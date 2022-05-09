@@ -1,4 +1,12 @@
 <?php
+/**
+ * Class Google\Site_Kit\Core\CLI\Auth_Scopes_CLI_Command
+ *
+ * @package   Google\Site_Kit\Core\CLI
+ * @copyright 2022 Google LLC
+ * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
+ * @link      https://sitekit.withgoogle.com
+ */
 
 namespace Google\Site_Kit\Core\CLI;
 
@@ -8,7 +16,7 @@ use Google\Site_Kit\Core\Storage\User_Options;
 use WP_CLI\Formatter;
 
 /**
- * Manages authentication token.
+ * Manages authentication scopes.
  *
  * @since n.e.x.t
  * @access private
@@ -36,8 +44,8 @@ class Auth_Scopes_CLI_Command extends CLI_Command {
 	 *   - yaml
 	 * ---
 	 *
-	 * @param $args
-	 * @param $assoc_args
+	 * @param array $args Array of arguments.
+	 * @param array $assoc_args Array of associated arguments.
 	 */
 	public function get( $args, $assoc_args ) {
 		$identifier = reset( $args );
@@ -52,8 +60,8 @@ class Auth_Scopes_CLI_Command extends CLI_Command {
 
 		$items = array_map(
 			function ( $scope ) use ( $required_scopes, $granted_scopes ) {
-				$required = in_array( $scope, $required_scopes );
-				$granted  = in_array( $scope, $granted_scopes );
+				$required = in_array( $scope, $required_scopes, true );
+				$granted  = in_array( $scope, $granted_scopes, true );
 
 				return compact( 'scope', 'required', 'granted' );
 			},
