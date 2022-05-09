@@ -304,13 +304,13 @@ describe( 'core/user feature-tours', () => {
 
 				expect(
 					await registry
-						.__experimentalResolveSelect( CORE_USER )
+						.resolveSelect( CORE_USER )
 						.getFeatureToursForView( 'common-context' )
 				).toEqual( [ testTourA, testTourB ] );
 
 				expect(
 					await registry
-						.__experimentalResolveSelect( CORE_USER )
+						.resolveSelect( CORE_USER )
 						.getFeatureToursForView( 'b-only-context' )
 				).toEqual( [ testTourB ] );
 			} );
@@ -327,7 +327,7 @@ describe( 'core/user feature-tours', () => {
 				] );
 				// Tour A's version matches the user's initial version, so only Tour B is returned.
 				const viewTours = await registry
-					.__experimentalResolveSelect( CORE_USER )
+					.resolveSelect( CORE_USER )
 					.getFeatureToursForView( 'common-context' );
 				expect( viewTours.map( ( { slug } ) => slug ) ).toEqual( [
 					testTourB.slug,
@@ -344,7 +344,7 @@ describe( 'core/user feature-tours', () => {
 				// Tour B was received as dismissed, but A was not.
 				expect(
 					await registry
-						.__experimentalResolveSelect( CORE_USER )
+						.resolveSelect( CORE_USER )
 						.getFeatureToursForView( 'common-context' )
 				).toEqual( [ testTourA ] );
 			} );
@@ -370,7 +370,7 @@ describe( 'core/user feature-tours', () => {
 				] );
 
 				const viewTours = await registry
-					.__experimentalResolveSelect( CORE_USER )
+					.resolveSelect( CORE_USER )
 					.getFeatureToursForView( 'common-context' );
 				expect( viewTours.map( ( { slug } ) => slug ) ).toEqual( [
 					testTourA.slug,

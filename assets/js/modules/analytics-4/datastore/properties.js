@@ -224,9 +224,7 @@ const baseActions = {
 	*findMatchedProperty() {
 		const registry = yield commonActions.getRegistry();
 		const accounts = yield Data.commonActions.await(
-			registry
-				.__experimentalResolveSelect( MODULES_ANALYTICS_4 )
-				.getAccountSummaries()
+			registry.resolveSelect( MODULES_ANALYTICS_4 ).getAccountSummaries()
 		);
 
 		if ( ! Array.isArray( accounts ) || accounts.length === 0 ) {
@@ -320,7 +318,7 @@ const baseActions = {
 			);
 			const webdatastreams = yield commonActions.await(
 				registry
-					.__experimentalResolveSelect( MODULES_ANALYTICS_4 )
+					.resolveSelect( MODULES_ANALYTICS_4 )
 					.getWebDataStreamsBatch( chunk )
 			);
 
@@ -336,9 +334,7 @@ const baseActions = {
 						) {
 							return yield commonActions.await(
 								registry
-									.__experimentalResolveSelect(
-										MODULES_ANALYTICS_4
-									)
+									.resolveSelect( MODULES_ANALYTICS_4 )
 									.getProperty( propertyID )
 							);
 						}
@@ -376,7 +372,7 @@ const baseActions = {
 			);
 			const webdatastreams = yield commonActions.await(
 				registry
-					.__experimentalResolveSelect( MODULES_ANALYTICS_4 )
+					.resolveSelect( MODULES_ANALYTICS_4 )
 					.getWebDataStreamsBatch( chunk )
 			);
 
@@ -389,9 +385,7 @@ const baseActions = {
 						) {
 							return yield commonActions.await(
 								registry
-									.__experimentalResolveSelect(
-										MODULES_ANALYTICS_4
-									)
+									.resolveSelect( MODULES_ANALYTICS_4 )
 									.getProperty( propertyID )
 							);
 						}
@@ -419,16 +413,14 @@ const baseActions = {
 };
 
 const baseControls = {
-	[ WAIT_FOR_PROPERTIES ]: createRegistryControl(
-		( { __experimentalResolveSelect } ) => {
-			return async ( { payload } ) => {
-				const { accountID } = payload;
-				await __experimentalResolveSelect(
-					MODULES_ANALYTICS_4
-				).getProperties( accountID );
-			};
-		}
-	),
+	[ WAIT_FOR_PROPERTIES ]: createRegistryControl( ( { resolveSelect } ) => {
+		return async ( { payload } ) => {
+			const { accountID } = payload;
+			await resolveSelect( MODULES_ANALYTICS_4 ).getProperties(
+				accountID
+			);
+		};
+	} ),
 };
 
 function baseReducer( state, { type } ) {

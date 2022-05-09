@@ -43,7 +43,7 @@ const allTrafficWidget = {
 	gaEventCategory: ( viewContext ) => `${ viewContext }_all-traffic-widget`,
 	checkRequirements: async ( registry ) => {
 		// Here we need to wait for the underlying selector to be resolved before selecting `isModuleConnected`.
-		await registry.__experimentalResolveSelect( CORE_MODULES ).getModules();
+		await registry.resolveSelect( CORE_MODULES ).getModules();
 		if (
 			! registry.select( CORE_MODULES ).isModuleConnected( 'analytics' )
 		) {

@@ -190,7 +190,7 @@ const baseControls = {
 			// Check if the tour has already been dismissed.
 			// Here we need to first await the underlying selector with the asynchronous resolver.
 			await registry
-				.__experimentalResolveSelect( CORE_USER )
+				.resolveSelect( CORE_USER )
 				.getDismissedFeatureTourSlugs();
 			if ( registry.select( CORE_USER ).isTourDismissed( tour.slug ) ) {
 				return false;

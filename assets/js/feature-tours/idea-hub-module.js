@@ -41,7 +41,7 @@ const ideaHubModule = {
 	contexts: [ VIEW_CONTEXT_DASHBOARD, VIEW_CONTEXT_DASHBOARD_VIEW_ONLY ],
 	version: '1.43.0',
 	checkRequirements: async ( registry ) => {
-		await registry.__experimentalResolveSelect( CORE_MODULES ).getModules();
+		await registry.resolveSelect( CORE_MODULES ).getModules();
 		const isIdeaHubModuleActive = registry
 			.select( CORE_MODULES )
 			.isModuleActive( 'idea-hub' );
@@ -54,7 +54,7 @@ const ideaHubModule = {
 		}
 
 		const newIdeas = await registry
-			.__experimentalResolveSelect( MODULES_IDEA_HUB )
+			.resolveSelect( MODULES_IDEA_HUB )
 			.getNewIdeas();
 
 		return !! newIdeas.length;

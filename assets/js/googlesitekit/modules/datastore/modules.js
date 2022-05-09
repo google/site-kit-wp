@@ -569,7 +569,7 @@ const baseResolvers = {
 	*canActivateModule( slug ) {
 		const registry = yield Data.commonActions.getRegistry();
 		yield Data.commonActions.await(
-			registry.__experimentalResolveSelect( CORE_MODULES ).getModules()
+			registry.resolveSelect( CORE_MODULES ).getModules()
 		);
 		const module = registry.select( CORE_MODULES ).getModule( slug );
 

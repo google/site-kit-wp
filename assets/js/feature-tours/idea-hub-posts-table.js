@@ -38,7 +38,7 @@ const ideaHubPostsTable = {
 			return false;
 		}
 
-		await registry.__experimentalResolveSelect( CORE_MODULES ).getModules();
+		await registry.resolveSelect( CORE_MODULES ).getModules();
 
 		return registry.select( CORE_MODULES ).isModuleConnected( 'idea-hub' );
 	},

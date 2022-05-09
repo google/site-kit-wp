@@ -115,7 +115,7 @@ describe( 'modules/analytics adsense', () => {
 				);
 				// Select getAdsenseLinked once, using resolve select.
 				const selectPromise = registry
-					.__experimentalResolveSelect( MODULES_ANALYTICS )
+					.resolveSelect( MODULES_ANALYTICS )
 					.getAdsenseLinked();
 				// A regular synchronous select shows the value is currently in its initial state.
 				expect(
