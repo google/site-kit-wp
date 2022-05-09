@@ -15,7 +15,7 @@ use Google\Site_Kit\Core\Authentication\Exception\Insufficient_Scopes_Exception;
 use Google\Site_Kit\Core\CLI\Traits\CLI_Auth;
 use Google\Site_Kit\Core\Modules\Modules;
 use WP_CLI;
-use function Local\CLI\get_flag_value;
+use function WP_CLI\Utils\get_flag_value;
 
 /**
  * Manages Site Kit module data.

@@ -9,7 +9,7 @@ use Google\Site_Kit_Dependencies\Google\Service\Exception as Google_Service_Exce
 use Google\Site_Kit_Dependencies\Google\Service\SearchConsole;
 use Google\Site_Kit_Dependencies\Google\Service\SearchConsole\WmxSite;
 use WP_CLI;
-use function Local\CLI\get_flag_value;
+use function WP_CLI\Utils\get_flag_value;
 
 class Search_Console_Site_CLI_Command extends CLI_Command {
 	use CLI_Auth;
