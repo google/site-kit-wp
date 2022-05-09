@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import { useQuery } from 'react-query';
+
+/**
  * WordPress dependencies
  */
 import { useCallback } from '@wordpress/element';
@@ -26,6 +31,7 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import API from 'googlesitekit-api';
 import { MODULES_SEARCH_CONSOLE } from '../../datastore/constants';
 import ProgressBar from '../../../../components/ProgressBar';
 import { Select, Option } from '../../../../material-components';
@@ -39,14 +45,24 @@ export default function PropertySelect() {
 	const propertyID = useSelect( ( select ) =>
 		select( MODULES_SEARCH_CONSOLE ).getPropertyID()
 	);
-	const matchedProperties = useSelect( ( select ) =>
-		select( MODULES_SEARCH_CONSOLE ).getMatchedProperties()
+
+	const { isLoading, error, data: matchedProperties } = useQuery(
+		// Query key:
+		[ 'modules', 'search-console', 'matched-sites' ],
+		// Query function:
+		() => API.siteKitRequest( 'modules', 'search-console', 'matched-sites' )
 	);
-	const hasResolvedProperties = useSelect( ( select ) =>
-		select( MODULES_SEARCH_CONSOLE ).hasFinishedResolution(
-			'getMatchedProperties'
-		)
-	);
+
+	// console.log( 'isLoading, error, results', isLoading, error, results );
+
+	// const matchedProperties = useSelect( ( select ) =>
+	// 	select( MODULES_SEARCH_CONSOLE ).getMatchedProperties()
+	// );
+	// const hasResolvedProperties = useSelect( ( select ) =>
+	// 	select( MODULES_SEARCH_CONSOLE ).hasFinishedResolution(
+	// 		'getMatchedProperties'
+	// 	)
+	// );
 
 	const { setPropertyID } = useDispatch( MODULES_SEARCH_CONSOLE );
 	const onChange = useCallback(
@@ -64,7 +80,7 @@ export default function PropertySelect() {
 		[ propertyID, setPropertyID, viewContext ]
 	);
 
-	if ( ! hasResolvedProperties ) {
+	if ( isLoading ) {
 		return <ProgressBar small />;
 	}
 

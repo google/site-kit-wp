@@ -20,6 +20,9 @@
  * External dependencies
  */
 import invariant from 'invariant';
+import { QueryCache, QueryClient } from 'react-query';
+import { persistQueryClient } from 'react-query/persistQueryClient-experimental';
+import { createWebStoragePersistor } from 'react-query/createWebStoragePersistor-experimental';
 
 /**
  * WordPress dependencies
@@ -30,8 +33,8 @@ import { addQueryArgs } from '@wordpress/url';
 /**
  * Internal dependencies
  */
-import { deleteItem, getItem, getKeys, setItem } from './cache';
-import { stringifyObject, HOUR_IN_SECONDS } from '../../util';
+import { getStorageSync } from './cache';
+import { HOUR_IN_SECONDS } from '../../util';
 import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '../../util/errors';
 import { trackAPIError } from '../../util/api';
 
@@ -41,43 +44,33 @@ import { CORE_USER } from '../datastore/user/constants';
 // Caching is enabled by default.
 let cachingEnabled = true;
 
-const KEY_SEPARATOR = '::';
-
-/**
- * Creates a cache key for a set of type/identifier/datapoint values.
- *
- * @since 1.5.0
- * @private
- *
- * @param {string} type        The data to access. One of 'core' or 'modules'.
- * @param {string} identifier  The data identifier, eg. a module slug like `'search-console'`.
- * @param {string} datapoint   The endpoint to request data from.
- * @param {Object} queryParams Query params to send with the request.
- * @return {string} The cache key to use for this set of values.
- */
-export const createCacheKey = (
-	type,
-	identifier,
-	datapoint,
-	queryParams = {}
-) => {
-	const keySections = [ type, identifier, datapoint ].filter(
-		( keySection ) => {
-			return !! keySection && keySection.length;
-		}
-	);
-
-	if (
-		keySections.length === 3 &&
-		!! queryParams &&
-		queryParams.constructor === Object &&
-		Object.keys( queryParams ).length
-	) {
-		keySections.push( stringifyObject( queryParams ) );
+class SiteKitQueryCache extends QueryCache {
+	build( ...args ) {
+		// console.log( 'QueryCache build', args );
+		return super.build( ...args );
 	}
+}
 
-	return keySections.join( KEY_SEPARATOR );
-};
+/* Create and export React Query client */
+export const queryClient = new QueryClient( {
+	queryCache: new SiteKitQueryCache(),
+	defaultOptions: {
+		queries: {
+			cacheTime: HOUR_IN_SECONDS * 1000,
+			staleTime: Infinity,
+		},
+	},
+} );
+
+const storage = getStorageSync();
+if ( storage ) {
+	const persistor = createWebStoragePersistor( { storage } );
+
+	persistQueryClient( {
+		queryClient,
+		persistor,
+	} );
+}
 
 /**
  * Dispatches an error to the store, whether it's a permission or auth error.
@@ -123,39 +116,25 @@ export const siteKitRequest = async (
 	type,
 	identifier,
 	datapoint,
-	{
-		bodyParams,
-		cacheTTL = HOUR_IN_SECONDS,
-		method = 'GET',
-		queryParams,
-		useCache = undefined,
-		signal,
-	} = {}
+	{ bodyParams, method = 'GET', queryParams, signal } = {}
 ) => {
 	invariant( type, '`type` argument for requests is required.' );
 	invariant( identifier, '`identifier` argument for requests is required.' );
 	invariant( datapoint, '`datapoint` argument for requests is required.' );
 
-	// Don't check for a `false`-y `useCache` value to ensure we don't fallback
-	// to the `usingCache()` behavior when caching is manually disabled on a
-	// per-request basis.
-	const useCacheForRequest =
-		method === 'GET' &&
-		( useCache !== undefined ? useCache : usingCache() );
-	const cacheKey = createCacheKey( type, identifier, datapoint, queryParams );
+	// TODO: Would need to replicate this behaviour somehow...
+	// if ( useCacheForRequest ) {
+	// 	const { cacheHit, value, isError } = await getItem( cacheKey );
 
-	if ( useCacheForRequest ) {
-		const { cacheHit, value, isError } = await getItem( cacheKey );
+	// 	if ( isError ) {
+	// 		dispatchAPIError( value );
+	// 		throw value;
+	// 	}
 
-		if ( isError ) {
-			dispatchAPIError( value );
-			throw value;
-		}
-
-		if ( cacheHit ) {
-			return value;
-		}
-	}
+	// 	if ( cacheHit ) {
+	// 		return value;
+	// 	}
+	// }
 
 	// Make an API request to retrieve the results.
 	try {
@@ -169,10 +148,6 @@ export const siteKitRequest = async (
 			),
 		} );
 
-		if ( useCacheForRequest ) {
-			await setItem( cacheKey, response, { ttl: cacheTTL } );
-		}
-
 		return response;
 	} catch ( error ) {
 		if ( signal?.aborted ) {
@@ -181,12 +156,13 @@ export const siteKitRequest = async (
 			throw error;
 		}
 
-		if ( error?.data?.cacheTTL ) {
-			await setItem( cacheKey, error, {
-				ttl: error.data.cacheTTL,
-				isError: true,
-			} );
-		}
+		// TODO: Would need to replicate this behaviour somehow...
+		// if ( error?.data?.cacheTTL ) {
+		// 	await setItem( cacheKey, error, {
+		// 		ttl: error.data.cacheTTL,
+		// 		isError: true,
+		// 	} );
+		// }
 
 		trackAPIError( { method, datapoint, type, identifier, error } );
 		dispatchAPIError( error );
@@ -221,7 +197,6 @@ export const siteKitRequest = async (
  * @param {Object}  options          Extra options for this request.
  * @param {number}  options.cacheTTL The oldest cache data to use, in seconds.
  * @param {boolean} options.useCache Enable or disable caching for this request only.
- * @param {Object}  options.signal   Abort the fetch request.
  * @return {Promise} A promise for the `fetch` request.
  */
 export const get = async (
@@ -229,14 +204,28 @@ export const get = async (
 	identifier,
 	datapoint,
 	data,
-	{ cacheTTL = HOUR_IN_SECONDS, useCache = undefined, signal } = {}
+	{ cacheTTL = HOUR_IN_SECONDS, useCache = undefined } = {}
 ) => {
-	return siteKitRequest( type, identifier, datapoint, {
-		cacheTTL,
-		queryParams: data,
-		useCache,
-		signal,
-	} );
+	const useCacheForRequest = useCache !== undefined ? useCache : usingCache();
+	const cacheTime = useCacheForRequest ? cacheTTL * 1000 : 0;
+
+	return queryClient.fetchQuery(
+		[ type, identifier, datapoint, data ],
+		( { signal } ) =>
+			siteKitRequest( type, identifier, datapoint, {
+				// cacheTTL,
+				queryParams: data,
+				// useCache: false,
+				signal,
+			} ),
+		{
+			staleTime: cacheTime,
+			cacheTime,
+			// onError: ( error ) => {
+			// 	dispatchAPIError( error );
+			// },
+		}
+	);
 };
 
 /**
@@ -272,7 +261,6 @@ export const set = async (
 		bodyParams: { data },
 		method,
 		queryParams,
-		useCache: false,
 		signal,
 	} );
 
@@ -326,20 +314,19 @@ export const usingCache = () => {
  * @param {string} type       The data type to operate on. One of 'core' or 'modules'.
  * @param {string} identifier The data identifier, eg. a module slug like `'adsense'`.
  * @param {string} datapoint  The endpoint to invalidate cache data for.
+ * @return {Promise} A promise returned by `queryClient.invalidateQueries`.
  */
 export const invalidateCache = async ( type, identifier, datapoint ) => {
-	const groupPrefix = createCacheKey( type, identifier, datapoint );
-
-	const allKeys = await getKeys();
-
-	allKeys.forEach( ( key ) => {
-		if ( key.indexOf( groupPrefix ) === 0 ) {
-			deleteItem( key );
-		}
+	return queryClient.invalidateQueries( [ type, identifier, datapoint ], {
+		exact: false,
+		refetchActive: false,
+		refetchInactive: false,
 	} );
 };
 
 const API = {
+	queryClient,
+	siteKitRequest,
 	invalidateCache,
 	get,
 	set,

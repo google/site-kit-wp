@@ -120,7 +120,6 @@ function EntitySearchInput() {
 						'Enter title or URL…',
 						'google-site-kit'
 					) }
-					isLoading={ isLoading }
 					setIsLoading={ setIsLoading }
 					showDropdown={ isActive }
 					onClose={ onClose }

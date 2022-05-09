@@ -27,6 +27,7 @@ import {
 	ComboboxList,
 	ComboboxOption,
 } from '@reach/combobox';
+import { useQuery } from 'react-query';
 
 /**
  * WordPress dependencies
@@ -51,7 +52,6 @@ export default function PostSearcherAutoSuggest( {
 	id,
 	match,
 	setMatch,
-	isLoading,
 	showDropdown = true,
 	setIsLoading = noop,
 	setIsActive = noop,
@@ -60,7 +60,6 @@ export default function PostSearcherAutoSuggest( {
 	onClose = noop,
 	placeholder = '',
 } ) {
-	const lastFetchRequest = useRef();
 	const [ searchTerm, setSearchTerm ] = useState( '' );
 
 	// eslint-disable-next-line camelcase
@@ -81,7 +80,6 @@ export default function PostSearcherAutoSuggest( {
 		searchTerm === postTitleFromMatch ? 0 : 200
 	);
 
-	const [ results, setResults ] = useState( [] );
 	const noResultsMessage = __( 'No results found', 'google-site-kit' );
 
 	const unifiedDashboardEnabled = useFeature( 'unifiedDashboard' );
@@ -109,6 +107,28 @@ export default function PostSearcherAutoSuggest( {
 		},
 		[ currentEntityTitle, setIsActive ]
 	);
+
+	const enabled =
+		debouncedValue !== '' &&
+		debouncedValue !== currentEntityTitle &&
+		debouncedValue?.toLowerCase() !== postTitleFromMatch?.toLowerCase();
+
+	const { isLoading, error, data: results } = useQuery(
+		// Query key:
+		[ 'core', 'search', 'entity-search', debouncedValue ], // Using search term in query key ensures a new query is made when the search term changes.
+		// Query function:
+		( { signal } ) =>
+			API.siteKitRequest( 'core', 'search', 'entity-search', {
+				queryParams: { query: encodeURIComponent( debouncedValue ) },
+				signal,
+			} ),
+		// Query config:
+		{ enabled }
+	);
+
+	console.log( 'isLoading, error, results', isLoading, error, results );
+
+	setIsLoading( () => isLoading );
 
 	const onSelectCallback = useCallback(
 		( value ) => {
@@ -139,61 +159,6 @@ export default function PostSearcherAutoSuggest( {
 		},
 		[ setCanSubmit ]
 	);
-
-	useEffect( () => {
-		if (
-			debouncedValue !== '' &&
-			debouncedValue !== currentEntityTitle &&
-			debouncedValue?.toLowerCase() !== postTitleFromMatch?.toLowerCase()
-		) {
-			/**
-			 * Create AbortController instance to pass
-			 * the signal property to the API.get() method.
-			 */
-			const controller =
-				typeof AbortController === 'undefined'
-					? undefined
-					: new AbortController();
-
-			( async function request() {
-				setIsLoading( true );
-
-				const fetchPromise = API.get(
-					'core',
-					'search',
-					'entity-search',
-					{ query: encodeURIComponent( debouncedValue ) },
-					{ useCache: false, signal: controller?.signal }
-				);
-				lastFetchRequest.current = fetchPromise;
-
-				try {
-					const response = await fetchPromise;
-					setResults( response );
-				} catch {
-					setResults( null );
-				} finally {
-					if ( fetchPromise === lastFetchRequest.current ) {
-						setIsLoading( false );
-					}
-				}
-			} )();
-
-			// Clean-up abort
-			return () => controller?.abort();
-		}
-	}, [
-		debouncedValue,
-		setIsLoading,
-		currentEntityTitle,
-		postTitleFromMatch,
-	] );
-
-	useEffect( () => {
-		if ( ! searchTerm ) {
-			setResults( [] );
-		}
-	}, [ searchTerm ] );
 
 	useEffect( () => {
 		if ( currentEntityTitle ) {
@@ -302,7 +267,6 @@ PostSearcherAutoSuggest.propTypes = {
 	match: PropTypes.object,
 	setCanSubmit: PropTypes.func,
 	setMatch: PropTypes.func,
-	isLoading: PropTypes.bool,
 	setIsLoading: PropTypes.func,
 	onKeyDown: PropTypes.func,
 	autoFocus: PropTypes.bool,

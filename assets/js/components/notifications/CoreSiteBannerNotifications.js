@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import { useQuery } from 'react-query';
+
+/**
  * WordPress dependencies
  */
 import { useEffect, useState, useRef } from '@wordpress/element';
@@ -25,6 +30,7 @@ import { useEffect, useState, useRef } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import API from 'googlesitekit-api';
 const { useSelect } = Data;
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
@@ -42,6 +48,13 @@ const CoreSiteBannerNotifications = () => {
 	const notifications = useSelect( ( select ) =>
 		select( CORE_SITE ).getNotifications()
 	);
+	// const {
+	// 	isLoading,
+	// 	error,
+	// 	data: notifications,
+	// } = useQuery( 'core-user-notifications', () =>
+	// 	API.get( 'core', 'user', 'notifications' )
+	// );
 
 	useEffect( () => {
 		const timer = setTimeout( () => {

@@ -26,6 +26,7 @@ import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 export default function SettingsForm() {
 	return (
 		<div className="googlesitekit-search-console-settings-fields">
+			{ /* TODO: Check if avoiding getMatchedProperties results in less visibility of errors via StoreErrorNotices */ }
 			<StoreErrorNotices
 				moduleSlug="search-console"
 				storeName={ MODULES_SEARCH_CONSOLE }

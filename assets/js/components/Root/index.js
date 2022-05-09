@@ -39,6 +39,9 @@ import { FeatureToursDesktop } from '../FeatureToursDesktop';
 import CurrentSurveyPortal from '../surveys/CurrentSurveyPortal';
 import { Provider as ViewContextProvider } from './ViewContextContext';
 import InViewProvider from '../InViewProvider';
+import API from 'googlesitekit-api';
+import { QueryClientProvider } from 'react-query';
+import { ReactQueryDevtools } from 'react-query/devtools';
 
 export default function Root( { children, registry, viewContext = null } ) {
 	const [ inViewState ] = useState( {
@@ -47,27 +50,30 @@ export default function Root( { children, registry, viewContext = null } ) {
 	} );
 
 	return (
-		<InViewProvider value={ inViewState }>
-			<Data.RegistryProvider value={ registry }>
-				<FeaturesProvider value={ enabledFeatures }>
-					<ViewContextProvider value={ viewContext }>
-						<ErrorHandler>
-							<RestoreSnapshots>
-								{ children }
-								{ /*
+		<QueryClientProvider client={ API.queryClient }>
+			<InViewProvider value={ inViewState }>
+				<Data.RegistryProvider value={ registry }>
+					<FeaturesProvider value={ enabledFeatures }>
+						<ViewContextProvider value={ viewContext }>
+							<ErrorHandler>
+								<RestoreSnapshots>
+									{ children }
+									{ /*
 									TODO: Replace `FeatureToursDesktop` with `FeatureTours`
 									once tour conflicts in smaller viewports are resolved.
 									@see https://github.com/google/site-kit-wp/issues/3003
 								*/ }
-								{ viewContext && <FeatureToursDesktop /> }
-								<CurrentSurveyPortal />
-							</RestoreSnapshots>
-							<PermissionsModal />
-						</ErrorHandler>
-					</ViewContextProvider>
-				</FeaturesProvider>
-			</Data.RegistryProvider>
-		</InViewProvider>
+									{ viewContext && <FeatureToursDesktop /> }
+									<CurrentSurveyPortal />
+								</RestoreSnapshots>
+								<PermissionsModal />
+							</ErrorHandler>
+						</ViewContextProvider>
+					</FeaturesProvider>
+				</Data.RegistryProvider>
+			</InViewProvider>
+			<ReactQueryDevtools initialIsOpen={ false } />
+		</QueryClientProvider>
 	);
 }
 

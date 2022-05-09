@@ -121,6 +121,37 @@ export const isStorageAvailable = async ( type ) => {
 	}
 };
 
+export const isStorageAvailableSync = ( type ) => {
+	const storage = global[ type ];
+
+	if ( ! storage ) {
+		return false;
+	}
+
+	try {
+		const x = '__storage_test__';
+
+		storage.setItem( x, x );
+		storage.removeItem( x );
+		return true;
+	} catch ( e ) {
+		return (
+			e instanceof DOMException &&
+			// everything except Firefox
+			( 22 === e.code ||
+				// Firefox
+				1014 === e.code ||
+				// test name field too, because code might not be present
+				// everything except Firefox
+				'QuotaExceededError' === e.name ||
+				// Firefox
+				'NS_ERROR_DOM_QUOTA_REACHED' === e.name ) &&
+			// acknowledge QuotaExceededError only if there's something already stored
+			0 !== storage.length
+		);
+	}
+};
+
 /**
  * Gets the storage object to use.
  *
@@ -141,6 +172,31 @@ export async function getStorage() {
 		}
 
 		if ( await isStorageAvailable( backend ) ) {
+			storageBackend = global[ backend ];
+		}
+	}
+
+	if ( storageBackend === undefined ) {
+		storageBackend = null;
+	}
+
+	return storageBackend;
+}
+
+// Not sure why getStorage() is async, maybe historical? Creating synchronous copy for now.
+
+export function getStorageSync() {
+	if ( storageBackend !== undefined ) {
+		return storageBackend;
+	}
+
+	// Only run the logic to determine the storage object once.
+	for ( const backend of storageOrder ) {
+		if ( storageBackend ) {
+			continue;
+		}
+
+		if ( isStorageAvailableSync( backend ) ) {
 			storageBackend = global[ backend ];
 		}
 	}

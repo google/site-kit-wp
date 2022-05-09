@@ -17,9 +17,15 @@
  */
 
 /**
+ * External dependencies
+ */
+import { useQuery } from 'react-query';
+
+/**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import API from 'googlesitekit-api';
 import { MODULES_SEARCH_CONSOLE } from '../../datastore/constants';
 import ProgressBar from '../../../../components/ProgressBar';
 import SettingsForm from './SettingsForm';
@@ -28,21 +34,25 @@ const { useSelect } = Data;
 export default function SettingsEdit() {
 	// We need this useSelect hook to trigger starting getMatchedProperties resolution which is needed to properly
 	// display the progress bar while matched properties are being loaded.
-	useSelect( ( select ) =>
-		select( MODULES_SEARCH_CONSOLE ).getMatchedProperties()
+	// useSelect( ( select ) =>
+	// 	select( MODULES_SEARCH_CONSOLE ).getMatchedProperties()
+	// );
+
+	const { isLoading } = useQuery(
+		// Query key:
+		[ 'modules', 'search-console', 'matched-sites' ],
+		// Query function:
+		() => API.siteKitRequest( 'modules', 'search-console', 'matched-sites' )
 	);
+
+	// console.log( 'isLoading, error, results', isLoading, error, results );
 
 	const isDoingSubmitChanges = useSelect( ( select ) =>
 		select( MODULES_SEARCH_CONSOLE ).isDoingSubmitChanges()
 	);
-	const hasResolvedProperties = useSelect( ( select ) =>
-		select( MODULES_SEARCH_CONSOLE ).hasFinishedResolution(
-			'getMatchedProperties'
-		)
-	);
 
 	let viewComponent;
-	if ( isDoingSubmitChanges || ! hasResolvedProperties ) {
+	if ( isDoingSubmitChanges || isLoading ) {
 		viewComponent = <ProgressBar />;
 	} else {
 		viewComponent = <SettingsForm />;

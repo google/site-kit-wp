@@ -146,11 +146,27 @@ class Notifications {
 								return new WP_Error( 'exception', $e->getMessage() );
 							}
 
-							$data = array_map(
-								function ( Notification $notification ) {
-									return $notification->prepare_for_js();
-								},
-								$this->map_response_to_notifications( $response )
+							// $data = array_map(
+							// function ( Notification $notification ) {
+							// return $notification->prepare_for_js();
+							// },
+							// $this->map_response_to_notifications( $response )
+							// );
+							$data = array(
+								( new Notification(
+									'test-slug',
+									array(
+										'title'            => 'test-title',
+										'content'          => 'test-content',
+										'cta_url'          => 'test-cta-url',
+										'cta_label'        => 'test-cta-label',
+										'cta_target'       => 'test-cta-target',
+										'learn_more_url'   => 'test-learn-more-url',
+										'learn_more_label' => 'test-learn-more-label',
+										'dismissible'      => true,
+										'dismiss_label'    => 'test-dismiss-label',
+									)
+								) )->prepare_for_js(),
 							);
 
 							return new WP_REST_Response( $data );
