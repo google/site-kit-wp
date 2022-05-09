@@ -229,7 +229,7 @@ describe( 'core/modules modules', () => {
 					.dispatch( CORE_MODULES )
 					.recoverModule( slug );
 
-				expect( response.ownerID ).toBe( 1 );
+				expect( response.success ).toBe( true );
 
 				expect( fetchMock ).toHaveFetchedTimes( 4 );
 
@@ -270,14 +270,14 @@ describe( 'core/modules modules', () => {
 					{ body: FIXTURES, status: 200 }
 				);
 
-				const apiResponse = {
+				const errorResponse = {
 					code: 'module_not_recoverable',
 					message: 'Module is not recoverable.',
 					data: { status: 403 },
 				};
 				fetchMock.postOnce(
 					/^\/google-site-kit\/v1\/core\/modules\/data\/recover-module/,
-					{ body: apiResponse }
+					{ body: errorResponse, status: 403 }
 				);
 
 				const initialModules = registry
@@ -288,11 +288,13 @@ describe( 'core/modules modules', () => {
 				expect( initialModules ).toBeUndefined();
 				await untilResolved( registry, CORE_MODULES ).getModules();
 
-				const { response } = await registry
+				const { response, error } = await registry
 					.dispatch( CORE_MODULES )
 					.recoverModule( slug );
 
-				expect( response.message ).toBe( apiResponse.message );
+				expect( console ).toHaveErrored();
+				expect( response.success ).toBe( false );
+				expect( error.message ).toBe( errorResponse.message );
 
 				expect( fetchMock ).toHaveFetchedTimes( 2 );
 
@@ -321,21 +323,21 @@ describe( 'core/modules modules', () => {
 				);
 			} );
 
-			it( 'encourters an error if an invalid module slug is passed', async () => {
+			it( 'encounters an error if an invalid module slug is passed', async () => {
 				const slug = 'invalid-slug';
 				fetchMock.get(
 					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
 					{ body: FIXTURES, status: 200 }
 				);
 
-				const apiResponse = {
+				const errorResponse = {
 					code: 'invalid_module_slug',
 					message: `Invalid module slug ${ slug }.`,
 					data: { status: 404 },
 				};
 				fetchMock.postOnce(
 					/^\/google-site-kit\/v1\/core\/modules\/data\/recover-module/,
-					{ body: apiResponse }
+					{ body: errorResponse, status: 403 }
 				);
 
 				const initialModules = registry
@@ -346,11 +348,13 @@ describe( 'core/modules modules', () => {
 				expect( initialModules ).toBeUndefined();
 				await untilResolved( registry, CORE_MODULES ).getModules();
 
-				const { response } = await registry
+				const { response, error } = await registry
 					.dispatch( CORE_MODULES )
 					.recoverModule( slug );
 
-				expect( response.message ).toBe( apiResponse.message );
+				expect( console ).toHaveErrored();
+				expect( response.success ).toBe( false );
+				expect( error.message ).toBe( errorResponse.message );
 
 				expect( fetchMock ).toHaveFetchedTimes( 2 );
 
@@ -1367,13 +1371,11 @@ describe( 'core/modules modules', () => {
 					{ body: FIXTURES, status: 200 }
 				);
 
-				const recoverableModules = registry
-					.select( CORE_MODULES )
-					.getRecoverableModules();
+				registry.select( CORE_MODULES ).getRecoverableModules();
 
-				registry.select( CORE_MODULES ).getModules();
+				const modules = registry.select( CORE_MODULES ).getModules();
 
-				expect( recoverableModules ).toBeUndefined();
+				expect( modules ).toBeUndefined();
 			} );
 
 			it( 'should return an empty object if there is no `recoverableModules`', async () => {
@@ -1403,7 +1405,7 @@ describe( 'core/modules modules', () => {
 				expect( recoverableModules ).toMatchObject( {} );
 			} );
 
-			it( 'should return the modules object for each recoverable modules', async () => {
+			it( 'should return the modules object for each recoverable module', async () => {
 				global[ dashboardSharingDataBaseVar ] = recoverableModuleList;
 
 				fetchMock.getOnce(
