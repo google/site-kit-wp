@@ -464,6 +464,38 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 	}
 
 	/**
+	 * Gets all available verification meta tags.
+	 *
+	 * This is a special method needed for verification-tag endpoint.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array List of verification meta tags.
+	 */
+	public function get_verification_tags() {
+		$verification_tags = $this->get_all_verification_tags();
+		$allowed_html      = array(
+			'meta' => array(
+				'name'    => array(),
+				'content' => array(),
+			),
+		);
+
+		$meta_tags = array();
+		foreach ( $verification_tags as $verification_tag ) {
+			$verification_tag = html_entity_decode( $verification_tag );
+
+			if ( 0 !== strpos( $verification_tag, '<meta ' ) ) {
+				$verification_tag = '<meta name="google-site-verification" content="' . esc_attr( $verification_tag ) . '">';
+			}
+
+			$meta_tags[] = wp_kses( $verification_tag, $allowed_html );
+		}
+
+		return $meta_tags;
+	}
+
+	/**
 	 * Serves the verification file response.
 	 *
 	 * @param string $verification_token Token portion of verification.
