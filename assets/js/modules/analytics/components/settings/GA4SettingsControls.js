@@ -184,7 +184,7 @@ export default function GA4SettingsControls() {
 			{ isDisabled && <GA4ActivateSwitch onActivate={ onActivate } /> }
 
 			{ ! isDisabled && (
-				<div className="googlesitekit-setup-module__inputs googlesitekit-setup-module__inputs--multiline">
+				<div className="googlesitekit-settings-module__meta-item">
 					<SettingsUseSnippetSwitch />
 				</div>
 			) }

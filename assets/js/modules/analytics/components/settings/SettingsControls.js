@@ -49,7 +49,7 @@ export default function SettingsControls() {
 				</div>
 			) }
 
-			<div className="googlesitekit-setup-module__inputs googlesitekit-setup-module__inputs--multiline">
+			<div className="googlesitekit-settings-module__meta-item">
 				<SettingsUseSnippetSwitch />
 			</div>
 		</div>
