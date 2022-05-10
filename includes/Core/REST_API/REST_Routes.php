@@ -230,6 +230,8 @@ final class REST_Routes {
 					array(
 						'methods'             => WP_REST_Server::READABLE,
 						'callback'            => function( WP_REST_Request $request ) {
+							// @TODO: Verify the user and the site ownership from the request.
+
 							// Get verification meta tags.
 							$site_verification = new Site_Verification( $this->context );
 							$verification_tags = $site_verification->get_verification_tags();
