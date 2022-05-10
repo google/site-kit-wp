@@ -75,7 +75,7 @@ export default function SetupAccountPendingTasks( { accountID } ) {
 
 			<div className="googlesitekit-setup-module__action">
 				<Button onClick={ onButtonClick } href={ serviceAccountURL }>
-					{ __( 'Add site to AdSense', 'google-site-kit' ) }
+					{ __( 'Review AdSense account', 'google-site-kit' ) }
 				</Button>
 			</div>
 		</Fragment>
