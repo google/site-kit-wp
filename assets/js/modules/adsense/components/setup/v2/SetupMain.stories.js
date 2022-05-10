@@ -81,6 +81,7 @@ function createSetupAccountStory( variation, args = {} ) {
 				receiveGetSites,
 				receiveGetURLChannels,
 				receiveGetExistingTag,
+				setAccountID,
 			} = registry.dispatch( MODULES_ADSENSE );
 
 			provideSiteInfo( registry, {
@@ -92,8 +93,7 @@ function createSetupAccountStory( variation, args = {} ) {
 			receiveGetSites( sites, { accountID } );
 			receiveGetSettings( { ...defaultSettings, accountID } );
 			receiveGetAlerts( fixtures.alerts, { accountID } );
-
-			registry.dispatch( MODULES_ADSENSE ).setAccountID( accountID );
+			setAccountID( accountID );
 
 			const clientID = clients.find(
 				( { _accountID } ) => _accountID === accountID
@@ -215,6 +215,7 @@ export const SelectAccount = Template.bind( {} );
 SelectAccount.storyName = 'Select Account';
 SelectAccount.args = {
 	setupRegistry: ( registry ) => {
+		registry.dispatch( MODULES_ADSENSE ).setAccountID( '' );
 		registry.dispatch( MODULES_ADSENSE ).receiveGetAccounts( [
 			{
 				_id: 'pub-2833782679114991',
