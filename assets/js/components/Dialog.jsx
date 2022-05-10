@@ -36,7 +36,7 @@ import { __ } from '@wordpress/i18n';
 import Button from './Button';
 import Link from './Link';
 import { MDCDialog } from '../material-components';
-import Spinner from './Spinner.js';
+import Spinner from './Spinner';
 
 const Dialog = ( {
 	dialogActive,

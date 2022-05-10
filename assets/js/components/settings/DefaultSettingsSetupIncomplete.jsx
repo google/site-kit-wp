@@ -32,7 +32,7 @@ import { __ } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import Link from '../Link';
-import ModuleSettingsWarning from '../notifications/ModuleSettingsWarning.js';
+import ModuleSettingsWarning from '../notifications/ModuleSettingsWarning';
 import { Cell } from '../../material-components/layout';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 const { useSelect } = Data;

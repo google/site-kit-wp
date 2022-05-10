@@ -25,7 +25,7 @@ import { __ } from '@wordpress/i18n';
  * External dependencies
  */
 import invariant from 'invariant';
-import { detectAnyAdblocker } from 'just-detect-adblock';
+import adblock from 'just-detect-adblock';
 
 /**
  * Internal dependencies
@@ -63,7 +63,7 @@ export const actions = {
 
 export const controls = {
 	[ CHECK_ADBLOCKER ]: async () => {
-		if ( await detectAnyAdblocker() ) {
+		if ( await adblock.detectAnyAdblocker() ) {
 			return true;
 		}
 		// The above is good about detecting most adblockers.

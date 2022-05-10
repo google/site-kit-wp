@@ -36,7 +36,7 @@ import ModuleIcon from '../ModuleIcon';
 import Spinner from '../Spinner';
 import Link from '../Link';
 import Badge from '../Badge';
-import ModuleSettingsWarning from '../notifications/ModuleSettingsWarning.js';
+import ModuleSettingsWarning from '../notifications/ModuleSettingsWarning';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
