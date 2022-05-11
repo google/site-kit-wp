@@ -215,7 +215,6 @@ export const SelectAccount = Template.bind( {} );
 SelectAccount.storyName = 'Select Account';
 SelectAccount.args = {
 	setupRegistry: ( registry ) => {
-		registry.dispatch( MODULES_ADSENSE ).setAccountID( '' );
 		registry.dispatch( MODULES_ADSENSE ).receiveGetAccounts( [
 			{
 				_id: 'pub-2833782679114991',
@@ -225,6 +224,15 @@ SelectAccount.args = {
 					id: 'Europe/Berlin',
 				},
 				createTime: '2013-10-17T15:51:03.000Z',
+			},
+			{
+				_id: 'pub-2833782679114992',
+				name: 'accounts/pub-2833782679114992',
+				displayName: 'Test Account 2',
+				timeZone: {
+					id: 'Europe/Berlin',
+				},
+				createTime: '2013-10-18T15:51:03.000Z',
 			},
 		] );
 	},
