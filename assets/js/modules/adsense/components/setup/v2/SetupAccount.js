@@ -58,10 +58,6 @@ export default function SetupAccount( { account, finishSetup } ) {
 		select( MODULES_ADSENSE ).getClientID()
 	);
 
-	const clients = useSelect( ( select ) =>
-		select( MODULES_ADSENSE ).getClients( accountID )
-	);
-
 	const site = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getCurrentSite( accountID )
 	);
@@ -77,6 +73,8 @@ export default function SetupAccount( { account, finishSetup } ) {
 	useEffect( () => {
 		if ( afcClient?._id && clientID !== afcClient._id ) {
 			setClientID( afcClient._id );
+		} else if ( afcClient === null && !! clientID ) {
+			setClientID( '' );
 		}
 	}, [ afcClient, clientID, setClientID ] );
 
@@ -87,8 +85,8 @@ export default function SetupAccount( { account, finishSetup } ) {
 	}, [ setSiteStatus, site ] );
 
 	useEffect( () => {
-		// Do nothing if clients aren't loaded because we can't determine afcClientID yet.
-		if ( clients === undefined || site === undefined ) {
+		// Do nothing if site isn't loaded yet.
+		if ( site === undefined ) {
 			return;
 		}
 
@@ -103,10 +101,10 @@ export default function SetupAccount( { account, finishSetup } ) {
 		} else {
 			setAccountStatus( ACCOUNT_STATUS_READY );
 		}
-	}, [ accountState, afcClient, clientID, clients, setAccountStatus, site ] );
+	}, [ accountState, afcClient, clientID, setAccountStatus, site ] );
 
-	// Show the progress bar if clients or site aren't loaded yet.
-	if ( clients === undefined || site === undefined ) {
+	// Show the progress bar if site isn't loaded yet.
+	if ( site === undefined ) {
 		return <ProgressBar />;
 	}
 

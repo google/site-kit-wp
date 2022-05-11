@@ -146,11 +146,23 @@ export default function SetupMain( { finishSetup } ) {
 
 	// Update current account ID setting on-the-fly.
 	useEffect( () => {
+		if ( ! Array.isArray( accounts ) ) {
+			return;
+		}
+
+		let newAccountID;
+
 		if (
-			accounts?.length === 1 &&
+			accounts.length === 1 &&
 			( ! accountID || accounts[ 0 ]._id !== accountID )
 		) {
-			setAccountID( accounts[ 0 ]._id );
+			newAccountID = accounts[ 0 ]._id;
+		} else if ( accounts.length === 0 && !! accountID ) {
+			newAccountID = '';
+		}
+
+		if ( newAccountID !== undefined ) {
+			setAccountID( newAccountID );
 			// Set flag to await background submission.
 			setIsAwaitingBackgroundSubmit( true );
 		}
