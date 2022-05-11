@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import PropTypes from 'prop-types';
-
-/**
  * WordPress dependencies
  */
 import { Fragment, useCallback } from '@wordpress/element';
@@ -38,7 +33,8 @@ import { ErrorNotices } from '../../common';
 import { trackEvent } from '../../../../../util';
 import useViewContext from '../../../../../hooks/useViewContext';
 const { useSelect } = Data;
-export default function SetupAccountPendingTasks( { accountID } ) {
+
+export default function SetupAccountPendingTasks() {
 	const viewContext = useViewContext();
 
 	const onButtonClick = useCallback( () => {
@@ -48,10 +44,6 @@ export default function SetupAccountPendingTasks( { accountID } ) {
 	const serviceAccountURL = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getServiceAccountURL()
 	);
-
-	if ( ! accountID || ! serviceAccountURL ) {
-		return null;
-	}
 
 	return (
 		<Fragment>
@@ -81,7 +73,3 @@ export default function SetupAccountPendingTasks( { accountID } ) {
 		</Fragment>
 	);
 }
-
-SetupAccountPendingTasks.propTypes = {
-	accountID: PropTypes.string.isRequired,
-};

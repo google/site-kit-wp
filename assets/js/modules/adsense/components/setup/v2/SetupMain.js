@@ -40,6 +40,8 @@ import SetupSelectAccount from './SetupSelectAccount';
 import { trackEvent } from '../../../../../util';
 import { AdBlockerWarning, ErrorNotices } from '../../common';
 import { MODULES_ADSENSE } from '../../../datastore/constants';
+import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
+import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import {
 	ACCOUNT_STATUS_READY,
 	ACCOUNT_STATUS_NONE,
@@ -111,6 +113,13 @@ export default function SetupMain( { finishSetup } ) {
 	);
 	const hasResolvedAccounts = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).hasFinishedResolution( 'getAccounts' )
+	);
+	const userEmail = useSelect( ( select ) => select( CORE_USER ).getEmail() );
+	const referenceSiteURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getReferenceSiteURL()
+	);
+	const existingTag = useSelect( ( select ) =>
+		select( MODULES_ADSENSE ).getExistingTag()
 	);
 
 	const account = accounts?.find( ( { _id } ) => _id === accountID );
@@ -257,7 +266,13 @@ export default function SetupMain( { finishSetup } ) {
 
 	let viewComponent;
 
-	if ( ! hasResolvedAccounts ) {
+	if (
+		! hasResolvedAccounts ||
+		accountID === undefined ||
+		userEmail === undefined ||
+		referenceSiteURL === undefined ||
+		existingTag === undefined
+	) {
 		viewComponent = <ProgressBar />;
 	} else if ( hasErrors ) {
 		viewComponent = <ErrorNotices />;

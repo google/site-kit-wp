@@ -115,7 +115,7 @@ export default function SetupAccount( { account, finishSetup } ) {
 	}
 
 	if ( site === null ) {
-		return <SetupAccountCreateSite accountID={ accountID } />;
+		return <SetupAccountCreateSite />;
 	}
 
 	if (
@@ -123,7 +123,7 @@ export default function SetupAccount( { account, finishSetup } ) {
 		afcClient?.state === API_STATE_REQUIRES_REVIEW ||
 		afcClient?.state === API_STATE_GETTING_READY
 	) {
-		return <SetupAccountPendingTasks accountID={ accountID } />;
+		return <SetupAccountPendingTasks />;
 	}
 
 	return <SetupAccountSite site={ site } finishSetup={ finishSetup } />;

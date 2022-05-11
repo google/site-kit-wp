@@ -50,6 +50,10 @@ const fetchGetClientsStore = createFetchStore( {
 		);
 	},
 	reducerCallback: ( state, clients, { accountID } ) => {
+		if ( ! Array.isArray( clients ) ) {
+			return state;
+		}
+
 		return {
 			...state,
 			clients: {
