@@ -29,6 +29,11 @@ class Module_Sharing_SettingsTest extends SettingsTestCase {
 	 */
 	private $settings;
 
+	/**
+	 * Context instance.
+	 *
+	 * @var Context
+	 */
 	private $context;
 
 	public function set_up() {
