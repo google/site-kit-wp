@@ -365,7 +365,7 @@ final class Modules {
 		);
 
 		add_filter( 'option_googlesitekit_dashboard_sharing', $this->get_method_proxy( 'filter_shared_ownership_module_settings' ) );
-		add_filter( 'default_option_googlesitekit_dashboard_sharing', $this->get_method_proxy( 'filter_shared_ownership_module_settings' ) );
+		add_filter( 'default_option_googlesitekit_dashboard_sharing', $this->get_method_proxy( 'filter_shared_ownership_module_settings' ), 20 );
 
 		add_action(
 			'update_option_googlesitekit_dashboard_sharing',
@@ -1439,10 +1439,9 @@ final class Modules {
 	 * @since n.e.x.t
 	 *
 	 * @param array $sharing_settings The dashboard_sharing settings option fetched from the database.
-	 *
-	 * @return array dasboard_sharing settings option with default settings inserted for shared ownership modules.
+	 * @return array Dashboard sharing settings option with default settings inserted for shared ownership modules.
 	 */
-	public function filter_shared_ownership_module_settings( $sharing_settings ) {
+	protected function filter_shared_ownership_module_settings( $sharing_settings ) {
 		$shared_ownership_modules = array_keys( $this->get_shared_ownership_modules() );
 		foreach ( $shared_ownership_modules as $shared_ownership_module ) {
 			if ( ! isset( $sharing_settings[ $shared_ownership_module ] ) ) {
