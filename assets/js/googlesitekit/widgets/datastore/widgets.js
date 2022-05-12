@@ -80,7 +80,7 @@ export const actions = {
 	 * @param {number}                [settings.priority]   Optional. Widget's priority for ordering (lower number is higher priority, like WordPress hooks). Default is: 10.
 	 * @param {string|Array.<string>} [settings.width]      Optional. Widget's maximum width to occupy. Default is: "quarter". One of: "quarter", "half", "full".
 	 * @param {boolean}               [settings.wrapWidget] Optional. Whether to wrap the component with the <Widget> wrapper. Default is: true.
-	 * @param {string|Array.<string>} [settings.modules]    Optional. Widget's associated moduels.
+	 * @param {string|Array.<string>} [settings.modules]    Optional. Widget's associated modules.
 	 * @return {Object} Redux-style action.
 	 */
 	registerWidget(
@@ -312,7 +312,7 @@ export const selectors = {
 	 * @param {Object}                state             Data store's state.
 	 * @param {string}                widgetAreaSlug    Widget context to get areas for.
 	 * @param {Object}                options           Widgets selection options.
-	 * @param {string|Array.<string>} [options.modules] Optional. Widget's associated moduels.
+	 * @param {string|Array.<string>} [options.modules] Optional. Widget's associated modules.
 	 * @return {Array} An ordered array of widgets for this area.
 	 */
 	getWidgets( state, widgetAreaSlug, { modules } = {} ) {
