@@ -29,11 +29,13 @@ class Module_Sharing_SettingsTest extends SettingsTestCase {
 	 */
 	private $settings;
 
+	private $context;
+
 	public function set_up() {
 		parent::set_up();
 
-		$context        = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-		$options        = new Options( $context );
+		$this->context  = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$options        = new Options( $this->context );
 		$this->settings = new Module_Sharing_Settings( $options );
 		$this->settings->register();
 	}
@@ -215,27 +217,7 @@ class Module_Sharing_SettingsTest extends SettingsTestCase {
 		$this->assertEmpty( $this->settings->get_shared_roles( 'pagespeed-insights' ) );
 	}
 
-	private function grant_manage_options_permission() {
-		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-
-		$modules = new Modules( $context );
-		// Adds filters which insert default dashboard_sharing settings for shared_ownership_modules.
-		$modules->register();
-
-		// Authenticate current user to partially grant capability to manage module sharing options.
-		$authentication = new Authentication( $context );
-		$authentication->get_oauth_client()->set_token(
-			array(
-				'access_token' => 'valid-auth-token',
-			)
-		);
-		// Re-register Permissions after enabling the dashboardSharing feature to include dashboard sharing capabilities.
-		$user_options = new User_Options( $context );
-		$permissions  = new Permissions( $context, $authentication, $modules, $user_options, new Dismissed_Items( $user_options ) );
-		$permissions->register();
-	}
-
-	public function test_merge() {
+	public function test_merge__unauthenticated_user() {
 		$this->enable_feature( 'dashboardSharing' );
 
 		update_option(
@@ -249,7 +231,6 @@ class Module_Sharing_SettingsTest extends SettingsTestCase {
 
 		$admin_1 = self::factory()->user->create_and_get( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $admin_1->ID );
-		$admin_2 = self::factory()->user->create_and_get( array( 'role' => 'administrator' ) );
 
 		$test_sharing_settings = array(
 			'search-console'     => array(
@@ -268,9 +249,56 @@ class Module_Sharing_SettingsTest extends SettingsTestCase {
 
 		// Current unauthenticated admin_1 cannot update any settings.
 		$this->assertFalse( $this->settings->merge( $test_sharing_settings ) );
+	}
 
-		// Grant admin_1 partial capability to manage module sharing settings.
-		$this->grant_manage_options_permission();
+	public function test_merge__authenticated_user() {
+		$this->enable_feature( 'dashboardSharing' );
+
+		update_option(
+			'googlesitekit_active_modules',
+			array(
+				'search-console',
+				'analytics',
+				'pagespeed-insights',
+			)
+		);
+
+		$test_sharing_settings = array(
+			'search-console'     => array(
+				'sharedRoles' => array( 'editor', 'subscriber' ),
+				'management'  => 'all_admins',
+			),
+			'analytics'          => array(
+				'sharedRoles' => array( 'editor' ),
+				'management'  => 'all_admins',
+			),
+			'pagespeed-insights' => array(
+				'sharedRoles' => array( 'editor' ),
+				'management'  => 'all_admins',
+			),
+		);
+
+		$admin_1 = self::factory()->user->create_and_get( array( 'role' => 'administrator' ) );
+		$admin_2 = self::factory()->user->create_and_get( array( 'role' => 'administrator' ) );
+
+		wp_set_current_user( $admin_1->ID );
+
+		$modules = new Modules( $this->context );
+		// Adds filters which insert default dashboard_sharing settings for shared_ownership_modules.
+		$modules->register();
+
+		// Authenticate current user to partially grant capability to manage module sharing options.
+		$authentication = new Authentication( $this->context );
+		$authentication->get_oauth_client()->set_token(
+			array(
+				'access_token' => 'valid-auth-token',
+			)
+		);
+
+		// Re-register Permissions after enabling the dashboardSharing feature to include dashboard sharing capabilities.
+		$user_options = new User_Options( $this->context );
+		$permissions  = new Permissions( $this->context, $authentication, $modules, $user_options, new Dismissed_Items( $user_options ) );
+		$permissions->register();
 
 		// Add owners for search-console and analytics to test capability required to update sharing settings.
 		// Pagespeed-insights (shared ownership module) does not require an owner as its sharing settings
