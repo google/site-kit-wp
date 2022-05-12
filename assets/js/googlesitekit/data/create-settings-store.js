@@ -22,6 +22,7 @@
 import invariant from 'invariant';
 import isPlainObject from 'lodash/isPlainObject';
 import isEqual from 'lodash/isEqual';
+import pick from 'lodash/pick';
 
 /**
  * Internal dependencies
@@ -275,12 +276,21 @@ export const createSettingsStore = (
 		 * Indicates whether the current settings have changed from what is saved.
 		 *
 		 * @since 1.6.0
+		 * @since n.e.x.t Added ability to filter settings using `keys` argument.
 		 *
-		 * @param {Object} state Data store's state.
+		 * @param {Object}          state Data store's state.
+		 * @param {Array|undefined} keys  Settings keys to check; if not provided, all settings are checked.
 		 * @return {boolean} True if the settings have changed, false otherwise.
 		 */
-		haveSettingsChanged( state ) {
+		haveSettingsChanged( state, keys = undefined ) {
 			const { settings, savedSettings } = state;
+
+			if ( keys !== undefined ) {
+				return ! isEqual(
+					pick( settings, keys ),
+					pick( savedSettings, keys )
+				);
+			}
 
 			return ! isEqual( settings, savedSettings );
 		},

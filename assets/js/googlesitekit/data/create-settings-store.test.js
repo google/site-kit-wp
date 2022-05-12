@@ -393,6 +393,74 @@ describe( 'createSettingsStore store', () => {
 				dispatch.setSettings( serverValues );
 				expect( select.haveSettingsChanged() ).toEqual( false );
 			} );
+
+			it( 'compares all keys when keys argument is not supplied', async () => {
+				const serverValues = {
+					setting1: 'serverside',
+					setting2: 'test-value',
+				};
+				const clientValues = {
+					setting1: 'clientside',
+					setting2: 'test-value',
+				};
+
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/core\/site\/data\/settings/,
+					{ body: serverValues, status: 200 }
+				);
+
+				select.getSettings();
+				await subscribeUntil(
+					registry,
+					() => select.getSettings() !== undefined
+				);
+
+				// Update the settings so they differ. All values are being checked
+				// here.
+				dispatch.setSettings( clientValues );
+				expect( select.haveSettingsChanged() ).toEqual( true );
+			} );
+
+			it( 'compares select keys when keys argument is supplied', async () => {
+				const serverValues = {
+					setting1: 'serverside',
+					setting2: 'test-value',
+				};
+				const clientValues = {
+					setting1: 'clientside',
+					setting2: 'test-value',
+				};
+
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/core\/site\/data\/settings/,
+					{ body: serverValues, status: 200 }
+				);
+
+				select.getSettings();
+				await subscribeUntil(
+					registry,
+					() => select.getSettings() !== undefined
+				);
+
+				// Update the settings so they differ. Only `setting1` should trigger
+				// a truthy return value.
+				dispatch.setSettings( clientValues );
+				expect( select.haveSettingsChanged( [ 'setting1' ] ) ).toEqual(
+					true
+				);
+				expect( select.haveSettingsChanged( [ 'setting2' ] ) ).toEqual(
+					false
+				);
+
+				// Checking all values should be possible.
+				expect(
+					select.haveSettingsChanged( [ 'setting1', 'setting2' ] )
+				).toEqual( true );
+
+				// Checking no values should be possible, and should not be treated as
+				// an `undefined` keys array.
+				expect( select.haveSettingsChanged( [] ) ).toEqual( false );
+			} );
 		} );
 
 		describe( 'hasSettingChanged', () => {
