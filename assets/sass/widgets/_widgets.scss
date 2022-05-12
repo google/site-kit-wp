@@ -18,7 +18,7 @@
 
 .googlesitekit-widget {
 
-	@include shadow;
+	@include border-radius;
 	background: $c-base;
 	display: flex;
 	flex-direction: column;

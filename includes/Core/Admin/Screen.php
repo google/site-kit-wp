@@ -212,6 +212,13 @@ final class Screen {
 	 * @param Context $context Plugin context.
 	 */
 	public function initialize( Context $context ) {
+		add_filter(
+			'admin_body_class',
+			function( $body_classes ) {
+				return $body_classes . ' googlesitekit-screen';
+			}
+		);
+
 		if ( ! $this->args['initialize_callback'] ) {
 			return;
 		}

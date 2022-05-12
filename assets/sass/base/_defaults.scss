@@ -20,6 +20,10 @@
 	--reach-combobox: 1;
 }
 
+body.googlesitekit-screen {
+	background-color: $c-background-page;
+}
+
 /* .googlesitekit-plugin will always wrap all
  * of our content, so the properties below will act as defaults.
  */

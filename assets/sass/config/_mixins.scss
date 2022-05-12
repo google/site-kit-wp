@@ -65,6 +65,10 @@
 	transform: translate(-50%, -50%);
 }
 
+@mixin border-radius {
+	border-radius: 1rem;
+}
+
 @mixin shadow {
 	box-shadow: 0 1px 3px rgba($c-black, 0.2);
 }

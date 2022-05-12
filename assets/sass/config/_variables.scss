@@ -164,6 +164,7 @@ $c-success: $c-chateau-green;
 $c-wp-notice: $c-orange-roughy;
 $c-wp-notice-alt: $c-deep-sky-blue;
 
+$c-background-page: #eaeef0;
 $c-background: $c-mercury;
 $c-background-subtle: $c-alabaster;
 $c-background-brand: $c-royal-blue;
@@ -236,7 +237,7 @@ $mdc-theme-on-primary: $c-base;
 $mdc-theme-on-secondary: $c-base;
 
 // Fonts
-$f-primary: Roboto, "Helvetica Neue", Helvetica, Arial, sans-serif;
+$f-primary: "Google Sans", Roboto, "Helvetica Neue", Helvetica, Arial, sans-serif;
 $fw-primary-light: 300;
 $fw-primary-normal: 400;
 $fw-primary-medium: 500;
