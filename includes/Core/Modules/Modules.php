@@ -364,11 +364,11 @@ final class Modules {
 			}
 		);
 
-		add_filter( 'option_googlesitekit_dashboard_sharing', $this->get_method_proxy( 'filter_shared_ownership_module_settings' ) );
-		add_filter( 'default_option_googlesitekit_dashboard_sharing', $this->get_method_proxy( 'filter_shared_ownership_module_settings' ), 20 );
+		add_filter( 'option_' . Module_Sharing_Settings::OPTION, $this->get_method_proxy( 'filter_shared_ownership_module_settings' ) );
+		add_filter( 'default_option_' . Module_Sharing_Settings::OPTION, $this->get_method_proxy( 'filter_shared_ownership_module_settings' ), 20 );
 
 		add_action(
-			'update_option_googlesitekit_dashboard_sharing',
+			'update_option_' . Module_Sharing_Settings::OPTION,
 			function( $old_values, $values ) {
 				if ( is_array( $values ) && is_array( $old_values ) ) {
 					array_walk(
