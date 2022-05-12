@@ -1,7 +1,7 @@
 /**
- * `core/user` data store: permission utils.
+ * Dashboard Sharing Settings styles.
  *
- * Site Kit by Google, Copyright 2022 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,15 +16,32 @@
  * limitations under the License.
  */
 
-/**
- * Returns the property name for a meta capability, given the capability name and arguments.
- *
- * @since 1.74.0
- *
- * @param {string} capability Meta capability name.
- * @param {...any} args       Meta capability arguments.
- * @return {string} Meta capability property name.
- */
-export function getMetaCapabilityPropertyName( capability, ...args ) {
-	return `${ capability }::${ JSON.stringify( args ) }`;
+.googlesitekit-plugin {
+
+	.googlesitekit-sharing-settings__button {
+
+		&.mdc-button {
+			background-color: transparent;
+			box-shadow: none;
+			color: $c-boulder;
+
+			&:focus,
+			&:hover {
+				background-color: $c-alabaster;
+				color: rgba(0, 0, 0, 0.87);
+
+				&::before,
+				&::after {
+					background-color: rgba(0, 0, 0, 0.87);
+				}
+			}
+
+			&:hover {
+
+				&::before {
+					opacity: 0.04;
+				}
+			}
+		}
+	}
 }

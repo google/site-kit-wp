@@ -57,12 +57,12 @@ export default function DashboardSharingSettingsButton() {
 
 	return (
 		<Fragment>
-			<Link
+			<Button
 				aria-label={ __( 'Open sharing settings', 'google-site-kit' ) }
+				className="googlesitekit-sharing-settings__button googlesitekit-header__dropdown googlesitekit-border-radius-round googlesitekit-button-icon"
 				onClick={ openDialog }
-			>
-				<ShareIcon width={ 21 } height={ 21 } />
-			</Link>
+				icon={ <ShareIcon width={ 20 } height={ 20 } /> }
+			/>
 
 			<Portal>
 				<Dialog
@@ -72,9 +72,7 @@ export default function DashboardSharingSettingsButton() {
 				>
 					<div
 						className="googlesitekit-dialog__back-wrapper"
-						aria-hidden={
-							breakpoint === BREAKPOINT_SMALL ? false : true
-						}
+						aria-hidden={ breakpoint !== BREAKPOINT_SMALL }
 					>
 						<Button
 							aria-label={ __( 'Back', 'google-site-kit' ) }
@@ -86,36 +84,47 @@ export default function DashboardSharingSettingsButton() {
 					</div>
 
 					<DialogContent className="googlesitekit-dialog__content">
-						<div className="googlesitekit-dialog__titles">
-							<h2 className="googlesitekit-dialog__title">
-								{ __(
-									'Dashboard sharing & permissions',
-									'google-site-kit'
-								) }
-							</h2>
+						<div className="googlesitekit-dialog__header">
+							<div
+								className="googlesitekit-dialog__header-icon"
+								aria-hidden={ breakpoint === BREAKPOINT_SMALL }
+							>
+								<span>
+									<ShareIcon width={ 20 } height={ 20 } />
+								</span>
+							</div>
 
-							<p className="googlesitekit-dialog__subtitle">
-								{ createInterpolateElement(
-									__(
-										'Share a view-only version of your Site Kit dashboard with other WordPress roles. <a>Learn more</a>',
+							<div className="googlesitekit-dialog__header-titles">
+								<h2 className="googlesitekit-dialog__title">
+									{ __(
+										'Dashboard sharing & permissions',
 										'google-site-kit'
-									),
-									{
-										a: (
-											<Link
-												aria-label={ __(
-													'Learn more about dashboard sharing',
-													'google-site-kit'
-												) }
-												href="https://sitekit.withgoogle.com/documentation/using-site-kit/dashboard-sharing/"
-												external
-												hideExternalIndicator
-												inherit
-											/>
+									) }
+								</h2>
+
+								<p className="googlesitekit-dialog__subtitle">
+									{ createInterpolateElement(
+										__(
+											'Share a view-only version of your Site Kit dashboard with other WordPress roles. <a>Learn more</a>',
+											'google-site-kit'
 										),
-									}
-								) }
-							</p>
+										{
+											a: (
+												<Link
+													aria-label={ __(
+														'Learn more about dashboard sharing',
+														'google-site-kit'
+													) }
+													href="https://sitekit.withgoogle.com/documentation/using-site-kit/dashboard-sharing/"
+													external
+													hideExternalIndicator
+													inherit
+												/>
+											),
+										}
+									) }
+								</p>
+							</div>
 						</div>
 					</DialogContent>
 

@@ -46,6 +46,7 @@ const customRender = ( ui, options = {} ) => {
 		history = createMemoryHistory(),
 		route = undefined,
 		inView = true,
+		viewContext = null,
 		...renderOptions
 	} = options;
 
@@ -81,7 +82,9 @@ const customRender = ( ui, options = {} ) => {
 			<InViewProvider value={ inViewState }>
 				<RegistryProvider value={ registry }>
 					<FeaturesProvider value={ enabledFeatures }>
-						<Router history={ history }>{ children }</Router>
+						<ViewContextProvider value={ viewContext }>
+							<Router history={ history }>{ children }</Router>
+						</ViewContextProvider>
 					</FeaturesProvider>
 				</RegistryProvider>
 			</InViewProvider>

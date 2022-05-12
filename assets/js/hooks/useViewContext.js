@@ -26,7 +26,7 @@ import ViewContextContext from '../components/Root/ViewContextContext';
  * Returns the current Site Kit viewing context, eg. "dashboard",
  * "entity dashboard", "view-only dashboard", etc.
  *
- * @since n.e.x.t
+ * @since 1.74.0
  *
  * @return {string} The current "viewing context" value for the plugin.
  */

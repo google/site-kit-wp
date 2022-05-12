@@ -27,6 +27,8 @@ export const PERMISSION_SETUP = 'googlesitekit_setup';
 export const PERMISSION_VIEW_POSTS_INSIGHTS =
 	'googlesitekit_view_posts_insights';
 export const PERMISSION_VIEW_DASHBOARD = 'googlesitekit_view_dashboard';
+export const PERMISSION_VIEW_SHARED_DASHBOARD =
+	'googlesitekit_view_shared_dashboard';
 export const PERMISSION_VIEW_MODULE_DETAILS =
 	'googlesitekit_view_module_details';
 export const PERMISSION_MANAGE_OPTIONS = 'googlesitekit_manage_options';

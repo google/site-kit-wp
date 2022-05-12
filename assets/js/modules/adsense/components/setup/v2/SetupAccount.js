@@ -51,15 +51,11 @@ import SetupAccountCreateSite from './SetupAccountCreateSite';
 import SetupAccountPendingTasks from './SetupAccountPendingTasks';
 const { useSelect, useDispatch } = Data;
 
-export default function SetupAccount( { account } ) {
+export default function SetupAccount( { account, finishSetup } ) {
 	const { _id: accountID, state: accountState } = account;
 
 	const clientID = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getClientID()
-	);
-
-	const clients = useSelect( ( select ) =>
-		select( MODULES_ADSENSE ).getClients( accountID )
 	);
 
 	const site = useSelect( ( select ) =>
@@ -77,6 +73,8 @@ export default function SetupAccount( { account } ) {
 	useEffect( () => {
 		if ( afcClient?._id && clientID !== afcClient._id ) {
 			setClientID( afcClient._id );
+		} else if ( afcClient === null && !! clientID ) {
+			setClientID( '' );
 		}
 	}, [ afcClient, clientID, setClientID ] );
 
@@ -87,8 +85,8 @@ export default function SetupAccount( { account } ) {
 	}, [ setSiteStatus, site ] );
 
 	useEffect( () => {
-		// Do nothing if clients aren't loaded because we can't determine afcClientID yet.
-		if ( clients === undefined || site === undefined ) {
+		// Do nothing if site isn't loaded yet.
+		if ( site === undefined ) {
 			return;
 		}
 
@@ -103,19 +101,19 @@ export default function SetupAccount( { account } ) {
 		} else {
 			setAccountStatus( ACCOUNT_STATUS_READY );
 		}
-	}, [ accountState, afcClient, clientID, clients, setAccountStatus, site ] );
+	}, [ accountState, afcClient, clientID, setAccountStatus, site ] );
 
-	// Show the progress bar if clients or site aren't loaded yet.
-	if ( clients === undefined || site === undefined ) {
+	// Show the progress bar if site isn't loaded yet.
+	if ( site === undefined ) {
 		return <ProgressBar />;
 	}
 
 	if ( ! clientID ) {
-		return <SetupAccountNoClient accountID={ accountID } />;
+		return <SetupAccountNoClient />;
 	}
 
 	if ( site === null ) {
-		return <SetupAccountCreateSite accountID={ accountID } />;
+		return <SetupAccountCreateSite />;
 	}
 
 	if (
@@ -123,10 +121,10 @@ export default function SetupAccount( { account } ) {
 		afcClient?.state === API_STATE_REQUIRES_REVIEW ||
 		afcClient?.state === API_STATE_GETTING_READY
 	) {
-		return <SetupAccountPendingTasks accountID={ accountID } />;
+		return <SetupAccountPendingTasks />;
 	}
 
-	return <SetupAccountSite site={ site } />;
+	return <SetupAccountSite site={ site } finishSetup={ finishSetup } />;
 }
 
 SetupAccount.propTypes = {
@@ -134,4 +132,5 @@ SetupAccount.propTypes = {
 		_id: PropTypes.string,
 		state: PropTypes.string,
 	} ),
+	finishSetup: PropTypes.func,
 };
