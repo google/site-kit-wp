@@ -1,5 +1,5 @@
 /**
- * GA4 Setup Use Snippet Switch component.
+ * Tag Manager Setup Use Snippet Switch component.
  *
  * Site Kit by Google, Copyright 2022 Google LLC
  *
@@ -26,26 +26,27 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
-import UseSnippetSwitch from './UseSnippetSwitch';
+import { MODULES_TAGMANAGER } from '../../datastore/constants';
+import UseSnippetSwitch from '../common/UseSnippetSwitch';
 const { useSelect } = Data;
 
 export default function SetupUseSnippetSwitch() {
-	const existingTag = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getExistingTag()
+	const primaryContainerID = useSelect( ( select ) =>
+		select( MODULES_TAGMANAGER ).getPrimaryContainerID()
 	);
-	const measurementID = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getMeasurementID()
+
+	const existingTag = useSelect( ( select ) =>
+		select( MODULES_TAGMANAGER ).getExistingTag()
 	);
 
 	const description =
-		existingTag === measurementID ? (
+		primaryContainerID === existingTag ? (
 			<Fragment>
 				<p>
 					{ sprintf(
 						/* translators: %s: existing tag ID */
 						__(
-							'A tag %s for the selected property already exists on the site.',
+							'A tag %s for the selected container already exists on the site.',
 							'google-site-kit'
 						),
 						existingTag
@@ -53,7 +54,7 @@ export default function SetupUseSnippetSwitch() {
 				</p>
 				<p>
 					{ __(
-						'Make sure you remove it if you decide to place the same GA4 tag via Site Kit, otherwise they will be duplicated.',
+						'Make sure you remove it if you want to place the same tag via Site Kit, otherwise they will be duplicated.',
 						'google-site-kit'
 					) }
 				</p>
@@ -72,7 +73,7 @@ export default function SetupUseSnippetSwitch() {
 				</p>
 				<p>
 					{ __(
-						'If you prefer to collect data using that existing GA4 tag, please select the corresponding account and property above.',
+						'If you prefer to collect data using that existing tag, please select the corresponding account and property above.',
 						'google-site-kit'
 					) }
 				</p>

@@ -37,7 +37,6 @@ import {
 	ProfileSelect,
 	PropertySelect,
 	ProfileNameTextField,
-	SetupUseSnippetSwitch as SetupUseSnippetSwitchUA,
 } from '../common';
 import {
 	MODULES_ANALYTICS,
@@ -50,7 +49,8 @@ import {
 } from '../../../analytics-4/datastore/constants';
 import GA4PropertyNotice from '../common/GA4PropertyNotice';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
-import { SetupUseSnippetSwitch as SetupUseSnippetSwitchGA4 } from '../../../analytics-4/components/common';
+import { SetupUseSnippetSwitch as SetupUseSnippetSwitchUA } from '../setup';
+import { SetupUseSnippetSwitch as SetupUseSnippetSwitchGA4 } from '../../../analytics-4/components/setup';
 
 const { useSelect, useDispatch } = Data;
 

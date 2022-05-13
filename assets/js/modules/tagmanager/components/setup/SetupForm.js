@@ -45,14 +45,14 @@ import {
 	AccountSelect,
 	AMPContainerSelect,
 	ContainerNames,
+	FormInstructions,
 	WebContainerSelect,
 	TagCheckProgress,
-	SetupUseSnippetSwitch,
 } from '../common';
 import Button from '../../../../components/Button';
 import Link from '../../../../components/Link';
 import SetupErrorNotice from './SetupErrorNotice';
-import FormInstructions from '../common/FormInstructions';
+import SetupUseSnippetSwitch from './SetupUseSnippetSwitch';
 const { useSelect, useDispatch } = Data;
 
 export default function SetupForm( { finishSetup } ) {
