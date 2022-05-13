@@ -123,10 +123,10 @@ describe( 'setting up the Analytics module with an existing account and existing
 		await resetSiteKit();
 	} );
 
-	it( 'pre-selects account and property if an existing tag is found that matches one belonging to the user', async () => {
+	it( 'informs about an existing tag that matches the current selected property', async () => {
 		const existingTag = {
-			accountID: '100',
-			propertyID: 'UA-100-1',
+			accountID: '100', // Test Account A
+			propertyID: 'UA-100-1', // Test Property X
 		};
 		await setAnalyticsExistingPropertyID( existingTag.propertyID );
 		await proceedToSetUpAnalytics();
