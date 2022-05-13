@@ -153,7 +153,7 @@ export default function FieldReportMetrics( { data, error } ) {
 								'google-site-kit'
 							) }
 							description={ __(
-								'How quickly your page responds to when people interact with it',
+								'How quickly your page responds when people interact with it',
 								'google-site-kit'
 							) }
 							displayValue={ `${ interactionToNextPaint.percentile } ms` }
