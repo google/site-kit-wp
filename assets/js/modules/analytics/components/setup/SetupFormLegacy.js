@@ -36,7 +36,7 @@ import {
 	ProfileNameTextField,
 	GA4Notice,
 } from '../common';
-import { SetupUseSnippetSwitch } from '../setup';
+import SetupUseSnippetSwitch from './SetupUseSnippetSwitch';
 const { useSelect } = Data;
 
 export default function SetupFormLegacy() {
