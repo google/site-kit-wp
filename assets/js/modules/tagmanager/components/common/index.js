@@ -24,7 +24,6 @@ export { default as ContainerNames } from './ContainerNames';
 export { default as ContainerNameTextField } from './ContainerNameTextField';
 export { default as ContainerSelect } from './ContainerSelect';
 export { default as FormInstructions } from './FormInstructions';
-export { default as SettingsUseSnippetSwitch } from './SettingsUseSnippetSwitch';
 export { default as TagCheckProgress } from './TagCheckProgress';
 export { default as UseSnippetSwitch } from './UseSnippetSwitch';
 export { default as WebContainerNameTextField } from './WebContainerNameTextField';

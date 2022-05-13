@@ -1,5 +1,5 @@
 /**
- * Tag Manager Settings Use Snippet Switch component.
+ * Analytics Settings Use Snippet Switch component.
  *
  * Site Kit by Google, Copyright 2022 Google LLC
  *
@@ -26,34 +26,55 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import UseSnippetSwitch from './UseSnippetSwitch';
-import { MODULES_TAGMANAGER } from '../../datastore/constants';
+import { MODULES_ANALYTICS } from '../../datastore/constants';
+import UseSnippetSwitch from '../common/UseSnippetSwitch';
 const { useSelect } = Data;
 
 export default function SettingsUseSnippetSwitch() {
 	const useSnippet = useSelect( ( select ) =>
-		select( MODULES_TAGMANAGER ).getUseSnippet()
+		select( MODULES_ANALYTICS ).getUseSnippet()
 	);
-
-	const primaryContainerID = useSelect( ( select ) =>
-		select( MODULES_TAGMANAGER ).getPrimaryContainerID()
+	const canUseSnippet = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getCanUseSnippet()
 	);
 
 	const existingTag = useSelect( ( select ) =>
-		select( MODULES_TAGMANAGER ).getExistingTag()
+		select( MODULES_ANALYTICS ).getExistingTag()
 	);
+	const propertyID = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getPropertyID()
+	);
+
+	if ( canUseSnippet === undefined ) {
+		return null;
+	}
+
+	if ( canUseSnippet === false ) {
+		return (
+			<UseSnippetSwitch
+				description={
+					<p>
+						{ __(
+							'The code is controlled by the Tag Manager module.',
+							'google-site-kit'
+						) }
+					</p>
+				}
+			/>
+		);
+	}
 
 	let description;
 
 	if ( existingTag ) {
 		description =
-			primaryContainerID === existingTag ? (
+			existingTag === propertyID ? (
 				<Fragment>
 					<p>
 						{ sprintf(
 							/* translators: %s: existing tag ID */
 							__(
-								'A tag %s for the selected container already exists on the site.',
+								'A tag %s for the selected property already exists on the site.',
 								'google-site-kit'
 							),
 							existingTag
@@ -61,7 +82,7 @@ export default function SettingsUseSnippetSwitch() {
 					</p>
 					<p>
 						{ __(
-							'Make sure you remove it if you want to place the same tag via Site Kit, otherwise they will be duplicated.',
+							'Make sure you remove it if you want to place the same UA tag via Site Kit, otherwise they will be duplicated.',
 							'google-site-kit'
 						) }
 					</p>
@@ -80,7 +101,7 @@ export default function SettingsUseSnippetSwitch() {
 					</p>
 					<p>
 						{ __(
-							'If you prefer to collect data using that existing tag, please select the corresponding account and property above.',
+							'If you prefer to collect data using that existing UA tag, please select the corresponding account and property above.',
 							'google-site-kit'
 						) }
 					</p>
@@ -90,14 +111,14 @@ export default function SettingsUseSnippetSwitch() {
 		description = useSnippet ? (
 			<p>
 				{ __(
-					'Site Kit will add the code automatically.',
+					'Site Kit will add the UA code automatically.',
 					'google-site-kit'
 				) }
 			</p>
 		) : (
 			<p>
 				{ __(
-					'Site Kit will not add the code to your site.',
+					'Site Kit will not add the UA code to your site.',
 					'google-site-kit'
 				) }
 			</p>

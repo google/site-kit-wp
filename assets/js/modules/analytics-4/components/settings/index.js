@@ -1,7 +1,7 @@
 /**
- * Analytics Settings components.
+ * GA4 settings components.
  *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2022 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,4 @@
  * limitations under the License.
  */
 
-export { default as SettingsEdit } from './SettingsEdit';
-export { default as SettingsForm } from './SettingsForm';
-export { default as SettingsView } from './SettingsView';
-export { default as SettingsControls } from './SettingsControls';
 export { default as SettingsUseSnippetSwitch } from './SettingsUseSnippetSwitch';
-export { default as GA4SettingsControls } from './GA4SettingsControls';
