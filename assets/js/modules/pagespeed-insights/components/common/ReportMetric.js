@@ -64,7 +64,7 @@ export default function ReportMetric( {
 					{ !! experimental && (
 						<Badge
 							label={ __( 'Experimental', 'google-site-kit' ) }
-							className="googlesitekit-idea-hub__badge"
+							className="googlesitekit-pagespeed-report-metric__badge"
 						/>
 					) }
 				</div>
