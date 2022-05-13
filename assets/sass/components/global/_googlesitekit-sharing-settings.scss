@@ -44,4 +44,82 @@
 			}
 		}
 	}
+
+	.googlesitekit-dashboard-sharing-settings {
+		color: $c-cape-cod;
+		font-size: 14px;
+		line-height: 16px;
+	}
+
+	.googlesitekit-dashboard-sharing-settings__header {
+		font-size: 16px;
+		font-weight: $fw-primary-medium;
+		line-height: 19px;
+	}
+
+	.googlesitekit-dashboard-sharing-settings__column--product {
+		flex: 0 0 25%;
+	}
+
+	.googlesitekit-dashboard-sharing-settings__column--view {
+		flex: 1 1 30%;
+	}
+
+	.googlesitekit-dashboard-sharing-settings__row {
+		display: flex;
+		flex-wrap: nowrap;
+		gap: 16px;
+	}
+
+	.googlesitekit-dashboard-sharing-settings__module {
+		border-bottom: 1px solid $c-mercury;
+		padding: 16px 0;
+
+		.googlesitekit-dashboard-sharing-settings__column--product {
+			display: flex;
+			flex-direction: column;
+			gap: 12px;
+		}
+	}
+
+	p.googlesitekit-dashboard-sharing-settings__note {
+		color: $c-boulder;
+		font-size: 14px;
+		line-height: 16px;
+		margin: 0;
+	}
+
+	.googlesitekit-dashboard-sharing-settings__select {
+
+		.mdc-select__selected-text {
+			min-width: 100px;
+		}
+	}
+
+	.googlesitekit-dashboard-sharing-settings__column--manage {
+		flex: 1 1 45%;
+
+		.googlesitekit-dashboard-sharing-settings__note {
+			align-items: flex-end;
+			display: flex;
+			flex-wrap: wrap;
+			font-size: 12px;
+			line-height: 16px;
+
+			span:not(.googlesitekit-dashboard-sharing-settings__tooltip-icon) {
+				width: 100%;
+			}
+
+			svg {
+				fill: $c-boulder;
+			}
+		}
+
+		.googlesitekit-dashboard-sharing-settings__tooltip-icon {
+			display: block;
+			height: 18px;
+			line-height: 1;
+			margin: 0 0 0 4px;
+		}
+	}
 }

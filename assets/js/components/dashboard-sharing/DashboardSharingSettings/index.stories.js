@@ -1,5 +1,5 @@
 /**
- * DashboardSharingSettingsButton Component Stories.
+ * DashboardSharingSettings Component Stories.
  *
  * Site Kit by Google, Copyright 2022 Google LLC
  *
@@ -19,21 +19,21 @@
 /**
  * Internal dependencies
  */
-import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
-import { withConnected } from '../../googlesitekit/modules/datastore/__fixtures__';
-import { provideModuleRegistrations } from '../../../../tests/js/utils';
-import DashboardSharingSettingsButton from './DashboardSharingSettingsButton';
-import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
+import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
+import { withConnected } from '../../../googlesitekit/modules/datastore/__fixtures__';
+import { provideModuleRegistrations } from '../../../../../tests/js/utils';
+import WithRegistrySetup from '../../../../../tests/js/WithRegistrySetup';
+import DashboardSharingSettings from './index';
 
 const Template = ( { setupRegistry = () => {}, ...args } ) => (
 	<WithRegistrySetup func={ setupRegistry }>
-		<DashboardSharingSettingsButton { ...args } />
+		<DashboardSharingSettings { ...args } />
 	</WithRegistrySetup>
 );
 
-export const DefaultDashboardSharingSettingsButton = Template.bind( {} );
-DefaultDashboardSharingSettingsButton.storyName = 'Default';
-DefaultDashboardSharingSettingsButton.args = {
+export const DefaultDashboardSharingSettings = Template.bind( {} );
+DefaultDashboardSharingSettings.storyName = 'Default';
+DefaultDashboardSharingSettings.args = {
 	setupRegistry: ( registry ) => {
 		registry
 			.dispatch( CORE_MODULES )
@@ -50,6 +50,6 @@ DefaultDashboardSharingSettingsButton.args = {
 };
 
 export default {
-	title: 'Components/DashboardSharingSettingsButton',
-	component: DashboardSharingSettingsButton,
+	title: 'Components/DashboardSharingSettings',
+	component: DashboardSharingSettings,
 };

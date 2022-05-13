@@ -35,6 +35,7 @@ import Link from '../Link';
 import Button from '../Button';
 import Portal from '../Portal';
 import ShareIcon from '../../../svg/icons/share.svg';
+import DashboardSharingSettings from './DashboardSharingSettings';
 import { Dialog, DialogContent, DialogFooter } from '../../material-components';
 import { BREAKPOINT_SMALL, useBreakpoint } from '../../hooks/useBreakpoint';
 
@@ -125,6 +126,10 @@ export default function DashboardSharingSettingsButton() {
 									) }
 								</p>
 							</div>
+						</div>
+
+						<div className="googlesitekit-dialog__main">
+							<DashboardSharingSettings />
 						</div>
 					</DialogContent>
 
