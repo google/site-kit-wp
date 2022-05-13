@@ -26,7 +26,7 @@ import {
 	ProfileNameTextField,
 	ProfileSelect,
 	PropertySelect,
-	UseSnippetSwitch,
+	SettingsUseSnippetSwitch,
 } from '../common';
 const { useSelect } = Data;
 
@@ -49,8 +49,8 @@ export default function SettingsControls() {
 				</div>
 			) }
 
-			<div className="googlesitekit-setup-module__inputs googlesitekit-setup-module__inputs--multiline">
-				<UseSnippetSwitch />
+			<div className="googlesitekit-settings-module__meta-item">
+				<SettingsUseSnippetSwitch />
 			</div>
 		</div>
 	);

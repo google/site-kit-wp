@@ -1,7 +1,7 @@
 /**
- * Tag Manager custom hooks.
+ * UseSnippetSwitch styles.
  *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2022 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,4 +16,20 @@
  * limitations under the License.
  */
 
-export { default as useExistingTagEffect } from './useExistingTagEffect';
+.googlesitekit-plugin {
+
+	.googlesitekit-analytics-usesnippet,
+	.googlesitekit-tagmanager-usesnippet {
+
+
+		p {
+			font-size: 0.8rem;
+			margin: 0 0 0 2.625rem;
+		}
+
+		p:first-of-type {
+			margin-top: 0.375rem;
+		}
+
+	}
+}

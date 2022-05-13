@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * WordPress dependencies
  */
 import { __, sprintf } from '@wordpress/i18n';
@@ -29,14 +34,10 @@ import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import { MODULES_TAGMANAGER } from '../../datastore/constants';
 import { MODULES_ANALYTICS } from '../../../analytics/datastore/constants';
-import ExistingTagNotice from './ExistingTagNotice';
 import ErrorText from '../../../../components/ErrorText';
 const { useSelect } = Data;
 
-export default function FormInstructions() {
-	const hasExistingTag = useSelect( ( select ) =>
-		select( MODULES_TAGMANAGER ).hasExistingTag()
-	);
+export default function FormInstructions( { isSetup } ) {
 	const isSecondaryAMP = useSelect( ( select ) =>
 		select( CORE_SITE ).isSecondaryAMP()
 	);
@@ -63,29 +64,14 @@ export default function FormInstructions() {
 		return <ErrorText message={ message } />;
 	}
 
-	if ( analyticsModuleActive && singleAnalyticsPropertyID ) {
-		// If the selected containers reference a different property ID
-		// than is currently set in the Analytics module, display an error explaining why the user is blocked.
-		if ( singleAnalyticsPropertyID !== analyticsPropertyID ) {
-			/* translators: %1$s: Tag Manager Analytics property ID, %2$s: Analytics property ID */
-			const message = __(
-				'Looks like you’re already using Google Analytics within your Google Tag Manager configuration. However, its Analytics property %1$s is different from the Analytics property %2$s, which is currently selected in the plugin. You need to configure the same Analytics property in both places.',
-				'google-site-kit'
-			);
-
-			return (
-				<ErrorText
-					message={ sprintf(
-						message,
-						singleAnalyticsPropertyID,
-						analyticsPropertyID
-					) }
-				/>
-			);
-		}
-		// If the Analytics property ID in the container(s) matches
-		// the property ID configured for the Analytics module,
-		// inform the user that Tag Manager will take over outputting the tag/snippet.
+	// If the Analytics property ID in the container(s) matches
+	// the property ID configured for the Analytics module,
+	// inform the user that Tag Manager will take over outputting the tag/snippet.
+	if (
+		analyticsModuleActive &&
+		singleAnalyticsPropertyID &&
+		singleAnalyticsPropertyID === analyticsPropertyID
+	) {
 		return (
 			<p>
 				{ sprintf(
@@ -113,27 +99,37 @@ export default function FormInstructions() {
 		);
 	}
 
-	if ( hasExistingTag ) {
-		return <ExistingTagNotice />;
-	}
-
 	if ( isSecondaryAMP ) {
 		return (
 			<p>
-				{ __(
-					'Looks like your site is using paired AMP. Please select your Tag Manager account and relevant containers below, the snippets will be inserted automatically on your site.',
-					'google-site-kit'
-				) }
+				{ isSetup
+					? __(
+							'Looks like your site is using paired AMP. Please select your Tag Manager account and relevant containers below. You can change these later in your settings.',
+							'google-site-kit'
+					  )
+					: __(
+							'Looks like your site is using paired AMP. Please select your Tag Manager account and relevant containers below.',
+							'google-site-kit'
+					  ) }
 			</p>
 		);
 	}
 
 	return (
 		<p>
-			{ __(
-				'Please select your Tag Manager account and container below, the snippet will be inserted automatically on your site.',
-				'google-site-kit'
-			) }
+			{ isSetup
+				? __(
+						'Please select your Tag Manager account and container below. You can change these later in your settings.',
+						'google-site-kit'
+				  )
+				: __(
+						'Please select your Tag Manager account and container below.',
+						'google-site-kit'
+				  ) }
 		</p>
 	);
 }
+
+FormInstructions.propTypes = {
+	isSetup: PropTypes.bool,
+};

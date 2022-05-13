@@ -94,7 +94,7 @@ class REST_Dashboard_Sharing_Controller {
 
 						return new WP_REST_Response(
 							array(
-								$new_sharing_settings,
+								'settings'    => $new_sharing_settings,
 								'newOwnerIDs' => $changed_module_owners,
 							)
 						);
