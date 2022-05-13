@@ -678,47 +678,6 @@ describe( 'modules/analytics accounts', () => {
 				expect( console ).toHaveErrored();
 			} );
 
-			it( 'passes existing tag ID when fetching accounts', async () => {
-				const existingPropertyID = 'UA-1234567-1';
-
-				registry
-					.dispatch( MODULES_ANALYTICS )
-					.receiveGetExistingTag( existingPropertyID );
-				registry.dispatch( MODULES_ANALYTICS ).receiveGetTagPermission(
-					{
-						accountID: '1234567',
-						permission: true,
-					},
-					{ propertyID: existingPropertyID }
-				);
-
-				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/accounts-properties-profiles/,
-					{ body: fixtures.accountsPropertiesProfiles, status: 200 }
-				);
-
-				registry.select( MODULES_ANALYTICS ).getAccounts();
-
-				await subscribeUntil(
-					registry,
-					() =>
-						registry.select( MODULES_ANALYTICS ).getAccounts() !==
-							undefined ||
-						registry
-							.select( MODULES_ANALYTICS )
-							.getErrorForSelector( 'getAccounts' )
-				);
-
-				// Ensure the proper parameters were sent.
-				expect( fetchMock ).toHaveFetched(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/accounts-properties-profiles/,
-					{
-						query: { existingPropertyID },
-					}
-				);
-				expect( fetchMock ).toHaveFetchedTimes( 1 );
-			} );
-
 			it( 'supports asynchronous tag resolution before fetching accounts', async () => {
 				const existingPropertyID = 'UA-1234567-1';
 				fetchMock.getOnce(
@@ -727,13 +686,6 @@ describe( 'modules/analytics accounts', () => {
 						body: factories.generateHTMLWithTag(
 							existingPropertyID
 						),
-						status: 200,
-					}
-				);
-				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/tag-permission/,
-					{
-						body: { accountID: '1234567', permission: true },
 						status: 200,
 					}
 				);
@@ -752,23 +704,11 @@ describe( 'modules/analytics accounts', () => {
 					MODULES_ANALYTICS
 				).getAccounts();
 
-				expect( fetchMock ).toHaveFetched( true, {
-					query: { tagverify: '1' },
-				} );
-				expect(
-					fetchMock
-				).toHaveFetched(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/tag-permission/,
-					{ query: { propertyID: existingPropertyID } }
-				);
 				// Ensure the proper parameters were sent.
 				expect( fetchMock ).toHaveFetched(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/accounts-properties-profiles/,
-					{
-						query: { existingPropertyID },
-					}
+					/^\/google-site-kit\/v1\/modules\/analytics\/data\/accounts-properties-profiles/
 				);
-				expect( fetchMock ).toHaveFetchedTimes( 6 );
+				expect( fetchMock ).toHaveFetchedTimes( 4 );
 			} );
 
 			it( 'sets account, property, and profile IDs in the store, if a matchedProperty is received and an account is not selected yet', async () => {

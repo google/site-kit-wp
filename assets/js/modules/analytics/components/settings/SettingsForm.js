@@ -28,9 +28,8 @@ import Data from 'googlesitekit-data';
 import {
 	AdsConversionIDTextField,
 	AnonymizeIPSwitch,
-	ExistingTagNotice,
-	TrackingExclusionSwitches,
 	ExistingGTMPropertyNotice,
+	TrackingExclusionSwitches,
 } from '../common';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import { MODULES_ANALYTICS } from '../../datastore/constants';
@@ -44,10 +43,6 @@ export default function SettingsForm() {
 	const accountID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getAccountID()
 	);
-	const hasExistingTag = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).hasExistingTag()
-	);
-
 	const useAnalyticsSnippet = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getUseSnippet()
 	);
@@ -67,8 +62,7 @@ export default function SettingsForm() {
 				moduleSlug="analytics"
 				storeName={ MODULES_ANALYTICS }
 			/>
-			<ExistingTagNotice />
-			{ ! hasExistingTag && <ExistingGTMPropertyNotice /> }
+			<ExistingGTMPropertyNotice />
 
 			<SettingsControls />
 

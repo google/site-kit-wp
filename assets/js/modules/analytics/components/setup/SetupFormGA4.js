@@ -41,7 +41,13 @@ import {
 import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import GA4PropertySelect from '../../../analytics-4/components/common/PropertySelect';
-import { AccountSelect, GA4PropertyNotice, ExistingTagNotice } from '../common';
+import {
+	AccountSelect,
+	GA4PropertyNotice,
+	ExistingGTMPropertyNotice,
+	SetupUseSnippetSwitch as SetupUseSnippetSwitchUA,
+} from '../common';
+import { SetupUseSnippetSwitch as SetupUseSnippetSwitchGA4 } from '../../../analytics-4/components/common';
 const { useSelect, useDispatch } = Data;
 
 export default function SetupFormGA4() {
@@ -72,6 +78,10 @@ export default function SetupFormGA4() {
 	const shouldShowAssociatedPropertyNotice =
 		accountID && accountID !== ACCOUNT_CREATE && ga4PropertyID;
 
+	const hasExistingGA4Tag = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).hasExistingTag()
+	);
+
 	useMount( () => {
 		selectProperty( PROPERTY_CREATE );
 		setValues( FORM_SETUP, {
@@ -95,12 +105,12 @@ export default function SetupFormGA4() {
 				moduleSlug="analytics"
 				storeName={ MODULES_ANALYTICS }
 			/>
-			<ExistingTagNotice />
+			<ExistingGTMPropertyNotice />
 
 			{ !! accounts.length && (
 				<p className="googlesitekit-margin-bottom-0">
 					{ __(
-						'Please select the account information below. You can change this view later in your settings.',
+						'Please select the account information below. You can change this later in your settings.',
 						'google-site-kit'
 					) }
 				</p>
@@ -111,13 +121,17 @@ export default function SetupFormGA4() {
 				<GA4PropertySelect />
 			</div>
 
+			{ hasExistingGA4Tag && <SetupUseSnippetSwitchGA4 /> }
+
 			{ shouldShowAssociatedPropertyNotice && (
 				<GA4PropertyNotice
 					notice={ __(
 						'An associated Universal Analytics property will also be created.',
 						'google-site-kit'
 					) }
-				/>
+				>
+					<SetupUseSnippetSwitchUA />
+				</GA4PropertyNotice>
 			) }
 		</Fragment>
 	);
