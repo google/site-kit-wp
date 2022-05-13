@@ -32,7 +32,6 @@ import { __ } from '@wordpress/i18n';
  */
 import { MODULES_ADSENSE } from '../../../datastore/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
-import { useFeature } from '../../../../../hooks/useFeature';
 import { isZeroReport } from '../../../util';
 import DashboardZeroData from '../../dashboard/DashboardZeroData';
 import { HIDDEN_CLASS } from '../../../../../googlesitekit/widgets/util/constants';
@@ -50,8 +49,6 @@ const ModuleOverviewWidget = ( {
 	WidgetReportZero,
 	WidgetReportError,
 } ) => {
-	const unifiedDashboardEnabled = useFeature( 'unifiedDashboard' );
-
 	const [ selectedStats, setSelectedStats ] = useState( 0 );
 
 	const {
@@ -127,11 +124,9 @@ const ModuleOverviewWidget = ( {
 			] )
 	);
 
-	const widgetProps = unifiedDashboardEnabled ? { Footer } : {};
-
 	if ( loading ) {
 		return (
-			<Widget Header={ Header } { ...widgetProps } noPadding>
+			<Widget Header={ Header } Footer={ Footer } noPadding>
 				<PreviewBlock width="100%" height="190px" padding />
 				<PreviewBlock width="100%" height="270px" padding />
 			</Widget>
@@ -140,7 +135,7 @@ const ModuleOverviewWidget = ( {
 
 	if ( error ) {
 		return (
-			<Widget Header={ Header } { ...widgetProps }>
+			<Widget Header={ Header } Footer={ Footer }>
 				<WidgetReportError moduleSlug="adsense" error={ error } />
 			</Widget>
 		);
@@ -161,7 +156,7 @@ const ModuleOverviewWidget = ( {
 	}
 
 	return (
-		<Widget noPadding Header={ Header } { ...widgetProps }>
+		<Widget noPadding Header={ Header } Footer={ Footer }>
 			<Overview
 				metrics={ ModuleOverviewWidget.metrics }
 				currentRangeData={ currentRangeData }

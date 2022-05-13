@@ -35,20 +35,14 @@ jest.mock( './legacy-notifications/notification-counter', () =>
 );
 
 describe( 'DashboardEntryPoint', () => {
-	const unifiedDashboardRenderOptions = { features: [ 'unifiedDashboard' ] };
-
 	it( 'should render the unified dashboard when unified dashboard is enabled', () => {
-		const { container } = render(
-			<DashboardEntryPoint />,
-			unifiedDashboardRenderOptions
-		);
+		const { container } = render( <DashboardEntryPoint /> );
 		expect( container ).toMatchSnapshot();
 	} );
 
 	it( 'should render the module setup component when unified dashboard is enabled and passed the setupModuleSlug prop', () => {
 		const { container } = render(
-			<DashboardEntryPoint setupModuleSlug="analytics" />,
-			unifiedDashboardRenderOptions
+			<DashboardEntryPoint setupModuleSlug="analytics" />
 		);
 		expect( container ).toMatchSnapshot();
 	} );

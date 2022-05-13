@@ -180,29 +180,6 @@ abstract class Module {
 	}
 
 	/**
-	 * Returns all module information data for passing it to JavaScript.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return array Module information data.
-	 */
-	public function prepare_info_for_js() {
-		// TODO: Modify this to ditch unnecessary backward-compatibility.
-		return array(
-			'slug'         => $this->slug,
-			'name'         => $this->name,
-			'description'  => $this->description,
-			'sort'         => $this->order,
-			'homepage'     => $this->homepage,
-			'required'     => $this->depends_on,
-			'autoActivate' => $this->force_active,
-			'internal'     => $this->internal,
-			'screenID'     => $this instanceof Module_With_Screen ? $this->get_screen()->get_slug() : false,
-			'settings'     => $this instanceof Module_With_Settings ? $this->get_settings()->get() : false,
-		);
-	}
-
-	/**
 	 * Checks whether the module is connected.
 	 *
 	 * A module being connected means that all steps required as part of its activation are completed.

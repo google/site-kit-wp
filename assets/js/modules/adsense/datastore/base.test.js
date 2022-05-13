@@ -37,9 +37,6 @@ describe( 'modules/adsense base data store', () => {
 	} );
 
 	it( 'does not define the admin page when unified dashboard is enabled', () => {
-		const { enabledFeatures } = require( '../../../features' );
-		enabledFeatures.add( 'unifiedDashboard' );
-
 		store = require( './base' ).default;
 		registry.registerStore( MODULES_ADSENSE, store );
 

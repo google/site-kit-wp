@@ -45,7 +45,6 @@ import useViewOnly from '../hooks/useViewOnly';
 const { useSelect } = Data;
 
 const Header = ( { children, subHeader, showNavigation } ) => {
-	const unifiedDashboardEnabled = useFeature( 'unifiedDashboard' );
 	const dashboardSharingEnabled = useFeature( 'dashboardSharing' );
 	const viewOnlyDashboard = useViewOnly();
 
@@ -62,7 +61,6 @@ const Header = ( { children, subHeader, showNavigation } ) => {
 			<header
 				className={ classnames( 'googlesitekit-header', {
 					'googlesitekit-header--has-subheader': hasSubheader,
-					'googlesitekit-header--has-unified-dashboard': unifiedDashboardEnabled,
 				} ) }
 			>
 				<Grid>
@@ -102,7 +100,7 @@ const Header = ( { children, subHeader, showNavigation } ) => {
 
 			{ showNavigation && <DashboardNavigation /> }
 
-			{ unifiedDashboardEnabled && <EntityHeader /> }
+			<EntityHeader />
 
 			<ErrorNotifications />
 		</Fragment>

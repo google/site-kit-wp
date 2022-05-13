@@ -37,7 +37,6 @@ import { getHeaderHeight } from '../../../util/scroll';
 import { CORE_WIDGETS, WIDGET_AREA_STYLES } from '../datastore/constants';
 import { CORE_UI, ACTIVE_CONTEXT_ID } from '../../datastore/ui/constants';
 import { Cell, Grid, Row } from '../../../material-components';
-import { useFeature } from '../../../hooks/useFeature';
 import {
 	useBreakpoint,
 	BREAKPOINT_XLARGE,
@@ -75,8 +74,6 @@ function getRootMargin( breakpoint ) {
 }
 
 export default function WidgetAreaRenderer( { slug, totalAreas, contextID } ) {
-	const unifiedDashboardEnabled = useFeature( 'unifiedDashboard' );
-
 	const viewOnly = useViewOnly();
 
 	const viewableModules = useSelect( ( select ) => {
@@ -209,7 +206,7 @@ export default function WidgetAreaRenderer( { slug, totalAreas, contextID } ) {
 				) }
 				ref={ widgetAreaRef }
 			>
-				{ ( unifiedDashboardEnabled || totalAreas > 1 ) && (
+				{ totalAreas > 1 && (
 					<Row>
 						<Cell
 							className="googlesitekit-widget-area-header"

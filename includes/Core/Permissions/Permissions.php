@@ -35,7 +35,6 @@ final class Permissions {
 	const SETUP               = 'googlesitekit_setup';
 	const VIEW_POSTS_INSIGHTS = 'googlesitekit_view_posts_insights';
 	const VIEW_DASHBOARD      = 'googlesitekit_view_dashboard';
-	const VIEW_MODULE_DETAILS = 'googlesitekit_view_module_details';
 	const MANAGE_OPTIONS      = 'googlesitekit_manage_options';
 
 
@@ -161,7 +160,6 @@ final class Permissions {
 			// Allow editors and up to view the dashboard and module details.
 			// TODO change to map to edit_posts when Dashboard Sharing feature flag is removed.
 			self::VIEW_DASHBOARD      => $editor_capability,
-			self::VIEW_MODULE_DETAILS => $editor_capability,
 
 			// Allow administrators and up to manage options and set up the plugin.
 			self::MANAGE_OPTIONS      => 'manage_options',
@@ -197,12 +195,11 @@ final class Permissions {
 		$this->network_base = array(
 			// Require network admin access to view the dashboard and module details in network mode.
 			// TODO change to map to manage_network when Dashboard Sharing feature flag is removed.
-			self::VIEW_DASHBOARD      => $admin_network_capability,
-			self::VIEW_MODULE_DETAILS => $admin_network_capability,
+			self::VIEW_DASHBOARD => $admin_network_capability,
 
 			// Require network admin access to manage options and set up the plugin in network mode.
-			self::MANAGE_OPTIONS      => 'manage_network_options',
-			self::SETUP               => 'manage_network_options',
+			self::MANAGE_OPTIONS => 'manage_network_options',
+			self::SETUP          => 'manage_network_options',
 		);
 	}
 
@@ -685,7 +682,6 @@ final class Permissions {
 			self::SETUP,
 			self::VIEW_POSTS_INSIGHTS,
 			self::VIEW_DASHBOARD,
-			self::VIEW_MODULE_DETAILS,
 			self::MANAGE_OPTIONS,
 			self::VIEW_SPLASH,
 			self::VIEW_AUTHENTICATED_DASHBOARD,

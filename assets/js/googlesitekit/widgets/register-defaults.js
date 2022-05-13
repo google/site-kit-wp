@@ -29,7 +29,6 @@ import * as WIDGET_CONTEXTS from './default-contexts';
 import * as WIDGET_AREAS from './default-areas';
 import { WIDGET_URL_SEARCH } from './default-widgets';
 import { WIDGET_AREA_STYLES, WIDGET_WIDTHS } from './datastore/constants';
-import { isFeatureEnabled } from '../../features';
 
 const {
 	CONTEXT_DASHBOARD,
@@ -189,168 +188,166 @@ export function registerDefaults( widgetsAPI ) {
 		[ AREA_DASHBOARD_ACQUISITION ]
 	);
 
-	if ( isFeatureEnabled( 'unifiedDashboard' ) ) {
-		const {
-			CONTEXT_MAIN_DASHBOARD_TRAFFIC,
-			CONTEXT_MAIN_DASHBOARD_CONTENT,
-			CONTEXT_MAIN_DASHBOARD_SPEED,
-			CONTEXT_MAIN_DASHBOARD_MONETIZATION,
-			// Entity dashboard
-			CONTEXT_ENTITY_DASHBOARD_TRAFFIC,
-			CONTEXT_ENTITY_DASHBOARD_CONTENT,
-			CONTEXT_ENTITY_DASHBOARD_SPEED,
-			CONTEXT_ENTITY_DASHBOARD_MONETIZATION,
-		} = ADDITIONAL_WIDGET_CONTEXTS;
+	const {
+		CONTEXT_MAIN_DASHBOARD_TRAFFIC,
+		CONTEXT_MAIN_DASHBOARD_CONTENT,
+		CONTEXT_MAIN_DASHBOARD_SPEED,
+		CONTEXT_MAIN_DASHBOARD_MONETIZATION,
+		// Entity dashboard
+		CONTEXT_ENTITY_DASHBOARD_TRAFFIC,
+		CONTEXT_ENTITY_DASHBOARD_CONTENT,
+		CONTEXT_ENTITY_DASHBOARD_SPEED,
+		CONTEXT_ENTITY_DASHBOARD_MONETIZATION,
+	} = ADDITIONAL_WIDGET_CONTEXTS;
 
-		const {
-			// Main dashboard
-			AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY,
-			AREA_MAIN_DASHBOARD_CONTENT_PRIMARY,
-			AREA_MAIN_DASHBOARD_SPEED_PRIMARY,
-			AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY,
-			// Entity dashboard
-			AREA_ENTITY_DASHBOARD_TRAFFIC_PRIMARY,
-			AREA_ENTITY_DASHBOARD_CONTENT_PRIMARY,
-			AREA_ENTITY_DASHBOARD_SPEED_PRIMARY,
-			AREA_ENTITY_DASHBOARD_MONETIZATION_PRIMARY,
-		} = ADDITIONAL_WIDGET_AREAS;
+	const {
+		// Main dashboard
+		AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY,
+		AREA_MAIN_DASHBOARD_CONTENT_PRIMARY,
+		AREA_MAIN_DASHBOARD_SPEED_PRIMARY,
+		AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY,
+		// Entity dashboard
+		AREA_ENTITY_DASHBOARD_TRAFFIC_PRIMARY,
+		AREA_ENTITY_DASHBOARD_CONTENT_PRIMARY,
+		AREA_ENTITY_DASHBOARD_SPEED_PRIMARY,
+		AREA_ENTITY_DASHBOARD_MONETIZATION_PRIMARY,
+	} = ADDITIONAL_WIDGET_AREAS;
 
-		/*
-		 * Main dashboard areas.
-		 */
+	/*
+	 * Main dashboard areas.
+	 */
 
-		widgetsAPI.registerWidgetArea(
-			AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY,
-			{
-				title: __(
-					'Find out how your audience is growing',
-					'google-site-kit'
-				),
-				subtitle: __(
-					'Track your site’s traffic over time',
-					'google-site-kit'
-				),
-				style: WIDGET_AREA_STYLES.BOXES,
-				priority: 1,
-			},
-			CONTEXT_MAIN_DASHBOARD_TRAFFIC
-		);
+	widgetsAPI.registerWidgetArea(
+		AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY,
+		{
+			title: __(
+				'Find out how your audience is growing',
+				'google-site-kit'
+			),
+			subtitle: __(
+				'Track your site’s traffic over time',
+				'google-site-kit'
+			),
+			style: WIDGET_AREA_STYLES.BOXES,
+			priority: 1,
+		},
+		CONTEXT_MAIN_DASHBOARD_TRAFFIC
+	);
 
-		widgetsAPI.registerWidgetArea(
-			AREA_MAIN_DASHBOARD_CONTENT_PRIMARY,
-			{
-				title: __( 'See how your content is doing', 'google-site-kit' ),
-				subtitle: __(
-					'Keep track of your most popular pages and how people found them from Search',
-					'google-site-kit'
-				),
-				style: WIDGET_AREA_STYLES.BOXES,
-				priority: 1,
-			},
-			CONTEXT_MAIN_DASHBOARD_CONTENT
-		);
+	widgetsAPI.registerWidgetArea(
+		AREA_MAIN_DASHBOARD_CONTENT_PRIMARY,
+		{
+			title: __( 'See how your content is doing', 'google-site-kit' ),
+			subtitle: __(
+				'Keep track of your most popular pages and how people found them from Search',
+				'google-site-kit'
+			),
+			style: WIDGET_AREA_STYLES.BOXES,
+			priority: 1,
+		},
+		CONTEXT_MAIN_DASHBOARD_CONTENT
+	);
 
-		widgetsAPI.registerWidgetArea(
-			AREA_MAIN_DASHBOARD_SPEED_PRIMARY,
-			{
-				title: __(
-					'Find out how visitors experience your site',
-					'google-site-kit'
-				),
-				subtitle: __(
-					'Keep track of how fast your pages are and get specific recommendations on what to improve',
-					'google-site-kit'
-				),
-				style: WIDGET_AREA_STYLES.BOXES,
-				priority: 1,
-			},
-			CONTEXT_MAIN_DASHBOARD_SPEED
-		);
+	widgetsAPI.registerWidgetArea(
+		AREA_MAIN_DASHBOARD_SPEED_PRIMARY,
+		{
+			title: __(
+				'Find out how visitors experience your site',
+				'google-site-kit'
+			),
+			subtitle: __(
+				'Keep track of how fast your pages are and get specific recommendations on what to improve',
+				'google-site-kit'
+			),
+			style: WIDGET_AREA_STYLES.BOXES,
+			priority: 1,
+		},
+		CONTEXT_MAIN_DASHBOARD_SPEED
+	);
 
-		widgetsAPI.registerWidgetArea(
-			AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY,
-			{
-				title: __(
-					'Find out how much you’re earning from your content',
-					'google-site-kit'
-				),
-				subtitle: __(
-					'Track your AdSense revenue over time',
-					'google-site-kit'
-				),
-				style: WIDGET_AREA_STYLES.BOXES,
-				priority: 1,
-			},
-			CONTEXT_MAIN_DASHBOARD_MONETIZATION
-		);
+	widgetsAPI.registerWidgetArea(
+		AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY,
+		{
+			title: __(
+				'Find out how much you’re earning from your content',
+				'google-site-kit'
+			),
+			subtitle: __(
+				'Track your AdSense revenue over time',
+				'google-site-kit'
+			),
+			style: WIDGET_AREA_STYLES.BOXES,
+			priority: 1,
+		},
+		CONTEXT_MAIN_DASHBOARD_MONETIZATION
+	);
 
-		/*
-		 * Entity dashboard areas.
-		 */
+	/*
+	 * Entity dashboard areas.
+	 */
 
-		widgetsAPI.registerWidgetArea(
-			AREA_ENTITY_DASHBOARD_TRAFFIC_PRIMARY,
-			{
-				title: __(
-					'Find out how your audience is growing',
-					'google-site-kit'
-				),
-				subtitle: __(
-					'Track traffic to this page over time',
-					'google-site-kit'
-				),
-				style: WIDGET_AREA_STYLES.BOXES,
-				priority: 1,
-			},
-			CONTEXT_ENTITY_DASHBOARD_TRAFFIC
-		);
+	widgetsAPI.registerWidgetArea(
+		AREA_ENTITY_DASHBOARD_TRAFFIC_PRIMARY,
+		{
+			title: __(
+				'Find out how your audience is growing',
+				'google-site-kit'
+			),
+			subtitle: __(
+				'Track traffic to this page over time',
+				'google-site-kit'
+			),
+			style: WIDGET_AREA_STYLES.BOXES,
+			priority: 1,
+		},
+		CONTEXT_ENTITY_DASHBOARD_TRAFFIC
+	);
 
-		widgetsAPI.registerWidgetArea(
-			AREA_ENTITY_DASHBOARD_CONTENT_PRIMARY,
-			{
-				title: __( 'See how your content is doing', 'google-site-kit' ),
-				subtitle: __(
-					'Understand how people found this page from Search',
-					'google-site-kit'
-				),
-				style: WIDGET_AREA_STYLES.BOXES,
-				priority: 1,
-			},
-			CONTEXT_ENTITY_DASHBOARD_CONTENT
-		);
+	widgetsAPI.registerWidgetArea(
+		AREA_ENTITY_DASHBOARD_CONTENT_PRIMARY,
+		{
+			title: __( 'See how your content is doing', 'google-site-kit' ),
+			subtitle: __(
+				'Understand how people found this page from Search',
+				'google-site-kit'
+			),
+			style: WIDGET_AREA_STYLES.BOXES,
+			priority: 1,
+		},
+		CONTEXT_ENTITY_DASHBOARD_CONTENT
+	);
 
-		widgetsAPI.registerWidgetArea(
-			AREA_ENTITY_DASHBOARD_SPEED_PRIMARY,
-			{
-				title: __(
-					'Find out how visitors experience this page',
-					'google-site-kit'
-				),
-				subtitle: __(
-					'Keep track of how fast your page is and get specific recommendations on what to improve',
-					'google-site-kit'
-				),
-				style: WIDGET_AREA_STYLES.BOXES,
-				priority: 1,
-			},
-			CONTEXT_ENTITY_DASHBOARD_SPEED
-		);
+	widgetsAPI.registerWidgetArea(
+		AREA_ENTITY_DASHBOARD_SPEED_PRIMARY,
+		{
+			title: __(
+				'Find out how visitors experience this page',
+				'google-site-kit'
+			),
+			subtitle: __(
+				'Keep track of how fast your page is and get specific recommendations on what to improve',
+				'google-site-kit'
+			),
+			style: WIDGET_AREA_STYLES.BOXES,
+			priority: 1,
+		},
+		CONTEXT_ENTITY_DASHBOARD_SPEED
+	);
 
-		widgetsAPI.registerWidgetArea(
-			AREA_ENTITY_DASHBOARD_MONETIZATION_PRIMARY,
-			{
-				title: __(
-					'Find out how much you’re earning from your content',
-					'google-site-kit'
-				),
-				subtitle: __(
-					'Track your AdSense revenue over time',
-					'google-site-kit'
-				),
-				style: WIDGET_AREA_STYLES.BOXES,
-				priority: 1,
-			},
-			CONTEXT_ENTITY_DASHBOARD_MONETIZATION
-		);
-	}
+	widgetsAPI.registerWidgetArea(
+		AREA_ENTITY_DASHBOARD_MONETIZATION_PRIMARY,
+		{
+			title: __(
+				'Find out how much you’re earning from your content',
+				'google-site-kit'
+			),
+			subtitle: __(
+				'Track your AdSense revenue over time',
+				'google-site-kit'
+			),
+			style: WIDGET_AREA_STYLES.BOXES,
+			priority: 1,
+		},
+		CONTEXT_ENTITY_DASHBOARD_MONETIZATION
+	);
 }

@@ -64,24 +64,6 @@ class ModuleTest extends TestCase {
 		$this->assertNull( $module->non_existent );
 	}
 
-	public function test_prepare_info_for_js() {
-		$module = new FakeModule( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		$keys   = array(
-			'slug',
-			'name',
-			'description',
-			'sort',
-			'homepage',
-			'required',
-			'autoActivate',
-			'internal',
-			'screenID',
-			'settings',
-		);
-
-		$this->assertEqualSets( $keys, array_keys( $module->prepare_info_for_js() ) );
-	}
-
 	public function test_is_connected() {
 		$module = new FakeModule( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 

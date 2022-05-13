@@ -21,12 +21,12 @@
 	.googlesitekit-header {
 
 		@include googlesitekit-inner-padding;
-		@include shadow;
 		background-color: $c-base;
 		left: 0;
 		position: sticky;
 		right: 0;
 		top: 0;
+		transition: box-shadow $t-default ease-in-out;
 		z-index: 12;
 
 		.wp-responsive-open & {
@@ -46,6 +46,14 @@
 
 			@media (min-width: $bp-wpAdminBarTablet) {
 				top: 32px;
+			}
+		}
+
+		&.googlesitekit-header--has-subheader {
+
+			.googlesitekit-plugin--has-scrolled & {
+
+				@include shadow;
 			}
 		}
 
@@ -122,27 +130,15 @@
 				padding-right: $grid-gap-desktop;
 
 				@media (max-width: $bp-mobileOnly) {
-					min-width: 36px;
+					background: none;
+					margin-right: 0;
 					padding-right: 8px;
 				}
-			}
 
-			.googlesitekit-header__date-range-selector-menu--has-unified-dashboard {
-
-				&.mdc-button--dropdown {
+				svg {
 
 					@media (max-width: $bp-mobileOnly) {
-
-						background: none;
 						margin-right: 0;
-						padding-right: 8px;
-					}
-
-					svg {
-
-						@media (max-width: $bp-mobileOnly) {
-							margin-right: 0;
-						}
 					}
 				}
 			}
@@ -174,20 +170,6 @@
 
 			button {
 				padding: 4px;
-			}
-		}
-
-	}
-
-	.googlesitekit-header--has-unified-dashboard {
-		box-shadow: none;
-		transition: box-shadow $t-default ease-in-out;
-
-		&.googlesitekit-header--has-subheader {
-
-			.googlesitekit-plugin--has-scrolled & {
-
-				@include shadow;
 			}
 		}
 	}
