@@ -68,8 +68,6 @@ export const INVARIANT_MULTIPLE_ANALYTICS_PROPERTY_IDS =
 	'containers with Analytics tags must reference a single property ID to submit changes';
 export const INVARIANT_GTM_GA_PROPERTY_ID_MISMATCH =
 	'single GTM Analytics property ID must match Analytics property ID';
-export const INVARIANT_INSUFFICIENT_EXISTING_TAG_PERMISSION =
-	'existing tag permission is required to submit changes';
 
 export async function submitChanges( { select, dispatch } ) {
 	const accountID = select( MODULES_TAGMANAGER ).getAccountID();
@@ -161,8 +159,6 @@ export function validateCanSubmitChanges( select ) {
 		getInternalAMPContainerID,
 		getSingleAnalyticsPropertyID,
 		hasAnyAnalyticsPropertyID,
-		hasExistingTag,
-		hasExistingTagPermission,
 		hasMultipleAnalyticsPropertyIDs,
 		haveSettingsChanged,
 		isDoingSubmitChanges,
@@ -264,14 +260,6 @@ export function validateCanSubmitChanges( select ) {
 		invariant(
 			getSingleAnalyticsPropertyID() === getPropertyID(),
 			INVARIANT_GTM_GA_PROPERTY_ID_MISMATCH
-		);
-	}
-
-	// Do existing tag check last.
-	if ( hasExistingTag() ) {
-		invariant(
-			hasExistingTagPermission(),
-			INVARIANT_INSUFFICIENT_EXISTING_TAG_PERMISSION
 		);
 	}
 }

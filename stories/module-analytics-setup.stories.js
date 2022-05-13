@@ -492,13 +492,7 @@ storiesOf( 'Analytics Module/Setup', module )
 			registry
 				.dispatch( MODULES_ANALYTICS )
 				.receiveGetExistingTag( existingTag.propertyID );
-			registry.dispatch( MODULES_ANALYTICS ).receiveGetTagPermission(
-				{
-					accountID: existingTag.accountID,
-					permission: true,
-				},
-				{ propertyID: existingTag.propertyID }
-			);
+
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
 				.receiveGetSettings( { ...ga4Fixtures.defaultSettings } );
@@ -549,13 +543,6 @@ storiesOf( 'Analytics Module/Setup', module )
 			registry
 				.dispatch( MODULES_ANALYTICS )
 				.receiveGetExistingTag( existingTag.propertyID );
-			registry.dispatch( MODULES_ANALYTICS ).receiveGetTagPermission(
-				{
-					accountID: existingTag.accountID,
-					permission: false,
-				},
-				{ propertyID: existingTag.propertyID }
-			);
 
 			return <Setup />;
 		},

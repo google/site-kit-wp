@@ -25,7 +25,7 @@ import {
 	ContainerNames,
 	FormInstructions,
 	TagCheckProgress,
-	UseSnippetSwitch,
+	SettingsUseSnippetSwitch,
 	WebContainerSelect,
 } from '../common';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
@@ -53,7 +53,7 @@ export default function SettingsForm() {
 			<ContainerNames />
 
 			<div className="googlesitekit-setup-module__inputs googlesitekit-setup-module__inputs--multiline">
-				<UseSnippetSwitch />
+				<SettingsUseSnippetSwitch />
 			</div>
 		</div>
 	);

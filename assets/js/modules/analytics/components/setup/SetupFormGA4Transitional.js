@@ -20,7 +20,7 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { Fragment, useEffect } from '@wordpress/element';
+import { Fragment } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -43,9 +43,11 @@ import {
 	PropertySelectIncludingGA4,
 	ProfileNameTextField,
 	GA4PropertyNotice,
-	ExistingTagNotice,
+	ExistingGTMPropertyNotice,
+	SetupUseSnippetSwitch as SetupUseSnippetSwitchUA,
 } from '../common';
-const { useSelect, useDispatch } = Data;
+import { SetupUseSnippetSwitch as SetupUseSnippetSwitchGA4 } from '../../../analytics-4/components/common';
+const { useSelect } = Data;
 
 export default function SetupFormGA4Transitional() {
 	const accounts =
@@ -55,11 +57,8 @@ export default function SetupFormGA4Transitional() {
 		select( MODULES_ANALYTICS ).getPrimaryPropertyType()
 	);
 
-	const hasExistingTag = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).hasExistingTag()
-	);
-	const existingTag = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).getExistingTag()
+	const hasExistingGA4Tag = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).hasExistingTag()
 	);
 
 	const accountID = useSelect( ( select ) =>
@@ -75,34 +74,11 @@ export default function SetupFormGA4Transitional() {
 	const ga4PropertyID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getPropertyID()
 	);
-	const ga4ExistingTag = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getExistingTag()
-	);
-	const ga4MeasurementID = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getMeasurementID()
-	);
-
-	const { setUseSnippet: uaSetUseSnippet } = useDispatch( MODULES_ANALYTICS );
-	const { setUseSnippet: ga4SetUseSnippet } = useDispatch(
-		MODULES_ANALYTICS_4
-	);
 
 	const primaryPropertyID =
 		propertyType === PROPERTY_TYPE_UA ? propertyID : ga4PropertyID;
 	const showAssociatedPropertyNotice =
 		accountID && accountID !== ACCOUNT_CREATE && primaryPropertyID;
-
-	useEffect( () => {
-		uaSetUseSnippet( existingTag !== propertyID );
-		ga4SetUseSnippet( ga4ExistingTag !== ga4MeasurementID );
-	}, [
-		uaSetUseSnippet,
-		existingTag,
-		propertyID,
-		ga4SetUseSnippet,
-		ga4ExistingTag,
-		ga4MeasurementID,
-	] );
 
 	const notice =
 		propertyType === PROPERTY_TYPE_UA
@@ -121,12 +97,12 @@ export default function SetupFormGA4Transitional() {
 				moduleSlug="analytics"
 				storeName={ MODULES_ANALYTICS }
 			/>
-			<ExistingTagNotice />
+			<ExistingGTMPropertyNotice />
 
-			{ !! accounts.length && ! hasExistingTag && (
+			{ !! accounts.length && (
 				<p className="googlesitekit-margin-bottom-0">
 					{ __(
-						'Please select the account information below. You can change this view later in your settings.',
+						'Please select the account information below. You can change this later in your settings.',
 						'google-site-kit'
 					) }
 				</p>
@@ -147,6 +123,11 @@ export default function SetupFormGA4Transitional() {
 					</div>
 				) }
 
+			{ propertyType === PROPERTY_TYPE_UA && <SetupUseSnippetSwitchUA /> }
+			{ propertyType === PROPERTY_TYPE_GA4 && hasExistingGA4Tag && (
+				<SetupUseSnippetSwitchGA4 />
+			) }
+
 			{ showAssociatedPropertyNotice && (
 				<GA4PropertyNotice notice={ notice }>
 					{ propertyType === PROPERTY_TYPE_GA4 && (
@@ -161,12 +142,20 @@ export default function SetupFormGA4Transitional() {
 									<ProfileNameTextField />
 								</div>
 							) }
+
+							<SetupUseSnippetSwitchUA />
 						</Fragment>
 					) }
 					{ propertyType === PROPERTY_TYPE_UA && (
-						<div className="googlesitekit-setup-module__inputs">
-							<GA4PropertySelect />
-						</div>
+						<Fragment>
+							<div className="googlesitekit-setup-module__inputs">
+								<GA4PropertySelect />
+							</div>
+
+							{ hasExistingGA4Tag && (
+								<SetupUseSnippetSwitchGA4 />
+							) }
+						</Fragment>
 					) }
 				</GA4PropertyNotice>
 			) }
