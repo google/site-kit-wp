@@ -407,7 +407,7 @@ const baseSelectors = {
 	},
 
 	/**
-	 * Gets primary container ID based on the AMP status.
+	 * Gets primary container ID based on the AMP mode.
 	 *
 	 * @since n.e.x.t
 	 *
