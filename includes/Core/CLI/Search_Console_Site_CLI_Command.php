@@ -5,6 +5,7 @@ namespace Google\Site_Kit\Core\CLI;
 use Exception;
 use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\CLI\Traits\CLI_Auth;
+use Google\Site_Kit\Core\CLI\Traits\Runtime_Input;
 use Google\Site_Kit_Dependencies\Google\Service\Exception as Google_Service_Exception;
 use Google\Site_Kit_Dependencies\Google\Service\SearchConsole;
 use Google\Site_Kit_Dependencies\Google\Service\SearchConsole\WmxSite;
@@ -13,6 +14,7 @@ use function WP_CLI\Utils\get_flag_value;
 
 class Search_Console_Site_CLI_Command extends CLI_Command {
 	use CLI_Auth;
+	use Runtime_Input;
 
 	/**
 	 * Lists all Search Console sites for a user.
@@ -115,16 +117,6 @@ class Search_Console_Site_CLI_Command extends CLI_Command {
 				WP_CLI::line( "Failed to delete Search Console site: $site_url" );
 				WP_CLI::warning( $e->getMessage() );
 			}
-		}
-	}
-
-	protected function confirm( $question ) {
-		fwrite( STDOUT, $question . ' [y/N] ' );
-
-		$answer = fgets( STDIN );
-
-		if ( 'y' !== strtolower( trim( $answer ) ) ) {
-			throw new WP_CLI\ExitException();
 		}
 	}
 
