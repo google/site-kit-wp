@@ -45,6 +45,13 @@
 		}
 	}
 
+	.googlesitekit-sharing-settings-dialog {
+
+		.googlesitekit-dialog__content {
+			padding-bottom: 0;
+		}
+	}
+
 	.googlesitekit-dashboard-sharing-settings {
 		color: $c-cape-cod;
 		font-size: 14px;
@@ -59,10 +66,26 @@
 
 	.googlesitekit-dashboard-sharing-settings__column--product {
 		flex: 0 0 25%;
+
+		svg {
+			height: 28px;
+			width: 28px;
+
+			@media (min-width: $bp-desktop) {
+				height: 48px;
+				width: 48px;
+			}
+		}
 	}
 
 	.googlesitekit-dashboard-sharing-settings__column--view {
 		flex: 1 1 30%;
+
+		@media (min-width: $bp-tablet) {
+			align-items: center;
+			display: flex;
+			flex: 1 1 45%;
+		}
 	}
 
 	.googlesitekit-dashboard-sharing-settings__row {
@@ -79,6 +102,13 @@
 			display: flex;
 			flex-direction: column;
 			gap: 12px;
+
+			@media (min-width: $bp-tablet) {
+				align-items: center;
+				flex-direction: row;
+				flex-wrap: wrap;
+				gap: 16px;
+			}
 		}
 	}
 
@@ -87,17 +117,52 @@
 		font-size: 14px;
 		line-height: 16px;
 		margin: 0;
+
+		@media (min-width: $bp-tablet) {
+			font-size: 12px;
+			line-height: 14px;
+		}
 	}
 
 	.googlesitekit-dashboard-sharing-settings__select {
+		height: 48px;
+		width: 100%;
+
+		@media (min-width: $bp-tablet) {
+			height: 30px;
+		}
 
 		.mdc-select__selected-text {
 			min-width: 100px;
+
+			@media (min-width: $bp-tablet) {
+				min-width: 140px;
+			}
+		}
+
+		.mdc-select__native-control {
+			font-size: 14px;
+			height: 48px !important;
+			padding-bottom: 0;
+			padding-top: 0;
+
+			@media (min-width: $bp-tablet) {
+				height: 30px !important;
+				min-height: 30px;
+			}
+		}
+
+		.mdc-select__dropdown-icon {
+			display: none;
 		}
 	}
 
 	.googlesitekit-dashboard-sharing-settings__column--manage {
 		flex: 1 1 45%;
+
+		@media (min-width: $bp-tablet) {
+			flex: 0 0 30%;
+		}
 
 		.googlesitekit-dashboard-sharing-settings__note {
 			align-items: flex-end;
@@ -108,6 +173,11 @@
 
 			span:not(.googlesitekit-dashboard-sharing-settings__tooltip-icon) {
 				width: 100%;
+
+				@media (min-width: $bp-tablet) {
+					margin-right: 4px;
+					width: auto;
+				}
 			}
 
 			svg {

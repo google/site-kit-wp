@@ -69,7 +69,7 @@ export default function DashboardSharingSettingsButton() {
 				<Dialog
 					open={ dialogOpen }
 					onClose={ closeDialog }
-					className="googlesitekit-dialog"
+					className="googlesitekit-dialog googlesitekit-sharing-settings-dialog"
 				>
 					<div
 						className="googlesitekit-dialog__back-wrapper"

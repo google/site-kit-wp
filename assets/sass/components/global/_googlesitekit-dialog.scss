@@ -82,6 +82,7 @@
 		}
 
 		.googlesitekit-dialog__content {
+			overflow: auto;
 			padding: 24px 16px;
 
 			@media (min-width: $bp-tablet) {

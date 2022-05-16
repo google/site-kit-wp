@@ -21,7 +21,10 @@
  */
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { withConnected } from '../../../googlesitekit/modules/datastore/__fixtures__';
-import { provideModuleRegistrations } from '../../../../../tests/js/utils';
+import {
+	provideModuleRegistrations,
+	provideSiteConnection,
+} from '../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../tests/js/WithRegistrySetup';
 import DashboardSharingSettings from './index';
 
@@ -46,6 +49,27 @@ DefaultDashboardSharingSettings.args = {
 				)
 			);
 		provideModuleRegistrations( registry );
+	},
+};
+
+export const MultipleAdminsDashboardSharingSettings = Template.bind( {} );
+MultipleAdminsDashboardSharingSettings.storyName = 'Multiple Admins';
+MultipleAdminsDashboardSharingSettings.args = {
+	setupRegistry: ( registry ) => {
+		registry
+			.dispatch( CORE_MODULES )
+			.receiveGetModules(
+				withConnected(
+					'adsense',
+					'analytics',
+					'pagespeed-insights',
+					'search-console'
+				)
+			);
+		provideModuleRegistrations( registry );
+		provideSiteConnection( registry, {
+			hasMultipleAdmins: true,
+		} );
 	},
 };
 
