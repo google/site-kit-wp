@@ -13,6 +13,7 @@ namespace Google\Site_Kit\Core\Modules\Tags;
 use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\REST_API\REST_Route;
 use Google\Site_Kit\Modules\Analytics;
+use Google\Site_Kit\Modules\Adsense;
 use WP_REST_Request;
 use WP_REST_Server;
 
@@ -74,7 +75,9 @@ class REST_Tags_Controller {
 						'methods'             => WP_REST_Server::READABLE,
 						'callback'            => function( WP_REST_Request $request ) {
 							$analytics = $this->modules->get_module( Analytics::MODULE_SLUG );
-							$tags = $analytics->get_rest_tags();
+							$tags['head']['analytics'] = $analytics->get_rest_tags();
+							$adsense = $this->modules->get_module( Adsense::MODULE_SLUG );
+							$tags['head']['adsense'] = $adsense->get_rest_tags();
 							return rest_ensure_response( $tags );
 						},
 						'permission_callback' => function () {

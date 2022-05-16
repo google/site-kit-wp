@@ -715,6 +715,36 @@ final class AdSense extends Module
 	}
 
 	/**
+	 * Fetches the AdSense tag snippet.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string The AdSense JS snippet.
+	 */
+	public function get_rest_tags() {
+		// TODO: 'amp_story' support can be phased out in the long term.
+		if ( is_singular( array( 'amp_story' ) ) ) {
+			return;
+		}
+
+		$module_settings = $this->get_settings();
+		$settings        = $module_settings->get();
+		$tag             = new Web_Tag( $settings['clientID'], self::MODULE_SLUG );
+
+		if ( ! $tag->is_tag_blocked() ) {
+			$tag->use_guard( new Tag_Verify_Guard( $this->context->input() ) );
+			$tag->use_guard( new Tag_Guard( $module_settings ) );
+			$tag->use_guard( new Auto_Ad_Guard( $module_settings ) );
+			$tag->use_guard( new Tag_Production_Guard() );
+
+			if ( $tag->can_register() ) {
+				return $tag->filter_rest_tags();
+			}
+		}
+		return array();
+	}
+
+	/**
 	 * Parses account ID, adds it to the model object and returns updated model.
 	 *
 	 * @since 1.36.0

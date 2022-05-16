@@ -206,11 +206,9 @@ class Web_Tag extends Module_Web_Tag implements Tag_Interface {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param array $tags The array of tags to be rendered via a REST endpoint.
-	 *
-	 * @return array Adds the gtag snippet to tags rendered via a REST endpoint.
+	 * @return string Gets the gtag snippet to render via a REST endpoint.
 	 */
-	public function filter_rest_tags( $tags ) {
+	public function filter_rest_tags() {
 		$gtag_opt = array();
 		$gtag_src = 'https://www.googletagmanager.com/gtag/js?id=' . rawurlencode( $this->tag_id );
 
@@ -284,11 +282,7 @@ class Web_Tag extends Module_Web_Tag implements Tag_Interface {
 		$snippet_comment_begin = sprintf( "\n<!-- %s -->\n", esc_html__( 'Google Analytics snippet added by Site Kit', 'google-site-kit' ) );
 		$snippet_comment_end   = sprintf( "\n<!-- %s -->\n", esc_html__( 'End Google Analytics snippet added by Site Kit', 'google-site-kit' ) );
 
-		$tag = $snippet_comment_begin . $tag . $snippet_comment_end;
-
-		$tags['head']['analytics'] = $tag;
-
-		return $tags;
+		return $snippet_comment_begin . $tag . $snippet_comment_end;
 	}
 
 	/**

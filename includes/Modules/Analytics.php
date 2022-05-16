@@ -1244,7 +1244,7 @@ final class Analytics extends Module
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return array Array containing the analytics gtag JS snippet.
+	 * @return string The analytics gtag JS snippet.
 	 */
 	public function get_rest_tags() {
 		$settings = $this->get_settings()->get();
@@ -1266,9 +1266,9 @@ final class Analytics extends Module
 			);
 			$tag->set_ads_conversion_id( $settings['adsConversionID'] );
 
-			return $tag->filter_rest_tags( array() );
+			return $tag->filter_rest_tags();
 		}
-		return array();
+		return '';
 	}
 
 	/**
