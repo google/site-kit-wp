@@ -1,6 +1,6 @@
 <?php
 /**
- * Class Google\Site_Kit\Core\CLI\Traits\Runtime_Input
+ * Trait Google\Site_Kit\Core\CLI\Traits\Runtime_Input
  *
  * @package   Google\Site_Kit\Core\CLI
  * @copyright 2022 Google LLC
