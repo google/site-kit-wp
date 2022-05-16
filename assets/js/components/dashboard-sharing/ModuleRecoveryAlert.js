@@ -21,6 +21,7 @@
  */
 import { Fragment, useCallback, useEffect, useState } from '@wordpress/element';
 import { sprintf, __ } from '@wordpress/i18n';
+
 /**
  * Internal dependencies
  */
@@ -35,6 +36,9 @@ import Spinner from '../Spinner';
 const { useDispatch, useSelect } = Data;
 
 export default function ModuleRecoveryAlert() {
+	const [ checkboxes, setCheckboxes ] = useState( null );
+	const [ recoveringModules, setRecoveringModules ] = useState( false );
+
 	const recoverableModules = useSelect( ( select ) =>
 		select( CORE_MODULES ).getRecoverableModules()
 	);
@@ -46,9 +50,9 @@ export default function ModuleRecoveryAlert() {
 			return undefined;
 		}
 
-		const accessibleModules = Object.keys( modules ).map( ( module ) => ( {
-			slug: module,
-			hasModuleAccess: select( CORE_MODULES ).hasModuleAccess( module ),
+		const accessibleModules = Object.keys( modules ).map( ( slug ) => ( {
+			slug,
+			hasModuleAccess: select( CORE_MODULES ).hasModuleAccess( slug ),
 		} ) );
 
 		if (
@@ -64,22 +68,7 @@ export default function ModuleRecoveryAlert() {
 			.map( ( { slug } ) => slug );
 	} );
 
-	const [ checkboxes, setCheckboxes ] = useState( null );
-	const [ recoveringModules, setRecoveringModules ] = useState( false );
-
 	const { recoverModule } = useDispatch( CORE_MODULES );
-
-	useEffect( () => {
-		if ( userAccessibleModules !== undefined && checkboxes === null ) {
-			const checked = {};
-
-			userAccessibleModules.forEach( ( module ) => {
-				checked[ module ] = true;
-			} );
-
-			setCheckboxes( checked );
-		}
-	}, [ checkboxes, userAccessibleModules ] );
 
 	const updateCheckboxes = useCallback(
 		( slug ) =>
@@ -99,6 +88,18 @@ export default function ModuleRecoveryAlert() {
 			modulesToRecover.map( ( module ) => recoverModule( module ) )
 		).finally( () => setRecoveringModules( false ) );
 	}, [ checkboxes, recoverModule ] );
+
+	useEffect( () => {
+		if ( userAccessibleModules !== undefined && checkboxes === null ) {
+			const checked = {};
+
+			userAccessibleModules.forEach( ( module ) => {
+				checked[ module ] = true;
+			} );
+
+			setCheckboxes( checked );
+		}
+	}, [ checkboxes, userAccessibleModules ] );
 
 	if (
 		recoverableModules === undefined ||
