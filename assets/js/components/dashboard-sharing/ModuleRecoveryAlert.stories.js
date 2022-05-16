@@ -51,6 +51,10 @@ LoadingRecoverableModules.args = {
 			.receiveRecoverableModules( [ 'search-console' ] );
 	},
 };
+LoadingRecoverableModules.scenario = {
+	label: 'Global/ModuleRecoveryAlert/Loading Recoverable Modules',
+	delay: 250,
+};
 
 export const SingleRecoverableModule = Template.bind( {} );
 SingleRecoverableModule.storyName = 'Single Recoverable Module (with access)';
@@ -66,6 +70,10 @@ SingleRecoverableModule.args = {
 				{ slug: 'search-console' }
 			);
 	},
+};
+SingleRecoverableModule.scenario = {
+	label: 'Global/ModuleRecoveryAlert/Single Recoverable Module (with access)',
+	delay: 250,
 };
 
 export const MultipleRecoverableModule = Template.bind( {} );
@@ -107,6 +115,10 @@ SingleRecoverableModuleNoAccess.args = {
 			);
 	},
 };
+SingleRecoverableModuleNoAccess.scenario = {
+	label: 'Global/ModuleRecoveryAlert/Single Recoverable Module (no access)',
+	delay: 250,
+};
 
 export const MultipleRecoverableModuleNoAccess = Template.bind( {} );
 MultipleRecoverableModuleNoAccess.storyName =
@@ -129,6 +141,11 @@ MultipleRecoverableModuleNoAccess.args = {
 				{ slug: 'analytics' }
 			);
 	},
+};
+MultipleRecoverableModuleNoAccess.scenario = {
+	label:
+		'Global/ModuleRecoveryAlert/Multiple Recoverable Modules (no access)',
+	delay: 250,
 };
 
 export default {
