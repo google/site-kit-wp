@@ -25,11 +25,11 @@ import {
 	ContainerNames,
 	FormInstructions,
 	TagCheckProgress,
-	SettingsUseSnippetSwitch,
 	WebContainerSelect,
 } from '../common';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import { MODULES_TAGMANAGER } from '../../datastore/constants';
+import SettingsUseSnippetSwitch from './SettingsUseSnippetSwitch';
 
 export default function SettingsForm() {
 	return (
