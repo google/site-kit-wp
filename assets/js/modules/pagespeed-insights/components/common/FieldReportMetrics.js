@@ -25,7 +25,7 @@ import classnames from 'classnames';
 /**
  * WordPress dependencies
  */
-import { __, _x } from '@wordpress/i18n';
+import { __, _x, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -115,7 +115,11 @@ export default function FieldReportMetrics( { data, error } ) {
 							'Time it takes for the page to load',
 							'google-site-kit'
 						) }
-						displayValue={ `${ lcpSeconds } s` }
+						displayValue={ sprintf(
+							/* translators: %s: number of seconds */
+							_x( '%s s', 'duration', 'google-site-kit' ),
+							lcpSeconds
+						) }
 						category={ largestContentfulPaint.category }
 					/>
 					<ReportMetric
@@ -141,7 +145,11 @@ export default function FieldReportMetrics( { data, error } ) {
 							'Time it takes for the browser to respond when people first interact with the page',
 							'google-site-kit'
 						) }
-						displayValue={ `${ firstInputDelay.percentile } ms` }
+						displayValue={ sprintf(
+							/* translators: %s: number of milliseconds */
+							_x( '%s ms', 'duration', 'google-site-kit' ),
+							firstInputDelay.percentile
+						) }
 						category={ firstInputDelay.category }
 						isLast={ ! interactionToNextPaint }
 					/>
@@ -156,7 +164,11 @@ export default function FieldReportMetrics( { data, error } ) {
 								'How quickly your page responds when people interact with it',
 								'google-site-kit'
 							) }
-							displayValue={ `${ interactionToNextPaint.percentile } ms` }
+							displayValue={ sprintf(
+								/* translators: %s: number of milliseconds */
+								_x( '%s ms', 'duration', 'google-site-kit' ),
+								interactionToNextPaint.percentile
+							) }
 							category={ interactionToNextPaint.category }
 							experimental
 							isLast
