@@ -35,6 +35,7 @@ class CLI_Commands {
 		'search-console site' => Search_Console_Site_CLI_Command::class,
 		'site credentials'    => Site_Credentials_CLI_Command::class,
 		'site fields'         => Site_Fields_CLI_Command::class,
+		'site verification'   => Site_Verification_CLI_Command::class,
 	);
 
 	/**

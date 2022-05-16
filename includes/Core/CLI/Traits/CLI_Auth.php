@@ -1,4 +1,12 @@
 <?php
+/**
+ * Trait Google\Site_Kit\Core\CLI\Traits\CLI_Auth
+ *
+ * @package   Google\Site_Kit\Core\CLI
+ * @copyright 2021 Google LLC
+ * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
+ * @link      https://sitekit.withgoogle.com
+ */
 
 namespace Google\Site_Kit\Core\CLI\Traits;
 
@@ -25,18 +33,18 @@ trait CLI_Auth {
 			WP_CLI::error( 'This command requires authentication but the current user lacks an access token. Please sign in with Google with this user or use a different user.' );
 		}
 
-//		if ( ! $this->authentication->get_oauth_client()->has_sufficient_scopes( $scopes ) ) {
-//			$key = wp_generate_uuid4();
-//			set_transient( 'googlesitekit_cli_oauth_key', $key, MINUTE_IN_SECONDS );
-//			$connect_url = add_query_arg(
-//				[
-//					'action'            => 'googlesitekit_cli_connect',
-//					'cli_key'           => $key,
-//					'additional_scopes' => rawurlencode_deep( $scopes ),
-//				],
-//				admin_url( 'index.php' )
-//			);
-//			WP_CLI::error( "Additional scopes required! $connect_url" );
-//		}
+		// if ( ! $this->authentication->get_oauth_client()->has_sufficient_scopes( $scopes ) ) {
+		// $key = wp_generate_uuid4();
+		// set_transient( 'googlesitekit_cli_oauth_key', $key, MINUTE_IN_SECONDS );
+		// $connect_url = add_query_arg(
+		// [
+		// 'action'            => 'googlesitekit_cli_connect',
+		// 'cli_key'           => $key,
+		// 'additional_scopes' => rawurlencode_deep( $scopes ),
+		// ],
+		// admin_url( 'index.php' )
+		// );
+		// WP_CLI::error( "Additional scopes required! $connect_url" );
+		// }
 	}
 }

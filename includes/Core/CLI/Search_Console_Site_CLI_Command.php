@@ -1,4 +1,12 @@
 <?php
+/**
+ * Class Google\Site_Kit\Core\CLI\Search_Console_Site_CLI_Command
+ *
+ * @package   Google\Site_Kit\Core\CLI
+ * @copyright 2022 Google LLC
+ * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
+ * @link      https://sitekit.withgoogle.com
+ */
 
 namespace Google\Site_Kit\Core\CLI;
 
@@ -12,6 +20,13 @@ use Google\Site_Kit_Dependencies\Google\Service\SearchConsole\WmxSite;
 use WP_CLI;
 use function WP_CLI\Utils\get_flag_value;
 
+/**
+ * Manages Search Console sites.
+ *
+ * @since n.e.x.t
+ * @access private
+ * @ignore
+ */
 class Search_Console_Site_CLI_Command extends CLI_Command {
 	use CLI_Auth;
 	use Runtime_Input;
@@ -36,7 +51,7 @@ class Search_Console_Site_CLI_Command extends CLI_Command {
 	public function _list( $args, $assoc_args ) {
 		$this->require_auth_or_fail();
 
-		$glob = reset( $args );
+		$glob  = reset( $args );
 		$sites = $this->get_all( $glob, $assoc_args );
 
 		$items = array_map(
@@ -156,7 +171,7 @@ class Search_Console_Site_CLI_Command extends CLI_Command {
 
 	/**
 	 * @param WmxSite[] $sites
-	 * @param string $permissions
+	 * @param string    $permissions
 	 *
 	 * @return array
 	 */
