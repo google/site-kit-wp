@@ -98,6 +98,11 @@ MultipleRecoverableModule.args = {
 			);
 	},
 };
+MultipleRecoverableModule.scenario = {
+	label:
+		'Global/ModuleRecoveryAlert/Multiple Recoverable Modules (with access)',
+	delay: 250,
+};
 
 export const SingleRecoverableModuleNoAccess = Template.bind( {} );
 SingleRecoverableModuleNoAccess.storyName =
