@@ -197,18 +197,17 @@ final class AdSense extends Module
 	 */
 	protected function get_datapoint_definitions() {
 		return array(
-			'GET:adunits'        => array( 'service' => 'adsense' ),
-			'GET:accounts'       => array( 'service' => 'adsense' ),
-			'GET:alerts'         => array( 'service' => 'adsense' ),
-			'GET:clients'        => array( 'service' => 'adsense' ),
-			'GET:earnings'       => array(
+			'GET:adunits'       => array( 'service' => 'adsense' ),
+			'GET:accounts'      => array( 'service' => 'adsense' ),
+			'GET:alerts'        => array( 'service' => 'adsense' ),
+			'GET:clients'       => array( 'service' => 'adsense' ),
+			'GET:earnings'      => array(
 				'service'   => 'adsense',
 				'shareable' => Feature_Flags::enabled( 'dashboardSharing' ),
 			),
-			'GET:notifications'  => array( 'service' => '' ),
-			'GET:tag-permission' => array( 'service' => '' ),
-			'GET:urlchannels'    => array( 'service' => 'adsense' ),
-			'GET:sites'          => array( 'service' => 'adsense' ),
+			'GET:notifications' => array( 'service' => '' ),
+			'GET:urlchannels'   => array( 'service' => 'adsense' ),
+			'GET:sites'         => array( 'service' => 'adsense' ),
 		);
 	}
 
@@ -350,22 +349,6 @@ final class AdSense extends Module
 				}
 				$service = $this->get_service( 'adsense' );
 				return $service->accounts_sites->listAccountsSites( self::normalize_account_id( $data['accountID'] ) );
-			case 'GET:tag-permission':
-				return function() use ( $data ) {
-					if ( ! isset( $data['clientID'] ) ) {
-						return new WP_Error(
-							'missing_required_param',
-							/* translators: %s: Missing parameter name */
-							sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'clientID' ),
-							array( 'status' => 400 )
-						);
-					}
-
-					return array_merge(
-						array( 'clientID' => $data['clientID'] ),
-						$this->has_access_to_client( $data['clientID'] )
-					);
-				};
 			case 'GET:urlchannels':
 				if ( ! isset( $data['accountID'] ) ) {
 					return new WP_Error(
@@ -696,90 +679,6 @@ final class AdSense extends Module
 				)
 			),
 		);
-	}
-
-	/**
-	 * Verifies that user has access to the given client and account.
-	 *
-	 * @since 1.9.0
-	 *
-	 * @param string $client_id  Client found in the existing tag.
-	 * @return array {
-	 *      AdSense account access data.
-	 *      @type string $account_id The AdSense account ID for the given client.
-	 *      @type bool   $permission Whether the user has access to this account and client.
-	 * }
-	 */
-	protected function has_access_to_client( $client_id ) {
-		if ( empty( $client_id ) ) {
-			return array(
-				'account_id' => '',
-				'permission' => false,
-			);
-		}
-
-		$account_has_client = function ( $account_id ) use ( $client_id ) {
-			// Try to get clients for that account.
-			$clients = $this->get_data( 'clients', array( 'accountID' => $account_id ) );
-			if ( is_wp_error( $clients ) ) {
-				// No access to the account.
-				return false;
-			}
-			// Ensure there is access to the client.
-			foreach ( $clients as $client ) {
-				if ( $client->_id === $client_id ) {
-					return true;
-				}
-			}
-
-			return false;
-		};
-
-		$parsed_account_id = $this->parse_account_id( $client_id );
-
-		if ( $account_has_client( $parsed_account_id ) ) {
-			return array(
-				'account_id' => $parsed_account_id,
-				'permission' => true,
-			);
-		}
-
-		$accounts = $this->get_data( 'accounts' );
-		if ( is_wp_error( $accounts ) ) {
-			$accounts = array();
-		}
-
-		foreach ( $accounts as $account ) {
-			if ( $account->_id === $parsed_account_id ) {
-				continue;
-			}
-			if ( $account_has_client( $account->_id ) ) {
-				return array(
-					'account_id' => $account->_id,
-					'permission' => true,
-				);
-			}
-		}
-
-		return array(
-			'account_id' => $parsed_account_id,
-			'permission' => false,
-		);
-	}
-
-	/**
-	 * Determines the AdSense account ID from a given AdSense client ID.
-	 *
-	 * @since 1.9.0
-	 *
-	 * @param string $client_id AdSense client ID.
-	 * @return string AdSense account ID, or empty string if invalid client ID.
-	 */
-	protected function parse_account_id( $client_id ) {
-		if ( ! preg_match( '/^ca-(pub-[0-9]+)$/', $client_id, $matches ) ) {
-			return '';
-		}
-		return $matches[1];
 	}
 
 	/**

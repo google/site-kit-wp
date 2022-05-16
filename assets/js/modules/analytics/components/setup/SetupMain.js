@@ -36,14 +36,9 @@ import ProgressBar from '../../../../components/ProgressBar';
 import { MODULES_ANALYTICS, ACCOUNT_CREATE } from '../../datastore/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { CORE_LOCATION } from '../../../../googlesitekit/datastore/location/constants';
-import { MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
-import useExistingTagEffect from '../../hooks/useExistingTagEffect';
-import {
-	AccountCreate,
-	AccountCreateLegacy,
-	ExistingTagError,
-	ExistingGTMPropertyError,
-} from '../common';
+import useExistingTagEffectUA from '../../hooks/useExistingTagEffect';
+import useExistingTagEffectGA4 from '../../../analytics-4/hooks/useExistingTagEffect';
+import { AccountCreate, AccountCreateLegacy } from '../common';
 const { useSelect } = Data;
 
 export default function SetupMain( { finishSetup } ) {
@@ -52,12 +47,6 @@ export default function SetupMain( { finishSetup } ) {
 	);
 	const accountID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getAccountID()
-	);
-	const hasExistingTag = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).hasExistingTag()
-	);
-	const hasExistingTagPermission = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).hasExistingTagPermission()
 	);
 	const isDoingSubmitChanges = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).isDoingSubmitChanges()
@@ -75,23 +64,9 @@ export default function SetupMain( { finishSetup } ) {
 		select( MODULES_ANALYTICS ).getSetupFlowMode()
 	);
 
-	const {
-		hasGTMAnalyticsPropertyID,
-		hasGTMAnalyticsPropertyIDPermission,
-	} = useSelect( ( select ) => {
-		const gtmPropertyID = select(
-			MODULES_TAGMANAGER
-		).getSingleAnalyticsPropertyID();
-		return {
-			hasGTMAnalyticsPropertyID: !! gtmPropertyID,
-			hasGTMAnalyticsPropertyIDPermission: gtmPropertyID
-				? select( MODULES_ANALYTICS ).hasTagPermission( gtmPropertyID )
-				: false,
-		};
-	} );
-
 	// Set the accountID and containerID if there is an existing tag.
-	useExistingTagEffect();
+	useExistingTagEffectUA();
+	useExistingTagEffectGA4();
 
 	const isCreateAccount = ACCOUNT_CREATE === accountID;
 
@@ -105,13 +80,6 @@ export default function SetupMain( { finishSetup } ) {
 		setupFlowMode === undefined
 	) {
 		viewComponent = <ProgressBar />;
-	} else if ( hasExistingTag && hasExistingTagPermission === false ) {
-		viewComponent = <ExistingTagError />;
-	} else if (
-		hasGTMAnalyticsPropertyID &&
-		! hasGTMAnalyticsPropertyIDPermission
-	) {
-		viewComponent = <ExistingGTMPropertyError />;
 	} else if (
 		isCreateAccount ||
 		( Array.isArray( accounts ) && ! accounts.length )

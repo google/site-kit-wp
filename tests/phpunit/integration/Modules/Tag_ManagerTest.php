@@ -55,9 +55,15 @@ class Tag_ManagerTest extends TestCase {
 		$this->assertTrue( $analytics_settings->get()['canUseSnippet'] );
 		// Delayed to differentiate between initial value and post-registration value.
 		$tagmanager->register();
+		$analytics_settings->register();
 		$this->assertTrue( $analytics_settings->get()['canUseSnippet'] );
-		// Should be `false` if there is a `gaPropertyID` set.
+		// Should be `true` if there is a `gaPropertyID` set and is not the same as analytics property ID.
 		$settings->merge( array( 'gaPropertyID' => 'UA-S1T3K1T-1' ) );
+		$analytics_settings->merge( array( 'propertyID' => 'UA-9999999-1' ) );
+		$this->assertTrue( $analytics_settings->get()['canUseSnippet'] );
+		// Should be `false` if there is a `gaPropertyID` set and is the same as analytics property ID.
+		$settings->merge( array( 'gaPropertyID' => 'UA-S1T3K1T-1' ) );
+		$analytics_settings->merge( array( 'propertyID' => 'UA-S1T3K1T-1' ) );
 		$this->assertFalse( $analytics_settings->get()['canUseSnippet'] );
 		// Should be `true` even with a `gaPropertyID` if GTM's snippet is disabled.
 		$settings->merge( array( 'useSnippet' => false ) );
@@ -340,7 +346,6 @@ class Tag_ManagerTest extends TestCase {
 			array(
 				'accounts-containers',
 				'containers',
-				'tag-permission',
 				'accounts',
 				'create-container',
 				'live-container-version',
