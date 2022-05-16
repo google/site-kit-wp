@@ -1240,6 +1240,38 @@ final class Analytics extends Module
 	}
 
 	/**
+	 * Fetches the Analytics tag snippet.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array Array containing the analytics gtag JS snippet.
+	 */
+	public function get_rest_tags() {
+		$settings = $this->get_settings()->get();
+
+		$tag = new Web_Tag( $settings['propertyID'], self::MODULE_SLUG );
+
+		if ( $tag->is_tag_blocked() ) {
+			return;
+		}
+
+		$tag->use_guard( new Tag_Verify_Guard( $this->context->input() ) );
+		$tag->use_guard( new Tag_Guard( $this->get_settings() ) );
+		$tag->use_guard( new Tag_Production_Guard() );
+
+		if ( $tag->can_register() ) {
+			$tag->set_anonymize_ip( $settings['anonymizeIP'] );
+			$tag->set_home_domain(
+				wp_parse_url( $this->context->get_canonical_home_url(), PHP_URL_HOST )
+			);
+			$tag->set_ads_conversion_id( $settings['adsConversionID'] );
+
+			return $tag->filter_rest_tags( array() );
+		}
+		return array();
+	}
+
+	/**
 	 * Finds a property in the properties list.
 	 *
 	 * @since 1.31.0

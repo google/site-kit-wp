@@ -202,6 +202,96 @@ class Web_Tag extends Module_Web_Tag implements Tag_Interface {
 	}
 
 	/**
+	 * Gets the gtag script.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $tags The array of tags to be rendered via a REST endpoint.
+	 *
+	 * @return array Adds the gtag snippet to tags rendered via a REST endpoint.
+	 */
+	public function filter_rest_tags( $tags ) {
+		$gtag_opt = array();
+		$gtag_src = 'https://www.googletagmanager.com/gtag/js?id=' . rawurlencode( $this->tag_id );
+
+		$tag  = "<script src='$gtag_src' id='google_gtagjs-js' async=''></script>\n"; // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
+		$tag .= "<script>\n";
+		$tag .= "\twindow.dataLayer = window.dataLayer || [];function gtag(){dataLayer.push(arguments);}\n";
+
+		if ( ! empty( $this->home_domain ) ) {
+			$gtag_opt['linker'] = array( 'domains' => array( $this->home_domain ) );
+		}
+
+		if ( $this->anonymize_ip ) {
+			// See https://developers.google.com/analytics/devguides/collection/gtagjs/ip-anonymization.
+			$gtag_opt['anonymize_ip'] = true;
+		}
+
+		/**
+		 * Filters the gtag configuration options for the Analytics snippet.
+		 *
+		 * You can use the {@see 'googlesitekit_amp_gtag_opt'} filter to do the same for gtag in AMP.
+		 *
+		 * @since n.e.x.t
+		 *
+		 * @see https://developers.google.com/gtagjs/devguide/configure
+		 *
+		 * @param array $gtag_opt gtag config options.
+		 */
+		$gtag_opt = apply_filters( 'googlesitekit_gtag_opt', $gtag_opt );
+
+		if ( ! empty( $gtag_opt['linker'] ) ) {
+			$linker = wp_json_encode( $gtag_opt['linker'] );
+			$linker = sprintf( "gtag('set', 'linker', %s );", $linker );
+			$tag   .= "\t$linker\n";
+		}
+
+		unset( $gtag_opt['linker'] );
+
+		$tag .= "\tgtag('js', new Date());\n";
+		$tag .= "\tgtag('set', 'developer_id.dZTNiMT', true);\n"; // Site Kit developer ID.
+
+		$config = sprintf( "\tgtag('config', '%s');\n", esc_js( $this->tag_id ) );
+		if ( ! empty( $gtag_opt ) ) {
+			$config = sprintf( "\tgtag('config', '%s', %s);\n", esc_js( $this->tag_id ), wp_json_encode( $gtag_opt ) );
+		}
+		$tag .= $config;
+
+		if ( $this->ads_conversion_id ) {
+			$tag .= sprintf( "\tgtag('config', '%s');\n", esc_js( $this->ads_conversion_id ) );
+		}
+
+		$block_on_consent_attrs = $this->get_tag_blocked_on_consent_attribute();
+		if ( $block_on_consent_attrs ) {
+			$tag = str_replace(
+				array(
+					"<script src='$gtag_src'", // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
+					"<script src=\"$gtag_src\"", // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
+					"<script type='text/javascript' src='$gtag_src'", // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
+					"<script type=\"text/javascript\" src=\"$gtag_src\"", // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
+				),
+				array( // `type` attribute intentionally excluded in replacements.
+					"<script{$block_on_consent_attrs} src='$gtag_src'", // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
+					"<script{$block_on_consent_attrs} src=\"$gtag_src\"", // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
+					"<script{$block_on_consent_attrs} src='$gtag_src'", // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
+					"<script{$block_on_consent_attrs} src=\"$gtag_src\"", // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
+				),
+				$tag
+			);
+		}
+		$tag .= '</script>'; // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
+
+		$snippet_comment_begin = sprintf( "\n<!-- %s -->\n", esc_html__( 'Google Analytics snippet added by Site Kit', 'google-site-kit' ) );
+		$snippet_comment_end   = sprintf( "\n<!-- %s -->\n", esc_html__( 'End Google Analytics snippet added by Site Kit', 'google-site-kit' ) );
+
+		$tag = $snippet_comment_begin . $tag . $snippet_comment_end;
+
+		$tags['head']['analytics'] = $tag;
+
+		return $tags;
+	}
+
+	/**
 	 * Adds an inline script to configure ads conversion tracking.
 	 *
 	 * @since 1.32.0

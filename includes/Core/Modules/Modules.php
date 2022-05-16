@@ -14,6 +14,7 @@ use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Assets\Assets;
 use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
 use Google\Site_Kit\Core\Modules\Module_Sharing_Settings;
+use Google\Site_Kit\Core\Modules\Tags\REST_Tags_Controller;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\REST_Route;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
@@ -257,6 +258,8 @@ final class Modules {
 		if ( Feature_Flags::enabled( 'dashboardSharing' ) ) {
 			$this->rest_dashboard_sharing_controller->register();
 		}
+
+		( new REST_Tags_Controller( $this ) )->register();
 
 		add_filter(
 			'googlesitekit_assets',
