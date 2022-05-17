@@ -529,7 +529,7 @@ describe( 'core/widgets Widget areas', () => {
 					.dispatch( CORE_WIDGETS )
 					.registerWidget( 'TestWidget2', {
 						Component,
-						modules: [ 'test-module-2', 'test-module-3' ],
+						modules: [ 'test-module-3' ],
 					} );
 
 				registry
@@ -617,12 +617,12 @@ describe( 'core/widgets Widget areas', () => {
 			} );
 
 			it( 'returns false when passed a list of modules and the area does not contain active widgets for those modules', () => {
-				// A widget is only considered a match when _all_ of the specified modules are present. Hence, this check will fail.
+				// A widget is only considered a match when the widget's module list is a subset of the specified modules. Hence, this check will fail.
 				expect(
 					registry
 						.select( CORE_WIDGETS )
 						.isWidgetAreaActive( 'TestArea', {
-							modules: [ 'test-module-1', 'test-module-3' ],
+							modules: [ 'test-module-1' ],
 						} )
 				).toBe( false );
 
