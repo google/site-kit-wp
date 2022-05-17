@@ -32,7 +32,6 @@ import { Fragment, useCallback } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { VIEW_CONTEXT_SETTINGS } from '../../../googlesitekit/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { Cell, Grid, Row } from '../../../material-components';
 import PencilIcon from '../../../../svg/icons/pencil.svg';
@@ -42,10 +41,13 @@ import Spinner from '../../Spinner';
 import Link from '../../Link';
 import { clearWebStorage, trackEvent } from '../../../util';
 import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
+import useViewContext from '../../../hooks/useViewContext';
 const { useDispatch, useSelect } = Data;
 
 export default function Footer( props ) {
 	const { slug } = props;
+
+	const viewContext = useViewContext();
 
 	const history = useHistory();
 	const { action, moduleSlug } = useParams();
@@ -79,13 +81,13 @@ export default function Footer( props ) {
 
 	const handleClose = useCallback( async () => {
 		await trackEvent(
-			`${ VIEW_CONTEXT_SETTINGS }_module-list`,
+			`${ viewContext }_module-list`,
 			'cancel_module_settings',
 			slug
 		);
 		await clearErrors();
 		history.push( `/connected-services/${ slug }` );
-	}, [ clearErrors, history, slug ] );
+	}, [ clearErrors, history, viewContext, slug ] );
 
 	const handleConfirm = useCallback(
 		async ( event ) => {
@@ -99,7 +101,7 @@ export default function Footer( props ) {
 				setValue( errorKey, submissionError );
 			} else {
 				await trackEvent(
-					`${ VIEW_CONTEXT_SETTINGS }_module-list`,
+					`${ viewContext }_module-list`,
 					'update_module_settings',
 					slug
 				);
@@ -116,6 +118,7 @@ export default function Footer( props ) {
 			errorKey,
 			clearErrors,
 			history,
+			viewContext,
 		]
 	);
 
@@ -126,11 +129,11 @@ export default function Footer( props ) {
 	const handleEdit = useCallback(
 		() =>
 			trackEvent(
-				`${ VIEW_CONTEXT_SETTINGS }_module-list`,
+				`${ viewContext }_module-list`,
 				'edit_module_settings',
 				slug
 			),
-		[ slug ]
+		[ slug, viewContext ]
 	);
 
 	if ( ! module ) {

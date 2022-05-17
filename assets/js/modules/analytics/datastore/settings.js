@@ -24,10 +24,9 @@ import invariant from 'invariant';
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
 import API from 'googlesitekit-api';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
-import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
-import { MODULES_TAGMANAGER } from '../../tagmanager/datastore/constants';
 import {
 	MODULES_ANALYTICS_4,
 	PROPERTY_CREATE as GA4_PROPERTY_CREATE,
@@ -54,6 +53,10 @@ import {
 } from './constants';
 import { createStrictSelect } from '../../../googlesitekit/data/utils';
 import { isPermissionScopeError } from '../../../util/errors';
+import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
+import { MODULES_TAGMANAGER } from '../../tagmanager/datastore/constants';
+
+const { createRegistrySelector } = Data;
 
 // Invariant error messages.
 export const INVARIANT_INVALID_ACCOUNT_ID =
@@ -64,14 +67,10 @@ export const INVARIANT_INVALID_PROFILE_SELECTION =
 	'a valid profileID is required to submit changes';
 export const INVARIANT_INVALID_CONVERSION_ID =
 	'a valid adsConversionID is required to submit changes';
-export const INVARIANT_INSUFFICIENT_GTM_TAG_PERMISSIONS =
-	'cannot submit changes without having permissions for GTM property ID';
 export const INVARIANT_INVALID_PROFILE_NAME =
 	'a valid profile name is required to submit changes';
 export const INVARIANT_INVALID_INTERNAL_PROPERTY_ID =
 	'cannot submit changes with incorrect internal webPropertyID';
-export const INVARIANT_INSUFFICIENT_TAG_PERMISSIONS =
-	'cannot submit without proper permissions';
 
 async function submitGA4Changes( { select, dispatch } ) {
 	if ( ! select( MODULES_ANALYTICS_4 ).haveSettingsChanged() ) {
@@ -177,28 +176,12 @@ export function validateCanSubmitChanges( select ) {
 		getInternalWebPropertyID,
 		getProfileID,
 		getPropertyID,
-		hasExistingTagPermission,
-		hasTagPermission,
 		haveSettingsChanged,
 		isDoingSubmitChanges,
 	} = strictSelect( MODULES_ANALYTICS );
 
 	// Note: these error messages are referenced in test assertions.
 	invariant( ! isDoingSubmitChanges(), INVARIANT_DOING_SUBMIT_CHANGES );
-
-	const gtmIsActive = strictSelect( CORE_MODULES ).isModuleActive(
-		'tagmanager'
-	);
-	if ( gtmIsActive ) {
-		const gtmAnalyticsPropertyID = strictSelect(
-			MODULES_TAGMANAGER
-		).getSingleAnalyticsPropertyID();
-		invariant(
-			! isValidPropertyID( gtmAnalyticsPropertyID ) ||
-				hasTagPermission( gtmAnalyticsPropertyID ) !== false,
-			INVARIANT_INSUFFICIENT_GTM_TAG_PERMISSIONS
-		);
-	}
 
 	invariant(
 		haveSettingsChanged() ||
@@ -244,13 +227,44 @@ export function validateCanSubmitChanges( select ) {
 		INVARIANT_INVALID_INTERNAL_PROPERTY_ID
 	);
 
-	// Do existing tag check last.
-	invariant(
-		hasExistingTagPermission() !== false,
-		INVARIANT_INSUFFICIENT_TAG_PERMISSIONS
-	);
-
 	if ( select( MODULES_ANALYTICS ).canUseGA4Controls() ) {
 		select( MODULES_ANALYTICS_4 ).__dangerousCanSubmitChanges();
 	}
 }
+
+/**
+ * Gets the value of canUseSnippet based on the gaPropertyID of tagmanager module and propertyID.
+ *
+ * @since n.e.x.t
+ *
+ * @return {boolean|undefined} Computed value of canUseSnippet. `undefined` if not loaded.
+ */
+export const getCanUseSnippet = createRegistrySelector( ( select ) => () => {
+	const analyticsSettings = select( MODULES_ANALYTICS ).getSettings();
+
+	if ( ! analyticsSettings ) {
+		return undefined;
+	}
+
+	const isTagManagerConnected = select( CORE_MODULES ).isModuleConnected(
+		'tagmanager'
+	);
+
+	if ( ! isTagManagerConnected || ! select( MODULES_TAGMANAGER ) ) {
+		return analyticsSettings.canUseSnippet;
+	}
+
+	const tagManagerUseSnippet = select( MODULES_TAGMANAGER ).getUseSnippet();
+
+	if ( ! tagManagerUseSnippet ) {
+		return analyticsSettings.canUseSnippet;
+	}
+
+	const gtmGAPropertyID = select( MODULES_TAGMANAGER ).getGAPropertyID();
+
+	if ( isValidPropertyID( gtmGAPropertyID ) ) {
+		return gtmGAPropertyID !== analyticsSettings.propertyID;
+	}
+
+	return analyticsSettings.canUseSnippet;
+} );

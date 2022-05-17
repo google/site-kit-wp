@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import fetchMock from 'fetch-mock';
+
+/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
@@ -31,17 +36,38 @@ import HelpMenu from './help/HelpMenu';
 import HelpMenuLink from './help/HelpMenuLink';
 import UserInputSuccessBannerNotification from './notifications/UserInputSuccessBannerNotification';
 import Null from './Null';
+import DashboardSharingSettingsButton from './dashboard-sharing/DashboardSharingSettingsButton';
 import {
 	createTestRegistry,
 	WithTestRegistry,
 	provideUserAuthentication,
 	provideSiteInfo,
+	provideModules,
+	provideModuleRegistrations,
+	provideSiteConnection,
+	provideUserCapabilities,
 } from '../../../tests/js/utils';
 import WithRegistrySetup from '../../../tests/js/WithRegistrySetup';
-import { Provider } from './Root/ViewContextContext';
-import { VIEW_CONTEXT_PAGE_DASHBOARD } from '../googlesitekit/constants';
+import {
+	PERMISSION_AUTHENTICATE,
+	PERMISSION_READ_SHARED_MODULE_DATA,
+	CORE_USER,
+} from '../googlesitekit/datastore/user/constants';
+import { Provider as ViewContextProvider } from './Root/ViewContextContext';
+import { getMetaCapabilityPropertyName } from '../googlesitekit/datastore/util/permissions';
+import {
+	VIEW_CONTEXT_PAGE_DASHBOARD,
+	VIEW_CONTEXT_DASHBOARD,
+	VIEW_CONTEXT_DASHBOARD_VIEW_ONLY,
+} from '../googlesitekit/constants';
 
-const Template = ( args ) => <Header { ...args } />;
+const Template = ( { setupRegistry = () => {}, viewContext, ...args } ) => (
+	<WithRegistrySetup func={ setupRegistry }>
+		<ViewContextProvider value={ viewContext || VIEW_CONTEXT_DASHBOARD }>
+			<Header { ...args } />
+		</ViewContextProvider>
+	</WithRegistrySetup>
+);
 
 export const PluginHeader = Template.bind( {} );
 PluginHeader.storyName = 'Plugin Header';
@@ -106,25 +132,15 @@ HeaderWithSubHeaderEntityBanner.storyName =
 	'Plugin Header with Sub Header and Entity Header Banner';
 HeaderWithSubHeaderEntityBanner.args = {
 	subHeader: <UserInputSuccessBannerNotification />,
-};
-HeaderWithSubHeaderEntityBanner.decorators = [
-	( Story ) => {
-		const setupRegistry = ( registry ) => {
-			provideSiteInfo( registry, {
-				currentEntityTitle:
-					'Everything you need to know about driving in Ireland',
-				currentEntityURL: 'http://example.com/driving-ireland/',
-			} );
-		};
-		return (
-			<Provider value={ VIEW_CONTEXT_PAGE_DASHBOARD }>
-				<WithRegistrySetup func={ setupRegistry }>
-					<Story />
-				</WithRegistrySetup>
-			</Provider>
-		);
+	viewContext: VIEW_CONTEXT_PAGE_DASHBOARD,
+	setupRegistry: ( registry ) => {
+		provideSiteInfo( registry, {
+			currentEntityTitle:
+				'Everything you need to know about driving in Ireland',
+			currentEntityURL: 'http://example.com/driving-ireland/',
+		} );
 	},
-];
+};
 
 export const HeaderWithNullSubHeader = Template.bind( {} );
 HeaderWithNullSubHeader.storyName = 'Plugin Header with Null Sub Header';
@@ -138,17 +154,105 @@ HeaderWithNavigation.args = {
 	showNavigation: true,
 };
 
+export const HeaderWithDashboardSharingSettings = Template.bind( {} );
+HeaderWithDashboardSharingSettings.storyName =
+	'Plugin Header with Dashboard Sharing Settings';
+HeaderWithDashboardSharingSettings.args = {
+	children: (
+		<Fragment>
+			<DateRangeSelector />
+			<DashboardSharingSettingsButton />
+			<HelpMenu />
+		</Fragment>
+	),
+};
+HeaderWithDashboardSharingSettings.parameters = {
+	features: [ 'dashboardSharing' ],
+};
+
+export const HeaderViewOnly = Template.bind( {} );
+HeaderViewOnly.storyName = 'Plugin Header in view-only mode';
+HeaderViewOnly.args = {
+	children: (
+		<Fragment>
+			<DateRangeSelector />
+			<HelpMenu />
+		</Fragment>
+	),
+	viewContext: VIEW_CONTEXT_DASHBOARD_VIEW_ONLY,
+	setupRegistry: ( registry ) => {
+		provideSiteConnection( registry );
+		provideModules( registry, [
+			{
+				slug: 'search-console',
+				owner: {
+					id: '1',
+					login: 'Admin 1',
+				},
+			},
+			{
+				slug: 'pagespeed-insights',
+				owner: {
+					id: '2',
+					login: 'Admin 2',
+				},
+			},
+			{
+				slug: 'analytics',
+				owner: {
+					id: '3',
+					login: 'Admin 3',
+				},
+			},
+		] );
+		provideModuleRegistrations( registry );
+		provideUserCapabilities( registry, {
+			[ PERMISSION_AUTHENTICATE ]: true,
+			[ getMetaCapabilityPropertyName(
+				PERMISSION_READ_SHARED_MODULE_DATA,
+				'search-console'
+			) ]: true,
+			[ getMetaCapabilityPropertyName(
+				PERMISSION_READ_SHARED_MODULE_DATA,
+				'pagespeed-insights'
+			) ]: true,
+			[ getMetaCapabilityPropertyName(
+				PERMISSION_READ_SHARED_MODULE_DATA,
+				'analytics'
+			) ]: true,
+		} );
+
+		registry.dispatch( CORE_USER ).receiveGetTracking( { enabled: false } );
+
+		// Mock the tracking endpoint to allow checking/unchecking the tracking checkbox.
+		fetchMock.post(
+			RegExp( 'google-site-kit/v1/core/user/data/tracking' ),
+			( url, { body } ) => {
+				const { data } = JSON.parse( body );
+
+				return { body: data };
+			}
+		);
+	},
+};
+HeaderViewOnly.parameters = {
+	features: [ 'dashboardSharing' ],
+};
+
 export default {
 	title: 'Components/Header',
 	component: Header,
 	decorators: [
-		( Story ) => {
+		( Story, { parameters } ) => {
 			const registry = createTestRegistry();
 			provideUserAuthentication( registry );
 			provideSiteInfo( registry );
 
 			return (
-				<WithTestRegistry registry={ registry }>
+				<WithTestRegistry
+					registry={ registry }
+					features={ parameters.features || [] }
+				>
 					<Story />
 				</WithTestRegistry>
 			);

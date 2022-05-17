@@ -40,6 +40,8 @@ import SetupSelectAccount from './SetupSelectAccount';
 import { trackEvent } from '../../../../../util';
 import { AdBlockerWarning, ErrorNotices } from '../../common';
 import { MODULES_ADSENSE } from '../../../datastore/constants';
+import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
+import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import {
 	ACCOUNT_STATUS_READY,
 	ACCOUNT_STATUS_NONE,
@@ -112,6 +114,13 @@ export default function SetupMain( { finishSetup } ) {
 	const hasResolvedAccounts = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).hasFinishedResolution( 'getAccounts' )
 	);
+	const userEmail = useSelect( ( select ) => select( CORE_USER ).getEmail() );
+	const referenceSiteURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getReferenceSiteURL()
+	);
+	const existingTag = useSelect( ( select ) =>
+		select( MODULES_ADSENSE ).getExistingTag()
+	);
 
 	const account = accounts?.find( ( { _id } ) => _id === accountID );
 
@@ -137,11 +146,23 @@ export default function SetupMain( { finishSetup } ) {
 
 	// Update current account ID setting on-the-fly.
 	useEffect( () => {
+		if ( ! Array.isArray( accounts ) ) {
+			return;
+		}
+
+		let newAccountID;
+
 		if (
-			accounts?.length === 1 &&
+			accounts.length === 1 &&
 			( ! accountID || accounts[ 0 ]._id !== accountID )
 		) {
-			setAccountID( accounts[ 0 ]._id );
+			newAccountID = accounts[ 0 ]._id;
+		} else if ( accounts.length === 0 && !! accountID ) {
+			newAccountID = '';
+		}
+
+		if ( newAccountID !== undefined ) {
+			setAccountID( newAccountID );
 			// Set flag to await background submission.
 			setIsAwaitingBackgroundSubmit( true );
 		}
@@ -255,13 +276,17 @@ export default function SetupMain( { finishSetup } ) {
 		}
 	}, [ eventCategory, siteStatus ] );
 
-	if ( ! hasResolvedAccounts ) {
-		return <ProgressBar />;
-	}
-
 	let viewComponent;
 
-	if ( hasErrors ) {
+	if (
+		! hasResolvedAccounts ||
+		accountID === undefined ||
+		userEmail === undefined ||
+		referenceSiteURL === undefined ||
+		existingTag === undefined
+	) {
+		viewComponent = <ProgressBar />;
+	} else if ( hasErrors ) {
 		viewComponent = <ErrorNotices />;
 	} else if ( ! accounts?.length ) {
 		viewComponent = <SetupCreateAccount />;

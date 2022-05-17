@@ -20,6 +20,7 @@
  * Internal dependencies
  */
 import SetupMain from './SetupMain';
+import { Cell, Grid, Row } from '../../../../../material-components';
 import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
 import * as fixtures from '../../../datastore/__fixtures__';
 import {
@@ -43,7 +44,17 @@ const defaultSettings = {
 function Template( { setupRegistry } ) {
 	return (
 		<WithRegistrySetup func={ setupRegistry }>
-			<SetupMain />
+			<div className="googlesitekit-setup">
+				<section className="googlesitekit-setup__wrapper">
+					<Grid>
+						<Row>
+							<Cell size={ 12 }>
+								<SetupMain />
+							</Cell>
+						</Row>
+					</Grid>
+				</section>
+			</div>
 		</WithRegistrySetup>
 	);
 }
@@ -70,6 +81,7 @@ function createSetupAccountStory( variation, args = {} ) {
 				receiveGetSites,
 				receiveGetURLChannels,
 				receiveGetExistingTag,
+				setAccountID,
 			} = registry.dispatch( MODULES_ADSENSE );
 
 			provideSiteInfo( registry, {
@@ -81,8 +93,7 @@ function createSetupAccountStory( variation, args = {} ) {
 			receiveGetSites( sites, { accountID } );
 			receiveGetSettings( { ...defaultSettings, accountID } );
 			receiveGetAlerts( fixtures.alerts, { accountID } );
-
-			registry.dispatch( MODULES_ADSENSE ).setAccountID( accountID );
+			setAccountID( accountID );
 
 			const clientID = clients.find(
 				( { _accountID } ) => _accountID === accountID
@@ -196,6 +207,7 @@ export const SetupAccountPendingTasks = createSetupAccountStory(
 				],
 			},
 		],
+		existingTag: true,
 	}
 );
 
@@ -212,6 +224,15 @@ SelectAccount.args = {
 					id: 'Europe/Berlin',
 				},
 				createTime: '2013-10-17T15:51:03.000Z',
+			},
+			{
+				_id: 'pub-2833782679114992',
+				name: 'accounts/pub-2833782679114992',
+				displayName: 'Test Account 2',
+				timeZone: {
+					id: 'Europe/Berlin',
+				},
+				createTime: '2013-10-18T15:51:03.000Z',
 			},
 		] );
 	},
@@ -236,15 +257,12 @@ ErrorNotice.args = {
 		);
 	},
 };
-ErrorNotice.parameters = {
-	features: [ 'adsenseSetupV2' ],
-};
 
 export default {
 	title: 'Modules/AdSense/Components/Setup/V2/SetupMain',
 	component: SetupMain,
 	decorators: [
-		( Story, { parameters } ) => {
+		( Story ) => {
 			const registry = createTestRegistry();
 
 			provideModules( registry, [
@@ -265,11 +283,12 @@ export default {
 			return (
 				<WithTestRegistry
 					registry={ registry }
-					features={ parameters.features || [] }
+					features={ [ 'adsenseSetupV2' ] }
 				>
 					<Story />
 				</WithTestRegistry>
 			);
 		},
 	],
+	parameters: { padding: 0 },
 };

@@ -32,7 +32,6 @@ import { getQueryArg, addQueryArgs } from '@wordpress/url';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { VIEW_CONTEXT_DASHBOARD_SPLASH } from '../../googlesitekit/constants';
 import WelcomeSVG from '../../../svg/graphics/welcome.svg';
 import WelcomeAnalyticsSVG from '../../../svg/graphics/welcome-analytics.svg';
 import { trackEvent, untrailingslashit } from '../../util';
@@ -61,10 +60,13 @@ import {
 import HelpMenu from '../help/HelpMenu';
 import ActivateAnalyticsNotice from './ActivateAnalyticsNotice';
 import { useFeature } from '../../hooks/useFeature';
+import useViewContext from '../../hooks/useViewContext';
 import Link from '../Link';
 const { useSelect, useDispatch } = Data;
 
 export default function SetupUsingProxyWithSignIn() {
+	const viewContext = useViewContext();
+
 	const dashboardSharingEnabled = useFeature( 'dashboardSharing' );
 
 	const analyticsModuleActive = useSelect( ( select ) =>
@@ -130,7 +132,7 @@ export default function SetupUsingProxyWithSignIn() {
 
 				if ( ! error ) {
 					await trackEvent(
-						VIEW_CONTEXT_DASHBOARD_SPLASH,
+						viewContext,
 						'start_setup_with_analytics'
 					);
 
@@ -139,19 +141,11 @@ export default function SetupUsingProxyWithSignIn() {
 			}
 
 			if ( proxySetupURL ) {
-				await trackEvent(
-					VIEW_CONTEXT_DASHBOARD_SPLASH,
-					'start_user_setup',
-					'proxy'
-				);
+				await trackEvent( viewContext, 'start_user_setup', 'proxy' );
 			}
 
 			if ( proxySetupURL && ! isConnected ) {
-				await trackEvent(
-					VIEW_CONTEXT_DASHBOARD_SPLASH,
-					'start_site_setup',
-					'proxy'
-				);
+				await trackEvent( viewContext, 'start_site_setup', 'proxy' );
 			}
 
 			if ( moduleReauthURL && proxySetupURL ) {
@@ -168,6 +162,7 @@ export default function SetupUsingProxyWithSignIn() {
 			isConnected,
 			activateModule,
 			connectAnalytics,
+			viewContext,
 		]
 	);
 
@@ -365,7 +360,7 @@ export default function SetupUsingProxyWithSignIn() {
 																			inherit
 																		>
 																			{ __(
-																				'Go to dashboard',
+																				'Skip sign-in and view limited dashboard',
 																				'google-site-kit'
 																			) }
 																		</Link>
