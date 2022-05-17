@@ -112,7 +112,6 @@ export default function SettingsForm() {
 						<Link
 							href={ supportURL }
 							external
-							inherit
 							aria-label={ __(
 								'Learn more about Ad Sense Web Stories.',
 								'google-site-kit'

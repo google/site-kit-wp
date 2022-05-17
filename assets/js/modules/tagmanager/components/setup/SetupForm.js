@@ -208,7 +208,6 @@ export default function SetupForm( { finishSetup } ) {
 							type="button"
 							onClick={ onSetupWithoutAnalytics }
 							disabled={ ! canSubmitChanges }
-							inherit
 						>
 							{ __(
 								'Complete setup without Analytics',
