@@ -27,6 +27,7 @@ import invariant from 'invariant';
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { createFetchStore } from '../../data/create-fetch-store';
+import { CORE_MODULES } from './constants';
 
 // Actions
 const SET_OWNER_ID = 'SET_OWNER_ID';
@@ -145,22 +146,12 @@ const baseActions = {
 	 * @return {Object} Object with `{response, error}`.
 	 */
 	*saveSharingSettings() {
+		const registry = yield Data.commonActions.getRegistry();
 		// TODO: Refactor to use `getSharingSettings` selector
 		// to obtain the `sharingSettings` from the state in 4795.
-		const sharingSettings = {
-			'search-console': {
-				sharedRoles: [ 'editor', 'subscriber' ],
-				management: 'all_admins',
-			},
-			analytics: {
-				sharedRoles: [ 'editor' ],
-				management: 'owner',
-			},
-			'pagespeed-insights': {
-				sharedRoles: [ 'editor' ],
-				management: 'all_admins',
-			},
-		};
+		const { sharingSettings } = registry.stores[
+			CORE_MODULES
+		].store.getState();
 
 		const {
 			response,
