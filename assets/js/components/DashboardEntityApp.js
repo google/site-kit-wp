@@ -57,9 +57,15 @@ import Layout from './layout/Layout';
 import { CORE_WIDGETS } from '../googlesitekit/widgets/datastore/constants';
 import ScrollEffect from './ScrollEffect';
 import EntityBannerNotifications from './notifications/EntityBannerNotifications';
+import DashboardSharingSettingsButton from './dashboard-sharing/DashboardSharingSettingsButton';
+import { useFeature } from '../hooks/useFeature';
+import useViewOnly from '../hooks/useViewOnly';
 const { useSelect } = Data;
 
 function DashboardEntityApp() {
+	const dashboardSharingEnabled = useFeature( 'dashboardSharing' );
+	const viewOnlyDashboard = useViewOnly();
+
 	const currentEntityURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getCurrentEntityURL()
 	);
@@ -183,6 +189,9 @@ function DashboardEntityApp() {
 			<Header subHeader={ <EntityBannerNotifications /> } showNavigation>
 				<EntitySearchInput />
 				<DateRangeSelector />
+				{ dashboardSharingEnabled && ! viewOnlyDashboard && (
+					<DashboardSharingSettingsButton />
+				) }
 				<HelpMenu />
 			</Header>
 			<WidgetContextRenderer
