@@ -36,6 +36,7 @@ import Button from '../Button';
 import Portal from '../Portal';
 import ShareIcon from '../../../svg/icons/share.svg';
 import DashboardSharingSettings from './DashboardSharingSettings';
+import Footer from './DashboardSharingSettings/Footer';
 import { Dialog, DialogContent, DialogFooter } from '../../material-components';
 import { BREAKPOINT_SMALL, useBreakpoint } from '../../hooks/useBreakpoint';
 
@@ -48,11 +49,6 @@ export default function DashboardSharingSettingsButton() {
 	}, [] );
 
 	const closeDialog = useCallback( () => {
-		setDialogOpen( false );
-	}, [] );
-
-	const onApply = useCallback( () => {
-		// @TODO: Implement Apply behaviour.
 		setDialogOpen( false );
 	}, [] );
 
@@ -134,13 +130,7 @@ export default function DashboardSharingSettingsButton() {
 					</DialogContent>
 
 					<DialogFooter className="googlesitekit-dialog__footer">
-						<Link onClick={ closeDialog }>
-							{ __( 'Cancel', 'google-site-kit' ) }
-						</Link>
-
-						<Button onClick={ onApply }>
-							{ __( 'Apply', 'google-site-kit' ) }
-						</Button>
+						<Footer closeDialog={ closeDialog } />
 					</DialogFooter>
 				</Dialog>
 			</Portal>

@@ -26,9 +26,9 @@ import { __ } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import Module from './Module';
-// import { PERMISSION_MANAGE_MODULE_SHARING_OPTIONS } from '../../../googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
+// import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 const { useSelect } = Data;
 
 export default function DashboardSharingSettings() {
@@ -38,6 +38,11 @@ export default function DashboardSharingSettings() {
 	const hasMultipleAdmins = useSelect( ( select ) =>
 		select( CORE_SITE ).hasMultipleAdmins()
 	);
+
+	// @TODO: get modules user can manage
+	// const manageableModules = useSelect( ( select ) =>
+	// 	select( CORE_USER ).getManageableModules()
+	// );
 
 	if ( modules === undefined ) {
 		return null;
@@ -58,7 +63,7 @@ export default function DashboardSharingSettings() {
 					{ __( 'Who can view', 'google-site-kit' ) }
 				</div>
 
-				{ ! hasMultipleAdmins && (
+				{ hasMultipleAdmins && (
 					<div className="googlesitekit-dashboard-sharing-settings__column--manage">
 						{ __(
 							'Who can manage view access',

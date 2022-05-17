@@ -49,11 +49,12 @@ describe( 'core/user authentication', () => {
 		permissions: {
 			googlesitekit_view_dashboard: true,
 			googlesitekit_manage_options: true,
+			'googlesitekit_manage_module_sharing_options::["search-console"]': true,
+			'googlesitekit_manage_module_sharing_options::["analytics"]': true,
 			'googlesitekit_read_shared_module_data::["site-verification"]': false,
 			'googlesitekit_read_shared_module_data::["tagmanager"]': false,
 			'googlesitekit_read_shared_module_data::["optimize"]': false,
 			'googlesitekit_read_shared_module_data::["adsense"]': false,
-			'googlesitekit_manage_module_sharing_options::["search-console"]': true,
 			'googlesitekit_read_shared_module_data::["search-console"]': true,
 			'googlesitekit_read_shared_module_data::["analytics"]': true,
 			'googlesitekit_read_shared_module_data::["pagespeed-insights"]': true,
@@ -248,6 +249,86 @@ describe( 'core/user authentication', () => {
 					'search-console',
 					'analytics',
 					'pagespeed-insights',
+				] );
+			} );
+		} );
+
+		describe( 'getManageableModules', () => {
+			it( 'should return undefined if modules are not loaded', () => {
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
+					{ body: FIXTURES, status: 200 }
+				);
+
+				const manageableModules = registry
+					.select( CORE_USER )
+					.getManageableModules();
+
+				expect( manageableModules ).toBeUndefined();
+			} );
+
+			it( 'should return an empty array if manageable permissions are not available', async () => {
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
+					{ body: FIXTURES, status: 200 }
+				);
+				global[ capabilitiesBaseVar ] = {
+					...capabilities,
+					...{
+						permissions: {
+							'googlesitekit_manage_module_sharing_options::["search-console"]': false,
+						},
+					},
+				};
+
+				const initialManageableModules = registry
+					.select( CORE_USER )
+					.getManageableModules();
+
+				expect( initialManageableModules ).toBeUndefined();
+
+				await subscribeUntil(
+					registry,
+					() =>
+						registry.select( CORE_USER ).getManageableModules() !==
+						undefined
+				);
+
+				const manageableModules = registry
+					.select( CORE_USER )
+					.getManageableModules();
+
+				expect( manageableModules ).toEqual( [] );
+			} );
+
+			it( 'should return the list of module slugs if the manageable permissions are available', async () => {
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
+					{ body: FIXTURES, status: 200 }
+				);
+
+				global[ capabilitiesBaseVar ] = capabilitiesWithPermission;
+
+				const initialManageableModules = registry
+					.select( CORE_USER )
+					.getManageableModules();
+
+				expect( initialManageableModules ).toBeUndefined();
+
+				await subscribeUntil(
+					registry,
+					() =>
+						registry.select( CORE_USER ).getManageableModules() !==
+						undefined
+				);
+
+				const manageableModules = registry
+					.select( CORE_USER )
+					.getManageableModules();
+
+				expect( manageableModules ).toEqual( [
+					'search-console',
+					'analytics',
 				] );
 			} );
 		} );

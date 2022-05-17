@@ -42,12 +42,27 @@ import {
  */
 import Data from 'googlesitekit-data';
 import ModuleIcon from '../../ModuleIcon';
-import { Select, Option } from '../../../material-components';
+import { Select } from '../../../material-components';
+import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 const { useSelect } = Data;
 
+const viewAccessOptions = [
+	{
+		value: 'owner',
+		label: __( 'Only Me', 'google-site-kit' ),
+	},
+	{
+		value: 'all_admins',
+		label: __( 'All Admins', 'google-site-kit' ),
+	},
+];
+
 export default function Module( { moduleSlug, moduleName } ) {
-	const [ manageViewAccess, setManageViewAccess ] = useState( 'only-me' );
+	const [ manageViewAccess, setManageViewAccess ] = useState( 'owner' );
+	const module = useSelect( ( select ) =>
+		select( CORE_MODULES ).getModule( moduleSlug )
+	);
 	const hasMultipleAdmins = useSelect( ( select ) =>
 		select( CORE_SITE ).hasMultipleAdmins()
 	);
@@ -81,57 +96,55 @@ export default function Module( { moduleSlug, moduleName } ) {
 				</p>
 			</div>
 
-			{ ! hasMultipleAdmins && (
+			{ hasMultipleAdmins && (
 				<div className="googlesitekit-dashboard-sharing-settings__column--manage">
 					<Select
 						className="googlesitekit-dashboard-sharing-settings__select"
 						value={ manageViewAccess }
+						options={ viewAccessOptions }
 						onChange={ handleOnChange }
+						onClick={ handleOnChange }
 						outlined
-					>
-						<Option value="only-me">
-							{ __( 'Only me', 'google-site-kit' ) }
-						</Option>
-						<Option value="only-you">
-							{ __( 'Only you', 'google-site-kit' ) }
-						</Option>
-					</Select>
+					/>
 
-					<p className="googlesitekit-dashboard-sharing-settings__note">
-						{ createInterpolateElement(
-							sprintf(
-								/* translators: %s: user who manages the module. */
-								__(
-									'<span>Managed by </span> <strong>%s</strong>',
-									'google-site-kit'
+					{ /* @TODO: To be displayed in place of the select where applicable.  */ }
+					{ module?.owner?.login && (
+						<p className="googlesitekit-dashboard-sharing-settings__note">
+							{ createInterpolateElement(
+								sprintf(
+									/* translators: %s: user who manages the module. */
+									__(
+										'<span>Managed by </span> <strong>%s</strong>',
+										'google-site-kit'
+									),
+									'Admin 1'
 								),
-								'Admin 1'
-							),
-							{
-								span: <span />,
-								strong: <strong />,
-							}
-						) }
-
-						<Tooltip
-							title={ sprintf(
-								/* translators: %s: name of the user who manages the module. */
-								__(
-									'%s has connected this and given managing permissions to all admins. You can change who can view this on the dashboard.',
-									'google-site-kit'
-								),
-								'Admin 1'
+								{
+									span: <span />,
+									strong: <strong />,
+								}
 							) }
-							classes={ {
-								popper: 'googlesitekit-tooltip-popper',
-								tooltip: 'googlesitekit-tooltip',
-							} }
-						>
-							<span className="googlesitekit-dashboard-sharing-settings__tooltip-icon">
-								<Icon icon={ info } size={ 18 } />
-							</span>
-						</Tooltip>
-					</p>
+
+							<Tooltip
+								title={ sprintf(
+									/* translators: %s: name of the user who manages the module. */
+									__(
+										'%s has connected this and given managing permissions to all admins. You can change who can view this on the dashboard.',
+										'google-site-kit'
+									),
+									'Admin 1'
+								) }
+								classes={ {
+									popper: 'googlesitekit-tooltip-popper',
+									tooltip: 'googlesitekit-tooltip',
+								} }
+							>
+								<span className="googlesitekit-dashboard-sharing-settings__tooltip-icon">
+									<Icon icon={ info } size={ 18 } />
+								</span>
+							</Tooltip>
+						</p>
+					) }
 				</div>
 			) }
 		</div>
