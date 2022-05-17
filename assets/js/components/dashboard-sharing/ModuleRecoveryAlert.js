@@ -79,7 +79,7 @@ export default function ModuleRecoveryAlert() {
 		[]
 	);
 
-	const recoverModules = useCallback( () => {
+	const handleRecoverModules = useCallback( () => {
 		setRecoveringModules( true );
 		const modulesToRecover = Object.keys( checkboxes ).filter(
 			( module ) => checkboxes[ module ]
@@ -101,9 +101,11 @@ export default function ModuleRecoveryAlert() {
 		}
 	}, [ checkboxes, userAccessibleModules ] );
 
+	const recoverableModulesList = Object.keys( recoverableModules );
+
 	if (
 		recoverableModules === undefined ||
-		Object.keys( recoverableModules ).length === 0
+		recoverableModulesList.length === 0
 	) {
 		return null;
 	}
@@ -115,15 +117,14 @@ export default function ModuleRecoveryAlert() {
 		description = null;
 		children = <ProgressBar />;
 	} else if ( userAccessibleModules.length === 0 ) {
-		if ( Object.keys( recoverableModules ).length === 1 ) {
+		if ( recoverableModulesList.length === 1 ) {
 			description = sprintf(
 				/* translators: %s: module name. */
 				__(
 					'%s data was previously shared with other users on the site by another admin who no longer has access. To restore access, the module must be recovered by another admin who has access.',
 					'google-site-kit'
 				),
-				recoverableModules[ Object.keys( recoverableModules )[ 0 ] ]
-					.name
+				recoverableModules[ recoverableModulesList[ 0 ] ].name
 			);
 			children = null;
 		} else {
@@ -133,7 +134,7 @@ export default function ModuleRecoveryAlert() {
 			);
 			children = (
 				<ul className="mdc-list mdc-list--non-interactive">
-					{ Object.keys( recoverableModules ).map( ( slug ) => (
+					{ recoverableModulesList.map( ( slug ) => (
 						<li className="mdc-list-item" key={ slug }>
 							<span className="mdc-list-item__text">
 								{ recoverableModules[ slug ].name }
@@ -161,7 +162,7 @@ export default function ModuleRecoveryAlert() {
 					) }
 				</p>
 				<Button
-					onClick={ recoverModules }
+					onClick={ handleRecoverModules }
 					disabled={ recoveringModules }
 				>
 					{ __( 'Recover', 'google-site-kit' ) }
@@ -197,7 +198,7 @@ export default function ModuleRecoveryAlert() {
 					) }
 				</p>
 				<Button
-					onClick={ recoverModules }
+					onClick={ handleRecoverModules }
 					disabled={
 						recoveringModules ||
 						! Object.values( checkboxes ).some(
