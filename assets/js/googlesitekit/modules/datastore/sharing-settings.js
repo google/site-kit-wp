@@ -146,7 +146,7 @@ const baseActions = {
 	 */
 	*saveSharingSettings() {
 		// TODO: Refactor to use `getSharingSettings` selector
-		// to obtain the `sharingSettings` from the state.
+		// to obtain the `sharingSettings` from the state in 4795.
 		const sharingSettings = {
 			'search-console': {
 				sharedRoles: [ 'editor', 'subscriber' ],
