@@ -27,7 +27,7 @@ import { __, sprintf } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
-import UseSnippetSwitch from './UseSnippetSwitch';
+import UseSnippetSwitch from '../common/UseSnippetSwitch';
 const { useSelect } = Data;
 
 export default function SettingsUseSnippetSwitch() {

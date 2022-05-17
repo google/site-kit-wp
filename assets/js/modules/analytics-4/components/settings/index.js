@@ -1,7 +1,7 @@
 /**
- * Analytics Setup components.
+ * GA4 settings components.
  *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2022 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,4 @@
  * limitations under the License.
  */
 
-export { default as SetupForm } from './SetupForm';
-export { default as SetupMain } from './SetupMain';
-export { default as SetupFormLegacy } from './SetupFormLegacy';
-export { default as SetupFormUA } from './SetupFormUA';
-export { default as SetupFormGA4 } from './SetupFormGA4';
-export { default as SetupFormGA4Transitional } from './SetupFormGA4Transitional';
-export { default as SetupUseSnippetSwitch } from './SetupUseSnippetSwitch';
+export { default as SettingsUseSnippetSwitch } from './SettingsUseSnippetSwitch';

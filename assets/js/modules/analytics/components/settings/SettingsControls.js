@@ -26,8 +26,8 @@ import {
 	ProfileNameTextField,
 	ProfileSelect,
 	PropertySelect,
-	SettingsUseSnippetSwitch,
 } from '../common';
+import SettingsUseSnippetSwitch from './SettingsUseSnippetSwitch';
 const { useSelect } = Data;
 
 export default function SettingsControls() {
