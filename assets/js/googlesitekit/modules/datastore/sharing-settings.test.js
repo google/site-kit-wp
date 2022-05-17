@@ -20,9 +20,29 @@
  * Internal dependencies
  */
 import { CORE_MODULES } from './constants';
-import { createTestRegistry } from '../../../../../tests/js/utils';
+import {
+	createTestRegistry,
+	unsubscribeFromAll,
+} from '../../../../../tests/js/utils';
 
 describe( 'core/modules sharing-settings', () => {
+	const sharingSettings = {
+		settings: {
+			'search-console': {
+				sharedRoles: [ 'editor', 'subscriber' ],
+				management: 'all_admins',
+			},
+			analytics: {
+				sharedRoles: [ 'editor' ],
+				management: 'owner',
+			},
+			'pagespeed-insights': {
+				sharedRoles: [ 'editor' ],
+				management: 'all_admins',
+			},
+		},
+	};
+
 	let registry;
 	let store;
 
@@ -31,31 +51,18 @@ describe( 'core/modules sharing-settings', () => {
 		store = registry.stores[ CORE_MODULES ].store;
 	} );
 
-	describe( 'actions', () => {
-		const settings = {
-			sharingSettings: {
-				'search-console': {
-					sharedRoles: [ 'editor', 'subscriber' ],
-					management: 'all_admins',
-				},
-				analytics: {
-					sharedRoles: [ 'editor' ],
-					management: 'owner',
-				},
-				'pagespeed-insights': {
-					sharedRoles: [ 'editor' ],
-					management: 'all_admins',
-				},
-			},
-		};
+	afterEach( () => {
+		unsubscribeFromAll( registry );
+	} );
 
+	describe( 'actions', () => {
 		const sharingSettingsWithOwnerID = Object.keys(
-			settings.sharingSettings
+			sharingSettings.settings
 		).reduce(
 			( modules, moduleSlug ) => ( {
 				...modules,
 				[ moduleSlug ]: {
-					...settings.sharingSettings[ moduleSlug ],
+					...sharingSettings.settings[ moduleSlug ],
 					ownerID: 2,
 				},
 			} ),
@@ -72,7 +79,7 @@ describe( 'core/modules sharing-settings', () => {
 			it( 'receives newOwnerIDs and sets it to the sharing settings modules', () => {
 				registry
 					.dispatch( CORE_MODULES )
-					.receiveGetSharingSettings( settings );
+					.receiveGetSharingSettings( sharingSettings.settings );
 
 				const state = {
 					...store.getState().sharingSettings,
@@ -98,16 +105,14 @@ describe( 'core/modules sharing-settings', () => {
 
 		describe( 'setSharingManagement', () => {
 			const settingsWithoutManagement = {
-				sharingSettings: {
-					'search-console': {
-						sharedRoles: [ 'editor', 'subscriber' ],
-					},
-					analytics: {
-						sharedRoles: [ 'editor' ],
-					},
-					'pagespeed-insights': {
-						sharedRoles: [ 'editor' ],
-					},
+				'search-console': {
+					sharedRoles: [ 'editor', 'subscriber' ],
+				},
+				analytics: {
+					sharedRoles: [ 'editor' ],
+				},
+				'pagespeed-insights': {
+					sharedRoles: [ 'editor' ],
 				},
 			};
 
@@ -152,12 +157,10 @@ describe( 'core/modules sharing-settings', () => {
 					);
 
 				const sharingSettingsWithManagement = moduleSlugs.reduce(
-					( sharingSettings, moduleSlug, index ) => ( {
-						...sharingSettings,
+					( sharingSettingsObj, moduleSlug, index ) => ( {
+						...sharingSettingsObj,
 						[ moduleSlug ]: {
-							...settingsWithoutManagement.sharingSettings[
-								moduleSlug
-							],
+							...settingsWithoutManagement[ moduleSlug ],
 							management: managementRoles[ index ],
 						},
 					} ),
@@ -177,16 +180,14 @@ describe( 'core/modules sharing-settings', () => {
 
 		describe( 'setSharedRoles', () => {
 			const settingsWithoutRoles = {
-				sharingSettings: {
-					'search-console': {
-						management: 'all_admins',
-					},
-					analytics: {
-						management: 'owner',
-					},
-					'pagespeed-insights': {
-						management: 'all_admins',
-					},
+				'search-console': {
+					management: 'all_admins',
+				},
+				analytics: {
+					management: 'owner',
+				},
+				'pagespeed-insights': {
+					management: 'all_admins',
 				},
 			};
 
@@ -225,12 +226,10 @@ describe( 'core/modules sharing-settings', () => {
 					.setSharedRoles( moduleSlugs[ 1 ], sharedRoles );
 
 				const sharingSettingsWithSharedRoles = moduleSlugs.reduce(
-					( sharingSettings, moduleSlug ) => ( {
-						...sharingSettings,
+					( sharingSettingsObj, moduleSlug ) => ( {
+						...sharingSettingsObj,
 						[ moduleSlug ]: {
-							...settingsWithoutRoles.sharingSettings[
-								moduleSlug
-							],
+							...settingsWithoutRoles[ moduleSlug ],
 							sharedRoles,
 						},
 					} ),
@@ -249,10 +248,26 @@ describe( 'core/modules sharing-settings', () => {
 		} );
 
 		describe( 'saveSharingSettings', () => {
-			it( 'requires the sharingSettings param', () => {
-				expect( () => {
-					registry.dispatch( CORE_MODULES ).saveSharingSettings();
-				} ).toThrow( 'sharingSettings is required' );
+			it( 'does not require any params', () => {
+				expect( async () => {
+					fetchMock.postOnce(
+						/^\/google-site-kit\/v1\/core\/modules\/data\/sharing-settings/,
+						{
+							body: {
+								settings: sharingSettings.settings,
+								newOwnerIDs: {
+									analytics: 2,
+									'search-console': 2,
+									'pagespeed-insights': 2,
+								},
+							},
+						}
+					);
+
+					await registry
+						.dispatch( CORE_MODULES )
+						.saveSharingSettings();
+				} ).not.toThrow();
 			} );
 
 			it( 'dispatches a request to save sharing settings', async () => {
@@ -260,7 +275,7 @@ describe( 'core/modules sharing-settings', () => {
 					/^\/google-site-kit\/v1\/core\/modules\/data\/sharing-settings/,
 					{
 						body: {
-							settings: settings.sharingSettings,
+							settings: sharingSettings.settings,
 							newOwnerIDs: {
 								analytics: 2,
 								'search-console': 2,
@@ -270,9 +285,9 @@ describe( 'core/modules sharing-settings', () => {
 					}
 				);
 
-				await registry.dispatch( CORE_MODULES ).saveSharingSettings( {
-					savedSharingSettings: settings.sharingSettings,
-				} );
+				// TODO: Add coverage for using `getSharingSettings` selector in 4795.
+
+				await registry.dispatch( CORE_MODULES ).saveSharingSettings();
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 
@@ -308,15 +323,15 @@ describe( 'core/modules sharing-settings', () => {
 
 				registry
 					.dispatch( CORE_MODULES )
-					.receiveGetSharingSettings( settings );
+					.receiveGetSharingSettings( sharingSettings.settings );
 
 				expect( store.getState().sharingSettings ).toMatchObject( {
 					...state,
-					...settings.sharingSettings,
+					...sharingSettings.settings,
 				} );
 				expect( store.getState().savedSharingSettings ).toMatchObject( {
 					...state,
-					...settings.sharingSettings,
+					...sharingSettings.settings,
 				} );
 			} );
 		} );
