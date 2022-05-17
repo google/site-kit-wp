@@ -333,7 +333,7 @@ export const selectors = {
 
 				return (
 					intersection( widget.modules, allowedModules ).length ===
-					allowedModules.length
+					widget.modules.length
 				);
 			} );
 		}
