@@ -27,7 +27,6 @@ import invariant from 'invariant';
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { createFetchStore } from '../../data/create-fetch-store';
-import { createValidatedAction } from '../../data/utils';
 
 // Actions
 const SET_OWNER_ID = 'SET_OWNER_ID';
@@ -36,8 +35,8 @@ const SET_SHARED_ROLES = 'SET_SHARED_ROLES';
 const RECEIVE_GET_SHARING_SETTINGS = 'RECEIVE_GET_SHARING_SETTINGS';
 
 const baseInitialState = {
-	sharingSettings: {},
-	savedSharingSettings: {},
+	sharingSettings: undefined,
+	savedSharingSettings: undefined,
 };
 
 const fetchSaveSharingSettingsStore = createFetchStore( {
@@ -143,32 +142,48 @@ const baseActions = {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param {Object} sharingSettings Sharing settings for modules with `management` and `sharedRoles` properties.
 	 * @return {Object} Object with `{response, error}`.
 	 */
-	saveSharingSettings: createValidatedAction(
-		( sharingSettings ) => {
-			invariant( sharingSettings, 'sharingSettings is required.' );
-		},
-		function* ( sharingSettings ) {
-			const {
-				response,
-				error,
-			} = yield fetchSaveSharingSettingsStore.actions.fetchSaveSharingSettings(
-				sharingSettings
-			);
+	*saveSharingSettings() {
+		// TODO: Refactor to use `getSharingSettings` selector
+		// to obtain the `sharingSettings` from the state.
+		const sharingSettings = {
+			'search-console': {
+				sharedRoles: [ 'editor', 'subscriber' ],
+				management: 'all_admins',
+			},
+			analytics: {
+				sharedRoles: [ 'editor' ],
+				management: 'owner',
+			},
+			'pagespeed-insights': {
+				sharedRoles: [ 'editor' ],
+				management: 'all_admins',
+			},
+		};
 
-			// Update module owner IDs in the sharing settings modules.
-			if ( response?.newOwnerIDs ) {
-				yield baseActions.setOwnerID( response.newOwnerIDs );
-			}
+		const {
+			response,
+			error,
+		} = yield fetchSaveSharingSettingsStore.actions.fetchSaveSharingSettings(
+			sharingSettings
+		);
 
-			return { response, error };
+		// Update module owner IDs in the sharing settings modules.
+		if ( response?.newOwnerIDs ) {
+			yield baseActions.setOwnerID( response.newOwnerIDs );
 		}
-	),
+
+		return { response, error };
+	},
 
 	/**
 	 * Receives sharingSettings for dashboard sharing.
+	 * Stores sharingSettings in the datastore.
+	 *
+	 * Because this is frequently-accessed data, this is usually sourced
+	 * from a global variable (`_googlesitekitDashboardSharingData`), set by PHP
+	 * in the `before_print` callback for `googlesitekit-datastore-site`.
 	 *
 	 * @since n.e.x.t
 	 *
@@ -178,7 +193,7 @@ const baseActions = {
 	receiveGetSharingSettings( sharingSettings ) {
 		invariant( sharingSettings, 'sharingSettings is required.' );
 		return {
-			payload: sharingSettings,
+			payload: { sharingSettings },
 			type: RECEIVE_GET_SHARING_SETTINGS,
 		};
 	},
@@ -275,6 +290,8 @@ const baseReducer = ( state, { type, payload } ) => {
 	}
 };
 
+const baseResolvers = {};
+
 const baseSelectors = {};
 
 const store = Data.combineStores( fetchSaveSharingSettingsStore, {
@@ -282,6 +299,7 @@ const store = Data.combineStores( fetchSaveSharingSettingsStore, {
 	actions: baseActions,
 	selectors: baseSelectors,
 	reducer: baseReducer,
+	resolvers: baseResolvers,
 } );
 
 export const initialState = store.initialState;
