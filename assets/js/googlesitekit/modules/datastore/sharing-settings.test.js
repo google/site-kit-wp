@@ -264,6 +264,12 @@ describe( 'core/modules sharing-settings', () => {
 						}
 					);
 
+					// TODO: Remove the `receiveGetSharingSettings` call and
+					// Add coverage for using `getSharingSettings` selector in 4795.
+					registry
+						.dispatch( CORE_MODULES )
+						.receiveGetSharingSettings( sharingSettings.settings );
+
 					await registry
 						.dispatch( CORE_MODULES )
 						.saveSharingSettings();
@@ -285,7 +291,11 @@ describe( 'core/modules sharing-settings', () => {
 					}
 				);
 
-				// TODO: Add coverage for using `getSharingSettings` selector in 4795.
+				// TODO: Remove the `receiveGetSharingSettings` call and
+				// Add coverage for using `getSharingSettings` selector in 4795.
+				registry
+					.dispatch( CORE_MODULES )
+					.receiveGetSharingSettings( sharingSettings.settings );
 
 				await registry.dispatch( CORE_MODULES ).saveSharingSettings();
 
