@@ -42,7 +42,7 @@ import { MODULES_ANALYTICS_4 } from '../../assets/js/modules/analytics-4/datasto
  * Generates a story for a case when a GTM with Analytics property ID is already connected.
  *
  * @since 1.18.0
- * @since n.e.x.t Removed args.gaPermission and args.gtmPermission.
+ * @since 1.75.0 Removed args.gaPermission and args.gtmPermission.
  * @private
  *
  * @param {Object}      args                Story arguments.
