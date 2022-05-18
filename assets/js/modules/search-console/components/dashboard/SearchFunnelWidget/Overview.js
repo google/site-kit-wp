@@ -183,7 +183,9 @@ const Overview = ( {
 
 	const topAlignedDataBlockClass = {
 		'googlesitekit-data-block--is-top-aligned':
-			! analyticsModuleConnected || ! analyticsModuleActive,
+			! analyticsModuleConnected ||
+			! analyticsModuleActive ||
+			showGoalsCTA,
 	};
 
 	return (
@@ -273,7 +275,10 @@ const Overview = ( {
 						<Cell { ...quarterCellProps }>
 							<DataBlock
 								stat={ 2 }
-								className="googlesitekit-data-block--visitors googlesitekit-data-block--button-3"
+								className={ classnames(
+									'googlesitekit-data-block--visitors googlesitekit-data-block--button-3',
+									topAlignedDataBlockClass
+								) }
 								title={ __(
 									'Unique Visitors from Search',
 									'google-site-kit'
