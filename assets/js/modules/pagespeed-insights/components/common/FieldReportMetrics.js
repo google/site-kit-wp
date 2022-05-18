@@ -25,7 +25,7 @@ import classnames from 'classnames';
 /**
  * WordPress dependencies
  */
-import { __, _x } from '@wordpress/i18n';
+import { __, _x, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -36,9 +36,10 @@ import ErrorText from '../../../../components/ErrorText';
 
 export default function FieldReportMetrics( { data, error } ) {
 	const {
-		FIRST_INPUT_DELAY_MS: firstInputDelay,
 		LARGEST_CONTENTFUL_PAINT_MS: largestContentfulPaint,
 		CUMULATIVE_LAYOUT_SHIFT_SCORE: cumulativeLayoutShift,
+		FIRST_INPUT_DELAY_MS: firstInputDelay,
+		EXPERIMENTAL_INTERACTION_TO_NEXT_PAINT: interactionToNextPaint,
 	} = data?.loadingExperience?.metrics || {};
 
 	if ( error ) {
@@ -52,9 +53,9 @@ export default function FieldReportMetrics( { data, error } ) {
 	}
 
 	if (
-		! firstInputDelay ||
 		! largestContentfulPaint ||
-		! cumulativeLayoutShift
+		! cumulativeLayoutShift ||
+		! firstInputDelay
 	) {
 		return (
 			<div className="googlesitekit-pagespeed-insights-web-vitals-metrics googlesitekit-pagespeed-insights-web-vitals-metrics--field-data-unavailable">
@@ -106,19 +107,6 @@ export default function FieldReportMetrics( { data, error } ) {
 				<tbody>
 					<ReportMetric
 						title={ _x(
-							'First Input Delay',
-							'core web vitals name',
-							'google-site-kit'
-						) }
-						description={ __(
-							'Time it takes for the browser to respond when people first interact with the page',
-							'google-site-kit'
-						) }
-						displayValue={ `${ firstInputDelay.percentile } ms` }
-						category={ firstInputDelay.category }
-					/>
-					<ReportMetric
-						title={ _x(
 							'Largest Contentful Paint',
 							'core web vitals name',
 							'google-site-kit'
@@ -127,7 +115,11 @@ export default function FieldReportMetrics( { data, error } ) {
 							'Time it takes for the page to load',
 							'google-site-kit'
 						) }
-						displayValue={ `${ lcpSeconds } s` }
+						displayValue={ sprintf(
+							/* translators: %s: number of seconds */
+							_x( '%s s', 'duration', 'google-site-kit' ),
+							lcpSeconds
+						) }
 						category={ largestContentfulPaint.category }
 					/>
 					<ReportMetric
@@ -142,8 +134,46 @@ export default function FieldReportMetrics( { data, error } ) {
 						) }
 						displayValue={ cls }
 						category={ cumulativeLayoutShift.category }
-						isLast
 					/>
+					<ReportMetric
+						title={ _x(
+							'First Input Delay',
+							'core web vitals name',
+							'google-site-kit'
+						) }
+						description={ __(
+							'Time it takes for the browser to respond when people first interact with the page',
+							'google-site-kit'
+						) }
+						displayValue={ sprintf(
+							/* translators: %s: number of milliseconds */
+							_x( '%s ms', 'duration', 'google-site-kit' ),
+							firstInputDelay.percentile
+						) }
+						category={ firstInputDelay.category }
+						isLast={ ! interactionToNextPaint }
+					/>
+					{ !! interactionToNextPaint && (
+						<ReportMetric
+							title={ _x(
+								'Interaction to Next Paint',
+								'core web vitals name',
+								'google-site-kit'
+							) }
+							description={ __(
+								'How quickly your page responds when people interact with it',
+								'google-site-kit'
+							) }
+							displayValue={ sprintf(
+								/* translators: %s: number of milliseconds */
+								_x( '%s ms', 'duration', 'google-site-kit' ),
+								interactionToNextPaint.percentile
+							) }
+							category={ interactionToNextPaint.category }
+							experimental
+							isLast
+						/>
+					) }
 				</tbody>
 			</table>
 		</div>

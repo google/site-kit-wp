@@ -1056,7 +1056,7 @@ final class Authentication {
 					$current_url   = $this->context->get_canonical_home_url();
 					$content       = sprintf(
 						'<p>%s <a href="%s">%s</a></p>',
-						esc_html__( 'Looks like the URL of your site has changed. In order to continue using Site Kit, you’ll need to reconnect, so that your plugin settings are updated with the new URL.', 'google-site-kit' ),
+						esc_html__( 'Site Kit by Google: Looks like the URL of your site has changed. In order to continue using Site Kit, you’ll need to reconnect, so that your plugin settings are updated with the new URL.', 'google-site-kit' ),
 						esc_url( $this->get_proxy_setup_url() ),
 						esc_html__( 'Reconnect', 'google-site-kit' )
 					);
@@ -1105,7 +1105,7 @@ final class Authentication {
 					ob_start();
 					?>
 					<p>
-						<?php esc_html_e( 'You need to reauthenticate your Google account.', 'google-site-kit' ); ?>
+						<?php esc_html_e( 'Site Kit by Google: You need to reauthenticate your Google account.', 'google-site-kit' ); ?>
 						<a
 							href="#"
 							onclick="clearSiteKitAppStorage()"
@@ -1170,7 +1170,11 @@ final class Authentication {
 						return '';
 					}
 
-					$message = $auth_client->get_error_message( $error_code );
+					$message = sprintf(
+						/* translators: %s: Error message */
+						esc_html__( 'Site Kit by Google: %s', 'google-site-kit' ),
+						$auth_client->get_error_message( $error_code )
+					);
 
 					$access_code = $this->user_options->get( OAuth_Client::OPTION_PROXY_ACCESS_CODE );
 

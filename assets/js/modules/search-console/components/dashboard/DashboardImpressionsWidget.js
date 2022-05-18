@@ -34,7 +34,6 @@ import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { isZeroReport } from '../../util';
 import { calculateChange, untrailingslashit } from '../../../../util';
 import extractForSparkline from '../../../../util/extract-for-sparkline';
-import { trackEvent } from '../../../../util/tracking';
 import whenActive from '../../../../util/when-active';
 import DataBlock from '../../../../components/DataBlock';
 import Sparkline from '../../../../components/Sparkline';
@@ -113,7 +112,6 @@ function DashboardImpressionsWidget( { WidgetReportZero, WidgetReportError } ) {
 	);
 
 	if ( error ) {
-		trackEvent( 'plugin_setup', 'search_console_error', error.message );
 		return (
 			<WidgetReportError moduleSlug="search-console" error={ error } />
 		);
