@@ -42,7 +42,7 @@ import { Select, Option } from '../../../../material-components';
 import { GA4ActivateSwitch } from '../common';
 import { PropertySelect } from '../../../analytics-4/components/common';
 import ProgressBar from '../../../../components/ProgressBar';
-import SettingsUseSnippetSwitch from './SettingsUseSnippetSwitch';
+import SettingsUseSnippetSwitch from '../../../analytics-4/components/settings/SettingsUseSnippetSwitch';
 const { useSelect, useDispatch } = Data;
 
 export default function GA4SettingsControls() {
