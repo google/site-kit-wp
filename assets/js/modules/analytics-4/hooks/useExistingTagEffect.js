@@ -31,7 +31,7 @@ const { useSelect, useDispatch } = Data;
 /**
  * Toggles `useSnippet` depending on whether there is a existing tag matching the selected GA4 property.
  *
- * @since n.e.x.t
+ * @since 1.75.0
  */
 export default function useExistingTagEffect() {
 	const { setUseSnippet } = useDispatch( MODULES_ANALYTICS_4 );

@@ -19,7 +19,7 @@ use WP_REST_Server;
 /**
  * Class for handling dashboard sharing rest routes.
  *
- * @since n.e.x.t
+ * @since 1.75.0
  * @access private
  * @ignore
  */
@@ -28,7 +28,7 @@ class REST_Dashboard_Sharing_Controller {
 	/**
 	 * Modules instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.75.0
 	 * @var Modules
 	 */
 	protected $modules;
@@ -36,7 +36,7 @@ class REST_Dashboard_Sharing_Controller {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.75.0
 	 *
 	 * @param Modules $modules Modules instance.
 	 */
@@ -47,7 +47,7 @@ class REST_Dashboard_Sharing_Controller {
 	/**
 	 * Registers functionality through WordPress hooks.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.75.0
 	 */
 	public function register() {
 		add_filter(
@@ -61,7 +61,7 @@ class REST_Dashboard_Sharing_Controller {
 	/**
 	 * Gets REST route instances.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.75.0
 	 *
 	 * @return REST_Route[] List of REST_Route objects.
 	 */

@@ -235,7 +235,7 @@ export function validateCanSubmitChanges( select ) {
 /**
  * Gets the value of canUseSnippet based on the gaPropertyID of tagmanager module and propertyID.
  *
- * @since n.e.x.t
+ * @since 1.75.0
  *
  * @return {boolean|undefined} Computed value of canUseSnippet. `undefined` if not loaded.
  */
