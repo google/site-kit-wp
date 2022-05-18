@@ -118,6 +118,20 @@
 		}
 	}
 
+	.googlesitekit-pagespeed-report__footer {
+		gap: 16px;
+		justify-content: flex-end;
+		padding-top: 0;
+
+		p {
+			text-align: right;
+		}
+
+		&--with-action {
+			justify-content: space-between;
+		}
+	}
+
 	.googlesitekit-pagespeed-report__row,
 	.googlesitekit-pagespeed-report__footer {
 		align-items: center;
@@ -204,15 +218,6 @@
 			.googlesitekit-accordion:last-child {
 				margin-bottom: $grid-gap-desktop;
 			}
-		}
-	}
-
-	.googlesitekit-pagespeed-report__footer {
-		justify-content: flex-end;
-		padding-top: 0;
-
-		&--with-action {
-			justify-content: space-between;
 		}
 	}
 }
