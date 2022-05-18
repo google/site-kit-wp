@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * WordPress dependencies
  */
 import { useCallback } from '@wordpress/element';
@@ -32,13 +37,16 @@ import { trackEvent } from '../../../../util';
 import useViewContext from '../../../../hooks/useViewContext';
 const { useSelect, useDispatch } = Data;
 
-export default function UseSnippetSwitch() {
+export default function UseSnippetSwitch( { description } ) {
 	const viewContext = useViewContext();
 	const useSnippet = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getUseSnippet()
 	);
 	const canUseSnippet = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getCanUseSnippet()
+	);
+	const hasExistingTag = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).hasExistingTag()
 	);
 
 	const { setUseSnippet } = useDispatch( MODULES_ANALYTICS );
@@ -52,7 +60,7 @@ export default function UseSnippetSwitch() {
 		);
 	}, [ useSnippet, setUseSnippet, viewContext ] );
 
-	if ( useSnippet === undefined ) {
+	if ( useSnippet === undefined || hasExistingTag === undefined ) {
 		return null;
 	}
 
@@ -63,37 +71,16 @@ export default function UseSnippetSwitch() {
 					'Place Universal Analytics code',
 					'google-site-kit'
 				) }
-				checked={ useSnippet }
+				checked={ canUseSnippet === false ? false : useSnippet }
 				onClick={ onChange }
 				hideLabel={ false }
-				disabled={ ! canUseSnippet }
+				disabled={ canUseSnippet === false }
 			/>
-			<p>
-				{ canUseSnippet === false && (
-					<span>
-						{ __(
-							'The code is controlled by the Tag Manager module.',
-							'google-site-kit'
-						) }{ ' ' }
-					</span>
-				) }
-				{ canUseSnippet && useSnippet && (
-					<span>
-						{ __(
-							'Site Kit will add the UA code automatically.',
-							'google-site-kit'
-						) }{ ' ' }
-					</span>
-				) }
-				{ canUseSnippet && ! useSnippet && (
-					<span>
-						{ __(
-							'Site Kit will not add the UA code to your site.',
-							'google-site-kit'
-						) }{ ' ' }
-					</span>
-				) }
-			</p>
+			{ description }
 		</div>
 	);
 }
+
+UseSnippetSwitch.propTypes = {
+	description: PropTypes.node,
+};

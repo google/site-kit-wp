@@ -37,8 +37,8 @@ export default function SetupAccountApproved() {
 	const existingTag = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getExistingTag()
 	);
-	const hasExistingTagPermission = useSelect( ( select ) =>
-		select( MODULES_ADSENSE ).hasExistingTagPermission()
+	const clientID = useSelect( ( select ) =>
+		select( MODULES_ADSENSE ).getClientID()
 	);
 	const originalAccountStatus = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getOriginalAccountStatus()
@@ -47,6 +47,7 @@ export default function SetupAccountApproved() {
 		select( MODULES_ADSENSE ).isDoingSubmitChanges()
 	);
 
+	const hasExistingTagPermission = existingTag === clientID;
 	const { completeAccountSetup } = useDispatch( MODULES_ADSENSE );
 	const continueHandler = useCallback( async () => {
 		if ( isDoingSubmitChanges ) {

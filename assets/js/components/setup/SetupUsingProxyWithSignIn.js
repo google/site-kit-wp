@@ -360,7 +360,7 @@ export default function SetupUsingProxyWithSignIn() {
 																			inherit
 																		>
 																			{ __(
-																				'Go to dashboard',
+																				'Skip sign-in and view limited dashboard',
 																				'google-site-kit'
 																			) }
 																		</Link>

@@ -369,7 +369,6 @@ final class Analytics extends Module
 				'service'   => 'analyticsreporting',
 				'shareable' => Feature_Flags::enabled( 'dashboardSharing' ),
 			),
-			'GET:tag-permission'               => array( 'service' => '' ),
 		);
 	}
 
@@ -694,25 +693,6 @@ final class Analytics extends Module
 				$property->setName( wp_parse_url( $this->context->get_reference_site_url(), PHP_URL_HOST ) );
 				$property->setWebsiteUrl( $this->context->get_reference_site_url() );
 				return $this->get_service( 'analytics' )->management_webproperties->insert( $data['accountID'], $property );
-			case 'GET:tag-permission':
-				return function() use ( $data ) {
-					if ( ! isset( $data['propertyID'] ) ) {
-						return new WP_Error(
-							'missing_required_param',
-							/* translators: %s: Missing parameter name */
-							sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'propertyID' ),
-							array( 'status' => 400 )
-						);
-					}
-					$property_id = $data['propertyID'];
-					return array_merge(
-						array(
-							'accountID'  => '', // Set the accountID to be an empty string and let has_access_to_property handle determining actual ID.
-							'propertyID' => $property_id,
-						),
-						$this->has_access_to_property( $property_id )
-					);
-				};
 		}
 
 		return parent::create_data_request( $data );
@@ -791,33 +771,22 @@ final class Analytics extends Module
 					return array_merge( compact( 'accounts' ), $properties_profiles );
 				}
 
-				if ( $data['existingAccountID'] && $data['existingPropertyID'] ) {
-					// If there is an existing tag, pass it through to ensure only the existing tag is matched.
-					$properties_profiles = $this->get_data(
-						'properties-profiles',
-						array(
-							'accountID'          => $data['existingAccountID'],
-							'existingPropertyID' => $data['existingPropertyID'],
-						)
-					);
+				// Get the account ID from the saved settings.
+				$option     = $this->get_settings()->get();
+				$account_id = $option['accountID'];
+				// If the saved account ID is in the list of accounts the user has access to, it's a match.
+				if ( in_array( $account_id, $account_ids, true ) ) {
+					$properties_profiles = $this->get_data( 'properties-profiles', array( 'accountID' => $account_id ) );
 				} else {
-					// Get the account ID from the saved settings.
-					$option     = $this->get_settings()->get();
-					$account_id = $option['accountID'];
-					// If the saved account ID is in the list of accounts the user has access to, it's a match.
-					if ( in_array( $account_id, $account_ids, true ) ) {
-						$properties_profiles = $this->get_data( 'properties-profiles', array( 'accountID' => $account_id ) );
-					} else {
-						$account_summaries = $this->get_service( 'analytics' )->management_accountSummaries->listManagementAccountSummaries();
-						$current_url       = $this->context->get_reference_site_url();
-						$current_urls      = $this->permute_site_url( $current_url );
+					$account_summaries = $this->get_service( 'analytics' )->management_accountSummaries->listManagementAccountSummaries();
+					$current_url       = $this->context->get_reference_site_url();
+					$current_urls      = $this->permute_site_url( $current_url );
 
-						foreach ( $account_summaries as $account_summary ) {
-							$found_property = $this->find_property( $account_summary->getWebProperties(), '', $current_urls );
-							if ( ! is_null( $found_property ) ) {
-								$properties_profiles = $this->get_data( 'properties-profiles', array( 'accountID' => $account_summary->getId() ) );
-								break;
-							}
+					foreach ( $account_summaries as $account_summary ) {
+						$found_property = $this->find_property( $account_summary->getWebProperties(), '', $current_urls );
+						if ( ! is_null( $found_property ) ) {
+							$properties_profiles = $this->get_data( 'properties-profiles', array( 'accountID' => $account_summary->getId() ) );
+							break;
 						}
 					}
 				}
@@ -854,14 +823,9 @@ final class Analytics extends Module
 					return $response;
 				}
 
-				// If requested for a specific property, only match by property ID.
-				if ( ! empty( $data['existingPropertyID'] ) ) {
-					$found_property = $this->find_property( $properties, $data['existingPropertyID'], array() );
-				} else {
-					$current_url    = $this->context->get_reference_site_url();
-					$current_urls   = $this->permute_site_url( $current_url );
-					$found_property = $this->find_property( $properties, '', $current_urls );
-				}
+				$current_url    = $this->context->get_reference_site_url();
+				$current_urls   = $this->permute_site_url( $current_url );
+				$found_property = $this->find_property( $properties, '', $current_urls );
 
 				if ( ! is_null( $found_property ) ) {
 					$response['matchedProperty'] = $found_property;
@@ -1068,68 +1032,6 @@ final class Analytics extends Module
 	private function get_provisioning_redirect_uri() {
 		$google_proxy = new Google_Proxy( $this->context );
 		return $google_proxy->get_site_fields()['analytics_redirect_uri'];
-	}
-
-	/**
-	 * Verifies that user has access to the property found in the existing tag.
-	 *
-	 * @since 1.0.0
-	 * @since 1.8.0 Simplified to return a boolean and require account ID.
-	 *
-	 * @param string $property_id Property found in the existing tag.
-	 * @return array A string representing the accountID and a boolean representing if the user has access to the property.
-	 */
-	protected function has_access_to_property( $property_id ) {
-		if ( empty( $property_id ) ) {
-			return array(
-				'permission' => false,
-			);
-		}
-
-		$account_id        = $this->parse_account_id( $property_id );
-		$account_summaries = $this->get_service( 'analytics' )->management_accountSummaries->listManagementAccountSummaries();
-
-		/**
-		 * Helper method to check check if a given account
-		 * contains the property_id
-		 */
-		$has_property = function ( $account_id ) use ( $property_id, $account_summaries ) {
-			foreach ( $account_summaries as $account_summary ) {
-				if ( $account_summary->getId() !== $account_id ) {
-					continue;
-				}
-
-				foreach ( $account_summary->getWebProperties() as $property ) {
-					if ( $property->getId() === $property_id ) {
-						return true;
-					}
-				}
-			}
-
-			return false;
-		};
-
-		// Ensure there is access to the property.
-		if ( $has_property( $account_id ) ) {
-			return array(
-				'accountID'  => $account_id,
-				'permission' => true,
-			);
-		}
-
-		foreach ( $account_summaries as $account_summary ) {
-			if ( $has_property( $account_summary->getId() ) ) {
-				return array(
-					'accountID'  => $account_id,
-					'permission' => true,
-				);
-			}
-		}
-
-		// No property matched the account ID.
-		return array(
-			'permission' => false,
-		);
 	}
 
 	/**

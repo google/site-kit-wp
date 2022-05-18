@@ -42,21 +42,18 @@ import { MODULES_ANALYTICS_4 } from '../../assets/js/modules/analytics-4/datasto
  * Generates a story for a case when a GTM with Analytics property ID is already connected.
  *
  * @since 1.18.0
+ * @since n.e.x.t Removed args.gaPermission and args.gtmPermission.
  * @private
  *
  * @param {Object}      args                Story arguments.
  * @param {WPComponent} args.Component      Story component.
  * @param {boolean}     args.useExistingTag Whether to use an existing tag or not.
- * @param {boolean}     args.gaPermission   Whether the current user has GA tag permissions.
- * @param {boolean}     args.gtmPermission  Whether the current user has GTM tag permissions.
  * @param {Function}    args.setUp          Custom setup function.
  * @return {Function} Story callback function.
  */
 export function generateGTMAnalyticsPropertyStory( {
 	Component,
 	useExistingTag = false,
-	gaPermission = false,
-	gtmPermission = false,
 	setUp = () => {},
 } ) {
 	return ( args ) => {
@@ -149,26 +146,11 @@ export function generateGTMAnalyticsPropertyStory( {
 				registry
 					.dispatch( MODULES_ANALYTICS )
 					.receiveGetExistingTag( existingTagPropertyID );
-				registry.dispatch( MODULES_ANALYTICS ).receiveGetTagPermission(
-					{
-						accountID: existingTagAccountID,
-						permission: gaPermission,
-					},
-					{ propertyID: existingTagPropertyID }
-				);
 			} else {
 				registry
 					.dispatch( MODULES_ANALYTICS )
 					.receiveGetExistingTag( null );
 			}
-
-			registry.dispatch( MODULES_ANALYTICS ).receiveGetTagPermission(
-				{
-					accountID: gtmAccountID,
-					permission: gtmPermission,
-				},
-				{ propertyID: gtmPropertyID }
-			);
 
 			const { buildAndReceiveWebAndAMP } = createBuildAndReceivers(
 				registry

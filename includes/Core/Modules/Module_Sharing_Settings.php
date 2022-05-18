@@ -134,7 +134,7 @@ class Module_Sharing_Settings extends Setting {
 	 *
 	 * @param array $new_partial_settings Partial settings array to update existing settings with.
 	 *
-	 * @return bool True on success, false on failure.
+	 * @return bool True if sharing settings option was updated, false otherwise.
 	 */
 	public function merge( array $new_partial_settings ) {
 		$settings = $this->get();

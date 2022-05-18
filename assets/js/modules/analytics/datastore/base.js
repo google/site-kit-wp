@@ -22,6 +22,7 @@
 import Modules from 'googlesitekit-modules';
 import { MODULES_ANALYTICS } from './constants';
 import {
+	getCanUseSnippet,
 	rollbackChanges,
 	submitChanges,
 	validateCanSubmitChanges,
@@ -45,5 +46,7 @@ const baseModuleStore = Modules.createModuleStore( 'analytics', {
 	rollbackChanges,
 	validateCanSubmitChanges,
 } );
+
+baseModuleStore.selectors.getCanUseSnippet = getCanUseSnippet;
 
 export default baseModuleStore;

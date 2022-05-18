@@ -33,7 +33,6 @@ import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import extractForSparkline from '../../../../util/extract-for-sparkline';
 import { untrailingslashit, calculateChange } from '../../../../util';
-import { trackEvent } from '../../../../util/tracking';
 import { isZeroReport } from '../../util';
 import whenActive from '../../../../util/when-active';
 import DataBlock from '../../../../components/DataBlock';
@@ -113,7 +112,6 @@ function DashboardClicksWidget( { WidgetReportZero, WidgetReportError } ) {
 	);
 
 	if ( error ) {
-		trackEvent( 'plugin_setup', 'search_console_error', error.message );
 		return (
 			<WidgetReportError moduleSlug="search-console" error={ error } />
 		);
