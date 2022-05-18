@@ -479,7 +479,6 @@ describe( 'createSettingsStore store', () => {
 					storeDefinition
 				);
 				dispatch = registry.dispatch( storeDefinition.STORE_NAME );
-				store = registry.stores[ storeDefinition.STORE_NAME ].store;
 				select = registry.select( storeDefinition.STORE_NAME );
 
 				// Initially false.
