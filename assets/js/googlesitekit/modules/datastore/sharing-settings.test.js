@@ -23,7 +23,11 @@ import { CORE_MODULES } from './constants';
 import {
 	createTestRegistry,
 	unsubscribeFromAll,
+	untilResolved,
 } from '../../../../../tests/js/utils';
+import FIXTURES from './__fixtures__';
+import { MODULES_SEARCH_CONSOLE } from '../../../modules/search-console/datastore/constants';
+import { MODULES_PAGESPEED_INSIGHTS } from '../../../modules/pagespeed-insights/datastore/constants';
 
 describe( 'core/modules sharing-settings', () => {
 	const sharingSettings = {
@@ -56,19 +60,6 @@ describe( 'core/modules sharing-settings', () => {
 	} );
 
 	describe( 'actions', () => {
-		const sharingSettingsWithOwnerID = Object.keys(
-			sharingSettings.settings
-		).reduce(
-			( modules, moduleSlug ) => ( {
-				...modules,
-				[ moduleSlug ]: {
-					...sharingSettings.settings[ moduleSlug ],
-					ownerID: 2,
-				},
-			} ),
-			{}
-		);
-
 		describe( 'setSharingManagement', () => {
 			const settingsWithoutManagement = {
 				'search-console': {
@@ -208,19 +199,31 @@ describe( 'core/modules sharing-settings', () => {
 		describe( 'saveSharingSettings', () => {
 			it( 'does not require any params', () => {
 				expect( async () => {
+					fetchMock.get(
+						/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
+						{ body: FIXTURES, status: 200 }
+					);
+
 					fetchMock.postOnce(
 						/^\/google-site-kit\/v1\/core\/modules\/data\/sharing-settings/,
 						{
 							body: {
 								settings: sharingSettings.settings,
 								newOwnerIDs: {
-									analytics: 2,
 									'search-console': 2,
 									'pagespeed-insights': 2,
 								},
 							},
 						}
 					);
+
+					const initialModules = registry
+						.select( CORE_MODULES )
+						.getModules();
+					// The modules info will be its initial value while the modules
+					// info is fetched.
+					expect( initialModules ).toBeUndefined();
+					await untilResolved( registry, CORE_MODULES ).getModules();
 
 					// TODO: Remove the `receiveGetSharingSettings` call and
 					// Add coverage for using `getSharingSettings` selector in 4795.
@@ -234,44 +237,101 @@ describe( 'core/modules sharing-settings', () => {
 				} ).not.toThrow();
 			} );
 
-			it( 'dispatches a request to save sharing settings', async () => {
-				fetchMock.postOnce(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/sharing-settings/,
+			it.each( [
+				[
+					'should',
 					{
-						body: {
-							settings: sharingSettings.settings,
-							newOwnerIDs: {
-								analytics: 2,
-								'search-console': 2,
-								'pagespeed-insights': 2,
+						'search-console': 2,
+						'pagespeed-insights': 2,
+					},
+					2,
+				],
+				[ 'should not', undefined, undefined ],
+			] )(
+				'dispatches a request to save sharing settings and %s dispatch setOwnerID action based on the `newOwnerIDs` availability',
+				async ( _, newOwnerIDs, ownerID ) => {
+					fetchMock.get(
+						/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
+						{
+							body: [
+								...FIXTURES,
+								{
+									slug: 'search-console',
+									name: 'Search Console',
+									storeName: 'modules/search-console',
+								},
+								{
+									slug: 'pagespeed-insights',
+									name: 'PageSpeed Insights',
+									storeName: 'modules/pagespeed-insights',
+								},
+							],
+							status: 200,
+						}
+					);
+
+					fetchMock.get(
+						/^\/google-site-kit\/v1\/core\/site\/data\/settings/,
+						{ body: { setting1: 'value' }, status: 200 }
+					);
+
+					fetchMock.get(
+						/^\/google-site-kit\/v1\/modules\/search-console\/data\/settings/,
+						{ body: { setting1: 'value' }, status: 200 }
+					);
+
+					fetchMock.get(
+						/^\/google-site-kit\/v1\/modules\/pagespeed-insights\/data\/settings/,
+						{ body: { setting1: 'value' }, status: 200 }
+					);
+
+					fetchMock.postOnce(
+						/^\/google-site-kit\/v1\/core\/modules\/data\/sharing-settings/,
+						{
+							body: {
+								settings: sharingSettings.settings,
+								newOwnerIDs,
 							},
-						},
-					}
-				);
+						}
+					);
 
-				// TODO: Remove the `receiveGetSharingSettings` call and
-				// Add coverage for using `getSharingSettings` selector in 4795.
-				registry
-					.dispatch( CORE_MODULES )
-					.receiveGetSharingSettings( sharingSettings.settings );
+					const initialModules = registry
+						.select( CORE_MODULES )
+						.getModules();
+					// The modules info will be its initial value while the modules
+					// info is fetched.
+					expect( initialModules ).toBeUndefined();
+					await untilResolved( registry, CORE_MODULES ).getModules();
 
-				await registry.dispatch( CORE_MODULES ).saveSharingSettings();
+					registry
+						.dispatch( CORE_MODULES )
+						.receiveGetSharingSettings( sharingSettings.settings );
 
-				expect( fetchMock ).toHaveFetchedTimes( 1 );
+					await registry
+						.dispatch( CORE_MODULES )
+						.saveSharingSettings();
 
-				// Ensure the API call was made.
-				expect( fetchMock ).toHaveFetched(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/sharing-settings/
-				);
+					// Ensure the API call was made.
+					expect( fetchMock ).toHaveFetched(
+						/^\/google-site-kit\/v1\/core\/modules\/data\/sharing-settings/
+					);
 
-				// Ensure the ownerIDs were set to the modules via setOnwerID action
-				expect( store.getState().sharingSettings ).toMatchObject( {
-					...sharingSettingsWithOwnerID,
-				} );
-				expect( store.getState().savedSharingSettings ).toMatchObject( {
-					...sharingSettingsWithOwnerID,
-				} );
-			} );
+					expect( fetchMock ).toHaveFetched(
+						/^\/google-site-kit\/v1\/core\/modules\/data\/list/
+					);
+
+					// Ensure the `setOwnerID` action is dispatched and set the ownerID in state
+					// OR not based on the `newOwnerIDs` availability.
+					expect(
+						registry.select( MODULES_SEARCH_CONSOLE ).getOwnerID()
+					).toBe( ownerID );
+					expect(
+						registry
+							.select( MODULES_PAGESPEED_INSIGHTS )
+							.getOwnerID()
+					).toBe( ownerID );
+				}
+			);
 		} );
 
 		describe( 'receiveGetSharingSettings', () => {
