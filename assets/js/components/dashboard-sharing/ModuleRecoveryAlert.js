@@ -101,8 +101,7 @@ export default function ModuleRecoveryAlert() {
 		}
 	}, [ checkboxes, userAccessibleModules ] );
 
-	const recoverableModulesList = Object.keys( recoverableModules );
-
+	const recoverableModulesList = Object.keys( recoverableModules || {} );
 	if (
 		recoverableModules === undefined ||
 		recoverableModulesList.length === 0
@@ -110,11 +109,10 @@ export default function ModuleRecoveryAlert() {
 		return null;
 	}
 
-	let description;
-	let children;
+	let description = null;
+	let children = null;
 
 	if ( userAccessibleModules === undefined || checkboxes === null ) {
-		description = null;
 		children = <ProgressBar />;
 	} else if ( userAccessibleModules.length === 0 ) {
 		if ( recoverableModulesList.length === 1 ) {
@@ -126,7 +124,6 @@ export default function ModuleRecoveryAlert() {
 				),
 				recoverableModules[ recoverableModulesList[ 0 ] ].name
 			);
-			children = null;
 		} else {
 			description = __(
 				'The data for the following modules was previously shared with other users on the site by another admin who no longer has access. To restore access, the module must be recovered by another admin who has access.',
