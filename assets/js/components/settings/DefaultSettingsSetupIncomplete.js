@@ -54,7 +54,7 @@ export default function DefaultSettingsSetupIncomplete( { slug } ) {
 					'google-site-kit'
 				),
 				{
-					a: <Link href={ adminReauthURL } inherit />,
+					a: <Link href={ adminReauthURL } />,
 				}
 			) }
 		</Cell>

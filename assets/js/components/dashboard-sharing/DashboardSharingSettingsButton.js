@@ -118,7 +118,6 @@ export default function DashboardSharingSettingsButton() {
 													href="https://sitekit.withgoogle.com/documentation/using-site-kit/dashboard-sharing/"
 													external
 													hideExternalIndicator
-													inherit
 												/>
 											),
 										}

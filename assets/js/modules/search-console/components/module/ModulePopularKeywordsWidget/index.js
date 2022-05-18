@@ -131,7 +131,7 @@ export default function ModulePopularKeywordsWidget( props ) {
 				} );
 
 				return (
-					<Link href={ searchAnalyticsURL } external inherit>
+					<Link href={ searchAnalyticsURL } external>
 						{ fieldValue }
 					</Link>
 				);
