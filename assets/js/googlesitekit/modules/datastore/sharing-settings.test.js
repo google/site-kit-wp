@@ -137,10 +137,6 @@ describe( 'core/modules sharing-settings', () => {
 					...state,
 					...sharingSettingsWithManagement,
 				} );
-				expect( store.getState().savedSharingSettings ).toMatchObject( {
-					...state,
-					...sharingSettingsWithManagement,
-				} );
 			} );
 		} );
 
@@ -203,10 +199,6 @@ describe( 'core/modules sharing-settings', () => {
 				);
 
 				expect( store.getState().sharingSettings ).toMatchObject( {
-					...state,
-					...sharingSettingsWithSharedRoles,
-				} );
-				expect( store.getState().savedSharingSettings ).toMatchObject( {
 					...state,
 					...sharingSettingsWithSharedRoles,
 				} );
