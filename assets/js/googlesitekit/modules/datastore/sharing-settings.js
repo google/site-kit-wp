@@ -46,7 +46,7 @@ const fetchSaveSharingSettingsStore = createFetchStore( {
 			'core',
 			'modules',
 			'sharing-settings',
-			{ savedSharingSettings },
+			{ ...savedSharingSettings },
 			{
 				useCache: false,
 			}
