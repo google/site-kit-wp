@@ -29,6 +29,12 @@ import {
 } from './settings';
 
 const baseModuleStore = Modules.createModuleStore( 'analytics', {
+	ownedSettingsSlugs: [
+		'accountID',
+		'internalWebPropertyID',
+		'profileID',
+		'propertyID',
+	],
 	storeName: MODULES_ANALYTICS,
 	settingSlugs: [
 		'accountID',
