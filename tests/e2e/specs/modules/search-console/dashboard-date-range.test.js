@@ -135,7 +135,9 @@ describe( 'date range filtering on dashboard views', () => {
 		const { last28Days, last14Days } = dashboardDetailsRequests;
 
 		await visitAdminPage( 'admin.php', 'page=googlesitekit-dashboard' );
-		const postSearcher = await page.$( '.googlesitekit-post-searcher' );
+		const postSearcher = await page.$( '.googlesitekit-entity-search' );
+		await page.click( '.googlesitekit-entity-search .mdc-button' );
+		await page.waitForSelector( '.googlesitekit-entity-search__actions' );
 
 		await expect( postSearcher ).toFill( 'input', 'hello world' );
 		await page.waitForResponse( ( res ) =>

@@ -56,7 +56,9 @@ describe( 'Site Kit dashboard post search', () => {
 	} );
 
 	it( 'displays results when searching with a post title, and loads the details page when clicking View Data', async () => {
-		const postSearcher = await page.$( '.googlesitekit-post-searcher' );
+		const postSearcher = await page.$( '.googlesitekit-entity-search' );
+		await page.click( '.googlesitekit-entity-search .mdc-button' );
+		await page.waitForSelector( '.googlesitekit-entity-search__actions' );
 
 		await expect( postSearcher ).toFill( 'input', 'hello' );
 		await page.waitForResponse( ( res ) =>
@@ -103,7 +105,9 @@ describe( 'Site Kit dashboard post search', () => {
 	} );
 
 	it( 'displays results when searching with a URL, and loads the details page when clicking View Data', async () => {
-		const postSearcher = await page.$( '.googlesitekit-post-searcher' );
+		const postSearcher = await page.$( '.googlesitekit-entity-search' );
+		await page.click( '.googlesitekit-entity-search .mdc-button' );
+		await page.waitForSelector( '.googlesitekit-entity-search__actions' );
 
 		await expect( postSearcher ).toFill(
 			'input',
@@ -151,7 +155,9 @@ describe( 'Site Kit dashboard post search', () => {
 	} );
 
 	it( 'displays "No results found" when searching by title if no post is found', async () => {
-		const postSearcher = await page.$( '.googlesitekit-post-searcher' );
+		const postSearcher = await page.$( '.googlesitekit-entity-search' );
+		await page.click( '.googlesitekit-entity-search .mdc-button' );
+		await page.waitForSelector( '.googlesitekit-entity-search__actions' );
 
 		await expect( postSearcher ).toFill( 'input', 'non-existent title' );
 		await page.waitForResponse( ( res ) =>
@@ -169,7 +175,9 @@ describe( 'Site Kit dashboard post search', () => {
 	} );
 
 	it( 'displays "No results found" when searching by URL if no post is found', async () => {
-		const postSearcher = await page.$( '.googlesitekit-post-searcher' );
+		const postSearcher = await page.$( '.googlesitekit-entity-search' );
+		await page.click( '.googlesitekit-entity-search .mdc-button' );
+		await page.waitForSelector( '.googlesitekit-entity-search__actions' );
 
 		await expect( postSearcher ).toFill(
 			'input',
@@ -191,7 +199,9 @@ describe( 'Site Kit dashboard post search', () => {
 
 	it( 'works with post titles containing special characters', async () => {
 		const TITLE_SPECIAL_CHARACTERS = 'Hello Spéçïåł čhāràćtęrß!';
-		const postSearcher = await page.$( '.googlesitekit-post-searcher' );
+		const postSearcher = await page.$( '.googlesitekit-entity-search' );
+		await page.click( '.googlesitekit-entity-search .mdc-button' );
+		await page.waitForSelector( '.googlesitekit-entity-search__actions' );
 
 		await expect( postSearcher ).toFill( 'input', 'Spéçïåł' );
 		await page.waitForResponse( ( res ) =>

@@ -9,28 +9,6 @@ exports[`DashboardEntryPoint should render the module setup component when unifi
 </div>
 `;
 
-exports[`DashboardEntryPoint should render the module setup component when unified dashboard is not enabled and passed the setupModuleSlug prop 1`] = `
-<div>
-  <div>
-    ModuleSetup
-    {"moduleSlug":"analytics"}
-  </div>
-</div>
-`;
-
-exports[`DashboardEntryPoint should render the non-unified dashboard when unified dashboard is not enabled 1`] = `
-<div>
-  <div>
-    NotificationCounter
-    {}
-  </div>
-  <div>
-    DashboardApp
-    {}
-  </div>
-</div>
-`;
-
 exports[`DashboardEntryPoint should render the unified dashboard when unified dashboard is enabled 1`] = `
 <div>
   <div>
