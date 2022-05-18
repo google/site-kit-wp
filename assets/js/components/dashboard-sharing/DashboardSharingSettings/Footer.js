@@ -41,15 +41,19 @@ export default function Footer( { closeDialog } ) {
 
 	return (
 		<div className="googlesitekit-dashboard-sharing-settings__footer">
-			<Notice />
+			<div className="googlesitekit-dashboard-sharing-settings__footer-notice">
+				<Notice />
+			</div>
 
-			<Link onClick={ closeDialog }>
-				{ __( 'Cancel', 'google-site-kit' ) }
-			</Link>
+			<div className="googlesitekit-dashboard-sharing-settings__footer-actions">
+				<Link onClick={ closeDialog }>
+					{ __( 'Cancel', 'google-site-kit' ) }
+				</Link>
 
-			<Button onClick={ onApply }>
-				{ __( 'Apply', 'google-site-kit' ) }
-			</Button>
+				<Button onClick={ onApply }>
+					{ __( 'Apply', 'google-site-kit' ) }
+				</Button>
+			</div>
 		</div>
 	);
 }
