@@ -30,7 +30,6 @@ import { createFetchStore } from '../../data/create-fetch-store';
 import { CORE_MODULES } from './constants';
 
 // Actions
-const SET_OWNER_ID = 'SET_OWNER_ID';
 const SET_SHARING_MANAGEMENT = 'SET_SHARING_MANAGEMENT';
 const SET_SHARED_ROLES = 'SET_SHARED_ROLES';
 const RECEIVE_GET_SHARING_SETTINGS = 'RECEIVE_GET_SHARING_SETTINGS';
@@ -67,24 +66,6 @@ const fetchSaveSharingSettingsStore = createFetchStore( {
 } );
 
 const baseActions = {
-	/**
-	 * Sets ownerID for the given modules.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param {Object} newOwnerIDs New owner IDs, [moduleSlug]: Number.
-	 * @return {Object} Action for SET_OWNER_ID.
-	 */
-	setOwnerID( newOwnerIDs ) {
-		invariant( newOwnerIDs, 'newOwnerIDs is required.' );
-		return {
-			payload: {
-				newOwnerIDs,
-			},
-			type: SET_OWNER_ID,
-		};
-	},
-
 	/**
 	 * Sets the sharing settings management role of given module.
 	 *
@@ -162,7 +143,15 @@ const baseActions = {
 
 		// Update module owner IDs in the sharing settings modules.
 		if ( response?.newOwnerIDs ) {
-			yield baseActions.setOwnerID( response.newOwnerIDs );
+			for ( const [ slug, ownerID ] of Object.entries(
+				response.newOwnerIDs
+			) ) {
+				const storeName = registry
+					.select( CORE_MODULES )
+					.getModuleStoreName( slug );
+
+				yield registry.dispatch( storeName ).setOwnerID( ownerID );
+			}
 		}
 
 		return { response, error };
@@ -204,13 +193,6 @@ const baseReducer = ( state, { type, payload } ) => {
 						management,
 					},
 				},
-				savedSharingSettings: {
-					...state.savedSharingSettings,
-					[ moduleSlug ]: {
-						...state.savedSharingSettings[ moduleSlug ],
-						management,
-					},
-				},
 			};
 		}
 
@@ -226,42 +208,6 @@ const baseReducer = ( state, { type, payload } ) => {
 						sharedRoles: roles,
 					},
 				},
-				savedSharingSettings: {
-					...state.savedSharingSettings,
-					[ moduleSlug ]: {
-						...state.savedSharingSettings[ moduleSlug ],
-						sharedRoles: roles,
-					},
-				},
-			};
-		}
-
-		case SET_OWNER_ID: {
-			const { newOwnerIDs } = payload;
-
-			const sharingSettingsWithOnwerID = Object.keys(
-				newOwnerIDs
-			).reduce(
-				( modules, moduleSlug ) => ( {
-					...modules,
-					[ moduleSlug ]: {
-						...state.sharingSettings[ moduleSlug ],
-						ownerID: newOwnerIDs[ moduleSlug ],
-					},
-				} ),
-				{}
-			);
-
-			return {
-				...state,
-				sharingSettings: {
-					...state.sharingSettings,
-					...sharingSettingsWithOnwerID,
-				},
-				savedSharingSettings: {
-					...state.savedSharingSettings,
-					...sharingSettingsWithOnwerID,
-				},
 			};
 		}
 
@@ -270,8 +216,14 @@ const baseReducer = ( state, { type, payload } ) => {
 
 			return {
 				...state,
-				sharingSettings,
-				savedSharingSettings: sharingSettings,
+				sharingSettings: {
+					...state.sharingSettings,
+					...sharingSettings,
+				},
+				savedSharingSettings: {
+					...state.savedSharingSettings,
+					...sharingSettings,
+				},
 			};
 		}
 
