@@ -36,7 +36,7 @@ describe( 'modules/search-console base data store', () => {
 		provideSiteInfo( registry );
 	} );
 
-	it( 'does not define the admin page when unified dashboard is enabled', () => {
+	it( 'does not define the admin page', () => {
 		store = require( './base' ).default;
 		registry.registerStore( MODULES_SEARCH_CONSOLE, store );
 
@@ -44,17 +44,6 @@ describe( 'modules/search-console base data store', () => {
 			registry.select( MODULES_SEARCH_CONSOLE ).getAdminScreenURL()
 		).toBe(
 			'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard'
-		);
-	} );
-
-	it( 'does define the admin page when unified dashboard is not enabled', () => {
-		store = require( './base' ).default;
-		registry.registerStore( MODULES_SEARCH_CONSOLE, store );
-
-		expect(
-			registry.select( MODULES_SEARCH_CONSOLE ).getAdminScreenURL()
-		).toBe(
-			'http://example.com/wp-admin/admin.php?page=googlesitekit-module-search-console'
 		);
 	} );
 } );

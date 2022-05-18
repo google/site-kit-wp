@@ -46,16 +46,4 @@ describe( 'DashboardEntryPoint', () => {
 		);
 		expect( container ).toMatchSnapshot();
 	} );
-
-	it( 'should render the non-unified dashboard when unified dashboard is not enabled', () => {
-		const { container } = render( <DashboardEntryPoint /> );
-		expect( container ).toMatchSnapshot();
-	} );
-
-	it( 'should render the module setup component when unified dashboard is not enabled and passed the setupModuleSlug prop', () => {
-		const { container } = render(
-			<DashboardEntryPoint setupModuleSlug="analytics" />
-		);
-		expect( container ).toMatchSnapshot();
-	} );
 } );
