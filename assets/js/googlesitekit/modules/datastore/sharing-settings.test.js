@@ -69,40 +69,6 @@ describe( 'core/modules sharing-settings', () => {
 			{}
 		);
 
-		describe( 'setOwnerID', () => {
-			it( 'requires the newOwnerIDs param', () => {
-				expect( () => {
-					registry.dispatch( CORE_MODULES ).setOwnerID();
-				} ).toThrow( 'newOwnerIDs is required' );
-			} );
-
-			it( 'receives newOwnerIDs and sets it to the sharing settings modules', () => {
-				registry
-					.dispatch( CORE_MODULES )
-					.receiveGetSharingSettings( sharingSettings.settings );
-
-				const state = {
-					...store.getState().sharingSettings,
-					...store.getState().savedSharingSettings,
-				};
-
-				registry.dispatch( CORE_MODULES ).setOwnerID( {
-					analytics: 2,
-					'search-console': 2,
-					'pagespeed-insights': 2,
-				} );
-
-				expect( store.getState().sharingSettings ).toMatchObject( {
-					...state,
-					...sharingSettingsWithOwnerID,
-				} );
-				expect( store.getState().savedSharingSettings ).toMatchObject( {
-					...state,
-					...sharingSettingsWithOwnerID,
-				} );
-			} );
-		} );
-
 		describe( 'setSharingManagement', () => {
 			const settingsWithoutManagement = {
 				'search-console': {
