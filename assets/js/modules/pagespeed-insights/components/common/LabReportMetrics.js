@@ -35,12 +35,12 @@ import { getScoreCategory } from '../../util';
 import ErrorText from '../../../../components/ErrorText';
 
 export default function LabReportMetrics( { data, error } ) {
-	const totalBlockingTime =
-		data?.lighthouseResult?.audits?.[ 'total-blocking-time' ];
 	const largestContentfulPaint =
 		data?.lighthouseResult?.audits?.[ 'largest-contentful-paint' ];
 	const cumulativeLayoutShift =
 		data?.lighthouseResult?.audits?.[ 'cumulative-layout-shift' ];
+	const totalBlockingTime =
+		data?.lighthouseResult?.audits?.[ 'total-blocking-time' ];
 
 	if ( error ) {
 		return (
@@ -53,9 +53,9 @@ export default function LabReportMetrics( { data, error } ) {
 	}
 
 	if (
-		! totalBlockingTime ||
 		! largestContentfulPaint ||
-		! cumulativeLayoutShift
+		! cumulativeLayoutShift ||
+		! totalBlockingTime
 	) {
 		return null;
 	}
@@ -79,15 +79,6 @@ export default function LabReportMetrics( { data, error } ) {
 					</tr>
 				</thead>
 				<tbody>
-					<ReportMetric
-						title={ __( 'Total Blocking Time', 'google-site-kit' ) }
-						description={ __(
-							'How long people had to wait after the page loaded before they could click something',
-							'google-site-kit'
-						) }
-						displayValue={ totalBlockingTime.displayValue }
-						category={ getScoreCategory( totalBlockingTime.score ) }
-					/>
 					<ReportMetric
 						title={ _x(
 							'Largest Contentful Paint',
@@ -117,6 +108,15 @@ export default function LabReportMetrics( { data, error } ) {
 						category={ getScoreCategory(
 							cumulativeLayoutShift.score
 						) }
+					/>
+					<ReportMetric
+						title={ __( 'Total Blocking Time', 'google-site-kit' ) }
+						description={ __(
+							'How long people had to wait after the page loaded before they could click something',
+							'google-site-kit'
+						) }
+						displayValue={ totalBlockingTime.displayValue }
+						category={ getScoreCategory( totalBlockingTime.score ) }
 						isLast
 					/>
 				</tbody>
