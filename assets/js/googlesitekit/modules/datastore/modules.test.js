@@ -39,6 +39,9 @@ describe( 'core/modules modules', () => {
 	const recoverableModuleList = {
 		recoverableModules: [ 'analytics', 'search-console', 'tagmanager' ],
 	};
+	const sharedOwnershipModulesList = {
+		sharedOwnershipModules: [ 'analytics', 'search-console', 'tagmanager' ],
+	};
 
 	const sortedFixtures = sortByProperty( FIXTURES, 'order' );
 	const fixturesKeyValue = convertArrayListToKeyedObjectMap(
@@ -674,6 +677,28 @@ describe( 'core/modules modules', () => {
 				expect( state.moduleAccess ).toMatchObject( {
 					'search-console': true,
 				} );
+			} );
+		} );
+
+		describe( 'receiveSharedOwnershipModules', () => {
+			it( 'requires the sharedOwnershipModules param', () => {
+				expect( () => {
+					registry
+						.dispatch( CORE_MODULES )
+						.receiveSharedOwnershipModules();
+				} ).toThrow( 'sharedOwnershipModules is required' );
+			} );
+
+			it( 'receives sharedOwnershipModules and sets it to the state', () => {
+				registry
+					.dispatch( CORE_MODULES )
+					.receiveSharedOwnershipModules(
+						sharedOwnershipModulesList.sharedOwnershipModules
+					);
+
+				expect( store.getState().sharedOwnershipModules ).toMatchObject(
+					sharedOwnershipModulesList.sharedOwnershipModules
+				);
 			} );
 		} );
 	} );
