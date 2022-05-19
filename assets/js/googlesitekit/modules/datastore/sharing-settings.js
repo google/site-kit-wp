@@ -46,7 +46,7 @@ const fetchSaveSharingSettingsStore = createFetchStore( {
 			'core',
 			'modules',
 			'sharing-settings',
-			{ ...savedSharingSettings },
+			savedSharingSettings,
 			{
 				useCache: false,
 			}
@@ -216,14 +216,8 @@ const baseReducer = ( state, { type, payload } ) => {
 
 			return {
 				...state,
-				sharingSettings: {
-					...state.sharingSettings,
-					...sharingSettings,
-				},
-				savedSharingSettings: {
-					...state.savedSharingSettings,
-					...sharingSettings,
-				},
+				sharingSettings,
+				savedSharingSettings: sharingSettings,
 			};
 		}
 
