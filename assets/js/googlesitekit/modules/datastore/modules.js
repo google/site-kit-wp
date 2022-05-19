@@ -417,7 +417,7 @@ const baseActions = {
 	 * Stores recoverable modules in the datastore.
 	 *
 	 * Because this is frequently-accessed data, this is usually sourced
-	 * from a global variable (`_googlesitekitSiteData`), set by PHP
+	 * from a global variable (`_googlesitekitDashboardSharingData`), set by PHP
 	 * in the `before_print` callback for `googlesitekit-datastore-site`.
 	 *
 	 * @since 1.74.0
