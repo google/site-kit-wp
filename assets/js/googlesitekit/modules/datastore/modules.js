@@ -698,6 +698,28 @@ const baseResolvers = {
 		} = global._googlesitekitDashboardSharingData;
 		yield baseActions.receiveRecoverableModules( recoverableModules );
 	},
+
+	*getSharedOwnershipModules() {
+		const registry = yield Data.commonActions.getRegistry();
+
+		if ( registry.select( CORE_MODULES ).getSharedOwnershipModules() ) {
+			return;
+		}
+
+		if ( ! global._googlesitekitDashboardSharingData ) {
+			global.console.error(
+				'Could not load core/modules dashboard sharing.'
+			);
+			return;
+		}
+
+		const {
+			sharedOwnershipModules,
+		} = global._googlesitekitDashboardSharingData;
+		yield baseActions.receiveSharedOwnershipModules(
+			sharedOwnershipModules
+		);
+	},
 };
 
 const baseSelectors = {
