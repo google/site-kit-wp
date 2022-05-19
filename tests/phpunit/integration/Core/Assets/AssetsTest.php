@@ -12,12 +12,37 @@ namespace Google\Site_Kit\Tests\Core\Assets;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Assets\Assets;
+use Google\Site_Kit\Core\Authentication\Authentication;
+use Google\Site_Kit\Core\Dismissals\Dismissed_Items;
+use Google\Site_Kit\Core\Modules\Module_Sharing_Settings;
+use Google\Site_Kit\Core\Modules\Modules;
+use Google\Site_Kit\Core\Permissions\Permissions;
+use Google\Site_Kit\Core\Storage\Options;
+use Google\Site_Kit\Core\Storage\User_Options;
+use Google\Site_Kit\Tests\Fake_Site_Connection_Trait;
 use Google\Site_Kit\Tests\TestCase;
 
 /**
  * @group Assets
  */
 class AssetsTest extends TestCase {
+	use Fake_Site_Connection_Trait;
+
+	// The actions and filters below only get registered for users that can
+	// authorize with Site Kit.
+	private $authorized_actions = array(
+		'admin_print_scripts',
+		'wp_print_scripts',
+		'admin_print_styles',
+		'wp_print_styles',
+	);
+	private $authorized_filters = array(
+		// Both script_loader_tag and style_loader_tag are hooked by add_amp_dev_mode_attributes
+		// which requires authorization, however script_loader_tag is also filtered
+		// to apply script_execution attributes for all users, so it must be excluded here.
+		// 'script_loader_tag',
+		'style_loader_tag',
+	);
 
 	public function set_up() {
 		parent::set_up();
@@ -37,25 +62,10 @@ class AssetsTest extends TestCase {
 			remove_all_actions( $hook );
 		}
 
-		// The actions and filters below only get registered for users that can
-		// authorize with Site Kit.
-		$authorized_actions = array(
-			'admin_print_scripts',
-			'wp_print_scripts',
-			'admin_print_styles',
-			'wp_print_styles',
-		);
-		$authorized_filters = array(
-			// Both script_loader_tag and style_loader_tag are hooked by add_amp_dev_mode_attributes
-			// which requires authorization, however script_loader_tag is also filtered
-			// to apply script_execution attributes for all users, so it must be excluded here.
-			// 'script_loader_tag',
-			'style_loader_tag',
-		);
-		foreach ( $authorized_actions as $hook ) {
+		foreach ( $this->authorized_actions as $hook ) {
 			remove_all_actions( $hook );
 		}
-		foreach ( $authorized_filters as $hook ) {
+		foreach ( $this->authorized_filters as $hook ) {
 			remove_all_filters( $hook );
 		}
 
@@ -68,10 +78,10 @@ class AssetsTest extends TestCase {
 
 		// Without a user that can authenticate with Site Kit, these hooks
 		// should not have been added.
-		foreach ( $authorized_actions as $hook ) {
+		foreach ( $this->authorized_actions as $hook ) {
 			$this->assertFalse( has_action( $hook ), "Failed asserting that action was not added to {$hook}." );
 		}
-		foreach ( $authorized_filters as $hook ) {
+		foreach ( $this->authorized_filters as $hook ) {
 			$this->assertFalse( has_filter( $hook ), "Failed asserting that filter was not added to {$hook}." );
 		}
 
@@ -79,10 +89,53 @@ class AssetsTest extends TestCase {
 		$admin_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $admin_id );
 		$assets->register();
-		foreach ( $authorized_actions as $hook ) {
+		foreach ( $this->authorized_actions as $hook ) {
 			$this->assertTrue( has_action( $hook ), "Failed asserting that action was added to {$hook}." );
 		}
-		foreach ( $authorized_filters as $hook ) {
+		foreach ( $this->authorized_filters as $hook ) {
+			$this->assertTrue( has_filter( $hook ), "Failed asserting that filter was added to {$hook}." );
+		}
+	}
+
+	public function test_register_dashboard_sharing() {
+		// For a user that can view shared dashboard, ensure the hooks are added.
+		$this->enable_feature( 'dashboardSharing' );
+		$contributor = self::factory()->user->create_and_get( array( 'role' => 'contributor' ) );
+
+		$context         = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$assets          = new Assets( $context );
+		$settings        = new Module_Sharing_Settings( new Options( $context ) );
+		$user_options    = new User_Options( $context, $contributor->ID );
+		$dismissed_items = new Dismissed_Items( $user_options );
+		$authentication  = new Authentication( $context, null, $user_options );
+		$modules         = new Modules( $context, null, $user_options, $authentication );
+		$dismissed_items = new Dismissed_Items( $user_options );
+		$permissions     = new Permissions( $context, $authentication, $modules, $user_options, $dismissed_items );
+
+		$dismissed_items->add( 'shared_dashboard_splash', 0 );
+		$test_sharing_settings = array(
+			'analytics'      => array(
+				'sharedRoles' => array( 'contributor' ),
+				'management'  => 'all_admins',
+			),
+			'search-console' => array(
+				'management' => 'owner',
+			),
+		);
+		$settings->set( $test_sharing_settings );
+		$permissions->register();
+
+		// Make sure SiteKit is setup.
+		$this->fake_proxy_site_connection();
+		add_filter( 'googlesitekit_setup_complete', '__return_true', 100 );
+		$this->assertTrue( $authentication->is_setup_completed() );
+
+		wp_set_current_user( $contributor->ID );
+		$assets->register();
+		foreach ( $this->authorized_actions as $hook ) {
+			$this->assertTrue( has_action( $hook ), "Failed asserting that action was added to {$hook}." );
+		}
+		foreach ( $this->authorized_filters as $hook ) {
 			$this->assertTrue( has_filter( $hook ), "Failed asserting that filter was added to {$hook}." );
 		}
 	}
