@@ -181,12 +181,8 @@ const Overview = ( {
 		} )
 	);
 
-	const topAlignedDataBlockClass = {
-		'googlesitekit-data-block--is-top-aligned':
-			! analyticsModuleConnected ||
-			! analyticsModuleActive ||
-			showGoalsCTA,
-	};
+	const alignDataBlockOnTop =
+		! analyticsModuleConnected || ! analyticsModuleActive || showGoalsCTA;
 
 	return (
 		<Grid>
@@ -196,7 +192,9 @@ const Overview = ( {
 						stat={ 0 }
 						className={ classnames(
 							'googlesitekit-data-block--impressions googlesitekit-data-block--button-1',
-							topAlignedDataBlockClass
+							{
+								'googlesitekit-data-block--is-top-aligned': alignDataBlockOnTop,
+							}
 						) }
 						title={ __( 'Total Impressions', 'google-site-kit' ) }
 						datapoint={ totalImpressions }
@@ -214,7 +212,9 @@ const Overview = ( {
 						stat={ 1 }
 						className={ classnames(
 							'googlesitekit-data-block--clicks googlesitekit-data-block--button-2',
-							topAlignedDataBlockClass
+							{
+								'googlesitekit-data-block--is-top-aligned': alignDataBlockOnTop,
+							}
 						) }
 						title={ __( 'Total Clicks', 'google-site-kit' ) }
 						datapoint={ totalClicks }
@@ -277,7 +277,9 @@ const Overview = ( {
 								stat={ 2 }
 								className={ classnames(
 									'googlesitekit-data-block--visitors googlesitekit-data-block--button-3',
-									topAlignedDataBlockClass
+									{
+										'googlesitekit-data-block--is-top-aligned': alignDataBlockOnTop,
+									}
 								) }
 								title={ __(
 									'Unique Visitors from Search',
