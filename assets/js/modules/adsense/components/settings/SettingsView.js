@@ -169,7 +169,6 @@ export default function SettingsView() {
 						<Link
 							href={ siteStatusURL }
 							className="googlesitekit-settings-module__cta-button"
-							inherit
 							external
 						>
 							{ __(

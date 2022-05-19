@@ -28,12 +28,6 @@
 			margin-top: 8px;
 		}
 
-		.googlesitekit-setup__wrapper {
-
-			@include shadow;
-			background-color: $c-base;
-		}
-
 		.googlesitekit-setup__step {
 			border-bottom: 1px solid $c-border-light;
 			margin-bottom: $grid-gap-phone;
@@ -49,16 +43,6 @@
 				margin-bottom: 0;
 				padding-bottom: 0;
 			}
-		}
-
-		.googlesitekit-setup__intro-title {
-			color: $c-primary;
-			font-size: 0.75rem;
-			font-weight: $fw-primary-medium;
-			letter-spacing: 0.16em;
-			line-height: 1.16;
-			margin: 0 0 17px 0;
-			text-transform: uppercase;
 		}
 
 		.googlesitekit-setup__title {
@@ -134,6 +118,22 @@
 
 	.googlesitekit-start-setup {
 		margin-right: 16px;
+	}
+
+	.googlesitekit-setup__wrapper {
+
+		@include shadow;
+		background-color: $c-base;
+
+		.googlesitekit-setup__intro-title {
+			color: $c-primary;
+			font-size: 0.75rem;
+			font-weight: $fw-primary-medium;
+			letter-spacing: 0.16em;
+			line-height: 1.16;
+			margin: 0 0 17px 0;
+			text-transform: uppercase;
+		}
 	}
 
 	.googlesitekit-setup__warning {

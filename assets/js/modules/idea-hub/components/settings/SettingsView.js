@@ -42,7 +42,7 @@ export default function SettingsView() {
 			'google-site-kit'
 		),
 		{
-			a: <Link href={ dashboardPermalink } inherit />,
+			a: <Link href={ dashboardPermalink } />,
 		}
 	);
 }

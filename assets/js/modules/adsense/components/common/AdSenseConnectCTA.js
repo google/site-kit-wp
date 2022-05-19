@@ -224,10 +224,7 @@ export default function AdSenseConnectCTA() {
 											</Button>
 										) }
 
-									<Link
-										onClick={ handleDismissModule }
-										inherit
-									>
+									<Link onClick={ handleDismissModule }>
 										{ __(
 											'Maybe later',
 											'google-site-kit'
@@ -247,7 +244,6 @@ export default function AdSenseConnectCTA() {
 													href={ supportURL }
 													external
 													hideExternalIndicator
-													inherit
 												/>
 											),
 										}

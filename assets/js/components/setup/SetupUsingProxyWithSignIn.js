@@ -357,7 +357,6 @@ export default function SetupUsingProxyWithSignIn() {
 																			onClick={
 																				goToSharedDashboard
 																			}
-																			inherit
 																		>
 																			{ __(
 																				'Skip sign-in and view limited dashboard',

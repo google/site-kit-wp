@@ -19,18 +19,12 @@
 .googlesitekit-cta-link {
 	color: $c-link;
 	cursor: pointer;
-	font-family: $f-primary;
-	font-size: 0.875rem;
-	font-weight: $fw-primary-medium;
+	font-family: inherit;
+	font-size: inherit;
+	font-weight: inherit;
 	padding: 0;
 	text-align: left;
 	text-decoration: none;
-
-	&.googlesitekit-cta-link--inherit {
-		font-family: inherit;
-		font-size: inherit;
-		font-weight: inherit;
-	}
 
 	&.googlesitekit-cta-link--caps {
 		text-transform: uppercase;
