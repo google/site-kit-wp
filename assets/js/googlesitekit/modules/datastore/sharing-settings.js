@@ -142,7 +142,7 @@ const baseActions = {
 		);
 
 		// Update module owner IDs in the sharing settings modules.
-		if ( response?.newOwnerIDs ) {
+		if ( Object.keys( response?.newOwnerIDs ).length ) {
 			for ( const [ slug, ownerID ] of Object.entries(
 				response.newOwnerIDs
 			) ) {
