@@ -52,6 +52,7 @@ import {
 	ANCHOR_ID_SPEED,
 	ANCHOR_ID_TRAFFIC,
 } from '../googlesitekit/constants';
+import { CORE_USER } from '../googlesitekit/datastore/user/constants';
 import { CORE_WIDGETS } from '../googlesitekit/widgets/datastore/constants';
 import { useFeature } from '../hooks/useFeature';
 import useViewOnly from '../hooks/useViewOnly';
@@ -61,27 +62,43 @@ function DashboardMainApp() {
 	const dashboardSharingEnabled = useFeature( 'dashboardSharing' );
 	const viewOnlyDashboard = useViewOnly();
 
+	const viewableModules = useSelect( ( select ) => {
+		if ( ! viewOnlyDashboard ) {
+			return null;
+		}
+
+		return select( CORE_USER ).getViewableModules();
+	} );
+
+	const widgetContextOptions = {
+		modules: viewableModules ? viewableModules : undefined,
+	};
+
 	const isTrafficActive = useSelect( ( select ) =>
 		select( CORE_WIDGETS ).isWidgetContextActive(
-			CONTEXT_MAIN_DASHBOARD_TRAFFIC
+			CONTEXT_MAIN_DASHBOARD_TRAFFIC,
+			widgetContextOptions
 		)
 	);
 
 	const isContentActive = useSelect( ( select ) =>
 		select( CORE_WIDGETS ).isWidgetContextActive(
-			CONTEXT_MAIN_DASHBOARD_CONTENT
+			CONTEXT_MAIN_DASHBOARD_CONTENT,
+			widgetContextOptions
 		)
 	);
 
 	const isSpeedActive = useSelect( ( select ) =>
 		select( CORE_WIDGETS ).isWidgetContextActive(
-			CONTEXT_MAIN_DASHBOARD_SPEED
+			CONTEXT_MAIN_DASHBOARD_SPEED,
+			widgetContextOptions
 		)
 	);
 
 	const isMonetizationActive = useSelect( ( select ) =>
 		select( CORE_WIDGETS ).isWidgetContextActive(
-			CONTEXT_MAIN_DASHBOARD_MONETIZATION
+			CONTEXT_MAIN_DASHBOARD_MONETIZATION,
+			widgetContextOptions
 		)
 	);
 

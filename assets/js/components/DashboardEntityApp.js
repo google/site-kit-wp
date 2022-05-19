@@ -49,6 +49,7 @@ import {
 	ANCHOR_ID_TRAFFIC,
 } from '../googlesitekit/constants';
 import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
+import { CORE_USER } from '../googlesitekit/datastore/user/constants';
 import Link from './Link';
 import VisuallyHidden from './VisuallyHidden';
 import { Cell, Grid, Row } from '../material-components';
@@ -63,8 +64,16 @@ import useViewOnly from '../hooks/useViewOnly';
 const { useSelect } = Data;
 
 function DashboardEntityApp() {
-	const dashboardSharingEnabled = useFeature( 'dashboardSharing' );
 	const viewOnlyDashboard = useViewOnly();
+	const dashboardSharingEnabled = useFeature( 'dashboardSharing' );
+
+	const viewableModules = useSelect( ( select ) => {
+		if ( ! viewOnlyDashboard ) {
+			return null;
+		}
+
+		return select( CORE_USER ).getViewableModules();
+	} );
 
 	const currentEntityURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getCurrentEntityURL()
@@ -76,27 +85,35 @@ function DashboardEntityApp() {
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' )
 	);
 
+	const widgetContextOptions = {
+		modules: viewableModules ? viewableModules : undefined,
+	};
+
 	const isTrafficActive = useSelect( ( select ) =>
 		select( CORE_WIDGETS ).isWidgetContextActive(
-			CONTEXT_ENTITY_DASHBOARD_TRAFFIC
+			CONTEXT_ENTITY_DASHBOARD_TRAFFIC,
+			widgetContextOptions
 		)
 	);
 
 	const isContentActive = useSelect( ( select ) =>
 		select( CORE_WIDGETS ).isWidgetContextActive(
-			CONTEXT_ENTITY_DASHBOARD_CONTENT
+			CONTEXT_ENTITY_DASHBOARD_CONTENT,
+			widgetContextOptions
 		)
 	);
 
 	const isSpeedActive = useSelect( ( select ) =>
 		select( CORE_WIDGETS ).isWidgetContextActive(
-			CONTEXT_ENTITY_DASHBOARD_SPEED
+			CONTEXT_ENTITY_DASHBOARD_SPEED,
+			widgetContextOptions
 		)
 	);
 
 	const isMonetizationActive = useSelect( ( select ) =>
 		select( CORE_WIDGETS ).isWidgetContextActive(
-			CONTEXT_ENTITY_DASHBOARD_MONETIZATION
+			CONTEXT_ENTITY_DASHBOARD_MONETIZATION,
+			widgetContextOptions
 		)
 	);
 
