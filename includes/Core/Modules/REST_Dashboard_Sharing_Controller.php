@@ -95,7 +95,9 @@ class REST_Dashboard_Sharing_Controller {
 						return new WP_REST_Response(
 							array(
 								'settings'    => $new_sharing_settings,
-								'newOwnerIDs' => $changed_module_owners,
+								// Cast array to an object so JSON encoded response is always an object,
+								// even when the array is empty.
+								'newOwnerIDs' => (object) $changed_module_owners,
 							)
 						);
 					},
