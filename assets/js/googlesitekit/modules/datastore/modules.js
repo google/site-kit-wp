@@ -58,6 +58,7 @@ const REGISTER_MODULE = 'REGISTER_MODULE';
 const RECEIVE_CHECK_REQUIREMENTS_ERROR = 'RECEIVE_CHECK_REQUIREMENTS_ERROR';
 const RECEIVE_CHECK_REQUIREMENTS_SUCCESS = 'RECEIVE_CHECK_REQUIREMENTS_SUCCESS';
 const RECEIVE_RECOVERABLE_MODULES = 'RECEIVE_RECOVERABLE_MODULES';
+const RECEIVE_SHARED_OWNERSHIP_MODULES = 'RECEIVE_SHARED_OWNERSHIP_MODULES';
 
 const moduleDefaults = {
 	slug: '',
@@ -190,6 +191,7 @@ const baseInitialState = {
 	checkRequirementsResults: {},
 	moduleAccess: {},
 	recoverableModules: undefined,
+	sharedOwnershipModules: undefined,
 };
 
 const baseActions = {
@@ -415,7 +417,7 @@ const baseActions = {
 	 * Stores recoverable modules in the datastore.
 	 *
 	 * Because this is frequently-accessed data, this is usually sourced
-	 * from a global variable (`_googlesitekitSiteData`), set by PHP
+	 * from a global variable (`_googlesitekitDashboardSharingData`), set by PHP
 	 * in the `before_print` callback for `googlesitekit-datastore-site`.
 	 *
 	 * @since 1.74.0
@@ -481,6 +483,31 @@ const baseActions = {
 			};
 		}
 	),
+
+	/**
+	 * Receives the shared ownership modules for dashboard sharing.
+	 * Stores shared ownership modules in the datastore.
+	 *
+	 * Because this is frequently-accessed data, this is usually sourced
+	 * from a global variable (`_googlesitekitDashboardSharingData`), set by PHP
+	 * in the `before_print` callback for `googlesitekit-datastore-site`.
+	 *
+	 * @since n.e.x.t
+	 * @private
+	 *
+	 * @param {Object} sharedOwnershipModules Shared ownership modules, usually supplied via a global variable from PHP.
+	 * @return {Object} Action for RECEIVE_SHARED_OWNERSHIP_MODULES.
+	 */
+	receiveSharedOwnershipModules( sharedOwnershipModules ) {
+		invariant(
+			sharedOwnershipModules,
+			'sharedOwnershipModules is required.'
+		);
+		return {
+			payload: { sharedOwnershipModules },
+			type: RECEIVE_SHARED_OWNERSHIP_MODULES,
+		};
+	},
 };
 
 export const baseControls = {
@@ -557,6 +584,14 @@ const baseReducer = ( state, { type, payload } ) => {
 			return {
 				...state,
 				recoverableModules,
+			};
+		}
+
+		case RECEIVE_SHARED_OWNERSHIP_MODULES: {
+			const { sharedOwnershipModules } = payload;
+			return {
+				...state,
+				sharedOwnershipModules,
 			};
 		}
 
@@ -662,6 +697,28 @@ const baseResolvers = {
 			recoverableModules,
 		} = global._googlesitekitDashboardSharingData;
 		yield baseActions.receiveRecoverableModules( recoverableModules );
+	},
+
+	*getSharedOwnershipModules() {
+		const registry = yield Data.commonActions.getRegistry();
+
+		if ( registry.select( CORE_MODULES ).getSharedOwnershipModules() ) {
+			return;
+		}
+
+		if ( ! global._googlesitekitDashboardSharingData ) {
+			global.console.error(
+				'Could not load core/modules dashboard sharing.'
+			);
+			return;
+		}
+
+		const {
+			sharedOwnershipModules,
+		} = global._googlesitekitDashboardSharingData;
+		yield baseActions.receiveSharedOwnershipModules(
+			sharedOwnershipModules
+		);
 	},
 };
 
@@ -1134,6 +1191,46 @@ const baseSelectors = {
 			{}
 		);
 	} ),
+
+	/**
+	 * Gets the list of shared ownership modules for dashboard sharing.
+	 *
+	 * Returns an Object/map of objects, keyed by slug as same as `getModules`.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(Object|undefined)} Shared ownership modules available on the site; `undefined` if not loaded.
+	 */
+	getSharedOwnershipModules: createRegistrySelector(
+		( select ) => ( state ) => {
+			const modules = select( CORE_MODULES ).getModules();
+
+			// Return `undefined` if modules OR sharedOwnershipModules haven't been loaded yet.
+			if (
+				state.sharedOwnershipModules === undefined ||
+				modules === undefined
+			) {
+				return undefined;
+			}
+
+			return Object.values( modules ).reduce(
+				( sharedOwnershipModules, module ) => {
+					if (
+						state.sharedOwnershipModules.includes( module.slug )
+					) {
+						return {
+							...sharedOwnershipModules,
+							[ module.slug ]: module,
+						};
+					}
+
+					return sharedOwnershipModules;
+				},
+				{}
+			);
+		}
+	),
 };
 
 const store = Data.combineStores(
