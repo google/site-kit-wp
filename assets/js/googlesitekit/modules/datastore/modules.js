@@ -58,6 +58,7 @@ const REGISTER_MODULE = 'REGISTER_MODULE';
 const RECEIVE_CHECK_REQUIREMENTS_ERROR = 'RECEIVE_CHECK_REQUIREMENTS_ERROR';
 const RECEIVE_CHECK_REQUIREMENTS_SUCCESS = 'RECEIVE_CHECK_REQUIREMENTS_SUCCESS';
 const RECEIVE_RECOVERABLE_MODULES = 'RECEIVE_RECOVERABLE_MODULES';
+const RECEIVE_SHARED_OWNERSHIP_MODULES = 'RECEIVE_SHARED_OWNERSHIP_MODULES';
 
 const moduleDefaults = {
 	slug: '',
@@ -190,6 +191,7 @@ const baseInitialState = {
 	checkRequirementsResults: {},
 	moduleAccess: {},
 	recoverableModules: undefined,
+	sharedOwnershipModules: undefined,
 };
 
 const baseActions = {
@@ -481,6 +483,31 @@ const baseActions = {
 			};
 		}
 	),
+
+	/**
+	 * Receives the shared ownership modules for dashboard sharing.
+	 * Stores shared ownership modules in the datastore.
+	 *
+	 * Because this is frequently-accessed data, this is usually sourced
+	 * from a global variable (`_googlesitekitDashboardSharingData`), set by PHP
+	 * in the `before_print` callback for `googlesitekit-datastore-site`.
+	 *
+	 * @since n.e.x.t
+	 * @private
+	 *
+	 * @param {Object} sharedOwnershipModules Shared ownership modules, usually supplied via a global variable from PHP.
+	 * @return {Object} Action for RECEIVE_SHARED_OWNERSHIP_MODULES.
+	 */
+	receiveSharedOwnershipModules( sharedOwnershipModules ) {
+		invariant(
+			sharedOwnershipModules,
+			'sharedOwnershipModules is required.'
+		);
+		return {
+			payload: { sharedOwnershipModules },
+			type: RECEIVE_SHARED_OWNERSHIP_MODULES,
+		};
+	},
 };
 
 export const baseControls = {
