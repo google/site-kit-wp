@@ -1191,6 +1191,46 @@ const baseSelectors = {
 			{}
 		);
 	} ),
+
+	/**
+	 * Gets the list of shared ownership modules for dashboard sharing.
+	 *
+	 * Returns an Object/map of objects, keyed by slug as same as `getModules`.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(Object|undefined)} Shared ownership modules available on the site; `undefined` if not loaded.
+	 */
+	getSharedOwnershipModules: createRegistrySelector(
+		( select ) => ( state ) => {
+			const modules = select( CORE_MODULES ).getModules();
+
+			// Return `undefined` if modules OR sharedOwnershipModules haven't been loaded yet.
+			if (
+				state.sharedOwnershipModules === undefined ||
+				modules === undefined
+			) {
+				return undefined;
+			}
+
+			return Object.values( modules ).reduce(
+				( sharedOwnershipModules, module ) => {
+					if (
+						state.sharedOwnershipModules.includes( module.slug )
+					) {
+						return {
+							...sharedOwnershipModules,
+							[ module.slug ]: module,
+						};
+					}
+
+					return sharedOwnershipModules;
+				},
+				{}
+			);
+		}
+	),
 };
 
 const store = Data.combineStores(
