@@ -76,7 +76,6 @@ export default function AnonymizeIPSwitch() {
 				<Link
 					href={ supportURL }
 					external
-					inherit
 					aria-label={ __(
 						'Learn more about IP anonymization.',
 						'google-site-kit'

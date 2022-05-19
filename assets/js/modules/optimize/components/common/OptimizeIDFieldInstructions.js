@@ -43,7 +43,7 @@ export default function OptimizeIDFieldInstructions() {
 				'Please copy and paste your Optimize ID to complete your setup.',
 				'google-site-kit'
 			) }{ ' ' }
-			<Link href={ supportURL } external inherit>
+			<Link href={ supportURL } external>
 				{ __( 'You can locate this here.', 'google-site-kit' ) }
 			</Link>
 		</p>

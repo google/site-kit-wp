@@ -50,7 +50,7 @@ describe( 'SettingsEdit', () => {
 		] );
 	} );
 
-	it( 'sets the account ID and property ID of an existing tag when present', async () => {
+	it( 'does not set the account ID or property ID of an existing tag when present', async () => {
 		fetchMock.get( /tagmanager\/data\/settings/, { body: {} } );
 		fetchMock.getOnce(
 			/^\/google-site-kit\/v1\/modules\/analytics-4\/data\/properties/,
@@ -106,24 +106,17 @@ describe( 'SettingsEdit', () => {
 		registry
 			.dispatch( MODULES_ANALYTICS )
 			.receiveGetExistingTag( existingTag.propertyID );
-		registry.dispatch( MODULES_ANALYTICS ).receiveGetTagPermission(
-			{
-				accountID: existingTag.accountID,
-				permission: true,
-			},
-			{ propertyID: existingTag.propertyID }
-		);
 
 		await waitFor( () => {
 			render( <SettingsEdit />, { registry } );
 		} );
 
-		expect( registry.select( MODULES_ANALYTICS ).getAccountID() ).toBe(
-			existingTag.accountID
-		);
-		expect( registry.select( MODULES_ANALYTICS ).getPropertyID() ).toBe(
-			existingTag.propertyID
-		);
+		expect(
+			registry.select( MODULES_ANALYTICS ).getAccountID()
+		).toBeUndefined();
+		expect(
+			registry.select( MODULES_ANALYTICS ).getPropertyID()
+		).toBeUndefined();
 		expect( registry.select( MODULES_ANALYTICS ).hasErrors() ).toBeFalsy();
 	} );
 } );

@@ -91,7 +91,6 @@ export default function Description() {
 					a: (
 						<Link
 							href="https://sitekit.withgoogle.com/documentation/using-site-kit/dashboard-sharing/"
-							inherit
 							external
 							aria-label={ __(
 								'Learn more about dashboard sharing',

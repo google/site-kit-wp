@@ -23,12 +23,19 @@ import Modules from 'googlesitekit-modules';
 import { isFeatureEnabled } from '../../../features';
 import { MODULES_ANALYTICS } from './constants';
 import {
+	getCanUseSnippet,
 	rollbackChanges,
 	submitChanges,
 	validateCanSubmitChanges,
 } from './settings';
 
 const baseModuleStore = Modules.createModuleStore( 'analytics', {
+	ownedSettingsSlugs: [
+		'accountID',
+		'internalWebPropertyID',
+		'profileID',
+		'propertyID',
+	],
 	storeName: MODULES_ANALYTICS,
 	settingSlugs: [
 		'accountID',
@@ -49,5 +56,7 @@ const baseModuleStore = Modules.createModuleStore( 'analytics', {
 	rollbackChanges,
 	validateCanSubmitChanges,
 } );
+
+baseModuleStore.selectors.getCanUseSnippet = getCanUseSnippet;
 
 export default baseModuleStore;

@@ -29,7 +29,6 @@ import Data from 'googlesitekit-data';
 import ProgressBar from '../../../../components/ProgressBar';
 import { Select, Option } from '../../../../material-components';
 import { MODULES_ANALYTICS, ACCOUNT_CREATE } from '../../datastore/constants';
-import { MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
 import { trackEvent } from '../../../../util';
 import useViewContext from '../../../../hooks/useViewContext';
 const { useSelect, useDispatch } = Data;
@@ -46,22 +45,6 @@ export default function AccountSelect() {
 			'getAccounts'
 		),
 	} ) );
-
-	const { hasExistingTag, hasGTMPropertyID } = useSelect( ( select ) => {
-		const data = {
-			hasExistingTag: select( MODULES_ANALYTICS ).hasExistingTag(),
-			hasGTMPropertyID: false,
-		};
-
-		// No need to get a single Analytics property ID if we already have an existing Analytics tag.
-		if ( ! data.hasExistingTag ) {
-			data.hasGTMPropertyID = !! select(
-				MODULES_TAGMANAGER
-			).getSingleAnalyticsPropertyID();
-		}
-
-		return data;
-	} );
 
 	const { selectAccount } = useDispatch( MODULES_ANALYTICS );
 	const onChange = useCallback(
@@ -89,7 +72,6 @@ export default function AccountSelect() {
 			label={ __( 'Account', 'google-site-kit' ) }
 			value={ accountID }
 			onEnhancedChange={ onChange }
-			disabled={ hasExistingTag || hasGTMPropertyID }
 			enhanced
 			outlined
 		>

@@ -357,10 +357,9 @@ export default function SetupUsingProxyWithSignIn() {
 																			onClick={
 																				goToSharedDashboard
 																			}
-																			inherit
 																		>
 																			{ __(
-																				'Go to dashboard',
+																				'Skip sign-in and view limited dashboard',
 																				'google-site-kit'
 																			) }
 																		</Link>

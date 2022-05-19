@@ -58,11 +58,14 @@ import Layout from './layout/Layout';
 import { CORE_WIDGETS } from '../googlesitekit/widgets/datastore/constants';
 import ScrollEffect from './ScrollEffect';
 import EntityBannerNotifications from './notifications/EntityBannerNotifications';
+import DashboardSharingSettingsButton from './dashboard-sharing/DashboardSharingSettingsButton';
+import { useFeature } from '../hooks/useFeature';
 import useViewOnly from '../hooks/useViewOnly';
 const { useSelect } = Data;
 
 function DashboardEntityApp() {
 	const viewOnlyDashboard = useViewOnly();
+	const dashboardSharingEnabled = useFeature( 'dashboardSharing' );
 
 	const viewableModules = useSelect( ( select ) => {
 		if ( ! viewOnlyDashboard ) {
@@ -134,7 +137,7 @@ function DashboardEntityApp() {
 					<Row>
 						<Cell size={ 12 }>
 							<Fragment>
-								<Link href={ dashboardURL } inherit back small>
+								<Link href={ dashboardURL } back small>
 									{ __(
 										'Back to the Site Kit Dashboard',
 										'google-site-kit'
@@ -170,14 +173,12 @@ function DashboardEntityApp() {
 																<Link
 																	href="https://wordpress.org/support/plugin/google-site-kit/"
 																	external
-																	inherit
 																/>
 															),
 															link2: (
 																<Link
 																	href="https://sitekit.withgoogle.com/documentation/troubleshooting/dashboard/#url-not-part-of-this-site"
 																	external
-																	inherit
 																/>
 															),
 															VisuallyHidden: (
@@ -203,6 +204,9 @@ function DashboardEntityApp() {
 			<Header subHeader={ <EntityBannerNotifications /> } showNavigation>
 				<EntitySearchInput />
 				<DateRangeSelector />
+				{ dashboardSharingEnabled && ! viewOnlyDashboard && (
+					<DashboardSharingSettingsButton />
+				) }
 				<HelpMenu />
 			</Header>
 			<WidgetContextRenderer

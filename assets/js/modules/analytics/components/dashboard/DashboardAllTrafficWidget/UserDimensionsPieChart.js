@@ -196,7 +196,7 @@ export default function UserDimensionsPieChart( props ) {
 		`<p>
 			<a
 				href="${ url }"
-				class="googlesitekit-cta-link googlesitekit-cta-link--external googlesitekit-cta-link--inherit googlesitekit-cta-link__tooltip"
+				class="googlesitekit-cta-link googlesitekit-cta-link--external googlesitekit-cta-link__tooltip"
 				target="_blank"
 				rel="noreferrer noopener"
 				data-row-label="${ rowLabel }"

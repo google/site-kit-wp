@@ -23,6 +23,7 @@ import API from 'googlesitekit-api';
 import {
 	createTestRegistry,
 	muteFetch,
+	provideModules,
 	unsubscribeFromAll,
 	untilResolved,
 } from '../../../../../tests/js/utils';
@@ -38,6 +39,9 @@ describe( 'core/modules modules', () => {
 	const dashboardSharingDataBaseVar = '_googlesitekitDashboardSharingData';
 	const recoverableModuleList = {
 		recoverableModules: [ 'analytics', 'search-console', 'tagmanager' ],
+	};
+	const sharedOwnershipModulesList = {
+		sharedOwnershipModules: [ 'analytics', 'search-console', 'tagmanager' ],
 	};
 
 	const sortedFixtures = sortByProperty( FIXTURES, 'order' );
@@ -674,6 +678,28 @@ describe( 'core/modules modules', () => {
 				expect( state.moduleAccess ).toMatchObject( {
 					'search-console': true,
 				} );
+			} );
+		} );
+
+		describe( 'receiveSharedOwnershipModules', () => {
+			it( 'requires the sharedOwnershipModules param', () => {
+				expect( () => {
+					registry
+						.dispatch( CORE_MODULES )
+						.receiveSharedOwnershipModules();
+				} ).toThrow( 'sharedOwnershipModules is required' );
+			} );
+
+			it( 'receives sharedOwnershipModules and sets it to the state', () => {
+				registry
+					.dispatch( CORE_MODULES )
+					.receiveSharedOwnershipModules(
+						sharedOwnershipModulesList.sharedOwnershipModules
+					);
+
+				expect( store.getState().sharedOwnershipModules ).toMatchObject(
+					sharedOwnershipModulesList.sharedOwnershipModules
+				);
 			} );
 		} );
 	} );
@@ -1430,6 +1456,71 @@ describe( 'core/modules modules', () => {
 				expect( recoverableModules ).toMatchObject(
 					getModulesBySlugList(
 						recoverableModuleList.recoverableModules,
+						fixturesKeyValue
+					)
+				);
+			} );
+		} );
+
+		describe( 'getSharedOwnershipModules', () => {
+			it( 'should return undefined if `sharedOwnershipModules` cannot be loaded', () => {
+				global[ dashboardSharingDataBaseVar ] = undefined;
+
+				provideModules( registry, FIXTURES );
+
+				const sharedOwnershipModules = registry
+					.select( CORE_MODULES )
+					.getSharedOwnershipModules();
+
+				expect( console ).toHaveErrored();
+				expect( sharedOwnershipModules ).toBeUndefined();
+			} );
+
+			it( 'should return undefined if `modules` list cannot be loaded', () => {
+				global[
+					dashboardSharingDataBaseVar
+				] = sharedOwnershipModulesList;
+
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
+					{ body: FIXTURES, status: 200 }
+				);
+
+				registry.select( CORE_MODULES ).getSharedOwnershipModules();
+
+				const modules = registry.select( CORE_MODULES ).getModules();
+
+				expect( modules ).toBeUndefined();
+			} );
+
+			it( 'should return an empty object if there is no `sharedOwnershipModules`', async () => {
+				global[ dashboardSharingDataBaseVar ] = {
+					sharedOwnershipModules: [],
+				};
+
+				provideModules( registry, FIXTURES );
+
+				const sharedOwnershipModules = registry
+					.select( CORE_MODULES )
+					.getSharedOwnershipModules();
+
+				expect( sharedOwnershipModules ).toMatchObject( {} );
+			} );
+
+			it( 'should return the modules object for each shared ownership module', async () => {
+				global[
+					dashboardSharingDataBaseVar
+				] = sharedOwnershipModulesList;
+
+				provideModules( registry, FIXTURES );
+
+				const sharedOwnershipModules = registry
+					.select( CORE_MODULES )
+					.getSharedOwnershipModules();
+
+				expect( sharedOwnershipModules ).toMatchObject(
+					getModulesBySlugList(
+						sharedOwnershipModulesList.sharedOwnershipModules,
 						fixturesKeyValue
 					)
 				);

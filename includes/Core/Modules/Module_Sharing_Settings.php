@@ -130,11 +130,11 @@ class Module_Sharing_Settings extends Setting {
 	 * Only updates sharing settings for a module if the current user has the capability to
 	 * do so.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.75.0
 	 *
 	 * @param array $new_partial_settings Partial settings array to update existing settings with.
 	 *
-	 * @return bool True on success, false on failure.
+	 * @return bool True if sharing settings option was updated, false otherwise.
 	 */
 	public function merge( array $new_partial_settings ) {
 		$settings = $this->get();
