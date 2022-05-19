@@ -23,6 +23,7 @@ import API from 'googlesitekit-api';
 import {
 	createTestRegistry,
 	muteFetch,
+	provideModules,
 	unsubscribeFromAll,
 	untilResolved,
 } from '../../../../../tests/js/utils';
@@ -1465,10 +1466,7 @@ describe( 'core/modules modules', () => {
 			it( 'should return undefined if `sharedOwnershipModules` cannot be loaded', () => {
 				global[ dashboardSharingDataBaseVar ] = undefined;
 
-				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
-					{ body: FIXTURES, status: 200 }
-				);
+				provideModules( registry, FIXTURES );
 
 				const sharedOwnershipModules = registry
 					.select( CORE_MODULES )
@@ -1500,20 +1498,7 @@ describe( 'core/modules modules', () => {
 					sharedOwnershipModules: [],
 				};
 
-				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
-					{ body: FIXTURES, status: 200 }
-				);
-
-				const initialModules = registry
-					.select( CORE_MODULES )
-					.getModules();
-				// The modules info will be its initial value while the modules
-				// info is fetched.
-				expect( initialModules ).toBeUndefined();
-				await untilResolved( registry, CORE_MODULES ).getModules();
-
-				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				provideModules( registry, FIXTURES );
 
 				const sharedOwnershipModules = registry
 					.select( CORE_MODULES )
@@ -1527,20 +1512,7 @@ describe( 'core/modules modules', () => {
 					dashboardSharingDataBaseVar
 				] = sharedOwnershipModulesList;
 
-				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
-					{ body: FIXTURES, status: 200 }
-				);
-
-				const initialModules = registry
-					.select( CORE_MODULES )
-					.getModules();
-				// The modules info will be its initial value while the modules
-				// info is fetched.
-				expect( initialModules ).toBeUndefined();
-				await untilResolved( registry, CORE_MODULES ).getModules();
-
-				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				provideModules( registry, FIXTURES );
 
 				const sharedOwnershipModules = registry
 					.select( CORE_MODULES )
