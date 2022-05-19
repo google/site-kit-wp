@@ -1460,5 +1460,99 @@ describe( 'core/modules modules', () => {
 				);
 			} );
 		} );
+
+		describe( 'getSharedOwnershipModules', () => {
+			it( 'should return undefined if `sharedOwnershipModules` cannot be loaded', () => {
+				global[ dashboardSharingDataBaseVar ] = undefined;
+
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
+					{ body: FIXTURES, status: 200 }
+				);
+
+				const sharedOwnershipModules = registry
+					.select( CORE_MODULES )
+					.getSharedOwnershipModules();
+
+				expect( console ).toHaveErrored();
+				expect( sharedOwnershipModules ).toBeUndefined();
+			} );
+
+			it( 'should return undefined if `modules` list cannot be loaded', () => {
+				global[
+					dashboardSharingDataBaseVar
+				] = sharedOwnershipModulesList;
+
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
+					{ body: FIXTURES, status: 200 }
+				);
+
+				registry.select( CORE_MODULES ).getSharedOwnershipModules();
+
+				const modules = registry.select( CORE_MODULES ).getModules();
+
+				expect( modules ).toBeUndefined();
+			} );
+
+			it( 'should return an empty object if there is no `sharedOwnershipModules`', async () => {
+				global[ dashboardSharingDataBaseVar ] = {
+					sharedOwnershipModules: [],
+				};
+
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
+					{ body: FIXTURES, status: 200 }
+				);
+
+				const initialModules = registry
+					.select( CORE_MODULES )
+					.getModules();
+				// The modules info will be its initial value while the modules
+				// info is fetched.
+				expect( initialModules ).toBeUndefined();
+				await untilResolved( registry, CORE_MODULES ).getModules();
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+
+				const sharedOwnershipModules = registry
+					.select( CORE_MODULES )
+					.getSharedOwnershipModules();
+
+				expect( sharedOwnershipModules ).toMatchObject( {} );
+			} );
+
+			it( 'should return the modules object for each shared ownership module', async () => {
+				global[
+					dashboardSharingDataBaseVar
+				] = sharedOwnershipModulesList;
+
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
+					{ body: FIXTURES, status: 200 }
+				);
+
+				const initialModules = registry
+					.select( CORE_MODULES )
+					.getModules();
+				// The modules info will be its initial value while the modules
+				// info is fetched.
+				expect( initialModules ).toBeUndefined();
+				await untilResolved( registry, CORE_MODULES ).getModules();
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+
+				const sharedOwnershipModules = registry
+					.select( CORE_MODULES )
+					.getSharedOwnershipModules();
+
+				expect( sharedOwnershipModules ).toMatchObject(
+					getModulesBySlugList(
+						sharedOwnershipModulesList.sharedOwnershipModules,
+						fixturesKeyValue
+					)
+				);
+			} );
+		} );
 	} );
 } );
