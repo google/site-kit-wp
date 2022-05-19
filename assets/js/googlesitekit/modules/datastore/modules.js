@@ -587,6 +587,14 @@ const baseReducer = ( state, { type, payload } ) => {
 			};
 		}
 
+		case RECEIVE_SHARED_OWNERSHIP_MODULES: {
+			const { sharedOwnershipModules } = payload;
+			return {
+				...state,
+				sharedOwnershipModules,
+			};
+		}
+
 		default: {
 			return state;
 		}
