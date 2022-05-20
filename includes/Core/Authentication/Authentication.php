@@ -1184,7 +1184,7 @@ final class Authentication {
 					$message = sprintf(
 						/* translators: %1$s: Plugin name. %2$s: Message. */
 						__( '%1$s: %2$s', 'google-site-kit' ),
-						esc_html__( 'Site Kit by Google', 'google-site-kit' ),
+						__( 'Site Kit by Google', 'google-site-kit' ),
 						$auth_client->get_error_message( $error_code )
 					);
 
