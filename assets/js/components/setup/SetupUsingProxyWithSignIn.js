@@ -115,11 +115,11 @@ export default function SetupUsingProxyWithSignIn() {
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 	const { activateModule } = useDispatch( CORE_MODULES );
 
-	const goToSharedDashboard = useCallback( () => {
-		dismissItem( SHARED_DASHBOARD_SPLASH_ITEM_KEY );
-
+	const goToSharedDashboard = useCallback( async () => {
+		await dismissItem( SHARED_DASHBOARD_SPLASH_ITEM_KEY );
+		await trackEvent( viewContext, 'skip_setup_to_viewonly' );
 		navigateTo( dashboardURL );
-	}, [ dashboardURL, dismissItem, navigateTo ] );
+	}, [ dashboardURL, dismissItem, navigateTo, viewContext ] );
 
 	const onButtonClick = useCallback(
 		async ( event ) => {
