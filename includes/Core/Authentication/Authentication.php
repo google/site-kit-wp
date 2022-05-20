@@ -1113,7 +1113,7 @@ final class Authentication {
 									/* translators: %1$s: Plugin name. %2$s: Notice content. */
 									__( '%1$s: %2$s', 'google-site-kit' ),
 									__( 'Site Kit by Google', 'google-site-kit' ),
-									esc_html__( 'You need to reauthenticate your Google account.', 'google-site-kit' )
+									__( 'You need to reauthenticate your Google account.', 'google-site-kit' )
 								)
 							);
 						?>
