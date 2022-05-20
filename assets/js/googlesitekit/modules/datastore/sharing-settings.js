@@ -38,6 +38,7 @@ const RECEIVE_SHAREABLE_ROLES = 'RECEIVE_SHAREABLE_ROLES';
 const baseInitialState = {
 	sharingSettings: undefined,
 	savedSharingSettings: undefined,
+	shareableRoles: undefined,
 };
 
 const fetchSaveSharingSettingsStore = createFetchStore( {
@@ -239,6 +240,15 @@ const baseReducer = ( state, { type, payload } ) => {
 				...state,
 				sharingSettings,
 				savedSharingSettings: sharingSettings,
+			};
+		}
+
+		case RECEIVE_SHAREABLE_ROLES: {
+			const { shareableRoles } = payload;
+
+			return {
+				...state,
+				shareableRoles,
 			};
 		}
 
