@@ -277,6 +277,19 @@ const baseSelectors = {
 		const { sharingSettings } = state;
 		return sharingSettings;
 	},
+
+	/**
+	 * Gets the current dashboard shareable roles.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(Object|undefined)} Shareable Roles object. Returns undefined if it is not loaded yet.
+	 */
+	getShareableRoles( state ) {
+		const { shareableRoles } = state;
+		return shareableRoles;
+	},
 };
 
 const store = Data.combineStores( fetchSaveSharingSettingsStore, {
