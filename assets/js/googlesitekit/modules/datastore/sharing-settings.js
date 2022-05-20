@@ -128,11 +128,10 @@ const baseActions = {
 	 */
 	*saveSharingSettings() {
 		const registry = yield Data.commonActions.getRegistry();
-		// TODO: Refactor to use `getSharingSettings` selector
-		// to obtain the `sharingSettings` from the state in 4795.
-		const { sharingSettings } = registry.stores[
-			CORE_MODULES
-		].store.getState();
+
+		const sharingSettings = registry
+			.select( CORE_MODULES )
+			.getSharingSettings();
 
 		const {
 			response,
