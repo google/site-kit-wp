@@ -227,9 +227,40 @@ const baseReducer = ( state, { type, payload } ) => {
 	}
 };
 
-const baseResolvers = {};
+const baseResolvers = {
+	*getSharingSettings() {
+		const registry = yield Data.commonActions.getRegistry();
 
-const baseSelectors = {};
+		if ( registry.select( CORE_MODULES ).getSharingSettings() ) {
+			return;
+		}
+
+		if ( ! global._googlesitekitDashboardSharingData ) {
+			global.console.error(
+				'Could not load core/modules dashboard sharing settings.'
+			);
+			return;
+		}
+
+		const { settings } = global._googlesitekitDashboardSharingData;
+		yield actions.receiveGetSharingSettings( settings );
+	},
+};
+
+const baseSelectors = {
+	/**
+	 * Gets the current dashboard sharing settings.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(Object|undefined)} Sharing Settings object. Returns undefined if it is not loaded yet.
+	 */
+	getSharingSettings( state ) {
+		const { sharingSettings } = state;
+		return sharingSettings;
+	},
+};
 
 const store = Data.combineStores( fetchSaveSharingSettingsStore, {
 	initialState: baseInitialState,
