@@ -21,6 +21,7 @@
  */
 import { createInterpolateElement } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
+import useViewContext from '../../hooks/useViewContext';
 
 /**
  * Internal dependencies
@@ -28,6 +29,7 @@ import { __ } from '@wordpress/i18n';
 import OptIn from '../OptIn';
 
 export default function Tracking() {
+	const viewContext = useViewContext;
 	return (
 		<li className="googlesitekit-view-only-menu__list-item">
 			<p>
@@ -41,7 +43,9 @@ export default function Tracking() {
 					}
 				) }
 			</p>
-			<OptIn />
+			<OptIn
+				trackEventCategory={ `${ viewContext }_headerbar_viewonly` }
+			/>
 		</li>
 	);
 }

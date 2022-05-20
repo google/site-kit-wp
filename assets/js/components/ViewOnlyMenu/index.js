@@ -38,10 +38,13 @@ import Menu from '../Menu';
 import Description from './Description';
 import SharedServices from './SharedServices';
 import Tracking from './Tracking';
+import useViewContext from '../../hooks/useViewContext';
+import { trackEvent } from '../../util';
 
 export default function ViewOnlyMenu() {
 	const [ menuOpen, setMenuOpen ] = useState( false );
 	const menuWrapperRef = useRef();
+	const viewContext = useViewContext();
 
 	useClickAway( menuWrapperRef, () => setMenuOpen( false ) );
 	useKeyCodesInside( [ ESCAPE, TAB ], menuWrapperRef, () =>
@@ -49,8 +52,11 @@ export default function ViewOnlyMenu() {
 	);
 
 	const toggleMenu = useCallback( () => {
+		if ( ! menuOpen ) {
+			trackEvent( `${ viewContext }_headerbar`, 'open_viewonly' );
+		}
 		setMenuOpen( ! menuOpen );
-	}, [ menuOpen ] );
+	}, [ menuOpen, viewContext ] );
 
 	return (
 		<div
