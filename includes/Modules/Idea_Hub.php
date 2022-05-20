@@ -312,9 +312,14 @@ final class Idea_Hub extends Module
 			array(
 				'content'         => function() use ( $escape_and_wrap_notice_content ) {
 					$message = sprintf(
-						/* translators: %s: URL to saved ideas */
-						__( 'Site Kit by Google: Want some inspiration for a new post? <a href="%s">Revisit your saved ideas</a> in Site Kit.', 'google-site-kit' ),
-						esc_url( $this->context->admin_url( 'dashboard', array( 'idea-hub-tab' => 'saved-ideas' ) ) )
+						/* translators: %1$s: Plugin name. %2$s: Notice content. */
+						__( '%1$s: %2$s', 'google-site-kit' ),
+						get_plugin_data( GOOGLESITEKIT_PLUGIN_MAIN_FILE )['Name'],
+						sprintf(
+							/* translators: %s: URL to saved ideas */
+							__( 'Want some inspiration for a new post? <a href="%s">Revisit your saved ideas</a> in Site Kit.', 'google-site-kit' ),
+							esc_url( $this->context->admin_url( 'dashboard', array( 'idea-hub-tab' => 'saved-ideas' ) ) )
+						)
 					);
 
 					return $escape_and_wrap_notice_content( $message );
@@ -348,9 +353,14 @@ final class Idea_Hub extends Module
 			array(
 				'content'         => function() use ( $escape_and_wrap_notice_content ) {
 					$message = sprintf(
-						/* translators: %s: URL to new ideas */
-						__( 'Site Kit by Google: Want some inspiration for a new post? <a href="%s">Review your new ideas</a> in Site Kit.', 'google-site-kit' ),
-						esc_url( $this->context->admin_url( 'dashboard', array( 'idea-hub-tab' => 'new-ideas' ) ) )
+						/* translators: %1$s: Plugin name. %2$s: Notice content. */
+						__( '%1$s: %2$s', 'google-site-kit' ),
+						get_plugin_data( GOOGLESITEKIT_PLUGIN_MAIN_FILE )['Name'],
+						sprintf(
+							/* translators: %s: URL to saved ideas */
+							__( 'Want some inspiration for a new post? <a href="%s">Review your new ideas</a> in Site Kit.', 'google-site-kit' ),
+							esc_url( $this->context->admin_url( 'dashboard', array( 'idea-hub-tab' => 'new-ideas' ) ) )
+						)
 					);
 
 					return $escape_and_wrap_notice_content( $message );

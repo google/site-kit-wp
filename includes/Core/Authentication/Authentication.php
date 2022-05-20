@@ -1054,12 +1054,14 @@ final class Authentication {
 				'content'         => function() {
 					$connected_url = $this->connected_proxy_url->get();
 					$current_url   = $this->context->get_canonical_home_url();
-					$content       = sprintf(
-						'<p>%s <a href="%s">%s</a></p>',
-						esc_html__( 'Site Kit by Google: Looks like the URL of your site has changed. In order to continue using Site Kit, you’ll need to reconnect, so that your plugin settings are updated with the new URL.', 'google-site-kit' ),
+					$content       = '<p>' . sprintf(
+						/* translators: %1$s: Plugin name. %2$s: Notice content. %3$s: Proxy setup URL. %4$s: Reconnect string. */
+						__( '%1$s: %2$s <a href="%3$s">%4$s</a>', 'google-site-kit' ),
+						get_plugin_data( GOOGLESITEKIT_PLUGIN_MAIN_FILE )['Name'],
+						esc_html__( 'Looks like the URL of your site has changed. In order to continue using Site Kit, you’ll need to reconnect, so that your plugin settings are updated with the new URL.', 'google-site-kit' ),
 						esc_url( $this->get_proxy_setup_url() ),
 						esc_html__( 'Reconnect', 'google-site-kit' )
-					);
+					) . '</p>';
 
 					// Only show the comparison if URLs don't match as it is possible
 					// they could already match again at this point, although they most likely won't.
@@ -1105,7 +1107,16 @@ final class Authentication {
 					ob_start();
 					?>
 					<p>
-						<?php esc_html_e( 'Site Kit by Google: You need to reauthenticate your Google account.', 'google-site-kit' ); ?>
+						<?php
+							echo esc_html(
+								sprintf(
+									/* translators: %1$s: Plugin name. %2$s: Notice content. */
+									__( '%1$s: %2$s', 'google-site-kit' ),
+									get_plugin_data( GOOGLESITEKIT_PLUGIN_MAIN_FILE )['Name'],
+									esc_html__( 'You need to reauthenticate your Google account.', 'google-site-kit' )
+								)
+							);
+						?>
 						<a
 							href="#"
 							onclick="clearSiteKitAppStorage()"
@@ -1171,8 +1182,9 @@ final class Authentication {
 					}
 
 					$message = sprintf(
-						/* translators: %s: Error message */
-						esc_html__( 'Site Kit by Google: %s', 'google-site-kit' ),
+						/* translators: %1$s: Plugin name. %2$s: Error message. */
+						__( '%1$s: %2$s', 'google-site-kit' ),
+						get_plugin_data( GOOGLESITEKIT_PLUGIN_MAIN_FILE )['Name'],
 						$auth_client->get_error_message( $error_code )
 					);
 
