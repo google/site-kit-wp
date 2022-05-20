@@ -1055,7 +1055,7 @@ final class Authentication {
 					$connected_url = $this->connected_proxy_url->get();
 					$current_url   = $this->context->get_canonical_home_url();
 					$content       = '<p>' . sprintf(
-						/* translators: %1$s: Plugin name. %2$s: Notice content. %3$s: Proxy setup URL. %4$s: Reconnect string. */
+						/* translators: %1$s: Plugin name. %2$s: Message. %3$s: Proxy setup URL. %4$s: Reconnect string. */
 						__( '%1$s: %2$s <a href="%3$s">%4$s</a>', 'google-site-kit' ),
 						esc_html__( 'Site Kit by Google', 'google-site-kit' ),
 						esc_html__( 'Looks like the URL of your site has changed. In order to continue using Site Kit, you’ll need to reconnect, so that your plugin settings are updated with the new URL.', 'google-site-kit' ),
@@ -1110,7 +1110,7 @@ final class Authentication {
 						<?php
 							echo esc_html(
 								sprintf(
-									/* translators: %1$s: Plugin name. %2$s: Notice content. */
+									/* translators: %1$s: Plugin name. %2$s: Message. */
 									__( '%1$s: %2$s', 'google-site-kit' ),
 									__( 'Site Kit by Google', 'google-site-kit' ),
 									__( 'You need to reauthenticate your Google account.', 'google-site-kit' )
@@ -1182,7 +1182,7 @@ final class Authentication {
 					}
 
 					$message = sprintf(
-						/* translators: %1$s: Plugin name. %2$s: Error message. */
+						/* translators: %1$s: Plugin name. %2$s: Message. */
 						__( '%1$s: %2$s', 'google-site-kit' ),
 						esc_html__( 'Site Kit by Google', 'google-site-kit' ),
 						$auth_client->get_error_message( $error_code )
