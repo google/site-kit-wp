@@ -244,6 +244,24 @@ const baseResolvers = {
 		const { settings } = global._googlesitekitDashboardSharingData;
 		yield actions.receiveGetSharingSettings( settings );
 	},
+
+	*getShareableRoles() {
+		const registry = yield Data.commonActions.getRegistry();
+
+		if ( registry.select( CORE_MODULES ).getShareableRoles() ) {
+			return;
+		}
+
+		if ( ! global._googlesitekitDashboardSharingData ) {
+			global.console.error(
+				'Could not load core/modules dashboard sharing roles.'
+			);
+			return;
+		}
+
+		const { roles } = global._googlesitekitDashboardSharingData;
+		yield actions.receiveShareableRoles( roles );
+	},
 };
 
 const baseSelectors = {
