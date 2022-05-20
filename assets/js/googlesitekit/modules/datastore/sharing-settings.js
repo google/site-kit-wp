@@ -29,6 +29,8 @@ import Data from 'googlesitekit-data';
 import { createFetchStore } from '../../data/create-fetch-store';
 import { CORE_MODULES } from './constants';
 
+const { createRegistrySelector } = Data;
+
 // Actions
 const SET_SHARING_MANAGEMENT = 'SET_SHARING_MANAGEMENT';
 const SET_SHARED_ROLES = 'SET_SHARED_ROLES';
@@ -322,6 +324,30 @@ const baseSelectors = {
 		const { shareableRoles } = state;
 		return shareableRoles;
 	},
+
+	/**
+	 * Gets the dashboard sharing management for the given module.
+	 *
+	 * Returns the module's sharing management string.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state      Data store's state.
+	 * @param {string} moduleSlug Module slug.
+	 * @return {(string|null|undefined)} The module's sharing management string, null if there is none,
+	 *                                   undefined if not loaded yet.
+	 */
+	getSharingManagement: createRegistrySelector(
+		( select ) => ( state, moduleSlug ) => {
+			invariant( moduleSlug, 'moduleSlug is required.' );
+			const sharingSettings = select( CORE_MODULES ).getSharingSettings();
+
+			if ( sharingSettings === undefined ) {
+				return undefined;
+			}
+			return sharingSettings[ moduleSlug ]?.management || null;
+		}
+	),
 };
 
 const store = Data.combineStores( fetchSaveSharingSettingsStore, {
