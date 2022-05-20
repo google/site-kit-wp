@@ -33,6 +33,7 @@ import { CORE_MODULES } from './constants';
 const SET_SHARING_MANAGEMENT = 'SET_SHARING_MANAGEMENT';
 const SET_SHARED_ROLES = 'SET_SHARED_ROLES';
 const RECEIVE_GET_SHARING_SETTINGS = 'RECEIVE_GET_SHARING_SETTINGS';
+const RECEIVE_SHAREABLE_ROLES = 'RECEIVE_SHAREABLE_ROLES';
 
 const baseInitialState = {
 	sharingSettings: undefined,
@@ -174,6 +175,27 @@ const baseActions = {
 		return {
 			payload: { sharingSettings },
 			type: RECEIVE_GET_SHARING_SETTINGS,
+		};
+	},
+
+	/**
+	 * Receives shareableRoles for dashboard sharing.
+	 * Stores shareableRoles in the datastore.
+	 *
+	 * Because this is frequently-accessed data, this is usually sourced
+	 * from a global variable (`_googlesitekitDashboardSharingData`), set by PHP
+	 * in the `before_print` callback for `googlesitekit-datastore-site`.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} shareableRoles Shareable Roles for modules with `management` and `sharedRoles` properties.
+	 * @return {Object} Action for RECEIVE_SHAREABLE_ROLES.
+	 */
+	receiveShareableRoles( shareableRoles ) {
+		invariant( shareableRoles, 'shareableRoles is required.' );
+		return {
+			payload: { shareableRoles },
+			type: RECEIVE_SHAREABLE_ROLES,
 		};
 	},
 };
