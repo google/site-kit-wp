@@ -318,7 +318,7 @@ final class Idea_Hub extends Module
 					);
 
 					$message = sprintf(
-						/* translators: 1: Plugin name. 2: Notice content. */
+						/* translators: 1: Plugin name. 2: Message. */
 						__( '%1$s: %2$s', 'google-site-kit' ),
 						__( 'Site Kit by Google', 'google-site-kit' ),
 						$message_body
@@ -361,7 +361,7 @@ final class Idea_Hub extends Module
 					);
 
 					$message = sprintf(
-						/* translators: 1: Plugin name. 2: Notice content. */
+						/* translators: 1: Plugin name. 2: Message. */
 						__( '%1$s: %2$s', 'google-site-kit' ),
 						__( 'Site Kit by Google', 'google-site-kit' ),
 						$message_body
