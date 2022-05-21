@@ -701,6 +701,23 @@ class ModulesTest extends TestCase {
 		$this->assertEquals( 400, $response->get_status() );
 	}
 
+	public function test_check_access_rest_endpoint__module_does_not_have_service_entity() {
+		$this->setup_modules_to_test_rest_endpoint();
+
+		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/modules/data/check-access' );
+		$request->set_body_params(
+			array(
+				'data' => array(
+					'slug' => 'optimize',
+				),
+			)
+		);
+		$response = rest_get_server()->dispatch( $request );
+
+		$this->assertEquals( 'invalid_module', $response->get_data()['code'] );
+		$this->assertEquals( 400, $response->get_status() );
+	}
+
 	public function test_check_access_rest_endpoint__success() {
 		$modules = $this->setup_modules_to_test_rest_endpoint();
 
