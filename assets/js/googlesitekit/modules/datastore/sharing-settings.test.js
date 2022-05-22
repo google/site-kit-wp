@@ -344,5 +344,43 @@ describe( 'core/modules sharing-settings', () => {
 				expect( shareableRolesObj ).toMatchObject( shareableRoles );
 			} );
 		} );
+
+		describe( 'getSharingManagement', () => {
+			it( 'requires the moduleSlug param', () => {
+				expect( () => {
+					registry.select( CORE_MODULES ).getSharingManagement();
+				} ).toThrow( 'moduleSlug is required' );
+			} );
+
+			it( 'should return undefined if `sharingSettings` cannot be loaded', () => {
+				global[ dashboardSharingDataBaseVar ] = undefined;
+
+				const sharingManagement = registry
+					.select( CORE_MODULES )
+					.getSharingManagement( 'search-console' );
+
+				expect( console ).toHaveErrored();
+				expect( sharingManagement ).toBeUndefined();
+			} );
+
+			it( 'should return null if `management` is not available the given module', () => {
+				global[ dashboardSharingDataBaseVar ] = dashboardSharingData;
+
+				const sharingManagement = registry
+					.select( CORE_MODULES )
+					.getSharingManagement( 'idea-hub' );
+				expect( sharingManagement ).toBeNull();
+			} );
+
+			it( 'should return the `management` string for the given module', async () => {
+				global[ dashboardSharingDataBaseVar ] = dashboardSharingData;
+
+				const sharingManagement = registry
+					.select( CORE_MODULES )
+					.getSharingManagement( 'search-console' );
+
+				expect( sharingManagement ).toBe( 'all_admins' );
+			} );
+		} );
 	} );
 } );
