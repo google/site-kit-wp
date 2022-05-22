@@ -382,5 +382,43 @@ describe( 'core/modules sharing-settings', () => {
 				expect( sharingManagement ).toBe( 'all_admins' );
 			} );
 		} );
+
+		describe( 'getSharedRoles', () => {
+			it( 'requires the moduleSlug param', () => {
+				expect( () => {
+					registry.select( CORE_MODULES ).getSharedRoles();
+				} ).toThrow( 'moduleSlug is required' );
+			} );
+
+			it( 'should return undefined if `sharingSettings` cannot be loaded', () => {
+				global[ dashboardSharingDataBaseVar ] = undefined;
+
+				const sharedRoles = registry
+					.select( CORE_MODULES )
+					.getSharedRoles( 'search-console' );
+
+				expect( console ).toHaveErrored();
+				expect( sharedRoles ).toBeUndefined();
+			} );
+
+			it( 'should return null if `shareableRoles` is not available the given module', () => {
+				global[ dashboardSharingDataBaseVar ] = dashboardSharingData;
+
+				const sharedRoles = registry
+					.select( CORE_MODULES )
+					.getSharedRoles( 'idea-hub' );
+				expect( sharedRoles ).toBeNull();
+			} );
+
+			it( 'should return the `sharedRoles` array for the given module', async () => {
+				global[ dashboardSharingDataBaseVar ] = dashboardSharingData;
+
+				const sharedRoles = registry
+					.select( CORE_MODULES )
+					.getSharedRoles( 'search-console' );
+
+				expect( sharedRoles ).toEqual( [ 'editor', 'subscriber' ] );
+			} );
+		} );
 	} );
 } );
