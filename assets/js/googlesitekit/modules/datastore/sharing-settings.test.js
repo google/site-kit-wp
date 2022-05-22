@@ -288,6 +288,24 @@ describe( 'core/modules sharing-settings', () => {
 				);
 			} );
 		} );
+
+		describe( 'receiveShareableRoles', () => {
+			it( 'requires the shareableRoles param', () => {
+				expect( () => {
+					registry.dispatch( CORE_MODULES ).receiveShareableRoles();
+				} ).toThrow( 'shareableRoles is required' );
+			} );
+
+			it( 'receives shareableRoles and sets it to the state', () => {
+				registry
+					.dispatch( CORE_MODULES )
+					.receiveShareableRoles( shareableRoles );
+
+				expect( store.getState().shareableRoles ).toEqual(
+					expect.arrayContaining( shareableRoles )
+				);
+			} );
+		} );
 	} );
 
 	describe( 'selectors', () => {
