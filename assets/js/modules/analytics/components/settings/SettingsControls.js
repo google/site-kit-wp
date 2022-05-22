@@ -45,7 +45,7 @@ export default function SettingsControls() {
 	);
 
 	const hasModuleAccess = useSelect( ( select ) =>
-		select( CORE_MODULES ).hasModuleAccess( MODULES_ANALYTICS )
+		select( CORE_MODULES ).hasModuleAccess( 'analytics' )
 	);
 
 	const module = useSelect( ( select ) =>

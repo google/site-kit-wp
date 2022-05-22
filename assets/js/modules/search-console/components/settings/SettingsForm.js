@@ -37,7 +37,7 @@ const { useSelect } = Data;
 
 export default function SettingsForm() {
 	const hasModuleAccess = useSelect( ( select ) =>
-		select( CORE_MODULES ).hasModuleAccess( MODULES_SEARCH_CONSOLE )
+		select( CORE_MODULES ).hasModuleAccess( 'search-console' )
 	);
 
 	const module = useSelect( ( select ) =>

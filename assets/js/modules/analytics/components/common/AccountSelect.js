@@ -48,7 +48,7 @@ export default function AccountSelect() {
 	} ) );
 
 	const hasModuleAccess = useSelect( ( select ) =>
-		select( CORE_MODULES ).hasModuleAccess( MODULES_ANALYTICS )
+		select( CORE_MODULES ).hasModuleAccess( 'analytics' )
 	);
 
 	const { selectAccount } = useDispatch( MODULES_ANALYTICS );

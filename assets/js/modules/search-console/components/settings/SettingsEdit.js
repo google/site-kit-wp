@@ -43,7 +43,7 @@ export default function SettingsEdit() {
 	);
 
 	const hasModuleAccess = useSelect( ( select ) =>
-		select( CORE_MODULES ).hasModuleAccess( MODULES_SEARCH_CONSOLE )
+		select( CORE_MODULES ).hasModuleAccess( 'search-console' )
 	);
 
 	let viewComponent;

@@ -48,7 +48,7 @@ export default function SettingsEdit() {
 	);
 
 	const hasModuleAccess = useSelect( ( select ) =>
-		select( CORE_MODULES ).hasModuleAccess( MODULES_ANALYTICS )
+		select( CORE_MODULES ).hasModuleAccess( 'analytics' )
 	);
 
 	useExistingTagEffect();

@@ -50,7 +50,7 @@ export default function PropertySelect() {
 	);
 
 	const hasModuleAccess = useSelect( ( select ) =>
-		select( CORE_MODULES ).hasModuleAccess( MODULES_SEARCH_CONSOLE )
+		select( CORE_MODULES ).hasModuleAccess( 'search-console' )
 	);
 
 	const { setPropertyID } = useDispatch( MODULES_SEARCH_CONSOLE );

@@ -70,7 +70,7 @@ export default function PropertySelect( { label } ) {
 	);
 
 	const hasModuleAccess = useSelect( ( select ) =>
-		select( CORE_MODULES ).hasModuleAccess( MODULES_ANALYTICS )
+		select( CORE_MODULES ).hasModuleAccess( 'analytics' )
 	);
 
 	const { selectProperty } = useDispatch( MODULES_ANALYTICS_4 );
