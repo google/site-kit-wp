@@ -29,6 +29,7 @@ import { MODULES_SEARCH_CONSOLE } from '../../../modules/search-console/datastor
 import { MODULES_PAGESPEED_INSIGHTS } from '../../../modules/pagespeed-insights/datastore/constants';
 
 describe( 'core/modules sharing-settings', () => {
+	const dashboardSharingDataBaseVar = '_googlesitekitDashboardSharingData';
 	const sharingSettings = {
 		'search-console': {
 			sharedRoles: [ 'editor', 'subscriber' ],
@@ -43,6 +44,9 @@ describe( 'core/modules sharing-settings', () => {
 			management: 'all_admins',
 		},
 	};
+	const sharingSettingsList = {
+		settings: sharingSettings,
+	};
 
 	let registry;
 	let store;
@@ -54,6 +58,7 @@ describe( 'core/modules sharing-settings', () => {
 
 	afterEach( () => {
 		unsubscribeFromAll( registry );
+		delete global[ dashboardSharingDataBaseVar ];
 	} );
 
 	describe( 'actions', () => {
@@ -246,6 +251,43 @@ describe( 'core/modules sharing-settings', () => {
 				expect( store.getState().savedSharingSettings ).toMatchObject(
 					sharingSettings
 				);
+			} );
+		} );
+	} );
+
+	describe( 'selectors', () => {
+		describe( 'getSharingSettings', () => {
+			it( 'should return undefined if `sharingSettings` cannot be loaded', () => {
+				global[ dashboardSharingDataBaseVar ] = undefined;
+
+				const sharingSettingsObj = registry
+					.select( CORE_MODULES )
+					.getSharingSettings();
+
+				expect( console ).toHaveErrored();
+				expect( sharingSettingsObj ).toBeUndefined();
+			} );
+
+			it( 'should return an empty object if there is no `settings`', async () => {
+				global[ dashboardSharingDataBaseVar ] = {
+					settings: {},
+				};
+
+				const sharingSettingsObj = registry
+					.select( CORE_MODULES )
+					.getSharingSettings();
+
+				expect( sharingSettingsObj ).toMatchObject( {} );
+			} );
+
+			it( 'should return the `sharingSettings` object', async () => {
+				global[ dashboardSharingDataBaseVar ] = sharingSettingsList;
+
+				const sharingSettingsObj = registry
+					.select( CORE_MODULES )
+					.getSharingSettings();
+
+				expect( sharingSettingsObj ).toMatchObject( sharingSettings );
 			} );
 		} );
 	} );
