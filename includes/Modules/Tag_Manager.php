@@ -619,9 +619,6 @@ final class Tag_Manager extends Module
 	 * @return boolean|WP_Error
 	 */
 	public function check_service_entity_access() {
-		if ( ! $this->is_connected() ) {
-			return null;
-		}
 		$is_amp_mode = in_array( $this->context->get_amp_mode(), array( Context::AMP_MODE_PRIMARY, Context::AMP_MODE_SECONDARY ), true );
 
 		$settings   = $this->get_settings()->get();
