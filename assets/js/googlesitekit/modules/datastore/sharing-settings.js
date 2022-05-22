@@ -20,6 +20,8 @@
  * External dependencies
  */
 import invariant from 'invariant';
+import isEqual from 'lodash/isEqual';
+import pick from 'lodash/pick';
 
 /**
  * Internal dependencies
@@ -372,6 +374,28 @@ const baseSelectors = {
 			return sharingSettings[ moduleSlug ]?.sharedRoles || null;
 		}
 	),
+
+	/**
+	 * Indicates whether the current sharing settings have changed from what is saved.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object}     state Data store's state.
+	 * @param {Array|null} keys  Sharing Settings keys to check; if not provided, all sharing settings are checked.
+	 * @return {boolean} True if the sharing settings have changed, false otherwise.
+	 */
+	haveSharingSettingsChanged( state, keys = null ) {
+		const { sharingSettings, savedSharingSettings } = state;
+
+		if ( keys ) {
+			return ! isEqual(
+				pick( sharingSettings, keys ),
+				pick( savedSharingSettings, keys )
+			);
+		}
+
+		return ! isEqual( sharingSettings, savedSharingSettings );
+	},
 };
 
 const store = Data.combineStores( fetchSaveSharingSettingsStore, {
