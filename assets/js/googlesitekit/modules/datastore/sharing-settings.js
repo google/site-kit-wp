@@ -412,7 +412,7 @@ const baseSelectors = {
 			const storeName = select( CORE_MODULES ).getModuleStoreName(
 				moduleSlug
 			);
-			return !! select( storeName )?.canSubmitSharingChanges?.();
+			return !! select( storeName )?.canSubmitChanges?.();
 		}
 	),
 };
