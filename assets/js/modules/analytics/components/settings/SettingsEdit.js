@@ -22,6 +22,7 @@
 import Data from 'googlesitekit-data';
 import { MODULES_ANALYTICS, ACCOUNT_CREATE } from '../../datastore/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import useExistingTagEffect from '../../hooks/useExistingTagEffect';
 import useExistingGA4TagEffect from '../../../analytics-4/hooks/useExistingTagEffect';
 import SettingsForm from './SettingsForm';
@@ -46,6 +47,10 @@ export default function SettingsEdit() {
 		select( CORE_SITE ).isUsingProxy()
 	);
 
+	const hasModuleAccess = useSelect( ( select ) =>
+		select( CORE_MODULES ).hasModuleAccess( MODULES_ANALYTICS )
+	);
+
 	useExistingTagEffect();
 	useExistingGA4TagEffect();
 
@@ -54,7 +59,11 @@ export default function SettingsEdit() {
 	let viewComponent;
 	// Here we also check for `hasResolvedAccounts` to prevent showing a different case below
 	// when the component initially loads and has yet to start fetching accounts.
-	if ( isDoingSubmitChanges || ! hasResolvedAccounts ) {
+	if (
+		isDoingSubmitChanges ||
+		! hasResolvedAccounts ||
+		hasModuleAccess === undefined
+	) {
 		viewComponent = <ProgressBar />;
 	} else if ( ! accounts.length || isCreateAccount ) {
 		viewComponent = usingProxy ? (

@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import fetchMock from 'fetch-mock';
+
+/**
  * WordPress dependencies
  */
 import { withRegistry } from '@wordpress/data';
@@ -45,15 +50,17 @@ import { MODULES_ANALYTICS_4 } from '../../assets/js/modules/analytics-4/datasto
  * @since 1.75.0 Removed args.gaPermission and args.gtmPermission.
  * @private
  *
- * @param {Object}      args                Story arguments.
- * @param {WPComponent} args.Component      Story component.
- * @param {boolean}     args.useExistingTag Whether to use an existing tag or not.
- * @param {Function}    args.setUp          Custom setup function.
+ * @param {Object}      args                 Story arguments.
+ * @param {WPComponent} args.Component       Story component.
+ * @param {boolean}     args.useExistingTag  Whether to use an existing tag or not.
+ * @param {boolean}     args.hasModuleAccess Whether the user has edit access to analytics or not.
+ * @param {Function}    args.setUp           Custom setup function.
  * @return {Function} Story callback function.
  */
 export function generateGTMAnalyticsPropertyStory( {
 	Component,
 	useExistingTag = false,
+	hasModuleAccess = true,
 	setUp = () => {},
 } ) {
 	return ( args ) => {
@@ -160,6 +167,11 @@ export function generateGTMAnalyticsPropertyStory( {
 				webPropertyID: gtmPropertyID,
 				ampPropertyID: gtmPropertyID,
 			} );
+
+			fetchMock.postOnce(
+				/^\/google-site-kit\/v1\/core\/modules\/data\/check-access/,
+				{ body: { access: hasModuleAccess } }
+			);
 		};
 
 		const ComponentWithRegistry = withRegistry( Component );

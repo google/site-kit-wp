@@ -20,6 +20,7 @@
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import { MODULES_SEARCH_CONSOLE } from '../../datastore/constants';
 import ProgressBar from '../../../../components/ProgressBar';
 import SettingsForm from './SettingsForm';
@@ -41,8 +42,16 @@ export default function SettingsEdit() {
 		)
 	);
 
+	const hasModuleAccess = useSelect( ( select ) =>
+		select( CORE_MODULES ).hasModuleAccess( MODULES_SEARCH_CONSOLE )
+	);
+
 	let viewComponent;
-	if ( isDoingSubmitChanges || ! hasResolvedProperties ) {
+	if (
+		isDoingSubmitChanges ||
+		! hasResolvedProperties ||
+		hasModuleAccess === undefined
+	) {
 		viewComponent = <ProgressBar />;
 	} else {
 		viewComponent = <SettingsForm />;

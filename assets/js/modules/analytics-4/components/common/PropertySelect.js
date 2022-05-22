@@ -38,6 +38,7 @@ import {
 	MODULES_ANALYTICS_4,
 	PROPERTY_CREATE,
 } from '../../datastore/constants';
+import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import { MODULES_ANALYTICS } from '../../../analytics/datastore/constants';
 import { isValidAccountID } from '../../../analytics/util';
 import { isValidPropertySelection } from '../../utils/validation';
@@ -66,6 +67,10 @@ export default function PropertySelect( { label } ) {
 				MODULES_ANALYTICS_4
 			).hasFinishedResolution( 'getProperties', [ accountID ] ) ||
 			select( MODULES_ANALYTICS ).hasFinishedSelectingAccount() === false
+	);
+
+	const hasModuleAccess = useSelect( ( select ) =>
+		select( CORE_MODULES ).hasModuleAccess( MODULES_ANALYTICS )
 	);
 
 	const { selectProperty } = useDispatch( MODULES_ANALYTICS_4 );
@@ -107,7 +112,7 @@ export default function PropertySelect( { label } ) {
 			label={ label || __( 'Property', 'google-site-kit' ) }
 			value={ propertyID }
 			onEnhancedChange={ onChange }
-			disabled={ ! isValidAccountID( accountID ) }
+			disabled={ ! isValidAccountID( accountID ) || ! hasModuleAccess }
 			enhanced
 			outlined
 		>

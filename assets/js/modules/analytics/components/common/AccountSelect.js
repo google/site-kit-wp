@@ -29,6 +29,7 @@ import Data from 'googlesitekit-data';
 import ProgressBar from '../../../../components/ProgressBar';
 import { Select, Option } from '../../../../material-components';
 import { MODULES_ANALYTICS, ACCOUNT_CREATE } from '../../datastore/constants';
+import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import { trackEvent } from '../../../../util';
 import useViewContext from '../../../../hooks/useViewContext';
 const { useSelect, useDispatch } = Data;
@@ -45,6 +46,10 @@ export default function AccountSelect() {
 			'getAccounts'
 		),
 	} ) );
+
+	const hasModuleAccess = useSelect( ( select ) =>
+		select( CORE_MODULES ).hasModuleAccess( MODULES_ANALYTICS )
+	);
 
 	const { selectAccount } = useDispatch( MODULES_ANALYTICS );
 	const onChange = useCallback(
@@ -74,6 +79,7 @@ export default function AccountSelect() {
 			onEnhancedChange={ onChange }
 			enhanced
 			outlined
+			disabled={ ! hasModuleAccess }
 		>
 			{ ( accounts || [] )
 				.concat( {

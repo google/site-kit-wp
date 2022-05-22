@@ -29,6 +29,7 @@ import Data from 'googlesitekit-data';
 import { Select, Option } from '../../../../material-components';
 import ProgressBar from '../../../../components/ProgressBar';
 import { MODULES_ANALYTICS, PROPERTY_CREATE } from '../../datastore/constants';
+import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import { isValidAccountSelection } from '../../util';
 import { trackEvent } from '../../../../util';
 import useViewContext from '../../../../hooks/useViewContext';
@@ -61,6 +62,10 @@ export default function PropertySelect() {
 	);
 	const hasResolvedAccounts = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).hasFinishedResolution( 'getAccounts' )
+	);
+
+	const hasModuleAccess = useSelect( ( select ) =>
+		select( CORE_MODULES ).hasModuleAccess( MODULES_ANALYTICS )
 	);
 
 	const { selectProperty } = useDispatch( MODULES_ANALYTICS );
@@ -96,6 +101,7 @@ export default function PropertySelect() {
 			onEnhancedChange={ onChange }
 			enhanced
 			outlined
+			disabled={ ! hasModuleAccess }
 		>
 			{ ( properties || [] )
 				.concat( {

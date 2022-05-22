@@ -29,6 +29,7 @@ import Data from 'googlesitekit-data';
 import { Select, Option } from '../../../../material-components';
 import ProgressBar from '../../../../components/ProgressBar';
 import { MODULES_ANALYTICS, PROFILE_CREATE } from '../../datastore/constants';
+import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import { isValidPropertySelection, isValidAccountSelection } from '../../util';
 import { trackEvent } from '../../../../util';
 import useViewContext from '../../../../hooks/useViewContext';
@@ -61,6 +62,10 @@ export default function ProfileSelect() {
 			] )
 		);
 	} );
+
+	const hasModuleAccess = useSelect( ( select ) =>
+		select( CORE_MODULES ).hasModuleAccess( MODULES_ANALYTICS )
+	);
 
 	const { setProfileID } = useDispatch( MODULES_ANALYTICS );
 	const viewContext = useViewContext();
@@ -98,6 +103,7 @@ export default function ProfileSelect() {
 			onEnhancedChange={ onChange }
 			enhanced
 			outlined
+			disabled={ ! hasModuleAccess }
 		>
 			{ ( profiles || [] )
 				.concat( {

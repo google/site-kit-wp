@@ -20,6 +20,7 @@
  * External dependencies
  */
 import { storiesOf } from '@storybook/react';
+import fetchMock from 'fetch-mock';
 
 /**
  * Internal dependencies
@@ -250,6 +251,11 @@ storiesOf( 'Analytics Module/Settings', module )
 				accountID,
 			} );
 
+			fetchMock.postOnce(
+				/^\/google-site-kit\/v1\/core\/modules\/data\/check-access/,
+				{ body: { access: true } }
+			);
+
 			return (
 				<Settings
 					registry={ registry }
@@ -345,6 +351,112 @@ storiesOf( 'Analytics Module/Settings', module )
 				{ propertyID: '1001' }
 			);
 
+			fetchMock.postOnce(
+				/^\/google-site-kit\/v1\/core\/modules\/data\/check-access/,
+				{ body: { access: true } }
+			);
+
+			return (
+				<Settings
+					registry={ registry }
+					route="/connected-services/analytics/edit"
+					skipModulesProvide
+				/>
+			);
+		},
+		{
+			decorators: [ WithRegistry ],
+		}
+	)
+	.add(
+		'Edit, open with all settings w/ GA4, w/o module access',
+		( args, { registry } ) => {
+			const { dispatch } = registry;
+			const {
+				accounts,
+				properties,
+				profiles,
+			} = accountsPropertiesProfiles;
+
+			/* eslint-disable sitekit/acronym-case */
+			const {
+				accountId: accountID,
+				webPropertyId,
+				id: profileID,
+			} = profiles[ 0 ];
+			const { internalWebPropertyId } = properties.find(
+				( property ) => webPropertyId === property.id
+			);
+			/* eslint-enable */
+
+			provideModules( registry, [
+				{
+					slug: 'search-console',
+					active: false,
+					connected: true,
+				},
+				{
+					slug: 'analytics',
+					active: true,
+					connected: true,
+				},
+				{
+					slug: 'analytics-4',
+					active: true,
+					connected: true,
+					internal: true,
+				},
+			] );
+
+			dispatch( MODULES_ANALYTICS ).receiveGetAccounts( accounts );
+			dispatch( MODULES_ANALYTICS ).receiveGetProperties( properties, {
+				accountID,
+			} );
+			dispatch( MODULES_ANALYTICS ).receiveGetProfiles( profiles, {
+				accountID,
+				propertyID: profiles[ 0 ].webPropertyId, // eslint-disable-line sitekit/acronym-case
+			} );
+			dispatch( MODULES_ANALYTICS ).receiveGetSettings( {
+				...defaultSettings,
+				accountID,
+				propertyID: webPropertyId, // eslint-disable-line sitekit/acronym-case
+				internalWebPropertyID: internalWebPropertyId, // eslint-disable-line sitekit/acronym-case
+				profileID,
+			} );
+
+			dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+				...ga4DefaultSettings,
+				propertyID: '1001',
+				webDataStreamID: '2001',
+				measurementID: 'G-12345ABCDE',
+			} );
+			dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties(
+				[
+					{
+						_id: '1001',
+						displayName: 'GA4 Property',
+					},
+				],
+				{ accountID }
+			);
+			dispatch( MODULES_ANALYTICS_4 ).receiveGetWebDataStreams(
+				[
+					{
+						_id: '2001',
+						/* eslint-disable sitekit/acronym-case */
+						measurementId: 'G-12345ABCDE',
+						defaultUri: 'http://example.com',
+						/* eslint-disable */
+					},
+				],
+				{ propertyID: '1001' }
+			);
+
+			fetchMock.postOnce(
+				/^\/google-site-kit\/v1\/core\/modules\/data\/check-access/,
+				{ body: { access: false } }
+			);
+
 			return (
 				<Settings
 					registry={ registry }
@@ -398,6 +510,11 @@ storiesOf( 'Analytics Module/Settings', module )
 				accountID: accountId, // eslint-disable-line sitekit/acronym-case
 			} );
 
+			fetchMock.postOnce(
+				/^\/google-site-kit\/v1\/core\/modules\/data\/check-access/,
+				{ body: { access: true } }
+			);
+
 			return (
 				<Settings
 					registry={ registry }
@@ -414,6 +531,10 @@ storiesOf( 'Analytics Module/Settings', module )
 		( args, { registry } ) => {
 			const { dispatch } = registry;
 			dispatch( MODULES_ANALYTICS ).receiveGetAccounts( [] );
+			fetchMock.postOnce(
+				/^\/google-site-kit\/v1\/core\/modules\/data\/check-access/,
+				{ body: { access: true } }
+			);
 
 			return (
 				<Settings
@@ -464,6 +585,10 @@ storiesOf( 'Analytics Module/Settings', module )
 				],
 				{ accountID: existingTag.accountID }
 			);
+			fetchMock.postOnce(
+				/^\/google-site-kit\/v1\/core\/modules\/data\/check-access/,
+				{ body: { access: true } }
+			);
 
 			return (
 				<Settings
@@ -510,6 +635,10 @@ storiesOf( 'Analytics Module/Settings', module )
 			registry
 				.dispatch( MODULES_ANALYTICS )
 				.receiveGetExistingTag( existingTag.propertyID );
+			fetchMock.postOnce(
+				/^\/google-site-kit\/v1\/core\/modules\/data\/check-access/,
+				{ body: { access: true } }
+			);
 
 			return (
 				<Settings
@@ -540,6 +669,15 @@ storiesOf( 'Analytics Module/Settings', module )
 		'Existing Tag w/ access, GTM property w/ access',
 		usingGenerateGTMAnalyticsPropertyStory( {
 			useExistingTag: true,
+			gtmPermission: true,
+			gaPermission: true,
+		} )
+	)
+	.add(
+		'Existing Tag w/ access, GTM property w/ access, w/o module access',
+		usingGenerateGTMAnalyticsPropertyStory( {
+			useExistingTag: true,
+			hasModuleAccess: false,
 			gtmPermission: true,
 			gaPermission: true,
 		} )

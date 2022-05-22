@@ -20,6 +20,7 @@
  * External dependencies
  */
 import { storiesOf } from '@storybook/react';
+import fetchMock from 'fetch-mock';
 
 /**
  * Internal dependencies
@@ -133,6 +134,49 @@ storiesOf( 'Search Console Module/Settings', module )
 						siteURL: 'sc-domain:example.com',
 					},
 				] );
+
+			fetchMock.postOnce(
+				/^\/google-site-kit\/v1\/core\/modules\/data\/check-access/,
+				{ body: { access: true } }
+			);
+
+			return (
+				<Settings
+					registry={ registry }
+					route="/connected-services/search-console/edit"
+				/>
+			);
+		},
+		storyOptions
+	)
+	.add(
+		'Edit, with all settings, no module access',
+		( args, { registry } ) => {
+			registry.dispatch( MODULES_SEARCH_CONSOLE ).receiveGetSettings( {
+				...defaultSettings,
+				propertyID: 'sc-domain:example.com',
+			} );
+			registry
+				.dispatch( MODULES_SEARCH_CONSOLE )
+				.receiveGetMatchedProperties( [
+					{
+						permissionLevel: 'siteFullUser',
+						siteURL: 'https://www.example.com/',
+					},
+					{
+						permissionLevel: 'siteFullUser',
+						siteURL: 'http://example.com/',
+					},
+					{
+						permissionLevel: 'siteFullUser',
+						siteURL: 'sc-domain:example.com',
+					},
+				] );
+
+			fetchMock.postOnce(
+				/^\/google-site-kit\/v1\/core\/modules\/data\/check-access/,
+				{ body: { access: false } }
+			);
 
 			return (
 				<Settings

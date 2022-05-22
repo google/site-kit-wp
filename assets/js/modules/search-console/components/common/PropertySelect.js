@@ -26,6 +26,7 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import { MODULES_SEARCH_CONSOLE } from '../../datastore/constants';
 import ProgressBar from '../../../../components/ProgressBar';
 import { Select, Option } from '../../../../material-components';
@@ -46,6 +47,10 @@ export default function PropertySelect() {
 		select( MODULES_SEARCH_CONSOLE ).hasFinishedResolution(
 			'getMatchedProperties'
 		)
+	);
+
+	const hasModuleAccess = useSelect( ( select ) =>
+		select( CORE_MODULES ).hasModuleAccess( MODULES_SEARCH_CONSOLE )
 	);
 
 	const { setPropertyID } = useDispatch( MODULES_SEARCH_CONSOLE );
@@ -76,6 +81,7 @@ export default function PropertySelect() {
 			onEnhancedChange={ onChange }
 			enhanced
 			outlined
+			disabled={ ! hasModuleAccess }
 		>
 			{ ( matchedProperties || [] ).map( ( { siteURL } ) => (
 				<Option key={ siteURL } value={ siteURL }>
