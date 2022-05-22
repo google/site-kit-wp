@@ -348,6 +348,30 @@ const baseSelectors = {
 			return sharingSettings[ moduleSlug ]?.management || null;
 		}
 	),
+
+	/**
+	 * Gets the shared roles for the given module.
+	 *
+	 * Returns the module's shared roles list.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state      Data store's state.
+	 * @param {string} moduleSlug Module slug.
+	 * @return {(Array|null|undefined)} The module's shared roles array, null if there is none,
+	 *                                   undefined if not loaded yet.
+	 */
+	getSharedRoles: createRegistrySelector(
+		( select ) => ( state, moduleSlug ) => {
+			invariant( moduleSlug, 'moduleSlug is required.' );
+			const sharingSettings = select( CORE_MODULES ).getSharingSettings();
+
+			if ( sharingSettings === undefined ) {
+				return undefined;
+			}
+			return sharingSettings[ moduleSlug ]?.sharedRoles || null;
+		}
+	),
 };
 
 const store = Data.combineStores( fetchSaveSharingSettingsStore, {
