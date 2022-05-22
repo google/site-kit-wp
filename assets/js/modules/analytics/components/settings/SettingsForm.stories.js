@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import fetchMock from 'fetch-mock';
+
+/**
  * Internal dependencies
  */
 import SettingsForm from './SettingsForm';
@@ -143,6 +148,11 @@ export default {
 				registry
 					.dispatch( MODULES_ANALYTICS )
 					.selectAccount( accountID );
+
+				fetchMock.postOnce(
+					/^\/google-site-kit\/v1\/core\/modules\/data\/check-access/,
+					{ body: { access: true } }
+				);
 			};
 
 			return (
