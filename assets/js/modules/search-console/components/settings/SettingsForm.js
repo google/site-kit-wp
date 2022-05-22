@@ -17,13 +17,36 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { __, sprintf } from '@wordpress/i18n';
+
+/**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
 import { MODULES_SEARCH_CONSOLE } from '../../datastore/constants';
+import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import { PropertySelect } from '../common/';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
+import SettingsNotice from '../../../../components/SettingsNotice/SettingsNotice';
+import { TYPE_INFO } from '../../../../components/SettingsNotice/utils';
+import WarningIcon from '../../../../../../assets/svg/icons/warning-icon.svg';
+const { useSelect } = Data;
 
 export default function SettingsForm() {
+	const hasModuleAccess = useSelect( ( select ) =>
+		select( CORE_MODULES ).hasModuleAccess( MODULES_SEARCH_CONSOLE )
+	);
+
+	const module = useSelect( ( select ) =>
+		select( CORE_MODULES ).getModule( 'search-console' )
+	);
+
+	const ownerName = module?.owner?.username
+		? module?.owner?.login
+		: __( 'Another admin', 'google-site-kit' );
+
 	return (
 		<div className="googlesitekit-search-console-settings-fields">
 			<StoreErrorNotices
@@ -34,6 +57,21 @@ export default function SettingsForm() {
 			<div className="googlesitekit-setup-module__inputs">
 				<PropertySelect />
 			</div>
+			{ ! hasModuleAccess && (
+				<SettingsNotice
+					type={ TYPE_INFO }
+					Icon={ WarningIcon }
+					notice={ sprintf(
+						/* translators: %1$s: module owner's name, %2$s: module name */
+						__(
+							'%1$s configured %2$s and you don’t have access to this Search Console property. Contact them to share access or change the Search Console property.',
+							'google-site-kit'
+						),
+						ownerName,
+						module?.name
+					) }
+				/>
+			) }
 		</div>
 	);
 }
