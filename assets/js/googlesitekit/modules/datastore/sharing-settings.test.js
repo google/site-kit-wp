@@ -44,8 +44,27 @@ describe( 'core/modules sharing-settings', () => {
 			management: 'all_admins',
 		},
 	};
-	const sharingSettingsList = {
+	const shareableRoles = [
+		{
+			id: 'administrator',
+			displayName: 'Administrator',
+		},
+		{
+			id: 'editor',
+			displayName: 'Editor',
+		},
+		{
+			id: 'author',
+			displayName: 'Author',
+		},
+		{
+			id: 'contributor',
+			displayName: 'Contributor',
+		},
+	];
+	const dashboardSharingData = {
 		settings: sharingSettings,
+		roles: shareableRoles,
 	};
 
 	let registry;
@@ -281,13 +300,48 @@ describe( 'core/modules sharing-settings', () => {
 			} );
 
 			it( 'should return the `sharingSettings` object', async () => {
-				global[ dashboardSharingDataBaseVar ] = sharingSettingsList;
+				global[ dashboardSharingDataBaseVar ] = dashboardSharingData;
 
 				const sharingSettingsObj = registry
 					.select( CORE_MODULES )
 					.getSharingSettings();
 
 				expect( sharingSettingsObj ).toMatchObject( sharingSettings );
+			} );
+		} );
+
+		describe( 'getShareableRoles', () => {
+			it( 'should return undefined if `shareableRoles` cannot be loaded', () => {
+				global[ dashboardSharingDataBaseVar ] = undefined;
+
+				const shareableRolesObj = registry
+					.select( CORE_MODULES )
+					.getShareableRoles();
+
+				expect( console ).toHaveErrored();
+				expect( shareableRolesObj ).toBeUndefined();
+			} );
+
+			it( 'should return an empty array if there is no `roles`', async () => {
+				global[ dashboardSharingDataBaseVar ] = {
+					roles: [],
+				};
+
+				const shareableRolesObj = registry
+					.select( CORE_MODULES )
+					.getShareableRoles();
+
+				expect( shareableRolesObj ).toMatchObject( [] );
+			} );
+
+			it( 'should return the `shareableRoles` object', async () => {
+				global[ dashboardSharingDataBaseVar ] = dashboardSharingData;
+
+				const shareableRolesObj = registry
+					.select( CORE_MODULES )
+					.getShareableRoles();
+
+				expect( shareableRolesObj ).toMatchObject( shareableRoles );
 			} );
 		} );
 	} );
