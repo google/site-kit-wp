@@ -420,5 +420,111 @@ describe( 'core/modules sharing-settings', () => {
 				expect( sharedRoles ).toEqual( [ 'editor', 'subscriber' ] );
 			} );
 		} );
+
+		describe( 'haveSharingSettingsChanged', () => {
+			it( 'informs whether client-side sharing-settings differ from server-side ones', async () => {
+				global[ dashboardSharingDataBaseVar ] = undefined;
+
+				// Initially false.
+				expect(
+					registry.select( CORE_MODULES ).haveSharingSettingsChanged()
+				).toBe( false );
+
+				global[ dashboardSharingDataBaseVar ] = dashboardSharingData;
+				registry.select( CORE_MODULES ).getSharingSettings();
+
+				// Still false after getting the sharing settings from the global variable.
+				expect(
+					registry.select( CORE_MODULES ).haveSharingSettingsChanged()
+				).toBe( false );
+
+				// True after updating module's `management` on the client.
+				registry
+					.dispatch( CORE_MODULES )
+					.setSharingManagement( 'search-console', 'owner' );
+				expect(
+					registry.select( CORE_MODULES ).haveSharingSettingsChanged()
+				).toBe( true );
+
+				// False after updating module's `management` back to original server value on client.
+				registry
+					.dispatch( CORE_MODULES )
+					.setSharingManagement( 'search-console', 'all_admins' );
+				expect(
+					registry.select( CORE_MODULES ).haveSharingSettingsChanged()
+				).toBe( false );
+
+				// True after updating module's `sharedRoles` on the client.
+				registry
+					.dispatch( CORE_MODULES )
+					.setSharedRoles( 'search-console', [ 'editor' ] );
+				expect(
+					registry.select( CORE_MODULES ).haveSharingSettingsChanged()
+				).toBe( true );
+
+				// False after updating module's `sharedRoles` back to original server value on client.
+				registry
+					.dispatch( CORE_MODULES )
+					.setSharedRoles( 'search-console', [
+						'editor',
+						'subscriber',
+					] );
+				expect(
+					registry.select( CORE_MODULES ).haveSharingSettingsChanged()
+				).toBe( false );
+			} );
+
+			it( 'compares all keys when keys argument is not supplied', async () => {
+				global[ dashboardSharingDataBaseVar ] = dashboardSharingData;
+				registry.select( CORE_MODULES ).getSharingSettings();
+
+				// Update the sharing settings so they differ. All values are being checked here.
+				registry
+					.dispatch( CORE_MODULES )
+					.setSharingManagement( 'search-console', 'owner' );
+				expect(
+					registry.select( CORE_MODULES ).haveSharingSettingsChanged()
+				).toBe( true );
+			} );
+
+			it( 'compares select keys when keys argument is supplied', async () => {
+				global[ dashboardSharingDataBaseVar ] = dashboardSharingData;
+				registry.select( CORE_MODULES ).getSharingSettings();
+
+				// Update the sharing settings so they differ. Only `search-console` should trigger
+				// a truthy return value. `analytics` should return a falsy value.
+				registry
+					.dispatch( CORE_MODULES )
+					.setSharingManagement( 'search-console', 'owner' );
+				expect(
+					registry
+						.select( CORE_MODULES )
+						.haveSharingSettingsChanged( [ 'search-console' ] )
+				).toBe( true );
+				expect(
+					registry
+						.select( CORE_MODULES )
+						.haveSharingSettingsChanged( [ 'analytics' ] )
+				).toBe( false );
+
+				// Checking all values should be possible.
+				expect(
+					registry
+						.select( CORE_MODULES )
+						.haveSharingSettingsChanged( [
+							'search-console',
+							'analytics',
+						] )
+				).toBe( true );
+
+				// Checking no values should be possible, and should not be treated as
+				// an `undefined` keys array.
+				expect(
+					registry
+						.select( CORE_MODULES )
+						.haveSharingSettingsChanged( [] )
+				).toBe( false );
+			} );
+		} );
 	} );
 } );
