@@ -396,6 +396,25 @@ const baseSelectors = {
 
 		return ! isEqual( sharingSettings, savedSharingSettings );
 	},
+
+	/**
+	 * Checks whether we can submit sharing settings changes for a module.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state      Data store's state.
+	 * @param {string} moduleSlug Module slug.
+	 * @return {boolean} Whether the module supports submitting sharing settings changes.
+	 */
+	canSubmitSharingChanges: createRegistrySelector(
+		( select ) => ( state, moduleSlug ) => {
+			invariant( moduleSlug, 'moduleSlug is required.' );
+			const storeName = select( CORE_MODULES ).getModuleStoreName(
+				moduleSlug
+			);
+			return !! select( storeName )?.canSubmitSharingChanges?.();
+		}
+	),
 };
 
 const store = Data.combineStores( fetchSaveSharingSettingsStore, {
