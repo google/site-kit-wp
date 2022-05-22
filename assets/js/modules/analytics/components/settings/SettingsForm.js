@@ -37,6 +37,7 @@ import { MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
 import SettingsControls from './SettingsControls';
 import GA4SettingsControls from './GA4SettingsControls';
 import { isValidAccountID } from '../../util';
+import EntityOwnershipChangeNotice from '../../../../components/settings/EntityOwnershipChangeNotice';
 const { useSelect } = Data;
 
 export default function SettingsForm() {
@@ -75,6 +76,8 @@ export default function SettingsForm() {
 					<AdsConversionIDTextField />
 				</Fragment>
 			) }
+
+			<EntityOwnershipChangeNotice slug="analytics" />
 		</Fragment>
 	);
 }

@@ -32,6 +32,7 @@ import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import SettingsNotice from '../../../../components/SettingsNotice/SettingsNotice';
 import { TYPE_INFO } from '../../../../components/SettingsNotice/utils';
 import WarningIcon from '../../../../../../assets/svg/icons/warning-icon.svg';
+import EntityOwnershipChangeNotice from '../../../../components/settings/EntityOwnershipChangeNotice';
 const { useSelect } = Data;
 
 export default function SettingsForm() {
@@ -72,6 +73,7 @@ export default function SettingsForm() {
 					) }
 				/>
 			) }
+			<EntityOwnershipChangeNotice slug="search-console" />
 		</div>
 	);
 }
