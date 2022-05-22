@@ -209,6 +209,10 @@ describe( 'core/modules sharing-settings', () => {
 			] )(
 				'dispatches a request to save sharing settings and %s dispatch setOwnerID action based on the `newOwnerIDs` availability',
 				async ( _, newOwnerIDs, ownerID ) => {
+					global[
+						dashboardSharingDataBaseVar
+					] = dashboardSharingData;
+
 					provideModules( registry, [
 						{
 							slug: 'search-console',
@@ -238,10 +242,6 @@ describe( 'core/modules sharing-settings', () => {
 							},
 						}
 					);
-
-					registry
-						.dispatch( CORE_MODULES )
-						.receiveGetSharingSettings( sharingSettings );
 
 					await registry
 						.dispatch( CORE_MODULES )
