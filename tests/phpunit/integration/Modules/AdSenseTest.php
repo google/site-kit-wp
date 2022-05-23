@@ -49,7 +49,6 @@ class AdSenseTest extends TestCase {
 		$adsense->register();
 
 		$this->assertNotEmpty( apply_filters( 'googlesitekit_auth_scopes', array() ) );
-		$this->assertContains( $adsense->get_screen(), array() );
 	}
 
 	public function test_register_template_redirect_amp() {
