@@ -112,7 +112,7 @@ describe( 'modules/adsense report', () => {
 					data: { status: 500 },
 				};
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/adsense\/data\/earnings/,
+					/^\/google-site-kit\/v1\/modules\/adsense\/data\/report/,
 					{ body: response, status: 500 }
 				);
 
