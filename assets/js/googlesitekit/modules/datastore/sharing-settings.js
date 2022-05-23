@@ -30,6 +30,7 @@ import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { createFetchStore } from '../../data/create-fetch-store';
 import { CORE_MODULES } from './constants';
+import { createStrictSelect, createValidationSelector } from '../../data/utils';
 
 const { createRegistrySelector } = Data;
 
@@ -38,11 +39,20 @@ const SET_SHARING_MANAGEMENT = 'SET_SHARING_MANAGEMENT';
 const SET_SHARED_ROLES = 'SET_SHARED_ROLES';
 const RECEIVE_GET_SHARING_SETTINGS = 'RECEIVE_GET_SHARING_SETTINGS';
 const RECEIVE_SHAREABLE_ROLES = 'RECEIVE_SHAREABLE_ROLES';
+const START_SUBMIT_SHARING_CHANGES = 'START_SUBMIT_SHARING_CHANGES';
+const FINISH_SUBMIT_SHARING_CHANGES = 'FINISH_SUBMIT_SHARING_CHANGES';
+
+// Invariant error messages.
+export const INVARIANT_DOING_SUBMIT_SHARING_CHANGES =
+	'cannot submit sharing changes while submitting changes';
+export const INVARIANT_SHARING_SETTINGS_NOT_CHANGED =
+	'cannot submit changes if sharing settings have not changed';
 
 const baseInitialState = {
 	sharingSettings: undefined,
 	savedSharingSettings: undefined,
 	shareableRoles: undefined,
+	isDoingSubmitSharingChanges: undefined,
 };
 
 const fetchSaveSharingSettingsStore = createFetchStore( {
@@ -135,6 +145,11 @@ const baseActions = {
 	*saveSharingSettings() {
 		const registry = yield Data.commonActions.getRegistry();
 
+		yield {
+			type: START_SUBMIT_SHARING_CHANGES,
+			payload: {},
+		};
+
 		const sharingSettings = registry
 			.select( CORE_MODULES )
 			.getSharingSettings();
@@ -158,6 +173,11 @@ const baseActions = {
 				yield registry.dispatch( storeName ).setOwnerID( ownerID );
 			}
 		}
+
+		yield {
+			type: FINISH_SUBMIT_SHARING_CHANGES,
+			payload: {},
+		};
 
 		return { response, error };
 	},
@@ -256,6 +276,20 @@ const baseReducer = ( state, { type, payload } ) => {
 			};
 		}
 
+		case START_SUBMIT_SHARING_CHANGES: {
+			return {
+				...state,
+				isDoingSubmitSharingChanges: true,
+			};
+		}
+
+		case FINISH_SUBMIT_SHARING_CHANGES: {
+			return {
+				...state,
+				isDoingSubmitSharingChanges: false,
+			};
+		}
+
 		default: {
 			return state;
 		}
@@ -299,6 +333,28 @@ const baseResolvers = {
 		yield actions.receiveShareableRoles( roles );
 	},
 };
+
+function validateCanSubmitSharingChanges( select ) {
+	const strictSelect = createStrictSelect( select );
+	const {
+		isDoingSubmitSharingChanges,
+		haveSharingSettingsChanged,
+	} = strictSelect( CORE_MODULES );
+
+	invariant(
+		! isDoingSubmitSharingChanges(),
+		INVARIANT_DOING_SUBMIT_SHARING_CHANGES
+	);
+	invariant(
+		haveSharingSettingsChanged(),
+		INVARIANT_SHARING_SETTINGS_NOT_CHANGED
+	);
+}
+
+const {
+	safeSelector: canSubmitSharingChanges,
+	dangerousSelector: __dangerousCanSubmitSharingChanges,
+} = createValidationSelector( validateCanSubmitSharingChanges );
 
 const baseSelectors = {
 	/**
@@ -397,24 +453,8 @@ const baseSelectors = {
 		return ! isEqual( sharingSettings, savedSharingSettings );
 	},
 
-	/**
-	 * Checks whether we can submit sharing settings changes for a module.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param {Object} state      Data store's state.
-	 * @param {string} moduleSlug Module slug.
-	 * @return {boolean} Whether the module supports submitting sharing settings changes.
-	 */
-	canSubmitSharingChanges: createRegistrySelector(
-		( select ) => ( state, moduleSlug ) => {
-			invariant( moduleSlug, 'moduleSlug is required.' );
-			const storeName = select( CORE_MODULES ).getModuleStoreName(
-				moduleSlug
-			);
-			return !! select( storeName )?.canSubmitChanges?.();
-		}
-	),
+	canSubmitSharingChanges,
+	__dangerousCanSubmitSharingChanges,
 };
 
 const store = Data.combineStores( fetchSaveSharingSettingsStore, {
