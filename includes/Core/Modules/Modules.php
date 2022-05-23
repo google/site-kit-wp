@@ -920,6 +920,10 @@ final class Modules {
 								return new WP_Error( 'invalid_module_slug', __( 'Invalid module slug.', 'google-site-kit' ), array( 'status' => 404 ) );
 							}
 
+							if ( ! $module instanceof Module_With_Service_Entity ) {
+								return new WP_Error( 'invalid_module', __( 'Module access cannot be checked.', 'google-site-kit' ), array( 'status' => 400 ) );
+							}
+
 							if ( ! $this->is_module_connected( $slug ) ) {
 								return new WP_Error( 'module_not_connected', __( 'Module is not connected.', 'google-site-kit' ), array( 'status' => 400 ) );
 							}
