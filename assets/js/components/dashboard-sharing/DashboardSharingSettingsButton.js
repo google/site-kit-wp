@@ -37,12 +37,17 @@ import Portal from '../Portal';
 import ShareIcon from '../../../svg/icons/share.svg';
 import { Dialog, DialogContent, DialogFooter } from '../../material-components';
 import { BREAKPOINT_SMALL, useBreakpoint } from '../../hooks/useBreakpoint';
+import useViewContext from '../../hooks/useViewContext';
+import { trackEvent } from '../../util';
 
 export default function DashboardSharingSettingsButton() {
 	const breakpoint = useBreakpoint();
 	const [ dialogOpen, setDialogOpen ] = useState( false );
 
+	const viewContext = useViewContext();
+
 	const openDialog = useCallback( () => {
+		trackEvent( `${ viewContext }_headerbar`, 'open_sharing' );
 		setDialogOpen( true );
 	}, [] );
 
