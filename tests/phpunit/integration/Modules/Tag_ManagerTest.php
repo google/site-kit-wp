@@ -11,6 +11,7 @@
 namespace Google\Site_Kit\Tests\Modules;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_With_Owner;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Storage\Options;
@@ -19,7 +20,11 @@ use Google\Site_Kit\Modules\Tag_Manager;
 use Google\Site_Kit\Modules\Tag_Manager\Settings;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Owner_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Scopes_ContractTests;
+use Google\Site_Kit\Tests\Core\Modules\Module_With_Service_Entity_ContractTests;
+use Google\Site_Kit\Tests\FakeHttpClient;
 use Google\Site_Kit\Tests\TestCase;
+use Google\Site_Kit_Dependencies\GuzzleHttp\Message\Response;
+use Google\Site_Kit_Dependencies\GuzzleHttp\Stream\Stream;
 
 /**
  * @group Modules
@@ -27,6 +32,7 @@ use Google\Site_Kit\Tests\TestCase;
 class Tag_ManagerTest extends TestCase {
 	use Module_With_Scopes_ContractTests;
 	use Module_With_Owner_ContractTests;
+	use Module_With_Service_Entity_ContractTests;
 
 	public function test_register() {
 		$tagmanager = new Tag_Manager( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
@@ -427,5 +433,134 @@ class Tag_ManagerTest extends TestCase {
 	 */
 	protected function get_module_with_owner() {
 		return new Tag_Manager( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+	}
+
+	/**
+	 * @return Module_With_Service_Entity
+	 */
+	protected function get_module_with_service_entity() {
+		return new Tag_Manager( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+	}
+
+	protected function set_up_check_service_entity_access( Module $module, $status_code ) {
+		$module->get_settings()->merge(
+			array(
+				'accountID'   => '123456789',
+				'containerID' => 'GTM-123456',
+			)
+		);
+
+		if ( 200 === $status_code ) {
+			$this->set_up_check_service_entity_tag_manager( $module );
+		}
+
+	}
+
+	protected function set_up_check_service_entity_tag_manager( Module $module ) {
+		$fake_http_client = new FakeHttpClient();
+
+		$fake_http_client->set_request_handler(
+			function () {
+				return new Response(
+					200,
+					array(),
+					Stream::factory(
+						json_encode(
+							array(
+								'container' => array(
+									array( 'publicId' => 'GTM-123456' ),
+									array( 'publicId' => 'GTM-123457' ),
+									array( 'publicId' => 'GTM-123458' ),
+								),
+							)
+						)
+					)
+				);
+			}
+		);
+
+		$module->get_client()->setHttpClient( $fake_http_client );
+	}
+
+	// Module_With_Service_Entity_ContractTests does not cover all the cases for
+	// this module, so we need to add a few more tests here.
+
+	/**
+	 * @group Module_With_Service_Entity
+	 */
+	public function test_check_service_entity_access_no_access_not_in_all_containers() {
+		$module = new Tag_Manager( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+
+		$module->get_settings()->merge(
+			array(
+				'accountID'   => '123456789',
+				'containerID' => 'GTM-123459',
+			)
+		);
+
+		$this->set_up_check_service_entity_tag_manager( $module );
+
+		$access = $module->check_service_entity_access();
+
+		$this->assertNotWPError( $access );
+		$this->assertEquals( false, $access );
+	}
+
+	/**
+	 * @param string $input String to sanitize
+	 * @param string $expected Expected output
+	 * @group Module_With_Service_Entity
+	 * @dataProvider check_service_entity_access_provider
+	 */
+	public function test_check_service_entity_amp( $context, $container_id, $amp_container_id, $expected ) {
+		$module = new Tag_Manager( $context );
+
+		$module->get_settings()->merge(
+			array(
+				'accountID'      => '123456789',
+				'containerID'    => $container_id,
+				'ampContainerID' => $amp_container_id,
+			)
+		);
+
+		$this->set_up_check_service_entity_tag_manager( $module );
+
+		$access = $module->check_service_entity_access();
+
+		$this->assertNotWPError( $access );
+		$this->assertEquals( $expected, $access );
+	}
+
+	public function check_service_entity_access_provider() {
+		return array(
+			// AMP Primary - Success.
+			array(
+				$this->get_amp_primary_context(),
+				'GTM-123456',
+				'GTM-123457',
+				true,
+			),
+			// AMP Primary - No Access.
+			array(
+				$this->get_amp_primary_context(),
+				'GTM-123456',
+				'GTM-123459',
+				false,
+			),
+			// AMP Secondary - Success.
+			array(
+				$this->get_amp_secondary_context(),
+				'GTM-123456',
+				'GTM-123457',
+				true,
+			),
+			// AMP Secondary - No Access.
+			array(
+				$this->get_amp_secondary_context(),
+				'GTM-123459',
+				'GTM-123450',
+				false,
+			),
+		);
 	}
 }
