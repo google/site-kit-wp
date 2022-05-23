@@ -387,18 +387,20 @@ abstract class Module {
 	 * Validates the given data request.
 	 *
 	 * @since 1.9.0
-	 * @since n.e.x.t Requires `Datapoint` instead of `Data_Request`.
 	 *
-	 * @param Datapoint $datapoint Datapoint instance.
+	 * @param Data_Request $data Data_Request instance.
 	 * @throws Insufficient_Scopes_Exception Thrown if the user has not granted.
 	 */
-	private function validate_data_request( Datapoint $datapoint ) {
-		// Validate the request scopes if it requires a service.
-		if ( $this instanceof Module_With_Scopes && $datapoint->get_service() ) {
-			$oauth_client = $this->get_oauth_client_for_datapoint( $datapoint );
-			$this->validate_datapoint_scopes( $datapoint, $oauth_client );
-			$this->validate_base_scopes( $oauth_client );
+	private function validate_data_request( Data_Request $data ) {
+		if ( ! $this instanceof Module_With_Scopes ) {
+			return;
 		}
+
+		$datapoint    = $this->get_datapoint_definition( "{$data->method}:{$data->datapoint}" );
+		$oauth_client = $this->get_oauth_client_for_datapoint( $datapoint );
+
+		$this->validate_datapoint_scopes( $datapoint, $oauth_client );
+		$this->validate_base_scopes( $oauth_client );
 	}
 
 	/**
