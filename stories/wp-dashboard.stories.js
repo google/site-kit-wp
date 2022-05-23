@@ -279,12 +279,12 @@ storiesOf( 'WordPress', module )
 			// For <WPDashboardImpressions />
 			registry
 				.dispatch( MODULES_SEARCH_CONSOLE )
-				.receiveGetReport( {}, { options: impressionsArgs } );
+				.receiveGetReport( [], { options: impressionsArgs } );
 
 			// For <WPDashboardClicks />
 			registry
 				.dispatch( MODULES_SEARCH_CONSOLE )
-				.receiveGetReport( {}, { options: clicksOptions } );
+				.receiveGetReport( [], { options: clicksOptions } );
 
 			return (
 				<div id="dashboard-widgets">

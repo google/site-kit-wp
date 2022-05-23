@@ -38,19 +38,7 @@ describe( 'setting up the Analytics module with no existing account and with an 
 	beforeAll( async () => {
 		await page.setRequestInterception( true );
 		useRequestInterception( ( request ) => {
-			if (
-				request.url().match( 'modules/analytics/data/tag-permission' )
-			) {
-				request.respond( {
-					status: 200,
-					body: JSON.stringify( {
-						...existingTag,
-						permission: false,
-					} ),
-				} );
-			} else if (
-				request.url().match( 'analytics-4/data/account-summaries' )
-			) {
+			if ( request.url().match( 'analytics-4/data/account-summaries' ) ) {
 				request.respond( {
 					status: 200,
 					body: JSON.stringify( {} ),
@@ -88,31 +76,16 @@ describe( 'setting up the Analytics module with no existing account and with an 
 		await resetSiteKit();
 	} );
 
-	it( 'does not allow Analytics to be set up with an existing tag that does not match a property of the user', async () => {
+	it( 'allows Analytics to be set up with an existing tag that does not match a property of the user', async () => {
 		await setAnalyticsExistingPropertyID( existingTag.propertyID );
 
 		await proceedToSetUpAnalytics();
 
-		await expect( page ).toMatchElement( '.googlesitekit-error-text', {
-			text: /your account doesn't seem to have access to this Analytics property/i,
-		} );
-		// Buttons to proceed are not displayed; the user is blocked from completing setup.
-		await expect( page ).not.toMatchElement(
+		// User should see the "create account" page.
+		await expect( page ).toMatchElement(
 			'.googlesitekit-setup-module--analytics button',
 			{
-				text: /configure analytics/i,
-			}
-		);
-		await expect( page ).not.toMatchElement(
-			'.googlesitekit-setup-module--analytics button',
-			{
-				text: /create an account/i,
-			}
-		);
-		await expect( page ).not.toMatchElement(
-			'.googlesitekit-setup-module--analytics button',
-			{
-				text: /re-fetch my account/i,
+				text: /create account/i,
 			}
 		);
 	} );

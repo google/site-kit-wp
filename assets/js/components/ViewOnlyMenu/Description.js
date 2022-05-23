@@ -19,11 +19,7 @@
 /**
  * WordPress dependencies
  */
-import {
-	createInterpolateElement,
-	useCallback,
-	useContext,
-} from '@wordpress/element';
+import { createInterpolateElement, useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -37,13 +33,13 @@ import {
 	PERMISSION_AUTHENTICATE,
 } from '../../googlesitekit/datastore/user/constants';
 import { trackEvent } from '../../util';
-import ViewContextContext from '../../components/Root/ViewContextContext';
 import Button from '../../components/Button';
 import Link from '../../components/Link';
+import useViewContext from '../../hooks/useViewContext';
 const { useDispatch, useSelect } = Data;
 
 export default function Description() {
-	const viewContext = useContext( ViewContextContext );
+	const viewContext = useViewContext();
 
 	const canAuthenticate = useSelect( ( select ) =>
 		select( CORE_USER ).hasCapability( PERMISSION_AUTHENTICATE )
@@ -95,7 +91,6 @@ export default function Description() {
 					a: (
 						<Link
 							href="https://sitekit.withgoogle.com/documentation/using-site-kit/dashboard-sharing/"
-							inherit
 							external
 							aria-label={ __(
 								'Learn more about dashboard sharing',

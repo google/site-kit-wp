@@ -20,6 +20,7 @@
  * Internal dependencies
  */
 import SetupMain from './SetupMain';
+import { Cell, Grid, Row } from '../../../../../material-components';
 import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
 import * as fixtures from '../../../datastore/__fixtures__';
 import {
@@ -43,7 +44,17 @@ const defaultSettings = {
 function Template( { setupRegistry } ) {
 	return (
 		<WithRegistrySetup func={ setupRegistry }>
-			<SetupMain />
+			<div className="googlesitekit-setup">
+				<section className="googlesitekit-setup__wrapper">
+					<Grid>
+						<Row>
+							<Cell size={ 12 }>
+								<SetupMain />
+							</Cell>
+						</Row>
+					</Grid>
+				</section>
+			</div>
 		</WithRegistrySetup>
 	);
 }
@@ -54,6 +65,7 @@ function createSetupAccountStory( variation, args = {} ) {
 		clients = fixtures.clients,
 		sites = fixtures.sites,
 		referenceSiteURL = 'https://example.com',
+		existingTag = false,
 	} = args;
 
 	const story = Template.bind( {} );
@@ -68,6 +80,8 @@ function createSetupAccountStory( variation, args = {} ) {
 				receiveGetSettings,
 				receiveGetSites,
 				receiveGetURLChannels,
+				receiveGetExistingTag,
+				setAccountID,
 			} = registry.dispatch( MODULES_ADSENSE );
 
 			provideSiteInfo( registry, {
@@ -79,6 +93,7 @@ function createSetupAccountStory( variation, args = {} ) {
 			receiveGetSites( sites, { accountID } );
 			receiveGetSettings( { ...defaultSettings, accountID } );
 			receiveGetAlerts( fixtures.alerts, { accountID } );
+			setAccountID( accountID );
 
 			const clientID = clients.find(
 				( { _accountID } ) => _accountID === accountID
@@ -89,6 +104,10 @@ function createSetupAccountStory( variation, args = {} ) {
 					accountID,
 					clientID,
 				} );
+			}
+
+			if ( existingTag ) {
+				receiveGetExistingTag( 'ca-pub-2833782679114991' );
 			}
 		},
 	};
@@ -113,7 +132,6 @@ CreateAccount.args = {
 	},
 };
 
-export const SetupAccountSite = createSetupAccountStory( 'Site' );
 export const SetupAccountSiteNeedsAttention = createSetupAccountStory(
 	'Site - Needs Attention',
 	{
@@ -138,10 +156,36 @@ export const SetupAccountSiteReady = createSetupAccountStory(
 		referenceSiteURL: 'https://some-other-tld.ie',
 	}
 );
+export const SetupAccountSiteReadyWithTag = createSetupAccountStory(
+	'Site - Ready w Ads Enabled + Existing Tag',
+	{
+		referenceSiteURL: 'https://some-other-tld.ie',
+		existingTag: true,
+	}
+);
 export const SetupAccountSiteReadyAdsDisabled = createSetupAccountStory(
 	'Site - Ready w Ads Disabled',
 	{
 		referenceSiteURL: 'https://foo-bar.ie',
+	}
+);
+export const SetupAccountSiteReadyAdsDisabledWithTag = createSetupAccountStory(
+	'Site - Ready w Ads Disabled + Existing Tag',
+	{
+		referenceSiteURL: 'https://foo-bar.ie',
+		existingTag: true,
+	}
+);
+export const SetupAccountSiteErrorState = createSetupAccountStory(
+	'Site - Invalid Site State',
+	{
+		referenceSiteURL: 'https://invalid-error-site.com',
+		sites: [
+			{
+				domain: 'invalid-error-site.com',
+				state: 'NON_EXISTENT_SITE_STATE',
+			},
+		],
 	}
 );
 export const SetupAccountNoClient = createSetupAccountStory( 'No Client', {
@@ -163,6 +207,7 @@ export const SetupAccountPendingTasks = createSetupAccountStory(
 				],
 			},
 		],
+		existingTag: true,
 	}
 );
 
@@ -172,6 +217,7 @@ SelectAccount.args = {
 	setupRegistry: ( registry ) => {
 		registry.dispatch( MODULES_ADSENSE ).receiveGetAccounts( [
 			{
+				_id: 'pub-2833782679114991',
 				name: 'accounts/pub-2833782679114991',
 				displayName: 'Test Account',
 				timeZone: {
@@ -179,7 +225,36 @@ SelectAccount.args = {
 				},
 				createTime: '2013-10-17T15:51:03.000Z',
 			},
+			{
+				_id: 'pub-2833782679114992',
+				name: 'accounts/pub-2833782679114992',
+				displayName: 'Test Account 2',
+				timeZone: {
+					id: 'Europe/Berlin',
+				},
+				createTime: '2013-10-18T15:51:03.000Z',
+			},
 		] );
+	},
+};
+
+export const ErrorNotice = Template.bind( {} );
+ErrorNotice.storyName = 'Error Notice';
+ErrorNotice.args = {
+	setupRegistry: ( registry ) => {
+		registry.dispatch( MODULES_ADSENSE ).receiveGetAccounts( [] );
+		registry.dispatch( MODULES_ADSENSE ).receiveError(
+			{
+				// Typically thrown when fetching accounts.
+				message: 'AdSense account is disapproved.',
+				data: {
+					status: 403,
+					reason: 'disapprovedAccount',
+				},
+			},
+			'getAccounts',
+			[]
+		);
 	},
 };
 
@@ -206,10 +281,14 @@ export default {
 				.receiveIsAdBlockerActive( false );
 
 			return (
-				<WithTestRegistry registry={ registry }>
+				<WithTestRegistry
+					registry={ registry }
+					features={ [ 'adsenseSetupV2' ] }
+				>
 					<Story />
 				</WithTestRegistry>
 			);
 		},
 	],
+	parameters: { padding: 0 },
 };

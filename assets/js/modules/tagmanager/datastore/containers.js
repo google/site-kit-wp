@@ -36,6 +36,7 @@ import {
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 const { createRegistrySelector, createRegistryControl } = Data;
 import { createValidatedAction } from '../../../googlesitekit/data/utils';
+import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 
 // Actions
 const WAIT_FOR_CONTAINERS = 'WAIT_FOR_CONTAINERS';
@@ -404,6 +405,24 @@ const baseSelectors = {
 	isDoingCreateContainer( state ) {
 		return Object.values( state.isFetchingCreateContainer ).some( Boolean );
 	},
+
+	/**
+	 * Gets primary container ID based on the AMP mode.
+	 *
+	 * @since 1.75.0
+	 *
+	 * @return {(string|undefined)} Primary container ID or `undefined` if not loaded yet.
+	 */
+	getPrimaryContainerID: createRegistrySelector( ( select ) => () => {
+		const isPrimaryAMP = select( CORE_SITE ).isPrimaryAMP();
+		if ( undefined === isPrimaryAMP ) {
+			return undefined;
+		}
+		if ( isPrimaryAMP ) {
+			return select( MODULES_TAGMANAGER ).getAMPContainerID();
+		}
+		return select( MODULES_TAGMANAGER ).getContainerID();
+	} ),
 };
 
 const store = Data.combineStores(

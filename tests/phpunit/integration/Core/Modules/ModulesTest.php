@@ -12,6 +12,7 @@ namespace Google\Site_Kit\Tests\Core\Modules;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Authentication;
+use Google\Site_Kit\Core\Modules\Module_Sharing_Settings;
 use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Core\Storage\Options;
@@ -879,7 +880,7 @@ class ModulesTest extends TestCase {
 		$this->assertEquals( 200, $response->get_status() );
 	}
 
-	public function test_all_admin_module_ownership_change() {
+	private function setup_all_admin_module_ownership_change() {
 		$this->enable_feature( 'dashboardSharing' );
 		$user         = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
 		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
@@ -897,14 +898,19 @@ class ModulesTest extends TestCase {
 		);
 
 		$modules->register();
+		$module = $modules->get_module( 'pagespeed-insights' );
+		return $module->get_settings();
+	}
+
+	public function test_all_admin_module_ownership_change__add_settings() {
+		$pagespeed_insights_settings = $this->setup_all_admin_module_ownership_change();
 
 		$test_sharing_settings = array(
 			'pagespeed-insights' => array(),
 		);
-		$module                = $modules->get_module( 'pagespeed-insights' );
-		$settings              = $module->get_settings()->get();
 		add_option( 'googlesitekit_dashboard_sharing', $test_sharing_settings );
 
+		$settings = $pagespeed_insights_settings->get();
 		$this->assertEquals( $settings['ownerID'], 0 );
 
 		$test_updated_sharing_settings = array(
@@ -915,28 +921,12 @@ class ModulesTest extends TestCase {
 		);
 		update_option( 'googlesitekit_dashboard_sharing', $test_updated_sharing_settings );
 
-		$settings = $module->get_settings()->get();
-		$this->assertEquals( $settings['ownerID'], $user->ID );
+		$settings = $pagespeed_insights_settings->get();
+		$this->assertEquals( $settings['ownerID'], wp_get_current_user()->ID );
 	}
 
-	public function test_all_admin_module_ownership_change_shared_roles() {
-		$this->enable_feature( 'dashboardSharing' );
-		$user         = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
-		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-		$options      = new Options( $context );
-		$user_options = new User_Options( $context, $user->ID );
-		$modules      = new Modules( $context, $options, $user_options );
-		wp_set_current_user( $user->ID );
-
-		// Activate modules.
-		update_option(
-			'googlesitekit-active-modules',
-			array(
-				'pagespeed-insights',
-			)
-		);
-
-		$modules->register();
+	public function test_all_admin_module_ownership_change__add_shared_roles() {
+		$pagespeed_insights_settings = $this->setup_all_admin_module_ownership_change();
 
 		$test_sharing_settings = array(
 			'pagespeed-insights' => array(
@@ -944,12 +934,12 @@ class ModulesTest extends TestCase {
 				'management'  => 'owner',
 			),
 		);
-		$module                = $modules->get_module( 'pagespeed-insights' );
-		$settings              = $module->get_settings()->get();
 		add_option( 'googlesitekit_dashboard_sharing', $test_sharing_settings );
 
+		$settings = $pagespeed_insights_settings->get();
 		$this->assertEquals( $settings['ownerID'], 0 );
 
+		// Test adding a new shared role updates the owner.
 		$test_updated_sharing_settings = array(
 			'pagespeed-insights' => array(
 				'sharedRoles' => array( 'editor', 'subscriber' ),
@@ -958,28 +948,67 @@ class ModulesTest extends TestCase {
 		);
 		update_option( 'googlesitekit_dashboard_sharing', $test_updated_sharing_settings );
 
-		$settings = $module->get_settings()->get();
-		$this->assertEquals( $settings['ownerID'], $user->ID );
+		$settings = $pagespeed_insights_settings->get();
+		$this->assertEquals( $settings['ownerID'], wp_get_current_user()->ID );
 	}
 
-	public function test_all_admin_module_ownership_change_management() {
-		$this->enable_feature( 'dashboardSharing' );
-		$user         = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
-		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-		$options      = new Options( $context );
-		$user_options = new User_Options( $context, $user->ID );
-		$modules      = new Modules( $context, $options, $user_options );
-		wp_set_current_user( $user->ID );
+	public function test_all_admin_module_ownership_change__reorder_shared_roles() {
+		$pagespeed_insights_settings = $this->setup_all_admin_module_ownership_change();
 
-		// Activate modules.
-		update_option(
-			'googlesitekit-active-modules',
-			array(
-				'pagespeed-insights',
-			)
+		$test_sharing_settings = array(
+			'pagespeed-insights' => array(
+				'sharedRoles' => array( 'editor', 'subscriber' ),
+				'management'  => 'owner',
+			),
 		);
+		add_option( 'googlesitekit_dashboard_sharing', $test_sharing_settings );
 
-		$modules->register();
+		$settings = $pagespeed_insights_settings->get();
+		$this->assertEquals( $settings['ownerID'], 0 );
+
+		// Test changing the order of shared roles does not update the owner.
+		$test_updated_sharing_settings = array(
+			'pagespeed-insights' => array(
+				'sharedRoles' => array( 'subscriber', 'editor' ),
+				'management'  => 'owner',
+			),
+		);
+		update_option( 'googlesitekit_dashboard_sharing', $test_updated_sharing_settings );
+
+		$settings = $pagespeed_insights_settings->get();
+		$this->assertEquals( $settings['ownerID'], 0 );
+	}
+
+	public function test_all_admin_module_ownership_change__remove_shared_roles() {
+		$pagespeed_insights_settings = $this->setup_all_admin_module_ownership_change();
+		$settings                    = $pagespeed_insights_settings->get();
+
+		$test_sharing_settings = array(
+			'pagespeed-insights' => array(
+				'sharedRoles' => array( 'editor', 'subscriber' ),
+				'management'  => 'owner',
+			),
+		);
+		add_option( 'googlesitekit_dashboard_sharing', $test_sharing_settings );
+
+		$this->assertEquals( $settings['ownerID'], 0 );
+
+		// Test removing a shared role updates the owner.
+		$test_updated_sharing_settings = array(
+			'pagespeed-insights' => array(
+				'sharedRoles' => array( 'subscriber' ),
+				'management'  => 'owner',
+			),
+		);
+		update_option( 'googlesitekit_dashboard_sharing', $test_updated_sharing_settings );
+
+		$settings = $pagespeed_insights_settings->get();
+		$this->assertEquals( $settings['ownerID'], wp_get_current_user()->ID );
+	}
+
+	public function test_all_admin_module_ownership_change__update_management() {
+		$pagespeed_insights_settings = $this->setup_all_admin_module_ownership_change();
+		$settings                    = $pagespeed_insights_settings->get();
 
 		$test_sharing_settings = array(
 			'pagespeed-insights' => array(
@@ -987,22 +1016,21 @@ class ModulesTest extends TestCase {
 				'management'  => 'owner',
 			),
 		);
-		$module                = $modules->get_module( 'pagespeed-insights' );
-		$settings              = $module->get_settings()->get();
 		add_option( 'googlesitekit_dashboard_sharing', $test_sharing_settings );
 
+		$settings = $pagespeed_insights_settings->get();
 		$this->assertEquals( $settings['ownerID'], 0 );
 
 		$test_updated_sharing_settings = array(
 			'pagespeed-insights' => array(
-				'sharedRoles' => array( 'editor', 'subscriber' ),
+				'sharedRoles' => array( 'editor' ),
 				'management'  => 'all_admins',
 			),
 		);
 		update_option( 'googlesitekit_dashboard_sharing', $test_updated_sharing_settings );
 
-		$settings = $module->get_settings()->get();
-		$this->assertEquals( $settings['ownerID'], $user->ID );
+		$settings = $pagespeed_insights_settings->get();
+		$this->assertEquals( $settings['ownerID'], wp_get_current_user()->ID );
 	}
 
 	public function test_non_all_admin_module_ownership_change() {
@@ -1130,4 +1158,73 @@ class ModulesTest extends TestCase {
 		$settings = $module->get_settings()->get();
 		$this->assertEquals( $settings['ownerID'], 0 );
 	}
+
+	public function test_get_shareable_modules_owners() {
+		$this->enable_feature( 'dashboardSharing' );
+
+		$modules = new Modules( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+
+		// Activate modules.
+		update_option(
+			'googlesitekit-active-modules',
+			array(
+				'pagespeed-insights',
+				'search-console',
+				'analytics',
+			)
+		);
+
+		// Add an owner for the search-console module.
+		$search_console = $modules->get_module( 'search-console' );
+		$search_console->get_settings()->merge(
+			array(
+				'propertyID' => '123456789',
+				'ownerID'    => 1,
+			)
+		);
+
+		// Connect the analytics module and give it an owner.
+		$analytics = $modules->get_module( 'analytics' );
+		$analytics->get_client()->setHttpClient( new FakeHttpClient() );
+		$analytics->get_settings()->merge(
+			array(
+				'accountID'             => '12345678',
+				'profileID'             => '12345678',
+				'propertyID'            => '987654321',
+				'internalWebPropertyID' => '1234567890',
+				'ownerID'               => 2,
+			)
+		);
+
+		$expected_module_owners = array(
+			'search-console'     => 1,
+			'analytics'          => 2,
+			'pagespeed-insights' => 0,
+		);
+		$this->assertEqualSets( $expected_module_owners, $modules->get_shareable_modules_owners() );
+	}
+
+	public function test_shared_ownership_module_default_settings() {
+		$this->enable_feature( 'dashboardSharing' );
+
+		remove_all_filters( 'option_' . Module_Sharing_Settings::OPTION );
+		remove_all_filters( 'default_option_' . Module_Sharing_Settings::OPTION );
+
+		$modules = new Modules( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$modules->register();
+
+		$expected = array(
+			'pagespeed-insights' => array(
+				'sharedRoles' => array(),
+				'management'  => 'all_admins',
+			),
+		);
+
+		$settings = apply_filters( 'option_' . Module_Sharing_Settings::OPTION, array() );
+		$this->assertEqualSets( $expected, $settings );
+
+		$settings = apply_filters( 'default_option_' . Module_Sharing_Settings::OPTION, array(), '', '' );
+		$this->assertEqualSets( $expected, $settings );
+	}
+
 }

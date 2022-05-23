@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { useContext, useCallback } from '@wordpress/element';
+import { useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -30,11 +30,11 @@ import { MODULES_TAGMANAGER, ACCOUNT_CREATE } from '../../datastore/constants';
 import ProgressBar from '../../../../components/ProgressBar';
 import { Select, Option } from '../../../../material-components';
 import { trackEvent } from '../../../../util/tracking';
-import ViewContextContext from '../../../../components/Root/ViewContextContext';
+import useViewContext from '../../../../hooks/useViewContext';
 const { useSelect, useDispatch } = Data;
 
 export default function AccountSelect() {
-	const viewContext = useContext( ViewContextContext );
+	const viewContext = useViewContext();
 
 	const { accounts, hasResolvedAccounts } = useSelect( ( select ) => ( {
 		accounts: select( MODULES_TAGMANAGER ).getAccounts(),
@@ -45,9 +45,6 @@ export default function AccountSelect() {
 
 	const accountID = useSelect( ( select ) =>
 		select( MODULES_TAGMANAGER ).getAccountID()
-	);
-	const hasExistingTag = useSelect( ( select ) =>
-		select( MODULES_TAGMANAGER ).hasExistingTag()
 	);
 
 	const { selectAccount } = useDispatch( MODULES_TAGMANAGER );
@@ -77,7 +74,6 @@ export default function AccountSelect() {
 			label={ __( 'Account', 'google-site-kit' ) }
 			value={ accountID }
 			onEnhancedChange={ onChange }
-			disabled={ hasExistingTag }
 			enhanced
 			outlined
 		>

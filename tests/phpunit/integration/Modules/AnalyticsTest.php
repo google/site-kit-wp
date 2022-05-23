@@ -310,7 +310,6 @@ class AnalyticsTest extends TestCase {
 				'accounts-properties-profiles',
 				'properties-profiles',
 				'profiles',
-				'tag-permission',
 				'report',
 				'create-property',
 				'create-profile',

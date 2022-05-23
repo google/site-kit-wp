@@ -18,11 +18,29 @@
 
 .googlesitekit-pagespeed-report-metric {
 
-	.googlesitekit-pagespeed-report-metric__title {
+	&--fast {
+		color: $c-pagespeed-fast;
+	}
+
+	&--average {
+		color: $c-pagespeed-average;
+	}
+
+	&--slow {
+		color: $c-pagespeed-slow;
+	}
+
+	&__title {
 		color: $c-black;
 		font-size: 1rem;
 		letter-spacing: 0.1px;
 		line-height: 1.5rem;
+	}
+
+	&__badge {
+		margin-left: 6px;
+		margin-top: 1px;
+		vertical-align: top;
 	}
 
 	.googlesitekit-pagespeed-report-metric-value-container {
@@ -50,17 +68,5 @@
 
 	.googlesitekit-pagespeed-report-metric-value__rating {
 		text-transform: uppercase;
-	}
-
-	.googlesitekit-pagespeed-report-metric--fast {
-		color: $c-pagespeed-fast;
-	}
-
-	.googlesitekit-pagespeed-report-metric--average {
-		color: $c-pagespeed-average;
-	}
-
-	.googlesitekit-pagespeed-report-metric--slow {
-		color: $c-pagespeed-slow;
 	}
 }

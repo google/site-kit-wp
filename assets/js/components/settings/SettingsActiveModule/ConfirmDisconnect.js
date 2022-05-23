@@ -36,12 +36,14 @@ import { CORE_LOCATION } from '../../../googlesitekit/datastore/location/constan
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
-import { VIEW_CONTEXT_SETTINGS } from '../../../googlesitekit/constants';
 import { clearWebStorage, trackEvent } from '../../../util';
 import Dialog from '../../Dialog';
+import useViewContext from '../../../hooks/useViewContext';
 const { useSelect, useDispatch } = Data;
 
 export default function ConfirmDisconnect( { slug } ) {
+	const viewContext = useViewContext();
+
 	const [ isDeactivating, setIsDeactivating ] = useState( false );
 	const { setValue } = useDispatch( CORE_UI );
 
@@ -98,7 +100,7 @@ export default function ConfirmDisconnect( { slug } ) {
 			clearWebStorage();
 
 			await trackEvent(
-				`${ VIEW_CONTEXT_SETTINGS }_module-list`,
+				`${ viewContext }_module-list`,
 				'deactivate_module',
 				slug
 			);
@@ -114,6 +116,7 @@ export default function ConfirmDisconnect( { slug } ) {
 		settingsURL,
 		deactivateModule,
 		navigateTo,
+		viewContext,
 	] );
 
 	if ( ! module || ! dialogActive ) {

@@ -124,7 +124,7 @@ export default function CompatibilityErrorNotice( { error } ) {
 							) }
 						</span>
 					) }{ ' ' }
-					<Link { ...helperCTA( developerPlugin ) } inherit />
+					<Link { ...helperCTA( developerPlugin ) } />
 				</p>
 			);
 		case ERROR_TOKEN_MISMATCH:

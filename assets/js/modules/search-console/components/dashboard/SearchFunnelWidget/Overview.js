@@ -20,6 +20,7 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import classnames from 'classnames';
 
 /**
  * WordPress dependencies
@@ -180,13 +181,21 @@ const Overview = ( {
 		} )
 	);
 
+	const alignDataBlockOnTop =
+		! analyticsModuleConnected || ! analyticsModuleActive || showGoalsCTA;
+
 	return (
 		<Grid>
 			<Row>
 				<Cell { ...quarterCellProps }>
 					<DataBlock
 						stat={ 0 }
-						className="googlesitekit-data-block--impressions googlesitekit-data-block--button-1"
+						className={ classnames(
+							'googlesitekit-data-block--impressions googlesitekit-data-block--button-1',
+							{
+								'googlesitekit-data-block--is-top-aligned': alignDataBlockOnTop,
+							}
+						) }
 						title={ __( 'Total Impressions', 'google-site-kit' ) }
 						datapoint={ totalImpressions }
 						change={ totalImpressionsChange }
@@ -201,7 +210,12 @@ const Overview = ( {
 				<Cell { ...quarterCellProps }>
 					<DataBlock
 						stat={ 1 }
-						className="googlesitekit-data-block--clicks googlesitekit-data-block--button-2"
+						className={ classnames(
+							'googlesitekit-data-block--clicks googlesitekit-data-block--button-2',
+							{
+								'googlesitekit-data-block--is-top-aligned': alignDataBlockOnTop,
+							}
+						) }
 						title={ __( 'Total Clicks', 'google-site-kit' ) }
 						datapoint={ totalClicks }
 						change={ totalClicksChange }
@@ -261,7 +275,12 @@ const Overview = ( {
 						<Cell { ...quarterCellProps }>
 							<DataBlock
 								stat={ 2 }
-								className="googlesitekit-data-block--visitors googlesitekit-data-block--button-3"
+								className={ classnames(
+									'googlesitekit-data-block--visitors googlesitekit-data-block--button-3',
+									{
+										'googlesitekit-data-block--is-top-aligned': alignDataBlockOnTop,
+									}
+								) }
 								title={ __(
 									'Unique Visitors from Search',
 									'google-site-kit'

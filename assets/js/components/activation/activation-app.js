@@ -34,7 +34,6 @@ import Data from 'googlesitekit-data';
 import Button from '../Button';
 import Logo from '../Logo';
 import { Grid, Row, Cell } from '../../material-components';
-import { VIEW_CONTEXT_ACTIVATION } from '../../googlesitekit/constants';
 import { trackEvent } from '../../util';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import {
@@ -42,10 +41,12 @@ import {
 	PERMISSION_VIEW_DASHBOARD,
 } from '../../googlesitekit/datastore/user/constants';
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
+import useViewContext from '../../hooks/useViewContext';
 const { useSelect, useDispatch } = Data;
 
 export function ActivationApp() {
 	const { navigateTo } = useDispatch( CORE_LOCATION );
+	const viewContext = useViewContext();
 
 	const dashboardURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' )
@@ -58,7 +59,7 @@ export function ActivationApp() {
 	);
 
 	useMount( () => {
-		trackEvent( VIEW_CONTEXT_ACTIVATION, 'view_notification' );
+		trackEvent( viewContext, 'view_notification' );
 	} );
 
 	const buttonURL = canViewDashboard ? dashboardURL : splashURL;
@@ -70,15 +71,11 @@ export function ActivationApp() {
 		async ( event ) => {
 			event.preventDefault();
 			const eventLabel = canViewDashboard ? 'dashboard' : 'splash';
-			await trackEvent(
-				VIEW_CONTEXT_ACTIVATION,
-				'confirm_notification',
-				eventLabel
-			);
+			await trackEvent( viewContext, 'confirm_notification', eventLabel );
 
 			navigateTo( buttonURL );
 		},
-		[ buttonURL, canViewDashboard, navigateTo ]
+		[ buttonURL, canViewDashboard, navigateTo, viewContext ]
 	);
 
 	if ( ! buttonURL ) {

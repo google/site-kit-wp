@@ -48,6 +48,8 @@ import {
 import InViewProvider from '../../../components/InViewProvider';
 import WidgetRenderer from './WidgetRenderer';
 import WidgetCellWrapper from './WidgetCellWrapper';
+import useViewOnly from '../../../hooks/useViewOnly';
+import { CORE_USER } from '../../datastore/user/constants';
 const { useSelect } = Data;
 
 /**
@@ -75,6 +77,16 @@ function getRootMargin( breakpoint ) {
 export default function WidgetAreaRenderer( { slug, totalAreas, contextID } ) {
 	const unifiedDashboardEnabled = useFeature( 'unifiedDashboard' );
 
+	const viewOnlyDashboard = useViewOnly();
+
+	const viewableModules = useSelect( ( select ) => {
+		if ( ! viewOnlyDashboard ) {
+			return null;
+		}
+
+		return select( CORE_USER ).getViewableModules();
+	} );
+
 	const breakpoint = useBreakpoint();
 
 	const widgetAreaRef = useRef();
@@ -87,13 +99,17 @@ export default function WidgetAreaRenderer( { slug, totalAreas, contextID } ) {
 		select( CORE_WIDGETS ).getWidgetArea( slug )
 	);
 	const widgets = useSelect( ( select ) =>
-		select( CORE_WIDGETS ).getWidgets( slug )
+		select( CORE_WIDGETS ).getWidgets( slug, {
+			modules: viewableModules ? viewableModules : undefined,
+		} )
 	);
 	const widgetStates = useSelect( ( select ) =>
 		select( CORE_WIDGETS ).getWidgetStates()
 	);
 	const isActive = useSelect( ( select ) =>
-		select( CORE_WIDGETS ).isWidgetAreaActive( slug )
+		select( CORE_WIDGETS ).isWidgetAreaActive( slug, {
+			modules: viewableModules ? viewableModules : undefined,
+		} )
 	);
 
 	const activeContextID = useSelect( ( select ) =>

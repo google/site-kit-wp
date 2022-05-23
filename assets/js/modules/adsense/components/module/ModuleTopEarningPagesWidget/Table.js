@@ -85,7 +85,7 @@ export default function Table( { report } ) {
 					)
 				);
 				return (
-					<Link href={ serviceURL } external inherit>
+					<Link href={ serviceURL } external>
 						{ title }
 					</Link>
 				);

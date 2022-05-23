@@ -23,7 +23,6 @@ import {
 	createInterpolateElement,
 	Fragment,
 	useCallback,
-	useContext,
 } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 
@@ -33,21 +32,18 @@ import { __, sprintf } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import Button from '../../../../../components/Button';
 import Link from '../../../../../components/Link';
-import ViewContextContext from '../../../../../components/Root/ViewContextContext';
 import { trackEvent } from '../../../../../util';
 import { parseAccountID } from '../../../util/parsing';
 import { MODULES_ADSENSE } from '../../../datastore/constants';
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { ErrorNotices, UserProfile } from '../../common';
+import useViewContext from '../../../../../hooks/useViewContext';
 const { useSelect } = Data;
 
 export default function SetupCreateAccount() {
-	const viewContext = useContext( ViewContextContext );
+	const viewContext = useViewContext();
 	const eventCategory = `${ viewContext }_adsense`;
-	const siteURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getReferenceSiteURL()
-	);
 	const userEmail = useSelect( ( select ) => select( CORE_USER ).getEmail() );
 	const existingTag = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getExistingTag()
@@ -69,10 +65,6 @@ export default function SetupCreateAccount() {
 		},
 		[ signUpURL, eventCategory ]
 	);
-
-	if ( ! siteURL || ! userEmail || undefined === existingTag ) {
-		return null;
-	}
 
 	return (
 		<Fragment>
@@ -123,7 +115,6 @@ export default function SetupCreateAccount() {
 							a: (
 								<Link
 									href={ supportURL }
-									inherit
 									external
 									aria-label={ __(
 										'Learn more about adding a user to an existing AdSense account',

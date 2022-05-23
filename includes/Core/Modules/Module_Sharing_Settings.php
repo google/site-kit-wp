@@ -10,6 +10,7 @@
 
 namespace Google\Site_Kit\Core\Modules;
 
+use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Setting;
 
 /**
@@ -121,6 +122,33 @@ class Module_Sharing_Settings extends Setting {
 		}
 
 		return $settings;
+	}
+
+	/**
+	 * Merges a partial Module_Sharing_Settings option array into existing sharing settings.
+	 *
+	 * Only updates sharing settings for a module if the current user has the capability to
+	 * do so.
+	 *
+	 * @since 1.75.0
+	 *
+	 * @param array $new_partial_settings Partial settings array to update existing settings with.
+	 *
+	 * @return bool True if sharing settings option was updated, false otherwise.
+	 */
+	public function merge( array $new_partial_settings ) {
+		$settings = $this->get();
+
+		foreach ( $new_partial_settings as $module_slug => $new_settings ) {
+			if ( null === $new_settings ) {
+				continue;
+			}
+			if ( current_user_can( Permissions::MANAGE_MODULE_SHARING_OPTIONS, $module_slug ) ) {
+				$settings[ $module_slug ] = $new_settings;
+			}
+		}
+
+		return $this->set( $settings );
 	}
 
 	/**

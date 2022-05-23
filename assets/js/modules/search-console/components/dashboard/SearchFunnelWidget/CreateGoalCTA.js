@@ -25,7 +25,7 @@ import { useMount } from 'react-use';
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { useContext, useCallback } from '@wordpress/element';
+import { useCallback } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -35,12 +35,12 @@ import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants
 import Button from '../../../../../components/Button';
 import PreviewGraph from '../../../../../components/PreviewGraph';
 import GoalsGraphIcon from '../../../../../../svg/graphics/cta-graph-goals.svg';
-import ViewContextContext from '../../../../../components/Root/ViewContextContext';
 import { trackEvent } from '../../../../../util';
+import useViewContext from '../../../../../hooks/useViewContext';
 const { useSelect } = Data;
 
 export default function CreateGoalCTA() {
-	const viewContext = useContext( ViewContextContext );
+	const viewContext = useViewContext();
 	const eventCategory = `${ viewContext }_search-traffic-widget`;
 
 	const supportURL = useSelect( ( select ) =>

@@ -19,8 +19,8 @@
 /**
  * WordPress dependencies
  */
-import { useCallback, useContext } from '@wordpress/element';
-import { sprintf, __ } from '@wordpress/i18n';
+import { useCallback } from '@wordpress/element';
+import { _x, __, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -29,10 +29,9 @@ import Data from 'googlesitekit-data';
 import { Select, Option } from '../../../../material-components';
 import ProgressBar from '../../../../components/ProgressBar';
 import { MODULES_ANALYTICS, PROPERTY_CREATE } from '../../datastore/constants';
-import { MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
 import { isValidAccountSelection } from '../../util';
 import { trackEvent } from '../../../../util';
-import ViewContextContext from '../../../../components/Root/ViewContextContext';
+import useViewContext from '../../../../hooks/useViewContext';
 const { useSelect, useDispatch } = Data;
 
 export default function PropertySelect() {
@@ -57,13 +56,6 @@ export default function PropertySelect() {
 		}
 	);
 
-	const hasExistingTag = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).hasExistingTag()
-	);
-	const hasGTMPropertyID = useSelect(
-		( select ) =>
-			!! select( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID()
-	);
 	const propertyID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getPropertyID()
 	);
@@ -72,7 +64,7 @@ export default function PropertySelect() {
 	);
 
 	const { selectProperty } = useDispatch( MODULES_ANALYTICS );
-	const viewContext = useContext( ViewContextContext );
+	const viewContext = useViewContext();
 	const onChange = useCallback(
 		( index, item ) => {
 			const newPropertyID = item.dataset.value;
@@ -102,7 +94,6 @@ export default function PropertySelect() {
 			label={ __( 'Property', 'google-site-kit' ) }
 			value={ propertyID }
 			onEnhancedChange={ onChange }
-			disabled={ hasExistingTag || hasGTMPropertyID }
 			enhanced
 			outlined
 		>
@@ -124,7 +115,11 @@ export default function PropertySelect() {
 						{ internalWebPropertyId // eslint-disable-line sitekit/acronym-case
 							? sprintf(
 									/* translators: %1$s: property name, %2$s: property ID */
-									__( '%1$s (%2$s)', 'google-site-kit' ),
+									_x(
+										'%1$s (%2$s)',
+										'Analytics property name and ID',
+										'google-site-kit'
+									),
 									name,
 									id
 							  )

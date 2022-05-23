@@ -25,7 +25,7 @@ import { useUpdateEffect } from 'react-use';
 /**
  * WordPress dependencies
  */
-import { useCallback, Fragment, useContext } from '@wordpress/element';
+import { useCallback, Fragment } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -34,9 +34,9 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import Switch from '../../../../components/Switch';
 import SettingsNotice from '../../../../components/SettingsNotice';
-import ViewContextContext from '../../../../components/Root/ViewContextContext';
 import { trackEvent } from '../../../../util';
 import { MODULES_ADSENSE } from '../../datastore/constants';
+import useViewContext from '../../../../hooks/useViewContext';
 const { useSelect, useDispatch } = Data;
 
 export default function UseSnippetSwitch( props ) {
@@ -50,7 +50,7 @@ export default function UseSnippetSwitch( props ) {
 		saveOnChange,
 	} = props;
 
-	const viewContext = useContext( ViewContextContext );
+	const viewContext = useViewContext();
 	const eventCategory = `${ viewContext }_adsense`;
 
 	const useSnippet = useSelect( ( select ) =>

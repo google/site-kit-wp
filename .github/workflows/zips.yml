@@ -5,6 +5,7 @@ on:
     branches:
       - develop
       - main
+      - 'feature/**'
       - 'release/**'
     paths:
       - '.github/workflows/zips.yml'

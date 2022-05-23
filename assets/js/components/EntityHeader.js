@@ -25,19 +25,12 @@ import throttle from 'lodash/throttle';
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import {
-	useContext,
-	useCallback,
-	useEffect,
-	useRef,
-	useState,
-} from '@wordpress/element';
+import { useCallback, useEffect, useRef, useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import ViewContextContext from './Root/ViewContextContext';
 import Button from './Button';
 import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
 import BackspaceIcon from '../../svg/icons/keyboard-backspace.svg';
@@ -48,10 +41,11 @@ import { trackEvent } from '../util';
 import useDashboardType, {
 	DASHBOARD_TYPE_ENTITY,
 } from '../hooks/useDashboardType';
+import useViewContext from '../hooks/useViewContext';
 const { useSelect, useDispatch } = Data;
 
 const EntityHeader = () => {
-	const viewContext = useContext( ViewContextContext );
+	const viewContext = useViewContext();
 	const dashboardType = useDashboardType();
 	const currentEntityTitle = useSelect( ( select ) =>
 		select( CORE_SITE ).getCurrentEntityTitle()
@@ -135,12 +129,7 @@ const EntityHeader = () => {
 				className="googlesitekit-entity-header__details"
 			>
 				<p>{ currentEntityTitle }</p>
-				<Link
-					href={ entityURL }
-					aria-label={ entityURL }
-					external
-					inherit
-				>
+				<Link href={ entityURL } aria-label={ entityURL } external>
 					{ url }
 				</Link>
 			</div>
