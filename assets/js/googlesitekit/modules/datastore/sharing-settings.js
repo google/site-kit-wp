@@ -455,6 +455,18 @@ const baseSelectors = {
 
 	canSubmitSharingChanges,
 	__dangerousCanSubmitSharingChanges,
+
+	/**
+	 * Checks whether sharing settings changes are currently being submitted.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {boolean} TRUE if submitting, otherwise FALSE.
+	 */
+	isDoingSubmitSharingChanges( state ) {
+		return !! state.isDoingSubmitSharingChanges;
+	},
 };
 
 const store = Data.combineStores( fetchSaveSharingSettingsStore, {
