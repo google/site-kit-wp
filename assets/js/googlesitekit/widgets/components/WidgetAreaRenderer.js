@@ -74,10 +74,10 @@ function getRootMargin( breakpoint ) {
 }
 
 export default function WidgetAreaRenderer( { slug, totalAreas, contextID } ) {
-	const viewOnly = useViewOnly();
+	const viewOnlyDashboard = useViewOnly();
 
 	const viewableModules = useSelect( ( select ) => {
-		if ( ! viewOnly ) {
+		if ( ! viewOnlyDashboard ) {
 			return null;
 		}
 
@@ -104,7 +104,9 @@ export default function WidgetAreaRenderer( { slug, totalAreas, contextID } ) {
 		select( CORE_WIDGETS ).getWidgetStates()
 	);
 	const isActive = useSelect( ( select ) =>
-		select( CORE_WIDGETS ).isWidgetAreaActive( slug )
+		select( CORE_WIDGETS ).isWidgetAreaActive( slug, {
+			modules: viewableModules ? viewableModules : undefined,
+		} )
 	);
 
 	const activeContextID = useSelect( ( select ) =>

@@ -73,7 +73,6 @@ export default function SetupAccountNoClient() {
 							<Link
 								href={ supportURL }
 								external
-								inherit
 								aria-label={ __(
 									'Learn more about updating your AdSense account',
 									'google-site-kit'

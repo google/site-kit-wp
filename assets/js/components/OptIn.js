@@ -102,7 +102,6 @@ export default function OptIn( { id, name, className } ) {
 										'https://policies.google.com/privacy'
 									}
 									external
-									inherit
 								/>
 							),
 						}

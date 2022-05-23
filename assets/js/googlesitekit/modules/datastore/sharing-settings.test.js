@@ -1,0 +1,252 @@
+/**
+ * `googlesitekit/modules` datastore: sharing settings tests.
+ *
+ * Site Kit by Google, Copyright 2022 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * Internal dependencies
+ */
+import { CORE_MODULES } from './constants';
+import {
+	createTestRegistry,
+	provideModules,
+	unsubscribeFromAll,
+} from '../../../../../tests/js/utils';
+import { MODULES_SEARCH_CONSOLE } from '../../../modules/search-console/datastore/constants';
+import { MODULES_PAGESPEED_INSIGHTS } from '../../../modules/pagespeed-insights/datastore/constants';
+
+describe( 'core/modules sharing-settings', () => {
+	const sharingSettings = {
+		'search-console': {
+			sharedRoles: [ 'editor', 'subscriber' ],
+			management: 'all_admins',
+		},
+		analytics: {
+			sharedRoles: [ 'editor' ],
+			management: 'owner',
+		},
+		'pagespeed-insights': {
+			sharedRoles: [ 'editor' ],
+			management: 'all_admins',
+		},
+	};
+
+	let registry;
+	let store;
+
+	beforeEach( () => {
+		registry = createTestRegistry();
+		store = registry.stores[ CORE_MODULES ].store;
+	} );
+
+	afterEach( () => {
+		unsubscribeFromAll( registry );
+	} );
+
+	describe( 'actions', () => {
+		describe( 'setSharingManagement', () => {
+			const settingsWithoutManagement = {
+				'search-console': {
+					sharedRoles: [ 'editor', 'subscriber' ],
+				},
+				analytics: {
+					sharedRoles: [ 'editor' ],
+				},
+				'pagespeed-insights': {
+					sharedRoles: [ 'editor' ],
+				},
+			};
+
+			it( 'requires the moduleSlug param', () => {
+				expect( () => {
+					registry.dispatch( CORE_MODULES ).setSharingManagement();
+				} ).toThrow( 'moduleSlug is required' );
+			} );
+
+			it( 'requires the management param', () => {
+				expect( () => {
+					registry
+						.dispatch( CORE_MODULES )
+						.setSharingManagement( 'analytics' );
+				} ).toThrow( 'management must be one of: all_admins, owner.' );
+			} );
+
+			it( 'receives management and sets it to the sharing settings modules', () => {
+				registry
+					.dispatch( CORE_MODULES )
+					.receiveGetSharingSettings( settingsWithoutManagement );
+
+				registry
+					.dispatch( CORE_MODULES )
+					.setSharingManagement( 'search-console', 'all_admins' );
+				registry
+					.dispatch( CORE_MODULES )
+					.setSharingManagement( 'analytics', 'owner' );
+
+				expect(
+					store.getState().sharingSettings.analytics.management
+				).toBe( 'owner' );
+				expect(
+					store.getState().sharingSettings[ 'search-console' ]
+						.management
+				).toBe( 'all_admins' );
+			} );
+		} );
+
+		describe( 'setSharedRoles', () => {
+			const settingsWithoutRoles = {
+				'search-console': {
+					management: 'all_admins',
+				},
+				analytics: {
+					management: 'owner',
+				},
+				'pagespeed-insights': {
+					management: 'all_admins',
+				},
+			};
+
+			it( 'requires the moduleSlug param', () => {
+				expect( () => {
+					registry.dispatch( CORE_MODULES ).setSharedRoles();
+				} ).toThrow( 'moduleSlug is required' );
+			} );
+
+			it( 'requires the roles param', () => {
+				expect( () => {
+					registry
+						.dispatch( CORE_MODULES )
+						.setSharedRoles( 'analytics' );
+				} ).toThrow( 'roles must be an array of strings.' );
+			} );
+
+			it( 'receives roles and sets it to the sharing settings modules', () => {
+				registry
+					.dispatch( CORE_MODULES )
+					.receiveGetSharingSettings( settingsWithoutRoles );
+
+				registry
+					.dispatch( CORE_MODULES )
+					.setSharedRoles( 'analytics', [ 'editor', 'subscriber' ] );
+				registry
+					.dispatch( CORE_MODULES )
+					.setSharedRoles( 'search-console', [ 'subscriber' ] );
+
+				expect(
+					store.getState().sharingSettings.analytics.sharedRoles
+				).toEqual( [ 'editor', 'subscriber' ] );
+				expect(
+					store.getState().sharingSettings[ 'search-console' ]
+						.sharedRoles
+				).toEqual( [ 'subscriber' ] );
+			} );
+		} );
+
+		describe( 'saveSharingSettings', () => {
+			it.each( [
+				[
+					'should',
+					{
+						'search-console': 2,
+						'pagespeed-insights': 2,
+					},
+					2,
+				],
+				[ 'should not', {}, 1 ],
+			] )(
+				'dispatches a request to save sharing settings and %s dispatch setOwnerID action based on the `newOwnerIDs` availability',
+				async ( _, newOwnerIDs, ownerID ) => {
+					provideModules( registry, [
+						{
+							slug: 'search-console',
+							name: 'Search Console',
+							storeName: 'modules/search-console',
+						},
+						{
+							slug: 'pagespeed-insights',
+							name: 'PageSpeed Insights',
+							storeName: 'modules/pagespeed-insights',
+						},
+					] );
+
+					registry
+						.dispatch( MODULES_SEARCH_CONSOLE )
+						.receiveGetSettings( { ownerID: 1 } );
+					registry
+						.dispatch( MODULES_PAGESPEED_INSIGHTS )
+						.receiveGetSettings( { ownerID: 1 } );
+
+					fetchMock.postOnce(
+						/^\/google-site-kit\/v1\/core\/modules\/data\/sharing-settings/,
+						{
+							body: {
+								settings: sharingSettings,
+								newOwnerIDs,
+							},
+						}
+					);
+
+					registry
+						.dispatch( CORE_MODULES )
+						.receiveGetSharingSettings( sharingSettings );
+
+					await registry
+						.dispatch( CORE_MODULES )
+						.saveSharingSettings();
+
+					// Ensure the API call was made.
+					expect( fetchMock ).toHaveFetched(
+						/^\/google-site-kit\/v1\/core\/modules\/data\/sharing-settings/
+					);
+
+					// Ensure the `setOwnerID` action is dispatched and set the ownerID in state
+					// OR not based on the `newOwnerIDs` availability from the response.
+					expect(
+						registry.select( MODULES_SEARCH_CONSOLE ).getOwnerID()
+					).toBe( ownerID );
+					expect(
+						registry
+							.select( MODULES_PAGESPEED_INSIGHTS )
+							.getOwnerID()
+					).toBe( ownerID );
+				}
+			);
+		} );
+
+		describe( 'receiveGetSharingSettings', () => {
+			it( 'requires the sharingSettings param', () => {
+				expect( () => {
+					registry
+						.dispatch( CORE_MODULES )
+						.receiveGetSharingSettings();
+				} ).toThrow( 'sharingSettings is required' );
+			} );
+
+			it( 'receives sharingSettings and sets it to the state', () => {
+				registry
+					.dispatch( CORE_MODULES )
+					.receiveGetSharingSettings( sharingSettings );
+
+				expect( store.getState().sharingSettings ).toMatchObject(
+					sharingSettings
+				);
+				expect( store.getState().savedSharingSettings ).toMatchObject(
+					sharingSettings
+				);
+			} );
+		} );
+	} );
+} );

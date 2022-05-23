@@ -546,7 +546,7 @@ final class Tag_Manager extends Module
 	 * Filters whether or not the Analytics module's snippet should be controlled by its `useSnippet` setting.
 	 *
 	 * @since 1.28.0
-	 * @since n.e.x.t Now requires current UA property ID as second parameter.
+	 * @since 1.75.0 Now requires current UA property ID as second parameter.
 	 *
 	 * @param boolean $original_value Original value of useSnippet setting.
 	 * @param string  $ua_property_id Current UA property.

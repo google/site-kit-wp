@@ -85,7 +85,6 @@ export default function PlaceAntiFlickerSwitch() {
 						<Link
 							href={ supportURL }
 							external
-							inherit
 							aria-label={ __(
 								'Learn more about the anti-flicker snippet.',
 								'google-site-kit'

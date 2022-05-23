@@ -37,7 +37,6 @@ export default function GA4Notice() {
 				<Link
 					href="https://sitekit.withgoogle.com/documentation/using-site-kit/ga4/"
 					external
-					inherit
 				>
 					{ __( 'Learn more here.', 'google-site-kit' ) }
 				</Link>

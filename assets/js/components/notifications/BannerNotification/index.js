@@ -292,7 +292,6 @@ function BannerNotification( {
 										learnMoreTarget ===
 										LEARN_MORE_TARGET.EXTERNAL
 									}
-									inherit
 								>
 									{ learnMoreLabel }
 								</Link>

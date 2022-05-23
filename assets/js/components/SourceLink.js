@@ -50,14 +50,7 @@ function SourceLink( { name, href, className, external } ) {
 					`<a>${ name }</a>`
 				),
 				{
-					a: (
-						<Link
-							key="link"
-							href={ href }
-							external={ external }
-							inherit
-						/>
-					),
+					a: <Link key="link" href={ href } external={ external } />,
 				}
 			) }
 		</div>

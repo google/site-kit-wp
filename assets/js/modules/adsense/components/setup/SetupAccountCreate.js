@@ -115,7 +115,6 @@ export default function SetupAccountCreate() {
 					) }{ ' ' }
 				<Link
 					href={ supportURL }
-					inherit
 					external
 					aria-label={ __(
 						'Learn more about adding a user to an existing AdSense account',
