@@ -33,7 +33,7 @@ trait Module_With_Service_Entity_ContractTests {
 		$module   = $this->get_module_with_service_entity();
 
 		$this->mock_service_entity_access( $module, 200 );
-		$this->set_up_check_service_entity_access( $module, 200 );
+		$this->set_up_check_service_entity_access( $module );
 
 		$access = $module->check_service_entity_access();
 
@@ -49,7 +49,7 @@ trait Module_With_Service_Entity_ContractTests {
 		$module   = $this->get_module_with_service_entity();
 
 		$this->mock_service_entity_access( $module, 403 );
-		$this->set_up_check_service_entity_access( $module, 403 );
+		$this->set_up_check_service_entity_access( $module );
 
 		$access = $module->check_service_entity_access();
 
@@ -65,12 +65,12 @@ trait Module_With_Service_Entity_ContractTests {
 		$module   = $this->get_module_with_service_entity();
 
 		$this->mock_service_entity_access( $module, 401 );
-		$this->set_up_check_service_entity_access( $module, 401 );
+		$this->set_up_check_service_entity_access( $module );
 
 		$testcase->assertWPError( $module->check_service_entity_access() );
 	}
 
-	protected function set_up_check_service_entity_access( Module $module, $status_code ) {
+	protected function set_up_check_service_entity_access( Module $module ) {
 		// Override in implementing test case class if needed.
 	}
 

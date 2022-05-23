@@ -442,21 +442,16 @@ class Tag_ManagerTest extends TestCase {
 		return new Tag_Manager( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 	}
 
-	protected function set_up_check_service_entity_access( Module $module, $status_code ) {
+	protected function set_up_check_service_entity_access( Module $module ) {
 		$module->get_settings()->merge(
 			array(
 				'accountID'   => '123456789',
 				'containerID' => 'GTM-123456',
 			)
 		);
-
-		if ( 200 === $status_code ) {
-			$this->set_up_check_service_entity_tag_manager( $module );
-		}
-
 	}
 
-	protected function set_up_check_service_entity_tag_manager( Module $module ) {
+	protected function set_up_check_service_entity_access_tag_manager( Module $module ) {
 		$fake_http_client = new FakeHttpClient();
 
 		$fake_http_client->set_request_handler(
@@ -486,27 +481,6 @@ class Tag_ManagerTest extends TestCase {
 	// this module, so we need to add a few more tests here.
 
 	/**
-	 * @group Module_With_Service_Entity
-	 */
-	public function test_check_service_entity_access_no_access_not_in_all_containers() {
-		$module = new Tag_Manager( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-
-		$module->get_settings()->merge(
-			array(
-				'accountID'   => '123456789',
-				'containerID' => 'GTM-123459',
-			)
-		);
-
-		$this->set_up_check_service_entity_tag_manager( $module );
-
-		$access = $module->check_service_entity_access();
-
-		$this->assertNotWPError( $access );
-		$this->assertEquals( false, $access );
-	}
-
-	/**
 	 * @param Context $context Plugin context
 	 * @param string $container_id Container ID
 	 * @param string $amp_container_id AMP Container ID
@@ -514,7 +488,7 @@ class Tag_ManagerTest extends TestCase {
 	 * @group Module_With_Service_Entity
 	 * @dataProvider check_service_entity_access_provider
 	 */
-	public function test_check_service_entity_amp( $context, $container_id, $amp_container_id, $expected ) {
+	public function test_check_service_entity_access_success( $context, $container_id, $amp_container_id, $expected ) {
 		$module = new Tag_Manager( $context );
 
 		$module->get_settings()->merge(
@@ -525,7 +499,7 @@ class Tag_ManagerTest extends TestCase {
 			)
 		);
 
-		$this->set_up_check_service_entity_tag_manager( $module );
+		$this->set_up_check_service_entity_access_tag_manager( $module );
 
 		$access = $module->check_service_entity_access();
 
@@ -535,6 +509,20 @@ class Tag_ManagerTest extends TestCase {
 
 	public function check_service_entity_access_provider() {
 		return array(
+			// Non-AMP - Success
+			array(
+				new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ),
+				'GTM-123456',
+				'',
+				true,
+			),
+			// Non-AMP - No Access
+			array(
+				new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ),
+				'GTM-123459',
+				'',
+				false,
+			),
 			// AMP Primary - Success.
 			array(
 				$this->get_amp_primary_context(),
