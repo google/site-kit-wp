@@ -507,8 +507,10 @@ class Tag_ManagerTest extends TestCase {
 	}
 
 	/**
-	 * @param string $input String to sanitize
-	 * @param string $expected Expected output
+	 * @param Context $context Plugin context
+	 * @param string $container_id Container ID
+	 * @param string $amp_container_id AMP Container ID
+	 * @param boolean $expected Expected access
 	 * @group Module_With_Service_Entity
 	 * @dataProvider check_service_entity_access_provider
 	 */
