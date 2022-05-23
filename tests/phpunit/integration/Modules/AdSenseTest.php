@@ -393,7 +393,7 @@ class AdSenseTest extends TestCase {
 				'alerts',
 				'clients',
 				'urlchannels',
-				'reports',
+				'report',
 				'adunits',
 				'sites',
 			),

@@ -62,7 +62,7 @@ describe( 'modules/adsense report', () => {
 				const report = getAdSenseMockResponse( options );
 
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/adsense\/data\/reports/,
+					/^\/google-site-kit\/v1\/modules\/adsense\/data\/report/,
 					{ body: report }
 				);
 
