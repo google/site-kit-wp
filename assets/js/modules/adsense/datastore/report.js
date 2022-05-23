@@ -40,7 +40,7 @@ import { validateDimensions, validateMetrics } from '../util/report-validation';
 const fetchGetReportStore = createFetchStore( {
 	baseName: 'getReport',
 	controlCallback: ( { options } ) => {
-		return API.get( 'modules', 'adsense', 'earnings', options );
+		return API.get( 'modules', 'adsense', 'reports', options );
 	},
 	reducerCallback: ( state, report, { options } ) => {
 		return {

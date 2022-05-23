@@ -201,7 +201,7 @@ final class AdSense extends Module
 			'GET:accounts'      => array( 'service' => 'adsense' ),
 			'GET:alerts'        => array( 'service' => 'adsense' ),
 			'GET:clients'       => array( 'service' => 'adsense' ),
-			'GET:earnings'      => array(
+			'GET:reports'       => array(
 				'service'   => 'adsense',
 				'shareable' => Feature_Flags::enabled( 'dashboardSharing' ),
 			),
@@ -264,7 +264,7 @@ final class AdSense extends Module
 				}
 				$service = $this->get_service( 'adsense' );
 				return $service->accounts_adclients->listAccountsAdclients( self::normalize_account_id( $data['accountID'] ) );
-			case 'GET:earnings':
+			case 'GET:reports':
 				$start_date = $data['startDate'];
 				$end_date   = $data['endDate'];
 				if ( ! strtotime( $start_date ) || ! strtotime( $end_date ) ) {
@@ -396,7 +396,7 @@ final class AdSense extends Module
 				return array_map( array( self::class, 'filter_client_with_ids' ), $response->getAdClients() );
 			case 'GET:urlchannels':
 				return $response->getUrlChannels();
-			case 'GET:earnings':
+			case 'GET:reports':
 				return $response;
 			case 'GET:sites':
 				return $response->getSites();
