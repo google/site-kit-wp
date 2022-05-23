@@ -19,16 +19,15 @@
 /**
  * Internal dependencies
  */
-import Modules from 'googlesitekit-modules';
 import { CORE_MODULES } from './constants';
 import {
 	createTestRegistry,
+	// freezeFetch,
 	provideModules,
 	unsubscribeFromAll,
 } from '../../../../../tests/js/utils';
 import { MODULES_SEARCH_CONSOLE } from '../../../modules/search-console/datastore/constants';
 import { MODULES_PAGESPEED_INSIGHTS } from '../../../modules/pagespeed-insights/datastore/constants';
-import { MODULES_ANALYTICS } from '../../../modules/analytics/datastore/constants';
 
 describe( 'core/modules sharing-settings', () => {
 	const dashboardSharingDataBaseVar = '_googlesitekitDashboardSharingData';
@@ -71,24 +70,10 @@ describe( 'core/modules sharing-settings', () => {
 
 	let registry;
 	let store;
-	let validateCanSubmitChangesError = false;
 
 	beforeEach( () => {
 		registry = createTestRegistry();
 		store = registry.stores[ CORE_MODULES ].store;
-
-		registry.registerStore(
-			MODULES_ANALYTICS,
-			Modules.createModuleStore( 'analytics', {
-				storeName: MODULES_ANALYTICS,
-				submitChanges: jest.fn(),
-				validateCanSubmitChanges: () => {
-					if ( validateCanSubmitChangesError ) {
-						throw new Error( validateCanSubmitChangesError );
-					}
-				},
-			} )
-		);
 	} );
 
 	afterEach( () => {
@@ -562,47 +547,27 @@ describe( 'core/modules sharing-settings', () => {
 		} );
 
 		describe( 'canSubmitSharingChanges', () => {
-			it( 'requires the moduleSlug param', () => {
-				expect( () => {
-					registry.select( CORE_MODULES ).canSubmitSharingChanges();
-				} ).toThrow( 'moduleSlug is required' );
-			} );
+			it( 'informs whether client-side sharing-settings differ from server-side ones', () => {
+				global[ dashboardSharingDataBaseVar ] = dashboardSharingData;
+				registry.select( CORE_MODULES ).getSharingSettings();
 
-			it( 'should return FALSE for non existing module', () => {
-				provideModules( registry, [
-					{
-						slug: 'search-console',
-						name: 'Search Console',
-						storeName: 'modules/search-console',
-					},
-				] );
-
+				// True after updating module's `sharedRoles` on the client.
+				registry
+					.dispatch( CORE_MODULES )
+					.setSharedRoles( 'search-console', [ 'editor' ] );
 				expect(
-					registry
-						.select( CORE_MODULES )
-						.canSubmitSharingChanges( 'not-module' )
-				).toBe( false );
-			} );
-
-			it( 'should proxy the selector call to the module with the given slug', () => {
-				provideModules( registry, [
-					{
-						slug: 'analytics',
-						name: 'Analytics',
-						storeName: MODULES_ANALYTICS,
-					},
-				] );
-
-				expect(
-					registry
-						.select( CORE_MODULES )
-						.canSubmitSharingChanges( 'analytics' )
+					registry.select( CORE_MODULES ).canSubmitSharingChanges()
 				).toBe( true );
-				validateCanSubmitChangesError = 'error message';
+
+				// False after updating module's `sharedRoles` back to original server value on client.
+				registry
+					.dispatch( CORE_MODULES )
+					.setSharedRoles( 'search-console', [
+						'editor',
+						'subscriber',
+					] );
 				expect(
-					registry
-						.select( CORE_MODULES )
-						.canSubmitSharingChanges( 'analytics' )
+					registry.select( CORE_MODULES ).canSubmitSharingChanges()
 				).toBe( false );
 			} );
 		} );
