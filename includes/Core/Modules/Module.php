@@ -362,7 +362,7 @@ abstract class Module {
 			} elseif ( $request instanceof Closure ) {
 				$response = $request();
 			} elseif ( $request instanceof RequestInterface ) {
-				$oauth_client = $this->get_oauth_client_for_request( $datapoint );
+				$oauth_client = $this->get_oauth_client_for_datapoint( $datapoint );
 
 				$response = $oauth_client->get_client()->execute( $request );
 			} else {
@@ -395,14 +395,14 @@ abstract class Module {
 	private function validate_data_request( Datapoint $datapoint ) {
 		// Validate the request scopes if it requires a service.
 		if ( $this instanceof Module_With_Scopes && $datapoint->get_service() ) {
-			$oauth_client = $this->get_oauth_client_for_request( $datapoint );
-			$this->validate_request_scopes( $datapoint, $oauth_client );
+			$oauth_client = $this->get_oauth_client_for_datapoint( $datapoint );
+			$this->validate_datapoint_scopes( $datapoint, $oauth_client );
 			$this->validate_base_scopes( $oauth_client );
 		}
 	}
 
 	/**
-	 * Validates necessary scopes for the given request.
+	 * Validates necessary scopes for the given datapoint.
 	 *
 	 * @since n.e.x.t
 	 *
@@ -410,7 +410,7 @@ abstract class Module {
 	 * @param OAuth_Client $oauth_client OAuth_Client instance.
 	 * @throws Insufficient_Scopes_Exception Thrown if required scopes are not satisfied.
 	 */
-	private function validate_request_scopes( Datapoint $datapoint, OAuth_Client $oauth_client ) {
+	private function validate_datapoint_scopes( Datapoint $datapoint, OAuth_Client $oauth_client ) {
 		$required_scopes = $datapoint->get_required_scopes();
 
 		if ( $required_scopes && ! $oauth_client->has_sufficient_scopes( $required_scopes ) ) {
@@ -589,14 +589,14 @@ abstract class Module {
 	}
 
 	/**
-	 * Gets the oAuth client instance to use for the request.
+	 * Gets the oAuth client instance to use for the given datapoint.
 	 *
 	 * @since n.e.x.t
 	 *
 	 * @param Datapoint $datapoint Datapoint definition.
 	 * @return OAuth_Client OAuth_Client instance.
 	 */
-	private function get_oauth_client_for_request( Datapoint $datapoint ) {
+	private function get_oauth_client_for_datapoint( Datapoint $datapoint ) {
 		if (
 			$this instanceof Module_With_Owner
 			&& $this->is_shareable()
