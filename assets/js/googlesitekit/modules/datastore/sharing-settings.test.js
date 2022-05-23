@@ -22,7 +22,7 @@
 import { CORE_MODULES } from './constants';
 import {
 	createTestRegistry,
-	// freezeFetch,
+	freezeFetch,
 	provideModules,
 	unsubscribeFromAll,
 } from '../../../../../tests/js/utils';
@@ -568,6 +568,56 @@ describe( 'core/modules sharing-settings', () => {
 					] );
 				expect(
 					registry.select( CORE_MODULES ).canSubmitSharingChanges()
+				).toBe( false );
+			} );
+		} );
+
+		describe( 'isDoingSubmitSharingChanges', () => {
+			it( 'should be set to FALSE by default', () => {
+				expect(
+					registry
+						.select( CORE_MODULES )
+						.isDoingSubmitSharingChanges()
+				).toBe( false );
+			} );
+
+			it( 'should be set to TRUE after starting submiting sharing changes', () => {
+				global[ dashboardSharingDataBaseVar ] = dashboardSharingData;
+				registry.select( CORE_MODULES ).getSharingSettings();
+
+				freezeFetch(
+					/^\/google-site-kit\/v1\/core\/modules\/data\/sharing-settings/
+				);
+
+				registry.dispatch( CORE_MODULES ).saveSharingSettings();
+
+				expect(
+					registry
+						.select( CORE_MODULES )
+						.isDoingSubmitSharingChanges()
+				).toBe( true );
+			} );
+
+			it( 'should be set to FALSE after finishing submitting sharing changes', async () => {
+				global[ dashboardSharingDataBaseVar ] = dashboardSharingData;
+				registry.select( CORE_MODULES ).getSharingSettings();
+
+				fetchMock.postOnce(
+					/^\/google-site-kit\/v1\/core\/modules\/data\/sharing-settings/,
+					{
+						body: {
+							settings: sharingSettings,
+							newOwnerIDs: {},
+						},
+					}
+				);
+
+				await registry.dispatch( CORE_MODULES ).saveSharingSettings();
+
+				expect(
+					registry
+						.select( CORE_MODULES )
+						.isDoingSubmitSharingChanges()
 				).toBe( false );
 			} );
 		} );
