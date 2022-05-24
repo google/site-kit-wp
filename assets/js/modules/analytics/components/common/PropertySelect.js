@@ -64,6 +64,10 @@ export default function PropertySelect() {
 		select( MODULES_ANALYTICS ).hasFinishedResolution( 'getAccounts' )
 	);
 
+	const isModuleConnected = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleConnected( 'analytics' )
+	);
+
 	const hasModuleAccess = useSelect( ( select ) =>
 		select( CORE_MODULES ).hasModuleAccess( 'analytics' )
 	);
@@ -101,7 +105,7 @@ export default function PropertySelect() {
 			onEnhancedChange={ onChange }
 			enhanced
 			outlined
-			disabled={ ! hasModuleAccess }
+			disabled={ isModuleConnected && ! hasModuleAccess }
 		>
 			{ ( properties || [] )
 				.concat( {

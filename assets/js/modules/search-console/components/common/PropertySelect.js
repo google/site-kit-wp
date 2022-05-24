@@ -49,6 +49,10 @@ export default function PropertySelect() {
 		)
 	);
 
+	const isModuleConnected = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleConnected( 'search-console' )
+	);
+
 	const hasModuleAccess = useSelect( ( select ) =>
 		select( CORE_MODULES ).hasModuleAccess( 'search-console' )
 	);
@@ -81,7 +85,7 @@ export default function PropertySelect() {
 			onEnhancedChange={ onChange }
 			enhanced
 			outlined
-			disabled={ ! hasModuleAccess }
+			disabled={ isModuleConnected && ! hasModuleAccess }
 		>
 			{ ( matchedProperties || [] ).map( ( { siteURL } ) => (
 				<Option key={ siteURL } value={ siteURL }>

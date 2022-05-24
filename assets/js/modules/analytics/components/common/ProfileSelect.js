@@ -63,6 +63,10 @@ export default function ProfileSelect() {
 		);
 	} );
 
+	const isModuleConnected = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleConnected( 'analytics' )
+	);
+
 	const hasModuleAccess = useSelect( ( select ) =>
 		select( CORE_MODULES ).hasModuleAccess( 'analytics' )
 	);
@@ -103,7 +107,7 @@ export default function ProfileSelect() {
 			onEnhancedChange={ onChange }
 			enhanced
 			outlined
-			disabled={ ! hasModuleAccess }
+			disabled={ isModuleConnected && ! hasModuleAccess }
 		>
 			{ ( profiles || [] )
 				.concat( {

@@ -47,6 +47,10 @@ export default function AccountSelect() {
 		),
 	} ) );
 
+	const isModuleConnected = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleConnected( 'analytics' )
+	);
+
 	const hasModuleAccess = useSelect( ( select ) =>
 		select( CORE_MODULES ).hasModuleAccess( 'analytics' )
 	);
@@ -79,7 +83,7 @@ export default function AccountSelect() {
 			onEnhancedChange={ onChange }
 			enhanced
 			outlined
-			disabled={ ! hasModuleAccess }
+			disabled={ isModuleConnected && ! hasModuleAccess }
 		>
 			{ ( accounts || [] )
 				.concat( {

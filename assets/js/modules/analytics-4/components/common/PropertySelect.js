@@ -69,6 +69,10 @@ export default function PropertySelect( { label } ) {
 			select( MODULES_ANALYTICS ).hasFinishedSelectingAccount() === false
 	);
 
+	const isModuleConnected = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleConnected( 'analytics' )
+	);
+
 	const hasModuleAccess = useSelect( ( select ) =>
 		select( CORE_MODULES ).hasModuleAccess( 'analytics' )
 	);
@@ -112,7 +116,10 @@ export default function PropertySelect( { label } ) {
 			label={ label || __( 'Property', 'google-site-kit' ) }
 			value={ propertyID }
 			onEnhancedChange={ onChange }
-			disabled={ ! isValidAccountID( accountID ) || ! hasModuleAccess }
+			disabled={
+				! isValidAccountID( accountID ) ||
+				( isModuleConnected && ! hasModuleAccess )
+			}
 			enhanced
 			outlined
 		>
