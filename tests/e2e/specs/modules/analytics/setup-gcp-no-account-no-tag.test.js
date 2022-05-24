@@ -85,6 +85,17 @@ describe( 'setting up the Analytics module using GCP auth with no existing accou
 					body: JSON.stringify( fixtures.createWebDataStream ),
 					status: 200,
 				} );
+			} else if (
+				request
+					.url()
+					.match(
+						'google-site-kit/v1/core/modules/data/check-access'
+					)
+			) {
+				request.respond( {
+					body: JSON.stringify( { access: true } ),
+					status: 200,
+				} );
 			} else {
 				request.continue();
 			}
