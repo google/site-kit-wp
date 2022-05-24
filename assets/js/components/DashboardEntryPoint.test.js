@@ -24,9 +24,6 @@ import { mockCreateComponent } from '../../../tests/js/mock-component-utils';
 import DashboardEntryPoint from './DashboardEntryPoint';
 
 jest.mock( './setup/ModuleSetup', () => mockCreateComponent( 'ModuleSetup' ) );
-jest.mock( './dashboard/DashboardApp', () =>
-	mockCreateComponent( 'DashboardApp' )
-);
 jest.mock( './DashboardMainApp', () =>
 	mockCreateComponent( 'DashboardMainApp' )
 );
@@ -35,12 +32,12 @@ jest.mock( './legacy-notifications/notification-counter', () =>
 );
 
 describe( 'DashboardEntryPoint', () => {
-	it( 'should render the unified dashboard when unified dashboard is enabled', () => {
+	it( 'should render the unified dashboard', () => {
 		const { container } = render( <DashboardEntryPoint /> );
 		expect( container ).toMatchSnapshot();
 	} );
 
-	it( 'should render the module setup component when unified dashboard is enabled and passed the setupModuleSlug prop', () => {
+	it( 'should render the module setup component when the setupModuleSlug prop is passed', () => {
 		const { container } = render(
 			<DashboardEntryPoint setupModuleSlug="analytics" />
 		);
