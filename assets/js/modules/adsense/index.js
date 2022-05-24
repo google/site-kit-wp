@@ -42,7 +42,6 @@ import AdSenseIcon from '../../../svg/graphics/adsense.svg';
 import { MODULES_ADSENSE } from './datastore/constants';
 import {
 	AREA_MODULE_ADSENSE_MAIN,
-	CONTEXT_MODULE_ADSENSE,
 	ERROR_CODE_ADBLOCKER_ACTIVE,
 } from './constants';
 import { isFeatureEnabled } from '../../features';
@@ -82,7 +81,6 @@ export const registerModule = ( modules ) => {
 				data: null,
 			};
 		},
-		screenWidgetContext: CONTEXT_MODULE_ADSENSE,
 	} );
 };
 

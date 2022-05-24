@@ -16,12 +16,6 @@
  * limitations under the License.
  */
 
-export const CONTEXT_DASHBOARD = 'dashboard';
-export const CONTEXT_PAGE_DASHBOARD = 'pageDashboard';
-export const CONTEXT_MODULE_SEARCH_CONSOLE = 'moduleSearchConsole';
-export const CONTEXT_MODULE_ANALYTICS = 'moduleAnalytics';
-export const CONTEXT_MODULE_ADSENSE = 'moduleAdsense';
-//
 // Main dashboard
 export const CONTEXT_MAIN_DASHBOARD_TRAFFIC = 'mainDashboardTraffic';
 export const CONTEXT_MAIN_DASHBOARD_CONTENT = 'mainDashboardContent';
@@ -35,12 +29,6 @@ export const CONTEXT_ENTITY_DASHBOARD_MONETIZATION =
 	'entityDashboardMonetization';
 
 export default {
-	CONTEXT_DASHBOARD,
-	CONTEXT_PAGE_DASHBOARD,
-	CONTEXT_MODULE_SEARCH_CONSOLE,
-	CONTEXT_MODULE_ANALYTICS,
-	CONTEXT_MODULE_ADSENSE,
-
 	// Main dashboard
 	CONTEXT_MAIN_DASHBOARD_TRAFFIC,
 	CONTEXT_MAIN_DASHBOARD_CONTENT,

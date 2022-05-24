@@ -31,7 +31,6 @@ import {
 	AREA_ENTITY_DASHBOARD_CONTENT_PRIMARY,
 } from '../../googlesitekit/widgets/default-areas';
 import AnalyticsIcon from '../../../svg/graphics/analytics.svg';
-import { CONTEXT_MODULE_ANALYTICS } from './constants';
 import { MODULES_ANALYTICS } from './datastore/constants';
 import { SetupMain } from './components/setup';
 import { SettingsEdit, SettingsView } from './components/settings';
@@ -53,7 +52,6 @@ export const registerModule = ( modules ) => {
 			__( 'Top pages', 'google-site-kit' ),
 			__( 'Top acquisition channels', 'google-site-kit' ),
 		],
-		screenWidgetContext: CONTEXT_MODULE_ANALYTICS,
 	} );
 };
 

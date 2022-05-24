@@ -23,14 +23,13 @@ import { SettingsEdit, SettingsView } from './components/settings';
 import DashboardPopularKeywordsWidget from './components/dashboard/DashboardPopularKeywordsWidget';
 import SearchFunnelWidget from './components/dashboard/SearchFunnelWidget';
 import {
-	AREA_ENTITY_DASHBOARD_CONTENT_PRIMARY,
 	AREA_MAIN_DASHBOARD_CONTENT_PRIMARY,
 	AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY,
+	AREA_ENTITY_DASHBOARD_CONTENT_PRIMARY,
 	AREA_ENTITY_DASHBOARD_TRAFFIC_PRIMARY,
 } from '../../googlesitekit/widgets/default-areas';
 import SearchConsoleIcon from '../../../svg/graphics/search-console.svg';
 import { MODULES_SEARCH_CONSOLE } from './datastore/constants';
-import { CONTEXT_MODULE_SEARCH_CONSOLE } from './constants';
 
 export { registerStore } from './datastore';
 
@@ -40,7 +39,6 @@ export const registerModule = ( modules ) => {
 		SettingsEditComponent: SettingsEdit,
 		SettingsViewComponent: SettingsView,
 		Icon: SearchConsoleIcon,
-		screenWidgetContext: CONTEXT_MODULE_SEARCH_CONSOLE,
 	} );
 };
 
