@@ -300,6 +300,32 @@ class SettingsTest extends SettingsTestCase {
 		$this->assertTrue( $settings->get()['canUseSnippet'] );
 	}
 
+	public function test_tracking_disabled() {
+		$context  = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$settings = new Settings( new Options( $context ) );
+		$settings->register();
+		$analytics = new Analytics( $context );
+
+		// Defaults to `[ 'loggedinUsers' ]`
+		$this->assertEqualSets( array( 'loggedinUsers' ), $settings->get()['trackingDisabled'] );
+
+		// Save with defaults.
+		$settings->merge( array() );
+		$this->assertEqualSets( array( 'loggedinUsers' ), $settings->get()['trackingDisabled'] );
+
+		// Save with loggedinUsers.
+		$settings->merge( array( 'trackingDisabled' => array( 'loggedinUsers' ) ) );
+		$this->assertEqualSets( array( 'loggedinUsers' ), $settings->get()['trackingDisabled'] );
+
+		// Save with contentCreators.
+		$settings->merge( array( 'trackingDisabled' => array( 'contentCreators' ) ) );
+		$this->assertEqualSets( array( 'contentCreators' ), $settings->get()['trackingDisabled'] );
+
+		// Save with multiple options including loggedinUsers.
+		$settings->merge( array( 'trackingDisabled' => array( 'loggedinUsers', 'contentCreators' ) ) );
+		$this->assertEqualSets( array( 'loggedinUsers' ), $settings->get()['trackingDisabled'] );
+	}
+
 	protected function get_testcase() {
 		return $this;
 	}
