@@ -44,11 +44,11 @@ export default function EntityOwnershipChangeNotice( { slug } ) {
 	);
 
 	const haveOwnedSettingsChanged = useSelect( ( select ) =>
-		select( storeName ).haveOwnedSettingsChanged()
+		select( storeName )?.haveOwnedSettingsChanged()
 	);
 
 	const moduleOwnerID = useSelect( ( select ) =>
-		select( storeName ).getOwnerID()
+		select( storeName )?.getOwnerID()
 	);
 
 	const currentUserID = useSelect( ( select ) =>
