@@ -21,50 +21,35 @@ class Collection_Key_Cap_FilterTest extends TestCase {
 	}
 
 	public function data_filter_key_by_cap() {
+		$collection_with_foo    = array(
+			array(
+				'foo' => 'bar',
+				'baz' => 'buzz',
+			),
+			array(
+				'foo' => '123',
+				'baz' => 'any',
+			),
+		);
+		$collection_without_foo = array(
+			array( 'baz' => 'buzz' ),
+			array( 'baz' => 'any' ),
+		);
+
 		yield 'editor with delete_users' => array(
 			'editor',
 			'delete_users',
 			'foo',
-			array(
-				array(
-					'foo' => 'bar',
-					'baz' => 'buzz',
-				),
-				array(
-					'foo' => '123',
-					'baz' => 'any',
-				),
-			),
-			array(
-				array( 'baz' => 'buzz' ),
-				array( 'baz' => 'any' ),
-			),
+			$collection_with_foo,
+			$collection_without_foo,
 		);
 
 		yield 'admin with delete_users' => array(
 			'administrator',
 			'delete_users',
 			'foo',
-			array(
-				array(
-					'foo' => 'bar',
-					'baz' => 'buzz',
-				),
-				array(
-					'foo' => '123',
-					'baz' => 'any',
-				),
-			),
-			array(
-				array(
-					'foo' => 'bar',
-					'baz' => 'buzz',
-				),
-				array(
-					'foo' => '123',
-					'baz' => 'any',
-				),
-			),
+			$collection_with_foo,
+			$collection_with_foo,
 		);
 	}
 }
