@@ -150,7 +150,6 @@ describe( 'date range filtering on dashboard views', () => {
 
 		await Promise.all( [
 			page.waitForNavigation(),
-			expect( postSearcher ).toClick( 'button', { text: /view data/i } ),
 			page.waitForResponse( ( res ) =>
 				res
 					.url()
