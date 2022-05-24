@@ -121,7 +121,8 @@ WithGA4Tag.decorators = [
 ];
 
 export const WithBothTags = Template.bind( null );
-WithBothTags.storyName = 'With Both Tags, matching property selected';
+WithBothTags.storyName =
+	'With Both Tags, both UA+GA4 matching selected properties';
 WithBothTags.decorators = [
 	( Story ) => {
 		const setupRegistry = ( registry ) => {

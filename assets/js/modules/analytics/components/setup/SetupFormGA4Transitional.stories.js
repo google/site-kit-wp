@@ -110,7 +110,7 @@ WithGA4ExistingTag.decorators = [
 
 export const WithGA4AndUAExistingTag = Template.bind( null );
 WithGA4AndUAExistingTag.storyName =
-	'With Both Tags, matching properties selected';
+	'With Both Tags, both UA+GA4 matching selected properties';
 WithGA4AndUAExistingTag.decorators = [
 	( Story ) => {
 		const setupRegistry = ( registry ) => {
