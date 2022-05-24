@@ -20,7 +20,6 @@
  * External dependencies
  */
 import { storiesOf } from '@storybook/react';
-import fetchMock from 'fetch-mock';
 
 /**
  * Internal dependencies
@@ -40,6 +39,7 @@ import {
 	defaultSettings,
 } from '../assets/js/modules/analytics/datastore/__fixtures__';
 import { defaultSettings as ga4DefaultSettings } from '../assets/js/modules/analytics-4/datastore/__fixtures__';
+import { CORE_MODULES } from '../assets/js/googlesitekit/modules/datastore/constants';
 
 /* eslint-disable sitekit/acronym-case */
 const { useRegistry } = Data;
@@ -231,6 +231,11 @@ storiesOf( 'Analytics Module/Settings', module )
 				},
 			] );
 
+			dispatch( CORE_MODULES ).receiveCheckModuleAccess(
+				{ access: true },
+				{ slug: 'analytics' }
+			);
+
 			dispatch( MODULES_ANALYTICS ).receiveGetAccounts( accounts );
 			dispatch( MODULES_ANALYTICS ).receiveGetProperties( properties, {
 				accountID,
@@ -250,11 +255,6 @@ storiesOf( 'Analytics Module/Settings', module )
 			dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties( [], {
 				accountID,
 			} );
-
-			fetchMock.postOnce(
-				/^\/google-site-kit\/v1\/core\/modules\/data\/check-access/,
-				{ body: { access: true } }
-			);
 
 			return (
 				<Settings
@@ -307,6 +307,11 @@ storiesOf( 'Analytics Module/Settings', module )
 				},
 			] );
 
+			dispatch( CORE_MODULES ).receiveCheckModuleAccess(
+				{ access: true },
+				{ slug: 'analytics' }
+			);
+
 			dispatch( MODULES_ANALYTICS ).receiveGetAccounts( accounts );
 			dispatch( MODULES_ANALYTICS ).receiveGetProperties( properties, {
 				accountID,
@@ -349,11 +354,6 @@ storiesOf( 'Analytics Module/Settings', module )
 					},
 				],
 				{ propertyID: '1001' }
-			);
-
-			fetchMock.postOnce(
-				/^\/google-site-kit\/v1\/core\/modules\/data\/check-access/,
-				{ body: { access: true } }
 			);
 
 			return (
@@ -408,6 +408,11 @@ storiesOf( 'Analytics Module/Settings', module )
 				},
 			] );
 
+			dispatch( CORE_MODULES ).receiveCheckModuleAccess(
+				{ access: false },
+				{ slug: 'analytics' }
+			);
+
 			dispatch( MODULES_ANALYTICS ).receiveGetAccounts( accounts );
 			dispatch( MODULES_ANALYTICS ).receiveGetProperties( properties, {
 				accountID,
@@ -452,11 +457,6 @@ storiesOf( 'Analytics Module/Settings', module )
 				{ propertyID: '1001' }
 			);
 
-			fetchMock.postOnce(
-				/^\/google-site-kit\/v1\/core\/modules\/data\/check-access/,
-				{ body: { access: false } }
-			);
-
 			return (
 				<Settings
 					registry={ registry }
@@ -486,6 +486,11 @@ storiesOf( 'Analytics Module/Settings', module )
 				( property ) => webPropertyId === property.id
 			);
 
+			dispatch( CORE_MODULES ).receiveCheckModuleAccess(
+				{ access: true },
+				{ slug: 'analytics' }
+			);
+
 			dispatch( MODULES_ANALYTICS ).receiveGetAccounts( accounts );
 			dispatch( MODULES_ANALYTICS ).receiveGetProperties( properties, {
 				accountID: accountId,
@@ -510,11 +515,6 @@ storiesOf( 'Analytics Module/Settings', module )
 				accountID: accountId, // eslint-disable-line sitekit/acronym-case
 			} );
 
-			fetchMock.postOnce(
-				/^\/google-site-kit\/v1\/core\/modules\/data\/check-access/,
-				{ body: { access: true } }
-			);
-
 			return (
 				<Settings
 					registry={ registry }
@@ -530,11 +530,12 @@ storiesOf( 'Analytics Module/Settings', module )
 		'Edit, open with no accounts',
 		( args, { registry } ) => {
 			const { dispatch } = registry;
-			dispatch( MODULES_ANALYTICS ).receiveGetAccounts( [] );
-			fetchMock.postOnce(
-				/^\/google-site-kit\/v1\/core\/modules\/data\/check-access/,
-				{ body: { access: true } }
+			dispatch( CORE_MODULES ).receiveCheckModuleAccess(
+				{ access: true },
+				{ slug: 'analytics' }
 			);
+
+			dispatch( MODULES_ANALYTICS ).receiveGetAccounts( [] );
 
 			return (
 				<Settings
@@ -563,6 +564,11 @@ storiesOf( 'Analytics Module/Settings', module )
 				propertyID: matchedProperty.id,
 			};
 
+			dispatch( CORE_MODULES ).receiveCheckModuleAccess(
+				{ access: true },
+				{ slug: 'analytics' }
+			);
+
 			dispatch( MODULES_ANALYTICS ).receiveGetAccounts( accounts );
 			dispatch( MODULES_ANALYTICS ).receiveGetProperties( properties, {
 				accountID: properties[ 0 ].accountId,
@@ -584,10 +590,6 @@ storiesOf( 'Analytics Module/Settings', module )
 					},
 				],
 				{ accountID: existingTag.accountID }
-			);
-			fetchMock.postOnce(
-				/^\/google-site-kit\/v1\/core\/modules\/data\/check-access/,
-				{ body: { access: true } }
 			);
 
 			return (
@@ -615,6 +617,11 @@ storiesOf( 'Analytics Module/Settings', module )
 				propertyID: 'UA-12345678-1',
 			};
 
+			registry.dispatch( CORE_MODULES ).receiveCheckModuleAccess(
+				{ access: true },
+				{ slug: 'analytics' }
+			);
+
 			registry
 				.dispatch( MODULES_ANALYTICS )
 				.receiveGetAccounts( accounts );
@@ -635,10 +642,6 @@ storiesOf( 'Analytics Module/Settings', module )
 			registry
 				.dispatch( MODULES_ANALYTICS )
 				.receiveGetExistingTag( existingTag.propertyID );
-			fetchMock.postOnce(
-				/^\/google-site-kit\/v1\/core\/modules\/data\/check-access/,
-				{ body: { access: true } }
-			);
 
 			return (
 				<Settings

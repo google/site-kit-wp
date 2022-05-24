@@ -17,17 +17,13 @@
  */
 
 /**
- * External dependencies
- */
-import fetchMock from 'fetch-mock';
-
-/**
  * Internal dependencies
  */
 import SettingsForm from './SettingsForm';
 import { Cell, Grid, Row } from '../../../../material-components';
 import { MODULES_ANALYTICS } from '../../datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
+import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import {
 	provideModules,
 	provideModuleRegistrations,
@@ -95,6 +91,13 @@ export default {
 				provideModuleRegistrations( registry );
 
 				registry
+					.dispatch( CORE_MODULES )
+					.receiveCheckModuleAccess(
+						{ access: true },
+						{ slug: 'analytics' }
+					);
+
+				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveGetSettings( {} );
 				registry
@@ -148,11 +151,6 @@ export default {
 				registry
 					.dispatch( MODULES_ANALYTICS )
 					.selectAccount( accountID );
-
-				fetchMock.postOnce(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/check-access/,
-					{ body: { access: true } }
-				);
 			};
 
 			return (

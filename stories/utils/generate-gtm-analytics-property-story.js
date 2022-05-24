@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import fetchMock from 'fetch-mock';
-
-/**
  * WordPress dependencies
  */
 import { withRegistry } from '@wordpress/data';
@@ -42,6 +37,7 @@ import {
 import WithRegistrySetup from '../../tests/js/WithRegistrySetup';
 import { createBuildAndReceivers } from '../../assets/js/modules/tagmanager/datastore/__factories__/utils';
 import { MODULES_ANALYTICS_4 } from '../../assets/js/modules/analytics-4/datastore/constants';
+import { CORE_MODULES } from '../../assets/js/googlesitekit/modules/datastore/constants';
 
 /**
  * Generates a story for a case when a GTM with Analytics property ID is already connected.
@@ -115,6 +111,13 @@ export function generateGTMAnalyticsPropertyStory( {
 				ampMode: AMP_MODE_SECONDARY,
 			} );
 
+			registry
+				.dispatch( CORE_MODULES )
+				.receiveCheckModuleAccess(
+					{ access: hasModuleAccess },
+					{ slug: 'analytics' }
+				);
+
 			registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
 			registry
 				.dispatch( MODULES_ANALYTICS )
@@ -167,11 +170,6 @@ export function generateGTMAnalyticsPropertyStory( {
 				webPropertyID: gtmPropertyID,
 				ampPropertyID: gtmPropertyID,
 			} );
-
-			fetchMock.postOnce(
-				/^\/google-site-kit\/v1\/core\/modules\/data\/check-access/,
-				{ body: { access: hasModuleAccess } }
-			);
 		};
 
 		const ComponentWithRegistry = withRegistry( Component );

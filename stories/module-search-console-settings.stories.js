@@ -20,12 +20,12 @@
  * External dependencies
  */
 import { storiesOf } from '@storybook/react';
-import fetchMock from 'fetch-mock';
 
 /**
  * Internal dependencies
  */
 import { MODULES_SEARCH_CONSOLE } from '../assets/js/modules/search-console/datastore/constants';
+import { CORE_MODULES } from '../assets/js/googlesitekit/modules/datastore/constants';
 import createLegacySettingsWrapper from './utils/create-legacy-settings-wrapper';
 import {
 	createTestRegistry,
@@ -114,6 +114,12 @@ storiesOf( 'Search Console Module/Settings', module )
 	.add(
 		'Edit, with all settings',
 		( args, { registry } ) => {
+			registry
+				.dispatch( CORE_MODULES )
+				.receiveCheckModuleAccess(
+					{ access: true },
+					{ slug: 'search-console' }
+				);
 			registry.dispatch( MODULES_SEARCH_CONSOLE ).receiveGetSettings( {
 				...defaultSettings,
 				propertyID: 'sc-domain:example.com',
@@ -134,11 +140,6 @@ storiesOf( 'Search Console Module/Settings', module )
 						siteURL: 'sc-domain:example.com',
 					},
 				] );
-
-			fetchMock.postOnce(
-				/^\/google-site-kit\/v1\/core\/modules\/data\/check-access/,
-				{ body: { access: true } }
-			);
 
 			return (
 				<Settings
@@ -150,8 +151,14 @@ storiesOf( 'Search Console Module/Settings', module )
 		storyOptions
 	)
 	.add(
-		'Edit, with all settings, no module access',
+		'Edit, with all settings, w/o module access',
 		( args, { registry } ) => {
+			registry
+				.dispatch( CORE_MODULES )
+				.receiveCheckModuleAccess(
+					{ access: false },
+					{ slug: 'search-console' }
+				);
 			registry.dispatch( MODULES_SEARCH_CONSOLE ).receiveGetSettings( {
 				...defaultSettings,
 				propertyID: 'sc-domain:example.com',
@@ -172,11 +179,6 @@ storiesOf( 'Search Console Module/Settings', module )
 						siteURL: 'sc-domain:example.com',
 					},
 				] );
-
-			fetchMock.postOnce(
-				/^\/google-site-kit\/v1\/core\/modules\/data\/check-access/,
-				{ body: { access: false } }
-			);
 
 			return (
 				<Settings
