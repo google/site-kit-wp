@@ -32,7 +32,6 @@ import {
 import { MODULES_ANALYTICS_4 } from '../assets/js/modules/analytics-4/datastore/constants';
 import { MODULES_TAGMANAGER } from '../assets/js/modules/tagmanager/datastore/constants';
 import { provideModules, provideModuleRegistrations } from '../tests/js/utils';
-import { generateGTMAnalyticsPropertyStory } from './utils/generate-gtm-analytics-property-story';
 import createLegacySettingsWrapper from './utils/create-legacy-settings-wrapper';
 import {
 	accountsPropertiesProfiles,
@@ -44,20 +43,6 @@ import { defaultSettings as ga4DefaultSettings } from '../assets/js/modules/anal
 const { useRegistry } = Data;
 
 const Settings = createLegacySettingsWrapper( 'analytics' );
-
-function usingGenerateGTMAnalyticsPropertyStory( args ) {
-	return generateGTMAnalyticsPropertyStory( {
-		...args,
-		Component( { registry } ) {
-			return (
-				<Settings
-					registry={ registry }
-					route="/connected-services/analytics/edit"
-				/>
-			);
-		},
-	} );
-}
 
 function WithRegistry( Story ) {
 	const registry = useRegistry();
@@ -425,146 +410,4 @@ storiesOf( 'Analytics Module/Settings', module )
 		{
 			decorators: [ WithRegistry ],
 		}
-	)
-	.add(
-		'Edit, with existing tag w/ access',
-		( args, { registry } ) => {
-			const { dispatch } = registry;
-			const {
-				accounts,
-				properties,
-				profiles,
-				matchedProperty,
-			} = accountsPropertiesProfiles;
-			const existingTag = {
-				// eslint-disable-next-line sitekit/acronym-case
-				accountID: matchedProperty.accountId,
-				propertyID: matchedProperty.id,
-			};
-
-			dispatch( MODULES_ANALYTICS ).receiveGetAccounts( accounts );
-			dispatch( MODULES_ANALYTICS ).receiveGetProperties( properties, {
-				accountID: properties[ 0 ].accountId,
-			} ); // eslint-disable-line sitekit/acronym-case
-			dispatch( MODULES_ANALYTICS ).receiveGetProfiles( profiles, {
-				accountID: properties[ 0 ].accountId, // eslint-disable-line sitekit/acronym-case
-				propertyID: profiles[ 0 ].webPropertyId, // eslint-disable-line sitekit/acronym-case
-			} );
-			dispatch( MODULES_ANALYTICS ).receiveGetSettings( defaultSettings );
-			dispatch( MODULES_ANALYTICS ).receiveGetExistingTag(
-				existingTag.propertyID
-			);
-
-			dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties(
-				[
-					{
-						_id: '1001',
-						displayName: 'GA4 Property',
-					},
-				],
-				{ accountID: existingTag.accountID }
-			);
-
-			return (
-				<Settings
-					registry={ registry }
-					route="/connected-services/analytics/edit"
-				/>
-			);
-		},
-		{
-			decorators: [ WithRegistry ],
-		}
-	)
-	.add(
-		'Edit, with existing tag w/o access',
-		( args, { registry } ) => {
-			const {
-				accounts,
-				properties,
-				profiles,
-			} = accountsPropertiesProfiles;
-
-			const existingTag = {
-				accountID: '12345678',
-				propertyID: 'UA-12345678-1',
-			};
-
-			registry
-				.dispatch( MODULES_ANALYTICS )
-				.receiveGetAccounts( accounts );
-			registry
-				.dispatch( MODULES_ANALYTICS )
-				.receiveGetProperties( properties, {
-					accountID: properties[ 0 ].accountId,
-				} ); // eslint-disable-line sitekit/acronym-case
-			registry
-				.dispatch( MODULES_ANALYTICS )
-				.receiveGetProfiles( profiles, {
-					accountID: properties[ 0 ].accountId, // eslint-disable-line sitekit/acronym-case
-					propertyID: profiles[ 0 ].webPropertyId, // eslint-disable-line sitekit/acronym-case
-				} );
-			registry
-				.dispatch( MODULES_ANALYTICS )
-				.receiveGetSettings( defaultSettings );
-			registry
-				.dispatch( MODULES_ANALYTICS )
-				.receiveGetExistingTag( existingTag.propertyID );
-
-			return (
-				<Settings
-					registry={ registry }
-					route="/connected-services/analytics/edit"
-				/>
-			);
-		},
-		{
-			decorators: [ WithRegistry ],
-		}
-	)
-	.add(
-		'No Tag, GTM property w/ access',
-		usingGenerateGTMAnalyticsPropertyStory( {
-			useExistingTag: false,
-			gtmPermission: true,
-		} )
-	)
-	.add(
-		'No Tag, GTM property w/o access',
-		usingGenerateGTMAnalyticsPropertyStory( {
-			useExistingTag: false,
-			gtmPermission: false,
-		} )
-	)
-	.add(
-		'Existing Tag w/ access, GTM property w/ access',
-		usingGenerateGTMAnalyticsPropertyStory( {
-			useExistingTag: true,
-			gtmPermission: true,
-			gaPermission: true,
-		} )
-	)
-	.add(
-		'Existing Tag w/ access, GTM property w/o access',
-		usingGenerateGTMAnalyticsPropertyStory( {
-			useExistingTag: true,
-			gtmPermission: false,
-			gaPermission: true,
-		} )
-	)
-	.add(
-		'Existing Tag w/o access, GTM property w/ access',
-		usingGenerateGTMAnalyticsPropertyStory( {
-			useExistingTag: true,
-			gtmPermission: true,
-			gaPermission: false,
-		} )
-	)
-	.add(
-		'Existing Tag w/o access, GTM property w/o access',
-		usingGenerateGTMAnalyticsPropertyStory( {
-			useExistingTag: true,
-			gtmPermission: false,
-			gaPermission: false,
-		} )
 	);

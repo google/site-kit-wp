@@ -37,12 +37,20 @@ function Template() {
 
 export const WithoutExistingTag = Template.bind( null );
 WithoutExistingTag.storyName = 'Without Existing Tag';
+WithoutExistingTag.scenario = {
+	label: 'Modules/Analytics/Setup/SetupFormGA4/WithoutExistingTag',
+	delay: 250,
+};
 
 export const WithGA4Tag = Template.bind( null );
-WithGA4Tag.storyName = 'With GA4 Tag';
+WithGA4Tag.storyName = 'With GA4 Tag, non-matching property selected';
 WithGA4Tag.decorators = [
 	( Story ) => {
 		const setupRegistry = ( registry ) => {
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.selectProperty( ga4Fixtures.properties[ 1 ]._id );
+
 			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetExistingTag(
 				// eslint-disable-next-line sitekit/acronym-case
 				ga4Fixtures.webDataStreams[ 0 ].webStreamData.measurementId
@@ -58,7 +66,7 @@ WithGA4Tag.decorators = [
 ];
 
 export const WithBothTags = Template.bind( null );
-WithBothTags.storyName = 'With Both Tags';
+WithBothTags.storyName = 'With Both Tags, matching GA4 property selected';
 WithBothTags.decorators = [
 	( Story ) => {
 		const setupRegistry = ( registry ) => {
@@ -74,7 +82,7 @@ WithBothTags.decorators = [
 				);
 
 			registry.dispatch( MODULES_ANALYTICS ).setUseSnippet( true );
-			registry.dispatch( MODULES_ANALYTICS_4 ).setUseSnippet( true );
+			registry.dispatch( MODULES_ANALYTICS_4 ).setUseSnippet( false );
 		};
 
 		return (
@@ -84,6 +92,10 @@ WithBothTags.decorators = [
 		);
 	},
 ];
+WithBothTags.scenario = {
+	label: 'Modules/Analytics/Setup/SetupFormGA4/WithBothTags',
+	delay: 250,
+};
 
 export default {
 	title: 'Modules/Analytics/Setup/SetupFormGA4',
