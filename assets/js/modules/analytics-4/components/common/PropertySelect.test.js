@@ -29,6 +29,7 @@ import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import * as fixtures from '../../datastore/__fixtures__';
 import * as analyticsFixtures from '../../../analytics/datastore/__fixtures__';
 import { fireEvent, act, render } from '../../../../../../tests/js/test-utils';
+import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 
 const {
 	createProperty,
@@ -44,6 +45,17 @@ const setupRegistry = ( { dispatch } ) => {
 	dispatch( CORE_SITE ).receiveSiteInfo( {
 		referenceSiteURL: 'http://example.com',
 	} );
+	dispatch( CORE_MODULES ).receiveGetModules( [
+		{
+			slug: 'analytics',
+			active: true,
+			connected: true,
+		},
+	] );
+	dispatch( CORE_MODULES ).receiveCheckModuleAccess(
+		{ access: true },
+		{ slug: 'analytics' }
+	);
 	dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
 	dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
 	dispatch( MODULES_ANALYTICS ).setAccountID( accountID );
@@ -67,6 +79,17 @@ const setupRegistry = ( { dispatch } ) => {
 };
 
 const setupEmptyRegistry = ( { dispatch } ) => {
+	dispatch( CORE_MODULES ).receiveGetModules( [
+		{
+			slug: 'analytics',
+			active: true,
+			connected: true,
+		},
+	] );
+	dispatch( CORE_MODULES ).receiveCheckModuleAccess(
+		{ access: true },
+		{ slug: 'analytics' }
+	);
 	dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
 	dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
 	dispatch( MODULES_ANALYTICS ).setAccountID( accountID );

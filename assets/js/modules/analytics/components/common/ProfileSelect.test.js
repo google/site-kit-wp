@@ -26,6 +26,7 @@ import apiFetchMock from '@wordpress/api-fetch';
  */
 import ProfileSelect from './ProfileSelect';
 import { MODULES_ANALYTICS, PROFILE_CREATE } from '../../datastore/constants';
+import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import * as fixtures from '../../datastore/__fixtures__';
 import { fireEvent, render, act } from '../../../../../../tests/js/test-utils';
 
@@ -42,6 +43,18 @@ const setupRegistry = ( { dispatch } ) => {
 		webPropertyId: propertyID, // eslint-disable-line sitekit/acronym-case
 		accountId: accountID, // eslint-disable-line sitekit/acronym-case
 	} = fixtures.propertiesProfiles.profiles[ 0 ];
+
+	dispatch( CORE_MODULES ).receiveGetModules( [
+		{
+			slug: 'analytics',
+			active: true,
+			connected: true,
+		},
+	] );
+	dispatch( CORE_MODULES ).receiveCheckModuleAccess(
+		{ access: true },
+		{ slug: 'analytics' }
+	);
 
 	dispatch( MODULES_ANALYTICS ).setAccountID( accountID );
 	dispatch( MODULES_ANALYTICS ).setPropertyID( propertyID );
@@ -78,6 +91,18 @@ const setupRegistryWithExistingTag = ( { dispatch } ) => {
 	};
 	const { id } = fixtures.propertiesProfiles.profiles[ 0 ];
 
+	dispatch( CORE_MODULES ).receiveGetModules( [
+		{
+			slug: 'analytics',
+			active: true,
+			connected: true,
+		},
+	] );
+	dispatch( CORE_MODULES ).receiveCheckModuleAccess(
+		{ access: true },
+		{ slug: 'analytics' }
+	);
+
 	dispatch( MODULES_ANALYTICS ).setAccountID( existingTag.accountID );
 	dispatch( MODULES_ANALYTICS ).setPropertyID( existingTag.propertyID );
 	dispatch( MODULES_ANALYTICS ).setProfileID( id );
@@ -113,6 +138,18 @@ const setupEmptyRegistry = ( { dispatch } ) => {
 		fixtures.accountsPropertiesProfiles.profiles[ 0 ].accountId; // eslint-disable-line sitekit/acronym-case
 	const propertyID =
 		fixtures.accountsPropertiesProfiles.profiles[ 0 ].webPropertyId; // eslint-disable-line sitekit/acronym-case
+
+	dispatch( CORE_MODULES ).receiveGetModules( [
+		{
+			slug: 'analytics',
+			active: true,
+			connected: true,
+		},
+	] );
+	dispatch( CORE_MODULES ).receiveCheckModuleAccess(
+		{ access: true },
+		{ slug: 'analytics' }
+	);
 
 	dispatch( MODULES_ANALYTICS ).setSettings( {} );
 	dispatch( MODULES_ANALYTICS ).setAccountID( accountID );

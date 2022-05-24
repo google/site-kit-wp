@@ -22,6 +22,7 @@
 import PropertySelect from './PropertySelect';
 import { MODULES_ANALYTICS, ACCOUNT_CREATE } from '../../datastore/constants';
 import { MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
+import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import * as fixtures from '../../datastore/__fixtures__';
 import {
 	fireEvent,
@@ -34,6 +35,17 @@ const setupRegistry = ( { dispatch } ) => {
 	const { properties, profiles } = fixtures.accountsPropertiesProfiles;
 	const propertyID = properties[ 0 ].id;
 	const accountID = properties[ 0 ].accountId; // eslint-disable-line sitekit/acronym-case
+	dispatch( CORE_MODULES ).receiveGetModules( [
+		{
+			slug: 'analytics',
+			active: true,
+			connected: true,
+		},
+	] );
+	dispatch( CORE_MODULES ).receiveCheckModuleAccess(
+		{ access: true },
+		{ slug: 'analytics' }
+	);
 	dispatch( MODULES_TAGMANAGER ).setSettings( {} );
 	dispatch( MODULES_ANALYTICS ).setAccountID( accountID );
 	dispatch( MODULES_ANALYTICS ).receiveGetExistingTag( null );
@@ -64,6 +76,17 @@ const setupRegistry = ( { dispatch } ) => {
 const setupRegistryWithExistingTag = ( { dispatch } ) => {
 	const accountID =
 		fixtures.accountsPropertiesProfiles.properties[ 0 ].accountId; // eslint-disable-line sitekit/acronym-case
+	dispatch( CORE_MODULES ).receiveGetModules( [
+		{
+			slug: 'analytics',
+			active: true,
+			connected: true,
+		},
+	] );
+	dispatch( CORE_MODULES ).receiveCheckModuleAccess(
+		{ access: true },
+		{ slug: 'analytics' }
+	);
 	dispatch( MODULES_TAGMANAGER ).setSettings( {} );
 	dispatch( MODULES_ANALYTICS ).receiveGetExistingTag(
 		fixtures.getTagPermissionsAccess.propertyID
@@ -93,6 +116,17 @@ const setupRegistryWithExistingTag = ( { dispatch } ) => {
 const setupEmptyRegistry = ( { dispatch } ) => {
 	const { properties } = fixtures.accountsPropertiesProfiles;
 	const accountID = properties[ 0 ].accountId; // eslint-disable-line sitekit/acronym-case
+	dispatch( CORE_MODULES ).receiveGetModules( [
+		{
+			slug: 'analytics',
+			active: true,
+			connected: true,
+		},
+	] );
+	dispatch( CORE_MODULES ).receiveCheckModuleAccess(
+		{ access: true },
+		{ slug: 'analytics' }
+	);
 	dispatch( MODULES_TAGMANAGER ).setSettings( {} );
 	dispatch( MODULES_ANALYTICS ).setSettings( {} );
 	dispatch( MODULES_ANALYTICS ).setAccountID( accountID );

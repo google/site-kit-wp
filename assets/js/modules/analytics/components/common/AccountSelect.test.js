@@ -29,6 +29,7 @@ import {
 } from '../../../../../../tests/js/test-utils';
 import { MODULES_ANALYTICS, ACCOUNT_CREATE } from '../../datastore/constants';
 import { MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
+import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import { provideSiteInfo } from '../../../../../../tests/js/utils';
 import * as fixtures from '../../datastore/__fixtures__';
 
@@ -37,6 +38,17 @@ const setupRegistry = ( registry ) => {
 		referenceSiteURL:
 			fixtures.accountsPropertiesProfiles.properties[ 0 ].websiteUrl, // eslint-disable-line sitekit/acronym-case
 	} );
+
+	registry.dispatch( CORE_MODULES ).receiveGetModules( [
+		{
+			slug: 'analytics',
+			active: true,
+			connected: true,
+		},
+	] );
+	registry
+		.dispatch( CORE_MODULES )
+		.receiveCheckModuleAccess( { access: true }, { slug: 'analytics' } );
 
 	registry.dispatch( MODULES_TAGMANAGER ).setSettings( {} );
 	registry.dispatch( MODULES_ANALYTICS ).setSettings( {} );
@@ -51,12 +63,34 @@ const setupRegistry = ( registry ) => {
 };
 
 const setupLoadingRegistry = ( registry ) => {
+	registry.dispatch( CORE_MODULES ).receiveGetModules( [
+		{
+			slug: 'analytics',
+			active: true,
+			connected: true,
+		},
+	] );
+	registry
+		.dispatch( CORE_MODULES )
+		.receiveCheckModuleAccess( { access: true }, { slug: 'analytics' } );
+
 	registry.dispatch( MODULES_TAGMANAGER ).setSettings( {} );
 	registry.dispatch( MODULES_ANALYTICS ).setSettings( {} );
 	registry.dispatch( MODULES_ANALYTICS ).receiveGetExistingTag( null );
 };
 
 const setupEmptyRegistry = ( registry ) => {
+	registry.dispatch( CORE_MODULES ).receiveGetModules( [
+		{
+			slug: 'analytics',
+			active: true,
+			connected: true,
+		},
+	] );
+	registry
+		.dispatch( CORE_MODULES )
+		.receiveCheckModuleAccess( { access: true }, { slug: 'analytics' } );
+
 	registry.dispatch( MODULES_TAGMANAGER ).setSettings( {} );
 	registry.dispatch( MODULES_ANALYTICS ).setSettings( {} );
 	registry.dispatch( MODULES_ANALYTICS ).receiveGetExistingTag( null );
