@@ -135,7 +135,6 @@ const Dialog = ( {
 								<Link
 									className="googlesitekit-margin-left-auto mdc-dialog__cancel-button"
 									onClick={ handleDialog }
-									inherit
 									disabled={ inProgress }
 								>
 									{ __( 'Cancel', 'google-site-kit' ) }

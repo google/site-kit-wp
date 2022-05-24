@@ -49,6 +49,7 @@ import {
 	ANCHOR_ID_TRAFFIC,
 } from '../googlesitekit/constants';
 import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
+import { CORE_USER } from '../googlesitekit/datastore/user/constants';
 import Link from './Link';
 import VisuallyHidden from './VisuallyHidden';
 import { Cell, Grid, Row } from '../material-components';
@@ -57,9 +58,23 @@ import Layout from './layout/Layout';
 import { CORE_WIDGETS } from '../googlesitekit/widgets/datastore/constants';
 import ScrollEffect from './ScrollEffect';
 import EntityBannerNotifications from './notifications/EntityBannerNotifications';
+import DashboardSharingSettingsButton from './dashboard-sharing/DashboardSharingSettingsButton';
+import { useFeature } from '../hooks/useFeature';
+import useViewOnly from '../hooks/useViewOnly';
 const { useSelect } = Data;
 
 function DashboardEntityApp() {
+	const viewOnlyDashboard = useViewOnly();
+	const dashboardSharingEnabled = useFeature( 'dashboardSharing' );
+
+	const viewableModules = useSelect( ( select ) => {
+		if ( ! viewOnlyDashboard ) {
+			return null;
+		}
+
+		return select( CORE_USER ).getViewableModules();
+	} );
+
 	const currentEntityURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getCurrentEntityURL()
 	);
@@ -70,27 +85,35 @@ function DashboardEntityApp() {
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' )
 	);
 
+	const widgetContextOptions = {
+		modules: viewableModules ? viewableModules : undefined,
+	};
+
 	const isTrafficActive = useSelect( ( select ) =>
 		select( CORE_WIDGETS ).isWidgetContextActive(
-			CONTEXT_ENTITY_DASHBOARD_TRAFFIC
+			CONTEXT_ENTITY_DASHBOARD_TRAFFIC,
+			widgetContextOptions
 		)
 	);
 
 	const isContentActive = useSelect( ( select ) =>
 		select( CORE_WIDGETS ).isWidgetContextActive(
-			CONTEXT_ENTITY_DASHBOARD_CONTENT
+			CONTEXT_ENTITY_DASHBOARD_CONTENT,
+			widgetContextOptions
 		)
 	);
 
 	const isSpeedActive = useSelect( ( select ) =>
 		select( CORE_WIDGETS ).isWidgetContextActive(
-			CONTEXT_ENTITY_DASHBOARD_SPEED
+			CONTEXT_ENTITY_DASHBOARD_SPEED,
+			widgetContextOptions
 		)
 	);
 
 	const isMonetizationActive = useSelect( ( select ) =>
 		select( CORE_WIDGETS ).isWidgetContextActive(
-			CONTEXT_ENTITY_DASHBOARD_MONETIZATION
+			CONTEXT_ENTITY_DASHBOARD_MONETIZATION,
+			widgetContextOptions
 		)
 	);
 
@@ -114,7 +137,7 @@ function DashboardEntityApp() {
 					<Row>
 						<Cell size={ 12 }>
 							<Fragment>
-								<Link href={ dashboardURL } inherit back small>
+								<Link href={ dashboardURL } back small>
 									{ __(
 										'Back to the Site Kit Dashboard',
 										'google-site-kit'
@@ -150,14 +173,12 @@ function DashboardEntityApp() {
 																<Link
 																	href="https://wordpress.org/support/plugin/google-site-kit/"
 																	external
-																	inherit
 																/>
 															),
 															link2: (
 																<Link
 																	href="https://sitekit.withgoogle.com/documentation/troubleshooting/dashboard/#url-not-part-of-this-site"
 																	external
-																	inherit
 																/>
 															),
 															VisuallyHidden: (
@@ -183,6 +204,9 @@ function DashboardEntityApp() {
 			<Header subHeader={ <EntityBannerNotifications /> } showNavigation>
 				<EntitySearchInput />
 				<DateRangeSelector />
+				{ dashboardSharingEnabled && ! viewOnlyDashboard && (
+					<DashboardSharingSettingsButton />
+				) }
 				<HelpMenu />
 			</Header>
 			<WidgetContextRenderer

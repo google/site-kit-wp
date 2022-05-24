@@ -40,11 +40,9 @@ import {
 import { FORM_SETUP, MODULES_ANALYTICS } from '../../datastore/constants';
 import { Select, Option } from '../../../../material-components';
 import { GA4ActivateSwitch } from '../common';
-import {
-	PropertySelect,
-	UseSnippetSwitch,
-} from '../../../analytics-4/components/common';
+import { PropertySelect } from '../../../analytics-4/components/common';
 import ProgressBar from '../../../../components/ProgressBar';
+import SettingsUseSnippetSwitch from '../../../analytics-4/components/settings/SettingsUseSnippetSwitch';
 const { useSelect, useDispatch } = Data;
 
 export default function GA4SettingsControls() {
@@ -184,8 +182,8 @@ export default function GA4SettingsControls() {
 			{ isDisabled && <GA4ActivateSwitch onActivate={ onActivate } /> }
 
 			{ ! isDisabled && (
-				<div className="googlesitekit-setup-module__inputs googlesitekit-setup-module__inputs--multiline">
-					<UseSnippetSwitch />
+				<div className="googlesitekit-settings-module__meta-item">
+					<SettingsUseSnippetSwitch />
 				</div>
 			) }
 		</div>

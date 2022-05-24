@@ -46,9 +46,6 @@ export default function AccountSelect() {
 	const accountID = useSelect( ( select ) =>
 		select( MODULES_TAGMANAGER ).getAccountID()
 	);
-	const hasExistingTag = useSelect( ( select ) =>
-		select( MODULES_TAGMANAGER ).hasExistingTag()
-	);
 
 	const { selectAccount } = useDispatch( MODULES_TAGMANAGER );
 	const onChange = useCallback(
@@ -77,7 +74,6 @@ export default function AccountSelect() {
 			label={ __( 'Account', 'google-site-kit' ) }
 			value={ accountID }
 			onEnhancedChange={ onChange }
-			disabled={ hasExistingTag }
 			enhanced
 			outlined
 		>

@@ -25,6 +25,7 @@ import { MODULES_ADSENSE } from './constants';
 import { validateCanSubmitChanges } from './settings';
 
 const baseModuleStore = Modules.createModuleStore( 'adsense', {
+	ownedSettingsSlugs: [ 'accountID', 'clientID' ],
 	storeName: MODULES_ADSENSE,
 	settingSlugs: [
 		'accountID',

@@ -45,13 +45,14 @@ import {
 	AccountSelect,
 	AMPContainerSelect,
 	ContainerNames,
+	FormInstructions,
 	WebContainerSelect,
 	TagCheckProgress,
 } from '../common';
 import Button from '../../../../components/Button';
 import Link from '../../../../components/Link';
 import SetupErrorNotice from './SetupErrorNotice';
-import FormInstructions from '../common/FormInstructions';
+import SetupUseSnippetSwitch from './SetupUseSnippetSwitch';
 const { useSelect, useDispatch } = Data;
 
 export default function SetupForm( { finishSetup } ) {
@@ -75,6 +76,10 @@ export default function SetupForm( { finishSetup } ) {
 	const initialSubmitMode = useSelect(
 		( select ) => select( CORE_FORMS ).getValue( FORM_SETUP, 'submitMode' ),
 		[]
+	);
+
+	const hasExistingTag = useSelect( ( select ) =>
+		select( MODULES_TAGMANAGER ).hasExistingTag()
 	);
 
 	const { setValues } = useDispatch( CORE_FORMS );
@@ -169,7 +174,7 @@ export default function SetupForm( { finishSetup } ) {
 			onSubmit={ onSubmit }
 		>
 			<SetupErrorNotice />
-			<FormInstructions />
+			<FormInstructions isSetup />
 
 			<div className="googlesitekit-setup-module__inputs">
 				<AccountSelect />
@@ -182,6 +187,8 @@ export default function SetupForm( { finishSetup } ) {
 			</div>
 
 			<ContainerNames />
+
+			{ hasExistingTag && <SetupUseSnippetSwitch /> }
 
 			<div className="googlesitekit-setup-module__action">
 				{ isSetupWithAnalytics && (
@@ -201,7 +208,6 @@ export default function SetupForm( { finishSetup } ) {
 							type="button"
 							onClick={ onSetupWithoutAnalytics }
 							disabled={ ! canSubmitChanges }
-							inherit
 						>
 							{ __(
 								'Complete setup without Analytics',

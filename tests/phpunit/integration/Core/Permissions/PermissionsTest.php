@@ -111,6 +111,8 @@ class PermissionsTest extends TestCase {
 				Permissions::MANAGE_OPTIONS               => false,
 				Permissions::VIEW_SPLASH                  => false,
 				Permissions::VIEW_AUTHENTICATED_DASHBOARD => false,
+				Permissions::VIEW_WP_DASHBOARD_WIDGET     => false,
+				Permissions::VIEW_ADMIN_BAR_MENU          => false,
 			),
 			$permissions->check_all_for_current_user()
 		);
@@ -141,6 +143,8 @@ class PermissionsTest extends TestCase {
 				Permissions::MANAGE_OPTIONS               => false,
 				Permissions::VIEW_SPLASH                  => true,
 				Permissions::VIEW_AUTHENTICATED_DASHBOARD => false,
+				Permissions::VIEW_WP_DASHBOARD_WIDGET     => false,
+				Permissions::VIEW_ADMIN_BAR_MENU          => false,
 			),
 			$permissions->check_all_for_current_user()
 		);
@@ -186,6 +190,8 @@ class PermissionsTest extends TestCase {
 				Permissions::MANAGE_OPTIONS               => true,
 				Permissions::VIEW_SPLASH                  => true,
 				Permissions::VIEW_AUTHENTICATED_DASHBOARD => true,
+				Permissions::VIEW_WP_DASHBOARD_WIDGET     => true,
+				Permissions::VIEW_ADMIN_BAR_MENU          => true,
 			),
 			$permissions->check_all_for_current_user()
 		);
@@ -216,6 +222,8 @@ class PermissionsTest extends TestCase {
 				Permissions::MANAGE_OPTIONS               => false,
 				Permissions::VIEW_SPLASH                  => true,
 				Permissions::VIEW_AUTHENTICATED_DASHBOARD => false,
+				Permissions::VIEW_WP_DASHBOARD_WIDGET     => false,
+				Permissions::VIEW_ADMIN_BAR_MENU          => false,
 			),
 			$permissions->check_all_for_current_user()
 		);
@@ -231,6 +239,8 @@ class PermissionsTest extends TestCase {
 			Permissions::MANAGE_OPTIONS,
 			Permissions::VIEW_SPLASH,
 			Permissions::VIEW_AUTHENTICATED_DASHBOARD,
+			Permissions::VIEW_WP_DASHBOARD_WIDGET,
+			Permissions::VIEW_ADMIN_BAR_MENU,
 		);
 
 		$this->assertEqualSets( $capabilities, Permissions::get_capabilities() );
@@ -247,6 +257,8 @@ class PermissionsTest extends TestCase {
 			Permissions::VIEW_SPLASH,
 			Permissions::VIEW_SHARED_DASHBOARD,
 			Permissions::VIEW_AUTHENTICATED_DASHBOARD,
+			Permissions::VIEW_WP_DASHBOARD_WIDGET,
+			Permissions::VIEW_ADMIN_BAR_MENU,
 		);
 		$this->assertEqualSets( $capabilities, Permissions::get_capabilities() );
 	}
@@ -391,6 +403,8 @@ class PermissionsTest extends TestCase {
 				Permissions::VIEW_SPLASH                  => false,
 				Permissions::VIEW_SHARED_DASHBOARD        => false,
 				Permissions::VIEW_AUTHENTICATED_DASHBOARD => false,
+				Permissions::VIEW_WP_DASHBOARD_WIDGET     => false,
+				Permissions::VIEW_ADMIN_BAR_MENU          => false,
 				Permissions::READ_SHARED_MODULE_DATA . '::' . wp_json_encode( array( 'search-console' ) ) => false,
 				Permissions::READ_SHARED_MODULE_DATA . '::' . wp_json_encode( array( 'pagespeed-insights' ) ) => false,
 				Permissions::MANAGE_MODULE_SHARING_OPTIONS . '::' . wp_json_encode( array( 'search-console' ) ) => false,
@@ -423,6 +437,8 @@ class PermissionsTest extends TestCase {
 				Permissions::VIEW_SPLASH                  => true,
 				Permissions::VIEW_SHARED_DASHBOARD        => false,
 				Permissions::VIEW_AUTHENTICATED_DASHBOARD => false,
+				Permissions::VIEW_WP_DASHBOARD_WIDGET     => false,
+				Permissions::VIEW_ADMIN_BAR_MENU          => false,
 				Permissions::READ_SHARED_MODULE_DATA . '::' . wp_json_encode( array( 'search-console' ) ) => false,
 				Permissions::READ_SHARED_MODULE_DATA . '::' . wp_json_encode( array( 'pagespeed-insights' ) ) => false,
 				Permissions::MANAGE_MODULE_SHARING_OPTIONS . '::' . wp_json_encode( array( 'search-console' ) ) => false,
@@ -477,10 +493,12 @@ class PermissionsTest extends TestCase {
 				Permissions::VIEW_SPLASH                  => true,
 				Permissions::VIEW_SHARED_DASHBOARD        => false,
 				Permissions::VIEW_AUTHENTICATED_DASHBOARD => true,
+				Permissions::VIEW_WP_DASHBOARD_WIDGET     => true,
+				Permissions::VIEW_ADMIN_BAR_MENU          => true,
 				Permissions::READ_SHARED_MODULE_DATA . '::' . wp_json_encode( array( 'search-console' ) ) => false,
 				Permissions::READ_SHARED_MODULE_DATA . '::' . wp_json_encode( array( 'pagespeed-insights' ) ) => false,
 				Permissions::MANAGE_MODULE_SHARING_OPTIONS . '::' . wp_json_encode( array( 'search-console' ) ) => false,
-				Permissions::MANAGE_MODULE_SHARING_OPTIONS . '::' . wp_json_encode( array( 'pagespeed-insights' ) ) => false,
+				Permissions::MANAGE_MODULE_SHARING_OPTIONS . '::' . wp_json_encode( array( 'pagespeed-insights' ) ) => true,
 				Permissions::DELEGATE_MODULE_SHARING_MANAGEMENT . '::' . wp_json_encode( array( 'search-console' ) ) => false,
 				Permissions::DELEGATE_MODULE_SHARING_MANAGEMENT . '::' . wp_json_encode( array( 'pagespeed-insights' ) ) => false,
 			),
@@ -516,10 +534,12 @@ class PermissionsTest extends TestCase {
 				Permissions::VIEW_SPLASH                  => true,
 				Permissions::VIEW_SHARED_DASHBOARD        => false,
 				Permissions::VIEW_AUTHENTICATED_DASHBOARD => false,
+				Permissions::VIEW_WP_DASHBOARD_WIDGET     => false,
+				Permissions::VIEW_ADMIN_BAR_MENU          => false,
 				Permissions::READ_SHARED_MODULE_DATA . '::' . wp_json_encode( array( 'search-console' ) ) => false,
 				Permissions::READ_SHARED_MODULE_DATA . '::' . wp_json_encode( array( 'pagespeed-insights' ) ) => false,
 				Permissions::MANAGE_MODULE_SHARING_OPTIONS . '::' . wp_json_encode( array( 'search-console' ) ) => false,
-				Permissions::MANAGE_MODULE_SHARING_OPTIONS . '::' . wp_json_encode( array( 'pagespeed-insights' ) ) => false,
+				Permissions::MANAGE_MODULE_SHARING_OPTIONS . '::' . wp_json_encode( array( 'pagespeed-insights' ) ) => true,
 				Permissions::DELEGATE_MODULE_SHARING_MANAGEMENT . '::' . wp_json_encode( array( 'search-console' ) ) => false,
 				Permissions::DELEGATE_MODULE_SHARING_MANAGEMENT . '::' . wp_json_encode( array( 'pagespeed-insights' ) ) => false,
 			),

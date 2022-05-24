@@ -12,6 +12,7 @@ namespace Google\Site_Kit\Tests\Core\Modules;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Authentication;
+use Google\Site_Kit\Core\Modules\Module_Sharing_Settings;
 use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Core\Storage\Options;
@@ -700,6 +701,23 @@ class ModulesTest extends TestCase {
 		$this->assertEquals( 400, $response->get_status() );
 	}
 
+	public function test_check_access_rest_endpoint__module_does_not_have_service_entity() {
+		$this->setup_modules_to_test_rest_endpoint();
+
+		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/modules/data/check-access' );
+		$request->set_body_params(
+			array(
+				'data' => array(
+					'slug' => 'optimize',
+				),
+			)
+		);
+		$response = rest_get_server()->dispatch( $request );
+
+		$this->assertEquals( 'invalid_module', $response->get_data()['code'] );
+		$this->assertEquals( 400, $response->get_status() );
+	}
+
 	public function test_check_access_rest_endpoint__success() {
 		$modules = $this->setup_modules_to_test_rest_endpoint();
 
@@ -1202,4 +1220,28 @@ class ModulesTest extends TestCase {
 		);
 		$this->assertEqualSets( $expected_module_owners, $modules->get_shareable_modules_owners() );
 	}
+
+	public function test_shared_ownership_module_default_settings() {
+		$this->enable_feature( 'dashboardSharing' );
+
+		remove_all_filters( 'option_' . Module_Sharing_Settings::OPTION );
+		remove_all_filters( 'default_option_' . Module_Sharing_Settings::OPTION );
+
+		$modules = new Modules( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$modules->register();
+
+		$expected = array(
+			'pagespeed-insights' => array(
+				'sharedRoles' => array(),
+				'management'  => 'all_admins',
+			),
+		);
+
+		$settings = apply_filters( 'option_' . Module_Sharing_Settings::OPTION, array() );
+		$this->assertEqualSets( $expected, $settings );
+
+		$settings = apply_filters( 'default_option_' . Module_Sharing_Settings::OPTION, array(), '', '' );
+		$this->assertEqualSets( $expected, $settings );
+	}
+
 }
