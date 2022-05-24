@@ -127,28 +127,24 @@ class Module_Sharing_Settings extends Setting {
 	/**
 	 * Merges a partial Module_Sharing_Settings option array into existing sharing settings.
 	 *
-	 * Only updates sharing settings for a module if the current user has the capability to
-	 * do so.
-	 *
 	 * @since 1.75.0
+	 * @since n.e.x.t Removed capability checks.
 	 *
-	 * @param array $new_partial_settings Partial settings array to update existing settings with.
+	 * @param array $partial Partial settings array to update existing settings with.
 	 *
 	 * @return bool True if sharing settings option was updated, false otherwise.
 	 */
-	public function merge( array $new_partial_settings ) {
+	public function merge( array $partial ) {
 		$settings = $this->get();
-
-		foreach ( $new_partial_settings as $module_slug => $new_settings ) {
-			if ( null === $new_settings ) {
-				continue;
+		$partial  = array_filter(
+			$partial,
+			function ( $value ) {
+				return null !== $value;
 			}
-			if ( current_user_can( Permissions::MANAGE_MODULE_SHARING_OPTIONS, $module_slug ) ) {
-				$settings[ $module_slug ] = $new_settings;
-			}
-		}
+		);
+		$updated  = array_intersect_key( $partial, $settings );
 
-		return $this->set( $settings );
+		return $this->set( array_merge( $settings, $updated ) );
 	}
 
 	/**
