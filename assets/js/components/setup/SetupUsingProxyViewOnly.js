@@ -58,7 +58,7 @@ export default function SetupUsingProxyViewOnly() {
 		] ).finally( () => {
 			navigateTo( dashboardURL );
 		} );
-	}, [ dashboardURL, dismissItem, navigateTo ] );
+	}, [ dashboardURL, dismissItem, navigateTo, viewContext ] );
 
 	if ( ! dashboardURL ) {
 		return null;

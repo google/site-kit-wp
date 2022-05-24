@@ -122,7 +122,7 @@ export default function SetupUsingProxyWithSignIn() {
 		] ).finally( () => {
 			navigateTo( dashboardURL );
 		} );
-	}, [ dashboardURL, dismissItem, navigateTo ] );
+	}, [ dashboardURL, dismissItem, navigateTo, viewContext ] );
 
 	const onButtonClick = useCallback(
 		async ( event ) => {
