@@ -147,6 +147,17 @@ describe( 'setting up the Analytics module with an existing account and no exist
 					status: 200,
 					body: JSON.stringify( [] ),
 				} );
+			} else if (
+				request
+					.url()
+					.match(
+						'google-site-kit/v1/core/modules/data/check-access'
+					)
+			) {
+				request.respond( {
+					body: JSON.stringify( { access: true } ),
+					status: 200,
+				} );
 			} else {
 				request.continue();
 			}
