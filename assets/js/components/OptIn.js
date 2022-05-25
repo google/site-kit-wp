@@ -45,8 +45,6 @@ export default function OptIn( {
 	className,
 	trackEventCategory,
 } ) {
-	const viewContext = useViewContext();
-
 	const enabled = useSelect( ( select ) =>
 		select( CORE_USER ).isTrackingEnabled()
 	);
@@ -60,6 +58,7 @@ export default function OptIn( {
 	);
 
 	const { setTrackingEnabled } = useDispatch( CORE_USER );
+	const viewContext = useViewContext();
 
 	const handleOptIn = useCallback(
 		async ( e ) => {
