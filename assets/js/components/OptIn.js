@@ -39,15 +39,13 @@ import Link from './Link';
 import useViewContext from '../hooks/useViewContext';
 const { useSelect, useDispatch } = Data;
 
-export default function OptIn( props ) {
+export default function OptIn( {
+	id = 'googlesitekit-opt-in',
+	name = 'optIn',
+	className,
+	trackEventCategory,
+} ) {
 	const viewContext = useViewContext();
-
-	const {
-		id = 'googlesitekit-opt-in',
-		name = 'optIn',
-		className,
-		trackEventCategory = viewContext,
-	} = props;
 
 	const enabled = useSelect( ( select ) =>
 		select( CORE_USER ).isTrackingEnabled()
@@ -72,11 +70,14 @@ export default function OptIn( props ) {
 			if ( ! responseError ) {
 				toggleTracking( response.enabled );
 				if ( response.enabled ) {
-					trackEvent( trackEventCategory, 'tracking_optin' );
+					trackEvent(
+						trackEventCategory || viewContext,
+						'tracking_optin'
+					);
 				}
 			}
 		},
-		[ setTrackingEnabled, trackEventCategory ]
+		[ setTrackingEnabled, trackEventCategory, viewContext ]
 	);
 
 	return (
