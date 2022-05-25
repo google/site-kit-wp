@@ -55,6 +55,7 @@ import {
 } from '../googlesitekit/datastore/user/constants';
 import { Provider as ViewContextProvider } from './Root/ViewContextContext';
 import { getMetaCapabilityPropertyName } from '../googlesitekit/datastore/util/permissions';
+import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
 import {
 	VIEW_CONTEXT_PAGE_DASHBOARD,
 	VIEW_CONTEXT_DASHBOARD,
@@ -236,6 +237,28 @@ HeaderViewOnly.args = {
 	},
 };
 HeaderViewOnly.parameters = {
+	features: [ 'dashboardSharing' ],
+};
+
+export const HeaderWithModuleRecoveryAlert = Template.bind( {} );
+HeaderWithModuleRecoveryAlert.storyName =
+	'Plugin Header with Module Recovery Alert';
+HeaderWithModuleRecoveryAlert.args = {
+	setupRegistry: ( registry ) => {
+		provideModules( registry );
+
+		registry
+			.dispatch( CORE_MODULES )
+			.receiveRecoverableModules( [ 'search-console' ] );
+		registry
+			.dispatch( CORE_MODULES )
+			.receiveCheckModuleAccess(
+				{ access: true },
+				{ slug: 'search-console' }
+			);
+	},
+};
+HeaderWithModuleRecoveryAlert.parameters = {
 	features: [ 'dashboardSharing' ],
 };
 
