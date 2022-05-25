@@ -37,9 +37,13 @@ import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
 import { Grid, Row, Cell } from '../../material-components';
+import { trackEvent } from '../../util';
+import useViewContext from '../../hooks/useViewContext';
 const { useSelect, useDispatch } = Data;
 
 export default function SetupUsingProxyViewOnly() {
+	const viewContext = useViewContext();
+
 	const { dismissItem } = useDispatch( CORE_USER );
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 
@@ -47,10 +51,14 @@ export default function SetupUsingProxyViewOnly() {
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' )
 	);
 
-	const onButtonClick = useCallback( async () => {
-		await dismissItem( SHARED_DASHBOARD_SPLASH_ITEM_KEY );
-		navigateTo( dashboardURL );
-	}, [ dashboardURL, dismissItem, navigateTo ] );
+	const onButtonClick = useCallback( () => {
+		Promise.all( [
+			dismissItem( SHARED_DASHBOARD_SPLASH_ITEM_KEY ),
+			trackEvent( viewContext, 'confirm_viewonly' ),
+		] ).finally( () => {
+			navigateTo( dashboardURL );
+		} );
+	}, [ dashboardURL, dismissItem, navigateTo, viewContext ] );
 
 	if ( ! dashboardURL ) {
 		return null;

@@ -20,6 +20,8 @@
  * External dependencies
  */
 import invariant from 'invariant';
+import isEqual from 'lodash/isEqual';
+import pick from 'lodash/pick';
 
 /**
  * Internal dependencies
@@ -28,15 +30,29 @@ import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { createFetchStore } from '../../data/create-fetch-store';
 import { CORE_MODULES } from './constants';
+import { createStrictSelect, createValidationSelector } from '../../data/utils';
+
+const { createRegistrySelector } = Data;
 
 // Actions
 const SET_SHARING_MANAGEMENT = 'SET_SHARING_MANAGEMENT';
 const SET_SHARED_ROLES = 'SET_SHARED_ROLES';
 const RECEIVE_GET_SHARING_SETTINGS = 'RECEIVE_GET_SHARING_SETTINGS';
+const RECEIVE_SHAREABLE_ROLES = 'RECEIVE_SHAREABLE_ROLES';
+const START_SUBMIT_SHARING_CHANGES = 'START_SUBMIT_SHARING_CHANGES';
+const FINISH_SUBMIT_SHARING_CHANGES = 'FINISH_SUBMIT_SHARING_CHANGES';
+
+// Invariant error messages.
+export const INVARIANT_DOING_SUBMIT_SHARING_CHANGES =
+	'cannot submit sharing changes while submitting changes';
+export const INVARIANT_SHARING_SETTINGS_NOT_CHANGED =
+	'cannot submit changes if sharing settings have not changed';
 
 const baseInitialState = {
 	sharingSettings: undefined,
 	savedSharingSettings: undefined,
+	shareableRoles: undefined,
+	isDoingSubmitSharingChanges: undefined,
 };
 
 const fetchSaveSharingSettingsStore = createFetchStore( {
@@ -128,11 +144,15 @@ const baseActions = {
 	 */
 	*saveSharingSettings() {
 		const registry = yield Data.commonActions.getRegistry();
-		// TODO: Refactor to use `getSharingSettings` selector
-		// to obtain the `sharingSettings` from the state in 4795.
-		const { sharingSettings } = registry.stores[
-			CORE_MODULES
-		].store.getState();
+
+		yield {
+			type: START_SUBMIT_SHARING_CHANGES,
+			payload: {},
+		};
+
+		const sharingSettings = registry
+			.select( CORE_MODULES )
+			.getSharingSettings();
 
 		const {
 			response,
@@ -153,6 +173,11 @@ const baseActions = {
 				yield registry.dispatch( storeName ).setOwnerID( ownerID );
 			}
 		}
+
+		yield {
+			type: FINISH_SUBMIT_SHARING_CHANGES,
+			payload: {},
+		};
 
 		return { response, error };
 	},
@@ -175,6 +200,27 @@ const baseActions = {
 		return {
 			payload: { sharingSettings },
 			type: RECEIVE_GET_SHARING_SETTINGS,
+		};
+	},
+
+	/**
+	 * Receives shareableRoles for dashboard sharing.
+	 * Stores shareableRoles in the datastore.
+	 *
+	 * Because this is frequently-accessed data, this is usually sourced
+	 * from a global variable (`_googlesitekitDashboardSharingData`), set by PHP
+	 * in the `before_print` callback for `googlesitekit-datastore-site`.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} shareableRoles Shareable Roles for modules with `management` and `sharedRoles` properties.
+	 * @return {Object} Action for RECEIVE_SHAREABLE_ROLES.
+	 */
+	receiveShareableRoles( shareableRoles ) {
+		invariant( shareableRoles, 'shareableRoles is required.' );
+		return {
+			payload: { shareableRoles },
+			type: RECEIVE_SHAREABLE_ROLES,
 		};
 	},
 };
@@ -221,15 +267,207 @@ const baseReducer = ( state, { type, payload } ) => {
 			};
 		}
 
+		case RECEIVE_SHAREABLE_ROLES: {
+			const { shareableRoles } = payload;
+
+			return {
+				...state,
+				shareableRoles,
+			};
+		}
+
+		case START_SUBMIT_SHARING_CHANGES: {
+			return {
+				...state,
+				isDoingSubmitSharingChanges: true,
+			};
+		}
+
+		case FINISH_SUBMIT_SHARING_CHANGES: {
+			return {
+				...state,
+				isDoingSubmitSharingChanges: false,
+			};
+		}
+
 		default: {
 			return state;
 		}
 	}
 };
 
-const baseResolvers = {};
+const baseResolvers = {
+	*getSharingSettings() {
+		const registry = yield Data.commonActions.getRegistry();
 
-const baseSelectors = {};
+		if ( registry.select( CORE_MODULES ).getSharingSettings() ) {
+			return;
+		}
+
+		if ( ! global._googlesitekitDashboardSharingData ) {
+			global.console.error(
+				'Could not load core/modules dashboard sharing settings.'
+			);
+			return;
+		}
+
+		const { settings } = global._googlesitekitDashboardSharingData;
+		yield actions.receiveGetSharingSettings( settings );
+	},
+
+	*getShareableRoles() {
+		const registry = yield Data.commonActions.getRegistry();
+
+		if ( registry.select( CORE_MODULES ).getShareableRoles() ) {
+			return;
+		}
+
+		if ( ! global._googlesitekitDashboardSharingData ) {
+			global.console.error(
+				'Could not load core/modules dashboard sharing roles.'
+			);
+			return;
+		}
+
+		const { roles } = global._googlesitekitDashboardSharingData;
+		yield actions.receiveShareableRoles( roles );
+	},
+};
+
+function validateCanSubmitSharingChanges( select ) {
+	const strictSelect = createStrictSelect( select );
+	const {
+		isDoingSubmitSharingChanges,
+		haveSharingSettingsChanged,
+	} = strictSelect( CORE_MODULES );
+
+	invariant(
+		! isDoingSubmitSharingChanges(),
+		INVARIANT_DOING_SUBMIT_SHARING_CHANGES
+	);
+	invariant(
+		haveSharingSettingsChanged(),
+		INVARIANT_SHARING_SETTINGS_NOT_CHANGED
+	);
+}
+
+const {
+	safeSelector: canSubmitSharingChanges,
+	dangerousSelector: __dangerousCanSubmitSharingChanges,
+} = createValidationSelector( validateCanSubmitSharingChanges );
+
+const baseSelectors = {
+	/**
+	 * Gets the current dashboard sharing settings.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(Object|undefined)} Sharing Settings object. Returns undefined if it is not loaded yet.
+	 */
+	getSharingSettings( state ) {
+		const { sharingSettings } = state;
+		return sharingSettings;
+	},
+
+	/**
+	 * Gets the current dashboard shareable roles.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(Object|undefined)} Shareable Roles object. Returns undefined if it is not loaded yet.
+	 */
+	getShareableRoles( state ) {
+		const { shareableRoles } = state;
+		return shareableRoles;
+	},
+
+	/**
+	 * Gets the dashboard sharing management for the given module.
+	 *
+	 * Returns the module's sharing management string.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state      Data store's state.
+	 * @param {string} moduleSlug Module slug.
+	 * @return {(string|null|undefined)} The module's sharing management string, null if there is none,
+	 *                                   undefined if not loaded yet.
+	 */
+	getSharingManagement: createRegistrySelector(
+		( select ) => ( state, moduleSlug ) => {
+			invariant( moduleSlug, 'moduleSlug is required.' );
+			const sharingSettings = select( CORE_MODULES ).getSharingSettings();
+
+			if ( sharingSettings === undefined ) {
+				return undefined;
+			}
+			return sharingSettings[ moduleSlug ]?.management || null;
+		}
+	),
+
+	/**
+	 * Gets the shared roles for the given module.
+	 *
+	 * Returns the module's shared roles list.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state      Data store's state.
+	 * @param {string} moduleSlug Module slug.
+	 * @return {(Array|null|undefined)} The module's shared roles array, null if there is none,
+	 *                                   undefined if not loaded yet.
+	 */
+	getSharedRoles: createRegistrySelector(
+		( select ) => ( state, moduleSlug ) => {
+			invariant( moduleSlug, 'moduleSlug is required.' );
+			const sharingSettings = select( CORE_MODULES ).getSharingSettings();
+
+			if ( sharingSettings === undefined ) {
+				return undefined;
+			}
+			return sharingSettings[ moduleSlug ]?.sharedRoles || null;
+		}
+	),
+
+	/**
+	 * Indicates whether the current sharing settings have changed from what is saved.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object}     state Data store's state.
+	 * @param {Array|null} keys  Sharing Settings keys to check; if not provided, all sharing settings are checked.
+	 * @return {boolean} True if the sharing settings have changed, false otherwise.
+	 */
+	haveSharingSettingsChanged( state, keys = null ) {
+		const { sharingSettings, savedSharingSettings } = state;
+
+		if ( keys ) {
+			return ! isEqual(
+				pick( sharingSettings, keys ),
+				pick( savedSharingSettings, keys )
+			);
+		}
+
+		return ! isEqual( sharingSettings, savedSharingSettings );
+	},
+
+	canSubmitSharingChanges,
+	__dangerousCanSubmitSharingChanges,
+
+	/**
+	 * Checks whether sharing settings changes are currently being submitted.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {boolean} TRUE if submitting, otherwise FALSE.
+	 */
+	isDoingSubmitSharingChanges( state ) {
+		return !! state.isDoingSubmitSharingChanges;
+	},
+};
 
 const store = Data.combineStores( fetchSaveSharingSettingsStore, {
 	initialState: baseInitialState,
