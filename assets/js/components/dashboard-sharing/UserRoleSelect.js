@@ -37,7 +37,9 @@ import Button from '../Button';
 import Link from '../Link';
 import ShareIcon from '../../../svg/icons/share.svg';
 import CloseIcon from '../../../svg/icons/close.svg';
+import useViewContext from '../../hooks/useViewContext';
 import { useKeyCodesInside } from '../../hooks/useKeyCodesInside';
+import { trackEvent } from '../../util';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 const { useSelect, useDispatch } = Data;
 
@@ -45,7 +47,9 @@ const ALL_CHIP_ID = 'all';
 const ALL_CHIP_DISPLAY_NAME = __( 'All', 'google-site-kit' );
 
 export default function UserRoleSelect( { moduleSlug } ) {
+	const viewContext = useViewContext();
 	const wrapperRef = useRef();
+
 	const [ editMode, setEditMode ] = useState( false );
 
 	const { setSharedRoles } = useDispatch( CORE_MODULES );
@@ -56,12 +60,25 @@ export default function UserRoleSelect( { moduleSlug } ) {
 	const sharedRoles = useSelect( ( select ) =>
 		select( CORE_MODULES ).getSharedRoles( moduleSlug )
 	);
+	const rolesChanged = useSelect( ( select ) =>
+		select( CORE_MODULES ).haveSharingSettingsChanged(
+			`${ moduleSlug }.sharedRoles`
+		)
+	);
 
 	useKeyCodesInside( [ ESCAPE ], wrapperRef, () => setEditMode( false ) );
 
 	const toggleEditMode = useCallback( () => {
+		if ( editMode ) {
+			trackEvent(
+				`${ viewContext }_sharing`,
+				'change_shared_roles',
+				moduleSlug
+			);
+		}
+
 		setEditMode( ! editMode );
-	}, [ editMode, setEditMode ] );
+	}, [ editMode, setEditMode, rolesChanged, viewContext, moduleSlug ] );
 
 	const toggleChip = useCallback(
 		( { type, target, keyCode } ) => {
