@@ -48,6 +48,8 @@ export const INVARIANT_DOING_SUBMIT_SHARING_CHANGES =
 export const INVARIANT_SHARING_SETTINGS_NOT_CHANGED =
 	'cannot submit changes if sharing settings have not changed';
 
+const validManagementValues = [ 'all_admins', 'owner' ];
+
 const baseInitialState = {
 	sharingSettings: undefined,
 	savedSharingSettings: undefined,
@@ -62,10 +64,7 @@ const fetchSaveSharingSettingsStore = createFetchStore( {
 			'core',
 			'modules',
 			'sharing-settings',
-			savedSharingSettings,
-			{
-				useCache: false,
-			}
+			savedSharingSettings
 		);
 	},
 	reducerCallback: ( state, { settings } ) => {
@@ -83,20 +82,22 @@ const fetchSaveSharingSettingsStore = createFetchStore( {
 
 const baseActions = {
 	/**
-	 * Sets the sharing settings management role of given module.
+	 * Sets the sharing settings management of a given module.
 	 *
 	 * @since n.e.x.t
 	 *
 	 * @param {string} moduleSlug Module slug.
-	 * @param {string} management New management role for module, one of: all_admins, owner.
+	 * @param {string} management New management for a module, one of all_admins | owner.
 	 * @return {Object} Action for SET_SHARING_MANAGEMENT.
 	 */
 	setSharingManagement( moduleSlug, management ) {
 		invariant( moduleSlug, 'moduleSlug is required.' );
-		const managementRoles = [ 'all_admins', 'owner' ];
+
 		invariant(
-			managementRoles.includes( management ),
-			`management must be one of: ${ managementRoles.join( ', ' ) }.`
+			validManagementValues.includes( management ),
+			`management must be one of: ${ validManagementValues.join(
+				', '
+			) }.`
 		);
 		return {
 			payload: {
@@ -108,7 +109,7 @@ const baseActions = {
 	},
 
 	/**
-	 * Sets the sharing settings management role of given module.
+	 * Sets the sharing settings shared roles of a given module.
 	 *
 	 * @since n.e.x.t
 	 *
@@ -162,7 +163,7 @@ const baseActions = {
 		);
 
 		// Update module owner IDs in the sharing settings modules.
-		if ( Object.keys( response?.newOwnerIDs ).length ) {
+		if ( ! error && Object.keys( response.newOwnerIDs ).length ) {
 			for ( const [ slug, ownerID ] of Object.entries(
 				response.newOwnerIDs
 			) ) {
@@ -170,7 +171,7 @@ const baseActions = {
 					.select( CORE_MODULES )
 					.getModuleStoreName( slug );
 
-				yield registry.dispatch( storeName ).setOwnerID( ownerID );
+				registry.dispatch( storeName ).setOwnerID( ownerID );
 			}
 		}
 
