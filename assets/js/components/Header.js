@@ -85,7 +85,7 @@ const Header = ( { children, subHeader, showNavigation } ) => {
 						>
 							{ children }
 
-							{ isAuthenticated &&
+							{ ! isAuthenticated &&
 								dashboardSharingEnabled &&
 								viewOnlyDashboard && <ViewOnlyMenu /> }
 							{ isAuthenticated &&
