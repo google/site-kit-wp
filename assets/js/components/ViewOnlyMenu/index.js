@@ -57,7 +57,7 @@ export default function ViewOnlyMenu() {
 		}
 
 		setMenuOpen( ! menuOpen );
-	}, [ menuOpen ] );
+	}, [ menuOpen, viewContext ] );
 
 	return (
 		<div

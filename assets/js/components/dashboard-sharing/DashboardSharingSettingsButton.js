@@ -49,7 +49,7 @@ export default function DashboardSharingSettingsButton() {
 	const openDialog = useCallback( () => {
 		trackEvent( `${ viewContext }_headerbar`, 'open_sharing' );
 		setDialogOpen( true );
-	}, [] );
+	}, [ viewContext ] );
 
 	const closeDialog = useCallback( () => {
 		setDialogOpen( false );
