@@ -43,6 +43,7 @@ const { useSelect, useDispatch } = Data;
 
 const ALL_CHIP_ID = 'all';
 const ALL_CHIP_DISPLAY_NAME = __( 'All', 'google-site-kit' );
+
 export default function UserRoleSelect( { moduleSlug } ) {
 	const wrapperRef = useRef();
 	const [ editMode, setEditMode ] = useState( false );
