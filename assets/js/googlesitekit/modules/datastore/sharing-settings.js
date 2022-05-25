@@ -21,7 +21,7 @@
  */
 import invariant from 'invariant';
 import isEqual from 'lodash/isEqual';
-import pick from 'lodash/pick';
+import at from 'lodash/at';
 
 /**
  * Internal dependencies
@@ -357,6 +357,9 @@ const {
 } = createValidationSelector( validateCanSubmitSharingChanges );
 
 const baseSelectors = {
+	canSubmitSharingChanges,
+	__dangerousCanSubmitSharingChanges,
+
 	/**
 	 * Gets the current dashboard sharing settings.
 	 *
@@ -444,17 +447,26 @@ const baseSelectors = {
 		const { sharingSettings, savedSharingSettings } = state;
 
 		if ( keys ) {
-			return ! isEqual(
-				pick( sharingSettings, keys ),
-				pick( savedSharingSettings, keys )
-			);
+			let originalKeys = at( sharingSettings, keys );
+			if ( Array.isArray( originalKeys ) && originalKeys.length === 1 ) {
+				originalKeys = originalKeys[ 0 ];
+			}
+
+			let savedKeys = at( savedSharingSettings, keys );
+			if ( Array.isArray( savedKeys ) && savedKeys.length === 1 ) {
+				savedKeys = savedKeys[ 0 ];
+			}
+
+			if ( Array.isArray( originalKeys ) && Array.isArray( savedKeys ) ) {
+				originalKeys.sort();
+				savedKeys.sort();
+			}
+
+			return ! isEqual( originalKeys, savedKeys );
 		}
 
 		return ! isEqual( sharingSettings, savedSharingSettings );
 	},
-
-	canSubmitSharingChanges,
-	__dangerousCanSubmitSharingChanges,
 
 	/**
 	 * Checks whether sharing settings changes are currently being submitted.
