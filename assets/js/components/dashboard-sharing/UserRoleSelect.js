@@ -20,13 +20,13 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
-import { ChipSet, Chip } from '@material/react-chips';
+import { Chip, ChipCheckmark } from '@material/react-chips';
 
 /**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { ESCAPE } from '@wordpress/keycodes';
+import { ESCAPE, ENTER } from '@wordpress/keycodes';
 import { useState, useCallback, useRef } from '@wordpress/element';
 
 /**
@@ -41,10 +41,14 @@ import { useKeyCodesInside } from '../../hooks/useKeyCodesInside';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 const { useSelect, useDispatch } = Data;
 
+const ALL_CHIP_ID = 'all';
+const ALL_CHIP_DISPLAY_NAME = __( 'All', 'google-site-kit' );
 export default function UserRoleSelect( { moduleSlug } ) {
 	const wrapperRef = useRef();
-	const { setSharedRoles } = useDispatch( CORE_MODULES );
 	const [ editMode, setEditMode ] = useState( false );
+
+	const { setSharedRoles } = useDispatch( CORE_MODULES );
+
 	const shareableRoles = useSelect( ( select ) =>
 		select( CORE_MODULES ).getShareableRoles()
 	);
@@ -52,66 +56,58 @@ export default function UserRoleSelect( { moduleSlug } ) {
 		select( CORE_MODULES ).getSharedRoles( moduleSlug )
 	);
 
-	// const shareableRoles = [
-	// 	{
-	// 		id: 1,
-	// 		displayName: 'Administrator',
-	// 	},
-	// 	{
-	// 		id: 2,
-	// 		displayName: 'Authors',
-	// 	},
-	// 	{
-	// 		id: 3,
-	// 		displayName: 'Contributors',
-	// 	},
-	// 	{
-	// 		id: 4,
-	// 		displayName: 'Editors',
-	// 	},
-	// ];
-
-	// const sharedRoles = [
-	// 	{
-	// 		id: 1,
-	// 		displayName: 'Administrator',
-	// 	},
-	// 	{
-	// 		id: 2,
-	// 		displayName: 'Authors',
-	// 	},
-	// 	{
-	// 		id: 3,
-	// 		displayName: 'Contributors',
-	// 	},
-	// 	{
-	// 		id: 4,
-	// 		displayName: 'Editors',
-	// 	},
-	// ];
-
 	useKeyCodesInside( [ ESCAPE ], wrapperRef, () => setEditMode( false ) );
 
 	const toggleEditMode = useCallback( () => {
 		setEditMode( ! editMode );
 	}, [ editMode, setEditMode ] );
 
-	const handleAllChip = useCallback( () => {}, [] );
+	const toggleChip = useCallback(
+		( { type, target, keyCode } ) => {
+			if ( type === 'keyup' && keyCode !== ENTER ) {
+				return;
+			}
 
-	const handleSelect = useCallback(
-		( chipIDs ) => {
-			setSharedRoles( moduleSlug, chipIDs );
+			let updatedSharedRoles;
+			const chip = target.closest( '.mdc-chip' );
+			const chipID = chip?.dataset?.chipId; // eslint-disable-line sitekit/acronym-case
+
+			if ( ! chipID ) {
+				return;
+			}
+
+			if ( chipID === ALL_CHIP_ID ) {
+				if ( sharedRoles?.length === shareableRoles?.length ) {
+					updatedSharedRoles = [];
+				} else {
+					updatedSharedRoles = shareableRoles.map( ( { id } ) => id );
+				}
+			} else if ( sharedRoles.includes( chipID ) ) {
+				updatedSharedRoles = sharedRoles.filter(
+					( role ) => role !== chipID
+				);
+			} else {
+				updatedSharedRoles = [ ...sharedRoles, chipID ];
+			}
+
+			setSharedRoles( moduleSlug, updatedSharedRoles );
 		},
-		[ setSharedRoles, moduleSlug ]
+		[ moduleSlug, setSharedRoles, sharedRoles, shareableRoles ]
 	);
 
-	if ( ! shareableRoles ) {
-		return false;
-	}
+	const getSharedRolesDisplayNames = () => {
+		const roleDisplayNames = shareableRoles?.reduce( ( acc, role ) => {
+			if ( sharedRoles.includes( role.id ) ) {
+				acc.push( role.displayName );
+			}
+			return acc;
+		}, [] );
 
-	const selectedChipIDs = sharedRoles.map( ( { id } ) => id );
-	if ( sharedRoles.length === shareableRoles.length ) {
-		selectedChipIDs.push( 'all' );
+		return roleDisplayNames.join( ', ' );
+	};
+
+	if ( ! shareableRoles ) {
+		return null;
 	}
 
 	return (
@@ -133,15 +129,13 @@ export default function UserRoleSelect( { moduleSlug } ) {
 				}
 			/>
 
-			{ ! editMode && sharedRoles.length > 0 && (
+			{ ! editMode && sharedRoles?.length > 0 && (
 				<span className="googlesitekit-user-role-select__current-roles">
-					{ sharedRoles
-						.map( ( { displayName } ) => displayName )
-						.join( ', ' ) }
+					{ getSharedRolesDisplayNames() }
 				</span>
 			) }
 
-			{ ! editMode && sharedRoles.length === 0 && (
+			{ ! editMode && sharedRoles?.length === 0 && (
 				<span className="googlesitekit-user-role-select__add-roles">
 					<Link onClick={ toggleEditMode }>
 						{ __( 'Add roles', 'google-site-kit' ) }
@@ -150,28 +144,34 @@ export default function UserRoleSelect( { moduleSlug } ) {
 			) }
 
 			{ editMode && (
-				<ChipSet
-					selectedChipIds={ selectedChipIDs }
-					className="googlesitekit-user-role-select__chipset"
-					handleSelect={ handleSelect }
-					filter
-				>
+				<div className="googlesitekit-user-role-select__chipset">
 					<Chip
-						id="all"
-						label={ __( 'All', 'google-site-kit' ) }
-						className="googlesitekit-user-role-select__chip"
-						handleSelect={ handleAllChip }
+						chipCheckmark={ <ChipCheckmark /> }
+						data-chip-id={ ALL_CHIP_ID }
+						id={ ALL_CHIP_ID }
+						label={ ALL_CHIP_DISPLAY_NAME }
+						onClick={ toggleChip }
+						onKeyUp={ toggleChip }
+						selected={
+							sharedRoles?.length === shareableRoles?.length
+						}
+						className="googlesitekit-user-role-select__chip googlesitekit-user-role-select__chip--all"
 					/>
 
 					{ shareableRoles.map( ( { id, displayName }, index ) => (
 						<Chip
+							chipCheckmark={ <ChipCheckmark /> }
+							data-chip-id={ id }
 							id={ id }
-							label={ displayName }
 							key={ index }
+							label={ displayName }
+							onClick={ toggleChip }
+							onKeyUp={ toggleChip }
+							selected={ sharedRoles?.includes( id ) }
 							className="googlesitekit-user-role-select__chip"
 						/>
 					) ) }
-				</ChipSet>
+				</div>
 			) }
 		</div>
 	);
