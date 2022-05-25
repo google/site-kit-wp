@@ -69,7 +69,6 @@ export default function UserRoleSelect( { moduleSlug } ) {
 				return;
 			}
 
-			let updatedSharedRoles;
 			const chip = target.closest( '.mdc-chip' );
 			const chipID = chip?.dataset?.chipId; // eslint-disable-line sitekit/acronym-case
 
@@ -77,6 +76,7 @@ export default function UserRoleSelect( { moduleSlug } ) {
 				return;
 			}
 
+			let updatedSharedRoles;
 			if ( chipID === ALL_CHIP_ID ) {
 				if ( sharedRoles?.length === shareableRoles?.length ) {
 					updatedSharedRoles = [];
