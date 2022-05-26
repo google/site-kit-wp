@@ -30,11 +30,17 @@ import { useCallback } from '@wordpress/element';
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
 import Link from '../../Link';
 import Button from '../../Button';
 import Notice from './Notice';
+import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
+const { useSelect } = Data;
 
 export default function Footer( { closeDialog } ) {
+	const canSubmitSharingChanges = useSelect( ( select ) =>
+		select( CORE_MODULES ).canSubmitSharingChanges()
+	);
 	const onApply = useCallback( () => {
 		// @TODO: Implement Apply behaviour.
 	}, [] );
@@ -50,7 +56,10 @@ export default function Footer( { closeDialog } ) {
 					{ __( 'Cancel', 'google-site-kit' ) }
 				</Link>
 
-				<Button onClick={ onApply }>
+				<Button
+					onClick={ onApply }
+					disabled={ ! canSubmitSharingChanges }
+				>
 					{ __( 'Apply', 'google-site-kit' ) }
 				</Button>
 			</div>
