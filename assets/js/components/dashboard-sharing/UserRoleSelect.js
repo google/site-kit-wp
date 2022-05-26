@@ -40,6 +40,10 @@ import CloseIcon from '../../../svg/icons/close.svg';
 import { useKeyCodesInside } from '../../hooks/useKeyCodesInside';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
+import {
+	EDITING_USER_ROLES_KEY,
+	SHARING_SETTINGS_SLUG_KEY,
+} from './DashboardSharingSettings/constants';
 const { useSelect, useDispatch } = Data;
 
 const ALL_CHIP_ID = 'all';
@@ -65,8 +69,8 @@ export default function UserRoleSelect( { moduleSlug } ) {
 		setEditMode( ! editMode );
 
 		// Reset the state to enable modules in when not editing.
-		setValue( 'slug', undefined );
-		setValue( 'isEditingUserRoles', false );
+		setValue( SHARING_SETTINGS_SLUG_KEY, undefined );
+		setValue( EDITING_USER_ROLES_KEY, false );
 	}, [ editMode, setEditMode, setValue ] );
 
 	const toggleChip = useCallback(
@@ -83,8 +87,8 @@ export default function UserRoleSelect( { moduleSlug } ) {
 			}
 
 			// Set these state to disable modules in when editing user roles
-			setValue( 'slug', moduleSlug );
-			setValue( 'isEditingUserRoles', true );
+			setValue( SHARING_SETTINGS_SLUG_KEY, moduleSlug );
+			setValue( EDITING_USER_ROLES_KEY, true );
 
 			let updatedSharedRoles;
 			if ( chipID === ALL_CHIP_ID ) {

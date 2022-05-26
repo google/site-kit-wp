@@ -37,6 +37,11 @@ import Notice from './Notice';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
 import Spinner from '../../Spinner';
+import {
+	EDITING_USER_ROLES_KEY,
+	SHARING_SETINGS_SAVING_KEY,
+	SHARING_SETTINGS_SLUG_KEY,
+} from './constants';
 const { useSelect, useDispatch } = Data;
 
 export default function Footer( { closeDialog } ) {
@@ -47,19 +52,17 @@ export default function Footer( { closeDialog } ) {
 	const { saveSharingSettings } = useDispatch( CORE_MODULES );
 	const { setValue } = useDispatch( CORE_UI );
 
-	const isSavingKey = 'sharing-setings-isSaving';
-
 	const isSaving = useSelect( ( select ) =>
-		select( CORE_UI ).getValue( isSavingKey )
+		select( CORE_UI ).getValue( SHARING_SETINGS_SAVING_KEY )
 	);
 
 	const onApply = useCallback( async () => {
-		setValue( isSavingKey, true );
+		setValue( SHARING_SETINGS_SAVING_KEY, true );
 		await saveSharingSettings();
 		// Reset the state to enable modules in when not editing or saving.
-		setValue( 'slug', undefined );
-		setValue( 'isEditingUserRoles', false );
-		setValue( isSavingKey, false );
+		setValue( SHARING_SETTINGS_SLUG_KEY, undefined );
+		setValue( EDITING_USER_ROLES_KEY, false );
+		setValue( SHARING_SETINGS_SAVING_KEY, false );
 	}, [ saveSharingSettings, setValue ] );
 
 	return (
