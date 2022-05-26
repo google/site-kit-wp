@@ -49,8 +49,7 @@ import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import UserRoleSelect from '../UserRoleSelect';
 import SettingsOverlay from '../../settings/SettingsOverlay';
 import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
-
-const { useSelect } = Data;
+const { useSelect, useDispatch } = Data;
 
 const viewAccessOptions = [
 	{
@@ -85,6 +84,11 @@ export default function Module( {
 	const editingModuleSlug = useSelect( ( select ) =>
 		select( CORE_UI ).getValue( 'slug' )
 	);
+	const isSaving = useSelect( ( select ) =>
+		select( CORE_UI ).getValue( 'sharing-setings-isSaving' )
+	);
+
+	const { setSharingManagement } = useDispatch( CORE_MODULES );
 
 	useEffect( () => {
 		setManageViewAccess( management );
@@ -93,11 +97,13 @@ export default function Module( {
 	const handleOnChange = useCallback(
 		( event ) => {
 			setManageViewAccess( event.target.value );
+			setSharingManagement( moduleSlug, event.target.value );
 		},
-		[ setManageViewAccess ]
+		[ moduleSlug, setManageViewAccess, setSharingManagement ]
 	);
 
-	const isLocked = moduleSlug !== editingModuleSlug && isEditingUserRoles;
+	const isLocked =
+		( moduleSlug !== editingModuleSlug && isEditingUserRoles ) || isSaving;
 
 	return (
 		<div

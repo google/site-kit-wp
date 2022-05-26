@@ -56,6 +56,9 @@ export default function Footer( { closeDialog } ) {
 	const onApply = useCallback( async () => {
 		setValue( isSavingKey, true );
 		await saveSharingSettings();
+		// Reset the state to enable modules in when not editing or saving.
+		setValue( 'slug', undefined );
+		setValue( 'isEditingUserRoles', false );
 		setValue( isSavingKey, false );
 	}, [ saveSharingSettings, setValue ] );
 

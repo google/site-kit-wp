@@ -64,7 +64,7 @@ export default function UserRoleSelect( { moduleSlug } ) {
 	const toggleEditMode = useCallback( () => {
 		setEditMode( ! editMode );
 
-		// Set these state to enable modules in when not editing user roles
+		// Reset the state to enable modules in when not editing.
 		setValue( 'slug', undefined );
 		setValue( 'isEditingUserRoles', false );
 	}, [ editMode, setEditMode, setValue ] );
