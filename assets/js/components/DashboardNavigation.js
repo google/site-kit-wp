@@ -44,6 +44,7 @@ import {
 	ANCHOR_ID_SPEED,
 	ANCHOR_ID_TRAFFIC,
 } from '../googlesitekit/constants';
+import { CORE_USER } from '../googlesitekit/datastore/user/constants';
 import { CORE_WIDGETS } from '../googlesitekit/widgets/datastore/constants';
 import {
 	CORE_UI,
@@ -66,6 +67,7 @@ import { useBreakpoint } from '../hooks/useBreakpoint';
 import { getContextScrollTop } from '../util/scroll';
 import { trackEvent } from '../util';
 import useViewContext from '../hooks/useViewContext';
+import useViewOnly from '../hooks/useViewOnly';
 const { useSelect, useDispatch } = Data;
 
 export default function DashboardNavigation() {
@@ -81,14 +83,28 @@ export default function DashboardNavigation() {
 	const [ isSticky, setIsSticky ] = useState( false );
 
 	const viewContext = useViewContext();
+	const viewOnlyDashboard = useViewOnly();
 
 	const { setValue } = useDispatch( CORE_UI );
+
+	const viewableModules = useSelect( ( select ) => {
+		if ( ! viewOnlyDashboard ) {
+			return null;
+		}
+
+		return select( CORE_USER ).getViewableModules();
+	} );
+
+	const widgetContextOptions = {
+		modules: viewableModules ? viewableModules : undefined,
+	};
 
 	const showTraffic = useSelect( ( select ) =>
 		select( CORE_WIDGETS ).isWidgetContextActive(
 			dashboardType === DASHBOARD_TYPE_MAIN
 				? CONTEXT_MAIN_DASHBOARD_TRAFFIC
-				: CONTEXT_ENTITY_DASHBOARD_TRAFFIC
+				: CONTEXT_ENTITY_DASHBOARD_TRAFFIC,
+			widgetContextOptions
 		)
 	);
 
@@ -96,7 +112,8 @@ export default function DashboardNavigation() {
 		select( CORE_WIDGETS ).isWidgetContextActive(
 			dashboardType === DASHBOARD_TYPE_MAIN
 				? CONTEXT_MAIN_DASHBOARD_CONTENT
-				: CONTEXT_ENTITY_DASHBOARD_CONTENT
+				: CONTEXT_ENTITY_DASHBOARD_CONTENT,
+			widgetContextOptions
 		)
 	);
 
@@ -104,7 +121,8 @@ export default function DashboardNavigation() {
 		select( CORE_WIDGETS ).isWidgetContextActive(
 			dashboardType === DASHBOARD_TYPE_MAIN
 				? CONTEXT_MAIN_DASHBOARD_SPEED
-				: CONTEXT_ENTITY_DASHBOARD_SPEED
+				: CONTEXT_ENTITY_DASHBOARD_SPEED,
+			widgetContextOptions
 		)
 	);
 
@@ -112,7 +130,8 @@ export default function DashboardNavigation() {
 		select( CORE_WIDGETS ).isWidgetContextActive(
 			dashboardType === DASHBOARD_TYPE_MAIN
 				? CONTEXT_MAIN_DASHBOARD_MONETIZATION
-				: CONTEXT_ENTITY_DASHBOARD_MONETIZATION
+				: CONTEXT_ENTITY_DASHBOARD_MONETIZATION,
+			widgetContextOptions
 		)
 	);
 

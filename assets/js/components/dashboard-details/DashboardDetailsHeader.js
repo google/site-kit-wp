@@ -51,7 +51,7 @@ export default function DashboardDetailsHeader() {
 
 	return (
 		<Fragment>
-			<Link href={ dashboardURL } inherit back small>
+			<Link href={ dashboardURL } back small>
 				{ __( 'Back to the Site Kit Dashboard', 'google-site-kit' ) }
 			</Link>
 
@@ -81,11 +81,7 @@ export default function DashboardDetailsHeader() {
 												currentEntityTitle
 											) }
 									</h3>
-									<Link
-										href={ currentEntityURL }
-										inherit
-										external
-									>
+									<Link href={ currentEntityURL } external>
 										{ currentEntityURL }
 									</Link>
 								</Fragment>
@@ -107,14 +103,12 @@ export default function DashboardDetailsHeader() {
 												<Link
 													href="https://wordpress.org/support/plugin/google-site-kit/"
 													external
-													inherit
 												/>
 											),
 											link2: (
 												<Link
 													href="https://sitekit.withgoogle.com/documentation/troubleshooting/dashboard/#url-not-part-of-this-site"
 													external
-													inherit
 												/>
 											),
 											VisuallyHidden: <VisuallyHidden />,

@@ -61,6 +61,46 @@
 		}
 	}
 
+	.googlesitekit-user-role-select {
+		align-items: center;
+		column-gap: 12px;
+		display: flex;
+		flex-wrap: wrap;
+		row-gap: 4px;
+	}
+
+	.googlesitekit-user-role-select__button {
+		border: 1px solid $c-royal-blue;
+		border-radius: 50%;
+		box-shadow: none;
+		color: $c-royal-blue;
+		display: flex;
+		height: 48px;
+		min-height: auto;
+		min-width: auto;
+		padding: 0;
+		width: 48px;
+
+		@media (min-width: $bp-tablet) {
+			height: 28px;
+			width: 28px;
+		}
+
+		&:not(:disabled) {
+			background-color: $c-white;
+			color: $c-royal-blue;
+		}
+
+		& svg {
+			fill: $c-royal-blue;
+
+			@media (min-width: $bp-tablet) {
+				height: 14px;
+				width: 14px;
+			}
+		}
+	}
+
 	.googlesitekit-dashboard-sharing-settings {
 		color: $c-cape-cod;
 		font-size: 14px;
@@ -83,6 +123,28 @@
 			@media (min-width: $bp-desktop) {
 				height: 48px;
 				width: 48px;
+			}
+		}
+	}
+
+	.googlesitekit-user-role-select__current-roles {
+		color: $c-cape-cod;
+		display: block;
+		font-size: 14px;
+		line-height: 21px;
+	}
+
+	.googlesitekit-user-role-select__add-roles {
+		display: block;
+
+		button {
+			color: $c-jumbo;
+			font-size: 16px;
+			font-weight: 400;
+			line-height: 20px;
+
+			@media (min-width: $bp-tablet) {
+				font-size: 14px;
 			}
 		}
 	}
@@ -265,6 +327,66 @@
 
 		@media (min-width: $bp-desktop) {
 			max-width: 400px;
+		}
+	}
+
+	.googlesitekit-user-role-select__chipset {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px;
+		padding: 0;
+
+		@media (min-width: $bp-tablet) {
+			gap: 10px;
+		}
+	}
+
+	.googlesitekit-user-role-select__chip {
+		background-color: transparent;
+		border: 1px solid $c-mercury;
+		border-radius: 100px;
+		color: $c-royal-blue;
+		flex-direction: row-reverse;
+		font-size: 14px;
+		justify-content: center;
+		line-height: 16px;
+		margin: 0;
+		min-width: 80px;
+		padding: 13px 12px;
+
+		@media (min-width: $bp-tablet) {
+			padding: 3px 12px;
+		}
+
+		.mdc-chip__checkmark {
+			margin: 0;
+		}
+
+		.mdc-chip__checkmark-svg {
+			transition: none;
+		}
+
+		.mdc-chip__text {
+			padding: 0 12px;
+		}
+
+		&.mdc-chip--selected {
+			background-color: $c-link-water;
+			border-color: $c-link-water;
+			gap: 6px;
+
+			.mdc-chip__checkmark-path {
+				stroke: $c-royal-blue;
+			}
+
+			.mdc-chip__checkmark-svg {
+				height: 18px;
+				width: 18px;
+			}
+
+			.mdc-chip__text {
+				padding: 0;
+			}
 		}
 	}
 }

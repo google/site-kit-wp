@@ -130,7 +130,16 @@ class Setup {
 			? $this->google_proxy->sync_site_fields( $this->credentials, 'sync' )
 			: $this->google_proxy->register_site( 'sync' );
 
-		if ( is_wp_error( $oauth_setup_redirect ) || ! filter_var( $oauth_setup_redirect, FILTER_VALIDATE_URL ) ) {
+		if ( is_wp_error( $oauth_setup_redirect ) ) {
+			$error_message = $oauth_setup_redirect->get_error_message();
+			if ( empty( $error_message ) ) {
+				$error_message = $oauth_setup_redirect->get_error_code();
+			}
+			/* translators: %s: Error message or error code. */
+			wp_die( esc_html( sprintf( __( 'The request to the authentication proxy has failed with an error: %s', 'google-site-kit' ), $error_message ) ) );
+		}
+
+		if ( ! filter_var( $oauth_setup_redirect, FILTER_VALIDATE_URL ) ) {
 			wp_die( esc_html__( 'The request to the authentication proxy has failed. Please, try again later.', 'google-site-kit' ) );
 		}
 

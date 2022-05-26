@@ -37,22 +37,29 @@ export const selectors = {
 	 * Returns `false` if the widget context is NOT active.
 	 *
 	 * @since 1.47.0
+	 * @since n.e.x.t Add options.modules parameter.
 	 *
-	 * @param {Object} state Data store's state.
-	 * @param {string} slug  Widget context's slug.
+	 * @param {Object}         state             Data store's state.
+	 * @param {string}         slug              Widget context's slug.
+	 * @param {Object}         [options]         Optional. Options parameter.
+	 * @param {Array.<string>} [options.modules] Optional. List of module slugs, when provided the widgets checked will be restricted to those associated with the specified modules.
 	 * @return {boolean} `true`/`false` based on whether widget context is active.
 	 */
 	isWidgetContextActive: createRegistrySelector(
-		( select ) => ( state, contextSlug ) => {
+		( select ) => ( state, contextSlug, options = {} ) => {
 			invariant(
 				contextSlug,
 				'contextSlug is required to check a widget context is active.'
 			);
 
+			const { modules } = options;
+
 			return select( CORE_WIDGETS )
 				.getWidgetAreas( contextSlug )
 				.some( ( area ) =>
-					select( CORE_WIDGETS ).isWidgetAreaActive( area.slug )
+					select( CORE_WIDGETS ).isWidgetAreaActive( area.slug, {
+						modules,
+					} )
 				);
 		}
 	),

@@ -137,7 +137,7 @@ final class Modules {
 	/**
 	 * REST_Dashboard_Sharing_Controller instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.75.0
 	 * @var REST_Dashboard_Sharing_Controller
 	 */
 	private $rest_controller;
@@ -920,6 +920,10 @@ final class Modules {
 								return new WP_Error( 'invalid_module_slug', __( 'Invalid module slug.', 'google-site-kit' ), array( 'status' => 404 ) );
 							}
 
+							if ( ! $module instanceof Module_With_Service_Entity ) {
+								return new WP_Error( 'invalid_module', __( 'Module access cannot be checked.', 'google-site-kit' ), array( 'status' => 400 ) );
+							}
+
 							if ( ! $this->is_module_connected( $slug ) ) {
 								return new WP_Error( 'module_not_connected', __( 'Module is not connected.', 'google-site-kit' ), array( 'status' => 400 ) );
 							}
@@ -1436,7 +1440,7 @@ final class Modules {
 	 * are not set for these modules. This filter is applied after every attempt to fetch
 	 * the googlesitekit-dashboard_sharing settings option from the database.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.75.0
 	 *
 	 * @param array $sharing_settings The dashboard_sharing settings option fetched from the database.
 	 * @return array Dashboard sharing settings option with default settings inserted for shared ownership modules.
@@ -1457,7 +1461,7 @@ final class Modules {
 	/**
 	 * Gets the ownerIDs of all shareable modules.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.75.0
 	 *
 	 * @return array Array of $module_slug => $owner_id.
 	 */

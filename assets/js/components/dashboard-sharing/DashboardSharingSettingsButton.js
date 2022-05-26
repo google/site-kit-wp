@@ -39,14 +39,19 @@ import DashboardSharingSettings from './DashboardSharingSettings';
 import Footer from './DashboardSharingSettings/Footer';
 import { Dialog, DialogContent, DialogFooter } from '../../material-components';
 import { BREAKPOINT_SMALL, useBreakpoint } from '../../hooks/useBreakpoint';
+import useViewContext from '../../hooks/useViewContext';
+import { trackEvent } from '../../util';
 
 export default function DashboardSharingSettingsButton() {
 	const breakpoint = useBreakpoint();
 	const [ dialogOpen, setDialogOpen ] = useState( false );
 
+	const viewContext = useViewContext();
+
 	const openDialog = useCallback( () => {
+		trackEvent( `${ viewContext }_headerbar`, 'open_sharing' );
 		setDialogOpen( true );
-	}, [] );
+	}, [ viewContext ] );
 
 	const closeDialog = useCallback( () => {
 		setDialogOpen( false );
@@ -115,7 +120,6 @@ export default function DashboardSharingSettingsButton() {
 													href="https://sitekit.withgoogle.com/documentation/using-site-kit/dashboard-sharing/"
 													external
 													hideExternalIndicator
-													inherit
 												/>
 											),
 										}

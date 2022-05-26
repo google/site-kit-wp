@@ -59,9 +59,11 @@ export default function Description() {
 		async ( event ) => {
 			event.preventDefault();
 
-			if ( proxySetupURL ) {
-				await trackEvent( viewContext, 'start_user_setup', 'proxy' );
-			}
+			await trackEvent(
+				`${ viewContext }_headerbar_viewonly`,
+				'start_user_setup',
+				proxySetupURL ? 'proxy' : 'custom-oauth'
+			);
 
 			if ( proxySetupURL && ! isConnected ) {
 				await trackEvent( viewContext, 'start_site_setup', 'proxy' );
@@ -71,6 +73,13 @@ export default function Description() {
 		},
 		[ proxySetupURL, isConnected, navigateTo, viewContext ]
 	);
+
+	const onLinkClick = useCallback( () => {
+		trackEvent(
+			`${ viewContext }_headerbar_viewonly`,
+			'click_learn_more_link'
+		);
+	}, [ viewContext ] );
 
 	const description = canAuthenticate
 		? createInterpolateElement(
@@ -91,8 +100,8 @@ export default function Description() {
 					a: (
 						<Link
 							href="https://sitekit.withgoogle.com/documentation/using-site-kit/dashboard-sharing/"
-							inherit
 							external
+							onClick={ onLinkClick }
 							aria-label={ __(
 								'Learn more about dashboard sharing',
 								'google-site-kit'

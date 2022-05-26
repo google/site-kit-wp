@@ -140,7 +140,7 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 				 * is disconnected, ensuring the Analytics snippet is always included.
 				 *
 				 * @since 1.28.0
-				 * @since n.e.x.t Added the `$property_id` parameter.
+				 * @since 1.75.0 Added the `$property_id` parameter.
 				 *
 				 * @param bool   $can_use_snippet Whether or not `useSnippet` can control snippet output. Default: `true`.
 				 * @param string $property_id     The current property ID.
