@@ -10,7 +10,6 @@
 
 namespace Google\Site_Kit\Core\Modules;
 
-use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Setting;
 
 /**
