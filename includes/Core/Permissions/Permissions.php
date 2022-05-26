@@ -353,7 +353,11 @@ final class Permissions {
 				}
 
 				// For admin users, also require being verified.
-				if ( user_can( $user_id, self::SETUP ) && ! $this->is_user_verified( $user_id ) && ! $this->is_shared_dashboard_splash_dismissed( $user_id ) ) {
+				if (
+					user_can( $user_id, self::SETUP ) &&
+					! $this->is_user_verified( $user_id ) &&
+					! $this->is_shared_dashboard_splash_dismissed( $user_id )
+				) {
 					return array_merge( $caps, array( 'do_not_allow' ) );
 				}
 
