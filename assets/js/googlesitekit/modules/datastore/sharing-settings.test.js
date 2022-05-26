@@ -23,6 +23,7 @@ import { CORE_MODULES } from './constants';
 import {
 	createTestRegistry,
 	freezeFetch,
+	provideModuleRegistrations,
 	provideModules,
 	unsubscribeFromAll,
 } from '../../../../../tests/js/utils';
@@ -198,18 +199,8 @@ describe( 'core/modules sharing-settings', () => {
 						dashboardSharingDataBaseVar
 					] = dashboardSharingData;
 
-					provideModules( registry, [
-						{
-							slug: 'search-console',
-							name: 'Search Console',
-							storeName: 'modules/search-console',
-						},
-						{
-							slug: 'pagespeed-insights',
-							name: 'PageSpeed Insights',
-							storeName: 'modules/pagespeed-insights',
-						},
-					] );
+					provideModules( registry );
+					provideModuleRegistrations( registry );
 
 					registry
 						.dispatch( MODULES_SEARCH_CONSOLE )

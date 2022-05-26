@@ -165,7 +165,7 @@ export default function SettingsView() {
 						{ canUseSnippet === false && (
 							<span>
 								{ __(
-									'The code is controlled by the Tag Manager module.',
+									'The code is controlled by the Tag Manager module',
 									'google-site-kit'
 								) }
 							</span>
@@ -331,7 +331,7 @@ export default function SettingsView() {
 								) }
 						{ ! trackingDisabled.length &&
 							__(
-								'Analytics is currently enabled for all visitors.',
+								'Analytics is currently enabled for all visitors',
 								'google-site-kit'
 							) }
 					</p>
