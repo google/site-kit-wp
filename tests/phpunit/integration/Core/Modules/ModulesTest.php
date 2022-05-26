@@ -721,13 +721,16 @@ class ModulesTest extends TestCase {
 	}
 
 	public function test_check_access_rest_endpoint__unshareable_module_does_not_have_service_entity() {
-		$this->setup_modules_to_test_rest_endpoint();
+		$modules = $this->setup_modules_to_test_rest_endpoint();
+
+		$optimize = $modules->get_module( 'optimize' );
+		$optimize->get_settings()->merge( array( 'optimizeID' => 'GTM-XXXXX' ) );
 
 		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/modules/data/check-access' );
 		$request->set_body_params(
 			array(
 				'data' => array(
-					'slug' => 'pagespeed-insights',
+					'slug' => 'optimize',
 				),
 			)
 		);
