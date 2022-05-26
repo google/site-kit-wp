@@ -39,6 +39,7 @@ import ShareIcon from '../../../svg/icons/share.svg';
 import CloseIcon from '../../../svg/icons/close.svg';
 import { useKeyCodesInside } from '../../hooks/useKeyCodesInside';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
+import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 const { useSelect, useDispatch } = Data;
 
 const ALL_CHIP_ID = 'all';
@@ -49,6 +50,7 @@ export default function UserRoleSelect( { moduleSlug } ) {
 	const [ editMode, setEditMode ] = useState( false );
 
 	const { setSharedRoles } = useDispatch( CORE_MODULES );
+	const { setValue } = useDispatch( CORE_UI );
 
 	const shareableRoles = useSelect( ( select ) =>
 		select( CORE_MODULES ).getShareableRoles()
@@ -61,7 +63,11 @@ export default function UserRoleSelect( { moduleSlug } ) {
 
 	const toggleEditMode = useCallback( () => {
 		setEditMode( ! editMode );
-	}, [ editMode, setEditMode ] );
+
+		// Set these state to enable modules in when not editing user roles
+		setValue( 'slug', undefined );
+		setValue( 'isEditingUserRoles', false );
+	}, [ editMode, setEditMode, setValue ] );
 
 	const toggleChip = useCallback(
 		( { type, target, keyCode } ) => {
@@ -75,6 +81,10 @@ export default function UserRoleSelect( { moduleSlug } ) {
 			if ( ! chipID ) {
 				return;
 			}
+
+			// Set these state to disable modules in when editing user roles
+			setValue( 'slug', moduleSlug );
+			setValue( 'isEditingUserRoles', true );
 
 			let updatedSharedRoles;
 			if ( chipID === ALL_CHIP_ID ) {
@@ -93,7 +103,7 @@ export default function UserRoleSelect( { moduleSlug } ) {
 
 			setSharedRoles( moduleSlug, updatedSharedRoles );
 		},
-		[ moduleSlug, setSharedRoles, sharedRoles, shareableRoles ]
+		[ moduleSlug, setSharedRoles, sharedRoles, shareableRoles, setValue ]
 	);
 
 	const getSharedRolesDisplayNames = () => {

@@ -46,7 +46,9 @@ import ModuleIcon from '../../ModuleIcon';
 import { Select } from '../../../material-components';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
-// import UserRoleSelect from '../UserRoleSelect';
+import UserRoleSelect from '../UserRoleSelect';
+import SettingsOverlay from '../../settings/SettingsOverlay';
+import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
 
 const { useSelect } = Data;
 
@@ -69,11 +71,19 @@ export default function Module( {
 	sharedOwnershipModule,
 } ) {
 	const [ manageViewAccess, setManageViewAccess ] = useState( '' );
+	// const [ disableModules, setDisableModules ] = useState( false );
 	const module = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModule( moduleSlug )
 	);
 	const hasMultipleAdmins = useSelect( ( select ) =>
 		select( CORE_SITE ).hasMultipleAdmins()
+	);
+
+	const isEditingUserRoles = useSelect( ( select ) =>
+		select( CORE_UI ).getValue( 'isEditingUserRoles' )
+	);
+	const editingModuleSlug = useSelect( ( select ) =>
+		select( CORE_UI ).getValue( 'slug' )
 	);
 
 	useEffect( () => {
@@ -87,11 +97,16 @@ export default function Module( {
 		[ setManageViewAccess ]
 	);
 
+	const isLocked = moduleSlug !== editingModuleSlug && isEditingUserRoles;
+
 	return (
 		<div
 			className="googlesitekit-dashboard-sharing-settings__module googlesitekit-dashboard-sharing-settings__row"
 			key={ moduleSlug }
 		>
+			{ /* Disable other modules when editing sharing settings for a module. */ }
+			{ isLocked && <SettingsOverlay compress /> }
+
 			<div className="googlesitekit-dashboard-sharing-settings__column--product">
 				<ModuleIcon slug={ moduleSlug } size={ 48 } />
 
@@ -101,12 +116,13 @@ export default function Module( {
 			</div>
 
 			<div className="googlesitekit-dashboard-sharing-settings__column--view">
-				<p className="googlesitekit-dashboard-sharing-settings__note">
+				<UserRoleSelect moduleSlug={ moduleSlug } />
+				{ /* <p className="googlesitekit-dashboard-sharing-settings__note">
 					{ __(
 						'Contact managing user to manage view access',
 						'google-site-kit'
 					) }
-				</p>
+				</p> */ }
 			</div>
 
 			{ hasMultipleAdmins && (
