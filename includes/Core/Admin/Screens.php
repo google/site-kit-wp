@@ -360,12 +360,21 @@ final class Screens {
 	 * @return array List of Screen instances.
 	 */
 	private function get_screens() {
+		// The dashboard link in the menu should point to the splash screen if the user cannot view the dashboard OR
+		// if they are able to view the Shared Dashboard but haven't dismissed the splash screen yet.
+		$show_splash_in_menu = current_user_can( Permissions::VIEW_SPLASH ) &&
+			(
+				! current_user_can( Permissions::VIEW_DASHBOARD ) ||
+				( current_user_can( Permissions::VIEW_SHARED_DASHBOARD ) && ! $this->dismissed_items->is_dismissed( 'shared_dashboard_splash' ) )
+			);
+
 		$screens = array(
 			new Screen(
 				self::PREFIX . 'dashboard',
 				array(
 					'title'               => __( 'Dashboard', 'google-site-kit' ),
 					'capability'          => Permissions::VIEW_DASHBOARD,
+					'parent_slug'         => $show_splash_in_menu ? null : Screen::MENU_SLUG,
 					'enqueue_callback'    => function( Assets $assets ) {
 						if ( $this->context->input()->filter( INPUT_GET, 'permaLink' ) ) {
 							$assets->enqueue_asset( 'googlesitekit-dashboard-details' );
@@ -451,8 +460,6 @@ final class Screens {
 				},
 			)
 		);
-
-		$show_splash_in_menu = current_user_can( Permissions::VIEW_SPLASH ) && ! current_user_can( Permissions::VIEW_DASHBOARD );
 
 		$screens[] = new Screen(
 			self::PREFIX . 'splash',
