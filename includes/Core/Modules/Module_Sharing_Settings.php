@@ -11,6 +11,7 @@
 namespace Google\Site_Kit\Core\Modules;
 
 use Google\Site_Kit\Core\Storage\Setting;
+use SimplePie_Misc;
 
 /**
  * Class for module sharing settings.
@@ -143,7 +144,7 @@ class Module_Sharing_Settings extends Setting {
 		);
 		$updated  = array_intersect_key( $partial, $settings );
 
-		return $this->set( array_merge( $settings, $updated ) );
+		return $this->set( $this->array_merge_deep( $settings, $updated ) );
 	}
 
 	/**
@@ -198,6 +199,29 @@ class Module_Sharing_Settings extends Setting {
 		}
 
 		return array();
+	}
+
+	/**
+	 * Merges two arrays recursively to a specific depth.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $array1 First array.
+	 * @param array $array2 Second array.
+	 * @param int   $depth Optional. Depth to merge to. Default is 1.
+	 *
+	 * @return array Merged array.
+	 */
+	private function array_merge_deep( $array1, $array2, $depth = 1 ) {
+		foreach ( $array2 as $key => $value ) {
+			if ( $depth > 0 && is_array( $value ) ) {
+				$array1[ $key ] = $this->array_merge_deep( $array1[ $key ], $value, $depth - 1 );
+			} else {
+				$array1[ $key ] = $value;
+			}
+		}
+
+		return $array1;
 	}
 
 }
