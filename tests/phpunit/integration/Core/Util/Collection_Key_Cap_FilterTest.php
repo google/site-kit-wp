@@ -36,17 +36,17 @@ class Collection_Key_Cap_FilterTest extends TestCase {
 			array( 'baz' => 'any' ),
 		);
 
-		yield 'editor with delete_users' => array(
+		yield 'editor with manage_options' => array(
 			'editor',
-			'delete_users',
+			'manage_options',
 			'foo',
 			$collection_with_foo,
 			$collection_without_foo,
 		);
 
-		yield 'admin with delete_users' => array(
+		yield 'admin with manage_options' => array(
 			'administrator',
-			'delete_users',
+			'manage_options',
 			'foo',
 			$collection_with_foo,
 			$collection_with_foo,
