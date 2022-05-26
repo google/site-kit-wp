@@ -356,7 +356,8 @@ final class Permissions {
 				if (
 					user_can( $user_id, self::SETUP ) &&
 					! $this->is_user_verified( $user_id ) &&
-					! $this->is_shared_dashboard_splash_dismissed( $user_id )
+					// The VIEW_DASHBOARD capability should be allowed when dashboard spash is dismissed.
+					( self::VIEW_DASHBOARD !== $cap || ! $this->is_shared_dashboard_splash_dismissed( $user_id ) )
 				) {
 					return array_merge( $caps, array( 'do_not_allow' ) );
 				}
