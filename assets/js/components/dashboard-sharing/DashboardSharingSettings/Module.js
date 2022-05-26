@@ -34,6 +34,7 @@ import { Icon, info } from '@wordpress/icons';
 import {
 	createInterpolateElement,
 	useCallback,
+	useEffect,
 	useState,
 } from '@wordpress/element';
 
@@ -45,6 +46,8 @@ import ModuleIcon from '../../ModuleIcon';
 import { Select } from '../../../material-components';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
+// import UserRoleSelect from '../UserRoleSelect';
+
 const { useSelect } = Data;
 
 const viewAccessOptions = [
@@ -58,14 +61,24 @@ const viewAccessOptions = [
 	},
 ];
 
-export default function Module( { moduleSlug, moduleName } ) {
-	const [ manageViewAccess, setManageViewAccess ] = useState( 'owner' );
+export default function Module( {
+	moduleSlug,
+	moduleName,
+	management,
+	ownerUsername,
+	sharedOwnershipModule,
+} ) {
+	const [ manageViewAccess, setManageViewAccess ] = useState( '' );
 	const module = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModule( moduleSlug )
 	);
 	const hasMultipleAdmins = useSelect( ( select ) =>
 		select( CORE_SITE ).hasMultipleAdmins()
 	);
+
+	useEffect( () => {
+		setManageViewAccess( management );
+	}, [ management ] );
 
 	const handleOnChange = useCallback(
 		( event ) => {
@@ -104,6 +117,7 @@ export default function Module( { moduleSlug, moduleName } ) {
 						options={ viewAccessOptions }
 						onChange={ handleOnChange }
 						onClick={ handleOnChange }
+						disabled={ sharedOwnershipModule }
 						outlined
 					/>
 
@@ -117,7 +131,7 @@ export default function Module( { moduleSlug, moduleName } ) {
 										'<span>Managed by </span> <strong>%s</strong>',
 										'google-site-kit'
 									),
-									'Admin 1'
+									ownerUsername
 								),
 								{
 									span: <span />,
@@ -132,7 +146,7 @@ export default function Module( { moduleSlug, moduleName } ) {
 										'%s has connected this and given managing permissions to all admins. You can change who can view this on the dashboard.',
 										'google-site-kit'
 									),
-									'Admin 1'
+									ownerUsername
 								) }
 								classes={ {
 									popper: 'googlesitekit-tooltip-popper',
@@ -154,4 +168,7 @@ export default function Module( { moduleSlug, moduleName } ) {
 Module.propTypes = {
 	moduleSlug: PropTypes.string.isRequired,
 	moduleName: PropTypes.string.isRequired,
+	management: PropTypes.string,
+	ownerUsername: PropTypes.string,
+	sharedOwnershipModule: PropTypes.bool.isRequired,
 };
