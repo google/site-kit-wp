@@ -222,7 +222,7 @@ class Module_Sharing_SettingsTest extends SettingsTestCase {
 		$this->assertEmpty( $this->settings->get_shared_roles( 'pagespeed-insights' ) );
 	}
 
-	public function test_merge__unauthenticated_user() {
+	public function test_merge() {
 		$this->enable_feature( 'dashboardSharing' );
 
 		update_option(
@@ -234,29 +234,114 @@ class Module_Sharing_SettingsTest extends SettingsTestCase {
 			)
 		);
 
-		$admin_1 = self::factory()->user->create_and_get( array( 'role' => 'administrator' ) );
-		wp_set_current_user( $admin_1->ID );
-
-		$test_sharing_settings = array(
+		$initial_sharing_settings = array(
 			'search-console'     => array(
-				'sharedRoles' => array( 'editor', 'subscriber' ),
-				'management'  => 'all_admins',
+				'sharedRoles' => array( 'contributor' ),
+				'management'  => 'owner',
 			),
 			'analytics'          => array(
-				'sharedRoles' => array( 'editor' ),
+				'sharedRoles' => array( 'contributor', 'subscriber' ),
 				'management'  => 'all_admins',
 			),
 			'pagespeed-insights' => array(
-				'sharedRoles' => array( 'editor' ),
+				'sharedRoles' => array(),
 				'management'  => 'all_admins',
 			),
 		);
 
-		// Current unauthenticated admin_1 cannot update any settings.
-		$this->assertFalse( $this->settings->merge( $test_sharing_settings ) );
+		// Set some valid sharing settings to test merging.
+		$this->settings->set( $initial_sharing_settings );
+
+		// Can not merge with inactive modules (module already not present in settings).
+		$this->assertFalse(
+			$this->settings->merge(
+				array(
+					'adsense' => array(
+						'sharedRoles' => array( 'editor' ),
+						'management'  => 'owner',
+					),
+				)
+			)
+		);
+
+		// Modules with `null` values are ignored.
+		$this->assertFalse(
+			$this->settings->merge(
+				array(
+					'search-console' => null,
+					'analytics'      => null,
+				)
+			)
+		);
+
+		// Merges settings with valid partials and keeps the rest.
+		$test_sharing_settings = array(
+			'search-console'     => array(
+				'sharedRoles' => array( 'contributor', 'editor' ),
+			),
+			'analytics'          => array(
+				'management' => 'owner',
+			),
+			'pagespeed-insights' => array(
+				'sharedRoles' => array( 'author' ),
+				'management'  => 'owner',
+			),
+		);
+		$expected              = array(
+			'search-console'     => array(
+				'sharedRoles' => array( 'contributor', 'editor' ),
+				'management'  => 'owner',
+			),
+			'analytics'          => array(
+				'sharedRoles' => array( 'contributor', 'subscriber' ),
+				'management'  => 'owner',
+			),
+			'pagespeed-insights' => array(
+				'sharedRoles' => array( 'author' ),
+				'management'  => 'owner',
+			),
+		);
+
+		$this->assertTrue( $this->settings->merge( $test_sharing_settings ) );
+		$this->assertEquals( $expected, $this->settings->get() );
+
+		// Keeps the valid parts of partial and descards the invalid parts.
+		$test_sharing_settings = array(
+			'adsense'            => array(
+				'sharedRoles' => array( 'editor' ),
+				'management'  => 'owner',
+			),
+			'search-console'     => null,
+			'analytics'          => array(
+				'sharedRoles' => array( 'contributor' ),
+				'invalid'     => array( 'invalid' ),
+			),
+			'pagespeed-insights' => array(
+				'sharedRoles' => array( 'subscriber' ),
+				'management'  => null,
+			),
+		);
+		$expected              = array(
+			'search-console'     => array(
+				'sharedRoles' => array( 'contributor', 'editor' ),
+				'management'  => 'owner',
+			),
+			'analytics'          => array(
+				'sharedRoles' => array( 'contributor' ),
+				'management'  => 'owner',
+			),
+			'pagespeed-insights' => array(
+				'sharedRoles' => array( 'subscriber' ),
+				'management'  => 'owner',
+			),
+		);
+
+		$this->assertTrue( $this->settings->merge( $test_sharing_settings ) );
+		$this->assertEquals( $expected, $this->settings->get() );
 	}
 
 	public function test_merge__authenticated_user() {
+		$this->markTestSkipped( 'This test is skipped because will be removed.' );
 		$this->enable_feature( 'dashboardSharing' );
 
 		update_option(
