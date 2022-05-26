@@ -13,8 +13,10 @@ namespace Google\Site_Kit\Core\Admin;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Assets\Assets;
 use Google\Site_Kit\Core\Authentication\Authentication;
+use Google\Site_Kit\Core\Dismissals\Dismissed_Items;
 use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Permissions\Permissions;
+use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Util\Feature_Flags;
 
 /**
@@ -61,6 +63,22 @@ final class Screens {
 	private $authentication;
 
 	/**
+	 * User_Options instance.
+	 *
+	 * @since n.e.x.t
+	 * @var User_Options
+	 */
+	private $user_options;
+
+	/**
+	 * Dismissed_Items instance.
+	 *
+	 * @since n.e.x.t
+	 * @var Dismissed_Items
+	 */
+	private $dismissed_items;
+
+	/**
 	 * Associative array of $hook_suffix => $screen pairs.
 	 *
 	 * @since 1.0.0
@@ -73,21 +91,27 @@ final class Screens {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param Context        $context Plugin context.
-	 * @param Assets         $assets  Optional. Assets API instance. Default is a new instance.
-	 * @param Modules        $modules Optional. Modules instance. Default is a new instance.
-	 * @param Authentication $authentication  Optional. Authentication instance. Default is a new instance.
+	 * @param Context         $context Plugin context.
+	 * @param Assets          $assets  Optional. Assets API instance. Default is a new instance.
+	 * @param Modules         $modules Optional. Modules instance. Default is a new instance.
+	 * @param Authentication  $authentication  Optional. Authentication instance. Default is a new instance.
+	 * @param User_Options    $user_options    User_Options instance. Default is a new instance.
+	 * @param Dismissed_Items $dismissed_items Dismissed_Items instance. Default is a new instance.
 	 */
 	public function __construct(
 		Context $context,
 		Assets $assets = null,
 		Modules $modules = null,
-		Authentication $authentication = null
+		Authentication $authentication = null,
+		User_Options $user_options = null,
+		Dismissed_Items $dismissed_items = null
 	) {
-		$this->context        = $context;
-		$this->assets         = $assets ?: new Assets( $this->context );
-		$this->modules        = $modules ?: new Modules( $this->context );
-		$this->authentication = $authentication ?: new Authentication( $this->context );
+		$this->context         = $context;
+		$this->assets          = $assets ?: new Assets( $this->context );
+		$this->user_options    = $user_options ?: new User_Options( $this->context );
+		$this->modules         = $modules ?: new Modules( $this->context, null, $this->user_options );
+		$this->authentication  = $authentication ?: new Authentication( $this->context, null, $this->user_options );
+		$this->dismissed_items = $dismissed_items ?: new Dismissed_Items( $this->user_options );
 	}
 
 	/**
@@ -254,6 +278,22 @@ final class Screens {
 	}
 
 	/**
+	 * Redirect the user to the splash screen if they have permission to do so.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return void
+	 */
+	private function redirect_to_splash() {
+		if ( current_user_can( Permissions::VIEW_SPLASH ) ) {
+			wp_safe_redirect(
+				$this->context->admin_url( 'splash' )
+			);
+			exit;
+		}
+	}
+
+	/**
 	 * Redirects from the dashboard to the splash screen if permissions to access the dashboard are currently not met.
 	 *
 	 * Dashboard permission access is conditional based on whether the user has successfully authenticated. When
@@ -274,12 +314,7 @@ final class Screens {
 			return;
 		}
 
-		if ( current_user_can( Permissions::VIEW_SPLASH ) ) {
-			wp_safe_redirect(
-				$this->context->admin_url( 'splash' )
-			);
-			exit;
-		}
+		$this->redirect_to_splash();
 	}
 
 	/**
@@ -329,16 +364,25 @@ final class Screens {
 			new Screen(
 				self::PREFIX . 'dashboard',
 				array(
-					'title'            => __( 'Dashboard', 'google-site-kit' ),
-					'capability'       => Permissions::VIEW_DASHBOARD,
-					'enqueue_callback' => function( Assets $assets ) {
+					'title'               => __( 'Dashboard', 'google-site-kit' ),
+					'capability'          => Permissions::VIEW_DASHBOARD,
+					'enqueue_callback'    => function( Assets $assets ) {
 						if ( $this->context->input()->filter( INPUT_GET, 'permaLink' ) ) {
 							$assets->enqueue_asset( 'googlesitekit-dashboard-details' );
 						} else {
 							$assets->enqueue_asset( 'googlesitekit-dashboard' );
 						}
 					},
-					'render_callback'  => function( Context $context ) {
+					// This callback redirects a user to the splash screen if they are going to view
+					// the shared dashboard but have not dismissed the splash screen yet.
+					'initialize_callback' => function( Context $context ) {
+						if ( current_user_can( Permissions::VIEW_SHARED_DASHBOARD ) ) {
+							if ( ! $this->dismissed_items->is_dismissed( 'shared_dashboard_splash' ) ) {
+								$this->redirect_to_splash();
+							}
+						}
+					},
+					'render_callback'     => function( Context $context ) {
 						$is_view_only = ! $this->authentication->is_authenticated();
 
 						$setup_slug = $context->input()->filter( INPUT_GET, 'slug', FILTER_SANITIZE_STRING );
@@ -416,8 +460,9 @@ final class Screens {
 				'title'               => __( 'Dashboard', 'google-site-kit' ),
 				'capability'          => Permissions::VIEW_SPLASH,
 				'parent_slug'         => $show_splash_in_menu ? Screen::MENU_SLUG : null,
-
-				// This callback will redirect to the dashboard on successful authentication.
+				// This callback redirects a user to the dashboard if they are already authenticated (can view
+				// the authenticated dashboard) or they are going to view the shared dashboard and have already
+				// dismissed the splash screen.
 				'initialize_callback' => function( Context $context ) {
 					$splash_context = $context->input()->filter( INPUT_GET, 'googlesitekit_context' );
 					$reset_session  = $context->input()->filter( INPUT_GET, 'googlesitekit_reset_session', FILTER_VALIDATE_BOOLEAN );
@@ -430,23 +475,24 @@ final class Screens {
 						exit;
 					}
 
-					// Don't consider redirect if the current user cannot access the dashboard (yet).
-					if ( ! current_user_can( Permissions::VIEW_DASHBOARD ) ) {
-						return;
+					$dashboard_url = $context->admin_url(
+						'dashboard',
+						array(
+							// Pass through the notification parameter, or removes it if none.
+							'notification' => $context->input()->filter( INPUT_GET, 'notification' ),
+						)
+					);
+
+					if ( current_user_can( Permissions::VIEW_AUTHENTICATED_DASHBOARD ) ) {
+						wp_safe_redirect( $dashboard_url );
+						exit;
 					}
 
-					// Redirect to dashboard if user is authenticated.
-					if ( $this->authentication->is_authenticated() ) {
-						wp_safe_redirect(
-							$context->admin_url(
-								'dashboard',
-								array(
-									// Pass through the notification parameter, or removes it if none.
-									'notification' => $context->input()->filter( INPUT_GET, 'notification' ),
-								)
-							)
-						);
-						exit;
+					if ( current_user_can( Permissions::VIEW_SHARED_DASHBOARD ) ) {
+						if ( $this->dismissed_items->is_dismissed( 'shared_dashboard_splash' ) ) {
+							wp_safe_redirect( $dashboard_url );
+							exit;
+						}
 					}
 				},
 				'enqueue_callback'    => function( Assets $assets ) {
