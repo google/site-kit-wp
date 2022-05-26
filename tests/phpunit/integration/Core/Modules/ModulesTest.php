@@ -24,6 +24,7 @@ use Google\Site_Kit\Modules\Idea_Hub;
 use Google\Site_Kit\Modules\Idea_Hub\Settings as Idea_Hub_Settings;
 use Google\Site_Kit\Modules\Optimize;
 use Google\Site_Kit\Modules\PageSpeed_Insights;
+use Google\Site_Kit\Modules\PageSpeed_Insights\Settings as PageSpeed_Insights_Settings;
 use Google\Site_Kit\Modules\Search_Console;
 use Google\Site_Kit\Modules\Site_Verification;
 use Google\Site_Kit\Modules\Subscribe_With_Google;
@@ -701,14 +702,32 @@ class ModulesTest extends TestCase {
 		$this->assertEquals( 400, $response->get_status() );
 	}
 
-	public function test_check_access_rest_endpoint__module_does_not_have_service_entity() {
+	public function test_check_access_rest_endpoint__shareable_module_does_not_have_service_entity() {
+		$this->enable_feature( 'dashboardSharing' );
 		$this->setup_modules_to_test_rest_endpoint();
 
 		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/modules/data/check-access' );
 		$request->set_body_params(
 			array(
 				'data' => array(
-					'slug' => 'optimize',
+					'slug' => 'pagespeed-insights',
+				),
+			)
+		);
+		$response = rest_get_server()->dispatch( $request );
+
+		$this->assertEquals( true, $response->get_data()['access'] );
+		$this->assertEquals( 200, $response->get_status() );
+	}
+
+	public function test_check_access_rest_endpoint__unshareable_module_does_not_have_service_entity() {
+		$this->setup_modules_to_test_rest_endpoint();
+
+		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/modules/data/check-access' );
+		$request->set_body_params(
+			array(
+				'data' => array(
+					'slug' => 'pagespeed-insights',
 				),
 			)
 		);
