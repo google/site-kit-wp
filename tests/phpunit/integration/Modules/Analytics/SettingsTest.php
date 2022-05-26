@@ -304,7 +304,6 @@ class SettingsTest extends SettingsTestCase {
 		$context  = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$settings = new Settings( new Options( $context ) );
 		$settings->register();
-		$analytics = new Analytics( $context );
 
 		// Defaults to `[ 'loggedinUsers' ]`
 		$this->assertEqualSets( array( 'loggedinUsers' ), $settings->get()['trackingDisabled'] );
