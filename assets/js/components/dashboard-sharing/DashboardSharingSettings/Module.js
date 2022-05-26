@@ -19,12 +19,8 @@
 /**
  * External dependencies
  */
-import { Tooltip } from '@material-ui/core';
-
-/**
- * External dependencies
- */
 import PropTypes from 'prop-types';
+import { Tooltip } from '@material-ui/core';
 
 /**
  * WordPress dependencies
@@ -50,6 +46,7 @@ import UserRoleSelect from '../UserRoleSelect';
 import SettingsOverlay from '../../settings/SettingsOverlay';
 import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
 import {
+	EDITING_MANAGEMENT_KEY,
 	EDITING_USER_ROLES_KEY,
 	SHARING_SETINGS_SAVING_KEY,
 	SHARING_SETTINGS_SLUG_KEY,
@@ -86,6 +83,9 @@ export default function Module( {
 	const isEditingUserRoles = useSelect( ( select ) =>
 		select( CORE_UI ).getValue( EDITING_USER_ROLES_KEY )
 	);
+	// const isEditingManagement = useSelect( ( select ) =>
+	// 	select( CORE_UI ).getValue( EDITING_MANAGEMENT_KEY )
+	// );
 	const editingModuleSlug = useSelect( ( select ) =>
 		select( CORE_UI ).getValue( SHARING_SETTINGS_SLUG_KEY )
 	);
@@ -94,6 +94,7 @@ export default function Module( {
 	);
 
 	const { setSharingManagement } = useDispatch( CORE_MODULES );
+	const { setValue } = useDispatch( CORE_UI );
 
 	useEffect( () => {
 		setManageViewAccess( management );
@@ -101,14 +102,18 @@ export default function Module( {
 
 	const handleOnChange = useCallback(
 		( event ) => {
+			setValue( EDITING_MANAGEMENT_KEY, true );
+			setValue( SHARING_SETTINGS_SLUG_KEY, moduleSlug );
 			setManageViewAccess( event.target.value );
 			setSharingManagement( moduleSlug, event.target.value );
 		},
-		[ moduleSlug, setManageViewAccess, setSharingManagement ]
+		[ moduleSlug, setManageViewAccess, setSharingManagement, setValue ]
 	);
 
 	const isLocked =
-		( moduleSlug !== editingModuleSlug && isEditingUserRoles ) || isSaving;
+		( moduleSlug !== editingModuleSlug && isEditingUserRoles ) ||
+		// ( moduleSlug !== editingModuleSlug && isEditingManagement ) ||
+		isSaving;
 
 	return (
 		<div

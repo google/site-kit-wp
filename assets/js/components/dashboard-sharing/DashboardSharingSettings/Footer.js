@@ -38,6 +38,7 @@ import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants
 import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
 import Spinner from '../../Spinner';
 import {
+	EDITING_MANAGEMENT_KEY,
 	EDITING_USER_ROLES_KEY,
 	SHARING_SETINGS_SAVING_KEY,
 	SHARING_SETTINGS_SLUG_KEY,
@@ -62,6 +63,7 @@ export default function Footer( { closeDialog } ) {
 		// Reset the state to enable modules in when not editing or saving.
 		setValue( SHARING_SETTINGS_SLUG_KEY, undefined );
 		setValue( EDITING_USER_ROLES_KEY, false );
+		setValue( EDITING_MANAGEMENT_KEY, false );
 		setValue( SHARING_SETINGS_SAVING_KEY, false );
 	}, [ saveSharingSettings, setValue ] );
 
