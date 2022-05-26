@@ -22,56 +22,56 @@
  */
 
 $c-white: #fff;
-$c-alabaster: #f9f9f9;
-$c-mercury: #e6e6e6;
-$c-silver: #bbb;
-$c-silver-2: #ccc;
-$c-header-gray: #fafafa;
-$c-jumbo: #828286; // 3.82 contrast
-$c-boulder: #757575;
-$c-gray-cx: #6e7275;
-$c-device-icon-gray: #5f6368;
-$c-scarpa-flow: #5b5b61;
-$c-cape-cod: #3c4043;
-$c-nearblack: #212121;
+$c-alabaster: #f8fafb;
+$c-mercury: #ebeef0;
+$c-silver: #b8bdb9;
+$c-silver-2: #cbd0d3;
+$c-header-gray: #f8fafb;
+$c-jumbo: #999f9b; // 3.82 contrast
+$c-boulder: #7b807d;
+$c-gray-cx: #7b807d;
+$c-device-icon-gray: #5f6561;
+$c-scarpa-flow: #5f6561;
+$c-cape-cod: #333935;
+$c-nearblack: #232824;
 $c-black: #000;
-$c-cornflower-blue: #4285f4; // 3.56 contrast
-$c-royal-blue: #1a73e8; // 4.5 contrast
-$c-denim: #1967d2;
-$c-allports: #0073aa;
-$c-cerulean: #00a0d2;
-$c-deep-sky-blue: #00b9eb;
-$c-picton-blue: #2998e8;
-$c-scooter: #27bcd4;
-$c-golden-rod-yellow: #fafad2;
-$c-selective-yellow: #fbbc05;
-$c-yellow-900: #e37400;
-$c-sun: #f8a708;
-$c-orange-roughy: #ca4a1f;
-$c-valencia: #d53e36;
-$c-cinnabar: #ea4335;
-$c-red-600: #d93025;
-$c-rangitoto: #2a2a21;
-$c-chateau-green: #34a853;
-$c-elm: #1b9688;
-$c-green-700: #188038;
-$c-purple-heart: #673ab7;
-$c-jewel: #178239;
-$c-mango-tango: #e67700;
-$c-thunderbird: #c7221f;
-$c-solitude: #e8f0fe;
-$c-heather: #bdc1c6;
-$c-gallery: #f0f0f0;
-$c-gallery-2: #eaeaea;
-$c-fiord: #455a64;
-$c-iron: #dedfdf;
-$c-shark: #202124;
-$c-oslo-gray: #80868b;
-$c-jordy-blue: #8bb3f3;
-$c-pizazz: #f78f01;
-$c-tundora: #484848;
-$c-aqua-haze: #f5f9f9;
-$c-link-water: #ebf2fb;
+$c-cornflower-blue: #6380b8; // 3.56 contrast
+$c-royal-blue: #446199; // 4.5 contrast
+$c-denim: #7f9cd4;
+$c-allports: #6380b8;
+$c-cerulean: #9bb8f0;
+$c-deep-sky-blue: #bed4ff;
+$c-picton-blue: #6380b8;
+$c-scooter: #bed4ff;
+$c-golden-rod-yellow: #ffe4b1;
+$c-selective-yellow: #fece72;
+$c-yellow-900: #e77d5b;
+$c-sun: #e1b155;
+$c-orange-roughy: #cc6240;
+$c-valencia: #ac4220;
+$c-cinnabar: #cc6240;
+$c-red-600: #ac4220;
+$c-rangitoto: #232824;
+$c-chateau-green: #88b146;
+$c-elm: #5c9271;
+$c-green-700: #4d760b;
+$c-purple-heart: #6e48ab;
+$c-jewel: #395d00;
+$c-mango-tango: #e77d5b;
+$c-thunderbird: #ac4220;
+$c-solitude: #f8faff;
+$c-heather: #b8bdb9;
+$c-gallery: #ebeef0;
+$c-gallery-2: #ebeef0;
+$c-fiord: #1b3870;
+$c-iron: #b8bdb9;
+$c-shark: #232824;
+$c-oslo-gray: #7b807d;
+$c-jordy-blue: #7f9cd4;
+$c-pizazz: #fece72;
+$c-tundora: #464b48;
+$c-aqua-haze: #ebeef0;
+$c-link-water: #ebf2fb; // @TODO: to check with design team for updated color.
 
 // WordPress core pallete (see https://make.wordpress.org/core/2021/02/23/standardization-of-wp-admin-colors-in-wordpress-5-7/)
 // For use primarily outside of Site Kit screens.
@@ -313,6 +313,10 @@ $typography: (
 		line-height: 16px,
 	)
 );
+
+// Border radius
+$border-radius-sm: 16px;
+$border-radius-md: 24px;
 
 // Google MDC Layout Grid Overrides
 
