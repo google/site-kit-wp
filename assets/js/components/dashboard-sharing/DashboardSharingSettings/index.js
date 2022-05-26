@@ -28,7 +28,10 @@ import Data from 'googlesitekit-data';
 import Module from './Module';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
-import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
+import {
+	CORE_USER,
+	// PERMISSION_MANAGE_MODULE_SHARING_OPTIONS,
+} from '../../../googlesitekit/datastore/user/constants';
 const { useSelect } = Data;
 
 export default function DashboardSharingSettings() {
@@ -87,6 +90,41 @@ export default function DashboardSharingSettings() {
 				return sortedModules;
 			}, [] );
 	} );
+
+	// const sortedShareableModules = useSelect( ( select ) => {
+	// 	const modules = select( CORE_MODULES ).getModules();
+
+	// 	// return early if modules is not an array
+	// 	if ( modules === undefined ) {
+	// 		return undefined;
+	// 	}
+	// 	const userID = select( CORE_USER ).getID();
+
+	// 	const shareableModules1 = Object.values( modules ).filter(
+	// 		( module ) => module.shareable
+	// 	);
+
+	// 	const owned = [];
+	// 	const manageable = [];
+	// 	const rest = [];
+
+	// 	for ( module of shareableModules1 ) {
+	// 		if ( module.owner?.id === userID ) {
+	// 			owned.push( module );
+	// 		} else if (
+	// 			select( CORE_USER ).hasCapability(
+	// 				PERMISSION_MANAGE_MODULE_SHARING_OPTIONS,
+	// 				module.slug
+	// 			)
+	// 		) {
+	// 			manageable.push( module );
+	// 		} else {
+	// 			rest.push( module );
+	// 		}
+	// 	}
+
+	// 	return [ ...owned, ...manageable, ...rest ];
+	// }, [] );
 
 	if ( shareableModules === undefined ) {
 		return null;
