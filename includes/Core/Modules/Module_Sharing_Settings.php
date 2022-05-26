@@ -11,7 +11,6 @@
 namespace Google\Site_Kit\Core\Modules;
 
 use Google\Site_Kit\Core\Storage\Setting;
-use SimplePie_Misc;
 
 /**
  * Class for module sharing settings.
