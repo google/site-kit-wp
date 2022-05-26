@@ -468,6 +468,20 @@ const baseActions = {
 				// Reload all modules from the server.
 				yield fetchGetModulesStore.actions.fetchGetModules();
 
+				const recoverableModules = select(
+					CORE_MODULES
+				).getRecoverableModules();
+
+				if ( recoverableModules?.[ slug ] ) {
+					// Remove the module from the list of recoverable modules in state.
+					yield baseActions.receiveRecoverableModules(
+						Object.keys( recoverableModules ).filter(
+							( recoverableModuleSlug ) =>
+								recoverableModuleSlug !== slug
+						)
+					);
+				}
+
 				return {
 					response: {
 						success: true,
