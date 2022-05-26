@@ -35,15 +35,29 @@ import Link from '../../Link';
 import Button from '../../Button';
 import Notice from './Notice';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
-const { useSelect } = Data;
+import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
+import Spinner from '../../Spinner';
+const { useSelect, useDispatch } = Data;
 
 export default function Footer( { closeDialog } ) {
 	const canSubmitSharingChanges = useSelect( ( select ) =>
 		select( CORE_MODULES ).canSubmitSharingChanges()
 	);
-	const onApply = useCallback( () => {
-		// @TODO: Implement Apply behaviour.
-	}, [] );
+
+	const { saveSharingSettings } = useDispatch( CORE_MODULES );
+	const { setValue } = useDispatch( CORE_UI );
+
+	const isSavingKey = 'sharing-setings-isSaving';
+
+	const isSaving = useSelect( ( select ) =>
+		select( CORE_UI ).getValue( isSavingKey )
+	);
+
+	const onApply = useCallback( async () => {
+		setValue( isSavingKey, true );
+		await saveSharingSettings();
+		setValue( isSavingKey, false );
+	}, [ saveSharingSettings, setValue ] );
 
 	return (
 		<div className="googlesitekit-dashboard-sharing-settings__footer">
@@ -58,9 +72,10 @@ export default function Footer( { closeDialog } ) {
 
 				<Button
 					onClick={ onApply }
-					disabled={ ! canSubmitSharingChanges }
+					disabled={ isSaving || ! canSubmitSharingChanges }
 				>
 					{ __( 'Apply', 'google-site-kit' ) }
+					{ isSaving && <Spinner isSaving={ isSaving } /> }
 				</Button>
 			</div>
 		</div>
