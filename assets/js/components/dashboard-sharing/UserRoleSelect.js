@@ -97,6 +97,8 @@ export default function UserRoleSelect( { moduleSlug } ) {
 				} else {
 					updatedSharedRoles = shareableRoles.map( ( { id } ) => id );
 				}
+			} else if ( sharedRoles === null ) {
+				updatedSharedRoles = [ chipID ];
 			} else if ( sharedRoles.includes( chipID ) ) {
 				updatedSharedRoles = sharedRoles.filter(
 					( role ) => role !== chipID
@@ -150,7 +152,7 @@ export default function UserRoleSelect( { moduleSlug } ) {
 				</span>
 			) }
 
-			{ ! editMode && sharedRoles?.length === 0 && (
+			{ ! editMode && ( ! sharedRoles || sharedRoles?.length === 0 ) && (
 				<span className="googlesitekit-user-role-select__add-roles">
 					<Link onClick={ toggleEditMode }>
 						{ __( 'Add roles', 'google-site-kit' ) }
