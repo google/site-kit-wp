@@ -55,10 +55,13 @@ export default function DashboardSharingSettings() {
 			sharedOwnershipModules
 		);
 
+		const user = select( CORE_USER ).getUser();
 		return Object.keys( modules )
 			.reverse()
 			.reduce( ( sortedModules, slug ) => {
 				const module = modules[ slug ];
+
+				const hasOwnedModule = module.owner?.id === user?.id;
 
 				if ( ! module.internal && module.connected ) {
 					const moduleWithManagement = {
@@ -70,9 +73,13 @@ export default function DashboardSharingSettings() {
 						sharedOwnershipModule: sharedOwnershipModuleSlugs.includes(
 							slug
 						),
+						hasOwnedModule,
 					};
 
-					if ( manageableModules.includes( slug ) ) {
+					if (
+						hasOwnedModule &&
+						manageableModules.includes( slug )
+					) {
 						return [ moduleWithManagement, ...sortedModules ];
 					}
 					return [ ...sortedModules, moduleWithManagement ];
@@ -113,6 +120,7 @@ export default function DashboardSharingSettings() {
 						management,
 						owner,
 						sharedOwnershipModule,
+						hasOwnedModule,
 					} ) => (
 						<Module
 							key={ slug }
@@ -121,6 +129,7 @@ export default function DashboardSharingSettings() {
 							management={ management }
 							ownerUsername={ owner?.login }
 							sharedOwnershipModule={ sharedOwnershipModule }
+							hasOwnedModule={ hasOwnedModule }
 						/>
 					)
 				) }

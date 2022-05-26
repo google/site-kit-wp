@@ -49,6 +49,11 @@ import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import UserRoleSelect from '../UserRoleSelect';
 import SettingsOverlay from '../../settings/SettingsOverlay';
 import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
+import {
+	EDITING_USER_ROLES_KEY,
+	SHARING_SETINGS_SAVING_KEY,
+	SHARING_SETTINGS_SLUG_KEY,
+} from './constants';
 const { useSelect, useDispatch } = Data;
 
 const viewAccessOptions = [
@@ -68,9 +73,9 @@ export default function Module( {
 	management,
 	ownerUsername,
 	sharedOwnershipModule,
+	hasOwnedModule,
 } ) {
-	const [ manageViewAccess, setManageViewAccess ] = useState( '' );
-	// const [ disableModules, setDisableModules ] = useState( false );
+	const [ manageViewAccess, setManageViewAccess ] = useState( undefined );
 	const module = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModule( moduleSlug )
 	);
@@ -79,13 +84,13 @@ export default function Module( {
 	);
 
 	const isEditingUserRoles = useSelect( ( select ) =>
-		select( CORE_UI ).getValue( 'isEditingUserRoles' )
+		select( CORE_UI ).getValue( EDITING_USER_ROLES_KEY )
 	);
 	const editingModuleSlug = useSelect( ( select ) =>
-		select( CORE_UI ).getValue( 'slug' )
+		select( CORE_UI ).getValue( SHARING_SETTINGS_SLUG_KEY )
 	);
 	const isSaving = useSelect( ( select ) =>
-		select( CORE_UI ).getValue( 'sharing-setings-isSaving' )
+		select( CORE_UI ).getValue( SHARING_SETINGS_SAVING_KEY )
 	);
 
 	const { setSharingManagement } = useDispatch( CORE_MODULES );
@@ -122,29 +127,35 @@ export default function Module( {
 			</div>
 
 			<div className="googlesitekit-dashboard-sharing-settings__column--view">
-				<UserRoleSelect moduleSlug={ moduleSlug } />
-				{ /* <p className="googlesitekit-dashboard-sharing-settings__note">
-					{ __(
-						'Contact managing user to manage view access',
-						'google-site-kit'
-					) }
-				</p> */ }
+				{ hasOwnedModule && (
+					<UserRoleSelect moduleSlug={ moduleSlug } />
+				) }
+
+				{ ! hasOwnedModule && (
+					<p className="googlesitekit-dashboard-sharing-settings__note">
+						{ __(
+							'Contact managing user to manage view access',
+							'google-site-kit'
+						) }
+					</p>
+				) }
 			</div>
 
 			{ hasMultipleAdmins && (
 				<div className="googlesitekit-dashboard-sharing-settings__column--manage">
-					<Select
-						className="googlesitekit-dashboard-sharing-settings__select"
-						value={ manageViewAccess }
-						options={ viewAccessOptions }
-						onChange={ handleOnChange }
-						onClick={ handleOnChange }
-						disabled={ sharedOwnershipModule }
-						outlined
-					/>
+					{ hasOwnedModule && (
+						<Select
+							className="googlesitekit-dashboard-sharing-settings__select"
+							value={ manageViewAccess }
+							options={ viewAccessOptions }
+							onChange={ handleOnChange }
+							onClick={ handleOnChange }
+							disabled={ sharedOwnershipModule }
+							outlined
+						/>
+					) }
 
-					{ /* @TODO: To be displayed in place of the select where applicable.  */ }
-					{ module?.owner?.login && (
+					{ ! hasOwnedModule && module?.owner?.login && (
 						<p className="googlesitekit-dashboard-sharing-settings__note">
 							{ createInterpolateElement(
 								sprintf(
@@ -193,4 +204,5 @@ Module.propTypes = {
 	management: PropTypes.string,
 	ownerUsername: PropTypes.string,
 	sharedOwnershipModule: PropTypes.bool.isRequired,
+	hasOwnedModule: PropTypes.bool.isRequired,
 };
