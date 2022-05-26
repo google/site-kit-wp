@@ -10,7 +10,6 @@
 
 namespace Google\Site_Kit\Core\Modules;
 
-use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Setting;
 
 /**
@@ -127,28 +126,24 @@ class Module_Sharing_Settings extends Setting {
 	/**
 	 * Merges a partial Module_Sharing_Settings option array into existing sharing settings.
 	 *
-	 * Only updates sharing settings for a module if the current user has the capability to
-	 * do so.
-	 *
 	 * @since 1.75.0
+	 * @since n.e.x.t Removed capability checks.
 	 *
-	 * @param array $new_partial_settings Partial settings array to update existing settings with.
+	 * @param array $partial Partial settings array to update existing settings with.
 	 *
 	 * @return bool True if sharing settings option was updated, false otherwise.
 	 */
-	public function merge( array $new_partial_settings ) {
+	public function merge( array $partial ) {
 		$settings = $this->get();
-
-		foreach ( $new_partial_settings as $module_slug => $new_settings ) {
-			if ( null === $new_settings ) {
-				continue;
+		$partial  = array_filter(
+			$partial,
+			function ( $value ) {
+				return null !== $value;
 			}
-			if ( current_user_can( Permissions::MANAGE_MODULE_SHARING_OPTIONS, $module_slug ) ) {
-				$settings[ $module_slug ] = $new_settings;
-			}
-		}
+		);
+		$updated  = array_intersect_key( $partial, $settings );
 
-		return $this->set( $settings );
+		return $this->set( $this->array_merge_deep( $settings, $updated ) );
 	}
 
 	/**
@@ -203,6 +198,29 @@ class Module_Sharing_Settings extends Setting {
 		}
 
 		return array();
+	}
+
+	/**
+	 * Merges two arrays recursively to a specific depth.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $array1 First array.
+	 * @param array $array2 Second array.
+	 * @param int   $depth Optional. Depth to merge to. Default is 1.
+	 *
+	 * @return array Merged array.
+	 */
+	private function array_merge_deep( $array1, $array2, $depth = 1 ) {
+		foreach ( $array2 as $key => $value ) {
+			if ( $depth > 0 && is_array( $value ) ) {
+				$array1[ $key ] = $this->array_merge_deep( $array1[ $key ], $value, $depth - 1 );
+			} else {
+				$array1[ $key ] = $value;
+			}
+		}
+
+		return $array1;
 	}
 
 }
