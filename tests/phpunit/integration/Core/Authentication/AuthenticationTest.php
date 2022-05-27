@@ -79,7 +79,6 @@ class AuthenticationTest extends TestCase {
 		$this->assertEqualSets(
 			array(
 				'needs_reauthentication',
-				'oauth_error',
 				'reconnect_after_url_mismatch',
 			),
 			array_filter( $notice_slugs )
