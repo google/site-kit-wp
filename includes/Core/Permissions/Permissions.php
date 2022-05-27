@@ -85,14 +85,6 @@ final class Permissions {
 	private $user_options;
 
 	/**
-	 * Dismissed_Items instance.
-	 *
-	 * @since 1.69.0
-	 * @var Dismissed_Items
-	 */
-	private $dismissed_items;
-
-	/**
 	 * Mappings for custom base capabilities to WordPress core built-in ones.
 	 *
 	 * @since 1.30.0
@@ -131,18 +123,16 @@ final class Permissions {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param Context         $context         Plugin context.
-	 * @param Authentication  $authentication  Authentication instance.
-	 * @param Modules         $modules         Modules instance.
-	 * @param User_Options    $user_options    User_Options instance.
-	 * @param Dismissed_Items $dismissed_items Dismissed_Items instance.
+	 * @param Context        $context        Plugin context.
+	 * @param Authentication $authentication Authentication instance.
+	 * @param Modules        $modules        Modules instance.
+	 * @param User_Options   $user_options   User_Options instance.
 	 */
-	public function __construct( Context $context, Authentication $authentication, Modules $modules, User_Options $user_options, Dismissed_Items $dismissed_items ) {
-		$this->context         = $context;
-		$this->authentication  = $authentication;
-		$this->modules         = $modules;
-		$this->user_options    = $user_options;
-		$this->dismissed_items = $dismissed_items;
+	public function __construct( Context $context, Authentication $authentication, Modules $modules, User_Options $user_options ) {
+		$this->context        = $context;
+		$this->authentication = $authentication;
+		$this->modules        = $modules;
+		$this->user_options   = $user_options;
 
 		// TODO Remove the temporary assignment of these capabilities when Dashboard Sharing feature flag is removed.
 		$editor_capability        = 'manage_options';
@@ -437,10 +427,6 @@ final class Permissions {
 			return array( self::AUTHENTICATE );
 		}
 
-		if ( $this->is_shared_dashboard_splash_dismissed( $user_id ) ) {
-			return array( self::AUTHENTICATE );
-		}
-
 		if ( ! $this->user_has_shared_role( $user_id ) ) {
 			return array( self::AUTHENTICATE );
 		}
@@ -483,10 +469,6 @@ final class Permissions {
 	 */
 	private function check_view_shared_dashboard_capability( $user_id ) {
 		if ( ! $this->user_has_shared_role( $user_id ) ) {
-			return array( 'do_not_allow' );
-		}
-
-		if ( ! $this->is_shared_dashboard_splash_dismissed( $user_id ) ) {
 			return array( 'do_not_allow' );
 		}
 
@@ -644,21 +626,6 @@ final class Permissions {
 		$is_user_verified = $this->authentication->verification()->has();
 		$restore_user();
 		return $is_user_verified;
-	}
-
-	/**
-	 * Checks if a user has dimissed the shared dashboard splash screen message.
-	 *
-	 * @since 1.69.0
-	 *
-	 * @param int $user_id User ID of the user to be checked.
-	 * @return bool True if the user has dismissed the splash message, false if not.
-	 */
-	private function is_shared_dashboard_splash_dismissed( $user_id ) {
-		$restore_user        = $this->user_options->switch_user( $user_id );
-		$is_splash_dismissed = $this->dismissed_items->is_dismissed( 'shared_dashboard_splash' );
-		$restore_user();
-		return $is_splash_dismissed;
 	}
 
 	/**

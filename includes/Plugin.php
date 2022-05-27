@@ -166,9 +166,7 @@ final class Plugin {
 				$dismissals = new Core\Dismissals\Dismissals( $this->context, $user_options );
 				$dismissals->register();
 
-				$dismissed_items = $dismissals->get_dismissed_items();
-
-				$permissions = new Core\Permissions\Permissions( $this->context, $authentication, $modules, $user_options, $dismissed_items );
+				$permissions = new Core\Permissions\Permissions( $this->context, $authentication, $modules, $user_options );
 				$permissions->register();
 
 				// Assets must be registered after Modules instance is registered.
