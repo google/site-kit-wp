@@ -30,7 +30,7 @@ import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import {
 	CORE_USER,
-	// PERMISSION_MANAGE_MODULE_SHARING_OPTIONS,
+	PERMISSION_MANAGE_MODULE_SHARING_OPTIONS,
 } from '../../../googlesitekit/datastore/user/constants';
 const { useSelect } = Data;
 
@@ -39,94 +39,60 @@ export default function DashboardSharingSettings() {
 		select( CORE_SITE ).hasMultipleAdmins()
 	);
 
-	const shareableModules = useSelect( ( select ) => {
+	const sortedShareableModules = useSelect( ( select ) => {
 		const modules = select( CORE_MODULES ).getModules();
 		const sharedOwnershipModules = select(
 			CORE_MODULES
 		).getSharedOwnershipModules();
-		const manageableModules = select( CORE_USER ).getManageableModules();
 
-		if (
-			modules === undefined ||
-			manageableModules === undefined ||
-			sharedOwnershipModules === undefined
-		) {
+		// return early if modules || sharedOwnershipModules are not loaded
+		if ( modules === undefined || sharedOwnershipModules === undefined ) {
 			return undefined;
 		}
-
+		const userID = select( CORE_USER ).getID();
 		const sharedOwnershipModuleSlugs = Object.keys(
 			sharedOwnershipModules
 		);
+		const shareableModules = Object.values( modules ).filter(
+			( module ) => module.shareable
+		);
 
-		const user = select( CORE_USER ).getUser();
-		return Object.keys( modules )
-			.reverse()
-			.reduce( ( sortedModules, slug ) => {
-				const module = modules[ slug ];
+		const owned = [];
+		const manageable = [];
+		const rest = [];
 
-				const hasOwnedModule = module.owner?.id === user?.id;
+		for ( module of shareableModules ) {
+			const hasOwnedModule = module.owner?.id === userID;
+			const moduleWithManagement = {
+				...module,
+				hasOwnedModule,
+				management:
+					select( CORE_MODULES ).getSharingManagement(
+						module.slug
+					) ?? 'owner',
+				sharedOwnershipModule: sharedOwnershipModuleSlugs.includes(
+					module.slug
+				),
+			};
 
-				if ( ! module.internal && module.connected ) {
-					const moduleWithManagement = {
-						...module,
-						management:
-							select( CORE_MODULES ).getSharingManagement(
-								slug
-							) ?? 'owner',
-						sharedOwnershipModule: sharedOwnershipModuleSlugs.includes(
-							slug
-						),
-						hasOwnedModule,
-					};
+			if ( hasOwnedModule ) {
+				owned.push( moduleWithManagement );
+			} else if (
+				select( CORE_USER ).hasCapability(
+					PERMISSION_MANAGE_MODULE_SHARING_OPTIONS,
+					module.slug
+				)
+			) {
+				manageable.push( moduleWithManagement );
+			} else {
+				rest.push( moduleWithManagement );
+			}
+		}
 
-					if (
-						hasOwnedModule &&
-						manageableModules.includes( slug )
-					) {
-						return [ moduleWithManagement, ...sortedModules ];
-					}
-					return [ ...sortedModules, moduleWithManagement ];
-				}
-				return sortedModules;
-			}, [] );
-	} );
+		return [ ...owned, ...manageable, ...rest ];
+	}, [] );
 
-	// const sortedShareableModules = useSelect( ( select ) => {
-	// 	const modules = select( CORE_MODULES ).getModules();
-
-	// 	// return early if modules is not an array
-	// 	if ( modules === undefined ) {
-	// 		return undefined;
-	// 	}
-	// 	const userID = select( CORE_USER ).getID();
-
-	// 	const shareableModules1 = Object.values( modules ).filter(
-	// 		( module ) => module.shareable
-	// 	);
-
-	// 	const owned = [];
-	// 	const manageable = [];
-	// 	const rest = [];
-
-	// 	for ( module of shareableModules1 ) {
-	// 		if ( module.owner?.id === userID ) {
-	// 			owned.push( module );
-	// 		} else if (
-	// 			select( CORE_USER ).hasCapability(
-	// 				PERMISSION_MANAGE_MODULE_SHARING_OPTIONS,
-	// 				module.slug
-	// 			)
-	// 		) {
-	// 			manageable.push( module );
-	// 		} else {
-	// 			rest.push( module );
-	// 		}
-	// 	}
-
-	// 	return [ ...owned, ...manageable, ...rest ];
-	// }, [] );
-
-	if ( shareableModules === undefined ) {
+	if ( sortedShareableModules === undefined ) {
 		return null;
 	}
 
@@ -151,7 +117,7 @@ export default function DashboardSharingSettings() {
 			</header>
 
 			<div className="googlesitekit-dashboard-sharing-settings__main">
-				{ shareableModules.map(
+				{ sortedShareableModules.map(
 					( {
 						slug,
 						name,
