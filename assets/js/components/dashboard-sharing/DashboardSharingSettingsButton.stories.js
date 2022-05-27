@@ -19,14 +19,92 @@
 /**
  * Internal dependencies
  */
-import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
-import { withConnected } from '../../googlesitekit/modules/datastore/__fixtures__';
 import {
 	provideModuleRegistrations,
+	provideModules,
 	provideSiteConnection,
 } from '../../../../tests/js/utils';
 import DashboardSharingSettingsButton from './DashboardSharingSettingsButton';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
+import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import { MODULES_PAGESPEED_INSIGHTS } from '../../modules/pagespeed-insights/datastore/constants';
+import { MODULES_SEARCH_CONSOLE } from '../../modules/search-console/datastore/constants';
+import { MODULES_ANALYTICS } from '../../modules/analytics/datastore/constants';
+
+const settings = {
+	'search-console': {
+		sharedRoles: [ 'administrator' ],
+		management: 'owner',
+	},
+	analytics: {
+		sharedRoles: [ 'editor' ],
+		management: 'owner',
+	},
+	'pagespeed-insights': {
+		sharedRoles: [ 'author' ],
+		management: 'all_admins',
+	},
+	adsense: {
+		sharedRoles: [],
+		management: 'all_admins',
+	},
+};
+const roles = [
+	{
+		id: 'administrator',
+		displayName: 'Administrator',
+	},
+	{
+		id: 'editor',
+		displayName: 'Editor',
+	},
+	{
+		id: 'author',
+		displayName: 'Author',
+	},
+	{
+		id: 'contributor',
+		displayName: 'Contributor',
+	},
+];
+
+const sharedOwnershipModules = [ 'pagespeed-insights' ];
+
+const modules = [
+	{
+		slug: 'search-console',
+		shareable: true,
+		owner: {
+			id: 1,
+			login: 'Admin 1',
+		},
+	},
+	{
+		slug: 'analytics',
+		shareable: true,
+		owner: {
+			id: 1,
+			login: 'Admin 1',
+		},
+	},
+	{
+		slug: 'pagespeed-insights',
+		shareable: true,
+		owner: {
+			id: 1,
+			login: 'Admin 1',
+		},
+	},
+
+	{
+		slug: 'adsense',
+		shareable: true,
+		owner: {
+			id: 2,
+			login: 'Admin 2',
+		},
+	},
+];
 
 const Template = ( { setupRegistry = () => {}, ...args } ) => (
 	<WithRegistrySetup func={ setupRegistry }>
@@ -37,36 +115,13 @@ const Template = ( { setupRegistry = () => {}, ...args } ) => (
 export const DefaultDashboardSharingSettingsButton = Template.bind( {} );
 DefaultDashboardSharingSettingsButton.storyName = 'Default';
 DefaultDashboardSharingSettingsButton.args = {
-	setupRegistry: ( registry ) => {
-		registry
-			.dispatch( CORE_MODULES )
-			.receiveGetModules(
-				withConnected(
-					'adsense',
-					'analytics',
-					'pagespeed-insights',
-					'search-console'
-				)
-			);
-		provideModuleRegistrations( registry );
-	},
+	setupRegistry: () => {},
 };
 
 export const MultipleAdminsDashboardSharingSettingsButton = Template.bind( {} );
 MultipleAdminsDashboardSharingSettingsButton.storyName = 'Multiple Admins';
 MultipleAdminsDashboardSharingSettingsButton.args = {
 	setupRegistry: ( registry ) => {
-		registry
-			.dispatch( CORE_MODULES )
-			.receiveGetModules(
-				withConnected(
-					'adsense',
-					'analytics',
-					'pagespeed-insights',
-					'search-console'
-				)
-			);
-		provideModuleRegistrations( registry );
 		provideSiteConnection( registry, {
 			hasMultipleAdmins: true,
 		} );
@@ -75,5 +130,45 @@ MultipleAdminsDashboardSharingSettingsButton.args = {
 
 export default {
 	title: 'Components/DashboardSharingSettingsButton',
-	component: DashboardSharingSettingsButton,
+	decorators: [
+		( Story, { args } ) => {
+			const setupRegistry = ( registry ) => {
+				// Set global dashboard sharing variables
+				global._googlesitekitDashboardSharingData = {
+					settings,
+					roles,
+					sharedOwnershipModules,
+				};
+
+				provideModules( registry, modules );
+				provideModuleRegistrations( registry );
+
+				registry.dispatch( CORE_USER ).receiveUserInfo( {
+					id: 1,
+					email: 'admin@example.com',
+					name: 'admin',
+					picture: 'https://path/to/image',
+				} );
+
+				registry
+					.dispatch( MODULES_PAGESPEED_INSIGHTS )
+					.receiveGetSettings( { ownerID: 1 } );
+				registry
+					.dispatch( MODULES_SEARCH_CONSOLE )
+					.receiveGetSettings( { ownerID: 1 } );
+				registry
+					.dispatch( MODULES_ANALYTICS )
+					.receiveGetSettings( { ownerID: 1 } );
+
+				// Call story-specific setup.
+				args.setupRegistry( registry );
+			};
+
+			return (
+				<WithRegistrySetup func={ setupRegistry }>
+					<Story />
+				</WithRegistrySetup>
+			);
+		},
+	],
 };

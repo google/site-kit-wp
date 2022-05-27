@@ -33,7 +33,7 @@ import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 
 const settings = {
 	'search-console': {
-		sharedRoles: [ 'editor', 'subscriber' ],
+		sharedRoles: [ 'administrator' ],
 		management: 'owner',
 	},
 	analytics: {
@@ -41,7 +41,7 @@ const settings = {
 		management: 'owner',
 	},
 	'pagespeed-insights': {
-		sharedRoles: [ 'editor' ],
+		sharedRoles: [ 'author' ],
 		management: 'all_admins',
 	},
 	adsense: {
