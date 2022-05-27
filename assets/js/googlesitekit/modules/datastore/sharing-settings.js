@@ -358,6 +358,9 @@ const {
 } = createValidationSelector( validateCanSubmitSharingChanges );
 
 const baseSelectors = {
+	canSubmitSharingChanges,
+	__dangerousCanSubmitSharingChanges,
+
 	/**
 	 * Gets the current dashboard sharing settings.
 	 *
@@ -453,9 +456,6 @@ const baseSelectors = {
 
 		return ! isEqual( sharingSettings, savedSharingSettings );
 	},
-
-	canSubmitSharingChanges,
-	__dangerousCanSubmitSharingChanges,
 
 	/**
 	 * Checks whether sharing settings changes are currently being submitted.
