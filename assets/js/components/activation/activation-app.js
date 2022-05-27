@@ -51,9 +51,6 @@ export function ActivationApp() {
 	const dashboardURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' )
 	);
-	const splashURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' )
-	);
 	const canViewDashboard = useSelect( ( select ) =>
 		select( CORE_USER ).hasCapability( PERMISSION_VIEW_DASHBOARD )
 	);
@@ -62,7 +59,7 @@ export function ActivationApp() {
 		trackEvent( viewContext, 'view_notification' );
 	} );
 
-	const buttonURL = canViewDashboard ? dashboardURL : splashURL;
+	const buttonURL = dashboardURL;
 	const buttonLabel = canViewDashboard
 		? __( 'Go to Dashboard', 'google-site-kit' )
 		: __( 'Start setup', 'google-site-kit' );
