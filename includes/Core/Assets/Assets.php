@@ -104,7 +104,7 @@ final class Assets {
 		// All other asset-related general logic should only be active when the
 		// current user can actually use Site Kit (which only is so if they can
 		// authenticate or view shared dashboard).
-		if ( ! ( current_user_can( Permissions::AUTHENTICATE ) || current_user_can( Permissions::VIEW_SHARED_DASHBOARD ) ) ) {
+		if ( ! current_user_can( Permissions::VIEW_SPLASH ) ) {
 			return;
 		}
 
