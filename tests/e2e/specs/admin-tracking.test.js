@@ -184,13 +184,13 @@ describe( 'initialization on load for Site Kit screens', () => {
 
 	describe( 'splash page', () => {
 		it( 'does not load tracking if not opted-in', async () => {
-			await visitAdminPage( 'admin.php', 'page=googlesitekit-splash' );
+			await visitAdminPage( 'admin.php', 'page=googlesitekit-dashboard' );
 
 			await expect( page ).not.toHaveTracking();
 		} );
 
 		it( 'loads tracking when opted-in', async () => {
-			await visitAdminPage( 'admin.php', 'page=googlesitekit-splash' );
+			await visitAdminPage( 'admin.php', 'page=googlesitekit-dashboard' );
 			await toggleOptIn();
 			await page.reload();
 
@@ -207,7 +207,7 @@ describe( 'initialization on load for Site Kit screens', () => {
 		} );
 
 		it( 'loads tracking when opted-in', async () => {
-			await visitAdminPage( 'admin.php', 'page=googlesitekit-splash' );
+			await visitAdminPage( 'admin.php', 'page=googlesitekit-dashboard' );
 			await toggleOptIn();
 			await setupSiteKit();
 			await visitAdminPage( 'admin.php', 'page=googlesitekit-settings' );
@@ -225,7 +225,7 @@ describe( 'initialization on load for Site Kit screens', () => {
 		} );
 
 		it( 'loads tracking when opted-in', async () => {
-			await visitAdminPage( 'admin.php', 'page=googlesitekit-splash' );
+			await visitAdminPage( 'admin.php', 'page=googlesitekit-dashboard' );
 			await toggleOptIn();
 			await setupSiteKit();
 			await visitAdminPage( 'admin.php', 'page=googlesitekit-dashboard' );
@@ -246,7 +246,7 @@ describe( 'initialization on load for Site Kit screens', () => {
 		} );
 
 		it( 'loads tracking when opted-in', async () => {
-			await visitAdminPage( 'admin.php', 'page=googlesitekit-splash' );
+			await visitAdminPage( 'admin.php', 'page=googlesitekit-dashboard' );
 			await toggleOptIn();
 			await setupSiteKit();
 			await visitAdminPage(
@@ -270,7 +270,7 @@ describe( 'initialization on load for non-Site Kit screens', () => {
 		} );
 
 		it( 'does not load tracking if opted-in', async () => {
-			await visitAdminPage( 'admin.php', 'page=googlesitekit-splash' );
+			await visitAdminPage( 'admin.php', 'page=googlesitekit-dashboard' );
 			await toggleOptIn();
 			await visitAdminPage( 'plugins.php' );
 
@@ -288,7 +288,7 @@ describe( 'initialization on load for non-Site Kit screens', () => {
 		} );
 
 		it( 'does not load tracking if opted-in', async () => {
-			await visitAdminPage( 'admin.php', 'page=googlesitekit-splash' );
+			await visitAdminPage( 'admin.php', 'page=googlesitekit-dashboard' );
 			await toggleOptIn();
 			await visitAdminPage( 'index.php' );
 

@@ -62,7 +62,7 @@ export default function UserMenu() {
 		select( CORE_USER ).getPicture()
 	);
 	const postDisconnectURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getAdminURL( 'googlesitekit-splash', {
+		select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard', {
 			googlesitekit_context: 'revoked',
 		} )
 	);

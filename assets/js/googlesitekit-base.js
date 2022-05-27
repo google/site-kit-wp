@@ -25,8 +25,8 @@ import { appendNotificationsCount, clearWebStorage } from './util/standalone';
 
 if (
 	'toplevel_page_googlesitekit-dashboard' !== global.pagenow &&
-	'site-kit_page_googlesitekit-splash' !== global.pagenow &&
-	'admin_page_googlesitekit-splash' !== global.pagenow &&
+	'site-kit_page_googlesitekit-dashboard' !== global.pagenow &&
+	'admin_page_googlesitekit-dashboard' !== global.pagenow &&
 	global.localStorage
 ) {
 	// The total notifications count should always rely on local storage

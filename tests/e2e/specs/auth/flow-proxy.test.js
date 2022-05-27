@@ -5,7 +5,7 @@ import { visitAdminPage } from '@wordpress/e2e-test-utils';
 
 describe( 'Site Kit set up flow for the first time', () => {
 	it( 'renders a splash page for proxy set up when no GCP credentials are provided', async () => {
-		await visitAdminPage( 'admin.php', 'page=googlesitekit-splash' );
+		await visitAdminPage( 'admin.php', 'page=googlesitekit-dashboard' );
 
 		await page.waitForSelector( '.googlesitekit-start-setup' );
 

@@ -832,7 +832,7 @@ class AuthenticationTest extends TestCase {
 			do_action( $action );
 			$this->fail( 'Expected WPDieException to be thrown' );
 		} catch ( Exception $e ) {
-			$this->assertEquals( 'The link you followed has expired.</p><p><a href="http://example.org/wp-admin/admin.php?page=googlesitekit-splash">Please try again.</a>', $e->getMessage() );
+			$this->assertEquals( 'The link you followed has expired.</p><p><a href="http://example.org/wp-admin/admin.php?page=googlesitekit-dashboard">Please try again.</a>', $e->getMessage() );
 		}
 
 		$_GET['nonce'] = wp_create_nonce( Google_Proxy::ACTION_PERMISSIONS );
@@ -1035,7 +1035,7 @@ class AuthenticationTest extends TestCase {
 		try {
 			Authentication::invalid_nonce_error( 'googlesitekit_proxy_foo_action' );
 		} catch ( WPDieException $exception ) {
-			$this->assertEquals( 'The link you followed has expired.</p><p><a href="http://example.org/wp-admin/admin.php?page=googlesitekit-splash">Please try again.</a>', $exception->getMessage() );
+			$this->assertEquals( 'The link you followed has expired.</p><p><a href="http://example.org/wp-admin/admin.php?page=googlesitekit-dashboard">Please try again.</a>', $exception->getMessage() );
 			return;
 		}
 		$this->fail( 'Expected WPDieException!' );

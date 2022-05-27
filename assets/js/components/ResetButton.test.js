@@ -154,7 +154,7 @@ describe( 'ResetButton', () => {
 			const url = new URL( locationAssignMock.mock.calls[ 0 ][ 0 ] );
 			expect( url.pathname ).toBe( '/wp-admin/admin.php' );
 			expect( url.href ).toMatchQueryParameters( {
-				page: 'googlesitekit-splash',
+				page: 'googlesitekit-dashboard',
 				notification: 'reset_success',
 			} );
 		} );

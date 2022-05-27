@@ -83,7 +83,7 @@ describe( 'the set up flow for the second administrator', () => {
 			path: 'google-site-kit/v1/e2e/verify-site',
 			method: 'post',
 		} );
-		await visitAdminPage( 'admin.php', 'page=googlesitekit-splash' );
+		await visitAdminPage( 'admin.php', 'page=googlesitekit-dashboard' );
 
 		await expect( page ).toMatchElement(
 			'.googlesitekit-wizard-step__title',

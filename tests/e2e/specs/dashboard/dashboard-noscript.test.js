@@ -26,7 +26,7 @@ describe( 'dashboard noscript notice', () => {
 	let waitForFetchRequests;
 	beforeEach( async () => {
 		waitForFetchRequests = createWaitForFetchRequests();
-		await visitAdminPage( 'admin.php', 'page=googlesitekit-splash' );
+		await visitAdminPage( 'admin.php', 'page=googlesitekit-dashboard' );
 	} );
 
 	afterEach( () => waitForFetchRequests() ); // Clean up request listeners.

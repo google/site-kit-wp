@@ -135,7 +135,7 @@ describe( 'User Input Settings', () => {
 	it( 'should require new users to enter input settings after signing in', async () => {
 		await step(
 			'visit splash screen',
-			visitAdminPage( 'admin.php', 'page=googlesitekit-splash' )
+			visitAdminPage( 'admin.php', 'page=googlesitekit-dashboard' )
 		);
 		await step(
 			'click on start setup button and wait for navigation',

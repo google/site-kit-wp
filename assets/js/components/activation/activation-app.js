@@ -52,7 +52,7 @@ export function ActivationApp() {
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' )
 	);
 	const splashURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getAdminURL( 'googlesitekit-splash' )
+		select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' )
 	);
 	const canViewDashboard = useSelect( ( select ) =>
 		select( CORE_USER ).hasCapability( PERMISSION_VIEW_DASHBOARD )
