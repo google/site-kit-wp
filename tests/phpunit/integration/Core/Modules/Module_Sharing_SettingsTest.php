@@ -11,13 +11,8 @@
 namespace Google\Site_Kit\Tests\Core\Modules;
 
 use Google\Site_Kit\Context;
-use Google\Site_Kit\Core\Authentication\Authentication;
-use Google\Site_Kit\Core\Dismissals\Dismissed_Items;
 use Google\Site_Kit\Core\Modules\Module_Sharing_Settings;
-use Google\Site_Kit\Core\Modules\Modules;
-use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Options;
-use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Tests\Modules\SettingsTestCase;
 
 class Module_Sharing_SettingsTest extends SettingsTestCase {
@@ -222,7 +217,7 @@ class Module_Sharing_SettingsTest extends SettingsTestCase {
 		$this->assertEmpty( $this->settings->get_shared_roles( 'pagespeed-insights' ) );
 	}
 
-	public function test_merge__unauthenticated_user() {
+	public function test_merge() {
 		$this->enable_feature( 'dashboardSharing' );
 
 		update_option(
@@ -234,104 +229,10 @@ class Module_Sharing_SettingsTest extends SettingsTestCase {
 			)
 		);
 
-		$admin_1 = self::factory()->user->create_and_get( array( 'role' => 'administrator' ) );
-		wp_set_current_user( $admin_1->ID );
-
-		$test_sharing_settings = array(
+		$initial_sharing_settings = array(
 			'search-console'     => array(
-				'sharedRoles' => array( 'editor', 'subscriber' ),
-				'management'  => 'all_admins',
-			),
-			'analytics'          => array(
-				'sharedRoles' => array( 'editor' ),
-				'management'  => 'all_admins',
-			),
-			'pagespeed-insights' => array(
-				'sharedRoles' => array( 'editor' ),
-				'management'  => 'all_admins',
-			),
-		);
-
-		// Current unauthenticated admin_1 cannot update any settings.
-		$this->assertFalse( $this->settings->merge( $test_sharing_settings ) );
-	}
-
-	public function test_merge__authenticated_user() {
-		$this->enable_feature( 'dashboardSharing' );
-
-		update_option(
-			'googlesitekit_active_modules',
-			array(
-				'search-console',
-				'analytics',
-				'pagespeed-insights',
-			)
-		);
-
-		$test_sharing_settings = array(
-			'search-console'     => array(
-				'sharedRoles' => array( 'editor', 'subscriber' ),
-				'management'  => 'all_admins',
-			),
-			'analytics'          => array(
-				'sharedRoles' => array( 'editor' ),
-				'management'  => 'all_admins',
-			),
-			'pagespeed-insights' => array(
-				'sharedRoles' => array( 'editor' ),
-				'management'  => 'all_admins',
-			),
-		);
-
-		$admin_1 = self::factory()->user->create_and_get( array( 'role' => 'administrator' ) );
-		$admin_2 = self::factory()->user->create_and_get( array( 'role' => 'administrator' ) );
-
-		wp_set_current_user( $admin_1->ID );
-
-		$modules = new Modules( $this->context );
-		// Adds filters which insert default dashboard_sharing settings for shared_ownership_modules.
-		$modules->register();
-
-		// Authenticate current user to partially grant capability to manage module sharing options.
-		$authentication = new Authentication( $this->context );
-		$authentication->get_oauth_client()->set_token(
-			array(
-				'access_token' => 'valid-auth-token',
-			)
-		);
-
-		// Re-register Permissions after enabling the dashboardSharing feature to include dashboard sharing capabilities.
-		$user_options = new User_Options( $this->context );
-		$permissions  = new Permissions( $this->context, $authentication, $modules, $user_options, new Dismissed_Items( $user_options ) );
-		$permissions->register();
-
-		// Add owners for search-console and analytics to test capability required to update sharing settings.
-		// Pagespeed-insights (shared ownership module) does not require an owner as its sharing settings
-		// can always be managed by any authenticated admin.
-		update_option( 'googlesitekit_search-console_settings', array( 'ownerID' => $admin_1->ID ) );
-		update_option( 'googlesitekit_analytics_settings', array( 'ownerID' => $admin_2->ID ) );
-
-		// In the absence of dashboard sharing settings in the DB to begin with, admin_1 can only update
-		// search-console (as an owner) and pagespeed-insights (set to "all_admins" by default).
-		$this->assertTrue( $this->settings->merge( $test_sharing_settings ) );
-		$expected_sharing_settings = array(
-			'search-console'     => array(
-				'sharedRoles' => array( 'editor', 'subscriber' ),
-				'management'  => 'all_admins',
-			),
-			'pagespeed-insights' => array(
-				'sharedRoles' => array( 'editor' ),
-				'management'  => 'all_admins',
-			),
-		);
-		$this->assertEquals( $expected_sharing_settings, $this->settings->get() );
-
-		wp_set_current_user( $admin_2->ID );
-
-		$updated_sharing_settings = array(
-			'search-console'     => array(
-				'sharedRoles' => array( 'subscriber' ),
-				'management'  => 'all_admins',
+				'sharedRoles' => array( 'contributor' ),
+				'management'  => 'owner',
 			),
 			'analytics'          => array(
 				'sharedRoles' => array( 'contributor', 'subscriber' ),
@@ -342,39 +243,96 @@ class Module_Sharing_SettingsTest extends SettingsTestCase {
 				'management'  => 'all_admins',
 			),
 		);
-		// admin_2 should be able to change search-console (set to "all_admins"), analytics (not
-		// already in DB but as an owner) and pagespeed-insights (as an authenticated admin).
-		$this->assertTrue( $this->settings->merge( $updated_sharing_settings ) );
-		$this->assertEquals( $updated_sharing_settings, $this->settings->get() );
 
-		// Test updating partial settings changing search-console to owner only.
-		$updated_sharing_settings = array(
-			'search-console' => array(
-				'sharedRoles' => array( 'contributor' ),
+		// Set some valid sharing settings to test merging.
+		$this->settings->set( $initial_sharing_settings );
+
+		// Can not merge with inactive modules (module already not present in settings).
+		$this->assertFalse(
+			$this->settings->merge(
+				array(
+					'adsense' => array(
+						'sharedRoles' => array( 'editor' ),
+						'management'  => 'owner',
+					),
+				)
+			)
+		);
+
+		// Modules with `null` values are ignored.
+		$this->assertFalse(
+			$this->settings->merge(
+				array(
+					'search-console' => null,
+					'analytics'      => null,
+				)
+			)
+		);
+
+		// Merges settings with valid partials and keeps the rest.
+		$test_sharing_settings = array(
+			'search-console'     => array(
+				'sharedRoles' => array( 'contributor', 'editor' ),
+			),
+			'analytics'          => array(
+				'management' => 'owner',
+			),
+			'pagespeed-insights' => array(
+				'sharedRoles' => array( 'author' ),
 				'management'  => 'owner',
 			),
 		);
-		$this->assertTrue( $this->settings->merge( $updated_sharing_settings ) );
-		$this->assertEquals(
-			array(
-				'search-console'     => array(
-					'sharedRoles' => array( 'contributor' ),
-					'management'  => 'owner',
-				),
-				'analytics'          => array(
-					'sharedRoles' => array( 'contributor', 'subscriber' ),
-					'management'  => 'all_admins',
-				),
-				'pagespeed-insights' => array(
-					'sharedRoles' => array(),
-					'management'  => 'all_admins',
-				),
+		$expected              = array(
+			'search-console'     => array(
+				'sharedRoles' => array( 'contributor', 'editor' ),
+				'management'  => 'owner',
 			),
-			$this->settings->get()
+			'analytics'          => array(
+				'sharedRoles' => array( 'contributor', 'subscriber' ),
+				'management'  => 'owner',
+			),
+			'pagespeed-insights' => array(
+				'sharedRoles' => array( 'author' ),
+				'management'  => 'owner',
+			),
 		);
 
-		// admin_2 now cannot update search-console settings as management setting is set to "owner".
-		$this->assertFalse( $this->settings->merge( $updated_sharing_settings ) );
+		$this->assertTrue( $this->settings->merge( $test_sharing_settings ) );
+		$this->assertEquals( $expected, $this->settings->get() );
+
+		// Keeps the valid parts of partial and descards the invalid parts.
+		$test_sharing_settings = array(
+			'adsense'            => array(
+				'sharedRoles' => array( 'editor' ),
+				'management'  => 'owner',
+			),
+			'search-console'     => null,
+			'analytics'          => array(
+				'sharedRoles' => array( 'contributor' ),
+				'invalid'     => array( 'invalid' ),
+			),
+			'pagespeed-insights' => array(
+				'sharedRoles' => array( 'subscriber' ),
+				'management'  => null,
+			),
+		);
+		$expected              = array(
+			'search-console'     => array(
+				'sharedRoles' => array( 'contributor', 'editor' ),
+				'management'  => 'owner',
+			),
+			'analytics'          => array(
+				'sharedRoles' => array( 'contributor' ),
+				'management'  => 'owner',
+			),
+			'pagespeed-insights' => array(
+				'sharedRoles' => array( 'subscriber' ),
+				'management'  => 'owner',
+			),
+		);
+
+		$this->assertTrue( $this->settings->merge( $test_sharing_settings ) );
+		$this->assertEquals( $expected, $this->settings->get() );
 	}
 
 }
