@@ -83,18 +83,12 @@ export default function Module( {
 	const isEditingUserRoles = useSelect( ( select ) =>
 		select( CORE_UI ).getValue( EDITING_USER_ROLES_KEY )
 	);
-	// const isEditingManagement = useSelect( ( select ) =>
-	// 	select( CORE_UI ).getValue( EDITING_MANAGEMENT_KEY )
-	// );
 	const editingModuleSlug = useSelect( ( select ) =>
 		select( CORE_UI ).getValue( SHARING_SETTINGS_SLUG_KEY )
 	);
 	const isSaving = useSelect( ( select ) =>
 		select( CORE_UI ).getValue( SHARING_SETINGS_SAVING_KEY )
 	);
-	// const canSubmitSharingChanges = useSelect( ( select ) =>
-	// 	select( CORE_MODULES ).canSubmitSharingChanges()
-	// );
 
 	const { setSharingManagement } = useDispatch( CORE_MODULES );
 	const { setValue } = useDispatch( CORE_UI );

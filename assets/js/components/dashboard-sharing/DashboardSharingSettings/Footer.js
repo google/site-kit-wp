@@ -54,12 +54,6 @@ export default function Footer( { closeDialog } ) {
 	const isSaving = useSelect( ( select ) =>
 		select( CORE_UI ).getValue( SHARING_SETINGS_SAVING_KEY )
 	);
-	// const isEditingUserRoles = useSelect( ( select ) =>
-	// 	select( CORE_UI ).getValue( EDITING_USER_ROLES_KEY )
-	// );
-	// const isEditingManagement = useSelect( ( select ) =>
-	// 	select( CORE_UI ).getValue( EDITING_MANAGEMENT_KEY )
-	// );
 
 	const { saveSharingSettings } = useDispatch( CORE_MODULES );
 	const { setValue } = useDispatch( CORE_UI );
@@ -82,9 +76,7 @@ export default function Footer( { closeDialog } ) {
 		setValue( SHARING_SETINGS_SAVING_KEY, false );
 	}, [ saveSharingSettings, setValue, closeDialog ] );
 
-	// TODO: Error state
-	// 1. Do we need to reset the state or not?
-	// 2. How to clear error after another change?
+	// TODO: Clear error state after another change has been made.
 
 	return (
 		<div className="googlesitekit-dashboard-sharing-settings__footer">
