@@ -266,13 +266,14 @@ class PermissionsTest extends TestCase {
 	public function test_dashboard_sharing_capabilities() {
 		$disable_feature = $this->enable_feature( 'dashboardSharing' );
 
-		$contributor = self::factory()->user->create_and_get( array( 'role' => 'contributor' ) );
-		$author      = self::factory()->user->create_and_get( array( 'role' => 'author' ) );
+		$contributor   = self::factory()->user->create_and_get( array( 'role' => 'contributor' ) );
+		$author        = self::factory()->user->create_and_get( array( 'role' => 'author' ) );
+		$administrator = self::factory()->user->create_and_get( array( 'role' => 'administrator' ) );
 
 		$settings              = new Module_Sharing_Settings( new Options( $this->context ) );
 		$test_sharing_settings = array(
 			'analytics'      => array(
-				'sharedRoles' => array( 'contributor' ),
+				'sharedRoles' => array( 'contributor', 'administrator' ),
 				'management'  => 'all_admins',
 			),
 			'search-console' => array(
@@ -289,11 +290,9 @@ class PermissionsTest extends TestCase {
 		add_filter( 'googlesitekit_setup_complete', '__return_true', 100 );
 		$this->assertTrue( $this->authentication->is_setup_completed() );
 
-		$this->verify_view_shared_dashboard_capability( $author, $contributor );
+		$this->verify_view_shared_dashboard_capability( $author, $contributor, $administrator );
 
 		$this->verify_read_shared_module_data_capability( $author, $contributor );
-
-		$administrator = self::factory()->user->create_and_get( array( 'role' => 'administrator' ) );
 
 		$this->verify_module_sharing_admin_capabilities_before_admin_auth( $contributor, $administrator );
 		// Authenticate the administrator user.
@@ -305,6 +304,7 @@ class PermissionsTest extends TestCase {
 		);
 		$restore_user();
 		$this->verify_module_sharing_admin_capabilities_after_admin_auth( $administrator );
+		$this->verify_view_shared_dashboard_capability_after_admin_auth( $administrator );
 
 		// Test dashboard sharing capabilites can only be granted if the feature flag is enabled.
 		$disable_feature();
@@ -314,26 +314,22 @@ class PermissionsTest extends TestCase {
 		$this->assertFalse( user_can( $administrator, Permissions::DELEGATE_MODULE_SHARING_MANAGEMENT, 'search-console' ) );
 	}
 
-	private function verify_view_shared_dashboard_capability( $author, $contributor ) {
-		// Test user should have at least one sharedRole and the shared_dashboard_splash
-		// item dismissed to VIEW_SHARED_DASHBOARD.
+	private function verify_view_shared_dashboard_capability( $author, $contributor, $administrator ) {
+		// Test user should have at least one sharedRole and cannot VIEW_AUTHENTICATED_DASHBOARD
+		// to VIEW_SHARED_DASHBOARD.
 		$this->assertFalse( user_can( $author, Permissions::VIEW_SHARED_DASHBOARD ) );
-		$this->assertFalse( user_can( $contributor, Permissions::VIEW_SHARED_DASHBOARD ) );
-		$this->assertFalse( user_can( $contributor, Permissions::VIEW_DASHBOARD ) );
-		$this->assertFalse( user_can( $contributor, Permissions::VIEW_POSTS_INSIGHTS ) );
-
-		$contributor_user_options = new User_Options( $this->context, $contributor->ID );
-		$dismissed_items          = new Dismissed_Items( $contributor_user_options );
-		$dismissed_items->add( 'shared_dashboard_splash', 0 );
 		$this->assertTrue( user_can( $contributor, Permissions::VIEW_SHARED_DASHBOARD ) );
-		// User should also be able to access VIEW_DASHBOARD as they have the VIEW_SHARED_DASHBOARD access.
+		// administrator is not authenticated yet, so cannot VIEW_AUTHENTICATED_DASHBOARD
+		$this->assertTrue( user_can( $administrator, Permissions::VIEW_SHARED_DASHBOARD ) );
+
+		// contributor should also be able to VIEW_DASHBOARD since they can VIEW_SHARED_DASHBOARD.
 		$this->assertTrue( user_can( $contributor, Permissions::VIEW_DASHBOARD ) );
 		$this->assertTrue( user_can( $contributor, Permissions::VIEW_POSTS_INSIGHTS ) );
+	}
 
-		$author_user_options = new User_Options( $this->context, $author->ID );
-		$dismissed_items     = new Dismissed_Items( $author_user_options );
-		$dismissed_items->add( 'shared_dashboard_splash', 0 );
-		$this->assertFalse( user_can( $author, Permissions::VIEW_SHARED_DASHBOARD ) );
+	private function verify_view_shared_dashboard_capability_after_admin_auth( $administrator ) {
+		// administrator has a shared role but can VIEW_AUTHENTICATED_DASHBOARD
+		$this->assertFalse( user_can( $administrator, Permissions::VIEW_SHARED_DASHBOARD ) );
 	}
 
 	private function verify_read_shared_module_data_capability( $author, $contributor ) {

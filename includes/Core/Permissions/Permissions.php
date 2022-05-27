@@ -352,7 +352,12 @@ final class Permissions {
 					return array_merge( $caps, array( 'do_not_allow' ) );
 				}
 				// For admin users, also require being verified.
-				if ( user_can( $user_id, self::SETUP ) && ! $this->is_user_verified( $user_id ) ) {
+				if (
+					user_can( $user_id, self::SETUP ) &&
+					! $this->is_user_verified( $user_id ) &&
+					// The VIEW_DASHBOARD capability should be allowed when dashboard spash is dismissed.
+					( self::VIEW_DASHBOARD !== $cap || ! $this->is_shared_dashboard_splash_dismissed( $user_id ) )
+				) {
 					return array_merge( $caps, array( 'do_not_allow' ) );
 				}
 
@@ -477,6 +482,8 @@ final class Permissions {
 	 * not dismissed the dashboard sharing splash screen message.
 	 *
 	 * @since 1.69.0
+	 * @since n.e.x.t Remove check for splash dismissal and fail the check if the user
+	 *        can view the authenticated dashboard.
 	 *
 	 * @param int $user_id User ID of the user the capability is checked for.
 	 * @return array Array with a 'do_not_allow' element if checks fail, empty array if checks pass.
@@ -486,7 +493,7 @@ final class Permissions {
 			return array( 'do_not_allow' );
 		}
 
-		if ( ! $this->is_shared_dashboard_splash_dismissed( $user_id ) ) {
+		if ( user_can( $user_id, self::VIEW_AUTHENTICATED_DASHBOARD ) ) {
 			return array( 'do_not_allow' );
 		}
 
