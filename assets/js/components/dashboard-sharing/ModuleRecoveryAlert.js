@@ -220,7 +220,6 @@ export default function ModuleRecoveryAlert() {
 			description={ description }
 			learnMoreURL="https://sitekit.withgoogle.com/documentation/using-site-kit/dashboard-sharing/"
 			learnMoreLabel={ __( 'Learn more', 'google-site-kit' ) }
-			format="full"
 		>
 			{ children }
 		</BannerNotification>
