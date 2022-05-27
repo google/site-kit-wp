@@ -66,11 +66,8 @@
 		column-gap: 12px;
 		display: flex;
 		flex-wrap: wrap;
+		position: relative;
 		row-gap: 4px;
-	}
-
-	.googlesitekit-user-role-select--open {
-		align-items: flex-start;
 	}
 
 	.googlesitekit-user-role-select__button {
@@ -105,6 +102,24 @@
 		}
 	}
 
+	.googlesitekit-user-role-select--open {
+		align-items: flex-start;
+
+		.googlesitekit-user-role-select__button {
+			// 16px for the gap
+			left: calc(50% + 16px);
+			position: absolute;
+			// 64px: 48px for button height and 16px for margin
+			top: -64px;
+
+			@media (min-width: $bp-tablet) {
+				left: auto;
+				position: relative;
+				top: auto;
+			}
+		}
+	}
+
 	.googlesitekit-dashboard-sharing-settings {
 		color: $c-cape-cod;
 		font-size: 14px;
@@ -118,7 +133,7 @@
 	}
 
 	.googlesitekit-dashboard-sharing-settings__column--product {
-		flex: 0 0 25%;
+		flex: 0 0 50%;
 
 		svg {
 			height: 28px;
@@ -136,6 +151,10 @@
 		display: block;
 		font-size: 14px;
 		line-height: 21px;
+
+		@media (min-width: $bp-tablet) {
+			flex: 1;
+		}
 	}
 
 	.googlesitekit-user-role-select__add-roles {
@@ -155,6 +174,7 @@
 
 	.googlesitekit-dashboard-sharing-settings__column--view {
 		flex: 1 1 30%;
+		position: relative;
 
 		@media (min-width: $bp-tablet) {
 			align-items: center;
@@ -185,6 +205,23 @@
 		}
 	}
 
+	.googlesitekit-dashboard-sharing-settings__row--editing {
+		flex-direction: column;
+
+		@media (min-width: $bp-tablet) {
+			align-items: flex-start;
+			flex-direction: row;
+		}
+
+		.googlesitekit-dashboard-sharing-settings__column--product {
+			min-height: 48px;
+
+			@media (min-width: $bp-tablet) {
+				min-height: 28px;
+			}
+		}
+	}
+
 	.googlesitekit-dashboard-sharing-settings__module {
 		border-bottom: 1px solid $c-mercury;
 		padding: 16px 0;
@@ -194,8 +231,10 @@
 		}
 
 		.googlesitekit-dashboard-sharing-settings__column--product {
+			align-items: center;
 			display: flex;
-			flex-direction: column;
+			flex-direction: row;
+			flex-wrap: nowrap;
 			gap: 12px;
 
 			@media (min-width: $bp-desktop) {

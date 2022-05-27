@@ -126,6 +126,7 @@ export default function Module( {
 				'googlesitekit-dashboard-sharing-settings__module',
 				'googlesitekit-dashboard-sharing-settings__row',
 				{
+					'googlesitekit-dashboard-sharing-settings__row--editing': isEditingUserRoles,
 					'googlesitekit-dashboard-sharing-settings__row--disabled': isLocked,
 				}
 			) }

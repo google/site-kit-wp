@@ -28,7 +28,7 @@ import { Chip, ChipCheckmark } from '@material/react-chips';
  */
 import { __ } from '@wordpress/i18n';
 import { ESCAPE, ENTER } from '@wordpress/keycodes';
-import { useState, useCallback, useRef } from '@wordpress/element';
+import { useEffect, useState, useCallback, useRef } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -66,13 +66,21 @@ export default function UserRoleSelect( { moduleSlug, isLocked = false } ) {
 
 	useKeyCodesInside( [ ESCAPE ], wrapperRef, () => setEditMode( false ) );
 
+	useEffect( () => {
+		if ( editMode ) {
+			// Set these state to disable modules in when editing user roles
+			setValue( SHARING_SETTINGS_SLUG_KEY, moduleSlug );
+			setValue( EDITING_USER_ROLES_KEY, true );
+		} else {
+			// Reset the state to enable modules in when not editing.
+			setValue( SHARING_SETTINGS_SLUG_KEY, undefined );
+			setValue( EDITING_USER_ROLES_KEY, false );
+		}
+	}, [ editMode, setValue, moduleSlug ] );
+
 	const toggleEditMode = useCallback( () => {
 		setEditMode( ! editMode );
-
-		// Reset the state to enable modules in when not editing.
-		setValue( SHARING_SETTINGS_SLUG_KEY, undefined );
-		setValue( EDITING_USER_ROLES_KEY, false );
-	}, [ editMode, setEditMode, setValue ] );
+	}, [ editMode, setEditMode ] );
 
 	const toggleChip = useCallback(
 		( { type, target, keyCode } ) => {
@@ -86,10 +94,6 @@ export default function UserRoleSelect( { moduleSlug, isLocked = false } ) {
 			if ( ! chipID ) {
 				return;
 			}
-
-			// Set these state to disable modules in when editing user roles
-			setValue( SHARING_SETTINGS_SLUG_KEY, moduleSlug );
-			setValue( EDITING_USER_ROLES_KEY, true );
 
 			let updatedSharedRoles;
 			if ( chipID === ALL_CHIP_ID ) {
@@ -110,7 +114,7 @@ export default function UserRoleSelect( { moduleSlug, isLocked = false } ) {
 
 			setSharedRoles( moduleSlug, updatedSharedRoles );
 		},
-		[ moduleSlug, setSharedRoles, sharedRoles, shareableRoles, setValue ]
+		[ moduleSlug, setSharedRoles, sharedRoles, shareableRoles ]
 	);
 
 	const getSharedRolesDisplayNames = () => {
