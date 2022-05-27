@@ -42,6 +42,7 @@ import Data from 'googlesitekit-data';
 import ModuleIcon from '../../ModuleIcon';
 import UserRoleSelect from '../UserRoleSelect';
 import { Select } from '../../../material-components';
+import useViewContext from '../../../hooks/useViewContext';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
@@ -51,6 +52,7 @@ import {
 	SHARING_SETINGS_SAVING_KEY,
 	SHARING_SETTINGS_SLUG_KEY,
 } from './constants';
+import { trackEvent } from '../../../util';
 const { useSelect, useDispatch } = Data;
 
 const viewAccessOptions = [
@@ -72,6 +74,8 @@ export default function Module( {
 	sharedOwnershipModule,
 	hasOwnedModule,
 } ) {
+	const viewContext = useViewContext();
+
 	const [ manageViewAccess, setManageViewAccess ] = useState( undefined );
 	const module = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModule( moduleSlug )
@@ -103,12 +107,24 @@ export default function Module( {
 
 	const handleOnChange = useCallback(
 		( event ) => {
+			const value = event.target.value;
 			setValue( EDITING_MANAGEMENT_KEY, true );
 			setValue( SHARING_SETTINGS_SLUG_KEY, moduleSlug );
-			setManageViewAccess( event.target.value );
-			setSharingManagement( moduleSlug, event.target.value );
+			setManageViewAccess( value );
+			setSharingManagement( moduleSlug, value );
+			trackEvent(
+				`${ viewContext }_sharing`,
+				`change_management_${ value }`,
+				moduleSlug
+			);
 		},
-		[ moduleSlug, setManageViewAccess, setSharingManagement, setValue ]
+		[
+			moduleSlug,
+			viewContext,
+			setManageViewAccess,
+			setSharingManagement,
+			setValue,
+		]
 	);
 
 	const isLocked =
