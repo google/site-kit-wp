@@ -300,27 +300,26 @@ final class Screens {
 					'title'               => __( 'Dashboard', 'google-site-kit' ),
 					'capability'          => Permissions::VIEW_SPLASH,
 					'initialize_callback' => function( Context $context ) {
+						$request_context = $context->input()->filter( INPUT_GET, 'googlesitekit_context' );
+						$reset_session   = $context->input()->filter( INPUT_GET, 'googlesitekit_reset_session', FILTER_VALIDATE_BOOLEAN );
+
+						// If the user is authenticated, redirect them to the disconnect URL and then send them back here.
+						if ( ! $reset_session && 'revoked' === $request_context && $this->authentication->is_authenticated() ) {
+							$this->authentication->disconnect();
+
+							wp_safe_redirect( add_query_arg( array( 'googlesitekit_reset_session' => 1 ) ) );
+							exit;
+						}
+
 						if ( current_user_can( Permissions::VIEW_DASHBOARD ) ) {
 							if ( Feature_Flags::enabled( 'dashboardSharing' ) ) {
 								$dismissed_items = new Dismissed_Items( new User_Options( $this->context ) );
 								if ( current_user_can( Permissions::VIEW_AUTHENTICATED_DASHBOARD ) || current_user_can( Permissions::VIEW_SHARED_DASHBOARD ) && $dismissed_items->is_dismissed( 'shared_dashboard_splash' ) ) {
 									$this->show_dashboard = true;
 								}
-								return;
+							} else {
+								$this->show_dashboard = true;
 							}
-							$this->show_dashboard = true;
-							return;
-						}
-
-						$splash_context = $context->input()->filter( INPUT_GET, 'googlesitekit_context' );
-						$reset_session  = $context->input()->filter( INPUT_GET, 'googlesitekit_reset_session', FILTER_VALIDATE_BOOLEAN );
-
-						// If the user is authenticated, redirect them to the disconnect URL and then send them back here.
-						if ( ! $reset_session && 'revoked' === $splash_context && $this->authentication->is_authenticated() ) {
-							$this->authentication->disconnect();
-
-							wp_safe_redirect( add_query_arg( array( 'googlesitekit_reset_session' => 1 ) ) );
-							exit;
 						}
 					},
 					'enqueue_callback'    => function( Assets $assets ) {
