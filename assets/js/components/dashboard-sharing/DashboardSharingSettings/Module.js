@@ -119,6 +119,7 @@ export default function Module( {
 
 	const isLocked =
 		( moduleSlug !== editingModuleSlug && isEditingUserRoles ) || isSaving;
+	const isEditing = moduleSlug === editingModuleSlug && isEditingUserRoles;
 
 	return (
 		<div
@@ -126,7 +127,7 @@ export default function Module( {
 				'googlesitekit-dashboard-sharing-settings__module',
 				'googlesitekit-dashboard-sharing-settings__row',
 				{
-					'googlesitekit-dashboard-sharing-settings__row--editing': isEditingUserRoles,
+					'googlesitekit-dashboard-sharing-settings__row--editing': isEditing,
 					'googlesitekit-dashboard-sharing-settings__row--disabled': isLocked,
 				}
 			) }
