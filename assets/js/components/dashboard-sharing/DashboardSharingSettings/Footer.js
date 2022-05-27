@@ -25,7 +25,7 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { useCallback } from '@wordpress/element';
+import { useCallback, useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -43,34 +43,54 @@ import {
 	SHARING_SETINGS_SAVING_KEY,
 	SHARING_SETTINGS_SLUG_KEY,
 } from './constants';
+import ErrorText from '../../ErrorText';
 const { useSelect, useDispatch } = Data;
 
 export default function Footer( { closeDialog } ) {
+	const [ errorNotice, setErrorNotice ] = useState( null );
 	const canSubmitSharingChanges = useSelect( ( select ) =>
 		select( CORE_MODULES ).canSubmitSharingChanges()
 	);
+	const isSaving = useSelect( ( select ) =>
+		select( CORE_UI ).getValue( SHARING_SETINGS_SAVING_KEY )
+	);
+	// const isEditingUserRoles = useSelect( ( select ) =>
+	// 	select( CORE_UI ).getValue( EDITING_USER_ROLES_KEY )
+	// );
+	// const isEditingManagement = useSelect( ( select ) =>
+	// 	select( CORE_UI ).getValue( EDITING_MANAGEMENT_KEY )
+	// );
 
 	const { saveSharingSettings } = useDispatch( CORE_MODULES );
 	const { setValue } = useDispatch( CORE_UI );
 
-	const isSaving = useSelect( ( select ) =>
-		select( CORE_UI ).getValue( SHARING_SETINGS_SAVING_KEY )
-	);
-
 	const onApply = useCallback( async () => {
 		setValue( SHARING_SETINGS_SAVING_KEY, true );
-		await saveSharingSettings();
-		// Reset the state to enable modules in when not editing or saving.
-		setValue( SHARING_SETTINGS_SLUG_KEY, undefined );
-		setValue( EDITING_USER_ROLES_KEY, false );
-		setValue( EDITING_MANAGEMENT_KEY, false );
+		const { error } = await saveSharingSettings();
+
+		if ( error ) {
+			setErrorNotice( error.message );
+		} else {
+			// Reset the state to enable modules in when not editing or saving.
+			setValue( SHARING_SETTINGS_SLUG_KEY, undefined );
+			setValue( EDITING_USER_ROLES_KEY, false );
+			setValue( EDITING_MANAGEMENT_KEY, false );
+
+			closeDialog();
+		}
+		// Reset saving state when there is an error or not.
 		setValue( SHARING_SETINGS_SAVING_KEY, false );
-	}, [ saveSharingSettings, setValue ] );
+	}, [ saveSharingSettings, setValue, closeDialog ] );
+
+	// TODO: Error state
+	// 1. Do we need to reset the state or not?
+	// 2. How to clear error after another change?
 
 	return (
 		<div className="googlesitekit-dashboard-sharing-settings__footer">
 			<div className="googlesitekit-dashboard-sharing-settings__footer-notice">
-				<Notice />
+				{ errorNotice && <ErrorText message={ errorNotice } /> }
+				{ ! errorNotice && <Notice /> }
 			</div>
 
 			<div className="googlesitekit-dashboard-sharing-settings__footer-actions">
