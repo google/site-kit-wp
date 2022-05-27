@@ -141,7 +141,7 @@ class Google_ProxyTest extends TestCase {
 				'url'                    => home_url(),
 				'action_uri'             => admin_url( 'index.php' ),
 				'name'                   => get_bloginfo( 'name' ),
-				'return_uri'             => $this->context->admin_url( 'splash' ),
+				'return_uri'             => $this->context->admin_url(),
 				'redirect_uri'           => add_query_arg( 'oauth2callback', 1, admin_url( 'index.php' ) ),
 				'analytics_redirect_uri' => add_query_arg( 'gatoscallback', 1, admin_url( 'index.php' ) ),
 			),
@@ -196,7 +196,7 @@ class Google_ProxyTest extends TestCase {
 			'url'                    => home_url(),
 			'action_uri'             => admin_url( 'index.php' ),
 			'name'                   => get_bloginfo( 'name' ),
-			'return_uri'             => $this->context->admin_url( 'splash' ),
+			'return_uri'             => $this->context->admin_url(),
 			'redirect_uri'           => add_query_arg( 'oauth2callback', 1, admin_url( 'index.php' ) ),
 			'analytics_redirect_uri' => add_query_arg( 'gatoscallback', 1, admin_url( 'index.php' ) ),
 		);
