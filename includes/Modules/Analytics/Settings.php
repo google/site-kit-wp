@@ -214,7 +214,12 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 					$option['anonymizeIP'] = (bool) $option['anonymizeIP'];
 				}
 				if ( isset( $option['trackingDisabled'] ) ) {
-					$option['trackingDisabled'] = (array) $option['trackingDisabled'];
+					// Prevent other options from being saved if 'loggedinUsers' is selected.
+					if ( in_array( 'loggedinUsers', $option['trackingDisabled'], true ) ) {
+						$option['trackingDisabled'] = array( 'loggedinUsers' );
+					} else {
+						$option['trackingDisabled'] = (array) $option['trackingDisabled'];
+					}
 				}
 				if ( isset( $option['adsenseLinked'] ) ) {
 					$option['adsenseLinked'] = (bool) $option['adsenseLinked'];

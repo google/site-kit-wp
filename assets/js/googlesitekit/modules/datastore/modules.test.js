@@ -191,6 +191,8 @@ describe( 'core/modules modules', () => {
 		describe( 'recoverModule', () => {
 			it( 'dispatches a request to recover a module', async () => {
 				const slug = 'analytics';
+				global[ dashboardSharingDataBaseVar ] = recoverableModuleList;
+
 				fetchMock.get(
 					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
 					{
@@ -265,6 +267,16 @@ describe( 'core/modules modules', () => {
 				expect( fetchMock ).toHaveFetched(
 					/^\/google-site-kit\/v1\/core\/modules\/data\/list/
 				);
+
+				// Ensure the module has been removed from the recoverable modules list.
+				const recoverableModules = registry
+					.select( CORE_MODULES )
+					.getRecoverableModules();
+
+				expect( Object.keys( recoverableModules ) ).toEqual( [
+					'search-console',
+					'tagmanager',
+				] );
 			} );
 
 			it( 'encounters an error if the module is not recoverable', async () => {
