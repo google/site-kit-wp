@@ -461,10 +461,12 @@
 			align-items: flex-start;
 			flex-basis: 25%;
 			flex-direction: column;
+			max-width: 25%;
 
 			@media (min-width: $bp-tablet) {
 				align-items: center;
 				flex-direction: row;
+				max-width: auto;
 			}
 		}
 
@@ -472,6 +474,10 @@
 
 			.googlesitekit-user-role-select__button {
 				left: calc(25% + 16px);
+
+				@media (min-width: $bp-tablet) {
+					left: auto;
+				}
 			}
 		}
 	}
