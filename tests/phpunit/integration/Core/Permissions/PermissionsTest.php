@@ -47,11 +47,6 @@ class PermissionsTest extends TestCase {
 	 */
 	private $user_options;
 
-	/**
-	 * @var Dismissed_Items
-	 */
-	private $dismissed_items;
-
 	public function set_up() {
 		parent::set_up();
 
@@ -61,15 +56,14 @@ class PermissionsTest extends TestCase {
 		remove_all_filters( 'googlesitekit_user_data' );
 		remove_all_filters( 'user_has_cap' );
 
-		$this->context         = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-		$this->user_options    = new User_Options( $this->context );
-		$this->authentication  = new Authentication( $this->context, null, $this->user_options );
-		$this->modules         = new Modules( $this->context, null, $this->user_options, $this->authentication );
-		$this->dismissed_items = new Dismissed_Items( $this->user_options );
+		$this->context        = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$this->user_options   = new User_Options( $this->context );
+		$this->authentication = new Authentication( $this->context, null, $this->user_options );
+		$this->modules        = new Modules( $this->context, null, $this->user_options, $this->authentication );
 	}
 
 	public function test_register() {
-		$permissions = new Permissions( $this->context, $this->authentication, $this->modules, $this->user_options, $this->dismissed_items );
+		$permissions = new Permissions( $this->context, $this->authentication, $this->modules, $this->user_options );
 		$permissions->register();
 
 		$this->assertTrue( has_filter( 'map_meta_cap' ) );
@@ -83,7 +77,7 @@ class PermissionsTest extends TestCase {
 	public function test_register__without_dynamic_capabilities() {
 		define( 'GOOGLESITEKIT_DISABLE_DYNAMIC_CAPABILITIES', true );
 
-		$permissions = new Permissions( $this->context, $this->authentication, $this->modules, $this->user_options, $this->dismissed_items );
+		$permissions = new Permissions( $this->context, $this->authentication, $this->modules, $this->user_options );
 		$permissions->register();
 
 		$this->assertTrue( has_filter( 'map_meta_cap' ) );
@@ -98,7 +92,7 @@ class PermissionsTest extends TestCase {
 		$user = self::factory()->user->create_and_get( array( 'role' => $role ) );
 		wp_set_current_user( $user->ID );
 		$this->user_options->switch_user( $user->ID );
-		$permissions = new Permissions( $this->context, $this->authentication, $this->modules, $this->user_options, $this->dismissed_items );
+		$permissions = new Permissions( $this->context, $this->authentication, $this->modules, $this->user_options );
 		$permissions->register();
 
 		$this->assertEqualSetsWithIndex(
@@ -130,7 +124,7 @@ class PermissionsTest extends TestCase {
 		wp_set_current_user( $user->ID );
 		$this->user_options->switch_user( $user->ID );
 
-		$permissions = new Permissions( $this->context, $this->authentication, $this->modules, $this->user_options, $this->dismissed_items );
+		$permissions = new Permissions( $this->context, $this->authentication, $this->modules, $this->user_options );
 		$permissions->register();
 
 		$this->assertEqualSetsWithIndex(
@@ -155,7 +149,7 @@ class PermissionsTest extends TestCase {
 		wp_set_current_user( $user->ID );
 		$this->user_options->switch_user( $user->ID );
 
-		$permissions = new Permissions( $this->context, $this->authentication, $this->modules, $this->user_options, $this->dismissed_items );
+		$permissions = new Permissions( $this->context, $this->authentication, $this->modules, $this->user_options );
 		$permissions->register();
 
 		$this->assertFalse( $this->authentication->is_authenticated() );
@@ -203,7 +197,7 @@ class PermissionsTest extends TestCase {
 		wp_set_current_user( $user->ID );
 		$this->user_options->switch_user( $user->ID );
 
-		$permissions = new Permissions( $this->context, $this->authentication, $this->modules, $this->user_options, $this->dismissed_items );
+		$permissions = new Permissions( $this->context, $this->authentication, $this->modules, $this->user_options );
 		$permissions->register();
 
 		// Fake a valid authentication token on the client.
@@ -281,7 +275,7 @@ class PermissionsTest extends TestCase {
 		);
 		$settings->set( $test_sharing_settings );
 
-		$permissions = new Permissions( $this->context, $this->authentication, $this->modules, $this->user_options, $this->dismissed_items );
+		$permissions = new Permissions( $this->context, $this->authentication, $this->modules, $this->user_options );
 		$permissions->register();
 
 		// Make sure SiteKit is setup.
@@ -315,25 +309,12 @@ class PermissionsTest extends TestCase {
 	}
 
 	private function verify_view_shared_dashboard_capability( $author, $contributor ) {
-		// Test user should have at least one sharedRole and the shared_dashboard_splash
-		// item dismissed to VIEW_SHARED_DASHBOARD.
+		// Test user should have at least one sharedRole to VIEW_SHARED_DASHBOARD.
 		$this->assertFalse( user_can( $author, Permissions::VIEW_SHARED_DASHBOARD ) );
-		$this->assertFalse( user_can( $contributor, Permissions::VIEW_SHARED_DASHBOARD ) );
-		$this->assertFalse( user_can( $contributor, Permissions::VIEW_DASHBOARD ) );
-		$this->assertFalse( user_can( $contributor, Permissions::VIEW_POSTS_INSIGHTS ) );
-
-		$contributor_user_options = new User_Options( $this->context, $contributor->ID );
-		$dismissed_items          = new Dismissed_Items( $contributor_user_options );
-		$dismissed_items->add( 'shared_dashboard_splash', 0 );
 		$this->assertTrue( user_can( $contributor, Permissions::VIEW_SHARED_DASHBOARD ) );
 		// User should also be able to access VIEW_DASHBOARD as they have the VIEW_SHARED_DASHBOARD access.
 		$this->assertTrue( user_can( $contributor, Permissions::VIEW_DASHBOARD ) );
 		$this->assertTrue( user_can( $contributor, Permissions::VIEW_POSTS_INSIGHTS ) );
-
-		$author_user_options = new User_Options( $this->context, $author->ID );
-		$dismissed_items     = new Dismissed_Items( $author_user_options );
-		$dismissed_items->add( 'shared_dashboard_splash', 0 );
-		$this->assertFalse( user_can( $author, Permissions::VIEW_SHARED_DASHBOARD ) );
 	}
 
 	private function verify_read_shared_module_data_capability( $author, $contributor ) {
@@ -389,7 +370,7 @@ class PermissionsTest extends TestCase {
 		$user = self::factory()->user->create_and_get( array( 'role' => $role ) );
 		wp_set_current_user( $user->ID );
 		$this->user_options->switch_user( $user->ID );
-		$permissions = new Permissions( $this->context, $this->authentication, $this->modules, $this->user_options, $this->dismissed_items );
+		$permissions = new Permissions( $this->context, $this->authentication, $this->modules, $this->user_options );
 		$permissions->register();
 
 		$this->assertEqualSetsWithIndex(
@@ -423,7 +404,7 @@ class PermissionsTest extends TestCase {
 		wp_set_current_user( $user->ID );
 		$this->user_options->switch_user( $user->ID );
 
-		$permissions = new Permissions( $this->context, $this->authentication, $this->modules, $this->user_options, $this->dismissed_items );
+		$permissions = new Permissions( $this->context, $this->authentication, $this->modules, $this->user_options );
 		$permissions->register();
 
 		$this->assertEqualSetsWithIndex(
@@ -457,7 +438,7 @@ class PermissionsTest extends TestCase {
 		wp_set_current_user( $user->ID );
 		$this->user_options->switch_user( $user->ID );
 
-		$permissions = new Permissions( $this->context, $this->authentication, $this->modules, $this->user_options, $this->dismissed_items );
+		$permissions = new Permissions( $this->context, $this->authentication, $this->modules, $this->user_options );
 		$permissions->register();
 
 		$this->assertFalse( $this->authentication->is_authenticated() );
@@ -514,7 +495,7 @@ class PermissionsTest extends TestCase {
 		wp_set_current_user( $user->ID );
 		$this->user_options->switch_user( $user->ID );
 
-		$permissions = new Permissions( $this->context, $this->authentication, $this->modules, $this->user_options, $this->dismissed_items );
+		$permissions = new Permissions( $this->context, $this->authentication, $this->modules, $this->user_options );
 		$permissions->register();
 
 		// Fake a valid authentication token on the client.
@@ -557,7 +538,7 @@ class PermissionsTest extends TestCase {
 		$this->user_options->switch_user( $user->ID );
 
 		$sharing_settings = new Module_Sharing_Settings( new Options( $this->context ) );
-		$permissions      = new Permissions( $this->context, $this->authentication, $this->modules, $this->user_options, $this->dismissed_items );
+		$permissions      = new Permissions( $this->context, $this->authentication, $this->modules, $this->user_options );
 		$permissions->register();
 
 		$this->assertFalse( user_can( $user, Permissions::VIEW_SPLASH ) );
@@ -569,10 +550,6 @@ class PermissionsTest extends TestCase {
 		);
 
 		$this->assertTrue( user_can( $user, Permissions::VIEW_SPLASH ) );
-
-		// Once the shared_dashboard_splash item is dismissed, the splash cannot be viewed again.
-		$this->dismissed_items->add( 'shared_dashboard_splash' );
-		$this->assertFalse( user_can( $user, Permissions::VIEW_SPLASH ) );
 	}
 
 	public function data_default_shareable_non_admin_roles() {
@@ -583,7 +560,7 @@ class PermissionsTest extends TestCase {
 
 	public function test_view_splash__admin() {
 		$user        = self::factory()->user->create_and_get( array( 'role' => 'administrator' ) );
-		$permissions = new Permissions( $this->context, $this->authentication, $this->modules, $this->user_options, $this->dismissed_items );
+		$permissions = new Permissions( $this->context, $this->authentication, $this->modules, $this->user_options );
 		$permissions->register();
 		$this->user_options->switch_user( $user->ID );
 
@@ -591,10 +568,6 @@ class PermissionsTest extends TestCase {
 
 		$this->enable_feature( 'dashboardSharing' );
 
-		$this->assertTrue( user_can( $user, Permissions::VIEW_SPLASH ) );
-
-		// An admin can still see the splash even when this dismissal is present because they can authenticate.
-		$this->dismissed_items->add( 'shared_dashboard_splash' );
 		$this->assertTrue( user_can( $user, Permissions::VIEW_SPLASH ) );
 	}
 }
