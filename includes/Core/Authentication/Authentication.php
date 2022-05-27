@@ -810,7 +810,7 @@ final class Authentication {
 		$this->disconnect();
 
 		$redirect_url = $this->context->admin_url(
-			'splash',
+			'dashboard',
 			array(
 				'googlesitekit_reset_session' => 1,
 			)
@@ -830,7 +830,7 @@ final class Authentication {
 	 */
 	private function inline_js_base_data( $data ) {
 		$data['isOwner']             = $this->owner_id->get() === get_current_user_id();
-		$data['splashURL']           = esc_url_raw( $this->context->admin_url( 'splash' ) );
+		$data['splashURL']           = esc_url_raw( $this->context->admin_url() );
 		$data['proxySetupURL']       = '';
 		$data['proxyPermissionsURL'] = '';
 		$data['usingProxy']          = false;
@@ -1204,7 +1204,7 @@ final class Authentication {
 					} elseif ( $this->is_authenticated() ) {
 						$setup_url = $this->get_connect_url();
 					} else {
-						$setup_url = $this->context->admin_url( 'splash' );
+						$setup_url = $this->context->admin_url();
 					}
 
 					if ( 'access_denied' === $error_code ) {
@@ -1491,7 +1491,7 @@ final class Authentication {
 		$html .= '</p><p>';
 		$html .= sprintf(
 			'<a href="%s">%s</a>',
-			esc_url( Plugin::instance()->context()->admin_url( 'splash' ) ),
+			esc_url( Plugin::instance()->context()->admin_url() ),
 			__( 'Please try again.', 'google-site-kit' )
 		);
 		wp_die( $html, __( 'Something went wrong.', 'google-site-kit' ), 403 ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped

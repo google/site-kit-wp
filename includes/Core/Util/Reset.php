@@ -270,7 +270,7 @@ class Reset {
 
 		wp_safe_redirect(
 			$this->context->admin_url(
-				'splash',
+				'dashboard',
 				array(
 					// Trigger client-side storage reset.
 					'googlesitekit_reset_session' => 1,
