@@ -44,9 +44,13 @@ import {
 	SHARING_SETTINGS_SLUG_KEY,
 } from './constants';
 import ErrorText from '../../ErrorText';
+import { trackEvent } from '../../../util';
+import useViewContext from '../../../hooks/useViewContext';
 const { useSelect, useDispatch } = Data;
 
 export default function Footer( { closeDialog } ) {
+	const viewContext = useViewContext();
+
 	const [ errorNotice, setErrorNotice ] = useState( null );
 	const canSubmitSharingChanges = useSelect( ( select ) =>
 		select( CORE_MODULES ).canSubmitSharingChanges()
@@ -65,6 +69,8 @@ export default function Footer( { closeDialog } ) {
 		if ( error ) {
 			setErrorNotice( error.message );
 		} else {
+			await trackEvent( `${ viewContext }_sharing`, 'settings_confirm' );
+
 			// Reset the state to enable modules in when not editing or saving.
 			setValue( SHARING_SETTINGS_SLUG_KEY, undefined );
 			setValue( EDITING_USER_ROLES_KEY, false );
@@ -74,7 +80,7 @@ export default function Footer( { closeDialog } ) {
 		}
 		// Reset saving state when there is an error or not.
 		setValue( SHARING_SETINGS_SAVING_KEY, false );
-	}, [ saveSharingSettings, setValue, closeDialog ] );
+	}, [ viewContext, saveSharingSettings, setValue, closeDialog ] );
 
 	// TODO: Clear error state after another change has been made.
 
