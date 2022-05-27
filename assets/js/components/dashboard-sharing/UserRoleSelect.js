@@ -22,6 +22,7 @@
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import { Chip, ChipCheckmark } from '@material/react-chips';
+import isEqual from 'lodash/isEqual';
 
 /**
  * WordPress dependencies
@@ -38,7 +39,9 @@ import Button from '../Button';
 import Link from '../Link';
 import ShareIcon from '../../../svg/icons/share.svg';
 import CloseIcon from '../../../svg/icons/close.svg';
+import useViewContext from '../../hooks/useViewContext';
 import { useKeyCodesInside } from '../../hooks/useKeyCodesInside';
+import { trackEvent } from '../../util';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 import {
@@ -51,8 +54,11 @@ const ALL_CHIP_ID = 'all';
 const ALL_CHIP_DISPLAY_NAME = __( 'All', 'google-site-kit' );
 
 export default function UserRoleSelect( { moduleSlug, isLocked = false } ) {
+	const viewContext = useViewContext();
 	const wrapperRef = useRef();
+
 	const [ editMode, setEditMode ] = useState( false );
+	const [ initialSharedRoles, setInitialSharedRoles ] = useState( [] );
 
 	const { setSharedRoles } = useDispatch( CORE_MODULES );
 	const { setValue } = useDispatch( CORE_UI );
@@ -79,8 +85,20 @@ export default function UserRoleSelect( { moduleSlug, isLocked = false } ) {
 	}, [ editMode, setValue, moduleSlug ] );
 
 	const toggleEditMode = useCallback( () => {
+		if ( editMode ) {
+			if ( ! isEqual( [ ...sharedRoles ].sort(), initialSharedRoles ) ) {
+				trackEvent(
+					`${ viewContext }_sharing`,
+					'change_shared_roles',
+					moduleSlug
+				);
+			}
+		} else {
+			setInitialSharedRoles( [ ...sharedRoles ].sort() );
+		}
+
 		setEditMode( ! editMode );
-	}, [ editMode, setEditMode ] );
+	}, [ editMode, sharedRoles, initialSharedRoles, viewContext, moduleSlug ] );
 
 	const toggleChip = useCallback(
 		( { type, target, keyCode } ) => {

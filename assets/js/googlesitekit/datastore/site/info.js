@@ -101,6 +101,8 @@ export const reducer = ( state, { payload, type } ) => {
 				proxyPermissionsURL,
 				proxySetupURL,
 				referenceSiteURL,
+				setupErrorMessage,
+				setupErrorRedoURL,
 				siteName,
 				timezone,
 				usingProxy,
@@ -120,6 +122,8 @@ export const reducer = ( state, { payload, type } ) => {
 					proxyPermissionsURL,
 					proxySetupURL,
 					referenceSiteURL,
+					setupErrorMessage,
+					setupErrorRedoURL,
 					siteName,
 					timezone,
 					usingProxy,
@@ -164,11 +168,14 @@ export const resolvers = {
 			proxyPermissionsURL,
 			proxySetupURL,
 			referenceSiteURL,
+			setupErrorMessage,
+			setupErrorRedoURL,
 			siteName,
 			timezone,
 			usingProxy,
 			webStoriesActive,
 		} = global._googlesitekitBaseData;
+
 		const {
 			currentEntityID,
 			currentEntityTitle,
@@ -187,6 +194,8 @@ export const resolvers = {
 			proxyPermissionsURL,
 			proxySetupURL,
 			referenceSiteURL,
+			setupErrorMessage,
+			setupErrorRedoURL,
 			siteName,
 			timezone,
 			usingProxy: !! usingProxy,
@@ -461,6 +470,29 @@ export const selectors = {
 	 * @return {(string|undefined)} The site name.
 	 */
 	getSiteName: getSiteInfoProperty( 'siteName' ),
+
+	/**
+	 * Gets a setup error message, if one exists.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(string|null|undefined)} An error message from setup, if one exists. Will be `null` if no error exists; `undefined` when loading.
+	 */
+	getSetupErrorMessage: getSiteInfoProperty( 'setupErrorMessage' ),
+
+	/**
+	 * Gets a setup redo URL, if one exists after encountering a setup error.
+	 *
+	 * This URL will be used to redo the setup process if a user encountered
+	 * an error.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(string|null|undefined)} The setup URL, if one exists. Will be `null` if no error exists and thus the setup redo URL doesn't exist; `undefined` when loading.
+	 */
+	getSetupErrorRedoURL: getSiteInfoProperty( 'setupErrorRedoURL' ),
 
 	/**
 	 * Gets the 'permaLink' query parameter.
