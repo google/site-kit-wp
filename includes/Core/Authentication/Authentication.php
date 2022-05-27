@@ -940,7 +940,7 @@ final class Authentication {
 		$data['needReauthenticate'] = $auth_client->needs_reauthentication();
 
 		// All admins need to go through site verification process.
-		if ( current_user_can( Permissions::MANAGE_OPTIONS ) ) {
+		if ( current_user_can( Permissions::AUTHENTICATE ) ) {
 			$data['isVerified'] = $this->verification->has();
 		} else {
 			$data['isVerified'] = false;
