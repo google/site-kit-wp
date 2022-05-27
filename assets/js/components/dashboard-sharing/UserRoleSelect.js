@@ -21,6 +21,7 @@
  */
 import PropTypes from 'prop-types';
 import { Chip, ChipCheckmark } from '@material/react-chips';
+import isEqual from 'lodash/isEqual';
 
 /**
  * WordPress dependencies
@@ -51,6 +52,7 @@ export default function UserRoleSelect( { moduleSlug } ) {
 	const wrapperRef = useRef();
 
 	const [ editMode, setEditMode ] = useState( false );
+	const [ initialSharedRoles, setInitialSharedRoles ] = useState( [] );
 
 	const { setSharedRoles } = useDispatch( CORE_MODULES );
 
@@ -60,25 +62,24 @@ export default function UserRoleSelect( { moduleSlug } ) {
 	const sharedRoles = useSelect( ( select ) =>
 		select( CORE_MODULES ).getSharedRoles( moduleSlug )
 	);
-	const rolesChanged = useSelect( ( select ) =>
-		select( CORE_MODULES ).haveSharingSettingsChanged(
-			`${ moduleSlug }.sharedRoles`
-		)
-	);
 
 	useKeyCodesInside( [ ESCAPE ], wrapperRef, () => setEditMode( false ) );
 
 	const toggleEditMode = useCallback( () => {
 		if ( editMode ) {
-			trackEvent(
-				`${ viewContext }_sharing`,
-				'change_shared_roles',
-				moduleSlug
-			);
+			if ( ! isEqual( [ ...sharedRoles ].sort(), initialSharedRoles ) ) {
+				trackEvent(
+					`${ viewContext }_sharing`,
+					'change_shared_roles',
+					moduleSlug
+				);
+			}
+		} else {
+			setInitialSharedRoles( [ ...sharedRoles ].sort() );
 		}
 
 		setEditMode( ! editMode );
-	}, [ editMode, setEditMode, rolesChanged, viewContext, moduleSlug ] );
+	}, [ editMode, sharedRoles, initialSharedRoles, viewContext, moduleSlug ] );
 
 	const toggleChip = useCallback(
 		( { type, target, keyCode } ) => {
