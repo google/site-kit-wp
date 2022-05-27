@@ -146,6 +146,7 @@
 			justify-content: flex-end;
 			margin: 0;
 			padding: 16px;
+			z-index: 2;
 
 			@media (min-width: $bp-tablet) {
 				padding: 20px 32px;

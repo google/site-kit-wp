@@ -20,6 +20,7 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import classnames from 'classnames';
 import { Tooltip } from '@material-ui/core';
 
 /**
@@ -39,11 +40,10 @@ import {
  */
 import Data from 'googlesitekit-data';
 import ModuleIcon from '../../ModuleIcon';
+import UserRoleSelect from '../UserRoleSelect';
 import { Select } from '../../../material-components';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
-import UserRoleSelect from '../UserRoleSelect';
-import SettingsOverlay from '../../settings/SettingsOverlay';
 import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
 import {
 	EDITING_MANAGEMENT_KEY,
@@ -122,12 +122,15 @@ export default function Module( {
 
 	return (
 		<div
-			className="googlesitekit-dashboard-sharing-settings__module googlesitekit-dashboard-sharing-settings__row"
+			className={ classnames(
+				'googlesitekit-dashboard-sharing-settings__module',
+				'googlesitekit-dashboard-sharing-settings__row',
+				{
+					'googlesitekit-dashboard-sharing-settings__row--disabled': isLocked,
+				}
+			) }
 			key={ moduleSlug }
 		>
-			{ /* Disable other modules when editing sharing settings for a module. */ }
-			{ isLocked && <SettingsOverlay compress /> }
-
 			<div className="googlesitekit-dashboard-sharing-settings__column--product">
 				<ModuleIcon slug={ moduleSlug } size={ 48 } />
 
@@ -138,7 +141,10 @@ export default function Module( {
 
 			<div className="googlesitekit-dashboard-sharing-settings__column--view">
 				{ hasOwnedModule && (
-					<UserRoleSelect moduleSlug={ moduleSlug } />
+					<UserRoleSelect
+						moduleSlug={ moduleSlug }
+						isLocked={ isLocked }
+					/>
 				) }
 
 				{ ! hasOwnedModule && (

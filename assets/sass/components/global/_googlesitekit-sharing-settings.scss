@@ -69,6 +69,10 @@
 		row-gap: 4px;
 	}
 
+	.googlesitekit-user-role-select--open {
+		align-items: flex-start;
+	}
+
 	.googlesitekit-user-role-select__button {
 		border: 1px solid $c-royal-blue;
 		border-radius: 50%;
@@ -164,6 +168,21 @@
 		flex-wrap: nowrap;
 		gap: 16px;
 		position: relative;
+	}
+
+	.googlesitekit-dashboard-sharing-settings__row--disabled {
+
+		&::after {
+			background-color: rgba($c-white, 0.6);
+			content: "";
+			display: block;
+			height: 100%;
+			left: 0;
+			position: absolute;
+			top: 0;
+			width: 100%;
+			z-index: 1;
+		}
 	}
 
 	.googlesitekit-dashboard-sharing-settings__module {
@@ -338,6 +357,7 @@
 		padding: 0;
 
 		@media (min-width: $bp-tablet) {
+			flex: 1;
 			gap: 10px;
 		}
 	}

@@ -20,6 +20,7 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import classnames from 'classnames';
 import { Chip, ChipCheckmark } from '@material/react-chips';
 
 /**
@@ -49,7 +50,7 @@ const { useSelect, useDispatch } = Data;
 const ALL_CHIP_ID = 'all';
 const ALL_CHIP_DISPLAY_NAME = __( 'All', 'google-site-kit' );
 
-export default function UserRoleSelect( { moduleSlug } ) {
+export default function UserRoleSelect( { moduleSlug, isLocked = false } ) {
 	const wrapperRef = useRef();
 	const [ editMode, setEditMode ] = useState( false );
 
@@ -128,7 +129,12 @@ export default function UserRoleSelect( { moduleSlug } ) {
 	}
 
 	return (
-		<div className="googlesitekit-user-role-select" ref={ wrapperRef }>
+		<div
+			className={ classnames( 'googlesitekit-user-role-select', {
+				'googlesitekit-user-role-select--open': editMode,
+			} ) }
+			ref={ wrapperRef }
+		>
 			<Button
 				aria-label={
 					editMode
@@ -144,6 +150,7 @@ export default function UserRoleSelect( { moduleSlug } ) {
 						<ShareIcon width={ 23 } height={ 23 } />
 					)
 				}
+				tabIndex={ isLocked ? -1 : undefined }
 			/>
 
 			{ ! editMode && sharedRoles?.length > 0 && (
@@ -154,7 +161,10 @@ export default function UserRoleSelect( { moduleSlug } ) {
 
 			{ ! editMode && ( ! sharedRoles || sharedRoles?.length === 0 ) && (
 				<span className="googlesitekit-user-role-select__add-roles">
-					<Link onClick={ toggleEditMode }>
+					<Link
+						onClick={ toggleEditMode }
+						tabIndex={ isLocked ? -1 : undefined }
+					>
 						{ __( 'Add roles', 'google-site-kit' ) }
 					</Link>
 				</span>
@@ -196,4 +206,5 @@ export default function UserRoleSelect( { moduleSlug } ) {
 
 UserRoleSelect.propTypes = {
 	moduleSlug: PropTypes.string.isRequired,
+	isLocked: PropTypes.bool,
 };
