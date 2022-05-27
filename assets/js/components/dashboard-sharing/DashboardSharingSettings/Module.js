@@ -92,13 +92,20 @@ export default function Module( {
 	const isSaving = useSelect( ( select ) =>
 		select( CORE_UI ).getValue( SHARING_SETINGS_SAVING_KEY )
 	);
+	// const canSubmitSharingChanges = useSelect( ( select ) =>
+	// 	select( CORE_MODULES ).canSubmitSharingChanges()
+	// );
 
 	const { setSharingManagement } = useDispatch( CORE_MODULES );
 	const { setValue } = useDispatch( CORE_UI );
 
 	useEffect( () => {
-		setManageViewAccess( management );
-	}, [ management ] );
+		if ( sharedOwnershipModule ) {
+			setManageViewAccess( 'all_admins' );
+		} else {
+			setManageViewAccess( management );
+		}
+	}, [ management, sharedOwnershipModule ] );
 
 	const handleOnChange = useCallback(
 		( event ) => {
@@ -111,9 +118,7 @@ export default function Module( {
 	);
 
 	const isLocked =
-		( moduleSlug !== editingModuleSlug && isEditingUserRoles ) ||
-		// ( moduleSlug !== editingModuleSlug && isEditingManagement ) ||
-		isSaving;
+		( moduleSlug !== editingModuleSlug && isEditingUserRoles ) || isSaving;
 
 	return (
 		<div
