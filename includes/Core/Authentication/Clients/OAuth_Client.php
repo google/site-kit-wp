@@ -328,7 +328,7 @@ final class OAuth_Client extends OAuth_Client_Base {
 	 */
 	public function get_authentication_url( $redirect_url = '', $additional_scopes = array() ) {
 		if ( empty( $redirect_url ) ) {
-			$redirect_url = $this->context->admin_url( 'splash' );
+			$redirect_url = $this->context->admin_url( 'dashboard' );
 		}
 		if ( is_array( $additional_scopes ) ) {
 			// Rewrite each scope to convert `gttp` -> `http`, if it starts with this placeholder scheme.
@@ -474,7 +474,7 @@ final class OAuth_Client extends OAuth_Client_Base {
 			$this->user_options->delete( self::OPTION_REDIRECT_URL );
 		} else {
 			// No redirect_url is set, use default page.
-			$redirect_url = $this->context->admin_url( 'splash', array( 'notification' => 'authentication_success' ) );
+			$redirect_url = $this->context->admin_url( 'dashboard', array( 'notification' => 'authentication_success' ) );
 		}
 
 		wp_safe_redirect( $redirect_url );

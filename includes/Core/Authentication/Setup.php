@@ -345,7 +345,7 @@ class Setup {
 	 * @since 1.48.0
 	 */
 	protected function redirect_to_splash() {
-		wp_safe_redirect( $this->context->admin_url( 'splash' ) );
+		wp_safe_redirect( $this->context->admin_url( 'dashboard' ) );
 		exit;
 	}
 }
