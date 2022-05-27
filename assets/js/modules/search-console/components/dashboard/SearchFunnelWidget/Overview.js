@@ -254,10 +254,7 @@ const Overview = ( {
 	];
 
 	const dataBlockWrapperCellProps = {
-		2: {
-			...halfCellProps,
-			mdSize: 8,
-		},
+		2: halfCellProps,
 		3: threeQuartersCellProps,
 		4: fullCellProps,
 	};
