@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import classnames from 'classnames';
+
+/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
@@ -97,7 +102,14 @@ export default function DashboardSharingSettings() {
 	}
 
 	return (
-		<div className="googlesitekit-dashboard-sharing-settings">
+		<div
+			className={ classnames(
+				'googlesitekit-dashboard-sharing-settings',
+				{
+					'googlesitekit-dashboard-sharing-settings--has-multiple-admins': hasMultipleAdmins,
+				}
+			) }
+		>
 			<header className="googlesitekit-dashboard-sharing-settings__header googlesitekit-dashboard-sharing-settings__row">
 				<div className="googlesitekit-dashboard-sharing-settings__column--product">
 					{ __( 'Product', 'google-site-kit' ) }
