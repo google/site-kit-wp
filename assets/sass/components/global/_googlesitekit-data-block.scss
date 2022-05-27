@@ -73,10 +73,6 @@
 		opacity: 1;
 	}
 
-	&--is-top-aligned {
-		justify-content: flex-start;
-	}
-
 	$buttonColors: (
 		1: $c-chart-1,
 		2: $c-chart-2,
