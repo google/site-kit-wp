@@ -79,7 +79,6 @@ class AuthenticationTest extends TestCase {
 		$this->assertEqualSets(
 			array(
 				'needs_reauthentication',
-				'oauth_error',
 				'reconnect_after_url_mismatch',
 			),
 			array_filter( $notice_slugs )
@@ -720,7 +719,7 @@ class AuthenticationTest extends TestCase {
 			$this->fail( 'Expected redirection to splash URL' );
 		} catch ( RedirectException $e ) {
 			$redirect_url = $e->get_location();
-			$this->assertStringStartsWith( $context->admin_url( 'splash' ), $redirect_url );
+			$this->assertStringStartsWith( $context->admin_url( 'dashboard' ), $redirect_url );
 			wp_parse_str( parse_url( $redirect_url, PHP_URL_QUERY ), $params );
 			$this->assertEquals( 1, $params['googlesitekit_reset_session'] );
 		}

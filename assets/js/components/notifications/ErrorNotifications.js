@@ -20,6 +20,7 @@
  * WordPress dependencies
  */
 import { Fragment } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -29,17 +30,47 @@ import AuthError from './AuthError';
 import UnsatisfiedScopesAlert from './UnsatisfiedScopesAlert';
 import InternalServerError from './InternalServerError';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import BannerNotification from './BannerNotification';
 const { useSelect } = Data;
 
 export default function ErrorNotifications() {
 	const isAuthenticated = useSelect( ( select ) =>
 		select( CORE_USER ).isAuthenticated()
 	);
+
+	// These will be `null` if no errors exist.
+	const setupErrorMessage = useSelect( ( select ) =>
+		select( CORE_SITE ).getSetupErrorMessage()
+	);
+	const setupErrorRedoURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getSetupErrorRedoURL()
+	);
+
 	return (
 		<Fragment>
 			<InternalServerError />
 			<AuthError />
-			{ isAuthenticated && <UnsatisfiedScopesAlert /> }
+			{ setupErrorMessage && (
+				<BannerNotification
+					id="setup_error"
+					type="win-error"
+					title={ __(
+						'Error connecting Site Kit.',
+						'google-site-kit'
+					) }
+					description={ setupErrorMessage }
+					isDismissible={ false }
+					ctaLink={ setupErrorRedoURL }
+					ctaLabel={ __(
+						'Redo the plugin setup',
+						'google-site-kit'
+					) }
+				/>
+			) }
+			{ ! setupErrorMessage && isAuthenticated && (
+				<UnsatisfiedScopesAlert />
+			) }
 		</Fragment>
 	);
 }

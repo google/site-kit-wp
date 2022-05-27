@@ -126,7 +126,7 @@ class ResetTest extends TestCase {
 			$this->fail( 'Expected redirection' );
 		} catch ( RedirectException $redirect ) {
 			$redirect_url = $redirect->get_location();
-			$this->assertStringStartsWith( $this->context_with_mutable_input->admin_url( 'splash' ), $redirect_url );
+			$this->assertStringStartsWith( $this->context_with_mutable_input->admin_url( 'dashboard' ), $redirect_url );
 			$this->assertStringContainsString( '&googlesitekit_reset_session=1', $redirect_url );
 			$this->assertStringContainsString( '&notification=reset_success', $redirect_url );
 
