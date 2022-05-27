@@ -211,6 +211,24 @@ final class Screens {
 	}
 
 	/**
+	 * Disconnects the user if the conditions are met.
+	 *
+	 * @param Context $context Context instance.
+	 */
+	protected function maybe_disconnect( Context $context ) {
+		$context_param = $context->input()->filter( INPUT_GET, 'googlesitekit_context' );
+		$reset_session = $context->input()->filter( INPUT_GET, 'googlesitekit_reset_session', FILTER_VALIDATE_BOOLEAN );
+
+		// If the user is authenticated, redirect them to the disconnect URL and then send them back here.
+		if ( ! $reset_session && 'revoked' === $context_param && $this->authentication->is_authenticated() ) {
+			$this->authentication->disconnect();
+
+			wp_safe_redirect( add_query_arg( array( 'googlesitekit_reset_session' => 1 ) ) );
+			exit;
+		}
+	}
+
+	/**
 	 * Adds the given screen to the admin.
 	 *
 	 * @since 1.0.0
@@ -364,20 +382,23 @@ final class Screens {
 		return new Screen(
 			self::PREFIX . 'dashboard',
 			array(
-				'title'            => __( 'Dashboard', 'google-site-kit' ),
-				'capability'       => Permissions::VIEW_DASHBOARD,
-				'enqueue_callback' => function( Assets $assets ) {
+				'title'               => __( 'Dashboard', 'google-site-kit' ),
+				'capability'          => Permissions::VIEW_DASHBOARD,
+				'initialize_callback' => function( Context $context ) {
+					$this->maybe_disconnect( $context );
+				},
+				'enqueue_callback'    => function( Assets $assets ) {
 					if ( $this->context->input()->filter( INPUT_GET, 'permaLink' ) ) {
 						$assets->enqueue_asset( 'googlesitekit-dashboard-details' );
 					} else {
 						$assets->enqueue_asset( 'googlesitekit-dashboard' );
 					}
 				},
-				'render_callback'  => function( Context $context ) {
+				'render_callback'     => function( Context $context ) {
 					$is_view_only = ! $this->authentication->is_authenticated();
+					$setup_slug   = $context->input()->filter( INPUT_GET, 'slug', FILTER_SANITIZE_STRING );
+					$reauth       = $context->input()->filter( INPUT_GET, 'reAuth', FILTER_VALIDATE_BOOLEAN );
 
-					$setup_slug = $context->input()->filter( INPUT_GET, 'slug', FILTER_SANITIZE_STRING );
-					$reauth = $context->input()->filter( INPUT_GET, 'reAuth', FILTER_VALIDATE_BOOLEAN );
 					if ( $context->input()->filter( INPUT_GET, 'permaLink' ) ) {
 						?>
 						<div id="js-googlesitekit-dashboard-details" data-view-only="<?php echo esc_attr( $is_view_only ); ?>" class="googlesitekit-page"></div>
@@ -418,26 +439,12 @@ final class Screens {
 		return new Screen(
 			self::PREFIX . 'dashboard',
 			array(
-				'title'               => __( 'Dashboard', 'google-site-kit' ),
-				'capability'          => Permissions::VIEW_SPLASH,
-
-				// This callback will redirect to the dashboard on successful authentication.
-				'initialize_callback' => function( Context $context ) {
-					$splash_context = $context->input()->filter( INPUT_GET, 'googlesitekit_context' );
-					$reset_session  = $context->input()->filter( INPUT_GET, 'googlesitekit_reset_session', FILTER_VALIDATE_BOOLEAN );
-
-					// If the user is authenticated, redirect them to the disconnect URL and then send them back here.
-					if ( ! $reset_session && 'revoked' === $splash_context && $this->authentication->is_authenticated() ) {
-						$this->authentication->disconnect();
-
-						wp_safe_redirect( add_query_arg( array( 'googlesitekit_reset_session' => 1 ) ) );
-						exit;
-					}
-				},
-				'enqueue_callback'    => function( Assets $assets ) {
+				'title'            => __( 'Dashboard', 'google-site-kit' ),
+				'capability'       => Permissions::VIEW_SPLASH,
+				'enqueue_callback' => function( Assets $assets ) {
 					$assets->enqueue_asset( 'googlesitekit-dashboard-splash' );
 				},
-				'render_callback'     => function( Context $context ) {
+				'render_callback'  => function( Context $context ) {
 					?>
 
 					<div id="js-googlesitekit-dashboard-splash" class="googlesitekit-page"></div>
