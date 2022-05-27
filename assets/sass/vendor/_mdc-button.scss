@@ -9,13 +9,18 @@
 
 	&--raised {
 
-		@include mdc-button-filled-accessible($c-background-brand);
+		@include mdc-button-filled-accessible($c-link);
+		@include mdc-button-shape-radius(100px);
+
 		font-family: $f-primary;
+		font-weight: $fw-primary-normal;
 		height: auto;
+		letter-spacing: normal;
 		min-height: $mdc-button-min-height;
 		padding-bottom: 8px;
 		padding-top: 8px;
 		text-align: center;
+		text-transform: capitalize;
 
 		&:hover {
 			text-decoration: none;

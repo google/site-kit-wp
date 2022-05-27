@@ -16,6 +16,8 @@
  * limitations under the License.
  */
 
+@import "variables-mui3";
+
 /*
  * Colors
  * Names from http://chir.ag/projects/name-that-color/
@@ -153,7 +155,7 @@ $c-tertiary: $c-scarpa-flow;
 $c-brand: $c-royal-blue;
 $c-highlight: $c-cornflower-blue;
 $c-subtle: $c-jumbo;
-$c-link: $c-royal-blue;
+$c-link: $c-green-g-600;
 $c-link-wpdb: $c-allports;
 $c-link-wpdb-hover: $c-cerulean;
 $c-input: $c-royal-blue;
@@ -237,13 +239,13 @@ $mdc-theme-on-primary: $c-base;
 $mdc-theme-on-secondary: $c-base;
 
 // Fonts
-$f-primary: Roboto, "Helvetica Neue", Helvetica, Arial, sans-serif;
+$f-primary: "Google Sans Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
 $fw-primary-light: 300;
 $fw-primary-normal: 400;
 $fw-primary-medium: 500;
 $fw-primary-bold: 700;
 
-$f-secondary: "Google Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+$f-secondary: "Google Sans Display", "Helvetica Neue", Helvetica, Arial, sans-serif;
 $fw-secondary-light: 300;
 $fw-secondary-normal: 400;
 $fw-secondary-medium: 500;
@@ -289,34 +291,30 @@ $max-width-setup-content: 465px;
 // Typography
 $typography: (
 	headline1: (
-		font-size: 36px,
-		line-height: 44px,
+		font-size: $fs-display-sm,
+		line-height: $lh-display-sm,
 	),
 	headline3: (
-		font-size: 28px,
-		line-height: 36px,
+		font-size: $fs-headline-md,
+		line-height: $lh-headline-md,
 	),
 	body1: (
-		font-size: 22px,
-		line-height: 28px,
+		font-size: $fs-headline-sm,
+		line-height: $lh-headline-sm,
 	),
 	body2: (
-		font-size: 16px,
-		line-height: 24px,
+		font-size: $fs-body-lg,
+		line-height: $lh-body-lg,
 	),
 	body3: (
-		font-size: 14px,
-		line-height: 20px,
+		font-size: $fs-body-md,
+		line-height: $lh-body-md,
 	),
 	caption: (
-		font-size: 12px,
-		line-height: 16px,
+		font-size: $fs-body-sm,
+		line-height: $lh-body-md,
 	)
 );
-
-// Border radius
-$border-radius-sm: 16px;
-$border-radius-md: 24px;
 
 // Google MDC Layout Grid Overrides
 
@@ -331,4 +329,4 @@ $mdc-layout-grid-breakpoints: (
 // Base64 images for reuse
 $icon-checked: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2212%22%20viewBox%3D%220%200%2016%2012%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cg%20fill%3D%22%23FFF%22%20fill-rule%3D%22evenodd%22%3E%3Cpath%20d%3D%22M0%206.414L1.415%205l5.292%205.292-1.414%201.415z%22%2F%3E%3Cpath%20d%3D%22M14.146.146l1.415%201.414L5.414%2011.707%204%2010.292z%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E");
 
-$mdc-button-min-height: 36px;
+$mdc-button-min-height: 40px;

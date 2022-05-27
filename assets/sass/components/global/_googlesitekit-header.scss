@@ -21,7 +21,6 @@
 	.googlesitekit-header {
 
 		@include googlesitekit-inner-padding;
-		@include shadow;
 		background-color: $c-base;
 		left: 0;
 		position: sticky;
@@ -187,7 +186,7 @@
 
 			.googlesitekit-plugin--has-scrolled & {
 
-				@include shadow;
+				border-bottom: 1px solid $c-red-r-700;
 			}
 		}
 	}

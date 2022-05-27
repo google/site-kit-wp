@@ -38,7 +38,6 @@
 
 		align-items: flex-end;
 		background: $c-header-gray;
-		box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.1);
 		display: flex;
 		justify-content: space-between;
 
@@ -69,11 +68,6 @@
 	.googlesitekit-pagespeed-widget__device-size-tab-bar-wrapper {
 		padding: 12px;
 		width: auto;
-
-		.googlesitekit-device-size-tab-bar {
-
-			@include shadow;
-		}
 	}
 
 	.googlesitekit-pagespeed-insights-web-vitals-metrics--field-data-unavailable {

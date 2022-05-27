@@ -21,9 +21,6 @@
 	&.nojs {
 
 		.googlesitekit-noscript {
-
-			@include shadow;
-
 			border-left: 4px solid $c-selective-yellow;
 			display: none;
 			left: 0;
@@ -46,8 +43,6 @@
 	}
 
 	.googlesitekit-plugin .googlesitekit-adminbar {
-
-		@include shadow;
 		background: $c-base;
 		color: $c-black;
 		left: 0;

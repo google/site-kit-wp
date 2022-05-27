@@ -20,7 +20,8 @@
 
 	.googlesitekit-navigation {
 		background-color: $c-base;
-		box-shadow: 0 3px 3px rgba($c-black, 0.1);
+		border-bottom-left-radius: $border-radius-sm;
+		border-bottom-right-radius: $border-radius-sm;
 		justify-content: center;
 		left: 0;
 		padding: 12px 0;
@@ -30,8 +31,6 @@
 		z-index: 10;
 
 		&::before {
-
-			@include shadow;
 			content: "";
 			display: block;
 			height: 3px;
@@ -97,8 +96,7 @@
 	.googlesitekit-navigation--is-sticky {
 
 		+ .googlesitekit-entity-header {
-			box-shadow: 0 3px 3px rgb(0 0 0 / 10%);
-			transition: box-shadow $t-speed-2;
+			border-bottom: 1px solid $c-red-r-700;
 		}
 	}
 
