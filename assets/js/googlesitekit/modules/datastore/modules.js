@@ -499,6 +499,83 @@ const baseActions = {
 	),
 
 	/**
+	 * Recovers multiple modules on the server.
+	 *
+	 * Recovers multiple modules (based on the slugs provided).
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Array.<string>} slugs Slugs of the modules to recover.
+	 * @return {Object} Object with `{response, error}`.
+	 */
+	recoverModules: createValidatedAction(
+		( slugs ) => {
+			invariant( Array.isArray( slugs ), 'slugs must be an array' );
+		},
+		function* ( slugs ) {
+			const { dispatch, select } = yield Data.commonActions.getRegistry();
+
+			const recoveredModules = [];
+
+			const errors = [];
+
+			for ( const slug of slugs ) {
+				const {
+					response,
+					error,
+				} = yield fetchRecoverModuleStore.actions.fetchRecoverModule(
+					slug
+				);
+
+				if ( response?.ownerID ) {
+					const storeName = select( CORE_MODULES ).getModuleStoreName(
+						slug
+					);
+					// Reload the module's settings from the server.
+					yield dispatch( storeName ).fetchGetSettings();
+
+					recoveredModules.push( slug );
+				} else {
+					errors.push( error );
+				}
+			}
+
+			if ( recoveredModules.length ) {
+				// Reload all modules from the server.
+				yield fetchGetModulesStore.actions.fetchGetModules();
+
+				const recoverableModules = select(
+					CORE_MODULES
+				).getRecoverableModules();
+
+				if ( recoverableModules ) {
+					// Remove the recovered modules from the list of recoverable modules in state.
+					yield baseActions.receiveRecoverableModules(
+						Object.keys( recoverableModules ).filter(
+							( slug ) => ! recoveredModules.includes( slug )
+						)
+					);
+				}
+			}
+
+			if ( errors.length ) {
+				return {
+					response: {
+						success: false,
+					},
+					error: errors,
+				};
+			}
+
+			return {
+				response: {
+					success: true,
+				},
+			};
+		}
+	),
+
+	/**
 	 * Receives the shared ownership modules for dashboard sharing.
 	 * Stores shared ownership modules in the datastore.
 	 *
