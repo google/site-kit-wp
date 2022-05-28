@@ -84,9 +84,10 @@ export default function ModuleRecoveryAlert() {
 		const modulesToRecover = Object.keys( checkboxes ).filter(
 			( module ) => checkboxes[ module ]
 		);
-		recoverModules( modulesToRecover ).finally( () =>
-			setRecoveringModules( false )
-		);
+		recoverModules( modulesToRecover ).finally( () => {
+			setRecoveringModules( false );
+			setCheckboxes( null );
+		} );
 	}, [ checkboxes, recoverModules ] );
 
 	useEffect( () => {
