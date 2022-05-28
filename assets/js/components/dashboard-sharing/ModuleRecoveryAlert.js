@@ -68,7 +68,7 @@ export default function ModuleRecoveryAlert() {
 			.map( ( { slug } ) => slug );
 	} );
 
-	const { recoverModule } = useDispatch( CORE_MODULES );
+	const { recoverModules } = useDispatch( CORE_MODULES );
 
 	const updateCheckboxes = useCallback(
 		( slug ) =>
@@ -84,10 +84,10 @@ export default function ModuleRecoveryAlert() {
 		const modulesToRecover = Object.keys( checkboxes ).filter(
 			( module ) => checkboxes[ module ]
 		);
-		Promise.all(
-			modulesToRecover.map( ( module ) => recoverModule( module ) )
-		).finally( () => setRecoveringModules( false ) );
-	}, [ checkboxes, recoverModule ] );
+		recoverModules( modulesToRecover ).finally( () =>
+			setRecoveringModules( false )
+		);
+	}, [ checkboxes, recoverModules ] );
 
 	useEffect( () => {
 		if ( userAccessibleModules !== undefined && checkboxes === null ) {
