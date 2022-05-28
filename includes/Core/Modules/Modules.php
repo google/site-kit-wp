@@ -772,7 +772,7 @@ final class Modules {
 		};
 
 		$can_list_data = function() {
-			return current_user_can( Permissions::AUTHENTICATE ) || current_user_can( Permissions::VIEW_SHARED_DASHBOARD );
+			return current_user_can( Permissions::VIEW_SPLASH ) || current_user_can( Permissions::VIEW_DASHBOARD );
 		};
 
 		$can_view_insights = function() {

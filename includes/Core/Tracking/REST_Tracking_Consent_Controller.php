@@ -90,7 +90,7 @@ class REST_Tracking_Consent_Controller {
 	 */
 	private function get_rest_routes( $routes ) {
 		$can_access_tracking = function() {
-			return current_user_can( Permissions::AUTHENTICATE ) || current_user_can( Permissions::VIEW_SHARED_DASHBOARD );
+			return current_user_can( Permissions::VIEW_SPLASH ) || current_user_can( Permissions::VIEW_DASHBOARD );
 		};
 
 		$tracking_callback = function ( WP_REST_Request $request ) {
