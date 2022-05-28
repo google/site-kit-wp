@@ -536,7 +536,7 @@ const baseActions = {
 
 					recoveredModules.push( slug );
 				} else {
-					errors.push( error );
+					errors.push( [ slug, error ] );
 				}
 			}
 
@@ -558,19 +558,26 @@ const baseActions = {
 				}
 			}
 
+			const response = {
+				success: {
+					...Object.fromEntries(
+						recoveredModules.map( ( slug ) => [ slug, true ] )
+					),
+					...Object.fromEntries(
+						errors.map( ( [ slug ] ) => [ slug, false ] )
+					),
+				},
+			};
+
 			if ( errors.length ) {
 				return {
-					response: {
-						success: false,
-					},
-					error: errors,
+					response,
+					error: Object.fromEntries( errors ),
 				};
 			}
 
 			return {
-				response: {
-					success: true,
-				},
+				response,
 			};
 		}
 	),
