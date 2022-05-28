@@ -505,7 +505,7 @@ const baseActions = {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param {Array.<string>} slugs Slugs of the modules to recover.
+	 * @param {Array.<string>} slugs Array of slugs of the modules to recover.
 	 * @return {Object} Object with `{response, error}`.
 	 */
 	recoverModules: createValidatedAction(
