@@ -346,9 +346,13 @@ final class Permissions {
 				$caps[] = self::SETUP;
 			}
 
+			if ( self::MANAGE_OPTIONS === $cap && ! $this->is_user_authenticated( $user_id ) ) {
+				return array_merge( $caps, array( 'do_not_allow' ) );
+			}
+
 			if ( ! in_array( $cap, array( self::AUTHENTICATE, self::SETUP ), true ) ) {
 				// For regular users, require being authenticated.
-				if ( ! Feature_Flags::enabled( 'dashboardSharing' ) && ! $this->is_user_authenticated( $user_id ) ) {
+				if ( ! $this->is_user_authenticated( $user_id ) ) {
 					return array_merge( $caps, array( 'do_not_allow' ) );
 				}
 				// For admin users, also require being verified.
