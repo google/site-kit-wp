@@ -99,20 +99,8 @@ describe( 'the set up flow for the second administrator', () => {
 			page.waitForNavigation(),
 		] );
 
-		await page.waitForSelector( '.googlesitekit-wizard-step button' );
-		await expect( page ).toMatchElement(
-			'.googlesitekit-wizard-step__title',
-			{
-				text: /congratulations!/i,
-			}
-		);
-
-		await Promise.all( [
-			expect( page ).toClick( '.googlesitekit-wizard-step button', {
-				text: /go to dashboard/i,
-			} ),
-			page.waitForNavigation(),
-		] );
+		// Because of plugins that are activated during oauth
+		// the user will end up on the dashboard here.
 
 		await expect( page ).toMatchElement( '#js-googlesitekit-dashboard' );
 		await expect( page ).toMatchElement(
