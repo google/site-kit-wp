@@ -350,7 +350,7 @@ final class Permissions {
 				return array_merge( $caps, array( 'do_not_allow' ) );
 			}
 
-			if ( ! in_array( $cap, array( self::AUTHENTICATE, self::SETUP, self::VIEW_DASHBOARD ), true ) ) {
+			if ( ! in_array( $cap, array( self::AUTHENTICATE, self::SETUP, self::VIEW_DASHBOARD, self::VIEW_POSTS_INSIGHTS ), true ) ) {
 				// For regular users, require being authenticated.
 				if ( ! $this->is_user_authenticated( $user_id ) ) {
 					return array_merge( $caps, array( 'do_not_allow' ) );
