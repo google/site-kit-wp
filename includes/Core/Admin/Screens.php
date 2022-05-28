@@ -124,7 +124,7 @@ final class Screens {
 		add_action(
 			'admin_page_access_denied',
 			function() {
-				$this->no_access_redirect_module_to_dashboard();
+				$this->no_access_redirect_to_dashboard();
 			}
 		);
 
@@ -268,21 +268,21 @@ final class Screens {
 	}
 
 	/**
-	 * Redirects module pages to the dashboard or splash based on user capability.
+	 * Redirects legacy pages to the dashboard.
 	 *
-	 * @since 1.69.0
+	 * @since n.e.x.t
 	 */
-	private function no_access_redirect_module_to_dashboard() {
+	private function no_access_redirect_to_dashboard() {
 		global $plugin_page;
 
-		$legacy_module_pages = array(
+		$legacy_pages = array(
 			self::PREFIX . 'splash',
 			self::PREFIX . 'module-adsense',
 			self::PREFIX . 'module-analytics',
 			self::PREFIX . 'module-search-console',
 		);
 
-		if ( ! in_array( $plugin_page, $legacy_module_pages, true ) ) {
+		if ( ! in_array( $plugin_page, $legacy_pages, true ) ) {
 			return;
 		}
 

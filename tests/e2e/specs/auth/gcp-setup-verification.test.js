@@ -62,7 +62,7 @@ describe( 'Site Kit set up flow for the first time with site verification', () =
 	} );
 
 	it( 'prompts for confirmation if user is not verified for the site', async () => {
-		await visitAdminPage( 'admin.php', 'page=googlesitekit-splash' );
+		await visitAdminPage( 'admin.php', 'page=googlesitekit-dashboard' );
 
 		await expect( page ).toClick( '.googlesitekit-wizard-step button', {
 			text: /sign in with Google/i,
@@ -116,7 +116,7 @@ describe( 'Site Kit set up flow for the first time with site verification', () =
 			method: 'post',
 		} );
 
-		await visitAdminPage( 'admin.php', 'page=googlesitekit-splash' );
+		await visitAdminPage( 'admin.php', 'page=googlesitekit-dashboard' );
 
 		await expect( page ).toClick( '.googlesitekit-wizard-step button', {
 			text: /sign in with Google/i,

@@ -42,7 +42,7 @@ add_action(
 		require_once ABSPATH . 'wp-admin/includes/plugin.php';
 
 		$redirect_url        = $user_options->get( OAuth_Client::OPTION_REDIRECT_URL );
-		$success_redirect    = $redirect_url ?: $context->admin_url( 'splash', array( 'notification' => 'authentication_success' ) );
+		$success_redirect    = $redirect_url ?: $context->admin_url( 'dashboard', array( 'notification' => 'authentication_success' ) );
 		$plugins_to_activate = array(
 			sprintf( '%s/%s-auth.php', __DIR__, $auth->credentials()->using_proxy() ? 'proxy' : 'gcp' ),
 		);

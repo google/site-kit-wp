@@ -41,7 +41,7 @@ export const resetGlobals = () => {
 		activeModules: [],
 		isOwner: true,
 		splashURL:
-			'http://example.com/wp-admin/admin.php?page=googlesitekit-splash',
+			'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard',
 		proxySetupURL:
 			'http://example.com/wp-admin/index.php?action=googlesitekit_proxy_setup&nonce=abc123',
 		proxyPermissionsURL:

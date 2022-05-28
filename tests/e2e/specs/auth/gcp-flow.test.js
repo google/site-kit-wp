@@ -80,7 +80,7 @@ describe( 'Site Kit set up flow for the first time', () => {
 
 	it( 'authenticates from splash page', async () => {
 		await activatePlugin( 'e2e-tests-oauth-callback-plugin' );
-		await visitAdminPage( 'admin.php', 'page=googlesitekit-splash' );
+		await visitAdminPage( 'admin.php', 'page=googlesitekit-dashboard' );
 		// Sign in with Google
 		await page.setRequestInterception( true );
 		useRequestInterception( handleRequest );

@@ -604,8 +604,6 @@ final class OAuth_Client extends OAuth_Client_Base {
 	 * @since n.e.x.t
 	 */
 	private function authorize_user_redirect_url() {
-		return current_user_can( Permissions::VIEW_DASHBOARD )
-			? $this->context->admin_url( 'dashboard' )
-			: $this->context->admin_url( 'splash' );
+		return $this->context->admin_url();
 	}
 }

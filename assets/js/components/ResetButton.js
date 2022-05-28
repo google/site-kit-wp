@@ -46,7 +46,7 @@ import useViewContext from '../hooks/useViewContext';
 
 function ResetButton( { children } ) {
 	const postResetURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getAdminURL( 'googlesitekit-splash', {
+		select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard', {
 			notification: 'reset_success',
 		} )
 	);
