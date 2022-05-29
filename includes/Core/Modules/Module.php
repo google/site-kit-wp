@@ -626,7 +626,14 @@ abstract class Module {
 	 */
 	final protected function get_service( $identifier ) {
 		if ( null === $this->google_services ) {
-			$services = $this->setup_services( $this->get_client() );
+			// Always setup services using the default client.
+			// If a request explicitly makes a non-deferred request (e.g. a closure handler)
+			// it will be made with the client the service was setup with (this one).
+			$client = $this->get_client();
+			// It's important to ensure the client given to services is pre-set to defer execution
+			// to allow for executing with an alternate client at request time.
+			$client->setDefer( true );
+			$services = $this->setup_services( $client );
 			if ( ! is_array( $services ) ) {
 				throw new Exception( __( 'Google services not set up correctly.', 'google-site-kit' ) );
 			}
