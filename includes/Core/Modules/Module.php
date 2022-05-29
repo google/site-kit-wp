@@ -606,17 +606,7 @@ abstract class Module {
 			&& $this->get_owner_id() !== get_current_user_id()
 			&& current_user_can( Permissions::READ_SHARED_MODULE_DATA, $this->slug )
 		) {
-			$user_options = new User_Options( $this->context, $this->get_owner_id() );
-
-			return new OAuth_Client(
-				$this->context,
-				$this->options,
-				$user_options,
-				$this->authentication->credentials(),
-				$this->authentication->get_google_proxy(),
-				new Profile( $user_options ),
-				new Token( $user_options )
-			);
+			return $this->get_owner_oauth_client();
 		}
 
 		return $this->authentication->get_oauth_client();
