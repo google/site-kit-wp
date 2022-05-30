@@ -64,6 +64,7 @@ export default function Footer( { closeDialog } ) {
 
 	const onApply = useCallback( async () => {
 		setValue( SHARING_SETINGS_SAVING_KEY, true );
+		setErrorNotice( null );
 		const { error } = await saveSharingSettings();
 
 		if ( error ) {
@@ -81,8 +82,6 @@ export default function Footer( { closeDialog } ) {
 		// Reset saving state when there is an error or not.
 		setValue( SHARING_SETINGS_SAVING_KEY, false );
 	}, [ viewContext, saveSharingSettings, setValue, closeDialog ] );
-
-	// TODO: Clear error state after another change has been made.
 
 	return (
 		<div className="googlesitekit-dashboard-sharing-settings__footer">
