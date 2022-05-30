@@ -17,8 +17,6 @@ use Google\Site_Kit\Core\Assets\Assets;
 use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
 use Google\Site_Kit\Core\Authentication\Exception\Insufficient_Scopes_Exception;
 use Google\Site_Kit\Core\Authentication\Exception\Google_Proxy_Code_Exception;
-use Google\Site_Kit\Core\Authentication\Profile;
-use Google\Site_Kit\Core\Authentication\Token;
 use Google\Site_Kit\Core\Contracts\WP_Errorable;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Options;
