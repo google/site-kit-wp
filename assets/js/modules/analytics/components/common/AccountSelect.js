@@ -33,7 +33,7 @@ import { trackEvent } from '../../../../util';
 import useViewContext from '../../../../hooks/useViewContext';
 const { useSelect, useDispatch } = Data;
 
-export default function AccountSelect() {
+export default function AccountSelect( { disabled = false } ) {
 	const viewContext = useViewContext();
 	const accountID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getAccountID()
@@ -74,6 +74,7 @@ export default function AccountSelect() {
 			onEnhancedChange={ onChange }
 			enhanced
 			outlined
+			disabled={ disabled }
 		>
 			{ ( accounts || [] )
 				.concat( {

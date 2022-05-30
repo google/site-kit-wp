@@ -17,10 +17,16 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { __, sprintf } from '@wordpress/i18n';
+
+/**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
 import { MODULES_ANALYTICS, PROFILE_CREATE } from '../../datastore/constants';
+import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import {
 	AccountSelect,
 	ProfileNameTextField,
@@ -28,20 +34,47 @@ import {
 	PropertySelect,
 } from '../common';
 import SettingsUseSnippetSwitch from './SettingsUseSnippetSwitch';
+import SettingsNotice from '../../../../components/SettingsNotice/SettingsNotice';
+import { TYPE_INFO } from '../../../../components/SettingsNotice';
+import WarningIcon from '../../../../../../assets/svg/icons/warning-icon.svg';
 const { useSelect } = Data;
 
-export default function SettingsControls() {
+export default function SettingsControls( { hasModuleAccess = true } ) {
 	const profileID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getProfileID()
 	);
 
+	const module = useSelect( ( select ) =>
+		select( CORE_MODULES ).getModule( 'analytics' )
+	);
+
+	const ownerName = module?.owner?.login
+		? module?.owner?.login
+		: __( 'Another admin', 'google-site-kit' );
+
 	return (
 		<div className="googlesitekit-settings-module__fields-group">
 			<div className="googlesitekit-setup-module__inputs">
-				<AccountSelect />
-				<PropertySelect />
-				<ProfileSelect />
+				<AccountSelect disabled={ ! hasModuleAccess } />
+				<PropertySelect disabled={ ! hasModuleAccess } />
+				<ProfileSelect disabled={ ! hasModuleAccess } />
 			</div>
+
+			{ ! hasModuleAccess && (
+				<SettingsNotice
+					type={ TYPE_INFO }
+					Icon={ WarningIcon }
+					notice={ sprintf(
+						/* translators: %1$s: module owner's name, %2$s: module name */
+						__(
+							'%1$s configured %2$s and you don’t have access to this Analytics property. Contact them to share access or change the Analytics property.',
+							'google-site-kit'
+						),
+						ownerName,
+						module?.name
+					) }
+				/>
+			) }
 
 			{ profileID === PROFILE_CREATE && (
 				<div className="googlesitekit-setup-module__inputs googlesitekit-setup-module__inputs--multiline">

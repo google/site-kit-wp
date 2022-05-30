@@ -45,7 +45,7 @@ import ProgressBar from '../../../../components/ProgressBar';
 import SettingsUseSnippetSwitch from '../../../analytics-4/components/settings/SettingsUseSnippetSwitch';
 const { useSelect, useDispatch } = Data;
 
-export default function GA4SettingsControls() {
+export default function GA4SettingsControls( { hasModuleAccess = true } ) {
 	const [ matchedProperty, setMatchedProperty ] = useState();
 	const [ matchedWebDataStream, setMatchedWebDataStream ] = useState();
 
@@ -146,6 +146,7 @@ export default function GA4SettingsControls() {
 							'Google Analytics 4 Property',
 							'google-site-kit'
 						) }
+						disabled={ ! hasModuleAccess }
 					/>
 				) }
 				{ isDisabled && (

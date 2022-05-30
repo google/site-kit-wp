@@ -39,7 +39,7 @@ import GA4SettingsControls from './GA4SettingsControls';
 import { isValidAccountID } from '../../util';
 const { useSelect } = Data;
 
-export default function SettingsForm() {
+export default function SettingsForm( { hasModuleAccess = true } ) {
 	const accountID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getAccountID()
 	);
@@ -64,9 +64,9 @@ export default function SettingsForm() {
 			/>
 			<ExistingGTMPropertyNotice />
 
-			<SettingsControls />
+			<SettingsControls hasModuleAccess={ hasModuleAccess } />
 
-			<GA4SettingsControls />
+			<GA4SettingsControls hasModuleAccess={ hasModuleAccess } />
 
 			{ isValidAccountID( accountID ) && (
 				<Fragment>

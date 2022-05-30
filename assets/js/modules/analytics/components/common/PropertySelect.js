@@ -34,7 +34,7 @@ import { trackEvent } from '../../../../util';
 import useViewContext from '../../../../hooks/useViewContext';
 const { useSelect, useDispatch } = Data;
 
-export default function PropertySelect() {
+export default function PropertySelect( { disabled = false } ) {
 	const { accountID, properties, isResolvingProperties } = useSelect(
 		( select ) => {
 			const data = {
@@ -96,6 +96,7 @@ export default function PropertySelect() {
 			onEnhancedChange={ onChange }
 			enhanced
 			outlined
+			disabled={ disabled }
 		>
 			{ ( properties || [] )
 				.concat( {
