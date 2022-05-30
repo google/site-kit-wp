@@ -152,7 +152,7 @@ export default function ModuleRecoveryAlert() {
 		);
 		children = (
 			<Fragment>
-				<p>
+				<p className="googlesitekit-publisher-win__desc">
 					{ __(
 						'By recovering the module, you will restore access for other users by sharing access via your Google account. This does not make any changes to external services and can be managed at any time via the dashboard sharing settings.',
 						'google-site-kit'
@@ -188,7 +188,7 @@ export default function ModuleRecoveryAlert() {
 						</Checkbox>
 					</div>
 				) ) }
-				<p>
+				<p className="googlesitekit-publisher-win__desc">
 					{ __(
 						'By recovering the selected modules, you will restore access for other users by sharing access via your Google account. This does not make any changes to external services and can be managed at any time via the dashboard sharing settings.',
 						'google-site-kit'
@@ -218,7 +218,7 @@ export default function ModuleRecoveryAlert() {
 				'google-site-kit'
 			) }
 			description={ description }
-			learnMoreURL="#"
+			learnMoreURL="https://sitekit.withgoogle.com/documentation/using-site-kit/dashboard-sharing/"
 			learnMoreLabel={ __( 'Learn more', 'google-site-kit' ) }
 		>
 			{ children }

@@ -924,6 +924,18 @@ final class Modules {
 								return new WP_Error( 'module_not_connected', __( 'Module is not connected.', 'google-site-kit' ), array( 'status' => 400 ) );
 							}
 
+							if ( ! $module instanceof Module_With_Service_Entity ) {
+								if ( $module->is_shareable() ) {
+									return new WP_REST_Response(
+										array(
+											'access' => true,
+										)
+									);
+								}
+
+								return new WP_Error( 'invalid_module', __( 'Module access cannot be checked.', 'google-site-kit' ), array( 'status' => 400 ) );
+							}
+
 							$access = $module->check_service_entity_access();
 
 							if ( is_wp_error( $access ) ) {
