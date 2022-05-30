@@ -36,6 +36,7 @@ import { MODULES_ANALYTICS } from '../../datastore/constants';
 import { MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
 import SettingsControls from './SettingsControls';
 import GA4SettingsControls from './GA4SettingsControls';
+import EntityOwnershipChangeNotice from '../../../../components/settings/EntityOwnershipChangeNotice';
 import { isValidAccountID } from '../../util';
 const { useSelect } = Data;
 
@@ -74,6 +75,10 @@ export default function SettingsForm( { hasModuleAccess = true } ) {
 					{ showTrackingExclusion && <TrackingExclusionSwitches /> }
 					<AdsConversionIDTextField />
 				</Fragment>
+			) }
+
+			{ hasModuleAccess && (
+				<EntityOwnershipChangeNotice slug="analytics" />
 			) }
 		</Fragment>
 	);
