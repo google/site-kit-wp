@@ -155,7 +155,7 @@ $c-tertiary: $c-scarpa-flow;
 $c-brand: $c-royal-blue;
 $c-highlight: $c-cornflower-blue;
 $c-subtle: $c-jumbo;
-$c-link: $c-green-g-600;
+$c-link: $c-content-primary;
 $c-link-wpdb: $c-allports;
 $c-link-wpdb-hover: $c-cerulean;
 $c-input: $c-royal-blue;
@@ -219,7 +219,7 @@ $c-badge-background: $c-alabaster;
 $c-badge-text: $c-cape-cod;
 
 // Entity Search
-$c-entity-search-button: $c-boulder;
+$c-entity-search-button: $c-surfaces-on-surface-variant;
 $c-entity-search-input-border: $c-tundora;
 $c-entity-search-autocomplete-options: $c-shark;
 $c-entity-search-autocomplete-bg-hover: rgba($c-silver, 0.2);
@@ -233,7 +233,7 @@ $c-search-funnel-analytics-cta-bg: $c-aqua-haze;
 $c-search-funnel-analytics-cta-icon: $c-silver-2;
 
 // Google MDC Theme Overrides
-$mdc-theme-primary: $c-brand;
+$mdc-theme-primary: $c-content-primary;
 $mdc-theme-secondary: $c-brand;
 $mdc-theme-on-primary: $c-base;
 $mdc-theme-on-secondary: $c-base;

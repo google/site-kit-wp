@@ -17,12 +17,12 @@
  */
 
 .googlesitekit-plugin .googlesitekit-change-arrow {
-	--color-up: #{$c-chateau-green};
-	--color-down: #{$c-thunderbird};
+	--color-up: #{$c-utility-success};
+	--color-down: #{$c-utility-error};
 
 	&--inverted-color {
-		--color-up: #{$c-thunderbird};
-		--color-down: #{$c-chateau-green};
+		--color-up: #{$c-utility-error};
+		--color-down: #{$c-utility-success};
 	}
 
 	&--up {

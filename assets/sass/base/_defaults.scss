@@ -95,13 +95,10 @@
 	}
 
 	.googlesitekit-subheading-1 {
-		font-family: $f-primary;
-		font-size: 0.9375rem;
-		font-weight: $fw-primary-medium;
-
-		@media (min-width: $bp-tablet) {
-			font-size: 1rem;
-		}
+		font-family: $f-secondary;
+		font-size: $fs-title-sm;
+		font-weight: $fw-secondary-bold;
+		line-height: $lh-title-sm;
 	}
 
 	.googlesitekit-subheading-2 {

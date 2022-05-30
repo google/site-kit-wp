@@ -17,8 +17,8 @@
  */
 
 .googlesitekit-data-block {
-	--color-up: #{$c-chateau-green};
-	--color-down: #{$c-thunderbird};
+	--color-up: #{$c-utility-success};
+	--color-down: #{$c-utility-error};
 
 	position: relative;
 	text-align: left;
@@ -133,9 +133,12 @@
 	}
 
 	.googlesitekit-data-block__title {
-		color: $c-primary;
-		font-weight: $fw-primary-normal;
+		color: $c-surfaces-on-surface-variant;
+		font-family: $f-primary;
+		font-size: $fs-body-sm;
+		font-weight: $fw-primary-medium;
 		letter-spacing: 0.04em;
+		line-height: $lh-body-sm;
 		margin: 0 0 12px 0;
 
 		.googlesitekit-adminbar & {
@@ -154,18 +157,12 @@
 	}
 
 	.googlesitekit-data-block__datapoint {
-		color: $c-secondary;
-		font-size: 1.875rem;
-		line-height: 1;
+		color: $c-surfaces-on-surface;
+		font-family: $f-secondary;
+		font-size: $fs-display-md;
+		font-weight: $fw-secondary-medium;
+		line-height: $lh-display-md;
 		margin: 0;
-
-		@media (min-width: $bp-desktop) {
-			font-size: 2.625rem;
-		}
-
-		@media (min-width: $bp-xlarge) {
-			font-size: 3.625rem;
-		}
 
 		.googlesitekit-adminbar & {
 			display: inline-block;
@@ -184,8 +181,8 @@
 	}
 
 	.googlesitekit-data-block__change {
-		color: $c-primary;
-		font-size: 0.75rem;
+		color: $c-surfaces-on-surface-variant;
+		font-size: $fs-body-sm;
 		letter-spacing: 0;
 		line-height: 1;
 		margin-top: $grid-gap-phone;
@@ -264,11 +261,11 @@
 
 	.googlesitekit-data-block__value,
 	.googlesitekit-data-block__suffix {
-		color: $c-primary;
+		color: $c-surfaces-on-surface-variant;
 		display: inline-block;
-		font-size: 0.75rem;
+		font-size: $fs-body-sm;
 		letter-spacing: 0;
-		line-height: 1;
+		line-height: $lh-body-sm;
 		text-transform: none;
 
 		.googlesitekit-adminbar & {

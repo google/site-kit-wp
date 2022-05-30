@@ -118,6 +118,7 @@
 			}
 
 			.mdc-button--dropdown {
+				color: $c-surfaces-on-surface-variant;
 				padding-right: $grid-gap-desktop;
 
 				@media (max-width: $bp-mobileOnly) {
