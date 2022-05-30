@@ -18,7 +18,7 @@
 
 .googlesitekit-device-size-tab-bar {
 
-	border-radius: 8px;
+	border-radius: $border-radius-lg;
 	overflow: hidden;
 	width: auto;
 
@@ -26,18 +26,18 @@
 
 		button.mdc-tab {
 
-			background: $c-white;
+			background: $c-surfaces-surface-1;
 			height: 32px;
 			width: 56px;
 
 			&:first-child {
-				border-bottom-left-radius: 8px;
-				border-top-left-radius: 8px;
+				border-bottom-left-radius: $border-radius-lg;
+				border-top-left-radius: $border-radius-lg;
 			}
 
 			&:last-child {
-				border-bottom-right-radius: 8px;
-				border-top-right-radius: 8px;
+				border-bottom-right-radius: $border-radius-lg;
+				border-top-right-radius: $border-radius-lg;
 			}
 
 			svg {
@@ -46,7 +46,7 @@
 
 			&.mdc-tab--active {
 
-				background: $c-brand;
+				background: $c-content-primary;
 
 				svg {
 					color: $c-white;

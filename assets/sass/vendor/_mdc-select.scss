@@ -8,6 +8,7 @@
 	@include mdc-select-hover-outline-color($c-border);
 	@include mdc-select-focused-outline-color($c-input);
 	@include mdc-select-focused-bottom-line-color($c-border-brand);
+	@include mdc-select-outline-shape-radius($border-radius-xs);
 
 	max-width: 100%;
 

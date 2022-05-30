@@ -31,10 +31,12 @@
 	}
 
 	&__title {
-		color: $c-black;
-		font-size: 1rem;
+		color: $c-surfaces-on-surface;
+		font-family: $f-secondary;
+		font-size: $fs-title-md;
+		font-weight: $fw-secondary-bold;
 		letter-spacing: 0.1px;
-		line-height: 1.5rem;
+		line-height: $lh-title-md;
 	}
 
 	&__badge {
@@ -48,10 +50,10 @@
 		align-items: flex-end;
 		display: flex;
 		flex-direction: column;
-		font-size: 0.75rem;
+		font-size: $fs-body-md;
 		justify-content: center;
-		letter-spacing: 0.3px;
-		line-height: 1rem;
+		letter-spacing: 0.25px;
+		line-height: $lh-body-md;
 		text-align: right;
 	}
 
@@ -61,8 +63,10 @@
 	}
 
 	.googlesitekit-pagespeed-report-metric-value__display-value {
-		font-size: 1rem;
-		line-height: 1.5rem;
+		font-family: $f-secondary;
+		font-size: $fs-title-md;
+		font-weight: $fw-secondary-bold;
+		line-height: $lh-title-md;
 		white-space: nowrap;
 	}
 

@@ -31,9 +31,9 @@
 	}
 
 	.googlesitekit-idea-hub__title {
-		font-size: 0.875rem;
-		font-weight: $fw-primary-medium;
-		line-height: 1.5;
+		font-size: $fs-title-sm;
+		font-weight: $fw-primary-bold;
+		line-height: $lh-title-sm;
 		margin: 0 0 12px 0;
 
 		.googlesitekit-idea-hub__title-text {
@@ -54,11 +54,7 @@
 		}
 
 		.mdc-tab__content {
-			color: rgba($c-black, 0.54);
-			font-size: 0.875rem;
-			font-weight: $fw-primary-medium;
-			letter-spacing: 0.25px;
-			line-height: 1.25;
+			color: $c-surfaces-on-surface-variant;
 			text-transform: capitalize;
 
 			> span {
@@ -74,7 +70,7 @@
 		[aria-selected="true"] {
 
 			.mdc-tab__content {
-				color: $c-idea-hub-active-nav;
+				color: $c-content-primary;
 			}
 		}
 	}
@@ -282,6 +278,7 @@
 		display: inline-flex;
 		font-size: 0.75rem;
 		justify-content: center;
+		letter-spacing: 0.5px;
 		line-height: 1.33;
 
 		@media (min-width: $bp-tablet) {

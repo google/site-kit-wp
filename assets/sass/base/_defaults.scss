@@ -51,29 +51,23 @@
 	h4,
 	h5,
 	h6 {
-		color: $c-secondary;
+		color: $c-surfaces-on-surface;
 		font-family: $f-secondary;
 		line-height: 1.16;
 	}
 
 	h1,
 	.googlesitekit-heading-1 {
-		font-size: 1.75rem;
+		font-size: $fs-headline-lg;
 		font-weight: $fw-secondary-normal;
-
-		@media (min-width: $bp-tablet) {
-			font-size: 2.25rem;
-		}
+		line-height: $lh-headline-lg;
 	}
 
 	h2,
 	.googlesitekit-heading-2 {
-		font-size: 1.375rem;
+		font-size: $fs-headline-md;
 		font-weight: $fw-secondary-normal;
-
-		@media (min-width: $bp-tablet) {
-			font-size: 1.75rem;
-		}
+		line-height: $lh-headline-md;
 	}
 
 	h3,
@@ -85,13 +79,9 @@
 
 	h4,
 	.googlesitekit-heading-4 {
-		color: $c-tertiary;
-		font-size: 1.125rem;
-		font-weight: $fw-secondary-medium;
-
-		@media (min-width: $bp-tablet) {
-			font-size: 1.25rem;
-		}
+		font-size: $fs-title-lg;
+		font-weight: $fw-secondary-bold;
+		line-height: $lh-title-lg;
 	}
 
 	.googlesitekit-subheading-1 {
@@ -103,12 +93,9 @@
 
 	.googlesitekit-subheading-2 {
 		font-family: $f-primary;
-		font-size: 0.875rem;
+		font-size: $fs-body-sm;
 		font-weight: $fw-primary-medium;
-
-		@media (min-width: $bp-tablet) {
-			font-size: 0.9375rem;
-		}
+		line-height: $lh-body-sm;
 	}
 
 	.googlesitekit-recommended {
@@ -124,7 +111,7 @@
 
 	legend,
 	p:not([class*="mdc-"]) {
-		font-size: 1rem;
+		font-size: $fs-body-md;
 	}
 
 	a {

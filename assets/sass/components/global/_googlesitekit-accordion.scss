@@ -24,14 +24,12 @@
 		padding: 14px 20px;
 	}
 
-	.googlesitekit-accordion__header,
-	.googlesitekit-accordion__content p {
-		font-size: 14px;
-		line-height: 20px;
-	}
-
 	.googlesitekit-accordion__header {
 		cursor: pointer;
+		font-family: $f-secondary;
+		font-size: $fs-title-sm;
+		font-weight: $fw-secondary-bold;
+		line-height: $lh-title-sm;
 		padding-right: $grid-gap-phone * 2;
 		position: relative;
 		width: 100%;

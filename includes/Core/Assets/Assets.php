@@ -218,7 +218,7 @@ final class Assets {
 	 */
 	protected function get_fonts_src() {
 		$font_families = array(
-			'Google+Sans+Text:400',
+			'Google+Sans+Text:400,500',
 			'Google+Sans+Display:400,500,700',
 		);
 

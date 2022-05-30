@@ -19,7 +19,9 @@
 .googlesitekit-pagespeed-widget {
 
 	.googlesitekit-cta-link {
-
+		font-size: $fs-body-md;
+		font-weight: $fw-primary-medium;
+		line-height: $lh-body-md;
 		white-space: nowrap;
 	}
 
@@ -35,9 +37,9 @@
 	}
 
 	.googlesitekit-pagespeed-widget__header {
-
 		align-items: flex-end;
-		background: $c-header-gray;
+		border-bottom: 1px solid $c-utility-divider;
+		border-radius: $border-radius-sm $border-radius-sm 0 0;
 		display: flex;
 		justify-content: space-between;
 
@@ -51,9 +53,6 @@
 	.googlesitekit-pagespeed-widget__data-src-tabs {
 
 		button.mdc-tab {
-			font-size: 0.875rem;
-			letter-spacing: 0.25px;
-			line-height: 1.25rem;
 			margin: 0 10px;
 			text-transform: none;
 
@@ -113,11 +112,16 @@
 	}
 
 	.googlesitekit-pagespeed-report__footer {
-		gap: 16px;
+		border-top: 1px solid $c-utility-divider;
+		gap: $grid-gap-phone;
 		justify-content: flex-end;
 		padding-top: 0;
 
-		p {
+		p,
+		.googlesitekit-cta-link {
+			font-size: $fs-body-sm;
+			font-weight: $fw-primary-medium;
+			line-height: $lh-body-sm;
 			text-align: right;
 		}
 
@@ -137,10 +141,8 @@
 		}
 
 		p {
-			color: $c-gray-cx;
-			font-size: 0.875rem;
-			letter-spacing: 0.2px;
-			line-height: 1.25rem;
+			color: $c-surfaces-on-surface-variant;
+			letter-spacing: 0.25px;
 		}
 	}
 
@@ -179,15 +181,16 @@
 		padding: $grid-gap-phone $grid-gap-phone 0;
 
 		.googlesitekit-pagespeed-recommendations__title {
-			color: $c-black;
-			font-size: 1rem;
+			font-family: $f-secondary;
+			font-size: $fs-title-md;
+			font-weight: $fw-secondary-bold;
 			letter-spacing: 0.1px;
-			line-height: 1.5rem;
+			line-height: $lh-title-md;
 		}
 
 		.googlesitekit-accordion {
-			border-top-left-radius: 8px;
-			border-top-right-radius: 8px;
+			border-top-left-radius: $border-radius-sm;
+			border-top-right-radius: $border-radius-sm;
 			color: $c-black;
 
 			& + .googlesitekit-accordion {
@@ -195,8 +198,8 @@
 			}
 
 			&:last-of-type {
-				border-bottom-left-radius: 8px;
-				border-bottom-right-radius: 8px;
+				border-bottom-left-radius: $border-radius-sm;
+				border-bottom-right-radius: $border-radius-sm;
 			}
 		}
 

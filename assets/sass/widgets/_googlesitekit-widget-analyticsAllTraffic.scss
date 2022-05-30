@@ -58,9 +58,7 @@
 
 			@include mdc-tab-active-text-label-color($c-content-primary);
 
-			font-size: $fs-body-sm;
 			height: 40px;
-			line-height: 1;
 			margin: 0 10px;
 			padding: 0 20px;
 
@@ -100,6 +98,14 @@
 		.googlesitekit-data-block__datapoint {
 			font-size: $fs-display-lg;
 			line-height: $lh-display-lg;
+		}
+
+		.googlesitekit-data-block__arrow {
+			vertical-align: top;
+		}
+
+		.googlesitekit-data-block__suffix {
+			font-weight: $fw-primary-normal;
 		}
 	}
 

@@ -8,6 +8,8 @@
 	@include mdc-text-field-hover-outline-color($c-border);
 	@include mdc-text-field-outline-color($c-border-medium);
 	@include mdc-text-field-textarea-stroke-color($c-border-medium);
+	@include mdc-text-field-textarea-shape-radius($border-radius-xs);
+
 	width: 250px;
 
 	@media (min-width: $bp-tablet) {

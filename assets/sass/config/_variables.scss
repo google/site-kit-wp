@@ -144,12 +144,12 @@ $wp-colors: (
 );
 
 // PageSpeed Insights colors
-$c-pagespeed-fast: $c-green-700;
-$c-pagespeed-average: $c-yellow-900;
-$c-pagespeed-slow: $c-red-600;
+$c-pagespeed-fast: $c-utility-success;
+$c-pagespeed-average: $c-utility-warning;
+$c-pagespeed-slow: $c-utility-error;
 
 $c-base: $c-white;
-$c-primary: $c-boulder;
+$c-primary: $c-surfaces-on-surface;
 $c-secondary: $c-cape-cod;
 $c-tertiary: $c-scarpa-flow;
 $c-brand: $c-royal-blue;
@@ -330,3 +330,7 @@ $mdc-layout-grid-breakpoints: (
 $icon-checked: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2212%22%20viewBox%3D%220%200%2016%2012%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cg%20fill%3D%22%23FFF%22%20fill-rule%3D%22evenodd%22%3E%3Cpath%20d%3D%22M0%206.414L1.415%205l5.292%205.292-1.414%201.415z%22%2F%3E%3Cpath%20d%3D%22M14.146.146l1.415%201.414L5.414%2011.707%204%2010.292z%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E");
 
 $mdc-button-min-height: 40px;
+$mdc-typography-font-family: $f-primary;
+$mdc-typography-styles-subtitle1: (
+	font-size: $fs-body-md,
+);
