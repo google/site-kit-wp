@@ -346,9 +346,9 @@ final class Permissions {
 				$caps[] = self::SETUP;
 			}
 
-			if ( ! in_array( $cap, array( self::AUTHENTICATE, self::SETUP ), true ) ) {
+			if ( ! in_array( $cap, array( self::AUTHENTICATE, self::SETUP, self::VIEW_DASHBOARD, self::VIEW_POSTS_INSIGHTS ), true ) ) {
 				// For regular users, require being authenticated.
-				if ( ! Feature_Flags::enabled( 'dashboardSharing' ) && ! $this->is_user_authenticated( $user_id ) ) {
+				if ( ! $this->is_user_authenticated( $user_id ) ) {
 					return array_merge( $caps, array( 'do_not_allow' ) );
 				}
 				// For admin users, also require being verified.
@@ -504,7 +504,11 @@ final class Permissions {
 	 * @return array Array with a 'do_not_allow' element if checks fail, otherise returns AUTHENTICATE capability.
 	 */
 	private function check_view_authenticated_dashboard_capability( $user_id ) {
-		if ( $this->is_user_authenticated( $user_id ) && $this->authentication->is_setup_completed() ) {
+		if (
+			$this->is_user_authenticated( $user_id )
+			&& $this->is_user_verified( $user_id )
+			&& $this->authentication->is_setup_completed()
+		) {
 			return array( self::AUTHENTICATE );
 		}
 		return array( 'do_not_allow' );

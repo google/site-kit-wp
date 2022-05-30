@@ -49,10 +49,6 @@ export default function Description() {
 		select( CORE_SITE ).getProxySetupURL()
 	);
 
-	const isConnected = useSelect( ( select ) =>
-		select( CORE_SITE ).isConnected()
-	);
-
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 
 	const onButtonClick = useCallback(
@@ -65,13 +61,9 @@ export default function Description() {
 				proxySetupURL ? 'proxy' : 'custom-oauth'
 			);
 
-			if ( proxySetupURL && ! isConnected ) {
-				await trackEvent( viewContext, 'start_site_setup', 'proxy' );
-			}
-
 			navigateTo( proxySetupURL );
 		},
-		[ proxySetupURL, isConnected, navigateTo, viewContext ]
+		[ proxySetupURL, navigateTo, viewContext ]
 	);
 
 	const onLinkClick = useCallback( () => {
