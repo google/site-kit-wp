@@ -374,40 +374,6 @@ final class Screens {
 			),
 		);
 
-		// Wrap this simply to save some unnecessary filter firing and screen instantiation.
-		if ( current_user_can( Permissions::VIEW_MODULE_DETAILS ) ) {
-			/**
-			 * Filters the admin screens for modules.
-			 *
-			 * By default this is an empty array, but can be expanded.
-			 *
-			 * @since 1.0.0
-			 *
-			 * @param array $module_screens List of Screen instances.
-			 */
-			$module_screens = apply_filters( 'googlesitekit_module_screens', array() );
-
-			$screens = array_merge( $screens, $module_screens );
-		}
-
-		$screens[] = new Screen(
-			self::PREFIX . 'settings',
-			array(
-				'title'            => __( 'Settings', 'google-site-kit' ),
-				'capability'       => Permissions::MANAGE_OPTIONS,
-				'enqueue_callback' => function( Assets $assets ) {
-					$assets->enqueue_asset( 'googlesitekit-settings' );
-				},
-				'render_callback'  => function( Context $context ) {
-					?>
-
-					<div id="googlesitekit-settings-wrapper" class="googlesitekit-page"></div>
-
-					<?php
-				},
-			)
-		);
-
 		$show_splash_in_menu = current_user_can( Permissions::VIEW_SPLASH ) && ! current_user_can( Permissions::VIEW_DASHBOARD );
 
 		$screens[] = new Screen(
@@ -463,6 +429,24 @@ final class Screens {
 		);
 
 		$screens[] = new Screen(
+			self::PREFIX . 'settings',
+			array(
+				'title'            => __( 'Settings', 'google-site-kit' ),
+				'capability'       => Permissions::MANAGE_OPTIONS,
+				'enqueue_callback' => function( Assets $assets ) {
+					$assets->enqueue_asset( 'googlesitekit-settings' );
+				},
+				'render_callback'  => function( Context $context ) {
+					?>
+
+					<div id="googlesitekit-settings-wrapper" class="googlesitekit-page"></div>
+
+					<?php
+				},
+			)
+		);
+
+		$screens[] = new Screen(
 			self::PREFIX . 'user-input',
 			array(
 				'title'            => __( 'User Input', 'google-site-kit' ),
@@ -481,6 +465,22 @@ final class Screens {
 
 			)
 		);
+
+		// Wrap this simply to save some unnecessary filter firing and screen instantiation.
+		if ( current_user_can( Permissions::VIEW_MODULE_DETAILS ) ) {
+			/**
+			 * Filters the admin screens for modules.
+			 *
+			 * By default this is an empty array, but can be expanded.
+			 *
+			 * @since 1.0.0
+			 *
+			 * @param array $module_screens List of Screen instances.
+			 */
+			$module_screens = apply_filters( 'googlesitekit_module_screens', array() );
+
+			$screens = array_merge( $screens, $module_screens );
+		}
 
 		return $screens;
 	}
