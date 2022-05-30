@@ -49,7 +49,6 @@ import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
 import {
 	EDITING_MANAGEMENT_KEY,
 	EDITING_USER_ROLES_KEY,
-	SHARING_SETINGS_SAVING_KEY,
 	SHARING_SETTINGS_SLUG_KEY,
 } from './constants';
 import { trackEvent } from '../../../util';
@@ -91,7 +90,7 @@ export default function Module( {
 		select( CORE_UI ).getValue( SHARING_SETTINGS_SLUG_KEY )
 	);
 	const isSaving = useSelect( ( select ) =>
-		select( CORE_UI ).getValue( SHARING_SETINGS_SAVING_KEY )
+		select( CORE_MODULES ).isDoingSubmitSharingChanges()
 	);
 
 	const { setSharingManagement } = useDispatch( CORE_MODULES );

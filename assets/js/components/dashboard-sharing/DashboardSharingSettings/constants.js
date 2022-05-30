@@ -19,4 +19,3 @@
 export const EDITING_USER_ROLES_KEY = 'editing-user-roles-key';
 export const EDITING_MANAGEMENT_KEY = 'editing-management-key';
 export const SHARING_SETTINGS_SLUG_KEY = 'sharing-settings-slug-key';
-export const SHARING_SETINGS_SAVING_KEY = 'sharing-setings-saving-key';

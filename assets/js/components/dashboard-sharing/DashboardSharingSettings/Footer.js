@@ -40,7 +40,6 @@ import Spinner from '../../Spinner';
 import {
 	EDITING_MANAGEMENT_KEY,
 	EDITING_USER_ROLES_KEY,
-	SHARING_SETINGS_SAVING_KEY,
 	SHARING_SETTINGS_SLUG_KEY,
 } from './constants';
 import ErrorText from '../../ErrorText';
@@ -56,14 +55,13 @@ export default function Footer( { closeDialog } ) {
 		select( CORE_MODULES ).canSubmitSharingChanges()
 	);
 	const isSaving = useSelect( ( select ) =>
-		select( CORE_UI ).getValue( SHARING_SETINGS_SAVING_KEY )
+		select( CORE_MODULES ).isDoingSubmitSharingChanges()
 	);
 
 	const { saveSharingSettings } = useDispatch( CORE_MODULES );
 	const { setValue } = useDispatch( CORE_UI );
 
 	const onApply = useCallback( async () => {
-		setValue( SHARING_SETINGS_SAVING_KEY, true );
 		setErrorNotice( null );
 		const { error } = await saveSharingSettings();
 
@@ -80,7 +78,6 @@ export default function Footer( { closeDialog } ) {
 			closeDialog();
 		}
 		// Reset saving state when there is an error or not.
-		setValue( SHARING_SETINGS_SAVING_KEY, false );
 	}, [ viewContext, saveSharingSettings, setValue, closeDialog ] );
 
 	return (
