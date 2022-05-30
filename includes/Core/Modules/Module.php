@@ -348,7 +348,7 @@ abstract class Module {
 	 * @return mixed Data on success, or WP_Error on failure.
 	 */
 	final protected function execute_data_request( Data_Request $data ) {
-		$restore_defer = static function () {};
+		$restore_defers = array();
 		try {
 			$datapoint    = $this->get_datapoint_definition( "{$data->method}:{$data->datapoint}" );
 			$oauth_client = $this->get_oauth_client_for_datapoint( $datapoint );
@@ -361,8 +361,16 @@ abstract class Module {
 			// If not deferred, the request will be executed immediately with the client
 			// the service instance was instantiated with, which will always be the
 			// default client, configured for the current user and provided in `get_service`.
-			$restore_defer = $oauth_client->get_client()->withDefer( true );
-			$request       = $this->create_data_request( $data );
+
+			// Client defer is false by default, so we need to configure the default to defer
+			// even if a different client will be the one to execute the request because
+			// the default instance is what services are setup with.
+			$restore_defers[] = $this->get_client()->withDefer( true );
+			if ( $this->get_client() !== $oauth_client ) {
+				$restore_defers[] = $oauth_client->get_client()->withDefer( true );
+			}
+
+			$request = $this->create_data_request( $data );
 
 			if ( is_wp_error( $request ) ) {
 				return $request;
@@ -380,7 +388,9 @@ abstract class Module {
 		} catch ( Exception $e ) {
 			return $this->exception_to_error( $e, $data->datapoint );
 		} finally {
-			$restore_defer();
+			foreach ( $restore_defers as $restore_defer ) {
+				$restore_defer();
+			}
 		}
 
 		if ( is_wp_error( $response ) ) {
