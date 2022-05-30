@@ -68,7 +68,7 @@ export default function Footer( { closeDialog } ) {
 		if ( error ) {
 			setErrorNotice( error.message );
 		} else {
-			await trackEvent( `${ viewContext }_sharing`, 'settings_confirm' );
+			trackEvent( `${ viewContext }_sharing`, 'settings_confirm' );
 
 			// Reset the state to enable modules in when not editing or saving.
 			setValue( SHARING_SETTINGS_SLUG_KEY, undefined );
