@@ -350,6 +350,7 @@ abstract class Module {
 	 * @return mixed Data on success, or WP_Error on failure.
 	 */
 	final protected function execute_data_request( Data_Request $data ) {
+		$restore_defer = static function () {};
 		try {
 			$datapoint    = $this->get_datapoint_definition( "{$data->method}:{$data->datapoint}" );
 			$oauth_client = $this->get_oauth_client_for_datapoint( $datapoint );
@@ -357,7 +358,13 @@ abstract class Module {
 			$this->validate_datapoint_scopes( $datapoint, $oauth_client );
 			$this->validate_base_scopes( $oauth_client );
 
-			$request = $this->create_data_request( $data );
+			// In order for a request to leverage a client other than the default
+			// it must return a RequestInterface (Google Services return this when defer = true).
+			// If not deferred, the request will be executed immediately with the client
+			// the service instance was instantiated with, which will always be the
+			// default client, configured for the current user and provided in `get_service`.
+			$restore_defer = $oauth_client->get_client()->withDefer( true );
+			$request       = $this->create_data_request( $data );
 
 			if ( is_wp_error( $request ) ) {
 				return $request;
@@ -374,6 +381,8 @@ abstract class Module {
 			}
 		} catch ( Exception $e ) {
 			return $this->exception_to_error( $e, $data->datapoint );
+		} finally {
+			$restore_defer();
 		}
 
 		if ( is_wp_error( $response ) ) {
@@ -605,14 +614,7 @@ abstract class Module {
 	 */
 	final protected function get_service( $identifier ) {
 		if ( null === $this->google_services ) {
-			// Always setup services using the default client.
-			// If a request explicitly makes a non-deferred request (e.g. a closure handler)
-			// it will be made with the client the service was setup with (this one).
-			$client = $this->get_client();
-			// It's important to ensure the client given to services is pre-set to defer execution
-			// to allow for executing with an alternate client at request time.
-			$client->setDefer( true );
-			$services = $this->setup_services( $client );
+			$services = $this->setup_services( $this->get_client() );
 			if ( ! is_array( $services ) ) {
 				throw new Exception( __( 'Google services not set up correctly.', 'google-site-kit' ) );
 			}
