@@ -31,6 +31,7 @@ import {
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
 import Link from '../Link';
 import Button from '../Button';
 import Portal from '../Portal';
@@ -39,6 +40,8 @@ import { Dialog, DialogContent, DialogFooter } from '../../material-components';
 import { BREAKPOINT_SMALL, useBreakpoint } from '../../hooks/useBreakpoint';
 import useViewContext from '../../hooks/useViewContext';
 import { trackEvent } from '../../util';
+import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+const { useSelect } = Data;
 
 export default function DashboardSharingSettingsButton() {
 	const breakpoint = useBreakpoint();
@@ -46,10 +49,19 @@ export default function DashboardSharingSettingsButton() {
 
 	const viewContext = useViewContext();
 
+	const hasMultipleAdmins = useSelect( ( select ) =>
+		select( CORE_SITE ).hasMultipleAdmins()
+	);
+
 	const openDialog = useCallback( () => {
-		trackEvent( `${ viewContext }_headerbar`, 'open_sharing' );
+		trackEvent(
+			`${ viewContext }_headerbar`,
+			'open_sharing',
+			hasMultipleAdmins ? 'advanced' : 'simple'
+		);
+
 		setDialogOpen( true );
-	}, [ viewContext ] );
+	}, [ viewContext, hasMultipleAdmins ] );
 
 	const closeDialog = useCallback( () => {
 		setDialogOpen( false );
