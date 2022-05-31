@@ -25,11 +25,7 @@ import invariant from 'invariant';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import {
-	CORE_USER,
-	PERMISSION_READ_SHARED_MODULE_DATA,
-	PERMISSION_MANAGE_MODULE_SHARING_OPTIONS,
-} from './constants';
+import { CORE_USER, PERMISSION_READ_SHARED_MODULE_DATA } from './constants';
 import { CORE_MODULES } from '../../modules/datastore/constants';
 import { getMetaCapabilityPropertyName } from '../util/permissions';
 const { createRegistrySelector } = Data;
@@ -196,37 +192,6 @@ export const selectors = {
 		return Object.values( modules ).reduce( ( moduleSlugs, module ) => {
 			const hasCapability = select( CORE_USER ).hasCapability(
 				PERMISSION_READ_SHARED_MODULE_DATA,
-				module.slug
-			);
-
-			if ( module.shareable && hasCapability ) {
-				return [ ...moduleSlugs, module.slug ];
-			}
-
-			return moduleSlugs;
-		}, [] );
-	} ),
-
-	/**
-	 * Gets module slugs the current user can manage.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @return {(Array|undefined)} An array of viewable module slugs. `undefined` if `modules` are not loaded yet.
-	 */
-	getManageableModules: createRegistrySelector( ( select ) => () => {
-		const modules = select( CORE_MODULES ).getModules();
-
-		if ( modules === undefined ) {
-			return undefined;
-		}
-
-		// Return an array of module slugs for modules that are
-		// manageable and the user has the "manage module sharing options"
-		// capability for.
-		return Object.values( modules ).reduce( ( moduleSlugs, module ) => {
-			const hasCapability = select( CORE_USER ).hasCapability(
-				PERMISSION_MANAGE_MODULE_SHARING_OPTIONS,
 				module.slug
 			);
 
