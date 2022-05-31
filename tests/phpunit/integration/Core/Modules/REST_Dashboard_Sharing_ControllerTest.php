@@ -149,7 +149,7 @@ class REST_Dashboard_Sharing_ControllerTest extends TestCase {
 		);
 		$expected_response = array(
 			'settings'    => $expected_sharing_settings,
-			'newOwnerIDs' => array(
+			'newOwnerIDs' => (object) array(
 				// ownerID should be updated as settings have changed.
 				'pagespeed-insights' => $admin_2->ID,
 			),
