@@ -93,7 +93,7 @@ export default function ProfileSelect( { hasModuleAccess = true } ) {
 	if ( ! hasModuleAccess ) {
 		return (
 			<Select
-				className="googlesitekit-analytics__select-account"
+				className="googlesitekit-analytics__select-profile"
 				label={ __( 'View', 'google-site-kit' ) }
 				value={ profileID }
 				enhanced

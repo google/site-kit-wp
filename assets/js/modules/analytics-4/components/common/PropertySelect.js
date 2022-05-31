@@ -99,7 +99,7 @@ export default function PropertySelect( { label, hasModuleAccess = true } ) {
 	if ( ! hasModuleAccess ) {
 		return (
 			<Select
-				className="googlesitekit-analytics__select-account"
+				className="googlesitekit-analytics__select-property"
 				label={ label || __( 'Property', 'google-site-kit' ) }
 				value={ propertyID }
 				enhanced
