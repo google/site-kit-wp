@@ -34,7 +34,7 @@ import { trackEvent } from '../../../../util';
 import useViewContext from '../../../../hooks/useViewContext';
 const { useSelect, useDispatch } = Data;
 
-export default function ProfileSelect( { disabled = false } ) {
+export default function ProfileSelect( { hasModuleAccess = true } ) {
 	const accountID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getAccountID()
 	);
@@ -90,6 +90,21 @@ export default function ProfileSelect( { disabled = false } ) {
 		return <ProgressBar small />;
 	}
 
+	if ( ! hasModuleAccess ) {
+		return (
+			<Select
+				className="googlesitekit-analytics__select-account"
+				label={ __( 'View', 'google-site-kit' ) }
+				value={ profileID }
+				enhanced
+				outlined
+				disabled
+			>
+				<Option value={ profileID }>{ profileID }</Option>
+			</Select>
+		);
+	}
+
 	return (
 		<Select
 			className="googlesitekit-analytics__select-profile"
@@ -98,7 +113,6 @@ export default function ProfileSelect( { disabled = false } ) {
 			onEnhancedChange={ onChange }
 			enhanced
 			outlined
-			disabled={ disabled }
 		>
 			{ ( profiles || [] )
 				.concat( {

@@ -55,9 +55,9 @@ export default function SettingsControls( { hasModuleAccess = true } ) {
 	return (
 		<div className="googlesitekit-settings-module__fields-group">
 			<div className="googlesitekit-setup-module__inputs">
-				<AccountSelect disabled={ ! hasModuleAccess } />
-				<PropertySelect disabled={ ! hasModuleAccess } />
-				<ProfileSelect disabled={ ! hasModuleAccess } />
+				<AccountSelect hasModuleAccess={ hasModuleAccess } />
+				<PropertySelect hasModuleAccess={ hasModuleAccess } />
+				<ProfileSelect hasModuleAccess={ hasModuleAccess } />
 			</div>
 
 			{ ! hasModuleAccess && (

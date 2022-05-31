@@ -34,7 +34,7 @@ import { trackEvent } from '../../../../util';
 import useViewContext from '../../../../hooks/useViewContext';
 const { useSelect, useDispatch } = Data;
 
-export default function PropertySelect( { disabled = false } ) {
+export default function PropertySelect( { hasModuleAccess = true } ) {
 	const { accountID, properties, isResolvingProperties } = useSelect(
 		( select ) => {
 			const data = {
@@ -88,6 +88,21 @@ export default function PropertySelect( { disabled = false } ) {
 		return <ProgressBar small />;
 	}
 
+	if ( ! hasModuleAccess ) {
+		return (
+			<Select
+				className="googlesitekit-analytics__select-account"
+				label={ __( 'Property', 'google-site-kit' ) }
+				value={ propertyID }
+				enhanced
+				outlined
+				disabled
+			>
+				<Option value={ propertyID }>{ propertyID }</Option>
+			</Select>
+		);
+	}
+
 	return (
 		<Select
 			className="googlesitekit-analytics__select-property"
@@ -96,7 +111,6 @@ export default function PropertySelect( { disabled = false } ) {
 			onEnhancedChange={ onChange }
 			enhanced
 			outlined
-			disabled={ disabled }
 		>
 			{ ( properties || [] )
 				.concat( {

@@ -146,7 +146,7 @@ export default function GA4SettingsControls( { hasModuleAccess = true } ) {
 							'Google Analytics 4 Property',
 							'google-site-kit'
 						) }
-						disabled={ ! hasModuleAccess }
+						hasModuleAccess={ hasModuleAccess }
 					/>
 				) }
 				{ isDisabled && (

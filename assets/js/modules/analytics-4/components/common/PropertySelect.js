@@ -45,7 +45,7 @@ import { trackEvent } from '../../../../util';
 import useViewContext from '../../../../hooks/useViewContext';
 const { useSelect, useDispatch } = Data;
 
-export default function PropertySelect( { label, disabled = false } ) {
+export default function PropertySelect( { label, hasModuleAccess = true } ) {
 	// TODO: Update this select hook to pull accountID from the modules/analytics-4 datastore when GA4 module becomes separated from the Analytics one
 	const accountID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getAccountID()
@@ -96,6 +96,21 @@ export default function PropertySelect( { label, disabled = false } ) {
 
 	const isValidSelection = isValidPropertySelection( propertyID );
 
+	if ( ! hasModuleAccess ) {
+		return (
+			<Select
+				className="googlesitekit-analytics__select-account"
+				label={ label || __( 'Property', 'google-site-kit' ) }
+				value={ propertyID }
+				enhanced
+				outlined
+				disabled
+			>
+				<Option value={ propertyID }>{ propertyID }</Option>
+			</Select>
+		);
+	}
+
 	return (
 		<Select
 			className={ classnames(
@@ -107,7 +122,7 @@ export default function PropertySelect( { label, disabled = false } ) {
 			label={ label || __( 'Property', 'google-site-kit' ) }
 			value={ propertyID }
 			onEnhancedChange={ onChange }
-			disabled={ ! isValidAccountID( accountID ) || disabled }
+			disabled={ ! isValidAccountID( accountID ) }
 			enhanced
 			outlined
 		>
