@@ -152,7 +152,6 @@ export default function Module( { moduleSlug, moduleName, ownerUsername } ) {
 					'googlesitekit-dashboard-sharing-settings__row--disabled': isLocked,
 				}
 			) }
-			key={ moduleSlug }
 		>
 			<div className="googlesitekit-dashboard-sharing-settings__column--product">
 				<ModuleIcon slug={ moduleSlug } size={ 48 } />
@@ -200,7 +199,7 @@ export default function Module( { moduleSlug, moduleName, ownerUsername } ) {
 								sprintf(
 									/* translators: %s: user who manages the module. */
 									__(
-										'<span>Managed by </span> <strong>%s</strong>',
+										'<span>Managed by</span> <strong>%s</strong>',
 										'google-site-kit'
 									),
 									ownerUsername
