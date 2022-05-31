@@ -47,7 +47,7 @@ export default function EntityOwnershipChangeNotice( { slug } ) {
 		select( storeName )?.getOwnerID()
 	);
 
-	const currentUserID = useSelect( ( select ) =>
+	const loggedInUserID = useSelect( ( select ) =>
 		select( CORE_USER ).getID()
 	);
 
@@ -55,12 +55,12 @@ export default function EntityOwnershipChangeNotice( { slug } ) {
 		select( CORE_MODULES ).getModule( slug )
 	);
 
-	const hasOwnerChanged = moduleOwnerID !== currentUserID;
+	const isModuleOwnedByUser = moduleOwnerID === loggedInUserID;
 
 	if (
 		! isDashboardSharingEnabled ||
 		! haveOwnedSettingsChanged ||
-		! hasOwnerChanged
+		isModuleOwnedByUser
 	) {
 		return null;
 	}
