@@ -39,7 +39,7 @@ import { TYPE_INFO } from '../../../../components/SettingsNotice';
 import WarningIcon from '../../../../../../assets/svg/icons/warning-icon.svg';
 const { useSelect } = Data;
 
-export default function SettingsControls( { hasModuleAccess = true } ) {
+export default function SettingsControls( { hasModuleAccess } ) {
 	const profileID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getProfileID()
 	);
@@ -60,7 +60,7 @@ export default function SettingsControls( { hasModuleAccess = true } ) {
 				<ProfileSelect hasModuleAccess={ hasModuleAccess } />
 			</div>
 
-			{ ! hasModuleAccess && (
+			{ hasModuleAccess === false && (
 				<SettingsNotice
 					type={ TYPE_INFO }
 					Icon={ WarningIcon }

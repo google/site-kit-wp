@@ -34,7 +34,7 @@ import { trackEvent } from '../../../../util';
 import useViewContext from '../../../../hooks/useViewContext';
 const { useSelect, useDispatch } = Data;
 
-export default function ProfileSelect( { hasModuleAccess = true } ) {
+export default function ProfileSelect( { hasModuleAccess } ) {
 	const accountID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getAccountID()
 	);
@@ -90,7 +90,7 @@ export default function ProfileSelect( { hasModuleAccess = true } ) {
 		return <ProgressBar small />;
 	}
 
-	if ( ! hasModuleAccess ) {
+	if ( hasModuleAccess === false ) {
 		return (
 			<Select
 				className="googlesitekit-analytics__select-profile"

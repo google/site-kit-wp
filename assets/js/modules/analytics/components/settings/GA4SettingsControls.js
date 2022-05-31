@@ -45,7 +45,7 @@ import ProgressBar from '../../../../components/ProgressBar';
 import SettingsUseSnippetSwitch from '../../../analytics-4/components/settings/SettingsUseSnippetSwitch';
 const { useSelect, useDispatch } = Data;
 
-export default function GA4SettingsControls( { hasModuleAccess = true } ) {
+export default function GA4SettingsControls( { hasModuleAccess } ) {
 	const [ matchedProperty, setMatchedProperty ] = useState();
 	const [ matchedWebDataStream, setMatchedWebDataStream ] = useState();
 

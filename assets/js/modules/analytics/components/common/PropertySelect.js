@@ -34,7 +34,7 @@ import { trackEvent } from '../../../../util';
 import useViewContext from '../../../../hooks/useViewContext';
 const { useSelect, useDispatch } = Data;
 
-export default function PropertySelect( { hasModuleAccess = true } ) {
+export default function PropertySelect( { hasModuleAccess } ) {
 	const { accountID, properties, isResolvingProperties } = useSelect(
 		( select ) => {
 			const data = {
@@ -88,7 +88,7 @@ export default function PropertySelect( { hasModuleAccess = true } ) {
 		return <ProgressBar small />;
 	}
 
-	if ( ! hasModuleAccess ) {
+	if ( hasModuleAccess === false ) {
 		return (
 			<Select
 				className="googlesitekit-analytics__select-property"

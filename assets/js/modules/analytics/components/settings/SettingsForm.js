@@ -40,7 +40,7 @@ import EntityOwnershipChangeNotice from '../../../../components/settings/EntityO
 import { isValidAccountID } from '../../util';
 const { useSelect } = Data;
 
-export default function SettingsForm( { hasModuleAccess = true } ) {
+export default function SettingsForm( { hasModuleAccess } ) {
 	const accountID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getAccountID()
 	);
