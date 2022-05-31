@@ -51,7 +51,7 @@ export default function SettingsControls( { hasModuleAccess } ) {
 
 	const ownerName = module?.owner?.login
 		? module?.owner?.login
-		: __( 'Another admin', 'google-site-kit' );
+		: __( '(Another admin)', 'google-site-kit' );
 
 	return (
 		<div className="googlesitekit-settings-module__fields-group">
