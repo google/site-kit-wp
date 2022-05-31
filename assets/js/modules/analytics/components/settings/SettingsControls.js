@@ -19,6 +19,7 @@
 /**
  * WordPress dependencies
  */
+import { createInterpolateElement } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 
 /**
@@ -64,14 +65,19 @@ export default function SettingsControls( { hasModuleAccess } ) {
 				<SettingsNotice
 					type={ TYPE_INFO }
 					Icon={ WarningIcon }
-					notice={ sprintf(
-						/* translators: 1: module owner's name, 2: module name */
-						__(
-							'%1$s configured %2$s and you don’t have access to this Analytics property. Contact them to share access or change the Analytics property.',
-							'google-site-kit'
+					notice={ createInterpolateElement(
+						sprintf(
+							/* translators: 1: module owner's name, 2: module name */
+							__(
+								'<strong>%1$s</strong> configured %2$s and you don’t have access to this Analytics property. Contact them to share access or change the Analytics property.',
+								'google-site-kit'
+							),
+							ownerName,
+							module?.name
 						),
-						ownerName,
-						module?.name
+						{
+							strong: <strong />,
+						}
 					) }
 				/>
 			) }
