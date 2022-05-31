@@ -46,18 +46,12 @@ export default function DashboardSharingSettings() {
 
 	const sortedShareableModules = useSelect( ( select ) => {
 		const modules = select( CORE_MODULES ).getModules();
-		const sharedOwnershipModules = select(
-			CORE_MODULES
-		).getSharedOwnershipModules();
 
-		// return early if modules || sharedOwnershipModules are not loaded
-		if ( modules === undefined || sharedOwnershipModules === undefined ) {
+		// return early if modules are not loaded
+		if ( modules === undefined ) {
 			return undefined;
 		}
 		const userID = select( CORE_USER ).getID();
-		const sharedOwnershipModuleSlugs = Object.keys(
-			sharedOwnershipModules
-		);
 		const shareableModules = Object.values( modules ).filter(
 			( module ) => module.shareable
 		);
@@ -67,30 +61,17 @@ export default function DashboardSharingSettings() {
 		const rest = [];
 
 		for ( module of shareableModules ) {
-			const hasOwnedModule = module.owner?.id === userID;
-			const moduleWithManagement = {
-				...module,
-				hasOwnedModule,
-				management:
-					select( CORE_MODULES ).getSharingManagement(
-						module.slug
-					) ?? 'owner',
-				sharedOwnershipModule: sharedOwnershipModuleSlugs.includes(
-					module.slug
-				),
-			};
-
-			if ( hasOwnedModule ) {
-				owned.push( moduleWithManagement );
+			if ( module.owner?.id === userID ) {
+				owned.push( module );
 			} else if (
 				select( CORE_USER ).hasCapability(
 					PERMISSION_MANAGE_MODULE_SHARING_OPTIONS,
 					module.slug
 				)
 			) {
-				manageable.push( moduleWithManagement );
+				manageable.push( module );
 			} else {
-				rest.push( moduleWithManagement );
+				rest.push( module );
 			}
 		}
 
@@ -129,26 +110,14 @@ export default function DashboardSharingSettings() {
 			</header>
 
 			<div className="googlesitekit-dashboard-sharing-settings__main">
-				{ sortedShareableModules.map(
-					( {
-						slug,
-						name,
-						management,
-						owner,
-						sharedOwnershipModule,
-						hasOwnedModule,
-					} ) => (
-						<Module
-							key={ slug }
-							moduleSlug={ slug }
-							moduleName={ name }
-							management={ management }
-							ownerUsername={ owner?.login }
-							sharedOwnershipModule={ sharedOwnershipModule }
-							hasOwnedModule={ hasOwnedModule }
-						/>
-					)
-				) }
+				{ sortedShareableModules.map( ( { slug, name, owner } ) => (
+					<Module
+						key={ slug }
+						moduleSlug={ slug }
+						moduleName={ name }
+						ownerUsername={ owner?.login }
+					/>
+				) ) }
 			</div>
 		</div>
 	);

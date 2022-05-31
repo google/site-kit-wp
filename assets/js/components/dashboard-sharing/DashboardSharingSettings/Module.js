@@ -52,6 +52,11 @@ import {
 	SHARING_SETTINGS_SLUG_KEY,
 } from './constants';
 import { trackEvent } from '../../../util';
+import {
+	CORE_USER,
+	PERMISSION_DELEGATE_MODULE_SHARING_MANAGEMENT,
+	PERMISSION_MANAGE_MODULE_SHARING_OPTIONS,
+} from '../../../googlesitekit/datastore/user/constants';
 const { useSelect, useDispatch } = Data;
 
 const viewAccessOptions = [
@@ -65,24 +70,32 @@ const viewAccessOptions = [
 	},
 ];
 
-export default function Module( {
-	moduleSlug,
-	moduleName,
-	management,
-	ownerUsername,
-	sharedOwnershipModule,
-	hasOwnedModule,
-} ) {
+export default function Module( { moduleSlug, moduleName, ownerUsername } ) {
 	const viewContext = useViewContext();
 
 	const [ manageViewAccess, setManageViewAccess ] = useState( undefined );
-	const module = useSelect( ( select ) =>
-		select( CORE_MODULES ).getModule( moduleSlug )
-	);
 	const hasMultipleAdmins = useSelect( ( select ) =>
 		select( CORE_SITE ).hasMultipleAdmins()
 	);
-
+	const management = useSelect(
+		( select ) =>
+			select( CORE_MODULES ).getSharingManagement( moduleSlug ) ?? 'owner'
+	);
+	const hasOwnedModule = useSelect( ( select ) =>
+		select( CORE_USER ).hasCapability(
+			PERMISSION_DELEGATE_MODULE_SHARING_MANAGEMENT,
+			moduleSlug
+		)
+	);
+	const hasSharingCapability = useSelect( ( select ) =>
+		select( CORE_USER ).hasCapability(
+			PERMISSION_MANAGE_MODULE_SHARING_OPTIONS,
+			moduleSlug
+		)
+	);
+	const sharedOwnershipModules = useSelect( ( select ) =>
+		select( CORE_MODULES ).getSharedOwnershipModules()
+	);
 	const isEditingUserRoles = useSelect( ( select ) =>
 		select( CORE_UI ).getValue( EDITING_USER_ROLES_KEY )
 	);
@@ -95,6 +108,10 @@ export default function Module( {
 
 	const { setSharingManagement } = useDispatch( CORE_MODULES );
 	const { setValue } = useDispatch( CORE_UI );
+
+	const sharedOwnershipModule =
+		sharedOwnershipModules &&
+		Object.keys( sharedOwnershipModules ).includes( moduleSlug );
 
 	useEffect( () => {
 		if ( sharedOwnershipModule ) {
@@ -151,14 +168,14 @@ export default function Module( {
 			</div>
 
 			<div className="googlesitekit-dashboard-sharing-settings__column--view">
-				{ hasOwnedModule && (
+				{ hasSharingCapability && (
 					<UserRoleSelect
 						moduleSlug={ moduleSlug }
 						isLocked={ isLocked }
 					/>
 				) }
 
-				{ ! hasOwnedModule && (
+				{ ! hasSharingCapability && (
 					<p className="googlesitekit-dashboard-sharing-settings__note">
 						{ __(
 							'Contact managing user to manage view access',
@@ -182,7 +199,7 @@ export default function Module( {
 						/>
 					) }
 
-					{ ! hasOwnedModule && module?.owner?.login && (
+					{ ! hasOwnedModule && ownerUsername && (
 						<p className="googlesitekit-dashboard-sharing-settings__note">
 							{ createInterpolateElement(
 								sprintf(
@@ -228,8 +245,5 @@ export default function Module( {
 Module.propTypes = {
 	moduleSlug: PropTypes.string.isRequired,
 	moduleName: PropTypes.string.isRequired,
-	management: PropTypes.string,
 	ownerUsername: PropTypes.string,
-	sharedOwnershipModule: PropTypes.bool.isRequired,
-	hasOwnedModule: PropTypes.bool.isRequired,
 };
