@@ -48,6 +48,10 @@
 			}
 		}
 
+		body.site-kit_page_googlesitekit-settings & {
+			border-radius: 0 0 $border-radius-sm $border-radius-sm;
+		}
+
 		.googlesitekit-header__logo {
 			// prevent the logo from wrapping towards the tablet and mobile breakpoints
 			min-width: 150px;
@@ -176,7 +180,6 @@
 				padding: 4px;
 			}
 		}
-
 	}
 
 	.googlesitekit-header--has-unified-dashboard {

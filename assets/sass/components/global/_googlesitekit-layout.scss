@@ -59,4 +59,12 @@
 	&--fill .googlesitekit-layout__footer {
 		flex: 0 0 auto;
 	}
+
+	&.googlesitekit-layout--transparent {
+		background-color: transparent;
+	}
+
+	&.googlesitekit-layout--rounded {
+		border-radius: $border-radius-md;
+	}
 }

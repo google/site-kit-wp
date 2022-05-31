@@ -73,6 +73,7 @@ export default function SettingsInactiveModules() {
 				'Connect More Services to Gain More Insights',
 				'google-site-kit'
 			) }
+			className="googlesitekit-layout--rounded"
 			relative
 		>
 			<Grid>

@@ -50,21 +50,21 @@ $indicator-inactive: #649df5;
 .googlesitekit-tooltip-title {
 	color: $c-white;
 	font-family: $f-secondary;
+	font-size: $fs-body-lg;
 	font-weight: $fw-secondary-light;
+	line-height: $lh-body-lg;
 	margin-bottom: 4px;
 	margin-top: 0;
-
-	@include responsive-text("body2", "body2");
 }
 
 .googlesitekit-tooltip-body {
 	box-sizing: border-box;
 	font-family: $f-primary;
+	font-size: $fs-body-md;
 	font-weight: $fw-primary-light;
+	line-height: $lh-body-md;
 	max-width: 352px;
 	padding: 24px 56px 2px 24px;
-
-	@include responsive-text("body3", "body3");
 }
 
 .googlesitekit-tooltip-buttons {

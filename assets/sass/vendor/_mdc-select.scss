@@ -1,12 +1,12 @@
 // Overrides for .mdc-select
 .googlesitekit-plugin .mdc-select {
 
-	@include mdc-select-ink-color($c-primary);
-	@include mdc-select-label-color($c-tertiary);
-	@include mdc-select-focused-label-color($c-input);
+	@include mdc-select-ink-color($c-surfaces-on-surface);
+	@include mdc-select-label-color($c-surfaces-on-surface);
+	@include mdc-select-focused-label-color($c-surfaces-on-surface);
 	@include mdc-select-outline-color($c-border-medium);
 	@include mdc-select-hover-outline-color($c-border);
-	@include mdc-select-focused-outline-color($c-input);
+	@include mdc-select-focused-outline-color($c-content-primary);
 	@include mdc-select-focused-bottom-line-color($c-border-brand);
 	@include mdc-select-outline-shape-radius($border-radius-xs);
 

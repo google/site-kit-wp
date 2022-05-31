@@ -1,0 +1,58 @@
+/**
+ * MDC Tab Bar styles.
+ *
+ * Site Kit by Google, Copyright 2022 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.googlesitekit-plugin {
+
+	.googlesitekit-tab-bar__settings {
+
+		.mdc-tab-scroller__scroll-content {
+			gap: $grid-gap-phone / 4;
+		}
+
+		.mdc-tab {
+			background-color: $c-surfaces-surface-2;
+			color: $c-surfaces-on-surface;
+			font-size: $fs-body-md;
+			font-weight: $fw-primary-medium;
+			line-height: 1;
+
+			&:first-child {
+				border-radius: $border-radius-md 0 0 $border-radius-md;
+				overflow: hidden;
+			}
+
+			&:last-child {
+				border-radius: 0 $border-radius-md $border-radius-md 0;
+				overflow: hidden;
+			}
+		}
+
+		.mdc-tab__text-label {
+			color: $c-surfaces-on-surface;
+			opacity: 1;
+		}
+
+		.mdc-tab--active {
+			background-color: $c-surfaces-surface;
+
+			.mdc-tab__text-label {
+				color: $c-surfaces-on-surface;
+			}
+		}
+	}
+}

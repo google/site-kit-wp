@@ -1,13 +1,13 @@
 // Overrides for .mdc-text-field
 .googlesitekit-plugin .mdc-text-field {
 
-	@include mdc-text-field-ink-color($c-primary);
-	@include mdc-text-field-label-color($c-tertiary);
-	@include mdc-text-field-caret-color($c-primary);
-	@include mdc-text-field-focused-outline-color($c-input);
+	@include mdc-text-field-ink-color($c-surfaces-on-surface);
+	@include mdc-text-field-label-color($c-content-primary);
+	@include mdc-text-field-caret-color($c-content-primary);
+	@include mdc-text-field-focused-outline-color($c-content-primary);
 	@include mdc-text-field-hover-outline-color($c-border);
-	@include mdc-text-field-outline-color($c-border-medium);
-	@include mdc-text-field-textarea-stroke-color($c-border-medium);
+	@include mdc-text-field-outline-color($c-utility-outline);
+	@include mdc-text-field-textarea-stroke-color($c-utility-outline);
 	@include mdc-text-field-textarea-shape-radius($border-radius-xs);
 
 	width: 250px;
@@ -28,6 +28,7 @@
 		@include mdc-text-field-hover-outline-color($c-error);
 		@include mdc-text-field-outline-color($c-error);
 		@include mdc-text-field-textarea-stroke-color($c-error);
+		@include mdc-text-field-label-color($c-error);
 	}
 
 	&--textarea.mdc-text-field--focused {

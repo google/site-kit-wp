@@ -125,10 +125,11 @@
 
 		.googlesitekit-setup__intro-title {
 			color: $c-primary;
-			font-size: 0.75rem;
-			font-weight: $fw-primary-medium;
+			font-family: $f-secondary;
+			font-size: $fs-title-sm;
+			font-weight: $fw-secondary-bold;
 			letter-spacing: 0.16em;
-			line-height: 1.16;
+			line-height: $lh-title-sm;
 			margin: 0 0 17px 0;
 			text-transform: uppercase;
 		}

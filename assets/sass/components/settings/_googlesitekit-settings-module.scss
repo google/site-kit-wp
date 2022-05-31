@@ -66,6 +66,11 @@
 			&--open {
 				display: block;
 			}
+
+			.mdc-layout-grid__cell {
+				font-size: $fs-body-md;
+				line-height: $lh-body-md;
+			}
 		}
 
 		.googlesitekit-settings-module__title {
@@ -82,9 +87,16 @@
 
 		.googlesitekit-settings-module__status {
 			align-items: center;
+			color: $c-utility-success;
 			display: flex;
-			font-size: 0.75rem;
+			font-size: $fs-body-md;
+			font-weight: $fw-primary-medium;
+			line-height: $lh-body-md;
 			margin: 0;
+		}
+
+		.googlesitekit-settings-module__status--not-connected {
+			color: $c-utility-warning;
 		}
 
 		.googlesitekit-settings-module__status-icon {
@@ -118,7 +130,8 @@
 
 		.googlesitekit-settings-module__footer {
 			background-color: $c-background-subtle;
-			font-size: 0.8125rem;
+			font-size: $fs-body-md;
+			line-height: $lh-body-md;
 		}
 
 		.googlesitekit-settings-module__footer-cancel {
@@ -195,16 +208,16 @@
 
 		.googlesitekit-settings-module__meta-item-type {
 			color: $c-primary;
-			font-size: 0.75rem;
-			font-weight: inherit;
+			font-size: $fs-title-sm;
+			font-weight: $fw-secondary-bold;
+			line-height: $lh-title-sm;
 			margin: 0 0 8px 0;
 		}
 
 		.googlesitekit-settings-module__meta-item-data {
-			color: $c-tertiary;
-			font-size: 1rem;
-			font-weight: $fw-primary-bold;
-			line-height: 1.5rem;
+			color: $c-surfaces-on-surface;
+			font-size: $fs-body-lg;
+			line-height: $lh-body-lg;
 			margin: 0;
 
 			&--wrap {

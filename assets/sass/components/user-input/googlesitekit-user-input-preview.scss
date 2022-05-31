@@ -33,9 +33,9 @@
 			background-color: $c-alabaster;
 			color: $c-cape-cod;
 			display: block;
+			font-size: $fs-body-md;
+			line-height: $lh-body-md;
 			width: 100%;
-
-			@include responsive-text("body1", "body3");
 
 			@media (min-width: $bp-tablet) {
 				display: inline-block;
@@ -52,21 +52,20 @@
 
 	.googlesitekit-user-input__preview-answer {
 		align-items: center;
-		background-color: $c-solitude;
-		border-radius: 30px;
-		color: $c-denim;
+		background-color: $c-content-primary-container;
+		border-radius: $border-radius-xs;
+		color: $c-content-on-primary-container;
 		display: flex;
-		font-weight: $fw-secondary-medium;
+		font-size: $fs-body-md;
+		line-height: $lh-body-md;
 		margin-bottom: 12px;
 		margin-right: 12px;
 		padding: 8px 13px;
 		word-break: break-word;
-
-		@include responsive-text("body1", "body3");
 	}
 
 	.googlesitekit-user-input__preview-group {
-		border-bottom: 1px solid $c-mercury;
+		border-bottom: 1px solid $c-utility-divider;
 		margin-bottom: 12px;
 		padding-bottom: 12px;
 	}
@@ -77,10 +76,8 @@
 		justify-content: space-between;
 
 		p {
-			color: $c-cape-cod;
+			color: $c-surfaces-on-surface;
 			margin-top: 0;
-
-			@include responsive-text("body1", "body3");
 		}
 
 		button {
@@ -88,8 +85,6 @@
 			letter-spacing: normal;
 			margin-top: -4px;
 			text-transform: none;
-
-			@include responsive-text("body1", "body3");
 		}
 	}
 

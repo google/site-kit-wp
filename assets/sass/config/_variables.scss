@@ -161,9 +161,9 @@ $c-link-wpdb-hover: $c-cerulean;
 $c-input: $c-royal-blue;
 $c-disabled: $c-silver;
 $c-required: $c-valencia;
-$c-error: $c-valencia;
-$c-warning: $c-selective-yellow;
-$c-success: $c-chateau-green;
+$c-error: $c-utility-error;
+$c-warning: $c-utility-warning;
+$c-success: $c-utility-success;
 $c-wp-notice: $c-orange-roughy;
 $c-wp-notice-alt: $c-deep-sky-blue;
 
@@ -202,7 +202,7 @@ $c-progress-bg: $c-solitude;
 $c-user-input-options: $c-cape-cod;
 $c-user-input-note: $c-device-icon-gray;
 $c-user-input-placeholder: $c-heather;
-$c-user-input-color: $c-denim;
+$c-user-input-color: $c-content-on-primary-container;
 
 // Idea Hub colors
 $c-idea-hub-orange: $c-pizazz;
@@ -334,3 +334,5 @@ $mdc-typography-font-family: $f-primary;
 $mdc-typography-styles-subtitle1: (
 	font-size: $fs-body-md,
 );
+$mdc-text-field-error: $c-utility-error;
+$mdc-text-field-placeholder-ink-color: $c-interactive-on-disable-container;

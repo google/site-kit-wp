@@ -33,7 +33,7 @@
 	margin-left: -11px;
 
 	label[for="tosAccepted"] {
-
-		@include responsive-text("body2", "body2");
+		font-size: $fs-body-lg;
+		line-height: $lh-body-lg;
 	}
 }
