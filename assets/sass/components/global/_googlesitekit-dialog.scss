@@ -26,6 +26,10 @@
 
 		.mdc-dialog__container {
 			width: 100%;
+
+			@media (min-width: $bp-tablet) {
+				max-height: calc(100vh - 120px);
+			}
 		}
 
 		.mdc-dialog__surface {

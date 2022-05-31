@@ -106,11 +106,9 @@
 		align-items: flex-start;
 
 		.googlesitekit-user-role-select__button {
-			// 16px for the gap
-			left: calc(50% + 16px);
+			left: calc(50% + #{$grid-gap-phone});
 			position: absolute;
-			// 64px: 48px for button height and 16px for margin
-			top: -64px;
+			top: calc((48px + #{$grid-gap-phone}) * -1);
 
 			@media (min-width: $bp-tablet) {
 				left: auto;
@@ -137,12 +135,10 @@
 		flex: 0 0 50%;
 
 		svg {
-			height: 28px;
-			width: 28px;
 
-			@media (min-width: $bp-desktop) {
-				height: 48px;
-				width: 48px;
+			@media (max-width: $bp-desktop) {
+				height: 28px;
+				width: 28px;
 			}
 		}
 	}
@@ -245,6 +241,10 @@
 				gap: 16px;
 			}
 		}
+	}
+
+	.googlesitekit-dashboard-sharing-settings__module-name {
+		flex: 1;
 	}
 
 	p.googlesitekit-dashboard-sharing-settings__note {
@@ -466,7 +466,7 @@
 			@media (min-width: $bp-tablet) {
 				align-items: center;
 				flex-direction: row;
-				max-width: auto;
+				max-width: none;
 			}
 		}
 
