@@ -46,11 +46,7 @@ import useViewContext from '../../../hooks/useViewContext';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
-import {
-	EDITING_MANAGEMENT_KEY,
-	EDITING_USER_ROLES_KEY,
-	SHARING_SETTINGS_SLUG_KEY,
-} from './constants';
+import { EDITING_MANAGEMENT_KEY, SHARING_SETTINGS_SLUG_KEY } from './constants';
 import { trackEvent } from '../../../util';
 import {
 	CORE_USER,
@@ -95,9 +91,6 @@ export default function Module( { moduleSlug, moduleName, ownerUsername } ) {
 	);
 	const sharedOwnershipModules = useSelect( ( select ) =>
 		select( CORE_MODULES ).getSharedOwnershipModules()
-	);
-	const isEditingUserRoles = useSelect( ( select ) =>
-		select( CORE_UI ).getValue( EDITING_USER_ROLES_KEY )
 	);
 	const editingModuleSlug = useSelect( ( select ) =>
 		select( CORE_UI ).getValue( SHARING_SETTINGS_SLUG_KEY )
@@ -144,8 +137,10 @@ export default function Module( { moduleSlug, moduleName, ownerUsername } ) {
 	);
 
 	const isLocked =
-		( moduleSlug !== editingModuleSlug && isEditingUserRoles ) || isSaving;
-	const isEditing = moduleSlug === editingModuleSlug && isEditingUserRoles;
+		( editingModuleSlug !== undefined &&
+			moduleSlug !== editingModuleSlug ) ||
+		isSaving;
+	const isEditing = moduleSlug === editingModuleSlug;
 
 	return (
 		<div
