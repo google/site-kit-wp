@@ -25,7 +25,11 @@ import { useUpdateEffect } from 'react-use';
  * WordPress dependencies
  */
 import { __, _x, sprintf } from '@wordpress/i18n';
-import { useState, useCallback } from '@wordpress/element';
+import {
+	createInterpolateElement,
+	useState,
+	useCallback,
+} from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -38,11 +42,15 @@ import {
 	WEBDATASTREAM_CREATE,
 } from '../../../analytics-4/datastore/constants';
 import { FORM_SETUP, MODULES_ANALYTICS } from '../../datastore/constants';
+import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import { Select, Option } from '../../../../material-components';
 import { GA4ActivateSwitch } from '../common';
 import { PropertySelect } from '../../../analytics-4/components/common';
 import ProgressBar from '../../../../components/ProgressBar';
 import SettingsUseSnippetSwitch from '../../../analytics-4/components/settings/SettingsUseSnippetSwitch';
+import SettingsNotice from '../../../../components/SettingsNotice/SettingsNotice';
+import { TYPE_INFO } from '../../../../components/SettingsNotice';
+import WarningIcon from '../../../../../../assets/svg/icons/warning-icon.svg';
 const { useSelect, useDispatch } = Data;
 
 export default function GA4SettingsControls( { hasModuleAccess } ) {
@@ -69,6 +77,14 @@ export default function GA4SettingsControls( { hasModuleAccess } ) {
 	const propertyID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getPropertyID()
 	);
+
+	const module = useSelect( ( select ) =>
+		select( CORE_MODULES ).getModule( 'analytics-4' )
+	);
+
+	const ownerName = module?.owner?.login
+		? module?.owner?.login
+		: __( '(Another admin)', 'google-site-kit' );
 
 	const {
 		matchAccountProperty,
@@ -186,6 +202,27 @@ export default function GA4SettingsControls( { hasModuleAccess } ) {
 				<div className="googlesitekit-settings-module__meta-item">
 					<SettingsUseSnippetSwitch />
 				</div>
+			) }
+
+			{ hasModuleAccess === false && (
+				<SettingsNotice
+					type={ TYPE_INFO }
+					Icon={ WarningIcon }
+					notice={ createInterpolateElement(
+						sprintf(
+							/* translators: 1: module owner's name, 2: module name */
+							__(
+								'<strong>%1$s</strong> configured %2$s and you don’t have access to this Analytics property. Contact them to share access or change the Analytics property.',
+								'google-site-kit'
+							),
+							ownerName,
+							module?.name
+						),
+						{
+							strong: <strong />,
+						}
+					) }
+				/>
 			) }
 		</div>
 	);
