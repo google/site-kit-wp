@@ -21,6 +21,7 @@
 	.googlesitekit-header {
 
 		@include googlesitekit-inner-padding;
+		@include shadow;
 		background-color: $c-base;
 		left: 0;
 		position: sticky;
@@ -55,6 +56,10 @@
 
 				@include shadow;
 			}
+		}
+
+		&.googlesitekit-header--has-navigation {
+			box-shadow: none;
 		}
 
 		.googlesitekit-header__logo {

@@ -64,6 +64,7 @@ const Header = ( { children, subHeader, showNavigation } ) => {
 			<header
 				className={ classnames( 'googlesitekit-header', {
 					'googlesitekit-header--has-subheader': hasSubheader,
+					'googlesitekit-header--has-navigation': showNavigation,
 				} ) }
 			>
 				<Grid>
