@@ -220,9 +220,9 @@ $c-badge-text: $c-cape-cod;
 
 // Entity Search
 $c-entity-search-button: $c-surfaces-on-surface-variant;
-$c-entity-search-input-border: $c-tundora;
-$c-entity-search-autocomplete-options: $c-shark;
-$c-entity-search-autocomplete-bg-hover: rgba($c-silver, 0.2);
+$c-entity-search-input-border: $c-utility-outline;
+$c-entity-search-autocomplete-options: $c-surfaces-on-surface;
+$c-entity-search-autocomplete-bg-hover: $c-interactive-secondary-hover;
 
 // Setup Analytics Notice
 $c-setup-analytics-notice-bg: $c-alabaster;
@@ -287,34 +287,6 @@ $bp-wpdb4: 2200px;
 
 // Custom max width for setup content
 $max-width-setup-content: 465px;
-
-// Typography
-$typography: (
-	headline1: (
-		font-size: $fs-display-sm,
-		line-height: $lh-display-sm,
-	),
-	headline3: (
-		font-size: $fs-headline-md,
-		line-height: $lh-headline-md,
-	),
-	body1: (
-		font-size: $fs-headline-sm,
-		line-height: $lh-headline-sm,
-	),
-	body2: (
-		font-size: $fs-body-lg,
-		line-height: $lh-body-lg,
-	),
-	body3: (
-		font-size: $fs-body-md,
-		line-height: $lh-body-md,
-	),
-	caption: (
-		font-size: $fs-body-sm,
-		line-height: $lh-body-md,
-	)
-);
 
 // Google MDC Layout Grid Overrides
 

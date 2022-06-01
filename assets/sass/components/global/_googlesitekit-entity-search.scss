@@ -49,6 +49,7 @@
 		}
 
 		.mdc-button.googlesitekit-entity-search__close {
+			border-radius: 50%;
 			min-width: 36px;
 
 			@media ( min-width: $bp-tablet ) {
@@ -58,7 +59,7 @@
 		}
 
 		.googlesitekit-entity-search__loading {
-			border-radius: 4px 4px 0 0;
+			border-radius: 0 0 $border-radius-sm $border-radius-sm;
 			bottom: -4px;
 			position: absolute;
 			right: 4px;
@@ -66,9 +67,11 @@
 			z-index: 4;
 
 			@media ( min-width: $bp-wpAdminBarTablet ) {
-				bottom: -6px;
+				bottom: -4px;
+				left: 0;
+				margin: 0 auto;
 				right: 0;
-				width: 100%;
+				width: calc(100% - 25px);
 			}
 		}
 
@@ -78,7 +81,8 @@
 
 		.autocomplete__input {
 			border: none;
-			font-size: 14px;
+			border-radius: $border-radius-lg;
+			font-size: $fs-body-md;
 			height: 34px;
 			margin: 0;
 			padding: 0 32px 0 0;
@@ -88,17 +92,19 @@
 				padding: 0 32px 0 16px;
 			}
 
+			&:hover {
+				border-color: $c-neutral-n-900;
+			}
+
 			&:focus {
-				border-width: 1px;
+				border-color: $c-content-primary;
+				border-width: 2px;
 			}
 		}
 
 		.autocomplete__menu {
-			background-color: $c-base;
-			border-radius: 6px;
-			box-shadow:
-				0 3px 2px rgba(124, 128, 132, 0.3),
-				0 3px 7px rgba(121, 125, 128, 0.3);
+			background-color: $c-surfaces-surface-2;
+			border-radius: $border-radius-sm;
 			margin-left: -12px;
 			padding: 0;
 			top: calc(100% + 14px);
@@ -106,7 +112,7 @@
 
 			@media ( min-width: $bp-wpAdminBarTablet ) {
 				margin: 0;
-				top: calc(100% + 2px);
+				top: 100%;
 				width: 100%;
 			}
 		}
@@ -115,6 +121,14 @@
 			color: $c-entity-search-autocomplete-options;
 			font-size: 14px;
 			line-height: 1;
+
+			&:first-child {
+				border-radius: $border-radius-sm $border-radius-sm 0 0;
+			}
+
+			&:last-child {
+				border-radius: 0 0 $border-radius-sm $border-radius-sm;
+			}
 		}
 
 		.autocomplete__option--focused,
