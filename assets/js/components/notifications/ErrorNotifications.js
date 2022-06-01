@@ -56,7 +56,7 @@ export default function ErrorNotifications() {
 					id="setup_error"
 					type="win-error"
 					title={ __(
-						'Error connecting Site Kit.',
+						'Error connecting Site Kit',
 						'google-site-kit'
 					) }
 					description={ setupErrorMessage }
