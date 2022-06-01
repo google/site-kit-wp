@@ -31,7 +31,9 @@ import { ESCAPE, TAB } from '@wordpress/keycodes';
 /**
  * Internal dependencies
  */
+import useViewContext from '../../hooks/useViewContext';
 import { useKeyCodesInside } from '../../hooks/useKeyCodesInside';
+import { trackEvent } from '../../util';
 import ViewIcon from '../../../svg/icons/view.svg';
 import Button from '../Button';
 import Menu from '../Menu';
@@ -42,6 +44,7 @@ import Tracking from './Tracking';
 export default function ViewOnlyMenu() {
 	const [ menuOpen, setMenuOpen ] = useState( false );
 	const menuWrapperRef = useRef();
+	const viewContext = useViewContext();
 
 	useClickAway( menuWrapperRef, () => setMenuOpen( false ) );
 	useKeyCodesInside( [ ESCAPE, TAB ], menuWrapperRef, () =>
@@ -49,8 +52,12 @@ export default function ViewOnlyMenu() {
 	);
 
 	const toggleMenu = useCallback( () => {
+		if ( ! menuOpen ) {
+			trackEvent( `${ viewContext }_headerbar`, 'open_viewonly' );
+		}
+
 		setMenuOpen( ! menuOpen );
-	}, [ menuOpen ] );
+	}, [ menuOpen, viewContext ] );
 
 	return (
 		<div

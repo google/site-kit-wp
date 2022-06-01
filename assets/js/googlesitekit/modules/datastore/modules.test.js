@@ -191,6 +191,8 @@ describe( 'core/modules modules', () => {
 		describe( 'recoverModule', () => {
 			it( 'dispatches a request to recover a module', async () => {
 				const slug = 'analytics';
+				global[ dashboardSharingDataBaseVar ] = recoverableModuleList;
+
 				fetchMock.get(
 					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
 					{
@@ -265,6 +267,16 @@ describe( 'core/modules modules', () => {
 				expect( fetchMock ).toHaveFetched(
 					/^\/google-site-kit\/v1\/core\/modules\/data\/list/
 				);
+
+				// Ensure the module has been removed from the recoverable modules list.
+				const recoverableModules = registry
+					.select( CORE_MODULES )
+					.getRecoverableModules();
+
+				expect( Object.keys( recoverableModules ) ).toEqual( [
+					'search-console',
+					'tagmanager',
+				] );
 			} );
 
 			it( 'encounters an error if the module is not recoverable', async () => {
@@ -385,6 +397,279 @@ describe( 'core/modules modules', () => {
 						},
 					}
 				);
+			} );
+		} );
+
+		describe( 'recoverModules', () => {
+			it( 'dispatches requests to recover modules', async () => {
+				const slugs = [ 'analytics', 'tagmanager' ];
+				global[ dashboardSharingDataBaseVar ] = recoverableModuleList;
+
+				fetchMock.get(
+					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
+					{
+						body: [
+							...FIXTURES,
+							{
+								slug: 'analytics',
+								name: 'Analytics',
+								active: true,
+								connected: true,
+								shareable: true,
+								storeName: 'modules/analytics',
+							},
+							{
+								slug: 'tagmanager',
+								name: 'Tag Manager',
+								active: true,
+								connected: true,
+								shareable: true,
+								storeName: 'modules/tagmanager',
+							},
+						],
+						status: 200,
+					}
+				);
+				fetchMock.post(
+					/^\/google-site-kit\/v1\/core\/modules\/data\/recover-module/,
+					{ body: { ownerID: 1 } },
+					{ repeat: 2 }
+				);
+
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/modules\/analytics\/data\/settings/,
+					{
+						body: getModulesBySlugList( [ slugs ], FIXTURES ),
+						status: 200,
+					}
+				);
+
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/settings/,
+					{
+						body: getModulesBySlugList( [ slugs ], FIXTURES ),
+						status: 200,
+					}
+				);
+
+				const initialModules = registry
+					.select( CORE_MODULES )
+					.getModules();
+				// The modules info will be its initial value while the modules
+				// info is fetched.
+				expect( initialModules ).toBeUndefined();
+				await untilResolved( registry, CORE_MODULES ).getModules();
+
+				const { response } = await registry
+					.dispatch( CORE_MODULES )
+					.recoverModules( slugs );
+
+				expect( response.success ).toStrictEqual( {
+					analytics: true,
+					tagmanager: true,
+				} );
+
+				expect( fetchMock ).toHaveFetchedTimes( 6 );
+
+				// Ensure the proper body parameters were sent.
+				expect( fetchMock ).toHaveFetched(
+					/^\/google-site-kit\/v1\/core\/modules\/data\/recover-module/,
+					{
+						body: {
+							data: {
+								slug: 'analytics',
+							},
+						},
+					}
+				);
+
+				expect( fetchMock ).toHaveFetched(
+					/^\/google-site-kit\/v1\/core\/modules\/data\/recover-module/,
+					{
+						body: {
+							data: {
+								slug: 'tagmanager',
+							},
+						},
+					}
+				);
+
+				// Ensure fetchGetSettings have been called.
+				expect( fetchMock ).toHaveFetched(
+					/^\/google-site-kit\/v1\/modules\/analytics\/data\/settings/,
+					{
+						body: {
+							data: {
+								slug: 'analytics',
+							},
+						},
+					}
+				);
+
+				expect( fetchMock ).toHaveFetched(
+					/^\/google-site-kit\/v1\/modules\/analytics\/data\/settings/,
+					{
+						body: {
+							data: {
+								slug: 'tagmanager',
+							},
+						},
+					}
+				);
+
+				// Ensure fetchGetModules have been called.
+				expect( fetchMock ).toHaveFetched(
+					/^\/google-site-kit\/v1\/core\/modules\/data\/list/
+				);
+
+				// Ensure the module has been removed from the recoverable modules list.
+				const recoverableModules = registry
+					.select( CORE_MODULES )
+					.getRecoverableModules();
+
+				expect( Object.keys( recoverableModules ) ).toEqual( [
+					'search-console',
+				] );
+			} );
+
+			it( 'encounters an error if the any module is not recoverable', async () => {
+				const slugs = [ 'analytics', 'tagmanager' ];
+				global[ dashboardSharingDataBaseVar ] = recoverableModuleList;
+
+				fetchMock.get(
+					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
+					{
+						body: [
+							...FIXTURES,
+							{
+								slug: 'analytics',
+								name: 'Analytics',
+								active: true,
+								connected: true,
+								shareable: true,
+								storeName: 'modules/analytics',
+							},
+							{
+								slug: 'tagmanager',
+								name: 'Tag Manager',
+								active: true,
+								connected: true,
+								shareable: true,
+								storeName: 'modules/tagmanager',
+							},
+						],
+						status: 200,
+					}
+				);
+
+				const errorResponse = {
+					code: 'module_not_recoverable',
+					message: 'Module is not recoverable.',
+					data: { status: 403 },
+				};
+
+				fetchMock.postOnce(
+					/^\/google-site-kit\/v1\/core\/modules\/data\/recover-module/,
+					{ body: { ownerID: 1 } }
+				);
+
+				fetchMock.postOnce(
+					/^\/google-site-kit\/v1\/core\/modules\/data\/recover-module/,
+					{ body: errorResponse, status: 403 }
+				);
+
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/modules\/analytics\/data\/settings/,
+					{
+						body: getModulesBySlugList( [ slugs ], FIXTURES ),
+						status: 200,
+					}
+				);
+
+				const initialModules = registry
+					.select( CORE_MODULES )
+					.getModules();
+				// The modules info will be its initial value while the modules
+				// info is fetched.
+				expect( initialModules ).toBeUndefined();
+				await untilResolved( registry, CORE_MODULES ).getModules();
+
+				const { response, error } = await registry
+					.dispatch( CORE_MODULES )
+					.recoverModules( slugs );
+
+				expect( console ).toHaveErrored();
+				expect( response.success ).toStrictEqual( {
+					analytics: true,
+					tagmanager: false,
+				} );
+				expect( error.tagmanager.message ).toBe(
+					errorResponse.message
+				);
+
+				expect( fetchMock ).toHaveFetchedTimes( 5 );
+
+				// Ensure the proper body parameters were sent.
+				expect( fetchMock ).toHaveFetched(
+					/^\/google-site-kit\/v1\/core\/modules\/data\/recover-module/,
+					{
+						body: {
+							data: {
+								slug: 'analytics',
+							},
+						},
+					}
+				);
+
+				expect( fetchMock ).toHaveFetched(
+					/^\/google-site-kit\/v1\/core\/modules\/data\/recover-module/,
+					{
+						body: {
+							data: {
+								slug: 'tagmanager',
+							},
+						},
+					}
+				);
+
+				// Ensure fetchGetSettings has been called for Analytics.
+				expect( fetchMock ).toHaveFetched(
+					/^\/google-site-kit\/v1\/modules\/analytics\/data\/settings/,
+					{
+						body: {
+							data: {
+								slug: 'analytics',
+							},
+						},
+					}
+				);
+
+				// Ensure fetchGetSettings haven't been called for Tag Manager.
+				expect( fetchMock ).not.toHaveFetched(
+					/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/settings/,
+					{
+						body: {
+							data: {
+								slug: 'tagmanager',
+							},
+						},
+					}
+				);
+
+				// Ensure fetchGetModules have been called.
+				expect( fetchMock ).toHaveFetched(
+					/^\/google-site-kit\/v1\/core\/modules\/data\/list/
+				);
+
+				// Ensure the module has been removed from the recoverable modules list.
+				const recoverableModules = registry
+					.select( CORE_MODULES )
+					.getRecoverableModules();
+
+				expect( Object.keys( recoverableModules ) ).toEqual( [
+					'search-console',
+					'tagmanager',
+				] );
 			} );
 		} );
 

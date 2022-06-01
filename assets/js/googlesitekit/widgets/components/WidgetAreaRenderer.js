@@ -129,6 +129,10 @@ export default function WidgetAreaRenderer( { slug, totalAreas, contextID } ) {
 		} );
 	}, [ intersectionEntry, slug, activeContextID, contextID ] );
 
+	if ( viewableModules === undefined ) {
+		return null;
+	}
+
 	// Compute the layout.
 	const { columnWidths, rowIndexes } = getWidgetLayout(
 		widgets,

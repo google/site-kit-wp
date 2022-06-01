@@ -62,6 +62,10 @@ const WidgetContextRenderer = ( props ) => {
 			} )
 	);
 
+	if ( viewableModules === undefined ) {
+		return null;
+	}
+
 	return (
 		<div
 			id={ id }

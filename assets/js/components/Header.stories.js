@@ -52,9 +52,11 @@ import {
 	PERMISSION_AUTHENTICATE,
 	PERMISSION_READ_SHARED_MODULE_DATA,
 	CORE_USER,
+	PERMISSION_VIEW_SHARED_DASHBOARD,
 } from '../googlesitekit/datastore/user/constants';
 import { Provider as ViewContextProvider } from './Root/ViewContextContext';
 import { getMetaCapabilityPropertyName } from '../googlesitekit/datastore/util/permissions';
+import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
 import {
 	VIEW_CONTEXT_PAGE_DASHBOARD,
 	VIEW_CONTEXT_DASHBOARD,
@@ -71,6 +73,11 @@ const Template = ( { setupRegistry = () => {}, viewContext, ...args } ) => (
 
 export const PluginHeader = Template.bind( {} );
 PluginHeader.storyName = 'Plugin Header';
+PluginHeader.args = {
+	setupRegistry: ( registry ) => {
+		provideUserAuthentication( registry );
+	},
+};
 PluginHeader.scenario = {
 	label: 'Global/Plugin Header',
 	hierarchyRootSeparator: '|',
@@ -82,6 +89,9 @@ export const HeaderWithDateSelector = Template.bind( {} );
 HeaderWithDateSelector.storyName = 'Plugin Header with Date Selector';
 HeaderWithDateSelector.args = {
 	children: <DateRangeSelector />,
+	setupRegistry: ( registry ) => {
+		provideUserAuthentication( registry );
+	},
 };
 HeaderWithDateSelector.scenario = {
 	label: 'Global/Plugin Header with Date Selector',
@@ -94,6 +104,9 @@ export const HeaderWithHelpMenu = Template.bind( {} );
 HeaderWithHelpMenu.storyName = 'Plugin Header with Help Menu';
 HeaderWithHelpMenu.args = {
 	children: <HelpMenu />,
+	setupRegistry: ( registry ) => {
+		provideUserAuthentication( registry );
+	},
 };
 
 export const HeaderWithHelpMenuDateRangeSelector = Template.bind( {} );
@@ -106,6 +119,9 @@ HeaderWithHelpMenuDateRangeSelector.args = {
 			<HelpMenu />
 		</Fragment>
 	),
+	setupRegistry: ( registry ) => {
+		provideUserAuthentication( registry );
+	},
 };
 
 export const HeaderWithCustomHelpMenuLinks = Template.bind( {} );
@@ -119,12 +135,18 @@ HeaderWithCustomHelpMenuLinks.args = {
 			</HelpMenuLink>
 		</HelpMenu>
 	),
+	setupRegistry: ( registry ) => {
+		provideUserAuthentication( registry );
+	},
 };
 
 export const HeaderWithSubHeader = Template.bind( {} );
 HeaderWithSubHeader.storyName = 'Plugin Header with Sub Header';
 HeaderWithSubHeader.args = {
 	subHeader: <UserInputSuccessBannerNotification />,
+	setupRegistry: ( registry ) => {
+		provideUserAuthentication( registry );
+	},
 };
 
 export const HeaderWithSubHeaderEntityBanner = Template.bind( {} );
@@ -139,6 +161,7 @@ HeaderWithSubHeaderEntityBanner.args = {
 				'Everything you need to know about driving in Ireland',
 			currentEntityURL: 'http://example.com/driving-ireland/',
 		} );
+		provideUserAuthentication( registry );
 	},
 };
 
@@ -146,12 +169,18 @@ export const HeaderWithNullSubHeader = Template.bind( {} );
 HeaderWithNullSubHeader.storyName = 'Plugin Header with Null Sub Header';
 HeaderWithNullSubHeader.args = {
 	subHeader: <Null />,
+	setupRegistry: ( registry ) => {
+		provideUserAuthentication( registry );
+	},
 };
 
 export const HeaderWithNavigation = Template.bind( {} );
 HeaderWithNavigation.storyName = 'Plugin Header with Dashboard Navigation';
 HeaderWithNavigation.args = {
 	showNavigation: true,
+	setupRegistry: ( registry ) => {
+		provideUserAuthentication( registry );
+	},
 };
 
 export const HeaderWithDashboardSharingSettings = Template.bind( {} );
@@ -165,6 +194,9 @@ HeaderWithDashboardSharingSettings.args = {
 			<HelpMenu />
 		</Fragment>
 	),
+	setupRegistry: ( registry ) => {
+		provideUserAuthentication( registry );
+	},
 };
 HeaderWithDashboardSharingSettings.parameters = {
 	features: [ 'dashboardSharing' ],
@@ -207,7 +239,8 @@ HeaderViewOnly.args = {
 		] );
 		provideModuleRegistrations( registry );
 		provideUserCapabilities( registry, {
-			[ PERMISSION_AUTHENTICATE ]: true,
+			[ PERMISSION_AUTHENTICATE ]: false,
+			[ PERMISSION_VIEW_SHARED_DASHBOARD ]: true,
 			[ getMetaCapabilityPropertyName(
 				PERMISSION_READ_SHARED_MODULE_DATA,
 				'search-console'
@@ -239,13 +272,34 @@ HeaderViewOnly.parameters = {
 	features: [ 'dashboardSharing' ],
 };
 
+export const HeaderWithModuleRecoveryAlert = Template.bind( {} );
+HeaderWithModuleRecoveryAlert.storyName =
+	'Plugin Header with Module Recovery Alert';
+HeaderWithModuleRecoveryAlert.args = {
+	setupRegistry: ( registry ) => {
+		provideModules( registry );
+
+		registry
+			.dispatch( CORE_MODULES )
+			.receiveRecoverableModules( [ 'search-console' ] );
+		registry
+			.dispatch( CORE_MODULES )
+			.receiveCheckModuleAccess(
+				{ access: true },
+				{ slug: 'search-console' }
+			);
+	},
+};
+HeaderWithModuleRecoveryAlert.parameters = {
+	features: [ 'dashboardSharing' ],
+};
+
 export default {
 	title: 'Components/Header',
 	component: Header,
 	decorators: [
 		( Story, { parameters } ) => {
 			const registry = createTestRegistry();
-			provideUserAuthentication( registry );
 			provideSiteInfo( registry );
 
 			return (

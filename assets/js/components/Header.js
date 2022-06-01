@@ -35,6 +35,7 @@ import Data from 'googlesitekit-data';
 import Logo from './Logo';
 import UserMenu from './UserMenu';
 import ErrorNotifications from './notifications/ErrorNotifications';
+import ModuleRecoveryAlert from './dashboard-sharing/ModuleRecoveryAlert';
 import { CORE_USER } from '../googlesitekit/datastore/user/constants';
 import { Grid, Row, Cell } from '../material-components';
 import DashboardNavigation from './DashboardNavigation';
@@ -42,11 +43,13 @@ import EntityHeader from './EntityHeader';
 import ViewOnlyMenu from './ViewOnlyMenu';
 import { useFeature } from '../hooks/useFeature';
 import useViewOnly from '../hooks/useViewOnly';
+import useDashboardType from '../hooks/useDashboardType';
 const { useSelect } = Data;
 
 const Header = ( { children, subHeader, showNavigation } ) => {
 	const dashboardSharingEnabled = useFeature( 'dashboardSharing' );
-	const viewOnlyDashboard = useViewOnly();
+	const isDashboard = !! useDashboardType();
+	const isViewOnly = useViewOnly();
 
 	const isAuthenticated = useSelect( ( select ) =>
 		select( CORE_USER ).isAuthenticated()
@@ -83,12 +86,13 @@ const Header = ( { children, subHeader, showNavigation } ) => {
 						>
 							{ children }
 
-							{ isAuthenticated &&
+							{ ! isAuthenticated &&
 								dashboardSharingEnabled &&
-								viewOnlyDashboard && <ViewOnlyMenu /> }
+								isDashboard &&
+								isViewOnly && <ViewOnlyMenu /> }
 							{ isAuthenticated &&
 								( ! dashboardSharingEnabled ||
-									! viewOnlyDashboard ) && <UserMenu /> }
+									! isViewOnly ) && <UserMenu /> }
 						</Cell>
 					</Row>
 				</Grid>
@@ -103,6 +107,10 @@ const Header = ( { children, subHeader, showNavigation } ) => {
 			<EntityHeader />
 
 			<ErrorNotifications />
+
+			{ dashboardSharingEnabled && isDashboard && ! isViewOnly && (
+				<ModuleRecoveryAlert />
+			) }
 		</Fragment>
 	);
 };

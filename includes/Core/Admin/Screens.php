@@ -372,24 +372,6 @@ final class Screens {
 			),
 		);
 
-		$screens[] = new Screen(
-			self::PREFIX . 'settings',
-			array(
-				'title'            => __( 'Settings', 'google-site-kit' ),
-				'capability'       => Permissions::MANAGE_OPTIONS,
-				'enqueue_callback' => function( Assets $assets ) {
-					$assets->enqueue_asset( 'googlesitekit-settings' );
-				},
-				'render_callback'  => function( Context $context ) {
-					?>
-
-					<div id="googlesitekit-settings-wrapper" class="googlesitekit-page"></div>
-
-					<?php
-				},
-			)
-		);
-
 		$show_splash_in_menu = current_user_can( Permissions::VIEW_SPLASH ) && ! current_user_can( Permissions::VIEW_DASHBOARD );
 
 		$screens[] = new Screen(
@@ -438,6 +420,24 @@ final class Screens {
 					?>
 
 					<div id="js-googlesitekit-dashboard-splash" class="googlesitekit-page"></div>
+
+					<?php
+				},
+			)
+		);
+
+		$screens[] = new Screen(
+			self::PREFIX . 'settings',
+			array(
+				'title'            => __( 'Settings', 'google-site-kit' ),
+				'capability'       => Permissions::MANAGE_OPTIONS,
+				'enqueue_callback' => function( Assets $assets ) {
+					$assets->enqueue_asset( 'googlesitekit-settings' );
+				},
+				'render_callback'  => function( Context $context ) {
+					?>
+
+					<div id="googlesitekit-settings-wrapper" class="googlesitekit-page"></div>
 
 					<?php
 				},
