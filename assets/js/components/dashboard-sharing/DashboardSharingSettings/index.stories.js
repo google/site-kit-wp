@@ -30,8 +30,9 @@ import DashboardSharingSettings from './index';
 import { MODULES_PAGESPEED_INSIGHTS } from '../../../modules/pagespeed-insights/datastore/constants';
 import { MODULES_SEARCH_CONSOLE } from '../../../modules/search-console/datastore/constants';
 import { MODULES_ANALYTICS } from '../../../modules/analytics/datastore/constants';
-import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
+import { Dialog, DialogContent } from '../../../material-components';
+import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { sharingSettings, modules, roles } from './__fixtures__';
 
 const Template = ( { setupRegistry = () => {}, ...args } ) => (
@@ -290,7 +291,16 @@ export default {
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>
-					<Story />
+					<Dialog
+						className="googlesitekit-dialog googlesitekit-sharing-settings-dialog"
+						scrimClickAction=""
+						escapeKeyAction=""
+						open
+					>
+						<DialogContent className="googlesitekit-dialog__content">
+							<Story />
+						</DialogContent>
+					</Dialog>
 				</WithRegistrySetup>
 			);
 		},

@@ -47,7 +47,7 @@ export default function DashboardSharingSettings() {
 	const sortedShareableModules = useSelect( ( select ) => {
 		const modules = select( CORE_MODULES ).getModules();
 
-		// return early if modules are not loaded
+		// Return early if modules are not loaded.
 		if ( modules === undefined ) {
 			return undefined;
 		}
@@ -76,7 +76,7 @@ export default function DashboardSharingSettings() {
 		}
 
 		return [ ...owned, ...manageable, ...rest ];
-	}, [] );
+	} );
 
 	if ( sortedShareableModules === undefined ) {
 		return null;

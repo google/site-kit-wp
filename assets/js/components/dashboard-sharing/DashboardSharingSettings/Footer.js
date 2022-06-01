@@ -63,16 +63,17 @@ export default function Footer( { closeDialog } ) {
 
 		if ( error ) {
 			setErrorNotice( error.message );
-		} else {
-			trackEvent( `${ viewContext }_sharing`, 'settings_confirm' );
 
-			// Reset the state to enable modules in when not editing or saving.
-			setValue( SHARING_SETTINGS_SLUG_KEY, undefined );
-			setValue( EDITING_MANAGEMENT_KEY, false );
-
-			closeDialog();
+			return;
 		}
-		// Reset saving state when there is an error or not.
+
+		trackEvent( `${ viewContext }_sharing`, 'settings_confirm' );
+
+		// Reset the state to enable modules in when not editing or saving.
+		setValue( SHARING_SETTINGS_SLUG_KEY, undefined );
+		setValue( EDITING_MANAGEMENT_KEY, false );
+
+		closeDialog();
 	}, [ viewContext, saveSharingSettings, setValue, closeDialog ] );
 
 	return (
