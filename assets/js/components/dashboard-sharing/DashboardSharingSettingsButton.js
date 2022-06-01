@@ -36,6 +36,8 @@ import Link from '../Link';
 import Button from '../Button';
 import Portal from '../Portal';
 import ShareIcon from '../../../svg/icons/share.svg';
+import DashboardSharingSettings from './DashboardSharingSettings';
+import Footer from './DashboardSharingSettings/Footer';
 import { Dialog, DialogContent, DialogFooter } from '../../material-components';
 import { BREAKPOINT_SMALL, useBreakpoint } from '../../hooks/useBreakpoint';
 import useViewContext from '../../hooks/useViewContext';
@@ -64,13 +66,9 @@ export default function DashboardSharingSettingsButton() {
 	}, [ viewContext, hasMultipleAdmins ] );
 
 	const closeDialog = useCallback( () => {
+		trackEvent( `${ viewContext }_sharing`, 'settings_cancel' );
 		setDialogOpen( false );
-	}, [] );
-
-	const onApply = useCallback( () => {
-		// @TODO: Implement Apply behaviour.
-		setDialogOpen( false );
-	}, [] );
+	}, [ viewContext ] );
 
 	return (
 		<Fragment>
@@ -85,7 +83,7 @@ export default function DashboardSharingSettingsButton() {
 				<Dialog
 					open={ dialogOpen }
 					onClose={ closeDialog }
-					className="googlesitekit-dialog"
+					className="googlesitekit-dialog googlesitekit-sharing-settings-dialog"
 				>
 					<div
 						className="googlesitekit-dialog__back-wrapper"
@@ -142,16 +140,14 @@ export default function DashboardSharingSettingsButton() {
 								</p>
 							</div>
 						</div>
+
+						<div className="googlesitekit-dialog__main">
+							<DashboardSharingSettings />
+						</div>
 					</DialogContent>
 
 					<DialogFooter className="googlesitekit-dialog__footer">
-						<Link onClick={ closeDialog }>
-							{ __( 'Cancel', 'google-site-kit' ) }
-						</Link>
-
-						<Button onClick={ onApply }>
-							{ __( 'Apply', 'google-site-kit' ) }
-						</Button>
+						<Footer closeDialog={ closeDialog } />
 					</DialogFooter>
 				</Dialog>
 			</Portal>

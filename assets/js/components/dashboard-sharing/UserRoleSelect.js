@@ -20,6 +20,7 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import classnames from 'classnames';
 import { Chip, ChipCheckmark } from '@material/react-chips';
 import isEqual from 'lodash/isEqual';
 
@@ -28,7 +29,7 @@ import isEqual from 'lodash/isEqual';
  */
 import { __ } from '@wordpress/i18n';
 import { ESCAPE, ENTER } from '@wordpress/keycodes';
-import { useState, useCallback, useRef } from '@wordpress/element';
+import { useEffect, useState, useCallback, useRef } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -42,12 +43,14 @@ import useViewContext from '../../hooks/useViewContext';
 import { useKeyCodesInside } from '../../hooks/useKeyCodesInside';
 import { trackEvent } from '../../util';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
+import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
+import { SHARING_SETTINGS_SLUG_KEY } from './DashboardSharingSettings/constants';
 const { useSelect, useDispatch } = Data;
 
 const ALL_CHIP_ID = 'all';
 const ALL_CHIP_DISPLAY_NAME = __( 'All', 'google-site-kit' );
 
-export default function UserRoleSelect( { moduleSlug } ) {
+export default function UserRoleSelect( { moduleSlug, isLocked = false } ) {
 	const viewContext = useViewContext();
 	const wrapperRef = useRef();
 
@@ -55,6 +58,7 @@ export default function UserRoleSelect( { moduleSlug } ) {
 	const [ initialSharedRoles, setInitialSharedRoles ] = useState( [] );
 
 	const { setSharedRoles } = useDispatch( CORE_MODULES );
+	const { setValue } = useDispatch( CORE_UI );
 
 	const shareableRoles = useSelect( ( select ) =>
 		select( CORE_MODULES ).getShareableRoles()
@@ -64,6 +68,16 @@ export default function UserRoleSelect( { moduleSlug } ) {
 	);
 
 	useKeyCodesInside( [ ESCAPE ], wrapperRef, () => setEditMode( false ) );
+
+	useEffect( () => {
+		if ( editMode ) {
+			// Set these state to disable modules in when editing user roles
+			setValue( SHARING_SETTINGS_SLUG_KEY, moduleSlug );
+		} else {
+			// Reset the state to enable modules in when not editing.
+			setValue( SHARING_SETTINGS_SLUG_KEY, undefined );
+		}
+	}, [ editMode, setValue, moduleSlug ] );
 
 	const toggleEditMode = useCallback( () => {
 		if ( editMode ) {
@@ -101,6 +115,8 @@ export default function UserRoleSelect( { moduleSlug } ) {
 				} else {
 					updatedSharedRoles = shareableRoles.map( ( { id } ) => id );
 				}
+			} else if ( sharedRoles === null ) {
+				updatedSharedRoles = [ chipID ];
 			} else if ( sharedRoles.includes( chipID ) ) {
 				updatedSharedRoles = sharedRoles.filter(
 					( role ) => role !== chipID
@@ -130,7 +146,12 @@ export default function UserRoleSelect( { moduleSlug } ) {
 	}
 
 	return (
-		<div className="googlesitekit-user-role-select" ref={ wrapperRef }>
+		<div
+			className={ classnames( 'googlesitekit-user-role-select', {
+				'googlesitekit-user-role-select--open': editMode,
+			} ) }
+			ref={ wrapperRef }
+		>
 			<Button
 				aria-label={
 					editMode
@@ -146,6 +167,7 @@ export default function UserRoleSelect( { moduleSlug } ) {
 						<ShareIcon width={ 23 } height={ 23 } />
 					)
 				}
+				tabIndex={ isLocked ? -1 : undefined }
 			/>
 
 			{ ! editMode && sharedRoles?.length > 0 && (
@@ -154,9 +176,12 @@ export default function UserRoleSelect( { moduleSlug } ) {
 				</span>
 			) }
 
-			{ ! editMode && sharedRoles?.length === 0 && (
+			{ ! editMode && ( ! sharedRoles || sharedRoles?.length === 0 ) && (
 				<span className="googlesitekit-user-role-select__add-roles">
-					<Link onClick={ toggleEditMode }>
+					<Link
+						onClick={ toggleEditMode }
+						tabIndex={ isLocked ? -1 : undefined }
+					>
 						{ __( 'Add roles', 'google-site-kit' ) }
 					</Link>
 				</span>
@@ -198,4 +223,5 @@ export default function UserRoleSelect( { moduleSlug } ) {
 
 UserRoleSelect.propTypes = {
 	moduleSlug: PropTypes.string.isRequired,
+	isLocked: PropTypes.bool,
 };
