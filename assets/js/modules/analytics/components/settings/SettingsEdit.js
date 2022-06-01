@@ -21,6 +21,7 @@
  */
 import Data from 'googlesitekit-data';
 import { MODULES_ANALYTICS, ACCOUNT_CREATE } from '../../datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
@@ -47,13 +48,60 @@ export default function SettingsEdit() {
 	const usingProxy = useSelect( ( select ) =>
 		select( CORE_SITE ).isUsingProxy()
 	);
-	const hasModuleAccess = useSelect( ( select ) => {
-		const moduleOwnerID = select( MODULES_ANALYTICS )?.getOwnerID();
-		const loggedInUserID = select( CORE_USER ).getID();
+
+	const loggedInUserID = useSelect( ( select ) =>
+		select( CORE_USER ).getID()
+	);
+	const hasResolvedUser = useSelect( ( select ) =>
+		select( CORE_USER ).hasFinishedResolution( 'getUser' )
+	);
+
+	const hasAnalyticsAccess = useSelect( ( select ) => {
+		const moduleOwnerID = select( MODULES_ANALYTICS ).getOwnerID();
+
 		if ( moduleOwnerID === loggedInUserID ) {
 			return true;
 		}
 		return select( CORE_MODULES ).hasModuleAccess( 'analytics' );
+	} );
+	const hasResolvedAnalyticsAccess = useSelect( ( select ) => {
+		const hasResolvedModuleOwner = select(
+			MODULES_ANALYTICS
+		).hasFinishedResolution( 'getSettings' );
+
+		const isResolvingModuleAccess = select(
+			CORE_MODULES
+		).isResolving( 'hasModuleAccess', [ 'analytics' ] );
+
+		return (
+			hasResolvedModuleOwner &&
+			hasResolvedUser &&
+			! isResolvingModuleAccess
+		);
+	} );
+
+	const hasAnalytics4Access = useSelect( ( select ) => {
+		const moduleOwnerID = select( MODULES_ANALYTICS_4 ).getOwnerID();
+
+		if ( moduleOwnerID === loggedInUserID ) {
+			return true;
+		}
+		return select( CORE_MODULES ).hasModuleAccess( 'analytics-4' );
+	} );
+	const hasResolvedAnalytics4Access = useSelect( ( select ) => {
+		const hasResolvedModuleOwner = select(
+			MODULES_ANALYTICS_4
+		).hasFinishedResolution( 'getSettings' );
+
+		const isResolvingModuleAccess = select(
+			CORE_MODULES
+		).isResolving( 'hasModuleAccess', [ 'analytics-4' ] );
+
+		return (
+			hasResolvedModuleOwner &&
+			hasResolvedUser &&
+			! isResolvingModuleAccess
+		);
 	} );
 
 	useExistingTagEffect();
@@ -67,7 +115,8 @@ export default function SettingsEdit() {
 	if (
 		isDoingSubmitChanges ||
 		! hasResolvedAccounts ||
-		hasModuleAccess === undefined
+		! hasResolvedAnalyticsAccess ||
+		! hasResolvedAnalytics4Access
 	) {
 		viewComponent = <ProgressBar />;
 	} else if ( ! accounts.length || isCreateAccount ) {
@@ -77,7 +126,12 @@ export default function SettingsEdit() {
 			<AccountCreateLegacy />
 		);
 	} else {
-		viewComponent = <SettingsForm hasModuleAccess={ hasModuleAccess } />;
+		viewComponent = (
+			<SettingsForm
+				hasAnalyticsAccess={ hasAnalyticsAccess }
+				hasAnalytics4Access={ hasAnalytics4Access }
+			/>
+		);
 	}
 
 	return (

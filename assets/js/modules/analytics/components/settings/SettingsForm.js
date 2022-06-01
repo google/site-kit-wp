@@ -40,7 +40,10 @@ import EntityOwnershipChangeNotice from '../../../../components/settings/EntityO
 import { isValidAccountID } from '../../util';
 const { useSelect } = Data;
 
-export default function SettingsForm( { hasModuleAccess } ) {
+export default function SettingsForm( {
+	hasAnalyticsAccess,
+	hasAnalytics4Access,
+} ) {
 	const accountID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getAccountID()
 	);
@@ -65,9 +68,9 @@ export default function SettingsForm( { hasModuleAccess } ) {
 			/>
 			<ExistingGTMPropertyNotice />
 
-			<SettingsControls hasModuleAccess={ hasModuleAccess } />
+			<SettingsControls hasModuleAccess={ hasAnalyticsAccess } />
 
-			<GA4SettingsControls hasModuleAccess={ hasModuleAccess } />
+			<GA4SettingsControls hasModuleAccess={ hasAnalytics4Access } />
 
 			{ isValidAccountID( accountID ) && (
 				<Fragment>
@@ -77,7 +80,7 @@ export default function SettingsForm( { hasModuleAccess } ) {
 				</Fragment>
 			) }
 
-			{ hasModuleAccess && (
+			{ hasAnalyticsAccess && (
 				<EntityOwnershipChangeNotice slug="analytics" />
 			) }
 		</Fragment>

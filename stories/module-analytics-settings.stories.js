@@ -393,6 +393,10 @@ storiesOf( 'Analytics Module/Settings', module )
 				{ access: false },
 				{ slug: 'analytics' }
 			);
+			dispatch( CORE_MODULES ).receiveCheckModuleAccess(
+				{ access: false },
+				{ slug: 'analytics-4' }
+			);
 
 			dispatch( MODULES_ANALYTICS ).receiveGetAccounts( accounts );
 			dispatch( MODULES_ANALYTICS ).receiveGetProperties( properties, {
