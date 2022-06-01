@@ -64,7 +64,7 @@ export default function SettingsEdit() {
 		}
 		return select( CORE_MODULES ).hasModuleAccess( 'analytics' );
 	} );
-	const hasResolvedAnalyticsAccess = useSelect( ( select ) => {
+	const isLoadingAnalyticsAccess = useSelect( ( select ) => {
 		const hasResolvedModuleOwner = select(
 			MODULES_ANALYTICS
 		).hasFinishedResolution( 'getSettings' );
@@ -74,9 +74,9 @@ export default function SettingsEdit() {
 		).isResolving( 'hasModuleAccess', [ 'analytics' ] );
 
 		return (
-			hasResolvedModuleOwner &&
-			hasResolvedUser &&
-			! isResolvingModuleAccess
+			! hasResolvedModuleOwner ||
+			! hasResolvedUser ||
+			isResolvingModuleAccess
 		);
 	} );
 
@@ -88,7 +88,7 @@ export default function SettingsEdit() {
 		}
 		return select( CORE_MODULES ).hasModuleAccess( 'analytics-4' );
 	} );
-	const hasResolvedAnalytics4Access = useSelect( ( select ) => {
+	const isLoadingAnalytics4Access = useSelect( ( select ) => {
 		const hasResolvedModuleOwner = select(
 			MODULES_ANALYTICS_4
 		).hasFinishedResolution( 'getSettings' );
@@ -98,9 +98,9 @@ export default function SettingsEdit() {
 		).isResolving( 'hasModuleAccess', [ 'analytics-4' ] );
 
 		return (
-			hasResolvedModuleOwner &&
-			hasResolvedUser &&
-			! isResolvingModuleAccess
+			! hasResolvedModuleOwner ||
+			! hasResolvedUser ||
+			isResolvingModuleAccess
 		);
 	} );
 
@@ -115,8 +115,8 @@ export default function SettingsEdit() {
 	if (
 		isDoingSubmitChanges ||
 		! hasResolvedAccounts ||
-		! hasResolvedAnalyticsAccess ||
-		! hasResolvedAnalytics4Access
+		isLoadingAnalyticsAccess ||
+		isLoadingAnalytics4Access
 	) {
 		viewComponent = <ProgressBar />;
 	} else if ( ! accounts.length || isCreateAccount ) {
