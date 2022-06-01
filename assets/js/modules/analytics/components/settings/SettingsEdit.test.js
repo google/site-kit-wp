@@ -91,12 +91,6 @@ describe( 'SettingsEdit', () => {
 		const { accountID, propertyID } = existingTag;
 
 		registry.dispatch( CORE_MODULES ).receiveGetModules( [] );
-		registry
-			.dispatch( CORE_MODULES )
-			.receiveCheckModuleAccess(
-				{ access: true },
-				{ slug: 'analytics' }
-			);
 
 		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {} );
 
