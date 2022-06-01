@@ -32,7 +32,11 @@ import {
 import { MODULES_ANALYTICS_4 } from '../assets/js/modules/analytics-4/datastore/constants';
 import { MODULES_TAGMANAGER } from '../assets/js/modules/tagmanager/datastore/constants';
 import { CORE_MODULES } from '../assets/js/googlesitekit/modules/datastore/constants';
-import { provideModules, provideModuleRegistrations } from '../tests/js/utils';
+import {
+	provideModules,
+	provideModuleRegistrations,
+	provideUserInfo,
+} from '../tests/js/utils';
 import createLegacySettingsWrapper from './utils/create-legacy-settings-wrapper';
 import {
 	accountsPropertiesProfiles,
@@ -53,6 +57,7 @@ function WithRegistry( Story ) {
 	dispatch( MODULES_ANALYTICS ).receiveGetExistingTag( null );
 
 	dispatch( MODULES_TAGMANAGER ).receiveGetSettings( {} );
+	provideUserInfo( registry );
 
 	provideModules( registry, [
 		{
@@ -216,11 +221,6 @@ storiesOf( 'Analytics Module/Settings', module )
 				},
 			] );
 
-			dispatch( CORE_MODULES ).receiveCheckModuleAccess(
-				{ access: true },
-				{ slug: 'analytics' }
-			);
-
 			dispatch( MODULES_ANALYTICS ).receiveGetAccounts( accounts );
 			dispatch( MODULES_ANALYTICS ).receiveGetProperties( properties, {
 				accountID,
@@ -291,11 +291,6 @@ storiesOf( 'Analytics Module/Settings', module )
 					internal: true,
 				},
 			] );
-
-			dispatch( CORE_MODULES ).receiveCheckModuleAccess(
-				{ access: true },
-				{ slug: 'analytics' }
-			);
 
 			dispatch( MODULES_ANALYTICS ).receiveGetAccounts( accounts );
 			dispatch( MODULES_ANALYTICS ).receiveGetProperties( properties, {
@@ -384,7 +379,7 @@ storiesOf( 'Analytics Module/Settings', module )
 					slug: 'analytics',
 					active: true,
 					connected: true,
-					owner: { login: 'test-owner-username' },
+					owner: { id: '2', login: 'test-owner-username' },
 				},
 				{
 					slug: 'analytics-4',
@@ -413,6 +408,7 @@ storiesOf( 'Analytics Module/Settings', module )
 				propertyID: webPropertyId, // eslint-disable-line sitekit/acronym-case
 				internalWebPropertyID: internalWebPropertyId, // eslint-disable-line sitekit/acronym-case
 				profileID,
+				ownerID: 2,
 			} );
 
 			dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
@@ -472,11 +468,6 @@ storiesOf( 'Analytics Module/Settings', module )
 				( property ) => webPropertyId === property.id
 			);
 
-			dispatch( CORE_MODULES ).receiveCheckModuleAccess(
-				{ access: true },
-				{ slug: 'analytics' }
-			);
-
 			dispatch( MODULES_ANALYTICS ).receiveGetAccounts( accounts );
 			dispatch( MODULES_ANALYTICS ).receiveGetProperties( properties, {
 				accountID: accountId,
@@ -516,10 +507,6 @@ storiesOf( 'Analytics Module/Settings', module )
 		'Edit, open with no accounts',
 		( args, { registry } ) => {
 			const { dispatch } = registry;
-			dispatch( CORE_MODULES ).receiveCheckModuleAccess(
-				{ access: true },
-				{ slug: 'analytics' }
-			);
 			dispatch( MODULES_ANALYTICS ).receiveGetAccounts( [] );
 
 			return (

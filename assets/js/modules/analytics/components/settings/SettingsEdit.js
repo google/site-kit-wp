@@ -23,6 +23,7 @@ import Data from 'googlesitekit-data';
 import { MODULES_ANALYTICS, ACCOUNT_CREATE } from '../../datastore/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
+import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import useExistingTagEffect from '../../hooks/useExistingTagEffect';
 import useExistingGA4TagEffect from '../../../analytics-4/hooks/useExistingTagEffect';
 import SettingsForm from './SettingsForm';
@@ -46,9 +47,14 @@ export default function SettingsEdit() {
 	const usingProxy = useSelect( ( select ) =>
 		select( CORE_SITE ).isUsingProxy()
 	);
-	const hasModuleAccess = useSelect( ( select ) =>
-		select( CORE_MODULES ).hasModuleAccess( 'analytics' )
-	);
+	const hasModuleAccess = useSelect( ( select ) => {
+		const moduleOwnerID = select( MODULES_ANALYTICS )?.getOwnerID();
+		const loggedInUserID = select( CORE_USER ).getID();
+		if ( moduleOwnerID === loggedInUserID ) {
+			return true;
+		}
+		return select( CORE_MODULES ).hasModuleAccess( 'analytics' );
+	} );
 
 	useExistingTagEffect();
 	useExistingGA4TagEffect();
