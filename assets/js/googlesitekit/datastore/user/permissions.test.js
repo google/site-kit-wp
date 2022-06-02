@@ -49,11 +49,12 @@ describe( 'core/user authentication', () => {
 		permissions: {
 			googlesitekit_view_dashboard: true,
 			googlesitekit_manage_options: true,
+			'googlesitekit_manage_module_sharing_options::["search-console"]': true,
+			'googlesitekit_manage_module_sharing_options::["analytics"]': true,
 			'googlesitekit_read_shared_module_data::["site-verification"]': false,
 			'googlesitekit_read_shared_module_data::["tagmanager"]': false,
 			'googlesitekit_read_shared_module_data::["optimize"]': false,
 			'googlesitekit_read_shared_module_data::["adsense"]': false,
-			'googlesitekit_manage_module_sharing_options::["search-console"]': true,
 			'googlesitekit_read_shared_module_data::["search-console"]': true,
 			'googlesitekit_read_shared_module_data::["analytics"]': true,
 			'googlesitekit_read_shared_module_data::["pagespeed-insights"]': true,
