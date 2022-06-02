@@ -74,7 +74,7 @@
 
 		.googlesitekit-settings-connect-module__title {
 			font-family: $f-primary;
-			font-size: 0.9375rem;
+			font-size: $fs-body-lg;
 			font-weight: 500;
 			margin: 0 0 10px 0;
 		}
@@ -85,7 +85,7 @@
 		}
 
 		.googlesitekit-settings-module__status {
-			font-size: 0.75rem;
+			font-size: $fs-body-sm;
 		}
 
 		.googlesitekit-settings-module__status-icon {

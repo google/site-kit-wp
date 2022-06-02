@@ -29,7 +29,7 @@
 		}
 
 		.googlesitekit-cta-link {
-			font-size: 1em;
+			font-size: $fs-body-lg;
 			letter-spacing: 0.04em;
 		}
 	}
@@ -192,17 +192,17 @@
 		h4 {
 			color: rgba($c-black, 0.54);
 			font-family: $f-primary;
-			font-size: 1rem;
+			font-size: $fs-body-lg;
 			font-weight: $fw-secondary-normal;
-			line-height: 1.5;
+			line-height: $lh-body-lg;
 			margin: 0;
 		}
 
 		p {
 			color: rgba($c-black, 0.54);
-			font-size: 0.75rem;
+			font-size: $fs-body-sm;
 			letter-spacing: 0.1px;
-			line-height: 2;
+			line-height: $lh-body-sm;
 			margin: 4px 0 0;
 		}
 	}
@@ -247,9 +247,9 @@
 
 	.googlesitekit-widget--analyticsAllTraffic__dimensions-chart-gathering-data {
 		color: $c-silver-2;
-		font-size: 18px;
+		font-size: $fs-title-lg;
 		left: 50%;
-		line-height: 21px;
+		line-height: $lh-title-lg;
 		max-width: 80px;
 		position: absolute;
 		text-align: center;
@@ -307,7 +307,7 @@
 		border-radius: 4px;
 		color: $c-cape-cod;
 		display: inline-flex;
-		font-size: 12px;
+		font-size: $fs-body-sm;
 		font-weight: $fw-primary-normal;
 		margin: 0 4px 0 0;
 		padding: 7px 4px;

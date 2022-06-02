@@ -87,7 +87,7 @@
 			border-top: 1px solid $c-iron;
 			color: $c-boulder;
 			font-family: $f-primary;
-			font-size: 0.75rem;
+			font-size: $fs-body-sm;
 			margin: 12px 0 0;
 			padding-top: 12px;
 			text-align: left;
@@ -117,8 +117,8 @@
 		p {
 			color: $c-boulder;
 			font-family: $f-primary;
-			font-size: 0.75rem;
-			line-height: 1.16;
+			font-size: $fs-body-sm;
+			line-height: $lh-body-sm;
 			margin: 6px 0 0;
 		}
 
@@ -199,7 +199,7 @@
 
 				.mdc-text-field__input {
 					background: transparent;
-					font-size: 12px;
+					font-size: $fs-body-sm;
 				}
 			}
 

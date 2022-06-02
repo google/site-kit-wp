@@ -21,13 +21,13 @@
 	.googlesitekit-view-only-menu {
 
 		h4 {
-			font-size: 15px;
+			font-size: $fs-body-lg;
 			margin: 15px 0;
 		}
 
 		p {
 			color: $c-primary;
-			font-size: 14px;
+			font-size: $fs-body-md;
 		}
 
 		.mdc-button--dropdown {
@@ -104,13 +104,13 @@
 
 		.googlesitekit-view-only-menu__service--name {
 			flex: 1;
-			font-size: 14px;
+			font-size: $fs-body-md;
 			margin-right: 8px;
 		}
 
 		.googlesitekit-view-only-menu__service--owner {
 			color: $c-primary;
-			font-size: 12px;
+			font-size: $fs-body-sm;
 			margin-left: auto;
 		}
 

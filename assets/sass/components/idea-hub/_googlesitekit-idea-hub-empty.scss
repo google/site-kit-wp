@@ -46,9 +46,9 @@
 	.googlesitekit-idea-hub__empty--title {
 		color: $c-shark;
 		font-family: $f-secondary;
-		font-size: 1.375rem;
+		font-size: $fs-headline-sm;
 		font-weight: $fw-secondary-normal;
-		line-height: 1.27;
+		line-height: $lh-headline-sm;
 		margin: 0;
 	}
 
@@ -71,15 +71,15 @@
 		.googlesitekit-idea-hub__empty--title {
 			color: rgba($c-black, 0.54);
 			font-family: $f-primary;
-			font-size: 1rem;
-			line-height: 1.5;
+			font-size: $fs-body-lg;
+			line-height: $lh-body-lg;
 		}
 
 		.googlesitekit-idea-hub__empty--subtitle {
 			color: rgba($c-black, 0.54);
-			font-size: 0.75rem;
+			font-size: $fs-body-sm;
 			letter-spacing: 0.1px;
-			line-height: 2;
+			line-height: $lh-body-sm;
 		}
 	}
 }

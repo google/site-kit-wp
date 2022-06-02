@@ -142,17 +142,17 @@
 		margin: 0 0 12px 0;
 
 		.googlesitekit-adminbar & {
-			font-size: 16px;
+			font-size: $fs-body-lg;
 			margin-bottom: 5px;
 		}
 
 		.googlesitekit-dashboard-adsense-stats & {
-			font-size: 0.75rem;
+			font-size: $fs-body-sm;
 			margin-bottom: 0;
 		}
 
 		#dashboard-widgets .googlesitekit-wp-dashboard & {
-			font-size: 0.75rem;
+			font-size: $fs-body-sm;
 		}
 	}
 
@@ -166,17 +166,17 @@
 
 		.googlesitekit-adminbar & {
 			display: inline-block;
-			font-size: 36px;
-			line-height: 1.25;
+			font-size: $fs-title-sm;
+			line-height: $lh-title-sm;
 			margin-right: 5px;
 		}
 
 		.googlesitekit-wp-dashboard & {
-			font-size: 2.125rem;
+			font-size: $fs-headline-lg;
 		}
 
 		.googlesitekit-dashboard-adsense-stats & {
-			font-size: 2.25rem;
+			font-size: $fs-headline-md;
 		}
 	}
 
@@ -190,7 +190,7 @@
 
 		.googlesitekit-adminbar & {
 			display: inline-block;
-			font-size: 16px;
+			font-size: $fs-body-lg;
 			margin-top: 0;
 		}
 
@@ -270,7 +270,7 @@
 		text-transform: none;
 
 		.googlesitekit-adminbar & {
-			font-size: 16px;
+			font-size: $fs-body-lg;
 		}
 
 		&--up {
@@ -283,7 +283,7 @@
 	}
 
 	.googlesitekit-data-block__source {
-		font-size: 0.75rem;
+		font-size: $fs-body-sm;
 		margin-top: $grid-gap-phone / 2;
 
 		@media (min-width: $bp-desktop) {

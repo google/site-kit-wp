@@ -204,8 +204,8 @@
 
 		label {
 			color: $c-setup-analytics-notice-text;
-			font-size: 16px;
-			line-height: 24px;
+			font-size: $fs-body-lg;
+			line-height: $lh-body-lg;
 			padding-top: 8px;
 		}
 
@@ -238,7 +238,7 @@
 	.googlesitekit-setup__wrapper--adsense-connect {
 
 		.googlesitekit-setup-module__footer-text {
-			font-size: 12px;
+			font-size: $fs-body-sm;
 		}
 	}
 }

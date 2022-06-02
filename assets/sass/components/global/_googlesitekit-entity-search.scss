@@ -119,7 +119,7 @@
 
 		.autocomplete__option {
 			color: $c-entity-search-autocomplete-options;
-			font-size: 14px;
+			font-size: $fs-body-md;
 			line-height: 1;
 
 			&:first-child {

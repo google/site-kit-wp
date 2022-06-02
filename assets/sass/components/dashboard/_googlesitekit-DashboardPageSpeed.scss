@@ -95,14 +95,15 @@
 		}
 
 		h3 {
-			font-size: 1.25rem;
-			line-height: 1.75rem;
+			font-family: $f-secondary;
+			font-size: $fs-title-lg;
+			line-height: $lh-title-lg;
 			margin: 0 0 0.25rem;
 		}
 
 		p {
-			font-size: 0.875rem;
-			line-height: 1.25rem;
+			font-size: $fs-body-md;
+			line-height: $lh-body-md;
 			margin: 0.25rem 0;
 		}
 

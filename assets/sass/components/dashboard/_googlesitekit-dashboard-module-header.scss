@@ -29,14 +29,14 @@
 	}
 
 	.googlesitekit-dashboard-module-header__description {
-		font-size: 0.75rem;
-		line-height: 1.2;
+		font-size: $fs-body-sm;
+		line-height: $lh-body-sm;
 		margin: 0;
 	}
 
 	.googlesitekit-dashboard-module-header__time {
-		font-size: 0.75rem;
-		line-height: 1.2;
+		font-size: $fs-body-sm;
+		line-height: $lh-body-sm;
 		margin: 0;
 	}
 }

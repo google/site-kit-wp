@@ -6,7 +6,7 @@
 	padding: 8px 12px;
 
 	@media ( min-width: $bp-wpAdminBarTablet ) {
-		font-size: 1rem;
+		font-size: $fs-body-lg;
 		margin: 4px 16px;
 		padding: 12px 16px;
 	}

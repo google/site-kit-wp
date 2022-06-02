@@ -36,11 +36,7 @@
 
 	.googlesitekit-layout__header {
 		border-bottom: 1px solid $c-border-light;
-		font-size: 0.9375rem;
-
-		@media (min-width: $bp-tablet) {
-			font-size: 1rem;
-		}
+		font-size: $fs-body-lg;
 	}
 
 	&--fill .googlesitekit-layout__header {
@@ -53,7 +49,7 @@
 
 	.googlesitekit-layout__footer {
 		border-top: 1px solid $c-border-light;
-		font-size: 0.875rem;
+		font-size: $fs-body-sm;
 	}
 
 	&--fill .googlesitekit-layout__footer {

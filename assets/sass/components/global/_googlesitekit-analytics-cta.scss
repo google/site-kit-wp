@@ -36,7 +36,7 @@
 
 		.googlesitekit-analytics-cta--description {
 			color: $c-boulder;
-			font-size: 14px;
+			font-size: $fs-body-md;
 			margin: 0;
 		}
 
@@ -72,7 +72,7 @@
 		.googlesitekit-analytics-cta__preview-graph--title {
 			color: $c-secondary;
 			font-family: $f-secondary;
-			font-size: 11px;
+			font-size: $fs-body-sm;
 			font-weight: $fw-secondary-bold;
 			margin: 0 0 auto 0;
 			padding-bottom: var(--cta-analytics-gap-narrow);

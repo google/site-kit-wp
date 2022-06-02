@@ -21,14 +21,9 @@
 	span {
 		color: $c-jumbo;
 		display: block;
-		font-size: 16px;
-		line-height: 19px;
+		font-size: $fs-headline-md;
+		line-height: $lh-headline-md;
 		padding: 0;
-
-		@media (min-width: $bp-tablet) {
-			font-size: 28px;
-			line-height: 58px;
-		}
 	}
 
 }
@@ -54,8 +49,8 @@
 			@include notice-text;
 
 			span {
-				font-size: 13px;
-				line-height: 16px;
+				font-size: $fs-body-sm;
+				line-height: $lh-body-sm;
 				padding: 0;
 			}
 		}
@@ -80,8 +75,8 @@
 			@include overlay;
 
 			span {
-				font-size: 18px;
-				line-height: 21px;
+				font-size: $fs-title-lg;
+				line-height: $lh-title-lg;
 				max-width: 80px;
 				padding: 0;
 				text-align: center;
@@ -104,8 +99,8 @@
 
 			span {
 				color: $c-jumbo;
-				font-size: 13px;
-				line-height: 16px;
+				font-size: $fs-body-sm;
+				line-height: $lh-body-sm;
 				text-transform: lowercase;
 			}
 		}

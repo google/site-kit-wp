@@ -23,8 +23,8 @@
 	}
 
 	.googlesitekit-wizard-module__text {
-		font-size: 12px;
-		line-height: 1.58;
+		font-size: $fs-body-sm;
+		line-height: $lh-body-sm;
 		margin: 0;
 	}
 
@@ -37,6 +37,6 @@
 	}
 
 	.googlesitekit-wizard-module__cta {
-		font-size: 12px;
+		font-size: $fs-body-sm;
 	}
 }

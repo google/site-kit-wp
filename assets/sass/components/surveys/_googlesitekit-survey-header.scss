@@ -71,9 +71,9 @@
 		h3 {
 			color: $c-black;
 			font-family: $f-secondary;
-			font-size: 1rem;
+			font-size: $fs-body-lg;
 			font-weight: $fw-secondary-medium;
-			line-height: 1.31;
+			line-height: $lh-body-lg;
 			margin: 0;
 		}
 	}

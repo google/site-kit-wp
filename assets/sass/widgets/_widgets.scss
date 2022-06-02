@@ -106,12 +106,8 @@
 		}
 
 		.googlesitekit-cta-link {
-			font-size: 15px;
+			font-size: $fs-body-lg;
 			font-weight: $fw-primary-normal;
-
-			@media ( min-width: $bp-tablet ) {
-				font-size: 16px;
-			}
 		}
 	}
 }

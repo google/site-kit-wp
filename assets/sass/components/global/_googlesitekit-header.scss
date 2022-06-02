@@ -66,7 +66,7 @@
 			background-color: transparent;
 			cursor: pointer;
 			display: flex;
-			font-size: 0.75rem;
+			font-size: $fs-body-sm;
 			margin-right: -8px;
 			padding: 8px;
 			transition: background-color $t-default ease-in-out, color $t-default ease-in-out;

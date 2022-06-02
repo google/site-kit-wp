@@ -120,28 +120,21 @@
 
 		.googlesitekit-dialog__title {
 			color: $c-shark;
-			font-size: 1.5rem;
+			font-size: $fs-headline-sm;
 			font-weight: $fw-primary-bold;
-			line-height: 2rem;
+			line-height: $lh-headline-sm;
 			margin: 0 0 12px;
 
 			@media (min-width: $bp-tablet) {
-				font-size: 1.375rem;
-				font-weight: $fw-primary-normal;
-				line-height: 1.75rem;
 				margin: 0 0 8px;
 			}
 		}
 
 		.googlesitekit-dialog__subtitle {
 			color: $c-boulder;
-			font-size: 1rem;
-			line-height: 1.25rem;
+			font-size: $fs-body-sm;
+			line-height: $lh-body-sm;
 			margin: 0;
-
-			@media (min-width: $bp-tablet) {
-				font-size: 0.75rem;
-			}
 		}
 
 		.googlesitekit-dialog__footer {

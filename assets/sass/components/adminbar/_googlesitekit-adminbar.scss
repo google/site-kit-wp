@@ -62,18 +62,19 @@
 
 		.googlesitekit-adminbar__subtitle {
 			color: $c-primary;
-			font-size: 16px;
+			font-size: $fs-body-lg;
 		}
 
 		.googlesitekit-adminbar__title {
 			color: $c-secondary;
-			font-size: 22px;
-			font-weight: $fw-primary-medium;
+			font-family: $f-secondary;
+			font-size: $fs-title-lg;
+			font-weight: $fw-secondary-medium;
 			margin: 5px 0 0 0;
 
 			.googlesitekit-adminbar__title--date-range {
 				color: $c-primary;
-				font-size: 14px;
+				font-size: $fs-body-md;
 			}
 		}
 

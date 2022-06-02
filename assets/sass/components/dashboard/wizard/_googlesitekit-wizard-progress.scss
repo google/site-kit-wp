@@ -20,8 +20,8 @@
 	}
 
 	.googlesitekit-wizard-progress__description {
-		font-size: 12px;
-		line-height: 1.58;
+		font-size: $fs-body-sm;
+		line-height: $lh-body-sm;
 		margin: 0 0 10px 0;
 
 		@media (min-width: $bp-tablet) {

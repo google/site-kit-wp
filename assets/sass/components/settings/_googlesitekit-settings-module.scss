@@ -225,9 +225,9 @@
 			}
 
 			&--tiny {
-				font-size: 0.8125rem;
+				font-size: $fs-body-sm;
 				font-weight: 400;
-				line-height: 1.5rem;
+				line-height: $lh-body-sm;
 			}
 		}
 
@@ -259,7 +259,7 @@
 		}
 
 		.googlesitekit-settings-module__apikey-cancel {
-			font-size: 0.75em;
+			font-size: $fs-body-sm;
 			margin-left: 24px;
 		}
 	}

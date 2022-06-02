@@ -120,15 +120,15 @@
 
 	.googlesitekit-dashboard-sharing-settings {
 		color: $c-cape-cod;
-		font-size: 14px;
-		line-height: 16px;
+		font-size: $fs-title-sm;
+		line-height: $lh-title-sm;
 	}
 
 	.googlesitekit-dashboard-sharing-settings__header {
 		align-items: flex-start;
-		font-size: 16px;
+		font-size: $fs-body-lg;
 		font-weight: $fw-primary-medium;
-		line-height: 19px;
+		line-height: $lh-body-lg;
 	}
 
 	.googlesitekit-dashboard-sharing-settings__column--product {
@@ -146,8 +146,8 @@
 	.googlesitekit-user-role-select__current-roles {
 		color: $c-cape-cod;
 		display: block;
-		font-size: 14px;
-		line-height: 21px;
+		font-size: $fs-title-sm;
+		line-height: $lh-title-sm;
 
 		@media (min-width: $bp-tablet) {
 			flex: 1;
@@ -159,13 +159,9 @@
 
 		button {
 			color: $c-jumbo;
-			font-size: 16px;
+			font-size: $fs-title-sm;
 			font-weight: 400;
-			line-height: 20px;
-
-			@media (min-width: $bp-tablet) {
-				font-size: 14px;
-			}
+			line-height: $lh-title-sm;
 		}
 	}
 
@@ -249,14 +245,9 @@
 
 	p.googlesitekit-dashboard-sharing-settings__note {
 		color: $c-boulder;
-		font-size: 14px;
-		line-height: 16px;
+		font-size: $fs-body-sm;
+		line-height: $lh-body-sm;
 		margin: 0;
-
-		@media (min-width: $bp-tablet) {
-			font-size: 12px;
-			line-height: 14px;
-		}
 	}
 
 	.googlesitekit-dashboard-sharing-settings__select {
@@ -278,7 +269,7 @@
 		.mdc-select__native-control {
 			appearance: none;
 			background: none;
-			font-size: 14px;
+			font-size: $fs-title-sm;
 			height: 48px !important;
 			padding-bottom: 0;
 			padding-top: 0;
@@ -309,8 +300,8 @@
 			align-items: flex-end;
 			display: flex;
 			flex-wrap: wrap;
-			font-size: 12px;
-			line-height: 16px;
+			font-size: $fs-body-sm;
+			line-height: $lh-body-sm;
 
 			span:not(.googlesitekit-dashboard-sharing-settings__tooltip-icon) {
 				width: 100%;
@@ -374,14 +365,13 @@
 		background-color: $c-salomie-40;
 		border-radius: 8px;
 		color: $c-boulder;
-		font-size: 14px;
+		font-size: $fs-body-sm;
 		line-height: 20px;
 		margin: 0;
 		padding: 12px 24px;
 		width: 100%;
 
 		@media (min-width: $bp-tablet) {
-			font-size: 12px;
 			padding: 8px;
 		}
 
@@ -412,9 +402,9 @@
 		border-radius: 100px;
 		color: $c-royal-blue;
 		flex-direction: row-reverse;
-		font-size: 14px;
+		font-size: $fs-body-sm;
 		justify-content: center;
-		line-height: 16px;
+		line-height: $lh-body-sm;
 		margin: 0;
 		min-width: 80px;
 		padding: 13px 12px;

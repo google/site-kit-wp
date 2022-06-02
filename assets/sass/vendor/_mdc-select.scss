@@ -62,7 +62,7 @@
 
 	&--minimal .mdc-select__selected-text {
 		border: none;
-		font-size: 0.75rem !important;
+		font-size: $fs-body-sm !important;
 		height: 14px !important;
 		line-height: 1;
 		min-width: 0;

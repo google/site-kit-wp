@@ -21,8 +21,8 @@
 	border-radius: 4px;
 	color: $c-text-notice;
 	display: flex;
-	font-size: 0.875rem;
-	line-height: 1.42;
+	font-size: $fs-body-sm;
+	line-height: $lh-body-sm;
 	margin: 1.5em 0;
 	max-width: 1098px;
 	padding: $grid-gap-phone;
