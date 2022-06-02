@@ -17,13 +17,34 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { createInterpolateElement } from '@wordpress/element';
+import { __, sprintf } from '@wordpress/i18n';
+
+/**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
 import { MODULES_SEARCH_CONSOLE } from '../../datastore/constants';
+import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import { PropertySelect } from '../common/';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
+import EntityOwnershipChangeNotice from '../../../../components/settings/EntityOwnershipChangeNotice';
+import SettingsNotice from '../../../../components/SettingsNotice/SettingsNotice';
+import { TYPE_INFO } from '../../../../components/SettingsNotice';
+import WarningIcon from '../../../../../../assets/svg/icons/warning-icon.svg';
+const { useSelect } = Data;
 
-export default function SettingsForm() {
+export default function SettingsForm( { hasModuleAccess } ) {
+	const module = useSelect( ( select ) =>
+		select( CORE_MODULES ).getModule( 'search-console' )
+	);
+
+	const ownerName = module?.owner?.login
+		? module?.owner?.login
+		: __( '(Another admin)', 'google-site-kit' );
+
 	return (
 		<div className="googlesitekit-search-console-settings-fields">
 			<StoreErrorNotices
@@ -32,8 +53,33 @@ export default function SettingsForm() {
 			/>
 
 			<div className="googlesitekit-setup-module__inputs">
-				<PropertySelect />
+				<PropertySelect hasModuleAccess={ hasModuleAccess } />
 			</div>
+
+			{ hasModuleAccess === false && (
+				<SettingsNotice
+					type={ TYPE_INFO }
+					Icon={ WarningIcon }
+					notice={ createInterpolateElement(
+						sprintf(
+							/* translators: 1: module owner's name, 2: module name */
+							__(
+								'<strong>%1$s</strong> configured %2$s and you don’t have access to this Search Console property. Contact them to share access or change the Search Console property.',
+								'google-site-kit'
+							),
+							ownerName,
+							module?.name
+						),
+						{
+							strong: <strong />,
+						}
+					) }
+				/>
+			) }
+
+			{ hasModuleAccess && (
+				<EntityOwnershipChangeNotice slug="search-console" />
+			) }
 		</div>
 	);
 }
