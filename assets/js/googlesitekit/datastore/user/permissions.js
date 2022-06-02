@@ -239,9 +239,7 @@ export const selectors = {
 	 *
 	 * @param {Object} state      Data store's state.
 	 * @param {string} moduleSlug Module slug to check.
-	 * @return {(boolean|undefined)} `true` if the module is shareable and viewable by the current user.
-	 * 								 `false` if the module does not exist, is not shareable or not viewable by the current user.
-	 * 								 `undefined` if state is not loaded yet.
+	 * @return {(boolean|undefined)} `true` if the module is shareable and viewable by the current user. `false` if the module does not exist, is not shareable or not viewable by the current user. `undefined` if state is not loaded yet.
 	 */
 	canViewSharedModule: createRegistrySelector(
 		( select ) => ( state, moduleSlug ) => {
