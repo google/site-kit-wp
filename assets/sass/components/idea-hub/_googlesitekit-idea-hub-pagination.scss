@@ -29,15 +29,15 @@
 	}
 
 	.googlesitekit-idea-hub__pagination--legend {
-		color: rgba($c-black, 0.54);
-		font-size: 0.75rem;
-		line-height: 1.33;
+		color: $c-surfaces-on-surface-variant;
+		font-size: $fs-body-sm;
+		line-height: $lh-body-sm;
 	}
 
 	.googlesitekit-idea-hub__pagination--buttons {
 
 		svg {
-			fill: $c-black;
+			fill: $c-surfaces-on-surface-variant;
 			opacity: 0.54;
 			width: 36px;
 		}
@@ -46,7 +46,8 @@
 			background-color: transparent;
 			border-radius: 50%;
 			box-shadow: none;
-			height: $mdc-button-min-height;
+			height: 36px;
+			min-height: 36px;
 			min-width: 36px;
 			padding: 0;
 			width: 36px;

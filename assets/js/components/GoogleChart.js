@@ -224,6 +224,16 @@ export default function GoogleChart( props ) {
 		}
 	}
 
+	set( chartOptions, 'hAxis.textStyle.fontName', 'Google Sans Text' );
+	set( chartOptions, 'hAxis.textStyle.fontSize', 10 );
+	set( chartOptions, 'hAxis.textStyle.color', '#5f6561' );
+	set( chartOptions, 'vAxis.textStyle.fontName', 'Google Sans Text' );
+	set( chartOptions, 'vAxis.textStyle.color', '#5f6561' );
+	set( chartOptions, 'vAxis.textStyle.fontSize', 10 );
+	set( chartOptions, 'legend.textStyle.fontName', 'Google Sans Text' );
+	set( chartOptions, 'legend.textStyle.color', '#131418' );
+	set( chartOptions, 'legend.textStyle.fontSize', 12 );
+
 	return (
 		<div
 			className={ classnames(

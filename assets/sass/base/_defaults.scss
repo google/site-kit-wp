@@ -124,7 +124,7 @@
 
 		&:focus {
 			box-shadow: none;
-			outline: 1px dashed $c-cornflower-blue;
+			outline: 1px dotted $c-interactive-focus;
 			outline-offset: 3px;
 		}
 	}
@@ -140,8 +140,8 @@
 		}
 
 		&:focus {
-			outline: 1px dashed $c-cornflower-blue;
-			outline-offset: 3px;
+			outline: 1px solid $c-interactive-focus;
+			outline-offset: 6px;
 		}
 	}
 

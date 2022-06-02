@@ -228,18 +228,20 @@
 	}
 
 	.googlesitekit-widget--analyticsAllTraffic__dimensions-chart-title {
-		color: $c-scarpa-flow;
-		font-size: 16px;
-		font-weight: 500;
+		color: $c-surfaces-on-surface-variant;
+		font-size: $fs-body-sm;
+		font-weight: $fw-primary-medium;
 		left: 50%;
 		max-width: 80px;
 		position: absolute;
 		text-align: center;
+		text-transform: capitalize;
 		top: 50%;
 		transform: translate(-50%, -50%);
 
 		& span {
-			font-weight: 300;
+			display: block;
+			font-weight: $fw-primary-normal;
 		}
 	}
 

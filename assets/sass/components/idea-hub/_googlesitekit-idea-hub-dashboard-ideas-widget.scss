@@ -23,9 +23,9 @@
 		height: 100%;
 
 		.googlesitekit-idea-hub__idea--text {
-			color: $c-idea-hub-name;
-			font-size: 0.875rem;
-			line-height: 1.45;
+			color: $c-surfaces-on-surface;
+			font-size: $fs-body-md;
+			line-height: $lh-body-md;
 			margin: 0;
 		}
 	}
@@ -115,17 +115,16 @@
 	}
 
 	.googlesitekit-idea-hub__idea--topic {
-		background-color: $c-solitude;
-		border-radius: 2px;
-		color: $c-nearblack;
+		background-color: $c-violet-v-50;
+		border-radius: $border-radius-lg;
+		color: $c-violet-v-700;
 		display: inline-block;
-		font-size: 0.6875rem;
-		font-weight: $fw-primary-medium;
-		letter-spacing: 1px;
-		line-height: 1.45;
+		font-size: $fs-body-sm;
+		letter-spacing: 0.5px;
+		line-height: $lh-body-sm;
 		margin: 0 8px 4px 0;
-		padding: 1px 6px;
-		text-transform: uppercase;
+		padding: 2px 7px;
+		text-transform: capitalize;
 		vertical-align: top;
 	}
 
@@ -148,11 +147,14 @@
 	}
 
 	.googlesitekit-idea-hub__idea--single {
+		border-radius: $border-radius-sm;
+		margin: 0 auto;
+		max-width: calc(100% - 16px);
 		padding: $grid-gap-phone;
 		transition: background $t-default ease-in-out;
 
 		@media (min-width: $bp-desktop) {
-			padding: $grid-gap-desktop;
+			padding: $grid-gap-desktop - 8px;
 		}
 
 		@media (min-width: $bp-xlarge) {
@@ -186,12 +188,6 @@
 				margin: 0 0 0 ($grid-gap-desktop/2);
 			}
 
-			svg {
-				color: $c-idea-hub-icon-color;
-				height: 24px;
-				width: 24px;
-			}
-
 			.googlesitekit-idea-hub__actions--unpin {
 
 				svg {
@@ -204,6 +200,7 @@
 				background-color: transparent;
 				border-radius: 50%;
 				box-shadow: none;
+				color: $c-idea-hub-icon-color;
 				height: 48px;
 				min-width: 48px;
 				padding: 0;

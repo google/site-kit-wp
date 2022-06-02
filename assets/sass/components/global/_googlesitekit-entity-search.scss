@@ -30,7 +30,7 @@
 			z-index: 3;
 
 			@media ( min-width: $bp-desktop ) {
-				right: 1px;
+				right: 2px;
 			}
 
 			svg {
@@ -53,8 +53,8 @@
 			min-width: 36px;
 
 			@media ( min-width: $bp-tablet ) {
-				min-height: 32px;
-				min-width: 32px;
+				min-height: 31px;
+				min-width: 31px;
 			}
 		}
 

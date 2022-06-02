@@ -723,8 +723,9 @@ UserDimensionsPieChart.chartOptions = {
 	},
 	pieHole: 0.6,
 	pieSliceTextStyle: {
-		color: 'black',
+		color: '#131418',
 		fontSize: 12,
+		fontName: 'Google Sans Text',
 	},
 	slices: {
 		0: { color: '#fece72' },

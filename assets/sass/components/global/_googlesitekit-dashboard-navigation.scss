@@ -67,16 +67,20 @@
 			color: $c-surfaces-on-surface;
 			font-size: $fs-body-sm;
 			line-height: 1;
-			padding: 13px 14px 13px 19px;
+			padding: 11px 14px 11px 19px;
 
 			@media (max-width: $bp-mobileOnly) {
 				padding: 5px 10px 5px 12px;
 			}
 
+			@media (min-width: $bp-tablet) {
+				margin: 4px 12px;
+			}
+
 			.mdc-chip__icon {
 				border-radius: 0;
 				height: auto;
-				margin-right: 10px;
+				margin-right: 6px;
 				width: auto;
 
 				@media (max-width: $bp-mobileOnly) {
@@ -90,11 +94,18 @@
 		}
 	}
 
+
 	.googlesitekit-navigation--is-sticky {
+		border-bottom: 1px solid $c-utility-divider;
 
 		+ .googlesitekit-entity-header {
-			border-bottom: 1px solid $c-red-r-700;
+			border-bottom: 1px solid $c-utility-divider;
 		}
+	}
+
+	.googlesitekit-navigation--pageDashboard {
+		border-bottom: 1px solid $c-utility-divider;
+		border-radius: 0;
 	}
 
 	.googlesitekit-plugin--has-scrolled & {
