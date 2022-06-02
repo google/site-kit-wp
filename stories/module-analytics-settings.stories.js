@@ -32,11 +32,7 @@ import {
 import { MODULES_ANALYTICS_4 } from '../assets/js/modules/analytics-4/datastore/constants';
 import { MODULES_TAGMANAGER } from '../assets/js/modules/tagmanager/datastore/constants';
 import { CORE_MODULES } from '../assets/js/googlesitekit/modules/datastore/constants';
-import {
-	provideModules,
-	provideModuleRegistrations,
-	provideUserInfo,
-} from '../tests/js/utils';
+import { provideModules, provideModuleRegistrations } from '../tests/js/utils';
 import createLegacySettingsWrapper from './utils/create-legacy-settings-wrapper';
 import {
 	accountsPropertiesProfiles,
@@ -57,7 +53,6 @@ function WithRegistry( Story ) {
 	dispatch( MODULES_ANALYTICS ).receiveGetExistingTag( null );
 
 	dispatch( MODULES_TAGMANAGER ).receiveGetSettings( {} );
-	provideUserInfo( registry );
 
 	provideModules( registry, [
 		{
@@ -379,7 +374,7 @@ storiesOf( 'Analytics Module/Settings', module )
 					slug: 'analytics',
 					active: true,
 					connected: true,
-					owner: { id: '2', login: 'test-owner-username' },
+					owner: { login: 'test-owner-username' },
 				},
 				{
 					slug: 'analytics-4',
