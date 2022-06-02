@@ -407,7 +407,6 @@ storiesOf( 'Analytics Module/Settings', module )
 				propertyID: webPropertyId, // eslint-disable-line sitekit/acronym-case
 				internalWebPropertyID: internalWebPropertyId, // eslint-disable-line sitekit/acronym-case
 				profileID,
-				ownerID: 2,
 			} );
 
 			dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
