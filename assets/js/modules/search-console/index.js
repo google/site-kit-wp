@@ -159,7 +159,7 @@ export const registerWidgets = ( widgets ) => {
 				width: [ widgets.WIDGET_WIDTHS.FULL ],
 				priority: 3,
 				wrapWidget: false,
-				modules: [ 'search-console', 'analytics' ],
+				modules: [ 'search-console' ],
 			},
 			[
 				AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY,
