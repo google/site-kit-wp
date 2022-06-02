@@ -1,15 +1,15 @@
 {
+  "ownerID": 0,
   "accountID": "",
   "adsConversionID": "",
   "adsenseLinked": false,
   "anonymizeIP": true,
-  "canUseSnippet": true,
   "internalWebPropertyID": "",
-  "ownerID": 1,
   "profileID": "",
   "propertyID": "",
   "trackingDisabled": [
     "loggedinUsers"
   ],
-  "useSnippet": true
+  "useSnippet": true,
+  "canUseSnippet": true
 }
