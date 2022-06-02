@@ -25,6 +25,7 @@ import {
 } from '../../../../../tests/js/utils';
 import { CORE_USER, PERMISSION_MANAGE_OPTIONS } from './constants';
 import FIXTURES from '../../modules/datastore/__fixtures__';
+import { CORE_MODULES } from '../../modules/datastore/constants';
 
 describe( 'core/user authentication', () => {
 	const capabilitiesBaseVar = '_googlesitekitUserData';
@@ -249,6 +250,106 @@ describe( 'core/user authentication', () => {
 					'analytics',
 					'pagespeed-insights',
 				] );
+			} );
+		} );
+
+		describe( 'canViewSharedModule', () => {
+			it( 'should return undefined if modules are not loaded', () => {
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
+					{ body: FIXTURES, status: 200 }
+				);
+
+				const canViewSharedModule = registry
+					.select( CORE_USER )
+					.canViewSharedModule( 'search-console' );
+
+				expect( canViewSharedModule ).toBeUndefined();
+			} );
+
+			it( 'should return FALSE if the module does not exist', () => {
+				registry
+					.dispatch( CORE_MODULES )
+					.receiveGetModules( [
+						{ slug: 'search-console', name: 'Search Console' },
+					] );
+
+				const canViewSharedModule = registry
+					.select( CORE_USER )
+					.canViewSharedModule( 'invalid-module' );
+
+				expect( canViewSharedModule ).toBe( false );
+			} );
+
+			it( 'should return FALSE if the module is not shared', () => {
+				registry.dispatch( CORE_MODULES ).receiveGetModules( [
+					{
+						slug: 'search-console',
+						name: 'Search Console',
+						shareable: false,
+					},
+				] );
+
+				const canViewSharedModule = registry
+					.select( CORE_USER )
+					.canViewSharedModule( 'search-console' );
+
+				expect( canViewSharedModule ).toBe( false );
+			} );
+
+			it( 'should return undefined if the capabilities are not loaded', () => {
+				registry.dispatch( CORE_MODULES ).receiveGetModules( [
+					{
+						slug: 'search-console',
+						name: 'Search Console',
+						shareable: true,
+					},
+				] );
+				global[ capabilitiesBaseVar ] = undefined;
+
+				const canViewSharedModule = registry
+					.select( CORE_USER )
+					.canViewSharedModule( 'search-console' );
+
+				expect( console ).toHaveErroredWith(
+					'Could not load core/user permissions.'
+				);
+
+				expect( canViewSharedModule ).toBeUndefined();
+			} );
+
+			it( 'should return FALSE if the module is shared but the user does not have the view permission', () => {
+				registry.dispatch( CORE_MODULES ).receiveGetModules( [
+					{
+						slug: 'search-console',
+						name: 'Search Console',
+						shareable: true,
+					},
+				] );
+				global[ capabilitiesBaseVar ] = capabilities;
+
+				const canViewSharedModule = registry
+					.select( CORE_USER )
+					.canViewSharedModule( 'search-console' );
+
+				expect( canViewSharedModule ).toBe( false );
+			} );
+
+			it( 'should return TRUE if the module is shared and the user has the view permission', () => {
+				registry.dispatch( CORE_MODULES ).receiveGetModules( [
+					{
+						slug: 'search-console',
+						name: 'Search Console',
+						shareable: true,
+					},
+				] );
+				global[ capabilitiesBaseVar ] = capabilitiesWithPermission;
+
+				const canViewSharedModule = registry
+					.select( CORE_USER )
+					.canViewSharedModule( 'search-console' );
+
+				expect( canViewSharedModule ).toBe( true );
 			} );
 		} );
 	} );
