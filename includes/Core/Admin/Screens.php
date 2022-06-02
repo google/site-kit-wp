@@ -387,9 +387,11 @@ final class Screens {
 
 				// This callback will redirect to the dashboard on successful authentication.
 				'initialize_callback' => function( Context $context ) {
-					// Get the dismissed items for this user.
-					$user_options = new User_Options( $context );
-					$dismissed_items = new Dismissed_Items( $user_options );
+					if ( Feature_Flags::enabled( 'dashboardSharing' ) ) {
+						// Get the dismissed items for this user.
+						$user_options = new User_Options( $context );
+						$dismissed_items = new Dismissed_Items( $user_options );
+					}
 
 					$splash_context = $context->input()->filter( INPUT_GET, 'googlesitekit_context' );
 					$reset_session  = $context->input()->filter( INPUT_GET, 'googlesitekit_reset_session', FILTER_VALIDATE_BOOLEAN );
@@ -411,7 +413,11 @@ final class Screens {
 					// they have already accessed the shared dashboard.
 					if (
 						$this->authentication->is_authenticated() ||
-						( $dismissed_items->is_dismissed( 'shared_dashboard_splash' ) && current_user_can( Permissions::VIEW_SHARED_DASHBOARD ) )
+						(
+							Feature_Flags::enabled( 'dashboardSharing' ) &&
+							$dismissed_items->is_dismissed( 'shared_dashboard_splash' ) &&
+							current_user_can( Permissions::VIEW_SHARED_DASHBOARD )
+						)
 					) {
 						wp_safe_redirect(
 							$context->admin_url(
