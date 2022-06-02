@@ -81,7 +81,12 @@ export default function UserRoleSelect( { moduleSlug, isLocked = false } ) {
 
 	const toggleEditMode = useCallback( () => {
 		if ( editMode ) {
-			if ( ! isEqual( [ ...sharedRoles ].sort(), initialSharedRoles ) ) {
+			if (
+				! isEqual(
+					[ ...( sharedRoles || [] ) ].sort(),
+					initialSharedRoles
+				)
+			) {
 				trackEvent(
 					`${ viewContext }_sharing`,
 					'change_shared_roles',
@@ -89,7 +94,7 @@ export default function UserRoleSelect( { moduleSlug, isLocked = false } ) {
 				);
 			}
 		} else {
-			setInitialSharedRoles( [ ...sharedRoles ].sort() );
+			setInitialSharedRoles( [ ...( sharedRoles || [] ) ].sort() );
 		}
 
 		setEditMode( ! editMode );
