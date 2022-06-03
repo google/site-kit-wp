@@ -57,6 +57,8 @@ import {
 	BREAKPOINT_SMALL,
 	useBreakpoint,
 } from '../../../../../hooks/useBreakpoint';
+import useViewOnly from '../../../../../hooks/useViewOnly';
+import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 const { useSelect, useInViewSelect } = Data;
 
 function getDatapointAndChange( [ report ], selectedStat, divider = 1 ) {
@@ -84,6 +86,16 @@ const Overview = ( {
 	const dashboardType = useDashboardType();
 	const zeroDataStatesEnabled = useFeature( 'zeroDataStates' );
 	const breakpoint = useBreakpoint();
+
+	const viewOnly = useViewOnly();
+
+	const canViewSharedAnalytics = useSelect( ( select ) => {
+		if ( ! viewOnly ) {
+			return true;
+		}
+
+		return select( CORE_USER ).canViewSharedModule( 'analytics' );
+	} );
 
 	const analyticsModuleConnected = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleConnected( 'analytics' )
@@ -151,11 +163,15 @@ const Overview = ( {
 	}
 
 	const showAnalytics =
-		( analyticsModuleConnected &&
+		( canViewSharedAnalytics &&
+			analyticsModuleConnected &&
 			! isAnalyticsGatheringData &&
 			! zeroDataStatesEnabled &&
 			! error ) ||
-		( analyticsModuleConnected && zeroDataStatesEnabled && ! error );
+		( canViewSharedAnalytics &&
+			analyticsModuleConnected &&
+			zeroDataStatesEnabled &&
+			! error );
 
 	const showGoalsCTA =
 		showAnalytics &&
@@ -236,7 +252,8 @@ const Overview = ( {
 					</Cell>
 				) }
 
-				{ ( ! analyticsModuleConnected || ! analyticsModuleActive ) &&
+				{ canViewSharedAnalytics &&
+					( ! analyticsModuleConnected || ! analyticsModuleActive ) &&
 					! isNavigatingToReauthURL && (
 						<Cell { ...halfCellProps }>
 							{ zeroDataStatesEnabled &&
@@ -252,16 +269,19 @@ const Overview = ( {
 						</Cell>
 					) }
 
-				{ analyticsModuleActiveAndConnected && error && (
-					<Cell { ...halfCellProps }>
-						<WidgetReportError
-							moduleSlug="analytics"
-							error={ error }
-						/>
-					</Cell>
-				) }
+				{ canViewSharedAnalytics &&
+					analyticsModuleActiveAndConnected &&
+					error && (
+						<Cell { ...halfCellProps }>
+							<WidgetReportError
+								moduleSlug="analytics"
+								error={ error }
+							/>
+						</Cell>
+					) }
 
-				{ isAnalyticsGatheringData &&
+				{ canViewSharedAnalytics &&
+					isAnalyticsGatheringData &&
 					! error &&
 					! zeroDataStatesEnabled && (
 						<Cell { ...halfCellProps }>

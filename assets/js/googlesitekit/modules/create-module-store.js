@@ -54,7 +54,6 @@ import { createValidationSelector } from '../data/utils';
  * @param {number}   args.storeName                  Store name to use.
  * @param {Array}    [args.settingSlugs]             Optional. If the module store should support settings, this needs to be a list of the slugs that are part of the module and handled by the module's 'modules/{slug}/data/settings' API endpoint. Default is undefined.
  * @param {Array}    [args.ownedSettingsSlugs]       Optional. List of "owned settings" for this module, if they exist.
- * @param {string}   [args.adminPage]                Optional. Store admin page. Default is 'googlesitekit-dashboard'.
  * @param {boolean}  [args.requiresSetup]            Optional. Store flag for requires setup. Default is 'true'.
  * @param {Function} [args.submitChanges]            Optional. Submit settings changes handler.
  * @param {Function} [args.rollbackChanges]          Optional. Rollbacks settings changes handler.
@@ -68,7 +67,6 @@ export function createModuleStore( slug, args = {} ) {
 		storeName,
 		settingSlugs,
 		ownedSettingsSlugs = undefined,
-		adminPage = 'googlesitekit-dashboard',
 		requiresSetup = true,
 		submitChanges,
 		rollbackChanges,
@@ -90,7 +88,6 @@ export function createModuleStore( slug, args = {} ) {
 
 	const infoStore = createInfoStore( slug, {
 		storeName,
-		adminPage,
 		requiresSetup,
 	} );
 
