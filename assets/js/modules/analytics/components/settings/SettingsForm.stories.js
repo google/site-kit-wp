@@ -46,7 +46,7 @@ const properties = [
 
 const accountID = account.id;
 
-function Template() {
+function Template( args ) {
 	return (
 		<div className="googlesitekit-layout">
 			<div className="googlesitekit-settings-module googlesitekit-settings-module--active googlesitekit-settings-module--analytics">
@@ -55,7 +55,7 @@ function Template() {
 						<Grid>
 							<Row>
 								<Cell size={ 12 }>
-									<SettingsForm />
+									<SettingsForm { ...args } />
 								</Cell>
 							</Row>
 						</Grid>
@@ -67,10 +67,27 @@ function Template() {
 }
 
 export const WithGA4andUASnippet = Template.bind( null );
-WithGA4andUASnippet.storyName = 'UA and GA4 tag snippet switches';
+WithGA4andUASnippet.storyName = 'Settings w/ all switches';
 WithGA4andUASnippet.scenario = {
 	label: 'Modules/Analytics/Settings/SettingsEdit/WithGA4andUASnippet',
 	delay: 250,
+};
+
+export const WithoutModuleAccess = Template.bind( null );
+WithoutModuleAccess.storyName = 'Settings w/o module access';
+WithoutModuleAccess.args = {
+	hasAnalyticsAccess: false,
+	hasAnalytics4Access: false,
+};
+
+export const OwnedSettingsChanged = Template.bind( null );
+OwnedSettingsChanged.storyName = 'Owned Settings Changed';
+OwnedSettingsChanged.args = {
+	hasAnalyticsAccess: true,
+	hasAnalytics4Access: true,
+};
+OwnedSettingsChanged.parameters = {
+	features: [ 'dashboardSharing' ],
 };
 
 export const WithUATag = Template.bind( null );
@@ -215,6 +232,7 @@ export default {
 						slug: 'analytics',
 						active: true,
 						connected: true,
+						owner: { login: 'test-owner-username' },
 					},
 					{
 						slug: 'analytics-4',
