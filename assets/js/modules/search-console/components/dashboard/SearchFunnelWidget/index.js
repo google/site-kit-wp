@@ -60,6 +60,7 @@ import {
 	BREAKPOINT_SMALL,
 	useBreakpoint,
 } from '../../../../../hooks/useBreakpoint';
+import useViewOnly from '../../../../../hooks/useViewOnly';
 const { useSelect, useInViewSelect } = Data;
 
 const SearchFunnelWidget = ( {
@@ -72,6 +73,16 @@ const SearchFunnelWidget = ( {
 	const zeroDataStatesEnabled = useFeature( 'zeroDataStates' );
 
 	const breakpoint = useBreakpoint();
+
+	const viewOnly = useViewOnly();
+
+	const canViewSharedAnalytics = useSelect( ( select ) => {
+		if ( ! viewOnly ) {
+			return true;
+		}
+
+		return select( CORE_USER ).canViewSharedModule( 'analytics' );
+	} );
 
 	const isAnalyticsConnected = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleConnected( 'analytics' )
@@ -317,23 +328,25 @@ const SearchFunnelWidget = ( {
 					<WidgetReportZero moduleSlug="search-console" />
 				) }
 
-				{ ( ! isAnalyticsConnected || ! isAnalyticsActive ) && (
-					<Row>
-						<Cell { ...halfCellProps }>
-							<ReportZero moduleSlug="search-console" />
-						</Cell>
+				{ canViewSharedAnalytics &&
+					( ! isAnalyticsConnected || ! isAnalyticsActive ) && (
+						<Row>
+							<Cell { ...halfCellProps }>
+								<ReportZero moduleSlug="search-console" />
+							</Cell>
 
-						<Cell { ...halfCellProps }>
-							{ ! isAnalyticsActive && (
-								<ActivateModuleCTA moduleSlug="analytics" />
-							) }
+							<Cell { ...halfCellProps }>
+								{ ! isAnalyticsActive && (
+									<ActivateModuleCTA moduleSlug="analytics" />
+								) }
 
-							{ isAnalyticsActive && ! isAnalyticsConnected && (
-								<CompleteModuleActivationCTA moduleSlug="analytics" />
-							) }
-						</Cell>
-					</Row>
-				) }
+								{ isAnalyticsActive &&
+									! isAnalyticsConnected && (
+										<CompleteModuleActivationCTA moduleSlug="analytics" />
+									) }
+							</Cell>
+						</Row>
+					) }
 			</Widget>
 		);
 	}
@@ -368,6 +381,7 @@ const SearchFunnelWidget = ( {
 			) }
 
 			{ zeroDataStatesEnabled &&
+				canViewSharedAnalytics &&
 				( ! isAnalyticsActive || ! isAnalyticsConnected ) &&
 				BREAKPOINT_SMALL === breakpoint && (
 					<Grid>
@@ -398,32 +412,33 @@ const SearchFunnelWidget = ( {
 				/>
 			) }
 
-			{ ( selectedStats === 3 || selectedStats === 4 ) && (
-				<AnalyticsStats
-					data={ analyticsStatsData }
-					dateRangeLength={ dateRangeLength }
-					// The selected stats order defined in the parent component does not match the order from the API.
-					selectedStats={ selectedStats - 3 }
-					metrics={ SearchFunnelWidget.metrics }
-					dataLabels={ [
-						__( 'Goals', 'google-site-kit' ),
-						__( 'Bounce Rate %', 'google-site-kit' ),
-					] }
-					dataFormats={ [
-						( x ) => parseFloat( x ).toLocaleString(),
-						( x ) =>
-							numFmt( x / 100, {
-								style: 'percent',
-								signDisplay: 'never',
-								maximumFractionDigits: 2,
-							} ),
-					] }
-					statsColor={
-						SearchFunnelWidget.metrics[ selectedStats ].color
-					}
-					gatheringData={ isAnalyticsGatheringData }
-				/>
-			) }
+			{ canViewSharedAnalytics &&
+				( selectedStats === 3 || selectedStats === 4 ) && (
+					<AnalyticsStats
+						data={ analyticsStatsData }
+						dateRangeLength={ dateRangeLength }
+						// The selected stats order defined in the parent component does not match the order from the API.
+						selectedStats={ selectedStats - 3 }
+						metrics={ SearchFunnelWidget.metrics }
+						dataLabels={ [
+							__( 'Goals', 'google-site-kit' ),
+							__( 'Bounce Rate %', 'google-site-kit' ),
+						] }
+						dataFormats={ [
+							( x ) => parseFloat( x ).toLocaleString(),
+							( x ) =>
+								numFmt( x / 100, {
+									style: 'percent',
+									signDisplay: 'never',
+									maximumFractionDigits: 2,
+								} ),
+						] }
+						statsColor={
+							SearchFunnelWidget.metrics[ selectedStats ].color
+						}
+						gatheringData={ isAnalyticsGatheringData }
+					/>
+				) }
 		</Widget>
 	);
 };

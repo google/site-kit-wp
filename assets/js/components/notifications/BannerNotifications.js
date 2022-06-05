@@ -35,12 +35,15 @@ import UserInputPromptBannerNotification from './UserInputPromptBannerNotificati
 import AdSenseAlerts from './AdSenseAlerts';
 import ZeroDataStateNotifications from './ZeroDataStateNotifications';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import useViewOnly from '../../hooks/useViewOnly';
 const { useSelect } = Data;
 
 export default function BannerNotifications() {
 	const ideaHubModuleEnabled = useFeature( 'ideaHubModule' );
 	const userInputEnabled = useFeature( 'userInput' );
 	const zeroDataStatesEnabled = useFeature( 'zeroDataStates' );
+
+	const viewOnly = useViewOnly();
 
 	const isAuthenticated = useSelect( ( select ) =>
 		select( CORE_USER ).isAuthenticated()
@@ -53,15 +56,27 @@ export default function BannerNotifications() {
 
 	return (
 		<Fragment>
-			{ ( 'authentication_success' === notification ||
-				'user_input_success' === notification ) && (
-				<SetupSuccessBannerNotification />
+			{ ! viewOnly && (
+				<Fragment>
+					{ ( 'authentication_success' === notification ||
+						'user_input_success' === notification ) && (
+						<SetupSuccessBannerNotification />
+					) }
+					{ isAuthenticated && <CoreSiteBannerNotifications /> }
+				</Fragment>
 			) }
-			{ isAuthenticated && <CoreSiteBannerNotifications /> }
 			{ zeroDataStatesEnabled && <ZeroDataStateNotifications /> }
-			{ userInputEnabled && <UserInputPromptBannerNotification /> }
-			{ ideaHubModuleEnabled && <IdeaHubPromptBannerNotification /> }
-			{ adSenseModuleActive && <AdSenseAlerts /> }
+			{ ! viewOnly && (
+				<Fragment>
+					{ userInputEnabled && (
+						<UserInputPromptBannerNotification />
+					) }
+					{ ideaHubModuleEnabled && (
+						<IdeaHubPromptBannerNotification />
+					) }
+					{ adSenseModuleActive && <AdSenseAlerts /> }
+				</Fragment>
+			) }
 		</Fragment>
 	);
 }
