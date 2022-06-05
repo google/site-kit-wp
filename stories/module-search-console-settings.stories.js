@@ -157,6 +157,9 @@ storiesOf( 'Search Console Module/Settings', module )
 				...defaultSettings,
 				propertyID: 'sc-domain:example.com',
 			} );
+			registry
+				.dispatch( MODULES_SEARCH_CONSOLE )
+				.receiveGetMatchedProperties( [] );
 
 			return (
 				<Settings
