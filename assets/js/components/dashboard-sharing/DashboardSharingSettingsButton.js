@@ -70,8 +70,8 @@ export default function DashboardSharingSettingsButton() {
 	const closeDialog = useCallback( () => {
 		setDialogOpen( false );
 
-    setValue( EDITING_USER_ROLE_SELECT_SLUG_KEY, undefined );
-	}, [ viewContext, setValue ] );
+		setValue( EDITING_USER_ROLE_SELECT_SLUG_KEY, undefined );
+	}, [ setValue ] );
 
 	return (
 		<Fragment>
