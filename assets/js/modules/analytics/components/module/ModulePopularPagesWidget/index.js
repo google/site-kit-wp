@@ -64,7 +64,6 @@ function ModulePopularPagesWidget( props ) {
 	);
 
 	const zeroDataStates = useFeature( 'zeroDataStates' );
-	const unifiedDashboardEnabled = useFeature( 'unifiedDashboard' );
 
 	const args = {
 		...dates,
@@ -195,10 +194,7 @@ function ModulePopularPagesWidget( props ) {
 				<span>{ numFmt( Number( fieldValue ) / 100, '%' ) }</span>
 			),
 		},
-	];
-
-	if ( unifiedDashboardEnabled ) {
-		tableColumns.push( {
+		{
 			title: __( 'Session Duration', 'google-site-kit' ),
 			description: __( 'Session Duration', 'google-site-kit' ),
 			hideOnMobile: true,
@@ -206,8 +202,8 @@ function ModulePopularPagesWidget( props ) {
 			Component: ( { fieldValue } ) => (
 				<span>{ numFmt( fieldValue, 's' ) }</span>
 			),
-		} );
-	}
+		},
+	];
 
 	const rows = report?.[ 0 ]?.data?.rows?.length
 		? cloneDeep( report[ 0 ].data.rows )

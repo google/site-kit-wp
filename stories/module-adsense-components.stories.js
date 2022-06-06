@@ -23,9 +23,7 @@ import {
 	generateReportBasedWidgetStories,
 	makeReportDataGenerator,
 } from './utils/generate-widget-stories';
-import DashboardSummaryWidget from '../assets/js/modules/adsense/components/dashboard/DashboardSummaryWidget';
 import DashboardTopEarningPagesWidget from '../assets/js/modules/adsense/components/dashboard/DashboardTopEarningPagesWidget';
-import ModuleTopEarningPagesWidget from '../assets/js/modules/adsense/components/module/ModuleTopEarningPagesWidget';
 import ModuleOverviewWidget from '../assets/js/modules/adsense/components/module/ModuleOverviewWidget';
 import { MODULES_ADSENSE } from '../assets/js/modules/adsense/datastore/constants';
 import { MODULES_ANALYTICS } from '../assets/js/modules/analytics/datastore/constants';
@@ -39,49 +37,6 @@ const generateAnalyticsData = makeReportDataGenerator(
 	getAnalyticsMockResponse
 );
 const generateAdSenseData = makeReportDataGenerator( getAdSenseMockResponse );
-
-const dashboardSummaryOptions = [
-	{
-		// Custom start and end date for this widget to match data range: 'previousPeriod',
-		startDate: '2020-07-18',
-		endDate: '2020-08-14',
-		metrics: [ 'ESTIMATED_EARNINGS', 'PAGE_VIEWS_RPM', 'IMPRESSIONS' ],
-	},
-	{
-		// getDateRangeDates( { offsetDays: 1 }) for 'last-28-days' and '2020-09-12'.
-		startDate: '2020-08-15',
-		endDate: '2020-09-11',
-		metrics: [ 'ESTIMATED_EARNINGS', 'PAGE_VIEWS_RPM', 'IMPRESSIONS' ],
-	},
-	{
-		// Custom start and end date for this widget to match data range: 'this-month',
-		startDate: '2020-08-15',
-		endDate: '2020-09-11',
-		metrics: [ 'ESTIMATED_EARNINGS', 'PAGE_VIEWS_RPM', 'IMPRESSIONS' ],
-		dimensions: [ 'DATE' ],
-	},
-];
-generateReportBasedWidgetStories( {
-	moduleSlugs: [ 'adsense', 'analytics' ],
-	datastore: MODULES_ADSENSE,
-	group: 'AdSense Module/Components/Dashboard/Summary Widget',
-	referenceDate: '2020-09-12',
-	setup: ( { dispatch }, variantName ) => {
-		dispatch( MODULES_ANALYTICS ).setAdsenseLinked( true );
-		dispatch( MODULES_ADSENSE ).receiveIsAdBlockerActive(
-			variantName === 'Ad Blocker Active'
-		);
-	},
-	...generateAdSenseData( dashboardSummaryOptions ),
-	Component: DashboardSummaryWidget,
-	wrapWidget: false,
-	additionalVariants: {
-		'Ad Blocker Active': {
-			data: [],
-			options: [],
-		},
-	},
-} );
 
 const topEarningPagesArgs = {
 	startDate: '2020-08-15',
@@ -136,36 +91,6 @@ generateReportBasedWidgetStories( {
 		'Ad Blocker Active': {
 			data: [],
 			options: [],
-		},
-	},
-} );
-
-const moduleTopEarningPagesWidgetOptions = {
-	...topEarningPagesArgs,
-	limit: 10,
-};
-
-generateReportBasedWidgetStories( {
-	moduleSlugs: [ 'adsense', 'analytics' ],
-	datastore: MODULES_ANALYTICS,
-	setup: ( registry, variantName ) => {
-		registry
-			.dispatch( MODULES_ANALYTICS )
-			.setAdsenseLinked( variantName !== 'AdSense Not Linked' );
-		provideAdSenseMockReport( registry, getCurrencyFromReportOptions );
-		registry
-			.dispatch( MODULES_ADSENSE )
-			.finishResolution( 'getReport', [ getCurrencyFromReportOptions ] );
-	},
-	group: 'AdSense Module/Components/Module/Top Earning Pages Widget',
-	referenceDate: '2020-09-12',
-	...generateAnalyticsData( moduleTopEarningPagesWidgetOptions ),
-	Component: ModuleTopEarningPagesWidget,
-	wrapWidget: false,
-	additionalVariants: {
-		'AdSense Not Linked': {
-			data: [],
-			options: moduleTopEarningPagesWidgetOptions,
 		},
 	},
 } );
