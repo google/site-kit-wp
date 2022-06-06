@@ -78,7 +78,7 @@ export default function Footer( { closeDialog } ) {
 	const onCancel = useCallback( () => {
 		trackEvent( `${ viewContext }_sharing`, 'settings_cancel' );
 		closeDialog();
-	}, [ closeDialog ] );
+	}, [ closeDialog, viewContext ] );
 
 	return (
 		<div className="googlesitekit-dashboard-sharing-settings__footer">

@@ -66,7 +66,7 @@ export default function DashboardSharingSettingsButton() {
 
 	const closeDialog = useCallback( () => {
 		setDialogOpen( false );
-	}, [ viewContext ] );
+	}, [] );
 
 	return (
 		<Fragment>
