@@ -46,10 +46,9 @@ import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 const { useSelect } = Data;
 
 export default function DashboardSharingSettingsButton() {
+	const viewContext = useViewContext();
 	const breakpoint = useBreakpoint();
 	const [ dialogOpen, setDialogOpen ] = useState( false );
-
-	const viewContext = useViewContext();
 
 	const hasMultipleAdmins = useSelect( ( select ) =>
 		select( CORE_SITE ).hasMultipleAdmins()
@@ -66,9 +65,8 @@ export default function DashboardSharingSettingsButton() {
 	}, [ viewContext, hasMultipleAdmins ] );
 
 	const closeDialog = useCallback( () => {
-		trackEvent( `${ viewContext }_sharing`, 'settings_cancel' );
 		setDialogOpen( false );
-	}, [ viewContext ] );
+	}, [] );
 
 	return (
 		<Fragment>
