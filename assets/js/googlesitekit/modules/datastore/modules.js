@@ -311,7 +311,6 @@ const baseActions = {
 	 * @param {WPComponent}    [settings.SettingsSetupIncompleteComponent] Optional. React component to render the incomplete settings panel. Default none.
 	 * @param {WPComponent}    [settings.SetupComponent]                   Optional. React component to render the setup panel. Default none.
 	 * @param {Function}       [settings.checkRequirements]                Optional. Function to check requirements for the module. Throws a WP error object for error or returns on success.
-	 * @param {Function}       [settings.screenWidgetContext]              Optional. Get the registered context name for a given module.
 	 */
 	registerModule: createValidatedAction(
 		( slug ) => {
@@ -332,7 +331,6 @@ const baseActions = {
 				SetupComponent,
 				SettingsSetupIncompleteComponent,
 				checkRequirements,
-				screenWidgetContext,
 			} = {}
 		) {
 			const settings = {
@@ -348,7 +346,6 @@ const baseActions = {
 				SetupComponent,
 				SettingsSetupIncompleteComponent,
 				checkRequirements,
-				screenWidgetContext,
 			};
 
 			yield {
@@ -1187,34 +1184,6 @@ const baseSelectors = {
 			}
 
 			return state.checkRequirementsResults[ slug ];
-		}
-	),
-
-	/**
-	 * Gets the module's screenWidgetContext.
-	 *
-	 * Returns the registered context string, screenWidgetContext for the given module.
-	 *
-	 * @since 1.28.0
-	 *
-	 * @param {Object} state      Data store's state.
-	 * @param {string} moduleSlug Module slug.
-	 * @return {(string|null|undefined)} The module's registered context string, null if there is
-	 *                                   none, undefined if not loaded yet.
-	 */
-	getScreenWidgetContext: createRegistrySelector(
-		( select ) => ( state, moduleSlug ) => {
-			invariant( moduleSlug, 'slug is required.' );
-			const modules = select( CORE_MODULES ).getModules();
-
-			if ( modules === undefined ) {
-				return undefined;
-			}
-
-			const screenWidgetContext =
-				modules[ moduleSlug ]?.screenWidgetContext;
-
-			return screenWidgetContext || null;
 		}
 	),
 

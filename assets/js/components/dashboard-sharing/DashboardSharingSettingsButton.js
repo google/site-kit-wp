@@ -48,11 +48,10 @@ import { EDITING_USER_ROLE_SELECT_SLUG_KEY } from './DashboardSharingSettings/co
 const { useSelect, useDispatch } = Data;
 
 export default function DashboardSharingSettingsButton() {
+	const viewContext = useViewContext();
 	const breakpoint = useBreakpoint();
 	const { setValue } = useDispatch( CORE_UI );
 	const [ dialogOpen, setDialogOpen ] = useState( false );
-
-	const viewContext = useViewContext();
 
 	const hasMultipleAdmins = useSelect( ( select ) =>
 		select( CORE_SITE ).hasMultipleAdmins()
@@ -69,9 +68,9 @@ export default function DashboardSharingSettingsButton() {
 	}, [ viewContext, hasMultipleAdmins ] );
 
 	const closeDialog = useCallback( () => {
-		trackEvent( `${ viewContext }_sharing`, 'settings_cancel' );
 		setDialogOpen( false );
-		setValue( EDITING_USER_ROLE_SELECT_SLUG_KEY, undefined );
+
+    setValue( EDITING_USER_ROLE_SELECT_SLUG_KEY, undefined );
 	}, [ viewContext, setValue ] );
 
 	return (

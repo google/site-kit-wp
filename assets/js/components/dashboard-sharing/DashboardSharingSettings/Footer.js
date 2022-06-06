@@ -62,11 +62,10 @@ export default function Footer( { closeDialog } ) {
 
 	const onApply = useCallback( async () => {
 		setErrorNotice( null );
-		const { error } = await saveSharingSettings();
 
+		const { error } = await saveSharingSettings();
 		if ( error ) {
 			setErrorNotice( error.message );
-
 			return;
 		}
 
@@ -79,6 +78,11 @@ export default function Footer( { closeDialog } ) {
 		closeDialog();
 	}, [ viewContext, saveSharingSettings, setValue, closeDialog ] );
 
+	const onCancel = useCallback( () => {
+		trackEvent( `${ viewContext }_sharing`, 'settings_cancel' );
+		closeDialog();
+	}, [ closeDialog, viewContext ] );
+
 	return (
 		<div className="googlesitekit-dashboard-sharing-settings__footer">
 			<div className="googlesitekit-dashboard-sharing-settings__footer-notice">
@@ -87,7 +91,7 @@ export default function Footer( { closeDialog } ) {
 			</div>
 
 			<div className="googlesitekit-dashboard-sharing-settings__footer-actions">
-				<Link onClick={ closeDialog }>
+				<Link onClick={ onCancel }>
 					{ __( 'Cancel', 'google-site-kit' ) }
 				</Link>
 
