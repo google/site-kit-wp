@@ -44,7 +44,10 @@ import { useKeyCodesInside } from '../../hooks/useKeyCodesInside';
 import { trackEvent } from '../../util';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
-import { SHARING_SETTINGS_SLUG_KEY } from './DashboardSharingSettings/constants';
+import {
+	SHARING_SETTINGS_SLUG_KEY,
+	EDITING_USER_ROLE_SELECT_SLUG_KEY,
+} from './DashboardSharingSettings/constants';
 const { useSelect, useDispatch } = Data;
 
 const ALL_CHIP_ID = 'all';
@@ -73,9 +76,11 @@ export default function UserRoleSelect( { moduleSlug, isLocked = false } ) {
 		if ( editMode ) {
 			// Set these state to disable modules in when editing user roles
 			setValue( SHARING_SETTINGS_SLUG_KEY, moduleSlug );
+			setValue( EDITING_USER_ROLE_SELECT_SLUG_KEY, moduleSlug );
 		} else {
 			// Reset the state to enable modules in when not editing.
 			setValue( SHARING_SETTINGS_SLUG_KEY, undefined );
+			setValue( EDITING_USER_ROLE_SELECT_SLUG_KEY, undefined );
 		}
 	}, [ editMode, setValue, moduleSlug ] );
 

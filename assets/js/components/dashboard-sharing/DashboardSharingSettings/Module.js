@@ -46,7 +46,11 @@ import useViewContext from '../../../hooks/useViewContext';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
-import { EDITING_MANAGEMENT_KEY, SHARING_SETTINGS_SLUG_KEY } from './constants';
+import {
+	EDITING_MANAGEMENT_KEY,
+	SHARING_SETTINGS_SLUG_KEY,
+	EDITING_USER_ROLE_SELECT_SLUG_KEY,
+} from './constants';
 import { trackEvent } from '../../../util';
 import {
 	CORE_USER,
@@ -95,6 +99,9 @@ export default function Module( { moduleSlug, moduleName, ownerUsername } ) {
 	const editingModuleSlug = useSelect( ( select ) =>
 		select( CORE_UI ).getValue( SHARING_SETTINGS_SLUG_KEY )
 	);
+	const editingUserRolesSlug = useSelect( ( select ) =>
+		select( CORE_UI ).getValue( EDITING_USER_ROLE_SELECT_SLUG_KEY )
+	);
 	const isSaving = useSelect( ( select ) =>
 		select( CORE_MODULES ).isDoingSubmitSharingChanges()
 	);
@@ -140,7 +147,7 @@ export default function Module( { moduleSlug, moduleName, ownerUsername } ) {
 		( editingModuleSlug !== undefined &&
 			moduleSlug !== editingModuleSlug ) ||
 		isSaving;
-	const isEditing = moduleSlug === editingModuleSlug;
+	const isEditingUserRoles = moduleSlug === editingUserRolesSlug;
 
 	return (
 		<div
@@ -148,7 +155,7 @@ export default function Module( { moduleSlug, moduleName, ownerUsername } ) {
 				'googlesitekit-dashboard-sharing-settings__module',
 				'googlesitekit-dashboard-sharing-settings__row',
 				{
-					'googlesitekit-dashboard-sharing-settings__row--editing': isEditing,
+					'googlesitekit-dashboard-sharing-settings__row--editing': isEditingUserRoles,
 					'googlesitekit-dashboard-sharing-settings__row--disabled': isLocked,
 				}
 			) }
