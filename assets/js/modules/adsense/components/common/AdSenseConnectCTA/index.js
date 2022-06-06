@@ -38,20 +38,20 @@ import {
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { MODULES_ADSENSE } from '../../datastore/constants';
-import { Grid, Row, Cell } from '../../../../material-components';
-import { ADSENSE_CTA_WIDGET_DISMISSED_ITEM_KEY } from '../../constants';
-import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
-import { CORE_LOCATION } from '../../../../googlesitekit/datastore/location/constants';
-import { trackEvent } from '../../../../util';
-import Link from '../../../../components/Link';
-import Button from '../../../../components/Button';
-import Portal from '../../../../components/Portal';
-import Dialog from '../../../../components/Dialog';
-import AdSenseIcon from '../../../../../svg/graphics/adsense.svg';
-import useViewContext from '../../../../hooks/useViewContext';
+import { MODULES_ADSENSE } from '../../../datastore/constants';
+import { Grid, Row, Cell } from '../../../../../material-components';
+import { ADSENSE_CTA_WIDGET_DISMISSED_ITEM_KEY } from '../../../constants';
+import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
+import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
+import { CORE_MODULES } from '../../../../../googlesitekit/modules/datastore/constants';
+import { CORE_LOCATION } from '../../../../../googlesitekit/datastore/location/constants';
+import { trackEvent } from '../../../../../util';
+import Link from '../../../../../components/Link';
+import Button from '../../../../../components/Button';
+import Portal from '../../../../../components/Portal';
+import Dialog from '../../../../../components/Dialog';
+import AdSenseIcon from '../../../../../../svg/graphics/adsense.svg';
+import useViewContext from '../../../../../hooks/useViewContext';
 const { useSelect, useDispatch } = Data;
 
 export default function AdSenseConnectCTA() {

@@ -24,7 +24,7 @@ import { ESCAPE } from '@wordpress/keycodes';
 /**
  * Internal dependencies
  */
-import AdSenseConnectCTA from './AdSenseConnectCTA';
+import AdSenseConnectCTA from '.';
 import {
 	act,
 	fireEvent,
@@ -32,10 +32,10 @@ import {
 	createTestRegistry,
 	provideSiteInfo,
 	provideUserAuthentication,
-} from '../../../../../../tests/js/test-utils';
-import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
-import { MODULES_ADSENSE } from '../../datastore/constants';
-import { withActive } from '../../../../googlesitekit/modules/datastore/__fixtures__';
+} from '../../../../../../../tests/js/test-utils';
+import { CORE_MODULES } from '../../../../../googlesitekit/modules/datastore/constants';
+import { MODULES_ADSENSE } from '../../../datastore/constants';
+import { withActive } from '../../../../../googlesitekit/modules/datastore/__fixtures__';
 
 describe( 'AdSenseConnectCTA', () => {
 	let registry;
