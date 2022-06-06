@@ -48,7 +48,6 @@ import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
 import {
 	EDITING_MANAGEMENT_KEY,
-	SHARING_SETTINGS_SLUG_KEY,
 	EDITING_USER_ROLE_SELECT_SLUG_KEY,
 } from './constants';
 import { trackEvent } from '../../../util';
@@ -96,9 +95,6 @@ export default function Module( { moduleSlug, moduleName, ownerUsername } ) {
 	const sharedOwnershipModules = useSelect( ( select ) =>
 		select( CORE_MODULES ).getSharedOwnershipModules()
 	);
-	const editingModuleSlug = useSelect( ( select ) =>
-		select( CORE_UI ).getValue( SHARING_SETTINGS_SLUG_KEY )
-	);
 	const editingUserRolesSlug = useSelect( ( select ) =>
 		select( CORE_UI ).getValue( EDITING_USER_ROLE_SELECT_SLUG_KEY )
 	);
@@ -125,7 +121,6 @@ export default function Module( { moduleSlug, moduleName, ownerUsername } ) {
 		( event ) => {
 			const value = event.target.value;
 			setValue( EDITING_MANAGEMENT_KEY, true );
-			setValue( SHARING_SETTINGS_SLUG_KEY, moduleSlug );
 			setManageViewAccess( value );
 			setSharingManagement( moduleSlug, value );
 			trackEvent(
@@ -143,11 +138,10 @@ export default function Module( { moduleSlug, moduleName, ownerUsername } ) {
 		]
 	);
 
-	const isLocked =
-		( editingModuleSlug !== undefined &&
-			moduleSlug !== editingModuleSlug ) ||
-		isSaving;
 	const isEditingUserRoles = moduleSlug === editingUserRolesSlug;
+	const isLocked =
+		( ! isEditingUserRoles && editingUserRolesSlug !== undefined ) ||
+		isSaving;
 
 	return (
 		<div

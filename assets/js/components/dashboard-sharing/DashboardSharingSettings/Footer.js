@@ -39,7 +39,6 @@ import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
 import Spinner from '../../Spinner';
 import {
 	EDITING_MANAGEMENT_KEY,
-	SHARING_SETTINGS_SLUG_KEY,
 	EDITING_USER_ROLE_SELECT_SLUG_KEY,
 } from './constants';
 import ErrorText from '../../ErrorText';
@@ -74,7 +73,6 @@ export default function Footer( { closeDialog } ) {
 		trackEvent( `${ viewContext }_sharing`, 'settings_confirm' );
 
 		// Reset the state to enable modules in when not editing or saving.
-		setValue( SHARING_SETTINGS_SLUG_KEY, undefined );
 		setValue( EDITING_USER_ROLE_SELECT_SLUG_KEY, undefined );
 		setValue( EDITING_MANAGEMENT_KEY, false );
 
