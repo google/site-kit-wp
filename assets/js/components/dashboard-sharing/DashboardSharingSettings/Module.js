@@ -181,7 +181,7 @@ export default function Module( { moduleSlug, moduleName, ownerUsername } ) {
 
 			{ hasMultipleAdmins && (
 				<div className="googlesitekit-dashboard-sharing-settings__column--manage">
-					{ hasOwnedModule && (
+					{ ( sharedOwnershipModule || hasOwnedModule ) && (
 						<Select
 							className="googlesitekit-dashboard-sharing-settings__select"
 							value={ manageViewAccess }
@@ -193,43 +193,45 @@ export default function Module( { moduleSlug, moduleName, ownerUsername } ) {
 						/>
 					) }
 
-					{ ! hasOwnedModule && ownerUsername && (
-						<p className="googlesitekit-dashboard-sharing-settings__note">
-							{ createInterpolateElement(
-								sprintf(
-									/* translators: %s: user who manages the module. */
-									__(
-										'<span>Managed by</span> <strong>%s</strong>',
-										'google-site-kit'
+					{ ! sharedOwnershipModule &&
+						! hasOwnedModule &&
+						ownerUsername && (
+							<p className="googlesitekit-dashboard-sharing-settings__note">
+								{ createInterpolateElement(
+									sprintf(
+										/* translators: %s: user who manages the module. */
+										__(
+											'<span>Managed by</span> <strong>%s</strong>',
+											'google-site-kit'
+										),
+										ownerUsername
 									),
-									ownerUsername
-								),
-								{
-									span: <span />,
-									strong: <strong />,
-								}
-							) }
-
-							<Tooltip
-								title={ sprintf(
-									/* translators: %s: name of the user who manages the module. */
-									__(
-										'%s has connected this and given managing permissions to all admins. You can change who can view this on the dashboard.',
-										'google-site-kit'
-									),
-									ownerUsername
+									{
+										span: <span />,
+										strong: <strong />,
+									}
 								) }
-								classes={ {
-									popper: 'googlesitekit-tooltip-popper',
-									tooltip: 'googlesitekit-tooltip',
-								} }
-							>
-								<span className="googlesitekit-dashboard-sharing-settings__tooltip-icon">
-									<Icon icon={ info } size={ 18 } />
-								</span>
-							</Tooltip>
-						</p>
-					) }
+
+								<Tooltip
+									title={ sprintf(
+										/* translators: %s: name of the user who manages the module. */
+										__(
+											'%s has connected this and given managing permissions to all admins. You can change who can view this on the dashboard.',
+											'google-site-kit'
+										),
+										ownerUsername
+									) }
+									classes={ {
+										popper: 'googlesitekit-tooltip-popper',
+										tooltip: 'googlesitekit-tooltip',
+									} }
+								>
+									<span className="googlesitekit-dashboard-sharing-settings__tooltip-icon">
+										<Icon icon={ info } size={ 18 } />
+									</span>
+								</Tooltip>
+							</p>
+						) }
 				</div>
 			) }
 		</div>
