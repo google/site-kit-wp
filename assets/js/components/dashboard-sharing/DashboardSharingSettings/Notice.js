@@ -27,13 +27,16 @@ import { createInterpolateElement } from '@wordpress/element';
  */
 import Data from 'googlesitekit-data';
 import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
-import { EDITING_MANAGEMENT_KEY, SHARING_SETTINGS_SLUG_KEY } from './constants';
+import {
+	EDITING_MANAGEMENT_KEY,
+	EDITING_USER_ROLE_SELECT_SLUG_KEY,
+} from './constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 const { useSelect } = Data;
 
 export default function Notice() {
-	const editingModuleSlug = useSelect( ( select ) =>
-		select( CORE_UI ).getValue( SHARING_SETTINGS_SLUG_KEY )
+	const editingUserRolesSlug = useSelect( ( select ) =>
+		select( CORE_UI ).getValue( EDITING_USER_ROLE_SELECT_SLUG_KEY )
 	);
 	const isEditingManagement = useSelect( ( select ) =>
 		select( CORE_UI ).getValue( EDITING_MANAGEMENT_KEY )
@@ -58,7 +61,7 @@ export default function Notice() {
 				) }
 			{ ! isEditingManagement &&
 				canSubmitSharingChanges &&
-				editingModuleSlug &&
+				editingUserRolesSlug &&
 				createInterpolateElement(
 					__(
 						'By clicking <strong>Apply</strong>, you’re granting the selected roles view-only access to data from the Google services you’ve connected via your account.',

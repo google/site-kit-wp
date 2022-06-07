@@ -29,7 +29,7 @@ import isEqual from 'lodash/isEqual';
  */
 import { __ } from '@wordpress/i18n';
 import { ESCAPE, ENTER } from '@wordpress/keycodes';
-import { useEffect, useState, useCallback, useRef } from '@wordpress/element';
+import { useState, useCallback, useRef } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -44,7 +44,7 @@ import { useKeyCodesInside } from '../../hooks/useKeyCodesInside';
 import { trackEvent } from '../../util';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
-import { SHARING_SETTINGS_SLUG_KEY } from './DashboardSharingSettings/constants';
+import { EDITING_USER_ROLE_SELECT_SLUG_KEY } from './DashboardSharingSettings/constants';
 const { useSelect, useDispatch } = Data;
 
 const ALL_CHIP_ID = 'all';
@@ -54,7 +54,6 @@ export default function UserRoleSelect( { moduleSlug, isLocked = false } ) {
 	const viewContext = useViewContext();
 	const wrapperRef = useRef();
 
-	const [ editMode, setEditMode ] = useState( false );
 	const [ initialSharedRoles, setInitialSharedRoles ] = useState( [] );
 
 	const { setSharedRoles } = useDispatch( CORE_MODULES );
@@ -66,21 +65,19 @@ export default function UserRoleSelect( { moduleSlug, isLocked = false } ) {
 	const sharedRoles = useSelect( ( select ) =>
 		select( CORE_MODULES ).getSharedRoles( moduleSlug )
 	);
+	const editingUserRoleSelect = useSelect( ( select ) =>
+		select( CORE_UI ).getValue( EDITING_USER_ROLE_SELECT_SLUG_KEY )
+	);
+	const editMode = editingUserRoleSelect === moduleSlug;
 
-	useKeyCodesInside( [ ESCAPE ], wrapperRef, () => setEditMode( false ) );
-
-	useEffect( () => {
+	useKeyCodesInside( [ ESCAPE ], wrapperRef, () => {
 		if ( editMode ) {
-			// Set these state to disable modules in when editing user roles
-			setValue( SHARING_SETTINGS_SLUG_KEY, moduleSlug );
-		} else {
-			// Reset the state to enable modules in when not editing.
-			setValue( SHARING_SETTINGS_SLUG_KEY, undefined );
+			setValue( EDITING_USER_ROLE_SELECT_SLUG_KEY, undefined );
 		}
-	}, [ editMode, setValue, moduleSlug ] );
+	} );
 
 	const toggleEditMode = useCallback( () => {
-		if ( editMode ) {
+		if ( ! editMode ) {
 			if (
 				! isEqual(
 					[ ...( sharedRoles || [] ) ].sort(),
@@ -93,12 +90,23 @@ export default function UserRoleSelect( { moduleSlug, isLocked = false } ) {
 					moduleSlug
 				);
 			}
+
+			// Set these state to disable modules in when editing user roles
+			setValue( EDITING_USER_ROLE_SELECT_SLUG_KEY, moduleSlug );
 		} else {
 			setInitialSharedRoles( [ ...( sharedRoles || [] ) ].sort() );
-		}
 
-		setEditMode( ! editMode );
-	}, [ editMode, sharedRoles, initialSharedRoles, viewContext, moduleSlug ] );
+			// Reset the state to enable modules in when not editing.
+			setValue( EDITING_USER_ROLE_SELECT_SLUG_KEY, undefined );
+		}
+	}, [
+		editMode,
+		sharedRoles,
+		initialSharedRoles,
+		viewContext,
+		moduleSlug,
+		setValue,
+	] );
 
 	const toggleChip = useCallback(
 		( { type, target, keyCode } ) => {
