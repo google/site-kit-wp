@@ -944,7 +944,7 @@ class ModulesTest extends TestCase {
 	}
 
 	public function test_all_admin_module_ownership_change__add_settings() {
-		list( $pagespeed_insights_settings, $old_admin_id ) = $this->setup_all_admin_module_ownership_change();
+		list( $pagespeed_insights_settings, $first_admin_id ) = $this->setup_all_admin_module_ownership_change();
 
 		$test_sharing_settings = array(
 			'pagespeed-insights' => array(),
@@ -952,10 +952,10 @@ class ModulesTest extends TestCase {
 		add_option( 'googlesitekit_dashboard_sharing', $test_sharing_settings );
 
 		$settings = $pagespeed_insights_settings->get();
-		$this->assertEquals( $settings['ownerID'], $old_admin_id );
+		$this->assertEquals( $settings['ownerID'], $first_admin_id );
 
-		$new_admin = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
-		wp_set_current_user( $new_admin->ID );
+		$second_admin = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $second_admin->ID );
 
 		$test_updated_sharing_settings = array(
 			'pagespeed-insights' => array(
@@ -966,11 +966,11 @@ class ModulesTest extends TestCase {
 		update_option( 'googlesitekit_dashboard_sharing', $test_updated_sharing_settings );
 
 		$settings = $pagespeed_insights_settings->get();
-		$this->assertEquals( $settings['ownerID'], $new_admin->ID );
+		$this->assertEquals( $settings['ownerID'], $second_admin->ID );
 	}
 
 	public function test_all_admin_module_ownership_change__add_shared_roles() {
-		list( $pagespeed_insights_settings, $old_admin_id ) = $this->setup_all_admin_module_ownership_change();
+		list( $pagespeed_insights_settings, $first_admin_id ) = $this->setup_all_admin_module_ownership_change();
 
 		$test_sharing_settings = array(
 			'pagespeed-insights' => array(
@@ -981,10 +981,10 @@ class ModulesTest extends TestCase {
 		add_option( 'googlesitekit_dashboard_sharing', $test_sharing_settings );
 
 		$settings = $pagespeed_insights_settings->get();
-		$this->assertEquals( $settings['ownerID'], $old_admin_id );
+		$this->assertEquals( $settings['ownerID'], $first_admin_id );
 
-		$new_admin = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
-		wp_set_current_user( $new_admin->ID );
+		$second_admin = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $second_admin->ID );
 
 		// Test adding a new shared role updates the owner.
 		$test_updated_sharing_settings = array(
@@ -996,11 +996,11 @@ class ModulesTest extends TestCase {
 		update_option( 'googlesitekit_dashboard_sharing', $test_updated_sharing_settings );
 
 		$settings = $pagespeed_insights_settings->get();
-		$this->assertEquals( $settings['ownerID'], $new_admin->ID );
+		$this->assertEquals( $settings['ownerID'], $second_admin->ID );
 	}
 
 	public function test_all_admin_module_ownership_change__reorder_shared_roles() {
-		list( $pagespeed_insights_settings, $old_admin_id ) = $this->setup_all_admin_module_ownership_change();
+		list( $pagespeed_insights_settings, $first_admin_id ) = $this->setup_all_admin_module_ownership_change();
 
 		$test_sharing_settings = array(
 			'pagespeed-insights' => array(
@@ -1011,10 +1011,10 @@ class ModulesTest extends TestCase {
 		add_option( 'googlesitekit_dashboard_sharing', $test_sharing_settings );
 
 		$settings = $pagespeed_insights_settings->get();
-		$this->assertEquals( $settings['ownerID'], $old_admin_id );
+		$this->assertEquals( $settings['ownerID'], $first_admin_id );
 
-		$new_admin = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
-		wp_set_current_user( $new_admin->ID );
+		$second_admin = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $second_admin->ID );
 
 		// Test changing the order of shared roles does not update the owner.
 		$test_updated_sharing_settings = array(
@@ -1026,11 +1026,11 @@ class ModulesTest extends TestCase {
 		update_option( 'googlesitekit_dashboard_sharing', $test_updated_sharing_settings );
 
 		$settings = $pagespeed_insights_settings->get();
-		$this->assertEquals( $settings['ownerID'], $old_admin_id );
+		$this->assertEquals( $settings['ownerID'], $first_admin_id );
 	}
 
 	public function test_all_admin_module_ownership_change__remove_shared_roles() {
-		list( $pagespeed_insights_settings, $old_admin_id ) = $this->setup_all_admin_module_ownership_change();
+		list( $pagespeed_insights_settings, $first_admin_id ) = $this->setup_all_admin_module_ownership_change();
 
 		$test_sharing_settings = array(
 			'pagespeed-insights' => array(
@@ -1041,10 +1041,10 @@ class ModulesTest extends TestCase {
 		add_option( 'googlesitekit_dashboard_sharing', $test_sharing_settings );
 
 		$settings = $pagespeed_insights_settings->get();
-		$this->assertEquals( $settings['ownerID'], $old_admin_id );
+		$this->assertEquals( $settings['ownerID'], $first_admin_id );
 
-		$new_admin = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
-		wp_set_current_user( $new_admin->ID );
+		$second_admin = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $second_admin->ID );
 
 		// Test removing a shared role updates the owner.
 		$test_updated_sharing_settings = array(
@@ -1056,11 +1056,11 @@ class ModulesTest extends TestCase {
 		update_option( 'googlesitekit_dashboard_sharing', $test_updated_sharing_settings );
 
 		$settings = $pagespeed_insights_settings->get();
-		$this->assertEquals( $settings['ownerID'], $new_admin->ID );
+		$this->assertEquals( $settings['ownerID'], $second_admin->ID );
 	}
 
 	public function test_all_admin_module_ownership_change__update_management() {
-		list( $pagespeed_insights_settings, $old_admin_id ) = $this->setup_all_admin_module_ownership_change();
+		list( $pagespeed_insights_settings, $first_admin_id ) = $this->setup_all_admin_module_ownership_change();
 		$settings = $pagespeed_insights_settings->get();
 
 		$test_sharing_settings = array(
@@ -1072,10 +1072,10 @@ class ModulesTest extends TestCase {
 		add_option( 'googlesitekit_dashboard_sharing', $test_sharing_settings );
 
 		$settings = $pagespeed_insights_settings->get();
-		$this->assertEquals( $settings['ownerID'], $old_admin_id );
+		$this->assertEquals( $settings['ownerID'], $first_admin_id );
 
-		$new_admin = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
-		wp_set_current_user( $new_admin->ID );
+		$second_admin = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $second_admin->ID );
 
 		$test_updated_sharing_settings = array(
 			'pagespeed-insights' => array(
@@ -1086,7 +1086,7 @@ class ModulesTest extends TestCase {
 		update_option( 'googlesitekit_dashboard_sharing', $test_updated_sharing_settings );
 
 		$settings = $pagespeed_insights_settings->get();
-		$this->assertEquals( $settings['ownerID'], $new_admin->ID );
+		$this->assertEquals( $settings['ownerID'], $second_admin->ID );
 	}
 
 	public function test_non_all_admin_module_ownership_change() {
