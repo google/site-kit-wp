@@ -82,9 +82,9 @@ export default function GA4SettingsControls( { hasModuleAccess } ) {
 		select( CORE_MODULES ).getModule( 'analytics-4' )
 	);
 
-	const ownerName = module?.owner?.login
-		? module?.owner?.login
-		: __( '(Another admin)', 'google-site-kit' );
+	const formattedOwnerName = module?.owner?.login
+		? `<strong>${ module.owner.login }</strong>`
+		: __( 'Another admin', 'google-site-kit' );
 
 	const {
 		matchAccountProperty,
@@ -212,10 +212,10 @@ export default function GA4SettingsControls( { hasModuleAccess } ) {
 						sprintf(
 							/* translators: 1: module owner's name, 2: module name */
 							__(
-								'<strong>%1$s</strong> configured %2$s and you don’t have access to this Analytics property. Contact them to share access or change the Analytics property.',
+								'%1$s configured %2$s and you don’t have access to this Analytics property. Contact them to share access or change the Analytics property.',
 								'google-site-kit'
 							),
-							ownerName,
+							formattedOwnerName,
 							module?.name
 						),
 						{

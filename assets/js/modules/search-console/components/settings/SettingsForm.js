@@ -41,9 +41,9 @@ export default function SettingsForm( { hasModuleAccess } ) {
 		select( CORE_MODULES ).getModule( 'search-console' )
 	);
 
-	const ownerName = module?.owner?.login
-		? module?.owner?.login
-		: __( '(Another admin)', 'google-site-kit' );
+	const formattedOwnerName = module?.owner?.login
+		? `<strong>${ module.owner.login }</strong>`
+		: __( 'Another admin', 'google-site-kit' );
 
 	return (
 		<div className="googlesitekit-search-console-settings-fields">
@@ -64,10 +64,10 @@ export default function SettingsForm( { hasModuleAccess } ) {
 						sprintf(
 							/* translators: 1: module owner's name, 2: module name */
 							__(
-								'<strong>%1$s</strong> configured %2$s and you don’t have access to this Search Console property. Contact them to share access or change the Search Console property.',
+								'%1$s configured %2$s and you don’t have access to this Search Console property. Contact them to share access or change the Search Console property.',
 								'google-site-kit'
 							),
-							ownerName,
+							formattedOwnerName,
 							module?.name
 						),
 						{
