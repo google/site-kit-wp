@@ -33,14 +33,12 @@ import {
 	VIEW_CONTEXT_DASHBOARD,
 	VIEW_CONTEXT_DASHBOARD_VIEW_ONLY,
 } from '../googlesitekit/constants';
-import { isFeatureEnabled } from '../features';
 
 const unifiedDashboard = {
 	slug: 'unifiedDashboard',
 	contexts: [ VIEW_CONTEXT_DASHBOARD, VIEW_CONTEXT_DASHBOARD_VIEW_ONLY ],
 	version: '1.68.0',
 	gaEventCategory: ( viewContext ) => `${ viewContext }_unified-dashboard`,
-	checkRequirements: () => isFeatureEnabled( 'unifiedDashboard' ),
 	steps: [
 		{
 			target: '.googlesitekit-navigation',

@@ -125,10 +125,8 @@ final class Screens {
 				// Redirect dashboard to splash if no dashboard access (yet).
 				$this->no_access_redirect_dashboard_to_splash();
 
-				// Redirect module pages to dashboard if unifiedDashboard is enabled.
-				if ( Feature_Flags::enabled( 'unifiedDashboard' ) ) {
-					$this->no_access_redirect_module_to_dashboard();
-				}
+				// Redirect module pages to dashboard.
+				$this->no_access_redirect_module_to_dashboard();
 			}
 		);
 
@@ -465,22 +463,6 @@ final class Screens {
 
 			)
 		);
-
-		// Wrap this simply to save some unnecessary filter firing and screen instantiation.
-		if ( current_user_can( Permissions::VIEW_MODULE_DETAILS ) ) {
-			/**
-			 * Filters the admin screens for modules.
-			 *
-			 * By default this is an empty array, but can be expanded.
-			 *
-			 * @since 1.0.0
-			 *
-			 * @param array $module_screens List of Screen instances.
-			 */
-			$module_screens = apply_filters( 'googlesitekit_module_screens', array() );
-
-			$screens = array_merge( $screens, $module_screens );
-		}
 
 		return $screens;
 	}

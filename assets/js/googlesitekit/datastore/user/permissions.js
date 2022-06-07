@@ -187,7 +187,7 @@ export const selectors = {
 		}
 
 		// Return an array of module slugs for modules that are
-		// sharable and the user has the "read shared module data"
+		// shareable and the user has the "read shared module data"
 		// capability for.
 		return Object.values( modules ).reduce( ( moduleSlugs, module ) => {
 			const hasCapability = select( CORE_USER ).hasCapability(
@@ -229,6 +229,34 @@ export const selectors = {
 			}
 
 			return undefined;
+		}
+	),
+
+	/**
+	 * Checks if the specified module is shareable and viewable by the current user.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state      Data store's state.
+	 * @param {string} moduleSlug Module slug to check.
+	 * @return {(boolean|undefined)} `true` if the module is shareable and viewable by the current user. `false` if the module does not exist, is not shareable or not viewable by the current user. `undefined` if state is not loaded yet.
+	 */
+	canViewSharedModule: createRegistrySelector(
+		( select ) => ( state, moduleSlug ) => {
+			const module = select( CORE_MODULES ).getModule( moduleSlug );
+
+			if ( module === undefined ) {
+				return undefined;
+			}
+
+			if ( module === null || ! module.shareable ) {
+				return false;
+			}
+
+			return select( CORE_USER ).hasCapability(
+				PERMISSION_READ_SHARED_MODULE_DATA,
+				module.slug
+			);
 		}
 	),
 };

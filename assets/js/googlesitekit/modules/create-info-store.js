@@ -44,17 +44,12 @@ const { createRegistrySelector } = Data;
  * @param {string}  slug                 Slug of the module that the store is for.
  * @param {Object}  args                 Arguments to configure the store.
  * @param {number}  args.storeName       Store name to use.
- * @param {string}  [args.adminPage]     Optional. Store admin page. Default is 'googlesitekit-dashboard'.
  * @param {boolean} [args.requiresSetup] Optional. Store flag, for requires setup. Default is 'true'.
  * @return {Object} The info store object.
  */
 export const createInfoStore = (
 	slug,
-	{
-		storeName = undefined,
-		adminPage = 'googlesitekit-dashboard',
-		requiresSetup = true,
-	} = {}
+	{ storeName = undefined, requiresSetup = true } = {}
 ) => {
 	invariant( storeName, 'storeName is required.' );
 
@@ -76,7 +71,10 @@ export const createInfoStore = (
 		 */
 		getAdminScreenURL: createRegistrySelector(
 			( select ) => ( state, queryArgs ) => {
-				return select( CORE_SITE ).getAdminURL( adminPage, queryArgs );
+				return select( CORE_SITE ).getAdminURL(
+					'googlesitekit-dashboard',
+					queryArgs
+				);
 			}
 		),
 

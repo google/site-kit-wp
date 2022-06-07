@@ -302,7 +302,6 @@ function* webpackConfig( env, argv ) {
 			'googlesitekit-wp-dashboard':
 				'./assets/js/googlesitekit-wp-dashboard.js',
 			'googlesitekit-base': './assets/js/googlesitekit-base.js',
-			'googlesitekit-module': './assets/js/googlesitekit-module.js',
 		},
 		externals,
 		output: {
