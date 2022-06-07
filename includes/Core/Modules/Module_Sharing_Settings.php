@@ -141,9 +141,8 @@ class Module_Sharing_Settings extends Setting {
 				return null !== $value;
 			}
 		);
-		$updated  = array_intersect_key( $partial, $settings );
 
-		return $this->set( $this->array_merge_deep( $settings, $updated ) );
+		return $this->set( $this->array_merge_deep( $settings, $partial ) );
 	}
 
 	/**
@@ -203,6 +202,10 @@ class Module_Sharing_Settings extends Setting {
 	/**
 	 * Merges two arrays recursively to a specific depth.
 	 *
+	 * When array1 and array2 have the same string keys, it overwrites
+	 * the elements of array1 with elements of array2. Otherwise, it adds/appends
+	 * elements of array2.
+	 *
 	 * @since n.e.x.t
 	 *
 	 * @param array $array1 First array.
@@ -214,7 +217,8 @@ class Module_Sharing_Settings extends Setting {
 	private function array_merge_deep( $array1, $array2, $depth = 1 ) {
 		foreach ( $array2 as $key => $value ) {
 			if ( $depth > 0 && is_array( $value ) ) {
-				$array1[ $key ] = $this->array_merge_deep( $array1[ $key ], $value, $depth - 1 );
+				$array1_key     = isset( $array1[ $key ] ) ? $array1[ $key ] : null;
+				$array1[ $key ] = $this->array_merge_deep( $array1_key, $value, $depth - 1 );
 			} else {
 				$array1[ $key ] = $value;
 			}
