@@ -35,7 +35,6 @@ final class Permissions {
 	const SETUP                    = 'googlesitekit_setup';
 	const VIEW_POSTS_INSIGHTS      = 'googlesitekit_view_posts_insights';
 	const VIEW_DASHBOARD           = 'googlesitekit_view_dashboard';
-	const VIEW_MODULE_DETAILS      = 'googlesitekit_view_module_details';
 	const VIEW_WP_DASHBOARD_WIDGET = 'googlesitekit_view_wp_dashboard_widget';
 	const VIEW_ADMIN_BAR_MENU      = 'googlesitekit_view_admin_bar_menu';
 	const MANAGE_OPTIONS           = 'googlesitekit_manage_options';
@@ -163,7 +162,6 @@ final class Permissions {
 			// Allow editors and up to view the dashboard and module details.
 			// TODO change to map to edit_posts when Dashboard Sharing feature flag is removed.
 			self::VIEW_DASHBOARD           => $editor_capability,
-			self::VIEW_MODULE_DETAILS      => $editor_capability,
 			self::VIEW_WP_DASHBOARD_WIDGET => $editor_capability,
 			self::VIEW_ADMIN_BAR_MENU      => $editor_capability,
 
@@ -202,7 +200,6 @@ final class Permissions {
 			// Require network admin access to view the dashboard and module details in network mode.
 			// TODO change to map to manage_network when Dashboard Sharing feature flag is removed.
 			self::VIEW_DASHBOARD           => $admin_network_capability,
-			self::VIEW_MODULE_DETAILS      => $admin_network_capability,
 			self::VIEW_WP_DASHBOARD_WIDGET => $admin_network_capability,
 			self::VIEW_ADMIN_BAR_MENU      => $admin_network_capability,
 
@@ -699,7 +696,6 @@ final class Permissions {
 			self::SETUP,
 			self::VIEW_POSTS_INSIGHTS,
 			self::VIEW_DASHBOARD,
-			self::VIEW_MODULE_DETAILS,
 			self::MANAGE_OPTIONS,
 			self::VIEW_SPLASH,
 			self::VIEW_AUTHENTICATED_DASHBOARD,

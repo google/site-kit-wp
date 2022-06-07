@@ -19,38 +19,17 @@
 /**
  * WordPress dependencies
  */
-import { sprintf, _n, _x, __ } from '@wordpress/i18n';
-import { Fragment } from '@wordpress/element';
+import { sprintf, _n } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
-import {
-	MODULES_ANALYTICS,
-	DATE_RANGE_OFFSET,
-} from '../../../datastore/constants';
-import { useFeature } from '../../../../../hooks/useFeature';
 import WidgetHeaderTitle from '../../../../../googlesitekit/widgets/components/WidgetHeaderTitle';
-import WidgetHeaderCTA from '../../../../../googlesitekit/widgets/components/WidgetHeaderCTA';
-import { generateDateRangeArgs } from '../../../util/report-date-range-args';
 const { useSelect } = Data;
 
 export default function Header() {
-	const unifiedDashboardEnabled = useFeature( 'unifiedDashboard' );
-
-	const dates = useSelect( ( select ) =>
-		select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
-		} )
-	);
-	const contentPagesURL = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).getServiceReportURL(
-			'content-pages',
-			generateDateRangeArgs( dates )
-		)
-	);
 	const currentDayCount = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeNumberOfDays()
 	);
@@ -65,22 +44,5 @@ export default function Header() {
 		currentDayCount
 	);
 
-	const headerCTALabel = sprintf(
-		/* translators: %s: module name. */
-		__( 'See full stats in %s', 'google-site-kit' ),
-		_x( 'Analytics', 'Service name', 'google-site-kit' )
-	);
-
-	return (
-		<Fragment>
-			<WidgetHeaderTitle title={ title } />
-			{ ! unifiedDashboardEnabled && (
-				<WidgetHeaderCTA
-					href={ contentPagesURL }
-					label={ headerCTALabel }
-					external
-				/>
-			) }
-		</Fragment>
-	);
+	return <WidgetHeaderTitle title={ title } />;
 }

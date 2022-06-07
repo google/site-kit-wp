@@ -24,11 +24,7 @@ import { visitAdminPage } from '@wordpress/e2e-test-utils';
 /**
  * Internal dependencies
  */
-import {
-	enableFeature,
-	setupSiteKit,
-	useRequestInterception,
-} from '../../utils';
+import { setupSiteKit, useRequestInterception } from '../../utils';
 import surveyResponse from '../../../../assets/js/components/surveys/__fixtures__/survey-single-question.json';
 
 describe( 'dashboard surveys', () => {
@@ -65,16 +61,6 @@ describe( 'dashboard surveys', () => {
 	} );
 
 	it( 'shows a survey', async () => {
-		await visitAdminPage( 'admin.php', 'page=googlesitekit-dashboard' );
-
-		await expect( page ).toMatchElement( '.googlesitekit-survey', {
-			text: surveyResponse.survey_payload.question[ 0 ].question_text,
-		} );
-	} );
-
-	it( 'shows a survey on the unified dashboard', async () => {
-		await enableFeature( 'unifiedDashboard' );
-
 		await visitAdminPage( 'admin.php', 'page=googlesitekit-dashboard' );
 
 		await expect( page ).toMatchElement( '.googlesitekit-survey', {
