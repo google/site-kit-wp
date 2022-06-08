@@ -24,7 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { useState } from '@wordpress/element';
+import { StrictMode, useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -47,27 +47,29 @@ export default function Root( { children, registry, viewContext = null } ) {
 	} );
 
 	return (
-		<InViewProvider value={ inViewState }>
-			<Data.RegistryProvider value={ registry }>
-				<FeaturesProvider value={ enabledFeatures }>
-					<ViewContextProvider value={ viewContext }>
-						<ErrorHandler>
-							<RestoreSnapshots>
-								{ children }
-								{ /*
+		<StrictMode>
+			<InViewProvider value={ inViewState }>
+				<Data.RegistryProvider value={ registry }>
+					<FeaturesProvider value={ enabledFeatures }>
+						<ViewContextProvider value={ viewContext }>
+							<ErrorHandler>
+								<RestoreSnapshots>
+									{ children }
+									{ /*
 									TODO: Replace `FeatureToursDesktop` with `FeatureTours`
 									once tour conflicts in smaller viewports are resolved.
 									@see https://github.com/google/site-kit-wp/issues/3003
 								*/ }
-								{ viewContext && <FeatureToursDesktop /> }
-								<CurrentSurveyPortal />
-							</RestoreSnapshots>
-							<PermissionsModal />
-						</ErrorHandler>
-					</ViewContextProvider>
-				</FeaturesProvider>
-			</Data.RegistryProvider>
-		</InViewProvider>
+									{ viewContext && <FeatureToursDesktop /> }
+									<CurrentSurveyPortal />
+								</RestoreSnapshots>
+								<PermissionsModal />
+							</ErrorHandler>
+						</ViewContextProvider>
+					</FeaturesProvider>
+				</Data.RegistryProvider>
+			</InViewProvider>
+		</StrictMode>
 	);
 }
 
