@@ -66,6 +66,20 @@ describe( 'createErrorStore store', () => {
 	const baseName = 'getFoo';
 	const args = [ 'bar', 'baz' ];
 
+	describe( 'createErrorStore', () => {
+		it( 'requires a storeName argument', () => {
+			expect( () => {
+				createErrorStore();
+			} ).toThrow( 'storeName must be defined.' );
+		} );
+
+		it( 'does not error when storeName is provided', () => {
+			expect( () => {
+				createErrorStore( TEST_STORE );
+			} ).not.toThrow();
+		} );
+	} );
+
 	describe( 'actions', () => {
 		describe( 'receiveError', () => {
 			it( 'requires the error param', () => {
