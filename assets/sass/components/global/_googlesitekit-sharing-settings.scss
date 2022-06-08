@@ -71,10 +71,10 @@
 	}
 
 	.googlesitekit-user-role-select__button {
-		border: 1px solid $c-royal-blue;
+		border: 1px solid $c-content-primary;
 		border-radius: 50%;
 		box-shadow: none;
-		color: $c-royal-blue;
+		color: $c-content-primary;
 		display: flex;
 		height: 48px;
 		min-height: auto;
@@ -89,11 +89,11 @@
 
 		&:not(:disabled) {
 			background-color: $c-white;
-			color: $c-royal-blue;
+			color: $c-content-primary;
 		}
 
 		& svg {
-			fill: $c-royal-blue;
+			fill: $c-content-primary;
 
 			@media (min-width: $bp-tablet) {
 				height: 14px;
@@ -119,16 +119,17 @@
 	}
 
 	.googlesitekit-dashboard-sharing-settings {
-		color: $c-cape-cod;
+		color: $c-surfaces-on-surface;
 		font-size: $fs-title-sm;
 		line-height: $lh-title-sm;
 	}
 
 	.googlesitekit-dashboard-sharing-settings__header {
 		align-items: flex-start;
-		font-size: $fs-body-lg;
-		font-weight: $fw-primary-medium;
-		line-height: $lh-body-lg;
+		font-family: $f-secondary;
+		font-size: $fs-title-sm;
+		font-weight: $fw-secondary-bold;
+		line-height: $lh-title-sm;
 	}
 
 	.googlesitekit-dashboard-sharing-settings__column--product {
@@ -362,11 +363,11 @@
 	}
 
 	p.googlesitekit-dashboard-sharing-settings__notice {
-		background-color: $c-salomie-40;
-		border-radius: 8px;
-		color: $c-boulder;
+		background-color: $c-surfaces-surface-2;
+		border-radius: $border-radius-xs;
+		color: $c-surfaces-on-surface;
 		font-size: $fs-body-sm;
-		line-height: 20px;
+		line-height: $lh-body-sm;
 		margin: 0;
 		padding: 12px 24px;
 		width: 100%;
@@ -398,9 +399,9 @@
 
 	.googlesitekit-user-role-select__chip {
 		background-color: transparent;
-		border: 1px solid $c-mercury;
-		border-radius: 100px;
-		color: $c-royal-blue;
+		border: 1px solid $c-utility-outline;
+		border-radius: $border-radius-xs;
+		color: $c-surfaces-on-surface;
 		flex-direction: row-reverse;
 		font-size: $fs-body-sm;
 		justify-content: center;
@@ -426,12 +427,12 @@
 		}
 
 		&.mdc-chip--selected {
-			background-color: $c-link-water;
-			border-color: $c-link-water;
+			background-color: $c-content-primary-container;
+			border-color: $c-content-primary-container;
 			gap: 6px;
 
 			.mdc-chip__checkmark-path {
-				stroke: $c-royal-blue;
+				stroke: $c-surfaces-on-surface;
 			}
 
 			.mdc-chip__checkmark-svg {

@@ -136,6 +136,10 @@
 			line-height: $lh-body-md;
 		}
 
+		.googlesitekit-settings-module__footer--bottom-rounded {
+			border-radius: 0 0 $border-radius-md $border-radius-md;
+		}
+
 		.googlesitekit-settings-module__footer-cancel {
 			margin-left: $grid-gap-desktop;
 		}

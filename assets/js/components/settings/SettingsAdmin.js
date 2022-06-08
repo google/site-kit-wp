@@ -140,7 +140,7 @@ export default function SettingsAdmin() {
 							</Row>
 						</Grid>
 
-						<footer className="googlesitekit-settings-module__footer">
+						<footer className="googlesitekit-settings-module__footer googlesitekit-settings-module__footer--bottom-rounded">
 							<Grid>
 								<Row>
 									<Cell size={ 12 }>

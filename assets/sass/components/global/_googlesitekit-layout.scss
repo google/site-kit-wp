@@ -62,9 +62,5 @@
 
 	&.googlesitekit-layout--rounded {
 		border-radius: $border-radius-md;
-
-		.googlesitekit-settings-module__footer {
-			border-radius: 0 0 $border-radius-md $border-radius-md;
-		}
 	}
 }

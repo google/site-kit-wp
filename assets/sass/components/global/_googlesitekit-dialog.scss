@@ -36,6 +36,7 @@
 
 		.mdc-dialog__surface {
 			border-radius: 0;
+			box-shadow: none;
 			height: 100vh;
 			max-height: 100%;
 			max-width: 100%;
@@ -43,7 +44,7 @@
 			width: 100%;
 
 			@media (min-width: $bp-tablet) {
-				border-radius: 8px;
+				border-radius: $border-radius-md;
 				height: auto;
 			}
 
@@ -104,7 +105,7 @@
 
 			span {
 				align-items: center;
-				background-color: $c-royal-blue;
+				background-color: $c-utility-success;
 				border-radius: 50%;
 				color: $c-white;
 				display: flex;
@@ -119,7 +120,7 @@
 		}
 
 		.googlesitekit-dialog__title {
-			color: $c-shark;
+			color: $c-surfaces-on-surface;
 			font-size: $fs-headline-sm;
 			font-weight: $fw-primary-bold;
 			line-height: $lh-headline-sm;
@@ -131,14 +132,14 @@
 		}
 
 		.googlesitekit-dialog__subtitle {
-			color: $c-boulder;
+			color: $c-surfaces-on-surface-variant;
 			font-size: $fs-body-sm;
 			line-height: $lh-body-sm;
 			margin: 0;
 		}
 
 		.googlesitekit-dialog__footer {
-			box-shadow: 0 -1px 4px 2px rgba(60, 64, 67, 0.15);
+			border-top: 1px solid $c-utility-divider;
 			justify-content: flex-end;
 			margin: 0;
 			padding: 16px;
