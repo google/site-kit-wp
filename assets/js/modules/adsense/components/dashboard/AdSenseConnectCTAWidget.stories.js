@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+// import fetchMock from 'fetch-mock';
+
+/**
  * Internal dependencies
  */
 import { provideModules } from '../../../../../../tests/js/utils';
@@ -69,10 +74,37 @@ export default {
 				] );
 			};
 
+			// Mock the tracking endpoint to allow checking/unchecking the tracking checkbox.
+			// fetchMock.post(
+			// 	RegExp( 'google-site-kit/v1/core/user/data/dismiss-item' ),
+			// 	( url, { body } ) => {
+			// 		// const { data } = JSON.parse( body );
+
+			// 		// return { body: data };
+			// 		return { body: {} };
+			// 	}
+			// );
+
 			return (
-				<WithRegistrySetup func={ setupRegistry }>
-					<Story />
-				</WithRegistrySetup>
+				<div
+					style={ {
+						minHeight: '200px',
+						display: 'flex',
+						alignItems: 'center',
+					} }
+				>
+					<div id="adminmenu">
+						{
+							// eslint-disable-next-line jsx-a11y/anchor-has-content
+							<a href="?page=googlesitekit-settings" />
+						}
+					</div>
+					<div style={ { flex: 1 } }>
+						<WithRegistrySetup func={ setupRegistry }>
+							<Story />
+						</WithRegistrySetup>
+					</div>
+				</div>
 			);
 		},
 	],
