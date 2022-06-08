@@ -220,40 +220,19 @@ class Module_Sharing_SettingsTest extends SettingsTestCase {
 	public function test_merge() {
 		$this->enable_feature( 'dashboardSharing' );
 
-		update_option(
-			'googlesitekit_active_modules',
-			array(
-				'search-console',
-				'analytics',
-				'pagespeed-insights',
-			)
-		);
+		// Check there are no settings to begin with.
+		$this->assertEmpty( $this->settings->get() );
 
-		$initial_sharing_settings = array(
-			'search-console'     => array(
-				'sharedRoles' => array( 'contributor' ),
-				'management'  => 'owner',
-			),
-			'analytics'          => array(
-				'sharedRoles' => array( 'contributor', 'subscriber' ),
-				'management'  => 'all_admins',
-			),
-			'pagespeed-insights' => array(
-				'sharedRoles' => array(),
-				'management'  => 'all_admins',
-			),
-		);
-
-		// Set some valid sharing settings to test merging.
-		$this->settings->set( $initial_sharing_settings );
-
-		// Can not merge with inactive modules (module already not present in settings).
-		$this->assertFalse(
+		$this->assertTrue(
 			$this->settings->merge(
 				array(
-					'adsense' => array(
-						'sharedRoles' => array( 'editor' ),
+					'search-console' => array(
+						'sharedRoles' => array( 'contributor' ),
 						'management'  => 'owner',
+					),
+					'analytics'      => array(
+						'sharedRoles' => array( 'contributor', 'subscriber' ),
+						'management'  => 'all_admins',
 					),
 				)
 			)
@@ -300,12 +279,8 @@ class Module_Sharing_SettingsTest extends SettingsTestCase {
 		$this->assertTrue( $this->settings->merge( $test_sharing_settings ) );
 		$this->assertEquals( $expected, $this->settings->get() );
 
-		// Keeps the valid parts of partial and descards the invalid parts.
+		// Keeps the valid parts of partial and discards the invalid parts.
 		$test_sharing_settings = array(
-			'adsense'            => array(
-				'sharedRoles' => array( 'editor' ),
-				'management'  => 'owner',
-			),
 			'search-console'     => null,
 			'analytics'          => array(
 				'sharedRoles' => array( 'contributor' ),
