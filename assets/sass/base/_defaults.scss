@@ -27,8 +27,8 @@
 .googlesitekit-plugin {
 	color: $c-primary;
 	font-family: $f-primary;
-	font-size: 1rem;
-	line-height: 1.4;
+	font-size: $fs-body-md;
+	line-height: $lh-body-md;
 
 	*,
 	*::before,

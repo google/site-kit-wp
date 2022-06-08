@@ -42,6 +42,14 @@
 			}
 		}
 
+		.mdc-ripple-upgraded--background-focused {
+
+			&::before,
+			&::after {
+				background-color: $c-surfaces-surface;
+			}
+		}
+
 		.mdc-tab__text-label {
 			color: $c-surfaces-on-surface;
 			opacity: 1;

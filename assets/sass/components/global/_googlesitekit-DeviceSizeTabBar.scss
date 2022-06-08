@@ -31,13 +31,11 @@
 			width: 56px;
 
 			&:first-child {
-				border-bottom-left-radius: $border-radius-lg;
-				border-top-left-radius: $border-radius-lg;
+				border-radius: $border-radius-lg 0 0 $border-radius-lg;
 			}
 
 			&:last-child {
-				border-bottom-right-radius: $border-radius-lg;
-				border-top-right-radius: $border-radius-lg;
+				border-radius: 0 $border-radius-lg $border-radius-lg 0;
 			}
 
 			svg {

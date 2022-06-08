@@ -131,13 +131,7 @@
 		}
 
 		.googlesitekit-settings-module__footer {
-			background-color: $c-surfaces-surface-2;
-			font-size: $fs-body-md;
-			line-height: $lh-body-md;
-		}
-
-		.googlesitekit-settings-module__footer--bottom-rounded {
-			border-radius: 0 0 $border-radius-md $border-radius-md;
+			border-top: 1px solid $c-utility-divider;
 		}
 
 		.googlesitekit-settings-module__footer-cancel {
