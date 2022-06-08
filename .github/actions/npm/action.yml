@@ -1,0 +1,19 @@
+name: Node.js
+description: Sets up Node.js, installs dependencies if needed, and runs a custom command.
+inputs:
+  command:
+    description: A custom command to run.
+    required: false
+runs:
+  using: composite
+  steps:
+    - run: nvm install
+      shell: bash -l {0}
+    - uses: actions/cache@v2
+      with:
+        path: ~/.npm
+        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+    - run: if [ ! -d node_modules ]; then npm ci; fi
+      shell: bash
+    - run: if [ ! -z "${{ inputs.command }}" ]; then npm run ${{ inputs.command }}; fi
+      shell: bash

@@ -85,23 +85,8 @@ jobs:
         with:
           dev: no
           php_version: 7.3
-      - name: Read .nvmrc
-        run: echo "##[set-output name=NVMRC;]$(cat .nvmrc)"
-        id: nvm
-      - name: Setup Node.js (.nvmrc)
-        uses: actions/setup-node@v1
-        with:
-          node-version: '${{ steps.nvm.outputs.NVMRC }}'
-      - name: Cache Node - npm
-        uses: actions/cache@v2
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-cache-
-      - name: npm install
-        run: |
-          npm ci
+      - name: Install node_modules
+        uses: ./.github/actions/npm
       - name: Create destination directory and update file permissions
         run: |
           mkdir -p ${{ github.ref }}
