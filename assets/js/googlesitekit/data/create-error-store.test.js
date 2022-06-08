@@ -55,7 +55,7 @@ describe( 'createErrorStore store', () => {
 	beforeEach( () => {
 		registry = createRegistry();
 
-		storeDefinition = createErrorStore();
+		storeDefinition = createErrorStore( TEST_STORE );
 		registry.registerStore( TEST_STORE, storeDefinition );
 		dispatch = registry.dispatch( TEST_STORE );
 		store = registry.stores[ TEST_STORE ].store;

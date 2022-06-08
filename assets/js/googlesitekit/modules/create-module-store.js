@@ -136,7 +136,7 @@ export function createModuleStore( slug, args = {} ) {
 			settingsStore,
 			submitChangesStore,
 			infoStore,
-			createErrorStore(),
+			createErrorStore( storeName ),
 			setupBlockedStore
 		);
 	} else {
@@ -145,7 +145,7 @@ export function createModuleStore( slug, args = {} ) {
 			notificationsStore,
 			infoStore,
 			setupBlockedStore,
-			createErrorStore(),
+			createErrorStore( storeName ),
 			createSubmitChangesStore( {
 				submitChanges,
 				validateCanSubmitChanges,
