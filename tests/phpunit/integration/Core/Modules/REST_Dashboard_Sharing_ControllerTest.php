@@ -80,81 +80,219 @@ class REST_Dashboard_Sharing_ControllerTest extends TestCase {
 		$this->assertTrue( has_filter( 'googlesitekit_rest_routes' ) );
 	}
 
-	public function test_get_rest_routes__success() {
+	public function test_sharing_settings__requires_authenticated_admin() {
 		$this->enable_feature( 'dashboardSharing' );
-		$module_sharing_settings = $this->modules->get_module_sharing_settings();
 
-		$admin_1 = self::factory()->user->create_and_get( array( 'role' => 'administrator' ) );
-		wp_set_current_user( $admin_1->ID );
-		$initial_sharing_settings = array(
-			'search-console'     => array(
-				'sharedRoles' => array( 'editor', 'subscriber' ),
-				'management'  => 'all_admins',
-			),
-			'analytics'          => array(
-				'sharedRoles' => array( 'editor' ),
-				'management'  => 'owner',   // To test that non-owners cannot merge settings for this module.
-			),
-			'pagespeed-insights' => array(
-				'sharedRoles' => array( 'editor', 'subscriber' ),
-				'management'  => 'all_admins',
-			),
-		);
-		$module_sharing_settings->set( $initial_sharing_settings );
-		wp_set_current_user( $this->user );
-
-		$admin_2 = self::factory()->user->create_and_get( array( 'role' => 'administrator' ) );
-		wp_set_current_user( $admin_2->ID );
-
-		// Setup the site and admin_2 user to make a successful REST request.
-		$this->grant_manage_options_permission();
-
+		$admin = self::factory()->user->create_and_get( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $admin->ID );
 		$this->controller->register();
-
-		$updated_sharing_settings = array(
-			'analytics'          => array(
-				'sharedRoles' => array( 'editor', 'subscriber' ), // Changed settings should not take effect.
-				'management'  => 'owner',
-			),
-			'pagespeed-insights' => array(
-				'sharedRoles' => array( 'editor' ), // Changed settings should take effect and ownerID updated as well.
-				'management'  => 'all_admins',
-			),
-		);
 
 		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/modules/data/sharing-settings' );
 		$request->set_body_params(
 			array(
-				'data' => $updated_sharing_settings,
+				'data' => array(
+					'search-console' => array(
+						'sharedRoles' => array( 'editor', 'subscriber' ),
+						'management'  => 'all_admins',
+					),
+					'analytics'      => array(
+						'sharedRoles' => array( 'editor' ),
+					),
+				),
+			)
+		);
+		$response = rest_get_server()->dispatch( $request );
+		$this->assertEquals( 'rest_forbidden', $response->get_data()['code'] );
+	}
+
+	public function test_sharing_settings__create_new_settings() {
+		$this->enable_feature( 'dashboardSharing' );
+
+		$admin_1 = self::factory()->user->create_and_get( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $admin_1->ID );
+		// Setup the site and admin_1 user to make a successful REST request.
+		$this->grant_manage_options_permission();
+		update_option( 'googlesitekit_search-console_settings', array( 'ownerID' => $admin_1->ID ) );
+
+		$this->controller->register();
+
+		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/modules/data/sharing-settings' );
+		$request->set_body_params(
+			array(
+				'data' => array(
+					'search-console' => array(
+						'sharedRoles' => array( 'editor', 'subscriber' ),
+					),
+					'analytics'      => array(
+						'sharedRoles' => array( 'editor' ),
+						'management'  => 'owner',
+					),
+				),
 			)
 		);
 		$response = rest_get_server()->dispatch( $request );
 
-		$expected_sharing_settings = array(
-			// Nothing should have changed.
-			'search-console'     => array(
-				'sharedRoles' => array( 'editor', 'subscriber' ),
-				'management'  => 'all_admins',
+		$expected_response = array(
+			'settings'    => array(
+				// admin_1 is the owner and can add/edit search-console settings but
+				// NOT analytics settings.
+				'search-console'     => array(
+					'sharedRoles' => array( 'editor', 'subscriber' ),
+					'management'  => 'owner',
+				),
+				// Default settings always saved for shared ownership modules.
+				'pagespeed-insights' => array(
+					'sharedRoles' => array(),
+					'management'  => 'all_admins',
+				),
 			),
-			// Nothing should have changed since admin_2 is not the owner of Analytics.
-			'analytics'          => array(
-				'sharedRoles' => array( 'editor' ),
-				'management'  => 'owner',
-			),
-			// sharedRoles should be updated.
-			'pagespeed-insights' => array(
-				'sharedRoles' => array( 'editor' ),
-				'management'  => 'all_admins',
+			'newOwnerIDs' => (object) array(
+				// ownerID should be updated as settings have "changed" (added).
+				'pagespeed-insights' => $admin_1->ID,
 			),
 		);
-		$expected_response = array(
-			'settings'    => $expected_sharing_settings,
-			'newOwnerIDs' => (object) array(
-				// ownerID should be updated as settings have changed.
-				'pagespeed-insights' => $admin_2->ID,
-			),
+		$this->assertEquals( $expected_response, $response->get_data() );
+	}
+
+	public function test_sharing_settings__modify_shared_roles_settings() {
+		$this->enable_feature( 'dashboardSharing' );
+
+		$module_sharing_settings = $this->modules->get_module_sharing_settings();
+		$module_sharing_settings->set(
+			array(
+				'search-console' => array(
+					'sharedRoles' => array( 'contributor' ),
+					'management'  => 'owner',
+				),
+				'adsense'        => array(
+					'sharedRoles' => array(),
+					'management'  => 'owner',
+				),
+				'analytics'      => array(
+					'sharedRoles' => array( 'contributor', 'subscriber' ),
+					'management'  => 'all_admins',
+				),
+			)
 		);
 
+		// Test sharedRoles can be modified if the user is the owner or management setting is set to all_admins.
+		$admin_1 = self::factory()->user->create_and_get( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $admin_1->ID );
+		$this->grant_manage_options_permission();
+		update_option( 'googlesitekit_search-console_settings', array( 'ownerID' => $admin_1->ID ) );
+
+		$this->controller->register();
+
+		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/modules/data/sharing-settings' );
+		$request->set_body_params(
+			array(
+				'data' => array(
+					'search-console' => array(
+						'sharedRoles' => array(),
+					),
+					'adsense'        => array(
+						'sharedRoles' => array( 'author' ),
+					),
+					'analytics'      => array(
+						'sharedRoles' => array( 'editor' ),
+					),
+				),
+			)
+		);
+		$response = rest_get_server()->dispatch( $request );
+
+		$expected_response = array(
+			'settings'    => array(
+				'search-console'     => array(
+					'sharedRoles' => array(),
+					'management'  => 'owner',
+				),
+				'adsense'            => array(
+					'sharedRoles' => array(),
+					'management'  => 'owner',
+				),
+				'analytics'          => array(
+					'sharedRoles' => array( 'editor' ),
+					'management'  => 'all_admins',
+				),
+				'pagespeed-insights' => array(
+					'sharedRoles' => array(),
+					'management'  => 'all_admins',
+				),
+			),
+			'newOwnerIDs' => (object) array(),
+		);
+		$this->assertEquals( $expected_response, $response->get_data() );
+	}
+
+	public function test_sharing_settings__modify_management_settings() {
+		$this->enable_feature( 'dashboardSharing' );
+
+		$module_sharing_settings = $this->modules->get_module_sharing_settings();
+		$module_sharing_settings->set(
+			array(
+				'search-console' => array(
+					'sharedRoles' => array( 'contributor' ),
+					'management'  => 'owner',
+				),
+				'adsense'        => array(
+					'sharedRoles' => array(),
+					'management'  => 'owner',
+				),
+				'analytics'      => array(
+					'sharedRoles' => array( 'contributor', 'subscriber' ),
+					'management'  => 'all_admins',
+				),
+			)
+		);
+
+		// Test management setting can only be modified if the user is the module owner.
+		$admin_1 = self::factory()->user->create_and_get( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $admin_1->ID );
+		$this->grant_manage_options_permission();
+		update_option( 'googlesitekit_search-console_settings', array( 'ownerID' => $admin_1->ID ) );
+
+		$this->controller->register();
+
+		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/modules/data/sharing-settings' );
+		$request->set_body_params(
+			array(
+				'data' => array(
+					'search-console' => array(
+						'management' => 'all_admins',
+					),
+					'adsense'        => array(
+						'management' => 'all_admins',
+					),
+					'analytics'      => array(
+						'management' => 'owner',
+					),
+				),
+			)
+		);
+		$response = rest_get_server()->dispatch( $request );
+
+		$expected_response = array(
+			'settings'    => array(
+				'search-console'     => array(
+					'sharedRoles' => array( 'contributor' ),
+					'management'  => 'all_admins',
+				),
+				'adsense'            => array(
+					'sharedRoles' => array(),
+					'management'  => 'owner',
+				),
+				'analytics'          => array(
+					'sharedRoles' => array( 'contributor', 'subscriber' ),
+					'management'  => 'all_admins',
+				),
+				'pagespeed-insights' => array(
+					'sharedRoles' => array(),
+					'management'  => 'all_admins',
+				),
+			),
+			'newOwnerIDs' => (object) array(),
+		);
 		$this->assertEquals( $expected_response, $response->get_data() );
 	}
 
@@ -174,6 +312,7 @@ class REST_Dashboard_Sharing_ControllerTest extends TestCase {
 		);
 
 		// Re-register Permissions after enabling the dashboardSharing feature to include dashboard sharing capabilities.
+		// TODO Remove this when dashboardSharing feature flag is removed.
 		$permissions = new Permissions( $this->context, $authentication, $this->modules, $this->user_options, new Dismissed_Items( $this->user_options ) );
 		$permissions->register();
 	}
