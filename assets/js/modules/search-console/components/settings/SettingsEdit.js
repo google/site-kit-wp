@@ -21,6 +21,8 @@
  */
 import Data from 'googlesitekit-data';
 import { MODULES_SEARCH_CONSOLE } from '../../datastore/constants';
+import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import ProgressBar from '../../../../components/ProgressBar';
 import SettingsForm from './SettingsForm';
 const { useSelect } = Data;
@@ -41,11 +43,45 @@ export default function SettingsEdit() {
 		)
 	);
 
+	const loggedInUserID = useSelect( ( select ) =>
+		select( CORE_USER ).getID()
+	);
+	const hasResolvedUser = useSelect( ( select ) =>
+		select( CORE_USER ).hasFinishedResolution( 'getUser' )
+	);
+
+	const hasModuleAccess = useSelect( ( select ) => {
+		const moduleOwnerID = select( MODULES_SEARCH_CONSOLE ).getOwnerID();
+		if ( moduleOwnerID === loggedInUserID ) {
+			return true;
+		}
+		return select( CORE_MODULES ).hasModuleAccess( 'search-console' );
+	} );
+	const isLoadingModuleAccess = useSelect( ( select ) => {
+		const hasResolvedModuleOwner = select(
+			MODULES_SEARCH_CONSOLE
+		).hasFinishedResolution( 'getSettings' );
+
+		const isResolvingModuleAccess = select(
+			CORE_MODULES
+		).isResolving( 'hasModuleAccess', [ 'search-console' ] );
+
+		return (
+			! hasResolvedModuleOwner ||
+			! hasResolvedUser ||
+			isResolvingModuleAccess
+		);
+	} );
+
 	let viewComponent;
-	if ( isDoingSubmitChanges || ! hasResolvedProperties ) {
+	if (
+		isDoingSubmitChanges ||
+		! hasResolvedProperties ||
+		isLoadingModuleAccess
+	) {
 		viewComponent = <ProgressBar />;
 	} else {
-		viewComponent = <SettingsForm />;
+		viewComponent = <SettingsForm hasModuleAccess={ hasModuleAccess } />;
 	}
 
 	return (

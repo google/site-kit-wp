@@ -36,20 +36,22 @@ import Link from '../Link';
 import Button from '../Button';
 import Portal from '../Portal';
 import ShareIcon from '../../../svg/icons/share.svg';
-import DashboardSharingSettings from './DashboardSharingSettings';
 import Footer from './DashboardSharingSettings/Footer';
-import { Dialog, DialogContent, DialogFooter } from '../../material-components';
-import { BREAKPOINT_SMALL, useBreakpoint } from '../../hooks/useBreakpoint';
 import useViewContext from '../../hooks/useViewContext';
+import DashboardSharingSettings from './DashboardSharingSettings';
 import { trackEvent } from '../../util';
+import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-const { useSelect } = Data;
+import { BREAKPOINT_SMALL, useBreakpoint } from '../../hooks/useBreakpoint';
+import { Dialog, DialogContent, DialogFooter } from '../../material-components';
+import { EDITING_USER_ROLE_SELECT_SLUG_KEY } from './DashboardSharingSettings/constants';
+const { useSelect, useDispatch } = Data;
 
 export default function DashboardSharingSettingsButton() {
-	const breakpoint = useBreakpoint();
-	const [ dialogOpen, setDialogOpen ] = useState( false );
-
 	const viewContext = useViewContext();
+	const breakpoint = useBreakpoint();
+	const { setValue } = useDispatch( CORE_UI );
+	const [ dialogOpen, setDialogOpen ] = useState( false );
 
 	const hasMultipleAdmins = useSelect( ( select ) =>
 		select( CORE_SITE ).hasMultipleAdmins()
@@ -66,9 +68,10 @@ export default function DashboardSharingSettingsButton() {
 	}, [ viewContext, hasMultipleAdmins ] );
 
 	const closeDialog = useCallback( () => {
-		trackEvent( `${ viewContext }_sharing`, 'settings_cancel' );
 		setDialogOpen( false );
-	}, [ viewContext ] );
+
+		setValue( EDITING_USER_ROLE_SELECT_SLUG_KEY, undefined );
+	}, [ setValue ] );
 
 	return (
 		<Fragment>
@@ -132,7 +135,6 @@ export default function DashboardSharingSettingsButton() {
 													) }
 													href="https://sitekit.withgoogle.com/documentation/using-site-kit/dashboard-sharing/"
 													external
-													hideExternalIndicator
 												/>
 											),
 										}

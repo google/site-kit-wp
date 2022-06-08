@@ -25,10 +25,12 @@
 		}
 
 		.mdc-dialog__container {
+			max-width: 908px;
 			width: 100%;
 
 			@media (min-width: $bp-tablet) {
 				max-height: calc(100vh - 120px);
+				width: 80%;
 			}
 		}
 
@@ -43,8 +45,6 @@
 			@media (min-width: $bp-tablet) {
 				border-radius: 8px;
 				height: auto;
-				max-width: 908px;
-				width: 80%;
 			}
 
 			.admin-bar & {

@@ -13,8 +13,10 @@ namespace Google\Site_Kit\Core\Admin;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Assets\Assets;
 use Google\Site_Kit\Core\Authentication\Authentication;
+use Google\Site_Kit\Core\Dismissals\Dismissed_Items;
 use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Permissions\Permissions;
+use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Util\Feature_Flags;
 
 /**
@@ -383,6 +385,12 @@ final class Screens {
 
 				// This callback will redirect to the dashboard on successful authentication.
 				'initialize_callback' => function( Context $context ) {
+					if ( Feature_Flags::enabled( 'dashboardSharing' ) ) {
+						// Get the dismissed items for this user.
+						$user_options = new User_Options( $context );
+						$dismissed_items = new Dismissed_Items( $user_options );
+					}
+
 					$splash_context = $context->input()->filter( INPUT_GET, 'googlesitekit_context' );
 					$reset_session  = $context->input()->filter( INPUT_GET, 'googlesitekit_reset_session', FILTER_VALIDATE_BOOLEAN );
 
@@ -399,8 +407,16 @@ final class Screens {
 						return;
 					}
 
-					// Redirect to dashboard if user is authenticated.
-					if ( $this->authentication->is_authenticated() ) {
+					// Redirect to dashboard if user is authenticated or if
+					// they have already accessed the shared dashboard.
+					if (
+						$this->authentication->is_authenticated() ||
+						(
+							Feature_Flags::enabled( 'dashboardSharing' ) &&
+							$dismissed_items->is_dismissed( 'shared_dashboard_splash' ) &&
+							current_user_can( Permissions::VIEW_SHARED_DASHBOARD )
+						)
+					) {
 						wp_safe_redirect(
 							$context->admin_url(
 								'dashboard',

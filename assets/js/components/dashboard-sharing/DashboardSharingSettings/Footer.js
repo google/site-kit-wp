@@ -37,7 +37,10 @@ import Notice from './Notice';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
 import Spinner from '../../Spinner';
-import { EDITING_MANAGEMENT_KEY, SHARING_SETTINGS_SLUG_KEY } from './constants';
+import {
+	EDITING_MANAGEMENT_KEY,
+	EDITING_USER_ROLE_SELECT_SLUG_KEY,
+} from './constants';
 import ErrorText from '../../ErrorText';
 import { trackEvent } from '../../../util';
 import useViewContext from '../../../hooks/useViewContext';
@@ -59,22 +62,26 @@ export default function Footer( { closeDialog } ) {
 
 	const onApply = useCallback( async () => {
 		setErrorNotice( null );
-		const { error } = await saveSharingSettings();
 
+		const { error } = await saveSharingSettings();
 		if ( error ) {
 			setErrorNotice( error.message );
-
 			return;
 		}
 
 		trackEvent( `${ viewContext }_sharing`, 'settings_confirm' );
 
 		// Reset the state to enable modules in when not editing or saving.
-		setValue( SHARING_SETTINGS_SLUG_KEY, undefined );
+		setValue( EDITING_USER_ROLE_SELECT_SLUG_KEY, undefined );
 		setValue( EDITING_MANAGEMENT_KEY, false );
 
 		closeDialog();
 	}, [ viewContext, saveSharingSettings, setValue, closeDialog ] );
+
+	const onCancel = useCallback( () => {
+		trackEvent( `${ viewContext }_sharing`, 'settings_cancel' );
+		closeDialog();
+	}, [ closeDialog, viewContext ] );
 
 	return (
 		<div className="googlesitekit-dashboard-sharing-settings__footer">
@@ -84,7 +91,7 @@ export default function Footer( { closeDialog } ) {
 			</div>
 
 			<div className="googlesitekit-dashboard-sharing-settings__footer-actions">
-				<Link onClick={ closeDialog }>
+				<Link onClick={ onCancel }>
 					{ __( 'Cancel', 'google-site-kit' ) }
 				</Link>
 

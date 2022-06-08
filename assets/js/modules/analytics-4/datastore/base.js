@@ -46,6 +46,7 @@ const baseModuleStore = Modules.createModuleStore( 'analytics-4', {
 		'webDataStreamID',
 		'measurementID',
 		'useSnippet',
+		'ownerID',
 	],
 	submitChanges,
 	rollbackChanges,
