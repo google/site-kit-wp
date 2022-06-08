@@ -31,6 +31,7 @@ import {
 } from '../assets/js/modules/analytics/datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../assets/js/modules/analytics-4/datastore/constants';
 import { MODULES_TAGMANAGER } from '../assets/js/modules/tagmanager/datastore/constants';
+import { CORE_MODULES } from '../assets/js/googlesitekit/modules/datastore/constants';
 import { provideModules, provideModuleRegistrations } from '../tests/js/utils';
 import createLegacySettingsWrapper from './utils/create-legacy-settings-wrapper';
 import {
@@ -285,6 +286,112 @@ storiesOf( 'Analytics Module/Settings', module )
 					internal: true,
 				},
 			] );
+
+			dispatch( MODULES_ANALYTICS ).receiveGetAccounts( accounts );
+			dispatch( MODULES_ANALYTICS ).receiveGetProperties( properties, {
+				accountID,
+			} );
+			dispatch( MODULES_ANALYTICS ).receiveGetProfiles( profiles, {
+				accountID,
+				propertyID: profiles[ 0 ].webPropertyId, // eslint-disable-line sitekit/acronym-case
+			} );
+			dispatch( MODULES_ANALYTICS ).receiveGetSettings( {
+				...defaultSettings,
+				accountID,
+				propertyID: webPropertyId, // eslint-disable-line sitekit/acronym-case
+				internalWebPropertyID: internalWebPropertyId, // eslint-disable-line sitekit/acronym-case
+				profileID,
+			} );
+
+			dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+				...ga4DefaultSettings,
+				propertyID: '1001',
+				webDataStreamID: '2001',
+				measurementID: 'G-12345ABCDE',
+			} );
+			dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties(
+				[
+					{
+						_id: '1001',
+						displayName: 'GA4 Property',
+					},
+				],
+				{ accountID }
+			);
+			dispatch( MODULES_ANALYTICS_4 ).receiveGetWebDataStreams(
+				[
+					{
+						_id: '2001',
+						/* eslint-disable sitekit/acronym-case */
+						measurementId: 'G-12345ABCDE',
+						defaultUri: 'http://example.com',
+						/* eslint-disable */
+					},
+				],
+				{ propertyID: '1001' }
+			);
+
+			return (
+				<Settings
+					registry={ registry }
+					route="/connected-services/analytics/edit"
+					skipModulesProvide
+				/>
+			);
+		},
+		{
+			decorators: [ WithRegistry ],
+		}
+	)
+	.add(
+		'Edit, open with all settings w/ GA4, w/o module access',
+		( args, { registry } ) => {
+			const { dispatch } = registry;
+			const {
+				accounts,
+				properties,
+				profiles,
+			} = accountsPropertiesProfiles;
+
+			/* eslint-disable sitekit/acronym-case */
+			const {
+				accountId: accountID,
+				webPropertyId,
+				id: profileID,
+			} = profiles[ 0 ];
+			const { internalWebPropertyId } = properties.find(
+				( property ) => webPropertyId === property.id
+			);
+			/* eslint-enable */
+
+			provideModules( registry, [
+				{
+					slug: 'search-console',
+					active: false,
+					connected: true,
+				},
+				{
+					slug: 'analytics',
+					active: true,
+					connected: true,
+					owner: { login: 'test-owner-username' },
+				},
+				{
+					slug: 'analytics-4',
+					active: true,
+					connected: true,
+					internal: true,
+				},
+			] );
+
+			dispatch( CORE_MODULES ).receiveCheckModuleAccess(
+				{ access: false },
+				{ slug: 'analytics' }
+			);
+			dispatch( CORE_MODULES ).receiveCheckModuleAccess(
+				{ access: false },
+				{ slug: 'analytics-4' }
+			);
 
 			dispatch( MODULES_ANALYTICS ).receiveGetAccounts( accounts );
 			dispatch( MODULES_ANALYTICS ).receiveGetProperties( properties, {
