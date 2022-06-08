@@ -17,6 +17,8 @@
  */
 
 .googlesitekit-settings-module-warning {
+	font-size: $fs-body-md;
+	line-height: $lh-body-md;
 
 	&--settings {
 		margin-bottom: 1em;
@@ -33,7 +35,7 @@
 	}
 
 	svg {
-		color: $c-cinnabar;
+		color: $c-utility-warning;
 	}
 
 	&--module-sitekit-dashboard {

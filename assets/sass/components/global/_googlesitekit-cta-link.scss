@@ -26,6 +26,11 @@
 	text-align: left;
 	text-decoration: none;
 
+	&:hover {
+		color: $c-link;
+		text-decoration: underline;
+	}
+
 	&.googlesitekit-cta-link--caps {
 		text-transform: uppercase;
 	}
@@ -61,7 +66,11 @@
 	}
 
 	&.googlesitekit-cta-link--inverse {
-		color: $c-base;
+		color: $c-link;
+
+		&:hover {
+			color: $c-link;
+		}
 	}
 
 	&.googlesitekit-cta-link--back::before {
@@ -81,11 +90,6 @@
 		cursor: default;
 	}
 
-	&:hover {
-		color: $c-link;
-		text-decoration: underline;
-	}
-
 	&.googlesitekit-cta-link--danger:hover {
 		color: $c-error;
 	}
@@ -93,9 +97,5 @@
 	&.googlesitekit-cta-link--disabled:hover {
 		color: $c-disabled;
 		text-decoration: none;
-	}
-
-	&.googlesitekit-cta-link--inverse:hover {
-		color: $c-base;
 	}
 }

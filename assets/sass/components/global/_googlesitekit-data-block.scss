@@ -111,7 +111,9 @@
 		margin: 0 0 12px 0;
 
 		.googlesitekit-adminbar & {
+			font-family: $f-secondary;
 			font-size: $fs-body-lg;
+			font-weight: $fw-secondary-bold;
 			margin-bottom: 5px;
 		}
 
@@ -130,8 +132,9 @@
 
 		.googlesitekit-adminbar & {
 			display: inline-block;
-			font-size: $fs-title-sm;
-			line-height: $lh-title-sm;
+			font-family: $f-secondary;
+			font-size: $fs-display-sm;
+			line-height: $lh-display-sm;
 			margin-right: 5px;
 		}
 
@@ -211,6 +214,7 @@
 
 		.googlesitekit-adminbar & {
 			font-size: $fs-body-lg;
+			font-weight: $fw-primary-normal;
 		}
 
 		&--up {

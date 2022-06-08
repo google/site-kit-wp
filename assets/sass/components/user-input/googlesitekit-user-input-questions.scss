@@ -78,7 +78,7 @@
 	}
 
 	.googlesitekit-user-input__question-instructions--notice {
-		background-color: rgba($c-text-notice-info, 0.2);
+		background-color: $c-surfaces-surface-2;
 		display: inline-block;
 		margin-bottom: 24px;
 		padding: 6px 14px;
@@ -88,7 +88,7 @@
 
 		p:not(.googlesitekit-user-input__question-number),
 		.googlesitekit-user-input__question-instructions--notice {
-			color: $c-black;
+			color: $c-surfaces-on-surface;
 			font-size: $fs-body-md;
 			line-height: $lh-body-md;
 			margin: 0 0 13px;

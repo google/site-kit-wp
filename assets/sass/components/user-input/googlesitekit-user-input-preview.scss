@@ -30,8 +30,8 @@
 		}
 
 		.googlesitekit-user-input__question-instructions--notice {
-			background-color: $c-alabaster;
-			color: $c-cape-cod;
+			background-color: $c-surfaces-surface-2;
+			color: $c-surfaces-on-surface;
 			display: block;
 			font-size: $fs-body-md;
 			line-height: $lh-body-md;
@@ -81,6 +81,7 @@
 		}
 
 		button {
+			border-radius: $border-radius-lg;
 			font-weight: $fw-secondary-normal;
 			letter-spacing: normal;
 			margin-top: -4px;

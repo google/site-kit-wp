@@ -157,8 +157,8 @@ $c-brand: $c-royal-blue;
 $c-highlight: $c-cornflower-blue;
 $c-subtle: $c-jumbo;
 $c-link: $c-content-primary;
-$c-link-wpdb: $c-allports;
-$c-link-wpdb-hover: $c-cerulean;
+$c-link-wpdb: map-get($wp-colors, "blue-50");
+$c-link-wpdb-hover: map-get($wp-colors, "blue-60");
 $c-input: $c-royal-blue;
 $c-disabled: $c-silver;
 $c-required: $c-valencia;
@@ -169,24 +169,24 @@ $c-wp-notice: $c-orange-roughy;
 $c-wp-notice-alt: $c-deep-sky-blue;
 
 $c-background: $c-mercury;
-$c-background-subtle: $c-alabaster;
+$c-background-subtle: $c-surfaces-surface-1;
 $c-background-brand: $c-royal-blue;
 $c-background-notice: $c-golden-rod-yellow;
 $c-background-notice-warning: $c-golden-rod-yellow;
-$c-background-notice-info: $c-solitude;
+$c-background-notice-info: $c-surfaces-surface-2;
 $c-background-notice-suggestion: $c-solitude;
 
 $c-border: $c-boulder;
-$c-border-light: $c-mercury;
+$c-border-light: $c-neutral-n-50;
 $c-border-medium: $c-silver;
 $c-border-brand: $c-royal-blue;
 $c-border-notice-info-hover: $c-jordy-blue;
 
 $c-text-notice: rgba($c-black, 0.7);
 $c-text-notice-warning: rgba($c-black, 0.7);
-$c-text-notice-info: $c-denim;
+$c-text-notice-info: $c-surfaces-on-surface;
 $c-text-notice-suggestion: $c-denim;
-$c-text-notice-info-selected-text: $c-royal-blue;
+$c-text-notice-info-selected-text: $c-surfaces-on-surface;
 
 $c-icon-notice: $c-sun;
 $c-icon-notice-warning: $c-sun;
@@ -210,7 +210,7 @@ $c-idea-hub-orange: $c-pizazz;
 $c-idea-hub-background: $c-white;
 $c-idea-hub-background-hover: $c-interactive-tertiary-hover;
 $c-idea-hub-button-hover: $c-iron;
-$c-idea-hub-active-nav: $c-denim;
+$c-idea-hub-active-nav: $c-content-primary;
 $c-idea-hub-topic: $c-device-icon-gray;
 $c-idea-hub-name: $c-cape-cod;
 $c-idea-hub-icon-color: $c-surfaces-on-surface-variant;
@@ -230,7 +230,7 @@ $c-setup-analytics-notice-bg: $c-alabaster;
 $c-setup-analytics-notice-text: $c-cape-cod;
 
 // Analytics CTAs
-$c-search-funnel-analytics-cta-bg: $c-aqua-haze;
+$c-search-funnel-analytics-cta-bg: $c-surfaces-surface-1;
 $c-search-funnel-analytics-cta-icon: $c-silver-2;
 
 // Google MDC Theme Overrides
@@ -309,3 +309,4 @@ $mdc-typography-styles-subtitle1: (
 );
 $mdc-text-field-error: $c-utility-error;
 $mdc-text-field-placeholder-ink-color: $c-interactive-on-disable-container;
+$mdc-text-field-label: $c-interactive-on-disable-container;

@@ -80,4 +80,11 @@
 	&--minimal.mdc-select--focused .mdc-select__dropdown-icon {
 		transform: rotate(180deg) translateY(0);
 	}
+
+	&.mdc-select--focused:not(.mdc-select--disabled) {
+
+		.mdc-floating-label--float-above {
+			color: $c-content-primary;
+		}
+	}
 }

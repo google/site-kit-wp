@@ -100,6 +100,7 @@
 
 	.googlesitekit-recommended {
 		color: $c-success;
+		font-family: $f-secondary;
 		font-size: $fs-body-sm;
 		font-weight: $fw-primary-medium;
 		text-transform: uppercase;
@@ -132,6 +133,7 @@
 	button {
 		background: none;
 		border: none;
+		border-radius: $border-radius-lg;
 		color: $c-link;
 		text-decoration: none;
 
@@ -140,7 +142,7 @@
 		}
 
 		&:focus {
-			outline: 1px solid $c-interactive-focus;
+			outline: 1px dotted $c-interactive-focus;
 			outline-offset: 6px;
 		}
 	}

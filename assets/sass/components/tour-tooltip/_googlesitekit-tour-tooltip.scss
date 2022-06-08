@@ -16,9 +16,6 @@
  * limitations under the License.
  */
 
-$a-tags: "a, a:active, a:hover, a:visited";
-$indicator-inactive: #649df5;
-
 .react-joyride__overlay {
 	mix-blend-mode: multiply !important;
 }
@@ -31,14 +28,19 @@ $indicator-inactive: #649df5;
 .googlesitekit-tour-tooltip {
 
 	.googlesitekit-tooltip-card {
-		background-color: $c-royal-blue;
+		background-color: $c-surfaces-inverse-surface;
 		border-radius: 8px;
 		box-shadow: none;
 		color: $c-white;
 		position: relative;
 
-		#{$a-tags} {
-			color: $c-white;
+		a {
+
+			&:active,
+			&:hover,
+			&:visited {
+				color: $c-white;
+			}
 		}
 
 		svg {
@@ -51,7 +53,7 @@ $indicator-inactive: #649df5;
 	color: $c-white;
 	font-family: $f-secondary;
 	font-size: $fs-body-lg;
-	font-weight: $fw-secondary-light;
+	font-weight: $fw-secondary-medium;
 	line-height: $lh-body-lg;
 	margin-bottom: 4px;
 	margin-top: 0;
@@ -111,7 +113,7 @@ $indicator-inactive: #649df5;
 }
 
 .googlesitekit-tooltip-indicator {
-	background: $indicator-inactive;
+	background: $c-content-primary;
 	border-radius: 50%;
 	height: 8px;
 	list-style: none;

@@ -190,7 +190,7 @@
 		}
 
 		h4 {
-			color: rgba($c-black, 0.54);
+			color: $c-surfaces-on-surface-variant;
 			font-family: $f-primary;
 			font-size: $fs-body-lg;
 			font-weight: $fw-secondary-normal;
@@ -199,7 +199,7 @@
 		}
 
 		p {
-			color: rgba($c-black, 0.54);
+			color: $c-surfaces-on-surface-variant;
 			font-size: $fs-body-sm;
 			letter-spacing: 0.1px;
 			line-height: $lh-body-sm;

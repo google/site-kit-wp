@@ -122,16 +122,15 @@
 
 	.googlesitekit-setup__wrapper {
 		background-color: $c-base;
+		border-radius: $border-radius-sm;
 
 		.googlesitekit-setup__intro-title {
 			color: $c-primary;
 			font-family: $f-secondary;
 			font-size: $fs-title-sm;
 			font-weight: $fw-secondary-bold;
-			letter-spacing: 0.16em;
 			line-height: $lh-title-sm;
 			margin: 0 0 17px 0;
-			text-transform: uppercase;
 		}
 	}
 

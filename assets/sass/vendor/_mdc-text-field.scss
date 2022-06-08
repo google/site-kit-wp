@@ -2,7 +2,6 @@
 .googlesitekit-plugin .mdc-text-field {
 
 	@include mdc-text-field-ink-color($c-surfaces-on-surface);
-	@include mdc-text-field-label-color($c-content-primary);
 	@include mdc-text-field-caret-color($c-content-primary);
 	@include mdc-text-field-focused-outline-color($c-content-primary);
 	@include mdc-text-field-hover-outline-color($c-border);
@@ -29,6 +28,17 @@
 		@include mdc-text-field-outline-color($c-error);
 		@include mdc-text-field-textarea-stroke-color($c-error);
 		@include mdc-text-field-label-color($c-error);
+
+		&:not(.mdc-text-field--focused) {
+
+			.mdc-floating-label--float-above {
+				color: $c-error;
+			}
+		}
+
+		+ .mdc-text-field-helper-line .mdc-text-field-helper-text {
+			color: $c-error;
+		}
 	}
 
 	&--textarea.mdc-text-field--focused {
@@ -43,5 +53,4 @@
 	&--textarea:not(.mdc-text-field--disabled) .mdc-text-field__input:focus { // :not comes from MDC
 		border-color: $c-input;
 	}
-
 }

@@ -24,11 +24,11 @@
 		margin: 42px 0 0;
 
 		button {
-			border: 2px solid $c-mercury;
-			font-size: $fs-headline-sm;
+			border-radius: $border-radius-lg;
+			font-size: $fs-body-md;
 			height: auto;
 			letter-spacing: normal;
-			line-height: $lh-headline-sm;
+			line-height: $lh-body-md;
 			margin-left: 20px;
 			padding: 10px 33px;
 			text-transform: none;
@@ -66,8 +66,8 @@
 
 		label {
 			color: $c-user-input-options;
-			font-size: $fs-headline-sm;
-			line-height: $lh-headline-sm;
+			font-size: $fs-body-md;
+			line-height: $lh-body-md;
 
 			@media (min-width: $bp-tablet) {
 				padding: 10px 0;
