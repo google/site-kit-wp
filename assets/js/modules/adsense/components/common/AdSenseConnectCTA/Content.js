@@ -25,13 +25,13 @@ import classnames from 'classnames';
 /**
  * WordPress dependencies
  */
-import { __, _x } from '@wordpress/i18n';
+import { __ } from '@wordpress/i18n';
+import { Fragment } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
-import { Grid, Row, Cell } from '../../../../../material-components';
-import AdSenseIcon from '../../../../../../svg/graphics/adsense.svg';
+import { Cell } from '../../../../../material-components';
 import ContentSVG from './ContentSVG';
 
 export default function Content( { stage } ) {
@@ -66,54 +66,40 @@ export default function Content( { stage } ) {
 	};
 
 	return (
-		<Grid>
-			<Row>
-				<Cell { ...cellProps }>
-					<p className="googlesitekit-setup__intro-title">
-						{ __( 'Connect', 'google-site-kit' ) }
-					</p>
-					<div className="googlesitekit-setup-module">
-						<div className="googlesitekit-setup-module__logo">
-							<AdSenseIcon width="33" height="33" />
-						</div>
-
-						<h2 className="googlesitekit-heading-3 googlesitekit-setup-module__title">
-							{ _x(
-								'AdSense',
-								'Service name',
-								'google-site-kit'
+		<Fragment>
+			<Cell
+				{ ...cellProps }
+				smOrder={ 2 }
+				mdOrder={ 1 }
+				className="googlesitekit-setup-module--adsense__stage-text"
+			>
+				<ul>
+					{ stageContent.map( ( { title, description }, index ) => (
+						<li
+							key={ index }
+							className={ classnames(
+								'googlesitekit-setup-module--adsense__stage',
+								{
+									'googlesitekit-setup-module--adsense__stage--current':
+										stage === index,
+								}
 							) }
-						</h2>
-
-						<ul>
-							{ stageContent.map(
-								( { title, description }, index ) => (
-									<li
-										key={ index }
-										className={ classnames(
-											'googlesitekit-setup-module--adsense__stage',
-											{
-												'googlesitekit-setup-module--adsense__stage--current':
-													stage === index,
-											}
-										) }
-									>
-										<h4>{ title }</h4>
-										<p>{ description }</p>
-									</li>
-								)
-							) }
-						</ul>
-					</div>
-				</Cell>
-				<Cell
-					{ ...cellProps }
-					className="googlesitekit-setup-module--adsense__stage-image"
-				>
-					<ContentSVG stage={ stage } />
-				</Cell>
-			</Row>
-		</Grid>
+						>
+							<h4>{ title }</h4>
+							<p>{ description }</p>
+						</li>
+					) ) }
+				</ul>
+			</Cell>
+			<Cell
+				{ ...cellProps }
+				smOrder={ 1 }
+				mdOrder={ 2 }
+				className="googlesitekit-setup-module--adsense__stage-image"
+			>
+				<ContentSVG stage={ stage } />
+			</Cell>
+		</Fragment>
 	);
 }
 

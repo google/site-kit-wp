@@ -24,7 +24,7 @@ import { useIntersection } from 'react-use';
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
+import { __, _x } from '@wordpress/i18n';
 import {
 	createInterpolateElement,
 	useEffect,
@@ -50,6 +50,7 @@ import Content from './Content';
 import Link from '../../../../../components/Link';
 import Button from '../../../../../components/Button';
 import Tooltip from '../../../../../components/Tooltip';
+import AdSenseIcon from '../../../../../../svg/graphics/adsense.svg';
 import useViewContext from '../../../../../hooks/useViewContext';
 const { useSelect, useDispatch } = Data;
 
@@ -142,8 +143,29 @@ export default function AdSenseConnectCTA() {
 					ref={ trackingRef }
 					className="googlesitekit-setup__wrapper googlesitekit-setup__wrapper--adsense-connect"
 				>
-					<Content stage={ 1 } />
 					<Grid>
+						<Row>
+							<Cell { ...cellProps }>
+								<p className="googlesitekit-setup__intro-title">
+									{ __( 'Connect', 'google-site-kit' ) }
+								</p>
+								<div className="googlesitekit-setup-module">
+									<div className="googlesitekit-setup-module__logo">
+										<AdSenseIcon width="33" height="33" />
+									</div>
+
+									<h2 className="googlesitekit-heading-3 googlesitekit-setup-module__title">
+										{ _x(
+											'AdSense',
+											'Service name',
+											'google-site-kit'
+										) }
+									</h2>
+								</div>
+							</Cell>
+							<Cell { ...cellProps }></Cell>
+							<Content stage={ 1 } />
+						</Row>
 						<Row>
 							<Cell { ...cellProps }>
 								<div className="googlesitekit-setup-module__action">

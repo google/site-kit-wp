@@ -53,8 +53,10 @@
 		}
 
 		.googlesitekit-setup-module--adsense__stage-image {
+			// align-items: flex-start;
 			align-items: center;
 			display: flex;
+			justify-content: center;
 		}
 
 		.googlesitekit-setup-module__action {
@@ -85,7 +87,12 @@
 
 			}
 
+			.googlesitekit-setup-module--adsense__stage-text {
+				grid-row: 2;
+			}
+
 			.googlesitekit-setup-module--adsense__stage-image {
+				grid-row: 1 / span 2;
 				justify-content: flex-end;
 			}
 
