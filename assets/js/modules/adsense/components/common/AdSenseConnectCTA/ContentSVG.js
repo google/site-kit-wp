@@ -53,7 +53,7 @@ function LazyContentSVG( { stage } ) {
 
 export default function ContentSVG( { stage } ) {
 	return (
-		<Suspense fallback={ <PreviewBlock width="100%" height="39.77%" /> }>
+		<Suspense fallback={ <PreviewBlock width="100%" height="100%" /> }>
 			<LazyContentSVG stage={ stage } />
 		</Suspense>
 	);

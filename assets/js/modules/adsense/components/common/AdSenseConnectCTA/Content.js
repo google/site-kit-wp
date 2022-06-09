@@ -90,6 +90,17 @@ export default function Content( { stage } ) {
 						</li>
 					) ) }
 				</ul>
+				<ul className="googlesitekit-setup-module--adsense__stage-indicator">
+					{ stageContent.map( ( _, index ) => (
+						<li
+							key={ index }
+							className={ classnames( {
+								'googlesitekit-setup-module--adsense__stage-indicator--current':
+									stage === index,
+							} ) }
+						/>
+					) ) }
+				</ul>
 			</Cell>
 			<Cell
 				{ ...cellProps }
