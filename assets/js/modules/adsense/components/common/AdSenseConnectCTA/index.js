@@ -24,7 +24,7 @@ import { useIntersection } from 'react-use';
 /**
  * WordPress dependencies
  */
-import { __, _x } from '@wordpress/i18n';
+import { __ } from '@wordpress/i18n';
 import {
 	createInterpolateElement,
 	useEffect,
@@ -46,11 +46,10 @@ import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants
 import { CORE_MODULES } from '../../../../../googlesitekit/modules/datastore/constants';
 import { CORE_LOCATION } from '../../../../../googlesitekit/datastore/location/constants';
 import { trackEvent } from '../../../../../util';
-import Content from './Content';
+import ContentSwipeable from './ContentSwipeable';
 import Link from '../../../../../components/Link';
 import Button from '../../../../../components/Button';
 import Tooltip from '../../../../../components/Tooltip';
-import AdSenseIcon from '../../../../../../svg/graphics/adsense.svg';
 import useViewContext from '../../../../../hooks/useViewContext';
 const { useSelect, useDispatch } = Data;
 
@@ -144,28 +143,7 @@ export default function AdSenseConnectCTA() {
 					className="googlesitekit-setup__wrapper googlesitekit-setup__wrapper--adsense-connect"
 				>
 					<Grid>
-						<Row>
-							<Cell { ...cellProps }>
-								<p className="googlesitekit-setup__intro-title">
-									{ __( 'Connect', 'google-site-kit' ) }
-								</p>
-								<div className="googlesitekit-setup-module">
-									<div className="googlesitekit-setup-module__logo">
-										<AdSenseIcon width="33" height="33" />
-									</div>
-
-									<h2 className="googlesitekit-heading-3 googlesitekit-setup-module__title">
-										{ _x(
-											'AdSense',
-											'Service name',
-											'google-site-kit'
-										) }
-									</h2>
-								</div>
-							</Cell>
-							<Cell { ...cellProps }></Cell>
-							<Content stage={ 1 } />
-						</Row>
+						<ContentSwipeable />
 						<Row>
 							<Cell { ...cellProps }>
 								<div className="googlesitekit-setup-module__action">

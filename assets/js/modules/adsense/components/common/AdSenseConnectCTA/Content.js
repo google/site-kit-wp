@@ -25,16 +25,17 @@ import classnames from 'classnames';
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
-import { Fragment } from '@wordpress/element';
+import { __, _x } from '@wordpress/i18n';
+import { forwardRef } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
-import { Cell } from '../../../../../material-components';
+import { Row, Cell } from '../../../../../material-components';
 import ContentSVG from './ContentSVG';
+import AdSenseIcon from '../../../../../../svg/graphics/adsense.svg';
 
-export default function Content( { stage } ) {
+const Content = forwardRef( ( { stage }, ref ) => {
 	const stageContent = [
 		{
 			title: __( 'Earn money from your site', 'google-site-kit' ),
@@ -66,7 +67,22 @@ export default function Content( { stage } ) {
 	};
 
 	return (
-		<Fragment>
+		<Row ref={ ref }>
+			<Cell { ...cellProps }>
+				<p className="googlesitekit-setup__intro-title">
+					{ __( 'Connect', 'google-site-kit' ) }
+				</p>
+				<div className="googlesitekit-setup-module">
+					<div className="googlesitekit-setup-module__logo">
+						<AdSenseIcon width="33" height="33" />
+					</div>
+
+					<h2 className="googlesitekit-heading-3 googlesitekit-setup-module__title">
+						{ _x( 'AdSense', 'Service name', 'google-site-kit' ) }
+					</h2>
+				</div>
+			</Cell>
+			<Cell { ...cellProps }></Cell>
 			<Cell
 				{ ...cellProps }
 				smOrder={ 2 }
@@ -110,10 +126,12 @@ export default function Content( { stage } ) {
 			>
 				<ContentSVG stage={ stage } />
 			</Cell>
-		</Fragment>
+		</Row>
 	);
-}
+} );
 
 Content.propTypes = {
 	stage: PropTypes.oneOf( [ 0, 1, 2 ] ),
 };
+
+export default Content;

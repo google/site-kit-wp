@@ -1,7 +1,7 @@
 /**
- * Material UI > Layout > Row component.
+ * AdSenseConnectCTA > ContentSwipeable component.
  *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2022 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,33 +19,30 @@
 /**
  * External dependencies
  */
-import PropTypes from 'prop-types';
-import classnames from 'classnames';
+import { useSwipeable } from 'react-swipeable';
 
 /**
  * WordPress dependencies
  */
-import { forwardRef } from '@wordpress/element';
+import { useState } from '@wordpress/element';
 
-const Row = forwardRef( ( { className, children, ...otherProps }, ref ) => {
-	return (
-		<div
-			ref={ ref }
-			className={ classnames( 'mdc-layout-grid__inner', className ) }
-			{ ...otherProps }
-		>
-			{ children }
-		</div>
-	);
-} );
+/**
+ * Internal dependencies
+ */
+import Content from './Content';
 
-Row.propTypes = {
-	className: PropTypes.string,
-	children: PropTypes.node,
-};
+const minStage = 0;
+const maxStage = 2;
 
-Row.defaultProps = {
-	className: '',
-};
+export default function ContentSwipeable() {
+	const [ stage, setStage ] = useState( 0 );
 
-export default Row;
+	const { ref } = useSwipeable( {
+		onSwipedLeft: () =>
+			setStage( stage === minStage ? maxStage : stage - 1 ),
+		onSwipedRight: () =>
+			setStage( stage === maxStage ? minStage : stage + 1 ),
+	} );
+
+	return <Content stage={ stage } ref={ ref } />;
+}
