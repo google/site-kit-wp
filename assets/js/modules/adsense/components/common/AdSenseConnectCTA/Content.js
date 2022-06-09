@@ -124,7 +124,19 @@ const Content = forwardRef( ( { stage }, ref ) => {
 				mdOrder={ 2 }
 				className="googlesitekit-setup-module--adsense__stage-image"
 			>
-				<ContentSVG stage={ stage } />
+				<div>
+					{ stageContent.map( ( _, index ) => (
+						<div
+							key={ index }
+							className={ classnames( {
+								'googlesitekit-setup-module--adsense__stage-image--current':
+									stage === index,
+							} ) }
+						>
+							<ContentSVG stage={ index } />
+						</div>
+					) ) }
+				</div>
 			</Cell>
 		</Row>
 	);
