@@ -1,5 +1,5 @@
 /**
- * AdSenseConnectCTA > Connect component.
+ * AdSenseConnectCTA > Content component.
  *
  * Site Kit by Google, Copyright 2022 Google LLC
  *

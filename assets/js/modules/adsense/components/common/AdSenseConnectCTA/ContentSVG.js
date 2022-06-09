@@ -1,5 +1,5 @@
 /**
- * IdeaHubPromptSVG component.
+ * AdSenseConnectCTA > ContentSVG component.
  *
  * Site Kit by Google, Copyright 2022 Google LLC
  *
