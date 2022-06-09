@@ -148,7 +148,7 @@ class REST_Dashboard_Sharing_ControllerTest extends TestCase {
 					'management'  => 'all_admins',
 				),
 			),
-			'newOwnerIDs' => array(
+			'newOwnerIDs' => (object) array(
 				// ownerID should be updated as settings have "changed" (added).
 				'pagespeed-insights' => $admin_1->ID,
 			),
