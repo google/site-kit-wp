@@ -21,10 +21,10 @@
 	.googlesitekit-setup__wrapper--adsense-connect {
 
 		.googlesitekit-setup-module--adsense__stage {
-			border-left: 1px solid rgba($c-black, 0.1);
+
 			color: $c-subtle;
+			display: none;
 			margin-bottom: 24px;
-			padding-left: 20px;
 
 			h4 {
 				font-size: 20px;
@@ -39,7 +39,7 @@
 		}
 
 		.googlesitekit-setup-module--adsense__stage--current {
-			border-left: 1px solid $c-brand;
+			display: block;
 
 			h4 {
 				color: $c-brand;
@@ -55,10 +55,6 @@
 		.googlesitekit-setup-module--adsense__stage-image {
 			align-items: center;
 			display: flex;
-
-			@media (min-width: $width-tablet + 1 + px) {
-				justify-content: flex-end;
-			}
 		}
 
 		.googlesitekit-setup-module__action {
@@ -70,16 +66,47 @@
 
 		.googlesitekit-setup-module__footer-text {
 
-			@media (min-width: $width-tablet + 1 + px) {
-				align-items: flex-end;
-				display: flex;
-				justify-content: flex-end;
-			}
-
 			p {
 				font-size: 12px;
 				margin: 0;
 			}
 		}
+
+		@media (min-width: $width-tablet + 1 + px) {
+
+			.googlesitekit-setup-module--adsense__stage {
+				border-left: 1px solid rgba($c-black, 0.1);
+				display: block;
+				padding-left: 20px;
+			}
+
+			.googlesitekit-setup-module--adsense__stage--current {
+				border-left: 1px solid $c-brand;
+
+			}
+
+			.googlesitekit-setup-module--adsense__stage-image {
+				justify-content: flex-end;
+			}
+
+			.googlesitekit-setup-module__footer-text {
+				align-items: flex-end;
+				display: flex;
+				justify-content: flex-end;
+			}
+		}
+
+		@media (min-width: $bp-desktop) {
+
+			.googlesitekit-setup-module__action {
+
+				.mdc-button {
+					margin-right: 48px;
+				}
+			}
+
+		}
+
 	}
+
 }
