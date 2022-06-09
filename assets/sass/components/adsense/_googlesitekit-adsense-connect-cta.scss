@@ -57,6 +57,11 @@
 			align-items: center;
 			display: flex;
 			justify-content: center;
+
+			svg {
+				height: 100%;
+				max-height: 328px;
+			}
 		}
 
 		.googlesitekit-setup-module__action {
