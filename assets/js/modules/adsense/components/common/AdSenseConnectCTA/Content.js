@@ -89,14 +89,14 @@ const Content = forwardRef( ( { stage }, ref ) => {
 				mdOrder={ 1 }
 				className="googlesitekit-setup-module--adsense__stage-text"
 			>
-				<ul>
+				<ul className="googlesitekit-setup-module--adsense__stage-captions">
 					{ stageContent.map( ( { title, description }, index ) => (
 						<li
 							key={ index }
 							className={ classnames(
-								'googlesitekit-setup-module--adsense__stage',
+								'googlesitekit-setup-module--adsense__stage-caption',
 								{
-									'googlesitekit-setup-module--adsense__stage--current':
+									'googlesitekit-setup-module--adsense__stage-caption--current':
 										stage === index,
 								}
 							) }

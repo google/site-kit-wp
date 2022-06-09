@@ -20,14 +20,23 @@
 
 	.googlesitekit-setup__wrapper--adsense-connect {
 
-		.googlesitekit-setup-module--adsense__stage {
+		.googlesitekit-setup-module--adsense__stage-captions {
+			display: grid;
+			grid-template-columns: 1fr;
+
+		}
+
+		.googlesitekit-setup-module--adsense__stage-caption {
 
 			color: $c-subtle;
-			display: none;
-			margin-bottom: 24px;
+			// Set each caption to the same grid cell to allow fade in/out.
+			grid-column-start: 1;
+			grid-row-start: 1;
+			margin: 0;
+			opacity: 0;
 
 			transition-duration: 1s;
-			transition-property: border-left, color;
+			transition-property: border-left, color, opacity;
 			transition-timing-function: ease-in-out;
 
 			h4 {
@@ -46,8 +55,8 @@
 			}
 		}
 
-		.googlesitekit-setup-module--adsense__stage--current {
-			display: block;
+		.googlesitekit-setup-module--adsense__stage-caption--current {
+			opacity: 1;
 
 			h4 {
 				color: $c-brand;
@@ -100,6 +109,7 @@
 				background-color: rgba($c-black, 0.1);
 				border-radius: 1px;
 				height: 2px;
+				transition: background-color 1s ease-in-out;
 				width: 26px;
 
 				&.googlesitekit-setup-module--adsense__stage-indicator--current {
@@ -125,13 +135,20 @@
 
 		@media (min-width: $width-tablet + 1 + px) {
 
-			.googlesitekit-setup-module--adsense__stage {
-				border-left: 1px solid rgba($c-black, 0.1);
+			.googlesitekit-setup-module--adsense__stage-captions {
+				// Revert from grid layout to prevent the captions from overlapping.
 				display: block;
-				padding-left: 20px;
 			}
 
-			.googlesitekit-setup-module--adsense__stage--current {
+			.googlesitekit-setup-module--adsense__stage-caption {
+				border-left: 1px solid rgba($c-black, 0.1);
+				margin-bottom: 24px;
+				opacity: 1;
+				padding-left: 20px;
+
+			}
+
+			.googlesitekit-setup-module--adsense__stage-caption--current {
 				border-left: 1px solid $c-brand;
 
 			}
