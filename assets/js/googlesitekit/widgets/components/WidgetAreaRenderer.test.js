@@ -680,7 +680,7 @@ describe( 'WidgetAreaRenderer', () => {
 		).toHaveClass( 'googlesitekit-hidden' );
 	} );
 
-	it( 'should not render the widget area title, subtitle and icon if there is only widget area', async () => {
+	it( 'should render the widget area title, subtitle and icon', async () => {
 		createWidgets( registry, areaName, [
 			{
 				Component: WidgetComponent,
@@ -691,30 +691,7 @@ describe( 'WidgetAreaRenderer', () => {
 
 		const widgets = registry.select( CORE_WIDGETS ).getWidgets( areaName );
 		const { container } = render(
-			<WidgetAreaRenderer slug={ areaName } totalAreas={ 1 } />,
-			{ registry }
-		);
-
-		expect( widgets ).toHaveLength( 1 );
-		expect(
-			container.firstChild.querySelectorAll(
-				'.googlesitekit-widget-area-header'
-			)
-		).toHaveLength( 0 );
-	} );
-
-	it( 'should render the widget area title, subtitle and icon if there is more than widget area', async () => {
-		createWidgets( registry, areaName, [
-			{
-				Component: WidgetComponent,
-				slug: 'one',
-				width: WIDGET_WIDTHS.FULL,
-			},
-		] );
-
-		const widgets = registry.select( CORE_WIDGETS ).getWidgets( areaName );
-		const { container } = render(
-			<WidgetAreaRenderer slug={ areaName } totalAreas={ 3 } />,
+			<WidgetAreaRenderer slug={ areaName } />,
 			{ registry }
 		);
 
