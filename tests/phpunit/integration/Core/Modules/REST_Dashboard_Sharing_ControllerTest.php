@@ -102,6 +102,8 @@ class REST_Dashboard_Sharing_ControllerTest extends TestCase {
 			)
 		);
 		$response = rest_get_server()->dispatch( $request );
+		// This admin hasn't authenticated with the Site Kit proxy service yet,
+		// so they aren't allowed to modify Dashboard Sharing settings.
 		$this->assertEquals( 'rest_forbidden', $response->get_data()['code'] );
 	}
 
@@ -146,7 +148,7 @@ class REST_Dashboard_Sharing_ControllerTest extends TestCase {
 					'management'  => 'all_admins',
 				),
 			),
-			'newOwnerIDs' => (object) array(
+			'newOwnerIDs' => array(
 				// ownerID should be updated as settings have "changed" (added).
 				'pagespeed-insights' => $admin_1->ID,
 			),
@@ -312,7 +314,7 @@ class REST_Dashboard_Sharing_ControllerTest extends TestCase {
 		);
 
 		// Re-register Permissions after enabling the dashboardSharing feature to include dashboard sharing capabilities.
-		// TODO Remove this when dashboardSharing feature flag is removed.
+		// TODO: Remove this when `dashboardSharing` feature flag is removed.
 		$permissions = new Permissions( $this->context, $authentication, $this->modules, $this->user_options, new Dismissed_Items( $this->user_options ) );
 		$permissions->register();
 	}
