@@ -170,47 +170,101 @@ describe( 'createErrorStore store', () => {
 	} );
 
 	describe( 'selectors', () => {
-		describe.each( [ 'getErrorForSelector', 'getErrorForAction' ] )(
-			'%s',
-			( selectorName ) => {
-				const baseNameParam =
-					selectorName === 'getErrorForSelector'
-						? 'selectorName'
-						: 'actionName';
+		describe( 'getErrorForSelector', () => {
+			const baseNameParam = 'selectorName';
 
-				it( `requires a \`${ baseNameParam }\` param`, () => {
-					expect( () => {
-						select[ selectorName ]();
-					} ).toThrow( `${ baseNameParam } is required.` );
+			it( `requires a \`${ baseNameParam }\` param`, () => {
+				expect( () => {
+					select.getErrorForSelector();
+				} ).toThrow( `${ baseNameParam } is required.` );
+			} );
+
+			it( `returns \`undefined\` when no has been received error for the given \`${ baseNameParam }\``, () => {
+				expect(
+					select.getErrorForSelector( 'nonExistentBaseName' )
+				).toBeUndefined();
+			} );
+
+			it( `returns the error for the given \`${ baseNameParam }\` with empty \`args\` or none`, () => {
+				dispatch.receiveError( errorForbidden, baseName, [] );
+
+				expect( select.getErrorForSelector( baseName ) ).toEqual( {
+					...errorForbidden,
+					selectorData: {
+						args: [],
+						name: baseName,
+						storeName: TEST_STORE,
+					},
 				} );
-
-				it( `returns \`undefined\` when no has been received error for the given \`${ baseNameParam }\``, () => {
-					expect(
-						select[ selectorName ]( 'nonExistentBaseName' )
-					).toBeUndefined();
+				expect( select.getErrorForSelector( baseName, [] ) ).toEqual( {
+					...errorForbidden,
+					selectorData: {
+						args: [],
+						name: baseName,
+						storeName: TEST_STORE,
+					},
 				} );
+			} );
 
-				it( `returns the error for the given \`${ baseNameParam }\` with empty \`args\` or none`, () => {
-					dispatch.receiveError( errorForbidden, baseName, [] );
+			it.each( [
+				[
+					`returns the error received for the given \`${ baseNameParam }\` and \`args\``,
+				],
+				[
+					`\`selectorData\` matches the selector name for the given \`${ baseNameParam }\` and \`args\``,
+				],
+			] )( '%s', () => {
+				dispatch.receiveError( errorNotFound, baseName, [] );
+				dispatch.receiveError( errorForbidden, baseName, args );
 
-					expect( select[ selectorName ]( baseName ) ).toEqual(
-						errorForbidden
-					);
-					expect( select[ selectorName ]( baseName, [] ) ).toEqual(
-						errorForbidden
-					);
-				} );
+				expect( select.getErrorForSelector( baseName, args ) ).toEqual(
+					{
+						...errorForbidden,
+						selectorData: {
+							args,
+							name: baseName,
+							storeName: TEST_STORE,
+						},
+					}
+				);
+			} );
+		} );
 
-				it( `returns the error received for the given \`${ baseNameParam }\` and \`args\``, () => {
-					dispatch.receiveError( errorNotFound, baseName, [] );
-					dispatch.receiveError( errorForbidden, baseName, args );
+		describe( 'getErrorForAction', () => {
+			const baseNameParam = 'actionName';
 
-					expect( select[ selectorName ]( baseName, args ) ).toEqual(
-						errorForbidden
-					);
-				} );
-			}
-		);
+			it( `requires a \`${ baseNameParam }\` param`, () => {
+				expect( () => {
+					select.getErrorForAction();
+				} ).toThrow( `${ baseNameParam } is required.` );
+			} );
+
+			it( `returns \`undefined\` when no has been received error for the given \`${ baseNameParam }\``, () => {
+				expect(
+					select.getErrorForAction( 'nonExistentBaseName' )
+				).toBeUndefined();
+			} );
+
+			it( `returns the error for the given \`${ baseNameParam }\` with empty \`args\` or none`, () => {
+				dispatch.receiveError( errorForbidden, baseName, [] );
+
+				expect( select.getErrorForAction( baseName ) ).toEqual(
+					errorForbidden
+				);
+				expect( select.getErrorForAction( baseName, [] ) ).toEqual(
+					errorForbidden
+				);
+			} );
+
+			it( `returns the error received for the given \`${ baseNameParam }\` and \`args\``, () => {
+				dispatch.receiveError( errorNotFound, baseName, [] );
+				dispatch.receiveError( errorForbidden, baseName, args );
+
+				expect( select.getErrorForAction( baseName, args ) ).toEqual(
+					errorForbidden
+				);
+			} );
+		} );
 
 		describe( 'getError', () => {
 			describe( 'legacy argumentless behavior', () => {
