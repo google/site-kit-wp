@@ -24,10 +24,10 @@
 		margin: 42px 0 0;
 
 		button {
-			border-radius: $border-radius-lg;
+			border-radius: $br-lg;
 			font-size: $fs-body-md;
 			height: auto;
-			letter-spacing: normal;
+			letter-spacing: $ls-s;
 			line-height: $lh-body-md;
 			margin-left: 20px;
 			padding: 10px 33px;
@@ -67,6 +67,7 @@
 		label {
 			color: $c-user-input-options;
 			font-size: $fs-body-md;
+			letter-spacing: $ls-s;
 			line-height: $lh-body-md;
 
 			@media (min-width: $bp-tablet) {
@@ -128,11 +129,12 @@
 	.googlesitekit-user-input__text-option {
 		align-items: center;
 		background-color: $c-content-primary-container;
-		border-radius: $border-radius-xs;
+		border-radius: $br-xs;
 		color: $c-content-on-primary-container;
 		display: inline-flex;
 		font-size: $fs-body-md;
 		font-weight: $fw-primary-medium;
+		letter-spacing: $ls-s;
 		line-height: $lh-body-md;
 		padding: 3px 3px 3px 12px;
 		white-space: nowrap;

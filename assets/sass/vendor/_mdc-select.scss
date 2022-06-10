@@ -8,7 +8,7 @@
 	@include mdc-select-hover-outline-color($c-border);
 	@include mdc-select-focused-outline-color($c-content-primary);
 	@include mdc-select-focused-bottom-line-color($c-border-brand);
-	@include mdc-select-outline-shape-radius($border-radius-xs);
+	@include mdc-select-outline-shape-radius($br-xs);
 
 	max-width: 100%;
 
@@ -64,6 +64,7 @@
 		border: none;
 		font-size: $fs-body-sm !important;
 		height: 14px !important;
+		letter-spacing: $ls-xs;
 		line-height: 1;
 		min-width: 0;
 		padding: 0 18px 0 0;

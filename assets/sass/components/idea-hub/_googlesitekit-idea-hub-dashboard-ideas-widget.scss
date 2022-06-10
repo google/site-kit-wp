@@ -25,6 +25,7 @@
 		.googlesitekit-idea-hub__idea--text {
 			color: $c-surfaces-on-surface;
 			font-size: $fs-body-md;
+			letter-spacing: $ls-s;
 			line-height: $lh-body-md;
 			margin: 0;
 		}
@@ -116,11 +117,11 @@
 
 	.googlesitekit-idea-hub__idea--topic {
 		background-color: $c-violet-v-50;
-		border-radius: $border-radius-lg;
+		border-radius: $br-lg;
 		color: $c-violet-v-700;
 		display: inline-block;
 		font-size: $fs-body-sm;
-		letter-spacing: 0.5px;
+		letter-spacing: $ls-xs;
 		line-height: $lh-body-sm;
 		margin: 0 8px 4px 0;
 		padding: 2px 7px;
@@ -147,7 +148,7 @@
 	}
 
 	.googlesitekit-idea-hub__idea--single {
-		border-radius: $border-radius-sm;
+		border-radius: $br-sm;
 		margin: 0 auto;
 		max-width: calc(100% - 16px);
 		padding: $grid-gap-phone;
@@ -243,7 +244,7 @@
 		box-shadow: none;
 		color: $c-denim;
 		font-size: $fs-body-sm;
-		letter-spacing: 0.3px;
+		letter-spacing: $ls-xs;
 		line-height: $lh-body-sm;
 		text-transform: none;
 
@@ -261,7 +262,7 @@
 			color: $c-content-primary;
 			font-size: $fs-body-sm;
 			font-weight: $fw-primary-medium;
-			letter-spacing: 0.3px;
+			letter-spacing: $ls-xs;
 			line-height: $lh-body-sm;
 		}
 
@@ -281,7 +282,7 @@
 		display: inline-flex;
 		font-size: $fs-body-sm;
 		justify-content: center;
-		letter-spacing: 0.5px;
+		letter-spacing: $ls-xs;
 		line-height: $lh-body-sm;
 
 		@media (min-width: $bp-tablet) {

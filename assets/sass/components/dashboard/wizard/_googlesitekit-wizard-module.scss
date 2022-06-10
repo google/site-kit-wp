@@ -24,6 +24,7 @@
 
 	.googlesitekit-wizard-module__text {
 		font-size: $fs-body-sm;
+		letter-spacing: $ls-xs;
 		line-height: $lh-body-sm;
 		margin: 0;
 	}
@@ -38,5 +39,6 @@
 
 	.googlesitekit-wizard-module__cta {
 		font-size: $fs-body-sm;
+		letter-spacing: $ls-xs;
 	}
 }

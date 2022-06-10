@@ -44,7 +44,7 @@
 			width: 100%;
 
 			@media (min-width: $bp-tablet) {
-				border-radius: $border-radius-md;
+				border-radius: $br-md;
 				height: auto;
 			}
 
@@ -134,6 +134,7 @@
 		.googlesitekit-dialog__subtitle {
 			color: $c-surfaces-on-surface-variant;
 			font-size: $fs-body-sm;
+			letter-spacing: $ls-xs;
 			line-height: $lh-body-sm;
 			margin: 0;
 		}

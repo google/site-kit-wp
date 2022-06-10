@@ -18,7 +18,7 @@
 
 .googlesitekit-device-size-tab-bar {
 
-	border-radius: $border-radius-lg;
+	border-radius: $br-lg;
 	overflow: hidden;
 	width: auto;
 
@@ -31,11 +31,11 @@
 			width: 56px;
 
 			&:first-child {
-				border-radius: $border-radius-lg 0 0 $border-radius-lg;
+				border-radius: $br-lg 0 0 $br-lg;
 			}
 
 			&:last-child {
-				border-radius: 0 $border-radius-lg $border-radius-lg 0;
+				border-radius: 0 $br-lg $br-lg 0;
 			}
 
 			svg {

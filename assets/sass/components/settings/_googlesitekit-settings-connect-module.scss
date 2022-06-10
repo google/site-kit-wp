@@ -20,7 +20,7 @@
 
 	.googlesitekit-settings-connect-module {
 		border: 1px solid $c-border-light;
-		border-radius: $border-radius-xs;
+		border-radius: $br-xs;
 		height: 100%;
 		padding: $grid-gap-phone;
 		width: 100%;
@@ -58,6 +58,7 @@
 
 		.googlesitekit-settings-connect-module__text {
 			font-size: $fs-body-md;
+			letter-spacing: $ls-s;
 			line-height: $lh-body-md;
 			margin: 0;
 		}
@@ -72,6 +73,7 @@
 
 		.googlesitekit-settings-connect-module__cta {
 			font-size: $fs-body-md;
+			letter-spacing: $ls-s;
 		}
 	}
 }

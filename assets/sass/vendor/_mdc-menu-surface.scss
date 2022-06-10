@@ -3,7 +3,7 @@
 
 	.mdc-menu-surface {
 
-		@include mdc-menu-surface-shape-radius($border-radius-sm);
+		@include mdc-menu-surface-shape-radius($br-sm);
 
 		background-color: $c-surfaces-surface-2;
 		box-shadow: none;

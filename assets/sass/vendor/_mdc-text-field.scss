@@ -7,7 +7,7 @@
 	@include mdc-text-field-hover-outline-color($c-border);
 	@include mdc-text-field-outline-color($c-utility-outline);
 	@include mdc-text-field-textarea-stroke-color($c-utility-outline);
-	@include mdc-text-field-textarea-shape-radius($border-radius-xs);
+	@include mdc-text-field-textarea-shape-radius($br-xs);
 
 	width: 250px;
 

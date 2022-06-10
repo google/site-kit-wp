@@ -20,7 +20,6 @@
 
 	.googlesitekit-navigation {
 		background-color: $c-base;
-		border-radius: 0 0 $border-radius-sm $border-radius-sm;
 		justify-content: center;
 		left: 0;
 		padding: 12px 0;
@@ -63,9 +62,10 @@
 		.mdc-chip {
 			background-color: $c-base;
 			border: 1px solid $c-neutral-n-50;
-			border-radius: $border-radius-lg;
+			border-radius: $br-lg;
 			color: $c-surfaces-on-surface;
 			font-size: $fs-body-sm;
+			letter-spacing: $ls-xs;
 			line-height: 1;
 			padding: 11px 14px 11px 19px;
 

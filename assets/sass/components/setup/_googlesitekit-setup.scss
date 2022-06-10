@@ -122,7 +122,7 @@
 
 	.googlesitekit-setup__wrapper {
 		background-color: $c-base;
-		border-radius: $border-radius-sm;
+		border-radius: $br-sm;
 
 		.googlesitekit-setup__intro-title {
 			color: $c-primary;
@@ -204,6 +204,7 @@
 		label {
 			color: $c-setup-analytics-notice-text;
 			font-size: $fs-body-lg;
+			letter-spacing: $ls-m;
 			line-height: $lh-body-lg;
 			padding-top: 8px;
 		}
@@ -238,6 +239,7 @@
 
 		.googlesitekit-setup-module__footer-text {
 			font-size: $fs-body-sm;
+			letter-spacing: $ls-xs;
 		}
 	}
 }

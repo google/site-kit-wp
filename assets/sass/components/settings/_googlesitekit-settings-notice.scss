@@ -18,10 +18,11 @@
 
 .googlesitekit-settings-notice {
 	background-color: $c-background-notice;
-	border-radius: $border-radius-sm;
+	border-radius: $br-sm;
 	color: $c-text-notice;
 	display: flex;
 	font-size: $fs-body-sm;
+	letter-spacing: $ls-xs;
 	line-height: $lh-body-sm;
 	margin: 1.5em 0;
 	max-width: 1098px;

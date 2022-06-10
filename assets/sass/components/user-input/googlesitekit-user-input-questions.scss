@@ -90,6 +90,7 @@
 		.googlesitekit-user-input__question-instructions--notice {
 			color: $c-surfaces-on-surface;
 			font-size: $fs-body-md;
+			letter-spacing: $ls-s;
 			line-height: $lh-body-md;
 			margin: 0 0 13px;
 		}
@@ -107,6 +108,7 @@
 		color: $c-scarpa-flow;
 		display: flex;
 		font-size: $fs-body-sm;
+		letter-spacing: $ls-xs;
 
 		img {
 			border-radius: 50%;

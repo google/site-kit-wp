@@ -29,15 +29,16 @@
 			color: $c-surfaces-on-surface;
 			font-size: $fs-body-md;
 			font-weight: $fw-primary-medium;
+			letter-spacing: $ls-s;
 			line-height: 1;
 
 			&:first-child {
-				border-radius: $border-radius-md 0 0 $border-radius-md;
+				border-radius: $br-md 0 0 $br-md;
 				overflow: hidden;
 			}
 
 			&:last-child {
-				border-radius: 0 $border-radius-md $border-radius-md 0;
+				border-radius: 0 $br-md $br-md 0;
 				overflow: hidden;
 			}
 		}

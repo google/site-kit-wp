@@ -166,18 +166,18 @@ $c-interactive-tertiary-focus: rgba(22, 27, 24, 0.26);
 $c-interactive-tertiary-press: rgba(22, 27, 24, 0.16);
 
 // Font sizes
-$fs-display-lg: 3.625rem;
-$fs-display-md: 2.875rem;
-$fs-display-sm: 2.375rem;
-$fs-headline-lg: 2rem;
-$fs-headline-md: 1.75rem;
-$fs-headline-sm: 1.5rem;
-$fs-title-lg: 1.25rem;
-$fs-title-md: 1rem;
-$fs-title-sm: 0.875rem;
-$fs-body-lg: 1rem;
-$fs-body-md: 0.875rem;
-$fs-body-sm: 0.75rem;
+$fs-display-lg: 3.625rem; // 58px
+$fs-display-md: 2.875rem; // 46px
+$fs-display-sm: 2.375rem; // 38px
+$fs-headline-lg: 2rem; // 32px
+$fs-headline-md: 1.75rem; // 28px
+$fs-headline-sm: 1.5rem; // 24px
+$fs-title-lg: 1.25rem; // 20px
+$fs-title-md: 1rem; // 16px
+$fs-title-sm: 0.875rem; // 14px
+$fs-body-lg: 1rem; // 16px
+$fs-body-md: 0.875rem; // 14px
+$fs-body-sm: 0.75rem; // 12px
 
 // Line heights
 $lh-display-lg: 1.1;
@@ -194,7 +194,12 @@ $lh-body-md: 1.43;
 $lh-body-sm: 1.33;
 
 // Border radiuses
-$border-radius-xs: 8px;
-$border-radius-sm: 16px;
-$border-radius-md: 24px;
-$border-radius-lg: 100px;
+$br-xs: 8px;
+$br-sm: 16px;
+$br-md: 24px;
+$br-lg: 100px;
+
+// Letter spacing
+$ls-xs: 0.2px;
+$ls-s: 0.25px;
+$ls-m: 0.5px;

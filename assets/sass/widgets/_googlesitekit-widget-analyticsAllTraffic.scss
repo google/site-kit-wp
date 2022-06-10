@@ -30,7 +30,7 @@
 
 		.googlesitekit-cta-link {
 			font-size: $fs-body-lg;
-			letter-spacing: 0.04em;
+			letter-spacing: $ls-m;
 		}
 	}
 
@@ -92,6 +92,7 @@
 
 		.googlesitekit-data-block__title {
 			font-size: $fs-body-md;
+			letter-spacing: $ls-s;
 			line-height: $lh-body-md;
 		}
 
@@ -194,6 +195,7 @@
 			font-family: $f-primary;
 			font-size: $fs-body-lg;
 			font-weight: $fw-secondary-normal;
+			letter-spacing: $ls-m;
 			line-height: $lh-body-lg;
 			margin: 0;
 		}
@@ -201,7 +203,7 @@
 		p {
 			color: $c-surfaces-on-surface-variant;
 			font-size: $fs-body-sm;
-			letter-spacing: 0.1px;
+			letter-spacing: $ls-xs;
 			line-height: $lh-body-sm;
 			margin: 4px 0 0;
 		}
@@ -232,6 +234,7 @@
 		font-size: $fs-body-sm;
 		font-weight: $fw-primary-medium;
 		left: 50%;
+		letter-spacing: $ls-xs;
 		max-width: 80px;
 		position: absolute;
 		text-align: center;
@@ -309,6 +312,7 @@
 		display: inline-flex;
 		font-size: $fs-body-sm;
 		font-weight: $fw-primary-normal;
+		letter-spacing: $ls-xs;
 		margin: 0 4px 0 0;
 		padding: 7px 4px;
 		position: relative;

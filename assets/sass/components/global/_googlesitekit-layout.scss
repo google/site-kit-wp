@@ -37,6 +37,7 @@
 	.googlesitekit-layout__header {
 		border-bottom: 1px solid $c-border-light;
 		font-size: $fs-body-lg;
+		letter-spacing: $ls-m;
 	}
 
 	&--fill .googlesitekit-layout__header {
@@ -50,6 +51,7 @@
 	.googlesitekit-layout__footer {
 		border-top: 1px solid $c-border-light;
 		font-size: $fs-body-sm;
+		letter-spacing: $ls-xs;
 	}
 
 	&--fill .googlesitekit-layout__footer {
@@ -61,6 +63,6 @@
 	}
 
 	&.googlesitekit-layout--rounded {
-		border-radius: $border-radius-md;
+		border-radius: $br-md;
 	}
 }

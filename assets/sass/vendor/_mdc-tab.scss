@@ -5,7 +5,7 @@
 	@include mdc-tab-states-color($c-content-primary);
 
 	font-size: $fs-body-sm;
-	letter-spacing: 0.5px;
+	letter-spacing: $ls-xs;
 	line-height: 1;
 	text-transform: none;
 

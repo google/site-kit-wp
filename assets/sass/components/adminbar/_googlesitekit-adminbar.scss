@@ -63,6 +63,7 @@
 		.googlesitekit-adminbar__subtitle {
 			color: $c-surfaces-on-surface-variant;
 			font-size: $fs-body-lg;
+			letter-spacing: $ls-m;
 		}
 
 		.googlesitekit-adminbar__title {
@@ -75,6 +76,7 @@
 			.googlesitekit-adminbar__title--date-range {
 				color: $c-surfaces-on-surface-variant;
 				font-size: $fs-body-md;
+				letter-spacing: $ls-s;
 			}
 		}
 

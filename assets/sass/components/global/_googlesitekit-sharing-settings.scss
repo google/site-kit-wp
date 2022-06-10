@@ -247,6 +247,7 @@
 	p.googlesitekit-dashboard-sharing-settings__note {
 		color: $c-boulder;
 		font-size: $fs-body-sm;
+		letter-spacing: $ls-xs;
 		line-height: $lh-body-sm;
 		margin: 0;
 	}
@@ -302,6 +303,7 @@
 			display: flex;
 			flex-wrap: wrap;
 			font-size: $fs-body-sm;
+			letter-spacing: $ls-xs;
 			line-height: $lh-body-sm;
 
 			span:not(.googlesitekit-dashboard-sharing-settings__tooltip-icon) {
@@ -364,9 +366,10 @@
 
 	p.googlesitekit-dashboard-sharing-settings__notice {
 		background-color: $c-surfaces-surface-2;
-		border-radius: $border-radius-xs;
+		border-radius: $br-xs;
 		color: $c-surfaces-on-surface;
 		font-size: $fs-body-sm;
+		letter-spacing: $ls-xs;
 		line-height: $lh-body-sm;
 		margin: 0;
 		padding: 12px 24px;
@@ -400,11 +403,12 @@
 	.googlesitekit-user-role-select__chip {
 		background-color: transparent;
 		border: 1px solid $c-utility-outline;
-		border-radius: $border-radius-xs;
+		border-radius: $br-xs;
 		color: $c-surfaces-on-surface;
 		flex-direction: row-reverse;
 		font-size: $fs-body-sm;
 		justify-content: center;
+		letter-spacing: $ls-xs;
 		line-height: $lh-body-sm;
 		margin: 0;
 		min-width: 80px;

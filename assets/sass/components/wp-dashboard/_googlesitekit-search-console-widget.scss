@@ -21,7 +21,8 @@
 
 	.googlesitekit-search-console-widget__title {
 		font-size: $fs-body-lg;
-		font-weight: 700;
+		font-weight: $fw-secondary-bold;
+		letter-spacing: $ls-m;
 		margin: 0;
 		padding: 0;
 	}

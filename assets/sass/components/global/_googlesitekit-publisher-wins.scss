@@ -131,6 +131,7 @@
 
 	.googlesitekit-publisher-win__detect {
 		font-size: $fs-body-sm;
+		letter-spacing: $ls-xs;
 
 		@media (min-width: $bp-desktop) {
 			margin-left: 48px;
@@ -141,6 +142,7 @@
 
 		a {
 			font-size: $fs-body-lg;
+			letter-spacing: $ls-m;
 		}
 	}
 
@@ -173,6 +175,7 @@
 	.googlesitekit-publisher-win__module-name {
 		display: inline-block;
 		font-size: $fs-body-sm;
+		letter-spacing: $ls-xs;
 		line-height: 1;
 		margin-bottom: -1px;
 		vertical-align: bottom;

@@ -88,6 +88,7 @@
 			color: $c-surfaces-on-surface-variant;
 			font-family: $f-primary;
 			font-size: $fs-body-sm;
+			letter-spacing: $ls-xs;
 			margin: 12px 0 0;
 			padding-top: 12px;
 			text-align: left;
@@ -118,6 +119,7 @@
 			color: $c-surfaces-on-surface-variant;
 			font-family: $f-primary;
 			font-size: $fs-body-sm;
+			letter-spacing: $ls-xs;
 			line-height: $lh-body-sm;
 			margin: 6px 0 0;
 		}
@@ -200,6 +202,7 @@
 				.mdc-text-field__input {
 					background: transparent;
 					font-size: $fs-body-sm;
+					letter-spacing: $ls-xs;
 				}
 			}
 

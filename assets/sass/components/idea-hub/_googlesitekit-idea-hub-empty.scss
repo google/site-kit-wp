@@ -72,13 +72,14 @@
 			color: $c-surfaces-on-surface-variant;
 			font-family: $f-primary;
 			font-size: $fs-body-lg;
+			letter-spacing: $ls-m;
 			line-height: $lh-body-lg;
 		}
 
 		.googlesitekit-idea-hub__empty--subtitle {
 			color: rgba($c-black, 0.54);
 			font-size: $fs-body-sm;
-			letter-spacing: 0.1px;
+			letter-spacing: $ls-xs;
 			line-height: $lh-body-sm;
 		}
 	}

@@ -18,7 +18,7 @@
 
 .googlesitekit-widget {
 	background: $c-base;
-	border-radius: $border-radius-sm;
+	border-radius: $br-sm;
 	display: flex;
 	flex-direction: column;
 	height: 100%;
@@ -108,6 +108,7 @@
 		.googlesitekit-cta-link {
 			font-size: $fs-body-lg;
 			font-weight: $fw-primary-normal;
+			letter-spacing: $ls-m;
 		}
 	}
 }

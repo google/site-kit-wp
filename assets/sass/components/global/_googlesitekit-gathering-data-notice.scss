@@ -50,6 +50,7 @@
 
 			span {
 				font-size: $fs-body-sm;
+				letter-spacing: $ls-xs;
 				line-height: $lh-body-sm;
 				padding: 0;
 			}
@@ -100,6 +101,7 @@
 			span {
 				color: $c-jumbo;
 				font-size: $fs-body-sm;
+				letter-spacing: $ls-xs;
 				line-height: $lh-body-sm;
 				text-transform: lowercase;
 			}

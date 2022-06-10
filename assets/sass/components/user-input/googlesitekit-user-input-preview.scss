@@ -34,6 +34,7 @@
 			color: $c-surfaces-on-surface;
 			display: block;
 			font-size: $fs-body-md;
+			letter-spacing: $ls-s;
 			line-height: $lh-body-md;
 			width: 100%;
 
@@ -53,10 +54,11 @@
 	.googlesitekit-user-input__preview-answer {
 		align-items: center;
 		background-color: $c-content-primary-container;
-		border-radius: $border-radius-xs;
+		border-radius: $br-xs;
 		color: $c-content-on-primary-container;
 		display: flex;
 		font-size: $fs-body-md;
+		letter-spacing: $ls-s;
 		line-height: $lh-body-md;
 		margin-bottom: 12px;
 		margin-right: 12px;
@@ -81,7 +83,7 @@
 		}
 
 		button {
-			border-radius: $border-radius-lg;
+			border-radius: $br-lg;
 			font-weight: $fw-secondary-normal;
 			letter-spacing: normal;
 			margin-top: -4px;

@@ -23,6 +23,7 @@
 		display: flex;
 		font-size: $fs-body-sm;
 		justify-content: space-between;
+		letter-spacing: $ls-xs;
 		line-height: $lh-body-sm;
 		margin: 0 -12px; // 14px padding - (1px for each border) = 12px
 		padding: 14px;

@@ -18,9 +18,10 @@
 
 .googlesitekit-cta {
 	background-color: $c-surfaces-surface-1;
-	border-radius: $border-radius-sm;
+	border-radius: $br-sm;
 	font-size: $fs-body-md;
 	height: 100%;
+	letter-spacing: $ls-s;
 	line-height: $lh-body-md;
 	padding: $grid-gap-phone;
 	width: 100%;
@@ -72,6 +73,7 @@
 	.googlesitekit-adminbar-modules .googlesitekit-cta__title {
 		font-size: $fs-body-lg;
 		font-weight: $fw-secondary-bold;
+		letter-spacing: $ls-m;
 	}
 
 	#google_dashboard_widget & .googlesitekit-cta__title { // stylelint-disable-line selector-id-pattern

@@ -19,6 +19,7 @@
 .googlesitekit-table {
 	counter-reset: table;
 	font-size: $fs-body-md;
+	letter-spacing: $ls-s;
 	padding: $grid-gap-phone;
 	position: relative;
 
@@ -99,6 +100,7 @@
 				content: attr(data-tooltip);
 				display: none; // TODO Temp until we get updated verbiage.
 				font-size: $fs-body-sm;
+				letter-spacing: $ls-xs;
 				max-width: 250px;
 				opacity: 0;
 				padding: calc(#{$grid-gap-phone} / 2) $grid-gap-desktop;
@@ -225,6 +227,7 @@
 		background-image: none;
 		display: block;
 		font-size: $fs-body-sm;
+		letter-spacing: $ls-xs;
 		word-break: break-word;
 	}
 

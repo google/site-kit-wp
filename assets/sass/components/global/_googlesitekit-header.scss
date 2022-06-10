@@ -50,7 +50,7 @@
 		}
 
 		body.site-kit_page_googlesitekit-settings & {
-			border-radius: 0 0 $border-radius-sm $border-radius-sm;
+			border-radius: 0 0 $br-sm $br-sm;
 		}
 
 		.googlesitekit-header__logo {
@@ -68,6 +68,7 @@
 			cursor: pointer;
 			display: flex;
 			font-size: $fs-body-sm;
+			letter-spacing: $ls-xs;
 			margin-right: -8px;
 			padding: 8px;
 			transition: background-color $t-default ease-in-out, color $t-default ease-in-out;

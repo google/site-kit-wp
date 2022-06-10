@@ -18,6 +18,7 @@
 
 .googlesitekit-settings-module-warning {
 	font-size: $fs-body-md;
+	letter-spacing: $ls-s;
 	line-height: $lh-body-md;
 
 	&--settings {
@@ -26,6 +27,7 @@
 
 	&--modules-list {
 		font-size: $fs-body-sm;
+		letter-spacing: $ls-xs;
 		margin: 1em 0;
 
 		.svg {
