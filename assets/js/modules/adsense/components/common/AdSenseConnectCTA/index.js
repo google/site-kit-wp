@@ -59,7 +59,12 @@ import {
 const { useSelect, useDispatch } = Data;
 
 export default function AdSenseConnectCTA() {
-	const [ showTooltip, setShowTooltip ] = useState( false );
+	const [ { isTooltipVisible, rehideAdminMenu }, setShowTooltip ] = useState(
+		{
+			isTooltipVisible: false,
+			rehideAdminMenu: false,
+		}
+	);
 
 	const { dismissItem } = useDispatch( CORE_USER );
 	const { navigateTo } = useDispatch( CORE_LOCATION );
@@ -125,16 +130,33 @@ export default function AdSenseConnectCTA() {
 
 	const handleDismissModule = useCallback( () => {
 		trackEvent( `${ viewContext }_adsense-cta-widget`, 'dismiss_widget' );
-		setShowTooltip( true );
+
+		// Check if the WordPress admin menu is open, and if not, open it.
+		const isAdminMenuOpen = !! document.querySelector(
+			'#wpwrap.wp-responsive-open'
+		);
+		if ( ! isAdminMenuOpen ) {
+			document.getElementById( 'wp-admin-bar-menu-toggle' )?.click();
+		}
+
+		setShowTooltip( {
+			isTooltipVisible: true,
+			rehideAdminMenu: ! isAdminMenuOpen,
+		} );
 	}, [ viewContext ] );
 
 	const handleDismissTooltip = useCallback( async () => {
+		// If the WordPress admin menu was closed, re-close it.
+		if ( rehideAdminMenu ) {
+			document.getElementById( 'wp-admin-bar-menu-toggle' )?.click();
+		}
+
 		await trackEvent(
 			`${ viewContext }_adsense-cta-widget`,
 			'dismiss_tooltip'
 		);
 		await dismissItem( ADSENSE_CTA_WIDGET_DISMISSED_ITEM_KEY );
-	}, [ dismissItem, viewContext ] );
+	}, [ dismissItem, rehideAdminMenu, viewContext ] );
 
 	const cellProps = {
 		smSize: 4,
@@ -144,7 +166,7 @@ export default function AdSenseConnectCTA() {
 
 	return (
 		<Fragment>
-			{ ! showTooltip && (
+			{ ! isTooltipVisible && (
 				<section
 					ref={ trackingRef }
 					className="googlesitekit-setup__wrapper googlesitekit-setup__wrapper--adsense-connect"
@@ -214,7 +236,7 @@ export default function AdSenseConnectCTA() {
 					</Grid>
 				</section>
 			) }
-			{ showTooltip && (
+			{ isTooltipVisible && (
 				<Tooltip
 					title={ __(
 						'You can always connect AdSense from here later',
