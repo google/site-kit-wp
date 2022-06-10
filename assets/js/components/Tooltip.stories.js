@@ -33,6 +33,10 @@ DefaultTooltip.args = {
 	dismissLabel: 'Got it',
 	target: '.target',
 };
+DefaultTooltip.scenario = {
+	label: 'Global/Tooltip/DefaultTooltip',
+	delay: 250,
+};
 
 export default {
 	title: 'Components/Tooltip',

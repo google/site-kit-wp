@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-// import fetchMock from 'fetch-mock';
-
-/**
  * Internal dependencies
  */
 import { provideModules } from '../../../../../../tests/js/utils';
@@ -37,6 +32,10 @@ const Template = () => <WidgetWithComponentProps />;
 
 export const Ready = Template.bind( {} );
 Ready.storyName = 'Ready';
+Ready.scenario = {
+	label: 'Global/AdSenseConnectCTAWidget/Ready',
+	delay: 250,
+};
 
 export const ReadyNotConnected = Template.bind( {} );
 ReadyNotConnected.decorators = [
@@ -73,17 +72,6 @@ export default {
 					},
 				] );
 			};
-
-			// Mock the tracking endpoint to allow checking/unchecking the tracking checkbox.
-			// fetchMock.post(
-			// 	RegExp( 'google-site-kit/v1/core/user/data/dismiss-item' ),
-			// 	( url, { body } ) => {
-			// 		// const { data } = JSON.parse( body );
-
-			// 		// return { body: data };
-			// 		return { body: {} };
-			// 	}
-			// );
 
 			return (
 				<div
