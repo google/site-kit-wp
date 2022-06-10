@@ -129,6 +129,13 @@
 			text-align: right;
 		}
 
+		button.googlesitekit-cta-link {
+			color: $c-surfaces-on-surface-variant;
+			font-size: $fs-body-md;
+			font-weight: $fw-primary-medium;
+			line-height: $lh-body-md;
+		}
+
 		&--with-action {
 			justify-content: space-between;
 		}
