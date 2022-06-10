@@ -30,7 +30,7 @@ import { CORE_MODULES } from './constants';
 const store = Data.combineStores(
 	Data.commonStore,
 	modules,
-	createErrorStore(),
+	createErrorStore( CORE_MODULES ),
 	settingsPanel,
 	settings,
 	sharingSettings

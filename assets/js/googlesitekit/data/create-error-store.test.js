@@ -55,7 +55,7 @@ describe( 'createErrorStore store', () => {
 	beforeEach( () => {
 		registry = createRegistry();
 
-		storeDefinition = createErrorStore();
+		storeDefinition = createErrorStore( TEST_STORE );
 		registry.registerStore( TEST_STORE, storeDefinition );
 		dispatch = registry.dispatch( TEST_STORE );
 		store = registry.stores[ TEST_STORE ].store;
@@ -65,6 +65,20 @@ describe( 'createErrorStore store', () => {
 	// Shared fixtures for various arguments by the same names.
 	const baseName = 'getFoo';
 	const args = [ 'bar', 'baz' ];
+
+	describe( 'createErrorStore', () => {
+		it( 'requires a storeName argument', () => {
+			expect( () => {
+				createErrorStore();
+			} ).toThrow( 'storeName must be defined.' );
+		} );
+
+		it( 'does not error when storeName is provided', () => {
+			expect( () => {
+				createErrorStore( TEST_STORE );
+			} ).not.toThrow();
+		} );
+	} );
 
 	describe( 'actions', () => {
 		describe( 'receiveError', () => {

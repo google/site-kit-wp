@@ -73,7 +73,7 @@ function getRootMargin( breakpoint ) {
 	return `-${ top }px -${ gap }px -${ gap }px -${ gap }px`;
 }
 
-export default function WidgetAreaRenderer( { slug, totalAreas, contextID } ) {
+export default function WidgetAreaRenderer( { slug, contextID } ) {
 	const viewOnlyDashboard = useViewOnly();
 
 	const viewableModules = useSelect( ( select ) => {
@@ -212,28 +212,26 @@ export default function WidgetAreaRenderer( { slug, totalAreas, contextID } ) {
 				) }
 				ref={ widgetAreaRef }
 			>
-				{ totalAreas > 1 && (
-					<Row>
-						<Cell
-							className="googlesitekit-widget-area-header"
-							size={ 12 }
-						>
-							{ Icon && <Icon width={ 33 } height={ 33 } /> }
+				<Row>
+					<Cell
+						className="googlesitekit-widget-area-header"
+						size={ 12 }
+					>
+						{ Icon && <Icon width={ 33 } height={ 33 } /> }
 
-							{ title && (
-								<h3 className="googlesitekit-widget-area-header__title googlesitekit-heading-3">
-									{ title }
-								</h3>
-							) }
+						{ title && (
+							<h3 className="googlesitekit-widget-area-header__title googlesitekit-heading-3">
+								{ title }
+							</h3>
+						) }
 
-							{ subtitle && (
-								<h4 className="googlesitekit-widget-area-header__subtitle">
-									{ subtitle }
-								</h4>
-							) }
-						</Cell>
-					</Row>
-				) }
+						{ subtitle && (
+							<h4 className="googlesitekit-widget-area-header__subtitle">
+								{ subtitle }
+							</h4>
+						) }
+					</Cell>
+				</Row>
 
 				<div className="googlesitekit-widget-area-widgets">
 					<Row>
@@ -254,6 +252,5 @@ export default function WidgetAreaRenderer( { slug, totalAreas, contextID } ) {
 
 WidgetAreaRenderer.propTypes = {
 	slug: PropTypes.string.isRequired,
-	totalAreas: PropTypes.number,
 	contextID: PropTypes.string,
 };

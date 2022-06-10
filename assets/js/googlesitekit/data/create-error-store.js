@@ -87,7 +87,9 @@ export const actions = {
 	},
 };
 
-export function createErrorStore() {
+export function createErrorStore( storeName ) {
+	invariant( storeName, 'storeName must be defined.' );
+
 	const initialState = {
 		errors: {},
 		error: undefined,

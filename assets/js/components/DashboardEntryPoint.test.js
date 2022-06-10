@@ -27,9 +27,6 @@ jest.mock( './setup/ModuleSetup', () => mockCreateComponent( 'ModuleSetup' ) );
 jest.mock( './DashboardMainApp', () =>
 	mockCreateComponent( 'DashboardMainApp' )
 );
-jest.mock( './legacy-notifications/notification-counter', () =>
-	mockCreateComponent( 'NotificationCounter' )
-);
 
 describe( 'DashboardEntryPoint', () => {
 	it( 'should render the unified dashboard', () => {

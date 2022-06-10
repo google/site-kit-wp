@@ -31,7 +31,7 @@ const store = Data.combineStores(
 	areas,
 	widgets,
 	contexts,
-	createErrorStore()
+	createErrorStore( CORE_WIDGETS )
 );
 
 export const registerStore = ( registry ) => {
