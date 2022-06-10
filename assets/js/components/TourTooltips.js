@@ -40,7 +40,7 @@ import useViewContext from '../hooks/useViewContext';
 const { useSelect, useDispatch } = Data;
 
 /** For available options, see: {@link https://github.com/gilbarbara/react-joyride/blob/3e08384415a831b20ce21c8423b6c271ad419fbf/src/styles.js}. */
-const joyrideStyles = {
+export const joyrideStyles = {
 	options: {
 		arrowColor: '#1A73E8', // $c-royal-blue
 		backgroundColor: '#1A73E8', // $c-royal-blue
@@ -58,7 +58,7 @@ const joyrideLocale = {
 };
 
 /** For available options, see: {@link https://github.com/gilbarbara/react-floater#props}. */
-const floaterProps = {
+export const floaterProps = {
 	disableAnimation: true,
 	styles: {
 		arrow: {

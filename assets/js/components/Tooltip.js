@@ -26,34 +26,7 @@ import Joyride, { EVENTS } from 'react-joyride';
  * Internal dependencies
  */
 import TourTooltip from './TourTooltip';
-
-// TODO: Share this configuration with TourTooltips, where it's been copied from.
-
-/** For available options, see: {@link https://github.com/gilbarbara/react-joyride/blob/3e08384415a831b20ce21c8423b6c271ad419fbf/src/styles.js}. */
-const joyrideStyles = {
-	options: {
-		arrowColor: '#1A73E8', // $c-royal-blue
-		backgroundColor: '#1A73E8', // $c-royal-blue
-		overlayColor: 'rgba(0, 0, 0, 0.6)',
-		textColor: '#ffffff', // $c-white
-	},
-};
-
-/** For available options, see: {@link https://github.com/gilbarbara/react-floater#props}. */
-const floaterProps = {
-	disableAnimation: true,
-	styles: {
-		arrow: {
-			length: 8,
-			margin: 56,
-			spread: 16,
-		},
-		floater: {
-			filter:
-				'drop-shadow(rgba(60, 64, 67, 0.3) 0px 1px 2px) drop-shadow(rgba(60, 64, 67, 0.15) 0px 2px 6px)',
-		},
-	},
-};
+import { joyrideStyles, floaterProps } from './TourTooltips';
 
 export default function Tooltip( {
 	title,
@@ -88,6 +61,7 @@ export default function Tooltip( {
 			} }
 			disableOverlay
 			disableScrolling
+			spotlightPadding={ 0 }
 			floaterProps={ floaterProps }
 			locale={ joyrideLocale }
 			run={ true }
