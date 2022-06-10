@@ -105,18 +105,23 @@ describe( 'modules/adsense URL channels', () => {
 			} );
 
 			it( 'dispatches an error if the request fails', async () => {
+				const fakeAccountID = 'pub-777888999';
+				const fakeClientID = 'ca-pub-777888999';
+
 				const response = {
 					code: 'internal_server_error',
 					message: 'Internal server error',
 					data: { status: 500 },
+					selectorData: {
+						args: [ fakeAccountID, fakeClientID ],
+						name: 'getURLChannels',
+						storeName: MODULES_ADSENSE,
+					},
 				};
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/adsense\/data\/urlchannels/,
 					{ body: response, status: 500 }
 				);
-
-				const fakeAccountID = 'pub-777888999';
-				const fakeClientID = 'ca-pub-777888999';
 
 				registry
 					.select( MODULES_ADSENSE )

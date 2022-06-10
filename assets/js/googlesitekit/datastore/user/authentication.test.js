@@ -272,6 +272,11 @@ describe( 'core/user authentication', () => {
 					code: 'internal_server_error',
 					message: 'Internal server error',
 					data: { status: 500 },
+					selectorData: {
+						args: [],
+						name: 'getAuthentication',
+						storeName: CORE_USER,
+					},
 				};
 				fetchMock.getOnce( coreUserDataEndpointRegExp, {
 					body: response,

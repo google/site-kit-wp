@@ -425,6 +425,11 @@ describe( 'modules/tagmanager containers', () => {
 					code: 'internal_server_error',
 					message: 'Internal server error',
 					data: { status: 500 },
+					selectorData: {
+						args: [ accountID ],
+						name: 'getContainers',
+						storeName: MODULES_TAGMANAGER,
+					},
 				};
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/containers/,
