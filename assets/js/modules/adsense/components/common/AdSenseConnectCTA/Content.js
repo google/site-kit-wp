@@ -87,9 +87,9 @@ const Content = forwardRef( ( { stage }, ref ) => {
 				{ ...cellProps }
 				smOrder={ 2 }
 				mdOrder={ 1 }
-				className="googlesitekit-setup-module--adsense__stage-text"
+				className="googlesitekit-setup-module--adsense__stage-captions"
 			>
-				<ul className="googlesitekit-setup-module--adsense__stage-captions">
+				<ul className="googlesitekit-setup-module--adsense__stage-caption-container">
 					{ stageContent.map( ( { title, description }, index ) => (
 						<li
 							key={ index }
@@ -122,16 +122,19 @@ const Content = forwardRef( ( { stage }, ref ) => {
 				{ ...cellProps }
 				smOrder={ 1 }
 				mdOrder={ 2 }
-				className="googlesitekit-setup-module--adsense__stage-image"
+				className="googlesitekit-setup-module--adsense__stage-images"
 			>
-				<div>
+				<div className="googlesitekit-setup-module--adsense__stage-image-container">
 					{ stageContent.map( ( _, index ) => (
 						<div
 							key={ index }
-							className={ classnames( {
-								'googlesitekit-setup-module--adsense__stage-image--current':
-									stage === index,
-							} ) }
+							className={ classnames(
+								'googlesitekit-setup-module--adsense__stage-image',
+								{
+									'googlesitekit-setup-module--adsense__stage-image--current':
+										stage === index,
+								}
+							) }
 						>
 							<ContentSVG stage={ index } />
 						</div>

@@ -20,16 +20,16 @@
 
 	.googlesitekit-setup__wrapper--adsense-connect {
 
-		.googlesitekit-setup-module--adsense__stage-captions {
+		.googlesitekit-setup-module--adsense__stage-caption-container {
 			display: grid;
 			grid-template-columns: 1fr;
-
 		}
 
 		.googlesitekit-setup-module--adsense__stage-caption {
 
 			color: $c-subtle;
-			// Set each caption to the same grid cell to allow fade in/out.
+			// Set each caption to the same grid cell to overlay them
+			// in order to fade in/out.
 			grid-column-start: 1;
 			grid-row-start: 1;
 			margin: 0;
@@ -67,37 +67,34 @@
 			}
 		}
 
-		.googlesitekit-setup-module--adsense__stage-image {
+		.googlesitekit-setup-module--adsense__stage-image-container {
+			display: grid;
+			grid-template-columns: 1fr;
+			height: 100%;
+			width: 100%;
+		}
 
-			> div {
-				display: grid;
-				grid-template-columns: 1fr;
-				height: 100%;
-				width: 100%;
+		.googlesitekit-setup-module--adsense__stage-image {
+			align-items: center;
+			display: flex;
+			// Set each image container to the same grid cell to overlay them
+			// in order to fade in/out.
+			grid-column-start: 1;
+			grid-row-start: 1;
+			height: 100%;
+			justify-content: center;
+			opacity: 0;
+			transition: opacity 1s ease-in-out;
+			width: 100%;
+
+			&.googlesitekit-setup-module--adsense__stage-image--current {
+				opacity: 1;
 			}
 
-			> div > div {
-				align-items: center;
-				display: flex;
-				// Set each caption to the same grid cell to allow fade in/out.
-				grid-column-start: 1;
-				grid-row-start: 1;
+			svg {
 				height: 100%;
-				justify-content: center;
-				opacity: 0;
-				transition: opacity 1s ease-in-out;
-				width: 100%;
-
-
-				svg {
-					height: 100%;
-					max-height: 312px;
-					max-width: 100%;
-				}
-
-				&.googlesitekit-setup-module--adsense__stage-image--current {
-					opacity: 1;
-				}
+				max-height: 312px;
+				max-width: 100%;
 			}
 		}
 
@@ -138,8 +135,9 @@
 
 		@media (min-width: $width-tablet + 1 + px) {
 
-			.googlesitekit-setup-module--adsense__stage-captions {
-				// Revert from grid layout to prevent the captions from overlapping.
+			.googlesitekit-setup-module--adsense__stage-caption-container {
+				// Revert from grid layout to prevent the captions from being overlaid
+				// upon each other.
 				display: block;
 			}
 
@@ -148,29 +146,26 @@
 				margin-bottom: 24px;
 				opacity: 1;
 				padding-left: 20px;
-
 			}
 
 			.googlesitekit-setup-module--adsense__stage-caption--current {
 				border-left: 1px solid $c-brand;
-
 			}
 
-			.googlesitekit-setup-module--adsense__stage-text {
+			.googlesitekit-setup-module--adsense__stage-captions {
+				// Specify grid-row here to ensure the spanned image doesn't shift the
+				// captions to a different row (see grid-row usage in
+				// .googlesitekit-setup-module--adsense__stage-images).
 				grid-row: 2;
 			}
 
-			.googlesitekit-setup-module--adsense__stage-image {
+			.googlesitekit-setup-module--adsense__stage-images {
 				grid-row: 1 / span 2;
-				// justify-content: flex-end;
-
-
-				> div > div {
-					justify-content: flex-end;
-					// justify-content: flex-end;
-				}
 			}
 
+			.googlesitekit-setup-module--adsense__stage-image {
+				justify-content: flex-end;
+			}
 
 			.googlesitekit-setup-module--adsense__stage-indicator {
 				display: none;
