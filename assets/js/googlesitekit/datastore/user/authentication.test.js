@@ -288,7 +288,14 @@ describe( 'core/user authentication', () => {
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( value ).toBeUndefined();
-				expect( error ).toEqual( response );
+				expect( error ).toEqual( {
+					...response,
+					selectorData: {
+						args: [],
+						name: 'getAuthentication',
+						storeName: CORE_USER,
+					},
+				} );
 				expect( console ).toHaveErrored();
 			} );
 
