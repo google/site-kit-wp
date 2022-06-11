@@ -171,21 +171,19 @@ describe( 'createErrorStore store', () => {
 
 	describe( 'selectors', () => {
 		describe( 'getErrorForSelector', () => {
-			const baseNameParam = 'selectorName';
-
-			it( `requires a \`${ baseNameParam }\` param`, () => {
+			it( 'requires a `selectorName` param', () => {
 				expect( () => {
 					select.getErrorForSelector();
-				} ).toThrow( `${ baseNameParam } is required.` );
+				} ).toThrow( 'selectorName is required.' );
 			} );
 
-			it( `returns \`undefined\` when no has been received error for the given \`${ baseNameParam }\``, () => {
+			it( 'returns `undefined` when no has been received error for the given `selectorName`', () => {
 				expect(
 					select.getErrorForSelector( 'nonExistentBaseName' )
 				).toBeUndefined();
 			} );
 
-			it( `returns the error for the given \`${ baseNameParam }\` with empty \`args\` or none`, () => {
+			it( 'returns the error for the given `selectorName` with empty `args` or none', () => {
 				dispatch.receiveError( errorForbidden, baseName, [] );
 
 				expect( select.getErrorForSelector( baseName ) ).toEqual( {
@@ -208,10 +206,10 @@ describe( 'createErrorStore store', () => {
 
 			it.each( [
 				[
-					`returns the error received for the given \`${ baseNameParam }\` and \`args\``,
+					'returns the error received for the given `selectorName` and `args`',
 				],
 				[
-					`\`selectorData\` matches the selector name for the given \`${ baseNameParam }\` and \`args\``,
+					'`selectorData` matches the selector name for the given `selectorName` and `args`',
 				],
 			] )( '%s', () => {
 				dispatch.receiveError( errorNotFound, baseName, [] );
@@ -231,21 +229,19 @@ describe( 'createErrorStore store', () => {
 		} );
 
 		describe( 'getErrorForAction', () => {
-			const baseNameParam = 'actionName';
-
-			it( `requires a \`${ baseNameParam }\` param`, () => {
+			it( 'requires a `actionName` param', () => {
 				expect( () => {
 					select.getErrorForAction();
-				} ).toThrow( `${ baseNameParam } is required.` );
+				} ).toThrow( 'actionName is required.' );
 			} );
 
-			it( `returns \`undefined\` when no has been received error for the given \`${ baseNameParam }\``, () => {
+			it( 'returns `undefined` when no has been received error for the given `actionName`', () => {
 				expect(
 					select.getErrorForAction( 'nonExistentBaseName' )
 				).toBeUndefined();
 			} );
 
-			it( `returns the error for the given \`${ baseNameParam }\` with empty \`args\` or none`, () => {
+			it( 'returns the error for the given `actionName` with empty `args` or none', () => {
 				dispatch.receiveError( errorForbidden, baseName, [] );
 
 				expect( select.getErrorForAction( baseName ) ).toEqual(
@@ -256,7 +252,7 @@ describe( 'createErrorStore store', () => {
 				);
 			} );
 
-			it( `returns the error received for the given \`${ baseNameParam }\` and \`args\``, () => {
+			it( 'returns the error received for the given `actionName` and `args`', () => {
 				dispatch.receiveError( errorNotFound, baseName, [] );
 				dispatch.receiveError( errorForbidden, baseName, args );
 
