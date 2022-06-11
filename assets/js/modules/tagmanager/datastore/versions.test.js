@@ -789,11 +789,6 @@ describe( 'modules/tagmanager versions', () => {
 					code: 'internal_server_error',
 					message: 'Internal server error',
 					data: { status: 500 },
-					selectorData: {
-						args: [ accountID, internalContainerID ],
-						name: 'getLiveContainerVersion',
-						storeName: MODULES_TAGMANAGER,
-					},
 				};
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/live-container-version/,
@@ -816,7 +811,14 @@ describe( 'modules/tagmanager versions', () => {
 							accountID,
 							internalContainerID,
 						] )
-				).toEqual( errorResponse );
+				).toEqual( {
+					...errorResponse,
+					selectorData: {
+						args: [ accountID, internalContainerID ],
+						name: 'getLiveContainerVersion',
+						storeName: MODULES_TAGMANAGER,
+					},
+				} );
 				expect(
 					registry
 						.select( MODULES_TAGMANAGER )

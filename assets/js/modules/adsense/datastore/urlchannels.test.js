@@ -112,11 +112,6 @@ describe( 'modules/adsense URL channels', () => {
 					code: 'internal_server_error',
 					message: 'Internal server error',
 					data: { status: 500 },
-					selectorData: {
-						args: [ fakeAccountID, fakeClientID ],
-						name: 'getURLChannels',
-						storeName: MODULES_ADSENSE,
-					},
 				};
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/adsense\/data\/urlchannels/,
@@ -144,7 +139,14 @@ describe( 'modules/adsense URL channels', () => {
 						fakeAccountID,
 						fakeClientID,
 					] );
-				expect( urlChannelsError ).toEqual( response );
+				expect( urlChannelsError ).toEqual( {
+					...response,
+					selectorData: {
+						args: [ fakeAccountID, fakeClientID ],
+						name: 'getURLChannels',
+						storeName: MODULES_ADSENSE,
+					},
+				} );
 			} );
 		} );
 	} );
