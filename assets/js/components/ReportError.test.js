@@ -23,6 +23,7 @@ import { createTestRegistry, provideModules } from '../../../tests/js/utils';
 import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../util/errors';
 import { render } from '../../../tests/js/test-utils';
 import ReportError from './ReportError';
+import { MODULES_ANALYTICS } from '../modules/analytics/datastore/constants';
 
 describe( 'ReportError', () => {
 	let registry;
@@ -96,5 +97,39 @@ describe( 'ReportError', () => {
 		expect( container.querySelector( 'h3' ).textContent ).toEqual(
 			'Insufficient permissions in Test Module'
 		);
+	} );
+
+	it( 'renders the `Retry` button if the error has `selectorData` property', () => {
+		const { container } = render(
+			<ReportError
+				moduleSlug="analytics"
+				error={ {
+					code: 'test-error-code',
+					message: 'Test error message',
+					data: {
+						reason: ERROR_REASON_INSUFFICIENT_PERMISSIONS,
+					},
+					selectorData: {
+						args: [
+							{
+								dimensions: [ 'ga:date' ],
+								metrics: [ { expression: 'ga:users' } ],
+								startDate: '2020-08-11',
+								endDate: '2020-09-07',
+							},
+						],
+						name: 'getReport',
+						storeName: MODULES_ANALYTICS,
+					},
+				} }
+			/>,
+			{
+				registry,
+			}
+		);
+
+		const retryButton = container.querySelector( '.mdc-button--raised' );
+		expect( retryButton ).toBeInTheDocument();
+		expect( retryButton ).toHaveTextContent( 'Retry' );
 	} );
 } );
