@@ -24,6 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
+import { useCallback } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 
 /**
@@ -37,12 +38,14 @@ import { purify } from '../util/purify';
 import ErrorText from '../components/ErrorText';
 import CTA from './notifications/CTA';
 
-const { useSelect } = Data;
+const { useSelect, useDispatch } = Data;
 
 export default function ReportError( { moduleSlug, error } ) {
 	const module = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModule( moduleSlug )
 	);
+
+	const dispatch = useDispatch();
 
 	let title = sprintf(
 		/* translators: %s: module name */
@@ -67,7 +70,27 @@ export default function ReportError( { moduleSlug, error } ) {
 		purify.sanitize( message, { ALLOWED_TAGS: [] } )
 	);
 
-	return <CTA title={ title } description={ description } error />;
+	const retry = !! error?.selectorData;
+
+	const handleRetry = useCallback( () => {
+		if ( retry ) {
+			const { selectorData } = error;
+			dispatch( selectorData.storeName ).invalidateResolution(
+				selectorData.name,
+				selectorData.args
+			);
+		}
+	}, [ dispatch, error, retry ] );
+
+	return (
+		<CTA
+			title={ title }
+			description={ description }
+			onRetry={ retry ? handleRetry : undefined }
+			retry={ retry }
+			error
+		/>
+	);
 }
 
 ReportError.propTypes = {
