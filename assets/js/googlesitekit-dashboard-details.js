@@ -25,7 +25,6 @@ import { render } from '@wordpress/element';
 /**
  * Internal dependencies.
  */
-import './components/legacy-notifications';
 import DashboardEntityApp from './components/DashboardEntityApp';
 import Root from './components/Root';
 import {
