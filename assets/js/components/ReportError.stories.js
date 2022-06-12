@@ -26,6 +26,7 @@ import {
 	provideModules,
 } from '../../../tests/js/utils';
 import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../util/errors';
+import { MODULES_ANALYTICS } from '../modules/analytics/datastore/constants';
 
 const Template = ( args ) => (
 	<ReportError moduleSlug="test-module" { ...args } />
@@ -60,6 +61,30 @@ ReportErrorWithInsufficientPermissions.args = {
 		message: 'Test error message',
 		data: {
 			reason: ERROR_REASON_INSUFFICIENT_PERMISSIONS,
+		},
+	},
+};
+
+export const ReportErrorWithRetryButton = Template.bind( {} );
+ReportErrorWithRetryButton.storyName = 'ReportError with Retry Button';
+ReportErrorWithRetryButton.args = {
+	error: {
+		code: 'test-error-code',
+		message: 'Test error message',
+		data: {
+			reason: ERROR_REASON_INSUFFICIENT_PERMISSIONS,
+		},
+		selectorData: {
+			args: [
+				{
+					dimensions: [ 'ga:date' ],
+					metrics: [ { expression: 'ga:users' } ],
+					startDate: '2020-08-11',
+					endDate: '2020-09-07',
+				},
+			],
+			name: 'getReport',
+			storeName: MODULES_ANALYTICS,
 		},
 	},
 };
