@@ -217,15 +217,12 @@ const GOOGLESITEKIT_VERSION = googleSiteKitVersion
 
 const corePackages = [
 	'api-fetch',
-	'components',
 	'compose',
 	'data',
 	'dom-ready',
 	'element',
-	'hooks',
 	'icons',
 	'keycodes',
-	'scripts',
 	'url',
 ];
 
