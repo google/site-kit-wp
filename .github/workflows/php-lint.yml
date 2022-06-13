@@ -40,22 +40,9 @@ jobs:
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v2
-      - uses: shivammathur/setup-php@v2
-        with:
-          php-version: '7.4'
-      - name: Get Composer Cache Directory
-        id: composer-cache
-        run: |
-          echo "::set-output name=dir::$(composer config cache-files-dir)"
-      - uses: actions/cache@v2
-        with:
-          path: ${{ steps.composer-cache.outputs.dir }}
-          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-composer-
-      - name: Validate Composer configuration
-        run: composer validate --strict
       - name: Composer Install
-        run: composer install --no-interaction --no-progress
+        uses: ./.github/actions/composer
+        with:
+          dev: yes
       - name: PHP Lint
         run: composer lint

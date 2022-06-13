@@ -1,9 +1,16 @@
 name: Composer Dependencies
 description: Installs composer dependencies.
+inputs:
+  dev:
+    description: Wether to install dev dependencies or not.
+    required: false
+    default: yes
 runs:
   using: composite
   steps:
     - run: composer --version
+      shell: bash
+    - run: composer validate --strict
       shell: bash
     - id: composer-cache
       run: echo "::set-output name=dir::$(composer config cache-files-dir)"
@@ -12,5 +19,10 @@ runs:
       with:
         path: ${{ steps.composer-cache.outputs.dir }}
         key: composer-${{ hashFiles('**/composer.lock') }}
-    - run: composer install --no-interaction --no-progress --no-dev
+    - run: |
+        if [ "${{ inputs.dev }}" == "yes" ]; then
+          composer install --no-interaction --no-progress
+        else
+          composer install --no-interaction --no-progress --no-dev
+        fi
       shell: bash

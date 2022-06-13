@@ -89,30 +89,14 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - name: Composer Install
+        uses: ./.github/actions/composer
+
       - name: Install node_modules
         uses: ./.github/actions/npm
 
       - name: Build
         run: npm run build:test
-
-      # E2E tests use a dedicated container, this is just for Composer.
-      - uses: shivammathur/setup-php@v2
-        with:
-          php-version: '7.x'
-          tools: composer:2.1
-
-      - name: Get Composer Cache Directory
-        id: composer-cache
-        run: echo "::set-output name=dir::$(composer config cache-files-dir)"
-
-      - uses: actions/cache@v2
-        with:
-          path: ${{ steps.composer-cache.outputs.dir }}
-          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
-          restore-keys: ${{ runner.os }}-composer-
-
-      - name: Composer Install
-        run: composer install --no-interaction --no-progress --no-dev
 
       - name: Start environment
         run: npm run env:start
