@@ -3,10 +3,14 @@ description: Installs composer dependencies.
 runs:
   using: composite
   steps:
+    - run: composer --version
+      shell: bash
     - id: composer-cache
       run: echo "::set-output name=dir::$(composer config cache-files-dir)"
+      shell: bash
     - uses: actions/cache@v3
       with:
         path: ${{ steps.composer-cache.outputs.dir }}
         key: composer-${{ hashFiles('**/composer.lock') }}
     - run: composer install --no-interaction --no-progress --no-dev
+      shell: bash

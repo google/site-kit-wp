@@ -1,5 +1,5 @@
 name: Node.js
-description: Sets up Node.js and installs node_modules.
+description: Installs Node.js and npm dependencies.
 runs:
   using: composite
   steps:
