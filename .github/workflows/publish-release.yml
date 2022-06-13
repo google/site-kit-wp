@@ -1,0 +1,22 @@
+name: Publish Release
+
+on:
+  workflow_dispatch:
+
+jobs:
+  publish-to-svn:
+    name: Publish to SVN
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment: wordpress-plugin-svn
+    steps:
+      - uses: actions/checkout@v2
+      - name: Composer Install
+        uses: ./.github/actions/composer
+      - name: Install node_modules
+        uses: ./.github/actions/npm
+      - name: Build ZIP files
+        uses: ./.github/actions/zips
+        id: builds
+      - name: Prepare files
+        run: echo "${{ steps.builds.outputs.prod }}"
