@@ -70,22 +70,12 @@ jobs:
     if: false == ( ( github.event_name == 'pull_request' && ( github.event.action == 'closed' || github.event.pull_request.draft == true || contains( github.head_ref, 'dependabot/' ) ) ) || github.event.pull_request.head.repo.fork )
     steps:
       - uses: actions/checkout@v2
-      - name: Get Composer Cache Directory
-        id: composer-cache
-        run: |
-          composer --version
-          echo "::set-output name=dir::$(composer config cache-files-dir)"
       - uses: actions/cache@v2
         with:
-          path: ${{ steps.composer-cache.outputs.dir }}
-          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-composer-
+          path: /tmp/composer-cache
+          key: ${{ runner.os }}-composer-files-${{ hashFiles('**/composer.lock') }}
       - name: Composer Install
-        uses: php-actions/composer@v4
-        with:
-          dev: no
-          php_version: 7.3
+        run: composer install --no-interaction --no-progress --no-dev
       - name: Install node_modules
         uses: ./.github/actions/npm
       - name: Create destination directory and update file permissions
