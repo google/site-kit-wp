@@ -59,15 +59,14 @@ jobs:
       WP_VERSION: latest
     steps:
       - uses: actions/checkout@v2
+      - uses: shivammathur/setup-php@v2
+        with:
+          extensions: mysqli, runkit7, uopz
+          php-version: "8.0"
       - name: Composer Install
         uses: ./.github/actions/composer
         with:
           dev: yes
-      - uses: shivammathur/setup-php@v2
-        with:
-          extensions: mysqli, runkit7, uopz
-          tools: composer
-          php-version: '8.0'
       - name: Update PHPUnit
         run: composer update phpunit/phpunit --with-dependencies --ignore-platform-reqs --no-scripts
       - name: Set up PHP test data

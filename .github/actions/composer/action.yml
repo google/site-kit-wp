@@ -8,7 +8,11 @@ inputs:
 runs:
   using: composite
   steps:
+    - run: php -v
+      shell: bash
     - run: composer --version
+      shell: bash
+    - run: echo "Cache directory $(composer config cache-files-dir)"
       shell: bash
     - run: composer validate --strict
       shell: bash

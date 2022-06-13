@@ -57,18 +57,17 @@ jobs:
       MYSQL_PASSWORD: wordpress
       MYSQL_DATABASE: wordpress_test
       WP_VERSION: latest
-      WP_MULTISITE: '1'
+      WP_MULTISITE: "1"
     steps:
       - uses: actions/checkout@v2
+      - uses: shivammathur/setup-php@v2
+        with:
+          extensions: mysqli, runkit7, uopz
+          php-version: "7.4"
       - name: Composer Install
         uses: ./.github/actions/composer
         with:
           dev: yes
-      - uses: shivammathur/setup-php@v2
-        with:
-          extensions: mysqli, runkit7, uopz
-          tools: composer:2.1
-          php-version: '7.4'
       - name: Set up PHP test data
         run: tests/bin/install-wp-tests.sh ${MYSQL_DATABASE} ${MYSQL_USER} ${MYSQL_PASSWORD} ${DB_HOST}:${DB_PORT} ${WP_VERSION}
       - name: Run Unit Tests
