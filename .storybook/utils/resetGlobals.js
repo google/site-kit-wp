@@ -31,7 +31,6 @@ export const resetGlobals = () => {
 	global._googlesitekitBaseData = {
 		homeURL: 'http://example.com/',
 		referenceSiteURL: 'http://example.com/',
-		userIDHash: 'storybook',
 		adminURL: 'http://example.com/wp-admin/',
 		assetsURL:
 			'http://example.com/wp-content/plugins/google-site-kit/dist/assets/',
@@ -79,5 +78,14 @@ export const resetGlobals = () => {
 			googlesitekit_manage_options: true,
 			googlesitekit_publish_posts: true,
 		},
+	};
+	global._googlesitekitTrackingData = {
+		referenceSiteURL: 'http://example.com/',
+		userIDHash: 'storybook',
+		activeModules: [],
+		trackingEnabled: false,
+		trackingID: 'UA-000000000-1',
+		userRoles: [ 'administrator' ],
+		isAuthenticated: false,
 	};
 };
