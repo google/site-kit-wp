@@ -8,6 +8,10 @@ inputs:
 runs:
   using: composite
   steps:
+    - uses: shivammathur/setup-php@v2
+      with:
+        tools: composer:2.1
+        php-version: "7.4"
     - run: php -v
       shell: bash
     - run: composer --version
