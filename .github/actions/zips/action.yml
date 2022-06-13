@@ -1,0 +1,24 @@
+name: Zips
+description: Creates ZIP files for production and development versions of the plugin.
+outputs:
+  dev:
+    description: Development build.
+    value: ${{ github.ref }}/google-site-kit-dev.zip
+  prod:
+    description: Production build.
+    value: ${{ github.ref }}/google-site-kit.zip
+runs:
+  using: composite
+  steps:
+    - run: mkdir -p ${{ github.ref }}
+      shell: bash
+    - run: sudo chown -R $(id -u):$(id -g) .
+      shell: bash
+    - run: npm run dev-zip
+      shell: bash
+    - run: mv *.zip ${{ github.ref }}/google-site-kit-dev.zip
+      shell: bash
+    - run: npm run release-zip
+      shell: bash
+    - run: mv *.zip ${{ github.ref }}/google-site-kit.zip
+      shell: bash
