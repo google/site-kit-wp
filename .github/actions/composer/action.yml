@@ -1,0 +1,12 @@
+name: Composer Dependencies
+description: Installs composer dependencies.
+runs:
+  using: composite
+  steps:
+    - id: composer-cache
+      run: echo "::set-output name=dir::$(composer config cache-files-dir)"
+    - uses: actions/cache@v3
+      with:
+        path: ${{ steps.composer-cache.outputs.dir }}
+        key: composer-${{ hashFiles('**/composer.lock') }}
+    - run: composer install --no-interaction --no-progress --no-dev
