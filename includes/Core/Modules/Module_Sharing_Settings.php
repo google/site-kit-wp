@@ -138,7 +138,7 @@ class Module_Sharing_Settings extends Setting {
 		$partial  = array_filter(
 			$partial,
 			function ( $value ) {
-				return null !== $value;
+				return ! empty( $value );
 			}
 		);
 
