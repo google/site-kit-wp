@@ -70,7 +70,7 @@ export default function ReportError( { moduleSlug, error } ) {
 		purify.sanitize( message, { ALLOWED_TAGS: [] } )
 	);
 
-	const retry = !! error?.selectorData;
+	const retry = !! error?.selectorData?.storeName;
 
 	const handleRetry = useCallback( () => {
 		if ( retry ) {
@@ -86,8 +86,9 @@ export default function ReportError( { moduleSlug, error } ) {
 		<CTA
 			title={ title }
 			description={ description }
-			onRetry={ retry ? handleRetry : undefined }
-			retry={ retry }
+			ctaType={ retry ? 'button' : undefined }
+			ctaLabel={ retry ? __( 'Retry', 'google-site-kit' ) : undefined }
+			onClick={ retry ? handleRetry : undefined }
 			error
 		/>
 	);
