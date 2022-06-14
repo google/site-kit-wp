@@ -23,11 +23,6 @@ import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
 /**
- * WordPress dependencies
- */
-import { __ } from '@wordpress/i18n';
-
-/**
  * Internal dependencies
  */
 import Link from '../Link';
@@ -39,10 +34,9 @@ const CTA = ( {
 	ctaLink,
 	ctaLabel,
 	ctaLinkExternal,
+	ctaType,
 	error,
 	onClick,
-	retry,
-	onRetry,
 	'aria-label': ariaLabel,
 } ) => (
 	<div
@@ -59,12 +53,10 @@ const CTA = ( {
 				{ description }
 			</div>
 		) }
-		{ retry && (
-			<Button onClick={ onRetry }>
-				{ __( 'Retry', 'google-site-kit' ) }
-			</Button>
+		{ ctaLabel && ctaType === 'button' && (
+			<Button onClick={ onClick }>{ ctaLabel }</Button>
 		) }
-		{ ctaLabel && (
+		{ ctaLabel && ctaType === 'link' && (
 			<Link
 				href={ ctaLink }
 				onClick={ onClick }
@@ -87,11 +79,10 @@ CTA.propTypes = {
 	ctaLink: PropTypes.string,
 	ctaLinkExternal: PropTypes.bool,
 	ctaLabel: PropTypes.string,
+	ctaType: PropTypes.string,
 	'aria-label': PropTypes.string,
 	error: PropTypes.bool,
 	onClick: PropTypes.func,
-	retry: PropTypes.bool,
-	onRetry: PropTypes.func,
 };
 
 CTA.defaultProps = {
@@ -99,10 +90,9 @@ CTA.defaultProps = {
 	description: '',
 	ctaLink: '',
 	ctaLabel: '',
+	ctaType: 'link',
 	error: false,
 	onClick: () => {},
-	retry: false,
-	onRetry: () => {},
 };
 
 export default CTA;
