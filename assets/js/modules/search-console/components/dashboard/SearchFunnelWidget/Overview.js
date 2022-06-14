@@ -347,7 +347,7 @@ const Overview = ( {
 					) }
 
 				{ showAnalytics && (
-					<Cell { ...quarterCellProps }>
+					<Cell { ...quarterCellProps } smSize={ 4 }>
 						{ showGoalsCTA && zeroDataStatesEnabled && (
 							<CreateGoalCTA />
 						) }
