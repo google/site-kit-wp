@@ -66,6 +66,7 @@ class Tag_Environment_Type_GuardTest extends TestCase {
 			'googlesitekit_allowed_tag_environment_types',
 			function ( $allowed_environments ) {
 				$allowed_environments[] = 'development';
+				return $allowed_environments;
 			}
 		);
 		$this->assertTrue( $tagproduction->can_activate() );
