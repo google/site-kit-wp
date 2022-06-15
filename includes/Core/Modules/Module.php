@@ -343,7 +343,7 @@ abstract class Module {
 			// even if a different client will be the one to execute the request because
 			// the default instance is what services are setup with.
 			$restore_defers[] = $this->get_client()->withDefer( true );
-			if ( $this->get_client() !== $oauth_client ) {
+			if ( $this->authentication->get_oauth_client() !== $oauth_client ) {
 				$restore_defers[] = $oauth_client->get_client()->withDefer( true );
 			}
 
