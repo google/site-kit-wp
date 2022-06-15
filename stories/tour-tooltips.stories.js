@@ -216,14 +216,14 @@ const MockWPDashboard = () => (
 									<td className="googlesitekit-table__body-item">
 										<div className="googlesitekit-table__body-item-content">
 											<a
-												className="googlesitekit-cta-link googlesitekit-table__body-item-link googlesitekit-cta-link--inherit"
+												className="googlesitekit-cta-link googlesitekit-table__body-item-link"
 												href="https://earthbound.com/wp-admin/admin.php?page=googlesitekit-dashboard&amp;permaLink=https%3A%2F%2Fearthbound.com%2F"
 											>
 												Earthbound – Updates from the
 												edge of space…
 											</a>
 											<a
-												className="googlesitekit-cta-link googlesitekit-table__body-item-url googlesitekit-cta-link--external googlesitekit-cta-link--inherit"
+												className="googlesitekit-cta-link googlesitekit-table__body-item-url googlesitekit-cta-link--external"
 												href="/"
 												target="_blank"
 												rel="noopener noreferrer"
@@ -243,13 +243,13 @@ const MockWPDashboard = () => (
 									<td className="googlesitekit-table__body-item">
 										<div className="googlesitekit-table__body-item-content">
 											<a
-												className="googlesitekit-cta-link googlesitekit-table__body-item-link googlesitekit-cta-link--inherit"
+												className="googlesitekit-cta-link googlesitekit-table__body-item-link"
 												href="https://earthbound.com/wp-admin/admin.php?page=googlesitekit-dashboard&amp;permaLink=https%3A%2F%2Fearthbound.com%2Fabout%2F"
 											>
 												About – Earthbound
 											</a>
 											<a
-												className="googlesitekit-cta-link googlesitekit-table__body-item-url googlesitekit-cta-link--external googlesitekit-cta-link--inherit"
+												className="googlesitekit-cta-link googlesitekit-table__body-item-url googlesitekit-cta-link--external"
 												href="/about/"
 												target="_blank"
 												rel="noopener noreferrer"
@@ -269,13 +269,13 @@ const MockWPDashboard = () => (
 									<td className="googlesitekit-table__body-item">
 										<div className="googlesitekit-table__body-item-content">
 											<a
-												className="step-4 googlesitekit-cta-link googlesitekit-table__body-item-link googlesitekit-cta-link--inherit"
+												className="step-4 googlesitekit-cta-link googlesitekit-table__body-item-link"
 												href="https://earthbound.com/wp-admin/admin.php?page=googlesitekit-dashboard&amp;permaLink=https%3A%2F%2Fearthbound.com%2Fwordpress-websites%2F"
 											>
 												WordPress Websites – Earthbound
 											</a>
 											<a
-												className="googlesitekit-cta-link googlesitekit-table__body-item-url googlesitekit-cta-link--external googlesitekit-cta-link--inherit"
+												className="googlesitekit-cta-link googlesitekit-table__body-item-url googlesitekit-cta-link--external"
 												href="/wordpress-websites/"
 												target="_blank"
 												rel="noopener noreferrer"
@@ -295,14 +295,14 @@ const MockWPDashboard = () => (
 									<td className="googlesitekit-table__body-item">
 										<div className="googlesitekit-table__body-item-content">
 											<a
-												className="googlesitekit-cta-link googlesitekit-table__body-item-link googlesitekit-cta-link--inherit"
+												className="googlesitekit-cta-link googlesitekit-table__body-item-link"
 												href="https://earthbound.com/wp-admin/admin.php?page=googlesitekit-dashboard&amp;permaLink=https%3A%2F%2Fearthbound.com%2Fwordpress-websites%2Fwordpress-programming%2F"
 											>
 												WordPress Programming &amp;
 												Development – Earthbound
 											</a>
 											<a
-												className="googlesitekit-cta-link googlesitekit-table__body-item-url googlesitekit-cta-link--external googlesitekit-cta-link--inherit"
+												className="googlesitekit-cta-link googlesitekit-table__body-item-url googlesitekit-cta-link--external"
 												href="/wordpress-websites/wordpress-programming/"
 												target="_blank"
 												rel="noopener noreferrer"
@@ -322,13 +322,13 @@ const MockWPDashboard = () => (
 									<td className="googlesitekit-table__body-item">
 										<div className="googlesitekit-table__body-item-content">
 											<a
-												className="googlesitekit-cta-link googlesitekit-table__body-item-link googlesitekit-cta-link--inherit"
+												className="googlesitekit-cta-link googlesitekit-table__body-item-link"
 												href="https://earthbound.com/wp-admin/admin.php?page=googlesitekit-dashboard&amp;permaLink=https%3A%2F%2Fearthbound.com%2Fcategory%2Fwordpress%2F"
 											>
 												WordPress – Earthbound
 											</a>
 											<a
-												className="googlesitekit-cta-link googlesitekit-table__body-item-url googlesitekit-cta-link--external googlesitekit-cta-link--inherit"
+												className="googlesitekit-cta-link googlesitekit-table__body-item-url googlesitekit-cta-link--external"
 												href="/category/wordpress/"
 												target="_blank"
 												rel="noopener noreferrer"

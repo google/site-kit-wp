@@ -31,29 +31,47 @@ import {
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
 import Link from '../Link';
 import Button from '../Button';
 import Portal from '../Portal';
 import ShareIcon from '../../../svg/icons/share.svg';
-import { Dialog, DialogContent, DialogFooter } from '../../material-components';
+import Footer from './DashboardSharingSettings/Footer';
+import useViewContext from '../../hooks/useViewContext';
+import DashboardSharingSettings from './DashboardSharingSettings';
+import { trackEvent } from '../../util';
+import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
+import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { BREAKPOINT_SMALL, useBreakpoint } from '../../hooks/useBreakpoint';
+import { Dialog, DialogContent, DialogFooter } from '../../material-components';
+import { EDITING_USER_ROLE_SELECT_SLUG_KEY } from './DashboardSharingSettings/constants';
+const { useSelect, useDispatch } = Data;
 
 export default function DashboardSharingSettingsButton() {
+	const viewContext = useViewContext();
 	const breakpoint = useBreakpoint();
+	const { setValue } = useDispatch( CORE_UI );
 	const [ dialogOpen, setDialogOpen ] = useState( false );
 
+	const hasMultipleAdmins = useSelect( ( select ) =>
+		select( CORE_SITE ).hasMultipleAdmins()
+	);
+
 	const openDialog = useCallback( () => {
+		trackEvent(
+			`${ viewContext }_headerbar`,
+			'open_sharing',
+			hasMultipleAdmins ? 'advanced' : 'simple'
+		);
+
 		setDialogOpen( true );
-	}, [] );
+	}, [ viewContext, hasMultipleAdmins ] );
 
 	const closeDialog = useCallback( () => {
 		setDialogOpen( false );
-	}, [] );
 
-	const onApply = useCallback( () => {
-		// @TODO: Implement Apply behaviour.
-		setDialogOpen( false );
-	}, [] );
+		setValue( EDITING_USER_ROLE_SELECT_SLUG_KEY, undefined );
+	}, [ setValue ] );
 
 	return (
 		<Fragment>
@@ -68,7 +86,7 @@ export default function DashboardSharingSettingsButton() {
 				<Dialog
 					open={ dialogOpen }
 					onClose={ closeDialog }
-					className="googlesitekit-dialog"
+					className="googlesitekit-dialog googlesitekit-sharing-settings-dialog"
 				>
 					<div
 						className="googlesitekit-dialog__back-wrapper"
@@ -117,8 +135,6 @@ export default function DashboardSharingSettingsButton() {
 													) }
 													href="https://sitekit.withgoogle.com/documentation/using-site-kit/dashboard-sharing/"
 													external
-													hideExternalIndicator
-													inherit
 												/>
 											),
 										}
@@ -126,16 +142,14 @@ export default function DashboardSharingSettingsButton() {
 								</p>
 							</div>
 						</div>
+
+						<div className="googlesitekit-dialog__main">
+							<DashboardSharingSettings />
+						</div>
 					</DialogContent>
 
 					<DialogFooter className="googlesitekit-dialog__footer">
-						<Link onClick={ closeDialog }>
-							{ __( 'Cancel', 'google-site-kit' ) }
-						</Link>
-
-						<Button onClick={ onApply }>
-							{ __( 'Apply', 'google-site-kit' ) }
-						</Button>
+						<Footer closeDialog={ closeDialog } />
 					</DialogFooter>
 				</Dialog>
 			</Portal>

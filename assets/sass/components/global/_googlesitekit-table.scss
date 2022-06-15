@@ -26,7 +26,6 @@
 		padding: $grid-gap-desktop;
 	}
 
-	.googlesitekit-details-widget &,
 	.googlesitekit-alltraffic-widget &,
 	.googlesitekit-wp-dashboard & {
 		padding: 0;
@@ -128,6 +127,13 @@
 
 	.googlesitekit-table__body-row {
 		border-bottom: 1px solid $c-border-light;
+
+		&--no-data {
+
+			td {
+				white-space: normal;
+			}
+		}
 	}
 
 	.googlesitekit-table__body-item {
@@ -164,10 +170,6 @@
 		}
 	}
 
-	.googlesitekit-table__body-item-wrap {
-		white-space: normal;
-	}
-
 	&--with-list {
 
 		.googlesitekit-table__body-row {
@@ -179,6 +181,13 @@
 
 			&:hover {
 				background-color: rgba($c-secondary, 0.05);
+			}
+
+			&--no-data {
+
+				&:hover {
+					background-color: transparent;
+				}
 			}
 		}
 

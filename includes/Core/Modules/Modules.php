@@ -368,6 +368,30 @@ final class Modules {
 		add_filter( 'default_option_' . Module_Sharing_Settings::OPTION, $this->get_method_proxy( 'filter_shared_ownership_module_settings' ), 20 );
 
 		add_action(
+			'add_option_' . Module_Sharing_Settings::OPTION,
+			function( $option, $values ) {
+				array_walk(
+					$values,
+					function( $value, $module_slug ) {
+						$module = $this->get_module( $module_slug );
+
+						if ( ! $module instanceof Module_With_Service_Entity ) {
+
+							$module->get_settings()->merge(
+								array(
+									'ownerID' => get_current_user_id(),
+								)
+							);
+
+						};
+					}
+				);
+			},
+			10,
+			2
+		);
+
+		add_action(
 			'update_option_' . Module_Sharing_Settings::OPTION,
 			function( $old_values, $values ) {
 				if ( is_array( $values ) && is_array( $old_values ) ) {
@@ -772,7 +796,7 @@ final class Modules {
 		};
 
 		$can_list_data = function() {
-			return current_user_can( Permissions::AUTHENTICATE ) || current_user_can( Permissions::VIEW_SHARED_DASHBOARD );
+			return current_user_can( Permissions::VIEW_SPLASH ) || current_user_can( Permissions::VIEW_DASHBOARD );
 		};
 
 		$can_view_insights = function() {
@@ -922,6 +946,18 @@ final class Modules {
 
 							if ( ! $this->is_module_connected( $slug ) ) {
 								return new WP_Error( 'module_not_connected', __( 'Module is not connected.', 'google-site-kit' ), array( 'status' => 400 ) );
+							}
+
+							if ( ! $module instanceof Module_With_Service_Entity ) {
+								if ( $module->is_shareable() ) {
+									return new WP_REST_Response(
+										array(
+											'access' => true,
+										)
+									);
+								}
+
+								return new WP_Error( 'invalid_module', __( 'Module access cannot be checked.', 'google-site-kit' ), array( 'status' => 400 ) );
 							}
 
 							$access = $module->check_service_entity_access();

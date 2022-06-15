@@ -170,7 +170,6 @@ export default function Footer( props ) {
 				{ hasSettings && (
 					<Link
 						className="googlesitekit-settings-module__footer-cancel"
-						inherit
 						onClick={ handleClose }
 					>
 						{ __( 'Cancel', 'google-site-kit' ) }
@@ -182,7 +181,6 @@ export default function Footer( props ) {
 		primaryColumn = (
 			<Link
 				className="googlesitekit-settings-module__edit-button"
-				inherit
 				to={ `/connected-services/${ slug }/edit` }
 				onClick={ handleEdit }
 			>
@@ -201,7 +199,6 @@ export default function Footer( props ) {
 			<Link
 				className="googlesitekit-settings-module__remove-button"
 				onClick={ handleDialog }
-				inherit
 				danger
 			>
 				{ sprintf(
@@ -221,7 +218,6 @@ export default function Footer( props ) {
 			<Link
 				href={ homepage }
 				className="googlesitekit-settings-module__cta-button"
-				inherit
 				external
 			>
 				{ sprintf(

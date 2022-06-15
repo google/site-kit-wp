@@ -118,11 +118,7 @@ function ResetButton( { children } ) {
 
 	return (
 		<Fragment>
-			<Link
-				className="googlesitekit-reset-button"
-				onClick={ openDialog }
-				inherit
-			>
+			<Link className="googlesitekit-reset-button" onClick={ openDialog }>
 				{ children || __( 'Reset Site Kit', 'google-site-kit' ) }
 			</Link>
 			<Portal>

@@ -63,7 +63,10 @@ const fetchHTMLForURLStore = createFetchStore( {
 		// If response contains HTML, return that. Return null in other cases.
 		try {
 			const html = await response.text();
-			return html !== undefined ? html : null;
+			if ( html === '' || html === undefined ) {
+				return null;
+			}
+			return html;
 		} catch {
 			return null;
 		}

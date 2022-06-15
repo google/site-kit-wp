@@ -14,8 +14,6 @@ use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Deactivation;
 use Google\Site_Kit\Core\Modules\Module_With_Debug_Fields;
-use Google\Site_Kit\Core\Modules\Module_With_Screen;
-use Google\Site_Kit\Core\Modules\Module_With_Screen_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Settings;
@@ -55,12 +53,11 @@ use WP_Error;
  * @ignore
  */
 final class AdSense extends Module
-	implements Module_With_Screen, Module_With_Scopes, Module_With_Settings, Module_With_Assets, Module_With_Debug_Fields, Module_With_Owner, Module_With_Service_Entity, Module_With_Deactivation {
+	implements Module_With_Scopes, Module_With_Settings, Module_With_Assets, Module_With_Debug_Fields, Module_With_Owner, Module_With_Service_Entity, Module_With_Deactivation {
 	use Method_Proxy_Trait;
 	use Module_With_Assets_Trait;
 	use Module_With_Owner_Trait;
 	use Module_With_Scopes_Trait;
-	use Module_With_Screen_Trait;
 	use Module_With_Settings_Trait;
 
 	/**
@@ -75,10 +72,6 @@ final class AdSense extends Module
 	 */
 	public function register() {
 		$this->register_scopes_hook();
-
-		if ( ! Feature_Flags::enabled( 'unifiedDashboard' ) ) {
-			$this->register_screen_hook();
-		}
 
 		add_action( 'wp_head', $this->get_method_proxy_once( 'render_platform_meta_tags' ) );
 
@@ -201,7 +194,7 @@ final class AdSense extends Module
 			'GET:accounts'      => array( 'service' => 'adsense' ),
 			'GET:alerts'        => array( 'service' => 'adsense' ),
 			'GET:clients'       => array( 'service' => 'adsense' ),
-			'GET:earnings'      => array(
+			'GET:report'        => array(
 				'service'   => 'adsense',
 				'shareable' => Feature_Flags::enabled( 'dashboardSharing' ),
 			),
@@ -264,7 +257,7 @@ final class AdSense extends Module
 				}
 				$service = $this->get_service( 'adsense' );
 				return $service->accounts_adclients->listAccountsAdclients( self::normalize_account_id( $data['accountID'] ) );
-			case 'GET:earnings':
+			case 'GET:report':
 				$start_date = $data['startDate'];
 				$end_date   = $data['endDate'];
 				if ( ! strtotime( $start_date ) || ! strtotime( $end_date ) ) {
@@ -396,7 +389,7 @@ final class AdSense extends Module
 				return array_map( array( self::class, 'filter_client_with_ids' ), $response->getAdClients() );
 			case 'GET:urlchannels':
 				return $response->getUrlChannels();
-			case 'GET:earnings':
+			case 'GET:report':
 				return $response;
 			case 'GET:sites':
 				return $response->getSites();

@@ -102,9 +102,11 @@ final class Assets {
 		);
 
 		// All other asset-related general logic should only be active when the
-		// current user can actually use Site Kit (which only is so if they can
-		// authenticate).
-		if ( ! current_user_can( Permissions::AUTHENTICATE ) ) {
+		// current user can actually use Site Kit.
+		if ( false === (
+				current_user_can( Permissions::VIEW_SPLASH ) || current_user_can( Permissions::VIEW_DASHBOARD )
+			)
+		) {
 			return;
 		}
 
@@ -580,13 +582,6 @@ final class Assets {
 				array(
 					'src'          => $base_url . 'js/googlesitekit-dashboard.js',
 					'dependencies' => $dependencies_for_dashboard_sharing,
-				)
-			),
-			new Script(
-				'googlesitekit-module',
-				array(
-					'src'          => $base_url . 'js/googlesitekit-module.js',
-					'dependencies' => $dependencies,
 				)
 			),
 			new Script(

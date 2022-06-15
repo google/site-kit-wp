@@ -53,7 +53,6 @@ function HelpMenuLink( { children, href, gaEventLabel } ) {
 				href={ href }
 				external
 				hideExternalIndicator
-				inherit
 				role="menuitem"
 				onClick={ onClick }
 			>

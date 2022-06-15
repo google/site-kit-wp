@@ -49,11 +49,7 @@ export default function DetailsPermaLinks( { title, path, serviceURL } ) {
 
 	return (
 		<Fragment>
-			<Link
-				href={ serviceURL || detailsURL }
-				inherit
-				external={ !! serviceURL }
-			>
+			<Link href={ serviceURL || detailsURL } external={ !! serviceURL }>
 				{ title }
 			</Link>
 
@@ -65,7 +61,6 @@ export default function DetailsPermaLinks( { title, path, serviceURL } ) {
 				href={ permaLink }
 				target="_blank" // No external styling.
 				small
-				inherit
 			>
 				{ path }
 			</Link>

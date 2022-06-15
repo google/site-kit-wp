@@ -127,7 +127,6 @@ export default function SetupModule( { slug, name, description } ) {
 				<Link
 					onClick={ onSetup }
 					href=""
-					inherit
 					disabled={ ! canActivateModule }
 					arrow
 				>

@@ -20,11 +20,11 @@
  * Internal dependencies
  */
 import Modules from 'googlesitekit-modules';
-import { isFeatureEnabled } from '../../../features';
 import { MODULES_ADSENSE } from './constants';
 import { validateCanSubmitChanges } from './settings';
 
 const baseModuleStore = Modules.createModuleStore( 'adsense', {
+	ownedSettingsSlugs: [ 'accountID', 'clientID' ],
 	storeName: MODULES_ADSENSE,
 	settingSlugs: [
 		'accountID',
@@ -38,9 +38,6 @@ const baseModuleStore = Modules.createModuleStore( 'adsense', {
 		'webStoriesAdUnit',
 		'autoAdsDisabled',
 	],
-	adminPage: isFeatureEnabled( 'unifiedDashboard' )
-		? undefined
-		: 'googlesitekit-module-adsense',
 	validateCanSubmitChanges,
 	validateIsSetupBlocked: ( select ) => {
 		if ( select( MODULES_ADSENSE ).isAdBlockerActive() ) {

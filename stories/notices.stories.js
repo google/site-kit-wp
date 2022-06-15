@@ -36,7 +36,6 @@ const LearnMore = () => (
 	<Link
 		href="https://sitekit.withgoogle.com/documentation/using-site-kit/ga4/"
 		external
-		inherit
 	>
 		Learn more
 	</Link>

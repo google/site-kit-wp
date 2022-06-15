@@ -46,7 +46,6 @@ import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import {
 	CORE_USER,
 	DISCONNECTED_REASON_CONNECTED_URL_MISMATCH,
-	PERMISSION_VIEW_SHARED_DASHBOARD,
 } from '../../googlesitekit/datastore/user/constants';
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
@@ -107,8 +106,16 @@ export default function SetupUsingProxyWithSignIn() {
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' )
 	);
 
-	const canViewSharedDashboard = useSelect( ( select ) =>
-		select( CORE_USER ).hasCapability( PERMISSION_VIEW_SHARED_DASHBOARD )
+	const hasViewableModules = useSelect(
+		( select ) => !! select( CORE_USER ).getViewableModules()?.length
+	);
+
+	// These will be `null` if no errors exist.
+	const setupErrorMessage = useSelect( ( select ) =>
+		select( CORE_SITE ).getSetupErrorMessage()
+	);
+	const setupErrorRedoURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getSetupErrorRedoURL()
 	);
 
 	const { dismissItem } = useDispatch( CORE_USER );
@@ -116,10 +123,13 @@ export default function SetupUsingProxyWithSignIn() {
 	const { activateModule } = useDispatch( CORE_MODULES );
 
 	const goToSharedDashboard = useCallback( () => {
-		dismissItem( SHARED_DASHBOARD_SPLASH_ITEM_KEY );
-
-		navigateTo( dashboardURL );
-	}, [ dashboardURL, dismissItem, navigateTo ] );
+		Promise.all( [
+			dismissItem( SHARED_DASHBOARD_SPLASH_ITEM_KEY ),
+			trackEvent( viewContext, 'skip_setup_to_viewonly' ),
+		] ).finally( () => {
+			navigateTo( dashboardURL );
+		} );
+	}, [ dashboardURL, dismissItem, navigateTo, viewContext ] );
 
 	const onButtonClick = useCallback(
 		async ( event ) => {
@@ -165,9 +175,6 @@ export default function SetupUsingProxyWithSignIn() {
 			viewContext,
 		]
 	);
-
-	// @TODO: this needs to be migrated to the core/site datastore in the future
-	const { errorMessage } = global._googlesitekitLegacyData.setup;
 
 	let title;
 	let description;
@@ -225,7 +232,7 @@ export default function SetupUsingProxyWithSignIn() {
 			<Header>
 				<HelpMenu />
 			</Header>
-			{ errorMessage && (
+			{ setupErrorMessage && (
 				<BannerNotification
 					id="setup_error"
 					type="win-error"
@@ -233,8 +240,13 @@ export default function SetupUsingProxyWithSignIn() {
 						'Oops! There was a problem during set up. Please try again.',
 						'google-site-kit'
 					) }
-					description={ errorMessage }
+					description={ setupErrorMessage }
 					isDismissible={ false }
+					ctaLabel={ __(
+						'Redo the plugin setup',
+						'google-site-kit'
+					) }
+					ctaLink={ setupErrorRedoURL }
 				/>
 			) }
 			{ getQueryArg( location.href, 'notification' ) ===
@@ -351,13 +363,12 @@ export default function SetupUsingProxyWithSignIn() {
 																	inProgressFeedback
 																}
 																{ dashboardSharingEnabled &&
-																	canViewSharedDashboard &&
+																	hasViewableModules &&
 																	complete && (
 																		<Link
 																			onClick={
 																				goToSharedDashboard
 																			}
-																			inherit
 																		>
 																			{ __(
 																				'Skip sign-in and view limited dashboard',

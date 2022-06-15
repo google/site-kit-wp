@@ -81,7 +81,7 @@ class REST_Dismissals_Controller {
 	 */
 	protected function get_rest_routes() {
 		$can_dismiss_item = function() {
-			return current_user_can( Permissions::AUTHENTICATE ) || current_user_can( Permissions::VIEW_SHARED_DASHBOARD );
+			return current_user_can( Permissions::VIEW_SPLASH ) || current_user_can( Permissions::VIEW_DASHBOARD );
 		};
 
 		return array(

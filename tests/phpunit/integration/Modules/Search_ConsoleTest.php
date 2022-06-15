@@ -12,13 +12,11 @@ namespace Google\Site_Kit\Tests\Modules;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
-use Google\Site_Kit\Core\Modules\Module_With_Screen;
 use Google\Site_Kit\Core\Modules\Module_With_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Service_Entity;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Modules\Search_Console;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Scopes_ContractTests;
-use Google\Site_Kit\Tests\Core\Modules\Module_With_Screen_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Settings_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Owner_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Service_Entity_ContractTests;
@@ -29,7 +27,6 @@ use Google\Site_Kit\Tests\TestCase;
  */
 class Search_ConsoleTest extends TestCase {
 	use Module_With_Scopes_ContractTests;
-	use Module_With_Screen_ContractTests;
 	use Module_With_Settings_ContractTests;
 	use Module_With_Owner_ContractTests;
 	use Module_With_Service_Entity_ContractTests;
@@ -47,11 +44,9 @@ class Search_ConsoleTest extends TestCase {
 		$property_url   = 'https://example.com';
 
 		remove_all_filters( 'googlesitekit_auth_scopes' );
-		remove_all_filters( 'googlesitekit_module_screens' );
 		remove_all_filters( 'googlesitekit_setup_complete' );
 
 		$this->assertEmpty( apply_filters( 'googlesitekit_auth_scopes', array() ) );
-		$this->assertEmpty( apply_filters( 'googlesitekit_module_screens', array() ) );
 		$this->assertTrue( apply_filters( 'googlesitekit_setup_complete', true ) );
 
 		// Register search console.
@@ -63,33 +58,12 @@ class Search_ConsoleTest extends TestCase {
 			apply_filters( 'googlesitekit_auth_scopes', array() )
 		);
 
-		// Test registers screen.
-		$this->assertContains(
-			$search_console->get_screen(),
-			apply_filters( 'googlesitekit_module_screens', array() )
-		);
-
 		// Test sitekit setup complete requires property set.
 		$this->assertFalse( apply_filters( 'googlesitekit_setup_complete', true ) );
 		$options = new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$options->set( 'googlesitekit_search_console_property', $property_url );
 		$this->assertTrue( apply_filters( 'googlesitekit_setup_complete', true ) );
 	}
-
-	public function test_register_unified_dashboard() {
-		$this->enable_feature( 'unifiedDashboard' );
-
-		$search_console = new Search_Console( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		remove_all_filters( 'googlesitekit_module_screens' );
-
-		$this->assertEmpty( apply_filters( 'googlesitekit_module_screens', array() ) );
-
-		$search_console->register();
-
-		// Verify the screen is not registered.
-		$this->assertEmpty( apply_filters( 'googlesitekit_module_screens', array() ) );
-	}
-
 
 	public function test_get_datapoints() {
 		$search_console = new Search_Console( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
@@ -120,13 +94,6 @@ class Search_ConsoleTest extends TestCase {
 	 * @return Module_With_Scopes
 	 */
 	protected function get_module_with_scopes() {
-		return new Search_Console( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-	}
-
-	/**
-	 * @return Module_With_Screen
-	 */
-	protected function get_module_with_screen() {
 		return new Search_Console( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 	}
 

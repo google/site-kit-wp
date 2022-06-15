@@ -25,7 +25,13 @@
 		}
 
 		.mdc-dialog__container {
+			max-width: 908px;
 			width: 100%;
+
+			@media (min-width: $bp-tablet) {
+				max-height: calc(100vh - 120px);
+				width: 80%;
+			}
 		}
 
 		.mdc-dialog__surface {
@@ -39,8 +45,6 @@
 			@media (min-width: $bp-tablet) {
 				border-radius: 8px;
 				height: auto;
-				max-width: 908px;
-				width: 80%;
 			}
 
 			.admin-bar & {
@@ -82,6 +86,7 @@
 		}
 
 		.googlesitekit-dialog__content {
+			overflow: auto;
 			padding: 24px 16px;
 
 			@media (min-width: $bp-tablet) {
@@ -142,10 +147,10 @@
 
 		.googlesitekit-dialog__footer {
 			box-shadow: 0 -1px 4px 2px rgba(60, 64, 67, 0.15);
-			gap: 32px;
 			justify-content: flex-end;
 			margin: 0;
 			padding: 16px;
+			z-index: 2;
 
 			@media (min-width: $bp-tablet) {
 				padding: 20px 32px;
