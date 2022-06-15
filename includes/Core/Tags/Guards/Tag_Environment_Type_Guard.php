@@ -37,6 +37,10 @@ class Tag_Environment_Type_Guard implements Guard_Interface {
 			array( 'production' )
 		);
 
+		if ( ! is_array( $allowed_environments ) ) {
+			return false;
+		}
+
 		return in_array( wp_get_environment_type(), $allowed_environments, true );
 	}
 }
