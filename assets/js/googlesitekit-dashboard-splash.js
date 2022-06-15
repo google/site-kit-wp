@@ -26,7 +26,6 @@ import { render } from '@wordpress/element';
  * Internal dependencies
  */
 import { clearWebStorage } from './util';
-import './components/legacy-notifications';
 import Root from './components/Root';
 import DashboardSplashApp from './components/dashboard-splash/DashboardSplashApp';
 import { VIEW_CONTEXT_DASHBOARD_SPLASH } from './googlesitekit/constants';

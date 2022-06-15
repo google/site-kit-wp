@@ -25,7 +25,6 @@ import { render } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import './components/legacy-notifications';
 import Root from './components/Root';
 import UserInputApp from './components/user-input/UserInputApp';
 import { VIEW_CONTEXT_USER_INPUT } from './googlesitekit/constants';
