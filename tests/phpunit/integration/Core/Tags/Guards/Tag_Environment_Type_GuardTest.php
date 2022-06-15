@@ -45,6 +45,22 @@ class Tag_Environment_Type_GuardTest extends TestCase {
 		$tagproduction = new Tag_Environment_Type_Guard();
 		uopz_set_static( 'wp_get_environment_type', array( 'current_env' => 'development' ) );
 		$this->assertFalse( $tagproduction->can_activate() );
+		uopz_set_static( 'wp_get_environment_type', array( 'current_env' => $env_type ) );
+
+	}
+
+	public function test_can_activate_in_development() {
+		// Pre WP-5.5.0
+		if ( ! function_exists( 'wp_get_environment_type' ) ) {
+			$this->markTestSkipped( 'Missing wp_get_environment_type() function.' );
+		}
+		if ( ! function_exists( 'uopz_set_static' ) ) {
+			$this->markTestSkipped( 'The uopz extension is not available.' );
+		}
+		$env_type      = wp_get_environment_type();
+		$tagproduction = new Tag_Environment_Type_Guard();
+		uopz_set_static( 'wp_get_environment_type', array( 'current_env' => 'development' ) );
+		$this->assertFalse( $tagproduction->can_activate() );
 
 		add_filter(
 			'googlesitekit_allowed_tag_environment_types',
