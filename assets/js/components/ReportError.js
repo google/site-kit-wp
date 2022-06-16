@@ -75,10 +75,8 @@ export default function ReportError( { moduleSlug, error } ) {
 	);
 
 	const showRetry =
-		!! (
-			error?.selectorData?.storeName &&
-			error.selectorData?.name === 'getReport'
-		) &&
+		!! error?.selectorData?.storeName &&
+		error.selectorData?.name === 'getReport' &&
 		! isInsufficientPermissionsError( error ) &&
 		! isPermissionScopeError( error ) &&
 		! isAuthError( error );
