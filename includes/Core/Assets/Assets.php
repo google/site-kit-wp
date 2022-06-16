@@ -815,13 +815,11 @@ final class Assets {
 		);
 
 		/**
-		 * Filters the most basic inline data to pass to JS.
+		 * Filters the data relevant to trackEvent calls to pass to JS.
 		 *
-		 * This should not include anything remotely expensive to compute.
+		 * @since n.e.x.t
 		 *
-		 * @since 1.2.0
-		 *
-		 * @param array $data Base data.
+		 * @param array $inline_data Tracking data.
 		 */
 		return apply_filters( 'googlesitekit_inline_tracking_data', $inline_data );
 	}
