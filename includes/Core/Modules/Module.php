@@ -836,4 +836,22 @@ abstract class Module {
 
 		return false;
 	}
+
+	/**
+	 * Checks whether the module is recoverable.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return bool
+	 */
+	public function is_recoverable() {
+		/**
+		 * Filters the recoverable status of the module.
+		 *
+		 * @since n.e.x.t
+		 * @param bool   $_    Whether or not the module is recoverable. Default: false
+		 * @param string $slug Module slug.
+		 */
+		return (bool) apply_filters( 'googlesitekit_is_module_recoverable', false, $this->slug );
+	}
 }
