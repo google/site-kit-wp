@@ -54,7 +54,13 @@ const CTA = ( {
 			</div>
 		) }
 		{ ctaLabel && ctaType === 'button' && (
-			<Button onClick={ onClick }>{ ctaLabel }</Button>
+			<Button
+				aria-label={ ariaLabel }
+				href={ ctaLink }
+				onClick={ onClick }
+			>
+				{ ctaLabel }
+			</Button>
 		) }
 		{ ctaLabel && ctaType === 'link' && (
 			<Link
