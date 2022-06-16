@@ -577,9 +577,17 @@ abstract class Module {
 			&& $this->is_shareable()
 			&& $datapoint->is_shareable()
 			&& $this->get_owner_id() !== get_current_user_id()
+			&& ! $this->is_recoverable()
 			&& current_user_can( Permissions::READ_SHARED_MODULE_DATA, $this->slug )
 		) {
-			return $this->get_owner_oauth_client();
+			$oauth_client = $this->get_owner_oauth_client();
+
+			try {
+				$this->validate_base_scopes( $oauth_client );
+				return $oauth_client;
+			} catch ( Exception $exception ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
+				// Fallthrough to default oauth client if scopes are unsatisfied.
+			}
 		}
 
 		return $this->authentication->get_oauth_client();
