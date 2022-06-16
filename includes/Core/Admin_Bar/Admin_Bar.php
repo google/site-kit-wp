@@ -206,7 +206,7 @@ final class Admin_Bar {
 			}
 		} else {
 			// Otherwise use more general permission check (typically admin-only).
-			if ( ! current_user_can( Permissions::VIEW_DASHBOARD ) ) {
+			if ( ! current_user_can( Permissions::VIEW_ADMIN_BAR_MENU ) ) {
 				return false;
 			}
 		}

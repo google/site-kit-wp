@@ -83,7 +83,7 @@ final class Dashboard {
 		);
 
 		$wp_dashboard_callback = function() {
-			if ( 'dashboard' === get_current_screen()->id && current_user_can( Permissions::VIEW_DASHBOARD ) ) {
+			if ( 'dashboard' === get_current_screen()->id && current_user_can( Permissions::VIEW_WP_DASHBOARD_WIDGET ) ) {
 				// Enqueue styles.
 				$this->assets->enqueue_asset( 'googlesitekit-wp-dashboard-css' );
 
@@ -102,8 +102,7 @@ final class Dashboard {
 	 * @since 1.0.0
 	 */
 	private function add_widgets() {
-		// Only show the Dashboard Widget if the current user has access.
-		if ( ! current_user_can( Permissions::VIEW_DASHBOARD ) ) {
+		if ( ! current_user_can( Permissions::VIEW_WP_DASHBOARD_WIDGET ) ) {
 			return;
 		}
 

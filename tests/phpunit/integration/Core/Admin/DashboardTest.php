@@ -38,7 +38,7 @@ class DashboardTest extends TestCase {
 		add_filter(
 			'map_meta_cap',
 			function ( $caps, $cap ) {
-				if ( Permissions::VIEW_DASHBOARD === $cap ) {
+				if ( Permissions::VIEW_WP_DASHBOARD_WIDGET === $cap ) {
 					$caps = array_filter(
 						$caps,
 						function ( $cap ) {
@@ -53,9 +53,9 @@ class DashboardTest extends TestCase {
 			2
 		);
 
-		$this->assertFalse( current_user_can( Permissions::VIEW_DASHBOARD ) );
+		$this->assertFalse( current_user_can( Permissions::VIEW_WP_DASHBOARD_WIDGET ) );
 		wp_set_current_user( $admin_id );
-		$this->assertTrue( current_user_can( Permissions::VIEW_DASHBOARD ) );
+		$this->assertTrue( current_user_can( Permissions::VIEW_WP_DASHBOARD_WIDGET ) );
 
 		require_once ABSPATH . 'wp-admin/includes/dashboard.php';
 		wp_dashboard_setup();
