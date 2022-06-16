@@ -72,7 +72,7 @@ ReportErrorWithRetryButton.args = {
 		code: 'test-error-code',
 		message: 'Test error message',
 		data: {
-			reason: ERROR_REASON_INSUFFICIENT_PERMISSIONS,
+			reason: 'Data Error',
 		},
 		selectorData: {
 			args: [
