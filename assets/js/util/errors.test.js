@@ -26,6 +26,7 @@ import {
 	ERROR_CODE_MISSING_REQUIRED_SCOPE,
 	ERROR_REASON_INSUFFICIENT_PERMISSIONS,
 	ERROR_REASON_FORBIDDEN,
+	isAuthError,
 } from './errors';
 
 describe( 'Error Utilities', () => {
@@ -115,10 +116,37 @@ describe( 'Error Utilities', () => {
 		} );
 	} );
 
+	describe( 'isAuthError', () => {
+		it( 'should return TRUE if the error object has the `reconnectURL` property', () => {
+			const error = {
+				data: {
+					reconnectURL: 'example.com',
+				},
+			};
+
+			expect( isAuthError( error ) ).toBe( true );
+		} );
+
+		it( 'should return FALSE if the error object does not have `reconnectURL` property', () => {
+			const error = {
+				data: {
+					reason: 'dailyLimitExceeded',
+				},
+			};
+
+			expect( isAuthError( error ) ).toBe( false );
+		} );
+
+		it( 'should return FALSE if the passed object does not have the code property', () => {
+			expect( isAuthError( { message: 'Not Found' } ) ).toBe( false );
+		} );
+	} );
+
 	describe.each( [
 		[ 'isWPError', isWPError ],
 		[ 'isPermissionScopeError', isPermissionScopeError ],
 		[ 'isInsufficientPermissionsError', isInsufficientPermissionsError ],
+		[ 'isAuthError', isAuthError ],
 	] )( '%s', ( fnName, fn ) => {
 		it( 'should return FALSE for non-plain objects', () => {
 			expect( fn( new Error() ) ).toBe( false );
