@@ -73,3 +73,15 @@ export function isInsufficientPermissionsError( error ) {
 		ERROR_REASON_FORBIDDEN,
 	].includes( error?.data?.reason );
 }
+
+/**
+ * Checks if the given error is an auth error.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} error The error object to check.
+ * @return {boolean} TRUE if it's an auth error, otherwise FALSE.
+ */
+export function isAuthError( error ) {
+	return !! error?.data?.reconnectURL;
+}
