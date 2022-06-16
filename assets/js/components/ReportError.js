@@ -32,7 +32,11 @@ import { __, sprintf } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
-import { isInsufficientPermissionsError } from '../util/errors';
+import {
+	isAuthError,
+	isInsufficientPermissionsError,
+	isPermissionScopeError,
+} from '../util/errors';
 import { getInsufficientPermissionsErrorDescription } from '../util/insufficient-permissions-error-description';
 import { purify } from '../util/purify';
 import ErrorText from '../components/ErrorText';
@@ -70,25 +74,32 @@ export default function ReportError( { moduleSlug, error } ) {
 		purify.sanitize( message, { ALLOWED_TAGS: [] } )
 	);
 
-	const retry = !! error?.selectorData?.storeName;
+	const showRetry =
+		!! (
+			error?.selectorData?.storeName &&
+			error.selectorData?.name === 'getReport'
+		) &&
+		! isInsufficientPermissionsError( error ) &&
+		! isPermissionScopeError( error ) &&
+		! isAuthError( error );
 
 	const handleRetry = useCallback( () => {
-		if ( retry ) {
-			const { selectorData } = error;
-			dispatch( selectorData.storeName ).invalidateResolution(
-				selectorData.name,
-				selectorData.args
-			);
-		}
-	}, [ dispatch, error, retry ] );
+		const { selectorData } = error;
+		dispatch( selectorData.storeName ).invalidateResolution(
+			selectorData.name,
+			selectorData.args
+		);
+	}, [ dispatch, error ] );
 
 	return (
 		<CTA
 			title={ title }
 			description={ description }
-			ctaType={ retry ? 'button' : undefined }
-			ctaLabel={ retry ? __( 'Retry', 'google-site-kit' ) : undefined }
-			onClick={ retry ? handleRetry : undefined }
+			ctaType={ showRetry ? 'button' : undefined }
+			ctaLabel={
+				showRetry ? __( 'Retry', 'google-site-kit' ) : undefined
+			}
+			onClick={ showRetry ? handleRetry : undefined }
 			error
 		/>
 	);
