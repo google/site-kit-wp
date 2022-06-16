@@ -37,7 +37,7 @@ export const selectors = {
 	 * Returns `false` if the widget context is NOT active.
 	 *
 	 * @since 1.47.0
-	 * @since n.e.x.t Add options.modules parameter.
+	 * @since 1.77.0 Add options.modules parameter.
 	 *
 	 * @param {Object}         state             Data store's state.
 	 * @param {string}         slug              Widget context's slug.

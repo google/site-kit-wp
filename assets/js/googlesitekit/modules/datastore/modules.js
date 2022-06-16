@@ -500,7 +500,7 @@ const baseActions = {
 	 *
 	 * Recovers multiple modules (based on the slugs provided).
 	 *
-	 * @since n.e.x.t
+	 * @since 1.77.0
 	 *
 	 * @param {Array.<string>} slugs Array of slugs of the modules to recover.
 	 * @return {Object} Object with `{response, error}`.
@@ -587,7 +587,7 @@ const baseActions = {
 	 * from a global variable (`_googlesitekitDashboardSharingData`), set by PHP
 	 * in the `before_print` callback for `googlesitekit-datastore-site`.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.77.0
 	 * @private
 	 *
 	 * @param {Object} sharedOwnershipModules Shared ownership modules, usually supplied via a global variable from PHP.
@@ -1264,7 +1264,7 @@ const baseSelectors = {
 	 *
 	 * Returns an Object/map of objects, keyed by slug as same as `getModules`.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.77.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(Object|undefined)} Shared ownership modules available on the site; `undefined` if not loaded.
