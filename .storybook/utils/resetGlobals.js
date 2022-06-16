@@ -45,8 +45,6 @@ export const resetGlobals = () => {
 			'http://example.com/wp-admin/index.php?action=googlesitekit_proxy_setup&nonce=abc123',
 		proxyPermissionsURL:
 			'http://example.com/wp-admin/index.php?action=googlesitekit_proxy_permissions&nonce=abc123',
-		trackingEnabled: false,
-		trackingID: 'UA-000000000-1',
 		userRoles: [ 'administrator' ],
 		isAuthenticated: false,
 	};
