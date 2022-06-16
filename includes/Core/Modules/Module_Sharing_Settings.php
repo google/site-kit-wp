@@ -127,7 +127,7 @@ class Module_Sharing_Settings extends Setting {
 	 * Merges a partial Module_Sharing_Settings option array into existing sharing settings.
 	 *
 	 * @since 1.75.0
-	 * @since n.e.x.t Removed capability checks.
+	 * @since 1.77.0 Removed capability checks.
 	 *
 	 * @param array $partial Partial settings array to update existing settings with.
 	 *
@@ -206,7 +206,7 @@ class Module_Sharing_Settings extends Setting {
 	 * the elements of array1 with elements of array2. Otherwise, it adds/appends
 	 * elements of array2.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.77.0
 	 *
 	 * @param array $array1 First array.
 	 * @param array $array2 Second array.

@@ -235,7 +235,7 @@ export const selectors = {
 	/**
 	 * Checks if the specified module is shareable and viewable by the current user.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.77.0
 	 *
 	 * @param {Object} state      Data store's state.
 	 * @param {string} moduleSlug Module slug to check.

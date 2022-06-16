@@ -13,7 +13,7 @@ namespace Google\Site_Kit\Core\Util;
 /**
  * Class for filtering a specific key of a collection based on a capability.
  *
- * @since n.e.x.t
+ * @since 1.77.0
  * @access private
  * @ignore
  */
@@ -22,7 +22,7 @@ class Collection_Key_Cap_Filter {
 	/**
 	 * Collection key.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.77.0
 	 * @var string
 	 */
 	private $key;
@@ -30,7 +30,7 @@ class Collection_Key_Cap_Filter {
 	/**
 	 * Capability.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.77.0
 	 * @var string
 	 */
 	private $cap;
@@ -38,7 +38,7 @@ class Collection_Key_Cap_Filter {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t.
+	 * @since 1.77.0.
 	 *
 	 * @param string $key        Target collection key to filter.
 	 * @param string $capability Required capability to filter by.
@@ -52,7 +52,7 @@ class Collection_Key_Cap_Filter {
 	 * Filters the given value of a specific key in each item of the given collection
 	 * based on the key and capability.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.77.0
 	 *
 	 * @param array[] $collection Array of arrays.
 	 * @return array[] Filtered collection.
