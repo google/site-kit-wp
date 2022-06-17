@@ -35,6 +35,7 @@ import helpVisibility from './help-visibility';
 import ideaHubModule from './idea-hub-module';
 import ideaHubPostsTable from './idea-hub-posts-table';
 import unifiedDashboard from './unified-dashboard';
+import dashboardSharing from './dashboard-sharing';
 
 const allTrafficWidget = {
 	slug: 'allTrafficWidget',
@@ -109,4 +110,5 @@ export default [
 	ideaHubModule,
 	ideaHubPostsTable,
 	unifiedDashboard,
+	dashboardSharing,
 ];

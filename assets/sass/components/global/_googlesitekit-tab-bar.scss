@@ -25,7 +25,7 @@
 		}
 
 		.mdc-tab {
-			background-color: $c-surfaces-surface-2;
+			background-color: $c-surfaces-surface;
 			color: $c-surfaces-on-surface;
 			font-size: $fs-body-md;
 			font-weight: $fw-primary-medium;
@@ -54,14 +54,6 @@
 		.mdc-tab__text-label {
 			color: $c-surfaces-on-surface;
 			opacity: 1;
-		}
-
-		.mdc-tab--active {
-			background-color: $c-surfaces-surface;
-
-			.mdc-tab__text-label {
-				color: $c-surfaces-on-surface;
-			}
 		}
 	}
 }

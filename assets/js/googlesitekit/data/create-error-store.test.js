@@ -170,47 +170,97 @@ describe( 'createErrorStore store', () => {
 	} );
 
 	describe( 'selectors', () => {
-		describe.each( [ 'getErrorForSelector', 'getErrorForAction' ] )(
-			'%s',
-			( selectorName ) => {
-				const baseNameParam =
-					selectorName === 'getErrorForSelector'
-						? 'selectorName'
-						: 'actionName';
+		describe( 'getErrorForSelector', () => {
+			it( 'requires a `selectorName` param', () => {
+				expect( () => {
+					select.getErrorForSelector();
+				} ).toThrow( 'selectorName is required.' );
+			} );
 
-				it( `requires a \`${ baseNameParam }\` param`, () => {
-					expect( () => {
-						select[ selectorName ]();
-					} ).toThrow( `${ baseNameParam } is required.` );
+			it( 'returns `undefined` when no has been received error for the given `selectorName`', () => {
+				expect(
+					select.getErrorForSelector( 'nonExistentBaseName' )
+				).toBeUndefined();
+			} );
+
+			it( 'returns the error for the given `selectorName` with empty `args` or none', () => {
+				dispatch.receiveError( errorForbidden, baseName, [] );
+
+				expect( select.getErrorForSelector( baseName ) ).toEqual( {
+					...errorForbidden,
+					selectorData: {
+						args: [],
+						name: baseName,
+						storeName: TEST_STORE,
+					},
 				} );
-
-				it( `returns \`undefined\` when no has been received error for the given \`${ baseNameParam }\``, () => {
-					expect(
-						select[ selectorName ]( 'nonExistentBaseName' )
-					).toBeUndefined();
+				expect( select.getErrorForSelector( baseName, [] ) ).toEqual( {
+					...errorForbidden,
+					selectorData: {
+						args: [],
+						name: baseName,
+						storeName: TEST_STORE,
+					},
 				} );
+			} );
 
-				it( `returns the error for the given \`${ baseNameParam }\` with empty \`args\` or none`, () => {
-					dispatch.receiveError( errorForbidden, baseName, [] );
+			it.each( [
+				[
+					'returns the error received for the given `selectorName` and `args`',
+				],
+				[
+					'`selectorData` matches the selector name for the given `selectorName` and `args`',
+				],
+			] )( '%s', () => {
+				dispatch.receiveError( errorNotFound, baseName, [] );
+				dispatch.receiveError( errorForbidden, baseName, args );
 
-					expect( select[ selectorName ]( baseName ) ).toEqual(
-						errorForbidden
-					);
-					expect( select[ selectorName ]( baseName, [] ) ).toEqual(
-						errorForbidden
-					);
-				} );
+				expect( select.getErrorForSelector( baseName, args ) ).toEqual(
+					{
+						...errorForbidden,
+						selectorData: {
+							args,
+							name: baseName,
+							storeName: TEST_STORE,
+						},
+					}
+				);
+			} );
+		} );
 
-				it( `returns the error received for the given \`${ baseNameParam }\` and \`args\``, () => {
-					dispatch.receiveError( errorNotFound, baseName, [] );
-					dispatch.receiveError( errorForbidden, baseName, args );
+		describe( 'getErrorForAction', () => {
+			it( 'requires a `actionName` param', () => {
+				expect( () => {
+					select.getErrorForAction();
+				} ).toThrow( 'actionName is required.' );
+			} );
 
-					expect( select[ selectorName ]( baseName, args ) ).toEqual(
-						errorForbidden
-					);
-				} );
-			}
-		);
+			it( 'returns `undefined` when no has been received error for the given `actionName`', () => {
+				expect(
+					select.getErrorForAction( 'nonExistentBaseName' )
+				).toBeUndefined();
+			} );
+
+			it( 'returns the error for the given `actionName` with empty `args` or none', () => {
+				dispatch.receiveError( errorForbidden, baseName, [] );
+
+				expect( select.getErrorForAction( baseName ) ).toEqual(
+					errorForbidden
+				);
+				expect( select.getErrorForAction( baseName, [] ) ).toEqual(
+					errorForbidden
+				);
+			} );
+
+			it( 'returns the error received for the given `actionName` and `args`', () => {
+				dispatch.receiveError( errorNotFound, baseName, [] );
+				dispatch.receiveError( errorForbidden, baseName, args );
+
+				expect( select.getErrorForAction( baseName, args ) ).toEqual(
+					errorForbidden
+				);
+			} );
+		} );
 
 		describe( 'getError', () => {
 			describe( 'legacy argumentless behavior', () => {
