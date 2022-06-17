@@ -414,7 +414,8 @@ final class Screens {
 						(
 							Feature_Flags::enabled( 'dashboardSharing' ) &&
 							$dismissed_items->is_dismissed( 'shared_dashboard_splash' ) &&
-							current_user_can( Permissions::VIEW_SHARED_DASHBOARD )
+							current_user_can( Permissions::VIEW_SHARED_DASHBOARD ) &&
+							! current_user_can( Permissions::AUTHENTICATE )
 						)
 					) {
 						wp_safe_redirect(
