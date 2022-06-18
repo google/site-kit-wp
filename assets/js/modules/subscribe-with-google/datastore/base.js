@@ -20,12 +20,12 @@
  * Internal dependencies
  */
 import Modules from 'googlesitekit-modules';
-import { STORE_NAME } from './constants';
+import { MODULES_THANK_WITH_GOOGLE } from './constants';
 import { submitChanges, validateCanSubmitChanges } from './settings';
 
 export default Modules.createModuleStore( 'thank-with-google', {
 	ownedSettingsSlugs: [ 'products', 'publicationID', 'revenueModel' ],
-	storeName: STORE_NAME,
+	storeName: MODULES_THANK_WITH_GOOGLE,
 	settingSlugs: [ 'products', 'publicationID', 'revenueModel' ],
 	submitChanges,
 	validateCanSubmitChanges,

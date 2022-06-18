@@ -25,7 +25,7 @@ import {
 	SettingsView,
 } from '../subscribe-with-google/components/settings';
 import SubscribeWithGoogleIcon from '../../../svg/graphics/logo-g.svg';
-import { STORE_NAME } from './datastore/constants';
+import { MODULES_THANK_WITH_GOOGLE } from './datastore/constants';
 import { isFeatureEnabled } from '../../features';
 
 export { registerStore } from '../subscribe-with-google/datastore';
@@ -38,7 +38,7 @@ const ifSwgIsEnabled = ( func ) => ( ...args ) => {
 
 export const registerModule = ifSwgIsEnabled( ( modules ) => {
 	modules.registerModule( 'thank-with-google', {
-		storeName: STORE_NAME,
+		storeName: MODULES_THANK_WITH_GOOGLE,
 		SettingsEditComponent: SettingsEdit,
 		SettingsViewComponent: SettingsView,
 		SetupComponent: SetupMain,

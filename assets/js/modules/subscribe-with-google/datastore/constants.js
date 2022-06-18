@@ -16,5 +16,4 @@
  * limitations under the License.
  */
 
-export const STORE_NAME = 'modules/thank-with-google';
-export { STORE_NAME as MODULES_SUBSCRIBE_WITH_GOOGLE };
+export const MODULES_THANK_WITH_GOOGLE = 'modules/thank-with-google';

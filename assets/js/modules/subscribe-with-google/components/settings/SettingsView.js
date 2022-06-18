@@ -28,19 +28,19 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import DisplaySetting from '../../../../components/DisplaySetting';
 import { REVENUE_MODELS } from '../../constants';
-import { STORE_NAME } from '../../datastore/constants';
+import { MODULES_THANK_WITH_GOOGLE } from '../../datastore/constants';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 const { useSelect } = Data;
 
 export default function SettingsView() {
 	const products = useSelect( ( select ) =>
-		select( STORE_NAME ).getProducts()
+		select( MODULES_THANK_WITH_GOOGLE ).getProducts()
 	);
 	const publicationID = useSelect( ( select ) =>
-		select( STORE_NAME ).getPublicationID()
+		select( MODULES_THANK_WITH_GOOGLE ).getPublicationID()
 	);
 	const revenueModel = useSelect( ( select ) =>
-		select( STORE_NAME ).getRevenueModel()
+		select( MODULES_THANK_WITH_GOOGLE ).getRevenueModel()
 	);
 
 	// Bail if the values aren't ready.
@@ -56,7 +56,7 @@ export default function SettingsView() {
 		<Fragment>
 			<StoreErrorNotices
 				moduleSlug="thank-with-google"
-				storeName={ STORE_NAME }
+				storeName={ MODULES_THANK_WITH_GOOGLE }
 			/>
 
 			<div className="googlesitekit-settings-module__meta-items">

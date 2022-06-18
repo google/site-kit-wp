@@ -31,7 +31,7 @@ import { useCallback } from '@wordpress/element';
  */
 import Data from 'googlesitekit-data';
 import { REVENUE_MODELS } from '../../constants';
-import { STORE_NAME } from '../../datastore/constants';
+import { MODULES_THANK_WITH_GOOGLE } from '../../datastore/constants';
 import { Option, Select } from '../../../../material-components';
 import { isValidRevenueModel } from '../../util/validation';
 const { useDispatch, useSelect } = Data;
@@ -39,11 +39,11 @@ const { useDispatch, useSelect } = Data;
 export default function RevenueModelDropdown() {
 	// Get value.
 	const revenueModel = useSelect( ( select ) =>
-		select( STORE_NAME ).getRevenueModel()
+		select( MODULES_THANK_WITH_GOOGLE ).getRevenueModel()
 	);
 
 	// Handle form input.
-	const { setRevenueModel } = useDispatch( STORE_NAME );
+	const { setRevenueModel } = useDispatch( MODULES_THANK_WITH_GOOGLE );
 	const onChange = useCallback(
 		( index ) => {
 			setRevenueModel( REVENUE_MODELS[ index ].value );

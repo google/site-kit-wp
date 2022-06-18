@@ -25,7 +25,7 @@ import { Fragment } from '@wordpress/element';
  * Internal dependencies
  */
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
-import { STORE_NAME } from '../../datastore/constants';
+import { MODULES_THANK_WITH_GOOGLE } from '../../datastore/constants';
 import {
 	ProductsInput,
 	PublicationIDInput,
@@ -37,7 +37,7 @@ export default function SettingsForm() {
 		<Fragment>
 			<StoreErrorNotices
 				moduleSlug="thank-with-google"
-				storeName={ STORE_NAME }
+				storeName={ MODULES_THANK_WITH_GOOGLE }
 			/>
 
 			<div className="googlesitekit-setup-module__inputs">

@@ -32,14 +32,14 @@ import { _x } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import SubscribeWithGoogleIcon from '../../../../../svg/graphics/logo-g.svg';
 import ProgressBar from '../../../../components/ProgressBar';
-import { STORE_NAME } from '../../datastore/constants';
+import { MODULES_THANK_WITH_GOOGLE } from '../../datastore/constants';
 import { CORE_LOCATION } from '../../../../googlesitekit/datastore/location/constants';
 import SetupForm from './SetupForm';
 const { useSelect } = Data;
 
 export default function SetupMain( { finishSetup } ) {
 	const isDoingSubmitChanges = useSelect( ( select ) =>
-		select( STORE_NAME ).isDoingSubmitChanges()
+		select( MODULES_THANK_WITH_GOOGLE ).isDoingSubmitChanges()
 	);
 	const isNavigating = useSelect( ( select ) =>
 		select( CORE_LOCATION ).isNavigating()

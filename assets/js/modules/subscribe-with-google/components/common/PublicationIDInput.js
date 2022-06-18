@@ -30,7 +30,7 @@ import { useCallback } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from '../../datastore/constants';
+import { MODULES_THANK_WITH_GOOGLE } from '../../datastore/constants';
 import { TextField, Input } from '../../../../material-components';
 import { isValidPublicationID } from '../../util/validation';
 const { useDispatch, useSelect } = Data;
@@ -38,11 +38,11 @@ const { useDispatch, useSelect } = Data;
 export default function PublicationIDInput() {
 	// Get value.
 	const publicationID = useSelect( ( select ) =>
-		select( STORE_NAME ).getPublicationID()
+		select( MODULES_THANK_WITH_GOOGLE ).getPublicationID()
 	);
 
 	// Handle form input.
-	const { setPublicationID } = useDispatch( STORE_NAME );
+	const { setPublicationID } = useDispatch( MODULES_THANK_WITH_GOOGLE );
 	const onChange = useCallback(
 		( { currentTarget } ) => {
 			setPublicationID( currentTarget.value.trim() );
