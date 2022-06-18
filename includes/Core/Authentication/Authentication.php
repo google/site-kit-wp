@@ -31,7 +31,7 @@ use WP_REST_Response;
 use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Util\BC_Functions;
 use Google\Site_Kit\Modules\Idea_Hub;
-use Google\Site_Kit\Modules\Subscribe_With_Google;
+use Google\Site_Kit\Modules\Thank_With_Google;
 
 /**
  * Authentication Class.
@@ -1377,7 +1377,7 @@ final class Authentication {
 				}
 
 				if ( 'swgModule' === $feature_name ) {
-					return in_array( Subscribe_With_Google::MODULE_SLUG, $active_modules, true );
+					return in_array( Thank_With_Google::MODULE_SLUG, $active_modules, true );
 				}
 			}
 
