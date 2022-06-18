@@ -188,7 +188,7 @@ final class Modules {
 		if ( Feature_Flags::enabled( 'ideaHubModule' ) ) {
 			$this->core_modules[ Idea_Hub::MODULE_SLUG ] = Idea_Hub::class;
 		}
-		if ( Feature_Flags::enabled( 'swgModule' ) ) {
+		if ( Feature_Flags::enabled( 'twgModule' ) ) {
 			$this->core_modules[ Thank_With_Google::MODULE_SLUG ] = Thank_With_Google::class;
 		}
 
