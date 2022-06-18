@@ -27,13 +27,13 @@ import { isFeatureEnabled } from '../../features';
 
 export { registerStore } from './datastore';
 
-const ifSwgIsEnabled = ( func ) => ( ...args ) => {
-	if ( isFeatureEnabled( 'swgModule' ) ) {
+const ifTwgIsEnabled = ( func ) => ( ...args ) => {
+	if ( isFeatureEnabled( 'twgModule' ) ) {
 		func( ...args );
 	}
 };
 
-export const registerModule = ifSwgIsEnabled( ( modules ) => {
+export const registerModule = ifTwgIsEnabled( ( modules ) => {
 	modules.registerModule( 'thank-with-google', {
 		storeName: MODULES_THANK_WITH_GOOGLE,
 		SettingsEditComponent: SettingsEdit,
