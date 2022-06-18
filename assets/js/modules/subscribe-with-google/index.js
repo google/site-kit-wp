@@ -24,7 +24,7 @@ import {
 	SettingsEdit,
 	SettingsView,
 } from '../subscribe-with-google/components/settings';
-import SubscribeWithGoogleIcon from '../../../svg/graphics/logo-g.svg';
+import ThankWithGoogleIcon from '../../../svg/graphics/thank-with-google.svg';
 import { MODULES_THANK_WITH_GOOGLE } from './datastore/constants';
 import { isFeatureEnabled } from '../../features';
 
@@ -43,6 +43,6 @@ export const registerModule = ifSwgIsEnabled( ( modules ) => {
 		SettingsViewComponent: SettingsView,
 		SetupComponent: SetupMain,
 		// TODO: Replace with another icon later.
-		Icon: SubscribeWithGoogleIcon,
+		Icon: ThankWithGoogleIcon,
 	} );
 } );
