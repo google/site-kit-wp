@@ -1,5 +1,5 @@
 /**
- * Subscribe with Google module initialization.
+ * Thank with Google module initialization.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -37,7 +37,7 @@ const ifSwgIsEnabled = ( func ) => ( ...args ) => {
 };
 
 export const registerModule = ifSwgIsEnabled( ( modules ) => {
-	modules.registerModule( 'subscribe-with-google', {
+	modules.registerModule( 'thank-with-google', {
 		storeName: STORE_NAME,
 		SettingsEditComponent: SettingsEdit,
 		SettingsViewComponent: SettingsView,

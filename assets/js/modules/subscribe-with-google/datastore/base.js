@@ -1,5 +1,5 @@
 /**
- * `modules/subscribe-with-google` base data store
+ * `modules/thank-with-google` base data store
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -23,7 +23,7 @@ import Modules from 'googlesitekit-modules';
 import { STORE_NAME } from './constants';
 import { submitChanges, validateCanSubmitChanges } from './settings';
 
-export default Modules.createModuleStore( 'subscribe-with-google', {
+export default Modules.createModuleStore( 'thank-with-google', {
 	ownedSettingsSlugs: [ 'products', 'publicationID', 'revenueModel' ],
 	storeName: STORE_NAME,
 	settingSlugs: [ 'products', 'publicationID', 'revenueModel' ],

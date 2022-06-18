@@ -1,5 +1,5 @@
 /**
- * Subscribe with Google module entrypoint.
+ * Thank with Google module entrypoint.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *

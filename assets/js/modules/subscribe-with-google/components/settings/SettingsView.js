@@ -1,5 +1,5 @@
 /**
- * Subscribe with Google Settings View component.
+ * Thank with Google Settings View component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -55,7 +55,7 @@ export default function SettingsView() {
 	return (
 		<Fragment>
 			<StoreErrorNotices
-				moduleSlug="subscribe-with-google"
+				moduleSlug="thank-with-google"
 				storeName={ STORE_NAME }
 			/>
 

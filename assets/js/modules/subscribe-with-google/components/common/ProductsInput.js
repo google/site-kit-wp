@@ -1,5 +1,5 @@
 /**
- * Subscribe with Google Products Input component.
+ * Thank with Google Products Input component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *

@@ -1,5 +1,5 @@
 /**
- * Subscribe with Google Revenue Model Input component.
+ * Thank with Google Revenue Model Input component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *

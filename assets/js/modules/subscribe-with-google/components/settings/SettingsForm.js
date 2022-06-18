@@ -1,5 +1,5 @@
 /**
- * Subscribe with Google Settings Form component.
+ * Thank with Google Settings Form component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -36,7 +36,7 @@ export default function SettingsForm() {
 	return (
 		<Fragment>
 			<StoreErrorNotices
-				moduleSlug="subscribe-with-google"
+				moduleSlug="thank-with-google"
 				storeName={ STORE_NAME }
 			/>
 

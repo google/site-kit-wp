@@ -1,5 +1,5 @@
 /**
- * Subscribe with Google Publication ID Input component.
+ * Thank with Google Publication ID Input component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *

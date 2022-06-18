@@ -1,5 +1,5 @@
 /**
- * `modules/subscribe-with-google` data store
+ * `modules/thank-with-google` data store
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *

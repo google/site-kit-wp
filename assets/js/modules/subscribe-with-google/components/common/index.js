@@ -1,5 +1,5 @@
 /**
- * Subscribe with Google common components.
+ * Thank with Google common components.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *

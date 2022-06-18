@@ -1,5 +1,5 @@
 /**
- * Subscribe with Google Main setup component.
+ * Thank with Google Main setup component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -53,7 +53,7 @@ export default function SetupMain( { finishSetup } ) {
 	}
 
 	return (
-		<div className="googlesitekit-setup-module googlesitekit-setup-module--subscribe-with-google">
+		<div className="googlesitekit-setup-module googlesitekit-setup-module--thank-with-google">
 			<div className="googlesitekit-setup-module__logo">
 				<SubscribeWithGoogleIcon width="33" height="33" />
 			</div>

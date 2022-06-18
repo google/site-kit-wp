@@ -1,5 +1,5 @@
 /**
- * `modules/subscribe-with-google` data store constants.
+ * `modules/thank-with-google` data store constants.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -16,5 +16,5 @@
  * limitations under the License.
  */
 
-export const STORE_NAME = 'modules/subscribe-with-google';
+export const STORE_NAME = 'modules/thank-with-google';
 export { STORE_NAME as MODULES_SUBSCRIBE_WITH_GOOGLE };

@@ -1,5 +1,5 @@
 /**
- * `modules/subscribe-with-google` data store: settings.
+ * `modules/thank-with-google` data store: settings.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -55,7 +55,7 @@ export async function submitChanges( { select, dispatch } ) {
 		}
 	}
 
-	await API.invalidateCache( 'modules', 'subscribe-with-google' );
+	await API.invalidateCache( 'modules', 'thank-with-google' );
 
 	return {};
 }

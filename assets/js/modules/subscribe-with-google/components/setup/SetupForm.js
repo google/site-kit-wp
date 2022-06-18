@@ -1,5 +1,5 @@
 /**
- * Subscribe with Google Setup Form component.
+ * Thank with Google Setup Form component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -64,7 +64,7 @@ export default function SetupForm( { finishSetup } ) {
 			onSubmit={ submitForm }
 		>
 			<StoreErrorNotices
-				moduleSlug="subscribe-with-google"
+				moduleSlug="thank-with-google"
 				storeName={ STORE_NAME }
 			/>
 

@@ -1,5 +1,5 @@
 /**
- * Subscribe with Google Settings Edit component.
+ * Thank with Google Settings Edit component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -45,7 +45,7 @@ export default function SettingsEdit() {
 	}
 
 	return (
-		<div className="googlesitekit-setup-module googlesitekit-setup-module--subscribe-with-google">
+		<div className="googlesitekit-setup-module googlesitekit-setup-module--thank-with-google">
 			{ viewComponent }
 		</div>
 	);
