@@ -1,5 +1,5 @@
 /**
- * Subscribe with Google SettingsView component stories.
+ * SetupForm component stories.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -19,34 +19,19 @@
 /**
  * Internal dependencies
  */
-import SettingsView from './SettingsView';
-import { Cell, Grid, Row } from '../../../../material-components';
-import { MODULES_SUBSCRIBE_WITH_GOOGLE } from '../../datastore/constants';
+import { MODULES_THANK_WITH_GOOGLE } from '../../datastore/constants';
 import {
 	provideModules,
 	provideModuleRegistrations,
 	provideSiteInfo,
 } from '../../../../../../tests/js/utils';
+import ModuleSetup from '../../../../components/setup/ModuleSetup';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 
 const features = [ 'swgModule' ];
 
 function Template() {
-	return (
-		<div className="googlesitekit-layout">
-			<div className="googlesitekit-settings-module googlesitekit-settings-module--active googlesitekit-settings-module--subscribe-with-google">
-				<div className="googlesitekit-settings-module__content googlesitekit-settings-module__content--open">
-					<Grid>
-						<Row>
-							<Cell size={ 12 }>
-								<SettingsView />
-							</Cell>
-						</Row>
-					</Grid>
-				</div>
-			</div>
-		</div>
-	);
+	return <ModuleSetup moduleSlug="subscribe-with-google" />;
 }
 
 export const Default = Template.bind( null );
@@ -54,7 +39,7 @@ Default.storyName = 'Default';
 Default.parameters = { features };
 
 export default {
-	title: 'Modules/Subscribe with Google/Settings/SettingsView',
+	title: 'Modules/Subscribe with Google/Setup/SetupForm',
 	decorators: [
 		( Story ) => {
 			const setupRegistry = ( registry ) => {
@@ -62,19 +47,29 @@ export default {
 					{
 						slug: 'subscribe-with-google',
 						active: true,
-						connected: true,
+						connected: false,
 					},
 				] );
 				provideSiteInfo( registry );
 				provideModuleRegistrations( registry );
 
+				// Simulate a user filling out an initially empty form.
 				registry
-					.dispatch( MODULES_SUBSCRIBE_WITH_GOOGLE )
+					.dispatch( MODULES_THANK_WITH_GOOGLE )
 					.receiveGetSettings( {
-						products: [ 'basic' ],
-						publicationID: 'example.com',
-						revenueModel: 'contribution',
+						products: [],
+						publicationID: '',
+						revenueModel: '',
 					} );
+				registry
+					.dispatch( MODULES_THANK_WITH_GOOGLE )
+					.setProducts( [ 'basic' ] );
+				registry
+					.dispatch( MODULES_THANK_WITH_GOOGLE )
+					.setPublicationID( 'example.com' );
+				registry
+					.dispatch( MODULES_THANK_WITH_GOOGLE )
+					.setRevenueModel( 'contribution' );
 			};
 
 			return (

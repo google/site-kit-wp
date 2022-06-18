@@ -20,15 +20,12 @@
  * Internal dependencies
  */
 import { SetupMain } from './components/setup';
-import {
-	SettingsEdit,
-	SettingsView,
-} from '../subscribe-with-google/components/settings';
+import { SettingsEdit, SettingsView } from './components/settings';
 import ThankWithGoogleIcon from '../../../svg/graphics/thank-with-google.svg';
 import { MODULES_THANK_WITH_GOOGLE } from './datastore/constants';
 import { isFeatureEnabled } from '../../features';
 
-export { registerStore } from '../subscribe-with-google/datastore';
+export { registerStore } from './datastore';
 
 const ifSwgIsEnabled = ( func ) => ( ...args ) => {
 	if ( isFeatureEnabled( 'swgModule' ) ) {

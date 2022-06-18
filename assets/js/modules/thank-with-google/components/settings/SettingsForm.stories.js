@@ -21,7 +21,7 @@
  */
 import SettingsForm from './SettingsForm';
 import { Cell, Grid, Row } from '../../../../material-components';
-import { MODULES_SUBSCRIBE_WITH_GOOGLE } from '../../datastore/constants';
+import { MODULES_THANK_WITH_GOOGLE } from '../../datastore/constants';
 import {
 	provideModules,
 	provideModuleRegistrations,
@@ -71,7 +71,7 @@ export default {
 				provideModuleRegistrations( registry );
 
 				registry
-					.dispatch( MODULES_SUBSCRIBE_WITH_GOOGLE )
+					.dispatch( MODULES_THANK_WITH_GOOGLE )
 					.receiveGetSettings( {
 						products: [ 'basic' ],
 						publicationID: 'example.com',

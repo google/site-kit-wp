@@ -26,7 +26,7 @@ import {
 	render,
 } from '../../../../../../tests/js/test-utils';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
-import { STORE_NAME } from '../../datastore/constants';
+import { MODULES_THANK_WITH_GOOGLE } from '../../datastore/constants';
 
 describe( 'SetupForm', () => {
 	let registry;
@@ -47,7 +47,9 @@ describe( 'SetupForm', () => {
 		registry = createTestRegistry();
 		// Prevent extra fetches during tests.
 		registry.dispatch( CORE_MODULES ).receiveGetModules( [] );
-		registry.dispatch( STORE_NAME ).setSettings( defaultSettings );
+		registry
+			.dispatch( MODULES_THANK_WITH_GOOGLE )
+			.setSettings( defaultSettings );
 
 		// Mock `fetch` method.
 		const pendingPromise = new Promise( () => {} );
@@ -56,7 +58,9 @@ describe( 'SetupForm', () => {
 
 	describe( '"Configure Subscribe with Google" button', () => {
 		it( 'is enabled by valid settings', () => {
-			registry.dispatch( STORE_NAME ).setSettings( validSettings );
+			registry
+				.dispatch( MODULES_THANK_WITH_GOOGLE )
+				.setSettings( validSettings );
 			const finishSetupButton = render(
 				<SetupForm finishSetup={ jest.fn() } />,
 				{ registry }
@@ -78,7 +82,9 @@ describe( 'SetupForm', () => {
 
 		it( 'submits form', () => {
 			// Render enabled button.
-			registry.dispatch( STORE_NAME ).setSettings( validSettings );
+			registry
+				.dispatch( MODULES_THANK_WITH_GOOGLE )
+				.setSettings( validSettings );
 			const finishSetup = jest.fn();
 			const finishSetupButton = render(
 				<SetupForm finishSetup={ finishSetup } />,

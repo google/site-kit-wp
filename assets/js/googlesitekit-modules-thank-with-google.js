@@ -1,5 +1,5 @@
 /**
- * `modules/subscribe-with-google` data store: selectors test.
+ * Thank with Google module entrypoint.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -19,28 +19,9 @@
 /**
  * Internal dependencies
  */
-import { STORE_NAME } from './constants';
-import {
-	createTestRegistry,
-	unsubscribeFromAll,
-} from '../../../../../tests/js/utils';
+import Data from 'googlesitekit-data';
+import Modules from 'googlesitekit-modules';
+import { registerStore, registerModule } from './modules/thank-with-google';
 
-describe( 'modules/subscribe-with-google properties', () => {
-	let registry;
-
-	beforeEach( () => {
-		registry = createTestRegistry();
-	} );
-
-	afterEach( () => {
-		unsubscribeFromAll( registry );
-	} );
-
-	describe( 'store', () => {
-		it( 'is registered correctly', () => {
-			const selectors = registry.select( STORE_NAME );
-
-			expect( selectors.getPublicationID ).toBeInstanceOf( Function );
-		} );
-	} );
-} );
+registerStore( Data );
+registerModule( Modules );
