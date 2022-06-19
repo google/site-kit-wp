@@ -51,7 +51,7 @@ export default function Notice() {
 				isEditingManagement &&
 				createInterpolateElement(
 					__(
-						'By clicking <strong>Apply</strong>, you are giving other admins permission to manage view-only access on your behalf to data from the Google services you selected “Any admin signed in with Google” for.',
+						'By clicking <strong>Apply</strong>, you are giving other admins permission to manage view-only access on your behalf to data from the Google services you selected “All Admins” for.',
 						'google-site-kit'
 					),
 					{
