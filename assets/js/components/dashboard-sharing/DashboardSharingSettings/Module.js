@@ -65,7 +65,7 @@ const viewAccessOptions = [
 	},
 	{
 		value: 'all_admins',
-		label: __( 'All Admins', 'google-site-kit' ),
+		label: __( 'Any admin signed in with Google', 'google-site-kit' ),
 	},
 ];
 
