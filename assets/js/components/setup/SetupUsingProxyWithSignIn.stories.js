@@ -144,6 +144,7 @@ SharedDashboardAdminCanView.args = {
 	setupRegistry: ( registry ) => {
 		provideSiteConnection( registry, {
 			hasConnectedAdmins: true,
+			hasMultipleAdmins: true,
 		} );
 
 		provideModules( registry, [
