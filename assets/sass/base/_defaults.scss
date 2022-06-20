@@ -59,42 +59,42 @@
 	h1,
 	.googlesitekit-heading-1 {
 		font-size: $fs-headline-lg;
-		font-weight: $fw-secondary-normal;
+		font-weight: $fw-normal;
 		line-height: $lh-headline-lg;
 	}
 
 	h2,
 	.googlesitekit-heading-2 {
 		font-size: $fs-headline-md;
-		font-weight: $fw-secondary-normal;
+		font-weight: $fw-normal;
 		line-height: $lh-headline-md;
 	}
 
 	h3,
 	.googlesitekit-heading-3 {
 		font-size: $fs-headline-sm;
-		font-weight: $fw-secondary-normal;
+		font-weight: $fw-normal;
 		line-height: $lh-headline-sm;
 	}
 
 	h4,
 	.googlesitekit-heading-4 {
 		font-size: $fs-title-lg;
-		font-weight: $fw-secondary-bold;
+		font-weight: $fw-bold;
 		line-height: $lh-title-lg;
 	}
 
 	.googlesitekit-subheading-1 {
 		font-family: $f-secondary;
 		font-size: $fs-title-sm;
-		font-weight: $fw-secondary-bold;
+		font-weight: $fw-bold;
 		line-height: $lh-title-sm;
 	}
 
 	.googlesitekit-subheading-2 {
 		font-family: $f-primary;
 		font-size: $fs-body-sm;
-		font-weight: $fw-primary-medium;
+		font-weight: $fw-medium;
 		letter-spacing: $ls-xs;
 		line-height: $lh-body-sm;
 	}
@@ -103,7 +103,7 @@
 		color: $c-success;
 		font-family: $f-secondary;
 		font-size: $fs-body-sm;
-		font-weight: $fw-primary-medium;
+		font-weight: $fw-medium;
 		letter-spacing: $ls-xs;
 		text-transform: uppercase;
 	}

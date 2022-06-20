@@ -155,7 +155,7 @@ $c-tertiary: $c-scarpa-flow;
 $c-brand: $c-royal-blue;
 $c-highlight: $c-cornflower-blue;
 $c-subtle: $c-jumbo;
-$c-link: $c-content-primary;
+$c-link: $c-content-link;
 $c-link-wpdb: map-get($wp-colors, "blue-50");
 $c-link-wpdb-hover: map-get($wp-colors, "blue-60");
 $c-input: $c-royal-blue;
@@ -240,16 +240,14 @@ $mdc-theme-on-secondary: $c-base;
 
 // Fonts
 $f-primary: "Google Sans Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
-$fw-primary-light: 300;
-$fw-primary-normal: 400;
-$fw-primary-medium: 500;
-$fw-primary-bold: 700;
-
 $f-secondary: "Google Sans Display", "Helvetica Neue", Helvetica, Arial, sans-serif;
-$fw-secondary-light: 300;
-$fw-secondary-normal: 400;
-$fw-secondary-medium: 500;
-$fw-secondary-bold: 700;
+
+// Font weights
+$fw-light: 300;
+$fw-normal: 400;
+$fw-medium: 500;
+$fw-semi-bold: 600;
+$fw-bold: 700;
 
 // Transitions
 $t-default: 0.2s;

@@ -1,7 +1,7 @@
 // Overrides for .mdc-button
 .googlesitekit-plugin .mdc-button {
 
-	@include mdc-button-ink-color($c-link);
+	@include mdc-button-ink-color($c-content-primary);
 
 	@media (max-width: $bp-desktop) {
 		min-width: auto;
@@ -9,11 +9,11 @@
 
 	&--raised {
 
-		@include mdc-button-filled-accessible($c-link);
-		@include mdc-button-shape-radius(100px);
+		@include mdc-button-filled-accessible($c-content-primary);
+		@include mdc-button-shape-radius($br-lg);
 
 		font-family: $f-primary;
-		font-weight: $fw-primary-normal;
+		font-weight: $fw-normal;
 		height: auto;
 		letter-spacing: normal;
 		min-height: $mdc-button-min-height;
