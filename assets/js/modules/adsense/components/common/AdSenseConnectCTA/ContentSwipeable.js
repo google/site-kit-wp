@@ -39,9 +39,9 @@ export default function ContentSwipeable() {
 
 	const { ref } = useSwipeable( {
 		onSwipedLeft: () =>
-			setStage( stage === minStage ? maxStage : stage - 1 ),
-		onSwipedRight: () =>
 			setStage( stage === maxStage ? minStage : stage + 1 ),
+		onSwipedRight: () =>
+			setStage( stage === minStage ? maxStage : stage - 1 ),
 	} );
 
 	return <Content stage={ stage } ref={ ref } />;
