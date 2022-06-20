@@ -67,10 +67,10 @@
 	}
 
 	&.googlesitekit-cta-link--inverse {
-		color: $c-link;
+		color: $c-content-on-primary;
 
 		&:hover {
-			color: $c-link;
+			color: $c-content-on-primary;
 		}
 	}
 
@@ -98,5 +98,16 @@
 	&.googlesitekit-cta-link--disabled:hover {
 		color: $c-disabled;
 		text-decoration: none;
+	}
+}
+
+button {
+
+	&.googlesitekit-cta-link {
+		color: $c-content-primary;
+
+		&:hover {
+			color: $c-content-primary-hover;
+		}
 	}
 }
