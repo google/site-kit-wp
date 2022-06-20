@@ -82,6 +82,7 @@ const Content = forwardRef( ( { stage }, ref ) => {
 					</h2>
 				</div>
 			</Cell>
+			{ /* Provide an empty cell here in order for the image cell (further below) to span the grid row, in non-mobile viewports. */ }
 			<Cell { ...cellProps }></Cell>
 			<Cell
 				{ ...cellProps }
@@ -118,6 +119,7 @@ const Content = forwardRef( ( { stage }, ref ) => {
 					) ) }
 				</ul>
 			</Cell>
+			{ /* This cell containing the image will span the grid row above it, in non-mobile viewports. */ }
 			<Cell
 				{ ...cellProps }
 				smOrder={ 1 }
