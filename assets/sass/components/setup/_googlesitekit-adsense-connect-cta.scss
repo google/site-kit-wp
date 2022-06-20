@@ -146,16 +146,12 @@
 		}
 
 		.googlesitekit-setup-module__action {
-
-			.mdc-button {
-				margin-right: 24px;
-			}
+			display: flex;
+			flex-wrap: wrap;
+			gap: 8px 24px;
 
 			@media (min-width: $bp-desktop) {
-
-				.mdc-button {
-					margin-right: 48px;
-				}
+				column-gap: 48px;
 			}
 		}
 
