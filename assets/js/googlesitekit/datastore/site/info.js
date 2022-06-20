@@ -474,7 +474,7 @@ export const selectors = {
 	/**
 	 * Gets a setup error message, if one exists.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.77.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(string|null|undefined)} An error message from setup, if one exists. Will be `null` if no error exists; `undefined` when loading.
@@ -487,7 +487,7 @@ export const selectors = {
 	 * This URL will be used to redo the setup process if a user encountered
 	 * an error.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.77.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(string|null|undefined)} The setup URL, if one exists. Will be `null` if no error exists and thus the setup redo URL doesn't exist; `undefined` when loading.

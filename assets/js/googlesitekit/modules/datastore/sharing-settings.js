@@ -84,7 +84,7 @@ const baseActions = {
 	/**
 	 * Sets the sharing settings management of a given module.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.77.0
 	 *
 	 * @param {string} moduleSlug Module slug.
 	 * @param {string} management New management for a module, one of all_admins | owner.
@@ -111,7 +111,7 @@ const baseActions = {
 	/**
 	 * Sets the sharing settings shared roles of a given module.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.77.0
 	 *
 	 * @param {string}   moduleSlug Module slug.
 	 * @param {string[]} roles      List of roles the module is shared with.
@@ -139,7 +139,7 @@ const baseActions = {
 	 * Save sharingSettings for dashboard sharing.
 	 * Update ownerID from the response for the modules in the sharingSettings state.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.77.0
 	 *
 	 * @return {Object} Object with `{response, error}`.
 	 */
@@ -191,7 +191,7 @@ const baseActions = {
 	 * from a global variable (`_googlesitekitDashboardSharingData`), set by PHP
 	 * in the `before_print` callback for `googlesitekit-datastore-site`.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.77.0
 	 *
 	 * @param {Object} sharingSettings Sharing settings for modules with `management` and `sharedRoles` properties.
 	 * @return {Object} Action for RECEIVE_GET_SHARING_SETTINGS.
@@ -212,7 +212,7 @@ const baseActions = {
 	 * from a global variable (`_googlesitekitDashboardSharingData`), set by PHP
 	 * in the `before_print` callback for `googlesitekit-datastore-site`.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.77.0
 	 *
 	 * @param {Object} shareableRoles Shareable Roles for modules with `management` and `sharedRoles` properties.
 	 * @return {Object} Action for RECEIVE_SHAREABLE_ROLES.
@@ -364,7 +364,7 @@ const baseSelectors = {
 	/**
 	 * Gets the current dashboard sharing settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.77.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(Object|undefined)} Sharing Settings object. Returns undefined if it is not loaded yet.
@@ -377,7 +377,7 @@ const baseSelectors = {
 	/**
 	 * Gets the current dashboard shareable roles.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.77.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(Object|undefined)} Shareable Roles object. Returns undefined if it is not loaded yet.
@@ -392,7 +392,7 @@ const baseSelectors = {
 	 *
 	 * Returns the module's sharing management string.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.77.0
 	 *
 	 * @param {Object} state      Data store's state.
 	 * @param {string} moduleSlug Module slug.
@@ -416,7 +416,7 @@ const baseSelectors = {
 	 *
 	 * Returns the module's shared roles list.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.77.0
 	 *
 	 * @param {Object} state      Data store's state.
 	 * @param {string} moduleSlug Module slug.
@@ -438,7 +438,7 @@ const baseSelectors = {
 	/**
 	 * Indicates whether the current sharing settings have changed from what is saved.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.77.0
 	 *
 	 * @param {Object}     state Data store's state.
 	 * @param {Array|null} keys  Sharing Settings keys to check; if not provided, all sharing settings are checked.
@@ -460,7 +460,7 @@ const baseSelectors = {
 	/**
 	 * Checks whether sharing settings changes are currently being submitted.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.77.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {boolean} TRUE if submitting, otherwise FALSE.

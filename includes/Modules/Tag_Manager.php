@@ -614,7 +614,7 @@ final class Tag_Manager extends Module
 	/**
 	 * Checks if the current user has access to the current configured service entity.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.77.0
 	 *
 	 * @return boolean|WP_Error
 	 */

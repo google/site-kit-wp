@@ -26,7 +26,7 @@ trait Module_With_Owner_Trait {
 	/**
 	 * OAuth_Client instance.
 	 *
-	 * @since n.e.x.t.
+	 * @since 1.77.0.
 	 * @var OAuth_Client
 	 */
 	protected $owner_oauth_client;
@@ -54,7 +54,7 @@ trait Module_With_Owner_Trait {
 	/**
 	 * Gets the OAuth_Client instance for the module owner.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.77.0
 	 *
 	 * @return OAuth_Client OAuth_Client instance.
 	 */

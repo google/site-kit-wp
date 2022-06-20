@@ -313,6 +313,7 @@ final class Assets {
 		$base_url = $this->context->url( 'dist/assets/' );
 
 		$dependencies = array(
+			'googlesitekit-tracking-data',
 			'googlesitekit-runtime',
 			'googlesitekit-i18n',
 			'googlesitekit-vendor',
@@ -405,6 +406,15 @@ final class Assets {
 					'global'        => '_googlesitekitDashboardSharingData',
 					'data_callback' => function() {
 						return $this->get_inline_dashboard_sharing_data();
+					},
+				)
+			),
+			new Script_Data(
+				'googlesitekit-tracking-data',
+				array(
+					'global'        => '_googlesitekitTrackingData',
+					'data_callback' => function() {
+						return $this->get_inline_tracking_data();
 					},
 				)
 			),
@@ -675,13 +685,11 @@ final class Assets {
 	 */
 	private function get_inline_base_data() {
 		global $wpdb;
-		$site_url     = $this->context->get_reference_site_url();
-		$current_user = wp_get_current_user();
+		$site_url = $this->context->get_reference_site_url();
 
 		$inline_data = array(
 			'homeURL'          => trailingslashit( $this->context->get_canonical_home_url() ),
 			'referenceSiteURL' => esc_url_raw( trailingslashit( $site_url ) ),
-			'userIDHash'       => md5( $site_url . $current_user->ID ),
 			'adminURL'         => esc_url_raw( trailingslashit( admin_url() ) ),
 			'assetsURL'        => esc_url_raw( $this->context->url( 'dist/assets/' ) ),
 			'blogPrefix'       => $wpdb->get_blog_prefix(),
@@ -788,6 +796,32 @@ final class Assets {
 		 * @param array $data dashboard sharing data.
 		 */
 		return apply_filters( 'googlesitekit_dashboard_sharing_data', $inline_data );
+	}
+
+	/**
+	 * Gets data relevant for `trackEvent` calls.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array The tracking inline data to be output.
+	 */
+	private function get_inline_tracking_data() {
+		$site_url     = $this->context->get_reference_site_url();
+		$current_user = wp_get_current_user();
+
+		$inline_data = array(
+			'referenceSiteURL' => esc_url_raw( trailingslashit( $site_url ) ),
+			'userIDHash'       => md5( $site_url . $current_user->ID ),
+		);
+
+		/**
+		 * Filters the data relevant to trackEvent calls to pass to JS.
+		 *
+		 * @since n.e.x.t
+		 *
+		 * @param array $inline_data Tracking data.
+		 */
+		return apply_filters( 'googlesitekit_inline_tracking_data', $inline_data );
 	}
 
 	/**

@@ -271,7 +271,7 @@ abstract class Module {
 	/**
 	 * Gets the datapoint definition instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.77.0
 	 *
 	 * @param string $datapoint_id Datapoint ID.
 	 * @return Datapoint Datapoint instance.
@@ -343,7 +343,7 @@ abstract class Module {
 			// even if a different client will be the one to execute the request because
 			// the default instance is what services are setup with.
 			$restore_defers[] = $this->get_client()->withDefer( true );
-			if ( $this->get_client() !== $oauth_client ) {
+			if ( $this->authentication->get_oauth_client() !== $oauth_client ) {
 				$restore_defers[] = $oauth_client->get_client()->withDefer( true );
 			}
 
@@ -380,7 +380,7 @@ abstract class Module {
 	/**
 	 * Validates necessary scopes for the given datapoint.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.77.0
 	 *
 	 * @param Datapoint    $datapoint    Datapoint instance.
 	 * @param OAuth_Client $oauth_client OAuth_Client instance.
@@ -399,7 +399,7 @@ abstract class Module {
 	/**
 	 * Validates necessary scopes for the module.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.77.0
 	 *
 	 * @param OAuth_Client $oauth_client OAuth_Client instance.
 	 * @throws Insufficient_Scopes_Exception Thrown if required scopes are not satisfied.
@@ -566,7 +566,7 @@ abstract class Module {
 	/**
 	 * Gets the oAuth client instance to use for the given datapoint.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.77.0
 	 *
 	 * @param Datapoint $datapoint Datapoint definition.
 	 * @return OAuth_Client OAuth_Client instance.
