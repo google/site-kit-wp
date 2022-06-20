@@ -76,9 +76,6 @@
 // Activation
 @import "components/activation/googlesitekit-activation";
 
-// AdSense
-@import "components/adsense";
-
 // Global
 @import "components/global/googlesitekit-accordion";
 @import "components/global/googlesitekit-analytics-cta";
@@ -149,6 +146,7 @@
 // Setup
 @import "components/setup/googlesitekit-setup";
 @import "components/setup/googlesitekit-setup-module";
+@import "components/setup/googlesitekit-adsense-connect-cta";
 
 // Settings
 @import "components/settings/googlesitekit-settings-connect-module";
