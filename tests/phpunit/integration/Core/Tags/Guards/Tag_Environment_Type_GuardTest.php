@@ -62,6 +62,7 @@ class Tag_Environment_Type_GuardTest extends TestCase {
 		uopz_set_static( 'wp_get_environment_type', array( 'current_env' => 'development' ) );
 		$this->assertFalse( $tagproduction->can_activate() );
 
+		remove_all_filters( 'googlesitekit_allowed_tag_environment_types' );
 		add_filter(
 			'googlesitekit_allowed_tag_environment_types',
 			function ( $allowed_environments ) {
