@@ -84,6 +84,8 @@ const Content = forwardRef( ( { stage }, ref ) => {
 			</Cell>
 			{ /* Provide an empty cell here in order for the image cell (further below) to span the grid row, in non-mobile viewports. */ }
 			<Cell { ...cellProps }></Cell>
+			{ /* Ordinarily, we would close the row and start a new one here (</Row><Row>), but in order to faciliate the image cell row spanning we do without it,
+					 as `Row` actually renders a CSS grid container with `display: grid`, preventing a <Cell> from spanning multiple <Row> elements. */ }
 			<Cell
 				{ ...cellProps }
 				smOrder={ 2 }
