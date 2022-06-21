@@ -133,10 +133,8 @@
 		}
 
 		.mdc-button__label {
-			display: none;
 
 			@media ( min-width: $bp-tablet ) {
-				display: inline-block;
 				line-height: 0;
 			}
 
