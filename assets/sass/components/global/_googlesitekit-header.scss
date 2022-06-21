@@ -18,6 +18,16 @@
 
 .googlesitekit-plugin {
 
+	.googlesitekit-subheader {
+		background-color: $c-base;
+		position: relative;
+		z-index: 11;
+
+		@media (min-width: $bp-tablet) {
+			padding: 0 10px;
+		}
+	}
+
 	.googlesitekit-header {
 
 		@include googlesitekit-inner-padding;
@@ -170,16 +180,12 @@
 				padding: 4px;
 			}
 		}
-	}
 
-	.googlesitekit-subheader {
-		background-color: $c-base;
-		border-bottom: 1px solid $c-utility-divider;
-		position: relative;
-		z-index: 11;
+		&.googlesitekit-header--has-subheader {
 
-		@media (min-width: $bp-tablet) {
-			padding: 0 10px;
+			+ .googlesitekit-subheader {
+				border-bottom: 1px solid $c-utility-divider;
+			}
 		}
 	}
 

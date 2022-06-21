@@ -20,6 +20,7 @@
 
 	.googlesitekit-navigation {
 		background-color: $c-base;
+		border-bottom: 1px solid $c-utility-divider;
 		justify-content: center;
 		left: 0;
 		padding: 12px 0;
@@ -64,7 +65,7 @@
 			border: 1px solid $c-neutral-n-50;
 			border-radius: $br-lg;
 			color: $c-surfaces-on-surface;
-			font-size: $fs-body-sm;
+			font-size: $fs-title-sm;
 			letter-spacing: $ls-xs;
 			line-height: 1;
 			padding: 11px 14px 11px 19px;

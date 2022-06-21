@@ -32,8 +32,12 @@
 	}
 
 	.googlesitekit-idea-hub__title {
+		align-items: center;
+		display: flex;
+		flex-wrap: nowrap;
 		font-size: $fs-title-sm;
 		font-weight: $fw-bold;
+		justify-content: space-between;
 		line-height: $lh-title-sm;
 		margin: 0 0 12px 0;
 

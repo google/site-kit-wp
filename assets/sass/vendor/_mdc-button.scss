@@ -12,6 +12,7 @@
 		@include mdc-button-filled-accessible($c-content-primary);
 		@include mdc-button-shape-radius($br-lg);
 
+		box-shadow: none;
 		font-family: $f-primary;
 		font-weight: $fw-normal;
 		height: auto;

@@ -17,13 +17,13 @@
  */
 
 .googlesitekit-badge {
-	background-color: $c-gallery;
+	background-color: $c-content-primary-container;
 	border-radius: $br-lg;
 	color: $c-badge-text;
 	display: inline-block;
 	font-family: $f-primary;
 	font-size: $fs-body-sm;
-	font-weight: 500;
+	font-weight: $fw-medium;
 	letter-spacing: $ls-xs;
 	line-height: 1;
 	padding: 6px 12px;
