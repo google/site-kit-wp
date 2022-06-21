@@ -1,9 +1,9 @@
 <?php
 /**
- * Class Google\Site_Kit\Core\Tags\Guards\Tag_Production_Guard
+ * Class Google\Site_Kit\Core\Tags\Guards\Tag_Environment_Type_Guard
  *
  * @package   Google\Site_Kit\Core\Tags\Guards
- * @copyright 2021 Google LLC
+ * @copyright 2022 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
@@ -19,7 +19,7 @@ use Google\Site_Kit\Core\Guards\Guard_Interface;
  * @access private
  * @ignore
  */
-class Tag_Production_Guard implements Guard_Interface {
+class Tag_Environment_Type_Guard implements Guard_Interface {
 	/**
 	 * Determines whether the guarded tag can be activated or not.
 	 *
@@ -31,6 +31,16 @@ class Tag_Production_Guard implements Guard_Interface {
 		if ( ! function_exists( 'wp_get_environment_type' ) ) {
 			return true;
 		}
-		return 'production' === wp_get_environment_type();
+
+		$allowed_environments = apply_filters(
+			'googlesitekit_allowed_tag_environment_types',
+			array( 'production' )
+		);
+
+		if ( ! is_array( $allowed_environments ) ) {
+			$allowed_environments = array( 'production' );
+		}
+
+		return in_array( wp_get_environment_type(), $allowed_environments, true );
 	}
 }
