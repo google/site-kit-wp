@@ -349,6 +349,27 @@ class ModuleTest extends TestCase {
 		$this->assertFalse( $module->is_shareable() );
 	}
 
+	public function test_is_recoverable() {
+		remove_all_filters( 'googlesitekit_is_module_recoverable' );
+		$module      = new FakeModule( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$invocations = array();
+		$spy         = function ( ...$args ) use ( &$invocations ) {
+			$invocations[] = $args;
+			return $args[0];
+		};
+
+		// is_recoverable is a proxy through this filter which is handled by
+		// Modules::is_module_recoverable. @see \Google\Site_Kit\Tests\Core\Modules\ModulesTest::test_is_module_recoverable
+		add_filter( 'googlesitekit_is_module_recoverable', $spy, 10, 2 );
+
+		$module->is_recoverable();
+
+		$this->assertCount( 1, $invocations );
+		list ( $given, $slug ) = $invocations[0];
+		$this->assertFalse( $given );
+		$this->assertEquals( $module->slug, $slug );
+	}
+
 	/**
 	 * Determine the difference between the expected and the returned date.
 	 *
