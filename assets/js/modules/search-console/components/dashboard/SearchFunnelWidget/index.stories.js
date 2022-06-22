@@ -24,6 +24,7 @@ import {
 	provideModuleRegistrations,
 	provideModules,
 	provideSiteInfo,
+	provideUserAuthentication,
 	provideUserCapabilities,
 	WithTestRegistry,
 } from '../../../../../../../tests/js/utils';
@@ -258,6 +259,7 @@ export const ReadyWithCreateGoalCTA = Template.bind( {} );
 ReadyWithCreateGoalCTA.storyName = 'Ready with Create Goal CTA';
 ReadyWithCreateGoalCTA.args = {
 	setupRegistry: ( registry ) => {
+		provideUserAuthentication( registry );
 		provideSearchConsoleMockReport( registry, searchConsoleArgs );
 		for ( const options of analyticsArgs ) {
 			provideAnalyticsMockReport( registry, options );

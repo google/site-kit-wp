@@ -184,7 +184,7 @@ describe( 'DashboardSharingSettings', () => {
 			).toBeInTheDocument();
 		} );
 
-		it( 'should set sharing management to `All Admins` and disabled if a module has shared ownership', () => {
+		it( 'should set sharing management to `Any admin signed in with Google` and disabled if a module has shared ownership', () => {
 			provideModules( registry, modules );
 			provideModuleRegistrations( registry );
 			provideSiteConnection( registry, {
