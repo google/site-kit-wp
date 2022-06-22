@@ -56,8 +56,13 @@ export default function Footer( { closeDialog } ) {
 	const isSaving = useSelect( ( select ) =>
 		select( CORE_MODULES ).isDoingSubmitSharingChanges()
 	);
+	const haveSettingsChanged = useSelect( ( select ) =>
+		select( CORE_MODULES ).haveSharingSettingsChanged()
+	);
 
-	const { saveSharingSettings } = useDispatch( CORE_MODULES );
+	const { saveSharingSettings, rollbackSharingSettings } = useDispatch(
+		CORE_MODULES
+	);
 	const { setValue } = useDispatch( CORE_UI );
 
 	const onApply = useCallback( async () => {
@@ -81,7 +86,16 @@ export default function Footer( { closeDialog } ) {
 	const onCancel = useCallback( () => {
 		trackEvent( `${ viewContext }_sharing`, 'settings_cancel' );
 		closeDialog();
-	}, [ closeDialog, viewContext ] );
+
+		if ( haveSettingsChanged ) {
+			rollbackSharingSettings();
+		}
+	}, [
+		closeDialog,
+		haveSettingsChanged,
+		rollbackSharingSettings,
+		viewContext,
+	] );
 
 	return (
 		<div className="googlesitekit-dashboard-sharing-settings__footer">
