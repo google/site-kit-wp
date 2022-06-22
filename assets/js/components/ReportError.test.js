@@ -102,7 +102,7 @@ describe( 'ReportError', () => {
 		);
 	} );
 
-	it( 'should not render the `Retry` button if the error's `selectorData.name` is not `getReport`', () => {
+	it( "should not render the `Retry` button if the error's `selectorData.name` is not `getReport`", () => {
 		const { queryByText } = render(
 			<ReportError
 				moduleSlug="analytics"
