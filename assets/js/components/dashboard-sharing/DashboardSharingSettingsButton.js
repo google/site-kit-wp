@@ -42,6 +42,7 @@ import DashboardSharingSettings from './DashboardSharingSettings';
 import { trackEvent } from '../../util';
 import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { BREAKPOINT_SMALL, useBreakpoint } from '../../hooks/useBreakpoint';
 import { Dialog, DialogContent, DialogFooter } from '../../material-components';
 import { EDITING_USER_ROLE_SELECT_SLUG_KEY } from './DashboardSharingSettings/constants';
@@ -56,6 +57,11 @@ export default function DashboardSharingSettingsButton() {
 	const hasMultipleAdmins = useSelect( ( select ) =>
 		select( CORE_SITE ).hasMultipleAdmins()
 	);
+	const haveSettingsChanged = useSelect( ( select ) =>
+		select( CORE_MODULES ).haveSharingSettingsChanged()
+	);
+
+	const { rollbackSharingSettings } = useDispatch( CORE_MODULES );
 
 	const openDialog = useCallback( () => {
 		trackEvent(
@@ -67,11 +73,18 @@ export default function DashboardSharingSettingsButton() {
 		setDialogOpen( true );
 	}, [ viewContext, hasMultipleAdmins ] );
 
-	const closeDialog = useCallback( () => {
-		setDialogOpen( false );
+	const closeDialog = useCallback(
+		( rollbackSettings = false ) => {
+			setDialogOpen( false );
 
-		setValue( EDITING_USER_ROLE_SELECT_SLUG_KEY, undefined );
-	}, [ setValue ] );
+			setValue( EDITING_USER_ROLE_SELECT_SLUG_KEY, undefined );
+
+			if ( rollbackSettings && haveSettingsChanged ) {
+				rollbackSharingSettings();
+			}
+		},
+		[ haveSettingsChanged, rollbackSharingSettings, setValue ]
+	);
 
 	return (
 		<Fragment>
@@ -85,7 +98,7 @@ export default function DashboardSharingSettingsButton() {
 			<Portal>
 				<Dialog
 					open={ dialogOpen }
-					onClose={ closeDialog }
+					onClose={ () => closeDialog( true ) }
 					className="googlesitekit-dialog googlesitekit-sharing-settings-dialog"
 				>
 					<div
@@ -95,7 +108,7 @@ export default function DashboardSharingSettingsButton() {
 						<Button
 							aria-label={ __( 'Back', 'google-site-kit' ) }
 							className="googlesitekit-dialog__back"
-							onClick={ closeDialog }
+							onClick={ () => closeDialog( true ) }
 						>
 							<Icon icon={ arrowLeft } />
 						</Button>
