@@ -62,6 +62,7 @@ export default function SettingsInactiveModules() {
 				format="small"
 				SmallImageSVG={ AwardSVG }
 				type="win-success"
+				className="googlesitekit-publisher-win--rounded"
 			/>
 		);
 	}

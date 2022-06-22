@@ -2,6 +2,8 @@
 .googlesitekit-plugin .mdc-button {
 
 	@include mdc-button-ink-color($c-content-primary);
+	box-shadow: none;
+	text-transform: capitalize;
 
 	@media (max-width: $bp-desktop) {
 		min-width: auto;

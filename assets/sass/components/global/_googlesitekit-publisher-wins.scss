@@ -207,4 +207,8 @@
 			display: block;
 		}
 	}
+
+	&.googlesitekit-publisher-win--rounded {
+		border-radius: $br-md;
+	}
 }
