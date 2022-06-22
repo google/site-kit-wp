@@ -102,7 +102,7 @@ describe( 'ReportError', () => {
 		);
 	} );
 
-	it( 'should not render the `Retry` button if the error `selectorData` has other than `getReport` selector name', () => {
+	it( 'should not render the `Retry` button if the error's `selectorData.name` is not `getReport`', () => {
 		const { queryByText } = render(
 			<ReportError
 				moduleSlug="analytics"
@@ -127,7 +127,7 @@ describe( 'ReportError', () => {
 		expect( queryByText( /retry/i ) ).not.toBeInTheDocument();
 	} );
 
-	it( 'should not render the `Retry` button if the error has `ERROR_REASON_INSUFFICIENT_PERMISSIONS`', () => {
+	it( 'should not render the `Retry` button if the error reason is `ERROR_REASON_INSUFFICIENT_PERMISSIONS`', () => {
 		const { queryByText } = render(
 			<ReportError
 				moduleSlug="analytics"
@@ -152,7 +152,7 @@ describe( 'ReportError', () => {
 		expect( queryByText( /retry/i ) ).not.toBeInTheDocument();
 	} );
 
-	it( 'should not render the `Retry` button if the error has `ERROR_CODE_MISSING_REQUIRED_SCOPE`', () => {
+	it( 'should not render the `Retry` button if the error reason is `ERROR_CODE_MISSING_REQUIRED_SCOPE`', () => {
 		const { queryByText } = render(
 			<ReportError
 				moduleSlug="analytics"
@@ -177,7 +177,7 @@ describe( 'ReportError', () => {
 		expect( queryByText( /retry/i ) ).not.toBeInTheDocument();
 	} );
 
-	it( 'should not render the `Retry` button if the error has an auth error', () => {
+	it( 'should not render the `Retry` button if the error is an auth error', () => {
 		const { queryByText } = render(
 			<ReportError
 				moduleSlug="analytics"
@@ -203,7 +203,7 @@ describe( 'ReportError', () => {
 		expect( queryByText( /retry/i ) ).not.toBeInTheDocument();
 	} );
 
-	it( 'renders the `Retry` button if the error selector name is `getReport`', () => {
+	it( 'should render the `Retry` button if the error selector name is `getReport`', () => {
 		const { queryByText } = render(
 			<ReportError
 				moduleSlug="analytics"

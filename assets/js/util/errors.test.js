@@ -137,8 +137,12 @@ describe( 'Error Utilities', () => {
 			expect( isAuthError( error ) ).toBe( false );
 		} );
 
-		it( 'should return FALSE if the passed object does not have the code property', () => {
-			expect( isAuthError( { message: 'Not Found' } ) ).toBe( false );
+		it( 'should return FALSE if the passed object does not have the `data` property', () => {
+			const error = {
+				message: 'Not Found',
+			};
+
+			expect( isAuthError( error ) ).toBe( false );
 		} );
 	} );
 
