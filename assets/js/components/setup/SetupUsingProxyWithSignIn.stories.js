@@ -24,6 +24,7 @@ import {
 	CORE_USER,
 	DISCONNECTED_REASON_CONNECTED_URL_MISMATCH,
 	PERMISSION_VIEW_SHARED_DASHBOARD,
+	PERMISSION_READ_SHARED_MODULE_DATA,
 } from '../../googlesitekit/datastore/user/constants';
 import {
 	provideSiteConnection,
@@ -32,6 +33,7 @@ import {
 	provideUserCapabilities,
 } from '../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
+import { getMetaCapabilityPropertyName } from '../../googlesitekit/datastore/util/permissions';
 
 const Template = () => <SetupUsingProxyWithSignIn />;
 
@@ -157,6 +159,10 @@ SharedDashboardAdminCanView.args = {
 
 		provideUserCapabilities( registry, {
 			[ PERMISSION_VIEW_SHARED_DASHBOARD ]: true,
+			[ getMetaCapabilityPropertyName(
+				PERMISSION_READ_SHARED_MODULE_DATA,
+				'analytics'
+			) ]: true,
 		} );
 	},
 };
