@@ -16,99 +16,104 @@
  * limitations under the License.
  */
 
-.googlesitekit-widget {
-	background: $c-base;
-	border-radius: $br-sm;
-	display: flex;
-	flex-direction: column;
-	height: 100%;
-	padding: 0;
+.googlesitekit-plugin {
 
-	&__body {
-		flex: 1;
-	}
+	.googlesitekit-widget {
+		background: $c-base;
+		border-radius: $br-sm;
+		display: flex;
+		flex-direction: column;
+		height: 100%;
+		padding: 0;
 
-	&__header {
-		border-bottom: 1px solid $c-border-light;
-
-		@media ( min-width: $bp-tablet ) {
-			display: flex;
-			justify-content: space-between;
+		&__body {
+			flex: 1;
 		}
 
-		&-title {
-			margin: 0;
-		}
-	}
+		&__header {
+			border-bottom: 1px solid $c-border-light;
 
-	&__footer {
-		border-top: 1px solid $c-border-light;
-	}
+			@media ( min-width: $bp-tablet ) {
+				display: flex;
+				justify-content: space-between;
+			}
 
-	&__header,
-	&__body,
-	&__footer {
-
-		@each $size in map-keys( $mdc-layout-grid-columns ) {
-
-			@include mdc-layout-grid-media-query_( $size ) {
-				$margin: map-get($mdc-layout-grid-default-margin, $size);
-
-				padding: $margin;
-				padding: var(--mdc-layout-grid-margin-#{$size}, #{$margin});
+			&-title {
+				font-size: $fs-title-md;
+				line-height: $lh-title-md;
+				margin: 0;
 			}
 		}
-	}
 
-	&--hidden-footer .googlesitekit-widget__footer {
-		// This intentionally uses `visibility` rather than `display`
-		// to preserve content dimensions.
-		visibility: hidden;
-	}
-
-	.googlesitekit-widget-area--composite & {
-		// Background, shadow, and padding are applied to entire widget
-		// area instead.
-		background: transparent;
-		box-shadow: none;
+		&__footer {
+			border-top: 1px solid $c-border-light;
+		}
 
 		&__header,
 		&__body,
 		&__footer {
-			padding-left: 0;
-			padding-right: 0;
 
-			&:first-child {
-				padding-top: 0;
-			}
+			@each $size in map-keys( $mdc-layout-grid-columns ) {
 
-			&:last-child {
-				padding-bottom: 0;
+				@include mdc-layout-grid-media-query_( $size ) {
+					$margin: map-get($mdc-layout-grid-default-margin, $size);
+
+					padding: $margin;
+					padding: var(--mdc-layout-grid-margin-#{$size}, #{$margin});
+				}
 			}
 		}
-	}
 
-	&.googlesitekit-widget--no-padding .googlesitekit-widget__body {
-		padding: 0;
-	}
-
-	&.googlesitekit-widget--footer-v2 .googlesitekit-widget__footer {
-		border-top: 0;
-		display: flex;
-		justify-content: flex-end;
-	}
-
-	.googlesitekit-widget__header--cta {
-		margin: $grid-gap-phone 0 0;
-
-		@media ( min-width: $bp-tablet ) {
-			margin: 0;
+		&--hidden-footer .googlesitekit-widget__footer {
+			// This intentionally uses `visibility` rather than `display`
+			// to preserve content dimensions.
+			visibility: hidden;
 		}
 
-		.googlesitekit-cta-link {
-			font-size: $fs-body-lg;
-			font-weight: $fw-normal;
-			letter-spacing: $ls-m;
+		.googlesitekit-widget-area--composite & {
+			// Background, shadow, and padding are applied to entire widget
+			// area instead.
+			background: transparent;
+			box-shadow: none;
+
+			&__header,
+			&__body,
+			&__footer {
+				padding-left: 0;
+				padding-right: 0;
+
+				&:first-child {
+					padding-top: 0;
+				}
+
+				&:last-child {
+					padding-bottom: 0;
+				}
+			}
+		}
+
+		&.googlesitekit-widget--no-padding .googlesitekit-widget__body {
+			padding: 0;
+		}
+
+		&.googlesitekit-widget--footer-v2 .googlesitekit-widget__footer {
+			border-top: 0;
+			display: flex;
+			justify-content: flex-end;
+		}
+
+		.googlesitekit-widget__header--cta {
+			margin: $grid-gap-phone 0 0;
+
+			@media ( min-width: $bp-tablet ) {
+				margin: 0;
+			}
+
+			.googlesitekit-cta-link {
+				font-size: $fs-body-lg;
+				font-weight: $fw-normal;
+				letter-spacing: $ls-m;
+			}
 		}
 	}
 }
