@@ -69,6 +69,10 @@
       {
         "avoidEscape": true
       }
+    ],
+    "curly": [
+      "error",
+      "all"
     ]
   },
   "settings": {
@@ -83,7 +87,10 @@
     "import/resolver": {
       "alias": {
         "map": [
-          ["@wordpress-core", "@wordpress"]
+          [
+            "@wordpress-core",
+            "@wordpress"
+          ]
         ]
       }
     }
