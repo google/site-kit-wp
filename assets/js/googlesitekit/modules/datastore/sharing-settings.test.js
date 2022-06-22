@@ -282,6 +282,25 @@ describe( 'core/modules sharing-settings', () => {
 				);
 			} );
 		} );
+
+		describe( 'rollbackSharingSettings', () => {
+			it( 'dispatches a request to rollback the sharing settings to the currently saved values', () => {
+				registry
+					.dispatch( CORE_MODULES )
+					.receiveGetSharingSettings( sharingSettings );
+
+				// Make changes to the shared settings to verify the rollback.
+				registry
+					.dispatch( CORE_MODULES )
+					.setSharedRoles( 'analytics', [ 'editor', 'subscriber' ] );
+
+				registry.dispatch( CORE_MODULES ).rollbackSharingSettings();
+
+				expect( store.getState().sharingSettings ).toMatchObject(
+					sharingSettings
+				);
+			} );
+		} );
 	} );
 
 	describe( 'selectors', () => {
