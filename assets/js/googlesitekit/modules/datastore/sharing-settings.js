@@ -306,6 +306,13 @@ const baseReducer = ( state, { type, payload } ) => {
 			};
 		}
 
+		case ROLLBACK_SHARING_SETTINGS: {
+			return {
+				...state,
+				sharingSettings: state.savedSharingSettings,
+			};
+		}
+
 		default: {
 			return state;
 		}
