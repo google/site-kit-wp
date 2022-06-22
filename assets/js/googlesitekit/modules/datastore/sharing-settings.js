@@ -41,6 +41,7 @@ const RECEIVE_GET_SHARING_SETTINGS = 'RECEIVE_GET_SHARING_SETTINGS';
 const RECEIVE_SHAREABLE_ROLES = 'RECEIVE_SHAREABLE_ROLES';
 const START_SUBMIT_SHARING_CHANGES = 'START_SUBMIT_SHARING_CHANGES';
 const FINISH_SUBMIT_SHARING_CHANGES = 'FINISH_SUBMIT_SHARING_CHANGES';
+const ROLLBACK_SHARING_SETTINGS = 'ROLLBACK_SHARING_SETTINGS';
 
 // Invariant error messages.
 export const INVARIANT_DOING_SUBMIT_SHARING_CHANGES =
@@ -222,6 +223,20 @@ const baseActions = {
 		return {
 			payload: { shareableRoles },
 			type: RECEIVE_SHAREABLE_ROLES,
+		};
+	},
+
+	/**
+	 * Restores the sharing settings to the currently saved values.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {Object} Action for ROLLBACK_SHARING_SETTINGS.
+	 */
+	rollbackSharingSettings() {
+		return {
+			payload: {},
+			type: ROLLBACK_SHARING_SETTINGS,
 		};
 	},
 };
