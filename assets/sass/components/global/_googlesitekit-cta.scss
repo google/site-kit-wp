@@ -52,7 +52,7 @@
 	}
 
 	.googlesitekit-wp-dashboard & {
-		background-color: $c-link-wpdb;
+		background-color: $c-surfaces-surface-1;
 		box-sizing: border-box;
 		height: auto;
 		margin-top: 12px;
@@ -90,21 +90,6 @@
 		color: $c-surfaces-on-surface;
 		margin: 0 0 20px 0;
 	}
-
-	/* stylelint-disable selector-id-pattern */
-	// Override WP link color.
-	#google_dashboard_widget .googlesitekit-wp-dashboard & a,
-	#google_dashboard_widget .googlesitekit-wp-dashboard & button {
-		background-color: transparent;
-		border: none;
-		color: $c-base;
-
-		&:hover {
-			color: $c-base;
-			text-decoration: underline;
-		}
-	}
-	/* stylelint-enable selector-id-pattern */
 
 	*:last-child {
 		margin-bottom: 0;
