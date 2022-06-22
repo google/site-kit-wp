@@ -21,14 +21,16 @@
 	.googlesitekit-dialog {
 
 		.admin-bar & {
-			top: 23px;
+			top: 46px;
 		}
 
 		.mdc-dialog__container {
+			height: 100%;
 			max-width: 908px;
 			width: 100%;
 
 			@media (min-width: $bp-tablet) {
+				height: auto;
 				max-height: calc(100vh - 120px);
 				width: 80%;
 			}
@@ -36,7 +38,7 @@
 
 		.mdc-dialog__surface {
 			border-radius: 0;
-			height: 100vh;
+			height: 100%;
 			max-height: 100%;
 			max-width: 100%;
 			padding: 0;
@@ -48,7 +50,7 @@
 			}
 
 			.admin-bar & {
-				height: calc(100vh - 46px);
+				height: calc(100% - 46px);
 
 				@media (min-width: $bp-tablet) {
 					height: auto;

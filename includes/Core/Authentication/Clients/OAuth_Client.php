@@ -601,7 +601,7 @@ final class OAuth_Client extends OAuth_Client_Base {
 	 * Return the URL for the user to view the dashboard/splash
 	 * page based on their permissions.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.77.0
 	 */
 	private function authorize_user_redirect_url() {
 		return current_user_can( Permissions::VIEW_DASHBOARD )

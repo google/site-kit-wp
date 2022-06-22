@@ -336,23 +336,8 @@ final class Modules {
 			1
 		);
 
-		add_filter(
-			'googlesitekit_inline_base_data',
-			function ( $data ) {
-				$all_active_modules = $this->get_active_modules();
-
-				$non_internal_active_modules = array_filter(
-					$all_active_modules,
-					function( Module $module ) {
-						return false === $module->internal;
-					}
-				);
-
-				$data['activeModules'] = array_keys( $non_internal_active_modules );
-
-				return $data;
-			}
-		);
+		add_filter( 'googlesitekit_inline_base_data', $this->get_method_proxy( 'inline_js_data' ) );
+		add_filter( 'googlesitekit_inline_tracking_data', $this->get_method_proxy( 'inline_js_data' ) );
 
 		add_filter(
 			'googlesitekit_dashboard_sharing_data',
@@ -362,6 +347,15 @@ final class Modules {
 
 				return $data;
 			}
+		);
+
+		add_filter(
+			'googlesitekit_is_module_recoverable',
+			function ( $recoverable, $slug ) {
+				return $this->is_module_recoverable( $slug );
+			},
+			10,
+			2
 		);
 
 		add_filter( 'option_' . Module_Sharing_Settings::OPTION, $this->get_method_proxy( 'filter_shared_ownership_module_settings' ) );
@@ -445,6 +439,29 @@ final class Modules {
 			10,
 			2
 		);
+	}
+
+	/**
+	 * Adds / modifies data to pass to JS.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $data Inline JS data.
+	 * @return array Filtered $data.
+	 */
+	private function inline_js_data( $data ) {
+		$all_active_modules = $this->get_active_modules();
+
+		$non_internal_active_modules = array_filter(
+			$all_active_modules,
+			function( Module $module ) {
+				return false === $module->internal;
+			}
+		);
+
+		$data['activeModules'] = array_keys( $non_internal_active_modules );
+
+		return $data;
 	}
 
 	/**

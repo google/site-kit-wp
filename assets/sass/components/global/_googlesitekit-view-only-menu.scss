@@ -32,14 +32,6 @@
 
 		.mdc-button--dropdown {
 
-			.mdc-button__label {
-
-				@media (max-width: $bp-mobileOnly) {
-
-					@include screen-reader-only;
-				}
-			}
-
 			.mdc-button__icon {
 
 				margin-right: 0;
@@ -93,23 +85,28 @@
 
 		.googlesitekit-view-only-menu__service {
 			display: flex;
+			gap: 8px;
 			margin-bottom: 10px;
 
 			svg {
-				margin-right: 8px;
 				padding: 2px;
 				width: 24px;
 			}
 		}
 
+		.googlesitekit-view-only-menu__service--icon {
+			flex: 0 0 24px;
+		}
+
 		.googlesitekit-view-only-menu__service--name {
-			flex: 1;
+			flex: 0 0 100px;
 			font-size: 14px;
 			margin-right: 8px;
 		}
 
 		.googlesitekit-view-only-menu__service--owner {
 			color: $c-primary;
+			flex: 1;
 			font-size: 12px;
 			margin-left: auto;
 		}

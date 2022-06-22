@@ -281,7 +281,7 @@ export const createSettingsStore = (
 		 * Indicates whether the current settings have changed from what is saved.
 		 *
 		 * @since 1.6.0
-		 * @since n.e.x.t Added ability to filter settings using `keys` argument.
+		 * @since 1.77.0 Added ability to filter settings using `keys` argument.
 		 *
 		 * @param {Object}     state Data store's state.
 		 * @param {Array|null} keys  Settings keys to check; if not provided, all settings are checked.
@@ -342,7 +342,7 @@ export const createSettingsStore = (
 		/**
 		 * Gets the owned settings slugs for this module.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.77.0
 		 *
 		 * @param {Object} state Data store's state.
 		 * @return {Array|null} The array of owned settings slugs for this module if they exist. Returns `null` if no owned settings slugs exist.
@@ -354,7 +354,7 @@ export const createSettingsStore = (
 		/**
 		 * Returns `true` if a module's "own settings" have changed; `false` if not.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.77.0
 		 *
 		 * @param {Object} state Data store's state.
 		 * @return {boolean} `true` if the module's "own settings" have changed; `false` if not.

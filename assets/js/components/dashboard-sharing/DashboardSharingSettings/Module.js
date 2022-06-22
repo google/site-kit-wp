@@ -61,11 +61,11 @@ const { useSelect, useDispatch } = Data;
 const viewAccessOptions = [
 	{
 		value: 'owner',
-		label: __( 'Only Me', 'google-site-kit' ),
+		label: __( 'Only me', 'google-site-kit' ),
 	},
 	{
 		value: 'all_admins',
-		label: __( 'All Admins', 'google-site-kit' ),
+		label: __( 'Any admin signed in with Google', 'google-site-kit' ),
 	},
 ];
 

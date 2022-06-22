@@ -56,7 +56,7 @@ describe( 'createSubmitChangesStore', () => {
 					Data.combineStores(
 						Data.commonStore,
 						createSubmitChangesStore( { submitChanges } ),
-						createErrorStore()
+						createErrorStore( storeName )
 					)
 				);
 
@@ -77,7 +77,7 @@ describe( 'createSubmitChangesStore', () => {
 						createSubmitChangesStore( {
 							submitChanges: async () => ( { error } ),
 						} ),
-						createErrorStore()
+						createErrorStore( storeName )
 					)
 				);
 
@@ -107,7 +107,7 @@ describe( 'createSubmitChangesStore', () => {
 						createSubmitChangesStore( {
 							submitChanges: async () => ( { error } ),
 						} ),
-						createErrorStore()
+						createErrorStore( storeName )
 					)
 				);
 
@@ -180,7 +180,7 @@ describe( 'createSubmitChangesStore', () => {
 					storeName,
 					Data.combineStores(
 						Data.commonStore,
-						createErrorStore(),
+						createErrorStore( storeName ),
 						createSubmitChangesStore( {
 							submitChanges: async () => {
 								expect(
@@ -207,7 +207,7 @@ describe( 'createSubmitChangesStore', () => {
 						createSubmitChangesStore( {
 							submitChanges: async () => ( {} ),
 						} ),
-						createErrorStore()
+						createErrorStore( storeName )
 					)
 				);
 

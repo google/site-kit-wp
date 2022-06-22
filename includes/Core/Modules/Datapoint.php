@@ -13,7 +13,7 @@ namespace Google\Site_Kit\Core\Modules;
 /**
  * Class representing a datapoint definition.
  *
- * @since n.e.x.t
+ * @since 1.77.0
  * @access private
  * @ignore
  */
@@ -22,7 +22,7 @@ class Datapoint {
 	/**
 	 * Service identifier.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.77.0
 	 * @var string
 	 */
 	private $service = '';
@@ -30,7 +30,7 @@ class Datapoint {
 	/**
 	 * Required scopes.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.77.0
 	 * @var string[]
 	 */
 	private $scopes = array();
@@ -38,7 +38,7 @@ class Datapoint {
 	/**
 	 * Shareable status.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.77.0
 	 * @var bool
 	 */
 	private $shareable;
@@ -46,7 +46,7 @@ class Datapoint {
 	/**
 	 * Request scopes message.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.77.0
 	 * @var string
 	 */
 	private $request_scopes_message;
@@ -54,7 +54,7 @@ class Datapoint {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.77.0
 	 *
 	 * @param array $definition Definition fields.
 	 */
@@ -77,7 +77,7 @@ class Datapoint {
 	/**
 	 * Checks if the datapoint is shareable.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.77.0
 	 *
 	 * @return bool
 	 */
@@ -88,7 +88,7 @@ class Datapoint {
 	/**
 	 * Gets the service identifier.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.77.0
 	 *
 	 * @return string
 	 */
@@ -99,7 +99,7 @@ class Datapoint {
 	/**
 	 * Gets the list of required scopes.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.77.0
 	 *
 	 * @return string[]
 	 */
@@ -110,7 +110,7 @@ class Datapoint {
 	/**
 	 * Gets the request scopes message.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.77.0
 	 *
 	 * @return string
 	 */

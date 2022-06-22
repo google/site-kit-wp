@@ -374,6 +374,8 @@ final class Authentication {
 			}
 		);
 
+		add_filter( 'googlesitekit_inline_tracking_data', $this->get_method_proxy( 'inline_js_tracking_data' ) );
+
 		// Synchronize site fields on shutdown when select options change.
 		$option_updated = function () {
 			$sync_site_fields = function () {
@@ -951,6 +953,21 @@ final class Authentication {
 		if ( ! isset( $data['hasSearchConsoleProperty'] ) ) {
 			$data['hasSearchConsoleProperty'] = false;
 		}
+
+		return $data;
+	}
+
+	/**
+	 * Adds / modifies tracking relevant data to pass to JS.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $data Inline JS data.
+	 * @return array Filtered $data.
+	 */
+	private function inline_js_tracking_data( $data ) {
+		$data['isAuthenticated'] = $this->is_authenticated();
+		$data['userRoles']       = wp_get_current_user()->roles;
 
 		return $data;
 	}
