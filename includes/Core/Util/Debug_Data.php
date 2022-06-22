@@ -161,31 +161,33 @@ class Debug_Data {
 	 */
 	protected function get_fields() {
 		$fields = array(
-			'version'              => array(
+			'version'                 => array(
 				'label' => __( 'Version', 'google-site-kit' ),
 				'value' => GOOGLESITEKIT_VERSION,
 			),
-			'php_version'          => array(
+			'php_version'             => array(
 				'label' => __( 'PHP Version', 'google-site-kit' ),
 				'value' => PHP_VERSION,
 			),
-			'wp_version'           => array(
+			'wp_version'              => array(
 				'label' => __( 'WordPress Version', 'google-site-kit' ),
 				'value' => get_bloginfo( 'version' ),
 			),
-			'reference_url'        => array(
+			'reference_url'           => array(
 				'label' => __( 'Reference Site URL', 'google-site-kit' ),
 				'value' => $this->context->get_reference_site_url(),
 			),
-			'amp_mode'             => $this->get_amp_mode_field(),
-			'site_status'          => $this->get_site_status_field(),
-			'user_status'          => $this->get_user_status_field(),
-			'verification_status'  => $this->get_verification_status_field(),
-			'connected_user_count' => $this->get_connected_user_count_field(),
-			'active_modules'       => $this->get_active_modules_field(),
-			'required_scopes'      => $this->get_required_scopes_field(),
-			'capabilities'         => $this->get_capabilities_field(),
-			'enabled_features'     => $this->get_feature_fields(),
+			'amp_mode'                => $this->get_amp_mode_field(),
+			'site_status'             => $this->get_site_status_field(),
+			'user_status'             => $this->get_user_status_field(),
+			'verification_status'     => $this->get_verification_status_field(),
+			'connected_user_count'    => $this->get_connected_user_count_field(),
+			'active_modules'          => $this->get_active_modules_field(),
+			'recoverable_modules'     => $this->get_recoverable_modules_field(),
+			'required_scopes'         => $this->get_required_scopes_field(),
+			'capabilities'            => $this->get_capabilities_field(),
+			'enabled_features'        => $this->get_feature_fields(),
+			'module_sharing_settings' => $this->get_module_sharing_settings_fields(),
 		);
 		$none   = __( 'None', 'google-site-kit' );
 
@@ -361,6 +363,44 @@ class Debug_Data {
 			),
 			'debug' => join( ', ', wp_list_pluck( $active_modules, 'slug' ) ),
 		);
+	}
+
+	/**
+	 * Gets the field definition for the recoverable_modules field.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array
+	 */
+	private function get_recoverable_modules_field() {
+		$recoverable_modules = $this->modules->get_recoverable_modules();
+
+		return array(
+			'label' => __( 'Recoverable Modules', 'google-site-kit' ),
+			'value' => join(
+				/* translators: used between list items, there is a space after the comma. */
+				__( ', ', 'google-site-kit' ),
+				wp_list_pluck( $recoverable_modules, 'name' )
+			),
+			'debug' => join( ', ', wp_list_pluck( $recoverable_modules, 'slug' ) ),
+		);
+	}
+
+	/**
+	 * Gets the field definition for the module_sharing_settings field.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array
+	 */
+	private function get_module_sharing_settings_fields() {
+		$settings = $this->modules->get_module_sharing_settings();
+
+		foreach ( $shareable_modules as $module_slug => $module_details ) {
+			$module = $this->modules->get_module( $module_slug );
+		}
+
+		return array();
 	}
 
 	/**
