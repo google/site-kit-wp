@@ -113,7 +113,7 @@
 
 			@media ( min-width: $bp-wpAdminBarTablet ) {
 				margin: 0;
-				top: 100%;
+				top: calc(100% + 1px);
 				width: 100%;
 			}
 		}
