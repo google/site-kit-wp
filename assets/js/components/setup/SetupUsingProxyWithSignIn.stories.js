@@ -170,6 +170,37 @@ SharedDashboardAdminCanView.parameters = {
 	features: [ 'dashboardSharing' ],
 };
 
+export const SharedDashboardSingleAdminCanView = Template.bind( {} );
+SharedDashboardSingleAdminCanView.storyName =
+	'Start - with Dashboard Sharing enabled and available but there is only one admin';
+SharedDashboardSingleAdminCanView.args = {
+	setupRegistry: ( registry ) => {
+		provideSiteConnection( registry, {
+			hasConnectedAdmins: true,
+			hasMultipleAdmins: false,
+		} );
+
+		provideModules( registry, [
+			{
+				slug: 'analytics',
+				active: true,
+				connected: true,
+			},
+		] );
+
+		provideUserCapabilities( registry, {
+			[ PERMISSION_VIEW_SHARED_DASHBOARD ]: true,
+			[ getMetaCapabilityPropertyName(
+				PERMISSION_READ_SHARED_MODULE_DATA,
+				'analytics'
+			) ]: true,
+		} );
+	},
+};
+SharedDashboardSingleAdminCanView.parameters = {
+	features: [ 'dashboardSharing' ],
+};
+
 export default {
 	title: 'Setup / Using Proxy With Sign-in',
 	decorators: [
