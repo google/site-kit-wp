@@ -33,6 +33,7 @@
 
 	.googlesitekit-idea-hub__title {
 		align-items: center;
+		border-bottom: 1px solid $c-utility-divider;
 		display: flex;
 		flex-wrap: nowrap;
 		font-size: $fs-title-sm;
@@ -40,9 +41,13 @@
 		justify-content: space-between;
 		line-height: $lh-title-sm;
 		margin: 0 0 12px 0;
+		padding: 0 120px 12px 0;
+		position: relative;
 
-		.googlesitekit-idea-hub__title-text {
-			padding-right: 12px;
+		.googlesitekit-badge {
+			position: absolute;
+			right: 0;
+			top: -6px;
 		}
 	}
 
