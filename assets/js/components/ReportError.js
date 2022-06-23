@@ -24,6 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
+import { useCallback } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 
 /**
@@ -31,18 +32,24 @@ import { __, sprintf } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
-import { isInsufficientPermissionsError } from '../util/errors';
+import {
+	isAuthError,
+	isInsufficientPermissionsError,
+	isPermissionScopeError,
+} from '../util/errors';
 import { getInsufficientPermissionsErrorDescription } from '../util/insufficient-permissions-error-description';
 import { purify } from '../util/purify';
 import ErrorText from '../components/ErrorText';
 import CTA from './notifications/CTA';
 
-const { useSelect } = Data;
+const { useSelect, useDispatch } = Data;
 
 export default function ReportError( { moduleSlug, error } ) {
 	const module = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModule( moduleSlug )
 	);
+
+	const dispatch = useDispatch();
 
 	let title = sprintf(
 		/* translators: %s: module name */
@@ -67,7 +74,33 @@ export default function ReportError( { moduleSlug, error } ) {
 		purify.sanitize( message, { ALLOWED_TAGS: [] } )
 	);
 
-	return <CTA title={ title } description={ description } error />;
+	const showRetry =
+		!! error?.selectorData?.storeName &&
+		error.selectorData?.name === 'getReport' &&
+		! isInsufficientPermissionsError( error ) &&
+		! isPermissionScopeError( error ) &&
+		! isAuthError( error );
+
+	const handleRetry = useCallback( () => {
+		const { selectorData } = error;
+		dispatch( selectorData.storeName ).invalidateResolution(
+			selectorData.name,
+			selectorData.args
+		);
+	}, [ dispatch, error ] );
+
+	return (
+		<CTA
+			title={ title }
+			description={ description }
+			ctaType={ showRetry ? 'button' : undefined }
+			ctaLabel={
+				showRetry ? __( 'Retry', 'google-site-kit' ) : undefined
+			}
+			onClick={ showRetry ? handleRetry : undefined }
+			error
+		/>
+	);
 }
 
 ReportError.propTypes = {
