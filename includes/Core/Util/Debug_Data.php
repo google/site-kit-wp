@@ -161,33 +161,32 @@ class Debug_Data {
 	 */
 	protected function get_fields() {
 		$fields = array(
-			'version'                 => array(
+			'version'              => array(
 				'label' => __( 'Version', 'google-site-kit' ),
 				'value' => GOOGLESITEKIT_VERSION,
 			),
-			'php_version'             => array(
+			'php_version'          => array(
 				'label' => __( 'PHP Version', 'google-site-kit' ),
 				'value' => PHP_VERSION,
 			),
-			'wp_version'              => array(
+			'wp_version'           => array(
 				'label' => __( 'WordPress Version', 'google-site-kit' ),
 				'value' => get_bloginfo( 'version' ),
 			),
-			'reference_url'           => array(
+			'reference_url'        => array(
 				'label' => __( 'Reference Site URL', 'google-site-kit' ),
 				'value' => $this->context->get_reference_site_url(),
 			),
-			'amp_mode'                => $this->get_amp_mode_field(),
-			'site_status'             => $this->get_site_status_field(),
-			'user_status'             => $this->get_user_status_field(),
-			'verification_status'     => $this->get_verification_status_field(),
-			'connected_user_count'    => $this->get_connected_user_count_field(),
-			'active_modules'          => $this->get_active_modules_field(),
-			'recoverable_modules'     => $this->get_recoverable_modules_field(),
-			'required_scopes'         => $this->get_required_scopes_field(),
-			'capabilities'            => $this->get_capabilities_field(),
-			'enabled_features'        => $this->get_feature_fields(),
-			'module_sharing_settings' => $this->get_module_sharing_settings_fields(),
+			'amp_mode'             => $this->get_amp_mode_field(),
+			'site_status'          => $this->get_site_status_field(),
+			'user_status'          => $this->get_user_status_field(),
+			'verification_status'  => $this->get_verification_status_field(),
+			'connected_user_count' => $this->get_connected_user_count_field(),
+			'active_modules'       => $this->get_active_modules_field(),
+			'recoverable_modules'  => $this->get_recoverable_modules_field(),
+			'required_scopes'      => $this->get_required_scopes_field(),
+			'capabilities'         => $this->get_capabilities_field(),
+			'enabled_features'     => $this->get_feature_fields(),
 		);
 		$none   = __( 'None', 'google-site-kit' );
 
@@ -200,7 +199,7 @@ class Debug_Data {
 
 				return $field;
 			},
-			array_merge( $fields, $this->get_module_fields() )
+			array_merge( $fields, $this->get_module_sharing_settings_fields(), $this->get_module_fields() )
 		);
 	}
 
@@ -394,13 +393,89 @@ class Debug_Data {
 	 * @return array
 	 */
 	private function get_module_sharing_settings_fields() {
-		$settings = $this->modules->get_module_sharing_settings();
+		$sharing_settings  = $this->modules->get_module_sharing_settings()->get();
+		$shareable_modules = $this->modules->get_shareable_modules();
+		$fields            = array();
 
 		foreach ( $shareable_modules as $module_slug => $module_details ) {
-			$module = $this->modules->get_module( $module_slug );
+			$fields[] = array_merge(
+				array(
+					/* translators: %s: module name */
+					'label' => sprintf( __( '%s Shared Roles', 'google-site-kit' ), $module_details->name ),
+				),
+				$this->get_module_shared_role_names( $sharing_settings[ $module_slug ]['sharedRoles'] )
+			);
+
+			$fields[] = array_merge(
+				array(
+					/* translators: %s: module name */
+					'label' => sprintf( __( '%s Management', 'google-site-kit' ), $module_details->name ),
+				),
+				$this->get_module_management( $sharing_settings[ $module_slug ]['management'] )
+			);
 		}
 
-		return array();
+		return $fields;
+	}
+
+	/**
+	 * Gets the comma separated list of shared role names for module_sharing_settings.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $role_slugs List of role slugs.
+	 *
+	 * @return array $role_names Comma separated list of role names for module_sharing_settings within value and debug keys.
+	 */
+	private function get_module_shared_role_names( $role_slugs ) {
+		if ( ! $role_slugs ) {
+			return array(
+				'value' => __( 'None', 'google-site-kit' ),
+				'debug' => 'none',
+			);
+		}
+
+		$wp_role_names     = wp_roles()->get_names();
+		$shared_role_names = array_filter(
+			$wp_role_names,
+			function( $key ) use ( $role_slugs ) {
+				return in_array( $key, $role_slugs, true );
+			},
+			ARRAY_FILTER_USE_KEY
+		);
+
+		return array(
+			'value' => join(
+				/* translators: used between list items, there is a space after the comma. */
+				__( ', ', 'google-site-kit' ),
+				$shared_role_names
+			),
+			'debug' => join( ', ', $role_slugs ),
+		);
+	}
+
+	/**
+	 * Gets the user friendly and debug values for module management used in module_sharing_settings.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $management The module management value. Can be wither `owner` or `all_admins`.
+	 *
+	 * @return array User friendly and debug values for module management used in module_sharing_settings within value and debug keys.
+	 */
+	private function get_module_management( $management ) {
+		switch ( $management ) {
+			case 'all_admins':
+				return array(
+					'value' => __( 'Any admin signed in with Google', 'google-site-kit' ),
+					'debug' => 'all_admins',
+				);
+			default:
+				return array(
+					'value' => __( 'Only me', 'google-site-kit' ),
+					'debug' => 'owner',
+				);
+		}
 	}
 
 	/**
