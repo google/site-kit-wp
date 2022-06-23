@@ -135,6 +135,50 @@ export default function Navigation() {
 		)
 	);
 
+	const getDefaultChipID = () => {
+		if ( ! viewOnlyDashboard ) {
+			return ANCHOR_ID_TRAFFIC;
+		}
+
+		if ( showTraffic ) {
+			return ANCHOR_ID_TRAFFIC;
+		}
+
+		if ( showContent ) {
+			return ANCHOR_ID_CONTENT;
+		}
+
+		if ( showSpeed ) {
+			return ANCHOR_ID_SPEED;
+		}
+
+		if ( showMonetization ) {
+			return ANCHOR_ID_MONETIZATION;
+		}
+
+		return '';
+	};
+
+	const isValidChipID = ( chipID ) => {
+		if ( showTraffic && chipID === ANCHOR_ID_TRAFFIC ) {
+			return true;
+		}
+
+		if ( showContent && chipID === ANCHOR_ID_CONTENT ) {
+			return true;
+		}
+
+		if ( showSpeed && chipID === ANCHOR_ID_SPEED ) {
+			return true;
+		}
+
+		if ( showMonetization && chipID === ANCHOR_ID_MONETIZATION ) {
+			return true;
+		}
+
+		return false;
+	};
+
 	const handleSelect = useCallback(
 		( { target } ) => {
 			const chip = target.closest( '.mdc-chip' );
@@ -161,22 +205,30 @@ export default function Navigation() {
 	);
 
 	useMount( () => {
+		const defaultChipID = getDefaultChipID();
+
 		if ( ! initialHash ) {
-			setSelectedID( ANCHOR_ID_TRAFFIC );
+			setSelectedID( defaultChipID );
 			setTimeout( () =>
-				global.history.replaceState( {}, '', `#${ ANCHOR_ID_TRAFFIC }` )
+				global.history.replaceState( {}, '', `#${ defaultChipID }` )
 			);
+
 			return;
 		}
 
-		const chipID = initialHash;
+		let chipID = initialHash;
+
+		if ( ! isValidChipID( chipID ) ) {
+			chipID = defaultChipID;
+		}
+
 		setValue( ACTIVE_CONTEXT_ID, chipID );
 
 		setTimeout( () => {
 			global.scrollTo( {
 				top:
-					chipID !== ANCHOR_ID_TRAFFIC
-						? getContextScrollTop( `#${ initialHash }`, breakpoint )
+					chipID !== defaultChipID
+						? getContextScrollTop( `#${ chipID }`, breakpoint )
 						: 0,
 				behavior: 'smooth',
 			} );
