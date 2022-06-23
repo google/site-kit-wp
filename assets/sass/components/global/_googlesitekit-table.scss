@@ -55,10 +55,10 @@
 	.googlesitekit-table__head-item {
 		color: $c-surfaces-on-surface;
 		font-family: $f-secondary;
-		font-size: $fs-title-sm;
+		font-size: $fs-title-md;
 		font-weight: $fw-bold;
 		hyphens: auto;
-		line-height: $lh-title-sm;
+		line-height: $lh-title-md;
 		outline: 0;
 		padding: 0 ($grid-gap-phone / 4) ($grid-gap-phone / 2) ($grid-gap-phone / 4);
 		position: relative;
@@ -85,6 +85,12 @@
 
 		&--primary {
 			width: 50%;
+		}
+
+		// Table headers within widgets with headers have smaller font size.
+		.googlesitekit-widget__header + .googlesitekit-widget__body & {
+			font-size: $fs-title-sm;
+			line-height: $lh-title-sm;
 		}
 
 		.googlesitekit-table-overflow &:last-child {

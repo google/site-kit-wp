@@ -36,10 +36,10 @@
 		border-bottom: 1px solid $c-utility-divider;
 		display: flex;
 		flex-wrap: nowrap;
-		font-size: $fs-title-sm;
+		font-size: $fs-title-md;
 		font-weight: $fw-bold;
 		justify-content: space-between;
-		line-height: $lh-title-sm;
+		line-height: $lh-title-md;
 		margin: 0 0 12px 0;
 		padding: 0 120px 12px 0;
 		position: relative;
@@ -47,7 +47,6 @@
 		.googlesitekit-badge {
 			position: absolute;
 			right: 0;
-			top: -6px;
 		}
 	}
 
