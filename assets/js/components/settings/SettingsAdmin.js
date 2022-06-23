@@ -108,7 +108,10 @@ export default function SettingsAdmin() {
 						</Layout>
 					) }
 					{ ! isUserInputCompleted && (
-						<UserInputSettings isDismissible={ false } />
+						<UserInputSettings
+							isDismissible={ false }
+							className="googlesitekit-publisher-win--rounded"
+						/>
 					) }
 				</Cell>
 			) }

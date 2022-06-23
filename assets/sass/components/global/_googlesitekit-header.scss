@@ -26,6 +26,10 @@
 		@media (min-width: $bp-tablet) {
 			padding: 0 10px;
 		}
+
+		&:not(:empty) {
+			border-bottom: 1px solid $c-utility-divider;
+		}
 	}
 
 	.googlesitekit-header {
@@ -197,13 +201,6 @@
 				@media ( min-width: $width-wpAdminBarTablet + 1 + px ) {
 					display: inline-block;
 				}
-			}
-		}
-
-		&.googlesitekit-header--has-subheader {
-
-			+ .googlesitekit-subheader {
-				border-bottom: 1px solid $c-utility-divider;
 			}
 		}
 	}
