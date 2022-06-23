@@ -52,8 +52,6 @@ final class Thank_With_Google extends Module
 		if ( ! $this->is_connected() ) {
 			return;
 		}
-
-		// TODO: Bring back SwG functionality after #3120 is merged.
 	}
 
 	/**
