@@ -21,7 +21,12 @@
 	.googlesitekit-dialog {
 
 		.admin-bar & {
-			top: 23px;
+			// Stretch to cover full screen on mobile.
+			align-items: stretch;
+
+			@media (min-width: $bp-tablet) {
+				align-items: center;
+			}
 		}
 
 		.mdc-dialog__container {
@@ -36,8 +41,7 @@
 
 		.mdc-dialog__surface {
 			border-radius: 0;
-			height: 100vh;
-			max-height: 100%;
+			max-height: 100vh; // Height is programmatically set upto 100vh on mobile.
 			max-width: 100%;
 			padding: 0;
 			width: 100%;
@@ -45,14 +49,6 @@
 			@media (min-width: $bp-tablet) {
 				border-radius: 8px;
 				height: auto;
-			}
-
-			.admin-bar & {
-				height: calc(100vh - 46px);
-
-				@media (min-width: $bp-tablet) {
-					height: auto;
-				}
 			}
 		}
 
