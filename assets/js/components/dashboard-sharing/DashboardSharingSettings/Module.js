@@ -214,14 +214,25 @@ export default function Module( { moduleSlug, moduleName, ownerUsername } ) {
 								) }
 
 								<Tooltip
-									title={ sprintf(
-										/* translators: %s: name of the user who manages the module. */
-										__(
-											'%s has connected this and given managing permissions to all admins. You can change who can view this on the dashboard.',
-											'google-site-kit'
-										),
-										ownerUsername
-									) }
+									title={
+										hasSharingCapability
+											? sprintf(
+													/* translators: %s: name of the user who manages the module. */
+													__(
+														'%s has connected this and given managing permissions to all admins. You can change who can view this on the dashboard.',
+														'google-site-kit'
+													),
+													ownerUsername
+											  )
+											: sprintf(
+													/* translators: %s: name of the user who manages the module. */
+													__(
+														'Contact %s to change who can manage view access for this module.',
+														'google-site-kit'
+													),
+													ownerUsername
+											  )
+									}
 									classes={ {
 										popper: 'googlesitekit-tooltip-popper',
 										tooltip: 'googlesitekit-tooltip',
