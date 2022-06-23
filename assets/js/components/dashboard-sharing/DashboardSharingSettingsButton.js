@@ -97,7 +97,7 @@ export default function DashboardSharingSettingsButton() {
 					// WP Admin bar of 46px which gradually scrolls off the screen.
 					style={ {
 						top: `${ y < 46 ? 46 - y : 0 }px`,
-						height: `calc(100vh - 46px + ${ y < 46 ? y : 46 }px)`,
+						height: `calc(100% - 46px + ${ y < 46 ? y : 46 }px)`,
 					} }
 				>
 					<div
