@@ -1,5 +1,5 @@
 /**
- * `modules/subscribe-with-google` data store: settings tests.
+ * `modules/thank-with-google` data store: settings tests.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -37,7 +37,7 @@ import {
 	INVARIANT_INVALID_REVENUE_MODEL,
 } from './settings';
 
-describe( 'modules/subscribe-with-google settings', () => {
+describe( 'modules/thank-with-google settings', () => {
 	let registry;
 
 	const defaultSettings = {
@@ -58,7 +58,7 @@ describe( 'modules/subscribe-with-google settings', () => {
 		data: { status: 500 },
 	};
 
-	const fetchPattern = /^\/google-site-kit\/v1\/modules\/subscribe-with-google\/data\/settings/;
+	const fetchPattern = /^\/google-site-kit\/v1\/modules\/thank-with-google\/data\/settings/;
 
 	beforeAll( () => {
 		API.setUsingCache( false );
@@ -132,7 +132,7 @@ describe( 'modules/subscribe-with-google settings', () => {
 				muteFetch( fetchPattern );
 				const cacheKey = createCacheKey(
 					'modules',
-					'subscribe-with-google',
+					'thank-with-google',
 					'arbitrary-datapoint'
 				);
 				expect( await setItem( cacheKey, 'test-value' ) ).toBe( true );

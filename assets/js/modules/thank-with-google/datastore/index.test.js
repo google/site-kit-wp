@@ -1,5 +1,5 @@
 /**
- * `modules/subscribe-with-google` data store: selectors test.
+ * `modules/thank-with-google` data store: selectors test.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -25,7 +25,7 @@ import {
 	unsubscribeFromAll,
 } from '../../../../../tests/js/utils';
 
-describe( 'modules/subscribe-with-google properties', () => {
+describe( 'modules/thank-with-google properties', () => {
 	let registry;
 
 	beforeEach( () => {

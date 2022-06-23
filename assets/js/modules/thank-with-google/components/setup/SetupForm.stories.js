@@ -28,10 +28,10 @@ import {
 import ModuleSetup from '../../../../components/setup/ModuleSetup';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 
-const features = [ 'swgModule' ];
+const features = [ 'twgModule' ];
 
 function Template() {
-	return <ModuleSetup moduleSlug="subscribe-with-google" />;
+	return <ModuleSetup moduleSlug="thank-with-google" />;
 }
 
 export const Default = Template.bind( null );
@@ -39,13 +39,13 @@ Default.storyName = 'Default';
 Default.parameters = { features };
 
 export default {
-	title: 'Modules/Subscribe with Google/Setup/SetupForm',
+	title: 'Modules/Thank with Google/Setup/SetupForm',
 	decorators: [
 		( Story ) => {
 			const setupRegistry = ( registry ) => {
 				provideModules( registry, [
 					{
-						slug: 'subscribe-with-google',
+						slug: 'thank-with-google',
 						active: true,
 						connected: false,
 					},

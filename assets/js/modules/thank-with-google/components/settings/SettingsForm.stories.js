@@ -1,5 +1,5 @@
 /**
- * Subscribe with Google SettingsView component stories.
+ * Thank with Google SettingsView component stories.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -29,12 +29,12 @@ import {
 } from '../../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 
-const features = [ 'swgModule' ];
+const features = [ 'twgModule' ];
 
 function Template() {
 	return (
 		<div className="googlesitekit-layout">
-			<div className="googlesitekit-settings-module googlesitekit-settings-module--active googlesitekit-settings-module--subscribe-with-google">
+			<div className="googlesitekit-settings-module googlesitekit-settings-module--active googlesitekit-settings-module--thank-with-google">
 				<div className="googlesitekit-setup-module">
 					<div className="googlesitekit-settings-module__content googlesitekit-settings-module__content--open">
 						<Grid>
@@ -56,13 +56,13 @@ Default.storyName = 'Default';
 Default.parameters = { features };
 
 export default {
-	title: 'Modules/Subscribe with Google/Settings/SettingsForm',
+	title: 'Modules/Thank with Google/Settings/SettingsForm',
 	decorators: [
 		( Story ) => {
 			const setupRegistry = ( registry ) => {
 				provideModules( registry, [
 					{
-						slug: 'subscribe-with-google',
+						slug: 'thank-with-google',
 						active: true,
 						connected: true,
 					},
