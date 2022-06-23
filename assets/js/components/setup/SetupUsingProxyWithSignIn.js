@@ -86,6 +86,7 @@ export default function SetupUsingProxyWithSignIn() {
 		isConnected,
 		connectedProxyURL,
 		homeURL,
+		hasMultipleAdmins,
 	} = useSelect( ( select ) => {
 		const site = select( CORE_SITE );
 		const user = select( CORE_USER );
@@ -99,6 +100,7 @@ export default function SetupUsingProxyWithSignIn() {
 			connectedProxyURL: untrailingslashit( user.getConnectedProxyURL() ),
 			homeURL: untrailingslashit( site.getHomeURL() ),
 			isConnected: site.isConnected(),
+			hasMultipleAdmins: site.hasMultipleAdmins(),
 		};
 	} );
 
@@ -362,7 +364,9 @@ export default function SetupUsingProxyWithSignIn() {
 																{
 																	inProgressFeedback
 																}
-																{ dashboardSharingEnabled &&
+																{ hasMultipleAdmins &&
+																	isSecondAdmin &&
+																	dashboardSharingEnabled &&
 																	hasViewableModules &&
 																	complete && (
 																		<Link

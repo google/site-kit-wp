@@ -32,14 +32,6 @@
 
 		.mdc-button--dropdown {
 
-			.mdc-button__label {
-
-				@media (max-width: $bp-mobileOnly) {
-
-					@include screen-reader-only;
-				}
-			}
-
 			.mdc-button__icon {
 
 				margin-right: 0;

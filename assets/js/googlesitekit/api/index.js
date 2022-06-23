@@ -32,7 +32,7 @@ import { addQueryArgs } from '@wordpress/url';
  */
 import { deleteItem, getItem, getKeys, setItem } from './cache';
 import { stringifyObject, HOUR_IN_SECONDS } from '../../util';
-import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '../../util/errors';
+import { isAuthError, isPermissionScopeError } from '../../util/errors';
 import { trackAPIError } from '../../util/api';
 
 // Specific error to handle here, see below.
@@ -93,9 +93,9 @@ export const dispatchAPIError = ( error ) => {
 	// Kind of a hack, but scales to all components.
 	const dispatch = global.googlesitekit?.data?.dispatch?.( CORE_USER );
 	if ( dispatch ) {
-		if ( error.code === ERROR_CODE_MISSING_REQUIRED_SCOPE ) {
+		if ( isPermissionScopeError( error ) ) {
 			dispatch.setPermissionScopeError( error );
-		} else if ( error.data?.reconnectURL ) {
+		} else if ( isAuthError( error ) ) {
 			dispatch.setAuthError( error );
 		}
 	}
