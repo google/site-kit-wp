@@ -182,14 +182,38 @@ export default function Module( { moduleSlug, moduleName, ownerUsername } ) {
 
 			{ hasMultipleAdmins && (
 				<div className="googlesitekit-dashboard-sharing-settings__column--manage">
-					{ ( sharedOwnershipModule || hasOwnedModule ) && (
+					{ sharedOwnershipModule && (
+						<p className="googlesitekit-dashboard-sharing-settings__note">
+							<span>
+								{ __(
+									'Any admin signed in with Google',
+									'google-site-kit'
+								) }
+							</span>
+
+							<Tooltip
+								title={ __(
+									'This service requires general access to Google APIs rather than access to a specific user-owned property/entity, so view access is manageable by any admin signed in with Google.',
+									'google-site-kit'
+								) }
+								classes={ {
+									popper: 'googlesitekit-tooltip-popper',
+									tooltip: 'googlesitekit-tooltip',
+								} }
+							>
+								<span className="googlesitekit-dashboard-sharing-settings__tooltip-icon">
+									<Icon icon={ info } size={ 18 } />
+								</span>
+							</Tooltip>
+						</p>
+					) }
+					{ ! sharedOwnershipModule && hasOwnedModule && (
 						<Select
 							className="googlesitekit-dashboard-sharing-settings__select"
 							value={ manageViewAccess }
 							options={ viewAccessOptions }
 							onChange={ handleOnChange }
 							onClick={ handleOnChange }
-							disabled={ sharedOwnershipModule }
 							outlined
 						/>
 					) }
