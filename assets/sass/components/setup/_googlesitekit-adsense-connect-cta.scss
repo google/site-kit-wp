@@ -30,6 +30,7 @@
 				// Revert from grid layout to prevent the captions from being overlaid
 				// upon each other.
 				display: block;
+				padding: 32px 0 0;
 			}
 		}
 
@@ -91,6 +92,14 @@
 			grid-template-columns: 1fr;
 			height: 100%;
 			width: 100%;
+
+			@media (min-width: $bp-nonMobile) {
+				margin-bottom: 12px;
+			}
+
+			@media (min-width: $width-desktop + 1 + px) {
+				margin-top: -70px;
+			}
 		}
 
 		.googlesitekit-setup-module--adsense__stage-image {
@@ -166,20 +175,6 @@
 				align-items: flex-end;
 				display: flex;
 				justify-content: flex-end;
-			}
-		}
-
-		@media (min-width: $bp-nonMobile) {
-
-			.googlesitekit-setup-module--adsense__stage-captions {
-				// Specify grid-row here to ensure the spanned image doesn't shift the
-				// captions to a different row (see grid-row usage in
-				// .googlesitekit-setup-module--adsense__stage-images).
-				grid-row: 2;
-			}
-
-			.googlesitekit-setup-module--adsense__stage-images {
-				grid-row: 1 / span 2;
 			}
 		}
 	}
