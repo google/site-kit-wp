@@ -30,10 +30,12 @@
 		}
 
 		.mdc-dialog__container {
+			height: 100%;
 			max-width: 908px;
 			width: 100%;
 
 			@media (min-width: $bp-tablet) {
+				height: auto;
 				max-height: calc(100vh - 120px);
 				width: 80%;
 			}
@@ -41,7 +43,7 @@
 
 		.mdc-dialog__surface {
 			border-radius: 0;
-			max-height: 100%; // Height is programmatically set upto 100vh on mobile.
+			max-height: 100%; // Height is programmatically set upto 100% on mobile.
 			max-width: 100%;
 			padding: 0;
 			width: 100%;
