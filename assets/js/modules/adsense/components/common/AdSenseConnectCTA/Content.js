@@ -26,7 +26,7 @@ import classnames from 'classnames';
  * WordPress dependencies
  */
 import { __, _x } from '@wordpress/i18n';
-import { forwardRef } from '@wordpress/element';
+import { forwardRef, Fragment } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -67,85 +67,92 @@ const Content = forwardRef( ( { stage }, ref ) => {
 	};
 
 	return (
-		<Row ref={ ref }>
-			<Cell { ...cellProps }>
-				<p className="googlesitekit-setup__intro-title">
-					{ __( 'Connect', 'google-site-kit' ) }
-				</p>
-				<div className="googlesitekit-setup-module">
-					<div className="googlesitekit-setup-module__logo">
-						<AdSenseIcon width="33" height="33" />
-					</div>
-
-					<h2 className="googlesitekit-heading-3 googlesitekit-setup-module__title">
-						{ _x( 'AdSense', 'Service name', 'google-site-kit' ) }
-					</h2>
-				</div>
-			</Cell>
-			{ /* Provide an empty cell here in order for the image cell (further below) to span the grid row, in non-mobile viewports. */ }
-			<Cell { ...cellProps }></Cell>
-			{ /* Ordinarily, we would close the row and start a new one here (</Row><Row>), but in order to faciliate the image cell row spanning we do without it,
-					 as `Row` actually renders a CSS grid container with `display: grid`, preventing a <Cell> from spanning multiple <Row> elements. */ }
-			<Cell
-				{ ...cellProps }
-				smOrder={ 2 }
-				mdOrder={ 1 }
-				className="googlesitekit-setup-module--adsense__stage-captions"
-			>
-				<ul className="googlesitekit-setup-module--adsense__stage-caption-container">
-					{ stageContent.map( ( { title, description }, index ) => (
-						<li
-							key={ index }
-							className={ classnames(
-								'googlesitekit-setup-module--adsense__stage-caption',
-								{
-									'googlesitekit-setup-module--adsense__stage-caption--current':
-										stage === index,
-								}
-							) }
-						>
-							<h4>{ title }</h4>
-							<p>{ description }</p>
-						</li>
-					) ) }
-				</ul>
-				<ul className="googlesitekit-setup-module--adsense__stage-indicator">
-					{ stageContent.map( ( _, index ) => (
-						<li
-							key={ index }
-							className={ classnames( {
-								'googlesitekit-setup-module--adsense__stage-indicator--current':
-									stage === index,
-							} ) }
-						/>
-					) ) }
-				</ul>
-			</Cell>
-			{ /* This cell containing the image will span the grid row above it, in non-mobile viewports. */ }
-			<Cell
-				{ ...cellProps }
-				smOrder={ 1 }
-				mdOrder={ 2 }
-				className="googlesitekit-setup-module--adsense__stage-images"
-			>
-				<div className="googlesitekit-setup-module--adsense__stage-image-container">
-					{ stageContent.map( ( _, index ) => (
-						<div
-							key={ index }
-							className={ classnames(
-								'googlesitekit-setup-module--adsense__stage-image',
-								{
-									'googlesitekit-setup-module--adsense__stage-image--current':
-										stage === index,
-								}
-							) }
-						>
-							<ContentSVG stage={ index } />
+		<Fragment>
+			<Row>
+				<Cell size={ 12 }>
+					<p className="googlesitekit-setup__intro-title">
+						{ __( 'Connect', 'google-site-kit' ) }
+					</p>
+					<div className="googlesitekit-setup-module">
+						<div className="googlesitekit-setup-module__logo">
+							<AdSenseIcon width="33" height="33" />
 						</div>
-					) ) }
-				</div>
-			</Cell>
-		</Row>
+
+						<h2 className="googlesitekit-heading-3 googlesitekit-setup-module__title">
+							{ _x(
+								'AdSense',
+								'Service name',
+								'google-site-kit'
+							) }
+						</h2>
+					</div>
+				</Cell>
+			</Row>
+
+			<Row ref={ ref }>
+				<Cell
+					{ ...cellProps }
+					smOrder={ 2 }
+					mdOrder={ 1 }
+					className="googlesitekit-setup-module--adsense__stage-captions"
+				>
+					<ul className="googlesitekit-setup-module--adsense__stage-caption-container">
+						{ stageContent.map(
+							( { title, description }, index ) => (
+								<li
+									key={ index }
+									className={ classnames(
+										'googlesitekit-setup-module--adsense__stage-caption',
+										{
+											'googlesitekit-setup-module--adsense__stage-caption--current':
+												stage === index,
+										}
+									) }
+								>
+									<h4>{ title }</h4>
+									<p>{ description }</p>
+								</li>
+							)
+						) }
+					</ul>
+					<ul className="googlesitekit-setup-module--adsense__stage-indicator">
+						{ stageContent.map( ( _, index ) => (
+							<li
+								key={ index }
+								className={ classnames( {
+									'googlesitekit-setup-module--adsense__stage-indicator--current':
+										stage === index,
+								} ) }
+							/>
+						) ) }
+					</ul>
+				</Cell>
+
+				<Cell
+					{ ...cellProps }
+					smOrder={ 1 }
+					mdOrder={ 2 }
+					className="googlesitekit-setup-module--adsense__stage-images"
+				>
+					<div className="googlesitekit-setup-module--adsense__stage-image-container">
+						{ stageContent.map( ( _, index ) => (
+							<div
+								key={ index }
+								className={ classnames(
+									'googlesitekit-setup-module--adsense__stage-image',
+									{
+										'googlesitekit-setup-module--adsense__stage-image--current':
+											stage === index,
+									}
+								) }
+							>
+								<ContentSVG stage={ index } />
+							</div>
+						) ) }
+					</div>
+				</Cell>
+			</Row>
+		</Fragment>
 	);
 } );
 
