@@ -39,7 +39,6 @@ export const registerModule = ifTwgIsEnabled( ( modules ) => {
 		SettingsEditComponent: SettingsEdit,
 		SettingsViewComponent: SettingsView,
 		SetupComponent: SetupMain,
-		// TODO: Replace with another icon later.
 		Icon: ThankWithGoogleIcon,
 	} );
 } );
