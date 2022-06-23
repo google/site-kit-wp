@@ -19,17 +19,17 @@
 /**
  * Internal dependencies
  */
-import DashboardNavigation from './DashboardNavigation';
-import { Provider as ViewContextProvider } from './Root/ViewContextContext';
-import { CORE_WIDGETS } from '../googlesitekit/widgets/datastore/constants';
+import DashboardNavigation from './';
+import { Provider as ViewContextProvider } from '../Root/ViewContextContext';
+import { CORE_WIDGETS } from '../../googlesitekit/widgets/datastore/constants';
 import {
 	CONTEXT_MAIN_DASHBOARD_TRAFFIC,
 	CONTEXT_MAIN_DASHBOARD_CONTENT,
 	CONTEXT_MAIN_DASHBOARD_SPEED,
 	CONTEXT_MAIN_DASHBOARD_MONETIZATION,
-} from '../googlesitekit/widgets/default-contexts';
-import WithRegistrySetup from '../../../tests/js/WithRegistrySetup';
-import { VIEW_CONTEXT_DASHBOARD } from '../googlesitekit/constants';
+} from '../../googlesitekit/widgets/default-contexts';
+import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
+import { VIEW_CONTEXT_DASHBOARD } from '../../googlesitekit/constants';
 
 /**
  * Dispatches required actions to registry to make sure widget contexts for Traffic, Content & Speed are active.

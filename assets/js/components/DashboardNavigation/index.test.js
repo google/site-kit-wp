@@ -19,8 +19,8 @@
 /**
  * Internal dependencies
  */
-import { render } from '../../../tests/js/test-utils';
-import DashboardNavigation from './DashboardNavigation';
+import { render } from '../../../../tests/js/test-utils';
+import DashboardNavigation from './';
 
 describe( 'Dashboard Navigation', () => {
 	const { container } = render( <DashboardNavigation /> );

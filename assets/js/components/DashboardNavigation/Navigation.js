@@ -1,5 +1,5 @@
 /**
- * DashboardNavigation component.
+ * Navigation component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -34,22 +34,22 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import NavTrafficIcon from '../../svg/icons/nav-traffic-icon.svg';
-import NavContentIcon from '../../svg/icons/nav-content-icon.svg';
-import NavSpeedIcon from '../../svg/icons/nav-speed-icon.svg';
-import NavMonetizationIcon from '../../svg/icons/nav-monetization-icon.svg';
+import NavTrafficIcon from '../../../svg/icons/nav-traffic-icon.svg';
+import NavContentIcon from '../../../svg/icons/nav-content-icon.svg';
+import NavSpeedIcon from '../../../svg/icons/nav-speed-icon.svg';
+import NavMonetizationIcon from '../../../svg/icons/nav-monetization-icon.svg';
 import {
 	ANCHOR_ID_CONTENT,
 	ANCHOR_ID_MONETIZATION,
 	ANCHOR_ID_SPEED,
 	ANCHOR_ID_TRAFFIC,
-} from '../googlesitekit/constants';
-import { CORE_USER } from '../googlesitekit/datastore/user/constants';
-import { CORE_WIDGETS } from '../googlesitekit/widgets/datastore/constants';
+} from '../../googlesitekit/constants';
+import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import { CORE_WIDGETS } from '../../googlesitekit/widgets/datastore/constants';
 import {
 	CORE_UI,
 	ACTIVE_CONTEXT_ID,
-} from '../googlesitekit/datastore/ui/constants';
+} from '../../googlesitekit/datastore/ui/constants';
 import {
 	CONTEXT_ENTITY_DASHBOARD_TRAFFIC,
 	CONTEXT_ENTITY_DASHBOARD_CONTENT,
@@ -59,18 +59,18 @@ import {
 	CONTEXT_MAIN_DASHBOARD_CONTENT,
 	CONTEXT_MAIN_DASHBOARD_SPEED,
 	CONTEXT_MAIN_DASHBOARD_MONETIZATION,
-} from '../googlesitekit/widgets/default-contexts';
+} from '../../googlesitekit/widgets/default-contexts';
 import useDashboardType, {
 	DASHBOARD_TYPE_MAIN,
-} from '../hooks/useDashboardType';
-import { useBreakpoint } from '../hooks/useBreakpoint';
-import { getContextScrollTop } from '../util/scroll';
-import { trackEvent } from '../util';
-import useViewContext from '../hooks/useViewContext';
-import useViewOnly from '../hooks/useViewOnly';
+} from '../../hooks/useDashboardType';
+import { useBreakpoint } from '../../hooks/useBreakpoint';
+import { getContextScrollTop } from '../../util/scroll';
+import { trackEvent } from '../../util';
+import useViewContext from '../../hooks/useViewContext';
+import useViewOnly from '../../hooks/useViewOnly';
 const { useSelect, useDispatch } = Data;
 
-export default function DashboardNavigation() {
+export default function Navigation() {
 	const dashboardType = useDashboardType();
 	const elementRef = useRef();
 	const breakpoint = useBreakpoint();
