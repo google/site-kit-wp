@@ -158,10 +158,12 @@ function DashboardAllTrafficWidget( props ) {
 		);
 	} );
 
-	const userCountGraphLoaded = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).hasFinishedResolution( 'getReport', [
-			graphArgs,
-		] )
+	const userCountGraphLoaded = useSelect(
+		( select ) =>
+			canViewSharedAnalytics &&
+			select( MODULES_ANALYTICS ).hasFinishedResolution( 'getReport', [
+				graphArgs,
+			] )
 	);
 	const userCountGraphError = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [
@@ -175,10 +177,12 @@ function DashboardAllTrafficWidget( props ) {
 		);
 	} );
 
-	const totalUsersLoaded = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).hasFinishedResolution( 'getReport', [
-			totalsArgs,
-		] )
+	const totalUsersLoaded = useSelect(
+		( select ) =>
+			canViewSharedAnalytics &&
+			select( MODULES_ANALYTICS ).hasFinishedResolution( 'getReport', [
+				totalsArgs,
+			] )
 	);
 	const totalUsersError = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [
