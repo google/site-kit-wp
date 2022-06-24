@@ -459,7 +459,7 @@ class Debug_Data {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param string $management The module management value. Can be wither `owner` or `all_admins`.
+	 * @param string $management The module sharing settings management value. Can be either `owner` or `all_admins`.
 	 *
 	 * @return array User friendly and debug values for module management used in module_sharing_settings within value and debug keys.
 	 */
