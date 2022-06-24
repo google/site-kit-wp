@@ -134,7 +134,6 @@ export default function Navigation() {
 			widgetContextOptions
 		)
 	);
-
 	const getDefaultChipID = () => {
 		if ( ! viewOnlyDashboard ) {
 			return ANCHOR_ID_TRAFFIC;
@@ -223,6 +222,7 @@ export default function Navigation() {
 		}
 
 		setValue( ACTIVE_CONTEXT_ID, chipID );
+		setSelectedID( chipID );
 
 		setTimeout( () => {
 			global.scrollTo( {

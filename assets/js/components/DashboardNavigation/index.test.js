@@ -91,6 +91,16 @@ export const setupDefaultChips = ( registry ) => {
 };
 
 describe( 'Dashboard Navigation', () => {
+	let previousSiteKitUserData;
+
+	beforeEach( () => {
+		previousSiteKitUserData = global._googlesitekitUserData;
+	} );
+
+	afterEach( () => {
+		global._googlesitekitUserData = previousSiteKitUserData;
+	} );
+
 	it( 'has a chip set', () => {
 		const { container } = render( <DashboardNavigation /> );
 
@@ -173,5 +183,58 @@ describe( 'Dashboard Navigation', () => {
 		expect(
 			container.querySelector( '.mdc-chip--selected' )
 		).toHaveTextContent( 'Traffic' );
+	} );
+
+	it( 'uses `ANCHOR_ID_CONTENT` as the chip viewing a shared dashboard with the traffic sections unavailable', async () => {
+		global._googlesitekitUserData = {
+			permissions: {
+				googlesitekit_view_dashboard: true,
+				googlesitekit_manage_options: true,
+				'googlesitekit_manage_module_sharing_options::["search-console"]': false,
+				'googlesitekit_read_shared_module_data::["search-console"]': false,
+				'googlesitekit_read_shared_module_data::["analytics"]': false,
+				'googlesitekit_read_shared_module_data::["pagespeed-insights"]': true,
+			},
+		};
+
+		const { container } = render( <DashboardNavigation />, {
+			setupRegistry: ( registry ) => {
+				registry.dispatch( CORE_MODULES ).receiveGetModules( [
+					{
+						slug: 'pagespeed-insights',
+						name: 'PageSpeed Insights',
+						shareable: true,
+					},
+				] );
+
+				// Speed
+				registry
+					.dispatch( CORE_WIDGETS )
+					.registerWidgetArea( 'SpeedArea', {
+						title: 'Speed',
+						subtitle: 'Speed Widget Area',
+						style: 'composite',
+					} );
+				registry
+					.dispatch( CORE_WIDGETS )
+					.assignWidgetArea(
+						'SpeedArea',
+						CONTEXT_MAIN_DASHBOARD_SPEED
+					);
+				registry
+					.dispatch( CORE_WIDGETS )
+					.registerWidget( 'SpeedWidget', {
+						Component: () => <div>Speed Widget</div>,
+					} );
+				registry
+					.dispatch( CORE_WIDGETS )
+					.assignWidget( 'SpeedWidget', 'SpeedArea' );
+			},
+			viewContext: VIEW_CONTEXT_DASHBOARD_VIEW_ONLY,
+		} );
+
+		expect(
+			container.querySelector( '.mdc-chip--selected' )
+		).toHaveTextContent( 'Speed' );
 	} );
 } );
