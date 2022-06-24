@@ -27,6 +27,7 @@ import {
 	WIDGET_AREA_STYLES,
 } from '../datastore/constants';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
+import { CORE_MODULES } from '../../modules/datastore/constants';
 import {
 	createTestRegistry,
 	render,
@@ -88,10 +89,14 @@ describe( 'WidgetAreaRenderer', () => {
 	const areaName = 'gridcell-test';
 	let registry;
 
-	beforeEach( async () => {
+	beforeEach( () => {
 		registry = createTestRegistryWithArea( areaName );
+
+		provideModules( registry );
+		registry.dispatch( CORE_MODULES ).receiveRecoverableModules( [] );
+
 		const connection = { connected: true };
-		await registry.dispatch( CORE_SITE ).receiveGetConnection( connection );
+		registry.dispatch( CORE_SITE ).receiveGetConnection( connection );
 	} );
 
 	afterEach( () => {
@@ -623,6 +628,8 @@ describe( 'WidgetAreaRenderer', () => {
 			areaName,
 			WIDGET_AREA_STYLES.COMPOSITE
 		);
+		provideModules( registry );
+		registry.dispatch( CORE_MODULES ).receiveRecoverableModules( [] );
 		registry
 			.dispatch( CORE_SITE )
 			.receiveGetConnection( { connected: true } );

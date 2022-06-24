@@ -20,14 +20,20 @@
  * Internal dependencies
  */
 import WidgetRenderer from './WidgetRenderer';
+import { CORE_MODULES } from '../../modules/datastore/constants';
 import { CORE_WIDGETS } from '../datastore/constants';
-import { render } from '../../../../../tests/js/test-utils';
+import { provideModules, render } from '../../../../../tests/js/test-utils';
 
 const setupRegistry = ( {
 	Component = () => <div>Test</div>,
 	wrapWidget = false,
 } = {} ) => {
-	return ( { dispatch } ) => {
+	return ( registry ) => {
+		const { dispatch } = registry;
+
+		provideModules( registry );
+		dispatch( CORE_MODULES ).receiveRecoverableModules( [] );
+
 		dispatch( CORE_WIDGETS ).registerWidgetArea( 'dashboard-header', {
 			title: 'Dashboard Header',
 			subtitle: 'Cool stuff for yoursite.com',
