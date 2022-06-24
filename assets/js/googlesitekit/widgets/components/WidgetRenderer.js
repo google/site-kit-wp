@@ -53,9 +53,10 @@ const WidgetRenderer = ( { slug, OverrideComponent } ) => {
 
 	const widgetRecoverableModules = useMemo(
 		() =>
+			widget &&
 			recoverableModules &&
 			intersection( widget.modules, Object.keys( recoverableModules ) ),
-		[ recoverableModules, widget.modules ]
+		[ recoverableModules, widget ]
 	);
 
 	if ( ! widget ) {
