@@ -37,6 +37,7 @@ import BaseWidget from './Widget';
 import WidgetRecoverableModules from './WidgetRecoverableModules';
 import { getWidgetComponentProps } from '../util';
 import { HIDDEN_CLASS } from '../util/constants';
+import useViewOnly from '../../../hooks/useViewOnly';
 
 const { useSelect } = Data;
 
@@ -51,6 +52,7 @@ const WidgetRenderer = ( { slug, OverrideComponent } ) => {
 		select( CORE_MODULES ).getRecoverableModules()
 	);
 
+	const viewOnly = useViewOnly();
 	const widgetRecoverableModules = useMemo(
 		() =>
 			widget &&
@@ -67,7 +69,7 @@ const WidgetRenderer = ( { slug, OverrideComponent } ) => {
 
 	let widgetElement = <Component { ...widgetComponentProps } />;
 
-	if ( widgetRecoverableModules?.length ) {
+	if ( viewOnly && widgetRecoverableModules?.length ) {
 		widgetElement = (
 			<WidgetRecoverableModules
 				widgetSlug={ slug }
