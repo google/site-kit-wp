@@ -68,7 +68,7 @@ export default function DashboardSharingSettingsButton() {
 
 		setDialogOpen( true );
 
-		dismissTour( 'dashboardSharing', false );
+		dismissTour( 'dashboardSharing' );
 
 		setTimeout( () => {
 			startTour(

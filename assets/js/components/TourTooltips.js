@@ -121,7 +121,7 @@ export default function TourTooltips( {
 			'googlesitekit-showing-feature-tour'
 		);
 		// Dismiss tour to avoid unwanted repeat viewing.
-		dismissTour( tourID, tourID === 'dashboardSharing' ? false : true );
+		dismissTour( tourID );
 	};
 
 	const trackAllTourEvents = ( {

@@ -99,7 +99,7 @@ const baseActions = {
 		( slug ) => {
 			invariant( slug, 'A tour slug is required to dismiss a tour.' );
 		},
-		function* ( slug, cooldown = true ) {
+		function* ( slug ) {
 			const { select } = yield getRegistry();
 
 			if ( select( CORE_USER ).isFetchingDismissTour( slug ) ) {
@@ -115,10 +115,8 @@ const baseActions = {
 				payload: { slug },
 			};
 
-			if ( cooldown ) {
-				// Save the timestamp to allow the cooldown
-				yield actions.setLastDismissedAt( Date.now() );
-			}
+			// Save the timestamp to allow the cooldown
+			yield actions.setLastDismissedAt( Date.now() );
 
 			// Dispatch a request to persist and receive updated dismissed tours.
 			return yield fetchDismissTourStore.actions.fetchDismissTour( slug );

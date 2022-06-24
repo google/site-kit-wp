@@ -52,7 +52,7 @@ export default function FeatureTours() {
 		nextTour = tours.filter( ( tour ) => tour.autoStart !== false )?.[ 0 ];
 	}
 
-	if ( ! nextTour || toursAreOnCooldown ) {
+	if ( ( ! nextTour || toursAreOnCooldown ) && ! pendingTour ) {
 		return null;
 	}
 
