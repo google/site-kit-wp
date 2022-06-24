@@ -472,7 +472,7 @@ class Debug_Data {
 				);
 			default:
 				return array(
-					'value' => __( 'Only me', 'google-site-kit' ),
+					'value' => __( 'Owner', 'google-site-kit' ),
 					'debug' => 'owner',
 				);
 		}
