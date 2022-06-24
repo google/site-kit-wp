@@ -30,6 +30,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import { useFeature } from '../../../../../hooks/useFeature';
 import { MODULES_ADSENSE } from '../../../datastore/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { isZeroReport } from '../../../util';
@@ -50,6 +51,7 @@ const ModuleOverviewWidget = ( {
 	WidgetReportError,
 } ) => {
 	const [ selectedStats, setSelectedStats ] = useState( 0 );
+	const isAdsenceSetupV2 = useFeature( 'adsenseSetupV2' );
 
 	const {
 		startDate,
@@ -141,18 +143,20 @@ const ModuleOverviewWidget = ( {
 		);
 	}
 
-	if (
-		isZeroReport( currentRangeData ) ||
-		isZeroReport( currentRangeChartData )
-	) {
-		return (
-			<Widget noPadding>
-				<DashboardZeroData />
-				<div className={ HIDDEN_CLASS }>
-					<WidgetReportZero moduleSlug="adsense" />
-				</div>
-			</Widget>
-		);
+	if ( ! isAdsenceSetupV2 ) {
+		if (
+			isZeroReport( currentRangeData ) ||
+			isZeroReport( currentRangeChartData )
+		) {
+			return (
+				<Widget noPadding>
+					<DashboardZeroData />
+					<div className={ HIDDEN_CLASS }>
+						<WidgetReportZero moduleSlug="adsense" />
+					</div>
+				</Widget>
+			);
+		}
 	}
 
 	return (
