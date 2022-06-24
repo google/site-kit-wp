@@ -20,18 +20,21 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import intersection from 'lodash/intersection';
 
 /**
  * WordPress dependencies
  */
-import { Fragment } from '@wordpress/element';
+import { useMemo, Fragment } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
 import { CORE_WIDGETS } from '../datastore/constants';
+import { CORE_MODULES } from '../../modules/datastore/constants';
 import BaseWidget from './Widget';
+import WidgetRecoverableModules from './WidgetRecoverableModules';
 import { getWidgetComponentProps } from '../util';
 import { HIDDEN_CLASS } from '../util/constants';
 
@@ -44,6 +47,17 @@ const WidgetRenderer = ( { slug, OverrideComponent } ) => {
 	const widgetComponentProps = getWidgetComponentProps( slug );
 	const { Widget, WidgetNull } = widgetComponentProps;
 
+	const recoverableModules = useSelect( ( select ) =>
+		select( CORE_MODULES ).getRecoverableModules()
+	);
+
+	const widgetRecoverableModules = useMemo(
+		() =>
+			recoverableModules &&
+			intersection( widget.modules, Object.keys( recoverableModules ) ),
+		[ recoverableModules, widget.modules ]
+	);
+
 	if ( ! widget ) {
 		return <WidgetNull />;
 	}
@@ -51,6 +65,15 @@ const WidgetRenderer = ( { slug, OverrideComponent } ) => {
 	const { Component, wrapWidget } = widget;
 
 	let widgetElement = <Component { ...widgetComponentProps } />;
+
+	if ( widgetRecoverableModules?.length ) {
+		widgetElement = (
+			<WidgetRecoverableModules
+				widgetSlug={ slug }
+				moduleSlugs={ widgetRecoverableModules }
+			/>
+		);
+	}
 
 	if ( OverrideComponent ) {
 		// If OverrideComponent passed, render it instead of the actual widget.
