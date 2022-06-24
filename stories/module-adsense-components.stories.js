@@ -23,6 +23,7 @@ import {
 	generateReportBasedWidgetStories,
 	makeReportDataGenerator,
 } from './utils/generate-widget-stories';
+import { zeroing } from './utils/adsense-data-zeroing';
 import DashboardTopEarningPagesWidget from '../assets/js/modules/adsense/components/dashboard/DashboardTopEarningPagesWidget';
 import ModuleOverviewWidget from '../assets/js/modules/adsense/components/module/ModuleOverviewWidget';
 import { MODULES_ADSENSE } from '../assets/js/modules/adsense/datastore/constants';
@@ -37,33 +38,6 @@ const generateAnalyticsData = makeReportDataGenerator(
 	getAnalyticsMockResponse
 );
 const generateAdSenseData = makeReportDataGenerator( getAdSenseMockResponse );
-
-const zeroing = ( report ) => {
-	const zeroValue = ( cell ) => ( { ...cell, value: 0 } );
-
-	let clonedReport = { ...report };
-
-	const { totals, rows } = clonedReport;
-	const { cells } = totals;
-
-	clonedReport = {
-		...clonedReport,
-		totals: {
-			cells: cells.map( zeroValue ),
-		},
-		rows: rows.map( ( row ) => ( {
-			...row,
-			cells: row.cells.map( ( cell, index ) => {
-				if ( index !== 0 ) {
-					return zeroValue( cell );
-				}
-				return cell;
-			} ),
-		} ) ),
-	};
-
-	return clonedReport;
-};
 
 const topEarningPagesArgs = {
 	startDate: '2020-08-15',
