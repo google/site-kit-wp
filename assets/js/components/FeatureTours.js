@@ -28,13 +28,29 @@ const { useSelect } = Data;
 export default function FeatureTours() {
 	const viewContext = useViewContext();
 
-	const nextTour = useSelect(
-		( select ) =>
-			select( CORE_USER ).getFeatureToursForView( viewContext )?.[ 0 ]
+	const tours = useSelect( ( select ) =>
+		select( CORE_USER ).getFeatureToursForView( viewContext )
 	);
 	const toursAreOnCooldown = useSelect( ( select ) =>
 		select( CORE_USER ).areFeatureToursOnCooldown()
 	);
+	const pendingTourSlug = useSelect( ( select ) =>
+		select( CORE_USER ).getPendingTour()
+	);
+	const pendingTour = useSelect( ( select ) =>
+		select( CORE_USER ).getFeatureTour( pendingTourSlug )
+	);
+
+	if ( tours === undefined ) {
+		return null;
+	}
+
+	let nextTour;
+	if ( pendingTour ) {
+		nextTour = pendingTour;
+	} else {
+		nextTour = tours.filter( ( tour ) => tour.autoStart !== false )?.[ 0 ];
+	}
 
 	if ( ! nextTour || toursAreOnCooldown ) {
 		return null;
@@ -46,6 +62,7 @@ export default function FeatureTours() {
 			steps={ nextTour.steps }
 			gaEventCategory={ nextTour.gaEventCategory }
 			callback={ nextTour.callback }
+			autoStart={ nextTour.autoStart }
 		/>
 	);
 }

@@ -26,27 +26,32 @@ import { __ } from '@wordpress/i18n';
  */
 import { VIEW_CONTEXT_DASHBOARD } from '../googlesitekit/constants';
 import { isFeatureEnabled } from '../features';
+import { steps } from './dashboard-sharing-settings';
 
-const dashboardSharing = {
-	slug: 'dashboardSharing',
+const dashboardSharingSettingsMultipleAdmins = {
+	slug: 'dashboardSharingSettingsMultipleAdmins',
 	contexts: [ VIEW_CONTEXT_DASHBOARD ],
 	// TODO: This version should be changed when the feature flag is removed
 	// to the actual upcoming version.
 	version: '1.85.0',
 	gaEventCategory: ( viewContext ) => `${ viewContext }_dashboard-sharing`,
 	steps: [
+		...steps,
 		{
-			target: '.googlesitekit-sharing-settings__button',
-			title: __( 'New! Dashboard sharing', 'google-site-kit' ),
-			content: __(
-				'Share a view-only version of your dashboard with other WordPress roles',
+			target: '.googlesitekit-dashboard-sharing-settings__column--manage',
+			title: __(
+				'Share management with other admins',
 				'google-site-kit'
 			),
-			placement: 'bottom-start',
-			spotlightClicks: true,
+			content: __(
+				'By default only the user who connects a service can control who it is shared with. This setting optionally lets these users allow any other admin signed in with Google to manage the roles a service is shared with.',
+				'google-site-kit'
+			),
+			placement: 'auto',
 		},
 	],
+	autoStart: false,
 	checkRequirements: () => isFeatureEnabled( 'dashboardSharing' ),
 };
 
-export default dashboardSharing;
+export default dashboardSharingSettingsMultipleAdmins;

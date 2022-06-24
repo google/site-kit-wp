@@ -46,6 +46,7 @@ const joyrideStyles = {
 		backgroundColor: '#1A73E8', // $c-royal-blue
 		overlayColor: 'rgba(0, 0, 0, 0.6)',
 		textColor: '#ffffff', // $c-white
+		zIndex: 10001,
 	},
 };
 
@@ -120,7 +121,7 @@ export default function TourTooltips( {
 			'googlesitekit-showing-feature-tour'
 		);
 		// Dismiss tour to avoid unwanted repeat viewing.
-		dismissTour( tourID );
+		dismissTour( tourID, tourID === 'dashboardSharing' ? false : true );
 	};
 
 	const trackAllTourEvents = ( {

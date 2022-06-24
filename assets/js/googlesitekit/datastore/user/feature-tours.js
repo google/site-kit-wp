@@ -46,6 +46,7 @@ const RECEIVE_READY_TOURS = 'RECEIVE_READY_TOURS';
 const RECEIVE_TOURS = 'RECEIVE_TOURS';
 const CHECK_TOUR_REQUIREMENTS = 'CHECK_TOUR_REQUIREMENTS';
 const RECEIVE_LAST_DISMISSED_AT = 'RECEIVE_LAST_DISMISSED_AT';
+const START_TOUR = 'START_TOUR';
 
 // Controls.
 const CACHE_LAST_DISMISSED_AT = 'CACHE_LAST_DISMISSED_AT';
@@ -82,6 +83,7 @@ const baseInitialState = {
 	tours: featureTours,
 	// Map of [viewContext]: ordered array of tour objects.
 	viewTours: {},
+	pendingTourSlug: undefined,
 };
 
 const baseActions = {
@@ -97,7 +99,7 @@ const baseActions = {
 		( slug ) => {
 			invariant( slug, 'A tour slug is required to dismiss a tour.' );
 		},
-		function* ( slug ) {
+		function* ( slug, cooldown = true ) {
 			const { select } = yield getRegistry();
 
 			if ( select( CORE_USER ).isFetchingDismissTour( slug ) ) {
@@ -113,8 +115,10 @@ const baseActions = {
 				payload: { slug },
 			};
 
-			// Save the timestamp to allow the cooldown
-			yield actions.setLastDismissedAt( Date.now() );
+			if ( cooldown ) {
+				// Save the timestamp to allow the cooldown
+				yield actions.setLastDismissedAt( Date.now() );
+			}
 
 			// Dispatch a request to persist and receive updated dismissed tours.
 			return yield fetchDismissTourStore.actions.fetchDismissTour( slug );
@@ -163,6 +167,13 @@ const baseActions = {
 			};
 		}
 	),
+
+	startTour( tour ) {
+		return {
+			payload: { tour },
+			type: START_TOUR,
+		};
+	},
 };
 
 const baseControls = {
@@ -249,6 +260,13 @@ const baseReducer = ( state, { type, payload } ) => {
 			return {
 				...state,
 				lastDismissedAt: payload.timestamp,
+			};
+		}
+
+		case START_TOUR: {
+			return {
+				...state,
+				pendingTourSlug: payload.tour,
 			};
 		}
 
@@ -402,6 +420,17 @@ const baseSelectors = {
 
 		return Date.now() < coolDownExpiresAt;
 	} ),
+
+	getFeatureTour( state, slug ) {
+		if ( slug === undefined ) {
+			return undefined;
+		}
+		return state.tours.find( ( tour ) => tour.slug === slug );
+	},
+
+	getPendingTour( state ) {
+		return state.pendingTourSlug;
+	},
 };
 
 export const {

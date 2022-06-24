@@ -27,26 +27,27 @@ import { __ } from '@wordpress/i18n';
 import { VIEW_CONTEXT_DASHBOARD } from '../googlesitekit/constants';
 import { isFeatureEnabled } from '../features';
 
-const dashboardSharing = {
-	slug: 'dashboardSharing',
+export const steps = [
+	{
+		target: '.googlesitekit-dashboard-sharing-settings__column--view',
+		title: __( 'Manage view access for other roles', 'google-site-kit' ),
+		content: __(
+			'Grant access to the view-only dashboard for each service for the specific roles you want. Users will see the Site Kit dashboard with only the services that have been shared with them without needing to sign-in with Google.',
+			'google-site-kit'
+		),
+		placement: 'auto',
+	},
+];
+const dashboardSharingSettings = {
+	slug: 'dashboardSharingSettings',
 	contexts: [ VIEW_CONTEXT_DASHBOARD ],
 	// TODO: This version should be changed when the feature flag is removed
 	// to the actual upcoming version.
 	version: '1.85.0',
 	gaEventCategory: ( viewContext ) => `${ viewContext }_dashboard-sharing`,
-	steps: [
-		{
-			target: '.googlesitekit-sharing-settings__button',
-			title: __( 'New! Dashboard sharing', 'google-site-kit' ),
-			content: __(
-				'Share a view-only version of your dashboard with other WordPress roles',
-				'google-site-kit'
-			),
-			placement: 'bottom-start',
-			spotlightClicks: true,
-		},
-	],
+	steps,
+	autoStart: false,
 	checkRequirements: () => isFeatureEnabled( 'dashboardSharing' ),
 };
 
-export default dashboardSharing;
+export default dashboardSharingSettings;

@@ -42,6 +42,7 @@ import DashboardSharingSettings from './DashboardSharingSettings';
 import { trackEvent } from '../../util';
 import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { BREAKPOINT_SMALL, useBreakpoint } from '../../hooks/useBreakpoint';
 import { Dialog, DialogContent, DialogFooter } from '../../material-components';
 import { EDITING_USER_ROLE_SELECT_SLUG_KEY } from './DashboardSharingSettings/constants';
@@ -51,6 +52,7 @@ export default function DashboardSharingSettingsButton() {
 	const viewContext = useViewContext();
 	const breakpoint = useBreakpoint();
 	const { setValue } = useDispatch( CORE_UI );
+	const { dismissTour, startTour } = useDispatch( CORE_USER );
 	const [ dialogOpen, setDialogOpen ] = useState( false );
 
 	const hasMultipleAdmins = useSelect( ( select ) =>
@@ -65,7 +67,17 @@ export default function DashboardSharingSettingsButton() {
 		);
 
 		setDialogOpen( true );
-	}, [ viewContext, hasMultipleAdmins ] );
+
+		dismissTour( 'dashboardSharing', false );
+
+		setTimeout( () => {
+			startTour(
+				hasMultipleAdmins
+					? 'dashboardSharingSettingsMultipleAdmins'
+					: 'dashboardSharingSettings'
+			);
+		}, 500 );
+	}, [ viewContext, hasMultipleAdmins, startTour, dismissTour ] );
 
 	const closeDialog = useCallback( () => {
 		setDialogOpen( false );
