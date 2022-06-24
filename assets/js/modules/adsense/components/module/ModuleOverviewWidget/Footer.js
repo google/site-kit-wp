@@ -32,6 +32,7 @@ import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants
 import { generateDateRangeArgs } from '../../../util/report-date-range-args';
 import SourceLink from '../../../../../components/SourceLink';
 import Data from 'googlesitekit-data';
+import { useSelectIfNotViewOnly } from '../../../../../hooks/useSelectIfNotViewOnly';
 const { useSelect } = Data;
 
 const Footer = () => {
@@ -40,7 +41,7 @@ const Footer = () => {
 			offsetDays: DATE_RANGE_OFFSET,
 		} )
 	);
-	const accountSiteURL = useSelect( ( select ) =>
+	const accountSiteURL = useSelectIfNotViewOnly( ( select ) =>
 		select( MODULES_ADSENSE ).getServiceReportURL(
 			generateDateRangeArgs( dateRangeDates )
 		)
