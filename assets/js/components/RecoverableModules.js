@@ -36,12 +36,19 @@ import CTA from './notifications/CTA';
 const { useSelect } = Data;
 
 export default function RecoverableModules( { moduleSlugs } ) {
-	const moduleNames = useSelect( ( select ) =>
-		moduleSlugs.map(
-			( moduleSlug ) =>
-				select( CORE_MODULES ).getModule( moduleSlug ).name
-		)
-	);
+	const moduleNames = useSelect( ( select ) => {
+		const modules = select( CORE_MODULES ).getModules();
+
+		if ( modules === undefined ) {
+			return undefined;
+		}
+
+		return moduleSlugs.map( ( moduleSlug ) => modules[ moduleSlug ].name );
+	} );
+
+	if ( moduleNames === undefined ) {
+		return null;
+	}
 
 	const description =
 		moduleNames.length === 1
