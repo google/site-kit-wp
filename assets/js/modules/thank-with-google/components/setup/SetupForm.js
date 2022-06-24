@@ -82,10 +82,7 @@ export default function SetupForm( { finishSetup } ) {
 
 			<div className="googlesitekit-setup-module__action">
 				<Button disabled={ ! canSubmitChanges }>
-					{ __(
-						'Configure Subscribe with Google',
-						'google-site-kit'
-					) }
+					{ __( 'Configure Thank with Google', 'google-site-kit' ) }
 				</Button>
 			</div>
 		</form>

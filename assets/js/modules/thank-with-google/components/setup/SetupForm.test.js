@@ -56,7 +56,7 @@ describe( 'SetupForm', () => {
 		self.fetch = jest.fn().mockReturnValue( pendingPromise );
 	} );
 
-	describe( '"Configure Subscribe with Google" button', () => {
+	describe( '"Configure Thank with Google" button', () => {
 		it( 'is enabled by valid settings', () => {
 			registry
 				.dispatch( MODULES_THANK_WITH_GOOGLE )
@@ -65,7 +65,7 @@ describe( 'SetupForm', () => {
 				<SetupForm finishSetup={ jest.fn() } />,
 				{ registry }
 			).getByRole( 'button', {
-				name: /Configure Subscribe with Google/i,
+				name: /Configure Thank with Google/i,
 			} );
 			expect( finishSetupButton ).toBeEnabled();
 		} );
@@ -75,7 +75,7 @@ describe( 'SetupForm', () => {
 				<SetupForm finishSetup={ jest.fn() } />,
 				{ registry }
 			).getByRole( 'button', {
-				name: /Configure Subscribe with Google/i,
+				name: /Configure Thank with Google/i,
 			} );
 			expect( finishSetupButton ).toBeDisabled();
 		} );
@@ -90,7 +90,7 @@ describe( 'SetupForm', () => {
 				<SetupForm finishSetup={ finishSetup } />,
 				{ registry }
 			).getByRole( 'button', {
-				name: /Configure Subscribe with Google/i,
+				name: /Configure Thank with Google/i,
 			} );
 
 			// Click button.
