@@ -1,6 +1,6 @@
 <?php
 /**
- * Class Google\Site_Kit\Modules\Subscribe_With_Google
+ * Class Google\Site_Kit\Modules\Thank_With_Google
  *
  * @package   Google\Site_Kit
  * @copyright 2021 Google LLC
@@ -22,16 +22,16 @@ use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Owner;
 use Google\Site_Kit\Core\Modules\Module_With_Owner_Trait;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
-use Google\Site_Kit\Modules\Subscribe_With_Google\Settings;
+use Google\Site_Kit\Modules\Thank_With_Google\Settings;
 
 /**
- * Class representing the Subscribe with Google module.
+ * Class representing the Thank with Google module.
  *
- * @since 1.41.0
+ * @since n.e.x.t
  * @access private
  * @ignore
  */
-final class Subscribe_With_Google extends Module
+final class Thank_With_Google extends Module
 	implements Module_With_Assets, Module_With_Deactivation, Module_With_Owner, Module_With_Settings {
 	use Method_Proxy_Trait;
 	use Module_With_Assets_Trait;
@@ -41,19 +41,17 @@ final class Subscribe_With_Google extends Module
 	/**
 	 * Module slug name.
 	 */
-	const MODULE_SLUG = 'subscribe-with-google';
+	const MODULE_SLUG = 'thank-with-google';
 
 	/**
 	 * Registers functionality through WordPress hooks.
 	 *
-	 * @since 1.41.0
+	 * @since n.e.x.t
 	 */
 	public function register() {
 		if ( ! $this->is_connected() ) {
 			return;
 		}
-
-		// TODO: Bring back SwG functionality after #3120 is merged.
 	}
 
 	/**
@@ -61,7 +59,7 @@ final class Subscribe_With_Google extends Module
 	 *
 	 * A module being connected means that all steps required as part of its activation are completed.
 	 *
-	 * @since 1.41.0
+	 * @since n.e.x.t
 	 *
 	 * @return bool True if module is connected, false otherwise.
 	 */
@@ -90,7 +88,7 @@ final class Subscribe_With_Google extends Module
 	/**
 	 * Cleans up when the module is deactivated.
 	 *
-	 * @since 1.41.0
+	 * @since n.e.x.t
 	 */
 	public function on_deactivation() {
 		$this->get_settings()->delete();
@@ -99,14 +97,14 @@ final class Subscribe_With_Google extends Module
 	/**
 	 * Sets up information about the module.
 	 *
-	 * @since 1.41.0
+	 * @since n.e.x.t
 	 *
 	 * @return array Associative array of module info.
 	 */
 	protected function setup_info() {
 		return array(
-			'slug'        => 'subscribe-with-google',
-			'name'        => _x( 'Subscribe with Google', 'Service name', 'google-site-kit' ),
+			'slug'        => 'thank-with-google',
+			'name'        => _x( 'Thank with Google', 'Service name', 'google-site-kit' ),
 			'description' => __( 'Generate revenue through your content by adding subscriptions or contributions to your publication', 'google-site-kit' ),
 			'order'       => 7,
 			'homepage'    => __( 'https://publishercenter.google.com/', 'google-site-kit' ),
@@ -116,7 +114,7 @@ final class Subscribe_With_Google extends Module
 	/**
 	 * Sets up the module's settings instance.
 	 *
-	 * @since 1.41.0
+	 * @since n.e.x.t
 	 *
 	 * @return Module_Settings
 	 */
@@ -127,7 +125,7 @@ final class Subscribe_With_Google extends Module
 	/**
 	 * Sets up the module's assets to register.
 	 *
-	 * @since 1.41.0
+	 * @since n.e.x.t
 	 *
 	 * @return Asset[] List of Asset objects.
 	 */
