@@ -203,6 +203,7 @@ export function generateReportBasedWidgetStories( args ) {
 		ZeroData:
 			typeof zeroing === 'function'
 				? {
+						features: [ 'adsenseSetupV2' ],
 						callback: ( { dispatch } ) => {
 							if ( Array.isArray( options ) ) {
 								options.forEach( ( option, index ) => {

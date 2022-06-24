@@ -38,6 +38,33 @@ const generateAnalyticsData = makeReportDataGenerator(
 );
 const generateAdSenseData = makeReportDataGenerator( getAdSenseMockResponse );
 
+const zeroing = ( report ) => {
+	const zeroValue = ( cell ) => ( { ...cell, value: 0 } );
+
+	let clonedReport = { ...report };
+
+	const { totals, rows } = clonedReport;
+	const { cells } = totals;
+
+	clonedReport = {
+		...clonedReport,
+		totals: {
+			cells: cells.map( zeroValue ),
+		},
+		rows: rows.map( ( row ) => ( {
+			...row,
+			cells: row.cells.map( ( cell, index ) => {
+				if ( index !== 0 ) {
+					return zeroValue( cell );
+				}
+				return cell;
+			} ),
+		} ) ),
+	};
+
+	return clonedReport;
+};
+
 const topEarningPagesArgs = {
 	startDate: '2020-08-15',
 	endDate: '2020-09-11',
@@ -100,6 +127,7 @@ generateReportBasedWidgetStories( {
 	datastore: MODULES_ADSENSE,
 	group: 'AdSense Module/Components/Module/Overview Widget',
 	referenceDate: '2020-11-25',
+	zeroing,
 	...generateAdSenseData( [
 		{
 			metrics: [
