@@ -25,6 +25,7 @@ import {
 	createInterpolateElement,
 	Fragment,
 	useCallback,
+	useEffect,
 	useState,
 } from '@wordpress/element';
 
@@ -61,8 +62,6 @@ export default function DashboardSharingSettingsButton() {
 		select( CORE_MODULES ).haveSharingSettingsChanged()
 	);
 
-	const { rollbackSharingSettings } = useDispatch( CORE_MODULES );
-
 	const openDialog = useCallback( () => {
 		trackEvent(
 			`${ viewContext }_headerbar`,
@@ -73,18 +72,19 @@ export default function DashboardSharingSettingsButton() {
 		setDialogOpen( true );
 	}, [ viewContext, hasMultipleAdmins ] );
 
-	const closeDialog = useCallback(
-		( rollbackSettings = false ) => {
-			setDialogOpen( false );
+	const closeDialog = useCallback( () => {
+		setDialogOpen( false );
 
-			setValue( EDITING_USER_ROLE_SELECT_SLUG_KEY, undefined );
+		setValue( EDITING_USER_ROLE_SELECT_SLUG_KEY, undefined );
+	}, [ setValue ] );
 
-			if ( rollbackSettings && haveSettingsChanged ) {
-				rollbackSharingSettings();
-			}
-		},
-		[ haveSettingsChanged, rollbackSharingSettings, setValue ]
-	);
+	// Rollback any temporary selections to saved values if settings have changed and modal is closed.
+	const { rollbackSharingSettings } = useDispatch( CORE_MODULES );
+	useEffect( () => {
+		if ( ! dialogOpen && haveSettingsChanged ) {
+			rollbackSharingSettings();
+		}
+	}, [ dialogOpen, haveSettingsChanged, rollbackSharingSettings ] );
 
 	return (
 		<Fragment>
@@ -98,7 +98,7 @@ export default function DashboardSharingSettingsButton() {
 			<Portal>
 				<Dialog
 					open={ dialogOpen }
-					onClose={ () => closeDialog( true ) }
+					onClose={ closeDialog }
 					className="googlesitekit-dialog googlesitekit-sharing-settings-dialog"
 				>
 					<div
@@ -108,7 +108,7 @@ export default function DashboardSharingSettingsButton() {
 						<Button
 							aria-label={ __( 'Back', 'google-site-kit' ) }
 							className="googlesitekit-dialog__back"
-							onClick={ () => closeDialog( true ) }
+							onClick={ closeDialog }
 						>
 							<Icon icon={ arrowLeft } />
 						</Button>

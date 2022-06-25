@@ -80,7 +80,7 @@ export default function Footer( { closeDialog } ) {
 
 	const onCancel = useCallback( () => {
 		trackEvent( `${ viewContext }_sharing`, 'settings_cancel' );
-		closeDialog( true );
+		closeDialog();
 	}, [ closeDialog, viewContext ] );
 
 	return (
