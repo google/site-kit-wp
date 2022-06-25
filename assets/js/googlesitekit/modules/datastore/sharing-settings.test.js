@@ -284,7 +284,7 @@ describe( 'core/modules sharing-settings', () => {
 		} );
 
 		describe( 'rollbackSharingSettings', () => {
-			it( 'dispatches a request to rollback the sharing settings to the currently saved values', () => {
+			it( 'sets the sharing settings to the current saved values', () => {
 				registry
 					.dispatch( CORE_MODULES )
 					.receiveGetSharingSettings( sharingSettings );
