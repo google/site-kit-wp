@@ -294,10 +294,16 @@ describe( 'core/modules sharing-settings', () => {
 					.dispatch( CORE_MODULES )
 					.setSharedRoles( 'analytics', [ 'editor', 'subscriber' ] );
 
+				// Assert that the changed settings and saved settings aren't same.
+				expect( store.getState().sharingSettings ).not.toMatchObject(
+					store.getState().savedSharingSettings
+				);
+
 				registry.dispatch( CORE_MODULES ).rollbackSharingSettings();
 
+				// Assert that the changed settings have rolled back to saved settings.
 				expect( store.getState().sharingSettings ).toMatchObject(
-					sharingSettings
+					store.getState().savedSharingSettings
 				);
 			} );
 		} );
