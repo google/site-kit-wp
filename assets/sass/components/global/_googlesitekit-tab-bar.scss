@@ -33,12 +33,12 @@
 			line-height: 1;
 
 			&:first-child {
-				border-radius: $br-md 0 0 $br-md;
+				border-radius: $br-sm 0 0 $br-sm;
 				overflow: hidden;
 			}
 
 			&:last-child {
-				border-radius: 0 $br-md $br-md 0;
+				border-radius: 0 $br-sm $br-sm 0;
 				overflow: hidden;
 			}
 		}
