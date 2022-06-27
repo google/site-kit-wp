@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { MODULES_SUBSCRIBE_WITH_GOOGLE } from '../../datastore/constants';
+import { MODULES_THANK_WITH_GOOGLE } from '../../datastore/constants';
 import {
 	provideModules,
 	provideModuleRegistrations,
@@ -28,10 +28,10 @@ import {
 import ModuleSetup from '../../../../components/setup/ModuleSetup';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 
-const features = [ 'swgModule' ];
+const features = [ 'twgModule' ];
 
 function Template() {
-	return <ModuleSetup moduleSlug="subscribe-with-google" />;
+	return <ModuleSetup moduleSlug="thank-with-google" />;
 }
 
 export const Default = Template.bind( null );
@@ -39,13 +39,13 @@ Default.storyName = 'Default';
 Default.parameters = { features };
 
 export default {
-	title: 'Modules/Subscribe with Google/Setup/SetupForm',
+	title: 'Modules/Thank with Google/Setup/SetupForm',
 	decorators: [
 		( Story ) => {
 			const setupRegistry = ( registry ) => {
 				provideModules( registry, [
 					{
-						slug: 'subscribe-with-google',
+						slug: 'thank-with-google',
 						active: true,
 						connected: false,
 					},
@@ -55,20 +55,20 @@ export default {
 
 				// Simulate a user filling out an initially empty form.
 				registry
-					.dispatch( MODULES_SUBSCRIBE_WITH_GOOGLE )
+					.dispatch( MODULES_THANK_WITH_GOOGLE )
 					.receiveGetSettings( {
 						products: [],
 						publicationID: '',
 						revenueModel: '',
 					} );
 				registry
-					.dispatch( MODULES_SUBSCRIBE_WITH_GOOGLE )
+					.dispatch( MODULES_THANK_WITH_GOOGLE )
 					.setProducts( [ 'basic' ] );
 				registry
-					.dispatch( MODULES_SUBSCRIBE_WITH_GOOGLE )
+					.dispatch( MODULES_THANK_WITH_GOOGLE )
 					.setPublicationID( 'example.com' );
 				registry
-					.dispatch( MODULES_SUBSCRIBE_WITH_GOOGLE )
+					.dispatch( MODULES_THANK_WITH_GOOGLE )
 					.setRevenueModel( 'contribution' );
 			};
 

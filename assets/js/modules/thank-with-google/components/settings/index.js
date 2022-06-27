@@ -1,5 +1,5 @@
 /**
- * `modules/subscribe-with-google` base data store
+ * Thank with Google settings components.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -16,17 +16,6 @@
  * limitations under the License.
  */
 
-/**
- * Internal dependencies
- */
-import Modules from 'googlesitekit-modules';
-import { STORE_NAME } from './constants';
-import { submitChanges, validateCanSubmitChanges } from './settings';
-
-export default Modules.createModuleStore( 'subscribe-with-google', {
-	ownedSettingsSlugs: [ 'products', 'publicationID', 'revenueModel' ],
-	storeName: STORE_NAME,
-	settingSlugs: [ 'products', 'publicationID', 'revenueModel' ],
-	submitChanges,
-	validateCanSubmitChanges,
-} );
+export { default as SettingsEdit } from './SettingsEdit';
+export { default as SettingsForm } from './SettingsForm';
+export { default as SettingsView } from './SettingsView';

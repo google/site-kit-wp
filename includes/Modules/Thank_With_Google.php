@@ -134,9 +134,9 @@ final class Thank_With_Google extends Module
 
 		return array(
 			new Script(
-				'googlesitekit-modules-subscribe-with-google',
+				'googlesitekit-modules-thank-with-google',
 				array(
-					'src'          => $base_url . 'js/googlesitekit-modules-subscribe-with-google.js',
+					'src'          => $base_url . 'js/googlesitekit-modules-thank-with-google.js',
 					'dependencies' => array(
 						'googlesitekit-api',
 						'googlesitekit-data',

@@ -1,5 +1,5 @@
 /**
- * `modules/subscribe-with-google` data store: selectors test.
+ * `modules/thank-with-google` data store: selectors test.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -19,13 +19,13 @@
 /**
  * Internal dependencies
  */
-import { STORE_NAME } from './constants';
+import { MODULES_THANK_WITH_GOOGLE } from './constants';
 import {
 	createTestRegistry,
 	unsubscribeFromAll,
 } from '../../../../../tests/js/utils';
 
-describe( 'modules/subscribe-with-google properties', () => {
+describe( 'modules/thank-with-google properties', () => {
 	let registry;
 
 	beforeEach( () => {
@@ -38,7 +38,7 @@ describe( 'modules/subscribe-with-google properties', () => {
 
 	describe( 'store', () => {
 		it( 'is registered correctly', () => {
-			const selectors = registry.select( STORE_NAME );
+			const selectors = registry.select( MODULES_THANK_WITH_GOOGLE );
 
 			expect( selectors.getPublicationID ).toBeInstanceOf( Function );
 		} );
