@@ -178,6 +178,25 @@
 				padding: 4px;
 			}
 		}
+
+		.googlesitekit-header__children {
+			align-items: center;
+			display: flex;
+			gap: $grid-gap-phone;
+			justify-content: flex-end;
+
+			@media (min-width: $bp-desktop) {
+				gap: $grid-gap-desktop;
+			}
+
+			div > button > .mdc-button__label {
+				display: none;
+
+				@media ( min-width: $width-wpAdminBarTablet + 1 + px ) {
+					display: inline-block;
+				}
+			}
+		}
 	}
 
 	.googlesitekit-subheader {
@@ -187,17 +206,6 @@
 
 		@media (min-width: $bp-tablet) {
 			padding: 0 10px;
-		}
-	}
-
-	.googlesitekit-header__children {
-		align-items: center;
-		display: flex;
-		gap: $grid-gap-phone;
-		justify-content: flex-end;
-
-		@media (min-width: $bp-desktop) {
-			gap: $grid-gap-desktop;
 		}
 	}
 }

@@ -122,6 +122,7 @@ Please create a new topic on our [WordPress.org support forum](https://wordpress
 * Enhance `PreviewBlock` for compatibility with `prefers-reduced-motion`. See [#5055](https://github.com/google/site-kit-wp/issues/5055).
 * Update the setup error screen to include an error message returned from the proxy server. See [#5038](https://github.com/google/site-kit-wp/issues/5038).
 * Fix styles issue for report tables when they are in the gathering state. See [#4981](https://github.com/google/site-kit-wp/issues/4981).
+* Restrict editing module entity settings to users who have access, either by being the module owner or by having the module shared with them. See [#4825](https://github.com/google/site-kit-wp/issues/4825).
 * Implement module recovery alert notification. See [#4823](https://github.com/google/site-kit-wp/issues/4823).
 * Add settings modal to allow admins to configure Dashboard Sharing. See [#4822](https://github.com/google/site-kit-wp/issues/4822).
 * Add a new component that allows selecting user roles. See [#4821](https://github.com/google/site-kit-wp/issues/4821).
@@ -144,7 +145,9 @@ Please create a new topic on our [WordPress.org support forum](https://wordpress
 
 * Fix bug that could cause Analytics properties not to be pre-selected properly during setup. See [#5356](https://github.com/google/site-kit-wp/issues/5356).
 * Show widget area headings/subheadings regardless of number of widgets. See [#5332](https://github.com/google/site-kit-wp/issues/5332).
+* Fix a bug where a shared ownership module's owner was not updated if changed when saving the sharing settings for the first time. See [#5307](https://github.com/google/site-kit-wp/issues/5307).
 * Allow users with shared dashboard access to load assets and access REST endpoints. See [#5299](https://github.com/google/site-kit-wp/issues/5299).
+* Prevent admin-related notifications from appearing on view-only dashboard. See [#5295](https://github.com/google/site-kit-wp/issues/5295).
 * Make view-only menu visible on Shared Dashboard. See [#5255](https://github.com/google/site-kit-wp/issues/5255).
 * Update wording for the Analytics tracking exclusions switch. See [#5243](https://github.com/google/site-kit-wp/issues/5243).
 

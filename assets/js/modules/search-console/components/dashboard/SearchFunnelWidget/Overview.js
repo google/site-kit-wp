@@ -111,12 +111,15 @@ const Overview = ( {
 		select( CORE_LOCATION ).isNavigatingTo( adminReauthURL )
 	);
 	const isAnalyticsGatheringData = useInViewSelect( ( select ) =>
-		analyticsModuleActiveAndConnected
+		analyticsModuleActiveAndConnected && canViewSharedAnalytics
 			? select( MODULES_ANALYTICS ).isGatheringData()
 			: false
 	);
 	const isSearchConsoleGatheringData = useInViewSelect( ( select ) =>
 		select( MODULES_SEARCH_CONSOLE ).isGatheringData()
+	);
+	const isAuthenticated = useSelect( ( select ) =>
+		select( CORE_USER ).isAuthenticated()
 	);
 
 	const {
@@ -172,6 +175,7 @@ const Overview = ( {
 			! error );
 
 	const showGoalsCTA =
+		isAuthenticated &&
 		showAnalytics &&
 		dashboardType === DASHBOARD_TYPE_MAIN &&
 		! analyticsGoalsData?.items?.length;

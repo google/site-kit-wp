@@ -31,7 +31,7 @@ use WP_REST_Response;
 use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Util\BC_Functions;
 use Google\Site_Kit\Modules\Idea_Hub;
-use Google\Site_Kit\Modules\Subscribe_With_Google;
+use Google\Site_Kit\Modules\Thank_With_Google;
 
 /**
  * Authentication Class.
@@ -1360,12 +1360,12 @@ final class Authentication {
 		$features               = $this->options->get( $remote_features_option );
 
 		if ( false === $features ) {
-			// The experimental features (ideaHubModule and swgModule) are checked within Modules::construct() which
+			// The experimental features (ideaHubModule and twgModule) are checked within Modules::construct() which
 			// runs before Modules::register() where the `googlesitekit_features_request_data` filter is registered.
 			// Without this filter, some necessary context data is not sent when a request to Google_Proxy::get_features() is
 			// made. So we avoid making this request and solely check the active modules in the database to see if these
 			// features are enabled.
-			if ( in_array( $feature_name, array( 'ideaHubModule', 'swgModule' ), true ) ) {
+			if ( in_array( $feature_name, array( 'ideaHubModule', 'twgModule' ), true ) ) {
 				$active_modules = $this->options->get( Modules::OPTION_ACTIVE_MODULES );
 
 				if ( ! is_array( $active_modules ) ) {
@@ -1376,8 +1376,8 @@ final class Authentication {
 					return in_array( Idea_Hub::MODULE_SLUG, $active_modules, true );
 				}
 
-				if ( 'swgModule' === $feature_name ) {
-					return in_array( Subscribe_With_Google::MODULE_SLUG, $active_modules, true );
+				if ( 'twgModule' === $feature_name ) {
+					return in_array( Thank_With_Google::MODULE_SLUG, $active_modules, true );
 				}
 			}
 

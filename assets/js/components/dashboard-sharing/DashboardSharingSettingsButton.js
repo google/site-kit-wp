@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import { useWindowScroll } from 'react-use';
+
+/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
@@ -52,6 +57,7 @@ const { useSelect, useDispatch } = Data;
 export default function DashboardSharingSettingsButton() {
 	const viewContext = useViewContext();
 	const breakpoint = useBreakpoint();
+	const { y } = useWindowScroll();
 	const { setValue } = useDispatch( CORE_UI );
 	const [ dialogOpen, setDialogOpen ] = useState( false );
 
@@ -86,6 +92,15 @@ export default function DashboardSharingSettingsButton() {
 		}
 	}, [ dialogOpen, haveSettingsChanged, rollbackSharingSettings ] );
 
+	const dialogStyles = {};
+	// On mobile, the dialog box's flexbox is set to stretch items within to cover
+	// the whole screen. But we have to move the box and adjust its height below the
+	// WP Admin bar of 46px which gradually scrolls off the screen.
+	if ( breakpoint === BREAKPOINT_SMALL ) {
+		dialogStyles.top = `${ y < 46 ? 46 - y : 0 }px`;
+		dialogStyles.height = `calc(100% - 46px + ${ y < 46 ? y : 46 }px)`;
+	}
+
 	return (
 		<Fragment>
 			<Button
@@ -100,6 +115,7 @@ export default function DashboardSharingSettingsButton() {
 					open={ dialogOpen }
 					onClose={ closeDialog }
 					className="googlesitekit-dialog googlesitekit-sharing-settings-dialog"
+					style={ dialogStyles }
 				>
 					<div
 						className="googlesitekit-dialog__back-wrapper"
