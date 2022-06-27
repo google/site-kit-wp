@@ -40,7 +40,7 @@ export default function SettingsActiveModules() {
 		.sort( ( a, b ) => a.order - b.order );
 
 	return (
-		<Layout className="googlesitekit-layout--rounded">
+		<Layout rounded>
 			{ activeModules.map( ( { slug } ) => (
 				<SettingsActiveModule key={ slug } slug={ slug } />
 			) ) }

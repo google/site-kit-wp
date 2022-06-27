@@ -70,7 +70,7 @@ function SettingsApp() {
 							/>
 						</Cell>
 						<Cell size={ 12 }>
-							<Layout className="googlesitekit-layout--rounded googlesitekit-layout--transparent">
+							<Layout transparent rounded>
 								<TabBar
 									activeIndex={ activeTab }
 									className="googlesitekit-tab-bar__settings"

@@ -96,6 +96,7 @@ function BannerNotification( {
 	title,
 	type,
 	WinImageSVG,
+	rounded = false,
 } ) {
 	// Closed notifications are invisible, but still occupy space.
 	const [ isClosed, setIsClosed ] = useState( false );
@@ -331,6 +332,7 @@ function BannerNotification( {
 				[ `googlesitekit-publisher-win--${ format }` ]: format,
 				[ `googlesitekit-publisher-win--${ type }` ]: type,
 				[ `googlesitekit-publisher-win--${ closedClass }` ]: closedClass,
+				'googlesitekit-publisher-win--rounded': rounded,
 				'googlesitekit-publisher-win--no-bottom-padding': noBottomPadding,
 			} ) }
 		>
@@ -459,6 +461,7 @@ BannerNotification.propTypes = {
 	anchorLinkLabel: PropTypes.string,
 	badgeLabel: PropTypes.string,
 	noBottomPadding: PropTypes.bool,
+	rounded: PropTypes.bool,
 };
 
 BannerNotification.defaultProps = {

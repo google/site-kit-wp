@@ -20,7 +20,6 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
-import classnames from 'classnames';
 
 /**
  * WordPress dependencies
@@ -43,7 +42,7 @@ export default function UserInputSettings( {
 	onCTAClick,
 	onDismiss,
 	isDismissible,
-	className = '',
+	rounded = false,
 } ) {
 	const instanceID = useInstanceID( UserInputSettings );
 	const ctaLink = useSelect( ( select ) =>
@@ -60,10 +59,7 @@ export default function UserInputSettings( {
 	return (
 		<BannerNotification
 			id={ `user-input-settings-notification-${ instanceID }` }
-			className={ classnames(
-				'googlesitekit-user-input__notification',
-				className
-			) }
+			className="googlesitekit-user-input__notification"
 			title={ __(
 				'Customize Site Kit to match your goals',
 				'google-site-kit'
@@ -81,6 +77,7 @@ export default function UserInputSettings( {
 			WinImageSVG={ UserInputPromptSVG }
 			isDismissible={ isDismissible }
 			onDismiss={ onDismiss }
+			rounded={ rounded }
 		/>
 	);
 }
@@ -90,5 +87,5 @@ UserInputSettings.propTypes = {
 	onCTAClick: PropTypes.func,
 	onDismiss: PropTypes.func,
 	isDismissible: PropTypes.bool,
-	className: PropTypes.string,
+	rounded: PropTypes.bool,
 };

@@ -82,7 +82,7 @@ export default function SettingsAdmin() {
 			{ userInputEnabled && (
 				<Cell size={ 12 }>
 					{ isUserInputCompleted && (
-						<Layout className="googlesitekit-layout--rounded">
+						<Layout rounded>
 							<div className="googlesitekit-settings-module googlesitekit-settings-module--active googlesitekit-settings-user-input">
 								<Grid>
 									<Row>
@@ -108,16 +108,13 @@ export default function SettingsAdmin() {
 						</Layout>
 					) }
 					{ ! isUserInputCompleted && (
-						<UserInputSettings
-							isDismissible={ false }
-							className="googlesitekit-publisher-win--rounded"
-						/>
+						<UserInputSettings isDismissible={ false } rounded />
 					) }
 				</Cell>
 			) }
 
 			<Cell size={ 12 }>
-				<Layout className="googlesitekit-layout--rounded">
+				<Layout rounded>
 					<div className="googlesitekit-settings-module googlesitekit-settings-module--active">
 						<Grid>
 							<Row>
@@ -162,10 +159,11 @@ export default function SettingsAdmin() {
 
 			<Cell size={ 12 }>
 				<Layout
-					className="googlesitekit-settings-meta googlesitekit-layout--rounded"
+					className="googlesitekit-settings-meta"
 					title={ __( 'Tracking', 'google-site-kit' ) }
 					header
 					fill
+					rounded
 				>
 					<div className="googlesitekit-settings-module googlesitekit-settings-module--active">
 						<Grid>

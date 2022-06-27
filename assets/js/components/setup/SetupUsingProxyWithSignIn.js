@@ -266,7 +266,7 @@ export default function SetupUsingProxyWithSignIn() {
 				<Grid>
 					<Row>
 						<Cell size={ 12 }>
-							<Layout className="googlesitekit-layout--rounded">
+							<Layout rounded>
 								<section className="googlesitekit-setup__splash">
 									<Grid>
 										<Row className="googlesitekit-setup__content">

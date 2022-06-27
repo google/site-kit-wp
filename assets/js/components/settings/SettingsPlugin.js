@@ -56,10 +56,11 @@ export default function SettingsPlugin() {
 
 	return (
 		<Layout
-			className="googlesitekit-settings-meta googlesitekit-layout--rounded"
+			className="googlesitekit-settings-meta"
 			title={ __( 'Plugin Settings', 'google-site-kit' ) }
 			header
 			fill
+			rounded
 		>
 			<div className="googlesitekit-settings-module googlesitekit-settings-module--active">
 				<Grid>
