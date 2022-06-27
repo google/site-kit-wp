@@ -20,6 +20,8 @@
  * Internal dependencies
  */
 import WidgetRenderer from './WidgetRenderer';
+import { Provider as ViewContextProvider } from '../../../components/Root/ViewContextContext';
+import { VIEW_CONTEXT_DASHBOARD_VIEW_ONLY } from '../../../googlesitekit/constants';
 import { CORE_MODULES } from '../../modules/datastore/constants';
 import { CORE_WIDGETS } from '../datastore/constants';
 import { provideModules, render } from '../../../../../tests/js/test-utils';
@@ -27,12 +29,15 @@ import { provideModules, render } from '../../../../../tests/js/test-utils';
 const setupRegistry = ( {
 	Component = () => <div>Test</div>,
 	wrapWidget = false,
+	recoverableModules = [],
 } = {} ) => {
 	return ( registry ) => {
 		const { dispatch } = registry;
 
 		provideModules( registry );
-		dispatch( CORE_MODULES ).receiveRecoverableModules( [] );
+		dispatch( CORE_MODULES ).receiveRecoverableModules(
+			recoverableModules
+		);
 
 		dispatch( CORE_WIDGETS ).registerWidgetArea( 'dashboard-header', {
 			title: 'Dashboard Header',
@@ -46,6 +51,7 @@ const setupRegistry = ( {
 		dispatch( CORE_WIDGETS ).registerWidget( 'TestWidget', {
 			Component,
 			wrapWidget,
+			modules: [ 'search-console', 'pagespeed-insights' ],
 		} );
 		dispatch( CORE_WIDGETS ).assignWidget(
 			'TestWidget',
@@ -83,5 +89,46 @@ describe( 'WidgetRenderer', () => {
 		} );
 
 		expect( container.firstChild ).toEqual( null );
+	} );
+
+	it( 'should output the recoverable modules component when the widget depends on a recoverable module', async () => {
+		const { getByText } = render(
+			<ViewContextProvider value={ VIEW_CONTEXT_DASHBOARD_VIEW_ONLY }>
+				<WidgetRenderer slug="TestWidget" />
+			</ViewContextProvider>,
+			{
+				setupRegistry: setupRegistry( {
+					recoverableModules: [ 'search-console' ],
+				} ),
+			}
+		);
+
+		expect(
+			getByText(
+				/Search Console data was previously shared by an admin who no longer has access/
+			)
+		).toBeInTheDocument();
+	} );
+
+	it( 'should output the recoverable modules component when the widget depends on multiple recoverable modules', async () => {
+		const { getByText } = render(
+			<ViewContextProvider value={ VIEW_CONTEXT_DASHBOARD_VIEW_ONLY }>
+				<WidgetRenderer slug="TestWidget" />
+			</ViewContextProvider>,
+			{
+				setupRegistry: setupRegistry( {
+					recoverableModules: [
+						'search-console',
+						'pagespeed-insights',
+					],
+				} ),
+			}
+		);
+
+		expect(
+			getByText(
+				/The data for the following modules was previously shared by an admin who no longer has access: Search Console, PageSpeed Insights/
+			)
+		).toBeInTheDocument();
 	} );
 } );
