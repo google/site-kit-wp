@@ -20,9 +20,13 @@
  * Internal dependencies
  */
 import { createTestRegistry, provideModules } from '../../../tests/js/utils';
-import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../util/errors';
+import {
+	ERROR_CODE_MISSING_REQUIRED_SCOPE,
+	ERROR_REASON_INSUFFICIENT_PERMISSIONS,
+} from '../util/errors';
 import { render } from '../../../tests/js/test-utils';
 import ReportError from './ReportError';
+import { MODULES_ANALYTICS } from '../modules/analytics/datastore/constants';
 
 describe( 'ReportError', () => {
 	let registry;
@@ -96,5 +100,138 @@ describe( 'ReportError', () => {
 		expect( container.querySelector( 'h3' ).textContent ).toEqual(
 			'Insufficient permissions in Test Module'
 		);
+	} );
+
+	it( "should not render the `Retry` button if the error's `selectorData.name` is not `getReport`", () => {
+		const { queryByText } = render(
+			<ReportError
+				moduleSlug="analytics"
+				error={ {
+					code: 'test-error-code',
+					message: 'Test error message',
+					data: {
+						reason: ERROR_REASON_INSUFFICIENT_PERMISSIONS,
+					},
+					selectorData: {
+						args: [],
+						name: 'getAccountID',
+						storeName: MODULES_ANALYTICS,
+					},
+				} }
+			/>,
+			{
+				registry,
+			}
+		);
+
+		expect( queryByText( /retry/i ) ).not.toBeInTheDocument();
+	} );
+
+	it( 'should not render the `Retry` button if the error reason is `ERROR_REASON_INSUFFICIENT_PERMISSIONS`', () => {
+		const { queryByText } = render(
+			<ReportError
+				moduleSlug="analytics"
+				error={ {
+					code: 'test-error-code',
+					message: 'Test error message',
+					data: {
+						reason: ERROR_REASON_INSUFFICIENT_PERMISSIONS,
+					},
+					selectorData: {
+						args: [],
+						name: 'getAccountID',
+						storeName: MODULES_ANALYTICS,
+					},
+				} }
+			/>,
+			{
+				registry,
+			}
+		);
+
+		expect( queryByText( /retry/i ) ).not.toBeInTheDocument();
+	} );
+
+	it( 'should not render the `Retry` button if the error reason is `ERROR_CODE_MISSING_REQUIRED_SCOPE`', () => {
+		const { queryByText } = render(
+			<ReportError
+				moduleSlug="analytics"
+				error={ {
+					code: ERROR_CODE_MISSING_REQUIRED_SCOPE,
+					message: 'Test error message',
+					data: {
+						reason: '',
+					},
+					selectorData: {
+						args: [],
+						name: 'getAccountID',
+						storeName: MODULES_ANALYTICS,
+					},
+				} }
+			/>,
+			{
+				registry,
+			}
+		);
+
+		expect( queryByText( /retry/i ) ).not.toBeInTheDocument();
+	} );
+
+	it( 'should not render the `Retry` button if the error is an auth error', () => {
+		const { queryByText } = render(
+			<ReportError
+				moduleSlug="analytics"
+				error={ {
+					code: 'test-error-code',
+					message: 'Test error message',
+					data: {
+						reason: '',
+						reconnectURL: 'example.com',
+					},
+					selectorData: {
+						args: [],
+						name: 'getAccountID',
+						storeName: MODULES_ANALYTICS,
+					},
+				} }
+			/>,
+			{
+				registry,
+			}
+		);
+
+		expect( queryByText( /retry/i ) ).not.toBeInTheDocument();
+	} );
+
+	it( 'should render the `Retry` button if the error selector name is `getReport`', () => {
+		const { queryByText } = render(
+			<ReportError
+				moduleSlug="analytics"
+				error={ {
+					code: 'test-error-code',
+					message: 'Test error message',
+					data: {
+						reason: '',
+					},
+					selectorData: {
+						args: [
+							{
+								dimensions: [ 'ga:date' ],
+								metrics: [ { expression: 'ga:users' } ],
+								startDate: '2020-08-11',
+								endDate: '2020-09-07',
+							},
+						],
+						name: 'getReport',
+						storeName: MODULES_ANALYTICS,
+					},
+				} }
+			/>,
+			{
+				registry,
+			}
+		);
+
+		expect( queryByText( /retry/i ) ).toBeInTheDocument();
 	} );
 } );

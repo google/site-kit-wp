@@ -577,9 +577,17 @@ abstract class Module {
 			&& $this->is_shareable()
 			&& $datapoint->is_shareable()
 			&& $this->get_owner_id() !== get_current_user_id()
+			&& ! $this->is_recoverable()
 			&& current_user_can( Permissions::READ_SHARED_MODULE_DATA, $this->slug )
 		) {
-			return $this->get_owner_oauth_client();
+			$oauth_client = $this->get_owner_oauth_client();
+
+			try {
+				$this->validate_base_scopes( $oauth_client );
+				return $oauth_client;
+			} catch ( Exception $exception ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
+				// Fallthrough to default oauth client if scopes are unsatisfied.
+			}
 		}
 
 		return $this->authentication->get_oauth_client();
@@ -835,5 +843,23 @@ abstract class Module {
 		}
 
 		return false;
+	}
+
+	/**
+	 * Checks whether the module is recoverable.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return bool
+	 */
+	public function is_recoverable() {
+		/**
+		 * Filters the recoverable status of the module.
+		 *
+		 * @since n.e.x.t
+		 * @param bool   $_    Whether or not the module is recoverable. Default: false
+		 * @param string $slug Module slug.
+		 */
+		return (bool) apply_filters( 'googlesitekit_is_module_recoverable', false, $this->slug );
 	}
 }

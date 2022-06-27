@@ -32,7 +32,7 @@ use Google\Site_Kit\Modules\PageSpeed_Insights;
 use Google\Site_Kit\Modules\Search_Console;
 use Google\Site_Kit\Modules\Site_Verification;
 use Google\Site_Kit\Modules\Tag_Manager;
-use Google\Site_Kit\Modules\Subscribe_With_Google;
+use Google\Site_Kit\Modules\Thank_With_Google;
 use WP_REST_Server;
 use WP_REST_Request;
 use WP_REST_Response;
@@ -188,8 +188,8 @@ final class Modules {
 		if ( Feature_Flags::enabled( 'ideaHubModule' ) ) {
 			$this->core_modules[ Idea_Hub::MODULE_SLUG ] = Idea_Hub::class;
 		}
-		if ( Feature_Flags::enabled( 'swgModule' ) ) {
-			$this->core_modules[ Subscribe_With_Google::MODULE_SLUG ] = Subscribe_With_Google::class;
+		if ( Feature_Flags::enabled( 'twgModule' ) ) {
+			$this->core_modules[ Thank_With_Google::MODULE_SLUG ] = Thank_With_Google::class;
 		}
 
 		if ( Feature_Flags::enabled( 'dashboardSharing' ) ) {
@@ -347,6 +347,15 @@ final class Modules {
 
 				return $data;
 			}
+		);
+
+		add_filter(
+			'googlesitekit_is_module_recoverable',
+			function ( $recoverable, $slug ) {
+				return $this->is_module_recoverable( $slug );
+			},
+			10,
+			2
 		);
 
 		add_filter( 'option_' . Module_Sharing_Settings::OPTION, $this->get_method_proxy( 'filter_shared_ownership_module_settings' ) );

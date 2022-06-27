@@ -118,6 +118,9 @@ const Overview = ( {
 	const isSearchConsoleGatheringData = useInViewSelect( ( select ) =>
 		select( MODULES_SEARCH_CONSOLE ).isGatheringData()
 	);
+	const isAuthenticated = useSelect( ( select ) =>
+		select( CORE_USER ).isAuthenticated()
+	);
 
 	const {
 		totalClicks,
@@ -172,6 +175,7 @@ const Overview = ( {
 			! error );
 
 	const showGoalsCTA =
+		isAuthenticated &&
 		showAnalytics &&
 		dashboardType === DASHBOARD_TYPE_MAIN &&
 		! analyticsGoalsData?.items?.length;
