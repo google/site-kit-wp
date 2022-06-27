@@ -111,7 +111,7 @@ const Overview = ( {
 		select( CORE_LOCATION ).isNavigatingTo( adminReauthURL )
 	);
 	const isAnalyticsGatheringData = useInViewSelect( ( select ) =>
-		analyticsModuleActiveAndConnected
+		analyticsModuleActiveAndConnected && canViewSharedAnalytics
 			? select( MODULES_ANALYTICS ).isGatheringData()
 			: false
 	);
