@@ -76,7 +76,10 @@ final class Search_Console extends Module
 				}
 
 				// If the response includes the Search Console property, set that.
-				if ( ! empty( $token_response['search_console_property'] ) ) {
+				// But only if it is being set for the first time or if Search Console
+				// has no owner or the current user is the owner.
+				if ( ! empty( $token_response['search_console_property'] ) &&
+				( empty( $this->get_property_id() ) || ( in_array( $this->get_owner_id(), array( 0, get_current_user_id() ), true ) ) ) ) {
 					$this->get_settings()->merge(
 						array( 'propertyID' => $token_response['search_console_property'] )
 					);
