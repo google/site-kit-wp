@@ -1,5 +1,5 @@
 /**
- * DashboardNavigation component.
+ * Navigation component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -34,22 +34,22 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import NavTrafficIcon from '../../svg/icons/nav-traffic-icon.svg';
-import NavContentIcon from '../../svg/icons/nav-content-icon.svg';
-import NavSpeedIcon from '../../svg/icons/nav-speed-icon.svg';
-import NavMonetizationIcon from '../../svg/icons/nav-monetization-icon.svg';
+import NavTrafficIcon from '../../../svg/icons/nav-traffic-icon.svg';
+import NavContentIcon from '../../../svg/icons/nav-content-icon.svg';
+import NavSpeedIcon from '../../../svg/icons/nav-speed-icon.svg';
+import NavMonetizationIcon from '../../../svg/icons/nav-monetization-icon.svg';
 import {
 	ANCHOR_ID_CONTENT,
 	ANCHOR_ID_MONETIZATION,
 	ANCHOR_ID_SPEED,
 	ANCHOR_ID_TRAFFIC,
-} from '../googlesitekit/constants';
-import { CORE_USER } from '../googlesitekit/datastore/user/constants';
-import { CORE_WIDGETS } from '../googlesitekit/widgets/datastore/constants';
+} from '../../googlesitekit/constants';
+import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import { CORE_WIDGETS } from '../../googlesitekit/widgets/datastore/constants';
 import {
 	CORE_UI,
 	ACTIVE_CONTEXT_ID,
-} from '../googlesitekit/datastore/ui/constants';
+} from '../../googlesitekit/datastore/ui/constants';
 import {
 	CONTEXT_ENTITY_DASHBOARD_TRAFFIC,
 	CONTEXT_ENTITY_DASHBOARD_CONTENT,
@@ -59,18 +59,18 @@ import {
 	CONTEXT_MAIN_DASHBOARD_CONTENT,
 	CONTEXT_MAIN_DASHBOARD_SPEED,
 	CONTEXT_MAIN_DASHBOARD_MONETIZATION,
-} from '../googlesitekit/widgets/default-contexts';
+} from '../../googlesitekit/widgets/default-contexts';
 import useDashboardType, {
 	DASHBOARD_TYPE_MAIN,
-} from '../hooks/useDashboardType';
-import { useBreakpoint } from '../hooks/useBreakpoint';
-import { getContextScrollTop } from '../util/scroll';
-import { trackEvent } from '../util';
-import useViewContext from '../hooks/useViewContext';
-import useViewOnly from '../hooks/useViewOnly';
+} from '../../hooks/useDashboardType';
+import { useBreakpoint } from '../../hooks/useBreakpoint';
+import { getContextScrollTop } from '../../util/scroll';
+import { trackEvent } from '../../util';
+import useViewContext from '../../hooks/useViewContext';
+import useViewOnly from '../../hooks/useViewOnly';
 const { useSelect, useDispatch } = Data;
 
-export default function DashboardNavigation() {
+export default function Navigation() {
 	const dashboardType = useDashboardType();
 	const elementRef = useRef();
 	const breakpoint = useBreakpoint();
@@ -134,6 +134,49 @@ export default function DashboardNavigation() {
 			widgetContextOptions
 		)
 	);
+	const getDefaultChipID = () => {
+		if ( ! viewOnlyDashboard ) {
+			return ANCHOR_ID_TRAFFIC;
+		}
+
+		if ( showTraffic ) {
+			return ANCHOR_ID_TRAFFIC;
+		}
+
+		if ( showContent ) {
+			return ANCHOR_ID_CONTENT;
+		}
+
+		if ( showSpeed ) {
+			return ANCHOR_ID_SPEED;
+		}
+
+		if ( showMonetization ) {
+			return ANCHOR_ID_MONETIZATION;
+		}
+
+		return '';
+	};
+
+	const isValidChipID = ( chipID ) => {
+		if ( showTraffic && chipID === ANCHOR_ID_TRAFFIC ) {
+			return true;
+		}
+
+		if ( showContent && chipID === ANCHOR_ID_CONTENT ) {
+			return true;
+		}
+
+		if ( showSpeed && chipID === ANCHOR_ID_SPEED ) {
+			return true;
+		}
+
+		if ( showMonetization && chipID === ANCHOR_ID_MONETIZATION ) {
+			return true;
+		}
+
+		return false;
+	};
 
 	const handleSelect = useCallback(
 		( { target } ) => {
@@ -161,22 +204,31 @@ export default function DashboardNavigation() {
 	);
 
 	useMount( () => {
+		const defaultChipID = getDefaultChipID();
+
 		if ( ! initialHash ) {
-			setSelectedID( ANCHOR_ID_TRAFFIC );
+			setSelectedID( defaultChipID );
 			setTimeout( () =>
-				global.history.replaceState( {}, '', `#${ ANCHOR_ID_TRAFFIC }` )
+				global.history.replaceState( {}, '', `#${ defaultChipID }` )
 			);
+
 			return;
 		}
 
-		const chipID = initialHash;
+		let chipID = initialHash;
+
+		if ( ! isValidChipID( chipID ) ) {
+			chipID = defaultChipID;
+		}
+
 		setValue( ACTIVE_CONTEXT_ID, chipID );
+		setSelectedID( chipID );
 
 		setTimeout( () => {
 			global.scrollTo( {
 				top:
-					chipID !== ANCHOR_ID_TRAFFIC
-						? getContextScrollTop( `#${ initialHash }`, breakpoint )
+					chipID !== defaultChipID
+						? getContextScrollTop( `#${ chipID }`, breakpoint )
 						: 0,
 				behavior: 'smooth',
 			} );
