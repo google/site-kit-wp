@@ -42,8 +42,8 @@ export default function Notice() {
 
 	return (
 		<p className="googlesitekit-dashboard-sharing-settings__notice">
-			{ canSubmitSharingChanges &&
-				haveSharingSettingsChangedManagement &&
+			{ haveSharingSettingsChangedManagement &&
+				canSubmitSharingChanges &&
 				createInterpolateElement(
 					__(
 						'By clicking <strong>Apply</strong>, you will give other authenticated admins of your site permission to manage view-only access to Site Kit Dashboard data from the chosen Google service.',
