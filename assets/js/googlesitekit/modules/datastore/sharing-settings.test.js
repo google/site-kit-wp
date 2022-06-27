@@ -618,7 +618,7 @@ describe( 'core/modules sharing-settings', () => {
 		} );
 
 		describe( 'haveSharingSettingsExpanded', () => {
-			it( 'requires the `key` param', () => {
+			it( 'requires a valid `key` parameter', () => {
 				expect( () => {
 					registry
 						.select( CORE_MODULES )
@@ -636,7 +636,7 @@ describe( 'core/modules sharing-settings', () => {
 				).toBeUndefined();
 			} );
 
-			it( 'informs whether the `management` setting for any module has been changed from `owner` to `all_admins`', async () => {
+			it( 'informs whether the `management` setting for any module has been changed from `owner` to `all_admins`', () => {
 				global[ dashboardSharingDataBaseVar ] = undefined;
 
 				// Initially undefined.
@@ -687,71 +687,121 @@ describe( 'core/modules sharing-settings', () => {
 				).toBe( false );
 			} );
 
-			it( "informs whether the `sharedRoles` settings for any module contain roles that haven't been previously selected", async () => {
-				global[ dashboardSharingDataBaseVar ] = undefined;
+			describe( 'informs whether the `sharedRoles` settings for any module have been changed', () => {
+				it( 'False when changes are made with previously selected values', () => {
+					global[ dashboardSharingDataBaseVar ] = undefined;
 
-				// Initially undefined.
-				expect(
+					// Initially undefined.
+					expect(
+						registry
+							.select( CORE_MODULES )
+							.haveSharingSettingsExpanded( 'sharedRoles' )
+					).toBeUndefined();
+
+					global[
+						dashboardSharingDataBaseVar
+					] = dashboardSharingData;
+					registry.select( CORE_MODULES ).getSharingSettings();
+
+					// Still false after getting the sharing settings from the global variable.
+					expect(
+						registry
+							.select( CORE_MODULES )
+							.haveSharingSettingsExpanded( 'sharedRoles' )
+					).toBe( false );
+
+					// False after removing some of the module's existing `sharedRoles` on the client.
 					registry
-						.select( CORE_MODULES )
-						.haveSharingSettingsExpanded( 'sharedRoles' )
-				).toBeUndefined();
+						.dispatch( CORE_MODULES )
+						.setSharedRoles( 'search-console', [ 'editor' ] );
+					expect(
+						registry
+							.select( CORE_MODULES )
+							.haveSharingSettingsExpanded( 'sharedRoles' )
+					).toBe( false );
 
-				global[ dashboardSharingDataBaseVar ] = dashboardSharingData;
-				registry.select( CORE_MODULES ).getSharingSettings();
-
-				// Still false after getting the sharing settings from the global variable.
-				expect(
+					// False after adding back the removed existing role to the module's `sharedRoles` on the client.
 					registry
-						.select( CORE_MODULES )
-						.haveSharingSettingsExpanded( 'sharedRoles' )
-				).toBe( false );
+						.dispatch( CORE_MODULES )
+						.setSharedRoles( 'search-console', [
+							'editor',
+							'subscriber',
+						] );
+					expect(
+						registry
+							.select( CORE_MODULES )
+							.haveSharingSettingsExpanded( 'sharedRoles' )
+					).toBe( false );
+				} );
 
-				// False after removing some of the module's existing `sharedRoles` on the client.
-				registry
-					.dispatch( CORE_MODULES )
-					.setSharedRoles( 'search-console', [ 'editor' ] );
-				expect(
-					registry
-						.select( CORE_MODULES )
-						.haveSharingSettingsExpanded( 'sharedRoles' )
-				).toBe( false );
+				it( "True when changes aren't made with previously selected values", () => {
+					global[ dashboardSharingDataBaseVar ] = undefined;
 
-				// False after adding back the removed existing role to the module's `sharedRoles` on the client.
-				registry
-					.dispatch( CORE_MODULES )
-					.setSharedRoles( 'search-console', [
-						'editor',
-						'subscriber',
-					] );
-				expect(
-					registry
-						.select( CORE_MODULES )
-						.haveSharingSettingsExpanded( 'sharedRoles' )
-				).toBe( false );
+					// Initially undefined.
+					expect(
+						registry
+							.select( CORE_MODULES )
+							.haveSharingSettingsExpanded( 'sharedRoles' )
+					).toBeUndefined();
 
-				// True after adding new non-existing role to the module's `sharedRoles` on the client.
-				registry
-					.dispatch( CORE_MODULES )
-					.setSharedRoles( 'search-console', [
-						'editor',
-						'administrator',
-					] );
-				expect(
-					registry
-						.select( CORE_MODULES )
-						.haveSharingSettingsExpanded( 'sharedRoles' )
-				).toBe( true );
+					global[
+						dashboardSharingDataBaseVar
+					] = dashboardSharingData;
+					registry.select( CORE_MODULES ).getSharingSettings();
 
-				// True when adding a new role when the module's `sharedRoles` is empty.
-				registry
-					.dispatch( CORE_MODULES )
-					.setSharedRoles( 'adsense', [ 'editor' ] );
-				expect(
+					// Still false after getting the sharing settings from the global variable.
+					expect(
+						registry
+							.select( CORE_MODULES )
+							.haveSharingSettingsExpanded( 'sharedRoles' )
+					).toBe( false );
+
+					// True after adding new non-existing role to the module's `sharedRoles` on the client.
 					registry
-						.select( CORE_MODULES )
-						.haveSharingSettingsExpanded( 'sharedRoles' )
-				).toBe( true );
+						.dispatch( CORE_MODULES )
+						.setSharedRoles( 'search-console', [
+							'editor',
+							'administrator',
+						] );
+					expect(
+						registry
+							.select( CORE_MODULES )
+							.haveSharingSettingsExpanded( 'sharedRoles' )
+					).toBe( true );
+				} );
+
+				it( 'True when changes are made when the roles are empty', () => {
+					global[ dashboardSharingDataBaseVar ] = undefined;
+
+					// Initially undefined.
+					expect(
+						registry
+							.select( CORE_MODULES )
+							.haveSharingSettingsExpanded( 'sharedRoles' )
+					).toBeUndefined();
+
+					global[
+						dashboardSharingDataBaseVar
+					] = dashboardSharingData;
+					registry.select( CORE_MODULES ).getSharingSettings();
+
+					// Still false after getting the sharing settings from the global variable.
+					expect(
+						registry
+							.select( CORE_MODULES )
+							.haveSharingSettingsExpanded( 'sharedRoles' )
+					).toBe( false );
+
+					// True when adding a new role when the module's `sharedRoles` is empty.
+					registry
+						.dispatch( CORE_MODULES )
+						.setSharedRoles( 'adsense', [ 'editor' ] );
+					expect(
+						registry
+							.select( CORE_MODULES )
+							.haveSharingSettingsExpanded( 'sharedRoles' )
+					).toBe( true );
+				} );
 			} );
 		} );
 	} );
