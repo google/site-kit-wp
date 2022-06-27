@@ -30,6 +30,7 @@ import {
 	createInterpolateElement,
 	Fragment,
 	useCallback,
+	useEffect,
 	useState,
 } from '@wordpress/element';
 
@@ -47,6 +48,7 @@ import DashboardSharingSettings from './DashboardSharingSettings';
 import { trackEvent } from '../../util';
 import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { BREAKPOINT_SMALL, useBreakpoint } from '../../hooks/useBreakpoint';
 import { Dialog, DialogContent, DialogFooter } from '../../material-components';
 import { EDITING_USER_ROLE_SELECT_SLUG_KEY } from './DashboardSharingSettings/constants';
@@ -61,6 +63,9 @@ export default function DashboardSharingSettingsButton() {
 
 	const hasMultipleAdmins = useSelect( ( select ) =>
 		select( CORE_SITE ).hasMultipleAdmins()
+	);
+	const haveSettingsChanged = useSelect( ( select ) =>
+		select( CORE_MODULES ).haveSharingSettingsChanged()
 	);
 
 	const openDialog = useCallback( () => {
@@ -78,6 +83,14 @@ export default function DashboardSharingSettingsButton() {
 
 		setValue( EDITING_USER_ROLE_SELECT_SLUG_KEY, undefined );
 	}, [ setValue ] );
+
+	// Rollback any temporary selections to saved values if settings have changed and modal is closed.
+	const { rollbackSharingSettings } = useDispatch( CORE_MODULES );
+	useEffect( () => {
+		if ( ! dialogOpen && haveSettingsChanged ) {
+			rollbackSharingSettings();
+		}
+	}, [ dialogOpen, haveSettingsChanged, rollbackSharingSettings ] );
 
 	const dialogStyles = {};
 	// On mobile, the dialog box's flexbox is set to stretch items within to cover
