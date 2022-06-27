@@ -458,7 +458,7 @@ const baseSelectors = {
 	},
 
 	/**
-	 * Compares current sharing settings managemnt OR sharedRoles have changed from what is saved.
+	 * Compares current sharing settings management OR sharedRoles have changed from what is saved.
 	 *
 	 * @since n.e.x.t
 	 *
