@@ -458,6 +458,63 @@ const baseSelectors = {
 	},
 
 	/**
+	 * Compares current sharing settings managemnt OR sharedRoles have changed from what is saved.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @param {string} key   Sharing Settings property key to check; one of `management` | `sharedRoles`.
+	 * @return {boolean|undefined} True if the sharing settings have changed, false otherwise, `undefined` if not yet loaded.
+	 */
+	haveSharingSettingsExpanded( state, key ) {
+		const validKeys = [ 'management', 'sharedRoles' ];
+		invariant(
+			validKeys.includes( key ),
+			`key must be one of: ${ validKeys.join( ', ' ) }.`
+		);
+		const { sharingSettings, savedSharingSettings } = state;
+
+		if (
+			sharingSettings === undefined ||
+			savedSharingSettings === undefined
+		) {
+			return undefined;
+		}
+
+		// Return `true` if the management setting for any module has been
+		// changed from `owner` to `all_admins`.
+		if ( key === 'management' ) {
+			return Object.keys( sharingSettings ).some( ( moduleSlug ) => {
+				const hasInitialManagementChanged =
+					savedSharingSettings[ moduleSlug ]?.management !==
+					sharingSettings[ moduleSlug ]?.management;
+
+				return (
+					hasInitialManagementChanged &&
+					sharingSettings[ moduleSlug ]?.management === 'all_admins'
+				);
+			} );
+		}
+
+		// Return `true` if sharing settings for any module contain roles
+		// that haven't been previously selected.
+		if ( key === 'sharedRoles' ) {
+			return Object.keys( sharingSettings ).some( ( moduleSlug ) => {
+				return (
+					sharingSettings[ moduleSlug ]?.sharedRoles?.filter(
+						( currentRole ) =>
+							! savedSharingSettings[
+								moduleSlug
+							]?.sharedRoles?.includes( currentRole )
+					).length > 0
+				);
+			} );
+		}
+
+		return false;
+	},
+
+	/**
 	 * Checks whether sharing settings changes are currently being submitted.
 	 *
 	 * @since 1.77.0
