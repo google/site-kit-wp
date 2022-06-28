@@ -42,9 +42,7 @@
 			grid-row-start: 1;
 			margin: 0;
 			opacity: 0;
-			transition-duration: 2.5s;
-			transition-property: color, opacity;
-			transition-timing-function: ease-in-out;
+			transition: color 2.5s ease-in-out;
 
 			@media (min-width: $bp-nonMobile) {
 				margin-bottom: 24px;
@@ -81,7 +79,6 @@
 
 		.googlesitekit-setup-module--adsense__stage-caption--current--enter,
 		.googlesitekit-setup-module--adsense__stage-caption--current--leave {
-			opacity: 1;
 
 			.googlesitekit-setup-module--adsense__stage-caption-indicator {
 				// Provide a solid background colour for the animated "progress
@@ -99,7 +96,33 @@
 			}
 		}
 
-		@keyframes captionin {
+		@keyframes fade-in {
+
+			0% {
+				opacity: 0;
+			}
+
+			50% {
+				opacity: 1;
+			}
+
+			100% {
+				opacity: 1;
+			}
+		}
+
+		@keyframes fade-out {
+
+			from {
+				opacity: 1;
+			}
+
+			to {
+				opacity: 0;
+			}
+		}
+
+		@keyframes caption-indicator-enter {
 
 			from {
 				background-size: 100% 0%;
@@ -110,7 +133,7 @@
 			}
 		}
 
-		@keyframes captionout {
+		@keyframes caption-indicator-leave {
 
 			from {
 				background-size: 100% 100%;
@@ -122,17 +145,27 @@
 		}
 
 		.googlesitekit-setup-module--adsense__stage-caption--current--enter {
+			animation: fade-in 5s linear forwards;
+
+			@media (min-width: $bp-nonMobile) {
+				animation: none;
+			}
 
 			.googlesitekit-setup-module--adsense__stage-caption-indicator {
-				animation: captionin 1.5s linear forwards;
+				animation: caption-indicator-enter 1.5s linear forwards;
 				background-position: 0% 0%;
 			}
 		}
 
 		.googlesitekit-setup-module--adsense__stage-caption--current--leave {
+			animation: fade-out 2.5s linear forwards;
+
+			@media (min-width: $bp-nonMobile) {
+				animation: none;
+			}
 
 			.googlesitekit-setup-module--adsense__stage-caption-indicator {
-				animation: captionout 1.5s linear forwards;
+				animation: caption-indicator-leave 1.5s linear forwards;
 				background-position: 0% 100%;
 			}
 		}
@@ -175,38 +208,12 @@
 			}
 		}
 
-		@keyframes fadein {
-
-			0% {
-				opacity: 0;
-			}
-
-			50% {
-				opacity: 1;
-			}
-
-			100% {
-				opacity: 1;
-			}
-		}
-
-		@keyframes fadeout {
-
-			from {
-				opacity: 1;
-			}
-
-			to {
-				opacity: 0;
-			}
-		}
-
 		.googlesitekit-setup-module--adsense__stage-image--current--enter {
-			animation: fadein 5s linear forwards;
+			animation: fade-in 5s linear forwards;
 		}
 
 		.googlesitekit-setup-module--adsense__stage-image--current--leave {
-			animation: fadeout 2.5s linear forwards;
+			animation: fade-out 2.5s linear forwards;
 		}
 
 		.googlesitekit-setup-module--adsense__stage-indicator {
@@ -226,28 +233,6 @@
 				height: 2px;
 				width: 26px;
 
-				@keyframes indicatorin {
-
-					from {
-						background-size: 0% 100%;
-					}
-
-					to {
-						background-size: 100% 100%;
-					}
-				}
-
-				@keyframes indicatorout {
-
-					from {
-						background-size: 100% 100%;
-					}
-
-					to {
-						background-size: 0% 100%;
-					}
-				}
-
 				&.googlesitekit-setup-module--adsense__stage-indicator--current--enter,
 				&.googlesitekit-setup-module--adsense__stage-indicator--current--leave {
 					// Provide a solid background colour for the animated "progress
@@ -256,14 +241,36 @@
 					background-repeat: no-repeat;
 				}
 
+				@keyframes indicator-enter {
+
+					from {
+						background-size: 0% 100%;
+					}
+
+					to {
+						background-size: 100% 100%;
+					}
+				}
+
+				@keyframes indicator-leave {
+
+					from {
+						background-size: 100% 100%;
+					}
+
+					to {
+						background-size: 0% 100%;
+					}
+				}
+
 				&.googlesitekit-setup-module--adsense__stage-indicator--current--enter {
-					animation: indicatorin 1.5s linear forwards;
+					animation: indicator-enter 1.5s linear forwards;
 					background-position: 0% 0%;
 
 				}
 
 				&.googlesitekit-setup-module--adsense__stage-indicator--current--leave {
-					animation: indicatorout 1.5s linear forwards;
+					animation: indicator-leave 1.5s linear forwards;
 					background-position: 100% 0%;
 				}
 			}
