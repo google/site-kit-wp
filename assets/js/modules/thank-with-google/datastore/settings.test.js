@@ -1,5 +1,5 @@
 /**
- * `modules/subscribe-with-google` data store: settings tests.
+ * `modules/thank-with-google` data store: settings tests.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -30,14 +30,14 @@ import { createCacheKey } from '../../../googlesitekit/api';
 import { getItem, setItem } from '../../../googlesitekit/api/cache';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
-import { STORE_NAME } from './constants';
+import { MODULES_THANK_WITH_GOOGLE } from './constants';
 import {
 	INVARIANT_INVALID_PRODUCTS,
 	INVARIANT_INVALID_PUBLICATION_ID,
 	INVARIANT_INVALID_REVENUE_MODEL,
 } from './settings';
 
-describe( 'modules/subscribe-with-google settings', () => {
+describe( 'modules/thank-with-google settings', () => {
 	let registry;
 
 	const defaultSettings = {
@@ -58,7 +58,7 @@ describe( 'modules/subscribe-with-google settings', () => {
 		data: { status: 500 },
 	};
 
-	const fetchPattern = /^\/google-site-kit\/v1\/modules\/subscribe-with-google\/data\/settings/;
+	const fetchPattern = /^\/google-site-kit\/v1\/modules\/thank-with-google\/data\/settings/;
 
 	beforeAll( () => {
 		API.setUsingCache( false );
@@ -79,26 +79,34 @@ describe( 'modules/subscribe-with-google settings', () => {
 	describe( 'actions', () => {
 		describe( 'submitChanges', () => {
 			it( 'dispatches saveSettings', async () => {
-				registry.dispatch( STORE_NAME ).setSettings( validSettings );
+				registry
+					.dispatch( MODULES_THANK_WITH_GOOGLE )
+					.setSettings( validSettings );
 
 				fetchMock.postOnce( fetchPattern, {
 					body: validSettings,
 					status: 200,
 				} );
 
-				await registry.dispatch( STORE_NAME ).submitChanges();
+				await registry
+					.dispatch( MODULES_THANK_WITH_GOOGLE )
+					.submitChanges();
 
 				expect( fetchMock ).toHaveFetched( fetchPattern, {
 					body: { data: validSettings },
 				} );
 
 				expect(
-					registry.select( STORE_NAME ).haveSettingsChanged()
+					registry
+						.select( MODULES_THANK_WITH_GOOGLE )
+						.haveSettingsChanged()
 				).toBe( false );
 			} );
 
 			it( 'returns an error if saveSettings fails', async () => {
-				registry.dispatch( STORE_NAME ).setSettings( validSettings );
+				registry
+					.dispatch( MODULES_THANK_WITH_GOOGLE )
+					.setSettings( validSettings );
 
 				fetchMock.postOnce( fetchPattern, {
 					body: WPError,
@@ -106,7 +114,7 @@ describe( 'modules/subscribe-with-google settings', () => {
 				} );
 
 				const result = await registry
-					.dispatch( STORE_NAME )
+					.dispatch( MODULES_THANK_WITH_GOOGLE )
 					.submitChanges();
 
 				expect( fetchMock ).toHaveFetched( fetchPattern, {
@@ -117,18 +125,22 @@ describe( 'modules/subscribe-with-google settings', () => {
 			} );
 
 			it( 'invalidates module cache on success', async () => {
-				registry.dispatch( STORE_NAME ).setSettings( validSettings );
+				registry
+					.dispatch( MODULES_THANK_WITH_GOOGLE )
+					.setSettings( validSettings );
 
 				muteFetch( fetchPattern );
 				const cacheKey = createCacheKey(
 					'modules',
-					'subscribe-with-google',
+					'thank-with-google',
 					'arbitrary-datapoint'
 				);
 				expect( await setItem( cacheKey, 'test-value' ) ).toBe( true );
 				expect( ( await getItem( cacheKey ) ).value ).not.toBeFalsy();
 
-				await registry.dispatch( STORE_NAME ).submitChanges();
+				await registry
+					.dispatch( MODULES_THANK_WITH_GOOGLE )
+					.submitChanges();
 
 				expect( ( await getItem( cacheKey ) ).value ).toBeFalsy();
 			} );
@@ -139,26 +151,36 @@ describe( 'modules/subscribe-with-google settings', () => {
 		describe( 'isDoingSubmitChanges', () => {
 			it( 'returns true while submitting changes', async () => {
 				registry
-					.dispatch( STORE_NAME )
+					.dispatch( MODULES_THANK_WITH_GOOGLE )
 					.receiveGetSettings( validSettings );
 
 				expect(
-					registry.select( STORE_NAME ).haveSettingsChanged()
+					registry
+						.select( MODULES_THANK_WITH_GOOGLE )
+						.haveSettingsChanged()
 				).toBe( false );
 				expect(
-					registry.select( STORE_NAME ).isDoingSubmitChanges()
+					registry
+						.select( MODULES_THANK_WITH_GOOGLE )
+						.isDoingSubmitChanges()
 				).toBe( false );
 
-				const promise = registry.dispatch( STORE_NAME ).submitChanges();
+				const promise = registry
+					.dispatch( MODULES_THANK_WITH_GOOGLE )
+					.submitChanges();
 
 				expect(
-					registry.select( STORE_NAME ).isDoingSubmitChanges()
+					registry
+						.select( MODULES_THANK_WITH_GOOGLE )
+						.isDoingSubmitChanges()
 				).toBe( true );
 
 				await promise;
 
 				expect(
-					registry.select( STORE_NAME ).isDoingSubmitChanges()
+					registry
+						.select( MODULES_THANK_WITH_GOOGLE )
+						.isDoingSubmitChanges()
 				).toBe( false );
 			} );
 		} );
@@ -168,60 +190,86 @@ describe( 'modules/subscribe-with-google settings', () => {
 				// Preload default settings to prevent the resolver from making unexpected requests
 				// as this is covered in settings store tests.
 				registry
-					.dispatch( STORE_NAME )
+					.dispatch( MODULES_THANK_WITH_GOOGLE )
 					.receiveGetSettings( defaultSettings );
 
 				registry
 					.dispatch( CORE_SITE )
 					.receiveSiteInfo( { ampMode: false } );
-				registry.dispatch( STORE_NAME ).setSettings( validSettings );
+				registry
+					.dispatch( MODULES_THANK_WITH_GOOGLE )
+					.setSettings( validSettings );
 				registry
 					.dispatch( CORE_MODULES )
 					.receiveGetModules( defaultModules );
 			} );
 
 			it( 'requires a valid publicationID', () => {
-				expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe(
-					true
-				);
+				expect(
+					registry
+						.select( MODULES_THANK_WITH_GOOGLE )
+						.canSubmitChanges()
+				).toBe( true );
 
-				registry.dispatch( STORE_NAME ).setPublicationID( '!' );
+				registry
+					.dispatch( MODULES_THANK_WITH_GOOGLE )
+					.setPublicationID( '!' );
 
-				expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe(
-					false
-				);
+				expect(
+					registry
+						.select( MODULES_THANK_WITH_GOOGLE )
+						.canSubmitChanges()
+				).toBe( false );
 				expect( () =>
-					registry.select( STORE_NAME ).__dangerousCanSubmitChanges()
+					registry
+						.select( MODULES_THANK_WITH_GOOGLE )
+						.__dangerousCanSubmitChanges()
 				).toThrow( INVARIANT_INVALID_PUBLICATION_ID );
 			} );
 
 			it( 'requires a valid products list', () => {
-				expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe(
-					true
-				);
+				expect(
+					registry
+						.select( MODULES_THANK_WITH_GOOGLE )
+						.canSubmitChanges()
+				).toBe( true );
 
-				registry.dispatch( STORE_NAME ).setProducts( [] );
+				registry
+					.dispatch( MODULES_THANK_WITH_GOOGLE )
+					.setProducts( [] );
 
-				expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe(
-					false
-				);
+				expect(
+					registry
+						.select( MODULES_THANK_WITH_GOOGLE )
+						.canSubmitChanges()
+				).toBe( false );
 				expect( () =>
-					registry.select( STORE_NAME ).__dangerousCanSubmitChanges()
+					registry
+						.select( MODULES_THANK_WITH_GOOGLE )
+						.__dangerousCanSubmitChanges()
 				).toThrow( INVARIANT_INVALID_PRODUCTS );
 			} );
 
 			it( 'requires a valid revenue model', () => {
-				expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe(
-					true
-				);
+				expect(
+					registry
+						.select( MODULES_THANK_WITH_GOOGLE )
+						.canSubmitChanges()
+				).toBe( true );
 
-				registry.dispatch( STORE_NAME ).setRevenueModel( '' );
+				registry
+					.dispatch( MODULES_THANK_WITH_GOOGLE )
+					.setRevenueModel( '' );
 
-				expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe(
-					false
-				);
+				expect(
+					registry
+						.select( MODULES_THANK_WITH_GOOGLE )
+						.canSubmitChanges()
+				).toBe( false );
 				expect( () =>
-					registry.select( STORE_NAME ).__dangerousCanSubmitChanges()
+					registry
+						.select( MODULES_THANK_WITH_GOOGLE )
+						.__dangerousCanSubmitChanges()
 				).toThrow( INVARIANT_INVALID_REVENUE_MODEL );
 			} );
 		} );

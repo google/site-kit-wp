@@ -1,5 +1,5 @@
 /**
- * Subscribe with Google settings components.
+ * Thank with Google Setup components.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -16,6 +16,5 @@
  * limitations under the License.
  */
 
-export { default as SettingsEdit } from './SettingsEdit';
-export { default as SettingsForm } from './SettingsForm';
-export { default as SettingsView } from './SettingsView';
+export { default as SetupForm } from './SetupForm';
+export { default as SetupMain } from './SetupMain';

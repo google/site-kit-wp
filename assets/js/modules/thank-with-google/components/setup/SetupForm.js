@@ -1,5 +1,5 @@
 /**
- * Subscribe with Google Setup Form component.
+ * Thank with Google Setup Form component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -33,7 +33,7 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import Button from '../../../../components/Button';
-import { STORE_NAME } from '../../datastore/constants';
+import { MODULES_THANK_WITH_GOOGLE } from '../../datastore/constants';
 import {
 	ProductsInput,
 	PublicationIDInput,
@@ -44,11 +44,11 @@ const { useDispatch, useSelect } = Data;
 export default function SetupForm( { finishSetup } ) {
 	// Get validation function.
 	const canSubmitChanges = useSelect( ( select ) =>
-		select( STORE_NAME ).canSubmitChanges()
+		select( MODULES_THANK_WITH_GOOGLE ).canSubmitChanges()
 	);
 
 	// Handle form submissions.
-	const { submitChanges } = useDispatch( STORE_NAME );
+	const { submitChanges } = useDispatch( MODULES_THANK_WITH_GOOGLE );
 	const submitForm = useCallback(
 		( e ) => {
 			e.preventDefault();
@@ -64,8 +64,8 @@ export default function SetupForm( { finishSetup } ) {
 			onSubmit={ submitForm }
 		>
 			<StoreErrorNotices
-				moduleSlug="subscribe-with-google"
-				storeName={ STORE_NAME }
+				moduleSlug="thank-with-google"
+				storeName={ MODULES_THANK_WITH_GOOGLE }
 			/>
 
 			<div className="googlesitekit-setup-module__inputs">
@@ -82,10 +82,7 @@ export default function SetupForm( { finishSetup } ) {
 
 			<div className="googlesitekit-setup-module__action">
 				<Button disabled={ ! canSubmitChanges }>
-					{ __(
-						'Configure Subscribe with Google',
-						'google-site-kit'
-					) }
+					{ __( 'Configure Thank with Google', 'google-site-kit' ) }
 				</Button>
 			</div>
 		</form>

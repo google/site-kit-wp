@@ -1,5 +1,5 @@
 /**
- * Subscribe with Google common components.
+ * Thank with Google module entrypoint.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -16,6 +16,12 @@
  * limitations under the License.
  */
 
-export { default as ProductsInput } from './ProductsInput';
-export { default as PublicationIDInput } from './PublicationIDInput';
-export { default as RevenueModelDropdown } from './RevenueModelDropdown';
+/**
+ * Internal dependencies
+ */
+import Data from 'googlesitekit-data';
+import Modules from 'googlesitekit-modules';
+import { registerStore, registerModule } from './modules/thank-with-google';
+
+registerStore( Data );
+registerModule( Modules );

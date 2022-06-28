@@ -1,5 +1,5 @@
 /**
- * `modules/subscribe-with-google` data store constants.
+ * Thank with Google common components.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -16,5 +16,6 @@
  * limitations under the License.
  */
 
-export const STORE_NAME = 'modules/subscribe-with-google';
-export { STORE_NAME as MODULES_SUBSCRIBE_WITH_GOOGLE };
+export { default as ProductsInput } from './ProductsInput';
+export { default as PublicationIDInput } from './PublicationIDInput';
+export { default as RevenueModelDropdown } from './RevenueModelDropdown';

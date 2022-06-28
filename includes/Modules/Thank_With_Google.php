@@ -105,7 +105,7 @@ final class Thank_With_Google extends Module
 		return array(
 			'slug'        => 'thank-with-google',
 			'name'        => _x( 'Thank with Google', 'Service name', 'google-site-kit' ),
-			'description' => __( 'Generate revenue through your content by adding subscriptions or contributions to your publication', 'google-site-kit' ),
+			'description' => __( 'Let your supporters show appreciation of your work through virtual stickers and personal messages', 'google-site-kit' ),
 			'order'       => 7,
 			'homepage'    => __( 'https://publishercenter.google.com/', 'google-site-kit' ),
 		);
@@ -134,9 +134,9 @@ final class Thank_With_Google extends Module
 
 		return array(
 			new Script(
-				'googlesitekit-modules-subscribe-with-google',
+				'googlesitekit-modules-thank-with-google',
 				array(
-					'src'          => $base_url . 'js/googlesitekit-modules-subscribe-with-google.js',
+					'src'          => $base_url . 'js/googlesitekit-modules-thank-with-google.js',
 					'dependencies' => array(
 						'googlesitekit-api',
 						'googlesitekit-data',

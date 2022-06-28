@@ -31,7 +31,7 @@ import * as modulesOptimize from '../../assets/js/modules/optimize';
 import * as modulesPageSpeedInsights from '../../assets/js/modules/pagespeed-insights';
 import * as modulesSearchConsole from '../../assets/js/modules/search-console';
 import * as modulesTagManager from '../../assets/js/modules/tagmanager';
-import * as modulesSubscribeWithGoogle from '../../assets/js/modules/subscribe-with-google';
+import * as modulesThankWithGoogle from '../../assets/js/modules/thank-with-google';
 import { CORE_SITE } from '../../assets/js/googlesitekit/datastore/site/constants';
 import {
 	PERMISSION_AUTHENTICATE,
@@ -65,7 +65,7 @@ const allCoreModules = [
 	modulesPageSpeedInsights,
 	modulesSearchConsole,
 	modulesTagManager,
-	modulesSubscribeWithGoogle,
+	modulesThankWithGoogle,
 ];
 
 /**

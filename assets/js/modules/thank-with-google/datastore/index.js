@@ -1,5 +1,5 @@
 /**
- * `modules/subscribe-with-google` data store
+ * `modules/thank-with-google` data store
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -21,12 +21,12 @@
  */
 import Data from 'googlesitekit-data';
 import { createSnapshotStore } from '../../../googlesitekit/data/create-snapshot-store';
-import { STORE_NAME } from './constants';
+import { MODULES_THANK_WITH_GOOGLE } from './constants';
 import baseModuleStore from './base';
 
 const store = Data.combineStores(
 	baseModuleStore,
-	createSnapshotStore( STORE_NAME )
+	createSnapshotStore( MODULES_THANK_WITH_GOOGLE )
 );
 
 export const {
@@ -39,7 +39,7 @@ export const {
 } = store;
 
 export const registerStore = ( registry ) => {
-	registry.registerStore( STORE_NAME, store );
+	registry.registerStore( MODULES_THANK_WITH_GOOGLE, store );
 };
 
 export default store;

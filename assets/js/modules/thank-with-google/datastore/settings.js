@@ -1,5 +1,5 @@
 /**
- * `modules/subscribe-with-google` data store: settings.
+ * `modules/thank-with-google` data store: settings.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -25,7 +25,7 @@ import invariant from 'invariant';
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import { STORE_NAME } from './constants';
+import { MODULES_THANK_WITH_GOOGLE } from './constants';
 import {
 	INVARIANT_DOING_SUBMIT_CHANGES,
 	INVARIANT_SETTINGS_NOT_CHANGED,
@@ -47,15 +47,17 @@ export const INVARIANT_INVALID_REVENUE_MODEL =
 export async function submitChanges( { select, dispatch } ) {
 	// This action shouldn't be called if settings haven't changed,
 	// but this prevents errors in tests.
-	if ( select( STORE_NAME ).haveSettingsChanged() ) {
-		const { error } = await dispatch( STORE_NAME ).saveSettings();
+	if ( select( MODULES_THANK_WITH_GOOGLE ).haveSettingsChanged() ) {
+		const { error } = await dispatch(
+			MODULES_THANK_WITH_GOOGLE
+		).saveSettings();
 
 		if ( error ) {
 			return { error };
 		}
 	}
 
-	await API.invalidateCache( 'modules', 'subscribe-with-google' );
+	await API.invalidateCache( 'modules', 'thank-with-google' );
 
 	return {};
 }
@@ -71,7 +73,7 @@ export function validateCanSubmitChanges( select ) {
 		getProducts,
 		getPublicationID,
 		getRevenueModel,
-	} = strictSelect( STORE_NAME );
+	} = strictSelect( MODULES_THANK_WITH_GOOGLE );
 
 	// Note: these error messages are referenced in test assertions.
 	invariant( ! isDoingSubmitChanges(), INVARIANT_DOING_SUBMIT_CHANGES );

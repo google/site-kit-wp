@@ -19,7 +19,7 @@
 /**
  * Checks if the given publication ID appears to be a valid.
  *
- * @since 1.41.0
+ * @since n.e.x.t
  *
  * @param {string} publicationID Publication ID to test.
  * @return {boolean} `true` if the given publication ID is valid, `false` otherwise.
@@ -34,7 +34,7 @@ export function isValidPublicationID( publicationID ) {
 /**
  * Checks if the given products string appears to be a valid.
  *
- * @since 1.41.0
+ * @since n.e.x.t
  *
  * @param {string[]} products Products to test.
  * @return {boolean} `true` if the given products list is valid, `false` otherwise.
@@ -50,7 +50,7 @@ export function isValidProducts( products ) {
 /**
  * Checks if the given revenue model appears to be a valid.
  *
- * @since 1.45.0
+ * @since n.e.x.t
  *
  * @param {string} revenueModel Revenue model to test.
  * @return {boolean} `true` if the given revenue model is valid, `false` otherwise.

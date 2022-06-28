@@ -1,5 +1,5 @@
 /**
- * Subscribe with Google Settings Edit component.
+ * Thank with Google Settings Edit component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -21,20 +21,21 @@
  */
 import Data from 'googlesitekit-data';
 import ProgressBar from '../../../../components/ProgressBar';
-import { STORE_NAME } from '../../datastore/constants';
+import { MODULES_THANK_WITH_GOOGLE } from '../../datastore/constants';
 import SettingsForm from './SettingsForm';
 const { useSelect } = Data;
 
 export default function SettingsEdit() {
 	const isLoading = useSelect(
 		( select ) =>
-			select( STORE_NAME ).getProducts() === undefined &&
-			select( STORE_NAME ).getPublicationID() === undefined &&
-			select( STORE_NAME ).getRevenueModel() === undefined
+			select( MODULES_THANK_WITH_GOOGLE ).getProducts() === undefined &&
+			select( MODULES_THANK_WITH_GOOGLE ).getPublicationID() ===
+				undefined &&
+			select( MODULES_THANK_WITH_GOOGLE ).getRevenueModel() === undefined
 	);
 
 	const isDoingSubmitChanges = useSelect( ( select ) =>
-		select( STORE_NAME ).isDoingSubmitChanges()
+		select( MODULES_THANK_WITH_GOOGLE ).isDoingSubmitChanges()
 	);
 
 	let viewComponent;
@@ -45,7 +46,7 @@ export default function SettingsEdit() {
 	}
 
 	return (
-		<div className="googlesitekit-setup-module googlesitekit-setup-module--subscribe-with-google">
+		<div className="googlesitekit-setup-module googlesitekit-setup-module--thank-with-google">
 			{ viewComponent }
 		</div>
 	);
