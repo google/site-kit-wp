@@ -19,7 +19,6 @@
 .googlesitekit-plugin {
 
 	.googlesitekit-setup__wrapper--adsense-connect {
-		$bp-nonMobile: $width-tablet + 1 + px;
 
 		.googlesitekit-setup-module--adsense__stage-caption-container {
 			display: grid;
@@ -35,7 +34,6 @@
 		}
 
 		.googlesitekit-setup-module--adsense__stage-caption {
-
 			color: $c-subtle;
 			// Set each caption to the same grid cell to overlay them
 			// in order to fade in/out.
@@ -43,25 +41,9 @@
 			grid-row-start: 1;
 			margin: 0;
 			opacity: 0;
-
 			transition-duration: 2.5s;
 			transition-property: border-left, color, opacity;
 			transition-timing-function: ease-in-out;
-
-			h4 {
-				font-size: 18px;
-				font-weight: 400;
-				margin: 0 0 4px;
-
-				transition: inherit;
-			}
-
-			p {
-				font-size: 12px;
-				margin: 0;
-
-				transition: inherit;
-			}
 
 			@media (min-width: $bp-nonMobile) {
 				border-left: 1px solid rgba($c-black, 0.1);
@@ -69,10 +51,27 @@
 				opacity: 1;
 				padding-left: 20px;
 			}
+
+			h4 {
+				font-size: 18px;
+				font-weight: 400;
+				margin: 0 0 4px;
+				transition: inherit;
+			}
+
+			p {
+				font-size: 12px;
+				margin: 0;
+				transition: inherit;
+			}
 		}
 
 		.googlesitekit-setup-module--adsense__stage-caption--current {
 			opacity: 1;
+
+			@media (min-width: $bp-nonMobile) {
+				border-left: 1px solid $c-brand;
+			}
 
 			h4 {
 				color: $c-brand;
@@ -80,10 +79,6 @@
 
 			p {
 				color: $c-secondary;
-			}
-
-			@media (min-width: $bp-nonMobile) {
-				border-left: 1px solid $c-brand;
 			}
 		}
 
@@ -115,14 +110,14 @@
 			transition: opacity 2.5s ease-in-out;
 			width: 100%;
 
+			@media (min-width: $bp-nonMobile) {
+				justify-content: flex-end;
+			}
+
 			svg {
 				height: 100%;
 				max-height: 312px;
 				max-width: 100%;
-			}
-
-			@media (min-width: $bp-nonMobile) {
-				justify-content: flex-end;
 			}
 		}
 
@@ -137,6 +132,10 @@
 			justify-content: flex-start;
 			margin: 12px 0 20px;
 
+			@media (min-width: $bp-nonMobile) {
+				display: none;
+			}
+
 			li {
 				background-color: rgba($c-black, 0.1);
 				border-radius: 1px;
@@ -147,10 +146,6 @@
 				&.googlesitekit-setup-module--adsense__stage-indicator--current {
 					background-color: $c-brand;
 				}
-			}
-
-			@media (min-width: $bp-nonMobile) {
-				display: none;
 			}
 		}
 
@@ -166,15 +161,15 @@
 
 		.googlesitekit-setup-module__footer-text {
 
-			p {
-				font-size: 12px;
-				margin: 0;
-			}
-
 			@media (min-width: $bp-nonMobile) {
 				align-items: flex-end;
 				display: flex;
 				justify-content: flex-end;
+			}
+
+			p {
+				font-size: 12px;
+				margin: 0;
 			}
 		}
 	}
