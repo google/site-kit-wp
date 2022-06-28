@@ -35,6 +35,9 @@ describe( 'Footer', () => {
 			</ViewContextProvider>
 		);
 
+		expect( fetchMock ).not.toHaveFetched(
+			/^\/google-site-kit\/v1\/modules\/adsense\/data\/settings/
+		);
 		expect( container ).not.toHaveTextContent( 'AdSense' );
 		expect( container.firstChild ).toBeNull();
 	} );
@@ -51,6 +54,9 @@ describe( 'Footer', () => {
 			</ViewContextProvider>
 		);
 
+		expect( fetchMock ).toHaveFetched(
+			/^\/google-site-kit\/v1\/modules\/adsense\/data\/settings/
+		);
 		expect( container ).toHaveTextContent( 'AdSense' );
 		expect( container.firstChild ).not.toBeNull();
 	} );

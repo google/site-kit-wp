@@ -51,6 +51,9 @@ describe( 'Footer', () => {
 			</ViewContextProvider>
 		);
 
+		expect( fetchMock ).not.toHaveFetched(
+			/^\/google-site-kit\/v1\/modules\/search-console\/data\/settings/
+		);
 		expect( container ).not.toHaveTextContent( 'Search Console' );
 		expect( container.firstChild ).toBeNull();
 	} );
@@ -62,6 +65,9 @@ describe( 'Footer', () => {
 			</ViewContextProvider>
 		);
 
+		expect( fetchMock ).not.toHaveFetched(
+			/^\/google-site-kit\/v1\/modules\/analytics\/data\/settings/
+		);
 		expect( container ).not.toHaveTextContent( 'Analytics' );
 		expect( container.firstChild ).toBeNull();
 	} );
@@ -78,6 +84,9 @@ describe( 'Footer', () => {
 			</ViewContextProvider>
 		);
 
+		expect( fetchMock ).toHaveFetched(
+			/^\/google-site-kit\/v1\/modules\/search-console\/data\/settings/
+		);
 		expect( container ).toHaveTextContent( 'Search Console' );
 		expect( container.firstChild ).not.toBeNull();
 	} );
@@ -94,6 +103,9 @@ describe( 'Footer', () => {
 			</ViewContextProvider>
 		);
 
+		expect( fetchMock ).toHaveFetched(
+			/^\/google-site-kit\/v1\/modules\/analytics\/data\/settings/
+		);
 		expect( container ).toHaveTextContent( 'Analytics' );
 		expect( container.firstChild ).not.toBeNull();
 	} );
