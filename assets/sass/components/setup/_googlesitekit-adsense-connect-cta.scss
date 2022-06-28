@@ -84,11 +84,10 @@
 			opacity: 1;
 
 			.googlesitekit-setup-module--adsense__stage-caption-indicator {
-
-				@media (min-width: $bp-nonMobile) {
-					background-image: linear-gradient(0deg, $c-brand 0%, $c-brand 100%);
-					background-repeat: no-repeat;
-				}
+				// Provide a solid background colour for the animated "progress
+				// bar" aspect of the stage indicator.
+				background-image: linear-gradient(0deg, $c-brand 0%, $c-brand 100%);
+				background-repeat: no-repeat;
 			}
 
 			h4 {
@@ -225,11 +224,47 @@
 				background-color: rgba($c-black, 0.1);
 				border-radius: 1px;
 				height: 2px;
-				transition: background-color 2.5s ease-in-out;
 				width: 26px;
 
-				&.googlesitekit-setup-module--adsense__stage-indicator--current {
-					background-color: $c-brand;
+				@keyframes indicatorin {
+
+					from {
+						background-size: 0% 100%;
+					}
+
+					to {
+						background-size: 100% 100%;
+					}
+				}
+
+				@keyframes indicatorout {
+
+					from {
+						background-size: 100% 100%;
+					}
+
+					to {
+						background-size: 0% 100%;
+					}
+				}
+
+				&.googlesitekit-setup-module--adsense__stage-indicator--current--enter,
+				&.googlesitekit-setup-module--adsense__stage-indicator--current--leave {
+					// Provide a solid background colour for the animated "progress
+					// bar" aspect of the stage indicator.
+					background-image: linear-gradient(0deg, $c-brand 0%, $c-brand 100%);
+					background-repeat: no-repeat;
+				}
+
+				&.googlesitekit-setup-module--adsense__stage-indicator--current--enter {
+					animation: indicatorin 1.5s linear forwards;
+					background-position: 0% 0%;
+
+				}
+
+				&.googlesitekit-setup-module--adsense__stage-indicator--current--leave {
+					animation: indicatorout 1.5s linear forwards;
+					background-position: 100% 0%;
 				}
 			}
 		}

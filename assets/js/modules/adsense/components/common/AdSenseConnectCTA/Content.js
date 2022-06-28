@@ -123,7 +123,7 @@ const Content = forwardRef( ( { stage, mode, onAnimationEnd }, ref ) => {
 							<li
 								key={ index }
 								className={ classnames( {
-									'googlesitekit-setup-module--adsense__stage-indicator--current':
+									[ `googlesitekit-setup-module--adsense__stage-indicator--current--${ mode }` ]:
 										stage === index,
 								} ) }
 							/>
