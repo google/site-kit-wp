@@ -32,22 +32,12 @@ import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 const { useSelect } = Data;
 
 export default function SettingsView() {
-	const products = useSelect( ( select ) =>
-		select( MODULES_THANK_WITH_GOOGLE ).getProducts()
-	);
 	const publicationID = useSelect( ( select ) =>
 		select( MODULES_THANK_WITH_GOOGLE ).getPublicationID()
 	);
-	const revenueModel = useSelect( ( select ) =>
-		select( MODULES_THANK_WITH_GOOGLE ).getRevenueModel()
-	);
 
 	// Bail if the values aren't ready.
-	if (
-		products === undefined ||
-		publicationID === undefined ||
-		revenueModel === undefined
-	) {
+	if ( publicationID === undefined ) {
 		return null;
 	}
 
