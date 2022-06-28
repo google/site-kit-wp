@@ -24,16 +24,13 @@ import {
 	VIEW_CONTEXT_DASHBOARD,
 	VIEW_CONTEXT_DASHBOARD_VIEW_ONLY,
 } from '../../../../../googlesitekit/constants';
-import { Provider as ViewContextProvider } from '../../../../../components/Root/ViewContextContext';
 import Footer from './Footer';
 
 describe( 'Footer', () => {
 	it( 'should not make a adsense settings requests when the view context is "view only"', async () => {
-		const { container } = render(
-			<ViewContextProvider value={ VIEW_CONTEXT_DASHBOARD_VIEW_ONLY }>
-				<Footer />
-			</ViewContextProvider>
-		);
+		const { container } = render( <Footer />, {
+			viewContext: VIEW_CONTEXT_DASHBOARD_VIEW_ONLY,
+		} );
 
 		expect( fetchMock ).not.toHaveFetched(
 			/^\/google-site-kit\/v1\/modules\/adsense\/data\/settings/
@@ -48,11 +45,9 @@ describe( 'Footer', () => {
 			{ body: {}, status: 200 }
 		);
 
-		const { container } = render(
-			<ViewContextProvider value={ VIEW_CONTEXT_DASHBOARD }>
-				<Footer />
-			</ViewContextProvider>
-		);
+		const { container } = render( <Footer />, {
+			viewContext: VIEW_CONTEXT_DASHBOARD,
+		} );
 
 		expect( fetchMock ).toHaveFetched(
 			/^\/google-site-kit\/v1\/modules\/adsense\/data\/settings/

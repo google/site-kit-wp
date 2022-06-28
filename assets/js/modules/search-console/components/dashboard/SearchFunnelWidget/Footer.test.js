@@ -24,7 +24,6 @@ import {
 	VIEW_CONTEXT_DASHBOARD,
 	VIEW_CONTEXT_DASHBOARD_VIEW_ONLY,
 } from '../../../../../googlesitekit/constants';
-import { Provider as ViewContextProvider } from '../../../../../components/Root/ViewContextContext';
 import Footer from './Footer';
 
 describe( 'Footer', () => {
@@ -46,9 +45,10 @@ describe( 'Footer', () => {
 
 	it( 'should not make a search console settings requests when the view context is "view only"', async () => {
 		const { container } = render(
-			<ViewContextProvider value={ VIEW_CONTEXT_DASHBOARD_VIEW_ONLY }>
-				<Footer metrics={ metrics } selectedStats={ 0 } />
-			</ViewContextProvider>
+			<Footer metrics={ metrics } selectedStats={ 0 } />,
+			{
+				viewContext: VIEW_CONTEXT_DASHBOARD_VIEW_ONLY,
+			}
 		);
 
 		expect( fetchMock ).not.toHaveFetched(
@@ -60,9 +60,10 @@ describe( 'Footer', () => {
 
 	it( 'should not make a analytics settings requests when the view context is "view only"', async () => {
 		const { container } = render(
-			<ViewContextProvider value={ VIEW_CONTEXT_DASHBOARD_VIEW_ONLY }>
-				<Footer metrics={ metrics } selectedStats={ 1 } />
-			</ViewContextProvider>
+			<Footer metrics={ metrics } selectedStats={ 1 } />,
+			{
+				viewContext: VIEW_CONTEXT_DASHBOARD_VIEW_ONLY,
+			}
 		);
 
 		expect( fetchMock ).not.toHaveFetched(
@@ -79,9 +80,10 @@ describe( 'Footer', () => {
 		);
 
 		const { container } = render(
-			<ViewContextProvider value={ VIEW_CONTEXT_DASHBOARD }>
-				<Footer metrics={ metrics } selectedStats={ 0 } />
-			</ViewContextProvider>
+			<Footer metrics={ metrics } selectedStats={ 0 } />,
+			{
+				viewContext: VIEW_CONTEXT_DASHBOARD,
+			}
 		);
 
 		expect( fetchMock ).toHaveFetched(
@@ -98,9 +100,10 @@ describe( 'Footer', () => {
 		);
 
 		const { container } = render(
-			<ViewContextProvider value={ VIEW_CONTEXT_DASHBOARD }>
-				<Footer metrics={ metrics } selectedStats={ 1 } />
-			</ViewContextProvider>
+			<Footer metrics={ metrics } selectedStats={ 1 } />,
+			{
+				viewContext: VIEW_CONTEXT_DASHBOARD,
+			}
 		);
 
 		expect( fetchMock ).toHaveFetched(
