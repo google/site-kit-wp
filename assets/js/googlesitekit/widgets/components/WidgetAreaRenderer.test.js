@@ -94,14 +94,11 @@ describe( 'WidgetAreaRenderer', () => {
 	const areaName = 'gridcell-test';
 	let registry;
 
-	beforeEach( () => {
+	beforeEach( async () => {
 		registry = createTestRegistryWithArea( areaName );
 
-		provideModules( registry );
-		registry.dispatch( CORE_MODULES ).receiveRecoverableModules( [] );
-
 		const connection = { connected: true };
-		registry.dispatch( CORE_SITE ).receiveGetConnection( connection );
+		await registry.dispatch( CORE_SITE ).receiveGetConnection( connection );
 	} );
 
 	afterEach( () => {
@@ -633,8 +630,6 @@ describe( 'WidgetAreaRenderer', () => {
 			areaName,
 			WIDGET_AREA_STYLES.COMPOSITE
 		);
-		provideModules( registry );
-		registry.dispatch( CORE_MODULES ).receiveRecoverableModules( [] );
 		registry
 			.dispatch( CORE_SITE )
 			.receiveGetConnection( { connected: true } );
@@ -715,7 +710,8 @@ describe( 'WidgetAreaRenderer', () => {
 		).toHaveLength( 1 );
 	} );
 
-	it( 'should combine multiple widgets in RecoverableModules state with the same metadata into a single widget', async () => {
+	it( 'should combine multiple widgets in RecoverableModules state with the same metadata into a single widget', () => {
+		provideModules( registry );
 		registry
 			.dispatch( CORE_MODULES )
 			.receiveRecoverableModules( [ 'search-console' ] );
@@ -740,7 +736,11 @@ describe( 'WidgetAreaRenderer', () => {
 
 		const { container } = render(
 			<WidgetAreaRenderer slug={ areaName } />,
-			{ registry, viewContext: VIEW_CONTEXT_DASHBOARD_VIEW_ONLY }
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_DASHBOARD_VIEW_ONLY,
+				features: [ 'dashboardSharing' ],
+			}
 		);
 
 		const visibleWidgetSelector =

@@ -96,6 +96,7 @@ describe( 'WidgetRenderer', () => {
 				recoverableModules: [ 'search-console' ],
 			} ),
 			viewContext: VIEW_CONTEXT_DASHBOARD_VIEW_ONLY,
+			features: [ 'dashboardSharing' ],
 		} );
 
 		expect(
@@ -111,6 +112,7 @@ describe( 'WidgetRenderer', () => {
 				recoverableModules: [ 'search-console', 'pagespeed-insights' ],
 			} ),
 			viewContext: VIEW_CONTEXT_DASHBOARD_VIEW_ONLY,
+			features: [ 'dashboardSharing' ],
 		} );
 
 		expect(

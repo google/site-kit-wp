@@ -21,9 +21,7 @@
  */
 import WidgetContextRenderer from './WidgetContextRenderer';
 import { CORE_WIDGETS } from '../datastore/constants';
-import { CORE_MODULES } from '../../modules/datastore/constants';
 import {
-	provideModules,
 	createTestRegistry,
 	render,
 	waitFor,
@@ -42,9 +40,6 @@ describe( 'WidgetContextRenderer', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
-
-		provideModules( registry );
-		registry.dispatch( CORE_MODULES ).receiveRecoverableModules( [] );
 
 		// Register a widget area.
 		registry.dispatch( CORE_WIDGETS ).registerWidgetArea( 'TestArea1', {
