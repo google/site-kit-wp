@@ -70,15 +70,19 @@ final class Thank_With_Google extends Module
 			return false;
 		}
 
-		if ( ! $settings['products'] ) {
-			return false;
-		}
-
 		if ( ! $settings['publicationID'] ) {
 			return false;
 		}
 
-		if ( ! $settings['revenueModel'] ) {
+		if ( ! $settings['colorTheme'] ) {
+			return false;
+		}
+
+		if ( ! $settings['buttonPlacement'] ) {
+			return false;
+		}
+
+		if ( ! $settings['buttonPostTypes'] ) {
 			return false;
 		}
 
