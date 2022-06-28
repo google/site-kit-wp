@@ -35,14 +35,43 @@ const minStage = 0;
 const maxStage = 2;
 
 export default function ContentSwipeable() {
-	const [ stage, setStage ] = useState( 0 );
+	const [ { stage, mode, nextStage }, setContentState ] = useState( {
+		stage: 0,
+		mode: 'enter',
+		nextStage: 0,
+	} );
 
 	const { ref } = useSwipeable( {
 		onSwipedLeft: () =>
-			setStage( stage === maxStage ? minStage : stage + 1 ),
+			setContentState( {
+				stage,
+				mode: 'leave',
+				nextStage: nextStage === maxStage ? minStage : nextStage + 1,
+			} ),
 		onSwipedRight: () =>
-			setStage( stage === minStage ? maxStage : stage - 1 ),
+			setContentState( {
+				stage,
+				mode: 'leave',
+				nextStage: nextStage === minStage ? maxStage : nextStage - 1,
+			} ),
 	} );
 
-	return <Content stage={ stage } ref={ ref } />;
+	function onAnimationEnd() {
+		if ( mode === 'leave' ) {
+			setContentState( {
+				stage: nextStage,
+				mode: 'enter',
+				nextStage,
+			} );
+		}
+	}
+
+	return (
+		<Content
+			ref={ ref }
+			stage={ stage }
+			mode={ mode }
+			onAnimationEnd={ onAnimationEnd }
+		/>
+	);
 }

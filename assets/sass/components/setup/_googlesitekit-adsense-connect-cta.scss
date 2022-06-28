@@ -35,6 +35,7 @@
 
 		.googlesitekit-setup-module--adsense__stage-caption {
 			color: $c-subtle;
+			display: flex;
 			// Set each caption to the same grid cell to overlay them
 			// in order to fade in/out.
 			grid-column-start: 1;
@@ -42,35 +43,52 @@
 			margin: 0;
 			opacity: 0;
 			transition-duration: 2.5s;
-			transition-property: border-left, color, opacity;
+			transition-property: color, opacity;
 			transition-timing-function: ease-in-out;
 
 			@media (min-width: $bp-nonMobile) {
-				border-left: 1px solid rgba($c-black, 0.1);
 				margin-bottom: 24px;
 				opacity: 1;
-				padding-left: 20px;
+			}
+
+			.googlesitekit-setup-module--adsense__stage-caption-indicator {
+				align-self: stretch;
+				background-color: rgba($c-black, 0.1);
+				display: none;
+				margin-right: 20px;
+				width: 1px;
+
+				@media (min-width: $bp-nonMobile) {
+					display: block;
+				}
 			}
 
 			h4 {
 				font-size: 18px;
 				font-weight: 400;
 				margin: 0 0 4px;
-				transition: inherit;
 			}
 
 			p {
 				font-size: 12px;
 				margin: 0;
+			}
+
+			* {
 				transition: inherit;
 			}
 		}
 
-		.googlesitekit-setup-module--adsense__stage-caption--current {
+		.googlesitekit-setup-module--adsense__stage-caption--current--enter,
+		.googlesitekit-setup-module--adsense__stage-caption--current--leave {
 			opacity: 1;
 
-			@media (min-width: $bp-nonMobile) {
-				border-left: 1px solid $c-brand;
+			.googlesitekit-setup-module--adsense__stage-caption-indicator {
+
+				@media (min-width: $bp-nonMobile) {
+					background-image: linear-gradient(0deg, $c-brand 0%, $c-brand 100%);
+					background-repeat: no-repeat;
+				}
 			}
 
 			h4 {
@@ -79,6 +97,44 @@
 
 			p {
 				color: $c-secondary;
+			}
+		}
+
+		@keyframes captionin {
+
+			from {
+				background-size: 100% 0%;
+			}
+
+			to {
+				background-size: 100% 100%;
+			}
+		}
+
+		@keyframes captionout {
+
+			from {
+				background-size: 100% 100%;
+			}
+
+			to {
+				background-size: 100% 0%;
+			}
+		}
+
+		.googlesitekit-setup-module--adsense__stage-caption--current--enter {
+
+			.googlesitekit-setup-module--adsense__stage-caption-indicator {
+				animation: captionin 1.5s linear forwards;
+				background-position: 0% 0%;
+			}
+		}
+
+		.googlesitekit-setup-module--adsense__stage-caption--current--leave {
+
+			.googlesitekit-setup-module--adsense__stage-caption-indicator {
+				animation: captionout 1.5s linear forwards;
+				background-position: 0% 100%;
 			}
 		}
 
@@ -107,7 +163,6 @@
 			height: 100%;
 			justify-content: center;
 			opacity: 0;
-			transition: opacity 2.5s ease-in-out;
 			width: 100%;
 
 			@media (min-width: $bp-nonMobile) {
@@ -121,8 +176,38 @@
 			}
 		}
 
-		.googlesitekit-setup-module--adsense__stage-image--current {
-			opacity: 1;
+		@keyframes fadein {
+
+			0% {
+				opacity: 0;
+			}
+
+			50% {
+				opacity: 1;
+			}
+
+			100% {
+				opacity: 1;
+			}
+		}
+
+		@keyframes fadeout {
+
+			from {
+				opacity: 1;
+			}
+
+			to {
+				opacity: 0;
+			}
+		}
+
+		.googlesitekit-setup-module--adsense__stage-image--current--enter {
+			animation: fadein 5s linear forwards;
+		}
+
+		.googlesitekit-setup-module--adsense__stage-image--current--leave {
+			animation: fadeout 2.5s linear forwards;
 		}
 
 		.googlesitekit-setup-module--adsense__stage-indicator {

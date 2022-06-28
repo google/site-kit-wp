@@ -35,7 +35,7 @@ import { Row, Cell } from '../../../../../material-components';
 import ContentSVG from './ContentSVG';
 import AdSenseIcon from '../../../../../../svg/graphics/adsense.svg';
 
-const Content = forwardRef( ( { stage }, ref ) => {
+const Content = forwardRef( ( { stage, mode, onAnimationEnd }, ref ) => {
 	const stageContent = [
 		{
 			title: __( 'Earn money from your site', 'google-site-kit' ),
@@ -104,13 +104,16 @@ const Content = forwardRef( ( { stage }, ref ) => {
 									className={ classnames(
 										'googlesitekit-setup-module--adsense__stage-caption',
 										{
-											'googlesitekit-setup-module--adsense__stage-caption--current':
+											[ `googlesitekit-setup-module--adsense__stage-caption--current--${ mode }` ]:
 												stage === index,
 										}
 									) }
 								>
-									<h4>{ title }</h4>
-									<p>{ description }</p>
+									<div className="googlesitekit-setup-module--adsense__stage-caption-indicator" />
+									<div>
+										<h4>{ title }</h4>
+										<p>{ description }</p>
+									</div>
 								</li>
 							)
 						) }
@@ -141,10 +144,13 @@ const Content = forwardRef( ( { stage }, ref ) => {
 								className={ classnames(
 									'googlesitekit-setup-module--adsense__stage-image',
 									{
-										'googlesitekit-setup-module--adsense__stage-image--current':
+										[ `googlesitekit-setup-module--adsense__stage-image--current--${ mode }` ]:
 											stage === index,
 									}
 								) }
+								onAnimationEnd={
+									stage === index ? onAnimationEnd : undefined
+								}
 							>
 								<ContentSVG stage={ index } />
 							</div>
@@ -158,6 +164,8 @@ const Content = forwardRef( ( { stage }, ref ) => {
 
 Content.propTypes = {
 	stage: PropTypes.oneOf( [ 0, 1, 2 ] ),
+	mode: PropTypes.oneOf( [ 'enter', 'leave' ] ),
+	onAnimationEnd: PropTypes.func.isRequired,
 };
 
 export default Content;

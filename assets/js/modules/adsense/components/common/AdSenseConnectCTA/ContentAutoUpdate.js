@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { useEffect, useState } from '@wordpress/element';
+import { useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -30,16 +30,30 @@ const minStage = 0;
 const maxStage = 2;
 
 export default function ContentAutoUpdate() {
-	const [ stage, setStage ] = useState( 0 );
+	const [ { stage, mode }, setContentState ] = useState( {
+		stage: 0,
+		mode: 'enter',
+	} );
 
-	useEffect( () => {
-		const interval = setInterval( () => {
-			setStage( ( theStage ) =>
-				theStage === maxStage ? minStage : theStage + 1
-			);
-		}, 5000 );
-		return () => clearInterval( interval );
-	}, [] );
+	function onAnimationEnd() {
+		if ( mode === 'enter' ) {
+			setContentState( {
+				stage,
+				mode: 'leave',
+			} );
+		} else if ( mode === 'leave' ) {
+			setContentState( {
+				stage: stage === maxStage ? minStage : stage + 1,
+				mode: 'enter',
+			} );
+		}
+	}
 
-	return <Content stage={ stage } />;
+	return (
+		<Content
+			stage={ stage }
+			mode={ mode }
+			onAnimationEnd={ onAnimationEnd }
+		/>
+	);
 }
