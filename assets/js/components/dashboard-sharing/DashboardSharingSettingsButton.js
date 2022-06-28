@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import { useWindowScroll } from 'react-use';
+
+/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
@@ -25,6 +30,7 @@ import {
 	createInterpolateElement,
 	Fragment,
 	useCallback,
+	useEffect,
 	useState,
 } from '@wordpress/element';
 
@@ -42,6 +48,7 @@ import DashboardSharingSettings from './DashboardSharingSettings';
 import { trackEvent } from '../../util';
 import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { BREAKPOINT_SMALL, useBreakpoint } from '../../hooks/useBreakpoint';
 import { Dialog, DialogContent, DialogFooter } from '../../material-components';
 import { EDITING_USER_ROLE_SELECT_SLUG_KEY } from './DashboardSharingSettings/constants';
@@ -50,11 +57,15 @@ const { useSelect, useDispatch } = Data;
 export default function DashboardSharingSettingsButton() {
 	const viewContext = useViewContext();
 	const breakpoint = useBreakpoint();
+	const { y } = useWindowScroll();
 	const { setValue } = useDispatch( CORE_UI );
 	const [ dialogOpen, setDialogOpen ] = useState( false );
 
 	const hasMultipleAdmins = useSelect( ( select ) =>
 		select( CORE_SITE ).hasMultipleAdmins()
+	);
+	const haveSettingsChanged = useSelect( ( select ) =>
+		select( CORE_MODULES ).haveSharingSettingsChanged()
 	);
 
 	const openDialog = useCallback( () => {
@@ -73,6 +84,23 @@ export default function DashboardSharingSettingsButton() {
 		setValue( EDITING_USER_ROLE_SELECT_SLUG_KEY, undefined );
 	}, [ setValue ] );
 
+	// Rollback any temporary selections to saved values if settings have changed and modal is closed.
+	const { rollbackSharingSettings } = useDispatch( CORE_MODULES );
+	useEffect( () => {
+		if ( ! dialogOpen && haveSettingsChanged ) {
+			rollbackSharingSettings();
+		}
+	}, [ dialogOpen, haveSettingsChanged, rollbackSharingSettings ] );
+
+	const dialogStyles = {};
+	// On mobile, the dialog box's flexbox is set to stretch items within to cover
+	// the whole screen. But we have to move the box and adjust its height below the
+	// WP Admin bar of 46px which gradually scrolls off the screen.
+	if ( breakpoint === BREAKPOINT_SMALL ) {
+		dialogStyles.top = `${ y < 46 ? 46 - y : 0 }px`;
+		dialogStyles.height = `calc(100% - 46px + ${ y < 46 ? y : 46 }px)`;
+	}
+
 	return (
 		<Fragment>
 			<Button
@@ -87,6 +115,7 @@ export default function DashboardSharingSettingsButton() {
 					open={ dialogOpen }
 					onClose={ closeDialog }
 					className="googlesitekit-dialog googlesitekit-sharing-settings-dialog"
+					style={ dialogStyles }
 				>
 					<div
 						className="googlesitekit-dialog__back-wrapper"

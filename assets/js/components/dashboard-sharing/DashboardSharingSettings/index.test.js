@@ -184,40 +184,6 @@ describe( 'DashboardSharingSettings', () => {
 			).toBeInTheDocument();
 		} );
 
-		it( 'should set sharing management to `All Admins` and disabled if a module has shared ownership', () => {
-			provideModules( registry, modules );
-			provideModuleRegistrations( registry );
-			provideSiteConnection( registry, {
-				hasMultipleAdmins: true,
-			} );
-			provideUserInfo( registry );
-
-			registry
-				.dispatch( CORE_MODULES )
-				.receiveGetSharingSettings( sharingSettings );
-			registry.dispatch( CORE_MODULES ).receiveShareableRoles( roles );
-			registry
-				.dispatch( CORE_MODULES )
-				.receiveSharedOwnershipModules( [ 'search-console' ] );
-
-			registry.dispatch( CORE_USER ).receiveCapabilities( {
-				'googlesitekit_delegate_module_sharing_management::["search-console"]': true,
-				'googlesitekit_manage_module_sharing_options::["search-console"]': true,
-			} );
-			registry
-				.dispatch( MODULES_SEARCH_CONSOLE )
-				.receiveGetSettings( { ownerID: 1 } );
-
-			const { container } = render( <DashboardSharingSettings />, {
-				registry,
-			} );
-
-			expect( console ).not.toHaveErrored();
-			expect(
-				container.querySelector( '.mdc-select__native-control' )
-			).toBeDisabled();
-		} );
-
 		it( 'should disable other modules while editing user roles', () => {
 			provideModules( registry, modules );
 			provideModuleRegistrations( registry );

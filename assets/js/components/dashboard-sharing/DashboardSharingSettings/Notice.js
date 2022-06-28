@@ -26,32 +26,27 @@ import { createInterpolateElement } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
-import {
-	EDITING_MANAGEMENT_KEY,
-	EDITING_USER_ROLE_SELECT_SLUG_KEY,
-} from './constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 const { useSelect } = Data;
 
 export default function Notice() {
-	const editingUserRolesSlug = useSelect( ( select ) =>
-		select( CORE_UI ).getValue( EDITING_USER_ROLE_SELECT_SLUG_KEY )
-	);
-	const isEditingManagement = useSelect( ( select ) =>
-		select( CORE_UI ).getValue( EDITING_MANAGEMENT_KEY )
-	);
 	const canSubmitSharingChanges = useSelect( ( select ) =>
 		select( CORE_MODULES ).canSubmitSharingChanges()
+	);
+	const haveSharingSettingsChangedManagement = useSelect( ( select ) =>
+		select( CORE_MODULES ).haveSharingSettingsExpanded( 'management' )
+	);
+	const haveSharingSettingsChangedRoles = useSelect( ( select ) =>
+		select( CORE_MODULES ).haveSharingSettingsExpanded( 'sharedRoles' )
 	);
 
 	return (
 		<p className="googlesitekit-dashboard-sharing-settings__notice">
-			{ canSubmitSharingChanges &&
-				isEditingManagement &&
+			{ haveSharingSettingsChangedManagement &&
+				canSubmitSharingChanges &&
 				createInterpolateElement(
 					__(
-						'By clicking <strong>Apply</strong>, you are giving other admins permission to manage view-only access on your behalf to data from the Google services you selected “All Admins” for.',
+						'By clicking <strong>Apply</strong>, you will give other authenticated admins of your site permission to manage view-only access to Site Kit Dashboard data from the chosen Google service.',
 						'google-site-kit'
 					),
 					{
@@ -59,9 +54,9 @@ export default function Notice() {
 						strong: <strong />,
 					}
 				) }
-			{ ! isEditingManagement &&
+			{ ! haveSharingSettingsChangedManagement &&
 				canSubmitSharingChanges &&
-				editingUserRolesSlug &&
+				haveSharingSettingsChangedRoles &&
 				createInterpolateElement(
 					__(
 						'By clicking <strong>Apply</strong>, you’re granting the selected roles view-only access to data from the Google services you’ve connected via your account.',

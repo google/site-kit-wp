@@ -48,10 +48,13 @@ import {
 import { numFmt } from '../../../../util';
 import { getCurrencyFormat } from '../../util/currency';
 import { useFeature } from '../../../../hooks/useFeature';
+import useViewOnly from '../../../../hooks/useViewOnly';
 const { useSelect, useInViewSelect } = Data;
 
 function DashboardTopEarningPagesWidget( props ) {
-	const { Widget, WidgetReportZero, WidgetReportError } = props;
+	const { Widget, WidgetReportZero, WidgetReportError, WidgetNull } = props;
+
+	const isViewOnly = useViewOnly();
 
 	const zeroDataStates = useFeature( 'zeroDataStates' );
 
@@ -147,9 +150,13 @@ function DashboardTopEarningPagesWidget( props ) {
 		);
 	}
 
+	if ( ! isAdSenseLinked && isViewOnly ) {
+		return <WidgetNull />;
+	}
+
 	// A restricted metrics error will cause this value to change in the resolver
 	// so this check should happen before an error, which is only relevant if they are linked.
-	if ( ! isAdSenseLinked ) {
+	if ( ! isAdSenseLinked && ! isViewOnly ) {
 		return (
 			<Widget Footer={ Footer }>
 				<AdSenseLinkCTA />

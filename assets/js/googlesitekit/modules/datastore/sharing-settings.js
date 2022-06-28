@@ -41,6 +41,7 @@ const RECEIVE_GET_SHARING_SETTINGS = 'RECEIVE_GET_SHARING_SETTINGS';
 const RECEIVE_SHAREABLE_ROLES = 'RECEIVE_SHAREABLE_ROLES';
 const START_SUBMIT_SHARING_CHANGES = 'START_SUBMIT_SHARING_CHANGES';
 const FINISH_SUBMIT_SHARING_CHANGES = 'FINISH_SUBMIT_SHARING_CHANGES';
+const ROLLBACK_SHARING_SETTINGS = 'ROLLBACK_SHARING_SETTINGS';
 
 // Invariant error messages.
 export const INVARIANT_DOING_SUBMIT_SHARING_CHANGES =
@@ -224,6 +225,20 @@ const baseActions = {
 			type: RECEIVE_SHAREABLE_ROLES,
 		};
 	},
+
+	/**
+	 * Restores the sharing settings to the currently saved values.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {Object} Action for ROLLBACK_SHARING_SETTINGS.
+	 */
+	rollbackSharingSettings() {
+		return {
+			payload: {},
+			type: ROLLBACK_SHARING_SETTINGS,
+		};
+	},
 };
 
 const baseReducer = ( state, { type, payload } ) => {
@@ -288,6 +303,13 @@ const baseReducer = ( state, { type, payload } ) => {
 			return {
 				...state,
 				isDoingSubmitSharingChanges: false,
+			};
+		}
+
+		case ROLLBACK_SHARING_SETTINGS: {
+			return {
+				...state,
+				sharingSettings: state.savedSharingSettings,
 			};
 		}
 
@@ -455,6 +477,63 @@ const baseSelectors = {
 		}
 
 		return ! isEqual( sharingSettings, savedSharingSettings );
+	},
+
+	/**
+	 * Compares current sharing settings management OR sharedRoles have changed from what is saved.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @param {string} key   Sharing Settings property key to check; one of `management` | `sharedRoles`.
+	 * @return {boolean|undefined} True if the sharing settings have changed, false otherwise, `undefined` if not yet loaded.
+	 */
+	haveSharingSettingsExpanded( state, key ) {
+		const validKeys = [ 'management', 'sharedRoles' ];
+		invariant(
+			validKeys.includes( key ),
+			`key must be one of: ${ validKeys.join( ', ' ) }.`
+		);
+		const { sharingSettings, savedSharingSettings } = state;
+
+		if (
+			sharingSettings === undefined ||
+			savedSharingSettings === undefined
+		) {
+			return undefined;
+		}
+
+		// Return `true` if the management setting for any module has been
+		// changed from `owner` to `all_admins`.
+		if ( key === 'management' ) {
+			return Object.keys( sharingSettings ).some( ( moduleSlug ) => {
+				const hasInitialManagementChanged =
+					savedSharingSettings[ moduleSlug ]?.management !==
+					sharingSettings[ moduleSlug ]?.management;
+
+				return (
+					hasInitialManagementChanged &&
+					sharingSettings[ moduleSlug ]?.management === 'all_admins'
+				);
+			} );
+		}
+
+		// Return `true` if sharing settings for any module contain roles
+		// that haven't been previously selected.
+		if ( key === 'sharedRoles' ) {
+			return Object.keys( sharingSettings ).some( ( moduleSlug ) => {
+				return (
+					sharingSettings[ moduleSlug ]?.sharedRoles?.filter(
+						( currentRole ) =>
+							! savedSharingSettings[
+								moduleSlug
+							]?.sharedRoles?.includes( currentRole )
+					).length > 0
+				);
+			} );
+		}
+
+		return false;
 	},
 
 	/**

@@ -170,15 +170,12 @@ export const GatheringDataZeroDataStates = Template.bind( {} );
 GatheringDataZeroDataStates.storyName = 'Gathering Data w/ zeroDataStates';
 GatheringDataZeroDataStates.args = {
 	setupRegistry: ( { dispatch } ) => {
-		dispatch( MODULES_ANALYTICS ).receiveGetReport(
-			{},
-			{
-				options: gatheringReportOptions,
-			}
-		);
+		dispatch( MODULES_ANALYTICS ).receiveGetReport( [], {
+			options: gatheringReportOptions,
+		} );
 
 		for ( const options of reportOptions ) {
-			dispatch( MODULES_ANALYTICS ).receiveGetReport( {}, { options } );
+			dispatch( MODULES_ANALYTICS ).receiveGetReport( [], { options } );
 		}
 	},
 };
@@ -191,15 +188,12 @@ GatheringDataZeroDataStatesDisabled.storyName =
 	'Gathering Data w/o zeroDataStates';
 GatheringDataZeroDataStatesDisabled.args = {
 	setupRegistry: ( { dispatch } ) => {
-		dispatch( MODULES_ANALYTICS ).receiveGetReport(
-			{},
-			{
-				options: gatheringReportOptions,
-			}
-		);
+		dispatch( MODULES_ANALYTICS ).receiveGetReport( [], {
+			options: gatheringReportOptions,
+		} );
 
 		for ( const options of reportOptions ) {
-			dispatch( MODULES_ANALYTICS ).receiveGetReport( {}, { options } );
+			dispatch( MODULES_ANALYTICS ).receiveGetReport( [], { options } );
 		}
 	},
 };
@@ -311,15 +305,12 @@ GatheringDataEntityURLZeroDataStates.storyName =
 	'Gathering w/ entity URL and zeroDataStates';
 GatheringDataEntityURLZeroDataStates.args = {
 	setupRegistry: ( { dispatch } ) => {
-		dispatch( MODULES_ANALYTICS ).receiveGetReport(
-			{},
-			{
-				options: gatheringReportOptions,
-			}
-		);
+		dispatch( MODULES_ANALYTICS ).receiveGetReport( [], {
+			options: gatheringReportOptions,
+		} );
 
 		for ( const options of reportOptions ) {
-			dispatch( MODULES_ANALYTICS ).receiveGetReport( {}, { options } );
+			dispatch( MODULES_ANALYTICS ).receiveGetReport( [], { options } );
 		}
 	},
 };
@@ -332,15 +323,12 @@ GatheringDataEntityURLZeroDataStatesDisabled.storyName =
 	'Gathering w/ entity URL and w/o zeroDataStates';
 GatheringDataEntityURLZeroDataStatesDisabled.args = {
 	setupRegistry: ( { dispatch } ) => {
-		dispatch( MODULES_ANALYTICS ).receiveGetReport(
-			{},
-			{
-				options: gatheringReportOptions,
-			}
-		);
+		dispatch( MODULES_ANALYTICS ).receiveGetReport( [], {
+			options: gatheringReportOptions,
+		} );
 
 		for ( const options of reportOptions ) {
-			dispatch( MODULES_ANALYTICS ).receiveGetReport( {}, { options } );
+			dispatch( MODULES_ANALYTICS ).receiveGetReport( [], { options } );
 		}
 	},
 };

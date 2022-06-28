@@ -26,7 +26,7 @@ use Google\Site_Kit\Modules\Optimize;
 use Google\Site_Kit\Modules\PageSpeed_Insights;
 use Google\Site_Kit\Modules\Search_Console;
 use Google\Site_Kit\Modules\Site_Verification;
-use Google\Site_Kit\Modules\Subscribe_With_Google;
+use Google\Site_Kit\Modules\Thank_With_Google;
 use Google\Site_Kit\Modules\Tag_Manager;
 use Google\Site_Kit\Tests\TestCase;
 use Google\Site_Kit\Tests\FakeHttpClient;
@@ -501,22 +501,22 @@ class ModulesTest extends TestCase {
 			$default_modules,
 		);
 
-		yield 'should include the `subscribe-with-google` module when enabled' => array(
+		yield 'should include the `thank-with-google` module when enabled' => array(
 			// Module feature flag.
-			'swgModule',
+			'twgModule',
 			// Module enabled or disabled
 			true,
-			Subscribe_With_Google::MODULE_SLUG,
+			Thank_With_Google::MODULE_SLUG,
 			// Expected
-			array_merge( $default_modules, array( Subscribe_With_Google::MODULE_SLUG ) ),
+			array_merge( $default_modules, array( Thank_With_Google::MODULE_SLUG ) ),
 		);
 
-		yield 'should not include the `subscribe-with-google` module when enabled' => array(
+		yield 'should not include the `thank-with-google` module when enabled' => array(
 			// Module feature flag.
-			'swgModule',
+			'twgModule',
 			// Module enabled or disabled
 			false,
-			Subscribe_With_Google::MODULE_SLUG,
+			Thank_With_Google::MODULE_SLUG,
 			// Expected
 			$default_modules,
 		);

@@ -110,12 +110,14 @@ const SearchFunnelWidget = ( {
 		} )
 	);
 
-	const analyticsGoalsData = useInViewSelect( ( select ) =>
-		isAnalyticsConnected ? select( MODULES_ANALYTICS ).getGoals() : {}
-	);
+	const analyticsGoalsData = useInViewSelect( ( select ) => {
+		return isAnalyticsConnected && canViewSharedAnalytics
+			? select( MODULES_ANALYTICS ).getGoals()
+			: {};
+	} );
 
 	const analyticsGoalsLoading = useSelect( ( select ) =>
-		isAnalyticsConnected
+		isAnalyticsConnected && canViewSharedAnalytics
 			? ! select( MODULES_ANALYTICS ).hasFinishedResolution(
 					'getGoals',
 					[]
@@ -187,7 +189,7 @@ const SearchFunnelWidget = ( {
 	);
 
 	const analyticsOverviewLoading = useSelect( ( select ) => {
-		if ( ! isAnalyticsConnected ) {
+		if ( ! isAnalyticsConnected || ! canViewSharedAnalytics ) {
 			return false;
 		}
 
@@ -197,7 +199,7 @@ const SearchFunnelWidget = ( {
 		);
 	} );
 	const analyticsOverviewData = useInViewSelect( ( select ) => {
-		if ( ! isAnalyticsConnected ) {
+		if ( ! isAnalyticsConnected || ! canViewSharedAnalytics ) {
 			return null;
 		}
 
@@ -214,7 +216,7 @@ const SearchFunnelWidget = ( {
 	} );
 
 	const analyticsStatsLoading = useSelect( ( select ) => {
-		if ( ! isAnalyticsConnected ) {
+		if ( ! isAnalyticsConnected || ! canViewSharedAnalytics ) {
 			return false;
 		}
 
@@ -224,7 +226,7 @@ const SearchFunnelWidget = ( {
 		);
 	} );
 	const analyticsStatsData = useInViewSelect( ( select ) => {
-		if ( ! isAnalyticsConnected ) {
+		if ( ! isAnalyticsConnected || ! canViewSharedAnalytics ) {
 			return null;
 		}
 
@@ -241,7 +243,7 @@ const SearchFunnelWidget = ( {
 	} );
 
 	const analyticsVisitorsOverviewAndStatsLoading = useSelect( ( select ) => {
-		if ( ! isAnalyticsConnected ) {
+		if ( ! isAnalyticsConnected || ! canViewSharedAnalytics ) {
 			return false;
 		}
 
@@ -252,7 +254,7 @@ const SearchFunnelWidget = ( {
 	} );
 	const analyticsVisitorsOverviewAndStatsData = useInViewSelect(
 		( select ) => {
-			if ( ! isAnalyticsConnected ) {
+			if ( ! isAnalyticsConnected || ! canViewSharedAnalytics ) {
 				return null;
 			}
 
@@ -272,7 +274,7 @@ const SearchFunnelWidget = ( {
 	} );
 
 	const isAnalyticsGatheringData = useInViewSelect( ( select ) =>
-		isAnalyticsConnected
+		isAnalyticsConnected && canViewSharedAnalytics
 			? select( MODULES_ANALYTICS ).isGatheringData()
 			: false
 	);
