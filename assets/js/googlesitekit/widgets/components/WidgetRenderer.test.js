@@ -20,7 +20,6 @@
  * Internal dependencies
  */
 import WidgetRenderer from './WidgetRenderer';
-import { Provider as ViewContextProvider } from '../../../components/Root/ViewContextContext';
 import { VIEW_CONTEXT_DASHBOARD_VIEW_ONLY } from '../../../googlesitekit/constants';
 import { CORE_MODULES } from '../../modules/datastore/constants';
 import { CORE_WIDGETS } from '../datastore/constants';
@@ -92,16 +91,12 @@ describe( 'WidgetRenderer', () => {
 	} );
 
 	it( 'should output the recoverable modules component when the widget depends on a recoverable module', async () => {
-		const { getByText } = render(
-			<ViewContextProvider value={ VIEW_CONTEXT_DASHBOARD_VIEW_ONLY }>
-				<WidgetRenderer slug="TestWidget" />
-			</ViewContextProvider>,
-			{
-				setupRegistry: setupRegistry( {
-					recoverableModules: [ 'search-console' ],
-				} ),
-			}
-		);
+		const { getByText } = render( <WidgetRenderer slug="TestWidget" />, {
+			setupRegistry: setupRegistry( {
+				recoverableModules: [ 'search-console' ],
+			} ),
+			viewContext: VIEW_CONTEXT_DASHBOARD_VIEW_ONLY,
+		} );
 
 		expect(
 			getByText(
@@ -111,23 +106,16 @@ describe( 'WidgetRenderer', () => {
 	} );
 
 	it( 'should output the recoverable modules component when the widget depends on multiple recoverable modules', async () => {
-		const { getByText } = render(
-			<ViewContextProvider value={ VIEW_CONTEXT_DASHBOARD_VIEW_ONLY }>
-				<WidgetRenderer slug="TestWidget" />
-			</ViewContextProvider>,
-			{
-				setupRegistry: setupRegistry( {
-					recoverableModules: [
-						'search-console',
-						'pagespeed-insights',
-					],
-				} ),
-			}
-		);
+		const { getByText } = render( <WidgetRenderer slug="TestWidget" />, {
+			setupRegistry: setupRegistry( {
+				recoverableModules: [ 'search-console', 'pagespeed-insights' ],
+			} ),
+			viewContext: VIEW_CONTEXT_DASHBOARD_VIEW_ONLY,
+		} );
 
 		expect(
 			getByText(
-				/The data for the following modules was previously shared by an admin who no longer has access: Search Console, PageSpeed Insights/
+				/The data for the following modules was previously shared by an admin who no longer has access: PageSpeed Insights, Search Console/
 			)
 		).toBeInTheDocument();
 	} );
