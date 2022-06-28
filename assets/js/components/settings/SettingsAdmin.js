@@ -82,22 +82,22 @@ export default function SettingsAdmin() {
 			{ userInputEnabled && (
 				<Cell size={ 12 }>
 					{ isUserInputCompleted && (
-						<Layout rounded>
+						<Layout
+							title={ __( 'Your site goals', 'google-site-kit' ) }
+							header
+							rounded
+						>
 							<div className="googlesitekit-settings-module googlesitekit-settings-module--active googlesitekit-settings-user-input">
 								<Grid>
 									<Row>
 										<Cell size={ 12 }>
-											<h3 className="googlesitekit-heading-4 googlesitekit-settings-module__title">
-												{ __(
-													'Your site goals',
-													'google-site-kit'
-												) }
-											</h3>
 											<p>
-												{ __(
-													'Based on your responses, Site Kit will show you metrics and suggestions that are specific to your site to help you achieve your goals',
-													'google-site-kit'
-												) }
+												<strong>
+													{ __(
+														'Based on your responses, Site Kit will show you metrics and suggestions that are specific to your site to help you achieve your goals',
+														'google-site-kit'
+													) }
+												</strong>
 											</p>
 										</Cell>
 									</Row>
@@ -114,18 +114,14 @@ export default function SettingsAdmin() {
 			) }
 
 			<Cell size={ 12 }>
-				<Layout rounded>
+				<Layout
+					title={ __( 'Plugin Status', 'google-site-kit' ) }
+					header
+					rounded
+				>
 					<div className="googlesitekit-settings-module googlesitekit-settings-module--active">
 						<Grid>
 							<Row>
-								<Cell size={ 12 }>
-									<h3 className="googlesitekit-heading-4 googlesitekit-settings-module__title">
-										{ __(
-											'Plugin Status',
-											'google-site-kit'
-										) }
-									</h3>
-								</Cell>
 								<Cell size={ 12 }>
 									<div className="googlesitekit-settings-module__meta-items">
 										<p className="googlesitekit-settings-module__status">

@@ -61,6 +61,7 @@
 		}
 
 		.googlesitekit-settings-module__content {
+			border-top: 1px solid $c-utility-divider;
 			display: none;
 
 			&--open {
@@ -90,7 +91,6 @@
 
 		.googlesitekit-settings-module__status {
 			align-items: center;
-			color: $c-utility-success;
 			display: flex;
 			font-size: $fs-body-md;
 			font-weight: $fw-medium;
@@ -104,6 +104,7 @@
 		}
 
 		.googlesitekit-settings-module__status-icon {
+			color: $c-utility-success;
 			margin-left: $grid-gap-phone;
 
 			&::before {

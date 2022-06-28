@@ -88,7 +88,7 @@
 		}
 
 		// Table headers within widgets with headers have smaller font size.
-		.googlesitekit-widget__header + .googlesitekit-widget__body & {
+		.googlesitekit-widget--with-header & {
 			font-size: $fs-title-sm;
 			line-height: $lh-title-sm;
 		}

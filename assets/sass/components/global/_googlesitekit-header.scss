@@ -63,10 +63,6 @@
 			}
 		}
 
-		body.site-kit_page_googlesitekit-settings & {
-			border-radius: 0 0 $br-sm $br-sm;
-		}
-
 		.googlesitekit-header__logo {
 			// prevent the logo from wrapping towards the tablet and mobile breakpoints
 			min-width: 150px;

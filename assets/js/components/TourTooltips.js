@@ -47,6 +47,10 @@ const joyrideStyles = {
 		overlayColor: 'rgba(0, 0, 0, 0.6)',
 		textColor: '#ebeef0', // $c-surfaces-inverse-on-surface
 	},
+	spotlight: {
+		border: '2px solid #3c7251', // $c-content-primary
+		backgroundColor: '#fff',
+	},
 };
 
 // Provides button content as well as aria-label & title attribute values.
