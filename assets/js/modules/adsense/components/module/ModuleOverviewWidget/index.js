@@ -51,7 +51,7 @@ const ModuleOverviewWidget = ( {
 	WidgetReportError,
 } ) => {
 	const [ selectedStats, setSelectedStats ] = useState( 0 );
-	const isAdsenceSetupV2 = useFeature( 'adsenseSetupV2' );
+	const adsenseSetupV2Enabled = useFeature( 'adsenseSetupV2' );
 
 	const {
 		startDate,
@@ -143,7 +143,7 @@ const ModuleOverviewWidget = ( {
 		);
 	}
 
-	if ( ! isAdsenceSetupV2 ) {
+	if ( ! adsenseSetupV2Enabled ) {
 		if (
 			isZeroReport( currentRangeData ) ||
 			isZeroReport( currentRangeChartData )
