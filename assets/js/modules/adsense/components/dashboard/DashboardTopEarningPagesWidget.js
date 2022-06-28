@@ -99,21 +99,23 @@ function DashboardTopEarningPagesWidget( props ) {
 		} )
 	);
 
-	const { error, loading, isAdSenseLinked, isAdblockerActive } = useSelect(
-		( select ) => {
-			return {
-				error: select(
-					MODULES_ANALYTICS
-				).getErrorForSelector( 'getReport', [ args ] ),
-				loading: ! select(
-					MODULES_ANALYTICS
-				).hasFinishedResolution( 'getReport', [ args ] ),
-				isAdSenseLinked: select( MODULES_ANALYTICS ).getAdsenseLinked(),
-				isAdblockerActive: select(
-					MODULES_ADSENSE
-				).isAdBlockerActive(),
-			};
-		}
+	const error = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [ args ] )
+	);
+
+	const loading = useSelect(
+		( select ) =>
+			! select( MODULES_ANALYTICS ).hasFinishedResolution( 'getReport', [
+				args,
+			] )
+	);
+
+	const isAdSenseLinked = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getAdsenseLinked()
+	);
+
+	const isAdblockerActive = useSelect( ( select ) =>
+		select( MODULES_ADSENSE ).isAdBlockerActive()
 	);
 
 	const currencyFormat = getCurrencyFormat( adsenseData );
