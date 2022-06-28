@@ -110,7 +110,7 @@ export default function SetupModule( { slug, name, description } ) {
 			>
 				{ name }
 
-				{ slug === 'idea-hub' && (
+				{ [ 'idea-hub', 'thank-with-google' ].includes( slug ) && (
 					<Badge
 						label={ __( 'Experimental', 'google-site-kit' ) }
 						className="googlesitekit-idea-hub__badge"

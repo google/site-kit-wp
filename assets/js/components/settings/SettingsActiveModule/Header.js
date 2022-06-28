@@ -98,7 +98,9 @@ export default function Header( { slug } ) {
 							/>
 							{ name }
 
-							{ slug === 'idea-hub' && (
+							{ [ 'idea-hub', 'thank-with-google' ].includes(
+								slug
+							) && (
 								<Badge
 									label={ __(
 										'Experimental',
