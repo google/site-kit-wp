@@ -55,6 +55,7 @@ class Debug_DataTest extends TestCase {
 				'verification_status',
 				'connected_user_count',
 				'active_modules',
+				'recoverable_modules',
 				'reference_url',
 				'search_console_property',
 				'required_scopes',

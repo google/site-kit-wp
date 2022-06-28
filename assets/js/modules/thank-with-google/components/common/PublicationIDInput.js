@@ -1,5 +1,5 @@
 /**
- * Subscribe with Google Revenue Model Input component.
+ * Thank with Google Publication ID Input component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -30,49 +30,46 @@ import { useCallback } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { REVENUE_MODELS } from '../../constants';
-import { STORE_NAME } from '../../datastore/constants';
-import { Option, Select } from '../../../../material-components';
-import { isValidRevenueModel } from '../../util/validation';
+import { MODULES_THANK_WITH_GOOGLE } from '../../datastore/constants';
+import { TextField, Input } from '../../../../material-components';
+import { isValidPublicationID } from '../../util/validation';
 const { useDispatch, useSelect } = Data;
 
-export default function RevenueModelDropdown() {
+export default function PublicationIDInput() {
 	// Get value.
-	const revenueModel = useSelect( ( select ) =>
-		select( STORE_NAME ).getRevenueModel()
+	const publicationID = useSelect( ( select ) =>
+		select( MODULES_THANK_WITH_GOOGLE ).getPublicationID()
 	);
 
 	// Handle form input.
-	const { setRevenueModel } = useDispatch( STORE_NAME );
+	const { setPublicationID } = useDispatch( MODULES_THANK_WITH_GOOGLE );
 	const onChange = useCallback(
-		( index ) => {
-			setRevenueModel( REVENUE_MODELS[ index ].value );
+		( { currentTarget } ) => {
+			setPublicationID( currentTarget.value.trim() );
 		},
-		[ setRevenueModel ]
+		[ setPublicationID ]
 	);
 
 	// Bail if the value isn't ready.
-	if ( revenueModel === undefined ) {
+	if ( publicationID === undefined ) {
 		return null;
 	}
 
 	return (
-		<Select
+		<TextField
 			className={ classnames( {
 				'mdc-text-field--error':
-					revenueModel && ! isValidRevenueModel( revenueModel ),
+					publicationID && ! isValidPublicationID( publicationID ),
 			} ) }
-			label="Revenue Model"
-			value={ revenueModel }
-			onEnhancedChange={ onChange }
-			enhanced
+			label="Publication ID"
 			outlined
 		>
-			{ REVENUE_MODELS.map( ( { displayName, value } ) => (
-				<Option key={ value } value={ value }>
-					{ displayName }
-				</Option>
-			) ) }
-		</Select>
+			<Input
+				id="publicationID"
+				name="publicationID"
+				value={ publicationID }
+				onChange={ onChange }
+			/>
+		</TextField>
 	);
 }

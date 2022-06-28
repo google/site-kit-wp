@@ -1,5 +1,5 @@
 /**
- * Subscribe with Google Settings Form component.
+ * Thank with Google Settings Form component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -25,7 +25,7 @@ import { Fragment } from '@wordpress/element';
  * Internal dependencies
  */
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
-import { STORE_NAME } from '../../datastore/constants';
+import { MODULES_THANK_WITH_GOOGLE } from '../../datastore/constants';
 import {
 	ProductsInput,
 	PublicationIDInput,
@@ -36,8 +36,8 @@ export default function SettingsForm() {
 	return (
 		<Fragment>
 			<StoreErrorNotices
-				moduleSlug="subscribe-with-google"
-				storeName={ STORE_NAME }
+				moduleSlug="thank-with-google"
+				storeName={ MODULES_THANK_WITH_GOOGLE }
 			/>
 
 			<div className="googlesitekit-setup-module__inputs">

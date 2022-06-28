@@ -1,5 +1,5 @@
 /**
- * Subscribe with Google module initialization.
+ * Thank with Google module initialization.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -20,29 +20,25 @@
  * Internal dependencies
  */
 import { SetupMain } from './components/setup';
-import {
-	SettingsEdit,
-	SettingsView,
-} from '../subscribe-with-google/components/settings';
-import SubscribeWithGoogleIcon from '../../../svg/graphics/logo-g.svg';
-import { STORE_NAME } from './datastore/constants';
+import { SettingsEdit, SettingsView } from './components/settings';
+import ThankWithGoogleIcon from '../../../svg/graphics/thank-with-google.svg';
+import { MODULES_THANK_WITH_GOOGLE } from './datastore/constants';
 import { isFeatureEnabled } from '../../features';
 
-export { registerStore } from '../subscribe-with-google/datastore';
+export { registerStore } from './datastore';
 
-const ifSwgIsEnabled = ( func ) => ( ...args ) => {
-	if ( isFeatureEnabled( 'swgModule' ) ) {
+const ifTwgIsEnabled = ( func ) => ( ...args ) => {
+	if ( isFeatureEnabled( 'twgModule' ) ) {
 		func( ...args );
 	}
 };
 
-export const registerModule = ifSwgIsEnabled( ( modules ) => {
-	modules.registerModule( 'subscribe-with-google', {
-		storeName: STORE_NAME,
+export const registerModule = ifTwgIsEnabled( ( modules ) => {
+	modules.registerModule( 'thank-with-google', {
+		storeName: MODULES_THANK_WITH_GOOGLE,
 		SettingsEditComponent: SettingsEdit,
 		SettingsViewComponent: SettingsView,
 		SetupComponent: SetupMain,
-		// TODO: Replace with another icon later.
-		Icon: SubscribeWithGoogleIcon,
+		Icon: ThankWithGoogleIcon,
 	} );
 } );

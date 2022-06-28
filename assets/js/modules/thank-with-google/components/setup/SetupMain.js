@@ -1,5 +1,5 @@
 /**
- * Subscribe with Google Main setup component.
+ * Thank with Google Main setup component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -30,16 +30,16 @@ import { _x } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import SubscribeWithGoogleIcon from '../../../../../svg/graphics/logo-g.svg';
+import ThankWithGoogleIcon from '../../../../../svg/graphics/thank-with-google.svg';
 import ProgressBar from '../../../../components/ProgressBar';
-import { STORE_NAME } from '../../datastore/constants';
+import { MODULES_THANK_WITH_GOOGLE } from '../../datastore/constants';
 import { CORE_LOCATION } from '../../../../googlesitekit/datastore/location/constants';
 import SetupForm from './SetupForm';
 const { useSelect } = Data;
 
 export default function SetupMain( { finishSetup } ) {
 	const isDoingSubmitChanges = useSelect( ( select ) =>
-		select( STORE_NAME ).isDoingSubmitChanges()
+		select( MODULES_THANK_WITH_GOOGLE ).isDoingSubmitChanges()
 	);
 	const isNavigating = useSelect( ( select ) =>
 		select( CORE_LOCATION ).isNavigating()
@@ -53,17 +53,13 @@ export default function SetupMain( { finishSetup } ) {
 	}
 
 	return (
-		<div className="googlesitekit-setup-module googlesitekit-setup-module--subscribe-with-google">
+		<div className="googlesitekit-setup-module googlesitekit-setup-module--thank-with-google">
 			<div className="googlesitekit-setup-module__logo">
-				<SubscribeWithGoogleIcon width="33" height="33" />
+				<ThankWithGoogleIcon width="33" height="33" />
 			</div>
 
 			<h2 className="googlesitekit-heading-3 googlesitekit-setup-module__title">
-				{ _x(
-					'Subscribe with Google',
-					'Service name',
-					'google-site-kit'
-				) }
+				{ _x( 'Thank with Google', 'Service name', 'google-site-kit' ) }
 			</h2>
 
 			{ viewComponent }

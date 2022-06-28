@@ -1,5 +1,5 @@
 /**
- * Subscribe with Google Products Input component.
+ * Thank with Google Products Input component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -30,7 +30,7 @@ import { useCallback } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from '../../datastore/constants';
+import { MODULES_THANK_WITH_GOOGLE } from '../../datastore/constants';
 import { TextField, Input } from '../../../../material-components';
 import { isValidProducts } from '../../util/validation';
 const { useDispatch, useSelect } = Data;
@@ -38,11 +38,11 @@ const { useDispatch, useSelect } = Data;
 export default function ProductsInput() {
 	// Get value.
 	const products = useSelect( ( select ) =>
-		select( STORE_NAME ).getProducts()
+		select( MODULES_THANK_WITH_GOOGLE ).getProducts()
 	);
 
 	// Handle form input.
-	const { setProducts } = useDispatch( STORE_NAME );
+	const { setProducts } = useDispatch( MODULES_THANK_WITH_GOOGLE );
 	const onChange = useCallback(
 		( { currentTarget } ) => {
 			const isEmpty = ! currentTarget.value.trim();

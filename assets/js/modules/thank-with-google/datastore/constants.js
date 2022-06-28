@@ -1,5 +1,5 @@
 /**
- * Subscribe with Google Setup components.
+ * `modules/thank-with-google` data store constants.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -16,5 +16,4 @@
  * limitations under the License.
  */
 
-export { default as SetupForm } from './SetupForm';
-export { default as SetupMain } from './SetupMain';
+export const MODULES_THANK_WITH_GOOGLE = 'modules/thank-with-google';
