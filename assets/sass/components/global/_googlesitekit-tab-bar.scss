@@ -33,13 +33,19 @@
 			line-height: 1;
 
 			&:first-child {
-				border-radius: $br-sm 0 0 $br-sm;
-				overflow: hidden;
+
+				@media (min-width: $bp-tablet) {
+					border-radius: $br-sm 0 0 $br-sm;
+					overflow: hidden;
+				}
 			}
 
 			&:last-child {
-				border-radius: 0 $br-sm $br-sm 0;
-				overflow: hidden;
+
+				@media (min-width: $bp-tablet) {
+					border-radius: 0 $br-sm $br-sm 0;
+					overflow: hidden;
+				}
 			}
 		}
 
