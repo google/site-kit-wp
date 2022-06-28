@@ -38,7 +38,19 @@ export default function WidgetRecoverableModules( {
 	moduleSlugs,
 	...props
 } ) {
-	const metadata = useMemo( () => ( { moduleSlugs } ), [ moduleSlugs ] );
+	const metadata = useMemo(
+		() => ( {
+			// Here we serialize to `moduleSlug` for compatibility with the logic in
+			// `combineWidgets()`. In future we may wish to take a less "hacky" approach.
+			// See https://github.com/google/site-kit-wp/issues/5376#issuecomment-1165771399.
+			moduleSlug: JSON.stringify( moduleSlugs.sort() ),
+			// We also store `moduleSlugs` in the metadata in order for it to be passed back
+			// into RecoverableModules as a prop.
+			// See https://github.com/google/site-kit-wp/blob/c272c20eddcca61aae24c9812b6b11dbc15ec673/assets/js/googlesitekit/widgets/components/WidgetAreaRenderer.js#L171.
+			moduleSlugs,
+		} ),
+		[ moduleSlugs ]
+	);
 	useWidgetStateEffect( widgetSlug, RecoverableModules, metadata );
 
 	return <RecoverableModules moduleSlugs={ moduleSlugs } { ...props } />;
