@@ -65,6 +65,7 @@ export function generateReportBasedWidgetStories( args ) {
 		Component,
 		referenceDate,
 		wrapWidget = true,
+		defaultVariantOptions = {},
 		additionalVariants = {},
 		additionalVariantCallbacks = {},
 		setup = () => {},
@@ -134,6 +135,7 @@ export function generateReportBasedWidgetStories( args ) {
 	// Existing default variants.
 	const defaultVariants = {
 		Loaded: {
+			...defaultVariantOptions.Loaded,
 			callback( { dispatch } ) {
 				if ( Array.isArray( options ) ) {
 					options.forEach( ( option, index ) => {
@@ -152,6 +154,7 @@ export function generateReportBasedWidgetStories( args ) {
 			},
 		},
 		Loading: {
+			...defaultVariantOptions.Loading,
 			callback( { dispatch } ) {
 				if ( Array.isArray( options ) ) {
 					options.forEach( ( option, index ) => {
@@ -176,6 +179,7 @@ export function generateReportBasedWidgetStories( args ) {
 			},
 		},
 		DataUnavailable: {
+			...defaultVariantOptions.DataUnavailable,
 			callback( { dispatch } ) {
 				if ( Array.isArray( options ) ) {
 					options.forEach( ( option, index ) => {
@@ -203,7 +207,7 @@ export function generateReportBasedWidgetStories( args ) {
 		ZeroData:
 			typeof zeroing === 'function'
 				? {
-						features: [ 'adsenseSetupV2' ],
+						...defaultVariantOptions.ZeroData,
 						callback: ( { dispatch } ) => {
 							if ( Array.isArray( options ) ) {
 								options.forEach( ( option, index ) => {
@@ -235,6 +239,7 @@ export function generateReportBasedWidgetStories( args ) {
 				  }
 				: undefined,
 		Error: {
+			...defaultVariantOptions.Error,
 			callback( { dispatch } ) {
 				const error = {
 					code: 'missing_required_param',

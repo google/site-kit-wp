@@ -101,6 +101,11 @@ generateReportBasedWidgetStories( {
 	datastore: MODULES_ADSENSE,
 	group: 'AdSense Module/Components/Module/Overview Widget',
 	referenceDate: '2020-11-25',
+	defaultVariantOptions: {
+		ZeroData: {
+			features: [ 'adsenseSetupV2' ],
+		},
+	},
 	zeroing,
 	...generateAdSenseData( [
 		{
