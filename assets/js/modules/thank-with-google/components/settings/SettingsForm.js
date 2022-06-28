@@ -26,11 +26,7 @@ import { Fragment } from '@wordpress/element';
  */
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import { MODULES_THANK_WITH_GOOGLE } from '../../datastore/constants';
-import {
-	ProductsInput,
-	PublicationIDInput,
-	RevenueModelDropdown,
-} from '../common';
+import { PublicationIDInput } from '../common';
 
 export default function SettingsForm() {
 	return (
@@ -42,14 +38,6 @@ export default function SettingsForm() {
 
 			<div className="googlesitekit-setup-module__inputs">
 				<PublicationIDInput />
-			</div>
-
-			<div className="googlesitekit-setup-module__inputs">
-				<RevenueModelDropdown />
-			</div>
-
-			<div className="googlesitekit-setup-module__inputs">
-				<ProductsInput />
 			</div>
 		</Fragment>
 	);
