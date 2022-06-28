@@ -106,7 +106,7 @@ export default function Header( { slug } ) {
 										'Experimental',
 										'google-site-kit'
 									) }
-									className="googlesitekit-idea-hub__badge"
+									hasLeftSpacing={ true }
 								/>
 							) }
 						</h3>

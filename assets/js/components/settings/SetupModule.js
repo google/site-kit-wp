@@ -113,7 +113,7 @@ export default function SetupModule( { slug, name, description } ) {
 				{ [ 'idea-hub', 'thank-with-google' ].includes( slug ) && (
 					<Badge
 						label={ __( 'Experimental', 'google-site-kit' ) }
-						className="googlesitekit-idea-hub__badge"
+						hasLeftSpacing={ true }
 					/>
 				) }
 			</h3>
