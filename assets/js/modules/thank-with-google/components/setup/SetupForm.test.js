@@ -39,8 +39,9 @@ describe( 'SetupForm', () => {
 
 	const validSettings = {
 		publicationID: 'example.com',
-		products: [ 'basic' ],
-		revenueModel: 'contribution',
+		colorTheme: 'light',
+		buttonPlacement: 'bottom-right',
+		buttonPostTypes: [ 'post' ],
 	};
 
 	beforeEach( () => {
