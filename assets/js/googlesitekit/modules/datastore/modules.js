@@ -100,6 +100,29 @@ const normalizeModules = memize( ( serverDefinitions, clientDefinitions ) => {
 		}, {} );
 } );
 
+/**
+ * Gets a memoized object mapping recoverable module slugs to their corresponding
+ * module objects.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} modules            Module definitions.
+ * @param {Array}  recoverableModules Array of recoverable module slugs.
+ * @return {Object} Map of recoverable module slugs to their corresponding module objects.
+ */
+const calculateRecoverableModules = memize( ( modules, recoverableModules ) =>
+	Object.values( modules ).reduce( ( recoverable, module ) => {
+		if ( recoverableModules.includes( module.slug ) ) {
+			return {
+				...recoverable,
+				[ module.slug ]: module,
+			};
+		}
+
+		return recoverable;
+	}, {} )
+);
+
 const fetchGetModulesStore = createFetchStore( {
 	baseName: 'getModules',
 	controlCallback: () => {
@@ -1244,19 +1267,7 @@ const baseSelectors = {
 			return undefined;
 		}
 
-		return Object.values( modules ).reduce(
-			( recoverableModules, module ) => {
-				if ( state.recoverableModules.includes( module.slug ) ) {
-					return {
-						...recoverableModules,
-						[ module.slug ]: module,
-					};
-				}
-
-				return recoverableModules;
-			},
-			{}
-		);
+		return calculateRecoverableModules( modules, state.recoverableModules );
 	} ),
 
 	/**

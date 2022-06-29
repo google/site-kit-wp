@@ -20,29 +20,51 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import intersection from 'lodash/intersection';
 
 /**
  * WordPress dependencies
  */
-import { Fragment } from '@wordpress/element';
+import { useMemo, Fragment } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
 import { CORE_WIDGETS } from '../datastore/constants';
+import { CORE_MODULES } from '../../modules/datastore/constants';
 import BaseWidget from './Widget';
+import WidgetRecoverableModules from './WidgetRecoverableModules';
 import { getWidgetComponentProps } from '../util';
 import { HIDDEN_CLASS } from '../util/constants';
+import useViewOnly from '../../../hooks/useViewOnly';
+import { useFeature } from '../../../hooks/useFeature';
 
 const { useSelect } = Data;
 
 const WidgetRenderer = ( { slug, OverrideComponent } ) => {
+	const dashboardSharingEnabled = useFeature( 'dashboardSharing' );
+
 	const widget = useSelect( ( select ) =>
 		select( CORE_WIDGETS ).getWidget( slug )
 	);
 	const widgetComponentProps = getWidgetComponentProps( slug );
 	const { Widget, WidgetNull } = widgetComponentProps;
+
+	const recoverableModules = useSelect(
+		( select ) =>
+			dashboardSharingEnabled &&
+			select( CORE_MODULES ).getRecoverableModules()
+	);
+
+	const viewOnly = useViewOnly();
+	const widgetRecoverableModules = useMemo(
+		() =>
+			widget &&
+			recoverableModules &&
+			intersection( widget.modules, Object.keys( recoverableModules ) ),
+		[ recoverableModules, widget ]
+	);
 
 	if ( ! widget ) {
 		return <WidgetNull />;
@@ -51,6 +73,15 @@ const WidgetRenderer = ( { slug, OverrideComponent } ) => {
 	const { Component, wrapWidget } = widget;
 
 	let widgetElement = <Component { ...widgetComponentProps } />;
+
+	if ( viewOnly && widgetRecoverableModules?.length ) {
+		widgetElement = (
+			<WidgetRecoverableModules
+				widgetSlug={ slug }
+				moduleSlugs={ widgetRecoverableModules }
+			/>
+		);
+	}
 
 	if ( OverrideComponent ) {
 		// If OverrideComponent passed, render it instead of the actual widget.
