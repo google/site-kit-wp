@@ -20,7 +20,10 @@
  * Internal dependencies
  */
 import WidgetRenderer from './WidgetRenderer';
-import { VIEW_CONTEXT_DASHBOARD_VIEW_ONLY } from '../../../googlesitekit/constants';
+import {
+	VIEW_CONTEXT_DASHBOARD,
+	VIEW_CONTEXT_DASHBOARD_VIEW_ONLY,
+} from '../../../googlesitekit/constants';
 import { CORE_MODULES } from '../../modules/datastore/constants';
 import { CORE_WIDGETS } from '../datastore/constants';
 import { provideModules, render } from '../../../../../tests/js/test-utils';
@@ -90,7 +93,7 @@ describe( 'WidgetRenderer', () => {
 		expect( container.firstChild ).toEqual( null );
 	} );
 
-	it( 'should output the recoverable modules component when the widget depends on a recoverable module', async () => {
+	it( 'should output the recoverable modules component when the widget depends on a recoverable module in view-only mode', async () => {
 		const { getByText } = render( <WidgetRenderer slug="TestWidget" />, {
 			setupRegistry: setupRegistry( {
 				recoverableModules: [ 'search-console' ],
@@ -106,7 +109,7 @@ describe( 'WidgetRenderer', () => {
 		).toBeInTheDocument();
 	} );
 
-	it( 'should output the recoverable modules component when the widget depends on multiple recoverable modules', async () => {
+	it( 'should output the recoverable modules component when the widget depends on multiple recoverable modules in view-only mode', async () => {
 		const { getByText } = render( <WidgetRenderer slug="TestWidget" />, {
 			setupRegistry: setupRegistry( {
 				recoverableModules: [ 'search-console', 'pagespeed-insights' ],
@@ -120,5 +123,26 @@ describe( 'WidgetRenderer', () => {
 				/The data for the following modules was previously shared by an admin who no longer has access: PageSpeed Insights, Search Console/
 			)
 		).toBeInTheDocument();
+	} );
+
+	it( 'should not output the recoverable modules component when the widget depends on a recoverable module and is not in view-only mode ', async () => {
+		const { getByText, queryByText } = render(
+			<WidgetRenderer slug="TestWidget" />,
+			{
+				setupRegistry: setupRegistry( {
+					recoverableModules: [ 'search-console' ],
+				} ),
+				viewContext: VIEW_CONTEXT_DASHBOARD,
+				features: [ 'dashboardSharing' ],
+			}
+		);
+
+		expect(
+			queryByText(
+				/Search Console data was previously shared by an admin who no longer has access/
+			)
+		).toBeNull();
+
+		expect( getByText( 'Test' ) ).toBeInTheDocument();
 	} );
 } );
