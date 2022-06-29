@@ -34,11 +34,7 @@ import Data from 'googlesitekit-data';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import Button from '../../../../components/Button';
 import { MODULES_THANK_WITH_GOOGLE } from '../../datastore/constants';
-import {
-	ProductsInput,
-	PublicationIDInput,
-	RevenueModelDropdown,
-} from '../common';
+import { PublicationIDInput } from '../common';
 const { useDispatch, useSelect } = Data;
 
 export default function SetupForm( { finishSetup } ) {
@@ -70,14 +66,6 @@ export default function SetupForm( { finishSetup } ) {
 
 			<div className="googlesitekit-setup-module__inputs">
 				<PublicationIDInput />
-			</div>
-
-			<div className="googlesitekit-setup-module__inputs">
-				<RevenueModelDropdown />
-			</div>
-
-			<div className="googlesitekit-setup-module__inputs">
-				<ProductsInput />
 			</div>
 
 			<div className="googlesitekit-setup-module__action">

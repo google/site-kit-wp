@@ -32,17 +32,20 @@ import {
 } from '../../../googlesitekit/data/create-settings-store';
 import { createStrictSelect } from '../../../googlesitekit/data/utils';
 import {
-	isValidProducts,
+	isValidButtonPlacement,
+	isValidButtonPostTypes,
+	isValidColorTheme,
 	isValidPublicationID,
-	isValidRevenueModel,
 } from '../util/validation';
 
 // Invariant error messages.
 export const INVARIANT_INVALID_PUBLICATION_ID =
 	'a valid publicationID is required';
-export const INVARIANT_INVALID_PRODUCTS = 'a valid products string is required';
-export const INVARIANT_INVALID_REVENUE_MODEL =
-	'a valid revenue model is required';
+export const INVARIANT_INVALID_COLOR_THEME = 'a valid color theme is required';
+export const INVARIANT_INVALID_BUTTON_PLACEMENT =
+	'a valid button placement is required';
+export const INVARIANT_INVALID_BUTTON_POST_TYPES =
+	'a valid button post types array is required';
 
 export async function submitChanges( { select, dispatch } ) {
 	// This action shouldn't be called if settings haven't changed,
@@ -70,9 +73,10 @@ export function validateCanSubmitChanges( select ) {
 	const {
 		haveSettingsChanged,
 		isDoingSubmitChanges,
-		getProducts,
 		getPublicationID,
-		getRevenueModel,
+		getColorTheme,
+		getButtonPlacement,
+		getButtonPostTypes,
 	} = strictSelect( MODULES_THANK_WITH_GOOGLE );
 
 	// Note: these error messages are referenced in test assertions.
@@ -85,12 +89,18 @@ export function validateCanSubmitChanges( select ) {
 		INVARIANT_INVALID_PUBLICATION_ID
 	);
 
-	const products = getProducts();
-	invariant( isValidProducts( products ), INVARIANT_INVALID_PRODUCTS );
+	const colorTheme = getColorTheme();
+	invariant( isValidColorTheme( colorTheme ), INVARIANT_INVALID_COLOR_THEME );
 
-	const revenueModel = getRevenueModel();
+	const buttonPlacement = getButtonPlacement();
 	invariant(
-		isValidRevenueModel( revenueModel ),
-		INVARIANT_INVALID_REVENUE_MODEL
+		isValidButtonPlacement( buttonPlacement ),
+		INVARIANT_INVALID_BUTTON_PLACEMENT
+	);
+
+	const buttonPostTypes = getButtonPostTypes();
+	invariant(
+		isValidButtonPostTypes( buttonPostTypes ),
+		INVARIANT_INVALID_BUTTON_POST_TYPES
 	);
 }

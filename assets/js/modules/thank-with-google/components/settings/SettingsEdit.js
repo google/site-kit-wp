@@ -28,10 +28,7 @@ const { useSelect } = Data;
 export default function SettingsEdit() {
 	const isLoading = useSelect(
 		( select ) =>
-			select( MODULES_THANK_WITH_GOOGLE ).getProducts() === undefined &&
-			select( MODULES_THANK_WITH_GOOGLE ).getPublicationID() ===
-				undefined &&
-			select( MODULES_THANK_WITH_GOOGLE ).getRevenueModel() === undefined
+			select( MODULES_THANK_WITH_GOOGLE ).getPublicationID() === undefined
 	);
 
 	const isDoingSubmitChanges = useSelect( ( select ) =>
