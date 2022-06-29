@@ -221,9 +221,7 @@ ReadyWithActivateAnalyticsCTA.args = {
 		provideSearchConsoleMockReport( registry, searchConsoleArgs );
 	},
 };
-ReadyWithActivateAnalyticsCTA.parameters = {
-	features: [ 'zeroDataStates' ],
-};
+
 ReadyWithActivateAnalyticsCTA.scenario = {
 	label: 'SearchConsole/SearchFunnelWidget/ReadyWithActivateAnalyticsCTA',
 	delay: 3000,
@@ -251,9 +249,6 @@ ReadyWithCompleteAnalyticsActivationCTA.args = {
 		provideModuleRegistrations( registry );
 	},
 };
-ReadyWithCompleteAnalyticsActivationCTA.parameters = {
-	features: [ 'zeroDataStates' ],
-};
 
 export const ReadyWithCreateGoalCTA = Template.bind( {} );
 ReadyWithCreateGoalCTA.storyName = 'Ready with Create Goal CTA';
@@ -266,9 +261,7 @@ ReadyWithCreateGoalCTA.args = {
 		}
 	},
 };
-ReadyWithCreateGoalCTA.parameters = {
-	features: [ 'zeroDataStates' ],
-};
+
 ReadyWithCreateGoalCTA.scenario = {
 	label: 'SearchConsole/SearchFunnelWidget/ReadyWithCreateGoalCTA',
 	delay: 3000,
@@ -357,9 +350,6 @@ GatheringDataZeroDataStates.args = {
 				.receiveGetReport( [], { options } );
 		}
 	},
-};
-GatheringDataZeroDataStates.parameters = {
-	features: [ 'zeroDataStates' ],
 };
 
 export const ReadyEntityDashboard = Template.bind( {} );

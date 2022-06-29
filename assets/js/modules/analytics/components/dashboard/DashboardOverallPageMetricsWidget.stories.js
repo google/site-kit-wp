@@ -179,9 +179,6 @@ GatheringDataZeroDataStates.args = {
 		}
 	},
 };
-GatheringDataZeroDataStates.parameters = {
-	features: [ 'zeroDataStates' ],
-};
 
 export const GatheringDataZeroDataStatesDisabled = Template.bind( {} );
 GatheringDataZeroDataStatesDisabled.storyName =
@@ -313,9 +310,6 @@ GatheringDataEntityURLZeroDataStates.args = {
 			dispatch( MODULES_ANALYTICS ).receiveGetReport( [], { options } );
 		}
 	},
-};
-GatheringDataEntityURLZeroDataStates.parameters = {
-	features: [ 'zeroDataStates' ],
 };
 
 export const GatheringDataEntityURLZeroDataStatesDisabled = Template.bind( {} );

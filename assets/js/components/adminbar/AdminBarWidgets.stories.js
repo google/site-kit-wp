@@ -83,9 +83,6 @@ AnalyticsInactiveNew.args = {
 		setupSearchConsoleMockReports( registry );
 	},
 };
-AnalyticsInactiveNew.parameters = {
-	features: [ 'zeroDataStates' ],
-};
 
 export const AnalyticsInactiveNewCompleteActivation = Template.bind( {} );
 AnalyticsInactiveNewCompleteActivation.storyName =
@@ -104,9 +101,6 @@ AnalyticsInactiveNewCompleteActivation.args = {
 		provideUserAuthentication( registry );
 		setupSearchConsoleMockReports( registry );
 	},
-};
-AnalyticsInactiveNewCompleteActivation.parameters = {
-	features: [ 'zeroDataStates' ],
 };
 
 export const SearchConsoleGatheringDataLegacy = Template.bind( {} );
@@ -130,17 +124,11 @@ GatheringData.storyName = 'Gathering Data';
 GatheringData.args = {
 	setupRegistry: setupSearchConsoleAnalyticsGatheringData,
 };
-GatheringData.parameters = {
-	features: [ 'zeroDataStates' ],
-};
 
 export const ZeroData = Template.bind( {} );
 ZeroData.storyName = 'Zero Data';
 ZeroData.args = {
 	setupRegistry: setupSearchConsoleAnalyticsZeroData,
-};
-ZeroData.parameters = {
-	features: [ 'zeroDataStates' ],
 };
 
 export default {

@@ -57,17 +57,11 @@ GatheringData.args = {
 		setupAnalyticsGatheringData( registry );
 	},
 };
-GatheringData.parameters = {
-	features: [ 'zeroDataStates' ],
-};
 
 export const ZeroData = Template.bind( {} );
 ZeroData.storyName = 'Zero Data';
 ZeroData.args = {
 	setupRegistry: setupSearchConsoleAnalyticsZeroData,
-};
-ZeroData.parameters = {
-	features: [ 'zeroDataStates' ],
 };
 
 export default {
