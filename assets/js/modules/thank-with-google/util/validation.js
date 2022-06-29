@@ -60,13 +60,13 @@ export function isValidButtonPlacement( buttonPlacement ) {
  *
  * @since n.e.x.t
  *
- * @param {string[]} postTypes Products to test.
+ * @param {string[]} buttonPostTypes Button post types to test.
  * @return {boolean} `true` if the given products list is valid, `false` otherwise.
  */
-export function isValidButtonPostTypes( postTypes ) {
+export function isValidButtonPostTypes( buttonPostTypes ) {
 	return (
-		Array.isArray( postTypes ) &&
-		postTypes.length >= 1 &&
-		postTypes.every( ( postType ) => postType.length > 0 )
+		Array.isArray( buttonPostTypes ) &&
+		buttonPostTypes.length >= 1 &&
+		buttonPostTypes.every( ( buttonPostType ) => buttonPostType.length > 0 )
 	);
 }
