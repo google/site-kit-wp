@@ -32,24 +32,26 @@ import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { MODULES_THANK_WITH_GOOGLE } from './constants';
 import {
-	INVARIANT_INVALID_PRODUCTS,
+	INVARIANT_INVALID_BUTTON_PLACEMENT,
+	INVARIANT_INVALID_COLOR_THEME,
 	INVARIANT_INVALID_PUBLICATION_ID,
-	INVARIANT_INVALID_REVENUE_MODEL,
 } from './settings';
 
 describe( 'modules/thank-with-google settings', () => {
 	let registry;
 
 	const defaultSettings = {
-		products: [],
 		publicationID: '',
-		revenueModel: '',
+		colorTheme: '',
+		buttonPlacement: '',
+		buttonPostTypes: [],
 	};
 
 	const validSettings = {
-		products: [ 'news' ],
 		publicationID: 'publisher.com',
-		revenueModel: 'contribution',
+		colorTheme: 'light',
+		buttonPlacement: 'bottom-right',
+		buttonPostTypes: [ 'post' ],
 	};
 
 	const WPError = {
@@ -227,7 +229,7 @@ describe( 'modules/thank-with-google settings', () => {
 				).toThrow( INVARIANT_INVALID_PUBLICATION_ID );
 			} );
 
-			it( 'requires a valid products list', () => {
+			it( 'requires a valid color theme', () => {
 				expect(
 					registry
 						.select( MODULES_THANK_WITH_GOOGLE )
@@ -236,7 +238,7 @@ describe( 'modules/thank-with-google settings', () => {
 
 				registry
 					.dispatch( MODULES_THANK_WITH_GOOGLE )
-					.setProducts( [] );
+					.setColorTheme( '' );
 
 				expect(
 					registry
@@ -247,10 +249,10 @@ describe( 'modules/thank-with-google settings', () => {
 					registry
 						.select( MODULES_THANK_WITH_GOOGLE )
 						.__dangerousCanSubmitChanges()
-				).toThrow( INVARIANT_INVALID_PRODUCTS );
+				).toThrow( INVARIANT_INVALID_COLOR_THEME );
 			} );
 
-			it( 'requires a valid revenue model', () => {
+			it( 'requires a valid button placement', () => {
 				expect(
 					registry
 						.select( MODULES_THANK_WITH_GOOGLE )
@@ -259,7 +261,7 @@ describe( 'modules/thank-with-google settings', () => {
 
 				registry
 					.dispatch( MODULES_THANK_WITH_GOOGLE )
-					.setRevenueModel( '' );
+					.setButtonPlacement( '' );
 
 				expect(
 					registry
@@ -270,7 +272,7 @@ describe( 'modules/thank-with-google settings', () => {
 					registry
 						.select( MODULES_THANK_WITH_GOOGLE )
 						.__dangerousCanSubmitChanges()
-				).toThrow( INVARIANT_INVALID_REVENUE_MODEL );
+				).toThrow( INVARIANT_INVALID_BUTTON_PLACEMENT );
 			} );
 		} );
 	} );

@@ -45,6 +45,10 @@ describe( 'core/modules sharing-settings', () => {
 			sharedRoles: [ 'editor' ],
 			management: 'all_admins',
 		},
+		adsense: {
+			sharedRoles: [],
+			management: 'all_admins',
+		},
 	};
 	const shareableRoles = [
 		{
@@ -635,6 +639,186 @@ describe( 'core/modules sharing-settings', () => {
 						.select( CORE_MODULES )
 						.isDoingSubmitSharingChanges()
 				).toBe( false );
+			} );
+		} );
+
+		describe( 'haveSharingSettingsExpanded', () => {
+			it( 'requires a valid `key` parameter', () => {
+				expect( () => {
+					registry
+						.select( CORE_MODULES )
+						.haveSharingSettingsExpanded( 'invalid-param' );
+				} ).toThrow( 'key must be one of: management, sharedRoles.' );
+			} );
+
+			it( 'should return undefined if `sharingSettings` or `savedSharingSettings` cannot be loaded', () => {
+				global[ dashboardSharingDataBaseVar ] = undefined;
+
+				expect(
+					registry
+						.select( CORE_MODULES )
+						.haveSharingSettingsExpanded( 'management' )
+				).toBeUndefined();
+			} );
+
+			it( 'informs whether the `management` setting for any module has been changed from `owner` to `all_admins`', () => {
+				global[ dashboardSharingDataBaseVar ] = undefined;
+
+				// Initially undefined.
+				expect(
+					registry
+						.select( CORE_MODULES )
+						.haveSharingSettingsExpanded( 'management' )
+				).toBeUndefined();
+
+				global[ dashboardSharingDataBaseVar ] = dashboardSharingData;
+				registry.select( CORE_MODULES ).getSharingSettings();
+
+				// Still false after getting the sharing settings from the global variable.
+				expect(
+					registry
+						.select( CORE_MODULES )
+						.haveSharingSettingsExpanded( 'management' )
+				).toBe( false );
+
+				// True after updating module's `management` from `owner` to `all_admins` on the client.
+				registry
+					.dispatch( CORE_MODULES )
+					.setSharingManagement( 'analytics', 'all_admins' );
+				expect(
+					registry
+						.select( CORE_MODULES )
+						.haveSharingSettingsExpanded( 'management' )
+				).toBe( true );
+
+				// False after updating module's `management` back to original server value on client.
+				registry
+					.dispatch( CORE_MODULES )
+					.setSharingManagement( 'analytics', 'owner' );
+				expect(
+					registry
+						.select( CORE_MODULES )
+						.haveSharingSettingsExpanded( 'management' )
+				).toBe( false );
+
+				// False after updating module's `management` from `all-admins` to `owner`.
+				registry
+					.dispatch( CORE_MODULES )
+					.setSharingManagement( 'search-console', 'owner' );
+				expect(
+					registry
+						.select( CORE_MODULES )
+						.haveSharingSettingsExpanded( 'management' )
+				).toBe( false );
+			} );
+
+			it( 'should return false when changes to `sharedRoles` settings are made with previously selected values', () => {
+				global[ dashboardSharingDataBaseVar ] = undefined;
+
+				// Initially undefined.
+				expect(
+					registry
+						.select( CORE_MODULES )
+						.haveSharingSettingsExpanded( 'sharedRoles' )
+				).toBeUndefined();
+
+				global[ dashboardSharingDataBaseVar ] = dashboardSharingData;
+				registry.select( CORE_MODULES ).getSharingSettings();
+
+				// Still false after getting the sharing settings from the global variable.
+				expect(
+					registry
+						.select( CORE_MODULES )
+						.haveSharingSettingsExpanded( 'sharedRoles' )
+				).toBe( false );
+
+				// False after removing some of the module's existing `sharedRoles` on the client.
+				registry
+					.dispatch( CORE_MODULES )
+					.setSharedRoles( 'search-console', [ 'editor' ] );
+				expect(
+					registry
+						.select( CORE_MODULES )
+						.haveSharingSettingsExpanded( 'sharedRoles' )
+				).toBe( false );
+
+				// False after adding back the removed existing role to the module's `sharedRoles` on the client.
+				registry
+					.dispatch( CORE_MODULES )
+					.setSharedRoles( 'search-console', [
+						'editor',
+						'subscriber',
+					] );
+				expect(
+					registry
+						.select( CORE_MODULES )
+						.haveSharingSettingsExpanded( 'sharedRoles' )
+				).toBe( false );
+			} );
+
+			it( 'should return true when changes to `sharedRoles` settings are made with new values', () => {
+				global[ dashboardSharingDataBaseVar ] = undefined;
+
+				// Initially undefined.
+				expect(
+					registry
+						.select( CORE_MODULES )
+						.haveSharingSettingsExpanded( 'sharedRoles' )
+				).toBeUndefined();
+
+				global[ dashboardSharingDataBaseVar ] = dashboardSharingData;
+				registry.select( CORE_MODULES ).getSharingSettings();
+
+				// Still false after getting the sharing settings from the global variable.
+				expect(
+					registry
+						.select( CORE_MODULES )
+						.haveSharingSettingsExpanded( 'sharedRoles' )
+				).toBe( false );
+
+				// True after adding new non-existing role to the module's `sharedRoles` on the client.
+				registry
+					.dispatch( CORE_MODULES )
+					.setSharedRoles( 'search-console', [
+						'editor',
+						'administrator',
+					] );
+				expect(
+					registry
+						.select( CORE_MODULES )
+						.haveSharingSettingsExpanded( 'sharedRoles' )
+				).toBe( true );
+			} );
+
+			it( 'should return true when changes to `sharedRoles` settings are made and the roles are initially empty', () => {
+				global[ dashboardSharingDataBaseVar ] = undefined;
+
+				// Initially undefined.
+				expect(
+					registry
+						.select( CORE_MODULES )
+						.haveSharingSettingsExpanded( 'sharedRoles' )
+				).toBeUndefined();
+
+				global[ dashboardSharingDataBaseVar ] = dashboardSharingData;
+				registry.select( CORE_MODULES ).getSharingSettings();
+
+				// Still false after getting the sharing settings from the global variable.
+				expect(
+					registry
+						.select( CORE_MODULES )
+						.haveSharingSettingsExpanded( 'sharedRoles' )
+				).toBe( false );
+
+				// True when adding a new role when the module's `sharedRoles` is empty.
+				registry
+					.dispatch( CORE_MODULES )
+					.setSharedRoles( 'adsense', [ 'editor' ] );
+				expect(
+					registry
+						.select( CORE_MODULES )
+						.haveSharingSettingsExpanded( 'sharedRoles' )
+				).toBe( true );
 			} );
 		} );
 	} );

@@ -46,10 +46,7 @@ import useViewContext from '../../../hooks/useViewContext';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
-import {
-	EDITING_MANAGEMENT_KEY,
-	EDITING_USER_ROLE_SELECT_SLUG_KEY,
-} from './constants';
+import { EDITING_USER_ROLE_SELECT_SLUG_KEY } from './constants';
 import { trackEvent } from '../../../util';
 import {
 	CORE_USER,
@@ -103,7 +100,6 @@ export default function Module( { moduleSlug, moduleName, ownerUsername } ) {
 	);
 
 	const { setSharingManagement } = useDispatch( CORE_MODULES );
-	const { setValue } = useDispatch( CORE_UI );
 
 	const sharedOwnershipModule =
 		sharedOwnershipModules &&
@@ -120,7 +116,6 @@ export default function Module( { moduleSlug, moduleName, ownerUsername } ) {
 	const handleOnChange = useCallback(
 		( event ) => {
 			const value = event.target.value;
-			setValue( EDITING_MANAGEMENT_KEY, true );
 			setManageViewAccess( value );
 			setSharingManagement( moduleSlug, value );
 			trackEvent(
@@ -129,13 +124,7 @@ export default function Module( { moduleSlug, moduleName, ownerUsername } ) {
 				moduleSlug
 			);
 		},
-		[
-			moduleSlug,
-			viewContext,
-			setManageViewAccess,
-			setSharingManagement,
-			setValue,
-		]
+		[ setSharingManagement, setManageViewAccess, moduleSlug, viewContext ]
 	);
 
 	const isEditingUserRoles = moduleSlug === editingUserRolesSlug;

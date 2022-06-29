@@ -49,9 +49,10 @@ class Thank_With_GoogleTest extends TestCase {
 		$options->set(
 			Settings::OPTION,
 			array(
-				'products'      => true,
-				'publicationID' => true,
-				'revenueModel'  => true,
+				'publicationID'   => '12345',
+				'colorTheme'      => 'light',
+				'buttonPlacement' => 'bottom',
+				'buttonPostTypes' => array( 'post' ),
 			)
 		);
 

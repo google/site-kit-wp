@@ -16,6 +16,5 @@
  * limitations under the License.
  */
 
-export const EDITING_MANAGEMENT_KEY = 'editing-management-key';
 export const EDITING_USER_ROLE_SELECT_SLUG_KEY =
 	'editing-user-role-select-slug-key';

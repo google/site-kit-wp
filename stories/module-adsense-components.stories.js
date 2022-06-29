@@ -23,6 +23,7 @@ import {
 	generateReportBasedWidgetStories,
 	makeReportDataGenerator,
 } from './utils/generate-widget-stories';
+import { zeroing } from './utils/adsense-data-zeroing';
 import DashboardTopEarningPagesWidget from '../assets/js/modules/adsense/components/dashboard/DashboardTopEarningPagesWidget';
 import ModuleOverviewWidget from '../assets/js/modules/adsense/components/module/ModuleOverviewWidget';
 import { MODULES_ADSENSE } from '../assets/js/modules/adsense/datastore/constants';
@@ -100,6 +101,12 @@ generateReportBasedWidgetStories( {
 	datastore: MODULES_ADSENSE,
 	group: 'AdSense Module/Components/Module/Overview Widget',
 	referenceDate: '2020-11-25',
+	defaultVariantOptions: {
+		ZeroData: {
+			features: [ 'adsenseSetupV2' ],
+		},
+	},
+	zeroing,
 	...generateAdSenseData( [
 		{
 			metrics: [
