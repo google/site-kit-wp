@@ -120,7 +120,7 @@ describe( 'WidgetRenderer', () => {
 
 		expect(
 			getByText(
-				/The data for the following modules was previously shared by an admin who no longer has access: PageSpeed Insights, Search Console/
+				/The data for the following modules was previously shared by an admin who no longer has access: Search Console, PageSpeed Insights/
 			)
 		).toBeInTheDocument();
 	} );
