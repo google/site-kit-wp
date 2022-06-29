@@ -61,7 +61,7 @@ export function isValidButtonPlacement( buttonPlacement ) {
  * @since n.e.x.t
  *
  * @param {string[]} buttonPostTypes Button post types to test.
- * @return {boolean} `true` if the given products list is valid, `false` otherwise.
+ * @return {boolean} `true` if the given button post types list is valid, `false` otherwise.
  */
 export function isValidButtonPostTypes( buttonPostTypes ) {
 	return (
