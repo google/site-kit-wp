@@ -101,7 +101,7 @@ const normalizeModules = memize( ( serverDefinitions, clientDefinitions ) => {
 } );
 
 /**
- * Memoized function to build an object mapping recoverable module slugs to their corresponding
+ * Gets a memoized object mapping recoverable module slugs to their corresponding
  * module objects.
  *
  * @since n.e.x.t
