@@ -46,54 +46,6 @@ import AwardSVG from '../assets/svg/graphics/award.svg';
 
 storiesOf( 'Global/Notifications', module )
 	.add(
-		'Module Setup Complete',
-		() => {
-			const setupRegistry = ( registry ) => {
-				registry
-					.dispatch( CORE_MODULES )
-					.receiveGetModules(
-						withConnected(
-							'search-console',
-							'analytics',
-							'pagespeed-insights'
-						)
-					);
-				provideModuleRegistrations( registry );
-				registry
-					.dispatch( MODULES_ADSENSE )
-					.receiveIsAdBlockerActive( false );
-			};
-
-			return (
-				<WithTestRegistry callback={ setupRegistry }>
-					<BannerNotification
-						id="notification-id"
-						title={ __(
-							'Congrats on completing the setup for Analytics!',
-							'google-site-kit'
-						) }
-						WinImageSVG={ SuccessGreenSVG }
-						dismiss={ __( 'OK, Got it!', 'google-site-kit' ) }
-						format="large"
-						type="win-success"
-					>
-						<ModulesList
-							moduleSlugs={ [
-								'search-console',
-								'adsense',
-								'analytics',
-								'pagespeed-insights',
-							] }
-						/>
-					</BannerNotification>
-				</WithTestRegistry>
-			);
-		},
-		{
-			padding: 0,
-		}
-	)
-	.add(
 		'Small with Image',
 		() => (
 			<BannerNotification
