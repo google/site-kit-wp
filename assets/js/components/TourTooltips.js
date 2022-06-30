@@ -46,6 +46,7 @@ const joyrideStyles = {
 		backgroundColor: '#1A73E8', // $c-royal-blue
 		overlayColor: 'rgba(0, 0, 0, 0.6)',
 		textColor: '#ffffff', // $c-white
+		zIndex: 10001,
 	},
 };
 
@@ -87,6 +88,7 @@ export default function TourTooltips( {
 	tourID,
 	gaEventCategory,
 	callback,
+	autoStart,
 } ) {
 	const stepKey = `${ tourID }-step`;
 	const runKey = `${ tourID }-run`;
@@ -99,10 +101,11 @@ export default function TourTooltips( {
 		select( CORE_UI ).getValue( stepKey )
 	);
 	const run = useSelect( ( select ) => {
-		return (
+		const ok =
 			select( CORE_UI ).getValue( runKey ) &&
-			select( CORE_USER ).isTourDismissed( tourID ) === false
-		);
+			select( CORE_USER ).isTourDismissed( tourID ) === false;
+
+		return ok === true;
 	} );
 
 	const changeStep = ( index, action ) =>
@@ -224,7 +227,11 @@ export default function TourTooltips( {
 	};
 
 	// Start tour on initial render
-	useMount( startTour );
+	useMount( () => {
+		if ( autoStart !== false ) {
+			startTour();
+		}
+	} );
 
 	const parsedSteps = steps.map( ( step ) => ( {
 		disableBeacon: true,

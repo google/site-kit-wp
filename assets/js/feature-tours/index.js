@@ -36,6 +36,7 @@ import ideaHubModule from './idea-hub-module';
 import ideaHubPostsTable from './idea-hub-posts-table';
 import unifiedDashboard from './unified-dashboard';
 import dashboardSharing from './dashboard-sharing';
+import dashboardSharingSettingsMultipleAdmins from './dashboard-sharing-settings-multiple-admins';
 
 const allTrafficWidget = {
 	slug: 'allTrafficWidget',
@@ -111,4 +112,5 @@ export default [
 	ideaHubPostsTable,
 	unifiedDashboard,
 	dashboardSharing,
+	dashboardSharingSettingsMultipleAdmins,
 ];
