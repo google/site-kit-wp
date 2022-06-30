@@ -367,7 +367,7 @@ class Debug_Data {
 	/**
 	 * Gets the field definition for the recoverable_modules field.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.78.0
 	 *
 	 * @return array
 	 */
@@ -388,7 +388,7 @@ class Debug_Data {
 	/**
 	 * Gets the field definition for the module_sharing_settings field.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.78.0
 	 *
 	 * @return array
 	 */
@@ -421,7 +421,7 @@ class Debug_Data {
 	/**
 	 * Gets the comma separated list of shared role names for module_sharing_settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.78.0
 	 *
 	 * @param array $role_slugs List of role slugs.
 	 *
@@ -457,7 +457,7 @@ class Debug_Data {
 	/**
 	 * Gets the user friendly and debug values for module management used in module_sharing_settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.78.0
 	 *
 	 * @param string $management The module sharing settings management value. Can be either `owner` or `all_admins`.
 	 *

@@ -801,7 +801,7 @@ final class Assets {
 	/**
 	 * Gets data relevant for `trackEvent` calls.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.78.0
 	 *
 	 * @return array The tracking inline data to be output.
 	 */
@@ -817,7 +817,7 @@ final class Assets {
 		/**
 		 * Filters the data relevant to trackEvent calls to pass to JS.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.78.0
 		 *
 		 * @param array $inline_data Tracking data.
 		 */

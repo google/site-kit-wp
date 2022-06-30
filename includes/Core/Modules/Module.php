@@ -848,7 +848,7 @@ abstract class Module {
 	/**
 	 * Checks whether the module is recoverable.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.78.0
 	 *
 	 * @return bool
 	 */
@@ -856,7 +856,7 @@ abstract class Module {
 		/**
 		 * Filters the recoverable status of the module.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.78.0
 		 * @param bool   $_    Whether or not the module is recoverable. Default: false
 		 * @param string $slug Module slug.
 		 */

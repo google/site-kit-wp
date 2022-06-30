@@ -77,7 +77,7 @@ export function isInsufficientPermissionsError( error ) {
 /**
  * Checks if the given error is an auth error.
  *
- * @since n.e.x.t
+ * @since 1.78.0
  *
  * @param {Object} error The error object to check.
  * @return {boolean} TRUE if it's an auth error, otherwise FALSE.
