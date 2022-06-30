@@ -19,11 +19,8 @@
 /**
  * Internal dependencies
  */
-import { useFeature } from '../../hooks/useFeature';
 import ZeroDataStateNotifications from './ZeroDataStateNotifications';
 
-export default function EntityBannerNotifications() {
-	const zeroDataStatesEnabled = useFeature( 'zeroDataStates' );
+const EntityBannerNotifications = () => <ZeroDataStateNotifications />;
 
-	return zeroDataStatesEnabled && <ZeroDataStateNotifications />;
-}
+export default EntityBannerNotifications;

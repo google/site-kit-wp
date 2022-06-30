@@ -34,19 +34,16 @@ import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import whenActive from '../../../../util/when-active';
 import PreviewTable from '../../../../components/PreviewTable';
 import SourceLink from '../../../../components/SourceLink';
-import { isZeroReport, generateDateRangeArgs } from '../../util';
+import { generateDateRangeArgs } from '../../util';
 import TableOverflowContainer from '../../../../components/TableOverflowContainer';
 import ReportTable from '../../../../components/ReportTable';
 import Link from '../../../../components/Link';
 import { numFmt } from '../../../../util';
 import { ZeroDataMessage } from '../common';
-import { useFeature } from '../../../../hooks/useFeature';
 const { useSelect, useInViewSelect } = Data;
 
 function DashboardPopularKeywordsWidget( props ) {
-	const { Widget, WidgetReportZero, WidgetReportError } = props;
-
-	const zeroDataStates = useFeature( 'zeroDataStates' );
+	const { Widget, WidgetReportError } = props;
 
 	const isGatheringData = useInViewSelect( ( select ) =>
 		select( MODULES_SEARCH_CONSOLE ).isGatheringData()
@@ -116,14 +113,6 @@ function DashboardPopularKeywordsWidget( props ) {
 		return (
 			<Widget noPadding Footer={ Footer }>
 				<PreviewTable padding />
-			</Widget>
-		);
-	}
-
-	if ( ! zeroDataStates && isGatheringData && isZeroReport( data ) ) {
-		return (
-			<Widget Footer={ Footer }>
-				<WidgetReportZero moduleSlug="search-console" />
 			</Widget>
 		);
 	}

@@ -27,7 +27,6 @@ import PropTypes from 'prop-types';
 /**
  * Internal dependencies.
  */
-import { useFeature } from '../hooks/useFeature';
 import GatheringDataNotice from './GatheringDataNotice';
 
 export default function ReportTable( {
@@ -38,8 +37,6 @@ export default function ReportTable( {
 	zeroState: ZeroState,
 	gatheringData = false,
 } ) {
-	const zeroDataStatesEnabled = useFeature( 'zeroDataStates' );
-
 	invariant( Array.isArray( rows ), 'rows must be an array.' );
 	invariant( Array.isArray( columns ), 'columns must be an array.' );
 	columns.forEach( ( { Component, field = null } ) => {
@@ -103,7 +100,7 @@ export default function ReportTable( {
 				</thead>
 
 				<tbody className="googlesitekit-table__body">
-					{ zeroDataStatesEnabled && gatheringData && (
+					{ gatheringData && (
 						<tr className="googlesitekit-table__body-row googlesitekit-table__body-row--no-data">
 							<td
 								className="googlesitekit-table__body-item"
@@ -113,18 +110,16 @@ export default function ReportTable( {
 							</td>
 						</tr>
 					) }
-					{ ( ! zeroDataStatesEnabled || ! gatheringData ) &&
-						! rows?.length &&
-						ZeroState && (
-							<tr className="googlesitekit-table__body-row googlesitekit-table__body-row--no-data">
-								<td
-									className="googlesitekit-table__body-item"
-									colSpan={ columns.length }
-								>
-									<ZeroState />
-								</td>
-							</tr>
-						) }
+					{ ! gatheringData && ! rows?.length && ZeroState && (
+						<tr className="googlesitekit-table__body-row googlesitekit-table__body-row--no-data">
+							<td
+								className="googlesitekit-table__body-item"
+								colSpan={ columns.length }
+							>
+								<ZeroState />
+							</td>
+						</tr>
+					) }
 
 					{ ! gatheringData &&
 						rows.slice( 0, limit ).map( ( row, rowIndex ) => (

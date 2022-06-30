@@ -47,15 +47,11 @@ import TotalUserCount from './TotalUserCount';
 import UserCountGraph from './UserCountGraph';
 import DimensionTabs from './DimensionTabs';
 import UserDimensionsPieChart from './UserDimensionsPieChart';
-import EmptyPieChart from './EmptyPieChart';
-import { useFeature } from '../../../../../hooks/useFeature';
 import useViewOnly from '../../../../../hooks/useViewOnly';
 const { useSelect, useInViewSelect, useDispatch } = Data;
 
 function DashboardAllTrafficWidget( props ) {
-	const { Widget, WidgetReportZero, WidgetReportError } = props;
-
-	const zeroDataStatesEnabled = useFeature( 'zeroDataStates' );
+	const { Widget, WidgetReportError } = props;
 
 	const viewOnly = useViewOnly();
 
@@ -283,15 +279,6 @@ function DashboardAllTrafficWidget( props ) {
 	}
 
 	const pieChartReportIsZero = isZeroReport( pieChartReport );
-	if ( ! zeroDataStatesEnabled && isGatheringData && pieChartReportIsZero ) {
-		return (
-			<Widget>
-				<WidgetReportZero moduleSlug="analytics" />
-			</Widget>
-		);
-	}
-
-	const showEmptyPieChart = ! zeroDataStatesEnabled && pieChartReportIsZero;
 
 	return (
 		<Widget
@@ -344,18 +331,14 @@ function DashboardAllTrafficWidget( props ) {
 							gatheringData={ isGatheringData }
 							isZeroData={ pieChartReportIsZero }
 						/>
-
-						{ ! showEmptyPieChart && (
-							<UserDimensionsPieChart
-								dimensionName={ dimensionName }
-								dimensionValue={ dimensionValue }
-								gatheringData={ isGatheringData }
-								loaded={ pieChartLoaded && ! firstLoad }
-								report={ pieChartReport }
-							/>
-						) }
-
-						{ showEmptyPieChart && <EmptyPieChart /> }
+						<UserDimensionsPieChart
+							dimensionName={ dimensionName }
+							dimensionValue={ dimensionValue }
+							gatheringData={ isGatheringData }
+							loaded={ pieChartLoaded && ! firstLoad }
+							report={ pieChartReport }
+						/>
+						)
 					</Cell>
 				</Row>
 			</Grid>

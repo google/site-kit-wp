@@ -44,7 +44,6 @@ import {
 	HIDDEN_CLASS,
 } from '../../googlesitekit/widgets/util/constants';
 import { withWidgetComponentProps } from '../../googlesitekit/widgets/util/get-widget-component-props';
-import { useFeature } from '../../hooks/useFeature';
 const { useSelect } = Data;
 
 // Widget slugs.
@@ -74,11 +73,7 @@ const WPDashboardPopularPagesWidget = withWidgetComponentProps(
 )( WPDashboardPopularPages );
 
 // Special widget states.
-const [
-	ActivateModuleCTA,
-	CompleteModuleActivationCTA,
-	ReportZero,
-] = SPECIAL_WIDGET_STATES;
+const [ ReportZero ] = SPECIAL_WIDGET_STATES;
 
 const WPDashboardWidgets = () => {
 	const analyticsModule = useSelect( ( select ) =>
@@ -123,8 +118,6 @@ const WPDashboardWidgets = () => {
 				?.Component === ReportZero
 	);
 
-	const zeroDataStates = useFeature( 'zeroDataStates' );
-
 	if (
 		analyticsModule === undefined ||
 		shouldCombineAnalyticsArea1 === undefined ||
@@ -136,11 +129,13 @@ const WPDashboardWidgets = () => {
 
 	return (
 		<div
-			className={ classnames( 'googlesitekit-wp-dashboard-stats', {
-				'googlesitekit-wp-dashboard-stats--fourup':
-					analyticsModuleActive && analyticsModuleConnected,
-				'googlesitekit-wp-dashboard-stats--twoup': zeroDataStates,
-			} ) }
+			className={ classnames(
+				'googlesitekit-wp-dashboard-stats googlesitekit-wp-dashboard-stats--twoup',
+				{
+					'googlesitekit-wp-dashboard-stats--fourup':
+						analyticsModuleActive && analyticsModuleConnected,
+				}
+			) }
 		>
 			<WPDashboardIdeaHub />
 
@@ -162,13 +157,7 @@ const WPDashboardWidgets = () => {
 
 			{ ( ! analyticsModuleConnected || ! analyticsModuleActive ) && (
 				<div className="googlesitekit-wp-dashboard-stats__cta">
-					{ zeroDataStates && <WPDashboardActivateAnalyticsCTA /> }
-					{ ! zeroDataStates &&
-						( analyticsModuleActive ? (
-							<CompleteModuleActivationCTA moduleSlug="analytics" />
-						) : (
-							<ActivateModuleCTA moduleSlug="analytics" />
-						) ) }
+					<WPDashboardActivateAnalyticsCTA />
 				</div>
 			) }
 

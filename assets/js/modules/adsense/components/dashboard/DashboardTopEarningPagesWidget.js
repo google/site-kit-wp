@@ -35,7 +35,6 @@ import { MODULES_ADSENSE } from '../../datastore/constants';
 import whenActive from '../../../../util/when-active';
 import PreviewTable from '../../../../components/PreviewTable';
 import SourceLink from '../../../../components/SourceLink';
-import { isZeroReport } from '../../../analytics/util';
 import TableOverflowContainer from '../../../../components/TableOverflowContainer';
 import ReportTable from '../../../../components/ReportTable';
 import Link from '../../../../components/Link';
@@ -47,16 +46,13 @@ import {
 } from '../../../analytics/components/common';
 import { numFmt } from '../../../../util';
 import { getCurrencyFormat } from '../../util/currency';
-import { useFeature } from '../../../../hooks/useFeature';
 import useViewOnly from '../../../../hooks/useViewOnly';
 const { useSelect, useInViewSelect } = Data;
 
 function DashboardTopEarningPagesWidget( props ) {
-	const { Widget, WidgetReportZero, WidgetReportError, WidgetNull } = props;
+	const { Widget, WidgetReportError, WidgetNull } = props;
 
 	const isViewOnly = useViewOnly();
-
-	const zeroDataStates = useFeature( 'zeroDataStates' );
 
 	const isGatheringData = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).isGatheringData()
@@ -168,14 +164,6 @@ function DashboardTopEarningPagesWidget( props ) {
 		return (
 			<Widget Footer={ Footer }>
 				<WidgetReportError moduleSlug="analytics" error={ error } />
-			</Widget>
-		);
-	}
-
-	if ( ! zeroDataStates && isGatheringData && isZeroReport( data ) ) {
-		return (
-			<Widget Footer={ Footer }>
-				<WidgetReportZero moduleSlug="analytics" />
 			</Widget>
 		);
 	}

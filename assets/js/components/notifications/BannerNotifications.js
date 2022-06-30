@@ -41,7 +41,6 @@ const { useSelect } = Data;
 export default function BannerNotifications() {
 	const ideaHubModuleEnabled = useFeature( 'ideaHubModule' );
 	const userInputEnabled = useFeature( 'userInput' );
-	const zeroDataStatesEnabled = useFeature( 'zeroDataStates' );
 
 	const viewOnly = useViewOnly();
 
@@ -65,7 +64,7 @@ export default function BannerNotifications() {
 					{ isAuthenticated && <CoreSiteBannerNotifications /> }
 				</Fragment>
 			) }
-			{ zeroDataStatesEnabled && <ZeroDataStateNotifications /> }
+			<ZeroDataStateNotifications />
 			{ ! viewOnly && (
 				<Fragment>
 					{ userInputEnabled && (
