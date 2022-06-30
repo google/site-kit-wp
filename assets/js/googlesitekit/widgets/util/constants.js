@@ -21,6 +21,7 @@
  */
 import { WIDGET_WIDTHS } from '../datastore/constants';
 import ReportZero from '../../../components/ReportZero';
+import RecoverableModules from '../../../components/RecoverableModules';
 import CompleteModuleActivationCTA from '../../../components/CompleteModuleActivationCTA';
 import ActivateModuleCTA from '../../../components/ActivateModuleCTA';
 
@@ -35,4 +36,5 @@ export const SPECIAL_WIDGET_STATES = [
 	ActivateModuleCTA,
 	CompleteModuleActivationCTA,
 	ReportZero,
+	RecoverableModules,
 ];

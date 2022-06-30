@@ -73,9 +73,7 @@ export default {
 				registry
 					.dispatch( MODULES_THANK_WITH_GOOGLE )
 					.receiveGetSettings( {
-						products: [ 'basic' ],
 						publicationID: 'example.com',
-						revenueModel: 'contribution',
 					} );
 			};
 

@@ -54,6 +54,8 @@ function DashboardTopEarningPagesWidget( props ) {
 
 	const isViewOnly = useViewOnly();
 
+	const viewOnlyDashboard = useViewOnly();
+
 	const isGatheringData = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).isGatheringData()
 	);
@@ -95,31 +97,36 @@ function DashboardTopEarningPagesWidget( props ) {
 		} )
 	);
 
-	const {
-		analyticsMainURL,
-		error,
-		loading,
-		isAdSenseLinked,
-		isAdblockerActive,
-	} = useSelect( ( select ) => {
-		return {
-			analyticsMainURL: select( MODULES_ANALYTICS ).getServiceReportURL(
-				'content-publisher-overview',
-				generateDateRangeArgs( { startDate, endDate } )
-			),
-			error: select( MODULES_ANALYTICS ).getErrorForSelector(
-				'getReport',
-				[ args ]
-			),
-			loading: ! select(
-				MODULES_ANALYTICS
-			).hasFinishedResolution( 'getReport', [ args ] ),
-			isAdSenseLinked: select( MODULES_ANALYTICS ).getAdsenseLinked(),
-			isAdblockerActive: select( MODULES_ADSENSE ).isAdBlockerActive(),
-		};
-	} );
+	const error = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [ args ] )
+	);
+
+	const loading = useSelect(
+		( select ) =>
+			! select( MODULES_ANALYTICS ).hasFinishedResolution( 'getReport', [
+				args,
+			] )
+	);
+
+	const isAdSenseLinked = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getAdsenseLinked()
+	);
+
+	const isAdblockerActive = useSelect( ( select ) =>
+		select( MODULES_ADSENSE ).isAdBlockerActive()
+	);
 
 	const currencyFormat = getCurrencyFormat( adsenseData );
+
+	const analyticsMainURL = useSelect( ( select ) => {
+		if ( viewOnlyDashboard ) {
+			return null;
+		}
+		return select( MODULES_ANALYTICS ).getServiceReportURL(
+			'content-publisher-overview',
+			generateDateRangeArgs( { startDate, endDate } )
+		);
+	} );
 
 	const Footer = () => (
 		<SourceLink

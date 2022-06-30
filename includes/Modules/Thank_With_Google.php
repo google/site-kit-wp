@@ -27,7 +27,7 @@ use Google\Site_Kit\Modules\Thank_With_Google\Settings;
 /**
  * Class representing the Thank with Google module.
  *
- * @since n.e.x.t
+ * @since 1.78.0
  * @access private
  * @ignore
  */
@@ -46,7 +46,7 @@ final class Thank_With_Google extends Module
 	/**
 	 * Registers functionality through WordPress hooks.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.78.0
 	 */
 	public function register() {
 		if ( ! $this->is_connected() ) {
@@ -59,7 +59,7 @@ final class Thank_With_Google extends Module
 	 *
 	 * A module being connected means that all steps required as part of its activation are completed.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.78.0
 	 *
 	 * @return bool True if module is connected, false otherwise.
 	 */
@@ -70,15 +70,19 @@ final class Thank_With_Google extends Module
 			return false;
 		}
 
-		if ( ! $settings['products'] ) {
-			return false;
-		}
-
 		if ( ! $settings['publicationID'] ) {
 			return false;
 		}
 
-		if ( ! $settings['revenueModel'] ) {
+		if ( ! $settings['colorTheme'] ) {
+			return false;
+		}
+
+		if ( ! $settings['buttonPlacement'] ) {
+			return false;
+		}
+
+		if ( ! $settings['buttonPostTypes'] ) {
 			return false;
 		}
 
@@ -88,7 +92,7 @@ final class Thank_With_Google extends Module
 	/**
 	 * Cleans up when the module is deactivated.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.78.0
 	 */
 	public function on_deactivation() {
 		$this->get_settings()->delete();
@@ -97,7 +101,7 @@ final class Thank_With_Google extends Module
 	/**
 	 * Sets up information about the module.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.78.0
 	 *
 	 * @return array Associative array of module info.
 	 */
@@ -114,7 +118,7 @@ final class Thank_With_Google extends Module
 	/**
 	 * Sets up the module's settings instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.78.0
 	 *
 	 * @return Module_Settings
 	 */
@@ -125,7 +129,7 @@ final class Thank_With_Google extends Module
 	/**
 	 * Sets up the module's assets to register.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.78.0
 	 *
 	 * @return Asset[] List of Asset objects.
 	 */

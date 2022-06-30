@@ -220,12 +220,16 @@ function DashboardAllTrafficWidget( props ) {
 		) }`;
 	}
 
-	const serviceReportURL = useSelect( ( select ) =>
+	const serviceReportURL = useSelect( ( select ) => {
+		if ( viewOnly ) {
+			return null;
+		}
+
 		select( MODULES_ANALYTICS ).getServiceReportURL(
 			reportType,
 			reportArgs
-		)
-	);
+		);
+	} );
 
 	useEffect( () => {
 		if ( dateRange !== currentRange ) {

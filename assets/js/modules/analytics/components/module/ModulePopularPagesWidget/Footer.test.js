@@ -1,5 +1,5 @@
 /**
- * SourceLink tests.
+ * Footer tests.
  *
  * Site Kit by Google, Copyright 2022 Google LLC
  *
@@ -19,42 +19,39 @@
 /**
  * Internal dependencies
  */
-import { render } from '../../../tests/js/test-utils';
+import { render } from '../../../../../../../tests/js/test-utils';
 import {
 	VIEW_CONTEXT_DASHBOARD,
 	VIEW_CONTEXT_DASHBOARD_VIEW_ONLY,
-} from '../googlesitekit/constants';
-import SourceLink from './SourceLink';
+} from '../../../../../googlesitekit/constants';
+import Footer from './Footer';
 
-describe( 'SourceLink', () => {
-	it( 'should not render the SourceLink when the view context is "view only"', async () => {
-		const { container } = render(
-			<SourceLink
-				name="Analytics"
-				href={ 'https://analytics.google.com/test' }
-				external
-			/>,
-			{
-				viewContext: VIEW_CONTEXT_DASHBOARD_VIEW_ONLY,
-			}
+describe( 'Footer', () => {
+	it( 'should not make a analytics settings requests when the view context is "view only"', async () => {
+		const { container } = render( <Footer />, {
+			viewContext: VIEW_CONTEXT_DASHBOARD_VIEW_ONLY,
+		} );
+
+		expect( fetchMock ).not.toHaveFetched(
+			/^\/google-site-kit\/v1\/modules\/analytics\/data\/settings/
 		);
-
 		expect( container ).not.toHaveTextContent( 'Analytics' );
 		expect( container.firstChild ).toBeNull();
 	} );
 
-	it( 'should render the SourceLink normally when the view context is NOT "view only"', async () => {
-		const { container } = render(
-			<SourceLink
-				name="Analytics"
-				href={ 'https://analytics.google.com/test' }
-				external
-			/>,
-			{
-				viewContext: VIEW_CONTEXT_DASHBOARD,
-			}
+	it( 'should make a analytics settings request normally when the view context is NOT "view only"', async () => {
+		fetchMock.getOnce(
+			/^\/google-site-kit\/v1\/modules\/analytics\/data\/settings/,
+			{ body: {}, status: 200 }
 		);
 
+		const { container } = render( <Footer />, {
+			viewContext: VIEW_CONTEXT_DASHBOARD,
+		} );
+
+		expect( fetchMock ).toHaveFetched(
+			/^\/google-site-kit\/v1\/modules\/analytics\/data\/settings/
+		);
 		expect( container ).toHaveTextContent( 'Analytics' );
 		expect( container.firstChild ).not.toBeNull();
 	} );

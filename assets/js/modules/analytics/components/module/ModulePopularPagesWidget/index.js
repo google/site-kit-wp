@@ -46,6 +46,7 @@ import PreviewTable from '../../../../../components/PreviewTable';
 import { ZeroDataMessage } from '../../common';
 import Header from './Header';
 import Footer from './Footer';
+import useViewOnly from '../../../../../hooks/useViewOnly';
 const { useSelect, useInViewSelect } = Data;
 
 function ModulePopularPagesWidget( props ) {
@@ -60,6 +61,8 @@ function ModulePopularPagesWidget( props ) {
 			offsetDays: DATE_RANGE_OFFSET,
 		} )
 	);
+
+	const viewOnlyDashboard = useViewOnly();
 
 	const args = {
 		...dates,
@@ -136,16 +139,20 @@ function ModulePopularPagesWidget( props ) {
 			primary: true,
 			Component: ( { row } ) => {
 				const [ title, url ] = row.dimensions;
-				const serviceURL = useSelect( ( select ) =>
-					select( MODULES_ANALYTICS ).getServiceReportURL(
+				const serviceURL = useSelect( ( select ) => {
+					if ( viewOnlyDashboard ) {
+						return null;
+					}
+
+					return select( MODULES_ANALYTICS ).getServiceReportURL(
 						'content-drilldown',
 						{
 							'explorer-table.plotKeys': '[]',
 							'_r.drilldown': `analytics.pagePath:${ url }`,
 							...generateDateRangeArgs( dates ),
 						}
-					)
-				);
+					);
+				} );
 
 				return (
 					<DetailsPermaLinks

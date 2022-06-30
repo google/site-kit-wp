@@ -17,7 +17,7 @@ use Google\Site_Kit\Core\Storage\Setting_With_Owned_Keys_Trait;
 /**
  * Class for Thank with Google settings.
  *
- * @since n.e.x.t
+ * @since 1.78.0
  * @access private
  * @ignore
  */
@@ -29,7 +29,7 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 	/**
 	 * Registers the setting in WordPress.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.78.0
 	 */
 	public function register() {
 		parent::register();
@@ -40,31 +40,33 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 	/**
 	 * Returns keys for owned settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.78.0
 	 *
 	 * @return array An array of keys for owned settings.
 	 */
 	public function get_owned_keys() {
 		return array(
-			'products',
 			'publicationID',
-			'revenueModel',
+			'colorTheme',
+			'buttonPlacement',
+			'buttonPostTypes',
 		);
 	}
 
 	/**
 	 * Gets the default value.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.78.0
 	 *
 	 * @return array
 	 */
 	protected function get_default() {
 		return array(
-			'ownerID'       => '',
-			'products'      => array(),
-			'publicationID' => '',
-			'revenueModel'  => '',
+			'ownerID'         => '',
+			'publicationID'   => '',
+			'colorTheme'      => '',
+			'buttonPlacement' => '',
+			'buttonPostTypes' => array( 'post' ),
 		);
 	}
 }

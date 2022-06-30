@@ -19,7 +19,7 @@
 /**
  * Checks if the given publication ID appears to be a valid.
  *
- * @since n.e.x.t
+ * @since 1.78.0
  *
  * @param {string} publicationID Publication ID to test.
  * @return {boolean} `true` if the given publication ID is valid, `false` otherwise.
@@ -32,32 +32,41 @@ export function isValidPublicationID( publicationID ) {
 }
 
 /**
- * Checks if the given products string appears to be a valid.
+ * Checks if the given color theme is valid.
  *
- * @since n.e.x.t
+ * @since 1.78.0
  *
- * @param {string[]} products Products to test.
- * @return {boolean} `true` if the given products list is valid, `false` otherwise.
+ * @param {string} colorTheme Color theme to test.
+ * @return {boolean} `true` if the given color theme is valid, `false` otherwise.
  */
-export function isValidProducts( products ) {
-	return (
-		Array.isArray( products ) &&
-		products.length >= 1 &&
-		products.every( ( product ) => product.length > 0 )
-	);
+export function isValidColorTheme( colorTheme ) {
+	return typeof colorTheme === 'string' && colorTheme !== '';
 }
 
 /**
- * Checks if the given revenue model appears to be a valid.
+ * Checks if the given button placement is valid.
  *
- * @since n.e.x.t
+ * @since 1.78.0
  *
- * @param {string} revenueModel Revenue model to test.
- * @return {boolean} `true` if the given revenue model is valid, `false` otherwise.
+ * @param {string} buttonPlacement Button placement to test.
+ * @return {boolean} `true` if the given button placement is valid, `false` otherwise.
  */
-export function isValidRevenueModel( revenueModel ) {
+export function isValidButtonPlacement( buttonPlacement ) {
+	return typeof buttonPlacement === 'string' && buttonPlacement !== '';
+}
+
+/**
+ * Checks if the given buttonPostTypes array is valid.
+ *
+ * @since 1.78.0
+ *
+ * @param {string[]} buttonPostTypes Button post types to test.
+ * @return {boolean} `true` if the given button post types list is valid, `false` otherwise.
+ */
+export function isValidButtonPostTypes( buttonPostTypes ) {
 	return (
-		typeof revenueModel === 'string' &&
-		[ 'contribution', 'subscription' ].includes( revenueModel )
+		Array.isArray( buttonPostTypes ) &&
+		buttonPostTypes.length >= 1 &&
+		buttonPostTypes.every( ( buttonPostType ) => buttonPostType.length > 0 )
 	);
 }

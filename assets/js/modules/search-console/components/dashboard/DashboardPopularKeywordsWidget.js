@@ -40,10 +40,13 @@ import ReportTable from '../../../../components/ReportTable';
 import Link from '../../../../components/Link';
 import { numFmt } from '../../../../util';
 import { ZeroDataMessage } from '../common';
+import useViewOnly from '../../../../hooks/useViewOnly';
 const { useSelect, useInViewSelect } = Data;
 
 function DashboardPopularKeywordsWidget( props ) {
 	const { Widget, WidgetReportError } = props;
+
+	const viewOnlyDashboard = useViewOnly();
 
 	const isGatheringData = useInViewSelect( ( select ) =>
 		select( MODULES_SEARCH_CONSOLE ).isGatheringData()
@@ -82,12 +85,16 @@ function DashboardPopularKeywordsWidget( props ) {
 				MODULES_SEARCH_CONSOLE
 			).hasFinishedResolution( 'getReport', [ reportArgs ] )
 	);
-	const baseServiceURL = useSelect( ( select ) =>
-		select( MODULES_SEARCH_CONSOLE ).getServiceReportURL( {
+	const baseServiceURL = useSelect( ( select ) => {
+		if ( viewOnlyDashboard ) {
+			return null;
+		}
+
+		return select( MODULES_SEARCH_CONSOLE ).getServiceReportURL( {
 			...generateDateRangeArgs( dateRangeDates ),
 			page: url ? `!${ url }` : undefined,
-		} )
-	);
+		} );
+	} );
 
 	const Footer = () => (
 		<SourceLink
@@ -130,6 +137,9 @@ function DashboardPopularKeywordsWidget( props ) {
 			field: 'keys.0',
 			Component: ( { fieldValue } ) => {
 				const searchAnalyticsURL = useSelect( ( select ) => {
+					if ( viewOnlyDashboard ) {
+						return null;
+					}
 					const dates = select( CORE_USER ).getDateRangeDates( {
 						offsetDays: DATE_RANGE_OFFSET,
 					} );

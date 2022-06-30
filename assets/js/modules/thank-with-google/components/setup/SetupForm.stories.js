@@ -57,19 +57,11 @@ export default {
 				registry
 					.dispatch( MODULES_THANK_WITH_GOOGLE )
 					.receiveGetSettings( {
-						products: [],
 						publicationID: '',
-						revenueModel: '',
 					} );
 				registry
 					.dispatch( MODULES_THANK_WITH_GOOGLE )
-					.setProducts( [ 'basic' ] );
-				registry
-					.dispatch( MODULES_THANK_WITH_GOOGLE )
 					.setPublicationID( 'example.com' );
-				registry
-					.dispatch( MODULES_THANK_WITH_GOOGLE )
-					.setRevenueModel( 'contribution' );
 			};
 
 			return (

@@ -33,14 +33,16 @@ describe( 'SetupForm', () => {
 
 	const defaultSettings = {
 		publicationID: '',
-		products: [],
-		revenueModel: '',
+		colorTheme: '',
+		buttonPlacement: '',
+		buttonPostTypes: [ 'post' ],
 	};
 
 	const validSettings = {
 		publicationID: 'example.com',
-		products: [ 'basic' ],
-		revenueModel: 'contribution',
+		colorTheme: 'light',
+		buttonPlacement: 'bottom-right',
+		buttonPostTypes: [ 'post' ],
 	};
 
 	beforeEach( () => {

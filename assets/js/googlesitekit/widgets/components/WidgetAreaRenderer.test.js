@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import { getByText } from '@testing-library/dom';
+
+/**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
@@ -27,6 +32,7 @@ import {
 	WIDGET_AREA_STYLES,
 } from '../datastore/constants';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
+import { CORE_MODULES } from '../../modules/datastore/constants';
 import {
 	createTestRegistry,
 	render,
@@ -90,6 +96,7 @@ describe( 'WidgetAreaRenderer', () => {
 
 	beforeEach( async () => {
 		registry = createTestRegistryWithArea( areaName );
+
 		const connection = { connected: true };
 		await registry.dispatch( CORE_SITE ).receiveGetConnection( connection );
 	} );
@@ -701,5 +708,68 @@ describe( 'WidgetAreaRenderer', () => {
 				'.googlesitekit-widget-area-header'
 			)
 		).toHaveLength( 1 );
+	} );
+
+	it( 'should combine multiple widgets in RecoverableModules state with the same metadata into a single widget', () => {
+		provideModules( registry );
+		registry
+			.dispatch( CORE_MODULES )
+			.receiveRecoverableModules( [ 'search-console' ] );
+
+		provideUserCapabilities( registry, {
+			[ PERMISSION_VIEW_DASHBOARD ]: true,
+			[ `${ PERMISSION_READ_SHARED_MODULE_DATA }::["search-console"]` ]: true,
+		} );
+
+		createWidgets( registry, areaName, [
+			{
+				Component: WidgetComponent,
+				slug: 'one',
+				modules: [ 'search-console' ],
+			},
+			{
+				Component: WidgetComponent,
+				slug: 'two',
+				modules: [ 'search-console' ],
+			},
+		] );
+
+		const { container } = render(
+			<WidgetAreaRenderer slug={ areaName } />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_DASHBOARD_VIEW_ONLY,
+				features: [ 'dashboardSharing' ],
+			}
+		);
+
+		const visibleWidgetSelector =
+			'.googlesitekit-widget-area-widgets > .mdc-layout-grid__inner > .mdc-layout-grid__cell > .googlesitekit-widget';
+
+		// There should be a single visible widget.
+		expect(
+			container.firstChild.querySelectorAll( visibleWidgetSelector )
+		).toHaveLength( 1 );
+
+		// The visible widget should be rendered as the RecoverableModules component.
+		expect(
+			getByText(
+				container.firstChild.querySelector( visibleWidgetSelector ),
+				'Search Console data was previously shared by an admin who no longer has access. Please contact another admin to restore it.'
+			)
+		).toBeInTheDocument();
+
+		// There should also be a hidden widget.
+		expect(
+			container.firstChild.querySelectorAll(
+				'.googlesitekit-widget-area-widgets .googlesitekit-hidden .googlesitekit-widget'
+			)
+		).toHaveLength( 1 );
+
+		expect(
+			container.firstChild.querySelector(
+				'.googlesitekit-widget-area-widgets'
+			)
+		).toMatchSnapshot();
 	} );
 } );
