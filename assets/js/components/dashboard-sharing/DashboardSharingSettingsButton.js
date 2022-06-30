@@ -67,6 +67,9 @@ export default function DashboardSharingSettingsButton() {
 	const haveSettingsChanged = useSelect( ( select ) =>
 		select( CORE_MODULES ).haveSharingSettingsChanged()
 	);
+	const editingUserRoleSelect = useSelect( ( select ) =>
+		select( CORE_UI ).getValue( EDITING_USER_ROLE_SELECT_SLUG_KEY )
+	);
 
 	const openDialog = useCallback( () => {
 		trackEvent(
@@ -116,6 +119,9 @@ export default function DashboardSharingSettingsButton() {
 					onClose={ closeDialog }
 					className="googlesitekit-dialog googlesitekit-sharing-settings-dialog"
 					style={ dialogStyles }
+					escapeKeyAction={
+						editingUserRoleSelect === undefined ? 'close' : ''
+					}
 				>
 					<div
 						className="googlesitekit-dialog__back-wrapper"
