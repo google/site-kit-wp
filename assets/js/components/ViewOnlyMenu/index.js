@@ -20,6 +20,7 @@
  * External dependencies
  */
 import { useClickAway } from 'react-use';
+import classnames from 'classnames';
 
 /**
  * WordPress dependencies
@@ -40,6 +41,12 @@ import Menu from '../Menu';
 import Description from './Description';
 import SharedServices from './SharedServices';
 import Tracking from './Tracking';
+import Data from 'googlesitekit-data';
+import {
+	CORE_USER,
+	PERMISSION_AUTHENTICATE,
+} from '../../googlesitekit/datastore/user/constants';
+const { useSelect } = Data;
 
 export default function ViewOnlyMenu() {
 	const [ menuOpen, setMenuOpen ] = useState( false );
@@ -59,10 +66,22 @@ export default function ViewOnlyMenu() {
 		setMenuOpen( ! menuOpen );
 	}, [ menuOpen, viewContext ] );
 
+	const canAuthenticate = useSelect( ( select ) =>
+		select( CORE_USER ).hasCapability( PERMISSION_AUTHENTICATE )
+	);
+
 	return (
 		<div
 			ref={ menuWrapperRef }
-			className="googlesitekit-view-only-menu googlesitekit-dropdown-menu googlesitekit-dropdown-menu__icon-menu mdc-menu-surface--anchor"
+			className={ classnames(
+				'googlesitekit-view-only-menu',
+				'googlesitekit-dropdown-menu',
+				'googlesitekit-dropdown-menu__icon-menu',
+				'mdc-menu-surface--anchor',
+				{
+					'googlesitekit-view-only-menu--user-can-authenticate': canAuthenticate,
+				}
+			) }
 		>
 			<Button
 				className="googlesitekit-header__dropdown mdc-button--dropdown googlesitekit-border-radius-round--phone googlesitekit-button-icon"
