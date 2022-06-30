@@ -16,16 +16,6 @@
  * limitations under the License.
  */
 
-/**
- * Internal dependencies
- */
-import AdminBarZeroData from './AdminBarZeroData';
-
-const Template = ( args ) => <AdminBarZeroData { ...args } />;
-
-export const Ready = Template.bind( {} );
-Ready.storyName = 'Gathering Data (Legacy)';
-
 export default {
 	title: 'Views/AdminBarApp/AdminBarZeroData',
 	decorators: [

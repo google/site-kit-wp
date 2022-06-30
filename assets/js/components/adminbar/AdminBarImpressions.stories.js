@@ -45,9 +45,6 @@ Ready.args = {
 	setupRegistry: setupSearchConsoleMockReports,
 };
 
-export const GatheringDataLegacy = Template.bind( {} );
-GatheringDataLegacy.storyName = 'Gathering Data (Legacy)';
-
 export const GatheringData = Template.bind( {} );
 GatheringData.storyName = 'Gathering Data';
 GatheringData.args = {

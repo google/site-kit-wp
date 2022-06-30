@@ -26,7 +26,6 @@ import {
 } from '../../../../tests/js/utils';
 import {
 	setupSearchConsoleAnalyticsMockReports,
-	setupAnalyticsMockReports,
 	setupSearchConsoleMockReports,
 	setupSearchConsoleAnalyticsGatheringData,
 	setupSearchConsoleAnalyticsZeroData,
@@ -45,18 +44,6 @@ export const Ready = Template.bind( {} );
 Ready.storyName = 'Ready';
 Ready.args = {
 	setupRegistry: setupSearchConsoleAnalyticsMockReports,
-};
-
-export const GatheringDataLegacy = Template.bind( {} );
-GatheringDataLegacy.storyName = 'Gathering Data (Legacy)';
-
-export const AnalyticsGatheringDataLegacy = Template.bind( {} );
-AnalyticsGatheringDataLegacy.storyName = 'Gathering Data (Legacy): Analytics';
-AnalyticsGatheringDataLegacy.args = {
-	setupRegistry: ( registry ) => {
-		setupSearchConsoleMockReports( registry );
-		setupAnalyticsMockReports( registry, [] );
-	},
 };
 
 export const AnalyticsInactive = Template.bind( {} );
@@ -100,22 +87,6 @@ AnalyticsInactiveNewCompleteActivation.args = {
 		provideModuleRegistrations( registry );
 		provideUserAuthentication( registry );
 		setupSearchConsoleMockReports( registry );
-	},
-};
-
-export const SearchConsoleGatheringDataLegacy = Template.bind( {} );
-SearchConsoleGatheringDataLegacy.storyName =
-	'Gathering Data (Legacy): Search Console';
-SearchConsoleGatheringDataLegacy.args = {
-	setupRegistry: ( registry ) => {
-		provideModules( registry, [
-			{
-				slug: 'search-console',
-				active: true,
-				connected: true,
-			},
-		] );
-		setupSearchConsoleMockReports( registry, [] );
 	},
 };
 

@@ -45,9 +45,6 @@ Ready.args = {
 	setupRegistry: setupAnalyticsMockReports,
 };
 
-export const GatheringDataLegacy = Template.bind( {} );
-GatheringDataLegacy.storyName = 'Gathering Data (Legacy)';
-
 export const GatheringData = Template.bind( {} );
 GatheringData.storyName = 'GatheringData';
 GatheringData.args = {
