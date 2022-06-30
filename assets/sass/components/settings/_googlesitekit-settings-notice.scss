@@ -53,7 +53,6 @@
 	.googlesitekit-settings-notice__text {
 		flex-grow: 1;
 		line-height: 20px; // Match icon height.
-
 	}
 
 	.mdc-select:not(.mdc-select--disabled),
@@ -120,6 +119,7 @@
 
 		.googlesitekit-settings-notice__learn-more {
 			flex-shrink: 0;
+			line-height: 20px; // to match icon height.
 			text-align: right;
 
 			@media (min-width: $bp-tablet) {
@@ -177,7 +177,7 @@
 		color: $c-text-notice-info;
 
 		.googlesitekit-cta-link {
-			color: $c-content-primary;
+			color: $c-content-link;
 		}
 	}
 

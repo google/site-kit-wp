@@ -28,6 +28,7 @@ import PropTypes from 'prop-types';
 import { Chart } from 'react-google-charts';
 import set from 'lodash/set';
 import cloneDeep from 'lodash/cloneDeep';
+import merge from 'lodash/merge';
 
 /**
  * WordPress dependencies
@@ -224,15 +225,29 @@ export default function GoogleChart( props ) {
 		}
 	}
 
-	set( chartOptions, 'hAxis.textStyle.fontName', 'Google Sans Text' );
-	set( chartOptions, 'hAxis.textStyle.fontSize', 10 );
-	set( chartOptions, 'hAxis.textStyle.color', '#5f6561' );
-	set( chartOptions, 'vAxis.textStyle.fontName', 'Google Sans Text' );
-	set( chartOptions, 'vAxis.textStyle.color', '#5f6561' );
-	set( chartOptions, 'vAxis.textStyle.fontSize', 10 );
-	set( chartOptions, 'legend.textStyle.fontName', 'Google Sans Text' );
-	set( chartOptions, 'legend.textStyle.color', '#131418' );
-	set( chartOptions, 'legend.textStyle.fontSize', 12 );
+	merge( chartOptions, {
+		hAxis: {
+			textStyle: {
+				fontName: 'Google Sans Text',
+				fontSize: 10,
+				color: '#5f6561',
+			},
+		},
+		vAxis: {
+			textStyle: {
+				fontName: 'Google Sans Text',
+				color: '#5f6561',
+				fontSize: 10,
+			},
+		},
+		legend: {
+			textStyle: {
+				fontName: 'Google Sans Text',
+				color: '#131418',
+				fontSize: 12,
+			},
+		},
+	} );
 
 	return (
 		<div
