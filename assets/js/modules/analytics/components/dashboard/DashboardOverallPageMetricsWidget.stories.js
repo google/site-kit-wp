@@ -166,35 +166,6 @@ Error.args = {
 	},
 };
 
-export const GatheringDataZeroDataStates = Template.bind( {} );
-GatheringDataZeroDataStates.storyName = 'Gathering Data w/ zeroDataStates';
-GatheringDataZeroDataStates.args = {
-	setupRegistry: ( { dispatch } ) => {
-		dispatch( MODULES_ANALYTICS ).receiveGetReport( [], {
-			options: gatheringReportOptions,
-		} );
-
-		for ( const options of reportOptions ) {
-			dispatch( MODULES_ANALYTICS ).receiveGetReport( [], { options } );
-		}
-	},
-};
-
-export const GatheringDataZeroDataStatesDisabled = Template.bind( {} );
-GatheringDataZeroDataStatesDisabled.storyName =
-	'Gathering Data w/o zeroDataStates';
-GatheringDataZeroDataStatesDisabled.args = {
-	setupRegistry: ( { dispatch } ) => {
-		dispatch( MODULES_ANALYTICS ).receiveGetReport( [], {
-			options: gatheringReportOptions,
-		} );
-
-		for ( const options of reportOptions ) {
-			dispatch( MODULES_ANALYTICS ).receiveGetReport( [], { options } );
-		}
-	},
-};
-
 export const LoadedEntityURL = Template.bind( {} );
 LoadedEntityURL.storyName = 'Ready w/ entity URL set';
 LoadedEntityURL.args = {
@@ -294,36 +265,6 @@ ErrorEntityURL.args = {
 		registry
 			.dispatch( MODULES_ANALYTICS )
 			.finishResolution( 'getReport', [ options ] );
-	},
-};
-
-export const GatheringDataEntityURLZeroDataStates = Template.bind( {} );
-GatheringDataEntityURLZeroDataStates.storyName =
-	'Gathering w/ entity URL and zeroDataStates';
-GatheringDataEntityURLZeroDataStates.args = {
-	setupRegistry: ( { dispatch } ) => {
-		dispatch( MODULES_ANALYTICS ).receiveGetReport( [], {
-			options: gatheringReportOptions,
-		} );
-
-		for ( const options of reportOptions ) {
-			dispatch( MODULES_ANALYTICS ).receiveGetReport( [], { options } );
-		}
-	},
-};
-
-export const GatheringDataEntityURLZeroDataStatesDisabled = Template.bind( {} );
-GatheringDataEntityURLZeroDataStatesDisabled.storyName =
-	'Gathering w/ entity URL and w/o zeroDataStates';
-GatheringDataEntityURLZeroDataStatesDisabled.args = {
-	setupRegistry: ( { dispatch } ) => {
-		dispatch( MODULES_ANALYTICS ).receiveGetReport( [], {
-			options: gatheringReportOptions,
-		} );
-
-		for ( const options of reportOptions ) {
-			dispatch( MODULES_ANALYTICS ).receiveGetReport( [], { options } );
-		}
 	},
 };
 
