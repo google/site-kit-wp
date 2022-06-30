@@ -19,7 +19,7 @@
 /**
  * Checks if the given publication ID appears to be a valid.
  *
- * @since n.e.x.t
+ * @since 1.78.0
  *
  * @param {string} publicationID Publication ID to test.
  * @return {boolean} `true` if the given publication ID is valid, `false` otherwise.
@@ -34,7 +34,7 @@ export function isValidPublicationID( publicationID ) {
 /**
  * Checks if the given color theme is valid.
  *
- * @since n.e.x.t
+ * @since 1.78.0
  *
  * @param {string} colorTheme Color theme to test.
  * @return {boolean} `true` if the given color theme is valid, `false` otherwise.
@@ -46,7 +46,7 @@ export function isValidColorTheme( colorTheme ) {
 /**
  * Checks if the given button placement is valid.
  *
- * @since n.e.x.t
+ * @since 1.78.0
  *
  * @param {string} buttonPlacement Button placement to test.
  * @return {boolean} `true` if the given button placement is valid, `false` otherwise.
@@ -58,7 +58,7 @@ export function isValidButtonPlacement( buttonPlacement ) {
 /**
  * Checks if the given buttonPostTypes array is valid.
  *
- * @since n.e.x.t
+ * @since 1.78.0
  *
  * @param {string[]} buttonPostTypes Button post types to test.
  * @return {boolean} `true` if the given button post types list is valid, `false` otherwise.
