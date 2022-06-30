@@ -34,6 +34,7 @@ import { __, sprintf } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
+import { EXPERIMENTAL_MODULES } from '../../dashboard-sharing/DashboardSharingSettings/constants';
 import { Grid, Row, Cell } from '../../../material-components';
 import Link from '../../Link';
 import ModuleIcon from '../../ModuleIcon';
@@ -98,9 +99,7 @@ export default function Header( { slug } ) {
 							/>
 							{ name }
 
-							{ [ 'idea-hub', 'thank-with-google' ].includes(
-								slug
-							) && (
+							{ EXPERIMENTAL_MODULES.includes( slug ) && (
 								<Badge
 									label={ __(
 										'Experimental',

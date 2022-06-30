@@ -40,6 +40,7 @@ import ModuleSettingsWarning from '../notifications/ModuleSettingsWarning.js';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
+import { EXPERIMENTAL_MODULES } from '../dashboard-sharing/DashboardSharingSettings/constants';
 import { trackEvent } from '../../util';
 import useViewContext from '../../hooks/useViewContext';
 const { useSelect, useDispatch } = Data;
@@ -110,7 +111,7 @@ export default function SetupModule( { slug, name, description } ) {
 			>
 				{ name }
 
-				{ [ 'idea-hub', 'thank-with-google' ].includes( slug ) && (
+				{ EXPERIMENTAL_MODULES.includes( slug ) && (
 					<Badge
 						label={ __( 'Experimental', 'google-site-kit' ) }
 						hasLeftSpacing={ true }
