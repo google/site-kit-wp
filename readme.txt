@@ -123,7 +123,6 @@ Please create a new topic on our [WordPress.org support forum](https://wordpress
 * Display a message with tooltip instead of disabled Dashboard Sharing view management dropdown. See [#5352](https://github.com/google/site-kit-wp/issues/5352).
 * Improve the notice first shown to non administrators on the initial splash screen. See [#5347](https://github.com/google/site-kit-wp/issues/5347).
 * Add a feature tour for the dashboard sharing. See [#5328](https://github.com/google/site-kit-wp/issues/5328).
-* Update design of the dashboard CTA for connecting AdSense. See [#5260](https://github.com/google/site-kit-wp/issues/5260).
 * Move tracking related data into its own global `_googlesitekitTrackingData` variable. See [#5117](https://github.com/google/site-kit-wp/issues/5117).
 * Update tag placement functionality to allow using tags in non-production environments. See [#4774](https://github.com/google/site-kit-wp/issues/4774).
 * Add Dashboard Sharing's Active Modules and Sharable Modules to Site Health. See [#4534](https://github.com/google/site-kit-wp/issues/4534).
