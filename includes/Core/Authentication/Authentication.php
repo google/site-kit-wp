@@ -960,7 +960,7 @@ final class Authentication {
 	/**
 	 * Adds / modifies tracking relevant data to pass to JS.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.78.0
 	 *
 	 * @param array $data Inline JS data.
 	 * @return array Filtered $data.

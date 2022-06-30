@@ -229,7 +229,7 @@ const baseActions = {
 	/**
 	 * Restores the sharing settings to the currently saved values.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.78.0
 	 *
 	 * @return {Object} Action for ROLLBACK_SHARING_SETTINGS.
 	 */
@@ -482,7 +482,7 @@ const baseSelectors = {
 	/**
 	 * Compares current sharing settings management OR sharedRoles have changed from what is saved.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.78.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @param {string} key   Sharing Settings property key to check; one of `management` | `sharedRoles`.

@@ -19,7 +19,7 @@
 /**
  * Returns an AdSense report with zeroed data.
  *
- * @since n.e.x.t
+ * @since 1.78.0
  *
  * @param {Object} report AdSense report data.
  * @return {Object} AdSense report data with zeroed data.
