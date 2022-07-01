@@ -283,9 +283,29 @@ describe( 'ReportError', () => {
 		expect( queryByText( /retry/i ) ).toBeInTheDocument();
 	} );
 
-	it( "should dispatch the `invalidateResolution` action the equal times of errors' length", () => {
+	it( 'should dispatch the `invalidateResolution` action for each retry-able error', () => {
 		const { queryByText, getByRole } = render(
-			<ReportError moduleSlug="analytics" error={ errors } />,
+			<ReportError
+				moduleSlug="analytics"
+				error={ [
+					...errors,
+					// The following error object is not retry-able.
+					...[
+						{
+							code: ERROR_CODE_MISSING_REQUIRED_SCOPE,
+							message: 'Test error message',
+							data: {
+								reason: '',
+							},
+							selectorData: {
+								args: [],
+								name: 'getAccountID',
+								storeName: MODULES_ANALYTICS,
+							},
+						},
+					],
+				] }
+			/>,
 			{
 				registry,
 			}
@@ -295,6 +315,9 @@ describe( 'ReportError', () => {
 
 		fireEvent.click( getByRole( 'button', { name: /retry/i } ) );
 
+		// There are three error object is being passed to the prop.
+		// Only two are retry-able.
+		// So, there should be only two invalidateResolution calls.
 		expect( invalidateResolutionSpy ).toHaveBeenCalledTimes( 2 );
 	} );
 
