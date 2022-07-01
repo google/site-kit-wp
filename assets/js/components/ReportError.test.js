@@ -339,4 +339,33 @@ describe( 'ReportError', () => {
 
 		expect( invalidateResolutionSpy ).toHaveBeenCalledTimes( 2 );
 	} );
+
+	it( 'should list only the unique error descriptions', () => {
+		const { container, queryByText, getByRole } = render(
+			<ReportError
+				moduleSlug="analytics"
+				error={ [ ...errors, ...errors ] }
+			/>,
+			{
+				registry,
+			}
+		);
+
+		expect( queryByText( /retry/i ) ).toBeInTheDocument();
+
+		// Verify that the error descriptions are listed one by one if the errors are different.
+		expect( queryByText( /Test error message one/i ) ).toBeInTheDocument();
+		expect( queryByText( /Test error message two/i ) ).toBeInTheDocument();
+
+		const errorDescriptionElement = container.querySelectorAll(
+			'.googlesitekit-cta__description'
+		);
+
+		// Verify the child element count for the error description element is two.
+		// However, the passed error array has four repetitive error objects.
+		expect( errorDescriptionElement[ 0 ].childElementCount ).toBe( 2 );
+
+		fireEvent.click( getByRole( 'button', { name: /retry/i } ) );
+		expect( invalidateResolutionSpy ).toHaveBeenCalledTimes( 4 );
+	} );
 } );
