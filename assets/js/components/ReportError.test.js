@@ -24,20 +24,68 @@ import {
 	ERROR_CODE_MISSING_REQUIRED_SCOPE,
 	ERROR_REASON_INSUFFICIENT_PERMISSIONS,
 } from '../util/errors';
-import { render } from '../../../tests/js/test-utils';
+import { fireEvent, render } from '../../../tests/js/test-utils';
 import ReportError from './ReportError';
 import { MODULES_ANALYTICS } from '../modules/analytics/datastore/constants';
 
 describe( 'ReportError', () => {
 	let registry;
+	let invalidateResolutionSpy;
 	const moduleName = 'test-module';
+
+	const errors = [
+		{
+			code: 'test-error-code',
+			message: 'Test error message one',
+			data: {
+				reason: 'Data Error',
+			},
+			selectorData: {
+				args: [
+					{
+						dimensions: [ 'ga:date' ],
+						metrics: [ { expression: 'ga:users' } ],
+						startDate: '2020-08-11',
+						endDate: '2020-09-07',
+					},
+				],
+				name: 'getReport',
+				storeName: MODULES_ANALYTICS,
+			},
+		},
+		{
+			code: 'test-error-code',
+			message: 'Test error message two',
+			data: {
+				reason: 'Data Error',
+			},
+			selectorData: {
+				args: [
+					{
+						dimensions: [ 'ga:date' ],
+						metrics: [ { expression: 'ga:users' } ],
+						startDate: '2020-08-11',
+						endDate: '2020-09-07',
+					},
+				],
+				name: 'getReport',
+				storeName: MODULES_ANALYTICS,
+			},
+		},
+	];
 
 	beforeEach( () => {
 		registry = createTestRegistry();
 		provideModules( registry, [
 			{ slug: moduleName, name: 'Test Module' },
 		] );
+		invalidateResolutionSpy = jest.spyOn(
+			registry.dispatch( MODULES_ANALYTICS ),
+			'invalidateResolution'
+		);
 	} );
+
+	afterEach( () => invalidateResolutionSpy.mockReset() );
 
 	it( 'renders the error message', () => {
 		const { container } = render(
@@ -233,5 +281,39 @@ describe( 'ReportError', () => {
 		);
 
 		expect( queryByText( /retry/i ) ).toBeInTheDocument();
+	} );
+
+	it( "should dispatch the `invalidateResolution` action the equal times of errors' length", () => {
+		const { queryByText, getByRole } = render(
+			<ReportError moduleSlug="analytics" error={ errors } />,
+			{
+				registry,
+			}
+		);
+
+		expect( queryByText( /retry/i ) ).toBeInTheDocument();
+
+		fireEvent.click( getByRole( 'button', { name: /retry/i } ) );
+
+		expect( invalidateResolutionSpy ).toHaveBeenCalledTimes( 2 );
+	} );
+
+	it( 'should list all the error descriptions one by one if errors are different', () => {
+		const { queryByText, getByRole } = render(
+			<ReportError moduleSlug="analytics" error={ errors } />,
+			{
+				registry,
+			}
+		);
+
+		expect( queryByText( /retry/i ) ).toBeInTheDocument();
+
+		// Verify that the error descriptions are listed one by one if the errors are different.
+		expect( queryByText( /Test error message one/i ) ).toBeInTheDocument();
+		expect( queryByText( /Test error message two/i ) ).toBeInTheDocument();
+
+		fireEvent.click( getByRole( 'button', { name: /retry/i } ) );
+
+		expect( invalidateResolutionSpy ).toHaveBeenCalledTimes( 2 );
 	} );
 } );
