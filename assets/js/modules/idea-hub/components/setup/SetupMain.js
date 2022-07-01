@@ -64,7 +64,7 @@ export default function SetupMain( { finishSetup } ) {
 
 				<Badge
 					label={ __( 'Experimental', 'google-site-kit' ) }
-					className="googlesitekit-idea-hub__badge"
+					hasLeftSpacing={ true }
 				/>
 			</h2>
 
