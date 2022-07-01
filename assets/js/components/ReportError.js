@@ -20,7 +20,7 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
-import uniqueBy from 'lodash/uniqBy';
+import uniqWith from 'lodash/uniqWith';
 
 /**
  * WordPress dependencies
@@ -51,24 +51,7 @@ export default function ReportError( { moduleSlug, error } ) {
 	);
 
 	const dispatch = useDispatch();
-
-	const errors = Array.isArray( error ) ? error : [ error ];
-	const uniqueErrors = uniqueBy( errors, ( e ) => e.code && e.message );
-
 	let title;
-	if ( uniqueErrors.length > 1 ) {
-		title = sprintf(
-			/* translators: %s: module name */
-			__( 'Data errors in %s', 'google-site-kit' ),
-			module?.name
-		);
-	} else {
-		title = sprintf(
-			/* translators: %s: module name */
-			__( 'Data error in %s', 'google-site-kit' ),
-			module?.name
-		);
-	}
 
 	const getMessage = ( e ) => {
 		const message = e.message;
@@ -88,20 +71,49 @@ export default function ReportError( { moduleSlug, error } ) {
 		return message;
 	};
 
+	const errors = Array.isArray( error ) ? error : [ error ];
+	const uniqueErrors = uniqWith(
+		errors.map( ( e ) => ( {
+			...e,
+			message: getMessage( e ),
+			reconnectURL: e.data?.reconnectURL,
+		} ) ),
+		( errorA, errorB ) =>
+			errorA.message === errorB.message &&
+			errorA.reconnectURL === errorB.reconnectURL
+	);
+
+	const hasInsufficientPermissionsError = errors.some( ( e ) =>
+		isInsufficientPermissionsError( e )
+	);
+
+	if ( ! hasInsufficientPermissionsError && uniqueErrors.length === 1 ) {
+		title = sprintf(
+			/* translators: %s: module name */
+			__( 'Data error in %s', 'google-site-kit' ),
+			module?.name
+		);
+	} else if ( ! hasInsufficientPermissionsError && uniqueErrors.length > 1 ) {
+		title = sprintf(
+			/* translators: %s: module name */
+			__( 'Data errors in %s', 'google-site-kit' ),
+			module?.name
+		);
+	}
+
 	const description = (
 		<Fragment>
 			{ uniqueErrors.map( ( e ) => {
-				const message = getMessage( e );
 				const reconnectURL = error?.data?.reconnectURL;
 				return reconnectURL ? (
 					<ErrorText
 						key={ e.message }
-						message={ message }
+						message={ e.message }
 						reconnectURL={ reconnectURL }
 					/>
 				) : (
 					<p key={ e.message }>
-						{ purify.sanitize( message, { ALLOWED_TAGS: [] } ) }
+						{ purify.sanitize( e.message, { ALLOWED_TAGS: [] } ) }
 					</p>
 				);
 			} ) }
