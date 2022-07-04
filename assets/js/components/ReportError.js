@@ -20,11 +20,12 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import uniqWith from 'lodash/uniqWith';
 
 /**
  * WordPress dependencies
  */
-import { useCallback } from '@wordpress/element';
+import { Fragment, useCallback } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 
 /**
@@ -50,44 +51,93 @@ export default function ReportError( { moduleSlug, error } ) {
 	);
 
 	const dispatch = useDispatch();
+	let title;
 
-	let title = sprintf(
-		/* translators: %s: module name */
-		__( 'Data error in %s', 'google-site-kit' ),
-		module?.name
+	const getMessage = ( err ) => {
+		if ( isInsufficientPermissionsError( err ) ) {
+			title = sprintf(
+				/* translators: %s: module name */
+				__( 'Insufficient permissions in %s', 'google-site-kit' ),
+				module?.name
+			);
+
+			return getInsufficientPermissionsErrorDescription(
+				err.message,
+				module
+			);
+		}
+
+		return err.message;
+	};
+
+	const errors = Array.isArray( error ) ? error : [ error ];
+	const uniqueErrors = uniqWith(
+		errors.map( ( err ) => ( {
+			...err,
+			message: getMessage( err ),
+			reconnectURL: err.data?.reconnectURL,
+		} ) ),
+		( errorA, errorB ) =>
+			errorA.message === errorB.message &&
+			errorA.reconnectURL === errorB.reconnectURL
 	);
-	let message = error.message;
 
-	if ( isInsufficientPermissionsError( error ) ) {
+	const hasInsufficientPermissionsError = errors.some( ( err ) =>
+		isInsufficientPermissionsError( err )
+	);
+
+	if ( ! hasInsufficientPermissionsError && uniqueErrors.length === 1 ) {
 		title = sprintf(
 			/* translators: %s: module name */
-			__( 'Insufficient permissions in %s', 'google-site-kit' ),
+			__( 'Data error in %s', 'google-site-kit' ),
 			module?.name
 		);
-		message = getInsufficientPermissionsErrorDescription( message, module );
+	} else if ( ! hasInsufficientPermissionsError && uniqueErrors.length > 1 ) {
+		title = sprintf(
+			/* translators: %s: module name */
+			__( 'Data errors in %s', 'google-site-kit' ),
+			module?.name
+		);
 	}
 
-	const reconnectURL = error?.data?.reconnectURL;
-	const description = reconnectURL ? (
-		<ErrorText message={ message } reconnectURL={ reconnectURL } />
-	) : (
-		purify.sanitize( message, { ALLOWED_TAGS: [] } )
+	const description = (
+		<Fragment>
+			{ uniqueErrors.map( ( err ) => {
+				const reconnectURL = error?.data?.reconnectURL;
+				return reconnectURL ? (
+					<ErrorText
+						key={ err.message }
+						message={ err.message }
+						reconnectURL={ reconnectURL }
+					/>
+				) : (
+					<p key={ err.message }>
+						{ purify.sanitize( err.message, { ALLOWED_TAGS: [] } ) }
+					</p>
+				);
+			} ) }
+		</Fragment>
 	);
 
-	const showRetry =
-		!! error?.selectorData?.storeName &&
-		error.selectorData?.name === 'getReport' &&
-		! isInsufficientPermissionsError( error ) &&
-		! isPermissionScopeError( error ) &&
-		! isAuthError( error );
+	const retryableErrors = errors.filter(
+		( err ) =>
+			!! err?.selectorData?.storeName &&
+			err.selectorData?.name === 'getReport' &&
+			! isInsufficientPermissionsError( err ) &&
+			! isPermissionScopeError( err ) &&
+			! isAuthError( err )
+	);
+	const showRetry = !! retryableErrors.length;
 
 	const handleRetry = useCallback( () => {
-		const { selectorData } = error;
-		dispatch( selectorData.storeName ).invalidateResolution(
-			selectorData.name,
-			selectorData.args
-		);
-	}, [ dispatch, error ] );
+		retryableErrors.forEach( ( err ) => {
+			const { selectorData } = err;
+			dispatch( selectorData.storeName ).invalidateResolution(
+				selectorData.name,
+				selectorData.args
+			);
+		} );
+	}, [ dispatch, retryableErrors ] );
 
 	return (
 		<CTA
@@ -105,5 +155,8 @@ export default function ReportError( { moduleSlug, error } ) {
 
 ReportError.propTypes = {
 	moduleSlug: PropTypes.string.isRequired,
-	error: PropTypes.object.isRequired,
+	error: PropTypes.oneOfType( [
+		PropTypes.arrayOf( PropTypes.object ),
+		PropTypes.object,
+	] ).isRequired,
 };
