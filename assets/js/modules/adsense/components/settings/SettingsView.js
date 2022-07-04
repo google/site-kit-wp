@@ -40,6 +40,7 @@ import {
 	ACCOUNT_STATUS_PENDING,
 	ACCOUNT_STATUS_NO_CLIENT,
 	ACCOUNT_STATUS_APPROVED,
+	ACCOUNT_STATUS_READY,
 } from '../../util/status';
 import { ErrorNotices } from '../common';
 const { useSelect } = Data;
@@ -78,6 +79,12 @@ export default function SettingsView() {
 		case ACCOUNT_STATUS_APPROVED:
 			accountStatusLabel = __(
 				'Your account has been approved',
+				'google-site-kit'
+			);
+			break;
+		case ACCOUNT_STATUS_READY:
+			accountStatusLabel = __(
+				'Your site is ready for ads',
 				'google-site-kit'
 			);
 			break;
