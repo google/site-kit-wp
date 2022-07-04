@@ -53,38 +53,37 @@ export default function ReportError( { moduleSlug, error } ) {
 	const dispatch = useDispatch();
 	let title;
 
-	const getMessage = ( e ) => {
-		const message = e.message;
-
-		if ( isInsufficientPermissionsError( e ) ) {
+	const getMessage = ( err ) => {
+		if ( isInsufficientPermissionsError( err ) ) {
 			title = sprintf(
 				/* translators: %s: module name */
 				__( 'Insufficient permissions in %s', 'google-site-kit' ),
 				module?.name
 			);
+
 			return getInsufficientPermissionsErrorDescription(
-				message,
+				err.message,
 				module
 			);
 		}
 
-		return message;
+		return err.message;
 	};
 
 	const errors = Array.isArray( error ) ? error : [ error ];
 	const uniqueErrors = uniqWith(
-		errors.map( ( e ) => ( {
-			...e,
-			message: getMessage( e ),
-			reconnectURL: e.data?.reconnectURL,
+		errors.map( ( err ) => ( {
+			...err,
+			message: getMessage( err ),
+			reconnectURL: err.data?.reconnectURL,
 		} ) ),
 		( errorA, errorB ) =>
 			errorA.message === errorB.message &&
 			errorA.reconnectURL === errorB.reconnectURL
 	);
 
-	const hasInsufficientPermissionsError = errors.some( ( e ) =>
-		isInsufficientPermissionsError( e )
+	const hasInsufficientPermissionsError = errors.some( ( err ) =>
+		isInsufficientPermissionsError( err )
 	);
 
 	if ( ! hasInsufficientPermissionsError && uniqueErrors.length === 1 ) {
@@ -103,17 +102,17 @@ export default function ReportError( { moduleSlug, error } ) {
 
 	const description = (
 		<Fragment>
-			{ uniqueErrors.map( ( e ) => {
+			{ uniqueErrors.map( ( err ) => {
 				const reconnectURL = error?.data?.reconnectURL;
 				return reconnectURL ? (
 					<ErrorText
-						key={ e.message }
-						message={ e.message }
+						key={ err.message }
+						message={ err.message }
 						reconnectURL={ reconnectURL }
 					/>
 				) : (
-					<p key={ e.message }>
-						{ purify.sanitize( e.message, { ALLOWED_TAGS: [] } ) }
+					<p key={ err.message }>
+						{ purify.sanitize( err.message, { ALLOWED_TAGS: [] } ) }
 					</p>
 				);
 			} ) }
@@ -121,18 +120,18 @@ export default function ReportError( { moduleSlug, error } ) {
 	);
 
 	const retryableErrors = errors.filter(
-		( e ) =>
-			!! e?.selectorData?.storeName &&
-			e.selectorData?.name === 'getReport' &&
-			! isInsufficientPermissionsError( e ) &&
-			! isPermissionScopeError( e ) &&
-			! isAuthError( e )
+		( err ) =>
+			!! err?.selectorData?.storeName &&
+			err.selectorData?.name === 'getReport' &&
+			! isInsufficientPermissionsError( err ) &&
+			! isPermissionScopeError( err ) &&
+			! isAuthError( err )
 	);
 	const showRetry = !! retryableErrors.length;
 
 	const handleRetry = useCallback( () => {
-		retryableErrors.forEach( ( e ) => {
-			const { selectorData } = e;
+		retryableErrors.forEach( ( err ) => {
+			const { selectorData } = err;
 			dispatch( selectorData.storeName ).invalidateResolution(
 				selectorData.name,
 				selectorData.args
