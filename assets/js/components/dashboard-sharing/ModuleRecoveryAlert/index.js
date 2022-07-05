@@ -26,12 +26,12 @@ import { sprintf, __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
-import Button from '../Button';
-import Checkbox from '../Checkbox';
-import BannerNotification from '../notifications/BannerNotification';
-import ProgressBar from '../ProgressBar';
-import Spinner from '../Spinner';
+import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
+import Button from '../../Button';
+import Checkbox from '../../Checkbox';
+import BannerNotification from '../../notifications/BannerNotification';
+import ProgressBar from '../../ProgressBar';
+import Spinner from '../../Spinner';
 
 const { useDispatch, useSelect } = Data;
 

@@ -27,12 +27,12 @@ import {
 	provideSiteInfo,
 	provideUserAuthentication,
 	WithTestRegistry,
-} from '../../../../tests/js/utils';
-import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
-import { VIEW_CONTEXT_DASHBOARD } from '../../googlesitekit/constants';
-import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
-import { Provider as ViewContextProvider } from '../Root/ViewContextContext';
-import ModuleRecoveryAlert from './ModuleRecoveryAlert';
+} from '../../../../../tests/js/utils';
+import WithRegistrySetup from '../../../../../tests/js/WithRegistrySetup';
+import { VIEW_CONTEXT_DASHBOARD } from '../../../googlesitekit/constants';
+import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
+import { Provider as ViewContextProvider } from '../../Root/ViewContextContext';
+import ModuleRecoveryAlert from '.';
 
 const Template = ( { setupRegistry = () => {}, ...args } ) => (
 	<WithRegistrySetup func={ setupRegistry }>
