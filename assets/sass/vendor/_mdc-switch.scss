@@ -2,10 +2,10 @@
 .googlesitekit-plugin .mdc-switch {
 
 	@include mdc-switch-toggled-on-color($c-content-primary);
-	@include mdc-switch-toggled-on-thumb-color($c-content-primary-container);
-	@include mdc-switch-toggled-on-track-color($c-content-primary);
-	@include mdc-switch-toggled-off-track-color($c-surfaces-inverse-surface);
-	@include mdc-switch-toggled-off-thumb-color($c-surfaces-inverse-on-surface);
+	@include mdc-switch-toggled-on-thumb-color($c-content-primary);
+	@include mdc-switch-toggled-on-track-color($c-content-primary-container);
+	@include mdc-switch-toggled-off-thumb-color($c-surfaces-on-surface-variant);
+	@include mdc-switch-toggled-off-track-color($c-surfaces-surface-2);
 	vertical-align: middle;
 
 	// Overriding WordPress load-styles.php
