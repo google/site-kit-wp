@@ -110,21 +110,28 @@ const ModuleOverviewWidget = ( {
 			] )
 	);
 
-	const error = useSelect(
-		( select ) =>
+	const errors = useSelect( ( select ) => [
+		...[
 			select( MODULES_ADSENSE ).getErrorForSelector( 'getReport', [
 				currentRangeArgs,
-			] ) ||
+			] ),
+		],
+		...[
 			select( MODULES_ADSENSE ).getErrorForSelector( 'getReport', [
 				previousRangeArgs,
-			] ) ||
+			] ),
+		],
+		...[
 			select( MODULES_ADSENSE ).getErrorForSelector( 'getReport', [
 				currentRangeChartArgs,
-			] ) ||
+			] ),
+		],
+		...[
 			select( MODULES_ADSENSE ).getErrorForSelector( 'getReport', [
 				previousRangeChartArgs,
-			] )
-	);
+			] ),
+		],
+	] ).filter( Boolean );
 
 	if ( loading ) {
 		return (
@@ -135,10 +142,10 @@ const ModuleOverviewWidget = ( {
 		);
 	}
 
-	if ( error ) {
+	if ( !! errors.length ) {
 		return (
 			<Widget Header={ Header } Footer={ Footer }>
-				<WidgetReportError moduleSlug="adsense" error={ error } />
+				<WidgetReportError moduleSlug="adsense" error={ errors } />
 			</Widget>
 		);
 	}

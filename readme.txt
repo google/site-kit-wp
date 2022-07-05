@@ -115,9 +115,11 @@ Please create a new topic on our [WordPress.org support forum](https://wordpress
 **Enhanced**
 
 * Show the zero-data view of the AdSense Overview widget when the `adsenseSetupV2` feature flag is enabled and there is no data. See [#5385](https://github.com/google/site-kit-wp/issues/5385).
+* Update view-only dashboard to use a new placeholder for widgets that rely on recoverable modules. See [#5376](https://github.com/google/site-kit-wp/issues/5376).
 * Clarify "All admins" wording in Dashboard Sharing settings. See [#5374](https://github.com/google/site-kit-wp/issues/5374).
 * Rollback any unsaved changes to dashboard sharing settings when closing the dialog. See [#5372](https://github.com/google/site-kit-wp/issues/5372).
 * Update the warning notice that appears on the Dashboard Sharing modal when changing settings. See [#5371](https://github.com/google/site-kit-wp/issues/5371).
+* Add foundation for Thank with Google settings. See [#5366](https://github.com/google/site-kit-wp/issues/5366).
 * Add foundation for new Thank with Google feature (JS). See [#5365](https://github.com/google/site-kit-wp/issues/5365).
 * Add foundation for new Thank with Google feature (PHP). See [#5364](https://github.com/google/site-kit-wp/issues/5364).
 * Display a message with tooltip instead of disabled Dashboard Sharing view management dropdown. See [#5352](https://github.com/google/site-kit-wp/issues/5352).
@@ -142,6 +144,7 @@ Please create a new topic on our [WordPress.org support forum](https://wordpress
 * Fix Dashboard Sharing modal position on small screens. See [#5358](https://github.com/google/site-kit-wp/issues/5358).
 * Do not show "Create Goals" widget on shared dashboard. See [#5351](https://github.com/google/site-kit-wp/issues/5351).
 * Don't show the "Link Analytics and AdSense" CTA on the view-only Dashboard. See [#5346](https://github.com/google/site-kit-wp/issues/5346).
+* Prevent errors on the view-only dashboard from requesting module settings unnecessarily. See [#5310](https://github.com/google/site-kit-wp/issues/5310).
 * Prevent "Can't access necessary data" notice flicker when activating Analytics via GTM setup. See [#5244](https://github.com/google/site-kit-wp/issues/5244).
 * Fix date range selector sometimes remaining open but hidden after selection. See [#4735](https://github.com/google/site-kit-wp/issues/4735).
 
