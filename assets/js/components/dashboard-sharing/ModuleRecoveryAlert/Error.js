@@ -16,6 +16,9 @@
  * limitations under the License.
  */
 
+/**
+ * WordPress dependencies
+ */
 import { Fragment } from '@wordpress/element';
 import { sprintf, __ } from '@wordpress/i18n';
 
