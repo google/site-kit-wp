@@ -17,9 +17,14 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * WordPress dependencies
  */
-import { useState } from '@wordpress/element';
+import { useState, useEffect } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -29,10 +34,10 @@ import Content from './Content';
 const minStage = 0;
 const maxStage = 2;
 
-export default function ContentAutoUpdate() {
+export default function ContentAutoUpdate( { hasBeenInView } ) {
 	const [ { stage, mode }, setContentState ] = useState( {
 		stage: 0,
-		mode: 'enter',
+		mode: 'static',
 	} );
 
 	function onAnimationEnd() {
@@ -49,6 +54,17 @@ export default function ContentAutoUpdate() {
 		}
 	}
 
+	useEffect( () => {
+		if ( hasBeenInView ) {
+			setTimeout( () => {
+				setContentState( {
+					stage: 0,
+					mode: 'leave',
+				} );
+			}, 2500 );
+		}
+	}, [ hasBeenInView ] );
+
 	return (
 		<Content
 			stage={ stage }
@@ -57,3 +73,7 @@ export default function ContentAutoUpdate() {
 		/>
 	);
 }
+
+ContentAutoUpdate.propTypes = {
+	hasBeenInView: PropTypes.bool.isRequired,
+};

@@ -164,8 +164,8 @@ const Content = forwardRef( ( { stage, mode, onAnimationEnd }, ref ) => {
 
 Content.propTypes = {
 	stage: PropTypes.oneOf( [ 0, 1, 2 ] ),
-	mode: PropTypes.oneOf( [ 'enter', 'leave' ] ),
-	onAnimationEnd: PropTypes.func.isRequired,
+	mode: PropTypes.oneOf( [ 'static', 'enter', 'leave' ] ),
+	onAnimationEnd: PropTypes.func,
 };
 
 export default Content;

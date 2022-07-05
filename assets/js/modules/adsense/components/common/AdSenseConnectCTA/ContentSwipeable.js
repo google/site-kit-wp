@@ -37,7 +37,7 @@ const maxStage = 2;
 export default function ContentSwipeable() {
 	const [ { stage, mode, nextStage }, setContentState ] = useState( {
 		stage: 0,
-		mode: 'enter',
+		mode: 'static',
 		nextStage: 0,
 	} );
 

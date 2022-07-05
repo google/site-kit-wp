@@ -176,7 +176,9 @@ export default function AdSenseConnectCTA() {
 							<ContentSwipeable />
 						) }
 						{ breakpoint !== BREAKPOINT_SMALL && (
-							<ContentAutoUpdate />
+							<ContentAutoUpdate
+								hasBeenInView={ hasBeenInView }
+							/>
 						) }
 						<Row>
 							<Cell { ...cellProps }>
