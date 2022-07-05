@@ -110,6 +110,14 @@
 
 		}
 
+		--adsense-connect-cta-fade-in-duration: 1s;
+		--adsense-connect-cta-fade-out-duration: 500ms;
+
+		@media (min-width: $bp-nonMobile) {
+			--adsense-connect-cta-fade-in-duration: 5s;
+			--adsense-connect-cta-fade-out-duration: 2.5s;
+		}
+
 		@keyframes fade-in {
 
 			0% {
@@ -159,7 +167,7 @@
 		}
 
 		.googlesitekit-setup-module--adsense__stage-caption--current--enter {
-			animation: fade-in 5s linear forwards;
+			animation: fade-in var(--adsense-connect-cta-fade-in-duration) linear forwards;
 
 			@media (min-width: $bp-nonMobile) {
 				animation: none;
@@ -172,7 +180,7 @@
 		}
 
 		.googlesitekit-setup-module--adsense__stage-caption--current--leave {
-			animation: fade-out 2.5s linear forwards;
+			animation: fade-out var(--adsense-connect-cta-fade-out-duration) linear forwards;
 
 			@media (min-width: $bp-nonMobile) {
 				animation: none;
@@ -223,11 +231,11 @@
 		}
 
 		.googlesitekit-setup-module--adsense__stage-image--current--enter {
-			animation: fade-in 5s linear forwards;
+			animation: fade-in var(--adsense-connect-cta-fade-in-duration) linear forwards;
 		}
 
 		.googlesitekit-setup-module--adsense__stage-image--current--leave {
-			animation: fade-out 2.5s linear forwards;
+			animation: fade-out var(--adsense-connect-cta-fade-out-duration) linear forwards;
 		}
 
 		.googlesitekit-setup-module--adsense__stage-indicator {
@@ -259,6 +267,12 @@
 					background-repeat: no-repeat;
 				}
 
+				--adsense-connect-cta-indicator-duration: 500ms;
+
+				@media (min-width: $bp-nonMobile) {
+					--adsense-connect-cta-indicator-duration: 1.5s;
+				}
+
 				@keyframes indicator-enter {
 
 					from {
@@ -282,13 +296,13 @@
 				}
 
 				&.googlesitekit-setup-module--adsense__stage-indicator--current--enter {
-					animation: indicator-enter 1.5s linear forwards;
+					animation: indicator-enter var(--adsense-connect-cta-indicator-duration) linear forwards;
 					background-position: 0% 0%;
 
 				}
 
 				&.googlesitekit-setup-module--adsense__stage-indicator--current--leave {
-					animation: indicator-leave 1.5s linear forwards;
+					animation: indicator-leave var(--adsense-connect-cta-indicator-duration) linear forwards;
 					background-position: 100% 0%;
 				}
 			}
