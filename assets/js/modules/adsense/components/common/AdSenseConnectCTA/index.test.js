@@ -50,13 +50,15 @@ describe( 'AdSenseConnectCTA', () => {
 			container = render(
 				<div>
 					<div id="adminmenu">
-						<a href="?page=googlesitekit-settings">Settings</a>
+						<a href="http://test.test/wp-admin/admin.php?page=googlesitekit-settings">
+							Settings
+						</a>
 					</div>
 					<AdSenseConnectCTA />
 				</div>,
 				{ registry }
 			).container;
-			// await act( async () => {
+
 			fireEvent.click(
 				container.querySelector( 'button.googlesitekit-cta-link' )
 			);

@@ -7,6 +7,11 @@
 		transition-duration: 0ms !important;
 	}
 
+	/**
+	 * While the rules above set animation-duration to 0ms for VRT builds, there can be times where this is not appropriate.
+	 * For example if there is a constant animation in a story, it results in the animation running constantly at top speed and the VRT screengrab becomes somewhat undeterministic.
+	 * Instead we can use the following .googlesitekit-vrt-animation-none in a story wrapper element to entirely disable animations for a given story.
+	 */
 	#root .googlesitekit-vrt-animation-none *,
 	#root .googlesitekit-vrt-animation-none *::before,
 	#root .googlesitekit-vrt-animation-none *::after {

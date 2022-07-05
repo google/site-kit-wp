@@ -64,7 +64,7 @@ export default function Tooltip( {
 			spotlightPadding={ 0 }
 			floaterProps={ floaterProps }
 			locale={ joyrideLocale }
-			run={ true }
+			run
 			steps={ steps }
 			styles={ joyrideStyles }
 			tooltipComponent={ TourTooltip }
