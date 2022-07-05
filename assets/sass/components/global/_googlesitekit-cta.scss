@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-.googlesitekit-cta {
+.googlesitekit-plugin .googlesitekit-cta {
 	background-color: $c-surfaces-surface-1;
 	border-radius: $br-sm;
 	font-size: $fs-body-md;
@@ -28,19 +28,6 @@
 
 	@media (min-width: $bp-desktop) {
 		padding: $grid-gap-desktop;
-	}
-
-	&--error {
-		background-color: $c-utility-error-container;
-
-		.googlesitekit-cta__title {
-			color: $c-utility-error;
-		}
-
-		.googlesitekit-cta__description {
-			color: $c-utility-error;
-			word-break: break-word;
-		}
 	}
 
 	.googlesitekit-wp-dashboard &--error {
@@ -76,6 +63,29 @@
 		letter-spacing: $ls-m;
 	}
 
+	.googlesitekit-cta__description {
+		color: $c-surfaces-on-surface;
+		margin: 0 0 20px 0;
+	}
+
+	&.googlesitekit-cta--error {
+		background-color: $c-utility-error-container;
+
+		.googlesitekit-cta__title {
+			color: $c-utility-error;
+		}
+
+		.googlesitekit-cta__description {
+			color: $c-utility-error;
+			word-break: break-word;
+		}
+
+		.mdc-button:not(:disabled) {
+			background-color: $c-utility-error;
+			color: $c-utility-on-error;
+		}
+	}
+
 	#google_dashboard_widget & .googlesitekit-cta__title { // stylelint-disable-line selector-id-pattern
 		color: $c-surfaces-on-surface;
 		font-weight: 700;
@@ -83,12 +93,6 @@
 
 	#google_dashboard_widget &--error .googlesitekit-cta__title { // stylelint-disable-line selector-id-pattern
 		color: $c-primary;
-	}
-
-	// Description.
-	.googlesitekit-cta__description {
-		color: $c-surfaces-on-surface;
-		margin: 0 0 20px 0;
 	}
 
 	*:last-child {
