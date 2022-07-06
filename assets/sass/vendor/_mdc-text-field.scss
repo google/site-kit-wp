@@ -12,6 +12,13 @@
 
 	width: 250px;
 
+	.mdc-notched-outline__notch {
+		// Override added padding from mdc styles.
+		padding-right: 0;
+		// !important needed to override inline style from component.
+		width: auto !important;
+	}
+
 	@media (min-width: $bp-tablet) {
 		width: 350px;
 	}
