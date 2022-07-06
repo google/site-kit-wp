@@ -31,22 +31,15 @@
 			padding: 0 12px 12px 12px;
 		}
 
-		// Match WP Dashboard colors for all links
-		a {
-			color: $c-link-wpdb;
+	}
 
-			&:hover {
-				color: $c-link-wpdb-hover;
-				text-decoration: none;
-			}
-		}
+	.googlesitekit-data-block .googlesitekit-data-block__datapoint,
+	.googlesitekit-data-block .googlesitekit-data-block__title,
+	.googlesitekit-table .googlesitekit-table__head-item {
+		font-family: inherit;
+	}
 
-		.googlesitekit-wp-dashboard__cta-link {
-			font-family: $f-secondary;
-			font-size: $fs-title-md;
-			font-weight: $fw-bold;
-			line-height: $lh-title-md;
-		}
-
+	.googlesitekit-table .googlesitekit-table__head-item {
+		font-size: inherit;
 	}
 }
