@@ -110,14 +110,34 @@ const SearchFunnelWidget = ( {
 		} )
 	);
 
+	const showRecoverableAnalytics = useSelect( ( select ) => {
+		if ( ! viewOnly ) {
+			return false;
+		}
+
+		const recoverableModules = select(
+			CORE_MODULES
+		).getRecoverableModules();
+
+		if ( recoverableModules === undefined ) {
+			return undefined;
+		}
+
+		return Object.keys( recoverableModules ).includes( 'analytics' );
+	} );
+
 	const analyticsGoalsData = useInViewSelect( ( select ) => {
-		return isAnalyticsConnected && canViewSharedAnalytics
+		return isAnalyticsConnected &&
+			canViewSharedAnalytics &&
+			! showRecoverableAnalytics
 			? select( MODULES_ANALYTICS ).getGoals()
 			: {};
 	} );
 
 	const analyticsGoalsLoading = useSelect( ( select ) =>
-		isAnalyticsConnected && canViewSharedAnalytics
+		isAnalyticsConnected &&
+		canViewSharedAnalytics &&
+		! showRecoverableAnalytics
 			? ! select( MODULES_ANALYTICS ).hasFinishedResolution(
 					'getGoals',
 					[]
@@ -126,7 +146,7 @@ const SearchFunnelWidget = ( {
 	);
 
 	const analyticsGoalsError = useSelect( ( select ) =>
-		isAnalyticsConnected
+		isAnalyticsConnected && ! showRecoverableAnalytics
 			? select( MODULES_ANALYTICS ).getErrorForSelector( 'getGoals', [] )
 			: null
 	);
@@ -189,7 +209,11 @@ const SearchFunnelWidget = ( {
 	);
 
 	const analyticsOverviewLoading = useSelect( ( select ) => {
-		if ( ! isAnalyticsConnected || ! canViewSharedAnalytics ) {
+		if (
+			! isAnalyticsConnected ||
+			! canViewSharedAnalytics ||
+			showRecoverableAnalytics
+		) {
 			return false;
 		}
 
@@ -199,14 +223,18 @@ const SearchFunnelWidget = ( {
 		);
 	} );
 	const analyticsOverviewData = useInViewSelect( ( select ) => {
-		if ( ! isAnalyticsConnected || ! canViewSharedAnalytics ) {
+		if (
+			! isAnalyticsConnected ||
+			! canViewSharedAnalytics ||
+			showRecoverableAnalytics
+		) {
 			return null;
 		}
 
 		return select( MODULES_ANALYTICS ).getReport( analyticsOverviewArgs );
 	} );
 	const analyticsOverviewError = useSelect( ( select ) => {
-		if ( ! isAnalyticsConnected ) {
+		if ( ! isAnalyticsConnected || showRecoverableAnalytics ) {
 			return false;
 		}
 
@@ -216,7 +244,11 @@ const SearchFunnelWidget = ( {
 	} );
 
 	const analyticsStatsLoading = useSelect( ( select ) => {
-		if ( ! isAnalyticsConnected || ! canViewSharedAnalytics ) {
+		if (
+			! isAnalyticsConnected ||
+			! canViewSharedAnalytics ||
+			showRecoverableAnalytics
+		) {
 			return false;
 		}
 
@@ -226,14 +258,18 @@ const SearchFunnelWidget = ( {
 		);
 	} );
 	const analyticsStatsData = useInViewSelect( ( select ) => {
-		if ( ! isAnalyticsConnected || ! canViewSharedAnalytics ) {
+		if (
+			! isAnalyticsConnected ||
+			! canViewSharedAnalytics ||
+			showRecoverableAnalytics
+		) {
 			return null;
 		}
 
 		return select( MODULES_ANALYTICS ).getReport( analyticsStatsArgs );
 	} );
 	const analyticsStatsError = useSelect( ( select ) => {
-		if ( ! isAnalyticsConnected ) {
+		if ( ! isAnalyticsConnected || showRecoverableAnalytics ) {
 			return false;
 		}
 
@@ -243,7 +279,11 @@ const SearchFunnelWidget = ( {
 	} );
 
 	const analyticsVisitorsOverviewAndStatsLoading = useSelect( ( select ) => {
-		if ( ! isAnalyticsConnected || ! canViewSharedAnalytics ) {
+		if (
+			! isAnalyticsConnected ||
+			! canViewSharedAnalytics ||
+			showRecoverableAnalytics
+		) {
 			return false;
 		}
 
@@ -254,7 +294,11 @@ const SearchFunnelWidget = ( {
 	} );
 	const analyticsVisitorsOverviewAndStatsData = useInViewSelect(
 		( select ) => {
-			if ( ! isAnalyticsConnected || ! canViewSharedAnalytics ) {
+			if (
+				! isAnalyticsConnected ||
+				! canViewSharedAnalytics ||
+				showRecoverableAnalytics
+			) {
 				return null;
 			}
 
@@ -264,7 +308,7 @@ const SearchFunnelWidget = ( {
 		}
 	);
 	const analyticsVisitorsOverviewAndStatsError = useSelect( ( select ) => {
-		if ( ! isAnalyticsConnected ) {
+		if ( ! isAnalyticsConnected || showRecoverableAnalytics ) {
 			return false;
 		}
 
@@ -274,7 +318,9 @@ const SearchFunnelWidget = ( {
 	} );
 
 	const isAnalyticsGatheringData = useInViewSelect( ( select ) =>
-		isAnalyticsConnected && canViewSharedAnalytics
+		isAnalyticsConnected &&
+		canViewSharedAnalytics &&
+		! showRecoverableAnalytics
 			? select( MODULES_ANALYTICS ).isGatheringData()
 			: false
 	);
@@ -370,6 +416,7 @@ const SearchFunnelWidget = ( {
 					analyticsGoalsError
 				}
 				WidgetReportError={ WidgetReportError }
+				showRecoverableAnalytics={ showRecoverableAnalytics }
 			/>
 
 			{ ( selectedStats === 0 || selectedStats === 1 ) && (
