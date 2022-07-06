@@ -111,6 +111,10 @@ const SearchFunnelWidget = ( {
 	);
 
 	const showRecoverableAnalytics = useSelect( ( select ) => {
+		if ( ! viewOnly ) {
+			return false;
+		}
+
 		const recoverableModules = select(
 			CORE_MODULES
 		).getRecoverableModules();
@@ -119,10 +123,7 @@ const SearchFunnelWidget = ( {
 			return undefined;
 		}
 
-		return (
-			Object.keys( recoverableModules ).includes( 'analytics' ) &&
-			viewOnly
-		);
+		return Object.keys( recoverableModules ).includes( 'analytics' );
 	} );
 
 	const analyticsGoalsData = useInViewSelect( ( select ) => {
