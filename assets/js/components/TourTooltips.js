@@ -110,14 +110,16 @@ export default function TourTooltips( {
 
 	const startTour = () => {
 		global.document.body.classList.add(
-			'googlesitekit-showing-feature-tour'
+			'googlesitekit-showing-feature-tour',
+			`googlesitekit-showing-feature-tour--${ tourID }`
 		);
 		setValue( runKey, true );
 	};
 
 	const endTour = () => {
 		global.document.body.classList.remove(
-			'googlesitekit-showing-feature-tour'
+			'googlesitekit-showing-feature-tour',
+			`googlesitekit-showing-feature-tour--${ tourID }`
 		);
 		// Dismiss tour to avoid unwanted repeat viewing.
 		dismissTour( tourID );
