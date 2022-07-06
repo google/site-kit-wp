@@ -42,7 +42,7 @@
 			grid-row-start: 1;
 			margin: 0;
 			opacity: 0;
-			transition: color 2.5s ease-in-out;
+			transition: color 500ms ease-in-out;
 
 			@media (min-width: $bp-nonMobile) {
 				margin-bottom: 24px;
@@ -110,12 +110,12 @@
 
 		}
 
-		--adsense-connect-cta-fade-in-duration: 1s;
-		--adsense-connect-cta-fade-out-duration: 500ms;
+		--adsense-connect-cta-fade-in-duration: 180ms;
+		--adsense-connect-cta-fade-out-duration: 180ms;
 
 		@media (min-width: $bp-nonMobile) {
 			--adsense-connect-cta-fade-in-duration: 5s;
-			--adsense-connect-cta-fade-out-duration: 2.5s;
+			--adsense-connect-cta-fade-out-duration: 500ms;
 		}
 
 		@keyframes fade-in {
@@ -124,7 +124,7 @@
 				opacity: 0;
 			}
 
-			50% {
+			10% {
 				opacity: 1;
 			}
 
@@ -135,11 +135,15 @@
 
 		@keyframes fade-out {
 
-			from {
+			0% {
 				opacity: 1;
 			}
 
-			to {
+			50% {
+				opacity: 0;
+			}
+
+			100% {
 				opacity: 0;
 			}
 		}
@@ -174,7 +178,7 @@
 			}
 
 			.googlesitekit-setup-module--adsense__stage-caption-indicator {
-				animation: caption-indicator-enter 1.5s linear forwards;
+				animation: caption-indicator-enter 500ms linear forwards;
 				background-position: 0% 0%;
 			}
 		}
@@ -187,7 +191,7 @@
 			}
 
 			.googlesitekit-setup-module--adsense__stage-caption-indicator {
-				animation: caption-indicator-leave 1.5s linear forwards;
+				animation: caption-indicator-leave 500ms linear forwards;
 				background-position: 0% 100%;
 			}
 		}
@@ -268,10 +272,6 @@
 				}
 
 				--adsense-connect-cta-indicator-duration: 500ms;
-
-				@media (min-width: $bp-nonMobile) {
-					--adsense-connect-cta-indicator-duration: 1.5s;
-				}
 
 				@keyframes indicator-enter {
 
