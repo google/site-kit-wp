@@ -50,9 +50,12 @@ const { useSelect, useDispatch } = Data;
 const ALL_CHIP_ID = 'all';
 const ALL_CHIP_DISPLAY_NAME = __( 'All', 'google-site-kit' );
 
-export default function UserRoleSelect( { moduleSlug, isLocked = false } ) {
+export default function UserRoleSelect( {
+	moduleSlug,
+	isLocked = false,
+	moduleRef,
+} ) {
 	const viewContext = useViewContext();
-	const wrapperRef = useRef();
 	const roleSelectBtnRef = useRef();
 
 	const [ initialSharedRoles, setInitialSharedRoles ] = useState( [] );
@@ -71,7 +74,7 @@ export default function UserRoleSelect( { moduleSlug, isLocked = false } ) {
 	);
 	const editMode = editingUserRoleSelect === moduleSlug;
 
-	useKeyCodesInside( [ ESCAPE ], wrapperRef, () => {
+	useKeyCodesInside( [ ESCAPE ], moduleRef, () => {
 		if ( editMode ) {
 			setValue( EDITING_USER_ROLE_SELECT_SLUG_KEY, undefined );
 		}
@@ -164,7 +167,6 @@ export default function UserRoleSelect( { moduleSlug, isLocked = false } ) {
 			className={ classnames( 'googlesitekit-user-role-select', {
 				'googlesitekit-user-role-select--open': editMode,
 			} ) }
-			ref={ wrapperRef }
 		>
 			<Button
 				aria-label={
