@@ -325,6 +325,10 @@ function BannerNotification( {
 		  }
 		: { size: 12 };
 
+	// ctaLink links are always buttons, in which case the dismiss should be a Link.
+	// If there is only a dismiss however, it should be the primary action with a Button.
+	const DismissComponent = ctaLink ? Link : Button;
+
 	return (
 		<section
 			id={ id }
@@ -397,7 +401,9 @@ function BannerNotification( {
 						) }
 
 						{ isDismissible && dismiss && (
-							<Link onClick={ handleDismiss }>{ dismiss }</Link>
+							<DismissComponent onClick={ handleDismiss }>
+								{ dismiss }
+							</DismissComponent>
 						) }
 					</Cell>
 
