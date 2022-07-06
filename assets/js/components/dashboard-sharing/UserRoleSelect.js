@@ -53,6 +53,7 @@ const ALL_CHIP_DISPLAY_NAME = __( 'All', 'google-site-kit' );
 export default function UserRoleSelect( { moduleSlug, isLocked = false } ) {
 	const viewContext = useViewContext();
 	const wrapperRef = useRef();
+	const roleSelectBtnRef = useRef();
 
 	const [ initialSharedRoles, setInitialSharedRoles ] = useState( [] );
 
@@ -181,6 +182,7 @@ export default function UserRoleSelect( { moduleSlug, isLocked = false } ) {
 					)
 				}
 				tabIndex={ isLocked ? -1 : undefined }
+				ref={ roleSelectBtnRef }
 			/>
 
 			{ ! editMode && sharedRoles?.length > 0 && (
@@ -192,7 +194,13 @@ export default function UserRoleSelect( { moduleSlug, isLocked = false } ) {
 			{ ! editMode && ( ! sharedRoles || sharedRoles?.length === 0 ) && (
 				<span className="googlesitekit-user-role-select__add-roles">
 					<Link
-						onClick={ toggleEditMode }
+						onClick={ () => {
+							// As this link exits the DOM on click, we change
+							// the focus to the role select button.
+							roleSelectBtnRef.current.focus();
+
+							toggleEditMode();
+						} }
 						tabIndex={ isLocked ? -1 : undefined }
 					>
 						{ __( 'Add roles', 'google-site-kit' ) }
