@@ -80,6 +80,7 @@ const Overview = ( {
 	dateRangeLength,
 	error,
 	WidgetReportError,
+	showRecoverableAnalytics,
 } ) => {
 	const dashboardType = useDashboardType();
 	const zeroDataStatesEnabled = useFeature( 'zeroDataStates' );
@@ -111,7 +112,9 @@ const Overview = ( {
 		select( CORE_LOCATION ).isNavigatingTo( adminReauthURL )
 	);
 	const isAnalyticsGatheringData = useInViewSelect( ( select ) =>
-		analyticsModuleActiveAndConnected && canViewSharedAnalytics
+		analyticsModuleActiveAndConnected &&
+		canViewSharedAnalytics &&
+		! showRecoverableAnalytics
 			? select( MODULES_ANALYTICS ).isGatheringData()
 			: false
 	);
