@@ -376,6 +376,14 @@ final class Authentication {
 
 		add_filter( 'googlesitekit_inline_tracking_data', $this->get_method_proxy( 'inline_js_tracking_data' ) );
 
+		add_filter(
+			'googlesitekit_dashboard_sharing_data',
+			function ( $data ) {
+				$data['hasMultipleAdmins'] = $this->has_multiple_admins->get();
+				return $data;
+			}
+		);
+
 		// Synchronize site fields on shutdown when select options change.
 		$option_updated = function () {
 			$sync_site_fields = function () {
