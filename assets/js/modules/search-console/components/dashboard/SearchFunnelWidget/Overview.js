@@ -51,6 +51,7 @@ import CTA from '../../../../../components/notifications/CTA';
 import DataBlock from '../../../../../components/DataBlock';
 import ProgressBar from '../../../../../components/ProgressBar';
 import ReportZero from '../../../../../components/ReportZero';
+import RecoverableModules from '../../../../../components/RecoverableModules';
 import {
 	BREAKPOINT_SMALL,
 	useBreakpoint,
@@ -167,15 +168,16 @@ const Overview = ( {
 	}
 
 	const showAnalytics =
-		( canViewSharedAnalytics &&
+		( ( canViewSharedAnalytics &&
 			analyticsModuleConnected &&
 			! isAnalyticsGatheringData &&
 			! zeroDataStatesEnabled &&
 			! error ) ||
-		( canViewSharedAnalytics &&
-			analyticsModuleConnected &&
-			zeroDataStatesEnabled &&
-			! error );
+			( canViewSharedAnalytics &&
+				analyticsModuleConnected &&
+				zeroDataStatesEnabled &&
+				! error ) ) &&
+		! showRecoverableAnalytics;
 
 	const showGoalsCTA =
 		isAuthenticated &&
@@ -352,7 +354,8 @@ const Overview = ( {
 						</Cell>
 					) }
 
-				{ canViewSharedAnalytics &&
+				{ ! showRecoverableAnalytics &&
+					canViewSharedAnalytics &&
 					analyticsModuleActiveAndConnected &&
 					error && (
 						<Cell { ...halfCellProps }>
@@ -398,6 +401,16 @@ const Overview = ( {
 						) }
 					</Cell>
 				) }
+
+				{ canViewSharedAnalytics &&
+					analyticsModuleActiveAndConnected &&
+					showRecoverableAnalytics && (
+						<Cell { ...halfCellProps }>
+							<RecoverableModules
+								moduleSlugs={ [ 'analytics' ] }
+							/>
+						</Cell>
+					) }
 			</Row>
 		</Grid>
 	);
