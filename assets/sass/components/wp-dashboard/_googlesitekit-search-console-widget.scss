@@ -19,11 +19,12 @@
 #google_dashboard_widget .googlesitekit-search-console-widget { // stylelint-disable-line selector-id-pattern
 	padding-top: 12px;
 
-	.googlesitekit-search-console-widget__title {
-		font-size: $fs-body-lg;
-		font-weight: $fw-bold;
-		letter-spacing: $ls-m;
-		margin: 0;
-		padding: 0;
+	.googlesitekit-table__body-row:hover {
+		background: transparent;
+	}
+
+	// Match WP Dashboard colors for all links
+	.googlesitekit-cta-link {
+		text-decoration: none;
 	}
 }
