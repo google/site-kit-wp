@@ -26,6 +26,7 @@ import { __ } from '@wordpress/i18n';
  */
 import { VIEW_CONTEXT_DASHBOARD } from '../googlesitekit/constants';
 import { isFeatureEnabled } from '../features';
+import settingsTour from './dashboard-sharing-settings';
 
 const dashboardSharing = {
 	slug: 'dashboardSharing',
@@ -44,6 +45,7 @@ const dashboardSharing = {
 			),
 			placement: 'bottom-start',
 		},
+		...settingsTour.steps,
 	],
 	checkRequirements: () => isFeatureEnabled( 'dashboardSharing' ),
 };
