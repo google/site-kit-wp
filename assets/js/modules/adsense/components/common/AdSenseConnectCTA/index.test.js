@@ -17,14 +17,9 @@
  */
 
 /**
- * WordPress dependencies
- */
-import { ESCAPE } from '@wordpress/keycodes';
-
-/**
  * Internal dependencies
  */
-import AdSenseConnectCTA from './AdSenseConnectCTA';
+import AdSenseConnectCTA from '.';
 import {
 	act,
 	fireEvent,
@@ -32,10 +27,10 @@ import {
 	createTestRegistry,
 	provideSiteInfo,
 	provideUserAuthentication,
-} from '../../../../../../tests/js/test-utils';
-import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
-import { MODULES_ADSENSE } from '../../datastore/constants';
-import { withActive } from '../../../../googlesitekit/modules/datastore/__fixtures__';
+} from '../../../../../../../tests/js/test-utils';
+import { CORE_MODULES } from '../../../../../googlesitekit/modules/datastore/constants';
+import { MODULES_ADSENSE } from '../../../datastore/constants';
+import { withActive } from '../../../../../googlesitekit/modules/datastore/__fixtures__';
 
 describe( 'AdSenseConnectCTA', () => {
 	let registry;
@@ -52,57 +47,62 @@ describe( 'AdSenseConnectCTA', () => {
 	describe( 'after click', () => {
 		let container;
 		beforeEach( () => {
-			container = render( <AdSenseConnectCTA />, { registry } ).container;
+			container = render(
+				<div>
+					<div id="adminmenu">
+						<a href="http://test.test/wp-admin/admin.php?page=googlesitekit-settings">
+							Settings
+						</a>
+					</div>
+					<AdSenseConnectCTA />
+				</div>,
+				{ registry }
+			).container;
+
 			fireEvent.click(
 				container.querySelector( 'button.googlesitekit-cta-link' )
 			);
-		} );
 
-		it( 'should open the dialog', async () => {
-			expect(
-				document.querySelector( '.mdc-dialog--open' )
-			).toBeInTheDocument();
-		} );
-
-		it( 'should close the modal on clicking cancel', async () => {
-			await act( async () => {
-				fireEvent.click(
-					document.querySelector(
-						'.mdc-dialog--open .googlesitekit-cta-link'
-					)
-				);
-			} );
-			expect(
-				document.querySelector( '.mdc-dialog--open' )
-			).not.toBeInTheDocument();
-		} );
-
-		it( 'should close the modal on pressing escape key', async () => {
-			fireEvent.keyUp( global, { keyCode: ESCAPE } );
-			expect(
-				document.querySelector( '.mdc-dialog--open' )
-			).not.toBeInTheDocument();
-		} );
-
-		it( 'should make the correct API request', async () => {
-			const response = [ 'adsense-connect-cta' ];
 			fetchMock.postOnce(
-				/^\/google-site-kit\/v1\/core\/user\/data\/dismiss-item/,
-				{ body: JSON.stringify( response ), status: 200 }
+				RegExp( '^/google-site-kit/v1/core/user/data/dismiss-item' ),
+				{
+					body: JSON.stringify( [ 'adsense-connect-cta' ] ),
+					status: 200,
+				}
 			);
+		} );
 
+		it( 'should open the tooltip', async () => {
+			expect(
+				document.querySelector( '.googlesitekit-tour-tooltip' )
+			).toBeInTheDocument();
+			expect( fetchMock ).toHaveFetchedTimes( 0 );
+		} );
+
+		it( 'should close the tooltip on clicking the close button', async () => {
+			await act( async () => {
+				fireEvent.click(
+					document.querySelector( '.googlesitekit-tooltip-close' )
+				);
+			} );
+			expect(
+				document.querySelector( '.googlesitekit-tour-tooltip' )
+			).not.toBeInTheDocument();
+			expect( fetchMock ).toHaveFetchedTimes( 1 );
+		} );
+
+		it( 'should close the modal on clicking the dismiss button', async () => {
 			await act( async () => {
 				fireEvent.click(
 					document.querySelector(
-						'.mdc-dialog--open .mdc-button--raised'
+						'.googlesitekit-tooltip-buttons > button'
 					)
 				);
 			} );
-
-			expect( fetchMock ).toHaveFetchedTimes( 1 );
 			expect(
-				document.querySelector( '.mdc-dialog--open' )
-			).toBeInTheDocument();
+				document.querySelector( '.googlesitekit-tour-tooltip' )
+			).not.toBeInTheDocument();
+			expect( fetchMock ).toHaveFetchedTimes( 1 );
 		} );
 	} );
 } );
