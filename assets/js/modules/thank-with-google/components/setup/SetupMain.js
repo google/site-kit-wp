@@ -55,18 +55,23 @@ export default function SetupMain( { finishSetup } ) {
 
 	return (
 		<div className="googlesitekit-setup-module googlesitekit-setup-module--thank-with-google">
-			<div className="googlesitekit-setup-module__logo">
-				<ThankWithGoogleIcon width="33" height="33" />
+			<div className="googlesitekit-setup-module__header">
+				<div className="googlesitekit-setup-module__heading">
+					<div className="googlesitekit-setup-module__logo">
+						<ThankWithGoogleIcon width="33" height="33" />
+					</div>
+
+					<h2 className="googlesitekit-heading-3 googlesitekit-setup-module__title">
+						{ _x(
+							'Thank with Google',
+							'Service name',
+							'google-site-kit'
+						) }
+					</h2>
+				</div>
+
+				<Badge label={ __( 'Experimental', 'google-site-kit' ) } />
 			</div>
-
-			<h2 className="googlesitekit-heading-3 googlesitekit-setup-module__title">
-				{ _x( 'Thank with Google', 'Service name', 'google-site-kit' ) }
-
-				<Badge
-					label={ __( 'Experimental', 'google-site-kit' ) }
-					hasLeftSpacing={ true }
-				/>
-			</h2>
 
 			{ viewComponent }
 		</div>
