@@ -47,8 +47,16 @@
 			}
 		}
 
-		.googlesitekit-settings-connect-module__title {
+		.googlesitekit-settings-connect-module__heading {
+			align-items: center;
+			display: flex;
+			flex-wrap: wrap;
+			grid-gap: 10px 12px;
 			margin: 15px 0 10px 0;
+		}
+
+		.googlesitekit-settings-connect-module__title {
+			margin: 0;
 		}
 
 		&--disabled .googlesitekit-settings-connect-module__title {
