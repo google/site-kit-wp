@@ -95,7 +95,7 @@ export default {
 					<div id="adminmenu">
 						{
 							// eslint-disable-next-line jsx-a11y/anchor-has-content
-							<a href="?page=googlesitekit-settings" />
+							<a href="http://test.test/?page=googlesitekit-settings" />
 						}
 					</div>
 					<div
