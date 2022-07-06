@@ -46,6 +46,7 @@ export const joyrideStyles = {
 		backgroundColor: '#1A73E8', // $c-royal-blue
 		overlayColor: 'rgba(0, 0, 0, 0.6)',
 		textColor: '#ffffff', // $c-white
+		zIndex: 20000,
 	},
 };
 
