@@ -35,7 +35,7 @@
 /*
  * Top-level Cascade Items
  */
-@import "base/defaults";
+// Don't load defaults for non-Site Kit screens
 
 /*
  * Components
@@ -45,7 +45,6 @@
 @import "components/global/googlesitekit-analytics-cta";
 @import "components/global/googlesitekit-change-arrow";
 @import "components/global/googlesitekit-cta";
-@import "components/global/googlesitekit-cta-link";
 @import "components/global/googlesitekit-data-block";
 @import "components/global/googlesitekit-error-text";
 @import "components/global/googlesitekit-gathering-data-notice";
