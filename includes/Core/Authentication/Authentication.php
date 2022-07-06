@@ -365,24 +365,17 @@ final class Authentication {
 					$user['user']['picture'] = $profile_data['photo'];
 				}
 
-				$user['connectURL']     = esc_url_raw( $this->get_connect_url() );
-				$user['initialVersion'] = $this->initial_version->get();
-				$user['userInputState'] = $this->user_input_state->get();
-				$user['verified']       = $this->verification->has();
+				$user['connectURL']        = esc_url_raw( $this->get_connect_url() );
+				$user['hasMultipleAdmins'] = $this->has_multiple_admins->get();
+				$user['initialVersion']    = $this->initial_version->get();
+				$user['userInputState']    = $this->user_input_state->get();
+				$user['verified']          = $this->verification->has();
 
 				return $user;
 			}
 		);
 
 		add_filter( 'googlesitekit_inline_tracking_data', $this->get_method_proxy( 'inline_js_tracking_data' ) );
-
-		add_filter(
-			'googlesitekit_dashboard_sharing_data',
-			function ( $data ) {
-				$data['hasMultipleAdmins'] = $this->has_multiple_admins->get();
-				return $data;
-			}
-		);
 
 		// Synchronize site fields on shutdown when select options change.
 		$option_updated = function () {
