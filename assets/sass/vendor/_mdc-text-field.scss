@@ -2,6 +2,7 @@
 .googlesitekit-plugin .mdc-text-field {
 
 	@include mdc-text-field-ink-color($c-surfaces-on-surface);
+	@include mdc-text-field-label-color($c-surfaces-on-surface);
 	@include mdc-text-field-caret-color($c-content-primary);
 	@include mdc-text-field-focused-outline-color($c-content-primary);
 	@include mdc-text-field-hover-outline-color($c-border);
