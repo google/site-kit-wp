@@ -101,10 +101,6 @@ const baseSelectors = {
 			return null;
 		}
 
-		if ( publications.length === 1 ) {
-			return publications[ 0 ];
-		}
-
 		return (
 			publications.find( ( p ) => p.publicationID ) ||
 			publications.find( ( p ) => p.state === 'ACTIVE' ) ||
