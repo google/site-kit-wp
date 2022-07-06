@@ -90,15 +90,6 @@
 		}
 	}
 
-	#google_dashboard_widget & .googlesitekit-cta__title { // stylelint-disable-line selector-id-pattern
-		color: $c-surfaces-on-surface;
-		font-weight: 700;
-	}
-
-	#google_dashboard_widget &--error .googlesitekit-cta__title { // stylelint-disable-line selector-id-pattern
-		color: $c-primary;
-	}
-
 	*:last-child {
 		margin-bottom: 0;
 	}
