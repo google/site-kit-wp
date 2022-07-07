@@ -64,8 +64,8 @@ export default function DashboardSharingSettingsButton() {
 	const { y } = useWindowScroll();
 	const { setValue } = useDispatch( CORE_UI );
 
-	const dialogOpen = !! useSelect( ( select ) =>
-		select( CORE_UI ).getValue( UI_KEY_DIALOG_OPEN )
+	const dialogOpen = useSelect(
+		( select ) => !! select( CORE_UI ).getValue( UI_KEY_DIALOG_OPEN )
 	);
 	const hasMultipleAdmins = useSelect( ( select ) =>
 		select( CORE_SITE ).hasMultipleAdmins()
