@@ -288,8 +288,11 @@ describe( 'core/user feature-tours', () => {
 
 				expect( store.getState().currentTour ).toEqual( testTourA );
 
+				// Trigger a new tour, but because one is already set in state, this will have no effect.
 				await registry.dispatch( CORE_USER ).triggerTour( testTourB );
 
+				// Ensure the original tour in state ("testTourA") is still in state and that a
+				// newly-triggered tour does not overwrite the existing tour in-state.
 				expect( store.getState().currentTour ).toEqual( testTourA );
 			} );
 		} );
