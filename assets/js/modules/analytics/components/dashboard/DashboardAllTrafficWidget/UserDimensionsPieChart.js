@@ -723,15 +723,16 @@ UserDimensionsPieChart.chartOptions = {
 	},
 	pieHole: 0.6,
 	pieSliceTextStyle: {
-		color: 'black',
+		color: '#131418',
 		fontSize: 12,
+		fontName: 'Google Sans Text',
 	},
 	slices: {
-		0: { color: '#ffcd33' },
-		1: { color: '#c196ff' },
-		2: { color: '#9de3fe' },
-		3: { color: '#ff7fc6' },
-		4: { color: '#ff886b' },
+		0: { color: '#fece72' },
+		1: { color: '#a983e6' },
+		2: { color: '#bed4ff' },
+		3: { color: '#ee92da' },
+		4: { color: '#ff9b7a' },
 	},
 	title: null,
 	tooltip: {

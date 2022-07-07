@@ -2,6 +2,11 @@
 .googlesitekit-plugin {
 
 	.mdc-menu-surface {
+
+		@include mdc-menu-surface-shape-radius($br-sm);
+
+		background-color: $c-surfaces-surface-2;
+		box-shadow: none;
 		left: auto !important;
 		right: -8px;
 		top: calc(100% + 10px) !important;

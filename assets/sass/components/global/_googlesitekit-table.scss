@@ -18,7 +18,8 @@
 
 .googlesitekit-table {
 	counter-reset: table;
-	font-size: 0.875rem;
+	font-size: $fs-body-md;
+	letter-spacing: $ls-s;
 	padding: $grid-gap-phone;
 	position: relative;
 
@@ -52,9 +53,12 @@
 	}
 
 	.googlesitekit-table__head-item {
-		color: $c-secondary;
-		font-weight: $fw-primary-medium;
+		color: $c-surfaces-on-surface;
+		font-family: $f-secondary;
+		font-size: $fs-title-md;
+		font-weight: $fw-bold;
 		hyphens: auto;
+		line-height: $lh-title-md;
 		outline: 0;
 		padding: 0 ($grid-gap-phone / 4) ($grid-gap-phone / 2) ($grid-gap-phone / 4);
 		position: relative;
@@ -83,6 +87,12 @@
 			width: 50%;
 		}
 
+		// Table headers within widgets with headers have smaller font size.
+		.googlesitekit-widget--with-header & {
+			font-size: $fs-title-sm;
+			line-height: $lh-title-sm;
+		}
+
 		.googlesitekit-table-overflow &:last-child {
 			padding-right: 0;
 		}
@@ -95,7 +105,8 @@
 				color: $c-base;
 				content: attr(data-tooltip);
 				display: none; // TODO Temp until we get updated verbiage.
-				font-size: 0.75rem;
+				font-size: $fs-body-sm;
+				letter-spacing: $ls-xs;
 				max-width: 250px;
 				opacity: 0;
 				padding: calc(#{$grid-gap-phone} / 2) $grid-gap-desktop;
@@ -122,7 +133,8 @@
 	}
 
 	.googlesitekit-table__body {
-		font-weight: $fw-primary-normal;
+		color: $c-surfaces-on-surface;
+		font-weight: $fw-normal;
 	}
 
 	.googlesitekit-table__body-row {
@@ -220,7 +232,8 @@
 	.googlesitekit-table__body-item-url {
 		background-image: none;
 		display: block;
-		font-size: 0.75rem;
+		font-size: $fs-body-sm;
+		letter-spacing: $ls-xs;
 		word-break: break-word;
 	}
 

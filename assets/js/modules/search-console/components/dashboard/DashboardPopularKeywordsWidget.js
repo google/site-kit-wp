@@ -165,7 +165,11 @@ function DashboardPopularKeywordsWidget( props ) {
 				} );
 
 				return (
-					<Link href={ searchAnalyticsURL } external>
+					<Link
+						href={ searchAnalyticsURL }
+						external
+						hideExternalIndicator
+					>
 						{ fieldValue }
 					</Link>
 				);

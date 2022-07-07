@@ -16,64 +16,64 @@
  * limitations under the License.
  */
 
+@import "variables-mui3";
+
 /*
  * Colors
  * Names from http://chir.ag/projects/name-that-color/
  */
 
 $c-white: #fff;
-$c-alabaster: #f9f9f9;
-$c-mercury: #e6e6e6;
-$c-silver: #bbb;
-$c-silver-2: #ccc;
-$c-header-gray: #fafafa;
-$c-jumbo: #828286; // 3.82 contrast
-$c-boulder: #757575;
-$c-gray-cx: #6e7275;
-$c-device-icon-gray: #5f6368;
-$c-scarpa-flow: #5b5b61;
-$c-cape-cod: #3c4043;
-$c-nearblack: #212121;
+$c-alabaster: #f8fafb;
+$c-mercury: #ebeef0;
+$c-silver: #b8bdb9;
+$c-silver-2: #cbd0d3;
+$c-header-gray: #f8fafb;
+$c-jumbo: #999f9b; // 3.82 contrast
+$c-boulder: #7b807d;
+$c-gray-cx: #7b807d;
+$c-device-icon-gray: #5f6561;
+$c-scarpa-flow: #5f6561;
+$c-cape-cod: #333935;
+$c-nearblack: #232824;
 $c-black: #000;
-$c-cornflower-blue: #4285f4; // 3.56 contrast
-$c-royal-blue: #1a73e8; // 4.5 contrast
-$c-denim: #1967d2;
-$c-allports: #0073aa;
-$c-cerulean: #00a0d2;
-$c-deep-sky-blue: #00b9eb;
-$c-picton-blue: #2998e8;
-$c-scooter: #27bcd4;
-$c-golden-rod-yellow: #fafad2;
-$c-selective-yellow: #fbbc05;
-$c-yellow-900: #e37400;
-$c-sun: #f8a708;
-$c-orange-roughy: #ca4a1f;
-$c-valencia: #d53e36;
-$c-cinnabar: #ea4335;
-$c-red-600: #d93025;
-$c-rangitoto: #2a2a21;
-$c-chateau-green: #34a853;
-$c-elm: #1b9688;
-$c-green-700: #188038;
-$c-purple-heart: #673ab7;
-$c-jewel: #178239;
-$c-mango-tango: #e67700;
-$c-thunderbird: #c7221f;
-$c-solitude: #e8f0fe;
-$c-heather: #bdc1c6;
-$c-gallery: #f0f0f0;
-$c-gallery-2: #eaeaea;
-$c-fiord: #455a64;
-$c-iron: #dedfdf;
-$c-shark: #202124;
-$c-oslo-gray: #80868b;
-$c-jordy-blue: #8bb3f3;
-$c-pizazz: #f78f01;
-$c-tundora: #484848;
-$c-aqua-haze: #f5f9f9;
+$c-cornflower-blue: #6380b8; // 3.56 contrast
+$c-royal-blue: #446199; // 4.5 contrast
+$c-denim: #7f9cd4;
+$c-allports: #6380b8;
+$c-cerulean: #9bb8f0;
+$c-deep-sky-blue: #bed4ff;
+$c-picton-blue: #6380b8;
+$c-scooter: #bed4ff;
+$c-golden-rod-yellow: #ffe4b1;
+$c-selective-yellow: #fece72;
+$c-yellow-900: #e77d5b;
+$c-sun: #e1b155;
+$c-orange-roughy: #cc6240;
+$c-valencia: #ac4220;
+$c-cinnabar: #cc6240;
+$c-red-600: #ac4220;
+$c-rangitoto: #232824;
+$c-chateau-green: #88b146;
+$c-elm: #5c9271;
+$c-green-700: #4d760b;
+$c-purple-heart: #6e48ab;
+$c-jewel: #395d00;
+$c-mango-tango: #e77d5b;
+$c-thunderbird: #ac4220;
+$c-solitude: #f8faff;
+$c-heather: #b8bdb9;
+$c-gallery: #ebeef0;
+$c-gallery-2: #ebeef0;
+$c-fiord: #1b3870;
+$c-iron: #b8bdb9;
+$c-shark: #232824;
+$c-oslo-gray: #7b807d;
+$c-jordy-blue: #7f9cd4;
+$c-pizazz: #fece72;
+$c-tundora: #464b48;
+$c-aqua-haze: #ebeef0;
 $c-salomie-40: rgba(255, 220, 130, 0.4);
-$c-link-water: #ebf2fb;
-$c-seashell: #f1f1f1;
 
 // WordPress core pallete (see https://make.wordpress.org/core/2021/02/23/standardization-of-wp-admin-colors-in-wordpress-5-7/)
 // For use primarily outside of Site Kit screens.
@@ -144,48 +144,48 @@ $wp-colors: (
 );
 
 // PageSpeed Insights colors
-$c-pagespeed-fast: $c-green-700;
-$c-pagespeed-average: $c-yellow-900;
-$c-pagespeed-slow: $c-red-600;
+$c-pagespeed-fast: $c-utility-success;
+$c-pagespeed-average: $c-utility-warning;
+$c-pagespeed-slow: $c-utility-error;
 
 $c-base: $c-white;
-$c-primary: $c-boulder;
+$c-primary: $c-surfaces-on-surface;
 $c-secondary: $c-cape-cod;
 $c-tertiary: $c-scarpa-flow;
 $c-brand: $c-royal-blue;
 $c-highlight: $c-cornflower-blue;
 $c-subtle: $c-jumbo;
-$c-link: $c-royal-blue;
-$c-link-wpdb: $c-allports;
-$c-link-wpdb-hover: $c-cerulean;
+$c-link: $c-content-link;
+$c-link-wpdb: map-get($wp-colors, "blue-50");
+$c-link-wpdb-hover: map-get($wp-colors, "blue-60");
 $c-input: $c-royal-blue;
 $c-disabled: $c-silver;
 $c-required: $c-valencia;
-$c-error: $c-valencia;
-$c-warning: $c-selective-yellow;
-$c-success: $c-chateau-green;
+$c-error: $c-utility-error;
+$c-warning: $c-utility-warning;
+$c-success: $c-utility-success;
 $c-wp-notice: $c-orange-roughy;
 $c-wp-notice-alt: $c-deep-sky-blue;
 
 $c-background: $c-mercury;
-$c-background-subtle: $c-alabaster;
+$c-background-subtle: $c-surfaces-surface-1;
 $c-background-brand: $c-royal-blue;
 $c-background-notice: $c-golden-rod-yellow;
 $c-background-notice-warning: $c-golden-rod-yellow;
-$c-background-notice-info: $c-solitude;
+$c-background-notice-info: $c-surfaces-surface-1;
 $c-background-notice-suggestion: $c-solitude;
 
 $c-border: $c-boulder;
-$c-border-light: $c-mercury;
+$c-border-light: $c-neutral-n-50;
 $c-border-medium: $c-silver;
 $c-border-brand: $c-royal-blue;
 $c-border-notice-info-hover: $c-jordy-blue;
 
 $c-text-notice: rgba($c-black, 0.7);
 $c-text-notice-warning: rgba($c-black, 0.7);
-$c-text-notice-info: $c-denim;
+$c-text-notice-info: $c-surfaces-on-surface;
 $c-text-notice-suggestion: $c-denim;
-$c-text-notice-info-selected-text: $c-royal-blue;
+$c-text-notice-info-selected-text: $c-surfaces-on-surface;
 
 $c-icon-notice: $c-sun;
 $c-icon-notice-warning: $c-sun;
@@ -202,54 +202,52 @@ $c-progress-bg: $c-solitude;
 $c-user-input-options: $c-cape-cod;
 $c-user-input-note: $c-device-icon-gray;
 $c-user-input-placeholder: $c-heather;
-$c-user-input-color: $c-denim;
+$c-user-input-color: $c-content-on-primary-container;
 
 // Idea Hub colors
 $c-idea-hub-orange: $c-pizazz;
 $c-idea-hub-background: $c-white;
-$c-idea-hub-background-hover: $c-gallery-2;
+$c-idea-hub-background-hover: $c-interactive-tertiary-hover;
 $c-idea-hub-button-hover: $c-iron;
-$c-idea-hub-active-nav: $c-denim;
+$c-idea-hub-active-nav: $c-content-primary;
 $c-idea-hub-topic: $c-device-icon-gray;
 $c-idea-hub-name: $c-cape-cod;
-$c-idea-hub-icon-color: $c-fiord;
+$c-idea-hub-icon-color: $c-surfaces-on-surface-variant;
 
 // Badge
 $c-badge-background: $c-alabaster;
 $c-badge-text: $c-cape-cod;
 
 // Entity Search
-$c-entity-search-button: $c-boulder;
-$c-entity-search-input-border: $c-tundora;
-$c-entity-search-autocomplete-options: $c-shark;
-$c-entity-search-autocomplete-bg-hover: rgba($c-silver, 0.2);
+$c-entity-search-button: $c-surfaces-on-surface-variant;
+$c-entity-search-input-border: $c-utility-outline;
+$c-entity-search-autocomplete-options: $c-surfaces-on-surface;
+$c-entity-search-autocomplete-bg-hover: $c-interactive-secondary-hover;
 
 // Setup Analytics Notice
 $c-setup-analytics-notice-bg: $c-alabaster;
 $c-setup-analytics-notice-text: $c-cape-cod;
 
 // Analytics CTAs
-$c-search-funnel-analytics-cta-bg: $c-aqua-haze;
+$c-search-funnel-analytics-cta-bg: $c-surfaces-surface-1;
 $c-search-funnel-analytics-cta-icon: $c-silver-2;
 
 // Google MDC Theme Overrides
-$mdc-theme-primary: $c-brand;
+$mdc-theme-primary: $c-content-primary;
 $mdc-theme-secondary: $c-brand;
 $mdc-theme-on-primary: $c-base;
 $mdc-theme-on-secondary: $c-base;
 
 // Fonts
-$f-primary: Roboto, "Helvetica Neue", Helvetica, Arial, sans-serif;
-$fw-primary-light: 300;
-$fw-primary-normal: 400;
-$fw-primary-medium: 500;
-$fw-primary-bold: 700;
+$f-primary: "Google Sans Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
+$f-secondary: "Google Sans Display", "Helvetica Neue", Helvetica, Arial, sans-serif;
 
-$f-secondary: "Google Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
-$fw-secondary-light: 300;
-$fw-secondary-normal: 400;
-$fw-secondary-medium: 500;
-$fw-secondary-bold: 700;
+// Font weights
+$fw-light: 300;
+$fw-normal: 400;
+$fw-medium: 500;
+$fw-semi-bold: 600;
+$fw-bold: 700;
 
 // Transitions
 $t-default: 0.2s;
@@ -289,34 +287,6 @@ $bp-wpdb4: 2200px;
 // Custom max width for setup content
 $max-width-setup-content: 465px;
 
-// Typography
-$typography: (
-	headline1: (
-		font-size: 36px,
-		line-height: 44px,
-	),
-	headline3: (
-		font-size: 28px,
-		line-height: 36px,
-	),
-	body1: (
-		font-size: 22px,
-		line-height: 28px,
-	),
-	body2: (
-		font-size: 16px,
-		line-height: 24px,
-	),
-	body3: (
-		font-size: 14px,
-		line-height: 20px,
-	),
-	caption: (
-		font-size: 12px,
-		line-height: 16px,
-	)
-);
-
 // Google MDC Layout Grid Overrides
 
 /* stylelint-disable */
@@ -330,4 +300,11 @@ $mdc-layout-grid-breakpoints: (
 // Base64 images for reuse
 $icon-checked: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2212%22%20viewBox%3D%220%200%2016%2012%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cg%20fill%3D%22%23FFF%22%20fill-rule%3D%22evenodd%22%3E%3Cpath%20d%3D%22M0%206.414L1.415%205l5.292%205.292-1.414%201.415z%22%2F%3E%3Cpath%20d%3D%22M14.146.146l1.415%201.414L5.414%2011.707%204%2010.292z%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E");
 
-$mdc-button-min-height: 36px;
+$mdc-button-min-height: 40px;
+$mdc-typography-font-family: $f-primary;
+$mdc-typography-styles-subtitle1: (
+	font-size: $fs-body-md,
+);
+$mdc-text-field-error: $c-utility-error;
+$mdc-text-field-placeholder-ink-color: $c-interactive-on-disable-container;
+$mdc-text-field-label: $c-interactive-on-disable-container;
