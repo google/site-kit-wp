@@ -105,6 +105,70 @@ export const selectors = {
 	} ),
 
 	/**
+	 * Gets the Site Kit documentation URL.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @param {string} slug  The slug of the documentation page.
+	 * @return {string} The Site Kit support URL.
+	 */
+	getDocumentationLinkURL: createRegistrySelector(
+		( select ) => ( state, slug ) => {
+			const proxySupportLink = select(
+				CORE_SITE
+			).getProxySupportLinkURL();
+
+			if ( ! slug ) {
+				return proxySupportLink;
+			}
+
+			return `${ proxySupportLink }?doc=${ encodeURIComponent( slug ) }`;
+		}
+	),
+
+	/**
+	 * Gets the relevant troubleshooting URL.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @param {Object} error The error object.
+	 * @return {string} The Site Kit support URL.
+	 */
+	getErrorTroubleshootingLinkURL: createRegistrySelector(
+		( select ) => ( state, error ) => {
+			function isNumber( n ) {
+				return ! isNaN( parseFloat( n ) ) && ! isNaN( n - 0 );
+			}
+
+			const proxySupportLink = select(
+				CORE_SITE
+			).getProxySupportLinkURL();
+
+			if ( ! error ) {
+				return proxySupportLink;
+			}
+
+			if ( error.code && ! isNumber( error?.code ) ) {
+				return `${ proxySupportLink }?error=${ encodeURIComponent(
+					error.code
+				) }`;
+			}
+
+			if ( error.id && ! isNumber( error?.id ) ) {
+				return `${ proxySupportLink }?error=${ encodeURIComponent(
+					error.id
+				) }`;
+			}
+
+			return `${ proxySupportLink }?error=${ encodeURIComponent(
+				error.message
+			) }`;
+		}
+	),
+
+	/**
 	 * Gets the Google terms of service URL.
 	 *
 	 * @since 1.36.0
