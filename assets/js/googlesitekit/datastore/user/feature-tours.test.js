@@ -365,6 +365,42 @@ describe( 'core/user feature-tours', () => {
 				expect( store.getState().currentTour ).toEqual( tour );
 			} );
 		} );
+
+		describe( 'triggerTourForView', () => {
+			it( 'triggers the first tour that qualifies for the given viewContext when multiple tours match', async () => {
+				registry.dispatch( CORE_USER ).receiveGetDismissedTours( [] );
+				registry
+					.dispatch( CORE_USER )
+					.receiveAllFeatureTours( [ testTourA, testTourB ] );
+				expect( testTourA.contexts ).toContain( 'common-context' );
+				expect( testTourB.contexts ).toContain( 'common-context' );
+
+				expect( store.getState().currentTour ).toBeNull();
+
+				await registry
+					.dispatch( CORE_USER )
+					.triggerTourForView( 'common-context' );
+
+				expect( store.getState().currentTour ).toEqual( testTourA );
+			} );
+
+			it( 'triggers the first tour that qualifies for the given viewContext', async () => {
+				registry.dispatch( CORE_USER ).receiveGetDismissedTours( [] );
+				registry
+					.dispatch( CORE_USER )
+					.receiveAllFeatureTours( [ testTourA, testTourB ] );
+				expect( testTourA.contexts ).not.toContain( 'b-only-context' );
+				expect( testTourB.contexts ).toContain( 'b-only-context' );
+
+				expect( store.getState().currentTour ).toBeNull();
+
+				await registry
+					.dispatch( CORE_USER )
+					.triggerTourForView( 'b-only-context' );
+
+				expect( store.getState().currentTour ).toEqual( testTourB );
+			} );
+		} );
 	} );
 
 	describe( 'selectors', () => {
