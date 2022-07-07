@@ -83,8 +83,6 @@ const baseInitialState = {
 	dismissedTourSlugs: undefined,
 	// Array of tour objects.
 	tours: featureTours,
-	// Map of [viewContext]: ordered array of tour objects.
-	viewTours: {},
 	// Current active tour
 	currentTour: null,
 };
@@ -354,24 +352,6 @@ const baseResolvers = {
 		}
 	},
 
-	*getFeatureToursForView( viewContext ) {
-		const registry = yield getRegistry();
-		const tours = registry.select( CORE_USER ).getAllFeatureTours();
-		const viewTours = [];
-
-		for ( const tour of tours ) {
-			const tourQualifies = yield {
-				payload: { tour, viewContext },
-				type: CHECK_TOUR_REQUIREMENTS,
-			};
-
-			if ( tourQualifies ) {
-				viewTours.push( tour );
-			}
-		}
-		yield actions.receiveFeatureToursForView( viewTours, { viewContext } );
-	},
-
 	*getLastDismissedAt() {
 		const { value: lastDismissedAt } = yield Data.commonActions.await(
 			getItem( FEATURE_TOUR_LAST_DISMISSED_AT )
@@ -407,20 +387,6 @@ const baseSelectors = {
 	 */
 	getDismissedFeatureTourSlugs( state ) {
 		return state.dismissedTourSlugs;
-	},
-
-	/**
-	 * Gets a list of tour objects that qualify for the given view context.
-	 *
-	 * @since 1.29.0
-	 *
-	 * @param {Object} state       Data store's state.
-	 * @param {string} viewContext View context.
-	 * @return {(Object[]|undefined)} Array of qualifying tour objects
-	 *                                `undefined` while readiness is being resolved.
-	 */
-	getFeatureToursForView( state, viewContext ) {
-		return state.viewTours[ viewContext ];
 	},
 
 	/**
