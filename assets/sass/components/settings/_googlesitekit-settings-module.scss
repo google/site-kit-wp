@@ -72,11 +72,11 @@
 			align-items: center;
 			display: flex;
 			margin: 0;
-			min-width: 240px;
+			min-width: 315px;
 			width: min-content;
 
 			@media (min-width: $bp-tablet) {
-				min-width: 325px;
+				min-width: 400px;
 			}
 		}
 
