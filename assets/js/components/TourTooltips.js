@@ -37,7 +37,7 @@ import { CORE_USER } from '../googlesitekit/datastore/user/constants';
 import { trackEvent } from '../util/tracking';
 import TourTooltip from './TourTooltip';
 import useViewContext from '../hooks/useViewContext';
-const { useSelect, useDispatch } = Data;
+const { useSelect, useDispatch, useRegistry } = Data;
 
 /** For available options, see: {@link https://github.com/gilbarbara/react-joyride/blob/3e08384415a831b20ce21c8423b6c271ad419fbf/src/styles.js}. */
 export const joyrideStyles = {
@@ -46,6 +46,7 @@ export const joyrideStyles = {
 		backgroundColor: '#161b18', // $c-surfaces-inverse-surface
 		overlayColor: 'rgba(0, 0, 0, 0.6)',
 		textColor: '#ebeef0', // $c-surfaces-inverse-on-surface
+		zIndex: 20000,
 	},
 	spotlight: {
 		border: '2px solid #3c7251', // $c-content-primary
@@ -96,6 +97,7 @@ export default function TourTooltips( {
 	const runKey = `${ tourID }-run`;
 	const { setValue } = useDispatch( CORE_UI );
 	const { dismissTour } = useDispatch( CORE_USER );
+	const registry = useRegistry();
 
 	const viewContext = useViewContext();
 
@@ -114,14 +116,16 @@ export default function TourTooltips( {
 
 	const startTour = () => {
 		global.document.body.classList.add(
-			'googlesitekit-showing-feature-tour'
+			'googlesitekit-showing-feature-tour',
+			`googlesitekit-showing-feature-tour--${ tourID }`
 		);
 		setValue( runKey, true );
 	};
 
 	const endTour = () => {
 		global.document.body.classList.remove(
-			'googlesitekit-showing-feature-tour'
+			'googlesitekit-showing-feature-tour',
+			`googlesitekit-showing-feature-tour--${ tourID }`
 		);
 		// Dismiss tour to avoid unwanted repeat viewing.
 		dismissTour( tourID );
@@ -223,7 +227,7 @@ export default function TourTooltips( {
 		}
 
 		if ( callback ) {
-			callback( data );
+			callback( data, registry );
 		}
 	};
 
