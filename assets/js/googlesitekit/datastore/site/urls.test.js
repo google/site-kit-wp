@@ -77,6 +77,163 @@ describe( 'core/site urls', () => {
 			} );
 		} );
 
+		describe( 'getDocumentationLinkURL', () => {
+			it( 'should return the correct documentation URL given a documentation slug', () => {
+				const testSlug = 'test-slug';
+
+				const baseURL = registry
+					.select( CORE_SITE )
+					.getProxySupportLinkURL();
+
+				const url = registry
+					.select( CORE_SITE )
+					.getDocumentationLinkURL( testSlug );
+
+				expect( url ).toBe( `${ baseURL }?doc=${ testSlug }` );
+			} );
+
+			it( 'should return the base support url if the slug is not provided', () => {
+				const baseURL = registry
+					.select( CORE_SITE )
+					.getProxySupportLinkURL();
+
+				const url = registry
+					.select( CORE_SITE )
+					.getDocumentationLinkURL();
+
+				expect( url ).toBe( baseURL );
+			} );
+		} );
+
+		describe( 'getErrorTroubleshootingLinkURL', () => {
+			const testError = {
+				data: {
+					reason: 'Data Error',
+				},
+				selectorData: {
+					args: [
+						{
+							dimensions: [ 'ga:date' ],
+							metrics: [ { expression: 'ga:users' } ],
+							startDate: '2020-08-11',
+							endDate: '2020-09-07',
+						},
+					],
+					name: 'getReport',
+					storeName: 'MODULES_ANALYTICS',
+				},
+			};
+
+			const testErrorWithMessage = {
+				...testError,
+				message: 'Test error message',
+			};
+			const testErrorWithCode = { ...testError, code: 'test-error-code' };
+			const testErrorWithID = { ...testError, id: 'test-error-id' };
+
+			it( 'should return the base support page if no error is given', () => {
+				const baseURL = registry
+					.select( CORE_SITE )
+					.getProxySupportLinkURL();
+
+				const url = registry
+					.select( CORE_SITE )
+					.getErrorTroubleshootingLinkURL();
+
+				expect( url ).toBe( baseURL );
+			} );
+
+			it( 'should return the support link with the error message if no code or id is given', () => {
+				const baseURL = registry
+					.select( CORE_SITE )
+					.getProxySupportLinkURL();
+
+				const url = registry
+					.select( CORE_SITE )
+					.getErrorTroubleshootingLinkURL( testErrorWithMessage );
+
+				expect( url ).toBe(
+					`${ baseURL }?error=${ encodeURIComponent(
+						testErrorWithMessage.message
+					) }`
+				);
+			} );
+
+			it( 'should return the support link with the error code if the error code is given', () => {
+				const baseURL = registry
+					.select( CORE_SITE )
+					.getProxySupportLinkURL();
+
+				const url = registry
+					.select( CORE_SITE )
+					.getErrorTroubleshootingLinkURL( testErrorWithCode );
+
+				expect( url ).toBe(
+					`${ baseURL }?error=${ encodeURIComponent(
+						testErrorWithCode.code
+					) }`
+				);
+			} );
+
+			it( 'should return the support link with the error id if the error id is given', () => {
+				const baseURL = registry
+					.select( CORE_SITE )
+					.getProxySupportLinkURL();
+
+				const url = registry
+					.select( CORE_SITE )
+					.getErrorTroubleshootingLinkURL( testErrorWithID );
+
+				expect( url ).toBe(
+					`${ baseURL }?error=${ encodeURIComponent(
+						testErrorWithID.id
+					) }`
+				);
+			} );
+
+			it( 'it should default to the error message if the error code is a numeric value', () => {
+				const testErrorWithNumericCode = {
+					testErrorWithMessage,
+					code: 123,
+				};
+
+				const baseURL = registry
+					.select( CORE_SITE )
+					.getProxySupportLinkURL();
+
+				const url = registry
+					.select( CORE_SITE )
+					.getErrorTroubleshootingLinkURL( testErrorWithNumericCode );
+
+				expect( url ).toBe(
+					`${ baseURL }?error=${ encodeURIComponent(
+						testErrorWithNumericCode.message
+					) }`
+				);
+			} );
+
+			it( 'it should default to the error message if the error id is a numeric value', () => {
+				const testErrorWithNumericID = {
+					testErrorWithMessage,
+					id: 123,
+				};
+
+				const baseURL = registry
+					.select( CORE_SITE )
+					.getProxySupportLinkURL();
+
+				const url = registry
+					.select( CORE_SITE )
+					.getErrorTroubleshootingLinkURL( testErrorWithNumericID );
+
+				expect( url ).toBe(
+					`${ baseURL }?error=${ encodeURIComponent(
+						testErrorWithNumericID.message
+					) }`
+				);
+			} );
+		} );
+
 		describe( 'getGoogleTermsURL', () => {
 			it( 'should return the correct terms URL', () => {
 				const url = registry.select( CORE_SITE ).getGoogleTermsURL();

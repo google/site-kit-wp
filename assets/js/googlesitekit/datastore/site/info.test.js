@@ -248,6 +248,7 @@ describe( 'core/site site info', () => {
 			[ 'getSiteName', 'siteName' ],
 			[ 'getSetupErrorMessage', 'setupErrorMessage' ],
 			[ 'getSetupErrorRedoURL', 'setupErrorRedoURL' ],
+			[ 'getProxySupportLinkURL', 'proxySupportLinkURL' ],
 			[ 'getTimezone', 'timezone' ],
 			[ 'isUsingProxy', 'usingProxy' ],
 			[ 'isAMP', 'ampMode' ],
