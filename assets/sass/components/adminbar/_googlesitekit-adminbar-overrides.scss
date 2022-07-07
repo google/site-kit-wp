@@ -252,7 +252,8 @@
 		.googlesitekit-cta-link {
 
 			background-color: transparent;
-			font-size: 16px;
+			font-size: $fs-body-lg;
+			letter-spacing: $ls-m;
 		}
 
 		// New Analytics CTA Link
@@ -265,9 +266,8 @@
 			}
 
 			.mdc-button__label {
-				font-weight: $fw-primary-normal;
+				font-weight: $fw-normal;
 				letter-spacing: 1.25px;
-				text-transform: uppercase;
 			}
 		}
 	}

@@ -23,9 +23,11 @@ import Data from 'googlesitekit-data';
 import { createSnapshotStore } from '../../../googlesitekit/data/create-snapshot-store';
 import { MODULES_THANK_WITH_GOOGLE } from './constants';
 import baseModuleStore from './base';
+import publications from './publications';
 
 const store = Data.combineStores(
 	baseModuleStore,
+	publications,
 	createSnapshotStore( MODULES_THANK_WITH_GOOGLE )
 );
 

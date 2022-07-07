@@ -132,9 +132,9 @@ export default function WPDashboardPopularPages( props ) {
 
 	return (
 		<div className="googlesitekit-search-console-widget">
-			<h2 className="googlesitekit-search-console-widget__title">
+			<h3>
 				{ __( 'Top content over the last 28 days', 'google-site-kit' ) }
-			</h2>
+			</h3>
 			<TableOverflowContainer>
 				<ReportTable
 					rows={ rows }

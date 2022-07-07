@@ -118,7 +118,15 @@ export default function Header( { slug } ) {
 						alignMiddle
 						mdAlignRight
 					>
-						<p className="googlesitekit-settings-module__status">
+						<p
+							className={ classnames(
+								'googlesitekit-settings-module__status',
+								{
+									'googlesitekit-settings-module__status--connected': connected,
+									'googlesitekit-settings-module__status--not-connected': ! connected,
+								}
+							) }
+						>
 							{ connected
 								? sprintf(
 										/* translators: %s: module name. */

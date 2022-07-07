@@ -49,7 +49,11 @@ export default function DetailsPermaLinks( { title, path, serviceURL } ) {
 
 	return (
 		<Fragment>
-			<Link href={ serviceURL || detailsURL } external={ !! serviceURL }>
+			<Link
+				href={ serviceURL || detailsURL }
+				external={ !! serviceURL }
+				hideExternalIndicator
+			>
 				{ title }
 			</Link>
 

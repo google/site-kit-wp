@@ -17,13 +17,17 @@
  */
 
 .googlesitekit-settings-module-warning {
+	font-size: $fs-body-md;
+	letter-spacing: $ls-s;
+	line-height: $lh-body-md;
 
 	&--settings {
 		margin-bottom: 1em;
 	}
 
 	&--modules-list {
-		font-size: 0.75rem;
+		font-size: $fs-body-sm;
+		letter-spacing: $ls-xs;
 		margin: 1em 0;
 
 		.svg {
@@ -33,7 +37,7 @@
 	}
 
 	svg {
-		color: $c-cinnabar;
+		color: $c-utility-warning;
 	}
 
 	&--module-sitekit-dashboard {

@@ -495,33 +495,33 @@ const SearchFunnelWidget = ( {
 SearchFunnelWidget.metrics = [
 	{
 		id: 'impressions',
-		color: '#4285f4',
+		color: '#6380b8',
 		label: __( 'Impressions', 'google-site-kit' ),
 		metric: 'impressions',
 		service: 'search-console',
 	},
 	{
 		id: 'clicks',
-		color: '#27bcd4',
+		color: '#bed4ff',
 		label: __( 'Clicks', 'google-site-kit' ),
 		metric: 'clicks',
 		service: 'search-console',
 	},
 	{
 		id: 'users',
-		color: '#1b9688',
+		color: '#5c9271',
 		label: __( 'Users', 'google-site-kit' ),
 		service: 'analytics',
 	},
 	{
 		id: 'goals',
-		color: '#673ab7',
+		color: '#6e48ab',
 		label: __( 'Goals', 'google-site-kit' ),
 		service: 'analytics',
 	},
 	{
 		id: 'bounce-rate',
-		color: '#673ab7',
+		color: '#6e48ab',
 		label: __( 'Bounce Rate', 'google-site-kit' ),
 		service: 'analytics',
 	},
