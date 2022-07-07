@@ -17,26 +17,32 @@
  */
 
 /**
+ * External dependencies
+ */
+import { useMount } from 'react-use';
+
+/**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
 import { CORE_USER } from '../googlesitekit/datastore/user/constants';
 import useViewContext from '../hooks/useViewContext';
 import TourTooltips from './TourTooltips';
-const { useSelect } = Data;
+const { useSelect, useDispatch } = Data;
 
 export default function FeatureTours() {
 	const viewContext = useViewContext();
+	const { triggerTourForView } = useDispatch( CORE_USER );
 
-	const nextTour = useSelect(
-		( select ) =>
-			select( CORE_USER ).getFeatureToursForView( viewContext )?.[ 0 ]
-	);
-	const toursAreOnCooldown = useSelect( ( select ) =>
-		select( CORE_USER ).areFeatureToursOnCooldown()
+	useMount( () => {
+		triggerTourForView( viewContext );
+	} );
+
+	const nextTour = useSelect( ( select ) =>
+		select( CORE_USER ).getCurrentTour()
 	);
 
-	if ( ! nextTour || toursAreOnCooldown ) {
+	if ( ! nextTour ) {
 		return null;
 	}
 
