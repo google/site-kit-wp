@@ -136,6 +136,60 @@ describe( 'core/user feature-tours', () => {
 					} )
 				);
 			} );
+
+			it( 'unsets the currentTour when the slug matches', async () => {
+				muteFetch( fetchDismissTourRegExp, [] );
+
+				registry.dispatch( CORE_USER ).receiveCurrentTour( testTourA );
+
+				await registry
+					.dispatch( CORE_USER )
+					.dismissTour( testTourA.slug );
+
+				expect( store.getState().currentTour ).toBeNull();
+			} );
+
+			it( 'does not unset the currentTour if the slug does not match', async () => {
+				muteFetch( fetchDismissTourRegExp, [] );
+
+				registry.dispatch( CORE_USER ).receiveCurrentTour( testTourA );
+
+				await registry
+					.dispatch( CORE_USER )
+					.dismissTour( testTourB.slug );
+
+				expect( store.getState().currentTour ).toEqual( testTourA );
+			} );
+		} );
+
+		describe( 'receiveCurrentTour', () => {
+			it( 'requires the given tour to be a plain object', () => {
+				const { receiveCurrentTour } = registry.dispatch( CORE_USER );
+				const expectedError = 'tour must be a plain object';
+				expect( () => receiveCurrentTour() ).toThrow( expectedError );
+				expect( () => receiveCurrentTour( new Date() ) ).toThrow(
+					expectedError
+				);
+				expect( () => receiveCurrentTour( {} ) ).not.toThrow();
+			} );
+
+			it( 'sets the currentTour in state', () => {
+				expect( store.getState().currentTour ).toBeNull();
+
+				registry.dispatch( CORE_USER ).receiveCurrentTour( testTourA );
+
+				expect( store.getState().currentTour ).toEqual( testTourA );
+			} );
+
+			it( 'sets the currentTour even when another is set', () => {
+				registry.dispatch( CORE_USER ).receiveCurrentTour( testTourA );
+
+				expect( store.getState().currentTour ).toEqual( testTourA );
+
+				registry.dispatch( CORE_USER ).receiveCurrentTour( testTourB );
+
+				expect( store.getState().currentTour ).toEqual( testTourB );
+			} );
 		} );
 
 		describe( 'receiveAllFeatureTours', () => {
@@ -223,6 +277,89 @@ describe( 'core/user feature-tours', () => {
 						ttl: FEATURE_TOUR_COOLDOWN_SECONDS,
 					} )
 				);
+			} );
+		} );
+
+		describe( 'triggerTour', () => {
+			it( 'sets the currentTour in state if none is already set', async () => {
+				expect( store.getState().currentTour ).toBeNull();
+
+				await registry.dispatch( CORE_USER ).triggerTour( testTourA );
+
+				expect( store.getState().currentTour ).toEqual( testTourA );
+
+				await registry.dispatch( CORE_USER ).triggerTour( testTourB );
+
+				expect( store.getState().currentTour ).toEqual( testTourA );
+			} );
+		} );
+
+		describe( 'triggerOnDemandTour', () => {
+			it( 'triggers the given tour', async () => {
+				expect( store.getState().currentTour ).toBeNull();
+				registry.dispatch( CORE_USER ).receiveGetDismissedTours( [] );
+				await registry
+					.dispatch( CORE_USER )
+					.triggerOnDemandTour( testTourA );
+
+				expect( store.getState().currentTour ).toEqual( testTourA );
+			} );
+
+			it( 'does not trigger the given tour if it has been dismissed', async () => {
+				expect( store.getState().currentTour ).toBeNull();
+				registry
+					.dispatch( CORE_USER )
+					.receiveGetDismissedTours( [ testTourA.slug ] );
+				await registry
+					.dispatch( CORE_USER )
+					.triggerOnDemandTour( testTourA );
+
+				expect( store.getState().currentTour ).toBeNull();
+			} );
+
+			it( 'will trigger the given tour even when tours are on cooldown', async () => {
+				registry.dispatch( CORE_USER ).receiveGetDismissedTours( [] );
+				registry
+					.dispatch( CORE_USER )
+					.receiveLastDismissedAt( Date.now() );
+
+				expect(
+					registry.select( CORE_USER ).areFeatureToursOnCooldown()
+				).toBe( true );
+
+				await registry
+					.dispatch( CORE_USER )
+					.triggerOnDemandTour( testTourA );
+
+				expect( store.getState().currentTour ).toEqual( testTourA );
+			} );
+
+			it( 'will not trigger a given tour with a checkRequirements function that returns false', async () => {
+				const checkRequirements = jest.fn( () => false );
+				const tour = { ...testTourA, checkRequirements };
+				expect( store.getState().currentTour ).toBeNull();
+				registry.dispatch( CORE_USER ).receiveGetDismissedTours( [] );
+
+				await registry
+					.dispatch( CORE_USER )
+					.triggerOnDemandTour( tour );
+
+				expect( checkRequirements ).toHaveBeenCalledTimes( 1 );
+				expect( store.getState().currentTour ).toBeNull();
+			} );
+
+			it( 'will trigger a given tour with a checkRequirements function that returns true', async () => {
+				const checkRequirements = jest.fn( () => true );
+				const tour = { ...testTourA, checkRequirements };
+				expect( store.getState().currentTour ).toBeNull();
+				registry.dispatch( CORE_USER ).receiveGetDismissedTours( [] );
+
+				await registry
+					.dispatch( CORE_USER )
+					.triggerOnDemandTour( tour );
+
+				expect( checkRequirements ).toHaveBeenCalledTimes( 1 );
+				expect( store.getState().currentTour ).toEqual( tour );
 			} );
 		} );
 	} );
