@@ -38,20 +38,20 @@ export default function FeatureTours() {
 		triggerTourForView( viewContext );
 	} );
 
-	const nextTour = useSelect( ( select ) =>
+	const tour = useSelect( ( select ) =>
 		select( CORE_USER ).getCurrentTour()
 	);
 
-	if ( ! nextTour ) {
+	if ( ! tour ) {
 		return null;
 	}
 
 	return (
 		<TourTooltips
-			tourID={ nextTour.slug }
-			steps={ nextTour.steps }
-			gaEventCategory={ nextTour.gaEventCategory }
-			callback={ nextTour.callback }
+			tourID={ tour.slug }
+			steps={ tour.steps }
+			gaEventCategory={ tour.gaEventCategory }
+			callback={ tour.callback }
 		/>
 	);
 }
