@@ -72,6 +72,12 @@
 			align-items: center;
 			display: flex;
 			margin: 0;
+			min-width: 240px;
+			width: min-content;
+
+			@media (min-width: $bp-tablet) {
+				min-width: 325px;
+			}
 		}
 
 		.googlesitekit-settings-module__title-icon {
