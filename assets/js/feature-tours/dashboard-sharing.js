@@ -20,6 +20,7 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
+import { EVENTS, ACTIONS } from 'react-joyride';
 
 /*
  * Internal dependencies
@@ -27,9 +28,11 @@ import { __ } from '@wordpress/i18n';
 import { VIEW_CONTEXT_DASHBOARD } from '../googlesitekit/constants';
 import { isFeatureEnabled } from '../features';
 import settingsTour from './dashboard-sharing-settings';
-import { ACTIONS } from 'react-joyride';
 import { CORE_UI } from '../googlesitekit/datastore/ui/constants';
 import { UI_KEY_DIALOG_OPEN } from '../components/dashboard-sharing/DashboardSharingSettingsButton';
+import { CORE_USER } from '../googlesitekit/datastore/user/constants';
+
+let viewedAllSteps;
 
 const dashboardSharing = {
 	slug: 'dashboardSharing',
@@ -52,7 +55,7 @@ const dashboardSharing = {
 	],
 	checkRequirements: () => isFeatureEnabled( 'dashboardSharing' ),
 	callback: ( data, { select, dispatch } ) => {
-		const { action, index } = data;
+		const { action, index, size, type } = data;
 
 		const dialogOpen = select( CORE_UI ).getValue( UI_KEY_DIALOG_OPEN );
 
@@ -64,6 +67,16 @@ const dashboardSharing = {
 		// Close the dialog if the tour is ended or we end up back on the first step.
 		if ( ACTIONS.STOP === action || ( index === 0 && dialogOpen ) ) {
 			dispatch( CORE_UI ).setValue( UI_KEY_DIALOG_OPEN, false );
+		}
+
+		if (
+			index + 1 === size &&
+			EVENTS.TOOLTIP === type &&
+			! viewedAllSteps
+		) {
+			viewedAllSteps = true;
+			// If the user has "seen" all the steps, dismiss the settings tour.
+			dispatch( CORE_USER ).dismissTour( settingsTour.slug );
 		}
 	},
 };
