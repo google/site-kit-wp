@@ -42,10 +42,10 @@ const { useSelect, useDispatch, useRegistry } = Data;
 /** For available options, see: {@link https://github.com/gilbarbara/react-joyride/blob/3e08384415a831b20ce21c8423b6c271ad419fbf/src/styles.js}. */
 export const joyrideStyles = {
 	options: {
-		arrowColor: '#161b18', // $c-surfaces-inverse-surface
-		backgroundColor: '#161b18', // $c-surfaces-inverse-surface
+		arrowColor: '#3c7251', // $c-content-primary
+		backgroundColor: '#3c7251', // $c-content-primary
 		overlayColor: 'rgba(0, 0, 0, 0.6)',
-		textColor: '#ebeef0', // $c-surfaces-inverse-on-surface
+		textColor: '#fff', // $c-content-on-primary
 		zIndex: 20000,
 	},
 	spotlight: {
