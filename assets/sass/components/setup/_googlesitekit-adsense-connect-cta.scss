@@ -200,13 +200,12 @@
 			display: grid;
 			grid-template-columns: 1fr;
 			height: 100%;
+			padding: 16px 0;
 			width: 100%;
 
 			@media (min-width: $bp-nonMobile) {
+				height: calc(100% + 70px);
 				margin-bottom: 12px;
-			}
-
-			@media (min-width: $width-desktop + 1 + px) {
 				margin-top: -70px;
 			}
 		}
@@ -224,7 +223,7 @@
 			width: 100%;
 
 			svg {
-				height: 100%;
+				flex: 1;
 				max-height: 312px;
 				max-width: 100%;
 			}
