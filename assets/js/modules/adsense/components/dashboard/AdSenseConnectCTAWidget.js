@@ -17,6 +17,12 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { Fragment, useCallback } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
+
+/**
  * External dependencies
  */
 import PropTypes from 'prop-types';
@@ -26,12 +32,36 @@ import PropTypes from 'prop-types';
  */
 import Data from 'googlesitekit-data';
 import AdSenseConnectCTA from '../common/AdSenseConnectCTA';
-import { ADSENSE_CTA_WIDGET_DISMISSED_ITEM_KEY } from '../../constants';
+import {
+	ADSENSE_CTA_WIDGET_DISMISSED_ITEM_KEY,
+	ADSENSE_CTA_WIDGET_TOOLTIP_STATE_KEY,
+} from '../../constants';
+import { CORE_UI } from '../../../../googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
-const { useSelect } = Data;
+import Tooltip from '../../../../components/Tooltip';
+import useViewContext from '../../../../hooks/useViewContext';
+import { trackEvent } from '../../../../util';
+const { useDispatch, useSelect } = Data;
+
+// TODO move to constants
 
 function AdSenseConnectCTAWidget( { Widget, WidgetNull } ) {
+	const { dismissItem } = useDispatch( CORE_USER );
+	const { setValue } = useDispatch( CORE_UI );
+
+	const { isTooltipVisible, rehideAdminMenu } = useSelect(
+		( select ) =>
+			select( CORE_UI ).getValue(
+				ADSENSE_CTA_WIDGET_TOOLTIP_STATE_KEY
+			) || {
+				isTooltipVisible: false,
+				rehideAdminMenu: false,
+			}
+	);
+
+	const viewContext = useViewContext();
+
 	const adSenseModuleConnected = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleConnected( 'adsense' )
 	);
@@ -41,13 +71,64 @@ function AdSenseConnectCTAWidget( { Widget, WidgetNull } ) {
 		)
 	);
 
+	const onDismissModule = useCallback( () => {
+		// Check if the WordPress admin menu is open, and if not, open it.
+		const isAdminMenuOpen = !! document.querySelector(
+			'#wpwrap.wp-responsive-open'
+		);
+		if ( ! isAdminMenuOpen ) {
+			document.getElementById( 'wp-admin-bar-menu-toggle' )?.click();
+		}
+
+		setValue( ADSENSE_CTA_WIDGET_TOOLTIP_STATE_KEY, {
+			isTooltipVisible: true,
+			rehideAdminMenu: ! isAdminMenuOpen,
+		} );
+	}, [ setValue ] );
+
+	const handleDismissTooltip = useCallback( async () => {
+		// If the WordPress admin menu was closed, re-close it.
+		if ( rehideAdminMenu ) {
+			document.getElementById( 'wp-admin-bar-menu-toggle' )?.click();
+		}
+
+		await trackEvent(
+			`${ viewContext }_adsense-cta-widget`,
+			'dismiss_tooltip'
+		);
+		await dismissItem( ADSENSE_CTA_WIDGET_DISMISSED_ITEM_KEY );
+
+		setValue( ADSENSE_CTA_WIDGET_TOOLTIP_STATE_KEY, undefined );
+	}, [ dismissItem, rehideAdminMenu, setValue, viewContext ] );
+
+	if ( isTooltipVisible ) {
+		return (
+			<Fragment>
+				<WidgetNull />
+				<Tooltip
+					title={ __(
+						'You can always connect AdSense from here later',
+						'google-site-kit'
+					) }
+					content={ __(
+						'The Monetization section will be added back to your dashboard if you connect AdSense in Settings later.',
+						'google-site-kit'
+					) }
+					dismissLabel={ __( 'Got it', 'google-site-kit' ) }
+					target="#adminmenu [href*='page=googlesitekit-settings']"
+					onDismiss={ handleDismissTooltip }
+				/>
+			</Fragment>
+		);
+	}
+
 	if ( adSenseModuleConnected || hasDismissedWidget ) {
 		return <WidgetNull />;
 	}
 
 	return (
 		<Widget noPadding>
-			<AdSenseConnectCTA />
+			<AdSenseConnectCTA onDismissModule={ onDismissModule } />
 		</Widget>
 	);
 }
