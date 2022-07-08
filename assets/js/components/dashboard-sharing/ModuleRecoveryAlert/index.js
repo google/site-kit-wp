@@ -39,7 +39,7 @@ const { useDispatch, useSelect } = Data;
 export default function ModuleRecoveryAlert() {
 	const [ checkboxes, setCheckboxes ] = useState( null );
 	const [ recoveringModules, setRecoveringModules ] = useState( false );
-	const [ error, setError ] = useState( false );
+	const [ error, setError ] = useState( null );
 
 	const recoverableModules = useSelect( ( select ) =>
 		select( CORE_MODULES ).getRecoverableModules()
@@ -84,7 +84,7 @@ export default function ModuleRecoveryAlert() {
 	const handleRecoverModules = useCallback( () => {
 		// Reset error state.
 		if ( error ) {
-			setError( false );
+			setError( null );
 		}
 
 		setRecoveringModules( true );
