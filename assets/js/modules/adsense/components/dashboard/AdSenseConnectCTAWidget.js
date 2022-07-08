@@ -44,19 +44,18 @@ import useViewContext from '../../../../hooks/useViewContext';
 import { trackEvent } from '../../../../util';
 const { useDispatch, useSelect } = Data;
 
-// TODO move to constants
-
 function AdSenseConnectCTAWidget( { Widget, WidgetNull } ) {
 	const { dismissItem } = useDispatch( CORE_USER );
 	const { setValue } = useDispatch( CORE_UI );
 
-	const { isTooltipVisible, rehideAdminMenu } = useSelect(
+	const { isTooltipVisible, rehideAdminMenu, rehideAdminSubMenu } = useSelect(
 		( select ) =>
 			select( CORE_UI ).getValue(
 				ADSENSE_CTA_WIDGET_TOOLTIP_STATE_KEY
 			) || {
 				isTooltipVisible: false,
 				rehideAdminMenu: false,
+				rehideAdminSubMenu: false,
 			}
 	);
 
@@ -71,25 +70,55 @@ function AdSenseConnectCTAWidget( { Widget, WidgetNull } ) {
 		)
 	);
 
-	const onDismissModule = useCallback( () => {
+	const onDismissModule = useCallback( async () => {
 		// Check if the WordPress admin menu is open, and if not, open it.
-		const isAdminMenuOpen = !! document.querySelector(
-			'#wpwrap.wp-responsive-open'
-		);
+		// The admin menu is hidden via responsive CSS. This is a simple and effective way to check if it's visible.
+		const isAdminMenuOpen =
+			document.querySelector( '#adminmenu' ).offsetHeight > 0;
+
 		if ( ! isAdminMenuOpen ) {
 			document.getElementById( 'wp-admin-bar-menu-toggle' )?.click();
+
+			// On iOS, at least, this is necessary, without it the settings menu item
+			// is not scrolled into view when the Tooltip is shown.
+			await new Promise( ( resolve ) => {
+				setTimeout( resolve, 0 );
+			} );
+		}
+
+		// Check if the Site Kit admin submenu is hidden, and if so, show it.
+		const adminSubMenuSelector =
+			"#adminmenu [href*='page=googlesitekit-dashboard']";
+		const isAdminSubMenuHidden = !! document.querySelector(
+			`${ adminSubMenuSelector }[aria-haspopup=true]`
+		);
+
+		if ( isAdminSubMenuHidden ) {
+			document.querySelector( adminSubMenuSelector ).click();
 		}
 
 		setValue( ADSENSE_CTA_WIDGET_TOOLTIP_STATE_KEY, {
 			isTooltipVisible: true,
 			rehideAdminMenu: ! isAdminMenuOpen,
+			rehideAdminSubMenu: isAdminSubMenuHidden,
 		} );
 	}, [ setValue ] );
 
 	const handleDismissTooltip = useCallback( async () => {
 		// If the WordPress admin menu was closed, re-close it.
 		if ( rehideAdminMenu ) {
-			document.getElementById( 'wp-admin-bar-menu-toggle' )?.click();
+			const isAdminMenuOpen =
+				document.querySelector( '#adminmenu' ).offsetHeight > 0;
+
+			if ( isAdminMenuOpen ) {
+				document.getElementById( 'wp-admin-bar-menu-toggle' )?.click();
+			}
+		}
+
+		// If the Site Kit admin submenu was hidden, re-hide it.
+		if ( rehideAdminSubMenu ) {
+			// Click on the body to close the submenu.
+			document.querySelector( 'body' ).click();
 		}
 
 		await trackEvent(
@@ -99,7 +128,13 @@ function AdSenseConnectCTAWidget( { Widget, WidgetNull } ) {
 		await dismissItem( ADSENSE_CTA_WIDGET_DISMISSED_ITEM_KEY );
 
 		setValue( ADSENSE_CTA_WIDGET_TOOLTIP_STATE_KEY, undefined );
-	}, [ dismissItem, rehideAdminMenu, setValue, viewContext ] );
+	}, [
+		dismissItem,
+		rehideAdminMenu,
+		rehideAdminSubMenu,
+		setValue,
+		viewContext,
+	] );
 
 	if ( isTooltipVisible ) {
 		return (
