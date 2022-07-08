@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * WordPress dependencies
  */
 import { Fragment } from '@wordpress/element';
@@ -56,3 +61,8 @@ export default function Error( { recoverableModules, error } ) {
 		</div>
 	);
 }
+
+Error.propTypes = {
+	recoverableModules: PropTypes.object,
+	error: PropTypes.object,
+};
