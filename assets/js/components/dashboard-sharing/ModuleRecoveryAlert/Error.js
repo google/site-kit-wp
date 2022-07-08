@@ -25,7 +25,17 @@ import { sprintf, __ } from '@wordpress/i18n';
 export default function Error( { recoverableModules, error } ) {
 	return (
 		<div className="googlesitekit-module-recovery-error">
-			{ Object.keys( error ).length > 1 ? (
+			{ Object.keys( error ).length === 1 && (
+				<p>
+					{ sprintf(
+						/* translators: %s: Error message */
+						__( 'Error: %s', 'google-site-kit' ),
+						Object.values( error )[ 0 ].message
+					) }
+				</p>
+			) }
+
+			{ Object.keys( error ).length > 1 && (
 				<Fragment>
 					<p>
 						{ __(
@@ -42,14 +52,6 @@ export default function Error( { recoverableModules, error } ) {
 						) ) }
 					</ul>
 				</Fragment>
-			) : (
-				<p>
-					{ sprintf(
-						/* translators: %s: Error message */
-						__( 'Error: %s', 'google-site-kit' ),
-						Object.values( error )[ 0 ].message
-					) }
-				</p>
 			) }
 		</div>
 	);
