@@ -62,12 +62,14 @@
 			}
 
 			h4 {
+				color: $c-neutral-n-400;
 				font-size: 18px;
 				font-weight: 400;
 				margin: 0 0 4px;
 			}
 
 			p {
+				color: $c-neutral-n-400;
 				font-size: 12px;
 				margin: 0;
 			}
@@ -318,6 +320,10 @@
 				align-items: flex-end;
 				display: flex;
 				justify-content: flex-end;
+			}
+
+			a {
+				text-decoration: underline;
 			}
 
 			p {
