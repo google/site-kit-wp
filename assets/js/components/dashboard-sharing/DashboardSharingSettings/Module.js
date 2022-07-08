@@ -159,7 +159,7 @@ export default function Module( { moduleSlug, moduleName, ownerUsername } ) {
 					<UserRoleSelect
 						moduleSlug={ moduleSlug }
 						isLocked={ isLocked }
-						moduleRef={ moduleRef }
+						ref={ moduleRef }
 					/>
 				) }
 
