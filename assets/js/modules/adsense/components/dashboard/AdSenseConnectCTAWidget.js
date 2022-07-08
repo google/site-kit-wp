@@ -77,13 +77,19 @@ function AdSenseConnectCTAWidget( { Widget, WidgetNull } ) {
 			document.querySelector( '#adminmenu' ).offsetHeight > 0;
 
 		if ( ! isAdminMenuOpen ) {
-			document.getElementById( 'wp-admin-bar-menu-toggle' )?.click();
+			const adminMenuToggle = document.getElementById(
+				'wp-admin-bar-menu-toggle'
+			);
 
-			// On iOS, at least, this is necessary, without it the settings menu item
-			// is not scrolled into view when the Tooltip is shown.
-			await new Promise( ( resolve ) => {
-				setTimeout( resolve, 0 );
-			} );
+			if ( adminMenuToggle ) {
+				adminMenuToggle.click();
+
+				// On iOS, at least, this is necessary, without it the settings menu item
+				// is not scrolled into view when the Tooltip is shown.
+				await new Promise( ( resolve ) => {
+					setTimeout( resolve, 0 );
+				} );
+			}
 		}
 
 		// Check if the Site Kit admin submenu is hidden, and if so, show it.
