@@ -110,13 +110,8 @@
 
 		}
 
-		--adsense-connect-cta-fade-in-duration: 180ms;
-		--adsense-connect-cta-fade-out-duration: 180ms;
-
-		@media (min-width: $bp-nonMobile) {
-			--adsense-connect-cta-fade-in-duration: 5s;
-			--adsense-connect-cta-fade-out-duration: 500ms;
-		}
+		--adsense-connect-cta-fade-in-duration: 5s;
+		--adsense-connect-cta-fade-out-duration: 500ms;
 
 		@keyframes fade-in {
 

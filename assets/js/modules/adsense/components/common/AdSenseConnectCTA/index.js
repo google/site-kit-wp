@@ -45,22 +45,15 @@ import { CORE_MODULES } from '../../../../../googlesitekit/modules/datastore/con
 import { CORE_LOCATION } from '../../../../../googlesitekit/datastore/location/constants';
 import { trackEvent } from '../../../../../util';
 import ContentAutoUpdate from './ContentAutoUpdate';
-import ContentSwipeable from './ContentSwipeable';
 import Link from '../../../../../components/Link';
 import Button from '../../../../../components/Button';
 import useViewContext from '../../../../../hooks/useViewContext';
-import {
-	useBreakpoint,
-	BREAKPOINT_SMALL,
-} from '../../../../../hooks/useBreakpoint';
 const { useSelect, useDispatch } = Data;
 
 export default function AdSenseConnectCTA( { onDismissModule } ) {
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 	const { activateModule } = useDispatch( CORE_MODULES );
 	const { setInternalServerError } = useDispatch( CORE_SITE );
-
-	const breakpoint = useBreakpoint();
 
 	const viewContext = useViewContext();
 	const trackingRef = useRef();
@@ -134,10 +127,7 @@ export default function AdSenseConnectCTA( { onDismissModule } ) {
 			className="googlesitekit-setup__wrapper googlesitekit-setup__wrapper--adsense-connect"
 		>
 			<Grid>
-				{ breakpoint === BREAKPOINT_SMALL && <ContentSwipeable /> }
-				{ breakpoint !== BREAKPOINT_SMALL && (
-					<ContentAutoUpdate hasBeenInView={ hasBeenInView } />
-				) }
+				<ContentAutoUpdate hasBeenInView={ hasBeenInView } />
 				<Row>
 					<Cell { ...cellProps }>
 						<div className="googlesitekit-setup-module__action">
