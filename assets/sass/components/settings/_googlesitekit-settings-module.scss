@@ -72,11 +72,6 @@
 			align-items: center;
 			display: flex;
 			margin: 0;
-			width: min-content;
-
-			@media (min-width: $bp-wpAdminBarTablet) {
-				min-width: 400px;
-			}
 		}
 
 		.googlesitekit-settings-module__title-icon {
@@ -253,6 +248,17 @@
 		.googlesitekit-settings-module__apikey-cancel {
 			font-size: 0.75em;
 			margin-left: 24px;
+		}
+
+		&.googlesitekit-settings-module--thank-with-google {
+
+			.googlesitekit-settings-module__title {
+				width: min-content;
+
+				@media (min-width: $bp-wpAdminBarTablet) {
+					min-width: 400px;
+				}
+			}
 		}
 	}
 }
