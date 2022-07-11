@@ -31,7 +31,8 @@ describe( 'modules/thank-with-google publications', () => {
 	let registry;
 	const PUBLICATIONS = [
 		{
-			publicationID: 'TEST-PUBLICATION-ID',
+			// eslint-disable-next-line sitekit/acronym-case
+			publicationId: 'TEST-PUBLICATION-ID',
 			displayName: 'Test publication title',
 			verifiedDomains: [ 'https://example.com' ],
 			paymentOptions: {
@@ -162,6 +163,10 @@ describe( 'modules/thank-with-google publications', () => {
 					.dispatch( MODULES_THANK_WITH_GOOGLE )
 					.receiveGetPublications( PUBLICATIONS );
 
+				registry
+					.dispatch( MODULES_THANK_WITH_GOOGLE )
+					.setPublicationID( null );
+
 				const publication = registry
 					.select( MODULES_THANK_WITH_GOOGLE )
 					.getCurrentPublication();
@@ -174,8 +179,9 @@ describe( 'modules/thank-with-google publications', () => {
 					.dispatch( MODULES_THANK_WITH_GOOGLE )
 					.receiveGetPublications( [
 						...PUBLICATIONS,
-						// The following publication doesn't have the publicationID.
 						{
+							// eslint-disable-next-line sitekit/acronym-case
+							publicationId: 'test-publication-id-2',
 							displayName: 'Test publication title',
 							verifiedDomains: [ 'https://example.com' ],
 							paymentOptions: {
@@ -184,6 +190,45 @@ describe( 'modules/thank-with-google publications', () => {
 						},
 					] );
 
+				registry
+					.dispatch( MODULES_THANK_WITH_GOOGLE )
+					.setPublicationID( 'test-publication-id-2' );
+
+				const publication = registry
+					.select( MODULES_THANK_WITH_GOOGLE )
+					.getCurrentPublication();
+
+				expect( publication ).toEqual( {
+					// eslint-disable-next-line sitekit/acronym-case
+					publicationId: 'test-publication-id-2',
+					displayName: 'Test publication title',
+					verifiedDomains: [ 'https://example.com' ],
+					paymentOptions: {
+						virtualGifts: true,
+					},
+				} );
+			} );
+
+			it( 'returns the publication if the publicationID is not set and the state is set to ACTIVE', () => {
+				registry
+					.dispatch( MODULES_THANK_WITH_GOOGLE )
+					.receiveGetPublications( [
+						...PUBLICATIONS,
+						{
+							// eslint-disable-next-line sitekit/acronym-case
+							publicationId: 'test-publication-id-2',
+							displayName: 'Test publication title',
+							verifiedDomains: [ 'https://example.com' ],
+							paymentOptions: {
+								virtualGifts: true,
+							},
+						},
+					] );
+
+				registry
+					.dispatch( MODULES_THANK_WITH_GOOGLE )
+					.setPublicationID( null );
+
 				const publication = registry
 					.select( MODULES_THANK_WITH_GOOGLE )
 					.getCurrentPublication();
@@ -191,40 +236,7 @@ describe( 'modules/thank-with-google publications', () => {
 				expect( publication ).toEqual( PUBLICATIONS[ 0 ] );
 			} );
 
-			it( 'returns the publication if the publicationId is not set and the state is set to ACTIVE', () => {
-				const publicationsWithActiveState = [
-					{
-						displayName: 'Test publication title',
-						verifiedDomains: [ 'https://example.com' ],
-						paymentOptions: {
-							virtualGifts: true,
-						},
-					},
-					// The following publication doesn't have the publicationID.
-					// However, it has the state set to ACTIVE.
-					{
-						displayName: 'Test publication another title',
-						verifiedDomains: [ 'https://example.com' ],
-						paymentOptions: {
-							virtualGifts: true,
-						},
-						state: 'ACTIVE',
-					},
-				];
-				registry
-					.dispatch( MODULES_THANK_WITH_GOOGLE )
-					.receiveGetPublications( publicationsWithActiveState );
-
-				const publication = registry
-					.select( MODULES_THANK_WITH_GOOGLE )
-					.getCurrentPublication();
-
-				expect( publication ).toEqual(
-					publicationsWithActiveState[ 1 ]
-				);
-			} );
-
-			it( 'returns the first publication from the list if the publicationId is not set and the state is not set to ACTIVE', () => {
+			it( 'returns the first publication from the list if the publicationID is not set and the state is not set to ACTIVE', () => {
 				const publicationsWithoutIDAndActive = [
 					{
 						displayName: 'Test publication title',
@@ -244,6 +256,10 @@ describe( 'modules/thank-with-google publications', () => {
 				registry
 					.dispatch( MODULES_THANK_WITH_GOOGLE )
 					.receiveGetPublications( publicationsWithoutIDAndActive );
+
+				registry
+					.dispatch( MODULES_THANK_WITH_GOOGLE )
+					.setPublicationID( null );
 
 				const publication = registry
 					.select( MODULES_THANK_WITH_GOOGLE )
