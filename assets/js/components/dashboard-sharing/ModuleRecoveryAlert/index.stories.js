@@ -185,11 +185,6 @@ SingleRecoverableModuleError.args = {
 			);
 	},
 };
-SingleRecoverableModuleError.scenario = {
-	label:
-		'Global/ModuleRecoveryAlert/Single Recoverable Module with Error Message',
-	delay: 250,
-};
 
 export const MultipleRecoverableModuleErrors = Template.bind( {} );
 MultipleRecoverableModuleErrors.storyName =
@@ -223,11 +218,6 @@ MultipleRecoverableModuleErrors.args = {
 				{ slug: 'analytics' }
 			);
 	},
-};
-MultipleRecoverableModuleErrors.scenario = {
-	label:
-		'Global/ModuleRecoveryAlert/Multiple Recoverable Modules with Error Messages',
-	delay: 250,
 };
 
 export default {
