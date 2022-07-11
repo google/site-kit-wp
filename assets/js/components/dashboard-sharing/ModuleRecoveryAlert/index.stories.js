@@ -191,6 +191,45 @@ SingleRecoverableModuleError.scenario = {
 	delay: 250,
 };
 
+export const MultipleRecoverableModuleErrors = Template.bind( {} );
+MultipleRecoverableModuleErrors.storyName =
+	'Multiple Recoverable Modules with Error Messages';
+MultipleRecoverableModuleErrors.args = {
+	setupRegistry: ( registry ) => {
+		const errorResponse = {
+			code: 'module_not_recoverable',
+			message: 'Module is not recoverable.',
+			data: { status: 403 },
+		};
+
+		fetchMock.post(
+			/^\/google-site-kit\/v1\/core\/modules\/data\/recover-module/,
+			{ body: errorResponse, status: 403 }
+		);
+
+		registry
+			.dispatch( CORE_MODULES )
+			.receiveRecoverableModules( [ 'search-console', 'analytics' ] );
+		registry
+			.dispatch( CORE_MODULES )
+			.receiveCheckModuleAccess(
+				{ access: true },
+				{ slug: 'search-console' }
+			);
+		registry
+			.dispatch( CORE_MODULES )
+			.receiveCheckModuleAccess(
+				{ access: true },
+				{ slug: 'analytics' }
+			);
+	},
+};
+MultipleRecoverableModuleErrors.scenario = {
+	label:
+		'Global/ModuleRecoveryAlert/Multiple Recoverable Modules with Error Messages',
+	delay: 250,
+};
+
 export default {
 	title: 'Components/ModuleRecoveryAlert',
 	component: ModuleRecoveryAlert,
