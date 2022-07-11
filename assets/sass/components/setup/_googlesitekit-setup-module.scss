@@ -237,4 +237,21 @@
 			}
 		}
 	}
+
+	.googlesitekit-setup-module__header {
+		align-items: center;
+		display: flex;
+		flex-wrap: wrap;
+		grid-gap: 10px 12px;
+
+		.googlesitekit-setup-module__logo,
+		.googlesitekit-setup-module__title {
+			margin-bottom: 0;
+		}
+	}
+
+	.googlesitekit-setup-module__heading {
+		align-items: center;
+		display: flex;
+	}
 }

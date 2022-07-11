@@ -266,5 +266,16 @@
 			letter-spacing: $ls-xs;
 			margin-left: 24px;
 		}
+
+		&.googlesitekit-settings-module--thank-with-google {
+
+			.googlesitekit-settings-module__title {
+				width: min-content;
+
+				@media (min-width: $bp-wpAdminBarTablet) {
+					min-width: 400px;
+				}
+			}
+		}
 	}
 }
