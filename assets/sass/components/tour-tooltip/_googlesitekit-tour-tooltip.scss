@@ -16,17 +16,28 @@
  * limitations under the License.
  */
 
-.react-joyride__overlay {
-	mix-blend-mode: multiply !important;
+// Only override global Joyride styles when a Site Kit tour is active
+// as there is no other way to scope the selectors using Joyride.
+.googlesitekit-showing-feature-tour {
+
+	.react-joyride__overlay {
+		mix-blend-mode: multiply !important;
+	}
+
+	.react-joyride__spotlight {
+		// Ideally the border-radius would vary by the size of the spotlight element
+		// so we use the average radius here.
+		border-radius: $br-sm !important; // Override uncustomizable inline style.
+	}
 }
 
 .googlesitekit-tour-tooltip {
 
 	.googlesitekit-tooltip-card {
-		background-color: $c-surfaces-inverse-surface;
+		--mdc-theme-surface: #{$c-content-primary};
 		border-radius: 8px;
 		box-shadow: none;
-		color: $c-white;
+		color: $c-content-on-primary;
 		position: relative;
 
 		a {
@@ -34,18 +45,18 @@
 			&:active,
 			&:hover,
 			&:visited {
-				color: $c-white;
+				color: $c-content-on-primary;
 			}
 		}
 
 		svg {
-			color: $c-white;
+			color: $c-content-on-primary;
 		}
 	}
 }
 
 .googlesitekit-tooltip-title {
-	color: $c-white;
+	color: $c-content-on-primary;
 	font-family: $f-secondary;
 	font-size: $fs-body-lg;
 	font-weight: $fw-medium;
@@ -110,15 +121,16 @@
 }
 
 .googlesitekit-tooltip-indicator {
-	background: $c-content-primary;
+	background: $c-content-on-primary;
 	border-radius: 50%;
 	height: 8px;
 	list-style: none;
 	margin-bottom: 0;
 	margin-right: 8px;
+	opacity: 0.5;
 	width: 8px;
 }
 
 .googlesitekit-tooltip-indicator.active {
-	background: $c-white;
+	opacity: 1;
 }
