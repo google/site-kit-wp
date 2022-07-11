@@ -30,7 +30,9 @@ const fetchGetPublicationsStore = createFetchStore( {
 	baseName: 'getPublications',
 	storeName: MODULES_THANK_WITH_GOOGLE,
 	controlCallback: () => {
-		return API.get( 'modules', 'thank-with-google', 'publications' );
+		return API.get( 'modules', 'thank-with-google', 'publications', null, {
+			useCache: false,
+		} );
 	},
 	reducerCallback: ( state, publications ) => {
 		return {
