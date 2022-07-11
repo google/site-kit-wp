@@ -19,3 +19,5 @@
 export const ERROR_CODE_ADBLOCKER_ACTIVE = 'adblocker_active';
 export const AREA_MODULE_ADSENSE_MAIN = 'moduleAdsenseMain';
 export const ADSENSE_CTA_WIDGET_DISMISSED_ITEM_KEY = 'adsense-connect-cta';
+export const ADSENSE_CTA_WIDGET_TOOLTIP_STATE_KEY =
+	'adsense-connect-cta-tooltip-state';

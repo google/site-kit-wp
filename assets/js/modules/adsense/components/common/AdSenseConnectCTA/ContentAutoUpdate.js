@@ -55,14 +55,20 @@ export default function ContentAutoUpdate( { hasBeenInView } ) {
 	}
 
 	useEffect( () => {
-		if ( hasBeenInView ) {
-			setTimeout( () => {
-				setContentState( {
-					stage: 0,
-					mode: 'leave',
-				} );
-			}, 2500 );
+		if ( ! hasBeenInView ) {
+			return;
 		}
+
+		const timeoutID = setTimeout( () => {
+			setContentState( {
+				stage: 0,
+				mode: 'leave',
+			} );
+		}, 2500 );
+
+		return () => {
+			clearTimeout( timeoutID );
+		};
 	}, [ hasBeenInView ] );
 
 	return (

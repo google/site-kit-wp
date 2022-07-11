@@ -62,12 +62,14 @@
 			}
 
 			h4 {
+				color: $c-neutral-n-400;
 				font-size: 18px;
 				font-weight: 400;
 				margin: 0 0 4px;
 			}
 
 			p {
+				color: $c-neutral-n-400;
 				font-size: 12px;
 				margin: 0;
 			}
@@ -110,13 +112,8 @@
 
 		}
 
-		--adsense-connect-cta-fade-in-duration: 180ms;
-		--adsense-connect-cta-fade-out-duration: 180ms;
-
-		@media (min-width: $bp-nonMobile) {
-			--adsense-connect-cta-fade-in-duration: 5s;
-			--adsense-connect-cta-fade-out-duration: 500ms;
-		}
+		--adsense-connect-cta-fade-in-duration: 5s;
+		--adsense-connect-cta-fade-out-duration: 500ms;
 
 		@keyframes fade-in {
 
@@ -200,13 +197,12 @@
 			display: grid;
 			grid-template-columns: 1fr;
 			height: 100%;
+			padding: 16px 0;
 			width: 100%;
 
 			@media (min-width: $bp-nonMobile) {
+				height: calc(100% + 70px);
 				margin-bottom: 12px;
-			}
-
-			@media (min-width: $width-desktop + 1 + px) {
 				margin-top: -70px;
 			}
 		}
@@ -224,7 +220,7 @@
 			width: 100%;
 
 			svg {
-				height: 100%;
+				flex: 1;
 				max-height: 312px;
 				max-width: 100%;
 			}
@@ -324,6 +320,10 @@
 				align-items: flex-end;
 				display: flex;
 				justify-content: flex-end;
+			}
+
+			a {
+				text-decoration: underline;
 			}
 
 			p {

@@ -1,5 +1,5 @@
 /**
- * AdSenseConnectCTA component tests.
+ * AdSenseConnectCTAWidget component tests.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import AdSenseConnectCTA from '.';
+import AdSenseConnectCTAWidget from './AdSenseConnectCTAWidget';
 import {
 	act,
 	fireEvent,
@@ -27,10 +27,11 @@ import {
 	createTestRegistry,
 	provideSiteInfo,
 	provideUserAuthentication,
-} from '../../../../../../../tests/js/test-utils';
-import { CORE_MODULES } from '../../../../../googlesitekit/modules/datastore/constants';
-import { MODULES_ADSENSE } from '../../../datastore/constants';
-import { withActive } from '../../../../../googlesitekit/modules/datastore/__fixtures__';
+} from '../../../../../../tests/js/test-utils';
+import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
+import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import { MODULES_ADSENSE } from '../../datastore/constants';
+import { withActive } from '../../../../googlesitekit/modules/datastore/__fixtures__';
 
 describe( 'AdSenseConnectCTA', () => {
 	let registry;
@@ -42,11 +43,15 @@ describe( 'AdSenseConnectCTA', () => {
 		registry
 			.dispatch( CORE_MODULES )
 			.receiveGetModules( withActive( 'adsense' ) );
+		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 	} );
 
 	describe( 'after click', () => {
 		let container;
 		beforeEach( () => {
+			const Widget = ( { children } ) => <div>{ children }</div>;
+			const WidgetNull = () => <div>NULL</div>;
+
 			container = render(
 				<div>
 					<div id="adminmenu">
@@ -54,7 +59,10 @@ describe( 'AdSenseConnectCTA', () => {
 							Settings
 						</a>
 					</div>
-					<AdSenseConnectCTA />
+					<AdSenseConnectCTAWidget
+						Widget={ Widget }
+						WidgetNull={ WidgetNull }
+					/>
 				</div>,
 				{ registry }
 			).container;
