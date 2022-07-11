@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import fetchMock from 'fetch-mock';
+
+/**
  * Internal dependencies
  */
 import {
@@ -150,6 +155,39 @@ MultipleRecoverableModuleNoAccess.args = {
 MultipleRecoverableModuleNoAccess.scenario = {
 	label:
 		'Global/ModuleRecoveryAlert/Multiple Recoverable Modules (no access)',
+	delay: 250,
+};
+
+export const SingleRecoverableModuleError = Template.bind( {} );
+SingleRecoverableModuleError.storyName =
+	'Single Recoverable Module with Error Message';
+SingleRecoverableModuleError.args = {
+	setupRegistry: ( registry ) => {
+		const errorResponse = {
+			code: 'module_not_recoverable',
+			message: 'Module is not recoverable.',
+			data: { status: 403 },
+		};
+
+		fetchMock.post(
+			/^\/google-site-kit\/v1\/core\/modules\/data\/recover-module/,
+			{ body: errorResponse, status: 403 }
+		);
+
+		registry
+			.dispatch( CORE_MODULES )
+			.receiveRecoverableModules( [ 'search-console' ] );
+		registry
+			.dispatch( CORE_MODULES )
+			.receiveCheckModuleAccess(
+				{ access: true },
+				{ slug: 'search-console' }
+			);
+	},
+};
+SingleRecoverableModuleError.scenario = {
+	label:
+		'Global/ModuleRecoveryAlert/Single Recoverable Module with Error Message',
 	delay: 250,
 };
 
