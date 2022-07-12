@@ -74,6 +74,9 @@ const UserRoleSelect = forwardRef(
 		useKeyCodesInside( [ ESCAPE ], ref, () => {
 			if ( editMode ) {
 				setValue( EDITING_USER_ROLE_SELECT_SLUG_KEY, undefined );
+
+				// Reset focus to edit roles button.
+				roleSelectButtonRef.current.focus();
 			}
 		} );
 
