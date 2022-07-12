@@ -53,7 +53,7 @@ const ALL_CHIP_DISPLAY_NAME = __( 'All', 'google-site-kit' );
 const UserRoleSelect = forwardRef(
 	( { moduleSlug, isLocked = false }, ref ) => {
 		const viewContext = useViewContext();
-		const roleSelectBtnRef = useRef();
+		const roleSelectButtonRef = useRef();
 
 		const [ initialSharedRoles, setInitialSharedRoles ] = useState( [] );
 
@@ -183,7 +183,7 @@ const UserRoleSelect = forwardRef(
 						)
 					}
 					tabIndex={ isLocked ? -1 : undefined }
-					ref={ roleSelectBtnRef }
+					ref={ roleSelectButtonRef }
 				/>
 
 				{ ! editMode && sharedRoles?.length > 0 && (
@@ -199,7 +199,7 @@ const UserRoleSelect = forwardRef(
 								onClick={ () => {
 									// As this link exits the DOM on click, we change
 									// the focus to the role select button.
-									roleSelectBtnRef.current.focus();
+									roleSelectButtonRef.current.focus();
 
 									toggleEditMode();
 								} }
