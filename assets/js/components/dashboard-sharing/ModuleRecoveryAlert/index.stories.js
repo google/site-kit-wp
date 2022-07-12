@@ -20,6 +20,7 @@
  * External dependencies
  */
 import fetchMock from 'fetch-mock';
+import { waitForElement } from '@testing-library/react';
 
 /**
  * Internal dependencies
@@ -185,6 +186,16 @@ SingleRecoverableModuleError.args = {
 			);
 	},
 };
+SingleRecoverableModuleError.decorators = [
+	( Story ) => {
+		setTimeout( async () => {
+			await waitForElement( () => document.querySelector( 'button' ) );
+			document.querySelector( 'button' ).click();
+		}, 0 );
+
+		return <Story />;
+	},
+];
 
 export const MultipleRecoverableModuleErrors = Template.bind( {} );
 MultipleRecoverableModuleErrors.storyName =
@@ -219,6 +230,16 @@ MultipleRecoverableModuleErrors.args = {
 			);
 	},
 };
+MultipleRecoverableModuleErrors.decorators = [
+	( Story ) => {
+		setTimeout( async () => {
+			await waitForElement( () => document.querySelector( 'button' ) );
+			document.querySelector( 'button' ).click();
+		}, 0 );
+
+		return <Story />;
+	},
+];
 
 export default {
 	title: 'Components/ModuleRecoveryAlert',
