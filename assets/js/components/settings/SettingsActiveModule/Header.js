@@ -108,6 +108,13 @@ export default function Header( { slug } ) {
 									hasLeftSpacing={ true }
 								/>
 							) }
+
+							{ 'thank-with-google' === slug && (
+								<Badge
+									label={ __( 'US Only', 'google-site-kit' ) }
+									hasLeftSpacing={ true }
+								/>
+							) }
 						</h3>
 					</Cell>
 
