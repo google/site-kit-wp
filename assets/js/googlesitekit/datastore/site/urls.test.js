@@ -78,6 +78,14 @@ describe( 'core/site urls', () => {
 		} );
 
 		describe( 'getDocumentationLinkURL', () => {
+			it( 'should throw an error if the slug is omitted', () => {
+				try {
+					registry.select( CORE_SITE ).getDocumentationLinkURL();
+				} catch ( error ) {
+					expect( error.message ).toBe( 'A slug is required.' );
+				}
+			} );
+
 			it( 'should return the correct documentation URL given a documentation slug', () => {
 				const testSlug = 'test-slug';
 
@@ -90,18 +98,6 @@ describe( 'core/site urls', () => {
 					.getDocumentationLinkURL( testSlug );
 
 				expect( url ).toBe( `${ baseURL }?doc=${ testSlug }` );
-			} );
-
-			it( 'should return the base support url if the slug is not provided', () => {
-				const baseURL = registry
-					.select( CORE_SITE )
-					.getProxySupportLinkURL();
-
-				const url = registry
-					.select( CORE_SITE )
-					.getDocumentationLinkURL();
-
-				expect( url ).toBe( baseURL );
 			} );
 		} );
 
@@ -131,16 +127,14 @@ describe( 'core/site urls', () => {
 			const testErrorWithCode = { ...testError, code: 'test-error-code' };
 			const testErrorWithID = { ...testError, id: 'test-error-id' };
 
-			it( 'should return the base support page if no error is given', () => {
-				const baseURL = registry
-					.select( CORE_SITE )
-					.getProxySupportLinkURL();
-
-				const url = registry
-					.select( CORE_SITE )
-					.getErrorTroubleshootingLinkURL();
-
-				expect( url ).toBe( baseURL );
+			it( 'should throw an error if no error is given', () => {
+				try {
+					registry
+						.select( CORE_SITE )
+						.getErrorTroubleshootingLinkURL();
+				} catch ( error ) {
+					expect( error.message ).toBe( 'An error is required.' );
+				}
 			} );
 
 			it( 'should return the support link with the error message if no code or id is given', () => {
@@ -169,7 +163,7 @@ describe( 'core/site urls', () => {
 					.getErrorTroubleshootingLinkURL( testErrorWithCode );
 
 				expect( url ).toBe(
-					`${ baseURL }?error=${ encodeURIComponent(
+					`${ baseURL }?error_id=${ encodeURIComponent(
 						testErrorWithCode.code
 					) }`
 				);
@@ -185,7 +179,7 @@ describe( 'core/site urls', () => {
 					.getErrorTroubleshootingLinkURL( testErrorWithID );
 
 				expect( url ).toBe(
-					`${ baseURL }?error=${ encodeURIComponent(
+					`${ baseURL }?error_id=${ encodeURIComponent(
 						testErrorWithID.id
 					) }`
 				);
@@ -193,7 +187,7 @@ describe( 'core/site urls', () => {
 
 			it( 'it should default to the error message if the error code is a numeric value', () => {
 				const testErrorWithNumericCode = {
-					testErrorWithMessage,
+					...testErrorWithMessage,
 					code: 123,
 				};
 
@@ -214,7 +208,7 @@ describe( 'core/site urls', () => {
 
 			it( 'it should default to the error message if the error id is a numeric value', () => {
 				const testErrorWithNumericID = {
-					testErrorWithMessage,
+					...testErrorWithMessage,
 					id: 123,
 				};
 

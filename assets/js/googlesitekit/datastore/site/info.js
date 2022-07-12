@@ -499,7 +499,7 @@ export const selectors = {
 	getSetupErrorRedoURL: getSiteInfoProperty( 'setupErrorRedoURL' ),
 
 	/**
-	 * Gets the support URL.
+	 * Gets the proxy support URL.
 	 *
 	 * @since n.e.x.t
 	 *

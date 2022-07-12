@@ -24,6 +24,12 @@ import { CORE_SITE } from './constants';
 import { getLocale } from '../../../util';
 const { createRegistrySelector } = Data;
 
+/**
+ * External dependencies
+ */
+import invariant from 'invariant';
+import { isNumber } from 'lodash';
+
 export const selectors = {
 	/**
 	 * Gets an external Google URL that includes the user's locale.
@@ -115,13 +121,11 @@ export const selectors = {
 	 */
 	getDocumentationLinkURL: createRegistrySelector(
 		( select ) => ( state, slug ) => {
+			invariant( slug, 'A slug is required.' );
+
 			const proxySupportLink = select(
 				CORE_SITE
 			).getProxySupportLinkURL();
-
-			if ( ! slug ) {
-				return proxySupportLink;
-			}
 
 			return `${ proxySupportLink }?doc=${ encodeURIComponent( slug ) }`;
 		}
@@ -138,26 +142,20 @@ export const selectors = {
 	 */
 	getErrorTroubleshootingLinkURL: createRegistrySelector(
 		( select ) => ( state, error ) => {
-			function isNumber( n ) {
-				return ! isNaN( parseFloat( n ) ) && ! isNaN( n - 0 );
-			}
+			invariant( error, 'An error is required.' );
 
 			const proxySupportLink = select(
 				CORE_SITE
 			).getProxySupportLinkURL();
 
-			if ( ! error ) {
-				return proxySupportLink;
-			}
-
 			if ( error.code && ! isNumber( error?.code ) ) {
-				return `${ proxySupportLink }?error=${ encodeURIComponent(
+				return `${ proxySupportLink }?error_id=${ encodeURIComponent(
 					error.code
 				) }`;
 			}
 
 			if ( error.id && ! isNumber( error?.id ) ) {
-				return `${ proxySupportLink }?error=${ encodeURIComponent(
+				return `${ proxySupportLink }?error_id=${ encodeURIComponent(
 					error.id
 				) }`;
 			}
