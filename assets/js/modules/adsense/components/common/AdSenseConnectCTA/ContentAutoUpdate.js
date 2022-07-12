@@ -64,7 +64,7 @@ export default function ContentAutoUpdate( { hasBeenInView } ) {
 				stage: 0,
 				mode: 'leave',
 			} );
-		}, 2500 );
+		}, 7000 );
 
 		return () => {
 			clearTimeout( timeoutID );

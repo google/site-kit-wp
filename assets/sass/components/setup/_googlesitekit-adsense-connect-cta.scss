@@ -112,7 +112,7 @@
 
 		}
 
-		--adsense-connect-cta-fade-in-duration: 5s;
+		--adsense-connect-cta-fade-in-duration: 7.5s;
 		--adsense-connect-cta-fade-out-duration: 500ms;
 
 		@keyframes fade-in {
@@ -121,7 +121,7 @@
 				opacity: 0;
 			}
 
-			10% {
+			6.67% {
 				opacity: 1;
 			}
 
