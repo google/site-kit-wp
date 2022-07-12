@@ -272,7 +272,7 @@
 			.googlesitekit-settings-module__title {
 				width: min-content;
 
-				@media (min-width: $bp-wpAdminBarTablet) {
+				@media (min-width: $width-desktop) {
 					min-width: 400px;
 				}
 			}
