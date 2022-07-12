@@ -42,6 +42,7 @@ const ImageRadio = ( {
 	onKeyDown,
 	image,
 	label,
+	children,
 	description,
 	ariaLabel,
 } ) => {
@@ -88,7 +89,7 @@ const ImageRadio = ( {
 			</div>
 			<label htmlFor={ id }>
 				{ image && <span>{ label }</span> }
-				{ description }
+				{ description ? description : children }
 			</label>
 		</div>
 	);
@@ -103,6 +104,7 @@ ImageRadio.propTypes = {
 	checked: PropTypes.bool,
 	tabIndex: PropTypes.oneOfType( [ PropTypes.number, PropTypes.string ] ),
 	label: PropTypes.string.isRequired,
+	children: PropTypes.string.isRequired,
 	image: PropTypes.element,
 	description: PropTypes.string,
 	ariaLabel: PropTypes.string,

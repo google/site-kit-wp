@@ -25,6 +25,7 @@ import { storiesOf } from '@storybook/react';
  * Internal dependencies
  */
 import ImageRadio from '../assets/js/components/ImageRadio';
+
 const image = (
 	<svg
 		width="241"
@@ -35,7 +36,6 @@ const image = (
 	>
 		<mask
 			id="mask0_1205_5766"
-			style="mask-type:alpha"
 			maskUnits="userSpaceOnUse"
 			x="0"
 			y="0"
@@ -87,10 +87,8 @@ storiesOf( 'Global', module ).add( 'Image Radios', () => (
 			>
 				Default
 			</ImageRadio>
-		</div>
-		<div>
 			<ImageRadio
-				id="image-radio-story"
+				id="image-radio-story-2"
 				name="image-radio-story"
 				value="story"
 				image={ image }
@@ -103,7 +101,7 @@ storiesOf( 'Global', module ).add( 'Image Radios', () => (
 		</div>
 		<div>
 			<ImageRadio
-				id="image-radio-story"
+				id="image-radio-story-3"
 				name="image-radio-story"
 				value="story"
 				label={ 'Image Radio' }
@@ -114,7 +112,7 @@ storiesOf( 'Global', module ).add( 'Image Radios', () => (
 		</div>
 		<div>
 			<ImageRadio
-				id="image-radio-story"
+				id="image-radio-story-4"
 				name="image-radio-story"
 				value="story"
 				label={ 'Image Radio' }
