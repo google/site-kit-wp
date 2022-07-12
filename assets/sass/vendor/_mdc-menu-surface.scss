@@ -1,14 +1,18 @@
-// Overrides for .mdc-menu-surface
-// Outside .googlesitekit-plugin because the open menu is moved to the body.
+// Outside .googlesitekit-plugin because some menus are moved to the body.
 .mdc-menu-surface {
 
 	@include elevation-3();
 	@include mdc-menu-surface-shape-radius($br-sm);
+}
 
-	left: auto !important;
-	right: -8px;
-	top: calc(100% + 10px) !important;
-	width: calc(100% + 8px);
+.googlesitekit-plugin {
+
+	.mdc-menu-surface {
+		left: auto !important;
+		right: -8px;
+		top: calc(100% + 10px) !important;
+		width: calc(100% + 8px);
+	}
 }
 
 .mdc-menu-surface--open {
