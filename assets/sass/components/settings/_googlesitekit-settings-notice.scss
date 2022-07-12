@@ -18,11 +18,12 @@
 
 .googlesitekit-settings-notice {
 	background-color: $c-background-notice;
-	border-radius: 4px;
+	border-radius: $br-sm;
 	color: $c-text-notice;
 	display: flex;
-	font-size: 0.875rem;
-	line-height: 1.42;
+	font-size: $fs-body-sm;
+	letter-spacing: $ls-xs;
+	line-height: $lh-body-sm;
 	margin: 1.5em 0;
 	max-width: 1098px;
 	padding: $grid-gap-phone;
@@ -52,7 +53,6 @@
 	.googlesitekit-settings-notice__text {
 		flex-grow: 1;
 		line-height: 20px; // Match icon height.
-
 	}
 
 	.mdc-select:not(.mdc-select--disabled),
@@ -61,7 +61,7 @@
 		.mdc-notched-outline__leading,
 		.mdc-notched-outline__notch,
 		.mdc-notched-outline__trailing {
-			border-color: $c-border-brand;
+			border-color: $c-utility-outline;
 		}
 
 		.mdc-floating-label {
@@ -109,7 +109,7 @@
 				.mdc-notched-outline__leading,
 				.mdc-notched-outline__notch,
 				.mdc-notched-outline__trailing {
-					border-color: $c-border-notice-info-hover;
+					border-color: $c-neutral-n-900;
 				}
 			}
 		}
@@ -119,6 +119,7 @@
 
 		.googlesitekit-settings-notice__learn-more {
 			flex-shrink: 0;
+			line-height: 20px; // to match icon height.
 			text-align: right;
 
 			@media (min-width: $bp-tablet) {
@@ -176,7 +177,7 @@
 		color: $c-text-notice-info;
 
 		.googlesitekit-cta-link {
-			color: $c-text-notice-info;
+			color: $c-content-link;
 		}
 	}
 

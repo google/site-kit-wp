@@ -51,10 +51,10 @@
 @keyframes pulse {
 
 	0% {
-		background-color: rgba($c-black, 0.05);
+		background-color: $c-surfaces-surface-1;
 	}
 
 	100% {
-		background-color: rgba($c-black, 0.15);
+		background-color: $c-surfaces-surface-2;
 	}
 }

@@ -121,18 +121,16 @@
 	}
 
 	.googlesitekit-setup__wrapper {
-
-		@include shadow;
 		background-color: $c-base;
+		border-radius: $br-sm;
 
 		.googlesitekit-setup__intro-title {
 			color: $c-primary;
-			font-size: 0.75rem;
-			font-weight: $fw-primary-medium;
-			letter-spacing: 0.16em;
-			line-height: 1.16;
+			font-family: $f-secondary;
+			font-size: $fs-title-sm;
+			font-weight: $fw-bold;
+			line-height: $lh-title-sm;
 			margin: 0 0 17px 0;
-			text-transform: uppercase;
 		}
 	}
 
@@ -205,8 +203,9 @@
 
 		label {
 			color: $c-setup-analytics-notice-text;
-			font-size: 16px;
-			line-height: 24px;
+			font-size: $fs-body-lg;
+			letter-spacing: $ls-m;
+			line-height: $lh-body-lg;
 			padding-top: 8px;
 		}
 
@@ -233,13 +232,6 @@
 				margin: 0;
 				width: 378px;
 			}
-		}
-	}
-
-	.googlesitekit-setup__wrapper--adsense-connect {
-
-		.googlesitekit-setup-module__footer-text {
-			font-size: 12px;
 		}
 	}
 }

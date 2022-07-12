@@ -24,14 +24,14 @@
 		margin: 42px 0 0;
 
 		button {
-			border: 2px solid $c-mercury;
+			border-radius: $br-lg;
+			font-size: $fs-body-md;
 			height: auto;
-			letter-spacing: normal;
+			letter-spacing: $ls-s;
+			line-height: $lh-body-md;
 			margin-left: 20px;
 			padding: 10px 33px;
 			text-transform: none;
-
-			@include responsive-text("body1", "body3");
 
 			&.mdc-button--raised {
 				border: none;
@@ -66,8 +66,9 @@
 
 		label {
 			color: $c-user-input-options;
-
-			@include responsive-text("body1", "body3");
+			font-size: $fs-body-md;
+			letter-spacing: $ls-s;
+			line-height: $lh-body-md;
 
 			@media (min-width: $bp-tablet) {
 				padding: 10px 0;
@@ -127,11 +128,14 @@
 
 	.googlesitekit-user-input__text-option {
 		align-items: center;
-		background-color: $c-solitude;
-		border-radius: 100px;
-		color: $c-denim;
+		background-color: $c-content-primary-container;
+		border-radius: $br-xs;
+		color: $c-content-on-primary-container;
 		display: inline-flex;
-		font-weight: 500;
+		font-size: $fs-body-md;
+		font-weight: $fw-medium;
+		letter-spacing: $ls-s;
+		line-height: $lh-body-md;
 		padding: 3px 3px 3px 12px;
 		white-space: nowrap;
 

@@ -21,7 +21,10 @@
 		background-color: map-get($wp-colors, "blue-0");
 		border-left: 4px solid map-get($wp-colors, "blue-20");
 		display: flex;
+		font-size: $fs-body-sm;
 		justify-content: space-between;
+		letter-spacing: $ls-xs;
+		line-height: $lh-body-sm;
 		margin: 0 -12px; // 14px padding - (1px for each border) = 12px
 		padding: 14px;
 		width: calc(100% + 14px + 14px);
@@ -34,12 +37,6 @@
 		white-space: nowrap;
 	}
 
-	.googlesitekit-idea-hub__wpdashboard--copy,
-	.googlesitekit-idea-hub__wpdashboard--link {
-		font-size: 14px;
-		line-height: 1.5;
-	}
-
 	.googlesitekit-idea-hub__wpdashboard--copy {
 		color: map-get($wp-colors, "blue-80");
 		margin-right: 14px;
@@ -49,7 +46,6 @@
 		align-items: center;
 		display: flex;
 		margin-left: auto;
-		text-transform: uppercase;
 		white-space: nowrap;
 	}
 }

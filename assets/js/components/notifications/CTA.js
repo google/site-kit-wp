@@ -66,12 +66,10 @@ const CTA = ( {
 			<Link
 				href={ ctaLink }
 				onClick={ onClick }
-				inverse={ ! error }
-				caps
-				arrow
 				aria-label={ ariaLabel }
 				external={ ctaLinkExternal }
 				hideExternalIndicator={ ctaLinkExternal }
+				arrow
 			>
 				{ ctaLabel }
 			</Link>

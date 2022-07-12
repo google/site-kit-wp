@@ -1,5 +1,5 @@
 /**
- * AdSenseConnectCTA component tests.
+ * AdSenseConnectCTAWidget component tests.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -17,14 +17,9 @@
  */
 
 /**
- * WordPress dependencies
- */
-import { ESCAPE } from '@wordpress/keycodes';
-
-/**
  * Internal dependencies
  */
-import AdSenseConnectCTA from './AdSenseConnectCTA';
+import AdSenseConnectCTAWidget from './AdSenseConnectCTAWidget';
 import {
 	act,
 	fireEvent,
@@ -34,6 +29,7 @@ import {
 	provideUserAuthentication,
 } from '../../../../../../tests/js/test-utils';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
+import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { MODULES_ADSENSE } from '../../datastore/constants';
 import { withActive } from '../../../../googlesitekit/modules/datastore/__fixtures__';
 
@@ -47,62 +43,74 @@ describe( 'AdSenseConnectCTA', () => {
 		registry
 			.dispatch( CORE_MODULES )
 			.receiveGetModules( withActive( 'adsense' ) );
+		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 	} );
 
 	describe( 'after click', () => {
 		let container;
 		beforeEach( () => {
-			container = render( <AdSenseConnectCTA />, { registry } ).container;
+			const Widget = ( { children } ) => <div>{ children }</div>;
+			const WidgetNull = () => <div>NULL</div>;
+
+			container = render(
+				<div>
+					<div id="adminmenu">
+						<a href="http://test.test/wp-admin/admin.php?page=googlesitekit-settings">
+							Settings
+						</a>
+					</div>
+					<AdSenseConnectCTAWidget
+						Widget={ Widget }
+						WidgetNull={ WidgetNull }
+					/>
+				</div>,
+				{ registry }
+			).container;
+
 			fireEvent.click(
 				container.querySelector( 'button.googlesitekit-cta-link' )
 			);
-		} );
 
-		it( 'should open the dialog', async () => {
-			expect(
-				document.querySelector( '.mdc-dialog--open' )
-			).toBeInTheDocument();
-		} );
-
-		it( 'should close the modal on clicking cancel', async () => {
-			await act( async () => {
-				fireEvent.click(
-					document.querySelector(
-						'.mdc-dialog--open .googlesitekit-cta-link'
-					)
-				);
-			} );
-			expect(
-				document.querySelector( '.mdc-dialog--open' )
-			).not.toBeInTheDocument();
-		} );
-
-		it( 'should close the modal on pressing escape key', async () => {
-			fireEvent.keyUp( global, { keyCode: ESCAPE } );
-			expect(
-				document.querySelector( '.mdc-dialog--open' )
-			).not.toBeInTheDocument();
-		} );
-
-		it( 'should make the correct API request', async () => {
-			const response = [ 'adsense-connect-cta' ];
 			fetchMock.postOnce(
-				/^\/google-site-kit\/v1\/core\/user\/data\/dismiss-item/,
-				{ body: JSON.stringify( response ), status: 200 }
+				RegExp( '^/google-site-kit/v1/core/user/data/dismiss-item' ),
+				{
+					body: JSON.stringify( [ 'adsense-connect-cta' ] ),
+					status: 200,
+				}
 			);
+		} );
 
+		it( 'should open the tooltip', async () => {
+			expect(
+				document.querySelector( '.googlesitekit-tour-tooltip' )
+			).toBeInTheDocument();
+			expect( fetchMock ).toHaveFetchedTimes( 0 );
+		} );
+
+		it( 'should close the tooltip on clicking the close button', async () => {
+			await act( async () => {
+				fireEvent.click(
+					document.querySelector( '.googlesitekit-tooltip-close' )
+				);
+			} );
+			expect(
+				document.querySelector( '.googlesitekit-tour-tooltip' )
+			).not.toBeInTheDocument();
+			expect( fetchMock ).toHaveFetchedTimes( 1 );
+		} );
+
+		it( 'should close the modal on clicking the dismiss button', async () => {
 			await act( async () => {
 				fireEvent.click(
 					document.querySelector(
-						'.mdc-dialog--open .mdc-button--raised'
+						'.googlesitekit-tooltip-buttons > button'
 					)
 				);
 			} );
-
-			expect( fetchMock ).toHaveFetchedTimes( 1 );
 			expect(
-				document.querySelector( '.mdc-dialog--open' )
-			).toBeInTheDocument();
+				document.querySelector( '.googlesitekit-tour-tooltip' )
+			).not.toBeInTheDocument();
+			expect( fetchMock ).toHaveFetchedTimes( 1 );
 		} );
 	} );
 } );

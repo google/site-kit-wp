@@ -34,6 +34,7 @@ import { __, sprintf } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
+import { EXPERIMENTAL_MODULES } from '../../dashboard-sharing/DashboardSharingSettings/constants';
 import { Grid, Row, Cell } from '../../../material-components';
 import Link from '../../Link';
 import ModuleIcon from '../../ModuleIcon';
@@ -98,13 +99,13 @@ export default function Header( { slug } ) {
 							/>
 							{ name }
 
-							{ slug === 'idea-hub' && (
+							{ EXPERIMENTAL_MODULES.includes( slug ) && (
 								<Badge
 									label={ __(
 										'Experimental',
 										'google-site-kit'
 									) }
-									className="googlesitekit-idea-hub__badge"
+									hasLeftSpacing={ true }
 								/>
 							) }
 						</h3>
@@ -117,7 +118,15 @@ export default function Header( { slug } ) {
 						alignMiddle
 						mdAlignRight
 					>
-						<p className="googlesitekit-settings-module__status">
+						<p
+							className={ classnames(
+								'googlesitekit-settings-module__status',
+								{
+									'googlesitekit-settings-module__status--connected': connected,
+									'googlesitekit-settings-module__status--not-connected': ! connected,
+								}
+							) }
+						>
 							{ connected
 								? sprintf(
 										/* translators: %s: module name. */

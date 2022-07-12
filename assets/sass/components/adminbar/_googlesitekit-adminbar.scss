@@ -21,9 +21,6 @@
 	&.nojs {
 
 		.googlesitekit-noscript {
-
-			@include shadow;
-
 			border-left: 4px solid $c-selective-yellow;
 			display: none;
 			left: 0;
@@ -46,8 +43,6 @@
 	}
 
 	.googlesitekit-plugin .googlesitekit-adminbar {
-
-		@include shadow;
 		background: $c-base;
 		color: $c-black;
 		left: 0;
@@ -66,19 +61,22 @@
 		}
 
 		.googlesitekit-adminbar__subtitle {
-			color: $c-primary;
-			font-size: 16px;
+			color: $c-surfaces-on-surface-variant;
+			font-size: $fs-body-lg;
+			letter-spacing: $ls-m;
 		}
 
 		.googlesitekit-adminbar__title {
 			color: $c-secondary;
-			font-size: 22px;
-			font-weight: $fw-primary-medium;
+			font-family: $f-secondary;
+			font-size: $fs-title-lg;
+			font-weight: $fw-medium;
 			margin: 5px 0 0 0;
 
 			.googlesitekit-adminbar__title--date-range {
-				color: $c-primary;
-				font-size: 14px;
+				color: $c-surfaces-on-surface-variant;
+				font-size: $fs-body-md;
+				letter-spacing: $ls-s;
 			}
 		}
 

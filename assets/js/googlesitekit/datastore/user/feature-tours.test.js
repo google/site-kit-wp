@@ -136,6 +136,60 @@ describe( 'core/user feature-tours', () => {
 					} )
 				);
 			} );
+
+			it( 'unsets the currentTour when the slug matches', async () => {
+				muteFetch( fetchDismissTourRegExp, [] );
+
+				registry.dispatch( CORE_USER ).receiveCurrentTour( testTourA );
+
+				await registry
+					.dispatch( CORE_USER )
+					.dismissTour( testTourA.slug );
+
+				expect( store.getState().currentTour ).toBeNull();
+			} );
+
+			it( 'does not unset the currentTour if the slug does not match', async () => {
+				muteFetch( fetchDismissTourRegExp, [] );
+
+				registry.dispatch( CORE_USER ).receiveCurrentTour( testTourA );
+
+				await registry
+					.dispatch( CORE_USER )
+					.dismissTour( testTourB.slug );
+
+				expect( store.getState().currentTour ).toEqual( testTourA );
+			} );
+		} );
+
+		describe( 'receiveCurrentTour', () => {
+			it( 'requires the given tour to be a plain object', () => {
+				const { receiveCurrentTour } = registry.dispatch( CORE_USER );
+				const expectedError = 'tour must be a plain object';
+				expect( () => receiveCurrentTour() ).toThrow( expectedError );
+				expect( () => receiveCurrentTour( new Date() ) ).toThrow(
+					expectedError
+				);
+				expect( () => receiveCurrentTour( {} ) ).not.toThrow();
+			} );
+
+			it( 'sets the currentTour in state', () => {
+				expect( store.getState().currentTour ).toBeNull();
+
+				registry.dispatch( CORE_USER ).receiveCurrentTour( testTourA );
+
+				expect( store.getState().currentTour ).toEqual( testTourA );
+			} );
+
+			it( 'sets the currentTour even when another is set', () => {
+				registry.dispatch( CORE_USER ).receiveCurrentTour( testTourA );
+
+				expect( store.getState().currentTour ).toEqual( testTourA );
+
+				registry.dispatch( CORE_USER ).receiveCurrentTour( testTourB );
+
+				expect( store.getState().currentTour ).toEqual( testTourB );
+			} );
 		} );
 
 		describe( 'receiveAllFeatureTours', () => {
@@ -225,6 +279,128 @@ describe( 'core/user feature-tours', () => {
 				);
 			} );
 		} );
+
+		describe( 'triggerTour', () => {
+			it( 'sets the currentTour in state if none is already set', async () => {
+				expect( store.getState().currentTour ).toBeNull();
+
+				await registry.dispatch( CORE_USER ).triggerTour( testTourA );
+
+				expect( store.getState().currentTour ).toEqual( testTourA );
+
+				// Trigger a new tour, but because one is already set in state, this will have no effect.
+				await registry.dispatch( CORE_USER ).triggerTour( testTourB );
+
+				// Ensure the original tour in state ("testTourA") is still in state and that a
+				// newly-triggered tour does not overwrite the existing tour in-state.
+				expect( store.getState().currentTour ).toEqual( testTourA );
+			} );
+		} );
+
+		describe( 'triggerOnDemandTour', () => {
+			it( 'triggers the given tour', async () => {
+				expect( store.getState().currentTour ).toBeNull();
+				registry.dispatch( CORE_USER ).receiveGetDismissedTours( [] );
+				await registry
+					.dispatch( CORE_USER )
+					.triggerOnDemandTour( testTourA );
+
+				expect( store.getState().currentTour ).toEqual( testTourA );
+			} );
+
+			it( 'does not trigger the given tour if it has been dismissed', async () => {
+				expect( store.getState().currentTour ).toBeNull();
+				registry
+					.dispatch( CORE_USER )
+					.receiveGetDismissedTours( [ testTourA.slug ] );
+				await registry
+					.dispatch( CORE_USER )
+					.triggerOnDemandTour( testTourA );
+
+				expect( store.getState().currentTour ).toBeNull();
+			} );
+
+			it( 'will trigger the given tour even when tours are on cooldown', async () => {
+				registry.dispatch( CORE_USER ).receiveGetDismissedTours( [] );
+				registry
+					.dispatch( CORE_USER )
+					.receiveLastDismissedAt( Date.now() );
+
+				expect(
+					registry.select( CORE_USER ).areFeatureToursOnCooldown()
+				).toBe( true );
+
+				await registry
+					.dispatch( CORE_USER )
+					.triggerOnDemandTour( testTourA );
+
+				expect( store.getState().currentTour ).toEqual( testTourA );
+			} );
+
+			it( 'will not trigger a given tour with a checkRequirements function that returns false', async () => {
+				const checkRequirements = jest.fn( () => false );
+				const tour = { ...testTourA, checkRequirements };
+				expect( store.getState().currentTour ).toBeNull();
+				registry.dispatch( CORE_USER ).receiveGetDismissedTours( [] );
+
+				await registry
+					.dispatch( CORE_USER )
+					.triggerOnDemandTour( tour );
+
+				expect( checkRequirements ).toHaveBeenCalledTimes( 1 );
+				expect( store.getState().currentTour ).toBeNull();
+			} );
+
+			it( 'will trigger a given tour with a checkRequirements function that returns true', async () => {
+				const checkRequirements = jest.fn( () => true );
+				const tour = { ...testTourA, checkRequirements };
+				expect( store.getState().currentTour ).toBeNull();
+				registry.dispatch( CORE_USER ).receiveGetDismissedTours( [] );
+
+				await registry
+					.dispatch( CORE_USER )
+					.triggerOnDemandTour( tour );
+
+				expect( checkRequirements ).toHaveBeenCalledTimes( 1 );
+				expect( store.getState().currentTour ).toEqual( tour );
+			} );
+		} );
+
+		describe( 'triggerTourForView', () => {
+			it( 'triggers the first tour that qualifies for the given viewContext when multiple tours match', async () => {
+				registry.dispatch( CORE_USER ).receiveGetDismissedTours( [] );
+				registry
+					.dispatch( CORE_USER )
+					.receiveAllFeatureTours( [ testTourA, testTourB ] );
+				expect( testTourA.contexts ).toContain( 'common-context' );
+				expect( testTourB.contexts ).toContain( 'common-context' );
+
+				expect( store.getState().currentTour ).toBeNull();
+
+				await registry
+					.dispatch( CORE_USER )
+					.triggerTourForView( 'common-context' );
+
+				expect( store.getState().currentTour ).toEqual( testTourA );
+			} );
+
+			it( 'triggers the first tour that qualifies for the given viewContext', async () => {
+				registry.dispatch( CORE_USER ).receiveGetDismissedTours( [] );
+				registry
+					.dispatch( CORE_USER )
+					.receiveAllFeatureTours( [ testTourA, testTourB ] );
+				expect( testTourA.contexts ).not.toContain( 'b-only-context' );
+				expect( testTourB.contexts ).toContain( 'b-only-context' );
+
+				expect( store.getState().currentTour ).toBeNull();
+
+				await registry
+					.dispatch( CORE_USER )
+					.triggerTourForView( 'b-only-context' );
+
+				expect( store.getState().currentTour ).toEqual( testTourB );
+			} );
+		} );
 	} );
 
 	describe( 'selectors', () => {
@@ -281,109 +457,6 @@ describe( 'core/user feature-tours', () => {
 				).toEqual(
 					expect.arrayContaining( [ 'feature-x', 'tour-a' ] )
 				);
-			} );
-		} );
-
-		describe( 'getFeatureToursForView', () => {
-			beforeEach( () => {
-				registry.dispatch( CORE_USER ).receiveGetDismissedTours( [] );
-			} );
-
-			it( 'returns `undefined` while tour readiness is being resolved', () => {
-				expect(
-					registry
-						.select( CORE_USER )
-						.getFeatureToursForView( 'test-view-context' )
-				).toBeUndefined();
-			} );
-
-			it( 'returns an array of tours that qualify for the given view context', async () => {
-				registry
-					.dispatch( CORE_USER )
-					.receiveAllFeatureTours( [ testTourA, testTourB ] );
-
-				expect(
-					await registry
-						.__experimentalResolveSelect( CORE_USER )
-						.getFeatureToursForView( 'common-context' )
-				).toEqual( [ testTourA, testTourB ] );
-
-				expect(
-					await registry
-						.__experimentalResolveSelect( CORE_USER )
-						.getFeatureToursForView( 'b-only-context' )
-				).toEqual( [ testTourB ] );
-			} );
-
-			it( 'returns an array of tours that have a version greater than the user’s initial Site Kit version', async () => {
-				const initialVersion = '1.0.0';
-				const tourVersion = '2.0.0';
-				registry
-					.dispatch( CORE_USER )
-					.receiveInitialSiteKitVersion( initialVersion );
-				registry.dispatch( CORE_USER ).receiveAllFeatureTours( [
-					{ ...testTourA, version: initialVersion },
-					{ ...testTourB, version: tourVersion },
-				] );
-				// Tour A's version matches the user's initial version, so only Tour B is returned.
-				const viewTours = await registry
-					.__experimentalResolveSelect( CORE_USER )
-					.getFeatureToursForView( 'common-context' );
-				expect( viewTours.map( ( { slug } ) => slug ) ).toEqual( [
-					testTourB.slug,
-				] );
-			} );
-
-			it( 'returns an array of tours that have not been dismissed by the user yet', async () => {
-				registry
-					.dispatch( CORE_USER )
-					.receiveAllFeatureTours( [ testTourA, testTourB ] );
-				registry
-					.dispatch( CORE_USER )
-					.receiveGetDismissedTours( [ testTourB.slug ] );
-				// Tour B was received as dismissed, but A was not.
-				expect(
-					await registry
-						.__experimentalResolveSelect( CORE_USER )
-						.getFeatureToursForView( 'common-context' )
-				).toEqual( [ testTourA ] );
-			} );
-
-			it( 'returns an array of tours that use their own logic for checking additional requirements', async () => {
-				// Check A will resolve with `true` on the next tick.
-				const checkA = jest.fn(
-					async () =>
-						new Promise( ( resolve ) =>
-							setTimeout( resolve( true ) )
-						)
-				);
-				// Check B will resolve with `false` on the next tick.
-				const checkB = jest.fn(
-					async () =>
-						new Promise( ( resolve ) =>
-							setTimeout( resolve( false ) )
-						)
-				);
-				registry.dispatch( CORE_USER ).receiveAllFeatureTours( [
-					{ ...testTourA, checkRequirements: checkA },
-					{ ...testTourB, checkRequirements: checkB },
-				] );
-
-				const viewTours = await registry
-					.__experimentalResolveSelect( CORE_USER )
-					.getFeatureToursForView( 'common-context' );
-				expect( viewTours.map( ( { slug } ) => slug ) ).toEqual( [
-					testTourA.slug,
-				] );
-				// Check functions should be called with the registry as the first parameter.
-				const registryMatcher = expect.objectContaining( {
-					select: expect.any( Function ),
-					dispatch: expect.any( Function ),
-				} );
-				// The registry instance passed to the function is slightly different for some reason
-				// so we can't simply call `.toHaveBeenCalledWith( registry )`
-				expect( checkA ).toHaveBeenCalledWith( registryMatcher );
-				expect( checkB ).toHaveBeenCalledWith( registryMatcher );
 			} );
 		} );
 

@@ -79,9 +79,10 @@
 			border: 15px solid $c-base;
 			border-radius: 50%;
 			color: $c-secondary;
-			font-size: 14px;
+			font-size: $fs-body-md;
 			height: 54px;
-			line-height: 24px;
+			letter-spacing: $ls-s;
+			line-height: $lh-body-md;
 			margin: 0 auto;
 			position: relative;
 			width: 54px;
@@ -139,8 +140,9 @@
 
 		.googlesitekit-wizard-progress-step__text {
 			color: $c-tertiary;
-			font-size: 15px;
-			font-weight: $fw-primary-medium;
+			font-size: $fs-body-md;
+			font-weight: $fw-medium;
+			letter-spacing: $ls-s;
 			margin: 0;
 
 			span {

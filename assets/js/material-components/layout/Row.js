@@ -22,16 +22,22 @@
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
-export default function Row( { className, children, ...otherProps } ) {
+/**
+ * WordPress dependencies
+ */
+import { forwardRef } from '@wordpress/element';
+
+const Row = forwardRef( ( { className, children, ...otherProps }, ref ) => {
 	return (
 		<div
+			ref={ ref }
 			className={ classnames( 'mdc-layout-grid__inner', className ) }
 			{ ...otherProps }
 		>
 			{ children }
 		</div>
 	);
-}
+} );
 
 Row.propTypes = {
 	className: PropTypes.string,
@@ -41,3 +47,5 @@ Row.propTypes = {
 Row.defaultProps = {
 	className: '',
 };
+
+export default Row;

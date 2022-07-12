@@ -96,6 +96,7 @@ function BannerNotification( {
 	title,
 	type,
 	WinImageSVG,
+	rounded = false,
 } ) {
 	// Closed notifications are invisible, but still occupy space.
 	const [ isClosed, setIsClosed ] = useState( false );
@@ -324,6 +325,10 @@ function BannerNotification( {
 		  }
 		: { size: 12 };
 
+	// ctaLink links are always buttons, in which case the dismiss should be a Link.
+	// If there is only a dismiss however, it should be the primary action with a Button.
+	const DismissComponent = ctaLink ? Link : Button;
+
 	return (
 		<section
 			id={ id }
@@ -331,6 +336,7 @@ function BannerNotification( {
 				[ `googlesitekit-publisher-win--${ format }` ]: format,
 				[ `googlesitekit-publisher-win--${ type }` ]: type,
 				[ `googlesitekit-publisher-win--${ closedClass }` ]: closedClass,
+				'googlesitekit-publisher-win--rounded': rounded,
 				'googlesitekit-publisher-win--no-bottom-padding': noBottomPadding,
 			} ) }
 		>
@@ -395,7 +401,9 @@ function BannerNotification( {
 						) }
 
 						{ isDismissible && dismiss && (
-							<Link onClick={ handleDismiss }>{ dismiss }</Link>
+							<DismissComponent onClick={ handleDismiss }>
+								{ dismiss }
+							</DismissComponent>
 						) }
 					</Cell>
 
@@ -459,6 +467,7 @@ BannerNotification.propTypes = {
 	anchorLinkLabel: PropTypes.string,
 	badgeLabel: PropTypes.string,
 	noBottomPadding: PropTypes.bool,
+	rounded: PropTypes.bool,
 };
 
 BannerNotification.defaultProps = {

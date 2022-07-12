@@ -21,7 +21,8 @@
 	position: relative;
 
 	.googlesitekit-chart__source {
-		font-size: 0.75rem;
+		font-size: $fs-body-sm;
+		letter-spacing: $ls-xs;
 		margin-top: $grid-gap-phone;
 	}
 }
