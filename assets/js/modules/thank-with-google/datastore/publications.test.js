@@ -29,46 +29,36 @@ import { MODULES_THANK_WITH_GOOGLE } from './constants';
 
 describe( 'modules/thank-with-google publications', () => {
 	let registry;
+
+	const publicationWithActiveStateA = {
+		// eslint-disable-next-line sitekit/acronym-case
+		publicationId: 'test-publication-a',
+		displayName: 'Test publication title',
+		verifiedDomains: [ 'https://example.com' ],
+		paymentOptions: {
+			virtualGifts: true,
+		},
+		state: 'ACTIVE',
+	};
+	const publicationWithActiveStateB = {
+		...publicationWithActiveStateA,
+		// eslint-disable-next-line sitekit/acronym-case
+		publicationId: 'test-publication-b',
+	};
+	const publicationWithoutStateC = {
+		...publicationWithActiveStateA,
+		// eslint-disable-next-line sitekit/acronym-case
+		publicationId: 'test-publication-c',
+	};
+	delete publicationWithoutStateC.state;
+	const publicationWithoutStateD = {
+		...publicationWithoutStateC,
+		// eslint-disable-next-line sitekit/acronym-case
+		publicationId: 'test-publication-d',
+	};
 	const publicationsWithActiveState = [
-		{
-			// eslint-disable-next-line sitekit/acronym-case
-			publicationId: 'TEST-PUBLICATION-ID',
-			displayName: 'Test publication title',
-			verifiedDomains: [ 'https://example.com' ],
-			paymentOptions: {
-				virtualGifts: true,
-			},
-			state: 'ACTIVE',
-		},
-	];
-
-	const publicationsWithoutState = [
-		{
-			// eslint-disable-next-line sitekit/acronym-case
-			publicationId: 'test-publication-id-2',
-			displayName: 'Test publication title',
-			verifiedDomains: [ 'https://example.com' ],
-			paymentOptions: {
-				virtualGifts: true,
-			},
-		},
-	];
-
-	const publicationsWithoutIDAndState = [
-		{
-			displayName: 'Test publication title',
-			verifiedDomains: [ 'https://example.com' ],
-			paymentOptions: {
-				virtualGifts: true,
-			},
-		},
-		{
-			displayName: 'Test publication another title',
-			verifiedDomains: [ 'https://example.com' ],
-			paymentOptions: {
-				virtualGifts: true,
-			},
-		},
+		publicationWithActiveStateA,
+		publicationWithActiveStateB,
 	];
 
 	beforeEach( () => {
@@ -205,36 +195,36 @@ describe( 'modules/thank-with-google publications', () => {
 				);
 			} );
 
-			it( 'returns the publication if the publicationID is set and the publication is in the list', () => {
+			it( 'returns the publication that matches the publicationID when present', () => {
 				registry
 					.dispatch( MODULES_THANK_WITH_GOOGLE )
 					.receiveGetPublications( [
-						...publicationsWithActiveState,
-						...publicationsWithoutState,
+						publicationWithActiveStateA,
+						publicationWithActiveStateB,
 					] );
 
 				registry
 					.dispatch( MODULES_THANK_WITH_GOOGLE )
-					.setPublicationID( 'test-publication-id-2' );
+					.setPublicationID( 'test-publication-b' );
 
 				const publication = registry
 					.select( MODULES_THANK_WITH_GOOGLE )
 					.getCurrentPublication();
 
-				expect( publication ).toEqual( publicationsWithoutState[ 0 ] );
+				// eslint-disable-next-line sitekit/acronym-case
+				expect( publication.publicationId ).toEqual(
+					'test-publication-b'
+				);
 			} );
 
-			it( 'returns the publication if the publicationID is not set and the state is set to ACTIVE', () => {
+			it( 'returns the first publication with an active state when no publication matches the publicationID', () => {
 				registry
 					.dispatch( MODULES_THANK_WITH_GOOGLE )
-					.receiveGetPublications( [
-						...publicationsWithoutState,
-						...publicationsWithActiveState,
-					] );
+					.receiveGetPublications( publicationsWithActiveState );
 
 				registry
 					.dispatch( MODULES_THANK_WITH_GOOGLE )
-					.setPublicationID( null );
+					.setPublicationID( 'test-publication--non-matching' );
 
 				const publication = registry
 					.select( MODULES_THANK_WITH_GOOGLE )
@@ -243,24 +233,31 @@ describe( 'modules/thank-with-google publications', () => {
 				expect( publication ).toEqual(
 					publicationsWithActiveState[ 0 ]
 				);
+				expect( publication.state ).toBe( 'ACTIVE' );
+				// eslint-disable-next-line sitekit/acronym-case
+				expect( publication.publicationId ).not.toBe(
+					'test-publication--non-matching'
+				);
 			} );
 
-			it( 'returns the first publication from the list if the publicationID is not set and the state is not set to ACTIVE', () => {
+			it( 'returns the first publication when no publication matches the publicationID or has an active state', () => {
+				const inactivePublications = [
+					publicationWithoutStateC,
+					publicationWithoutStateD,
+				];
 				registry
 					.dispatch( MODULES_THANK_WITH_GOOGLE )
-					.receiveGetPublications( publicationsWithoutIDAndState );
+					.receiveGetPublications( inactivePublications );
 
 				registry
 					.dispatch( MODULES_THANK_WITH_GOOGLE )
-					.setPublicationID( null );
+					.setPublicationID( 'test-publication--non-matching' );
 
 				const publication = registry
 					.select( MODULES_THANK_WITH_GOOGLE )
 					.getCurrentPublication();
 
-				expect( publication ).toEqual(
-					publicationsWithoutIDAndState[ 0 ]
-				);
+				expect( publication ).toEqual( publicationWithoutStateC );
 			} );
 		} );
 	} );
