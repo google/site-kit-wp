@@ -29,7 +29,7 @@ import { MODULES_THANK_WITH_GOOGLE } from './constants';
 
 describe( 'modules/thank-with-google publications', () => {
 	let registry;
-	const PUBLICATIONS = [
+	const publicationWithActiveState = [
 		{
 			// eslint-disable-next-line sitekit/acronym-case
 			publicationId: 'TEST-PUBLICATION-ID',
@@ -39,6 +39,35 @@ describe( 'modules/thank-with-google publications', () => {
 				virtualGifts: true,
 			},
 			state: 'ACTIVE',
+		},
+	];
+
+	const publicationWithoutState = [
+		{
+			// eslint-disable-next-line sitekit/acronym-case
+			publicationId: 'test-publication-id-2',
+			displayName: 'Test publication title',
+			verifiedDomains: [ 'https://example.com' ],
+			paymentOptions: {
+				virtualGifts: true,
+			},
+		},
+	];
+
+	const publicationsWithoutIDAndState = [
+		{
+			displayName: 'Test publication title',
+			verifiedDomains: [ 'https://example.com' ],
+			paymentOptions: {
+				virtualGifts: true,
+			},
+		},
+		{
+			displayName: 'Test publication another title',
+			verifiedDomains: [ 'https://example.com' ],
+			paymentOptions: {
+				virtualGifts: true,
+			},
 		},
 	];
 
@@ -55,7 +84,7 @@ describe( 'modules/thank-with-google publications', () => {
 			it( 'uses a resolver to get all the publications when requested', async () => {
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/thank-with-google\/data\/publications/,
-					{ body: PUBLICATIONS, status: 200 }
+					{ body: publicationWithActiveState, status: 200 }
 				);
 
 				// The publications will be `undefined` whilst loading.
@@ -76,7 +105,7 @@ describe( 'modules/thank-with-google publications', () => {
 					.getPublications();
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
-				expect( publications ).toEqual( PUBLICATIONS );
+				expect( publications ).toEqual( publicationWithActiveState );
 			} );
 
 			it( 'dispatches an error if the request fails', async () => {
@@ -122,14 +151,14 @@ describe( 'modules/thank-with-google publications', () => {
 			it( 'does not make a network request if data is already in state', () => {
 				registry
 					.dispatch( MODULES_THANK_WITH_GOOGLE )
-					.receiveGetPublications( PUBLICATIONS );
+					.receiveGetPublications( publicationWithActiveState );
 
 				const publications = registry
 					.select( MODULES_THANK_WITH_GOOGLE )
 					.getPublications();
 
 				expect( fetchMock ).not.toHaveFetched();
-				expect( publications ).toEqual( PUBLICATIONS );
+				expect( publications ).toEqual( publicationWithActiveState );
 			} );
 		} );
 
@@ -161,101 +190,7 @@ describe( 'modules/thank-with-google publications', () => {
 			it( 'returns the publication if that is the only one in the list', () => {
 				registry
 					.dispatch( MODULES_THANK_WITH_GOOGLE )
-					.receiveGetPublications( PUBLICATIONS );
-
-				registry
-					.dispatch( MODULES_THANK_WITH_GOOGLE )
-					.setPublicationID( null );
-
-				const publication = registry
-					.select( MODULES_THANK_WITH_GOOGLE )
-					.getCurrentPublication();
-
-				expect( publication ).toEqual( PUBLICATIONS[ 0 ] );
-			} );
-
-			it( 'returns the publication if the publicationID is set and the publication is in the list', () => {
-				registry
-					.dispatch( MODULES_THANK_WITH_GOOGLE )
-					.receiveGetPublications( [
-						...PUBLICATIONS,
-						{
-							// eslint-disable-next-line sitekit/acronym-case
-							publicationId: 'test-publication-id-2',
-							displayName: 'Test publication title',
-							verifiedDomains: [ 'https://example.com' ],
-							paymentOptions: {
-								virtualGifts: true,
-							},
-						},
-					] );
-
-				registry
-					.dispatch( MODULES_THANK_WITH_GOOGLE )
-					.setPublicationID( 'test-publication-id-2' );
-
-				const publication = registry
-					.select( MODULES_THANK_WITH_GOOGLE )
-					.getCurrentPublication();
-
-				expect( publication ).toEqual( {
-					// eslint-disable-next-line sitekit/acronym-case
-					publicationId: 'test-publication-id-2',
-					displayName: 'Test publication title',
-					verifiedDomains: [ 'https://example.com' ],
-					paymentOptions: {
-						virtualGifts: true,
-					},
-				} );
-			} );
-
-			it( 'returns the publication if the publicationID is not set and the state is set to ACTIVE', () => {
-				registry
-					.dispatch( MODULES_THANK_WITH_GOOGLE )
-					.receiveGetPublications( [
-						...PUBLICATIONS,
-						{
-							// eslint-disable-next-line sitekit/acronym-case
-							publicationId: 'test-publication-id-2',
-							displayName: 'Test publication title',
-							verifiedDomains: [ 'https://example.com' ],
-							paymentOptions: {
-								virtualGifts: true,
-							},
-						},
-					] );
-
-				registry
-					.dispatch( MODULES_THANK_WITH_GOOGLE )
-					.setPublicationID( null );
-
-				const publication = registry
-					.select( MODULES_THANK_WITH_GOOGLE )
-					.getCurrentPublication();
-
-				expect( publication ).toEqual( PUBLICATIONS[ 0 ] );
-			} );
-
-			it( 'returns the first publication from the list if the publicationID is not set and the state is not set to ACTIVE', () => {
-				const publicationsWithoutIDAndActive = [
-					{
-						displayName: 'Test publication title',
-						verifiedDomains: [ 'https://example.com' ],
-						paymentOptions: {
-							virtualGifts: true,
-						},
-					},
-					{
-						displayName: 'Test publication another title',
-						verifiedDomains: [ 'https://example.com' ],
-						paymentOptions: {
-							virtualGifts: true,
-						},
-					},
-				];
-				registry
-					.dispatch( MODULES_THANK_WITH_GOOGLE )
-					.receiveGetPublications( publicationsWithoutIDAndActive );
+					.receiveGetPublications( publicationWithActiveState );
 
 				registry
 					.dispatch( MODULES_THANK_WITH_GOOGLE )
@@ -266,7 +201,65 @@ describe( 'modules/thank-with-google publications', () => {
 					.getCurrentPublication();
 
 				expect( publication ).toEqual(
-					publicationsWithoutIDAndActive[ 0 ]
+					publicationWithActiveState[ 0 ]
+				);
+			} );
+
+			it( 'returns the publication if the publicationID is set and the publication is in the list', () => {
+				registry
+					.dispatch( MODULES_THANK_WITH_GOOGLE )
+					.receiveGetPublications( [
+						...publicationWithActiveState,
+						...publicationWithoutState,
+					] );
+
+				registry
+					.dispatch( MODULES_THANK_WITH_GOOGLE )
+					.setPublicationID( 'test-publication-id-2' );
+
+				const publication = registry
+					.select( MODULES_THANK_WITH_GOOGLE )
+					.getCurrentPublication();
+
+				expect( publication ).toEqual( publicationWithoutState[ 0 ] );
+			} );
+
+			it( 'returns the publication if the publicationID is not set and the state is set to ACTIVE', () => {
+				registry
+					.dispatch( MODULES_THANK_WITH_GOOGLE )
+					.receiveGetPublications( [
+						...publicationWithoutState,
+						...publicationWithActiveState,
+					] );
+
+				registry
+					.dispatch( MODULES_THANK_WITH_GOOGLE )
+					.setPublicationID( null );
+
+				const publication = registry
+					.select( MODULES_THANK_WITH_GOOGLE )
+					.getCurrentPublication();
+
+				expect( publication ).toEqual(
+					publicationWithActiveState[ 0 ]
+				);
+			} );
+
+			it( 'returns the first publication from the list if the publicationID is not set and the state is not set to ACTIVE', () => {
+				registry
+					.dispatch( MODULES_THANK_WITH_GOOGLE )
+					.receiveGetPublications( publicationsWithoutIDAndState );
+
+				registry
+					.dispatch( MODULES_THANK_WITH_GOOGLE )
+					.setPublicationID( null );
+
+				const publication = registry
+					.select( MODULES_THANK_WITH_GOOGLE )
+					.getCurrentPublication();
+
+				expect( publication ).toEqual(
+					publicationsWithoutIDAndState[ 0 ]
 				);
 			} );
 		} );
