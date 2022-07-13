@@ -28,7 +28,7 @@ const { createRegistrySelector } = Data;
  * External dependencies
  */
 import invariant from 'invariant';
-import { isNumber } from 'lodash';
+import isNumber from 'lodash/isNumber';
 
 export const selectors = {
 	/**
@@ -148,13 +148,13 @@ export const selectors = {
 				CORE_SITE
 			).getProxySupportLinkURL();
 
-			if ( error.code && ! isNumber( error?.code ) ) {
+			if ( error.code && ! isNumber( error.code ) ) {
 				return `${ proxySupportLink }?error_id=${ encodeURIComponent(
 					error.code
 				) }`;
 			}
 
-			if ( error.id && ! isNumber( error?.id ) ) {
+			if ( error.id && ! isNumber( error.id ) ) {
 				return `${ proxySupportLink }?error_id=${ encodeURIComponent(
 					error.id
 				) }`;

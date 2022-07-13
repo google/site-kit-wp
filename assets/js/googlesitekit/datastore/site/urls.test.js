@@ -79,11 +79,9 @@ describe( 'core/site urls', () => {
 
 		describe( 'getDocumentationLinkURL', () => {
 			it( 'should throw an error if the slug is omitted', () => {
-				try {
-					registry.select( CORE_SITE ).getDocumentationLinkURL();
-				} catch ( error ) {
-					expect( error.message ).toBe( 'A slug is required.' );
-				}
+				expect( () =>
+					registry.select( CORE_SITE ).getDocumentationLinkURL()
+				).toThrow( 'A slug is required.' );
 			} );
 
 			it( 'should return the correct documentation URL given a documentation slug', () => {
@@ -128,13 +126,11 @@ describe( 'core/site urls', () => {
 			const testErrorWithID = { ...testError, id: 'test-error-id' };
 
 			it( 'should throw an error if no error is given', () => {
-				try {
+				expect( () =>
 					registry
 						.select( CORE_SITE )
-						.getErrorTroubleshootingLinkURL();
-				} catch ( error ) {
-					expect( error.message ).toBe( 'An error is required.' );
-				}
+						.getErrorTroubleshootingLinkURL()
+				).toThrow( 'An error is required.' );
 			} );
 
 			it( 'should return the support link with the error message if no code or id is given', () => {
