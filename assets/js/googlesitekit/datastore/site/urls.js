@@ -148,15 +148,15 @@ export const selectors = {
 				CORE_SITE
 			).getProxySupportLinkURL();
 
-			if ( error.code && ! isNumber( error.code ) ) {
-				return `${ proxySupportLink }?error_id=${ encodeURIComponent(
-					error.code
-				) }`;
-			}
-
 			if ( error.id && ! isNumber( error.id ) ) {
 				return `${ proxySupportLink }?error_id=${ encodeURIComponent(
 					error.id
+				) }`;
+			}
+
+			if ( error.code && ! isNumber( error.code ) ) {
+				return `${ proxySupportLink }?error_id=${ encodeURIComponent(
+					error.code
 				) }`;
 			}
 
