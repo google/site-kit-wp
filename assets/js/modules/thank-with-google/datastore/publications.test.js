@@ -29,7 +29,7 @@ import { MODULES_THANK_WITH_GOOGLE } from './constants';
 
 describe( 'modules/thank-with-google publications', () => {
 	let registry;
-	const publicationWithActiveState = [
+	const publicationsWithActiveState = [
 		{
 			// eslint-disable-next-line sitekit/acronym-case
 			publicationId: 'TEST-PUBLICATION-ID',
@@ -42,7 +42,7 @@ describe( 'modules/thank-with-google publications', () => {
 		},
 	];
 
-	const publicationWithoutState = [
+	const publicationsWithoutState = [
 		{
 			// eslint-disable-next-line sitekit/acronym-case
 			publicationId: 'test-publication-id-2',
@@ -84,7 +84,7 @@ describe( 'modules/thank-with-google publications', () => {
 			it( 'uses a resolver to get all the publications when requested', async () => {
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/thank-with-google\/data\/publications/,
-					{ body: publicationWithActiveState, status: 200 }
+					{ body: publicationsWithActiveState, status: 200 }
 				);
 
 				// The publications will be `undefined` whilst loading.
@@ -105,7 +105,7 @@ describe( 'modules/thank-with-google publications', () => {
 					.getPublications();
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
-				expect( publications ).toEqual( publicationWithActiveState );
+				expect( publications ).toEqual( publicationsWithActiveState );
 			} );
 
 			it( 'dispatches an error if the request fails', async () => {
@@ -151,14 +151,14 @@ describe( 'modules/thank-with-google publications', () => {
 			it( 'does not make a network request if data is already in state', () => {
 				registry
 					.dispatch( MODULES_THANK_WITH_GOOGLE )
-					.receiveGetPublications( publicationWithActiveState );
+					.receiveGetPublications( publicationsWithActiveState );
 
 				const publications = registry
 					.select( MODULES_THANK_WITH_GOOGLE )
 					.getPublications();
 
 				expect( fetchMock ).not.toHaveFetched();
-				expect( publications ).toEqual( publicationWithActiveState );
+				expect( publications ).toEqual( publicationsWithActiveState );
 			} );
 		} );
 
@@ -190,7 +190,7 @@ describe( 'modules/thank-with-google publications', () => {
 			it( 'returns the publication if that is the only one in the list', () => {
 				registry
 					.dispatch( MODULES_THANK_WITH_GOOGLE )
-					.receiveGetPublications( publicationWithActiveState );
+					.receiveGetPublications( publicationsWithActiveState );
 
 				registry
 					.dispatch( MODULES_THANK_WITH_GOOGLE )
@@ -201,7 +201,7 @@ describe( 'modules/thank-with-google publications', () => {
 					.getCurrentPublication();
 
 				expect( publication ).toEqual(
-					publicationWithActiveState[ 0 ]
+					publicationsWithActiveState[ 0 ]
 				);
 			} );
 
@@ -209,8 +209,8 @@ describe( 'modules/thank-with-google publications', () => {
 				registry
 					.dispatch( MODULES_THANK_WITH_GOOGLE )
 					.receiveGetPublications( [
-						...publicationWithActiveState,
-						...publicationWithoutState,
+						...publicationsWithActiveState,
+						...publicationsWithoutState,
 					] );
 
 				registry
@@ -221,15 +221,15 @@ describe( 'modules/thank-with-google publications', () => {
 					.select( MODULES_THANK_WITH_GOOGLE )
 					.getCurrentPublication();
 
-				expect( publication ).toEqual( publicationWithoutState[ 0 ] );
+				expect( publication ).toEqual( publicationsWithoutState[ 0 ] );
 			} );
 
 			it( 'returns the publication if the publicationID is not set and the state is set to ACTIVE', () => {
 				registry
 					.dispatch( MODULES_THANK_WITH_GOOGLE )
 					.receiveGetPublications( [
-						...publicationWithoutState,
-						...publicationWithActiveState,
+						...publicationsWithoutState,
+						...publicationsWithActiveState,
 					] );
 
 				registry
@@ -241,7 +241,7 @@ describe( 'modules/thank-with-google publications', () => {
 					.getCurrentPublication();
 
 				expect( publication ).toEqual(
-					publicationWithActiveState[ 0 ]
+					publicationsWithActiveState[ 0 ]
 				);
 			} );
 
