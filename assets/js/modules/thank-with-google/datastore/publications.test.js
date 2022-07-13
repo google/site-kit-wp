@@ -45,16 +45,17 @@ describe( 'modules/thank-with-google publications', () => {
 		// eslint-disable-next-line sitekit/acronym-case
 		publicationId: 'test-publication-b',
 	};
-	const publicationWithoutStateC = {
+	const publicationActionRequiredStateC = {
 		...publicationWithActiveStateA,
 		// eslint-disable-next-line sitekit/acronym-case
 		publicationId: 'test-publication-c',
+		state: 'ACTION_REQUIRED',
 	};
-	delete publicationWithoutStateC.state;
-	const publicationWithoutStateD = {
-		...publicationWithoutStateC,
+	const publicationPendingVerificationD = {
+		...publicationWithActiveStateA,
 		// eslint-disable-next-line sitekit/acronym-case
 		publicationId: 'test-publication-d',
+		state: 'PENDING_VERIFICATION',
 	};
 	const publicationsWithActiveState = [
 		publicationWithActiveStateA,
@@ -242,8 +243,8 @@ describe( 'modules/thank-with-google publications', () => {
 
 			it( 'returns the first publication when no publication matches the publicationID or has an active state', () => {
 				const inactivePublications = [
-					publicationWithoutStateC,
-					publicationWithoutStateD,
+					publicationActionRequiredStateC,
+					publicationPendingVerificationD,
 				];
 				registry
 					.dispatch( MODULES_THANK_WITH_GOOGLE )
@@ -257,7 +258,9 @@ describe( 'modules/thank-with-google publications', () => {
 					.select( MODULES_THANK_WITH_GOOGLE )
 					.getCurrentPublication();
 
-				expect( publication ).toEqual( publicationWithoutStateC );
+				expect( publication ).toEqual(
+					publicationActionRequiredStateC
+				);
 			} );
 		} );
 	} );
