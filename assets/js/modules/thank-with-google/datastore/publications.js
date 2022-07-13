@@ -30,7 +30,9 @@ const fetchGetPublicationsStore = createFetchStore( {
 	baseName: 'getPublications',
 	storeName: MODULES_THANK_WITH_GOOGLE,
 	controlCallback: () => {
-		return API.get( 'modules', 'thank-with-google', 'publications' );
+		return API.get( 'modules', 'thank-with-google', 'publications', null, {
+			useCache: false,
+		} );
 	},
 	reducerCallback: ( state, publications ) => {
 		return {
@@ -79,7 +81,7 @@ const baseSelectors = {
 	 *
 	 * Returns the first item if only one publication is available in the list.
 	 * If there are multiple publications in the list, returns one of them based on the following logic:
-	 * - If the `publicationID` is set and that publication is in the list.
+	 * - If the `publicationID` module setting is already set and that publication is in the list.
 	 * - Otherwise, if any of the publications has its `state` field set to `ACTIVE`.
 	 * - Otherwise, returns the first one in the list.
 	 *
@@ -101,8 +103,13 @@ const baseSelectors = {
 			return null;
 		}
 
+		const publicationID = select(
+			MODULES_THANK_WITH_GOOGLE
+		).getPublicationID();
+
 		return (
-			publications.find( ( p ) => p.publicationID ) ||
+			// eslint-disable-next-line sitekit/acronym-case
+			publications.find( ( p ) => p.publicationId === publicationID ) ||
 			publications.find( ( p ) => p.state === 'ACTIVE' ) ||
 			publications[ 0 ]
 		);
