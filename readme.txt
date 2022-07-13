@@ -4,7 +4,7 @@ Contributors:      google
 Requires at least: 4.7
 Tested up to:      6.0
 Requires PHP:      5.6
-Stable tag:        1.78.0
+Stable tag:        1.79.0
 License:           Apache License 2.0
 License URI:       https://www.apache.org/licenses/LICENSE-2.0
 Tags:              google, search-console, analytics, adsense, pagespeed-insights, optimize, tag-manager, site-kit
@@ -105,6 +105,22 @@ By default, Site Kit does anonymize IP addresses upon activation of the Google A
 Please create a new topic on our [WordPress.org support forum](https://wordpress.org/support/plugin/google-site-kit/). Be sure to follow the [support forum guidelines](https://wordpress.org/support/guidelines/) when posting.
 
 == Changelog ==
+
+= 1.79.0 =
+
+**Enhanced**
+
+* Show "Recoverable Modules" component for Analytics section of the Search Funnel widget, when on the view-only Dashboard and the Analytics module is in a recoverable state. See [#5470](https://github.com/google/site-kit-wp/issues/5470).
+* Add "experimental" label to Thank with Google module. See [#5452](https://github.com/google/site-kit-wp/issues/5452).
+* Refine the _Escape_ keyboard shortcut in the Dashboard Sharing modal to exit the "Edit Roles" view when its active, rather than closing the modal. See [#5442](https://github.com/google/site-kit-wp/issues/5442).
+* Update the text on the view-only splash screen. See [#5441](https://github.com/google/site-kit-wp/issues/5441).
+* Extend the Dashboard Sharing feature tour to include steps for the settings interface. See [#5382](https://github.com/google/site-kit-wp/issues/5382).
+* Update design of the dashboard CTA for connecting AdSense. See [#5260](https://github.com/google/site-kit-wp/issues/5260).
+* Update the plugin styling in line with Google Material 3. See [#5254](https://github.com/google/site-kit-wp/issues/5254).
+
+**Fixed**
+
+* Improve "View only" menu icon alignment when viewing shared dashboard. See [#5446](https://github.com/google/site-kit-wp/issues/5446).
 
 = 1.78.0 =
 

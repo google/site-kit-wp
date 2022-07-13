@@ -157,7 +157,7 @@ final class Thank_With_Google extends Module
 	/**
 	 * Gets map of datapoint to definition data for each.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.79.0
 	 * @return array Map of datapoints to their definitions.
 	 */
 	protected function get_datapoint_definitions() {
@@ -169,7 +169,7 @@ final class Thank_With_Google extends Module
 	/**
 	 * Creates a request object for the given datapoint.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.79.0
 	 *
 	 * @param Data_Request $data Data request object.
 	 * @return RequestInterface|callable|WP_Error Request object or callable on success, or WP_Error on failure.

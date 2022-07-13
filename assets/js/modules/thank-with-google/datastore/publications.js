@@ -67,7 +67,7 @@ const baseSelectors = {
 	/**
 	 * Gets the list of publications from the server.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.79.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(Array|undefined|null)} Publications array list. Returns undefined if it is not loaded yet.
@@ -85,7 +85,7 @@ const baseSelectors = {
 	 * - Otherwise, if any of the publications has its `state` field set to `ACTIVE`.
 	 * - Otherwise, returns the first one in the list.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.79.0
 	 *
 	 * @return {(Object|undefined|null)} Publication object. Returns undefined if it is not loaded yet.
 	 * 																	Returns null if the publications list is empty.
