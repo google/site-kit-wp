@@ -104,7 +104,9 @@
 		}
 
 		.autocomplete__menu {
-			background-color: $c-surfaces-surface-2;
+
+			@include elevation-3();
+			background-color: $c-surfaces-surface;
 			border-radius: $br-sm;
 			margin-left: -12px;
 			overflow: hidden;
