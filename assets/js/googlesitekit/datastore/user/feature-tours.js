@@ -365,7 +365,7 @@ const baseSelectors = {
 	/**
 	 * Gets the currently active tour object.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.79.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(Object|null)} Active tour object.

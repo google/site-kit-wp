@@ -29,16 +29,37 @@ import { MODULES_THANK_WITH_GOOGLE } from './constants';
 
 describe( 'modules/thank-with-google publications', () => {
 	let registry;
-	const PUBLICATIONS = [
-		{
-			publicationID: 'TEST-PUBLICATION-ID',
-			displayName: 'Test publication title',
-			verifiedDomains: [ 'https://example.com' ],
-			paymentOptions: {
-				virtualGifts: true,
-			},
-			state: 'ACTIVE',
+
+	const publicationWithActiveStateA = {
+		// eslint-disable-next-line sitekit/acronym-case
+		publicationId: 'test-publication-a',
+		displayName: 'Test publication title',
+		verifiedDomains: [ 'https://example.com' ],
+		paymentOptions: {
+			virtualGifts: true,
 		},
+		state: 'ACTIVE',
+	};
+	const publicationWithActiveStateB = {
+		...publicationWithActiveStateA,
+		// eslint-disable-next-line sitekit/acronym-case
+		publicationId: 'test-publication-b',
+	};
+	const publicationActionRequiredStateC = {
+		...publicationWithActiveStateA,
+		// eslint-disable-next-line sitekit/acronym-case
+		publicationId: 'test-publication-c',
+		state: 'ACTION_REQUIRED',
+	};
+	const publicationPendingVerificationD = {
+		...publicationWithActiveStateA,
+		// eslint-disable-next-line sitekit/acronym-case
+		publicationId: 'test-publication-d',
+		state: 'PENDING_VERIFICATION',
+	};
+	const publicationsWithActiveState = [
+		publicationWithActiveStateA,
+		publicationWithActiveStateB,
 	];
 
 	beforeEach( () => {
@@ -54,7 +75,7 @@ describe( 'modules/thank-with-google publications', () => {
 			it( 'uses a resolver to get all the publications when requested', async () => {
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/thank-with-google\/data\/publications/,
-					{ body: PUBLICATIONS, status: 200 }
+					{ body: publicationsWithActiveState, status: 200 }
 				);
 
 				// The publications will be `undefined` whilst loading.
@@ -75,7 +96,7 @@ describe( 'modules/thank-with-google publications', () => {
 					.getPublications();
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
-				expect( publications ).toEqual( PUBLICATIONS );
+				expect( publications ).toEqual( publicationsWithActiveState );
 			} );
 
 			it( 'dispatches an error if the request fails', async () => {
@@ -121,14 +142,14 @@ describe( 'modules/thank-with-google publications', () => {
 			it( 'does not make a network request if data is already in state', () => {
 				registry
 					.dispatch( MODULES_THANK_WITH_GOOGLE )
-					.receiveGetPublications( PUBLICATIONS );
+					.receiveGetPublications( publicationsWithActiveState );
 
 				const publications = registry
 					.select( MODULES_THANK_WITH_GOOGLE )
 					.getPublications();
 
 				expect( fetchMock ).not.toHaveFetched();
-				expect( publications ).toEqual( PUBLICATIONS );
+				expect( publications ).toEqual( publicationsWithActiveState );
 			} );
 		} );
 
@@ -160,97 +181,85 @@ describe( 'modules/thank-with-google publications', () => {
 			it( 'returns the publication if that is the only one in the list', () => {
 				registry
 					.dispatch( MODULES_THANK_WITH_GOOGLE )
-					.receiveGetPublications( PUBLICATIONS );
+					.receiveGetPublications( publicationsWithActiveState );
+
+				registry
+					.dispatch( MODULES_THANK_WITH_GOOGLE )
+					.setPublicationID( null );
 
 				const publication = registry
 					.select( MODULES_THANK_WITH_GOOGLE )
 					.getCurrentPublication();
 
-				expect( publication ).toEqual( PUBLICATIONS[ 0 ] );
+				expect( publication ).toEqual(
+					publicationsWithActiveState[ 0 ]
+				);
 			} );
 
-			it( 'returns the publication if the publicationID is set and the publication is in the list', () => {
+			it( 'returns the publication that matches the publicationID when present', () => {
 				registry
 					.dispatch( MODULES_THANK_WITH_GOOGLE )
 					.receiveGetPublications( [
-						...PUBLICATIONS,
-						// The following publication doesn't have the publicationID.
-						{
-							displayName: 'Test publication title',
-							verifiedDomains: [ 'https://example.com' ],
-							paymentOptions: {
-								virtualGifts: true,
-							},
-						},
+						publicationWithActiveStateA,
+						publicationWithActiveStateB,
 					] );
+
+				registry
+					.dispatch( MODULES_THANK_WITH_GOOGLE )
+					.setPublicationID( 'test-publication-b' );
 
 				const publication = registry
 					.select( MODULES_THANK_WITH_GOOGLE )
 					.getCurrentPublication();
 
-				expect( publication ).toEqual( PUBLICATIONS[ 0 ] );
+				// eslint-disable-next-line sitekit/acronym-case
+				expect( publication.publicationId ).toEqual(
+					'test-publication-b'
+				);
 			} );
 
-			it( 'returns the publication if the publicationId is not set and the state is set to ACTIVE', () => {
-				const publicationsWithActiveState = [
-					{
-						displayName: 'Test publication title',
-						verifiedDomains: [ 'https://example.com' ],
-						paymentOptions: {
-							virtualGifts: true,
-						},
-					},
-					// The following publication doesn't have the publicationID.
-					// However, it has the state set to ACTIVE.
-					{
-						displayName: 'Test publication another title',
-						verifiedDomains: [ 'https://example.com' ],
-						paymentOptions: {
-							virtualGifts: true,
-						},
-						state: 'ACTIVE',
-					},
-				];
+			it( 'returns the first publication with an active state when no publication matches the publicationID', () => {
 				registry
 					.dispatch( MODULES_THANK_WITH_GOOGLE )
 					.receiveGetPublications( publicationsWithActiveState );
 
+				registry
+					.dispatch( MODULES_THANK_WITH_GOOGLE )
+					.setPublicationID( 'test-publication--non-matching' );
+
 				const publication = registry
 					.select( MODULES_THANK_WITH_GOOGLE )
 					.getCurrentPublication();
 
 				expect( publication ).toEqual(
-					publicationsWithActiveState[ 1 ]
+					publicationsWithActiveState[ 0 ]
+				);
+				expect( publication.state ).toBe( 'ACTIVE' );
+				// eslint-disable-next-line sitekit/acronym-case
+				expect( publication.publicationId ).not.toBe(
+					'test-publication--non-matching'
 				);
 			} );
 
-			it( 'returns the first publication from the list if the publicationId is not set and the state is not set to ACTIVE', () => {
-				const publicationsWithoutIDAndActive = [
-					{
-						displayName: 'Test publication title',
-						verifiedDomains: [ 'https://example.com' ],
-						paymentOptions: {
-							virtualGifts: true,
-						},
-					},
-					{
-						displayName: 'Test publication another title',
-						verifiedDomains: [ 'https://example.com' ],
-						paymentOptions: {
-							virtualGifts: true,
-						},
-					},
+			it( 'returns the first publication when no publication matches the publicationID or has an active state', () => {
+				const inactivePublications = [
+					publicationActionRequiredStateC,
+					publicationPendingVerificationD,
 				];
 				registry
 					.dispatch( MODULES_THANK_WITH_GOOGLE )
-					.receiveGetPublications( publicationsWithoutIDAndActive );
+					.receiveGetPublications( inactivePublications );
+
+				registry
+					.dispatch( MODULES_THANK_WITH_GOOGLE )
+					.setPublicationID( 'test-publication--non-matching' );
 
 				const publication = registry
 					.select( MODULES_THANK_WITH_GOOGLE )
 					.getCurrentPublication();
 
 				expect( publication ).toEqual(
-					publicationsWithoutIDAndActive[ 0 ]
+					publicationActionRequiredStateC
 				);
 			} );
 		} );
