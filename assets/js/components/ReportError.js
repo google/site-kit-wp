@@ -34,9 +34,8 @@ import { __, sprintf } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
 import {
-	isAuthError,
+	isErrorRetryable,
 	isInsufficientPermissionsError,
-	isPermissionScopeError,
 } from '../util/errors';
 import { getInsufficientPermissionsErrorDescription } from '../util/insufficient-permissions-error-description';
 import { purify } from '../util/purify';
@@ -119,14 +118,7 @@ export default function ReportError( { moduleSlug, error } ) {
 		</Fragment>
 	);
 
-	const retryableErrors = errors.filter(
-		( err ) =>
-			!! err?.selectorData?.storeName &&
-			err.selectorData?.name === 'getReport' &&
-			! isInsufficientPermissionsError( err ) &&
-			! isPermissionScopeError( err ) &&
-			! isAuthError( err )
-	);
+	const retryableErrors = errors.filter( ( err ) => isErrorRetryable( err ) );
 	const showRetry = !! retryableErrors.length;
 
 	const handleRetry = useCallback( () => {

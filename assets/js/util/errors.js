@@ -85,3 +85,21 @@ export function isInsufficientPermissionsError( error ) {
 export function isAuthError( error ) {
 	return !! error?.data?.reconnectURL;
 }
+
+/**
+ * Checks if the given error can be retried.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} error The error object to check.
+ * @return {boolean} TRUE if the error is retryable, otherwise FALSE.
+ */
+export function isErrorRetryable( error ) {
+	return (
+		!! error?.selectorData?.storeName &&
+		error.selectorData?.name === 'getReport' &&
+		! isInsufficientPermissionsError( error ) &&
+		! isPermissionScopeError( error ) &&
+		! isAuthError( error )
+	);
+}

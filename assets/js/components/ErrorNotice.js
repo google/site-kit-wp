@@ -22,15 +22,34 @@
 import PropTypes from 'prop-types';
 
 /**
+ * WordPress dependencies
+ */
+import { Fragment, useCallback } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
+
+/**
  * Internal dependencies
  */
-import { isPermissionScopeError } from '../util/errors';
+import Data from 'googlesitekit-data';
+import { isPermissionScopeError, isErrorRetryable } from '../util/errors';
 import ErrorText from './ErrorText';
+import Button from './Button';
 
+const { useDispatch } = Data;
 export default function ErrorNotice( {
 	error,
 	shouldDisplayError = () => true,
 } ) {
+	const dispatch = useDispatch();
+
+	const handleRetry = useCallback( () => {
+		const { selectorData } = error;
+		dispatch( selectorData.storeName ).invalidateResolution(
+			selectorData.name,
+			selectorData.args
+		);
+	}, [ dispatch, error ] );
+
 	// Do not display if no error, or if the error is for missing scopes.
 	if (
 		! error ||
@@ -40,11 +59,20 @@ export default function ErrorNotice( {
 		return null;
 	}
 
+	const shouldDisplayRetry = isErrorRetryable( error );
+
 	return (
-		<ErrorText
-			message={ error.message }
-			reconnectURL={ error.data?.reconnectURL }
-		/>
+		<Fragment>
+			<ErrorText
+				message={ error.message }
+				reconnectURL={ error.data?.reconnectURL }
+			/>
+			{ shouldDisplayRetry && (
+				<Button onClick={ handleRetry }>
+					{ __( 'Retry', 'google-site-kit' ) }
+				</Button>
+			) }
+		</Fragment>
 	);
 }
 
