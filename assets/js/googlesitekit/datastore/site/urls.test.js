@@ -222,6 +222,48 @@ describe( 'core/site urls', () => {
 					) }`
 				);
 			} );
+
+			it( 'it should default to the error message if the error id is a string containing a numeric value', () => {
+				const testErrorWithNumericID = {
+					...testErrorWithMessage,
+					id: '123',
+				};
+
+				const baseURL = registry
+					.select( CORE_SITE )
+					.getProxySupportLinkURL();
+
+				const url = registry
+					.select( CORE_SITE )
+					.getErrorTroubleshootingLinkURL( testErrorWithNumericID );
+
+				expect( url ).toBe(
+					`${ baseURL }?error=${ encodeURIComponent(
+						testErrorWithNumericID.message
+					) }`
+				);
+			} );
+
+			it( 'it should default to the error message if the error code is a string containing a numeric value', () => {
+				const testErrorWithNumericCode = {
+					...testErrorWithMessage,
+					code: '123',
+				};
+
+				const baseURL = registry
+					.select( CORE_SITE )
+					.getProxySupportLinkURL();
+
+				const url = registry
+					.select( CORE_SITE )
+					.getErrorTroubleshootingLinkURL( testErrorWithNumericCode );
+
+				expect( url ).toBe(
+					`${ baseURL }?error=${ encodeURIComponent(
+						testErrorWithNumericCode.message
+					) }`
+				);
+			} );
 		} );
 
 		describe( 'getGoogleTermsURL', () => {

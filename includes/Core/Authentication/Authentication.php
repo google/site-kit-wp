@@ -840,7 +840,7 @@ final class Authentication {
 		$data['isAuthenticated']     = $this->is_authenticated();
 		$data['setupErrorMessage']   = null;
 		$data['setupErrorRedoURL']   = null;
-		$data['proxySupportLinkURL'] = '';
+		$data['proxySupportLinkURL'] = null;
 
 		if ( $this->credentials->using_proxy() ) {
 			$auth_client                 = $this->get_oauth_client();
@@ -1335,7 +1335,7 @@ final class Authentication {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return string Support URL.
+	 * @return string|null Support URL.
 	 */
 	private function get_proxy_support_link_url() {
 		return $this->google_proxy->url( Google_Proxy::SUPPORT_LINK_URI );
