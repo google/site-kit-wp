@@ -398,6 +398,26 @@ export const selectors = {
 	} ),
 
 	/**
+	 * Gets the url with the users email appended.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(string|undefined)} The concatenated url if an email is present, undefined else.
+	 */
+	getAccountChooserURL: createRegistrySelector(
+		( select ) => ( state, destinationURL ) => {
+			invariant( destinationURL, 'destinationURL is required' );
+			const userEmail = select( CORE_USER ).getEmail();
+			return userEmail !== undefined
+				? `${ encodeURIComponent(
+						destinationURL
+				  ) }&Email=${ encodeURIComponent( userEmail ) }`
+				: undefined;
+		}
+	),
+
+	/**
 	 * Gets the initial version that the user used Site Kit with.
 	 *
 	 * @since 1.27.0

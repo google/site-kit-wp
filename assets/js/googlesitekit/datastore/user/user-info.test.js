@@ -364,5 +364,53 @@ describe( 'core/user userInfo', () => {
 				expect( global[ userDataGlobal ] ).not.toEqual( undefined );
 			} );
 		} );
+
+		describe( 'getAccountChooserURL', () => {
+			it( 'throws an error if a destinationURL is not given', () => {
+				expect( () => {
+					registry.select( CORE_USER ).getAccountChooserURL();
+				} ).toThrow( 'destinationURL is required' );
+			} );
+
+			it( 'returns the encoded destination url with the email appended', async () => {
+				global[ userDataGlobal ] = userData;
+
+				const testURL = 'test destination url';
+				const userEmail = global[ userDataGlobal ].user.email;
+
+				registry.select( CORE_USER ).getAccountChooserURL( testURL );
+
+				await subscribeUntil(
+					registry,
+					() =>
+						registry
+							.select( CORE_USER )
+							.getAccountChooserURL( testURL ) !== undefined
+				);
+
+				const accountChooserURL = registry
+					.select( CORE_USER )
+					.getAccountChooserURL( testURL );
+
+				expect( accountChooserURL ).toBe(
+					`${ encodeURIComponent(
+						testURL
+					) }&Email=${ encodeURIComponent( userEmail ) }`
+				);
+			} );
+
+			it( 'should return undefined when no data is available', async () => {
+				expect( global[ userDataGlobal ] ).toEqual( undefined );
+				const testURL = 'test destination url';
+
+				const userInfo = registry
+					.select( CORE_USER )
+					.getAccountChooserURL( testURL );
+
+				const { user } = initialState;
+				expect( userInfo ).toEqual( user );
+				expect( console ).toHaveErrored();
+			} );
+		} );
 	} );
 } );
