@@ -27,6 +27,7 @@ import { sprintf, __ } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
+import { getTimeInSeconds } from '../../util';
 import Button from '../Button';
 import Checkbox from '../Checkbox';
 import BannerNotification from '../notifications/BannerNotification';
@@ -221,6 +222,8 @@ export default function ModuleRecoveryAlert() {
 			description={ description }
 			learnMoreURL="https://sitekit.withgoogle.com/documentation/using-site-kit/dashboard-sharing/"
 			learnMoreLabel={ __( 'Learn more', 'google-site-kit' ) }
+			dismiss={ __( 'Remind me later', 'google-site-kit' ) }
+			dismissExpires={ getTimeInSeconds( 'day' ) }
 		>
 			{ children }
 		</BannerNotification>
