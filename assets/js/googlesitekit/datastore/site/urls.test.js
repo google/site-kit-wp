@@ -202,6 +202,27 @@ describe( 'core/site urls', () => {
 				);
 			} );
 
+			it( 'it should default to the error message if the error code is empty', () => {
+				const testErrorWithNumericCode = {
+					...testErrorWithMessage,
+					code: '',
+				};
+
+				const baseURL = registry
+					.select( CORE_SITE )
+					.getProxySupportLinkURL();
+
+				const url = registry
+					.select( CORE_SITE )
+					.getErrorTroubleshootingLinkURL( testErrorWithNumericCode );
+
+				expect( url ).toBe(
+					`${ baseURL }?error=${ encodeURIComponent(
+						testErrorWithNumericCode.message
+					) }`
+				);
+			} );
+
 			it( 'it should default to the error message if the error id is a numeric value', () => {
 				const testErrorWithNumericID = {
 					...testErrorWithMessage,
