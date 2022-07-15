@@ -37,6 +37,7 @@ export * from './convert-time';
 export * from './date-range';
 export * from './chart';
 export * from './urls';
+export * from './isnumeric';
 
 /**
  * Transforms a period string into a number of seconds.
