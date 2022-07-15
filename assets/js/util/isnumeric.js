@@ -28,9 +28,12 @@ export function isNumeric( value ) {
 	if ( typeof value === 'number' ) {
 		return true;
 	}
+
 	const string = ( value || '' ).toString();
+
 	if ( ! string ) {
 		return false;
 	}
+
 	return ! isNaN( string );
 }
