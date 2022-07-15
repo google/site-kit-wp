@@ -202,7 +202,7 @@ function SetupSuccessBannerNotification() {
 
 			if ( 'thank-with-google' === slug ) {
 				winData.description = __(
-					'Thank with Google is visible to your visitors. To see metrics, ',
+					'Thank with Google is visible to your visitors. To see metrics,',
 					'google-site-kit'
 				);
 				winData.learnMore = {
