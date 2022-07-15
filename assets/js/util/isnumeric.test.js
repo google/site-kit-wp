@@ -31,5 +31,6 @@ describe( 'isNumeric', () => {
 		expect( isNumeric( '' ) ).toBe( false );
 		expect( isNumeric( 'a' ) ).toBe( false );
 		expect( isNumeric( 'a1' ) ).toBe( false );
+		expect( isNumeric( '1a' ) ).toBe( false );
 	} );
 } );
