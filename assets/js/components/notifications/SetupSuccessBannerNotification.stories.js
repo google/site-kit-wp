@@ -94,6 +94,16 @@ UserInputSuccess.parameters = {
 	},
 };
 
+export const ThankWithGoogle = Template.bind( {} );
+ThankWithGoogle.storyName = 'Authentication Success - Thank With Google';
+ThankWithGoogle.parameters = {
+	module: { slug: 'thank-with-google', name: 'Thank With Google' },
+	query: {
+		notification: 'authentication_success',
+		slug: 'thank-with-google',
+	},
+};
+
 export default {
 	title: 'Components/SetupSuccessBannerNotification',
 	component: SetupSuccessBannerNotification,
