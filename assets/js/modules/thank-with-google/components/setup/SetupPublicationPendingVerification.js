@@ -1,7 +1,7 @@
 /**
- * Thank with Google Setup components.
+ * Thank with Google SetupPublicationPendingVerification component.
  *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2022 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,11 @@
  * limitations under the License.
  */
 
-export { default as SetupMain } from './SetupMain';
-export { default as SetupCreatePublication } from './SetupCreatePublication';
-export { default as SetupCustomize } from './SetupCustomize';
-export { default as SetupPublicationActive } from './SetupPublicationActive';
-export { default as SetupPublicationActionRequired } from './SetupPublicationActionRequired';
-export { default as SetupPublicationPendingVerification } from './SetupPublicationPendingVerification';
+export default function SetupPublicationPendingVerification() {
+	return (
+		<div>
+			TODO: UI for publication pending verification -
+			SetupPublicationPendingVerification
+		</div>
+	);
+}
