@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-// import { MODULES_THANK_WITH_GOOGLE } from '../../datastore/constants';
+import { MODULES_THANK_WITH_GOOGLE } from '../../datastore/constants';
 import {
 	createTestRegistry,
 	freezeFetch,
@@ -91,6 +91,16 @@ PublicationsLoading.args = {
 		freezeFetch(
 			/^\/google-site-kit\/v1\/modules\/thank-with-google\/data\/publications/
 		);
+	},
+};
+
+export const CreatePublication = Template.bind( {} );
+CreatePublication.storyName = 'Create Publication';
+CreatePublication.args = {
+	setupRegistry: ( registry ) => {
+		registry
+			.dispatch( MODULES_THANK_WITH_GOOGLE )
+			.receiveGetPublications( [] );
 	},
 };
 
