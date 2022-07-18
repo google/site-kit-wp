@@ -17,11 +17,16 @@
  */
 
 /**
+ * External dependencies
+ */
+import invariant from 'invariant';
+
+/**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
 import { CORE_SITE } from './constants';
-import { getLocale } from '../../../util';
+import { getLocale, isNumeric } from '../../../util';
 const { createRegistrySelector } = Data;
 
 export const selectors = {
@@ -103,6 +108,62 @@ export const selectors = {
 			path: '/privacypolicy',
 		} );
 	} ),
+
+	/**
+	 * Gets the Site Kit documentation URL.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @param {string} slug  The slug of the documentation page.
+	 * @return {string} The Site Kit support URL.
+	 */
+	getDocumentationLinkURL: createRegistrySelector(
+		( select ) => ( state, slug ) => {
+			invariant( slug, 'A slug is required.' );
+
+			const proxySupportLink = select(
+				CORE_SITE
+			).getProxySupportLinkURL();
+
+			return `${ proxySupportLink }?doc=${ encodeURIComponent( slug ) }`;
+		}
+	),
+
+	/**
+	 * Gets the relevant troubleshooting URL.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @param {Object} error The error object.
+	 * @return {string} The Site Kit support URL.
+	 */
+	getErrorTroubleshootingLinkURL: createRegistrySelector(
+		( select ) => ( state, error ) => {
+			invariant( error, 'An error is required.' );
+
+			const proxySupportLink = select(
+				CORE_SITE
+			).getProxySupportLinkURL();
+
+			if ( error.id && ! isNumeric( error.id ) ) {
+				return `${ proxySupportLink }?error_id=${ encodeURIComponent(
+					error.id
+				) }`;
+			}
+
+			if ( error.code && ! isNumeric( error.code ) ) {
+				return `${ proxySupportLink }?error_id=${ encodeURIComponent(
+					error.code
+				) }`;
+			}
+
+			return `${ proxySupportLink }?error=${ encodeURIComponent(
+				error.message
+			) }`;
+		}
+	),
 
 	/**
 	 * Gets the Google terms of service URL.
