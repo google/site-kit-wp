@@ -376,7 +376,6 @@ describe( 'core/user userInfo', () => {
 				global[ userDataGlobal ] = userData;
 
 				const testURL = 'https://analytics.google.com/dashboard/';
-				const userEmail = global[ userDataGlobal ].user.email;
 
 				registry.select( CORE_USER ).getAccountChooserURL( testURL );
 
@@ -392,10 +391,8 @@ describe( 'core/user userInfo', () => {
 					.select( CORE_USER )
 					.getAccountChooserURL( testURL );
 
-				expect( accountChooserURL ).toBe(
-					`https://accounts.google.com/accountchooser?continue=${ encodeURIComponent(
-						testURL
-					) }&Email=${ encodeURIComponent( userEmail ) }`
+				expect( accountChooserURL ).toMatchInlineSnapshot(
+					'"https://accounts.google.com/accountchooser?continue=https%3A%2F%2Fanalytics.google.com%2Fdashboard%2F&Email=admin%40example.com"'
 				);
 			} );
 
