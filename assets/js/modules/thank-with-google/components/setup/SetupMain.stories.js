@@ -34,27 +34,27 @@ import SetupMain from './SetupMain';
 
 const features = [ 'twgModule' ];
 
-// const publicationWithActiveStateA = {
-// 	// eslint-disable-next-line sitekit/acronym-case
-// 	publicationId: 'test-publication-a',
-// 	displayName: 'Test publication title',
-// 	verifiedDomains: [ 'https://example.com' ],
-// 	paymentOptions: {
-// 		virtualGifts: true,
-// 	},
-// 	state: 'ACTIVE',
-// };
+const publicationWithActiveStateA = {
+	// eslint-disable-next-line sitekit/acronym-case
+	publicationId: 'test-publication-a',
+	displayName: 'Test publication title',
+	verifiedDomains: [ 'https://example.com' ],
+	paymentOptions: {
+		virtualGifts: true,
+	},
+	state: 'ACTIVE',
+};
 // const publicationWithActiveStateB = {
 // 	...publicationWithActiveStateA,
 // 	// eslint-disable-next-line sitekit/acronym-case
 // 	publicationId: 'test-publication-b',
 // };
-// const publicationActionRequiredStateC = {
-// 	...publicationWithActiveStateA,
-// 	// eslint-disable-next-line sitekit/acronym-case
-// 	publicationId: 'test-publication-c',
-// 	state: 'ACTION_REQUIRED',
-// };
+const publicationActionRequiredStateC = {
+	...publicationWithActiveStateA,
+	// eslint-disable-next-line sitekit/acronym-case
+	publicationId: 'test-publication-c',
+	state: 'ACTION_REQUIRED',
+};
 // const publicationPendingVerificationD = {
 // 	...publicationWithActiveStateA,
 // 	// eslint-disable-next-line sitekit/acronym-case
@@ -101,6 +101,16 @@ CreatePublication.args = {
 		registry
 			.dispatch( MODULES_THANK_WITH_GOOGLE )
 			.receiveGetPublications( [] );
+	},
+};
+
+export const PublicationActionRequired = Template.bind( {} );
+PublicationActionRequired.storyName = 'Publication Action Required';
+PublicationActionRequired.args = {
+	setupRegistry: ( registry ) => {
+		registry
+			.dispatch( MODULES_THANK_WITH_GOOGLE )
+			.receiveGetPublications( [ publicationActionRequiredStateC ] );
 	},
 };
 
