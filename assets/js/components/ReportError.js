@@ -118,7 +118,7 @@ export default function ReportError( { moduleSlug, error } ) {
 		</Fragment>
 	);
 
-	const retryableErrors = errors.filter( ( err ) => isErrorRetryable( err ) );
+	const retryableErrors = errors.filter( isErrorRetryable );
 	const showRetry = !! retryableErrors.length;
 
 	const handleRetry = useCallback( () => {
