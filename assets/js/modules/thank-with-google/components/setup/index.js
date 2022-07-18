@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 
-export { default as SetupForm } from './SetupForm';
 export { default as SetupMain } from './SetupMain';
 export { default as SetupCreatePublication } from './SetupCreatePublication';
 export { default as SetupCustomize } from './SetupCustomize';
