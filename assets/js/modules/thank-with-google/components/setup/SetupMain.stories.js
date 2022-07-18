@@ -134,6 +134,20 @@ PublicationActive.args = {
 	},
 };
 
+export const PublicationCustomize = Template.bind( {} );
+PublicationCustomize.storyName = 'Publication Customize';
+PublicationCustomize.args = {
+	setupRegistry: ( registry ) => {
+		registry
+			.dispatch( MODULES_THANK_WITH_GOOGLE )
+			.receiveGetPublications( publicationsWithActiveState );
+
+		registry
+			.dispatch( MODULES_THANK_WITH_GOOGLE )
+			.setPublicationID( 'test-publication-a' );
+	},
+};
+
 export default {
 	title: 'Modules/Thank with Google/Setup/SetupMain',
 	component: SetupMain,
