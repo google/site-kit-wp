@@ -148,6 +148,28 @@ PublicationCustomize.args = {
 	},
 };
 
+export const ErrorNotice = Template.bind( {} );
+ErrorNotice.storyName = 'Error Notice';
+ErrorNotice.args = {
+	setupRegistry: ( registry ) => {
+		registry
+			.dispatch( MODULES_THANK_WITH_GOOGLE )
+			.receiveGetPublications( [] );
+		registry.dispatch( MODULES_THANK_WITH_GOOGLE ).receiveError(
+			{
+				// Typically thrown when fetching publications.
+				message: 'Thank with Google publication is disapproved.',
+				data: {
+					status: 403,
+					reason: 'disapprovedPublication',
+				},
+			},
+			'getPublications',
+			[]
+		);
+	},
+};
+
 export default {
 	title: 'Modules/Thank with Google/Setup/SetupMain',
 	component: SetupMain,
