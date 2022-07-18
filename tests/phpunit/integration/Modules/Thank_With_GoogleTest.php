@@ -18,7 +18,6 @@ use Google\Site_Kit\Tests\TestCase;
 
 /**
  * @group Modules
- * @group Thank_With_Google
  */
 class Thank_With_GoogleTest extends TestCase {
 
@@ -144,6 +143,7 @@ class Thank_With_GoogleTest extends TestCase {
 
 	public function test_is_connected() {
 		$this->options->delete( Settings::OPTION );
+
 		$this->assertFalse( $this->thank_with_google->is_connected() );
 
 		$this->options->set(
