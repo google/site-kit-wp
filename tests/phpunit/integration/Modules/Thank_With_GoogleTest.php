@@ -107,7 +107,7 @@ class Thank_With_GoogleTest extends TestCase {
 		$this->assertEmpty( $output );
 
 		$post_ID = $this->factory()->post->create();
-		\WP_UnitTestCase_Base::go_to( get_permalink( $post_ID ) );
+		$this->go_to( get_permalink( $post_ID ) );
 
 		do_action( 'template_redirect' );
 		do_action( 'wp_enqueue_scripts' );
@@ -133,7 +133,7 @@ class Thank_With_GoogleTest extends TestCase {
 		$this->assertEquals( $output, $mock_content );
 
 		$post_ID = $this->factory()->post->create();
-		\WP_UnitTestCase_Base::go_to( get_permalink( $post_ID ) );
+		$this->go_to( get_permalink( $post_ID ) );
 
 		$output = apply_filters( 'the_content', '<p>Hello World</p>' );
 
