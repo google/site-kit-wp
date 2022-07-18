@@ -379,12 +379,10 @@ describe( 'core/user userInfo', () => {
 
 				registry.select( CORE_USER ).getAccountChooserURL( testURL );
 
-				await subscribeUntil(
-					registry,
-					() =>
-						registry
-							.select( CORE_USER )
-							.getAccountChooserURL( testURL ) !== undefined
+				await subscribeUntil( registry, () =>
+					registry
+						.select( CORE_USER )
+						.hasFinishedResolution( 'getUser' )
 				);
 
 				const accountChooserURL = registry
@@ -398,14 +396,22 @@ describe( 'core/user userInfo', () => {
 
 			it( 'should return undefined when no data is available', async () => {
 				expect( global[ userDataGlobal ] ).toEqual( undefined );
-				const testURL = 'test destination url';
 
-				const userInfo = registry
+				const testURL = 'https://analytics.google.com/dashboard/';
+
+				registry.select( CORE_USER ).getAccountChooserURL( testURL );
+
+				await subscribeUntil( registry, () =>
+					registry
+						.select( CORE_USER )
+						.hasFinishedResolution( 'getUser' )
+				);
+
+				const accountChooserURL = registry
 					.select( CORE_USER )
 					.getAccountChooserURL( testURL );
 
-				const { user } = initialState;
-				expect( userInfo ).toEqual( user );
+				expect( accountChooserURL ).toBeUndefined();
 				expect( console ).toHaveErrored();
 			} );
 		} );
