@@ -375,7 +375,7 @@ describe( 'core/user userInfo', () => {
 			it( 'returns the encoded destination url with the email appended', async () => {
 				global[ userDataGlobal ] = userData;
 
-				const testURL = 'test destination url';
+				const testURL = 'https://analytics.google.com/dashboard/';
 				const userEmail = global[ userDataGlobal ].user.email;
 
 				registry.select( CORE_USER ).getAccountChooserURL( testURL );
@@ -393,7 +393,7 @@ describe( 'core/user userInfo', () => {
 					.getAccountChooserURL( testURL );
 
 				expect( accountChooserURL ).toBe(
-					`${ encodeURIComponent(
+					`https://accounts.google.com/accountchooser?continue=${ encodeURIComponent(
 						testURL
 					) }&Email=${ encodeURIComponent( userEmail ) }`
 				);

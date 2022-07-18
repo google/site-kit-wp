@@ -398,22 +398,28 @@ export const selectors = {
 	} ),
 
 	/**
-	 * Gets the url with the users email appended.
+	 * Gets an account chooser url with the current user's email.
 	 *
 	 * @since n.e.x.t
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {(string|undefined)} The concatenated url if an email is present, undefined else.
+	 * @return {(string|undefined)} The concatenated url if an email is present; otherwise undefined.
 	 */
 	getAccountChooserURL: createRegistrySelector(
 		( select ) => ( state, destinationURL ) => {
 			invariant( destinationURL, 'destinationURL is required' );
+
 			const userEmail = select( CORE_USER ).getEmail();
-			return userEmail !== undefined
-				? `${ encodeURIComponent(
-						destinationURL
-				  ) }&Email=${ encodeURIComponent( userEmail ) }`
-				: undefined;
+
+			if ( userEmail === undefined ) {
+				return undefined;
+			}
+
+			// The `Email` parameter is case sensitive;
+			// the capital E is required for the account chooser URL.
+			return `https://accounts.google.com/accountchooser?continue=${ encodeURIComponent(
+				destinationURL
+			) }&Email=${ encodeURIComponent( userEmail ) }`;
 		}
 	),
 
