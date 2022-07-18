@@ -34,10 +34,10 @@ import ThankWithGoogleIcon from '../../../../../svg/graphics/thank-with-google.s
 import ProgressBar from '../../../../components/ProgressBar';
 import Badge from '../../../../components/Badge';
 import { MODULES_THANK_WITH_GOOGLE } from '../../datastore/constants';
-import SetupPublicationActive from './SetupPublicationActive';
-import SetupPublicationActionRequired from './SetupPublicationActionRequired';
 import SetupCreatePublication from './SetupCreatePublication';
 import SetupCustomize from './SetupCustomize';
+import SetupPublicationActive from './SetupPublicationActive';
+import SetupPublicationActionRequired from './SetupPublicationActionRequired';
 import SetupPublicationPendingVerification from './SetupPublicationPendingVerification';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 const { useSelect } = Data;
