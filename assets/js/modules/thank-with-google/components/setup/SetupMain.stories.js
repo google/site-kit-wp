@@ -44,11 +44,11 @@ const publicationWithActiveStateA = {
 	},
 	state: 'ACTIVE',
 };
-// const publicationWithActiveStateB = {
-// 	...publicationWithActiveStateA,
-// 	// eslint-disable-next-line sitekit/acronym-case
-// 	publicationId: 'test-publication-b',
-// };
+const publicationWithActiveStateB = {
+	...publicationWithActiveStateA,
+	// eslint-disable-next-line sitekit/acronym-case
+	publicationId: 'test-publication-b',
+};
 const publicationActionRequiredStateC = {
 	...publicationWithActiveStateA,
 	// eslint-disable-next-line sitekit/acronym-case
@@ -61,10 +61,10 @@ const publicationPendingVerificationD = {
 	publicationId: 'test-publication-d',
 	state: 'PENDING_VERIFICATION',
 };
-// const publicationsWithActiveState = [
-// 	publicationWithActiveStateA,
-// 	publicationWithActiveStateB,
-// ];
+const publicationsWithActiveState = [
+	publicationWithActiveStateA,
+	publicationWithActiveStateB,
+];
 
 function Template( { setupRegistry } ) {
 	return (
@@ -121,6 +121,16 @@ PublicationPendingVerification.args = {
 		registry
 			.dispatch( MODULES_THANK_WITH_GOOGLE )
 			.receiveGetPublications( [ publicationPendingVerificationD ] );
+	},
+};
+
+export const PublicationActive = Template.bind( {} );
+PublicationActive.storyName = 'Publication Active';
+PublicationActive.args = {
+	setupRegistry: ( registry ) => {
+		registry
+			.dispatch( MODULES_THANK_WITH_GOOGLE )
+			.receiveGetPublications( publicationsWithActiveState );
 	},
 };
 
