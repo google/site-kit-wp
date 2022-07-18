@@ -155,6 +155,9 @@ class Web_Tag extends Module_Web_Tag implements Tag_Interface {
 
 		add_filter( 'script_loader_tag', $filter_google_gtagjs, 10, 2 );
 
+		if ( $is_singular_button_post_type_entity ) {
+			wp_enqueue_script( 'google_thankjs' );
+		}
 	}
 
 	/**
