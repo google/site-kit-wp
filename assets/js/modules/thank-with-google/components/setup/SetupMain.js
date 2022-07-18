@@ -1,5 +1,5 @@
 /**
- * Thank with Google Main setup component.
+ * Thank with Google Main Setup component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -34,23 +34,51 @@ import ThankWithGoogleIcon from '../../../../../svg/graphics/thank-with-google.s
 import ProgressBar from '../../../../components/ProgressBar';
 import Badge from '../../../../components/Badge';
 import { MODULES_THANK_WITH_GOOGLE } from '../../datastore/constants';
-import { CORE_LOCATION } from '../../../../googlesitekit/datastore/location/constants';
-import SetupForm from './SetupForm';
+import SetupPublicationActive from './SetupPublicationActive';
+import SetupPublicationActionRequired from './SetupPublicationActionRequired';
+import SetupCreatePublication from './SetupCreatePublication';
+import SetupCustomize from './SetupCustomize';
+import SetupPublicationPendingVerification from './SetupPublicationPendingVerification';
+import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 const { useSelect } = Data;
 
 export default function SetupMain( { finishSetup } ) {
-	const isDoingSubmitChanges = useSelect( ( select ) =>
-		select( MODULES_THANK_WITH_GOOGLE ).isDoingSubmitChanges()
+	const hasErrors = useSelect( ( select ) =>
+		select( MODULES_THANK_WITH_GOOGLE ).hasErrors()
 	);
-	const isNavigating = useSelect( ( select ) =>
-		select( CORE_LOCATION ).isNavigating()
+	const publicationID = useSelect( ( select ) =>
+		select( MODULES_THANK_WITH_GOOGLE ).getPublicationID()
+	);
+	const currentPublication = useSelect( ( select ) =>
+		select( MODULES_THANK_WITH_GOOGLE ).getCurrentPublication()
 	);
 
 	let viewComponent;
-	if ( isDoingSubmitChanges || isNavigating ) {
+
+	if ( hasErrors ) {
+		viewComponent = (
+			<StoreErrorNotices
+				moduleSlug="thank-with-google"
+				storeName={ MODULES_THANK_WITH_GOOGLE }
+			/>
+		);
+	} else if ( currentPublication === undefined ) {
 		viewComponent = <ProgressBar />;
-	} else {
-		viewComponent = <SetupForm finishSetup={ finishSetup } />;
+	} else if ( currentPublication === null ) {
+		viewComponent = <SetupCreatePublication />;
+	} else if ( currentPublication.state === 'ACTION_REQUIRED' ) {
+		viewComponent = <SetupPublicationActionRequired />;
+	} else if ( currentPublication.state === 'PENDING_VERIFICATION' ) {
+		viewComponent = <SetupPublicationPendingVerification />;
+	} else if ( currentPublication.state === 'ACTIVE' && ! publicationID ) {
+		viewComponent = (
+			<SetupPublicationActive
+				// eslint-disable-next-line sitekit/acronym-case
+				currentPublicationID={ currentPublication.publicationId }
+			/>
+		);
+	} else if ( currentPublication.state === 'ACTIVE' && publicationID ) {
+		viewComponent = <SetupCustomize finishSetup={ finishSetup } />;
 	}
 
 	return (
