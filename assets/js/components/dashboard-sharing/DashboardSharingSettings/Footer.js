@@ -43,7 +43,7 @@ import { trackEvent } from '../../../util';
 import useViewContext from '../../../hooks/useViewContext';
 const { useSelect, useDispatch } = Data;
 
-export default function Footer( { closeDialog } ) {
+export default function Footer( { closeDialog, openResetDialog } ) {
 	const viewContext = useViewContext();
 
 	const [ errorNotice, setErrorNotice ] = useState( null );
@@ -87,6 +87,14 @@ export default function Footer( { closeDialog } ) {
 			</div>
 
 			<div className="googlesitekit-dashboard-sharing-settings__footer-actions">
+				<Link
+					onClick={ () => {
+						openResetDialog();
+					} }
+				>
+					{ __( 'Reset sharing permissions', 'google-site-kit' ) }
+				</Link>
+
 				<Link onClick={ onCancel }>
 					{ __( 'Cancel', 'google-site-kit' ) }
 				</Link>
