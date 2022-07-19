@@ -99,6 +99,7 @@ export default function SetupMain( { finishSetup } ) {
 				</div>
 
 				<Badge label={ __( 'Experimental', 'google-site-kit' ) } />
+				<Badge label={ __( 'US Only', 'google-site-kit' ) } />
 			</div>
 
 			{ viewComponent }
