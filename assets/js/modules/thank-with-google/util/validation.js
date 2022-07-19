@@ -16,6 +16,16 @@
  * limitations under the License.
  */
 
+const validColorThemes = [ 'blue' ];
+const validButtonPlacements = [
+	'dynamic_low',
+	'dynamic_high',
+	'static_auto',
+	'static_above-content',
+	'static_below-content',
+	'static_below-first-paragraph',
+];
+
 /**
  * Checks if the given publication ID appears to be a valid.
  *
@@ -40,7 +50,7 @@ export function isValidPublicationID( publicationID ) {
  * @return {boolean} `true` if the given color theme is valid, `false` otherwise.
  */
 export function isValidColorTheme( colorTheme ) {
-	return typeof colorTheme === 'string' && colorTheme !== '';
+	return validColorThemes.includes( colorTheme );
 }
 
 /**
@@ -52,7 +62,7 @@ export function isValidColorTheme( colorTheme ) {
  * @return {boolean} `true` if the given button placement is valid, `false` otherwise.
  */
 export function isValidButtonPlacement( buttonPlacement ) {
-	return typeof buttonPlacement === 'string' && buttonPlacement !== '';
+	return validButtonPlacements.includes( buttonPlacement );
 }
 
 /**
