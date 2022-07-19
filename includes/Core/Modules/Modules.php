@@ -1548,4 +1548,15 @@ final class Modules {
 		return $module_owners;
 	}
 
+	/**
+	 * Resets sharing settings.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return bool True on success, false on failure.
+	 */
+	public function reset_sharing_settings() {
+		return $this->options->delete( 'googlesitekit_dashboard_sharing' );
+	}
+
 }
