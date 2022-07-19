@@ -82,8 +82,8 @@ storiesOf( 'Global', module ).add( 'Image Radios', () => (
 				name="image-radio-story"
 				value="story"
 				image={ image }
-				label={ 'Image Radio' }
-				description={ 'This is a description' }
+				label="Image Radio"
+				description="This is a description"
 			>
 				Default
 			</ImageRadio>
@@ -92,8 +92,8 @@ storiesOf( 'Global', module ).add( 'Image Radios', () => (
 				name="image-radio-story"
 				value="story"
 				image={ image }
-				label={ 'Image Radio' }
-				description={ 'This is a description' }
+				label="Image Radio"
+				description="This is a description"
 				checked
 			>
 				Checked
@@ -104,8 +104,8 @@ storiesOf( 'Global', module ).add( 'Image Radios', () => (
 				id="image-radio-story-3"
 				name="image-radio-story"
 				value="story"
-				label={ 'Image Radio' }
-				description={ 'This is a description' }
+				label="Image Radio"
+				description="This is a description"
 			>
 				Without image
 			</ImageRadio>
@@ -115,8 +115,8 @@ storiesOf( 'Global', module ).add( 'Image Radios', () => (
 				id="image-radio-story-4"
 				name="image-radio-story"
 				value="story"
-				label={ 'Image Radio' }
-				description={ 'This is a description' }
+				label="Image Radio"
+				description="This is a description"
 				checked
 			>
 				Checked, without image

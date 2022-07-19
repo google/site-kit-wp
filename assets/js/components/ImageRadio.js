@@ -46,13 +46,13 @@ const ImageRadio = ( {
 	description,
 	ariaLabel,
 } ) => {
-	const formFieldRef = useCallback( ( el ) => {
-		if ( el !== null ) {
-			const formField = new MDCFormField( el );
-			const radioEl = el.querySelector( '.mdc-image-radio' );
+	const formFieldRef = useCallback( ( element ) => {
+		if ( element !== null ) {
+			const formField = new MDCFormField( element );
+			const radioElement = element.querySelector( '.mdc-image-radio' );
 
-			if ( radioEl ) {
-				formField.input = new MDCRadio( radioEl );
+			if ( radioElement ) {
+				formField.input = new MDCRadio( radioElement );
 			}
 		}
 	}, [] );
@@ -62,7 +62,7 @@ const ImageRadio = ( {
 			className="mdc-form-field googlesitekit-image-radio"
 			ref={ formFieldRef }
 		>
-			<div className={ classnames( 'mdc-image-radio mdc-radio' ) }>
+			<div className="mdc-image-radio mdc-radio">
 				<input
 					aria-label={ ariaLabel ? ariaLabel : label }
 					className="mdc-radio__native-control"
