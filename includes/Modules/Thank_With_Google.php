@@ -193,7 +193,7 @@ final class Thank_With_Google extends Module
 	}
 
 	/**
-	 * Registers the Tank with Google tag.
+	 * Registers the Thank with Google tag.
 	 *
 	 * @since n.e.x.t
 	 */
