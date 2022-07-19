@@ -76,4 +76,24 @@ class Supporter_Wall_Widget extends WP_Widget {
 		return $instance;
 	}
 
+	/**
+	 * Displays the widget.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $args The widget arguments.
+	 * @param array $instance The widget settings.
+	 */
+	public function widget( $args, $instance ) {
+		echo $args['before_widget']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+
+		if ( ! empty( $instance['title'] ) ) {
+			echo $args['before_title'], apply_filters( 'widget_title', $instance['title'] ), $args['after_title'];  // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		}
+
+		echo '<div twg-thank-wall style="width:100%;height:490px;min-height:150px;overflow:hidden;border:1px solid #e3e3e3;border-radius:15px;margin:20px 0"></div>';
+
+		echo $args['after_widget'];  // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+	}
+
 }

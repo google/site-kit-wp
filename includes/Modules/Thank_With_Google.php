@@ -24,6 +24,7 @@ use Google\Site_Kit\Core\Modules\Module_With_Owner_Trait;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Modules\Thank_With_Google\Settings;
+use Google\Site_Kit\Modules\Thank_With_Google\Supporter_Wall_Widget;
 
 /**
  * Class representing the Thank with Google module.
@@ -53,6 +54,13 @@ final class Thank_With_Google extends Module
 		if ( ! $this->is_connected() ) {
 			return;
 		}
+
+		add_action(
+			'widgets_init',
+			function() {
+				register_widget( Supporter_Wall_Widget::class );
+			}
+		);
 	}
 
 	/**
