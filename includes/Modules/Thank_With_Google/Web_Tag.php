@@ -21,7 +21,7 @@ use Google\Site_Kit\Core\Tags\Tag_With_DNS_Prefetch_Trait;
  * @access private
  * @ignore
  */
-class Web_Tag extends Module_Web_Tag implements Tag_Interface {
+class Web_Tag extends Module_Web_Tag {
 
 	use Method_Proxy_Trait, Tag_With_DNS_Prefetch_Trait;
 
@@ -89,7 +89,7 @@ class Web_Tag extends Module_Web_Tag implements Tag_Interface {
 	 * @since n.e.x.t
 	 */
 	public function register() {
-		add_action( 'wp_enqueue_scripts', $this->get_method_proxy( 'enqueue_gtag_script' ) );
+		add_action( 'wp_enqueue_scripts', $this->get_method_proxy( 'enqueue_twg_script' ) );
 		add_filter( 'the_content', $this->get_method_proxy( 'update_the_content' ) );
 		add_filter(
 			'wp_resource_hints',
@@ -102,25 +102,25 @@ class Web_Tag extends Module_Web_Tag implements Tag_Interface {
 	}
 
 	/**
-	 * Outputs gtag snippet.
+	 * This method is intended a web tag, but it does nothing in this module as the tag is enqueued.
 	 *
 	 * @since n.e.x.t
 	 */
 	protected function render() {
-		// Do nothing, gtag script is enqueued.
+		// Do nothing, Thank with Google script is enqueued.
 	}
 
 	/**
-	 * Enqueues gtag script.
+	 * Enqueues the "Thanks with Google" script.
 	 *
 	 * @since n.e.x.t
 	 */
-	protected function enqueue_gtag_script() {
-		$gtag_src = 'https://news.google.com/thank/js/v1/thank.js';
+	protected function enqueue_twg_script() {
+		$twg_src = 'https://news.google.com/thank/js/v1/thank.js';
 
 		$is_singular_button_post_type_entity = $this->is_singular_button_post_type_entity();
 
-		$gtag_inline_script = sprintf(
+		$twg_inline_script = sprintf(
 			"
 			(self.SWG_BASIC = self.SWG_BASIC || []).push(subscriptions => {
 				subscriptions.init({
@@ -142,18 +142,18 @@ class Web_Tag extends Module_Web_Tag implements Tag_Interface {
 		);
 
 		// phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion
-		wp_register_script( 'google_thankjs', $gtag_src, array(), null, true );
-		wp_add_inline_script( 'google_thankjs', $gtag_inline_script, 'before' );
+		wp_register_script( 'google_thankjs', $twg_src, array(), null, true );
+		wp_add_inline_script( 'google_thankjs', $twg_inline_script, 'before' );
 
-		$filter_google_gtagjs = function ( $tag, $handle ) {
+		$filter_google_thankjs = function ( $tag, $handle ) {
 			if ( 'google_thankjs' !== $handle ) {
 				return $tag;
 			}
 
-			return $this->snippet_comment_begin() . $tag . $this->snippet_comment_end();
+			return $this->add_snippet_comments( $tag );
 		};
 
-		add_filter( 'script_loader_tag', $filter_google_gtagjs, 10, 2 );
+		add_filter( 'script_loader_tag', $filter_google_thankjs, 10, 2 );
 
 		if ( $is_singular_button_post_type_entity ) {
 			wp_enqueue_script( 'google_thankjs' );
@@ -173,8 +173,8 @@ class Web_Tag extends Module_Web_Tag implements Tag_Interface {
 			return $content;
 		}
 
-		$button_placeholder = "<div counter-button style=\"height: 34px; visibility: hidden; box-sizing: content-box; padding: 12px 0; display: inline-block; overflow: hidden;\"></div>\n<button twg-button style=\"height: 42px; visibility: hidden; margin: 12px 0;\"></button>";
-		$button_placeholder = $this->snippet_comment_begin() . $button_placeholder . $this->snippet_comment_end();
+		$button_placeholder = '<div counter-button style="height: 34px; visibility: hidden; box-sizing: content-box; padding: 12px 0; display: inline-block; overflow: hidden;"></div><button twg-button style="height: 42px; visibility: hidden; margin: 12px 0;"></button>';
+		$button_placeholder = $this->add_snippet_comments( $button_placeholder );
 
 		if ( in_array( $this->button_placement, array( 'static_auto', 'static_below-content' ), true ) ) {
 			$content = $content . $button_placeholder;
@@ -199,24 +199,17 @@ class Web_Tag extends Module_Web_Tag implements Tag_Interface {
 	}
 
 	/**
-	 * Gets snippet comment begin.
+	 * Add snippet comments around the tag.
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return string Snippet comment begin.
-	 */
-	private function snippet_comment_begin() {
-		return sprintf( "\n<!-- %s -->\n", esc_html__( 'Thank with Google snippet added by Site Kit', 'google-site-kit' ) );
-	}
-
-	/**
-	 * Gets snippet comment end.
+	 * @param string $code The tag code.
 	 *
-	 * @since n.e.x.t
-	 *
-	 * @return string Snippet comment end.
+	 * @return string The tag code with snippet comments.
 	 */
-	private function snippet_comment_end() {
-		return sprintf( "\n<!-- %s -->\n", esc_html__( 'End Thank with Google snippet added by Site Kit', 'google-site-kit' ) );
+	private function add_snippet_comments( $code ) {
+		$before = sprintf( "\n<!-- %s -->\n", esc_html__( 'Thank with Google snippet added by Site Kit', 'google-site-kit' ) );
+		$after  = sprintf( "\n<!-- %s -->\n", esc_html__( 'End Thank with Google snippet added by Site Kit', 'google-site-kit' ) );
+		return $before . $code . $after;
 	}
 }
