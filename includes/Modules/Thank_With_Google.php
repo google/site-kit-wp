@@ -61,6 +61,33 @@ final class Thank_With_Google extends Module
 				register_widget( Supporter_Wall_Widget::class );
 			}
 		);
+
+		add_action(
+			'admin_init',
+			function() {
+				if (
+					! empty( $_GET['legacy-widget-preview']['idBase'] ) &&
+					Supporter_Wall_Widget::WIDGET_ID !== $_GET['legacy-widget-preview']['idBase']
+				) {
+					// $this->register_tag();
+				}
+			}
+		);
+
+		add_filter(
+			'rest_pre_dispatch',
+			function( $result, $server, $request ) {
+				if (
+					stripos( $request->get_route(), sprintf( 'widget-types/%s/render', Supporter_Wall_Widget::WIDGET_ID ) ) > 0 &&
+					Supporter_Wall_Widget::WIDGET_ID === $request['id']
+				) {
+					// $this->register_tag();
+				}
+				return $result;
+			},
+			10,
+			3
+		);
 	}
 
 	/**

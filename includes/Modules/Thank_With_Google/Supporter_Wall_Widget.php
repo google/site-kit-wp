@@ -21,6 +21,8 @@ use WP_Widget;
  */
 class Supporter_Wall_Widget extends WP_Widget {
 
+	const WIDGET_ID = 'googlesitekit-twg-supporter-wall';
+
 	/**
 	 * Constructor.
 	 *
@@ -28,7 +30,7 @@ class Supporter_Wall_Widget extends WP_Widget {
 	 */
 	public function __construct() {
 		parent::__construct(
-			'googlesitekit-twg-supporter-wall',
+			self::WIDGET_ID,
 			sprintf( 'Thank with Google: %s', __( 'Supporter Wall', 'google-site-kit' ) )
 		);
 	}
