@@ -49,8 +49,8 @@ describe( 'modules/thank-with-google settings', () => {
 
 	const validSettings = {
 		publicationID: 'publisher.com',
-		colorTheme: 'light',
-		buttonPlacement: 'bottom-right',
+		colorTheme: 'blue',
+		buttonPlacement: 'dynamic_low',
 		buttonPostTypes: [ 'post' ],
 	};
 
