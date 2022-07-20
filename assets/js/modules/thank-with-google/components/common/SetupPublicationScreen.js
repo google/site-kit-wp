@@ -21,19 +21,27 @@
  */
 import PropTypes from 'prop-types';
 
+/**
+ *
+ * WordPress dependencies
+ */
+import { Fragment } from '@wordpress/element';
+
 export default function SetupPublicationScreen( {
 	title,
 	description,
 	children,
 } ) {
 	return (
-		<div className="googlesitekit-setup-module__publication-screen">
-			<h3 className="googlesitekit-heading-3 googlesitekit-setup-module__title">
-				{ title }
-			</h3>
-			<p>{ description }</p>
+		<Fragment>
+			<div className="googlesitekit-setup-module__publication-screen">
+				<h3 className="googlesitekit-heading-3 googlesitekit-setup-module__title">
+					{ title }
+				</h3>
+				<p>{ description }</p>
+			</div>
 			{ children }
-		</div>
+		</Fragment>
 	);
 }
 
