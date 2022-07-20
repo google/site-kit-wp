@@ -39,7 +39,6 @@ const { useDispatch, useSelect } = Data;
 export default function ModuleRecoveryAlert() {
 	const [ checkboxes, setCheckboxes ] = useState( null );
 	const [ recoveringModules, setRecoveringModules ] = useState( false );
-	const [ processedModules, setProcessedModules ] = useState( [] );
 
 	const recoverableModules = useSelect( ( select ) =>
 		select( CORE_MODULES ).getRecoverableModules()
@@ -70,22 +69,33 @@ export default function ModuleRecoveryAlert() {
 			.map( ( { slug } ) => slug );
 	} );
 
-	const recoveryErrors = useSelect( ( select ) =>
-		processedModules.reduce(
-			( acc, module ) => ( {
-				...acc,
-				[ module ]: {
-					name: recoverableModules[ module ].name,
-					...select(
-						CORE_MODULES
-					).getErrorForAction( 'recoverModule', [ module ] ),
-				},
-			} ),
-			{}
-		)
-	);
+	const recoveryErrors = useSelect( ( select ) => {
+		if ( ! recoverableModules ) {
+			return undefined;
+		}
 
-	const { recoverModules } = useDispatch( CORE_MODULES );
+		const modules = Object.keys( recoverableModules );
+
+		const getRecoveryError = ( module ) =>
+			select( CORE_MODULES ).getErrorForAction( 'recoverModule', [
+				module,
+			] );
+
+		return modules
+			.filter( ( module ) => !! getRecoveryError( module ) )
+			.reduce(
+				( acc, module ) => ( {
+					...acc,
+					[ module ]: {
+						name: recoverableModules[ module ].name,
+						...getRecoveryError( module ),
+					},
+				} ),
+				{}
+			);
+	} );
+
+	const { recoverModules, clearErrors } = useDispatch( CORE_MODULES );
 
 	const updateCheckboxes = useCallback(
 		( slug ) =>
@@ -97,20 +107,17 @@ export default function ModuleRecoveryAlert() {
 	);
 
 	const handleRecoverModules = useCallback( () => {
-		if ( processedModules.length ) {
-			setProcessedModules( [] );
-		}
-
 		setRecoveringModules( true );
 		const modulesToRecover = Object.keys( checkboxes ).filter(
 			( module ) => checkboxes[ module ]
 		);
-		recoverModules( modulesToRecover ).finally( () => {
-			setProcessedModules( modulesToRecover );
-			setRecoveringModules( false );
-			setCheckboxes( null );
+		clearErrors( 'recoverModule' ).then( () => {
+			recoverModules( modulesToRecover ).finally( () => {
+				setRecoveringModules( false );
+				setCheckboxes( null );
+			} );
 		} );
-	}, [ checkboxes, processedModules, recoverModules ] );
+	}, [ checkboxes, clearErrors, recoverModules ] );
 
 	useEffect( () => {
 		if ( userAccessibleModules !== undefined && checkboxes === null ) {
