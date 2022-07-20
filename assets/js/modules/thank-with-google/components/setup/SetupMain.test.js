@@ -179,9 +179,8 @@ describe( 'SetupMain', () => {
 			registry,
 		} );
 
-		// TODO: Update this assertion to match the new UI.
 		expect( container ).toHaveTextContent(
-			'TODO: UI for setup publication active - SetupPublicationActive'
+			'Your account is now active. To get started, customize the appearance of Thank with Google on your site.'
 		);
 		const button = queryByRole( 'button' );
 		expect( button ).toBeInTheDocument();
