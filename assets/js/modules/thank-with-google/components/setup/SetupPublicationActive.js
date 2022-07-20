@@ -33,6 +33,7 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import { MODULES_THANK_WITH_GOOGLE } from '../../datastore/constants';
 import Button from '../../../../components/Button';
+import SetupPublicationScreen from '../common/SetupPublicationScreen';
 const { useDispatch } = Data;
 
 export default function SetupPublicationActive( { currentPublicationID } ) {
@@ -44,12 +45,17 @@ export default function SetupPublicationActive( { currentPublicationID } ) {
 
 	return (
 		<Fragment>
-			<div>
-				TODO: UI for setup publication active - SetupPublicationActive
-			</div>
-			<Button onClick={ handleSetupCustomize }>
-				{ __( 'Customize Thank with Google', 'google-site-kit' ) }
-			</Button>
+			<SetupPublicationScreen
+				title={ __( 'Congratulations!', 'google-site-kit' ) }
+				description={ __(
+					'Your account is now active. To get started, customize the appearance of Thank with Google on your site.',
+					'google-site-kit'
+				) }
+			>
+				<Button onClick={ handleSetupCustomize }>
+					{ __( 'Customize Thank with Google', 'google-site-kit' ) }
+				</Button>
+			</SetupPublicationScreen>
 		</Fragment>
 	);
 }
