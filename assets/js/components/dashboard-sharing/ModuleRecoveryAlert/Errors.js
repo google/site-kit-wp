@@ -27,20 +27,20 @@ import PropTypes from 'prop-types';
 import { Fragment } from '@wordpress/element';
 import { sprintf, __ } from '@wordpress/i18n';
 
-export default function Error( { recoverableModules, error } ) {
+export default function Errors( { recoveryErrors } ) {
 	return (
 		<div className="googlesitekit-module-recovery-error">
-			{ Object.keys( error ).length === 1 && (
+			{ Object.keys( recoveryErrors ).length === 1 && (
 				<p>
 					{ sprintf(
 						/* translators: %s: Error message */
 						__( 'Error: %s', 'google-site-kit' ),
-						Object.values( error )[ 0 ].message
+						Object.values( recoveryErrors )[ 0 ].message
 					) }
 				</p>
 			) }
 
-			{ Object.keys( error ).length > 1 && (
+			{ Object.keys( recoveryErrors ).length > 1 && (
 				<Fragment>
 					<p>
 						{ __(
@@ -49,10 +49,10 @@ export default function Error( { recoverableModules, error } ) {
 						) }
 					</p>
 					<ul>
-						{ Object.keys( error ).map( ( module ) => (
+						{ Object.keys( recoveryErrors ).map( ( module ) => (
 							<li key={ module }>
-								{ recoverableModules[ module ].name }:{ ' ' }
-								{ error[ module ].message }
+								{ recoveryErrors[ module ].name }:{ ' ' }
+								{ recoveryErrors[ module ].message }
 							</li>
 						) ) }
 					</ul>
@@ -62,7 +62,6 @@ export default function Error( { recoverableModules, error } ) {
 	);
 }
 
-Error.propTypes = {
-	recoverableModules: PropTypes.object,
-	error: PropTypes.object,
+Errors.propTypes = {
+	recoveryErrors: PropTypes.object.isRequired,
 };

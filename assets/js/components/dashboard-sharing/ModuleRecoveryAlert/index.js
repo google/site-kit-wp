@@ -32,14 +32,14 @@ import Checkbox from '../../Checkbox';
 import BannerNotification from '../../notifications/BannerNotification';
 import ProgressBar from '../../ProgressBar';
 import Spinner from '../../Spinner';
-import Error from './Error';
+import Errors from './Errors';
 
 const { useDispatch, useSelect } = Data;
 
 export default function ModuleRecoveryAlert() {
 	const [ checkboxes, setCheckboxes ] = useState( null );
 	const [ recoveringModules, setRecoveringModules ] = useState( false );
-	const [ error, setError ] = useState( null );
+	const [ processedModules, setProcessedModules ] = useState( [] );
 
 	const recoverableModules = useSelect( ( select ) =>
 		select( CORE_MODULES ).getRecoverableModules()
@@ -70,6 +70,21 @@ export default function ModuleRecoveryAlert() {
 			.map( ( { slug } ) => slug );
 	} );
 
+	const recoveryErrors = useSelect( ( select ) =>
+		processedModules.reduce(
+			( acc, module ) => ( {
+				...acc,
+				[ module ]: {
+					name: recoverableModules[ module ].name,
+					...select(
+						CORE_MODULES
+					).getErrorForAction( 'recoverModule', [ module ] ),
+				},
+			} ),
+			{}
+		)
+	);
+
 	const { recoverModules } = useDispatch( CORE_MODULES );
 
 	const updateCheckboxes = useCallback(
@@ -82,25 +97,20 @@ export default function ModuleRecoveryAlert() {
 	);
 
 	const handleRecoverModules = useCallback( () => {
-		// Reset error state.
-		if ( error ) {
-			setError( null );
+		if ( processedModules.length ) {
+			setProcessedModules( [] );
 		}
 
 		setRecoveringModules( true );
 		const modulesToRecover = Object.keys( checkboxes ).filter(
 			( module ) => checkboxes[ module ]
 		);
-		recoverModules( modulesToRecover ).then( ( res ) => {
-			// Set API error.
-			if ( res.error ) {
-				setError( res.error );
-			}
-
+		recoverModules( modulesToRecover ).finally( () => {
+			setProcessedModules( modulesToRecover );
 			setRecoveringModules( false );
 			setCheckboxes( null );
 		} );
-	}, [ checkboxes, error, recoverModules ] );
+	}, [ checkboxes, processedModules, recoverModules ] );
 
 	useEffect( () => {
 		if ( userAccessibleModules !== undefined && checkboxes === null ) {
@@ -171,11 +181,8 @@ export default function ModuleRecoveryAlert() {
 						'google-site-kit'
 					) }
 				</p>
-				{ error && (
-					<Error
-						recoverableModules={ recoverableModules }
-						error={ error }
-					/>
+				{ Object.keys( recoveryErrors ).length > 0 && (
+					<Errors recoveryErrors={ recoveryErrors } />
 				) }
 				<Button
 					onClick={ handleRecoverModules }
@@ -213,11 +220,8 @@ export default function ModuleRecoveryAlert() {
 						'google-site-kit'
 					) }
 				</p>
-				{ error && (
-					<Error
-						recoverableModules={ recoverableModules }
-						error={ error }
-					/>
+				{ Object.keys( recoveryErrors ).length > 0 && (
+					<Errors recoveryErrors={ recoveryErrors } />
 				) }
 				<Button
 					onClick={ handleRecoverModules }
