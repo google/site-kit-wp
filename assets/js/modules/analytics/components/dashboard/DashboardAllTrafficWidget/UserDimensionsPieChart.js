@@ -725,7 +725,20 @@ UserDimensionsPieChart.chartOptions = {
 	pieSliceTextStyle: {
 		color: '#131418',
 		fontSize: 12,
-		fontName: 'Google Sans Text',
+		fontName:
+			// If the Google `WebFont` global exists and we try to use
+			// the `fontName` property in a Google Chart, we'll encounter an
+			// exception and the entire dashboard will crash.
+			//
+			// Our "workaround" is not to load custom fonts when the `WebFont`
+			// global exists, as these are usually very small UI elements
+			// and there's no clear way to get them to load without errors
+			// when the `WebFont` global/script is loaded.
+			//
+			// See: https://github.com/google/site-kit-wp/issues/5572
+			typeof WebFont === 'undefined'
+				? '"Google Sans Text", "Helvetica Neue", Helvetica, Arial, sans-serif'
+				: undefined,
 	},
 	slices: {
 		0: { color: '#fece72' },
