@@ -135,7 +135,7 @@ class Web_Tag extends Module_Web_Tag {
 			});
 			",
 			esc_js( $this->publication_id ),
-			esc_js( substr( $this->button_placement, 0, 7 ) === 'static_' ? 'inline' : 'floating' ), // strlen( 'static_' ) is 7.
+			esc_js( $this->has_static_button_placement() ? 'inline' : 'floating' ),
 			esc_js( $is_singular_button_post_type_entity ? get_permalink() : '' ),
 			esc_js( GOOGLESITEKIT_VERSION ),
 			esc_js( $is_singular_button_post_type_entity ? get_the_title() : '' )
@@ -169,12 +169,16 @@ class Web_Tag extends Module_Web_Tag {
 	 * @return string Content of the post.
 	 */
 	protected function update_the_content( $content ) {
-		if ( ! $this->is_singular_button_post_type_entity() || substr( $this->button_placement, 0, 7 ) !== 'static_' ) { // strlen( 'static_' ) is 7.
+		if ( ! $this->is_singular_button_post_type_entity() || ! $this->has_static_button_placement() ) {
 			return $content;
 		}
 
 		$button_placeholder = '<div counter-button style="height: 34px; visibility: hidden; box-sizing: content-box; padding: 12px 0; display: inline-block; overflow: hidden;"></div><button twg-button style="height: 42px; visibility: hidden; margin: 12px 0;"></button>';
 		$button_placeholder = $this->add_snippet_comments( $button_placeholder );
+
+		if ( empty( $content ) ) {
+			return $button_placeholder;
+		}
 
 		if ( in_array( $this->button_placement, array( 'static_auto', 'static_below-content' ), true ) ) {
 			$content = $content . $button_placeholder;
@@ -185,6 +189,17 @@ class Web_Tag extends Module_Web_Tag {
 		}
 
 		return $content;
+	}
+
+	/**
+	 * Checks if the current buttton placement is static.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return bool True if the current button placement is static.
+	 */
+	private function has_static_button_placement() {
+		return esc_js( substr( $this->button_placement, 0, 7 ) === 'static_' ); // strlen( 'static_' ) is 7.
 	}
 
 	/**
@@ -204,7 +219,6 @@ class Web_Tag extends Module_Web_Tag {
 	 * @since n.e.x.t
 	 *
 	 * @param string $code The tag code.
-	 *
 	 * @return string The tag code with snippet comments.
 	 */
 	private function add_snippet_comments( $code ) {
