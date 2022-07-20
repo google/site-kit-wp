@@ -28,7 +28,9 @@ export default function SetupPublicationScreen( {
 } ) {
 	return (
 		<div className="googlesitekit-setup-module__publication-screen">
-			<h3>{ title }</h3>
+			<h3 className="googlesitekit-heading-3 googlesitekit-setup-module__title">
+				{ title }
+			</h3>
 			<p>{ description }</p>
 			{ children }
 		</div>

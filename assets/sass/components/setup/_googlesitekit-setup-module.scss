@@ -236,22 +236,33 @@
 				margin: ($grid-gap-desktop * 1.5) 0 0 0;
 			}
 		}
-	}
 
-	.googlesitekit-setup-module__header {
-		align-items: center;
-		display: flex;
-		flex-wrap: wrap;
-		grid-gap: 10px 12px;
+		.googlesitekit-setup-module__header {
+			align-items: center;
+			display: flex;
+			flex-wrap: wrap;
+			grid-gap: 10px 12px;
 
-		.googlesitekit-setup-module__logo,
-		.googlesitekit-setup-module__title {
-			margin-bottom: 0;
+			.googlesitekit-setup-module__logo,
+			.googlesitekit-setup-module__title {
+				margin-bottom: 0;
+			}
 		}
-	}
 
-	.googlesitekit-setup-module__heading {
-		align-items: center;
-		display: flex;
+		.googlesitekit-setup-module__heading {
+			align-items: center;
+			display: flex;
+		}
+
+		.googlesitekit-setup-module__publication-screen {
+
+			.googlesitekit-setup-module__title {
+				margin-top: 25px;
+			}
+
+			.googlesitekit-setup-module__title + p {
+				margin: 0 0 40px 0;
+			}
+		}
 	}
 }
