@@ -19,7 +19,11 @@
 /**
  * Internal dependencies.
  */
-import { isSingleSlice, calculateDifferenceBetweenChartValues } from './chart';
+import {
+	isSingleSlice,
+	calculateDifferenceBetweenChartValues,
+	chartFontName,
+} from './chart';
 
 describe( 'isSingleSlice', () => {
 	it( 'returns undefined when undefined is passed', () => {
@@ -263,4 +267,43 @@ describe( 'calculateDifferenceBetweenChartValues', () => {
 			expect( difference ).toBe( result );
 		}
 	);
+} );
+
+describe( 'chartFontName', () => {
+	beforeEach( () => {
+		global.WebFont = undefined;
+	} );
+
+	afterAll( () => {
+		global.WebFont = undefined;
+	} );
+
+	it( 'should return the default font name when no fontName argument is used', () => {
+		expect( chartFontName() ).toMatchImageSnapshot();
+	} );
+
+	it( 'should not return the default font styles WebFont is defined', () => {
+		global.WebFont = {};
+
+		expect( chartFontName() ).toBeUndefined();
+	} );
+
+	it( 'should return the supplied font name string when WebFont is undefined', () => {
+		expect( chartFontName( '"Times New Roman"' ) ).toEqual(
+			'"Times New Roman"'
+		);
+	} );
+
+	it( 'should not return the the supplied font name string when WebFont is defined', () => {
+		global.WebFont = {};
+
+		expect( chartFontName( '"Times New Roman"' ) ).toBeUndefined();
+	} );
+
+	it( 'considers any non-undefined value to be defined', () => {
+		global.WebFont = null;
+
+		expect( chartFontName() ).toBeUndefined();
+		expect( chartFontName( '"Times New Roman"' ) ).toBeUndefined();
+	} );
 } );
