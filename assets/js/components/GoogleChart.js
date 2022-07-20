@@ -48,6 +48,7 @@ import { useFeature } from '../hooks/useFeature';
 import { CORE_USER } from '../googlesitekit/datastore/user/constants';
 import GatheringDataNotice, { NOTICE_STYLE } from './GatheringDataNotice';
 import Data from 'googlesitekit-data';
+import { chartFontName } from '../util/chart';
 const { useSelect } = Data;
 
 export default function GoogleChart( props ) {
@@ -225,44 +226,24 @@ export default function GoogleChart( props ) {
 		}
 	}
 
-	// Note the `typeof WebFont === 'undefined'` check for every `fontName`
-	// property. If the Google `WebFont` global exists and we try to use
-	// the `fontName` property in a Google Chart, we'll encounter an
-	// exception and the entire dashboard will crash.
-	//
-	// Our "workaround" is not to load custom fonts when the `WebFont`
-	// global exists, as these are usually very small UI elements
-	// and there's no clear way to get them to load without errors
-	// when the `WebFont` global/script is loaded.
-	//
-	// See: https://github.com/google/site-kit-wp/issues/5572
 	merge( chartOptions, {
 		hAxis: {
 			textStyle: {
-				fontName:
-					typeof WebFont === 'undefined'
-						? '"Google Sans Text", "Helvetica Neue", Helvetica, Arial, sans-serif'
-						: undefined,
+				fontName: chartFontName(),
 				fontSize: 10,
 				color: '#5f6561',
 			},
 		},
 		vAxis: {
 			textStyle: {
-				fontName:
-					typeof WebFont === 'undefined'
-						? '"Google Sans Text", "Helvetica Neue", Helvetica, Arial, sans-serif'
-						: undefined,
+				fontName: chartFontName(),
 				color: '#5f6561',
 				fontSize: 10,
 			},
 		},
 		legend: {
 			textStyle: {
-				fontName:
-					typeof WebFont === 'undefined'
-						? '"Google Sans Text", "Helvetica Neue", Helvetica, Arial, sans-serif'
-						: undefined,
+				fontName: chartFontName(),
 				color: '#131418',
 				fontSize: 12,
 			},
