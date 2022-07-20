@@ -33,7 +33,7 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import { MODULES_THANK_WITH_GOOGLE } from '../../datastore/constants';
 import Button from '../../../../components/Button';
-import SetupPublicationScreen from '../common/SetupPublicationScreen';
+import { SetupPublicationScreen } from '../common';
 const { useDispatch } = Data;
 
 export default function SetupPublicationActive( { currentPublicationID } ) {
