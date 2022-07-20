@@ -279,9 +279,7 @@ describe( 'chartFontName', () => {
 	} );
 
 	it( 'should return the default font name when no fontName argument is used', () => {
-		expect( chartFontName() ).toMatchInlineSnapshot(
-			'"\\"Google Sans Text\\", \\"Helvetica Neue\\", Helvetica, Arial, sans-serif"'
-		);
+		expect( chartFontName() ).toMatchInlineSnapshot( '"Google Sans Text"' );
 	} );
 
 	it( 'should not return the default font styles WebFont is defined', () => {

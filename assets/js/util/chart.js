@@ -104,12 +104,10 @@ export const calculateDifferenceBetweenChartValues = (
  *
  * @since n.e.x.t
  *
- * @param {string=} fontName Optional. Font name string to return. Defaults to `'"Google Sans Text", "Helvetica Neue", Helvetica, Arial, sans-serif'`.
+ * @param {string=} fontName Optional. Font name string to return. Defaults to `'Google Sans Text`.
  * @return {string|undefined} The font string supplied if `WebFont` is not set. `undefined` if the `WebFont` global is set.
  */
-export const chartFontName = (
-	fontName = '"Google Sans Text", "Helvetica Neue", Helvetica, Arial, sans-serif'
-) => {
+export const chartFontName = ( fontName = 'Google Sans Text' ) => {
 	// If the Google `WebFont` global exists and we try to use
 	// the `fontName` property in a Google Chart, we'll encounter an
 	// exception and the entire dashboard will crash.
