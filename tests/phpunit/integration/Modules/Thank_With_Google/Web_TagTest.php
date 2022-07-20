@@ -135,6 +135,7 @@ class Web_TagTest extends TestCase {
 		$post_ID = $this->factory()->post->create(
 			array(
 				'post_content' => '<p>Hello World</p><p>Goodbye World</p>',
+				'post_status'  => 'publish',
 			)
 		);
 		$this->go_to( get_permalink( $post_ID ) );
