@@ -18,49 +18,67 @@
 		}
 	}
 
-	.mdc-image-radio {
+	.image-radio {
+
+		/**
+		 * The material radio button has an inline ripple size property,
+		 * that is used for the animation. The !important here is to override this,
+		 * and disabling the animation by setting the ripple size to zero.
+		 */
+		--mdc-ripple-fg-size: 0 !important;
+
 		height: unset;
 		padding: 0;
 		width: 100%;
 
-		&:hover::before,
-		&.mdc-ripple-upgraded--background-focused::before {
-			border-radius: 0.3125rem;
-			height: calc(100% + 5%);
-			inset: 50% 50%;
-			transform: translate(-50%, -50%);
-			width: calc(100% + 2%);
-			z-index: -1;
-		}
-
 		.mdc-image-radio__background {
 
 			.mdc-image-radio__content {
+				align-items: center;
 				background-color: $c-surfaces-surface;
 				border: 0.3125rem solid $c-surfaces-surface;
-				border-radius: 0.3125rem;
+				border-radius: 0.5625rem;
 				color: $c-neutral-n-900;
-				outline: 0.125rem solid $c-jumbo;
+				display: flex;
+				height: 12.1875rem;
+				justify-content: center;
+				outline: 0.0625rem solid $c-jumbo;
+				width: 16.5rem;
 
 				&--no-image {
-					background-color: $c-surfaces-surface-3;
-					padding: 1.3125rem 1.875rem;
+					background-color: $c-surfaces-surface-2;
+					height: 5.0625rem;
 					text-align: center;
 				}
 
 				svg {
-					max-width: 100%;
 					object-fit: contain;
+					width: 100%;
 				}
 			}
 		}
 
+		&:hover .mdc-image-radio__content {
+			background-color: $c-surfaces-surface-2;
 
-		input[checked] + .mdc-image-radio__background {
+			&--no-image {
+				background-color: $c-radio-background-hover;
+			}
+		}
+
+		&.mdc-ripple-upgraded--background-focused .mdc-image-radio__content {
+			background-color: $c-surfaces-surface-2;
+
+			&--no-image {
+				background-color: $c-radio-background-focus;
+			}
+		}
+
+		.mdc-radio__native-control[checked] + .mdc-image-radio__background {
 
 			.mdc-image-radio__content {
-				border: 0.1875rem solid $c-surfaces-surface;
-				outline: 0.1875rem solid $c-content-link;
+				border: 0.3125rem solid $c-surfaces-surface;
+				outline: 0.125rem solid $c-content-link;
 			}
 		}
 	}

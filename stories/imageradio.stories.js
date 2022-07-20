@@ -88,7 +88,7 @@ storiesOf( 'Global', module ).add( 'Image Radios', () => (
 				Default
 			</ImageRadio>
 			<ImageRadio
-				id="image-radio-story-2"
+				id="image-radio-story"
 				name="image-radio-story"
 				value="story"
 				image={ image }
@@ -101,7 +101,7 @@ storiesOf( 'Global', module ).add( 'Image Radios', () => (
 		</div>
 		<div>
 			<ImageRadio
-				id="image-radio-story-3"
+				id="image-radio-story"
 				name="image-radio-story"
 				value="story"
 				label="Image Radio"
@@ -112,7 +112,7 @@ storiesOf( 'Global', module ).add( 'Image Radios', () => (
 		</div>
 		<div>
 			<ImageRadio
-				id="image-radio-story-4"
+				id="image-radio-story"
 				name="image-radio-story"
 				value="story"
 				label="Image Radio"
