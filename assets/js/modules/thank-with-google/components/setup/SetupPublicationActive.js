@@ -52,7 +52,13 @@ export default function SetupPublicationActive( { currentPublicationID } ) {
 					'google-site-kit'
 				) }
 			>
-				<Button onClick={ handleSetupCustomize }>
+				<Button
+					onClick={ handleSetupCustomize }
+					ariaLabel={ __(
+						'Customize Thank with Google',
+						'google-site-kit'
+					) }
+				>
 					{ __( 'Customize Thank with Google', 'google-site-kit' ) }
 				</Button>
 			</SetupPublicationScreen>
