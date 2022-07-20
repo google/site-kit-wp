@@ -49,7 +49,7 @@ class Web_TagTest extends TestCase {
 		);
 		$this->go_to( get_permalink( $post_ID ) );
 
-		$output = $this->capture_output( 'the_content' );
+		$output = get_echo( 'the_content' );
 
 		$this->assertStringNotContainsString( 'Thank with Google snippet added by Site Kit', $output );
 		$this->assertStringNotContainsString( '<button twg-button', $output );
@@ -63,7 +63,7 @@ class Web_TagTest extends TestCase {
 
 		$this->create_post_and_go_to_it();
 
-		$output = $this->capture_output( 'the_content' );
+		$output = get_echo( 'the_content' );
 
 		$this->assertStringContainsString( 'Thank with Google snippet added by Site Kit', $output );
 		$this->assertStringContainsString( '<button twg-button', $output );
@@ -77,7 +77,7 @@ class Web_TagTest extends TestCase {
 
 		$this->create_post_and_go_to_it();
 
-		$output = $this->capture_output( 'the_content' );
+		$output = get_echo( 'the_content' );
 
 		$this->assertStringNotContainsString( 'Thank with Google snippet added by Site Kit', $output );
 		$this->assertStringNotContainsString( '<button twg-button', $output );
@@ -91,7 +91,7 @@ class Web_TagTest extends TestCase {
 
 		$this->create_post_and_go_to_it();
 
-		$output  = $this->capture_output( 'the_content' );
+		$output  = get_echo( 'the_content' );
 		$content = get_the_content();
 
 		$this->assertStringStartsWith( $content, $output );
@@ -107,7 +107,7 @@ class Web_TagTest extends TestCase {
 
 		$this->create_post_and_go_to_it();
 
-		$output  = $this->capture_output( 'the_content' );
+		$output  = get_echo( 'the_content' );
 		$content = get_the_content();
 
 		$this->assertStringEndsWith( $content, $output );
@@ -123,7 +123,7 @@ class Web_TagTest extends TestCase {
 
 		$this->create_post_and_go_to_it();
 
-		$output = $this->capture_output( 'the_content' );
+		$output = get_echo( 'the_content' );
 
 		$this->assertStringStartsWith( '<p>Hello World</p>', $output );
 		$this->assertStringEndsWith( '<p>Goodbye World</p>', $output );
@@ -138,12 +138,5 @@ class Web_TagTest extends TestCase {
 			)
 		);
 		$this->go_to( get_permalink( $post_ID ) );
-	}
-
-	private function capture_output( $callback ) {
-		ob_start();
-		$callback();
-		$output = ob_get_clean();
-		return $output;
 	}
 }
