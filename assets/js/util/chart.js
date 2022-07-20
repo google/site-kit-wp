@@ -98,3 +98,31 @@ export const calculateDifferenceBetweenChartValues = (
 	}
 	return 0;
 };
+
+/**
+ * Returns a font name only if the Google Web Font loader script isn't loaded.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string=} fontName Optional. Font name string to return. Defaults to `'"Google Sans Text", "Helvetica Neue", Helvetica, Arial, sans-serif'`.
+ * @return {string|undefined} The font string supplied if `WebFont` is not set. `undefined` if the `WebFont` global is set.
+ */
+export const chartFontName = (
+	fontName = '"Google Sans Text", "Helvetica Neue", Helvetica, Arial, sans-serif'
+) => {
+	// If the Google `WebFont` global exists and we try to use
+	// the `fontName` property in a Google Chart, we'll encounter an
+	// exception and the entire dashboard will crash.
+	//
+	// Our "workaround" is not to load custom fonts when the `WebFont`
+	// global exists, as these are usually very small UI elements
+	// and there's no clear way to get them to load without errors
+	// when the `WebFont` global/script is loaded.
+	//
+	// See: https://github.com/google/site-kit-wp/issues/5572
+	if ( typeof WebFont !== 'undefined' ) {
+		return undefined;
+	}
+
+	return fontName;
+};
