@@ -24,7 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { Fragment, useCallback } from '@wordpress/element';
+import { useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -44,25 +44,23 @@ export default function SetupPublicationActive( { currentPublicationID } ) {
 	}, [ currentPublicationID, setPublicationID ] );
 
 	return (
-		<Fragment>
-			<SetupPublicationScreen
-				title={ __( 'Congratulations!', 'google-site-kit' ) }
-				description={ __(
-					'Your account is now active. To get started, customize the appearance of Thank with Google on your site.',
+		<SetupPublicationScreen
+			title={ __( 'Congratulations!', 'google-site-kit' ) }
+			description={ __(
+				'Your account is now active. To get started, customize the appearance of Thank with Google on your site.',
+				'google-site-kit'
+			) }
+		>
+			<Button
+				onClick={ handleSetupCustomize }
+				ariaLabel={ __(
+					'Customize Thank with Google',
 					'google-site-kit'
 				) }
 			>
-				<Button
-					onClick={ handleSetupCustomize }
-					ariaLabel={ __(
-						'Customize Thank with Google',
-						'google-site-kit'
-					) }
-				>
-					{ __( 'Customize Thank with Google', 'google-site-kit' ) }
-				</Button>
-			</SetupPublicationScreen>
-		</Fragment>
+				{ __( 'Customize Thank with Google', 'google-site-kit' ) }
+			</Button>
+		</SetupPublicationScreen>
 	);
 }
 
