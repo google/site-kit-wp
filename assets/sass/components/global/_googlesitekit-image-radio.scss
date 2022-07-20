@@ -59,18 +59,54 @@
 		}
 
 		&:hover .mdc-image-radio__content {
-			background-color: $c-surfaces-surface-2;
+			box-shadow: 0 0 5px 5px $c-surfaces-surface-2;
+			position: relative;
+
+			&::after {
+				background-color: $c-radio-background-hover;
+				border-radius: 0.5625rem;
+				content: "";
+				height: calc(100% + 0.75rem);
+				left: 50%;
+				opacity: 0.2;
+				position: absolute;
+				top: 50%;
+				transform: translate(-50%, -50%);
+				width: calc(100% + 0.75rem);
+			}
 
 			&--no-image {
 				background-color: $c-radio-background-hover;
+
+				&::after {
+					content: unset;
+				}
 			}
 		}
 
 		&.mdc-ripple-upgraded--background-focused .mdc-image-radio__content {
-			background-color: $c-surfaces-surface-2;
+			box-shadow: 0 0 5px 5px $c-surfaces-surface-2;
+			position: relative;
+
+			&::after {
+				background-color: $c-radio-background-focus;
+				border-radius: 0.5625rem;
+				content: "";
+				height: calc(100% + 0.75rem);
+				left: 50%;
+				opacity: 0.2;
+				position: absolute;
+				top: 50%;
+				transform: translate(-50%, -50%);
+				width: calc(100% + 0.75rem);
+			}
 
 			&--no-image {
 				background-color: $c-radio-background-focus;
+
+				&::after {
+					content: unset;
+				}
 			}
 		}
 
