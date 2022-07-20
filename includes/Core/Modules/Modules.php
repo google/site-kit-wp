@@ -1549,13 +1549,13 @@ final class Modules {
 	}
 
 	/**
-	 * Resets sharing settings.
+	 * Deletes sharing settings.
 	 *
 	 * @since n.e.x.t
 	 *
 	 * @return bool True on success, false on failure.
 	 */
-	public function reset_sharing_settings() {
+	public function delete_dashboard_sharing_settings() {
 		return $this->options->delete( 'googlesitekit_dashboard_sharing' );
 	}
 

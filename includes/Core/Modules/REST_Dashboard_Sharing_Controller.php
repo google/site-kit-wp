@@ -123,7 +123,7 @@ class REST_Dashboard_Sharing_Controller {
 					array(
 						'methods'             => WP_REST_Server::DELETABLE,
 						'callback'            => function ( WP_REST_Request $request ) {
-							$this->modules->reset_sharing_settings();
+							$this->modules->delete_dashboard_sharing_settings();
 
 							return new WP_REST_Response( true );
 						},
