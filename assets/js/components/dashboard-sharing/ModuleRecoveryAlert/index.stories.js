@@ -20,7 +20,6 @@
  * External dependencies
  */
 import fetchMock from 'fetch-mock';
-import { waitForElement } from '@testing-library/react';
 
 /**
  * Internal dependencies
@@ -184,18 +183,11 @@ SingleRecoverableModuleError.args = {
 				{ access: true },
 				{ slug: 'search-console' }
 			);
+		registry
+			.dispatch( CORE_MODULES )
+			.recoverModules( [ 'search-console' ] );
 	},
 };
-SingleRecoverableModuleError.decorators = [
-	( Story ) => {
-		setTimeout( async () => {
-			await waitForElement( () => document.querySelector( 'button' ) );
-			document.querySelector( 'button' ).click();
-		}, 0 );
-
-		return <Story />;
-	},
-];
 
 export const MultipleRecoverableModuleErrors = Template.bind( {} );
 MultipleRecoverableModuleErrors.storyName =
@@ -228,18 +220,11 @@ MultipleRecoverableModuleErrors.args = {
 				{ access: true },
 				{ slug: 'analytics' }
 			);
+		registry
+			.dispatch( CORE_MODULES )
+			.recoverModules( [ 'search-console', 'analytics' ] );
 	},
 };
-MultipleRecoverableModuleErrors.decorators = [
-	( Story ) => {
-		setTimeout( async () => {
-			await waitForElement( () => document.querySelector( 'button' ) );
-			document.querySelector( 'button' ).click();
-		}, 0 );
-
-		return <Story />;
-	},
-];
 
 export default {
 	title: 'Components/ModuleRecoveryAlert',
