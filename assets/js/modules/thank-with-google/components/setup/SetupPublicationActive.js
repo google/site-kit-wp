@@ -53,7 +53,7 @@ export default function SetupPublicationActive( { currentPublicationID } ) {
 		>
 			<Button
 				onClick={ handleSetupCustomize }
-				ariaLabel={ __(
+				aria-label={ __(
 					'Customize Thank with Google',
 					'google-site-kit'
 				) }
