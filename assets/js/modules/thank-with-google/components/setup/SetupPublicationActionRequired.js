@@ -16,11 +16,36 @@
  * limitations under the License.
  */
 
+/**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+
+/**
+ * Internal dependencies
+ */
+import Button from '../../../../components/Button';
+import { SetupPublicationScreen } from '../common';
+
 export default function SetupPublicationActionRequired() {
 	return (
-		<div>
-			TODO: UI for publication action required -
-			SetupPublicationActionRequired
-		</div>
+		<SetupPublicationScreen
+			title={ __( 'Complete your account setup', 'google-site-kit' ) }
+			description={ __(
+				'Finish the setup to customize and add Thank with Google on your site.',
+				'google-site-kit'
+			) }
+		>
+			<Button
+				href="https://publishercenter.google.com/"
+				target="_blank"
+				aria-label={ __(
+					'Complete your Thank with Google account setup',
+					'google-site-kit'
+				) }
+			>
+				{ __( 'Complete setup', 'google-site-kit' ) }
+			</Button>
+		</SetupPublicationScreen>
 	);
 }
