@@ -25,6 +25,7 @@ import {
 	createTestRegistry,
 	provideUserAuthentication,
 	provideModules,
+	provideSiteInfo,
 } from '../../../../tests/js/test-utils';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 
@@ -63,5 +64,22 @@ describe( 'ErrorNotifications', () => {
 		expect( container ).toHaveTextContent(
 			'Site Kit can’t access necessary data'
 		);
+	} );
+
+	it( 'renders `Get help` link', () => {
+		provideUserAuthentication( registry, {
+			unsatisfiedScopes: [
+				'https://www.googleapis.com/auth/analytics.readonly',
+			],
+		} );
+		provideSiteInfo( registry, {
+			setupErrorCode: 'error_code',
+			setupErrorMessage: 'An error occurred',
+		} );
+		const { container } = render( <ErrorNotifications />, {
+			registry,
+		} );
+
+		expect( container ).toHaveTextContent( 'Get help' );
 	} );
 } );
