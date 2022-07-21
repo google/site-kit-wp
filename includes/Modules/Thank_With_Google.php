@@ -82,10 +82,8 @@ final class Thank_With_Google extends Module
 		add_filter(
 			'rest_pre_dispatch',
 			function( $result, $server, $request ) {
-				if (
-					stripos( $request->get_route(), sprintf( 'widget-types/%s/render', Supporter_Wall_Widget::WIDGET_ID ) ) > 0 &&
-					Supporter_Wall_Widget::WIDGET_ID === $request['id']
-				) {
+				$needle = sprintf( 'widget-types/%s/render', Supporter_Wall_Widget::WIDGET_ID );
+				if ( stripos( $request->get_route(), $needle ) > 0 ) {
 					$this->register_tag();
 				}
 				return $result;

@@ -87,6 +87,8 @@ class Supporter_Wall_Widget extends WP_Widget {
 	 * @param array $instance The widget settings.
 	 */
 	public function widget( $args, $instance ) {
+		wp_enqueue_script( 'google_thankjs' );
+
 		echo $args['before_widget']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 
 		if ( ! empty( $instance['title'] ) ) {
