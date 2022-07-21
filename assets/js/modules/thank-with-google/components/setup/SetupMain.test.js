@@ -134,9 +134,8 @@ describe( 'SetupMain', () => {
 			registry,
 		} );
 
-		// TODO: Update this assertion to match the new UI.
 		expect( container ).toHaveTextContent(
-			'TODO: UI to create publication - SetupCreatePublication'
+			'To get started, create an account. Currently available only in the US.'
 		);
 	} );
 
