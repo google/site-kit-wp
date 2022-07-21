@@ -49,7 +49,6 @@ import {
 	trackEvent,
 	getChartDifferenceArrow,
 	isSingleSlice,
-	chartFontName,
 } from '../../../../../util';
 import { extractAnalyticsDataForPieChart } from '../../../util';
 import GoogleChart from '../../../../../components/GoogleChart';
@@ -726,7 +725,6 @@ UserDimensionsPieChart.chartOptions = {
 	pieSliceTextStyle: {
 		color: '#131418',
 		fontSize: 12,
-		fontName: chartFontName(),
 	},
 	slices: {
 		0: { color: '#fece72' },

@@ -48,7 +48,6 @@ import { useFeature } from '../hooks/useFeature';
 import { CORE_USER } from '../googlesitekit/datastore/user/constants';
 import GatheringDataNotice, { NOTICE_STYLE } from './GatheringDataNotice';
 import Data from 'googlesitekit-data';
-import { chartFontName } from '../util/chart';
 const { useSelect } = Data;
 
 export default function GoogleChart( props ) {
@@ -229,21 +228,18 @@ export default function GoogleChart( props ) {
 	merge( chartOptions, {
 		hAxis: {
 			textStyle: {
-				fontName: chartFontName(),
 				fontSize: 10,
 				color: '#5f6561',
 			},
 		},
 		vAxis: {
 			textStyle: {
-				fontName: chartFontName(),
 				color: '#5f6561',
 				fontSize: 10,
 			},
 		},
 		legend: {
 			textStyle: {
-				fontName: chartFontName(),
 				color: '#131418',
 				fontSize: 12,
 			},
