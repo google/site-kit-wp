@@ -31,8 +31,10 @@ import { _x, __ } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import ThankWithGoogleIcon from '../../../../../svg/graphics/thank-with-google.svg';
+import ThankWithGoogleSetup from '../../../../../svg/graphics/thank-with-google-setup.svg';
 import ProgressBar from '../../../../components/ProgressBar';
 import Badge from '../../../../components/Badge';
+import { Grid, Row, Cell } from '../../../../material-components';
 import { MODULES_THANK_WITH_GOOGLE } from '../../datastore/constants';
 import SetupCreatePublication from './SetupCreatePublication';
 import SetupCustomize from './SetupCustomize';
@@ -83,26 +85,51 @@ export default function SetupMain( { finishSetup } ) {
 
 	return (
 		<div className="googlesitekit-setup-module googlesitekit-setup-module--thank-with-google">
-			<div className="googlesitekit-setup-module__header">
-				<div className="googlesitekit-setup-module__heading">
-					<div className="googlesitekit-setup-module__logo">
-						<ThankWithGoogleIcon width="33" height="33" />
-					</div>
+			<Grid>
+				<Row className="googlesitekit-setup__content">
+					<Cell
+						smSize={ 4 }
+						mdSize={ 8 }
+						lgSize={ 6 }
+						lgOrder={ 2 }
+						className="googlesitekit-setup__icon"
+					>
+						<ThankWithGoogleSetup width={ 360 } height={ 210 } />
+					</Cell>
+					<Cell smSize={ 4 } mdSize={ 8 } lgSize={ 6 } lgOrder={ 1 }>
+						<div className="googlesitekit-setup-module__header">
+							<div className="googlesitekit-setup-module__heading">
+								<div className="googlesitekit-setup-module__logo">
+									<ThankWithGoogleIcon
+										width="33"
+										height="33"
+									/>
+								</div>
 
-					<h2 className="googlesitekit-heading-3 googlesitekit-setup-module__title">
-						{ _x(
-							'Thank with Google',
-							'Service name',
-							'google-site-kit'
-						) }
-					</h2>
-				</div>
+								<h2 className="googlesitekit-heading-3 googlesitekit-setup-module__title">
+									{ _x(
+										'Thank with Google',
+										'Service name',
+										'google-site-kit'
+									) }
+								</h2>
+							</div>
 
-				<Badge label={ __( 'Experimental', 'google-site-kit' ) } />
-				<Badge label={ __( 'US Only', 'google-site-kit' ) } />
-			</div>
+							<Badge
+								label={ __(
+									'Experimental',
+									'google-site-kit'
+								) }
+							/>
+							<Badge
+								label={ __( 'US Only', 'google-site-kit' ) }
+							/>
+						</div>
 
-			{ viewComponent }
+						{ viewComponent }
+					</Cell>
+				</Row>
+			</Grid>
 		</div>
 	);
 }

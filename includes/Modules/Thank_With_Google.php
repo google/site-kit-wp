@@ -21,10 +21,13 @@ use Google\Site_Kit\Core\Modules\Module_With_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Owner;
 use Google\Site_Kit\Core\Modules\Module_With_Owner_Trait;
+use Google\Site_Kit\Core\Tags\Guards\Tag_Environment_Type_Guard;
+use Google\Site_Kit\Core\Tags\Guards\Tag_Verify_Guard;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Modules\Thank_With_Google\Settings;
 use Google\Site_Kit\Modules\Thank_With_Google\Supporter_Wall_Widget;
+use Google\Site_Kit\Modules\Thank_With_Google\Web_Tag;
 
 /**
  * Class representing the Thank with Google module.
@@ -54,6 +57,8 @@ final class Thank_With_Google extends Module
 		if ( ! $this->is_connected() ) {
 			return;
 		}
+
+		add_action( 'template_redirect', $this->get_method_proxy( 'register_tag' ) );
 
 		add_action(
 			'widgets_init',
@@ -221,4 +226,35 @@ final class Thank_With_Google extends Module
 
 		return parent::create_data_request( $data );
 	}
+
+	/**
+	 * Registers the Thank with Google tag.
+	 *
+	 * @since n.e.x.t
+	 */
+	private function register_tag() {
+		if ( $this->context->is_amp() ) {
+			return;
+		}
+
+		$settings = $this->get_settings()->get();
+
+		$tag = new Web_Tag( $settings['publicationID'], self::MODULE_SLUG );
+
+		if ( $tag->is_tag_blocked() ) {
+			return;
+		}
+
+		$tag->use_guard( new Tag_Verify_Guard( $this->context->input() ) );
+		$tag->use_guard( new Tag_Environment_Type_Guard() );
+
+		if ( $tag->can_register() ) {
+			$tag->set_publication_id( $settings['publicationID'] );
+			$tag->set_button_placement( $settings['buttonPlacement'] );
+			$tag->set_button_post_types( $settings['buttonPostTypes'] );
+
+			$tag->register();
+		}
+	}
+
 }
