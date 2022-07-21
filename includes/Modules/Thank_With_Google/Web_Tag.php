@@ -69,7 +69,6 @@ class Web_Tag extends Module_Web_Tag {
 	 */
 	public function set_button_placement( $button_placement ) {
 		$this->button_placement = $button_placement;
-
 	}
 
 	/**
