@@ -74,14 +74,8 @@ export default function ErrorNotifications() {
 						'Redo the plugin setup',
 						'google-site-kit'
 					) }
-					learnMoreLabel={
-						setupErrorCode
-							? __( 'Get help', 'google-site-kit' )
-							: null
-					}
-					learnMoreURL={
-						setupErrorCode ? errorTroubleshootingLinkURL : null
-					}
+					learnMoreLabel={ __( 'Get help', 'google-site-kit' ) }
+					learnMoreURL={ errorTroubleshootingLinkURL }
 				/>
 			) }
 			{ ! setupErrorMessage && isAuthenticated && (
