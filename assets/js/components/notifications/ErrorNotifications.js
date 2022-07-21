@@ -40,11 +40,19 @@ export default function ErrorNotifications() {
 	);
 
 	// These will be `null` if no errors exist.
+	const setupErrorCode = useSelect( ( select ) =>
+		select( CORE_SITE ).getSetupErrorCode()
+	);
 	const setupErrorMessage = useSelect( ( select ) =>
 		select( CORE_SITE ).getSetupErrorMessage()
 	);
 	const setupErrorRedoURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getSetupErrorRedoURL()
+	);
+	const errorTroubleshootingLinkURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getErrorTroubleshootingLinkURL( {
+			code: setupErrorCode,
+		} )
 	);
 
 	return (
@@ -66,6 +74,14 @@ export default function ErrorNotifications() {
 						'Redo the plugin setup',
 						'google-site-kit'
 					) }
+					learnMoreLabel={
+						setupErrorCode
+							? __( 'Get help', 'google-site-kit' )
+							: null
+					}
+					learnMoreURL={
+						setupErrorCode ? errorTroubleshootingLinkURL : null
+					}
 				/>
 			) }
 			{ ! setupErrorMessage && isAuthenticated && (
