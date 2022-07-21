@@ -101,6 +101,7 @@ export const reducer = ( state, { payload, type } ) => {
 				proxyPermissionsURL,
 				proxySetupURL,
 				referenceSiteURL,
+				setupErrorCode,
 				setupErrorMessage,
 				setupErrorRedoURL,
 				siteName,
@@ -123,6 +124,7 @@ export const reducer = ( state, { payload, type } ) => {
 					proxyPermissionsURL,
 					proxySetupURL,
 					referenceSiteURL,
+					setupErrorCode,
 					setupErrorMessage,
 					setupErrorRedoURL,
 					siteName,
@@ -170,6 +172,7 @@ export const resolvers = {
 			proxyPermissionsURL,
 			proxySetupURL,
 			referenceSiteURL,
+			setupErrorCode,
 			setupErrorMessage,
 			setupErrorRedoURL,
 			siteName,
@@ -197,6 +200,7 @@ export const resolvers = {
 			proxyPermissionsURL,
 			proxySetupURL,
 			referenceSiteURL,
+			setupErrorCode,
 			setupErrorMessage,
 			setupErrorRedoURL,
 			siteName,
@@ -474,6 +478,16 @@ export const selectors = {
 	 * @return {(string|undefined)} The site name.
 	 */
 	getSiteName: getSiteInfoProperty( 'siteName' ),
+
+	/**
+	 * Gets a setup error code, if one exists.
+	 *
+	 * @since 1.14.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(string|undefined)} An error code from setup, if one exists. Will be `null` if no error exists; `undefined` when loading.
+	 */
+	getSetupErrorCode: getSiteInfoProperty( 'setupErrorCode' ),
 
 	/**
 	 * Gets a setup error message, if one exists.
