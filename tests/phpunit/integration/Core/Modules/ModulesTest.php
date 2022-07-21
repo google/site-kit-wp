@@ -177,6 +177,17 @@ class ModulesTest extends TestCase {
 		$this->fail( 'Failed to catch exception thrown for non-existent module in get_module_dependencies.' );
 	}
 
+	public function test_module_exists() {
+		$fake_module = new FakeModule( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$modules     = new Modules( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+
+		$this->force_set_property( $modules, 'modules', array( 'fake-module' => $fake_module ) );
+		$this->assertTrue( $modules->module_exists( 'fake-module' ) );
+
+		$module_slug = 'non-existent-module';
+		$this->assertFalse( $modules->module_exists( $module_slug ) );
+	}
+
 	public function test_get_module_dependants() {
 		$modules = new Modules( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 

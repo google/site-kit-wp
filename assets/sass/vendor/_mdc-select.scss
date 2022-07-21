@@ -1,13 +1,14 @@
 // Overrides for .mdc-select
 .googlesitekit-plugin .mdc-select {
 
-	@include mdc-select-ink-color($c-primary);
-	@include mdc-select-label-color($c-tertiary);
-	@include mdc-select-focused-label-color($c-input);
+	@include mdc-select-ink-color($c-surfaces-on-surface);
+	@include mdc-select-label-color($c-surfaces-on-surface);
+	@include mdc-select-focused-label-color($c-surfaces-on-surface);
 	@include mdc-select-outline-color($c-border-medium);
 	@include mdc-select-hover-outline-color($c-border);
-	@include mdc-select-focused-outline-color($c-input);
+	@include mdc-select-focused-outline-color($c-content-primary);
 	@include mdc-select-focused-bottom-line-color($c-border-brand);
+	@include mdc-select-outline-shape-radius($br-xs);
 
 	max-width: 100%;
 
@@ -61,8 +62,9 @@
 
 	&--minimal .mdc-select__selected-text {
 		border: none;
-		font-size: 0.75rem !important;
+		font-size: $fs-body-sm !important;
 		height: 14px !important;
+		letter-spacing: $ls-xs;
 		line-height: 1;
 		min-width: 0;
 		padding: 0 18px 0 0;
@@ -78,5 +80,12 @@
 
 	&--minimal.mdc-select--focused .mdc-select__dropdown-icon {
 		transform: rotate(180deg) translateY(0);
+	}
+
+	&.mdc-select--focused:not(.mdc-select--disabled) {
+
+		.mdc-floating-label--float-above {
+			color: $c-content-primary;
+		}
 	}
 }

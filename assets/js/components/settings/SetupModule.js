@@ -103,21 +103,23 @@ export default function SetupModule( { slug, name, description } ) {
 			<div className="googlesitekit-settings-connect-module__logo">
 				<ModuleIcon slug={ slug } />
 			</div>
-			<h3
-				className="
+			<div className="googlesitekit-settings-connect-module__heading">
+				<h3
+					className="
 					googlesitekit-subheading-1
 					googlesitekit-settings-connect-module__title
 				"
-			>
-				{ name }
-
+				>
+					{ name }
+				</h3>
 				{ EXPERIMENTAL_MODULES.includes( slug ) && (
-					<Badge
-						label={ __( 'Experimental', 'google-site-kit' ) }
-						hasLeftSpacing={ true }
-					/>
+					<Badge label={ __( 'Experimental', 'google-site-kit' ) } />
 				) }
-			</h3>
+
+				{ 'thank-with-google' === slug && (
+					<Badge label={ __( 'US Only', 'google-site-kit' ) } />
+				) }
+			</div>
 			<p className="googlesitekit-settings-connect-module__text">
 				{ description }
 			</p>

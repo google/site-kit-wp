@@ -220,8 +220,8 @@ final class Assets {
 	 */
 	protected function get_fonts_src() {
 		$font_families = array(
-			'Google+Sans:300,300i,400,400i,500,500i,700,700i',
-			'Roboto:300,300i,400,400i,500,500i,700,700i',
+			'Google+Sans+Text:400,500',
+			'Google+Sans+Display:400,500,700',
 		);
 
 		$filtered_font_families = apply_filters( 'googlesitekit_font_families', $font_families );

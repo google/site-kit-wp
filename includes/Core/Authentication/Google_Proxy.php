@@ -39,6 +39,7 @@ class Google_Proxy {
 	const FEATURES_URI              = '/site-management/features/';
 	const SURVEY_TRIGGER_URI        = '/survey/trigger/';
 	const SURVEY_EVENT_URI          = '/survey/event/';
+	const SUPPORT_LINK_URI          = '/support';
 	const ACTION_EXCHANGE_SITE_CODE = 'googlesitekit_proxy_exchange_site_code';
 	const ACTION_SETUP              = 'googlesitekit_proxy_setup';
 	const ACTION_SETUP_START        = 'googlesitekit_proxy_setup_start';

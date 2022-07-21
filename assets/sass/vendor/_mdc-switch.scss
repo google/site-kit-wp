@@ -1,7 +1,11 @@
 // Overrides for .mdc-switch
 .googlesitekit-plugin .mdc-switch {
 
-	@include mdc-switch-toggled-on-color($c-input);
+	@include mdc-switch-toggled-on-color($c-content-primary);
+	@include mdc-switch-toggled-on-thumb-color($c-content-primary);
+	@include mdc-switch-toggled-on-track-color($c-content-primary-container);
+	@include mdc-switch-toggled-off-thumb-color($c-surfaces-on-surface-variant);
+	@include mdc-switch-toggled-off-track-color($c-surfaces-surface-2);
 	vertical-align: middle;
 
 	// Overriding WordPress load-styles.php
@@ -33,6 +37,17 @@
 	}
 
 	+ label {
+		font-size: $fs-body-md;
+		letter-spacing: $ls-s;
+		line-height: $lh-body-md;
 		margin-left: 10px;
+	}
+
+	.mdc-switch__track {
+		opacity: 1;
+	}
+
+	.mdc-switch__thumb {
+		box-shadow: none;
 	}
 }

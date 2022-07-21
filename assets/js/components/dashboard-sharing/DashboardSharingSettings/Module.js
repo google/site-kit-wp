@@ -33,6 +33,7 @@ import {
 	useCallback,
 	useEffect,
 	useState,
+	useRef,
 } from '@wordpress/element';
 
 /**
@@ -68,6 +69,7 @@ const viewAccessOptions = [
 
 export default function Module( { moduleSlug, moduleName, ownerUsername } ) {
 	const viewContext = useViewContext();
+	const moduleRef = useRef();
 
 	const [ manageViewAccess, setManageViewAccess ] = useState( undefined );
 	const hasMultipleAdmins = useSelect( ( select ) =>
@@ -159,6 +161,7 @@ export default function Module( { moduleSlug, moduleName, ownerUsername } ) {
 					'googlesitekit-dashboard-sharing-settings__row--disabled': isLocked,
 				}
 			) }
+			ref={ moduleRef }
 		>
 			<div className="googlesitekit-dashboard-sharing-settings__column--product">
 				<ModuleIcon slug={ moduleSlug } size={ 48 } />
@@ -173,6 +176,7 @@ export default function Module( { moduleSlug, moduleName, ownerUsername } ) {
 					<UserRoleSelect
 						moduleSlug={ moduleSlug }
 						isLocked={ isLocked }
+						ref={ moduleRef }
 					/>
 				) }
 

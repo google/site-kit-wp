@@ -398,6 +398,32 @@ export const selectors = {
 	} ),
 
 	/**
+	 * Gets an account chooser url with the current user's email.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(string|undefined)} The concatenated url if an email is present; otherwise undefined.
+	 */
+	getAccountChooserURL: createRegistrySelector(
+		( select ) => ( state, destinationURL ) => {
+			invariant( destinationURL, 'destinationURL is required' );
+
+			const userEmail = select( CORE_USER ).getEmail();
+
+			if ( userEmail === undefined ) {
+				return undefined;
+			}
+
+			// The `Email` parameter is case sensitive;
+			// the capital E is required for the account chooser URL.
+			return `https://accounts.google.com/accountchooser?continue=${ encodeURIComponent(
+				destinationURL
+			) }&Email=${ encodeURIComponent( userEmail ) }`;
+		}
+	),
+
+	/**
 	 * Gets the initial version that the user used Site Kit with.
 	 *
 	 * @since 1.27.0

@@ -51,6 +51,7 @@ import CTA from '../../../../../components/notifications/CTA';
 import DataBlock from '../../../../../components/DataBlock';
 import ProgressBar from '../../../../../components/ProgressBar';
 import ReportZero from '../../../../../components/ReportZero';
+import RecoverableModules from '../../../../../components/RecoverableModules';
 import {
 	BREAKPOINT_SMALL,
 	useBreakpoint,
@@ -80,6 +81,7 @@ const Overview = ( {
 	dateRangeLength,
 	error,
 	WidgetReportError,
+	showRecoverableAnalytics,
 } ) => {
 	const dashboardType = useDashboardType();
 	const zeroDataStatesEnabled = useFeature( 'zeroDataStates' );
@@ -111,7 +113,9 @@ const Overview = ( {
 		select( CORE_LOCATION ).isNavigatingTo( adminReauthURL )
 	);
 	const isAnalyticsGatheringData = useInViewSelect( ( select ) =>
-		analyticsModuleActiveAndConnected && canViewSharedAnalytics
+		analyticsModuleActiveAndConnected &&
+		canViewSharedAnalytics &&
+		! showRecoverableAnalytics
 			? select( MODULES_ANALYTICS ).isGatheringData()
 			: false
 	);
@@ -164,15 +168,16 @@ const Overview = ( {
 	}
 
 	const showAnalytics =
-		( canViewSharedAnalytics &&
+		( ( canViewSharedAnalytics &&
 			analyticsModuleConnected &&
 			! isAnalyticsGatheringData &&
 			! zeroDataStatesEnabled &&
 			! error ) ||
-		( canViewSharedAnalytics &&
-			analyticsModuleConnected &&
-			zeroDataStatesEnabled &&
-			! error );
+			( canViewSharedAnalytics &&
+				analyticsModuleConnected &&
+				zeroDataStatesEnabled &&
+				! error ) ) &&
+		! showRecoverableAnalytics;
 
 	const showGoalsCTA =
 		isAuthenticated &&
@@ -349,7 +354,8 @@ const Overview = ( {
 						</Cell>
 					) }
 
-				{ canViewSharedAnalytics &&
+				{ ! showRecoverableAnalytics &&
+					canViewSharedAnalytics &&
 					analyticsModuleActiveAndConnected &&
 					error && (
 						<Cell { ...halfCellProps }>
@@ -395,6 +401,16 @@ const Overview = ( {
 						) }
 					</Cell>
 				) }
+
+				{ canViewSharedAnalytics &&
+					analyticsModuleActiveAndConnected &&
+					showRecoverableAnalytics && (
+						<Cell { ...halfCellProps }>
+							<RecoverableModules
+								moduleSlugs={ [ 'analytics' ] }
+							/>
+						</Cell>
+					) }
 			</Row>
 		</Grid>
 	);

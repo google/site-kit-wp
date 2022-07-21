@@ -88,11 +88,11 @@ describe( 'core site notifications', () => {
 							'google-site-kit/v1/core/site/data/mark-notification'
 						)
 				),
-				expect(
-					page
-				).toClick(
-					'.googlesitekit-publisher-win .googlesitekit-cta-link',
-					{ text: /test dismiss site notification/i }
+				expect( page ).toClick(
+					'.googlesitekit-publisher-win .mdc-button',
+					{
+						text: /test dismiss site notification/i,
+					}
 				),
 			] );
 			await page.waitForSelector(

@@ -364,5 +364,56 @@ describe( 'core/user userInfo', () => {
 				expect( global[ userDataGlobal ] ).not.toEqual( undefined );
 			} );
 		} );
+
+		describe( 'getAccountChooserURL', () => {
+			it( 'throws an error if a destinationURL is not given', () => {
+				expect( () => {
+					registry.select( CORE_USER ).getAccountChooserURL();
+				} ).toThrow( 'destinationURL is required' );
+			} );
+
+			it( 'returns the encoded destination url with the email appended', async () => {
+				global[ userDataGlobal ] = userData;
+
+				const testURL = 'https://analytics.google.com/dashboard/';
+
+				registry.select( CORE_USER ).getAccountChooserURL( testURL );
+
+				await subscribeUntil( registry, () =>
+					registry
+						.select( CORE_USER )
+						.hasFinishedResolution( 'getUser' )
+				);
+
+				const accountChooserURL = registry
+					.select( CORE_USER )
+					.getAccountChooserURL( testURL );
+
+				expect( accountChooserURL ).toMatchInlineSnapshot(
+					'"https://accounts.google.com/accountchooser?continue=https%3A%2F%2Fanalytics.google.com%2Fdashboard%2F&Email=admin%40example.com"'
+				);
+			} );
+
+			it( 'should return undefined when no data is available', async () => {
+				expect( global[ userDataGlobal ] ).toEqual( undefined );
+
+				const testURL = 'https://analytics.google.com/dashboard/';
+
+				registry.select( CORE_USER ).getAccountChooserURL( testURL );
+
+				await subscribeUntil( registry, () =>
+					registry
+						.select( CORE_USER )
+						.hasFinishedResolution( 'getUser' )
+				);
+
+				const accountChooserURL = registry
+					.select( CORE_USER )
+					.getAccountChooserURL( testURL );
+
+				expect( accountChooserURL ).toBeUndefined();
+				expect( console ).toHaveErrored();
+			} );
+		} );
 	} );
 } );

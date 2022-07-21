@@ -21,13 +21,15 @@
 	.googlesitekit-view-only-menu {
 
 		h4 {
-			font-size: 15px;
+			font-size: $fs-body-lg;
+			letter-spacing: $ls-m;
 			margin: 15px 0;
 		}
 
 		p {
 			color: $c-primary;
-			font-size: 14px;
+			font-size: $fs-body-md;
+			letter-spacing: $ls-s;
 		}
 
 		.mdc-button--dropdown {
@@ -99,13 +101,15 @@
 		}
 
 		.googlesitekit-view-only-menu__service--name {
-			font-size: 14px;
+			font-size: $fs-body-md;
+			letter-spacing: $ls-s;
 		}
 
 		.googlesitekit-view-only-menu__service--owner {
 			color: $c-primary;
 			flex: 1;
-			font-size: 12px;
+			font-size: $fs-body-sm;
+			letter-spacing: $ls-xs;
 			margin-left: auto;
 		}
 

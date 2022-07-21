@@ -22,6 +22,7 @@ use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Owner;
 use Google\Site_Kit\Core\Modules\Module_With_Owner_Trait;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
+use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Modules\Thank_With_Google\Settings;
 
 /**
@@ -153,4 +154,36 @@ final class Thank_With_Google extends Module
 		);
 	}
 
+	/**
+	 * Gets map of datapoint to definition data for each.
+	 *
+	 * @since 1.79.0
+	 * @return array Map of datapoints to their definitions.
+	 */
+	protected function get_datapoint_definitions() {
+		return array(
+			'GET:publications' => array( 'service' => '' ),
+		);
+	}
+
+	/**
+	 * Creates a request object for the given datapoint.
+	 *
+	 * @since 1.79.0
+	 *
+	 * @param Data_Request $data Data request object.
+	 * @return RequestInterface|callable|WP_Error Request object or callable on success, or WP_Error on failure.
+	 *
+	 * @throws Invalid_Datapoint_Exception Thrown if the datapoint does not exist.
+	 */
+	protected function create_data_request( Data_Request $data ) {
+		switch ( "{$data->method}:{$data->datapoint}" ) {
+			case 'GET:publications':
+				return function () {
+					return array();
+				};
+		}
+
+		return parent::create_data_request( $data );
+	}
 }

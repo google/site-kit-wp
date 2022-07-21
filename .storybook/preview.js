@@ -63,7 +63,7 @@ export const decorators = [
 	},
 	// Features must be set up before test registry is initialized.
 	( Story, { parameters } ) => {
-		const { features = [] } = parameters;
+		const { features = [], route } = parameters;
 		const isFirstMount = useFirstMountState();
 		useUnmount( () => enabledFeatures.clear() );
 
@@ -73,7 +73,7 @@ export const decorators = [
 		}
 
 		return (
-			<WithTestRegistry features={ features }>
+			<WithTestRegistry features={ features } route={ route }>
 				<Story />
 			</WithTestRegistry>
 		);
