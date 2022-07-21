@@ -166,7 +166,7 @@ describe( 'SetupMain', () => {
 
 		// TODO: Update this assertion to match the new UI.
 		expect( container ).toHaveTextContent(
-			'TODO: UI for publication pending verification - SetupPublicationPendingVerification'
+			'We received your request to create a Thank with Google account. Check again for updates to your status.'
 		);
 	} );
 
