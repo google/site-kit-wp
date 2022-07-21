@@ -22,6 +22,7 @@ use Google\Site_Kit\Core\Storage\Transients;
 use Google\Site_Kit\Core\Admin\Notice;
 use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
+use Google\Site_Kit\Core\Authentication\Google_Proxy;
 use Google\Site_Kit\Core\Util\User_Input_Settings;
 use Google\Site_Kit\Plugin;
 use WP_Error;
@@ -840,12 +841,14 @@ final class Authentication {
 		$data['isAuthenticated']     = $this->is_authenticated();
 		$data['setupErrorMessage']   = null;
 		$data['setupErrorRedoURL']   = null;
+		$data['proxySupportLinkURL'] = null;
 
 		if ( $this->credentials->using_proxy() ) {
 			$auth_client                 = $this->get_oauth_client();
 			$data['proxySetupURL']       = esc_url_raw( $this->get_proxy_setup_url() );
 			$data['proxyPermissionsURL'] = esc_url_raw( $this->get_proxy_permissions_url() );
 			$data['usingProxy']          = true;
+			$data['proxySupportLinkURL'] = esc_url_raw( $this->get_proxy_support_link_url() );
 
 			// Check for an error in the proxy setup.
 			$error_code = $this->user_options->get( OAuth_Client::OPTION_ERROR_CODE );
@@ -1326,6 +1329,17 @@ final class Authentication {
 			),
 			admin_url( 'index.php' )
 		);
+	}
+
+	/**
+	 * Gets the proxy support URL.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string|null Support URL.
+	 */
+	private function get_proxy_support_link_url() {
+		return $this->google_proxy->url( Google_Proxy::SUPPORT_LINK_URI );
 	}
 
 	/**

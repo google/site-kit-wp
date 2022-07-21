@@ -75,6 +75,11 @@
 			}
 		}
 
+		.googlesitekit-settings-module__heading {
+			align-items: center;
+			display: flex;
+		}
+
 		.googlesitekit-settings-module__title {
 			align-items: center;
 			display: flex;
@@ -83,10 +88,17 @@
 			margin: 0;
 		}
 
-		.googlesitekit-settings-module__title-icon {
+		.googlesitekit-settings-module__heading-icon {
 			height: auto;
 			margin-right: $grid-gap-phone;
 			width: 24px;
+		}
+
+		.googlesitekit-settings-module__heading-badges {
+			align-items: center;
+			display: flex;
+			flex-wrap: wrap;
+			row-gap: 12px;
 		}
 
 		.googlesitekit-settings-module__status {
@@ -98,6 +110,7 @@
 			letter-spacing: $ls-s;
 			line-height: $lh-body-md;
 			margin: 0;
+			text-align: right;
 		}
 
 		.googlesitekit-settings-module__status--not-connected {
@@ -272,8 +285,8 @@
 			.googlesitekit-settings-module__title {
 				width: min-content;
 
-				@media (min-width: $bp-wpAdminBarTablet) {
-					min-width: 400px;
+				@media (min-width: $bp-desktop) {
+					min-width: 145px;
 				}
 			}
 		}

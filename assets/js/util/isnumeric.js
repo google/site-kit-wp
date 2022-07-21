@@ -1,7 +1,7 @@
 /**
- * Thank with Google Setup components.
+ * Utility function related to checking if a given value is numeric.
  *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2022 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,24 @@
  * limitations under the License.
  */
 
-export { default as SetupMain } from './SetupMain';
-export { default as SetupCreatePublication } from './SetupCreatePublication';
-export { default as SetupCustomize } from './SetupCustomize';
-export { default as SetupPublicationActive } from './SetupPublicationActive';
-export { default as SetupPublicationActionRequired } from './SetupPublicationActionRequired';
-export { default as SetupPublicationPendingVerification } from './SetupPublicationPendingVerification';
+/**
+ * Checks if a given value is numeric.
+ *
+ * @since n.e.x.t
+ *
+ * @param {*} value The value to check.
+ * @return {boolean} TRUE if a value is numeric FALSE otherwise.
+ */
+export function isNumeric( value ) {
+	if ( typeof value === 'number' ) {
+		return true;
+	}
+
+	const string = ( value || '' ).toString();
+
+	if ( ! string ) {
+		return false;
+	}
+
+	return ! isNaN( string );
+}
