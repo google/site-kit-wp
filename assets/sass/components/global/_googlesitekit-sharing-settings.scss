@@ -345,6 +345,7 @@
 	}
 
 	.googlesitekit-dashboard-sharing-settings__footer-notice {
+		margin: -0.625rem 0;
 
 		@media (max-width: $bp-mobileOnly ) {
 			padding: 16px 16px 0;
@@ -377,10 +378,6 @@
 
 		@media (min-width: $bp-tablet) {
 			padding: 8px;
-		}
-
-		@media (min-width: $bp-desktop) {
-			max-width: 400px;
 		}
 
 		&:empty {
