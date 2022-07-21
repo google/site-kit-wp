@@ -73,7 +73,7 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 	/**
 	 * Gets the setting value.
 	 *
-	 * @since m.e.x.t
+	 * @since n.e.x.t
 	 *
 	 * @return array
 	 */
@@ -164,8 +164,16 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 	 */
 	private function sanitize_button_post_types( $button_post_types ) {
 		if ( ! is_array( $button_post_types ) ) {
-			return array( 'post' );
+			return array();
 		}
-		return array_intersect( $button_post_types, get_post_types( array( 'public' => true ) ) );
+		return array_intersect(
+			$button_post_types,
+			array_filter(
+				get_post_types(),
+				function( $post_type ) {
+					return is_post_type_viewable( $post_type );
+				}
+			)
+		);
 	}
 }
