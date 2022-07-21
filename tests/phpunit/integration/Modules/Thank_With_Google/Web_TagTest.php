@@ -26,6 +26,8 @@ class Web_TagTest extends TestCase {
 	 */
 	private $web_tag;
 
+	private $dummy_content = '<p>Hello World</p><p>Goodbye World</p>';
+
 	public function set_up() {
 		parent::set_up();
 
@@ -33,97 +35,75 @@ class Web_TagTest extends TestCase {
 
 		$this->web_tag->set_publication_id( '12345' );
 		$this->web_tag->set_button_post_types( array( 'post' ) );
+
+		remove_all_filters( 'the_content' );
+		$this->web_tag->register();
 	}
 
 	public function test_content_placeholder_not_inserted_on_unselected_button_post_types() {
-		remove_all_filters( 'the_content' );
-
 		$this->web_tag->set_button_placement( 'static_auto' );
-		$this->web_tag->register();
 
-		$post_ID = $this->factory()->post->create(
-			array(
-				'post_type'    => 'page',
-				'post_content' => '<p>Hello World</p><p>Goodbye World</p>',
-			)
-		);
+		$post_ID = $this->factory()->post->create( array( 'post_type' => 'page' ) );
 		$this->go_to( get_permalink( $post_ID ) );
 
-		$output = get_echo( 'the_content' );
+		$output = apply_filters( 'the_content', $this->dummy_content );
 
 		$this->assertStringNotContainsString( 'Thank with Google snippet added by Site Kit', $output );
 		$this->assertStringNotContainsString( '<button twg-button', $output );
 	}
 
 	public function test_content_placeholder_inserted_on_button_post_types() {
-		remove_all_filters( 'the_content' );
-
 		$this->web_tag->set_button_placement( 'static_auto' );
-		$this->web_tag->register();
 
 		$this->create_post_and_go_to_it();
 
-		$output = get_echo( 'the_content' );
+		$output = apply_filters( 'the_content', $this->dummy_content );
 
 		$this->assertStringContainsString( 'Thank with Google snippet added by Site Kit', $output );
 		$this->assertStringContainsString( '<button twg-button', $output );
 	}
 
 	public function test_content_placeholder_not_inserted_on_dynamic_button_placement() {
-		remove_all_filters( 'the_content' );
-
 		$this->web_tag->set_button_placement( 'dynamic_low' );
-		$this->web_tag->register();
 
 		$this->create_post_and_go_to_it();
 
-		$output = get_echo( 'the_content' );
+		$output = apply_filters( 'the_content', $this->dummy_content );
 
 		$this->assertStringNotContainsString( 'Thank with Google snippet added by Site Kit', $output );
 		$this->assertStringNotContainsString( '<button twg-button', $output );
 	}
 
 	public function test_content_placeholder_inserted_static_below_content() {
-		remove_all_filters( 'the_content' );
-
 		$this->web_tag->set_button_placement( 'static_below-content' );
-		$this->web_tag->register();
 
 		$this->create_post_and_go_to_it();
 
-		$output  = get_echo( 'the_content' );
-		$content = get_the_content();
+		$output = apply_filters( 'the_content', $this->dummy_content );
 
-		$this->assertStringStartsWith( $content, $output );
+		$this->assertStringStartsWith( $this->dummy_content, $output );
 		$this->assertStringContainsString( 'Thank with Google snippet added by Site Kit', $output );
 		$this->assertStringContainsString( '<button twg-button', $output );
 	}
 
 	public function test_content_placeholder_inserted_static_above_content() {
-		remove_all_filters( 'the_content' );
-
 		$this->web_tag->set_button_placement( 'static_above-content' );
-		$this->web_tag->register();
 
 		$this->create_post_and_go_to_it();
 
-		$output  = get_echo( 'the_content' );
-		$content = get_the_content();
+		$output = apply_filters( 'the_content', $this->dummy_content );
 
-		$this->assertStringEndsWith( $content, $output );
+		$this->assertStringEndsWith( $this->dummy_content, $output );
 		$this->assertStringContainsString( 'Thank with Google snippet added by Site Kit', $output );
 		$this->assertStringContainsString( '<button twg-button', $output );
 	}
 
 	public function test_content_placeholder_inserted_static_below_first_paragraph() {
-		remove_all_filters( 'the_content' );
-
 		$this->web_tag->set_button_placement( 'static_below-first-paragraph' );
-		$this->web_tag->register();
 
 		$this->create_post_and_go_to_it();
 
-		$output = get_echo( 'the_content' );
+		$output = apply_filters( 'the_content', $this->dummy_content );
 
 		$this->assertStringStartsWith( '<p>Hello World</p>', $output );
 		$this->assertStringEndsWith( '<p>Goodbye World</p>', $output );
@@ -132,12 +112,7 @@ class Web_TagTest extends TestCase {
 	}
 
 	private function create_post_and_go_to_it() {
-		$post_ID = $this->factory()->post->create(
-			array(
-				'post_content' => '<p>Hello World</p><p>Goodbye World</p>',
-				'post_status'  => 'publish',
-			)
-		);
+		$post_ID = $this->factory()->post->create();
 		$this->go_to( get_permalink( $post_ID ) );
 	}
 }
