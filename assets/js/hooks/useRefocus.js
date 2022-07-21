@@ -21,6 +21,14 @@
  */
 import { useEffect } from '@wordpress/element';
 
+/**
+ * Invokes a `reset` function when the window is blurred and then refocused after the specified delay.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Function} reset        Callback to invoke when the window is blurred and then refocused after the specified delay.
+ * @param {number}   milliseconds Delay in milliseconds.
+ */
 export function useRefocus( reset, milliseconds ) {
 	// Reset all fetched data when user re-focuses window.
 	useEffect( () => {
