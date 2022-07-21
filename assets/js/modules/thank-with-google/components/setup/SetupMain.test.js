@@ -145,14 +145,16 @@ describe( 'SetupMain', () => {
 			.dispatch( MODULES_THANK_WITH_GOOGLE )
 			.receiveGetPublications( [ publicationActionRequiredStateC ] );
 
-		const { container } = render( <SetupMain />, {
+		const { container, queryByRole } = render( <SetupMain />, {
 			registry,
 		} );
 
-		// TODO: Update this assertion to match the new UI.
 		expect( container ).toHaveTextContent(
-			'TODO: UI for publication action required - SetupPublicationActionRequired'
+			'Finish the setup to customize and add Thank with Google on your site.'
 		);
+		const button = queryByRole( 'button' );
+		expect( button ).toBeInTheDocument();
+		expect( button ).toHaveTextContent( 'Complete setup' );
 	} );
 
 	it( 'should render the publication pending verification screen if the current publication state is `PENDING_VERIFICATION`', () => {
