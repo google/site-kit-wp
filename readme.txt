@@ -4,7 +4,7 @@ Contributors:      google
 Requires at least: 4.7
 Tested up to:      6.0
 Requires PHP:      5.6
-Stable tag:        1.79.0
+Stable tag:        1.79.1
 License:           Apache License 2.0
 License URI:       https://www.apache.org/licenses/LICENSE-2.0
 Tags:              google, search-console, analytics, adsense, pagespeed-insights, optimize, tag-manager, site-kit
@@ -105,6 +105,12 @@ By default, Site Kit does anonymize IP addresses upon activation of the Google A
 Please create a new topic on our [WordPress.org support forum](https://wordpress.org/support/plugin/google-site-kit/). Be sure to follow the [support forum guidelines](https://wordpress.org/support/guidelines/) when posting.
 
 == Changelog ==
+
+= 1.79.1 =
+
+**Fixed**
+
+* Fix an issue that could cause Site Kit's dashboard to crash when a theme/plugin loads the Google Web Font Loader JS on Site Kit screens. See [#5572](https://github.com/google/site-kit-wp/issues/5572).
 
 = 1.79.0 =
 
