@@ -80,8 +80,13 @@ const SurveyQuestionOpenText = ( {
 					onChange={ onChange }
 					label={ placeholder }
 					noLabel
+					textarea
 				>
-					<Input id={ instanceID } value={ value } />
+					<Input
+						inputType="textarea"
+						id={ instanceID }
+						value={ value }
+					/>
 				</TextField>
 			</div>
 			<div className="googlesitekit-survey__footer">
