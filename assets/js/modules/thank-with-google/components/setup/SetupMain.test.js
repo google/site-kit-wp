@@ -134,9 +134,8 @@ describe( 'SetupMain', () => {
 			registry,
 		} );
 
-		// TODO: Update this assertion to match the new UI.
 		expect( container ).toHaveTextContent(
-			'TODO: UI to create publication - SetupCreatePublication'
+			'To get started, create an account. Currently available only in the US.'
 		);
 	} );
 
@@ -168,7 +167,7 @@ describe( 'SetupMain', () => {
 
 		// TODO: Update this assertion to match the new UI.
 		expect( container ).toHaveTextContent(
-			'TODO: UI for publication pending verification - SetupPublicationPendingVerification'
+			'We received your request to create a Thank with Google account. Check again for updates to your status.'
 		);
 	} );
 
