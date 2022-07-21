@@ -57,6 +57,9 @@ class Supporter_Wall_Widget extends WP_Widget {
 				esc_attr( $title )
 			);
 		echo '</p>';
+		echo '<p class="description">';
+			esc_html_e( 'The color of the supporter wall is based on the color theme you selected in the Thank with Google module settings.', 'google-site-kit' );
+		echo '</p>';
 	}
 
 	/**
