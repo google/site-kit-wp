@@ -71,10 +71,10 @@ final class Thank_With_Google extends Module
 			'admin_init',
 			function() {
 				if (
-					! empty( $_GET['legacy-widget-preview']['idBase'] ) &&
-					Supporter_Wall_Widget::WIDGET_ID !== $_GET['legacy-widget-preview']['idBase']
+					! empty( $_GET['legacy-widget-preview']['idBase'] ) && // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+					Supporter_Wall_Widget::WIDGET_ID !== $_GET['legacy-widget-preview']['idBase'] // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 				) {
-					// $this->register_tag();
+					$this->register_tag();
 				}
 			}
 		);
@@ -86,7 +86,7 @@ final class Thank_With_Google extends Module
 					stripos( $request->get_route(), sprintf( 'widget-types/%s/render', Supporter_Wall_Widget::WIDGET_ID ) ) > 0 &&
 					Supporter_Wall_Widget::WIDGET_ID === $request['id']
 				) {
-					// $this->register_tag();
+					$this->register_tag();
 				}
 				return $result;
 			},
@@ -240,7 +240,6 @@ final class Thank_With_Google extends Module
 		$settings = $this->get_settings()->get();
 
 		$tag = new Web_Tag( $settings['publicationID'], self::MODULE_SLUG );
-
 		if ( $tag->is_tag_blocked() ) {
 			return;
 		}
