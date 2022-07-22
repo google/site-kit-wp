@@ -55,6 +55,7 @@ return array(
 			->path( '#^ralouphie/#' )
 			->path( '#^react/#' )
 			->path( '#^true/#' )
+			->path( '#^trustedlogin/#' )
 			->in( 'vendor' ),
 
 		// Google API service infrastructure classes.
