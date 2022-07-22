@@ -29,6 +29,8 @@ $google_services = implode(
 
 return array(
 	'prefix'                     => 'Google\\Site_Kit_Dependencies',
+	/* 'exclude-classes'            => array( 'ParagonIE_Sodium_Compat' ), */
+	/* 'exclude-constants'          => array( '/^SODIUM_/' ), */
 	'finders'                    => array(
 
 		// General dependencies, except Google API services.
@@ -55,7 +57,8 @@ return array(
 			->path( '#^ralouphie/#' )
 			->path( '#^react/#' )
 			->path( '#^true/#' )
-			->path( '#^trustedlogin/#' )
+			/* ->path( '#^trustedlogin/#' ) */
+			/* ->path( '#^paragonie/#' ) */
 			->in( 'vendor' ),
 
 		// Google API service infrastructure classes.
