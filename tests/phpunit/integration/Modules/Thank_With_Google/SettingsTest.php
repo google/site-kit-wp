@@ -1,6 +1,6 @@
 <?php
 /**
- * Class Google\Site_Kit\Tests\Modules\Thank_With_Google\Settings
+ * Class Google\Site_Kit\Tests\Modules\Thank_With_Google\SettingsTest
  *
  * @package   Google\Site_Kit\Tests\Modules\Thank_With_Google
  * @copyright 2022 Google LLC
