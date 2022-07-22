@@ -52,7 +52,7 @@ export function useRefocus( callback, milliseconds = 0 ) {
 			if ( ! runCallback ) {
 				return;
 			}
-			callback = false;
+			runCallback = false;
 
 			callback();
 		};
