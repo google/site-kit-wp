@@ -22,7 +22,7 @@
 import { useEffect } from '@wordpress/element';
 
 /**
- * Invokes a `reset` function when the window is blurred and then refocused after the specified delay.
+ * Invokes a function when the window is blurred and then refocused after the specified delay.
  *
  * @since n.e.x.t
  *
