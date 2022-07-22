@@ -35,6 +35,9 @@ export default function SettingsView() {
 	const publicationID = useSelect( ( select ) =>
 		select( MODULES_THANK_WITH_GOOGLE ).getPublicationID()
 	);
+	const suppoertWallSidebars = useSelect( ( select ) =>
+		select( MODULES_THANK_WITH_GOOGLE ).getSupportWallSidebars()
+	);
 
 	// Bail if the values aren't ready.
 	if ( publicationID === undefined ) {
@@ -55,6 +58,16 @@ export default function SettingsView() {
 					</h5>
 					<p className="googlesitekit-settings-module__meta-item-data">
 						<DisplaySetting value={ publicationID } />
+					</p>
+				</div>
+				<div className="googlesitekit-settings-module__meta-item">
+					<h5 className="googlesitekit-settings-module__meta-item-type">
+						{ __( 'Supporter Wall Widget', 'google-site-kit' ) }
+					</h5>
+					<p className="googlesitekit-settings-module__meta-item-data">
+						<DisplaySetting
+							value={ suppoertWallSidebars?.join( ', ' ) }
+						/>
 					</p>
 				</div>
 			</div>
