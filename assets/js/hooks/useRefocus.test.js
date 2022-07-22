@@ -50,6 +50,27 @@ describe( 'useRefocus', () => {
 		expect( resetSpy ).toHaveBeenCalledTimes( 1 );
 	} );
 
+	it( 'should invoke the reset handler when the window is blurred and then refocused when no delay is specified', () => {
+		const resetSpy = jest.fn();
+
+		renderHook( () => useRefocus( resetSpy ) );
+
+		act( () => {
+			global.window.dispatchEvent( new Event( 'blur' ) );
+		} );
+
+		// The default delay is 0 milliseconds
+		act( () => jest.advanceTimersByTime( 0 ) );
+
+		expect( resetSpy ).toHaveBeenCalledTimes( 0 );
+
+		act( () => {
+			global.window.dispatchEvent( new Event( 'focus' ) );
+		} );
+
+		expect( resetSpy ).toHaveBeenCalledTimes( 1 );
+	} );
+
 	it( 'should not invoke the reset handler when the window is blurred and then refocused before the specified delay', () => {
 		const resetSpy = jest.fn();
 
