@@ -39,6 +39,7 @@ import { FeatureToursDesktop } from '../FeatureToursDesktop';
 import CurrentSurveyPortal from '../surveys/CurrentSurveyPortal';
 import { Provider as ViewContextProvider } from './ViewContextContext';
 import InViewProvider from '../InViewProvider';
+import isSiteKitScreen from '../../util/is-site-kit-screen';
 
 export default function Root( { children, registry, viewContext = null } ) {
 	const [ inViewState ] = useState( {
@@ -63,7 +64,9 @@ export default function Root( { children, registry, viewContext = null } ) {
 									{ viewContext && <FeatureToursDesktop /> }
 									<CurrentSurveyPortal />
 								</RestoreSnapshots>
-								<PermissionsModal />
+								{ isSiteKitScreen( viewContext ) && (
+									<PermissionsModal />
+								) }
 							</ErrorHandler>
 						</ViewContextProvider>
 					</FeaturesProvider>
