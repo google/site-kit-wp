@@ -14,6 +14,61 @@
  * limitations under the License.
  */
 
+/**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+import { useCallback } from '@wordpress/element';
+
+/**
+ * Internal dependencies
+ */
+import Data from 'googlesitekit-data';
+import { MODULES_THANK_WITH_GOOGLE } from '../../datastore/constants';
+import ImageRadio from '../../../../components/ImageRadio';
+import { getColorThemes } from '../../util/settings';
+const { useSelect, useDispatch } = Data;
+
 export default function ColorRadio() {
-	return <div>ColorRadio</div>;
+	const { setColorTheme } = useDispatch( MODULES_THANK_WITH_GOOGLE );
+
+	const currentColor = useSelect( ( select ) =>
+		select( MODULES_THANK_WITH_GOOGLE ).getColorTheme()
+	);
+
+	const onChange = useCallback(
+		( { target } = {} ) => {
+			const { value: color = 'blue' } = target || {};
+			setColorTheme( color );
+		},
+		[ setColorTheme ]
+	);
+
+	const colors = getColorThemes()?.map(
+		( { colorThemeID, name, svg: SVG } ) => (
+			<ImageRadio
+				key={ `${ currentColor }::${ colorThemeID }` }
+				id={ colorThemeID }
+				name="color-theme"
+				value={ colorThemeID }
+				label={ name }
+				image={ <SVG /> }
+				onChange={ onChange }
+				checked={ currentColor === colorThemeID }
+			/>
+		)
+	);
+
+	return (
+		<div className="googlesitekit-color-radio">
+			<h4>{ __( 'Color', 'google-site-kit' ) }</h4>
+			<p>
+				{ __(
+					'Choose the color of the Thank button, counter, supporter wall, and other components.',
+					'google-site-kit'
+				) }
+			</p>
+			<div className="googlesitekit-color-radio__options">{ colors }</div>
+		</div>
+	);
 }
