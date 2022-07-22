@@ -29,38 +29,41 @@ import { useEffect } from '@wordpress/element';
  * @param {Function} callback     Function to invoke when the window is blurred and then refocused after the specified delay.
  * @param {number}   milliseconds Delay in milliseconds.
  */
-export function useRefocus( reset, milliseconds ) {
-	// Reset all fetched data when user re-focuses window.
+export function useRefocus( callback, milliseconds = 0 ) {
+	// Run the supplied callback whenever a user re-focuses window, as
+	// long as it happens after the specified delay.
 	useEffect( () => {
 		let timeout;
-		let needReset = false;
+		let runCallback = false;
 
 		// Count `milliseconds` once user focuses elsewhere.
 		const countIdleTime = () => {
 			timeout = global.setTimeout( () => {
-				needReset = true;
+				runCallback = true;
 			}, milliseconds );
 		};
 
-		// Reset when user re-focuses after `milliseconds` or more.
+		// Run the callback when user re-focuses after `milliseconds` or more.
 		const onFocus = () => {
 			global.clearTimeout( timeout );
 
-			// Do not reset if user has been away for less than `milliseconds`.
-			if ( ! needReset ) {
+			// Do not run the callback if user has been away for less
+			// than `milliseconds`.
+			if ( ! runCallback ) {
 				return;
 			}
-			needReset = false;
+			callback = false;
 
-			reset();
+			callback();
 		};
 
 		global.addEventListener( 'focus', onFocus );
 		global.addEventListener( 'blur', countIdleTime );
+
 		return () => {
 			global.removeEventListener( 'focus', onFocus );
 			global.removeEventListener( 'blur', countIdleTime );
 			global.clearTimeout( timeout );
 		};
-	}, [ milliseconds, reset ] );
+	}, [ milliseconds, callback ] );
 }
