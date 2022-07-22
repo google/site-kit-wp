@@ -1,6 +1,4 @@
 /**
- * Thank with Google common components.
- *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,10 +14,6 @@
  * limitations under the License.
  */
 
-export { default as PublicationIDInput } from './PublicationIDInput';
-export { default as SetupPublicationScreen } from './SetupPublicationScreen';
-export { default as ProminenceRadio } from './ProminenceRadio';
-export { default as TypeRadio } from './TypeRadio';
-export { default as PositionRadio } from './PositionRadio';
-export { default as ColorRadio } from './ColorRadio';
-export { default as PostTypesSelect } from './PostTypesSelect';
+export default function TypeRadio() {
+	return <div>Type Radio</div>;
+}
