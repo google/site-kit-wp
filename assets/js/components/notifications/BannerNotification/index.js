@@ -160,7 +160,7 @@ function BannerNotification( {
 		let dismissOnCTAClick = true;
 		if ( onCTAClick ) {
 			setIsAwaitingCTAResponse( true );
-			( { dismissOnCTAClick } = ( await onCTAClick( e ) ) || {} );
+			( { dismissOnCTAClick = true } = ( await onCTAClick( e ) ) || {} );
 			setIsAwaitingCTAResponse( false );
 		}
 
