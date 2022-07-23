@@ -161,11 +161,7 @@
 		}
 	}
 
-	.mdc-button + .googlesitekit-cta-link {
-		margin-left: $grid-gap-desktop;
-	}
-
-	.mdc-button + .spinner + .googlesitekit-cta-link {
+	.spinner + .googlesitekit-cta-link {
 		margin-left: $grid-gap-desktop;
 	}
 
