@@ -19,7 +19,6 @@
 /**
  * WordPress dependencies
  */
-import { Fragment } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -29,6 +28,9 @@ import Data from 'googlesitekit-data';
 import DisplaySetting from '../../../../components/DisplaySetting';
 import { MODULES_THANK_WITH_GOOGLE } from '../../datastore/constants';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
+import Link from '../../../../components/Link';
+import { Cell, Grid, Row } from '../../../../material-components';
+import { getButtonPostTypes, getProminence, getType } from '../../util/utils';
 const { useSelect } = Data;
 
 export default function SettingsView() {
@@ -36,28 +38,103 @@ export default function SettingsView() {
 		select( MODULES_THANK_WITH_GOOGLE ).getPublicationID()
 	);
 
+	const buttonPlacement = useSelect( ( select ) =>
+		select( MODULES_THANK_WITH_GOOGLE ).getButtonPlacement()
+	);
+
+	const colorTheme = useSelect( ( select ) =>
+		select( MODULES_THANK_WITH_GOOGLE ).getColorTheme()
+	);
+
+	const buttonPostTypes = useSelect( ( select ) =>
+		select( MODULES_THANK_WITH_GOOGLE ).getButtonPostTypes()
+	);
+
 	// Bail if the values aren't ready.
-	if ( publicationID === undefined ) {
+	if (
+		[
+			publicationID,
+			buttonPlacement,
+			colorTheme,
+			buttonPostTypes,
+		].includes( undefined )
+	) {
 		return null;
 	}
 
 	return (
-		<Fragment>
+		<Grid>
 			<StoreErrorNotices
 				moduleSlug="thank-with-google"
 				storeName={ MODULES_THANK_WITH_GOOGLE }
 			/>
 
-			<div className="googlesitekit-settings-module__meta-items">
-				<div className="googlesitekit-settings-module__meta-item">
+			<Row>
+				<Cell className="googlesitekit-settings-module__meta-item">
 					<h5 className="googlesitekit-settings-module__meta-item-type">
 						{ __( 'Publication ID', 'google-site-kit' ) }
 					</h5>
 					<p className="googlesitekit-settings-module__meta-item-data">
 						<DisplaySetting value={ publicationID } />
 					</p>
-				</div>
-			</div>
-		</Fragment>
+				</Cell>
+				<Cell className="googlesitekit-settings-module__meta-item">
+					<h5 className="googlesitekit-settings-module__meta-item-type">
+						{ __( 'Supporter Wall Widget', 'google-site-kit' ) }
+					</h5>
+					<p className="googlesitekit-settings-module__meta-item-data">
+						<Link
+							href="#"
+							className="googlesitekit-settings-module__cta-button"
+						>
+							{ __( 'Add Supporter wall', 'google-site-kit' ) }
+						</Link>
+					</p>
+				</Cell>
+			</Row>
+
+			<Row>
+				<Cell className="googlesitekit-settings-module__meta-item">
+					<h5 className="googlesitekit-settings-module__meta-item-type">
+						{ __( 'Type', 'google-site-kit' ) }
+					</h5>
+					<p className="googlesitekit-settings-module__meta-item-data">
+						<DisplaySetting value={ getType( buttonPlacement ) } />
+					</p>
+				</Cell>
+				<Cell className="googlesitekit-settings-module__meta-item">
+					<h5 className="googlesitekit-settings-module__meta-item-type">
+						{ __( 'Color', 'google-site-kit' ) }
+					</h5>
+					<p className="googlesitekit-settings-module__meta-item-data">
+						{ /* TODO: Localize color setting. */ }
+						<DisplaySetting value={ colorTheme } />
+					</p>
+				</Cell>
+			</Row>
+
+			<Row>
+				<Cell className="googlesitekit-settings-module__meta-item">
+					<h5 className="googlesitekit-settings-module__meta-item-type">
+						{ __( 'Prominence', 'google-site-kit' ) }
+					</h5>
+					<p className="googlesitekit-settings-module__meta-item-data">
+						<DisplaySetting
+							value={ getProminence( buttonPlacement ) }
+						/>
+					</p>
+				</Cell>
+				<Cell className="googlesitekit-settings-module__meta-item">
+					<h5 className="googlesitekit-settings-module__meta-item-type">
+						{ __( 'Post Types', 'google-site-kit' ) }
+					</h5>
+					<p className="googlesitekit-settings-module__meta-item-data">
+						<DisplaySetting
+							value={ getButtonPostTypes( buttonPostTypes ) }
+						/>
+					</p>
+				</Cell>
+			</Row>
+		</Grid>
 	);
 }
