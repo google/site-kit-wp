@@ -37,7 +37,7 @@ Site Kit shows key metrics and insights from different Google products:
 * **Optimize:** Use Site Kit to easily set up Optimize- no code editing required. Then, set up A/B tests in Optimize.
 
 == Installation ==
-**Note**: Make sure that your website is live. If your website isn't live yet, Site Kit can't show you any data. 
+**Note**: Make sure that your website is live. If your website isn't live yet, Site Kit can't show you any data.
 However, if you have a staging environment in addition to your production site, Site Kit can display data from your production site in the staging environment. Learn how to use [Site Kit with a staging environment](https://sitekit.withgoogle.com/documentation/using-site-kit/staging/).
 
 = Installation from within WordPress =
@@ -88,11 +88,13 @@ If you are still seeing this message after a few days, feel free to get in touch
 
 = Why aren’t any ads appearing on my site after I connected AdSense? =
 
-If you’re new to AdSense when you connect via Site Kit, your new AdSense account and your site will need to be manually reviewed and approved for ads by the AdSense team. Ads will not display until your account and site have been approved. [Check out this guide for more information about the approval process and timeline.](https://support.google.com/adsense/answer/76228)
+If you're new to AdSense when you connect via Site Kit, your new AdSense account and your site will need to be manually reviewed and approved for ads by the AdSense team. Ads will not display until your account and site have been approved. [Check out this guide for more information about the approval process and timeline.](https://support.google.com/adsense/answer/76228)
 
-You can check your approval status in Site Kit by going to Settings > Connected Services > AdSense and clicking “Check your site status.” This link will direct you to AdSense. If you see “Ready,” your account and site have been approved and should be displaying ads. If you see “Getting ready…,” your account and site are still under review and your site will not display ads until they have been approved.
+You can check your approval status in Site Kit by going to **Settings > Connected Services > AdSense** and clicking **Check your site status**. This link will direct you to AdSense. If you see "Ready," your account and site have been approved and should be displaying ads. If you see "Getting ready...," your account and site are still under review and your site will not display ads until they have been approved.
 
-If the AdSense snippet is successfully embedded on your site **and** your account and site have been approved, but your site is still not showing ads, [contact the AdSense Help Center for assistance](https://support.google.com/adsense/#topic=3373519).
+If Site Kit has successfully added the AdSense snippet to your site and your account and site have been approved, but your site is still not showing ads, [contact the AdSense Help Center for assistance](https://support.google.com/adsense/#topic=3373519).
+
+You can find out more information on how Site Kit works with AdSense in our [Managing AdSense guide](https://sitekit.withgoogle.com/documentation/using-site-kit/managing-adsense/).
 
 = Is Site Kit GDPR compliant? =
 
