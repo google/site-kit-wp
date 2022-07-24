@@ -31,6 +31,23 @@ import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 
 const features = [ 'twgModule' ];
 
+const setupBaseRegistry = ( registry, args ) => {
+	provideModules( registry, [
+		{
+			slug: 'thank-with-google',
+			active: true,
+			connected: true,
+		},
+	] );
+	provideSiteInfo( registry );
+	provideModuleRegistrations( registry );
+
+	// Call story-specific setup.
+	if ( typeof args?.setupRegistry === 'function' ) {
+		args.setupRegistry( registry );
+	}
+};
+
 function Template() {
 	return (
 		<div className="googlesitekit-layout">
@@ -52,27 +69,48 @@ function Template() {
 export const Default = Template.bind( null );
 Default.storyName = 'Default';
 Default.parameters = { features };
+Default.args = {
+	setupRegistry: ( registry ) => {
+		registry.dispatch( MODULES_THANK_WITH_GOOGLE ).receiveGetSettings( {
+			publicationID: 'example.com',
+			buttonPlacement: 'static_auto',
+			colorTheme: 'blue',
+			buttonPostTypes: [ 'Posts', 'Pages' ],
+		} );
+	},
+};
+
+export const SettingsError = Template.bind( null );
+SettingsError.storyName = 'SettingsError';
+SettingsError.parameters = { features };
+SettingsError.args = {
+	setupRegistry: ( registry ) => {
+		registry.dispatch( MODULES_THANK_WITH_GOOGLE ).receiveGetSettings( {
+			publicationID: 'example.com',
+			buttonPlacement: 'static_auto',
+			colorTheme: 'blue',
+			buttonPostTypes: [ 'Posts', 'Pages' ],
+		} );
+		registry.dispatch( MODULES_THANK_WITH_GOOGLE ).receiveError(
+			{
+				message: 'Thank with Google publication is invalid.',
+				data: {
+					status: 403,
+					reason: 'invalidSetting',
+				},
+			},
+			'getPublicationId',
+			[]
+		);
+	},
+};
 
 export default {
 	title: 'Modules/Thank with Google/Settings/SettingsView',
 	decorators: [
-		( Story ) => {
+		( Story, { args } ) => {
 			const setupRegistry = ( registry ) => {
-				provideModules( registry, [
-					{
-						slug: 'thank-with-google',
-						active: true,
-						connected: true,
-					},
-				] );
-				provideSiteInfo( registry );
-				provideModuleRegistrations( registry );
-
-				registry
-					.dispatch( MODULES_THANK_WITH_GOOGLE )
-					.receiveGetSettings( {
-						publicationID: 'example.com',
-					} );
+				setupBaseRegistry( registry, args );
 			};
 
 			return (
