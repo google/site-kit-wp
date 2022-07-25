@@ -1,5 +1,5 @@
 /**
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2022 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +14,115 @@
  * limitations under the License.
  */
 
+/**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+import { useCallback } from '@wordpress/element';
+
+/**
+ * Internal dependencies
+ */
+import Data from 'googlesitekit-data';
+import {
+	MODULES_THANK_WITH_GOOGLE,
+	BUTTON_PLACEMENT_STATIC_ABOVE_CONTENT,
+	BUTTON_PLACEMENT_STATIC_AUTO,
+	BUTTON_PLACEMENT_STATIC_BELOW_1ST_P,
+	BUTTON_PLACEMENT_STATIC_BELOW_CONTENT,
+} from '../../datastore/constants';
+import Radio from '../../../../components/Radio';
+const { useSelect, useDispatch } = Data;
+
 export default function PositionRadio() {
-	return <div>PositionRadio</div>;
+	const { setButtonPlacement } = useDispatch( MODULES_THANK_WITH_GOOGLE );
+
+	const buttonPlacement = useSelect( ( select ) =>
+		select( MODULES_THANK_WITH_GOOGLE ).getButtonPlacement()
+	);
+
+	const onChange = useCallback(
+		( { target } = {} ) => {
+			const { value: placement } = target || {};
+			setButtonPlacement( placement );
+		},
+		[ setButtonPlacement ]
+	);
+
+	return (
+		<div className="googlesitekit-position-radio">
+			<h4>{ __( 'Position', 'google-site-kit' ) }</h4>
+			<div className="googlesitekit-position-radio__option">
+				<Radio
+					id={ `button-placement-${ BUTTON_PLACEMENT_STATIC_AUTO }` }
+					name="button-placement"
+					value={ BUTTON_PLACEMENT_STATIC_AUTO }
+					checked={ buttonPlacement === BUTTON_PLACEMENT_STATIC_AUTO }
+					onChange={ onChange }
+				>
+					<b>{ __( 'Auto', 'google-site-kit' ) }</b>
+				</Radio>
+				<p>
+					{ __(
+						'The prompt is automatically placed where it may perform best',
+						'google-site-kit'
+					) }
+				</p>
+			</div>
+			<div className="googlesitekit-position-radio__option">
+				<Radio
+					id="button-placement-manual"
+					name="button-placement"
+					value=""
+					readonly
+				>
+					<b>{ __( 'Manual', 'google-site-kit' ) }</b>
+				</Radio>
+				<p>
+					{ __(
+						'Choose where you want to display Thank with Google on the page',
+						'google-site-kit'
+					) }
+				</p>
+				<div className="googlesitekit-position-radio__suboptions">
+					<Radio
+						id={ `button-placement-${ BUTTON_PLACEMENT_STATIC_ABOVE_CONTENT }` }
+						name="button-placement"
+						value={ BUTTON_PLACEMENT_STATIC_ABOVE_CONTENT }
+						checked={
+							buttonPlacement ===
+							BUTTON_PLACEMENT_STATIC_ABOVE_CONTENT
+						}
+						onChange={ onChange }
+					>
+						{ __( 'Above the post', 'google-site-kit' ) }
+					</Radio>
+					<Radio
+						id={ `button-placement-${ BUTTON_PLACEMENT_STATIC_BELOW_CONTENT }` }
+						name="button-placement"
+						value={ BUTTON_PLACEMENT_STATIC_BELOW_CONTENT }
+						checked={
+							buttonPlacement ===
+							BUTTON_PLACEMENT_STATIC_BELOW_CONTENT
+						}
+						onChange={ onChange }
+					>
+						{ __( 'Below the post', 'google-site-kit' ) }
+					</Radio>
+					<Radio
+						id={ `button-placement-${ BUTTON_PLACEMENT_STATIC_BELOW_1ST_P }` }
+						name="button-placement"
+						value={ BUTTON_PLACEMENT_STATIC_BELOW_1ST_P }
+						checked={
+							buttonPlacement ===
+							BUTTON_PLACEMENT_STATIC_BELOW_1ST_P
+						}
+						onChange={ onChange }
+					>
+						{ __( 'Below the 1st paragraph', 'google-site-kit' ) }
+					</Radio>
+				</div>
+			</div>
+		</div>
+	);
 }

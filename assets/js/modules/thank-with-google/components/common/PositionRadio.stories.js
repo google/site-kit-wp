@@ -17,19 +17,22 @@
 /**
  * Internal dependencies
  */
-import ColorRadio from './ColorRadio';
-import { MODULES_THANK_WITH_GOOGLE } from '../../datastore/constants';
+import PositionRadio from './PositionRadio';
+import {
+	MODULES_THANK_WITH_GOOGLE,
+	BUTTON_PLACEMENT_STATIC_ABOVE_CONTENT,
+} from '../../datastore/constants';
 import { provideModules } from '../../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 
-const Template = ( args ) => <ColorRadio { ...args } />;
+const Template = ( args ) => <PositionRadio { ...args } />;
 
-export const DefaultColorRadio = Template.bind( {} );
-DefaultColorRadio.storyName = 'Default';
-DefaultColorRadio.args = {};
+export const DefaultPositionRadio = Template.bind( {} );
+DefaultPositionRadio.storyName = 'Default';
+DefaultPositionRadio.args = {};
 
 export default {
-	title: 'Modules/Thank with Google/Common/ColorRadio',
+	title: 'Modules/Thank with Google/Common/PositionRadio',
 	decorators: [
 		( Story ) => {
 			const setupRegistry = ( registry ) => {
@@ -44,7 +47,7 @@ export default {
 				registry
 					.dispatch( MODULES_THANK_WITH_GOOGLE )
 					.receiveGetSettings( {
-						colorTheme: 'blue',
+						buttonPlacement: BUTTON_PLACEMENT_STATIC_ABOVE_CONTENT,
 					} );
 			};
 

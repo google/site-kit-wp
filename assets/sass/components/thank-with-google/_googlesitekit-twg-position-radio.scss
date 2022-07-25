@@ -14,5 +14,34 @@
  * limitations under the License.
  */
 
-@import "googlesitekit-twg-color-radio";
-@import "googlesitekit-twg-position-radio";
+.googlesitekit-plugin {
+
+	.googlesitekit-position-radio {
+
+		.mdc-radio {
+			margin-left: -10px;
+		}
+	}
+
+	.googlesitekit-position-radio__suboptions {
+		margin: 17px 0 0 34px;
+
+		.mdc-form-field {
+			display: flex;
+			margin-top: -10px;
+		}
+	}
+
+	.googlesitekit-position-radio__option {
+		margin-bottom: 14px;
+
+		&:last-child {
+			margin-bottom: 0;
+		}
+
+		p {
+			font-size: 12px;
+			margin: -10px 0 0 34px;
+		}
+	}
+}

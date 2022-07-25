@@ -17,3 +17,9 @@
  */
 
 export const MODULES_THANK_WITH_GOOGLE = 'modules/thank-with-google';
+
+export const BUTTON_PLACEMENT_STATIC_AUTO = 'static_auto';
+export const BUTTON_PLACEMENT_STATIC_ABOVE_CONTENT = 'static_above-content';
+export const BUTTON_PLACEMENT_STATIC_BELOW_CONTENT = 'static_below-content';
+export const BUTTON_PLACEMENT_STATIC_BELOW_1ST_P =
+	'static_below-first-paragraph';
