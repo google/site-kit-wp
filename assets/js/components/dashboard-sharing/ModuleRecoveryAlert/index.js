@@ -106,17 +106,17 @@ export default function ModuleRecoveryAlert() {
 		[]
 	);
 
-	const handleRecoverModules = useCallback( () => {
+	const handleRecoverModules = useCallback( async () => {
 		setRecoveringModules( true );
 		const modulesToRecover = Object.keys( checkboxes ).filter(
 			( module ) => checkboxes[ module ]
 		);
-		clearErrors( 'recoverModule' ).then( () => {
-			recoverModules( modulesToRecover ).finally( () => {
-				setRecoveringModules( false );
-				setCheckboxes( null );
-			} );
-		} );
+
+		await clearErrors( 'recoverModule' );
+		await recoverModules( modulesToRecover );
+
+		setRecoveringModules( false );
+		setCheckboxes( null );
 	}, [ checkboxes, clearErrors, recoverModules ] );
 
 	useEffect( () => {
