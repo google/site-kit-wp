@@ -46,7 +46,7 @@ export default function SettingsView() {
 	}
 
 	const { name: colorName } =
-		getColorThemes()?.find(
+		getColorThemes().find(
 			( { colorThemeID } ) => colorThemeID === colorTheme
 		) || {};
 
