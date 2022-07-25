@@ -842,7 +842,7 @@ describe( 'core/modules sharing-settings', () => {
 				).toBeUndefined();
 			} );
 
-			it( 'informs whether client-side sharing-settings differ from server-side ones for the given module', () => {
+			it( 'informs whether client-side sharing settings differ from server-side ones for the given module', () => {
 				global[ dashboardSharingDataBaseVar ] = undefined;
 
 				// Initially undefined.
