@@ -25,11 +25,11 @@ import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 const Template = ( args ) => <ColorRadio { ...args } />;
 
 export const DefaultColorRadio = Template.bind( {} );
-DefaultColorRadio.storyName = 'Default';
+DefaultColorRadio.storyName = 'ColorRadio';
 DefaultColorRadio.args = {};
 
 export default {
-	title: 'Modules/Thank with Google/Common/ColorRadio',
+	title: 'Modules/Thank with Google/Common',
 	decorators: [
 		( Story ) => {
 			const setupRegistry = ( registry ) => {

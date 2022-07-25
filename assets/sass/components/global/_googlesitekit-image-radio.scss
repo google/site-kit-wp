@@ -110,12 +110,9 @@
 			}
 		}
 
-		.mdc-radio__native-control[checked] + .mdc-image-radio__background {
-
-			.mdc-image-radio__content {
-				border: 0.3125rem solid $c-surfaces-surface;
-				outline: 0.125rem solid $c-content-link;
-			}
+		.mdc-image-radio__content[aria-checked="true"] {
+			border: 0.3125rem solid $c-surfaces-surface;
+			outline: 0.125rem solid $c-content-link;
 		}
 	}
 }

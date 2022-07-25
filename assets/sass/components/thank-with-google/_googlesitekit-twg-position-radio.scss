@@ -18,6 +18,10 @@
 
 	.googlesitekit-position-radio {
 
+		h4 {
+			margin: 0 0 21px;
+		}
+
 		.mdc-radio {
 			margin-left: -10px;
 		}
@@ -39,8 +43,16 @@
 			margin-bottom: 0;
 		}
 
+		> .mdc-form-field {
+
+			label {
+				font-weight: 700;
+			}
+		}
+
 		p {
-			font-size: 12px;
+			color: $c-user-input-note;
+			font-size: 0.75rem;
 			margin: -10px 0 0 34px;
 		}
 	}

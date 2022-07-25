@@ -28,11 +28,11 @@ import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 const Template = ( args ) => <PositionRadio { ...args } />;
 
 export const DefaultPositionRadio = Template.bind( {} );
-DefaultPositionRadio.storyName = 'Default';
+DefaultPositionRadio.storyName = 'PositionRadio';
 DefaultPositionRadio.args = {};
 
 export default {
-	title: 'Modules/Thank with Google/Common/PositionRadio',
+	title: 'Modules/Thank with Google/Common',
 	decorators: [
 		( Story ) => {
 			const setupRegistry = ( registry ) => {

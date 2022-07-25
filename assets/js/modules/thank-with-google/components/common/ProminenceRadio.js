@@ -14,6 +14,84 @@
  * limitations under the License.
  */
 
+/**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+import { useCallback, lazy, Suspense } from '@wordpress/element';
+
+/**
+ * Internal dependencies
+ */
+import Data from 'googlesitekit-data';
+import {
+	MODULES_THANK_WITH_GOOGLE,
+	BUTTON_PLACEMENT_DYNAMIC_HIGH,
+	BUTTON_PLACEMENT_DYNAMIC_LOW,
+} from '../../datastore/constants';
+import ImageRadio from '../../../../components/ImageRadio';
+import ProgressBar from '../../../../components/ProgressBar';
+const { useSelect, useDispatch } = Data;
+
+const DynamicLowSVG = lazy( () =>
+	import( '../../../../../svg/graphics/twg-dynamic-low.svg' )
+);
+const DynamicHighSVG = lazy( () =>
+	import( '../../../../../svg/graphics/twg-dynamic-high.svg' )
+);
+
 export default function ProminenceRadio() {
-	return <div>ProminenceRadio</div>;
+	const { setButtonPlacement } = useDispatch( MODULES_THANK_WITH_GOOGLE );
+
+	const buttonPlacement = useSelect( ( select ) =>
+		select( MODULES_THANK_WITH_GOOGLE ).getButtonPlacement()
+	);
+
+	const onChange = useCallback(
+		( { target } = {} ) => {
+			const { value: placement } = target || {};
+			setButtonPlacement( placement );
+		},
+		[ setButtonPlacement ]
+	);
+
+	return (
+		<div className="googlesitekit-prominence-radio">
+			<h4>{ __( 'Prominence', 'google-site-kit' ) }</h4>
+			<div className="googlesitekit-prominence-radio__options">
+				<Suspense fallback={ <ProgressBar small /> }>
+					<ImageRadio
+						id={ `button-placement-${ BUTTON_PLACEMENT_DYNAMIC_LOW }` }
+						name="button-placement"
+						value={ BUTTON_PLACEMENT_DYNAMIC_LOW }
+						label={ __( 'Low', 'google-site-kit' ) }
+						description={ __(
+							'Floats at the bottom of the page',
+							'google-site-kit'
+						) }
+						image={ <DynamicLowSVG /> }
+						onChange={ onChange }
+						checked={
+							buttonPlacement === BUTTON_PLACEMENT_DYNAMIC_LOW
+						}
+					/>
+					<ImageRadio
+						id={ `button-placement-${ BUTTON_PLACEMENT_DYNAMIC_HIGH }` }
+						name="button-placement"
+						value={ BUTTON_PLACEMENT_DYNAMIC_HIGH }
+						label={ __( 'High', 'google-site-kit' ) }
+						description={ __(
+							'Can be temporary dismissed',
+							'google-site-kit'
+						) }
+						image={ <DynamicHighSVG /> }
+						onChange={ onChange }
+						checked={
+							buttonPlacement === BUTTON_PLACEMENT_DYNAMIC_HIGH
+						}
+					/>
+				</Suspense>
+			</div>
+		</div>
+	);
 }

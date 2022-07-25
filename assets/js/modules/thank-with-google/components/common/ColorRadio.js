@@ -51,7 +51,7 @@ export default function ColorRadio() {
 				id={ colorThemeID }
 				name="color-theme"
 				value={ colorThemeID }
-				label={ name }
+				description={ name }
 				image={ <SVG /> }
 				onChange={ onChange }
 				checked={ currentColor === colorThemeID }

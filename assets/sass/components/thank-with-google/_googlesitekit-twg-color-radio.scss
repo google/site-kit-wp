@@ -16,6 +16,18 @@
 
 .googlesitekit-plugin {
 
+	.googlesitekit-color-radio {
+
+		h4 {
+			margin: 0 0 21px;
+		}
+
+		p {
+			color: $c-user-input-note;
+			font-size: 0.75rem;
+		}
+	}
+
 	.googlesitekit-color-radio__options {
 		display: flex;
 		flex-wrap: wrap;

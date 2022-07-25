@@ -60,7 +60,7 @@ export default function PositionRadio() {
 					checked={ buttonPlacement === BUTTON_PLACEMENT_STATIC_AUTO }
 					onChange={ onChange }
 				>
-					<b>{ __( 'Auto', 'google-site-kit' ) }</b>
+					{ __( 'Auto', 'google-site-kit' ) }
 				</Radio>
 				<p>
 					{ __(
@@ -76,7 +76,7 @@ export default function PositionRadio() {
 					value=""
 					readonly
 				>
-					<b>{ __( 'Manual', 'google-site-kit' ) }</b>
+					{ __( 'Manual', 'google-site-kit' ) }
 				</Radio>
 				<p>
 					{ __(

@@ -92,7 +92,7 @@ export default function ImageRadio( props ) {
 				</div>
 			</div>
 			<label htmlFor={ id }>
-				{ image && <span>{ label }</span> }
+				{ label && <span>{ label }</span> }
 				{ description ? description : children }
 			</label>
 		</div>
@@ -107,7 +107,7 @@ ImageRadio.propTypes = {
 	value: PropTypes.string.isRequired,
 	checked: PropTypes.bool,
 	tabIndex: PropTypes.oneOfType( [ PropTypes.number, PropTypes.string ] ),
-	label: PropTypes.string.isRequired,
+	label: PropTypes.string,
 	children: PropTypes.string,
 	image: PropTypes.element,
 	description: PropTypes.string,
