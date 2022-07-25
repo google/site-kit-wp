@@ -51,8 +51,12 @@ export default function Errors( { recoveryErrors } ) {
 					<ul>
 						{ Object.keys( recoveryErrors ).map( ( module ) => (
 							<li key={ module }>
-								{ recoveryErrors[ module ].name }:{ ' ' }
-								{ recoveryErrors[ module ].message }
+								{ sprintf(
+									/* translators: 1: Module name, 2: Error message */
+									__( '%1$s: %2$s', 'google-site-kit' ),
+									recoveryErrors[ module ].name,
+									recoveryErrors[ module ].message
+								) }
 							</li>
 						) ) }
 					</ul>
