@@ -28,6 +28,7 @@ import {
 	provideSiteInfo,
 } from '../../../../tests/js/test-utils';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 
 describe( 'ErrorNotifications', () => {
 	let registry;
@@ -73,13 +74,20 @@ describe( 'ErrorNotifications', () => {
 			],
 		} );
 		provideSiteInfo( registry, {
+			proxySupportLinkURL: 'https://test.com',
 			setupErrorCode: 'error_code',
 			setupErrorMessage: 'An error occurred',
 		} );
-		const { container } = render( <ErrorNotifications />, {
+		const { container, getByRole } = render( <ErrorNotifications />, {
 			registry,
 		} );
 
 		expect( container ).toHaveTextContent( 'Get help' );
+		expect( getByRole( 'link', { name: /get help/i } ) ).toHaveAttribute(
+			'href',
+			registry.select( CORE_SITE ).getErrorTroubleshootingLinkURL( {
+				code: registry.select( CORE_SITE ).getSetupErrorCode(),
+			} )
+		);
 	} );
 } );
