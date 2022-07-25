@@ -89,6 +89,11 @@
 		}
 	}
 
+	&--surfaces {
+
+		@include mdc-button-filled-accessible($c-surfaces-on-background);
+	}
+
 	.mdc-button__icon {
 
 		&--image {
