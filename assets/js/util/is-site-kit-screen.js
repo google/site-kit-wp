@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import includes from 'lodash/includes';
-
-/**
  * Internal dependencies
  */
 import { SITE_KIT_VIEW_CONTEXTS } from '../googlesitekit/constants';
@@ -31,10 +26,10 @@ import { SITE_KIT_VIEW_CONTEXTS } from '../googlesitekit/constants';
  *
  * @since n.e.x.t
  *
- * @param {string} viewContext THe view-context.
+ * @param {string} viewContext The view-context.
  * @return {boolean} TRUE if the passed view-context is a site kit view; otherwise FALSE.
  */
 const isSiteKitScreen = ( viewContext ) =>
-	includes( SITE_KIT_VIEW_CONTEXTS, viewContext );
+	SITE_KIT_VIEW_CONTEXTS.includes( viewContext );
 
 export default isSiteKitScreen;
