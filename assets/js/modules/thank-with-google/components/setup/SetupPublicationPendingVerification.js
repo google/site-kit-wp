@@ -24,7 +24,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Link from '../../../../../js/components/Link';
+import Button from '../../../../components/Button';
 import { SetupPublicationScreen } from '../common';
 
 export default function SetupPublicationPendingVerification() {
@@ -39,17 +39,17 @@ export default function SetupPublicationPendingVerification() {
 				'google-site-kit'
 			) }
 		>
-			<Link
+			<Button
+				className="mdc-button--surfaces"
 				href="https://publishercenter.google.com/"
-				external={ true }
+				target="_blank"
 				aria-label={ __(
 					'Check your status on Thank with Google Publisher Center',
 					'google-site-kit'
 				) }
-				hideExternalIndicator={ true }
 			>
 				{ __( 'Check your status', 'google-site-kit' ) }
-			</Link>
+			</Button>
 		</SetupPublicationScreen>
 	);
 }
