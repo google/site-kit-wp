@@ -29,7 +29,7 @@ import { sprintf, __ } from '@wordpress/i18n';
 
 export default function Errors( { recoveryErrors } ) {
 	return (
-		<div className="googlesitekit-module-recovery-error">
+		<div className="googlesitekit-module-recovery-errors">
 			{ Object.keys( recoveryErrors ).length === 1 && (
 				<p>
 					{ sprintf(
