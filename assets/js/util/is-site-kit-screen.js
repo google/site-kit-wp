@@ -1,5 +1,5 @@
 /**
- * Utility function to check whether or not a view-context is a site kit view.
+ * Utility function to check whether or not a view-context is a Site Kit view.
  *
  * Site Kit by Google, Copyright 2022 Google LLC
  *
