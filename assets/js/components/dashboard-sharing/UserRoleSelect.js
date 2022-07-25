@@ -86,7 +86,7 @@ const UserRoleSelect = forwardRef(
 
 		const toggleEditMode = useCallback( () => {
 			if ( ! editMode ) {
-				// Set these state to disable modules in when editing user roles
+				// Set the state to disable modules in when editing user roles
 				setValue( EDITING_USER_ROLE_SELECT_SLUG_KEY, moduleSlug );
 			} else {
 				// Reset the state to enable modules in when not editing.
