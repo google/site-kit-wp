@@ -22,14 +22,13 @@
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import { Chip, ChipCheckmark } from '@material/react-chips';
-import isEqual from 'lodash/isEqual';
 
 /**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
 import { ESCAPE, ENTER } from '@wordpress/keycodes';
-import { useState, useCallback, useRef, forwardRef } from '@wordpress/element';
+import { useCallback, useRef, forwardRef } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -55,8 +54,6 @@ const UserRoleSelect = forwardRef(
 		const viewContext = useViewContext();
 		const roleSelectButtonRef = useRef();
 
-		const [ initialSharedRoles, setInitialSharedRoles ] = useState( [] );
-
 		const { setSharedRoles } = useDispatch( CORE_MODULES );
 		const { setValue } = useDispatch( CORE_UI );
 
@@ -80,36 +77,35 @@ const UserRoleSelect = forwardRef(
 			}
 		} );
 
+		const haveSharingSettingsRolesChanged = useSelect( ( select ) =>
+			select( CORE_MODULES ).haveModuleSharingSettingsChanged(
+				moduleSlug,
+				'sharedRoles'
+			)
+		);
+
 		const toggleEditMode = useCallback( () => {
 			if ( ! editMode ) {
-				if (
-					! isEqual(
-						[ ...( sharedRoles || [] ) ].sort(),
-						initialSharedRoles
-					)
-				) {
+				// Set the state to disable modules in when editing user roles
+				setValue( EDITING_USER_ROLE_SELECT_SLUG_KEY, moduleSlug );
+			} else {
+				// Reset the state to enable modules in when not editing.
+				setValue( EDITING_USER_ROLE_SELECT_SLUG_KEY, undefined );
+
+				if ( haveSharingSettingsRolesChanged ) {
 					trackEvent(
 						`${ viewContext }_sharing`,
 						'change_shared_roles',
 						moduleSlug
 					);
 				}
-
-				// Set these state to disable modules in when editing user roles
-				setValue( EDITING_USER_ROLE_SELECT_SLUG_KEY, moduleSlug );
-			} else {
-				setInitialSharedRoles( [ ...( sharedRoles || [] ) ].sort() );
-
-				// Reset the state to enable modules in when not editing.
-				setValue( EDITING_USER_ROLE_SELECT_SLUG_KEY, undefined );
 			}
 		}, [
 			editMode,
-			sharedRoles,
-			initialSharedRoles,
-			viewContext,
+			haveSharingSettingsRolesChanged,
 			moduleSlug,
 			setValue,
+			viewContext,
 		] );
 
 		const toggleChip = useCallback(

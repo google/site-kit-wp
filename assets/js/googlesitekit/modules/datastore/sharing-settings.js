@@ -537,6 +537,41 @@ const baseSelectors = {
 	},
 
 	/**
+	 * Indicates whether the current sharing settings have changed from what is saved for the given module.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object}     state      Data store's state.
+	 * @param {string}     moduleSlug Module slug.
+	 * @param {Array|null} keys       Sharing Settings keys to check; if not provided, all sharing settings are checked.
+	 * @return {boolean|undefined} True if the given module's sharing settings have changed; false otherwise; `undefined` if not yet loaded.
+	 */
+	haveModuleSharingSettingsChanged( state, moduleSlug, keys = null ) {
+		invariant( moduleSlug, 'moduleSlug is required.' );
+
+		const { sharingSettings, savedSharingSettings } = state;
+
+		if (
+			sharingSettings === undefined ||
+			savedSharingSettings === undefined
+		) {
+			return undefined;
+		}
+
+		if ( keys ) {
+			return ! isEqual(
+				pick( sharingSettings[ moduleSlug ], keys ),
+				pick( savedSharingSettings[ moduleSlug ], keys )
+			);
+		}
+
+		return ! isEqual(
+			sharingSettings[ moduleSlug ],
+			savedSharingSettings[ moduleSlug ]
+		);
+	},
+
+	/**
 	 * Checks whether sharing settings changes are currently being submitted.
 	 *
 	 * @since 1.77.0
