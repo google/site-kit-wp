@@ -482,7 +482,7 @@ export const selectors = {
 	/**
 	 * Gets a setup error code, if one exists.
 	 *
-	 * @since 1.14.0
+	 * @since n.e.x.t
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(string|undefined)} An error code from setup, if one exists. Will be `null` if no error exists; `undefined` when loading.
