@@ -63,16 +63,18 @@ describe( 'isSiteKitScreen', () => {
 		expect( isSiteKitScreen( screen ) ).toBe( false );
 	} );
 
-	it( 'should return false for values other than Site Kit screen context constans', () => {
-		expect( isSiteKitScreen( 'foo' ) ).toBe( false );
-		expect( isSiteKitScreen( null ) ).toBe( false );
-		expect( isSiteKitScreen( undefined ) ).toBe( false );
-		expect( isSiteKitScreen( 0 ) ).toBe( false );
-		expect( isSiteKitScreen( 1 ) ).toBe( false );
-		expect( isSiteKitScreen( true ) ).toBe( false );
-		expect( isSiteKitScreen( false ) ).toBe( false );
-		expect( isSiteKitScreen( {} ) ).toBe( false );
-		expect( isSiteKitScreen( [] ) ).toBe( false );
-		expect( isSiteKitScreen( function () {} ) ).toBe( false );
+	it.each( [
+		[ 'String "foo"', 'foo' ],
+		[ 'Number 0', 0 ],
+		[ 'Number 1', 1 ],
+		[ 'Boolean true', true ],
+		[ 'Boolean false', false ],
+		[ 'Null', null ],
+		[ 'Undefined', undefined ],
+		[ 'Object', {} ],
+		[ 'Array', [] ],
+		[ 'Function', function () {} ],
+	] )( 'should return FALSE for %s', ( _, screen ) => {
+		expect( isSiteKitScreen( screen ) ).toBe( false );
 	} );
 } );
