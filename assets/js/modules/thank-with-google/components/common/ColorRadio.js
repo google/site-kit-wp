@@ -60,7 +60,7 @@ export default function ColorRadio() {
 	);
 
 	return (
-		<div className="googlesitekit-color-radio">
+		<div className="googlesitekit-twg-setting-field googlesitekit-twg-color-radio">
 			<h4>{ __( 'Color', 'google-site-kit' ) }</h4>
 			<p>
 				{ __(
@@ -68,7 +68,9 @@ export default function ColorRadio() {
 					'google-site-kit'
 				) }
 			</p>
-			<div className="googlesitekit-color-radio__options">{ colors }</div>
+			<div className="googlesitekit-twg-color-radio__options">
+				{ colors }
+			</div>
 		</div>
 	);
 }

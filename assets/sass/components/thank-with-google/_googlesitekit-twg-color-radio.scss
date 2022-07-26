@@ -16,11 +16,7 @@
 
 .googlesitekit-plugin {
 
-	.googlesitekit-color-radio {
-
-		h4 {
-			margin: 0 0 21px;
-		}
+	.googlesitekit-twg-color-radio {
 
 		p {
 			color: $c-user-input-note;
@@ -28,7 +24,7 @@
 		}
 	}
 
-	.googlesitekit-color-radio__options {
+	.googlesitekit-twg-color-radio__options {
 		display: flex;
 		flex-wrap: wrap;
 

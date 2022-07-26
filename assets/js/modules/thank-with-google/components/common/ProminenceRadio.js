@@ -56,9 +56,9 @@ export default function ProminenceRadio() {
 	);
 
 	return (
-		<div className="googlesitekit-prominence-radio">
+		<div className="googlesitekit-twg-setting-field googlesitekit-twg-prominence-radio">
 			<h4>{ __( 'Prominence', 'google-site-kit' ) }</h4>
-			<div className="googlesitekit-prominence-radio__options">
+			<div className="googlesitekit-twg-prominence-radio__options">
 				<Suspense fallback={ <ProgressBar small /> }>
 					<ImageRadio
 						id={ `button-placement-${ BUTTON_PLACEMENT_DYNAMIC_LOW }` }

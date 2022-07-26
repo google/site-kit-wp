@@ -50,9 +50,9 @@ export default function PositionRadio() {
 	);
 
 	return (
-		<div className="googlesitekit-position-radio">
+		<div className="googlesitekit-twg-setting-field googlesitekit-twg-position-radio">
 			<h4>{ __( 'Position', 'google-site-kit' ) }</h4>
-			<div className="googlesitekit-position-radio__option">
+			<div className="googlesitekit-twg-position-radio__option">
 				<Radio
 					id={ `button-placement-${ BUTTON_PLACEMENT_STATIC_AUTO }` }
 					name="button-placement"
@@ -69,7 +69,7 @@ export default function PositionRadio() {
 					) }
 				</p>
 			</div>
-			<div className="googlesitekit-position-radio__option">
+			<div className="googlesitekit-twg-position-radio__option">
 				<Radio
 					id="button-placement-manual"
 					name="button-placement"
@@ -84,7 +84,7 @@ export default function PositionRadio() {
 						'google-site-kit'
 					) }
 				</p>
-				<div className="googlesitekit-position-radio__suboptions">
+				<div className="googlesitekit-twg-position-radio__suboptions">
 					<Radio
 						id={ `button-placement-${ BUTTON_PLACEMENT_STATIC_ABOVE_CONTENT }` }
 						name="button-placement"

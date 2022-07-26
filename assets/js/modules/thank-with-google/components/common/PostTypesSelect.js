@@ -15,5 +15,9 @@
  */
 
 export default function PostTypesSelect() {
-	return <div>PostTypesSelect</div>;
+	return (
+		<div className="googlesitekit-twg-setting-field googlesitekit-twg-post-type-select">
+			PostTypesSelect
+		</div>
+	);
 }

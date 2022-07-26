@@ -92,7 +92,7 @@ export default function ImageRadio( props ) {
 				</div>
 			</div>
 			<label htmlFor={ id }>
-				{ label && <span>{ label }</span> }
+				{ image && label && <span>{ label }</span> }
 				{ description ? description : children }
 			</label>
 		</div>

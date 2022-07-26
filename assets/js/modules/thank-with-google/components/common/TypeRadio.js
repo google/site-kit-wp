@@ -14,6 +14,60 @@
  * limitations under the License.
  */
 
+/**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+import { useCallback, useState } from '@wordpress/element';
+
+/**
+ * Internal dependencies
+ */
+import ImageRadio from '../../../../components/ImageRadio';
+
+const TYPE_OVERLAY = 'overlay';
+const TYPE_FIXED = 'fixed';
+
 export default function TypeRadio() {
-	return <div>Type Radio</div>;
+	const [ type, setType ] = useState( TYPE_OVERLAY );
+
+	const onChange = useCallback(
+		( { target } ) => {
+			const { value } = target || {};
+			setType( value );
+		},
+		[ setType ]
+	);
+
+	return (
+		<div className="googlesitekit-twg-setting-field googlesitekit-twg-type-radio">
+			<h4>{ __( 'Type', 'google-site-kit' ) }</h4>
+			<div className="googlesitekit-twg-type-radio__options">
+				<ImageRadio
+					id={ `type-${ TYPE_OVERLAY }` }
+					name="type"
+					value={ TYPE_OVERLAY }
+					checked={ TYPE_OVERLAY === type }
+					label={ __( 'Overlay', 'google-site-kit' ) }
+					description={ __(
+						'Stays in view as the user scrolls',
+						'google-site-kit'
+					) }
+					onChange={ onChange }
+				/>
+				<ImageRadio
+					id={ `type-${ TYPE_FIXED }` }
+					name="type"
+					value={ TYPE_FIXED }
+					checked={ TYPE_FIXED === type }
+					label={ __( 'Fixed', 'google-site-kit' ) }
+					description={ __(
+						'Stays in position and goes out of view as the user scrolls',
+						'google-site-kit'
+					) }
+					onChange={ onChange }
+				/>
+			</div>
+		</div>
+	);
 }

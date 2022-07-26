@@ -16,40 +16,7 @@
 
 .googlesitekit-plugin {
 
-	.googlesitekit-twg-position-radio {
-
-		.mdc-radio {
-			margin-left: -10px;
-		}
-	}
-
-	.googlesitekit-twg-position-radio__suboptions {
-		margin: 17px 0 0 34px;
-
-		.mdc-form-field {
-			display: flex;
-			margin-top: -10px;
-		}
-	}
-
-	.googlesitekit-twg-position-radio__option {
-		margin-bottom: 14px;
-
-		&:last-child {
-			margin-bottom: 0;
-		}
-
-		> .mdc-form-field {
-
-			label {
-				font-weight: 700;
-			}
-		}
-
-		p {
-			color: $c-user-input-note;
-			font-size: 0.75rem;
-			margin: -10px 0 0 34px;
-		}
+	.googlesitekit-twg-type-radio__options {
+		display: flex;
 	}
 }
