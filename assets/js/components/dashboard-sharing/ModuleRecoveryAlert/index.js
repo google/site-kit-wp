@@ -26,11 +26,12 @@ import { sprintf, __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
-import { getTimeInSeconds } from '../../util';
-import Checkbox from '../Checkbox';
-import BannerNotification from '../notifications/BannerNotification';
-import ProgressBar from '../ProgressBar';
+import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
+import { getTimeInSeconds } from '../../../util';
+import Checkbox from '../../Checkbox';
+import BannerNotification from '../../notifications/BannerNotification';
+import ProgressBar from '../../ProgressBar';
+import Errors from './Errors';
 
 const { useDispatch, useSelect } = Data;
 
@@ -67,7 +68,33 @@ export default function ModuleRecoveryAlert() {
 			.map( ( { slug } ) => slug );
 	} );
 
-	const { recoverModules } = useDispatch( CORE_MODULES );
+	const recoveryErrors = useSelect( ( select ) => {
+		if ( ! recoverableModules ) {
+			return undefined;
+		}
+
+		const modules = Object.keys( recoverableModules );
+
+		const getRecoveryError = ( module ) =>
+			select( CORE_MODULES ).getErrorForAction( 'recoverModule', [
+				module,
+			] );
+
+		return modules
+			.filter( ( module ) => !! getRecoveryError( module ) )
+			.reduce(
+				( acc, module ) => ( {
+					...acc,
+					[ module ]: {
+						name: recoverableModules[ module ].name,
+						...getRecoveryError( module ),
+					},
+				} ),
+				{}
+			);
+	} );
+
+	const { recoverModules, clearErrors } = useDispatch( CORE_MODULES );
 
 	const isLoading =
 		userAccessibleModules === undefined || checkboxes === null;
@@ -87,13 +114,15 @@ export default function ModuleRecoveryAlert() {
 		const modulesToRecover = Object.keys( checkboxes ).filter(
 			( module ) => checkboxes[ module ]
 		);
+
+		await clearErrors( 'recoverModule' );
 		await recoverModules( modulesToRecover );
 
 		setRecoveringModules( false );
 		setCheckboxes( null );
 
 		return { dismissOnCTAClick: false };
-	}, [ checkboxes, recoverModules ] );
+	}, [ checkboxes, clearErrors, recoverModules ] );
 
 	useEffect( () => {
 		if ( userAccessibleModules !== undefined && checkboxes === null ) {
@@ -167,6 +196,9 @@ export default function ModuleRecoveryAlert() {
 						'google-site-kit'
 					) }
 				</p>
+				{ Object.keys( recoveryErrors ).length > 0 && (
+					<Errors recoveryErrors={ recoveryErrors } />
+				) }
 			</Fragment>
 		);
 		ctaLink = '#';
@@ -199,6 +231,9 @@ export default function ModuleRecoveryAlert() {
 						'google-site-kit'
 					) }
 				</p>
+				{ Object.keys( recoveryErrors ).length > 0 && (
+					<Errors recoveryErrors={ recoveryErrors } />
+				) }
 			</Fragment>
 		);
 		ctaLink = '#';
