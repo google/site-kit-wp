@@ -122,6 +122,7 @@ return array(
 
 			if ( preg_match( '#.*trustedlogin/client/.*#', $file_path ) ) {
 				$contents = str_replace( $prefix . '\\WP_Error', 'WP_Error', $contents );
+				$contents = str_replace( $prefix . '\\WP_User', 'WP_User', $contents );
 			}
 
 			return $contents;
