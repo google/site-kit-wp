@@ -16,7 +16,11 @@
  * limitations under the License.
  */
 
-const validColorThemes = [ 'blue' ];
+/**
+ * Internal dependencies
+ */
+import { getColorThemes } from './settings';
+
 const validButtonPlacements = [
 	'dynamic_low',
 	'dynamic_high',
@@ -50,7 +54,10 @@ export function isValidPublicationID( publicationID ) {
  * @return {boolean} `true` if the given color theme is valid, `false` otherwise.
  */
 export function isValidColorTheme( colorTheme ) {
-	return validColorThemes.includes( colorTheme );
+	const validColorThemes = getColorThemes();
+	return validColorThemes.some(
+		( { colorThemeID } ) => colorThemeID === colorTheme
+	);
 }
 
 /**
