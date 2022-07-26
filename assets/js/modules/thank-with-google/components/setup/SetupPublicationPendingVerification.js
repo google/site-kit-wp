@@ -46,7 +46,7 @@ export default function SetupPublicationPendingVerification() {
 					'Check your status on Thank with Google Publisher Center',
 					'google-site-kit'
 				) }
-				inverse={ true }
+				inverse
 			>
 				{ __( 'Check your status', 'google-site-kit' ) }
 			</Button>
