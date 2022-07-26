@@ -79,7 +79,6 @@ const SurveyQuestionOpenText = ( {
 					}
 					onChange={ onChange }
 					label={ placeholder }
-					noLabel
 					textarea
 				>
 					<Input
