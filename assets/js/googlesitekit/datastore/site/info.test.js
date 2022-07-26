@@ -37,6 +37,8 @@ describe( 'core/site site info', () => {
 		referenceSiteURL: 'http://example.com',
 		proxyPermissionsURL: '', // not available until site is authenticated
 		proxySetupURL: 'https://sitekit.withgoogle.com/site-management/setup/', // params omitted
+		setupErrorMessage: null,
+		setupErrorRedoURL: null,
 		siteName: 'Something Test',
 		timezone: 'America/Denver',
 		usingProxy: true,
@@ -244,6 +246,10 @@ describe( 'core/site site info', () => {
 			[ 'getProxySetupURL', 'proxySetupURL' ],
 			[ 'getProxyPermissionsURL', 'proxyPermissionsURL' ],
 			[ 'getSiteName', 'siteName' ],
+			[ 'getSetupErrorCode', 'setupErrorCode' ],
+			[ 'getSetupErrorMessage', 'setupErrorMessage' ],
+			[ 'getSetupErrorRedoURL', 'setupErrorRedoURL' ],
+			[ 'getProxySupportLinkURL', 'proxySupportLinkURL' ],
 			[ 'getTimezone', 'timezone' ],
 			[ 'isUsingProxy', 'usingProxy' ],
 			[ 'isAMP', 'ampMode' ],

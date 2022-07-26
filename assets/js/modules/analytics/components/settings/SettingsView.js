@@ -138,7 +138,7 @@ export default function SettingsView() {
 				</div>
 				<div className="googlesitekit-settings-module__meta-item googlesitekit-settings-module__meta-item--data-only">
 					<p className="googlesitekit-settings-module__meta-item-data googlesitekit-settings-module__meta-item-data--tiny">
-						<Link href={ editViewSettingsURL } external inherit>
+						<Link href={ editViewSettingsURL } external>
 							{ createInterpolateElement(
 								__(
 									'Edit <VisuallyHidden>Universal Analytics property view </VisuallyHidden>in Analytics',
@@ -165,7 +165,7 @@ export default function SettingsView() {
 						{ canUseSnippet === false && (
 							<span>
 								{ __(
-									'The code is controlled by the Tag Manager module.',
+									'The code is controlled by the Tag Manager module',
 									'google-site-kit'
 								) }
 							</span>
@@ -233,7 +233,6 @@ export default function SettingsView() {
 								<Link
 									href={ editDataStreamSettingsURL }
 									external
-									inherit
 								>
 									{ createInterpolateElement(
 										__(
@@ -332,7 +331,7 @@ export default function SettingsView() {
 								) }
 						{ ! trackingDisabled.length &&
 							__(
-								'Analytics is currently enabled for all visitors.',
+								'Analytics is currently enabled for all visitors',
 								'google-site-kit'
 							) }
 					</p>

@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import { useWindowScroll } from 'react-use';
+
+/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
@@ -25,35 +30,94 @@ import {
 	createInterpolateElement,
 	Fragment,
 	useCallback,
-	useState,
+	useEffect,
+	useRef,
 } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
 import Link from '../Link';
 import Button from '../Button';
 import Portal from '../Portal';
 import ShareIcon from '../../../svg/icons/share.svg';
-import { Dialog, DialogContent, DialogFooter } from '../../material-components';
+import Footer from './DashboardSharingSettings/Footer';
+import useViewContext from '../../hooks/useViewContext';
+import DashboardSharingSettings from './DashboardSharingSettings';
+import { trackEvent } from '../../util';
+import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
+import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { BREAKPOINT_SMALL, useBreakpoint } from '../../hooks/useBreakpoint';
+import { Dialog, DialogContent, DialogFooter } from '../../material-components';
+import { EDITING_USER_ROLE_SELECT_SLUG_KEY } from './DashboardSharingSettings/constants';
+import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import sharingSettingsTour from '../../feature-tours/dashboard-sharing-settings';
+const { useSelect, useDispatch } = Data;
+
+export const UI_KEY_DIALOG_OPEN = 'dashboardSharingDialogOpen';
 
 export default function DashboardSharingSettingsButton() {
+	const viewContext = useViewContext();
 	const breakpoint = useBreakpoint();
-	const [ dialogOpen, setDialogOpen ] = useState( false );
+	const { y } = useWindowScroll();
+	const { setValue } = useDispatch( CORE_UI );
+
+	const dialogOpen = useSelect(
+		( select ) => !! select( CORE_UI ).getValue( UI_KEY_DIALOG_OPEN )
+	);
+	const hasMultipleAdmins = useSelect( ( select ) =>
+		select( CORE_SITE ).hasMultipleAdmins()
+	);
+	const haveSettingsChanged = useSelect( ( select ) =>
+		select( CORE_MODULES ).haveSharingSettingsChanged()
+	);
+	const editingUserRoleSelect = useSelect( ( select ) =>
+		select( CORE_UI ).getValue( EDITING_USER_ROLE_SELECT_SLUG_KEY )
+	);
 
 	const openDialog = useCallback( () => {
-		setDialogOpen( true );
-	}, [] );
+		trackEvent(
+			`${ viewContext }_headerbar`,
+			'open_sharing',
+			hasMultipleAdmins ? 'advanced' : 'simple'
+		);
+
+		setValue( UI_KEY_DIALOG_OPEN, true );
+	}, [ setValue, viewContext, hasMultipleAdmins ] );
 
 	const closeDialog = useCallback( () => {
-		setDialogOpen( false );
-	}, [] );
+		setValue( UI_KEY_DIALOG_OPEN, false );
 
-	const onApply = useCallback( () => {
-		// @TODO: Implement Apply behaviour.
-		setDialogOpen( false );
-	}, [] );
+		setValue( EDITING_USER_ROLE_SELECT_SLUG_KEY, undefined );
+	}, [ setValue ] );
+
+	// Rollback any temporary selections to saved values if settings have changed and modal is closed.
+	const { rollbackSharingSettings } = useDispatch( CORE_MODULES );
+	useEffect( () => {
+		if ( ! dialogOpen && haveSettingsChanged ) {
+			rollbackSharingSettings();
+		}
+	}, [ dialogOpen, haveSettingsChanged, rollbackSharingSettings ] );
+
+	const triggeredTourRef = useRef();
+	const { triggerOnDemandTour } = useDispatch( CORE_USER );
+	useEffect( () => {
+		if ( dialogOpen && ! triggeredTourRef.current ) {
+			triggeredTourRef.current = true;
+			triggerOnDemandTour( sharingSettingsTour );
+		}
+	}, [ dialogOpen, triggerOnDemandTour ] );
+
+	const dialogStyles = {};
+	// On mobile, the dialog box's flexbox is set to stretch items within to cover
+	// the whole screen. But we have to move the box and adjust its height below the
+	// WP Admin bar of 46px which gradually scrolls off the screen.
+	if ( breakpoint === BREAKPOINT_SMALL ) {
+		dialogStyles.top = `${ y < 46 ? 46 - y : 0 }px`;
+		dialogStyles.height = `calc(100% - 46px + ${ y < 46 ? y : 46 }px)`;
+	}
 
 	return (
 		<Fragment>
@@ -68,7 +132,11 @@ export default function DashboardSharingSettingsButton() {
 				<Dialog
 					open={ dialogOpen }
 					onClose={ closeDialog }
-					className="googlesitekit-dialog"
+					className="googlesitekit-dialog googlesitekit-sharing-settings-dialog"
+					style={ dialogStyles }
+					escapeKeyAction={
+						editingUserRoleSelect === undefined ? 'close' : ''
+					}
 				>
 					<div
 						className="googlesitekit-dialog__back-wrapper"
@@ -117,8 +185,6 @@ export default function DashboardSharingSettingsButton() {
 													) }
 													href="https://sitekit.withgoogle.com/documentation/using-site-kit/dashboard-sharing/"
 													external
-													hideExternalIndicator
-													inherit
 												/>
 											),
 										}
@@ -126,16 +192,14 @@ export default function DashboardSharingSettingsButton() {
 								</p>
 							</div>
 						</div>
+
+						<div className="googlesitekit-dialog__main">
+							<DashboardSharingSettings />
+						</div>
 					</DialogContent>
 
 					<DialogFooter className="googlesitekit-dialog__footer">
-						<Link onClick={ closeDialog }>
-							{ __( 'Cancel', 'google-site-kit' ) }
-						</Link>
-
-						<Button onClick={ onApply }>
-							{ __( 'Apply', 'google-site-kit' ) }
-						</Button>
+						<Footer closeDialog={ closeDialog } />
 					</DialogFooter>
 				</Dialog>
 			</Portal>

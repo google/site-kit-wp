@@ -34,3 +34,7 @@ export const PERMISSION_VIEW_MODULE_DETAILS =
 export const PERMISSION_MANAGE_OPTIONS = 'googlesitekit_manage_options';
 export const PERMISSION_READ_SHARED_MODULE_DATA =
 	'googlesitekit_read_shared_module_data';
+export const PERMISSION_MANAGE_MODULE_SHARING_OPTIONS =
+	'googlesitekit_manage_module_sharing_options';
+export const PERMISSION_DELEGATE_MODULE_SHARING_MANAGEMENT =
+	'googlesitekit_delegate_module_sharing_management';

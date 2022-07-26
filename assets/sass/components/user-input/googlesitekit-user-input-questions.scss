@@ -21,7 +21,6 @@
 	.googlesitekit-user-input__question {
 		background-color: $c-white;
 		border-bottom: 1px solid $c-mercury;
-		box-shadow: 0 -1px 5px rgba($c-jumbo, 0.09);
 		margin-left: -10px;
 		margin-right: -10px;
 		padding: 50px 24px;
@@ -72,13 +71,14 @@
 
 	.googlesitekit-user-input__question-number {
 		color: $c-silver;
+		font-family: $f-secondary;
+		font-size: $fs-display-sm;
+		line-height: $lh-display-sm;
 		margin: 0 0 13px;
-
-		@include responsive-text("headline1", "headline3");
 	}
 
 	.googlesitekit-user-input__question-instructions--notice {
-		background-color: rgba($c-text-notice-info, 0.2);
+		background-color: $c-surfaces-surface-2;
 		display: inline-block;
 		margin-bottom: 24px;
 		padding: 6px 14px;
@@ -88,17 +88,18 @@
 
 		p:not(.googlesitekit-user-input__question-number),
 		.googlesitekit-user-input__question-instructions--notice {
-			color: $c-black;
+			color: $c-surfaces-on-surface;
+			font-size: $fs-body-md;
+			letter-spacing: $ls-s;
+			line-height: $lh-body-md;
 			margin: 0 0 13px;
-
-			@include responsive-text("body1", "body3");
 		}
 
 		h1 {
 			color: $c-black;
+			font-size: $fs-headline-md;
+			line-height: $lh-headline-md;
 			margin: 0 0 13px;
-
-			@include responsive-text("headline1", "headline3");
 		}
 	}
 
@@ -106,7 +107,8 @@
 		align-items: center;
 		color: $c-scarpa-flow;
 		display: flex;
-		font-size: 12px;
+		font-size: $fs-body-sm;
+		letter-spacing: $ls-xs;
 
 		img {
 			border-radius: 50%;

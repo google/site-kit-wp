@@ -21,7 +21,7 @@ $circle-width: 0.1em;
 .googlesitekit-percentage-circle {
 	background-color: $c-border-light;
 	border-radius: 50%;
-	font-size: 50px;
+	font-size: $fs-headline-md;
 	height: 1em;
 	margin: 0 auto;
 	position: relative;
@@ -55,8 +55,8 @@ $circle-width: 0.1em;
 
 	.googlesitekit-percentage-circle__text {
 		box-sizing: content-box;
-		font-size: 1.25rem;
-		font-weight: $fw-primary-bold;
+		font-size: $fs-title-lg;
+		font-weight: $fw-bold;
 		left: 0;
 		line-height: 50px;
 		position: absolute;

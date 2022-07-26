@@ -61,33 +61,64 @@
 		}
 
 		.googlesitekit-settings-module__content {
+			border-top: 1px solid $c-utility-divider;
 			display: none;
 
 			&--open {
 				display: block;
 			}
+
+			.mdc-layout-grid__cell {
+				font-size: $fs-body-md;
+				letter-spacing: $ls-s;
+				line-height: $lh-body-md;
+			}
+		}
+
+		.googlesitekit-settings-module__heading {
+			align-items: center;
+			display: flex;
 		}
 
 		.googlesitekit-settings-module__title {
 			align-items: center;
 			display: flex;
+			font-size: $fs-title-md;
+			line-height: $lh-title-md;
 			margin: 0;
 		}
 
-		.googlesitekit-settings-module__title-icon {
+		.googlesitekit-settings-module__heading-icon {
 			height: auto;
 			margin-right: $grid-gap-phone;
 			width: 24px;
 		}
 
-		.googlesitekit-settings-module__status {
+		.googlesitekit-settings-module__heading-badges {
 			align-items: center;
 			display: flex;
-			font-size: 0.75rem;
+			flex-wrap: wrap;
+			row-gap: 12px;
+		}
+
+		.googlesitekit-settings-module__status {
+			align-items: center;
+			color: $c-surfaces-on-surface;
+			display: flex;
+			font-size: $fs-body-md;
+			font-weight: $fw-medium;
+			letter-spacing: $ls-s;
+			line-height: $lh-body-md;
 			margin: 0;
+			text-align: right;
+		}
+
+		.googlesitekit-settings-module__status--not-connected {
+			color: $c-utility-warning;
 		}
 
 		.googlesitekit-settings-module__status-icon {
+			color: $c-utility-success;
 			margin-left: $grid-gap-phone;
 
 			&::before {
@@ -114,11 +145,6 @@
 				background-position: center 3px;
 				background-size: 13px 11px;
 			}
-		}
-
-		.googlesitekit-settings-module__footer {
-			background-color: $c-background-subtle;
-			font-size: 0.8125rem;
 		}
 
 		.googlesitekit-settings-module__footer-cancel {
@@ -195,16 +221,18 @@
 
 		.googlesitekit-settings-module__meta-item-type {
 			color: $c-primary;
-			font-size: 0.75rem;
-			font-weight: inherit;
+			font-size: $fs-body-sm;
+			font-weight: $fw-bold;
+			letter-spacing: $ls-xs;
+			line-height: $lh-body-sm;
 			margin: 0 0 8px 0;
 		}
 
 		.googlesitekit-settings-module__meta-item-data {
-			color: $c-tertiary;
-			font-size: 1rem;
-			font-weight: $fw-primary-bold;
-			line-height: 1.5rem;
+			color: $c-surfaces-on-surface;
+			font-size: $fs-body-md;
+			letter-spacing: $ls-s;
+			line-height: $lh-body-md;
 			margin: 0;
 
 			&--wrap {
@@ -212,9 +240,10 @@
 			}
 
 			&--tiny {
-				font-size: 0.8125rem;
-				font-weight: 400;
-				line-height: 1.5rem;
+				font-size: $fs-body-sm;
+				font-weight: $fw-normal;
+				letter-spacing: $ls-xs;
+				line-height: $lh-body-sm;
 			}
 		}
 
@@ -242,12 +271,24 @@
 		.googlesitekit-settings-module__error {
 			background-color: $c-error;
 			color: $c-base;
-			font-weight: $fw-primary-bold;
+			font-weight: $fw-bold;
 		}
 
 		.googlesitekit-settings-module__apikey-cancel {
-			font-size: 0.75em;
+			font-size: $fs-body-sm;
+			letter-spacing: $ls-xs;
 			margin-left: 24px;
+		}
+
+		&.googlesitekit-settings-module--thank-with-google {
+
+			.googlesitekit-settings-module__title {
+				width: min-content;
+
+				@media (min-width: $bp-desktop) {
+					min-width: 145px;
+				}
+			}
 		}
 	}
 }

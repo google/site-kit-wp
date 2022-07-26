@@ -28,14 +28,15 @@
 	}
 
 	.googlesitekit-user-input__heading {
-
-		@include responsive-text("headline1", "headline3");
+		font-family: $f-secondary;
+		font-size: $fs-headline-md;
+		line-height: $lh-headline-md;
 	}
 
 	.googlesitekit-user-input__subtitle {
 		color: $c-secondary;
-
-		@include responsive-text("body1", "body2");
+		font-size: $fs-title-md;
+		line-height: $lh-title-md;
 	}
 
 	.googlesitekit-user-input__content {
@@ -51,8 +52,6 @@
 		margin: -10px;
 		padding: 35px;
 
-		@include shadow;
-
 		h1 {
 			margin-bottom: 0;
 		}
@@ -60,8 +59,9 @@
 
 	.googlesitekit-user-input__note {
 		color: $c-user-input-note;
+		font-size: $fs-body-sm;
+		letter-spacing: $ls-xs;
+		line-height: $lh-body-sm;
 		margin: 0;
-
-		@include responsive-text("body2", "caption");
 	}
 }

@@ -60,6 +60,7 @@ export default function SettingsPlugin() {
 			title={ __( 'Plugin Settings', 'google-site-kit' ) }
 			header
 			fill
+			rounded
 		>
 			<div className="googlesitekit-settings-module googlesitekit-settings-module--active">
 				<Grid>

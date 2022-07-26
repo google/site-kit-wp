@@ -19,7 +19,6 @@
 .googlesitekit-plugin {
 
 	.googlesitekit-idea-hub__empty {
-		box-shadow: 0 -1px 0 rgba($c-black, 0.12);
 		padding: $grid-gap-phone;
 
 		@media (min-width: $bp-desktop) {
@@ -45,11 +44,11 @@
 	}
 
 	.googlesitekit-idea-hub__empty--title {
-		color: $c-shark;
+		color: $c-surfaces-on-surface-variant;
 		font-family: $f-secondary;
-		font-size: 1.375rem;
-		font-weight: $fw-secondary-normal;
-		line-height: 1.27;
+		font-size: $fs-headline-sm;
+		font-weight: $fw-normal;
+		line-height: $lh-headline-sm;
 		margin: 0;
 	}
 
@@ -70,17 +69,18 @@
 		}
 
 		.googlesitekit-idea-hub__empty--title {
-			color: rgba($c-black, 0.54);
+			color: $c-surfaces-on-surface-variant;
 			font-family: $f-primary;
-			font-size: 1rem;
-			line-height: 1.5;
+			font-size: $fs-body-lg;
+			letter-spacing: $ls-m;
+			line-height: $lh-body-lg;
 		}
 
 		.googlesitekit-idea-hub__empty--subtitle {
 			color: rgba($c-black, 0.54);
-			font-size: 0.75rem;
-			letter-spacing: 0.1px;
-			line-height: 2;
+			font-size: $fs-body-sm;
+			letter-spacing: $ls-xs;
+			line-height: $lh-body-sm;
 		}
 	}
 }

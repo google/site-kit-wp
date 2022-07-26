@@ -10,7 +10,6 @@
 
 namespace Google\Site_Kit\Core\Modules;
 
-use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Setting;
 
 /**
@@ -127,28 +126,23 @@ class Module_Sharing_Settings extends Setting {
 	/**
 	 * Merges a partial Module_Sharing_Settings option array into existing sharing settings.
 	 *
-	 * Only updates sharing settings for a module if the current user has the capability to
-	 * do so.
-	 *
 	 * @since 1.75.0
+	 * @since 1.77.0 Removed capability checks.
 	 *
-	 * @param array $new_partial_settings Partial settings array to update existing settings with.
+	 * @param array $partial Partial settings array to update existing settings with.
 	 *
 	 * @return bool True if sharing settings option was updated, false otherwise.
 	 */
-	public function merge( array $new_partial_settings ) {
+	public function merge( array $partial ) {
 		$settings = $this->get();
-
-		foreach ( $new_partial_settings as $module_slug => $new_settings ) {
-			if ( null === $new_settings ) {
-				continue;
+		$partial  = array_filter(
+			$partial,
+			function ( $value ) {
+				return ! empty( $value );
 			}
-			if ( current_user_can( Permissions::MANAGE_MODULE_SHARING_OPTIONS, $module_slug ) ) {
-				$settings[ $module_slug ] = $new_settings;
-			}
-		}
+		);
 
-		return $this->set( $settings );
+		return $this->set( $this->array_merge_deep( $settings, $partial ) );
 	}
 
 	/**
@@ -203,6 +197,34 @@ class Module_Sharing_Settings extends Setting {
 		}
 
 		return array();
+	}
+
+	/**
+	 * Merges two arrays recursively to a specific depth.
+	 *
+	 * When array1 and array2 have the same string keys, it overwrites
+	 * the elements of array1 with elements of array2. Otherwise, it adds/appends
+	 * elements of array2.
+	 *
+	 * @since 1.77.0
+	 *
+	 * @param array $array1 First array.
+	 * @param array $array2 Second array.
+	 * @param int   $depth Optional. Depth to merge to. Default is 1.
+	 *
+	 * @return array Merged array.
+	 */
+	private function array_merge_deep( $array1, $array2, $depth = 1 ) {
+		foreach ( $array2 as $key => $value ) {
+			if ( $depth > 0 && is_array( $value ) ) {
+				$array1_key     = isset( $array1[ $key ] ) ? $array1[ $key ] : null;
+				$array1[ $key ] = $this->array_merge_deep( $array1_key, $value, $depth - 1 );
+			} else {
+				$array1[ $key ] = $value;
+			}
+		}
+
+		return $array1;
 	}
 
 }

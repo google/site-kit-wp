@@ -25,7 +25,6 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { useFeature } from '../../../../hooks/useFeature';
 import { sanitizeHTML } from '../../../../util';
 import { MODULES_PAGESPEED_INSIGHTS } from '../../datastore/constants';
 const { useSelect } = Data;
@@ -35,20 +34,13 @@ export default function SettingsView() {
 		select( MODULES_PAGESPEED_INSIGHTS ).getAdminScreenURL()
 	);
 
-	const unifiedDashboardEnabled = useFeature( 'unifiedDashboard' );
-
-	// Append PSI section hash based on unifiedDashboardEnabled is enabled or not
-	const dashboardPermalinkWithPSI = unifiedDashboardEnabled
-		? `${ dashboardPermalink }#speed`
-		: `${ dashboardPermalink }#googlesitekit-pagespeed-header`;
-
 	const content = sprintf(
 		/* translators: %s is the URL to the Site Kit dashboard. */
 		__(
 			'To view insights, <a href="%s">visit the dashboard</a>',
 			'google-site-kit'
 		),
-		dashboardPermalinkWithPSI
+		`${ dashboardPermalink }#speed`
 	);
 
 	return (

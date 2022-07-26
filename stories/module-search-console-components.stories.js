@@ -19,11 +19,7 @@
 /**
  * Internal dependencies
  */
-import DashboardClicksWidget from '../assets/js/modules/search-console/components/dashboard/DashboardClicksWidget';
-import DashboardImpressionsWidget from '../assets/js/modules/search-console/components/dashboard/DashboardImpressionsWidget';
 import DashboardPopularKeywordsWidget from '../assets/js/modules/search-console/components/dashboard/DashboardPopularKeywordsWidget';
-import ModulePopularKeywordsWidget from '../assets/js/modules/search-console/components/module/ModulePopularKeywordsWidget';
-import ModuleOverviewWidget from '../assets/js/modules/search-console/components/module/ModuleOverviewWidget';
 import { MODULES_SEARCH_CONSOLE } from '../assets/js/modules/search-console/datastore/constants';
 import { getSearchConsoleMockResponse } from '../assets/js/modules/search-console/util/data-mock';
 import {
@@ -71,52 +67,6 @@ function generateSearchConsoleWidgetStories( args ) {
 }
 
 generateSearchConsoleWidgetStories( {
-	group: 'Search Console Module/Components/Dashboard/Clicks Widget',
-	referenceDate: '2020-08-26',
-	...generateSearchConsoleData( {
-		dimensions: 'date',
-		startDate: '2020-07-01',
-		endDate: '2020-08-25',
-	} ),
-	Component: DashboardClicksWidget,
-} );
-
-generateSearchConsoleWidgetStories( {
-	group: 'Search Console Module/Components/Page Dashboard/Clicks Widget',
-	referenceDate: '2020-08-26',
-	...generateSearchConsoleData( {
-		dimensions: 'date',
-		startDate: '2020-07-01',
-		endDate: '2020-08-25',
-		url: 'https://example.com/example-page/',
-	} ),
-	Component: DashboardClicksWidget,
-} );
-
-generateSearchConsoleWidgetStories( {
-	group: 'Search Console Module/Components/Dashboard/Impressions Widget',
-	referenceDate: '2020-08-26',
-	...generateSearchConsoleData( {
-		dimensions: 'date',
-		startDate: '2020-07-01',
-		endDate: '2020-08-25',
-	} ),
-	Component: DashboardImpressionsWidget,
-} );
-
-generateSearchConsoleWidgetStories( {
-	group: 'Search Console Module/Components/Page Dashboard/Impressions Widget',
-	referenceDate: '2020-08-26',
-	...generateSearchConsoleData( {
-		dimensions: 'date',
-		startDate: '2020-07-01',
-		endDate: '2020-08-25',
-		url: 'https://example.com/example-page/',
-	} ),
-	Component: DashboardImpressionsWidget,
-} );
-
-generateSearchConsoleWidgetStories( {
 	group: 'Search Console Module/Components/Dashboard/Popular Keywords Widget',
 	referenceDate: '2020-08-26',
 	...generateSearchConsoleData( [
@@ -156,38 +106,5 @@ generateSearchConsoleWidgetStories( {
 		},
 	] ),
 	Component: DashboardPopularKeywordsWidget,
-	wrapWidget: false,
-} );
-
-generateSearchConsoleWidgetStories( {
-	group: 'Search Console Module/Components/Module Page/Overview Widget',
-	referenceDate: '2020-08-26',
-	...generateSearchConsoleData( {
-		dimensions: 'date',
-		startDate: '2020-07-01',
-		endDate: '2020-08-25',
-	} ),
-	Component: ModuleOverviewWidget,
-	wrapWidget: false,
-} );
-
-generateSearchConsoleWidgetStories( {
-	group:
-		'Search Console Module/Components/Module Page/Popular Keywords Widget',
-	referenceDate: '2020-08-26',
-	...generateSearchConsoleData( [
-		{
-			startDate: '2020-07-29',
-			endDate: '2020-08-25',
-			dimensions: 'query',
-			limit: 10,
-		},
-		{
-			dimensions: 'date',
-			startDate: '2020-07-01',
-			endDate: '2020-08-25',
-		},
-	] ),
-	Component: ModulePopularKeywordsWidget,
 	wrapWidget: false,
 } );

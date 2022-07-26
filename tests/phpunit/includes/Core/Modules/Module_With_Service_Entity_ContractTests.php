@@ -36,8 +36,8 @@ trait Module_With_Service_Entity_ContractTests {
 		$this->set_up_check_service_entity_access( $module );
 
 		$access = $module->check_service_entity_access();
-		$this->assertNotWPError( $access );
 
+		$testcase->assertNotWPError( $access );
 		$testcase->assertEquals( true, $access );
 	}
 
@@ -52,8 +52,8 @@ trait Module_With_Service_Entity_ContractTests {
 		$this->set_up_check_service_entity_access( $module );
 
 		$access = $module->check_service_entity_access();
-		$this->assertNotWPError( $access );
 
+		$testcase->assertNotWPError( $access );
 		$testcase->assertEquals( false, $access );
 	}
 

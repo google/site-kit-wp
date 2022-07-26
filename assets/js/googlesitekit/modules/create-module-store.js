@@ -52,9 +52,8 @@ import { createValidationSelector } from '../data/utils';
  * @param {string}   slug                            Slug of the module that the store is for.
  * @param {Object}   args                            Arguments to consider for the store.
  * @param {number}   args.storeName                  Store name to use.
- * @param {Array}    [args.settingSlugs]             Optional. If the module store should support settings, this needs to be a list of the slugs that are part of the module and handled by the module's 'modules/{slug}/data/settings' API endpoint.
- *                                                    Default is undefined.
- * @param {string}   [args.adminPage]                Optional. Store admin page. Default is 'googlesitekit-dashboard'.
+ * @param {Array}    [args.settingSlugs]             Optional. If the module store should support settings, this needs to be a list of the slugs that are part of the module and handled by the module's 'modules/{slug}/data/settings' API endpoint. Default is undefined.
+ * @param {Array}    [args.ownedSettingsSlugs]       Optional. List of "owned settings" for this module, if they exist.
  * @param {boolean}  [args.requiresSetup]            Optional. Store flag for requires setup. Default is 'true'.
  * @param {Function} [args.submitChanges]            Optional. Submit settings changes handler.
  * @param {Function} [args.rollbackChanges]          Optional. Rollbacks settings changes handler.
@@ -67,7 +66,7 @@ export function createModuleStore( slug, args = {} ) {
 	const {
 		storeName,
 		settingSlugs,
-		adminPage = 'googlesitekit-dashboard',
+		ownedSettingsSlugs = undefined,
 		requiresSetup = true,
 		submitChanges,
 		rollbackChanges,
@@ -89,7 +88,6 @@ export function createModuleStore( slug, args = {} ) {
 
 	const infoStore = createInfoStore( slug, {
 		storeName,
-		adminPage,
 		requiresSetup,
 	} );
 
@@ -114,6 +112,7 @@ export function createModuleStore( slug, args = {} ) {
 			slug,
 			'settings',
 			{
+				ownedSettingsSlugs,
 				storeName,
 				settingSlugs,
 			}
@@ -129,7 +128,7 @@ export function createModuleStore( slug, args = {} ) {
 				makeDefaultCanSubmitChanges( storeName ),
 		} );
 
-		// to prevent duplication errors during combining stores, we don't need to combine
+		// To prevent duplication errors during combining stores, we don't need to combine
 		// Data.commonStore here since settingsStore already uses commonActions and commonControls
 		// from the Data.commonStore.
 		combinedStore = Data.combineStores(
@@ -137,7 +136,7 @@ export function createModuleStore( slug, args = {} ) {
 			settingsStore,
 			submitChangesStore,
 			infoStore,
-			createErrorStore(),
+			createErrorStore( storeName ),
 			setupBlockedStore
 		);
 	} else {
@@ -146,7 +145,7 @@ export function createModuleStore( slug, args = {} ) {
 			notificationsStore,
 			infoStore,
 			setupBlockedStore,
-			createErrorStore(),
+			createErrorStore( storeName ),
 			createSubmitChangesStore( {
 				submitChanges,
 				validateCanSubmitChanges,

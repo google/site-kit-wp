@@ -19,25 +19,34 @@
 /**
  * Internal dependencies
  */
-import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import {
+	createTestRegistry,
+	provideModuleRegistrations,
 	provideModules,
 	provideSiteInfo,
-	provideModuleRegistrations,
+	provideUserAuthentication,
+	provideUserCapabilities,
+	WithTestRegistry,
 } from '../../../../../../../tests/js/utils';
-import { MODULES_SEARCH_CONSOLE } from '../../../datastore/constants';
-import { MODULES_ANALYTICS } from '../../../../analytics/datastore/constants';
-import { withWidgetComponentProps } from '../../../../../googlesitekit/widgets/util';
-import { provideSearchConsoleMockReport } from '../../../util/data-mock';
-import { provideAnalyticsMockReport } from '../../../../analytics/util/data-mock';
-import { goals } from '../../../../analytics/datastore/__fixtures__';
+import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
+import { Provider as ViewContextProvider } from '../../../../../components/Root/ViewContextContext';
 import {
 	VIEW_CONTEXT_DASHBOARD,
+	VIEW_CONTEXT_DASHBOARD_VIEW_ONLY,
 	VIEW_CONTEXT_PAGE_DASHBOARD,
 } from '../../../../../googlesitekit/constants';
-import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
+import {
+	CORE_USER,
+	PERMISSION_READ_SHARED_MODULE_DATA,
+} from '../../../../../googlesitekit/datastore/user/constants';
+import { getMetaCapabilityPropertyName } from '../../../../../googlesitekit/datastore/util/permissions';
+import { withWidgetComponentProps } from '../../../../../googlesitekit/widgets/util';
+import { MODULES_ANALYTICS } from '../../../../analytics/datastore/constants';
+import { goals } from '../../../../analytics/datastore/__fixtures__';
+import { provideAnalyticsMockReport } from '../../../../analytics/util/data-mock';
+import { MODULES_SEARCH_CONSOLE } from '../../../datastore/constants';
+import { provideSearchConsoleMockReport } from '../../../util/data-mock';
 import SearchFunnelWidget from './index';
-import { Provider } from '../../../../../components/Root/ViewContextContext';
 
 const searchConsoleArgs = {
 	startDate: '2021-08-18',
@@ -116,9 +125,11 @@ const WidgetWithComponentProps = withWidgetComponentProps( 'widget-slug' )(
 	SearchFunnelWidget
 );
 
-const Template = ( { setupRegistry, ...args } ) => (
+const Template = ( { setupRegistry = () => {}, viewContext, ...args } ) => (
 	<WithRegistrySetup func={ setupRegistry }>
-		<WidgetWithComponentProps { ...args } />
+		<ViewContextProvider value={ viewContext || VIEW_CONTEXT_DASHBOARD }>
+			<WidgetWithComponentProps { ...args } />
+		</ViewContextProvider>
 	</WithRegistrySetup>
 );
 
@@ -248,6 +259,7 @@ export const ReadyWithCreateGoalCTA = Template.bind( {} );
 ReadyWithCreateGoalCTA.storyName = 'Ready with Create Goal CTA';
 ReadyWithCreateGoalCTA.args = {
 	setupRegistry: ( registry ) => {
+		provideUserAuthentication( registry );
 		provideSearchConsoleMockReport( registry, searchConsoleArgs );
 		for ( const options of analyticsArgs ) {
 			provideAnalyticsMockReport( registry, options );
@@ -360,16 +372,49 @@ ReadyEntityDashboard.args = {
 			provideAnalyticsMockReport( registry, options );
 		}
 	},
+	viewContext: VIEW_CONTEXT_PAGE_DASHBOARD,
 };
-ReadyEntityDashboard.decorators = [
-	( Story ) => {
-		return (
-			<Provider value={ VIEW_CONTEXT_PAGE_DASHBOARD }>
-				<Story />
-			</Provider>
-		);
+
+export const ViewOnlySearchConsoleOnlyReady = Template.bind( {} );
+ViewOnlySearchConsoleOnlyReady.storyName =
+	'ViewOnly - Only Search Console Shared - Ready';
+ViewOnlySearchConsoleOnlyReady.args = {
+	setupRegistry: ( registry ) => {
+		provideModules( registry, [
+			{
+				active: true,
+				connected: true,
+				slug: 'search-console',
+				shareable: true,
+			},
+			{
+				active: true,
+				connected: true,
+				slug: 'analytics',
+				shareable: false,
+			},
+		] );
+		provideUserCapabilities( registry, {
+			[ getMetaCapabilityPropertyName(
+				PERMISSION_READ_SHARED_MODULE_DATA,
+				'search-console'
+			) ]: true,
+			[ getMetaCapabilityPropertyName(
+				PERMISSION_READ_SHARED_MODULE_DATA,
+				'analytics'
+			) ]: false,
+		} );
+		provideSearchConsoleMockReport( registry, searchConsoleArgs );
+		for ( const options of analyticsArgs ) {
+			provideAnalyticsMockReport( registry, options );
+		}
+		registry.dispatch( MODULES_ANALYTICS ).receiveGetGoals( goals );
 	},
-];
+	viewContext: VIEW_CONTEXT_DASHBOARD_VIEW_ONLY,
+};
+ViewOnlySearchConsoleOnlyReady.parameters = {
+	features: [ 'dashboardSharing' ],
+};
 
 export default {
 	title: 'Modules/SearchConsole/Widgets/SearchFunnelWidget',
@@ -381,37 +426,34 @@ export default {
 				</div>
 			</div>
 		),
-		( Story, { args } ) => {
-			const setupRegistry = ( registry ) => {
-				provideSiteInfo( registry );
-				registry.dispatch( CORE_USER ).setReferenceDate( '2021-10-13' );
-				registry.dispatch( CORE_USER ).receiveGetAuthentication( {
-					needsReauthentication: false,
-				} );
+		( Story, { parameters } ) => {
+			const registry = createTestRegistry();
+			provideSiteInfo( registry );
+			registry.dispatch( CORE_USER ).setReferenceDate( '2021-10-13' );
+			registry.dispatch( CORE_USER ).receiveGetAuthentication( {
+				needsReauthentication: false,
+			} );
 
-				provideModules( registry, [
-					{
-						active: true,
-						connected: true,
-						slug: 'search-console',
-					},
-					{
-						active: true,
-						connected: true,
-						slug: 'analytics',
-					},
-				] );
-
-				// Call story-specific setup.
-				args.setupRegistry( registry );
-			};
+			provideModules( registry, [
+				{
+					active: true,
+					connected: true,
+					slug: 'search-console',
+				},
+				{
+					active: true,
+					connected: true,
+					slug: 'analytics',
+				},
+			] );
 
 			return (
-				<WithRegistrySetup func={ setupRegistry }>
-					<Provider value={ VIEW_CONTEXT_DASHBOARD }>
-						<Story />
-					</Provider>
-				</WithRegistrySetup>
+				<WithTestRegistry
+					registry={ registry }
+					features={ parameters.features || [] }
+				>
+					<Story />
+				</WithTestRegistry>
 			);
 		},
 	],

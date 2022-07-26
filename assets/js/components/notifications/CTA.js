@@ -26,6 +26,7 @@ import classnames from 'classnames';
  * Internal dependencies
  */
 import Link from '../Link';
+import Button from '../Button';
 
 const CTA = ( {
 	title,
@@ -33,6 +34,7 @@ const CTA = ( {
 	ctaLink,
 	ctaLabel,
 	ctaLinkExternal,
+	ctaType,
 	error,
 	onClick,
 	'aria-label': ariaLabel,
@@ -51,16 +53,23 @@ const CTA = ( {
 				{ description }
 			</div>
 		) }
-		{ ctaLabel && (
+		{ ctaLabel && ctaType === 'button' && (
+			<Button
+				aria-label={ ariaLabel }
+				href={ ctaLink }
+				onClick={ onClick }
+			>
+				{ ctaLabel }
+			</Button>
+		) }
+		{ ctaLabel && ctaType === 'link' && (
 			<Link
 				href={ ctaLink }
 				onClick={ onClick }
-				inverse={ ! error }
-				caps
-				arrow
 				aria-label={ ariaLabel }
 				external={ ctaLinkExternal }
 				hideExternalIndicator={ ctaLinkExternal }
+				arrow
 			>
 				{ ctaLabel }
 			</Link>
@@ -74,6 +83,7 @@ CTA.propTypes = {
 	ctaLink: PropTypes.string,
 	ctaLinkExternal: PropTypes.bool,
 	ctaLabel: PropTypes.string,
+	ctaType: PropTypes.string,
 	'aria-label': PropTypes.string,
 	error: PropTypes.bool,
 	onClick: PropTypes.func,
@@ -84,6 +94,7 @@ CTA.defaultProps = {
 	description: '',
 	ctaLink: '',
 	ctaLabel: '',
+	ctaType: 'link',
 	error: false,
 	onClick: () => {},
 };

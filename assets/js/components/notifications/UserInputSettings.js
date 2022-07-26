@@ -42,6 +42,7 @@ export default function UserInputSettings( {
 	onCTAClick,
 	onDismiss,
 	isDismissible,
+	rounded = false,
 } ) {
 	const instanceID = useInstanceID( UserInputSettings );
 	const ctaLink = useSelect( ( select ) =>
@@ -76,6 +77,7 @@ export default function UserInputSettings( {
 			WinImageSVG={ UserInputPromptSVG }
 			isDismissible={ isDismissible }
 			onDismiss={ onDismiss }
+			rounded={ rounded }
 		/>
 	);
 }
@@ -85,4 +87,5 @@ UserInputSettings.propTypes = {
 	onCTAClick: PropTypes.func,
 	onDismiss: PropTypes.func,
 	isDismissible: PropTypes.bool,
+	rounded: PropTypes.bool,
 };

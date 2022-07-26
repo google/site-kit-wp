@@ -20,7 +20,11 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { useCallback, Fragment } from '@wordpress/element';
+import {
+	useCallback,
+	createInterpolateElement,
+	Fragment,
+} from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -30,6 +34,7 @@ import OptIn from '../OptIn';
 import Header from '../Header';
 import Button from '../Button';
 import Layout from '../layout/Layout';
+import Link from '../Link';
 import HelpMenu from '../help/HelpMenu';
 import SideKickSVG from '../../../svg/graphics/view-only-setup-sidekick.svg';
 import { SHARED_DASHBOARD_SPLASH_ITEM_KEY } from './constants';
@@ -37,9 +42,13 @@ import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
 import { Grid, Row, Cell } from '../../material-components';
+import { trackEvent } from '../../util';
+import useViewContext from '../../hooks/useViewContext';
 const { useSelect, useDispatch } = Data;
 
 export default function SetupUsingProxyViewOnly() {
+	const viewContext = useViewContext();
+
 	const { dismissItem } = useDispatch( CORE_USER );
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 
@@ -47,10 +56,14 @@ export default function SetupUsingProxyViewOnly() {
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' )
 	);
 
-	const onButtonClick = useCallback( async () => {
-		await dismissItem( SHARED_DASHBOARD_SPLASH_ITEM_KEY );
-		navigateTo( dashboardURL );
-	}, [ dashboardURL, dismissItem, navigateTo ] );
+	const onButtonClick = useCallback( () => {
+		Promise.all( [
+			dismissItem( SHARED_DASHBOARD_SPLASH_ITEM_KEY ),
+			trackEvent( viewContext, 'confirm_viewonly' ),
+		] ).finally( () => {
+			navigateTo( dashboardURL );
+		} );
+	}, [ dashboardURL, dismissItem, navigateTo, viewContext ] );
 
 	if ( ! dashboardURL ) {
 		return null;
@@ -66,7 +79,7 @@ export default function SetupUsingProxyViewOnly() {
 				<Grid>
 					<Row>
 						<Cell size={ 12 }>
-							<Layout>
+							<Layout rounded>
 								<section className="googlesitekit-setup__splash">
 									<Grid>
 										<Row className="googlesitekit-setup__content">
@@ -94,10 +107,29 @@ export default function SetupUsingProxyViewOnly() {
 														'google-site-kit'
 													) }
 												</h1>
-
 												<p className="googlesitekit-setup__description">
+													{ createInterpolateElement(
+														__(
+															"An administrator has granted you access to view this site's Dashboard to view stats from all shared Google services. <a>Learn more</a>",
+															'google-site-kit'
+														),
+														{
+															a: (
+																<Link
+																	aria-label={ __(
+																		'Learn more about dashboard sharing',
+																		'google-site-kit'
+																	) }
+																	href="https://sitekit.withgoogle.com/documentation/using-site-kit/dashboard-sharing/"
+																	external
+																/>
+															),
+														}
+													) }
+												</p>
+												<p>
 													{ __(
-														'Get insights about how people find and use your site, how to improve and monetize your content, directly in your WordPress dashboard',
+														'Get insights about how people find and use your site as well as how to improve and monetize your content, directly in your WordPress dashboard.',
 														'google-site-kit'
 													) }
 												</p>

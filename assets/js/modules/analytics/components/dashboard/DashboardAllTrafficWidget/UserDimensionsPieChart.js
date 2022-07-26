@@ -196,7 +196,7 @@ export default function UserDimensionsPieChart( props ) {
 		`<p>
 			<a
 				href="${ url }"
-				class="googlesitekit-cta-link googlesitekit-cta-link--external googlesitekit-cta-link--inherit googlesitekit-cta-link__tooltip"
+				class="googlesitekit-cta-link googlesitekit-cta-link--external googlesitekit-cta-link__tooltip"
 				target="_blank"
 				rel="noreferrer noopener"
 				data-row-label="${ rowLabel }"
@@ -723,15 +723,15 @@ UserDimensionsPieChart.chartOptions = {
 	},
 	pieHole: 0.6,
 	pieSliceTextStyle: {
-		color: 'black',
+		color: '#131418',
 		fontSize: 12,
 	},
 	slices: {
-		0: { color: '#ffcd33' },
-		1: { color: '#c196ff' },
-		2: { color: '#9de3fe' },
-		3: { color: '#ff7fc6' },
-		4: { color: '#ff886b' },
+		0: { color: '#fece72' },
+		1: { color: '#a983e6' },
+		2: { color: '#bed4ff' },
+		3: { color: '#ee92da' },
+		4: { color: '#ff9b7a' },
 	},
 	title: null,
 	tooltip: {

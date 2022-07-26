@@ -108,7 +108,6 @@ export default function SetupForm( { finishSetup } ) {
 					submitMode === SETUP_MODE_WITH_ANALYTICS &&
 					! analyticsModuleActive
 				) {
-					await throwOnError( () => activateModule( 'analytics' ) );
 					const { response, error } = await activateModule(
 						'analytics'
 					);
@@ -208,7 +207,6 @@ export default function SetupForm( { finishSetup } ) {
 							type="button"
 							onClick={ onSetupWithoutAnalytics }
 							disabled={ ! canSubmitChanges }
-							inherit
 						>
 							{ __(
 								'Complete setup without Analytics',

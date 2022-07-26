@@ -203,13 +203,13 @@ describe( 'Site Kit admin bar component display', () => {
 				}
 			),
 			// Waiting for navigation here does not work as expected as this is a JS navigation.
-			page.waitForSelector( '.googlesitekit-page-header__title' ),
+			page.waitForSelector( '.googlesitekit-entity-header' ),
 		] );
 
 		await expect( page ).toMatchElement(
-			'.googlesitekit-page-header__title',
+			'.googlesitekit-entity-header__back',
 			{
-				title: /Detailed Page Stats/i,
+				text: /Back to dashboard/i,
 			}
 		);
 	} );

@@ -12,6 +12,7 @@ namespace Google\Site_Kit\Core\Modules;
 
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\REST_Route;
+use Google\Site_Kit\Core\Util\Collection_Key_Cap_Filter;
 use WP_REST_Request;
 use WP_REST_Response;
 use WP_REST_Server;
@@ -78,10 +79,19 @@ class REST_Dashboard_Sharing_Controller {
 					'callback'            => function ( WP_REST_Request $request ) {
 						$original_module_owners = $this->modules->get_shareable_modules_owners();
 
-						$sharing_settings = $this->modules->get_module_sharing_settings();
-						$sharing_settings->merge( (array) $request['data'] );
+						$sharing_settings     = $this->modules->get_module_sharing_settings();
+						$new_sharing_settings = array_reduce(
+							array(
+								new Collection_Key_Cap_Filter( 'sharedRoles', Permissions::MANAGE_MODULE_SHARING_OPTIONS ),
+								new Collection_Key_Cap_Filter( 'management', Permissions::DELEGATE_MODULE_SHARING_MANAGEMENT ),
+							),
+							function ( $settings, Collection_Key_Cap_Filter $filter ) {
+								return $filter->filter_key_by_cap( $settings );
+							},
+							(array) $request['data']
+						);
 
-						$new_sharing_settings = $sharing_settings->get();
+						$sharing_settings->merge( $new_sharing_settings );
 
 						$new_module_owners = $this->modules->get_shareable_modules_owners();
 						$changed_module_owners = array_filter(
@@ -94,7 +104,7 @@ class REST_Dashboard_Sharing_Controller {
 
 						return new WP_REST_Response(
 							array(
-								'settings'    => $new_sharing_settings,
+								'settings'    => $sharing_settings->get(),
 								// Cast array to an object so JSON encoded response is always an object,
 								// even when the array is empty.
 								'newOwnerIDs' => (object) $changed_module_owners,
