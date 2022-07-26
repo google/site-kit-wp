@@ -34,27 +34,33 @@ import {
 } from '../googlesitekit/constants';
 
 describe( 'isSiteKitScreen', () => {
-	it( 'should return true for Site Kit screens', () => {
-		expect( isSiteKitScreen( VIEW_CONTEXT_DASHBOARD ) ).toBe( true );
-		expect( isSiteKitScreen( VIEW_CONTEXT_PAGE_DASHBOARD ) ).toBe( true );
-		expect( isSiteKitScreen( VIEW_CONTEXT_DASHBOARD_VIEW_ONLY ) ).toBe(
-			true
-		);
-		expect( isSiteKitScreen( VIEW_CONTEXT_PAGE_DASHBOARD_VIEW_ONLY ) ).toBe(
-			true
-		);
-		expect( isSiteKitScreen( VIEW_CONTEXT_USER_INPUT ) ).toBe( true );
-		expect( isSiteKitScreen( VIEW_CONTEXT_DASHBOARD_SPLASH ) ).toBe( true );
-		expect( isSiteKitScreen( VIEW_CONTEXT_SETTINGS ) ).toBe( true );
-		expect( isSiteKitScreen( VIEW_CONTEXT_MODULE_SETUP ) ).toBe( true );
+	it.each( [
+		[ 'VIEW_CONTEXT_DASHBOARD', VIEW_CONTEXT_DASHBOARD ],
+		[ 'VIEW_CONTEXT_PAGE_DASHBOARD', VIEW_CONTEXT_PAGE_DASHBOARD ],
+		[
+			'VIEW_CONTEXT_DASHBOARD_VIEW_ONLY',
+			VIEW_CONTEXT_DASHBOARD_VIEW_ONLY,
+		],
+		[
+			'VIEW_CONTEXT_PAGE_DASHBOARD_VIEW_ONLY',
+			VIEW_CONTEXT_PAGE_DASHBOARD_VIEW_ONLY,
+		],
+		[ 'VIEW_CONTEXT_USER_INPUT', VIEW_CONTEXT_USER_INPUT ],
+		[ 'VIEW_CONTEXT_DASHBOARD_SPLASH', VIEW_CONTEXT_DASHBOARD_SPLASH ],
+		[ 'VIEW_CONTEXT_SETTINGS', VIEW_CONTEXT_SETTINGS ],
+		[ 'VIEW_CONTEXT_MODULE_SETUP', VIEW_CONTEXT_MODULE_SETUP ],
+	] )( 'should return TRUE for %s screen', ( _, screen ) => {
+		expect( isSiteKitScreen( screen ) ).toBe( true );
 	} );
 
-	it( 'should return false for view contexts that are not Site Kit screens', () => {
-		expect( isSiteKitScreen( VIEW_CONTEXT_POSTS_LIST ) ).toBe( false );
-		expect( isSiteKitScreen( VIEW_CONTEXT_ACTIVATION ) ).toBe( false );
-		expect( isSiteKitScreen( VIEW_CONTEXT_ADMIN_BAR ) ).toBe( false );
-		expect( isSiteKitScreen( VIEW_CONTEXT_MODULE ) ).toBe( false );
-		expect( isSiteKitScreen( VIEW_CONTEXT_WP_DASHBOARD ) ).toBe( false );
+	it.each( [
+		[ 'VIEW_CONTEXT_POSTS_LIST', VIEW_CONTEXT_POSTS_LIST ],
+		[ 'VIEW_CONTEXT_ACTIVATION', VIEW_CONTEXT_ACTIVATION ],
+		[ 'VIEW_CONTEXT_ADMIN_BAR', VIEW_CONTEXT_ADMIN_BAR ],
+		[ 'VIEW_CONTEXT_MODULE', VIEW_CONTEXT_MODULE ],
+		[ 'VIEW_CONTEXT_WP_DASHBOARD', VIEW_CONTEXT_WP_DASHBOARD ],
+	] )( 'should return FALSE for %s screen', ( _, screen ) => {
+		expect( isSiteKitScreen( screen ) ).toBe( false );
 	} );
 
 	it( 'should return false for values other than Site Kit screen context constans', () => {
