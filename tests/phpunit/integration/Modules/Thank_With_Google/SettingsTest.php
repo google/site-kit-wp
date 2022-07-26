@@ -70,7 +70,7 @@ class SettingsTest extends SettingsTestCase {
 
 		$settings->merge(
 			array(
-				'colorTheme'      => 'blue',
+				'colorTheme'      => 'cyan',
 				'buttonPlacement' => 'static_auto',
 				'buttonPostTypes' => array(
 					'post',
@@ -84,7 +84,7 @@ class SettingsTest extends SettingsTestCase {
 			array(
 				'ownerID'         => '',
 				'publicationID'   => '',
-				'colorTheme'      => 'blue',
+				'colorTheme'      => 'cyan',
 				'buttonPlacement' => 'static_auto',
 				'buttonPostTypes' => array( 'post', 'test' ),
 			),
