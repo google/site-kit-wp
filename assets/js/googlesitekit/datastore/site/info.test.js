@@ -42,6 +42,12 @@ describe( 'core/site site info', () => {
 		siteName: 'Something Test',
 		timezone: 'America/Denver',
 		usingProxy: true,
+		postTypes: [
+			{
+				slug: 'post',
+				label: 'Post',
+			},
+		],
 	};
 	const entityInfoVar = '_googlesitekitEntityData';
 	const entityInfo = {
@@ -251,6 +257,7 @@ describe( 'core/site site info', () => {
 			[ 'getSetupErrorRedoURL', 'setupErrorRedoURL' ],
 			[ 'getProxySupportLinkURL', 'proxySupportLinkURL' ],
 			[ 'getTimezone', 'timezone' ],
+			[ 'getPostTypes', 'postTypes' ],
 			[ 'isUsingProxy', 'usingProxy' ],
 			[ 'isAMP', 'ampMode' ],
 			[ 'isPrimaryAMP', 'ampMode' ],

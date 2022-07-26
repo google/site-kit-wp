@@ -64,7 +64,7 @@ export default function ColorRadio() {
 			<h4>{ __( 'Color', 'google-site-kit' ) }</h4>
 			<p>
 				{ __(
-					'Choose the color of the Thank button, counter, supporter wall, and other components.',
+					'Choose the color of the Thank button, counter, supporter wall, and other components',
 					'google-site-kit'
 				) }
 			</p>

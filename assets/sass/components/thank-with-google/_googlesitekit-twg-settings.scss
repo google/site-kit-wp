@@ -17,15 +17,28 @@
 .googlesitekit-plugin {
 
 	.googlesitekit-twg-setting-field {
+		margin-bottom: 0 !important;
+		width: 100%;
 
-		h4 {
+		> h4 {
+			font-size: 1rem;
 			margin: 0 0 21px;
+		}
+
+		> p {
+			color: $c-user-input-note;
+			font-size: 0.75rem;
 		}
 
 		+ .googlesitekit-twg-setting-field {
 			border-top: 1px solid $c-mercury;
-			margin-top: 24px;
-			padding-top: 24px;
+			margin: $grid-gap-phone 0;
+			padding-top: $grid-gap-phone;
+
+			@media (min-width: $bp-desktop) {
+				margin: $grid-gap-desktop 0;
+				padding-top: $grid-gap-desktop;
+			}
 		}
 	}
 }

@@ -14,10 +14,87 @@
  * limitations under the License.
  */
 
+/**
+ * External dependencies
+ */
+import { Chip, ChipCheckmark } from '@material/react-chips';
+
+/**
+ * WordPress dependencies
+ */
+import { useCallback } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
+import { ENTER } from '@wordpress/keycodes';
+
+/**
+ * Internal dependencies
+ */
+import Data from 'googlesitekit-data';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import { MODULES_THANK_WITH_GOOGLE } from '../../datastore/constants';
+const { useSelect, useDispatch } = Data;
+
 export default function PostTypesSelect() {
+	const postTypes = useSelect( ( select ) =>
+		select( CORE_SITE ).getPostTypes()
+	);
+
+	const buttonPostTypes = useSelect( ( select ) =>
+		select( MODULES_THANK_WITH_GOOGLE ).getButtonPostTypes()
+	);
+
+	const { setButtonPostTypes } = useDispatch( MODULES_THANK_WITH_GOOGLE );
+	const toggleChip = useCallback(
+		( { type, target, keyCode } ) => {
+			if ( type === 'keyup' && keyCode !== ENTER ) {
+				return;
+			}
+
+			const chip = target.closest( '.mdc-chip' );
+			const chipID = chip?.dataset?.chipId; // eslint-disable-line sitekit/acronym-case
+			if ( ! chipID ) {
+				return;
+			}
+
+			if ( buttonPostTypes.includes( chipID ) ) {
+				setButtonPostTypes(
+					buttonPostTypes.filter(
+						( postType ) => postType !== chipID
+					)
+				);
+			} else {
+				setButtonPostTypes( [ ...buttonPostTypes, chipID ] );
+			}
+		},
+		[ buttonPostTypes, setButtonPostTypes ]
+	);
+
+	const options = postTypes?.map( ( { slug, label } ) => (
+		<Chip
+			chipCheckmark={ <ChipCheckmark /> }
+			data-chip-id={ slug }
+			id={ slug }
+			key={ slug }
+			label={ label }
+			onClick={ toggleChip }
+			onKeyUp={ toggleChip }
+			selected={ buttonPostTypes?.includes( slug ) }
+			className="googlesitekit-twg-post-type-select__chip"
+		/>
+	) );
+
 	return (
 		<div className="googlesitekit-twg-setting-field googlesitekit-twg-post-type-select">
-			PostTypesSelect
+			<h4>{ __( 'Post types', 'google-site-kit' ) }</h4>
+			<p>
+				{ __(
+					'Display Thank with Google on these post types',
+					'google-site-kit'
+				) }
+			</p>
+			<div className="googlesitekit-twg-post-type-select__options">
+				{ options }
+			</div>
 		</div>
 	);
 }

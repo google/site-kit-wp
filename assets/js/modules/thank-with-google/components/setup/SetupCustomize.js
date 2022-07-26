@@ -35,7 +35,9 @@ import { MODULES_THANK_WITH_GOOGLE } from '../../datastore/constants';
 import Button from '../../../../components/Button';
 const { useDispatch, useSelect } = Data;
 
-export default function SetupCustomize( { finishSetup } ) {
+export default function SetupCustomize( props ) {
+	const { finishSetup } = props;
+
 	const canSubmitChanges = useSelect( ( select ) =>
 		select( MODULES_THANK_WITH_GOOGLE ).canSubmitChanges()
 	);
@@ -45,7 +47,7 @@ export default function SetupCustomize( { finishSetup } ) {
 	const handleSubmitChanges = useCallback( async () => {
 		const { error } = await submitChanges();
 		if ( ! error ) {
-			finishSetup();
+			finishSetup?.();
 		}
 	}, [ submitChanges, finishSetup ] );
 
@@ -64,8 +66,4 @@ export default function SetupCustomize( { finishSetup } ) {
 
 SetupCustomize.propTypes = {
 	finishSetup: PropTypes.func,
-};
-
-SetupCustomize.defaultProps = {
-	finishSetup: () => {},
 };
