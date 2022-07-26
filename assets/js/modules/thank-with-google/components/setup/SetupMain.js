@@ -19,6 +19,7 @@
 /**
  * External dependencies
  */
+import { useCallback } from '@wordpress/element';
 import PropTypes from 'prop-types';
 
 /**
@@ -42,7 +43,8 @@ import SetupPublicationActive from './SetupPublicationActive';
 import SetupPublicationActionRequired from './SetupPublicationActionRequired';
 import SetupPublicationPendingVerification from './SetupPublicationPendingVerification';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
-const { useSelect } = Data;
+import { useRefocus } from '../../../../hooks/useRefocus';
+const { useDispatch, useSelect } = Data;
 
 export default function SetupMain( { finishSetup } ) {
 	const hasErrors = useSelect( ( select ) =>
@@ -54,6 +56,20 @@ export default function SetupMain( { finishSetup } ) {
 	const currentPublication = useSelect( ( select ) =>
 		select( MODULES_THANK_WITH_GOOGLE ).getCurrentPublication()
 	);
+
+	const { resetPublications } = useDispatch( MODULES_THANK_WITH_GOOGLE );
+
+	const reset = useCallback( () => {
+		// Do not reset if the publication ID has already been set.
+		if ( publicationID ) {
+			return;
+		}
+
+		resetPublications();
+	}, [ publicationID, resetPublications ] );
+
+	// Reset all fetched data when user re-focuses window.
+	useRefocus( reset, 15000 );
 
 	let viewComponent;
 
