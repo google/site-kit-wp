@@ -162,7 +162,7 @@ export default function SettingsView() {
 	const siteStatusLinkLabel = adsenseSetupV2Enabled
 		? createInterpolateElement(
 				__(
-					' View <VisuallyHidden>site</VisuallyHidden>in AdSense',
+					'View <VisuallyHidden>site </VisuallyHidden>in AdSense',
 					'google-site-kit'
 				),
 				{
@@ -235,7 +235,7 @@ export default function SettingsView() {
 						{ __( 'Site Status', 'google-site-kit' ) }
 					</h5>
 					<p className="googlesitekit-settings-module__meta-item-data">
-						{ adsenseSetupV2Enabled && siteStatusLabel }
+						{ adsenseSetupV2Enabled && siteStatusLabel + ' ' }
 						<Link
 							href={ siteStatusURL }
 							className="googlesitekit-settings-module__cta-button"
