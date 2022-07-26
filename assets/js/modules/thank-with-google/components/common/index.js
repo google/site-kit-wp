@@ -17,3 +17,4 @@
  */
 
 export { default as PublicationIDInput } from './PublicationIDInput';
+export { default as SetupPublicationScreen } from './SetupPublicationScreen';

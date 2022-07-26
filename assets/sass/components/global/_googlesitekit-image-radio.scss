@@ -1,0 +1,121 @@
+.googlesitekit-image-radio {
+	display: flex;
+	flex-direction: column;
+	padding: 0.625rem;
+	width: fit-content;
+
+	& > label {
+		color: $c-user-input-note;
+		font-size: 0.75rem;
+		margin-top: 0.625rem;
+		padding: 0;
+
+		span {
+			color: $c-neutral-n-900;
+			display: block;
+			font-size: 0.875rem;
+			margin-bottom: 0.125rem;
+		}
+	}
+
+	.image-radio {
+
+		/**
+		 * The material radio button has an inline ripple size property,
+		 * that is used for the animation. The !important here is to override this,
+		 * and disabling the animation by setting the ripple size to zero.
+		 */
+		--mdc-ripple-fg-size: 0 !important;
+
+		height: unset;
+		padding: 0;
+		width: 100%;
+
+		.mdc-image-radio__background {
+
+			.mdc-image-radio__content {
+				align-items: center;
+				background-color: $c-surfaces-surface;
+				border: 0.3125rem solid $c-surfaces-surface;
+				border-radius: 0.5625rem;
+				color: $c-neutral-n-900;
+				display: flex;
+				height: 12.1875rem;
+				justify-content: center;
+				outline: 0.0625rem solid $c-jumbo;
+				width: 16.5rem;
+
+				&--no-image {
+					background-color: $c-surfaces-surface-2;
+					height: 5.0625rem;
+					text-align: center;
+				}
+
+				svg {
+					object-fit: contain;
+					width: 100%;
+				}
+			}
+		}
+
+		&:hover .mdc-image-radio__content {
+			box-shadow: 0 0 5px 5px $c-surfaces-surface-2;
+			position: relative;
+
+			&::after {
+				background-color: $c-radio-background-hover;
+				border-radius: 0.5625rem;
+				content: "";
+				height: calc(100% + 0.75rem);
+				left: 50%;
+				opacity: 0.2;
+				position: absolute;
+				top: 50%;
+				transform: translate(-50%, -50%);
+				width: calc(100% + 0.75rem);
+			}
+
+			&--no-image {
+				background-color: $c-radio-background-hover;
+
+				&::after {
+					content: unset;
+				}
+			}
+		}
+
+		&.mdc-ripple-upgraded--background-focused .mdc-image-radio__content {
+			box-shadow: 0 0 5px 5px $c-surfaces-surface-2;
+			position: relative;
+
+			&::after {
+				background-color: $c-radio-background-focus;
+				border-radius: 0.5625rem;
+				content: "";
+				height: calc(100% + 0.75rem);
+				left: 50%;
+				opacity: 0.2;
+				position: absolute;
+				top: 50%;
+				transform: translate(-50%, -50%);
+				width: calc(100% + 0.75rem);
+			}
+
+			&--no-image {
+				background-color: $c-radio-background-focus;
+
+				&::after {
+					content: unset;
+				}
+			}
+		}
+
+		.mdc-radio__native-control[checked] + .mdc-image-radio__background {
+
+			.mdc-image-radio__content {
+				border: 0.3125rem solid $c-surfaces-surface;
+				outline: 0.125rem solid $c-content-link;
+			}
+		}
+	}
+}
