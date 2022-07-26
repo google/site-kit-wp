@@ -146,12 +146,12 @@ export default function ModuleRecoveryAlert() {
 
 	let description = null;
 	let children = null;
-	let ctaLink = null;
-	let ctaLabel = null;
 	let onCTAClick = null;
+	let isDismissible = true;
 
 	if ( isLoading ) {
 		children = <ProgressBar />;
+		isDismissible = false;
 	} else if ( userAccessibleModules.length === 0 ) {
 		if ( recoverableModulesList.length === 1 ) {
 			description = sprintf(
@@ -201,8 +201,6 @@ export default function ModuleRecoveryAlert() {
 				) }
 			</Fragment>
 		);
-		ctaLink = '#';
-		ctaLabel = __( 'Recover', 'google-site-kit' );
 		onCTAClick = handleRecoverModules;
 	} else {
 		description = __(
@@ -236,8 +234,6 @@ export default function ModuleRecoveryAlert() {
 				) }
 			</Fragment>
 		);
-		ctaLink = '#';
-		ctaLabel = __( 'Recover', 'google-site-kit' );
 		onCTAClick = handleRecoverModules;
 	}
 
@@ -248,17 +244,14 @@ export default function ModuleRecoveryAlert() {
 				'Dashboard data for some services has been interrupted',
 				'google-site-kit'
 			) }
-			ctaLabel={ ctaLabel }
 			onCTAClick={ onCTAClick }
-			ctaLink={ ctaLink }
+			ctaLabel={ onCTAClick ? __( 'Recover', 'google-site-kit' ) : null }
+			ctaLink={ onCTAClick ? '#' : null }
 			description={ description }
 			learnMoreURL="https://sitekit.withgoogle.com/documentation/using-site-kit/dashboard-sharing/"
 			learnMoreLabel={ __( 'Learn more', 'google-site-kit' ) }
-			dismiss={
-				isLoading
-					? undefined
-					: __( 'Remind me later', 'google-site-kit' )
-			}
+			isDismissible={ isDismissible }
+			dismiss={ __( 'Remind me later', 'google-site-kit' ) }
 			dismissExpires={ getTimeInSeconds( 'day' ) }
 		>
 			{ children }
