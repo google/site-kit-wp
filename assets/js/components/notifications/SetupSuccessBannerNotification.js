@@ -200,6 +200,21 @@ function SetupSuccessBannerNotification() {
 				};
 			}
 
+			if ( 'thank-with-google' === slug ) {
+				winData.description = __(
+					'Thank with Google is visible to your visitors. To see metrics,',
+					'google-site-kit'
+				);
+				winData.learnMore = {
+					label: __(
+						'open the administrator panel.',
+						'google-site-kit'
+					),
+					url: 'https://publishercenter.google.com/',
+					target: LEARN_MORE_TARGET.EXTERNAL,
+				};
+			}
+
 			return (
 				<Fragment>
 					<BannerNotification

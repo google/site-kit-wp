@@ -72,6 +72,7 @@ export default {
 					.dispatch( MODULES_THANK_WITH_GOOGLE )
 					.receiveGetSettings( {
 						publicationID: 'example.com',
+						colorTheme: 'purple',
 					} );
 			};
 

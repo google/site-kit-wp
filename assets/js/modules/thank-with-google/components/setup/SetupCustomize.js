@@ -1,7 +1,7 @@
 /**
- * Thank with Google Setup Form component.
+ * Thank with Google SetupCustomize component.
  *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2022 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,61 +24,48 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { useCallback } from '@wordpress/element';
+import { Fragment, useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import StoreErrorNotices from '../../../../components/StoreErrorNotices';
-import Button from '../../../../components/Button';
 import { MODULES_THANK_WITH_GOOGLE } from '../../datastore/constants';
-import { PublicationIDInput } from '../common';
+import Button from '../../../../components/Button';
 const { useDispatch, useSelect } = Data;
 
-export default function SetupForm( { finishSetup } ) {
-	// Get validation function.
+export default function SetupCustomize( { finishSetup } ) {
 	const canSubmitChanges = useSelect( ( select ) =>
 		select( MODULES_THANK_WITH_GOOGLE ).canSubmitChanges()
 	);
 
-	// Handle form submissions.
 	const { submitChanges } = useDispatch( MODULES_THANK_WITH_GOOGLE );
-	const submitForm = useCallback(
-		( e ) => {
-			e.preventDefault();
-			submitChanges();
+
+	const handleSubmitChanges = useCallback( async () => {
+		const { error } = await submitChanges();
+		if ( ! error ) {
 			finishSetup();
-		},
-		[ submitChanges, finishSetup ]
-	);
+		}
+	}, [ submitChanges, finishSetup ] );
 
 	return (
-		<form
-			className="googlesitekit-analytics-setup__form"
-			onSubmit={ submitForm }
-		>
-			<StoreErrorNotices
-				moduleSlug="thank-with-google"
-				storeName={ MODULES_THANK_WITH_GOOGLE }
-			/>
-
-			<div className="googlesitekit-setup-module__inputs">
-				<PublicationIDInput />
-			</div>
-
-			<div className="googlesitekit-setup-module__action">
-				<Button disabled={ ! canSubmitChanges }>
-					{ __( 'Configure Thank with Google', 'google-site-kit' ) }
-				</Button>
-			</div>
-		</form>
+		<Fragment>
+			<div>TODO: UI for setup customize - SetupCustomize</div>
+			<Button
+				disabled={ ! canSubmitChanges }
+				onClick={ handleSubmitChanges }
+			>
+				{ __( 'Configure Thank with Google', 'google-site-kit' ) }
+			</Button>
+		</Fragment>
 	);
 }
 
-SetupForm.propTypes = {
+SetupCustomize.propTypes = {
 	finishSetup: PropTypes.func,
 };
 
-SetupForm.defaultProps = {};
+SetupCustomize.defaultProps = {
+	finishSetup: () => {},
+};

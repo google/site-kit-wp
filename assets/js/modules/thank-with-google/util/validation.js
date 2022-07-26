@@ -17,6 +17,20 @@
  */
 
 /**
+ * Internal dependencies
+ */
+import { getColorThemes } from './settings';
+
+const validButtonPlacements = [
+	'dynamic_low',
+	'dynamic_high',
+	'static_auto',
+	'static_above-content',
+	'static_below-content',
+	'static_below-first-paragraph',
+];
+
+/**
  * Checks if the given publication ID appears to be a valid.
  *
  * @since 1.78.0
@@ -40,7 +54,10 @@ export function isValidPublicationID( publicationID ) {
  * @return {boolean} `true` if the given color theme is valid, `false` otherwise.
  */
 export function isValidColorTheme( colorTheme ) {
-	return typeof colorTheme === 'string' && colorTheme !== '';
+	const validColorThemes = getColorThemes();
+	return validColorThemes.some(
+		( { colorThemeID } ) => colorThemeID === colorTheme
+	);
 }
 
 /**
@@ -52,7 +69,7 @@ export function isValidColorTheme( colorTheme ) {
  * @return {boolean} `true` if the given button placement is valid, `false` otherwise.
  */
 export function isValidButtonPlacement( buttonPlacement ) {
-	return typeof buttonPlacement === 'string' && buttonPlacement !== '';
+	return validButtonPlacements.includes( buttonPlacement );
 }
 
 /**

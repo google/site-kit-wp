@@ -24,18 +24,14 @@ import { MODULES_THANK_WITH_GOOGLE } from './constants';
 import { submitChanges, validateCanSubmitChanges } from './settings';
 
 export default Modules.createModuleStore( 'thank-with-google', {
-	ownedSettingsSlugs: [
-		'publicationID',
-		'colorTheme',
-		'buttonPlacement',
-		'buttonPostTypes',
-	],
+	ownedSettingsSlugs: [ 'publicationID' ],
 	storeName: MODULES_THANK_WITH_GOOGLE,
 	settingSlugs: [
 		'publicationID',
 		'colorTheme',
 		'buttonPlacement',
 		'buttonPostTypes',
+		'ownerID',
 	],
 	submitChanges,
 	validateCanSubmitChanges,

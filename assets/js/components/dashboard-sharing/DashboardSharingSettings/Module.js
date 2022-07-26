@@ -115,18 +115,35 @@ export default function Module( { moduleSlug, moduleName, ownerUsername } ) {
 		}
 	}, [ management, sharedOwnershipModule ] );
 
+	const haveSharingSettingsManagementChanged = useSelect( ( select ) =>
+		select( CORE_MODULES ).haveModuleSharingSettingsChanged(
+			moduleSlug,
+			'management'
+		)
+	);
+
+	useEffect( () => {
+		if ( haveSharingSettingsManagementChanged ) {
+			trackEvent(
+				`${ viewContext }_sharing`,
+				`change_management_${ management }`,
+				moduleSlug
+			);
+		}
+	}, [
+		haveSharingSettingsManagementChanged,
+		management,
+		moduleSlug,
+		viewContext,
+	] );
+
 	const handleOnChange = useCallback(
 		( event ) => {
 			const value = event.target.value;
 			setManageViewAccess( value );
 			setSharingManagement( moduleSlug, value );
-			trackEvent(
-				`${ viewContext }_sharing`,
-				`change_management_${ value }`,
-				moduleSlug
-			);
 		},
-		[ setSharingManagement, setManageViewAccess, moduleSlug, viewContext ]
+		[ setSharingManagement, setManageViewAccess, moduleSlug ]
 	);
 
 	const isEditingUserRoles = moduleSlug === editingUserRolesSlug;

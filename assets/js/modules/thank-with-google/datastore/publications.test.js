@@ -22,6 +22,7 @@
 import {
 	createTestRegistry,
 	freezeFetch,
+	subscribeUntil,
 	unsubscribeFromAll,
 	untilResolved,
 } from '../../../../../tests/js/utils';
@@ -68,6 +69,63 @@ describe( 'modules/thank-with-google publications', () => {
 
 	afterEach( () => {
 		unsubscribeFromAll( registry );
+	} );
+
+	describe( 'actions', () => {
+		describe( 'resetAccounts', () => {
+			it( 'sets publications back to their initial values', () => {
+				registry
+					.dispatch( MODULES_THANK_WITH_GOOGLE )
+					.receiveGetPublications( publicationsWithActiveState );
+
+				// Verify the defined state.
+				expect(
+					registry
+						.select( MODULES_THANK_WITH_GOOGLE )
+						.getPublications()
+				).toEqual( publicationsWithActiveState );
+
+				registry
+					.dispatch( MODULES_THANK_WITH_GOOGLE )
+					.resetPublications();
+
+				// getPublications() will trigger a request again.
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/modules\/thank-with-google\/data\/publications/,
+					{ body: publicationsWithActiveState, status: 200 }
+				);
+
+				// Now it should have reverted to the initial undefined state.
+				expect(
+					registry
+						.select( MODULES_THANK_WITH_GOOGLE )
+						.getPublications()
+				).toBeUndefined();
+			} );
+
+			it( 'invalidates the resolver for getPublications', async () => {
+				registry
+					.dispatch( MODULES_THANK_WITH_GOOGLE )
+					.receiveGetPublications( publicationsWithActiveState );
+				registry.select( MODULES_THANK_WITH_GOOGLE ).getPublications();
+
+				await subscribeUntil( registry, () =>
+					registry
+						.select( MODULES_THANK_WITH_GOOGLE )
+						.hasFinishedResolution( 'getPublications' )
+				);
+
+				registry
+					.dispatch( MODULES_THANK_WITH_GOOGLE )
+					.resetPublications();
+
+				expect(
+					registry
+						.select( MODULES_THANK_WITH_GOOGLE )
+						.hasFinishedResolution( 'getPublications' )
+				).toBe( false );
+			} );
+		} );
 	} );
 
 	describe( 'selectors', () => {

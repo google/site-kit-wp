@@ -115,6 +115,10 @@ export default function SetupModule( { slug, name, description } ) {
 				{ EXPERIMENTAL_MODULES.includes( slug ) && (
 					<Badge label={ __( 'Experimental', 'google-site-kit' ) } />
 				) }
+
+				{ 'thank-with-google' === slug && (
+					<Badge label={ __( 'US Only', 'google-site-kit' ) } />
+				) }
 			</div>
 			<p className="googlesitekit-settings-connect-module__text">
 				{ description }
