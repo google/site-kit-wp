@@ -839,6 +839,7 @@ final class Authentication {
 		$data['proxyPermissionsURL'] = '';
 		$data['usingProxy']          = false;
 		$data['isAuthenticated']     = $this->is_authenticated();
+		$data['setupErrorCode']      = null;
 		$data['setupErrorMessage']   = null;
 		$data['setupErrorRedoURL']   = null;
 		$data['proxySupportLinkURL'] = null;
@@ -858,6 +859,7 @@ final class Authentication {
 			// We'll also remove the existing access code in the user options,
 			// because it isn't valid (given there was a setup error).
 			if ( ! empty( $error_code ) ) {
+				$data['setupErrorCode']    = $error_code;
 				$data['setupErrorMessage'] = $auth_client->get_error_message( $error_code );
 
 				// Get credentials needed to authenticate with the proxy
