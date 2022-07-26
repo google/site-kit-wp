@@ -15,6 +15,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
@@ -25,18 +30,22 @@ import { useCallback, useState } from '@wordpress/element';
  */
 import ImageRadio from '../../../../components/ImageRadio';
 
-const TYPE_OVERLAY = 'overlay';
-const TYPE_FIXED = 'fixed';
+export const TYPE_OVERLAY = 'overlay';
+export const TYPE_FIXED = 'fixed';
 
-export default function TypeRadio() {
-	const [ type, setType ] = useState( TYPE_OVERLAY );
+export default function TypeRadio( props ) {
+	const { defaultType = TYPE_OVERLAY, onUpdate } = props;
+
+	const [ type, setType ] = useState( defaultType );
 
 	const onChange = useCallback(
 		( { target } ) => {
 			const { value } = target || {};
+
 			setType( value );
+			onUpdate?.( value );
 		},
-		[ setType ]
+		[ setType, onUpdate ]
 	);
 
 	return (
@@ -71,3 +80,8 @@ export default function TypeRadio() {
 		</div>
 	);
 }
+
+TypeRadio.propTypes = {
+	defaultType: PropTypes.string,
+	onUpdate: PropTypes.func,
+};

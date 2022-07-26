@@ -21,5 +21,11 @@
 		h4 {
 			margin: 0 0 21px;
 		}
+
+		+ .googlesitekit-twg-setting-field {
+			border-top: 1px solid $c-mercury;
+			margin-top: 24px;
+			padding-top: 24px;
+		}
 	}
 }
