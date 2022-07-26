@@ -40,13 +40,13 @@ export default function SetupPublicationPendingVerification() {
 			) }
 		>
 			<Button
-				className="mdc-button--surfaces"
 				href="https://publishercenter.google.com/"
 				target="_blank"
 				aria-label={ __(
 					'Check your status on Thank with Google Publisher Center',
 					'google-site-kit'
 				) }
+				inverse={ true }
 			>
 				{ __( 'Check your status', 'google-site-kit' ) }
 			</Button>

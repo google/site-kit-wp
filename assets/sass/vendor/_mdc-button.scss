@@ -89,9 +89,9 @@
 		}
 	}
 
-	&--surfaces {
+	&--inverse {
 
-		@include mdc-button-filled-accessible($c-surfaces-on-background);
+		@include mdc-button-filled-accessible($c-surfaces-inverse-surface);
 	}
 
 	.mdc-button__icon {
