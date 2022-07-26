@@ -101,8 +101,8 @@ export default function SetupMain( { finishSetup } ) {
 							<div className="googlesitekit-setup-module__heading">
 								<div className="googlesitekit-setup-module__logo">
 									<ThankWithGoogleIcon
-										width="33"
-										height="33"
+										width="40"
+										height="39"
 									/>
 								</div>
 
