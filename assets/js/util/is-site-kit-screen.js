@@ -1,7 +1,7 @@
 /**
- * `modules/thank-with-google` base data store
+ * Utility function to check whether or not a view-context is a Site Kit view.
  *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2022 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,20 +19,15 @@
 /**
  * Internal dependencies
  */
-import Modules from 'googlesitekit-modules';
-import { MODULES_THANK_WITH_GOOGLE } from './constants';
-import { submitChanges, validateCanSubmitChanges } from './settings';
+import { SITE_KIT_VIEW_CONTEXTS } from '../googlesitekit/constants';
 
-export default Modules.createModuleStore( 'thank-with-google', {
-	ownedSettingsSlugs: [ 'publicationID' ],
-	storeName: MODULES_THANK_WITH_GOOGLE,
-	settingSlugs: [
-		'publicationID',
-		'colorTheme',
-		'buttonPlacement',
-		'buttonPostTypes',
-		'ownerID',
-	],
-	submitChanges,
-	validateCanSubmitChanges,
-} );
+/**
+ * Checks whether or not the current viewContext is a Site Kit screen.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} viewContext The view-context.
+ * @return {boolean} TRUE if the passed view-context is a site kit view; otherwise FALSE.
+ */
+export const isSiteKitScreen = ( viewContext ) =>
+	SITE_KIT_VIEW_CONTEXTS.includes( viewContext );
