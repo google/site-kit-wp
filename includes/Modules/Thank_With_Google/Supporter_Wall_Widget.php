@@ -31,7 +31,7 @@ class Supporter_Wall_Widget extends WP_Widget {
 	public function __construct() {
 		parent::__construct(
 			self::WIDGET_ID,
-			sprintf( 'Thank with Google: %s', __( 'Supporter Wall', 'google-site-kit' ) )
+			__( 'Thank with Google: Supporter Wall', 'google-site-kit' )
 		);
 	}
 
