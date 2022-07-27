@@ -135,7 +135,7 @@ const baseSelectors = {
 			return undefined;
 		}
 
-		if ( publications.length === 0 ) {
+		if ( ! publications?.length ) {
 			return null;
 		}
 

@@ -19,20 +19,19 @@
 /**
  * External dependencies
  */
-import { useCallback } from '@wordpress/element';
 import PropTypes from 'prop-types';
 
 /**
  * WordPress dependencies
  */
 import { _x, __ } from '@wordpress/i18n';
+import { useCallback, lazy, Suspense } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import ThankWithGoogleIcon from '../../../../../svg/graphics/thank-with-google.svg';
-import ThankWithGoogleSetup from '../../../../../svg/graphics/thank-with-google-setup.svg';
+import ThankWithGoogleIconSVG from '../../../../../svg/graphics/thank-with-google.svg';
 import ProgressBar from '../../../../components/ProgressBar';
 import Badge from '../../../../components/Badge';
 import { Grid, Row, Cell } from '../../../../material-components';
@@ -45,6 +44,10 @@ import SetupPublicationPendingVerification from './SetupPublicationPendingVerifi
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import { useRefocus } from '../../../../hooks/useRefocus';
 const { useDispatch, useSelect } = Data;
+
+const ThankWithGoogleSetup = lazy( () =>
+	import( '../../../../../svg/graphics/thank-with-google-setup.svg' )
+);
 
 export default function SetupMain( { finishSetup } ) {
 	const hasErrors = useSelect( ( select ) =>
@@ -72,6 +75,7 @@ export default function SetupMain( { finishSetup } ) {
 	useRefocus( reset, 15000 );
 
 	let viewComponent;
+	const svgHeight = 210;
 
 	if ( hasErrors ) {
 		viewComponent = (
@@ -81,7 +85,7 @@ export default function SetupMain( { finishSetup } ) {
 			/>
 		);
 	} else if ( currentPublication === undefined ) {
-		viewComponent = <ProgressBar />;
+		viewComponent = <ProgressBar height={ svgHeight * 0.75 } />;
 	} else if ( currentPublication === null ) {
 		viewComponent = <SetupCreatePublication />;
 	} else if ( currentPublication.state === 'ACTION_REQUIRED' ) {
@@ -110,13 +114,18 @@ export default function SetupMain( { finishSetup } ) {
 						lgOrder={ 2 }
 						className="googlesitekit-setup__icon"
 					>
-						<ThankWithGoogleSetup width={ 360 } height={ 210 } />
+						<Suspense fallback={ <div /> }>
+							<ThankWithGoogleSetup
+								width={ 360 }
+								height={ svgHeight }
+							/>
+						</Suspense>
 					</Cell>
 					<Cell smSize={ 4 } mdSize={ 8 } lgSize={ 6 } lgOrder={ 1 }>
 						<div className="googlesitekit-setup-module__header">
 							<div className="googlesitekit-setup-module__heading">
 								<div className="googlesitekit-setup-module__logo">
-									<ThankWithGoogleIcon
+									<ThankWithGoogleIconSVG
 										width="33"
 										height="33"
 									/>
