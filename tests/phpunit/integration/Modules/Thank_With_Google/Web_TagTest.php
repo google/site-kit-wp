@@ -39,7 +39,7 @@ class Web_TagTest extends TestCase {
 	}
 
 	public function test_content_placeholder_not_inserted_on_unselected_button_post_types() {
-		$this->web_tag->set_button_placement( 'static_auto' );
+		$this->web_tag->set_button_placement( Web_Tag::PLACEMENT_STATIC_AUTO );
 
 		$post_ID = $this->factory()->post->create( array( 'post_type' => 'page' ) );
 		$this->go_to( get_permalink( $post_ID ) );
@@ -51,7 +51,7 @@ class Web_TagTest extends TestCase {
 	}
 
 	public function test_content_placeholder_inserted_on_button_post_types() {
-		$this->web_tag->set_button_placement( 'static_auto' );
+		$this->web_tag->set_button_placement( Web_Tag::PLACEMENT_STATIC_AUTO );
 
 		$this->create_post_and_go_to_it();
 
@@ -62,7 +62,7 @@ class Web_TagTest extends TestCase {
 	}
 
 	public function test_content_placeholder_not_inserted_on_dynamic_button_placement() {
-		$this->web_tag->set_button_placement( 'dynamic_low' );
+		$this->web_tag->set_button_placement( Web_Tag::PLACEMENT_DYNAMIC_LOW );
 
 		$this->create_post_and_go_to_it();
 
@@ -73,7 +73,7 @@ class Web_TagTest extends TestCase {
 	}
 
 	public function test_content_placeholder_inserted_static_below_content() {
-		$this->web_tag->set_button_placement( 'static_below-content' );
+		$this->web_tag->set_button_placement( Web_Tag::PLACEMENT_STATIC_BELOW_CONTENT );
 
 		$this->create_post_and_go_to_it();
 
@@ -85,7 +85,7 @@ class Web_TagTest extends TestCase {
 	}
 
 	public function test_content_placeholder_inserted_static_above_content() {
-		$this->web_tag->set_button_placement( 'static_above-content' );
+		$this->web_tag->set_button_placement( Web_Tag::PLACEMENT_STATIC_ABOVE_CONTENT );
 
 		$this->create_post_and_go_to_it();
 
@@ -97,7 +97,7 @@ class Web_TagTest extends TestCase {
 	}
 
 	public function test_content_placeholder_inserted_static_below_first_paragraph() {
-		$this->web_tag->set_button_placement( 'static_below-first-paragraph' );
+		$this->web_tag->set_button_placement( Web_Tag::PLACEMENT_STATIC_AFTER_1ST_P );
 
 		$this->create_post_and_go_to_it();
 

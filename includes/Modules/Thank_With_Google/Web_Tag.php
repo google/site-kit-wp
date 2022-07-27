@@ -25,6 +25,13 @@ class Web_Tag extends Module_Web_Tag {
 
 	use Method_Proxy_Trait, Tag_With_DNS_Prefetch_Trait;
 
+	const PLACEMENT_DYNAMIC_LOW          = 'dynamic_low';
+	const PLACEMENT_DYNAMIC_HIGH         = 'dynamic_high';
+	const PLACEMENT_STATIC_AUTO          = 'static_auto';
+	const PLACEMENT_STATIC_ABOVE_CONTENT = 'static_above-content';
+	const PLACEMENT_STATIC_BELOW_CONTENT = 'static_below-content';
+	const PLACEMENT_STATIC_AFTER_1ST_P   = 'static_below-first-paragraph';
+
 	/**
 	 * Publication ID.
 	 *
@@ -168,11 +175,11 @@ class Web_Tag extends Module_Web_Tag {
 			return $button_placeholder;
 		}
 
-		if ( in_array( $this->button_placement, array( 'static_auto', 'static_below-content' ), true ) ) {
+		if ( in_array( $this->button_placement, array( self::PLACEMENT_STATIC_AUTO, self::PLACEMENT_STATIC_BELOW_CONTENT ), true ) ) {
 			$content = $content . $button_placeholder;
-		} elseif ( 'static_above-content' === $this->button_placement ) {
+		} elseif ( self::PLACEMENT_STATIC_ABOVE_CONTENT === $this->button_placement ) {
 			$content = $button_placeholder . $content;
-		} elseif ( 'static_below-first-paragraph' === $this->button_placement ) {
+		} elseif ( self::PLACEMENT_STATIC_AFTER_1ST_P === $this->button_placement ) {
 			$content = substr_replace( $content, $button_placeholder, strpos( $content, '</p>' ) + 4, 0 ); // strlen( '</p>' ) is 4.
 		}
 
