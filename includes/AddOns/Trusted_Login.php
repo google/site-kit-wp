@@ -15,7 +15,7 @@ final class TrustedLogin {
 	private function get_trustedlogin_config() {
 		return array(
 			'auth'    => array(
-				'api_key' => 'abc123',
+				'api_key' => 'e491f85b9601c6a4', // Public key from app.trustedlogin.com
 			),
 			'menu'    => array(
 				'slug'     => 'googlesitekit-dashboard',
