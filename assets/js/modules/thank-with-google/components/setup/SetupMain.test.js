@@ -201,7 +201,6 @@ describe( 'SetupMain', () => {
 			registry,
 		} );
 
-		// TODO: Update this assertion to match the new UI.
 		expect( container ).toHaveTextContent(
 			'Customize the appearance of Thank with Google on your site'
 		);
