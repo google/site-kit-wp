@@ -47,9 +47,6 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 	public function get_owned_keys() {
 		return array(
 			'publicationID',
-			'colorTheme',
-			'buttonPlacement',
-			'buttonPostTypes',
 		);
 	}
 
@@ -122,7 +119,18 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 	 * @return string The sanitized value.
 	 */
 	private function sanitize_color_theme( $color_theme ) {
-		if ( in_array( $color_theme, array( 'blue' ), true ) ) {
+		$allowed_colors = array(
+			'blue',
+			'cyan',
+			'green',
+			'purple',
+			'pink',
+			'orange',
+			'brown',
+			'black',
+		);
+
+		if ( in_array( $color_theme, $allowed_colors, true ) ) {
 			return $color_theme;
 		}
 		return '';
