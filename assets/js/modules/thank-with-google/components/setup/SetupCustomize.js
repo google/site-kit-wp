@@ -24,7 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { Fragment, useCallback } from '@wordpress/element';
+import { useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -33,6 +33,9 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import { MODULES_THANK_WITH_GOOGLE } from '../../datastore/constants';
 import Button from '../../../../components/Button';
+import { Cell } from '../../../../material-components';
+import { ButtonPlacement, ColorRadio, PostTypesSelect } from '../common';
+import SetupHeader from './SetupHeader';
 const { useDispatch, useSelect } = Data;
 
 export default function SetupCustomize( props ) {
@@ -52,15 +55,31 @@ export default function SetupCustomize( props ) {
 	}, [ submitChanges, finishSetup ] );
 
 	return (
-		<Fragment>
-			<div>TODO: UI for setup customize - SetupCustomize</div>
+		<Cell size={ 12 }>
+			<SetupHeader />
+
+			<div className="googlesitekit-setup-module__publication-screen googlesitekit-twg-setup-customize">
+				<p>
+					{ __(
+						'Customize the appearance of Thank with Google on your site',
+						'google-site-kit'
+					) }
+				</p>
+
+				<div className="googlesitekit-setup-module__inputs">
+					<ButtonPlacement />
+					<ColorRadio />
+					<PostTypesSelect />
+				</div>
+			</div>
+
 			<Button
 				disabled={ ! canSubmitChanges }
 				onClick={ handleSubmitChanges }
 			>
 				{ __( 'Configure Thank with Google', 'google-site-kit' ) }
 			</Button>
-		</Fragment>
+		</Cell>
 	);
 }
 

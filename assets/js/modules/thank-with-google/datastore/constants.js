@@ -18,6 +18,10 @@
 
 export const MODULES_THANK_WITH_GOOGLE = 'modules/thank-with-google';
 
+export const STATE_ACTIVE = 'ACTIVE';
+export const STATE_ACTION_REQUIRED = 'ACTION_REQUIRED';
+export const STATE_PENDING_VERIFICATION = 'PENDING_VERIFICATION';
+
 export const BUTTON_PLACEMENT_DYNAMIC_LOW = 'dynamic_low';
 export const BUTTON_PLACEMENT_DYNAMIC_HIGH = 'dynamic_high';
 export const BUTTON_PLACEMENT_STATIC_AUTO = 'static_auto';

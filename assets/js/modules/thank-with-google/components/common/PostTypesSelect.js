@@ -56,14 +56,14 @@ export default function PostTypesSelect() {
 				return;
 			}
 
-			if ( buttonPostTypes.includes( chipID ) ) {
+			if ( buttonPostTypes?.includes( chipID ) ) {
 				setButtonPostTypes(
 					buttonPostTypes.filter(
 						( postType ) => postType !== chipID
 					)
 				);
 			} else {
-				setButtonPostTypes( [ ...buttonPostTypes, chipID ] );
+				setButtonPostTypes( [ ...( buttonPostTypes || [] ), chipID ] );
 			}
 		},
 		[ buttonPostTypes, setButtonPostTypes ]

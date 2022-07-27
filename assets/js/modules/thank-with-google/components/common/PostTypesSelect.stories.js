@@ -18,9 +18,11 @@
  * Internal dependencies
  */
 import PostTypesSelect from './PostTypesSelect';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { MODULES_THANK_WITH_GOOGLE } from '../../datastore/constants';
-import { provideModules } from '../../../../../../tests/js/utils';
+import {
+	provideModules,
+	provideSiteInfo,
+} from '../../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 
 const Template = ( args ) => <PostTypesSelect { ...args } />;
@@ -34,21 +36,7 @@ export default {
 	decorators: [
 		( Story ) => {
 			const setupRegistry = ( registry ) => {
-				const postTypes = [
-					{
-						slug: 'post',
-						label: 'Posts',
-					},
-					{
-						slug: 'page',
-						label: 'Pages',
-					},
-					{
-						slug: 'attachment',
-						label: 'Media',
-					},
-				];
-
+				provideSiteInfo( registry );
 				provideModules( registry, [
 					{
 						slug: 'thank-with-google',
@@ -62,8 +50,6 @@ export default {
 					.receiveGetSettings( {
 						buttonPostTypes: [ 'post' ],
 					} );
-
-				registry.dispatch( CORE_SITE ).receiveSiteInfo( { postTypes } );
 			};
 
 			return (

@@ -17,7 +17,6 @@
  */
 
 export { default as PublicationIDInput } from './PublicationIDInput';
-export { default as SetupPublicationScreen } from './SetupPublicationScreen';
 export { default as ProminenceRadio } from './ProminenceRadio';
 export { default as TypeRadio } from './TypeRadio';
 export { default as PositionRadio } from './PositionRadio';

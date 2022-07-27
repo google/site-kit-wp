@@ -14,10 +14,25 @@
  * limitations under the License.
  */
 
-@import "googlesitekit-twg-settings";
-@import "googlesitekit-twg-setup";
-@import "googlesitekit-twg-color-radio";
-@import "googlesitekit-twg-post-types-select";
-@import "googlesitekit-twg-position-radio";
-@import "googlesitekit-twg-prominence-radio";
-@import "googlesitekit-twg-type-radio";
+.googlesitekit-plugin {
+
+	.googlesitekit-twg-setup-customize {
+
+		> p {
+			font-size: 1rem;
+			margin: $grid-gap-phone 0 0;
+
+			@media (min-width: $bp-desktop) {
+				margin: $grid-gap-desktop 0 0;
+			}
+		}
+	}
+
+	.googlesitekit-setup-module__publication-screen {
+		margin: 25px 0 40px 0;
+
+		.googlesitekit-setup-module__title + p {
+			margin: 0;
+		}
+	}
+}

@@ -24,13 +24,18 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { useCallback, lazy, Suspense } from '@wordpress/element';
+import { useCallback } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { MODULES_THANK_WITH_GOOGLE } from '../../datastore/constants';
+import {
+	MODULES_THANK_WITH_GOOGLE,
+	STATE_ACTIVE,
+	STATE_ACTION_REQUIRED,
+	STATE_PENDING_VERIFICATION,
+} from '../../datastore/constants';
 import { useRefocus } from '../../../../hooks/useRefocus';
 import { Grid, Row, Cell } from '../../../../material-components';
 import ProgressBar from '../../../../components/ProgressBar';
@@ -42,10 +47,6 @@ import SetupPublicationActionRequired from './SetupPublicationActionRequired';
 import SetupPublicationPendingVerification from './SetupPublicationPendingVerification';
 import SetupHeader from './SetupHeader';
 const { useDispatch, useSelect } = Data;
-
-const ThankWithGoogleSetup = lazy( () =>
-	import( '../../../../../svg/graphics/thank-with-google-setup.svg' )
-);
 
 export default function SetupMain( { finishSetup } ) {
 	const hasErrors = useSelect( ( select ) =>
@@ -61,45 +62,48 @@ export default function SetupMain( { finishSetup } ) {
 	const { resetPublications } = useDispatch( MODULES_THANK_WITH_GOOGLE );
 
 	const reset = useCallback( () => {
-		// Do not reset if the publication ID has already been set.
-		if ( publicationID ) {
-			return;
+		// Reset if the publication ID hasn't been set yet.
+		if ( ! publicationID ) {
+			resetPublications();
 		}
-
-		resetPublications();
 	}, [ publicationID, resetPublications ] );
 
 	// Reset all fetched data when user re-focuses window.
 	useRefocus( reset, 15000 );
 
-	const svgHeight = 210;
-	const progressBar = <ProgressBar height={ svgHeight * 0.75 } />;
-
 	let viewComponent;
 
 	if ( hasErrors ) {
 		viewComponent = (
-			<StoreErrorNotices
-				moduleSlug="thank-with-google"
-				storeName={ MODULES_THANK_WITH_GOOGLE }
-			/>
+			<Cell size={ 12 }>
+				<SetupHeader />
+				<StoreErrorNotices
+					moduleSlug="thank-with-google"
+					storeName={ MODULES_THANK_WITH_GOOGLE }
+				/>
+			</Cell>
 		);
 	} else if ( currentPublication === undefined ) {
-		viewComponent = progressBar;
+		viewComponent = (
+			<Cell size={ 12 }>
+				<SetupHeader />
+				<ProgressBar height={ 210 } />
+			</Cell>
+		);
 	} else if ( currentPublication === null ) {
 		viewComponent = <SetupCreatePublication />;
-	} else if ( currentPublication.state === 'ACTION_REQUIRED' ) {
+	} else if ( currentPublication.state === STATE_ACTION_REQUIRED ) {
 		viewComponent = <SetupPublicationActionRequired />;
-	} else if ( currentPublication.state === 'PENDING_VERIFICATION' ) {
+	} else if ( currentPublication.state === STATE_PENDING_VERIFICATION ) {
 		viewComponent = <SetupPublicationPendingVerification />;
-	} else if ( currentPublication.state === 'ACTIVE' && ! publicationID ) {
+	} else if ( currentPublication.state === STATE_ACTIVE && ! publicationID ) {
 		viewComponent = (
 			<SetupPublicationActive
 				// eslint-disable-next-line sitekit/acronym-case
 				currentPublicationID={ currentPublication.publicationId }
 			/>
 		);
-	} else if ( currentPublication.state === 'ACTIVE' && publicationID ) {
+	} else if ( currentPublication.state === STATE_ACTIVE && publicationID ) {
 		viewComponent = <SetupCustomize finishSetup={ finishSetup } />;
 	}
 
@@ -107,36 +111,7 @@ export default function SetupMain( { finishSetup } ) {
 		<div className="googlesitekit-setup-module googlesitekit-setup-module--thank-with-google">
 			<Grid>
 				<Row className="googlesitekit-setup__content">
-					<Suspense
-						fallback={
-							<Cell size={ 12 }>
-								<SetupHeader />
-								{ progressBar }
-							</Cell>
-						}
-					>
-						<Cell
-							smSize={ 4 }
-							mdSize={ 8 }
-							lgSize={ 6 }
-							lgOrder={ 2 }
-							className="googlesitekit-setup__icon"
-						>
-							<ThankWithGoogleSetup
-								width={ 360 }
-								height={ svgHeight }
-							/>
-						</Cell>
-						<Cell
-							smSize={ 4 }
-							mdSize={ 8 }
-							lgSize={ 6 }
-							lgOrder={ 1 }
-						>
-							<SetupHeader />
-							{ viewComponent }
-						</Cell>
-					</Suspense>
+					{ viewComponent }
 				</Row>
 			</Grid>
 		</div>
@@ -145,8 +120,4 @@ export default function SetupMain( { finishSetup } ) {
 
 SetupMain.propTypes = {
 	finishSetup: PropTypes.func,
-};
-
-SetupMain.defaultProps = {
-	finishSetup: () => {},
 };
