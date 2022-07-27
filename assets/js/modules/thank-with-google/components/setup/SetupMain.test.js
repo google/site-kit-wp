@@ -203,7 +203,7 @@ describe( 'SetupMain', () => {
 
 		// TODO: Update this assertion to match the new UI.
 		expect( container ).toHaveTextContent(
-			'TODO: UI for setup customize - SetupCustomize'
+			'Customize the appearance of Thank with Google on your site'
 		);
 		const button = queryByRole( 'button' );
 		expect( button ).toBeInTheDocument();
