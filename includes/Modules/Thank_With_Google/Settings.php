@@ -148,12 +148,12 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 		if ( in_array(
 			$button_placement,
 			array(
-				'dynamic_low',
-				'dynamic_high',
-				'static_auto',
-				'static_above-content',
-				'static_below-content',
-				'static_below-first-paragraph',
+				Web_Tag::PLACEMENT_DYNAMIC_LOW,
+				Web_Tag::PLACEMENT_DYNAMIC_HIGH,
+				Web_Tag::PLACEMENT_STATIC_AUTO,
+				Web_Tag::PLACEMENT_STATIC_ABOVE_CONTENT,
+				Web_Tag::PLACEMENT_STATIC_BELOW_CONTENT,
+				Web_Tag::PLACEMENT_STATIC_AFTER_1ST_P,
 			),
 			true
 		) ) {

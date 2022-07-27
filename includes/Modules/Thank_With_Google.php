@@ -214,7 +214,6 @@ final class Thank_With_Google extends Module
 		$tag->use_guard( new Tag_Environment_Type_Guard() );
 
 		if ( $tag->can_register() ) {
-			$tag->set_publication_id( $settings['publicationID'] );
 			$tag->set_button_placement( $settings['buttonPlacement'] );
 			$tag->set_button_post_types( $settings['buttonPostTypes'] );
 
