@@ -30,20 +30,24 @@ import { MODULES_THANK_WITH_GOOGLE } from '../../datastore/constants';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import Link from '../../../../components/Link';
 import { Cell, Grid, Row } from '../../../../material-components';
-import { getButtonPostTypes, getProminence, getType } from '../../util/utils';
+import {
+	getColorThemes,
+	getType,
+	getProminence,
+	getButtonPostTypes,
+} from '../../util/settings';
 const { useSelect } = Data;
 
 export default function SettingsView() {
 	const publicationID = useSelect( ( select ) =>
 		select( MODULES_THANK_WITH_GOOGLE ).getPublicationID()
 	);
+	const colorTheme = useSelect( ( select ) =>
+		select( MODULES_THANK_WITH_GOOGLE ).getColorTheme()
+	);
 
 	const buttonPlacement = useSelect( ( select ) =>
 		select( MODULES_THANK_WITH_GOOGLE ).getButtonPlacement()
-	);
-
-	const colorTheme = useSelect( ( select ) =>
-		select( MODULES_THANK_WITH_GOOGLE ).getColorTheme()
 	);
 
 	const buttonPostTypes = useSelect( ( select ) =>
@@ -61,6 +65,11 @@ export default function SettingsView() {
 	) {
 		return null;
 	}
+
+	const { name: colorName } =
+		getColorThemes().find(
+			( { colorThemeID } ) => colorThemeID === colorTheme
+		) || {};
 
 	return (
 		<Grid>
@@ -107,8 +116,7 @@ export default function SettingsView() {
 						{ __( 'Color', 'google-site-kit' ) }
 					</h5>
 					<p className="googlesitekit-settings-module__meta-item-data">
-						{ /* TODO: Localize color setting. */ }
-						<DisplaySetting value={ colorTheme } />
+						<DisplaySetting value={ colorName } />
 					</p>
 				</Cell>
 			</Row>

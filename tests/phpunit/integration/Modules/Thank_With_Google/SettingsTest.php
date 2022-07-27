@@ -13,6 +13,7 @@ namespace Google\Site_Kit\Tests\Modules\Thank_With_Google;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Modules\Thank_With_Google\Settings;
+use Google\Site_Kit\Tests\Core\Storage\Setting_With_Owned_Keys_ContractTests;
 use Google\Site_Kit\Tests\Modules\SettingsTestCase;
 
 /**
@@ -20,6 +21,7 @@ use Google\Site_Kit\Tests\Modules\SettingsTestCase;
  * @group Thank_With_Google
  */
 class SettingsTest extends SettingsTestCase {
+	use Setting_With_Owned_Keys_ContractTests;
 
 	public function test_get_default() {
 		$settings = new Settings( new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ) );
@@ -68,7 +70,7 @@ class SettingsTest extends SettingsTestCase {
 
 		$settings->merge(
 			array(
-				'colorTheme'      => 'blue',
+				'colorTheme'      => 'cyan',
 				'buttonPlacement' => 'static_auto',
 				'buttonPostTypes' => array(
 					'post',
@@ -82,7 +84,7 @@ class SettingsTest extends SettingsTestCase {
 			array(
 				'ownerID'         => '',
 				'publicationID'   => '',
-				'colorTheme'      => 'blue',
+				'colorTheme'      => 'cyan',
 				'buttonPlacement' => 'static_auto',
 				'buttonPostTypes' => array( 'post', 'test' ),
 			),
@@ -110,5 +112,9 @@ class SettingsTest extends SettingsTestCase {
 	 */
 	protected function get_option_name() {
 		return Settings::OPTION;
+	}
+
+	protected function get_setting_with_owned_keys() {
+		return new Settings( new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ) );
 	}
 }

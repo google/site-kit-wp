@@ -74,7 +74,7 @@ Default.args = {
 		registry.dispatch( MODULES_THANK_WITH_GOOGLE ).receiveGetSettings( {
 			publicationID: 'example.com',
 			buttonPlacement: 'static_auto',
-			colorTheme: 'blue',
+			colorTheme: 'purple',
 			buttonPostTypes: [ 'Posts', 'Pages' ],
 		} );
 	},
@@ -88,7 +88,7 @@ SettingsError.args = {
 		registry.dispatch( MODULES_THANK_WITH_GOOGLE ).receiveGetSettings( {
 			publicationID: 'example.com',
 			buttonPlacement: 'static_auto',
-			colorTheme: 'blue',
+			colorTheme: 'purple',
 			buttonPostTypes: [ 'Posts', 'Pages' ],
 		} );
 		registry.dispatch( MODULES_THANK_WITH_GOOGLE ).receiveError(

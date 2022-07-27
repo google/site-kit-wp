@@ -26,12 +26,12 @@ import { sprintf, __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
-import Button from '../Button';
-import Checkbox from '../Checkbox';
-import BannerNotification from '../notifications/BannerNotification';
-import ProgressBar from '../ProgressBar';
-import Spinner from '../Spinner';
+import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
+import { getTimeInSeconds } from '../../../util';
+import Checkbox from '../../Checkbox';
+import BannerNotification from '../../notifications/BannerNotification';
+import ProgressBar from '../../ProgressBar';
+import Errors from './Errors';
 
 const { useDispatch, useSelect } = Data;
 
@@ -68,7 +68,36 @@ export default function ModuleRecoveryAlert() {
 			.map( ( { slug } ) => slug );
 	} );
 
-	const { recoverModules } = useDispatch( CORE_MODULES );
+	const recoveryErrors = useSelect( ( select ) => {
+		if ( ! recoverableModules ) {
+			return undefined;
+		}
+
+		const modules = Object.keys( recoverableModules );
+
+		const getRecoveryError = ( module ) =>
+			select( CORE_MODULES ).getErrorForAction( 'recoverModule', [
+				module,
+			] );
+
+		return modules
+			.filter( ( module ) => !! getRecoveryError( module ) )
+			.reduce(
+				( acc, module ) => ( {
+					...acc,
+					[ module ]: {
+						name: recoverableModules[ module ].name,
+						...getRecoveryError( module ),
+					},
+				} ),
+				{}
+			);
+	} );
+
+	const { recoverModules, clearErrors } = useDispatch( CORE_MODULES );
+
+	const isLoading =
+		userAccessibleModules === undefined || checkboxes === null;
 
 	const updateCheckboxes = useCallback(
 		( slug ) =>
@@ -79,16 +108,21 @@ export default function ModuleRecoveryAlert() {
 		[]
 	);
 
-	const handleRecoverModules = useCallback( () => {
+	const handleRecoverModules = useCallback( async () => {
 		setRecoveringModules( true );
+
 		const modulesToRecover = Object.keys( checkboxes ).filter(
 			( module ) => checkboxes[ module ]
 		);
-		recoverModules( modulesToRecover ).finally( () => {
-			setRecoveringModules( false );
-			setCheckboxes( null );
-		} );
-	}, [ checkboxes, recoverModules ] );
+
+		await clearErrors( 'recoverModule' );
+		await recoverModules( modulesToRecover );
+
+		setRecoveringModules( false );
+		setCheckboxes( null );
+
+		return { dismissOnCTAClick: false };
+	}, [ checkboxes, clearErrors, recoverModules ] );
 
 	useEffect( () => {
 		if ( userAccessibleModules !== undefined && checkboxes === null ) {
@@ -112,9 +146,12 @@ export default function ModuleRecoveryAlert() {
 
 	let description = null;
 	let children = null;
+	let onCTAClick = null;
+	let isDismissible = true;
 
-	if ( userAccessibleModules === undefined || checkboxes === null ) {
+	if ( isLoading ) {
 		children = <ProgressBar />;
+		isDismissible = false;
 	} else if ( userAccessibleModules.length === 0 ) {
 		if ( recoverableModulesList.length === 1 ) {
 			description = sprintf(
@@ -159,15 +196,12 @@ export default function ModuleRecoveryAlert() {
 						'google-site-kit'
 					) }
 				</p>
-				<Button
-					onClick={ handleRecoverModules }
-					disabled={ recoveringModules }
-				>
-					{ __( 'Recover', 'google-site-kit' ) }
-				</Button>
-				<Spinner isSaving={ recoveringModules } />
+				{ Object.keys( recoveryErrors ).length > 0 && (
+					<Errors recoveryErrors={ recoveryErrors } />
+				) }
 			</Fragment>
 		);
+		onCTAClick = handleRecoverModules;
 	} else {
 		description = __(
 			'The data for the following modules was previously shared with other users on the site by another admin who no longer has access. To restore access, you may recover the module as the new owner.',
@@ -195,20 +229,12 @@ export default function ModuleRecoveryAlert() {
 						'google-site-kit'
 					) }
 				</p>
-				<Button
-					onClick={ handleRecoverModules }
-					disabled={
-						recoveringModules ||
-						! Object.values( checkboxes ).some(
-							( checked ) => checked
-						)
-					}
-				>
-					{ __( 'Recover', 'google-site-kit' ) }
-				</Button>
-				<Spinner isSaving={ recoveringModules } />
+				{ Object.keys( recoveryErrors ).length > 0 && (
+					<Errors recoveryErrors={ recoveryErrors } />
+				) }
 			</Fragment>
 		);
+		onCTAClick = handleRecoverModules;
 	}
 
 	return (
@@ -218,9 +244,15 @@ export default function ModuleRecoveryAlert() {
 				'Dashboard data for some services has been interrupted',
 				'google-site-kit'
 			) }
+			onCTAClick={ onCTAClick }
+			ctaLabel={ onCTAClick ? __( 'Recover', 'google-site-kit' ) : null }
+			ctaLink={ onCTAClick ? '#' : null }
 			description={ description }
 			learnMoreURL="https://sitekit.withgoogle.com/documentation/using-site-kit/dashboard-sharing/"
 			learnMoreLabel={ __( 'Learn more', 'google-site-kit' ) }
+			isDismissible={ isDismissible }
+			dismiss={ __( 'Remind me later', 'google-site-kit' ) }
+			dismissExpires={ getTimeInSeconds( 'day' ) }
 		>
 			{ children }
 		</BannerNotification>
