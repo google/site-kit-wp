@@ -24,25 +24,23 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { _x, __ } from '@wordpress/i18n';
 import { useCallback, lazy, Suspense } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import ThankWithGoogleIconSVG from '../../../../../svg/graphics/thank-with-google.svg';
-import ProgressBar from '../../../../components/ProgressBar';
-import Badge from '../../../../components/Badge';
-import { Grid, Row, Cell } from '../../../../material-components';
 import { MODULES_THANK_WITH_GOOGLE } from '../../datastore/constants';
+import { useRefocus } from '../../../../hooks/useRefocus';
+import { Grid, Row, Cell } from '../../../../material-components';
+import ProgressBar from '../../../../components/ProgressBar';
+import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import SetupCreatePublication from './SetupCreatePublication';
 import SetupCustomize from './SetupCustomize';
 import SetupPublicationActive from './SetupPublicationActive';
 import SetupPublicationActionRequired from './SetupPublicationActionRequired';
 import SetupPublicationPendingVerification from './SetupPublicationPendingVerification';
-import StoreErrorNotices from '../../../../components/StoreErrorNotices';
-import { useRefocus } from '../../../../hooks/useRefocus';
+import SetupHeader from './SetupHeader';
 const { useDispatch, useSelect } = Data;
 
 const ThankWithGoogleSetup = lazy( () =>
@@ -74,8 +72,10 @@ export default function SetupMain( { finishSetup } ) {
 	// Reset all fetched data when user re-focuses window.
 	useRefocus( reset, 15000 );
 
-	let viewComponent;
 	const svgHeight = 210;
+	const progressBar = <ProgressBar height={ svgHeight * 0.75 } />;
+
+	let viewComponent;
 
 	if ( hasErrors ) {
 		viewComponent = (
@@ -85,7 +85,7 @@ export default function SetupMain( { finishSetup } ) {
 			/>
 		);
 	} else if ( currentPublication === undefined ) {
-		viewComponent = <ProgressBar height={ svgHeight * 0.75 } />;
+		viewComponent = progressBar;
 	} else if ( currentPublication === null ) {
 		viewComponent = <SetupCreatePublication />;
 	} else if ( currentPublication.state === 'ACTION_REQUIRED' ) {
@@ -107,52 +107,36 @@ export default function SetupMain( { finishSetup } ) {
 		<div className="googlesitekit-setup-module googlesitekit-setup-module--thank-with-google">
 			<Grid>
 				<Row className="googlesitekit-setup__content">
-					<Cell
-						smSize={ 4 }
-						mdSize={ 8 }
-						lgSize={ 6 }
-						lgOrder={ 2 }
-						className="googlesitekit-setup__icon"
+					<Suspense
+						fallback={
+							<Cell size={ 12 }>
+								<SetupHeader />
+								{ progressBar }
+							</Cell>
+						}
 					>
-						<Suspense fallback={ <div /> }>
+						<Cell
+							smSize={ 4 }
+							mdSize={ 8 }
+							lgSize={ 6 }
+							lgOrder={ 2 }
+							className="googlesitekit-setup__icon"
+						>
 							<ThankWithGoogleSetup
 								width={ 360 }
 								height={ svgHeight }
 							/>
-						</Suspense>
-					</Cell>
-					<Cell smSize={ 4 } mdSize={ 8 } lgSize={ 6 } lgOrder={ 1 }>
-						<div className="googlesitekit-setup-module__header">
-							<div className="googlesitekit-setup-module__heading">
-								<div className="googlesitekit-setup-module__logo">
-									<ThankWithGoogleIconSVG
-										width="33"
-										height="33"
-									/>
-								</div>
-
-								<h2 className="googlesitekit-heading-3 googlesitekit-setup-module__title">
-									{ _x(
-										'Thank with Google',
-										'Service name',
-										'google-site-kit'
-									) }
-								</h2>
-							</div>
-
-							<Badge
-								label={ __(
-									'Experimental',
-									'google-site-kit'
-								) }
-							/>
-							<Badge
-								label={ __( 'US Only', 'google-site-kit' ) }
-							/>
-						</div>
-
-						{ viewComponent }
-					</Cell>
+						</Cell>
+						<Cell
+							smSize={ 4 }
+							mdSize={ 8 }
+							lgSize={ 6 }
+							lgOrder={ 1 }
+						>
+							<SetupHeader />
+							{ viewComponent }
+						</Cell>
+					</Suspense>
 				</Row>
 			</Grid>
 		</div>
