@@ -4,7 +4,7 @@ Contributors:      google
 Requires at least: 4.7
 Tested up to:      6.0
 Requires PHP:      5.6
-Stable tag:        1.79.1
+Stable tag:        1.80.0
 License:           Apache License 2.0
 License URI:       https://www.apache.org/licenses/LICENSE-2.0
 Tags:              google, search-console, analytics, adsense, pagespeed-insights, optimize, tag-manager, site-kit
@@ -107,6 +107,37 @@ By default, Site Kit does anonymize IP addresses upon activation of the Google A
 Please create a new topic on our [WordPress.org support forum](https://wordpress.org/support/plugin/google-site-kit/). Be sure to follow the [support forum guidelines](https://wordpress.org/support/guidelines/) when posting.
 
 == Changelog ==
+
+= 1.80.0 =
+
+**Enhanced**
+
+* Update the open text survey question entry field to allow multiline text input. See [#5612](https://github.com/google/site-kit-wp/issues/5612).
+* Update the Thank with Google module's owned settings. See [#5587](https://github.com/google/site-kit-wp/issues/5587).
+* Include specific copy for Thank with Google on the setup success banner. See [#5536](https://github.com/google/site-kit-wp/issues/5536).
+* Add automatic status updates to Thank with Google setup screen. See [#5532](https://github.com/google/site-kit-wp/issues/5532).
+* Implement the Thank with Google setup UI for the no publication scenario. See [#5528](https://github.com/google/site-kit-wp/issues/5528).
+* Implement the Thank with Google setup UI for the publication in review scenario. See [#5527](https://github.com/google/site-kit-wp/issues/5527).
+* Implement the Thank with Google setup UI. See [#5526](https://github.com/google/site-kit-wp/issues/5526).
+* Implement Thank with Google setup UI for the publication setup completed scenario. See [#5525](https://github.com/google/site-kit-wp/issues/5525).
+* Show selected Thank with Google color in settings view. See [#5524](https://github.com/google/site-kit-wp/issues/5524).
+* Update the AdSense settings to display the site status when available. See [#5503](https://github.com/google/site-kit-wp/issues/5503).
+* Improve notice UX/sizing when adjusting Dashboard Sharing settings "view access" setting. See [#5489](https://github.com/google/site-kit-wp/issues/5489).
+* When setup fails with an error from the proxy, show a "get help" link that leads to the relevant support page for the given error code. See [#5479](https://github.com/google/site-kit-wp/issues/5479).
+* Improve validation for Thank with Google settings. See [#5461](https://github.com/google/site-kit-wp/issues/5461).
+* Add a new enhanced radio button component that allows for using graphics for choices. See [#5459](https://github.com/google/site-kit-wp/issues/5459).
+* Add "US only" label to Thank with Google module. See [#5457](https://github.com/google/site-kit-wp/issues/5457).
+* Scaffold Thank with Google module setup flow logic for different scenarios. See [#5455](https://github.com/google/site-kit-wp/issues/5455).
+* Add new selector `getAccountChooserURL` to the `core/user` store. See [#5453](https://github.com/google/site-kit-wp/issues/5453).
+* Implement Thank with Google tag placement infrastructure. See [#5450](https://github.com/google/site-kit-wp/issues/5450).
+* Update module recovery notification to display feedback for errors. See [#5318](https://github.com/google/site-kit-wp/issues/5318).
+
+**Fixed**
+
+* Update location of module recovery alert to be grouped with normal notifications. See [#5550](https://github.com/google/site-kit-wp/issues/5550).
+* Prevent error from appearing when sharing data exists for a non-existent module. See [#5488](https://github.com/google/site-kit-wp/issues/5488).
+* Avoid tracking Google Analytics events for Dashboard Sharing settings when no change is made. See [#5487](https://github.com/google/site-kit-wp/issues/5487).
+* Fix permissions modal issue on non Site Kit pages. See [#5424](https://github.com/google/site-kit-wp/issues/5424).
 
 = 1.79.1 =
 

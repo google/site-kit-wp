@@ -70,7 +70,7 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 	/**
 	 * Gets the setting value.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.80.0
 	 *
 	 * @return array
 	 */
@@ -89,7 +89,7 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 	/**
 	 * Gets the callback for sanitizing the setting's value before saving.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.80.0
 	 *
 	 * @return callable|null
 	 */
@@ -113,7 +113,7 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 	/**
 	 * Sanitizes the value of color theme.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.80.0
 	 *
 	 * @param string $color_theme The value to sanitize.
 	 * @return string The sanitized value.
@@ -139,7 +139,7 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 	/**
 	 * Sanitizes the value of button placement.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.80.0
 	 *
 	 * @param string $button_placement The value to sanitize.
 	 * @return string The sanitized value.
@@ -165,7 +165,7 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 	/**
 	 * Sanitizes the value of button post types.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.80.0
 	 *
 	 * @param array $button_post_types The value to sanitize.
 	 * @return array The sanitized value.

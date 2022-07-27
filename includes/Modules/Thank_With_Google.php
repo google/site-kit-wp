@@ -195,7 +195,7 @@ final class Thank_With_Google extends Module
 	/**
 	 * Registers the Thank with Google tag.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.80.0
 	 */
 	private function register_tag() {
 		if ( $this->context->is_amp() ) {

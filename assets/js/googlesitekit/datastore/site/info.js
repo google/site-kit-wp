@@ -482,7 +482,7 @@ export const selectors = {
 	/**
 	 * Gets a setup error code, if one exists.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.80.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(string|undefined)} An error code from setup, if one exists. Will be `null` if no error exists; `undefined` when loading.
@@ -515,7 +515,7 @@ export const selectors = {
 	/**
 	 * Gets the proxy support URL.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.80.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(string|null)}

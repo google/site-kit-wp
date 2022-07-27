@@ -24,7 +24,7 @@ import { useEffect } from '@wordpress/element';
 /**
  * Invokes a function when the window is blurred and then refocused after the specified delay.
  *
- * @since n.e.x.t
+ * @since 1.80.0
  *
  * @param {Function} callback     Function to invoke when the window is blurred and then refocused after the specified delay.
  * @param {number}   milliseconds Amount of time (in milliseconds) required to elapse with the tab unfocused before the callback should be run when refocused. Default is `0`, eg. run the `callback` after returning to this tab/window as soon as the user is unfocused for any length of time.
