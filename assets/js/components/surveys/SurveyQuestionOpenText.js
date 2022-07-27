@@ -35,7 +35,7 @@ import { TextField, Input, HelperText } from '../../material-components';
 import Button from '../Button';
 import VisuallyHidden from '../VisuallyHidden';
 
-const MAXIMUM_CHARACTER_LIMIT = 100;
+const MAXIMUM_CHARACTER_LIMIT = 200;
 
 const SurveyQuestionOpenText = ( {
 	question,
