@@ -1,7 +1,7 @@
 /**
- * User Feedback styles.
+ * Survey constants.
  *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2022 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,4 @@
  * limitations under the License.
  */
 
-@import "googlesitekit-surveys-modal";
-@import "googlesitekit-survey-header";
-@import "googlesitekit-surveys";
-@import "googlesitekit-survey-completion";
-@import "googlesitekit-survey-open-text";
-@import "googlesitekit-survey-single-select";
+export const SURVEY_INPUT_MAX_CHARACTER_LIMIT = 200;
