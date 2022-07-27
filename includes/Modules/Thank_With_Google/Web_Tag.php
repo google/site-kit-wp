@@ -50,17 +50,6 @@ class Web_Tag extends Module_Web_Tag {
 	private $button_post_types;
 
 	/**
-	 * Sets the current publication ID.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param string $publication_id Publication ID.
-	 */
-	public function set_publication_id( $publication_id ) {
-		$this->publication_id = $publication_id;
-	}
-
-	/**
 	 * Sets the current button placement.
 	 *
 	 * @since n.e.x.t
@@ -133,7 +122,7 @@ class Web_Tag extends Module_Web_Tag {
 				});
 			});
 			",
-			esc_js( $this->publication_id ),
+			esc_js( $this->tag_id ),
 			esc_js( $this->has_static_button_placement() ? 'inline' : 'floating' ),
 			esc_js( $is_singular_button_post_type_entity ? get_permalink() : '' ),
 			esc_js( GOOGLESITEKIT_VERSION ),

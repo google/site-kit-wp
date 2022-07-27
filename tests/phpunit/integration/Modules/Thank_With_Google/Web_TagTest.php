@@ -32,8 +32,6 @@ class Web_TagTest extends TestCase {
 		parent::set_up();
 
 		$this->web_tag = new Web_Tag( '12345', Thank_With_Google::MODULE_SLUG );
-
-		$this->web_tag->set_publication_id( '12345' );
 		$this->web_tag->set_button_post_types( array( 'post' ) );
 
 		remove_all_filters( 'the_content' );
