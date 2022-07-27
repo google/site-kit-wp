@@ -59,16 +59,15 @@
 		}
 
 		&:hover .mdc-image-radio__content {
-			box-shadow: 0 0 5px 5px $c-surfaces-surface-2;
 			position: relative;
 
 			&::after {
-				background-color: $c-radio-background-hover;
+				background-color: $c-surfaces-surface-2;
 				border-radius: 0.5625rem;
 				content: "";
 				height: calc(100% + 0.75rem);
 				left: 50%;
-				opacity: 0.2;
+				opacity: 0.3;
 				position: absolute;
 				top: 50%;
 				transform: translate(-50%, -50%);
@@ -76,7 +75,7 @@
 			}
 
 			&--no-image {
-				background-color: $c-radio-background-hover;
+				background-color: $c-surfaces-surface-2;
 
 				&::after {
 					content: unset;
@@ -84,8 +83,8 @@
 			}
 		}
 
-		&.mdc-ripple-upgraded--background-focused .mdc-image-radio__content {
-			box-shadow: 0 0 5px 5px $c-surfaces-surface-2;
+		&.mdc-ripple-upgraded--background-focused .mdc-image-radio__content,
+		&.mdc-ripple-upgraded--foreground-activation .mdc-image-radio__content {
 			position: relative;
 
 			&::after {
@@ -94,7 +93,7 @@
 				content: "";
 				height: calc(100% + 0.75rem);
 				left: 50%;
-				opacity: 0.2;
+				opacity: 1;
 				position: absolute;
 				top: 50%;
 				transform: translate(-50%, -50%);
