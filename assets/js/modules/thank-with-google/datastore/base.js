@@ -30,7 +30,7 @@ let baseModuleStore = Modules.createModuleStore( 'thank-with-google', {
 		'publicationID',
 		'colorTheme',
 		'ctaPlacement',
-		'buttonPostTypes',
+		'ctaPostTypes',
 		'ownerID',
 	],
 	submitChanges,
@@ -39,22 +39,26 @@ let baseModuleStore = Modules.createModuleStore( 'thank-with-google', {
 
 // Rename generated pieces to adhere to our convention.
 baseModuleStore = ( ( { actions, selectors, ...store } ) => {
-	// eslint-disable-next-line sitekit/acronym-case
-	const { setCtaPlacement, ...restActions } = actions;
-	// eslint-disable-next-line sitekit/acronym-case
-	const { getCtaPlacement, ...restSelectors } = selectors;
+	/* eslint-disable sitekit/acronym-case */
+	const { setCtaPlacement, setCtaPostTypes, ...restActions } = actions;
+	const { getCtaPlacement, getCtaPostTypes, ...restSelectors } = selectors;
+	/* eslint-enable */
 
 	return {
 		...store,
 		actions: {
 			...restActions,
-			// eslint-disable-next-line sitekit/acronym-case
+			/* eslint-disable sitekit/acronym-case */
 			setCTAPlacement: setCtaPlacement,
+			setCTAPostTypes: setCtaPostTypes,
+			/* eslint-enable */
 		},
 		selectors: {
 			...restSelectors,
-			// eslint-disable-next-line sitekit/acronym-case
+			/* eslint-disable sitekit/acronym-case */
 			getCTAPlacement: getCtaPlacement,
+			getCTAPostTypes: getCtaPostTypes,
+			/* eslint-enable */
 		},
 	};
 } )( baseModuleStore );

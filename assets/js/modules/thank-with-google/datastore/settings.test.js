@@ -47,14 +47,14 @@ describe( 'modules/thank-with-google settings', () => {
 		publicationID: '',
 		colorTheme: '',
 		ctaPlacement: '',
-		buttonPostTypes: [],
+		ctaPostTypes: [],
 	};
 
 	const validSettings = {
 		publicationID: 'publisher.com',
 		colorTheme: 'blue',
 		ctaPlacement: BUTTON_PLACEMENT_DYNAMIC_LOW,
-		buttonPostTypes: [ 'post' ],
+		ctaPostTypes: [ 'post' ],
 	};
 
 	const WPError = {

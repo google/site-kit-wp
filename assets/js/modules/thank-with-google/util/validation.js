@@ -79,17 +79,17 @@ export function isValidCTAPlacement( ctaPlacement ) {
 }
 
 /**
- * Checks if the given buttonPostTypes array is valid.
+ * Checks if the given ctaPostTypes array is valid.
  *
  * @since 1.78.0
  *
- * @param {string[]} buttonPostTypes Button post types to test.
+ * @param {string[]} ctaPostTypes Button post types to test.
  * @return {boolean} `true` if the given button post types list is valid, `false` otherwise.
  */
-export function isValidButtonPostTypes( buttonPostTypes ) {
+export function isValidCTAPostTypes( ctaPostTypes ) {
 	return (
-		Array.isArray( buttonPostTypes ) &&
-		buttonPostTypes.length >= 1 &&
-		buttonPostTypes.every( ( buttonPostType ) => buttonPostType.length > 0 )
+		Array.isArray( ctaPostTypes ) &&
+		ctaPostTypes.length >= 1 &&
+		ctaPostTypes.every( ( buttonPostType ) => buttonPostType.length > 0 )
 	);
 }

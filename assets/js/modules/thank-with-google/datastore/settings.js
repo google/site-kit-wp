@@ -33,7 +33,7 @@ import {
 import { createStrictSelect } from '../../../googlesitekit/data/utils';
 import {
 	isValidCTAPlacement,
-	isValidButtonPostTypes,
+	isValidCTAPostTypes,
 	isValidColorTheme,
 	isValidPublicationID,
 } from '../util/validation';
@@ -76,7 +76,7 @@ export function validateCanSubmitChanges( select ) {
 		getPublicationID,
 		getColorTheme,
 		getCTAPlacement,
-		getButtonPostTypes,
+		getCTAPostTypes,
 	} = strictSelect( MODULES_THANK_WITH_GOOGLE );
 
 	// Note: these error messages are referenced in test assertions.
@@ -98,9 +98,9 @@ export function validateCanSubmitChanges( select ) {
 		INVARIANT_INVALID_BUTTON_PLACEMENT
 	);
 
-	const buttonPostTypes = getButtonPostTypes();
+	const ctaPostTypes = getCTAPostTypes();
 	invariant(
-		isValidButtonPostTypes( buttonPostTypes ),
+		isValidCTAPostTypes( ctaPostTypes ),
 		INVARIANT_INVALID_BUTTON_POST_TYPES
 	);
 }

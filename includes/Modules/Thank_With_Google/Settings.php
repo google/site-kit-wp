@@ -59,11 +59,11 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 	 */
 	protected function get_default() {
 		return array(
-			'ownerID'         => '',
-			'publicationID'   => '',
-			'colorTheme'      => '',
-			'ctaPlacement'    => '',
-			'buttonPostTypes' => array( 'post' ),
+			'ownerID'       => '',
+			'publicationID' => '',
+			'colorTheme'    => '',
+			'ctaPlacement'  => '',
+			'ctaPostTypes'  => array( 'post' ),
 		);
 	}
 
@@ -78,8 +78,8 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 		$option = parent::get();
 
 		if ( is_array( $option ) ) {
-			if ( isset( $option['buttonPostTypes'] ) ) {
-				$option['buttonPostTypes'] = $this->sanitize_button_post_types( $option['buttonPostTypes'] );
+			if ( isset( $option['ctaPostTypes'] ) ) {
+				$option['ctaPostTypes'] = $this->sanitize_cta_post_types( $option['ctaPostTypes'] );
 			}
 		}
 
@@ -100,10 +100,10 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 					$option['colorTheme'] = $this->sanitize_color_theme( $option['colorTheme'] );
 				}
 				if ( isset( $option['ctaPlacement'] ) ) {
-					$option['ctaPlacement'] = $this->sanitize_button_placement( $option['ctaPlacement'] );
+					$option['ctaPlacement'] = $this->sanitize_cta_placement( $option['ctaPlacement'] );
 				}
-				if ( isset( $option['buttonPostTypes'] ) ) {
-					$option['buttonPostTypes'] = $this->sanitize_button_post_types( $option['buttonPostTypes'] );
+				if ( isset( $option['ctaPostTypes'] ) ) {
+					$option['ctaPostTypes'] = $this->sanitize_cta_post_types( $option['ctaPostTypes'] );
 				}
 			}
 			return $option;
@@ -163,19 +163,19 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 	}
 
 	/**
-	 * Sanitizes the value of button post types.
+	 * Sanitizes the value of CTA post types.
 	 *
 	 * @since 1.80.0
 	 *
-	 * @param array $button_post_types The value to sanitize.
+	 * @param array $cta_post_types The value to sanitize.
 	 * @return array The sanitized value.
 	 */
-	private function sanitize_button_post_types( $button_post_types ) {
-		if ( ! is_array( $button_post_types ) ) {
+	private function sanitize_cta_post_types( $cta_post_types ) {
+		if ( ! is_array( $cta_post_types ) ) {
 			return array();
 		}
 		return array_intersect(
-			$button_post_types,
+			$cta_post_types,
 			array_filter(
 				get_post_types(),
 				function( $post_type ) {

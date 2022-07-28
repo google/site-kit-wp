@@ -52,10 +52,10 @@ class Thank_With_GoogleTest extends TestCase {
 		$this->options->set(
 			Settings::OPTION,
 			array(
-				'publicationID'   => '12345',
-				'colorTheme'      => 'blue',
-				'ctaPlacement'    => 'static_auto',
-				'buttonPostTypes' => array( 'post' ),
+				'publicationID' => '12345',
+				'colorTheme'    => 'blue',
+				'ctaPlacement'  => 'static_auto',
+				'ctaPostTypes'  => array( 'post' ),
 			)
 		);
 	}
@@ -136,10 +136,10 @@ class Thank_With_GoogleTest extends TestCase {
 		$this->options->set(
 			Settings::OPTION,
 			array(
-				'publicationID'   => '12345',
-				'colorTheme'      => 'blue',
-				'ctaPlacement'    => 'static_auto',
-				'buttonPostTypes' => array( 'post' ),
+				'publicationID' => '12345',
+				'colorTheme'    => 'blue',
+				'ctaPlacement'  => 'static_auto',
+				'ctaPostTypes'  => array( 'post' ),
 			)
 		);
 

@@ -48,7 +48,7 @@ export default {
 				registry
 					.dispatch( MODULES_THANK_WITH_GOOGLE )
 					.receiveGetSettings( {
-						buttonPostTypes: [ 'post' ],
+						ctaPostTypes: [ 'post' ],
 					} );
 			};
 

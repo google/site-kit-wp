@@ -121,7 +121,7 @@ final class Thank_With_Google extends Module
 			return false;
 		}
 
-		if ( ! $settings['buttonPostTypes'] ) {
+		if ( ! $settings['ctaPostTypes'] ) {
 			return false;
 		}
 
@@ -246,8 +246,8 @@ final class Thank_With_Google extends Module
 		$tag->use_guard( new Tag_Environment_Type_Guard() );
 
 		if ( $tag->can_register() ) {
-			$tag->set_button_placement( $settings['ctaPlacement'] );
-			$tag->set_button_post_types( $settings['buttonPostTypes'] );
+			$tag->set_cta_placement( $settings['ctaPlacement'] );
+			$tag->set_cta_post_types( $settings['ctaPostTypes'] );
 
 			$tag->register();
 		}
