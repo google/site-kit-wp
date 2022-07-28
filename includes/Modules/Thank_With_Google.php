@@ -26,6 +26,7 @@ use Google\Site_Kit\Core\Tags\Guards\Tag_Verify_Guard;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Modules\Thank_With_Google\Settings;
+use Google\Site_Kit\Modules\Thank_With_Google\Supporter_Wall_Widget;
 use Google\Site_Kit\Modules\Thank_With_Google\Web_Tag;
 
 /**
@@ -58,6 +59,38 @@ final class Thank_With_Google extends Module
 		}
 
 		add_action( 'template_redirect', $this->get_method_proxy( 'register_tag' ) );
+
+		add_action(
+			'widgets_init',
+			function() {
+				register_widget( Supporter_Wall_Widget::class );
+			}
+		);
+
+		add_action(
+			'admin_init',
+			function() {
+				if (
+					! empty( $_GET['legacy-widget-preview']['idBase'] ) && // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+					Supporter_Wall_Widget::WIDGET_ID !== $_GET['legacy-widget-preview']['idBase'] // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+				) {
+					$this->register_tag();
+				}
+			}
+		);
+
+		add_filter(
+			'rest_pre_dispatch',
+			function( $result, $server, $request ) {
+				$needle = sprintf( 'widget-types/%s/render', Supporter_Wall_Widget::WIDGET_ID );
+				if ( stripos( $request->get_route(), $needle ) > 0 ) {
+					$this->register_tag();
+				}
+				return $result;
+			},
+			10,
+			3
+		);
 	}
 
 	/**
@@ -195,7 +228,7 @@ final class Thank_With_Google extends Module
 	/**
 	 * Registers the Thank with Google tag.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.80.0
 	 */
 	private function register_tag() {
 		if ( $this->context->is_amp() ) {
@@ -205,7 +238,6 @@ final class Thank_With_Google extends Module
 		$settings = $this->get_settings()->get();
 
 		$tag = new Web_Tag( $settings['publicationID'], self::MODULE_SLUG );
-
 		if ( $tag->is_tag_blocked() ) {
 			return;
 		}
@@ -214,7 +246,6 @@ final class Thank_With_Google extends Module
 		$tag->use_guard( new Tag_Environment_Type_Guard() );
 
 		if ( $tag->can_register() ) {
-			$tag->set_publication_id( $settings['publicationID'] );
 			$tag->set_button_placement( $settings['buttonPlacement'] );
 			$tag->set_button_post_types( $settings['buttonPostTypes'] );
 

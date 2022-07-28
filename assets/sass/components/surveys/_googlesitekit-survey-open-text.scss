@@ -1,7 +1,7 @@
 /**
- * User Feedback styles.
+ * User Feedback Open Text question styles.
  *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2022 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,10 +15,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+.googlesitekit-survey__open-text {
 
-@import "googlesitekit-surveys-modal";
-@import "googlesitekit-survey-header";
-@import "googlesitekit-surveys";
-@import "googlesitekit-survey-completion";
-@import "googlesitekit-survey-open-text";
-@import "googlesitekit-survey-single-select";
+	.mdc-text-field {
+		margin-bottom: $grid-gap-phone;
+	}
+
+	.mdc-text-field-helper-line {
+		padding-left: 0;
+	}
+
+	.googlesitekit-survey__body {
+		align-items: center;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		padding: $grid-gap-phone;
+
+		@media (min-width: $bp-desktop) {
+			padding: $grid-gap-desktop;
+		}
+	}
+}

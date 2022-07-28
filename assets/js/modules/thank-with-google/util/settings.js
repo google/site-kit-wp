@@ -36,7 +36,7 @@ import BlackSVG from '../../../../svg/graphics/twg-black.svg';
 /**
  * Gets color themes supported by Thank with Google.
  *
- * @since n.e.x.t
+ * @since 1.80.0
  *
  * @return {Array.<Object>} Color themes array.
  */
