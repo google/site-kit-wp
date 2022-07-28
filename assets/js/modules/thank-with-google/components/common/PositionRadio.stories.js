@@ -47,7 +47,7 @@ export default {
 				registry
 					.dispatch( MODULES_THANK_WITH_GOOGLE )
 					.receiveGetSettings( {
-						buttonPlacement: BUTTON_PLACEMENT_STATIC_ABOVE_CONTENT,
+						ctaPlacement: BUTTON_PLACEMENT_STATIC_ABOVE_CONTENT,
 					} );
 			};
 

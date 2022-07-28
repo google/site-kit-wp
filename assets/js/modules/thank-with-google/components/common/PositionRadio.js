@@ -35,18 +35,18 @@ import Radio from '../../../../components/Radio';
 const { useSelect, useDispatch } = Data;
 
 export default function PositionRadio() {
-	const { setButtonPlacement } = useDispatch( MODULES_THANK_WITH_GOOGLE );
+	const { setCTAPlacement } = useDispatch( MODULES_THANK_WITH_GOOGLE );
 
-	const buttonPlacement = useSelect( ( select ) =>
-		select( MODULES_THANK_WITH_GOOGLE ).getButtonPlacement()
+	const ctaPlacement = useSelect( ( select ) =>
+		select( MODULES_THANK_WITH_GOOGLE ).getCTAPlacement()
 	);
 
 	const onChange = useCallback(
 		( { target } = {} ) => {
 			const { value: placement } = target || {};
-			setButtonPlacement( placement );
+			setCTAPlacement( placement );
 		},
-		[ setButtonPlacement ]
+		[ setCTAPlacement ]
 	);
 
 	return (
@@ -57,7 +57,7 @@ export default function PositionRadio() {
 					id={ `button-placement-${ BUTTON_PLACEMENT_STATIC_AUTO }` }
 					name="button-placement"
 					value={ BUTTON_PLACEMENT_STATIC_AUTO }
-					checked={ buttonPlacement === BUTTON_PLACEMENT_STATIC_AUTO }
+					checked={ ctaPlacement === BUTTON_PLACEMENT_STATIC_AUTO }
 					onChange={ onChange }
 				>
 					{ __( 'Auto', 'google-site-kit' ) }
@@ -91,7 +91,7 @@ export default function PositionRadio() {
 						name="button-placement"
 						value={ BUTTON_PLACEMENT_STATIC_ABOVE_CONTENT }
 						checked={
-							buttonPlacement ===
+							ctaPlacement ===
 							BUTTON_PLACEMENT_STATIC_ABOVE_CONTENT
 						}
 						onChange={ onChange }
@@ -103,7 +103,7 @@ export default function PositionRadio() {
 						name="button-placement"
 						value={ BUTTON_PLACEMENT_STATIC_BELOW_CONTENT }
 						checked={
-							buttonPlacement ===
+							ctaPlacement ===
 							BUTTON_PLACEMENT_STATIC_BELOW_CONTENT
 						}
 						onChange={ onChange }
@@ -115,7 +115,7 @@ export default function PositionRadio() {
 						name="button-placement"
 						value={ BUTTON_PLACEMENT_STATIC_BELOW_1ST_PARAGRAPH }
 						checked={
-							buttonPlacement ===
+							ctaPlacement ===
 							BUTTON_PLACEMENT_STATIC_BELOW_1ST_PARAGRAPH
 						}
 						onChange={ onChange }

@@ -41,18 +41,18 @@ const DynamicHighSVG = lazy( () =>
 );
 
 export default function ProminenceRadio() {
-	const { setButtonPlacement } = useDispatch( MODULES_THANK_WITH_GOOGLE );
+	const { setCTAPlacement } = useDispatch( MODULES_THANK_WITH_GOOGLE );
 
-	const buttonPlacement = useSelect( ( select ) =>
-		select( MODULES_THANK_WITH_GOOGLE ).getButtonPlacement()
+	const ctaPlacement = useSelect( ( select ) =>
+		select( MODULES_THANK_WITH_GOOGLE ).getCTAPlacement()
 	);
 
 	const onChange = useCallback(
 		( { target } = {} ) => {
 			const { value: placement } = target || {};
-			setButtonPlacement( placement );
+			setCTAPlacement( placement );
 		},
-		[ setButtonPlacement ]
+		[ setCTAPlacement ]
 	);
 
 	return (
@@ -72,7 +72,7 @@ export default function ProminenceRadio() {
 						image={ <DynamicLowSVG /> }
 						onChange={ onChange }
 						checked={
-							buttonPlacement === BUTTON_PLACEMENT_DYNAMIC_LOW
+							ctaPlacement === BUTTON_PLACEMENT_DYNAMIC_LOW
 						}
 					/>
 					<ImageRadio
@@ -87,7 +87,7 @@ export default function ProminenceRadio() {
 						image={ <DynamicHighSVG /> }
 						onChange={ onChange }
 						checked={
-							buttonPlacement === BUTTON_PLACEMENT_DYNAMIC_HIGH
+							ctaPlacement === BUTTON_PLACEMENT_DYNAMIC_HIGH
 						}
 					/>
 				</Suspense>

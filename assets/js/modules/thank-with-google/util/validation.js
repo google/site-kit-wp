@@ -19,16 +19,15 @@
 /**
  * Internal dependencies
  */
+import {
+	BUTTON_PLACEMENT_DYNAMIC_HIGH,
+	BUTTON_PLACEMENT_DYNAMIC_LOW,
+	BUTTON_PLACEMENT_STATIC_ABOVE_CONTENT,
+	BUTTON_PLACEMENT_STATIC_AUTO,
+	BUTTON_PLACEMENT_STATIC_BELOW_1ST_PARAGRAPH,
+	BUTTON_PLACEMENT_STATIC_BELOW_CONTENT,
+} from '../datastore/constants';
 import { getColorThemes } from './settings';
-
-const validButtonPlacements = [
-	'dynamic_low',
-	'dynamic_high',
-	'static_auto',
-	'static_above-content',
-	'static_below-content',
-	'static_below-first-paragraph',
-];
 
 /**
  * Checks if the given publication ID appears to be a valid.
@@ -61,15 +60,22 @@ export function isValidColorTheme( colorTheme ) {
 }
 
 /**
- * Checks if the given button placement is valid.
+ * Checks if the given cta placement is valid.
  *
  * @since 1.78.0
  *
- * @param {string} buttonPlacement Button placement to test.
+ * @param {string} ctaPlacement Button placement to test.
  * @return {boolean} `true` if the given button placement is valid, `false` otherwise.
  */
-export function isValidButtonPlacement( buttonPlacement ) {
-	return validButtonPlacements.includes( buttonPlacement );
+export function isValidCTAPlacement( ctaPlacement ) {
+	return [
+		BUTTON_PLACEMENT_DYNAMIC_HIGH,
+		BUTTON_PLACEMENT_DYNAMIC_LOW,
+		BUTTON_PLACEMENT_STATIC_AUTO,
+		BUTTON_PLACEMENT_STATIC_ABOVE_CONTENT,
+		BUTTON_PLACEMENT_STATIC_BELOW_CONTENT,
+		BUTTON_PLACEMENT_STATIC_BELOW_1ST_PARAGRAPH,
+	].includes( ctaPlacement );
 }
 
 /**

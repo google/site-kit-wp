@@ -62,7 +62,7 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 			'ownerID'         => '',
 			'publicationID'   => '',
 			'colorTheme'      => '',
-			'buttonPlacement' => '',
+			'ctaPlacement'    => '',
 			'buttonPostTypes' => array( 'post' ),
 		);
 	}
@@ -99,8 +99,8 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 				if ( isset( $option['colorTheme'] ) ) {
 					$option['colorTheme'] = $this->sanitize_color_theme( $option['colorTheme'] );
 				}
-				if ( isset( $option['buttonPlacement'] ) ) {
-					$option['buttonPlacement'] = $this->sanitize_button_placement( $option['buttonPlacement'] );
+				if ( isset( $option['ctaPlacement'] ) ) {
+					$option['ctaPlacement'] = $this->sanitize_button_placement( $option['ctaPlacement'] );
 				}
 				if ( isset( $option['buttonPostTypes'] ) ) {
 					$option['buttonPostTypes'] = $this->sanitize_button_post_types( $option['buttonPostTypes'] );
@@ -137,16 +137,16 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 	}
 
 	/**
-	 * Sanitizes the value of button placement.
+	 * Sanitizes the value of CTA placement.
 	 *
 	 * @since 1.80.0
 	 *
-	 * @param string $button_placement The value to sanitize.
+	 * @param string $cta_placement The value to sanitize.
 	 * @return string The sanitized value.
 	 */
-	private function sanitize_button_placement( $button_placement ) {
+	private function sanitize_cta_placement( $cta_placement ) {
 		if ( in_array(
-			$button_placement,
+			$cta_placement,
 			array(
 				Web_Tag::PLACEMENT_DYNAMIC_LOW,
 				Web_Tag::PLACEMENT_DYNAMIC_HIGH,
@@ -157,7 +157,7 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 			),
 			true
 		) ) {
-			return $button_placement;
+			return $cta_placement;
 		}
 		return '';
 	}

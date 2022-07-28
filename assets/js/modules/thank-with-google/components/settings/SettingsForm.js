@@ -28,7 +28,7 @@ import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import { MODULES_THANK_WITH_GOOGLE } from '../../datastore/constants';
 import {
 	PublicationIDInput,
-	ButtonPlacement,
+	CTAPlacement,
 	ColorRadio,
 	PostTypesSelect,
 } from '../common';
@@ -43,7 +43,7 @@ export default function SettingsForm() {
 
 			<div className="googlesitekit-setup-module__inputs">
 				<PublicationIDInput />
-				<ButtonPlacement />
+				<CTAPlacement />
 				<ColorRadio />
 				<PostTypesSelect />
 			</div>

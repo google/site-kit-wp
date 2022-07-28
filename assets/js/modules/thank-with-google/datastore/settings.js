@@ -32,7 +32,7 @@ import {
 } from '../../../googlesitekit/data/create-settings-store';
 import { createStrictSelect } from '../../../googlesitekit/data/utils';
 import {
-	isValidButtonPlacement,
+	isValidCTAPlacement,
 	isValidButtonPostTypes,
 	isValidColorTheme,
 	isValidPublicationID,
@@ -75,7 +75,7 @@ export function validateCanSubmitChanges( select ) {
 		isDoingSubmitChanges,
 		getPublicationID,
 		getColorTheme,
-		getButtonPlacement,
+		getCTAPlacement,
 		getButtonPostTypes,
 	} = strictSelect( MODULES_THANK_WITH_GOOGLE );
 
@@ -92,9 +92,9 @@ export function validateCanSubmitChanges( select ) {
 	const colorTheme = getColorTheme();
 	invariant( isValidColorTheme( colorTheme ), INVARIANT_INVALID_COLOR_THEME );
 
-	const buttonPlacement = getButtonPlacement();
+	const ctaPlacement = getCTAPlacement();
 	invariant(
-		isValidButtonPlacement( buttonPlacement ),
+		isValidCTAPlacement( ctaPlacement ),
 		INVARIANT_INVALID_BUTTON_PLACEMENT
 	);
 

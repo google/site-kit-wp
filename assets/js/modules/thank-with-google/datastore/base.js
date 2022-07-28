@@ -23,16 +23,40 @@ import Modules from 'googlesitekit-modules';
 import { MODULES_THANK_WITH_GOOGLE } from './constants';
 import { submitChanges, validateCanSubmitChanges } from './settings';
 
-export default Modules.createModuleStore( 'thank-with-google', {
+let baseModuleStore = Modules.createModuleStore( 'thank-with-google', {
 	ownedSettingsSlugs: [ 'publicationID' ],
 	storeName: MODULES_THANK_WITH_GOOGLE,
 	settingSlugs: [
 		'publicationID',
 		'colorTheme',
-		'buttonPlacement',
+		'ctaPlacement',
 		'buttonPostTypes',
 		'ownerID',
 	],
 	submitChanges,
 	validateCanSubmitChanges,
 } );
+
+// Rename generated pieces to adhere to our convention.
+baseModuleStore = ( ( { actions, selectors, ...store } ) => {
+	// eslint-disable-next-line sitekit/acronym-case
+	const { setCtaPlacement, ...restActions } = actions;
+	// eslint-disable-next-line sitekit/acronym-case
+	const { getCtaPlacement, ...restSelectors } = selectors;
+
+	return {
+		...store,
+		actions: {
+			...restActions,
+			// eslint-disable-next-line sitekit/acronym-case
+			setCTAPlacement: setCtaPlacement,
+		},
+		selectors: {
+			...restSelectors,
+			// eslint-disable-next-line sitekit/acronym-case
+			getCTAPlacement: getCtaPlacement,
+		},
+	};
+} )( baseModuleStore );
+
+export default baseModuleStore;

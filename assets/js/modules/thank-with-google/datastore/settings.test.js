@@ -30,7 +30,10 @@ import { createCacheKey } from '../../../googlesitekit/api';
 import { getItem, setItem } from '../../../googlesitekit/api/cache';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
-import { MODULES_THANK_WITH_GOOGLE } from './constants';
+import {
+	BUTTON_PLACEMENT_DYNAMIC_LOW,
+	MODULES_THANK_WITH_GOOGLE,
+} from './constants';
 import {
 	INVARIANT_INVALID_BUTTON_PLACEMENT,
 	INVARIANT_INVALID_COLOR_THEME,
@@ -43,14 +46,14 @@ describe( 'modules/thank-with-google settings', () => {
 	const defaultSettings = {
 		publicationID: '',
 		colorTheme: '',
-		buttonPlacement: '',
+		ctaPlacement: '',
 		buttonPostTypes: [],
 	};
 
 	const validSettings = {
 		publicationID: 'publisher.com',
 		colorTheme: 'blue',
-		buttonPlacement: 'dynamic_low',
+		ctaPlacement: BUTTON_PLACEMENT_DYNAMIC_LOW,
 		buttonPostTypes: [ 'post' ],
 	};
 
@@ -252,7 +255,7 @@ describe( 'modules/thank-with-google settings', () => {
 				).toThrow( INVARIANT_INVALID_COLOR_THEME );
 			} );
 
-			it( 'requires a valid button placement', () => {
+			it( 'requires a valid cta placement', () => {
 				expect(
 					registry
 						.select( MODULES_THANK_WITH_GOOGLE )
@@ -261,7 +264,7 @@ describe( 'modules/thank-with-google settings', () => {
 
 				registry
 					.dispatch( MODULES_THANK_WITH_GOOGLE )
-					.setButtonPlacement( '' );
+					.setCTAPlacement( '' );
 
 				expect(
 					registry

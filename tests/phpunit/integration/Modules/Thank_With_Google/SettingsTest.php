@@ -32,7 +32,7 @@ class SettingsTest extends SettingsTestCase {
 				'ownerID'         => '',
 				'publicationID'   => '',
 				'colorTheme'      => '',
-				'buttonPlacement' => '',
+				'ctaPlacement'    => '',
 				'buttonPostTypes' => array( 'post' ),
 			),
 			get_option( Settings::OPTION )
@@ -48,7 +48,7 @@ class SettingsTest extends SettingsTestCase {
 		$settings->merge(
 			array(
 				'colorTheme'      => 'invalid',
-				'buttonPlacement' => 'invalid',
+				'ctaPlacement'    => 'invalid',
 				'buttonPostTypes' => array(
 					'post',
 					'test',
@@ -62,7 +62,7 @@ class SettingsTest extends SettingsTestCase {
 				'ownerID'         => '',
 				'publicationID'   => '',
 				'colorTheme'      => '',
-				'buttonPlacement' => '',
+				'ctaPlacement'    => '',
 				'buttonPostTypes' => array( 'post', 'test' ),
 			),
 			get_option( Settings::OPTION )
@@ -71,7 +71,7 @@ class SettingsTest extends SettingsTestCase {
 		$settings->merge(
 			array(
 				'colorTheme'      => 'cyan',
-				'buttonPlacement' => 'static_auto',
+				'ctaPlacement'    => 'static_auto',
 				'buttonPostTypes' => array(
 					'post',
 					'test',
@@ -85,7 +85,7 @@ class SettingsTest extends SettingsTestCase {
 				'ownerID'         => '',
 				'publicationID'   => '',
 				'colorTheme'      => 'cyan',
-				'buttonPlacement' => 'static_auto',
+				'ctaPlacement'    => 'static_auto',
 				'buttonPostTypes' => array( 'post', 'test' ),
 			),
 			get_option( Settings::OPTION )

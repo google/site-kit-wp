@@ -54,7 +54,7 @@ class Thank_With_GoogleTest extends TestCase {
 			array(
 				'publicationID'   => '12345',
 				'colorTheme'      => 'blue',
-				'buttonPlacement' => 'static_auto',
+				'ctaPlacement'    => 'static_auto',
 				'buttonPostTypes' => array( 'post' ),
 			)
 		);
@@ -138,7 +138,7 @@ class Thank_With_GoogleTest extends TestCase {
 			array(
 				'publicationID'   => '12345',
 				'colorTheme'      => 'blue',
-				'buttonPlacement' => 'static_auto',
+				'ctaPlacement'    => 'static_auto',
 				'buttonPostTypes' => array( 'post' ),
 			)
 		);
