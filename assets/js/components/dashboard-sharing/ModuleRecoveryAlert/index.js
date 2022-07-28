@@ -26,6 +26,7 @@ import { sprintf, __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { getTimeInSeconds } from '../../../util';
 import Checkbox from '../../Checkbox';
@@ -42,6 +43,12 @@ export default function ModuleRecoveryAlert() {
 	const recoverableModules = useSelect( ( select ) =>
 		select( CORE_MODULES ).getRecoverableModules()
 	);
+
+	const documentationURL = useSelect( ( select ) => {
+		return select( CORE_SITE ).getDocumentationLinkURL(
+			'dashboard-sharing'
+		);
+	} );
 
 	const userAccessibleModules = useSelect( ( select ) => {
 		const modules = select( CORE_MODULES ).getRecoverableModules();
@@ -248,7 +255,7 @@ export default function ModuleRecoveryAlert() {
 			ctaLabel={ onCTAClick ? __( 'Recover', 'google-site-kit' ) : null }
 			ctaLink={ onCTAClick ? '#' : null }
 			description={ description }
-			learnMoreURL="https://sitekit.withgoogle.com/documentation/using-site-kit/dashboard-sharing/"
+			learnMoreURL={ documentationURL }
 			learnMoreLabel={ __( 'Learn more', 'google-site-kit' ) }
 			isDismissible={ isDismissible }
 			dismiss={ __( 'Remind me later', 'google-site-kit' ) }
