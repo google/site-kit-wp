@@ -25,6 +25,7 @@ import classnames from 'classnames';
  * WordPress dependencies
  */
 import { useCallback } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -36,12 +37,10 @@ import { isValidPublicationID } from '../../util/validation';
 const { useDispatch, useSelect } = Data;
 
 export default function PublicationIDInput() {
-	// Get value.
 	const publicationID = useSelect( ( select ) =>
 		select( MODULES_THANK_WITH_GOOGLE ).getPublicationID()
 	);
 
-	// Handle form input.
 	const { setPublicationID } = useDispatch( MODULES_THANK_WITH_GOOGLE );
 	const onChange = useCallback(
 		( { currentTarget } ) => {
@@ -56,20 +55,23 @@ export default function PublicationIDInput() {
 	}
 
 	return (
-		<TextField
-			className={ classnames( {
-				'mdc-text-field--error':
-					publicationID && ! isValidPublicationID( publicationID ),
-			} ) }
-			label="Publication ID"
-			outlined
-		>
-			<Input
-				id="publicationID"
-				name="publicationID"
-				value={ publicationID }
-				onChange={ onChange }
-			/>
-		</TextField>
+		<div className="googlesitekit-twg-setting-field">
+			<h4>{ __( 'Publication ID', 'google-site-kit' ) }</h4>
+			<TextField
+				className={ classnames( {
+					'mdc-text-field--error': ! isValidPublicationID(
+						publicationID
+					),
+				} ) }
+				outlined
+			>
+				<Input
+					id="publicationID"
+					name="publicationID"
+					value={ publicationID }
+					onChange={ onChange }
+				/>
+			</TextField>
+		</div>
 	);
 }

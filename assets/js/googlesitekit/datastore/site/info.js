@@ -109,6 +109,7 @@ export const reducer = ( state, { payload, type } ) => {
 				usingProxy,
 				webStoriesActive,
 				proxySupportLinkURL,
+				postTypes,
 			} = payload.siteInfo;
 
 			return {
@@ -132,6 +133,7 @@ export const reducer = ( state, { payload, type } ) => {
 					usingProxy,
 					webStoriesActive,
 					proxySupportLinkURL,
+					postTypes,
 				},
 			};
 		}
@@ -180,6 +182,7 @@ export const resolvers = {
 			usingProxy,
 			webStoriesActive,
 			proxySupportLinkURL,
+			postTypes,
 		} = global._googlesitekitBaseData;
 
 		const {
@@ -205,6 +208,7 @@ export const resolvers = {
 			setupErrorRedoURL,
 			siteName,
 			timezone,
+			postTypes,
 			usingProxy: !! usingProxy,
 			webStoriesActive,
 			proxySupportLinkURL,
@@ -518,9 +522,19 @@ export const selectors = {
 	 * @since 1.80.0
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {(string|null)}
+	 * @return {(string|null)} The proxy support URL.
 	 */
 	getProxySupportLinkURL: getSiteInfoProperty( 'proxySupportLinkURL' ),
+
+	/**
+	 * Gets the public post types.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {Array.<Object>} The public post types.
+	 */
+	getPostTypes: getSiteInfoProperty( 'postTypes' ),
 
 	/**
 	 * Gets the 'permaLink' query parameter.
