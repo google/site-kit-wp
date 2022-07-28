@@ -17,7 +17,7 @@ use Google\Site_Kit\Core\Tags\Tag_With_DNS_Prefetch_Trait;
 /**
  * Class for Web tag.
  *
- * @since n.e.x.t
+ * @since 1.80.0
  * @access private
  * @ignore
  */
@@ -25,10 +25,17 @@ class Web_Tag extends Module_Web_Tag {
 
 	use Method_Proxy_Trait, Tag_With_DNS_Prefetch_Trait;
 
+	const PLACEMENT_DYNAMIC_LOW          = 'dynamic_low';
+	const PLACEMENT_DYNAMIC_HIGH         = 'dynamic_high';
+	const PLACEMENT_STATIC_AUTO          = 'static_auto';
+	const PLACEMENT_STATIC_ABOVE_CONTENT = 'static_above-content';
+	const PLACEMENT_STATIC_BELOW_CONTENT = 'static_below-content';
+	const PLACEMENT_STATIC_AFTER_1ST_P   = 'static_below-first-paragraph';
+
 	/**
 	 * Publication ID.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.80.0
 	 * @var string
 	 */
 	private $publication_id;
@@ -36,7 +43,7 @@ class Web_Tag extends Module_Web_Tag {
 	/**
 	 * Button placement.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.80.0
 	 * @var string
 	 */
 	private $button_placement;
@@ -44,26 +51,15 @@ class Web_Tag extends Module_Web_Tag {
 	/**
 	 * Button post types.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.80.0
 	 * @var string[]
 	 */
 	private $button_post_types;
 
 	/**
-	 * Sets the current publication ID.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param string $publication_id Publication ID.
-	 */
-	public function set_publication_id( $publication_id ) {
-		$this->publication_id = $publication_id;
-	}
-
-	/**
 	 * Sets the current button placement.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.80.0
 	 *
 	 * @param string $button_placement Button placement.
 	 */
@@ -74,7 +70,7 @@ class Web_Tag extends Module_Web_Tag {
 	/**
 	 * Sets the current button post types.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.80.0
 	 *
 	 * @param string[] $button_post_types Button post types.
 	 */
@@ -85,7 +81,7 @@ class Web_Tag extends Module_Web_Tag {
 	/**
 	 * Registers tag hooks.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.80.0
 	 */
 	public function register() {
 		add_action( 'wp_enqueue_scripts', $this->get_method_proxy( 'enqueue_twg_script' ) );
@@ -103,7 +99,7 @@ class Web_Tag extends Module_Web_Tag {
 	/**
 	 * This method is intended a web tag, but it does nothing in this module as the tag is enqueued.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.80.0
 	 */
 	protected function render() {
 		// Do nothing, Thank with Google script is enqueued.
@@ -112,7 +108,7 @@ class Web_Tag extends Module_Web_Tag {
 	/**
 	 * Enqueues the "Thanks with Google" script.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.80.0
 	 */
 	protected function enqueue_twg_script() {
 		$twg_src = 'https://news.google.com/thank/js/v1/thank.js';
@@ -133,7 +129,7 @@ class Web_Tag extends Module_Web_Tag {
 				});
 			});
 			",
-			esc_js( $this->publication_id ),
+			esc_js( $this->tag_id ),
 			esc_js( $this->has_static_button_placement() ? 'inline' : 'floating' ),
 			esc_js( $is_singular_button_post_type_entity ? get_permalink() : '' ),
 			esc_js( GOOGLESITEKIT_VERSION ),
@@ -162,7 +158,7 @@ class Web_Tag extends Module_Web_Tag {
 	/**
 	 * Updates the content of the post.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.80.0
 	 *
 	 * @param string $content Content of the post.
 	 * @return string Content of the post.
@@ -179,11 +175,11 @@ class Web_Tag extends Module_Web_Tag {
 			return $button_placeholder;
 		}
 
-		if ( in_array( $this->button_placement, array( 'static_auto', 'static_below-content' ), true ) ) {
+		if ( in_array( $this->button_placement, array( self::PLACEMENT_STATIC_AUTO, self::PLACEMENT_STATIC_BELOW_CONTENT ), true ) ) {
 			$content = $content . $button_placeholder;
-		} elseif ( 'static_above-content' === $this->button_placement ) {
+		} elseif ( self::PLACEMENT_STATIC_ABOVE_CONTENT === $this->button_placement ) {
 			$content = $button_placeholder . $content;
-		} elseif ( 'static_below-first-paragraph' === $this->button_placement ) {
+		} elseif ( self::PLACEMENT_STATIC_AFTER_1ST_P === $this->button_placement ) {
 			$content = substr_replace( $content, $button_placeholder, strpos( $content, '</p>' ) + 4, 0 ); // strlen( '</p>' ) is 4.
 		}
 
@@ -193,7 +189,7 @@ class Web_Tag extends Module_Web_Tag {
 	/**
 	 * Checks if the current buttton placement is static.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.80.0
 	 *
 	 * @return bool True if the current button placement is static.
 	 */
@@ -204,7 +200,7 @@ class Web_Tag extends Module_Web_Tag {
 	/**
 	 * Determine if the current page is a singular button post type entry.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.80.0
 	 *
 	 * @return bool True if the current page is a singular button post type entry. False otherwise.
 	 */
@@ -215,7 +211,7 @@ class Web_Tag extends Module_Web_Tag {
 	/**
 	 * Add snippet comments around the tag.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.80.0
 	 *
 	 * @param string $code The tag code.
 	 * @return string The tag code with snippet comments.

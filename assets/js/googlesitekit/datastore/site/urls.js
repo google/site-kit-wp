@@ -112,7 +112,7 @@ export const selectors = {
 	/**
 	 * Gets the Site Kit documentation URL.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.80.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @param {string} slug  The slug of the documentation page.
@@ -133,7 +133,7 @@ export const selectors = {
 	/**
 	 * Gets the relevant troubleshooting URL.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.80.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @param {Object} error The error object.

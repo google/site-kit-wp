@@ -539,7 +539,7 @@ const baseSelectors = {
 	/**
 	 * Indicates whether the current sharing settings have changed from what is saved for the given module.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.80.0
 	 *
 	 * @param {Object}     state      Data store's state.
 	 * @param {string}     moduleSlug Module slug.

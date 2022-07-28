@@ -1336,7 +1336,7 @@ final class Authentication {
 	/**
 	 * Gets the proxy support URL.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.80.0
 	 *
 	 * @return string|null Support URL.
 	 */
