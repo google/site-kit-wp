@@ -27,5 +27,5 @@ export const BUTTON_PLACEMENT_DYNAMIC_HIGH = 'dynamic_high';
 export const BUTTON_PLACEMENT_STATIC_AUTO = 'static_auto';
 export const BUTTON_PLACEMENT_STATIC_ABOVE_CONTENT = 'static_above-content';
 export const BUTTON_PLACEMENT_STATIC_BELOW_CONTENT = 'static_below-content';
-export const BUTTON_PLACEMENT_STATIC_BELOW_1ST_P =
+export const BUTTON_PLACEMENT_STATIC_BELOW_1ST_PARAGRAPH =
 	'static_below-first-paragraph';

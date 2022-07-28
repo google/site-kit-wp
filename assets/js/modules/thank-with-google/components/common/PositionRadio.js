@@ -28,7 +28,7 @@ import {
 	MODULES_THANK_WITH_GOOGLE,
 	BUTTON_PLACEMENT_STATIC_ABOVE_CONTENT,
 	BUTTON_PLACEMENT_STATIC_AUTO,
-	BUTTON_PLACEMENT_STATIC_BELOW_1ST_P,
+	BUTTON_PLACEMENT_STATIC_BELOW_1ST_PARAGRAPH,
 	BUTTON_PLACEMENT_STATIC_BELOW_CONTENT,
 } from '../../datastore/constants';
 import Radio from '../../../../components/Radio';
@@ -75,6 +75,7 @@ export default function PositionRadio() {
 					name="button-placement"
 					value=""
 					readonly
+					disabled
 				>
 					{ __( 'Manual', 'google-site-kit' ) }
 				</Radio>
@@ -110,12 +111,12 @@ export default function PositionRadio() {
 						{ __( 'Below the post', 'google-site-kit' ) }
 					</Radio>
 					<Radio
-						id={ `button-placement-${ BUTTON_PLACEMENT_STATIC_BELOW_1ST_P }` }
+						id={ `button-placement-${ BUTTON_PLACEMENT_STATIC_BELOW_1ST_PARAGRAPH }` }
 						name="button-placement"
-						value={ BUTTON_PLACEMENT_STATIC_BELOW_1ST_P }
+						value={ BUTTON_PLACEMENT_STATIC_BELOW_1ST_PARAGRAPH }
 						checked={
 							buttonPlacement ===
-							BUTTON_PLACEMENT_STATIC_BELOW_1ST_P
+							BUTTON_PLACEMENT_STATIC_BELOW_1ST_PARAGRAPH
 						}
 						onChange={ onChange }
 					>

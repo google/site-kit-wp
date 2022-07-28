@@ -47,7 +47,7 @@ export default function ColorRadio() {
 	const colors = getColorThemes()?.map(
 		( { colorThemeID, name, svg: SVG } ) => (
 			<ImageRadio
-				key={ `${ currentColor }::${ colorThemeID }` }
+				key={ colorThemeID }
 				id={ colorThemeID }
 				name="color-theme"
 				value={ colorThemeID }
