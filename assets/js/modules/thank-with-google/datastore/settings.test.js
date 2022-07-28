@@ -31,7 +31,7 @@ import { getItem, setItem } from '../../../googlesitekit/api/cache';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import {
-	BUTTON_PLACEMENT_DYNAMIC_LOW,
+	CTA_PLACEMENT_DYNAMIC_LOW,
 	MODULES_THANK_WITH_GOOGLE,
 } from './constants';
 import {
@@ -53,7 +53,7 @@ describe( 'modules/thank-with-google settings', () => {
 	const validSettings = {
 		publicationID: 'publisher.com',
 		colorTheme: 'blue',
-		ctaPlacement: BUTTON_PLACEMENT_DYNAMIC_LOW,
+		ctaPlacement: CTA_PLACEMENT_DYNAMIC_LOW,
 		ctaPostTypes: [ 'post' ],
 	};
 

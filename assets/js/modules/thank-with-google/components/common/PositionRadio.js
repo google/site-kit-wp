@@ -26,10 +26,10 @@ import { useCallback } from '@wordpress/element';
 import Data from 'googlesitekit-data';
 import {
 	MODULES_THANK_WITH_GOOGLE,
-	BUTTON_PLACEMENT_STATIC_ABOVE_CONTENT,
-	BUTTON_PLACEMENT_STATIC_AUTO,
-	BUTTON_PLACEMENT_STATIC_BELOW_1ST_PARAGRAPH,
-	BUTTON_PLACEMENT_STATIC_BELOW_CONTENT,
+	CTA_PLACEMENT_STATIC_ABOVE_CONTENT,
+	CTA_PLACEMENT_STATIC_AUTO,
+	CTA_PLACEMENT_STATIC_BELOW_1ST_PARAGRAPH,
+	CTA_PLACEMENT_STATIC_BELOW_CONTENT,
 } from '../../datastore/constants';
 import Radio from '../../../../components/Radio';
 const { useSelect, useDispatch } = Data;
@@ -54,10 +54,10 @@ export default function PositionRadio() {
 			<h4>{ __( 'Position', 'google-site-kit' ) }</h4>
 			<div className="googlesitekit-twg-position-radio__option">
 				<Radio
-					id={ `button-placement-${ BUTTON_PLACEMENT_STATIC_AUTO }` }
+					id={ `button-placement-${ CTA_PLACEMENT_STATIC_AUTO }` }
 					name="button-placement"
-					value={ BUTTON_PLACEMENT_STATIC_AUTO }
-					checked={ ctaPlacement === BUTTON_PLACEMENT_STATIC_AUTO }
+					value={ CTA_PLACEMENT_STATIC_AUTO }
+					checked={ ctaPlacement === CTA_PLACEMENT_STATIC_AUTO }
 					onChange={ onChange }
 				>
 					{ __( 'Auto', 'google-site-kit' ) }
@@ -87,36 +87,34 @@ export default function PositionRadio() {
 				</p>
 				<div className="googlesitekit-twg-position-radio__suboptions">
 					<Radio
-						id={ `button-placement-${ BUTTON_PLACEMENT_STATIC_ABOVE_CONTENT }` }
+						id={ `button-placement-${ CTA_PLACEMENT_STATIC_ABOVE_CONTENT }` }
 						name="button-placement"
-						value={ BUTTON_PLACEMENT_STATIC_ABOVE_CONTENT }
+						value={ CTA_PLACEMENT_STATIC_ABOVE_CONTENT }
 						checked={
-							ctaPlacement ===
-							BUTTON_PLACEMENT_STATIC_ABOVE_CONTENT
+							ctaPlacement === CTA_PLACEMENT_STATIC_ABOVE_CONTENT
 						}
 						onChange={ onChange }
 					>
 						{ __( 'Above the post', 'google-site-kit' ) }
 					</Radio>
 					<Radio
-						id={ `button-placement-${ BUTTON_PLACEMENT_STATIC_BELOW_CONTENT }` }
+						id={ `button-placement-${ CTA_PLACEMENT_STATIC_BELOW_CONTENT }` }
 						name="button-placement"
-						value={ BUTTON_PLACEMENT_STATIC_BELOW_CONTENT }
+						value={ CTA_PLACEMENT_STATIC_BELOW_CONTENT }
 						checked={
-							ctaPlacement ===
-							BUTTON_PLACEMENT_STATIC_BELOW_CONTENT
+							ctaPlacement === CTA_PLACEMENT_STATIC_BELOW_CONTENT
 						}
 						onChange={ onChange }
 					>
 						{ __( 'Below the post', 'google-site-kit' ) }
 					</Radio>
 					<Radio
-						id={ `button-placement-${ BUTTON_PLACEMENT_STATIC_BELOW_1ST_PARAGRAPH }` }
+						id={ `button-placement-${ CTA_PLACEMENT_STATIC_BELOW_1ST_PARAGRAPH }` }
 						name="button-placement"
-						value={ BUTTON_PLACEMENT_STATIC_BELOW_1ST_PARAGRAPH }
+						value={ CTA_PLACEMENT_STATIC_BELOW_1ST_PARAGRAPH }
 						checked={
 							ctaPlacement ===
-							BUTTON_PLACEMENT_STATIC_BELOW_1ST_PARAGRAPH
+							CTA_PLACEMENT_STATIC_BELOW_1ST_PARAGRAPH
 						}
 						onChange={ onChange }
 					>

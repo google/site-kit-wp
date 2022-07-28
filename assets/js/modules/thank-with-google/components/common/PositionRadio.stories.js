@@ -20,7 +20,7 @@
 import PositionRadio from './PositionRadio';
 import {
 	MODULES_THANK_WITH_GOOGLE,
-	BUTTON_PLACEMENT_STATIC_ABOVE_CONTENT,
+	CTA_PLACEMENT_STATIC_ABOVE_CONTENT,
 } from '../../datastore/constants';
 import { provideModules } from '../../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
@@ -47,7 +47,7 @@ export default {
 				registry
 					.dispatch( MODULES_THANK_WITH_GOOGLE )
 					.receiveGetSettings( {
-						ctaPlacement: BUTTON_PLACEMENT_STATIC_ABOVE_CONTENT,
+						ctaPlacement: CTA_PLACEMENT_STATIC_ABOVE_CONTENT,
 					} );
 			};
 

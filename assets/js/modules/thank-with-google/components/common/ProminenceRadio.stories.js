@@ -20,7 +20,7 @@
 import ProminenceRadio from './ProminenceRadio';
 import {
 	MODULES_THANK_WITH_GOOGLE,
-	BUTTON_PLACEMENT_DYNAMIC_LOW,
+	CTA_PLACEMENT_DYNAMIC_LOW,
 } from '../../datastore/constants';
 import { provideModules } from '../../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
@@ -47,7 +47,7 @@ export default {
 				registry
 					.dispatch( MODULES_THANK_WITH_GOOGLE )
 					.receiveGetSettings( {
-						ctaPlacement: BUTTON_PLACEMENT_DYNAMIC_LOW,
+						ctaPlacement: CTA_PLACEMENT_DYNAMIC_LOW,
 					} );
 			};
 
