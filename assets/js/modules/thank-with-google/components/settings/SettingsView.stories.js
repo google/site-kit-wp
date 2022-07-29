@@ -21,6 +21,7 @@
  */
 import SettingsView from './SettingsView';
 import { Cell, Grid, Row } from '../../../../material-components';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { MODULES_THANK_WITH_GOOGLE } from '../../datastore/constants';
 import {
 	provideModules,
@@ -71,11 +72,18 @@ Default.storyName = 'Default';
 Default.parameters = { features };
 Default.args = {
 	setupRegistry: ( registry ) => {
+		registry.dispatch( CORE_SITE ).receiveSiteInfo( {
+			postTypes: [
+				{ slug: 'posts', label: 'Posts' },
+				{ slug: 'pages', label: 'Pages' },
+				{ slug: 'custom', label: 'Custom' },
+			],
+		} );
 		registry.dispatch( MODULES_THANK_WITH_GOOGLE ).receiveGetSettings( {
 			publicationID: 'example.com',
 			buttonPlacement: 'static_auto',
 			colorTheme: 'purple',
-			buttonPostTypes: [ 'Posts', 'Pages' ],
+			buttonPostTypes: [ 'posts', 'pages' ],
 		} );
 	},
 };
@@ -89,7 +97,7 @@ SettingsError.args = {
 			publicationID: 'example.com',
 			buttonPlacement: 'static_auto',
 			colorTheme: 'purple',
-			buttonPostTypes: [ 'Posts', 'Pages' ],
+			buttonPostTypes: [ 'posts', 'pages' ],
 		} );
 		registry.dispatch( MODULES_THANK_WITH_GOOGLE ).receiveError(
 			{
