@@ -252,7 +252,7 @@ describe( 'ReportError', () => {
 	} );
 
 	it( 'should render the `Retry` button if the error selector name is `getReport`', () => {
-		const { queryByText } = render(
+		const { getByRole } = render(
 			<ReportError
 				moduleSlug="analytics"
 				error={ {
@@ -280,11 +280,11 @@ describe( 'ReportError', () => {
 			}
 		);
 
-		expect( queryByText( /retry/i ) ).toBeInTheDocument();
+		expect( getByRole( 'button', { name: /retry/i } ) ).toBeInTheDocument();
 	} );
 
 	it( 'should dispatch the `invalidateResolution` action for each retry-able error', () => {
-		const { queryByText, getByRole } = render(
+		const { getByRole } = render(
 			<ReportError
 				moduleSlug="analytics"
 				error={ [
@@ -311,7 +311,7 @@ describe( 'ReportError', () => {
 			}
 		);
 
-		expect( queryByText( /retry/i ) ).toBeInTheDocument();
+		expect( getByRole( 'button', { name: /retry/i } ) ).toBeInTheDocument();
 
 		fireEvent.click( getByRole( 'button', { name: /retry/i } ) );
 
@@ -329,7 +329,7 @@ describe( 'ReportError', () => {
 			}
 		);
 
-		expect( queryByText( /retry/i ) ).toBeInTheDocument();
+		expect( getByRole( 'button', { name: /retry/i } ) ).toBeInTheDocument();
 
 		// Verify that the error descriptions are listed one by one if the errors are different.
 		expect( queryByText( /Test error message one/i ) ).toBeInTheDocument();
@@ -351,7 +351,7 @@ describe( 'ReportError', () => {
 			}
 		);
 
-		expect( queryByText( /retry/i ) ).toBeInTheDocument();
+		expect( getByRole( 'button', { name: /retry/i } ) ).toBeInTheDocument();
 
 		// Verify that the error descriptions are listed one by one if the errors are different.
 		expect( queryByText( /Test error message one/i ) ).toBeInTheDocument();
@@ -367,5 +367,71 @@ describe( 'ReportError', () => {
 
 		fireEvent.click( getByRole( 'button', { name: /retry/i } ) );
 		expect( invalidateResolutionSpy ).toHaveBeenCalledTimes( 4 );
+	} );
+
+	it( 'shold render `Get help` ulink without prefix text on non-retryable error', () => {
+		const { getByRole, queryByText } = render(
+			<ReportError
+				moduleSlug="analytics"
+				// Non-Retryable Error
+				error={ {
+					code: ERROR_CODE_MISSING_REQUIRED_SCOPE,
+					message: 'Test error message',
+					data: {
+						reason: '',
+					},
+					selectorData: {
+						args: [],
+						name: 'getAccountID',
+						storeName: MODULES_ANALYTICS,
+					},
+				} }
+			/>,
+			{
+				registry,
+			}
+		);
+
+		expect(
+			getByRole( 'link', { name: /get help/i } )
+		).toBeInTheDocument();
+		expect( queryByText( /retry didn’t work/i ) ).not.toBeInTheDocument();
+	} );
+
+	it( 'should render `Get help` link with prefix text on retryable error', () => {
+		const { getByRole, queryByText } = render(
+			<ReportError
+				moduleSlug="analytics"
+				// Retryable Error
+				error={ {
+					code: 'test-error-code',
+					message: 'Test error message',
+					data: {
+						reason: '',
+					},
+					selectorData: {
+						args: [
+							{
+								dimensions: [ 'ga:date' ],
+								metrics: [ { expression: 'ga:users' } ],
+								startDate: '2020-08-11',
+								endDate: '2020-09-07',
+							},
+						],
+						name: 'getReport',
+						storeName: MODULES_ANALYTICS,
+					},
+				} }
+			/>,
+			{
+				registry,
+			}
+		);
+
+		expect( getByRole( 'button', { name: /retry/i } ) ).toBeInTheDocument();
+		expect(
+			getByRole( 'link', { name: /get help/i } )
+		).toBeInTheDocument();
+		expect( queryByText( /retry didn’t work/i ) ).toBeInTheDocument();
 	} );
 } );

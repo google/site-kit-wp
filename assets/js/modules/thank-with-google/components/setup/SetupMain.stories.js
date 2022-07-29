@@ -19,7 +19,12 @@
 /**
  * Internal dependencies
  */
-import { MODULES_THANK_WITH_GOOGLE } from '../../datastore/constants';
+import {
+	MODULES_THANK_WITH_GOOGLE,
+	STATE_ACTION_REQUIRED,
+	STATE_ACTIVE,
+	STATE_PENDING_VERIFICATION,
+} from '../../datastore/constants';
 import {
 	createTestRegistry,
 	freezeFetch,
@@ -42,7 +47,7 @@ const publicationWithActiveStateA = {
 	paymentOptions: {
 		virtualGifts: true,
 	},
-	state: 'ACTIVE',
+	state: STATE_ACTIVE,
 };
 const publicationWithActiveStateB = {
 	...publicationWithActiveStateA,
@@ -53,13 +58,13 @@ const publicationActionRequiredStateC = {
 	...publicationWithActiveStateA,
 	// eslint-disable-next-line sitekit/acronym-case
 	publicationId: 'test-publication-c',
-	state: 'ACTION_REQUIRED',
+	state: STATE_ACTION_REQUIRED,
 };
 const publicationPendingVerificationD = {
 	...publicationWithActiveStateA,
 	// eslint-disable-next-line sitekit/acronym-case
 	publicationId: 'test-publication-d',
-	state: 'PENDING_VERIFICATION',
+	state: STATE_PENDING_VERIFICATION,
 };
 const publicationsWithActiveState = [
 	publicationWithActiveStateA,
@@ -171,7 +176,7 @@ ErrorNotice.args = {
 };
 
 export default {
-	title: 'Modules/Thank with Google/Setup/SetupMain',
+	title: 'Modules/Thank with Google/Setup',
 	component: SetupMain,
 	decorators: [
 		( Story ) => {

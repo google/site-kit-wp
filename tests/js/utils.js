@@ -221,6 +221,20 @@ export const provideSiteInfo = ( registry, extraData = {} ) => {
 		siteName: 'My Site Name',
 		timezone: 'America/Detroit',
 		usingProxy: true,
+		postTypes: [
+			{
+				slug: 'post',
+				label: 'Posts',
+			},
+			{
+				slug: 'page',
+				label: 'Pages',
+			},
+			{
+				slug: 'attachment',
+				label: 'Media',
+			},
+		],
 	};
 
 	registry.dispatch( CORE_SITE ).receiveSiteInfo( {

@@ -687,6 +687,15 @@ final class Assets {
 		global $wpdb;
 		$site_url = $this->context->get_reference_site_url();
 
+		$post_types     = array();
+		$all_post_types = get_post_types( array( 'public' => true ), 'objects' );
+		foreach ( $all_post_types as $post_type_slug => $post_type_obj ) {
+			$post_types[] = array(
+				'slug'  => $post_type_slug,
+				'label' => $post_type_obj->label,
+			);
+		}
+
 		$inline_data = array(
 			'homeURL'          => trailingslashit( $this->context->get_canonical_home_url() ),
 			'referenceSiteURL' => esc_url_raw( trailingslashit( $site_url ) ),
@@ -699,6 +708,7 @@ final class Assets {
 			'siteName'         => wp_specialchars_decode( get_bloginfo( 'name' ), ENT_QUOTES ),
 			'enabledFeatures'  => Feature_Flags::get_enabled_features(),
 			'webStoriesActive' => defined( 'WEBSTORIES_VERSION' ),
+			'postTypes'        => $post_types,
 		);
 
 		/**

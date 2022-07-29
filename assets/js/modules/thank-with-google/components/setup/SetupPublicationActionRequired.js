@@ -25,7 +25,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Button from '../../../../components/Button';
-import { SetupPublicationScreen } from '../common';
+import SetupPublicationScreen from './SetupPublicationScreen';
 
 export default function SetupPublicationActionRequired() {
 	return (
