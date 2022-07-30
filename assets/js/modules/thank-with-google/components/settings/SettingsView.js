@@ -51,6 +51,10 @@ export default function SettingsView() {
 		select( MODULES_THANK_WITH_GOOGLE ).getButtonPlacement()
 	);
 
+	const supporterWallURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getWidgetsAdminURL()
+	);
+
 	const postTypes = useSelect( ( select ) =>
 		select( CORE_SITE ).getPostTypes()
 	);
@@ -98,7 +102,7 @@ export default function SettingsView() {
 					</h5>
 					<p className="googlesitekit-settings-module__meta-item-data">
 						<Link
-							href="#"
+							href={ supporterWallURL }
 							className="googlesitekit-settings-module__cta-button"
 						>
 							{ __( 'Add Supporter wall', 'google-site-kit' ) }

@@ -78,6 +78,7 @@ Default.args = {
 				{ slug: 'pages', label: 'Pages' },
 				{ slug: 'custom', label: 'Custom' },
 			],
+			widgetsAdminURL: 'http://example.com/wp-admin/widgets.php',
 		} );
 		registry.dispatch( MODULES_THANK_WITH_GOOGLE ).receiveGetSettings( {
 			publicationID: 'example.com',
