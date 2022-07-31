@@ -46,20 +46,28 @@ export const selectors = {
 	 */
 	getServiceURL: createRegistrySelector(
 		( select ) => ( state, { path, query } = {} ) => {
-			const userEmail = select( CORE_USER ).getEmail();
-			if ( userEmail === undefined ) {
-				return undefined;
-			}
 			const baseURI = 'https://search.google.com/search-console';
-			const queryArgs = { ...query, authuser: userEmail };
+
+			let appendedURL = baseURI;
+
+			if ( query ) {
+				appendedURL = addQueryArgs( baseURI, query );
+			}
+
 			if ( path ) {
 				const sanitizedPath = `/${ path.replace( /^\//, '' ) }`;
-				return addQueryArgs(
-					`${ baseURI }${ sanitizedPath }`,
-					queryArgs
-				);
+				appendedURL = `${ appendedURL }#${ sanitizedPath }`;
 			}
-			return addQueryArgs( baseURI, queryArgs );
+
+			const accountChooserBaseURI = select(
+				CORE_USER
+			).getAccountChooserURL( appendedURL );
+
+			if ( accountChooserBaseURI ) {
+				return accountChooserBaseURI;
+			}
+
+			return undefined;
 		}
 	),
 

@@ -47,23 +47,27 @@ export const selectors = {
 	 */
 	getServiceURL: createRegistrySelector(
 		( select ) => ( state, { path, query } = {} ) => {
-			const userEmail = select( CORE_USER ).getEmail();
-			if ( userEmail === undefined ) {
-				return undefined;
+			const baseURI = 'https://www.google.com/adsense/new';
+			let appendedURL = baseURI;
+
+			if ( query ) {
+				appendedURL = addQueryArgs( baseURI, query );
 			}
 
-			const baseURI = 'https://www.google.com/adsense/new/u/0';
-			const queryParams = query
-				? { ...query, authuser: userEmail }
-				: { authuser: userEmail };
 			if ( path ) {
 				const sanitizedPath = `/${ path.replace( /^\//, '' ) }`;
-				return addQueryArgs(
-					`${ baseURI }${ sanitizedPath }`,
-					queryParams
-				);
+				appendedURL = `${ appendedURL }#${ sanitizedPath }`;
 			}
-			return addQueryArgs( baseURI, queryParams );
+
+			const accountChooserBaseURI = select(
+				CORE_USER
+			).getAccountChooserURL( appendedURL );
+
+			if ( accountChooserBaseURI ) {
+				return accountChooserBaseURI;
+			}
+
+			return undefined;
 		}
 	),
 

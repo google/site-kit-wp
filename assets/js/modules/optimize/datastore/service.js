@@ -42,21 +42,28 @@ export const selectors = {
 	 */
 	getServiceURL: createRegistrySelector(
 		( select ) => ( state, { path, query } = {} ) => {
-			const userEmail = select( CORE_USER ).getEmail();
-
-			if ( userEmail === undefined ) {
-				return undefined;
-			}
 			const baseURI = 'https://optimize.google.com/optimize/home/';
-			const queryParams = query
-				? { ...query, authuser: userEmail }
-				: { authuser: userEmail };
-			const baseURIWithQuery = addQueryArgs( baseURI, queryParams );
+
+			let appendedURL = baseURI;
+
+			if ( query ) {
+				appendedURL = addQueryArgs( baseURI, query );
+			}
+
 			if ( path ) {
 				const sanitizedPath = `/${ path.replace( /^\//, '' ) }`;
-				return `${ baseURIWithQuery }#${ sanitizedPath }`;
+				appendedURL = `${ appendedURL }#${ sanitizedPath }`;
 			}
-			return baseURIWithQuery;
+
+			const accountChooserBaseURI = select(
+				CORE_USER
+			).getAccountChooserURL( appendedURL );
+
+			if ( accountChooserBaseURI ) {
+				return accountChooserBaseURI;
+			}
+
+			return undefined;
 		}
 	),
 };

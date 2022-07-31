@@ -42,22 +42,28 @@ export const selectors = {
 	 */
 	getServiceURL: createRegistrySelector(
 		( select ) => ( state, { path, query } = {} ) => {
-			const userEmail = select( CORE_USER ).getEmail();
+			const baseURI = 'https://tagmanager.google.com/';
 
-			if ( userEmail === undefined ) {
-				return undefined;
+			let appendedURL = baseURI;
+
+			if ( query ) {
+				appendedURL = addQueryArgs( baseURI, query );
 			}
 
-			const baseURI = 'https://tagmanager.google.com/';
-			const queryParams = query
-				? { ...query, authuser: userEmail }
-				: { authuser: userEmail };
-			const baseURIWithQuery = addQueryArgs( baseURI, queryParams );
 			if ( path ) {
 				const sanitizedPath = `/${ path.replace( /^\//, '' ) }`;
-				return `${ baseURIWithQuery }#${ sanitizedPath }`;
+				appendedURL = `${ appendedURL }#${ sanitizedPath }`;
 			}
-			return baseURIWithQuery;
+
+			const accountChooserBaseURI = select(
+				CORE_USER
+			).getAccountChooserURL( appendedURL );
+
+			if ( accountChooserBaseURI ) {
+				return accountChooserBaseURI;
+			}
+
+			return undefined;
 		}
 	),
 };

@@ -36,11 +36,60 @@ describe( 'module/search-console service store', () => {
 		name: 'admin',
 		picture: 'https://path/to/image',
 	};
-	const authuser = userData.email;
+
 	const baseURI = 'https://search.google.com/search-console';
 
 	const propertyID = 'https://example.com';
 	const domainPropertyID = 'sc-domain:example.com';
+
+	const accountChooserBaseURI = `https://accounts.google.com/accountchooser?continue=${ encodeURIComponent(
+		baseURI
+	) }`;
+
+	/**
+	 * Mocks an account chooser URL.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {string} path The path to append to the base URL.
+	 * @return {string} The account chooser with an appended path.
+	 */
+	const mockAccountChooserURL = ( path = '' ) =>
+		`${ accountChooserBaseURI }${
+			path &&
+			`${ encodeURIComponent( '#/' ) }${ encodeURIComponent(
+				path.replace( /^\//, '' )
+			) }`
+		}&Email=${ encodeURIComponent( userData.email ) }`;
+
+	/**
+	 * Decodes an account chooser URLs `continue` argument.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {string} receivedURL The URL to decode.
+	 * @return {string} The decoded URL.
+	 */
+	const decodeServiceURL = ( receivedURL ) => {
+		const url = new URL( receivedURL );
+
+		const received = Array.from( url.searchParams ).reduce(
+			( object, [ key, value ] ) => {
+				object[ key ] = value;
+
+				return object;
+			},
+			{}
+		);
+
+		if ( ! received.continue ) {
+			return;
+		}
+
+		const serviceURL = decodeURIComponent( received.continue );
+
+		return serviceURL;
+	};
 
 	let registry;
 
@@ -60,10 +109,9 @@ describe( 'module/search-console service store', () => {
 				const serviceURL = registry
 					.select( MODULES_SEARCH_CONSOLE )
 					.getServiceURL();
-				expect( serviceURL.startsWith( baseURI ) ).toBe( true );
-				expect( serviceURL ).toMatchQueryParameters( {
-					authuser: userData.email,
-				} );
+				expect( serviceURL.startsWith( mockAccountChooserURL() ) ).toBe(
+					true
+				);
 			} );
 
 			it( 'appends the given path (without leading slash) to the path of the base URL', () => {
@@ -71,8 +119,8 @@ describe( 'module/search-console service store', () => {
 					.select( MODULES_SEARCH_CONSOLE )
 					.getServiceURL( { path: 'test/path/to/deeplink' } );
 				expect(
-					serviceURL.startsWith(
-						`${ baseURI }/test/path/to/deeplink`
+					serviceURL.endsWith(
+						mockAccountChooserURL( '/test/path/to/deeplink' )
 					)
 				).toBe( true );
 			} );
@@ -82,8 +130,8 @@ describe( 'module/search-console service store', () => {
 					.select( MODULES_SEARCH_CONSOLE )
 					.getServiceURL( { path: '/test/path/to/deeplink' } );
 				expect(
-					serviceURL.startsWith(
-						`${ baseURI }/test/path/to/deeplink`
+					serviceURL.endsWith(
+						mockAccountChooserURL( '/test/path/to/deeplink' )
 					)
 				).toBe( true );
 			} );
@@ -94,26 +142,13 @@ describe( 'module/search-console service store', () => {
 				const serviceURL = registry
 					.select( MODULES_SEARCH_CONSOLE )
 					.getServiceURL( { query: { foo, baz } } );
-				expect( serviceURL.startsWith( baseURI ) ).toBe( true );
-				expect( serviceURL ).toMatchQueryParameters( {
+
+				const decodedServiceURL = decodeServiceURL( serviceURL );
+
+				expect( decodedServiceURL.startsWith( baseURI ) ).toBe( true );
+				expect( decodedServiceURL ).toMatchQueryParameters( {
 					foo,
 					baz,
-					authuser,
-				} );
-			} );
-
-			it( 'does not take precedence over the authuser query arg', () => {
-				const query = {
-					authuser: 'bar', // conflicts with userData.email applied in the selector
-					baz: 'buzz',
-				};
-				const serviceURL = registry
-					.select( MODULES_SEARCH_CONSOLE )
-					.getServiceURL( { query } );
-				expect( serviceURL.startsWith( baseURI ) ).toBe( true );
-				expect( serviceURL ).toMatchQueryParameters( {
-					authuser: userData.email,
-					baz: 'buzz',
 				} );
 			} );
 		} );
@@ -129,9 +164,12 @@ describe( 'module/search-console service store', () => {
 				const serviceURL = registry
 					.select( MODULES_SEARCH_CONSOLE )
 					.getServiceReportURL();
+
+				const decodedServiceURL = decodeServiceURL( serviceURL );
+
 				expect(
-					serviceURL.startsWith(
-						`${ baseURI }/performance/search-analytics`
+					decodedServiceURL.endsWith(
+						'#/performance/search-analytics'
 					)
 				).toBe( true );
 			} );
@@ -140,7 +178,10 @@ describe( 'module/search-console service store', () => {
 				const serviceURL = registry
 					.select( MODULES_SEARCH_CONSOLE )
 					.getServiceReportURL();
-				expect( serviceURL ).toMatchQueryParameters( {
+
+				const decodedServiceURL = decodeServiceURL( serviceURL );
+
+				expect( decodedServiceURL ).toMatchQueryParameters( {
 					resource_id: propertyID,
 				} );
 			} );
@@ -155,10 +196,14 @@ describe( 'module/search-console service store', () => {
 				const serviceURL = registry
 					.select( MODULES_SEARCH_CONSOLE )
 					.getServiceReportURL();
+
+				const decodedServiceURL = decodeServiceURL( serviceURL );
+
 				const referenceSiteURL = registry
 					.select( CORE_SITE )
 					.getReferenceSiteURL();
-				expect( serviceURL ).toMatchQueryParameters( {
+
+				expect( decodedServiceURL ).toMatchQueryParameters( {
 					resource_id: domainPropertyID,
 					page: `*${ referenceSiteURL }`,
 				} );
@@ -174,10 +219,14 @@ describe( 'module/search-console service store', () => {
 				const serviceURL = registry
 					.select( MODULES_SEARCH_CONSOLE )
 					.getServiceReportURL( { page: undefined } );
+
+				const decodedServiceURL = decodeServiceURL( serviceURL );
+
 				const referenceSiteURL = registry
 					.select( CORE_SITE )
 					.getReferenceSiteURL();
-				expect( serviceURL ).toMatchQueryParameters( {
+
+				expect( decodedServiceURL ).toMatchQueryParameters( {
 					resource_id: domainPropertyID,
 					page: `*${ referenceSiteURL }`,
 				} );
