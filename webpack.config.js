@@ -33,7 +33,7 @@ const WebpackBar = require( 'webpackbar' );
 const { DefinePlugin, ProvidePlugin } = require( 'webpack' );
 const { BundleAnalyzerPlugin } = require( 'webpack-bundle-analyzer' );
 const CreateFileWebpack = require( 'create-file-webpack' );
-const ManifestPlugin = require( 'webpack-manifest-plugin' );
+const { WebpackManifestPlugin } = require( 'webpack-manifest-plugin' );
 const features = require( './feature-flags.json' );
 const formattedFeaturesToPHPArray = features
 	.map( ( feature ) => `'${ feature }'` )
@@ -127,8 +127,6 @@ return array(
 );
 `;
 
-const noAMDParserRule = { parser: { amd: false } };
-
 const siteKitExternals = {
 	'googlesitekit-api': [ 'googlesitekit', 'api' ],
 	'googlesitekit-data': [ 'googlesitekit', 'data' ],
@@ -153,7 +151,6 @@ const svgRule = {
 };
 
 const createRules = ( mode ) => [
-	noAMDParserRule,
 	svgRule,
 	{
 		test: /\.js$/,
@@ -170,15 +167,12 @@ const createRules = ( mode ) => [
 				},
 			},
 		],
-		...noAMDParserRule,
 	},
 ];
 
 const createMinimizerRules = ( mode ) => [
 	new TerserPlugin( {
 		parallel: true,
-		sourceMap: mode !== 'production',
-		cache: true,
 		terserOptions: {
 			// We preserve function names that start with capital letters as
 			// they're _likely_ component names, and these are useful to have
@@ -187,6 +181,7 @@ const createMinimizerRules = ( mode ) => [
 			output: {
 				comments: /translators:/i,
 			},
+			sourceMap: mode !== 'production',
 		},
 		extractComments: false,
 	} ),
@@ -310,7 +305,7 @@ function* webpackConfig( env, argv ) {
 			// same webpage, there is a risk of conflicts of on-demand chunks in the global
 			// namespace.
 			// See: https://webpack.js.org/configuration/output/#outputjsonpfunction.
-			jsonpFunction: '__googlesitekit_webpackJsonp',
+			chunkLoadingGlobal: '__googlesitekit_webpackJsonp',
 		},
 		performance: {
 			maxEntrypointSize: 175000,
@@ -342,7 +337,7 @@ function* webpackConfig( env, argv ) {
 						`array( ${ formattedFeaturesToPHPArray } )`
 					),
 			} ),
-			new ManifestPlugin( {
+			new WebpackManifestPlugin( {
 				...manifestArgs( mode ),
 				filter( file ) {
 					return ( file.name || '' ).match( /\.js$/ );
@@ -414,7 +409,7 @@ function* webpackConfig( env, argv ) {
 				name: 'Basic Modules',
 				color: '#fb1105',
 			} ),
-			new ManifestPlugin( {
+			new WebpackManifestPlugin( {
 				...manifestArgs( mode ),
 				filter( file ) {
 					return ( file.name || '' ).match( /\.js$/ );
@@ -470,7 +465,7 @@ function* webpackConfig( env, argv ) {
 				name: 'Plugin CSS',
 				color: '#4285f4',
 			} ),
-			new ManifestPlugin( {
+			new WebpackManifestPlugin( {
 				...manifestArgs( mode ),
 				filter( file ) {
 					return ( file.name || '' ).match( /\.css$/ );
@@ -495,7 +490,7 @@ function* webpackConfig( env, argv ) {
 			// same webpage, there is a risk of conflicts of on-demand chunks in the global
 			// namespace.
 			// See: https://webpack.js.org/configuration/output/#outputjsonpfunction.
-			jsonpFunction: '__googlesitekit_block_editor_webpackJsonp',
+			chunkLoadingGlobal: '__googlesitekit_block_editor_webpackJsonp',
 		},
 		performance: {
 			maxEntrypointSize: 175000,
@@ -514,7 +509,7 @@ function* webpackConfig( env, argv ) {
 				allowAsyncCycles: false,
 				cwd: process.cwd(),
 			} ),
-			new ManifestPlugin( {
+			new WebpackManifestPlugin( {
 				...manifestArgs( mode ),
 				filter( file ) {
 					return ( file.name || '' ).match( /\.js$/ );
@@ -561,7 +556,6 @@ function testBundle( mode ) {
 
 module.exports = {
 	externals,
-	noAMDParserRule,
 	projectPath,
 	resolve,
 	siteKitExternals,
