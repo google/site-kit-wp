@@ -86,17 +86,60 @@ class Web_Tag extends Module_Web_Tag {
 	}
 
 	/**
-	 * Gets the Tag Manager script tag for render and rest endpoint.
+	 * Gets the Tag Manager noscript tag.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string The noscript tag contents.
+	 */
+	private function get_no_js_tag() {
+		// Consent-based blocking requires JS to be enabled so we need to bail here if present.
+		if ( $this->get_tag_blocked_on_consent_attribute() ) {
+			return;
+		}
+
+		$iframe_src            = 'https://www.googletagmanager.com/ns.html?id=' . rawurlencode( $this->tag_id );
+		$snippet_comment_begin = sprintf( "\n<!-- %s -->\n", esc_html__( 'Google Tag Manager (noscript) snippet added by Site Kit', 'google-site-kit' ) );
+		$tag                   = sprintf( '<noscript><iframe src="%s" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>', esc_url( $iframe_src ) );
+		$snippet_comment_end   = sprintf( "\n<!-- %s -->\n", esc_html__( 'End Google Tag Manager (noscript) snippet added by Site Kit', 'google-site-kit' ) );
+
+		return $snippet_comment_begin . $tag . $snippet_comment_end;
+	}
+
+	/**
+	 * Gets the Tag Manager head script tag for render and rest endpoint.
 	 *
 	 * @since n.e.x.t
 	 *
 	 * @return string The script tag.
 	 */
-	public function get() {
+	public function get_head() {
 		$snippet_comment_begin = sprintf( "\n<!-- %s -->\n", esc_html__( 'Google Tag Manager snippet added by Site Kit', 'google-site-kit' ) );
 		$tag                   = BC_Functions::wp_get_inline_script_tag( $this->get_tag_script(), $this->get_tag_attributes() );
 		$snippet_comment_end   = sprintf( "\n<!-- %s -->\n", esc_html__( 'End Google Tag Manager snippet added by Site Kit', 'google-site-kit' ) );
 		return $snippet_comment_begin . $tag . $snippet_comment_end;
+	}
+
+	/**
+	 * Gets the Tag Manager body_open script tag for render and rest endpoint.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string The script tag.
+	 */
+	public function get_body_open() {
+		return $this->get_no_js_tag();
+	}
+
+	/**
+	 * Gets the Tag Manager footer script tag for render and rest endpoint.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string The script tag.
+	 */
+	public function get_footer() {
+		return $this->get_no_js_tag();
 	}
 
 	/**
@@ -105,29 +148,16 @@ class Web_Tag extends Module_Web_Tag {
 	 * @since 1.24.0
 	 */
 	protected function render() {
-		echo $this->get(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		echo $this->get_head(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	}
 
 	/**
 	 * Outputs Tag Manager iframe for when the browser has JavaScript disabled.
 	 *
-	 * @since 1.24.0
+	 * @since n.e.x.t
 	 */
 	private function render_no_js() {
-		// Consent-based blocking requires JS to be enabled so we need to bail here if present.
-		if ( $this->get_tag_blocked_on_consent_attribute() ) {
-			return;
-		}
-
-		$iframe_src = 'https://www.googletagmanager.com/ns.html?id=' . rawurlencode( $this->tag_id );
-
-		?>
-		<!-- <?php esc_html_e( 'Google Tag Manager (noscript) snippet added by Site Kit', 'google-site-kit' ); ?> -->
-		<noscript>
-			<iframe src="<?php echo esc_url( $iframe_src ); ?>" height="0" width="0" style="display:none;visibility:hidden"></iframe>
-		</noscript>
-		<!-- <?php esc_html_e( 'End Google Tag Manager (noscript) snippet added by Site Kit', 'google-site-kit' ); ?> -->
-		<?php
+		echo $this->get_no_js_tag(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	}
 
 }

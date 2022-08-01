@@ -534,15 +534,19 @@ final class Tag_Manager extends Module
 			? new AMP_Tag( $settings['ampContainerID'], self::MODULE_SLUG )
 			: new Web_Tag( $settings['containerID'], self::MODULE_SLUG );
 
-		if ( ! $tag->is_tag_blocked() ) {
-			$tag->use_guard( new Tag_Verify_Guard( $this->context->input() ) );
-			$tag->use_guard( new Tag_Guard( $module_settings, $is_amp ) );
-			$tag->use_guard( new Tag_Environment_Type_Guard() );
-
-			return $tag;
+		if ( $tag->is_tag_blocked() ) {
+			return null;
 		}
 
-		return null;
+		$tag->use_guard( new Tag_Verify_Guard( $this->context->input() ) );
+		$tag->use_guard( new Tag_Guard( $module_settings, $is_amp ) );
+		$tag->use_guard( new Tag_Environment_Type_Guard() );
+
+		if ( ! $tag->can_register() ) {
+			return null;
+		}
+
+		return $tag;
 	}
 
 	/**
@@ -553,7 +557,7 @@ final class Tag_Manager extends Module
 	private function register_tag() {
 		$tag = $this->build_tag();
 
-		if ( $tag && $tag->can_register() ) {
+		if ( $tag ) {
 			$tag->register();
 		}
 	}
@@ -568,8 +572,29 @@ final class Tag_Manager extends Module
 	public function get_tag() {
 		$tag = $this->build_tag();
 
-		if ( $tag && $tag->can_register() ) {
+		if ( $tag && $tag instanceof Web_Tag ) {
 			return $tag->get();
+		}
+
+		return array();
+	}
+
+	/**
+	 * Fetches the Tag Manager tag snippets.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array The Tag Manager JS snippets.
+	 */
+	public function get_tags() {
+		$tag = $this->build_tag();
+
+		if ( $tag && $tag instanceof Web_Tag ) {
+			return array(
+				'head'      => $tag->get_head(),
+				'body_open' => $tag->get_body_open(),
+				'footer'    => $tag->get_footer(),
+			);
 		}
 
 		return array();
