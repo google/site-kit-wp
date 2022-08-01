@@ -98,6 +98,7 @@
 		"@material/linear-progress": "^1.1.0",
 		"@material/list": "^2.3.0",
 		"@material/menu": "^2.3.0",
+		"@material/mwc-button": "^0.26.1",
 		"@material/radio": "^2.3.0",
 		"@material/react-card": "^0.15.0",
 		"@material/react-chips": "^0.15.0",
