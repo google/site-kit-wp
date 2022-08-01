@@ -675,11 +675,43 @@ final class AdSense extends Module
 	}
 
 	/**
-	 * Registers the AdSense tag.
+	 * Registers the AdSense tag snippet.
 	 *
 	 * @since 1.24.0
 	 */
 	private function register_tag() {
+		$tag = $this->build_tag();
+
+		if ( $tag && $tag->can_register() ) {
+			$tag->register();
+		}
+	}
+
+	/**
+	 * Fetches the AdSense tag snippet.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string The AdSense JS snippet.
+	 */
+	public function get_tag() {
+		$tag = $this->build_tag();
+
+		if ( $tag && $tag->can_register() ) {
+			return $tag->get();
+		}
+
+		return array();
+	}
+
+	/**
+	 * Prepares the AdSense tag snippet.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return AMP_Tag|Web_Tag|null The tag object or null if a tag guard fails.
+	 */
+	private function build_tag() {
 		// TODO: 'amp_story' support can be phased out in the long term.
 		if ( is_singular( array( 'amp_story' ) ) ) {
 			return;
@@ -701,40 +733,10 @@ final class AdSense extends Module
 			$tag->use_guard( new Auto_Ad_Guard( $module_settings ) );
 			$tag->use_guard( new Tag_Environment_Type_Guard() );
 
-			if ( $tag->can_register() ) {
-				$tag->register();
-			}
-		}
-	}
-
-	/**
-	 * Fetches the AdSense tag snippet.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @return string The AdSense JS snippet.
-	 */
-	public function get_rest_tags() {
-		// TODO: 'amp_story' support can be phased out in the long term.
-		if ( is_singular( array( 'amp_story' ) ) ) {
-			return;
+			return $tag;
 		}
 
-		$module_settings = $this->get_settings();
-		$settings        = $module_settings->get();
-		$tag             = new Web_Tag( $settings['clientID'], self::MODULE_SLUG );
-
-		if ( ! $tag->is_tag_blocked() ) {
-			$tag->use_guard( new Tag_Verify_Guard( $this->context->input() ) );
-			$tag->use_guard( new Tag_Guard( $module_settings ) );
-			$tag->use_guard( new Auto_Ad_Guard( $module_settings ) );
-			$tag->use_guard( new Tag_Environment_Type_Guard() );
-
-			if ( $tag->can_register() ) {
-				return $tag->filter_rest_tags();
-			}
-		}
-		return array();
+		return null;
 	}
 
 	/**

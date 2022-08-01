@@ -100,9 +100,7 @@ class Web_Tag extends Module_Web_Tag {
 	 * @since 1.24.0
 	 */
 	protected function render() {
-		printf( "\n<!-- %s -->\n", esc_html__( 'Google AdSense snippet added by Site Kit', 'google-site-kit' ) );
-		BC_Functions::wp_print_script_tag( $this->get_tag_attributes() );
-		printf( "\n<!-- %s -->\n", esc_html__( 'End Google AdSense snippet added by Site Kit', 'google-site-kit' ) );
+		echo $this->get(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	}
 
 	/**
@@ -112,7 +110,7 @@ class Web_Tag extends Module_Web_Tag {
 	 *
 	 * @return string Gets the AdSense snippet to render via a REST endpoint.
 	 */
-	public function filter_rest_tags() {
+	public function get() {
 		$snippet_comment_begin = sprintf( "\n<!-- %s -->\n", esc_html__( 'Google AdSense snippet added by Site Kit', 'google-site-kit' ) );
 		$tag                   = BC_Functions::wp_get_script_tag( $this->get_tag_attributes() );
 		$snippet_comment_end   = sprintf( "\n<!-- %s -->\n", esc_html__( 'End Google AdSense snippet added by Site Kit', 'google-site-kit' ) );

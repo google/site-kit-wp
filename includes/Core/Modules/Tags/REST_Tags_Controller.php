@@ -18,7 +18,7 @@ use WP_REST_Request;
 use WP_REST_Server;
 
 /**
- * Class for handling dashboard sharing rest routes.
+ * Class for handling Module tags rest routes.
  *
  * @since n.e.x.t
  * @access private
@@ -77,7 +77,7 @@ class REST_Tags_Controller {
 							$analytics = $this->modules->get_module( Analytics::MODULE_SLUG );
 							$tags['head']['analytics'] = $analytics->get_rest_tags();
 							$adsense = $this->modules->get_module( Adsense::MODULE_SLUG );
-							$tags['head']['adsense'] = $adsense->get_rest_tags();
+							$tags['head']['adsense'] = $adsense->get_tag();
 							return rest_ensure_response( $tags );
 						},
 						'permission_callback' => function () {
