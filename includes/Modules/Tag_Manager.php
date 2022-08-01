@@ -519,11 +519,13 @@ final class Tag_Manager extends Module
 	}
 
 	/**
-	 * Registers the Tag Manager tag.
+	 * Prepares the Tag Manager tag snippet.
 	 *
-	 * @since 1.24.0
+	 * @since n.e.x.t
+	 *
+	 * @return AMP_Tag|Web_Tag|null The tag object or null if a tag guard fails.
 	 */
-	private function register_tag() {
+	private function build_tag() {
 		$is_amp          = $this->context->is_amp();
 		$module_settings = $this->get_settings();
 		$settings        = $module_settings->get();
@@ -537,10 +539,40 @@ final class Tag_Manager extends Module
 			$tag->use_guard( new Tag_Guard( $module_settings, $is_amp ) );
 			$tag->use_guard( new Tag_Environment_Type_Guard() );
 
-			if ( $tag->can_register() ) {
-				$tag->register();
-			}
+			return $tag;
 		}
+
+		return null;
+	}
+
+	/**
+	 * Registers the Tag Manager tag snippet.
+	 *
+	 * @since 1.24.0
+	 */
+	private function register_tag() {
+		$tag = $this->build_tag();
+
+		if ( $tag && $tag->can_register() ) {
+			$tag->register();
+		}
+	}
+
+	/**
+	 * Fetches the Tag Manager tag snippet.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string The Tag Manager JS snippet.
+	 */
+	public function get_tag() {
+		$tag = $this->build_tag();
+
+		if ( $tag && $tag->can_register() ) {
+			return $tag->get();
+		}
+
+		return array();
 	}
 
 	/**

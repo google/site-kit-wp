@@ -51,13 +51,14 @@ class Web_Tag extends Module_Web_Tag {
 	}
 
 	/**
-	 * Outputs Tag Manager script.
+	 * Gets the Tag Manager script tag contents.
 	 *
-	 * @since 1.24.0
+	 * @since n.e.x.t
+	 *
+	 * @return string The script tag contents.
 	 */
-	protected function render() {
-
-		$tag_manager_inline_script = sprintf(
+	private function get_tag_script() {
+		return sprintf(
 			"
 			( function( w, d, s, l, i ) {
 				w[l] = w[l] || [];
@@ -71,12 +72,40 @@ class Web_Tag extends Module_Web_Tag {
 			",
 			esc_js( $this->tag_id )
 		);
+	}
 
-		$tag_manager_consent_attribute = $this->get_tag_blocked_on_consent_attribute_array();
+	/**
+	 * Gets the Tag Manager script tag attributes.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array Array of attributes.
+	 */
+	private function get_tag_attributes() {
+		return $this->get_tag_blocked_on_consent_attribute_array();
+	}
 
-		printf( "\n<!-- %s -->\n", esc_html__( 'Google Tag Manager snippet added by Site Kit', 'google-site-kit' ) );
-		BC_Functions::wp_print_inline_script_tag( $tag_manager_inline_script, $tag_manager_consent_attribute );
-		printf( "\n<!-- %s -->\n", esc_html__( 'End Google Tag Manager snippet added by Site Kit', 'google-site-kit' ) );
+	/**
+	 * Gets the Tag Manager script tag for render and rest endpoint.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string The script tag.
+	 */
+	public function get() {
+		$snippet_comment_begin = sprintf( "\n<!-- %s -->\n", esc_html__( 'Google Tag Manager snippet added by Site Kit', 'google-site-kit' ) );
+		$tag                   = BC_Functions::wp_get_inline_script_tag( $this->get_tag_script(), $this->get_tag_attributes() );
+		$snippet_comment_end   = sprintf( "\n<!-- %s -->\n", esc_html__( 'End Google Tag Manager snippet added by Site Kit', 'google-site-kit' ) );
+		return $snippet_comment_begin . $tag . $snippet_comment_end;
+	}
+
+	/**
+	 * Outputs Tag Manager script.
+	 *
+	 * @since 1.24.0
+	 */
+	protected function render() {
+		echo $this->get(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	}
 
 	/**
