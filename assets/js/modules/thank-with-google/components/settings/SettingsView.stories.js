@@ -22,7 +22,10 @@
 import SettingsView from './SettingsView';
 import { Cell, Grid, Row } from '../../../../material-components';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import { MODULES_THANK_WITH_GOOGLE } from '../../datastore/constants';
+import {
+	MODULES_THANK_WITH_GOOGLE,
+	BUTTON_PLACEMENT_STATIC_AUTO,
+} from '../../datastore/constants';
 import {
 	provideModules,
 	provideModuleRegistrations,
@@ -82,7 +85,7 @@ Default.args = {
 		} );
 		registry.dispatch( MODULES_THANK_WITH_GOOGLE ).receiveGetSettings( {
 			publicationID: 'example.com',
-			buttonPlacement: 'static_auto',
+			buttonPlacement: BUTTON_PLACEMENT_STATIC_AUTO,
 			colorTheme: 'purple',
 			buttonPostTypes: [ 'posts', 'pages' ],
 		} );
@@ -96,7 +99,7 @@ SettingsError.args = {
 	setupRegistry: ( registry ) => {
 		registry.dispatch( MODULES_THANK_WITH_GOOGLE ).receiveGetSettings( {
 			publicationID: 'example.com',
-			buttonPlacement: 'static_auto',
+			buttonPlacement: BUTTON_PLACEMENT_STATIC_AUTO,
 			colorTheme: 'purple',
 			buttonPostTypes: [ 'posts', 'pages' ],
 		} );

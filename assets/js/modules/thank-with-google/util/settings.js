@@ -32,6 +32,14 @@ import PinkSVG from '../../../../svg/graphics/twg-pink.svg';
 import OrangeSVG from '../../../../svg/graphics/twg-orange.svg';
 import BrownSVG from '../../../../svg/graphics/twg-brown.svg';
 import BlackSVG from '../../../../svg/graphics/twg-black.svg';
+import {
+	BUTTON_PLACEMENT_STATIC_AUTO,
+	BUTTON_PLACEMENT_STATIC_ABOVE_CONTENT,
+	BUTTON_PLACEMENT_STATIC_BELOW_CONTENT,
+	BUTTON_PLACEMENT_DYNAMIC_HIGH,
+	BUTTON_PLACEMENT_DYNAMIC_LOW,
+	BUTTON_PLACEMENT_STATIC_BELOW_1ST_PARAGRAPH,
+} from '../datastore/constants';
 
 /**
  * Gets color themes supported by Thank with Google.
@@ -110,17 +118,17 @@ export const getType = ( buttonPlacement ) => {
  */
 export const getProminence = ( buttonPlacement ) => {
 	switch ( buttonPlacement ) {
-		case 'static_auto':
+		case BUTTON_PLACEMENT_STATIC_AUTO:
 			return __( 'Auto', 'google-site-kit' );
-		case 'static_above-content':
+		case BUTTON_PLACEMENT_STATIC_ABOVE_CONTENT:
 			return __( 'Above the post', 'google-site-kit' );
-		case 'static_below-content':
+		case BUTTON_PLACEMENT_STATIC_BELOW_CONTENT:
 			return __( 'Below the post', 'google-site-kit' );
-		case 'static_below-first-paragraph':
+		case BUTTON_PLACEMENT_STATIC_BELOW_1ST_PARAGRAPH:
 			return __( 'Below the 1st paragraph', 'google-site-kit' );
-		case 'dynamic_high':
+		case BUTTON_PLACEMENT_DYNAMIC_HIGH:
 			return __( 'High', 'google-site-kit' );
-		case 'dynamic_low':
+		case BUTTON_PLACEMENT_DYNAMIC_LOW:
 			return __( 'Low', 'google-site-kit' );
 		default:
 			return '';
