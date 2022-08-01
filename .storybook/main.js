@@ -32,6 +32,9 @@ function vrtHead() {
 }
 
 module.exports = {
+	core: {
+		builder: 'webpack5',
+	},
 	stories: [ '../stories/**/*.stories.js', '../assets/js/**/*.stories.js' ],
 	addons: [ '@storybook/addon-viewport', '@storybook/addon-postcss' ],
 	previewHead: ( head ) => {
