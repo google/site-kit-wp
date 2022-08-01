@@ -77,7 +77,7 @@ export default function ResetSharingSettings() {
 			</h2>
 			<p className="mdc-dialog__lead">
 				{ __(
-					'Reset viewing roles and view-only management roles for shared dashboard',
+					'Warning: Resetting these permissions will remove view-only access for all users. Are you sure you want to reset all Dashboard Sharing permissions?',
 					'google-site-kit'
 				) }
 			</p>
