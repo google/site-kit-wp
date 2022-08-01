@@ -76,7 +76,7 @@ class REST_Tags_Controller {
 						'methods'             => WP_REST_Server::READABLE,
 						'callback'            => function( WP_REST_Request $request ) {
 							$analytics = $this->modules->get_module( Analytics::MODULE_SLUG );
-							$tags['head']['analytics'] = $analytics->get_rest_tags();
+							$tags['head']['analytics'] = $analytics->get_tag();
 							$adsense = $this->modules->get_module( Adsense::MODULE_SLUG );
 							$tags['head']['adsense'] = $adsense->get_tag();
 							$tag_manager = $this->modules->get_module( Tag_Manager::MODULE_SLUG );

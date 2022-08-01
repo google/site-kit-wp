@@ -208,7 +208,7 @@ class Web_Tag extends Module_Web_Tag implements Tag_Interface {
 	 *
 	 * @return string Gets the gtag snippet to render via a REST endpoint.
 	 */
-	public function filter_rest_tags() {
+	public function get() {
 		$gtag_opt = array();
 		$gtag_src = 'https://www.googletagmanager.com/gtag/js?id=' . rawurlencode( $this->tag_id );
 
