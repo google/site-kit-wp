@@ -103,12 +103,15 @@ class PermissionsTest extends TestCase {
 
 		$this->assertEqualSetsWithIndex(
 			array(
-				Permissions::AUTHENTICATE        => false,
-				Permissions::SETUP               => false,
-				Permissions::VIEW_POSTS_INSIGHTS => false,
-				Permissions::VIEW_DASHBOARD      => false,
-				Permissions::VIEW_MODULE_DETAILS => false,
-				Permissions::MANAGE_OPTIONS      => false,
+				Permissions::AUTHENTICATE                 => false,
+				Permissions::SETUP                        => false,
+				Permissions::VIEW_POSTS_INSIGHTS          => false,
+				Permissions::VIEW_DASHBOARD               => false,
+				Permissions::MANAGE_OPTIONS               => false,
+				Permissions::VIEW_SPLASH                  => false,
+				Permissions::VIEW_AUTHENTICATED_DASHBOARD => false,
+				Permissions::VIEW_WP_DASHBOARD_WIDGET     => false,
+				Permissions::VIEW_ADMIN_BAR_MENU          => false,
 			),
 			$permissions->check_all_for_current_user()
 		);
@@ -131,12 +134,15 @@ class PermissionsTest extends TestCase {
 
 		$this->assertEqualSetsWithIndex(
 			array(
-				Permissions::AUTHENTICATE        => true,
-				Permissions::SETUP               => true,
-				Permissions::VIEW_POSTS_INSIGHTS => false,
-				Permissions::VIEW_DASHBOARD      => false,
-				Permissions::VIEW_MODULE_DETAILS => false,
-				Permissions::MANAGE_OPTIONS      => false,
+				Permissions::AUTHENTICATE                 => true,
+				Permissions::SETUP                        => true,
+				Permissions::VIEW_POSTS_INSIGHTS          => false,
+				Permissions::VIEW_DASHBOARD               => false,
+				Permissions::MANAGE_OPTIONS               => false,
+				Permissions::VIEW_SPLASH                  => true,
+				Permissions::VIEW_AUTHENTICATED_DASHBOARD => false,
+				Permissions::VIEW_WP_DASHBOARD_WIDGET     => false,
+				Permissions::VIEW_ADMIN_BAR_MENU          => false,
 			),
 			$permissions->check_all_for_current_user()
 		);
@@ -174,12 +180,15 @@ class PermissionsTest extends TestCase {
 
 		$this->assertEqualSetsWithIndex(
 			array(
-				Permissions::AUTHENTICATE        => true,
-				Permissions::SETUP               => true,
-				Permissions::VIEW_POSTS_INSIGHTS => true,
-				Permissions::VIEW_DASHBOARD      => true,
-				Permissions::VIEW_MODULE_DETAILS => true,
-				Permissions::MANAGE_OPTIONS      => true,
+				Permissions::AUTHENTICATE                 => true,
+				Permissions::SETUP                        => true,
+				Permissions::VIEW_POSTS_INSIGHTS          => true,
+				Permissions::VIEW_DASHBOARD               => true,
+				Permissions::MANAGE_OPTIONS               => true,
+				Permissions::VIEW_SPLASH                  => true,
+				Permissions::VIEW_AUTHENTICATED_DASHBOARD => true,
+				Permissions::VIEW_WP_DASHBOARD_WIDGET     => true,
+				Permissions::VIEW_ADMIN_BAR_MENU          => true,
 			),
 			$permissions->check_all_for_current_user()
 		);
@@ -202,12 +211,15 @@ class PermissionsTest extends TestCase {
 
 		$this->assertEqualSetsWithIndex(
 			array(
-				Permissions::AUTHENTICATE        => true,
-				Permissions::SETUP               => true,
-				Permissions::VIEW_POSTS_INSIGHTS => false,
-				Permissions::VIEW_DASHBOARD      => false,
-				Permissions::VIEW_MODULE_DETAILS => false,
-				Permissions::MANAGE_OPTIONS      => false,
+				Permissions::AUTHENTICATE                 => true,
+				Permissions::SETUP                        => true,
+				Permissions::VIEW_POSTS_INSIGHTS          => false,
+				Permissions::VIEW_DASHBOARD               => false,
+				Permissions::MANAGE_OPTIONS               => false,
+				Permissions::VIEW_SPLASH                  => true,
+				Permissions::VIEW_AUTHENTICATED_DASHBOARD => false,
+				Permissions::VIEW_WP_DASHBOARD_WIDGET     => false,
+				Permissions::VIEW_ADMIN_BAR_MENU          => false,
 			),
 			$permissions->check_all_for_current_user()
 		);
@@ -219,8 +231,11 @@ class PermissionsTest extends TestCase {
 			Permissions::SETUP,
 			Permissions::VIEW_POSTS_INSIGHTS,
 			Permissions::VIEW_DASHBOARD,
-			Permissions::VIEW_MODULE_DETAILS,
 			Permissions::MANAGE_OPTIONS,
+			Permissions::VIEW_SPLASH,
+			Permissions::VIEW_AUTHENTICATED_DASHBOARD,
+			Permissions::VIEW_WP_DASHBOARD_WIDGET,
+			Permissions::VIEW_ADMIN_BAR_MENU,
 		);
 
 		$this->assertEqualSets( $capabilities, Permissions::get_capabilities() );
@@ -232,9 +247,12 @@ class PermissionsTest extends TestCase {
 			Permissions::SETUP,
 			Permissions::VIEW_POSTS_INSIGHTS,
 			Permissions::VIEW_DASHBOARD,
-			Permissions::VIEW_MODULE_DETAILS,
 			Permissions::MANAGE_OPTIONS,
+			Permissions::VIEW_SPLASH,
 			Permissions::VIEW_SHARED_DASHBOARD,
+			Permissions::VIEW_AUTHENTICATED_DASHBOARD,
+			Permissions::VIEW_WP_DASHBOARD_WIDGET,
+			Permissions::VIEW_ADMIN_BAR_MENU,
 		);
 		$this->assertEqualSets( $capabilities, Permissions::get_capabilities() );
 	}
@@ -295,11 +313,16 @@ class PermissionsTest extends TestCase {
 		// item dismissed to VIEW_SHARED_DASHBOARD.
 		$this->assertFalse( user_can( $author, Permissions::VIEW_SHARED_DASHBOARD ) );
 		$this->assertFalse( user_can( $contributor, Permissions::VIEW_SHARED_DASHBOARD ) );
+		$this->assertFalse( user_can( $contributor, Permissions::VIEW_DASHBOARD ) );
+		$this->assertFalse( user_can( $contributor, Permissions::VIEW_POSTS_INSIGHTS ) );
 
 		$contributor_user_options = new User_Options( $this->context, $contributor->ID );
 		$dismissed_items          = new Dismissed_Items( $contributor_user_options );
 		$dismissed_items->add( 'shared_dashboard_splash', 0 );
 		$this->assertTrue( user_can( $contributor, Permissions::VIEW_SHARED_DASHBOARD ) );
+		// User should also be able to access VIEW_DASHBOARD as they have the VIEW_SHARED_DASHBOARD access.
+		$this->assertTrue( user_can( $contributor, Permissions::VIEW_DASHBOARD ) );
+		$this->assertTrue( user_can( $contributor, Permissions::VIEW_POSTS_INSIGHTS ) );
 
 		$author_user_options = new User_Options( $this->context, $author->ID );
 		$dismissed_items     = new Dismissed_Items( $author_user_options );
@@ -365,13 +388,16 @@ class PermissionsTest extends TestCase {
 
 		$this->assertEqualSetsWithIndex(
 			array(
-				Permissions::AUTHENTICATE          => false,
-				Permissions::SETUP                 => false,
-				Permissions::VIEW_POSTS_INSIGHTS   => false,
-				Permissions::VIEW_DASHBOARD        => false,
-				Permissions::VIEW_MODULE_DETAILS   => false,
-				Permissions::MANAGE_OPTIONS        => false,
-				Permissions::VIEW_SHARED_DASHBOARD => false,
+				Permissions::AUTHENTICATE                 => false,
+				Permissions::SETUP                        => false,
+				Permissions::VIEW_POSTS_INSIGHTS          => false,
+				Permissions::VIEW_DASHBOARD               => false,
+				Permissions::MANAGE_OPTIONS               => false,
+				Permissions::VIEW_SPLASH                  => false,
+				Permissions::VIEW_SHARED_DASHBOARD        => false,
+				Permissions::VIEW_AUTHENTICATED_DASHBOARD => false,
+				Permissions::VIEW_WP_DASHBOARD_WIDGET     => false,
+				Permissions::VIEW_ADMIN_BAR_MENU          => false,
 				Permissions::READ_SHARED_MODULE_DATA . '::' . wp_json_encode( array( 'search-console' ) ) => false,
 				Permissions::READ_SHARED_MODULE_DATA . '::' . wp_json_encode( array( 'pagespeed-insights' ) ) => false,
 				Permissions::MANAGE_MODULE_SHARING_OPTIONS . '::' . wp_json_encode( array( 'search-console' ) ) => false,
@@ -395,13 +421,16 @@ class PermissionsTest extends TestCase {
 
 		$this->assertEqualSetsWithIndex(
 			array(
-				Permissions::AUTHENTICATE          => true,
-				Permissions::SETUP                 => true,
-				Permissions::VIEW_POSTS_INSIGHTS   => false,
-				Permissions::VIEW_DASHBOARD        => false,
-				Permissions::VIEW_MODULE_DETAILS   => false,
-				Permissions::MANAGE_OPTIONS        => false,
-				Permissions::VIEW_SHARED_DASHBOARD => false,
+				Permissions::AUTHENTICATE                 => true,
+				Permissions::SETUP                        => true,
+				Permissions::VIEW_POSTS_INSIGHTS          => false,
+				Permissions::VIEW_DASHBOARD               => false,
+				Permissions::MANAGE_OPTIONS               => false,
+				Permissions::VIEW_SPLASH                  => true,
+				Permissions::VIEW_SHARED_DASHBOARD        => false,
+				Permissions::VIEW_AUTHENTICATED_DASHBOARD => false,
+				Permissions::VIEW_WP_DASHBOARD_WIDGET     => false,
+				Permissions::VIEW_ADMIN_BAR_MENU          => false,
 				Permissions::READ_SHARED_MODULE_DATA . '::' . wp_json_encode( array( 'search-console' ) ) => false,
 				Permissions::READ_SHARED_MODULE_DATA . '::' . wp_json_encode( array( 'pagespeed-insights' ) ) => false,
 				Permissions::MANAGE_MODULE_SHARING_OPTIONS . '::' . wp_json_encode( array( 'search-console' ) ) => false,
@@ -447,17 +476,20 @@ class PermissionsTest extends TestCase {
 
 		$this->assertEqualSetsWithIndex(
 			array(
-				Permissions::AUTHENTICATE          => true,
-				Permissions::SETUP                 => true,
-				Permissions::VIEW_POSTS_INSIGHTS   => true,
-				Permissions::VIEW_DASHBOARD        => true,
-				Permissions::VIEW_MODULE_DETAILS   => true,
-				Permissions::MANAGE_OPTIONS        => true,
-				Permissions::VIEW_SHARED_DASHBOARD => false,
+				Permissions::AUTHENTICATE                 => true,
+				Permissions::SETUP                        => true,
+				Permissions::VIEW_POSTS_INSIGHTS          => true,
+				Permissions::VIEW_DASHBOARD               => true,
+				Permissions::MANAGE_OPTIONS               => true,
+				Permissions::VIEW_SPLASH                  => true,
+				Permissions::VIEW_SHARED_DASHBOARD        => false,
+				Permissions::VIEW_AUTHENTICATED_DASHBOARD => true,
+				Permissions::VIEW_WP_DASHBOARD_WIDGET     => true,
+				Permissions::VIEW_ADMIN_BAR_MENU          => true,
 				Permissions::READ_SHARED_MODULE_DATA . '::' . wp_json_encode( array( 'search-console' ) ) => false,
 				Permissions::READ_SHARED_MODULE_DATA . '::' . wp_json_encode( array( 'pagespeed-insights' ) ) => false,
 				Permissions::MANAGE_MODULE_SHARING_OPTIONS . '::' . wp_json_encode( array( 'search-console' ) ) => false,
-				Permissions::MANAGE_MODULE_SHARING_OPTIONS . '::' . wp_json_encode( array( 'pagespeed-insights' ) ) => false,
+				Permissions::MANAGE_MODULE_SHARING_OPTIONS . '::' . wp_json_encode( array( 'pagespeed-insights' ) ) => true,
 				Permissions::DELEGATE_MODULE_SHARING_MANAGEMENT . '::' . wp_json_encode( array( 'search-console' ) ) => false,
 				Permissions::DELEGATE_MODULE_SHARING_MANAGEMENT . '::' . wp_json_encode( array( 'pagespeed-insights' ) ) => false,
 			),
@@ -484,21 +516,75 @@ class PermissionsTest extends TestCase {
 
 		$this->assertEqualSetsWithIndex(
 			array(
-				Permissions::AUTHENTICATE          => true,
-				Permissions::SETUP                 => true,
-				Permissions::VIEW_POSTS_INSIGHTS   => false,
-				Permissions::VIEW_DASHBOARD        => false,
-				Permissions::VIEW_MODULE_DETAILS   => false,
-				Permissions::MANAGE_OPTIONS        => false,
-				Permissions::VIEW_SHARED_DASHBOARD => false,
+				Permissions::AUTHENTICATE                 => true,
+				Permissions::SETUP                        => true,
+				Permissions::VIEW_POSTS_INSIGHTS          => false,
+				Permissions::VIEW_DASHBOARD               => false,
+				Permissions::MANAGE_OPTIONS               => false,
+				Permissions::VIEW_SPLASH                  => true,
+				Permissions::VIEW_SHARED_DASHBOARD        => false,
+				Permissions::VIEW_AUTHENTICATED_DASHBOARD => false,
+				Permissions::VIEW_WP_DASHBOARD_WIDGET     => false,
+				Permissions::VIEW_ADMIN_BAR_MENU          => false,
 				Permissions::READ_SHARED_MODULE_DATA . '::' . wp_json_encode( array( 'search-console' ) ) => false,
 				Permissions::READ_SHARED_MODULE_DATA . '::' . wp_json_encode( array( 'pagespeed-insights' ) ) => false,
 				Permissions::MANAGE_MODULE_SHARING_OPTIONS . '::' . wp_json_encode( array( 'search-console' ) ) => false,
-				Permissions::MANAGE_MODULE_SHARING_OPTIONS . '::' . wp_json_encode( array( 'pagespeed-insights' ) ) => false,
+				Permissions::MANAGE_MODULE_SHARING_OPTIONS . '::' . wp_json_encode( array( 'pagespeed-insights' ) ) => true,
 				Permissions::DELEGATE_MODULE_SHARING_MANAGEMENT . '::' . wp_json_encode( array( 'search-console' ) ) => false,
 				Permissions::DELEGATE_MODULE_SHARING_MANAGEMENT . '::' . wp_json_encode( array( 'pagespeed-insights' ) ) => false,
 			),
 			$permissions->check_all_for_current_user()
 		);
+	}
+
+	/**
+	 * @param string $shared_with_role
+	 * @dataProvider data_default_shareable_non_admin_roles
+	 */
+	public function test_view_splash__non_admin_dashboardSharing( $shared_with_role ) {
+		$this->enable_feature( 'dashboardSharing' );
+		$user = self::factory()->user->create_and_get( array( 'role' => $shared_with_role ) );
+		$this->user_options->switch_user( $user->ID );
+
+		$sharing_settings = new Module_Sharing_Settings( new Options( $this->context ) );
+		$permissions      = new Permissions( $this->context, $this->authentication, $this->modules, $this->user_options, $this->dismissed_items );
+		$permissions->register();
+
+		$this->assertFalse( user_can( $user, Permissions::VIEW_SPLASH ) );
+
+		$sharing_settings->set(
+			array(
+				'pagespeed-insights' => array( 'sharedRoles' => array( $shared_with_role ) ),
+			)
+		);
+
+		$this->assertTrue( user_can( $user, Permissions::VIEW_SPLASH ) );
+
+		// Once the shared_dashboard_splash item is dismissed, the splash cannot be viewed again.
+		$this->dismissed_items->add( 'shared_dashboard_splash' );
+		$this->assertFalse( user_can( $user, Permissions::VIEW_SPLASH ) );
+	}
+
+	public function data_default_shareable_non_admin_roles() {
+		yield '`contributor` role' => array( 'contributor' );
+		yield '`author` role' => array( 'author' );
+		yield '`editor` role' => array( 'editor' );
+	}
+
+	public function test_view_splash__admin() {
+		$user        = self::factory()->user->create_and_get( array( 'role' => 'administrator' ) );
+		$permissions = new Permissions( $this->context, $this->authentication, $this->modules, $this->user_options, $this->dismissed_items );
+		$permissions->register();
+		$this->user_options->switch_user( $user->ID );
+
+		$this->assertTrue( user_can( $user, Permissions::VIEW_SPLASH ) );
+
+		$this->enable_feature( 'dashboardSharing' );
+
+		$this->assertTrue( user_can( $user, Permissions::VIEW_SPLASH ) );
+
+		// An admin can still see the splash even when this dismissal is present because they can authenticate.
+		$this->dismissed_items->add( 'shared_dashboard_splash' );
+		$this->assertTrue( user_can( $user, Permissions::VIEW_SPLASH ) );
 	}
 }

@@ -311,10 +311,17 @@ final class Idea_Hub extends Module
 			self::SLUG_SAVED_IDEAS,
 			array(
 				'content'         => function() use ( $escape_and_wrap_notice_content ) {
-					$message = sprintf(
+					$message_body = sprintf(
 						/* translators: %s: URL to saved ideas */
 						__( 'Want some inspiration for a new post? <a href="%s">Revisit your saved ideas</a> in Site Kit.', 'google-site-kit' ),
 						esc_url( $this->context->admin_url( 'dashboard', array( 'idea-hub-tab' => 'saved-ideas' ) ) )
+					);
+
+					$message = sprintf(
+						/* translators: 1: Plugin name. 2: Message. */
+						__( '%1$s: %2$s', 'google-site-kit' ),
+						__( 'Site Kit by Google', 'google-site-kit' ),
+						$message_body
 					);
 
 					return $escape_and_wrap_notice_content( $message );
@@ -347,10 +354,17 @@ final class Idea_Hub extends Module
 			self::SLUG_NEW_IDEAS,
 			array(
 				'content'         => function() use ( $escape_and_wrap_notice_content ) {
-					$message = sprintf(
-						/* translators: %s: URL to new ideas */
+					$message_body = sprintf(
+						/* translators: %s: URL to saved ideas */
 						__( 'Want some inspiration for a new post? <a href="%s">Review your new ideas</a> in Site Kit.', 'google-site-kit' ),
 						esc_url( $this->context->admin_url( 'dashboard', array( 'idea-hub-tab' => 'new-ideas' ) ) )
+					);
+
+					$message = sprintf(
+						/* translators: 1: Plugin name. 2: Message. */
+						__( '%1$s: %2$s', 'google-site-kit' ),
+						__( 'Site Kit by Google', 'google-site-kit' ),
+						$message_body
 					);
 
 					return $escape_and_wrap_notice_content( $message );

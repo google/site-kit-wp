@@ -25,11 +25,12 @@ use Google\Site_Kit\Core\Modules\Module_With_Owner;
 use Google\Site_Kit\Core\Modules\Module_With_Owner_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes_Trait;
+use Google\Site_Kit\Core\Modules\Module_With_Service_Entity;
 use Google\Site_Kit\Core\Modules\Module_With_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\REST_API\Exception\Invalid_Datapoint_Exception;
-use Google\Site_Kit\Core\Tags\Guards\Tag_Production_Guard;
+use Google\Site_Kit\Core\Tags\Guards\Tag_Environment_Type_Guard;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Verify_Guard;
 use Google\Site_Kit\Core\Util\BC_Functions;
 use Google\Site_Kit\Core\Util\Debug_Data;
@@ -39,10 +40,7 @@ use Google\Site_Kit\Modules\Tag_Manager\Settings;
 use Google\Site_Kit\Modules\Tag_Manager\Tag_Guard;
 use Google\Site_Kit\Modules\Tag_Manager\Web_Tag;
 use Google\Site_Kit_Dependencies\Google\Service\TagManager as Google_Service_TagManager;
-use Google\Site_Kit_Dependencies\Google\Service\TagManager\Account as Google_Service_TagManager_Account;
 use Google\Site_Kit_Dependencies\Google\Service\TagManager\Container as Google_Service_TagManager_Container;
-use Google\Site_Kit_Dependencies\Google\Service\TagManager\ListAccountsResponse as Google_Service_TagManager_ListAccountsResponse;
-use Google\Site_Kit_Dependencies\Google\Service\TagManager\ListContainersResponse as Google_Service_TagManager_ListContainersResponse;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 use WP_Error;
 
@@ -54,7 +52,7 @@ use WP_Error;
  * @ignore
  */
 final class Tag_Manager extends Module
-	implements Module_With_Scopes, Module_With_Settings, Module_With_Assets, Module_With_Debug_Fields, Module_With_Owner, Module_With_Deactivation {
+	implements Module_With_Scopes, Module_With_Settings, Module_With_Assets, Module_With_Debug_Fields, Module_With_Owner, Module_With_Service_Entity, Module_With_Deactivation {
 	use Method_Proxy_Trait;
 	use Module_With_Assets_Trait;
 	use Module_With_Owner_Trait;
@@ -97,7 +95,7 @@ final class Tag_Manager extends Module
 		// Tag Manager tag placement logic.
 		add_action( 'template_redirect', $this->get_method_proxy( 'register_tag' ) );
 		// Filter the Analytics `canUseSnippet` value.
-		add_action( 'googlesitekit_analytics_can_use_snippet', $this->get_method_proxy( 'can_analytics_use_snippet' ) );
+		add_filter( 'googlesitekit_analytics_can_use_snippet', $this->get_method_proxy( 'can_analytics_use_snippet' ), 10, 2 );
 		// Filter whether certain users can be excluded from tracking.
 		add_action( 'googlesitekit_allow_tracking_disabled', $this->get_method_proxy( 'filter_analytics_allow_tracking_disabled' ) );
 		add_action( 'googlesitekit_analytics_tracking_opt_out', $this->get_method_proxy( 'analytics_tracking_opt_out' ) );
@@ -241,7 +239,6 @@ final class Tag_Manager extends Module
 				'request_scopes_message' => __( 'Additional permissions are required to create a new Tag Manager container on your behalf.', 'google-site-kit' ),
 			),
 			'GET:live-container-version' => array( 'service' => 'tagmanager' ),
-			'GET:tag-permission'         => array( 'service' => 'tagmanager' ),
 		);
 	}
 
@@ -331,43 +328,6 @@ final class Tag_Manager extends Module
 				return $this->get_tagmanager_service()->accounts_containers_versions->live(
 					"accounts/{$data['accountID']}/containers/{$data['internalContainerID']}"
 				);
-			case 'GET:tag-permission':
-				return function () use ( $data ) {
-					$container_id = $data['containerID'];
-
-					if ( ! $container_id ) {
-						return new WP_Error(
-							'missing_required_param',
-							/* translators: %s: Missing parameter name */
-							sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'containerID' ),
-							array( 'status' => 400 )
-						);
-					}
-
-					$accounts = $this->get_data( 'accounts' );
-
-					if ( is_wp_error( $accounts ) ) {
-						return $accounts;
-					}
-
-					$response = array(
-						'accountID'   => '',
-						'containerID' => $container_id,
-						'permission'  => false,
-					);
-
-					try {
-						$account_container      = $this->get_account_for_container( $container_id, $accounts );
-						$response['accountID']  = $account_container['account']['accountId'];
-						$response['permission'] = true;
-
-						// Return full `account` and `container` for backwards compat with legacy setup component.
-						// TODO: Remove $account_container from response.
-						return array_merge( $response, $account_container );
-					} catch ( Exception $exception ) {
-						return $response;
-					}
-				};
 		}
 
 		return parent::create_data_request( $data );
@@ -469,48 +429,6 @@ final class Tag_Manager extends Module
 		}
 
 		return parent::parse_data_response( $data, $response );
-	}
-
-	/**
-	 * Finds the account for the given container *public ID* from the given list of accounts.
-	 *
-	 * There is no way to query a container by its public ID (the ID that identifies the container on the client)
-	 * so we must find it by listing the containers of the available accounts and matching on the public ID.
-	 *
-	 * @since 1.2.0
-	 *
-	 * @param string                              $container_id Container public ID (e.g. GTM-ABCDEFG).
-	 * @param Google_Service_TagManager_Account[] $accounts     All accounts available to the current user.
-	 *
-	 * @return array {
-	 *     @type Google_Service_TagManager_Account   $account   Account model instance.
-	 *     @type Google_Service_TagManager_Container $container Container model instance.
-	 * }
-	 * @throws Exception Thrown if the given container ID does not belong to any of the given accounts.
-	 */
-	private function get_account_for_container( $container_id, $accounts ) {
-		foreach ( (array) $accounts as $account ) {
-			/* @var Google_Service_TagManager_Account $account Tag manager account */
-			$containers = $this->get_data(
-				'containers',
-				array(
-					'accountID'    => $account->getAccountId(),
-					'usageContext' => array_keys( $this->context_map ),
-				)
-			);
-
-			if ( is_wp_error( $containers ) ) {
-				break;
-			}
-
-			foreach ( (array) $containers as $container ) {
-				/* @var Google_Service_TagManager_Container $container Container instance */
-				if ( $container_id === $container->getPublicId() ) {
-					return compact( 'account', 'container' );
-				}
-			}
-		}
-		throw new Exception( __( 'No account found for given container', 'google-site-kit' ) );
 	}
 
 	/**
@@ -617,7 +535,7 @@ final class Tag_Manager extends Module
 		if ( ! $tag->is_tag_blocked() ) {
 			$tag->use_guard( new Tag_Verify_Guard( $this->context->input() ) );
 			$tag->use_guard( new Tag_Guard( $module_settings, $is_amp ) );
-			$tag->use_guard( new Tag_Production_Guard() );
+			$tag->use_guard( new Tag_Environment_Type_Guard() );
 
 			if ( $tag->can_register() ) {
 				$tag->register();
@@ -629,16 +547,16 @@ final class Tag_Manager extends Module
 	 * Filters whether or not the Analytics module's snippet should be controlled by its `useSnippet` setting.
 	 *
 	 * @since 1.28.0
+	 * @since 1.75.0 Now requires current UA property ID as second parameter.
 	 *
 	 * @param boolean $original_value Original value of useSnippet setting.
+	 * @param string  $ua_property_id Current UA property.
 	 * @return boolean Filtered value.
 	 */
-	private function can_analytics_use_snippet( $original_value ) {
+	private function can_analytics_use_snippet( $original_value, $ua_property_id ) {
 		$settings = $this->get_settings()->get();
 
-		// This disables the Analytics snippet if there is a GA tag in the
-		// configured containers, and the GTM snippet is enabled.
-		if ( ! empty( $settings['gaPropertyID'] ) && $settings['useSnippet'] ) {
+		if ( ! empty( $settings['gaPropertyID'] ) && $settings['useSnippet'] && $settings['gaPropertyID'] === $ua_property_id ) {
 			return false;
 		}
 
@@ -691,6 +609,40 @@ final class Tag_Manager extends Module
 		}
 
 		return $allowed;
+	}
+
+	/**
+	 * Checks if the current user has access to the current configured service entity.
+	 *
+	 * @since 1.77.0
+	 *
+	 * @return boolean|WP_Error
+	 */
+	public function check_service_entity_access() {
+		$is_amp_mode = in_array( $this->context->get_amp_mode(), array( Context::AMP_MODE_PRIMARY, Context::AMP_MODE_SECONDARY ), true );
+
+		$settings   = $this->get_settings()->get();
+		$account_id = $settings['accountID'];
+
+		$configured_containers = $is_amp_mode ? array( $settings['containerID'], $settings['ampContainerID'] ) : array( $settings['containerID'] );
+
+		try {
+			$containers = $this->get_tagmanager_service()->accounts_containers->listAccountsContainers( "accounts/{$account_id}" );
+		} catch ( Exception $e ) {
+			if ( $e->getCode() === 403 ) {
+				return false;
+			}
+			return $this->exception_to_error( $e );
+		}
+
+		$all_containers = array_map(
+			function( $container ) {
+				return $container->getPublicId();
+			},
+			$containers->getContainer()
+		);
+
+		return empty( array_diff( $configured_containers, $all_containers ) );
 	}
 
 }

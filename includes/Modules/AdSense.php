@@ -14,8 +14,6 @@ use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Deactivation;
 use Google\Site_Kit\Core\Modules\Module_With_Debug_Fields;
-use Google\Site_Kit\Core\Modules\Module_With_Screen;
-use Google\Site_Kit\Core\Modules\Module_With_Screen_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Settings;
@@ -30,7 +28,7 @@ use Google\Site_Kit\Core\Assets\Script;
 use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
 use Google\Site_Kit\Core\Modules\Module_With_Service_Entity;
 use Google\Site_Kit\Core\REST_API\Data_Request;
-use Google\Site_Kit\Core\Tags\Guards\Tag_Production_Guard;
+use Google\Site_Kit\Core\Tags\Guards\Tag_Environment_Type_Guard;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Verify_Guard;
 use Google\Site_Kit\Core\Util\Debug_Data;
 use Google\Site_Kit\Core\Util\Feature_Flags;
@@ -55,12 +53,11 @@ use WP_Error;
  * @ignore
  */
 final class AdSense extends Module
-	implements Module_With_Screen, Module_With_Scopes, Module_With_Settings, Module_With_Assets, Module_With_Debug_Fields, Module_With_Owner, Module_With_Service_Entity, Module_With_Deactivation {
+	implements Module_With_Scopes, Module_With_Settings, Module_With_Assets, Module_With_Debug_Fields, Module_With_Owner, Module_With_Service_Entity, Module_With_Deactivation {
 	use Method_Proxy_Trait;
 	use Module_With_Assets_Trait;
 	use Module_With_Owner_Trait;
 	use Module_With_Scopes_Trait;
-	use Module_With_Screen_Trait;
 	use Module_With_Settings_Trait;
 
 	/**
@@ -75,10 +72,6 @@ final class AdSense extends Module
 	 */
 	public function register() {
 		$this->register_scopes_hook();
-
-		if ( ! Feature_Flags::enabled( 'unifiedDashboard' ) ) {
-			$this->register_screen_hook();
-		}
 
 		add_action( 'wp_head', $this->get_method_proxy_once( 'render_platform_meta_tags' ) );
 
@@ -197,18 +190,17 @@ final class AdSense extends Module
 	 */
 	protected function get_datapoint_definitions() {
 		return array(
-			'GET:adunits'        => array( 'service' => 'adsense' ),
-			'GET:accounts'       => array( 'service' => 'adsense' ),
-			'GET:alerts'         => array( 'service' => 'adsense' ),
-			'GET:clients'        => array( 'service' => 'adsense' ),
-			'GET:earnings'       => array(
+			'GET:adunits'       => array( 'service' => 'adsense' ),
+			'GET:accounts'      => array( 'service' => 'adsense' ),
+			'GET:alerts'        => array( 'service' => 'adsense' ),
+			'GET:clients'       => array( 'service' => 'adsense' ),
+			'GET:report'        => array(
 				'service'   => 'adsense',
 				'shareable' => Feature_Flags::enabled( 'dashboardSharing' ),
 			),
-			'GET:notifications'  => array( 'service' => '' ),
-			'GET:tag-permission' => array( 'service' => '' ),
-			'GET:urlchannels'    => array( 'service' => 'adsense' ),
-			'GET:sites'          => array( 'service' => 'adsense' ),
+			'GET:notifications' => array( 'service' => '' ),
+			'GET:urlchannels'   => array( 'service' => 'adsense' ),
+			'GET:sites'         => array( 'service' => 'adsense' ),
 		);
 	}
 
@@ -265,7 +257,7 @@ final class AdSense extends Module
 				}
 				$service = $this->get_service( 'adsense' );
 				return $service->accounts_adclients->listAccountsAdclients( self::normalize_account_id( $data['accountID'] ) );
-			case 'GET:earnings':
+			case 'GET:report':
 				$start_date = $data['startDate'];
 				$end_date   = $data['endDate'];
 				if ( ! strtotime( $start_date ) || ! strtotime( $end_date ) ) {
@@ -350,22 +342,6 @@ final class AdSense extends Module
 				}
 				$service = $this->get_service( 'adsense' );
 				return $service->accounts_sites->listAccountsSites( self::normalize_account_id( $data['accountID'] ) );
-			case 'GET:tag-permission':
-				return function() use ( $data ) {
-					if ( ! isset( $data['clientID'] ) ) {
-						return new WP_Error(
-							'missing_required_param',
-							/* translators: %s: Missing parameter name */
-							sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'clientID' ),
-							array( 'status' => 400 )
-						);
-					}
-
-					return array_merge(
-						array( 'clientID' => $data['clientID'] ),
-						$this->has_access_to_client( $data['clientID'] )
-					);
-				};
 			case 'GET:urlchannels':
 				if ( ! isset( $data['accountID'] ) ) {
 					return new WP_Error(
@@ -403,7 +379,8 @@ final class AdSense extends Module
 	protected function parse_data_response( Data_Request $data, $response ) {
 		switch ( "{$data->method}:{$data->datapoint}" ) {
 			case 'GET:accounts':
-				return array_map( array( self::class, 'filter_account_with_ids' ), $response->getAccounts() );
+				$accounts = array_filter( $response->getAccounts(), array( self::class, 'is_account_not_closed' ) );
+				return array_map( array( self::class, 'filter_account_with_ids' ), $accounts );
 			case 'GET:adunits':
 				return array_map( array( self::class, 'filter_adunit_with_ids' ), $response->getAdUnits() );
 			case 'GET:alerts':
@@ -412,13 +389,25 @@ final class AdSense extends Module
 				return array_map( array( self::class, 'filter_client_with_ids' ), $response->getAdClients() );
 			case 'GET:urlchannels':
 				return $response->getUrlChannels();
-			case 'GET:earnings':
+			case 'GET:report':
 				return $response;
 			case 'GET:sites':
 				return $response->getSites();
 		}
 
 		return parent::parse_data_response( $data, $response );
+	}
+
+	/**
+	 * Checks for the state of an Account, whether closed or not.
+	 *
+	 * @since 1.73.0
+	 *
+	 * @param Google_Model $account Account model.
+	 * @return bool Whether the account is not closed.
+	 */
+	public static function is_account_not_closed( $account ) {
+		return 'CLOSED' !== $account->getState();
 	}
 
 	/**
@@ -686,90 +675,6 @@ final class AdSense extends Module
 	}
 
 	/**
-	 * Verifies that user has access to the given client and account.
-	 *
-	 * @since 1.9.0
-	 *
-	 * @param string $client_id  Client found in the existing tag.
-	 * @return array {
-	 *      AdSense account access data.
-	 *      @type string $account_id The AdSense account ID for the given client.
-	 *      @type bool   $permission Whether the user has access to this account and client.
-	 * }
-	 */
-	protected function has_access_to_client( $client_id ) {
-		if ( empty( $client_id ) ) {
-			return array(
-				'account_id' => '',
-				'permission' => false,
-			);
-		}
-
-		$account_has_client = function ( $account_id ) use ( $client_id ) {
-			// Try to get clients for that account.
-			$clients = $this->get_data( 'clients', array( 'accountID' => $account_id ) );
-			if ( is_wp_error( $clients ) ) {
-				// No access to the account.
-				return false;
-			}
-			// Ensure there is access to the client.
-			foreach ( $clients as $client ) {
-				if ( $client->_id === $client_id ) {
-					return true;
-				}
-			}
-
-			return false;
-		};
-
-		$parsed_account_id = $this->parse_account_id( $client_id );
-
-		if ( $account_has_client( $parsed_account_id ) ) {
-			return array(
-				'account_id' => $parsed_account_id,
-				'permission' => true,
-			);
-		}
-
-		$accounts = $this->get_data( 'accounts' );
-		if ( is_wp_error( $accounts ) ) {
-			$accounts = array();
-		}
-
-		foreach ( $accounts as $account ) {
-			if ( $account->_id === $parsed_account_id ) {
-				continue;
-			}
-			if ( $account_has_client( $account->_id ) ) {
-				return array(
-					'account_id' => $account->_id,
-					'permission' => true,
-				);
-			}
-		}
-
-		return array(
-			'account_id' => $parsed_account_id,
-			'permission' => false,
-		);
-	}
-
-	/**
-	 * Determines the AdSense account ID from a given AdSense client ID.
-	 *
-	 * @since 1.9.0
-	 *
-	 * @param string $client_id AdSense client ID.
-	 * @return string AdSense account ID, or empty string if invalid client ID.
-	 */
-	protected function parse_account_id( $client_id ) {
-		if ( ! preg_match( '/^ca-(pub-[0-9]+)$/', $client_id, $matches ) ) {
-			return '';
-		}
-		return $matches[1];
-	}
-
-	/**
 	 * Registers the AdSense tag.
 	 *
 	 * @since 1.24.0
@@ -794,7 +699,7 @@ final class AdSense extends Module
 			$tag->use_guard( new Tag_Verify_Guard( $this->context->input() ) );
 			$tag->use_guard( new Tag_Guard( $module_settings ) );
 			$tag->use_guard( new Auto_Ad_Guard( $module_settings ) );
-			$tag->use_guard( new Tag_Production_Guard() );
+			$tag->use_guard( new Tag_Environment_Type_Guard() );
 
 			if ( $tag->can_register() ) {
 				$tag->register();

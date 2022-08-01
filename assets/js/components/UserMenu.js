@@ -19,7 +19,6 @@
 /**
  * External dependencies
  */
-import classnames from 'classnames';
 import { useClickAway } from 'react-use';
 
 /**
@@ -31,7 +30,6 @@ import {
 	useRef,
 	useEffect,
 	useCallback,
-	useContext,
 } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { ESCAPE, TAB } from '@wordpress/keycodes';
@@ -45,16 +43,14 @@ import Dialog from './Dialog';
 import Button from './Button';
 import Menu from './Menu';
 import Portal from './Portal';
-import { useFeature } from '../hooks/useFeature';
 import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../googlesitekit/datastore/user/constants';
 import { CORE_LOCATION } from '../googlesitekit/datastore/location/constants';
 import { useKeyCodesInside } from '../hooks/useKeyCodesInside';
-import ViewContextContext from './Root/ViewContextContext';
+import useViewContext from '../hooks/useViewContext';
 const { useSelect, useDispatch } = Data;
 
 export default function UserMenu() {
-	const unifiedDashboardEnabled = useFeature( 'unifiedDashboard' );
 	const proxyPermissionsURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getProxyPermissionsURL()
 	);
@@ -71,7 +67,7 @@ export default function UserMenu() {
 	const [ dialogActive, toggleDialog ] = useState( false );
 	const [ menuOpen, setMenuOpen ] = useState( false );
 	const menuWrapperRef = useRef();
-	const viewContext = useContext( ViewContextContext );
+	const viewContext = useViewContext();
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 
 	useClickAway( menuWrapperRef, () => setMenuOpen( false ) );
@@ -153,7 +149,7 @@ export default function UserMenu() {
 		navigateTo( postDisconnectURL );
 	}, [ postDisconnectURL, navigateTo, viewContext ] );
 
-	if ( ! unifiedDashboardEnabled && ! userEmail ) {
+	if ( ! userEmail ) {
 		return null;
 	}
 
@@ -164,25 +160,13 @@ export default function UserMenu() {
 				className="googlesitekit-user-selector googlesitekit-dropdown-menu googlesitekit-dropdown-menu__icon-menu mdc-menu-surface--anchor"
 			>
 				<Button
-					className={ classnames(
-						'googlesitekit-header__dropdown',
-						'mdc-button--dropdown',
-						// Adds circle background to the non-unified dashboard tablet + mobile view
-						'googlesitekit-border-radius-round--tablet',
-						'googlesitekit-border-radius-round--phone',
-						{
-							'googlesitekit-border-radius-round': unifiedDashboardEnabled,
-							'googlesitekit-button-icon': unifiedDashboardEnabled,
-						}
-					) }
+					className="googlesitekit-header__dropdown mdc-button--dropdown googlesitekit-border-radius-round--tablet googlesitekit-border-radius-round--phone googlesitekit-border-radius-round googlesitekit-button-icon"
 					text
 					onClick={ handleMenu }
 					icon={
 						!! userPicture && (
 							<i
-								className={ classnames( 'mdc-button__icon', {
-									'mdc-button__account': unifiedDashboardEnabled,
-								} ) }
+								className="mdc-button__icon mdc-button__account"
 								aria-hidden="true"
 							>
 								<img
@@ -201,9 +185,8 @@ export default function UserMenu() {
 					aria-controls="user-menu"
 					aria-label={ __( 'Account', 'google-site-kit' ) }
 					tooltip
-				>
-					{ unifiedDashboardEnabled ? undefined : userEmail }
-				</Button>
+				/>
+
 				<Menu
 					className="googlesitekit-width-auto"
 					menuOpen={ menuOpen }

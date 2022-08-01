@@ -67,8 +67,8 @@ class REST_Entity_Search_Controller {
 	 * @return REST_Route[] List of REST_Route objects.
 	 */
 	protected function get_rest_routes() {
-		$can_authenticate = function() {
-			return current_user_can( Permissions::AUTHENTICATE );
+		$can_search = function() {
+			return current_user_can( Permissions::AUTHENTICATE ) || current_user_can( Permissions::VIEW_SHARED_DASHBOARD );
 		};
 
 		return array(
@@ -123,7 +123,7 @@ class REST_Entity_Search_Controller {
 
 							return new WP_REST_Response( $entities );
 						},
-						'permission_callback' => $can_authenticate,
+						'permission_callback' => $can_search,
 					),
 				),
 				array(

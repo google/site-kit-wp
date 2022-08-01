@@ -32,18 +32,6 @@ import {
 	provideModuleRegistrations,
 } from '../../../../tests/js/utils';
 
-function createServiceSetupV2Variant( Story ) {
-	const StoryV2 = ( ...args ) => Story( ...args );
-
-	return Object.assign( StoryV2, Story, {
-		storyName: Story.storyName + ' - Service Setup V2',
-		parameters: {
-			...Story.parameters,
-			features: [ 'serviceSetupV2' ],
-		},
-	} );
-}
-
 function Template( { ...args } ) {
 	return <SetupSuccessBannerNotification { ...args } />;
 }
@@ -98,21 +86,21 @@ IdeaHub.parameters = {
 	},
 };
 
-export const SiteV2 = createServiceSetupV2Variant( Site );
-export const ModuleV2 = createServiceSetupV2Variant( Module );
-export const ModuleWithDescriptionV2 = createServiceSetupV2Variant(
-	ModuleWithDescription
-);
-export const PageSpeedInsightsV2 = createServiceSetupV2Variant(
-	PageSpeedInsights
-);
-export const IdeaHubV2 = createServiceSetupV2Variant( IdeaHub );
-
 export const UserInputSuccess = Template.bind( {} );
 UserInputSuccess.storyName = 'User Input Success';
 UserInputSuccess.parameters = {
 	query: {
 		notification: 'user_input_success',
+	},
+};
+
+export const ThankWithGoogle = Template.bind( {} );
+ThankWithGoogle.storyName = 'Authentication Success - Thank with Google';
+ThankWithGoogle.parameters = {
+	module: { slug: 'thank-with-google', name: 'Thank with Google' },
+	query: {
+		notification: 'authentication_success',
+		slug: 'thank-with-google',
 	},
 };
 

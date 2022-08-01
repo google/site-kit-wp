@@ -82,7 +82,7 @@ const helperCTA = ( developerPlugin ) => {
 		),
 		children: __( 'Learn how', 'google-site-kit' ),
 		href:
-			'https://sitekit.withgoogle.com/documentation/using-site-kit-on-a-staging-environment/',
+			'https://sitekit.withgoogle.com/documentation/using-site-kit/staging/',
 		external: true,
 	};
 };
@@ -124,7 +124,7 @@ export default function CompatibilityErrorNotice( { error } ) {
 							) }
 						</span>
 					) }{ ' ' }
-					<Link { ...helperCTA( developerPlugin ) } inherit />
+					<Link { ...helperCTA( developerPlugin ) } />
 				</p>
 			);
 		case ERROR_TOKEN_MISMATCH:

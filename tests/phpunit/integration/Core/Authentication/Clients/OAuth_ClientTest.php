@@ -360,7 +360,7 @@ class OAuth_ClientTest extends TestCase {
 			$client->authorize_user();
 		} catch ( RedirectException $redirect ) {
 			$this->assertEquals( 'callback_error', $user_options->get( OAuth_Client::OPTION_ERROR_CODE ) );
-			$this->assertEquals( admin_url(), $redirect->get_location() );
+			$this->assertEquals( admin_url( 'admin.php?page=googlesitekit-splash' ), $redirect->get_location() );
 		}
 
 		// If no credentials.
@@ -371,7 +371,7 @@ class OAuth_ClientTest extends TestCase {
 		try {
 			$client->authorize_user();
 		} catch ( RedirectException $redirect ) {
-			$this->assertEquals( admin_url(), $redirect->get_location() );
+			$this->assertEquals( admin_url( 'admin.php?page=googlesitekit-splash' ), $redirect->get_location() );
 		}
 
 		$this->assertEquals( 'oauth_credentials_not_exist', get_user_option( OAuth_Client::OPTION_ERROR_CODE, $user_id ) );
@@ -575,46 +575,6 @@ class OAuth_ClientTest extends TestCase {
 		// Use proxy when proxy site ID is used.
 		$this->fake_proxy_site_connection();
 		$this->assertTrue( $client->using_proxy() );
-	}
-
-	public function test_get_proxy_setup_url() {
-		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-
-		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
-		wp_set_current_user( $user_id );
-
-		// If no site ID, pass site registration args.
-		$client = new OAuth_Client( $context );
-		$url    = $client->get_proxy_setup_url();
-		$this->assertStringContainsString( 'name=', $url );
-		$this->assertStringContainsString( 'url=', $url );
-		$this->assertStringContainsString( 'scope=', $url );
-		$this->assertStringContainsString( 'nonce=', $url );
-		$this->assertStringContainsString( 'redirect_uri=', $url );
-		$this->assertStringContainsString( 'action_uri=', $url );
-		$this->assertStringContainsString( 'return_uri=', $url );
-		$this->assertStringContainsString( 'analytics_redirect_uri=', $url );
-		$this->assertStringContainsString( 'user_roles=', $url );
-		$this->assertStringContainsString( 'application_name=', $url );
-		$this->assertStringContainsString( 'hl=', $url );
-		$this->assertStringNotContainsString( 'site_id=', $url );
-
-		// Otherwise, pass site ID and given temporary access code.
-		list( $site_id ) = $this->fake_proxy_site_connection();
-		$client          = new OAuth_Client( $context );
-		$url             = $client->get_proxy_setup_url( 'temp-code' );
-		$this->assertStringContainsString( 'site_id=' . $site_id, $url );
-		$this->assertStringContainsString( 'code=temp-code', $url );
-		$this->assertStringContainsString( 'scope=', $url );
-		$this->assertStringContainsString( 'nonce=', $url );
-		$this->assertStringContainsString( 'user_roles=', $url );
-		$this->assertStringContainsString( 'application_name=', $url );
-		$this->assertStringNotContainsString( '&name=', $url );
-		$this->assertStringNotContainsString( 'url=', $url );
-		$this->assertStringNotContainsString( 'redirect_uri=', $url );
-		$this->assertStringNotContainsString( 'action_uri=', $url );
-		$this->assertStringNotContainsString( 'return_uri=', $url );
-		$this->assertStringNotContainsString( 'analytics_redirect_uri=', $url );
 	}
 
 	public function test_get_proxy_permissions_url() {

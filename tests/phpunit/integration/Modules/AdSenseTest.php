@@ -14,7 +14,6 @@ use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_With_Owner;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
-use Google\Site_Kit\Core\Modules\Module_With_Screen;
 use Google\Site_Kit\Core\Modules\Module_With_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Service_Entity;
 use Google\Site_Kit\Core\Storage\Options;
@@ -26,7 +25,6 @@ use Google\Site_Kit\Modules\AdSense;
 use Google\Site_Kit\Modules\AdSense\Settings;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Owner_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Scopes_ContractTests;
-use Google\Site_Kit\Tests\Core\Modules\Module_With_Screen_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Service_Entity_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Settings_ContractTests;
 use Google\Site_Kit\Tests\TestCase;
@@ -38,7 +36,6 @@ use WP_REST_Request;
  */
 class AdSenseTest extends TestCase {
 	use Module_With_Scopes_ContractTests;
-	use Module_With_Screen_ContractTests;
 	use Module_With_Settings_ContractTests;
 	use Module_With_Owner_ContractTests;
 	use Module_With_Service_Entity_ContractTests;
@@ -46,29 +43,12 @@ class AdSenseTest extends TestCase {
 	public function test_register() {
 		$adsense = new AdSense( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		remove_all_filters( 'googlesitekit_auth_scopes' );
-		remove_all_filters( 'googlesitekit_module_screens' );
 
 		$this->assertEmpty( apply_filters( 'googlesitekit_auth_scopes', array() ) );
-		$this->assertEmpty( apply_filters( 'googlesitekit_module_screens', array() ) );
 
 		$adsense->register();
 
 		$this->assertNotEmpty( apply_filters( 'googlesitekit_auth_scopes', array() ) );
-		$this->assertContains( $adsense->get_screen(), apply_filters( 'googlesitekit_module_screens', array() ) );
-	}
-
-	public function test_register_unified_dashboard() {
-		$this->enable_feature( 'unifiedDashboard' );
-
-		$adsense = new AdSense( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		remove_all_filters( 'googlesitekit_module_screens' );
-
-		$this->assertEmpty( apply_filters( 'googlesitekit_module_screens', array() ) );
-
-		$adsense->register();
-
-		// Verify the screen is not registered.
-		$this->assertEmpty( apply_filters( 'googlesitekit_module_screens', array() ) );
 	}
 
 	public function test_register_template_redirect_amp() {
@@ -389,12 +369,11 @@ class AdSenseTest extends TestCase {
 		$this->assertEqualSets(
 			array(
 				'notifications',
-				'tag-permission',
 				'accounts',
 				'alerts',
 				'clients',
 				'urlchannels',
-				'earnings',
+				'report',
 				'adunits',
 				'sites',
 			),
@@ -403,60 +382,9 @@ class AdSenseTest extends TestCase {
 	}
 
 	/**
-	 * @dataProvider data_parse_account_id
-	 */
-	public function test_parse_account_id( $client_id, $expected ) {
-		$class  = new \ReflectionClass( AdSense::class );
-		$method = $class->getMethod( 'parse_account_id' );
-		$method->setAccessible( true );
-
-		$result = $method->invokeArgs(
-			new AdSense( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ),
-			array( $client_id )
-		);
-		$this->assertSame( $expected, $result );
-	}
-
-	public function data_parse_account_id() {
-		return array(
-			array(
-				'ca-pub-2358017',
-				'pub-2358017',
-			),
-			array(
-				'ca-pub-13572468',
-				'pub-13572468',
-			),
-			array(
-				'ca-xyz-13572468',
-				'',
-			),
-			array(
-				'ca-13572468',
-				'',
-			),
-			array(
-				'GTM-13572468',
-				'',
-			),
-			array(
-				'13572468',
-				'',
-			),
-		);
-	}
-
-	/**
 	 * @return Module_With_Scopes
 	 */
 	protected function get_module_with_scopes() {
-		return new AdSense( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-	}
-
-	/**
-	 * @return Module|Module_With_Screen
-	 */
-	protected function get_module_with_screen() {
 		return new AdSense( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 	}
 

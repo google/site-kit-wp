@@ -34,9 +34,8 @@ import Link from '../assets/js/components/Link';
 
 const LearnMore = () => (
 	<Link
-		href="https://sitekit.withgoogle.com/documentation/ga4-analytics-property/"
+		href="https://sitekit.withgoogle.com/documentation/using-site-kit/ga4/"
 		external
-		inherit
 	>
 		Learn more
 	</Link>

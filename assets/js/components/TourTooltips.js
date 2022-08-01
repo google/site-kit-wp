@@ -27,7 +27,6 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { useContext } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -36,17 +35,22 @@ import Data from 'googlesitekit-data';
 import { CORE_UI } from '../googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '../googlesitekit/datastore/user/constants';
 import { trackEvent } from '../util/tracking';
-import ViewContextContext from '../components/Root/ViewContextContext';
 import TourTooltip from './TourTooltip';
-const { useSelect, useDispatch } = Data;
+import useViewContext from '../hooks/useViewContext';
+const { useSelect, useDispatch, useRegistry } = Data;
 
 /** For available options, see: {@link https://github.com/gilbarbara/react-joyride/blob/3e08384415a831b20ce21c8423b6c271ad419fbf/src/styles.js}. */
-const joyrideStyles = {
+export const joyrideStyles = {
 	options: {
-		arrowColor: '#1A73E8', // $c-royal-blue
-		backgroundColor: '#1A73E8', // $c-royal-blue
+		arrowColor: '#3c7251', // $c-content-primary
+		backgroundColor: '#3c7251', // $c-content-primary
 		overlayColor: 'rgba(0, 0, 0, 0.6)',
-		textColor: '#ffffff', // $c-white
+		textColor: '#fff', // $c-content-on-primary
+		zIndex: 20000,
+	},
+	spotlight: {
+		border: '2px solid #3c7251', // $c-content-primary
+		backgroundColor: '#fff',
 	},
 };
 
@@ -59,7 +63,7 @@ const joyrideLocale = {
 };
 
 /** For available options, see: {@link https://github.com/gilbarbara/react-floater#props}. */
-const floaterProps = {
+export const floaterProps = {
 	disableAnimation: true,
 	styles: {
 		arrow: {
@@ -93,8 +97,9 @@ export default function TourTooltips( {
 	const runKey = `${ tourID }-run`;
 	const { setValue } = useDispatch( CORE_UI );
 	const { dismissTour } = useDispatch( CORE_USER );
+	const registry = useRegistry();
 
-	const viewContext = useContext( ViewContextContext );
+	const viewContext = useViewContext();
 
 	const stepIndex = useSelect( ( select ) =>
 		select( CORE_UI ).getValue( stepKey )
@@ -111,14 +116,16 @@ export default function TourTooltips( {
 
 	const startTour = () => {
 		global.document.body.classList.add(
-			'googlesitekit-showing-feature-tour'
+			'googlesitekit-showing-feature-tour',
+			`googlesitekit-showing-feature-tour--${ tourID }`
 		);
 		setValue( runKey, true );
 	};
 
 	const endTour = () => {
 		global.document.body.classList.remove(
-			'googlesitekit-showing-feature-tour'
+			'googlesitekit-showing-feature-tour',
+			`googlesitekit-showing-feature-tour--${ tourID }`
 		);
 		// Dismiss tour to avoid unwanted repeat viewing.
 		dismissTour( tourID );
@@ -220,7 +227,7 @@ export default function TourTooltips( {
 		}
 
 		if ( callback ) {
-			callback( data );
+			callback( data, registry );
 		}
 	};
 

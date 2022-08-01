@@ -372,13 +372,13 @@ final class OAuth_Client extends OAuth_Client_Base {
 		// If the OAuth redirects with an error code, handle it.
 		if ( ! empty( $error_code ) ) {
 			$this->user_options->set( self::OPTION_ERROR_CODE, $error_code );
-			wp_safe_redirect( admin_url() );
+			wp_safe_redirect( $this->authorize_user_redirect_url() );
 			exit();
 		}
 
 		if ( ! $this->credentials->has() ) {
 			$this->user_options->set( self::OPTION_ERROR_CODE, 'oauth_credentials_not_exist' );
-			wp_safe_redirect( admin_url() );
+			wp_safe_redirect( $this->authorize_user_redirect_url() );
 			exit();
 		}
 
@@ -386,28 +386,25 @@ final class OAuth_Client extends OAuth_Client_Base {
 			$token_response = $this->get_client()->fetchAccessTokenWithAuthCode( $code );
 		} catch ( Google_Proxy_Code_Exception $e ) {
 			// Redirect back to proxy immediately with the access code.
-			if ( Feature_Flags::enabled( 'serviceSetupV2' ) ) {
-				$credentials = $this->credentials->get();
-				$params      = array(
-					'code'    => $e->getAccessCode(),
-					'site_id' => ! empty( $credentials['oauth2_client_id'] ) ? $credentials['oauth2_client_id'] : '',
-				);
-				$params      = $this->google_proxy->add_setup_step_from_error_code( $params, $e->getMessage() );
-				$url         = $this->google_proxy->setup_url_v2( $params );
-			} else {
-				$url = $this->get_proxy_setup_url( $e->getAccessCode(), $e->getMessage() );
-			}
+			$credentials = $this->credentials->get();
+			$params      = array(
+				'code'    => $e->getAccessCode(),
+				'site_id' => ! empty( $credentials['oauth2_client_id'] ) ? $credentials['oauth2_client_id'] : '',
+			);
+			$params      = $this->google_proxy->add_setup_step_from_error_code( $params, $e->getMessage() );
+			$url         = $this->google_proxy->setup_url( $params );
+
 			wp_safe_redirect( $url );
 			exit();
 		} catch ( Exception $e ) {
 			$this->handle_fetch_token_exception( $e );
-			wp_safe_redirect( admin_url() );
+			wp_safe_redirect( $this->authorize_user_redirect_url() );
 			exit();
 		}
 
 		if ( ! isset( $token_response['access_token'] ) ) {
 			$this->user_options->set( self::OPTION_ERROR_CODE, 'access_token_not_received' );
-			wp_safe_redirect( admin_url() );
+			wp_safe_redirect( $this->authorize_user_redirect_url() );
 			exit();
 		}
 
@@ -542,34 +539,6 @@ final class OAuth_Client extends OAuth_Client_Base {
 	}
 
 	/**
-	 * Returns the setup URL to the authentication proxy.
-	 *
-	 * @since 1.0.0
-	 * @since 1.1.2 Added googlesitekit_proxy_setup_url_params filter.
-	 * @since 1.27.0 Error code is no longer used.
-	 *
-	 * @param string $access_code Optional. Temporary access code for an undelegated access token. Default empty string.
-	 * @return string URL to the setup page on the authentication proxy.
-	 *
-	 * @since 1.49.0
-	 * @throws Exception Thrown if called when the `serviceSetupV2` feature flag is enabled.
-	 */
-	public function get_proxy_setup_url( $access_code = '' ) {
-		if ( Feature_Flags::enabled( 'serviceSetupV2' ) ) {
-			throw new Exception( __( 'Unexpected method call: get_proxy_setup_url should not be called when the serviceSetupV2 feature flag is enabled.', 'google-site-kit' ) );
-		}
-
-		$scope = rawurlencode( implode( ' ', $this->get_required_scopes() ) );
-
-		$query_params = array( 'scope' => $scope );
-		if ( ! empty( $access_code ) ) {
-			$query_params['code'] = $access_code;
-		}
-
-		return $this->google_proxy->setup_url( $this->credentials, $query_params );
-	}
-
-	/**
 	 * Determines whether the current owner ID must be changed or not.
 	 *
 	 * @since 1.16.0
@@ -626,5 +595,17 @@ final class OAuth_Client extends OAuth_Client_Base {
 
 		$this->user_options->delete( self::OPTION_REDIRECT_URL );
 		$this->user_options->delete( self::OPTION_ADDITIONAL_AUTH_SCOPES );
+	}
+
+	/**
+	 * Return the URL for the user to view the dashboard/splash
+	 * page based on their permissions.
+	 *
+	 * @since 1.77.0
+	 */
+	private function authorize_user_redirect_url() {
+		return current_user_can( Permissions::VIEW_DASHBOARD )
+			? $this->context->admin_url( 'dashboard' )
+			: $this->context->admin_url( 'splash' );
 	}
 }

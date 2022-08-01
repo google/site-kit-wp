@@ -167,7 +167,9 @@ storiesOf( 'AdSense Module', module )
 		return (
 			<WithTestRegistry callback={ setupRegistry }>
 				<Layout fill>
-					<DashboardZeroData />
+					<div className="googlesitekit-setup-module">
+						<DashboardZeroData />
+					</div>
 				</Layout>
 			</WithTestRegistry>
 		);

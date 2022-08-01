@@ -25,16 +25,13 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import {
-	AREA_DASHBOARD_SPEED,
 	AREA_ENTITY_DASHBOARD_SPEED_PRIMARY,
 	AREA_MAIN_DASHBOARD_SPEED_PRIMARY,
-	AREA_PAGE_DASHBOARD_SPEED,
 } from '../../googlesitekit/widgets/default-areas';
 import { SettingsView } from './components/settings';
 import DashboardPageSpeedWidget from './components/dashboard/DashboardPageSpeedWidget';
 import PageSpeedInsightsIcon from '../../../svg/graphics/pagespeed-insights.svg';
 import { MODULES_PAGESPEED_INSIGHTS } from './datastore/constants';
-import { isFeatureEnabled } from '../../features';
 
 export { registerStore } from './datastore';
 
@@ -53,30 +50,17 @@ export const registerModule = ( modules ) => {
 };
 
 export const registerWidgets = ( widgets ) => {
-	if ( ! isFeatureEnabled( 'unifiedDashboard' ) ) {
-		widgets.registerWidget(
-			'pagespeedInsightsWebVitals',
-			{
-				Component: DashboardPageSpeedWidget,
-				width: widgets.WIDGET_WIDTHS.FULL,
-				wrapWidget: false,
-			},
-			[ AREA_DASHBOARD_SPEED, AREA_PAGE_DASHBOARD_SPEED ]
-		);
-	}
-
-	if ( isFeatureEnabled( 'unifiedDashboard' ) ) {
-		widgets.registerWidget(
-			'pagespeedInsightsWebVitals',
-			{
-				Component: DashboardPageSpeedWidget,
-				width: widgets.WIDGET_WIDTHS.FULL,
-				wrapWidget: false,
-			},
-			[
-				AREA_MAIN_DASHBOARD_SPEED_PRIMARY,
-				AREA_ENTITY_DASHBOARD_SPEED_PRIMARY,
-			]
-		);
-	}
+	widgets.registerWidget(
+		'pagespeedInsightsWebVitals',
+		{
+			Component: DashboardPageSpeedWidget,
+			width: widgets.WIDGET_WIDTHS.FULL,
+			wrapWidget: false,
+			modules: [ 'pagespeed-insights' ],
+		},
+		[
+			AREA_MAIN_DASHBOARD_SPEED_PRIMARY,
+			AREA_ENTITY_DASHBOARD_SPEED_PRIMARY,
+		]
+	);
 };

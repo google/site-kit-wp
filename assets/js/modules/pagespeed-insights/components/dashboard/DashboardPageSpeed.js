@@ -22,7 +22,7 @@
 import classnames from 'classnames';
 import Tab from '@material/react-tab';
 import TabBar from '@material/react-tab-bar';
-import { useIntersection, useMount } from 'react-use';
+import { useIntersection } from 'react-use';
 
 /**
  * WordPress dependencies
@@ -31,7 +31,6 @@ import {
 	Fragment,
 	useCallback,
 	useEffect,
-	useContext,
 	useRef,
 	useState,
 } from '@wordpress/element';
@@ -43,7 +42,6 @@ import { __ } from '@wordpress/i18n';
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { Cell, Grid, Row } from '../../../../material-components';
-import ViewContextContext from '../../../../components/Root/ViewContextContext';
 import DeviceSizeTabBar from '../../../../components/DeviceSizeTabBar';
 import ProgressBar from '../../../../components/ProgressBar';
 import Link from '../../../../components/Link';
@@ -63,10 +61,8 @@ import {
 	UI_STRATEGY,
 	UI_DATA_SOURCE,
 } from '../../datastore/constants';
-import { useFeature } from '../../../../hooks/useFeature';
-import { useBreakpoint } from '../../../../hooks/useBreakpoint';
-import { getContextScrollTop } from '../../../../util/scroll';
 import Spinner from '../../../../components/Spinner';
+import useViewContext from '../../../../hooks/useViewContext';
 const { useSelect, useDispatch, useInViewSelect } = Data;
 
 export default function DashboardPageSpeed() {
@@ -74,7 +70,7 @@ export default function DashboardPageSpeed() {
 
 	const [ hasBeenInView, setHasBeenInView ] = useState( false );
 
-	const viewContext = useContext( ViewContextContext );
+	const viewContext = useViewContext();
 	const referenceURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getCurrentReferenceURL()
 	);
@@ -224,32 +220,6 @@ export default function DashboardPageSpeed() {
 		},
 		[ invalidateResolution, referenceURL ]
 	);
-
-	/**
-	 * TODO - Remove this and the useMount() hook
-	 * when the unified dashboard is published and
-	 * the `unifiedDashboard` feature flag is removed.
-	 */
-	const unifiedDashboardEnabled = useFeature( 'unifiedDashboard' );
-	const breakpoint = useBreakpoint();
-
-	// Scroll to the PSI section if the URL has pagespeed-header hash
-	useMount( () => {
-		if (
-			! unifiedDashboardEnabled &&
-			global.location.hash === '#googlesitekit-pagespeed-header'
-		) {
-			setTimeout( () => {
-				global.scrollTo( {
-					top: getContextScrollTop(
-						global.location.hash,
-						breakpoint
-					),
-					behavior: 'smooth',
-				} );
-			}, 10 );
-		}
-	} );
 
 	const reportData =
 		strategy === STRATEGY_MOBILE ? reportMobile : reportDesktop;

@@ -21,6 +21,7 @@
 
 	.googlesitekit-page-header__title {
 		display: inline-block;
+		font-weight: $fw-medium;
 		line-height: 1;
 		margin: 0 0 -2px 0;
 		padding: 0;
@@ -46,7 +47,8 @@
 	}
 
 	.googlesitekit-page-header__status {
-		font-size: 0.75rem;
+		font-size: $fs-body-sm;
+		letter-spacing: $ls-xs;
 		line-height: 1;
 		margin: 0;
 

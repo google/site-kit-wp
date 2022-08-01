@@ -35,7 +35,6 @@ describe( 'core/user userInfo', () => {
 			email: 'admin@example.com',
 			name: 'admin',
 			picture: 'https://path/to/image',
-			roles: [ 'administrator' ],
 		},
 		connectURL:
 			'http://example.com/wp-admin/index.php?action=googlesitekit_connect&nonce=abc123',
@@ -363,6 +362,57 @@ describe( 'core/user userInfo', () => {
 
 				// Data must not be wiped after retrieving, as it could be used by other dependents.
 				expect( global[ userDataGlobal ] ).not.toEqual( undefined );
+			} );
+		} );
+
+		describe( 'getAccountChooserURL', () => {
+			it( 'throws an error if a destinationURL is not given', () => {
+				expect( () => {
+					registry.select( CORE_USER ).getAccountChooserURL();
+				} ).toThrow( 'destinationURL is required' );
+			} );
+
+			it( 'returns the encoded destination url with the email appended', async () => {
+				global[ userDataGlobal ] = userData;
+
+				const testURL = 'https://analytics.google.com/dashboard/';
+
+				registry.select( CORE_USER ).getAccountChooserURL( testURL );
+
+				await subscribeUntil( registry, () =>
+					registry
+						.select( CORE_USER )
+						.hasFinishedResolution( 'getUser' )
+				);
+
+				const accountChooserURL = registry
+					.select( CORE_USER )
+					.getAccountChooserURL( testURL );
+
+				expect( accountChooserURL ).toMatchInlineSnapshot(
+					'"https://accounts.google.com/accountchooser?continue=https%3A%2F%2Fanalytics.google.com%2Fdashboard%2F&Email=admin%40example.com"'
+				);
+			} );
+
+			it( 'should return undefined when no data is available', async () => {
+				expect( global[ userDataGlobal ] ).toEqual( undefined );
+
+				const testURL = 'https://analytics.google.com/dashboard/';
+
+				registry.select( CORE_USER ).getAccountChooserURL( testURL );
+
+				await subscribeUntil( registry, () =>
+					registry
+						.select( CORE_USER )
+						.hasFinishedResolution( 'getUser' )
+				);
+
+				const accountChooserURL = registry
+					.select( CORE_USER )
+					.getAccountChooserURL( testURL );
+
+				expect( accountChooserURL ).toBeUndefined();
+				expect( console ).toHaveErrored();
 			} );
 		} );
 	} );

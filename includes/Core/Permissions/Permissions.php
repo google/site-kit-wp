@@ -18,6 +18,7 @@ use Google\Site_Kit\Core\Modules\Module_With_Owner;
 use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Util\Feature_Flags;
+use WP_User;
 
 /**
  * Class managing plugin permissions.
@@ -30,17 +31,21 @@ final class Permissions {
 	/*
 	 * Custom base capabilities.
 	 */
-	const AUTHENTICATE          = 'googlesitekit_authenticate';
-	const SETUP                 = 'googlesitekit_setup';
-	const VIEW_POSTS_INSIGHTS   = 'googlesitekit_view_posts_insights';
-	const VIEW_DASHBOARD        = 'googlesitekit_view_dashboard';
-	const VIEW_MODULE_DETAILS   = 'googlesitekit_view_module_details';
-	const MANAGE_OPTIONS        = 'googlesitekit_manage_options';
-	const VIEW_SHARED_DASHBOARD = 'googlesitekit_view_shared_dashboard';
+	const AUTHENTICATE             = 'googlesitekit_authenticate';
+	const SETUP                    = 'googlesitekit_setup';
+	const VIEW_POSTS_INSIGHTS      = 'googlesitekit_view_posts_insights';
+	const VIEW_DASHBOARD           = 'googlesitekit_view_dashboard';
+	const VIEW_WP_DASHBOARD_WIDGET = 'googlesitekit_view_wp_dashboard_widget';
+	const VIEW_ADMIN_BAR_MENU      = 'googlesitekit_view_admin_bar_menu';
+	const MANAGE_OPTIONS           = 'googlesitekit_manage_options';
+
 
 	/*
 	 * Custom meta capabilities.
 	 */
+	const VIEW_SPLASH                        = 'googlesitekit_view_splash';
+	const VIEW_SHARED_DASHBOARD              = 'googlesitekit_view_shared_dashboard';
+	const VIEW_AUTHENTICATED_DASHBOARD       = 'googlesitekit_view_authenticated_dashboard';
 	const VIEW_POST_INSIGHTS                 = 'googlesitekit_view_post_insights';
 	const READ_SHARED_MODULE_DATA            = 'googlesitekit_read_shared_module_data';
 	const MANAGE_MODULE_SHARING_OPTIONS      = 'googlesitekit_manage_module_sharing_options';
@@ -148,26 +153,22 @@ final class Permissions {
 
 		$this->base_to_core = array(
 			// By default, only allow administrators to authenticate.
-			self::AUTHENTICATE        => 'manage_options',
+			self::AUTHENTICATE             => 'manage_options',
 
 			// Allow contributors and up to view their own post's insights.
 			// TODO change to map to edit_posts when Dashboard Sharing feature flag is removed.
-			self::VIEW_POSTS_INSIGHTS => $editor_capability,
+			self::VIEW_POSTS_INSIGHTS      => $editor_capability,
 
 			// Allow editors and up to view the dashboard and module details.
 			// TODO change to map to edit_posts when Dashboard Sharing feature flag is removed.
-			self::VIEW_DASHBOARD      => $editor_capability,
-			self::VIEW_MODULE_DETAILS => $editor_capability,
+			self::VIEW_DASHBOARD           => $editor_capability,
+			self::VIEW_WP_DASHBOARD_WIDGET => $editor_capability,
+			self::VIEW_ADMIN_BAR_MENU      => $editor_capability,
 
 			// Allow administrators and up to manage options and set up the plugin.
-			self::MANAGE_OPTIONS      => 'manage_options',
-			self::SETUP               => 'manage_options',
+			self::MANAGE_OPTIONS           => 'manage_options',
+			self::SETUP                    => 'manage_options',
 		);
-		// TODO Add the element assigned below into $this->base_to_core above when the dashboard sharing feature flag is removed.
-		if ( Feature_Flags::enabled( 'dashboardSharing' ) ) {
-			// Allow editors and up to view shared dashboard data.
-			$this->base_to_core[ self::VIEW_SHARED_DASHBOARD ] = 'edit_posts';
-		}
 
 		$this->meta_to_core = array(
 			// Allow users that can edit a post to view that post's insights.
@@ -175,19 +176,22 @@ final class Permissions {
 		);
 
 		$this->meta_to_base = array(
+			self::VIEW_SPLASH                  => self::VIEW_DASHBOARD,
+			self::VIEW_AUTHENTICATED_DASHBOARD => array( self::VIEW_DASHBOARD, self::AUTHENTICATE ),
 			// Allow users that can generally view posts insights to view a specific post's insights.
-			self::VIEW_POST_INSIGHTS => self::VIEW_POSTS_INSIGHTS,
+			self::VIEW_POST_INSIGHTS           => self::VIEW_POSTS_INSIGHTS,
 		);
 		// TODO Merge the array below into $this->meta_to_base above when the dashboard sharing feature flag is removed.
 		if ( Feature_Flags::enabled( 'dashboardSharing' ) ) {
 			$this->meta_to_base = array_merge(
 				$this->meta_to_base,
 				array(
-					// Allow users that can generally view the shared dashboard to read shared module data.
-					self::READ_SHARED_MODULE_DATA       => self::VIEW_SHARED_DASHBOARD,
+					// Allow users that can generally view dashboard to read shared module data.
+					self::READ_SHARED_MODULE_DATA       => self::VIEW_DASHBOARD,
 					// Admins who can manage options for SK can generally manage module sharing options.
 					self::MANAGE_MODULE_SHARING_OPTIONS => self::MANAGE_OPTIONS,
 					self::DELEGATE_MODULE_SHARING_MANAGEMENT => self::MANAGE_OPTIONS,
+					self::VIEW_SHARED_DASHBOARD         => self::VIEW_DASHBOARD,
 				)
 			);
 		}
@@ -195,14 +199,14 @@ final class Permissions {
 		$this->network_base = array(
 			// Require network admin access to view the dashboard and module details in network mode.
 			// TODO change to map to manage_network when Dashboard Sharing feature flag is removed.
-			self::VIEW_DASHBOARD      => $admin_network_capability,
-			self::VIEW_MODULE_DETAILS => $admin_network_capability,
+			self::VIEW_DASHBOARD           => $admin_network_capability,
+			self::VIEW_WP_DASHBOARD_WIDGET => $admin_network_capability,
+			self::VIEW_ADMIN_BAR_MENU      => $admin_network_capability,
 
 			// Require network admin access to manage options and set up the plugin in network mode.
-			self::MANAGE_OPTIONS      => 'manage_network_options',
-			self::SETUP               => 'manage_network_options',
+			self::MANAGE_OPTIONS           => 'manage_network_options',
+			self::SETUP                    => 'manage_network_options',
 		);
-
 	}
 
 	/**
@@ -339,9 +343,9 @@ final class Permissions {
 				$caps[] = self::SETUP;
 			}
 
-			if ( ! in_array( $cap, array( self::AUTHENTICATE, self::SETUP ), true ) ) {
+			if ( ! in_array( $cap, array( self::AUTHENTICATE, self::SETUP, self::VIEW_DASHBOARD, self::VIEW_POSTS_INSIGHTS ), true ) ) {
 				// For regular users, require being authenticated.
-				if ( ! Feature_Flags::enabled( 'dashboardSharing' ) && ! $this->is_user_authenticated( $user_id ) ) {
+				if ( ! $this->is_user_authenticated( $user_id ) ) {
 					return array_merge( $caps, array( 'do_not_allow' ) );
 				}
 				// For admin users, also require being verified.
@@ -358,6 +362,24 @@ final class Permissions {
 
 		if ( in_array( $cap, self::get_dashboard_sharing_capabilities(), true ) ) {
 			$caps = array_merge( $caps, $this->check_dashboard_sharing_capability( $cap, $user_id, $args ) );
+		}
+
+		switch ( $cap ) {
+			case self::VIEW_SPLASH:
+				$caps = array_merge( $caps, $this->check_view_splash_capability( $user_id ) );
+				break;
+			// Intentional fallthrough - viewing the dashboard widget and admin bar menu require
+			// a user to be authenticated.
+			case self::VIEW_AUTHENTICATED_DASHBOARD:
+			case self::VIEW_WP_DASHBOARD_WIDGET:
+			case self::VIEW_ADMIN_BAR_MENU:
+				$caps = array_merge( $caps, $this->check_view_authenticated_dashboard_capability( $user_id ) );
+				break;
+			// Intentional fallthrough.
+			case self::VIEW_DASHBOARD:
+			case self::VIEW_POSTS_INSIGHTS:
+				$caps = array_merge( $caps, $this->check_view_dashboard_capability( $user_id ) );
+				break;
 		}
 
 		return $caps;
@@ -400,6 +422,51 @@ final class Permissions {
 	}
 
 	/**
+	 * Checks if the VIEW_SPLASH capability is allowed for the user.
+	 *
+	 * @since 1.73.0
+	 *
+	 * @param int $user_id User ID of the user the capability is checked for.
+	 * @return array Array with a 'do_not_allow' element if checks fail, empty array if checks pass.
+	 */
+	private function check_view_splash_capability( $user_id ) {
+		if ( ! Feature_Flags::enabled( 'dashboardSharing' ) ) {
+			return array( self::AUTHENTICATE );
+		}
+
+		if ( $this->is_shared_dashboard_splash_dismissed( $user_id ) ) {
+			return array( self::AUTHENTICATE );
+		}
+
+		if ( ! $this->user_has_shared_role( $user_id ) ) {
+			return array( self::AUTHENTICATE );
+		}
+
+		return array();
+	}
+
+	/**
+	 * Checks if the VIEW_DASHBOARD capability is allowed for the user.
+	 *
+	 * Allows access to the VIEW_DASHBOARD capability if the user can view either
+	 * the authenticated or shared dashboard.
+	 *
+	 * @since 1.73.0
+	 *
+	 * @param int $user_id User ID of the user the capability is checked for.
+	 * @return array Array with a 'do_not_allow' element if checks fail, empty array if checks pass.
+	 */
+	private function check_view_dashboard_capability( $user_id ) {
+		$view_authenticated_dashboard = $this->check_view_authenticated_dashboard_capability( $user_id );
+
+		if ( Feature_Flags::enabled( 'dashboardSharing' ) && in_array( 'do_not_allow', $view_authenticated_dashboard, true ) ) {
+			return $this->check_view_shared_dashboard_capability( $user_id );
+		}
+
+		return $view_authenticated_dashboard;
+	}
+
+	/**
 	 * Checks if the VIEW_SHARED_DASHBOARD capability should be denied.
 	 *
 	 * Prevents access to the VIEW_SHARED_DASHBOARD capability if a user does not
@@ -412,12 +479,7 @@ final class Permissions {
 	 * @return array Array with a 'do_not_allow' element if checks fail, empty array if checks pass.
 	 */
 	private function check_view_shared_dashboard_capability( $user_id ) {
-		$module_sharing_settings = $this->modules->get_module_sharing_settings();
-		$shared_roles            = $module_sharing_settings->get_all_shared_roles();
-		$user                    = get_userdata( $user_id );
-
-		$user_has_shared_role = ! empty( array_intersect( $shared_roles, $user->roles ) );
-		if ( ! $user_has_shared_role ) {
+		if ( ! $this->user_has_shared_role( $user_id ) ) {
 			return array( 'do_not_allow' );
 		}
 
@@ -426,6 +488,27 @@ final class Permissions {
 		}
 
 		return array();
+	}
+
+	/**
+	 * Checks if the VIEW_AUTHENTICATED_DASHBOARD capability is allowed for the user.
+	 *
+	 * Allows access to the VIEW_AUTHENTICATED_DASHBOARD capability if the user is authenticated.
+	 *
+	 * @since 1.73.0
+	 *
+	 * @param int $user_id User ID of the user the capability is checked for.
+	 * @return array Array with a 'do_not_allow' element if checks fail, otherise returns AUTHENTICATE capability.
+	 */
+	private function check_view_authenticated_dashboard_capability( $user_id ) {
+		if (
+			$this->is_user_authenticated( $user_id )
+			&& $this->is_user_verified( $user_id )
+			&& $this->authentication->is_setup_completed()
+		) {
+			return array( self::AUTHENTICATE );
+		}
+		return array( 'do_not_allow' );
 	}
 
 	/**
@@ -441,16 +524,7 @@ final class Permissions {
 	 * @return array Array with a 'do_not_allow' element if checks fail, empty array if checks pass.
 	 */
 	private function check_read_shared_module_data_capability( $user_id, $module_slug ) {
-		$module_sharing_settings = $this->modules->get_module_sharing_settings();
-		$sharing_settings        = $module_sharing_settings->get();
-		$user                    = get_userdata( $user_id );
-
-		if ( ! isset( $sharing_settings[ $module_slug ]['sharedRoles'] ) ) {
-			return array( 'do_not_allow' );
-		}
-
-		$user_has_module_shared_role = ! empty( array_intersect( $sharing_settings[ $module_slug ]['sharedRoles'], $user->roles ) );
-		if ( ! $user_has_module_shared_role ) {
+		if ( ! $this->user_has_shared_role_for_module( $user_id, $module_slug ) ) {
 			return array( 'do_not_allow' );
 		}
 
@@ -506,6 +580,44 @@ final class Permissions {
 	}
 
 	/**
+	 * Checks if the given user has a role in the list of shared roles.
+	 *
+	 * @since 1.73.0
+	 *
+	 * @param int           $user_id User ID.
+	 * @param string[]|null $shared_roles Optional. List of shared role IDs to check against the user's. Defaults to all shared module roles.
+	 * @return bool
+	 */
+	private function user_has_shared_role( $user_id, array $shared_roles = null ) {
+		if ( ! is_array( $shared_roles ) ) {
+			$shared_roles = $this->modules->get_module_sharing_settings()->get_all_shared_roles();
+		}
+
+		$shared_user_roles = array_intersect( $shared_roles, ( new WP_User( $user_id ) )->roles );
+
+		return ! empty( $shared_user_roles );
+	}
+
+	/**
+	 * Checks if the given user has a role in the list of shared roles for the given module.
+	 *
+	 * @since 1.73.0
+	 *
+	 * @param int    $user_id User ID.
+	 * @param string $module  Module slug.
+	 * @return bool
+	 */
+	private function user_has_shared_role_for_module( $user_id, $module ) {
+		$settings = $this->modules->get_module_sharing_settings()->get();
+
+		if ( empty( $settings[ $module ]['sharedRoles'] ) ) {
+			return false;
+		}
+
+		return $this->user_has_shared_role( $user_id, $settings[ $module ]['sharedRoles'] );
+	}
+
+	/**
 	 * Checks if a user is authenticated in Site Kit.
 	 *
 	 * @since 1.69.0
@@ -529,10 +641,10 @@ final class Permissions {
 	 * @return bool True if the user is verified, false if not.
 	 */
 	public function is_user_verified( $user_id ) {
-		$restore_user    = $this->user_options->switch_user( $user_id );
-		$is_user_verfied = $this->authentication->verification()->has();
+		$restore_user     = $this->user_options->switch_user( $user_id );
+		$is_user_verified = $this->authentication->verification()->has();
 		$restore_user();
-		return $is_user_verfied;
+		return $is_user_verified;
 	}
 
 	/**
@@ -584,8 +696,11 @@ final class Permissions {
 			self::SETUP,
 			self::VIEW_POSTS_INSIGHTS,
 			self::VIEW_DASHBOARD,
-			self::VIEW_MODULE_DETAILS,
 			self::MANAGE_OPTIONS,
+			self::VIEW_SPLASH,
+			self::VIEW_AUTHENTICATED_DASHBOARD,
+			self::VIEW_WP_DASHBOARD_WIDGET,
+			self::VIEW_ADMIN_BAR_MENU,
 		);
 
 		if ( Feature_Flags::enabled( 'dashboardSharing' ) ) {

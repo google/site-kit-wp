@@ -183,13 +183,13 @@ describe( 'core/widgets Widgets', () => {
 				return <div>Hello { props.children }!</div>;
 			};
 
-			it( 'requires a component to be provided', () => {
+			it( 'should require a component to be provided', () => {
 				expect( () =>
 					registry.dispatch( CORE_WIDGETS ).registerWidget( slug )
 				).toThrow( 'component is required to register a widget.' );
 			} );
 
-			it( 'requires a valid width to be provided', () => {
+			it( 'should require a valid width to be provided', () => {
 				expect( () =>
 					registry.dispatch( CORE_WIDGETS ).registerWidget( slug, {
 						Component: WidgetComponent,
@@ -198,16 +198,21 @@ describe( 'core/widgets Widgets', () => {
 				).toThrow( 'Widget width should be one of' );
 			} );
 
-			it( 'registers the component with the given settings and component', () => {
+			it( 'should register the component with the given settings and component', () => {
 				registry.dispatch( CORE_WIDGETS ).registerWidget( slug, {
 					Component: WidgetComponent,
 					priority: 11,
+					modules: [ 'analytics', 'tag-manager' ],
 				} );
 
-				expect( store.getState().widgets[ slug ].Component ).toBe(
-					WidgetComponent
-				);
-				expect( store.getState().widgets[ slug ].priority ).toBe( 11 );
+				const { widgets } = store.getState();
+
+				expect( widgets[ slug ].Component ).toEqual( WidgetComponent );
+				expect( widgets[ slug ].priority ).toBe( 11 );
+				expect( widgets[ slug ].modules ).toEqual( [
+					'analytics',
+					'tag-manager',
+				] );
 
 				// Ensure we can render a component with the widget's component, verifying it's still a
 				// usable React component.
@@ -216,7 +221,7 @@ describe( 'core/widgets Widgets', () => {
 				expect( container.firstChild ).toMatchSnapshot();
 			} );
 
-			it( 'does not overwrite an existing widget', () => {
+			it( 'should not overwrite an existing widget', () => {
 				const WidgetOne = () => {
 					return <div>Hello world!</div>;
 				};
@@ -258,7 +263,7 @@ describe( 'core/widgets Widgets', () => {
 				expect( widgets ).toEqual( [] );
 			} );
 
-			it( "should return all widgets for a given widgetAreaSlug after they're registered", () => {
+			it( 'should return all widgets for a given widgetAreaSlug after they are registered', () => {
 				const PageViews = () => {
 					return <div>Ten people viewed your page!</div>;
 				};
@@ -382,6 +387,56 @@ describe( 'core/widgets Widgets', () => {
 					.getWidgets( 'dashboard-header' );
 
 				expect( widgets ).toHaveLength( 1 );
+			} );
+
+			it( 'should return widgets for provided modules', () => {
+				const Component = () => <div>Hello test.</div>;
+
+				registry
+					.dispatch( CORE_WIDGETS )
+					.assignWidgetArea( 'dashboard-header', 'dashboard' );
+
+				[
+					{
+						Component,
+						modules: [ 'analytics', 'tag-manager' ],
+					},
+					{
+						Component,
+						modules: [ 'tag-manager' ],
+					},
+					{
+						Component,
+						modules: [ 'analytics', 'search-console' ],
+					},
+					{
+						Component,
+						modules: [ 'search-console' ],
+					},
+					{
+						Component,
+					},
+				].forEach( ( widget, i ) => {
+					const slug = `TestWidget${ i }`;
+
+					registry
+						.dispatch( CORE_WIDGETS )
+						.registerWidget( slug, widget );
+					registry
+						.dispatch( CORE_WIDGETS )
+						.assignWidget( slug, 'dashboard-header' );
+				} );
+
+				const widgets = registry
+					.select( CORE_WIDGETS )
+					.getWidgets( 'dashboard-header', {
+						modules: [ 'analytics', 'tag-manager' ],
+					} );
+
+				expect( widgets ).toHaveLength( 3 );
+				expect( widgets[ 0 ].slug ).toBe( 'TestWidget0' );
+				expect( widgets[ 1 ].slug ).toBe( 'TestWidget1' );
+				expect( widgets[ 2 ].slug ).toBe( 'TestWidget4' );
 			} );
 		} );
 

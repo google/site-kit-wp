@@ -27,13 +27,7 @@ import cloneDeep from 'lodash/cloneDeep';
 /**
  * WordPress dependencies
  */
-import {
-	Fragment,
-	useEffect,
-	useRef,
-	useState,
-	useContext,
-} from '@wordpress/element';
+import { Fragment, useEffect, useRef, useState } from '@wordpress/element';
 import { __, _x, sprintf } from '@wordpress/i18n';
 import { ESCAPE } from '@wordpress/keycodes';
 
@@ -41,7 +35,6 @@ import { ESCAPE } from '@wordpress/keycodes';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import ViewContextContext from '../../../../../components/Root/ViewContextContext';
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
 import {
@@ -62,7 +55,11 @@ import GoogleChart from '../../../../../components/GoogleChart';
 import Link from '../../../../../components/Link';
 import PreviewBlock from '../../../../../components/PreviewBlock';
 import PieChartZeroData from '../../../../../../svg/icons/pie-chart-zero-data.svg';
+import GatheringDataNotice, {
+	NOTICE_STYLE,
+} from '../../../../../components/GatheringDataNotice';
 import { useFeature } from '../../../../../hooks/useFeature';
+import useViewContext from '../../../../../hooks/useViewContext';
 const { useDispatch, useSelect } = Data;
 
 export default function UserDimensionsPieChart( props ) {
@@ -77,7 +74,7 @@ export default function UserDimensionsPieChart( props ) {
 	const zeroDataStatesEnabled = useFeature( 'zeroDataStates' );
 
 	const [ selectable, setSelectable ] = useState( false );
-	const viewContext = useContext( ViewContextContext );
+	const viewContext = useViewContext();
 
 	const otherSupportURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getGoogleSupportURL( {
@@ -199,7 +196,7 @@ export default function UserDimensionsPieChart( props ) {
 		`<p>
 			<a
 				href="${ url }"
-				class="googlesitekit-cta-link googlesitekit-cta-link--external googlesitekit-cta-link--inherit googlesitekit-cta-link__tooltip"
+				class="googlesitekit-cta-link googlesitekit-cta-link--external googlesitekit-cta-link__tooltip"
 				target="_blank"
 				rel="noreferrer noopener"
 				data-row-label="${ rowLabel }"
@@ -550,6 +547,11 @@ export default function UserDimensionsPieChart( props ) {
 			>
 				{ showZeroDataChart && (
 					<div className="googlesitekit-widget--analyticsAllTraffic__chart-zero-data">
+						{ gatheringData && (
+							<GatheringDataNotice
+								style={ NOTICE_STYLE.SMALL_OVERLAY }
+							/>
+						) }
 						<PieChartZeroData />
 					</div>
 				) }
@@ -721,15 +723,15 @@ UserDimensionsPieChart.chartOptions = {
 	},
 	pieHole: 0.6,
 	pieSliceTextStyle: {
-		color: 'black',
+		color: '#131418',
 		fontSize: 12,
 	},
 	slices: {
-		0: { color: '#ffcd33' },
-		1: { color: '#c196ff' },
-		2: { color: '#9de3fe' },
-		3: { color: '#ff7fc6' },
-		4: { color: '#ff886b' },
+		0: { color: '#fece72' },
+		1: { color: '#a983e6' },
+		2: { color: '#bed4ff' },
+		3: { color: '#ee92da' },
+		4: { color: '#ff9b7a' },
 	},
 	title: null,
 	tooltip: {

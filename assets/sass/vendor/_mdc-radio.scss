@@ -1,10 +1,10 @@
 // Overrides for .mdc-radio
 .googlesitekit-plugin .mdc-radio {
 
-	@include mdc-radio-unchecked-stroke-color($c-border-brand);
-	@include mdc-radio-checked-stroke-color($c-border-brand);
-	@include mdc-radio-ink-color($c-background-brand);
-	@include mdc-radio-focus-indicator-color($c-background-brand);
+	@include mdc-radio-unchecked-stroke-color($c-black);
+	@include mdc-radio-checked-stroke-color($c-black);
+	@include mdc-radio-ink-color($c-black);
+	@include mdc-radio-focus-indicator-color($c-content-on-primary-container);
 
 	// Overriding WordPress load-styles.php
 	.mdc-radio__native-control {

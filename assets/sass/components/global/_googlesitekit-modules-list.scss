@@ -29,6 +29,7 @@
 
 		.googlesitekit-modules-list__module {
 			border: 1px solid $c-border-light;
+			border-radius: $br-xs;
 			flex: 0 0 auto;
 			margin-bottom: 10px;
 			margin-right: 10px;
@@ -74,8 +75,9 @@
 
 		.googlesitekit-settings-connect-module__title {
 			font-family: $f-primary;
-			font-size: 0.9375rem;
+			font-size: $fs-body-lg;
 			font-weight: 500;
+			letter-spacing: $ls-m;
 			margin: 0 0 10px 0;
 		}
 
@@ -85,7 +87,8 @@
 		}
 
 		.googlesitekit-settings-module__status {
-			font-size: 0.75rem;
+			font-size: $fs-body-sm;
+			letter-spacing: $ls-xs;
 		}
 
 		.googlesitekit-settings-module__status-icon {

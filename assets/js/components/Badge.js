@@ -22,8 +22,12 @@
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
 
-const Badge = ( { label, className } ) => (
-	<span className={ classnames( 'googlesitekit-badge', className ) }>
+const Badge = ( { label, className, hasLeftSpacing = false } ) => (
+	<span
+		className={ classnames( 'googlesitekit-badge', className, {
+			'googlesitekit-badge--has-left-spacing': hasLeftSpacing,
+		} ) }
+	>
 		{ label }
 	</span>
 );
@@ -32,6 +36,7 @@ Badge.displayName = 'Badge';
 
 Badge.propTypes = {
 	label: PropTypes.string.isRequired,
+	hasLeftSpacing: PropTypes.bool,
 };
 
 export default Badge;

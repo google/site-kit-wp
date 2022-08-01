@@ -31,11 +31,13 @@ import { Cell, Grid, Row } from '../../material-components';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { decodeHTMLEntity, trackEvent } from '../../util';
-import { VIEW_CONTEXT_ADMIN_BAR } from '../../googlesitekit/constants';
 import AdminBarWidgets from './AdminBarWidgets';
+import useViewContext from '../../hooks/useViewContext';
 const { useSelect } = Data;
 
 export default function AdminBarApp() {
+	const viewContext = useViewContext();
+
 	const currentEntityURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getCurrentEntityURL()
 	);
@@ -52,9 +54,9 @@ export default function AdminBarApp() {
 	);
 
 	const onMoreDetailsClick = useCallback( async () => {
-		await trackEvent( VIEW_CONTEXT_ADMIN_BAR, 'open_urldetails' );
+		await trackEvent( viewContext, 'open_urldetails' );
 		document.location.assign( detailsURL );
-	}, [ detailsURL ] );
+	}, [ detailsURL, viewContext ] );
 
 	// Only show the adminbar on valid pages and posts.
 	if ( ! detailsURL || ! currentEntityURL ) {

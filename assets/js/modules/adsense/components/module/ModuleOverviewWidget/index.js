@@ -30,9 +30,9 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import { useFeature } from '../../../../../hooks/useFeature';
 import { MODULES_ADSENSE } from '../../../datastore/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
-import { useFeature } from '../../../../../hooks/useFeature';
 import { isZeroReport } from '../../../util';
 import DashboardZeroData from '../../dashboard/DashboardZeroData';
 import { HIDDEN_CLASS } from '../../../../../googlesitekit/widgets/util/constants';
@@ -50,9 +50,8 @@ const ModuleOverviewWidget = ( {
 	WidgetReportZero,
 	WidgetReportError,
 } ) => {
-	const unifiedDashboardEnabled = useFeature( 'unifiedDashboard' );
-
 	const [ selectedStats, setSelectedStats ] = useState( 0 );
+	const adsenseSetupV2Enabled = useFeature( 'adsenseSetupV2' );
 
 	const {
 		startDate,
@@ -111,57 +110,64 @@ const ModuleOverviewWidget = ( {
 			] )
 	);
 
-	const error = useSelect(
-		( select ) =>
+	const errors = useSelect( ( select ) => [
+		...[
 			select( MODULES_ADSENSE ).getErrorForSelector( 'getReport', [
 				currentRangeArgs,
-			] ) ||
+			] ),
+		],
+		...[
 			select( MODULES_ADSENSE ).getErrorForSelector( 'getReport', [
 				previousRangeArgs,
-			] ) ||
+			] ),
+		],
+		...[
 			select( MODULES_ADSENSE ).getErrorForSelector( 'getReport', [
 				currentRangeChartArgs,
-			] ) ||
+			] ),
+		],
+		...[
 			select( MODULES_ADSENSE ).getErrorForSelector( 'getReport', [
 				previousRangeChartArgs,
-			] )
-	);
-
-	const widgetProps = unifiedDashboardEnabled ? { Footer } : {};
+			] ),
+		],
+	] ).filter( Boolean );
 
 	if ( loading ) {
 		return (
-			<Widget Header={ Header } { ...widgetProps } noPadding>
+			<Widget Header={ Header } Footer={ Footer } noPadding>
 				<PreviewBlock width="100%" height="190px" padding />
 				<PreviewBlock width="100%" height="270px" padding />
 			</Widget>
 		);
 	}
 
-	if ( error ) {
+	if ( !! errors.length ) {
 		return (
-			<Widget Header={ Header } { ...widgetProps }>
-				<WidgetReportError moduleSlug="adsense" error={ error } />
+			<Widget Header={ Header } Footer={ Footer }>
+				<WidgetReportError moduleSlug="adsense" error={ errors } />
 			</Widget>
 		);
 	}
 
-	if (
-		isZeroReport( currentRangeData ) ||
-		isZeroReport( currentRangeChartData )
-	) {
-		return (
-			<Widget noPadding>
-				<DashboardZeroData />
-				<div className={ HIDDEN_CLASS }>
-					<WidgetReportZero moduleSlug="adsense" />
-				</div>
-			</Widget>
-		);
+	if ( ! adsenseSetupV2Enabled ) {
+		if (
+			isZeroReport( currentRangeData ) ||
+			isZeroReport( currentRangeChartData )
+		) {
+			return (
+				<Widget noPadding>
+					<DashboardZeroData />
+					<div className={ HIDDEN_CLASS }>
+						<WidgetReportZero moduleSlug="adsense" />
+					</div>
+				</Widget>
+			);
+		}
 	}
 
 	return (
-		<Widget noPadding Header={ Header } { ...widgetProps }>
+		<Widget noPadding Header={ Header } Footer={ Footer }>
 			<Overview
 				metrics={ ModuleOverviewWidget.metrics }
 				currentRangeData={ currentRangeData }

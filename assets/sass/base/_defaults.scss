@@ -27,8 +27,8 @@
 .googlesitekit-plugin {
 	color: $c-primary;
 	font-family: $f-primary;
-	font-size: 1rem;
-	line-height: 1.4;
+	font-size: $fs-body-md;
+	line-height: $lh-body-md;
 
 	*,
 	*::before,
@@ -51,77 +51,52 @@
 	h4,
 	h5,
 	h6 {
-		color: $c-secondary;
+		color: $c-surfaces-on-surface;
 		font-family: $f-secondary;
 		line-height: 1.16;
 	}
 
 	h1,
 	.googlesitekit-heading-1 {
-		font-size: 1.75rem;
-		font-weight: $fw-secondary-normal;
-
-		@media (min-width: $bp-tablet) {
-			font-size: 2.25rem;
-		}
+		font-size: $fs-headline-lg;
+		font-weight: $fw-normal;
+		line-height: $lh-headline-lg;
 	}
 
 	h2,
 	.googlesitekit-heading-2 {
-		font-size: 1.375rem;
-		font-weight: $fw-secondary-normal;
-
-		@media (min-width: $bp-tablet) {
-			font-size: 1.75rem;
-		}
+		font-size: $fs-headline-md;
+		font-weight: $fw-normal;
+		line-height: $lh-headline-md;
 	}
 
 	h3,
 	.googlesitekit-heading-3 {
-		font-size: 1.25rem;
-		font-weight: $fw-secondary-normal;
-
-		@media (min-width: $bp-tablet) {
-			font-size: 1.5rem;
-		}
+		font-size: $fs-headline-sm;
+		font-weight: $fw-normal;
+		line-height: $lh-headline-sm;
 	}
 
 	h4,
 	.googlesitekit-heading-4 {
-		color: $c-tertiary;
-		font-size: 1.125rem;
-		font-weight: $fw-secondary-medium;
-
-		@media (min-width: $bp-tablet) {
-			font-size: 1.25rem;
-		}
+		font-size: $fs-title-lg;
+		font-weight: $fw-bold;
+		line-height: $lh-title-lg;
 	}
 
 	.googlesitekit-subheading-1 {
-		font-family: $f-primary;
-		font-size: 0.9375rem;
-		font-weight: $fw-primary-medium;
-
-		@media (min-width: $bp-tablet) {
-			font-size: 1rem;
-		}
+		font-family: $f-secondary;
+		font-size: $fs-title-sm;
+		font-weight: $fw-bold;
+		line-height: $lh-title-sm;
 	}
 
 	.googlesitekit-subheading-2 {
 		font-family: $f-primary;
-		font-size: 0.875rem;
-		font-weight: $fw-primary-medium;
-
-		@media (min-width: $bp-tablet) {
-			font-size: 0.9375rem;
-		}
-	}
-
-	.googlesitekit-recommended {
-		color: $c-success;
-		font-size: 10px;
-		font-weight: $fw-primary-medium;
-		text-transform: uppercase;
+		font-size: $fs-body-sm;
+		font-weight: $fw-medium;
+		letter-spacing: $ls-xs;
+		line-height: $lh-body-sm;
 	}
 
 	.googlesitekit-nodata {
@@ -130,7 +105,8 @@
 
 	legend,
 	p:not([class*="mdc-"]) {
-		font-size: 1rem;
+		font-size: $fs-body-md;
+		letter-spacing: $ls-s;
 	}
 
 	a {
@@ -143,7 +119,7 @@
 
 		&:focus {
 			box-shadow: none;
-			outline: 1px dashed $c-cornflower-blue;
+			outline: 1px dotted $c-interactive-focus;
 			outline-offset: 3px;
 		}
 	}
@@ -151,6 +127,7 @@
 	button {
 		background: none;
 		border: none;
+		border-radius: $br-lg;
 		color: $c-link;
 		text-decoration: none;
 
@@ -159,8 +136,8 @@
 		}
 
 		&:focus {
-			outline: 1px dashed $c-cornflower-blue;
-			outline-offset: 3px;
+			outline: 1px dotted $c-interactive-focus;
+			outline-offset: 6px;
 		}
 	}
 

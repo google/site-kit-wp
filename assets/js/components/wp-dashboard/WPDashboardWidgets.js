@@ -36,6 +36,7 @@ import WPDashboardUniqueVisitors from './WPDashboardUniqueVisitors';
 import WPDashboardSessionDuration from './WPDashboardSessionDuration';
 import WPDashboardPopularPages from './WPDashboardPopularPages';
 import WPDashboardIdeaHub from './WPDashboardIdeaHub';
+import WPDashboardActivateAnalyticsCTA from './WPDashboardActivateAnalyticsCTA';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { CORE_WIDGETS } from '../../googlesitekit/widgets/datastore/constants';
 import {
@@ -43,6 +44,7 @@ import {
 	HIDDEN_CLASS,
 } from '../../googlesitekit/widgets/util/constants';
 import { withWidgetComponentProps } from '../../googlesitekit/widgets/util/get-widget-component-props';
+import { useFeature } from '../../hooks/useFeature';
 const { useSelect } = Data;
 
 // Widget slugs.
@@ -121,6 +123,8 @@ const WPDashboardWidgets = () => {
 				?.Component === ReportZero
 	);
 
+	const zeroDataStates = useFeature( 'zeroDataStates' );
+
 	if (
 		analyticsModule === undefined ||
 		shouldCombineAnalyticsArea1 === undefined ||
@@ -135,6 +139,7 @@ const WPDashboardWidgets = () => {
 			className={ classnames( 'googlesitekit-wp-dashboard-stats', {
 				'googlesitekit-wp-dashboard-stats--fourup':
 					analyticsModuleActive && analyticsModuleConnected,
+				'googlesitekit-wp-dashboard-stats--twoup': zeroDataStates,
 			} ) }
 		>
 			<WPDashboardIdeaHub />
@@ -157,12 +162,13 @@ const WPDashboardWidgets = () => {
 
 			{ ( ! analyticsModuleConnected || ! analyticsModuleActive ) && (
 				<div className="googlesitekit-wp-dashboard-stats__cta">
-					{ ! analyticsModuleActive && (
-						<ActivateModuleCTA moduleSlug="analytics" />
-					) }
-					{ analyticsModuleActive && (
-						<CompleteModuleActivationCTA moduleSlug="analytics" />
-					) }
+					{ zeroDataStates && <WPDashboardActivateAnalyticsCTA /> }
+					{ ! zeroDataStates &&
+						( analyticsModuleActive ? (
+							<CompleteModuleActivationCTA moduleSlug="analytics" />
+						) : (
+							<ActivateModuleCTA moduleSlug="analytics" />
+						) ) }
 				</div>
 			) }
 

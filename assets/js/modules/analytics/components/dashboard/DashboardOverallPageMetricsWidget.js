@@ -44,6 +44,7 @@ import parseDimensionStringToDate from '../../util/parseDimensionStringToDate';
 import { isZeroReport } from '../../util';
 import WidgetHeaderTitle from '../../../../googlesitekit/widgets/components/WidgetHeaderTitle';
 import { isFeatureEnabled } from '../../../../features';
+import useViewOnly from '../../../../hooks/useViewOnly';
 const { useSelect, useInViewSelect } = Data;
 
 /**
@@ -59,6 +60,8 @@ const { useSelect, useInViewSelect } = Data;
  * @return {OverallPageMetricsReport} Analytics report data and state.
  */
 function useOverallPageMetricsReport() {
+	const viewOnlyDashboard = useViewOnly();
+
 	const dates = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeDates( {
 			offsetDays: DATE_RANGE_OFFSET,
@@ -114,12 +117,16 @@ function useOverallPageMetricsReport() {
 		select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [ args ] )
 	);
 
-	const serviceURL = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).getServiceReportURL(
+	const serviceURL = useSelect( ( select ) => {
+		if ( viewOnlyDashboard ) {
+			return null;
+		}
+
+		return select( MODULES_ANALYTICS ).getServiceReportURL(
 			'visitors-overview',
 			reportArgs
-		)
-	);
+		);
+	} );
 
 	const report = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getReport( args )

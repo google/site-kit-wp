@@ -217,15 +217,12 @@ const GOOGLESITEKIT_VERSION = googleSiteKitVersion
 
 const corePackages = [
 	'api-fetch',
-	'components',
 	'compose',
 	'data',
 	'dom-ready',
 	'element',
-	'hooks',
 	'icons',
 	'keycodes',
-	'scripts',
 	'url',
 ];
 
@@ -280,8 +277,8 @@ function* webpackConfig( env, argv ) {
 				'assets/js/googlesitekit-modules-pagespeed-insights.js',
 			'googlesitekit-modules-search-console':
 				'./assets/js/googlesitekit-modules-search-console.js',
-			'googlesitekit-modules-subscribe-with-google':
-				'./assets/js/googlesitekit-modules-subscribe-with-google.js',
+			'googlesitekit-modules-thank-with-google':
+				'./assets/js/googlesitekit-modules-thank-with-google.js',
 			'googlesitekit-modules-tagmanager':
 				'./assets/js/googlesitekit-modules-tagmanager.js',
 			'googlesitekit-user-input':
@@ -302,7 +299,6 @@ function* webpackConfig( env, argv ) {
 			'googlesitekit-wp-dashboard':
 				'./assets/js/googlesitekit-wp-dashboard.js',
 			'googlesitekit-base': './assets/js/googlesitekit-base.js',
-			'googlesitekit-module': './assets/js/googlesitekit-module.js',
 		},
 		externals,
 		output: {

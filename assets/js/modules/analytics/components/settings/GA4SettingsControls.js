@@ -24,8 +24,12 @@ import { useUpdateEffect } from 'react-use';
 /**
  * WordPress dependencies
  */
-import { __, sprintf } from '@wordpress/i18n';
-import { useState, useCallback } from '@wordpress/element';
+import { __, _x, sprintf } from '@wordpress/i18n';
+import {
+	createInterpolateElement,
+	useState,
+	useCallback,
+} from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -38,16 +42,18 @@ import {
 	WEBDATASTREAM_CREATE,
 } from '../../../analytics-4/datastore/constants';
 import { FORM_SETUP, MODULES_ANALYTICS } from '../../datastore/constants';
+import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import { Select, Option } from '../../../../material-components';
 import { GA4ActivateSwitch } from '../common';
-import {
-	PropertySelect,
-	UseSnippetSwitch,
-} from '../../../analytics-4/components/common';
+import { PropertySelect } from '../../../analytics-4/components/common';
 import ProgressBar from '../../../../components/ProgressBar';
+import SettingsUseSnippetSwitch from '../../../analytics-4/components/settings/SettingsUseSnippetSwitch';
+import SettingsNotice from '../../../../components/SettingsNotice/SettingsNotice';
+import { TYPE_INFO } from '../../../../components/SettingsNotice';
+import WarningIcon from '../../../../../../assets/svg/icons/warning-icon.svg';
 const { useSelect, useDispatch } = Data;
 
-export default function GA4SettingsControls() {
+export default function GA4SettingsControls( { hasModuleAccess } ) {
 	const [ matchedProperty, setMatchedProperty ] = useState();
 	const [ matchedWebDataStream, setMatchedWebDataStream ] = useState();
 
@@ -71,6 +77,14 @@ export default function GA4SettingsControls() {
 	const propertyID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getPropertyID()
 	);
+
+	const module = useSelect( ( select ) =>
+		select( CORE_MODULES ).getModule( 'analytics-4' )
+	);
+
+	const formattedOwnerName = module?.owner?.login
+		? `<strong>${ module.owner.login }</strong>`
+		: __( 'Another admin', 'google-site-kit' );
 
 	const {
 		matchAccountProperty,
@@ -148,6 +162,7 @@ export default function GA4SettingsControls() {
 							'Google Analytics 4 Property',
 							'google-site-kit'
 						) }
+						hasModuleAccess={ hasModuleAccess }
 					/>
 				) }
 				{ isDisabled && (
@@ -168,7 +183,11 @@ export default function GA4SettingsControls() {
 								? ''
 								: sprintf(
 										/* translators: 1: Property name. 2: Property ID. */
-										__( '%1$s (%2$s)', 'google-site-kit' ),
+										_x(
+											'%1$s (%2$s)',
+											'Analytics property name and ID',
+											'google-site-kit'
+										),
 										matchedProperty.displayName,
 										matchedProperty._id
 								  ) }
@@ -180,9 +199,30 @@ export default function GA4SettingsControls() {
 			{ isDisabled && <GA4ActivateSwitch onActivate={ onActivate } /> }
 
 			{ ! isDisabled && (
-				<div className="googlesitekit-setup-module__inputs googlesitekit-setup-module__inputs--multiline">
-					<UseSnippetSwitch />
+				<div className="googlesitekit-settings-module__meta-item">
+					<SettingsUseSnippetSwitch />
 				</div>
+			) }
+
+			{ hasModuleAccess === false && (
+				<SettingsNotice
+					type={ TYPE_INFO }
+					Icon={ WarningIcon }
+					notice={ createInterpolateElement(
+						sprintf(
+							/* translators: 1: module owner's name, 2: module name */
+							__(
+								'%1$s configured %2$s and you don’t have access to this Analytics property. Contact them to share access or change the Analytics property.',
+								'google-site-kit'
+							),
+							formattedOwnerName,
+							module?.name
+						),
+						{
+							strong: <strong />,
+						}
+					) }
+				/>
 			) }
 		</div>
 	);

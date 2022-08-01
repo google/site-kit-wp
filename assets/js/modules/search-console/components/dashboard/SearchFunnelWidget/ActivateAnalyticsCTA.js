@@ -1,5 +1,5 @@
 /**
- * ActivateAnalyticsCTA component.
+ * Search Funnel Widget ActivateAnalyticsCTA component.
  *
  * Site Kit by Google, Copyright 2022 Google LLC
  *
@@ -19,54 +19,27 @@
 /**
  * WordPress dependencies
  */
-import { createInterpolateElement } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import useActivateModuleCallback from '../../../../../hooks/useActivateModuleCallback';
-import Button from '../../../../../components/Button';
-import PreviewGraph from './PreviewGraph';
 import VisitorsGraph from '../../../../../../svg/graphics/cta-graph-visitors.svg';
 import GoalsGraph from '../../../../../../svg/graphics/cta-graph-goals.svg';
+import AnalyticsCTA from '../../../../../components/ActivateAnalyticsCTA';
+import PreviewGraph from '../../../../../components/PreviewGraph';
 
 export default function ActivateAnalyticsCTA() {
-	const activateModuleCallback = useActivateModuleCallback( 'analytics' );
-
-	if ( ! activateModuleCallback ) return null;
-
 	return (
-		<div className="googlesitekit-analytics-cta">
-			<div className="googlesitekit-analytics-cta__preview-graphs">
-				<PreviewGraph
-					title={ __(
-						'Unique visitors from Search',
-						'google-site-kit'
-					) }
-					GraphSVG={ VisitorsGraph }
-				/>
-				<PreviewGraph
-					title={ __( 'Goals completed', 'google-site-kit' ) }
-					GraphSVG={ GoalsGraph }
-				/>
-			</div>
-			<div className="googlesitekit-analytics-cta__details">
-				<p className="googlesitekit-analytics-cta--description">
-					{ createInterpolateElement(
-						__(
-							'See how many people visit your site from Search and track how you’re achieving your goals: <strong>install Google Analytics.</strong>',
-							'google-site-kit'
-						),
-						{
-							strong: <strong />,
-						}
-					) }
-				</p>
-				<Button onClick={ activateModuleCallback }>
-					{ __( 'Set up Google Analytics', 'google-site-kit' ) }
-				</Button>
-			</div>
-		</div>
+		<AnalyticsCTA>
+			<PreviewGraph
+				title={ __( 'Unique visitors from Search', 'google-site-kit' ) }
+				GraphSVG={ VisitorsGraph }
+			/>
+			<PreviewGraph
+				title={ __( 'Goals completed', 'google-site-kit' ) }
+				GraphSVG={ GoalsGraph }
+			/>
+		</AnalyticsCTA>
 	);
 }

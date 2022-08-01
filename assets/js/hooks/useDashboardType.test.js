@@ -22,7 +22,9 @@
 import { renderHook } from '../../../tests/js/test-utils';
 import {
 	VIEW_CONTEXT_DASHBOARD,
+	VIEW_CONTEXT_DASHBOARD_VIEW_ONLY,
 	VIEW_CONTEXT_PAGE_DASHBOARD,
+	VIEW_CONTEXT_PAGE_DASHBOARD_VIEW_ONLY,
 	VIEW_CONTEXT_SETTINGS,
 } from '../googlesitekit/constants';
 import useDashboardType, {
@@ -45,9 +47,25 @@ describe( 'useDashboardType', () => {
 		expect( result.current ).toEqual( DASHBOARD_TYPE_MAIN );
 	} );
 
+	it( 'should return DASHBOARD_TYPE_MAIN for VIEW_CONTEXT_DASHBOARD_VIEW_ONLY view context', () => {
+		const { result } = renderHook( () => useDashboardType(), {
+			viewContext: VIEW_CONTEXT_DASHBOARD_VIEW_ONLY,
+		} );
+
+		expect( result.current ).toEqual( DASHBOARD_TYPE_MAIN );
+	} );
+
 	it( 'should return DASHBOARD_TYPE_ENTITY for VIEW_CONTEXT_PAGE_DASHBOARD view context', () => {
 		const { result } = renderHook( () => useDashboardType(), {
 			viewContext: VIEW_CONTEXT_PAGE_DASHBOARD,
+		} );
+
+		expect( result.current ).toEqual( DASHBOARD_TYPE_ENTITY );
+	} );
+
+	it( 'should return DASHBOARD_TYPE_ENTITY for VIEW_CONTEXT_PAGE_DASHBOARD_VIEW_ONLY view context', () => {
+		const { result } = renderHook( () => useDashboardType(), {
+			viewContext: VIEW_CONTEXT_PAGE_DASHBOARD_VIEW_ONLY,
 		} );
 
 		expect( result.current ).toEqual( DASHBOARD_TYPE_ENTITY );

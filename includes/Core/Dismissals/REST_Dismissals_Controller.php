@@ -80,8 +80,8 @@ class REST_Dismissals_Controller {
 	 * @return REST_Route[] List of REST_Route objects.
 	 */
 	protected function get_rest_routes() {
-		$can_authenticate = function () {
-			return current_user_can( Permissions::AUTHENTICATE );
+		$can_dismiss_item = function() {
+			return current_user_can( Permissions::VIEW_SPLASH ) || current_user_can( Permissions::VIEW_DASHBOARD );
 		};
 
 		return array(
@@ -92,7 +92,7 @@ class REST_Dismissals_Controller {
 					'callback'            => function () {
 						return new WP_REST_Response( $this->dismissed_items->get_dismissed_items() );
 					},
-					'permission_callback' => $can_authenticate,
+					'permission_callback' => $can_dismiss_item,
 				)
 			),
 			new REST_Route(
@@ -120,7 +120,7 @@ class REST_Dismissals_Controller {
 
 						return new WP_REST_Response( $this->dismissed_items->get_dismissed_items() );
 					},
-					'permission_callback' => $can_authenticate,
+					'permission_callback' => $can_dismiss_item,
 					'args'                => array(
 						'data' => array(
 							'type'     => 'object',

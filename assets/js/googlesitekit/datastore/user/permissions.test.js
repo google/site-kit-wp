@@ -19,8 +19,13 @@
 /**
  * Internal dependencies
  */
-import { createTestRegistry } from '../../../../../tests/js/utils';
+import {
+	createTestRegistry,
+	subscribeUntil,
+} from '../../../../../tests/js/utils';
 import { CORE_USER, PERMISSION_MANAGE_OPTIONS } from './constants';
+import FIXTURES from '../../modules/datastore/__fixtures__';
+import { CORE_MODULES } from '../../modules/datastore/constants';
 
 describe( 'core/user authentication', () => {
 	const capabilitiesBaseVar = '_googlesitekitUserData';
@@ -29,8 +34,32 @@ describe( 'core/user authentication', () => {
 		permissions: {
 			googlesitekit_view_dashboard: true,
 			googlesitekit_manage_options: true,
+			'googlesitekit_read_shared_module_data::["site-verification"]': false,
+			'googlesitekit_read_shared_module_data::["tagmanager"]': false,
+			'googlesitekit_read_shared_module_data::["optimize"]': false,
+			'googlesitekit_read_shared_module_data::["adsense"]': false,
 			'googlesitekit_manage_module_sharing_options::["search-console"]': true,
 			'googlesitekit_read_shared_module_data::["search-console"]': false,
+			'googlesitekit_read_shared_module_data::["analytics"]': false,
+			'googlesitekit_read_shared_module_data::["pagespeed-insights"]': false,
+			'googlesitekit_read_shared_module_data::["idea-hub"]': false,
+		},
+	};
+
+	const capabilitiesWithPermission = {
+		permissions: {
+			googlesitekit_view_dashboard: true,
+			googlesitekit_manage_options: true,
+			'googlesitekit_manage_module_sharing_options::["search-console"]': true,
+			'googlesitekit_manage_module_sharing_options::["analytics"]': true,
+			'googlesitekit_read_shared_module_data::["site-verification"]': false,
+			'googlesitekit_read_shared_module_data::["tagmanager"]': false,
+			'googlesitekit_read_shared_module_data::["optimize"]': false,
+			'googlesitekit_read_shared_module_data::["adsense"]': false,
+			'googlesitekit_read_shared_module_data::["search-console"]': true,
+			'googlesitekit_read_shared_module_data::["analytics"]': true,
+			'googlesitekit_read_shared_module_data::["pagespeed-insights"]': true,
+			'googlesitekit_read_shared_module_data::["idea-hub"]': false,
 		},
 	};
 
@@ -149,6 +178,179 @@ describe( 'core/user authentication', () => {
 					'search-console',
 				] );
 				expect( hasCapability ).toBe( true );
+			} );
+		} );
+
+		describe( 'getViewableModules', () => {
+			it( 'should return undefined if modules are not loaded', () => {
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
+					{ body: FIXTURES, status: 200 }
+				);
+
+				const viewableModules = registry
+					.select( CORE_USER )
+					.getViewableModules();
+
+				expect( viewableModules ).toBeUndefined();
+			} );
+
+			it( 'should return an empty array if viewable permissions are not available', async () => {
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
+					{ body: FIXTURES, status: 200 }
+				);
+				global[ capabilitiesBaseVar ] = capabilities;
+
+				const initialViewableModules = registry
+					.select( CORE_USER )
+					.getViewableModules();
+
+				expect( initialViewableModules ).toBeUndefined();
+
+				await subscribeUntil(
+					registry,
+					() =>
+						registry.select( CORE_USER ).getViewableModules() !==
+						undefined
+				);
+
+				const viewableModules = registry
+					.select( CORE_USER )
+					.getViewableModules();
+
+				expect( viewableModules ).toEqual( [] );
+			} );
+
+			it( 'should return the list of module slugs if the viewable permissions are available', async () => {
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
+					{ body: FIXTURES, status: 200 }
+				);
+				global[ capabilitiesBaseVar ] = capabilitiesWithPermission;
+
+				const initialViewableModules = registry
+					.select( CORE_USER )
+					.getViewableModules();
+
+				expect( initialViewableModules ).toBeUndefined();
+
+				await subscribeUntil(
+					registry,
+					() =>
+						registry.select( CORE_USER ).getViewableModules() !==
+						undefined
+				);
+
+				const viewableModules = registry
+					.select( CORE_USER )
+					.getViewableModules();
+
+				expect( viewableModules ).toEqual( [
+					'search-console',
+					'analytics',
+					'pagespeed-insights',
+				] );
+			} );
+		} );
+
+		describe( 'canViewSharedModule', () => {
+			it( 'should return undefined if modules are not loaded', () => {
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
+					{ body: FIXTURES, status: 200 }
+				);
+
+				const canViewSharedModule = registry
+					.select( CORE_USER )
+					.canViewSharedModule( 'search-console' );
+
+				expect( canViewSharedModule ).toBeUndefined();
+			} );
+
+			it( 'should return FALSE if the module does not exist', () => {
+				registry
+					.dispatch( CORE_MODULES )
+					.receiveGetModules( [
+						{ slug: 'search-console', name: 'Search Console' },
+					] );
+
+				const canViewSharedModule = registry
+					.select( CORE_USER )
+					.canViewSharedModule( 'invalid-module' );
+
+				expect( canViewSharedModule ).toBe( false );
+			} );
+
+			it( 'should return FALSE if the module is not shared', () => {
+				registry.dispatch( CORE_MODULES ).receiveGetModules( [
+					{
+						slug: 'search-console',
+						name: 'Search Console',
+						shareable: false,
+					},
+				] );
+
+				const canViewSharedModule = registry
+					.select( CORE_USER )
+					.canViewSharedModule( 'search-console' );
+
+				expect( canViewSharedModule ).toBe( false );
+			} );
+
+			it( 'should return undefined if the capabilities are not loaded', () => {
+				registry.dispatch( CORE_MODULES ).receiveGetModules( [
+					{
+						slug: 'search-console',
+						name: 'Search Console',
+						shareable: true,
+					},
+				] );
+				global[ capabilitiesBaseVar ] = undefined;
+
+				const canViewSharedModule = registry
+					.select( CORE_USER )
+					.canViewSharedModule( 'search-console' );
+
+				expect( console ).toHaveErroredWith(
+					'Could not load core/user permissions.'
+				);
+
+				expect( canViewSharedModule ).toBeUndefined();
+			} );
+
+			it( 'should return FALSE if the module is shared but the user does not have the view permission', () => {
+				registry.dispatch( CORE_MODULES ).receiveGetModules( [
+					{
+						slug: 'search-console',
+						name: 'Search Console',
+						shareable: true,
+					},
+				] );
+				global[ capabilitiesBaseVar ] = capabilities;
+
+				const canViewSharedModule = registry
+					.select( CORE_USER )
+					.canViewSharedModule( 'search-console' );
+
+				expect( canViewSharedModule ).toBe( false );
+			} );
+
+			it( 'should return TRUE if the module is shared and the user has the view permission', () => {
+				registry.dispatch( CORE_MODULES ).receiveGetModules( [
+					{
+						slug: 'search-console',
+						name: 'Search Console',
+						shareable: true,
+					},
+				] );
+				global[ capabilitiesBaseVar ] = capabilitiesWithPermission;
+
+				const canViewSharedModule = registry
+					.select( CORE_USER )
+					.canViewSharedModule( 'search-console' );
+
+				expect( canViewSharedModule ).toBe( true );
 			} );
 		} );
 	} );

@@ -30,35 +30,56 @@ import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import useQueryArg from '../../hooks/useQueryArg';
 import SetupSuccessBannerNotification from './SetupSuccessBannerNotification';
 import CoreSiteBannerNotifications from './CoreSiteBannerNotifications';
+import ModuleRecoveryAlert from '../dashboard-sharing/ModuleRecoveryAlert';
 import IdeaHubPromptBannerNotification from './IdeaHubPromptBannerNotification';
 import UserInputPromptBannerNotification from './UserInputPromptBannerNotification';
 import AdSenseAlerts from './AdSenseAlerts';
 import ZeroDataStateNotifications from './ZeroDataStateNotifications';
+import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import useViewOnly from '../../hooks/useViewOnly';
 const { useSelect } = Data;
 
 export default function BannerNotifications() {
+	const dashboardSharingEnabled = useFeature( 'dashboardSharing' );
+	const ideaHubModuleEnabled = useFeature( 'ideaHubModule' );
+	const userInputEnabled = useFeature( 'userInput' );
+	const zeroDataStatesEnabled = useFeature( 'zeroDataStates' );
+
+	const viewOnly = useViewOnly();
+
+	const isAuthenticated = useSelect( ( select ) =>
+		select( CORE_USER ).isAuthenticated()
+	);
 	const adSenseModuleActive = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleActive( 'adsense' )
 	);
 
-	const ideaHubModuleEnabled = useFeature( 'ideaHubModule' );
-	const userInputEnabled = useFeature( 'userInput' );
-
 	const [ notification ] = useQueryArg( 'notification' );
-
-	const zeroDataStatesEnabled = useFeature( 'zeroDataStates' );
 
 	return (
 		<Fragment>
-			{ ( 'authentication_success' === notification ||
-				'user_input_success' === notification ) && (
-				<SetupSuccessBannerNotification />
+			{ ! viewOnly && (
+				<Fragment>
+					{ ( 'authentication_success' === notification ||
+						'user_input_success' === notification ) && (
+						<SetupSuccessBannerNotification />
+					) }
+					{ isAuthenticated && <CoreSiteBannerNotifications /> }
+					{ dashboardSharingEnabled && <ModuleRecoveryAlert /> }
+				</Fragment>
 			) }
-			<CoreSiteBannerNotifications />
 			{ zeroDataStatesEnabled && <ZeroDataStateNotifications /> }
-			{ userInputEnabled && <UserInputPromptBannerNotification /> }
-			{ ideaHubModuleEnabled && <IdeaHubPromptBannerNotification /> }
-			{ adSenseModuleActive && <AdSenseAlerts /> }
+			{ ! viewOnly && (
+				<Fragment>
+					{ userInputEnabled && (
+						<UserInputPromptBannerNotification />
+					) }
+					{ ideaHubModuleEnabled && (
+						<IdeaHubPromptBannerNotification />
+					) }
+					{ adSenseModuleActive && <AdSenseAlerts /> }
+				</Fragment>
+			) }
 		</Fragment>
 	);
 }

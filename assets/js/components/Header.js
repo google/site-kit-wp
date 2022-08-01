@@ -39,11 +39,17 @@ import { CORE_USER } from '../googlesitekit/datastore/user/constants';
 import { Grid, Row, Cell } from '../material-components';
 import DashboardNavigation from './DashboardNavigation';
 import EntityHeader from './EntityHeader';
+import ViewOnlyMenu from './ViewOnlyMenu';
 import { useFeature } from '../hooks/useFeature';
+import useViewOnly from '../hooks/useViewOnly';
+import useDashboardType from '../hooks/useDashboardType';
 const { useSelect } = Data;
 
 const Header = ( { children, subHeader, showNavigation } ) => {
-	const unifiedDashboardEnabled = useFeature( 'unifiedDashboard' );
+	const dashboardSharingEnabled = useFeature( 'dashboardSharing' );
+	const isDashboard = !! useDashboardType();
+	const isViewOnly = useViewOnly();
+
 	const isAuthenticated = useSelect( ( select ) =>
 		select( CORE_USER ).isAuthenticated()
 	);
@@ -57,7 +63,7 @@ const Header = ( { children, subHeader, showNavigation } ) => {
 			<header
 				className={ classnames( 'googlesitekit-header', {
 					'googlesitekit-header--has-subheader': hasSubheader,
-					'googlesitekit-header--has-unified-dashboard': unifiedDashboardEnabled,
+					'googlesitekit-header--has-navigation': showNavigation,
 				} ) }
 			>
 				<Grid>
@@ -79,7 +85,14 @@ const Header = ( { children, subHeader, showNavigation } ) => {
 							alignMiddle
 						>
 							{ children }
-							{ isAuthenticated && <UserMenu /> }
+
+							{ ! isAuthenticated &&
+								dashboardSharingEnabled &&
+								isDashboard &&
+								isViewOnly && <ViewOnlyMenu /> }
+							{ isAuthenticated &&
+								( ! dashboardSharingEnabled ||
+									! isViewOnly ) && <UserMenu /> }
 						</Cell>
 					</Row>
 				</Grid>
@@ -91,7 +104,7 @@ const Header = ( { children, subHeader, showNavigation } ) => {
 
 			{ showNavigation && <DashboardNavigation /> }
 
-			{ unifiedDashboardEnabled && <EntityHeader /> }
+			<EntityHeader />
 
 			<ErrorNotifications />
 		</Fragment>

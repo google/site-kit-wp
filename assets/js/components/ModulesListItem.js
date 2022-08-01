@@ -81,7 +81,6 @@ const ModulesListItem = ( { module, handleSetupModule } ) => {
 					onClick={ () => handleSetupModule( slug ) }
 					arrow
 					small
-					inherit
 					disabled={ ! canActivateModule }
 				>
 					{ __( 'Connect Service', 'google-site-kit' ) }

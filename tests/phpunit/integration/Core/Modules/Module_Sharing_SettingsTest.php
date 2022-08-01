@@ -24,11 +24,18 @@ class Module_Sharing_SettingsTest extends SettingsTestCase {
 	 */
 	private $settings;
 
+	/**
+	 * Context instance.
+	 *
+	 * @var Context
+	 */
+	private $context;
+
 	public function set_up() {
 		parent::set_up();
 
-		$context        = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-		$options        = new Options( $context );
+		$this->context  = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$options        = new Options( $this->context );
 		$this->settings = new Module_Sharing_Settings( $options );
 		$this->settings->register();
 	}
@@ -208,6 +215,109 @@ class Module_Sharing_SettingsTest extends SettingsTestCase {
 		$this->settings->set( $test_sharing_settings );
 		$this->assertEquals( array( 'editor', 'subscriber' ), $this->settings->get_shared_roles( 'analytics' ) );
 		$this->assertEmpty( $this->settings->get_shared_roles( 'pagespeed-insights' ) );
+	}
+
+	public function test_merge() {
+		$this->enable_feature( 'dashboardSharing' );
+
+		// Check there are no settings to begin with.
+		$this->assertEmpty( $this->settings->get() );
+
+		$this->assertTrue(
+			$this->settings->merge(
+				array(
+					'search-console' => array(
+						'sharedRoles' => array( 'contributor' ),
+						'management'  => 'owner',
+					),
+					'analytics'      => array(
+						'sharedRoles' => array( 'contributor', 'subscriber' ),
+						'management'  => 'all_admins',
+					),
+				)
+			)
+		);
+
+		// Modules with `null` values are ignored.
+		$this->assertFalse(
+			$this->settings->merge(
+				array(
+					'search-console' => null,
+					'analytics'      => null,
+				)
+			)
+		);
+
+		// Modules with `empty` values are ignored.
+		$this->assertFalse(
+			$this->settings->merge(
+				array(
+					'search-console' => array(),
+					'analytics'      => array(),
+				)
+			)
+		);
+
+		// Merges settings with valid partials and keeps the rest.
+		$test_sharing_settings = array(
+			'search-console'     => array(
+				'sharedRoles' => array( 'contributor', 'editor' ),
+			),
+			'analytics'          => array(
+				'management' => 'owner',
+			),
+			'pagespeed-insights' => array(
+				'sharedRoles' => array( 'author' ),
+				'management'  => 'owner',
+			),
+		);
+		$expected              = array(
+			'search-console'     => array(
+				'sharedRoles' => array( 'contributor', 'editor' ),
+				'management'  => 'owner',
+			),
+			'analytics'          => array(
+				'sharedRoles' => array( 'contributor', 'subscriber' ),
+				'management'  => 'owner',
+			),
+			'pagespeed-insights' => array(
+				'sharedRoles' => array( 'author' ),
+				'management'  => 'owner',
+			),
+		);
+
+		$this->assertTrue( $this->settings->merge( $test_sharing_settings ) );
+		$this->assertEquals( $expected, $this->settings->get() );
+
+		// Keeps the valid parts of partial and discards the invalid parts.
+		$test_sharing_settings = array(
+			'search-console'     => null,
+			'analytics'          => array(
+				'sharedRoles' => array( 'contributor' ),
+				'invalid'     => array( 'invalid' ),
+			),
+			'pagespeed-insights' => array(
+				'sharedRoles' => array( 'subscriber' ),
+				'management'  => null,
+			),
+		);
+		$expected              = array(
+			'search-console'     => array(
+				'sharedRoles' => array( 'contributor', 'editor' ),
+				'management'  => 'owner',
+			),
+			'analytics'          => array(
+				'sharedRoles' => array( 'contributor' ),
+				'management'  => 'owner',
+			),
+			'pagespeed-insights' => array(
+				'sharedRoles' => array( 'subscriber' ),
+				'management'  => 'owner',
+			),
+		);
+
+		$this->assertTrue( $this->settings->merge( $test_sharing_settings ) );
+		$this->assertEquals( $expected, $this->settings->get() );
 	}
 
 }

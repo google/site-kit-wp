@@ -2,9 +2,9 @@
 
 Contributors:      google
 Requires at least: 4.7
-Tested up to:      5.9
+Tested up to:      6.0
 Requires PHP:      5.6
-Stable tag:        1.70.0
+Stable tag:        1.80.0
 License:           Apache License 2.0
 License URI:       https://www.apache.org/licenses/LICENSE-2.0
 Tags:              google, search-console, analytics, adsense, pagespeed-insights, optimize, tag-manager, site-kit
@@ -37,8 +37,8 @@ Site Kit shows key metrics and insights from different Google products:
 * **Optimize:** Use Site Kit to easily set up Optimize- no code editing required. Then, set up A/B tests in Optimize.
 
 == Installation ==
-**Note**: Make sure that your website is live. If your website isn't live yet, Site Kit can't show you any data. 
-However, if you have a staging environment in addition to your production site, Site Kit can display data from your production site in the staging environment. Learn how to use [Site Kit with a staging environment](https://sitekit.withgoogle.com/documentation/using-site-kit-on-a-staging-environment/).
+**Note**: Make sure that your website is live. If your website isn't live yet, Site Kit can't show you any data.
+However, if you have a staging environment in addition to your production site, Site Kit can display data from your production site in the staging environment. Learn how to use [Site Kit with a staging environment](https://sitekit.withgoogle.com/documentation/using-site-kit/staging/).
 
 = Installation from within WordPress =
 
@@ -60,7 +60,7 @@ However, if you have a staging environment in addition to your production site, 
 1. Visit the new **Site Kit** menu.
 2. Follow the instructions in the setup flow.
 3. Go to the main Site Kit dashboard which already displays key metrics from Search Console.
-4. Connect additional Google tools under **Site Kit > Settings**. Learn more about [which tools are right for you](https://sitekit.withgoogle.com/documentation/choose-tools/).
+4. Connect additional Google tools under **Site Kit > Settings**. Learn more about [which tools are right for you](https://sitekit.withgoogle.com/documentation/getting-started/connecting-services/).
 
 == Frequently Asked Questions ==
 
@@ -90,9 +90,11 @@ If you are still seeing this message after a few days, feel free to get in touch
 
 If you’re new to AdSense when you connect via Site Kit, your new AdSense account and your site will need to be manually reviewed and approved for ads by the AdSense team. Ads will not display until your account and site have been approved. [Check out this guide for more information about the approval process and timeline.](https://support.google.com/adsense/answer/76228)
 
-You can check your approval status in Site Kit by going to Settings > Connected Services > AdSense and clicking “Check your site status.” This link will direct you to AdSense. If you see “Ready,” your account and site have been approved and should be displaying ads. If you see “Getting ready…,” your account and site are still under review and your site will not display ads until they have been approved.
+You can check your approval status in Site Kit by going to **Settings > Connected Services > AdSense** and clicking **Check your site status**. This link will direct you to AdSense. If you see “Ready,” your account and site have been approved and should be displaying ads. If you see “Getting ready…,” your account and site are still under review and your site will not display ads until they have been approved.
 
-If the AdSense snippet is successfully embedded on your site **and** your account and site have been approved, but your site is still not showing ads, [contact the AdSense Help Center for assistance](https://support.google.com/adsense/#topic=3373519).
+If Site Kit has successfully added the AdSense snippet to your site and your account and site have been approved, but your site is still not showing ads, [contact the AdSense Help Center for assistance](https://support.google.com/adsense/#topic=3373519).
+
+You can find more information on how Site Kit works with AdSense in our [Managing AdSense guide](https://sitekit.withgoogle.com/documentation/using-site-kit/managing-adsense/).
 
 = Is Site Kit GDPR compliant? =
 
@@ -105,6 +107,266 @@ By default, Site Kit does anonymize IP addresses upon activation of the Google A
 Please create a new topic on our [WordPress.org support forum](https://wordpress.org/support/plugin/google-site-kit/). Be sure to follow the [support forum guidelines](https://wordpress.org/support/guidelines/) when posting.
 
 == Changelog ==
+
+= 1.80.0 =
+
+**Enhanced**
+
+* Update the open text survey question entry field to allow multiline text input. See [#5612](https://github.com/google/site-kit-wp/issues/5612).
+* Update the Thank with Google module's owned settings. See [#5587](https://github.com/google/site-kit-wp/issues/5587).
+* Include specific copy for Thank with Google on the setup success banner. See [#5536](https://github.com/google/site-kit-wp/issues/5536).
+* Add automatic status updates to Thank with Google setup screen. See [#5532](https://github.com/google/site-kit-wp/issues/5532).
+* Implement the Thank with Google setup UI for the no publication scenario. See [#5528](https://github.com/google/site-kit-wp/issues/5528).
+* Implement the Thank with Google setup UI for the publication in review scenario. See [#5527](https://github.com/google/site-kit-wp/issues/5527).
+* Implement the Thank with Google setup UI. See [#5526](https://github.com/google/site-kit-wp/issues/5526).
+* Implement Thank with Google setup UI for the publication setup completed scenario. See [#5525](https://github.com/google/site-kit-wp/issues/5525).
+* Show selected Thank with Google color in settings view. See [#5524](https://github.com/google/site-kit-wp/issues/5524).
+* Update the AdSense settings to display the site status when available. See [#5503](https://github.com/google/site-kit-wp/issues/5503).
+* Improve notice UX/sizing when adjusting Dashboard Sharing settings "view access" setting. See [#5489](https://github.com/google/site-kit-wp/issues/5489).
+* When setup fails with an error from the proxy, show a "get help" link that leads to the relevant support page for the given error code. See [#5479](https://github.com/google/site-kit-wp/issues/5479).
+* Improve validation for Thank with Google settings. See [#5461](https://github.com/google/site-kit-wp/issues/5461).
+* Add a new enhanced radio button component that allows for using graphics for choices. See [#5459](https://github.com/google/site-kit-wp/issues/5459).
+* Add "US only" label to Thank with Google module. See [#5457](https://github.com/google/site-kit-wp/issues/5457).
+* Scaffold Thank with Google module setup flow logic for different scenarios. See [#5455](https://github.com/google/site-kit-wp/issues/5455).
+* Add new selector `getAccountChooserURL` to the `core/user` store. See [#5453](https://github.com/google/site-kit-wp/issues/5453).
+* Implement Thank with Google tag placement infrastructure. See [#5450](https://github.com/google/site-kit-wp/issues/5450).
+* Update module recovery notification to display feedback for errors. See [#5318](https://github.com/google/site-kit-wp/issues/5318).
+
+**Fixed**
+
+* Update location of module recovery alert to be grouped with normal notifications. See [#5550](https://github.com/google/site-kit-wp/issues/5550).
+* Prevent error from appearing when sharing data exists for a non-existent module. See [#5488](https://github.com/google/site-kit-wp/issues/5488).
+* Avoid tracking Google Analytics events for Dashboard Sharing settings when no change is made. See [#5487](https://github.com/google/site-kit-wp/issues/5487).
+* Fix permissions modal issue on non Site Kit pages. See [#5424](https://github.com/google/site-kit-wp/issues/5424).
+
+= 1.79.1 =
+
+**Fixed**
+
+* Fix an issue that could cause Site Kit's dashboard to crash when a theme/plugin loads the Google Web Font Loader JS on Site Kit screens. See [#5572](https://github.com/google/site-kit-wp/issues/5572).
+
+= 1.79.0 =
+
+**Enhanced**
+
+* Show "Recoverable Modules" component for Analytics section of the Search Funnel widget, when on the view-only Dashboard and the Analytics module is in a recoverable state. See [#5470](https://github.com/google/site-kit-wp/issues/5470).
+* Add "experimental" label to Thank with Google module. See [#5452](https://github.com/google/site-kit-wp/issues/5452).
+* Refine the _Escape_ keyboard shortcut in the Dashboard Sharing modal to exit the "Edit Roles" view when its active, rather than closing the modal. See [#5442](https://github.com/google/site-kit-wp/issues/5442).
+* Update the text on the view-only splash screen. See [#5441](https://github.com/google/site-kit-wp/issues/5441).
+* Extend the Dashboard Sharing feature tour to include steps for the settings interface. See [#5382](https://github.com/google/site-kit-wp/issues/5382).
+* Update design of the dashboard CTA for connecting AdSense. See [#5260](https://github.com/google/site-kit-wp/issues/5260).
+* Update the plugin styling in line with Google Material 3. See [#5254](https://github.com/google/site-kit-wp/issues/5254).
+
+**Fixed**
+
+* Improve "View only" menu icon alignment when viewing shared dashboard. See [#5446](https://github.com/google/site-kit-wp/issues/5446).
+
+= 1.78.0 =
+
+**Added**
+
+* Add a "retry" button for HTTP requests that encountered an error on the dashboard. See [#5236](https://github.com/google/site-kit-wp/issues/5236).
+
+**Enhanced**
+
+* Show the zero-data view of the AdSense Overview widget when the `adsenseSetupV2` feature flag is enabled and there is no data. See [#5385](https://github.com/google/site-kit-wp/issues/5385).
+* Update view-only dashboard to use a new placeholder for widgets that rely on recoverable modules. See [#5376](https://github.com/google/site-kit-wp/issues/5376).
+* Clarify "All admins" wording in Dashboard Sharing settings. See [#5374](https://github.com/google/site-kit-wp/issues/5374).
+* Rollback any unsaved changes to dashboard sharing settings when closing the dialog. See [#5372](https://github.com/google/site-kit-wp/issues/5372).
+* Update the warning notice that appears on the Dashboard Sharing modal when changing settings. See [#5371](https://github.com/google/site-kit-wp/issues/5371).
+* Add foundation for Thank with Google settings. See [#5366](https://github.com/google/site-kit-wp/issues/5366).
+* Add foundation for new Thank with Google feature (JS). See [#5365](https://github.com/google/site-kit-wp/issues/5365).
+* Add foundation for new Thank with Google feature (PHP). See [#5364](https://github.com/google/site-kit-wp/issues/5364).
+* Display a message with tooltip instead of disabled Dashboard Sharing view management dropdown. See [#5352](https://github.com/google/site-kit-wp/issues/5352).
+* Improve the notice first shown to non administrators on the initial splash screen. See [#5347](https://github.com/google/site-kit-wp/issues/5347).
+* Add a feature tour for the dashboard sharing. See [#5328](https://github.com/google/site-kit-wp/issues/5328).
+* Move tracking related data into its own global `_googlesitekitTrackingData` variable. See [#5117](https://github.com/google/site-kit-wp/issues/5117).
+* Update tag placement functionality to allow using tags in non-production environments. See [#4774](https://github.com/google/site-kit-wp/issues/4774).
+* Add Dashboard Sharing's Active Modules and Sharable Modules to Site Health. See [#4534](https://github.com/google/site-kit-wp/issues/4534).
+
+**Fixed**
+
+* Fix default Dashboard Navigation section for the view-only Dashboard. See [#5388](https://github.com/google/site-kit-wp/issues/5388).
+* Do not attempt to make requests for module data where the module is shared and also recoverable. See [#5383](https://github.com/google/site-kit-wp/issues/5383).
+* Fix service information alignment in the view-only menu. See [#5381](https://github.com/google/site-kit-wp/issues/5381).
+* Remove "view limited dashboard" sign-in option when only one admin exists on the site. See [#5380](https://github.com/google/site-kit-wp/issues/5380).
+* Prevent data requests on shared dashboard for connected but non-shared modules. See [#5379](https://github.com/google/site-kit-wp/issues/5379).
+* Fix conditions for showing the notice in the bottom of the Dashboard Sharing modal when sharing settings are changed. See [#5375](https://github.com/google/site-kit-wp/issues/5375).
+* Fix the overlapping of some items in the plugin header in small viewports when dashboard sharing is enabled. See [#5373](https://github.com/google/site-kit-wp/issues/5373).
+* Update the tooltip for the "Managed by..." info icon on the Dashboard Sharing modal, when the module management has been set to "Only me". See [#5370](https://github.com/google/site-kit-wp/issues/5370).
+* Fix bug where a secondary admin would always take ownership of Search Console when connecting Site Kit. See [#5363](https://github.com/google/site-kit-wp/issues/5363).
+* Fix dashboard sharing menu footer visibility issue on iPhone. See [#5360](https://github.com/google/site-kit-wp/issues/5360).
+* Fix Dashboard Sharing modal position on small screens. See [#5358](https://github.com/google/site-kit-wp/issues/5358).
+* Do not show "Create Goals" widget on shared dashboard. See [#5351](https://github.com/google/site-kit-wp/issues/5351).
+* Don't show the "Link Analytics and AdSense" CTA on the view-only Dashboard. See [#5346](https://github.com/google/site-kit-wp/issues/5346).
+* Prevent errors on the view-only dashboard from requesting module settings unnecessarily. See [#5310](https://github.com/google/site-kit-wp/issues/5310).
+* Prevent "Can't access necessary data" notice flicker when activating Analytics via GTM setup. See [#5244](https://github.com/google/site-kit-wp/issues/5244).
+* Fix date range selector sometimes remaining open but hidden after selection. See [#4735](https://github.com/google/site-kit-wp/issues/4735).
+
+= 1.77.0 =
+
+**Enhanced**
+
+* Ensure only Search Console data appears in widgets when Analytics data is not shared. See [#5296](https://github.com/google/site-kit-wp/issues/5296).
+* Add module recovery alert to the dashboard. See [#5256](https://github.com/google/site-kit-wp/issues/5256).
+* Require `storeName` parameter for `createErrorStore` function, to provide it as context for errors. See [#5235](https://github.com/google/site-kit-wp/issues/5235).
+* Update the `getErrorForSelector` selector to include selector details in the returning error. See [#5234](https://github.com/google/site-kit-wp/issues/5234).
+* Ensure only users with the `DELEGATE_MODULE_SHARING_MANAGEMENT` permission can modify the `management` value for a module's sharing settings. See [#5229](https://github.com/google/site-kit-wp/issues/5229).
+* Introduce new permissions for viewing Site Kit on the WordPress Dashboard, and in the Admin Bar. See [#5202](https://github.com/google/site-kit-wp/issues/5202).
+* Update asset bootstrapping for non-admins. See [#5189](https://github.com/google/site-kit-wp/issues/5189).
+* Limit widget areas and contexts displayed on the shared dashboard to modules which are shared with the user. See [#5161](https://github.com/google/site-kit-wp/issues/5161).
+* Expose owned module settings to client. See [#5121](https://github.com/google/site-kit-wp/issues/5121).
+* Enhance `PreviewBlock` for compatibility with `prefers-reduced-motion`. See [#5055](https://github.com/google/site-kit-wp/issues/5055).
+* Update the setup error screen to include an error message returned from the proxy server. See [#5038](https://github.com/google/site-kit-wp/issues/5038).
+* Fix styles issue for report tables when they are in the gathering state. See [#4981](https://github.com/google/site-kit-wp/issues/4981).
+* Restrict editing module entity settings to users who have access, either by being the module owner or by having the module shared with them. See [#4825](https://github.com/google/site-kit-wp/issues/4825).
+* Implement module recovery alert notification. See [#4823](https://github.com/google/site-kit-wp/issues/4823).
+* Add settings modal to allow admins to configure Dashboard Sharing. See [#4822](https://github.com/google/site-kit-wp/issues/4822).
+* Add a new component that allows selecting user roles. See [#4821](https://github.com/google/site-kit-wp/issues/4821).
+* Implement new selectors for sharing settings. See [#4795](https://github.com/google/site-kit-wp/issues/4795).
+* Implement new actions for sharing settings. See [#4794](https://github.com/google/site-kit-wp/issues/4794).
+* Implement new selector for shared ownership modules. See [#4791](https://github.com/google/site-kit-wp/issues/4791).
+* Fix single-page dashboard header background colour when using a non-default WordPress admin color scheme. See [#4769](https://github.com/google/site-kit-wp/issues/4769).
+* Update admin notice messages to have `Site Kit by Google:` prefixes. Props carolinan. See [#4721](https://github.com/google/site-kit-wp/issues/4721).
+* Fix alignment issue of data block metric labels on small viewports. See [#4582](https://github.com/google/site-kit-wp/issues/4582).
+* Allow view-only users to make data requests for shared modules with owners. See [#4532](https://github.com/google/site-kit-wp/issues/4532).
+* Redirect from the splash screen to the dashboard for users who are able to view the shared dashboard. See [#4525](https://github.com/google/site-kit-wp/issues/4525).
+* Update styles of the PageSpeed Insights plugin to show footer correctly on mobile. See [#4497](https://github.com/google/site-kit-wp/issues/4497).
+* Redirect back to Site Kit when an error occurs during Google sign-in instead of the WordPress dashboard. See [#3160](https://github.com/google/site-kit-wp/issues/3160).
+
+**Changed**
+
+* Rename AdSense REST data point `GET:earnings` to `GET:report`. See [#4914](https://github.com/google/site-kit-wp/issues/4914).
+
+**Fixed**
+
+* Fix bug that could cause Analytics properties not to be pre-selected properly during setup. See [#5356](https://github.com/google/site-kit-wp/issues/5356).
+* Show widget area headings/subheadings regardless of number of widgets. See [#5332](https://github.com/google/site-kit-wp/issues/5332).
+* Fix a bug where a shared ownership module's owner was not updated if changed when saving the sharing settings for the first time. See [#5307](https://github.com/google/site-kit-wp/issues/5307).
+* Allow users with shared dashboard access to load assets and access REST endpoints. See [#5299](https://github.com/google/site-kit-wp/issues/5299).
+* Prevent admin-related notifications from appearing on view-only dashboard. See [#5295](https://github.com/google/site-kit-wp/issues/5295).
+* Make view-only menu visible on Shared Dashboard. See [#5255](https://github.com/google/site-kit-wp/issues/5255).
+* Update wording for the Analytics tracking exclusions switch. See [#5243](https://github.com/google/site-kit-wp/issues/5243).
+
+= 1.75.0 =
+
+**Enhanced**
+
+* Add new experimental Interaction to Next Paint field metric to PageSpeed dashboard widget. See [#5207](https://github.com/google/site-kit-wp/issues/5207).
+* Update the "Skip to view-only dashboard" button text. See [#5176](https://github.com/google/site-kit-wp/issues/5176).
+* Ensure that snippet toggle in Analytics and Tag Manager correctly inform about existing tags. See [#5143](https://github.com/google/site-kit-wp/issues/5143).
+* Update Analytics snippet toggle behavior to be disabled when the same property is set in the Tag Manager container. See [#5141](https://github.com/google/site-kit-wp/issues/5141).
+* Update Tag Manager container dropdowns to also include the container ID. See [#5108](https://github.com/google/site-kit-wp/issues/5108).
+* Update the Tag Manager `useExistingTagEffect` hook to use AMP container ID when in the primary AMP mode. See [#5044](https://github.com/google/site-kit-wp/issues/5044).
+* Ensure that the snippet toggle in Analytics settings only changes following the user modifying the selected property. See [#4974](https://github.com/google/site-kit-wp/issues/4974).
+* Include snippet toggle in Tag Manager setup flow whenever there is an existing tag. See [#4934](https://github.com/google/site-kit-wp/issues/4934).
+* Include snippet toggle in Analytics setup flow whenever there is an existing tag. See [#4913](https://github.com/google/site-kit-wp/issues/4913).
+* Update info in plugin header for users viewing a shared dashboard. See [#4826](https://github.com/google/site-kit-wp/issues/4826).
+* Limit widgets displayed on the shared dashboard to those which the user has access to. See [#4813](https://github.com/google/site-kit-wp/issues/4813).
+* Add UI for new AdSense setup flow. See [#4763](https://github.com/google/site-kit-wp/issues/4763).
+* Ensure that Tag Manager containers are no longer force-selected based on existing tags. See [#4713](https://github.com/google/site-kit-wp/issues/4713).
+* Remove functionality related to checking for existing Tag Manager tag permission. See [#4709](https://github.com/google/site-kit-wp/issues/4709).
+* Ensure that Analytics properties are no longer force-selected based on existing tags. See [#4703](https://github.com/google/site-kit-wp/issues/4703).
+* Remove functionality related to checking for existing Analytics tag permission. See [#4702](https://github.com/google/site-kit-wp/issues/4702).
+* Remove functionality related to checking for existing AdSense tag permission. See [#4627](https://github.com/google/site-kit-wp/issues/4627).
+* Allow dashboard sharing users to use REST routes when using dashboard sharing view mode. See [#4529](https://github.com/google/site-kit-wp/issues/4529).
+* Add new REST endpoint for updating dashboard sharing settings. See [#4481](https://github.com/google/site-kit-wp/issues/4481).
+
+**Fixed**
+
+* Ensure AdSense account ID and client ID are always set based on API response during setup. See [#5183](https://github.com/google/site-kit-wp/issues/5183).
+* Fix AdSense error message when user does not have an AdSense account. See [#5180](https://github.com/google/site-kit-wp/issues/5180).
+* Fix AdSense logo and progress bar placement in new setup flow. See [#5159](https://github.com/google/site-kit-wp/issues/5159).
+
+= 1.74.0 =
+
+**Enhanced**
+
+* Remove color from disabled tab in Search Console widget on dashboard when Search Console is gathering data. See [#5056](https://github.com/google/site-kit-wp/issues/5056).
+* Add `useViewContext` hook for retrieving the current view context. See [#5011](https://github.com/google/site-kit-wp/issues/5011).
+* Update internal event tracking to include user authentication state. See [#4846](https://github.com/google/site-kit-wp/issues/4846).
+* Add the new DashboardSharingSettingsButton component. See [#4820](https://github.com/google/site-kit-wp/issues/4820).
+* Hide Analytics goals CTA in view-only context. See [#4817](https://github.com/google/site-kit-wp/issues/4817).
+* Add a dropdown menu for users using the "view-only" dashboard sharing mode. See [#4812](https://github.com/google/site-kit-wp/issues/4812).
+* Allow users with shared dashboard access to navigate directly to the shared dashboard from the splash page. See [#4811](https://github.com/google/site-kit-wp/issues/4811).
+* Implement the view only splash screen. See [#4810](https://github.com/google/site-kit-wp/issues/4810).
+* Add an action to recover a module and a selector to get recoverable modules. See [#4803](https://github.com/google/site-kit-wp/issues/4803).
+* Implement UI for new AdSense setup site components. See [#4764](https://github.com/google/site-kit-wp/issues/4764).
+
+**Fixed**
+
+* Update the AdSense SetupMain component to show existing errors. See [#5107](https://github.com/google/site-kit-wp/issues/5107).
+* Avoid an unnecessary network request for Analytics settings on the Site Kit dashboard when Analytics is not active. See [#5091](https://github.com/google/site-kit-wp/issues/5091).
+* Add required versions of PHP and WP to plugin header. See [#5076](https://github.com/google/site-kit-wp/issues/5076).
+* Fix infinite loading state for components relying on gathering or zero data reports. See [#4542](https://github.com/google/site-kit-wp/issues/4542).
+
+= 1.73.0 =
+
+**Enhanced**
+
+* Update Google API client services library for latest AdSense API enhancements. See [#5092](https://github.com/google/site-kit-wp/issues/5092).
+* Update the `Learn More` link to point to the new documentation page. Props smamun19. See [#5077](https://github.com/google/site-kit-wp/issues/5077).
+* Update AdSense V2 state detection logic with new API return values. See [#5052](https://github.com/google/site-kit-wp/issues/5052).
+* Update AdSense V2 code constants to use new API capabilities. See [#5051](https://github.com/google/site-kit-wp/issues/5051).
+* Improve logic for handling timeouts for user surveys on the dashboard. See [#4925](https://github.com/google/site-kit-wp/issues/4925).
+* Update widget registration to declare associated modules. See [#4849](https://github.com/google/site-kit-wp/issues/4849).
+* Ensure permissions modal only appears for authenticated users. See [#4819](https://github.com/google/site-kit-wp/issues/4819).
+* Hide Idea Hub action buttons when viewing dashboard in view-only mode. See [#4816](https://github.com/google/site-kit-wp/issues/4816).
+* Update source links to hide on the view only dashboard. See [#4815](https://github.com/google/site-kit-wp/issues/4815).
+* Add UI for new AdSense components. See [#4762](https://github.com/google/site-kit-wp/issues/4762).
+* Extend and update custom capabilities for viewing dashboard and splash screens with logic for dashboard sharing. See [#4599](https://github.com/google/site-kit-wp/issues/4599).
+* Add REST endpoint for module recovery. See [#4533](https://github.com/google/site-kit-wp/issues/4533).
+
+**Fixed**
+
+* Ensure closed AdSense accounts are not considered for the AdSense account to use with the module. Props sancodes. See [#5050](https://github.com/google/site-kit-wp/issues/5050).
+* Remove lines below "gathering data" text on chart metric selection buttons. See [#5010](https://github.com/google/site-kit-wp/issues/5010).
+* Fix bug that could cause the incorrect notification to briefly appear when Analytics or Search Console is gathering data. See [#5008](https://github.com/google/site-kit-wp/issues/5008).
+* Add "gathering data" overlay to the All Traffic widget when Analytics is gathering data. See [#5006](https://github.com/google/site-kit-wp/issues/5006).
+* Fix zero data state message formatting issues. See [#5001](https://github.com/google/site-kit-wp/issues/5001).
+* Add "gathering data" and "zero data" headers to single URL ("entity") dashboard pages. See [#4983](https://github.com/google/site-kit-wp/issues/4983).
+* Update complete Analytics activation CTA for consistency with new zero data states activation CTA. See [#4966](https://github.com/google/site-kit-wp/issues/4966).
+* Fix authentication issue with WordPress security plugins/other plugins that modify/obscure the WordPress version number. See [#4963](https://github.com/google/site-kit-wp/issues/4963).
+* Fix Google chart labels to no longer be truncated due to lack of space. See [#4944](https://github.com/google/site-kit-wp/issues/4944).
+
+= 1.72.0 =
+
+**Enhanced**
+
+* Update documentation URLs. See [#4935](https://github.com/google/site-kit-wp/issues/4935).
+* Use alternate `viewContext` for non-authenticated users. See [#4814](https://github.com/google/site-kit-wp/issues/4814).
+* Implement modified snippet toggle component for enhanced AdSense setup flow. See [#4761](https://github.com/google/site-kit-wp/issues/4761).
+
+**Fixed**
+
+* Fix bug where user surveys would not trigger when viewing the dashboard. See [#5073](https://github.com/google/site-kit-wp/issues/5073).
+* When Analytics is gathering data, ensure "gathering data" is shown under All Users in the All Traffic widget. See [#5007](https://github.com/google/site-kit-wp/issues/5007).
+* Ensure WordPress dashboard notices appear in Site Kit. See [#4998](https://github.com/google/site-kit-wp/issues/4998).
+* Don't show the "gathering data" blue box CTA on the Admin Bar. See [#4986](https://github.com/google/site-kit-wp/issues/4986).
+* Fix styling issues with table view on mobile when no results are available. See [#4982](https://github.com/google/site-kit-wp/issues/4982).
+* Prevent selection of metrics in the Search Traffic widget when gathering data. See [#4967](https://github.com/google/site-kit-wp/issues/4967).
+* Disable All Traffic pie chart tabs when in gathering or zero data state. See [#4961](https://github.com/google/site-kit-wp/issues/4961).
+* Ensure consistent alignment of content in data blocks. See [#4946](https://github.com/google/site-kit-wp/issues/4946).
+* Fix gathering data message appearing too early on chart components. See [#4945](https://github.com/google/site-kit-wp/issues/4945).
+* Fix display of special characters used in the site title. See [#4852](https://github.com/google/site-kit-wp/issues/4852).
+
+= 1.71.0 =
+
+**Enhanced**
+
+* Update gathering data UI in WordPress Dashboard widget. See [#4908](https://github.com/google/site-kit-wp/issues/4908).
+* Update the Analytics Signup CTA on the WordPress Dashboard. See [#4868](https://github.com/google/site-kit-wp/issues/4868).
+* Store remote features as a persistent option, ensuring features remain enabled when Site Kit is disconnected or reset. See [#4861](https://github.com/google/site-kit-wp/issues/4861).
+* Add additional context to remote feature request. See [#4858](https://github.com/google/site-kit-wp/issues/4858).
+* Prevent surveys from triggering for non-authenticated users on a shared dashboard. See [#4806](https://github.com/google/site-kit-wp/issues/4806).
+* Add notifications to site header when Analytics and/or Search Console are still gathering data. See [#4698](https://github.com/google/site-kit-wp/issues/4698).
+* Update widgets to pass gathering data state to components. See [#4697](https://github.com/google/site-kit-wp/issues/4697).
+* Update CTA placement for the Search Funnel widget on mobile. See [#4695](https://github.com/google/site-kit-wp/issues/4695).
+* Improve the zero state design in the All Traffic Widget. See [#4675](https://github.com/google/site-kit-wp/issues/4675).
+
+**Fixed**
+
+* Ensure request for remote features is made on site connection. See [#4957](https://github.com/google/site-kit-wp/issues/4957).
 
 = 1.70.0 =
 

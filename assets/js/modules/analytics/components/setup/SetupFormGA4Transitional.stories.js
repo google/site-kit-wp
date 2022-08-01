@@ -28,8 +28,22 @@ import {
 } from '../../../../../../tests/js/utils';
 import ModuleSetup from '../../../../components/setup/ModuleSetup';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
+import { createBuildAndReceivers } from '../../../../modules/tagmanager/datastore/__factories__/utils';
 import * as fixtures from '../../datastore/__fixtures__';
 import * as ga4Fixtures from '../../../analytics-4/datastore/__fixtures__';
+
+const accounts = fixtures.accountsPropertiesProfiles.accounts.slice( 0, 1 );
+const properties = [
+	{
+		...fixtures.accountsPropertiesProfiles.properties[ 0 ],
+		websiteUrl: 'http://example.com', // eslint-disable-line sitekit/acronym-case
+	},
+	{
+		...fixtures.accountsPropertiesProfiles.properties[ 1 ],
+	},
+];
+
+const accountID = accounts[ 0 ].id;
 
 function Template() {
 	return <ModuleSetup moduleSlug="analytics" />;
@@ -37,17 +51,28 @@ function Template() {
 
 export const WithoutExistingTag = Template.bind( null );
 WithoutExistingTag.storyName = 'Without Existing Tags';
+WithoutExistingTag.scenario = {
+	label:
+		'Modules/Analytics/Setup/SetupFormGA4Transitional/WithoutExistingTag',
+	delay: 250,
+};
 
 export const WithUAExistingTag = Template.bind( null );
-WithUAExistingTag.storyName = 'With UA Tag';
+WithUAExistingTag.storyName = 'With UA Tag, non-matching property selected';
 WithUAExistingTag.decorators = [
 	( Story ) => {
 		const setupRegistry = ( registry ) => {
+			registry.dispatch( MODULES_ANALYTICS ).selectProperty(
+				properties[ 1 ].id,
+				// eslint-disable-next-line sitekit/acronym-case
+				properties[ 1 ].internalWebPropertyId
+			);
+
 			registry
 				.dispatch( MODULES_ANALYTICS )
-				.receiveGetExistingTag(
-					fixtures.accountsPropertiesProfiles.properties[ 0 ].id
-				);
+				.receiveGetExistingTag( properties[ 0 ].id );
+
+			registry.dispatch( MODULES_ANALYTICS ).setUseSnippet( true );
 		};
 
 		return (
@@ -59,14 +84,20 @@ WithUAExistingTag.decorators = [
 ];
 
 export const WithGA4ExistingTag = Template.bind( null );
-WithGA4ExistingTag.storyName = 'With GA4 Tag';
+WithGA4ExistingTag.storyName = 'With GA4 Tag, non-matching property selected';
 WithGA4ExistingTag.decorators = [
 	( Story ) => {
 		const setupRegistry = ( registry ) => {
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.selectProperty( ga4Fixtures.properties[ 1 ]._id );
+
 			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetExistingTag(
 				// eslint-disable-next-line sitekit/acronym-case
 				ga4Fixtures.webDataStreams[ 0 ].webStreamData.measurementId
 			);
+
+			registry.dispatch( MODULES_ANALYTICS_4 ).setUseSnippet( true );
 		};
 
 		return (
@@ -78,19 +109,52 @@ WithGA4ExistingTag.decorators = [
 ];
 
 export const WithGA4AndUAExistingTag = Template.bind( null );
-WithGA4AndUAExistingTag.storyName = 'With Both Tags';
+WithGA4AndUAExistingTag.storyName =
+	'With Both Tags, both UA+GA4 matching selected properties';
 WithGA4AndUAExistingTag.decorators = [
 	( Story ) => {
 		const setupRegistry = ( registry ) => {
 			registry
 				.dispatch( MODULES_ANALYTICS )
-				.receiveGetExistingTag(
-					fixtures.accountsPropertiesProfiles.properties[ 0 ].id
-				);
+				.receiveGetExistingTag( properties[ 0 ].id );
 			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetExistingTag(
 				// eslint-disable-next-line sitekit/acronym-case
-				ga4Fixtures.webDataStreams[ 0 ].measurementId
+				ga4Fixtures.webDataStreams[ 0 ].webStreamData.measurementId
 			);
+
+			registry.dispatch( MODULES_ANALYTICS ).setUseSnippet( false );
+			registry.dispatch( MODULES_ANALYTICS_4 ).setUseSnippet( false );
+		};
+
+		return (
+			<WithRegistrySetup func={ setupRegistry }>
+				<Story />
+			</WithRegistrySetup>
+		);
+	},
+];
+WithGA4AndUAExistingTag.scenario = {
+	label:
+		'Modules/Analytics/Setup/SetupFormGA4Transitional/WithGA4AndUAExistingTag',
+	delay: 250,
+};
+
+export const WithExistingGTMPropertyNonMatching = Template.bind( null );
+WithExistingGTMPropertyNonMatching.storyName =
+	'With GTM (UA) property that does not match the selected UA property ID';
+WithExistingGTMPropertyNonMatching.decorators = [
+	( Story ) => {
+		const setupRegistry = ( registry ) => {
+			const propertyID = properties[ 1 ].id;
+
+			const { buildAndReceiveWebAndAMP } = createBuildAndReceivers(
+				registry
+			);
+			buildAndReceiveWebAndAMP( {
+				accountID,
+				webPropertyID: propertyID,
+				ampPropertyID: propertyID,
+			} );
 		};
 
 		return (
@@ -101,27 +165,42 @@ WithGA4AndUAExistingTag.decorators = [
 	},
 ];
 
+export const WithExistingGTMPropertyMatching = Template.bind( null );
+WithExistingGTMPropertyMatching.storyName =
+	'With GTM (UA) property that does match the selected UA property ID';
+WithExistingGTMPropertyMatching.decorators = [
+	( Story ) => {
+		const setupRegistry = ( registry ) => {
+			const propertyID = properties[ 0 ].id;
+
+			const { buildAndReceiveWebAndAMP } = createBuildAndReceivers(
+				registry
+			);
+			buildAndReceiveWebAndAMP( {
+				accountID,
+				webPropertyID: propertyID,
+				ampPropertyID: propertyID,
+			} );
+		};
+
+		return (
+			<WithRegistrySetup func={ setupRegistry }>
+				<Story />
+			</WithRegistrySetup>
+		);
+	},
+];
+WithExistingGTMPropertyMatching.scenario = {
+	label:
+		'Modules/Analytics/Setup/SetupFormGA4Transitional/WithExistingGTMPropertyMatching',
+	delay: 250,
+};
+
 export default {
 	title: 'Modules/Analytics/Setup/SetupFormGA4Transitional',
 	decorators: [
 		( Story ) => {
 			const setupRegistry = ( registry ) => {
-				const accounts = fixtures.accountsPropertiesProfiles.accounts.slice(
-					0,
-					1
-				);
-				const properties = [
-					{
-						...fixtures.accountsPropertiesProfiles.properties[ 0 ],
-						websiteUrl: 'http://example.com', // eslint-disable-line sitekit/acronym-case
-					},
-					{
-						...fixtures.accountsPropertiesProfiles.properties[ 1 ],
-					},
-				];
-
-				const accountID = accounts[ 0 ].id;
-
 				provideModules( registry, [
 					{
 						slug: 'analytics',
@@ -151,13 +230,19 @@ export default {
 					} );
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveGetWebDataStreams( ga4Fixtures.webDataStreams, {
-						propertyID: ga4Fixtures.properties[ 0 ]._id,
-					} );
+					.receiveGetWebDataStreamsBatch(
+						ga4Fixtures.webDataStreamsBatchSetup,
+						{
+							propertyIDs: Object.keys(
+								ga4Fixtures.webDataStreamsBatchSetup
+							),
+						}
+					);
 
-				registry
-					.dispatch( MODULES_ANALYTICS )
-					.receiveGetSettings( { adsConversionID: '' } );
+				registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {
+					adsConversionID: '',
+					canUseSnippet: true,
+				} );
 				registry
 					.dispatch( MODULES_ANALYTICS )
 					.receiveGetExistingTag( null );

@@ -20,9 +20,8 @@ import {
 } from '../../utils';
 
 function handleRequest( request ) {
-	if (
-		request.url().startsWith( 'https://accounts.google.com/o/oauth2/auth' )
-	) {
+	const url = request.url();
+	if ( url.startsWith( 'https://accounts.google.com/o/oauth2/auth' ) ) {
 		request.respond( {
 			status: 302,
 			headers: {
@@ -32,29 +31,13 @@ function handleRequest( request ) {
 				),
 			},
 		} );
-	} else if (
-		request
-			.url()
-			.match(
-				'google-site-kit/v1/modules/search-console/data/searchanalytics'
-			)
-	) {
-		request.respond( { status: 200, body: JSON.stringify( {} ) } );
-	} else if (
-		request
-			.url()
-			.match(
-				'google-site-kit/v1/modules/pagespeed-insights/data/pagespeed'
-			)
-	) {
-		request.respond( { status: 200, body: JSON.stringify( {} ) } );
-	} else if (
-		request
-			.url()
-			.match(
-				'google-site-kit/v1/modules/search-console/data/matched-sites'
-			)
-	) {
+	} else if ( url.match( 'search-console/data/searchanalytics' ) ) {
+		request.respond( { status: 200, body: '[]' } );
+	} else if ( url.match( 'pagespeed-insights/data/pagespeed' ) ) {
+		request.respond( { status: 200, body: '{}' } );
+	} else if ( url.match( 'user/data/survey-timeouts' ) ) {
+		request.respond( { status: 200, body: '[]' } );
+	} else if ( url.match( 'search-console/data/matched-sites' ) ) {
 		request.respond( {
 			status: 200,
 			contentType: 'application/json',

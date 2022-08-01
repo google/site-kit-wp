@@ -28,26 +28,25 @@ import Data from 'googlesitekit-data';
 import {
 	AdsConversionIDTextField,
 	AnonymizeIPSwitch,
-	ExistingTagNotice,
-	TrackingExclusionSwitches,
 	ExistingGTMPropertyNotice,
+	TrackingExclusionSwitches,
 } from '../common';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import { MODULES_ANALYTICS } from '../../datastore/constants';
 import { MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
 import SettingsControls from './SettingsControls';
 import GA4SettingsControls from './GA4SettingsControls';
+import EntityOwnershipChangeNotice from '../../../../components/settings/EntityOwnershipChangeNotice';
 import { isValidAccountID } from '../../util';
 const { useSelect } = Data;
 
-export default function SettingsForm() {
+export default function SettingsForm( {
+	hasAnalyticsAccess,
+	hasAnalytics4Access,
+} ) {
 	const accountID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getAccountID()
 	);
-	const hasExistingTag = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).hasExistingTag()
-	);
-
 	const useAnalyticsSnippet = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getUseSnippet()
 	);
@@ -67,12 +66,11 @@ export default function SettingsForm() {
 				moduleSlug="analytics"
 				storeName={ MODULES_ANALYTICS }
 			/>
-			<ExistingTagNotice />
-			{ ! hasExistingTag && <ExistingGTMPropertyNotice /> }
+			<ExistingGTMPropertyNotice />
 
-			<SettingsControls />
+			<SettingsControls hasModuleAccess={ hasAnalyticsAccess } />
 
-			<GA4SettingsControls />
+			<GA4SettingsControls hasModuleAccess={ hasAnalytics4Access } />
 
 			{ isValidAccountID( accountID ) && (
 				<Fragment>
@@ -80,6 +78,10 @@ export default function SettingsForm() {
 					{ showTrackingExclusion && <TrackingExclusionSwitches /> }
 					<AdsConversionIDTextField />
 				</Fragment>
+			) }
+
+			{ hasAnalyticsAccess && (
+				<EntityOwnershipChangeNotice slug="analytics" />
 			) }
 		</Fragment>
 	);

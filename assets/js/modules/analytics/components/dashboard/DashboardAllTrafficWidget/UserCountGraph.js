@@ -60,7 +60,7 @@ export default function UserCountGraph( props ) {
 	);
 	const graphLineColor = useSelect(
 		( select ) =>
-			select( CORE_UI ).getValue( UI_DIMENSION_COLOR ) || '#1a73e8'
+			select( CORE_UI ).getValue( UI_DIMENSION_COLOR ) || '#3c7251'
 	);
 
 	const [ xSmallOnly, setXSmallOnly ] = useState(
@@ -228,12 +228,12 @@ UserCountGraph.chartOptions = {
 	curveType: 'function',
 	height: 340,
 	width: '100%',
-	colors: [ '#1a73e8' ],
+	colors: [ '#3c7251' ],
 	chartArea: {
-		left: '1%',
+		left: 7,
+		right: 40,
 		height: 300,
 		top: 21,
-		width: '90%',
 	},
 	legend: {
 		position: 'none',
@@ -275,7 +275,7 @@ UserCountGraph.chartOptions = {
 		},
 	},
 	crosshair: {
-		color: '#1a73e8',
+		color: '#3c7251',
 		opacity: 0.1,
 		orientation: 'vertical',
 	},

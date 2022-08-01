@@ -34,6 +34,7 @@ import AdminBarImpressions from './AdminBarImpressions';
 import AdminBarClicks from './AdminBarClicks';
 import AdminBarUniqueVisitors from './AdminBarUniqueVisitors';
 import AdminBarSessions from './AdminBarSessions';
+import AdminBarActivateAnalyticsCTA from './AdminBarActivateAnalyticsCTA';
 import ActivateModuleCTA from '../ActivateModuleCTA';
 import CompleteModuleActivationCTA from '../CompleteModuleActivationCTA';
 import AdminBarZeroData from './AdminBarZeroData';
@@ -43,6 +44,7 @@ import { CORE_WIDGETS } from '../../googlesitekit/widgets/datastore/constants';
 import { HIDDEN_CLASS } from '../../googlesitekit/widgets/util/constants';
 import ReportZero from '../ReportZero';
 import { withWidgetComponentProps } from '../../googlesitekit/widgets/util/get-widget-component-props';
+import { useFeature } from '../../hooks/useFeature';
 const { useSelect } = Data;
 
 // Widget slugs.
@@ -66,6 +68,8 @@ const AdminBarSessionsWidget = withWidgetComponentProps( WIDGET_SESSIONS )(
 );
 
 export default function AdminBarWidgets() {
+	const zeroDataStatesEnabled = useFeature( 'zeroDataStates' );
+
 	const analyticsModuleConnected = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleConnected( 'analytics' )
 	);
@@ -129,14 +133,15 @@ export default function AdminBarWidgets() {
 
 				{ ( ! analyticsModuleConnected || ! analyticsModuleActive ) && (
 					<Cell lgSize={ 6 } mdSize={ 4 }>
-						{ ! analyticsModuleActive && (
-							<ActivateModuleCTA moduleSlug="analytics" />
+						{ zeroDataStatesEnabled && (
+							<AdminBarActivateAnalyticsCTA />
 						) }
-
-						{ analyticsModuleActive &&
-							! analyticsModuleConnected && (
+						{ ! zeroDataStatesEnabled &&
+							( analyticsModuleActive ? (
 								<CompleteModuleActivationCTA moduleSlug="analytics" />
-							) }
+							) : (
+								<ActivateModuleCTA moduleSlug="analytics" />
+							) ) }
 					</Cell>
 				) }
 			</Row>

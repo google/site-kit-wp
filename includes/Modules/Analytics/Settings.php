@@ -58,7 +58,7 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 
 				// `canUseSnippet` is a computed setting, so this sets the value if settings have not been saved yet.
 				// This filter is documented below.
-				$can_use_snippet = apply_filters( 'googlesitekit_analytics_can_use_snippet', true );
+				$can_use_snippet = apply_filters( 'googlesitekit_analytics_can_use_snippet', true, '' );
 				if ( is_bool( $can_use_snippet ) ) {
 					$default['canUseSnippet'] = $can_use_snippet;
 				}
@@ -93,6 +93,7 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 				if ( ! empty( $property_id ) ) {
 					$option['propertyID'] = $property_id;
 				}
+				$property_id = isset( $option['propertyID'] ) ? $option['propertyID'] : '';
 
 				/**
 				 * Filters the Google Analytics internal web property ID to use.
@@ -139,9 +140,12 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 				 * is disconnected, ensuring the Analytics snippet is always included.
 				 *
 				 * @since 1.28.0
-				 * @param bool $can_use_snippet Whether or not `useSnippet` can control snippet output. Default: `true`.
+				 * @since 1.75.0 Added the `$property_id` parameter.
+				 *
+				 * @param bool   $can_use_snippet Whether or not `useSnippet` can control snippet output. Default: `true`.
+				 * @param string $property_id     The current property ID.
 				 */
-				$can_use_snippet = apply_filters( 'googlesitekit_analytics_can_use_snippet', true );
+				$can_use_snippet = apply_filters( 'googlesitekit_analytics_can_use_snippet', true, $property_id );
 				if ( is_bool( $can_use_snippet ) ) {
 					$option['canUseSnippet'] = $can_use_snippet;
 				}
@@ -210,7 +214,12 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 					$option['anonymizeIP'] = (bool) $option['anonymizeIP'];
 				}
 				if ( isset( $option['trackingDisabled'] ) ) {
-					$option['trackingDisabled'] = (array) $option['trackingDisabled'];
+					// Prevent other options from being saved if 'loggedinUsers' is selected.
+					if ( in_array( 'loggedinUsers', $option['trackingDisabled'], true ) ) {
+						$option['trackingDisabled'] = array( 'loggedinUsers' );
+					} else {
+						$option['trackingDisabled'] = (array) $option['trackingDisabled'];
+					}
 				}
 				if ( isset( $option['adsenseLinked'] ) ) {
 					$option['adsenseLinked'] = (bool) $option['adsenseLinked'];

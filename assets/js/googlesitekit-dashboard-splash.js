@@ -26,10 +26,8 @@ import { render } from '@wordpress/element';
  * Internal dependencies
  */
 import { clearWebStorage } from './util';
-import './components/legacy-notifications';
 import Root from './components/Root';
 import DashboardSplashApp from './components/dashboard-splash/DashboardSplashApp';
-import NotificationCounter from './components/legacy-notifications/notification-counter';
 import { VIEW_CONTEXT_DASHBOARD_SPLASH } from './googlesitekit/constants';
 
 // Initialize the app once the DOM is ready.
@@ -45,7 +43,6 @@ domReady( () => {
 	if ( renderTarget ) {
 		render(
 			<Root viewContext={ VIEW_CONTEXT_DASHBOARD_SPLASH }>
-				<NotificationCounter />
 				<DashboardSplashApp />
 			</Root>,
 			renderTarget

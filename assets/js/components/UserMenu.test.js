@@ -70,7 +70,7 @@ describe( 'UserMenu', () => {
 			container = render( <UserMenu />, { registry } ).container;
 			fireEvent.click(
 				container.querySelector(
-					'.googlesitekit-header__dropdown span'
+					'.googlesitekit-user-selector .googlesitekit-header__dropdown'
 				)
 			);
 			menu = container.querySelector( '#user-menu' );

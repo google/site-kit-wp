@@ -36,6 +36,7 @@ import { createTestRegistry, createWaitForRegistry } from './utils';
  * @param {History}  [options.history]       History object for React Router. Defaults to MemoryHistory.
  * @param {string}   [options.route]         Route to pass to history as starting route.
  * @param {boolean}  [options.inView]        If the component should consider itself in-view (see `useInView` hook).
+ * @param {string}   [options.viewContext]   `viewContext` to use for this component and its children.
  * @return {Object} An object containing all of {@link https://testing-library.com/docs/react-testing-library/api#render-result} as well as the `registry`.
  */
 const customRender = ( ui, options = {} ) => {
@@ -46,6 +47,7 @@ const customRender = ( ui, options = {} ) => {
 		history = createMemoryHistory(),
 		route = undefined,
 		inView = true,
+		viewContext = null,
 		...renderOptions
 	} = options;
 
@@ -81,7 +83,9 @@ const customRender = ( ui, options = {} ) => {
 			<InViewProvider value={ inViewState }>
 				<RegistryProvider value={ registry }>
 					<FeaturesProvider value={ enabledFeatures }>
-						<Router history={ history }>{ children }</Router>
+						<ViewContextProvider value={ viewContext }>
+							<Router history={ history }>{ children }</Router>
+						</ViewContextProvider>
 					</FeaturesProvider>
 				</RegistryProvider>
 			</InViewProvider>

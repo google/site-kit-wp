@@ -40,9 +40,8 @@ export default function GA4PropertyNotice( { notice, children } ) {
 			type={ TYPE_INFO }
 			LearnMore={ () => (
 				<Link
-					href="https://sitekit.withgoogle.com/documentation/ga4-analytics-property/"
+					href="https://sitekit.withgoogle.com/documentation/using-site-kit/ga4/"
 					external
-					inherit
 				>
 					{ __( 'Learn more', 'google-site-kit' ) }
 				</Link>

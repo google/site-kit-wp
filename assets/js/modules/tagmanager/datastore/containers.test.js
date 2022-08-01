@@ -29,6 +29,7 @@ import {
 } from '../../../../../tests/js/utils';
 import * as factories from './__factories__';
 import * as fixtures from './__fixtures__';
+import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 
 describe( 'modules/tagmanager containers', () => {
 	let registry;
@@ -447,7 +448,14 @@ describe( 'modules/tagmanager containers', () => {
 				const error = registry
 					.select( MODULES_TAGMANAGER )
 					.getErrorForSelector( 'getContainers', [ accountID ] );
-				expect( error ).toEqual( errorResponse );
+				expect( error ).toEqual( {
+					...errorResponse,
+					selectorData: {
+						args: [ accountID ],
+						name: 'getContainers',
+						storeName: MODULES_TAGMANAGER,
+					},
+				} );
 				expect( console ).toHaveErrored();
 			} );
 		} );
@@ -591,6 +599,95 @@ describe( 'modules/tagmanager containers', () => {
 						.select( MODULES_TAGMANAGER )
 						.getAMPContainers( accountID )
 				).toEqual( ampContainers );
+			} );
+		} );
+
+		describe( 'getPrimaryContainerID', () => {
+			it( 'returns undefined when isPrimaryAMP is not loaded', () => {
+				const account = factories.accountBuilder();
+				const [ webContainer ] = factories.buildContainers( 1, {
+					// eslint-disable-next-line sitekit/acronym-case
+					accountId: account.accountId,
+					usageContext: [ CONTEXT_WEB ],
+				} );
+				const [ ampContainer ] = factories.buildContainers( 1, {
+					// eslint-disable-next-line sitekit/acronym-case
+					accountId: account.accountId,
+					usageContext: [ CONTEXT_AMP ],
+				} );
+
+				registry
+					.dispatch( MODULES_TAGMANAGER )
+					.setContainerID( webContainer );
+				registry
+					.dispatch( MODULES_TAGMANAGER )
+					.setAMPContainerID( ampContainer );
+
+				expect(
+					registry
+						.select( MODULES_TAGMANAGER )
+						.getPrimaryContainerID()
+				).toBeUndefined();
+			} );
+			it( 'returns webContainer when isPrimaryAMP is false', () => {
+				const account = factories.accountBuilder();
+				const [ webContainer ] = factories.buildContainers( 1, {
+					// eslint-disable-next-line sitekit/acronym-case
+					accountId: account.accountId,
+					usageContext: [ CONTEXT_WEB ],
+				} );
+				const [ ampContainer ] = factories.buildContainers( 1, {
+					// eslint-disable-next-line sitekit/acronym-case
+					accountId: account.accountId,
+					usageContext: [ CONTEXT_AMP ],
+				} );
+
+				registry.dispatch( CORE_SITE ).receiveSiteInfo( {
+					ampMode: 'reader',
+				} );
+
+				registry
+					.dispatch( MODULES_TAGMANAGER )
+					.setContainerID( webContainer );
+				registry
+					.dispatch( MODULES_TAGMANAGER )
+					.setAMPContainerID( ampContainer );
+
+				expect(
+					registry
+						.select( MODULES_TAGMANAGER )
+						.getPrimaryContainerID()
+				).toEqual( webContainer );
+			} );
+			it( 'returns ampContainer when isPrimaryAMP is true', () => {
+				const account = factories.accountBuilder();
+				const [ webContainer ] = factories.buildContainers( 1, {
+					// eslint-disable-next-line sitekit/acronym-case
+					accountId: account.accountId,
+					usageContext: [ CONTEXT_WEB ],
+				} );
+				const [ ampContainer ] = factories.buildContainers( 1, {
+					// eslint-disable-next-line sitekit/acronym-case
+					accountId: account.accountId,
+					usageContext: [ CONTEXT_AMP ],
+				} );
+
+				registry.dispatch( CORE_SITE ).receiveSiteInfo( {
+					ampMode: 'primary',
+				} );
+
+				registry
+					.dispatch( MODULES_TAGMANAGER )
+					.setContainerID( webContainer );
+				registry
+					.dispatch( MODULES_TAGMANAGER )
+					.setAMPContainerID( ampContainer );
+
+				expect(
+					registry
+						.select( MODULES_TAGMANAGER )
+						.getPrimaryContainerID()
+				).toEqual( ampContainer );
 			} );
 		} );
 	} );

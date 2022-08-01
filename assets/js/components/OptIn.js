@@ -25,11 +25,7 @@ import classnames from 'classnames';
 /**
  * WordPress dependencies
  */
-import {
-	useCallback,
-	createInterpolateElement,
-	useContext,
-} from '@wordpress/element';
+import { useCallback, createInterpolateElement } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -40,10 +36,15 @@ import { CORE_USER } from '../googlesitekit/datastore/user/constants';
 import { toggleTracking, trackEvent } from '../util/tracking';
 import Checkbox from './Checkbox';
 import Link from './Link';
-import ViewContextContext from './Root/ViewContextContext';
+import useViewContext from '../hooks/useViewContext';
 const { useSelect, useDispatch } = Data;
 
-export default function OptIn( { id, name, className } ) {
+export default function OptIn( {
+	id = 'googlesitekit-opt-in',
+	name = 'optIn',
+	className,
+	trackEventCategory,
+} ) {
 	const enabled = useSelect( ( select ) =>
 		select( CORE_USER ).isTrackingEnabled()
 	);
@@ -57,7 +58,7 @@ export default function OptIn( { id, name, className } ) {
 	);
 
 	const { setTrackingEnabled } = useDispatch( CORE_USER );
-	const viewContext = useContext( ViewContextContext );
+	const viewContext = useViewContext();
 
 	const handleOptIn = useCallback(
 		async ( e ) => {
@@ -68,11 +69,14 @@ export default function OptIn( { id, name, className } ) {
 			if ( ! responseError ) {
 				toggleTracking( response.enabled );
 				if ( response.enabled ) {
-					trackEvent( viewContext, 'tracking_optin' );
+					trackEvent(
+						trackEventCategory || viewContext,
+						'tracking_optin'
+					);
 				}
 			}
 		},
-		[ setTrackingEnabled, viewContext ]
+		[ setTrackingEnabled, trackEventCategory, viewContext ]
 	);
 
 	return (
@@ -106,7 +110,6 @@ export default function OptIn( { id, name, className } ) {
 										'https://policies.google.com/privacy'
 									}
 									external
-									inherit
 								/>
 							),
 						}
@@ -127,9 +130,5 @@ OptIn.propTypes = {
 	id: PropTypes.string,
 	name: PropTypes.string,
 	className: PropTypes.string,
-};
-
-OptIn.defaultProps = {
-	id: 'googlesitekit-opt-in',
-	name: 'optIn',
+	trackEventCategory: PropTypes.string,
 };

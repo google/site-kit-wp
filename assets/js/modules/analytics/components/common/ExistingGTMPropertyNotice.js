@@ -30,29 +30,43 @@ import { MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
 const { useSelect } = Data;
 
 export default function ExistingGTMPropertyNotice() {
+	const propertyID = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getPropertyID()
+	);
+
 	const gtmAnalyticsPropertyID = useSelect( ( select ) =>
 		select( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID()
 	);
-	const gtmAnalyticsPropertyIDPermission = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).hasTagPermission( gtmAnalyticsPropertyID )
-	);
 
-	// Don't display this notice if:
-	if (
-		! gtmAnalyticsPropertyID || // There is no GTM tag.
-		! gtmAnalyticsPropertyIDPermission // The current user doesn't have permissions for the GTM tag.
-	) {
+	if ( ! gtmAnalyticsPropertyID ) {
 		return null;
 	}
 
-	const message = sprintf(
-		/* translators: %s: Analytics tag ID */
-		__(
-			'You’re already using Google Analytics through Google Tag Manager with the property %s. Site Kit will therefore not place an Analytics tag because Tag Manager already covers it.',
-			'google-site-kit'
-		),
-		gtmAnalyticsPropertyID
-	);
+	if ( gtmAnalyticsPropertyID === propertyID ) {
+		return (
+			<p>
+				{ sprintf(
+					/* translators: %s: GTM property ID */
+					__(
+						'An existing Google Tag Manager property was found on your site with the ID %s. Since it refers to the same property selected here, Site Kit will not place its own tag and rely on the existing one. If later on you decide to remove this property, Site Kit can place a new tag for you.',
+						'google-site-kit'
+					),
+					gtmAnalyticsPropertyID
+				) }
+			</p>
+		);
+	}
 
-	return <p>{ message }</p>;
+	return (
+		<p>
+			{ sprintf(
+				/* translators: %s: GTM property ID */
+				__(
+					'An existing Google Tag Manager property was found on your site with the ID %s.',
+					'google-site-kit'
+				),
+				gtmAnalyticsPropertyID
+			) }
+		</p>
+	);
 }

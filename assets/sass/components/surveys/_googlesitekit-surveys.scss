@@ -43,25 +43,6 @@
 		}
 	}
 
-	.googlesitekit-survey__open-text {
-
-		.googlesitekit-survey__body {
-			align-items: center;
-			display: flex;
-			flex-direction: column;
-			justify-content: center;
-			padding: $grid-gap-phone 0;
-		}
-
-		.mdc-text-field {
-			margin-bottom: $grid-gap-phone;
-		}
-
-		.mdc-text-field-helper-line {
-			padding-left: 0;
-		}
-	}
-
 	.googlesitekit-survey__choices {
 		display: flex;
 		flex-wrap: nowrap;
@@ -84,10 +65,11 @@
 		}
 
 		p {
-			border-top: 1px solid $c-iron;
-			color: $c-boulder;
+			border-top: 1px solid $c-utility-divider;
+			color: $c-surfaces-on-surface-variant;
 			font-family: $f-primary;
-			font-size: 0.75rem;
+			font-size: $fs-body-sm;
+			letter-spacing: $ls-xs;
 			margin: 12px 0 0;
 			padding-top: 12px;
 			text-align: left;
@@ -115,10 +97,11 @@
 	.googlesitekit-survey__choice {
 
 		p {
-			color: $c-boulder;
+			color: $c-surfaces-on-surface-variant;
 			font-family: $f-primary;
-			font-size: 0.75rem;
-			line-height: 1.16;
+			font-size: $fs-body-sm;
+			letter-spacing: $ls-xs;
+			line-height: $lh-body-sm;
 			margin: 6px 0 0;
 		}
 
@@ -199,7 +182,8 @@
 
 				.mdc-text-field__input {
 					background: transparent;
-					font-size: 12px;
+					font-size: $fs-body-sm;
+					letter-spacing: $ls-xs;
 				}
 			}
 

@@ -89,8 +89,8 @@ class REST_Tracking_Consent_Controller {
 	 * @return array Modified array of routes that contains tracking related routes.
 	 */
 	private function get_rest_routes( $routes ) {
-		$can_authenticate = function () {
-			return current_user_can( Permissions::AUTHENTICATE );
+		$can_access_tracking = function() {
+			return current_user_can( Permissions::VIEW_SPLASH ) || current_user_can( Permissions::VIEW_DASHBOARD );
 		};
 
 		$tracking_callback = function ( WP_REST_Request $request ) {
@@ -110,7 +110,7 @@ class REST_Tracking_Consent_Controller {
 						array(
 							'methods'             => WP_REST_Server::READABLE,
 							'callback'            => $tracking_callback,
-							'permission_callback' => $can_authenticate,
+							'permission_callback' => $can_access_tracking,
 						),
 						array(
 							'methods'             => WP_REST_Server::CREATABLE,
@@ -122,7 +122,7 @@ class REST_Tracking_Consent_Controller {
 
 								return $tracking_callback( $request );
 							},
-							'permission_callback' => $can_authenticate,
+							'permission_callback' => $can_access_tracking,
 							'args'                => array(
 								'data' => array(
 									'type'       => 'object',

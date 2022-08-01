@@ -31,8 +31,8 @@ import { addQueryArgs } from '@wordpress/url';
  * Internal dependencies
  */
 import { deleteItem, getItem, getKeys, setItem } from './cache';
-import { stringifyObject } from '../../util';
-import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '../../util/errors';
+import { stringifyObject, HOUR_IN_SECONDS } from '../../util';
+import { isAuthError, isPermissionScopeError } from '../../util/errors';
 import { trackAPIError } from '../../util/api';
 
 // Specific error to handle here, see below.
@@ -93,9 +93,9 @@ export const dispatchAPIError = ( error ) => {
 	// Kind of a hack, but scales to all components.
 	const dispatch = global.googlesitekit?.data?.dispatch?.( CORE_USER );
 	if ( dispatch ) {
-		if ( error.code === ERROR_CODE_MISSING_REQUIRED_SCOPE ) {
+		if ( isPermissionScopeError( error ) ) {
 			dispatch.setPermissionScopeError( error );
-		} else if ( error.data?.reconnectURL ) {
+		} else if ( isAuthError( error ) ) {
 			dispatch.setAuthError( error );
 		}
 	}
@@ -125,7 +125,7 @@ export const siteKitRequest = async (
 	datapoint,
 	{
 		bodyParams,
-		cacheTTL = 3600,
+		cacheTTL = HOUR_IN_SECONDS,
 		method = 'GET',
 		queryParams,
 		useCache = undefined,
@@ -229,7 +229,7 @@ export const get = async (
 	identifier,
 	datapoint,
 	data,
-	{ cacheTTL = 3600, useCache = undefined, signal } = {}
+	{ cacheTTL = HOUR_IN_SECONDS, useCache = undefined, signal } = {}
 ) => {
 	return siteKitRequest( type, identifier, datapoint, {
 		cacheTTL,
