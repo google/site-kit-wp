@@ -30,7 +30,7 @@ const {
 	userIDHash,
 	isAuthenticated,
 	userRoles,
-} = global._googlesitekitBaseData || {};
+} = global._googlesitekitTrackingData || {};
 
 const { GOOGLESITEKIT_VERSION: pluginVersion } = global;
 

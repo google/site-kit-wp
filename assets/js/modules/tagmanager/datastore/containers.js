@@ -409,7 +409,7 @@ const baseSelectors = {
 	/**
 	 * Gets primary container ID based on the AMP mode.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.75.0
 	 *
 	 * @return {(string|undefined)} Primary container ID or `undefined` if not loaded yet.
 	 */

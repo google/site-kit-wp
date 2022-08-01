@@ -19,14 +19,97 @@
 /**
  * Internal dependencies
  */
+import {
+	provideModuleRegistrations,
+	provideModules,
+	provideSiteConnection,
+	provideUserInfo,
+} from '../../../../tests/js/utils';
 import DashboardSharingSettingsButton from './DashboardSharingSettingsButton';
+import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
+import { MODULES_PAGESPEED_INSIGHTS } from '../../modules/pagespeed-insights/datastore/constants';
+import { MODULES_SEARCH_CONSOLE } from '../../modules/search-console/datastore/constants';
+import { MODULES_ANALYTICS } from '../../modules/analytics/datastore/constants';
+import {
+	sharingSettings,
+	modules,
+	roles,
+} from './DashboardSharingSettings/__fixtures__';
+import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
+import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 
-const Template = () => <DashboardSharingSettingsButton />;
+const Template = ( { setupRegistry = () => {}, ...args } ) => (
+	<WithRegistrySetup func={ setupRegistry }>
+		<DashboardSharingSettingsButton { ...args } />
+	</WithRegistrySetup>
+);
 
 export const DefaultDashboardSharingSettingsButton = Template.bind( {} );
 DefaultDashboardSharingSettingsButton.storyName = 'Default';
+DefaultDashboardSharingSettingsButton.args = {
+	setupRegistry: ( registry ) => {
+		registry.dispatch( CORE_USER ).receiveCapabilities( {
+			'googlesitekit_manage_module_sharing_options::["search-console"]': true,
+			'googlesitekit_manage_module_sharing_options::["analytics"]': true,
+		} );
+	},
+};
+
+export const MultipleAdminsDashboardSharingSettingsButton = Template.bind( {} );
+MultipleAdminsDashboardSharingSettingsButton.storyName = 'Multiple Admins';
+MultipleAdminsDashboardSharingSettingsButton.args = {
+	setupRegistry: ( registry ) => {
+		provideSiteConnection( registry, {
+			hasMultipleAdmins: true,
+		} );
+
+		registry.dispatch( CORE_USER ).receiveCapabilities( {
+			'googlesitekit_delegate_module_sharing_management::["search-console"]': true,
+			'googlesitekit_delegate_module_sharing_management::["pagespeed-insights"]': true,
+			'googlesitekit_manage_module_sharing_options::["search-console"]': true,
+			'googlesitekit_manage_module_sharing_options::["analytics"]': true,
+		} );
+	},
+};
 
 export default {
 	title: 'Components/DashboardSharingSettingsButton',
-	component: DashboardSharingSettingsButton,
+	decorators: [
+		( Story, { args } ) => {
+			const setupRegistry = ( registry ) => {
+				registry
+					.dispatch( CORE_MODULES )
+					.receiveGetSharingSettings( sharingSettings );
+				registry
+					.dispatch( CORE_MODULES )
+					.receiveShareableRoles( roles );
+				registry
+					.dispatch( CORE_MODULES )
+					.receiveSharedOwnershipModules( [ 'pagespeed-insights' ] );
+
+				provideModules( registry, modules );
+				provideModuleRegistrations( registry );
+				provideUserInfo( registry );
+
+				registry
+					.dispatch( MODULES_PAGESPEED_INSIGHTS )
+					.receiveGetSettings( { ownerID: 1 } );
+				registry
+					.dispatch( MODULES_SEARCH_CONSOLE )
+					.receiveGetSettings( { ownerID: 1 } );
+				registry
+					.dispatch( MODULES_ANALYTICS )
+					.receiveGetSettings( { ownerID: 1 } );
+
+				// Call story-specific setup.
+				args.setupRegistry( registry );
+			};
+
+			return (
+				<WithRegistrySetup func={ setupRegistry }>
+					<Story />
+				</WithRegistrySetup>
+			);
+		},
+	],
 };

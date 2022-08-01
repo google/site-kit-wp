@@ -43,12 +43,10 @@ import {
 	PERMISSION_MANAGE_OPTIONS,
 } from '../../googlesitekit/datastore/user/constants';
 import { trackEvent } from '../../util/tracking';
-import { useFeature } from '../../hooks/useFeature';
 import useViewContext from '../../hooks/useViewContext';
 const { useSelect } = Data;
 
 function SetupSuccessBannerNotification() {
-	const unifiedDashboardEnabled = useFeature( 'unifiedDashboard' );
 	const slug = getQueryParameter( 'slug' );
 	const viewContext = useViewContext();
 	const modules = useSelect( ( select ) =>
@@ -171,9 +169,7 @@ function SetupSuccessBannerNotification() {
 			};
 
 			if ( 'pagespeed-insights' === slug ) {
-				anchor.link = unifiedDashboardEnabled
-					? '#speed'
-					: '#googlesitekit-pagespeed-header';
+				anchor.link = '#speed';
 				anchor.label = __(
 					'Jump to the bottom of the dashboard to see how fast your home page is',
 					'google-site-kit'
@@ -201,6 +197,21 @@ function SetupSuccessBannerNotification() {
 					label: __( 'Go to Settings', 'google-site-kit' ),
 					url: `${ settingsAdminURL }#/connect-more-services`,
 					target: LEARN_MORE_TARGET.INTERNAL,
+				};
+			}
+
+			if ( 'thank-with-google' === slug ) {
+				winData.description = __(
+					'Thank with Google is visible to your visitors. To see metrics,',
+					'google-site-kit'
+				);
+				winData.learnMore = {
+					label: __(
+						'open the administrator panel.',
+						'google-site-kit'
+					),
+					url: 'https://publishercenter.google.com/',
+					target: LEARN_MORE_TARGET.EXTERNAL,
 				};
 			}
 

@@ -25,7 +25,9 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
+import useViewOnly from '../../../hooks/useViewOnly';
 import { MODULES_ANALYTICS } from '../../../modules/analytics/datastore/constants';
 import { MODULES_SEARCH_CONSOLE } from '../../../modules/search-console/datastore/constants';
 import GatheringDataNotification from './GatheringDataNotification';
@@ -33,11 +35,20 @@ import ZeroDataNotification from './ZeroDataNotification';
 const { useSelect, useInViewSelect } = Data;
 
 export default function ZeroDataStateNotifications() {
+	const viewOnly = useViewOnly();
 	const isAnalyticsConnected = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleConnected( 'analytics' )
 	);
+	const canViewSharedAnalytics = useSelect( ( select ) => {
+		if ( ! viewOnly ) {
+			return true;
+		}
+
+		return select( CORE_USER ).canViewSharedModule( 'analytics' );
+	} );
+
 	const analyticsGatheringData = useInViewSelect( ( select ) =>
-		isAnalyticsConnected
+		isAnalyticsConnected && canViewSharedAnalytics
 			? select( MODULES_ANALYTICS ).isGatheringData()
 			: false
 	);
@@ -45,7 +56,9 @@ export default function ZeroDataStateNotifications() {
 		select( MODULES_SEARCH_CONSOLE ).isGatheringData()
 	);
 	const analyticsHasZeroData = useInViewSelect( ( select ) =>
-		isAnalyticsConnected ? select( MODULES_ANALYTICS ).hasZeroData() : false
+		isAnalyticsConnected && canViewSharedAnalytics
+			? select( MODULES_ANALYTICS ).hasZeroData()
+			: false
 	);
 	const searchConsoleHasZeroData = useInViewSelect( ( select ) =>
 		select( MODULES_SEARCH_CONSOLE ).hasZeroData()

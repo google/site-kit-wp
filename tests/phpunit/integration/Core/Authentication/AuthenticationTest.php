@@ -79,7 +79,6 @@ class AuthenticationTest extends TestCase {
 		$this->assertEqualSets(
 			array(
 				'needs_reauthentication',
-				'oauth_error',
 				'reconnect_after_url_mismatch',
 			),
 			array_filter( $notice_slugs )
@@ -127,6 +126,7 @@ class AuthenticationTest extends TestCase {
 				'initialVersion',
 				'userInputState',
 				'verified',
+				'hasMultipleAdmins',
 			),
 			array_keys( $user_data )
 		);
@@ -143,6 +143,7 @@ class AuthenticationTest extends TestCase {
 				'userInputState',
 				'verified',
 				'user',
+				'hasMultipleAdmins',
 			),
 			array_keys( $user_data )
 		);
@@ -923,13 +924,13 @@ class AuthenticationTest extends TestCase {
 
 		// Test experimental features are checked solely within the database via options.
 		$this->assertFalse( apply_filters( 'googlesitekit_is_feature_enabled', false, 'ideaHubModule' ) );
-		$this->assertFalse( apply_filters( 'googlesitekit_is_feature_enabled', false, 'swgModule' ) );
+		$this->assertFalse( apply_filters( 'googlesitekit_is_feature_enabled', false, 'twgModule' ) );
 		// Update the active modules and test if they are checked.
 		update_option( 'googlesitekit_active_modules', array( 'idea-hub' ) );
 		$this->assertTrue( apply_filters( 'googlesitekit_is_feature_enabled', false, 'ideaHubModule' ) );
-		$this->assertFalse( apply_filters( 'googlesitekit_is_feature_enabled', false, 'swgModule' ) );
-		update_option( 'googlesitekit_active_modules', array( 'idea-hub', 'subscribe-with-google' ) );
-		$this->assertTrue( apply_filters( 'googlesitekit_is_feature_enabled', false, 'swgModule' ) );
+		$this->assertFalse( apply_filters( 'googlesitekit_is_feature_enabled', false, 'twgModule' ) );
+		update_option( 'googlesitekit_active_modules', array( 'idea-hub', 'thank-with-google' ) );
+		$this->assertTrue( apply_filters( 'googlesitekit_is_feature_enabled', false, 'twgModule' ) );
 
 		// Till this point, no requests should have been made to the Google Proxy server.
 		$this->assertEmpty( $proxy_server_requests );

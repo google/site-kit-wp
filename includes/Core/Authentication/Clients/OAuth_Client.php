@@ -372,13 +372,13 @@ final class OAuth_Client extends OAuth_Client_Base {
 		// If the OAuth redirects with an error code, handle it.
 		if ( ! empty( $error_code ) ) {
 			$this->user_options->set( self::OPTION_ERROR_CODE, $error_code );
-			wp_safe_redirect( admin_url() );
+			wp_safe_redirect( $this->authorize_user_redirect_url() );
 			exit();
 		}
 
 		if ( ! $this->credentials->has() ) {
 			$this->user_options->set( self::OPTION_ERROR_CODE, 'oauth_credentials_not_exist' );
-			wp_safe_redirect( admin_url() );
+			wp_safe_redirect( $this->authorize_user_redirect_url() );
 			exit();
 		}
 
@@ -398,13 +398,13 @@ final class OAuth_Client extends OAuth_Client_Base {
 			exit();
 		} catch ( Exception $e ) {
 			$this->handle_fetch_token_exception( $e );
-			wp_safe_redirect( admin_url() );
+			wp_safe_redirect( $this->authorize_user_redirect_url() );
 			exit();
 		}
 
 		if ( ! isset( $token_response['access_token'] ) ) {
 			$this->user_options->set( self::OPTION_ERROR_CODE, 'access_token_not_received' );
-			wp_safe_redirect( admin_url() );
+			wp_safe_redirect( $this->authorize_user_redirect_url() );
 			exit();
 		}
 
@@ -595,5 +595,17 @@ final class OAuth_Client extends OAuth_Client_Base {
 
 		$this->user_options->delete( self::OPTION_REDIRECT_URL );
 		$this->user_options->delete( self::OPTION_ADDITIONAL_AUTH_SCOPES );
+	}
+
+	/**
+	 * Return the URL for the user to view the dashboard/splash
+	 * page based on their permissions.
+	 *
+	 * @since 1.77.0
+	 */
+	private function authorize_user_redirect_url() {
+		return current_user_can( Permissions::VIEW_DASHBOARD )
+			? $this->context->admin_url( 'dashboard' )
+			: $this->context->admin_url( 'splash' );
 	}
 }

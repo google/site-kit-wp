@@ -64,24 +64,6 @@ class ModuleTest extends TestCase {
 		$this->assertNull( $module->non_existent );
 	}
 
-	public function test_prepare_info_for_js() {
-		$module = new FakeModule( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		$keys   = array(
-			'slug',
-			'name',
-			'description',
-			'sort',
-			'homepage',
-			'required',
-			'autoActivate',
-			'internal',
-			'screenID',
-			'settings',
-		);
-
-		$this->assertEqualSets( $keys, array_keys( $module->prepare_info_for_js() ) );
-	}
-
 	public function test_is_connected() {
 		$module = new FakeModule( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
@@ -365,6 +347,27 @@ class ModuleTest extends TestCase {
 		$module = new FakeModule( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
 		$this->assertFalse( $module->is_shareable() );
+	}
+
+	public function test_is_recoverable() {
+		remove_all_filters( 'googlesitekit_is_module_recoverable' );
+		$module      = new FakeModule( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$invocations = array();
+		$spy         = function ( ...$args ) use ( &$invocations ) {
+			$invocations[] = $args;
+			return $args[0];
+		};
+
+		// is_recoverable is a proxy through this filter which is handled by
+		// Modules::is_module_recoverable. @see \Google\Site_Kit\Tests\Core\Modules\ModulesTest::test_is_module_recoverable
+		add_filter( 'googlesitekit_is_module_recoverable', $spy, 10, 2 );
+
+		$module->is_recoverable();
+
+		$this->assertCount( 1, $invocations );
+		list ( $given, $slug ) = $invocations[0];
+		$this->assertFalse( $given );
+		$this->assertEquals( $module->slug, $slug );
 	}
 
 	/**

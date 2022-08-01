@@ -360,7 +360,7 @@ class OAuth_ClientTest extends TestCase {
 			$client->authorize_user();
 		} catch ( RedirectException $redirect ) {
 			$this->assertEquals( 'callback_error', $user_options->get( OAuth_Client::OPTION_ERROR_CODE ) );
-			$this->assertEquals( admin_url(), $redirect->get_location() );
+			$this->assertEquals( admin_url( 'admin.php?page=googlesitekit-splash' ), $redirect->get_location() );
 		}
 
 		// If no credentials.
@@ -371,7 +371,7 @@ class OAuth_ClientTest extends TestCase {
 		try {
 			$client->authorize_user();
 		} catch ( RedirectException $redirect ) {
-			$this->assertEquals( admin_url(), $redirect->get_location() );
+			$this->assertEquals( admin_url( 'admin.php?page=googlesitekit-splash' ), $redirect->get_location() );
 		}
 
 		$this->assertEquals( 'oauth_credentials_not_exist', get_user_option( OAuth_Client::OPTION_ERROR_CODE, $user_id ) );

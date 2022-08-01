@@ -10,7 +10,10 @@
 
 namespace Google\Site_Kit\Core\Modules;
 
-use Google\Site_Kit\Core\Modules\Module_With_Settings;
+use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
+use Google\Site_Kit\Core\Authentication\Profile;
+use Google\Site_Kit\Core\Authentication\Token;
+use Google\Site_Kit\Core\Storage\User_Options;
 
 /**
  * Trait for a module that includes an owner ID.
@@ -20,6 +23,13 @@ use Google\Site_Kit\Core\Modules\Module_With_Settings;
  * @ignore
  */
 trait Module_With_Owner_Trait {
+	/**
+	 * OAuth_Client instance.
+	 *
+	 * @since 1.77.0.
+	 * @var OAuth_Client
+	 */
+	protected $owner_oauth_client;
 
 	/**
 	 * Gets an owner ID for the module.
@@ -41,4 +51,30 @@ trait Module_With_Owner_Trait {
 		return $settings['ownerID'];
 	}
 
+	/**
+	 * Gets the OAuth_Client instance for the module owner.
+	 *
+	 * @since 1.77.0
+	 *
+	 * @return OAuth_Client OAuth_Client instance.
+	 */
+	public function get_owner_oauth_client() {
+		if ( $this->owner_oauth_client instanceof OAuth_Client ) {
+			return $this->owner_oauth_client;
+		}
+
+		$user_options = new User_Options( $this->context, $this->get_owner_id() );
+
+		$this->owner_oauth_client = new OAuth_Client(
+			$this->context,
+			$this->options,
+			$user_options,
+			$this->authentication->credentials(),
+			$this->authentication->get_google_proxy(),
+			new Profile( $user_options ),
+			new Token( $user_options )
+		);
+
+		return $this->owner_oauth_client;
+	}
 }

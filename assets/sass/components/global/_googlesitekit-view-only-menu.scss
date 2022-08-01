@@ -21,24 +21,18 @@
 	.googlesitekit-view-only-menu {
 
 		h4 {
-			font-size: 15px;
+			font-size: $fs-body-lg;
+			letter-spacing: $ls-m;
 			margin: 15px 0;
 		}
 
 		p {
 			color: $c-primary;
-			font-size: 14px;
+			font-size: $fs-body-md;
+			letter-spacing: $ls-s;
 		}
 
 		.mdc-button--dropdown {
-
-			.mdc-button__label {
-
-				@media (max-width: $bp-mobileOnly) {
-
-					@include screen-reader-only;
-				}
-			}
 
 			.mdc-button__icon {
 
@@ -93,24 +87,29 @@
 
 		.googlesitekit-view-only-menu__service {
 			display: flex;
+			gap: 8px;
 			margin-bottom: 10px;
 
 			svg {
-				margin-right: 8px;
 				padding: 2px;
 				width: 24px;
 			}
 		}
 
+		.googlesitekit-view-only-menu__service--icon {
+			flex: 0 0 24px;
+		}
+
 		.googlesitekit-view-only-menu__service--name {
-			flex: 1;
-			font-size: 14px;
-			margin-right: 8px;
+			font-size: $fs-body-md;
+			letter-spacing: $ls-s;
 		}
 
 		.googlesitekit-view-only-menu__service--owner {
 			color: $c-primary;
-			font-size: 12px;
+			flex: 1;
+			font-size: $fs-body-sm;
+			letter-spacing: $ls-xs;
 			margin-left: auto;
 		}
 
@@ -118,6 +117,14 @@
 			// Compensate for the padding & absolute positioning of the checkbox
 			// provided by the OptIn component.
 			margin-left: -11px;
+		}
+
+		&--user-can-authenticate {
+
+			.googlesitekit-view-only-menu__service--name {
+				flex: 0 0 100px;
+				margin-right: 8px;
+			}
 		}
 	}
 }

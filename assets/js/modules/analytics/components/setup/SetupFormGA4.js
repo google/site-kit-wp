@@ -45,9 +45,9 @@ import {
 	AccountSelect,
 	GA4PropertyNotice,
 	ExistingGTMPropertyNotice,
-	SetupUseSnippetSwitch as SetupUseSnippetSwitchUA,
 } from '../common';
-import { SetupUseSnippetSwitch as SetupUseSnippetSwitchGA4 } from '../../../analytics-4/components/common';
+import SetupUseSnippetSwitchUA from './SetupUseSnippetSwitch';
+import { SetupUseSnippetSwitch as SetupUseSnippetSwitchGA4 } from '../../../analytics-4/components/setup';
 const { useSelect, useDispatch } = Data;
 
 export default function SetupFormGA4() {

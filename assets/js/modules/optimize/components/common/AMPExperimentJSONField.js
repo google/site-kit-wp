@@ -68,7 +68,6 @@ export default function AMPExperimentJSONField() {
 				<Link
 					href="https://developers.google.com/optimize/devguides/amp-experiments"
 					external
-					inherit
 				>
 					{ __( 'Learn More', 'google-site-kit' ) }
 				</Link>

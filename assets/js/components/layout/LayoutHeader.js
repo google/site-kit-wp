@@ -67,7 +67,7 @@ class LayoutHeader extends Component {
 								smSize={ 4 }
 								lgSize={ 6 }
 							>
-								<Link href={ ctaLink } external inherit>
+								<Link href={ ctaLink } external>
 									{ ctaLabel }
 								</Link>
 							</Cell>

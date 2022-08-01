@@ -26,7 +26,7 @@ use Google\Site_Kit\Modules\Optimize;
 use Google\Site_Kit\Modules\PageSpeed_Insights;
 use Google\Site_Kit\Modules\Search_Console;
 use Google\Site_Kit\Modules\Site_Verification;
-use Google\Site_Kit\Modules\Subscribe_With_Google;
+use Google\Site_Kit\Modules\Thank_With_Google;
 use Google\Site_Kit\Modules\Tag_Manager;
 use Google\Site_Kit\Tests\TestCase;
 use Google\Site_Kit\Tests\FakeHttpClient;
@@ -175,6 +175,17 @@ class ModulesTest extends TestCase {
 		}
 
 		$this->fail( 'Failed to catch exception thrown for non-existent module in get_module_dependencies.' );
+	}
+
+	public function test_module_exists() {
+		$fake_module = new FakeModule( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$modules     = new Modules( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+
+		$this->force_set_property( $modules, 'modules', array( 'fake-module' => $fake_module ) );
+		$this->assertTrue( $modules->module_exists( 'fake-module' ) );
+
+		$module_slug = 'non-existent-module';
+		$this->assertFalse( $modules->module_exists( $module_slug ) );
 	}
 
 	public function test_get_module_dependants() {
@@ -501,22 +512,22 @@ class ModulesTest extends TestCase {
 			$default_modules,
 		);
 
-		yield 'should include the `subscribe-with-google` module when enabled' => array(
+		yield 'should include the `thank-with-google` module when enabled' => array(
 			// Module feature flag.
-			'swgModule',
+			'twgModule',
 			// Module enabled or disabled
 			true,
-			Subscribe_With_Google::MODULE_SLUG,
+			Thank_With_Google::MODULE_SLUG,
 			// Expected
-			array_merge( $default_modules, array( Subscribe_With_Google::MODULE_SLUG ) ),
+			array_merge( $default_modules, array( Thank_With_Google::MODULE_SLUG ) ),
 		);
 
-		yield 'should not include the `subscribe-with-google` module when enabled' => array(
+		yield 'should not include the `thank-with-google` module when enabled' => array(
 			// Module feature flag.
-			'swgModule',
+			'twgModule',
 			// Module enabled or disabled
 			false,
-			Subscribe_With_Google::MODULE_SLUG,
+			Thank_With_Google::MODULE_SLUG,
 			// Expected
 			$default_modules,
 		);
@@ -698,6 +709,44 @@ class ModulesTest extends TestCase {
 		$response = rest_get_server()->dispatch( $request );
 
 		$this->assertEquals( 'module_not_connected', $response->get_data()['code'] );
+		$this->assertEquals( 400, $response->get_status() );
+	}
+
+	public function test_check_access_rest_endpoint__shareable_module_does_not_have_service_entity() {
+		$this->enable_feature( 'dashboardSharing' );
+		$this->setup_modules_to_test_rest_endpoint();
+
+		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/modules/data/check-access' );
+		$request->set_body_params(
+			array(
+				'data' => array(
+					'slug' => 'pagespeed-insights',
+				),
+			)
+		);
+		$response = rest_get_server()->dispatch( $request );
+
+		$this->assertEquals( true, $response->get_data()['access'] );
+		$this->assertEquals( 200, $response->get_status() );
+	}
+
+	public function test_check_access_rest_endpoint__unshareable_module_does_not_have_service_entity() {
+		$modules = $this->setup_modules_to_test_rest_endpoint();
+
+		$optimize = $modules->get_module( 'optimize' );
+		$optimize->get_settings()->merge( array( 'optimizeID' => 'GTM-XXXXX' ) );
+
+		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/modules/data/check-access' );
+		$request->set_body_params(
+			array(
+				'data' => array(
+					'slug' => 'optimize',
+				),
+			)
+		);
+		$response = rest_get_server()->dispatch( $request );
+
+		$this->assertEquals( 'invalid_module', $response->get_data()['code'] );
 		$this->assertEquals( 400, $response->get_status() );
 	}
 
@@ -899,11 +948,14 @@ class ModulesTest extends TestCase {
 
 		$modules->register();
 		$module = $modules->get_module( 'pagespeed-insights' );
-		return $module->get_settings();
+		return array(
+			$module->get_settings(),
+			$user->ID,
+		);
 	}
 
 	public function test_all_admin_module_ownership_change__add_settings() {
-		$pagespeed_insights_settings = $this->setup_all_admin_module_ownership_change();
+		list( $pagespeed_insights_settings, $first_admin_id ) = $this->setup_all_admin_module_ownership_change();
 
 		$test_sharing_settings = array(
 			'pagespeed-insights' => array(),
@@ -911,7 +963,10 @@ class ModulesTest extends TestCase {
 		add_option( 'googlesitekit_dashboard_sharing', $test_sharing_settings );
 
 		$settings = $pagespeed_insights_settings->get();
-		$this->assertEquals( $settings['ownerID'], 0 );
+		$this->assertEquals( $settings['ownerID'], $first_admin_id );
+
+		$second_admin = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $second_admin->ID );
 
 		$test_updated_sharing_settings = array(
 			'pagespeed-insights' => array(
@@ -922,11 +977,11 @@ class ModulesTest extends TestCase {
 		update_option( 'googlesitekit_dashboard_sharing', $test_updated_sharing_settings );
 
 		$settings = $pagespeed_insights_settings->get();
-		$this->assertEquals( $settings['ownerID'], wp_get_current_user()->ID );
+		$this->assertEquals( $settings['ownerID'], $second_admin->ID );
 	}
 
 	public function test_all_admin_module_ownership_change__add_shared_roles() {
-		$pagespeed_insights_settings = $this->setup_all_admin_module_ownership_change();
+		list( $pagespeed_insights_settings, $first_admin_id ) = $this->setup_all_admin_module_ownership_change();
 
 		$test_sharing_settings = array(
 			'pagespeed-insights' => array(
@@ -937,7 +992,10 @@ class ModulesTest extends TestCase {
 		add_option( 'googlesitekit_dashboard_sharing', $test_sharing_settings );
 
 		$settings = $pagespeed_insights_settings->get();
-		$this->assertEquals( $settings['ownerID'], 0 );
+		$this->assertEquals( $settings['ownerID'], $first_admin_id );
+
+		$second_admin = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $second_admin->ID );
 
 		// Test adding a new shared role updates the owner.
 		$test_updated_sharing_settings = array(
@@ -949,11 +1007,11 @@ class ModulesTest extends TestCase {
 		update_option( 'googlesitekit_dashboard_sharing', $test_updated_sharing_settings );
 
 		$settings = $pagespeed_insights_settings->get();
-		$this->assertEquals( $settings['ownerID'], wp_get_current_user()->ID );
+		$this->assertEquals( $settings['ownerID'], $second_admin->ID );
 	}
 
 	public function test_all_admin_module_ownership_change__reorder_shared_roles() {
-		$pagespeed_insights_settings = $this->setup_all_admin_module_ownership_change();
+		list( $pagespeed_insights_settings, $first_admin_id ) = $this->setup_all_admin_module_ownership_change();
 
 		$test_sharing_settings = array(
 			'pagespeed-insights' => array(
@@ -964,7 +1022,10 @@ class ModulesTest extends TestCase {
 		add_option( 'googlesitekit_dashboard_sharing', $test_sharing_settings );
 
 		$settings = $pagespeed_insights_settings->get();
-		$this->assertEquals( $settings['ownerID'], 0 );
+		$this->assertEquals( $settings['ownerID'], $first_admin_id );
+
+		$second_admin = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $second_admin->ID );
 
 		// Test changing the order of shared roles does not update the owner.
 		$test_updated_sharing_settings = array(
@@ -976,12 +1037,11 @@ class ModulesTest extends TestCase {
 		update_option( 'googlesitekit_dashboard_sharing', $test_updated_sharing_settings );
 
 		$settings = $pagespeed_insights_settings->get();
-		$this->assertEquals( $settings['ownerID'], 0 );
+		$this->assertEquals( $settings['ownerID'], $first_admin_id );
 	}
 
 	public function test_all_admin_module_ownership_change__remove_shared_roles() {
-		$pagespeed_insights_settings = $this->setup_all_admin_module_ownership_change();
-		$settings                    = $pagespeed_insights_settings->get();
+		list( $pagespeed_insights_settings, $first_admin_id ) = $this->setup_all_admin_module_ownership_change();
 
 		$test_sharing_settings = array(
 			'pagespeed-insights' => array(
@@ -991,7 +1051,11 @@ class ModulesTest extends TestCase {
 		);
 		add_option( 'googlesitekit_dashboard_sharing', $test_sharing_settings );
 
-		$this->assertEquals( $settings['ownerID'], 0 );
+		$settings = $pagespeed_insights_settings->get();
+		$this->assertEquals( $settings['ownerID'], $first_admin_id );
+
+		$second_admin = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $second_admin->ID );
 
 		// Test removing a shared role updates the owner.
 		$test_updated_sharing_settings = array(
@@ -1003,12 +1067,12 @@ class ModulesTest extends TestCase {
 		update_option( 'googlesitekit_dashboard_sharing', $test_updated_sharing_settings );
 
 		$settings = $pagespeed_insights_settings->get();
-		$this->assertEquals( $settings['ownerID'], wp_get_current_user()->ID );
+		$this->assertEquals( $settings['ownerID'], $second_admin->ID );
 	}
 
 	public function test_all_admin_module_ownership_change__update_management() {
-		$pagespeed_insights_settings = $this->setup_all_admin_module_ownership_change();
-		$settings                    = $pagespeed_insights_settings->get();
+		list( $pagespeed_insights_settings, $first_admin_id ) = $this->setup_all_admin_module_ownership_change();
+		$settings = $pagespeed_insights_settings->get();
 
 		$test_sharing_settings = array(
 			'pagespeed-insights' => array(
@@ -1019,7 +1083,10 @@ class ModulesTest extends TestCase {
 		add_option( 'googlesitekit_dashboard_sharing', $test_sharing_settings );
 
 		$settings = $pagespeed_insights_settings->get();
-		$this->assertEquals( $settings['ownerID'], 0 );
+		$this->assertEquals( $settings['ownerID'], $first_admin_id );
+
+		$second_admin = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $second_admin->ID );
 
 		$test_updated_sharing_settings = array(
 			'pagespeed-insights' => array(
@@ -1030,7 +1097,7 @@ class ModulesTest extends TestCase {
 		update_option( 'googlesitekit_dashboard_sharing', $test_updated_sharing_settings );
 
 		$settings = $pagespeed_insights_settings->get();
-		$this->assertEquals( $settings['ownerID'], wp_get_current_user()->ID );
+		$this->assertEquals( $settings['ownerID'], $second_admin->ID );
 	}
 
 	public function test_non_all_admin_module_ownership_change() {

@@ -31,12 +31,13 @@ final class Permissions {
 	/*
 	 * Custom base capabilities.
 	 */
-	const AUTHENTICATE        = 'googlesitekit_authenticate';
-	const SETUP               = 'googlesitekit_setup';
-	const VIEW_POSTS_INSIGHTS = 'googlesitekit_view_posts_insights';
-	const VIEW_DASHBOARD      = 'googlesitekit_view_dashboard';
-	const VIEW_MODULE_DETAILS = 'googlesitekit_view_module_details';
-	const MANAGE_OPTIONS      = 'googlesitekit_manage_options';
+	const AUTHENTICATE             = 'googlesitekit_authenticate';
+	const SETUP                    = 'googlesitekit_setup';
+	const VIEW_POSTS_INSIGHTS      = 'googlesitekit_view_posts_insights';
+	const VIEW_DASHBOARD           = 'googlesitekit_view_dashboard';
+	const VIEW_WP_DASHBOARD_WIDGET = 'googlesitekit_view_wp_dashboard_widget';
+	const VIEW_ADMIN_BAR_MENU      = 'googlesitekit_view_admin_bar_menu';
+	const MANAGE_OPTIONS           = 'googlesitekit_manage_options';
 
 
 	/*
@@ -152,20 +153,21 @@ final class Permissions {
 
 		$this->base_to_core = array(
 			// By default, only allow administrators to authenticate.
-			self::AUTHENTICATE        => 'manage_options',
+			self::AUTHENTICATE             => 'manage_options',
 
 			// Allow contributors and up to view their own post's insights.
 			// TODO change to map to edit_posts when Dashboard Sharing feature flag is removed.
-			self::VIEW_POSTS_INSIGHTS => $editor_capability,
+			self::VIEW_POSTS_INSIGHTS      => $editor_capability,
 
 			// Allow editors and up to view the dashboard and module details.
 			// TODO change to map to edit_posts when Dashboard Sharing feature flag is removed.
-			self::VIEW_DASHBOARD      => $editor_capability,
-			self::VIEW_MODULE_DETAILS => $editor_capability,
+			self::VIEW_DASHBOARD           => $editor_capability,
+			self::VIEW_WP_DASHBOARD_WIDGET => $editor_capability,
+			self::VIEW_ADMIN_BAR_MENU      => $editor_capability,
 
 			// Allow administrators and up to manage options and set up the plugin.
-			self::MANAGE_OPTIONS      => 'manage_options',
-			self::SETUP               => 'manage_options',
+			self::MANAGE_OPTIONS           => 'manage_options',
+			self::SETUP                    => 'manage_options',
 		);
 
 		$this->meta_to_core = array(
@@ -197,12 +199,13 @@ final class Permissions {
 		$this->network_base = array(
 			// Require network admin access to view the dashboard and module details in network mode.
 			// TODO change to map to manage_network when Dashboard Sharing feature flag is removed.
-			self::VIEW_DASHBOARD      => $admin_network_capability,
-			self::VIEW_MODULE_DETAILS => $admin_network_capability,
+			self::VIEW_DASHBOARD           => $admin_network_capability,
+			self::VIEW_WP_DASHBOARD_WIDGET => $admin_network_capability,
+			self::VIEW_ADMIN_BAR_MENU      => $admin_network_capability,
 
 			// Require network admin access to manage options and set up the plugin in network mode.
-			self::MANAGE_OPTIONS      => 'manage_network_options',
-			self::SETUP               => 'manage_network_options',
+			self::MANAGE_OPTIONS           => 'manage_network_options',
+			self::SETUP                    => 'manage_network_options',
 		);
 	}
 
@@ -340,9 +343,9 @@ final class Permissions {
 				$caps[] = self::SETUP;
 			}
 
-			if ( ! in_array( $cap, array( self::AUTHENTICATE, self::SETUP ), true ) ) {
+			if ( ! in_array( $cap, array( self::AUTHENTICATE, self::SETUP, self::VIEW_DASHBOARD, self::VIEW_POSTS_INSIGHTS ), true ) ) {
 				// For regular users, require being authenticated.
-				if ( ! Feature_Flags::enabled( 'dashboardSharing' ) && ! $this->is_user_authenticated( $user_id ) ) {
+				if ( ! $this->is_user_authenticated( $user_id ) ) {
 					return array_merge( $caps, array( 'do_not_allow' ) );
 				}
 				// For admin users, also require being verified.
@@ -365,7 +368,11 @@ final class Permissions {
 			case self::VIEW_SPLASH:
 				$caps = array_merge( $caps, $this->check_view_splash_capability( $user_id ) );
 				break;
+			// Intentional fallthrough - viewing the dashboard widget and admin bar menu require
+			// a user to be authenticated.
 			case self::VIEW_AUTHENTICATED_DASHBOARD:
+			case self::VIEW_WP_DASHBOARD_WIDGET:
+			case self::VIEW_ADMIN_BAR_MENU:
 				$caps = array_merge( $caps, $this->check_view_authenticated_dashboard_capability( $user_id ) );
 				break;
 			// Intentional fallthrough.
@@ -494,7 +501,11 @@ final class Permissions {
 	 * @return array Array with a 'do_not_allow' element if checks fail, otherise returns AUTHENTICATE capability.
 	 */
 	private function check_view_authenticated_dashboard_capability( $user_id ) {
-		if ( $this->is_user_authenticated( $user_id ) && $this->authentication->is_setup_completed() ) {
+		if (
+			$this->is_user_authenticated( $user_id )
+			&& $this->is_user_verified( $user_id )
+			&& $this->authentication->is_setup_completed()
+		) {
 			return array( self::AUTHENTICATE );
 		}
 		return array( 'do_not_allow' );
@@ -685,10 +696,11 @@ final class Permissions {
 			self::SETUP,
 			self::VIEW_POSTS_INSIGHTS,
 			self::VIEW_DASHBOARD,
-			self::VIEW_MODULE_DETAILS,
 			self::MANAGE_OPTIONS,
 			self::VIEW_SPLASH,
 			self::VIEW_AUTHENTICATED_DASHBOARD,
+			self::VIEW_WP_DASHBOARD_WIDGET,
+			self::VIEW_ADMIN_BAR_MENU,
 		);
 
 		if ( Feature_Flags::enabled( 'dashboardSharing' ) ) {

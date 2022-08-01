@@ -140,7 +140,7 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 				 * is disconnected, ensuring the Analytics snippet is always included.
 				 *
 				 * @since 1.28.0
-				 * @since n.e.x.t Added the `$property_id` parameter.
+				 * @since 1.75.0 Added the `$property_id` parameter.
 				 *
 				 * @param bool   $can_use_snippet Whether or not `useSnippet` can control snippet output. Default: `true`.
 				 * @param string $property_id     The current property ID.
@@ -214,7 +214,12 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 					$option['anonymizeIP'] = (bool) $option['anonymizeIP'];
 				}
 				if ( isset( $option['trackingDisabled'] ) ) {
-					$option['trackingDisabled'] = (array) $option['trackingDisabled'];
+					// Prevent other options from being saved if 'loggedinUsers' is selected.
+					if ( in_array( 'loggedinUsers', $option['trackingDisabled'], true ) ) {
+						$option['trackingDisabled'] = array( 'loggedinUsers' );
+					} else {
+						$option['trackingDisabled'] = (array) $option['trackingDisabled'];
+					}
 				}
 				if ( isset( $option['adsenseLinked'] ) ) {
 					$option['adsenseLinked'] = (bool) $option['adsenseLinked'];

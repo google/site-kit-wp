@@ -58,6 +58,7 @@ const REGISTER_MODULE = 'REGISTER_MODULE';
 const RECEIVE_CHECK_REQUIREMENTS_ERROR = 'RECEIVE_CHECK_REQUIREMENTS_ERROR';
 const RECEIVE_CHECK_REQUIREMENTS_SUCCESS = 'RECEIVE_CHECK_REQUIREMENTS_SUCCESS';
 const RECEIVE_RECOVERABLE_MODULES = 'RECEIVE_RECOVERABLE_MODULES';
+const RECEIVE_SHARED_OWNERSHIP_MODULES = 'RECEIVE_SHARED_OWNERSHIP_MODULES';
 
 const moduleDefaults = {
 	slug: '',
@@ -98,6 +99,29 @@ const normalizeModules = memize( ( serverDefinitions, clientDefinitions ) => {
 			return { ...acc, [ module.slug ]: module };
 		}, {} );
 } );
+
+/**
+ * Gets a memoized object mapping recoverable module slugs to their corresponding
+ * module objects.
+ *
+ * @since 1.78.0
+ *
+ * @param {Object} modules            Module definitions.
+ * @param {Array}  recoverableModules Array of recoverable module slugs.
+ * @return {Object} Map of recoverable module slugs to their corresponding module objects.
+ */
+const calculateRecoverableModules = memize( ( modules, recoverableModules ) =>
+	Object.values( modules ).reduce( ( recoverable, module ) => {
+		if ( recoverableModules.includes( module.slug ) ) {
+			return {
+				...recoverable,
+				[ module.slug ]: module,
+			};
+		}
+
+		return recoverable;
+	}, {} )
+);
 
 const fetchGetModulesStore = createFetchStore( {
 	baseName: 'getModules',
@@ -190,6 +214,7 @@ const baseInitialState = {
 	checkRequirementsResults: {},
 	moduleAccess: {},
 	recoverableModules: undefined,
+	sharedOwnershipModules: undefined,
 };
 
 const baseActions = {
@@ -309,7 +334,6 @@ const baseActions = {
 	 * @param {WPComponent}    [settings.SettingsSetupIncompleteComponent] Optional. React component to render the incomplete settings panel. Default none.
 	 * @param {WPComponent}    [settings.SetupComponent]                   Optional. React component to render the setup panel. Default none.
 	 * @param {Function}       [settings.checkRequirements]                Optional. Function to check requirements for the module. Throws a WP error object for error or returns on success.
-	 * @param {Function}       [settings.screenWidgetContext]              Optional. Get the registered context name for a given module.
 	 */
 	registerModule: createValidatedAction(
 		( slug ) => {
@@ -330,7 +354,6 @@ const baseActions = {
 				SetupComponent,
 				SettingsSetupIncompleteComponent,
 				checkRequirements,
-				screenWidgetContext,
 			} = {}
 		) {
 			const settings = {
@@ -346,7 +369,6 @@ const baseActions = {
 				SetupComponent,
 				SettingsSetupIncompleteComponent,
 				checkRequirements,
-				screenWidgetContext,
 			};
 
 			yield {
@@ -415,7 +437,7 @@ const baseActions = {
 	 * Stores recoverable modules in the datastore.
 	 *
 	 * Because this is frequently-accessed data, this is usually sourced
-	 * from a global variable (`_googlesitekitSiteData`), set by PHP
+	 * from a global variable (`_googlesitekitDashboardSharingData`), set by PHP
 	 * in the `before_print` callback for `googlesitekit-datastore-site`.
 	 *
 	 * @since 1.74.0
@@ -466,6 +488,20 @@ const baseActions = {
 				// Reload all modules from the server.
 				yield fetchGetModulesStore.actions.fetchGetModules();
 
+				const recoverableModules = select(
+					CORE_MODULES
+				).getRecoverableModules();
+
+				if ( recoverableModules?.[ slug ] ) {
+					// Remove the module from the list of recoverable modules in state.
+					yield baseActions.receiveRecoverableModules(
+						Object.keys( recoverableModules ).filter(
+							( recoverableModuleSlug ) =>
+								recoverableModuleSlug !== slug
+						)
+					);
+				}
+
 				return {
 					response: {
 						success: true,
@@ -481,6 +517,115 @@ const baseActions = {
 			};
 		}
 	),
+
+	/**
+	 * Recovers multiple modules on the server.
+	 *
+	 * Recovers multiple modules (based on the slugs provided).
+	 *
+	 * @since 1.77.0
+	 *
+	 * @param {Array.<string>} slugs Array of slugs of the modules to recover.
+	 * @return {Object} Object with `{response, error}`.
+	 */
+	recoverModules: createValidatedAction(
+		( slugs ) => {
+			invariant( Array.isArray( slugs ), 'slugs must be an array' );
+		},
+		function* ( slugs ) {
+			const { dispatch, select } = yield Data.commonActions.getRegistry();
+
+			const recoveredModules = [];
+
+			const errors = [];
+
+			for ( const slug of slugs ) {
+				const {
+					response,
+					error,
+				} = yield fetchRecoverModuleStore.actions.fetchRecoverModule(
+					slug
+				);
+
+				if ( response?.ownerID ) {
+					const storeName = select( CORE_MODULES ).getModuleStoreName(
+						slug
+					);
+					// Reload the module's settings from the server.
+					yield dispatch( storeName ).fetchGetSettings();
+
+					recoveredModules.push( slug );
+				} else {
+					errors.push( [ slug, error ] );
+				}
+			}
+
+			if ( recoveredModules.length ) {
+				// Reload all modules from the server.
+				yield fetchGetModulesStore.actions.fetchGetModules();
+
+				const recoverableModules = select(
+					CORE_MODULES
+				).getRecoverableModules();
+
+				if ( recoverableModules ) {
+					// Remove the recovered modules from the list of recoverable modules in state.
+					yield baseActions.receiveRecoverableModules(
+						Object.keys( recoverableModules ).filter(
+							( slug ) => ! recoveredModules.includes( slug )
+						)
+					);
+				}
+			}
+
+			const response = {
+				success: {
+					...Object.fromEntries(
+						recoveredModules.map( ( slug ) => [ slug, true ] )
+					),
+					...Object.fromEntries(
+						errors.map( ( [ slug ] ) => [ slug, false ] )
+					),
+				},
+			};
+
+			if ( errors.length ) {
+				return {
+					response,
+					error: Object.fromEntries( errors ),
+				};
+			}
+
+			return {
+				response,
+			};
+		}
+	),
+
+	/**
+	 * Receives the shared ownership modules for dashboard sharing.
+	 * Stores shared ownership modules in the datastore.
+	 *
+	 * Because this is frequently-accessed data, this is usually sourced
+	 * from a global variable (`_googlesitekitDashboardSharingData`), set by PHP
+	 * in the `before_print` callback for `googlesitekit-datastore-site`.
+	 *
+	 * @since 1.77.0
+	 * @private
+	 *
+	 * @param {Object} sharedOwnershipModules Shared ownership modules, usually supplied via a global variable from PHP.
+	 * @return {Object} Action for RECEIVE_SHARED_OWNERSHIP_MODULES.
+	 */
+	receiveSharedOwnershipModules( sharedOwnershipModules ) {
+		invariant(
+			sharedOwnershipModules,
+			'sharedOwnershipModules is required.'
+		);
+		return {
+			payload: { sharedOwnershipModules },
+			type: RECEIVE_SHARED_OWNERSHIP_MODULES,
+		};
+	},
 };
 
 export const baseControls = {
@@ -557,6 +702,14 @@ const baseReducer = ( state, { type, payload } ) => {
 			return {
 				...state,
 				recoverableModules,
+			};
+		}
+
+		case RECEIVE_SHARED_OWNERSHIP_MODULES: {
+			const { sharedOwnershipModules } = payload;
+			return {
+				...state,
+				sharedOwnershipModules,
 			};
 		}
 
@@ -662,6 +815,28 @@ const baseResolvers = {
 			recoverableModules,
 		} = global._googlesitekitDashboardSharingData;
 		yield baseActions.receiveRecoverableModules( recoverableModules );
+	},
+
+	*getSharedOwnershipModules() {
+		const registry = yield Data.commonActions.getRegistry();
+
+		if ( registry.select( CORE_MODULES ).getSharedOwnershipModules() ) {
+			return;
+		}
+
+		if ( ! global._googlesitekitDashboardSharingData ) {
+			global.console.error(
+				'Could not load core/modules dashboard sharing.'
+			);
+			return;
+		}
+
+		const {
+			sharedOwnershipModules,
+		} = global._googlesitekitDashboardSharingData;
+		yield baseActions.receiveSharedOwnershipModules(
+			sharedOwnershipModules
+		);
 	},
 };
 
@@ -1036,34 +1211,6 @@ const baseSelectors = {
 	),
 
 	/**
-	 * Gets the module's screenWidgetContext.
-	 *
-	 * Returns the registered context string, screenWidgetContext for the given module.
-	 *
-	 * @since 1.28.0
-	 *
-	 * @param {Object} state      Data store's state.
-	 * @param {string} moduleSlug Module slug.
-	 * @return {(string|null|undefined)} The module's registered context string, null if there is
-	 *                                   none, undefined if not loaded yet.
-	 */
-	getScreenWidgetContext: createRegistrySelector(
-		( select ) => ( state, moduleSlug ) => {
-			invariant( moduleSlug, 'slug is required.' );
-			const modules = select( CORE_MODULES ).getModules();
-
-			if ( modules === undefined ) {
-				return undefined;
-			}
-
-			const screenWidgetContext =
-				modules[ moduleSlug ]?.screenWidgetContext;
-
-			return screenWidgetContext || null;
-		}
-	),
-
-	/**
 	 * Gets the module's list of features.
 	 *
 	 * Returns a list of features of this module.
@@ -1120,20 +1267,48 @@ const baseSelectors = {
 			return undefined;
 		}
 
-		return Object.values( modules ).reduce(
-			( recoverableModules, module ) => {
-				if ( state.recoverableModules.includes( module.slug ) ) {
-					return {
-						...recoverableModules,
-						[ module.slug ]: module,
-					};
-				}
-
-				return recoverableModules;
-			},
-			{}
-		);
+		return calculateRecoverableModules( modules, state.recoverableModules );
 	} ),
+
+	/**
+	 * Gets the list of shared ownership modules for dashboard sharing.
+	 *
+	 * Returns an Object/map of objects, keyed by slug as same as `getModules`.
+	 *
+	 * @since 1.77.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(Object|undefined)} Shared ownership modules available on the site; `undefined` if not loaded.
+	 */
+	getSharedOwnershipModules: createRegistrySelector(
+		( select ) => ( state ) => {
+			const modules = select( CORE_MODULES ).getModules();
+
+			// Return `undefined` if modules OR sharedOwnershipModules haven't been loaded yet.
+			if (
+				state.sharedOwnershipModules === undefined ||
+				modules === undefined
+			) {
+				return undefined;
+			}
+
+			return Object.values( modules ).reduce(
+				( sharedOwnershipModules, module ) => {
+					if (
+						state.sharedOwnershipModules.includes( module.slug )
+					) {
+						return {
+							...sharedOwnershipModules,
+							[ module.slug ]: module,
+						};
+					}
+
+					return sharedOwnershipModules;
+				},
+				{}
+			);
+		}
+	),
 };
 
 const store = Data.combineStores(

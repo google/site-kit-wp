@@ -20,7 +20,7 @@
 
 	.googlesitekit-navigation {
 		background-color: $c-base;
-		box-shadow: 0 3px 3px rgba($c-black, 0.1);
+		border-bottom: 1px solid $c-utility-divider;
 		justify-content: center;
 		left: 0;
 		padding: 12px 0;
@@ -30,8 +30,6 @@
 		z-index: 10;
 
 		&::before {
-
-			@include shadow;
 			content: "";
 			display: block;
 			height: 3px;
@@ -64,18 +62,26 @@
 
 		.mdc-chip {
 			background-color: $c-base;
-			border: 1px solid $c-border-light;
-			color: $c-device-icon-gray;
-			padding: 13px 14px 13px 19px;
+			border: 1px solid $c-neutral-n-50;
+			border-radius: $br-lg;
+			color: $c-surfaces-on-surface;
+			font-size: $fs-title-sm;
+			letter-spacing: $ls-xs;
+			line-height: 1;
+			padding: 11px 14px 11px 19px;
 
 			@media (max-width: $bp-mobileOnly) {
 				padding: 5px 10px 5px 12px;
 			}
 
+			@media (min-width: $bp-tablet) {
+				margin: 4px 12px;
+			}
+
 			.mdc-chip__icon {
 				border-radius: 0;
 				height: auto;
-				margin-right: 10px;
+				margin-right: 6px;
 				width: auto;
 
 				@media (max-width: $bp-mobileOnly) {
@@ -85,21 +91,22 @@
 		}
 
 		.mdc-chip--selected {
-			border-color: rgba($c-royal-blue, 0.08);
-			color: $c-denim;
-
-			.mdc-chip__icon {
-				color: $c-royal-blue;
-			}
+			color: $c-content-primary;
 		}
 	}
 
+
 	.googlesitekit-navigation--is-sticky {
+		border-bottom: 1px solid $c-utility-divider;
 
 		+ .googlesitekit-entity-header {
-			box-shadow: 0 3px 3px rgb(0 0 0 / 10%);
-			transition: box-shadow $t-speed-2;
+			border-bottom: 1px solid $c-utility-divider;
 		}
+	}
+
+	.googlesitekit-navigation--pageDashboard {
+		border-bottom: 1px solid $c-utility-divider;
+		border-radius: 0;
 	}
 
 	.googlesitekit-plugin--has-scrolled & {

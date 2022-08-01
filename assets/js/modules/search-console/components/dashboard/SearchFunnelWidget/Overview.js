@@ -25,7 +25,6 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { Fragment } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -52,10 +51,13 @@ import CTA from '../../../../../components/notifications/CTA';
 import DataBlock from '../../../../../components/DataBlock';
 import ProgressBar from '../../../../../components/ProgressBar';
 import ReportZero from '../../../../../components/ReportZero';
+import RecoverableModules from '../../../../../components/RecoverableModules';
 import {
 	BREAKPOINT_SMALL,
 	useBreakpoint,
 } from '../../../../../hooks/useBreakpoint';
+import useViewOnly from '../../../../../hooks/useViewOnly';
+import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 const { useSelect, useInViewSelect } = Data;
 
 function getDatapointAndChange( [ report ], selectedStat, divider = 1 ) {
@@ -79,10 +81,21 @@ const Overview = ( {
 	dateRangeLength,
 	error,
 	WidgetReportError,
+	showRecoverableAnalytics,
 } ) => {
 	const dashboardType = useDashboardType();
 	const zeroDataStatesEnabled = useFeature( 'zeroDataStates' );
 	const breakpoint = useBreakpoint();
+
+	const viewOnly = useViewOnly();
+
+	const canViewSharedAnalytics = useSelect( ( select ) => {
+		if ( ! viewOnly ) {
+			return true;
+		}
+
+		return select( CORE_USER ).canViewSharedModule( 'analytics' );
+	} );
 
 	const analyticsModuleConnected = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleConnected( 'analytics' )
@@ -100,12 +113,17 @@ const Overview = ( {
 		select( CORE_LOCATION ).isNavigatingTo( adminReauthURL )
 	);
 	const isAnalyticsGatheringData = useInViewSelect( ( select ) =>
-		analyticsModuleActiveAndConnected
+		analyticsModuleActiveAndConnected &&
+		canViewSharedAnalytics &&
+		! showRecoverableAnalytics
 			? select( MODULES_ANALYTICS ).isGatheringData()
 			: false
 	);
 	const isSearchConsoleGatheringData = useInViewSelect( ( select ) =>
 		select( MODULES_SEARCH_CONSOLE ).isGatheringData()
+	);
+	const isAuthenticated = useSelect( ( select ) =>
+		select( CORE_USER ).isAuthenticated()
 	);
 
 	const {
@@ -150,13 +168,19 @@ const Overview = ( {
 	}
 
 	const showAnalytics =
-		( analyticsModuleConnected &&
+		( ( canViewSharedAnalytics &&
+			analyticsModuleConnected &&
 			! isAnalyticsGatheringData &&
 			! zeroDataStatesEnabled &&
 			! error ) ||
-		( analyticsModuleConnected && zeroDataStatesEnabled && ! error );
+			( canViewSharedAnalytics &&
+				analyticsModuleConnected &&
+				zeroDataStatesEnabled &&
+				! error ) ) &&
+		! showRecoverableAnalytics;
 
 	const showGoalsCTA =
+		isAuthenticated &&
 		showAnalytics &&
 		dashboardType === DASHBOARD_TYPE_MAIN &&
 		! analyticsGoalsData?.items?.length;
@@ -167,10 +191,28 @@ const Overview = ( {
 		lgSize: 3,
 	};
 
+	const oneThirdCellProps = {
+		smSize: 2,
+		mdSize: 4,
+		lgSize: 4,
+	};
+
 	const halfCellProps = {
 		smSize: 4,
 		mdSize: 4,
 		lgSize: 6,
+	};
+
+	const threeQuartersCellProps = {
+		smSize: 4,
+		mdSize: 4,
+		lgSize: 9,
+	};
+
+	const fullCellProps = {
+		smSize: 4,
+		mdSize: 8,
+		lgSize: 12,
 	};
 
 	const supportURL = useSelect( ( select ) =>
@@ -180,37 +222,110 @@ const Overview = ( {
 		} )
 	);
 
+	// Collection of all the data blocks to be displayed
+	const dataBlocks = [
+		{
+			id: 'impressions',
+			stat: 0,
+			title: __( 'Total Impressions', 'google-site-kit' ),
+			datapoint: totalImpressions,
+			change: totalImpressionsChange,
+		},
+		{
+			id: 'clicks',
+			stat: 1,
+			title: __( 'Total Clicks', 'google-site-kit' ),
+			datapoint: totalClicks,
+			change: totalClicksChange,
+		},
+		...( showAnalytics
+			? [
+					{
+						id: 'visitors',
+						stat: 2,
+						title: __(
+							'Unique Visitors from Search',
+							'google-site-kit'
+						),
+						datapoint: analyticsVisitorsDatapoint,
+						change: analyticsVisitorsChange,
+					},
+			  ]
+			: [] ),
+		...( showAnalytics &&
+		dashboardType === DASHBOARD_TYPE_MAIN &&
+		analyticsGoalsData?.items?.length > 0
+			? [
+					{
+						id: 'goals',
+						stat: 3,
+						title: __( 'Goals', 'google-site-kit' ),
+						datapoint: analyticsGoalsDatapoint,
+						change: analyticsGoalsChange,
+					},
+			  ]
+			: [] ),
+		...( showAnalytics && dashboardType === DASHBOARD_TYPE_ENTITY
+			? [
+					{
+						id: 'bounce',
+						stat: 4,
+						title: __( 'Bounce Rate', 'google-site-kit' ),
+						datapoint: analyticsBounceDatapoint,
+						change: analyticsBounceChange,
+					},
+			  ]
+			: [] ),
+	];
+
+	const dataBlockWrapperCellProps = {
+		2: halfCellProps,
+		3: threeQuartersCellProps,
+		4: fullCellProps,
+	};
+
+	const dataBlockCellProps = {
+		2: {
+			...halfCellProps,
+			smSize: 2,
+		},
+		3: oneThirdCellProps,
+		4: quarterCellProps,
+	};
+
 	return (
 		<Grid>
 			<Row>
-				<Cell { ...quarterCellProps }>
-					<DataBlock
-						stat={ 0 }
-						className="googlesitekit-data-block--impressions googlesitekit-data-block--button-1"
-						title={ __( 'Total Impressions', 'google-site-kit' ) }
-						datapoint={ totalImpressions }
-						change={ totalImpressionsChange }
-						changeDataUnit="%"
-						context="button"
-						selected={ selectedStats === 0 }
-						handleStatSelection={ handleStatsSelection }
-						gatheringData={ isSearchConsoleGatheringData }
-					/>
-				</Cell>
-
-				<Cell { ...quarterCellProps }>
-					<DataBlock
-						stat={ 1 }
-						className="googlesitekit-data-block--clicks googlesitekit-data-block--button-2"
-						title={ __( 'Total Clicks', 'google-site-kit' ) }
-						datapoint={ totalClicks }
-						change={ totalClicksChange }
-						changeDataUnit="%"
-						context="button"
-						selected={ selectedStats === 1 }
-						handleStatSelection={ handleStatsSelection }
-						gatheringData={ isSearchConsoleGatheringData }
-					/>
+				<Cell { ...dataBlockWrapperCellProps[ dataBlocks.length ] }>
+					<Row>
+						{ dataBlocks.map( ( dataBlock, index ) => (
+							<Cell
+								key={ dataBlock.id }
+								{ ...dataBlockCellProps[ dataBlocks.length ] }
+							>
+								<DataBlock
+									stat={ dataBlock.stat }
+									className={ `googlesitekit-data-block--${
+										dataBlock.id
+									} googlesitekit-data-block--button-${
+										index + 1
+									}` }
+									title={ dataBlock.title }
+									datapoint={ dataBlock.datapoint }
+									change={ dataBlock.change }
+									changeDataUnit="%"
+									context="button"
+									selected={
+										selectedStats === dataBlock.stat
+									}
+									handleStatSelection={ handleStatsSelection }
+									gatheringData={
+										isSearchConsoleGatheringData
+									}
+								/>
+							</Cell>
+						) ) }
+					</Row>
 				</Cell>
 
 				{ isNavigatingToReauthURL && (
@@ -222,7 +337,8 @@ const Overview = ( {
 					</Cell>
 				) }
 
-				{ ( ! analyticsModuleConnected || ! analyticsModuleActive ) &&
+				{ canViewSharedAnalytics &&
+					( ! analyticsModuleConnected || ! analyticsModuleActive ) &&
 					! isNavigatingToReauthURL && (
 						<Cell { ...halfCellProps }>
 							{ zeroDataStatesEnabled &&
@@ -238,16 +354,20 @@ const Overview = ( {
 						</Cell>
 					) }
 
-				{ analyticsModuleActiveAndConnected && error && (
-					<Cell { ...halfCellProps }>
-						<WidgetReportError
-							moduleSlug="analytics"
-							error={ error }
-						/>
-					</Cell>
-				) }
+				{ ! showRecoverableAnalytics &&
+					canViewSharedAnalytics &&
+					analyticsModuleActiveAndConnected &&
+					error && (
+						<Cell { ...halfCellProps }>
+							<WidgetReportError
+								moduleSlug="analytics"
+								error={ error }
+							/>
+						</Cell>
+					) }
 
-				{ isAnalyticsGatheringData &&
+				{ canViewSharedAnalytics &&
+					isAnalyticsGatheringData &&
 					! error &&
 					! zeroDataStatesEnabled && (
 						<Cell { ...halfCellProps }>
@@ -257,92 +377,40 @@ const Overview = ( {
 					) }
 
 				{ showAnalytics && (
-					<Fragment>
-						<Cell { ...quarterCellProps }>
-							<DataBlock
-								stat={ 2 }
-								className="googlesitekit-data-block--visitors googlesitekit-data-block--button-3"
+					<Cell { ...quarterCellProps } smSize={ 4 }>
+						{ showGoalsCTA && zeroDataStatesEnabled && (
+							<CreateGoalCTA />
+						) }
+						{ showGoalsCTA && ! zeroDataStatesEnabled && (
+							<CTA
 								title={ __(
-									'Unique Visitors from Search',
+									'Use goals to measure success',
 									'google-site-kit'
 								) }
-								datapoint={ analyticsVisitorsDatapoint }
-								change={ analyticsVisitorsChange }
-								changeDataUnit="%"
-								context="button"
-								selected={ selectedStats === 2 }
-								handleStatSelection={ handleStatsSelection }
-								gatheringData={ isAnalyticsGatheringData }
+								description={ __(
+									'Goals measure how well your site or app fulfills your target objectives',
+									'google-site-kit'
+								) }
+								ctaLink={ supportURL }
+								ctaLabel={ __(
+									'Create a new goal',
+									'google-site-kit'
+								) }
+								ctaLinkExternal
+							/>
+						) }
+					</Cell>
+				) }
+
+				{ canViewSharedAnalytics &&
+					analyticsModuleActiveAndConnected &&
+					showRecoverableAnalytics && (
+						<Cell { ...halfCellProps }>
+							<RecoverableModules
+								moduleSlugs={ [ 'analytics' ] }
 							/>
 						</Cell>
-
-						<Cell { ...quarterCellProps }>
-							{ showGoalsCTA && zeroDataStatesEnabled && (
-								<CreateGoalCTA />
-							) }
-							{ showGoalsCTA && ! zeroDataStatesEnabled && (
-								<CTA
-									title={ __(
-										'Use goals to measure success',
-										'google-site-kit'
-									) }
-									description={ __(
-										'Goals measure how well your site or app fulfills your target objectives',
-										'google-site-kit'
-									) }
-									ctaLink={ supportURL }
-									ctaLabel={ __(
-										'Create a new goal',
-										'google-site-kit'
-									) }
-									ctaLinkExternal
-								/>
-							) }
-							{ dashboardType === DASHBOARD_TYPE_MAIN &&
-								analyticsGoalsData?.items?.length > 0 && (
-									<DataBlock
-										stat={ 3 }
-										className="googlesitekit-data-block--goals googlesitekit-data-block--button-4"
-										title={ __(
-											'Goals',
-											'google-site-kit'
-										) }
-										datapoint={ analyticsGoalsDatapoint }
-										change={ analyticsGoalsChange }
-										changeDataUnit="%"
-										context="button"
-										selected={ selectedStats === 3 }
-										handleStatSelection={
-											handleStatsSelection
-										}
-										gatheringData={
-											isAnalyticsGatheringData
-										}
-									/>
-								) }
-
-							{ dashboardType === DASHBOARD_TYPE_ENTITY && (
-								<DataBlock
-									stat={ 4 }
-									className="googlesitekit-data-block--bounce googlesitekit-data-block--button-4"
-									title={ __(
-										'Bounce Rate',
-										'google-site-kit'
-									) }
-									datapoint={ analyticsBounceDatapoint }
-									datapointUnit="%"
-									change={ analyticsBounceChange }
-									changeDataUnit="%"
-									context="button"
-									selected={ selectedStats === 4 }
-									handleStatSelection={ handleStatsSelection }
-									gatheringData={ isAnalyticsGatheringData }
-									invertChangeColor
-								/>
-							) }
-						</Cell>
-					</Fragment>
-				) }
+					) }
 			</Row>
 		</Grid>
 	);
