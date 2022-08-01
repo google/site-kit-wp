@@ -1218,7 +1218,7 @@ final class Analytics extends Module
 	 */
 	public function get_tag() {
 		$tag = $this->build_tag();
-		if ( $tag ) {
+		if ( $tag && $tag instanceof Web_Tag ) {
 			return $tag->get();
 		}
 	}

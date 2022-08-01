@@ -682,7 +682,7 @@ final class AdSense extends Module
 	private function register_tag() {
 		$tag = $this->build_tag();
 
-		if ( $tag && $tag->can_register() ) {
+		if ( $tag ) {
 			$tag->register();
 		}
 	}
@@ -697,7 +697,7 @@ final class AdSense extends Module
 	public function get_tag() {
 		$tag = $this->build_tag();
 
-		if ( $tag && $tag->can_register() ) {
+		if ( $tag && $tag instanceof Web_Tag ) {
 			return $tag->get();
 		}
 
@@ -705,11 +705,12 @@ final class AdSense extends Module
 	}
 
 	/**
-	 * Prepares the AdSense tag snippet.
+	 * Prepares the AdSense tag snippet if it can be registered.
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return AMP_Tag|Web_Tag|null The tag object or null if a tag guard fails.
+	 * @return AMP_Tag|Web_Tag|null The tag object if it can be registered and
+	 * passes all tag guards or null otherwise.
 	 */
 	private function build_tag() {
 		// TODO: 'amp_story' support can be phased out in the long term.
@@ -727,16 +728,19 @@ final class AdSense extends Module
 			$tag = new Web_Tag( $settings['clientID'], self::MODULE_SLUG );
 		}
 
-		if ( ! $tag->is_tag_blocked() ) {
-			$tag->use_guard( new Tag_Verify_Guard( $this->context->input() ) );
-			$tag->use_guard( new Tag_Guard( $module_settings ) );
-			$tag->use_guard( new Auto_Ad_Guard( $module_settings ) );
-			$tag->use_guard( new Tag_Environment_Type_Guard() );
-
-			return $tag;
+		if ( $tag->is_tag_blocked() ) {
+			return null;
 		}
 
-		return null;
+		$tag->use_guard( new Tag_Verify_Guard( $this->context->input() ) );
+		$tag->use_guard( new Tag_Guard( $module_settings ) );
+		$tag->use_guard( new Auto_Ad_Guard( $module_settings ) );
+		$tag->use_guard( new Tag_Environment_Type_Guard() );
+
+		if ( ! $tag->can_register() ) {
+			return null;
+		}
+		return $tag;
 	}
 
 	/**
