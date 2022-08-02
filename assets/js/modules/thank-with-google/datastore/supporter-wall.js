@@ -24,8 +24,8 @@ import Data from 'googlesitekit-data';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { MODULES_THANK_WITH_GOOGLE } from './constants';
 
-const fetchGetSupportWallSidebars = createFetchStore( {
-	baseName: 'getSupportWallSidebars',
+const fetchGetSupporterWallSidebars = createFetchStore( {
+	baseName: 'getSupporterWallSidebars',
 	storeName: MODULES_THANK_WITH_GOOGLE,
 	controlCallback: () => {
 		return API.get(
@@ -51,11 +51,11 @@ const baseInitialState = {
 };
 
 const baseResolvers = {
-	*getSupportWallSidebars() {
+	*getSupporterWallSidebars() {
 		const registry = yield Data.commonActions.getRegistry();
 		const sidebars = registry
 			.select( MODULES_THANK_WITH_GOOGLE )
-			.getSupportWallSidebars();
+			.getSupporterWallSidebars();
 
 		// If there are already sidebars loaded in the state, consider it fulfilled
 		// and don't make an API request.
@@ -63,7 +63,7 @@ const baseResolvers = {
 			return;
 		}
 
-		yield fetchGetSupportWallSidebars.actions.fetchGetSupportWallSidebars();
+		yield fetchGetSupporterWallSidebars.actions.fetchGetSupporterWallSidebars();
 	},
 };
 
@@ -76,12 +76,12 @@ const baseSelectors = {
 	 * @param {Object} state Data store's state.
 	 * @return {(Array|undefined|null)} Supporter wall sidebars list. Returns undefined if it is not loaded yet.
 	 */
-	getSupportWallSidebars( state ) {
+	getSupporterWallSidebars( state ) {
 		return state.supporterWallSidebars;
 	},
 };
 
-const store = Data.combineStores( fetchGetSupportWallSidebars, {
+const store = Data.combineStores( fetchGetSupporterWallSidebars, {
 	initialState: baseInitialState,
 	resolvers: baseResolvers,
 	selectors: baseSelectors,
