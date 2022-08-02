@@ -86,11 +86,12 @@ class Setup {
 		User_Options $user_options,
 		Authentication $authentication
 	) {
-		$this->context        = $context;
-		$this->user_options   = $user_options;
-		$this->authentication = $authentication;
-		$this->credentials    = $authentication->credentials();
-		$this->google_proxy   = $authentication->get_google_proxy();
+		$this->context                = $context;
+		$this->user_options           = $user_options;
+		$this->authentication         = $authentication;
+		$this->credentials            = $authentication->credentials();
+		$this->google_proxy           = $authentication->get_google_proxy();
+		$this->proxy_support_link_url = $authentication->get_proxy_support_link_url();
 	}
 
 	/**
@@ -130,17 +131,41 @@ class Setup {
 			? $this->google_proxy->sync_site_fields( $this->credentials, 'sync' )
 			: $this->google_proxy->register_site( 'sync' );
 
+		$oauth_proxy_failed_help_link = sprintf(
+			/* translators: 1: Support link URL. 2: Get Help string. */
+			__( '<a href="%1$s" target="_blank">%2$s</a>', 'google-site-kit' ),
+			esc_url( $this->proxy_support_link_url . '/?error_id=request_to_auth_proxy_failed' ),
+			esc_html__( 'Get Help', 'google-site-kit' )
+		);
+
 		if ( is_wp_error( $oauth_setup_redirect ) ) {
 			$error_message = $oauth_setup_redirect->get_error_message();
 			if ( empty( $error_message ) ) {
 				$error_message = $oauth_setup_redirect->get_error_code();
 			}
-			/* translators: %s: Error message or error code. */
-			wp_die( esc_html( sprintf( __( 'The request to the authentication proxy has failed with an error: %s', 'google-site-kit' ), $error_message ) ) );
+
+			wp_die(
+				esc_html(
+					sprintf(
+						/* translators: 1: Error message or error code. 2: Get Help link. */
+						__( 'The request to the authentication proxy has failed with an error: %1$s. %2$s.', 'google-site-kit' ),
+						$error_message,
+						$oauth_proxy_failed_help_link
+					)
+				)
+			);
 		}
 
 		if ( ! filter_var( $oauth_setup_redirect, FILTER_VALIDATE_URL ) ) {
-			wp_die( esc_html__( 'The request to the authentication proxy has failed. Please, try again later.', 'google-site-kit' ) );
+			wp_die(
+				esc_html(
+					sprintf(
+						/* translators: %s: Get Help link. */
+						__( 'The request to the authentication proxy has failed. Please, try again later. %s.', 'google-site-kit' ),
+						$oauth_proxy_failed_help_link
+					)
+				)
+			);
 		}
 
 		if ( $redirect_url ) {
