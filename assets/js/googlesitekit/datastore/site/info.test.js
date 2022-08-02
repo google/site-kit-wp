@@ -42,6 +42,7 @@ describe( 'core/site site info', () => {
 		siteName: 'Something Test',
 		timezone: 'America/Denver',
 		usingProxy: true,
+		widgetsAdminURL: 'http://example.com/wp-admin/widgets.php',
 		postTypes: [
 			{
 				slug: 'post',
@@ -256,6 +257,7 @@ describe( 'core/site site info', () => {
 			[ 'getSetupErrorMessage', 'setupErrorMessage' ],
 			[ 'getSetupErrorRedoURL', 'setupErrorRedoURL' ],
 			[ 'getProxySupportLinkURL', 'proxySupportLinkURL' ],
+			[ 'getWidgetsAdminURL', 'widgetsAdminURL' ],
 			[ 'getTimezone', 'timezone' ],
 			[ 'getPostTypes', 'postTypes' ],
 			[ 'isUsingProxy', 'usingProxy' ],
