@@ -23,6 +23,7 @@ import classnames from 'classnames';
 import PropTypes from 'prop-types';
 import useMergedRef from '@react-hook/merged-ref';
 import { Tooltip } from '@material-ui/core';
+import '@material/mwc-button/mwc-button';
 
 /**
  * WordPress dependencies
@@ -35,73 +36,71 @@ import { _x } from '@wordpress/i18n';
  */
 import { MDCRipple } from '../material-components';
 
-const Button = forwardRef(
-	(
-		{
-			children,
-			href,
-			text,
-			className,
-			danger,
-			disabled,
-			target,
-			icon,
-			trailingIcon,
-			'aria-label': ariaLabel,
-			title,
-			tooltip,
-			inverse,
-			...extraProps
-		},
-		ref
-	) => {
-		const buttonRef = useCallback( ( el ) => {
-			if ( el !== null ) {
-				MDCRipple.attachTo( el );
-			}
-		}, [] );
-		const mergedRefs = useMergedRef( ref, buttonRef );
+const Button = forwardRef( ( props, ref ) => {
+	const {
+		children,
+		href,
+		text,
+		className,
+		danger,
+		disabled,
+		target,
+		icon,
+		trailingIcon,
+		'aria-label': ariaLabel,
+		title,
+		tooltip,
+		inverse,
+		...extraProps
+	} = props;
 
-		// Use a button if disabled, even if a href is provided to ensure expected behavior.
-		const SemanticButton = href && ! disabled ? 'a' : 'button';
+	const buttonRef = useCallback( ( el ) => {
+		if ( el !== null ) {
+			MDCRipple.attachTo( el );
+		}
+	}, [] );
+	const mergedRefs = useMergedRef( ref, buttonRef );
 
-		const getAriaLabel = () => {
-			let label = ariaLabel;
+	const getAriaLabel = () => {
+		let label = ariaLabel;
 
-			if ( target !== '_blank' ) {
-				return label;
-			}
+		if ( target !== '_blank' ) {
+			return label;
+		}
 
-			const newTabText = _x(
-				'(opens in a new tab)',
-				'screen reader text',
-				'google-site-kit'
-			);
+		const newTabText = _x(
+			'(opens in a new tab)',
+			'screen reader text',
+			'google-site-kit'
+		);
 
-			if ( typeof children === 'string' ) {
-				label = label || children;
-			}
+		if ( typeof children === 'string' ) {
+			label = label || children;
+		}
 
-			if ( label ) {
-				return `${ label } ${ newTabText }`;
-			}
+		if ( label ) {
+			return `${ label } ${ newTabText }`;
+		}
 
-			return newTabText;
-		};
+		return newTabText;
+	};
 
-		const ButtonComponent = (
-			<SemanticButton
+	let ButtonComponent;
+
+	if ( href && ! disabled ) {
+		ButtonComponent = (
+			<a
 				className={ classnames( 'mdc-button', className, {
 					'mdc-button--raised': ! text,
 					'mdc-button--danger': danger,
 					'mdc-button--inverse': inverse,
 				} ) }
-				href={ disabled ? undefined : href }
+				href={ href }
 				ref={ mergedRefs }
 				disabled={ !! disabled }
 				aria-label={ getAriaLabel() }
 				target={ target || '_self' }
-				role={ 'a' === SemanticButton ? 'button' : undefined }
+				role="button"
 				{ ...extraProps }
 			>
 				{ icon }
@@ -109,29 +108,50 @@ const Button = forwardRef(
 					<span className="mdc-button__label">{ children }</span>
 				) }
 				{ trailingIcon }
-			</SemanticButton>
+			</a>
 		);
-
-		if (
-			( tooltip && ( title || ariaLabel ) ) ||
-			( icon && ( title || ariaLabel ) && children === undefined )
-		) {
-			return (
-				<Tooltip
-					title={ title || ariaLabel }
-					classes={ {
-						popper: 'googlesitekit-tooltip-popper',
-						tooltip: 'googlesitekit-tooltip',
-					} }
-				>
-					{ ButtonComponent }
-				</Tooltip>
-			);
+	} else {
+		const buttonProps = {};
+		if ( disabled ) {
+			buttonProps.disabled = true;
 		}
-
-		return ButtonComponent;
+		if ( ! text ) {
+			buttonProps.raised = true;
+		}
+		ButtonComponent = (
+			<mwc-button
+				ref={ mergedRefs }
+				className={ classnames( {
+					'mdc-button--danger': danger,
+					'mdc-button--inverse': inverse,
+				} ) }
+				label={ children }
+				aria-label={ getAriaLabel() }
+				{ ...buttonProps }
+				{ ...extraProps }
+			></mwc-button>
+		);
 	}
-);
+
+	if (
+		( tooltip && ( title || ariaLabel ) ) ||
+		( icon && ( title || ariaLabel ) && children === undefined )
+	) {
+		return (
+			<Tooltip
+				title={ title || ariaLabel }
+				classes={ {
+					popper: 'googlesitekit-tooltip-popper',
+					tooltip: 'googlesitekit-tooltip',
+				} }
+			>
+				{ ButtonComponent }
+			</Tooltip>
+		);
+	}
+
+	return ButtonComponent;
+} );
 
 Button.displayName = 'Button';
 
