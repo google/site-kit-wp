@@ -108,6 +108,10 @@ export default function SetupUsingProxyWithSignIn() {
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' )
 	);
 
+	const changedURLHelpLink = useSelect( ( select ) =>
+		select( CORE_SITE ).getDocumentationLinkURL( 'url-has-changed' )
+	);
+
 	const hasViewableModules = useSelect(
 		( select ) => !! select( CORE_USER ).getViewableModules()?.length
 	);
@@ -194,6 +198,8 @@ export default function SetupUsingProxyWithSignIn() {
 		};
 	}
 
+	let getHelp = '';
+
 	if ( 'revoked' === getQueryArg( location.href, 'googlesitekit_context' ) ) {
 		title = sprintf(
 			/* translators: %s is the site's hostname. (e.g. example.com) */
@@ -212,6 +218,10 @@ export default function SetupUsingProxyWithSignIn() {
 			'Looks like the URL of your site has changed. In order to continue using Site Kit, you’ll need to reconnect, so that your plugin settings are updated with the new URL.',
 			'google-site-kit'
 		);
+
+		if ( changedURLHelpLink ) {
+			getHelp = changedURLHelpLink;
+		}
 	} else if ( isSecondAdmin ) {
 		title = __(
 			'Connect your Google account to Site Kit',
@@ -303,6 +313,17 @@ export default function SetupUsingProxyWithSignIn() {
 												<p className="googlesitekit-setup__description">
 													{ description }
 												</p>
+												{ getHelp && (
+													<Link
+														href={ getHelp }
+														external
+													>
+														{ __(
+															'Get Help',
+															'google-site-kit'
+														) }
+													</Link>
+												) }
 												{ DISCONNECTED_REASON_CONNECTED_URL_MISMATCH ===
 													disconnectedReason &&
 													connectedProxyURL !==
