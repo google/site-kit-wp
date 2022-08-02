@@ -217,6 +217,7 @@ export const provideSiteInfo = ( registry, extraData = {} ) => {
 		proxyPermissionsURL:
 			'https://sitekit.withgoogle.com/site-management/permissions/',
 		proxySetupURL: 'https://sitekit.withgoogle.com/site-management/setup/',
+		widgetsAdminURL: 'http://example.com/wp-admin/widgets.php',
 		referenceSiteURL: 'http://example.com',
 		siteName: 'My Site Name',
 		timezone: 'America/Detroit',
