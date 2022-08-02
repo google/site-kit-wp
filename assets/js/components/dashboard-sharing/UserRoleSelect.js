@@ -28,7 +28,13 @@ import { Chip, ChipCheckmark } from '@material/react-chips';
  */
 import { __ } from '@wordpress/i18n';
 import { ESCAPE, ENTER } from '@wordpress/keycodes';
-import { useCallback, useRef, forwardRef, Fragment } from '@wordpress/element';
+import {
+	useCallback,
+	useEffect,
+	useRef,
+	forwardRef,
+	Fragment,
+} from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -52,7 +58,7 @@ const ALL_CHIP_DISPLAY_NAME = __( 'All', 'google-site-kit' );
 const UserRoleSelect = forwardRef(
 	( { moduleSlug, isLocked = false }, ref ) => {
 		const viewContext = useViewContext();
-		const roleSelectButtonRef = useRef();
+		const roleSelectRef = useRef();
 
 		const { setSharedRoles } = useDispatch( CORE_MODULES );
 		const { setValue } = useDispatch( CORE_UI );
@@ -71,9 +77,6 @@ const UserRoleSelect = forwardRef(
 		useKeyCodesInside( [ ESCAPE ], ref, () => {
 			if ( editMode ) {
 				setValue( EDITING_USER_ROLE_SELECT_SLUG_KEY, undefined );
-
-				// Reset focus to edit roles button.
-				roleSelectButtonRef.current.focus();
 			}
 		} );
 
@@ -108,9 +111,19 @@ const UserRoleSelect = forwardRef(
 			viewContext,
 		] );
 
+		useEffect( () => {
+			if ( editMode ) {
+				// Focus on the "All" roles button.
+				roleSelectRef.current.firstChild.focus();
+			} else {
+				// Focus on the role select button.
+				roleSelectRef.current.focus();
+			}
+		}, [ editMode ] );
+
 		const toggleChip = useCallback(
 			( { type, target, keyCode } ) => {
-				if ( type === 'keyup' && keyCode !== ENTER ) {
+				if ( type === 'keydown' && keyCode !== ENTER ) {
 					return;
 				}
 
@@ -173,7 +186,7 @@ const UserRoleSelect = forwardRef(
 						onClick={ toggleEditMode }
 						icon={ <ShareIcon width={ 23 } height={ 23 } /> }
 						tabIndex={ isLocked ? -1 : undefined }
-						ref={ roleSelectButtonRef }
+						ref={ roleSelectRef }
 					/>
 				) }
 
@@ -187,13 +200,7 @@ const UserRoleSelect = forwardRef(
 					( ! sharedRoles || sharedRoles?.length === 0 ) && (
 						<span className="googlesitekit-user-role-select__add-roles">
 							<Link
-								onClick={ () => {
-									// As this link exits the DOM on click, we change
-									// the focus to the role select button.
-									roleSelectButtonRef.current.focus();
-
-									toggleEditMode();
-								} }
+								onClick={ toggleEditMode }
 								tabIndex={ isLocked ? -1 : undefined }
 							>
 								{ __( 'Add roles', 'google-site-kit' ) }
@@ -203,14 +210,17 @@ const UserRoleSelect = forwardRef(
 
 				{ editMode && (
 					<Fragment>
-						<div className="googlesitekit-user-role-select__chipset">
+						<div
+							className="googlesitekit-user-role-select__chipset"
+							ref={ roleSelectRef }
+						>
 							<Chip
 								chipCheckmark={ <ChipCheckmark /> }
 								data-chip-id={ ALL_CHIP_ID }
 								id={ ALL_CHIP_ID }
 								label={ ALL_CHIP_DISPLAY_NAME }
 								onClick={ toggleChip }
-								onKeyUp={ toggleChip }
+								onKeyDown={ toggleChip }
 								selected={
 									sharedRoles?.length ===
 									shareableRoles?.length
@@ -227,7 +237,7 @@ const UserRoleSelect = forwardRef(
 										key={ index }
 										label={ displayName }
 										onClick={ toggleChip }
-										onKeyUp={ toggleChip }
+										onKeyDown={ toggleChip }
 										selected={ sharedRoles?.includes( id ) }
 										className="googlesitekit-user-role-select__chip"
 									/>
@@ -240,7 +250,6 @@ const UserRoleSelect = forwardRef(
 							onClick={ toggleEditMode }
 							icon={ <CloseIcon width={ 18 } height={ 18 } /> }
 							tabIndex={ isLocked ? -1 : undefined }
-							ref={ roleSelectButtonRef }
 						/>
 					</Fragment>
 				) }
