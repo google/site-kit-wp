@@ -27,7 +27,7 @@ import {
 	BUTTON_PLACEMENT_DYNAMIC_LOW,
 	BUTTON_PLACEMENT_STATIC_BELOW_1ST_PARAGRAPH,
 } from '../datastore/constants';
-import { getType, getProminence } from './settings';
+import { getType, getProminence, getButtonPostTypesString } from './settings';
 
 describe( 'getType', () => {
 	it.each( [
@@ -81,4 +81,74 @@ describe( 'getProminence', () => {
 			expect( getProminence( buttonPlacement ) ).toBe( '' );
 		}
 	);
+} );
+
+describe( 'getButtonPostTypesString', () => {
+	it( 'returns postType labels for buttonPostTypes settings slugs', () => {
+		const buttonPostTypes = [ 'post', 'page' ];
+		const postTypes = [
+			{
+				slug: 'post',
+				label: 'Posts',
+			},
+			{
+				slug: 'page',
+				label: 'Pages',
+			},
+			{
+				slug: 'attachment',
+				label: 'Media',
+			},
+		];
+
+		expect( getButtonPostTypesString( buttonPostTypes, postTypes ) ).toBe(
+			'Posts, Pages'
+		);
+	} );
+
+	it( 'returns "All post types" if buttonPostTypes cover all postTypes', () => {
+		const buttonPostTypes = [ 'post', 'page', 'attachment' ];
+		const postTypes = [
+			{
+				slug: 'post',
+				label: 'Posts',
+			},
+			{
+				slug: 'page',
+				label: 'Pages',
+			},
+			{
+				slug: 'attachment',
+				label: 'Media',
+			},
+		];
+
+		expect( getButtonPostTypesString( buttonPostTypes, postTypes ) ).toBe(
+			'All post types'
+		);
+	} );
+
+	it.each( [ null, undefined, [] ] )(
+		'should return buttonPostTypes slugs when postTypes is %s',
+		( postTypes ) => {
+			expect(
+				getButtonPostTypesString( [ 'post', 'page' ], postTypes )
+			).toBe( 'post, page' );
+		}
+	);
+
+	it( 'returns an empty string if buttonPostTypes is empty', () => {
+		const postTypes = [
+			{
+				slug: 'post',
+				label: 'Posts',
+			},
+			{
+				slug: 'page',
+				label: 'Pages',
+			},
+		];
+
+		expect( getButtonPostTypesString( [], postTypes ) ).toBe( '' );
+	} );
 } );

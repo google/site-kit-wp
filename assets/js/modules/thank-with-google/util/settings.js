@@ -144,14 +144,19 @@ export const getProminence = ( buttonPlacement ) => {
  *
  * @since n.e.x.t
  *
- * @param {string} buttonPostTypes The buttonPostTypes setting value.
- * @param {string} postTypes       All available public postTypes.
+ * @param {Array} buttonPostTypes The buttonPostTypes setting value.
+ * @param {Array} postTypes       All available public postTypes.
  * @return {string} Formatted string of buttonPostTypes.
  */
 export const getButtonPostTypesString = ( buttonPostTypes, postTypes ) => {
+	if ( ! postTypes || postTypes.length === 0 ) {
+		return buttonPostTypes.join( ', ' );
+	}
+
 	const enabledPostTypes = postTypes.filter( ( postType ) =>
 		buttonPostTypes.includes( postType.slug )
 	);
+
 	if ( enabledPostTypes.length === postTypes.length ) {
 		return __( 'All post types', 'google-site-kit' );
 	}
