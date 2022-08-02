@@ -20,72 +20,66 @@
  * Internal dependencies
  */
 import {
-	BUTTON_PLACEMENT_STATIC_AUTO,
-	BUTTON_PLACEMENT_STATIC_ABOVE_CONTENT,
-	BUTTON_PLACEMENT_STATIC_BELOW_CONTENT,
-	BUTTON_PLACEMENT_DYNAMIC_HIGH,
-	BUTTON_PLACEMENT_DYNAMIC_LOW,
-	BUTTON_PLACEMENT_STATIC_BELOW_1ST_PARAGRAPH,
+	CTA_PLACEMENT_STATIC_AUTO,
+	CTA_PLACEMENT_STATIC_ABOVE_CONTENT,
+	CTA_PLACEMENT_STATIC_BELOW_CONTENT,
+	CTA_PLACEMENT_DYNAMIC_HIGH,
+	CTA_PLACEMENT_DYNAMIC_LOW,
+	CTA_PLACEMENT_STATIC_BELOW_1ST_PARAGRAPH,
 } from '../datastore/constants';
-import { getType, getProminence, getButtonPostTypesString } from './settings';
+import { getType, getProminence, getCTAPostTypesString } from './settings';
 
 describe( 'getType', () => {
 	it.each( [
-		BUTTON_PLACEMENT_STATIC_AUTO,
-		BUTTON_PLACEMENT_STATIC_ABOVE_CONTENT,
-		BUTTON_PLACEMENT_STATIC_BELOW_CONTENT,
-		BUTTON_PLACEMENT_STATIC_BELOW_1ST_PARAGRAPH,
-	] )(
-		'should return "Fixed" for %s button placement',
-		( buttonPlacement ) => {
-			expect( getType( buttonPlacement ) ).toBe( 'Fixed' );
-		}
-	);
+		CTA_PLACEMENT_STATIC_AUTO,
+		CTA_PLACEMENT_STATIC_ABOVE_CONTENT,
+		CTA_PLACEMENT_STATIC_BELOW_CONTENT,
+		CTA_PLACEMENT_STATIC_BELOW_1ST_PARAGRAPH,
+	] )( 'should return "Fixed" for %s button placement', ( ctaPlacement ) => {
+		expect( getType( ctaPlacement ) ).toBe( 'Fixed' );
+	} );
 
-	it.each( [ BUTTON_PLACEMENT_DYNAMIC_HIGH, BUTTON_PLACEMENT_DYNAMIC_LOW ] )(
+	it.each( [ CTA_PLACEMENT_DYNAMIC_HIGH, CTA_PLACEMENT_DYNAMIC_LOW ] )(
 		'should return "Overlay" for %s',
-		( buttonPlacement ) => {
-			expect( getType( buttonPlacement ) ).toBe( 'Overlay' );
+		( ctaPlacement ) => {
+			expect( getType( ctaPlacement ) ).toBe( 'Overlay' );
 		}
 	);
 
 	it.each( [ undefined, null, '' ] )(
 		'should return "" for %s',
-		( buttonPlacement ) => {
-			expect( getType( buttonPlacement ) ).toBe( '' );
+		( ctaPlacement ) => {
+			expect( getType( ctaPlacement ) ).toBe( '' );
 		}
 	);
 } );
 
 describe( 'getProminence', () => {
 	it.each( [
-		[ BUTTON_PLACEMENT_STATIC_AUTO, 'Auto' ],
-		[ BUTTON_PLACEMENT_STATIC_ABOVE_CONTENT, 'Above the post' ],
-		[ BUTTON_PLACEMENT_STATIC_BELOW_CONTENT, 'Below the post' ],
-		[
-			BUTTON_PLACEMENT_STATIC_BELOW_1ST_PARAGRAPH,
-			'Below the 1st paragraph',
-		],
-		[ BUTTON_PLACEMENT_DYNAMIC_HIGH, 'High' ],
-		[ BUTTON_PLACEMENT_DYNAMIC_LOW, 'Low' ],
+		[ CTA_PLACEMENT_STATIC_AUTO, 'Auto' ],
+		[ CTA_PLACEMENT_STATIC_ABOVE_CONTENT, 'Above the post' ],
+		[ CTA_PLACEMENT_STATIC_BELOW_CONTENT, 'Below the post' ],
+		[ CTA_PLACEMENT_STATIC_BELOW_1ST_PARAGRAPH, 'Below the 1st paragraph' ],
+		[ CTA_PLACEMENT_DYNAMIC_HIGH, 'High' ],
+		[ CTA_PLACEMENT_DYNAMIC_LOW, 'Low' ],
 	] )(
 		'for %s button placement should return %s',
-		( buttonPlacement, expected ) => {
-			expect( getProminence( buttonPlacement ) ).toBe( expected );
+		( ctaPlacement, expected ) => {
+			expect( getProminence( ctaPlacement ) ).toBe( expected );
 		}
 	);
 
 	it.each( [ [ null ], [ undefined ], [ '' ] ] )(
 		'should return an empty string when button placement is %s',
-		( buttonPlacement ) => {
-			expect( getProminence( buttonPlacement ) ).toBe( '' );
+		( ctaPlacement ) => {
+			expect( getProminence( ctaPlacement ) ).toBe( '' );
 		}
 	);
 } );
 
-describe( 'getButtonPostTypesString', () => {
-	it( 'returns postType labels for buttonPostTypes settings slugs', () => {
-		const buttonPostTypes = [ 'post', 'page' ];
+describe( 'getCTAPostTypesString', () => {
+	it( 'returns postType labels for ctaPostTypes settings slugs', () => {
+		const ctaPostTypes = [ 'post', 'page' ];
 		const postTypes = [
 			{
 				slug: 'post',
@@ -101,13 +95,13 @@ describe( 'getButtonPostTypesString', () => {
 			},
 		];
 
-		expect( getButtonPostTypesString( buttonPostTypes, postTypes ) ).toBe(
+		expect( getCTAPostTypesString( ctaPostTypes, postTypes ) ).toBe(
 			'Posts, Pages'
 		);
 	} );
 
-	it( 'returns "All post types" if buttonPostTypes cover all postTypes', () => {
-		const buttonPostTypes = [ 'post', 'page', 'attachment' ];
+	it( 'returns "All post types" if ctaPostTypes cover all postTypes', () => {
+		const ctaPostTypes = [ 'post', 'page', 'attachment' ];
 		const postTypes = [
 			{
 				slug: 'post',
@@ -123,21 +117,21 @@ describe( 'getButtonPostTypesString', () => {
 			},
 		];
 
-		expect( getButtonPostTypesString( buttonPostTypes, postTypes ) ).toBe(
+		expect( getCTAPostTypesString( ctaPostTypes, postTypes ) ).toBe(
 			'All post types'
 		);
 	} );
 
 	it.each( [ null, undefined, [] ] )(
-		'should return buttonPostTypes slugs when postTypes is %s',
+		'should return ctaPostTypes slugs when postTypes is %s',
 		( postTypes ) => {
 			expect(
-				getButtonPostTypesString( [ 'post', 'page' ], postTypes )
+				getCTAPostTypesString( [ 'post', 'page' ], postTypes )
 			).toBe( 'post, page' );
 		}
 	);
 
-	it( 'returns an empty string if buttonPostTypes is empty', () => {
+	it( 'returns an empty string if ctaPostTypes is empty', () => {
 		const postTypes = [
 			{
 				slug: 'post',
@@ -149,6 +143,6 @@ describe( 'getButtonPostTypesString', () => {
 			},
 		];
 
-		expect( getButtonPostTypesString( [], postTypes ) ).toBe( '' );
+		expect( getCTAPostTypesString( [], postTypes ) ).toBe( '' );
 	} );
 } );
