@@ -21,7 +21,6 @@
  */
 import SettingsView from './SettingsView';
 import { Cell, Grid, Row } from '../../../../material-components';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import {
 	MODULES_THANK_WITH_GOOGLE,
 	BUTTON_PLACEMENT_STATIC_AUTO,
@@ -75,19 +74,11 @@ Default.storyName = 'Default';
 Default.parameters = { features };
 Default.args = {
 	setupRegistry: ( registry ) => {
-		registry.dispatch( CORE_SITE ).receiveSiteInfo( {
-			postTypes: [
-				{ slug: 'posts', label: 'Posts' },
-				{ slug: 'pages', label: 'Pages' },
-				{ slug: 'custom', label: 'Custom' },
-			],
-			widgetsAdminURL: 'http://example.com/wp-admin/widgets.php',
-		} );
 		registry.dispatch( MODULES_THANK_WITH_GOOGLE ).receiveGetSettings( {
 			publicationID: 'example.com',
 			buttonPlacement: BUTTON_PLACEMENT_STATIC_AUTO,
 			colorTheme: 'purple',
-			buttonPostTypes: [ 'posts', 'pages' ],
+			buttonPostTypes: [ 'post', 'page' ],
 		} );
 	},
 };
@@ -101,7 +92,7 @@ SettingsError.args = {
 			publicationID: 'example.com',
 			buttonPlacement: BUTTON_PLACEMENT_STATIC_AUTO,
 			colorTheme: 'purple',
-			buttonPostTypes: [ 'posts', 'pages' ],
+			buttonPostTypes: [ 'post', 'page' ],
 		} );
 		registry.dispatch( MODULES_THANK_WITH_GOOGLE ).receiveError(
 			{
