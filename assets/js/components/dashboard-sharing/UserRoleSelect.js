@@ -112,6 +112,10 @@ const UserRoleSelect = forwardRef(
 		] );
 
 		useEffect( () => {
+			if ( ! roleSelectRef.current ) {
+				return;
+			}
+
 			if ( editMode ) {
 				// Focus on the "All" roles button.
 				roleSelectRef.current.firstChild.focus();
