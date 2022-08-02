@@ -24,7 +24,7 @@ import { SITE_KIT_VIEW_CONTEXTS } from '../googlesitekit/constants';
 /**
  * Checks whether or not the current viewContext is a Site Kit screen.
  *
- * @since n.e.x.t
+ * @since 1.80.0
  *
  * @param {string} viewContext The view-context.
  * @return {boolean} TRUE if the passed view-context is a site kit view; otherwise FALSE.

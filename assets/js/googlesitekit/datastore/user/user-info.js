@@ -400,7 +400,7 @@ export const selectors = {
 	/**
 	 * Gets an account chooser url with the current user's email.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.80.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(string|undefined)} The concatenated url if an email is present; otherwise undefined.

@@ -31,7 +31,7 @@ class Supporter_Wall_Widget extends WP_Widget {
 	public function __construct() {
 		parent::__construct(
 			self::WIDGET_ID,
-			sprintf( 'Thank with Google: %s', __( 'Supporter Wall', 'google-site-kit' ) )
+			__( 'Thank with Google: Supporter Wall', 'google-site-kit' )
 		);
 	}
 
@@ -46,17 +46,23 @@ class Supporter_Wall_Widget extends WP_Widget {
 		$title    = ! empty( $instance['title'] ) ? $instance['title'] : '';
 		$title_id = $this->get_field_id( 'title' );
 
-		echo '<p>';
-			echo '<label for="', esc_attr( $title_id ), '">';
-				esc_html_e( 'Title:', 'google-site-kit' );
-			echo '</label>';
-			printf(
-				'<input type="text" id="%s" class="widefat" name="%s" value="%s">',
-				esc_attr( $title_id ),
-				esc_attr( $this->get_field_name( 'title' ) ),
-				esc_attr( $title )
-			);
-		echo '</p>';
+		?>
+			<p>
+				<label for="<?php echo esc_attr( $title_id ); ?>">
+					<?php esc_html_e( 'Title:', 'google-site-kit' ); ?>
+				</label>
+				<input
+					type="text"
+					id="<?php echo esc_attr( $title_id ); ?>"
+					class="widefat"
+					name="<?php echo esc_attr( $this->get_field_name( 'title' ) ); ?>"
+					value="<?php echo esc_attr( $title ); ?>"
+				>
+			</p>
+			<p class="description">
+				<?php esc_html_e( 'The color of the supporter wall is based on the color theme you selected in the Thank with Google module settings.', 'google-site-kit' ); ?>
+			</p>
+		<?php
 	}
 
 	/**

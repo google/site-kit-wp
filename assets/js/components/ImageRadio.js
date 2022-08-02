@@ -32,20 +32,22 @@ import { useCallback } from '@wordpress/element';
  */
 import { MDCFormField, MDCRadio } from '../material-components';
 
-const ImageRadio = ( {
-	onClick,
-	id,
-	name,
-	value,
-	checked,
-	tabIndex,
-	onKeyDown,
-	image,
-	label,
-	children,
-	description,
-	ariaLabel,
-} ) => {
+export default function ImageRadio( props ) {
+	const {
+		onChange = null,
+		id,
+		name,
+		value,
+		checked = false,
+		tabIndex = undefined,
+		onKeyDown = null,
+		image,
+		label = '',
+		children,
+		description,
+		ariaLabel,
+	} = props;
+
 	const formFieldRef = useCallback( ( element ) => {
 		if ( element !== null ) {
 			const formField = new MDCFormField( element );
@@ -68,7 +70,7 @@ const ImageRadio = ( {
 				<input
 					aria-label={ ariaLabel ? ariaLabel : label }
 					className="mdc-radio__native-control"
-					onClick={ onClick }
+					onChange={ onChange }
 					onKeyDown={ onKeyDown }
 					type="radio"
 					id={ id }
@@ -90,35 +92,24 @@ const ImageRadio = ( {
 				</div>
 			</div>
 			<label htmlFor={ id }>
-				{ image && <span>{ label }</span> }
+				{ image && label && <span>{ label }</span> }
 				{ description ? description : children }
 			</label>
 		</div>
 	);
-};
+}
 
 ImageRadio.propTypes = {
-	onClick: PropTypes.func,
+	onChange: PropTypes.func,
 	onKeyDown: PropTypes.func,
 	id: PropTypes.string.isRequired,
 	name: PropTypes.string.isRequired,
 	value: PropTypes.string.isRequired,
 	checked: PropTypes.bool,
 	tabIndex: PropTypes.oneOfType( [ PropTypes.number, PropTypes.string ] ),
-	label: PropTypes.string.isRequired,
-	children: PropTypes.string.isRequired,
+	label: PropTypes.string,
+	children: PropTypes.string,
 	image: PropTypes.element,
 	description: PropTypes.string,
 	ariaLabel: PropTypes.string,
 };
-
-ImageRadio.defaultProps = {
-	onClick: null,
-	onKeyDown: null,
-	checked: false,
-	disabled: false,
-	tabIndex: undefined,
-	label: '',
-};
-
-export default ImageRadio;

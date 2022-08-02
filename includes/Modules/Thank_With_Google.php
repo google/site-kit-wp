@@ -266,7 +266,7 @@ final class Thank_With_Google extends Module
 	/**
 	 * Registers the Thank with Google tag.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.80.0
 	 */
 	private function register_tag() {
 		if ( $this->context->is_amp() ) {
@@ -284,7 +284,6 @@ final class Thank_With_Google extends Module
 		$tag->use_guard( new Tag_Environment_Type_Guard() );
 
 		if ( $tag->can_register() ) {
-			$tag->set_publication_id( $settings['publicationID'] );
 			$tag->set_button_placement( $settings['buttonPlacement'] );
 			$tag->set_button_post_types( $settings['buttonPostTypes'] );
 

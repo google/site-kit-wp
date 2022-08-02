@@ -22,3 +22,5 @@ export { default as SetupCustomize } from './SetupCustomize';
 export { default as SetupPublicationActive } from './SetupPublicationActive';
 export { default as SetupPublicationActionRequired } from './SetupPublicationActionRequired';
 export { default as SetupPublicationPendingVerification } from './SetupPublicationPendingVerification';
+export { default as SetupHeader } from './SetupHeader';
+export { default as SetupPublicationScreen } from './SetupPublicationScreen';

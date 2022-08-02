@@ -103,12 +103,13 @@ export default function DashboardSharingSettingsButton() {
 
 	const triggeredTourRef = useRef();
 	const { triggerOnDemandTour } = useDispatch( CORE_USER );
-	useEffect( () => {
-		if ( dialogOpen && ! triggeredTourRef.current ) {
+
+	const handleTriggerOnDemandTour = useCallback( () => {
+		if ( ! triggeredTourRef.current ) {
 			triggeredTourRef.current = true;
 			triggerOnDemandTour( sharingSettingsTour );
 		}
-	}, [ dialogOpen, triggerOnDemandTour ] );
+	}, [ triggerOnDemandTour ] );
 
 	const dialogStyles = {};
 	// On mobile, the dialog box's flexbox is set to stretch items within to cover
@@ -132,6 +133,7 @@ export default function DashboardSharingSettingsButton() {
 				<Dialog
 					open={ dialogOpen }
 					onClose={ closeDialog }
+					onOpen={ handleTriggerOnDemandTour }
 					className="googlesitekit-dialog googlesitekit-sharing-settings-dialog"
 					style={ dialogStyles }
 					escapeKeyAction={

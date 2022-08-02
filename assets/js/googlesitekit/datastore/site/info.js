@@ -109,6 +109,8 @@ export const reducer = ( state, { payload, type } ) => {
 				usingProxy,
 				webStoriesActive,
 				proxySupportLinkURL,
+				widgetsAdminURL,
+				postTypes,
 			} = payload.siteInfo;
 
 			return {
@@ -132,6 +134,8 @@ export const reducer = ( state, { payload, type } ) => {
 					usingProxy,
 					webStoriesActive,
 					proxySupportLinkURL,
+					widgetsAdminURL,
+					postTypes,
 				},
 			};
 		}
@@ -180,6 +184,8 @@ export const resolvers = {
 			usingProxy,
 			webStoriesActive,
 			proxySupportLinkURL,
+			widgetsAdminURL,
+			postTypes,
 		} = global._googlesitekitBaseData;
 
 		const {
@@ -205,9 +211,11 @@ export const resolvers = {
 			setupErrorRedoURL,
 			siteName,
 			timezone,
+			postTypes,
 			usingProxy: !! usingProxy,
 			webStoriesActive,
 			proxySupportLinkURL,
+			widgetsAdminURL,
 		} );
 	},
 };
@@ -482,7 +490,7 @@ export const selectors = {
 	/**
 	 * Gets a setup error code, if one exists.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.80.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(string|undefined)} An error code from setup, if one exists. Will be `null` if no error exists; `undefined` when loading.
@@ -515,12 +523,32 @@ export const selectors = {
 	/**
 	 * Gets the proxy support URL.
 	 *
+	 * @since 1.80.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(string|null)} The proxy support URL.
+	 */
+	getProxySupportLinkURL: getSiteInfoProperty( 'proxySupportLinkURL' ),
+
+	/**
+	 * Gets the admin widgets editor URL.
+	 *
 	 * @since n.e.x.t
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {(string|null)}
+	 * @return {(string|null)} The proxy support URL.
 	 */
-	getProxySupportLinkURL: getSiteInfoProperty( 'proxySupportLinkURL' ),
+	getWidgetsAdminURL: getSiteInfoProperty( 'widgetsAdminURL' ),
+
+	/**
+	 * Gets the public post types.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {Array.<Object>} The public post types.
+	 */
+	getPostTypes: getSiteInfoProperty( 'postTypes' ),
 
 	/**
 	 * Gets the 'permaLink' query parameter.
