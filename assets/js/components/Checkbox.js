@@ -19,13 +19,13 @@
 /**
  * External dependencies
  */
-import classnames from 'classnames';
 import PropTypes from 'prop-types';
+import '@material/mwc-checkbox/mwc-checkbox';
 
 /**
  * WordPress dependencies
  */
-import { Fragment } from '@wordpress/element';
+import { useRef, useEffect } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -46,48 +46,52 @@ export default function Checkbox( props ) {
 		loading,
 	} = props;
 
+	const mwcProps = {};
+
+	if ( checked ) {
+		mwcProps.checked = true;
+	}
+
+	if ( disabled ) {
+		mwcProps.disabled = true;
+	}
+
+	const ref = useRef( null );
+
+	useEffect( () => {
+		const { current } = ref;
+		const change = ( ...params ) => onChange?.( ...params );
+
+		current?.addEventListener( 'change', change );
+		return () => current?.removeEventListener( 'change', change );
+	}, [ ref.current, onChange ] );
+
+	useEffect( () => {
+		const { current } = ref;
+		const keydown = ( ...params ) => onKeyDown?.( ...params );
+
+		current?.addEventListener( 'keydown', keydown );
+		return () => current?.removeEventListener( 'keydown', keydown );
+	}, [ ref.current, onKeyDown ] );
+
 	return (
 		<div className="mdc-form-field">
-			<div
-				className={ classnames( 'mdc-checkbox', {
-					'mdc-checkbox--disabled': disabled,
-				} ) }
-			>
-				{ loading ? (
-					<Spinner isSaving style={ { margin: '0' } } />
-				) : (
-					<Fragment>
-						<input
-							className="mdc-checkbox__native-control"
-							type="checkbox"
-							id={ id }
-							name={ name }
-							value={ value }
-							checked={ checked }
-							disabled={ disabled }
-							onChange={ onChange }
-							tabIndex={ tabIndex }
-							onKeyDown={ onKeyDown }
-						/>
+			{ loading ? (
+				<Spinner isSaving style={ { margin: '0' } } />
+			) : (
+				<mwc-checkbox
+					ref={ ref }
+					id={ id }
+					name={ name }
+					value={ value }
+					tabIndex={ tabIndex }
+					{ ...mwcProps }
+				/>
+			) }
 
-						<div className="mdc-checkbox__background">
-							<svg
-								className="mdc-checkbox__checkmark"
-								viewBox="0 0 24 24"
-							>
-								<path
-									className="mdc-checkbox__checkmark-path"
-									fill="none"
-									d="M1.73,12.91 8.1,19.28 22.79,4.59"
-								/>
-							</svg>
-							<div className="mdc-checkbox__mixedmark" />
-						</div>
-					</Fragment>
-				) }
-			</div>
-
-			<label htmlFor={ id }>{ children }</label>
+			<label htmlFor={ id } className="mdc-label">
+				{ children }
+			</label>
 		</div>
 	);
 }

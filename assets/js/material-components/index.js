@@ -26,7 +26,6 @@ import { MDCRadio } from '@material/radio';
 import Select, { Option } from '@material/react-select';
 import { MDCSwitch } from '@material/switch';
 import { MDCDialog } from '@material/dialog';
-import { MDCCheckbox } from '@material/checkbox';
 import { MDCMenu } from '@material/menu';
 import Dialog, { DialogContent, DialogFooter } from '@material/react-dialog';
 
@@ -42,7 +41,6 @@ export {
 	Option,
 	MDCSwitch,
 	MDCDialog,
-	MDCCheckbox,
 	MDCMenu,
 	Dialog,
 	DialogContent,
