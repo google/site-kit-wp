@@ -573,7 +573,8 @@ module.exports.default = ( env, argv ) => {
 		} );
 	}
 
-	const { includeTests, mode } = argv;
+	const { includeTests } = env;
+	const { mode } = argv;
 
 	if ( mode !== 'production' || includeTests ) {
 		// Build the test files if we aren't doing a production build.
