@@ -45,7 +45,7 @@ const projectPath = ( relativePath ) => {
 
 const manifestSeed = {};
 const manifestArgs = ( mode ) => ( {
-	fileName: './manifest.php',
+	fileName: projectPath( './dist/manifest.php' ),
 	seed: manifestSeed,
 	generate( seedObj, files ) {
 		const entry = ( filename, hash ) => {
