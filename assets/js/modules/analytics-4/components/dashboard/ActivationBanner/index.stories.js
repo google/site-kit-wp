@@ -1,7 +1,7 @@
 /**
- * `modules/analytics-4` data store constants.
+ * ActivationBanner Component Stories.
  *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2022 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,13 +16,16 @@
  * limitations under the License.
  */
 
-export const MODULES_ANALYTICS_4 = 'modules/analytics-4';
+/**
+ * Internal dependencies
+ */
+import ActivationBanner from './index';
 
-export const PROPERTY_CREATE = 'property_create';
-export const WEBDATASTREAM_CREATE = 'webdatastream_create';
+const Template = () => <ActivationBanner />;
 
-export const MAX_WEBDATASTREAMS_PER_BATCH = 10;
+export const Default = Template.bind( {} );
+Default.storyName = 'Default';
 
-export const ACTIVATION_STEP_REMINDER = 0;
-export const ACTIVATION_STEP_SETUP = 1;
-export const ACTIVATION_STEP_SUCCESS = 2;
+export default {
+	title: 'Modules/Analytics4/ActivationBanner',
+};
