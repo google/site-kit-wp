@@ -167,8 +167,9 @@ class Setup_Test extends TestCase {
 		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $user_id );
 
-		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
-		$setup   = new Setup( $context, new User_Options( $context ), new Authentication( $context ) );
+		$context                      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
+		$setup                        = new Setup( $context, new User_Options( $context ), new Authentication( $context ) );
+		$oauth_proxy_failed_help_link = $setup->get_oauth_proxy_failed_help_link();
 		$setup->register();
 
 		if ( $has_credentials ) {
@@ -206,7 +207,11 @@ class Setup_Test extends TestCase {
 		} catch ( WPDieException $exception ) {
 			$error = $has_credentials ? 'Test error message.' : 'test_error_code';
 			$this->assertStringContainsString(
-				sprintf( 'The request to the authentication proxy has failed with an error: %s', $error ),
+				sprintf(
+					'The request to the authentication proxy has failed with an error: %1$s. %2$s.',
+					$error,
+					$oauth_proxy_failed_help_link
+				),
 				$exception->getMessage()
 			);
 		}
