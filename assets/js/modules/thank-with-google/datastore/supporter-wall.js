@@ -1,6 +1,4 @@
 /**
- * `modules/thank-with-google` datastore: supporter-wall.
- *
  * Site Kit by Google, Copyright 2022 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
