@@ -106,6 +106,22 @@ class Setup {
 	}
 
 	/**
+	 * Composes the oAuth proxy get help link.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string The get help link.
+	 */
+	public function get_oauth_proxy_failed_help_link() {
+		return sprintf(
+			/* translators: 1: Support link URL. 2: Get Help string. */
+			__( '<a href="%1$s" target="_blank">%2$s</a>', 'google-site-kit' ),
+			esc_url( $this->proxy_support_link_url . '/?error_id=request_to_auth_proxy_failed' ),
+			esc_html__( 'Get Help', 'google-site-kit' )
+		);
+	}
+
+	/**
 	 * Handles the setup start action, taking the user to the proxy setup screen.
 	 *
 	 * @since 1.48.0
@@ -131,12 +147,7 @@ class Setup {
 			? $this->google_proxy->sync_site_fields( $this->credentials, 'sync' )
 			: $this->google_proxy->register_site( 'sync' );
 
-		$oauth_proxy_failed_help_link = sprintf(
-			/* translators: 1: Support link URL. 2: Get Help string. */
-			__( '<a href="%1$s" target="_blank">%2$s</a>', 'google-site-kit' ),
-			esc_url( $this->proxy_support_link_url . '/?error_id=request_to_auth_proxy_failed' ),
-			esc_html__( 'Get Help', 'google-site-kit' )
-		);
+		$oauth_proxy_failed_help_link = $this->get_oauth_proxy_failed_help_link();
 
 		if ( is_wp_error( $oauth_setup_redirect ) ) {
 			$error_message = $oauth_setup_redirect->get_error_message();
