@@ -44,61 +44,68 @@ const projectPath = ( relativePath ) => {
 };
 
 const manifestSeed = {};
-const manifestArgs = ( mode ) => ( {
-	fileName: projectPath( './dist/manifest.php' ),
-	seed: manifestSeed,
-	generate( seedObj, files ) {
-		const entry = ( filename, hash ) => {
-			if ( mode === 'production' ) {
-				return [ filename, null ];
-			}
-			return [ filename, hash ];
-		};
-		files.forEach( ( file ) => {
-			if ( file.name.match( /\.css$/ ) ) {
-				// CSS file paths contain the destination directory which needs to be stripped
-				// because the MiniCssExtractPlugin does not have separate
-				// options for `file` and `path` like normal entries.
-				seedObj[ file.chunk.name ] = entry(
-					path.basename( file.path ),
-					file.chunk.contentHash[ 'css/mini-extract' ]
-				);
-			} else if ( file.chunk.name === 'runtime' ) {
-				seedObj[ 'googlesitekit-runtime' ] = entry(
-					file.path,
-					file.chunk.contentHash.javascript
-				);
-			} else if ( file.isInitial ) {
-				// Normal entries.
-				seedObj[ file.chunk.name ] = entry(
-					file.path,
-					file.chunk.contentHash.javascript
-				);
-			}
-		} );
-		return seedObj;
-	},
-	serialize( manifest ) {
-		const handles = Object.keys( manifest ).map( ( key ) =>
-			key.replace( /\.(css|js)$/, '' )
-		);
-		const maxLen = Math.max( ...handles.map( ( key ) => key.length ) );
-		const content = manifestTemplate.replace(
-			'{{assets}}',
-			Object.entries( manifest )
-				.map( ( [ handle, value ] ) => {
-					const values = value.map( ( v ) => JSON.stringify( v ) );
-					const alignment = ''.padEnd( maxLen - handle.length );
-					return `'${ handle }' ${ alignment }=> array( ${ values.join(
-						', '
-					) } ),`;
-				} )
-				.join( '\n\t' )
-		);
+const manifestArgs = ( mode ) => {
+	return {
+		fileName:
+			mode === 'production'
+				? projectPath( 'dist/manifest.php' )
+				: projectPath( 'manifest.php' ),
+		seed: manifestSeed,
+		generate( seedObj, files ) {
+			const entry = ( filename, hash ) => {
+				if ( mode === 'production' ) {
+					return [ filename, null ];
+				}
+				return [ filename, hash ];
+			};
+			files.forEach( ( file ) => {
+				if ( file.name.match( /\.css$/ ) ) {
+					// CSS file paths contain the destination directory which needs to be stripped
+					// because the MiniCssExtractPlugin does not have separate
+					// options for `file` and `path` like normal entries.
+					seedObj[ file.chunk.name ] = entry(
+						path.basename( file.path ),
+						file.chunk.contentHash[ 'css/mini-extract' ]
+					);
+				} else if ( file.chunk.name === 'runtime' ) {
+					seedObj[ 'googlesitekit-runtime' ] = entry(
+						file.path,
+						file.chunk.contentHash.javascript
+					);
+				} else if ( file.isInitial ) {
+					// Normal entries.
+					seedObj[ file.chunk.name ] = entry(
+						file.path,
+						file.chunk.contentHash.javascript
+					);
+				}
+			} );
+			return seedObj;
+		},
+		serialize( manifest ) {
+			const handles = Object.keys( manifest ).map( ( key ) =>
+				key.replace( /\.(css|js)$/, '' )
+			);
+			const maxLen = Math.max( ...handles.map( ( key ) => key.length ) );
+			const content = manifestTemplate.replace(
+				'{{assets}}',
+				Object.entries( manifest )
+					.map( ( [ handle, value ] ) => {
+						const values = value.map( ( v ) =>
+							JSON.stringify( v )
+						);
+						const alignment = ''.padEnd( maxLen - handle.length );
+						return `'${ handle }' ${ alignment }=> array( ${ values.join(
+							', '
+						) } ),`;
+					} )
+					.join( '\n\t' )
+			);
 
-		return content;
-	},
-} );
+			return content;
+		},
+	};
+};
 
 const manifestTemplate = `<?php
 /**
