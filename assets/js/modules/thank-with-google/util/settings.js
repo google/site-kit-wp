@@ -102,7 +102,10 @@ export function getColorThemes() {
  * @return {string} "Fixed" or "Overlay" depending on if buttonPlacement is static or dynamic.
  */
 export const getType = ( buttonPlacement ) => {
-	if ( 'static' === buttonPlacement.substring( 0, 5 ) ) {
+	if ( ! buttonPlacement ) {
+		return '';
+	}
+	if ( 'static' === buttonPlacement.substring( 0, 6 ) ) {
 		return __( 'Fixed', 'google-site-kit' );
 	}
 	return __( 'Overlay', 'google-site-kit' );
