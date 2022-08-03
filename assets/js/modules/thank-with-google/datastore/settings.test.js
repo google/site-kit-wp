@@ -35,7 +35,7 @@ import {
 	MODULES_THANK_WITH_GOOGLE,
 } from './constants';
 import {
-	INVARIANT_INVALID_BUTTON_PLACEMENT,
+	INVARIANT_INVALID_CTA_PLACEMENT,
 	INVARIANT_INVALID_COLOR_THEME,
 	INVARIANT_INVALID_PUBLICATION_ID,
 } from './settings';
@@ -275,7 +275,7 @@ describe( 'modules/thank-with-google settings', () => {
 					registry
 						.select( MODULES_THANK_WITH_GOOGLE )
 						.__dangerousCanSubmitChanges()
-				).toThrow( INVARIANT_INVALID_BUTTON_PLACEMENT );
+				).toThrow( INVARIANT_INVALID_CTA_PLACEMENT );
 			} );
 		} );
 	} );

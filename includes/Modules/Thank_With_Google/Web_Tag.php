@@ -179,7 +179,7 @@ class Web_Tag extends Module_Web_Tag {
 	}
 
 	/**
-	 * Checks if the current buttton placement is static.
+	 * Checks if the current CTA placement is static.
 	 *
 	 * @since 1.80.0
 	 *

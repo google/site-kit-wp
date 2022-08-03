@@ -54,8 +54,8 @@ export default function PositionRadio() {
 			<h4>{ __( 'Position', 'google-site-kit' ) }</h4>
 			<div className="googlesitekit-twg-position-radio__option">
 				<Radio
-					id={ `button-placement-${ CTA_PLACEMENT_STATIC_AUTO }` }
-					name="button-placement"
+					id={ `cta-placement-${ CTA_PLACEMENT_STATIC_AUTO }` }
+					name="cta-placement"
 					value={ CTA_PLACEMENT_STATIC_AUTO }
 					checked={ ctaPlacement === CTA_PLACEMENT_STATIC_AUTO }
 					onChange={ onChange }
@@ -79,8 +79,8 @@ export default function PositionRadio() {
 				</p>
 				<div className="googlesitekit-twg-position-radio__suboptions">
 					<Radio
-						id={ `button-placement-${ CTA_PLACEMENT_STATIC_ABOVE_CONTENT }` }
-						name="button-placement"
+						id={ `cta-placement-${ CTA_PLACEMENT_STATIC_ABOVE_CONTENT }` }
+						name="cta-placement"
 						value={ CTA_PLACEMENT_STATIC_ABOVE_CONTENT }
 						checked={
 							ctaPlacement === CTA_PLACEMENT_STATIC_ABOVE_CONTENT
@@ -90,8 +90,8 @@ export default function PositionRadio() {
 						{ __( 'Above the post', 'google-site-kit' ) }
 					</Radio>
 					<Radio
-						id={ `button-placement-${ CTA_PLACEMENT_STATIC_BELOW_CONTENT }` }
-						name="button-placement"
+						id={ `cta-placement-${ CTA_PLACEMENT_STATIC_BELOW_CONTENT }` }
+						name="cta-placement"
 						value={ CTA_PLACEMENT_STATIC_BELOW_CONTENT }
 						checked={
 							ctaPlacement === CTA_PLACEMENT_STATIC_BELOW_CONTENT
@@ -101,8 +101,8 @@ export default function PositionRadio() {
 						{ __( 'Below the post', 'google-site-kit' ) }
 					</Radio>
 					<Radio
-						id={ `button-placement-${ CTA_PLACEMENT_STATIC_BELOW_1ST_PARAGRAPH }` }
-						name="button-placement"
+						id={ `cta-placement-${ CTA_PLACEMENT_STATIC_BELOW_1ST_PARAGRAPH }` }
+						name="cta-placement"
 						value={ CTA_PLACEMENT_STATIC_BELOW_1ST_PARAGRAPH }
 						checked={
 							ctaPlacement ===

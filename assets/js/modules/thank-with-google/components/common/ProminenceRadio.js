@@ -61,8 +61,8 @@ export default function ProminenceRadio() {
 			<div className="googlesitekit-twg-prominence-radio__options">
 				<Suspense fallback={ <ProgressBar small /> }>
 					<ImageRadio
-						id={ `button-placement-${ CTA_PLACEMENT_DYNAMIC_LOW }` }
-						name="button-placement"
+						id={ `cta-placement-${ CTA_PLACEMENT_DYNAMIC_LOW }` }
+						name="cta-placement"
 						value={ CTA_PLACEMENT_DYNAMIC_LOW }
 						label={ __( 'Low', 'google-site-kit' ) }
 						description={ __(
@@ -74,8 +74,8 @@ export default function ProminenceRadio() {
 						checked={ ctaPlacement === CTA_PLACEMENT_DYNAMIC_LOW }
 					/>
 					<ImageRadio
-						id={ `button-placement-${ CTA_PLACEMENT_DYNAMIC_HIGH }` }
-						name="button-placement"
+						id={ `cta-placement-${ CTA_PLACEMENT_DYNAMIC_HIGH }` }
+						name="cta-placement"
 						value={ CTA_PLACEMENT_DYNAMIC_HIGH }
 						label={ __( 'High', 'google-site-kit' ) }
 						description={ __(

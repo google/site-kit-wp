@@ -64,8 +64,8 @@ export function isValidColorTheme( colorTheme ) {
  *
  * @since 1.78.0
  *
- * @param {string} ctaPlacement Button placement to test.
- * @return {boolean} `true` if the given button placement is valid, `false` otherwise.
+ * @param {string} ctaPlacement CTA placement to test.
+ * @return {boolean} `true` if the given CTA placement is valid, `false` otherwise.
  */
 export function isValidCTAPlacement( ctaPlacement ) {
 	return [
@@ -83,13 +83,13 @@ export function isValidCTAPlacement( ctaPlacement ) {
  *
  * @since 1.78.0
  *
- * @param {string[]} ctaPostTypes Button post types to test.
- * @return {boolean} `true` if the given button post types list is valid, `false` otherwise.
+ * @param {string[]} ctaPostTypes CTA post types to test.
+ * @return {boolean} `true` if the given CTA post types list is valid, `false` otherwise.
  */
 export function isValidCTAPostTypes( ctaPostTypes ) {
 	return (
 		Array.isArray( ctaPostTypes ) &&
 		ctaPostTypes.length >= 1 &&
-		ctaPostTypes.every( ( buttonPostType ) => buttonPostType.length > 0 )
+		ctaPostTypes.every( ( postType ) => postType.length > 0 )
 	);
 }

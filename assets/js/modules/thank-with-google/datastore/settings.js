@@ -42,10 +42,10 @@ import {
 export const INVARIANT_INVALID_PUBLICATION_ID =
 	'a valid publicationID is required';
 export const INVARIANT_INVALID_COLOR_THEME = 'a valid color theme is required';
-export const INVARIANT_INVALID_BUTTON_PLACEMENT =
-	'a valid button placement is required';
-export const INVARIANT_INVALID_BUTTON_POST_TYPES =
-	'a valid button post types array is required';
+export const INVARIANT_INVALID_CTA_PLACEMENT =
+	'a valid cta placement is required';
+export const INVARIANT_INVALID_CTA_POST_TYPES =
+	'a valid cta post types array is required';
 
 export async function submitChanges( { select, dispatch } ) {
 	// This action shouldn't be called if settings haven't changed,
@@ -95,12 +95,12 @@ export function validateCanSubmitChanges( select ) {
 	const ctaPlacement = getCTAPlacement();
 	invariant(
 		isValidCTAPlacement( ctaPlacement ),
-		INVARIANT_INVALID_BUTTON_PLACEMENT
+		INVARIANT_INVALID_CTA_PLACEMENT
 	);
 
 	const ctaPostTypes = getCTAPostTypes();
 	invariant(
 		isValidCTAPostTypes( ctaPostTypes ),
-		INVARIANT_INVALID_BUTTON_POST_TYPES
+		INVARIANT_INVALID_CTA_POST_TYPES
 	);
 }

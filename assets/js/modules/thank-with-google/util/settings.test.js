@@ -35,7 +35,7 @@ describe( 'getType', () => {
 		CTA_PLACEMENT_STATIC_ABOVE_CONTENT,
 		CTA_PLACEMENT_STATIC_BELOW_CONTENT,
 		CTA_PLACEMENT_STATIC_BELOW_1ST_PARAGRAPH,
-	] )( 'should return "Fixed" for %s button placement', ( ctaPlacement ) => {
+	] )( 'should return "Fixed" for %s cta placement', ( ctaPlacement ) => {
 		expect( getType( ctaPlacement ) ).toBe( 'Fixed' );
 	} );
 
@@ -63,14 +63,14 @@ describe( 'getProminence', () => {
 		[ CTA_PLACEMENT_DYNAMIC_HIGH, 'High' ],
 		[ CTA_PLACEMENT_DYNAMIC_LOW, 'Low' ],
 	] )(
-		'for %s button placement should return %s',
+		'for %s cta placement should return %s',
 		( ctaPlacement, expected ) => {
 			expect( getProminence( ctaPlacement ) ).toBe( expected );
 		}
 	);
 
 	it.each( [ [ null ], [ undefined ], [ '' ] ] )(
-		'should return an empty string when button placement is %s',
+		'should return an empty string when cta placement is %s',
 		( ctaPlacement ) => {
 			expect( getProminence( ctaPlacement ) ).toBe( '' );
 		}
