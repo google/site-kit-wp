@@ -158,7 +158,7 @@ class Setup {
 			wp_die(
 				sprintf(
 					/* translators: 1: Error message or error code. 2: Get Help link. */
-					esc_html__( 'The request to the authentication proxy has failed with an error: %1$s. %2$s.', 'google-site-kit' ),
+					esc_html__( 'The request to the authentication proxy has failed with an error: %1$s %2$s.', 'google-site-kit' ),
 					esc_html( $error_message ),
 					wp_kses(
 						$oauth_proxy_failed_help_link,
