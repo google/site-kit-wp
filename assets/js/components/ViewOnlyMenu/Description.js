@@ -49,6 +49,12 @@ export default function Description() {
 		select( CORE_SITE ).getProxySetupURL()
 	);
 
+	const documentationURL = useSelect( ( select ) => {
+		return select( CORE_SITE ).getDocumentationLinkURL(
+			'dashboard-sharing'
+		);
+	} );
+
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 
 	const onButtonClick = useCallback(
@@ -91,7 +97,7 @@ export default function Description() {
 				{
 					a: (
 						<Link
-							href="https://sitekit.withgoogle.com/documentation/using-site-kit/dashboard-sharing/"
+							href={ documentationURL }
 							external
 							onClick={ onLinkClick }
 							aria-label={ __(
