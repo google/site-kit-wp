@@ -208,7 +208,7 @@ class Setup_Test extends TestCase {
 			$error = $has_credentials ? 'Test error message.' : 'test_error_code';
 			$this->assertStringContainsString(
 				sprintf(
-					'The request to the authentication proxy has failed with an error: %1$s. %2$s.',
+					'The request to the authentication proxy has failed with an error: %1$s %2$s.',
 					$error,
 					$oauth_proxy_failed_help_link
 				),
