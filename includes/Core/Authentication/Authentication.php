@@ -775,7 +775,7 @@ final class Authentication {
 		$input = $this->context->input();
 		$nonce = $input->filter( INPUT_GET, 'nonce' );
 		if ( ! wp_verify_nonce( $nonce, self::ACTION_CONNECT ) ) {
-			self::invalid_nonce_error( self::ACTION_CONNECT );
+			$this->invalid_nonce_error( self::ACTION_CONNECT );
 		}
 
 		if ( ! current_user_can( Permissions::AUTHENTICATE ) ) {
@@ -804,7 +804,7 @@ final class Authentication {
 	private function handle_disconnect() {
 		$nonce = $this->context->input()->filter( INPUT_GET, 'nonce' );
 		if ( ! wp_verify_nonce( $nonce, self::ACTION_DISCONNECT ) ) {
-			self::invalid_nonce_error( self::ACTION_DISCONNECT );
+			$this->invalid_nonce_error( self::ACTION_DISCONNECT );
 		}
 
 		if ( ! current_user_can( Permissions::AUTHENTICATE ) ) {
@@ -1300,7 +1300,7 @@ final class Authentication {
 	private function handle_proxy_permissions() {
 		$nonce = $this->context->input()->filter( INPUT_GET, 'nonce' );
 		if ( ! wp_verify_nonce( $nonce, Google_Proxy::ACTION_PERMISSIONS ) ) {
-			self::invalid_nonce_error( Google_Proxy::ACTION_PERMISSIONS );
+			$this->invalid_nonce_error( Google_Proxy::ACTION_PERMISSIONS );
 		}
 
 		if ( ! current_user_can( Permissions::AUTHENTICATE ) ) {
@@ -1455,7 +1455,7 @@ final class Authentication {
 	 *
 	 * @param string $action Action name.
 	 */
-	public static function invalid_nonce_error( $action ) {
+	public function invalid_nonce_error( $action ) {
 		if ( strpos( $action, 'googlesitekit_proxy_' ) !== 0 ) {
 			wp_nonce_ays( $action );
 			return;
@@ -1464,9 +1464,11 @@ final class Authentication {
 		$html  = __( 'The link you followed has expired.', 'google-site-kit' );
 		$html .= '</p><p>';
 		$html .= sprintf(
-			'<a href="%s">%s</a>',
+			'<a href="%s">%s</a>. <a href="%s" target="_blank">%s</a>.',
 			esc_url( Plugin::instance()->context()->admin_url( 'splash' ) ),
-			__( 'Please try again.', 'google-site-kit' )
+			__( 'Please try again', 'google-site-kit' ),
+			esc_url( $this->get_proxy_support_link_url() . '?error_id=nonce_expired' ),
+			__( 'Get Help', 'google-site-kit' )
 		);
 		wp_die( $html, __( 'Something went wrong.', 'google-site-kit' ), 403 ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	}
