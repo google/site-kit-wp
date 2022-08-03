@@ -60,9 +60,7 @@ export default function IdeaHubPromptBannerNotification() {
 	);
 
 	const ideaHubSupportURL = useSelect( ( select ) => {
-		return select( CORE_SITE ).getDocumentationLinkURL(
-			'using-site-kit/idea-hub'
-		);
+		return select( CORE_SITE ).getDocumentationLinkURL( 'idea-hub' );
 	} );
 
 	const handleOnDismiss = useCallback( async () => {
