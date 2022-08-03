@@ -98,6 +98,7 @@ function BannerNotification( {
 	type,
 	WinImageSVG,
 	rounded = false,
+	footer,
 } ) {
 	// Closed notifications are invisible, but still occupy space.
 	const [ isClosed, setIsClosed ] = useState( false );
@@ -443,6 +444,8 @@ function BannerNotification( {
 						</Cell>
 					) }
 				</Row>
+
+				{ footer && <Row>{ footer }</Row> }
 			</Grid>
 		</section>
 	);
@@ -480,6 +483,7 @@ BannerNotification.propTypes = {
 	badgeLabel: PropTypes.string,
 	noBottomPadding: PropTypes.bool,
 	rounded: PropTypes.bool,
+	footer: PropTypes.node,
 };
 
 BannerNotification.defaultProps = {
