@@ -42,8 +42,17 @@
 		> .mdc-form-field {
 
 			label {
-				font-weight: 700;
+				font-weight: 500;
 			}
+		}
+
+		h5 {
+			font-family: $f-primary;
+			font-size: 0.875rem;
+			font-weight: 400;
+			letter-spacing: $ls-m;
+			margin: 26px 0 10px 34px;
+			padding: 0 0 1px;
 		}
 
 		p {
