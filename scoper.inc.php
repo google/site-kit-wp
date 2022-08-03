@@ -8,7 +8,7 @@
  * @link      https://sitekit.withgoogle.com
  */
 
-use Isolated\Symfony\Component\Finder\Finder;
+use Symfony\Component\Finder\Finder;
 
 // Google API services to include classes for.
 $google_services = implode(
@@ -88,6 +88,12 @@ return array(
 			->name( '#^autoload.php$#' )
 			->depth( '== 0' )
 			->in( 'vendor/google/apiclient-services' ),
+
+		// Temporary SwG client.
+		Finder::create()
+			->files()
+			->name( '#\.php$#' )
+			->in( 'vendor/google/apiclient-services-subscribewithgoogle' ),
 	),
 	'files-whitelist'            => array(
 
