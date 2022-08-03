@@ -259,8 +259,8 @@ class Setup {
 	 * @param string $action Action name. Optional. Defaults to the action for the nonce given to the proxy.
 	 */
 	protected function verify_nonce( $nonce, $action = Google_Proxy::NONCE_ACTION ) {
-		if ( ! wp_verify_nonce( $nonce, $action ) ) {
-			Authentication::invalid_nonce_error( $action );
+		if ( wp_verify_nonce( $nonce, $action ) ) {
+			$this->authentication->invalid_nonce_error( $action );
 		}
 	}
 
