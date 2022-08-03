@@ -232,7 +232,7 @@ final class Thank_With_Google extends Module
 
 					$actual_sidebars_count = 0;
 					foreach ( $all_sidebars as $sidebar_id => $widgets ) {
-						// Skipt the inactive widgets sidebar because it is not an actual sidebar.
+						// Skip the inactive widgets sidebar because it is not an actual sidebar.
 						if ( 'wp_inactive_widgets' === $sidebar_id ) {
 							continue;
 						}

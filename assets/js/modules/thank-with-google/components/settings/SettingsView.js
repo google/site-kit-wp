@@ -86,7 +86,7 @@ export default function SettingsView() {
 	} else if ( supporterWallSidebars.length > 0 ) {
 		supporterWall = (
 			<p className="googlesitekit-settings-module__meta-item-data">
-				<DisplaySetting value={ supporterWallSidebars?.join( ', ' ) } />
+				<DisplaySetting value={ supporterWallSidebars.join( ', ' ) } />
 			</p>
 		);
 	} else {
@@ -96,7 +96,7 @@ export default function SettingsView() {
 					href={ supporterWallURL }
 					className="googlesitekit-settings-module__cta-button"
 				>
-					{ __( 'Add Supporter wall', 'google-site-kit' ) }
+					{ __( 'Add supporter wall', 'google-site-kit' ) }
 				</Link>
 			</p>
 		);
