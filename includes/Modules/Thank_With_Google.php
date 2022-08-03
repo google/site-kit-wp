@@ -245,7 +245,7 @@ final class Thank_With_Google extends Module
 							if ( preg_match( $pattern, $widget ) ) {
 								$sidebars[ $sidebar_id ] = $sidebar['name'];
 								break;
-							} elseif ( 
+							} elseif (
 								preg_match( '/block-(\d+)/', $widget, $block_match ) &&
 								stripos( $block_widgets[ $block_match[1] ]['content'], $substr ) > 0
 							) {
