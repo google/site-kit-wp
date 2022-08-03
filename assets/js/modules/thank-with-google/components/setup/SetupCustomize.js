@@ -34,7 +34,7 @@ import Data from 'googlesitekit-data';
 import { MODULES_THANK_WITH_GOOGLE } from '../../datastore/constants';
 import Button from '../../../../components/Button';
 import { Cell } from '../../../../material-components';
-import { ButtonPlacement, ColorRadio, PostTypesSelect } from '../common';
+import { CTAPlacement, ColorRadio, PostTypesSelect } from '../common';
 import SetupHeader from './SetupHeader';
 const { useDispatch, useSelect } = Data;
 
@@ -67,7 +67,7 @@ export default function SetupCustomize( props ) {
 				</p>
 
 				<div className="googlesitekit-setup-module__inputs">
-					<ButtonPlacement />
+					<CTAPlacement />
 					<ColorRadio />
 					<PostTypesSelect />
 				</div>

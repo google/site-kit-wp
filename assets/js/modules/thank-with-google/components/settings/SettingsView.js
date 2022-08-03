@@ -36,7 +36,7 @@ import {
 	getColorThemes,
 	getType,
 	getProminence,
-	getButtonPostTypesString,
+	getCTAPostTypesString,
 } from '../../util/settings';
 const { useSelect } = Data;
 
@@ -51,8 +51,8 @@ export default function SettingsView() {
 		select( MODULES_THANK_WITH_GOOGLE ).getColorTheme()
 	);
 
-	const buttonPlacement = useSelect( ( select ) =>
-		select( MODULES_THANK_WITH_GOOGLE ).getButtonPlacement()
+	const ctaPlacement = useSelect( ( select ) =>
+		select( MODULES_THANK_WITH_GOOGLE ).getCTAPlacement()
 	);
 
 	const supporterWallURL = useSelect( ( select ) =>
@@ -63,18 +63,15 @@ export default function SettingsView() {
 		select( CORE_SITE ).getPostTypes()
 	);
 
-	const buttonPostTypes = useSelect( ( select ) =>
-		select( MODULES_THANK_WITH_GOOGLE ).getButtonPostTypes()
+	const ctaPostTypes = useSelect( ( select ) =>
+		select( MODULES_THANK_WITH_GOOGLE ).getCTAPostTypes()
 	);
 
 	// Bail if the values aren't ready.
 	if (
-		[
-			publicationID,
-			buttonPlacement,
-			colorTheme,
-			buttonPostTypes,
-		].includes( undefined )
+		[ publicationID, ctaPlacement, colorTheme, ctaPostTypes ].includes(
+			undefined
+		)
 	) {
 		return null;
 	}
@@ -137,7 +134,7 @@ export default function SettingsView() {
 						{ __( 'Type', 'google-site-kit' ) }
 					</h5>
 					<p className="googlesitekit-settings-module__meta-item-data">
-						<DisplaySetting value={ getType( buttonPlacement ) } />
+						<DisplaySetting value={ getType( ctaPlacement ) } />
 					</p>
 				</Cell>
 				<Cell className="googlesitekit-settings-module__meta-item">
@@ -157,7 +154,7 @@ export default function SettingsView() {
 					</h5>
 					<p className="googlesitekit-settings-module__meta-item-data">
 						<DisplaySetting
-							value={ getProminence( buttonPlacement ) }
+							value={ getProminence( ctaPlacement ) }
 						/>
 					</p>
 				</Cell>
@@ -167,8 +164,8 @@ export default function SettingsView() {
 					</h5>
 					<p className="googlesitekit-settings-module__meta-item-data">
 						<DisplaySetting
-							value={ getButtonPostTypesString(
-								buttonPostTypes,
+							value={ getCTAPostTypesString(
+								ctaPostTypes,
 								postTypes
 							) }
 						/>

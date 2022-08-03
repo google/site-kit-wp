@@ -29,13 +29,13 @@ import ProminenceRadio from './ProminenceRadio';
 import PositionRadio from './PositionRadio';
 const { useSelect } = Data;
 
-export default function ButtonPlacement() {
-	const buttonPlacement = useSelect( ( select ) =>
-		select( MODULES_THANK_WITH_GOOGLE ).getButtonPlacement()
+export default function CTAPlacement() {
+	const ctaPlacement = useSelect( ( select ) =>
+		select( MODULES_THANK_WITH_GOOGLE ).getCTAPlacement()
 	);
 
 	const defaultType =
-		buttonPlacement?.substring( 0, 7 ) === 'static_'
+		ctaPlacement?.substring( 0, 7 ) === 'static_'
 			? TYPE_FIXED
 			: TYPE_OVERLAY;
 

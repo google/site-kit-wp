@@ -23,7 +23,7 @@ import SettingsView from './SettingsView';
 import { Cell, Grid, Row } from '../../../../material-components';
 import {
 	MODULES_THANK_WITH_GOOGLE,
-	BUTTON_PLACEMENT_STATIC_AUTO,
+	CTA_PLACEMENT_STATIC_AUTO,
 } from '../../datastore/constants';
 import {
 	provideModules,
@@ -59,9 +59,9 @@ Default.args = {
 	setupRegistry: ( registry ) => {
 		registry.dispatch( MODULES_THANK_WITH_GOOGLE ).receiveGetSettings( {
 			publicationID: 'example.com',
-			buttonPlacement: BUTTON_PLACEMENT_STATIC_AUTO,
+			ctaPlacement: CTA_PLACEMENT_STATIC_AUTO,
 			colorTheme: 'purple',
-			buttonPostTypes: [ 'post', 'page' ],
+			ctaPostTypes: [ 'post', 'page' ],
 		} );
 
 		registry
@@ -77,9 +77,9 @@ SettingsError.args = {
 	setupRegistry: ( registry ) => {
 		registry.dispatch( MODULES_THANK_WITH_GOOGLE ).receiveGetSettings( {
 			publicationID: 'example.com',
-			buttonPlacement: BUTTON_PLACEMENT_STATIC_AUTO,
+			ctaPlacement: CTA_PLACEMENT_STATIC_AUTO,
 			colorTheme: 'purple',
-			buttonPostTypes: [ 'post', 'page' ],
+			ctaPostTypes: [ 'post', 'page' ],
 		} );
 
 		registry
