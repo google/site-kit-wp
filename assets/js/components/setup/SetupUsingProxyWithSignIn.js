@@ -87,6 +87,7 @@ export default function SetupUsingProxyWithSignIn() {
 		connectedProxyURL,
 		homeURL,
 		hasMultipleAdmins,
+		secondAdminLearnMoreLink,
 	} = useSelect( ( select ) => {
 		const site = select( CORE_SITE );
 		const user = select( CORE_USER );
@@ -101,6 +102,9 @@ export default function SetupUsingProxyWithSignIn() {
 			homeURL: untrailingslashit( site.getHomeURL() ),
 			isConnected: site.isConnected(),
 			hasMultipleAdmins: site.hasMultipleAdmins(),
+			secondAdminLearnMoreLink: site.getDocumentationLinkURL(
+				'already-configured'
+			),
 		};
 	} );
 
@@ -180,6 +184,7 @@ export default function SetupUsingProxyWithSignIn() {
 
 	let title;
 	let description;
+	let learnMore;
 	let cellDetailsProp = {
 		smSize: 4,
 		mdSize: 8,
@@ -221,6 +226,7 @@ export default function SetupUsingProxyWithSignIn() {
 			'Site Kit has already been configured by another admin of this site. To use Site Kit as well, sign in with your Google account which has access to Google services for this site (e.g. Google Analytics). Once you complete the 3 setup steps, you’ll see stats from all activated Google products.',
 			'google-site-kit'
 		);
+		learnMore = secondAdminLearnMoreLink;
 	} else {
 		title = __( 'Set up Site Kit', 'google-site-kit' );
 		description = __(
@@ -302,6 +308,22 @@ export default function SetupUsingProxyWithSignIn() {
 
 												<p className="googlesitekit-setup__description">
 													{ description }
+													{ learnMore && (
+														<Fragment>
+															{ ' ' }
+															<Link
+																href={
+																	learnMore
+																}
+																external
+															>
+																{ __(
+																	'Learn More',
+																	'google-site-kit'
+																) }
+															</Link>
+														</Fragment>
+													) }
 												</p>
 												{ DISCONNECTED_REASON_CONNECTED_URL_MISMATCH ===
 													disconnectedReason &&
