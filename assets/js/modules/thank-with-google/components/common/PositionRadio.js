@@ -70,15 +70,7 @@ export default function PositionRadio() {
 				</p>
 			</div>
 			<div className="googlesitekit-twg-position-radio__option">
-				<Radio
-					id="button-placement-manual"
-					name="button-placement"
-					value=""
-					readonly
-					disabled
-				>
-					{ __( 'Manual', 'google-site-kit' ) }
-				</Radio>
+				<h5>{ __( 'Manual', 'google-site-kit' ) }</h5>
 				<p>
 					{ __(
 						'Choose where you want to display Thank with Google on the page',
