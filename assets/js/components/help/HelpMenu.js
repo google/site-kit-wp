@@ -70,10 +70,6 @@ export default function HelpMenu( { children } ) {
 		setMenuOpen( false );
 	}, [] );
 
-	const documentationURL = useSelect( ( select ) => {
-		return select( CORE_SITE ).getProxySupportLinkURL();
-	} );
-
 	const fixCommonIssuesURL = useSelect( ( select ) => {
 		return select( CORE_SITE ).getDocumentationLinkURL(
 			'fix-common-issues'
@@ -110,7 +106,7 @@ export default function HelpMenu( { children } ) {
 				</HelpMenuLink>
 				<HelpMenuLink
 					gaEventLabel="documentation"
-					href={ documentationURL }
+					href="https://sitekit.withgoogle.com/documentation/"
 				>
 					{ __( 'Read help docs', 'google-site-kit' ) }
 				</HelpMenuLink>
