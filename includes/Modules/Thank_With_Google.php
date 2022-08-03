@@ -200,7 +200,8 @@ final class Thank_With_Google extends Module
 	 */
 	protected function get_datapoint_definitions() {
 		return array(
-			'GET:publications' => array( 'service' => '' ),
+			'GET:publications'            => array( 'service' => '' ),
+			'GET:supporter-wall-sidebars' => array( 'service' => '' ),
 		);
 	}
 
@@ -219,6 +220,46 @@ final class Thank_With_Google extends Module
 			case 'GET:publications':
 				return function () {
 					return array();
+				};
+			case 'GET:supporter-wall-sidebars':
+				return function() {
+					$sidebars      = array();
+					$all_sidebars  = wp_get_sidebars_widgets();
+					$block_widgets = get_option( 'widget_block' );
+
+					$pattern = sprintf( '/^%s[0-9]+$/i', preg_quote( Supporter_Wall_Widget::WIDGET_ID . '-', '/' ) );
+					$substr  = sprintf( '"idBase":"%s"', Supporter_Wall_Widget::WIDGET_ID );
+
+					$actual_sidebars_count = 0;
+					foreach ( $all_sidebars as $sidebar_id => $widgets ) {
+						// Skip the inactive widgets sidebar because it is not an actual sidebar.
+						if ( 'wp_inactive_widgets' === $sidebar_id ) {
+							continue;
+						}
+
+						$actual_sidebars_count++;
+
+						$sidebar = wp_get_sidebar( $sidebar_id );
+						foreach ( $widgets as $widget ) {
+							$block_match = array();
+							if ( preg_match( $pattern, $widget ) ) {
+								$sidebars[ $sidebar_id ] = $sidebar['name'];
+								break;
+							} elseif (
+								preg_match( '/block-(\d+)/', $widget, $block_match ) &&
+								stripos( $block_widgets[ $block_match[1] ]['content'], $substr ) > 0
+							) {
+								$sidebars[ $sidebar_id ] = $sidebar['name'];
+								break;
+							}
+						}
+					}
+
+					if ( count( $sidebars ) === $actual_sidebars_count ) {
+						return array( __( 'all sidebars', 'google-site-kit' ) );
+					}
+
+					return array_values( $sidebars );
 				};
 		}
 
