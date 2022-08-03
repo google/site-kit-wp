@@ -17,16 +17,16 @@
 /**
  * Internal dependencies
  */
-import ButtonPlacement from './ButtonPlacement';
+import CTAPlacement from './CTAPlacement';
 import { MODULES_THANK_WITH_GOOGLE } from '../../datastore/constants';
 import { provideModules } from '../../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 
-const Template = ( args ) => <ButtonPlacement { ...args } />;
+const Template = ( args ) => <CTAPlacement { ...args } />;
 
-export const DefaultButtonPlacement = Template.bind( {} );
-DefaultButtonPlacement.storyName = 'ButtonPlacement';
-DefaultButtonPlacement.args = {};
+export const DefaultCTAPlacement = Template.bind( {} );
+DefaultCTAPlacement.storyName = 'CTAPlacement';
+DefaultCTAPlacement.args = {};
 
 export default {
 	title: 'Modules/Thank with Google/Common',
