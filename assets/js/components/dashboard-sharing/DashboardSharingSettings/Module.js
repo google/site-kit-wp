@@ -33,6 +33,7 @@ import {
 	useCallback,
 	useEffect,
 	useState,
+	useRef,
 } from '@wordpress/element';
 
 /**
@@ -68,6 +69,7 @@ const viewAccessOptions = [
 
 export default function Module( { moduleSlug, moduleName, ownerUsername } ) {
 	const viewContext = useViewContext();
+	const moduleRef = useRef();
 
 	const [ manageViewAccess, setManageViewAccess ] = useState( undefined );
 	const hasMultipleAdmins = useSelect( ( select ) =>
@@ -113,18 +115,35 @@ export default function Module( { moduleSlug, moduleName, ownerUsername } ) {
 		}
 	}, [ management, sharedOwnershipModule ] );
 
+	const haveSharingSettingsManagementChanged = useSelect( ( select ) =>
+		select( CORE_MODULES ).haveModuleSharingSettingsChanged(
+			moduleSlug,
+			'management'
+		)
+	);
+
+	useEffect( () => {
+		if ( haveSharingSettingsManagementChanged ) {
+			trackEvent(
+				`${ viewContext }_sharing`,
+				`change_management_${ management }`,
+				moduleSlug
+			);
+		}
+	}, [
+		haveSharingSettingsManagementChanged,
+		management,
+		moduleSlug,
+		viewContext,
+	] );
+
 	const handleOnChange = useCallback(
 		( event ) => {
 			const value = event.target.value;
 			setManageViewAccess( value );
 			setSharingManagement( moduleSlug, value );
-			trackEvent(
-				`${ viewContext }_sharing`,
-				`change_management_${ value }`,
-				moduleSlug
-			);
 		},
-		[ setSharingManagement, setManageViewAccess, moduleSlug, viewContext ]
+		[ setSharingManagement, setManageViewAccess, moduleSlug ]
 	);
 
 	const isEditingUserRoles = moduleSlug === editingUserRolesSlug;
@@ -142,6 +161,7 @@ export default function Module( { moduleSlug, moduleName, ownerUsername } ) {
 					'googlesitekit-dashboard-sharing-settings__row--disabled': isLocked,
 				}
 			) }
+			ref={ moduleRef }
 		>
 			<div className="googlesitekit-dashboard-sharing-settings__column--product">
 				<ModuleIcon slug={ moduleSlug } size={ 48 } />
@@ -156,6 +176,7 @@ export default function Module( { moduleSlug, moduleName, ownerUsername } ) {
 					<UserRoleSelect
 						moduleSlug={ moduleSlug }
 						isLocked={ isLocked }
+						ref={ moduleRef }
 					/>
 				) }
 

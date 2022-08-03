@@ -101,12 +101,16 @@ export const reducer = ( state, { payload, type } ) => {
 				proxyPermissionsURL,
 				proxySetupURL,
 				referenceSiteURL,
+				setupErrorCode,
 				setupErrorMessage,
 				setupErrorRedoURL,
 				siteName,
 				timezone,
 				usingProxy,
 				webStoriesActive,
+				proxySupportLinkURL,
+				widgetsAdminURL,
+				postTypes,
 			} = payload.siteInfo;
 
 			return {
@@ -122,12 +126,16 @@ export const reducer = ( state, { payload, type } ) => {
 					proxyPermissionsURL,
 					proxySetupURL,
 					referenceSiteURL,
+					setupErrorCode,
 					setupErrorMessage,
 					setupErrorRedoURL,
 					siteName,
 					timezone,
 					usingProxy,
 					webStoriesActive,
+					proxySupportLinkURL,
+					widgetsAdminURL,
+					postTypes,
 				},
 			};
 		}
@@ -168,12 +176,16 @@ export const resolvers = {
 			proxyPermissionsURL,
 			proxySetupURL,
 			referenceSiteURL,
+			setupErrorCode,
 			setupErrorMessage,
 			setupErrorRedoURL,
 			siteName,
 			timezone,
 			usingProxy,
 			webStoriesActive,
+			proxySupportLinkURL,
+			widgetsAdminURL,
+			postTypes,
 		} = global._googlesitekitBaseData;
 
 		const {
@@ -194,12 +206,16 @@ export const resolvers = {
 			proxyPermissionsURL,
 			proxySetupURL,
 			referenceSiteURL,
+			setupErrorCode,
 			setupErrorMessage,
 			setupErrorRedoURL,
 			siteName,
 			timezone,
+			postTypes,
 			usingProxy: !! usingProxy,
 			webStoriesActive,
+			proxySupportLinkURL,
+			widgetsAdminURL,
 		} );
 	},
 };
@@ -472,6 +488,16 @@ export const selectors = {
 	getSiteName: getSiteInfoProperty( 'siteName' ),
 
 	/**
+	 * Gets a setup error code, if one exists.
+	 *
+	 * @since 1.80.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(string|undefined)} An error code from setup, if one exists. Will be `null` if no error exists; `undefined` when loading.
+	 */
+	getSetupErrorCode: getSiteInfoProperty( 'setupErrorCode' ),
+
+	/**
 	 * Gets a setup error message, if one exists.
 	 *
 	 * @since 1.77.0
@@ -493,6 +519,36 @@ export const selectors = {
 	 * @return {(string|null|undefined)} The setup URL, if one exists. Will be `null` if no error exists and thus the setup redo URL doesn't exist; `undefined` when loading.
 	 */
 	getSetupErrorRedoURL: getSiteInfoProperty( 'setupErrorRedoURL' ),
+
+	/**
+	 * Gets the proxy support URL.
+	 *
+	 * @since 1.80.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(string|null)} The proxy support URL.
+	 */
+	getProxySupportLinkURL: getSiteInfoProperty( 'proxySupportLinkURL' ),
+
+	/**
+	 * Gets the admin widgets editor URL.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(string|null)} The proxy support URL.
+	 */
+	getWidgetsAdminURL: getSiteInfoProperty( 'widgetsAdminURL' ),
+
+	/**
+	 * Gets the public post types.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {Array.<Object>} The public post types.
+	 */
+	getPostTypes: getSiteInfoProperty( 'postTypes' ),
 
 	/**
 	 * Gets the 'permaLink' query parameter.

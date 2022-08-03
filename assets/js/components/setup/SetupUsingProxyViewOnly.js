@@ -79,7 +79,7 @@ export default function SetupUsingProxyViewOnly() {
 				<Grid>
 					<Row>
 						<Cell size={ 12 }>
-							<Layout>
+							<Layout rounded>
 								<section className="googlesitekit-setup__splash">
 									<Grid>
 										<Row className="googlesitekit-setup__content">
@@ -127,9 +127,9 @@ export default function SetupUsingProxyViewOnly() {
 														}
 													) }
 												</p>
-												<p className="googlesitekit-setup__description">
+												<p>
 													{ __(
-														'Get insights about how people find and use your site, how to improve and monetize your content, directly in your WordPress dashboard',
+														'Get insights about how people find and use your site as well as how to improve and monetize your content, directly in your WordPress dashboard.',
 														'google-site-kit'
 													) }
 												</p>

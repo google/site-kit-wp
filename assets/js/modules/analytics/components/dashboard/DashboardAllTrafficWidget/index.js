@@ -225,7 +225,7 @@ function DashboardAllTrafficWidget( props ) {
 			return null;
 		}
 
-		select( MODULES_ANALYTICS ).getServiceReportURL(
+		return select( MODULES_ANALYTICS ).getServiceReportURL(
 			reportType,
 			reportArgs
 		);

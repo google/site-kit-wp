@@ -61,3 +61,15 @@ global._googlesitekitAPIFetchData.nonceEndpoint =
 
 // Instantiate global to which we'll assign to the value imported from fetch-mock-jest during Jest's setupFilesAfterEnv execution.
 global.fetchMock = undefined;
+
+if ( global.document ) {
+	// Provide a stub for createRange (needed for rendering Joyride components)
+	global.document.createRange = () => ( {
+		setStart: () => {},
+		setEnd: () => {},
+		commonAncestorContainer: {
+			nodeName: 'BODY',
+			ownerDocument: document,
+		},
+	} );
+}

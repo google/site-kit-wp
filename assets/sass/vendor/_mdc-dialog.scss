@@ -8,13 +8,14 @@
 
 	.mdc-dialog__lead,
 	.mdc-dialog__title {
-		color: $c-tertiary;
+		color: $c-content-on-primary-container;
 		text-align: center;
 	}
 
 	.mdc-dialog__lead {
-		font-size: 1rem;
-		font-weight: $fw-secondary-light;
+		font-size: $fs-body-lg;
+		font-weight: $fw-light;
+		letter-spacing: $ls-m;
 		margin: 0;
 		max-width: 430px;
 	}

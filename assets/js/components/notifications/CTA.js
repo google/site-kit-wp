@@ -38,6 +38,7 @@ const CTA = ( {
 	error,
 	onClick,
 	'aria-label': ariaLabel,
+	children,
 } ) => (
 	<div
 		className={ classnames( 'googlesitekit-cta', {
@@ -66,16 +67,15 @@ const CTA = ( {
 			<Link
 				href={ ctaLink }
 				onClick={ onClick }
-				inverse={ ! error }
-				caps
-				arrow
 				aria-label={ ariaLabel }
 				external={ ctaLinkExternal }
 				hideExternalIndicator={ ctaLinkExternal }
+				arrow
 			>
 				{ ctaLabel }
 			</Link>
 		) }
+		{ children }
 	</div>
 );
 
@@ -89,6 +89,7 @@ CTA.propTypes = {
 	'aria-label': PropTypes.string,
 	error: PropTypes.bool,
 	onClick: PropTypes.func,
+	children: PropTypes.node,
 };
 
 CTA.defaultProps = {

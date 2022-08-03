@@ -28,6 +28,7 @@ import PropTypes from 'prop-types';
 import { Chart } from 'react-google-charts';
 import set from 'lodash/set';
 import cloneDeep from 'lodash/cloneDeep';
+import merge from 'lodash/merge';
 
 /**
  * WordPress dependencies
@@ -221,6 +222,27 @@ export default function GoogleChart( props ) {
 			delete chartOptions.hAxis.ticks;
 		}
 	}
+
+	merge( chartOptions, {
+		hAxis: {
+			textStyle: {
+				fontSize: 10,
+				color: '#5f6561',
+			},
+		},
+		vAxis: {
+			textStyle: {
+				color: '#5f6561',
+				fontSize: 10,
+			},
+		},
+		legend: {
+			textStyle: {
+				color: '#131418',
+				fontSize: 12,
+			},
+		},
+	} );
 
 	return (
 		<div

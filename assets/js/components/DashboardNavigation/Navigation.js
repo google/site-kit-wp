@@ -330,6 +330,7 @@ export default function Navigation() {
 			className={ classnames(
 				'mdc-chip-set',
 				'googlesitekit-navigation',
+				`googlesitekit-navigation--${ dashboardType }`,
 				{
 					'googlesitekit-navigation--is-sticky': isSticky,
 				}

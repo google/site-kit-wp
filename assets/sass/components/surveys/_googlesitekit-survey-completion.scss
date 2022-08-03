@@ -23,9 +23,10 @@
 		.googlesitekit-survey__body {
 			color: $c-scarpa-flow;
 			font-family: $f-primary;
-			font-size: 0.875rem;
-			font-weight: $fw-primary-normal;
-			line-height: 1.28;
+			font-size: $fs-body-sm;
+			font-weight: $fw-normal;
+			letter-spacing: $ls-xs;
+			line-height: $lh-body-sm;
 			padding: 0 $grid-gap-phone $grid-gap-phone 56px;
 
 			@media (min-width: $bp-desktop) {

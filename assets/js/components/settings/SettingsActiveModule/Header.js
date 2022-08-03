@@ -34,6 +34,7 @@ import { __, sprintf } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
+import { EXPERIMENTAL_MODULES } from '../../dashboard-sharing/DashboardSharingSettings/constants';
 import { Grid, Row, Cell } from '../../../material-components';
 import Link from '../../Link';
 import ModuleIcon from '../../ModuleIcon';
@@ -90,24 +91,39 @@ export default function Header( { slug } ) {
 			<Grid>
 				<Row>
 					<Cell lgSize={ 6 } mdSize={ 4 } smSize={ 4 }>
-						<h3 className="googlesitekit-heading-4 googlesitekit-settings-module__title">
+						<div className="googlesitekit-settings-module__heading">
 							<ModuleIcon
 								slug={ slug }
 								size={ 24 }
-								className="googlesitekit-settings-module__title-icon"
+								className="googlesitekit-settings-module__heading-icon"
 							/>
-							{ name }
 
-							{ slug === 'idea-hub' && (
-								<Badge
-									label={ __(
-										'Experimental',
-										'google-site-kit'
-									) }
-									className="googlesitekit-idea-hub__badge"
-								/>
-							) }
-						</h3>
+							<h3 className="googlesitekit-heading-4 googlesitekit-settings-module__title">
+								{ name }
+							</h3>
+
+							<div className="googlesitekit-settings-module__heading-badges">
+								{ EXPERIMENTAL_MODULES.includes( slug ) && (
+									<Badge
+										label={ __(
+											'Experimental',
+											'google-site-kit'
+										) }
+										hasLeftSpacing={ true }
+									/>
+								) }
+
+								{ 'thank-with-google' === slug && (
+									<Badge
+										label={ __(
+											'US Only',
+											'google-site-kit'
+										) }
+										hasLeftSpacing={ true }
+									/>
+								) }
+							</div>
+						</div>
 					</Cell>
 
 					<Cell
@@ -117,7 +133,15 @@ export default function Header( { slug } ) {
 						alignMiddle
 						mdAlignRight
 					>
-						<p className="googlesitekit-settings-module__status">
+						<p
+							className={ classnames(
+								'googlesitekit-settings-module__status',
+								{
+									'googlesitekit-settings-module__status--connected': connected,
+									'googlesitekit-settings-module__status--not-connected': ! connected,
+								}
+							) }
+						>
 							{ connected
 								? sprintf(
 										/* translators: %s: module name. */

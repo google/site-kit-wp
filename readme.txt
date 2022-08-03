@@ -4,7 +4,7 @@ Contributors:      google
 Requires at least: 4.7
 Tested up to:      6.0
 Requires PHP:      5.6
-Stable tag:        1.78.0
+Stable tag:        1.80.0
 License:           Apache License 2.0
 License URI:       https://www.apache.org/licenses/LICENSE-2.0
 Tags:              google, search-console, analytics, adsense, pagespeed-insights, optimize, tag-manager, site-kit
@@ -37,7 +37,7 @@ Site Kit shows key metrics and insights from different Google products:
 * **Optimize:** Use Site Kit to easily set up Optimize- no code editing required. Then, set up A/B tests in Optimize.
 
 == Installation ==
-**Note**: Make sure that your website is live. If your website isn't live yet, Site Kit can't show you any data. 
+**Note**: Make sure that your website is live. If your website isn't live yet, Site Kit can't show you any data.
 However, if you have a staging environment in addition to your production site, Site Kit can display data from your production site in the staging environment. Learn how to use [Site Kit with a staging environment](https://sitekit.withgoogle.com/documentation/using-site-kit/staging/).
 
 = Installation from within WordPress =
@@ -90,9 +90,11 @@ If you are still seeing this message after a few days, feel free to get in touch
 
 If you’re new to AdSense when you connect via Site Kit, your new AdSense account and your site will need to be manually reviewed and approved for ads by the AdSense team. Ads will not display until your account and site have been approved. [Check out this guide for more information about the approval process and timeline.](https://support.google.com/adsense/answer/76228)
 
-You can check your approval status in Site Kit by going to Settings > Connected Services > AdSense and clicking “Check your site status.” This link will direct you to AdSense. If you see “Ready,” your account and site have been approved and should be displaying ads. If you see “Getting ready…,” your account and site are still under review and your site will not display ads until they have been approved.
+You can check your approval status in Site Kit by going to **Settings > Connected Services > AdSense** and clicking **Check your site status**. This link will direct you to AdSense. If you see “Ready,” your account and site have been approved and should be displaying ads. If you see “Getting ready…,” your account and site are still under review and your site will not display ads until they have been approved.
 
-If the AdSense snippet is successfully embedded on your site **and** your account and site have been approved, but your site is still not showing ads, [contact the AdSense Help Center for assistance](https://support.google.com/adsense/#topic=3373519).
+If Site Kit has successfully added the AdSense snippet to your site and your account and site have been approved, but your site is still not showing ads, [contact the AdSense Help Center for assistance](https://support.google.com/adsense/#topic=3373519).
+
+You can find more information on how Site Kit works with AdSense in our [Managing AdSense guide](https://sitekit.withgoogle.com/documentation/using-site-kit/managing-adsense/).
 
 = Is Site Kit GDPR compliant? =
 
@@ -106,6 +108,59 @@ Please create a new topic on our [WordPress.org support forum](https://wordpress
 
 == Changelog ==
 
+= 1.80.0 =
+
+**Enhanced**
+
+* Update the open text survey question entry field to allow multiline text input. See [#5612](https://github.com/google/site-kit-wp/issues/5612).
+* Update the Thank with Google module's owned settings. See [#5587](https://github.com/google/site-kit-wp/issues/5587).
+* Include specific copy for Thank with Google on the setup success banner. See [#5536](https://github.com/google/site-kit-wp/issues/5536).
+* Add automatic status updates to Thank with Google setup screen. See [#5532](https://github.com/google/site-kit-wp/issues/5532).
+* Implement the Thank with Google setup UI for the no publication scenario. See [#5528](https://github.com/google/site-kit-wp/issues/5528).
+* Implement the Thank with Google setup UI for the publication in review scenario. See [#5527](https://github.com/google/site-kit-wp/issues/5527).
+* Implement the Thank with Google setup UI. See [#5526](https://github.com/google/site-kit-wp/issues/5526).
+* Implement Thank with Google setup UI for the publication setup completed scenario. See [#5525](https://github.com/google/site-kit-wp/issues/5525).
+* Show selected Thank with Google color in settings view. See [#5524](https://github.com/google/site-kit-wp/issues/5524).
+* Update the AdSense settings to display the site status when available. See [#5503](https://github.com/google/site-kit-wp/issues/5503).
+* Improve notice UX/sizing when adjusting Dashboard Sharing settings "view access" setting. See [#5489](https://github.com/google/site-kit-wp/issues/5489).
+* When setup fails with an error from the proxy, show a "get help" link that leads to the relevant support page for the given error code. See [#5479](https://github.com/google/site-kit-wp/issues/5479).
+* Improve validation for Thank with Google settings. See [#5461](https://github.com/google/site-kit-wp/issues/5461).
+* Add a new enhanced radio button component that allows for using graphics for choices. See [#5459](https://github.com/google/site-kit-wp/issues/5459).
+* Add "US only" label to Thank with Google module. See [#5457](https://github.com/google/site-kit-wp/issues/5457).
+* Scaffold Thank with Google module setup flow logic for different scenarios. See [#5455](https://github.com/google/site-kit-wp/issues/5455).
+* Add new selector `getAccountChooserURL` to the `core/user` store. See [#5453](https://github.com/google/site-kit-wp/issues/5453).
+* Implement Thank with Google tag placement infrastructure. See [#5450](https://github.com/google/site-kit-wp/issues/5450).
+* Update module recovery notification to display feedback for errors. See [#5318](https://github.com/google/site-kit-wp/issues/5318).
+
+**Fixed**
+
+* Update location of module recovery alert to be grouped with normal notifications. See [#5550](https://github.com/google/site-kit-wp/issues/5550).
+* Prevent error from appearing when sharing data exists for a non-existent module. See [#5488](https://github.com/google/site-kit-wp/issues/5488).
+* Avoid tracking Google Analytics events for Dashboard Sharing settings when no change is made. See [#5487](https://github.com/google/site-kit-wp/issues/5487).
+* Fix permissions modal issue on non Site Kit pages. See [#5424](https://github.com/google/site-kit-wp/issues/5424).
+
+= 1.79.1 =
+
+**Fixed**
+
+* Fix an issue that could cause Site Kit's dashboard to crash when a theme/plugin loads the Google Web Font Loader JS on Site Kit screens. See [#5572](https://github.com/google/site-kit-wp/issues/5572).
+
+= 1.79.0 =
+
+**Enhanced**
+
+* Show "Recoverable Modules" component for Analytics section of the Search Funnel widget, when on the view-only Dashboard and the Analytics module is in a recoverable state. See [#5470](https://github.com/google/site-kit-wp/issues/5470).
+* Add "experimental" label to Thank with Google module. See [#5452](https://github.com/google/site-kit-wp/issues/5452).
+* Refine the _Escape_ keyboard shortcut in the Dashboard Sharing modal to exit the "Edit Roles" view when its active, rather than closing the modal. See [#5442](https://github.com/google/site-kit-wp/issues/5442).
+* Update the text on the view-only splash screen. See [#5441](https://github.com/google/site-kit-wp/issues/5441).
+* Extend the Dashboard Sharing feature tour to include steps for the settings interface. See [#5382](https://github.com/google/site-kit-wp/issues/5382).
+* Update design of the dashboard CTA for connecting AdSense. See [#5260](https://github.com/google/site-kit-wp/issues/5260).
+* Update the plugin styling in line with Google Material 3. See [#5254](https://github.com/google/site-kit-wp/issues/5254).
+
+**Fixed**
+
+* Improve "View only" menu icon alignment when viewing shared dashboard. See [#5446](https://github.com/google/site-kit-wp/issues/5446).
+
 = 1.78.0 =
 
 **Added**
@@ -115,9 +170,11 @@ Please create a new topic on our [WordPress.org support forum](https://wordpress
 **Enhanced**
 
 * Show the zero-data view of the AdSense Overview widget when the `adsenseSetupV2` feature flag is enabled and there is no data. See [#5385](https://github.com/google/site-kit-wp/issues/5385).
+* Update view-only dashboard to use a new placeholder for widgets that rely on recoverable modules. See [#5376](https://github.com/google/site-kit-wp/issues/5376).
 * Clarify "All admins" wording in Dashboard Sharing settings. See [#5374](https://github.com/google/site-kit-wp/issues/5374).
 * Rollback any unsaved changes to dashboard sharing settings when closing the dialog. See [#5372](https://github.com/google/site-kit-wp/issues/5372).
 * Update the warning notice that appears on the Dashboard Sharing modal when changing settings. See [#5371](https://github.com/google/site-kit-wp/issues/5371).
+* Add foundation for Thank with Google settings. See [#5366](https://github.com/google/site-kit-wp/issues/5366).
 * Add foundation for new Thank with Google feature (JS). See [#5365](https://github.com/google/site-kit-wp/issues/5365).
 * Add foundation for new Thank with Google feature (PHP). See [#5364](https://github.com/google/site-kit-wp/issues/5364).
 * Display a message with tooltip instead of disabled Dashboard Sharing view management dropdown. See [#5352](https://github.com/google/site-kit-wp/issues/5352).
@@ -142,6 +199,7 @@ Please create a new topic on our [WordPress.org support forum](https://wordpress
 * Fix Dashboard Sharing modal position on small screens. See [#5358](https://github.com/google/site-kit-wp/issues/5358).
 * Do not show "Create Goals" widget on shared dashboard. See [#5351](https://github.com/google/site-kit-wp/issues/5351).
 * Don't show the "Link Analytics and AdSense" CTA on the view-only Dashboard. See [#5346](https://github.com/google/site-kit-wp/issues/5346).
+* Prevent errors on the view-only dashboard from requesting module settings unnecessarily. See [#5310](https://github.com/google/site-kit-wp/issues/5310).
 * Prevent "Can't access necessary data" notice flicker when activating Analytics via GTM setup. See [#5244](https://github.com/google/site-kit-wp/issues/5244).
 * Fix date range selector sometimes remaining open but hidden after selection. See [#4735](https://github.com/google/site-kit-wp/issues/4735).
 

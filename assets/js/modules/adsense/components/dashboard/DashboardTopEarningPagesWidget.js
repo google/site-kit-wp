@@ -182,7 +182,14 @@ function DashboardTopEarningPagesWidget( props ) {
 			primary: true,
 			Component: ( { row } ) => {
 				const [ title, url ] = row.dimensions;
-				return <Link href={ url } children={ title } external />;
+				return (
+					<Link
+						href={ url }
+						children={ title }
+						external
+						hideExternalIndicator
+					/>
+				);
 			},
 		},
 		{

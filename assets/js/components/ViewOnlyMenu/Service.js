@@ -54,7 +54,7 @@ export default function Service( { module } ) {
 	return (
 		<li className="googlesitekit-view-only-menu__service">
 			<span className="googlesitekit-view-only-menu__service--icon">
-				<Icon />
+				<Icon height={ 26 } />
 			</span>
 			<span className="googlesitekit-view-only-menu__service--name">
 				{ name }

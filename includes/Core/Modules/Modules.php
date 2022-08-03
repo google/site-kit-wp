@@ -367,6 +367,10 @@ final class Modules {
 				array_walk(
 					$values,
 					function( $value, $module_slug ) {
+						if ( ! $this->module_exists( $module_slug ) ) {
+							return;
+						}
+
 						$module = $this->get_module( $module_slug );
 
 						if ( ! $module instanceof Module_With_Service_Entity ) {
@@ -392,6 +396,10 @@ final class Modules {
 					array_walk(
 						$values,
 						function( $value, $module_slug ) use ( $old_values ) {
+							if ( ! $this->module_exists( $module_slug ) ) {
+								return;
+							}
+
 							$module = $this->get_module( $module_slug );
 
 							if ( ! $module instanceof Module_With_Service_Entity ) {
@@ -558,6 +566,23 @@ final class Modules {
 		}
 
 		return $modules[ $slug ];
+	}
+
+	/**
+	 * Checks if the module exists.
+	 *
+	 * @since 1.80.0
+	 *
+	 * @param string $slug Module slug.
+	 * @return bool True if the module exists, false otherwise.
+	 */
+	public function module_exists( $slug ) {
+		try {
+			$this->get_module( $slug );
+			return true;
+		} catch ( Exception $e ) {
+			return false;
+		}
 	}
 
 	/**

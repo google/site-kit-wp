@@ -20,11 +20,12 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import uniqWith from 'lodash/uniqWith';
 
 /**
  * WordPress dependencies
  */
-import { useCallback } from '@wordpress/element';
+import { Fragment, useCallback } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 
 /**
@@ -41,6 +42,9 @@ import { getInsufficientPermissionsErrorDescription } from '../util/insufficient
 import { purify } from '../util/purify';
 import ErrorText from '../components/ErrorText';
 import CTA from './notifications/CTA';
+import Button from './Button';
+import Link from './Link';
+import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
 
 const { useSelect, useDispatch } = Data;
 
@@ -49,61 +53,131 @@ export default function ReportError( { moduleSlug, error } ) {
 		select( CORE_MODULES ).getModule( moduleSlug )
 	);
 
+	const errors = Array.isArray( error ) ? error : [ error ];
+
+	const retryableErrors = errors.filter(
+		( err ) =>
+			!! err?.selectorData?.storeName &&
+			err.selectorData?.name === 'getReport' &&
+			! isInsufficientPermissionsError( err ) &&
+			! isPermissionScopeError( err ) &&
+			! isAuthError( err )
+	);
+
+	const showRetry = !! retryableErrors.length;
+
+	const errorTroubleshootingLinkURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getErrorTroubleshootingLinkURL(
+			showRetry ? retryableErrors[ 0 ] : errors[ 0 ]
+		)
+	);
+
 	const dispatch = useDispatch();
 
-	let title = sprintf(
-		/* translators: %s: module name */
-		__( 'Data error in %s', 'google-site-kit' ),
-		module?.name
-	);
-	let message = error.message;
+	let title;
 
-	if ( isInsufficientPermissionsError( error ) ) {
+	const getMessage = ( err ) => {
+		if ( isInsufficientPermissionsError( err ) ) {
+			title = sprintf(
+				/* translators: %s: module name */
+				__( 'Insufficient permissions in %s', 'google-site-kit' ),
+				module?.name
+			);
+
+			return getInsufficientPermissionsErrorDescription(
+				err.message,
+				module
+			);
+		}
+
+		return err.message;
+	};
+
+	const uniqueErrors = uniqWith(
+		errors.map( ( err ) => ( {
+			...err,
+			message: getMessage( err ),
+			reconnectURL: err.data?.reconnectURL,
+		} ) ),
+		( errorA, errorB ) =>
+			errorA.message === errorB.message &&
+			errorA.reconnectURL === errorB.reconnectURL
+	);
+
+	const hasInsufficientPermissionsError = errors.some( ( err ) =>
+		isInsufficientPermissionsError( err )
+	);
+
+	if ( ! hasInsufficientPermissionsError && uniqueErrors.length === 1 ) {
 		title = sprintf(
 			/* translators: %s: module name */
-			__( 'Insufficient permissions in %s', 'google-site-kit' ),
+			__( 'Data error in %s', 'google-site-kit' ),
 			module?.name
 		);
-		message = getInsufficientPermissionsErrorDescription( message, module );
+	} else if ( ! hasInsufficientPermissionsError && uniqueErrors.length > 1 ) {
+		title = sprintf(
+			/* translators: %s: module name */
+			__( 'Data errors in %s', 'google-site-kit' ),
+			module?.name
+		);
 	}
 
-	const reconnectURL = error?.data?.reconnectURL;
-	const description = reconnectURL ? (
-		<ErrorText message={ message } reconnectURL={ reconnectURL } />
-	) : (
-		purify.sanitize( message, { ALLOWED_TAGS: [] } )
+	const description = (
+		<Fragment>
+			{ uniqueErrors.map( ( err ) => {
+				const reconnectURL = error?.data?.reconnectURL;
+				return reconnectURL ? (
+					<ErrorText
+						key={ err.message }
+						message={ err.message }
+						reconnectURL={ reconnectURL }
+					/>
+				) : (
+					<p key={ err.message }>
+						{ purify.sanitize( err.message, { ALLOWED_TAGS: [] } ) }
+					</p>
+				);
+			} ) }
+		</Fragment>
 	);
 
-	const showRetry =
-		!! error?.selectorData?.storeName &&
-		error.selectorData?.name === 'getReport' &&
-		! isInsufficientPermissionsError( error ) &&
-		! isPermissionScopeError( error ) &&
-		! isAuthError( error );
-
 	const handleRetry = useCallback( () => {
-		const { selectorData } = error;
-		dispatch( selectorData.storeName ).invalidateResolution(
-			selectorData.name,
-			selectorData.args
-		);
-	}, [ dispatch, error ] );
+		retryableErrors.forEach( ( err ) => {
+			const { selectorData } = err;
+			dispatch( selectorData.storeName ).invalidateResolution(
+				selectorData.name,
+				selectorData.args
+			);
+		} );
+	}, [ dispatch, retryableErrors ] );
 
 	return (
-		<CTA
-			title={ title }
-			description={ description }
-			ctaType={ showRetry ? 'button' : undefined }
-			ctaLabel={
-				showRetry ? __( 'Retry', 'google-site-kit' ) : undefined
-			}
-			onClick={ showRetry ? handleRetry : undefined }
-			error
-		/>
+		<CTA title={ title } description={ description } error>
+			{ showRetry ? (
+				<Fragment>
+					<Button onClick={ handleRetry }>
+						{ __( 'Retry', 'google-site-kit' ) }
+					</Button>
+					<span className="googlesitekit-error-retry-text">
+						{ __( 'Retry didn’t work?', 'google-site-kit' ) }{ ' ' }
+					</span>
+					<Link href={ errorTroubleshootingLinkURL } external>
+						{ __( 'Get help', 'google-site-kit' ) }
+					</Link>
+				</Fragment>
+			) : (
+				<Link href={ errorTroubleshootingLinkURL } external>
+					{ __( 'Get help', 'google-site-kit' ) }
+				</Link>
+			) }
+		</CTA>
 	);
 }
 
 ReportError.propTypes = {
 	moduleSlug: PropTypes.string.isRequired,
-	error: PropTypes.object.isRequired,
+	error: PropTypes.oneOfType( [
+		PropTypes.arrayOf( PropTypes.object ),
+		PropTypes.object,
+	] ).isRequired,
 };

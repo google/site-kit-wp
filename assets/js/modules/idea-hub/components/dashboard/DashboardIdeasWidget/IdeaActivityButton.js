@@ -72,7 +72,11 @@ export default function IdeaActivityButton( {
 			disabled={ inProgress }
 			href={ href || undefined }
 			icon={
-				inProgress ? <CircularProgress size={ 24 } /> : <ActivityIcon />
+				inProgress ? (
+					<CircularProgress size={ 24 } />
+				) : (
+					<ActivityIcon width={ 24 } height={ 24 } />
+				)
 			}
 			title={ titlesMap[ activity ] }
 		>
