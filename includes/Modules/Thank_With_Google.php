@@ -271,14 +271,14 @@ final class Thank_With_Google extends Module
 								preg_match( '/block-(\d+)/', $widget, $block_match ) &&
 								stripos( $block_widgets[ $block_match[1] ]['content'], $substr ) > 0
 							) {
-								$sidebars[ $sidebar_id ] = $sidebar['name'];
+								$sidebars[ $sidebar_id ] = ucfirst( $sidebar['name'] );
 								break;
 							}
 						}
 					}
 
 					if ( count( $sidebars ) === $actual_sidebars_count ) {
-						return array( __( 'all sidebars', 'google-site-kit' ) );
+						return array( __( 'All sidebars', 'google-site-kit' ) );
 					}
 
 					return array_values( $sidebars );
