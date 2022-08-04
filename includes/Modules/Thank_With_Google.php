@@ -256,7 +256,7 @@ final class Thank_With_Google extends Module
 					}
 
 					if ( count( $sidebars ) === $actual_sidebars_count ) {
-						return array( __( 'all sidebars', 'google-site-kit' ) );
+						return array( __( 'All sidebars', 'google-site-kit' ) );
 					}
 
 					return array_values( $sidebars );
