@@ -31,7 +31,7 @@ import {
 	ACTIVATION_STEP_REMINDER,
 	ACTIVATION_STEP_SETUP,
 	ACTIVATION_STEP_SUCCESS,
-} from '../../../datastore/constants';
+} from '../../../constants';
 
 export default function ActivationBanner() {
 	const [ step, setStep ] = useState( ACTIVATION_STEP_REMINDER );
