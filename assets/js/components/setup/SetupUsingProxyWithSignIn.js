@@ -319,7 +319,7 @@ export default function SetupUsingProxyWithSignIn() {
 														external
 													>
 														{ __(
-															'Get Help',
+															'Get help',
 															'google-site-kit'
 														) }
 													</Link>
