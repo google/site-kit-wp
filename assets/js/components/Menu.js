@@ -40,7 +40,18 @@ import {
 import { MDCMenu } from '../material-components';
 
 const Menu = forwardRef(
-	( { children, className, menuOpen, menuItems, onSelected, id }, ref ) => {
+	(
+		{
+			children,
+			className,
+			menuOpen,
+			menuItems,
+			onSelected,
+			nonInteractive,
+			id,
+		},
+		ref
+	) => {
 		const [ menu, setMenu ] = useState( null );
 
 		const menuRef = useRef( null );
@@ -64,6 +75,8 @@ const Menu = forwardRef(
 
 			const menuComponent = new MDCMenu( menuRef.current );
 			menuComponent.listen( 'MDCMenu:selected', handleMenuSelected );
+			menuComponent.quickOpen = true;
+
 			setMenu( menuComponent );
 
 			return () => {
@@ -74,7 +87,7 @@ const Menu = forwardRef(
 
 				menuComponent.destroy();
 			};
-		}, [ menuRef, handleMenuSelected ] );
+		}, [ menuRef, handleMenuSelected, nonInteractive ] );
 
 		useEffect( () => {
 			if ( menu ) {
@@ -95,7 +108,9 @@ const Menu = forwardRef(
 				<ul
 					aria-hidden={ ! menuOpen }
 					aria-orientation="vertical"
-					className="mdc-list"
+					className={ classnames( 'mdc-list', {
+						'mdc-list--non-interactive': nonInteractive,
+					} ) }
 					id={ id }
 					role="menu"
 					tabIndex="-1"
@@ -128,10 +143,12 @@ Menu.propTypes = {
 	menuItems: PropTypes.array,
 	id: PropTypes.string.isRequired,
 	onSelected: PropTypes.func,
+	nonInteractive: PropTypes.bool,
 };
 
 Menu.defaultProps = {
 	onSelected: () => {},
+	nonInteractive: false,
 };
 
 export default Menu;

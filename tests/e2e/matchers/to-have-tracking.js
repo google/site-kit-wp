@@ -43,10 +43,10 @@ export async function toHaveTracking(
 			instance
 		).toMatchElement( 'script[data-googlesitekit-gtag]', { timeout } );
 		pass = true;
-		message = () => `Expected tracking not to be loaded`;
+		message = () => 'Expected tracking not to be loaded';
 	} catch {
 		pass = false;
-		message = () => `Expected tracking to be loaded`;
+		message = () => 'Expected tracking to be loaded';
 	}
 
 	return { pass, message };

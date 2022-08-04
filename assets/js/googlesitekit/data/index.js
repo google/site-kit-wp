@@ -34,6 +34,7 @@ import {
 /**
  * Internal dependencies
  */
+import { useInViewSelect } from '../../hooks/useInViewSelect';
 import {
 	combineStores,
 	commonActions,
@@ -41,7 +42,7 @@ import {
 	commonStore,
 } from './utils';
 
-const Data = createRegistry();
+const Data = createRegistry( {}, global.wp?.data );
 
 // Attach some of our utility functions to the registry so third-party
 // developers can use them.
@@ -49,6 +50,10 @@ Data.combineStores = combineStores;
 Data.commonActions = commonActions;
 Data.commonControls = commonControls;
 Data.commonStore = commonStore;
+
+// Attach our custom, useInViewSelect hook to the registry so third-party
+// developers can use it.
+Data.useInViewSelect = useInViewSelect;
 
 // Attach some WordPress data functions to the registry so third-party
 // developers can use them without importing '@wordpress/data'.

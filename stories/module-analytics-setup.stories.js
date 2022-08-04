@@ -43,21 +43,10 @@ import {
 	provideSiteInfo,
 	provideUserAuthentication,
 } from '../tests/js/utils';
-import { generateGTMAnalyticsPropertyStory } from './utils/generate-gtm-analytics-property-story';
 const { useRegistry } = Data;
 
 function Setup() {
 	return <ModuleSetup moduleSlug="analytics" />;
-}
-
-function usingGenerateGTMAnalyticsPropertyStory( args ) {
-	return generateGTMAnalyticsPropertyStory( {
-		...args,
-		Component: Setup,
-		setUp: ( registry ) => {
-			provideModuleRegistrations( registry );
-		},
-	} );
 }
 
 const WithRegistry = ( Story ) => {
@@ -78,7 +67,9 @@ storiesOf( 'Analytics Module/Setup', module )
 	.add(
 		'Loading',
 		( args, { registry } ) => {
-			registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
+			registry
+				.dispatch( MODULES_ANALYTICS )
+				.receiveGetSettings( { ...fixtures.defaultSettings } );
 			registry
 				.dispatch( MODULES_ANALYTICS )
 				.receiveGetExistingTag( null );
@@ -98,7 +89,9 @@ storiesOf( 'Analytics Module/Setup', module )
 				properties,
 				profiles,
 			} = fixtures.accountsPropertiesProfiles;
-			registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
+			registry
+				.dispatch( MODULES_ANALYTICS )
+				.receiveGetSettings( { ...fixtures.defaultSettings } );
 			registry
 				.dispatch( MODULES_ANALYTICS )
 				.receiveGetAccounts( accounts );
@@ -136,7 +129,9 @@ storiesOf( 'Analytics Module/Setup', module )
 				profiles,
 				matchedProperty,
 			} = fixtures.accountsPropertiesProfiles;
-			registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
+			registry
+				.dispatch( MODULES_ANALYTICS )
+				.receiveGetSettings( { ...fixtures.defaultSettings } );
 			registry
 				.dispatch( MODULES_ANALYTICS )
 				.receiveGetAccounts( accounts );
@@ -160,6 +155,13 @@ storiesOf( 'Analytics Module/Setup', module )
 			registry
 				.dispatch( MODULES_ANALYTICS )
 				.receiveMatchedProperty( matchedProperty );
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveGetSettings( { ...ga4Fixtures.defaultSettings } );
+			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties( [], {
+				// eslint-disable-next-line sitekit/acronym-case
+				accountID: properties[ 0 ].accountId,
+			} );
 
 			return <Setup />;
 		},
@@ -183,7 +185,9 @@ storiesOf( 'Analytics Module/Setup', module )
 				// eslint-disable-next-line sitekit/acronym-case
 				( property ) => webPropertyId === property.id
 			);
-			registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
+			registry
+				.dispatch( MODULES_ANALYTICS )
+				.receiveGetSettings( { ...fixtures.defaultSettings } );
 			registry
 				.dispatch( MODULES_ANALYTICS )
 				.receiveGetAccounts( accounts );
@@ -214,6 +218,13 @@ storiesOf( 'Analytics Module/Setup', module )
 				useSnippet: true,
 				trackingDisabled: [ 'loggedinUsers' ],
 			} );
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveGetSettings( { ...ga4Fixtures.defaultSettings } );
+			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties( [], {
+				// eslint-disable-next-line sitekit/acronym-case
+				accountID: properties[ 0 ].accountId,
+			} );
 
 			return <Setup />;
 		},
@@ -225,7 +236,9 @@ storiesOf( 'Analytics Module/Setup', module )
 	.add(
 		'Create Account Legacy (no accounts)',
 		( args, { registry } ) => {
-			registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
+			registry
+				.dispatch( MODULES_ANALYTICS )
+				.receiveGetSettings( { ...fixtures.defaultSettings } );
 			registry.dispatch( MODULES_ANALYTICS ).receiveGetAccounts( [] );
 			registry
 				.dispatch( MODULES_ANALYTICS )
@@ -429,156 +442,6 @@ storiesOf( 'Analytics Module/Setup', module )
 		}
 	)
 	.add(
-		'Existing Tag w/ access',
-		( args, { registry } ) => {
-			const {
-				accounts,
-				properties,
-				profiles,
-			} = fixtures.accountsPropertiesProfiles;
-			const existingTag = {
-				// eslint-disable-next-line sitekit/acronym-case
-				accountID: properties[ 0 ].accountId,
-				propertyID: properties[ 0 ].id,
-			};
-
-			registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
-			registry
-				.dispatch( MODULES_ANALYTICS )
-				.receiveGetAccounts( accounts );
-			registry
-				.dispatch( MODULES_ANALYTICS )
-				.receiveGetProperties( properties, {
-					// eslint-disable-next-line sitekit/acronym-case
-					accountID: properties[ 0 ].accountId,
-				} );
-			registry
-				.dispatch( MODULES_ANALYTICS )
-				.receiveGetProfiles( profiles, {
-					// eslint-disable-next-line sitekit/acronym-case
-					accountID: properties[ 0 ].accountId,
-					// eslint-disable-next-line sitekit/acronym-case
-					propertyID: profiles[ 0 ].webPropertyId,
-				} );
-			registry
-				.dispatch( MODULES_ANALYTICS )
-				.receiveGetExistingTag( existingTag.propertyID );
-			registry.dispatch( MODULES_ANALYTICS ).receiveGetTagPermission(
-				{
-					accountID: existingTag.accountID,
-					permission: true,
-				},
-				{ propertyID: existingTag.propertyID }
-			);
-
-			return <Setup />;
-		},
-		{
-			decorators: [ WithRegistry ],
-			padding: 0,
-		}
-	)
-	.add(
-		'Existing Tag w/o access',
-		( args, { registry } ) => {
-			const existingTag = {
-				accountID: '12345678',
-				propertyID: 'UA-12345678-1',
-			};
-			const {
-				accounts,
-				properties,
-				profiles,
-			} = fixtures.accountsPropertiesProfiles;
-			registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
-			registry
-				.dispatch( MODULES_ANALYTICS )
-				.receiveGetAccounts( accounts );
-			registry
-				.dispatch( MODULES_ANALYTICS )
-				.receiveGetProperties( properties, {
-					// eslint-disable-next-line sitekit/acronym-case
-					accountID: properties[ 0 ].accountId,
-				} );
-			registry
-				.dispatch( MODULES_ANALYTICS )
-				.receiveGetProfiles( profiles, {
-					// eslint-disable-next-line sitekit/acronym-case
-					accountID: properties[ 0 ].accountId,
-					// eslint-disable-next-line sitekit/acronym-case
-					propertyID: profiles[ 0 ].webPropertyId,
-				} );
-			registry
-				.dispatch( MODULES_ANALYTICS )
-				.receiveGetExistingTag( existingTag.propertyID );
-			registry.dispatch( MODULES_ANALYTICS ).receiveGetTagPermission(
-				{
-					accountID: existingTag.accountID,
-					permission: false,
-				},
-				{ propertyID: existingTag.propertyID }
-			);
-
-			return <Setup />;
-		},
-		{
-			decorators: [ WithRegistry ],
-			padding: 0,
-		}
-	)
-	.add(
-		'No Tag, GTM property w/ access',
-		usingGenerateGTMAnalyticsPropertyStory( {
-			useExistingTag: false,
-			gtmPermission: true,
-		} ),
-		{ padding: 0 }
-	)
-	.add(
-		'No Tag, GTM property w/o access',
-		usingGenerateGTMAnalyticsPropertyStory( {
-			useExistingTag: false,
-			gtmPermission: false,
-		} ),
-		{ padding: 0 }
-	)
-	.add(
-		'Existing Tag w/ access, GTM property w/ access',
-		usingGenerateGTMAnalyticsPropertyStory( {
-			useExistingTag: true,
-			gtmPermission: true,
-			gaPermission: true,
-		} ),
-		{ padding: 0 }
-	)
-	.add(
-		'Existing Tag w/ access, GTM property w/o access',
-		usingGenerateGTMAnalyticsPropertyStory( {
-			useExistingTag: true,
-			gtmPermission: false,
-			gaPermission: true,
-		} ),
-		{ padding: 0 }
-	)
-	.add(
-		'Existing Tag w/o access, GTM property w/ access',
-		usingGenerateGTMAnalyticsPropertyStory( {
-			useExistingTag: true,
-			gtmPermission: true,
-			gaPermission: false,
-		} ),
-		{ padding: 0 }
-	)
-	.add(
-		'Existing Tag w/o access, GTM property w/o access',
-		usingGenerateGTMAnalyticsPropertyStory( {
-			useExistingTag: true,
-			gtmPermission: false,
-			gaPermission: false,
-		} ),
-		{ padding: 0 }
-	)
-	.add(
 		'Nothing selected',
 		( args, { registry } ) => {
 			const {
@@ -586,7 +449,9 @@ storiesOf( 'Analytics Module/Setup', module )
 				properties,
 				profiles,
 			} = fixtures.accountsPropertiesProfiles;
-			registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
+			registry
+				.dispatch( MODULES_ANALYTICS )
+				.receiveGetSettings( { ...fixtures.defaultSettings } );
 			registry
 				.dispatch( MODULES_ANALYTICS )
 				.receiveGetAccounts( accounts );

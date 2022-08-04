@@ -25,21 +25,12 @@ import { render } from '@wordpress/element';
 /**
  * Internal dependencies.
  */
-import './components/legacy-notifications';
-import { useFeature } from './hooks/useFeature';
-import DashboardDetailsApp from './components/dashboard-details/DashboardDetailsApp';
 import DashboardEntityApp from './components/DashboardEntityApp';
 import Root from './components/Root';
-import { VIEW_CONTEXT_PAGE_DASHBOARD } from './googlesitekit/constants';
-
-const GoogleSitekitDashboardDetails = () => {
-	const unifiedDashboardEnabled = useFeature( 'unifiedDashboard' );
-
-	if ( unifiedDashboardEnabled ) {
-		return <DashboardEntityApp />;
-	}
-	return <DashboardDetailsApp />;
-};
+import {
+	VIEW_CONTEXT_PAGE_DASHBOARD,
+	VIEW_CONTEXT_PAGE_DASHBOARD_VIEW_ONLY,
+} from './googlesitekit/constants';
 
 // Initialize the app once the DOM is ready.
 domReady( () => {
@@ -48,9 +39,17 @@ domReady( () => {
 	);
 
 	if ( renderTarget ) {
+		const { viewOnly } = renderTarget.dataset;
+
 		render(
-			<Root viewContext={ VIEW_CONTEXT_PAGE_DASHBOARD }>
-				<GoogleSitekitDashboardDetails />
+			<Root
+				viewContext={
+					viewOnly
+						? VIEW_CONTEXT_PAGE_DASHBOARD_VIEW_ONLY
+						: VIEW_CONTEXT_PAGE_DASHBOARD
+				}
+			>
+				<DashboardEntityApp />
 			</Root>,
 			renderTarget
 		);

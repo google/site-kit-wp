@@ -38,18 +38,18 @@ import {
 	MODULES_IDEA_HUB,
 } from '../../../datastore/constants';
 import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
-import EmptyIcon from '../../../../../../svg/zero-state-yellow.svg';
+import EmptyIcon from '../../../../../../svg/graphics/zero-state-yellow.svg';
 import PreviewTable from '../../../../../components/PreviewTable';
 import Idea from './Idea';
 import Empty from './Empty';
-const { useSelect } = Data;
+const { useSelect, useInViewSelect } = Data;
 
 export default function NewIdeas( { WidgetReportError } ) {
 	const page = useSelect( ( select ) =>
 		select( CORE_UI ).getValue( 'idea-hub-page-new-ideas' )
 	);
 
-	const totalNewIdeas = useSelect(
+	const totalNewIdeas = useInViewSelect(
 		( select ) => select( MODULES_IDEA_HUB ).getNewIdeas()?.length
 	);
 	const hasFinishedResolution = useSelect( ( select ) =>
@@ -59,7 +59,7 @@ export default function NewIdeas( { WidgetReportError } ) {
 		select( MODULES_IDEA_HUB ).getErrorForSelector( 'getNewIdeas' )
 	);
 
-	const newIdeas = useSelect( ( select ) =>
+	const newIdeas = useInViewSelect( ( select ) =>
 		select( MODULES_IDEA_HUB ).getNewIdeasSlice( {
 			offset: ( page - 1 ) * IDEA_HUB_IDEAS_PER_PAGE,
 			length: IDEA_HUB_IDEAS_PER_PAGE,

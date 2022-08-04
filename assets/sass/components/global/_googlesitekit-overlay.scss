@@ -45,6 +45,10 @@
 		justify-content: center;
 		margin: 0 auto;
 		width: 60px;
+
+		svg {
+			color: $c-cape-cod;
+		}
 	}
 
 	&--compress .googlesitekit-overlay__icon {
@@ -64,7 +68,9 @@
 	}
 
 	&--compress .googlesitekit-overlay__title {
-		font-size: 1rem;
+		font-size: $fs-title-md;
+		font-weight: $fw-bold;
+		line-height: $lh-title-md;
 		margin-top: 0;
 		padding-right: 0;
 	}

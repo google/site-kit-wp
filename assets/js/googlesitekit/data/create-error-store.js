@@ -87,7 +87,9 @@ export const actions = {
 	},
 };
 
-export function createErrorStore() {
+export function createErrorStore( storeName ) {
+	invariant( storeName, 'storeName must be defined.' );
+
 	const initialState = {
 		errors: {},
 		error: undefined,
@@ -181,7 +183,20 @@ export function createErrorStore() {
 		 */
 		getErrorForSelector( state, selectorName, args = [] ) {
 			invariant( selectorName, 'selectorName is required.' );
-			return selectors.getError( state, selectorName, args );
+
+			const error = selectors.getError( state, selectorName, args );
+			if ( ! error ) {
+				return undefined;
+			}
+
+			return {
+				...error,
+				selectorData: {
+					storeName,
+					name: selectorName,
+					args,
+				},
+			};
 		},
 
 		/**

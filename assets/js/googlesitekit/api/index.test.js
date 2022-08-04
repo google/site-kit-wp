@@ -19,7 +19,10 @@
 /**
  * Internal dependencies
  */
-import { unexpectedSuccess } from '../../../../tests/js/test-utils';
+import {
+	freezeFetch,
+	unexpectedSuccess,
+} from '../../../../tests/js/test-utils';
 import * as CacheModule from './cache';
 import {
 	createCacheKey,
@@ -777,6 +780,25 @@ describe( 'googlesitekit.api', () => {
 					method: 'GET',
 				}
 			);
+		} );
+
+		it( 'should allow aborting the request using the `signal` option', async () => {
+			const controller = new AbortController();
+
+			freezeFetch(
+				/^\/google-site-kit\/v1\/test\/frozen\/data\/request/
+			);
+
+			try {
+				const promise = siteKitRequest( 'test', 'frozen', 'request', {
+					signal: controller.signal,
+				} );
+				controller.abort();
+				await promise;
+			} catch ( err ) {
+				expect( err.code ).toBe( 'fetch_error' );
+				expect( console ).not.toHaveErrored();
+			}
 		} );
 	} );
 } );

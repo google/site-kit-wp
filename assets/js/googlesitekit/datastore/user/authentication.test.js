@@ -37,6 +37,8 @@ describe( 'core/user authentication', () => {
 		unsatisfiedScopes: [],
 		needsReauthentication: true,
 		disconnectedReason: 'test-reason',
+		connectedProxyURL: 'http://example.com/current',
+		previousConnectedProxyURL: 'http://example.com/previous',
 	};
 
 	const authError = {
@@ -243,6 +245,8 @@ describe( 'core/user authentication', () => {
 			[ 'getUnsatisfiedScopes', 'unsatisfiedScopes' ],
 			[ 'needsReauthentication', 'needsReauthentication' ],
 			[ 'getDisconnectedReason', 'disconnectedReason' ],
+			[ 'getConnectedProxyURL', 'connectedProxyURL' ],
+			[ 'getPreviousConnectedProxyURL', 'previousConnectedProxyURL' ],
 		] )( '%s', ( selector, property ) => {
 			it( 'uses a resolver to load the authenticated value if not yet set.', async () => {
 				fetchMock.getOnce( coreUserDataEndpointRegExp, {
@@ -284,7 +288,14 @@ describe( 'core/user authentication', () => {
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( value ).toBeUndefined();
-				expect( error ).toEqual( response );
+				expect( error ).toEqual( {
+					...response,
+					selectorData: {
+						args: [],
+						name: 'getAuthentication',
+						storeName: CORE_USER,
+					},
+				} );
 				expect( console ).toHaveErrored();
 			} );
 

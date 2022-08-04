@@ -1,13 +1,24 @@
 // Overrides for .mdc-button
 .googlesitekit-plugin .mdc-button {
 
-	@include mdc-button-ink-color($c-link);
+	@include mdc-button-ink-color($c-content-primary);
+	box-shadow: none;
+	text-transform: none;
+
+	@media (max-width: $bp-desktop) {
+		min-width: auto;
+	}
 
 	&--raised {
 
-		@include mdc-button-filled-accessible($c-background-brand);
+		@include mdc-button-filled-accessible($c-content-primary);
+		@include mdc-button-shape-radius($br-lg);
+
+		box-shadow: none;
 		font-family: $f-primary;
+		font-weight: $fw-normal;
 		height: auto;
+		letter-spacing: normal;
 		min-height: $mdc-button-min-height;
 		padding-bottom: 8px;
 		padding-top: 8px;
@@ -49,11 +60,15 @@
 			@include mdc-button-filled-accessible($c-background-subtle);
 			text-decoration: none;
 		}
+
+		@media (max-width: $bp-mobileOnly ) {
+			background-image: none;
+		}
 	}
 
 	&--dropdown .mdc-button__label {
 
-		@media (max-width: $bp-tablet) {
+		@media (max-width: $bp-mobileOnly) {
 
 			@include screen-reader-only;
 		}
@@ -72,6 +87,11 @@
 		@media (min-width: $bp-xlarge) {
 			max-width: 450px;
 		}
+	}
+
+	&--inverse {
+
+		@include mdc-button-filled-accessible($c-surfaces-inverse-surface);
 	}
 
 	.mdc-button__icon {

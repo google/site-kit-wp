@@ -198,12 +198,13 @@ class FakeModule extends Module
 	 * Transforms an exception into a WP_Error object.
 	 *
 	 * @since 1.0.0
+	 * @since 1.70.0 $datapoint parameter is optional.
 	 *
 	 * @param Exception $e         Exception object.
-	 * @param string    $datapoint Datapoint originally requested.
+	 * @param string    $datapoint Optional. Datapoint originally requested. Default is an empty string.
 	 * @return WP_Error WordPress error object.
 	 */
-	public function exception_to_error( Exception $e, $datapoint ) { // phpcs:ignore Generic.CodeAnalysis.UselessOverridingMethod
+	public function exception_to_error( Exception $e, $datapoint = '' ) { // phpcs:ignore Generic.CodeAnalysis.UselessOverridingMethod
 		return parent::exception_to_error( $e, $datapoint );
 	}
 

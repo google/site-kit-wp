@@ -55,7 +55,8 @@ module.exports = iterateJsdoc(
 		) {
 			context.report( {
 				data: { name: jsdocNode.name },
-				message: `The first word in a function's description should be a third-person verb (eg "runs" not "run").`,
+				message:
+					'The first word in a function’s description should be a third-person verb (eg "runs" not "run").',
 				node: jsdocNode,
 			} );
 		}
@@ -64,7 +65,8 @@ module.exports = iterateJsdoc(
 		iterateAllJsdocs: true,
 		meta: {
 			docs: {
-				description: `Requires that all functions' first word end with "s" (assuming that it is a third-person verb).`,
+				description:
+					'Requires that all functions’ first word end with "s" (assuming that it is a third-person verb).',
 			},
 			fixable: 'code',
 			type: 'suggestion',

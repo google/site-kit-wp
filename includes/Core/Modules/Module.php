@@ -18,9 +18,9 @@ use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
 use Google\Site_Kit\Core\Authentication\Exception\Insufficient_Scopes_Exception;
 use Google\Site_Kit\Core\Authentication\Exception\Google_Proxy_Code_Exception;
 use Google\Site_Kit\Core\Contracts\WP_Errorable;
+use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
-use Google\Site_Kit\Core\Storage\Cache;
 use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
 use Google\Site_Kit\Core\REST_API\Exception\Invalid_Datapoint_Exception;
@@ -179,29 +179,6 @@ abstract class Module {
 	}
 
 	/**
-	 * Returns all module information data for passing it to JavaScript.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return array Module information data.
-	 */
-	public function prepare_info_for_js() {
-		// TODO: Modify this to ditch unnecessary backward-compatibility.
-		return array(
-			'slug'         => $this->slug,
-			'name'         => $this->name,
-			'description'  => $this->description,
-			'sort'         => $this->order,
-			'homepage'     => $this->homepage,
-			'required'     => $this->depends_on,
-			'autoActivate' => $this->force_active,
-			'internal'     => $this->internal,
-			'screenID'     => $this instanceof Module_With_Screen ? $this->get_screen()->get_slug() : false,
-			'settings'     => $this instanceof Module_With_Settings ? $this->get_settings()->get() : false,
-		);
-	}
-
-	/**
 	 * Checks whether the module is connected.
 	 *
 	 * A module being connected means that all steps required as part of its activation are completed.
@@ -292,6 +269,26 @@ abstract class Module {
 	}
 
 	/**
+	 * Gets the datapoint definition instance.
+	 *
+	 * @since 1.77.0
+	 *
+	 * @param string $datapoint_id Datapoint ID.
+	 * @return Datapoint Datapoint instance.
+	 * @throws Invalid_Datapoint_Exception Thrown if no datapoint exists by the given ID.
+	 */
+	protected function get_datapoint_definition( $datapoint_id ) {
+		$definitions = $this->get_datapoint_definitions();
+
+		// All datapoints must be defined.
+		if ( empty( $definitions[ $datapoint_id ] ) ) {
+			throw new Invalid_Datapoint_Exception();
+		}
+
+		return new Datapoint( $definitions[ $datapoint_id ] );
+	}
+
+	/**
 	 * Creates a request object for the given datapoint.
 	 *
 	 * @since 1.0.0
@@ -326,21 +323,38 @@ abstract class Module {
 	 *
 	 * @param Data_Request $data Data request object.
 	 * @return mixed Data on success, or WP_Error on failure.
-	 *
-	 * phpcs:disable Squiz.Commenting.FunctionCommentThrowTag.Missing
 	 */
 	final protected function execute_data_request( Data_Request $data ) {
+		$restore_defers = array();
 		try {
-			$this->validate_data_request( $data );
+			$datapoint    = $this->get_datapoint_definition( "{$data->method}:{$data->datapoint}" );
+			$oauth_client = $this->get_oauth_client_for_datapoint( $datapoint );
 
-			$request = $this->make_data_request( $data );
+			$this->validate_datapoint_scopes( $datapoint, $oauth_client );
+			$this->validate_base_scopes( $oauth_client );
+
+			// In order for a request to leverage a client other than the default
+			// it must return a RequestInterface (Google Services return this when defer = true).
+			// If not deferred, the request will be executed immediately with the client
+			// the service instance was instantiated with, which will always be the
+			// default client, configured for the current user and provided in `get_service`.
+
+			// Client defer is false by default, so we need to configure the default to defer
+			// even if a different client will be the one to execute the request because
+			// the default instance is what services are setup with.
+			$restore_defers[] = $this->get_client()->withDefer( true );
+			if ( $this->authentication->get_oauth_client() !== $oauth_client ) {
+				$restore_defers[] = $oauth_client->get_client()->withDefer( true );
+			}
+
+			$request = $this->create_data_request( $data );
 
 			if ( is_wp_error( $request ) ) {
 				return $request;
 			} elseif ( $request instanceof Closure ) {
 				$response = $request();
 			} elseif ( $request instanceof RequestInterface ) {
-				$response = $this->get_client()->execute( $request );
+				$response = $oauth_client->get_client()->execute( $request );
 			} else {
 				return new WP_Error(
 					'invalid_datapoint_request',
@@ -350,6 +364,10 @@ abstract class Module {
 			}
 		} catch ( Exception $e ) {
 			return $this->exception_to_error( $e, $data->datapoint );
+		} finally {
+			foreach ( $restore_defers as $restore_defer ) {
+				$restore_defer();
+			}
 		}
 
 		if ( is_wp_error( $response ) ) {
@@ -360,80 +378,44 @@ abstract class Module {
 	}
 
 	/**
-	 * Validates the given data request.
+	 * Validates necessary scopes for the given datapoint.
 	 *
-	 * @since 1.9.0
+	 * @since 1.77.0
 	 *
-	 * @param Data_Request $data Data request object.
-	 *
-	 * @throws Invalid_Datapoint_Exception   Thrown if the datapoint does not exist.
-	 * @throws Insufficient_Scopes_Exception Thrown if the user has not granted
-	 *                                       necessary scopes required by the datapoint.
+	 * @param Datapoint    $datapoint    Datapoint instance.
+	 * @param OAuth_Client $oauth_client OAuth_Client instance.
+	 * @throws Insufficient_Scopes_Exception Thrown if required scopes are not satisfied.
 	 */
-	private function validate_data_request( Data_Request $data ) {
-		$definitions   = $this->get_datapoint_definitions();
-		$datapoint_key = "$data->method:$data->datapoint";
+	private function validate_datapoint_scopes( Datapoint $datapoint, OAuth_Client $oauth_client ) {
+		$required_scopes = $datapoint->get_required_scopes();
 
-		// All datapoints must be defined.
-		if ( empty( $definitions[ $datapoint_key ] ) ) {
-			throw new Invalid_Datapoint_Exception();
-		}
+		if ( $required_scopes && ! $oauth_client->has_sufficient_scopes( $required_scopes ) ) {
+			$message = $datapoint->get_request_scopes_message();
 
-		if ( ! $this instanceof Module_With_Scopes ) {
-			return;
-		}
-
-		$datapoint    = $definitions[ $datapoint_key ];
-		$oauth_client = $this->authentication->get_oauth_client();
-
-		if ( ! empty( $datapoint['scopes'] ) && ! $oauth_client->has_sufficient_scopes( $datapoint['scopes'] ) ) {
-			// Otherwise, if the datapoint doesn't rely on a service but requires
-			// specific scopes, ensure they are satisfied.
-			$message = ! empty( $datapoint['request_scopes_message'] )
-				? $datapoint['request_scopes_message']
-				: __( 'You’ll need to grant Site Kit permission to do this.', 'google-site-kit' );
-
-			throw new Insufficient_Scopes_Exception( $message, 0, null, $datapoint['scopes'] );
-		}
-
-		$requires_service = ! empty( $datapoint['service'] );
-
-		if ( $requires_service && ! $oauth_client->has_sufficient_scopes( $this->get_scopes() ) ) {
-			// If the datapoint relies on a service which requires scopes and
-			// these have not been granted, fail the request with a permissions
-			// error (see issue #3227).
-
-			/* translators: %s: module name */
-			$message = sprintf( __( 'Site Kit can’t access the relevant data from %s because you haven’t granted all permissions requested during setup.', 'google-site-kit' ), $this->name );
-			throw new Insufficient_Scopes_Exception( $message, 0, null, $this->get_scopes() );
+			throw new Insufficient_Scopes_Exception( $message, 0, null, $required_scopes );
 		}
 	}
 
 	/**
-	 * Facilitates the creation of a request object for execution.
+	 * Validates necessary scopes for the module.
 	 *
-	 * @since 1.9.0
+	 * @since 1.77.0
 	 *
-	 * @param Data_Request $data Data request object.
-	 * @return RequestInterface|Closure|WP_Error
+	 * @param OAuth_Client $oauth_client OAuth_Client instance.
+	 * @throws Insufficient_Scopes_Exception Thrown if required scopes are not satisfied.
 	 */
-	private function make_data_request( Data_Request $data ) {
-		$definitions = $this->get_datapoint_definitions();
-
-		// We only need to initialize the client if this datapoint relies on a service.
-		$requires_client = ! empty( $definitions[ "$data->method:$data->datapoint" ]['service'] );
-
-		if ( $requires_client ) {
-			$restore_defer = $this->with_client_defer( true );
+	private function validate_base_scopes( OAuth_Client $oauth_client ) {
+		if ( ! $this instanceof Module_With_Scopes ) {
+			return;
 		}
-
-		$request = $this->create_data_request( $data );
-
-		if ( isset( $restore_defer ) ) {
-			$restore_defer();
+		if ( ! $oauth_client->has_sufficient_scopes( $this->get_scopes() ) ) {
+			$message = sprintf(
+				/* translators: %s: module name */
+				__( 'Site Kit can’t access the relevant data from %s because you haven’t granted all permissions requested during setup.', 'google-site-kit' ),
+				$this->name
+			);
+			throw new Insufficient_Scopes_Exception( $message, 0, null, $this->get_scopes() );
 		}
-
-		return $request;
 	}
 
 	/**
@@ -582,6 +564,36 @@ abstract class Module {
 	}
 
 	/**
+	 * Gets the oAuth client instance to use for the given datapoint.
+	 *
+	 * @since 1.77.0
+	 *
+	 * @param Datapoint $datapoint Datapoint definition.
+	 * @return OAuth_Client OAuth_Client instance.
+	 */
+	private function get_oauth_client_for_datapoint( Datapoint $datapoint ) {
+		if (
+			$this instanceof Module_With_Owner
+			&& $this->is_shareable()
+			&& $datapoint->is_shareable()
+			&& $this->get_owner_id() !== get_current_user_id()
+			&& ! $this->is_recoverable()
+			&& current_user_can( Permissions::READ_SHARED_MODULE_DATA, $this->slug )
+		) {
+			$oauth_client = $this->get_owner_oauth_client();
+
+			try {
+				$this->validate_base_scopes( $oauth_client );
+				return $oauth_client;
+			} catch ( Exception $exception ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
+				// Fallthrough to default oauth client if scopes are unsatisfied.
+			}
+		}
+
+		return $this->authentication->get_oauth_client();
+	}
+
+	/**
 	 * Gets the Google service for the given identifier.
 	 *
 	 * This method should be used to access Google services.
@@ -687,7 +699,7 @@ abstract class Module {
 				'homepage'     => '',
 				'feature'      => '',
 				'depends_on'   => array(),
-				'force_active' => false,
+				'force_active' => static::is_force_active(),
 				'internal'     => false,
 			)
 		);
@@ -705,12 +717,14 @@ abstract class Module {
 	 * Transforms an exception into a WP_Error object.
 	 *
 	 * @since 1.0.0
+	 * @since 1.49.0 Uses the new `Google_Proxy::setup_url_v2` method when the `serviceSetupV2` feature flag is enabled.
+	 * @since 1.70.0 $datapoint parameter is optional.
 	 *
 	 * @param Exception $e         Exception object.
-	 * @param string    $datapoint Datapoint originally requested.
+	 * @param string    $datapoint Optional. Datapoint originally requested. Default is an empty string.
 	 * @return WP_Error WordPress error object.
 	 */
-	protected function exception_to_error( Exception $e, $datapoint ) {
+	protected function exception_to_error( Exception $e, $datapoint = '' ) {
 		if ( $e instanceof WP_Errorable ) {
 			return $e->to_wp_error();
 		}
@@ -735,7 +749,14 @@ abstract class Module {
 			$code          = $message;
 			$auth_client   = $this->authentication->get_oauth_client();
 			$message       = $auth_client->get_error_message( $code );
-			$reconnect_url = $auth_client->get_proxy_setup_url( $e->getAccessCode(), $code );
+			$google_proxy  = $this->authentication->get_google_proxy();
+			$credentials   = $this->authentication->credentials()->get();
+			$params        = array(
+				'code'    => $e->getAccessCode(),
+				'site_id' => ! empty( $credentials['oauth2_client_id'] ) ? $credentials['oauth2_client_id'] : '',
+			);
+			$params        = $google_proxy->add_setup_step_from_error_code( $params, $code );
+			$reconnect_url = $google_proxy->setup_url( $params );
 		}
 
 		if ( empty( $code ) ) {
@@ -793,4 +814,52 @@ abstract class Module {
 		return $items;
 	}
 
+	/**
+	 * Determines whether the current module is forced to be active or not.
+	 *
+	 * @since 1.49.0
+	 *
+	 * @return bool TRUE if the module forced to be active, otherwise FALSE.
+	 */
+	public static function is_force_active() {
+		return false;
+	}
+
+	/**
+	 * Checks whether the module is shareable.
+	 *
+	 * @since 1.50.0
+	 *
+	 * @return bool True if module is shareable, false otherwise.
+	 */
+	public function is_shareable() {
+		if ( $this instanceof Module_With_Owner && $this->is_connected() ) {
+			$datapoints = $this->get_datapoint_definitions();
+			foreach ( $datapoints as $details ) {
+				if ( ! empty( $details['shareable'] ) ) {
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Checks whether the module is recoverable.
+	 *
+	 * @since 1.78.0
+	 *
+	 * @return bool
+	 */
+	public function is_recoverable() {
+		/**
+		 * Filters the recoverable status of the module.
+		 *
+		 * @since 1.78.0
+		 * @param bool   $_    Whether or not the module is recoverable. Default: false
+		 * @param string $slug Module slug.
+		 */
+		return (bool) apply_filters( 'googlesitekit_is_module_recoverable', false, $this->slug );
+	}
 }

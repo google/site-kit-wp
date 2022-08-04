@@ -18,6 +18,7 @@ on:
     branches:
       - develop
       - main
+      - 'feature/**'
     # Only run if PHP-related files changed.
     paths:
       - '.github/workflows/php-tests-wp-latest-php-8-0.yml'
@@ -31,6 +32,10 @@ on:
       - opened
       - reopened
       - synchronize
+
+concurrency:
+  group: php-tests-wp-latest-php-8-0-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   php-tests-wp-latest-php-8-0:
@@ -53,7 +58,6 @@ jobs:
       MYSQL_DATABASE: wordpress_test
       WP_VERSION: latest
     steps:
-      - uses: styfle/cancel-workflow-action@0.8.0
       - uses: actions/checkout@v2
       - uses: shivammathur/setup-php@v2
         with:
@@ -75,6 +79,6 @@ jobs:
       - name: Update PHPUnit
         run: composer update phpunit/phpunit --with-dependencies --ignore-platform-reqs --no-scripts
       - name: Set up PHP test data
-        run: tests/bin/install-wp-tests.sh ${MYSQL_DATABASE} ${MYSQL_USER} ${MYSQL_PASSWORD} ${DB_HOST}:${DB_PORT} ${WP_VERSION}
+        run: tests/phpunit/bin/install-wp-tests.sh ${MYSQL_DATABASE} ${MYSQL_USER} ${MYSQL_PASSWORD} ${DB_HOST}:${DB_PORT} ${WP_VERSION}
       - name: Run Unit Tests
-        run: composer test
+        run: composer test -- --verbose

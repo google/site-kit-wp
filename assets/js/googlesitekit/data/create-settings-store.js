@@ -22,6 +22,7 @@
 import invariant from 'invariant';
 import isPlainObject from 'lodash/isPlainObject';
 import isEqual from 'lodash/isEqual';
+import pick from 'lodash/pick';
 
 /**
  * Internal dependencies
@@ -61,13 +62,13 @@ const ROLLBACK_SETTINGS = 'ROLLBACK_SETTINGS';
  * @since 1.6.0
  * @private
  *
- * @param {string} type                 The data to access. One of 'core' or 'modules'.
- * @param {string} identifier           The data identifier, eg. a module slug like 'search-console'.
- * @param {string} datapoint            The endpoint to request data from, e.g. 'settings'.
- * @param {Object} options              Optional. Options to consider for the store.
- * @param {number} options.storeName    Store name to use. Default is '{type}/{identifier}'.
- * @param {Array}  options.settingSlugs List of the slugs that are part of the settings object
- *                                      handled by the respective API endpoint.
+ * @param {string} type                         The data to access. One of 'core' or 'modules'.
+ * @param {string} identifier                   The data identifier, eg. a module slug like 'search-console'.
+ * @param {string} datapoint                    The endpoint to request data from, e.g. 'settings'.
+ * @param {Object} options                      Optional. Options to consider for the store.
+ * @param {Array}  [options.ownedSettingsSlugs] Optional. List of "owned settings" for this module, if they exist.
+ * @param {number} [options.storeName]          Store name to use. Default is '{type}/{identifier}'.
+ * @param {Array}  [options.settingSlugs]       List of the slugs that are part of the settings object handled by the respective API endpoint.
  * @return {Object} The settings store object, with additional `STORE_NAME` and
  *                  `initialState` properties.
  */
@@ -75,7 +76,11 @@ export const createSettingsStore = (
 	type,
 	identifier,
 	datapoint,
-	{ storeName = undefined, settingSlugs = [] } = {}
+	{
+		ownedSettingsSlugs = undefined,
+		storeName = undefined,
+		settingSlugs = [],
+	} = {}
 ) => {
 	invariant( type, 'type is required.' );
 	invariant( identifier, 'identifier is required.' );
@@ -84,6 +89,7 @@ export const createSettingsStore = (
 	const STORE_NAME = storeName || `${ type }/${ identifier }`;
 
 	const initialState = {
+		ownedSettingsSlugs,
 		settings: undefined,
 		savedSettings: undefined,
 	};
@@ -275,14 +281,44 @@ export const createSettingsStore = (
 		 * Indicates whether the current settings have changed from what is saved.
 		 *
 		 * @since 1.6.0
+		 * @since 1.77.0 Added ability to filter settings using `keys` argument.
 		 *
-		 * @param {Object} state Data store's state.
+		 * @param {Object}     state Data store's state.
+		 * @param {Array|null} keys  Settings keys to check; if not provided, all settings are checked.
 		 * @return {boolean} True if the settings have changed, false otherwise.
 		 */
-		haveSettingsChanged( state ) {
+		haveSettingsChanged( state, keys = null ) {
 			const { settings, savedSettings } = state;
 
+			if ( keys ) {
+				return ! isEqual(
+					pick( settings, keys ),
+					pick( savedSettings, keys )
+				);
+			}
+
 			return ! isEqual( settings, savedSettings );
+		},
+
+		/**
+		 * Indicates whether the provided setting has changed from what is saved.
+		 *
+		 * @since 1.72.0
+		 *
+		 * @param {Object} state   Data store's state.
+		 * @param {string} setting The setting we want to check for saved changes.
+		 * @return {boolean} True if the settings have changed, false otherwise.
+		 */
+		hasSettingChanged( state, setting ) {
+			invariant( setting, 'setting is required.' );
+
+			const { settings, savedSettings } = state;
+
+			if ( ! settings || ! savedSettings ) {
+				return false;
+			}
+
+			return ! isEqual( settings[ setting ], savedSettings[ setting ] );
 		},
 
 		/**
@@ -302,6 +338,36 @@ export const createSettingsStore = (
 				Boolean
 			);
 		},
+
+		/**
+		 * Gets the owned settings slugs for this module.
+		 *
+		 * @since 1.77.0
+		 *
+		 * @param {Object} state Data store's state.
+		 * @return {Array|null} The array of owned settings slugs for this module if they exist. Returns `null` if no owned settings slugs exist.
+		 */
+		getOwnedSettingsSlugs: ( state ) => {
+			return state.ownedSettingsSlugs;
+		},
+
+		/**
+		 * Returns `true` if a module's "own settings" have changed; `false` if not.
+		 *
+		 * @since 1.77.0
+		 *
+		 * @param {Object} state Data store's state.
+		 * @return {boolean} `true` if the module's "own settings" have changed; `false` if not.
+		 */
+		haveOwnedSettingsChanged: createRegistrySelector( ( select ) => () => {
+			const ownedSettingsSlugsToCheck = select(
+				STORE_NAME
+			).getOwnedSettingsSlugs();
+
+			return select( STORE_NAME ).haveSettingsChanged(
+				ownedSettingsSlugsToCheck
+			);
+		} ),
 	};
 
 	// Define individual actions, selectors and related for sub-settings.

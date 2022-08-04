@@ -42,8 +42,8 @@ class User_TransientsTest extends TestCase {
 		wp_using_ext_object_cache( self::$old_wp_using_ext_object_cache );
 	}
 
-	public function setUp() {
-		parent::setUp();
+	public function set_up() {
+		parent::set_up();
 		$this->context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 	}
 

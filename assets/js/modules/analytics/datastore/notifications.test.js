@@ -26,6 +26,7 @@ import { __ } from '@wordpress/i18n';
  */
 import {
 	createTestRegistry,
+	provideSiteInfo,
 	unsubscribeFromAll,
 } from '../../../../../tests/js/utils';
 import { MODULES_ANALYTICS } from './constants';
@@ -35,6 +36,10 @@ describe( 'modules/analytics notifications', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
+
+		provideSiteInfo( registry, {
+			proxySupportLinkURL: 'https://test.com',
+		} );
 	} );
 
 	afterEach( () => {
@@ -55,8 +60,7 @@ describe( 'modules/analytics notifications', () => {
 					),
 					learnMore: {
 						label: 'Learn more',
-						url:
-							'https://sitekit.withgoogle.com/documentation/ga4-analytics-property/',
+						url: 'https://test.com?doc=ga4',
 					},
 				} );
 			} );

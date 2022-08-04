@@ -30,7 +30,7 @@ import Layout from '../layout/Layout';
 import BannerNotification from '../notifications/BannerNotification';
 import SetupModule from './SetupModule';
 import { Cell, Grid, Row } from '../../material-components';
-import AwardSVG from '../../../svg/award.svg';
+import AwardSVG from '../../../svg/graphics/award.svg';
 const { useSelect } = Data;
 
 export default function SettingsInactiveModules() {
@@ -62,6 +62,7 @@ export default function SettingsInactiveModules() {
 				format="small"
 				SmallImageSVG={ AwardSVG }
 				type="win-success"
+				rounded
 			/>
 		);
 	}
@@ -73,6 +74,7 @@ export default function SettingsInactiveModules() {
 				'Connect More Services to Gain More Insights',
 				'google-site-kit'
 			) }
+			rounded
 			relative
 		>
 			<Grid>

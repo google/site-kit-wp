@@ -37,6 +37,7 @@ export default function ReportDetailsLink() {
 	);
 	const pagespeedInsightsURL = useSelect( ( select ) =>
 		select( MODULES_PAGESPEED_INSIGHTS ).getServiceURL( {
+			path: 'report',
 			query: { url: referenceURL },
 		} )
 	);

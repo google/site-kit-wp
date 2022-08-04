@@ -34,7 +34,7 @@ module.exports = async ( { config } ) => {
 		...config.plugins,
 		new MiniCssExtractPlugin(),
 		new ProvidePlugin( {
-			React: 'react',
+			React: '@wordpress/element',
 		} ),
 	];
 

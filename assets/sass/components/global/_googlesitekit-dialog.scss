@@ -1,0 +1,152 @@
+/**
+ * Dialog styles.
+ *
+ * Site Kit by Google, Copyright 2022 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.googlesitekit-plugin {
+
+	.googlesitekit-dialog {
+
+		.admin-bar & {
+			// Stretch to cover full screen on mobile.
+			align-items: stretch;
+
+			@media (min-width: $bp-tablet) {
+				align-items: center;
+			}
+		}
+
+		.mdc-dialog__container {
+			height: 100%;
+			max-width: 908px;
+			width: 100%;
+
+			@media (min-width: $bp-tablet) {
+				height: auto;
+				max-height: calc(100vh - 120px);
+				width: 80%;
+			}
+		}
+
+		.mdc-dialog__surface {
+			border-radius: 0;
+			box-shadow: none;
+			max-height: 100%; // Height is programmatically set up to 100% on mobile.
+			max-width: 100%;
+			padding: 0;
+			width: 100%;
+
+			@media (min-width: $bp-tablet) {
+				border-radius: $br-md;
+				height: auto;
+			}
+		}
+
+		.googlesitekit-dialog__back-wrapper {
+			padding: 20px 16px;
+
+			&[aria-hidden="true"] {
+				display: none;
+			}
+		}
+
+		.googlesitekit-dialog__back {
+			background-color: transparent;
+			border-radius: 0;
+			box-shadow: none;
+			min-height: auto;
+			min-width: auto;
+			padding: 0;
+			width: 24px;
+
+			&:focus {
+				outline: 1px dotted $c-cornflower-blue;
+				outline-offset: 3px;
+			}
+
+			.mdc-button__label {
+				height: 24px;
+				line-height: 1;
+			}
+		}
+
+		.googlesitekit-dialog__content {
+			overflow: auto;
+			padding: 24px 16px;
+
+			@media (min-width: $bp-tablet) {
+				padding: 32px;
+			}
+		}
+
+		.googlesitekit-dialog__header {
+			display: flex;
+			flex-wrap: nowrap;
+			gap: 12px;
+			margin: 0 0 32px;
+		}
+
+		.googlesitekit-dialog__header-icon {
+
+			span {
+				align-items: center;
+				background-color: $c-utility-success;
+				border-radius: 50%;
+				color: $c-white;
+				display: flex;
+				height: 36px;
+				justify-content: center;
+				width: 36px;
+			}
+
+			&[aria-hidden="true"] {
+				display: none;
+			}
+		}
+
+		.googlesitekit-dialog__title {
+			color: $c-surfaces-on-surface;
+			font-size: $fs-headline-sm;
+			font-weight: $fw-bold;
+			line-height: $lh-headline-sm;
+			margin: 0 0 12px;
+
+			@media (min-width: $bp-tablet) {
+				margin: 0 0 8px;
+			}
+		}
+
+		.googlesitekit-dialog__subtitle {
+			color: $c-surfaces-on-surface-variant;
+			font-size: $fs-body-sm;
+			letter-spacing: $ls-xs;
+			line-height: $lh-body-sm;
+			margin: 0;
+		}
+
+		.googlesitekit-dialog__footer {
+			border-top: 1px solid $c-utility-divider;
+			justify-content: flex-end;
+			margin: 0;
+			padding: 16px;
+			z-index: 2;
+
+			@media (min-width: $bp-tablet) {
+				padding: 20px 32px;
+			}
+		}
+	}
+}

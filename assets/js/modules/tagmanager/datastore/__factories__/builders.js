@@ -241,7 +241,8 @@ export const liveContainerVersionBuilder = build(
 			path:
 				'accounts/{accountId}/containers/{containerId}/versions/{containerVersionId}',
 			tag: undefined, // required, but depends on container type.
-			tagManagerUrl: `https://tagmanager.google.com/#/versions/accounts/{accountId}/containers/{containerId}/versions/{containerVersionId}?apiLink=version`,
+			tagManagerUrl:
+				'https://tagmanager.google.com/#/versions/accounts/{accountId}/containers/{containerId}/versions/{containerVersionId}?apiLink=version',
 			variable: undefined, // absent by default.
 		},
 		postBuild( {

@@ -17,15 +17,15 @@
  */
 
 /**
+ * External dependencies
+ */
+import { useMount, useUpdateEffect } from 'react-use';
+
+/**
  * WordPress dependencies
  */
 import { useInstanceId } from '@wordpress/compose';
-import {
-	useCallback,
-	useContext,
-	useEffect,
-	useState,
-} from '@wordpress/element';
+import { useCallback, useEffect, useState, useRef } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -35,13 +35,16 @@ import Data from 'googlesitekit-data';
 import Button from './Button';
 import ProgressBar from './ProgressBar';
 import VisuallyHidden from './VisuallyHidden';
-import MagnifyingGlass from '../../svg/magnifying-glass.svg';
-import CloseDark from '../../svg/close-dark.svg';
+import MagnifyingGlass from '../../svg/icons/magnifying-glass.svg';
+import CloseDark from '../../svg/icons/close-dark.svg';
 import PostSearcherAutoSuggest from './PostSearcherAutoSuggest';
-import ViewContextContext from './Root/ViewContextContext';
 import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
 import { CORE_LOCATION } from '../googlesitekit/datastore/location/constants';
 import { trackEvent } from '../util';
+import useDashboardType, {
+	DASHBOARD_TYPE_ENTITY,
+} from '../hooks/useDashboardType';
+import useViewContext from '../hooks/useViewContext';
 
 const { useSelect, useDispatch } = Data;
 
@@ -49,22 +52,28 @@ function EntitySearchInput() {
 	const instanceID = useInstanceId( EntitySearchInput, 'EntitySearchInput' );
 	const [ isOpen, setIsOpen ] = useState( false );
 	const [ isLoading, setIsLoading ] = useState( false );
+	const [ isActive, setIsActive ] = useState( false );
+
+	const viewContext = useViewContext();
+	const dashboardType = useDashboardType();
+	const buttonRef = useRef();
 
 	const onOpen = useCallback( () => {
+		trackEvent( `${ viewContext }_headerbar`, 'open_urlsearch' );
 		setIsOpen( true );
-	}, [] );
+	}, [ viewContext ] );
 
 	const onClose = useCallback( () => {
+		trackEvent( `${ viewContext }_headerbar`, 'close_urlsearch' );
 		setIsOpen( false );
-	}, [] );
+	}, [ viewContext ] );
 
 	const [ match, setMatch ] = useState( {} );
-	const viewContext = useContext( ViewContextContext );
 
 	const detailsURL = useSelect( ( select ) =>
-		match?.permalink
+		match?.url
 			? select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard', {
-					permaLink: match.permalink,
+					permaLink: match.url,
 			  } )
 			: null
 	);
@@ -74,13 +83,25 @@ function EntitySearchInput() {
 	useEffect( () => {
 		if ( detailsURL ) {
 			trackEvent(
-				`${ viewContext }_headerbar`,
+				`${ viewContext }_headerbar_urlsearch`,
 				'open_urldetails'
 			).finally( () => {
 				navigateTo( detailsURL );
 			} );
 		}
 	}, [ detailsURL, navigateTo, viewContext ] );
+
+	useMount( () => {
+		if ( dashboardType === DASHBOARD_TYPE_ENTITY ) {
+			setIsOpen( true );
+		}
+	} );
+
+	useUpdateEffect( () => {
+		if ( ! isOpen ) {
+			buttonRef?.current?.focus();
+		}
+	}, [ isOpen ] );
 
 	if ( isOpen ) {
 		return (
@@ -92,6 +113,8 @@ function EntitySearchInput() {
 				</VisuallyHidden>
 				<PostSearcherAutoSuggest
 					id={ instanceID }
+					match={ match }
+					setIsActive={ setIsActive }
 					setMatch={ setMatch }
 					placeholder={ __(
 						'Enter title or URL…',
@@ -99,25 +122,27 @@ function EntitySearchInput() {
 					) }
 					isLoading={ isLoading }
 					setIsLoading={ setIsLoading }
+					showDropdown={ isActive }
 					onClose={ onClose }
 					/* eslint-disable-next-line jsx-a11y/no-autofocus */
 					autoFocus
 				/>
+				{ isLoading && isActive && (
+					<ProgressBar
+						className="googlesitekit-entity-search__loading"
+						compress
+					/>
+				) }
 
 				<div className="googlesitekit-entity-search__actions">
 					<Button
 						onClick={ onClose }
 						trailingIcon={ <CloseDark width="30" height="20" /> }
 						className="googlesitekit-entity-search__close"
+						title={ __( 'Close', 'google-site-kit' ) }
 						text
+						tooltip
 					/>
-					{ isLoading && (
-						<ProgressBar
-							className="googlesitekit-entity-search__loading"
-							small
-							compress
-						/>
-					) }
 				</div>
 			</div>
 		);
@@ -126,9 +151,13 @@ function EntitySearchInput() {
 	return (
 		<div className="googlesitekit-entity-search">
 			<Button
-				text
+				className="googlesitekit-border-radius-round--phone googlesitekit-button-icon--phone"
 				onClick={ onOpen }
-				trailingIcon={ <MagnifyingGlass width="16" height="16" /> }
+				text
+				ref={ buttonRef }
+				title={ __( 'Search', 'google-site-kit' ) }
+				trailingIcon={ <MagnifyingGlass width="20" height="20" /> }
+				tooltip
 			>
 				{ __( 'URL Search', 'google-site-kit' ) }
 			</Button>

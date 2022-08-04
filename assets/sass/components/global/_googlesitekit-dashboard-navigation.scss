@@ -19,17 +19,31 @@
 .googlesitekit-plugin {
 
 	.googlesitekit-navigation {
-
-		@include shadow;
-
 		background-color: $c-base;
+		border-bottom: 1px solid $c-utility-divider;
 		justify-content: center;
 		left: 0;
 		padding: 12px 0;
 		position: sticky;
 		right: 0;
 		top: 68px;
-		z-index: 12;
+		z-index: 10;
+
+		&::before {
+			content: "";
+			display: block;
+			height: 3px;
+			left: 0;
+			opacity: 1;
+			position: absolute;
+			top: -3px;
+			transition: opacity 0s;
+			width: 100%;
+		}
+
+		body.googlesitekit-showing-feature-tour & {
+			position: static;
+		}
 
 		body.admin-bar & {
 
@@ -41,17 +55,73 @@
 				top: 100px;
 			}
 
-			@media ( min-width: $bp-desktop ) {
+			@media ( min-width: $width-desktop + 1 + px ) {
 				top: 116px;
 			}
 		}
 
 		.mdc-chip {
 			background-color: $c-base;
-			border: 1px solid $c-border-light;
+			border: 1px solid $c-neutral-n-50;
+			border-radius: $br-lg;
+			color: $c-surfaces-on-surface;
+			font-size: $fs-title-sm;
+			letter-spacing: $ls-xs;
+			line-height: 1;
+			padding: 11px 14px 11px 19px;
 
-			&--selected {
-				border: none;
+			@media (max-width: $bp-mobileOnly) {
+				padding: 5px 10px 5px 12px;
+			}
+
+			@media (min-width: $bp-tablet) {
+				margin: 4px 12px;
+			}
+
+			.mdc-chip__icon {
+				border-radius: 0;
+				height: auto;
+				margin-right: 6px;
+				width: auto;
+
+				@media (max-width: $bp-mobileOnly) {
+					display: none;
+				}
+			}
+		}
+
+		.mdc-chip--selected {
+			color: $c-content-primary;
+		}
+	}
+
+
+	.googlesitekit-navigation--is-sticky {
+		border-bottom: 1px solid $c-utility-divider;
+
+		+ .googlesitekit-entity-header {
+			border-bottom: 1px solid $c-utility-divider;
+		}
+	}
+
+	.googlesitekit-navigation--pageDashboard {
+		border-bottom: 1px solid $c-utility-divider;
+		border-radius: 0;
+	}
+
+	.googlesitekit-plugin--has-scrolled & {
+
+		.googlesitekit-header--has-subheader {
+
+			+ .googlesitekit-subheader {
+
+				+ .googlesitekit-navigation--is-sticky {
+
+					&::before {
+						opacity: 0;
+						transition: opacity $t-speed-1 ease-out;
+					}
+				}
 			}
 		}
 	}

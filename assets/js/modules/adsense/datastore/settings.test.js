@@ -161,6 +161,25 @@ describe( 'modules/adsense settings', () => {
 				).toEqual( 'something' );
 			} );
 		} );
+
+		describe( 'receiveOriginalUseSnippet', () => {
+			it( 'requires the originalUseSnippet param', () => {
+				expect( () => {
+					registry
+						.dispatch( MODULES_ADSENSE )
+						.receiveOriginalUseSnippet();
+				} ).toThrow( 'originalUseSnippet is required.' );
+			} );
+
+			it( 'receives and sets originalUseSnippet from parameter', () => {
+				registry
+					.dispatch( MODULES_ADSENSE )
+					.receiveOriginalUseSnippet( true );
+				expect(
+					registry.select( MODULES_ADSENSE ).getOriginalUseSnippet()
+				).toBe( true );
+			} );
+		} );
 	} );
 
 	describe( 'selectors', () => {
@@ -333,6 +352,80 @@ describe( 'modules/adsense settings', () => {
 						.select( MODULES_ADSENSE )
 						.getOriginalAccountStatus()
 				).toEqual( value );
+			} );
+		} );
+
+		describe( 'getOriginalUseSnippet', () => {
+			it( 'uses a resolver to make a network request via getSettings', async () => {
+				const response = { useSnippet: false };
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/modules\/adsense\/data\/settings/,
+					{ body: response, status: 200 }
+				);
+
+				const initialOriginalUseSnippet = registry
+					.select( MODULES_ADSENSE )
+					.getOriginalUseSnippet();
+				// Settings will be their initial value while being fetched.
+				expect( initialOriginalUseSnippet ).toBeUndefined();
+
+				await subscribeUntil(
+					registry,
+					() =>
+						registry
+							.select( MODULES_ADSENSE )
+							.hasFinishedResolution( 'getOriginalUseSnippet' ) &&
+						registry
+							.select( MODULES_ADSENSE )
+							.hasFinishedResolution( 'getSettings' )
+				);
+
+				const originalUseSnippet = registry
+					.select( MODULES_ADSENSE )
+					.getOriginalUseSnippet();
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect( originalUseSnippet ).toBe( response.useSnippet );
+			} );
+
+			it( 'does not make a network request if original useSnippet is already set', async () => {
+				const value = true;
+				registry
+					.dispatch( MODULES_ADSENSE )
+					.receiveOriginalUseSnippet( value );
+
+				expect(
+					registry.select( MODULES_ADSENSE ).getOriginalUseSnippet()
+				).toBe( value );
+
+				await subscribeUntil( registry, () =>
+					registry
+						.select( MODULES_ADSENSE )
+						.hasFinishedResolution( 'getOriginalUseSnippet' )
+				);
+
+				expect( fetchMock ).not.toHaveFetched();
+			} );
+
+			it( 'does not override original useSnippet when receiving settings again', async () => {
+				// Set original value.
+				const value = true;
+				registry
+					.dispatch( MODULES_ADSENSE )
+					.receiveOriginalUseSnippet( value );
+
+				expect(
+					registry.select( MODULES_ADSENSE ).getOriginalUseSnippet()
+				).toBe( value );
+
+				// Despite receiving settings, the value should not be updated
+				// as it was already set.
+				registry
+					.dispatch( MODULES_ADSENSE )
+					.receiveGetSettings( { useSnippet: false } );
+				expect(
+					registry.select( MODULES_ADSENSE ).getOriginalUseSnippet()
+				).toBe( value );
 			} );
 		} );
 	} );

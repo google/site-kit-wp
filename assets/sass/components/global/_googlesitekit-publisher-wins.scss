@@ -19,7 +19,6 @@
 .googlesitekit-publisher-win {
 
 	@include googlesitekit-inner-padding;
-	@include shadow;
 	background: $c-base;
 	opacity: 1;
 	position: relative;
@@ -28,12 +27,25 @@
 		visibility $t-default ease-in-out;
 	visibility: visible;
 
+	// Only show one notification at a time.
+	& + .googlesitekit-publisher-win {
+		display: none;
+	}
+
 	&--win-warning {
 		border-right: 4px solid $c-warning;
+
+		.googlesitekit-publisher-win__icons {
+			color: $c-warning;
+		}
 	}
 
 	&--win-error {
 		border-right: 4px solid $c-error;
+
+		.googlesitekit-publisher-win__icons {
+			color: $c-cinnabar;
+		}
 	}
 
 	&--is-closed {
@@ -43,6 +55,22 @@
 
 	.googlesitekit-publisher-win__title {
 		margin: 0;
+
+		.googlesitekit-badge {
+			margin-left: $grid-gap-phone / 2;
+		}
+
+		& + .googlesitekit-cta-link {
+			margin-top: $grid-gap-phone;
+
+			@media (min-width: $bp-desktop) {
+				margin-top: $grid-gap-desktop;
+			}
+		}
+	}
+
+	.googlesitekit-publisher-win__desc {
+		max-width: 700px;
 	}
 
 	.googlesitekit-publisher-win__desc:first-child > *:first-child {
@@ -65,6 +93,14 @@
 
 		@media (min-width: $bp-desktop) {
 			right: calc(#{$grid-gap-desktop} * 2);
+		}
+	}
+
+	.googlesitekit-publisher-win__image-smaller {
+
+		svg {
+			max-height: 69px;
+			width: 100%;
 		}
 	}
 
@@ -94,7 +130,8 @@
 	}
 
 	.googlesitekit-publisher-win__detect {
-		font-size: 0.75rem;
+		font-size: $fs-body-sm;
+		letter-spacing: $ls-xs;
 
 		@media (min-width: $bp-desktop) {
 			margin-left: 48px;
@@ -104,7 +141,8 @@
 	.googlesitekit-publisher-win__link {
 
 		a {
-			font-size: 1.1rem;
+			font-size: $fs-body-lg;
+			letter-spacing: $ls-m;
 		}
 	}
 
@@ -123,7 +161,7 @@
 		}
 	}
 
-	.mdc-button + .googlesitekit-cta-link {
+	.spinner + .googlesitekit-cta-link {
 		margin-left: $grid-gap-desktop;
 	}
 
@@ -136,7 +174,8 @@
 
 	.googlesitekit-publisher-win__module-name {
 		display: inline-block;
-		font-size: 0.875rem;
+		font-size: $fs-body-sm;
+		letter-spacing: $ls-xs;
 		line-height: 1;
 		margin-bottom: -1px;
 		vertical-align: bottom;
@@ -150,7 +189,26 @@
 		}
 	}
 
-	.googlesitekit-subheader & {
-		box-shadow: none;
+	&.googlesitekit-publisher-win--no-bottom-padding {
+
+		// Add padding to the content area in case the height of the SVG is less.
+		.googlesitekit-publisher-win__content {
+			padding-bottom: $grid-gap-phone;
+
+			@media (min-width: $bp-desktop) {
+				padding-bottom: $grid-gap-desktop;
+			}
+		}
+	}
+
+	.googlesitekit-publisher-win__image-larger {
+
+		svg {
+			display: block;
+		}
+	}
+
+	&.googlesitekit-publisher-win--rounded {
+		border-radius: $br-md;
 	}
 }

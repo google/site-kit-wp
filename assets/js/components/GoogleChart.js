@@ -26,16 +26,29 @@ import '../util/initialize-google-global';
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
 import { Chart } from 'react-google-charts';
+import set from 'lodash/set';
+import cloneDeep from 'lodash/cloneDeep';
+import merge from 'lodash/merge';
 
 /**
  * WordPress dependencies
  */
-import { useEffect, useLayoutEffect, useRef } from '@wordpress/element';
+import {
+	useEffect,
+	useLayoutEffect,
+	useRef,
+	useState,
+} from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import PreviewBlock from './PreviewBlock';
+import { useFeature } from '../hooks/useFeature';
+import { CORE_USER } from '../googlesitekit/datastore/user/constants';
+import GatheringDataNotice, { NOTICE_STYLE } from './GatheringDataNotice';
+import Data from 'googlesitekit-data';
+const { useSelect } = Data;
 
 export default function GoogleChart( props ) {
 	const {
@@ -55,8 +68,17 @@ export default function GoogleChart( props ) {
 		onSelect,
 		selectedStats,
 		width,
+		options,
+		gatheringData = false,
 		...otherProps
 	} = props;
+	const zeroDataStatesEnabled = useFeature( 'zeroDataStates' );
+
+	const { startDate, endDate } = useSelect( ( select ) =>
+		select( CORE_USER ).getDateRangeDates()
+	);
+
+	const [ isChartLoaded, setIsChartLoaded ] = useState( false );
 
 	// Ensure we don't filter out columns that aren't data, but are things like
 	// tooltips or other content.
@@ -185,6 +207,45 @@ export default function GoogleChart( props ) {
 		} );
 	}
 
+	const chartOptions = cloneDeep( options );
+	if ( zeroDataStatesEnabled && gatheringData && chartType === 'LineChart' ) {
+		if ( ! options?.vAxis?.viewWindow?.min ) {
+			set( chartOptions, 'vAxis.viewWindow.min', 0 );
+		}
+		if ( ! options?.vAxis?.viewWindow?.max ) {
+			set( chartOptions, 'vAxis.viewWindow.max', 100 );
+		}
+		if ( ! options?.hAxis?.viewWindow?.min ) {
+			set( chartOptions, 'hAxis.viewWindow.min', new Date( startDate ) );
+			delete chartOptions.hAxis.ticks;
+		}
+		if ( ! options?.hAxis?.viewWindow?.max ) {
+			set( chartOptions, 'hAxis.viewWindow.max', new Date( endDate ) );
+			delete chartOptions.hAxis.ticks;
+		}
+	}
+
+	merge( chartOptions, {
+		hAxis: {
+			textStyle: {
+				fontSize: 10,
+				color: '#5f6561',
+			},
+		},
+		vAxis: {
+			textStyle: {
+				color: '#5f6561',
+				fontSize: 10,
+			},
+		},
+		legend: {
+			textStyle: {
+				color: '#131418',
+				fontSize: 12,
+			},
+		},
+	} );
+
 	return (
 		<div
 			className={ classnames(
@@ -192,6 +253,7 @@ export default function GoogleChart( props ) {
 				`googlesitekit-chart--${ chartType }`,
 				className
 			) }
+			tabIndex={ -1 }
 		>
 			<Chart
 				className="googlesitekit-chart__inner"
@@ -202,6 +264,15 @@ export default function GoogleChart( props ) {
 				loader={ loader }
 				height={ height }
 				getChartWrapper={ ( chartWrapper, google ) => {
+					// An issue with `react-google-charts` v4 causes the chart to
+					// render the overlay before the chart in some cases when using
+					// their own `onLoad` callback. This is a workaround to prevent
+					// that issue but still provide notice that the chart is loaded.
+					// See: https://github.com/google/site-kit-wp/issues/4945
+					if ( ! isChartLoaded ) {
+						setIsChartLoaded( true );
+					}
+
 					// Remove all the event listeners on the old chart before we draw
 					// a new one. Only run this if the old chart and the new chart aren't
 					// the same reference though, otherwise we'll remove existing `onReady`
@@ -225,8 +296,12 @@ export default function GoogleChart( props ) {
 					}
 				} }
 				width={ width }
+				options={ chartOptions }
 				{ ...otherProps }
 			/>
+			{ zeroDataStatesEnabled && gatheringData && isChartLoaded && (
+				<GatheringDataNotice style={ NOTICE_STYLE.OVERLAY } />
+			) }
 			{ children }
 		</div>
 	);
@@ -259,6 +334,8 @@ GoogleChart.propTypes = {
 	onSelect: PropTypes.func,
 	selectedStats: PropTypes.arrayOf( PropTypes.number ),
 	width: PropTypes.string,
+	options: PropTypes.object,
+	gatheringData: PropTypes.bool,
 };
 
 GoogleChart.defaultProps = {

@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { useEffect } from '@wordpress/element';
+import { useEffect, useRef } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -29,44 +29,28 @@ import { MODULES_TAGMANAGER } from '../datastore/constants';
 const { useSelect, useDispatch } = Data;
 
 export default function useExistingTagEffect() {
-	const hasExistingTag = useSelect( ( select ) =>
-		select( MODULES_TAGMANAGER ).hasExistingTag()
-	);
 	const existingTag = useSelect( ( select ) =>
 		select( MODULES_TAGMANAGER ).getExistingTag()
 	);
 	const containerID = useSelect( ( select ) =>
-		select( MODULES_TAGMANAGER ).getContainerID()
+		select( MODULES_TAGMANAGER ).getPrimaryContainerID()
 	);
-	const existingTagPermission = useSelect( ( select ) =>
-		select( MODULES_TAGMANAGER ).getTagPermission( existingTag )
-	);
-	const hasExistingTagPermission = useSelect( ( select ) =>
-		select( MODULES_TAGMANAGER ).hasExistingTagPermission()
-	);
-	// Set the accountID and containerID if there is an existing tag.
-	const { selectAccount, selectContainerByID, setUseSnippet } = useDispatch(
-		MODULES_TAGMANAGER
-	);
+
+	const skipEffect = useRef( true );
+
+	const { setUseSnippet } = useDispatch( MODULES_TAGMANAGER );
+
 	useEffect( () => {
-		( async () => {
-			if ( hasExistingTag && existingTag === containerID ) {
-				// Disable the plugin snippet to avoid duplicate tagging.
+		if ( existingTag && containerID !== undefined ) {
+			if ( containerID === '' || skipEffect.current ) {
+				skipEffect.current = false;
+				return;
+			}
+			if ( existingTag === containerID ) {
 				setUseSnippet( false );
+			} else {
+				setUseSnippet( true );
 			}
-			if ( hasExistingTag && hasExistingTagPermission ) {
-				await selectAccount( existingTagPermission.accountID );
-				await selectContainerByID( existingTag );
-			}
-		} )();
-	}, [
-		hasExistingTag,
-		existingTag,
-		hasExistingTagPermission,
-		existingTagPermission,
-		selectAccount,
-		selectContainerByID,
-		setUseSnippet,
-		containerID,
-	] );
+		}
+	}, [ containerID, existingTag, setUseSnippet ] );
 }

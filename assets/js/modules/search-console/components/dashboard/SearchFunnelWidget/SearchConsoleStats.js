@@ -34,12 +34,15 @@ import { Grid, Row, Cell } from '../../../../../material-components';
 import { partitionReport } from '../../../../../util/partition-report';
 import GoogleChart from '../../../../../components/GoogleChart';
 
-const SearchConsoleStats = ( {
-	data,
-	metrics,
-	selectedStats,
-	dateRangeLength,
-} ) => {
+export default function SearchConsoleStats( props ) {
+	const {
+		data,
+		metrics,
+		selectedStats,
+		dateRangeLength,
+		gatheringData,
+	} = props;
+
 	const { compareRange, currentRange } = partitionReport( data, {
 		dateRangeLength,
 	} );
@@ -80,6 +83,22 @@ const SearchConsoleStats = ( {
 		},
 	};
 
+	const currentValueIndex = 2;
+	const previousValueIndex = 3;
+	const isZeroChart = ! googleChartData
+		.slice( 1 )
+		.some(
+			( datum ) =>
+				datum[ currentValueIndex ] > 0 ||
+				datum[ previousValueIndex ] > 0
+		);
+
+	if ( isZeroChart ) {
+		options.vAxis.viewWindow.max = 1;
+	} else {
+		options.vAxis.viewWindow.max = undefined;
+	}
+
 	return (
 		<Grid className="googlesitekit-search-console-site-stats">
 			<Row>
@@ -90,12 +109,13 @@ const SearchConsoleStats = ( {
 						loadingHeight="270px"
 						loadingWidth="100%"
 						options={ options }
+						gatheringData={ gatheringData }
 					/>
 				</Cell>
 			</Row>
 		</Grid>
 	);
-};
+}
 
 SearchConsoleStats.propTypes = {
 	data: PropTypes.arrayOf( PropTypes.object ).isRequired,
@@ -113,8 +133,8 @@ SearchConsoleStats.chartOptions = {
 	width: '100%',
 	chartArea: {
 		height: '80%',
-		width: '100%',
 		left: 60,
+		right: 25,
 	},
 	legend: {
 		position: 'top',
@@ -157,5 +177,3 @@ SearchConsoleStats.chartOptions = {
 		trigger: 'both',
 	},
 };
-
-export default SearchConsoleStats;

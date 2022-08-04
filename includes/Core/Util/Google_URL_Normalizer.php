@@ -45,11 +45,13 @@ final class Google_URL_Normalizer {
 	 * @param string $url The URL or domain name to decode.
 	 */
 	protected function decode_unicode_url_or_domain( $url ) {
+		$encoder_class = class_exists( '\WpOrg\Requests\IdnaEncoder' ) ? '\WpOrg\Requests\IdnaEncoder' : '\Requests_IDNAEncoder';
+
 		$parts = wp_parse_url( $url );
 		if ( ! $parts || ! isset( $parts['host'] ) || '' === $parts['host'] ) {
-			return \Requests_IDNAEncoder::encode( $url );
+			return $encoder_class::encode( $url );
 		}
-		$decoded_host = \Requests_IDNAEncoder::encode( $parts['host'] );
+		$decoded_host = $encoder_class::encode( $parts['host'] );
 		return str_replace( $parts['host'], $decoded_host, $url );
 	}
 }

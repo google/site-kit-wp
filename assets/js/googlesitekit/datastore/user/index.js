@@ -36,7 +36,7 @@ import { CORE_USER } from './constants';
 
 const store = Data.combineStores(
 	Data.commonStore,
-	createErrorStore(),
+	createErrorStore( CORE_USER ),
 	authentication,
 	dateRange,
 	disconnect,

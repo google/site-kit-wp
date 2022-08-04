@@ -34,6 +34,7 @@ import {
 	numFmt,
 	getChartDifferenceArrow,
 	stringToDate,
+	calculateDifferenceBetweenChartValues,
 } from '../../../util';
 import { adsenseDateToInstance } from './date';
 
@@ -98,7 +99,10 @@ export function getSiteStatsDataForGoogleChart(
 				?.cells?.[ selectedColumn ]?.value || 0
 		);
 
-		const difference = prevMonth !== 0 ? currentMonth / prevMonth - 1 : 1; // if previous month has 0, we need to pretend it's 100% growth, thus the "difference" has to be 1
+		const difference = calculateDifferenceBetweenChartValues(
+			currentMonth,
+			prevMonth
+		);
 		const svgArrow = getChartDifferenceArrow( difference );
 		const dateRange = sprintf(
 			/* translators: 1: date for user stats, 2: previous date for user stats comparison */

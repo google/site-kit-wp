@@ -40,7 +40,7 @@ export default function SettingsView() {
 			'To view insights, <a href="%s">visit the dashboard</a>',
 			'google-site-kit'
 		),
-		dashboardPermalink
+		`${ dashboardPermalink }#speed`
 	);
 
 	return (

@@ -13,15 +13,15 @@ namespace Google\Site_Kit\Tests\Modules;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Modules\Module_With_Owner;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
-use Google\Site_Kit\Core\Modules\Module_With_Screen;
 use Google\Site_Kit\Core\Modules\Module_With_Settings;
+use Google\Site_Kit\Core\Modules\Module_With_Service_Entity;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Modules\Analytics;
 use Google\Site_Kit\Modules\Analytics\Settings;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Owner_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Scopes_ContractTests;
-use Google\Site_Kit\Tests\Core\Modules\Module_With_Screen_ContractTests;
+use Google\Site_Kit\Tests\Core\Modules\Module_With_Service_Entity_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Settings_ContractTests;
 use Google\Site_Kit\Tests\TestCase;
 use Google\Site_Kit\Tests\MutableInput;
@@ -38,14 +38,13 @@ use \ReflectionMethod;
  */
 class AnalyticsTest extends TestCase {
 	use Module_With_Scopes_ContractTests;
-	use Module_With_Screen_ContractTests;
 	use Module_With_Settings_ContractTests;
 	use Module_With_Owner_ContractTests;
+	use Module_With_Service_Entity_ContractTests;
 
 	public function test_register() {
 		$analytics = new Analytics( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		remove_all_filters( 'googlesitekit_auth_scopes' );
-		remove_all_filters( 'googlesitekit_module_screens' );
 		remove_all_filters( 'googlesitekit_analytics_adsense_linked' );
 		remove_all_actions( 'wp_head' );
 		remove_all_actions( 'web_stories_story_head' );
@@ -58,32 +57,12 @@ class AnalyticsTest extends TestCase {
 			apply_filters( 'googlesitekit_auth_scopes', array() )
 		);
 
-		// Test registers screen.
-		$this->assertContains(
-			$analytics->get_screen(),
-			apply_filters( 'googlesitekit_module_screens', array() )
-		);
-
 		$this->assertFalse( get_option( 'googlesitekit_analytics_adsense_linked' ) );
 		$this->assertFalse( $analytics->is_connected() );
 
 		// Test actions for tracking opt-out are added.
 		$this->assertTrue( has_action( 'wp_head' ) );
 		$this->assertTrue( has_action( 'web_stories_story_head' ) );
-	}
-
-	public function test_register_unified_dashboard() {
-		$this->enable_feature( 'unifiedDashboard' );
-
-		$analytics = new Analytics( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		remove_all_filters( 'googlesitekit_module_screens' );
-
-		$this->assertEmpty( apply_filters( 'googlesitekit_module_screens', array() ) );
-
-		$analytics->register();
-
-		// Verify the screen is not registered.
-		$this->assertEmpty( apply_filters( 'googlesitekit_module_screens', array() ) );
 	}
 
 	public function test_register_template_redirect_amp() {
@@ -213,12 +192,12 @@ class AnalyticsTest extends TestCase {
 
 		$output = $this->capture_action( '__test_print_scripts' );
 
-		$this->assertContains( 'https://www.googletagmanager.com/gtag/js?id=UA-12345678-1', $output );
+		$this->assertStringContainsString( 'https://www.googletagmanager.com/gtag/js?id=UA-12345678-1', $output );
 
 		if ( $enabled ) {
-			$this->assertRegExp( '/\sdata-block-on-consent\b/', $output );
+			$this->assertMatchesRegularExpression( '/\sdata-block-on-consent\b/', $output );
 		} else {
-			$this->assertNotRegExp( '/\sdata-block-on-consent\b/', $output );
+			$this->assertDoesNotMatchRegularExpression( '/\sdata-block-on-consent\b/', $output );
 		}
 	}
 
@@ -247,12 +226,12 @@ class AnalyticsTest extends TestCase {
 
 		$output = $this->capture_action( 'wp_footer' );
 
-		$this->assertContains( '<amp-analytics', $output );
+		$this->assertStringContainsString( '<amp-analytics', $output );
 
 		if ( $enabled ) {
-			$this->assertRegExp( '/\sdata-block-on-consent\b/', $output );
+			$this->assertMatchesRegularExpression( '/\sdata-block-on-consent\b/', $output );
 		} else {
-			$this->assertNotRegExp( '/\sdata-block-on-consent\b/', $output );
+			$this->assertDoesNotMatchRegularExpression( '/\sdata-block-on-consent\b/', $output );
 		}
 	}
 
@@ -307,7 +286,6 @@ class AnalyticsTest extends TestCase {
 				'accounts-properties-profiles',
 				'properties-profiles',
 				'profiles',
-				'tag-permission',
 				'report',
 				'create-property',
 				'create-profile',
@@ -480,9 +458,9 @@ class AnalyticsTest extends TestCase {
 		$this->assertNotEmpty( $head_html );
 		// Whether or not tracking is disabled does not affect output of snippet.
 		if ( $settings['useSnippet'] ) {
-			$this->assertContains( "id={$settings['propertyID']}", $head_html );
+			$this->assertStringContainsString( "id={$settings['propertyID']}", $head_html );
 		} else {
-			$this->assertNotContains( "id={$settings['propertyID']}", $head_html );
+			$this->assertStringNotContainsString( "id={$settings['propertyID']}", $head_html );
 		}
 
 		$assert_opt_out_presence( $head_html );
@@ -499,10 +477,10 @@ class AnalyticsTest extends TestCase {
 		);
 
 		$assert_contains_opt_out     = function ( $html ) {
-			$this->assertContains( 'window["ga-disable-UA-21234567-8"] = true', $html );
+			$this->assertStringContainsString( 'window["ga-disable-UA-21234567-8"] = true', $html );
 		};
 		$assert_not_contains_opt_out = function ( $html ) {
-			$this->assertNotContains( 'window["ga-disable-UA-21234567-8"] = true', $html );
+			$this->assertStringNotContainsString( 'window["ga-disable-UA-21234567-8"] = true', $html );
 		};
 
 		return array(
@@ -602,13 +580,6 @@ class AnalyticsTest extends TestCase {
 	}
 
 	/**
-	 * @return Module_With_Screen
-	 */
-	protected function get_module_with_screen() {
-		return new Analytics( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-	}
-
-	/**
 	 * @return Module_With_Settings
 	 */
 	protected function get_module_with_settings() {
@@ -619,6 +590,13 @@ class AnalyticsTest extends TestCase {
 	 * @return Module_With_Owner
 	 */
 	protected function get_module_with_owner() {
+		return new Analytics( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+	}
+
+	/**
+	 * @return Module_With_Service_Entity
+	 */
+	protected function get_module_with_service_entity() {
 		return new Analytics( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 	}
 
@@ -723,6 +701,54 @@ class AnalyticsTest extends TestCase {
 		$this->assertEquals( 2, count( $expressions ) );
 		$this->assertContains( $hostname, $expressions );
 		$this->assertContains( 'www.' . $hostname, $expressions );
+	}
+
+	public function test_handle_token_response_data() {
+		$context   = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$analytics = new Analytics( $context );
+
+		// Ensure settings are empty.
+		$settings = $analytics->get_settings()->get();
+		$this->assertEmpty( $settings['accountID'] );
+		$this->assertEmpty( $settings['propertyID'] );
+		$this->assertEmpty( $settings['internalWebPropertyID'] );
+		$this->assertEmpty( $settings['profileID'] );
+
+		$configuration = array(
+			'ga_account_id'               => '12345678',
+			'ua_property_id'              => 'UA-12345678-1',
+			'ua_internal_web_property_id' => '13579',
+			'ua_profile_id'               => '987654',
+		);
+
+		$analytics->handle_token_response_data(
+			array(
+				'analytics_configuration' => $configuration,
+			)
+		);
+
+		// Ensure settings were set correctly.
+		$settings = $analytics->get_settings()->get();
+		$this->assertEquals( $configuration['ga_account_id'], $settings['accountID'] );
+		$this->assertEquals( $configuration['ua_property_id'], $settings['propertyID'] );
+		$this->assertEquals( $configuration['ua_internal_web_property_id'], $settings['internalWebPropertyID'] );
+		$this->assertEquals( $configuration['ua_profile_id'], $settings['profileID'] );
+
+		$analytics->handle_token_response_data(
+			array(
+				'analytics_configuration' => array(
+					'ga_account_id'  => '12345678',
+					'ua_property_id' => 'UA-12345678-1',
+				),
+			)
+		);
+
+		// Ensure settings haven't changed because insufficient configuration is passed.
+		$settings = $analytics->get_settings()->get();
+		$this->assertEquals( $configuration['ga_account_id'], $settings['accountID'] );
+		$this->assertEquals( $configuration['ua_property_id'], $settings['propertyID'] );
+		$this->assertEquals( $configuration['ua_internal_web_property_id'], $settings['internalWebPropertyID'] );
+		$this->assertEquals( $configuration['ua_profile_id'], $settings['profileID'] );
 	}
 
 }

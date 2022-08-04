@@ -16,11 +16,14 @@ use Google\Site_Kit\Core\Feature_Tours\REST_Feature_Tours_Controller;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Core\Storage\User_Options;
+use Google\Site_Kit\Tests\RestTestTriat;
 use Google\Site_Kit\Tests\TestCase;
 use WP_REST_Request;
 use WP_REST_Response;
 
 class REST_Feature_Tours_ControllerTest extends TestCase {
+
+	use RestTestTriat;
 
 	/**
 	 * Dismissed tours instance.
@@ -36,8 +39,8 @@ class REST_Feature_Tours_ControllerTest extends TestCase {
 	 */
 	private $controller;
 
-	public function setUp() {
-		parent::setUp();
+	public function set_up() {
+		parent::set_up();
 
 		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $user_id );
@@ -48,8 +51,8 @@ class REST_Feature_Tours_ControllerTest extends TestCase {
 		$this->controller      = new REST_Feature_Tours_Controller( $this->dismissed_tours );
 	}
 
-	public function tearDown() {
-		parent::tearDown();
+	public function tear_down() {
+		parent::tear_down();
 		// This ensures the REST server is initialized fresh for each test using it.
 		unset( $GLOBALS['wp_rest_server'] );
 	}
@@ -123,26 +126,6 @@ class REST_Feature_Tours_ControllerTest extends TestCase {
 			array( 'feature_x', 'feature_y', 'feature_z' ),
 			$response->get_data()
 		);
-	}
-
-	protected function register_rest_routes() {
-		$routes = apply_filters( 'googlesitekit_rest_routes', array() );
-		$this->assertNotEmpty( $routes );
-
-		// Avoid test failing due to "_doing_it_wrong" notice.
-		// Routes must be registered on `rest_api_init` action.
-		add_action(
-			'rest_api_init',
-			function () use ( $routes ) {
-				foreach ( $routes as $route ) {
-					$route->register();
-				}
-			}
-		);
-		// Trigger the action.
-		rest_get_server();
-
-		return $routes;
 	}
 
 }

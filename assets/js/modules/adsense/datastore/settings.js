@@ -50,9 +50,13 @@ const COMPLETE_SITE_SETUP = 'COMPLETE_SITE_SETUP';
 // The original account status on pageload is a specific requirement for
 // certain parts of the AdSense setup flow.
 const RECEIVE_ORIGINAL_ACCOUNT_STATUS = 'RECEIVE_ORIGINAL_ACCOUNT_STATUS';
+// The original use-snippet on pageload is a specific requirement for
+// certain parts of the AdSense setup flow.
+const RECEIVE_ORIGINAL_USE_SNIPPET = 'RECEIVE_ORIGINAL_USE_SNIPPET';
 
 const baseInitialState = {
 	originalAccountStatus: undefined,
+	originalUseSnippet: undefined,
 };
 
 const baseActions = {
@@ -103,6 +107,15 @@ const baseActions = {
 		return {
 			payload: { originalAccountStatus },
 			type: RECEIVE_ORIGINAL_ACCOUNT_STATUS,
+		};
+	},
+
+	receiveOriginalUseSnippet( originalUseSnippet ) {
+		invariant( originalUseSnippet, 'originalUseSnippet is required.' );
+
+		return {
+			payload: { originalUseSnippet },
+			type: RECEIVE_ORIGINAL_USE_SNIPPET,
 		};
 	},
 };
@@ -178,23 +191,34 @@ const baseReducer = ( state, { type, payload } ) => {
 			};
 		}
 
+		// This action is purely for testing, the value is typically handled
+		// as a side-effect from 'RECEIVE_SETTINGS' (see below).
+		case RECEIVE_ORIGINAL_USE_SNIPPET: {
+			const { originalUseSnippet } = payload;
+			return {
+				...state,
+				originalUseSnippet,
+			};
+		}
+
 		// This action is mainly handled via createSettingsStore, but here we
 		// need it to have the side effect of storing the original account
-		// status.
+		// status and useSnippet.
 		case 'RECEIVE_GET_SETTINGS': {
 			const { response } = payload;
-			const { accountStatus } = response;
+			const { accountStatus, useSnippet } = response;
 
-			// Only set original account status when it is really the first
+			// Only set original account status AND original useSnippet when it is really the first
 			// time that we load the settings on this pageload.
-			if ( undefined === state.originalAccountStatus ) {
-				return {
-					...state,
+			return {
+				...state,
+				...( undefined === state.originalAccountStatus && {
 					originalAccountStatus: accountStatus,
-				};
-			}
-
-			return state;
+				} ),
+				...( undefined === state.originalUseSnippet && {
+					originalUseSnippet: useSnippet,
+				} ),
+			};
 		}
 
 		default: {
@@ -212,6 +236,21 @@ const baseResolvers = {
 			.select( MODULES_ADSENSE )
 			.getOriginalAccountStatus();
 		if ( undefined !== existingOriginalAccountStatus ) {
+			return;
+		}
+
+		// Ensure settings are being fetched if not yet in progress.
+		registry.select( MODULES_ADSENSE ).getSettings();
+	},
+
+	*getOriginalUseSnippet() {
+		const registry = yield commonActions.getRegistry();
+
+		// Do not do anything if original useSnippet is already known.
+		const existingOriginalUseSnippet = registry
+			.select( MODULES_ADSENSE )
+			.getOriginalUseSnippet();
+		if ( undefined !== existingOriginalUseSnippet ) {
 			return;
 		}
 
@@ -249,6 +288,19 @@ const baseSelectors = {
 	 */
 	getOriginalAccountStatus( state ) {
 		return state.originalAccountStatus;
+	},
+
+	/**
+	 * Gets the original useSnippet stored before the current pageload.
+	 *
+	 * @since 1.72.0
+	 * @private
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(boolean|undefined)} Original useSnippet, or undefined if not loaded yet.
+	 */
+	getOriginalUseSnippet( state ) {
+		return state.originalUseSnippet;
 	},
 };
 

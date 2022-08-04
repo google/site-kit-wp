@@ -81,37 +81,6 @@ module.exports = [
 		},
 	},
 	{
-		id: 'analytics-module-components-module-page-overview-widget--loaded',
-		kind: 'Analytics Module',
-		name: 'Overview Widget',
-		story: 'Loaded',
-		parameters: {
-			fileName: './stories/module-analytics-components.stories.js',
-			options: {
-				hierarchyRootSeparator: '|',
-				hierarchySeparator: {},
-				readySelector:
-					'.googlesitekit-chart .googlesitekit-chart__inner',
-			},
-		},
-	},
-	{
-		id:
-			'search-console-module-components-module-page-overview-widget--loaded',
-		kind: 'Search Console Module',
-		name: 'Overview Widget',
-		story: 'Loaded',
-		parameters: {
-			fileName: './stories/module-search-console-components.stories.js',
-			options: {
-				hierarchyRootSeparator: '|',
-				hierarchySeparator: {},
-				readySelector:
-					'.googlesitekit-chart .googlesitekit-chart__inner',
-			},
-		},
-	},
-	{
 		id: 'global-notifications--module-setup-complete',
 		kind: 'Global/Notifications',
 		name: 'Module Setup Complete',

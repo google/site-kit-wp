@@ -39,7 +39,7 @@ import {
 	ERROR_WP_PRE_V5,
 } from './constants';
 
-const helperCTA = ( developerPlugin ) => {
+const helperCTA = ( developerPlugin, stagingDocumentationURL ) => {
 	const {
 		installed,
 		active,
@@ -81,8 +81,7 @@ const helperCTA = ( developerPlugin ) => {
 			'google-site-kit'
 		),
 		children: __( 'Learn how', 'google-site-kit' ),
-		href:
-			'https://sitekit.withgoogle.com/documentation/using-site-kit-on-a-staging-environment/',
+		href: stagingDocumentationURL,
 		external: true,
 	};
 };
@@ -93,6 +92,10 @@ export default function CompatibilityErrorNotice( { error } ) {
 			select( CORE_SITE ).getDeveloperPluginState()
 		) || {};
 	const { installed } = developerPlugin;
+
+	const documentationURL = useSelect( ( select ) => {
+		return select( CORE_SITE ).getDocumentationLinkURL( 'staging' );
+	} );
 
 	switch ( error ) {
 		case ERROR_API_UNAVAILABLE:
@@ -124,14 +127,16 @@ export default function CompatibilityErrorNotice( { error } ) {
 							) }
 						</span>
 					) }{ ' ' }
-					<Link { ...helperCTA( developerPlugin ) } inherit />
+					<Link
+						{ ...helperCTA( developerPlugin, documentationURL ) }
+					/>
 				</p>
 			);
 		case ERROR_TOKEN_MISMATCH:
 			return (
 				<p>
 					{ __(
-						'Looks like you may be using a caching plugin which could interfere with setup. Please deactivate any caching plugins before setting up Site Kit. You may reactivate them once setup has been completed.',
+						'Looks like Site Kit is unable to place or detect tags on your site. This can be caused by using certain caching or maintenance mode plugins or your site’s frontend is configured on a different host or infrastructure than your administration dashboard.',
 						'google-site-kit'
 					) }
 				</p>

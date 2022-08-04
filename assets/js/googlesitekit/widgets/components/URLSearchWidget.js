@@ -19,35 +19,38 @@
 /**
  * WordPress dependencies
  */
-import { useState, useCallback, useContext } from '@wordpress/element';
+import { useState, useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import ViewContextContext from '../../../components/Root/ViewContextContext';
+import { Cell, Grid, Row } from '../../../material-components';
 import { trackEvent } from '../../../util/tracking';
 import { CORE_SITE } from '../../datastore/site/constants';
 import { CORE_LOCATION } from '../../datastore/location/constants';
 import Button from '../../../components/Button';
 import PostSearcherAutoSuggest from '../../../components/PostSearcherAutoSuggest';
+import useViewContext from '../../../hooks/useViewContext';
 const { useSelect, useDispatch } = Data;
 
 function URLSearchWidget( { Widget } ) {
 	const [ canSubmit, setCanSubmit ] = useState( false );
 	const [ match, setMatch ] = useState( {} );
-	const viewContext = useContext( ViewContextContext );
+	const viewContext = useViewContext();
 
 	const detailsURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard', {
-			permaLink: match?.permalink,
-		} )
+		match?.url
+			? select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard', {
+					permaLink: match.url,
+			  } )
+			: null
 	);
 
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 	const onClick = useCallback( async () => {
-		if ( match?.permalink ) {
+		if ( detailsURL ) {
 			await trackEvent(
 				`${ viewContext }_urlsearch-widget`,
 				'open_urldetails'
@@ -55,10 +58,10 @@ function URLSearchWidget( { Widget } ) {
 
 			navigateTo( detailsURL );
 		}
-	}, [ detailsURL, match, navigateTo, viewContext ] );
+	}, [ detailsURL, navigateTo, viewContext ] );
 
 	return (
-		<div className="mdc-layout-grid__cell">
+		<Cell>
 			<Widget
 				Header={ () => (
 					<h3 className="googlesitekit-subheading-1 googlesitekit-widget__header-title">
@@ -70,9 +73,9 @@ function URLSearchWidget( { Widget } ) {
 				) }
 				noPadding
 			>
-				<div className="mdc-layout-grid">
-					<div className="mdc-layout-grid__inner">
-						<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
+				<Grid>
+					<Row>
+						<Cell size={ 12 }>
 							<div className="googlesitekit-post-searcher">
 								<label
 									className="googlesitekit-post-searcher__label"
@@ -95,11 +98,11 @@ function URLSearchWidget( { Widget } ) {
 									</Button>
 								</div>
 							</div>
-						</div>
-					</div>
-				</div>
+						</Cell>
+					</Row>
+				</Grid>
 			</Widget>
-		</div>
+		</Cell>
 	);
 }
 

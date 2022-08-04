@@ -20,12 +20,7 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import {
-	useCallback,
-	useState,
-	useEffect,
-	useContext,
-} from '@wordpress/element';
+import { useCallback, useState, useEffect } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -44,6 +39,7 @@ import { CORE_LOCATION } from '../../../../../googlesitekit/datastore/location/c
 import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '../../../../../util/errors';
 import { trackEvent } from '../../../../../util';
 import { getAccountDefaults } from '../../../util/account';
+import { Cell } from '../../../../../material-components';
 import Button from '../../../../../components/Button';
 import Link from '../../../../../components/Link';
 import ProgressBar from '../../../../../components/ProgressBar';
@@ -54,7 +50,7 @@ import AccountField from './AccountField';
 import PropertyField from './PropertyField';
 import ProfileField from './ProfileField';
 import CountrySelect from './CountrySelect';
-import ViewContextContext from '../../../../../components/Root/ViewContextContext';
+import useViewContext from '../../../../../hooks/useViewContext';
 const { useDispatch, useSelect } = Data;
 
 export default function AccountCreate() {
@@ -96,7 +92,7 @@ export default function AccountCreate() {
 		select( CORE_SITE ).getTimezone()
 	);
 
-	const viewContext = useContext( ViewContextContext );
+	const viewContext = useViewContext();
 	const { setValues } = useDispatch( CORE_FORMS );
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 	const { createAccount } = useDispatch( MODULES_ANALYTICS );
@@ -128,11 +124,8 @@ export default function AccountCreate() {
 	const handleSubmit = useCallback( async () => {
 		const scopes = [];
 
-		if ( ! hasProvisioningScope ) {
+		if ( ! hasProvisioningScope || ! hasEditScope ) {
 			scopes.push( PROVISIONING_SCOPE );
-		}
-
-		if ( ! hasEditScope ) {
 			scopes.push( EDIT_SCOPE );
 		}
 
@@ -220,15 +213,15 @@ export default function AccountCreate() {
 			</p>
 
 			<div className="googlesitekit-setup-module__inputs">
-				<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-6">
+				<Cell size={ 6 }>
 					<AccountField />
-				</div>
-				<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-6">
+				</Cell>
+				<Cell size={ 6 }>
 					<PropertyField />
-				</div>
-				<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-6">
+				</Cell>
+				<Cell size={ 6 }>
 					<ProfileField />
-				</div>
+				</Cell>
 			</div>
 
 			<div className="googlesitekit-setup-module__inputs">

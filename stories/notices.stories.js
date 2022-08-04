@@ -24,23 +24,28 @@ import { storiesOf } from '@storybook/react';
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
 import SettingsNotice, {
 	TYPE_WARNING,
 	TYPE_INFO,
 	TYPE_SUGGESTION,
 } from '../assets/js/components/SettingsNotice';
-import WarningIcon from '../assets/svg/warning-icon.svg';
+import WarningIcon from '../assets/svg/icons/warning-icon.svg';
 import Link from '../assets/js/components/Link';
+import { CORE_SITE } from '../assets/js/googlesitekit/datastore/site/constants';
+const { useSelect } = Data;
 
-const LearnMore = () => (
-	<Link
-		href="https://sitekit.withgoogle.com/documentation/ga4-analytics-property/"
-		external
-		inherit
-	>
-		Learn more
-	</Link>
-);
+const LearnMore = () => {
+	const documentationURL = useSelect( ( select ) => {
+		return select( CORE_SITE ).getDocumentationLinkURL( 'ga4' );
+	} );
+
+	return (
+		<Link href={ documentationURL } external>
+			Learn more
+		</Link>
+	);
+};
 
 storiesOf( 'Global/Notices', module )
 	.add( 'Settings warning notice', () => (

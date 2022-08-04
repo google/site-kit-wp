@@ -17,40 +17,41 @@
  */
 
 /**
- * WordPress dependencies
+ * External dependencies
  */
-import { useContext } from '@wordpress/element';
+import { useMount } from 'react-use';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import ViewContextContext from '../components/Root/ViewContextContext';
 import { CORE_USER } from '../googlesitekit/datastore/user/constants';
+import useViewContext from '../hooks/useViewContext';
 import TourTooltips from './TourTooltips';
-const { useSelect } = Data;
+const { useSelect, useDispatch } = Data;
 
 export default function FeatureTours() {
-	const viewContext = useContext( ViewContextContext );
+	const viewContext = useViewContext();
+	const { triggerTourForView } = useDispatch( CORE_USER );
 
-	const nextTour = useSelect(
-		( select ) =>
-			select( CORE_USER ).getFeatureToursForView( viewContext )?.[ 0 ]
-	);
-	const toursAreOnCooldown = useSelect( ( select ) =>
-		select( CORE_USER ).areFeatureToursOnCooldown()
+	useMount( () => {
+		triggerTourForView( viewContext );
+	} );
+
+	const tour = useSelect( ( select ) =>
+		select( CORE_USER ).getCurrentTour()
 	);
 
-	if ( ! nextTour || toursAreOnCooldown ) {
+	if ( ! tour ) {
 		return null;
 	}
 
 	return (
 		<TourTooltips
-			tourID={ nextTour.slug }
-			steps={ nextTour.steps }
-			gaEventCategory={ nextTour.gaEventCategory }
-			callback={ nextTour.callback }
+			tourID={ tour.slug }
+			steps={ tour.steps }
+			gaEventCategory={ tour.gaEventCategory }
+			callback={ tour.callback }
 		/>
 	);
 }

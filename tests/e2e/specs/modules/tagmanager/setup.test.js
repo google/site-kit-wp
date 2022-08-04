@@ -63,19 +63,17 @@ describe( 'Tag Manager module setup', () => {
 	beforeAll( async () => {
 		await page.setRequestInterception( true );
 		useRequestInterception( ( request ) => {
+			const url = request.url();
 			if (
-				request
-					.url()
-					.match( 'google-site-kit/v1/core/site/data/notifications' )
+				url.match( 'site/data/notifications' ) ||
+				url.match( 'user/data/surevey-timeouts' )
 			) {
 				request.respond( {
 					status: 200,
-					body: JSON.stringify( [] ),
+					body: '[]',
 				} );
 			} else if (
-				request
-					.url()
-					.match( 'modules/tagmanager/data/live-container-version' )
+				url.match( 'tagmanager/data/live-container-version' )
 			) {
 				// Return a live container version without GA.
 				request.respond( {
@@ -83,29 +81,15 @@ describe( 'Tag Manager module setup', () => {
 					body: JSON.stringify( liveContainerVersionFixture ),
 				} );
 			} else if (
-				request
-					.url()
-					.match(
-						/^https:\/\/www\.googletagmanager\.com\/(gtm\.js|amp\.json)/
-					)
+				url.match(
+					/^https:\/\/www\.googletagmanager\.com\/(gtm\.js|amp\.json)/
+				)
 			) {
 				request.respond( { status: 200 } );
-			} else if (
-				request
-					.url()
-					.match(
-						'google-site-kit/v1/modules/pagespeed-insights/data/pagespeed'
-					)
-			) {
-				request.respond( { status: 200, body: JSON.stringify( {} ) } );
-			} else if (
-				request
-					.url()
-					.match(
-						'google-site-kit/v1/modules/search-console/data/searchanalytics'
-					)
-			) {
-				request.respond( { status: 200, body: JSON.stringify( {} ) } );
+			} else if ( url.match( 'search-console/data/searchanalytics' ) ) {
+				request.respond( { status: 200, body: '[]' } );
+			} else if ( url.match( 'pagespeed-insights/data/pagespeed' ) ) {
+				request.respond( { status: 200, body: '{}' } );
 			} else {
 				request.continue();
 			}
@@ -248,21 +232,21 @@ describe( 'Tag Manager module setup', () => {
 				'.googlesitekit-tagmanager__select-container--amp'
 			);
 
-			// Ensure account and container are selected by default.
+			// Ensure account and container are not yet selected.
 			await expect(
 				page
 			).toMatchElement(
 				'.googlesitekit-tagmanager__select-account .mdc-select__selected-text',
-				{ text: /test account a/i }
+				{ text: '' }
 			);
 			await expect(
 				page
 			).toMatchElement(
 				'.googlesitekit-tagmanager__select-container .mdc-select__selected-text',
-				{ text: /test container x/i }
+				{ text: '' }
 			);
 
-			// Ensure choosing a different account loads the proper values.
+			// Ensure choosing an account loads the proper values.
 			await expect( page ).toClick(
 				'.googlesitekit-tagmanager__select-account'
 			);
@@ -424,42 +408,44 @@ describe( 'Tag Manager module setup', () => {
 				);
 			} );
 
-			it( 'validates homepage AMP for logged-in users', async () => {
-				await expect( page ).toClick( 'button:not(:disabled)', {
-					text: /confirm \& continue/i,
+			describe( 'when validating', () => {
+				beforeEach( async () => {
+					await page.waitForSelector(
+						'.googlesitekit-tagmanager__select-account'
+					);
+					await expect( page ).toClick(
+						'.googlesitekit-tagmanager__select-account'
+					);
+					await expect( page ).toClick(
+						'.mdc-menu-surface--open .mdc-list-item',
+						{
+							text: /test account a/i,
+						}
+					);
+					await expect( page ).toClick( 'button:not(:disabled)', {
+						text: /confirm \& continue/i,
+					} );
+					await page.waitForSelector(
+						'.googlesitekit-publisher-win--win-success'
+					);
+					await expect( page ).toMatchElement(
+						'.googlesitekit-publisher-win__title',
+						{
+							text: /Congrats on completing the setup for Tag Manager!/i,
+						}
+					);
+					await page.goto( createURL( '/', 'amp' ), {
+						waitUntil: 'load',
+					} );
 				} );
-				await page.waitForSelector(
-					'.googlesitekit-publisher-win--win-success'
-				);
-				await expect( page ).toMatchElement(
-					'.googlesitekit-publisher-win__title',
-					{
-						text: /Congrats on completing the setup for Tag Manager!/i,
-					}
-				);
-				await page.goto( createURL( '/', 'amp' ), {
-					waitUntil: 'load',
-				} );
-				await expect( page ).toHaveValidAMPForUser();
-			} );
 
-			it( 'validates homepage AMP for non-logged-in users', async () => {
-				await expect( page ).toClick( 'button:not(:disabled)', {
-					text: /confirm \& continue/i,
+				it( 'validates homepage AMP for logged-in users', async () => {
+					await expect( page ).toHaveValidAMPForUser();
 				} );
-				await page.waitForSelector(
-					'.googlesitekit-publisher-win--win-success'
-				);
-				await expect( page ).toMatchElement(
-					'.googlesitekit-publisher-win__title',
-					{
-						text: /Congrats on completing the setup for Tag Manager!/i,
-					}
-				);
-				await page.goto( createURL( '/', 'amp' ), {
-					waitUntil: 'load',
+
+				it( 'validates homepage AMP for non-logged-in users', async () => {
+					await expect( page ).toHaveValidAMPForVisitor();
 				} );
-				await expect( page ).toHaveValidAMPForVisitor();
 			} );
 		} );
 	} );

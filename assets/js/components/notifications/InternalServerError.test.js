@@ -28,7 +28,7 @@ describe( 'InternalServerError', () => {
 
 	it( 'should display the notification when the internal server error is set', () => {
 		const error = {
-			id: `module-setup-error`,
+			id: 'module-setup-error',
 			title: 'Test Error',
 			description: 'Error message',
 		};

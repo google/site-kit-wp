@@ -24,7 +24,8 @@ import {
 	unsubscribeFromAll,
 } from '../../../../../tests/js/utils';
 import { CORE_WIDGETS } from './constants';
-import SiteKitLogo from '../../../../svg/logo-sitekit.svg';
+import Null from '../../../components/Null';
+import SiteKitLogo from '../../../../svg/graphics/logo-sitekit.svg';
 
 describe( 'core/widgets Widget areas', () => {
 	let registry;
@@ -95,7 +96,7 @@ describe( 'core/widgets Widget areas', () => {
 				expect( testareaAreas ).toHaveLength( 1 );
 				expect(
 					testareaAreas.some( ( area ) => area.slug === slug )
-				).toEqual( true );
+				).toBe( true );
 			} );
 		} );
 
@@ -118,7 +119,7 @@ describe( 'core/widgets Widget areas', () => {
 					registry
 						.select( CORE_WIDGETS )
 						.isWidgetAreaRegistered( slug )
-				).toEqual( true );
+				).toBe( true );
 				// There is no selector for unassigned widget areas, so we inspect the store directly for
 				// this test.
 				expect( state.areas ).toMatchObject( {
@@ -202,12 +203,12 @@ describe( 'core/widgets Widget areas', () => {
 					registry
 						.select( CORE_WIDGETS )
 						.isWidgetAreaRegistered( slugOne )
-				).toEqual( true );
+				).toBe( true );
 				expect(
 					registry
 						.select( CORE_WIDGETS )
 						.isWidgetAreaRegistered( slugTwo )
-				).toEqual( true );
+				).toBe( true );
 				// There is no selector for unassigned widget areas, so we inspect the store directly for
 				// this test.
 				expect( state.areas ).toMatchObject( {
@@ -233,7 +234,7 @@ describe( 'core/widgets Widget areas', () => {
 					registry
 						.select( CORE_WIDGETS )
 						.isWidgetAreaRegistered( slug )
-				).toEqual( true );
+				).toBe( true );
 				// There is no selector for unassigned widget areas, so we inspect the store directly for
 				// this test.
 				expect( state.areas ).toMatchObject( {
@@ -489,7 +490,150 @@ describe( 'core/widgets Widget areas', () => {
 					registry
 						.select( CORE_WIDGETS )
 						.getWidgetArea( 'NotRealArea' )
-				).toEqual( null );
+				).toBe( null );
+			} );
+		} );
+
+		describe( 'isWidgetAreaActive', () => {
+			beforeEach( () => {
+				// Register a test area which will remain empty.
+				registry
+					.dispatch( CORE_WIDGETS )
+					.registerWidgetArea( 'EmptyTestArea', {
+						title: 'Test Header 1',
+						subtitle: 'Cool stuff for yoursite.com',
+						style: 'composite',
+					} );
+
+				// Register a test area to populate with widgets.
+				registry
+					.dispatch( CORE_WIDGETS )
+					.registerWidgetArea( 'TestArea', {
+						title: 'Test Header 2',
+						subtitle: 'More cool stuff for yoursite.com',
+						style: 'composite',
+					} );
+
+				// Register an active widget with default widget state.
+				registry
+					.dispatch( CORE_WIDGETS )
+					.registerWidget( 'TestWidget1', {
+						Component: () => <div>Test Widget 1</div>,
+						modules: [ 'test-module-1', 'test-module-2' ],
+					} );
+
+				const Component = () => <div>Test Widget 2</div>;
+
+				// Register an active widget with state set to a component other than the `Null` component.
+				registry
+					.dispatch( CORE_WIDGETS )
+					.registerWidget( 'TestWidget2', {
+						Component,
+						modules: [ 'test-module-3' ],
+					} );
+
+				registry
+					.dispatch( CORE_WIDGETS )
+					.setWidgetState( 'TestWidget2', Component, {} );
+
+				// Assign the widgets to the widget area.
+				registry
+					.dispatch( CORE_WIDGETS )
+					.assignWidget( 'TestWidget1', 'TestArea' );
+
+				registry
+					.dispatch( CORE_WIDGETS )
+					.assignWidget( 'TestWidget2', 'TestArea' );
+			} );
+
+			it( 'requires a widgetAreaSlug', () => {
+				expect( () => {
+					registry.select( CORE_WIDGETS ).isWidgetAreaActive();
+				} ).toThrow(
+					'widgetAreaSlug is required to check a widget area is active.'
+				);
+			} );
+
+			it( 'returns false if there are no widgets registered for the area', () => {
+				expect(
+					registry
+						.select( CORE_WIDGETS )
+						.isWidgetAreaActive( 'EmptyTestArea' )
+				).toBe( false );
+			} );
+
+			it( 'returns true when the area widgets are active', () => {
+				expect(
+					registry
+						.select( CORE_WIDGETS )
+						.isWidgetAreaActive( 'TestArea' )
+				).toBe( true );
+			} );
+
+			it( 'returns true when at least one area widget is active', () => {
+				registry
+					.dispatch( CORE_WIDGETS )
+					.setWidgetState( 'TestWidget1', Null, {} );
+
+				expect(
+					registry
+						.select( CORE_WIDGETS )
+						.isWidgetAreaActive( 'TestArea' )
+				).toBe( true );
+			} );
+
+			it( 'returns false when none of the area widgets are active', () => {
+				registry
+					.dispatch( CORE_WIDGETS )
+					.setWidgetState( 'TestWidget1', Null, {} );
+
+				registry
+					.dispatch( CORE_WIDGETS )
+					.setWidgetState( 'TestWidget2', Null, {} );
+
+				expect(
+					registry
+						.select( CORE_WIDGETS )
+						.isWidgetAreaActive( 'TestArea' )
+				).toBe( false );
+			} );
+
+			it( 'returns true when passed a list of modules and the area contains active widgets for those modules', () => {
+				expect(
+					registry
+						.select( CORE_WIDGETS )
+						.isWidgetAreaActive( 'TestArea', {
+							modules: [ 'test-module-1', 'test-module-2' ],
+						} )
+				).toBe( true );
+
+				expect(
+					registry
+						.select( CORE_WIDGETS )
+						.isWidgetAreaActive( 'TestArea', {
+							modules: [ 'test-module-3' ],
+						} )
+				).toBe( true );
+			} );
+
+			it( 'returns false when passed a list of modules and the area does not contain active widgets for those modules', () => {
+				// A widget is only considered a match when the widget's module list is a subset of the specified modules. Hence, this check will fail.
+				expect(
+					registry
+						.select( CORE_WIDGETS )
+						.isWidgetAreaActive( 'TestArea', {
+							modules: [ 'test-module-1' ],
+						} )
+				).toBe( false );
+
+				// Test for non-existent module.
+				expect(
+					registry
+						.select( CORE_WIDGETS )
+						.isWidgetAreaActive( 'TestArea', {
+							modules: [ 'test-module-4' ],
+						} )
+				).toBe( false );
 			} );
 		} );
 
@@ -507,7 +651,7 @@ describe( 'core/widgets Widget areas', () => {
 					registry
 						.select( CORE_WIDGETS )
 						.isWidgetAreaRegistered( 'TestArea' )
-				).toEqual( true );
+				).toBe( true );
 			} );
 
 			it( 'returns false if the widget area is not registered', () => {
@@ -515,7 +659,7 @@ describe( 'core/widgets Widget areas', () => {
 					registry
 						.select( CORE_WIDGETS )
 						.isWidgetAreaRegistered( 'NotRealArea' )
-				).toEqual( false );
+				).toBe( false );
 			} );
 		} );
 	} );

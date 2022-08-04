@@ -30,6 +30,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import { useFeature } from '../../../../../hooks/useFeature';
 import { MODULES_ADSENSE } from '../../../datastore/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { isZeroReport } from '../../../util';
@@ -38,10 +39,11 @@ import { HIDDEN_CLASS } from '../../../../../googlesitekit/widgets/util/constant
 import PreviewBlock from '../../../../../components/PreviewBlock';
 import whenActive from '../../../../../util/when-active';
 import Header from './Header';
+import Footer from './Footer';
 import Overview from './Overview';
 import Stats from './Stats';
 import Data from 'googlesitekit-data';
-const { useSelect } = Data;
+const { useSelect, useInViewSelect } = Data;
 
 const ModuleOverviewWidget = ( {
 	Widget,
@@ -49,6 +51,7 @@ const ModuleOverviewWidget = ( {
 	WidgetReportError,
 } ) => {
 	const [ selectedStats, setSelectedStats ] = useState( 0 );
+	const adsenseSetupV2Enabled = useFeature( 'adsenseSetupV2' );
 
 	const {
 		startDate,
@@ -78,16 +81,16 @@ const ModuleOverviewWidget = ( {
 		dimensions: [ 'DATE' ],
 	};
 
-	const currentRangeData = useSelect( ( select ) =>
+	const currentRangeData = useInViewSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getReport( currentRangeArgs )
 	);
-	const previousRangeData = useSelect( ( select ) =>
+	const previousRangeData = useInViewSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getReport( previousRangeArgs )
 	);
-	const currentRangeChartData = useSelect( ( select ) =>
+	const currentRangeChartData = useInViewSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getReport( currentRangeChartArgs )
 	);
-	const previousRangeChartData = useSelect( ( select ) =>
+	const previousRangeChartData = useInViewSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getReport( previousRangeChartArgs )
 	);
 
@@ -107,55 +110,64 @@ const ModuleOverviewWidget = ( {
 			] )
 	);
 
-	const error = useSelect(
-		( select ) =>
+	const errors = useSelect( ( select ) => [
+		...[
 			select( MODULES_ADSENSE ).getErrorForSelector( 'getReport', [
 				currentRangeArgs,
-			] ) ||
+			] ),
+		],
+		...[
 			select( MODULES_ADSENSE ).getErrorForSelector( 'getReport', [
 				previousRangeArgs,
-			] ) ||
+			] ),
+		],
+		...[
 			select( MODULES_ADSENSE ).getErrorForSelector( 'getReport', [
 				currentRangeChartArgs,
-			] ) ||
+			] ),
+		],
+		...[
 			select( MODULES_ADSENSE ).getErrorForSelector( 'getReport', [
 				previousRangeChartArgs,
-			] )
-	);
+			] ),
+		],
+	] ).filter( Boolean );
 
 	if ( loading ) {
 		return (
-			<Widget Header={ Header } noPadding>
+			<Widget Header={ Header } Footer={ Footer } noPadding>
 				<PreviewBlock width="100%" height="190px" padding />
 				<PreviewBlock width="100%" height="270px" padding />
 			</Widget>
 		);
 	}
 
-	if ( error ) {
+	if ( !! errors.length ) {
 		return (
-			<Widget Header={ Header }>
-				<WidgetReportError moduleSlug="adsense" error={ error } />
+			<Widget Header={ Header } Footer={ Footer }>
+				<WidgetReportError moduleSlug="adsense" error={ errors } />
 			</Widget>
 		);
 	}
 
-	if (
-		isZeroReport( currentRangeData ) ||
-		isZeroReport( currentRangeChartData )
-	) {
-		return (
-			<Widget noPadding>
-				<DashboardZeroData />
-				<div className={ HIDDEN_CLASS }>
-					<WidgetReportZero moduleSlug="adsense" />
-				</div>
-			</Widget>
-		);
+	if ( ! adsenseSetupV2Enabled ) {
+		if (
+			isZeroReport( currentRangeData ) ||
+			isZeroReport( currentRangeChartData )
+		) {
+			return (
+				<Widget noPadding>
+					<DashboardZeroData />
+					<div className={ HIDDEN_CLASS }>
+						<WidgetReportZero moduleSlug="adsense" />
+					</div>
+				</Widget>
+			);
+		}
 	}
 
 	return (
-		<Widget noPadding Header={ Header }>
+		<Widget noPadding Header={ Header } Footer={ Footer }>
 			<Overview
 				metrics={ ModuleOverviewWidget.metrics }
 				currentRangeData={ currentRangeData }
@@ -189,7 +201,4 @@ ModuleOverviewWidget.metrics = {
 
 export default whenActive( {
 	moduleName: 'adsense',
-	IncompleteComponent: ( { WidgetCompleteModuleActivationCTA } ) => (
-		<WidgetCompleteModuleActivationCTA moduleSlug="adsense" />
-	),
 } )( ModuleOverviewWidget );

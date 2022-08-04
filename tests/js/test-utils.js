@@ -11,6 +11,7 @@ import { createMemoryHistory } from 'history';
  * WordPress dependencies
  */
 import { RegistryProvider } from '@wordpress/data';
+import { useEffect, useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -19,10 +20,6 @@ import FeaturesProvider from '../../assets/js/components/FeaturesProvider';
 import InViewProvider from '../../assets/js/components/InViewProvider';
 import { Provider as ViewContextProvider } from '../../assets/js/components/Root/ViewContextContext';
 import { createTestRegistry, createWaitForRegistry } from './utils';
-import { useState } from 'react';
-
-// Override `@testing-library/react`'s render method with one that includes
-// our data store.
 
 /**
  * Renders the given UI into a container to make assertions.
@@ -39,6 +36,7 @@ import { useState } from 'react';
  * @param {History}  [options.history]       History object for React Router. Defaults to MemoryHistory.
  * @param {string}   [options.route]         Route to pass to history as starting route.
  * @param {boolean}  [options.inView]        If the component should consider itself in-view (see `useInView` hook).
+ * @param {string}   [options.viewContext]   `viewContext` to use for this component and its children.
  * @return {Object} An object containing all of {@link https://testing-library.com/docs/react-testing-library/api#render-result} as well as the `registry`.
  */
 const customRender = ( ui, options = {} ) => {
@@ -49,6 +47,7 @@ const customRender = ( ui, options = {} ) => {
 		history = createMemoryHistory(),
 		route = undefined,
 		inView = true,
+		viewContext = null,
 		...renderOptions
 	} = options;
 
@@ -65,14 +64,28 @@ const customRender = ( ui, options = {} ) => {
 	}
 
 	function Wrapper( { children } ) {
-		const [ inViewState, setInViewState ] = useState( inView );
-		setInView = setInViewState;
+		const [ inViewStateValue, setInViewStateValue ] = useState( inView );
+		setInView = setInViewStateValue;
+
+		const [ inViewState, setInViewState ] = useState( {
+			key: 'Wrapper',
+			value: inViewStateValue,
+		} );
+
+		useEffect( () => {
+			setInViewState( {
+				key: 'Wrapper',
+				value: inViewStateValue,
+			} );
+		}, [ inViewStateValue ] );
 
 		return (
 			<InViewProvider value={ inViewState }>
 				<RegistryProvider value={ registry }>
 					<FeaturesProvider value={ enabledFeatures }>
-						<Router history={ history }>{ children }</Router>
+						<ViewContextProvider value={ viewContext }>
+							<Router history={ history }>{ children }</Router>
+						</ViewContextProvider>
 					</FeaturesProvider>
 				</RegistryProvider>
 			</InViewProvider>
@@ -144,8 +157,20 @@ const customRenderHook = (
 	let setInView;
 
 	const Wrapper = ( { children } ) => {
-		const [ inViewState, setInViewState ] = useState( inView );
-		setInView = setInViewState;
+		const [ inViewStateValue, setInViewStateValue ] = useState( inView );
+		setInView = setInViewStateValue;
+
+		const [ inViewState, setInViewState ] = useState( {
+			key: 'renderHook',
+			value: inViewStateValue,
+		} );
+
+		useEffect( () => {
+			setInViewState( {
+				key: 'renderHook',
+				value: inViewStateValue,
+			} );
+		}, [ inViewStateValue ] );
 
 		return (
 			<InViewProvider value={ inViewState }>
@@ -171,11 +196,15 @@ const customRenderHook = (
 export * from './utils';
 
 // Export @testing-library/react as normal.
+// eslint-disable-next-line import/export
 export * from '@testing-library/react';
 
-// Override @testing-library/react's render method with our own.
+// Override `@testing-library/react`'s render method with one that includes
+// our data store and other helpers.
+// eslint-disable-next-line import/export
 export { customRender as render };
-// Override @testing-library/react-hooks's renderHook method with our own.
+// Override @testing-library/react-hooks's renderHook method with our own that
+// includes our data store and other helpers.
 export { customRenderHook as renderHook };
 // Hooks need to use the `act` from @testing-library/react-hooks.
 export { actHook };

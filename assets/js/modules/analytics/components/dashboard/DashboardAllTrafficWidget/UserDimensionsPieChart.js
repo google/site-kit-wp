@@ -22,17 +22,12 @@
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
 import isNull from 'lodash/isNull';
+import cloneDeep from 'lodash/cloneDeep';
 
 /**
  * WordPress dependencies
  */
-import {
-	Fragment,
-	useEffect,
-	useRef,
-	useState,
-	useContext,
-} from '@wordpress/element';
+import { Fragment, useEffect, useRef, useState } from '@wordpress/element';
 import { __, _x, sprintf } from '@wordpress/i18n';
 import { ESCAPE } from '@wordpress/keycodes';
 
@@ -40,13 +35,13 @@ import { ESCAPE } from '@wordpress/keycodes';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import ViewContextContext from '../../../../../components/Root/ViewContextContext';
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
 import {
 	UI_DIMENSION_COLOR,
 	UI_DIMENSION_VALUE,
 	UI_ACTIVE_ROW_INDEX,
+	MODULES_ANALYTICS,
 } from '../../../datastore/constants';
 import {
 	numberFormat,
@@ -59,13 +54,27 @@ import { extractAnalyticsDataForPieChart } from '../../../util';
 import GoogleChart from '../../../../../components/GoogleChart';
 import Link from '../../../../../components/Link';
 import PreviewBlock from '../../../../../components/PreviewBlock';
+import PieChartZeroData from '../../../../../../svg/icons/pie-chart-zero-data.svg';
+import GatheringDataNotice, {
+	NOTICE_STYLE,
+} from '../../../../../components/GatheringDataNotice';
+import { useFeature } from '../../../../../hooks/useFeature';
+import useViewContext from '../../../../../hooks/useViewContext';
 const { useDispatch, useSelect } = Data;
 
 export default function UserDimensionsPieChart( props ) {
-	const { dimensionName, dimensionValue, loaded, report } = props;
+	const {
+		dimensionName,
+		dimensionValue,
+		gatheringData,
+		loaded,
+		report,
+	} = props;
+
+	const zeroDataStatesEnabled = useFeature( 'zeroDataStates' );
 
 	const [ selectable, setSelectable ] = useState( false );
-	const viewContext = useContext( ViewContextContext );
+	const viewContext = useViewContext();
 
 	const otherSupportURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getGoogleSupportURL( {
@@ -82,6 +91,10 @@ export default function UserDimensionsPieChart( props ) {
 	);
 	const activeRowIndex = useSelect( ( select ) =>
 		select( CORE_UI ).getValue( UI_ACTIVE_ROW_INDEX )
+	);
+
+	const hasZeroData = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).hasZeroData()
 	);
 
 	const { setValues } = useDispatch( CORE_UI );
@@ -183,7 +196,7 @@ export default function UserDimensionsPieChart( props ) {
 		`<p>
 			<a
 				href="${ url }"
-				class="googlesitekit-cta-link googlesitekit-cta-link--external googlesitekit-cta-link--inherit googlesitekit-cta-link__tooltip"
+				class="googlesitekit-cta-link googlesitekit-cta-link--external googlesitekit-cta-link__tooltip"
 				target="_blank"
 				rel="noreferrer noopener"
 				data-row-label="${ rowLabel }"
@@ -477,7 +490,9 @@ export default function UserDimensionsPieChart( props ) {
 		}
 	};
 
-	const labels = {
+	const options = cloneDeep( UserDimensionsPieChart.chartOptions );
+
+	let labels = {
 		'ga:channelGrouping': __(
 			'<span>By</span> channels',
 			'google-site-kit'
@@ -485,6 +500,15 @@ export default function UserDimensionsPieChart( props ) {
 		'ga:country': __( '<span>By</span> locations', 'google-site-kit' ),
 		'ga:deviceCategory': __( '<span>By</span> devices', 'google-site-kit' ),
 	};
+
+	if ( gatheringData ) {
+		labels = {
+			'ga:channelGrouping': __( 'gathering data…', 'google-site-kit' ),
+		};
+		options.pieSliceText = 'none';
+		options.tooltip.trigger = 'none';
+		options.sliceVisibilityThreshold = 1;
+	}
 
 	const sanitizeArgs = {
 		ALLOWED_TAGS: [ 'span' ],
@@ -494,8 +518,6 @@ export default function UserDimensionsPieChart( props ) {
 	const title = loaded
 		? sanitizeHTML( labels[ dimensionName ] || '', sanitizeArgs )
 		: { __html: '' };
-
-	const options = { ...UserDimensionsPieChart.chartOptions };
 
 	const isSingleSliceReport = isSingleSlice( report );
 	if ( isSingleSliceReport ) {
@@ -509,6 +531,8 @@ export default function UserDimensionsPieChart( props ) {
 		options.tooltip.trigger = 'focus';
 	}
 
+	const showZeroDataChart = zeroDataStatesEnabled && hasZeroData;
+
 	return (
 		<div className="googlesitekit-widget--analyticsAllTraffic__dimensions-container">
 			<div
@@ -521,39 +545,65 @@ export default function UserDimensionsPieChart( props ) {
 					}
 				) }
 			>
-				{ /* eslint-disable-next-line jsx-a11y/mouse-events-have-key-events */ }
-				<GoogleChart
-					chartType="PieChart"
-					data={ dataMap || [] }
-					getChartWrapper={ ( chartWrapper ) => {
-						chartWrapperRef.current = chartWrapper;
-					} }
-					height="368px"
-					loaded={ loaded }
-					loadingHeight="300px"
-					loadingWidth="300px"
-					onMouseOut={ onMouseOut }
-					onMouseOver={ onMouseOver }
-					onReady={ onReady }
-					onSelect={ onSelect }
-					options={ options }
-					width="100%"
-				>
-					<div
-						className="googlesitekit-widget--analyticsAllTraffic__dimensions-chart-title"
-						dangerouslySetInnerHTML={ title }
-					/>
-				</GoogleChart>
+				{ showZeroDataChart && (
+					<div className="googlesitekit-widget--analyticsAllTraffic__chart-zero-data">
+						{ gatheringData && (
+							<GatheringDataNotice
+								style={ NOTICE_STYLE.SMALL_OVERLAY }
+							/>
+						) }
+						<PieChartZeroData />
+					</div>
+				) }
+				{ ! showZeroDataChart && (
+					/* eslint-disable-next-line jsx-a11y/mouse-events-have-key-events */
+					<GoogleChart
+						chartType="PieChart"
+						data={ dataMap || [] }
+						getChartWrapper={ ( chartWrapper ) => {
+							chartWrapperRef.current = chartWrapper;
+						} }
+						gatheringData={ gatheringData }
+						height="368px"
+						loaded={ loaded }
+						loadingHeight="300px"
+						loadingWidth="300px"
+						onMouseOut={ onMouseOut }
+						onMouseOver={ onMouseOver }
+						onReady={ onReady }
+						onSelect={ onSelect }
+						options={ options }
+						width="100%"
+					>
+						<div
+							className={ classnames( {
+								'googlesitekit-widget--analyticsAllTraffic__dimensions-chart-gathering-data': gatheringData,
+								'googlesitekit-widget--analyticsAllTraffic__dimensions-chart-title': ! gatheringData,
+							} ) }
+							dangerouslySetInnerHTML={ title }
+						/>
+					</GoogleChart>
+				) }
 
 				<div
+					aria-label={
+						gatheringData
+							? __(
+									'A pie chart for Analytics that is gathering data, so has no data to display.',
+									'google-site-kit'
+							  )
+							: undefined
+					}
 					className={ classnames(
 						'googlesitekit-widget--analyticsAllTraffic__legend',
 						{
 							'googlesitekit-widget--analyticsAllTraffic__legend--single': isSingleSliceReport,
 						}
 					) }
+					role="region"
 				>
 					{ loaded &&
+						! showZeroDataChart &&
 						dataMap?.slice( 1 ).map( ( [ label ], i ) => {
 							const isActive = label === dimensionValue;
 							const sliceColor = slices[ i ]?.color;
@@ -571,6 +621,7 @@ export default function UserDimensionsPieChart( props ) {
 											'googlesitekit-widget--analyticsAllTraffic__legend-others': isOthers,
 										}
 									) }
+									disabled={ gatheringData }
 								>
 									<span
 										className="googlesitekit-widget--analyticsAllTraffic__dot"
@@ -672,15 +723,15 @@ UserDimensionsPieChart.chartOptions = {
 	},
 	pieHole: 0.6,
 	pieSliceTextStyle: {
-		color: 'black',
+		color: '#131418',
 		fontSize: 12,
 	},
 	slices: {
-		0: { color: '#ffcd33' },
-		1: { color: '#c196ff' },
-		2: { color: '#9de3fe' },
-		3: { color: '#ff7fc6' },
-		4: { color: '#ff886b' },
+		0: { color: '#fece72' },
+		1: { color: '#a983e6' },
+		2: { color: '#bed4ff' },
+		3: { color: '#ee92da' },
+		4: { color: '#ff9b7a' },
 	},
 	title: null,
 	tooltip: {
@@ -693,6 +744,7 @@ UserDimensionsPieChart.chartOptions = {
 UserDimensionsPieChart.propTypes = {
 	dimensionName: PropTypes.string.isRequired,
 	dimensionValue: PropTypes.string,
+	gatheringData: PropTypes.bool,
 	report: PropTypes.arrayOf( PropTypes.object ),
 	loaded: PropTypes.bool,
 };

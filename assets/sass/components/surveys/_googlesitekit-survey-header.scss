@@ -42,6 +42,7 @@
 	}
 
 	.googlesitekit-survey__header {
+		align-items: center;
 		display: flex;
 		flex-wrap: nowrap;
 		padding: $grid-gap-phone $grid-gap-phone 8px;
@@ -68,11 +69,12 @@
 		}
 
 		h3 {
-			color: $c-black;
+			color: $c-surfaces-on-surface;
 			font-family: $f-secondary;
-			font-size: 1rem;
-			font-weight: $fw-secondary-medium;
-			line-height: 1.31;
+			font-size: $fs-body-lg;
+			font-weight: $fw-medium;
+			letter-spacing: $ls-m;
+			line-height: $lh-body-lg;
 			margin: 0;
 		}
 	}

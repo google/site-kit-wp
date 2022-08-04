@@ -26,22 +26,13 @@ describe( 'core site notifications', () => {
 	beforeAll( async () => {
 		await page.setRequestInterception( true );
 		useRequestInterception( ( request ) => {
-			if (
-				request
-					.url()
-					.match(
-						'google-site-kit/v1/modules/search-console/data/searchanalytics'
-					)
-			) {
-				request.respond( { status: 200, body: JSON.stringify( {} ) } );
-			} else if (
-				request
-					.url()
-					.match(
-						'google-site-kit/v1/modules/pagespeed-insights/data/pagespeed'
-					)
-			) {
-				request.respond( { status: 200, body: JSON.stringify( {} ) } );
+			const url = request.url();
+			if ( url.match( 'search-console/data/searchanalytics' ) ) {
+				request.respond( { status: 200, body: '[]' } );
+			} else if ( url.match( 'pagespeed-insights/data/pagespeed' ) ) {
+				request.respond( { status: 200, body: '{}' } );
+			} else if ( url.match( 'user/data/survey-timeouts' ) ) {
+				request.respond( { status: 200, body: '[]' } );
 			} else {
 				request.continue();
 			}
@@ -97,11 +88,11 @@ describe( 'core site notifications', () => {
 							'google-site-kit/v1/core/site/data/mark-notification'
 						)
 				),
-				expect(
-					page
-				).toClick(
-					'.googlesitekit-publisher-win .googlesitekit-cta-link',
-					{ text: /test dismiss site notification/i }
+				expect( page ).toClick(
+					'.googlesitekit-publisher-win .mdc-button',
+					{
+						text: /test dismiss site notification/i,
+					}
 				),
 			] );
 			await page.waitForSelector(

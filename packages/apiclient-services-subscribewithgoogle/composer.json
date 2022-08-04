@@ -1,0 +1,7 @@
+{
+  "name": "google/apiclient-services-subscribewithgoogle",
+  "version": "v0.1",
+  "autoload": {
+    "classmap": ["SubscribewithGoogle.php"]
+  }
+}

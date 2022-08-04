@@ -28,10 +28,12 @@
 @import "base/defaults";
 
 // Material Imports
+@import "@material/button/mdc-button";
 @import "@material/layout-grid/mdc-layout-grid";
 @import "@material/linear-progress/mdc-linear-progress";
 
 // Material Modifications
+@import "vendor/mdc-button";
 @import "vendor/mdc-linear-progress";
 
 /*
@@ -44,11 +46,12 @@
 @import "components/adminbar/googlesitekit-wp-adminbar";
 
 // Global
+@import "components/global/googlesitekit-analytics-cta";
 @import "components/global/googlesitekit-change-arrow";
 @import "components/global/googlesitekit-cta";
 @import "components/global/googlesitekit-cta-link";
 @import "components/global/googlesitekit-data-block";
-@import "components/global/googlesitekit-notifications-counter";
+@import "components/global/googlesitekit-gathering-data-notice";
 @import "components/global/googlesitekit-preview-block";
 @import "components/global/googlesitekit-noscript";
 

@@ -31,7 +31,6 @@ import {
 	Fragment,
 	useCallback,
 	useEffect,
-	useContext,
 	useRef,
 	useState,
 } from '@wordpress/element';
@@ -42,7 +41,7 @@ import { __ } from '@wordpress/i18n';
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
-import ViewContextContext from '../../../../components/Root/ViewContextContext';
+import { Cell, Grid, Row } from '../../../../material-components';
 import DeviceSizeTabBar from '../../../../components/DeviceSizeTabBar';
 import ProgressBar from '../../../../components/ProgressBar';
 import Link from '../../../../components/Link';
@@ -62,15 +61,16 @@ import {
 	UI_STRATEGY,
 	UI_DATA_SOURCE,
 } from '../../datastore/constants';
-
-const { useSelect, useDispatch } = Data;
+import Spinner from '../../../../components/Spinner';
+import useViewContext from '../../../../hooks/useViewContext';
+const { useSelect, useDispatch, useInViewSelect } = Data;
 
 export default function DashboardPageSpeed() {
 	const trackingRef = useRef();
 
 	const [ hasBeenInView, setHasBeenInView ] = useState( false );
 
-	const viewContext = useContext( ViewContextContext );
+	const viewContext = useViewContext();
 	const referenceURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getCurrentReferenceURL()
 	);
@@ -85,8 +85,6 @@ export default function DashboardPageSpeed() {
 	const {
 		isFetchingMobile,
 		isFetchingDesktop,
-		reportMobile,
-		reportDesktop,
 		errorMobile,
 		errorDesktop,
 	} = useSelect( ( select ) => {
@@ -97,7 +95,6 @@ export default function DashboardPageSpeed() {
 				referenceURL,
 				STRATEGY_MOBILE,
 			] ),
-			reportMobile: store.getReport( referenceURL, STRATEGY_MOBILE ),
 			errorMobile: store.getErrorForSelector( 'getReport', [
 				referenceURL,
 				STRATEGY_MOBILE,
@@ -106,13 +103,26 @@ export default function DashboardPageSpeed() {
 				referenceURL,
 				STRATEGY_DESKTOP,
 			] ),
-			reportDesktop: store.getReport( referenceURL, STRATEGY_DESKTOP ),
 			errorDesktop: store.getErrorForSelector( 'getReport', [
 				referenceURL,
 				STRATEGY_DESKTOP,
 			] ),
 		};
 	} );
+
+	const reportMobile = useInViewSelect( ( select ) =>
+		select( MODULES_PAGESPEED_INSIGHTS ).getReport(
+			referenceURL,
+			STRATEGY_MOBILE
+		)
+	);
+
+	const reportDesktop = useInViewSelect( ( select ) =>
+		select( MODULES_PAGESPEED_INSIGHTS ).getReport(
+			referenceURL,
+			STRATEGY_DESKTOP
+		)
+	);
 
 	const { setValues } = useDispatch( CORE_UI );
 	const { invalidateResolution } = useDispatch( MODULES_PAGESPEED_INSIGHTS );
@@ -137,6 +147,9 @@ export default function DashboardPageSpeed() {
 		threshold: 0.25,
 	} );
 	const inView = !! intersectionEntry?.intersectionRatio;
+
+	const isFetching =
+		strategy === STRATEGY_MOBILE ? isFetchingMobile : isFetchingDesktop;
 
 	useEffect( () => {
 		if ( inView && ! hasBeenInView ) {
@@ -208,6 +221,11 @@ export default function DashboardPageSpeed() {
 		[ invalidateResolution, referenceURL ]
 	);
 
+	const reportData =
+		strategy === STRATEGY_MOBILE ? reportMobile : reportDesktop;
+	const reportError =
+		strategy === STRATEGY_MOBILE ? errorMobile : errorDesktop;
+
 	// Set the default data source based on report data.
 	useEffect( () => {
 		if (
@@ -218,19 +236,13 @@ export default function DashboardPageSpeed() {
 		}
 	}, [ reportMobile, reportDesktop, setDataSrcField ] );
 
-	if (
-		! referenceURL ||
-		isFetchingMobile ||
-		isFetchingDesktop ||
-		! dataSrc
-	) {
+	if ( ! referenceURL || ( isFetching && ! reportData ) || ! dataSrc ) {
 		return (
-			<div
+			<Grid
 				id="googlesitekit-pagespeed-header" // Used by jump link.
-				className="mdc-layout-grid"
 			>
-				<div className="mdc-layout-grid__inner">
-					<div className=" mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
+				<Row>
+					<Cell size={ 12 }>
 						<ProgressBar />
 						<p className="googlesitekit-text-align-center">
 							{ __(
@@ -238,16 +250,11 @@ export default function DashboardPageSpeed() {
 								'google-site-kit'
 							) }
 						</p>
-					</div>
-				</div>
-			</div>
+					</Cell>
+				</Row>
+			</Grid>
 		);
 	}
-
-	const reportData =
-		strategy === STRATEGY_MOBILE ? reportMobile : reportDesktop;
-	const reportError =
-		strategy === STRATEGY_MOBILE ? errorMobile : errorDesktop;
 
 	return (
 		<Fragment>
@@ -294,8 +301,17 @@ export default function DashboardPageSpeed() {
 					/>
 				</div>
 			</header>
+			{ isFetching && (
+				<div className="googlesitekit-pagespeed-widget__refreshing-progress-bar-wrapper">
+					<ProgressBar compress />
+				</div>
+			) }
 
-			<section>
+			<section
+				className={ classnames( {
+					'googlesitekit-pagespeed-widget__refreshing': isFetching,
+				} ) }
+			>
 				{ dataSrc === DATA_SRC_LAB && (
 					<LabReportMetrics
 						data={ reportData }
@@ -312,6 +328,9 @@ export default function DashboardPageSpeed() {
 
 			{ ! reportError && (
 				<Recommendations
+					className={ classnames( {
+						'googlesitekit-pagespeed-widget__refreshing': isFetching,
+					} ) }
 					referenceURL={ referenceURL }
 					strategy={ strategy }
 				/>
@@ -327,9 +346,12 @@ export default function DashboardPageSpeed() {
 				) }
 			>
 				{ dataSrc === DATA_SRC_LAB && (
-					<Link onClick={ updateReport }>
-						{ __( 'Run test again', 'google-site-kit' ) }
-					</Link>
+					<div>
+						<Link onClick={ updateReport } disabled={ isFetching }>
+							{ __( 'Run test again', 'google-site-kit' ) }
+						</Link>
+						<Spinner isSaving={ isFetching } />
+					</div>
 				) }
 				<ReportDetailsLink />
 			</div>

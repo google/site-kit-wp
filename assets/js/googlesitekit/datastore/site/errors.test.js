@@ -24,7 +24,7 @@ import { createTestRegistry } from '../../../../../tests/js/utils';
 
 describe( 'core/site errors', () => {
 	const internalServerError = {
-		id: `module-setup-error`,
+		id: 'module-setup-error',
 		title: 'Internal Server Error',
 		description: 'Test error message',
 		format: 'small',

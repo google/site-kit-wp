@@ -30,7 +30,7 @@ import { _x, __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import IdeaHubIcon from '../../../../../svg/idea-hub.svg';
+import IdeaHubIcon from '../../../../../svg/graphics/idea-hub.svg';
 import ProgressBar from '../../../../components/ProgressBar';
 import SetupForm from './SetupForm';
 import Badge from '../../../../components/Badge';
@@ -64,7 +64,7 @@ export default function SetupMain( { finishSetup } ) {
 
 				<Badge
 					label={ __( 'Experimental', 'google-site-kit' ) }
-					className="googlesitekit-idea-hub__badge"
+					hasLeftSpacing={ true }
 				/>
 			</h2>
 

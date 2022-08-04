@@ -34,7 +34,7 @@ describe( 'module/pagespeed-insights service store', () => {
 		name: 'admin',
 		picture: 'https://path/to/image',
 	};
-	const baseURI = 'https://developers.google.com/speed/pagespeed/insights';
+	const baseURI = 'https://pagespeed.web.dev';
 
 	let registry;
 

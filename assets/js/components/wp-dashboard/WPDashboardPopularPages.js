@@ -34,88 +34,96 @@ import {
 	MODULES_ANALYTICS,
 	DATE_RANGE_OFFSET,
 } from '../../modules/analytics/datastore/constants';
+import { ZeroDataMessage } from '../../modules/analytics/components/common';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import PreviewTable from '../../components/PreviewTable';
 import TableOverflowContainer from '../../components/TableOverflowContainer';
-import { isZeroReport } from '../../modules/analytics/util/is-zero-report';
 import ReportTable from '../ReportTable';
 import DetailsPermaLinks from '../DetailsPermaLinks';
 import { numFmt } from '../../util';
-const { useSelect } = Data;
+import { isFeatureEnabled } from '../../features';
+import { isZeroReport } from '../../modules/analytics/util';
+const { useSelect, useInViewSelect } = Data;
 
 export default function WPDashboardPopularPages( props ) {
 	const { WidgetReportZero, WidgetReportError } = props;
 
-	const isGatheringData = useSelect( ( select ) =>
+	const zeroDataStatesEnabled = isFeatureEnabled( 'zeroDataStates' );
+
+	const isGatheringData = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).isGatheringData()
 	);
-	const { report, titles, loading, error } = useSelect( ( select ) => {
-		const dateRangeDates = select( CORE_USER ).getDateRangeDates( {
+
+	const dateRangeDates = useSelect( ( select ) =>
+		select( CORE_USER ).getDateRangeDates( {
 			compare: true,
 			offsetDays: DATE_RANGE_OFFSET,
-		} );
+		} )
+	);
 
-		const reportArgs = {
-			...dateRangeDates,
-			metrics: [
-				{
-					expression: 'ga:pageviews',
-					alias: 'Pageviews',
-				},
-			],
-			dimensions: [ 'ga:pagePath' ],
-			orderby: [
-				{
-					fieldName: 'ga:pageviews',
-					sortOrder: 'DESCENDING',
-				},
-			],
-			limit: 5,
-		};
+	const reportArgs = {
+		...dateRangeDates,
+		metrics: [
+			{
+				expression: 'ga:pageviews',
+				alias: 'Pageviews',
+			},
+		],
+		dimensions: [ 'ga:pagePath' ],
+		orderby: [
+			{
+				fieldName: 'ga:pageviews',
+				sortOrder: 'DESCENDING',
+			},
+		],
+		limit: 5,
+	};
 
-		const data = {
-			report: select( MODULES_ANALYTICS ).getReport( reportArgs ),
-			error: select( MODULES_ANALYTICS ).getErrorForSelector(
-				'getReport',
-				[ reportArgs ]
-			),
-			loading: true,
-		};
+	const report = useInViewSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getReport( reportArgs )
+	);
 
+	const titles = useInViewSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getPageTitles( report, reportArgs )
+	);
+
+	const error = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [
+			reportArgs,
+		] )
+	);
+
+	const loading = useSelect( ( select ) => {
 		const reportLoaded = select(
 			MODULES_ANALYTICS
 		).hasFinishedResolution( 'getReport', [ reportArgs ] );
 
-		data.titles = select( MODULES_ANALYTICS ).getPageTitles(
-			data.report,
-			reportArgs
-		);
+		const hasLoadedPageTitles = undefined !== error || undefined !== titles;
 
-		const hasLoadedPageTitles =
-			undefined !== data.error || undefined !== data.titles;
-
-		data.loading = ! hasLoadedPageTitles || ! reportLoaded;
-
-		return data;
+		return ! hasLoadedPageTitles || ! reportLoaded;
 	} );
 
 	if ( loading || isGatheringData === undefined ) {
 		return <PreviewTable rows={ 6 } />;
 	}
 
-	if ( ! isGatheringData ) {
-		return null;
-	}
-
 	if ( error ) {
 		return <WidgetReportError moduleSlug="analytics" error={ error } />;
 	}
 
-	if ( isZeroReport( report ) ) {
+	if (
+		! zeroDataStatesEnabled &&
+		isGatheringData &&
+		isZeroReport( report )
+	) {
 		return <WidgetReportZero moduleSlug="analytics" />;
 	}
 
-	const rows = cloneDeep( report[ 0 ].data.rows );
+	// data.rows is not guaranteed to be set so we need a fallback.
+	let rows = [];
+	if ( report[ 0 ].data.rows ) {
+		rows = cloneDeep( report[ 0 ].data.rows );
+	}
 	// Combine the titles from the pageTitles with the rows from the metrics report.
 	rows.forEach( ( row ) => {
 		const url = row.dimensions[ 0 ];
@@ -124,14 +132,16 @@ export default function WPDashboardPopularPages( props ) {
 
 	return (
 		<div className="googlesitekit-search-console-widget">
-			<h2 className="googlesitekit-search-console-widget__title">
+			<h3>
 				{ __( 'Top content over the last 28 days', 'google-site-kit' ) }
-			</h2>
+			</h3>
 			<TableOverflowContainer>
 				<ReportTable
 					rows={ rows }
 					columns={ tableColumns }
 					limit={ 5 }
+					gatheringData={ isGatheringData }
+					zeroState={ ZeroDataMessage }
 				/>
 			</TableOverflowContainer>
 		</div>

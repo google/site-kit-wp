@@ -19,27 +19,27 @@
 /**
  * WordPress dependencies
  */
-import { useCallback } from '@wordpress/element';
+import { useSelect } from '@wordpress/data';
+import { useCallback, useRef } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
 import { useInView } from './useInView';
-const { useSelect } = Data;
 
 /**
  * Returns whether the nearest parent component tracking viewport detection is in-view.
  *
- * @since n.e.x.t
+ * @since 1.49.0
  * @private
  *
  * @param {Function} mapSelect Selector to call when this selector's component is considered in-view.
- * @param {Array}    deps      Deps passed to `useSelect`'s `deps` argument.
+ * @param {Array}    deps      Deps passed to `useInViewSelect`'s `deps` argument.
  * @return {*} The result of the selector if in-view; `undefined` if not in-view.
  */
 export const useInViewSelect = ( mapSelect, deps = [] ) => {
 	const isInView = useInView( { sticky: true } );
+	const latestSelectorResult = useRef();
 
 	const mapSelectCallback = useCallback( mapSelect, [ ...deps, mapSelect ] );
 
@@ -51,5 +51,9 @@ export const useInViewSelect = ( mapSelect, deps = [] ) => {
 			  }
 	);
 
-	return selectorResult;
+	if ( isInView ) {
+		latestSelectorResult.current = selectorResult;
+	}
+
+	return latestSelectorResult.current;
 };

@@ -24,8 +24,11 @@ import invariant from 'invariant';
 /**
  * Internal dependencies
  */
-import { WIDGET_AREA_STYLES } from './constants';
+import Data from 'googlesitekit-data';
+import { CORE_WIDGETS, WIDGET_AREA_STYLES } from './constants';
 import { sortByProperty } from '../../../util/sort-by-property';
+
+const { createRegistrySelector } = Data;
 
 const ASSIGN_WIDGET_AREA = 'ASSIGN_WIDGET_AREA';
 const REGISTER_WIDGET_AREA = 'REGISTER_WIDGET_AREA';
@@ -166,6 +169,38 @@ export const reducer = ( state, { type, payload } ) => {
 export const resolvers = {};
 
 export const selectors = {
+	/**
+	 * Checks if a widget area is active.
+	 *
+	 * Returns `true` if the widget area is active.
+	 * Returns `false` if the widget area is NOT active.
+	 *
+	 * @since 1.47.0
+	 * @since 1.77.0 Add options.modules parameter.
+	 *
+	 * @param {Object}         state             Data store's state.
+	 * @param {string}         slug              Widget area's slug.
+	 * @param {Object}         [options]         Optional. Options parameter.
+	 * @param {Array.<string>} [options.modules] Optional. List of module slugs, when provided the widgets checked will be restricted to those associated with the specified modules.
+	 * @return {boolean} `true`/`false` based on whether widget area is active.
+	 */
+	isWidgetAreaActive: createRegistrySelector(
+		( select ) => ( state, widgetAreaSlug, options = {} ) => {
+			invariant(
+				widgetAreaSlug,
+				'widgetAreaSlug is required to check a widget area is active.'
+			);
+
+			const { modules } = options;
+
+			return select( CORE_WIDGETS )
+				.getWidgets( widgetAreaSlug, { modules } )
+				.some( ( widget ) =>
+					select( CORE_WIDGETS ).isWidgetActive( widget.slug )
+				);
+		}
+	),
+
 	/**
 	 * Checks if a widget area has been registered.
 	 *

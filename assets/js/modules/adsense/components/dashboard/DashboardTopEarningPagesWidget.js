@@ -47,72 +47,89 @@ import {
 } from '../../../analytics/components/common';
 import { numFmt } from '../../../../util';
 import { getCurrencyFormat } from '../../util/currency';
-const { useSelect } = Data;
+import { useFeature } from '../../../../hooks/useFeature';
+import useViewOnly from '../../../../hooks/useViewOnly';
+const { useSelect, useInViewSelect } = Data;
 
 function DashboardTopEarningPagesWidget( props ) {
-	const { Widget, WidgetReportZero, WidgetReportError } = props;
+	const { Widget, WidgetReportZero, WidgetReportError, WidgetNull } = props;
 
-	const isGatheringData = useSelect( ( select ) =>
+	const isViewOnly = useViewOnly();
+
+	const zeroDataStates = useFeature( 'zeroDataStates' );
+
+	const viewOnlyDashboard = useViewOnly();
+
+	const isGatheringData = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).isGatheringData()
 	);
 
-	const {
-		analyticsMainURL,
-		data,
-		error,
-		loading,
-		isAdSenseLinked,
-		isAdblockerActive,
-		currencyFormat,
-	} = useSelect( ( select ) => {
-		const { startDate, endDate } = select( CORE_USER ).getDateRangeDates( {
+	const { startDate, endDate } = useSelect( ( select ) =>
+		select( CORE_USER ).getDateRangeDates( {
 			offsetDays: DATE_RANGE_OFFSET,
-		} );
+		} )
+	);
 
-		const args = {
-			startDate,
-			endDate,
-			dimensions: [ 'ga:pageTitle', 'ga:pagePath' ],
-			metrics: [
-				{ expression: 'ga:adsenseRevenue', alias: 'Earnings' },
-				{ expression: 'ga:adsenseECPM', alias: 'Page RPM' },
-				{
-					expression: 'ga:adsensePageImpressions',
-					alias: 'Impressions',
-				},
-			],
-			orderby: {
-				fieldName: 'ga:adsenseRevenue',
-				sortOrder: 'DESCENDING',
+	const args = {
+		startDate,
+		endDate,
+		dimensions: [ 'ga:pageTitle', 'ga:pagePath' ],
+		metrics: [
+			{ expression: 'ga:adsenseRevenue', alias: 'Earnings' },
+			{ expression: 'ga:adsenseECPM', alias: 'Page RPM' },
+			{
+				expression: 'ga:adsensePageImpressions',
+				alias: 'Impressions',
 			},
-			limit: 5,
-		};
+		],
+		orderby: {
+			fieldName: 'ga:adsenseRevenue',
+			sortOrder: 'DESCENDING',
+		},
+		limit: 5,
+	};
 
-		const adsenseData = select( MODULES_ADSENSE ).getReport( {
+	const data = useInViewSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getReport( args )
+	);
+
+	const adsenseData = useInViewSelect( ( select ) =>
+		select( MODULES_ADSENSE ).getReport( {
 			startDate,
 			endDate,
 			metrics: 'ESTIMATED_EARNINGS',
-		} );
+		} )
+	);
 
-		const adSenseLinked = select( MODULES_ANALYTICS ).getAdsenseLinked();
+	const error = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [ args ] )
+	);
 
-		return {
-			analyticsMainURL: select( MODULES_ANALYTICS ).getServiceReportURL(
-				'content-publisher-overview',
-				generateDateRangeArgs( { startDate, endDate } )
-			),
-			data: select( MODULES_ANALYTICS ).getReport( args ),
-			error: select( MODULES_ANALYTICS ).getErrorForSelector(
-				'getReport',
-				[ args ]
-			),
-			loading: ! select(
-				MODULES_ANALYTICS
-			).hasFinishedResolution( 'getReport', [ args ] ),
-			isAdSenseLinked: adSenseLinked,
-			isAdblockerActive: select( MODULES_ADSENSE ).isAdBlockerActive(),
-			currencyFormat: getCurrencyFormat( adsenseData ),
-		};
+	const loading = useSelect(
+		( select ) =>
+			! select( MODULES_ANALYTICS ).hasFinishedResolution( 'getReport', [
+				args,
+			] )
+	);
+
+	const isAdSenseLinked = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getAdsenseLinked()
+	);
+
+	const isAdblockerActive = useSelect( ( select ) =>
+		select( MODULES_ADSENSE ).isAdBlockerActive()
+	);
+
+	const currencyFormat = getCurrencyFormat( adsenseData );
+
+	const analyticsMainURL = useSelect( ( select ) => {
+		if ( viewOnlyDashboard ) {
+			return null;
+		}
+		return select( MODULES_ANALYTICS ).getServiceReportURL(
+			'content-publisher-overview',
+			generateDateRangeArgs( { startDate, endDate } )
+		);
 	} );
 
 	const Footer = () => (
@@ -140,9 +157,13 @@ function DashboardTopEarningPagesWidget( props ) {
 		);
 	}
 
+	if ( ! isAdSenseLinked && isViewOnly ) {
+		return <WidgetNull />;
+	}
+
 	// A restricted metrics error will cause this value to change in the resolver
 	// so this check should happen before an error, which is only relevant if they are linked.
-	if ( ! isAdSenseLinked ) {
+	if ( ! isAdSenseLinked && ! isViewOnly ) {
 		return (
 			<Widget Footer={ Footer }>
 				<AdSenseLinkCTA />
@@ -158,7 +179,7 @@ function DashboardTopEarningPagesWidget( props ) {
 		);
 	}
 
-	if ( isGatheringData && isZeroReport( data ) ) {
+	if ( ! zeroDataStates && isGatheringData && isZeroReport( data ) ) {
 		return (
 			<Widget Footer={ Footer }>
 				<WidgetReportZero moduleSlug="analytics" />
@@ -174,7 +195,12 @@ function DashboardTopEarningPagesWidget( props ) {
 			Component: ( { row } ) => {
 				const [ title, url ] = row.dimensions;
 				return (
-					<Link href={ url } children={ title } external inherit />
+					<Link
+						href={ url }
+						children={ title }
+						external
+						hideExternalIndicator
+					/>
 				);
 			},
 		},
@@ -195,6 +221,7 @@ function DashboardTopEarningPagesWidget( props ) {
 					rows={ data?.[ 0 ]?.data?.rows || [] }
 					columns={ tableColumns }
 					zeroState={ ZeroDataMessage }
+					gatheringData={ isGatheringData }
 				/>
 			</TableOverflowContainer>
 		</Widget>

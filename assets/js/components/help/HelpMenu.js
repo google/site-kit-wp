@@ -25,29 +25,37 @@ import { useClickAway } from 'react-use';
 /**
  * WordPress dependencies
  */
-import { useState, useRef, useCallback, useContext } from '@wordpress/element';
+import { useState, useRef, useCallback } from '@wordpress/element';
 import { ESCAPE, TAB } from '@wordpress/keycodes';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import HelpIcon from '../../../svg/help.svg';
+import Data from 'googlesitekit-data';
+import HelpIcon from '../../../svg/icons/help.svg';
 import { useKeyCodesInside } from '../../hooks/useKeyCodesInside';
 import { trackEvent } from '../../util';
-import ViewContextContext from '../Root/ViewContextContext';
 import Button from '../Button';
 import Menu from '../Menu';
 import HelpMenuLink from './HelpMenuLink';
+import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
+import useViewContext from '../../hooks/useViewContext';
+import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+const { useSelect } = Data;
 
 export default function HelpMenu( { children } ) {
 	const [ menuOpen, setMenuOpen ] = useState( false );
 	const menuWrapperRef = useRef();
-	const viewContext = useContext( ViewContextContext );
+	const viewContext = useViewContext();
 
 	useClickAway( menuWrapperRef, () => setMenuOpen( false ) );
 	useKeyCodesInside( [ ESCAPE, TAB ], menuWrapperRef, () =>
 		setMenuOpen( false )
+	);
+
+	const adSenseModuleActive = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleActive( 'adsense' )
 	);
 
 	const handleMenu = useCallback( () => {
@@ -62,17 +70,23 @@ export default function HelpMenu( { children } ) {
 		setMenuOpen( false );
 	}, [] );
 
+	const fixCommonIssuesURL = useSelect( ( select ) => {
+		return select( CORE_SITE ).getDocumentationLinkURL(
+			'fix-common-issues'
+		);
+	} );
+
 	return (
 		<div
 			ref={ menuWrapperRef }
-			className="googlesitekit-dropdown-menu googlesitekit-dropdown-menu__icon-menu googlesitekit-help-menu mdc-menu-surface--anchor"
+			className="googlesitekit-dropdown-menu googlesitekit-dropdown-menu__icon-menu mdc-menu-surface--anchor"
 		>
 			<Button
 				aria-controls="googlesitekit-help-menu"
 				aria-expanded={ menuOpen }
 				aria-label={ __( 'Help', 'google-site-kit' ) }
 				aria-haspopup="menu"
-				className="googlesitekit-header__dropdown googlesitekit-help-menu__button googlesitekit-margin-right-0 mdc-button--dropdown"
+				className="googlesitekit-header__dropdown googlesitekit-border-radius-round googlesitekit-button-icon googlesitekit-help-menu__button mdc-button--dropdown"
 				icon={ <HelpIcon width="20" height="20" /> }
 				onClick={ handleMenu }
 				text
@@ -86,7 +100,7 @@ export default function HelpMenu( { children } ) {
 				{ children }
 				<HelpMenuLink
 					gaEventLabel="fix_common_issues"
-					href="https://sitekit.withgoogle.com/documentation/fix-common-issues/"
+					href={ fixCommonIssuesURL }
 				>
 					{ __( 'Fix common issues', 'google-site-kit' ) }
 				</HelpMenuLink>
@@ -102,6 +116,14 @@ export default function HelpMenu( { children } ) {
 				>
 					{ __( 'Get support', 'google-site-kit' ) }
 				</HelpMenuLink>
+				{ adSenseModuleActive && (
+					<HelpMenuLink
+						gaEventLabel="adsense_help"
+						href="https://support.google.com/adsense/"
+					>
+						{ __( 'Get help with AdSense', 'google-site-kit' ) }
+					</HelpMenuLink>
+				) }
 			</Menu>
 		</div>
 	);

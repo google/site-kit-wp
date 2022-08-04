@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - develop
+      - 'feature/**'
     # Only run if CSS/JS/MD-related files changed.
     paths:
       - '.github/workflows/visual-regression.yml'
@@ -25,6 +26,10 @@ on:
       - synchronize
       - ready_for_review
 
+concurrency:
+  group: visual-regression-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   visual-regression:
     name: Run VR Tests
@@ -32,7 +37,6 @@ jobs:
     timeout-minutes: 20
     if: github.event.pull_request.draft == false
     steps:
-      - uses: styfle/cancel-workflow-action@0.8.0
       - uses: actions/checkout@v2
       - name: Read .nvmrc
         run: echo "##[set-output name=NVMRC;]$(cat .nvmrc)"

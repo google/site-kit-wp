@@ -3,7 +3,11 @@
  */
 import intlLocalesSupported from 'intl-locales-supported';
 import intl from 'intl';
-import React from 'react';
+
+/**
+ * WordPress dependencies
+ */
+import React from '@wordpress/element';
 
 if ( global.Intl ) {
 	// Check for locales other than American English.
@@ -57,3 +61,15 @@ global._googlesitekitAPIFetchData.nonceEndpoint =
 
 // Instantiate global to which we'll assign to the value imported from fetch-mock-jest during Jest's setupFilesAfterEnv execution.
 global.fetchMock = undefined;
+
+if ( global.document ) {
+	// Provide a stub for createRange (needed for rendering Joyride components)
+	global.document.createRange = () => ( {
+		setStart: () => {},
+		setEnd: () => {},
+		commonAncestorContainer: {
+			nodeName: 'BODY',
+			ownerDocument: document,
+		},
+	} );
+}

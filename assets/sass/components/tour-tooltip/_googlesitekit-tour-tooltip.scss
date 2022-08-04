@@ -16,51 +16,65 @@
  * limitations under the License.
  */
 
-$a-tags: "a, a:active, a:hover, a:visited";
-$indicator-inactive: #649df5;
+// Only override global Joyride styles when a Site Kit tour is active
+// as there is no other way to scope the selectors using Joyride.
+.googlesitekit-showing-feature-tour {
 
-.react-joyride__overlay {
-	mix-blend-mode: multiply !important;
-}
+	.react-joyride__overlay {
+		mix-blend-mode: multiply !important;
+	}
 
-.react-joyride__spotlight {
-	background-color: $c-white !important;
-	border: 2px solid $c-royal-blue !important;
+	.react-joyride__spotlight {
+		// Ideally the border-radius would vary by the size of the spotlight element
+		// so we use the average radius here.
+		border-radius: $br-sm !important; // Override uncustomizable inline style.
+	}
 }
 
 .googlesitekit-tour-tooltip {
 
 	.googlesitekit-tooltip-card {
-		background-color: $c-royal-blue;
+		--mdc-theme-surface: #{$c-content-primary};
 		border-radius: 8px;
 		box-shadow: none;
-		color: $c-white;
+		color: $c-content-on-primary;
 		position: relative;
 
-		#{$a-tags} {
-			color: $c-white;
+		a {
+
+			&:active,
+			&:hover,
+			&:visited {
+				color: $c-content-on-primary;
+			}
+		}
+
+		svg {
+			color: $c-content-on-primary;
 		}
 	}
 }
 
 .googlesitekit-tooltip-title {
-	color: $c-white;
+	color: $c-content-on-primary;
 	font-family: $f-secondary;
-	font-weight: $fw-secondary-light;
+	font-size: $fs-body-lg;
+	font-weight: $fw-medium;
+	letter-spacing: $ls-m;
+	line-height: $lh-body-lg;
 	margin-bottom: 4px;
 	margin-top: 0;
-
-	@include responsive-text("body2", "body2");
 }
 
 .googlesitekit-tooltip-body {
 	box-sizing: border-box;
 	font-family: $f-primary;
-	font-weight: $fw-primary-light;
+	font-size: $fs-body-md;
+	font-weight: $fw-light;
+	letter-spacing: $ls-s;
+	line-height: $lh-body-md;
 	max-width: 352px;
 	padding: 24px 56px 2px 24px;
-
-	@include responsive-text("body3", "body3");
 }
 
 .googlesitekit-tooltip-buttons {
@@ -107,15 +121,16 @@ $indicator-inactive: #649df5;
 }
 
 .googlesitekit-tooltip-indicator {
-	background: $indicator-inactive;
+	background: $c-content-on-primary;
 	border-radius: 50%;
 	height: 8px;
 	list-style: none;
 	margin-bottom: 0;
 	margin-right: 8px;
+	opacity: 0.5;
 	width: 8px;
 }
 
 .googlesitekit-tooltip-indicator.active {
-	background: $c-white;
+	opacity: 1;
 }

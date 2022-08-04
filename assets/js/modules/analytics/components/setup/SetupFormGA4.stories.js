@@ -37,15 +37,23 @@ function Template() {
 
 export const WithoutExistingTag = Template.bind( null );
 WithoutExistingTag.storyName = 'Without Existing Tag';
+WithoutExistingTag.scenario = {
+	label: 'Modules/Analytics/Setup/SetupFormGA4/WithoutExistingTag',
+	delay: 250,
+};
 
-export const WithExistingTag = Template.bind( null );
-WithExistingTag.storyName = 'With Existing Tag';
-WithExistingTag.decorators = [
+export const WithGA4Tag = Template.bind( null );
+WithGA4Tag.storyName = 'With GA4 Tag, non-matching property selected';
+WithGA4Tag.decorators = [
 	( Story ) => {
 		const setupRegistry = ( registry ) => {
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.selectProperty( ga4Fixtures.properties[ 1 ]._id );
+
 			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetExistingTag(
 				// eslint-disable-next-line sitekit/acronym-case
-				ga4Fixtures.webDataStreams[ 0 ].measurementId
+				ga4Fixtures.webDataStreams[ 0 ].webStreamData.measurementId
 			);
 		};
 
@@ -56,6 +64,38 @@ WithExistingTag.decorators = [
 		);
 	},
 ];
+
+export const WithBothTags = Template.bind( null );
+WithBothTags.storyName = 'With Both Tags, matching GA4 property selected';
+WithBothTags.decorators = [
+	( Story ) => {
+		const setupRegistry = ( registry ) => {
+			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetExistingTag(
+				// eslint-disable-next-line sitekit/acronym-case
+				ga4Fixtures.webDataStreams[ 0 ].webStreamData.measurementId
+			);
+
+			registry
+				.dispatch( MODULES_ANALYTICS )
+				.receiveGetExistingTag(
+					fixtures.accountsPropertiesProfiles.properties[ 0 ].id
+				);
+
+			registry.dispatch( MODULES_ANALYTICS ).setUseSnippet( true );
+			registry.dispatch( MODULES_ANALYTICS_4 ).setUseSnippet( false );
+		};
+
+		return (
+			<WithRegistrySetup func={ setupRegistry }>
+				<Story />
+			</WithRegistrySetup>
+		);
+	},
+];
+WithBothTags.scenario = {
+	label: 'Modules/Analytics/Setup/SetupFormGA4/WithBothTags',
+	delay: 250,
+};
 
 export default {
 	title: 'Modules/Analytics/Setup/SetupFormGA4',
@@ -97,13 +137,19 @@ export default {
 					} );
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveGetWebDataStreams( ga4Fixtures.webDataStreams, {
-						propertyID: ga4Fixtures.properties[ 0 ]._id,
-					} );
+					.receiveGetWebDataStreamsBatch(
+						ga4Fixtures.webDataStreamsBatchSetup,
+						{
+							propertyIDs: Object.keys(
+								ga4Fixtures.webDataStreamsBatchSetup
+							),
+						}
+					);
 
-				registry
-					.dispatch( MODULES_ANALYTICS )
-					.receiveGetSettings( { adsConversionID: '' } );
+				registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {
+					adsConversionID: '',
+					canUseSnippet: true,
+				} );
 				registry
 					.dispatch( MODULES_ANALYTICS )
 					.receiveGetExistingTag( null );

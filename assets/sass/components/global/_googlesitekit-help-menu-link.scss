@@ -24,21 +24,11 @@
 
 		.googlesitekit-cta-link {
 			align-items: center;
-			color: $c-nearblack;
+			color: $c-surfaces-on-surface;
 			display: flex;
-			font-size: 16px;
 			height: 100%;
 			padding: 0 16px;
 			width: 100%;
-		}
-	}
-
-	.googlesitekit-help-menu {
-
-		.mdc-button--dropdown {
-			border-radius: 50%;
-			min-width: 36px;
-			padding: 0;
 		}
 	}
 }

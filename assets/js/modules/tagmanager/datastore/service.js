@@ -48,7 +48,7 @@ export const selectors = {
 				return undefined;
 			}
 
-			const baseURI = `https://tagmanager.google.com/`;
+			const baseURI = 'https://tagmanager.google.com/';
 			const queryParams = query
 				? { ...query, authuser: userEmail }
 				: { authuser: userEmail };

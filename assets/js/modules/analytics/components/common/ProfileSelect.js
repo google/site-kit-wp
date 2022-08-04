@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { useCallback, useContext } from '@wordpress/element';
+import { useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -31,10 +31,10 @@ import ProgressBar from '../../../../components/ProgressBar';
 import { MODULES_ANALYTICS, PROFILE_CREATE } from '../../datastore/constants';
 import { isValidPropertySelection, isValidAccountSelection } from '../../util';
 import { trackEvent } from '../../../../util';
-import ViewContextContext from '../../../../components/Root/ViewContextContext';
+import useViewContext from '../../../../hooks/useViewContext';
 const { useSelect, useDispatch } = Data;
 
-export default function ProfileSelect() {
+export default function ProfileSelect( { hasModuleAccess } ) {
 	const accountID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getAccountID()
 	);
@@ -63,7 +63,7 @@ export default function ProfileSelect() {
 	} );
 
 	const { setProfileID } = useDispatch( MODULES_ANALYTICS );
-	const viewContext = useContext( ViewContextContext );
+	const viewContext = useViewContext();
 	const onChange = useCallback(
 		( index, item ) => {
 			const newProfileID = item.dataset.value;
@@ -88,6 +88,21 @@ export default function ProfileSelect() {
 
 	if ( isLoading ) {
 		return <ProgressBar small />;
+	}
+
+	if ( hasModuleAccess === false ) {
+		return (
+			<Select
+				className="googlesitekit-analytics__select-profile"
+				label={ __( 'View', 'google-site-kit' ) }
+				value={ profileID }
+				enhanced
+				outlined
+				disabled
+			>
+				<Option value={ profileID }>{ profileID }</Option>
+			</Select>
+		);
 	}
 
 	return (

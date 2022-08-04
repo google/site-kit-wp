@@ -14,53 +14,41 @@ use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_With_Owner;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
-use Google\Site_Kit\Core\Modules\Module_With_Screen;
 use Google\Site_Kit\Core\Modules\Module_With_Settings;
+use Google\Site_Kit\Core\Modules\Module_With_Service_Entity;
 use Google\Site_Kit\Core\Storage\Options;
+use Google\Site_Kit\Core\Storage\User_Options;
+use Google\Site_Kit\Core\Authentication\Authentication;
+use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
+use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Modules\AdSense;
 use Google\Site_Kit\Modules\AdSense\Settings;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Owner_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Scopes_ContractTests;
-use Google\Site_Kit\Tests\Core\Modules\Module_With_Screen_ContractTests;
+use Google\Site_Kit\Tests\Core\Modules\Module_With_Service_Entity_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Settings_ContractTests;
 use Google\Site_Kit\Tests\TestCase;
 use ReflectionMethod;
+use WP_REST_Request;
 
 /**
  * @group Modules
  */
 class AdSenseTest extends TestCase {
 	use Module_With_Scopes_ContractTests;
-	use Module_With_Screen_ContractTests;
 	use Module_With_Settings_ContractTests;
 	use Module_With_Owner_ContractTests;
+	use Module_With_Service_Entity_ContractTests;
 
 	public function test_register() {
 		$adsense = new AdSense( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		remove_all_filters( 'googlesitekit_auth_scopes' );
-		remove_all_filters( 'googlesitekit_module_screens' );
 
 		$this->assertEmpty( apply_filters( 'googlesitekit_auth_scopes', array() ) );
-		$this->assertEmpty( apply_filters( 'googlesitekit_module_screens', array() ) );
 
 		$adsense->register();
 
 		$this->assertNotEmpty( apply_filters( 'googlesitekit_auth_scopes', array() ) );
-		$this->assertContains( $adsense->get_screen(), apply_filters( 'googlesitekit_module_screens', array() ) );
-	}
-
-	public function test_register_unified_dashboard() {
-		$this->enable_feature( 'unifiedDashboard' );
-
-		$adsense = new AdSense( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		remove_all_filters( 'googlesitekit_module_screens' );
-
-		$this->assertEmpty( apply_filters( 'googlesitekit_module_screens', array() ) );
-
-		$adsense->register();
-
-		// Verify the screen is not registered.
-		$this->assertEmpty( apply_filters( 'googlesitekit_module_screens', array() ) );
 	}
 
 	public function test_register_template_redirect_amp() {
@@ -174,14 +162,14 @@ class AdSenseTest extends TestCase {
 
 		$output = $this->capture_action( 'wp_head' );
 
-		$this->assertContains( 'Google AdSense snippet added by Site Kit', $output );
+		$this->assertStringContainsString( 'Google AdSense snippet added by Site Kit', $output );
 
-		$this->assertContains( 'pagead2.googlesyndication.com/pagead/js/adsbygoogle.js', $output );
+		$this->assertStringContainsString( 'pagead2.googlesyndication.com/pagead/js/adsbygoogle.js', $output );
 
 		if ( $enabled ) {
-			$this->assertRegExp( '/\sdata-block-on-consent\b/', $output );
+			$this->assertMatchesRegularExpression( '/\sdata-block-on-consent\b/', $output );
 		} else {
-			$this->assertNotRegExp( '/\sdata-block-on-consent\b/', $output );
+			$this->assertDoesNotMatchRegularExpression( '/\sdata-block-on-consent\b/', $output );
 		}
 	}
 
@@ -197,11 +185,11 @@ class AdSenseTest extends TestCase {
 
 		$output = $this->capture_action( 'wp_head' );
 
-		$this->assertContains( 'google-adsense-platform-account', $output );
-		$this->assertContains( 'ca-host-pub-2644536267352236', $output );
+		$this->assertStringContainsString( 'google-adsense-platform-account', $output );
+		$this->assertStringContainsString( 'ca-host-pub-2644536267352236', $output );
 
-		$this->assertContains( 'google-adsense-platform-domain', $output );
-		$this->assertContains( 'sitekit.withgoogle.com', $output );
+		$this->assertStringContainsString( 'google-adsense-platform-domain', $output );
+		$this->assertStringContainsString( 'sitekit.withgoogle.com', $output );
 
 	}
 
@@ -230,14 +218,14 @@ class AdSenseTest extends TestCase {
 
 		$output = $this->capture_action( 'wp_body_open' );
 
-		$this->assertContains( 'Google AdSense AMP snippet added by Site Kit', $output );
+		$this->assertStringContainsString( 'Google AdSense AMP snippet added by Site Kit', $output );
 
-		$this->assertContains( 'data-ad-client="ca-pub-12345678"', $output );
+		$this->assertStringContainsString( 'data-ad-client="ca-pub-12345678"', $output );
 
 		if ( $enabled ) {
-			$this->assertRegExp( '/\sdata-block-on-consent\b/', $output );
+			$this->assertMatchesRegularExpression( '/\sdata-block-on-consent\b/', $output );
 		} else {
-			$this->assertNotRegExp( '/\sdata-block-on-consent\b/', $output );
+			$this->assertDoesNotMatchRegularExpression( '/\sdata-block-on-consent\b/', $output );
 		}
 	}
 
@@ -270,14 +258,14 @@ class AdSenseTest extends TestCase {
 
 		$output = apply_filters( 'the_content', 'test content' );
 
-		$this->assertContains( 'Google AdSense AMP snippet added by Site Kit', $output );
+		$this->assertStringContainsString( 'Google AdSense AMP snippet added by Site Kit', $output );
 
-		$this->assertContains( 'data-ad-client="ca-pub-12345678"', $output );
+		$this->assertStringContainsString( 'data-ad-client="ca-pub-12345678"', $output );
 
 		if ( $enabled ) {
-			$this->assertRegExp( '/\sdata-block-on-consent\b/', $output );
+			$this->assertMatchesRegularExpression( '/\sdata-block-on-consent\b/', $output );
 		} else {
-			$this->assertNotRegExp( '/\sdata-block-on-consent\b/', $output );
+			$this->assertDoesNotMatchRegularExpression( '/\sdata-block-on-consent\b/', $output );
 		}
 	}
 
@@ -313,7 +301,7 @@ class AdSenseTest extends TestCase {
 
 		// Confirm that the tag is not added if we're not in the loop.
 		$output = apply_filters( 'the_content', 'test content' );
-		$this->assertNotContains( 'data-ad-client="ca-pub-12345678"', $output );
+		$this->assertStringNotContainsString( 'data-ad-client="ca-pub-12345678"', $output );
 
 		// We need to fake the global to allow the hook to add the tag.
 		global $wp_query;
@@ -321,7 +309,7 @@ class AdSenseTest extends TestCase {
 
 		// Confirm that the tag is added when in the loop.
 		$output = apply_filters( 'the_content', 'test content' );
-		$this->assertContains( 'data-ad-client="ca-pub-12345678"', $output );
+		$this->assertStringContainsString( 'data-ad-client="ca-pub-12345678"', $output );
 	}
 
 	public function data_amp_auto_ads_tag_in_the_loop() {
@@ -381,59 +369,15 @@ class AdSenseTest extends TestCase {
 		$this->assertEqualSets(
 			array(
 				'notifications',
-				'tag-permission',
 				'accounts',
 				'alerts',
 				'clients',
 				'urlchannels',
-				'earnings',
+				'report',
 				'adunits',
+				'sites',
 			),
 			$adsense->get_datapoints()
-		);
-	}
-
-	/**
-	 * @dataProvider data_parse_account_id
-	 */
-	public function test_parse_account_id( $client_id, $expected ) {
-		$class  = new \ReflectionClass( AdSense::class );
-		$method = $class->getMethod( 'parse_account_id' );
-		$method->setAccessible( true );
-
-		$result = $method->invokeArgs(
-			new AdSense( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ),
-			array( $client_id )
-		);
-		$this->assertSame( $expected, $result );
-	}
-
-	public function data_parse_account_id() {
-		return array(
-			array(
-				'ca-pub-2358017',
-				'pub-2358017',
-			),
-			array(
-				'ca-pub-13572468',
-				'pub-13572468',
-			),
-			array(
-				'ca-xyz-13572468',
-				'',
-			),
-			array(
-				'ca-13572468',
-				'',
-			),
-			array(
-				'GTM-13572468',
-				'',
-			),
-			array(
-				'13572468',
-				'',
-			),
 		);
 	}
 
@@ -441,13 +385,6 @@ class AdSenseTest extends TestCase {
 	 * @return Module_With_Scopes
 	 */
 	protected function get_module_with_scopes() {
-		return new AdSense( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-	}
-
-	/**
-	 * @return Module|Module_With_Screen
-	 */
-	protected function get_module_with_screen() {
 		return new AdSense( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 	}
 
@@ -463,6 +400,21 @@ class AdSenseTest extends TestCase {
 	 */
 	protected function get_module_with_owner() {
 		return new AdSense( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+	}
+
+	/**
+	 * @return Module_With_Service_Entity
+	 */
+	protected function get_module_with_service_entity() {
+		return new AdSense( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+	}
+
+	protected function set_up_check_service_entity_access( Module $module ) {
+		$module->get_settings()->merge(
+			array(
+				'accountID' => 'pub-12345678',
+			)
+		);
 	}
 
 	public function test_parse_earnings_orderby() {
@@ -529,4 +481,25 @@ class AdSenseTest extends TestCase {
 		$this->assertEquals( '+sessions', $result[1] );
 	}
 
+	public function test_get_sites_no_account_id_from_rest_api() {
+		$user = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $user->ID );
+		do_action( 'wp_login', $user->user_login, $user );
+
+		$context        = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$options        = new Options( $context );
+		$user_options   = new User_Options( $context, $user->ID );
+		$authentication = new Authentication( $context, $options, $user_options );
+		$adsense        = new AdSense( $context, $options, $user_options, $authentication );
+		$adsense->register();
+
+		$authentication->get_oauth_client()->set_granted_scopes(
+			$adsense->get_scopes()
+		);
+		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/modules/adsense/data/sites' );
+		$response = rest_get_server()->dispatch( $request );
+
+		// Confirm the request returns 400 status code.
+		$this->assertEquals( 400, $response->get_status() );
+	}
 }

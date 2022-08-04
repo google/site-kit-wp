@@ -62,7 +62,3 @@ SurveyQuestionSingleSelectStory.args = {
 		global.console.log( 'Dismissed Survey' );
 	},
 };
-
-export default {
-	title: 'Components/Surveys',
-};

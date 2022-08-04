@@ -49,6 +49,7 @@ import {
 	isValidMetrics,
 } from '../util/report-validation';
 import { actions as adsenseActions } from './adsense';
+import { isZeroReport } from '../util';
 
 const { createRegistrySelector } = Data;
 
@@ -309,19 +310,81 @@ const baseSelectors = {
 			args.url = url;
 		}
 
+		// Disable reason: select needs to be called here or it will never run.
+		// eslint-disable-next-line @wordpress/no-unused-vars-before-return
 		const report = select( MODULES_ANALYTICS ).getReport( args );
-		if ( report === undefined ) {
+		const hasResolvedReport = select(
+			MODULES_ANALYTICS
+		).hasFinishedResolution( 'getReport', [ args ] );
+
+		if ( ! hasResolvedReport ) {
 			return undefined;
 		}
 
+		if ( ! Array.isArray( report ) ) {
+			return false;
+		}
+
 		if (
-			! Array.isArray( report?.[ 0 ]?.data?.rows ) ||
-			report?.[ 0 ]?.data?.rows?.length === 0
+			! Array.isArray( report[ 0 ]?.data?.rows ) ||
+			report[ 0 ]?.data?.rows?.length === 0
 		) {
 			return true;
 		}
 
 		return false;
+	} ),
+
+	/**
+	 * Determines whether Analytics has zero data or not.
+	 *
+	 * @since 1.69.0
+	 *
+	 * @return {boolean|undefined} Returns FALSE if not gathering data and the report is not zero, otherwise TRUE. If the request is still being resolved, returns undefined.
+	 */
+	hasZeroData: createRegistrySelector( ( select ) => () => {
+		const { startDate, endDate } = select( CORE_USER ).getDateRangeDates( {
+			offsetDays: DATE_RANGE_OFFSET,
+		} );
+
+		const args = {
+			dimensions: [ 'ga:date' ],
+			metrics: [ { expression: 'ga:users' } ],
+			startDate,
+			endDate,
+		};
+
+		const url = select( CORE_SITE ).getCurrentEntityURL();
+		if ( url ) {
+			args.url = url;
+		}
+
+		const isGatheringData = select( MODULES_ANALYTICS ).isGatheringData();
+		if ( isGatheringData === undefined ) {
+			return undefined;
+		}
+
+		// Disable reason: select needs to be called here or it will never run.
+		// eslint-disable-next-line @wordpress/no-unused-vars-before-return
+		const report = select( MODULES_ANALYTICS ).getReport( args );
+		const hasResolvedReport = select(
+			MODULES_ANALYTICS
+		).hasFinishedResolution( 'getReport', [ args ] );
+
+		if ( ! hasResolvedReport ) {
+			return undefined;
+		}
+
+		if ( ! Array.isArray( report ) ) {
+			return false;
+		}
+
+		const hasZeroReport = isZeroReport( report );
+		if ( isGatheringData === false && hasZeroReport === false ) {
+			return false;
+		}
+
+		return true;
 	} ),
 };
 

@@ -30,10 +30,14 @@ import '../assets/sass/admin.scss';
 import './assets/sass/wp-admin.scss';
 // Ensure all globals are set up before any other imports are run.
 import './polyfill-globals';
+import API from 'googlesitekit-api';
 import { resetGlobals } from './utils/resetGlobals';
 import { bootstrapFetchMocks } from './fetch-mocks';
 import { WithTestRegistry } from '../tests/js/utils';
 import { enabledFeatures } from '../assets/js/features';
+import { Cell, Grid, Row } from '../assets/js/material-components';
+
+API.setUsingCache( false );
 
 bootstrapFetchMocks();
 
@@ -48,21 +52,18 @@ export const decorators = [
 		}
 
 		return (
-			<div
-				className="googlesitekit-plugin-preview js mdc-layout-grid"
-				style={ styles }
-			>
-				<div className="mdc-layout-grid__inner">
-					<div className="googlesitekit-plugin mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
+			<Grid className="googlesitekit-plugin-preview js" style={ styles }>
+				<Row>
+					<Cell size={ 12 } className="googlesitekit-plugin">
 						<Story />
-					</div>
-				</div>
-			</div>
+					</Cell>
+				</Row>
+			</Grid>
 		);
 	},
 	// Features must be set up before test registry is initialized.
 	( Story, { parameters } ) => {
-		const { features = [] } = parameters;
+		const { features = [], route } = parameters;
 		const isFirstMount = useFirstMountState();
 		useUnmount( () => enabledFeatures.clear() );
 
@@ -72,7 +73,7 @@ export const decorators = [
 		}
 
 		return (
-			<WithTestRegistry features={ features }>
+			<WithTestRegistry features={ features } route={ route }>
 				<Story />
 			</WithTestRegistry>
 		);

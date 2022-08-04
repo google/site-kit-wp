@@ -22,35 +22,45 @@ use Google\Site_Kit\Plugin;
 class Manifest {
 
 	/**
-	 * Files as $handle => $filename map.
+	 * Entries as $handle => [ $filename, $hash ] map.
 	 *
-	 * @since 1.43.0
-	 * @var array|null
+	 * @since 1.48.0
+	 * @var array
 	 */
-	private static $assets;
+	private static $data;
 
 	/**
-	 * Gets the filename for a given handle.
+	 * Gets the manifest entry for the given handle.
 	 *
-	 * @since 1.43.0
+	 * @since 1.48.0
 	 *
-	 * @param string $handle  Script or stylesheet handle.
+	 * @param string $handle Asset handle to get manifest data for.
+	 * @return array List of $filename and $hash, or `null` for both if not found.
 	 */
-	public static function get_filename( $handle ) {
-		if ( is_null( self::$assets ) ) {
-			$path = Plugin::instance()->context()->path( "dist/manifest.php" );
-			if ( file_exists( $path ) ) {
-				self::$assets = include $path;
-			}
-		}
-		if ( isset( self::$assets[ $handle ] ) ) {
-			return self::$assets[ $handle ];
-		}
-		$handle = str_replace( 'googlesitekit-', '', $handle );
-		if ( isset( self::$assets[ $handle ] ) ) {
-			return self::$assets[ $handle ];
+	public static function get( $handle ) {
+		if ( null === self::$data ) {
+			self::load();
 		}
 
-		return null;
+		if ( isset( self::$data[ $handle ] ) ) {
+			return self::$data[ $handle ];
+		}
+
+		return array( null, null );
+	}
+
+	/**
+	 * Loads the generated manifest file.
+	 *
+	 * @since 1.48.0
+	 */
+	private static function load() {
+		$path = Plugin::instance()->context()->path( 'dist/manifest.php' );
+
+		if ( file_exists( $path ) ) {
+			// If the include fails, $data will be `false`
+			// so this should only be attempted once.
+			self::$data = include $path;
+		}
 	}
 }

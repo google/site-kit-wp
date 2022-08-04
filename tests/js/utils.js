@@ -11,6 +11,7 @@ import { Router } from 'react-router';
  * WordPress dependencies
  */
 import { createRegistry, RegistryProvider } from '@wordpress/data';
+import { useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -30,7 +31,7 @@ import * as modulesOptimize from '../../assets/js/modules/optimize';
 import * as modulesPageSpeedInsights from '../../assets/js/modules/pagespeed-insights';
 import * as modulesSearchConsole from '../../assets/js/modules/search-console';
 import * as modulesTagManager from '../../assets/js/modules/tagmanager';
-import * as modulesSubscribeWithGoogle from '../../assets/js/modules/subscribe-with-google';
+import * as modulesThankWithGoogle from '../../assets/js/modules/thank-with-google';
 import { CORE_SITE } from '../../assets/js/googlesitekit/datastore/site/constants';
 import {
 	PERMISSION_AUTHENTICATE,
@@ -44,6 +45,7 @@ import {
 import { CORE_MODULES } from '../../assets/js/googlesitekit/modules/datastore/constants';
 import FeaturesProvider from '../../assets/js/components/FeaturesProvider';
 import coreModulesFixture from '../../assets/js/googlesitekit/modules/datastore/__fixtures__';
+import InViewProvider from '../../assets/js/components/InViewProvider';
 
 const allCoreStores = [
 	coreForms,
@@ -63,7 +65,7 @@ const allCoreModules = [
 	modulesPageSpeedInsights,
 	modulesSearchConsole,
 	modulesTagManager,
-	modulesSubscribeWithGoogle,
+	modulesThankWithGoogle,
 ];
 
 /**
@@ -119,12 +121,19 @@ export function WithTestRegistry( {
 		callback( registry );
 	}
 
+	const [ inViewState ] = useState( {
+		key: 'renderStory',
+		value: true,
+	} );
+
 	return (
-		<RegistryProvider value={ registry }>
-			<FeaturesProvider value={ enabledFeatures }>
-				<Router history={ history }>{ children }</Router>
-			</FeaturesProvider>
-		</RegistryProvider>
+		<InViewProvider value={ inViewState }>
+			<RegistryProvider value={ registry }>
+				<FeaturesProvider value={ enabledFeatures }>
+					<Router history={ history }>{ children }</Router>
+				</FeaturesProvider>
+			</RegistryProvider>
+		</InViewProvider>
 	);
 }
 
@@ -208,10 +217,25 @@ export const provideSiteInfo = ( registry, extraData = {} ) => {
 		proxyPermissionsURL:
 			'https://sitekit.withgoogle.com/site-management/permissions/',
 		proxySetupURL: 'https://sitekit.withgoogle.com/site-management/setup/',
+		widgetsAdminURL: 'http://example.com/wp-admin/widgets.php',
 		referenceSiteURL: 'http://example.com',
 		siteName: 'My Site Name',
 		timezone: 'America/Detroit',
 		usingProxy: true,
+		postTypes: [
+			{
+				slug: 'post',
+				label: 'Posts',
+			},
+			{
+				slug: 'page',
+				label: 'Pages',
+			},
+			{
+				slug: 'attachment',
+				label: 'Media',
+			},
+		],
 	};
 
 	registry.dispatch( CORE_SITE ).receiveSiteInfo( {

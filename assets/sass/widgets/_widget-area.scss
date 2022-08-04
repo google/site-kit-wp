@@ -17,8 +17,6 @@
  */
 
 .googlesitekit-widget-area--composite .googlesitekit-widget-area-widgets {
-
-	@include shadow;
 	background: $c-base;
 }
 
@@ -38,17 +36,18 @@
 	}
 
 	.googlesitekit-widget-area-header__title {
-		color: $c-tertiary;
-		font-weight: 400;
-		margin: 0;
+		color: $c-neutral-n-900;
+		font-weight: $fw-medium;
+		margin: 0 0 0.125rem 0;
 	}
 
 	.googlesitekit-widget-area-header__subtitle {
-		color: $c-boulder;
+		color: $c-neutral-n-900;
 		font-family: $f-primary;
-		font-size: 0.75rem;
-		font-weight: 400;
-		line-height: 1.2;
+		font-size: $fs-body-md;
+		font-weight: $fw-normal;
+		letter-spacing: $ls-s;
+		line-height: $lh-body-md;
 		margin: 0;
 	}
 }

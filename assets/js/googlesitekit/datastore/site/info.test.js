@@ -37,9 +37,18 @@ describe( 'core/site site info', () => {
 		referenceSiteURL: 'http://example.com',
 		proxyPermissionsURL: '', // not available until site is authenticated
 		proxySetupURL: 'https://sitekit.withgoogle.com/site-management/setup/', // params omitted
+		setupErrorMessage: null,
+		setupErrorRedoURL: null,
 		siteName: 'Something Test',
 		timezone: 'America/Denver',
 		usingProxy: true,
+		widgetsAdminURL: 'http://example.com/wp-admin/widgets.php',
+		postTypes: [
+			{
+				slug: 'post',
+				label: 'Post',
+			},
+		],
 	};
 	const entityInfoVar = '_googlesitekitEntityData';
 	const entityInfo = {
@@ -244,13 +253,19 @@ describe( 'core/site site info', () => {
 			[ 'getProxySetupURL', 'proxySetupURL' ],
 			[ 'getProxyPermissionsURL', 'proxyPermissionsURL' ],
 			[ 'getSiteName', 'siteName' ],
+			[ 'getSetupErrorCode', 'setupErrorCode' ],
+			[ 'getSetupErrorMessage', 'setupErrorMessage' ],
+			[ 'getSetupErrorRedoURL', 'setupErrorRedoURL' ],
+			[ 'getProxySupportLinkURL', 'proxySupportLinkURL' ],
+			[ 'getWidgetsAdminURL', 'widgetsAdminURL' ],
 			[ 'getTimezone', 'timezone' ],
+			[ 'getPostTypes', 'postTypes' ],
 			[ 'isUsingProxy', 'usingProxy' ],
 			[ 'isAMP', 'ampMode' ],
 			[ 'isPrimaryAMP', 'ampMode' ],
 			[ 'isSecondaryAMP', 'ampMode' ],
 			[ 'isWebStoriesActive', 'webStoriesActive' ],
-		] )( `%s`, ( selector, infoKey ) => {
+		] )( '%s', ( selector, infoKey ) => {
 			it( 'uses a resolver to load site info then returns the info when this specific selector is used', async () => {
 				global[ baseInfoVar ] = baseInfo;
 				global[ entityInfoVar ] = entityInfo;

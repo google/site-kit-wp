@@ -20,8 +20,11 @@
  * Internal dependencies
  */
 import {
+	setupAnalyticsGatheringData,
 	setupBaseRegistry,
+	setupSearchConsoleGatheringData,
 	setupSearchConsoleAnalyticsMockReports,
+	setupSearchConsoleAnalyticsZeroData,
 } from './common.stories';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import AdminBarApp from './AdminBarApp';
@@ -43,8 +46,29 @@ Ready.scenario = {
 	delay: 250,
 };
 
-export const DataUnavailable = Template.bind( {} );
-DataUnavailable.storyName = 'Data Unavailable';
+export const GatheringDataLegacy = Template.bind( {} );
+GatheringDataLegacy.storyName = 'Gathering Data (Legacy)';
+
+export const GatheringData = Template.bind( {} );
+GatheringData.storyName = 'Gathering Data';
+GatheringData.args = {
+	setupRegistry: ( registry ) => {
+		setupSearchConsoleGatheringData( registry );
+		setupAnalyticsGatheringData( registry );
+	},
+};
+GatheringData.parameters = {
+	features: [ 'zeroDataStates' ],
+};
+
+export const ZeroData = Template.bind( {} );
+ZeroData.storyName = 'Zero Data';
+ZeroData.args = {
+	setupRegistry: setupSearchConsoleAnalyticsZeroData,
+};
+ZeroData.parameters = {
+	features: [ 'zeroDataStates' ],
+};
 
 export default {
 	title: 'Views/AdminBarApp/AdminBarApp',

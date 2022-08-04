@@ -24,31 +24,26 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import {
-	AREA_DASHBOARD_EARNINGS,
-	AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY,
-} from '../../googlesitekit/widgets/default-areas';
+import { AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY } from '../../googlesitekit/widgets/default-areas';
 import { SetupMain } from './components/setup';
+import { SetupMain as SetupMainV2 } from './components/setup/v2';
 import {
 	SettingsEdit,
 	SettingsSetupIncomplete,
 	SettingsView,
 } from './components/settings';
 import {
-	DashboardSummaryWidget,
 	DashboardTopEarningPagesWidget,
 	AdBlockerWarningWidget,
+	AdSenseConnectCTAWidget,
 } from './components/dashboard';
-import ModuleTopEarningPagesWidget from './components/module/ModuleTopEarningPagesWidget';
 import { ModuleOverviewWidget } from './components/module';
-import AdSenseIcon from '../../../svg/adsense.svg';
+import AdSenseIcon from '../../../svg/graphics/adsense.svg';
 import { MODULES_ADSENSE } from './datastore/constants';
 import {
 	AREA_MODULE_ADSENSE_MAIN,
-	CONTEXT_MODULE_ADSENSE,
 	ERROR_CODE_ADBLOCKER_ACTIVE,
 } from './constants';
-import { WIDGET_AREA_STYLES } from '../../googlesitekit/widgets/datastore/constants';
 import { isFeatureEnabled } from '../../features';
 export { registerStore } from './datastore';
 
@@ -58,7 +53,9 @@ export const registerModule = ( modules ) => {
 		SettingsEditComponent: SettingsEdit,
 		SettingsViewComponent: SettingsView,
 		SettingsSetupIncompleteComponent: SettingsSetupIncomplete,
-		SetupComponent: SetupMain,
+		SetupComponent: isFeatureEnabled( 'adsenseSetupV2' )
+			? SetupMainV2
+			: SetupMain,
 		Icon: AdSenseIcon,
 		features: [
 			__( 'Intelligent, automatic ad placement', 'google-site-kit' ),
@@ -84,7 +81,6 @@ export const registerModule = ( modules ) => {
 				data: null,
 			};
 		},
-		screenWidgetContext: CONTEXT_MODULE_ADSENSE,
 	} );
 };
 
@@ -96,73 +92,44 @@ export const registerWidgets = ( widgets ) => {
 			width: widgets.WIDGET_WIDTHS.FULL,
 			priority: 1,
 			wrapWidget: false,
+			modules: [ 'adsense' ],
 		},
-		[
-			isFeatureEnabled( 'unifiedDashboard' )
-				? AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY
-				: AREA_MODULE_ADSENSE_MAIN,
-		]
+		[ AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY, AREA_MODULE_ADSENSE_MAIN ]
 	);
 
-	if ( ! isFeatureEnabled( 'unifiedDashboard' ) ) {
-		widgets.registerWidget(
-			'adsenseSummary',
-			{
-				Component: DashboardSummaryWidget,
-				width: widgets.WIDGET_WIDTHS.HALF,
-				priority: 1,
-				wrapWidget: false,
-			},
-			[ AREA_DASHBOARD_EARNINGS ]
-		);
-		widgets.registerWidget(
-			'adsenseTopEarningPages',
-			{
-				Component: DashboardTopEarningPagesWidget,
-				width: [
-					widgets.WIDGET_WIDTHS.HALF,
-					widgets.WIDGET_WIDTHS.FULL,
-				],
-				priority: 2,
-				wrapWidget: false,
-			},
-			[
-				AREA_DASHBOARD_EARNINGS,
-				AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY,
-			]
-		);
-		widgets.registerWidget(
-			'adsenseModuleOverview',
-			{
-				Component: ModuleOverviewWidget,
-				width: widgets.WIDGET_WIDTHS.FULL,
-				priority: 2,
-				wrapWidget: false,
-			},
-			[
-				AREA_MODULE_ADSENSE_MAIN,
-				AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY,
-			]
-		);
-		widgets.registerWidgetArea(
-			AREA_MODULE_ADSENSE_MAIN,
-			{
-				priority: 1,
-				style: WIDGET_AREA_STYLES.BOXES,
-				title: __( 'Overview', 'google-site-kit' ),
-			},
-			CONTEXT_MODULE_ADSENSE
-		);
+	widgets.registerWidget(
+		'adsenseModuleOverview',
+		{
+			Component: ModuleOverviewWidget,
+			width: widgets.WIDGET_WIDTHS.FULL,
+			priority: 2,
+			wrapWidget: false,
+			modules: [ 'adsense' ],
+		},
+		[ AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY ]
+	);
 
-		widgets.registerWidget(
-			'adsenseModuleTopEarningPages',
-			{
-				Component: ModuleTopEarningPagesWidget,
-				width: widgets.WIDGET_WIDTHS.FULL,
-				priority: 2,
-				wrapWidget: false,
-			},
-			[ AREA_MODULE_ADSENSE_MAIN ]
-		);
-	}
+	widgets.registerWidget(
+		'adsenseConnectCTA',
+		{
+			Component: AdSenseConnectCTAWidget,
+			width: [ widgets.WIDGET_WIDTHS.FULL ],
+			priority: 2,
+			wrapWidget: false,
+			modules: [ 'adsense' ],
+		},
+		[ AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY ]
+	);
+
+	widgets.registerWidget(
+		'adsenseTopEarningPages',
+		{
+			Component: DashboardTopEarningPagesWidget,
+			width: [ widgets.WIDGET_WIDTHS.HALF, widgets.WIDGET_WIDTHS.FULL ],
+			priority: 3,
+			wrapWidget: false,
+			modules: [ 'adsense', 'analytics' ],
+		},
+		[ AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY ]
+	);
 };

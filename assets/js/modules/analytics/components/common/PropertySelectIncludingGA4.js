@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { useCallback, useContext } from '@wordpress/element';
+import { useCallback } from '@wordpress/element';
 import { __, _x, sprintf } from '@wordpress/i18n';
 
 /**
@@ -37,7 +37,7 @@ import {
 } from '../../datastore/constants';
 import { isValidAccountID } from '../../util';
 import { trackEvent } from '../../../../util';
-import ViewContextContext from '../../../../components/Root/ViewContextContext';
+import useViewContext from '../../../../hooks/useViewContext';
 const { useSelect, useDispatch } = Data;
 
 export default function PropertySelectIncludingGA4() {
@@ -82,7 +82,7 @@ export default function PropertySelectIncludingGA4() {
 
 	const ga4Dispatch = useDispatch( MODULES_ANALYTICS_4 );
 	const uaDispatch = useDispatch( MODULES_ANALYTICS );
-	const viewContext = useContext( ViewContextContext );
+	const viewContext = useViewContext();
 
 	const onChange = useCallback(
 		async ( index, item ) => {
@@ -127,7 +127,7 @@ export default function PropertySelectIncludingGA4() {
 				ga4Dispatch.setWebDataStreamID( webdatastream?._id || '' );
 				ga4Dispatch.setMeasurementID(
 					// eslint-disable-next-line sitekit/acronym-case
-					webdatastream?.measurementId || ''
+					webdatastream?.webStreamData?.measurementId || ''
 				);
 			} else {
 				const uaProperty = await uaDispatch.findMatchedProperty(
@@ -200,7 +200,7 @@ export default function PropertySelectIncludingGA4() {
 									/* translators: 1: Property name. 2: Property ID. */
 									_x(
 										'%1$s (%2$s)',
-										'{property name} ({property id})',
+										'Analytics property name and ID',
 										'google-site-kit'
 									),
 									name,

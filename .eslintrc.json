@@ -39,6 +39,14 @@
         "message": "Use 'global' instead."
       }
     ],
+    "no-use-before-define": [
+      "error",
+      {
+        "functions": false,
+        "classes": false,
+        "variables": false
+      }
+    ],
     "react/jsx-fragments": [
       "error",
       "element"
@@ -59,9 +67,12 @@
       "error",
       "single",
       {
-        "allowTemplateLiterals": true,
         "avoidEscape": true
       }
+    ],
+    "curly": [
+      "error",
+      "all"
     ]
   },
   "settings": {
@@ -72,7 +83,17 @@
       "googlesitekit-widgets",
       "@wordpress/i18n__non-shim",
       "@wordpress/api-fetch__non-shim"
-    ]
+    ],
+    "import/resolver": {
+      "alias": {
+        "map": [
+          [
+            "@wordpress-core",
+            "@wordpress"
+          ]
+        ]
+      }
+    }
   },
   "overrides": [
     {

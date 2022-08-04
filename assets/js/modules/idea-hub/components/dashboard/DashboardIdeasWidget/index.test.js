@@ -24,6 +24,7 @@ import {
 	fireEvent,
 	createTestRegistry,
 	provideModules,
+	act,
 } from '../../../../../../../tests/js/test-utils';
 import { enabledFeatures } from '../../../../../features';
 import { getWidgetComponentProps } from '../../../../../googlesitekit/widgets/util/';
@@ -86,7 +87,9 @@ describe( 'Idea Hub', () => {
 				{ registry }
 			);
 
-			fireEvent.click( getByRole( 'tab', { name: args } ) );
+			await act( async () => {
+				fireEvent.click( getByRole( 'tab', { name: args } ) );
+			} );
 			// eslint-disable-next-line sitekit/acronym-case
 			const ideaHubTab = new URLSearchParams(
 				global.location.search

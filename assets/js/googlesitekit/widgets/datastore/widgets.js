@@ -20,11 +20,16 @@
  * External dependencies
  */
 import invariant from 'invariant';
+import intersection from 'lodash/intersection';
 
 /**
  * Internal dependencies
  */
-import { WIDGET_WIDTHS } from './constants';
+import Data from 'googlesitekit-data';
+import { isInactiveWidgetState, normalizeWidgetModules } from '../util';
+import { CORE_WIDGETS, WIDGET_WIDTHS } from './constants';
+
+const { createRegistrySelector } = Data;
 
 const ASSIGN_WIDGET = 'ASSIGN_WIDGET';
 const REGISTER_WIDGET = 'REGISTER_WIDGET';
@@ -75,6 +80,7 @@ export const actions = {
 	 * @param {number}                [settings.priority]   Optional. Widget's priority for ordering (lower number is higher priority, like WordPress hooks). Default is: 10.
 	 * @param {string|Array.<string>} [settings.width]      Optional. Widget's maximum width to occupy. Default is: "quarter". One of: "quarter", "half", "full".
 	 * @param {boolean}               [settings.wrapWidget] Optional. Whether to wrap the component with the <Widget> wrapper. Default is: true.
+	 * @param {string|Array.<string>} [settings.modules]    Optional. Widget's associated modules.
 	 * @return {Object} Redux-style action.
 	 */
 	registerWidget(
@@ -84,6 +90,7 @@ export const actions = {
 			priority = 10,
 			width = WIDGET_WIDTHS.QUARTER,
 			wrapWidget = true,
+			modules,
 		} = {}
 	) {
 		const allWidths = Object.values( WIDGET_WIDTHS );
@@ -104,6 +111,7 @@ export const actions = {
 					priority,
 					width,
 					wrapWidget,
+					modules: normalizeWidgetModules( modules ),
 				},
 			},
 			type: REGISTER_WIDGET,
@@ -255,6 +263,26 @@ export const resolvers = {};
 
 export const selectors = {
 	/**
+	 * Checks if a widget with a given slug is active.
+	 *
+	 * Returns `true` if the widget area is active.
+	 * Returns `false` if the widget area is NOT active.
+	 *
+	 * @since 1.47.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @param {string} slug  Widget's slug.
+	 * @return {boolean} `true`/`false` based on whether widget is active.
+	 */
+	isWidgetActive: createRegistrySelector( ( select ) => ( state, slug ) => {
+		invariant( slug, 'slug is required to check a widget is active.' );
+
+		return ! isInactiveWidgetState(
+			select( CORE_WIDGETS ).getWidgetState( slug )
+		);
+	} ),
+
+	/**
 	 * Checks if a widget has been registered with a given slug.
 	 *
 	 * Returns `true` if the widget area has been registered.
@@ -281,20 +309,36 @@ export const selectors = {
 	 *
 	 * @since 1.9.0
 	 *
-	 * @param {Object} state          Data store's state.
-	 * @param {string} widgetAreaSlug Widget context to get areas for.
+	 * @param {Object}                state             Data store's state.
+	 * @param {string}                widgetAreaSlug    Widget context to get areas for.
+	 * @param {Object}                options           Widgets selection options.
+	 * @param {string|Array.<string>} [options.modules] Optional. Widget's associated modules.
 	 * @return {Array} An ordered array of widgets for this area.
 	 */
-	getWidgets( state, widgetAreaSlug ) {
+	getWidgets( state, widgetAreaSlug, { modules } = {} ) {
 		invariant( widgetAreaSlug, 'widgetAreaSlug is required.' );
 
-		const { areaAssignments, widgets } = state;
+		const { areaAssignments } = state;
 
-		return Object.values( widgets )
-			.filter( ( widget ) =>
-				areaAssignments[ widgetAreaSlug ]?.includes( widget.slug )
-			)
-			.sort( ( a, b ) => a.priority - b.priority );
+		let widgets = Object.values( state.widgets ).filter( ( widget ) =>
+			areaAssignments[ widgetAreaSlug ]?.includes( widget.slug )
+		);
+
+		if ( modules ) {
+			const allowedModules = normalizeWidgetModules( modules );
+			widgets = widgets.filter( ( widget ) => {
+				if ( ! widget.modules?.length ) {
+					return true;
+				}
+
+				return (
+					intersection( widget.modules, allowedModules ).length ===
+					widget.modules.length
+				);
+			} );
+		}
+
+		return widgets.sort( ( a, b ) => a.priority - b.priority );
 	},
 
 	/**

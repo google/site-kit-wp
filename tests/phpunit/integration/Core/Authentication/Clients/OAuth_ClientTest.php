@@ -268,8 +268,8 @@ class OAuth_ClientTest extends TestCase {
 		 * Requires credentials for redirect_uri to be set on the Google_Site_Kit_Client.
 		 * @see \Google\Site_Kit\Core\Authentication\Clients\OAuth_Client::get_client
 		 */
-		$fake_credentials = $this->fake_site_connection();
-		$user_id          = $this->factory()->user->create();
+		list( $client_id ) = $this->fake_site_connection();
+		$user_id           = $this->factory()->user->create();
 		wp_set_current_user( $user_id );
 		$client = new OAuth_Client( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
@@ -280,14 +280,15 @@ class OAuth_ClientTest extends TestCase {
 		wp_parse_str( parse_url( $authentication_url, PHP_URL_QUERY ), $params );
 
 		// Verify that the user locale is included in the URL.
-		$this->assertStringEndsWith( '&hl=en_US', $authentication_url );
+		$this->assertArrayHasKey( 'hl', $params );
+		$this->assertEquals( 'en_US', $params['hl'] );
 
 		/**
 		 * The redirect URL passed to get_authentication_url is used locally, and the redirect URI here is always the same.
 		 * @see \Google\Site_Kit\Core\Authentication\Authentication::handle_oauth
 		 */
 		$this->assertEquals( add_query_arg( 'oauth2callback', 1, admin_url( 'index.php' ) ), $params['redirect_uri'] );
-		$this->assertEquals( $fake_credentials['client_id'], $params['client_id'] );
+		$this->assertEquals( $client_id, $params['client_id'] );
 		$this->assertEqualSets(
 			explode( ' ', $params['scope'] ),
 			$base_scopes
@@ -359,7 +360,7 @@ class OAuth_ClientTest extends TestCase {
 			$client->authorize_user();
 		} catch ( RedirectException $redirect ) {
 			$this->assertEquals( 'callback_error', $user_options->get( OAuth_Client::OPTION_ERROR_CODE ) );
-			$this->assertEquals( admin_url(), $redirect->get_location() );
+			$this->assertEquals( admin_url( 'admin.php?page=googlesitekit-splash' ), $redirect->get_location() );
 		}
 
 		// If no credentials.
@@ -370,7 +371,7 @@ class OAuth_ClientTest extends TestCase {
 		try {
 			$client->authorize_user();
 		} catch ( RedirectException $redirect ) {
-			$this->assertEquals( admin_url(), $redirect->get_location() );
+			$this->assertEquals( admin_url( 'admin.php?page=googlesitekit-splash' ), $redirect->get_location() );
 		}
 
 		$this->assertEquals( 'oauth_credentials_not_exist', get_user_option( OAuth_Client::OPTION_ERROR_CODE, $user_id ) );
@@ -419,7 +420,7 @@ class OAuth_ClientTest extends TestCase {
 			$client->authorize_user();
 		} catch ( RedirectException $redirect ) {
 			$this->assertStringStartsWith( "$success_redirect?", $redirect->get_location() );
-			$this->assertContains( 'notification=authentication_success', $redirect->get_location() );
+			$this->assertStringContainsString( 'notification=authentication_success', $redirect->get_location() );
 		}
 
 		$profile = $user_options->get( Profile::OPTION );
@@ -576,46 +577,6 @@ class OAuth_ClientTest extends TestCase {
 		$this->assertTrue( $client->using_proxy() );
 	}
 
-	public function test_get_proxy_setup_url() {
-		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-
-		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
-		wp_set_current_user( $user_id );
-
-		// If no site ID, pass site registration args.
-		$client = new OAuth_Client( $context );
-		$url    = $client->get_proxy_setup_url();
-		$this->assertContains( 'name=', $url );
-		$this->assertContains( 'url=', $url );
-		$this->assertContains( 'scope=', $url );
-		$this->assertContains( 'nonce=', $url );
-		$this->assertContains( 'redirect_uri=', $url );
-		$this->assertContains( 'action_uri=', $url );
-		$this->assertContains( 'return_uri=', $url );
-		$this->assertContains( 'analytics_redirect_uri=', $url );
-		$this->assertContains( 'user_roles=', $url );
-		$this->assertContains( 'application_name=', $url );
-		$this->assertContains( 'hl=', $url );
-		$this->assertNotContains( 'site_id=', $url );
-
-		// Otherwise, pass site ID and given temporary access code.
-		$fake_credentials = $this->fake_proxy_site_connection();
-		$client           = new OAuth_Client( $context );
-		$url              = $client->get_proxy_setup_url( 'temp-code' );
-		$this->assertContains( 'site_id=' . $fake_credentials['client_id'], $url );
-		$this->assertContains( 'code=temp-code', $url );
-		$this->assertContains( 'scope=', $url );
-		$this->assertContains( 'nonce=', $url );
-		$this->assertContains( 'user_roles=', $url );
-		$this->assertContains( 'application_name=', $url );
-		$this->assertNotContains( '&name=', $url );
-		$this->assertNotContains( 'url=', $url );
-		$this->assertNotContains( 'redirect_uri=', $url );
-		$this->assertNotContains( 'action_uri=', $url );
-		$this->assertNotContains( 'return_uri=', $url );
-		$this->assertNotContains( 'analytics_redirect_uri=', $url );
-	}
-
 	public function test_get_proxy_permissions_url() {
 		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 
@@ -631,19 +592,19 @@ class OAuth_ClientTest extends TestCase {
 		$client = new OAuth_Client( $context );
 		$client->set_token( array( 'access_token' => 'test-access-token' ) );
 		$url = $client->get_proxy_permissions_url();
-		$this->assertContains( 'token=test-access-token', $url );
-		$this->assertContains( 'application_name=', $url );
-		$this->assertContains( 'hl=', $url );
+		$this->assertStringContainsString( 'token=test-access-token', $url );
+		$this->assertStringContainsString( 'application_name=', $url );
+		$this->assertStringContainsString( 'hl=', $url );
 
 		// If there is a site ID, it should also include that.
-		$fake_credentials = $this->fake_proxy_site_connection();
-		$client           = new OAuth_Client( $context );
+		list( $site_id ) = $this->fake_proxy_site_connection();
+		$client          = new OAuth_Client( $context );
 		$client->set_token( array( 'access_token' => 'test-access-token' ) );
 		$url = $client->get_proxy_permissions_url();
-		$this->assertContains( 'token=test-access-token', $url );
-		$this->assertContains( 'site_id=' . $fake_credentials['client_id'], $url );
-		$this->assertContains( 'application_name=', $url );
-		$this->assertContains( 'hl=', $url );
+		$this->assertStringContainsString( 'token=test-access-token', $url );
+		$this->assertStringContainsString( 'site_id=' . $site_id, $url );
+		$this->assertStringContainsString( 'application_name=', $url );
+		$this->assertStringContainsString( 'hl=', $url );
 	}
 
 	protected function get_user_credential_keys() {

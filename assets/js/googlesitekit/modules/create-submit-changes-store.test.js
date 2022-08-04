@@ -56,7 +56,7 @@ describe( 'createSubmitChangesStore', () => {
 					Data.combineStores(
 						Data.commonStore,
 						createSubmitChangesStore( { submitChanges } ),
-						createErrorStore()
+						createErrorStore( storeName )
 					)
 				);
 
@@ -77,7 +77,7 @@ describe( 'createSubmitChangesStore', () => {
 						createSubmitChangesStore( {
 							submitChanges: async () => ( { error } ),
 						} ),
-						createErrorStore()
+						createErrorStore( storeName )
 					)
 				);
 
@@ -107,7 +107,7 @@ describe( 'createSubmitChangesStore', () => {
 						createSubmitChangesStore( {
 							submitChanges: async () => ( { error } ),
 						} ),
-						createErrorStore()
+						createErrorStore( storeName )
 					)
 				);
 
@@ -173,14 +173,14 @@ describe( 'createSubmitChangesStore', () => {
 				).toBe( false );
 			} );
 
-			it( `should be set to TRUE after starting submiting changes`, async () => {
+			it( 'should be set to TRUE after starting submiting changes', async () => {
 				const registry = createRegistry();
 
 				registry.registerStore(
 					storeName,
 					Data.combineStores(
 						Data.commonStore,
-						createErrorStore(),
+						createErrorStore( storeName ),
 						createSubmitChangesStore( {
 							submitChanges: async () => {
 								expect(
@@ -197,7 +197,7 @@ describe( 'createSubmitChangesStore', () => {
 				await registry.dispatch( storeName ).submitChanges();
 			} );
 
-			it( `should be set to FALSE after finishing submitting changes`, async () => {
+			it( 'should be set to FALSE after finishing submitting changes', async () => {
 				const registry = createRegistry();
 
 				registry.registerStore(
@@ -207,7 +207,7 @@ describe( 'createSubmitChangesStore', () => {
 						createSubmitChangesStore( {
 							submitChanges: async () => ( {} ),
 						} ),
-						createErrorStore()
+						createErrorStore( storeName )
 					)
 				);
 

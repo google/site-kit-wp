@@ -12,8 +12,10 @@ namespace Google\Site_Kit\Core\Authentication;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Util\Feature_Flags;
-use WP_Error;
 use Exception;
+use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
+use Google\Site_Kit\Core\Storage\User_Options;
+use WP_Error;
 
 /**
  * Class for authentication service.
@@ -24,21 +26,27 @@ use Exception;
  */
 class Google_Proxy {
 
-	const PRODUCTION_BASE_URL     = 'https://sitekit.withgoogle.com';
-	const STAGING_BASE_URL        = 'https://site-kit-dev.appspot.com';
-	const OAUTH2_SITE_URI         = '/o/oauth2/site/';
-	const OAUTH2_REVOKE_URI       = '/o/oauth2/revoke/';
-	const OAUTH2_TOKEN_URI        = '/o/oauth2/token/';
-	const OAUTH2_AUTH_URI         = '/o/oauth2/auth/';
-	const OAUTH2_DELETE_SITE_URI  = '/o/oauth2/delete-site/';
-	const SETUP_URI               = '/site-management/setup/';
-	const PERMISSIONS_URI         = '/site-management/permissions/';
-	const USER_INPUT_SETTINGS_URI = '/site-management/settings/';
-	const FEATURES_URI            = '/site-management/features/';
-	const SURVEY_TRIGGER_URI      = '/survey/trigger/';
-	const SURVEY_EVENT_URI        = '/survey/event/';
-	const ACTION_SETUP            = 'googlesitekit_proxy_setup';
-	const ACTION_PERMISSIONS      = 'googlesitekit_proxy_permissions';
+	const PRODUCTION_BASE_URL       = 'https://sitekit.withgoogle.com';
+	const STAGING_BASE_URL          = 'https://site-kit-dev.appspot.com';
+	const OAUTH2_SITE_URI           = '/o/oauth2/site/';
+	const OAUTH2_REVOKE_URI         = '/o/oauth2/revoke/';
+	const OAUTH2_TOKEN_URI          = '/o/oauth2/token/';
+	const OAUTH2_AUTH_URI           = '/o/oauth2/auth/';
+	const OAUTH2_DELETE_SITE_URI    = '/o/oauth2/delete-site/';
+	const SETUP_URI                 = '/v2/site-management/setup/';
+	const PERMISSIONS_URI           = '/site-management/permissions/';
+	const USER_INPUT_SETTINGS_URI   = '/site-management/settings/';
+	const FEATURES_URI              = '/site-management/features/';
+	const SURVEY_TRIGGER_URI        = '/survey/trigger/';
+	const SURVEY_EVENT_URI          = '/survey/event/';
+	const SUPPORT_LINK_URI          = '/support';
+	const ACTION_EXCHANGE_SITE_CODE = 'googlesitekit_proxy_exchange_site_code';
+	const ACTION_SETUP              = 'googlesitekit_proxy_setup';
+	const ACTION_SETUP_START        = 'googlesitekit_proxy_setup_start';
+	const ACTION_PERMISSIONS        = 'googlesitekit_proxy_permissions';
+	const ACTION_VERIFY             = 'googlesitekit_proxy_verify';
+	const NONCE_ACTION              = 'googlesitekit_proxy_nonce';
+	const HEADER_REDIRECT_TO        = 'Redirect-To';
 
 	/**
 	 * Plugin context.
@@ -49,6 +57,14 @@ class Google_Proxy {
 	private $context;
 
 	/**
+	 * Required scopes list.
+	 *
+	 * @since 1.68.0
+	 * @var array
+	 */
+	private $required_scopes = array();
+
+	/**
 	 * Google_Proxy constructor.
 	 *
 	 * @since 1.1.2
@@ -57,6 +73,17 @@ class Google_Proxy {
 	 */
 	public function __construct( Context $context ) {
 		$this->context = $context;
+	}
+
+	/**
+	 * Sets required scopes to use when the site is registering at proxy.
+	 *
+	 * @since 1.68.0
+	 *
+	 * @param array $scopes List of scopes.
+	 */
+	public function with_scopes( array $scopes ) {
+		$this->required_scopes = $scopes;
 	}
 
 	/**
@@ -103,46 +130,47 @@ class Google_Proxy {
 	/**
 	 * Returns the setup URL to the authentication proxy.
 	 *
-	 * @since 1.27.0
+	 * @since 1.49.0
+	 * @since 1.71.0 Uses the V2 setup flow by default.
 	 *
-	 * @param Credentials $credentials  Credentials instance.
-	 * @param array       $query_params Optional. Additional query parameters.
+	 * @param array $query_params Query parameters to include in the URL.
 	 * @return string URL to the setup page on the authentication proxy.
+	 *
+	 * @throws Exception Thrown if called without the required query parameters.
 	 */
-	public function setup_url( Credentials $credentials, array $query_params = array() ) {
-		$params = array_merge(
-			$query_params,
-			array(
-				'supports' => rawurlencode( implode( ' ', $this->get_supports() ) ),
-				'nonce'    => rawurlencode( wp_create_nonce( self::ACTION_SETUP ) ),
-			)
-		);
-
-		if ( $credentials->has() ) {
-			$creds             = $credentials->get();
-			$params['site_id'] = $creds['oauth2_client_id'];
+	public function setup_url( array $query_params = array() ) {
+		if ( empty( $query_params['code'] ) ) {
+			throw new Exception( __( 'Missing code parameter for setup URL.', 'google-site-kit' ) );
+		}
+		if ( empty( $query_params['site_id'] ) && empty( $query_params['site_code'] ) ) {
+			throw new Exception( __( 'Missing site_id or site_code parameter for setup URL.', 'google-site-kit' ) );
 		}
 
-		/**
-		 * Filters parameters included in proxy setup URL.
-		 *
-		 * @since 1.27.0
-		 */
-		$params = apply_filters( 'googlesitekit_proxy_setup_url_params', $params );
+		return add_query_arg( $query_params, $this->url( self::SETUP_URI ) );
+	}
 
-		// If no site identification information is present, we need to provide details for a new site.
-		if ( empty( $params['site_id'] ) && empty( $params['site_code'] ) ) {
-			$site_fields = array_map( 'rawurlencode', $this->get_site_fields() );
-			$params      = array_merge( $params, $site_fields );
+	/**
+	 * Conditionally adds the `step` parameter to the passed query parameters, depending on the given error code.
+	 *
+	 * @since 1.49.0
+	 *
+	 * @param array  $query_params Query parameters.
+	 * @param string $error_code Error code.
+	 * @return array Query parameters with `step` included, depending on the error code.
+	 */
+	public function add_setup_step_from_error_code( $query_params, $error_code ) {
+		switch ( $error_code ) {
+			case 'missing_verification':
+				$query_params['step'] = 'verification';
+				break;
+			case 'missing_delegation_consent':
+				$query_params['step'] = 'delegation_consent';
+				break;
+			case 'missing_search_console_property':
+				$query_params['step'] = 'search_console_property';
+				break;
 		}
-
-		$user_fields = array_map( 'rawurlencode', $this->get_user_fields() );
-		$params      = array_merge( $params, $user_fields );
-
-		$params['application_name'] = rawurlencode( self::get_application_name() );
-		$params['hl']               = $this->context->get_locale( 'user' );
-
-		return add_query_arg( $params, $this->url( self::SETUP_URI ) );
+		return $query_params;
 	}
 
 	/**
@@ -249,6 +277,10 @@ class Google_Proxy {
 			return new WP_Error( 'request_failed', $message, array( 'status' => $code ) );
 		}
 
+		if ( ! empty( $args['return'] ) && 'response' === $args['return'] ) {
+			return $response;
+		}
+
 		if ( is_null( $body ) ) {
 			return new WP_Error(
 				'failed_to_parse_response',
@@ -269,13 +301,42 @@ class Google_Proxy {
 	 */
 	public function get_site_fields() {
 		return array(
-			'name'                   => wp_specialchars_decode( get_bloginfo( 'name' ) ),
+			'name'                   => wp_specialchars_decode( get_bloginfo( 'name' ), ENT_QUOTES ),
 			'url'                    => $this->context->get_canonical_home_url(),
 			'redirect_uri'           => add_query_arg( 'oauth2callback', 1, admin_url( 'index.php' ) ),
 			'action_uri'             => admin_url( 'index.php' ),
 			'return_uri'             => $this->context->admin_url( 'splash' ),
 			'analytics_redirect_uri' => add_query_arg( 'gatoscallback', 1, admin_url( 'index.php' ) ),
 		);
+	}
+
+	/**
+	 * Gets metadata fields.
+	 *
+	 * @since 1.68.0
+	 *
+	 * @return array Metadata fields array.
+	 */
+	public function get_metadata_fields() {
+		$metadata = array(
+			'supports'         => implode( ' ', $this->get_supports() ),
+			'nonce'            => wp_create_nonce( self::NONCE_ACTION ),
+			'mode'             => '',
+			'hl'               => $this->context->get_locale( 'user' ),
+			'application_name' => self::get_application_name(),
+			'service_version'  => 'v2',
+		);
+
+		/**
+		 * Filters the setup mode.
+		 *
+		 * @since 1.68.0
+		 *
+		 * @param string $mode An initial setup mode.
+		 */
+		$metadata['mode'] = apply_filters( 'googlesitekit_proxy_setup_mode', $metadata['mode'] );
+
+		return $metadata;
 	}
 
 	/**
@@ -348,23 +409,72 @@ class Google_Proxy {
 	}
 
 	/**
+	 * Registers the site on the proxy.
+	 *
+	 * @since 1.68.0
+	 *
+	 * @param string $mode Sync mode.
+	 * @return string|WP_Error Redirect URL on success, otherwise an error.
+	 */
+	public function register_site( $mode = 'async' ) {
+		return $this->send_site_fields( null, $mode );
+	}
+
+	/**
 	 * Synchronizes site fields with the proxy.
 	 *
 	 * @since 1.5.0
+	 * @since 1.68.0 Updated the function to return redirect URL.
 	 *
 	 * @param Credentials $credentials Credentials instance.
 	 * @param string      $mode        Sync mode.
-	 * @return array|WP_Error Response of the wp_remote_post request.
+	 * @return string|WP_Error Redirect URL on success, otherwise an error.
 	 */
 	public function sync_site_fields( Credentials $credentials, $mode = 'async' ) {
-		return $this->request(
+		return $this->send_site_fields( $credentials, $mode );
+	}
+
+	/**
+	 * Sends site fields to the proxy.
+	 *
+	 * @since 1.68.0
+	 *
+	 * @param Credentials $credentials Credentials instance.
+	 * @param string      $mode        Sync mode.
+	 * @return string|WP_Error Redirect URL on success, otherwise an error.
+	 */
+	private function send_site_fields( Credentials $credentials = null, $mode = 'async' ) {
+		$response = $this->request(
 			self::OAUTH2_SITE_URI,
 			$credentials,
 			array(
-				'mode' => $mode,
-				'body' => $this->get_site_fields(),
+				'return' => 'response',
+				'mode'   => $mode,
+				'body'   => array_merge(
+					$this->get_site_fields(),
+					$this->get_user_fields(),
+					$this->get_metadata_fields(),
+					array(
+						'scope' => implode( ' ', $this->required_scopes ),
+					)
+				),
 			)
 		);
+
+		if ( is_wp_error( $response ) ) {
+			return $response;
+		}
+
+		$redirect_to = wp_remote_retrieve_header( $response, self::HEADER_REDIRECT_TO );
+		if ( empty( $redirect_to ) ) {
+			return new WP_Error(
+				'failed_to_retrive_redirect',
+				__( 'Failed to retrieve redirect URL.', 'google-site-kit' ),
+				array( 'status' => 500 )
+			);
+		}
+
+		return $redirect_to;
 	}
 
 	/**
@@ -438,21 +548,57 @@ class Google_Proxy {
 	 *
 	 * @since 1.27.0
 	 *
-	 * @param Credentials $credentials  Credentials instance.
+	 * @param Credentials $credentials Credentials instance.
 	 * @return array|WP_Error Response of the wp_remote_post request.
 	 */
 	public function get_features( Credentials $credentials ) {
-		$platform = self::get_platform();
-		return $this->request(
-			self::FEATURES_URI,
-			$credentials,
+		global $wp_version;
+
+		$platform               = self::get_platform();
+		$user_count             = count_users();
+		$connectable_user_count = isset( $user_count['avail_roles']['administrator'] ) ? $user_count['avail_roles']['administrator'] : 0;
+
+		$body = array(
+			'platform'               => $platform . '/google-site-kit',
+			'version'                => GOOGLESITEKIT_VERSION,
+			'platform_version'       => $wp_version,
+			'user_count'             => $user_count['total_users'],
+			'connectable_user_count' => $connectable_user_count,
+			'connected_user_count'   => $this->count_connected_users(),
+		);
+
+		/**
+		 * Filters additional context data sent with the body of a remote-controlled features request.
+		 *
+		 * @since 1.71.0
+		 *
+		 * @param array $body Context data to be sent with the features request.
+		 */
+		$body = apply_filters( 'googlesitekit_features_request_data', $body );
+
+		return $this->request( self::FEATURES_URI, $credentials, array( 'body' => $body ) );
+	}
+
+	/**
+	 * Gets the number of users who are connected (i.e. authenticated /
+	 * have an access token).
+	 *
+	 * @since 1.71.0
+	 *
+	 * @return int Number of WordPress user accounts connected to SiteKit.
+	 */
+	public function count_connected_users() {
+		$user_options    = new User_Options( $this->context );
+		$connected_users = get_users(
 			array(
-				'body' => array(
-					'platform' => $platform . '/google-site-kit',
-					'version'  => GOOGLESITEKIT_VERSION,
-				),
+				'meta_key'     => $user_options->get_meta_key( OAuth_Client::OPTION_ACCESS_TOKEN ), // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
+				'meta_compare' => 'EXISTS',
+				'role'         => 'administrator',
+				'fields'       => 'ID',
 			)
 		);
+
+		return count( $connected_users );
 	}
 
 	/**

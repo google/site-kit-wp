@@ -11,7 +11,8 @@
 namespace Google\Site_Kit\Tests\Core\Modules;
 
 use Google\Site_Kit\Context;
-use Google\Site_Kit\Core\REST_API\Data_Request;
+use Google\Site_Kit\Core\Authentication\Exception\Google_Proxy_Code_Exception;
+use Google\Site_Kit\Tests\Fake_Site_Connection_Trait;
 use Google\Site_Kit\Tests\TestCase;
 use Google\Site_Kit_Dependencies\Google_Service_Exception;
 use Exception;
@@ -21,6 +22,8 @@ use ReflectionMethod;
  * @group Modules
  */
 class ModuleTest extends TestCase {
+
+	use Fake_Site_Connection_Trait;
 
 	const MODULE_CLASS_NAME = '\Google\Site_Kit\Core\Modules\Module';
 
@@ -61,24 +64,6 @@ class ModuleTest extends TestCase {
 		$this->assertNull( $module->non_existent );
 	}
 
-	public function test_prepare_info_for_js() {
-		$module = new FakeModule( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		$keys   = array(
-			'slug',
-			'name',
-			'description',
-			'sort',
-			'homepage',
-			'required',
-			'autoActivate',
-			'internal',
-			'screenID',
-			'settings',
-		);
-
-		$this->assertEqualSets( $keys, array_keys( $module->prepare_info_for_js() ) );
-	}
-
 	public function test_is_connected() {
 		$module = new FakeModule( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
@@ -99,7 +84,7 @@ class ModuleTest extends TestCase {
 
 		$module   = new FakeModule( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$response = $module->get_data( 'test-request', array( 'foo' => 'bar' ) );
-		$this->assertInternalType( 'object', $response );
+		$this->assertIsObject( $response );
 		$this->assertEquals( 'GET', $response->method );
 		$this->assertEquals( 'test-request', $response->datapoint );
 		$this->assertEquals( array( 'foo' => 'bar' ), (array) $response->data );
@@ -112,7 +97,7 @@ class ModuleTest extends TestCase {
 				'asArray' => true,
 			)
 		);
-		$this->assertInternalType( 'array', $response );
+		$this->assertIsArray( $response );
 		$this->assertEquals( 'GET', $response['method'] );
 		$this->assertEquals( 'test-request', $response['datapoint'] );
 		$this->assertEquals(
@@ -308,6 +293,20 @@ class ModuleTest extends TestCase {
 		);
 	}
 
+	public function test_exception_to_error__with_proxy_code_exception() {
+		$this->fake_proxy_site_connection();
+
+		$module    = new FakeModule( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$exception = new Google_Proxy_Code_Exception( 'test message', 0, 'access-code' );
+		$error     = $module->exception_to_error( $exception );
+
+		$this->assertWPError( $error );
+		$data = $error->get_error_data();
+
+		$this->assertEquals( 401, $data['status'] );
+		$this->assertStringStartsWith( 'https://sitekit.withgoogle.com/v2/site-management/setup/', $data['reconnectURL'] );
+	}
+
 	public function test_parse_string_list() {
 		$module = new FakeModule( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
@@ -342,6 +341,33 @@ class ModuleTest extends TestCase {
 		$this->assertEquals( 'one', $result[0] );
 		$this->assertEquals( 'two', $result[1] );
 		$this->assertEquals( 'three', $result[2] );
+	}
+
+	public function test_is_shareable() {
+		$module = new FakeModule( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+
+		$this->assertFalse( $module->is_shareable() );
+	}
+
+	public function test_is_recoverable() {
+		remove_all_filters( 'googlesitekit_is_module_recoverable' );
+		$module      = new FakeModule( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$invocations = array();
+		$spy         = function ( ...$args ) use ( &$invocations ) {
+			$invocations[] = $args;
+			return $args[0];
+		};
+
+		// is_recoverable is a proxy through this filter which is handled by
+		// Modules::is_module_recoverable. @see \Google\Site_Kit\Tests\Core\Modules\ModulesTest::test_is_module_recoverable
+		add_filter( 'googlesitekit_is_module_recoverable', $spy, 10, 2 );
+
+		$module->is_recoverable();
+
+		$this->assertCount( 1, $invocations );
+		list ( $given, $slug ) = $invocations[0];
+		$this->assertFalse( $given );
+		$this->assertEquals( $module->slug, $slug );
 	}
 
 	/**

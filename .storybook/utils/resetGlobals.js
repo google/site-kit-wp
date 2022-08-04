@@ -31,7 +31,6 @@ export const resetGlobals = () => {
 	global._googlesitekitBaseData = {
 		homeURL: 'http://example.com/',
 		referenceSiteURL: 'http://example.com/',
-		userIDHash: 'storybook',
 		adminURL: 'http://example.com/wp-admin/',
 		assetsURL:
 			'http://example.com/wp-content/plugins/google-site-kit/dist/assets/',
@@ -46,8 +45,8 @@ export const resetGlobals = () => {
 			'http://example.com/wp-admin/index.php?action=googlesitekit_proxy_setup&nonce=abc123',
 		proxyPermissionsURL:
 			'http://example.com/wp-admin/index.php?action=googlesitekit_proxy_permissions&nonce=abc123',
-		trackingEnabled: false,
-		trackingID: 'UA-000000000-1',
+		userRoles: [ 'administrator' ],
+		isAuthenticated: false,
 	};
 	global._googlesitekitEntityData = {
 		currentEntityURL: null,
@@ -62,7 +61,6 @@ export const resetGlobals = () => {
 			email: 'wapuu.wordpress@gmail.com',
 			picture:
 				'https://wapu.us/wp-content/uploads/2017/11/WapuuFinal-100x138.png',
-			roles: [ 'administrator' ],
 		},
 		connectURL:
 			'http://example.com/wp-admin/index.php?action=googlesitekit_connect&nonce=abc123',
@@ -78,5 +76,14 @@ export const resetGlobals = () => {
 			googlesitekit_manage_options: true,
 			googlesitekit_publish_posts: true,
 		},
+	};
+	global._googlesitekitTrackingData = {
+		referenceSiteURL: 'http://example.com/',
+		userIDHash: 'storybook',
+		activeModules: [],
+		trackingEnabled: false,
+		trackingID: 'UA-000000000-1',
+		userRoles: [ 'administrator' ],
+		isAuthenticated: false,
 	};
 };

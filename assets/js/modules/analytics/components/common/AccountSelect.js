@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { useCallback, useContext } from '@wordpress/element';
+import { useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -29,13 +29,12 @@ import Data from 'googlesitekit-data';
 import ProgressBar from '../../../../components/ProgressBar';
 import { Select, Option } from '../../../../material-components';
 import { MODULES_ANALYTICS, ACCOUNT_CREATE } from '../../datastore/constants';
-import { MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
 import { trackEvent } from '../../../../util';
-import ViewContextContext from '../../../../components/Root/ViewContextContext';
+import useViewContext from '../../../../hooks/useViewContext';
 const { useSelect, useDispatch } = Data;
 
-export default function AccountSelect() {
-	const viewContext = useContext( ViewContextContext );
+export default function AccountSelect( { hasModuleAccess } ) {
+	const viewContext = useViewContext();
 	const accountID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getAccountID()
 	);
@@ -46,22 +45,6 @@ export default function AccountSelect() {
 			'getAccounts'
 		),
 	} ) );
-
-	const { hasExistingTag, hasGTMPropertyID } = useSelect( ( select ) => {
-		const data = {
-			hasExistingTag: select( MODULES_ANALYTICS ).hasExistingTag(),
-			hasGTMPropertyID: false,
-		};
-
-		// No need to get a single Analytics property ID if we already have an existing Analytics tag.
-		if ( ! data.hasExistingTag ) {
-			data.hasGTMPropertyID = !! select(
-				MODULES_TAGMANAGER
-			).getSingleAnalyticsPropertyID();
-		}
-
-		return data;
-	} );
 
 	const { selectAccount } = useDispatch( MODULES_ANALYTICS );
 	const onChange = useCallback(
@@ -83,13 +66,27 @@ export default function AccountSelect() {
 		return <ProgressBar small />;
 	}
 
+	if ( hasModuleAccess === false ) {
+		return (
+			<Select
+				className="googlesitekit-analytics__select-account"
+				label={ __( 'Account', 'google-site-kit' ) }
+				value={ accountID }
+				enhanced
+				outlined
+				disabled
+			>
+				<Option value={ accountID }>{ accountID }</Option>
+			</Select>
+		);
+	}
+
 	return (
 		<Select
 			className="googlesitekit-analytics__select-account"
 			label={ __( 'Account', 'google-site-kit' ) }
 			value={ accountID }
 			onEnhancedChange={ onChange }
-			disabled={ hasExistingTag || hasGTMPropertyID }
 			enhanced
 			outlined
 		>

@@ -35,6 +35,7 @@ on:
     branches:
       - develop
       - main
+      - 'feature/**'
     # Ignore Storybook-only and unit-test-only changes when checking to run
     # E2E tests. This is useful when adding/modifying/refactoring/removing
     # test code ONLY in a commit, but saves running the expensive E2E test
@@ -67,6 +68,10 @@ on:
       - synchronize
       - ready_for_review
 
+concurrency:
+  group: e2e-tests-wp-nightly-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   e2e-tests-wp-nightly:
     name: E2E (WordPress nightly)
@@ -76,13 +81,11 @@ jobs:
 
     runs-on: ubuntu-latest
 
-    timeout-minutes: 20
+    timeout-minutes: 30
 
     if: github.event_name == 'push' || github.event.pull_request.draft == false
 
     steps:
-      - uses: styfle/cancel-workflow-action@0.8.0
-
       - uses: actions/checkout@v2
 
       - name: Read .nvmrc
@@ -116,7 +119,7 @@ jobs:
       - uses: shivammathur/setup-php@v2
         with:
           php-version: '7.x'
-          tools: composer
+          tools: composer:2.1
 
       - name: Get Composer Cache Directory
         id: composer-cache

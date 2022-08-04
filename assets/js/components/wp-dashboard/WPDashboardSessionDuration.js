@@ -33,14 +33,18 @@ import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { calculateChange } from '../../util';
 import DataBlock from '../DataBlock';
 import PreviewBlock from '../PreviewBlock';
+import { NOTICE_STYLE } from '../GatheringDataNotice';
 import { isZeroReport } from '../../modules/analytics/util/is-zero-report';
-const { useSelect } = Data;
+import { useFeature } from '../../hooks/useFeature';
+const { useSelect, useInViewSelect } = Data;
 
 const WPDashboardSessionDuration = ( {
 	WidgetReportZero,
 	WidgetReportError,
 } ) => {
-	const isGatheringData = useSelect( ( select ) =>
+	const zeroDataStatesEnabled = useFeature( 'zeroDataStates' );
+
+	const isGatheringData = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).isGatheringData()
 	);
 	const dateRangeDates = useSelect( ( select ) =>
@@ -62,7 +66,7 @@ const WPDashboardSessionDuration = ( {
 		],
 	};
 
-	const data = useSelect( ( select ) =>
+	const data = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getReport( reportArgs )
 	);
 	const error = useSelect( ( select ) =>
@@ -85,7 +89,7 @@ const WPDashboardSessionDuration = ( {
 		return <WidgetReportError moduleSlug="analytics" error={ error } />;
 	}
 
-	if ( isZeroReport( data ) && isGatheringData ) {
+	if ( ! zeroDataStatesEnabled && isGatheringData && isZeroReport( data ) ) {
 		return <WidgetReportZero moduleSlug="analytics" />;
 	}
 
@@ -98,6 +102,13 @@ const WPDashboardSessionDuration = ( {
 		lastMonth[ 0 ]
 	);
 
+	const gatheringDataProps = zeroDataStatesEnabled
+		? {
+				gatheringData: isGatheringData,
+				gatheringDataNoticeStyle: NOTICE_STYLE.SMALL,
+		  }
+		: {};
+
 	return (
 		<DataBlock
 			className="googlesitekit-wp-dashboard-stats__data-table overview-average-session-duration"
@@ -106,6 +117,7 @@ const WPDashboardSessionDuration = ( {
 			datapointUnit="s"
 			change={ averageSessionDurationChange }
 			changeDataUnit="%"
+			{ ...gatheringDataProps }
 		/>
 	);
 };

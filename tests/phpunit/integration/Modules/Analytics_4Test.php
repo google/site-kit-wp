@@ -11,17 +11,22 @@
 namespace Google\Site_Kit\Tests\Modules;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_With_Owner;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Modules\Module_With_Settings;
+use Google\Site_Kit\Core\Modules\Module_With_Service_Entity;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Modules\Analytics_4;
 use Google\Site_Kit\Modules\Analytics_4\Settings;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Owner_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Scopes_ContractTests;
+use Google\Site_Kit\Tests\Core\Modules\Module_With_Service_Entity_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Settings_ContractTests;
 use Google\Site_Kit\Tests\FakeHttpClient;
 use Google\Site_Kit\Tests\TestCase;
+use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1alphaDataStream;
+use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1alphaDataStreamWebStreamData;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Message\Request;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Message\Response;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Stream\Stream;
@@ -34,6 +39,7 @@ class Analytics_4Test extends TestCase {
 	use Module_With_Scopes_ContractTests;
 	use Module_With_Settings_ContractTests;
 	use Module_With_Owner_ContractTests;
+	use Module_With_Service_Entity_ContractTests;
 
 	/**
 	 * Context object.
@@ -49,8 +55,8 @@ class Analytics_4Test extends TestCase {
 	 */
 	private $analytics;
 
-	public function setUp() {
-		parent::setUp();
+	public function set_up() {
+		parent::set_up();
 
 		$this->context   = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$this->analytics = new Analytics_4( $this->context );
@@ -89,6 +95,7 @@ class Analytics_4Test extends TestCase {
 		$http_client->set_request_handler(
 			function( Request $request ) use ( $property_id, $webdatastream_id, $measurement_id ) {
 				$url = parse_url( $request->getUrl() );
+
 				if ( 'analyticsadmin.googleapis.com' !== $url['host'] ) {
 					return new Response( 200 );
 				}
@@ -106,17 +113,19 @@ class Analytics_4Test extends TestCase {
 								)
 							)
 						);
-					case "/v1alpha/properties/{$property_id}/webDataStreams":
+					case "/v1alpha/properties/{$property_id}/dataStreams":
+						$data = new GoogleAnalyticsAdminV1alphaDataStreamWebStreamData();
+						$data->setMeasurementId( $measurement_id );
+						$datastream = new GoogleAnalyticsAdminV1alphaDataStream();
+						$datastream->setName( "properties/{$property_id}/dataStreams/{$webdatastream_id}" );
+						$datastream->setType( 'WEB_DATA_STREAM' );
+						$datastream->setWebStreamData( $data );
+
 						return new Response(
 							200,
 							array(),
 							Stream::factory(
-								json_encode(
-									array(
-										'name'          => "properties/{$property_id}/webDataStreams/{$webdatastream_id}",
-										'measurementId' => $measurement_id,
-									)
-								)
+								json_encode( $datastream->toSimpleObject() )
 							)
 						);
 					default:
@@ -218,6 +227,21 @@ class Analytics_4Test extends TestCase {
 	 */
 	protected function get_module_with_owner() {
 		return $this->analytics;
+	}
+
+	/**
+	 * @return Module_With_Service_Entity
+	 */
+	protected function get_module_with_service_entity() {
+		return new Analytics_4( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+	}
+
+	protected function set_up_check_service_entity_access( Module $module ) {
+		$module->get_settings()->merge(
+			array(
+				'propertyID' => '123456789',
+			)
+		);
 	}
 
 }

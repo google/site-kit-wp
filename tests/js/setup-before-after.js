@@ -19,6 +19,7 @@
 /**
  * External dependencies
  */
+import faker from 'faker';
 import fetchMockJest from 'fetch-mock-jest';
 
 /**
@@ -40,6 +41,15 @@ beforeEach( () => {
 		localStorage[ method ].mockClear();
 		sessionStorage[ method ].mockClear();
 	} );
+
+	// This number is arbitrary, but needs to be consistent across test runs.
+	// Changing this will cause some tests to fail and others to have the
+	// _potential_ to fail, see:
+	// https://github.com/google/site-kit-wp/issues/5053
+	const knownSafeSeed = 500;
+	// Make random numbers created by Faker predictable, in case we want
+	// to use snapshots for any fixture data.
+	faker.seed( knownSafeSeed );
 } );
 
 afterEach( async () => {

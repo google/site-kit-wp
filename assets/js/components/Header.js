@@ -21,7 +21,7 @@
  */
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
-import { useWindowScroll } from 'react-use';
+import { useMutationObserver } from 'react-use-observer';
 
 /**
  * WordPress dependencies
@@ -38,20 +38,32 @@ import ErrorNotifications from './notifications/ErrorNotifications';
 import { CORE_USER } from '../googlesitekit/datastore/user/constants';
 import { Grid, Row, Cell } from '../material-components';
 import DashboardNavigation from './DashboardNavigation';
+import EntityHeader from './EntityHeader';
+import ViewOnlyMenu from './ViewOnlyMenu';
+import { useFeature } from '../hooks/useFeature';
+import useViewOnly from '../hooks/useViewOnly';
+import useDashboardType from '../hooks/useDashboardType';
 const { useSelect } = Data;
 
 const Header = ( { children, subHeader, showNavigation } ) => {
+	const dashboardSharingEnabled = useFeature( 'dashboardSharing' );
+	const isDashboard = !! useDashboardType();
+	const isViewOnly = useViewOnly();
+
 	const isAuthenticated = useSelect( ( select ) =>
 		select( CORE_USER ).isAuthenticated()
 	);
-	const { y } = useWindowScroll();
+	const [ subHeaderRef, subHeaderMutation ] = useMutationObserver( {
+		childList: true,
+	} );
+	const hasSubheader = !! subHeaderMutation.target?.childElementCount;
 
 	return (
 		<Fragment>
 			<header
 				className={ classnames( 'googlesitekit-header', {
-					'googlesitekit-header--has-subheader': subHeader,
-					'googlesitekit-header--has-scrolled': y > 1,
+					'googlesitekit-header--has-subheader': hasSubheader,
+					'googlesitekit-header--has-navigation': showNavigation,
 				} ) }
 			>
 				<Grid>
@@ -73,17 +85,26 @@ const Header = ( { children, subHeader, showNavigation } ) => {
 							alignMiddle
 						>
 							{ children }
-							{ isAuthenticated && <UserMenu /> }
+
+							{ ! isAuthenticated &&
+								dashboardSharingEnabled &&
+								isDashboard &&
+								isViewOnly && <ViewOnlyMenu /> }
+							{ isAuthenticated &&
+								( ! dashboardSharingEnabled ||
+									! isViewOnly ) && <UserMenu /> }
 						</Cell>
 					</Row>
 				</Grid>
 			</header>
 
-			{ subHeader && (
-				<div className="googlesitekit-subheader">{ subHeader }</div>
-			) }
+			<div className="googlesitekit-subheader" ref={ subHeaderRef }>
+				{ subHeader }
+			</div>
 
 			{ showNavigation && <DashboardNavigation /> }
+
+			<EntityHeader />
 
 			<ErrorNotifications />
 		</Fragment>

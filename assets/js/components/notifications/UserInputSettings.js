@@ -35,13 +35,14 @@ import BannerNotification from './BannerNotification';
 import { getTimeInSeconds } from '../../util';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import UserInputPromptSVG from '../../../svg/user-input-prompt.svg';
+import UserInputPromptSVG from '../../../svg/graphics/user-input-prompt.svg';
 const { useSelect } = Data;
 
 export default function UserInputSettings( {
 	onCTAClick,
 	onDismiss,
 	isDismissible,
+	rounded = false,
 } ) {
 	const instanceID = useInstanceID( UserInputSettings );
 	const ctaLink = useSelect( ( select ) =>
@@ -76,6 +77,7 @@ export default function UserInputSettings( {
 			WinImageSVG={ UserInputPromptSVG }
 			isDismissible={ isDismissible }
 			onDismiss={ onDismiss }
+			rounded={ rounded }
 		/>
 	);
 }
@@ -85,4 +87,5 @@ UserInputSettings.propTypes = {
 	onCTAClick: PropTypes.func,
 	onDismiss: PropTypes.func,
 	isDismissible: PropTypes.bool,
+	rounded: PropTypes.bool,
 };

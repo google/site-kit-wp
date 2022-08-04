@@ -21,7 +21,8 @@
 	position: relative;
 
 	.googlesitekit-chart__source {
-		font-size: 0.75rem;
+		font-size: $fs-body-sm;
+		letter-spacing: $ls-xs;
 		margin-top: $grid-gap-phone;
 	}
 }
@@ -43,6 +44,7 @@
 
 .googlesitekit-chart--PieChart div.google-visualization-tooltip {
 	pointer-events: none;
+	z-index: 8;
 }
 
 .googlesitekit-chart-loading__forced {

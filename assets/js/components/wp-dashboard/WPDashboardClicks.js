@@ -20,7 +20,6 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { useEffect } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -32,15 +31,19 @@ import {
 } from '../../modules/search-console/datastore/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { isZeroReport } from '../../modules/search-console/util';
-import { calculateChange, trackEvent } from '../../util';
+import { calculateChange } from '../../util';
 import sumObjectListValue from '../../util/sum-object-list-value';
 import { partitionReport } from '../../util/partition-report';
 import DataBlock from '../DataBlock';
 import PreviewBlock from '../PreviewBlock';
-const { useSelect } = Data;
+import { NOTICE_STYLE } from '../GatheringDataNotice';
+import { useFeature } from '../../hooks/useFeature';
+const { useSelect, useInViewSelect } = Data;
 
 const WPDashboardClicks = ( { WidgetReportZero, WidgetReportError } ) => {
-	const isGatheringData = useSelect( ( select ) =>
+	const zeroDataStatesEnabled = useFeature( 'zeroDataStates' );
+
+	const isGatheringData = useInViewSelect( ( select ) =>
 		select( MODULES_SEARCH_CONSOLE ).isGatheringData()
 	);
 	const { compareStartDate, endDate } = useSelect( ( select ) =>
@@ -59,7 +62,7 @@ const WPDashboardClicks = ( { WidgetReportZero, WidgetReportError } ) => {
 		dimensions: 'date',
 	};
 
-	const data = useSelect( ( select ) =>
+	const data = useInViewSelect( ( select ) =>
 		select( MODULES_SEARCH_CONSOLE ).getReport( reportArgs )
 	);
 	const error = useSelect( ( select ) =>
@@ -74,12 +77,6 @@ const WPDashboardClicks = ( { WidgetReportZero, WidgetReportError } ) => {
 			).hasFinishedResolution( 'getReport', [ reportArgs ] )
 	);
 
-	useEffect( () => {
-		if ( error ) {
-			trackEvent( 'plugin_setup', 'search_console_error', error.message );
-		}
-	}, [ error ] );
-
 	if ( loading || isGatheringData === undefined ) {
 		return <PreviewBlock width="48%" height="92px" />;
 	}
@@ -90,7 +87,7 @@ const WPDashboardClicks = ( { WidgetReportZero, WidgetReportError } ) => {
 		);
 	}
 
-	if ( isZeroReport( data ) && isGatheringData ) {
+	if ( ! zeroDataStatesEnabled && isGatheringData && isZeroReport( data ) ) {
 		return <WidgetReportZero moduleSlug="search-console" />;
 	}
 
@@ -101,6 +98,13 @@ const WPDashboardClicks = ( { WidgetReportZero, WidgetReportError } ) => {
 	const totalOlderClicks = sumObjectListValue( compareRange, 'clicks' );
 	const totalClicksChange = calculateChange( totalOlderClicks, totalClicks );
 
+	const gatheringDataProps = zeroDataStatesEnabled
+		? {
+				gatheringData: isGatheringData,
+				gatheringDataNoticeStyle: NOTICE_STYLE.SMALL,
+		  }
+		: {};
+
 	return (
 		<DataBlock
 			className="googlesitekit-wp-dashboard-stats__data-table overview-total-clicks"
@@ -108,6 +112,7 @@ const WPDashboardClicks = ( { WidgetReportZero, WidgetReportError } ) => {
 			datapoint={ totalClicks }
 			change={ totalClicksChange }
 			changeDataUnit="%"
+			{ ...gatheringDataProps }
 		/>
 	);
 };

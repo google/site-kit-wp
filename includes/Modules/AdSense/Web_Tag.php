@@ -59,6 +59,7 @@ class Web_Tag extends Module_Web_Tag {
 		);
 
 		$adsense_script_attributes = array(
+			'async'       => true,
 			'src'         => $adsense_script_src,
 			'crossorigin' => 'anonymous',
 		);

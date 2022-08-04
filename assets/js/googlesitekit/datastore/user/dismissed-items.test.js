@@ -171,5 +171,39 @@ describe( 'core/user dismissed-items', () => {
 				).toBe( false );
 			} );
 		} );
+
+		describe( 'isDismissingItem', () => {
+			it( 'returns true while item dismissal is in progress', async () => {
+				const slug = 'foo-bar';
+
+				muteFetch( fetchDismissItem );
+
+				expect(
+					registry.select( CORE_USER ).isDismissingItem( slug )
+				).toBe( false );
+
+				registry.dispatch( CORE_USER ).dismissItem( slug );
+
+				expect(
+					registry.select( CORE_USER ).isDismissingItem( slug )
+				).toBe( true );
+			} );
+
+			it( 'returns false while item dismissal is over', async () => {
+				const slug = 'foo-bar';
+
+				fetchMock.postOnce( fetchDismissItem, { body: [ slug ] } );
+
+				expect(
+					registry.select( CORE_USER ).isDismissingItem( slug )
+				).toBe( false );
+
+				await registry.dispatch( CORE_USER ).dismissItem( slug );
+
+				expect(
+					registry.select( CORE_USER ).isDismissingItem( slug )
+				).toBe( false );
+			} );
+		} );
 	} );
 } );

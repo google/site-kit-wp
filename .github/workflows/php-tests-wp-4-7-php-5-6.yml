@@ -18,6 +18,7 @@ on:
     branches:
       - develop
       - main
+      - 'feature/**'
     # Only run if PHP-related files changed.
     paths:
       - '.github/workflows/php-tests-wp-4-7-php-5-6.yml'
@@ -31,6 +32,10 @@ on:
       - opened
       - reopened
       - synchronize
+
+concurrency:
+  group: php-tests-wp-4-7-php-5-6-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   php-tests-wp-4-7-php-5-6:
@@ -53,13 +58,11 @@ jobs:
       MYSQL_DATABASE: wordpress_test
       WP_VERSION: '4.7'
     steps:
-      - uses: styfle/cancel-workflow-action@0.8.0
       - uses: actions/checkout@v2
       - uses: shivammathur/setup-php@v2
         with:
-          extensions: mysqli, runkit, uopz
-          tools: composer
-          php-version: '5.6'
+          tools: composer:2.1
+          php-version: '7.4' # Necessary for `composer install`
       - name: Get Composer Cache Directory
         id: composer-cache
         run: |
@@ -71,8 +74,12 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-composer-
       - name: Composer Install
-        run: docker run --rm -v "$PWD:/app" -v "${{ steps.composer-cache.outputs.dir }}:/tmp/cache" composer install --no-interaction --no-progress # Run inside docker so composer install doesn't error...
+        run: composer install --no-interaction --no-progress
+      - uses: shivammathur/setup-php@v2
+        with:
+          extensions: mysqli, runkit, uopz
+          php-version: '5.6'
       - name: Set up PHP test data
-        run: tests/bin/install-wp-tests.sh ${MYSQL_DATABASE} ${MYSQL_USER} ${MYSQL_PASSWORD} ${DB_HOST}:${DB_PORT} ${WP_VERSION}
+        run: tests/phpunit/bin/install-wp-tests.sh ${MYSQL_DATABASE} ${MYSQL_USER} ${MYSQL_PASSWORD} ${DB_HOST}:${DB_PORT} ${WP_VERSION}
       - name: Run Unit Tests
-        run: composer test
+        run: composer test -- --verbose

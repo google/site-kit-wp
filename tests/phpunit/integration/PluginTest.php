@@ -25,13 +25,12 @@ class PluginTest extends TestCase {
 	 */
 	protected static $backup_instance;
 
-	public static function setUpBeforeClass() {
-		parent::setUpBeforeClass();
+	public static function wpSetUpBeforeClass() {
 		self::$backup_instance = Plugin::instance();
 	}
 
-	public function tearDown() {
-		parent::tearDown();
+	public function tear_down() {
+		parent::tear_down();
 		// Restore the main instance after each test.
 		$this->force_set_property( 'Google\Site_Kit\Plugin', 'instance', self::$backup_instance );
 	}
@@ -42,6 +41,26 @@ class PluginTest extends TestCase {
 		$this->assertInstanceOf( 'Google\Site_Kit\Context', $plugin->context() );
 		// Test that the context provided is using the same file.
 		$this->assertEquals( plugin_dir_path( GOOGLESITEKIT_PLUGIN_MAIN_FILE ), $plugin->context()->path() );
+	}
+
+	// Ensure we're supplying the correct minimum version of PHP
+	// and WordPress in our plugin file's header.
+	public function test_plugin_data() {
+		// RequiresPHP and RequiresWP are only available in WordPress 5.3+,
+		// so only make assertions with those fields if they exist.
+
+		$plugin_data = get_plugin_data( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+
+		if ( array_key_exists( 'RequiresPHP', $plugin_data ) ) {
+			$this->assertEquals( $plugin_data['RequiresPHP'], '5.6' );
+		}
+		if ( array_key_exists( 'RequiresWP', $plugin_data ) ) {
+			$this->assertEquals( $plugin_data['RequiresWP'], '4.7' );
+		}
+
+		// These fields are available in all versions of WordPress we support,
+		// so check for them unconditionally.
+		$this->assertEquals( $plugin_data['Name'], 'Site Kit by Google' );
 	}
 
 	public function test_register() {
@@ -72,7 +91,7 @@ class PluginTest extends TestCase {
 		do_action( $action );
 		$output = ob_get_clean();
 
-		$this->assertContains(
+		$this->assertStringContainsString(
 			'<meta name="generator" content="Site Kit by Google ' . GOOGLESITEKIT_VERSION . '"',
 			$output
 		);
@@ -94,7 +113,7 @@ class PluginTest extends TestCase {
 		$network_admin_notices = ob_get_clean();
 
 		// Regex is case-insensitive and dotall (s) to match over multiple lines.
-		$this->assertRegExp( '#<div class="notice notice-warning.*?not yet compatible.*?</div>#is', $network_admin_notices );
+		$this->assertMatchesRegularExpression( '#<div class="notice notice-warning.*?not yet compatible.*?</div>#is', $network_admin_notices );
 	}
 
 	public function test_load_and_instance() {

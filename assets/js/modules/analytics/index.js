@@ -24,38 +24,19 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { isFeatureEnabled } from '../../features';
 import {
-	AREA_DASHBOARD_ALL_TRAFFIC,
-	AREA_PAGE_DASHBOARD_ALL_TRAFFIC,
-	AREA_DASHBOARD_SEARCH_FUNNEL,
-	AREA_PAGE_DASHBOARD_SEARCH_FUNNEL,
-	AREA_DASHBOARD_ACQUISITION,
 	AREA_MAIN_DASHBOARD_CONTENT_PRIMARY,
 	AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY,
 	AREA_ENTITY_DASHBOARD_TRAFFIC_PRIMARY,
 	AREA_ENTITY_DASHBOARD_CONTENT_PRIMARY,
 } from '../../googlesitekit/widgets/default-areas';
-import { WIDGET_AREA_STYLES } from '../../googlesitekit/widgets/datastore/constants';
-import AnalyticsIcon from '../../../svg/analytics.svg';
-import {
-	CONTEXT_MODULE_ANALYTICS,
-	AREA_MODULE_ANALYTICS_MAIN,
-} from './constants';
+import AnalyticsIcon from '../../../svg/graphics/analytics.svg';
 import { MODULES_ANALYTICS } from './datastore/constants';
 import { SetupMain } from './components/setup';
 import { SettingsEdit, SettingsView } from './components/settings';
 import DashboardAllTrafficWidget from './components/dashboard/DashboardAllTrafficWidget';
-import DashboardPopularPagesWidget from './components/dashboard/DashboardPopularPagesWidget';
-import DashboardGoalsWidget from './components/dashboard/DashboardGoalsWidget';
-import DashboardSearchVisitorsWidget from './components/dashboard/DashboardSearchVisitorsWidget';
-import DashboardBounceRateWidget from './components/dashboard/DashboardBounceRateWidget';
 import DashboardOverallPageMetricsWidget from './components/dashboard/DashboardOverallPageMetricsWidget';
-import {
-	ModuleOverviewWidget,
-	ModulePopularPagesWidget,
-	ModuleAcquisitionChannelsWidget,
-} from './components/module';
+import { ModulePopularPagesWidget } from './components/module';
 
 export { registerStore } from './datastore';
 
@@ -71,149 +52,46 @@ export const registerModule = ( modules ) => {
 			__( 'Top pages', 'google-site-kit' ),
 			__( 'Top acquisition channels', 'google-site-kit' ),
 		],
-		screenWidgetContext: CONTEXT_MODULE_ANALYTICS,
 	} );
 };
 
 export const registerWidgets = ( widgets ) => {
-	if ( ! isFeatureEnabled( 'unifiedDashboard' ) ) {
-		widgets.registerWidget(
-			'analyticsAllTraffic',
-			{
-				Component: DashboardAllTrafficWidget,
-				width: widgets.WIDGET_WIDTHS.FULL,
-				priority: 1,
-				wrapWidget: false,
-			},
-			[ AREA_DASHBOARD_ALL_TRAFFIC, AREA_PAGE_DASHBOARD_ALL_TRAFFIC ]
-		);
+	widgets.registerWidget(
+		'analyticsAllTraffic',
+		{
+			Component: DashboardAllTrafficWidget,
+			width: widgets.WIDGET_WIDTHS.FULL,
+			priority: 1,
+			wrapWidget: false,
+			modules: [ 'analytics' ],
+		},
+		[
+			AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY,
+			AREA_ENTITY_DASHBOARD_TRAFFIC_PRIMARY,
+		]
+	);
 
-		widgets.registerWidget(
-			'analyticsUniqueVisitors',
-			{
-				Component: DashboardSearchVisitorsWidget,
-				width: widgets.WIDGET_WIDTHS.QUARTER,
-				priority: 3,
-				wrapWidget: true,
-			},
-			[ AREA_DASHBOARD_SEARCH_FUNNEL, AREA_PAGE_DASHBOARD_SEARCH_FUNNEL ]
-		);
+	widgets.registerWidget(
+		'analyticsOverallPageMetrics',
+		{
+			Component: DashboardOverallPageMetricsWidget,
+			width: widgets.WIDGET_WIDTHS.FULL,
+			priority: 3,
+			wrapWidget: false,
+			modules: [ 'analytics' ],
+		},
+		[ AREA_ENTITY_DASHBOARD_CONTENT_PRIMARY ]
+	);
 
-		widgets.registerWidget(
-			'analyticsGoals',
-			{
-				Component: DashboardGoalsWidget,
-				width: widgets.WIDGET_WIDTHS.QUARTER,
-				priority: 4,
-				wrapWidget: true,
-			},
-			[ AREA_DASHBOARD_SEARCH_FUNNEL ]
-		);
-
-		widgets.registerWidget(
-			'analyticsBounceRate',
-			{
-				Component: DashboardBounceRateWidget,
-				width: widgets.WIDGET_WIDTHS.QUARTER,
-				priority: 4,
-				wrapWidget: true,
-			},
-			[ AREA_PAGE_DASHBOARD_SEARCH_FUNNEL ]
-		);
-
-		widgets.registerWidget(
-			'analyticsPopularPages',
-			{
-				Component: DashboardPopularPagesWidget,
-				width: widgets.WIDGET_WIDTHS.HALF,
-				priority: 3,
-				wrapWidget: false,
-			},
-			[ AREA_DASHBOARD_ACQUISITION ]
-		);
-
-		widgets.registerWidget(
-			'analyticsModuleAcquisitionChannels',
-			{
-				Component: ModuleAcquisitionChannelsWidget,
-				width: widgets.WIDGET_WIDTHS.FULL,
-				priority: 3,
-				wrapWidget: false,
-			},
-			[ AREA_MODULE_ANALYTICS_MAIN ]
-		);
-
-		widgets.registerWidgetArea(
-			AREA_MODULE_ANALYTICS_MAIN,
-			{
-				priority: 1,
-				style: WIDGET_AREA_STYLES.BOXES,
-				title: __( 'Overview', 'google-site-kit' ),
-			},
-			CONTEXT_MODULE_ANALYTICS
-		);
-
-		widgets.registerWidget(
-			'analyticsModuleOverview',
-			{
-				Component: ModuleOverviewWidget,
-				width: widgets.WIDGET_WIDTHS.FULL,
-				priority: 1,
-				wrapWidget: false,
-			},
-			[ AREA_MODULE_ANALYTICS_MAIN ]
-		);
-
-		widgets.registerWidget(
-			'analyticsModulePopularPages',
-			{
-				Component: ModulePopularPagesWidget,
-				width: widgets.WIDGET_WIDTHS.FULL,
-				priority: 2,
-				wrapWidget: false,
-			},
-			[ AREA_MODULE_ANALYTICS_MAIN ]
-		);
-	}
-
-	if ( isFeatureEnabled( 'unifiedDashboard' ) ) {
-		widgets.registerWidget(
-			'analyticsAllTraffic',
-			{
-				Component: DashboardAllTrafficWidget,
-				width: widgets.WIDGET_WIDTHS.FULL,
-				priority: 1,
-				wrapWidget: false,
-			},
-			[
-				AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY,
-				AREA_ENTITY_DASHBOARD_TRAFFIC_PRIMARY,
-			]
-		);
-
-		widgets.registerWidget(
-			'analyticsOverallPageMetrics',
-			{
-				Component: DashboardOverallPageMetricsWidget,
-				width: widgets.WIDGET_WIDTHS.FULL,
-				priority: 3,
-				wrapWidget: false,
-			},
-			[
-				AREA_MAIN_DASHBOARD_CONTENT_PRIMARY,
-				AREA_ENTITY_DASHBOARD_CONTENT_PRIMARY,
-			]
-		);
-
-		widgets.registerWidget(
-			'analyticsModulePopularPages',
-			{
-				Component: ModulePopularPagesWidget,
-				width: widgets.WIDGET_WIDTHS.FULL,
-				priority: 4,
-				wrapWidget: false,
-			},
-			[ AREA_MAIN_DASHBOARD_CONTENT_PRIMARY ]
-		);
-	}
+	widgets.registerWidget(
+		'analyticsModulePopularPages',
+		{
+			Component: ModulePopularPagesWidget,
+			width: widgets.WIDGET_WIDTHS.FULL,
+			priority: 4,
+			wrapWidget: false,
+			modules: [ 'analytics' ],
+		},
+		[ AREA_MAIN_DASHBOARD_CONTENT_PRIMARY ]
+	);
 };

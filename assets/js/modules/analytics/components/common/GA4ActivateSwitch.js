@@ -25,7 +25,7 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { Fragment, useCallback, useContext } from '@wordpress/element';
+import { Fragment, useCallback } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -34,18 +34,23 @@ import Data from 'googlesitekit-data';
 import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 import { FORM_SETUP } from '../../datastore/constants';
 import { trackEvent } from '../../../../util';
-import ViewContextContext from '../../../../components/Root/ViewContextContext';
 import Switch from '../../../../components/Switch';
 import Link from '../../../../components/Link';
+import useViewContext from '../../../../hooks/useViewContext';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 const { useSelect, useDispatch } = Data;
 
 export default function GA4ActivateSwitch( props ) {
 	const { onActivate } = props;
 
-	const viewContext = useContext( ViewContextContext );
+	const viewContext = useViewContext();
 	const enableGA4 = useSelect( ( select ) =>
 		select( CORE_FORMS ).getValue( FORM_SETUP, 'enableGA4' )
 	);
+
+	const documentationURL = useSelect( ( select ) => {
+		return select( CORE_SITE ).getDocumentationLinkURL( 'ga4' );
+	} );
 
 	const { setValues } = useDispatch( CORE_FORMS );
 	const onChange = useCallback( () => {
@@ -66,11 +71,7 @@ export default function GA4ActivateSwitch( props ) {
 							'Activate Google Analytics 4 and place code on your site.',
 							'google-site-kit'
 						) }{ ' ' }
-						<Link
-							href="https://sitekit.withgoogle.com/documentation/ga4-analytics-property/"
-							external
-							inherit
-						>
+						<Link href={ documentationURL } external>
 							{ __( 'Learn more', 'google-site-kit' ) }
 						</Link>
 					</Fragment>

@@ -40,12 +40,18 @@ import ReportTable from '../../../../components/ReportTable';
 import Link from '../../../../components/Link';
 import { numFmt } from '../../../../util';
 import { ZeroDataMessage } from '../common';
-const { useSelect } = Data;
+import { useFeature } from '../../../../hooks/useFeature';
+import useViewOnly from '../../../../hooks/useViewOnly';
+const { useSelect, useInViewSelect } = Data;
 
 function DashboardPopularKeywordsWidget( props ) {
 	const { Widget, WidgetReportZero, WidgetReportError } = props;
 
-	const isGatheringData = useSelect( ( select ) =>
+	const zeroDataStates = useFeature( 'zeroDataStates' );
+
+	const viewOnlyDashboard = useViewOnly();
+
+	const isGatheringData = useInViewSelect( ( select ) =>
 		select( MODULES_SEARCH_CONSOLE ).isGatheringData()
 	);
 
@@ -68,7 +74,7 @@ function DashboardPopularKeywordsWidget( props ) {
 		reportArgs.url = url;
 	}
 
-	const data = useSelect( ( select ) =>
+	const data = useInViewSelect( ( select ) =>
 		select( MODULES_SEARCH_CONSOLE ).getReport( reportArgs )
 	);
 	const error = useSelect( ( select ) =>
@@ -82,12 +88,16 @@ function DashboardPopularKeywordsWidget( props ) {
 				MODULES_SEARCH_CONSOLE
 			).hasFinishedResolution( 'getReport', [ reportArgs ] )
 	);
-	const baseServiceURL = useSelect( ( select ) =>
-		select( MODULES_SEARCH_CONSOLE ).getServiceReportURL( {
+	const baseServiceURL = useSelect( ( select ) => {
+		if ( viewOnlyDashboard ) {
+			return null;
+		}
+
+		return select( MODULES_SEARCH_CONSOLE ).getServiceReportURL( {
 			...generateDateRangeArgs( dateRangeDates ),
 			page: url ? `!${ url }` : undefined,
-		} )
-	);
+		} );
+	} );
 
 	const Footer = () => (
 		<SourceLink
@@ -117,7 +127,7 @@ function DashboardPopularKeywordsWidget( props ) {
 		);
 	}
 
-	if ( isGatheringData && isZeroReport( data ) ) {
+	if ( ! zeroDataStates && isGatheringData && isZeroReport( data ) ) {
 		return (
 			<Widget Footer={ Footer }>
 				<WidgetReportZero moduleSlug="search-console" />
@@ -138,6 +148,9 @@ function DashboardPopularKeywordsWidget( props ) {
 			field: 'keys.0',
 			Component: ( { fieldValue } ) => {
 				const searchAnalyticsURL = useSelect( ( select ) => {
+					if ( viewOnlyDashboard ) {
+						return null;
+					}
 					const dates = select( CORE_USER ).getDateRangeDates( {
 						offsetDays: DATE_RANGE_OFFSET,
 					} );
@@ -152,7 +165,11 @@ function DashboardPopularKeywordsWidget( props ) {
 				} );
 
 				return (
-					<Link href={ searchAnalyticsURL } external inherit>
+					<Link
+						href={ searchAnalyticsURL }
+						external
+						hideExternalIndicator
+					>
 						{ fieldValue }
 					</Link>
 				);
@@ -187,6 +204,7 @@ function DashboardPopularKeywordsWidget( props ) {
 					rows={ data }
 					columns={ tableColumns }
 					zeroState={ ZeroDataMessage }
+					gatheringData={ isGatheringData }
 				/>
 			</TableOverflowContainer>
 		</Widget>

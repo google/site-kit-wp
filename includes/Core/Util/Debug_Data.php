@@ -70,28 +70,39 @@ class Debug_Data {
 	private $modules;
 
 	/**
+	 * Permissions instance.
+	 *
+	 * @since 1.69.0
+	 * @var Permissions
+	 */
+	private $permissions;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since 1.5.0
 	 *
 	 * @param Context        $context        Context instance.
-	 * @param Options        $options        Optional. Options instance. Default is a new instance.
-	 * @param User_Options   $user_options   Optional. User_Options instance. Default is a new instance.
-	 * @param Authentication $authentication Optional. Authentication instance. Default is a new instance.
-	 * @param Modules        $modules        Optional. Modules instance. Default is a new instance.
+	 * @param Options        $options        Options instance.
+	 * @param User_Options   $user_options   User_Options instance.
+	 * @param Authentication $authentication Authentication instance.
+	 * @param Modules        $modules        Modules instance.
+	 * @param Permissions    $permissions    Permissions instance.
 	 */
 	public function __construct(
 		Context $context,
-		Options $options = null,
-		User_Options $user_options = null,
-		Authentication $authentication = null,
-		Modules $modules = null
+		Options $options,
+		User_Options $user_options,
+		Authentication $authentication,
+		Modules $modules,
+		Permissions $permissions
 	) {
 		$this->context        = $context;
-		$this->options        = $options ?: new Options( $this->context );
-		$this->user_options   = $user_options ?: new User_Options( $this->context );
-		$this->authentication = $authentication ?: new Authentication( $this->context, $this->options, $this->user_options );
-		$this->modules        = $modules ?: new Modules( $this->context, $this->options, $this->user_options, $this->authentication );
+		$this->options        = $options;
+		$this->user_options   = $user_options;
+		$this->authentication = $authentication;
+		$this->modules        = $modules;
+		$this->permissions    = $permissions;
 	}
 
 	/**
@@ -172,6 +183,7 @@ class Debug_Data {
 			'verification_status'  => $this->get_verification_status_field(),
 			'connected_user_count' => $this->get_connected_user_count_field(),
 			'active_modules'       => $this->get_active_modules_field(),
+			'recoverable_modules'  => $this->get_recoverable_modules_field(),
 			'required_scopes'      => $this->get_required_scopes_field(),
 			'capabilities'         => $this->get_capabilities_field(),
 			'enabled_features'     => $this->get_feature_fields(),
@@ -187,7 +199,7 @@ class Debug_Data {
 
 				return $field;
 			},
-			array_merge( $fields, $this->get_module_fields() )
+			array_merge( $fields, $this->get_module_sharing_settings_fields(), $this->get_module_fields() )
 		);
 	}
 
@@ -353,6 +365,120 @@ class Debug_Data {
 	}
 
 	/**
+	 * Gets the field definition for the recoverable_modules field.
+	 *
+	 * @since 1.78.0
+	 *
+	 * @return array
+	 */
+	private function get_recoverable_modules_field() {
+		$recoverable_modules = $this->modules->get_recoverable_modules();
+
+		return array(
+			'label' => __( 'Recoverable Modules', 'google-site-kit' ),
+			'value' => join(
+				/* translators: used between list items, there is a space after the comma. */
+				__( ', ', 'google-site-kit' ),
+				wp_list_pluck( $recoverable_modules, 'name' )
+			),
+			'debug' => join( ', ', wp_list_pluck( $recoverable_modules, 'slug' ) ),
+		);
+	}
+
+	/**
+	 * Gets the field definition for the module_sharing_settings field.
+	 *
+	 * @since 1.78.0
+	 *
+	 * @return array
+	 */
+	private function get_module_sharing_settings_fields() {
+		$sharing_settings  = $this->modules->get_module_sharing_settings()->get();
+		$shareable_modules = $this->modules->get_shareable_modules();
+		$fields            = array();
+
+		foreach ( $shareable_modules as $module_slug => $module_details ) {
+			$fields[] = array_merge(
+				array(
+					/* translators: %s: module name */
+					'label' => sprintf( __( '%s Shared Roles', 'google-site-kit' ), $module_details->name ),
+				),
+				$this->get_module_shared_role_names( $sharing_settings[ $module_slug ]['sharedRoles'] )
+			);
+
+			$fields[] = array_merge(
+				array(
+					/* translators: %s: module name */
+					'label' => sprintf( __( '%s Management', 'google-site-kit' ), $module_details->name ),
+				),
+				$this->get_module_management( $sharing_settings[ $module_slug ]['management'] )
+			);
+		}
+
+		return $fields;
+	}
+
+	/**
+	 * Gets the comma separated list of shared role names for module_sharing_settings.
+	 *
+	 * @since 1.78.0
+	 *
+	 * @param array $role_slugs List of role slugs.
+	 *
+	 * @return array $role_names Comma separated list of role names for module_sharing_settings within value and debug keys.
+	 */
+	private function get_module_shared_role_names( $role_slugs ) {
+		if ( ! $role_slugs ) {
+			return array(
+				'value' => __( 'None', 'google-site-kit' ),
+				'debug' => 'none',
+			);
+		}
+
+		$wp_role_names     = wp_roles()->get_names();
+		$shared_role_names = array_filter(
+			$wp_role_names,
+			function( $key ) use ( $role_slugs ) {
+				return in_array( $key, $role_slugs, true );
+			},
+			ARRAY_FILTER_USE_KEY
+		);
+
+		return array(
+			'value' => join(
+				/* translators: used between list items, there is a space after the comma. */
+				__( ', ', 'google-site-kit' ),
+				$shared_role_names
+			),
+			'debug' => join( ', ', $role_slugs ),
+		);
+	}
+
+	/**
+	 * Gets the user friendly and debug values for module management used in module_sharing_settings.
+	 *
+	 * @since 1.78.0
+	 *
+	 * @param string $management The module sharing settings management value. Can be either `owner` or `all_admins`.
+	 *
+	 * @return array User friendly and debug values for module management used in module_sharing_settings within value and debug keys.
+	 */
+	private function get_module_management( $management ) {
+		switch ( $management ) {
+			case 'all_admins':
+				return array(
+					'value' => __( 'Any admin signed in with Google', 'google-site-kit' ),
+					'debug' => 'all_admins',
+				);
+			default:
+				return array(
+					'value' => __( 'Owner', 'google-site-kit' ),
+					'debug' => 'owner',
+				);
+		}
+	}
+
+	/**
 	 * Gets the field definition for the required_scopes field.
 	 *
 	 * @since 1.5.0
@@ -383,10 +509,8 @@ class Debug_Data {
 	 * @return array
 	 */
 	private function get_capabilities_field() {
-		$permissions = new Permissions( $this->context, $this->authentication );
-		$value       = array();
-
-		foreach ( $permissions->check_all_for_current_user() as $permission => $granted ) {
+		$value = array();
+		foreach ( $this->permissions->check_all_for_current_user() as $permission => $granted ) {
 			$value[ $permission ] = $granted ? '✅' : '⭕';
 		}
 

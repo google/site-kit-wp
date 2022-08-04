@@ -20,25 +20,28 @@
  * External dependencies
  */
 import { useClickAway } from 'react-use';
+import classnames from 'classnames';
 
 /**
  * WordPress dependencies
  */
-import { useCallback, useRef, useState, useContext } from '@wordpress/element';
+import { useCallback, useRef, useState } from '@wordpress/element';
 import { ESCAPE, TAB } from '@wordpress/keycodes';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import DateRangeIcon from '../../svg/date-range.svg';
+import DateRangeIcon from '../../svg/icons/date-range.svg';
 import { CORE_USER } from '../googlesitekit/datastore/user/constants';
 import { useKeyCodesInside } from '../hooks/useKeyCodesInside';
 import { getAvailableDateRanges } from '../util/date-range';
-import ViewContextContext from './Root/ViewContextContext';
 import Menu from './Menu';
 import Button from './Button';
 import { trackEvent } from '../util';
+import { CORE_UI } from '../googlesitekit/datastore/ui/constants';
+import useViewContext from '../hooks/useViewContext';
 const { useSelect, useDispatch } = Data;
 
 export default function DateRangeSelector() {
@@ -47,10 +50,11 @@ export default function DateRangeSelector() {
 		select( CORE_USER ).getDateRange()
 	);
 	const { setDateRange } = useDispatch( CORE_USER );
+	const { resetInViewHook } = useDispatch( CORE_UI );
 
 	const [ menuOpen, setMenuOpen ] = useState( false );
 	const menuWrapperRef = useRef();
-	const viewContext = useContext( ViewContextContext );
+	const viewContext = useViewContext();
 
 	useClickAway( menuWrapperRef, () => setMenuOpen( false ) );
 
@@ -74,10 +78,11 @@ export default function DateRangeSelector() {
 				);
 			}
 
+			resetInViewHook();
 			setDateRange( newDateRange );
 			setMenuOpen( false );
 		},
-		[ ranges, setDateRange, viewContext, dateRange ]
+		[ ranges, dateRange, resetInViewHook, setDateRange, viewContext ]
 	);
 
 	const currentDateRangeLabel = ranges[ dateRange ]?.label;
@@ -89,13 +94,21 @@ export default function DateRangeSelector() {
 			className="googlesitekit-date-range-selector googlesitekit-dropdown-menu mdc-menu-surface--anchor"
 		>
 			<Button
-				className="googlesitekit-header__date-range-selector-menu mdc-button--dropdown googlesitekit-header__dropdown"
+				className={ classnames(
+					'mdc-button--dropdown',
+					'googlesitekit-header__dropdown',
+					'googlesitekit-header__date-range-selector-menu',
+					'googlesitekit-border-radius-round--phone',
+					'googlesitekit-button-icon--phone'
+				) }
 				text
 				onClick={ handleMenu }
-				icon={ <DateRangeIcon width="18" height="20" /> }
+				icon={ <DateRangeIcon width="20" height="20" /> }
 				aria-haspopup="menu"
 				aria-expanded={ menuOpen }
 				aria-controls="date-range-selector-menu"
+				title={ __( 'Date range', 'google-site-kit' ) }
+				tooltip
 			>
 				{ currentDateRangeLabel }
 			</Button>

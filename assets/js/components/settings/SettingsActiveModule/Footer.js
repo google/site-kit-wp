@@ -32,20 +32,22 @@ import { Fragment, useCallback } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { VIEW_CONTEXT_SETTINGS } from '../../../googlesitekit/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { Cell, Grid, Row } from '../../../material-components';
-import PencilIcon from '../../../../svg/pencil.svg';
-import TrashIcon from '../../../../svg/trash.svg';
+import PencilIcon from '../../../../svg/icons/pencil.svg';
+import TrashIcon from '../../../../svg/icons/trash.svg';
 import Button from '../../Button';
 import Spinner from '../../Spinner';
 import Link from '../../Link';
 import { clearWebStorage, trackEvent } from '../../../util';
 import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
+import useViewContext from '../../../hooks/useViewContext';
 const { useDispatch, useSelect } = Data;
 
 export default function Footer( props ) {
 	const { slug } = props;
+
+	const viewContext = useViewContext();
 
 	const history = useHistory();
 	const { action, moduleSlug } = useParams();
@@ -79,13 +81,13 @@ export default function Footer( props ) {
 
 	const handleClose = useCallback( async () => {
 		await trackEvent(
-			`${ VIEW_CONTEXT_SETTINGS }_module-list`,
+			`${ viewContext }_module-list`,
 			'cancel_module_settings',
 			slug
 		);
 		await clearErrors();
 		history.push( `/connected-services/${ slug }` );
-	}, [ clearErrors, history, slug ] );
+	}, [ clearErrors, history, viewContext, slug ] );
 
 	const handleConfirm = useCallback(
 		async ( event ) => {
@@ -99,7 +101,7 @@ export default function Footer( props ) {
 				setValue( errorKey, submissionError );
 			} else {
 				await trackEvent(
-					`${ VIEW_CONTEXT_SETTINGS }_module-list`,
+					`${ viewContext }_module-list`,
 					'update_module_settings',
 					slug
 				);
@@ -116,6 +118,7 @@ export default function Footer( props ) {
 			errorKey,
 			clearErrors,
 			history,
+			viewContext,
 		]
 	);
 
@@ -126,11 +129,11 @@ export default function Footer( props ) {
 	const handleEdit = useCallback(
 		() =>
 			trackEvent(
-				`${ VIEW_CONTEXT_SETTINGS }_module-list`,
+				`${ viewContext }_module-list`,
 				'edit_module_settings',
 				slug
 			),
-		[ slug ]
+		[ slug, viewContext ]
 	);
 
 	if ( ! module ) {
@@ -167,7 +170,6 @@ export default function Footer( props ) {
 				{ hasSettings && (
 					<Link
 						className="googlesitekit-settings-module__footer-cancel"
-						inherit
 						onClick={ handleClose }
 					>
 						{ __( 'Cancel', 'google-site-kit' ) }
@@ -179,7 +181,6 @@ export default function Footer( props ) {
 		primaryColumn = (
 			<Link
 				className="googlesitekit-settings-module__edit-button"
-				inherit
 				to={ `/connected-services/${ slug }/edit` }
 				onClick={ handleEdit }
 			>
@@ -198,7 +199,6 @@ export default function Footer( props ) {
 			<Link
 				className="googlesitekit-settings-module__remove-button"
 				onClick={ handleDialog }
-				inherit
 				danger
 			>
 				{ sprintf(
@@ -218,7 +218,6 @@ export default function Footer( props ) {
 			<Link
 				href={ homepage }
 				className="googlesitekit-settings-module__cta-button"
-				inherit
 				external
 			>
 				{ sprintf(
@@ -238,11 +237,11 @@ export default function Footer( props ) {
 						{ primaryColumn }
 					</Cell>
 					<Cell
-						className="mdc-layout-grid__cell--align-right-desktop"
 						lgSize={ 6 }
 						mdSize={ 8 }
 						smSize={ 4 }
 						alignMiddle
+						lgAlignRight
 					>
 						{ secondaryColumn }
 					</Cell>

@@ -26,26 +26,69 @@ import { useIntersection } from 'react-use';
 /**
  * WordPress dependencies
  */
-import { useRef } from '@wordpress/element';
+import { useEffect, useRef, useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { HIDDEN_CLASS } from '../util/constants';
+import { getWidgetLayout, combineWidgets, HIDDEN_CLASS } from '../util';
+import { getHeaderHeight } from '../../../util/scroll';
 import { CORE_WIDGETS, WIDGET_AREA_STYLES } from '../datastore/constants';
-import WidgetRenderer from './WidgetRenderer';
-import { getWidgetLayout, combineWidgets } from '../util';
+import { CORE_UI, ACTIVE_CONTEXT_ID } from '../../datastore/ui/constants';
 import { Cell, Grid, Row } from '../../../material-components';
-import WidgetCellWrapper from './WidgetCellWrapper';
-import { isInactiveWidgetState } from '../util/is-inactive-widget-state';
+import {
+	useBreakpoint,
+	BREAKPOINT_XLARGE,
+	BREAKPOINT_DESKTOP,
+	BREAKPOINT_TABLET,
+	BREAKPOINT_SMALL,
+} from '../../../hooks/useBreakpoint';
 import InViewProvider from '../../../components/InViewProvider';
+import WidgetRenderer from './WidgetRenderer';
+import WidgetCellWrapper from './WidgetCellWrapper';
+import useViewOnly from '../../../hooks/useViewOnly';
+import { CORE_USER } from '../../datastore/user/constants';
 const { useSelect } = Data;
 
-export default function WidgetAreaRenderer( { slug, totalAreas } ) {
+/**
+ * Gets root margin value for the intersection hook.
+ *
+ * @since 1.69.0
+ *
+ * @param {string} breakpoint The current breakpoint.
+ * @return {string} The root margin.
+ */
+function getRootMargin( breakpoint ) {
+	const gridGaps = {
+		[ BREAKPOINT_XLARGE ]: 48,
+		[ BREAKPOINT_DESKTOP ]: 48,
+		[ BREAKPOINT_TABLET ]: 32,
+		[ BREAKPOINT_SMALL ]: 32,
+	};
+
+	const gap = gridGaps[ breakpoint ];
+	const top = Math.abs( getHeaderHeight( breakpoint ) + gap );
+
+	return `-${ top }px -${ gap }px -${ gap }px -${ gap }px`;
+}
+
+export default function WidgetAreaRenderer( { slug, contextID } ) {
+	const viewOnlyDashboard = useViewOnly();
+
+	const viewableModules = useSelect( ( select ) => {
+		if ( ! viewOnlyDashboard ) {
+			return null;
+		}
+
+		return select( CORE_USER ).getViewableModules();
+	} );
+
+	const breakpoint = useBreakpoint();
+
 	const widgetAreaRef = useRef();
 	const intersectionEntry = useIntersection( widgetAreaRef, {
-		rootMargin: '0px',
+		rootMargin: getRootMargin( breakpoint ),
 		threshold: 0, // Trigger "in-view" as soon as one pixel is visible.
 	} );
 
@@ -53,19 +96,42 @@ export default function WidgetAreaRenderer( { slug, totalAreas } ) {
 		select( CORE_WIDGETS ).getWidgetArea( slug )
 	);
 	const widgets = useSelect( ( select ) =>
-		select( CORE_WIDGETS ).getWidgets( slug )
+		select( CORE_WIDGETS ).getWidgets( slug, {
+			modules: viewableModules ? viewableModules : undefined,
+		} )
 	);
 	const widgetStates = useSelect( ( select ) =>
 		select( CORE_WIDGETS ).getWidgetStates()
 	);
-
-	const activeWidgets = widgets.filter(
-		( widget ) =>
-			! (
-				widgetStates[ widget.slug ] &&
-				isInactiveWidgetState( widgetStates[ widget.slug ] )
-			)
+	const isActive = useSelect( ( select ) =>
+		select( CORE_WIDGETS ).isWidgetAreaActive( slug, {
+			modules: viewableModules ? viewableModules : undefined,
+		} )
 	);
+
+	const activeContextID = useSelect( ( select ) =>
+		select( CORE_UI ).getValue( ACTIVE_CONTEXT_ID )
+	);
+
+	const [ inViewState, setInViewState ] = useState( {
+		key: `WidgetAreaRenderer-${ slug }`,
+		value: activeContextID
+			? activeContextID === contextID
+			: !! intersectionEntry?.intersectionRatio,
+	} );
+
+	useEffect( () => {
+		setInViewState( {
+			key: `WidgetAreaRenderer-${ slug }`,
+			value: activeContextID
+				? activeContextID === contextID
+				: !! intersectionEntry?.intersectionRatio,
+		} );
+	}, [ intersectionEntry, slug, activeContextID, contextID ] );
+
+	if ( viewableModules === undefined ) {
+		return null;
+	}
 
 	// Compute the layout.
 	const { columnWidths, rowIndexes } = getWidgetLayout(
@@ -111,19 +177,23 @@ export default function WidgetAreaRenderer( { slug, totalAreas } ) {
 		</WidgetCellWrapper>
 	) );
 
+	const { Icon, title, style, subtitle } = widgetArea;
+
 	// Here we render the bare output as it is guaranteed to render empty.
 	// This is important compared to returning `null` so that the area
 	// can maybe render later if conditions change for widgets to become active.
 	// Returning `null` here however would have the side-effect of making
 	// all widgets active again, which is why we must return the "null" output.
-	if ( ! activeWidgets.length ) {
+	if ( ! isActive ) {
 		return (
 			<Grid
 				className={ classnames(
 					HIDDEN_CLASS,
 					'googlesitekit-widget-area',
-					`googlesitekit-widget-area--${ slug }`,
-					`googlesitekit-widget-area--${ style }`
+					{
+						[ `googlesitekit-widget-area--${ slug }` ]: !! slug,
+						[ `googlesitekit-widget-area--${ style }` ]: !! style,
+					}
 				) }
 				ref={ widgetAreaRef }
 			>
@@ -132,10 +202,8 @@ export default function WidgetAreaRenderer( { slug, totalAreas } ) {
 		);
 	}
 
-	const { Icon, title, style, subtitle } = widgetArea;
-
 	return (
-		<InViewProvider value={ !! intersectionEntry?.intersectionRatio }>
+		<InViewProvider value={ inViewState }>
 			<Grid
 				className={ classnames(
 					'googlesitekit-widget-area',
@@ -144,28 +212,26 @@ export default function WidgetAreaRenderer( { slug, totalAreas } ) {
 				) }
 				ref={ widgetAreaRef }
 			>
-				{ totalAreas > 1 && (
-					<Row>
-						<Cell
-							className="googlesitekit-widget-area-header"
-							size={ 12 }
-						>
-							{ Icon && <Icon width={ 33 } height={ 33 } /> }
+				<Row>
+					<Cell
+						className="googlesitekit-widget-area-header"
+						size={ 12 }
+					>
+						{ Icon && <Icon width={ 33 } height={ 33 } /> }
 
-							{ title && (
-								<h3 className="googlesitekit-widget-area-header__title googlesitekit-heading-3">
-									{ title }
-								</h3>
-							) }
+						{ title && (
+							<h3 className="googlesitekit-widget-area-header__title googlesitekit-heading-3">
+								{ title }
+							</h3>
+						) }
 
-							{ subtitle && (
-								<h4 className="googlesitekit-widget-area-header__subtitle">
-									{ subtitle }
-								</h4>
-							) }
-						</Cell>
-					</Row>
-				) }
+						{ subtitle && (
+							<h4 className="googlesitekit-widget-area-header__subtitle">
+								{ subtitle }
+							</h4>
+						) }
+					</Cell>
+				</Row>
 
 				<div className="googlesitekit-widget-area-widgets">
 					<Row>
@@ -186,4 +252,5 @@ export default function WidgetAreaRenderer( { slug, totalAreas } ) {
 
 WidgetAreaRenderer.propTypes = {
 	slug: PropTypes.string.isRequired,
+	contextID: PropTypes.string,
 };

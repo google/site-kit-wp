@@ -5,22 +5,62 @@ on:
     branches:
       - develop
       - main
+      - 'feature/**'
       - 'release/**'
-    paths-ignore:
-      - 'docs/**'
+    paths:
+      - '.github/workflows/zips.yml'
+      - 'bin/release'
+      - 'assets/**'
+      - '!assets/**/__tests__/**/*.js'
+      - '!assets/**/test/*.js'
+      - '!assets/**/*.test.js'
+      - 'includes/**'
+      - 'google-site-kit.php'
+      - 'scoper.inc.php'
+      - 'uninstall.php'
+      - 'composer.json'
+      - 'composer.lock'
+      - 'php-scoper/composer.lock'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'postcss.config.js'
+      - 'webpack.config.js'
+      - 'feature-flags.json'
     tags: ['**']
   pull_request:
     branches:
       - develop
       - main
-    paths-ignore:
-      - 'docs/**'
+      - 'feature/**'
+    paths:
+      - '.github/workflows/zips.yml'
+      - 'bin/release'
+      - 'assets/**'
+      - '!assets/**/__tests__/**/*.js'
+      - '!assets/**/test/*.js'
+      - '!assets/**/*.test.js'
+      - 'includes/**'
+      - 'google-site-kit.php'
+      - 'scoper.inc.php'
+      - 'uninstall.php'
+      - 'composer.json'
+      - 'composer.lock'
+      - 'php-scoper/composer.lock'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'postcss.config.js'
+      - 'webpack.config.js'
+      - 'feature-flags.json'
     types:
       - opened
       - closed
       - reopened
       - synchronize
       - ready_for_review
+
+concurrency:
+  group: zips-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build-zips:
@@ -29,7 +69,6 @@ jobs:
     timeout-minutes: 20
     if: false == ( ( github.event_name == 'pull_request' && ( github.event.action == 'closed' || github.event.pull_request.draft == true || contains( github.head_ref, 'dependabot/' ) ) ) || github.event.pull_request.head.repo.fork )
     steps:
-      - uses: styfle/cancel-workflow-action@0.8.0
       - uses: actions/checkout@v2
       - name: Get Composer Cache Directory
         id: composer-cache
@@ -118,7 +157,6 @@ jobs:
     timeout-minutes: 20
     if: ( github.event_name == 'pull_request' && github.event.action == 'closed' && contains( github.head_ref, 'dependabot/' ) == false ) && github.event.pull_request.head.repo.fork == false
     steps:
-      - uses: styfle/cancel-workflow-action@0.8.0
       - uses: actions/checkout@v2
         with:
           repository: ${{ github.repository }}.wiki

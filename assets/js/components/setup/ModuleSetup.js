@@ -37,17 +37,14 @@ import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
 import { trackEvent } from '../../util';
 import HelpMenu from '../help/HelpMenu';
-import HelpMenuLink from '../help/HelpMenuLink';
+import { Cell, Grid, Row } from '../../material-components';
 import Header from '../Header';
-import Link from '../Link';
+import ModuleSetupFooter from './ModuleSetupFooter';
 const { useSelect, useDispatch } = Data;
 
 export default function ModuleSetup( { moduleSlug } ) {
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 
-	const settingsPageURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getAdminURL( 'googlesitekit-settings' )
-	);
 	const module = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModule( moduleSlug )
 	);
@@ -102,38 +99,17 @@ export default function ModuleSetup( { moduleSlug } ) {
 	return (
 		<Fragment>
 			<Header>
-				<HelpMenu>
-					{ moduleSlug === 'adsense' && (
-						<HelpMenuLink href="https://support.google.com/adsense/">
-							{ __( 'Get help with AdSense', 'google-site-kit' ) }
-						</HelpMenuLink>
-					) }
-				</HelpMenu>
+				<HelpMenu />
 			</Header>
 			<div className="googlesitekit-setup">
-				<div className="mdc-layout-grid">
-					<div className="mdc-layout-grid__inner">
-						<div
-							className="
-							mdc-layout-grid__cell
-							mdc-layout-grid__cell--span-12
-						"
-						>
+				<Grid>
+					<Row>
+						<Cell size={ 12 }>
 							<section className="googlesitekit-setup__wrapper">
-								<div className="mdc-layout-grid">
-									<div className="mdc-layout-grid__inner">
-										<div
-											className="
-											mdc-layout-grid__cell
-											mdc-layout-grid__cell--span-12
-										"
-										>
-											<p
-												className="
-												googlesitekit-setup__intro-title
-												googlesitekit-overline
-											"
-											>
+								<Grid>
+									<Row>
+										<Cell size={ 12 }>
+											<p className="googlesitekit-setup__intro-title">
 												{ __(
 													'Connect Service',
 													'google-site-kit'
@@ -143,40 +119,18 @@ export default function ModuleSetup( { moduleSlug } ) {
 												module={ module }
 												finishSetup={ finishSetup }
 											/>
-										</div>
-									</div>
-								</div>
-								<div className="googlesitekit-setup__footer">
-									<div className="mdc-layout-grid">
-										<div className="mdc-layout-grid__inner">
-											<div
-												className="
-													mdc-layout-grid__cell
-													mdc-layout-grid__cell--span-2-phone
-													mdc-layout-grid__cell--span-4-tablet
-													mdc-layout-grid__cell--span-6-desktop
-												"
-											>
-												<Link
-													id={ `setup-${ module.slug }-cancel` }
-													href={ settingsPageURL }
-													onClick={
-														onCancelButtonClick
-													}
-												>
-													{ __(
-														'Cancel',
-														'google-site-kit'
-													) }
-												</Link>
-											</div>
-										</div>
-									</div>
-								</div>
+										</Cell>
+									</Row>
+								</Grid>
+
+								<ModuleSetupFooter
+									module={ module }
+									onCancel={ onCancelButtonClick }
+								/>
 							</section>
-						</div>
-					</div>
-				</div>
+						</Cell>
+					</Row>
+				</Grid>
 			</div>
 		</Fragment>
 	);

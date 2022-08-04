@@ -31,7 +31,7 @@ import { Icon, closeSmall } from '@wordpress/icons';
  * Internal dependencies
  */
 import Button from '../../components/Button';
-import Logo from '../../../svg/logo-g.svg';
+import Logo from '../../../svg/graphics/logo-g.svg';
 
 const SurveyHeader = ( { title, dismissSurvey } ) => (
 	<div className="googlesitekit-survey__header">

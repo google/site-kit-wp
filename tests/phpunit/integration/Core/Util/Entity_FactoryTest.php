@@ -348,7 +348,7 @@ class Entity_FactoryTest extends TestCase {
 		// * 'term' (taxonomy 'customtaxonomy', slug 'coffee', title 'Coffee')
 		// * 'user' (slug 'johndoe', title 'John Doe')
 		return array(
-			'front page'                   => array(
+			'front page'            => array(
 				array(),
 				function () {
 					return new Entity(
@@ -361,7 +361,7 @@ class Entity_FactoryTest extends TestCase {
 					);
 				},
 			),
-			'blog page'                    => array(
+			'blog page'             => array(
 				array(
 					'pagename' => 'blog',
 				),
@@ -376,24 +376,7 @@ class Entity_FactoryTest extends TestCase {
 					);
 				},
 			),
-			'blog page, page 3'            => array(
-				array(
-					'pagename' => 'blog',
-					'paged'    => '3',
-				),
-				function () {
-					// TODO: This should be 'https://example.com/blog/page/3/'.
-					return new Entity(
-						'https://example.com/blog/',
-						array(
-							'type'  => 'blog',
-							'title' => 'Blog',
-							'id'    => self::$post_titles_to_ids['Blog'],
-						)
-					);
-				},
-			),
-			'single post'                  => array(
+			'single post'           => array(
 				array(
 					'name' => 'some-post',
 				),
@@ -408,24 +391,7 @@ class Entity_FactoryTest extends TestCase {
 					);
 				},
 			),
-			'single post, paginated'       => array(
-				array(
-					'name' => 'some-post',
-					'page' => '2',
-				),
-				function () {
-					// TODO: This should be 'https://example.com/blog/some-post/2/'.
-					return new Entity(
-						'https://example.com/blog/some-post/',
-						array(
-							'type'  => 'post',
-							'title' => 'Some Post',
-							'id'    => self::$post_titles_to_ids['Some Post'],
-						)
-					);
-				},
-			),
-			'single page'                  => array(
+			'single page'           => array(
 				array(
 					'pagename' => 'some-page',
 				),
@@ -440,7 +406,7 @@ class Entity_FactoryTest extends TestCase {
 					);
 				},
 			),
-			'category archives'            => array(
+			'category archives'     => array(
 				array(
 					'category_name' => 'uncategorized',
 				),
@@ -455,7 +421,7 @@ class Entity_FactoryTest extends TestCase {
 					);
 				},
 			),
-			'sub-category archives'        => array(
+			'sub-category archives' => array(
 				array(
 					'category_name' => 'uncategorized/subcat',
 				),
@@ -470,24 +436,7 @@ class Entity_FactoryTest extends TestCase {
 					);
 				},
 			),
-			'category archives, page 3'    => array(
-				array(
-					'category_name' => 'uncategorized',
-					'paged'         => '3',
-				),
-				function () {
-					// TODO: This should be 'https://example.com/blog/category/uncategorized/page/3/'.
-					return new Entity(
-						'https://example.com/blog/category/uncategorized/',
-						array(
-							'type'  => 'term',
-							'title' => 'Category: Uncategorized',
-							'id'    => self::$term_names_to_ids['Uncategorized'],
-						)
-					);
-				},
-			),
-			'tag archives'                 => array(
+			'tag archives'          => array(
 				array(
 					'tag' => 'food',
 				),
@@ -502,24 +451,7 @@ class Entity_FactoryTest extends TestCase {
 					);
 				},
 			),
-			'tag archives, page 3'         => array(
-				array(
-					'tag'   => 'food',
-					'paged' => '3',
-				),
-				function () {
-					// TODO: This should be 'https://example.com/blog/tag/food/page/3/'.
-					return new Entity(
-						'https://example.com/blog/tag/food/',
-						array(
-							'type'  => 'term',
-							'title' => 'Tag: Food',
-							'id'    => self::$term_names_to_ids['Food'],
-						)
-					);
-				},
-			),
-			'post format archives'         => array(
+			'post format archives'  => array(
 				array(
 					// Passing 'image' works for WP request parsing,
 					// but the query requires the actual 'post-format-image'.
@@ -537,27 +469,7 @@ class Entity_FactoryTest extends TestCase {
 					);
 				},
 			),
-			'post format archives, page 2' => array(
-				array(
-					// Passing 'image' works for WP request parsing,
-					// but the query requires the actual 'post-format-image'.
-					'post_format' => 'post-format-image',
-					'post_type'   => array( 'post' ),
-					'paged'       => '2',
-				),
-				function () {
-					// TODO: This should be 'https://example.com/blog/type/image/page/2/'.
-					return new Entity(
-						'https://example.com/blog/type/image/',
-						array(
-							'type'  => 'term',
-							'title' => 'Images',
-							'id'    => self::$term_names_to_ids['Images'],
-						)
-					);
-				},
-			),
-			'author archives'              => array(
+			'author archives'       => array(
 				array(
 					'author_name' => 'johndoe',
 				),
@@ -572,24 +484,7 @@ class Entity_FactoryTest extends TestCase {
 					);
 				},
 			),
-			'author archives, page 2'      => array(
-				array(
-					'author_name' => 'johndoe',
-					'paged'       => '2',
-				),
-				function () {
-					// TODO: This should be 'https://example.com/blog/author/johndoe/page/2/'.
-					return new Entity(
-						'https://example.com/blog/author/johndoe/',
-						array(
-							'type'  => 'user',
-							'title' => 'Author: John Doe',
-							'id'    => self::$user_display_names_to_ids['John Doe'],
-						)
-					);
-				},
-			),
-			'year archives'                => array(
+			'year archives'         => array(
 				array(
 					'year' => '2020',
 				),
@@ -603,23 +498,7 @@ class Entity_FactoryTest extends TestCase {
 					);
 				},
 			),
-			'year archives, page 3'        => array(
-				array(
-					'year'  => '2020',
-					'paged' => '3',
-				),
-				function () {
-					// TODO: This should be 'https://example.com/blog/2020/page/3/'.
-					return new Entity(
-						'https://example.com/blog/2020/',
-						array(
-							'type'  => 'year',
-							'title' => 'Year: 2020',
-						)
-					);
-				},
-			),
-			'month archives'               => array(
+			'month archives'        => array(
 				array(
 					'year'     => '2020',
 					'monthnum' => '08',
@@ -634,24 +513,7 @@ class Entity_FactoryTest extends TestCase {
 					);
 				},
 			),
-			'month archives, page 3'       => array(
-				array(
-					'year'     => '2020',
-					'monthnum' => '08',
-					'paged'    => '3',
-				),
-				function () {
-					// TODO: This should be 'https://example.com/blog/2020/08/page/3/'.
-					return new Entity(
-						'https://example.com/blog/2020/08/',
-						array(
-							'type'  => 'month',
-							'title' => 'Month: August 2020',
-						)
-					);
-				},
-			),
-			'day archives'                 => array(
+			'day archives'          => array(
 				array(
 					'year'     => '2020',
 					'monthnum' => '08',
@@ -667,25 +529,7 @@ class Entity_FactoryTest extends TestCase {
 					);
 				},
 			),
-			'day archives, page 3'         => array(
-				array(
-					'year'     => '2020',
-					'monthnum' => '08',
-					'day'      => '04',
-					'paged'    => '3',
-				),
-				function () {
-					// TODO: This should be 'https://example.com/blog/2020/08/04/page/3/'.
-					return new Entity(
-						'https://example.com/blog/2020/08/04/',
-						array(
-							'type'  => 'day',
-							'title' => 'Day: August 4, 2020',
-						)
-					);
-				},
-			),
-			'custom post type post'        => array(
+			'custom post type post' => array(
 				array(
 					'customposttype' => 'coffee',
 					'post_type'      => 'customposttype',
@@ -703,7 +547,7 @@ class Entity_FactoryTest extends TestCase {
 					);
 				},
 			),
-			'post type archives'           => array(
+			'post type archives'    => array(
 				array(
 					'post_type' => 'customposttype',
 				),
@@ -714,6 +558,238 @@ class Entity_FactoryTest extends TestCase {
 							'type'  => 'post_type',
 							'title' => 'Archives: Custom Post Type',
 						)
+					);
+				},
+			),
+			'taxonomy archives'     => array(
+				array(
+					'customtaxonomy' => 'coffee',
+				),
+				function () {
+					return new Entity(
+						'https://example.com/blog/customtaxonomy/coffee/',
+						array(
+							'type'  => 'term',
+							'title' => 'Custom Taxonomy: Coffee',
+							'id'    => self::$term_names_to_ids['Coffee'],
+						)
+					);
+				},
+			),
+		);
+	}
+
+	/**
+	 * @dataProvider data_from_wp_query_paginated
+	 *
+	 * @param array $query_args           Query arguments.
+	 * @param Closure $get_expected_entity_args Function that returns an array of args used to construct the expected Entities.
+	 */
+	public function test_from_wp_query_paginated( array $query_args, Closure $get_expected_entity_args ) {
+		global $wp_rewrite;
+
+		$orig_permalink_structure = get_option( 'permalink_structure', '' );
+
+		$permalink_structures = array(
+			'',                  // Not using permalinks.
+			'/blog/%postname%/', // Using permalinks.
+		);
+
+		$expected_entity_args = $get_expected_entity_args();
+
+		foreach ( $permalink_structures as $index => $permalink_structure ) {
+			$wp_rewrite->set_permalink_structure( $permalink_structure );
+
+			$this->test_from_wp_query(
+				$query_args,
+				function () use ( $expected_entity_args, $index ) {
+					return new Entity(
+						$expected_entity_args['urls'][ $index ],
+						$expected_entity_args['args']
+					);
+				}
+			);
+		}
+
+		$wp_rewrite->set_permalink_structure( $orig_permalink_structure );
+	}
+
+	public function data_from_wp_query_paginated() {
+		// See notes in `data_from_wp_query()`.
+		// In the `urls` array, the first item is the non-permalinked URL, the second item is the permalinked URL.
+
+		return array(
+			'blog page, page 3'            => array(
+				array(
+					'pagename' => 'blog',
+					'paged'    => '3',
+				),
+				function () {
+					return array(
+						'urls' => array(
+							'https://example.com/?paged=3&page_id=' . self::$post_titles_to_ids['Blog'],
+							'https://example.com/blog/page/3/',
+						),
+						'args' => array(
+							'type'  => 'blog',
+							'title' => 'Blog',
+							'id'    => self::$post_titles_to_ids['Blog'],
+						),
+					);
+				},
+			),
+			'single post, paginated'       => array(
+				array(
+					'name' => 'some-post',
+					'page' => '2',
+				),
+				function () {
+					return array(
+						'urls' => array(
+							'https://example.com/?p=' . self::$post_titles_to_ids['Some Post'] . '&page=2',
+							'https://example.com/blog/some-post/2/',
+						),
+						'args' => array(
+							'type'  => 'post',
+							'title' => 'Some Post',
+							'id'    => self::$post_titles_to_ids['Some Post'],
+						),
+					);
+				},
+			),
+			'category archives, page 3'    => array(
+				array(
+					'category_name' => 'uncategorized',
+					'paged'         => '3',
+				),
+				function () {
+					return array(
+						'urls' => array(
+							'https://example.com/?paged=3&cat=' . self::$term_names_to_ids['Uncategorized'],
+							'https://example.com/blog/category/uncategorized/page/3/',
+						),
+						'args' => array(
+							'type'  => 'term',
+							'title' => 'Category: Uncategorized',
+							'id'    => self::$term_names_to_ids['Uncategorized'],
+						),
+					);
+				},
+			),
+			'tag archives, page 3'         => array(
+				array(
+					'tag'   => 'food',
+					'paged' => '3',
+				),
+				function () {
+					return array(
+						'urls' => array(
+							'https://example.com/?paged=3&tag=food',
+							'https://example.com/blog/tag/food/page/3/',
+						),
+						'args' => array(
+							'type'  => 'term',
+							'title' => 'Tag: Food',
+							'id'    => self::$term_names_to_ids['Food'],
+						),
+					);
+				},
+			),
+			'post format archives, page 2' => array(
+				array(
+					// Passing 'image' works for WP request parsing,
+					// but the query requires the actual 'post-format-image'.
+					'post_format' => 'post-format-image',
+					'post_type'   => array( 'post' ),
+					'paged'       => '2',
+				),
+				function () {
+					return array(
+						'urls' => array(
+							'https://example.com/?paged=2&post_format=image',
+							'https://example.com/blog/type/image/page/2/',
+						),
+						'args' => array(
+							'type'  => 'term',
+							'title' => 'Images',
+							'id'    => self::$term_names_to_ids['Images'],
+						),
+					);
+				},
+			),
+			'author archives, page 2'      => array(
+				array(
+					'author_name' => 'johndoe',
+					'paged'       => '2',
+				),
+				function () {
+					return array(
+						'urls' => array(
+							'https://example.com/?paged=2&author=' . self::$user_display_names_to_ids['John Doe'],
+							'https://example.com/blog/author/johndoe/page/2/',
+						),
+						'args' => array(
+							'type'  => 'user',
+							'title' => 'Author: John Doe',
+							'id'    => self::$user_display_names_to_ids['John Doe'],
+						),
+					);
+				},
+			),
+			'year archives, page 3'        => array(
+				array(
+					'year'  => '2020',
+					'paged' => '3',
+				),
+				function () {
+					return array(
+						'urls' => array(
+							'https://example.com/?paged=3&m=2020',
+							'https://example.com/blog/2020/page/3/',
+						),
+						'args' => array(
+							'type'  => 'year',
+							'title' => 'Year: 2020',
+						),
+					);
+				},
+			),
+			'month archives, page 3'       => array(
+				array(
+					'year'     => '2020',
+					'monthnum' => '08',
+					'paged'    => '3',
+				),
+				function () {
+					return array(
+						'urls' => array(
+							'https://example.com/?paged=3&m=202008',
+							'https://example.com/blog/2020/08/page/3/',
+						),
+						'args' => array(
+							'type'  => 'month',
+							'title' => 'Month: August 2020',
+						),
+					);
+				},
+			),
+			'day archives, page 3'         => array(
+				array(
+					'year'     => '2020',
+					'monthnum' => '08',
+					'day'      => '04',
+					'paged'    => '3',
+				),
+				function () {
+					return array(
+						'urls' => array(
+							'https://example.com/?paged=3&m=20200804',
+							'https://example.com/blog/2020/08/04/page/3/',
+						),
+						'args' => array(
+							'type'  => 'day',
+							'title' => 'Day: August 4, 2020',
+						),
 					);
 				},
 			),
@@ -723,28 +799,15 @@ class Entity_FactoryTest extends TestCase {
 					'paged'     => '3',
 				),
 				function () {
-					// TODO: This should be 'https://example.com/blog/customposttype/page/3/'.
-					return new Entity(
-						'https://example.com/blog/customposttype/',
-						array(
+					return array(
+						'urls' => array(
+							'https://example.com/?paged=3&post_type=customposttype',
+							'https://example.com/blog/customposttype/page/3/',
+						),
+						'args' => array(
 							'type'  => 'post_type',
 							'title' => 'Archives: Custom Post Type',
-						)
-					);
-				},
-			),
-			'taxonomy archives'            => array(
-				array(
-					'customtaxonomy' => 'coffee',
-				),
-				function () {
-					return new Entity(
-						'https://example.com/blog/customtaxonomy/coffee/',
-						array(
-							'type'  => 'term',
-							'title' => 'Custom Taxonomy: Coffee',
-							'id'    => self::$term_names_to_ids['Coffee'],
-						)
+						),
 					);
 				},
 			),
@@ -754,14 +817,16 @@ class Entity_FactoryTest extends TestCase {
 					'paged'          => '3',
 				),
 				function () {
-					// TODO: This should be 'https://example.com/blog/customtaxonomy/coffee/page/3/'.
-					return new Entity(
-						'https://example.com/blog/customtaxonomy/coffee/',
-						array(
+					return array(
+						'urls' => array(
+							'https://example.com/?paged=3&customtaxonomy=coffee',
+							'https://example.com/blog/customtaxonomy/coffee/page/3/',
+						),
+						'args' => array(
 							'type'  => 'term',
 							'title' => 'Custom Taxonomy: Coffee',
 							'id'    => self::$term_names_to_ids['Coffee'],
-						)
+						),
 					);
 				},
 			),

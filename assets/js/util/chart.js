@@ -73,3 +73,28 @@ export const isSingleSlice = ( report ) => {
 
 	return false;
 };
+
+/**
+ * Calculates difference between two chart values.
+ *
+ * @since 1.48.0
+ *
+ * @param {number} currentValue  Current chart value.
+ * @param {number} previousValue Previous chart value.
+ * @return {number} The difference.
+ */
+export const calculateDifferenceBetweenChartValues = (
+	currentValue,
+	previousValue
+) => {
+	if ( currentValue > 0 && previousValue > 0 ) {
+		return currentValue / previousValue - 1;
+	}
+	if ( currentValue > 0 ) {
+		return 1;
+	}
+	if ( previousValue > 0 ) {
+		return -1;
+	}
+	return 0;
+};

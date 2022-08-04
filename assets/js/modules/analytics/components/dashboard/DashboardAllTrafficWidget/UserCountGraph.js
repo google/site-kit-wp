@@ -47,7 +47,9 @@ const MOBILE_TO_DESKOP_MEDIA_QUERY =
 	'(min-width: 451px) and (max-width: 1280px';
 const X_LARGE_AND_ABOVE_MEDIA_QUERY = '(min-width: 1281px)';
 
-export default function UserCountGraph( { loaded, error, report } ) {
+export default function UserCountGraph( props ) {
+	const { loaded, error, report, gatheringData } = props;
+
 	const { startDate, endDate } = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeDates( {
 			offsetDays: DATE_RANGE_OFFSET,
@@ -58,7 +60,7 @@ export default function UserCountGraph( { loaded, error, report } ) {
 	);
 	const graphLineColor = useSelect(
 		( select ) =>
-			select( CORE_UI ).getValue( UI_DIMENSION_COLOR ) || '#1a73e8'
+			select( CORE_UI ).getValue( UI_DIMENSION_COLOR ) || '#3c7251'
 	);
 
 	const [ xSmallOnly, setXSmallOnly ] = useState(
@@ -205,6 +207,7 @@ export default function UserCountGraph( { loaded, error, report } ) {
 				loadingHeight="340px"
 				loaded={ loaded }
 				options={ chartOptions }
+				gatheringData={ gatheringData }
 				width="100%"
 			/>
 		</div>
@@ -215,6 +218,7 @@ UserCountGraph.propTypes = {
 	loaded: PropTypes.bool,
 	error: PropTypes.shape( {} ),
 	report: PropTypes.arrayOf( PropTypes.object ),
+	gatheringData: PropTypes.bool,
 };
 
 UserCountGraph.chartOptions = {
@@ -224,12 +228,12 @@ UserCountGraph.chartOptions = {
 	curveType: 'function',
 	height: 340,
 	width: '100%',
-	colors: [ '#1a73e8' ],
+	colors: [ '#3c7251' ],
 	chartArea: {
-		left: '1%',
+		left: 7,
+		right: 40,
 		height: 300,
 		top: 21,
-		width: '90%',
 	},
 	legend: {
 		position: 'none',
@@ -271,7 +275,7 @@ UserCountGraph.chartOptions = {
 		},
 	},
 	crosshair: {
-		color: '#1a73e8',
+		color: '#3c7251',
 		opacity: 0.1,
 		orientation: 'vertical',
 	},

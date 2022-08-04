@@ -24,19 +24,24 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { VIEW_CONTEXT_DASHBOARD } from '../googlesitekit/constants';
+import {
+	VIEW_CONTEXT_DASHBOARD,
+	VIEW_CONTEXT_DASHBOARD_VIEW_ONLY,
+} from '../googlesitekit/constants';
 import { CORE_UI } from '../googlesitekit/datastore/ui/constants';
 import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
 import { UI_ALL_TRAFFIC_LOADED } from '../modules/analytics/datastore/constants';
 import helpVisibility from './help-visibility';
 import ideaHubModule from './idea-hub-module';
 import ideaHubPostsTable from './idea-hub-posts-table';
+import unifiedDashboard from './unified-dashboard';
+import dashboardSharing from './dashboard-sharing';
 
 const allTrafficWidget = {
 	slug: 'allTrafficWidget',
-	contexts: [ VIEW_CONTEXT_DASHBOARD ],
+	contexts: [ VIEW_CONTEXT_DASHBOARD, VIEW_CONTEXT_DASHBOARD_VIEW_ONLY ],
 	version: '1.25.0',
-	gaEventCategory: `${ VIEW_CONTEXT_DASHBOARD }_all-traffic-widget`,
+	gaEventCategory: ( viewContext ) => `${ viewContext }_all-traffic-widget`,
 	checkRequirements: async ( registry ) => {
 		// Here we need to wait for the underlying selector to be resolved before selecting `isModuleConnected`.
 		await registry.__experimentalResolveSelect( CORE_MODULES ).getModules();
@@ -104,4 +109,6 @@ export default [
 	helpVisibility,
 	ideaHubModule,
 	ideaHubPostsTable,
+	unifiedDashboard,
+	dashboardSharing,
 ];

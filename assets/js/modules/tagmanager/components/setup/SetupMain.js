@@ -30,7 +30,7 @@ import { _x } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import TagManagerIcon from '../../../../../svg/tagmanager.svg';
+import TagManagerIcon from '../../../../../svg/graphics/tagmanager.svg';
 import SetupForm from './SetupForm';
 import ProgressBar from '../../../../components/ProgressBar';
 import {
@@ -40,8 +40,8 @@ import {
 } from '../../datastore/constants';
 import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 import { CORE_LOCATION } from '../../../../googlesitekit/datastore/location/constants';
-import { useExistingTagEffect } from '../../hooks';
-import { AccountCreate, ExistingTagError } from '../common';
+import useExistingTagEffect from '../../hooks/useExistingTagEffect';
+import { AccountCreate } from '../common';
 import useGAPropertyIDEffect from '../../hooks/useGAPropertyIDEffect';
 const { useSelect } = Data;
 
@@ -54,9 +54,6 @@ export default function SetupMain( { finishSetup } ) {
 	);
 	const hasExistingTag = useSelect( ( select ) =>
 		select( MODULES_TAGMANAGER ).hasExistingTag()
-	);
-	const hasExistingTagPermission = useSelect( ( select ) =>
-		select( MODULES_TAGMANAGER ).hasExistingTagPermission()
 	);
 	const isDoingSubmitChanges = useSelect( ( select ) =>
 		select( MODULES_TAGMANAGER ).isDoingSubmitChanges()
@@ -72,7 +69,7 @@ export default function SetupMain( { finishSetup } ) {
 	);
 	const isCreateAccount = ACCOUNT_CREATE === accountID;
 
-	// Set the accountID and containerID if there is an existing tag.
+	// Set useSnippet to `false` if there is an existing tag and it is the same as the selected container ID.
 	useExistingTagEffect();
 	// Synchronize the gaPropertyID setting with the singular GA property ID in selected containers.
 	useGAPropertyIDEffect();
@@ -84,11 +81,10 @@ export default function SetupMain( { finishSetup } ) {
 		isDoingSubmitChanges ||
 		! hasResolvedAccounts ||
 		isNavigating ||
-		submitInProgress
+		submitInProgress ||
+		hasExistingTag === undefined
 	) {
 		viewComponent = <ProgressBar />;
-	} else if ( hasExistingTag && hasExistingTagPermission === false ) {
-		viewComponent = <ExistingTagError />;
 	} else if ( isCreateAccount || ! accounts?.length ) {
 		viewComponent = <AccountCreate />;
 	} else {

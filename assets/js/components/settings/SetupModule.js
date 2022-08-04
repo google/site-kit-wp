@@ -40,11 +40,14 @@ import ModuleSettingsWarning from '../notifications/ModuleSettingsWarning.js';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
-import { VIEW_CONTEXT_SETTINGS } from '../../googlesitekit/constants';
+import { EXPERIMENTAL_MODULES } from '../dashboard-sharing/DashboardSharingSettings/constants';
 import { trackEvent } from '../../util';
+import useViewContext from '../../hooks/useViewContext';
 const { useSelect, useDispatch } = Data;
 
 export default function SetupModule( { slug, name, description } ) {
+	const viewContext = useViewContext();
+
 	const [ isSaving, setIsSaving ] = useState( false );
 
 	const { activateModule } = useDispatch( CORE_MODULES );
@@ -57,7 +60,7 @@ export default function SetupModule( { slug, name, description } ) {
 
 		if ( ! error ) {
 			await trackEvent(
-				`${ VIEW_CONTEXT_SETTINGS }_module-list`,
+				`${ viewContext }_module-list`,
 				'activate_module',
 				slug
 			);
@@ -70,7 +73,13 @@ export default function SetupModule( { slug, name, description } ) {
 			} );
 			setIsSaving( false );
 		}
-	}, [ activateModule, navigateTo, setInternalServerError, slug ] );
+	}, [
+		activateModule,
+		navigateTo,
+		setInternalServerError,
+		slug,
+		viewContext,
+	] );
 
 	const canActivateModule = useSelect( ( select ) =>
 		select( CORE_MODULES ).canActivateModule( slug )
@@ -82,7 +91,8 @@ export default function SetupModule( { slug, name, description } ) {
 				'googlesitekit-settings-connect-module',
 				`googlesitekit-settings-connect-module--${ slug }`,
 				{
-					'googlesitekit-settings-connect-module--disabled': ! canActivateModule,
+					'googlesitekit-settings-connect-module--disabled':
+						canActivateModule === false,
 				}
 			) }
 			key={ slug }
@@ -93,21 +103,23 @@ export default function SetupModule( { slug, name, description } ) {
 			<div className="googlesitekit-settings-connect-module__logo">
 				<ModuleIcon slug={ slug } />
 			</div>
-			<h3
-				className="
+			<div className="googlesitekit-settings-connect-module__heading">
+				<h3
+					className="
 					googlesitekit-subheading-1
 					googlesitekit-settings-connect-module__title
 				"
-			>
-				{ name }
-
-				{ slug === 'idea-hub' && (
-					<Badge
-						label={ __( 'Experimental', 'google-site-kit' ) }
-						className="googlesitekit-idea-hub__badge"
-					/>
+				>
+					{ name }
+				</h3>
+				{ EXPERIMENTAL_MODULES.includes( slug ) && (
+					<Badge label={ __( 'Experimental', 'google-site-kit' ) } />
 				) }
-			</h3>
+
+				{ 'thank-with-google' === slug && (
+					<Badge label={ __( 'US Only', 'google-site-kit' ) } />
+				) }
+			</div>
 			<p className="googlesitekit-settings-connect-module__text">
 				{ description }
 			</p>
@@ -118,7 +130,6 @@ export default function SetupModule( { slug, name, description } ) {
 				<Link
 					onClick={ onSetup }
 					href=""
-					inherit
 					disabled={ ! canActivateModule }
 					arrow
 				>

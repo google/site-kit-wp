@@ -19,7 +19,6 @@
 /**
  * WordPress dependencies
  */
-import { useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -34,13 +33,17 @@ import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { isZeroReport } from '../../modules/search-console/util';
 import DataBlock from '../DataBlock';
 import PreviewBlock from '../PreviewBlock';
-import { calculateChange, trackEvent } from '../../util';
+import { NOTICE_STYLE } from '../GatheringDataNotice';
+import { calculateChange } from '../../util';
 import sumObjectListValue from '../../util/sum-object-list-value';
 import { partitionReport } from '../../util/partition-report';
-const { useSelect } = Data;
+import { useFeature } from '../../hooks/useFeature';
+const { useSelect, useInViewSelect } = Data;
 
 const WPDashboardImpressions = ( { WidgetReportZero, WidgetReportError } ) => {
-	const isGatheringData = useSelect( ( select ) =>
+	const zeroDataStatesEnabled = useFeature( 'zeroDataStates' );
+
+	const isGatheringData = useInViewSelect( ( select ) =>
 		select( MODULES_SEARCH_CONSOLE ).isGatheringData()
 	);
 	const { compareStartDate, endDate } = useSelect( ( select ) =>
@@ -59,7 +62,7 @@ const WPDashboardImpressions = ( { WidgetReportZero, WidgetReportError } ) => {
 		dimensions: 'date',
 	};
 
-	const data = useSelect( ( select ) =>
+	const data = useInViewSelect( ( select ) =>
 		select( MODULES_SEARCH_CONSOLE ).getReport( reportArgs )
 	);
 	const error = useSelect( ( select ) =>
@@ -74,12 +77,6 @@ const WPDashboardImpressions = ( { WidgetReportZero, WidgetReportError } ) => {
 			).hasFinishedResolution( 'getReport', [ reportArgs ] )
 	);
 
-	useEffect( () => {
-		if ( error ) {
-			trackEvent( 'plugin_setup', 'search_console_error', error.message );
-		}
-	}, [ error ] );
-
 	if ( loading || isGatheringData === undefined ) {
 		return <PreviewBlock width="48%" height="92px" />;
 	}
@@ -90,7 +87,7 @@ const WPDashboardImpressions = ( { WidgetReportZero, WidgetReportError } ) => {
 		);
 	}
 
-	if ( isZeroReport( data ) && isGatheringData ) {
+	if ( ! zeroDataStatesEnabled && isGatheringData && isZeroReport( data ) ) {
 		return <WidgetReportZero moduleSlug="search-console" />;
 	}
 
@@ -107,6 +104,13 @@ const WPDashboardImpressions = ( { WidgetReportZero, WidgetReportError } ) => {
 		totalImpressions
 	);
 
+	const gatheringDataProps = zeroDataStatesEnabled
+		? {
+				gatheringData: isGatheringData,
+				gatheringDataNoticeStyle: NOTICE_STYLE.SMALL,
+		  }
+		: {};
+
 	return (
 		<DataBlock
 			className="googlesitekit-wp-dashboard-stats__data-table overview-total-impressions"
@@ -114,6 +118,7 @@ const WPDashboardImpressions = ( { WidgetReportZero, WidgetReportError } ) => {
 			datapoint={ totalImpressions }
 			change={ totalImpressionsChange }
 			changeDataUnit="%"
+			{ ...gatheringDataProps }
 		/>
 	);
 };

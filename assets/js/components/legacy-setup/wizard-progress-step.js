@@ -20,7 +20,6 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
-import React from 'react';
 import classnames from 'classnames';
 
 /**
@@ -31,8 +30,8 @@ import { Component } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import ExclamationIcon from '../../../svg/exclamation.svg';
-import CheckIcon from '../../../svg/check.svg';
+import ExclamationIcon from '../../../svg/icons/exclamation.svg';
+import CheckIcon from '../../../svg/icons/check.svg';
 
 class WizardProgressStep extends Component {
 	render() {

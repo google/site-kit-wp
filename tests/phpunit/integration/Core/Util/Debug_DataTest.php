@@ -11,6 +11,12 @@
 namespace Google\Site_Kit\Tests\Core\Util;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Authentication\Authentication;
+use Google\Site_Kit\Core\Dismissals\Dismissed_Items;
+use Google\Site_Kit\Core\Modules\Modules;
+use Google\Site_Kit\Core\Permissions\Permissions;
+use Google\Site_Kit\Core\Storage\Options;
+use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Util\Debug_Data;
 use Google\Site_Kit\Tests\TestCase;
 
@@ -20,7 +26,15 @@ use Google\Site_Kit\Tests\TestCase;
 class Debug_DataTest extends TestCase {
 
 	public function test_register() {
-		$debug_data = new Debug_Data( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$context         = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$options         = new Options( $context );
+		$user_options    = new User_Options( $context );
+		$authentication  = new Authentication( $context, $options, $user_options );
+		$modules         = new Modules( $context, $options, $user_options, $authentication );
+		$dismissed_items = new Dismissed_Items( $user_options );
+		$permissions     = new Permissions( $context, $authentication, $modules, $user_options, $dismissed_items );
+
+		$debug_data = new Debug_Data( $context, $options, $user_options, $authentication, $modules, $permissions );
 		remove_all_filters( 'debug_information' );
 
 		$debug_data->register();
@@ -41,6 +55,7 @@ class Debug_DataTest extends TestCase {
 				'verification_status',
 				'connected_user_count',
 				'active_modules',
+				'recoverable_modules',
 				'reference_url',
 				'search_console_property',
 				'required_scopes',

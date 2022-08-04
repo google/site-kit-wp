@@ -26,14 +26,19 @@ import {
 	unsubscribeFromAll,
 } from '../../../../../tests/js/utils';
 import { enabledFeatures } from '../../../features';
+import * as fixtures from './__fixtures__';
 
 describe( 'modules/idea-hub idea-state', () => {
 	let registry;
+	let store;
 
 	const ideaStateFixture = {
 		name: 'ideas/7612031899179595408',
 		saved: false,
 		dismissed: false,
+	};
+	const ideaHubData = {
+		lastIdeaPostUpdatedAt: '123',
 	};
 
 	beforeAll( () => {
@@ -43,6 +48,7 @@ describe( 'modules/idea-hub idea-state', () => {
 	beforeEach( () => {
 		enabledFeatures.add( 'ideaHubModule' );
 		registry = createTestRegistry();
+		store = registry.stores[ MODULES_IDEA_HUB ].store;
 	} );
 
 	afterEach( () => {
@@ -149,52 +155,166 @@ describe( 'modules/idea-hub idea-state', () => {
 		} );
 
 		describe( 'Activities', () => {
-			it( 'sets and removes different values for different activity keys', async () => {
-				expect(
-					registry.stores[ MODULES_IDEA_HUB ].store.getState()
-						.activities
-				).toEqual( {} );
+			it( 'sets and removes different values for different activity keys', () => {
+				expect( store.getState().activities ).toEqual( {} );
 
 				registry
 					.dispatch( MODULES_IDEA_HUB )
 					.setActivity( 'foo', 'bar' );
 
-				expect(
-					registry.stores[ MODULES_IDEA_HUB ].store.getState()
-						.activities
-				).toEqual( { foo: 'bar' } );
+				expect( store.getState().activities ).toEqual( { foo: 'bar' } );
 
 				registry
 					.dispatch( MODULES_IDEA_HUB )
 					.setActivity( 'bar', 'baz' );
 
-				expect(
-					registry.stores[ MODULES_IDEA_HUB ].store.getState()
-						.activities
-				).toEqual( { foo: 'bar', bar: 'baz' } );
+				expect( store.getState().activities ).toEqual( {
+					foo: 'bar',
+					bar: 'baz',
+				} );
 
 				registry.dispatch( MODULES_IDEA_HUB ).removeActivity( 'bar' );
 
-				expect(
-					registry.stores[ MODULES_IDEA_HUB ].store.getState()
-						.activities
-				).toEqual( { foo: 'bar' } );
+				expect( store.getState().activities ).toEqual( { foo: 'bar' } );
 
 				registry
 					.dispatch( MODULES_IDEA_HUB )
 					.setActivity( 'bar', 'baz' );
 
-				expect(
-					registry.stores[ MODULES_IDEA_HUB ].store.getState()
-						.activities
-				).toEqual( { foo: 'bar', bar: 'baz' } );
+				expect( store.getState().activities ).toEqual( {
+					foo: 'bar',
+					bar: 'baz',
+				} );
 
 				registry.dispatch( MODULES_IDEA_HUB ).removeActivity( 'foo' );
 
+				expect( store.getState().activities ).toEqual( { bar: 'baz' } );
+
+				registry
+					.dispatch( MODULES_IDEA_HUB )
+					.setActivity( 'fizz', 'buzz' );
+
+				expect( store.getState().activities ).toEqual( {
+					bar: 'baz',
+					fizz: 'buzz',
+				} );
+
+				registry.dispatch( MODULES_IDEA_HUB ).removeActivities( 'baz' );
+
+				expect( store.getState().activities ).toEqual( {
+					fizz: 'buzz',
+				} );
+			} );
+		} );
+
+		describe( 'moveIdeaFromNewIdeasToSavedIdeas', () => {
+			it( 'moves idea from newIdeas to savedIdeas if it exists', () => {
+				registry
+					.dispatch( MODULES_IDEA_HUB )
+					.receiveGetNewIdeas( fixtures.newIdeas, {
+						timestamp: ideaHubData.lastIdeaPostUpdatedAt,
+					} );
+				registry
+					.dispatch( MODULES_IDEA_HUB )
+					.receiveGetSavedIdeas( [], {} );
+
+				registry
+					.dispatch( MODULES_IDEA_HUB )
+					.moveIdeaFromNewIdeasToSavedIdeas(
+						fixtures.newIdeas[ 0 ].name
+					);
+
+				expect( store.getState().newIdeas ).not.toEqual(
+					expect.arrayContaining( [ fixtures.newIdeas[ 0 ] ] )
+				);
+				expect( store.getState().savedIdeas ).toEqual(
+					expect.arrayContaining( [ fixtures.newIdeas[ 0 ] ] )
+				);
+			} );
+		} );
+
+		describe( 'moveIdeaFromSavedIdeasToNewIdeas', () => {
+			it( 'moves idea from savedIdeas to newIdeas if it exists', () => {
+				registry
+					.dispatch( MODULES_IDEA_HUB )
+					.receiveGetNewIdeas( [], {} );
+				registry
+					.dispatch( MODULES_IDEA_HUB )
+					.receiveGetSavedIdeas( fixtures.savedIdeas, {
+						timestamp: ideaHubData.lastIdeaPostUpdatedAt,
+					} );
+
+				expect( store.getState().newIdeas ).toEqual( [] );
+				expect( store.getState().savedIdeas ).toEqual(
+					fixtures.savedIdeas
+				);
+
+				registry
+					.dispatch( MODULES_IDEA_HUB )
+					.moveIdeaFromSavedIdeasToNewIdeas(
+						fixtures.savedIdeas[ 0 ].name
+					);
+
+				expect( store.getState().savedIdeas ).not.toEqual(
+					expect.arrayContaining( [ fixtures.savedIdeas[ 0 ] ] )
+				);
+				expect( store.getState().newIdeas ).toEqual(
+					expect.arrayContaining( [ fixtures.savedIdeas[ 0 ] ] )
+				);
+			} );
+		} );
+
+		describe( 'removeIdeaFromNewIdeas', () => {
+			it( 'removes idea from newIdeas if it exists', () => {
+				registry
+					.dispatch( MODULES_IDEA_HUB )
+					.receiveGetNewIdeas( fixtures.newIdeas, {
+						timestamp: ideaHubData.lastIdeaPostUpdatedAt,
+					} );
+
+				expect( store.getState().newIdeas ).toEqual(
+					fixtures.newIdeas
+				);
+
+				registry
+					.dispatch( MODULES_IDEA_HUB )
+					.removeIdeaFromNewIdeas( fixtures.newIdeas[ 0 ].name );
+
+				expect( store.getState().newIdeas ).not.toEqual(
+					expect.arrayContaining( [ fixtures.newIdeas[ 0 ] ] )
+				);
+			} );
+		} );
+	} );
+
+	describe( 'selectors', () => {
+		describe( 'getIdeaByName', () => {
+			it( 'finds and retreives an idea by the given name and list to search', () => {
+				registry
+					.dispatch( MODULES_IDEA_HUB )
+					.receiveGetSavedIdeas( fixtures.savedIdeas, {
+						timestamp: ideaHubData.lastIdeaPostUpdatedAt,
+					} );
+
+				const [ idea ] = fixtures.savedIdeas;
+
 				expect(
-					registry.stores[ MODULES_IDEA_HUB ].store.getState()
-						.activities
-				).toEqual( { bar: 'baz' } );
+					registry
+						.select( MODULES_IDEA_HUB )
+						.getIdeaByName( idea.name, 'savedIdeas' )
+				).toEqual( idea );
+			} );
+
+			it( 'returns `null` for an idea that does not exist with the given name in the search list', () => {
+				registry
+					.dispatch( MODULES_IDEA_HUB )
+					.receiveGetNewIdeas( [], {} );
+
+				expect(
+					registry
+						.select( MODULES_IDEA_HUB )
+						.getIdeaByName( 'ideas/name', 'newIdeas' )
+				).toBeNull();
 			} );
 		} );
 	} );
