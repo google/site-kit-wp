@@ -12,15 +12,18 @@ namespace Google\Site_Kit\Modules;
 
 use Google\Site_Kit\Core\Assets\Asset;
 use Google\Site_Kit\Core\Assets\Script;
+use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Assets;
 use Google\Site_Kit\Core\Modules\Module_With_Assets_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Deactivation;
+use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Modules\Module_With_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Owner;
 use Google\Site_Kit\Core\Modules\Module_With_Owner_Trait;
+use Google\Site_Kit\Core\REST_API\Exception\Invalid_Datapoint_Exception;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Environment_Type_Guard;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Verify_Guard;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
@@ -28,6 +31,10 @@ use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Modules\Thank_With_Google\Settings;
 use Google\Site_Kit\Modules\Thank_With_Google\Supporter_Wall_Widget;
 use Google\Site_Kit\Modules\Thank_With_Google\Web_Tag;
+use Google\Site_Kit_Dependencies\Google_Service_SubscribewithGoogle;
+use Google\Site_Kit_Dependencies\Google_Service_SubscribewithGoogle_ListPublicationsResponse;
+use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
+use WP_Error;
 
 /**
  * Class representing the Thank with Google module.
@@ -37,7 +44,7 @@ use Google\Site_Kit\Modules\Thank_With_Google\Web_Tag;
  * @ignore
  */
 final class Thank_With_Google extends Module
-	implements Module_With_Assets, Module_With_Deactivation, Module_With_Owner, Module_With_Settings {
+	implements Module_With_Assets, Module_With_Deactivation, Module_With_Owner, Module_With_Scopes, Module_With_Settings {
 	use Method_Proxy_Trait;
 	use Module_With_Assets_Trait;
 	use Module_With_Owner_Trait;
@@ -138,6 +145,19 @@ final class Thank_With_Google extends Module
 	}
 
 	/**
+	 * Gets required Google OAuth scopes for the module.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array List of Google OAuth scopes.
+	 */
+	public function get_scopes() {
+		return array(
+			'https://www.googleapis.com/auth/subscribewithgoogle.publications.readonly',
+		);
+	}
+
+	/**
 	 * Sets up information about the module.
 	 *
 	 * @since 1.78.0
@@ -200,7 +220,7 @@ final class Thank_With_Google extends Module
 	 */
 	protected function get_datapoint_definitions() {
 		return array(
-			'GET:publications'            => array( 'service' => '' ),
+			'GET:publications'            => array( 'service' => 'subscribewithgoogle' ),
 			'GET:supporter-wall-sidebars' => array( 'service' => '' ),
 		);
 	}
@@ -218,9 +238,11 @@ final class Thank_With_Google extends Module
 	protected function create_data_request( Data_Request $data ) {
 		switch ( "{$data->method}:{$data->datapoint}" ) {
 			case 'GET:publications':
-				return function () {
-					return array();
-				};
+				$service = $this->get_service( 'subscribewithgoogle' );
+				/* @var $service Google_Service_SubscribewithGoogle phpcs:ignore Squiz.PHP.CommentedOutCode.Found */
+
+				/* @TODO filter by verified domains */
+				return $service->publications->listPublications();
 			case 'GET:supporter-wall-sidebars':
 				return function() {
 					$sidebars      = array();
@@ -267,6 +289,43 @@ final class Thank_With_Google extends Module
 	}
 
 	/**
+	 * Parses a response for the given datapoint.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param Data_Request $data Data request object.
+	 * @param mixed        $response Request response.
+	 * @return mixed Parsed response data on success, or WP_Error on failure.
+	 */
+	protected function parse_data_response( Data_Request $data, $response ) {
+		switch ( "{$data->method}:{$data->datapoint}" ) {
+			case 'GET:publications':
+				/* @var $response Google_Service_SubscribewithGoogle_ListPublicationsResponse phpcs:ignore Squiz.PHP.CommentedOutCode.Found */
+				return $response->getPublications();
+		}
+
+		return parent::parse_data_response( $data, $response );
+	}
+
+	/**
+	 * Sets up the Google services the module should use.
+	 *
+	 * This method is invoked once by {@see Module::get_service()} to lazily set up the services when one is requested
+	 * for the first time.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param Google_Site_Kit_Client $client Google client instance.
+	 * @return array Google services as $identifier => $service_instance pairs. Every $service_instance must be an
+	 *               instance of Google_Service.
+	 */
+	protected function setup_services( Google_Site_Kit_Client $client ) {
+		return array(
+			'subscribewithgoogle' => new Google_Service_SubscribewithGoogle( $client ),
+		);
+	}
+
+	/**
 	 * Registers the Thank with Google tag.
 	 *
 	 * @since 1.80.0
@@ -293,5 +352,4 @@ final class Thank_With_Google extends Module
 			$tag->register();
 		}
 	}
-
 }
