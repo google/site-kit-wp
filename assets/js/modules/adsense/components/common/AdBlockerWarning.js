@@ -60,13 +60,13 @@ export default function AdBlockerWarning( { context } ) {
 		>
 			{ createInterpolateElement(
 				sprintf(
-					/* translators: 1: The warning message. 2: The Get Help text. */
+					/* translators: 1: The warning message. 2: "Get help" text. */
 					__(
 						'<ErrorIcon /> %1$s. <Link>%2$s</Link>',
 						'google-site-kit'
 					),
 					adBlockerWarningMessage,
-					__( 'Get Help', 'google-site-kit' )
+					__( 'Get help', 'google-site-kit' )
 				),
 				{
 					ErrorIcon: <ErrorIcon height="20" width="23" />,
