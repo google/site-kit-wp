@@ -153,4 +153,10 @@ class Thank_With_GoogleTest extends TestCase {
 
 		$this->assertOptionNotExists( Settings::OPTION );
 	}
+
+	public function test_service_classes_exist() {
+		$this->assertTrue(
+			class_exists( 'Google\Site_Kit_Dependencies\Google_Service_SubscribewithGoogle' )
+		);
+	}
 }
