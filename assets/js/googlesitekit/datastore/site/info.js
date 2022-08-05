@@ -109,6 +109,7 @@ export const reducer = ( state, { payload, type } ) => {
 				usingProxy,
 				webStoriesActive,
 				proxySupportLinkURL,
+				widgetsAdminURL,
 				postTypes,
 			} = payload.siteInfo;
 
@@ -133,6 +134,7 @@ export const reducer = ( state, { payload, type } ) => {
 					usingProxy,
 					webStoriesActive,
 					proxySupportLinkURL,
+					widgetsAdminURL,
 					postTypes,
 				},
 			};
@@ -182,6 +184,7 @@ export const resolvers = {
 			usingProxy,
 			webStoriesActive,
 			proxySupportLinkURL,
+			widgetsAdminURL,
 			postTypes,
 		} = global._googlesitekitBaseData;
 
@@ -212,6 +215,7 @@ export const resolvers = {
 			usingProxy: !! usingProxy,
 			webStoriesActive,
 			proxySupportLinkURL,
+			widgetsAdminURL,
 		} );
 	},
 };
@@ -525,6 +529,16 @@ export const selectors = {
 	 * @return {(string|null)} The proxy support URL.
 	 */
 	getProxySupportLinkURL: getSiteInfoProperty( 'proxySupportLinkURL' ),
+
+	/**
+	 * Gets the admin widgets editor URL.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(string|null)} The proxy support URL.
+	 */
+	getWidgetsAdminURL: getSiteInfoProperty( 'widgetsAdminURL' ),
 
 	/**
 	 * Gets the public post types.

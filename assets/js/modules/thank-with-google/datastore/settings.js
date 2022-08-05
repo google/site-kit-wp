@@ -32,8 +32,8 @@ import {
 } from '../../../googlesitekit/data/create-settings-store';
 import { createStrictSelect } from '../../../googlesitekit/data/utils';
 import {
-	isValidButtonPlacement,
-	isValidButtonPostTypes,
+	isValidCTAPlacement,
+	isValidCTAPostTypes,
 	isValidColorTheme,
 	isValidPublicationID,
 } from '../util/validation';
@@ -42,10 +42,10 @@ import {
 export const INVARIANT_INVALID_PUBLICATION_ID =
 	'a valid publicationID is required';
 export const INVARIANT_INVALID_COLOR_THEME = 'a valid color theme is required';
-export const INVARIANT_INVALID_BUTTON_PLACEMENT =
-	'a valid button placement is required';
-export const INVARIANT_INVALID_BUTTON_POST_TYPES =
-	'a valid button post types array is required';
+export const INVARIANT_INVALID_CTA_PLACEMENT =
+	'a valid cta placement is required';
+export const INVARIANT_INVALID_CTA_POST_TYPES =
+	'a valid cta post types array is required';
 
 export async function submitChanges( { select, dispatch } ) {
 	// This action shouldn't be called if settings haven't changed,
@@ -75,8 +75,8 @@ export function validateCanSubmitChanges( select ) {
 		isDoingSubmitChanges,
 		getPublicationID,
 		getColorTheme,
-		getButtonPlacement,
-		getButtonPostTypes,
+		getCTAPlacement,
+		getCTAPostTypes,
 	} = strictSelect( MODULES_THANK_WITH_GOOGLE );
 
 	// Note: these error messages are referenced in test assertions.
@@ -92,15 +92,15 @@ export function validateCanSubmitChanges( select ) {
 	const colorTheme = getColorTheme();
 	invariant( isValidColorTheme( colorTheme ), INVARIANT_INVALID_COLOR_THEME );
 
-	const buttonPlacement = getButtonPlacement();
+	const ctaPlacement = getCTAPlacement();
 	invariant(
-		isValidButtonPlacement( buttonPlacement ),
-		INVARIANT_INVALID_BUTTON_PLACEMENT
+		isValidCTAPlacement( ctaPlacement ),
+		INVARIANT_INVALID_CTA_PLACEMENT
 	);
 
-	const buttonPostTypes = getButtonPostTypes();
+	const ctaPostTypes = getCTAPostTypes();
 	invariant(
-		isValidButtonPostTypes( buttonPostTypes ),
-		INVARIANT_INVALID_BUTTON_POST_TYPES
+		isValidCTAPostTypes( ctaPostTypes ),
+		INVARIANT_INVALID_CTA_POST_TYPES
 	);
 }

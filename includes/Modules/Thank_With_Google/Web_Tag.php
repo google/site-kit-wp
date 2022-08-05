@@ -33,49 +33,41 @@ class Web_Tag extends Module_Web_Tag {
 	const PLACEMENT_STATIC_AFTER_1ST_P   = 'static_below-first-paragraph';
 
 	/**
-	 * Publication ID.
+	 * CTA placement.
 	 *
 	 * @since 1.80.0
 	 * @var string
 	 */
-	private $publication_id;
+	private $cta_placement;
 
 	/**
-	 * Button placement.
-	 *
-	 * @since 1.80.0
-	 * @var string
-	 */
-	private $button_placement;
-
-	/**
-	 * Button post types.
+	 * CTA post types.
 	 *
 	 * @since 1.80.0
 	 * @var string[]
 	 */
-	private $button_post_types;
+	private $cta_post_types;
 
 	/**
-	 * Sets the current button placement.
+	 * Sets the current CTA placement.
 	 *
 	 * @since 1.80.0
 	 *
-	 * @param string $button_placement Button placement.
+	 * @param string $cta_placement CTA placement.
 	 */
-	public function set_button_placement( $button_placement ) {
-		$this->button_placement = $button_placement;
+	public function set_cta_placement( $cta_placement ) {
+		$this->cta_placement = $cta_placement;
 	}
 
 	/**
-	 * Sets the current button post types.
+	 * Sets the current CTA post types.
 	 *
 	 * @since 1.80.0
 	 *
-	 * @param string[] $button_post_types Button post types.
+	 * @param string[] $cta_post_types CTA post types.
 	 */
-	public function set_button_post_types( $button_post_types ) {
-		$this->button_post_types = $button_post_types;
+	public function set_cta_post_types( $cta_post_types ) {
+		$this->cta_post_types = $cta_post_types;
 	}
 
 	/**
@@ -113,7 +105,7 @@ class Web_Tag extends Module_Web_Tag {
 	protected function enqueue_twg_script() {
 		$twg_src = 'https://news.google.com/thank/js/v1/thank.js';
 
-		$is_singular_button_post_type_entity = $this->is_singular_button_post_type_entity();
+		$is_singular_cta_post_type_entity = $this->is_singular_cta_post_type_entity();
 
 		$twg_inline_script = sprintf(
 			"
@@ -130,10 +122,10 @@ class Web_Tag extends Module_Web_Tag {
 			});
 			",
 			esc_js( $this->tag_id ),
-			esc_js( $this->has_static_button_placement() ? 'inline' : 'floating' ),
-			esc_js( $is_singular_button_post_type_entity ? get_permalink() : '' ),
+			esc_js( $this->has_static_cta_placement() ? 'inline' : 'floating' ),
+			esc_js( $is_singular_cta_post_type_entity ? get_permalink() : '' ),
 			esc_js( GOOGLESITEKIT_VERSION ),
-			esc_js( $is_singular_button_post_type_entity ? get_the_title() : '' )
+			esc_js( $is_singular_cta_post_type_entity ? get_the_title() : '' )
 		);
 
 		// phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion
@@ -150,7 +142,7 @@ class Web_Tag extends Module_Web_Tag {
 
 		add_filter( 'script_loader_tag', $filter_google_thankjs, 10, 2 );
 
-		if ( $is_singular_button_post_type_entity ) {
+		if ( $is_singular_cta_post_type_entity ) {
 			wp_enqueue_script( 'google_thankjs' );
 		}
 	}
@@ -164,48 +156,48 @@ class Web_Tag extends Module_Web_Tag {
 	 * @return string Content of the post.
 	 */
 	protected function update_the_content( $content ) {
-		if ( ! $this->is_singular_button_post_type_entity() || ! $this->has_static_button_placement() ) {
+		if ( ! $this->is_singular_cta_post_type_entity() || ! $this->has_static_cta_placement() ) {
 			return $content;
 		}
 
-		$button_placeholder = '<div counter-button style="height: 34px; visibility: hidden; box-sizing: content-box; padding: 12px 0; display: inline-block; overflow: hidden;"></div><button twg-button style="height: 42px; visibility: hidden; margin: 12px 0;"></button>';
-		$button_placeholder = $this->add_snippet_comments( $button_placeholder );
+		$cta_placeholder = '<div counter-button style="height: 34px; visibility: hidden; box-sizing: content-box; padding: 12px 0; display: inline-block; overflow: hidden;"></div><button twg-button style="height: 42px; visibility: hidden; margin: 12px 0;"></button>';
+		$cta_placeholder = $this->add_snippet_comments( $cta_placeholder );
 
 		if ( empty( $content ) ) {
-			return $button_placeholder;
+			return $cta_placeholder;
 		}
 
-		if ( in_array( $this->button_placement, array( self::PLACEMENT_STATIC_AUTO, self::PLACEMENT_STATIC_BELOW_CONTENT ), true ) ) {
-			$content = $content . $button_placeholder;
-		} elseif ( self::PLACEMENT_STATIC_ABOVE_CONTENT === $this->button_placement ) {
-			$content = $button_placeholder . $content;
-		} elseif ( self::PLACEMENT_STATIC_AFTER_1ST_P === $this->button_placement ) {
-			$content = substr_replace( $content, $button_placeholder, strpos( $content, '</p>' ) + 4, 0 ); // strlen( '</p>' ) is 4.
+		if ( in_array( $this->cta_placement, array( self::PLACEMENT_STATIC_AUTO, self::PLACEMENT_STATIC_BELOW_CONTENT ), true ) ) {
+			$content = $content . $cta_placeholder;
+		} elseif ( self::PLACEMENT_STATIC_ABOVE_CONTENT === $this->cta_placement ) {
+			$content = $cta_placeholder . $content;
+		} elseif ( self::PLACEMENT_STATIC_AFTER_1ST_P === $this->cta_placement ) {
+			$content = substr_replace( $content, $cta_placeholder, strpos( $content, '</p>' ) + 4, 0 ); // strlen( '</p>' ) is 4.
 		}
 
 		return $content;
 	}
 
 	/**
-	 * Checks if the current buttton placement is static.
+	 * Checks if the current CTA placement is static.
 	 *
 	 * @since 1.80.0
 	 *
-	 * @return bool True if the current button placement is static.
+	 * @return bool True if the current CTA placement is static.
 	 */
-	private function has_static_button_placement() {
-		return esc_js( substr( $this->button_placement, 0, 7 ) === 'static_' ); // strlen( 'static_' ) is 7.
+	private function has_static_cta_placement() {
+		return esc_js( substr( $this->cta_placement, 0, 7 ) === 'static_' ); // strlen( 'static_' ) is 7.
 	}
 
 	/**
-	 * Determine if the current page is a singular button post type entry.
+	 * Determine if the current page is a singular CTA post type entry.
 	 *
 	 * @since 1.80.0
 	 *
-	 * @return bool True if the current page is a singular button post type entry. False otherwise.
+	 * @return bool True if the current page is a singular CTA post type entry. False otherwise.
 	 */
-	private function is_singular_button_post_type_entity() {
-		return is_singular( $this->button_post_types );
+	private function is_singular_cta_post_type_entity() {
+		return is_singular( $this->cta_post_types );
 	}
 
 	/**

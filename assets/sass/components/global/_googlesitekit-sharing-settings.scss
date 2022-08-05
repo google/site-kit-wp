@@ -104,18 +104,7 @@
 
 	.googlesitekit-user-role-select--open {
 		align-items: flex-start;
-
-		.googlesitekit-user-role-select__button {
-			left: calc(50% + #{$grid-gap-phone});
-			position: absolute;
-			top: calc((48px + #{$grid-gap-phone}) * -1);
-
-			@media (min-width: $bp-tablet) {
-				left: auto;
-				position: relative;
-				top: auto;
-			}
-		}
+		row-gap: 8px;
 	}
 
 	.googlesitekit-dashboard-sharing-settings {
@@ -459,17 +448,6 @@
 				align-items: center;
 				flex-direction: row;
 				max-width: none;
-			}
-		}
-
-		.googlesitekit-user-role-select--open {
-
-			.googlesitekit-user-role-select__button {
-				left: calc(25% + 16px);
-
-				@media (min-width: $bp-tablet) {
-					left: auto;
-				}
 			}
 		}
 	}

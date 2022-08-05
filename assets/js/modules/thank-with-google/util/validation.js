@@ -19,16 +19,15 @@
 /**
  * Internal dependencies
  */
+import {
+	CTA_PLACEMENT_DYNAMIC_HIGH,
+	CTA_PLACEMENT_DYNAMIC_LOW,
+	CTA_PLACEMENT_STATIC_ABOVE_CONTENT,
+	CTA_PLACEMENT_STATIC_AUTO,
+	CTA_PLACEMENT_STATIC_BELOW_1ST_PARAGRAPH,
+	CTA_PLACEMENT_STATIC_BELOW_CONTENT,
+} from '../datastore/constants';
 import { getColorThemes } from './settings';
-
-const validButtonPlacements = [
-	'dynamic_low',
-	'dynamic_high',
-	'static_auto',
-	'static_above-content',
-	'static_below-content',
-	'static_below-first-paragraph',
-];
 
 /**
  * Checks if the given publication ID appears to be a valid.
@@ -61,29 +60,36 @@ export function isValidColorTheme( colorTheme ) {
 }
 
 /**
- * Checks if the given button placement is valid.
+ * Checks if the given cta placement is valid.
  *
  * @since 1.78.0
  *
- * @param {string} buttonPlacement Button placement to test.
- * @return {boolean} `true` if the given button placement is valid, `false` otherwise.
+ * @param {string} ctaPlacement CTA placement to test.
+ * @return {boolean} `true` if the given CTA placement is valid, `false` otherwise.
  */
-export function isValidButtonPlacement( buttonPlacement ) {
-	return validButtonPlacements.includes( buttonPlacement );
+export function isValidCTAPlacement( ctaPlacement ) {
+	return [
+		CTA_PLACEMENT_DYNAMIC_HIGH,
+		CTA_PLACEMENT_DYNAMIC_LOW,
+		CTA_PLACEMENT_STATIC_AUTO,
+		CTA_PLACEMENT_STATIC_ABOVE_CONTENT,
+		CTA_PLACEMENT_STATIC_BELOW_CONTENT,
+		CTA_PLACEMENT_STATIC_BELOW_1ST_PARAGRAPH,
+	].includes( ctaPlacement );
 }
 
 /**
- * Checks if the given buttonPostTypes array is valid.
+ * Checks if the given ctaPostTypes array is valid.
  *
  * @since 1.78.0
  *
- * @param {string[]} buttonPostTypes Button post types to test.
- * @return {boolean} `true` if the given button post types list is valid, `false` otherwise.
+ * @param {string[]} ctaPostTypes CTA post types to test.
+ * @return {boolean} `true` if the given CTA post types list is valid, `false` otherwise.
  */
-export function isValidButtonPostTypes( buttonPostTypes ) {
+export function isValidCTAPostTypes( ctaPostTypes ) {
 	return (
-		Array.isArray( buttonPostTypes ) &&
-		buttonPostTypes.length >= 1 &&
-		buttonPostTypes.every( ( buttonPostType ) => buttonPostType.length > 0 )
+		Array.isArray( ctaPostTypes ) &&
+		ctaPostTypes.length >= 1 &&
+		ctaPostTypes.every( ( postType ) => postType.length > 0 )
 	);
 }

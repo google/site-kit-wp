@@ -52,10 +52,10 @@ class Thank_With_GoogleTest extends TestCase {
 		$this->options->set(
 			Settings::OPTION,
 			array(
-				'publicationID'   => '12345',
-				'colorTheme'      => 'blue',
-				'buttonPlacement' => 'static_auto',
-				'buttonPostTypes' => array( 'post' ),
+				'publicationID' => '12345',
+				'colorTheme'    => 'blue',
+				'ctaPlacement'  => 'static_auto',
+				'ctaPostTypes'  => array( 'post' ),
 			)
 		);
 	}
@@ -136,10 +136,10 @@ class Thank_With_GoogleTest extends TestCase {
 		$this->options->set(
 			Settings::OPTION,
 			array(
-				'publicationID'   => '12345',
-				'colorTheme'      => 'blue',
-				'buttonPlacement' => 'static_auto',
-				'buttonPostTypes' => array( 'post' ),
+				'publicationID' => '12345',
+				'colorTheme'    => 'blue',
+				'ctaPlacement'  => 'static_auto',
+				'ctaPostTypes'  => array( 'post' ),
 			)
 		);
 
@@ -152,5 +152,11 @@ class Thank_With_GoogleTest extends TestCase {
 		$this->thank_with_google->on_deactivation();
 
 		$this->assertOptionNotExists( Settings::OPTION );
+	}
+
+	public function test_service_classes_exist() {
+		$this->assertTrue(
+			class_exists( 'Google\Site_Kit_Dependencies\Google_Service_SubscribewithGoogle' )
+		);
 	}
 }

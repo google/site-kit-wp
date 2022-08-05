@@ -32,6 +32,14 @@ import PinkSVG from '../../../../svg/graphics/twg-pink.svg';
 import OrangeSVG from '../../../../svg/graphics/twg-orange.svg';
 import BrownSVG from '../../../../svg/graphics/twg-brown.svg';
 import BlackSVG from '../../../../svg/graphics/twg-black.svg';
+import {
+	CTA_PLACEMENT_STATIC_AUTO,
+	CTA_PLACEMENT_STATIC_ABOVE_CONTENT,
+	CTA_PLACEMENT_STATIC_BELOW_CONTENT,
+	CTA_PLACEMENT_DYNAMIC_HIGH,
+	CTA_PLACEMENT_DYNAMIC_LOW,
+	CTA_PLACEMENT_STATIC_BELOW_1ST_PARAGRAPH,
+} from '../datastore/constants';
 
 /**
  * Gets color themes supported by Thank with Google.
@@ -83,4 +91,76 @@ export function getColorThemes() {
 			svg: BlackSVG,
 		},
 	];
+}
+
+/**
+ * Gets the type value based on the ctaPlacement setting.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} ctaPlacement The ctaPlacement setting value.
+ * @return {string} "Fixed" or "Overlay" depending on if ctaPlacement is static or dynamic.
+ */
+export function getType( ctaPlacement ) {
+	if ( ! ctaPlacement ) {
+		return '';
+	}
+
+	if ( 'static' === ctaPlacement.substring( 0, 6 ) ) {
+		return __( 'Fixed', 'google-site-kit' );
+	}
+
+	return __( 'Overlay', 'google-site-kit' );
+}
+
+/**
+ * Gets the prominence value based on the ctaPlacement setting.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} ctaPlacement The ctaPlacement setting value.
+ * @return {string} Prominence value depending on the ctaPlacement setting.
+ */
+export function getProminence( ctaPlacement ) {
+	switch ( ctaPlacement ) {
+		case CTA_PLACEMENT_STATIC_AUTO:
+			return __( 'Auto', 'google-site-kit' );
+		case CTA_PLACEMENT_STATIC_ABOVE_CONTENT:
+			return __( 'Above the post', 'google-site-kit' );
+		case CTA_PLACEMENT_STATIC_BELOW_CONTENT:
+			return __( 'Below the post', 'google-site-kit' );
+		case CTA_PLACEMENT_STATIC_BELOW_1ST_PARAGRAPH:
+			return __( 'Below the 1st paragraph', 'google-site-kit' );
+		case CTA_PLACEMENT_DYNAMIC_HIGH:
+			return __( 'High', 'google-site-kit' );
+		case CTA_PLACEMENT_DYNAMIC_LOW:
+			return __( 'Low', 'google-site-kit' );
+		default:
+			return '';
+	}
+}
+
+/**
+ * Gets the formatted list of cta post types based on the ctaPostTypes slugs
+ * stored in settings.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Array} ctaPostTypes The ctaPostTypes setting value.
+ * @param {Array} postTypes    All available public postTypes.
+ * @return {string} Formatted string of ctaPostTypes.
+ */
+export function getCTAPostTypesString( ctaPostTypes, postTypes ) {
+	if ( ! postTypes || postTypes.length === 0 ) {
+		return ctaPostTypes.join( ', ' );
+	}
+
+	const enabledPostTypes = postTypes.filter( ( postType ) =>
+		ctaPostTypes.includes( postType.slug )
+	);
+
+	if ( enabledPostTypes.length === postTypes.length ) {
+		return __( 'All post types', 'google-site-kit' );
+	}
+	return enabledPostTypes.map( ( postType ) => postType.label ).join( ', ' );
 }
