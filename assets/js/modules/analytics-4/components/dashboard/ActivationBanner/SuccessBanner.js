@@ -34,7 +34,11 @@ export default function SuccessBanner() {
 				'You successfully set up your Google Analytics 4 property',
 				'google-site-kit'
 			) }
-			dismiss={ __( 'Ok, got it', 'google-site-kit' ) }
-		></BannerNotification>
+			description={ __(
+				'GA4 is collecting data for your site. You’ll only see Universal Analytics data on your dashboard for now.',
+				'google-site-kit'
+			) }
+			dismiss={ __( 'OK, got it!', 'google-site-kit' ) }
+		/>
 	);
 }

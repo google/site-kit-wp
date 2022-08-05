@@ -30,13 +30,13 @@ export default function SetupBanner( { onCTAClick } ) {
 	return (
 		<BannerNotification
 			id="ga4-activation-banner"
-			title={ __(
-				'TODO: Placeholder Setup Banner Title',
-				'google-site-kit'
-			) }
+			/* TODO: Internationalize title below */
+			title={ 'Placeholder Setup Banner Title' }
+			description={ 'Placeholder description text to be replaced.' }
 			ctaLabel={ __( 'Connect', 'google-site-kit' ) }
 			ctaLink={ onCTAClick ? '#' : null }
 			onCTAClick={ onCTAClick }
-		></BannerNotification>
+			dismiss={ __( 'Cancel', 'google-site-kit' ) }
+		/>
 	);
 }
