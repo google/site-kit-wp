@@ -27,6 +27,11 @@ import { PassThrough } from 'stream';
 import Docker from 'dockerode';
 import { printReceived } from 'jest-matcher-utils';
 
+/**
+ * Internal dependencies
+ */
+import { logIgnoreList } from './log-ignore-list';
+
 const docker = new Docker( { socketPath: '/var/run/docker.sock' } );
 
 /**
@@ -117,10 +122,12 @@ function resetDebugLog() {
 
 function assertEmptyDebugLog() {
 	// Filter out some lines from WP core that we can't do anything about.
-	const filteredDebugLog = debugLogData.filter(
-		( line ) =>
-			! line.match( 'Function get_magic_quotes_gpc\\(\\) is deprecated' )
-	);
+	const ignoreList = logIgnoreList[ process.env.WP_VERSION ] || [];
+
+	const filteredDebugLog = debugLogData.filter( ( line ) => {
+		const lineWithoutTimestamp = line.replace( /^\[[^\]]+\]\s+/, '' );
+		return ! ignoreList.includes( lineWithoutTimestamp );
+	} );
 
 	if ( filteredDebugLog.length ) {
 		throw new Error(
