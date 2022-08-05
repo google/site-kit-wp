@@ -114,10 +114,10 @@ class Setup {
 	 */
 	private function get_oauth_proxy_failed_help_link() {
 		return sprintf(
-			/* translators: 1: Support link URL. 2: Get Help string. */
+			/* translators: 1: Support link URL. 2: Get help string. */
 			__( '<a href="%1$s" target="_blank">%2$s</a>', 'google-site-kit' ),
 			esc_url( $this->proxy_support_link_url . '/?error_id=request_to_auth_proxy_failed' ),
-			esc_html__( 'Get Help', 'google-site-kit' )
+			esc_html__( 'Get help', 'google-site-kit' )
 		);
 	}
 
@@ -157,7 +157,7 @@ class Setup {
 
 			wp_die(
 				sprintf(
-					/* translators: 1: Error message or error code. 2: Get Help link. */
+					/* translators: 1: Error message or error code. 2: Get help link. */
 					esc_html__( 'The request to the authentication proxy has failed with an error: %1$s %2$s.', 'google-site-kit' ),
 					esc_html( $error_message ),
 					wp_kses(
@@ -176,7 +176,7 @@ class Setup {
 		if ( ! filter_var( $oauth_setup_redirect, FILTER_VALIDATE_URL ) ) {
 			wp_die(
 				sprintf(
-					/* translators: %s: Get Help link. */
+					/* translators: %s: Get help link. */
 					esc_html__( 'The request to the authentication proxy has failed. Please, try again later. %s.', 'google-site-kit' ),
 					wp_kses(
 						$oauth_proxy_failed_help_link,
