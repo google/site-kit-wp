@@ -37,14 +37,14 @@ export default function ActivationBanner() {
 	const [ step, setStep ] = useState( ACTIVATION_STEP_REMINDER );
 
 	const handleCTAClick = () => {
-		switch ( step ) {
-			case ACTIVATION_STEP_REMINDER:
-				setStep( ACTIVATION_STEP_SETUP );
-				break;
-			case ACTIVATION_STEP_SETUP:
-				setStep( ACTIVATION_STEP_SUCCESS );
-				break;
+		if ( step === ACTIVATION_STEP_REMINDER ) {
+			setStep( ACTIVATION_STEP_SETUP );
 		}
+
+		if ( step === ACTIVATION_STEP_SETUP ) {
+			setStep( ACTIVATION_STEP_SUCCESS );
+		}
+
 		return { dismissOnCTAClick: false };
 	};
 
