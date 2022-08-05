@@ -112,7 +112,7 @@ class Setup {
 	 *
 	 * @return string The get help link.
 	 */
-	public function get_oauth_proxy_failed_help_link() {
+	private function get_oauth_proxy_failed_help_link() {
 		return sprintf(
 			/* translators: 1: Support link URL. 2: Get Help string. */
 			__( '<a href="%1$s" target="_blank">%2$s</a>', 'google-site-kit' ),
