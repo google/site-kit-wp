@@ -4,7 +4,7 @@ module.exports = {
 	preset: 'jest-puppeteer',
 	setupFilesAfterEnv: [
 		'<rootDir>/config/bootstrap.js',
-		'<rootDir>/config/wordpress-debug-log.js',
+		'<rootDir>/config/wordpress-debug-log',
 		'@wordpress/jest-console',
 		'expect-puppeteer',
 	],
