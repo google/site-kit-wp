@@ -25,6 +25,7 @@ import { PassThrough } from 'stream';
  * External dependencies
  */
 import Docker from 'dockerode';
+import { printReceived } from 'jest-matcher-utils';
 
 const docker = new Docker( { socketPath: '/var/run/docker.sock' } );
 
@@ -121,7 +122,12 @@ function assertEmptyDebugLog() {
 			! line.match( 'Function get_magic_quotes_gpc\\(\\) is deprecated' )
 	);
 
-	expect( filteredDebugLog ).toHaveLength( 0 );
+	if ( filteredDebugLog.length ) {
+		throw new Error(
+			'Entries found in the WordPress debug log: ' +
+				printReceived( filteredDebugLog )
+		);
+	}
 }
 
 function tearDownDockerLogging() {
