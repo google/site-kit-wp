@@ -167,9 +167,8 @@ class Setup_Test extends TestCase {
 		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $user_id );
 
-		$context                      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
-		$setup                        = new Setup( $context, new User_Options( $context ), new Authentication( $context ) );
-		$oauth_proxy_failed_help_link = $setup->get_oauth_proxy_failed_help_link();
+		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
+		$setup   = new Setup( $context, new User_Options( $context ), new Authentication( $context ) );
 		$setup->register();
 
 		if ( $has_credentials ) {
@@ -208,9 +207,8 @@ class Setup_Test extends TestCase {
 			$error = $has_credentials ? 'Test error message.' : 'test_error_code';
 			$this->assertStringContainsString(
 				sprintf(
-					'The request to the authentication proxy has failed with an error: %1$s %2$s.',
-					$error,
-					$oauth_proxy_failed_help_link
+					'The request to the authentication proxy has failed with an error: %s <a href="https://sitekit.withgoogle.com/support/?error_id=request_to_auth_proxy_failed" target="_blank">Get help</a>.',
+					$error
 				),
 				$exception->getMessage()
 			);
@@ -223,12 +221,14 @@ class Setup_Test extends TestCase {
 	 * @dataProvider data_conditionally_syncs_site_fields
 	 */
 	public function test_handle_action_setup_start__invalid_url( $has_credentials ) {
+		// An invalid redirect URL (without protocol).
+		$redirect_url = 'sitekit.withgoogle.com/test-page';
+
 		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $user_id );
 
-		$context                      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
-		$setup                        = new Setup( $context, new User_Options( $context ), new Authentication( $context ) );
-		$oauth_proxy_failed_help_link = $setup->get_oauth_proxy_failed_help_link();
+		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
+		$setup   = new Setup( $context, new User_Options( $context ), new Authentication( $context ) );
 		$setup->register();
 
 		if ( $has_credentials ) {
@@ -242,16 +242,13 @@ class Setup_Test extends TestCase {
 
 		add_filter(
 			'pre_http_request',
-			function( $preempt, $args, $url ) use ( $context, &$proxy_server_requests, $has_credentials ) {
+			function( $preempt, $args, $url ) use ( $context, &$proxy_server_requests, $redirect_url ) {
 				if ( ( new Google_Proxy( $context ) )->url( Google_Proxy::OAUTH2_SITE_URI ) !== $url ) {
 					return $preempt;
 				}
 
 				// Collect any HTTP requests to the proxy server to register/sync site with the proxy server.
 				$proxy_server_requests[] = $args;
-
-				// An invalid redirect URL (without protocol).
-				$redirect_url = 'sitekit.withgoogle.com/test-page';
 
 				return array(
 					'response' => array( 'code' => 200 ),
@@ -270,10 +267,7 @@ class Setup_Test extends TestCase {
 			$this->fail( 'Expected WPDieException!' );
 		} catch ( WPDieException $exception ) {
 			$this->assertStringContainsString(
-				sprintf(
-					'The request to the authentication proxy has failed. Please, try again later. %s.',
-					$oauth_proxy_failed_help_link
-				),
+				'The request to the authentication proxy has failed. Please, try again later. <a href="https://sitekit.withgoogle.com/support/?error_id=request_to_auth_proxy_failed" target="_blank">Get help</a>.',
 				$exception->getMessage()
 			);
 		}
