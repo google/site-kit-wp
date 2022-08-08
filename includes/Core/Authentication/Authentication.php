@@ -1114,12 +1114,14 @@ final class Authentication {
 					$connected_url = $this->connected_proxy_url->get();
 					$current_url   = $this->context->get_canonical_home_url();
 					$content       = '<p>' . sprintf(
-						/* translators: 1: Plugin name. 2: Message. 3: Proxy setup URL. 4: Reconnect string. */
-						__( '%1$s: %2$s <a href="%3$s">%4$s</a>', 'google-site-kit' ),
+						/* translators: 1: Plugin name. 2: URL change message. 3: Proxy setup URL. 4: Reconnect string. 5: Proxy support link for the url-has-changed help page. 6: Help link message. */
+						__( '%1$s: %2$s <a href="%3$s">%4$s</a>. <a target="_blank" href="%5$s">%6$s</a>', 'google-site-kit' ),
 						esc_html__( 'Site Kit by Google', 'google-site-kit' ),
 						esc_html__( 'Looks like the URL of your site has changed. In order to continue using Site Kit, you’ll need to reconnect, so that your plugin settings are updated with the new URL.', 'google-site-kit' ),
 						esc_url( $this->get_proxy_setup_url() ),
-						esc_html__( 'Reconnect', 'google-site-kit' )
+						esc_html__( 'Reconnect', 'google-site-kit' ),
+						esc_url( $this->get_proxy_support_link_url() . '/?doc=url-has-changed' ),
+						esc_html__( 'Get help', 'google-site-kit' )
 					) . '</p>';
 
 					// Only show the comparison if URLs don't match as it is possible
