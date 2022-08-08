@@ -1340,7 +1340,7 @@ final class Authentication {
 	 *
 	 * @return string|null Support URL.
 	 */
-	private function get_proxy_support_link_url() {
+	public function get_proxy_support_link_url() {
 		return $this->google_proxy->url( Google_Proxy::SUPPORT_LINK_URI );
 	}
 
