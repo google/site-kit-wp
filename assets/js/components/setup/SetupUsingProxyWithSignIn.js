@@ -198,7 +198,7 @@ export default function SetupUsingProxyWithSignIn() {
 		};
 	}
 
-	let getHelp = '';
+	let getHelpURL = null;
 
 	if ( 'revoked' === getQueryArg( location.href, 'googlesitekit_context' ) ) {
 		title = sprintf(
@@ -219,9 +219,7 @@ export default function SetupUsingProxyWithSignIn() {
 			'google-site-kit'
 		);
 
-		if ( changedURLHelpLink ) {
-			getHelp = changedURLHelpLink;
-		}
+		getHelpURL = changedURLHelpLink;
 	} else if ( isSecondAdmin ) {
 		title = __(
 			'Connect your Google account to Site Kit',
@@ -313,9 +311,9 @@ export default function SetupUsingProxyWithSignIn() {
 												<p className="googlesitekit-setup__description">
 													{ description }
 												</p>
-												{ getHelp && (
+												{ getHelpURL && (
 													<Link
-														href={ getHelp }
+														href={ getHelpURL }
 														external
 													>
 														{ __(
