@@ -47,4 +47,26 @@ class Active_Consumers extends User_Setting {
 	protected function get_default() {
 		return array();
 	}
+
+	/**
+	 * Adds the current user to the list of active consumers
+	 *
+	 * @since n.e.x.t
+	 */
+	public function add() {
+		$active_consumers = $this->get();
+
+		$user       = wp_get_current_user();
+		$user_id    = $user->ID;
+		$user_roles = (array) $user->roles;
+
+		// If the user already exists in the list, bail.
+		if ( array_key_exists( $user_id, $active_consumers ) ) {
+			return;
+		}
+
+		$active_consumers[ $user_id ] = $user_roles;
+
+		$this->set( $active_consumers );
+	}
 }
