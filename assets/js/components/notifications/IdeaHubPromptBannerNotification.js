@@ -59,6 +59,10 @@ export default function IdeaHubPromptBannerNotification() {
 		select( MODULES_IDEA_HUB )?.getAdminReauthURL()
 	);
 
+	const ideaHubSupportURL = useSelect( ( select ) => {
+		return select( CORE_SITE ).getDocumentationLinkURL( 'idea-hub' );
+	} );
+
 	const handleOnDismiss = useCallback( async () => {
 		await dismissItem( NOTIFICATION_ID );
 		trackEvent(
@@ -138,7 +142,7 @@ export default function IdeaHubPromptBannerNotification() {
 			onCTAClick={ handleOnCTAClick }
 			badgeLabel={ __( 'Experimental', 'google-site-kit' ) }
 			learnMoreLabel={ __( 'Learn more', 'google-site-kit' ) }
-			learnMoreURL="https://sitekit.withgoogle.com/documentation/using-site-kit/idea-hub/"
+			learnMoreURL={ ideaHubSupportURL }
 			WinImageSVG={ IdeaHubPromptSVG }
 			noBottomPadding
 		/>

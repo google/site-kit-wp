@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "945c1b2e24d799c23ab1252de4aa279d",
+    "content-hash": "7f380b5c38d6adc383dac3d66b46414a",
     "packages": [
         {
             "name": "firebase/php-jwt",
@@ -177,6 +177,25 @@
                 "source": "https://github.com/googleapis/google-api-php-client-services/tree/v0.243.0"
             },
             "time": "2022-04-10T01:14:37+00:00"
+        },
+        {
+            "name": "google/apiclient-services-subscribewithgoogle",
+            "version": "v0.1",
+            "dist": {
+                "type": "path",
+                "url": "packages/apiclient-services-subscribewithgoogle",
+                "reference": "39bb6e2dc0191c06788a4b7bbfc9b83455ba85d6"
+            },
+            "type": "library",
+            "autoload": {
+                "classmap": [
+                    "SubscribewithGoogle.php"
+                ]
+            },
+            "transport-options": {
+                "symlink": false,
+                "relative": true
+            }
         },
         {
             "name": "google/auth",

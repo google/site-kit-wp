@@ -25,12 +25,13 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import DisplaySetting from '../../../../components/DisplaySetting';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { MODULES_THANK_WITH_GOOGLE } from '../../datastore/constants';
+import { Cell, Grid, Row } from '../../../../material-components';
+import DisplaySetting from '../../../../components/DisplaySetting';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import Link from '../../../../components/Link';
-import { Cell, Grid, Row } from '../../../../material-components';
+import ProgressBar from '../../../../components/ProgressBar';
 import {
 	getColorThemes,
 	getType,
@@ -42,6 +43,9 @@ const { useSelect } = Data;
 export default function SettingsView() {
 	const publicationID = useSelect( ( select ) =>
 		select( MODULES_THANK_WITH_GOOGLE ).getPublicationID()
+	);
+	const supporterWallSidebars = useSelect( ( select ) =>
+		select( MODULES_THANK_WITH_GOOGLE ).getSupporterWallSidebars()
 	);
 	const colorTheme = useSelect( ( select ) =>
 		select( MODULES_THANK_WITH_GOOGLE ).getColorTheme()
@@ -72,6 +76,29 @@ export default function SettingsView() {
 		return null;
 	}
 
+	let supporterWall;
+
+	if ( supporterWallSidebars === undefined ) {
+		supporterWall = <ProgressBar small />;
+	} else if ( supporterWallSidebars.length > 0 ) {
+		supporterWall = (
+			<p className="googlesitekit-settings-module__meta-item-data">
+				<DisplaySetting value={ supporterWallSidebars.join( ', ' ) } />
+			</p>
+		);
+	} else {
+		supporterWall = (
+			<p className="googlesitekit-settings-module__meta-item-data">
+				<Link
+					href={ supporterWallURL }
+					className="googlesitekit-settings-module__cta-button"
+				>
+					{ __( 'Add supporter wall', 'google-site-kit' ) }
+				</Link>
+			</p>
+		);
+	}
+
 	const { name: colorName } =
 		getColorThemes().find(
 			( { colorThemeID } ) => colorThemeID === colorTheme
@@ -97,14 +124,7 @@ export default function SettingsView() {
 					<h5 className="googlesitekit-settings-module__meta-item-type">
 						{ __( 'Supporter Wall Widget', 'google-site-kit' ) }
 					</h5>
-					<p className="googlesitekit-settings-module__meta-item-data">
-						<Link
-							href={ supporterWallURL }
-							className="googlesitekit-settings-module__cta-button"
-						>
-							{ __( 'Add Supporter wall', 'google-site-kit' ) }
-						</Link>
-					</p>
+					{ supporterWall }
 				</Cell>
 			</Row>
 
