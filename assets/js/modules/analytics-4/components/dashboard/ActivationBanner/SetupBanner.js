@@ -32,6 +32,7 @@ export default function SetupBanner( { onCTAClick } ) {
 			id="ga4-activation-banner"
 			/* TODO: Internationalize title below */
 			title={ 'Placeholder Setup Banner Title' }
+			/* TODO: Internationalize description below */
 			description={ 'Placeholder description text to be replaced.' }
 			ctaLabel={ __( 'Connect', 'google-site-kit' ) }
 			ctaLink={ onCTAClick ? '#' : null }

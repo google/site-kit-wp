@@ -51,10 +51,10 @@ export default function ActivationBanner() {
 	switch ( step ) {
 		case ACTIVATION_STEP_REMINDER:
 			return (
-				<ReminderBanner onCTAClick={ handleCTAClick }></ReminderBanner>
+				<ReminderBanner onCTAClick={ handleCTAClick } />
 			);
 		case ACTIVATION_STEP_SETUP:
-			return <SetupBanner onCTAClick={ handleCTAClick }></SetupBanner>;
+			return <SetupBanner onCTAClick={ handleCTAClick } />;
 		case ACTIVATION_STEP_SUCCESS:
 			return <SuccessBanner />;
 		default:

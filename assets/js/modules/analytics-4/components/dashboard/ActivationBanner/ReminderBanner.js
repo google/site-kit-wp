@@ -34,6 +34,7 @@ export default function ReminderBanner( { onCTAClick } ) {
 				'Set up Google Analytics 4 now to join the future of Analytics',
 				'google-site-kit'
 			) }
+			/* TODO: Internationalize title below */
 			description={ 'Placeholder description text to replace.' }
 			ctaLabel={ __( 'Set up now', 'google-site-kit' ) }
 			ctaLink={ onCTAClick ? '#' : null }
