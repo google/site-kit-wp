@@ -308,7 +308,7 @@ class Setup {
 	 */
 	protected function verify_nonce( $nonce, $action = Google_Proxy::NONCE_ACTION ) {
 		if ( ! wp_verify_nonce( $nonce, $action ) ) {
-			Authentication::invalid_nonce_error( $action );
+			$this->authentication->invalid_nonce_error( $action );
 		}
 	}
 
