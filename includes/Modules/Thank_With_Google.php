@@ -305,7 +305,7 @@ final class Thank_With_Google extends Module
 		switch ( "{$data->method}:{$data->datapoint}" ) {
 			case 'GET:publications':
 				/* @var $response Google_Service_SubscribewithGoogle_ListPublicationsResponse phpcs:ignore Squiz.PHP.CommentedOutCode.Found */
-				return $response->getPublications();
+				return (array) $response->getPublications();
 		}
 
 		return parent::parse_data_response( $data, $response );
