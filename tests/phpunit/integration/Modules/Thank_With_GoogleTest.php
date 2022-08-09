@@ -60,6 +60,14 @@ class Thank_With_GoogleTest extends TestCase {
 		);
 	}
 
+	public function test_register() {
+		remove_all_actions( 'googlesitekit_auth_scopes' );
+
+		$this->thank_with_google->register();
+
+		$this->assertTrue( has_filter( 'googlesitekit_auth_scopes' ) );
+	}
+
 	public function test_web_tag_hooks_are_added_when_tag_is_registered() {
 		remove_all_actions( 'template_redirect' );
 

@@ -19,6 +19,7 @@ use Google\Site_Kit\Core\Modules\Module_With_Assets;
 use Google\Site_Kit\Core\Modules\Module_With_Assets_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Deactivation;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
+use Google\Site_Kit\Core\Modules\Module_With_Scopes_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Owner;
@@ -48,6 +49,7 @@ final class Thank_With_Google extends Module
 	use Method_Proxy_Trait;
 	use Module_With_Assets_Trait;
 	use Module_With_Owner_Trait;
+	use Module_With_Scopes_Trait;
 	use Module_With_Settings_Trait;
 
 	/**
@@ -61,6 +63,8 @@ final class Thank_With_Google extends Module
 	 * @since 1.78.0
 	 */
 	public function register() {
+		$this->register_scopes_hook();
+
 		if ( ! $this->is_connected() ) {
 			return;
 		}
