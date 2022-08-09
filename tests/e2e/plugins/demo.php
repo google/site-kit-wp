@@ -13,3 +13,5 @@
  */
 
 // Silence is golden.
+
+trigger_error( 'Hello debug.log!' ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_trigger_error
