@@ -130,6 +130,7 @@ describe( 'Optimize Activation', () => {
 
 	beforeEach( async () => {
 		await activatePlugin( 'e2e-tests-proxy-auth-plugin' );
+		await activatePlugin( 'demo' );
 		await setSiteVerification();
 		await setSearchConsoleProperty();
 	} );
