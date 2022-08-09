@@ -19,63 +19,18 @@
 /**
  * External dependencies
  */
-import { PropTypes } from 'prop-types';
-import Joyride, { EVENTS } from 'react-joyride';
+import { Tooltip as MuiTooltip } from '@material-ui/core';
 
-/**
- * Internal dependencies
- */
-import TourTooltip from './TourTooltip';
-import { joyrideStyles, floaterProps } from './TourTooltips';
-
-export default function Tooltip( {
-	title,
-	content,
-	dismissLabel,
-	target,
-	onDismiss = () => {},
-} ) {
-	const steps = [
-		{
-			title,
-			target,
-			content,
-			disableBeacon: true,
-			isFixed: true,
-			placement: 'auto',
-		},
-	];
-
-	// Provides button content as well as aria-label & title attribute values.
-	const joyrideLocale = {
-		last: dismissLabel,
-	};
-
+export default function Tooltip( { children, ...props } ) {
 	return (
-		<Joyride
-			callback={ ( { type } ) => {
-				if ( type === EVENTS.STEP_AFTER ) {
-					// This is not strictly necessary as the tooltip will hide without it, but this allows the consumer of the component to clean up post-dismiss.
-					onDismiss();
-				}
+		<MuiTooltip
+			classes={ {
+				popper: 'googlesitekit-tooltip-popper',
+				tooltip: 'googlesitekit-tooltip',
 			} }
-			disableOverlay
-			disableScrolling
-			spotlightPadding={ 0 }
-			floaterProps={ floaterProps }
-			locale={ joyrideLocale }
-			run
-			steps={ steps }
-			styles={ joyrideStyles }
-			tooltipComponent={ TourTooltip }
-		/>
+			{ ...props }
+		>
+			{ children }
+		</MuiTooltip>
 	);
 }
-
-Tooltip.propTypes = {
-	title: PropTypes.string.isRequired,
-	content: PropTypes.string.isRequired,
-	dismissLabel: PropTypes.string.isRequired,
-	target: PropTypes.string.isRequired,
-	onDismiss: PropTypes.func,
-};
