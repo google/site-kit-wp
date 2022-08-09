@@ -1,5 +1,5 @@
 /**
- * Tooltip Component Stories.
+ * JoyrideTooltip Component Stories.
  *
  * Site Kit by Google, Copyright 2022 Google LLC
  *
@@ -20,9 +20,9 @@
  * Internal dependencies
  */
 import Button from './Button';
-import Tooltip from './Tooltip';
+import JoyrideTooltip from './JoyrideTooltip';
 
-const Template = ( args ) => <Tooltip { ...args } />;
+const Template = ( args ) => <JoyrideTooltip { ...args } />;
 
 export const DefaultTooltip = Template.bind( {} );
 DefaultTooltip.storyName = 'Default Tooltip';
@@ -40,7 +40,7 @@ DefaultTooltip.scenario = {
 
 export default {
 	title: 'Components/Tooltip',
-	component: Tooltip,
+	component: JoyrideTooltip,
 	decorators: [
 		( Story ) => {
 			return (
