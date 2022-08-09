@@ -1470,7 +1470,7 @@ final class Authentication {
 			esc_url( Plugin::instance()->context()->admin_url( 'splash' ) ),
 			__( 'Please try again', 'google-site-kit' ),
 			esc_url( $this->get_proxy_support_link_url() . '?error_id=nonce_expired' ),
-			__( 'Get Help', 'google-site-kit' )
+			__( 'Get help', 'google-site-kit' )
 		);
 		wp_die( $html, __( 'Something went wrong.', 'google-site-kit' ), 403 ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	}
