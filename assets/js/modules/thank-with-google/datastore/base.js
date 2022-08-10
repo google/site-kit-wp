@@ -23,16 +23,44 @@ import Modules from 'googlesitekit-modules';
 import { MODULES_THANK_WITH_GOOGLE } from './constants';
 import { submitChanges, validateCanSubmitChanges } from './settings';
 
-export default Modules.createModuleStore( 'thank-with-google', {
+let baseModuleStore = Modules.createModuleStore( 'thank-with-google', {
 	ownedSettingsSlugs: [ 'publicationID' ],
 	storeName: MODULES_THANK_WITH_GOOGLE,
 	settingSlugs: [
 		'publicationID',
 		'colorTheme',
-		'buttonPlacement',
-		'buttonPostTypes',
+		'ctaPlacement',
+		'ctaPostTypes',
 		'ownerID',
 	],
 	submitChanges,
 	validateCanSubmitChanges,
 } );
+
+// Rename generated pieces to adhere to our convention.
+baseModuleStore = ( ( { actions, selectors, ...store } ) => {
+	/* eslint-disable sitekit/acronym-case */
+	const { setCtaPlacement, setCtaPostTypes, ...restActions } = actions;
+	const { getCtaPlacement, getCtaPostTypes, ...restSelectors } = selectors;
+	/* eslint-enable */
+
+	return {
+		...store,
+		actions: {
+			...restActions,
+			/* eslint-disable sitekit/acronym-case */
+			setCTAPlacement: setCtaPlacement,
+			setCTAPostTypes: setCtaPostTypes,
+			/* eslint-enable */
+		},
+		selectors: {
+			...restSelectors,
+			/* eslint-disable sitekit/acronym-case */
+			getCTAPlacement: getCtaPlacement,
+			getCTAPostTypes: getCtaPostTypes,
+			/* eslint-enable */
+		},
+	};
+} )( baseModuleStore );
+
+export default baseModuleStore;

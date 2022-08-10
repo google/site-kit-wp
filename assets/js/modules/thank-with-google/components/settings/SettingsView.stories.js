@@ -23,7 +23,7 @@ import SettingsView from './SettingsView';
 import { Cell, Grid, Row } from '../../../../material-components';
 import {
 	MODULES_THANK_WITH_GOOGLE,
-	BUTTON_PLACEMENT_STATIC_AUTO,
+	CTA_PLACEMENT_STATIC_AUTO,
 } from '../../datastore/constants';
 import {
 	provideModules,
@@ -33,23 +33,6 @@ import {
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 
 const features = [ 'twgModule' ];
-
-const setupBaseRegistry = ( registry, args ) => {
-	provideModules( registry, [
-		{
-			slug: 'thank-with-google',
-			active: true,
-			connected: true,
-		},
-	] );
-	provideSiteInfo( registry );
-	provideModuleRegistrations( registry );
-
-	// Call story-specific setup.
-	if ( typeof args?.setupRegistry === 'function' ) {
-		args.setupRegistry( registry );
-	}
-};
 
 function Template() {
 	return (
@@ -76,10 +59,14 @@ Default.args = {
 	setupRegistry: ( registry ) => {
 		registry.dispatch( MODULES_THANK_WITH_GOOGLE ).receiveGetSettings( {
 			publicationID: 'example.com',
-			buttonPlacement: BUTTON_PLACEMENT_STATIC_AUTO,
+			ctaPlacement: CTA_PLACEMENT_STATIC_AUTO,
 			colorTheme: 'purple',
-			buttonPostTypes: [ 'post', 'page' ],
+			ctaPostTypes: [ 'post', 'page' ],
 		} );
+
+		registry
+			.dispatch( MODULES_THANK_WITH_GOOGLE )
+			.receiveGetSupporterWallSidebars( [ 'Sidebar 2' ] );
 	},
 };
 
@@ -90,10 +77,15 @@ SettingsError.args = {
 	setupRegistry: ( registry ) => {
 		registry.dispatch( MODULES_THANK_WITH_GOOGLE ).receiveGetSettings( {
 			publicationID: 'example.com',
-			buttonPlacement: BUTTON_PLACEMENT_STATIC_AUTO,
+			ctaPlacement: CTA_PLACEMENT_STATIC_AUTO,
 			colorTheme: 'purple',
-			buttonPostTypes: [ 'post', 'page' ],
+			ctaPostTypes: [ 'post', 'page' ],
 		} );
+
+		registry
+			.dispatch( MODULES_THANK_WITH_GOOGLE )
+			.receiveGetSupporterWallSidebars( [] );
+
 		registry.dispatch( MODULES_THANK_WITH_GOOGLE ).receiveError(
 			{
 				message: 'Thank with Google publication is invalid.',
@@ -113,7 +105,20 @@ export default {
 	decorators: [
 		( Story, { args } ) => {
 			const setupRegistry = ( registry ) => {
-				setupBaseRegistry( registry, args );
+				provideModules( registry, [
+					{
+						slug: 'thank-with-google',
+						active: true,
+						connected: true,
+					},
+				] );
+				provideSiteInfo( registry );
+				provideModuleRegistrations( registry );
+
+				// Call story-specific setup.
+				if ( typeof args?.setupRegistry === 'function' ) {
+					args.setupRegistry( registry );
+				}
 			};
 
 			return (

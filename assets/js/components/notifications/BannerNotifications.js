@@ -34,7 +34,7 @@ import ModuleRecoveryAlert from '../dashboard-sharing/ModuleRecoveryAlert';
 import IdeaHubPromptBannerNotification from './IdeaHubPromptBannerNotification';
 import UserInputPromptBannerNotification from './UserInputPromptBannerNotification';
 import AdSenseAlerts from './AdSenseAlerts';
-import ZeroDataStateNotifications from './ZeroDataStateNotifications';
+import ActivationBanner from '../../modules/analytics-4/components/dashboard/ActivationBanner';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import useViewOnly from '../../hooks/useViewOnly';
 const { useSelect } = Data;
@@ -43,6 +43,7 @@ export default function BannerNotifications() {
 	const dashboardSharingEnabled = useFeature( 'dashboardSharing' );
 	const ideaHubModuleEnabled = useFeature( 'ideaHubModule' );
 	const userInputEnabled = useFeature( 'userInput' );
+	const ga4ActivationBannerEnabled = useFeature( 'ga4ActivationBanner' );
 
 	const viewOnly = useViewOnly();
 
@@ -67,7 +68,7 @@ export default function BannerNotifications() {
 					{ dashboardSharingEnabled && <ModuleRecoveryAlert /> }
 				</Fragment>
 			) }
-			<ZeroDataStateNotifications />
+			{ ga4ActivationBannerEnabled && <ActivationBanner /> }
 			{ ! viewOnly && (
 				<Fragment>
 					{ userInputEnabled && (

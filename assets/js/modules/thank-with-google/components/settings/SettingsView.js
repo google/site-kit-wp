@@ -25,17 +25,18 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import DisplaySetting from '../../../../components/DisplaySetting';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { MODULES_THANK_WITH_GOOGLE } from '../../datastore/constants';
+import { Cell, Grid, Row } from '../../../../material-components';
+import DisplaySetting from '../../../../components/DisplaySetting';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import Link from '../../../../components/Link';
-import { Cell, Grid, Row } from '../../../../material-components';
+import ProgressBar from '../../../../components/ProgressBar';
 import {
 	getColorThemes,
 	getType,
 	getProminence,
-	getButtonPostTypesString,
+	getCTAPostTypesString,
 } from '../../util/settings';
 const { useSelect } = Data;
 
@@ -43,12 +44,15 @@ export default function SettingsView() {
 	const publicationID = useSelect( ( select ) =>
 		select( MODULES_THANK_WITH_GOOGLE ).getPublicationID()
 	);
+	const supporterWallSidebars = useSelect( ( select ) =>
+		select( MODULES_THANK_WITH_GOOGLE ).getSupporterWallSidebars()
+	);
 	const colorTheme = useSelect( ( select ) =>
 		select( MODULES_THANK_WITH_GOOGLE ).getColorTheme()
 	);
 
-	const buttonPlacement = useSelect( ( select ) =>
-		select( MODULES_THANK_WITH_GOOGLE ).getButtonPlacement()
+	const ctaPlacement = useSelect( ( select ) =>
+		select( MODULES_THANK_WITH_GOOGLE ).getCTAPlacement()
 	);
 
 	const supporterWallURL = useSelect( ( select ) =>
@@ -59,20 +63,40 @@ export default function SettingsView() {
 		select( CORE_SITE ).getPostTypes()
 	);
 
-	const buttonPostTypes = useSelect( ( select ) =>
-		select( MODULES_THANK_WITH_GOOGLE ).getButtonPostTypes()
+	const ctaPostTypes = useSelect( ( select ) =>
+		select( MODULES_THANK_WITH_GOOGLE ).getCTAPostTypes()
 	);
 
 	// Bail if the values aren't ready.
 	if (
-		[
-			publicationID,
-			buttonPlacement,
-			colorTheme,
-			buttonPostTypes,
-		].includes( undefined )
+		[ publicationID, ctaPlacement, colorTheme, ctaPostTypes ].includes(
+			undefined
+		)
 	) {
 		return null;
+	}
+
+	let supporterWall;
+
+	if ( supporterWallSidebars === undefined ) {
+		supporterWall = <ProgressBar small />;
+	} else if ( supporterWallSidebars.length > 0 ) {
+		supporterWall = (
+			<p className="googlesitekit-settings-module__meta-item-data">
+				<DisplaySetting value={ supporterWallSidebars.join( ', ' ) } />
+			</p>
+		);
+	} else {
+		supporterWall = (
+			<p className="googlesitekit-settings-module__meta-item-data">
+				<Link
+					href={ supporterWallURL }
+					className="googlesitekit-settings-module__cta-button"
+				>
+					{ __( 'Add supporter wall', 'google-site-kit' ) }
+				</Link>
+			</p>
+		);
 	}
 
 	const { name: colorName } =
@@ -100,14 +124,7 @@ export default function SettingsView() {
 					<h5 className="googlesitekit-settings-module__meta-item-type">
 						{ __( 'Supporter Wall Widget', 'google-site-kit' ) }
 					</h5>
-					<p className="googlesitekit-settings-module__meta-item-data">
-						<Link
-							href={ supporterWallURL }
-							className="googlesitekit-settings-module__cta-button"
-						>
-							{ __( 'Add Supporter wall', 'google-site-kit' ) }
-						</Link>
-					</p>
+					{ supporterWall }
 				</Cell>
 			</Row>
 
@@ -117,7 +134,7 @@ export default function SettingsView() {
 						{ __( 'Type', 'google-site-kit' ) }
 					</h5>
 					<p className="googlesitekit-settings-module__meta-item-data">
-						<DisplaySetting value={ getType( buttonPlacement ) } />
+						<DisplaySetting value={ getType( ctaPlacement ) } />
 					</p>
 				</Cell>
 				<Cell className="googlesitekit-settings-module__meta-item">
@@ -137,7 +154,7 @@ export default function SettingsView() {
 					</h5>
 					<p className="googlesitekit-settings-module__meta-item-data">
 						<DisplaySetting
-							value={ getProminence( buttonPlacement ) }
+							value={ getProminence( ctaPlacement ) }
 						/>
 					</p>
 				</Cell>
@@ -147,8 +164,8 @@ export default function SettingsView() {
 					</h5>
 					<p className="googlesitekit-settings-module__meta-item-data">
 						<DisplaySetting
-							value={ getButtonPostTypesString(
-								buttonPostTypes,
+							value={ getCTAPostTypesString(
+								ctaPostTypes,
 								postTypes
 							) }
 						/>

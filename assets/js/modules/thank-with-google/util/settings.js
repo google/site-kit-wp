@@ -33,12 +33,12 @@ import OrangeSVG from '../../../../svg/graphics/twg-orange.svg';
 import BrownSVG from '../../../../svg/graphics/twg-brown.svg';
 import BlackSVG from '../../../../svg/graphics/twg-black.svg';
 import {
-	BUTTON_PLACEMENT_STATIC_AUTO,
-	BUTTON_PLACEMENT_STATIC_ABOVE_CONTENT,
-	BUTTON_PLACEMENT_STATIC_BELOW_CONTENT,
-	BUTTON_PLACEMENT_DYNAMIC_HIGH,
-	BUTTON_PLACEMENT_DYNAMIC_LOW,
-	BUTTON_PLACEMENT_STATIC_BELOW_1ST_PARAGRAPH,
+	CTA_PLACEMENT_STATIC_AUTO,
+	CTA_PLACEMENT_STATIC_ABOVE_CONTENT,
+	CTA_PLACEMENT_STATIC_BELOW_CONTENT,
+	CTA_PLACEMENT_DYNAMIC_HIGH,
+	CTA_PLACEMENT_DYNAMIC_LOW,
+	CTA_PLACEMENT_STATIC_BELOW_1ST_PARAGRAPH,
 } from '../datastore/constants';
 
 /**
@@ -94,71 +94,73 @@ export function getColorThemes() {
 }
 
 /**
- * Gets the type value based on the buttonPlacement setting.
+ * Gets the type value based on the ctaPlacement setting.
  *
  * @since n.e.x.t
  *
- * @param {string} buttonPlacement The buttonPlacement setting value.
- * @return {string} "Fixed" or "Overlay" depending on if buttonPlacement is static or dynamic.
+ * @param {string} ctaPlacement The ctaPlacement setting value.
+ * @return {string} "Fixed" or "Overlay" depending on if ctaPlacement is static or dynamic.
  */
-export const getType = ( buttonPlacement ) => {
-	if ( ! buttonPlacement ) {
+export function getType( ctaPlacement ) {
+	if ( ! ctaPlacement ) {
 		return '';
 	}
-	if ( 'static' === buttonPlacement.substring( 0, 6 ) ) {
+
+	if ( 'static' === ctaPlacement.substring( 0, 6 ) ) {
 		return __( 'Fixed', 'google-site-kit' );
 	}
+
 	return __( 'Overlay', 'google-site-kit' );
-};
+}
 
 /**
- * Gets the prominence value based on the buttonPlacement setting.
+ * Gets the prominence value based on the ctaPlacement setting.
  *
  * @since n.e.x.t
  *
- * @param {string} buttonPlacement The buttonPlacement setting value.
- * @return {string} Prominence value depending on the buttonPlacement setting.
+ * @param {string} ctaPlacement The ctaPlacement setting value.
+ * @return {string} Prominence value depending on the ctaPlacement setting.
  */
-export const getProminence = ( buttonPlacement ) => {
-	switch ( buttonPlacement ) {
-		case BUTTON_PLACEMENT_STATIC_AUTO:
+export function getProminence( ctaPlacement ) {
+	switch ( ctaPlacement ) {
+		case CTA_PLACEMENT_STATIC_AUTO:
 			return __( 'Auto', 'google-site-kit' );
-		case BUTTON_PLACEMENT_STATIC_ABOVE_CONTENT:
+		case CTA_PLACEMENT_STATIC_ABOVE_CONTENT:
 			return __( 'Above the post', 'google-site-kit' );
-		case BUTTON_PLACEMENT_STATIC_BELOW_CONTENT:
+		case CTA_PLACEMENT_STATIC_BELOW_CONTENT:
 			return __( 'Below the post', 'google-site-kit' );
-		case BUTTON_PLACEMENT_STATIC_BELOW_1ST_PARAGRAPH:
+		case CTA_PLACEMENT_STATIC_BELOW_1ST_PARAGRAPH:
 			return __( 'Below the 1st paragraph', 'google-site-kit' );
-		case BUTTON_PLACEMENT_DYNAMIC_HIGH:
+		case CTA_PLACEMENT_DYNAMIC_HIGH:
 			return __( 'High', 'google-site-kit' );
-		case BUTTON_PLACEMENT_DYNAMIC_LOW:
+		case CTA_PLACEMENT_DYNAMIC_LOW:
 			return __( 'Low', 'google-site-kit' );
 		default:
 			return '';
 	}
-};
+}
 
 /**
- * Gets the formatted list of button post types based on the buttonPostTypes slugs
+ * Gets the formatted list of cta post types based on the ctaPostTypes slugs
  * stored in settings.
  *
  * @since n.e.x.t
  *
- * @param {Array} buttonPostTypes The buttonPostTypes setting value.
- * @param {Array} postTypes       All available public postTypes.
- * @return {string} Formatted string of buttonPostTypes.
+ * @param {Array} ctaPostTypes The ctaPostTypes setting value.
+ * @param {Array} postTypes    All available public postTypes.
+ * @return {string} Formatted string of ctaPostTypes.
  */
-export const getButtonPostTypesString = ( buttonPostTypes, postTypes ) => {
+export function getCTAPostTypesString( ctaPostTypes, postTypes ) {
 	if ( ! postTypes || postTypes.length === 0 ) {
-		return buttonPostTypes.join( ', ' );
+		return ctaPostTypes.join( ', ' );
 	}
 
 	const enabledPostTypes = postTypes.filter( ( postType ) =>
-		buttonPostTypes.includes( postType.slug )
+		ctaPostTypes.includes( postType.slug )
 	);
 
 	if ( enabledPostTypes.length === postTypes.length ) {
 		return __( 'All post types', 'google-site-kit' );
 	}
 	return enabledPostTypes.map( ( postType ) => postType.label ).join( ', ' );
-};
+}
