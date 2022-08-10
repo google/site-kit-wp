@@ -19,12 +19,46 @@
 /**
  * Internal dependencies
  */
+import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
+import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
 import ActivationBanner from './index';
 
 const Template = () => <ActivationBanner />;
 
-export const Default = Template.bind( {} );
-Default.storyName = 'Default';
+export const ReminderBanner = Template.bind( {} );
+ReminderBanner.storyName = 'ReminderBanner';
+
+export const SetupBanner = Template.bind( {} );
+SetupBanner.storyName = 'SetupBanner';
+SetupBanner.decorators = [
+	( Story ) => {
+		const setupRegistry = ( registry ) => {
+			registry.dispatch( CORE_UI ).setValue( 'ga4ActivationStep', 1 );
+		};
+
+		return (
+			<WithRegistrySetup func={ setupRegistry }>
+				<Story />
+			</WithRegistrySetup>
+		);
+	},
+];
+
+export const SuccessBanner = Template.bind( {} );
+SuccessBanner.storyName = 'SuccessBanner';
+SuccessBanner.decorators = [
+	( Story ) => {
+		const setupRegistry = ( registry ) => {
+			registry.dispatch( CORE_UI ).setValue( 'ga4ActivationStep', 2 );
+		};
+
+		return (
+			<WithRegistrySetup func={ setupRegistry }>
+				<Story />
+			</WithRegistrySetup>
+		);
+	},
+];
 
 export default {
 	title: 'Modules/Analytics4/ActivationBanner',
