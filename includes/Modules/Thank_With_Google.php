@@ -151,7 +151,7 @@ final class Thank_With_Google extends Module
 	/**
 	 * Gets required Google OAuth scopes for the module.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.81.0
 	 *
 	 * @return array List of Google OAuth scopes.
 	 */
@@ -295,7 +295,7 @@ final class Thank_With_Google extends Module
 	/**
 	 * Parses a response for the given datapoint.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.81.0
 	 *
 	 * @param Data_Request $data Data request object.
 	 * @param mixed        $response Request response.
@@ -317,7 +317,7 @@ final class Thank_With_Google extends Module
 	 * This method is invoked once by {@see Module::get_service()} to lazily set up the services when one is requested
 	 * for the first time.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.81.0
 	 *
 	 * @param Google_Site_Kit_Client $client Google client instance.
 	 * @return array Google services as $identifier => $service_instance pairs. Every $service_instance must be an

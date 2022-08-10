@@ -96,7 +96,7 @@ export function getColorThemes() {
 /**
  * Gets the type value based on the ctaPlacement setting.
  *
- * @since n.e.x.t
+ * @since 1.81.0
  *
  * @param {string} ctaPlacement The ctaPlacement setting value.
  * @return {string} "Fixed" or "Overlay" depending on if ctaPlacement is static or dynamic.
@@ -116,7 +116,7 @@ export function getType( ctaPlacement ) {
 /**
  * Gets the prominence value based on the ctaPlacement setting.
  *
- * @since n.e.x.t
+ * @since 1.81.0
  *
  * @param {string} ctaPlacement The ctaPlacement setting value.
  * @return {string} Prominence value depending on the ctaPlacement setting.
@@ -144,7 +144,7 @@ export function getProminence( ctaPlacement ) {
  * Gets the formatted list of cta post types based on the ctaPostTypes slugs
  * stored in settings.
  *
- * @since n.e.x.t
+ * @since 1.81.0
  *
  * @param {Array} ctaPostTypes The ctaPostTypes setting value.
  * @param {Array} postTypes    All available public postTypes.
