@@ -21,6 +21,7 @@
  */
 import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
 import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
+import { UI_KEY_ACTIVATION_STEP } from '../../../constants';
 import ActivationBanner from './index';
 
 const Template = () => <ActivationBanner />;
@@ -33,7 +34,7 @@ SetupBanner.storyName = 'SetupBanner';
 SetupBanner.decorators = [
 	( Story ) => {
 		const setupRegistry = ( registry ) => {
-			registry.dispatch( CORE_UI ).setValue( 'ga4ActivationStep', 1 );
+			registry.dispatch( CORE_UI ).setValue( UI_KEY_ACTIVATION_STEP, 1 );
 		};
 
 		return (
@@ -49,7 +50,7 @@ SuccessBanner.storyName = 'SuccessBanner';
 SuccessBanner.decorators = [
 	( Story ) => {
 		const setupRegistry = ( registry ) => {
-			registry.dispatch( CORE_UI ).setValue( 'ga4ActivationStep', 2 );
+			registry.dispatch( CORE_UI ).setValue( UI_KEY_ACTIVATION_STEP, 2 );
 		};
 
 		return (
