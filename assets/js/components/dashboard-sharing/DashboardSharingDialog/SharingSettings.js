@@ -1,5 +1,5 @@
 /**
- * DashboardSharingSettingsButton component.
+ * DashboardSharingDialog SharingSettings component.
  *
  * Site Kit by Google, Copyright 2022 Google LLC
  *
