@@ -26,6 +26,7 @@ import { __, sprintf } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import BannerNotification from '../../../../../components/notifications/BannerNotification';
+import { Grid, Row, Cell } from '../../../../../material-components';
 import { MODULES_ANALYTICS_4 } from '../../../datastore/constants';
 const { useSelect } = Data;
 
@@ -96,14 +97,20 @@ export default function SetupBanner( { onCTAClick } ) {
 	}
 
 	return (
-		<BannerNotification
-			id="ga4-activation-banner"
-			title={ title }
-			ctaLabel={ ctaLabel }
-			ctaLink={ onCTAClick ? '#' : null }
-			onCTAClick={ onCTAClick }
-			footer={ <p>{ footer }</p> }
-			dismiss={ __( 'Cancel', 'google-site-kit' ) }
-		></BannerNotification>
+		<Grid>
+			<Row>
+				<Cell lgSize={ 8 } mdSize={ 8 }>
+					<BannerNotification
+						id="ga4-activation-banner"
+						title={ title }
+						ctaLabel={ ctaLabel }
+						ctaLink={ onCTAClick ? '#' : null }
+						onCTAClick={ onCTAClick }
+						footer={ footer }
+						dismiss={ __( 'Cancel', 'google-site-kit' ) }
+					></BannerNotification>
+				</Cell>
+			</Row>
+		</Grid>
 	);
 }
