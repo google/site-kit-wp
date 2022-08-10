@@ -42,58 +42,50 @@ export default function SetupBanner( { onCTAClick } ) {
 	let ctaLabel;
 	let footer;
 
-	switch ( true ) {
-		case ! ga4MeasurementID && ! existingTag:
-			title = __(
-				'No existing Google Analytics 4 property found, Site Kit will help you create a new one and insert it on your site',
+	if ( ! ga4MeasurementID && ! existingTag ) {
+		title = __(
+			'No existing Google Analytics 4 property found, Site Kit will help you create a new one and insert it on your site',
+			'google-site-kit'
+		);
+		ctaLabel = __( 'Create property', 'google-site-kit' );
+		footer = __(
+			'You can always add/edit this in the Site Kit Settings.',
+			'google-site-kit'
+		);
+	} else if ( ga4MeasurementID && ! existingTag ) {
+		title = __(
+			'Connect the Google Analytics 4 property that’s associated with your existing Universal Analytics property',
+			'google-site-kit'
+		);
+		ctaLabel = __( 'Connect', 'google-site-kit' );
+		footer = __(
+			'You can always add/edit this in the Site Kit Settings.',
+			'google-site-kit'
+		);
+	} else if ( ga4MeasurementID && existingTag ) {
+		title = __(
+			'Connect the Google Analytics 4 property that’s associated with your existing Universal Analytics property',
+			'google-site-kit'
+		);
+		ctaLabel = __( 'Connect', 'google-site-kit' );
+		footer = __(
+			'You can always add/edit this in the Site Kit Settings.',
+			'google-site-kit'
+		);
+	} else if ( ! ga4MeasurementID && existingTag ) {
+		title = __(
+			'No existing Google Analytics 4 property found, Site Kit will help you create a new one and insert it on your site',
+			'google-site-kit'
+		);
+		ctaLabel = __( 'Create property', 'google-site-kit' );
+		footer = sprintf(
+			/* translators: %s: The existing tag ID. */
+			__(
+				'A GA4 tag %s is found on this site but this property is not associated with your Google Analytics account. You can always add/edit this in the Site Kit Settings.',
 				'google-site-kit'
-			);
-			ctaLabel = __( 'Create property', 'google-site-kit' );
-			footer = __(
-				'You can always add/edit this in the Site Kit Settings.',
-				'google-site-kit'
-			);
-			break;
-
-		case ga4MeasurementID && ! existingTag:
-			title = __(
-				'Connect the Google Analytics 4 property that’s associated with your existing Universal Analytics property',
-				'google-site-kit'
-			);
-			ctaLabel = __( 'Connect', 'google-site-kit' );
-			footer = __(
-				'You can always add/edit this in the Site Kit Settings.',
-				'google-site-kit'
-			);
-			break;
-
-		case ga4MeasurementID && existingTag:
-			title = __(
-				'Connect the Google Analytics 4 property that’s associated with your existing Universal Analytics property',
-				'google-site-kit'
-			);
-			ctaLabel = __( 'Connect', 'google-site-kit' );
-			footer = __(
-				'You can always add/edit this in the Site Kit Settings.',
-				'google-site-kit'
-			);
-			break;
-
-		case ! ga4MeasurementID && existingTag:
-			title = __(
-				'No existing Google Analytics 4 property found, Site Kit will help you create a new one and insert it on your site',
-				'google-site-kit'
-			);
-			ctaLabel = __( 'Create property', 'google-site-kit' );
-			footer = sprintf(
-				/* translators: %s: The existing tag ID. */
-				__(
-					'A GA4 tag %s is found on this site but this property is not associated with your Google Analytics account. You can always add/edit this in the Site Kit Settings.',
-					'google-site-kit'
-				),
-				existingTag
-			);
-			break;
+			),
+			existingTag
+		);
 	}
 
 	return (
@@ -108,7 +100,7 @@ export default function SetupBanner( { onCTAClick } ) {
 						onCTAClick={ onCTAClick }
 						footer={ footer }
 						dismiss={ __( 'Cancel', 'google-site-kit' ) }
-					></BannerNotification>
+					/>
 				</Cell>
 			</Row>
 		</Grid>
