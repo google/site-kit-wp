@@ -426,9 +426,9 @@ function BannerNotification( {
 						) }
 
 						{ footer && (
-							<p className="googlesitekit-publisher-win__footer-text">
+							<div className="googlesitekit-publisher-win__footer">
 								{ footer }
-							</p>
+							</div>
 						) }
 					</Cell>
 

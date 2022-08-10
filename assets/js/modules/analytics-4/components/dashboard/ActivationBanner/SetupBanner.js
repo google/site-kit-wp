@@ -94,11 +94,12 @@ export default function SetupBanner( { onCTAClick } ) {
 				<Cell lgSize={ 8 } mdSize={ 8 }>
 					<BannerNotification
 						id="ga4-activation-banner"
+						className="googlesitekit-ga4-setup-banner"
 						title={ title }
 						ctaLabel={ ctaLabel }
 						ctaLink={ onCTAClick ? '#' : null }
 						onCTAClick={ onCTAClick }
-						footer={ footer }
+						footer={ <p>{ footer }</p> }
 						dismiss={ __( 'Cancel', 'google-site-kit' ) }
 					/>
 				</Cell>
