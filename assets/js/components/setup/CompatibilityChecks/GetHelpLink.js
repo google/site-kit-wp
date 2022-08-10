@@ -39,7 +39,7 @@ import {
 	ERROR_TOKEN_MISMATCH,
 } from './constants';
 
-export default function GetHelpLink( { error } ) {
+export default function GetHelpLink( { errorCode } ) {
 	const errorCodes = {
 		[ ERROR_AMP_CDN_RESTRICTED ]: 'amp_cdn_restricted',
 		[ ERROR_API_UNAVAILABLE ]: 'check_api_unavailable',
@@ -48,7 +48,7 @@ export default function GetHelpLink( { error } ) {
 
 	const getHelpLinkURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getErrorTroubleshootingLinkURL( {
-			code: errorCodes[ error ],
+			code: errorCodes[ errorCode ],
 		} )
 	);
 
@@ -64,5 +64,5 @@ export default function GetHelpLink( { error } ) {
 }
 
 GetHelpLink.propTypes = {
-	error: PropTypes.string.isRequired,
+	errorCode: PropTypes.string.isRequired,
 };
