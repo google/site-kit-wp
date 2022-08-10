@@ -397,27 +397,39 @@ function BannerNotification( {
 							</Fragment>
 						) }
 
-						{ ctaLink && (
-							<Button
-								className="googlesitekit-notification__cta"
-								href={ ctaLink }
-								target={ ctaTarget }
-								onClick={ handleCTAClick }
-								disabled={ isAwaitingCTAResponse }
-							>
-								{ ctaLabel }
-							</Button>
+						{ ( ctaLink || isDismissible || dismiss ) && (
+							<div className="googlesitekit-publisher-win__actions">
+								{ ctaLink && (
+									<Button
+										className="googlesitekit-notification__cta"
+										href={ ctaLink }
+										target={ ctaTarget }
+										onClick={ handleCTAClick }
+										disabled={ isAwaitingCTAResponse }
+									>
+										{ ctaLabel }
+									</Button>
+								) }
+
+								<Spinner isSaving={ isAwaitingCTAResponse } />
+
+								{ isDismissible &&
+									dismiss &&
+									! isAwaitingCTAResponse && (
+										<DismissComponent
+											onClick={ handleDismiss }
+										>
+											{ dismiss }
+										</DismissComponent>
+									) }
+							</div>
 						) }
 
-						<Spinner isSaving={ isAwaitingCTAResponse } />
-
-						{ isDismissible &&
-							dismiss &&
-							! isAwaitingCTAResponse && (
-								<DismissComponent onClick={ handleDismiss }>
-									{ dismiss }
-								</DismissComponent>
-							) }
+						{ footer && (
+							<p className="googlesitekit-publisher-win__footer-text">
+								{ footer }
+							</p>
+						) }
 					</Cell>
 
 					{ WinImageSVG && (
@@ -444,8 +456,6 @@ function BannerNotification( {
 						</Cell>
 					) }
 				</Row>
-
-				{ footer && <Row>{ footer }</Row> }
 			</Grid>
 		</section>
 	);
