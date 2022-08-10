@@ -24,10 +24,12 @@ import { createSnapshotStore } from '../../../googlesitekit/data/create-snapshot
 import { MODULES_THANK_WITH_GOOGLE } from './constants';
 import baseModuleStore from './base';
 import publications from './publications';
+import supporterWall from './supporter-wall';
 
 const store = Data.combineStores(
 	baseModuleStore,
 	publications,
+	supporterWall,
 	createSnapshotStore( MODULES_THANK_WITH_GOOGLE )
 );
 

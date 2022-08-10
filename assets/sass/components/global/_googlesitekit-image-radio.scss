@@ -106,12 +106,9 @@
 			}
 		}
 
-		.mdc-radio__native-control[checked] + .mdc-image-radio__background {
-
-			.mdc-image-radio__content {
-				border: 0.25rem solid $c-surfaces-surface;
-				outline: 0.1875rem solid $c-content-primary;
-			}
+		.mdc-image-radio__content[aria-checked="true"] {
+			border: 0.25rem solid $c-surfaces-surface;
+			outline: 0.1875rem solid $c-content-primary;
 		}
 	}
 }

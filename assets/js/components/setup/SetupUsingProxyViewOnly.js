@@ -56,6 +56,12 @@ export default function SetupUsingProxyViewOnly() {
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' )
 	);
 
+	const documentationURL = useSelect( ( select ) => {
+		return select( CORE_SITE ).getDocumentationLinkURL(
+			'dashboard-sharing'
+		);
+	} );
+
 	const onButtonClick = useCallback( () => {
 		Promise.all( [
 			dismissItem( SHARED_DASHBOARD_SPLASH_ITEM_KEY ),
@@ -120,7 +126,9 @@ export default function SetupUsingProxyViewOnly() {
 																		'Learn more about dashboard sharing',
 																		'google-site-kit'
 																	) }
-																	href="https://sitekit.withgoogle.com/documentation/using-site-kit/dashboard-sharing/"
+																	href={
+																		documentationURL
+																	}
 																	external
 																/>
 															),

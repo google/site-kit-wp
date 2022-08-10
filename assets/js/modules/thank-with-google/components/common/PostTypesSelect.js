@@ -39,11 +39,11 @@ export default function PostTypesSelect() {
 		select( CORE_SITE ).getPostTypes()
 	);
 
-	const buttonPostTypes = useSelect( ( select ) =>
-		select( MODULES_THANK_WITH_GOOGLE ).getButtonPostTypes()
+	const ctaPostTypes = useSelect( ( select ) =>
+		select( MODULES_THANK_WITH_GOOGLE ).getCTAPostTypes()
 	);
 
-	const { setButtonPostTypes } = useDispatch( MODULES_THANK_WITH_GOOGLE );
+	const { setCTAPostTypes } = useDispatch( MODULES_THANK_WITH_GOOGLE );
 	const toggleChip = useCallback(
 		( { type, target, keyCode } ) => {
 			if ( type === 'keyup' && keyCode !== ENTER ) {
@@ -56,17 +56,15 @@ export default function PostTypesSelect() {
 				return;
 			}
 
-			if ( buttonPostTypes?.includes( chipID ) ) {
-				setButtonPostTypes(
-					buttonPostTypes.filter(
-						( postType ) => postType !== chipID
-					)
+			if ( ctaPostTypes?.includes( chipID ) ) {
+				setCTAPostTypes(
+					ctaPostTypes.filter( ( postType ) => postType !== chipID )
 				);
 			} else {
-				setButtonPostTypes( [ ...( buttonPostTypes || [] ), chipID ] );
+				setCTAPostTypes( [ ...( ctaPostTypes || [] ), chipID ] );
 			}
 		},
-		[ buttonPostTypes, setButtonPostTypes ]
+		[ ctaPostTypes, setCTAPostTypes ]
 	);
 
 	const options = postTypes?.map( ( { slug, label } ) => (
@@ -78,7 +76,7 @@ export default function PostTypesSelect() {
 			label={ label }
 			onClick={ toggleChip }
 			onKeyUp={ toggleChip }
-			selected={ buttonPostTypes?.includes( slug ) }
+			selected={ ctaPostTypes?.includes( slug ) }
 			className="googlesitekit-twg-post-type-select__chip"
 		/>
 	) );

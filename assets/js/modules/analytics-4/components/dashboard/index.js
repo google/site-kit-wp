@@ -1,7 +1,7 @@
 /**
- * Thank with Google common components.
+ * GA4 Dashboard components.
  *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2022 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,4 @@
  * limitations under the License.
  */
 
-export { default as ProminenceRadio } from './ProminenceRadio';
-export { default as TypeRadio } from './TypeRadio';
-export { default as PositionRadio } from './PositionRadio';
-export { default as ColorRadio } from './ColorRadio';
-export { default as PostTypesSelect } from './PostTypesSelect';
-export { default as CTAPlacement } from './CTAPlacement';
+export { default as ActivationBanner } from './ActivationBanner';

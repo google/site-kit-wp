@@ -166,10 +166,9 @@ describe( 'CurrentSurvey', () => {
 			}
 		);
 
-		const buttonElement = container.querySelector(
-			'.googlesitekit-user-role-select__button'
+		fireEvent.click(
+			container.querySelector( '.googlesitekit-user-role-select__button' )
 		);
-		fireEvent.click( buttonElement );
 
 		expect(
 			container.querySelector(
@@ -177,7 +176,9 @@ describe( 'CurrentSurvey', () => {
 			)
 		).toBeInTheDocument();
 
-		fireEvent.click( buttonElement );
+		fireEvent.click(
+			container.querySelector( '.googlesitekit-user-role-select__button' )
+		);
 
 		expect(
 			container.querySelector(
@@ -371,7 +372,7 @@ describe( 'CurrentSurvey', () => {
 			'[data-chip-id="contributor"]'
 		);
 		expect( contributorElement ).toHaveClass( 'mdc-chip--selected' );
-		fireEvent.keyUp( contributorElement, { keyCode: ENTER } );
+		fireEvent.keyDown( contributorElement, { keyCode: ENTER } );
 		expect( contributorElement ).not.toHaveClass( 'mdc-chip--selected' );
 	} );
 } );

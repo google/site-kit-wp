@@ -103,6 +103,7 @@ export default function SetupBanner( { onCTAClick } ) {
 			ctaLink={ onCTAClick ? '#' : null }
 			onCTAClick={ onCTAClick }
 			footer={ <p>{ footer }</p> }
+			dismiss={ __( 'Cancel', 'google-site-kit' ) }
 		></BannerNotification>
 	);
 }
