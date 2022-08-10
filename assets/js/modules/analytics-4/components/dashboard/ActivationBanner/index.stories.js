@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import { waitForElement } from '@testing-library/react';
-
-/**
  * Internal dependencies
  */
 import ActivationBanner from './index';
@@ -30,23 +25,6 @@ const Template = () => <ActivationBanner />;
 
 export const ReminderBanner = Template.bind( {} );
 ReminderBanner.storyName = 'ReminderBanner';
-
-export const SetupBanner = Template.bind( {} );
-SetupBanner.storyName = 'SetupBanner';
-SetupBanner.decorators = [
-	( Story ) => {
-		setTimeout( async () => {
-			await waitForElement( () =>
-				document.querySelector( 'a.googlesitekit-notification__cta' )
-			);
-			document
-				.querySelector( 'a.googlesitekit-notification__cta' )
-				.click();
-		}, 0 );
-
-		return <Story />;
-	},
-];
 
 export default {
 	title: 'Modules/Analytics4/ActivationBanner',
