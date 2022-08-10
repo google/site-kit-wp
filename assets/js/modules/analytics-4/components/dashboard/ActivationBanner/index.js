@@ -19,11 +19,12 @@
 /**
  * WordPress dependencies
  */
-import { useState } from '@wordpress/element';
+import { useCallback } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
 import ReminderBanner from './ReminderBanner';
 import SetupBanner from './SetupBanner';
 import SuccessBanner from './SuccessBanner';
@@ -31,10 +32,22 @@ import {
 	ACTIVATION_STEP_REMINDER,
 	ACTIVATION_STEP_SETUP,
 	ACTIVATION_STEP_SUCCESS,
+	UI_KEY_ACTIVATION_STEP,
 } from '../../../constants';
+import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
+const { useSelect, useDispatch } = Data;
 
 export default function ActivationBanner() {
-	const [ step, setStep ] = useState( ACTIVATION_STEP_REMINDER );
+	const { setValue } = useDispatch( CORE_UI );
+
+	const step = useSelect( ( select ) =>
+		select( CORE_UI ).getValue( UI_KEY_ACTIVATION_STEP )
+	);
+
+	const setStep = useCallback(
+		( newStep ) => setValue( UI_KEY_ACTIVATION_STEP, newStep ),
+		[ setValue ]
+	);
 
 	const handleCTAClick = () => {
 		if ( step === ACTIVATION_STEP_REMINDER ) {
