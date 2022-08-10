@@ -200,7 +200,7 @@ final class Plugin {
 				( new Core\Feature_Tours\Feature_Tours( $this->context, $user_options ) )->register();
 				( new Core\Util\Migration_1_3_0( $this->context, $options, $user_options ) )->register();
 				( new Core\Util\Migration_1_8_1( $this->context, $options, $user_options, $authentication ) )->register();
-				( new Core\Storage\Active_Consumers( $user_options ) )->register();
+				( new Core\Dashboard_Sharing\Activity_Metrics\Activity_Metrics( $this->context, $user_options ) )->register();
 
 				// If a login is happening (runs after 'init'), update current user in dependency chain.
 				add_action(

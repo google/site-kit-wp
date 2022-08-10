@@ -1,14 +1,14 @@
 <?php
 /**
- * Class Google\Site_Kit\Core\Storage\Active_Consumers
+ * Class Google\Site_Kit\Core\Dashboard_Sharing\Activity_Metrics\Active_Consumers
  *
- * @package   Google\Site_Kit\Core\Storage\Active_Consumers
+ * @package   Google\Site_Kit\Core\Dashboard_Sharing\Activity_Metrics
  * @copyright 2022 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
 
-namespace Google\Site_Kit\Core\Storage;
+namespace Google\Site_Kit\Core\Dashboard_Sharing\Activity_Metrics;
 
 use Google\Site_Kit\Core\Storage\User_Setting;
 
