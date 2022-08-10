@@ -29,11 +29,11 @@ class SettingsTest extends SettingsTestCase {
 
 		$this->assertEqualSetsWithIndex(
 			array(
-				'ownerID'         => '',
-				'publicationID'   => '',
-				'colorTheme'      => '',
-				'buttonPlacement' => '',
-				'buttonPostTypes' => array( 'post' ),
+				'ownerID'       => '',
+				'publicationID' => '',
+				'colorTheme'    => '',
+				'ctaPlacement'  => '',
+				'ctaPostTypes'  => array( 'post' ),
 			),
 			get_option( Settings::OPTION )
 		);
@@ -47,9 +47,9 @@ class SettingsTest extends SettingsTestCase {
 
 		$settings->merge(
 			array(
-				'colorTheme'      => 'invalid',
-				'buttonPlacement' => 'invalid',
-				'buttonPostTypes' => array(
+				'colorTheme'   => 'invalid',
+				'ctaPlacement' => 'invalid',
+				'ctaPostTypes' => array(
 					'post',
 					'test',
 					'invalid',
@@ -59,20 +59,20 @@ class SettingsTest extends SettingsTestCase {
 
 		$this->assertEqualSetsWithIndex(
 			array(
-				'ownerID'         => '',
-				'publicationID'   => '',
-				'colorTheme'      => '',
-				'buttonPlacement' => '',
-				'buttonPostTypes' => array( 'post', 'test' ),
+				'ownerID'       => '',
+				'publicationID' => '',
+				'colorTheme'    => '',
+				'ctaPlacement'  => '',
+				'ctaPostTypes'  => array( 'post', 'test' ),
 			),
 			get_option( Settings::OPTION )
 		);
 
 		$settings->merge(
 			array(
-				'colorTheme'      => 'cyan',
-				'buttonPlacement' => 'static_auto',
-				'buttonPostTypes' => array(
+				'colorTheme'   => 'cyan',
+				'ctaPlacement' => 'static_auto',
+				'ctaPostTypes' => array(
 					'post',
 					'test',
 					'invalid',
@@ -82,11 +82,11 @@ class SettingsTest extends SettingsTestCase {
 
 		$this->assertEqualSetsWithIndex(
 			array(
-				'ownerID'         => '',
-				'publicationID'   => '',
-				'colorTheme'      => 'cyan',
-				'buttonPlacement' => 'static_auto',
-				'buttonPostTypes' => array( 'post', 'test' ),
+				'ownerID'       => '',
+				'publicationID' => '',
+				'colorTheme'    => 'cyan',
+				'ctaPlacement'  => 'static_auto',
+				'ctaPostTypes'  => array( 'post', 'test' ),
 			),
 			get_option( Settings::OPTION )
 		);
@@ -98,13 +98,13 @@ class SettingsTest extends SettingsTestCase {
 
 		register_post_type( 'test', array( 'public' => true ) );
 
-		$settings->merge( array( 'buttonPostTypes' => array( 'post', 'test' ) ) );
+		$settings->merge( array( 'ctaPostTypes' => array( 'post', 'test' ) ) );
 
-		$this->assertEqualSetsWithIndex( array( 'post', 'test' ), $settings->get()['buttonPostTypes'] );
+		$this->assertEqualSetsWithIndex( array( 'post', 'test' ), $settings->get()['ctaPostTypes'] );
 
 		unregister_post_type( 'test' );
 
-		$this->assertEqualSetsWithIndex( array( 'post' ), $settings->get()['buttonPostTypes'] );
+		$this->assertEqualSetsWithIndex( array( 'post' ), $settings->get()['ctaPostTypes'] );
 	}
 
 	/**
