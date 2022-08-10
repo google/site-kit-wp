@@ -27,6 +27,10 @@ import {
 } from '../../../../../tests/js/utils';
 import * as fixtures from './__fixtures__';
 import { MODULES_ANALYTICS } from './constants';
+import {
+	createAccountChooserMock,
+	decodeServiceURL,
+} from '../../../../../tests/js/mock-accountChooserURL-utils';
 
 describe( 'module/analytics service store', () => {
 	const userData = {
@@ -37,54 +41,10 @@ describe( 'module/analytics service store', () => {
 	};
 	const baseURI = 'https://analytics.google.com/analytics/web/';
 
-	const accountChooserBaseURI = `https://accounts.google.com/accountchooser?continue=${ encodeURIComponent(
-		baseURI
-	) }`;
-
-	/**
-	 * Mocks an account chooser URL.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param {string} path The path to append to the base URL.
-	 * @return {string} The account chooser with an appended path.
-	 */
-	const mockAccountChooserURL = ( path = '' ) =>
-		`${ accountChooserBaseURI }${
-			path &&
-			`${ encodeURIComponent( '#/' ) }${ encodeURIComponent(
-				path.replace( /^\//, '' )
-			) }`
-		}&Email=${ encodeURIComponent( userData.email ) }`;
-
-	/**
-	 * Decodes an account chooser URLs `continue` argument.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param {string} receivedURL The URL to decode.
-	 * @return {string} The decoded URL.
-	 */
-	const decodeServiceURL = ( receivedURL ) => {
-		const url = new URL( receivedURL );
-
-		const received = Array.from( url.searchParams ).reduce(
-			( object, [ key, value ] ) => {
-				object[ key ] = value;
-
-				return object;
-			},
-			{}
-		);
-
-		if ( ! received.continue ) {
-			return;
-		}
-
-		const serviceURL = decodeURIComponent( received.continue );
-
-		return serviceURL;
-	};
+	const mockAccountChooserURL = createAccountChooserMock(
+		baseURI,
+		userData.email
+	);
 
 	let registry;
 
