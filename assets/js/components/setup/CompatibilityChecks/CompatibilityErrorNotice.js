@@ -39,7 +39,7 @@ import {
 	ERROR_WP_PRE_V5,
 } from './constants';
 
-const helperCTA = ( developerPlugin ) => {
+const helperCTA = ( developerPlugin, stagingDocumentationURL ) => {
 	const {
 		installed,
 		active,
@@ -81,8 +81,7 @@ const helperCTA = ( developerPlugin ) => {
 			'google-site-kit'
 		),
 		children: __( 'Learn how', 'google-site-kit' ),
-		href:
-			'https://sitekit.withgoogle.com/documentation/using-site-kit/staging/',
+		href: stagingDocumentationURL,
 		external: true,
 	};
 };
@@ -93,6 +92,10 @@ export default function CompatibilityErrorNotice( { error } ) {
 			select( CORE_SITE ).getDeveloperPluginState()
 		) || {};
 	const { installed } = developerPlugin;
+
+	const documentationURL = useSelect( ( select ) => {
+		return select( CORE_SITE ).getDocumentationLinkURL( 'staging' );
+	} );
 
 	switch ( error ) {
 		case ERROR_API_UNAVAILABLE:
@@ -124,7 +127,9 @@ export default function CompatibilityErrorNotice( { error } ) {
 							) }
 						</span>
 					) }{ ' ' }
-					<Link { ...helperCTA( developerPlugin ) } />
+					<Link
+						{ ...helperCTA( developerPlugin, documentationURL ) }
+					/>
 				</p>
 			);
 		case ERROR_TOKEN_MISMATCH:

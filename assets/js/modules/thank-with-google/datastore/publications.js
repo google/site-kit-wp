@@ -22,9 +22,13 @@
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
+import { actions as errorStoreActions } from '../../../googlesitekit/data/create-error-store';
 import { MODULES_THANK_WITH_GOOGLE } from './constants';
 
 const { createRegistrySelector } = Data;
+
+// Actions
+const RESET_PUBLICATIONS = 'RESET_PUBLICATIONS';
 
 const fetchGetPublicationsStore = createFetchStore( {
 	baseName: 'getPublications',
@@ -44,6 +48,38 @@ const fetchGetPublicationsStore = createFetchStore( {
 
 const baseInitialState = {
 	publications: undefined,
+};
+
+const baseActions = {
+	*resetPublications() {
+		const { dispatch } = yield Data.commonActions.getRegistry();
+
+		yield {
+			type: RESET_PUBLICATIONS,
+			payload: {},
+		};
+
+		yield errorStoreActions.clearErrors( 'getPublications' );
+
+		return dispatch(
+			MODULES_THANK_WITH_GOOGLE
+		).invalidateResolutionForStoreSelector( 'getPublications' );
+	},
+};
+
+const baseReducer = ( state, { type } ) => {
+	switch ( type ) {
+		case RESET_PUBLICATIONS: {
+			return {
+				...state,
+				publications: baseInitialState.publications,
+			};
+		}
+
+		default: {
+			return state;
+		}
+	}
 };
 
 const baseResolvers = {
@@ -99,7 +135,7 @@ const baseSelectors = {
 			return undefined;
 		}
 
-		if ( publications.length === 0 ) {
+		if ( ! publications?.length ) {
 			return null;
 		}
 
@@ -118,6 +154,8 @@ const baseSelectors = {
 
 const store = Data.combineStores( fetchGetPublicationsStore, {
 	initialState: baseInitialState,
+	actions: baseActions,
+	reducer: baseReducer,
 	resolvers: baseResolvers,
 	selectors: baseSelectors,
 } );

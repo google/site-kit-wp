@@ -50,6 +50,7 @@ const Button = forwardRef(
 			'aria-label': ariaLabel,
 			title,
 			tooltip,
+			inverse,
 			...extraProps
 		},
 		ref
@@ -93,6 +94,7 @@ const Button = forwardRef(
 				className={ classnames( 'mdc-button', className, {
 					'mdc-button--raised': ! text,
 					'mdc-button--danger': danger,
+					'mdc-button--inverse': inverse,
 				} ) }
 				href={ disabled ? undefined : href }
 				ref={ mergedRefs }
@@ -145,6 +147,7 @@ Button.propTypes = {
 	trailingIcon: PropTypes.element,
 	title: PropTypes.string,
 	tooltip: PropTypes.bool,
+	inverse: PropTypes.bool,
 };
 
 Button.defaultProps = {
@@ -158,6 +161,7 @@ Button.defaultProps = {
 	trailingIcon: null,
 	title: null,
 	tooltip: false,
+	inverse: false,
 };
 
 export default Button;

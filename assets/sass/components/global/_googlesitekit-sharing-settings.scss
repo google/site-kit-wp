@@ -104,18 +104,7 @@
 
 	.googlesitekit-user-role-select--open {
 		align-items: flex-start;
-
-		.googlesitekit-user-role-select__button {
-			left: calc(50% + #{$grid-gap-phone});
-			position: absolute;
-			top: calc((48px + #{$grid-gap-phone}) * -1);
-
-			@media (min-width: $bp-tablet) {
-				left: auto;
-				position: relative;
-				top: auto;
-			}
-		}
+		row-gap: 8px;
 	}
 
 	.googlesitekit-dashboard-sharing-settings {
@@ -345,6 +334,7 @@
 	}
 
 	.googlesitekit-dashboard-sharing-settings__footer-notice {
+		margin: -0.625rem 0;
 
 		@media (max-width: $bp-mobileOnly ) {
 			padding: 16px 16px 0;
@@ -377,10 +367,6 @@
 
 		@media (min-width: $bp-tablet) {
 			padding: 8px;
-		}
-
-		@media (min-width: $bp-desktop) {
-			max-width: 400px;
 		}
 
 		&:empty {
@@ -462,17 +448,6 @@
 				align-items: center;
 				flex-direction: row;
 				max-width: none;
-			}
-		}
-
-		.googlesitekit-user-role-select--open {
-
-			.googlesitekit-user-role-select__button {
-				left: calc(25% + 16px);
-
-				@media (min-width: $bp-tablet) {
-					left: auto;
-				}
 			}
 		}
 	}

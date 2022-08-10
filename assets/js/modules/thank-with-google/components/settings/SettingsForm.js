@@ -26,7 +26,7 @@ import { Fragment } from '@wordpress/element';
  */
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import { MODULES_THANK_WITH_GOOGLE } from '../../datastore/constants';
-import { PublicationIDInput } from '../common';
+import { CTAPlacement, ColorRadio, PostTypesSelect } from '../common';
 
 export default function SettingsForm() {
 	return (
@@ -37,7 +37,9 @@ export default function SettingsForm() {
 			/>
 
 			<div className="googlesitekit-setup-module__inputs">
-				<PublicationIDInput />
+				<CTAPlacement />
+				<ColorRadio />
+				<PostTypesSelect />
 			</div>
 		</Fragment>
 	);

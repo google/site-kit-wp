@@ -19,45 +19,159 @@
 /**
  * WordPress dependencies
  */
-import { Fragment } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import DisplaySetting from '../../../../components/DisplaySetting';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { MODULES_THANK_WITH_GOOGLE } from '../../datastore/constants';
+import { Cell, Grid, Row } from '../../../../material-components';
+import DisplaySetting from '../../../../components/DisplaySetting';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
+import Link from '../../../../components/Link';
+import ProgressBar from '../../../../components/ProgressBar';
+import {
+	getColorThemes,
+	getType,
+	getProminence,
+	getCTAPostTypesString,
+} from '../../util/settings';
 const { useSelect } = Data;
 
 export default function SettingsView() {
 	const publicationID = useSelect( ( select ) =>
 		select( MODULES_THANK_WITH_GOOGLE ).getPublicationID()
 	);
+	const supporterWallSidebars = useSelect( ( select ) =>
+		select( MODULES_THANK_WITH_GOOGLE ).getSupporterWallSidebars()
+	);
+	const colorTheme = useSelect( ( select ) =>
+		select( MODULES_THANK_WITH_GOOGLE ).getColorTheme()
+	);
+
+	const ctaPlacement = useSelect( ( select ) =>
+		select( MODULES_THANK_WITH_GOOGLE ).getCTAPlacement()
+	);
+
+	const supporterWallURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getWidgetsAdminURL()
+	);
+
+	const postTypes = useSelect( ( select ) =>
+		select( CORE_SITE ).getPostTypes()
+	);
+
+	const ctaPostTypes = useSelect( ( select ) =>
+		select( MODULES_THANK_WITH_GOOGLE ).getCTAPostTypes()
+	);
 
 	// Bail if the values aren't ready.
-	if ( publicationID === undefined ) {
+	if (
+		[ publicationID, ctaPlacement, colorTheme, ctaPostTypes ].includes(
+			undefined
+		)
+	) {
 		return null;
 	}
 
+	let supporterWall;
+
+	if ( supporterWallSidebars === undefined ) {
+		supporterWall = <ProgressBar small />;
+	} else if ( supporterWallSidebars.length > 0 ) {
+		supporterWall = (
+			<p className="googlesitekit-settings-module__meta-item-data">
+				<DisplaySetting value={ supporterWallSidebars.join( ', ' ) } />
+			</p>
+		);
+	} else {
+		supporterWall = (
+			<p className="googlesitekit-settings-module__meta-item-data">
+				<Link
+					href={ supporterWallURL }
+					className="googlesitekit-settings-module__cta-button"
+				>
+					{ __( 'Add supporter wall', 'google-site-kit' ) }
+				</Link>
+			</p>
+		);
+	}
+
+	const { name: colorName } =
+		getColorThemes().find(
+			( { colorThemeID } ) => colorThemeID === colorTheme
+		) || {};
+
 	return (
-		<Fragment>
+		<Grid>
 			<StoreErrorNotices
 				moduleSlug="thank-with-google"
 				storeName={ MODULES_THANK_WITH_GOOGLE }
 			/>
 
-			<div className="googlesitekit-settings-module__meta-items">
-				<div className="googlesitekit-settings-module__meta-item">
+			<Row>
+				<Cell className="googlesitekit-settings-module__meta-item">
 					<h5 className="googlesitekit-settings-module__meta-item-type">
 						{ __( 'Publication ID', 'google-site-kit' ) }
 					</h5>
 					<p className="googlesitekit-settings-module__meta-item-data">
 						<DisplaySetting value={ publicationID } />
 					</p>
-				</div>
-			</div>
-		</Fragment>
+				</Cell>
+				<Cell className="googlesitekit-settings-module__meta-item">
+					<h5 className="googlesitekit-settings-module__meta-item-type">
+						{ __( 'Supporter Wall Widget', 'google-site-kit' ) }
+					</h5>
+					{ supporterWall }
+				</Cell>
+			</Row>
+
+			<Row>
+				<Cell className="googlesitekit-settings-module__meta-item">
+					<h5 className="googlesitekit-settings-module__meta-item-type">
+						{ __( 'Type', 'google-site-kit' ) }
+					</h5>
+					<p className="googlesitekit-settings-module__meta-item-data">
+						<DisplaySetting value={ getType( ctaPlacement ) } />
+					</p>
+				</Cell>
+				<Cell className="googlesitekit-settings-module__meta-item">
+					<h5 className="googlesitekit-settings-module__meta-item-type">
+						{ __( 'Color', 'google-site-kit' ) }
+					</h5>
+					<p className="googlesitekit-settings-module__meta-item-data">
+						<DisplaySetting value={ colorName } />
+					</p>
+				</Cell>
+			</Row>
+
+			<Row>
+				<Cell className="googlesitekit-settings-module__meta-item">
+					<h5 className="googlesitekit-settings-module__meta-item-type">
+						{ __( 'Prominence', 'google-site-kit' ) }
+					</h5>
+					<p className="googlesitekit-settings-module__meta-item-data">
+						<DisplaySetting
+							value={ getProminence( ctaPlacement ) }
+						/>
+					</p>
+				</Cell>
+				<Cell className="googlesitekit-settings-module__meta-item">
+					<h5 className="googlesitekit-settings-module__meta-item-type">
+						{ __( 'Post Types', 'google-site-kit' ) }
+					</h5>
+					<p className="googlesitekit-settings-module__meta-item-data">
+						<DisplaySetting
+							value={ getCTAPostTypesString(
+								ctaPostTypes,
+								postTypes
+							) }
+						/>
+					</p>
+				</Cell>
+			</Row>
+		</Grid>
 	);
 }

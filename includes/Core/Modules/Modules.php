@@ -571,7 +571,7 @@ final class Modules {
 	/**
 	 * Checks if the module exists.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.80.0
 	 *
 	 * @param string $slug Module slug.
 	 * @return bool True if the module exists, false otherwise.

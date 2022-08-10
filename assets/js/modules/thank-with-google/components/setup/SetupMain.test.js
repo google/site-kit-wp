@@ -134,9 +134,8 @@ describe( 'SetupMain', () => {
 			registry,
 		} );
 
-		// TODO: Update this assertion to match the new UI.
 		expect( container ).toHaveTextContent(
-			'TODO: UI to create publication - SetupCreatePublication'
+			'To get started, create an account. Currently available only in the US.'
 		);
 	} );
 
@@ -145,14 +144,16 @@ describe( 'SetupMain', () => {
 			.dispatch( MODULES_THANK_WITH_GOOGLE )
 			.receiveGetPublications( [ publicationActionRequiredStateC ] );
 
-		const { container } = render( <SetupMain />, {
+		const { container, queryByRole } = render( <SetupMain />, {
 			registry,
 		} );
 
-		// TODO: Update this assertion to match the new UI.
 		expect( container ).toHaveTextContent(
-			'TODO: UI for publication action required - SetupPublicationActionRequired'
+			'Finish the setup to customize and add Thank with Google on your site.'
 		);
+		const button = queryByRole( 'button' );
+		expect( button ).toBeInTheDocument();
+		expect( button ).toHaveTextContent( 'Complete setup' );
 	} );
 
 	it( 'should render the publication pending verification screen if the current publication state is `PENDING_VERIFICATION`', () => {
@@ -166,7 +167,7 @@ describe( 'SetupMain', () => {
 
 		// TODO: Update this assertion to match the new UI.
 		expect( container ).toHaveTextContent(
-			'TODO: UI for publication pending verification - SetupPublicationPendingVerification'
+			'We received your request to create a Thank with Google account. Check again for updates to your status.'
 		);
 	} );
 
@@ -179,9 +180,8 @@ describe( 'SetupMain', () => {
 			registry,
 		} );
 
-		// TODO: Update this assertion to match the new UI.
 		expect( container ).toHaveTextContent(
-			'TODO: UI for setup publication active - SetupPublicationActive'
+			'Your account is now active. To get started, customize the appearance of Thank with Google on your site.'
 		);
 		const button = queryByRole( 'button' );
 		expect( button ).toBeInTheDocument();
@@ -201,9 +201,8 @@ describe( 'SetupMain', () => {
 			registry,
 		} );
 
-		// TODO: Update this assertion to match the new UI.
 		expect( container ).toHaveTextContent(
-			'TODO: UI for setup customize - SetupCustomize'
+			'Customize the appearance of Thank with Google on your site'
 		);
 		const button = queryByRole( 'button' );
 		expect( button ).toBeInTheDocument();

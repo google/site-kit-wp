@@ -21,7 +21,10 @@
  */
 import SettingsView from './SettingsView';
 import { Cell, Grid, Row } from '../../../../material-components';
-import { MODULES_THANK_WITH_GOOGLE } from '../../datastore/constants';
+import {
+	MODULES_THANK_WITH_GOOGLE,
+	CTA_PLACEMENT_STATIC_AUTO,
+} from '../../datastore/constants';
 import {
 	provideModules,
 	provideModuleRegistrations,
@@ -52,11 +55,55 @@ function Template() {
 export const Default = Template.bind( null );
 Default.storyName = 'Default';
 Default.parameters = { features };
+Default.args = {
+	setupRegistry: ( registry ) => {
+		registry.dispatch( MODULES_THANK_WITH_GOOGLE ).receiveGetSettings( {
+			publicationID: 'example.com',
+			ctaPlacement: CTA_PLACEMENT_STATIC_AUTO,
+			colorTheme: 'purple',
+			ctaPostTypes: [ 'post', 'page' ],
+		} );
+
+		registry
+			.dispatch( MODULES_THANK_WITH_GOOGLE )
+			.receiveGetSupporterWallSidebars( [ 'Sidebar 2' ] );
+	},
+};
+
+export const SettingsError = Template.bind( null );
+SettingsError.storyName = 'SettingsError';
+SettingsError.parameters = { features };
+SettingsError.args = {
+	setupRegistry: ( registry ) => {
+		registry.dispatch( MODULES_THANK_WITH_GOOGLE ).receiveGetSettings( {
+			publicationID: 'example.com',
+			ctaPlacement: CTA_PLACEMENT_STATIC_AUTO,
+			colorTheme: 'purple',
+			ctaPostTypes: [ 'post', 'page' ],
+		} );
+
+		registry
+			.dispatch( MODULES_THANK_WITH_GOOGLE )
+			.receiveGetSupporterWallSidebars( [] );
+
+		registry.dispatch( MODULES_THANK_WITH_GOOGLE ).receiveError(
+			{
+				message: 'Thank with Google publication is invalid.',
+				data: {
+					status: 403,
+					reason: 'invalidSetting',
+				},
+			},
+			'getPublicationId',
+			[]
+		);
+	},
+};
 
 export default {
 	title: 'Modules/Thank with Google/Settings/SettingsView',
 	decorators: [
-		( Story ) => {
+		( Story, { args } ) => {
 			const setupRegistry = ( registry ) => {
 				provideModules( registry, [
 					{
@@ -68,11 +115,10 @@ export default {
 				provideSiteInfo( registry );
 				provideModuleRegistrations( registry );
 
-				registry
-					.dispatch( MODULES_THANK_WITH_GOOGLE )
-					.receiveGetSettings( {
-						publicationID: 'example.com',
-					} );
+				// Call story-specific setup.
+				if ( typeof args?.setupRegistry === 'function' ) {
+					args.setupRegistry( registry );
+				}
 			};
 
 			return (

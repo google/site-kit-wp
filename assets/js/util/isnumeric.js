@@ -19,7 +19,7 @@
 /**
  * Checks if a given value is numeric.
  *
- * @since n.e.x.t
+ * @since 1.80.0
  *
  * @param {*} value The value to check.
  * @return {boolean} TRUE if a value is numeric FALSE otherwise.

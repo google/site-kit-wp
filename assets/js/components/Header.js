@@ -35,7 +35,6 @@ import Data from 'googlesitekit-data';
 import Logo from './Logo';
 import UserMenu from './UserMenu';
 import ErrorNotifications from './notifications/ErrorNotifications';
-import ModuleRecoveryAlert from './dashboard-sharing/ModuleRecoveryAlert';
 import { CORE_USER } from '../googlesitekit/datastore/user/constants';
 import { Grid, Row, Cell } from '../material-components';
 import DashboardNavigation from './DashboardNavigation';
@@ -108,10 +107,6 @@ const Header = ( { children, subHeader, showNavigation } ) => {
 			<EntityHeader />
 
 			<ErrorNotifications />
-
-			{ dashboardSharingEnabled && isDashboard && ! isViewOnly && (
-				<ModuleRecoveryAlert />
-			) }
 		</Fragment>
 	);
 };

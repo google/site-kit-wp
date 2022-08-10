@@ -16,11 +16,40 @@
  * limitations under the License.
  */
 
+/**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+
+/**
+ * Internal dependencies
+ */
+import Button from '../../../../components/Button';
+import SetupPublicationScreen from './SetupPublicationScreen';
+
 export default function SetupPublicationPendingVerification() {
 	return (
-		<div>
-			TODO: UI for publication pending verification -
-			SetupPublicationPendingVerification
-		</div>
+		<SetupPublicationScreen
+			title={ __(
+				'Reviewing your account application',
+				'google-site-kit'
+			) }
+			description={ __(
+				'We received your request to create a Thank with Google account. Check again for updates to your status.',
+				'google-site-kit'
+			) }
+		>
+			<Button
+				href="https://publishercenter.google.com/"
+				target="_blank"
+				aria-label={ __(
+					'Check your status on Thank with Google Publisher Center',
+					'google-site-kit'
+				) }
+				inverse
+			>
+				{ __( 'Check your status', 'google-site-kit' ) }
+			</Button>
+		</SetupPublicationScreen>
 	);
 }

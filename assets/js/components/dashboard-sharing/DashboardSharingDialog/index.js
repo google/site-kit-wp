@@ -25,7 +25,7 @@ import classnames from 'classnames';
 /**
  * WordPress dependencies
  */
-import { Fragment, useCallback } from '@wordpress/element';
+import { Fragment, useCallback, useRef } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -42,6 +42,8 @@ import {
 	SETTINGS_DIALOG,
 } from '../DashboardSharingSettings/constants';
 import SharingSettings from './SharingSettings';
+import sharingSettingsTour from '../../../feature-tours/dashboard-sharing-settings';
+import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 const { useSelect, useDispatch } = Data;
 
 export default function DashboardSharingDialog() {
@@ -65,6 +67,15 @@ export default function DashboardSharingDialog() {
 		setValue( RESET_SETTINGS_DIALOG, false );
 	}, [ setValue ] );
 
+	const triggeredTourRef = useRef();
+	const { triggerOnDemandTour } = useDispatch( CORE_USER );
+	const handleTriggerOnDemandTour = useCallback( () => {
+		if ( ! triggeredTourRef.current ) {
+			triggeredTourRef.current = true;
+			triggerOnDemandTour( sharingSettingsTour );
+		}
+	}, [ triggerOnDemandTour ] );
+
 	const dialogStyles = {};
 	// On mobile, the dialog box's flexbox is set to stretch items within to cover
 	// the whole screen. But we have to move the box and adjust its height below the
@@ -78,6 +89,7 @@ export default function DashboardSharingDialog() {
 		<Portal>
 			<Dialog
 				open={ settingsDialogOpen || resetDialogOpen }
+				onOpen={ handleTriggerOnDemandTour }
 				onClose={ closeDialog }
 				className={ classnames(
 					'googlesitekit-sharing-settings-dialog',

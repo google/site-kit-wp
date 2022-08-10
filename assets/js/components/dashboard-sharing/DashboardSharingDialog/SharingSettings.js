@@ -26,7 +26,6 @@ import {
 	Fragment,
 	useCallback,
 	useEffect,
-	useRef,
 } from '@wordpress/element';
 
 /**
@@ -40,7 +39,6 @@ import Footer from '../DashboardSharingSettings/Footer';
 import DashboardSharingSettings from '../DashboardSharingSettings';
 import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
-import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { BREAKPOINT_SMALL, useBreakpoint } from '../../../hooks/useBreakpoint';
 import { DialogContent, DialogFooter } from '../../../material-components';
 import {
@@ -48,7 +46,7 @@ import {
 	RESET_SETTINGS_DIALOG,
 	SETTINGS_DIALOG,
 } from '../DashboardSharingSettings/constants';
-import sharingSettingsTour from '../../../feature-tours/dashboard-sharing-settings';
+import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 const { useSelect, useDispatch } = Data;
 
 export default function SharingSettings() {
@@ -61,6 +59,11 @@ export default function SharingSettings() {
 	const haveSettingsChanged = useSelect( ( select ) =>
 		select( CORE_MODULES ).haveSharingSettingsChanged()
 	);
+	const documentationURL = useSelect( ( select ) => {
+		return select( CORE_SITE ).getDocumentationLinkURL(
+			'dashboard-sharing'
+		);
+	} );
 
 	// Rollback any temporary selections to saved values if settings have changed and modal is closed.
 	const { rollbackSharingSettings } = useDispatch( CORE_MODULES );
@@ -69,15 +72,6 @@ export default function SharingSettings() {
 			rollbackSharingSettings();
 		}
 	}, [ dialogOpen, haveSettingsChanged, rollbackSharingSettings ] );
-
-	const triggeredTourRef = useRef();
-	const { triggerOnDemandTour } = useDispatch( CORE_USER );
-	useEffect( () => {
-		if ( dialogOpen && ! triggeredTourRef.current ) {
-			triggeredTourRef.current = true;
-			triggerOnDemandTour( sharingSettingsTour );
-		}
-	}, [ dialogOpen, triggerOnDemandTour ] );
 
 	const closeDialog = useCallback( () => {
 		setValue( SETTINGS_DIALOG, false );
@@ -135,7 +129,7 @@ export default function SharingSettings() {
 												'Learn more about dashboard sharing',
 												'google-site-kit'
 											) }
-											href="https://sitekit.withgoogle.com/documentation/using-site-kit/dashboard-sharing/"
+											href={ documentationURL }
 											external
 										/>
 									),

@@ -30,9 +30,12 @@ import { createCacheKey } from '../../../googlesitekit/api';
 import { getItem, setItem } from '../../../googlesitekit/api/cache';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
-import { MODULES_THANK_WITH_GOOGLE } from './constants';
 import {
-	INVARIANT_INVALID_BUTTON_PLACEMENT,
+	CTA_PLACEMENT_DYNAMIC_LOW,
+	MODULES_THANK_WITH_GOOGLE,
+} from './constants';
+import {
+	INVARIANT_INVALID_CTA_PLACEMENT,
 	INVARIANT_INVALID_COLOR_THEME,
 	INVARIANT_INVALID_PUBLICATION_ID,
 } from './settings';
@@ -43,15 +46,15 @@ describe( 'modules/thank-with-google settings', () => {
 	const defaultSettings = {
 		publicationID: '',
 		colorTheme: '',
-		buttonPlacement: '',
-		buttonPostTypes: [],
+		ctaPlacement: '',
+		ctaPostTypes: [],
 	};
 
 	const validSettings = {
 		publicationID: 'publisher.com',
-		colorTheme: 'light',
-		buttonPlacement: 'bottom-right',
-		buttonPostTypes: [ 'post' ],
+		colorTheme: 'blue',
+		ctaPlacement: CTA_PLACEMENT_DYNAMIC_LOW,
+		ctaPostTypes: [ 'post' ],
 	};
 
 	const WPError = {
@@ -252,7 +255,7 @@ describe( 'modules/thank-with-google settings', () => {
 				).toThrow( INVARIANT_INVALID_COLOR_THEME );
 			} );
 
-			it( 'requires a valid button placement', () => {
+			it( 'requires a valid cta placement', () => {
 				expect(
 					registry
 						.select( MODULES_THANK_WITH_GOOGLE )
@@ -261,7 +264,7 @@ describe( 'modules/thank-with-google settings', () => {
 
 				registry
 					.dispatch( MODULES_THANK_WITH_GOOGLE )
-					.setButtonPlacement( '' );
+					.setCTAPlacement( '' );
 
 				expect(
 					registry
@@ -272,7 +275,7 @@ describe( 'modules/thank-with-google settings', () => {
 					registry
 						.select( MODULES_THANK_WITH_GOOGLE )
 						.__dangerousCanSubmitChanges()
-				).toThrow( INVARIANT_INVALID_BUTTON_PLACEMENT );
+				).toThrow( INVARIANT_INVALID_CTA_PLACEMENT );
 			} );
 		} );
 	} );
