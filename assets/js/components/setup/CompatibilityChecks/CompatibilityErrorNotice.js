@@ -20,6 +20,7 @@
  * WordPress dependencies
  */
 import { __, sprintf } from '@wordpress/i18n';
+import { createInterpolateElement } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -102,11 +103,15 @@ export default function CompatibilityErrorNotice( { error } ) {
 		case ERROR_API_UNAVAILABLE:
 			return (
 				<p>
-					{ __(
-						'Site Kit cannot access the WordPress REST API. Please ensure it is enabled on your site.',
-						'google-site-kit'
-					) }{ ' ' }
-					<GetHelpLink error={ error } />
+					{ createInterpolateElement(
+						__(
+							'Site Kit cannot access the WordPress REST API. Please ensure it is enabled on your site. <GetHelpLink />',
+							'google-site-kit'
+						),
+						{
+							GetHelpLink: <GetHelpLink errorCode={ error } />,
+						}
+					) }
 				</p>
 			);
 		case ERROR_INVALID_HOSTNAME:
@@ -137,11 +142,15 @@ export default function CompatibilityErrorNotice( { error } ) {
 		case ERROR_TOKEN_MISMATCH:
 			return (
 				<p>
-					{ __(
-						'Looks like Site Kit is unable to place or detect tags on your site. This can be caused by using certain caching or maintenance mode plugins or your site’s frontend is configured on a different host or infrastructure than your administration dashboard.',
-						'google-site-kit'
-					) }{ ' ' }
-					<GetHelpLink error={ error } />
+					{ createInterpolateElement(
+						__(
+							'Looks like Site Kit is unable to place or detect tags on your site. This can be caused by using certain caching or maintenance mode plugins or your site’s frontend is configured on a different host or infrastructure than your administration dashboard. <GetHelpLink />',
+							'google-site-kit'
+						),
+						{
+							GetHelpLink: <GetHelpLink errorCode={ error } />,
+						}
+					) }
 				</p>
 			);
 		case ERROR_GOOGLE_API_CONNECTION_FAIL:
@@ -176,11 +185,15 @@ export default function CompatibilityErrorNotice( { error } ) {
 		case ERROR_AMP_CDN_RESTRICTED:
 			return (
 				<p>
-					{ __(
-						'Looks like the AMP CDN is restricted in your region, which could interfere with setup on the Site Kit service.',
-						'google-site-kit'
-					) }{ ' ' }
-					<GetHelpLink error={ error } />
+					{ createInterpolateElement(
+						__(
+							'Looks like the AMP CDN is restricted in your region, which could interfere with setup on the Site Kit service. <GetHelpLink />',
+							'google-site-kit'
+						),
+						{
+							GetHelpLink: <GetHelpLink errorCode={ error } />,
+						}
+					) }
 				</p>
 			);
 		case ERROR_WP_PRE_V5:
