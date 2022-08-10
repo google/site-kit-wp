@@ -19,47 +19,12 @@
 /**
  * Internal dependencies
  */
-import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
-import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
-import { UI_KEY_ACTIVATION_STEP } from '../../../constants';
 import ActivationBanner from './index';
 
 const Template = () => <ActivationBanner />;
 
-export const ReminderBanner = Template.bind( {} );
-ReminderBanner.storyName = 'ReminderBanner';
-
-export const SetupBanner = Template.bind( {} );
-SetupBanner.storyName = 'SetupBanner';
-SetupBanner.decorators = [
-	( Story ) => {
-		const setupRegistry = ( registry ) => {
-			registry.dispatch( CORE_UI ).setValue( UI_KEY_ACTIVATION_STEP, 1 );
-		};
-
-		return (
-			<WithRegistrySetup func={ setupRegistry }>
-				<Story />
-			</WithRegistrySetup>
-		);
-	},
-];
-
-export const SuccessBanner = Template.bind( {} );
-SuccessBanner.storyName = 'SuccessBanner';
-SuccessBanner.decorators = [
-	( Story ) => {
-		const setupRegistry = ( registry ) => {
-			registry.dispatch( CORE_UI ).setValue( UI_KEY_ACTIVATION_STEP, 2 );
-		};
-
-		return (
-			<WithRegistrySetup func={ setupRegistry }>
-				<Story />
-			</WithRegistrySetup>
-		);
-	},
-];
+export const Default = Template.bind( {} );
+Default.storyName = 'Default';
 
 export default {
 	title: 'Modules/Analytics4/ActivationBanner',
