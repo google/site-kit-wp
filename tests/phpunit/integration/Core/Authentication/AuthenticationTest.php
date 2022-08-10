@@ -833,7 +833,7 @@ class AuthenticationTest extends TestCase {
 			do_action( $action );
 			$this->fail( 'Expected WPDieException to be thrown' );
 		} catch ( Exception $e ) {
-			$this->assertEquals( 'The link you followed has expired.</p><p><a href="http://example.org/wp-admin/admin.php?page=googlesitekit-splash">Please try again.</a>', $e->getMessage() );
+			$this->assertEquals( 'The link you followed has expired.</p><p><a href="http://example.org/wp-admin/admin.php?page=googlesitekit-splash">Please try again</a>. <a href="https://sitekit.withgoogle.com/support?error_id=nonce_expired" target="_blank">Get help</a>.', $e->getMessage() );
 		}
 
 		$_GET['nonce'] = wp_create_nonce( Google_Proxy::ACTION_PERMISSIONS );
@@ -1024,7 +1024,8 @@ class AuthenticationTest extends TestCase {
 
 	public function test_invalid_nonce_error_non_sitekit_action() {
 		try {
-			Authentication::invalid_nonce_error( 'log-out' );
+			$authentication = new Authentication( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+			$authentication->invalid_nonce_error( 'log-out' );
 		} catch ( WPDieException $exception ) {
 			$this->assertStringStartsWith( 'You are attempting to log out of Test Blog', $exception->getMessage() );
 			return;
@@ -1034,9 +1035,10 @@ class AuthenticationTest extends TestCase {
 
 	public function test_invalid_nonce_error_sitekit_action() {
 		try {
-			Authentication::invalid_nonce_error( 'googlesitekit_proxy_foo_action' );
+			$authentication = new Authentication( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+			$authentication->invalid_nonce_error( 'googlesitekit_proxy_foo_action' );
 		} catch ( WPDieException $exception ) {
-			$this->assertEquals( 'The link you followed has expired.</p><p><a href="http://example.org/wp-admin/admin.php?page=googlesitekit-splash">Please try again.</a>', $exception->getMessage() );
+			$this->assertEquals( 'The link you followed has expired.</p><p><a href="http://example.org/wp-admin/admin.php?page=googlesitekit-splash">Please try again</a>. <a href="https://sitekit.withgoogle.com/support?error_id=nonce_expired" target="_blank">Get help</a>.', $exception->getMessage() );
 			return;
 		}
 		$this->fail( 'Expected WPDieException!' );
