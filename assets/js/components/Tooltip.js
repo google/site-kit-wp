@@ -28,6 +28,7 @@ export default function Tooltip( { children, ...props } ) {
 				popper: 'googlesitekit-tooltip-popper',
 				tooltip: 'googlesitekit-tooltip',
 			} }
+			arrow
 			{ ...props }
 		>
 			{ children }
