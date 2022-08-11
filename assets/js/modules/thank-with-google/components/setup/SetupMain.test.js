@@ -19,7 +19,12 @@
 /**
  * Internal dependencies
  */
-import { MODULES_THANK_WITH_GOOGLE } from '../../datastore/constants';
+import {
+	MODULES_THANK_WITH_GOOGLE,
+	ONBOARDING_STATE_ACTION_REQUIRED,
+	ONBOARDING_STATE_COMPLETE,
+	ONBOARDING_STATE_PENDING_VERIFICATION,
+} from '../../datastore/constants';
 import {
 	render,
 	createTestRegistry,
@@ -40,7 +45,7 @@ describe( 'SetupMain', () => {
 		paymentOptions: {
 			virtualGifts: true,
 		},
-		state: 'ACTIVE',
+		state: ONBOARDING_STATE_COMPLETE,
 	};
 	const publicationWithActiveStateB = {
 		...publicationWithActiveStateA,
@@ -51,13 +56,13 @@ describe( 'SetupMain', () => {
 		...publicationWithActiveStateA,
 		// eslint-disable-next-line sitekit/acronym-case
 		publicationId: 'test-publication-c',
-		state: 'ACTION_REQUIRED',
+		state: ONBOARDING_STATE_ACTION_REQUIRED,
 	};
 	const publicationPendingVerificationD = {
 		...publicationWithActiveStateA,
 		// eslint-disable-next-line sitekit/acronym-case
 		publicationId: 'test-publication-d',
-		state: 'PENDING_VERIFICATION',
+		state: ONBOARDING_STATE_PENDING_VERIFICATION,
 	};
 	const publicationsWithActiveState = [
 		publicationWithActiveStateA,

@@ -26,7 +26,12 @@ import {
 	unsubscribeFromAll,
 	untilResolved,
 } from '../../../../../tests/js/utils';
-import { MODULES_THANK_WITH_GOOGLE } from './constants';
+import {
+	MODULES_THANK_WITH_GOOGLE,
+	ONBOARDING_STATE_ACTION_REQUIRED,
+	ONBOARDING_STATE_COMPLETE,
+	ONBOARDING_STATE_PENDING_VERIFICATION,
+} from './constants';
 
 describe( 'modules/thank-with-google publications', () => {
 	let registry;
@@ -39,7 +44,7 @@ describe( 'modules/thank-with-google publications', () => {
 		paymentOptions: {
 			virtualGifts: true,
 		},
-		state: 'ACTIVE',
+		state: ONBOARDING_STATE_COMPLETE,
 	};
 	const publicationWithActiveStateB = {
 		...publicationWithActiveStateA,
@@ -50,13 +55,13 @@ describe( 'modules/thank-with-google publications', () => {
 		...publicationWithActiveStateA,
 		// eslint-disable-next-line sitekit/acronym-case
 		publicationId: 'test-publication-c',
-		state: 'ACTION_REQUIRED',
+		state: ONBOARDING_STATE_ACTION_REQUIRED,
 	};
 	const publicationPendingVerificationD = {
 		...publicationWithActiveStateA,
 		// eslint-disable-next-line sitekit/acronym-case
 		publicationId: 'test-publication-d',
-		state: 'PENDING_VERIFICATION',
+		state: ONBOARDING_STATE_PENDING_VERIFICATION,
 	};
 	const publicationsWithActiveState = [
 		publicationWithActiveStateA,

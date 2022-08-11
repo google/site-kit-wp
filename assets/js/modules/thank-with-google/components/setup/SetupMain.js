@@ -32,9 +32,9 @@ import { useCallback } from '@wordpress/element';
 import Data from 'googlesitekit-data';
 import {
 	MODULES_THANK_WITH_GOOGLE,
-	STATE_ACTIVE,
-	STATE_ACTION_REQUIRED,
-	STATE_PENDING_VERIFICATION,
+	ONBOARDING_STATE_COMPLETE,
+	ONBOARDING_STATE_ACTION_REQUIRED,
+	ONBOARDING_STATE_PENDING_VERIFICATION,
 } from '../../datastore/constants';
 import { useRefocus } from '../../../../hooks/useRefocus';
 import { Grid, Row, Cell } from '../../../../material-components';
@@ -92,18 +92,28 @@ export default function SetupMain( { finishSetup } ) {
 		);
 	} else if ( currentPublication === null ) {
 		viewComponent = <SetupCreatePublication />;
-	} else if ( currentPublication.state === STATE_ACTION_REQUIRED ) {
+	} else if (
+		currentPublication.state === ONBOARDING_STATE_ACTION_REQUIRED
+	) {
 		viewComponent = <SetupPublicationActionRequired />;
-	} else if ( currentPublication.state === STATE_PENDING_VERIFICATION ) {
+	} else if (
+		currentPublication.state === ONBOARDING_STATE_PENDING_VERIFICATION
+	) {
 		viewComponent = <SetupPublicationPendingVerification />;
-	} else if ( currentPublication.state === STATE_ACTIVE && ! publicationID ) {
+	} else if (
+		currentPublication.state === ONBOARDING_STATE_COMPLETE &&
+		! publicationID
+	) {
 		viewComponent = (
 			<SetupPublicationActive
 				// eslint-disable-next-line sitekit/acronym-case
 				currentPublicationID={ currentPublication.publicationId }
 			/>
 		);
-	} else if ( currentPublication.state === STATE_ACTIVE && publicationID ) {
+	} else if (
+		currentPublication.state === ONBOARDING_STATE_COMPLETE &&
+		publicationID
+	) {
 		viewComponent = <SetupCustomize finishSetup={ finishSetup } />;
 	}
 

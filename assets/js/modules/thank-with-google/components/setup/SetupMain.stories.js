@@ -21,9 +21,9 @@
  */
 import {
 	MODULES_THANK_WITH_GOOGLE,
-	STATE_ACTION_REQUIRED,
-	STATE_ACTIVE,
-	STATE_PENDING_VERIFICATION,
+	ONBOARDING_STATE_ACTION_REQUIRED,
+	ONBOARDING_STATE_COMPLETE,
+	ONBOARDING_STATE_PENDING_VERIFICATION,
 } from '../../datastore/constants';
 import {
 	createTestRegistry,
@@ -47,7 +47,7 @@ const publicationWithActiveStateA = {
 	paymentOptions: {
 		virtualGifts: true,
 	},
-	state: STATE_ACTIVE,
+	state: ONBOARDING_STATE_COMPLETE,
 };
 const publicationWithActiveStateB = {
 	...publicationWithActiveStateA,
@@ -58,13 +58,13 @@ const publicationActionRequiredStateC = {
 	...publicationWithActiveStateA,
 	// eslint-disable-next-line sitekit/acronym-case
 	publicationId: 'test-publication-c',
-	state: STATE_ACTION_REQUIRED,
+	state: ONBOARDING_STATE_ACTION_REQUIRED,
 };
 const publicationPendingVerificationD = {
 	...publicationWithActiveStateA,
 	// eslint-disable-next-line sitekit/acronym-case
 	publicationId: 'test-publication-d',
-	state: STATE_PENDING_VERIFICATION,
+	state: ONBOARDING_STATE_PENDING_VERIFICATION,
 };
 const publicationsWithActiveState = [
 	publicationWithActiveStateA,
