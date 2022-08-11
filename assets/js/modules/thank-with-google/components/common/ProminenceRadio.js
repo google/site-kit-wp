@@ -34,10 +34,12 @@ import ProgressBar from '../../../../components/ProgressBar';
 const { useSelect, useDispatch } = Data;
 
 const DynamicLowSVG = lazy( () =>
-	import( '../../../../../svg/graphics/twg-dynamic-low.svg' )
+	// TODO: Replace with optimized SVG.
+	import( '../../../../../svg/graphics/twg-dynamic-low-placeholder.svg' )
 );
 const DynamicHighSVG = lazy( () =>
-	import( '../../../../../svg/graphics/twg-dynamic-high.svg' )
+	// TODO: Replace with optimized SVG.
+	import( '../../../../../svg/graphics/twg-dynamic-high-placeholder.svg' )
 );
 
 export default function ProminenceRadio() {

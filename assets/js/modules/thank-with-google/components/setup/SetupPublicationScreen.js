@@ -34,7 +34,10 @@ import { Cell } from '../../../../material-components';
 import SetupHeader from './SetupHeader';
 
 const ThankWithGoogleSetup = lazy( () =>
-	import( '../../../../../svg/graphics/thank-with-google-setup.svg' )
+	// TODO: Replace with optimized SVG.
+	import(
+		'../../../../../svg/graphics/thank-with-google-setup-placeholder.svg'
+	)
 );
 
 export default function SetupPublicationScreen( props ) {
