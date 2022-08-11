@@ -108,7 +108,7 @@ class Setup {
 	/**
 	 * Composes the oAuth proxy get help link.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.81.0
 	 *
 	 * @return string The get help link.
 	 */
