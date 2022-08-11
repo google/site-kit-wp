@@ -281,7 +281,7 @@ describe( 'modules/thank-with-google publications', () => {
 				);
 			} );
 
-			it( 'returns the first publication with an active state when no publication matches the publicationID', () => {
+			it( 'returns the first publication with `ONBOARDING_COMPLETE` onboardingState when no publication matches the publicationID', () => {
 				registry
 					.dispatch( MODULES_THANK_WITH_GOOGLE )
 					.receiveGetPublications( publicationsWithActiveState );
@@ -306,7 +306,7 @@ describe( 'modules/thank-with-google publications', () => {
 				);
 			} );
 
-			it( 'returns the first publication when no publication matches the publicationID or has an active state', () => {
+			it( 'returns the first publication when no publication matches the publicationID or has `ONBOARDING_COMPLETE` onboardingState', () => {
 				const inactivePublications = [
 					publicationActionRequiredStateC,
 					publicationPendingVerificationD,

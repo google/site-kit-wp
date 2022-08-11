@@ -144,7 +144,7 @@ describe( 'SetupMain', () => {
 		);
 	} );
 
-	it( 'should render the publication action required screen if the current publication state is `ACTION_REQUIRED`', () => {
+	it( 'should render the publication action required screen if the current publication onboardingState is `ONBOARDING_ACTION_REQUIRED`', () => {
 		registry
 			.dispatch( MODULES_THANK_WITH_GOOGLE )
 			.receiveGetPublications( [ publicationActionRequiredStateC ] );
@@ -161,7 +161,7 @@ describe( 'SetupMain', () => {
 		expect( button ).toHaveTextContent( 'Complete setup' );
 	} );
 
-	it( 'should render the publication pending verification screen if the current publication state is `PENDING_VERIFICATION`', () => {
+	it( 'should render the publication pending verification screen if the current publication onboardingState is `PENDING_VERIFICATION`', () => {
 		registry
 			.dispatch( MODULES_THANK_WITH_GOOGLE )
 			.receiveGetPublications( [ publicationPendingVerificationD ] );
@@ -176,7 +176,7 @@ describe( 'SetupMain', () => {
 		);
 	} );
 
-	it( 'should render the publication active screen if the current publication state is `ACTIVE` and the module setting publicationID is not set', () => {
+	it( 'should render the publication active screen if the current publication onboardingState is `ONBOARDING_COMPLETE` and the module setting publicationID is not set', () => {
 		registry
 			.dispatch( MODULES_THANK_WITH_GOOGLE )
 			.receiveGetPublications( publicationsWithActiveState );
@@ -193,7 +193,7 @@ describe( 'SetupMain', () => {
 		expect( button ).toHaveTextContent( 'Customize Thank with Google' );
 	} );
 
-	it( 'should render the publication customize screen if the current publication state is `ACTIVE` and the module setting publicationID is already set', () => {
+	it( 'should render the publication customize screen if the current publication onboardingState is `ONBOARDING_COMPLETE` and the module setting publicationID is already set', () => {
 		registry
 			.dispatch( MODULES_THANK_WITH_GOOGLE )
 			.receiveGetPublications( publicationsWithActiveState );
