@@ -43,7 +43,7 @@ describe( 'SetupMain', () => {
 		displayName: 'Test publication title',
 		verifiedDomains: [ 'https://example.com' ],
 		paymentOptions: {
-			virtualGifts: true,
+			thankStickers: true,
 		},
 		onboardingState: ONBOARDING_STATE_COMPLETE,
 	};
