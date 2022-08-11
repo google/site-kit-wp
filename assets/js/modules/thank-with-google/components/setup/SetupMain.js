@@ -93,15 +93,16 @@ export default function SetupMain( { finishSetup } ) {
 	} else if ( currentPublication === null ) {
 		viewComponent = <SetupCreatePublication />;
 	} else if (
-		currentPublication.state === ONBOARDING_STATE_ACTION_REQUIRED
+		currentPublication.onboardingState === ONBOARDING_STATE_ACTION_REQUIRED
 	) {
 		viewComponent = <SetupPublicationActionRequired />;
 	} else if (
-		currentPublication.state === ONBOARDING_STATE_PENDING_VERIFICATION
+		currentPublication.onboardingState ===
+		ONBOARDING_STATE_PENDING_VERIFICATION
 	) {
 		viewComponent = <SetupPublicationPendingVerification />;
 	} else if (
-		currentPublication.state === ONBOARDING_STATE_COMPLETE &&
+		currentPublication.onboardingState === ONBOARDING_STATE_COMPLETE &&
 		! publicationID
 	) {
 		viewComponent = (
@@ -111,7 +112,7 @@ export default function SetupMain( { finishSetup } ) {
 			/>
 		);
 	} else if (
-		currentPublication.state === ONBOARDING_STATE_COMPLETE &&
+		currentPublication.onboardingState === ONBOARDING_STATE_COMPLETE &&
 		publicationID
 	) {
 		viewComponent = <SetupCustomize finishSetup={ finishSetup } />;

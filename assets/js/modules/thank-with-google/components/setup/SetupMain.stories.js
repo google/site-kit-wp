@@ -47,7 +47,7 @@ const publicationWithActiveStateA = {
 	paymentOptions: {
 		virtualGifts: true,
 	},
-	state: ONBOARDING_STATE_COMPLETE,
+	onboardingState: ONBOARDING_STATE_COMPLETE,
 };
 const publicationWithActiveStateB = {
 	...publicationWithActiveStateA,
@@ -58,13 +58,13 @@ const publicationActionRequiredStateC = {
 	...publicationWithActiveStateA,
 	// eslint-disable-next-line sitekit/acronym-case
 	publicationId: 'test-publication-c',
-	state: ONBOARDING_STATE_ACTION_REQUIRED,
+	onboardingState: ONBOARDING_STATE_ACTION_REQUIRED,
 };
 const publicationPendingVerificationD = {
 	...publicationWithActiveStateA,
 	// eslint-disable-next-line sitekit/acronym-case
 	publicationId: 'test-publication-d',
-	state: ONBOARDING_STATE_PENDING_VERIFICATION,
+	onboardingState: ONBOARDING_STATE_PENDING_VERIFICATION,
 };
 const publicationsWithActiveState = [
 	publicationWithActiveStateA,

@@ -44,7 +44,7 @@ describe( 'modules/thank-with-google publications', () => {
 		paymentOptions: {
 			virtualGifts: true,
 		},
-		state: ONBOARDING_STATE_COMPLETE,
+		onboardingState: ONBOARDING_STATE_COMPLETE,
 	};
 	const publicationWithActiveStateB = {
 		...publicationWithActiveStateA,
@@ -55,13 +55,13 @@ describe( 'modules/thank-with-google publications', () => {
 		...publicationWithActiveStateA,
 		// eslint-disable-next-line sitekit/acronym-case
 		publicationId: 'test-publication-c',
-		state: ONBOARDING_STATE_ACTION_REQUIRED,
+		onboardingState: ONBOARDING_STATE_ACTION_REQUIRED,
 	};
 	const publicationPendingVerificationD = {
 		...publicationWithActiveStateA,
 		// eslint-disable-next-line sitekit/acronym-case
 		publicationId: 'test-publication-d',
-		state: ONBOARDING_STATE_PENDING_VERIFICATION,
+		onboardingState: ONBOARDING_STATE_PENDING_VERIFICATION,
 	};
 	const publicationsWithActiveState = [
 		publicationWithActiveStateA,
@@ -297,7 +297,9 @@ describe( 'modules/thank-with-google publications', () => {
 				expect( publication ).toEqual(
 					publicationsWithActiveState[ 0 ]
 				);
-				expect( publication.state ).toBe( 'ACTIVE' );
+				expect( publication.onboardingState ).toBe(
+					ONBOARDING_STATE_COMPLETE
+				);
 				// eslint-disable-next-line sitekit/acronym-case
 				expect( publication.publicationId ).not.toBe(
 					'test-publication--non-matching'
