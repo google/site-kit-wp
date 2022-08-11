@@ -44,6 +44,7 @@ const errorCodes = {
 	[ ERROR_API_UNAVAILABLE ]: 'check_api_unavailable',
 	[ ERROR_TOKEN_MISMATCH ]: 'setup_token_mismatch',
 };
+
 export default function GetHelpLink( { errorCode } ) {
 	const getHelpLinkURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getErrorTroubleshootingLinkURL( {
