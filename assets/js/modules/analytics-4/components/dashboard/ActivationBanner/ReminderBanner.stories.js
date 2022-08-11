@@ -1,5 +1,5 @@
 /**
- * ActivationBanner Component Stories.
+ * ReminderBanner Component Stories.
  *
  * Site Kit by Google, Copyright 2022 Google LLC
  *
@@ -27,5 +27,5 @@ export const ReminderBanner = Template.bind( {} );
 ReminderBanner.storyName = 'ReminderBanner';
 
 export default {
-	title: 'Modules/Analytics4/ActivationBanner',
+	title: 'Modules/Analytics4/ActivationBanner/ReminderBanner',
 };
