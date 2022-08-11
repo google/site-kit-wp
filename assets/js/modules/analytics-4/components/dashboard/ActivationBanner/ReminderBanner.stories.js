@@ -23,8 +23,8 @@ import ActivationBanner from './index';
 
 const Template = () => <ActivationBanner />;
 
-export const ReminderBanner = Template.bind( {} );
-ReminderBanner.storyName = 'ReminderBanner';
+export const Default = Template.bind( {} );
+Default.storyName = 'Default';
 
 export default {
 	title: 'Modules/Analytics4/ActivationBanner/ReminderBanner',
