@@ -305,7 +305,23 @@ final class Thank_With_Google extends Module
 		switch ( "{$data->method}:{$data->datapoint}" ) {
 			case 'GET:publications':
 				/* @var $response Google_Service_SubscribewithGoogle_ListPublicationsResponse phpcs:ignore Squiz.PHP.CommentedOutCode.Found */
-				return (array) $response->getPublications();
+				$publications          = $response->getPublications();
+				$filtered_publications = array_filter(
+					$publications,
+					function( $publication ) {
+						return (
+							(
+								// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+								isset( $publication->paymentOptions->thankStickers ) && $publication->paymentOptions->thankStickers
+							) &&
+							(
+								// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+								isset( $publication->publicationPredicates->businessPredicates->supportsSiteKit ) && $publication->publicationPredicates->businessPredicates->supportsSiteKit
+							)
+						);
+					}
+				);
+				return (array) $filtered_publications;
 		}
 
 		return parent::parse_data_response( $data, $response );
