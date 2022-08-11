@@ -207,7 +207,7 @@ class Setup_Test extends TestCase {
 			$error = $has_credentials ? 'Test error message.' : 'test_error_code';
 			$this->assertStringContainsString(
 				sprintf(
-					'The request to the authentication proxy has failed with an error: %s <a href="https://sitekit.withgoogle.com/support/?error_id=request_to_auth_proxy_failed" target="_blank">Get help</a>.',
+					'The request to the authentication proxy has failed with an error: %s <a href="https://sitekit.withgoogle.com/support?error_id=request_to_auth_proxy_failed" target="_blank">Get help</a>.',
 					$error
 				),
 				$exception->getMessage()
@@ -267,7 +267,7 @@ class Setup_Test extends TestCase {
 			$this->fail( 'Expected WPDieException!' );
 		} catch ( WPDieException $exception ) {
 			$this->assertStringContainsString(
-				'The request to the authentication proxy has failed. Please, try again later. <a href="https://sitekit.withgoogle.com/support/?error_id=request_to_auth_proxy_failed" target="_blank">Get help</a>.',
+				'The request to the authentication proxy has failed. Please, try again later. <a href="https://sitekit.withgoogle.com/support?error_id=request_to_auth_proxy_failed" target="_blank">Get help</a>.',
 				$exception->getMessage()
 			);
 		}
