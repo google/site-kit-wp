@@ -39,13 +39,12 @@ import {
 	ERROR_TOKEN_MISMATCH,
 } from './constants';
 
+const errorCodes = {
+	[ ERROR_AMP_CDN_RESTRICTED ]: 'amp_cdn_restricted',
+	[ ERROR_API_UNAVAILABLE ]: 'check_api_unavailable',
+	[ ERROR_TOKEN_MISMATCH ]: 'setup_token_mismatch',
+};
 export default function GetHelpLink( { errorCode } ) {
-	const errorCodes = {
-		[ ERROR_AMP_CDN_RESTRICTED ]: 'amp_cdn_restricted',
-		[ ERROR_API_UNAVAILABLE ]: 'check_api_unavailable',
-		[ ERROR_TOKEN_MISMATCH ]: 'setup_token_mismatch',
-	};
-
 	const getHelpLinkURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getErrorTroubleshootingLinkURL( {
 			code: errorCodes[ errorCode ],
