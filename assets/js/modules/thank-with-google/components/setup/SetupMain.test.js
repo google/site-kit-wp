@@ -37,7 +37,7 @@ import SetupMain from './SetupMain';
 describe( 'SetupMain', () => {
 	let registry;
 
-	const publicationWithActiveStateA = {
+	const publicationWithOnboardingCompleteStateA = {
 		// eslint-disable-next-line sitekit/acronym-case
 		publicationId: 'test-publication-a',
 		displayName: 'Test publication title',
@@ -47,26 +47,26 @@ describe( 'SetupMain', () => {
 		},
 		onboardingState: ONBOARDING_STATE_COMPLETE,
 	};
-	const publicationWithActiveStateB = {
-		...publicationWithActiveStateA,
+	const publicationWithOnboardingCompleteStateB = {
+		...publicationWithOnboardingCompleteStateA,
 		// eslint-disable-next-line sitekit/acronym-case
 		publicationId: 'test-publication-b',
 	};
-	const publicationActionRequiredStateC = {
-		...publicationWithActiveStateA,
+	const publicationOnboardingActionRequiredStateC = {
+		...publicationWithOnboardingCompleteStateA,
 		// eslint-disable-next-line sitekit/acronym-case
 		publicationId: 'test-publication-c',
 		onboardingState: ONBOARDING_STATE_ACTION_REQUIRED,
 	};
 	const publicationPendingVerificationD = {
-		...publicationWithActiveStateA,
+		...publicationWithOnboardingCompleteStateA,
 		// eslint-disable-next-line sitekit/acronym-case
 		publicationId: 'test-publication-d',
 		onboardingState: ONBOARDING_STATE_PENDING_VERIFICATION,
 	};
-	const publicationsWithActiveState = [
-		publicationWithActiveStateA,
-		publicationWithActiveStateB,
+	const publicationWithOnboardingCompleteState = [
+		publicationWithOnboardingCompleteStateA,
+		publicationWithOnboardingCompleteStateB,
 	];
 
 	beforeEach( () => {
@@ -147,7 +147,9 @@ describe( 'SetupMain', () => {
 	it( 'should render the publication action required screen if the current publication onboardingState is `ONBOARDING_ACTION_REQUIRED`', () => {
 		registry
 			.dispatch( MODULES_THANK_WITH_GOOGLE )
-			.receiveGetPublications( [ publicationActionRequiredStateC ] );
+			.receiveGetPublications( [
+				publicationOnboardingActionRequiredStateC,
+			] );
 
 		const { container, queryByRole } = render( <SetupMain />, {
 			registry,
@@ -179,7 +181,7 @@ describe( 'SetupMain', () => {
 	it( 'should render the publication active screen if the current publication onboardingState is `ONBOARDING_COMPLETE` and the module setting publicationID is not set', () => {
 		registry
 			.dispatch( MODULES_THANK_WITH_GOOGLE )
-			.receiveGetPublications( publicationsWithActiveState );
+			.receiveGetPublications( publicationWithOnboardingCompleteState );
 
 		const { container, queryByRole } = render( <SetupMain />, {
 			registry,
@@ -196,7 +198,7 @@ describe( 'SetupMain', () => {
 	it( 'should render the publication customize screen if the current publication onboardingState is `ONBOARDING_COMPLETE` and the module setting publicationID is already set', () => {
 		registry
 			.dispatch( MODULES_THANK_WITH_GOOGLE )
-			.receiveGetPublications( publicationsWithActiveState );
+			.receiveGetPublications( publicationWithOnboardingCompleteState );
 
 		registry
 			.dispatch( MODULES_THANK_WITH_GOOGLE )
