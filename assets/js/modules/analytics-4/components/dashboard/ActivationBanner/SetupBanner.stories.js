@@ -17,14 +17,9 @@
  */
 
 /**
- * External dependencies
- */
-import { waitForElement } from '@testing-library/react';
-
-/**
  * Internal dependencies
  */
-import ActivationBanner from './index';
+import SetupBanner from './SetupBanner';
 import {
 	provideModuleRegistrations,
 	provideModules,
@@ -34,7 +29,7 @@ import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
 import { MODULES_ANALYTICS_4 } from '../../../datastore/constants';
 import * as ga4Fixtures from '../../../../analytics-4/datastore/__fixtures__';
 
-const Template = () => <ActivationBanner />;
+const Template = () => <SetupBanner />;
 
 export const NoPropertyNoTag = Template.bind( {} );
 NoPropertyNoTag.storyName = 'No GA4 Property - No Existing Tag';
@@ -101,7 +96,7 @@ NoPropertyWithTag.decorators = [
 ];
 
 export default {
-	title: 'Modules/Analytics4/ActivationBanner/SetupBanner',
+	title: 'Modules/Analytics4/SetupBanner',
 	decorators: [
 		( Story ) => {
 			const setupRegistry = ( registry ) => {
@@ -120,17 +115,6 @@ export default {
 					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveGetExistingTag( null );
 			};
-
-			setTimeout( async () => {
-				await waitForElement( () =>
-					document.querySelector(
-						'a.googlesitekit-notification__cta'
-					)
-				);
-				document
-					.querySelector( 'a.googlesitekit-notification__cta' )
-					.click();
-			}, 0 );
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

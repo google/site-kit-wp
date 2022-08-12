@@ -19,13 +19,13 @@
 /**
  * Internal dependencies
  */
-import ActivationBanner from './index';
+import ReminderBanner from './ReminderBanner';
 
-const Template = () => <ActivationBanner />;
+const Template = () => <ReminderBanner />;
 
 export const Default = Template.bind( {} );
-Default.storyName = 'Default';
+Default.storyName = 'ReminderBanner';
 
 export default {
-	title: 'Modules/Analytics4/ActivationBanner/ReminderBanner',
+	title: 'Modules/Analytics4',
 };
