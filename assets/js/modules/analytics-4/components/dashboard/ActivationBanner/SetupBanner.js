@@ -19,6 +19,7 @@
 /**
  * WordPress dependencies
  */
+import { useCallback, useEffect } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 
 /**
@@ -28,7 +29,14 @@ import Data from 'googlesitekit-data';
 import BannerNotification from '../../../../../components/notifications/BannerNotification';
 import { Grid, Row, Cell } from '../../../../../material-components';
 import { MODULES_ANALYTICS_4 } from '../../../datastore/constants';
-const { useSelect } = Data;
+import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
+import {
+	EDIT_SCOPE,
+	FORM_SETUP,
+} from '../../../../analytics/datastore/constants';
+import { isPermissionScopeError } from '../../../../../util/errors';
+import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
+const { useSelect, useDispatch } = Data;
 
 export default function SetupBanner( { onCTAClick } ) {
 	const ga4MeasurementID = useSelect( ( select ) =>
@@ -37,6 +45,39 @@ export default function SetupBanner( { onCTAClick } ) {
 	const existingTag = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getExistingTag()
 	);
+	const autoSubmit = useSelect( ( select ) =>
+		select( CORE_FORMS ).getValue( FORM_SETUP, 'autoSubmit' )
+	);
+	const hasEditScope = useSelect( ( select ) =>
+		select( CORE_USER ).hasScope( EDIT_SCOPE )
+	);
+
+	const { setValues } = useDispatch( CORE_FORMS );
+	const { submitChanges } = useDispatch( MODULES_ANALYTICS_4 );
+
+	const submitForm = useCallback(
+		async ( event ) => {
+			event.preventDefault();
+			const { error } = await submitChanges();
+			if ( isPermissionScopeError( error ) ) {
+				setValues( FORM_SETUP, { autoSubmit: true } );
+			}
+			if ( ! error ) {
+				setValues( FORM_SETUP, { autoSubmit: false } );
+				// TODO: Check with Tom as it asks to call finishSetup()
+				onCTAClick();
+			}
+		},
+		[ onCTAClick, setValues, submitChanges ]
+	);
+
+	// If the user lands back on this component with autoSubmit and the edit scope,
+	// resubmit the form.
+	useEffect( () => {
+		if ( autoSubmit && hasEditScope ) {
+			submitForm( { preventDefault: () => {} } );
+		}
+	}, [ hasEditScope, autoSubmit, submitForm ] );
 
 	let title;
 	let ctaLabel;
