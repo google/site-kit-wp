@@ -21,9 +21,19 @@
  */
 import { useFeature } from '../../hooks/useFeature';
 import ZeroDataStateNotifications from './ZeroDataStateNotifications';
+import { ActivationBanner } from '../../modules/analytics-4/components/dashboard';
 
 export default function EntityBannerNotifications() {
 	const zeroDataStatesEnabled = useFeature( 'zeroDataStates' );
+	const ga4ActivationBannerEnabled = useFeature( 'ga4ActivationBanner' );
 
-	return zeroDataStatesEnabled && <ZeroDataStateNotifications />;
+	if ( zeroDataStatesEnabled ) {
+		return <ZeroDataStateNotifications />;
+	}
+
+	if ( ga4ActivationBannerEnabled ) {
+		return <ActivationBanner />;
+	}
+
+	return null;
 }
