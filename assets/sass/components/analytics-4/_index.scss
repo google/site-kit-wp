@@ -1,5 +1,5 @@
 /**
- * ActivationBanner Component Stories.
+ * GA4 styles.
  *
  * Site Kit by Google, Copyright 2022 Google LLC
  *
@@ -16,16 +16,4 @@
  * limitations under the License.
  */
 
-/**
- * Internal dependencies
- */
-import ActivationBanner from './index';
-
-const Template = () => <ActivationBanner />;
-
-export const Default = Template.bind( {} );
-Default.storyName = 'Default';
-
-export default {
-	title: 'Modules/Analytics4/ActivationBanner',
-};
+@import "googlesitekit-analytics-4-setup-banner";
