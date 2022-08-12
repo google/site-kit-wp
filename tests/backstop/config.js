@@ -29,6 +29,8 @@ if ( process.argv.includes( '--docker' ) && ! hasStorybookHostArg ) {
 	process.argv.push( `--storybook-host=http://${ hostname }:9001/` );
 }
 
+const tty = process.stdout.isTTY ? ' --tty' : '';
+
 module.exports = {
 	onBeforeScript: 'puppet/onBefore.js',
 	asyncCaptureLimit: 5,
@@ -38,12 +40,11 @@ module.exports = {
 	// Use a custom command template to make sure it works correctly in the GitHub actions environment.
 	// The only difference between the original dockerCommandTemplate and this one is that we use --tty flag
 	// in the current template only if it is supported by the current STDOUT stream.
-	dockerCommandTemplate: `docker run --rm -i${
-		process.stdout.isTTY ? ' --tty' : ''
-	} --mount type=bind,source="{cwd}",target=/src backstopjs/backstopjs:{version} {backstopCommand} {args}`,
+	dockerCommandTemplate: `docker run --rm -i${ tty } --mount type=bind,source="{cwd}",target=/src googlesitekit/vrt:{version} {backstopCommand} {args}`,
 	engine: 'puppeteer',
 	engineOptions: {
 		args: [ '--no-sandbox' ],
+		executablePath: '/usr/bin/chromium',
 	},
 	id: 'google-site-kit',
 	paths: {
