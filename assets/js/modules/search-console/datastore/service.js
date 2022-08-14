@@ -64,6 +64,7 @@ export const selectors = {
 			if ( accountChooserBaseURI === undefined ) {
 				return undefined;
 			}
+
 			return accountChooserBaseURI;
 		}
 	),
