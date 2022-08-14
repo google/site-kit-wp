@@ -74,9 +74,8 @@ export default function AMPExperimentJSONField() {
 			</p>
 			<TextField
 				className={ classnames( 'mdc-text-field', {
-					'mdc-text-field--error': ! isValidAMPExperimentJSON(
-						ampExperimentJSON
-					),
+					'mdc-text-field--error':
+						! isValidAMPExperimentJSON( ampExperimentJSON ),
 				} ) }
 				name="amp-experiment"
 				onChange={ onChange }

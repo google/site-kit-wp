@@ -85,11 +85,10 @@ describe( 'WebStoriesAdUnitSelect', () => {
 	} );
 
 	it( 'should update webStoriesAdUnit in the store when a new item is clicked', async () => {
-		const {
-			getByText,
-			container,
-			registry,
-		} = render( <WebStoriesAdUnitSelect />, { setupRegistry } );
+		const { getByText, container, registry } = render(
+			<WebStoriesAdUnitSelect />,
+			{ setupRegistry }
+		);
 		const originalWebStoriesAdUnit = registry
 			.select( MODULES_ADSENSE )
 			.getWebStoriesAdUnit();

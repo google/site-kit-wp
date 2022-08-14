@@ -41,10 +41,8 @@ const UserInputPromptBannerNotification = () => {
 
 	const category = `${ viewContext }_user-input-prompt-notification`;
 
-	const [
-		viewNotificationEventFired,
-		setViewNotificationEventFired,
-	] = useState( false );
+	const [ viewNotificationEventFired, setViewNotificationEventFired ] =
+		useState( false );
 
 	useEffect( () => {
 		if (

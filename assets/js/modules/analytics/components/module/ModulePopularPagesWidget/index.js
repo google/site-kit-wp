@@ -113,9 +113,10 @@ function ModulePopularPagesWidget( props ) {
 	);
 
 	const loaded = useSelect( ( select ) => {
-		const reportLoaded = select(
-			MODULES_ANALYTICS
-		).hasFinishedResolution( 'getReport', [ args ] );
+		const reportLoaded = select( MODULES_ANALYTICS ).hasFinishedResolution(
+			'getReport',
+			[ args ]
+		);
 
 		return undefined !== error || ( reportLoaded && undefined !== titles );
 	} );

@@ -40,13 +40,8 @@ import {
 } from './constants';
 
 const helperCTA = ( developerPlugin, stagingDocumentationURL ) => {
-	const {
-		installed,
-		active,
-		installURL,
-		activateURL,
-		configureURL,
-	} = developerPlugin;
+	const { installed, active, installURL, activateURL, configureURL } =
+		developerPlugin;
 
 	if ( ! installed && installURL ) {
 		return {

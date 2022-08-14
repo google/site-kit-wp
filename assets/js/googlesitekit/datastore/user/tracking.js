@@ -72,10 +72,8 @@ const baseActions = {
 			payload: { isSaving: true },
 		};
 
-		const {
-			response,
-			error,
-		} = yield fetchSaveTrackingStore.actions.fetchSetTracking( enabled );
+		const { response, error } =
+			yield fetchSaveTrackingStore.actions.fetchSetTracking( enabled );
 		if ( error ) {
 			yield receiveError( error, 'setTrackingEnabled', [ enabled ] );
 		}

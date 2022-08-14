@@ -168,9 +168,8 @@ describe( 'DashboardPageSpeed', () => {
 			setupRegistry,
 		} );
 
-		const labDataTabLink = getByLabelText( /In the Lab/i ).closest(
-			'button'
-		);
+		const labDataTabLink =
+			getByLabelText( /In the Lab/i ).closest( 'button' );
 		expect( labDataTabLink ).not.toHaveClass( activeClass );
 		fireEvent.click( labDataTabLink );
 

@@ -37,9 +37,8 @@ export const selectors = {
 	 * @return {Object} The service description, learn more label and URL.
 	 */
 	getSetupSuccessContent: createRegistrySelector( ( select ) => () => {
-		const documentationURL = select( CORE_SITE ).getDocumentationLinkURL(
-			'ga4'
-		);
+		const documentationURL =
+			select( CORE_SITE ).getDocumentationLinkURL( 'ga4' );
 
 		return {
 			description: __(

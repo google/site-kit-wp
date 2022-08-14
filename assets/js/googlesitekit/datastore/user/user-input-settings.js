@@ -166,12 +166,10 @@ const baseActions = {
 			payload: { isSaving: true },
 		};
 
-		const {
-			response,
-			error,
-		} = yield fetchSaveUserInputSettingsStore.actions.fetchSaveUserInputSettings(
-			values
-		);
+		const { response, error } =
+			yield fetchSaveUserInputSettingsStore.actions.fetchSaveUserInputSettings(
+				values
+			);
 		if ( error ) {
 			// Store error manually since saveUserInputSettings signature differs from fetchSaveUserInputSettings.
 			yield receiveError( error, 'saveUserInputSettings', [] );
@@ -199,14 +197,15 @@ export const baseControls = {
 		return getItem( CACHE_KEY_NAME );
 	},
 	[ SET_CACHED_USER_INPUT_SETTING ]: createRegistryControl(
-		( registry ) => async ( { payload: { settingID, values } } ) => {
-			const settings =
-				registry.select( CORE_USER ).getUserInputSettings() || {};
+		( registry ) =>
+			async ( { payload: { settingID, values } } ) => {
+				const settings =
+					registry.select( CORE_USER ).getUserInputSettings() || {};
 
-			settings[ settingID ] = { values };
+				settings[ settingID ] = { values };
 
-			return setItem( CACHE_KEY_NAME, settings );
-		}
+				return setItem( CACHE_KEY_NAME, settings );
+			}
 	),
 };
 

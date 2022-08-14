@@ -27,11 +27,13 @@ import { isFeatureEnabled } from '../../features';
 
 export { registerStore } from './datastore';
 
-const ifTwgIsEnabled = ( func ) => ( ...args ) => {
-	if ( isFeatureEnabled( 'twgModule' ) ) {
-		func( ...args );
-	}
-};
+const ifTwgIsEnabled =
+	( func ) =>
+	( ...args ) => {
+		if ( isFeatureEnabled( 'twgModule' ) ) {
+			func( ...args );
+		}
+	};
 
 export const registerModule = ifTwgIsEnabled( ( modules ) => {
 	modules.registerModule( 'thank-with-google', {

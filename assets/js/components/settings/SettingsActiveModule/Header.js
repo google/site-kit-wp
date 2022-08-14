@@ -137,8 +137,10 @@ export default function Header( { slug } ) {
 							className={ classnames(
 								'googlesitekit-settings-module__status',
 								{
-									'googlesitekit-settings-module__status--connected': connected,
-									'googlesitekit-settings-module__status--not-connected': ! connected,
+									'googlesitekit-settings-module__status--connected':
+										connected,
+									'googlesitekit-settings-module__status--not-connected':
+										! connected,
 								}
 							) }
 						>
@@ -164,8 +166,10 @@ export default function Header( { slug } ) {
 								className={ classnames(
 									'googlesitekit-settings-module__status-icon',
 									{
-										'googlesitekit-settings-module__status-icon--connected': connected,
-										'googlesitekit-settings-module__status-icon--not-connected': ! connected,
+										'googlesitekit-settings-module__status-icon--connected':
+											connected,
+										'googlesitekit-settings-module__status-icon--not-connected':
+											! connected,
 									}
 								) }
 							/>

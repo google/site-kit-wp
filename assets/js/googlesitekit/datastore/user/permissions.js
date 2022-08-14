@@ -214,22 +214,23 @@ export const selectors = {
 	 * @return {(boolean|undefined)} TRUE if the current user has this capability, otherwise FALSE. If capabilities ain't loaded yet, returns undefined.
 	 */
 	hasCapability: createRegistrySelector(
-		( select ) => ( state, capability, ...args ) => {
-			const capabilities = select( CORE_USER ).getCapabilities();
+		( select ) =>
+			( state, capability, ...args ) => {
+				const capabilities = select( CORE_USER ).getCapabilities();
 
-			if ( args.length > 0 ) {
-				capability = getMetaCapabilityPropertyName(
-					capability,
-					...args
-				);
+				if ( args.length > 0 ) {
+					capability = getMetaCapabilityPropertyName(
+						capability,
+						...args
+					);
+				}
+
+				if ( capabilities ) {
+					return !! capabilities[ capability ];
+				}
+
+				return undefined;
 			}
-
-			if ( capabilities ) {
-				return !! capabilities[ capability ];
-			}
-
-			return undefined;
-		}
 	),
 
 	/**

@@ -247,10 +247,8 @@ export default function Navigation() {
 			const entityHeader = document
 				.querySelector( '.googlesitekit-entity-header' )
 				?.getBoundingClientRect()?.bottom;
-			const {
-				bottom: navigationBottom,
-				top: navigationTop,
-			} = elementRef?.current?.getBoundingClientRect();
+			const { bottom: navigationBottom, top: navigationTop } =
+				elementRef?.current?.getBoundingClientRect();
 			const margin = 20;
 
 			const areas = [
