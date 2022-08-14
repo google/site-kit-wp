@@ -4,7 +4,7 @@ Contributors:      google
 Requires at least: 4.7
 Tested up to:      6.0
 Requires PHP:      5.6
-Stable tag:        1.80.0
+Stable tag:        1.81.0
 License:           Apache License 2.0
 License URI:       https://www.apache.org/licenses/LICENSE-2.0
 Tags:              google, search-console, analytics, adsense, pagespeed-insights, optimize, tag-manager, site-kit
@@ -107,6 +107,31 @@ By default, Site Kit does anonymize IP addresses upon activation of the Google A
 Please create a new topic on our [WordPress.org support forum](https://wordpress.org/support/plugin/google-site-kit/). Be sure to follow the [support forum guidelines](https://wordpress.org/support/guidelines/) when posting.
 
 == Changelog ==
+
+= 1.81.0 =
+
+**Enhanced**
+
+* Update the Thank with Google logo. See [#5655](https://github.com/google/site-kit-wp/issues/5655).
+* Add Thank with Google PHP client library. See [#5650](https://github.com/google/site-kit-wp/issues/5650).
+* Add a help link to sign in screen when Dashboard Sharing has been enabled by another admin. See [#5559](https://github.com/google/site-kit-wp/issues/5559).
+* Add a "Get help" link to Ad Blocker warning for AdSense module. See [#5558](https://github.com/google/site-kit-wp/issues/5558).
+* Add Thank with Google API functionality and scopes. See [#5534](https://github.com/google/site-kit-wp/issues/5534).
+* Implement UI for the Thank with Google settings. See [#5531](https://github.com/google/site-kit-wp/issues/5531).
+* Add the Thank with Google Setup UI. See [#5529](https://github.com/google/site-kit-wp/issues/5529).
+* Add "get help" links to error messages. See [#5507](https://github.com/google/site-kit-wp/issues/5507).
+* Update support documentation links to use the new URL structure. See [#5485](https://github.com/google/site-kit-wp/issues/5485).
+* Add a "get help" link to the message that appears when a request to the authentication proxy fails. See [#5484](https://github.com/google/site-kit-wp/issues/5484).
+* Add the "get help" link to the error message displayed when an invalid nonce is provided. See [#5482](https://github.com/google/site-kit-wp/issues/5482).
+* Add a help link to the "site URL has changed" notice when Site Kit detects your site URL has changed. See [#5481](https://github.com/google/site-kit-wp/issues/5481).
+* Determine and show whether and where the Thank with Google supporter wall widget is placed. See [#5462](https://github.com/google/site-kit-wp/issues/5462).
+* Implement Thank with Google settings view UI. See [#5456](https://github.com/google/site-kit-wp/issues/5456).
+* Add new "Thank with Google: Supporter Wall" WordPress widget. See [#5451](https://github.com/google/site-kit-wp/issues/5451).
+* Improve keyboard accessibility/behaviour when selecting user roles in Dashboard Sharing modal. See [#5440](https://github.com/google/site-kit-wp/issues/5440).
+
+**Fixed**
+
+* Remove radio button from top-level Thank with Google "Manual" position control. See [#5623](https://github.com/google/site-kit-wp/issues/5623).
 
 = 1.80.0 =
 

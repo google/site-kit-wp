@@ -98,6 +98,7 @@ function BannerNotification( {
 	type,
 	WinImageSVG,
 	rounded = false,
+	footer,
 } ) {
 	// Closed notifications are invisible, but still occupy space.
 	const [ isClosed, setIsClosed ] = useState( false );
@@ -396,27 +397,39 @@ function BannerNotification( {
 							</Fragment>
 						) }
 
-						{ ctaLink && (
-							<Button
-								className="googlesitekit-notification__cta"
-								href={ ctaLink }
-								target={ ctaTarget }
-								onClick={ handleCTAClick }
-								disabled={ isAwaitingCTAResponse }
-							>
-								{ ctaLabel }
-							</Button>
+						{ ( ctaLink || isDismissible || dismiss ) && (
+							<div className="googlesitekit-publisher-win__actions">
+								{ ctaLink && (
+									<Button
+										className="googlesitekit-notification__cta"
+										href={ ctaLink }
+										target={ ctaTarget }
+										onClick={ handleCTAClick }
+										disabled={ isAwaitingCTAResponse }
+									>
+										{ ctaLabel }
+									</Button>
+								) }
+
+								<Spinner isSaving={ isAwaitingCTAResponse } />
+
+								{ isDismissible &&
+									dismiss &&
+									! isAwaitingCTAResponse && (
+										<DismissComponent
+											onClick={ handleDismiss }
+										>
+											{ dismiss }
+										</DismissComponent>
+									) }
+							</div>
 						) }
 
-						<Spinner isSaving={ isAwaitingCTAResponse } />
-
-						{ isDismissible &&
-							dismiss &&
-							! isAwaitingCTAResponse && (
-								<DismissComponent onClick={ handleDismiss }>
-									{ dismiss }
-								</DismissComponent>
-							) }
+						{ footer && (
+							<div className="googlesitekit-publisher-win__footer">
+								{ footer }
+							</div>
+						) }
 					</Cell>
 
 					{ WinImageSVG && (
@@ -480,6 +493,7 @@ BannerNotification.propTypes = {
 	badgeLabel: PropTypes.string,
 	noBottomPadding: PropTypes.bool,
 	rounded: PropTypes.bool,
+	footer: PropTypes.node,
 };
 
 BannerNotification.defaultProps = {

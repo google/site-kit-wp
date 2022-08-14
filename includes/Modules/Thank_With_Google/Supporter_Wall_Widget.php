@@ -15,7 +15,7 @@ use WP_Widget;
 /**
  * The supporter wall widget for Thank with Google.
  *
- * @since n.e.x.t
+ * @since 1.81.0
  * @access private
  * @ignore
  */
@@ -26,7 +26,7 @@ class Supporter_Wall_Widget extends WP_Widget {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.81.0
 	 */
 	public function __construct() {
 		parent::__construct(
@@ -38,7 +38,7 @@ class Supporter_Wall_Widget extends WP_Widget {
 	/**
 	 * Renders the widget form.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.81.0
 	 *
 	 * @param array $instance The widget instance.
 	 */
@@ -68,7 +68,7 @@ class Supporter_Wall_Widget extends WP_Widget {
 	/**
 	 * Updates the widget settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.81.0
 	 *
 	 * @param array $new_instance The array with new settings for the widget.
 	 * @param array $old_instance The array with old settings for the widget.
@@ -87,7 +87,7 @@ class Supporter_Wall_Widget extends WP_Widget {
 	/**
 	 * Displays the widget.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.81.0
 	 *
 	 * @param array $args The widget arguments.
 	 * @param array $instance The widget settings.

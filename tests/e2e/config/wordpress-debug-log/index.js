@@ -35,14 +35,14 @@ import { logIgnoreList } from './log-ignore-list';
 const docker = new Docker( { socketPath: '/var/run/docker.sock' } );
 
 /**
- * @since n.e.x.t
+ * @since 1.81.0
  *
  * @type {Docker.Container} Docker `wordpress-debug-log` container instance.
  */
 let container;
 
 /**
- * @since n.e.x.t
+ * @since 1.81.0
  *
  * @type {NodeJS.ReadableStream} Container logs Stream instance.
  */
@@ -51,7 +51,7 @@ let dockerLogsStream;
 /**
  * Debug log data store.
  *
- * @since n.e.x.t
+ * @since 1.81.0
  *
  * @type {Array} Array of lines written to the log.
  */
@@ -73,7 +73,7 @@ logStream.on( 'data', ( chunk ) => {
 /**
  * Gets the logs container API instance.
  *
- * @since n.e.x.t
+ * @since 1.81.0
  *
  * @return {Docker.Container} Container instance.
  */
