@@ -28,10 +28,7 @@ import { ACCOUNT_STATUS_APPROVED, SITE_STATUS_ADDED } from '../util/status';
 import { MODULES_ADSENSE } from './constants';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
-import {
-	createAccountChooserMock,
-	decodeServiceURL,
-} from '../../../../../tests/js/mock-accountChooserURL-utils';
+import { decodeServiceURL } from '../../../../../tests/js/mock-accountChooserURL-utils';
 
 describe( 'module/adsense service store', () => {
 	const userData = {
@@ -41,11 +38,6 @@ describe( 'module/adsense service store', () => {
 		picture: 'https://path/to/image',
 	};
 	const baseURI = 'https://www.google.com/adsense/new';
-
-	const mockAccountChooserURL = createAccountChooserMock(
-		baseURI,
-		userData.email
-	);
 
 	const settings = {
 		accountID: 'pub-12345678',
@@ -78,22 +70,28 @@ describe( 'module/adsense service store', () => {
 				const serviceURL = registry
 					.select( MODULES_ADSENSE )
 					.getServiceURL();
-				expect( serviceURL ).toBe( mockAccountChooserURL() );
+
+				expect( serviceURL ).toMatchInlineSnapshot(
+					'"https://accounts.google.com/accountchooser?continue=https%3A%2F%2Fwww.google.com%2Fadsense%2Fnew&Email=admin%40example.com"'
+				);
 			} );
 
 			it( 'prepends a forward slash to to the path if missing', () => {
-				const expectedURL = mockAccountChooserURL(
-					'/test/path/to/deeplink'
-				);
-
 				const serviceURLNoSlashes = registry
 					.select( MODULES_ADSENSE )
 					.getServiceURL( { path: 'test/path/to/deeplink' } );
-				expect( serviceURLNoSlashes ).toEqual( expectedURL );
+
+				expect( serviceURLNoSlashes ).toMatchInlineSnapshot(
+					'"https://accounts.google.com/accountchooser?continue=https%3A%2F%2Fwww.google.com%2Fadsense%2Fnew%23%2Ftest%2Fpath%2Fto%2Fdeeplink&Email=admin%40example.com"'
+				);
+
 				const serviceURLWithLeadingSlash = registry
 					.select( MODULES_ADSENSE )
 					.getServiceURL( { path: '/test/path/to/deeplink' } );
-				expect( serviceURLWithLeadingSlash ).toEqual( expectedURL );
+
+				expect( serviceURLWithLeadingSlash ).toMatchInlineSnapshot(
+					'"https://accounts.google.com/accountchooser?continue=https%3A%2F%2Fwww.google.com%2Fadsense%2Fnew%23%2Ftest%2Fpath%2Fto%2Fdeeplink&Email=admin%40example.com"'
+				);
 			} );
 
 			it( 'adds query args', async () => {

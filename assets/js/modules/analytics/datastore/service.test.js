@@ -27,10 +27,7 @@ import {
 } from '../../../../../tests/js/utils';
 import * as fixtures from './__fixtures__';
 import { MODULES_ANALYTICS } from './constants';
-import {
-	createAccountChooserMock,
-	decodeServiceURL,
-} from '../../../../../tests/js/mock-accountChooserURL-utils';
+import { decodeServiceURL } from '../../../../../tests/js/mock-accountChooserURL-utils';
 
 describe( 'module/analytics service store', () => {
 	const userData = {
@@ -40,11 +37,6 @@ describe( 'module/analytics service store', () => {
 		picture: 'https://path/to/image',
 	};
 	const baseURI = 'https://analytics.google.com/analytics/web/';
-
-	const mockAccountChooserURL = createAccountChooserMock(
-		baseURI,
-		userData.email
-	);
 
 	let registry;
 
@@ -66,22 +58,28 @@ describe( 'module/analytics service store', () => {
 				const serviceURL = registry
 					.select( MODULES_ANALYTICS )
 					.getServiceURL();
-				expect( serviceURL ).toBe( mockAccountChooserURL() );
+
+				expect( serviceURL ).toMatchInlineSnapshot(
+					'"https://accounts.google.com/accountchooser?continue=https%3A%2F%2Fanalytics.google.com%2Fanalytics%2Fweb%2F&Email=admin%40example.com"'
+				);
 			} );
 
 			it( 'adds the path parameter', () => {
-				const expectedURL = mockAccountChooserURL(
-					'/test/path/to/deeplink'
-				);
-
 				const serviceURLNoSlashes = registry
 					.select( MODULES_ANALYTICS )
 					.getServiceURL( { path: 'test/path/to/deeplink' } );
-				expect( serviceURLNoSlashes ).toEqual( expectedURL );
+
+				expect( serviceURLNoSlashes ).toMatchInlineSnapshot(
+					'"https://accounts.google.com/accountchooser?continue=https%3A%2F%2Fanalytics.google.com%2Fanalytics%2Fweb%2F%23%2Ftest%2Fpath%2Fto%2Fdeeplink&Email=admin%40example.com"'
+				);
+
 				const serviceURLWithLeadingSlash = registry
 					.select( MODULES_ANALYTICS )
 					.getServiceURL( { path: '/test/path/to/deeplink' } );
-				expect( serviceURLWithLeadingSlash ).toEqual( expectedURL );
+
+				expect( serviceURLWithLeadingSlash ).toMatchInlineSnapshot(
+					'"https://accounts.google.com/accountchooser?continue=https%3A%2F%2Fanalytics.google.com%2Fanalytics%2Fweb%2F%23%2Ftest%2Fpath%2Fto%2Fdeeplink&Email=admin%40example.com"'
+				);
 			} );
 
 			it( 'adds query args', async () => {
@@ -184,6 +182,7 @@ describe( 'module/analytics service store', () => {
 						reportServiceURL
 					);
 					const url = new URL( decodedServiceURL );
+
 					expect( decodedServiceURL.startsWith( baseURI ) ).toBe(
 						true
 					);
@@ -207,7 +206,9 @@ describe( 'module/analytics service store', () => {
 					expect( decodedServiceURL.startsWith( baseURI ) ).toBe(
 						true
 					);
-					// For more details about how `reportArgs` are handled, see assets/js/modules/analytics/util/report-args.test.js.
+
+					// For more details about how `reportArgs` are handled,
+					// see `assets/js/modules/analytics/util/report-args.test.js`.
 					expect( url.hash ).toBe(
 						`#/report/${ type }/a${ accountID }w${ internalWebPropertyID }p${ profileID }/foo=bar/`
 					);

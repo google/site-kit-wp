@@ -20,10 +20,7 @@
  *
  * Internal dependencies
  */
-import {
-	createAccountChooserMock,
-	decodeServiceURL,
-} from '../../../../../tests/js/mock-accountChooserURL-utils';
+import { decodeServiceURL } from '../../../../../tests/js/mock-accountChooserURL-utils';
 import {
 	createTestRegistry,
 	provideSiteInfo,
@@ -46,11 +43,6 @@ describe( 'module/search-console service store', () => {
 	const propertyID = 'https://example.com';
 	const domainPropertyID = 'sc-domain:example.com';
 
-	const mockAccountChooserURL = createAccountChooserMock(
-		baseURI,
-		userData.email
-	);
-
 	let registry;
 
 	beforeEach( () => {
@@ -69,8 +61,9 @@ describe( 'module/search-console service store', () => {
 				const serviceURL = registry
 					.select( MODULES_SEARCH_CONSOLE )
 					.getServiceURL();
-				expect( serviceURL.startsWith( mockAccountChooserURL() ) ).toBe(
-					true
+
+				expect( serviceURL ).toMatchInlineSnapshot(
+					'"https://accounts.google.com/accountchooser?continue=https%3A%2F%2Fsearch.google.com%2Fsearch-console&Email=admin%40example.com"'
 				);
 			} );
 
@@ -78,9 +71,10 @@ describe( 'module/search-console service store', () => {
 				const serviceURL = registry
 					.select( MODULES_SEARCH_CONSOLE )
 					.getServiceURL( { path: 'test/path/to/deeplink' } );
+
 				expect(
 					serviceURL.endsWith(
-						mockAccountChooserURL( '/test/path/to/deeplink' )
+						'%2Ftest%2Fpath%2Fto%2Fdeeplink&Email=admin%40example.com'
 					)
 				).toBe( true );
 			} );
@@ -89,11 +83,10 @@ describe( 'module/search-console service store', () => {
 				const serviceURL = registry
 					.select( MODULES_SEARCH_CONSOLE )
 					.getServiceURL( { path: '/test/path/to/deeplink' } );
-				expect(
-					serviceURL.endsWith(
-						mockAccountChooserURL( '/test/path/to/deeplink' )
-					)
-				).toBe( true );
+
+				expect( serviceURL ).toMatchInlineSnapshot(
+					'"https://accounts.google.com/accountchooser?continue=https%3A%2F%2Fsearch.google.com%2Fsearch-console%23%2Ftest%2Fpath%2Fto%2Fdeeplink&Email=admin%40example.com"'
+				);
 			} );
 
 			it( 'merges given query args to the base service URL args', async () => {

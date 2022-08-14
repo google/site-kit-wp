@@ -17,39 +17,6 @@
  */
 
 /**
- * Returns a function used for mocking account chooser URL's.
- *
- * @since n.e.x.t
- *
- * @param {string} baseURL The base URL to mock.
- * @param {string} email   The user's email.
- * @return {Function} A util function for mocking account chooser URL's.
- */
-export const createAccountChooserMock = ( baseURL, email ) => {
-	const accountChooserBaseURL = `https://accounts.google.com/accountchooser?continue=${ encodeURIComponent(
-		baseURL
-	) }`;
-
-	/**
-	 * Mocks an account chooser URL.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param {string} path The path to append to the base URL.
-	 * @return {string} The account chooser with an appended path.
-	 */
-	const mockAccountChooserURL = ( path = '' ) =>
-		`${ accountChooserBaseURL }${
-			path &&
-			`${ encodeURIComponent( '#/' ) }${ encodeURIComponent(
-				path.replace( /^\//, '' )
-			) }`
-		}&Email=${ encodeURIComponent( email ) }`;
-
-	return mockAccountChooserURL;
-};
-
-/**
  * Decodes an account chooser URLs `continue` argument.
  *
  * @since n.e.x.t
