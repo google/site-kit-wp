@@ -24,6 +24,7 @@ import invariant from 'invariant';
 /**
  * Internal dependencies
  */
+import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { CORE_USER, PERMISSION_READ_SHARED_MODULE_DATA } from './constants';
 import { CORE_MODULES } from '../../modules/datastore/constants';
@@ -88,6 +89,29 @@ export const actions = {
 			type: RECEIVE_CAPABILITIES,
 			payload: { capabilities },
 		};
+	},
+
+	/**
+	 * Refreshs user capabilities.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {Object} Redux-style action.
+	 */
+	*refreshCapabilities() {
+		const { dispatch } = yield Data.commonActions.getRegistry();
+
+		const newCapabilities = yield API.get(
+			'core',
+			'user',
+			'permissions',
+			undefined,
+			{ useCache: false }
+		);
+
+		global._googlesitekitUserData.permissions = newCapabilities;
+
+		return dispatch( CORE_USER ).receiveCapabilities( newCapabilities );
 	},
 };
 
