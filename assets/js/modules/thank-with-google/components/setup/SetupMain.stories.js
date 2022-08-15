@@ -21,9 +21,9 @@
  */
 import {
 	MODULES_THANK_WITH_GOOGLE,
-	STATE_ACTION_REQUIRED,
-	STATE_ACTIVE,
-	STATE_PENDING_VERIFICATION,
+	ONBOARDING_STATE_ACTION_REQUIRED,
+	ONBOARDING_STATE_COMPLETE,
+	ONBOARDING_STATE_PENDING_VERIFICATION,
 } from '../../datastore/constants';
 import {
 	createTestRegistry,
@@ -39,36 +39,36 @@ import SetupMain from './SetupMain';
 
 const features = [ 'twgModule' ];
 
-const publicationWithActiveStateA = {
+const publicationWithOnboardingCompleteStateA = {
 	// eslint-disable-next-line sitekit/acronym-case
 	publicationId: 'test-publication-a',
 	displayName: 'Test publication title',
 	verifiedDomains: [ 'https://example.com' ],
 	paymentOptions: {
-		virtualGifts: true,
+		thankStickers: true,
 	},
-	state: STATE_ACTIVE,
+	onboardingState: ONBOARDING_STATE_COMPLETE,
 };
-const publicationWithActiveStateB = {
-	...publicationWithActiveStateA,
+const publicationWithOnboardingCompleteStateB = {
+	...publicationWithOnboardingCompleteStateA,
 	// eslint-disable-next-line sitekit/acronym-case
 	publicationId: 'test-publication-b',
 };
-const publicationActionRequiredStateC = {
-	...publicationWithActiveStateA,
+const publicationOnboardingActionRequiredStateC = {
+	...publicationWithOnboardingCompleteStateA,
 	// eslint-disable-next-line sitekit/acronym-case
 	publicationId: 'test-publication-c',
-	state: STATE_ACTION_REQUIRED,
+	onboardingState: ONBOARDING_STATE_ACTION_REQUIRED,
 };
 const publicationPendingVerificationD = {
-	...publicationWithActiveStateA,
+	...publicationWithOnboardingCompleteStateA,
 	// eslint-disable-next-line sitekit/acronym-case
 	publicationId: 'test-publication-d',
-	state: STATE_PENDING_VERIFICATION,
+	onboardingState: ONBOARDING_STATE_PENDING_VERIFICATION,
 };
-const publicationsWithActiveState = [
-	publicationWithActiveStateA,
-	publicationWithActiveStateB,
+const publicationWithOnboardingCompleteState = [
+	publicationWithOnboardingCompleteStateA,
+	publicationWithOnboardingCompleteStateB,
 ];
 
 function Template( { setupRegistry } ) {
@@ -115,7 +115,9 @@ PublicationActionRequired.args = {
 	setupRegistry: ( registry ) => {
 		registry
 			.dispatch( MODULES_THANK_WITH_GOOGLE )
-			.receiveGetPublications( [ publicationActionRequiredStateC ] );
+			.receiveGetPublications( [
+				publicationOnboardingActionRequiredStateC,
+			] );
 	},
 };
 
@@ -135,7 +137,7 @@ PublicationActive.args = {
 	setupRegistry: ( registry ) => {
 		registry
 			.dispatch( MODULES_THANK_WITH_GOOGLE )
-			.receiveGetPublications( publicationsWithActiveState );
+			.receiveGetPublications( publicationWithOnboardingCompleteState );
 	},
 };
 
@@ -145,7 +147,7 @@ PublicationCustomize.args = {
 	setupRegistry: ( registry ) => {
 		registry
 			.dispatch( MODULES_THANK_WITH_GOOGLE )
-			.receiveGetPublications( publicationsWithActiveState );
+			.receiveGetPublications( publicationWithOnboardingCompleteState );
 
 		registry
 			.dispatch( MODULES_THANK_WITH_GOOGLE )

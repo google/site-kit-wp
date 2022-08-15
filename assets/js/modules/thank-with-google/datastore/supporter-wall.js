@@ -69,7 +69,7 @@ const baseSelectors = {
 	/**
 	 * Gets the list of supporter wall sidebars from the server.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.81.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(Array|undefined|null)} Supporter wall sidebars list. Returns undefined if it is not loaded yet.

@@ -23,7 +23,10 @@ import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { actions as errorStoreActions } from '../../../googlesitekit/data/create-error-store';
-import { MODULES_THANK_WITH_GOOGLE } from './constants';
+import {
+	MODULES_THANK_WITH_GOOGLE,
+	ONBOARDING_STATE_COMPLETE,
+} from './constants';
 
 const { createRegistrySelector } = Data;
 
@@ -118,7 +121,7 @@ const baseSelectors = {
 	 * Returns the first item if only one publication is available in the list.
 	 * If there are multiple publications in the list, returns one of them based on the following logic:
 	 * - If the `publicationID` module setting is already set and that publication is in the list.
-	 * - Otherwise, if any of the publications has its `state` field set to `ACTIVE`.
+	 * - Otherwise, if any of the publications has its `onboardingState` field set to `ONBOARDING_COMPLETE`.
 	 * - Otherwise, returns the first one in the list.
 	 *
 	 * @since 1.79.0
@@ -146,7 +149,9 @@ const baseSelectors = {
 		return (
 			// eslint-disable-next-line sitekit/acronym-case
 			publications.find( ( p ) => p.publicationId === publicationID ) ||
-			publications.find( ( p ) => p.state === 'ACTIVE' ) ||
+			publications.find(
+				( p ) => p.onboardingState === ONBOARDING_STATE_COMPLETE
+			) ||
 			publications[ 0 ]
 		);
 	} ),
