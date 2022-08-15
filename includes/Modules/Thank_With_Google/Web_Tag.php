@@ -234,4 +234,5 @@ class Web_Tag extends Module_Web_Tag {
 		$after  = sprintf( "\n<!-- %s -->\n", esc_html__( 'End Thank with Google snippet added by Site Kit', 'google-site-kit' ) );
 		return $before . $code . $after;
 	}
+
 }
