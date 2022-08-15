@@ -67,6 +67,9 @@ const AdminBarSessionsWidget =
 export default function AdminBarWidgets() {
 	const zeroDataStatesEnabled = useFeature( 'zeroDataStates' );
 
+	const analyticsModuleAvailable = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleAvailable( 'analytics' )
+	);
 	const analyticsModuleConnected = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleConnected( 'analytics' )
 	);
@@ -128,7 +131,9 @@ export default function AdminBarWidgets() {
 					</Fragment>
 				) }
 
-				{ ( ! analyticsModuleConnected || ! analyticsModuleActive ) && (
+				{ ( ( analyticsModuleAvailable &&
+					! analyticsModuleConnected ) ||
+					! analyticsModuleActive ) && (
 					<Cell lgSize={ 6 } mdSize={ 4 }>
 						{ zeroDataStatesEnabled && (
 							<AdminBarActivateAnalyticsCTA />
