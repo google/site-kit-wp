@@ -188,12 +188,12 @@ describe( 'Analytics write scope requests', () => {
 
 		// When returning, their original action is automatically invoked, without requiring them to click the button again.
 		await page.waitForRequest( ( req ) =>
-			req.url().match( 'analytics%2Fdata%2Fcreate-account-ticket' )
+			req.url().match( 'analytics/data/create-account-ticket' )
 		);
 
 		// They should be redirected to the Analytics TOS.
 		await page.waitForRequest( ( req ) =>
-			req.url().match( 'analytics.google.com%2Fanalytics%2Fweb' )
+			req.url().match( 'analytics.google.com/analytics/web' )
 		);
 	} );
 
