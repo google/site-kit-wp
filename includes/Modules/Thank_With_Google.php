@@ -304,24 +304,22 @@ final class Thank_With_Google extends Module
 	protected function parse_data_response( Data_Request $data, $response ) {
 		switch ( "{$data->method}:{$data->datapoint}" ) {
 			case 'GET:publications':
-				/* @var $response Google_Service_SubscribewithGoogle_ListPublicationsResponse phpcs:ignore Squiz.PHP.CommentedOutCode.Found */
-				$publications          = $response->getPublications();
-				$filtered_publications = array_filter(
-					$publications,
+				return array_filter(
+					/* @var $response Google_Service_SubscribewithGoogle_ListPublicationsResponse phpcs:ignore Squiz.PHP.CommentedOutCode.Found */
+					(array) $response->getPublications(),
 					function( $publication ) {
 						return (
 							(
-								// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
-								isset( $publication->paymentOptions->thankStickers ) && $publication->paymentOptions->thankStickers
+                                // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+								isset( $publication['paymentOptions']['thankStickers'] ) && $publication['paymentOptions']['thankStickers']
 							) &&
 							(
-								// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
-								isset( $publication->publicationPredicates->businessPredicates->supportsSiteKit ) && $publication->publicationPredicates->businessPredicates->supportsSiteKit
+                                // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+								isset( $publication['publicationPredicates']['businessPredicates']['supportsSiteKit'] ) && $publication['publicationPredicates']['businessPredicates']['supportsSiteKit']
 							)
 						);
 					}
 				);
-				return (array) $filtered_publications;
 		}
 
 		return parent::parse_data_response( $data, $response );
