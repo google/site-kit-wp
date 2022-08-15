@@ -49,6 +49,14 @@ class Web_Tag extends Module_Web_Tag {
 	private $cta_post_types;
 
 	/**
+	 * Color theme.
+	 *
+	 * @since n.e.x.t
+	 * @var string
+	 */
+	private $color_theme;
+
+	/**
 	 * Sets the current CTA placement.
 	 *
 	 * @since 1.80.0
@@ -68,6 +76,17 @@ class Web_Tag extends Module_Web_Tag {
 	 */
 	public function set_cta_post_types( $cta_post_types ) {
 		$this->cta_post_types = $cta_post_types;
+	}
+
+	/**
+	 * Sets the color theme.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $color_theme Color theme.
+	 */
+	public function set_color_theme( $color_theme ) {
+		$this->color_theme = $color_theme;
 	}
 
 	/**
