@@ -36,63 +36,18 @@ jest.mock( './CompatibilityChecks', () => ( { children } ) =>
 
 describe( 'SetupUsingProxyWithSignIn', () => {
 	let registry;
-	// const homeURL = 'http://example.com';
 
 	beforeEach( () => {
-		// jest.useFakeTimers();
 		registry = createTestRegistry();
+
 		provideModules( registry );
 		provideUserInfo( registry );
 		provideUserAuthentication( registry );
 		provideUserCapabilities( registry );
 		registry.dispatch( CORE_USER ).receiveConnectURL( 'test-url' );
-		// provideSiteConnection( registry );
 
-		// CompatibilityChecks setup
-		// Mock global.location.hostname with value that won't throw error in first check.
-		// Object.defineProperty( global.window, 'location', {
-		// 	value: {
-		// 		hostname: 'validurl.tld',
-		// 	},
-		// 	writable: true,
-		// } );
-
-		// provideSiteInfo( registry, { homeURL } );
-
-		// const token = 'test-token-value';
-
-		// // Mock request to setup-tag.
-		// fetchMock.postOnce(
-		// 	/^\/google-site-kit\/v1\/core\/site\/data\/setup-tag/,
-		// 	{ body: { token }, status: 200 }
-		// );
-
-		// // Mock request to setup-tag.
-		// fetchMock.postOnce( homeURL, { body: { token }, status: 200 } );
-
-		// // Mock request to health-checks.
-		// fetchMock.getOnce(
-		// 	/^\/google-site-kit\/v1\/core\/site\/data\/health-checks/,
-		// 	{ body: { checks: { googleAPI: { pass: true } } }, status: 200 }
-		// );
-
-		// // Mock request to AMP project.
-		// muteFetch( AMP_PROJECT_TEST_URL );
-		// muteFetch(
-		// 	/^\/google-site-kit\/v1\/core\/site\/data\/developer-plugin/
-		// );
 		muteFetch( /^\/google-site-kit\/v1\/core\/site\/data\/connection/ );
-
 		muteFetch( /^\/google-site-kit\/v1\/core\/user\/data\/tracking/ );
-
-		// // Mock getExistingTag request
-		// fetchMock.get(
-		// 	{ query: { tagverify: '1' } },
-		// 	{
-		// 		body: `<html><head><meta name="googlesitekit-setup" content="${ token }"/></head><body></body>`,
-		// 		status: 200,
-		// 	}
-		// );
 	} );
 
 	it( 'should render the setup page, including the Activate Analytics notice', () => {
@@ -102,10 +57,6 @@ describe( 'SetupUsingProxyWithSignIn', () => {
 				registry,
 			}
 		);
-
-		// await waitForElementToBeRemoved(
-		// 	document.querySelector( '.mdc-linear-progress' )
-		// );
 
 		expect( container ).toMatchSnapshot();
 
