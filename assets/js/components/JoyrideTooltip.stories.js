@@ -34,12 +34,12 @@ DefaultTooltip.args = {
 	target: '.target',
 };
 DefaultTooltip.scenario = {
-	label: 'Global/Tooltip/DefaultTooltip',
+	label: 'Global/JoyrideTooltip/DefaultTooltip',
 	delay: 250,
 };
 
 export default {
-	title: 'Components/Tooltip',
+	title: 'Components/JoyrideTooltip',
 	component: JoyrideTooltip,
 	decorators: [
 		( Story ) => {

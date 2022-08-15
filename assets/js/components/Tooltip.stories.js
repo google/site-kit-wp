@@ -29,6 +29,7 @@ DefaultTooltip.storyName = 'Default Tooltip';
 DefaultTooltip.args = {
 	title: 'This is an example of Tooltip content.',
 	children: <Button>A button</Button>,
+	open: true,
 };
 DefaultTooltip.scenario = {
 	label: 'Global/Tooltip/DefaultTooltip',
