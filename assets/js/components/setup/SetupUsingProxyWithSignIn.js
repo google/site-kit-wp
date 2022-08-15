@@ -72,6 +72,9 @@ export default function SetupUsingProxyWithSignIn() {
 
 	const dashboardSharingEnabled = useFeature( 'dashboardSharing' );
 
+	const analyticsModuleAvailable = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleAvailable( 'analytics' )
+	);
 	const analyticsModuleActive = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleActive( 'analytics' )
 	);
@@ -383,9 +386,10 @@ export default function SetupUsingProxyWithSignIn() {
 														</p>
 													) }
 
-												{ ! analyticsModuleActive && (
-													<ActivateAnalyticsNotice />
-												) }
+												{ analyticsModuleAvailable &&
+													! analyticsModuleActive && (
+														<ActivateAnalyticsNotice />
+													) }
 
 												<CompatibilityChecks>
 													{ ( {
