@@ -8,7 +8,7 @@
  * @link      https://sitekit.withgoogle.com
  */
 
-namespace Google\Site_Kit\Core\Dashboard_Sharing\Activity_Metrics;
+namespace Google\Site_Kit\Core\Dashboard_Sharing;
 
 use Google\Site_Kit\Core\Storage\User_Setting;
 
