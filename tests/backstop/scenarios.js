@@ -37,9 +37,7 @@ const path = require( 'path' );
  */
 const legacyStorybookScenarios = require( '../../.storybook/storybook-data' );
 const storybookConfig = require( '../../.storybook/main' );
-const storybookHost = require( './detect-storybook-host' );
-
-const rootURL = `${ storybookHost }iframe.html?id=`;
+const rootURL = '/dist/iframe.html?id=';
 
 const storybookDir = path.resolve( __dirname, '../../.storybook' );
 const storyFiles = flatten(
