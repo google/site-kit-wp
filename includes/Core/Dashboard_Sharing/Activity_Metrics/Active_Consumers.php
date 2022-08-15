@@ -1,8 +1,8 @@
 <?php
 /**
- * Class Google\Site_Kit\Core\Dashboard_Sharing\Activity_Metrics\Active_Consumers
+ * Class Google\Site_Kit\Core\Dashboard_Sharing\Active_Consumers
  *
- * @package   Google\Site_Kit\Core\Dashboard_Sharing\Activity_Metrics
+ * @package   Google\Site_Kit\Core\Dashboard_Sharing
  * @copyright 2022 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
@@ -29,7 +29,7 @@ class Active_Consumers extends User_Setting {
 	/**
 	 * Gets the expected value type.
 	 *
-	 * @since 1.27.0
+	 * @since n.e.x.t
 	 *
 	 * @return string The type name.
 	 */
@@ -40,7 +40,7 @@ class Active_Consumers extends User_Setting {
 	/**
 	 * Gets the default value.
 	 *
-	 * @since 1.27.0
+	 * @since n.e.x.t
 	 *
 	 * @return array The default value.
 	 */

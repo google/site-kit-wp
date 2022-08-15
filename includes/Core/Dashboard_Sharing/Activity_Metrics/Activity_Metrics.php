@@ -3,7 +3,7 @@
  * Class Google\Site_Kit\Core\Dashboard_Sharing\Activity_Metrics
  *
  * @package   Google\Site_Kit\Core\Dashboard_Sharing
- * @copyright 2021 Google LLC
+ * @copyright 2022 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
@@ -33,7 +33,7 @@ class Activity_Metrics {
 	/**
 	 * Constructor.
 	 *
-	 * @since 1.27.0
+	 * @since n.e.x.t
 	 *
 	 * @param Context      $context Plugin context.
 	 * @param User_Options $user_options Optional. User option API. Default is a new instance.
@@ -45,7 +45,7 @@ class Activity_Metrics {
 	/**
 	 * Registers functionality through WordPress hooks.
 	 *
-	 * @since 1.27.0
+	 * @since n.e.x.t
 	 */
 	public function register() {
 		$this->active_consumers->register();
