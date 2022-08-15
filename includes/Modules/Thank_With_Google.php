@@ -310,11 +310,9 @@ final class Thank_With_Google extends Module
 					function( $publication ) {
 						return (
 							(
-                                // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 								isset( $publication['paymentOptions']['thankStickers'] ) && $publication['paymentOptions']['thankStickers']
 							) &&
 							(
-                                // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 								isset( $publication['publicationPredicates']['businessPredicates']['supportsSiteKit'] ) && $publication['publicationPredicates']['businessPredicates']['supportsSiteKit']
 							)
 						);
