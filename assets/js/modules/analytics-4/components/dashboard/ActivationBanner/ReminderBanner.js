@@ -1,5 +1,5 @@
 /**
- * EntityBannerNotifications component.
+ * ReminderBanner component.
  *
  * Site Kit by Google, Copyright 2022 Google LLC
  *
@@ -19,23 +19,27 @@
 /**
  * WordPress dependencies
  */
-import { Fragment } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import { useFeature } from '../../hooks/useFeature';
-import ZeroDataStateNotifications from './ZeroDataStateNotifications';
-import { ActivationBanner } from '../../modules/analytics-4/components/dashboard';
+import BannerNotification from '../../../../../components/notifications/BannerNotification';
 
-export default function EntityBannerNotifications() {
-	const zeroDataStatesEnabled = useFeature( 'zeroDataStates' );
-	const ga4ActivationBannerEnabled = useFeature( 'ga4ActivationBanner' );
-
+export default function ReminderBanner( { onCTAClick } ) {
 	return (
-		<Fragment>
-			{ zeroDataStatesEnabled && <ZeroDataStateNotifications /> }
-			{ ga4ActivationBannerEnabled && <ActivationBanner /> }
-		</Fragment>
+		<BannerNotification
+			id="ga4-activation-banner"
+			title={ __(
+				'Set up Google Analytics 4 now to join the future of Analytics',
+				'google-site-kit'
+			) }
+			/* TODO: Internationalize title below */
+			description={ 'Placeholder description text to replace.' }
+			ctaLabel={ __( 'Set up now', 'google-site-kit' ) }
+			ctaLink={ onCTAClick ? '#' : null }
+			onCTAClick={ onCTAClick }
+			dismiss={ __( 'Remind me later', 'google-site-kit' ) }
+		/>
 	);
 }

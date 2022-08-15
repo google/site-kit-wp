@@ -108,7 +108,7 @@ class Setup {
 	/**
 	 * Composes the oAuth proxy get help link.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.81.0
 	 *
 	 * @return string The get help link.
 	 */
@@ -116,7 +116,7 @@ class Setup {
 		return sprintf(
 			/* translators: 1: Support link URL. 2: Get help string. */
 			__( '<a href="%1$s" target="_blank">%2$s</a>', 'google-site-kit' ),
-			esc_url( $this->proxy_support_link_url . '/?error_id=request_to_auth_proxy_failed' ),
+			esc_url( add_query_arg( 'error_id', 'request_to_auth_proxy_failed', $this->proxy_support_link_url ) ),
 			esc_html__( 'Get help', 'google-site-kit' )
 		);
 	}
@@ -308,7 +308,7 @@ class Setup {
 	 */
 	protected function verify_nonce( $nonce, $action = Google_Proxy::NONCE_ACTION ) {
 		if ( ! wp_verify_nonce( $nonce, $action ) ) {
-			Authentication::invalid_nonce_error( $action );
+			$this->authentication->invalid_nonce_error( $action );
 		}
 	}
 

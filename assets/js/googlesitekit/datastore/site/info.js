@@ -533,7 +533,7 @@ export const selectors = {
 	/**
 	 * Gets the admin widgets editor URL.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.81.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(string|null)} The proxy support URL.
@@ -543,7 +543,7 @@ export const selectors = {
 	/**
 	 * Gets the public post types.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.81.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {Array.<Object>} The public post types.
