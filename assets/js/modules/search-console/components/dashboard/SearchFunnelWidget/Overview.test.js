@@ -1,5 +1,5 @@
 /**
- * SearchFunnelWidget component tests.
+ * Overview component tests.
  *
  * Site Kit by Google, Copyright 2022 Google LLC
  *
@@ -21,22 +21,45 @@ import {
 	createTestRegistry,
 	provideModules,
 	provideUserCapabilities,
-	waitForElementToBeRemoved,
 	provideUserInfo,
 	provideUserAuthentication,
 	provideSiteInfo,
+	waitFor,
 } from '../../../../../../../tests/js/test-utils';
 import coreModulesFixture from '../../../../../googlesitekit/modules/datastore/__fixtures__';
 import { CORE_MODULES } from '../../../../../googlesitekit/modules/datastore/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { MODULES_SEARCH_CONSOLE } from '../../../datastore/constants';
 import { getWidgetComponentProps } from '../../../../../googlesitekit/widgets/util';
-import SearchFunnelWidget from '.';
+import Overview from './Overview';
 
-describe( 'SearchFunnelWidget', () => {
+jest.mock( '../../../../../hooks/useBreakpoint', () => ( {
+	BREAKPOINT_SMALL: 'small',
+	useBreakpoint: () => 'tablet',
+} ) );
+
+describe( 'Overview', () => {
 	let registry;
 
-	const widgetComponentProps = getWidgetComponentProps( 'searchFunnel' );
+	const { WidgetReportError } = getWidgetComponentProps( 'searchFunnel' );
+
+	const searchConsoleData = [
+		{
+			clicks: 123,
+			ctr: 4.56,
+			impressions: 7890,
+			keys: [ '2022-06-21' ],
+			position: 12.345,
+		},
+	];
+
+	const overviewProps = {
+		searchConsoleData,
+		selectedStats: 0,
+		handleStatsSelection: () => {},
+		dateRangeLength: 28,
+		WidgetReportError,
+	};
 
 	beforeEach( () => {
 		registry = createTestRegistry();
@@ -54,30 +77,17 @@ describe( 'SearchFunnelWidget', () => {
 		fetchMock.getOnce(
 			/^\/google-site-kit\/v1\/modules\/search-console\/data\/searchanalytics/,
 			{
-				body: [
-					{
-						clicks: 123,
-						ctr: 4.56,
-						impressions: 7890,
-						keys: [ '2022-06-21' ],
-						position: 12.345,
-					},
-				],
+				body: searchConsoleData,
 			}
 		);
 	} );
 
-	it( 'should render the Search Funnel Widget, including the Activate Analytics CTA', async () => {
-		const { container, getByText } = render(
-			<SearchFunnelWidget { ...widgetComponentProps } />,
-			{
+	it( 'should render the Search Funnel Overview, including the Activate Analytics CTA', async () => {
+		const { container, getByText } = await waitFor( () =>
+			render( <Overview { ...overviewProps } />, {
 				features: [ 'zeroDataStates' ],
 				registry,
-			}
-		);
-
-		await waitForElementToBeRemoved(
-			document.querySelector( '.googlesitekit-preview-block' )
+			} )
 		);
 
 		expect( container ).toMatchSnapshot();
@@ -94,16 +104,11 @@ describe( 'SearchFunnelWidget', () => {
 				)
 			);
 
-		const { container, queryByText } = render(
-			<SearchFunnelWidget { ...widgetComponentProps } />,
-			{
+		const { container, queryByText } = await waitFor( () =>
+			render( <Overview { ...overviewProps } />, {
 				features: [ 'zeroDataStates' ],
 				registry,
-			}
-		);
-
-		await waitForElementToBeRemoved(
-			document.querySelector( '.googlesitekit-preview-block' )
+			} )
 		);
 
 		expect( container ).toMatchSnapshot();
