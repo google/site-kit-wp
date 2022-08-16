@@ -16,10 +16,13 @@ use Google\Site_Kit\Core\Dismissals\Dismissed_Items;
 use Google\Site_Kit\Core\Modules\Module_Sharing_Settings;
 use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Permissions\Permissions;
+use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Tests\Fake_Site_Connection_Trait;
 use Google\Site_Kit\Tests\TestCase;
+use WP_REST_Request;
+use WP_REST_Server;
 
 /**
  * @group Permissions
@@ -58,6 +61,7 @@ class PermissionsTest extends TestCase {
 		// Unhook all actions and filters added during Permissions::register
 		// to avoid interference with "main" instance setup during plugin bootstrap.
 		remove_all_filters( 'map_meta_cap' );
+		remove_all_filters( 'googlesitekit_rest_routes' );
 		remove_all_filters( 'googlesitekit_user_data' );
 		remove_all_filters( 'user_has_cap' );
 
@@ -73,6 +77,7 @@ class PermissionsTest extends TestCase {
 		$permissions->register();
 
 		$this->assertTrue( has_filter( 'map_meta_cap' ) );
+		$this->assertTrue( has_filter( 'googlesitekit_rest_routes' ) );
 		$this->assertTrue( has_filter( 'googlesitekit_user_data' ) );
 		$this->assertTrue( has_filter( 'user_has_cap' ) );
 	}
@@ -87,6 +92,7 @@ class PermissionsTest extends TestCase {
 		$permissions->register();
 
 		$this->assertTrue( has_filter( 'map_meta_cap' ) );
+		$this->assertTrue( has_filter( 'googlesitekit_rest_routes' ) );
 		$this->assertTrue( has_filter( 'googlesitekit_user_data' ) );
 		$this->assertFalse( has_filter( 'user_has_cap' ) );
 	}
@@ -586,5 +592,72 @@ class PermissionsTest extends TestCase {
 		// An admin can still see the splash even when this dismissal is present because they can authenticate.
 		$this->dismissed_items->add( 'shared_dashboard_splash' );
 		$this->assertTrue( user_can( $user, Permissions::VIEW_SPLASH ) );
+	}
+
+	public function test_permissions_route_unauthorized_request() {
+		$permissions = new Permissions( $this->context, $this->authentication, $this->modules, $this->user_options, $this->dismissed_items );
+		$permissions->register();
+
+		$request  = new WP_REST_Request( WP_REST_Server::READABLE, '/' . REST_Routes::REST_ROOT . '/core/user/data/permissions' );
+		$response = rest_get_server()->dispatch( $request );
+		$data     = $response->get_data();
+
+		$this->assertNotEquals( 200, $response->get_status() );
+		$this->assertArrayHasKey( 'code', $data );
+		$this->assertEquals( 'rest_forbidden', $data['code'] );
+	}
+
+	public function test_permissions_route_non_admin() {
+		$permissions = new Permissions( $this->context, $this->authentication, $this->modules, $this->user_options, $this->dismissed_items );
+		$permissions->register();
+
+		$user_id = $this->factory()->user->create( array( 'role' => 'editor' ) );
+		wp_set_current_user( $user_id );
+
+		$request  = new WP_REST_Request( WP_REST_Server::READABLE, '/' . REST_Routes::REST_ROOT . '/core/user/data/permissions' );
+		$response = rest_get_server()->dispatch( $request );
+		$data     = $response->get_data();
+
+		$this->assertNotEquals( 200, $response->get_status() );
+		$this->assertArrayHasKey( 'code', $data );
+		$this->assertEquals( 'rest_forbidden', $data['code'] );
+	}
+
+	public function test_permissions_route() {
+		$permissions = new Permissions( $this->context, $this->authentication, $this->modules, $this->user_options, $this->dismissed_items );
+		$permissions->register();
+
+		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $user_id );
+
+		$request  = new WP_REST_Request( WP_REST_Server::READABLE, '/' . REST_Routes::REST_ROOT . '/core/user/data/permissions' );
+		$response = rest_get_server()->dispatch( $request );
+		$data     = $response->get_data();
+
+		$this->assertEquals( 200, $response->get_status() );
+		$this->assertEqualSetsWithIndex( $data, $permissions->check_all_for_current_user() );
+	}
+
+	public function test_permissions_route_dashboard_sharing() {
+		$this->enable_feature( 'dashboardSharing' );
+		$user_id = $this->factory()->user->create( array( 'role' => 'editor' ) );
+		wp_set_current_user( $user_id );
+
+		$sharing_settings = new Module_Sharing_Settings( new Options( $this->context ) );
+		$permissions      = new Permissions( $this->context, $this->authentication, $this->modules, $this->user_options, $this->dismissed_items );
+		$permissions->register();
+
+		$sharing_settings->set(
+			array(
+				'pagespeed-insights' => array( 'sharedRoles' => array( 'editor' ) ),
+			)
+		);
+
+		$request  = new WP_REST_Request( WP_REST_Server::READABLE, '/' . REST_Routes::REST_ROOT . '/core/user/data/permissions' );
+		$response = rest_get_server()->dispatch( $request );
+		$data     = $response->get_data();
+
+		$this->assertEquals( 200, $response->get_status() );
+		$this->assertEqualSetsWithIndex( $data, $permissions->check_all_for_current_user() );
 	}
 }
