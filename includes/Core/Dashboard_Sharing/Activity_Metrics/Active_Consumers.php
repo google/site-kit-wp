@@ -86,18 +86,14 @@ class Active_Consumers extends User_Setting {
 				array_filter(
 					array_values( $value ),
 					function( $item ) {
-						if ( is_array( $item ) ) {
-							return false;
-						}
-
-						if ( count(
+						if ( is_array( $item ) || ( is_array( $item ) && count(
 							array_filter(
 								array_values( $item ),
 								function( $role_item ) {
 									return ! is_string( $role_item );
 								}
 							)
-						) > 0 ) {
+						) > 0 ) ) {
 							return false;
 						}
 
