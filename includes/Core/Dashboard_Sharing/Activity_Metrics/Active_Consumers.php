@@ -10,6 +10,7 @@
 
 namespace Google\Site_Kit\Core\Dashboard_Sharing;
 
+use Closure;
 use Google\Site_Kit\Core\Storage\User_Setting;
 
 /**
@@ -46,5 +47,68 @@ class Active_Consumers extends User_Setting {
 	 */
 	protected function get_default() {
 		return array();
+	}
+
+	/**
+	 * Gets the callback for sanitizing the setting's value before saving.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return Closure
+	 */
+	protected function get_sanitize_callback() {
+		return function ( $value ) {
+			// If the new value is not an array, preserve current value.
+			if ( ! is_array( $value ) ) {
+				return $this->get();
+			}
+
+			// If the new value is not an associative array, preserve current value.
+			if ( array_values( $value ) === $value ) {
+				return $this->get();
+			}
+
+			// If any of the array keys isn't an integer, preserve current value.
+			if ( count(
+				array_filter(
+					array_keys( $value ),
+					function( $item ) {
+						return ! is_int( $item );
+					}
+				)
+			) > 0 ) {
+				return $this->get();
+			}
+
+			// If any of the array values isn't an array, or any of the values of
+			// the nested arrays isn't a string, preserve current value.
+			if ( count(
+				array_filter(
+					array_values( $value ),
+					function( $item ) {
+						if ( is_array( $item ) ) {
+							return false;
+						}
+
+						if ( count(
+							array_filter(
+								array_values( $item ),
+								function( $role_item ) {
+									return ! is_string( $role_item );
+								}
+							)
+						) > 0 ) {
+							return false;
+						}
+
+						return true;
+					}
+				)
+			) > 0 ) {
+				return $this->get();
+			}
+
+			return $value;
+		};
 	}
 }
