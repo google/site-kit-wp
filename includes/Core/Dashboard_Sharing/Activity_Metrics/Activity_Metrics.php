@@ -1,14 +1,14 @@
 <?php
 /**
- * Class Google\Site_Kit\Core\Dashboard_Sharing\Activity_Metrics
+ * Class Google\Site_Kit\Core\Dashboard_Sharing\Activity_Metrics\Activity_Metrics
  *
- * @package   Google\Site_Kit\Core\Dashboard_Sharing
+ * @package   Google\Site_Kit\Core\Dashboard_Sharing\Activity_Metrics
  * @copyright 2022 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
 
-namespace Google\Site_Kit\Core\Dashboard_Sharing;
+namespace Google\Site_Kit\Core\Dashboard_Sharing\Activity_Metrics;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Storage\User_Options;
@@ -43,7 +43,7 @@ class Activity_Metrics {
 	}
 
 	/**
-	 * Registers functionality through WordPress hooks.
+	 * Registers functionality.
 	 *
 	 * @since n.e.x.t
 	 */
