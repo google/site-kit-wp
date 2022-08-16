@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * WordPress dependencies
  */
 import { useCallback } from '@wordpress/element';
@@ -36,7 +41,7 @@ import { trackEvent } from '../../../../util/tracking';
 import useViewContext from '../../../../hooks/useViewContext';
 const { useSelect, useDispatch } = Data;
 
-export default function AMPContainerSelect() {
+export default function AMPContainerSelect( { hasModuleAccess } ) {
 	const viewContext = useViewContext();
 
 	const accountID = useSelect( ( select ) =>
@@ -90,6 +95,10 @@ export default function AMPContainerSelect() {
 		? __( 'AMP Container', 'google-site-kit' )
 		: __( 'Container', 'google-site-kit' );
 
+	if ( hasModuleAccess === false ) {
+		// Render Select component
+	}
+
 	return (
 		<ContainerSelect
 			className="googlesitekit-tagmanager__select-container--amp"
@@ -100,3 +109,13 @@ export default function AMPContainerSelect() {
 		/>
 	);
 }
+
+// eslint-disable-next-line sitekit/acronym-case
+AMPContainerSelect.propTypes = {
+	hasModuleAccess: PropTypes.bool,
+};
+
+// eslint-disable-next-line sitekit/acronym-case
+AMPContainerSelect.defaultProps = {
+	hasModuleAccess: true,
+};

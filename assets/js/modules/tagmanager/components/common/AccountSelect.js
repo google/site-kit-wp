@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * WordPress dependencies
  */
 import { useCallback } from '@wordpress/element';
@@ -33,7 +38,7 @@ import { trackEvent } from '../../../../util/tracking';
 import useViewContext from '../../../../hooks/useViewContext';
 const { useSelect, useDispatch } = Data;
 
-export default function AccountSelect() {
+export default function AccountSelect( { hasModuleAccess } ) {
 	const viewContext = useViewContext();
 
 	const { accounts, hasResolvedAccounts } = useSelect( ( select ) => ( {
@@ -68,6 +73,10 @@ export default function AccountSelect() {
 		return <ProgressBar small />;
 	}
 
+	if ( hasModuleAccess === false ) {
+		// Render Select component
+	}
+
 	return (
 		<Select
 			className="googlesitekit-tagmanager__select-account"
@@ -95,3 +104,11 @@ export default function AccountSelect() {
 		</Select>
 	);
 }
+
+AccountSelect.propTypes = {
+	hasModuleAccess: PropTypes.bool,
+};
+
+AccountSelect.defaultProps = {
+	hasModuleAccess: true,
+};
