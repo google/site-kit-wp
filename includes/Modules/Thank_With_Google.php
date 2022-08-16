@@ -352,6 +352,7 @@ final class Thank_With_Google extends Module
 		if ( $tag->can_register() ) {
 			$tag->set_cta_placement( $settings['ctaPlacement'] );
 			$tag->set_cta_post_types( $settings['ctaPostTypes'] );
+			$tag->set_color_theme( $settings['colorTheme'] );
 
 			$tag->register();
 		}
