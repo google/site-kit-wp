@@ -18,6 +18,7 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import classnames from 'classnames';
 
 /**
  * WordPress dependencies
@@ -27,11 +28,11 @@ import { useState, useCallback } from '@wordpress/element';
 /**
  * Internal dependencies
  */
+import { CircularProgress } from '../material-components';
 import Button from './Button';
-import Spinner from './Spinner';
 
 export default function SpinnerButton( props ) {
-	const { onClick = () => {}, ...restProps } = props;
+	const { className, onClick = () => {}, ...restProps } = props;
 
 	const [ processing, setPropcessing ] = useState( false );
 
@@ -46,7 +47,16 @@ export default function SpinnerButton( props ) {
 
 	return (
 		<Button
-			trailingIcon={ <Spinner isSaving={ processing } /> }
+			className={ classnames(
+				className,
+				'googlesitekit-button-icon--spinner',
+				{
+					'googlesitekit-button-icon--spinner__running': processing,
+				}
+			) }
+			trailingIcon={
+				processing ? <CircularProgress size={ 14 } /> : undefined
+			}
 			onClick={ handleClick }
 			{ ...restProps }
 		/>
@@ -54,5 +64,6 @@ export default function SpinnerButton( props ) {
 }
 
 SpinnerButton.propTypes = {
+	className: PropTypes.string,
 	onClick: PropTypes.func,
 };
