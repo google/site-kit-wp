@@ -145,7 +145,7 @@ class Web_Tag extends Module_Web_Tag {
 		}
 
 		$twg_inline_script = sprintf(
-			'(self.SWG_BASIC=self.SWG_BASIC||[]).push(function(s){s.init(%s);})',
+			'(self.SWG_BASIC=self.SWG_BASIC||[]).push(function(subscriptions){subscriptions.init(%s);});',
 			wp_json_encode( $subscription )
 		);
 
