@@ -25,7 +25,7 @@ import { CORE_WIDGETS } from '../../googlesitekit/widgets/datastore/constants';
 import { CONTEXT_MAIN_DASHBOARD_MONETIZATION } from '../../googlesitekit/widgets/default-contexts';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import { VIEW_CONTEXT_DASHBOARD } from '../../googlesitekit/constants';
-import { setupDefaultChips } from './utils';
+import { setupDefaultChips } from './test-utils';
 
 const Template = ( { setupRegistry, viewContext, ...args } ) => (
 	<WithRegistrySetup func={ setupRegistry }>

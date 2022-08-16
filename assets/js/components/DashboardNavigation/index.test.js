@@ -27,8 +27,8 @@ import {
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { CORE_WIDGETS } from '../../googlesitekit/widgets/datastore/constants';
 import { CONTEXT_MAIN_DASHBOARD_SPEED } from '../../googlesitekit/widgets/default-contexts';
-import { setupDefaultChips } from './utils';
 import DashboardNavigation from './';
+import { setupDefaultChips } from './test-utils';
 
 describe( 'Dashboard Navigation', () => {
 	let previousSiteKitUserData;

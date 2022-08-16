@@ -1,5 +1,5 @@
 /**
- * Tooltip Component Stories.
+ * JoyrideTooltip Component Stories.
  *
  * Site Kit by Google, Copyright 2022 Google LLC
  *
@@ -20,23 +20,35 @@
  * Internal dependencies
  */
 import Button from './Button';
-import Tooltip from './Tooltip';
+import JoyrideTooltip from './JoyrideTooltip';
 
-const Template = ( args ) => <Tooltip { ...args } />;
+const Template = ( args ) => <JoyrideTooltip { ...args } />;
 
 export const DefaultTooltip = Template.bind( {} );
 DefaultTooltip.storyName = 'Default Tooltip';
 DefaultTooltip.args = {
-	title: 'This is an example of Tooltip content.',
-	children: <Button>A button</Button>,
-	open: true,
+	title: 'Tooltip title',
+	content:
+		'This is an example of some Tooltip content, to be displayed in the Tooltip content area.',
+	dismissLabel: 'Got it',
+	target: '.target',
 };
 DefaultTooltip.scenario = {
-	label: 'Global/Tooltip/DefaultTooltip',
+	label: 'Global/JoyrideTooltip/DefaultTooltip',
 	delay: 250,
 };
 
 export default {
-	title: 'Components/Tooltip',
-	component: Tooltip,
+	title: 'Components/JoyrideTooltip',
+	component: JoyrideTooltip,
+	decorators: [
+		( Story ) => {
+			return (
+				<div>
+					<Button className="target">A button</Button>
+					<Story />
+				</div>
+			);
+		},
+	],
 };

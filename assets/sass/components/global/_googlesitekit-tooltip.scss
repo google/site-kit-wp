@@ -16,11 +16,26 @@
  * limitations under the License.
  */
 
-.googlesitekit-tooltip.MuiTooltip-tooltipPlacementBottom {
-	margin-top: 0;
-}
-
 // High z-index since the survey modal has a high z-index as well
 .googlesitekit-tooltip-popper.MuiTooltip-popper {
 	z-index: 99999;
+}
+
+.googlesitekit-tooltip.MuiTooltip-tooltip {
+	background-color: $c-white;
+	border-radius: 8px;
+	box-shadow: 0 1px 2px rgba(60, 64, 67, 0.3), 0 2px 6px rgba(60, 64, 67, 0.15);
+	color: $c-mine-shaft;
+	font-family: $f-primary;
+	font-size: $fs-body-md;
+	font-weight: $fw-normal;
+	padding: 15px 20px;
+}
+
+.googlesitekit-tooltip .MuiTooltip-arrow {
+	color: $c-white;
+
+	&::before {
+		box-shadow: 0 1px 2px rgb(60 64 67 / 30%), 0 2px 6px rgb(60 64 67 / 15%);
+	}
 }
