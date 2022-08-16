@@ -25,9 +25,7 @@ export const DefaultButton = Template.bind( {} );
 DefaultButton.storyName = 'Default Button';
 DefaultButton.args = {
 	children: 'Default Button',
-	onClick() {
-		return new Promise( ( resolve ) => setTimeout( resolve, 5000 ) );
-	},
+	onClick: () => new Promise( ( resolve ) => setTimeout( resolve, 5000 ) ),
 };
 
 export default {
