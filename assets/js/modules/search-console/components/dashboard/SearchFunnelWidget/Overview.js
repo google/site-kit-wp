@@ -89,7 +89,15 @@ const Overview = ( {
 
 	const viewOnly = useViewOnly();
 
+	const analyticsModuleAvailable = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleAvailable( 'analytics' )
+	);
+
 	const canViewSharedAnalytics = useSelect( ( select ) => {
+		if ( ! analyticsModuleAvailable ) {
+			return false;
+		}
+
 		if ( ! viewOnly ) {
 			return true;
 		}
@@ -106,12 +114,18 @@ const Overview = ( {
 	const analyticsModuleActiveAndConnected =
 		analyticsModuleActive && analyticsModuleConnected;
 
-	const adminReauthURL = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).getAdminReauthURL()
-	);
-	const isNavigatingToReauthURL = useSelect( ( select ) =>
-		select( CORE_LOCATION ).isNavigatingTo( adminReauthURL )
-	);
+	const adminReauthURL = useSelect( ( select ) => {
+		if ( ! analyticsModuleAvailable ) {
+			return null;
+		}
+		return select( MODULES_ANALYTICS ).getAdminReauthURL();
+	} );
+	const isNavigatingToReauthURL = useSelect( ( select ) => {
+		if ( ! analyticsModuleAvailable ) {
+			return false;
+		}
+		return select( CORE_LOCATION ).isNavigatingTo( adminReauthURL );
+	} );
 	const isAnalyticsGatheringData = useInViewSelect( ( select ) =>
 		analyticsModuleActiveAndConnected &&
 		canViewSharedAnalytics &&

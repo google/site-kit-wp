@@ -42,8 +42,8 @@ describe( 'AdminBarWidgets', () => {
 				body: [
 					{
 						clicks: 123,
-						impressions: 4567,
 						ctr: 8.91,
+						impressions: 4567,
 						position: 23.456,
 					},
 				],
