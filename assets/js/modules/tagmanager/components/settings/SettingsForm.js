@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * Internal dependencies
  */
 import {
@@ -31,7 +36,7 @@ import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import { MODULES_TAGMANAGER } from '../../datastore/constants';
 import SettingsUseSnippetSwitch from './SettingsUseSnippetSwitch';
 
-export default function SettingsForm() {
+export default function SettingsForm( { hasModuleAccess } ) {
 	return (
 		<div className="googlesitekit-tagmanager-settings-fields">
 			<StoreErrorNotices
@@ -41,11 +46,11 @@ export default function SettingsForm() {
 			<FormInstructions />
 
 			<div className="googlesitekit-setup-module__inputs">
-				<AccountSelect />
+				<AccountSelect hasModuleAccess={ hasModuleAccess } />
 
-				<WebContainerSelect />
+				<WebContainerSelect hasModuleAccess={ hasModuleAccess } />
 
-				<AMPContainerSelect />
+				<AMPContainerSelect hasModuleAccess={ hasModuleAccess } />
 
 				<TagCheckProgress />
 			</div>
@@ -58,3 +63,11 @@ export default function SettingsForm() {
 		</div>
 	);
 }
+
+SettingsForm.propTypes = {
+	hasModuleAccess: PropTypes.bool,
+};
+
+SettingsForm.defaultProps = {
+	hasModuleAccess: true,
+};
