@@ -310,10 +310,10 @@ final class Thank_With_Google extends Module
 					function( $publication ) {
 						return (
 							(
-								isset( $publication['paymentOptions']['thankStickers'] ) && $publication['paymentOptions']['thankStickers'] === true
+								isset( $publication['paymentOptions']['thankStickers'] ) && $publication['paymentOptions']['thankStickers']
 							) &&
 							(
-								isset( $publication['publicationPredicates']['businessPredicates']['supportsSiteKit'] ) && $publication['publicationPredicates']['businessPredicates']['supportsSiteKit'] === true
+								isset( $publication['publicationPredicates']['businessPredicates']['supportsSiteKit'] ) && $publication['publicationPredicates']['businessPredicates']['supportsSiteKit']
 							)
 						);
 					}
