@@ -29,7 +29,7 @@ import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
 import { MODULES_ANALYTICS_4 } from '../../../datastore/constants';
 import * as ga4Fixtures from '../../../../analytics-4/datastore/__fixtures__';
 
-const Template = () => <SetupBanner />;
+const Template = ( args ) => <SetupBanner { ...args } />;
 
 export const NoPropertyNoTag = Template.bind( {} );
 NoPropertyNoTag.storyName = 'No GA4 Property - No Existing Tag';
@@ -97,6 +97,9 @@ NoPropertyWithTag.decorators = [
 
 export default {
 	title: 'Modules/Analytics4/SetupBanner',
+	args: {
+		onCTAClick: () => {},
+	},
 	decorators: [
 		( Story ) => {
 			const setupRegistry = ( registry ) => {
