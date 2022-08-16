@@ -11,7 +11,7 @@
 namespace Google\Site_Kit\Tests\Core\Dashboard_Sharing;
 
 use Google\Site_Kit\Context;
-use Google\Site_Kit\Core\Dashboard_Sharing\Active_Consumers;
+use Google\Site_Kit\Core\Dashboard_Sharing\Activity_Metrics\Active_Consumers;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Tests\TestCase;
 
