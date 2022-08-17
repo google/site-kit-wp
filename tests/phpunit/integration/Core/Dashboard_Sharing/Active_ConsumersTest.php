@@ -46,22 +46,18 @@ class Active_ConsumersTest extends TestCase {
 		$this->set_value( 123 );
 		$this->assertEquals( array(), $this->get_value() );
 
-		// Setting the value to a non-associative array will result in an empty array.
-		$this->set_value( array( 'a', 'b', 'c' ) );
-		$this->assertEquals( array(), $this->get_value() );
-
-		// Setting the value to an associative array but with non-integer keys
-		// will result in an empty array.
+		// Setting the value to an array but with non-integer keys will
+		// result in an empty array.
 		$this->set_value( array( 'a' => array( 'x', 'y', 'z' ) ) );
 		$this->assertEquals( array(), $this->get_value() );
 
-		// Setting the value to an associative array with integer keys but a non-array
+		// Setting the value to an array with integer keys but a non-array
 		// value will result in an empty array.
 		$this->set_value( array( 1 => 'a' ) );
 		$this->assertEquals( array(), $this->get_value() );
 
-		// Setting the value to an associative array with integer keys but array
-		// with non-string values as the value will result in an empty array.
+		// Setting the value to an array with integer keys but array with
+		// non-string values as the value will result in an empty array.
 		$this->set_value( array( 1 => array( 2, 3, 4 ) ) );
 		$this->assertEquals( array(), $this->get_value() );
 
@@ -69,6 +65,21 @@ class Active_ConsumersTest extends TestCase {
 		// with string values as the value works as expected.
 		$this->set_value( array( 1 => array( 'a', 'b', 'c' ) ) );
 		$this->assertEquals( array( 1 => array( 'a', 'b', 'c' ) ), $this->get_value() );
+
+		// Updating with mixed integer and non-integer keys will result
+		// in an array with non-integer keys filtered out.
+		$this->set_value(
+			array(
+				1   => array( 'a', 'b', 'c' ),
+				'x' => array( 'a', 'b', 'c' ),
+			)
+		);
+		$this->assertEquals( array( 1 => array( 'a', 'b', 'c' ) ), $this->get_value() );
+
+		// Updating with integer keys and array with mixed string and non-string
+		// values will result in a nested array with non-string values filtered out.
+		$this->set_value( array( 1 => array( 'a', 8, 'c' ) ) );
+		$this->assertEquals( array( 1 => array( 'a', 'c' ) ), $this->get_value() );
 
 		// Updating with a non-array will preserve the current value.
 		$this->set_value( 'not an array' );

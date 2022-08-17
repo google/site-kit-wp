@@ -63,49 +63,23 @@ class Active_Consumers extends User_Setting {
 				return $this->get();
 			}
 
-			// If the new value is not an associative array, preserve current value.
-			if ( array_values( $value ) === $value ) {
-				return $this->get();
-			}
+			foreach ( $value as $id => $roles ) {
+				// If any of the IDs isn't an integer, remove that item.
+				if ( ! is_int( $id ) ) {
+					unset( $value[ $id ] );
+				}
 
-			// If any of the array keys isn't an integer, preserve current value.
-			if ( count(
-				array_filter(
-					array_keys( $value ),
-					function( $item ) {
-						return ! is_int( $item );
-					}
-				)
-			) > 0 ) {
-				return $this->get();
-			}
-
-			// If any of the array values isn't an array, or any of the values of
-			// the nested arrays isn't a string, preserve current value.
-			if ( count(
-				array_filter(
-					array_values( $value ),
-					function( $item ) {
-						if ( ! is_array( $item ) ) {
-							return true;
+				// If any of the array values isn't an array, remove that item.
+				if ( ! is_array( $roles ) ) {
+					unset( $value[ $id ] );
+				} else {
+					foreach ( $roles as $index => $role ) {
+						// If any of the nested role item isn't a string, remove that role item.
+						if ( ! is_string( $role ) ) {
+							array_splice( $value[ $id ], $index, 1 );
 						}
-
-						if ( count(
-							array_filter(
-								array_values( $item ),
-								function( $role_item ) {
-									return ! is_string( $role_item );
-								}
-							)
-						) > 0 ) {
-							return true;
-						}
-
-						return false;
 					}
-				)
-			) > 0 ) {
-				return $this->get();
+				}
 			}
 
 			return $value;
