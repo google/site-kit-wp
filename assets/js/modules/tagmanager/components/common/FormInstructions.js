@@ -47,12 +47,19 @@ export default function FormInstructions( { isSetup } ) {
 	const hasMultipleAnalyticsPropertyIDs = useSelect( ( select ) =>
 		select( MODULES_TAGMANAGER ).hasMultipleAnalyticsPropertyIDs()
 	);
-	const analyticsPropertyID = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).getPropertyID()
+	const analyticsModuleAvailable = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleAvailable( 'analytics' )
 	);
 	const analyticsModuleActive = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleActive( 'analytics' )
 	);
+	const analyticsPropertyID = useSelect( ( select ) => {
+		if ( ! analyticsModuleAvailable ) {
+			return null;
+		}
+
+		return select( MODULES_ANALYTICS ).getPropertyID();
+	} );
 
 	// Multiple property IDs implies secondary AMP where selected containers don't reference the same Analytics property ID.
 	if ( hasMultipleAnalyticsPropertyIDs ) {
@@ -88,7 +95,11 @@ export default function FormInstructions( { isSetup } ) {
 
 	// If the Analytics module is not active, and selected containers reference a singular property ID,
 	// recommend continuing with Analytics setup.
-	if ( ! analyticsModuleActive && singleAnalyticsPropertyID ) {
+	if (
+		analyticsModuleAvailable &&
+		! analyticsModuleActive &&
+		singleAnalyticsPropertyID
+	) {
 		return (
 			<p>
 				{ __(

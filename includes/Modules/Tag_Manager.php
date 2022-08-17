@@ -505,12 +505,14 @@ final class Tag_Manager extends Module
 				'googlesitekit-modules-tagmanager',
 				array(
 					'src'          => $base_url . 'js/googlesitekit-modules-tagmanager.js',
+					// Note that the Tag Manager bundle will make use of the Analytics bundle
+					// if it's available, but can also function without it, hence the Analytics
+					// bundle not appearing in the list of dependencies here.
 					'dependencies' => array(
 						'googlesitekit-api',
 						'googlesitekit-data',
 						'googlesitekit-datastore-site',
 						'googlesitekit-modules',
-						'googlesitekit-modules-analytics',
 						'googlesitekit-vendor',
 					),
 				)
