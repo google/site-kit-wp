@@ -19,7 +19,10 @@
 /**
  * Internal dependencies
  */
-import { provideSiteInfo } from '../../../../../../tests/js/utils';
+import {
+	provideSiteInfo,
+	provideUserInfo,
+} from '../../../../../../tests/js/utils';
 import {
 	render,
 	waitFor,
@@ -104,6 +107,36 @@ describe( 'SettingsEdit', () => {
 				).toHaveValue( siteName );
 			} );
 
+			it( 'should display a warning if the current user does not have access to the module', async () => {
+				provideUserInfo( registry );
+				registry
+					.dispatch( CORE_MODULES )
+					.receiveCheckModuleAccess(
+						{ access: false },
+						{ slug: 'tagmanager' }
+					);
+
+				const { container } = await waitFor( () =>
+					render( <SettingsEdit />, { registry } )
+				);
+
+				expect(
+					container.querySelector( '#containerName' )
+				).toHaveValue( siteName );
+
+				// Verify that the current user doesn't have access warning is displayed.
+				expect(
+					container.querySelector( '.googlesitekit-settings-notice' )
+				).toBeInTheDocument();
+				expect(
+					container.querySelector(
+						'.googlesitekit-settings-notice__text'
+					)
+				).toHaveTextContent(
+					'Another admin configured Tag Manager and you don’t have access to this Tag Manager account. Contact them to share access or change the Tag Manager account.'
+				);
+			} );
+
 			it( 'should use a domain name as a default value when siteName is empty', async () => {
 				provideSiteInfo( registry, { siteName: '' } );
 				const { container } = await waitFor( () =>
@@ -156,6 +189,36 @@ describe( 'SettingsEdit', () => {
 				expect(
 					container.querySelector( '#ampContainerName' )
 				).toHaveValue( `${ siteName } AMP` );
+			} );
+
+			it( 'should display a warning if the current user does not have access to the module', async () => {
+				provideUserInfo( registry );
+				registry
+					.dispatch( CORE_MODULES )
+					.receiveCheckModuleAccess(
+						{ access: false },
+						{ slug: 'tagmanager' }
+					);
+
+				const { container } = await waitFor( () =>
+					render( <SettingsEdit />, { registry } )
+				);
+
+				expect(
+					container.querySelector( '#ampContainerName' )
+				).toHaveValue( `${ siteName } AMP` );
+
+				// Verify that the current user doesn't have access warning is displayed.
+				expect(
+					container.querySelector( '.googlesitekit-settings-notice' )
+				).toBeInTheDocument();
+				expect(
+					container.querySelector(
+						'.googlesitekit-settings-notice__text'
+					)
+				).toHaveTextContent(
+					'Another admin configured Tag Manager and you don’t have access to this Tag Manager account. Contact them to share access or change the Tag Manager account.'
+				);
 			} );
 
 			it( 'should use a domain name as a default value when siteName is empty', async () => {
@@ -220,6 +283,39 @@ describe( 'SettingsEdit', () => {
 				expect(
 					container.querySelector( '#ampContainerName' )
 				).toHaveValue( `${ siteName } AMP` );
+			} );
+
+			it( 'should display a warning if the current user does not have access to the module', async () => {
+				provideUserInfo( registry );
+				registry
+					.dispatch( CORE_MODULES )
+					.receiveCheckModuleAccess(
+						{ access: false },
+						{ slug: 'tagmanager' }
+					);
+
+				const { container } = await waitFor( () =>
+					render( <SettingsEdit />, { registry } )
+				);
+
+				expect(
+					container.querySelector( '#containerName' )
+				).toHaveValue( siteName );
+				expect(
+					container.querySelector( '#ampContainerName' )
+				).toHaveValue( `${ siteName } AMP` );
+
+				// Verify that the current user doesn't have access warning is displayed.
+				expect(
+					container.querySelector( '.googlesitekit-settings-notice' )
+				).toBeInTheDocument();
+				expect(
+					container.querySelector(
+						'.googlesitekit-settings-notice__text'
+					)
+				).toHaveTextContent(
+					'Another admin configured Tag Manager and you don’t have access to this Tag Manager account. Contact them to share access or change the Tag Manager account.'
+				);
 			} );
 
 			it( 'should use domain name as default values when siteName is empty', async () => {
