@@ -72,6 +72,12 @@ class PermissionsTest extends TestCase {
 		$this->dismissed_items = new Dismissed_Items( $this->user_options );
 	}
 
+	public function tear_down() {
+		parent::tear_down();
+		// This ensures the REST server is initialized fresh for each test using it.
+		unset( $GLOBALS['wp_rest_server'] );
+	}
+
 	public function test_register() {
 		$permissions = new Permissions( $this->context, $this->authentication, $this->modules, $this->user_options, $this->dismissed_items );
 		$permissions->register();
