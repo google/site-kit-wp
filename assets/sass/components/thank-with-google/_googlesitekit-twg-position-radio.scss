@@ -36,5 +36,11 @@
 				font-weight: 500;
 			}
 		}
+
+		p {
+			color: $c-surfaces-on-surface-variant;
+			font-size: 0.75rem;
+			margin: -10px 0 0 34px;
+		}
 	}
 }
