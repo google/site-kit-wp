@@ -56,11 +56,6 @@ class Active_ConsumersTest extends TestCase {
 		$this->set_value( array( 1 => 'a' ) );
 		$this->assertEquals( array(), $this->get_value() );
 
-		// Setting the value to an array with integer keys but array with
-		// non-string values as the value will result in an empty array.
-		$this->set_value( array( 1 => array( 2, 3, 4 ) ) );
-		$this->assertEquals( array(), $this->get_value() );
-
 		// Setting the value to an associative array with integer keys and array
 		// with string values as the value works as expected.
 		$this->set_value( array( 1 => array( 'a', 'b', 'c' ) ) );
