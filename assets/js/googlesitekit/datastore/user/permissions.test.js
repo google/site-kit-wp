@@ -129,6 +129,45 @@ describe( 'core/user authentication', () => {
 					registry.select( CORE_USER ).getCapabilities()
 				).toEqual( updatedCapabilities );
 			} );
+
+			it( 'Sets permissionScopeError when api throws an error', async () => {
+				const error = {
+					code: 'rest_forbidden',
+					message: 'Sorry, you are not allowed to do that.',
+					data: { status: 401 },
+				};
+				global[ capabilitiesBaseVar ] = capabilities;
+				expect(
+					registry.select( CORE_USER ).getCapabilities()
+				).toEqual( capabilities.permissions );
+
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/core\/user\/data\/permissions/,
+					{
+						body: error,
+						status: 401,
+					}
+				);
+
+				await registry.dispatch( CORE_USER ).refreshCapabilities();
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect( console ).toHaveErroredWith(
+					'Google Site Kit API Error',
+					'method:GET',
+					'datapoint:permissions',
+					'type:core',
+					'identifier:user',
+					'error:"Sorry, you are not allowed to do that."'
+				);
+				expect(
+					registry.select( CORE_USER ).getPermissionScopeError()
+				).toEqual( error );
+				// Permissions should be unchanged.
+				expect(
+					registry.select( CORE_USER ).getCapabilities()
+				).toEqual( capabilities.permissions );
+			} );
 		} );
 	} );
 
