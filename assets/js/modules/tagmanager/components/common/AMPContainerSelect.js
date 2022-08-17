@@ -37,6 +37,7 @@ import {
 } from '../../datastore/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import ContainerSelect from './ContainerSelect';
+import { Select, Option } from '../../../../material-components';
 import { trackEvent } from '../../../../util/tracking';
 import useViewContext from '../../../../hooks/useViewContext';
 const { useSelect, useDispatch } = Data;
@@ -50,9 +51,13 @@ export default function AMPContainerSelect( { hasModuleAccess } ) {
 	const ampContainerID = useSelect( ( select ) =>
 		select( MODULES_TAGMANAGER ).getAMPContainerID()
 	);
-	const ampContainers = useSelect( ( select ) =>
-		select( MODULES_TAGMANAGER ).getAMPContainers( accountID )
-	);
+	const ampContainers = useSelect( ( select ) => {
+		if ( hasModuleAccess === false ) {
+			return null;
+		}
+
+		select( MODULES_TAGMANAGER ).getAMPContainers( accountID );
+	} );
 	const isAMP = useSelect( ( select ) => select( CORE_SITE ).isAMP() );
 	const isSecondaryAMP = useSelect( ( select ) =>
 		select( CORE_SITE ).isSecondaryAMP()
@@ -96,7 +101,18 @@ export default function AMPContainerSelect( { hasModuleAccess } ) {
 		: __( 'Container', 'google-site-kit' );
 
 	if ( hasModuleAccess === false ) {
-		// Render Select component
+		return (
+			<Select
+				className="googlesitekit-tagmanager__select-container--amp"
+				label={ label }
+				value={ ampContainerID }
+				enhanced
+				outlined
+				disabled
+			>
+				<Option value={ ampContainerID }>{ ampContainerID }</Option>
+			</Select>
+		);
 	}
 
 	return (

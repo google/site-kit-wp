@@ -37,6 +37,7 @@ import {
 } from '../../datastore/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import ContainerSelect from './ContainerSelect';
+import { Select, Option } from '../../../../material-components';
 import { trackEvent } from '../../../../util/tracking';
 import useViewContext from '../../../../hooks/useViewContext';
 const { useSelect, useDispatch } = Data;
@@ -50,9 +51,12 @@ export default function WebContainerSelect( { hasModuleAccess } ) {
 	const containerID = useSelect( ( select ) =>
 		select( MODULES_TAGMANAGER ).getContainerID()
 	);
-	const containers = useSelect( ( select ) =>
-		select( MODULES_TAGMANAGER ).getWebContainers( accountID )
-	);
+	const containers = useSelect( ( select ) => {
+		if ( hasModuleAccess === false ) {
+			return null;
+		}
+		select( MODULES_TAGMANAGER ).getWebContainers( accountID );
+	} );
 	const isPrimaryAMP = useSelect( ( select ) =>
 		select( CORE_SITE ).isPrimaryAMP()
 	);
@@ -93,7 +97,18 @@ export default function WebContainerSelect( { hasModuleAccess } ) {
 		: __( 'Container', 'google-site-kit' );
 
 	if ( hasModuleAccess === false ) {
-		// Render Select component
+		return (
+			<Select
+				className="googlesitekit-tagmanager__select-container--web"
+				label={ label }
+				value={ containerID }
+				enhanced
+				outlined
+				disabled
+			>
+				<Option value={ containerID }>{ containerID }</Option>
+			</Select>
+		);
 	}
 
 	return (

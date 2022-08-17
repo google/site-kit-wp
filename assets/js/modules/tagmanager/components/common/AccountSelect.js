@@ -74,7 +74,18 @@ export default function AccountSelect( { hasModuleAccess } ) {
 	}
 
 	if ( hasModuleAccess === false ) {
-		// Render Select component
+		return (
+			<Select
+				className="googlesitekit-tagmanager__select-account"
+				label={ __( 'Account', 'google-site-kit' ) }
+				value={ accountID }
+				enhanced
+				outlined
+				disabled
+			>
+				<Option value={ accountID }>{ accountID }</Option>
+			</Select>
+		);
 	}
 
 	return (
