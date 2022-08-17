@@ -245,8 +245,10 @@ final class Thank_With_Google extends Module
 				$service = $this->get_service( 'subscribewithgoogle' );
 				/* @var $service Google_Service_SubscribewithGoogle phpcs:ignore Squiz.PHP.CommentedOutCode.Found */
 
-				/* @TODO filter by verified domains */
-				return $service->publications->listPublications();
+				$filter = apply_filters( 'googlesitekit_thank_with_google_publications_filter', '' );
+				return $service->publications->listPublications(
+					array( 'filter' => $filter )
+				);
 			case 'GET:supporter-wall-sidebars':
 				return function() {
 					$sidebars      = array();

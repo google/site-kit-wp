@@ -120,6 +120,36 @@ final class Search_Console extends Module
 			},
 			11
 		);
+
+		// Provide filter property based on Search Console property to
+		// get Thank with Google publications.
+		add_filter(
+			'googlesitekit_thank_with_google_publications_filter',
+			function() {
+				$sc_property_id = $this->get_property_id();
+				$url_normalizer = new Google_URL_Normalizer();
+				$raw_url        = $url_normalizer->normalize_url(
+					str_replace(
+						array( 'sc-domain:', 'https://', 'http://', 'www.' ),
+						'',
+						$sc_property_id
+					)
+				);
+
+				if ( 0 === strpos( $sc_property_id, 'sc-domain:' ) ) { // Domain property.
+					/* translators: %1$s is a repeated placeholder for the raw URL. */
+					$filter = sprintf( 'domain = "%1$s" OR domain = "www.%1$s"', $raw_url );
+				} else { // URL property.
+					$filter = sprintf(
+						/* translators: %1$s is a repeated placeholder for the raw URL. */
+						'site_url = "https://%1$s" OR site_url = "http://%1$s" OR site_url = "https://www.%1$s" OR site_url = "http://www.%1$s"',
+						trailingslashit( $raw_url )
+					);
+				}
+
+				return $filter;
+			}
+		);
 	}
 
 	/**
