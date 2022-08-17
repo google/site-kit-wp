@@ -26,7 +26,9 @@ import {
 	provideSiteInfo,
 } from '../../../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
+import { MODULES_ANALYTICS } from '../../../../analytics/datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../../datastore/constants';
+import * as fixtures from '../../../../analytics/datastore/__fixtures__';
 import * as ga4Fixtures from '../../../../analytics-4/datastore/__fixtures__';
 
 const Template = ( args ) => <SetupBanner { ...args } />;
@@ -102,6 +104,12 @@ export default {
 	},
 	decorators: [
 		( Story ) => {
+			const accounts = fixtures.accountsPropertiesProfiles.accounts.slice(
+				0,
+				1
+			);
+			const accountID = accounts[ 0 ].id;
+
 			const setupRegistry = ( registry ) => {
 				provideModules( registry, [
 					{
@@ -117,6 +125,10 @@ export default {
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveGetExistingTag( null );
+
+				registry
+					.dispatch( MODULES_ANALYTICS )
+					.selectAccount( accountID );
 			};
 
 			return (
