@@ -41,34 +41,28 @@ class Active_ConsumersTest extends TestCase {
 
 		// Setting the value to a non-array will result in an empty array.
 		$this->set_value( false );
-
 		$this->assertEquals( array(), $this->get_value() );
 
 		$this->set_value( 123 );
-
 		$this->assertEquals( array(), $this->get_value() );
 
 		// Setting the value to a non-associative array will result in an empty array.
 		$this->set_value( array( 'a', 'b', 'c' ) );
-
 		$this->assertEquals( array(), $this->get_value() );
 
 		// Setting the value to an associative array but with non-integer keys
 		// will result in an empty array.
 		$this->set_value( array( 'a' => array( 'x', 'y', 'z' ) ) );
-
 		$this->assertEquals( array(), $this->get_value() );
 
 		// Setting the value to an associative array with integer keys but a non-array
 		// value will result in an empty array.
 		$this->set_value( array( 1 => 'a' ) );
-
 		$this->assertEquals( array(), $this->get_value() );
 
 		// Setting the value to an associative array with integer keys but array
 		// with non-string values as the value will result in an empty array.
 		$this->set_value( array( 1 => array( 2, 3, 4 ) ) );
-
 		$this->assertEquals( array(), $this->get_value() );
 
 		// Setting the value to an associative array with integer keys and array
