@@ -22,8 +22,15 @@
 import PropTypes from 'prop-types';
 
 /**
+ * WordPress dependencies
+ */
+import { createInterpolateElement } from '@wordpress/element';
+import { __, sprintf } from '@wordpress/i18n';
+
+/**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
 import {
 	AccountSelect,
 	AMPContainerSelect,
@@ -34,9 +41,22 @@ import {
 } from '../common';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import { MODULES_TAGMANAGER } from '../../datastore/constants';
+import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import SettingsUseSnippetSwitch from './SettingsUseSnippetSwitch';
+import SettingsNotice from '../../../../components/SettingsNotice/SettingsNotice';
+import { TYPE_INFO } from '../../../../components/SettingsNotice';
+import WarningIcon from '../../../../../../assets/svg/icons/warning-icon.svg';
+const { useSelect } = Data;
 
 export default function SettingsForm( { hasModuleAccess } ) {
+	const module = useSelect( ( select ) =>
+		select( CORE_MODULES ).getModule( 'tagmanager' )
+	);
+
+	const formattedOwnerName = module?.owner?.login
+		? `<strong>${ module.owner.login }</strong>`
+		: __( 'Another admin', 'google-site-kit' );
+
 	return (
 		<div className="googlesitekit-tagmanager-settings-fields">
 			<StoreErrorNotices
@@ -54,6 +74,27 @@ export default function SettingsForm( { hasModuleAccess } ) {
 
 				<TagCheckProgress />
 			</div>
+
+			{ hasModuleAccess === false && (
+				<SettingsNotice
+					type={ TYPE_INFO }
+					Icon={ WarningIcon }
+					notice={ createInterpolateElement(
+						sprintf(
+							/* translators: 1: module owner's name, 2: module name */
+							__(
+								'%1$s configured %2$s and you don’t have access to this Tag Manager account. Contact them to share access or change the Tag Manager account.',
+								'google-site-kit'
+							),
+							formattedOwnerName,
+							module?.name
+						),
+						{
+							strong: <strong />,
+						}
+					) }
+				/>
+			) }
 
 			<ContainerNames />
 
