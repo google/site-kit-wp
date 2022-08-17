@@ -78,7 +78,7 @@ class Active_ConsumersTest extends TestCase {
 
 		// Updating with a non-array will preserve the current value.
 		$this->set_value( 'not an array' );
-		$this->assertEquals( array( 1 => array( 'a', 'b', 'c' ) ), $this->get_value() );
+		$this->assertEquals( array( 1 => array( 'a', 'c' ) ), $this->get_value() );
 	}
 
 	/**
