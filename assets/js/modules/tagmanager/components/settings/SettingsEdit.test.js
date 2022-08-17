@@ -124,6 +124,11 @@ describe( 'SettingsEdit', () => {
 					container.querySelector( '#containerName' )
 				).toHaveValue( siteName );
 
+				// Verify that the select dropdowns are disabled.
+				expect(
+					container.querySelector( '.mdc-select--disabled' )
+				).toBeInTheDocument();
+
 				// Verify that the current user doesn't have access warning is displayed.
 				expect(
 					container.querySelector( '.googlesitekit-settings-notice' )
@@ -207,6 +212,11 @@ describe( 'SettingsEdit', () => {
 				expect(
 					container.querySelector( '#ampContainerName' )
 				).toHaveValue( `${ siteName } AMP` );
+
+				// Verify that the select dropdowns are disabled.
+				expect(
+					container.querySelector( '.mdc-select--disabled' )
+				).toBeInTheDocument();
 
 				// Verify that the current user doesn't have access warning is displayed.
 				expect(
@@ -304,6 +314,11 @@ describe( 'SettingsEdit', () => {
 				expect(
 					container.querySelector( '#ampContainerName' )
 				).toHaveValue( `${ siteName } AMP` );
+
+				// Verify that the select dropdowns are disabled.
+				expect(
+					container.querySelector( '.mdc-select--disabled' )
+				).toBeInTheDocument();
 
 				// Verify that the current user doesn't have access warning is displayed.
 				expect(
