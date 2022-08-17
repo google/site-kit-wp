@@ -20,8 +20,33 @@
 
 	.googlesitekit-ga4-setup-banner {
 
+		.googlesitekit-publisher-win__title {
+
+
+			@media (min-width: $bp-desktop) {
+				max-width: 66.67%;
+			}
+		}
+
 		.googlesitekit-publisher-win__footer p {
 			color: $c-boulder;
+
+			@media (min-width: $bp-desktop) {
+				max-width: 66.67%;
+			}
+		}
+
+		.googlesitekit-ga4-setup-banner__field-group {
+			align-items: center;
+			column-gap: 30px;
+			display: flex;
+			flex-wrap: wrap;
+			margin: 25px 0 10px 0;
+			row-gap: 24px;
+
+			.googlesitekit-analytics-usesnippet p {
+				margin-left: 0;
+			}
 		}
 	}
 }
