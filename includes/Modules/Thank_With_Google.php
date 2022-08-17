@@ -304,8 +304,20 @@ final class Thank_With_Google extends Module
 	protected function parse_data_response( Data_Request $data, $response ) {
 		switch ( "{$data->method}:{$data->datapoint}" ) {
 			case 'GET:publications':
-				/* @var $response Google_Service_SubscribewithGoogle_ListPublicationsResponse phpcs:ignore Squiz.PHP.CommentedOutCode.Found */
-				return (array) $response->getPublications();
+				return array_filter(
+					/* @var $response Google_Service_SubscribewithGoogle_ListPublicationsResponse phpcs:ignore Squiz.PHP.CommentedOutCode.Found */
+					(array) $response->getPublications(),
+					function( $publication ) {
+						return (
+							(
+								isset( $publication['paymentOptions']['thankStickers'] ) && $publication['paymentOptions']['thankStickers']
+							) &&
+							(
+								isset( $publication['publicationPredicates']['businessPredicates']['supportsSiteKit'] ) && $publication['publicationPredicates']['businessPredicates']['supportsSiteKit']
+							)
+						);
+					}
+				);
 		}
 
 		return parent::parse_data_response( $data, $response );
@@ -352,6 +364,7 @@ final class Thank_With_Google extends Module
 		if ( $tag->can_register() ) {
 			$tag->set_cta_placement( $settings['ctaPlacement'] );
 			$tag->set_cta_post_types( $settings['ctaPostTypes'] );
+			$tag->set_color_theme( $settings['colorTheme'] );
 
 			$tag->register();
 		}

@@ -39,7 +39,7 @@ import {
 import { CORE_UI } from '../../../../googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
-import Tooltip from '../../../../components/Tooltip';
+import JoyrideTooltip from '../../../../components/JoyrideTooltip';
 import useViewContext from '../../../../hooks/useViewContext';
 import { trackEvent } from '../../../../util';
 const { useDispatch, useSelect } = Data;
@@ -146,7 +146,7 @@ function AdSenseConnectCTAWidget( { Widget, WidgetNull } ) {
 		return (
 			<Fragment>
 				<WidgetNull />
-				<Tooltip
+				<JoyrideTooltip
 					title={ __(
 						'You can always connect AdSense from here later',
 						'google-site-kit'

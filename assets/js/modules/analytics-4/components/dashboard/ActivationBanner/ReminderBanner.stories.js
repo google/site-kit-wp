@@ -1,5 +1,5 @@
 /**
- * Tooltip component.
+ * ReminderBanner Component Stories.
  *
  * Site Kit by Google, Copyright 2022 Google LLC
  *
@@ -17,21 +17,15 @@
  */
 
 /**
- * External dependencies
+ * Internal dependencies
  */
-import { Tooltip as MuiTooltip } from '@material-ui/core';
+import ReminderBanner from './ReminderBanner';
 
-export default function Tooltip( { children, ...props } ) {
-	return (
-		<MuiTooltip
-			classes={ {
-				popper: 'googlesitekit-tooltip-popper',
-				tooltip: 'googlesitekit-tooltip',
-			} }
-			arrow
-			{ ...props }
-		>
-			{ children }
-		</MuiTooltip>
-	);
-}
+const Template = () => <ReminderBanner />;
+
+export const Default = Template.bind( {} );
+Default.storyName = 'ReminderBanner';
+
+export default {
+	title: 'Modules/Analytics4',
+};

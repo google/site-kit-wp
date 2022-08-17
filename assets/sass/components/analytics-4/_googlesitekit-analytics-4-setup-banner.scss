@@ -1,5 +1,5 @@
 /**
- * Tooltip component.
+ * GA4 SetupBanner styles.
  *
  * Site Kit by Google, Copyright 2022 Google LLC
  *
@@ -16,22 +16,12 @@
  * limitations under the License.
  */
 
-/**
- * External dependencies
- */
-import { Tooltip as MuiTooltip } from '@material-ui/core';
+.googlesitekit-plugin {
 
-export default function Tooltip( { children, ...props } ) {
-	return (
-		<MuiTooltip
-			classes={ {
-				popper: 'googlesitekit-tooltip-popper',
-				tooltip: 'googlesitekit-tooltip',
-			} }
-			arrow
-			{ ...props }
-		>
-			{ children }
-		</MuiTooltip>
-	);
+	.googlesitekit-ga4-setup-banner {
+
+		.googlesitekit-publisher-win__footer p {
+			color: $c-boulder;
+		}
+	}
 }
