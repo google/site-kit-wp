@@ -113,7 +113,12 @@ const baseActions = {
 
 		const {
 			response,
+			error,
 		} = yield fetchRefreshCapabilitiesStore.actions.fetchRefreshCapabilities();
+
+		if ( error ) {
+			return dispatch( CORE_USER ).setPermissionScopeError( error );
+		}
 
 		global._googlesitekitUserData = {
 			permissions: response,
