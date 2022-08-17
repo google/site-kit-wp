@@ -26,6 +26,7 @@ import {
 import { CORE_USER, PERMISSION_MANAGE_OPTIONS } from './constants';
 import FIXTURES from '../../modules/datastore/__fixtures__';
 import { CORE_MODULES } from '../../modules/datastore/constants';
+import fetchMock from 'fetch-mock';
 
 describe( 'core/user authentication', () => {
 	const capabilitiesBaseVar = '_googlesitekitUserData';
@@ -90,6 +91,43 @@ describe( 'core/user authentication', () => {
 				expect(
 					registry.select( CORE_USER ).getPermissionScopeError()
 				).toEqual( someError );
+			} );
+		} );
+
+		describe( 'refreshCapabilities', () => {
+			it( 'updates capabilities from server', async () => {
+				const updatedCapabilities = {
+					googlesitekit_view_dashboard: true,
+					googlesitekit_manage_options: true,
+					'googlesitekit_read_shared_module_data::["site-verification"]': true,
+					'googlesitekit_read_shared_module_data::["tagmanager"]': true,
+					'googlesitekit_read_shared_module_data::["optimize"]': false,
+					'googlesitekit_read_shared_module_data::["adsense"]': false,
+					'googlesitekit_manage_module_sharing_options::["search-console"]': true,
+					'googlesitekit_read_shared_module_data::["search-console"]': false,
+					'googlesitekit_read_shared_module_data::["analytics"]': false,
+					'googlesitekit_read_shared_module_data::["pagespeed-insights"]': false,
+					'googlesitekit_read_shared_module_data::["idea-hub"]': false,
+				};
+				global[ capabilitiesBaseVar ] = capabilities;
+				expect(
+					registry.select( CORE_USER ).getCapabilities()
+				).toEqual( capabilities.permissions );
+
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/core\/user\/data\/permissions/,
+					{
+						body: updatedCapabilities,
+						status: 200,
+					}
+				);
+
+				await registry.dispatch( CORE_USER ).refreshCapabilities();
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect(
+					registry.select( CORE_USER ).getCapabilities()
+				).toEqual( updatedCapabilities );
 			} );
 		} );
 	} );
