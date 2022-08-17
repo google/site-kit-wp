@@ -56,3 +56,85 @@ Generally speaking, we cache report data that does not vary (either much or at a
 If the WordPress REST API returns a non-`2xx` HTTP response code (or the request fails entirely), the client will not save any data for this request in a cache and will instead log the error using a Redux (`@wordpress/data`) action. Usually the client will display this error in an appropriate fashion. Again: failed request data is never cached in `sessionStorage`.
 
 If the data was retrieved from the cache, the cache will not be modified. Cached data is stored with a time-to-live and will be cleared/ignored if "stale".
+
+## Creating a fetch action/selector using `createFetchStore`
+
+When creating an action/selector that triggers a `fetch` request, use the `createFetchStore` function to return a new [data store that can be combined with an existing store](./Data-store-architecture.md).
+
+Here's an example of what a `createFetchStore` looks like, using the existing `core/site/data/connection` route as a reference:
+
+```js
+const fetchGetConnectionStore = createFetchStore( {
+ baseName: 'getConnection',
+ // Make the API request; by default the cache is used for `get` calls.
+ controlCallback: () => {
+  return API.get( 'core', 'site', 'connection' );
+ },
+ // Changes to make to the reducer once the control finishes and gets a response.
+ reducerCallback: ( state, connection ) => {
+  return {
+   ...state,
+   connection,
+  };
+ },
+} );
+```
+
+## Defining REST API endpoints on the server
+
+REST API endpoints are defined for each module, using three methods for the `Module` class. These cover:
+
+1. REST API routes (`get_datapoint_definitions`)
+2. Data request to make to a 3rd-party API, if needed (`create_data_request`)
+3. Response parsing for the optional data request (`parse_data_response`)
+
+### REST API routes
+
+Define a module's REST routes using the `get_datapoint_definitions` function. This function defines the array of REST routes using an array where the keys are the REST routes and the values are requirements/properties of that route. Here's an example from Search Console's `get_datapoint_definitions`:
+
+```php
+protected function get_datapoint_definitions() {
+  return array(
+   'GET:matched-sites'   => array( 'service' => 'searchconsole' ),
+   'GET:searchanalytics' => array(
+    // The `service` key means this request requires Search Console to be
+    // active/connected.
+    'service'   => 'searchconsole',
+    // Shareable means this REST route is shared with Dashboard Sharing users.
+    'shareable' => Feature_Flags::enabled( 'dashboardSharing' ),
+   ),
+   'POST:site'           => array( 'service' => 'searchconsole' ),
+   'GET:sites'           => array( 'service' => 'searchconsole' ),
+  );
+ }
+```
+
+### Remote API requests
+
+If a REST route should communicate with a third-party API, eg. a Google API, that should be defined in the `create_data_request` function for a `Module`. This is usually written as a `switch` case, with each route parsing request params, user info, etc. before making the HTTP request to the remote API from PHP.
+
+This code will be used to create the request sent to the third-party API in a standardized way.
+
+Here's an example from the Tag Manager module's `create_data_request` function:
+
+```php
+protected function create_data_request( Data_Request $data ) {
+  switch ( "{$data->method}:{$data->datapoint}" ) {
+    case 'GET:accounts':
+    case 'GET:accounts-containers':
+      return $this->get_tagmanager_service()->accounts->listAccounts();
+  }
+
+  return parent::create_data_request( $data );
+}
+```
+
+### Response parsing for data requests
+
+Any custom data handling, code to run after receiving data, etc. can be defined in the `parse_data_response` method. At its most basic, it can return the response from the remote API without modification or any other action:
+
+```php
+protected function parse_data_response( Data_Request $data, $response ) {
+  return $response;
+}
+```
