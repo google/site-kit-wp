@@ -125,7 +125,3 @@ export default function WebContainerSelect( { hasModuleAccess } ) {
 WebContainerSelect.propTypes = {
 	hasModuleAccess: PropTypes.bool,
 };
-
-WebContainerSelect.defaultProps = {
-	hasModuleAccess: true,
-};

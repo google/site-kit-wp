@@ -119,7 +119,3 @@ export default function AccountSelect( { hasModuleAccess } ) {
 AccountSelect.propTypes = {
 	hasModuleAccess: PropTypes.bool,
 };
-
-AccountSelect.defaultProps = {
-	hasModuleAccess: true,
-};

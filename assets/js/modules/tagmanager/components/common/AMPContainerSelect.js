@@ -130,8 +130,3 @@ export default function AMPContainerSelect( { hasModuleAccess } ) {
 AMPContainerSelect.propTypes = {
 	hasModuleAccess: PropTypes.bool,
 };
-
-// eslint-disable-next-line sitekit/acronym-case
-AMPContainerSelect.defaultProps = {
-	hasModuleAccess: true,
-};
