@@ -383,6 +383,7 @@ const SearchFunnelWidget = ( {
 				{ isAnalyticsConnected && isAnalyticsActive && (
 					<WidgetReportZero moduleSlug="search-console" />
 				) }
+
 				{ canViewSharedAnalytics &&
 					( ! isAnalyticsConnected || ! isAnalyticsActive ) && (
 						<Row>
@@ -425,6 +426,7 @@ const SearchFunnelWidget = ( {
 				WidgetReportError={ WidgetReportError }
 				showRecoverableAnalytics={ showRecoverableAnalytics }
 			/>
+
 			{ ( selectedStats === 0 || selectedStats === 1 ) && (
 				<SearchConsoleStats
 					data={ searchConsoleData }
@@ -434,6 +436,7 @@ const SearchFunnelWidget = ( {
 					gatheringData={ isSearchConsoleGatheringData }
 				/>
 			) }
+
 			{ zeroDataStatesEnabled &&
 				canViewSharedAnalytics &&
 				( ! isAnalyticsActive || ! isAnalyticsConnected ) &&
@@ -446,6 +449,7 @@ const SearchFunnelWidget = ( {
 						</Row>
 					</Grid>
 				) }
+
 			{ selectedStats === 2 && (
 				<AnalyticsStats
 					data={ analyticsVisitorsOverviewAndStatsData }
@@ -464,6 +468,7 @@ const SearchFunnelWidget = ( {
 					gatheringData={ isAnalyticsGatheringData }
 				/>
 			) }
+
 			{ canViewSharedAnalytics &&
 				( selectedStats === 3 || selectedStats === 4 ) && (
 					<AnalyticsStats
