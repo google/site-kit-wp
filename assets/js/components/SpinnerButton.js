@@ -39,7 +39,7 @@ export default function SpinnerButton( props ) {
 	const handleClick = useCallback(
 		async ( ...params ) => {
 			setPropcessing( true );
-			await onClick?.( ...params );
+			await onClick( ...params );
 			setPropcessing( false );
 		},
 		[ onClick ]
