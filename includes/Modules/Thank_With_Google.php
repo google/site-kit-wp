@@ -309,7 +309,7 @@ final class Thank_With_Google extends Module
 				$publications = array_filter(
 					(array) $response->getPublications(),
 					function ( Google_Service_SubscribewithGoogle_Publication $publication ) {
-						// Require only twg-enabled publications.
+						// Require only TwG-enabled publications.
 						if ( empty( $publication['paymentOptions']['thankStickers'] ) ) {
 							return false;
 						}
