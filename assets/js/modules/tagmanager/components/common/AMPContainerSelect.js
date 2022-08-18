@@ -56,7 +56,7 @@ export default function AMPContainerSelect( { hasModuleAccess } ) {
 			return null;
 		}
 
-		select( MODULES_TAGMANAGER ).getAMPContainers( accountID );
+		return select( MODULES_TAGMANAGER ).getAMPContainers( accountID );
 	} );
 	const isAMP = useSelect( ( select ) => select( CORE_SITE ).isAMP() );
 	const isSecondaryAMP = useSelect( ( select ) =>

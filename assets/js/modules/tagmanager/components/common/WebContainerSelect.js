@@ -55,7 +55,7 @@ export default function WebContainerSelect( { hasModuleAccess } ) {
 		if ( hasModuleAccess === false ) {
 			return null;
 		}
-		select( MODULES_TAGMANAGER ).getWebContainers( accountID );
+		return select( MODULES_TAGMANAGER ).getWebContainers( accountID );
 	} );
 	const isPrimaryAMP = useSelect( ( select ) =>
 		select( CORE_SITE ).isPrimaryAMP()
