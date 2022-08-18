@@ -63,26 +63,34 @@ class Active_Consumers extends User_Setting {
 				return $this->get();
 			}
 
+			$results = array();
+
 			foreach ( $value as $id => $roles ) {
-				// If any of the IDs isn't an integer, remove that item.
+				// If any of the IDs isn't an integer, do not include that item.
 				if ( ! is_int( $id ) ) {
-					unset( $value[ $id ] );
+					continue;
 				}
 
-				// If any of the array values isn't an array, remove that item.
+				// If any of the array values isn't an array, do not include that item.
 				if ( ! is_array( $roles ) ) {
-					unset( $value[ $id ] );
-				} else {
-					foreach ( $roles as $index => $role ) {
-						// If any of the nested role item isn't a string, remove that role item.
-						if ( ! is_string( $role ) ) {
-							array_splice( $value[ $id ], $index, 1 );
-						}
+					continue;
+				}
+
+				$user_roles = array();
+
+				foreach ( $roles as $role ) {
+					// If the nested role item is a string, include that role item.
+					if ( is_string( $role ) ) {
+						$user_roles[] = $role;
 					}
+				}
+
+				if ( ! empty( $user_roles ) ) {
+					$results[ $id ] = $user_roles;
 				}
 			}
 
-			return $value;
+			return $results;
 		};
 	}
 }
