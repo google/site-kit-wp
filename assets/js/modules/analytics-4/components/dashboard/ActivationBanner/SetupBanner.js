@@ -31,16 +31,24 @@ import {
 	PropertySelect,
 	UseSnippetSwitch,
 } from '../../../../analytics-4/components/common';
+import useExistingTagEffect from '../../../../analytics-4/hooks/useExistingTagEffect';
+import { MODULES_ANALYTICS } from '../../../../analytics/datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../../datastore/constants';
 const { useSelect } = Data;
 
 export default function SetupBanner( { onCTAClick } ) {
+	// We need this useSelect hook to trigger starting getAccounts resolution which is needed to properly
+	// display the Property Select.
+	useSelect( ( select ) => select( MODULES_ANALYTICS ).getAccounts() );
+
 	const ga4MeasurementID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getMeasurementID()
 	);
 	const existingTag = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getExistingTag()
 	);
+
+	useExistingTagEffect();
 
 	let title;
 	let ctaLabel;

@@ -74,7 +74,7 @@ WithPropertyAndTag.decorators = [
 				// eslint-disable-next-line sitekit/acronym-case
 				ga4Fixtures.webDataStreams[ 0 ].webStreamData.measurementId
 			);
-			registry.dispatch( MODULES_ANALYTICS_4 ).setUseSnippet( true );
+			registry.dispatch( MODULES_ANALYTICS_4 ).setUseSnippet( false );
 		};
 
 		return (
