@@ -34,6 +34,7 @@ use Google\Site_Kit\Modules\Thank_With_Google\Supporter_Wall_Widget;
 use Google\Site_Kit\Modules\Thank_With_Google\Web_Tag;
 use Google\Site_Kit_Dependencies\Google_Service_SubscribewithGoogle;
 use Google\Site_Kit_Dependencies\Google_Service_SubscribewithGoogle_ListPublicationsResponse;
+use Google\Site_Kit_Dependencies\Google_Service_SubscribewithGoogle_Publication;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 use WP_Error;
 
@@ -304,20 +305,24 @@ final class Thank_With_Google extends Module
 	protected function parse_data_response( Data_Request $data, $response ) {
 		switch ( "{$data->method}:{$data->datapoint}" ) {
 			case 'GET:publications':
-				return array_filter(
-					/* @var $response Google_Service_SubscribewithGoogle_ListPublicationsResponse phpcs:ignore Squiz.PHP.CommentedOutCode.Found */
+				/* @var $response Google_Service_SubscribewithGoogle_ListPublicationsResponse phpcs:ignore Squiz.PHP.CommentedOutCode.Found */
+				$publications = array_filter(
 					(array) $response->getPublications(),
-					function( $publication ) {
-						return (
-							(
-								isset( $publication['paymentOptions']['thankStickers'] ) && $publication['paymentOptions']['thankStickers']
-							) &&
-							(
-								isset( $publication['publicationPredicates']['businessPredicates']['supportsSiteKit'] ) && $publication['publicationPredicates']['businessPredicates']['supportsSiteKit']
-							)
-						);
+					function ( Google_Service_SubscribewithGoogle_Publication $publication ) {
+						// Require only TwG-enabled publications.
+						if ( empty( $publication['paymentOptions']['thankStickers'] ) ) {
+							return false;
+						}
+						// If onboarding isn't completed, other criteria won't be available.
+						if ( 'ONBOARDING_COMPLETE' !== $publication->getOnboardingState() ) {
+							return true;
+						}
+
+						// This is left as array access as it is not guaranteed to be set.
+						return ! empty( $publication['publicationPredicates']['businessPredicates']['supportsSiteKit'] );
 					}
 				);
+				return array_values( $publications );
 		}
 
 		return parent::parse_data_response( $data, $response );
