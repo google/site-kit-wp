@@ -50,6 +50,7 @@ describe( 'SearchFunnelWidget', () => {
 		registry.dispatch( MODULES_SEARCH_CONSOLE ).receiveGetSettings( {
 			propertyID: 'http://example.com/',
 		} );
+		registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-28' );
 
 		fetchMock.getOnce(
 			/^\/google-site-kit\/v1\/modules\/search-console\/data\/searchanalytics/,
