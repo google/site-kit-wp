@@ -62,6 +62,44 @@ class ModulesTest extends TestCase {
 		);
 	}
 
+	public function test_get_available_modules__missing_dependency() {
+		$modules = new Modules( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+
+		add_filter(
+			'googlesitekit_available_modules',
+			function( $modules ) {
+				return array_filter(
+					$modules,
+					function( $module ) {
+						// Remove Analytics from the list of available modules.
+						return 'analytics' !== $module;
+					}
+				);
+			}
+		);
+
+		$available = array_map(
+			function ( $instance ) {
+				return get_class( $instance );
+			},
+			$modules->get_available_modules()
+		);
+
+		// Analytics is no longer present due to the filter above.
+		// Optimize is no longer present due to its dependency on Analytics.
+		$this->assertEqualSets(
+			array(
+				'adsense'            => 'Google\\Site_Kit\\Modules\\AdSense',
+				'analytics-4'        => 'Google\\Site_Kit\\Modules\\Analytics_4',
+				'pagespeed-insights' => 'Google\\Site_Kit\\Modules\\PageSpeed_Insights',
+				'search-console'     => 'Google\\Site_Kit\\Modules\\Search_Console',
+				'site-verification'  => 'Google\\Site_Kit\\Modules\\Site_Verification',
+				'tagmanager'         => 'Google\\Site_Kit\\Modules\\Tag_Manager',
+			),
+			$available
+		);
+	}
+
 	public function test_get_active_modules() {
 		$modules = new Modules( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
