@@ -19,12 +19,27 @@
 /**
  * Internal dependencies
  */
+import { provideSiteInfo } from '../../../../../../../tests/js/utils';
+import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
 import SuccessBanner from './SuccessBanner';
 
 const Template = () => <SuccessBanner />;
 
 export const Default = Template.bind( {} );
 Default.storyName = 'SuccessBanner';
+Default.decorators = [
+	( Story ) => {
+		const setupRegistry = ( registry ) => {
+			provideSiteInfo( registry );
+		};
+
+		return (
+			<WithRegistrySetup func={ setupRegistry }>
+				<Story />
+			</WithRegistrySetup>
+		);
+	},
+];
 
 export default {
 	title: 'Modules/Analytics4/SuccessBanner',
