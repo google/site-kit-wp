@@ -335,7 +335,7 @@ function BannerNotification( {
 
 	// ctaLink links are always buttons, in which case the dismiss should be a Link.
 	// If there is only a dismiss however, it should be the primary action with a Button.
-	const DismissComponent = ctaLink ? Link : Button;
+	const DismissComponent = ctaLink || onCTAClick ? Link : Button;
 
 	return (
 		<section
@@ -397,9 +397,12 @@ function BannerNotification( {
 							</Fragment>
 						) }
 
-						{ ( ctaLink || isDismissible || dismiss ) && (
+						{ ( ctaLink ||
+							isDismissible ||
+							dismiss ||
+							onCTAClick ) && (
 							<div className="googlesitekit-publisher-win__actions">
-								{ ctaLink && (
+								{ ( ctaLink || onCTAClick ) && (
 									<Button
 										className="googlesitekit-notification__cta"
 										href={ ctaLink }
