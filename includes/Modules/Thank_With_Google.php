@@ -28,6 +28,7 @@ use Google\Site_Kit\Core\REST_API\Exception\Invalid_Datapoint_Exception;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Environment_Type_Guard;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Verify_Guard;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
+use Google\Site_Kit\Core\Util\Google_URL_Normalizer;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Modules\Thank_With_Google\Settings;
 use Google\Site_Kit\Modules\Thank_With_Google\Supporter_Wall_Widget;
@@ -35,6 +36,7 @@ use Google\Site_Kit\Modules\Thank_With_Google\Web_Tag;
 use Google\Site_Kit_Dependencies\Google_Service_SubscribewithGoogle;
 use Google\Site_Kit_Dependencies\Google_Service_SubscribewithGoogle_ListPublicationsResponse;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
+use Google\Site_Kit\Modules\Search_Console\Settings as Search_Console_Settings;
 use WP_Error;
 
 /**
@@ -245,7 +247,39 @@ final class Thank_With_Google extends Module
 				$service = $this->get_service( 'subscribewithgoogle' );
 				/* @var $service Google_Service_SubscribewithGoogle phpcs:ignore Squiz.PHP.CommentedOutCode.Found */
 
-				$filter = apply_filters( 'googlesitekit_thank_with_google_publications_filter', '' );
+				$sc_settings    = $this->options->get( Search_Console_Settings::OPTION );
+				$sc_property_id = $sc_settings['propertyID'];
+				$url_normalizer = new Google_URL_Normalizer();
+				$raw_url        = $url_normalizer->normalize_url(
+					str_replace(
+						array( 'sc-domain:', 'https://', 'http://', 'www.' ),
+						'',
+						$sc_property_id
+					)
+				);
+
+				if ( 0 === strpos( $sc_property_id, 'sc-domain:' ) ) { // Domain property.
+					$filter = join(
+						' OR ',
+						array_map(
+							function ( $host ) {
+								return sprintf( 'domain = "%s"', $host );
+							},
+							$this->permute_site_hosts( $raw_url )
+						)
+					);
+				} else { // URL property.
+					$filter = join(
+						' OR ',
+						array_map(
+							function ( $host ) {
+								return sprintf( 'site_url = "%s"', $host );
+							},
+							$this->permute_site_url( $raw_url )
+						)
+					);
+				}
+
 				return $service->publications->listPublications(
 					array( 'filter' => $filter )
 				);
