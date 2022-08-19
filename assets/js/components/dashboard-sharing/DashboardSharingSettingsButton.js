@@ -77,6 +77,12 @@ export default function DashboardSharingSettingsButton() {
 		select( CORE_UI ).getValue( EDITING_USER_ROLE_SELECT_SLUG_KEY )
 	);
 
+	const documentationURL = useSelect( ( select ) => {
+		return select( CORE_SITE ).getDocumentationLinkURL(
+			'dashboard-sharing'
+		);
+	} );
+
 	const openDialog = useCallback( () => {
 		trackEvent(
 			`${ viewContext }_headerbar`,
@@ -103,12 +109,13 @@ export default function DashboardSharingSettingsButton() {
 
 	const triggeredTourRef = useRef();
 	const { triggerOnDemandTour } = useDispatch( CORE_USER );
-	useEffect( () => {
-		if ( dialogOpen && ! triggeredTourRef.current ) {
+
+	const handleTriggerOnDemandTour = useCallback( () => {
+		if ( ! triggeredTourRef.current ) {
 			triggeredTourRef.current = true;
 			triggerOnDemandTour( sharingSettingsTour );
 		}
-	}, [ dialogOpen, triggerOnDemandTour ] );
+	}, [ triggerOnDemandTour ] );
 
 	const dialogStyles = {};
 	// On mobile, the dialog box's flexbox is set to stretch items within to cover
@@ -132,6 +139,7 @@ export default function DashboardSharingSettingsButton() {
 				<Dialog
 					open={ dialogOpen }
 					onClose={ closeDialog }
+					onOpen={ handleTriggerOnDemandTour }
 					className="googlesitekit-dialog googlesitekit-sharing-settings-dialog"
 					style={ dialogStyles }
 					escapeKeyAction={
@@ -183,7 +191,7 @@ export default function DashboardSharingSettingsButton() {
 														'Learn more about dashboard sharing',
 														'google-site-kit'
 													) }
-													href="https://sitekit.withgoogle.com/documentation/using-site-kit/dashboard-sharing/"
+													href={ documentationURL }
 													external
 												/>
 											),

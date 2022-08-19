@@ -718,7 +718,7 @@ final class Assets {
 	/**
 	 * Gets the available public post type slugs and their labels.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.81.0
 	 *
 	 * @return array Available post types array with their respective slugs and labels.
 	 */
@@ -741,7 +741,7 @@ final class Assets {
 	 * Themes which have FSE support do not have the old widgets admin screen. Such
 	 * themes only have the option to edit widgets directly in the block editor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.81.0
 	 *
 	 * @return string The admin widgets page or block editor URL.
 	 */

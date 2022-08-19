@@ -21,6 +21,13 @@
  */
 import { __ } from '@wordpress/i18n';
 
+/**
+ * Internal dependencies
+ */
+import Data from 'googlesitekit-data';
+import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
+const { createRegistrySelector } = Data;
+
 export const selectors = {
 	/**
 	 * Gets the content for the setup success notification.
@@ -29,7 +36,11 @@ export const selectors = {
 	 *
 	 * @return {Object} The service description, learn more label and URL.
 	 */
-	getSetupSuccessContent() {
+	getSetupSuccessContent: createRegistrySelector( ( select ) => () => {
+		const documentationURL = select( CORE_SITE ).getDocumentationLinkURL(
+			'ga4'
+		);
+
 		return {
 			description: __(
 				'You’ll only see Universal Analytics data for now.',
@@ -37,11 +48,10 @@ export const selectors = {
 			),
 			learnMore: {
 				label: __( 'Learn more', 'google-site-kit' ),
-				url:
-					'https://sitekit.withgoogle.com/documentation/using-site-kit/ga4/',
+				url: documentationURL,
 			},
 		};
-	},
+	} ),
 };
 
 const store = {

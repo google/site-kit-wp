@@ -52,12 +52,20 @@ class Thank_With_GoogleTest extends TestCase {
 		$this->options->set(
 			Settings::OPTION,
 			array(
-				'publicationID'   => '12345',
-				'colorTheme'      => 'blue',
-				'buttonPlacement' => 'static_auto',
-				'buttonPostTypes' => array( 'post' ),
+				'publicationID' => '12345',
+				'colorTheme'    => 'blue',
+				'ctaPlacement'  => 'static_auto',
+				'ctaPostTypes'  => array( 'post' ),
 			)
 		);
+	}
+
+	public function test_register() {
+		remove_all_actions( 'googlesitekit_auth_scopes' );
+
+		$this->thank_with_google->register();
+
+		$this->assertTrue( has_filter( 'googlesitekit_auth_scopes' ) );
 	}
 
 	public function test_web_tag_hooks_are_added_when_tag_is_registered() {
@@ -124,8 +132,8 @@ class Thank_With_GoogleTest extends TestCase {
 		$output = $this->capture_action( '__test_print_scripts' );
 
 		$this->assertStringContainsString( 'Thank with Google snippet added by Site Kit', $output );
-		$this->assertStringContainsString( 'buttonPosition: \'inline\',', $output );
-		$this->assertStringContainsString( 'isPartOfProductId: \'12345:default\',', $output );
+		$this->assertStringContainsString( '"style":"inline"', $output );
+		$this->assertStringContainsString( '"isPartOfProductId":"12345:default",', $output );
 	}
 
 	public function test_is_connected() {
@@ -136,10 +144,10 @@ class Thank_With_GoogleTest extends TestCase {
 		$this->options->set(
 			Settings::OPTION,
 			array(
-				'publicationID'   => '12345',
-				'colorTheme'      => 'blue',
-				'buttonPlacement' => 'static_auto',
-				'buttonPostTypes' => array( 'post' ),
+				'publicationID' => '12345',
+				'colorTheme'    => 'blue',
+				'ctaPlacement'  => 'static_auto',
+				'ctaPostTypes'  => array( 'post' ),
 			)
 		);
 
@@ -152,5 +160,11 @@ class Thank_With_GoogleTest extends TestCase {
 		$this->thank_with_google->on_deactivation();
 
 		$this->assertOptionNotExists( Settings::OPTION );
+	}
+
+	public function test_service_classes_exist() {
+		$this->assertTrue(
+			class_exists( 'Google\Site_Kit_Dependencies\Google_Service_SubscribewithGoogle' )
+		);
 	}
 }

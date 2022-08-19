@@ -26,8 +26,8 @@ import { useCallback, lazy, Suspense } from '@wordpress/element';
 import Data from 'googlesitekit-data';
 import {
 	MODULES_THANK_WITH_GOOGLE,
-	BUTTON_PLACEMENT_DYNAMIC_HIGH,
-	BUTTON_PLACEMENT_DYNAMIC_LOW,
+	CTA_PLACEMENT_DYNAMIC_HIGH,
+	CTA_PLACEMENT_DYNAMIC_LOW,
 } from '../../datastore/constants';
 import ImageRadio from '../../../../components/ImageRadio';
 import ProgressBar from '../../../../components/ProgressBar';
@@ -41,18 +41,18 @@ const DynamicHighSVG = lazy( () =>
 );
 
 export default function ProminenceRadio() {
-	const { setButtonPlacement } = useDispatch( MODULES_THANK_WITH_GOOGLE );
+	const { setCTAPlacement } = useDispatch( MODULES_THANK_WITH_GOOGLE );
 
-	const buttonPlacement = useSelect( ( select ) =>
-		select( MODULES_THANK_WITH_GOOGLE ).getButtonPlacement()
+	const ctaPlacement = useSelect( ( select ) =>
+		select( MODULES_THANK_WITH_GOOGLE ).getCTAPlacement()
 	);
 
 	const onChange = useCallback(
 		( { target } = {} ) => {
 			const { value: placement } = target || {};
-			setButtonPlacement( placement );
+			setCTAPlacement( placement );
 		},
-		[ setButtonPlacement ]
+		[ setCTAPlacement ]
 	);
 
 	return (
@@ -61,9 +61,9 @@ export default function ProminenceRadio() {
 			<div className="googlesitekit-twg-prominence-radio__options">
 				<Suspense fallback={ <ProgressBar small /> }>
 					<ImageRadio
-						id={ `button-placement-${ BUTTON_PLACEMENT_DYNAMIC_LOW }` }
-						name="button-placement"
-						value={ BUTTON_PLACEMENT_DYNAMIC_LOW }
+						id={ `cta-placement-${ CTA_PLACEMENT_DYNAMIC_LOW }` }
+						name="cta-placement"
+						value={ CTA_PLACEMENT_DYNAMIC_LOW }
 						label={ __( 'Low', 'google-site-kit' ) }
 						description={ __(
 							'Floats at the bottom of the page',
@@ -71,14 +71,12 @@ export default function ProminenceRadio() {
 						) }
 						image={ <DynamicLowSVG /> }
 						onChange={ onChange }
-						checked={
-							buttonPlacement === BUTTON_PLACEMENT_DYNAMIC_LOW
-						}
+						checked={ ctaPlacement === CTA_PLACEMENT_DYNAMIC_LOW }
 					/>
 					<ImageRadio
-						id={ `button-placement-${ BUTTON_PLACEMENT_DYNAMIC_HIGH }` }
-						name="button-placement"
-						value={ BUTTON_PLACEMENT_DYNAMIC_HIGH }
+						id={ `cta-placement-${ CTA_PLACEMENT_DYNAMIC_HIGH }` }
+						name="cta-placement"
+						value={ CTA_PLACEMENT_DYNAMIC_HIGH }
 						label={ __( 'High', 'google-site-kit' ) }
 						description={ __(
 							'Can be temporary dismissed',
@@ -86,9 +84,7 @@ export default function ProminenceRadio() {
 						) }
 						image={ <DynamicHighSVG /> }
 						onChange={ onChange }
-						checked={
-							buttonPlacement === BUTTON_PLACEMENT_DYNAMIC_HIGH
-						}
+						checked={ ctaPlacement === CTA_PLACEMENT_DYNAMIC_HIGH }
 					/>
 				</Suspense>
 			</div>

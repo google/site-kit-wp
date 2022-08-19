@@ -18,14 +18,14 @@
 
 export const MODULES_THANK_WITH_GOOGLE = 'modules/thank-with-google';
 
-export const STATE_ACTIVE = 'ACTIVE';
-export const STATE_ACTION_REQUIRED = 'ACTION_REQUIRED';
-export const STATE_PENDING_VERIFICATION = 'PENDING_VERIFICATION';
+export const ONBOARDING_STATE_COMPLETE = 'ONBOARDING_COMPLETE';
+export const ONBOARDING_STATE_ACTION_REQUIRED = 'ONBOARDING_ACTION_REQUIRED';
+export const ONBOARDING_STATE_PENDING_VERIFICATION = 'PENDING_VERIFICATION';
 
-export const BUTTON_PLACEMENT_DYNAMIC_LOW = 'dynamic_low';
-export const BUTTON_PLACEMENT_DYNAMIC_HIGH = 'dynamic_high';
-export const BUTTON_PLACEMENT_STATIC_AUTO = 'static_auto';
-export const BUTTON_PLACEMENT_STATIC_ABOVE_CONTENT = 'static_above-content';
-export const BUTTON_PLACEMENT_STATIC_BELOW_CONTENT = 'static_below-content';
-export const BUTTON_PLACEMENT_STATIC_BELOW_1ST_PARAGRAPH =
+export const CTA_PLACEMENT_DYNAMIC_LOW = 'dynamic_low';
+export const CTA_PLACEMENT_DYNAMIC_HIGH = 'dynamic_high';
+export const CTA_PLACEMENT_STATIC_AUTO = 'static_auto';
+export const CTA_PLACEMENT_STATIC_ABOVE_CONTENT = 'static_above-content';
+export const CTA_PLACEMENT_STATIC_BELOW_CONTENT = 'static_below-content';
+export const CTA_PLACEMENT_STATIC_BELOW_1ST_PARAGRAPH =
 	'static_below-first-paragraph';

@@ -22,7 +22,6 @@
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
 import useMergedRef from '@react-hook/merged-ref';
-import { Tooltip } from '@material-ui/core';
 import '@material/mwc-button/mwc-button';
 
 /**
@@ -35,6 +34,7 @@ import { _x } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { MDCRipple } from '../material-components';
+import Tooltip from './Tooltip';
 
 const Button = forwardRef( ( props, ref ) => {
 	const {
@@ -115,9 +115,22 @@ const Button = forwardRef( ( props, ref ) => {
 		if ( disabled ) {
 			buttonProps.disabled = true;
 		}
+
 		if ( ! text ) {
 			buttonProps.raised = true;
 		}
+
+		if (
+			( tooltip && ( title || ariaLabel ) ) ||
+			( icon && ( title || ariaLabel ) && children === undefined )
+		) {
+			return (
+				<Tooltip title={ title || ariaLabel }>
+					{ ButtonComponent }
+				</Tooltip>
+			);
+		}
+
 		ButtonComponent = (
 			<mwc-button
 				ref={ mergedRefs }

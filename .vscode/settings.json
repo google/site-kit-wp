@@ -15,12 +15,12 @@
 	"jest.autoEnable": false,
 	"jest.pathToConfig": "./tests/js/jest.config.js",
 	"editor.defaultFormatter": "esbenp.prettier-vscode",
+	"[javascript]": {
+		"editor.formatOnSave": true
+	},
 	"editor.codeActionsOnSave": {
 		"source.fixAll": true,
 		"source.fixAll.eslint": true
-	},
-	"[javascript]": {
-		"editor.formatOnSave": true
 	},
 	"phpcs.enable": true,
 	"phpcs.executablePath": "vendor/bin/phpcs"

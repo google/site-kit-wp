@@ -29,20 +29,24 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
 import SettingsNotice, {
 	TYPE_INFO,
 } from '../../../../components/SettingsNotice';
 import Link from '../../../../components/Link';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+const { useSelect } = Data;
 
 export default function GA4PropertyNotice( { notice, children } ) {
+	const documentationURL = useSelect( ( select ) => {
+		return select( CORE_SITE ).getDocumentationLinkURL( 'ga4' );
+	} );
+
 	return (
 		<SettingsNotice
 			type={ TYPE_INFO }
 			LearnMore={ () => (
-				<Link
-					href="https://sitekit.withgoogle.com/documentation/using-site-kit/ga4/"
-					external
-				>
+				<Link href={ documentationURL } external>
 					{ __( 'Learn more', 'google-site-kit' ) }
 				</Link>
 			) }
