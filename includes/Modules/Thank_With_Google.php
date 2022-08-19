@@ -28,7 +28,6 @@ use Google\Site_Kit\Core\REST_API\Exception\Invalid_Datapoint_Exception;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Environment_Type_Guard;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Verify_Guard;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
-use Google\Site_Kit\Core\Util\Google_URL_Normalizer;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Modules\Thank_With_Google\Settings;
 use Google\Site_Kit\Modules\Thank_With_Google\Supporter_Wall_Widget;
@@ -249,13 +248,10 @@ final class Thank_With_Google extends Module
 
 				$sc_settings    = $this->options->get( Search_Console_Settings::OPTION );
 				$sc_property_id = $sc_settings['propertyID'];
-				$url_normalizer = new Google_URL_Normalizer();
-				$raw_url        = $url_normalizer->normalize_url(
-					str_replace(
-						array( 'sc-domain:', 'https://', 'http://', 'www.' ),
-						'',
-						$sc_property_id
-					)
+				$raw_url        = str_replace(
+					array( 'sc-domain:', 'https://', 'http://', 'www.' ),
+					'',
+					$sc_property_id
 				);
 
 				if ( 0 === strpos( $sc_property_id, 'sc-domain:' ) ) { // Domain property.
