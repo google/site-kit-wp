@@ -1,7 +1,5 @@
 /**
- * Overrides for .mdc-button Icon styles.
- *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2022 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,32 +14,21 @@
  * limitations under the License.
  */
 
+/**
+ * Internal dependencies
+ */
+import SpinnerButton from './SpinnerButton';
 
-.googlesitekit-plugin .mdc-button {
+const Template = ( args ) => <SpinnerButton { ...args } />;
 
-	&.googlesitekit-button-icon {
-		min-height: auto;
-		min-width: auto;
-		padding: 8px;
-	}
+export const DefaultButton = Template.bind( {} );
+DefaultButton.storyName = 'Default Button';
+DefaultButton.args = {
+	children: 'Default Button',
+	onClick: () => new Promise( ( resolve ) => setTimeout( resolve, 5000 ) ),
+};
 
-	&.googlesitekit-button-icon--phone {
-
-		@media (max-width: $bp-mobileOnly ) {
-			min-height: auto;
-			min-width: auto;
-			padding: 8px;
-		}
-	}
-
-	&.googlesitekit-button-icon--spinner__running {
-
-		.mdc-button__label {
-			margin-right: 8px;
-		}
-
-		svg circle {
-			stroke: $c-white;
-		}
-	}
-}
+export default {
+	title: 'Components/SpinnerButton',
+	component: SpinnerButton,
+};
