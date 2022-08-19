@@ -34,13 +34,13 @@ import Button from './Button';
 export default function SpinnerButton( props ) {
 	const { className, onClick = () => {}, ...restProps } = props;
 
-	const [ processing, setPropcessing ] = useState( false );
+	const [ processing, setProcessing ] = useState( false );
 
 	const handleClick = useCallback(
 		async ( ...params ) => {
-			setPropcessing( true );
+			setProcessing( true );
 			await onClick( ...params );
-			setPropcessing( false );
+			setProcessing( false );
 		},
 		[ onClick ]
 	);
