@@ -18,17 +18,18 @@ use Google\Site_Kit\Core\Modules\Module_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Assets;
 use Google\Site_Kit\Core\Modules\Module_With_Assets_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Deactivation;
+use Google\Site_Kit\Core\Modules\Module_With_Owner;
+use Google\Site_Kit\Core\Modules\Module_With_Owner_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
-use Google\Site_Kit\Core\Modules\Module_With_Owner;
-use Google\Site_Kit\Core\Modules\Module_With_Owner_Trait;
+use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\REST_API\Exception\Invalid_Datapoint_Exception;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Environment_Type_Guard;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Verify_Guard;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
-use Google\Site_Kit\Core\REST_API\Data_Request;
+use Google\Site_Kit\Modules\Search_Console\Settings as Search_Console_Settings;
 use Google\Site_Kit\Modules\Thank_With_Google\Settings;
 use Google\Site_Kit\Modules\Thank_With_Google\Supporter_Wall_Widget;
 use Google\Site_Kit\Modules\Thank_With_Google\Web_Tag;
@@ -246,8 +247,39 @@ final class Thank_With_Google extends Module
 				$service = $this->get_service( 'subscribewithgoogle' );
 				/* @var $service Google_Service_SubscribewithGoogle phpcs:ignore Squiz.PHP.CommentedOutCode.Found */
 
-				/* @TODO filter by verified domains */
-				return $service->publications->listPublications();
+				$sc_settings    = $this->options->get( Search_Console_Settings::OPTION );
+				$sc_property_id = $sc_settings['propertyID'];
+				$raw_url        = str_replace(
+					array( 'sc-domain:', 'https://', 'http://', 'www.' ),
+					'',
+					$sc_property_id
+				);
+
+				if ( 0 === strpos( $sc_property_id, 'sc-domain:' ) ) { // Domain property.
+					$filter = join(
+						' OR ',
+						array_map(
+							function ( $host ) {
+								return sprintf( 'domain = "%s"', $host );
+							},
+							$this->permute_site_hosts( $raw_url )
+						)
+					);
+				} else { // URL property.
+					$filter = join(
+						' OR ',
+						array_map(
+							function ( $host ) {
+								return sprintf( 'site_url = "%s"', $host );
+							},
+							$this->permute_site_url( $raw_url )
+						)
+					);
+				}
+
+				return $service->publications->listPublications(
+					array( 'filter' => $filter )
+				);
 			case 'GET:supporter-wall-sidebars':
 				return function() {
 					$sidebars      = array();
