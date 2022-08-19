@@ -19,6 +19,7 @@
 /**
  * WordPress dependencies
  */
+import { useCallback, useState } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 
 /**
@@ -27,16 +28,34 @@ import { __, sprintf } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import BannerNotification from '../../../../../components/notifications/BannerNotification';
 import { Grid, Row, Cell } from '../../../../../material-components';
+import ErrorNotice from '../../../../../components/ErrorNotice';
 import { MODULES_ANALYTICS_4 } from '../../../datastore/constants';
-const { useSelect } = Data;
+const { useDispatch, useSelect } = Data;
 
 export default function SetupBanner( { onCTAClick } ) {
+	const [ errorNotice, setErrorNotice ] = useState( null );
+
 	const ga4MeasurementID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getMeasurementID()
 	);
 	const existingTag = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getExistingTag()
 	);
+
+	const { submitChanges } = useDispatch( MODULES_ANALYTICS_4 );
+
+	const handleSubmitChanges = useCallback( async () => {
+		if ( ! ga4MeasurementID ) {
+			const { error } = await submitChanges();
+
+			if ( error ) {
+				setErrorNotice( error );
+				return;
+			}
+		}
+
+		onCTAClick();
+	}, [ ga4MeasurementID, onCTAClick, submitChanges ] );
 
 	let title;
 	let ctaLabel;
@@ -87,11 +106,12 @@ export default function SetupBanner( { onCTAClick } ) {
 						className="googlesitekit-ga4-setup-banner"
 						title={ title }
 						ctaLabel={ ctaLabel }
-						ctaLink={ onCTAClick ? '#' : null }
-						onCTAClick={ onCTAClick }
+						onCTAClick={ handleSubmitChanges }
 						footer={ <p>{ footer }</p> }
 						dismiss={ __( 'Cancel', 'google-site-kit' ) }
-					/>
+					>
+						{ errorNotice && <ErrorNotice error={ errorNotice } /> }
+					</BannerNotification>
 				</Cell>
 			</Row>
 		</Grid>
