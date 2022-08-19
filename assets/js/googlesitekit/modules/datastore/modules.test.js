@@ -530,7 +530,7 @@ describe( 'core/modules modules', () => {
 					/^\/google-site-kit\/v1\/core\/modules\/data\/list/
 				);
 
-				// Ensure refreshCapabilities have been called.
+				// Ensure `refreshCapabilities` has been called.
 				expect( fetchMock ).toHaveFetched(
 					/^\/google-site-kit\/v1\/core\/user\/data\/permissions/
 				);

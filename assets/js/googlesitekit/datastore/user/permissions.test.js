@@ -130,7 +130,7 @@ describe( 'core/user authentication', () => {
 				).toEqual( updatedCapabilities );
 			} );
 
-			it( 'Sets permissionScopeError when api throws an error', async () => {
+			it( 'sets permissionScopeError when API throws an error', async () => {
 				const error = {
 					code: 'rest_forbidden',
 					message: 'Sorry, you are not allowed to do that.',

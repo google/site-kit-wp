@@ -102,7 +102,7 @@ const baseActions = {
 	},
 
 	/**
-	 * Refreshs user capabilities.
+	 * Refreshes user capabilities.
 	 *
 	 * @since n.e.x.t
 	 *
