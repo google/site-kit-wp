@@ -29,13 +29,13 @@ use Google\Site_Kit\Core\Tags\Guards\Tag_Environment_Type_Guard;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Verify_Guard;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Core\REST_API\Data_Request;
+use Google\Site_Kit\Modules\Search_Console\Settings as Search_Console_Settings;
 use Google\Site_Kit\Modules\Thank_With_Google\Settings;
 use Google\Site_Kit\Modules\Thank_With_Google\Supporter_Wall_Widget;
 use Google\Site_Kit\Modules\Thank_With_Google\Web_Tag;
 use Google\Site_Kit_Dependencies\Google_Service_SubscribewithGoogle;
 use Google\Site_Kit_Dependencies\Google_Service_SubscribewithGoogle_ListPublicationsResponse;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
-use Google\Site_Kit\Modules\Search_Console\Settings as Search_Console_Settings;
 use WP_Error;
 
 /**
