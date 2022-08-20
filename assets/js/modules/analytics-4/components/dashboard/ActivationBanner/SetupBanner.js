@@ -29,10 +29,11 @@ import Data from 'googlesitekit-data';
 import BannerNotification from '../../../../../components/notifications/BannerNotification';
 import { Grid, Row, Cell } from '../../../../../material-components';
 import ErrorNotice from '../../../../../components/ErrorNotice';
+import SpinnerButton from '../../../../../components/SpinnerButton';
 import { MODULES_ANALYTICS_4 } from '../../../datastore/constants';
 const { useDispatch, useSelect } = Data;
 
-export default function SetupBanner( { onCTAClick } ) {
+export default function SetupBanner( {} ) {
 	const [ errorNotice, setErrorNotice ] = useState( null );
 
 	const ga4MeasurementID = useSelect( ( select ) =>
@@ -45,17 +46,12 @@ export default function SetupBanner( { onCTAClick } ) {
 	const { submitChanges } = useDispatch( MODULES_ANALYTICS_4 );
 
 	const handleSubmitChanges = useCallback( async () => {
-		if ( ! ga4MeasurementID ) {
-			const { error } = await submitChanges();
+		const { error } = await submitChanges();
 
-			if ( error ) {
-				setErrorNotice( error );
-				return;
-			}
+		if ( error ) {
+			setErrorNotice( error );
 		}
-
-		onCTAClick();
-	}, [ ga4MeasurementID, onCTAClick, submitChanges ] );
+	}, [ submitChanges ] );
 
 	let title;
 	let ctaLabel;
@@ -105,8 +101,13 @@ export default function SetupBanner( { onCTAClick } ) {
 						id="ga4-activation-banner"
 						className="googlesitekit-ga4-setup-banner"
 						title={ title }
-						ctaLabel={ ctaLabel }
-						onCTAClick={ handleSubmitChanges }
+						ctaComponent={
+							! ga4MeasurementID && (
+								<SpinnerButton onClick={ handleSubmitChanges }>
+									{ ctaLabel }
+								</SpinnerButton>
+							)
+						}
 						footer={ <p>{ footer }</p> }
 						dismiss={ __( 'Cancel', 'google-site-kit' ) }
 					>
