@@ -20,6 +20,7 @@
  * Internal dependencies
  */
 import { getTimeInSeconds } from '../../../util/index';
+import { stringToDate } from '../../../util/date-range/string-to-date';
 
 /**
  * Gets the time in seconds to expire a dismissal of the GA4 Activation Banner.
@@ -30,17 +31,17 @@ import { getTimeInSeconds } from '../../../util/index';
  * @return {number} Time in seconds for a dismissal to expire.
  */
 export function getBannerDismissalExpiryTime( referenceDateString ) {
-	const referenceDate = new Date( referenceDateString );
+	const referenceDate = stringToDate( referenceDateString );
 
 	// If dismissed before May 2023, show the banner again after 30 days.
-	if ( referenceDate < new Date( '2023-05-01' ) ) {
+	if ( referenceDate < stringToDate( '2023-05-01' ) ) {
 		return getTimeInSeconds( 'month' );
 	}
 
 	// If dismissed in May 2023, show the banner again in June 2023.
 	if (
-		new Date( '2023-05-01' ) <= referenceDate &&
-		referenceDate < new Date( '2023-06-01' )
+		stringToDate( '2023-05-01' ) <= referenceDate &&
+		referenceDate < stringToDate( '2023-06-01' )
 	) {
 		return Math.max(
 			31 * getTimeInSeconds( 'day' ) -
