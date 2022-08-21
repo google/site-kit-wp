@@ -83,7 +83,7 @@ export default function SettingsForm( { hasModuleAccess } ) {
 						sprintf(
 							/* translators: 1: module owner's name, 2: module name */
 							__(
-								'%1$s configured %2$s and you don’t have access to this Tag Manager account. Contact them to share access or change the Tag Manager account.',
+								'%1$s configured %2$s and you don’t have access to this %2$s account. Contact them to share access or change the %2$s account.',
 								'google-site-kit'
 							),
 							formattedOwnerName,
