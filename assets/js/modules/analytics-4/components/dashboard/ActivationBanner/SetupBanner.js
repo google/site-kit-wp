@@ -28,6 +28,8 @@ import Data from 'googlesitekit-data';
 import BannerNotification from '../../../../../components/notifications/BannerNotification';
 import { Grid, Row, Cell } from '../../../../../material-components';
 import { MODULES_ANALYTICS_4 } from '../../../datastore/constants';
+import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
+import { getBannerDismissalExpiryTime } from '../../../utils/banner-dismissal-expiry';
 const { useSelect } = Data;
 
 export default function SetupBanner( { onCTAClick } ) {
@@ -36,6 +38,10 @@ export default function SetupBanner( { onCTAClick } ) {
 	);
 	const existingTag = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getExistingTag()
+	);
+
+	const referenceDateString = useSelect( ( select ) =>
+		select( CORE_USER ).getReferenceDate()
 	);
 
 	let title;
@@ -91,6 +97,9 @@ export default function SetupBanner( { onCTAClick } ) {
 						onCTAClick={ onCTAClick }
 						footer={ <p>{ footer }</p> }
 						dismiss={ __( 'Cancel', 'google-site-kit' ) }
+						dismissExpires={ getBannerDismissalExpiryTime(
+							referenceDateString
+						) }
 					/>
 				</Cell>
 			</Row>
