@@ -114,6 +114,14 @@ abstract class Module {
 	private $google_services;
 
 	/**
+	 * Boolean instance to check if module is using shared credentials.
+	 *
+	 * @since n.e.x.t
+	 * @var bool
+	 */
+	protected $is_using_shared_credentials = false;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since 1.0.0
@@ -345,6 +353,8 @@ abstract class Module {
 			$restore_defers[] = $this->get_client()->withDefer( true );
 			if ( $this->authentication->get_oauth_client() !== $oauth_client ) {
 				$restore_defers[] = $oauth_client->get_client()->withDefer( true );
+
+				$this->is_using_shared_credentials = true;
 			}
 
 			$request = $this->create_data_request( $data );
@@ -368,6 +378,8 @@ abstract class Module {
 			foreach ( $restore_defers as $restore_defer ) {
 				$restore_defer();
 			}
+
+			$this->is_using_shared_credentials = false;
 		}
 
 		if ( is_wp_error( $response ) ) {
