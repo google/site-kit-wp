@@ -14,7 +14,8 @@ use Google\Site_Kit\Core\Admin\Pointer;
 use Google\Site_Kit\Tests\TestCase;
 
 /**
- * @group Admin_pointer
+ * @group Admin
+ * @group Pointer
  */
 class PointerTest extends TestCase {
 
@@ -134,16 +135,16 @@ class PointerTest extends TestCase {
 				'active_callback' => '__return_true',
 			)
 		);
+
 		remove_all_actions( 'admin_print_footer_scripts' );
 
 		$pointer->enqueue_script();
 
-		add_action( '__test_print_scripts', 'wp_print_footer_scripts' );
-
-		do_action( 'admin_print_footer_scripts' );
-
-		$output = $this->capture_action( '__test_print_scripts' );
+		$output = $this->capture_action( 'admin_print_footer_scripts' );
 
 		$this->assertContains( 'test-slug', $output );
+		$this->assertContains( 'Test pointer title.', $output );
+		$this->assertContains( 'Test pointer content.', $output );
+		$this->assertContains( '#test-target', $output );
 	}
 }
