@@ -26,25 +26,6 @@ final class View_Only_Pointer {
 	const SLUG = 'googlesitekit-view-only-pointer';
 
 	/**
-	 * Dismissed Items.
-	 *
-	 * @since n.e.x.t.
-	 * @var Dismissed_Items
-	 */
-	private $dismissed_items;
-
-	/**
-	 * Constructor.
-	 *
-	 * @since n.e.x.t.
-	 * @access public
-	 * @param Dismissed_Items $dismissed_items Dismissed Items.
-	 */
-	public function __construct( Dismissed_Items $dismissed_items ) {
-		$this->dismissed_items = $dismissed_items;
-	}
-
-	/**
 	 * Registers functionality through WordPress hooks.
 	 *
 	 * @since n.e.x.t
@@ -78,7 +59,6 @@ final class View_Only_Pointer {
 						|| ! Feature_Flags::enabled( 'dashboardSharing' )
 						|| current_user_can( Permissions::AUTHENTICATE )
 						|| ! current_user_can( Permissions::VIEW_SPLASH )
-						|| $this->dismissed_items->is_dismissed( 'shared_dashboard_splash' )
 
 					) {
 						return false;
