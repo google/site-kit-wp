@@ -22,19 +22,26 @@ class PointersTest extends TestCase {
 
 	const TEST_HOOK_SUFFIX = 'test-hook-suffix';
 
-	public function test_register() {
-		remove_all_actions( 'admin_enqueue_scripts' );
-		$pointers = new Pointers();
-		$pointers->register();
+	/**
+	 * Pointers instance.
+	 *
+	 * @var Pointers
+	 */
+	private $pointers;
 
+	public function set_up() {
+		parent::set_up();
+
+		remove_all_actions( 'admin_enqueue_scripts' );
+		$this->pointers = new Pointers();
+		$this->pointers->register();
+	}
+
+	public function test_register() {
 		$this->assertTrue( has_action( 'admin_enqueue_scripts' ) );
 	}
 
 	public function test_enqueue_pointers__no_hook_suffix() {
-		remove_all_actions( 'admin_enqueue_scripts' );
-		$pointers = new Pointers();
-		$pointers->register();
-
 		do_action( 'admin_enqueue_scripts' );
 
 		$this->assertFalse( wp_script_is( 'wp-pointer' ) );
@@ -42,10 +49,6 @@ class PointersTest extends TestCase {
 	}
 
 	public function test_enqueue_pointers__no_pointers() {
-		remove_all_actions( 'admin_enqueue_scripts' );
-		$pointers = new Pointers();
-		$pointers->register();
-
 		do_action( 'admin_enqueue_scripts', self::TEST_HOOK_SUFFIX );
 
 		$this->assertFalse( wp_script_is( 'wp-pointer' ) );
@@ -53,10 +56,6 @@ class PointersTest extends TestCase {
 	}
 
 	public function test_enqueue_pointers__no_active_pointers() {
-		remove_all_actions( 'admin_enqueue_scripts' );
-		$pointers = new Pointers();
-		$pointers->register();
-
 		add_filter(
 			'googlesitekit_admin_pointers',
 			function( $pointers ) {
@@ -80,10 +79,6 @@ class PointersTest extends TestCase {
 	}
 
 	public function test_enqueue_pointers() {
-		remove_all_actions( 'admin_enqueue_scripts' );
-		$pointers = new Pointers();
-		$pointers->register();
-
 		add_filter(
 			'googlesitekit_admin_pointers',
 			function( $pointers ) {
