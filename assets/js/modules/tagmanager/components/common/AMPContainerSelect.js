@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * WordPress dependencies
  */
 import { useCallback } from '@wordpress/element';
@@ -32,11 +37,12 @@ import {
 } from '../../datastore/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import ContainerSelect from './ContainerSelect';
+import { Select, Option } from '../../../../material-components';
 import { trackEvent } from '../../../../util/tracking';
 import useViewContext from '../../../../hooks/useViewContext';
 const { useSelect, useDispatch } = Data;
 
-export default function AMPContainerSelect() {
+export default function AMPContainerSelect( { hasModuleAccess } ) {
 	const viewContext = useViewContext();
 
 	const accountID = useSelect( ( select ) =>
@@ -45,9 +51,13 @@ export default function AMPContainerSelect() {
 	const ampContainerID = useSelect( ( select ) =>
 		select( MODULES_TAGMANAGER ).getAMPContainerID()
 	);
-	const ampContainers = useSelect( ( select ) =>
-		select( MODULES_TAGMANAGER ).getAMPContainers( accountID )
-	);
+	const ampContainers = useSelect( ( select ) => {
+		if ( hasModuleAccess === false ) {
+			return null;
+		}
+
+		return select( MODULES_TAGMANAGER ).getAMPContainers( accountID );
+	} );
 	const isAMP = useSelect( ( select ) => select( CORE_SITE ).isAMP() );
 	const isSecondaryAMP = useSelect( ( select ) =>
 		select( CORE_SITE ).isSecondaryAMP()
@@ -90,6 +100,21 @@ export default function AMPContainerSelect() {
 		? __( 'AMP Container', 'google-site-kit' )
 		: __( 'Container', 'google-site-kit' );
 
+	if ( hasModuleAccess === false ) {
+		return (
+			<Select
+				className="googlesitekit-tagmanager__select-container--amp"
+				label={ label }
+				value={ ampContainerID }
+				enhanced
+				outlined
+				disabled
+			>
+				<Option value={ ampContainerID }>{ ampContainerID }</Option>
+			</Select>
+		);
+	}
+
 	return (
 		<ContainerSelect
 			className="googlesitekit-tagmanager__select-container--amp"
@@ -100,3 +125,8 @@ export default function AMPContainerSelect() {
 		/>
 	);
 }
+
+// eslint-disable-next-line sitekit/acronym-case
+AMPContainerSelect.propTypes = {
+	hasModuleAccess: PropTypes.bool,
+};
