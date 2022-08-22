@@ -92,7 +92,7 @@ final class Pointer {
 	 * @return bool True if the pointer is active, false otherwise.
 	 */
 	public function is_active( $hook_suffix ) {
-		if ( empty( $this->args['title'] ) || empty( $this->args['content'] ) ) {
+		if ( empty( $this->args['title'] ) || empty( $this->args['content'] ) || empty( $this->args['target_id'] ) ) {
 			return false;
 		}
 
