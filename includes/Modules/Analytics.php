@@ -1331,4 +1331,96 @@ final class Analytics extends Module
 		return true;
 	}
 
+	/**
+	 * Validates the report metrics.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $metrics The metrics to validate.
+	 *
+	 * @return null|WP_Error NULL if metrics are valid, otherwise WP_Error.
+	 */
+	protected function validate_report_metrics( $metrics ) {
+		if ( false === $this->is_using_shared_credentials ) {
+			return null;
+		}
+
+		$valid_metrics = apply_filters(
+			'googlesitekit_shareable_analytics_metrics',
+			array(
+				'ga:sessions',
+				'ga:users',
+				'ga:pageviews',
+				'ga:uniquePageviews',
+				'ga:bounceRate',
+				'ga:avgSessionDuration',
+				'ga:adsenseRevenue',
+				'ga:adsenseECPM',
+				'ga:adsensePageImpressions',
+				'ga:goalCompletionsAll',
+			)
+		);
+
+		$invalid_metrics = array_diff( $metrics, $valid_metrics );
+
+		if ( count( $invalid_metrics ) > 0 ) {
+			return sprintf(
+				/* translators: %s is replaced with a comma separated list of the invalid metrics. */
+				_n(
+					'Unsupported metric requested: %s',
+					'Unsupported metrics requested: %s',
+					count( $invalid_metrics ),
+					'google-site-kit'
+				),
+				implode( ', ', $invalid_metrics )
+			);
+		}
+
+		return null;
+	}
+
+	/**
+	 * Validates the report dimensions.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $dimensions The dimensions to validate.
+	 *
+	 * @return null|WP_Error NULL if dimensions are valid, otherwise WP_Error.
+	 */
+	protected function validate_report_dimensions( $dimensions ) {
+		if ( false === $this->is_using_shared_credentials ) {
+			return null;
+		}
+
+		$valid_dimensions = apply_filters(
+			'googlesitekit_shareable_analytics_dimensions',
+			array(
+				'ga:date',
+				'ga:pagePath',
+				'ga:pageTitle',
+				'ga:channelGrouping',
+				'ga:country',
+				'ga:deviceCategory',
+			)
+		);
+
+		$invalid_dimensions = array_diff( $dimensions, $valid_dimensions );
+
+		if ( count( $invalid_dimensions ) > 0 ) {
+			return sprintf(
+				/* translators: %s is replaced with a comma separated list of the invalid dimensions. */
+				_n(
+					'Unsupported dimension requested: %s',
+					'Unsupported dimensions requested: %s',
+					count( $invalid_dimensions ),
+					'google-site-kit'
+				),
+				implode( ', ', $invalid_dimensions )
+			);
+		}
+
+		return null;
+	}
+
 }
