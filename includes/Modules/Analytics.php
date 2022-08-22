@@ -543,6 +543,23 @@ final class Analytics extends Module
 					);
 
 					if ( ! empty( $dimensions ) ) {
+						$invalid_dimensions_error_message = $this->validate_report_dimensions(
+							array_map(
+								function ( $dimension_def ) {
+									return $dimension_def->getName();
+								},
+								$dimensions
+							)
+						);
+
+						if ( isset( $invalid_dimensions_error_message ) ) {
+							return new WP_Error(
+								'invalid_dimensions',
+								$invalid_dimensions_error_message,
+								array( 'status' => 400 )
+							);
+						}
+
 						$request_args['dimensions'] = $dimensions;
 					}
 				}
@@ -641,6 +658,23 @@ final class Analytics extends Module
 					);
 
 					if ( ! empty( $metrics ) ) {
+						$invalid_metrics_error_message = $this->validate_report_metrics(
+							array_map(
+								function ( $metric_def ) {
+									return $metric_def->getExpression();
+								},
+								$metrics
+							)
+						);
+
+						if ( isset( $invalid_metrics_error_message ) ) {
+							return new WP_Error(
+								'invalid_metrics',
+								$invalid_metrics_error_message,
+								array( 'status' => 400 )
+							);
+						}
+
 						$request->setMetrics( $metrics );
 					}
 				}
