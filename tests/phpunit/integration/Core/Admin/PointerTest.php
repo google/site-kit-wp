@@ -142,9 +142,9 @@ class PointerTest extends TestCase {
 
 		$output = $this->capture_action( 'admin_print_footer_scripts' );
 
-		$this->assertContains( 'test-slug', $output );
-		$this->assertContains( 'Test pointer title.', $output );
-		$this->assertContains( 'Test pointer content.', $output );
-		$this->assertContains( '#test-target', $output );
+		$this->assertStringContainsString( 'test-slug', $output );
+		$this->assertStringContainsString( 'Test pointer title.', $output );
+		$this->assertStringContainsString( 'Test pointer content.', $output );
+		$this->assertStringContainsString( '#test-target', $output );
 	}
 }
