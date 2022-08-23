@@ -338,7 +338,7 @@ abstract class Module {
 			$datapoint    = $this->get_datapoint_definition( "{$data->method}:{$data->datapoint}" );
 			$oauth_client = $this->get_oauth_client_for_datapoint( $datapoint );
 
-			// Set request as using shared credentials to false.
+			// Always reset this property first to ensure it is only set true for the current request.
 			$this->is_using_shared_credentials = false;
 
 			$this->validate_datapoint_scopes( $datapoint, $oauth_client );
