@@ -114,7 +114,7 @@ abstract class Module {
 	private $google_services;
 
 	/**
-	 * Boolean instance to check if module is using shared credentials.
+	 * Whether module is using shared credentials or not.
 	 *
 	 * @since n.e.x.t
 	 * @var bool
@@ -354,6 +354,7 @@ abstract class Module {
 			if ( $this->authentication->get_oauth_client() !== $oauth_client ) {
 				$restore_defers[] = $oauth_client->get_client()->withDefer( true );
 
+				// Set request as using shared credentials if oAuth clients do not match.
 				$this->is_using_shared_credentials = true;
 			}
 
@@ -379,6 +380,7 @@ abstract class Module {
 				$restore_defer();
 			}
 
+			// Reset shared credentials usage property after execution.
 			$this->is_using_shared_credentials = false;
 		}
 
