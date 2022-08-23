@@ -117,6 +117,8 @@ return array(
 				$contents = str_replace( '"Google_', '"' . $prefix . '\Google_', $contents );
 			}
 			if ( false !== strpos( $file_path, 'apiclient-services-subscribewithgoogle' ) ) {
+				// Rewrite 'Class_Name' to Class_Name::class to inherit namespace.
+				$contents = preg_replace( '/\'(Google_[^\']+)\'/', '\\1::class', $contents );
 				// Rewrite "Class_Name" to Class_Name::class to inherit namespace.
 				$contents = preg_replace( '/"(Google_[^"]+)"/', '\\1::class', $contents );
 			}

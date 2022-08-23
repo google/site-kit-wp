@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * WordPress dependencies
  */
 import { useCallback } from '@wordpress/element';
@@ -32,11 +37,12 @@ import {
 } from '../../datastore/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import ContainerSelect from './ContainerSelect';
+import { Select, Option } from '../../../../material-components';
 import { trackEvent } from '../../../../util/tracking';
 import useViewContext from '../../../../hooks/useViewContext';
 const { useSelect, useDispatch } = Data;
 
-export default function WebContainerSelect() {
+export default function WebContainerSelect( { hasModuleAccess } ) {
 	const viewContext = useViewContext();
 
 	const accountID = useSelect( ( select ) =>
@@ -45,9 +51,13 @@ export default function WebContainerSelect() {
 	const containerID = useSelect( ( select ) =>
 		select( MODULES_TAGMANAGER ).getContainerID()
 	);
-	const containers = useSelect( ( select ) =>
-		select( MODULES_TAGMANAGER ).getWebContainers( accountID )
-	);
+	const containers = useSelect( ( select ) => {
+		if ( hasModuleAccess === false ) {
+			return null;
+		}
+
+		return select( MODULES_TAGMANAGER ).getWebContainers( accountID );
+	} );
 	const isPrimaryAMP = useSelect( ( select ) =>
 		select( CORE_SITE ).isPrimaryAMP()
 	);
@@ -87,6 +97,21 @@ export default function WebContainerSelect() {
 		? __( 'Web Container', 'google-site-kit' )
 		: __( 'Container', 'google-site-kit' );
 
+	if ( hasModuleAccess === false ) {
+		return (
+			<Select
+				className="googlesitekit-tagmanager__select-container--web"
+				label={ label }
+				value={ containerID }
+				enhanced
+				outlined
+				disabled
+			>
+				<Option value={ containerID }>{ containerID }</Option>
+			</Select>
+		);
+	}
+
 	return (
 		<ContainerSelect
 			className="googlesitekit-tagmanager__select-container--web"
@@ -97,3 +122,7 @@ export default function WebContainerSelect() {
 		/>
 	);
 }
+
+WebContainerSelect.propTypes = {
+	hasModuleAccess: PropTypes.bool,
+};

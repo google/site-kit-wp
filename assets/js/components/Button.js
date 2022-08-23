@@ -22,7 +22,6 @@
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
 import useMergedRef from '@react-hook/merged-ref';
-import { Tooltip } from '@material-ui/core';
 
 /**
  * WordPress dependencies
@@ -34,6 +33,7 @@ import { _x } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { MDCRipple } from '../material-components';
+import Tooltip from './Tooltip';
 
 const Button = forwardRef(
 	(
@@ -117,13 +117,7 @@ const Button = forwardRef(
 			( icon && ( title || ariaLabel ) && children === undefined )
 		) {
 			return (
-				<Tooltip
-					title={ title || ariaLabel }
-					classes={ {
-						popper: 'googlesitekit-tooltip-popper',
-						tooltip: 'googlesitekit-tooltip',
-					} }
-				>
+				<Tooltip title={ title || ariaLabel }>
 					{ ButtonComponent }
 				</Tooltip>
 			);
