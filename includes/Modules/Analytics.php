@@ -1342,7 +1342,7 @@ final class Analytics extends Module
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param array $metrics The metrics to validate.
+	 * @param Google_Service_AnalyticsReporting_Metric[] $metrics The metrics to validate.
 	 *
 	 * @throws Invalid_Metrics_Exception Thrown if the metrics are invalid.
 	 */
@@ -1387,7 +1387,7 @@ final class Analytics extends Module
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param array $dimensions The dimensions to validate.
+	 * @param Google_Service_AnalyticsReporting_Dimension[] $dimensions The dimensions to validate.
 	 *
 	 * @throws Invalid_Dimensions_Exception Thrown if the dimensions are invalid.
 	 */
