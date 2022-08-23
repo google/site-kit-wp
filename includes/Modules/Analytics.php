@@ -1436,6 +1436,7 @@ final class Analytics extends Module
 				'ga:channelGrouping',
 				'ga:country',
 				'ga:deviceCategory',
+				'ga:hostname',
 			)
 		);
 
