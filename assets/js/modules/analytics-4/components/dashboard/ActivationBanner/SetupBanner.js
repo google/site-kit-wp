@@ -45,7 +45,7 @@ export default function SetupBanner( { onCTAClick } ) {
 		select( MODULES_ANALYTICS_4 ).getExistingTag()
 	);
 
-  useExistingTagEffect();
+	useExistingTagEffect();
 
 	const referenceDateString = useSelect( ( select ) =>
 		select( CORE_USER ).getReferenceDate()
@@ -136,7 +136,7 @@ export default function SetupBanner( { onCTAClick } ) {
 			onCTAClick={ onCTAClick }
 			footer={ <p>{ footer }</p> }
 			dismiss={ __( 'Cancel', 'google-site-kit' ) }
-      dismissExpires={ getBannerDismissalExpiryTime(
+			dismissExpires={ getBannerDismissalExpiryTime(
 				referenceDateString
 			) }
 		>
