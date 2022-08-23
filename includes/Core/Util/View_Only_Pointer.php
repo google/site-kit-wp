@@ -11,7 +11,6 @@
 namespace Google\Site_Kit\Core\Util;
 
 use Google\Site_Kit\Core\Admin\Pointer;
-use Google\Site_Kit\Core\Dismissals\Dismissed_Items;
 use Google\Site_Kit\Core\Permissions\Permissions;
 
 /**
@@ -65,19 +64,16 @@ final class View_Only_Pointer {
 					}
 
 					$dismissed_wp_pointers = get_user_meta( get_current_user_id(), 'dismissed_wp_pointers', true );
-
 					if ( ! $dismissed_wp_pointers ) {
 						return true;
 					}
 
 					$dismissed_wp_pointers = explode( ',', $dismissed_wp_pointers );
-
 					if ( in_array( self::SLUG, $dismissed_wp_pointers, true ) ) {
 						return false;
 					}
 
 					return true;
-
 				},
 			)
 		);
