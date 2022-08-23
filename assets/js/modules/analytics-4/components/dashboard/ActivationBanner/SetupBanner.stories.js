@@ -23,13 +23,15 @@ import SetupBanner from './SetupBanner';
 import {
 	provideModuleRegistrations,
 	provideModules,
-	provideSiteInfo,
 } from '../../../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
+import { MODULES_ANALYTICS } from '../../../../analytics/datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../../datastore/constants';
+import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
+import * as fixtures from '../../../../analytics/datastore/__fixtures__';
 import * as ga4Fixtures from '../../../../analytics-4/datastore/__fixtures__';
 
-const Template = () => <SetupBanner />;
+const Template = ( args ) => <SetupBanner { ...args } />;
 
 export const NoPropertyNoTag = Template.bind( {} );
 NoPropertyNoTag.storyName = 'No GA4 Property - No Existing Tag';
@@ -39,6 +41,9 @@ WithPropertyNoTag.storyName = 'Existing GA4 Property - No Existing Tag';
 WithPropertyNoTag.decorators = [
 	( Story ) => {
 		const setupRegistry = ( registry ) => {
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setPropertyID( ga4Fixtures.webDataStreams[ 0 ]._propertyID );
 			registry.dispatch( MODULES_ANALYTICS_4 ).setMeasurementID(
 				// eslint-disable-next-line sitekit/acronym-case
 				ga4Fixtures.webDataStreams[ 0 ].webStreamData.measurementId
@@ -58,6 +63,9 @@ WithPropertyAndTag.storyName = 'Existing GA4 Property - Existing Tag';
 WithPropertyAndTag.decorators = [
 	( Story ) => {
 		const setupRegistry = ( registry ) => {
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setPropertyID( ga4Fixtures.webDataStreams[ 0 ]._propertyID );
 			registry.dispatch( MODULES_ANALYTICS_4 ).setMeasurementID(
 				// eslint-disable-next-line sitekit/acronym-case
 				ga4Fixtures.webDataStreams[ 0 ].webStreamData.measurementId
@@ -66,6 +74,7 @@ WithPropertyAndTag.decorators = [
 				// eslint-disable-next-line sitekit/acronym-case
 				ga4Fixtures.webDataStreams[ 0 ].webStreamData.measurementId
 			);
+			registry.dispatch( MODULES_ANALYTICS_4 ).setUseSnippet( false );
 		};
 
 		return (
@@ -97,8 +106,24 @@ NoPropertyWithTag.decorators = [
 
 export default {
 	title: 'Modules/Analytics4/SetupBanner',
+	args: {
+		onCTAClick: () => {},
+	},
 	decorators: [
 		( Story ) => {
+			const {
+				createProperty,
+				createWebDataStream,
+				properties,
+				webDataStreams,
+			} = ga4Fixtures;
+			const {
+				accounts,
+				properties: uaProps,
+			} = fixtures.accountsPropertiesProfiles;
+			const accountID = createProperty._accountID;
+			const propertyID = createWebDataStream._propertyID;
+
 			const setupRegistry = ( registry ) => {
 				provideModules( registry, [
 					{
@@ -108,12 +133,62 @@ export default {
 					},
 				] );
 
-				provideSiteInfo( registry );
 				provideModuleRegistrations( registry );
+
+				registry.dispatch( CORE_SITE ).receiveSiteInfo( {
+					referenceSiteURL: 'http://example.com',
+				} );
+				registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetSettings( {} );
+				registry
+					.dispatch( MODULES_ANALYTICS )
+					.setAccountID( accountID );
+
+				registry
+					.dispatch( MODULES_ANALYTICS )
+					.receiveGetAccounts( accounts );
+				registry
+					.dispatch( MODULES_ANALYTICS )
+					.finishResolution( 'getAccounts', [] );
+
+				registry
+					.dispatch( MODULES_ANALYTICS )
+					.receiveGetProperties( uaProps, {
+						accountID,
+					} );
+				registry
+					.dispatch( MODULES_ANALYTICS )
+					.finishResolution( 'getProperties', [ accountID ] );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetProperties( properties, {
+						accountID,
+					} );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.finishResolution( 'getProperties', [ accountID ] );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetWebDataStreams( webDataStreams, {
+						propertyID,
+					} );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.finishResolution( 'receiveGetWebDataStreams', {
+						propertyID,
+					} );
 
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveGetExistingTag( null );
+
+				registry
+					.dispatch( MODULES_ANALYTICS )
+					.selectAccount( accountID );
 			};
 
 			return (
