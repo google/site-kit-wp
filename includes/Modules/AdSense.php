@@ -874,7 +874,10 @@ final class AdSense extends Module
 		$valid_metrics = apply_filters(
 			'googlesitekit_shareable_adsense_metrics',
 			array(
-				'',
+				'ESTIMATED_EARNINGS',
+				'IMPRESSIONS',
+				'PAGE_VIEWS_CTR',
+				'PAGE_VIEWS_RPM',
 			)
 		);
 
@@ -916,7 +919,7 @@ final class AdSense extends Module
 		$valid_dimensions = apply_filters(
 			'googlesitekit_shareable_adsense_dimensions',
 			array(
-				'',
+				'DATE',
 			)
 		);
 
