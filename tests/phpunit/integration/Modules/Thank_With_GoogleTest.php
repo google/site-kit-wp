@@ -132,8 +132,8 @@ class Thank_With_GoogleTest extends TestCase {
 		$output = $this->capture_action( '__test_print_scripts' );
 
 		$this->assertStringContainsString( 'Thank with Google snippet added by Site Kit', $output );
-		$this->assertStringContainsString( 'buttonPosition: \'inline\',', $output );
-		$this->assertStringContainsString( 'isPartOfProductId: \'12345:default\',', $output );
+		$this->assertStringContainsString( '"style":"inline"', $output );
+		$this->assertStringContainsString( '"isPartOfProductId":"12345:default",', $output );
 	}
 
 	public function test_is_connected() {

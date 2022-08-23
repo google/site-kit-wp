@@ -1,6 +1,4 @@
 /**
- * ActivationBanner Component Stories.
- *
  * Site Kit by Google, Copyright 2022 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,13 +17,18 @@
 /**
  * Internal dependencies
  */
-import ActivationBanner from './index';
+import SpinnerButton from './SpinnerButton';
 
-const Template = () => <ActivationBanner />;
+const Template = ( args ) => <SpinnerButton { ...args } />;
 
-export const Default = Template.bind( {} );
-Default.storyName = 'Default';
+export const DefaultButton = Template.bind( {} );
+DefaultButton.storyName = 'Default Button';
+DefaultButton.args = {
+	children: 'Default Button',
+	onClick: () => new Promise( ( resolve ) => setTimeout( resolve, 5000 ) ),
+};
 
 export default {
-	title: 'Modules/Analytics4/ActivationBanner',
+	title: 'Components/SpinnerButton',
+	component: SpinnerButton,
 };

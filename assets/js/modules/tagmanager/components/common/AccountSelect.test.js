@@ -139,4 +139,28 @@ describe( 'AccountSelect', () => {
 		expect( originalAccountID ).not.toEqual( newAccountID );
 		expect( newAccountID ).toEqual( ACCOUNT_CREATE );
 	} );
+
+	it( 'should disable the account select if the user does not have module access', () => {
+		registry
+			.dispatch( MODULES_TAGMANAGER )
+			.receiveGetAccounts( fixtures.accounts );
+		registry
+			.dispatch( MODULES_TAGMANAGER )
+			.finishResolution( 'getAccounts', [] );
+
+		const { container } = render(
+			<AccountSelect hasModuleAccess={ false } />,
+			{
+				registry,
+			}
+		);
+
+		// Verify that the Account select dropdown is disabled.
+		[
+			'.googlesitekit-tagmanager__select-account',
+			'.mdc-select--disabled',
+		].forEach( ( className ) => {
+			expect( container.querySelector( className ) ).toBeInTheDocument();
+		} );
+	} );
 } );
