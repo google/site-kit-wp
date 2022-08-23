@@ -1,17 +1,17 @@
 <?php
 /**
- * Class Google\Site_Kit\Core\REST_API\Exception\Invalid_Metrics_Exception
+ * Class Google\Site_Kit\Core\Validation\Exception\Invalid_Metrics_Exception
  *
- * @package   Google\Site_Kit\Core\REST_API\Exception
+ * @package   Google\Site_Kit\Core\Validation\Exception
  * @copyright 2022 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
 
-namespace Google\Site_Kit\Core\REST_API\Exception;
+namespace Google\Site_Kit\Core\Validation\Exception;
 
 use Google\Site_Kit\Core\Contracts\WP_Errorable;
-use Exception;
+use DomainException;
 use WP_Error;
 
 /**
@@ -21,7 +21,7 @@ use WP_Error;
  * @access private
  * @ignore
  */
-class Invalid_Metrics_Exception extends Exception implements WP_Errorable {
+class Invalid_Metrics_Exception extends DomainException implements WP_Errorable {
 
 	const WP_ERROR_CODE = 'invalid_metrics';
 
