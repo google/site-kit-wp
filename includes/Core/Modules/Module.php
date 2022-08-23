@@ -380,7 +380,9 @@ abstract class Module {
 				$restore_defer();
 			}
 
-			// Reset shared credentials usage property after execution.
+			// Reset shared credentials usage property after the request
+			// is made, regardless of whether or not it completed successfully
+			// or encountered an error.
 			$this->is_using_shared_credentials = false;
 		}
 
