@@ -23,6 +23,8 @@ use Google\Site_Kit\Core\Modules\Module_With_Assets_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Owner;
 use Google\Site_Kit\Core\Modules\Module_With_Owner_Trait;
 use Google\Site_Kit\Core\REST_API\Exception\Invalid_Datapoint_Exception;
+use Google\Site_Kit\Core\REST_API\Exception\Invalid_Metrics_Exception;
+use Google\Site_Kit\Core\REST_API\Exception\Invalid_Dimensions_Exception;
 use Google\Site_Kit\Core\Authentication\Google_Proxy;
 use Google\Site_Kit\Core\Assets\Asset;
 use Google\Site_Kit\Core\Assets\Script;
@@ -543,22 +545,7 @@ final class Analytics extends Module
 					);
 
 					if ( ! empty( $dimensions ) ) {
-						$invalid_dimensions_error_message = $this->validate_report_dimensions(
-							array_map(
-								function ( $dimension_def ) {
-									return $dimension_def->getName();
-								},
-								$dimensions
-							)
-						);
-
-						if ( isset( $invalid_dimensions_error_message ) ) {
-							return new WP_Error(
-								'invalid_dimensions',
-								$invalid_dimensions_error_message,
-								array( 'status' => 400 )
-							);
-						}
+						$this->validate_report_dimensions( $dimensions );
 
 						$request_args['dimensions'] = $dimensions;
 					}
@@ -658,22 +645,7 @@ final class Analytics extends Module
 					);
 
 					if ( ! empty( $metrics ) ) {
-						$invalid_metrics_error_message = $this->validate_report_metrics(
-							array_map(
-								function ( $metric_def ) {
-									return $metric_def->getExpression();
-								},
-								$metrics
-							)
-						);
-
-						if ( isset( $invalid_metrics_error_message ) ) {
-							return new WP_Error(
-								'invalid_metrics',
-								$invalid_metrics_error_message,
-								array( 'status' => 400 )
-							);
-						}
+						$this->validate_report_metrics( $metrics );
 
 						$request->setMetrics( $metrics );
 					}
@@ -1372,7 +1344,7 @@ final class Analytics extends Module
 	 *
 	 * @param array $metrics The metrics to validate.
 	 *
-	 * @return null|WP_Error NULL if metrics are valid, otherwise WP_Error.
+	 * @throws Invalid_Metrics_Exception Thrown if the metrics are invalid.
 	 */
 	protected function validate_report_metrics( $metrics ) {
 		if ( false === $this->is_using_shared_credentials ) {
@@ -1395,22 +1367,19 @@ final class Analytics extends Module
 			)
 		);
 
-		$invalid_metrics = array_diff( $metrics, $valid_metrics );
+		$invalid_metrics = array_diff(
+			array_map(
+				function ( $metric ) {
+					return $metric->getExpression();
+				},
+				$metrics
+			),
+			$valid_metrics
+		);
 
 		if ( count( $invalid_metrics ) > 0 ) {
-			return sprintf(
-				/* translators: %s is replaced with a comma separated list of the invalid metrics. */
-				_n(
-					'Unsupported metric requested: %s',
-					'Unsupported metrics requested: %s',
-					count( $invalid_metrics ),
-					'google-site-kit'
-				),
-				implode( ', ', $invalid_metrics )
-			);
+			throw new Invalid_Metrics_Exception( '', 0, null, $invalid_metrics );
 		}
-
-		return null;
 	}
 
 	/**
@@ -1420,7 +1389,7 @@ final class Analytics extends Module
 	 *
 	 * @param array $dimensions The dimensions to validate.
 	 *
-	 * @return null|WP_Error NULL if dimensions are valid, otherwise WP_Error.
+	 * @throws Invalid_Dimensions_Exception Thrown if the dimensions are invalid.
 	 */
 	protected function validate_report_dimensions( $dimensions ) {
 		if ( false === $this->is_using_shared_credentials ) {
@@ -1440,22 +1409,19 @@ final class Analytics extends Module
 			)
 		);
 
-		$invalid_dimensions = array_diff( $dimensions, $valid_dimensions );
+		$invalid_dimensions = array_diff(
+			array_map(
+				function ( $dimension ) {
+					return $dimension->getName();
+				},
+				$dimensions
+			),
+			$valid_dimensions
+		);
 
 		if ( count( $invalid_dimensions ) > 0 ) {
-			return sprintf(
-				/* translators: %s is replaced with a comma separated list of the invalid dimensions. */
-				_n(
-					'Unsupported dimension requested: %s',
-					'Unsupported dimensions requested: %s',
-					count( $invalid_dimensions ),
-					'google-site-kit'
-				),
-				implode( ', ', $invalid_dimensions )
-			);
+			throw new Invalid_Dimensions_Exception( '', 0, null, $invalid_dimensions );
 		}
-
-		return null;
 	}
 
 }
