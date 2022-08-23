@@ -543,6 +543,23 @@ final class Analytics extends Module
 					);
 
 					if ( ! empty( $dimensions ) ) {
+						$invalid_dimensions_error_message = $this->validate_report_dimensions(
+							array_map(
+								function ( $dimension_def ) {
+									return $dimension_def->getName();
+								},
+								$dimensions
+							)
+						);
+
+						if ( isset( $invalid_dimensions_error_message ) ) {
+							return new WP_Error(
+								'invalid_dimensions',
+								$invalid_dimensions_error_message,
+								array( 'status' => 400 )
+							);
+						}
+
 						$request_args['dimensions'] = $dimensions;
 					}
 				}
@@ -641,6 +658,23 @@ final class Analytics extends Module
 					);
 
 					if ( ! empty( $metrics ) ) {
+						$invalid_metrics_error_message = $this->validate_report_metrics(
+							array_map(
+								function ( $metric_def ) {
+									return $metric_def->getExpression();
+								},
+								$metrics
+							)
+						);
+
+						if ( isset( $invalid_metrics_error_message ) ) {
+							return new WP_Error(
+								'invalid_metrics',
+								$invalid_metrics_error_message,
+								array( 'status' => 400 )
+							);
+						}
+
 						$request->setMetrics( $metrics );
 					}
 				}
@@ -1329,6 +1363,99 @@ final class Analytics extends Module
 		}
 
 		return true;
+	}
+
+	/**
+	 * Validates the report metrics.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $metrics The metrics to validate.
+	 *
+	 * @return null|WP_Error NULL if metrics are valid, otherwise WP_Error.
+	 */
+	protected function validate_report_metrics( $metrics ) {
+		if ( false === $this->is_using_shared_credentials ) {
+			return null;
+		}
+
+		$valid_metrics = apply_filters(
+			'googlesitekit_shareable_analytics_metrics',
+			array(
+				'ga:sessions',
+				'ga:users',
+				'ga:pageviews',
+				'ga:uniquePageviews',
+				'ga:bounceRate',
+				'ga:avgSessionDuration',
+				'ga:adsenseRevenue',
+				'ga:adsenseECPM',
+				'ga:adsensePageImpressions',
+				'ga:goalCompletionsAll',
+			)
+		);
+
+		$invalid_metrics = array_diff( $metrics, $valid_metrics );
+
+		if ( count( $invalid_metrics ) > 0 ) {
+			return sprintf(
+				/* translators: %s is replaced with a comma separated list of the invalid metrics. */
+				_n(
+					'Unsupported metric requested: %s',
+					'Unsupported metrics requested: %s',
+					count( $invalid_metrics ),
+					'google-site-kit'
+				),
+				implode( ', ', $invalid_metrics )
+			);
+		}
+
+		return null;
+	}
+
+	/**
+	 * Validates the report dimensions.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $dimensions The dimensions to validate.
+	 *
+	 * @return null|WP_Error NULL if dimensions are valid, otherwise WP_Error.
+	 */
+	protected function validate_report_dimensions( $dimensions ) {
+		if ( false === $this->is_using_shared_credentials ) {
+			return null;
+		}
+
+		$valid_dimensions = apply_filters(
+			'googlesitekit_shareable_analytics_dimensions',
+			array(
+				'ga:date',
+				'ga:pagePath',
+				'ga:pageTitle',
+				'ga:channelGrouping',
+				'ga:country',
+				'ga:deviceCategory',
+				'ga:hostname',
+			)
+		);
+
+		$invalid_dimensions = array_diff( $dimensions, $valid_dimensions );
+
+		if ( count( $invalid_dimensions ) > 0 ) {
+			return sprintf(
+				/* translators: %s is replaced with a comma separated list of the invalid dimensions. */
+				_n(
+					'Unsupported dimension requested: %s',
+					'Unsupported dimensions requested: %s',
+					count( $invalid_dimensions ),
+					'google-site-kit'
+				),
+				implode( ', ', $invalid_dimensions )
+			);
+		}
+
+		return null;
 	}
 
 }
