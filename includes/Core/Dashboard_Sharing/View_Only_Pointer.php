@@ -1,6 +1,6 @@
 <?php
 /**
- * Class Google\Site_Kit\Core\Util\View_Only_Pointer
+ * Class Google\Site_Kit\Core\Dashboard_Sharing\View_Only_Pointer
  *
  * @package   Google\Site_Kit
  * @copyright 2022 Google LLC
@@ -8,10 +8,11 @@
  * @link      https://sitekit.withgoogle.com
  */
 
-namespace Google\Site_Kit\Core\Util;
+namespace Google\Site_Kit\Core\Dashboard_Sharing;
 
 use Google\Site_Kit\Core\Admin\Pointer;
 use Google\Site_Kit\Core\Permissions\Permissions;
+use Google\Site_Kit\Core\Util\Feature_Flags;
 
 /**
  * Class for view-only pointer.

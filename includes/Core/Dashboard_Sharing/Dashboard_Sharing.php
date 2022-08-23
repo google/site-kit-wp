@@ -69,6 +69,7 @@ class Dashboard_Sharing {
 	 */
 	public function register() {
 		$this->activity_metrics->register();
+		( new View_Only_Pointer() )->register();
 	}
 
 }
