@@ -114,6 +114,14 @@ abstract class Module {
 	private $google_services;
 
 	/**
+	 * Whether module is using shared credentials or not.
+	 *
+	 * @since n.e.x.t
+	 * @var bool
+	 */
+	protected $is_using_shared_credentials = false;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since 1.0.0
@@ -345,6 +353,9 @@ abstract class Module {
 			$restore_defers[] = $this->get_client()->withDefer( true );
 			if ( $this->authentication->get_oauth_client() !== $oauth_client ) {
 				$restore_defers[] = $oauth_client->get_client()->withDefer( true );
+
+				// Set request as using shared credentials if oAuth clients do not match.
+				$this->is_using_shared_credentials = true;
 			}
 
 			$request = $this->create_data_request( $data );
@@ -368,6 +379,11 @@ abstract class Module {
 			foreach ( $restore_defers as $restore_defer ) {
 				$restore_defer();
 			}
+
+			// Reset shared credentials usage property after the request
+			// is made, regardless of whether or not it completed successfully
+			// or encountered an error.
+			$this->is_using_shared_credentials = false;
 		}
 
 		if ( is_wp_error( $response ) ) {
