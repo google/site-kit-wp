@@ -96,7 +96,7 @@ final class Pointer {
 			return false;
 		}
 
-		if ( ! $this->args['active_callback'] ) {
+		if ( ! is_callable( $this->args['active_callback'] ) ) {
 			return true;
 		}
 
@@ -118,7 +118,6 @@ final class Pointer {
 	 * @since n.e.x.t
 	 */
 	private function print_script() {
-		$heading = esc_js( $this->args['title'] );
 
 		if ( is_callable( $this->args['content'] ) ) {
 			$content = call_user_func( $this->args['content'] );
@@ -126,7 +125,7 @@ final class Pointer {
 				return;
 			}
 		} else {
-			$content = '<p>' . wp_kses( $this->args['content'], 'googlesitekit_admin_notice' ) . '</p>';
+			$content = '<p>' . wp_kses( $this->args['content'], 'googlesitekit_admin_pointer' ) . '</p>';
 		}
 
 		BC_Functions::wp_print_inline_script_tag(
@@ -155,8 +154,8 @@ final class Pointer {
 					jQuery( "#%s" ).pointer( options ).pointer( "open" );
 				} );
 				',
-				$heading,
-				$content,
+				esc_js( $this->args['title'] ),
+				esc_js( $content ),
 				esc_js( $this->slug ),
 				esc_js( $this->args['target_id'] )
 			),
