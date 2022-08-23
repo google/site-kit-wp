@@ -33,6 +33,8 @@ import {
 } from '../../../../analytics-4/components/common';
 import useExistingTagEffect from '../../../../analytics-4/hooks/useExistingTagEffect';
 import { MODULES_ANALYTICS_4 } from '../../../datastore/constants';
+import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
+import { getBannerDismissalExpiryTime } from '../../../utils/banner-dismissal-expiry';
 const { useSelect } = Data;
 
 export default function SetupBanner( { onCTAClick } ) {
@@ -43,7 +45,11 @@ export default function SetupBanner( { onCTAClick } ) {
 		select( MODULES_ANALYTICS_4 ).getExistingTag()
 	);
 
-	useExistingTagEffect();
+  useExistingTagEffect();
+
+	const referenceDateString = useSelect( ( select ) =>
+		select( CORE_USER ).getReferenceDate()
+	);
 
 	let title;
 	let ctaLabel;
@@ -130,6 +136,9 @@ export default function SetupBanner( { onCTAClick } ) {
 			onCTAClick={ onCTAClick }
 			footer={ <p>{ footer }</p> }
 			dismiss={ __( 'Cancel', 'google-site-kit' ) }
+      dismissExpires={ getBannerDismissalExpiryTime(
+				referenceDateString
+			) }
 		>
 			{ children }
 		</BannerNotification>

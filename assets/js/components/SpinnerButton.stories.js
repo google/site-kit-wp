@@ -14,33 +14,21 @@
  * limitations under the License.
  */
 
-.googlesitekit-plugin {
+/**
+ * Internal dependencies
+ */
+import SpinnerButton from './SpinnerButton';
 
-	.googlesitekit-twg-position-radio {
+const Template = ( args ) => <SpinnerButton { ...args } />;
 
-		.mdc-radio {
-			margin-left: -10px;
-		}
-	}
+export const DefaultButton = Template.bind( {} );
+DefaultButton.storyName = 'Default Button';
+DefaultButton.args = {
+	children: 'Default Button',
+	onClick: () => new Promise( ( resolve ) => setTimeout( resolve, 5000 ) ),
+};
 
-	.googlesitekit-twg-position-radio__option {
-		margin-bottom: 14px;
-
-		&:last-child {
-			margin-bottom: 0;
-		}
-
-		> .mdc-form-field {
-
-			label {
-				font-weight: 500;
-			}
-		}
-
-		p {
-			color: $c-surfaces-on-surface-variant;
-			font-size: 0.75rem;
-			margin: -10px 0 0 34px;
-		}
-	}
-}
+export default {
+	title: 'Components/SpinnerButton',
+	component: SpinnerButton,
+};

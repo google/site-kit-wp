@@ -24,9 +24,17 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
+import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import BannerNotification from '../../../../../components/notifications/BannerNotification';
+import { getBannerDismissalExpiryTime } from '../../../utils/banner-dismissal-expiry';
+const { useSelect } = Data;
 
 export default function ReminderBanner( { onCTAClick } ) {
+	const referenceDateString = useSelect( ( select ) =>
+		select( CORE_USER ).getReferenceDate()
+	);
+
 	return (
 		<BannerNotification
 			id="ga4-activation-banner"
@@ -40,6 +48,9 @@ export default function ReminderBanner( { onCTAClick } ) {
 			ctaLink={ onCTAClick ? '#' : null }
 			onCTAClick={ onCTAClick }
 			dismiss={ __( 'Remind me later', 'google-site-kit' ) }
+			dismissExpires={ getBannerDismissalExpiryTime(
+				referenceDateString
+			) }
 		/>
 	);
 }
