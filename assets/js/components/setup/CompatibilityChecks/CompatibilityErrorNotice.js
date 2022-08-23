@@ -106,7 +106,7 @@ export default function CompatibilityErrorNotice( { error } ) {
 						'Site Kit cannot access the WordPress REST API. Please ensure it is enabled on your site.',
 						'google-site-kit'
 					) }{ ' ' }
-					<GetHelpLink error={ error } />
+					<GetHelpLink errorCode={ error } />
 				</p>
 			);
 		case ERROR_INVALID_HOSTNAME:
@@ -141,7 +141,7 @@ export default function CompatibilityErrorNotice( { error } ) {
 						'Looks like Site Kit is unable to place or detect tags on your site. This can be caused by using certain caching or maintenance mode plugins or your site’s frontend is configured on a different host or infrastructure than your administration dashboard.',
 						'google-site-kit'
 					) }{ ' ' }
-					<GetHelpLink error={ error } />
+					<GetHelpLink errorCode={ error } />
 				</p>
 			);
 		case ERROR_GOOGLE_API_CONNECTION_FAIL:
@@ -180,7 +180,7 @@ export default function CompatibilityErrorNotice( { error } ) {
 						'Looks like the AMP CDN is restricted in your region, which could interfere with setup on the Site Kit service.',
 						'google-site-kit'
 					) }{ ' ' }
-					<GetHelpLink error={ error } />
+					<GetHelpLink errorCode={ error } />
 				</p>
 			);
 		case ERROR_WP_PRE_V5:
