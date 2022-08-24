@@ -1452,13 +1452,13 @@ final class Analytics extends Module
 				_n(
 					'Unsupported dimension requested: %s',
 					'Unsupported dimensions requested: %s',
-					count( $dimensions ),
+					count( $invalid_dimensions ),
 					'google-site-kit'
 				),
 				join(
 					/* translators: used between list items, there is a space after the comma. */
 					__( ', ', 'google-site-kit' ),
-					$dimensions
+					$invalid_dimensions
 				)
 			);
 
