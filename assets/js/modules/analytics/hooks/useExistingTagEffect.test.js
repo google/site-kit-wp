@@ -78,9 +78,8 @@ describe( 'useExistingTagEffect', () => {
 			.dispatch( MODULES_ANALYTICS )
 			.receiveGetExistingTag( existingTag.propertyID );
 
-		const { buildAndReceiveWebAndAMP } = createBuildAndReceivers(
-			registry
-		);
+		const { buildAndReceiveWebAndAMP } =
+			createBuildAndReceivers( registry );
 		buildAndReceiveWebAndAMP( gtmAnalytics );
 
 		act( () => {
@@ -131,9 +130,8 @@ describe( 'useExistingTagEffect', () => {
 			.dispatch( MODULES_ANALYTICS )
 			.receiveGetExistingTag( existingTag.propertyID );
 
-		const { buildAndReceiveWebAndAMP } = createBuildAndReceivers(
-			registry
-		);
+		const { buildAndReceiveWebAndAMP } =
+			createBuildAndReceivers( registry );
 		buildAndReceiveWebAndAMP( gtmAnalytics );
 
 		const { rerender } = renderHook( () => useExistingTagEffect(), {
@@ -220,9 +218,8 @@ describe( 'useExistingTagEffect', () => {
 			.dispatch( MODULES_ANALYTICS )
 			.setPropertyID( existingTag.propertyID );
 
-		const { buildAndReceiveWebAndAMP } = createBuildAndReceivers(
-			registry
-		);
+		const { buildAndReceiveWebAndAMP } =
+			createBuildAndReceivers( registry );
 		buildAndReceiveWebAndAMP( gtmAnalytics );
 
 		const { rerender } = renderHook( () => useExistingTagEffect(), {
@@ -313,9 +310,8 @@ describe( 'useExistingTagEffect', () => {
 			.dispatch( MODULES_ANALYTICS )
 			.receiveGetExistingTag( existingTag.propertyID );
 
-		const { buildAndReceiveWebAndAMP } = createBuildAndReceivers(
-			registry
-		);
+		const { buildAndReceiveWebAndAMP } =
+			createBuildAndReceivers( registry );
 		buildAndReceiveWebAndAMP( gtmAnalytics );
 
 		const { rerender } = renderHook( () => useExistingTagEffect(), {
@@ -404,9 +400,8 @@ describe( 'useExistingTagEffect', () => {
 			.dispatch( MODULES_ANALYTICS )
 			.receiveGetExistingTag( existingTag.propertyID );
 
-		const { buildAndReceiveWebAndAMP } = createBuildAndReceivers(
-			registry
-		);
+		const { buildAndReceiveWebAndAMP } =
+			createBuildAndReceivers( registry );
 		buildAndReceiveWebAndAMP( gtmAnalytics );
 
 		const { rerender } = renderHook( () => useExistingTagEffect(), {

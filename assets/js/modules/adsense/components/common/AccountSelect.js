@@ -42,9 +42,8 @@ export default function AccountSelect() {
 	);
 	const { accounts, hasResolvedAccounts } = useSelect( ( select ) => ( {
 		accounts: select( MODULES_ADSENSE ).getAccounts(),
-		hasResolvedAccounts: select( MODULES_ADSENSE ).hasFinishedResolution(
-			'getAccounts'
-		),
+		hasResolvedAccounts:
+			select( MODULES_ADSENSE ).hasFinishedResolution( 'getAccounts' ),
 	} ) );
 
 	const { setAccountID } = useDispatch( MODULES_ADSENSE );

@@ -25,7 +25,8 @@ import {
 import { MODULES_THANK_WITH_GOOGLE } from './constants';
 
 describe( 'modules/thank-with-google supporter-wall', () => {
-	const supporterWallSidebarsEndpoint = /^\/google-site-kit\/v1\/modules\/thank-with-google\/data\/supporter-wall-sidebars/;
+	const supporterWallSidebarsEndpoint =
+		/^\/google-site-kit\/v1\/modules\/thank-with-google\/data\/supporter-wall-sidebars/;
 
 	let registry;
 

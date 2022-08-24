@@ -160,12 +160,10 @@ const baseActions = {
 			invariant( propertyID, 'GA4 propertyID is required.' );
 		},
 		function* ( propertyID ) {
-			const {
-				response,
-				error,
-			} = yield fetchCreateWebDataStreamStore.actions.fetchCreateWebDataStream(
-				propertyID
-			);
+			const { response, error } =
+				yield fetchCreateWebDataStreamStore.actions.fetchCreateWebDataStream(
+					propertyID
+				);
 			return { response, error };
 		}
 	),
@@ -291,9 +289,8 @@ const baseSelectors = {
 	 */
 	getMatchingWebDataStream: createRegistrySelector(
 		( select ) => ( state, propertyID ) => {
-			const datastreams = select( MODULES_ANALYTICS_4 ).getWebDataStreams(
-				propertyID
-			);
+			const datastreams =
+				select( MODULES_ANALYTICS_4 ).getWebDataStreams( propertyID );
 			if ( datastreams === undefined ) {
 				return undefined;
 			}

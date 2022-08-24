@@ -87,7 +87,8 @@ export default function DashboardSharingSettings() {
 			className={ classnames(
 				'googlesitekit-dashboard-sharing-settings',
 				{
-					'googlesitekit-dashboard-sharing-settings--has-multiple-admins': hasMultipleAdmins,
+					'googlesitekit-dashboard-sharing-settings--has-multiple-admins':
+						hasMultipleAdmins,
 				}
 			) }
 		>

@@ -87,8 +87,7 @@ generateSearchConsoleWidgetStories( {
 } );
 
 generateSearchConsoleWidgetStories( {
-	group:
-		'Search Console Module/Components/Page Dashboard/Popular Keywords Widget',
+	group: 'Search Console Module/Components/Page Dashboard/Popular Keywords Widget',
 	referenceDate: '2020-08-26',
 	...generateSearchConsoleData( [
 		{

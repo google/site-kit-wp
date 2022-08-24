@@ -24,10 +24,12 @@ import invariant from 'invariant';
 /**
  * Internal dependencies
  */
+import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { CORE_USER, PERMISSION_READ_SHARED_MODULE_DATA } from './constants';
 import { CORE_MODULES } from '../../modules/datastore/constants';
 import { getMetaCapabilityPropertyName } from '../util/permissions';
+import { createFetchStore } from '../../data/create-fetch-store';
 const { createRegistrySelector } = Data;
 
 // Actions
@@ -35,12 +37,21 @@ const CLEAR_PERMISSION_SCOPE_ERROR = 'CLEAR_PERMISSION_SCOPE_ERROR';
 const SET_PERMISSION_SCOPE_ERROR = 'SET_PERMISSION_SCOPE_ERROR';
 const RECEIVE_CAPABILITIES = 'RECEIVE_CAPABILITIES';
 
-export const initialState = {
+const fetchRefreshCapabilitiesStore = createFetchStore( {
+	baseName: 'refreshCapabilities',
+	controlCallback: () => {
+		return API.get( 'core', 'user', 'permissions', undefined, {
+			useCache: false,
+		} );
+	},
+} );
+
+const baseInitialState = {
 	permissionError: null,
 	capabilities: undefined,
 };
 
-export const actions = {
+const baseActions = {
 	/**
 	 * Clears the permission scope error, if one was previously set.
 	 *
@@ -89,11 +100,35 @@ export const actions = {
 			payload: { capabilities },
 		};
 	},
+
+	/**
+	 * Refreshes user capabilities.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {Object} Redux-style action.
+	 */
+	*refreshCapabilities() {
+		const { dispatch } = yield Data.commonActions.getRegistry();
+
+		const { response, error } =
+			yield fetchRefreshCapabilitiesStore.actions.fetchRefreshCapabilities();
+
+		if ( error ) {
+			return dispatch( CORE_USER ).setPermissionScopeError( error );
+		}
+
+		global._googlesitekitUserData = {
+			permissions: response,
+		};
+
+		return dispatch( CORE_USER ).receiveCapabilities( response );
+	},
 };
 
-export const controls = {};
+const baseControls = {};
 
-export const reducer = ( state, { type, payload } ) => {
+const baseReducer = ( state, { type, payload } ) => {
 	switch ( type ) {
 		case CLEAR_PERMISSION_SCOPE_ERROR: {
 			return {
@@ -126,7 +161,7 @@ export const reducer = ( state, { type, payload } ) => {
 	}
 };
 
-export const resolvers = {
+const baseResolvers = {
 	*getCapabilities() {
 		const registry = yield Data.commonActions.getRegistry();
 
@@ -144,7 +179,7 @@ export const resolvers = {
 	},
 };
 
-export const selectors = {
+const baseSelectors = {
 	/**
 	 * Gets the most recent permission error encountered by this user.
 	 *
@@ -214,22 +249,23 @@ export const selectors = {
 	 * @return {(boolean|undefined)} TRUE if the current user has this capability, otherwise FALSE. If capabilities ain't loaded yet, returns undefined.
 	 */
 	hasCapability: createRegistrySelector(
-		( select ) => ( state, capability, ...args ) => {
-			const capabilities = select( CORE_USER ).getCapabilities();
+		( select ) =>
+			( state, capability, ...args ) => {
+				const capabilities = select( CORE_USER ).getCapabilities();
 
-			if ( args.length > 0 ) {
-				capability = getMetaCapabilityPropertyName(
-					capability,
-					...args
-				);
+				if ( args.length > 0 ) {
+					capability = getMetaCapabilityPropertyName(
+						capability,
+						...args
+					);
+				}
+
+				if ( capabilities ) {
+					return !! capabilities[ capability ];
+				}
+
+				return undefined;
 			}
-
-			if ( capabilities ) {
-				return !! capabilities[ capability ];
-			}
-
-			return undefined;
-		}
 	),
 
 	/**
@@ -261,11 +297,20 @@ export const selectors = {
 	),
 };
 
-export default {
-	initialState,
-	actions,
-	controls,
-	reducer,
-	resolvers,
-	selectors,
-};
+const store = Data.combineStores( fetchRefreshCapabilitiesStore, {
+	initialState: baseInitialState,
+	actions: baseActions,
+	controls: baseControls,
+	reducer: baseReducer,
+	resolvers: baseResolvers,
+	selectors: baseSelectors,
+} );
+
+export const initialState = store.initialState;
+export const actions = store.actions;
+export const controls = store.controls;
+export const reducer = store.reducer;
+export const resolvers = store.resolvers;
+export const selectors = store.selectors;
+
+export default store;

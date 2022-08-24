@@ -82,33 +82,29 @@ export default function DashboardPageSpeed() {
 			select( CORE_UI ).getValue( UI_DATA_SOURCE )
 		) || DATA_SRC_LAB;
 
-	const {
-		isFetchingMobile,
-		isFetchingDesktop,
-		errorMobile,
-		errorDesktop,
-	} = useSelect( ( select ) => {
-		const store = select( MODULES_PAGESPEED_INSIGHTS );
+	const { isFetchingMobile, isFetchingDesktop, errorMobile, errorDesktop } =
+		useSelect( ( select ) => {
+			const store = select( MODULES_PAGESPEED_INSIGHTS );
 
-		return {
-			isFetchingMobile: ! store.hasFinishedResolution( 'getReport', [
-				referenceURL,
-				STRATEGY_MOBILE,
-			] ),
-			errorMobile: store.getErrorForSelector( 'getReport', [
-				referenceURL,
-				STRATEGY_MOBILE,
-			] ),
-			isFetchingDesktop: ! store.hasFinishedResolution( 'getReport', [
-				referenceURL,
-				STRATEGY_DESKTOP,
-			] ),
-			errorDesktop: store.getErrorForSelector( 'getReport', [
-				referenceURL,
-				STRATEGY_DESKTOP,
-			] ),
-		};
-	} );
+			return {
+				isFetchingMobile: ! store.hasFinishedResolution( 'getReport', [
+					referenceURL,
+					STRATEGY_MOBILE,
+				] ),
+				errorMobile: store.getErrorForSelector( 'getReport', [
+					referenceURL,
+					STRATEGY_MOBILE,
+				] ),
+				isFetchingDesktop: ! store.hasFinishedResolution( 'getReport', [
+					referenceURL,
+					STRATEGY_DESKTOP,
+				] ),
+				errorDesktop: store.getErrorForSelector( 'getReport', [
+					referenceURL,
+					STRATEGY_DESKTOP,
+				] ),
+			};
+		} );
 
 	const reportMobile = useInViewSelect( ( select ) =>
 		select( MODULES_PAGESPEED_INSIGHTS ).getReport(
@@ -329,7 +325,8 @@ export default function DashboardPageSpeed() {
 			{ ! reportError && (
 				<Recommendations
 					className={ classnames( {
-						'googlesitekit-pagespeed-widget__refreshing': isFetching,
+						'googlesitekit-pagespeed-widget__refreshing':
+							isFetching,
 					} ) }
 					referenceURL={ referenceURL }
 					strategy={ strategy }

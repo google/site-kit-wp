@@ -185,20 +185,21 @@ export const selectors = {
 	 * @return {boolean} `true`/`false` based on whether widget area is active.
 	 */
 	isWidgetAreaActive: createRegistrySelector(
-		( select ) => ( state, widgetAreaSlug, options = {} ) => {
-			invariant(
-				widgetAreaSlug,
-				'widgetAreaSlug is required to check a widget area is active.'
-			);
-
-			const { modules } = options;
-
-			return select( CORE_WIDGETS )
-				.getWidgets( widgetAreaSlug, { modules } )
-				.some( ( widget ) =>
-					select( CORE_WIDGETS ).isWidgetActive( widget.slug )
+		( select ) =>
+			( state, widgetAreaSlug, options = {} ) => {
+				invariant(
+					widgetAreaSlug,
+					'widgetAreaSlug is required to check a widget area is active.'
 				);
-		}
+
+				const { modules } = options;
+
+				return select( CORE_WIDGETS )
+					.getWidgets( widgetAreaSlug, { modules } )
+					.some( ( widget ) =>
+						select( CORE_WIDGETS ).isWidgetActive( widget.slug )
+					);
+			}
 	),
 
 	/**
