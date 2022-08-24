@@ -83,10 +83,12 @@ function SetupSuccessBannerNotification() {
 	const publicationID = useSelect( ( select ) =>
 		select( MODULES_THANK_WITH_GOOGLE ).getPublicationID()
 	);
-	const publicationURL = useSelect( ( select ) =>
-		select( MODULES_THANK_WITH_GOOGLE ).getServicePublicationURL(
-			publicationID
-		)
+	const publicationURL = useSelect(
+		( select ) =>
+			publicationID &&
+			select( MODULES_THANK_WITH_GOOGLE ).getServicePublicationURL(
+				publicationID
+			)
 	);
 
 	useMount( () => {
