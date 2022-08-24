@@ -45,11 +45,14 @@ import {
 import { MODULES_THANK_WITH_GOOGLE } from '../../modules/thank-with-google/datastore/constants';
 import { trackEvent } from '../../util/tracking';
 import useViewContext from '../../hooks/useViewContext';
+import { useFeature } from '../../hooks/useFeature';
 const { useSelect } = Data;
 
 function SetupSuccessBannerNotification() {
 	const slug = getQueryParameter( 'slug' );
 	const viewContext = useViewContext();
+	const twgEnabled = useFeature( 'twgModule' );
+
 	const modules = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModules()
 	);
@@ -80,8 +83,9 @@ function SetupSuccessBannerNotification() {
 	const settingsAdminURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-settings' )
 	);
-	const publicationID = useSelect( ( select ) =>
-		select( MODULES_THANK_WITH_GOOGLE ).getPublicationID()
+	const publicationID = useSelect(
+		( select ) =>
+			twgEnabled && select( MODULES_THANK_WITH_GOOGLE ).getPublicationID()
 	);
 	const publicationURL = useSelect(
 		( select ) =>
