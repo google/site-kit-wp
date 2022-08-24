@@ -288,13 +288,11 @@ const baseActions = {
 			invariant( active !== undefined, 'active is required.' );
 		},
 		function* ( slug, active ) {
-			const {
-				response,
-				error,
-			} = yield fetchSetModuleActivationStore.actions.fetchSetModuleActivation(
-				slug,
-				active
-			);
+			const { response, error } =
+				yield fetchSetModuleActivationStore.actions.fetchSetModuleActivation(
+					slug,
+					active
+				);
 			if ( response?.success === true ) {
 				// Fetch (or re-fetch) all modules, with their updated status.
 				// TODO: This is temporary disabled until Site Kit no longer relies
@@ -471,26 +469,22 @@ const baseActions = {
 		function* ( slug ) {
 			const { dispatch, select } = yield Data.commonActions.getRegistry();
 
-			const {
-				response,
-				error,
-			} = yield fetchRecoverModuleStore.actions.fetchRecoverModule(
-				slug
-			);
-
-			if ( response?.ownerID ) {
-				const storeName = select( CORE_MODULES ).getModuleStoreName(
+			const { response, error } =
+				yield fetchRecoverModuleStore.actions.fetchRecoverModule(
 					slug
 				);
+
+			if ( response?.ownerID ) {
+				const storeName =
+					select( CORE_MODULES ).getModuleStoreName( slug );
 				// Reload the module's settings from the server.
 				yield dispatch( storeName ).fetchGetSettings();
 
 				// Reload all modules from the server.
 				yield fetchGetModulesStore.actions.fetchGetModules();
 
-				const recoverableModules = select(
-					CORE_MODULES
-				).getRecoverableModules();
+				const recoverableModules =
+					select( CORE_MODULES ).getRecoverableModules();
 
 				if ( recoverableModules?.[ slug ] ) {
 					// Remove the module from the list of recoverable modules in state.
@@ -540,17 +534,14 @@ const baseActions = {
 			const errors = [];
 
 			for ( const slug of slugs ) {
-				const {
-					response,
-					error,
-				} = yield fetchRecoverModuleStore.actions.fetchRecoverModule(
-					slug
-				);
-
-				if ( response?.ownerID ) {
-					const storeName = select( CORE_MODULES ).getModuleStoreName(
+				const { response, error } =
+					yield fetchRecoverModuleStore.actions.fetchRecoverModule(
 						slug
 					);
+
+				if ( response?.ownerID ) {
+					const storeName =
+						select( CORE_MODULES ).getModuleStoreName( slug );
 					// Reload the module's settings from the server.
 					yield dispatch( storeName ).fetchGetSettings();
 
@@ -564,9 +555,11 @@ const baseActions = {
 				// Reload all modules from the server.
 				yield fetchGetModulesStore.actions.fetchGetModules();
 
-				const recoverableModules = select(
-					CORE_MODULES
-				).getRecoverableModules();
+				const recoverableModules =
+					select( CORE_MODULES ).getRecoverableModules();
+
+				// Refresh user capabilities from the server.
+				yield dispatch( CORE_USER ).refreshCapabilities();
 
 				if ( recoverableModules ) {
 					// Remove the recovered modules from the list of recoverable modules in state.
@@ -630,26 +623,32 @@ const baseActions = {
 
 export const baseControls = {
 	[ REFETCH_AUTHENTICATION ]: createRegistryControl(
-		( { dispatch } ) => () => {
-			return dispatch( CORE_USER ).fetchGetAuthentication();
-		}
+		( { dispatch } ) =>
+			() => {
+				return dispatch( CORE_USER ).fetchGetAuthentication();
+			}
 	),
 	[ SELECT_MODULE_REAUTH_URL ]: createRegistryControl(
-		( { select } ) => ( { payload } ) => {
-			const { slug } = payload;
-			const storeName = select( CORE_MODULES ).getModuleStoreName( slug );
+		( { select } ) =>
+			( { payload } ) => {
+				const { slug } = payload;
+				const storeName =
+					select( CORE_MODULES ).getModuleStoreName( slug );
 
-			// If a storeName wasn't specified on registerModule we assume there is no store for this module
-			if ( ! storeName ) {
-				return;
-			}
+				// If a storeName wasn't specified on registerModule we assume there is no store for this module
+				if ( ! storeName ) {
+					return;
+				}
 
-			const getAdminReauthURL = select( storeName )?.getAdminReauthURL;
-			if ( getAdminReauthURL ) {
-				return getAdminReauthURL();
+				const getAdminReauthURL =
+					select( storeName )?.getAdminReauthURL;
+				if ( getAdminReauthURL ) {
+					return getAdminReauthURL();
+				}
+				return select( CORE_SITE ).getAdminURL(
+					'googlesitekit-dashboard'
+				);
 			}
-			return select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' );
-		}
 	),
 };
 
@@ -811,9 +810,8 @@ const baseResolvers = {
 			return;
 		}
 
-		const {
-			recoverableModules,
-		} = global._googlesitekitDashboardSharingData;
+		const { recoverableModules } =
+			global._googlesitekitDashboardSharingData;
 		yield baseActions.receiveRecoverableModules( recoverableModules );
 	},
 
@@ -831,9 +829,8 @@ const baseResolvers = {
 			return;
 		}
 
-		const {
-			sharedOwnershipModules,
-		} = global._googlesitekitDashboardSharingData;
+		const { sharedOwnershipModules } =
+			global._googlesitekitDashboardSharingData;
 		yield baseActions.receiveSharedOwnershipModules(
 			sharedOwnershipModules
 		);

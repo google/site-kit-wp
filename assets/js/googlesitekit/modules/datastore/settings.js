@@ -75,46 +75,48 @@ export const actions = {
 
 export const controls = {
 	[ SUBMIT_MODULE_CHANGES ]: createRegistryControl(
-		( registry ) => ( { payload } ) => {
-			const { slug } = payload;
-			const storeName = registry
-				.select( CORE_MODULES )
-				.getModuleStoreName( slug );
+		( registry ) =>
+			( { payload } ) => {
+				const { slug } = payload;
+				const storeName = registry
+					.select( CORE_MODULES )
+					.getModuleStoreName( slug );
 
-			if ( ! storeName ) {
-				return {
-					error: `The module '${ slug }' does not have a store.`,
-				};
+				if ( ! storeName ) {
+					return {
+						error: `The module '${ slug }' does not have a store.`,
+					};
+				}
+
+				const { submitChanges } = registry.dispatch( storeName );
+				if ( ! submitChanges ) {
+					return {
+						error: `The module '${ slug }' does not have a submitChanges() action.`,
+					};
+				}
+
+				return submitChanges( slug );
 			}
-
-			const { submitChanges } = registry.dispatch( storeName );
-			if ( ! submitChanges ) {
-				return {
-					error: `The module '${ slug }' does not have a submitChanges() action.`,
-				};
-			}
-
-			return submitChanges( slug );
-		}
 	),
 	[ ROLLBACK_MODULE_CHANGES ]: createRegistryControl(
-		( registry ) => ( { payload } ) => {
-			const { slug } = payload;
-			const storeName = registry
-				.select( CORE_MODULES )
-				.getModuleStoreName( slug );
+		( registry ) =>
+			( { payload } ) => {
+				const { slug } = payload;
+				const storeName = registry
+					.select( CORE_MODULES )
+					.getModuleStoreName( slug );
 
-			if ( ! storeName ) {
-				return {
-					error: `The module '${ slug }' does not have a store.`,
-				};
-			}
+				if ( ! storeName ) {
+					return {
+						error: `The module '${ slug }' does not have a store.`,
+					};
+				}
 
-			const { rollbackChanges } = registry.dispatch( storeName );
-			if ( rollbackChanges ) {
-				return rollbackChanges( slug );
+				const { rollbackChanges } = registry.dispatch( storeName );
+				if ( rollbackChanges ) {
+					return rollbackChanges( slug );
+				}
 			}
-		}
 	),
 };
 

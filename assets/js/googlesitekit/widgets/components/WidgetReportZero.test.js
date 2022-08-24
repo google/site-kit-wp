@@ -100,8 +100,9 @@ describe( 'WidgetReportZero', () => {
 			<WidgetReportZero widgetSlug="testWidget" { ...props } />,
 			{ registry }
 		).container;
-		const container = render( <ReportZero { ...props } />, { registry } )
-			.container;
+		const container = render( <ReportZero { ...props } />, {
+			registry,
+		} ).container;
 
 		expect( widgetContainer.innerHTML ).toEqual( container.innerHTML );
 	} );

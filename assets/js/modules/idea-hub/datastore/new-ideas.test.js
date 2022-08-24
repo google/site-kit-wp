@@ -36,7 +36,8 @@ describe( 'modules/idea-hub new-ideas', () => {
 		lastIdeaPostUpdatedAt: '123',
 	};
 
-	const newIdeasEndpoint = /^\/google-site-kit\/v1\/modules\/idea-hub\/data\/new-ideas/;
+	const newIdeasEndpoint =
+		/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/new-ideas/;
 
 	beforeAll( () => {
 		API.setUsingCache( false );

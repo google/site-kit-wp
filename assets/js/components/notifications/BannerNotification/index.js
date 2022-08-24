@@ -105,9 +105,8 @@ function BannerNotification( {
 	const [ isClosed, setIsClosed ] = useState( false );
 	// Start with an undefined dismissed state due to async resolution.
 	const [ isDismissed, setIsDismissed ] = useState( false );
-	const [ isAwaitingCTAResponse, setIsAwaitingCTAResponse ] = useState(
-		false
-	);
+	const [ isAwaitingCTAResponse, setIsAwaitingCTAResponse ] =
+		useState( false );
 	const cacheKeyDismissed = `notification::dismissed::${ id }`;
 	// Persists the notification dismissal to browser storage.
 	// Dismissed notifications don't expire.
@@ -344,9 +343,11 @@ function BannerNotification( {
 			className={ classnames( className, 'googlesitekit-publisher-win', {
 				[ `googlesitekit-publisher-win--${ format }` ]: format,
 				[ `googlesitekit-publisher-win--${ type }` ]: type,
-				[ `googlesitekit-publisher-win--${ closedClass }` ]: closedClass,
+				[ `googlesitekit-publisher-win--${ closedClass }` ]:
+					closedClass,
 				'googlesitekit-publisher-win--rounded': rounded,
-				'googlesitekit-publisher-win--no-bottom-padding': noBottomPadding,
+				'googlesitekit-publisher-win--no-bottom-padding':
+					noBottomPadding,
 			} ) }
 		>
 			<Grid

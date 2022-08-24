@@ -115,9 +115,8 @@ const SearchFunnelWidget = ( {
 			return false;
 		}
 
-		const recoverableModules = select(
-			CORE_MODULES
-		).getRecoverableModules();
+		const recoverableModules =
+			select( CORE_MODULES ).getRecoverableModules();
 
 		if ( recoverableModules === undefined ) {
 			return undefined;
@@ -203,9 +202,10 @@ const SearchFunnelWidget = ( {
 
 	const searchConsoleLoading = useSelect(
 		( select ) =>
-			! select(
-				MODULES_SEARCH_CONSOLE
-			).hasFinishedResolution( 'getReport', [ searchConsoleReportArgs ] )
+			! select( MODULES_SEARCH_CONSOLE ).hasFinishedResolution(
+				'getReport',
+				[ searchConsoleReportArgs ]
+			)
 	);
 
 	const analyticsOverviewLoading = useSelect( ( select ) => {

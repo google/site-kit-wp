@@ -156,12 +156,10 @@ const baseActions = {
 		invariant( accountID, 'accountID is required.' );
 
 		return ( function* () {
-			const {
-				response,
-				error,
-			} = yield fetchCreatePropertyStore.actions.fetchCreateProperty(
-				accountID
-			);
+			const { response, error } =
+				yield fetchCreatePropertyStore.actions.fetchCreateProperty(
+					accountID
+				);
 			return { response, error };
 		} )();
 	},

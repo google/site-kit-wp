@@ -23,6 +23,8 @@ use Google\Site_Kit\Core\Modules\Module_With_Assets_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Owner;
 use Google\Site_Kit\Core\Modules\Module_With_Owner_Trait;
 use Google\Site_Kit\Core\REST_API\Exception\Invalid_Datapoint_Exception;
+use Google\Site_Kit\Core\Validation\Exception\Invalid_Report_Metrics_Exception;
+use Google\Site_Kit\Core\Validation\Exception\Invalid_Report_Dimensions_Exception;
 use Google\Site_Kit\Core\Authentication\Google_Proxy;
 use Google\Site_Kit\Core\Assets\Asset;
 use Google\Site_Kit\Core\Assets\Script;
@@ -543,6 +545,15 @@ final class Analytics extends Module
 					);
 
 					if ( ! empty( $dimensions ) ) {
+						try {
+							$this->validate_report_dimensions( $dimensions );
+						} catch ( Invalid_Report_Dimensions_Exception $exception ) {
+							return new WP_Error(
+								'invalid_analytics_report_dimensions',
+								$exception->getMessage()
+							);
+						}
+
 						$request_args['dimensions'] = $dimensions;
 					}
 				}
@@ -641,6 +652,15 @@ final class Analytics extends Module
 					);
 
 					if ( ! empty( $metrics ) ) {
+						try {
+							$this->validate_report_metrics( $metrics );
+						} catch ( Invalid_Report_Metrics_Exception $exception ) {
+							return new WP_Error(
+								'invalid_analytics_report_metrics',
+								$exception->getMessage()
+							);
+						}
+
 						$request->setMetrics( $metrics );
 					}
 				}
@@ -1329,6 +1349,121 @@ final class Analytics extends Module
 		}
 
 		return true;
+	}
+
+	/**
+	 * Validates the report metrics.
+	 *
+	 * @since 1.82.0
+	 *
+	 * @param Google_Service_AnalyticsReporting_Metric[] $metrics The metrics to validate.
+	 * @throws Invalid_Report_Metrics_Exception Thrown if the metrics are invalid.
+	 */
+	protected function validate_report_metrics( $metrics ) {
+		if ( false === $this->is_using_shared_credentials ) {
+			return null;
+		}
+
+		$valid_metrics = apply_filters(
+			'googlesitekit_shareable_analytics_metrics',
+			array(
+				'ga:sessions',
+				'ga:users',
+				'ga:pageviews',
+				'ga:uniquePageviews',
+				'ga:bounceRate',
+				'ga:avgSessionDuration',
+				'ga:adsenseRevenue',
+				'ga:adsenseECPM',
+				'ga:adsensePageImpressions',
+				'ga:goalCompletionsAll',
+			)
+		);
+
+		$invalid_metrics = array_diff(
+			array_map(
+				function ( $metric ) {
+					return $metric->getExpression();
+				},
+				$metrics
+			),
+			$valid_metrics
+		);
+
+		if ( count( $invalid_metrics ) > 0 ) {
+			$message = sprintf(
+				/* translators: %s is replaced with a comma separated list of the invalid metrics. */
+				_n(
+					'Unsupported metric requested: %s',
+					'Unsupported metrics requested: %s',
+					count( $invalid_metrics ),
+					'google-site-kit'
+				),
+				join(
+					/* translators: used between list items, there is a space after the comma. */
+					__( ', ', 'google-site-kit' ),
+					$invalid_metrics
+				)
+			);
+
+			throw new Invalid_Report_Metrics_Exception( $message );
+		}
+	}
+
+	/**
+	 * Validates the report dimensions.
+	 *
+	 * @since 1.82.0
+	 *
+	 * @param Google_Service_AnalyticsReporting_Dimension[] $dimensions The dimensions to validate.
+	 * @throws Invalid_Report_Dimensions_Exception Thrown if the dimensions are invalid.
+	 */
+	protected function validate_report_dimensions( $dimensions ) {
+		if ( false === $this->is_using_shared_credentials ) {
+			return null;
+		}
+
+		$valid_dimensions = apply_filters(
+			'googlesitekit_shareable_analytics_dimensions',
+			array(
+				'ga:date',
+				'ga:pagePath',
+				'ga:pageTitle',
+				'ga:channelGrouping',
+				'ga:country',
+				'ga:deviceCategory',
+				'ga:hostname',
+			)
+		);
+
+		$invalid_dimensions = array_diff(
+			array_map(
+				function ( $dimension ) {
+					return $dimension->getName();
+				},
+				$dimensions
+			),
+			$valid_dimensions
+		);
+
+		if ( count( $invalid_dimensions ) > 0 ) {
+			$message = sprintf(
+				/* translators: %s is replaced with a comma separated list of the invalid dimensions. */
+				_n(
+					'Unsupported dimension requested: %s',
+					'Unsupported dimensions requested: %s',
+					count( $invalid_dimensions ),
+					'google-site-kit'
+				),
+				join(
+					/* translators: used between list items, there is a space after the comma. */
+					__( ', ', 'google-site-kit' ),
+					$invalid_dimensions
+				)
+			);
+
+			throw new Invalid_Report_Dimensions_Exception( $message );
+		}
 	}
 
 }

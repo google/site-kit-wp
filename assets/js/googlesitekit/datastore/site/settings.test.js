@@ -30,7 +30,8 @@ import {
 describe( 'core/site urls', () => {
 	let registry;
 
-	const adminBarSettingsEndpoint = /^\/google-site-kit\/v1\/core\/site\/data\/admin-bar-settings/;
+	const adminBarSettingsEndpoint =
+		/^\/google-site-kit\/v1\/core\/site\/data\/admin-bar-settings/;
 
 	beforeEach( () => {
 		registry = createTestRegistry();

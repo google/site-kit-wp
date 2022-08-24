@@ -46,25 +46,26 @@ export const selectors = {
 	 * @return {(string|undefined)} The URL to the service, or `undefined` if not loaded.
 	 */
 	getServiceURL: createRegistrySelector(
-		( select ) => ( state, { path, query } = {} ) => {
-			const userEmail = select( CORE_USER ).getEmail();
-			if ( userEmail === undefined ) {
-				return undefined;
-			}
+		( select ) =>
+			( state, { path, query } = {} ) => {
+				const userEmail = select( CORE_USER ).getEmail();
+				if ( userEmail === undefined ) {
+					return undefined;
+				}
 
-			const baseURI = 'https://www.google.com/adsense/new/u/0';
-			const queryParams = query
-				? { ...query, authuser: userEmail }
-				: { authuser: userEmail };
-			if ( path ) {
-				const sanitizedPath = `/${ path.replace( /^\//, '' ) }`;
-				return addQueryArgs(
-					`${ baseURI }${ sanitizedPath }`,
-					queryParams
-				);
+				const baseURI = 'https://www.google.com/adsense/new/u/0';
+				const queryParams = query
+					? { ...query, authuser: userEmail }
+					: { authuser: userEmail };
+				if ( path ) {
+					const sanitizedPath = `/${ path.replace( /^\//, '' ) }`;
+					return addQueryArgs(
+						`${ baseURI }${ sanitizedPath }`,
+						queryParams
+					);
+				}
+				return addQueryArgs( baseURI, queryParams );
 			}
-			return addQueryArgs( baseURI, queryParams );
-		}
 	),
 
 	/**

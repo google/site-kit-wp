@@ -301,12 +301,11 @@ describe( 'createNotificationsStore store', () => {
 						init: { status: 400 },
 					} );
 
-				const result = await storeDefinition.controls.FETCH_GET_NOTIFICATIONS(
-					{
+				const result =
+					await storeDefinition.controls.FETCH_GET_NOTIFICATIONS( {
 						payload: { params: {} },
 						type: 'FETCH_GET_NOTIFICATIONS',
-					}
-				);
+					} );
 				expect( result ).toEqual( response );
 				// Ensure `console.error()` wasn't called, which will happen if the API
 				// request fails.

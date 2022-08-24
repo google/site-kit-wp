@@ -44,9 +44,10 @@ export default function WebStoriesAdUnitSelect() {
 
 	const { adunits, hasResolvedAdUnits } = useSelect( ( select ) => ( {
 		adunits: select( MODULES_ADSENSE ).getAdUnits( accountID, clientID ),
-		hasResolvedAdUnits: select(
-			MODULES_ADSENSE
-		).hasFinishedResolution( 'getAdUnits', [ accountID, clientID ] ),
+		hasResolvedAdUnits: select( MODULES_ADSENSE ).hasFinishedResolution(
+			'getAdUnits',
+			[ accountID, clientID ]
+		),
 	} ) );
 
 	const { setWebStoriesAdUnit } = useDispatch( MODULES_ADSENSE );

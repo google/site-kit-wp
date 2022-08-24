@@ -36,7 +36,8 @@ describe( 'modules/idea-hub draft-ideas', () => {
 	};
 	let registry;
 
-	const getDraftPostIdeasEndpoint = /^\/google-site-kit\/v1\/modules\/idea-hub\/data\/draft-post-ideas/;
+	const getDraftPostIdeasEndpoint =
+		/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/draft-post-ideas/;
 
 	beforeAll( () => {
 		API.setUsingCache( false );

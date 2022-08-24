@@ -106,9 +106,8 @@ export default function SetupUsingProxyWithSignIn() {
 			homeURL: untrailingslashit( site.getHomeURL() ),
 			isConnected: site.isConnected(),
 			hasMultipleAdmins: site.hasMultipleAdmins(),
-			secondAdminLearnMoreLink: site.getDocumentationLinkURL(
-				'already-configured'
-			),
+			secondAdminLearnMoreLink:
+				site.getDocumentationLinkURL( 'already-configured' ),
 		};
 	} );
 
