@@ -42,6 +42,7 @@ import {
 	CORE_USER,
 	PERMISSION_MANAGE_OPTIONS,
 } from '../../googlesitekit/datastore/user/constants';
+import { MODULES_THANK_WITH_GOOGLE } from '../../modules/thank-with-google/datastore/constants';
 import { trackEvent } from '../../util/tracking';
 import useViewContext from '../../hooks/useViewContext';
 const { useSelect } = Data;
@@ -78,6 +79,14 @@ function SetupSuccessBannerNotification() {
 	} );
 	const settingsAdminURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-settings' )
+	);
+	const publicationID = useSelect( ( select ) =>
+		select( MODULES_THANK_WITH_GOOGLE ).getPublicationID()
+	);
+	const publicationURL = useSelect( ( select ) =>
+		select( MODULES_THANK_WITH_GOOGLE ).getServicePublicationURL(
+			publicationID
+		)
 	);
 
 	useMount( () => {
@@ -210,7 +219,7 @@ function SetupSuccessBannerNotification() {
 						'open the administrator panel.',
 						'google-site-kit'
 					),
-					url: 'https://publishercenter.google.com/',
+					url: publicationURL,
 					target: LEARN_MORE_TARGET.EXTERNAL,
 				};
 			}
