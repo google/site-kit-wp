@@ -27,6 +27,8 @@ import {
 	MODULES_THANK_WITH_GOOGLE,
 	ONBOARDING_STATE_COMPLETE,
 } from './constants';
+import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
+import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 
 const { createRegistrySelector } = Data;
 
@@ -155,6 +157,37 @@ const baseSelectors = {
 			publications[ 0 ]
 		);
 	} ),
+
+	/**
+	 * Gets the link to create new publication.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {string} Create publication URL.
+	 */
+	getServiceCreatePublicationURL: createRegistrySelector(
+		( select ) => () => {
+			const homeURL = select( CORE_SITE ).getHomeURL();
+
+			const url = new URL( 'https://publishercenter.google.com/' );
+			url.searchParams.set( 'sk_url', encodeURIComponent( homeURL ) );
+
+			return select( CORE_USER ).getAccountChooserURL( url.toString() );
+		}
+	),
+
+	/**
+	 * Gets the link of an existing publication.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} _state        Data store's state.
+	 * @param {string} publicationID The ID of the publication to get link for.
+	 * @return {string} Publication link.
+	 */
+	getServicePublicationURL: ( _state, publicationID ) => {
+		return `https://publishercenter.google.com/publications/${ publicationID }/overview`;
+	},
 };
 
 const store = Data.combineStores( fetchGetPublicationsStore, {
