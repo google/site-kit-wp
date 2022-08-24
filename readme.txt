@@ -4,7 +4,7 @@ Contributors:      google
 Requires at least: 4.7
 Tested up to:      6.0
 Requires PHP:      5.6
-Stable tag:        1.81.0
+Stable tag:        1.82.0
 License:           Apache License 2.0
 License URI:       https://www.apache.org/licenses/LICENSE-2.0
 Tags:              google, search-console, analytics, adsense, pagespeed-insights, optimize, tag-manager, site-kit
@@ -107,6 +107,32 @@ By default, Site Kit does anonymize IP addresses upon activation of the Google A
 Please create a new topic on our [WordPress.org support forum](https://wordpress.org/support/plugin/google-site-kit/). Be sure to follow the [support forum guidelines](https://wordpress.org/support/guidelines/) when posting.
 
 == Changelog ==
+
+= 1.82.0 =
+
+**Added**
+
+* Add the Google Analytics 4 Activation Banner to the Entity Dashboard. See [#5673](https://github.com/google/site-kit-wp/issues/5673).
+* Implement the design for the Success component from the Analytics-4 module. See [#5274](https://github.com/google/site-kit-wp/issues/5274).
+* Add logic for GA4 Activation banner timing. See [#5272](https://github.com/google/site-kit-wp/issues/5272).
+* Add a "button with spinner" component. See [#5271](https://github.com/google/site-kit-wp/issues/5271).
+
+**Enhanced**
+
+* Limit shared requests for Analytics reports to metrics and dimensions used by the Site Kit dashboard. See [#5711](https://github.com/google/site-kit-wp/issues/5711).
+* Flatten Thank with Google placement options in settings. See [#5683](https://github.com/google/site-kit-wp/issues/5683).
+* Show a list of features on the Thank with Google disconnection modal. See [#5661](https://github.com/google/site-kit-wp/issues/5661).
+* Ensure Thank with Google API results are filtered properly. See [#5653](https://github.com/google/site-kit-wp/issues/5653).
+* Update Thank with Google JS snippet parameters to reflect API updates. See [#5535](https://github.com/google/site-kit-wp/issues/5535).
+* Truncate long usernames in Dashboard Sharing. See [#5500](https://github.com/google/site-kit-wp/issues/5500).
+* Only allow users with Tag Manager access to edit Tag Manager settings in the UI. See [#5495](https://github.com/google/site-kit-wp/issues/5495).
+* Add the "Get Help" link to the compatibility error notice. See [#5483](https://github.com/google/site-kit-wp/issues/5483).
+* Update tooltip styles. See [#5444](https://github.com/google/site-kit-wp/issues/5444).
+* Refresh user permissions on module recovery. See [#5416](https://github.com/google/site-kit-wp/issues/5416).
+
+**Fixed**
+
+* Fix js errors in the storybook stories. See [#5585](https://github.com/google/site-kit-wp/issues/5585).
 
 = 1.81.0 =
 

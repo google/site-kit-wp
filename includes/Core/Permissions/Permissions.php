@@ -696,7 +696,7 @@ final class Permissions {
 	/**
 	 * Gets related REST routes.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.82.0
 	 *
 	 * @return array List of REST_Route objects.
 	 */

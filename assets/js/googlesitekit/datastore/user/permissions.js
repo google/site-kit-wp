@@ -104,7 +104,7 @@ const baseActions = {
 	/**
 	 * Refreshes user capabilities.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.82.0
 	 *
 	 * @return {Object} Redux-style action.
 	 */

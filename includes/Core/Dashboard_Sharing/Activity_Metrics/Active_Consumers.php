@@ -16,7 +16,7 @@ use Google\Site_Kit\Core\Storage\User_Setting;
 /**
  * Class for representing active consumers for an access token.
  *
- * @since n.e.x.t
+ * @since 1.82.0
  * @access private
  * @ignore
  */
@@ -30,7 +30,7 @@ class Active_Consumers extends User_Setting {
 	/**
 	 * Gets the expected value type.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.82.0
 	 *
 	 * @return string The type name.
 	 */
@@ -41,7 +41,7 @@ class Active_Consumers extends User_Setting {
 	/**
 	 * Gets the default value.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.82.0
 	 *
 	 * @return array The default value.
 	 */
@@ -52,7 +52,7 @@ class Active_Consumers extends User_Setting {
 	/**
 	 * Gets the callback for sanitizing the setting's value before saving.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.82.0
 	 *
 	 * @return Closure
 	 */
