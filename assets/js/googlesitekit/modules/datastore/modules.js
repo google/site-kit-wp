@@ -558,6 +558,9 @@ const baseActions = {
 				const recoverableModules =
 					select( CORE_MODULES ).getRecoverableModules();
 
+				// Refresh user capabilities from the server.
+				yield dispatch( CORE_USER ).refreshCapabilities();
+
 				if ( recoverableModules ) {
 					// Remove the recovered modules from the list of recoverable modules in state.
 					yield baseActions.receiveRecoverableModules(
