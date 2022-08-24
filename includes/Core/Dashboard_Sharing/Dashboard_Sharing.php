@@ -49,6 +49,14 @@ class Dashboard_Sharing {
 	protected $activity_metrics;
 
 	/**
+	 * View_Only_Pointer instance.
+	 *
+	 * @since n.e.x.t
+	 * @var View_Only_Pointer
+	 */
+	protected $view_only_pointer;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since n.e.x.t
@@ -57,9 +65,10 @@ class Dashboard_Sharing {
 	 * @param User_Options $user_options Optional. User Option API instance. Default is a new instance.
 	 */
 	public function __construct( Context $context, User_Options $user_options = null ) {
-		$this->context          = $context;
-		$this->user_options     = $user_options ?: new User_Options( $this->context );
-		$this->activity_metrics = new Activity_Metrics( $this->context, $this->user_options );
+		$this->context           = $context;
+		$this->user_options      = $user_options ?: new User_Options( $this->context );
+		$this->activity_metrics  = new Activity_Metrics( $this->context, $this->user_options );
+		$this->view_only_pointer = new View_Only_Pointer();
 	}
 
 	/**
@@ -69,7 +78,7 @@ class Dashboard_Sharing {
 	 */
 	public function register() {
 		$this->activity_metrics->register();
-		( new View_Only_Pointer() )->register();
+		$this->view_only_pointer->register();
 	}
 
 }
