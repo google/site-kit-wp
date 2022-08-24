@@ -149,11 +149,8 @@ describe( 'AccountSelect', () => {
 			{ body: [] }
 		);
 
-		const {
-			accounts,
-			properties,
-			profiles,
-		} = fixtures.accountsPropertiesProfiles;
+		const { accounts, properties, profiles } =
+			fixtures.accountsPropertiesProfiles;
 		const { getByText, container, registry } = render( <AccountSelect />, {
 			setupRegistry,
 		} );

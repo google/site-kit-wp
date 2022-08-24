@@ -60,13 +60,13 @@ export default function SettingsEdit() {
 		return select( CORE_MODULES ).hasModuleAccess( 'tagmanager' );
 	} );
 	const isLoadingModuleAccess = useSelect( ( select ) => {
-		const hasResolvedModuleOwner = select(
-			MODULES_TAGMANAGER
-		).hasFinishedResolution( 'getSettings' );
+		const hasResolvedModuleOwner =
+			select( MODULES_TAGMANAGER ).hasFinishedResolution( 'getSettings' );
 
-		const isResolvingModuleAccess = select(
-			CORE_MODULES
-		).isResolving( 'hasModuleAccess', [ 'tagmanager' ] );
+		const isResolvingModuleAccess = select( CORE_MODULES ).isResolving(
+			'hasModuleAccess',
+			[ 'tagmanager' ]
+		);
 
 		return (
 			! hasResolvedModuleOwner ||

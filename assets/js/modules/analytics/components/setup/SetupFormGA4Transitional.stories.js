@@ -52,8 +52,7 @@ function Template() {
 export const WithoutExistingTag = Template.bind( null );
 WithoutExistingTag.storyName = 'Without Existing Tags';
 WithoutExistingTag.scenario = {
-	label:
-		'Modules/Analytics/Setup/SetupFormGA4Transitional/WithoutExistingTag',
+	label: 'Modules/Analytics/Setup/SetupFormGA4Transitional/WithoutExistingTag',
 	delay: 250,
 };
 
@@ -134,8 +133,7 @@ WithGA4AndUAExistingTag.decorators = [
 	},
 ];
 WithGA4AndUAExistingTag.scenario = {
-	label:
-		'Modules/Analytics/Setup/SetupFormGA4Transitional/WithGA4AndUAExistingTag',
+	label: 'Modules/Analytics/Setup/SetupFormGA4Transitional/WithGA4AndUAExistingTag',
 	delay: 250,
 };
 
@@ -147,9 +145,8 @@ WithExistingGTMPropertyNonMatching.decorators = [
 		const setupRegistry = ( registry ) => {
 			const propertyID = properties[ 1 ].id;
 
-			const { buildAndReceiveWebAndAMP } = createBuildAndReceivers(
-				registry
-			);
+			const { buildAndReceiveWebAndAMP } =
+				createBuildAndReceivers( registry );
 			buildAndReceiveWebAndAMP( {
 				accountID,
 				webPropertyID: propertyID,
@@ -173,9 +170,8 @@ WithExistingGTMPropertyMatching.decorators = [
 		const setupRegistry = ( registry ) => {
 			const propertyID = properties[ 0 ].id;
 
-			const { buildAndReceiveWebAndAMP } = createBuildAndReceivers(
-				registry
-			);
+			const { buildAndReceiveWebAndAMP } =
+				createBuildAndReceivers( registry );
 			buildAndReceiveWebAndAMP( {
 				accountID,
 				webPropertyID: propertyID,
@@ -191,8 +187,7 @@ WithExistingGTMPropertyMatching.decorators = [
 	},
 ];
 WithExistingGTMPropertyMatching.scenario = {
-	label:
-		'Modules/Analytics/Setup/SetupFormGA4Transitional/WithExistingGTMPropertyMatching',
+	label: 'Modules/Analytics/Setup/SetupFormGA4Transitional/WithExistingGTMPropertyMatching',
 	delay: 250,
 };
 

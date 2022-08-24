@@ -121,9 +121,8 @@ const SurveyQuestionMultiSelect = ( {
 			// eslint-disable-next-line camelcase
 			if ( write_in ) {
 				// eslint-disable-next-line camelcase
-				const { selected, answer_text } = selectedValues[
-					answer_ordinal
-				];
+				const { selected, answer_text } =
+					selectedValues[ answer_ordinal ];
 				if ( selected && answer_text.length === 0 ) {
 					return true;
 				}

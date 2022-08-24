@@ -39,13 +39,11 @@ export default function TagCheckProgress( { className } ) {
 	const isResolvingLiveContainerVersion = useSelect( ( select ) => {
 		const accountID = select( MODULES_TAGMANAGER ).getAccountID();
 
-		const internalContainerID = select(
-			MODULES_TAGMANAGER
-		).getInternalContainerID();
+		const internalContainerID =
+			select( MODULES_TAGMANAGER ).getInternalContainerID();
 
-		const internalAMPContainerID = select(
-			MODULES_TAGMANAGER
-		).getInternalAMPContainerID();
+		const internalAMPContainerID =
+			select( MODULES_TAGMANAGER ).getInternalAMPContainerID();
 
 		return (
 			select( MODULES_TAGMANAGER ).isResolving(

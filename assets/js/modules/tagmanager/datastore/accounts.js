@@ -122,9 +122,8 @@ export const baseActions = {
 			// Trigger cascading selections.
 			const { isAMP, isSecondaryAMP } = select( CORE_SITE );
 			if ( ! isAMP() || isSecondaryAMP() ) {
-				const webContainers = select(
-					MODULES_TAGMANAGER
-				).getWebContainers( accountID );
+				const webContainers =
+					select( MODULES_TAGMANAGER ).getWebContainers( accountID );
 
 				if ( ! webContainers.length ) {
 					dispatch( MODULES_TAGMANAGER ).setContainerID(
@@ -144,9 +143,8 @@ export const baseActions = {
 			}
 
 			if ( isAMP() ) {
-				const ampContainers = select(
-					MODULES_TAGMANAGER
-				).getAMPContainers( accountID );
+				const ampContainers =
+					select( MODULES_TAGMANAGER ).getAMPContainers( accountID );
 
 				if ( ! ampContainers.length ) {
 					dispatch( MODULES_TAGMANAGER ).setAMPContainerID(
@@ -200,9 +198,8 @@ export const baseResolvers = {
 
 		// Only fetch accounts if they have not been received yet.
 		if ( ! accounts ) {
-			( {
-				response: accounts,
-			} = yield fetchGetAccountsStore.actions.fetchGetAccounts() );
+			( { response: accounts } =
+				yield fetchGetAccountsStore.actions.fetchGetAccounts() );
 		}
 
 		if (

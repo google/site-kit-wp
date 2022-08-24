@@ -130,9 +130,10 @@ describe( 'PropertySelect', () => {
 
 		const existingTagPropertyID =
 			fixtures.getTagPermissionsAccess.propertyID;
-		const existingTagProperty = fixtures.accountsPropertiesProfiles.properties.find(
-			( { id } ) => id === existingTagPropertyID
-		);
+		const existingTagProperty =
+			fixtures.accountsPropertiesProfiles.properties.find(
+				( { id } ) => id === existingTagPropertyID
+			);
 		const selectedText = container.querySelector(
 			'.mdc-select__selected-text'
 		);
@@ -184,11 +185,10 @@ describe( 'PropertySelect', () => {
 	} );
 
 	it( 'should update propertyID in the store when a new item is selected', async () => {
-		const {
-			getAllByRole,
-			container,
-			registry,
-		} = render( <PropertySelect />, { setupRegistry } );
+		const { getAllByRole, container, registry } = render(
+			<PropertySelect />,
+			{ setupRegistry }
+		);
 		const originalPropertyID = registry
 			.select( MODULES_ANALYTICS )
 			.getPropertyID();
@@ -212,11 +212,10 @@ describe( 'PropertySelect', () => {
 	} );
 
 	it( 'should update internalWebPropertyID in the store when an item is selected', () => {
-		const {
-			getAllByRole,
-			container,
-			registry,
-		} = render( <PropertySelect />, { setupRegistry } );
+		const { getAllByRole, container, registry } = render(
+			<PropertySelect />,
+			{ setupRegistry }
+		);
 		const accountID =
 			fixtures.accountsPropertiesProfiles.properties[ 0 ].accountId; // eslint-disable-line sitekit/acronym-case
 		const originalID = registry

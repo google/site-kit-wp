@@ -1783,9 +1783,8 @@ describe( 'core/modules modules', () => {
 			} );
 
 			it( 'should return undefined if `modules` list cannot be loaded', () => {
-				global[
-					dashboardSharingDataBaseVar
-				] = sharedOwnershipModulesList;
+				global[ dashboardSharingDataBaseVar ] =
+					sharedOwnershipModulesList;
 
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
@@ -1814,9 +1813,8 @@ describe( 'core/modules modules', () => {
 			} );
 
 			it( 'should return the modules object for each shared ownership module', async () => {
-				global[
-					dashboardSharingDataBaseVar
-				] = sharedOwnershipModulesList;
+				global[ dashboardSharingDataBaseVar ] =
+					sharedOwnershipModulesList;
 
 				provideModules( registry, FIXTURES );
 

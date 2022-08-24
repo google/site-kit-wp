@@ -52,7 +52,8 @@ describe( 'core/user authentication', () => {
 		},
 	};
 
-	const coreUserDataEndpointRegExp = /^\/google-site-kit\/v1\/core\/user\/data\/authentication/;
+	const coreUserDataEndpointRegExp =
+		/^\/google-site-kit\/v1\/core\/user\/data\/authentication/;
 
 	let registry;
 	let store;

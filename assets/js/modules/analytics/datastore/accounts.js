@@ -242,10 +242,8 @@ const baseActions = {
 		};
 
 		yield clearError( 'createAccount', [] );
-		const {
-			response,
-			error,
-		} = yield fetchCreateAccountStore.actions.fetchCreateAccount( data );
+		const { response, error } =
+			yield fetchCreateAccountStore.actions.fetchCreateAccount( data );
 		if ( error ) {
 			// Store error manually since createAccount signature differs from fetchCreateAccount.
 			yield receiveError( error, 'createAccount', [] );
@@ -319,10 +317,8 @@ const baseResolvers = {
 			.getMatchedProperty();
 		// Only fetch accounts if there are none in the store.
 		if ( existingAccounts === undefined ) {
-			const {
-				response,
-				error,
-			} = yield fetchGetAccountsPropertiesProfilesStore.actions.fetchGetAccountsPropertiesProfiles();
+			const { response, error } =
+				yield fetchGetAccountsPropertiesProfilesStore.actions.fetchGetAccountsPropertiesProfiles();
 
 			const { dispatch } = registry;
 			if ( response ) {

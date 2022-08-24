@@ -31,7 +31,8 @@ import { CORE_USER } from './constants';
 describe( 'core/user tracking settings', () => {
 	let registry;
 
-	const coreUserTrackingSettingsEndpointRegExp = /^\/google-site-kit\/v1\/core\/user\/data\/tracking/;
+	const coreUserTrackingSettingsEndpointRegExp =
+		/^\/google-site-kit\/v1\/core\/user\/data\/tracking/;
 
 	beforeAll( () => {
 		API.setUsingCache( false );
@@ -121,10 +122,8 @@ describe( 'core/user tracking settings', () => {
 					body: { enabled },
 				} );
 
-				const {
-					isTrackingEnabled,
-					hasFinishedResolution,
-				} = registry.select( CORE_USER );
+				const { isTrackingEnabled, hasFinishedResolution } =
+					registry.select( CORE_USER );
 
 				expect( isTrackingEnabled() ).toBeUndefined();
 				await waitFor(

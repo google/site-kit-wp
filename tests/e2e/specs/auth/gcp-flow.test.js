@@ -106,9 +106,7 @@ describe( 'Site Kit set up flow for the first time', () => {
 		await disconnectFromSiteKit();
 
 		// Ensure the user is on step one of the setup wizard.
-		await expect(
-			page
-		).toMatchElement(
+		await expect( page ).toMatchElement(
 			'.googlesitekit-wizard-progress-step__number-text--inprogress',
 			{ text: '1' }
 		);
