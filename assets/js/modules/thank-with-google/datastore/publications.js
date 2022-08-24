@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import invariant from 'invariant';
+
+/**
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
@@ -186,6 +191,8 @@ const baseSelectors = {
 	 * @return {string} Publication link.
 	 */
 	getServicePublicationURL: ( _state, publicationID ) => {
+		invariant( publicationID, 'A publicationID is required.' );
+
 		return `https://publishercenter.google.com/publications/${ publicationID }/overview`;
 	},
 };
