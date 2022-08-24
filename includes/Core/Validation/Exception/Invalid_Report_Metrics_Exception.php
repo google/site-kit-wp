@@ -1,6 +1,6 @@
 <?php
 /**
- * Class Google\Site_Kit\Core\Validation\Exception\Invalid_Metrics_Exception
+ * Class Google\Site_Kit\Core\Validation\Exception\Invalid_Report_Metrics_Exception
  *
  * @package   Google\Site_Kit\Core\Validation\Exception
  * @copyright 2022 Google LLC

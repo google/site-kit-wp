@@ -1,6 +1,6 @@
 <?php
 /**
- * Class Google\Site_Kit\Core\Validation\Exception\Invalid_Dimensions_Exception
+ * Class Google\Site_Kit\Core\Validation\Exception\Invalid_Report_Dimensions_Exception
  *
  * @package   Google\Site_Kit\Core\Validation\Exception
  * @copyright 2022 Google LLC
