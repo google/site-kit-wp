@@ -10,6 +10,7 @@
 
 namespace Google\Site_Kit\Core\Admin;
 
+use Google\Site_Kit\Core\Util\BC_Functions;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 
 /**
@@ -63,7 +64,12 @@ class Pointers {
 		wp_enqueue_script( 'wp-pointer' );
 
 		foreach ( $active_pointers as $pointer ) {
-			$pointer->enqueue_script();
+			add_action(
+				'admin_print_footer_scripts',
+				function() use ( $pointer ) {
+					$this->print_pointer_script( $pointer );
+				}
+			);
 		}
 	}
 
@@ -89,6 +95,63 @@ class Pointers {
 			function( $pointer ) {
 				return $pointer instanceof Pointer;
 			}
+		);
+	}
+
+	/**
+	 * Prints script for a given pointer.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param Pointer $pointer Pointer to print.
+	 */
+	private function print_pointer_script( $pointer ) {
+		$slug = $pointer->get_slug();
+		$args = $pointer->get_args();
+
+		if ( is_callable( $args['content'] ) ) {
+			$content = call_user_func( $args['content'] );
+			if ( empty( $content ) ) {
+				return;
+			}
+		} else {
+			$content = '<p>' . wp_kses( $args['content'], 'googlesitekit_admin_pointer' ) . '</p>';
+		}
+
+		BC_Functions::wp_print_inline_script_tag(
+			sprintf(
+				'
+				jQuery( function() {
+					var options = {
+						content: "<h3>%s</h3>%s",
+						position: {
+							edge:  "left",
+							align: "right",
+						},
+						pointerClass: "wp-pointer arrow-top",
+						pointerWidth: 420,
+						close: function() {
+							jQuery.post(
+								window.ajaxurl,
+								{
+									pointer: "%s",
+									action:  "dismiss-wp-pointer",
+								}
+							);
+						}
+					};
+		
+					jQuery( "#%s" ).pointer( options ).pointer( "open" );
+				} );
+				',
+				esc_js( $args['title'] ),
+				$content,
+				esc_js( $slug ),
+				esc_js( $args['target_id'] )
+			),
+			array(
+				'id' => $slug,
+			)
 		);
 	}
 }

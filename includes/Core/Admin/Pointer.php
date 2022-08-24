@@ -10,9 +10,6 @@
 
 namespace Google\Site_Kit\Core\Admin;
 
-use Google\Site_Kit\Core\Util\BC_Functions;
-use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
-
 /**
  * Class representing a single pointer.
  *
@@ -21,8 +18,6 @@ use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
  * @ignore
  */
 final class Pointer {
-
-	use Method_Proxy_Trait;
 
 	/**
 	 * Unique pointer slug.
@@ -82,6 +77,17 @@ final class Pointer {
 	}
 
 	/**
+	 * Gets the pointer arguments.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array Pointer arguments.
+	 */
+	public function get_args() {
+		return $this->args;
+	}
+
+	/**
 	 * Checks whether the pointer is active.
 	 *
 	 * This method executes the active callback in order to determine whether the pointer should be active or not.
@@ -101,67 +107,5 @@ final class Pointer {
 		}
 
 		return (bool) call_user_func( $this->args['active_callback'], $hook_suffix );
-	}
-
-	/**
-	 * Enqueues the pointer script.
-	 *
-	 * @since n.e.x.t
-	 */
-	public function enqueue_script() {
-		add_action( 'admin_print_footer_scripts', $this->get_method_proxy( 'print_script' ) );
-	}
-
-	/**
-	 * Prints the pointer script.
-	 *
-	 * @since n.e.x.t
-	 */
-	private function print_script() {
-
-		if ( is_callable( $this->args['content'] ) ) {
-			$content = call_user_func( $this->args['content'] );
-			if ( empty( $content ) ) {
-				return;
-			}
-		} else {
-			$content = '<p>' . wp_kses( $this->args['content'], 'googlesitekit_admin_pointer' ) . '</p>';
-		}
-
-		BC_Functions::wp_print_inline_script_tag(
-			sprintf(
-				'
-				jQuery( function() {
-					var options = {
-						content: "<h3>%s</h3>%s",
-						position: {
-							edge:  "left",
-							align: "right",
-						},
-						pointerClass: "wp-pointer arrow-top",
-						pointerWidth: 420,
-						close: function() {
-							jQuery.post(
-								window.ajaxurl,
-								{
-									pointer: "%s",
-									action:  "dismiss-wp-pointer",
-								}
-							);
-						}
-					};
-		
-					jQuery( "#%s" ).pointer( options ).pointer( "open" );
-				} );
-				',
-				esc_js( $this->args['title'] ),
-				esc_js( $content ),
-				esc_js( $this->slug ),
-				esc_js( $this->args['target_id'] )
-			),
-			array(
-				'id' => $this->slug,
-			)
-		);
 	}
 }
