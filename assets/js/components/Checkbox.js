@@ -25,7 +25,7 @@ import '@material/mwc-checkbox/mwc-checkbox';
 /**
  * WordPress dependencies
  */
-import { useRef, useEffect } from '@wordpress/element';
+import { useRef, useEffect, useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -57,22 +57,29 @@ export default function Checkbox( props ) {
 	}
 
 	const ref = useRef( null );
+	const [ index, setIndex ] = useState( 0 );
 
 	useEffect( () => {
 		const { current } = ref;
-		const change = ( ...params ) => onChange?.( ...params );
+		const change = ( ...params ) => {
+			onChange?.( ...params );
+			setIndex( index + 1 );
+		};
 
 		current?.addEventListener( 'change', change );
 		return () => current?.removeEventListener( 'change', change );
-	}, [ ref.current, onChange ] );
+	}, [ ref.current, onChange, index, setIndex ] );
 
 	useEffect( () => {
 		const { current } = ref;
-		const keydown = ( ...params ) => onKeyDown?.( ...params );
+		const keydown = ( ...params ) => {
+			onKeyDown?.( ...params );
+			setIndex( index + 1 );
+		};
 
 		current?.addEventListener( 'keydown', keydown );
 		return () => current?.removeEventListener( 'keydown', keydown );
-	}, [ ref.current, onKeyDown ] );
+	}, [ ref.current, onKeyDown, index, setIndex ] );
 
 	return (
 		<div className="mdc-form-field">
@@ -80,6 +87,7 @@ export default function Checkbox( props ) {
 				<Spinner isSaving style={ { margin: '0' } } />
 			) : (
 				<mwc-checkbox
+					key={ `checkbox-${ name }-${ index }` }
 					ref={ ref }
 					id={ id }
 					name={ name }
