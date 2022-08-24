@@ -41,24 +41,25 @@ export const selectors = {
 	 * @return {(string|undefined)} The URL to the service, or `undefined` if not loaded.
 	 */
 	getServiceURL: createRegistrySelector(
-		( select ) => ( state, { path, query } = {} ) => {
-			const userEmail = select( CORE_USER ).getEmail();
+		( select ) =>
+			( state, { path, query } = {} ) => {
+				const userEmail = select( CORE_USER ).getEmail();
 
-			if ( userEmail === undefined ) {
-				return undefined;
-			}
+				if ( userEmail === undefined ) {
+					return undefined;
+				}
 
-			const baseURI = 'https://tagmanager.google.com/';
-			const queryParams = query
-				? { ...query, authuser: userEmail }
-				: { authuser: userEmail };
-			const baseURIWithQuery = addQueryArgs( baseURI, queryParams );
-			if ( path ) {
-				const sanitizedPath = `/${ path.replace( /^\//, '' ) }`;
-				return `${ baseURIWithQuery }#${ sanitizedPath }`;
+				const baseURI = 'https://tagmanager.google.com/';
+				const queryParams = query
+					? { ...query, authuser: userEmail }
+					: { authuser: userEmail };
+				const baseURIWithQuery = addQueryArgs( baseURI, queryParams );
+				if ( path ) {
+					const sanitizedPath = `/${ path.replace( /^\//, '' ) }`;
+					return `${ baseURIWithQuery }#${ sanitizedPath }`;
+				}
+				return baseURIWithQuery;
 			}
-			return baseURIWithQuery;
-		}
 	),
 };
 

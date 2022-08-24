@@ -63,9 +63,8 @@ export default function UserInputPreview( props ) {
 			return;
 		}
 
-		const buttonEl = previewContainer.current.querySelector(
-			'.mdc-button'
-		);
+		const buttonEl =
+			previewContainer.current.querySelector( '.mdc-button' );
 		if ( buttonEl ) {
 			setTimeout( () => {
 				buttonEl.focus();

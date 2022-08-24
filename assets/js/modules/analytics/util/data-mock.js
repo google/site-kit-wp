@@ -253,9 +253,8 @@ export function getAnalyticsMockResponse( args ) {
 				new Observable( ( observer ) => {
 					for ( let i = 1; i <= 90; i++ ) {
 						// 90 is the max number of dates in the longest date range.
-						const val = ANALYTICS_DIMENSION_OPTIONS[ dimension ](
-							i
-						);
+						const val =
+							ANALYTICS_DIMENSION_OPTIONS[ dimension ]( i );
 						if ( val ) {
 							observer.next( val );
 						} else {

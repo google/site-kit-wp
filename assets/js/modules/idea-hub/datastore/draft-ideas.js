@@ -104,12 +104,10 @@ const baseActions = {
 	 * @return {Object} Object with `response` and `error`.
 	 */
 	*createIdeaDraftPost( idea ) {
-		const {
-			response,
-			error,
-		} = yield fetchCreateIdeaDraftPostStore.actions.fetchCreateIdeaDraftPost(
-			idea
-		);
+		const { response, error } =
+			yield fetchCreateIdeaDraftPostStore.actions.fetchCreateIdeaDraftPost(
+				idea
+			);
 
 		if ( ! error ) {
 			yield moduleDataActions.incrementInteractions();

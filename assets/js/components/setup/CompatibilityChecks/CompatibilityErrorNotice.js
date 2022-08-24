@@ -41,13 +41,8 @@ import {
 import GetHelpLink from './GetHelpLink';
 
 const helperCTA = ( developerPlugin, stagingDocumentationURL ) => {
-	const {
-		installed,
-		active,
-		installURL,
-		activateURL,
-		configureURL,
-	} = developerPlugin;
+	const { installed, active, installURL, activateURL, configureURL } =
+		developerPlugin;
 
 	if ( ! installed && installURL ) {
 		return {

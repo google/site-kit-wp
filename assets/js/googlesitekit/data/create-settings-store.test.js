@@ -630,12 +630,11 @@ describe( 'createSettingsStore store', () => {
 						init: { status: 400 },
 					} );
 
-				const result = await storeDefinition.controls.FETCH_GET_SETTINGS(
-					{
+				const result =
+					await storeDefinition.controls.FETCH_GET_SETTINGS( {
 						type: 'FETCH_GET_SETTINGS',
 						payload: { params: {} },
-					}
-				);
+					} );
 				expect( result ).toEqual( response );
 				// Ensure `console.error()` wasn't called, which will happen if the API
 				// request fails.
@@ -662,12 +661,11 @@ describe( 'createSettingsStore store', () => {
 						init: { status: 400 },
 					} );
 
-				const result = await storeDefinition.controls.FETCH_SAVE_SETTINGS(
-					{
+				const result =
+					await storeDefinition.controls.FETCH_SAVE_SETTINGS( {
 						type: 'FETCH_SAVE_SETTINGS',
 						payload: { params: { values: {} } },
-					}
-				);
+					} );
 				expect( result ).toEqual( response );
 				// Ensure `console.error()` wasn't called, which will happen if the API
 				// request fails.

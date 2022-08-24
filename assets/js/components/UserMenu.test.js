@@ -130,9 +130,8 @@ describe( 'UserMenu', () => {
 				);
 
 				await waitFor( () => {
-					const dialog = document.querySelector(
-						'.mdc-dialog--open'
-					);
+					const dialog =
+						document.querySelector( '.mdc-dialog--open' );
 
 					expect( dialog ).not.toBeInTheDocument();
 				} );

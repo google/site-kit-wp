@@ -157,8 +157,10 @@ export default function Module( { moduleSlug, moduleName, ownerUsername } ) {
 				'googlesitekit-dashboard-sharing-settings__module',
 				'googlesitekit-dashboard-sharing-settings__row',
 				{
-					'googlesitekit-dashboard-sharing-settings__row--editing': isEditingUserRoles,
-					'googlesitekit-dashboard-sharing-settings__row--disabled': isLocked,
+					'googlesitekit-dashboard-sharing-settings__row--editing':
+						isEditingUserRoles,
+					'googlesitekit-dashboard-sharing-settings__row--disabled':
+						isLocked,
 				}
 			) }
 			ref={ moduleRef }

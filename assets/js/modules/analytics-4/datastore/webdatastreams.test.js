@@ -38,9 +38,12 @@ import * as fixtures from './__fixtures__';
 describe( 'modules/analytics-4 webdatastreams', () => {
 	let registry;
 
-	const createWebDataStreamsEndpoint = /^\/google-site-kit\/v1\/modules\/analytics-4\/data\/create-webdatastream/;
-	const webDataStreamsEndpoint = /^\/google-site-kit\/v1\/modules\/analytics-4\/data\/webdatastreams/;
-	const webDataStreamsBatchEndpoint = /^\/google-site-kit\/v1\/modules\/analytics-4\/data\/webdatastreams-batch/;
+	const createWebDataStreamsEndpoint =
+		/^\/google-site-kit\/v1\/modules\/analytics-4\/data\/create-webdatastream/;
+	const webDataStreamsEndpoint =
+		/^\/google-site-kit\/v1\/modules\/analytics-4\/data\/webdatastreams/;
+	const webDataStreamsBatchEndpoint =
+		/^\/google-site-kit\/v1\/modules\/analytics-4\/data\/webdatastreams-batch/;
 	const webDataStreamDotCom = {
 		name: 'properties/1000/dataStreams/2000',
 		webStreamData: {

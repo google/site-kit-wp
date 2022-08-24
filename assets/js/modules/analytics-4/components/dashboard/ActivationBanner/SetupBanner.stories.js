@@ -117,10 +117,8 @@ export default {
 				properties,
 				webDataStreams,
 			} = ga4Fixtures;
-			const {
-				accounts,
-				properties: uaProps,
-			} = fixtures.accountsPropertiesProfiles;
+			const { accounts, properties: uaProps } =
+				fixtures.accountsPropertiesProfiles;
 			const accountID = createProperty._accountID;
 			const propertyID = createWebDataStream._propertyID;
 

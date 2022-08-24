@@ -163,9 +163,10 @@ export default function SetupForm( { finishSetup } ) {
 		[ submitForm, isSetupWithAnalytics ]
 	);
 	// Click handler for secondary option when setting up with option to include Analytics.
-	const onSetupWithoutAnalytics = useCallback( () => submitForm(), [
-		submitForm,
-	] );
+	const onSetupWithoutAnalytics = useCallback(
+		() => submitForm(),
+		[ submitForm ]
+	);
 
 	return (
 		<form

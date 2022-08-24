@@ -100,8 +100,7 @@ describe( 'modules/analytics-4 properties', () => {
 									{
 										_id: '2000',
 										_propertyID: '1000',
-										name:
-											'properties/1000/dataStreams/2000',
+										name: 'properties/1000/dataStreams/2000',
 										webStreamData: {
 											measurementId: '1A2BCD345E', // eslint-disable-line sitekit/acronym-case
 											defaultUri: 'http://example.com', // eslint-disable-line sitekit/acronym-case
