@@ -106,6 +106,7 @@ ThankWithGoogle.parameters = {
 		notification: 'authentication_success',
 		slug: 'thank-with-google',
 	},
+	features: [ 'twgModule' ],
 };
 
 export default {
