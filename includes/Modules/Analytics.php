@@ -23,8 +23,8 @@ use Google\Site_Kit\Core\Modules\Module_With_Assets_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Owner;
 use Google\Site_Kit\Core\Modules\Module_With_Owner_Trait;
 use Google\Site_Kit\Core\REST_API\Exception\Invalid_Datapoint_Exception;
-use Google\Site_Kit\Core\Validation\Exception\Invalid_Metrics_Exception;
-use Google\Site_Kit\Core\Validation\Exception\Invalid_Dimensions_Exception;
+use Google\Site_Kit\Core\Validation\Exception\Invalid_Report_Metrics_Exception;
+use Google\Site_Kit\Core\Validation\Exception\Invalid_Report_Dimensions_Exception;
 use Google\Site_Kit\Core\Authentication\Google_Proxy;
 use Google\Site_Kit\Core\Assets\Asset;
 use Google\Site_Kit\Core\Assets\Script;
@@ -545,7 +545,14 @@ final class Analytics extends Module
 					);
 
 					if ( ! empty( $dimensions ) ) {
-						$this->validate_report_dimensions( $dimensions );
+						try {
+							$this->validate_report_dimensions( $dimensions );
+						} catch ( Invalid_Report_Dimensions_Exception $exception ) {
+							return new WP_Error(
+								'invalid_analytics_report_dimensions',
+								$exception->getMessage()
+							);
+						}
 
 						$request_args['dimensions'] = $dimensions;
 					}
@@ -645,7 +652,14 @@ final class Analytics extends Module
 					);
 
 					if ( ! empty( $metrics ) ) {
-						$this->validate_report_metrics( $metrics );
+						try {
+							$this->validate_report_metrics( $metrics );
+						} catch ( Invalid_Report_Metrics_Exception $exception ) {
+							return new WP_Error(
+								'invalid_analytics_report_metrics',
+								$exception->getMessage()
+							);
+						}
 
 						$request->setMetrics( $metrics );
 					}
@@ -1343,8 +1357,7 @@ final class Analytics extends Module
 	 * @since n.e.x.t
 	 *
 	 * @param Google_Service_AnalyticsReporting_Metric[] $metrics The metrics to validate.
-	 *
-	 * @throws Invalid_Metrics_Exception Thrown if the metrics are invalid.
+	 * @throws Invalid_Report_Metrics_Exception Thrown if the metrics are invalid.
 	 */
 	protected function validate_report_metrics( $metrics ) {
 		if ( false === $this->is_using_shared_credentials ) {
@@ -1378,7 +1391,22 @@ final class Analytics extends Module
 		);
 
 		if ( count( $invalid_metrics ) > 0 ) {
-			throw new Invalid_Metrics_Exception( '', 0, null, $invalid_metrics );
+			$message = sprintf(
+				/* translators: %s is replaced with a comma separated list of the invalid metrics. */
+				_n(
+					'Unsupported metric requested: %s',
+					'Unsupported metrics requested: %s',
+					count( $invalid_metrics ),
+					'google-site-kit'
+				),
+				join(
+					/* translators: used between list items, there is a space after the comma. */
+					__( ', ', 'google-site-kit' ),
+					$invalid_metrics
+				)
+			);
+
+			throw new Invalid_Report_Metrics_Exception( $message );
 		}
 	}
 
@@ -1388,8 +1416,7 @@ final class Analytics extends Module
 	 * @since n.e.x.t
 	 *
 	 * @param Google_Service_AnalyticsReporting_Dimension[] $dimensions The dimensions to validate.
-	 *
-	 * @throws Invalid_Dimensions_Exception Thrown if the dimensions are invalid.
+	 * @throws Invalid_Report_Dimensions_Exception Thrown if the dimensions are invalid.
 	 */
 	protected function validate_report_dimensions( $dimensions ) {
 		if ( false === $this->is_using_shared_credentials ) {
@@ -1420,7 +1447,22 @@ final class Analytics extends Module
 		);
 
 		if ( count( $invalid_dimensions ) > 0 ) {
-			throw new Invalid_Dimensions_Exception( '', 0, null, $invalid_dimensions );
+			$message = sprintf(
+				/* translators: %s is replaced with a comma separated list of the invalid dimensions. */
+				_n(
+					'Unsupported dimension requested: %s',
+					'Unsupported dimensions requested: %s',
+					count( $dimensions ),
+					'google-site-kit'
+				),
+				join(
+					/* translators: used between list items, there is a space after the comma. */
+					__( ', ', 'google-site-kit' ),
+					$dimensions
+				)
+			);
+
+			throw new Invalid_Report_Dimensions_Exception( $message );
 		}
 	}
 
