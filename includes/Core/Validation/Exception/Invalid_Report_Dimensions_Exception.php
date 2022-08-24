@@ -15,7 +15,7 @@ use DomainException;
 /**
  * Exception thrown when dimensions are invalid for a report request.
  *
- * @since n.e.x.t
+ * @since 1.82.0
  * @access private
  * @ignore
  */

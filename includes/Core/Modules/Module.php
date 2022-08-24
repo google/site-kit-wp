@@ -116,7 +116,7 @@ abstract class Module {
 	/**
 	 * Whether module is using shared credentials or not.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.82.0
 	 * @var bool
 	 */
 	protected $is_using_shared_credentials = false;
