@@ -22,6 +22,8 @@
 import {
 	createTestRegistry,
 	freezeFetch,
+	provideSiteInfo,
+	provideUserInfo,
 	subscribeUntil,
 	unsubscribeFromAll,
 	untilResolved,
@@ -32,6 +34,8 @@ import {
 	ONBOARDING_STATE_COMPLETE,
 	ONBOARDING_STATE_PENDING_VERIFICATION,
 } from './constants';
+import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
+import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 
 describe( 'modules/thank-with-google publications', () => {
 	let registry;
@@ -345,6 +349,68 @@ describe( 'modules/thank-with-google publications', () => {
 
 				expect( publication ).toEqual(
 					publicationOnboardingActionRequiredStateC
+				);
+			} );
+		} );
+
+		describe( 'getServiceCreatePublicationURL', () => {
+			it( 'returns an account chooser URL with the home URL appended to the publisher center URL', () => {
+				provideSiteInfo( registry );
+				provideUserInfo( registry );
+
+				const homeURL = registry.select( CORE_SITE ).getHomeURL();
+				const publisherCenterURL = new URL(
+					'https://publishercenter.google.com/'
+				);
+				publisherCenterURL.searchParams.set(
+					'sk_url',
+					encodeURIComponent( homeURL )
+				);
+				const expectedAccountChooserURL = registry
+					.select( CORE_USER )
+					.getAccountChooserURL( publisherCenterURL );
+
+				const createPublicationURL = registry
+					.select( MODULES_THANK_WITH_GOOGLE )
+					.getServiceCreatePublicationURL();
+
+				expect( createPublicationURL ).toEqual(
+					expectedAccountChooserURL
+				);
+			} );
+		} );
+
+		describe( 'getServicePublicationURL', () => {
+			it( 'should throw an error if no publicationID is given', () => {
+				expect( () =>
+					registry
+						.select( MODULES_THANK_WITH_GOOGLE )
+						.getServicePublicationURL()
+				).toThrow( 'A publicationID is required.' );
+			} );
+
+			it( 'returns a publisher center URL for an existing publication', () => {
+				registry
+					.dispatch( MODULES_THANK_WITH_GOOGLE )
+					.receiveGetPublications(
+						publicationWithOnboardingCompleteState
+					);
+
+				registry
+					.dispatch( MODULES_THANK_WITH_GOOGLE )
+					.setPublicationID( 'test-publication-a' );
+
+				const publication = registry
+					.select( MODULES_THANK_WITH_GOOGLE )
+					.getCurrentPublication();
+
+				const publicationURL = registry
+					.select( MODULES_THANK_WITH_GOOGLE )
+					// eslint-disable-next-line sitekit/acronym-case
+					.getServicePublicationURL( publication.publicationId );
+
+				expect( publicationURL ).toEqual(
+					'https://publishercenter.google.com/publications/test-publication-a/overview'
 				);
 			} );
 		} );
