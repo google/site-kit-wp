@@ -25,6 +25,10 @@ import {
 	provideUserAuthentication,
 	provideSiteInfo,
 } from '../../../../../../../tests/js/test-utils';
+import {
+	getViewportWidth,
+	setViewportWidth,
+} from '../../../../../../../tests/js/viewport-width-utils';
 import coreModulesFixture from '../../../../../googlesitekit/modules/datastore/__fixtures__';
 import { CORE_MODULES } from '../../../../../googlesitekit/modules/datastore/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
@@ -32,13 +36,9 @@ import { MODULES_SEARCH_CONSOLE } from '../../../datastore/constants';
 import { getWidgetComponentProps } from '../../../../../googlesitekit/widgets/util';
 import Overview from './Overview';
 
-jest.mock( '../../../../../hooks/useBreakpoint', () => ( {
-	BREAKPOINT_SMALL: 'small',
-	useBreakpoint: () => 'tablet',
-} ) );
-
 describe( 'Overview', () => {
 	let registry;
+	let originalViewportWidth;
 
 	const { WidgetReportError } = getWidgetComponentProps( 'searchFunnel' );
 
@@ -79,6 +79,16 @@ describe( 'Overview', () => {
 				body: searchConsoleData,
 			}
 		);
+
+		originalViewportWidth = getViewportWidth();
+
+		// Set to a viewport larger than BREAKPOINT_SMALL, i.e. > 600, so as to test the execution
+		// path that renders the ActivateAnalyticsCTA component.
+		setViewportWidth( 1024 );
+	} );
+
+	afterEach( () => {
+		setViewportWidth( originalViewportWidth );
 	} );
 
 	it( 'should render the Search Funnel Overview, including the Activate Analytics CTA', async () => {
