@@ -44,6 +44,7 @@ class Pointers {
 		if ( empty( $hook_suffix ) ) {
 			return;
 		}
+
 		$pointers = $this->get_pointers();
 		if ( empty( $pointers ) ) {
 			return;
@@ -63,14 +64,14 @@ class Pointers {
 		wp_enqueue_style( 'wp-pointer' );
 		wp_enqueue_script( 'wp-pointer' );
 
-		foreach ( $active_pointers as $pointer ) {
-			add_action(
-				'admin_print_footer_scripts',
-				function() use ( $pointer ) {
+		add_action(
+			'admin_print_footer_scripts',
+			function() use ( $active_pointers ) {
+				foreach ( $active_pointers as $pointer ) {
 					$this->print_pointer_script( $pointer );
 				}
-			);
-		}
+			}
+		);
 	}
 
 	/**
