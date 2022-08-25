@@ -47,7 +47,7 @@ class ModulesTest extends TestCase {
 			$modules->get_available_modules()
 		);
 
-		$this->assertEqualSets(
+		$this->assertSameSetsWithIndex(
 			array(
 				'adsense'            => 'Google\\Site_Kit\\Modules\\AdSense',
 				'analytics'          => 'Google\\Site_Kit\\Modules\\Analytics',
@@ -87,7 +87,7 @@ class ModulesTest extends TestCase {
 
 		// Analytics is no longer present due to the filter above.
 		// Optimize is no longer present due to its dependency on Analytics.
-		$this->assertEqualSets(
+		$this->assertSameSetsWithIndex(
 			array(
 				'adsense'            => 'Google\\Site_Kit\\Modules\\AdSense',
 				'analytics-4'        => 'Google\\Site_Kit\\Modules\\Analytics_4',
@@ -112,7 +112,7 @@ class ModulesTest extends TestCase {
 			'pagespeed-insights' => 'Google\\Site_Kit\\Modules\\PageSpeed_Insights',
 		);
 
-		$this->assertEqualSets(
+		$this->assertSameSetsWithIndex(
 			$always_on_modules + $default_active_modules,
 			array_map( 'get_class', $modules->get_active_modules() )
 		);
@@ -122,7 +122,7 @@ class ModulesTest extends TestCase {
 		// Active modules will fallback to legacy option if set.
 		update_option( 'googlesitekit-active-modules', array( 'analytics' ) );
 
-		$this->assertEqualSets(
+		$this->assertSameSetsWithIndex(
 			$always_on_modules + array(
 				'analytics'   => 'Google\\Site_Kit\\Modules\\Analytics',
 				'analytics-4' => 'Google\\Site_Kit\\Modules\\Analytics_4',
@@ -578,7 +578,7 @@ class ModulesTest extends TestCase {
 
 		$shareable_active_modules = array_map( 'get_class', $modules->get_shareable_modules() );
 
-		$this->assertEqualSets(
+		$this->assertSameSetsWithIndex(
 			array(
 				'search-console'     => 'Google\\Site_Kit\\Modules\\Search_Console',
 				'pagespeed-insights' => 'Google\\Site_Kit\\Modules\\PageSpeed_Insights',
@@ -595,7 +595,7 @@ class ModulesTest extends TestCase {
 
 		// Check shared ownership for modules activated by default.
 		$modules = new Modules( $context );
-		$this->assertEqualSets(
+		$this->assertSameSetsWithIndex(
 			array(
 				'pagespeed-insights' => 'Google\\Site_Kit\\Modules\\PageSpeed_Insights',
 			),
@@ -624,7 +624,7 @@ class ModulesTest extends TestCase {
 
 		// Verify shared ownership for active and connected modules.
 		$modules = new Modules( $context );
-		$this->assertEqualSets(
+		$this->assertSameSetsWithIndex(
 			array(
 				'idea-hub'           => 'Google\\Site_Kit\\Modules\\Idea_Hub',
 				'pagespeed-insights' => 'Google\\Site_Kit\\Modules\\PageSpeed_Insights',
@@ -1306,7 +1306,7 @@ class ModulesTest extends TestCase {
 			'analytics'          => 2,
 			'pagespeed-insights' => 0,
 		);
-		$this->assertEqualSets( $expected_module_owners, $modules->get_shareable_modules_owners() );
+		$this->assertSameSetsWithIndex( $expected_module_owners, $modules->get_shareable_modules_owners() );
 	}
 
 	public function test_shared_ownership_module_default_settings() {
@@ -1326,10 +1326,10 @@ class ModulesTest extends TestCase {
 		);
 
 		$settings = apply_filters( 'option_' . Module_Sharing_Settings::OPTION, array() );
-		$this->assertEqualSets( $expected, $settings );
+		$this->assertSameSetsWithIndex( $expected, $settings );
 
 		$settings = apply_filters( 'default_option_' . Module_Sharing_Settings::OPTION, array(), '', '' );
-		$this->assertEqualSets( $expected, $settings );
+		$this->assertSameSetsWithIndex( $expected, $settings );
 	}
 
 }
