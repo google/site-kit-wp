@@ -106,17 +106,12 @@ class Pointers {
 	 * @param Pointer $pointer Pointer to print.
 	 */
 	private function print_pointer_script( $pointer ) {
-		$slug = $pointer->get_slug();
-		$args = $pointer->get_args();
-
-		if ( is_callable( $args['content'] ) ) {
-			$content = call_user_func( $args['content'] );
-			if ( empty( $content ) ) {
-				return;
-			}
-		} else {
-			$content = '<p>' . wp_kses( $args['content'], 'googlesitekit_admin_pointer' ) . '</p>';
+		$content = $pointer->get_content();
+		if ( empty( $content ) ) {
+			return;
 		}
+
+		$slug = $pointer->get_slug();
 
 		BC_Functions::wp_print_inline_script_tag(
 			sprintf(
@@ -144,10 +139,10 @@ class Pointers {
 					jQuery( "#%s" ).pointer( options ).pointer( "open" );
 				} );
 				',
-				esc_js( $args['title'] ),
+				esc_js( $pointer->get_title() ),
 				$content,
 				esc_js( $slug ),
-				esc_js( $args['target_id'] )
+				esc_js( $pointer->get_target_id() )
 			),
 			array(
 				'id' => $slug,

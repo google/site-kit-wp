@@ -27,26 +27,50 @@ class PointerTest extends TestCase {
 		$this->assertEquals( 'test-slug', $pointer->get_slug() );
 	}
 
-	public function test_get_args() {
+	public function test_get_title() {
 		$pointer = new Pointer(
 			'test-slug',
 			array(
-				'title'           => 'Test pointer title',
-				'content'         => 'Test pointer content.',
-				'target_id'       => 'test-target',
-				'active_callback' => '__return_true',
+				'title' => 'Test Title',
 			)
 		);
 
-		$this->assertSameSetsWithIndex(
+		$this->assertEquals( 'Test Title', $pointer->get_title() );
+	}
+
+	public function test_get_content_string() {
+		$pointer = new Pointer(
+			'test-slug',
 			array(
-				'title'           => 'Test pointer title',
-				'content'         => 'Test pointer content.',
-				'target_id'       => 'test-target',
-				'active_callback' => '__return_true',
-			),
-			$pointer->get_args()
+				'content' => 'Test Content',
+			)
 		);
+
+		$this->assertEquals( '<p>Test Content</p>', $pointer->get_content() );
+	}
+
+	public function test_get_content_callback() {
+		$pointer = new Pointer(
+			'test-slug',
+			array(
+				'content' => function() {
+					return '<strong>Test Content</strong>';
+				},
+			)
+		);
+
+		$this->assertEquals( '<strong>Test Content</strong>', $pointer->get_content() );
+	}
+
+	public function test_get_target_id() {
+		$pointer = new Pointer(
+			'test-slug',
+			array(
+				'target_id' => 'test-target-id',
+			)
+		);
+
+		$this->assertEquals( 'test-target-id', $pointer->get_target_id() );
 	}
 
 	/**

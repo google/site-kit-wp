@@ -77,14 +77,40 @@ final class Pointer {
 	}
 
 	/**
-	 * Gets the pointer arguments.
+	 * Gets the pointer title.
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return array Pointer arguments.
+	 * @return string Pointer title.
 	 */
-	public function get_args() {
-		return $this->args;
+	public function get_title() {
+		return $this->args['title'];
+	}
+
+	/**
+	 * Gets the pointer content.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string Pointer content.
+	 */
+	public function get_content() {
+		if ( is_callable( $this->args['content'] ) ) {
+			return call_user_func( $this->args['content'] );
+		} else {
+			return '<p>' . wp_kses( $this->args['content'], 'googlesitekit_admin_pointer' ) . '</p>';
+		}
+	}
+
+	/**
+	 * Gets the pointer target ID.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string Pointer target ID.
+	 */
+	public function get_target_id() {
+		return $this->args['target_id'];
 	}
 
 	/**
