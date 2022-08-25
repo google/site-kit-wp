@@ -184,6 +184,23 @@ describe( 'module/search-console service store', () => {
 			} );
 		} );
 
+		describe( 'getServiceEntityAccessURL', () => {
+			beforeEach( () => {
+				registry
+					.dispatch( MODULES_SEARCH_CONSOLE )
+					.setPropertyID( propertyID );
+			} );
+
+			it( 'adds the `resource_id` query arg for the current property ID', () => {
+				const serviceURL = registry
+					.select( MODULES_SEARCH_CONSOLE )
+					.getServiceEntityAccessURL();
+				expect( serviceURL ).toMatchQueryParameters( {
+					resource_id: propertyID,
+				} );
+			} );
+		} );
+
 		describe( 'isDomainProperty', () => {
 			it( 'should identify if property is search console domain property', async () => {
 				registry
