@@ -27,6 +27,28 @@ class PointerTest extends TestCase {
 		$this->assertEquals( 'test-slug', $pointer->get_slug() );
 	}
 
+	public function test_get_args() {
+		$pointer = new Pointer(
+			'test-slug',
+			array(
+				'title'           => 'Test pointer title',
+				'content'         => 'Test pointer content.',
+				'target_id'       => 'test-target',
+				'active_callback' => '__return_true',
+			)
+		);
+
+		$this->assertSameSetsWithIndex(
+			array(
+				'title'           => 'Test pointer title',
+				'content'         => 'Test pointer content.',
+				'target_id'       => 'test-target',
+				'active_callback' => '__return_true',
+			),
+			$pointer->get_args()
+		);
+	}
+
 	/**
 	 * @dataProvider data_is_active
 	 *
@@ -59,7 +81,7 @@ class PointerTest extends TestCase {
 			),
 			'no content'          => array(
 				array(
-					'title'           => 'Test pointer title.',
+					'title'           => 'Test pointer title',
 					'content'         => '',
 					'target_id'       => 'test-target',
 					'active_callback' => '__return_true',
@@ -68,7 +90,7 @@ class PointerTest extends TestCase {
 			),
 			'no target_id'        => array(
 				array(
-					'title'           => 'Test pointer title.',
+					'title'           => 'Test pointer title',
 					'content'         => 'Test pointer content.',
 					'target_id'       => '',
 					'active_callback' => '__return_true',
@@ -77,7 +99,7 @@ class PointerTest extends TestCase {
 			),
 			'no callback'         => array(
 				array(
-					'title'           => 'Test pointer title.',
+					'title'           => 'Test pointer title',
 					'content'         => 'Test pointer content.',
 					'target_id'       => 'test-target',
 					'active_callback' => null,
@@ -86,7 +108,7 @@ class PointerTest extends TestCase {
 			),
 			'test_hook_callback'  => array(
 				array(
-					'title'           => 'Test pointer title.',
+					'title'           => 'Test pointer title',
 					'content'         => 'Test pointer content.',
 					'target_id'       => 'test-target',
 					'active_callback' => function( $hook_suffix ) {
@@ -97,7 +119,7 @@ class PointerTest extends TestCase {
 			),
 			'other_hook_callback' => array(
 				array(
-					'title'           => 'Test pointer title.',
+					'title'           => 'Test pointer title',
 					'content'         => 'Test pointer content.',
 					'target_id'       => 'test-target',
 					'active_callback' => function( $hook_suffix ) {
@@ -107,44 +129,5 @@ class PointerTest extends TestCase {
 				false,
 			),
 		);
-	}
-
-	public function test_enqueue_script() {
-		$pointer = new Pointer(
-			'test-slug',
-			array(
-				'title'           => 'Test pointer title.',
-				'content'         => 'Test pointer content.',
-				'target_id'       => 'test-target',
-				'active_callback' => '__return_true',
-			)
-		);
-
-		remove_all_actions( 'admin_print_footer_scripts' );
-		$pointer->enqueue_script();
-		$this->assertTrue( has_action( 'admin_print_footer_scripts' ) );
-	}
-
-	public function test_print_script() {
-		$pointer = new Pointer(
-			'test-slug',
-			array(
-				'title'           => 'Test pointer title.',
-				'content'         => 'Test pointer content.',
-				'target_id'       => 'test-target',
-				'active_callback' => '__return_true',
-			)
-		);
-
-		remove_all_actions( 'admin_print_footer_scripts' );
-
-		$pointer->enqueue_script();
-
-		$output = $this->capture_action( 'admin_print_footer_scripts' );
-
-		$this->assertStringContainsString( 'test-slug', $output );
-		$this->assertStringContainsString( 'Test pointer title.', $output );
-		$this->assertStringContainsString( 'Test pointer content.', $output );
-		$this->assertStringContainsString( '#test-target', $output );
 	}
 }

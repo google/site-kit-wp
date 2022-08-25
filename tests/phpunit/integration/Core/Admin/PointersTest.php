@@ -33,6 +33,7 @@ class PointersTest extends TestCase {
 		parent::set_up();
 
 		remove_all_actions( 'admin_enqueue_scripts' );
+		remove_all_actions( 'admin_print_footer_scripts' );
 		$this->pointers = new Pointers();
 		$this->pointers->register();
 	}
@@ -46,6 +47,7 @@ class PointersTest extends TestCase {
 
 		$this->assertFalse( wp_script_is( 'wp-pointer' ) );
 		$this->assertFalse( wp_style_is( 'wp-pointer' ) );
+		$this->assertFalse( has_action( 'admin_print_footer_scripts' ) );
 	}
 
 	public function test_enqueue_pointers__no_pointers() {
@@ -53,6 +55,7 @@ class PointersTest extends TestCase {
 
 		$this->assertFalse( wp_script_is( 'wp-pointer' ) );
 		$this->assertFalse( wp_style_is( 'wp-pointer' ) );
+		$this->assertFalse( has_action( 'admin_print_footer_scripts' ) );
 	}
 
 	public function test_enqueue_pointers__no_active_pointers() {
@@ -76,6 +79,7 @@ class PointersTest extends TestCase {
 
 		$this->assertFalse( wp_script_is( 'wp-pointer' ) );
 		$this->assertFalse( wp_style_is( 'wp-pointer' ) );
+		$this->assertFalse( has_action( 'admin_print_footer_scripts' ) );
 	}
 
 	public function test_enqueue_pointers() {
@@ -99,5 +103,40 @@ class PointersTest extends TestCase {
 
 		$this->assertTrue( wp_script_is( 'wp-pointer' ) );
 		$this->assertTrue( wp_style_is( 'wp-pointer' ) );
+		$this->assertTrue( has_action( 'admin_print_footer_scripts' ) );
+
+		$output = $this->capture_action( 'admin_print_footer_scripts' );
+
+		$this->assertStringContainsString( 'test-slug', $output );
+		$this->assertStringContainsString( 'Test pointer title', $output );
+		$this->assertStringContainsString( 'Test pointer content.', $output );
+		$this->assertStringContainsString( '#test-target', $output );
+	}
+
+	public function test_print_pointer_scripy() {
+		add_filter(
+			'googlesitekit_admin_pointers',
+			function( $pointers ) {
+				$pointers[] = new Pointer(
+					'test-slug',
+					array(
+						'title'           => 'Test pointer title',
+						'content'         => 'Test pointer content.',
+						'target_id'       => 'test-target',
+						'active_callback' => '__return_true',
+					)
+				);
+				return $pointers;
+			}
+		);
+
+		do_action( 'admin_enqueue_scripts', self::TEST_HOOK_SUFFIX );
+
+		$output = $this->capture_action( 'admin_print_footer_scripts' );
+
+		$this->assertStringContainsString( 'test-slug', $output );
+		$this->assertStringContainsString( 'Test pointer title', $output );
+		$this->assertStringContainsString( 'Test pointer content.', $output );
+		$this->assertStringContainsString( '#test-target', $output );
 	}
 }
