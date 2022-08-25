@@ -24,7 +24,6 @@ import {
 	provideUserInfo,
 	provideUserAuthentication,
 	provideSiteInfo,
-	waitFor,
 } from '../../../../../../../tests/js/test-utils';
 import coreModulesFixture from '../../../../../googlesitekit/modules/datastore/__fixtures__';
 import { CORE_MODULES } from '../../../../../googlesitekit/modules/datastore/constants';
@@ -83,12 +82,15 @@ describe( 'Overview', () => {
 	} );
 
 	it( 'should render the Search Funnel Overview, including the Activate Analytics CTA', async () => {
-		const { container, getByText } = await waitFor( () =>
-			render( <Overview { ...overviewProps } />, {
+		const { container, getByText, waitForRegistry } = render(
+			<Overview { ...overviewProps } />,
+			{
 				features: [ 'zeroDataStates' ],
 				registry,
-			} )
+			}
 		);
+
+		await waitForRegistry();
 
 		expect( container ).toMatchSnapshot();
 
@@ -104,12 +106,15 @@ describe( 'Overview', () => {
 				)
 			);
 
-		const { container, queryByText } = await waitFor( () =>
-			render( <Overview { ...overviewProps } />, {
+		const { container, queryByText, waitForRegistry } = render(
+			<Overview { ...overviewProps } />,
+			{
 				features: [ 'zeroDataStates' ],
 				registry,
-			} )
+			}
 		);
+
+		await waitForRegistry();
 
 		expect( container ).toMatchSnapshot();
 

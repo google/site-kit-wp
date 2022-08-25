@@ -114,16 +114,11 @@ const Overview = ( {
 	const analyticsModuleActiveAndConnected =
 		analyticsModuleActive && analyticsModuleConnected;
 
-	const adminReauthURL = useSelect( ( select ) => {
-		if ( ! analyticsModuleAvailable ) {
-			return null;
-		}
-		return select( MODULES_ANALYTICS ).getAdminReauthURL();
-	} );
 	const isNavigatingToReauthURL = useSelect( ( select ) => {
 		if ( ! analyticsModuleAvailable ) {
 			return false;
 		}
+		const adminReauthURL = select( MODULES_ANALYTICS ).getAdminReauthURL();
 		return select( CORE_LOCATION ).isNavigatingTo( adminReauthURL );
 	} );
 	const isAnalyticsGatheringData = useInViewSelect( ( select ) =>
