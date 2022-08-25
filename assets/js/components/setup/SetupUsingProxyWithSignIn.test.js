@@ -30,8 +30,11 @@ import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import SetupUsingProxyWithSignIn from './SetupUsingProxyWithSignIn';
 
-jest.mock( './CompatibilityChecks', () => ( { children } ) =>
-	children( { complete: true } )
+jest.mock(
+	'./CompatibilityChecks',
+	() =>
+		( { children } ) =>
+			children( { complete: true } )
 );
 
 describe( 'SetupUsingProxyWithSignIn', () => {
