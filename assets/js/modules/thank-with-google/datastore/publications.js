@@ -195,7 +195,9 @@ const baseSelectors = {
 	getServicePublicationURL: ( _state, publicationID ) => {
 		invariant( publicationID, 'A publicationID is required.' );
 
-		return `https://publishercenter.google.com/publications/${ publicationID }/overview`;
+		return `https://publishercenter.google.com/publications/${ encodeURIComponent(
+			publicationID
+		) }/overview`;
 	},
 };
 
