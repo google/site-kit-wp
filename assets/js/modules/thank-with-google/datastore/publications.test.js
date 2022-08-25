@@ -378,7 +378,7 @@ describe( 'modules/thank-with-google publications', () => {
 					.select( MODULES_THANK_WITH_GOOGLE )
 					.getServiceCreatePublicationURL();
 
-				expect( createPublicationURL ).toEqual(
+				expect( createPublicationURL ).toBe(
 					expectedAccountChooserURL
 				);
 			} );
@@ -398,7 +398,7 @@ describe( 'modules/thank-with-google publications', () => {
 					.select( MODULES_THANK_WITH_GOOGLE )
 					.getServicePublicationURL( 'test-publication-a' );
 
-				expect( publicationURL ).toEqual(
+				expect( publicationURL ).toBe(
 					'https://publishercenter.google.com/publications/test-publication-a/overview'
 				);
 			} );
