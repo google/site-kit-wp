@@ -394,24 +394,9 @@ describe( 'modules/thank-with-google publications', () => {
 			} );
 
 			it( 'returns a publisher center URL for an existing publication', () => {
-				registry
-					.dispatch( MODULES_THANK_WITH_GOOGLE )
-					.receiveGetPublications(
-						publicationWithOnboardingCompleteState
-					);
-
-				registry
-					.dispatch( MODULES_THANK_WITH_GOOGLE )
-					.setPublicationID( 'test-publication-a' );
-
-				const publication = registry
-					.select( MODULES_THANK_WITH_GOOGLE )
-					.getCurrentPublication();
-
 				const publicationURL = registry
 					.select( MODULES_THANK_WITH_GOOGLE )
-					// eslint-disable-next-line sitekit/acronym-case
-					.getServicePublicationURL( publication.publicationId );
+					.getServicePublicationURL( 'test-publication-a' );
 
 				expect( publicationURL ).toEqual(
 					'https://publishercenter.google.com/publications/test-publication-a/overview'
