@@ -217,10 +217,8 @@ const baseActions = {
 			payload: {},
 		};
 
-		const {
-			response,
-			error,
-		} = yield fetchResetSharingSettingsStore.actions.fetchResetSharingSettings();
+		const { response, error } =
+			yield fetchResetSharingSettingsStore.actions.fetchResetSharingSettings();
 
 		yield {
 			type: FINISH_SUBMIT_SHARING_CHANGES,
