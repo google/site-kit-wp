@@ -354,6 +354,12 @@ final class Thank_With_Google extends Module
 						return ! empty( $publication['publicationPredicates']['businessPredicates']['supportsSiteKit'] );
 					}
 				);
+				$publications = array_map(
+					function ( Google_Service_SubscribewithGoogle_Publication $publication ) {
+						return $publication->toSimpleObject();
+					},
+					$publications
+				);
 				return array_values( $publications );
 		}
 
