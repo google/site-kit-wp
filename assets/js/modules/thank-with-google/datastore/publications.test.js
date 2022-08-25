@@ -17,6 +17,11 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { addQueryArgs } from '@wordpress/url';
+
+/**
  * Internal dependencies
  */
 import {
@@ -359,12 +364,11 @@ describe( 'modules/thank-with-google publications', () => {
 				provideUserInfo( registry );
 
 				const homeURL = registry.select( CORE_SITE ).getHomeURL();
-				const publisherCenterURL = new URL(
-					'https://publishercenter.google.com/'
-				);
-				publisherCenterURL.searchParams.set(
-					'sk_url',
-					encodeURIComponent( homeURL )
+				const publisherCenterURL = addQueryArgs(
+					'https://publishercenter.google.com/',
+					{
+						sk_url: encodeURIComponent( homeURL ),
+					}
 				);
 				const expectedAccountChooserURL = registry
 					.select( CORE_USER )

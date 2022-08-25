@@ -20,6 +20,7 @@
  * External dependencies
  */
 import invariant from 'invariant';
+import { addQueryArgs } from '@wordpress/url';
 
 /**
  * Internal dependencies
@@ -174,10 +175,11 @@ const baseSelectors = {
 		( select ) => () => {
 			const homeURL = select( CORE_SITE ).getHomeURL();
 
-			const url = new URL( 'https://publishercenter.google.com/' );
-			url.searchParams.set( 'sk_url', encodeURIComponent( homeURL ) );
+			const url = addQueryArgs( 'https://publishercenter.google.com/', {
+				sk_url: encodeURIComponent( homeURL ),
+			} );
 
-			return select( CORE_USER ).getAccountChooserURL( url.toString() );
+			return select( CORE_USER ).getAccountChooserURL( url );
 		}
 	),
 
