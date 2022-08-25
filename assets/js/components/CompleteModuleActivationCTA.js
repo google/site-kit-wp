@@ -40,9 +40,8 @@ const CompleteModuleActivationCTA = ( { moduleSlug, title, description } ) => {
 		select( CORE_MODULES ).getModule( moduleSlug )
 	);
 
-	const completeModuleActivationCallback = useCompleteModuleActivationCallback(
-		moduleSlug
-	);
+	const completeModuleActivationCallback =
+		useCompleteModuleActivationCallback( moduleSlug );
 
 	if ( ! completeModuleActivationCallback ) {
 		return null;

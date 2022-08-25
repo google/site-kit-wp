@@ -132,9 +132,8 @@ export async function submitChanges( { select, dispatch } ) {
 
 		// Fetch the latest settings in the Analytics store so that we can update
 		// the filtered value of canUseSnippet.
-		const analyticsModuleConnected = select(
-			CORE_MODULES
-		).isModuleConnected( 'analytics' );
+		const analyticsModuleConnected =
+			select( CORE_MODULES ).isModuleConnected( 'analytics' );
 		if ( analyticsModuleConnected ) {
 			await dispatch( MODULES_ANALYTICS ).fetchGetSettings();
 		}
@@ -186,9 +185,8 @@ export function validateCanSubmitChanges( select ) {
 		);
 
 		const containers = getContainers( accountID );
-		const normalizedContainerName = getNormalizedContainerName(
-			containerName
-		);
+		const normalizedContainerName =
+			getNormalizedContainerName( containerName );
 		invariant(
 			isUniqueContainerName( containerName, containers ),
 			`a container with "${ normalizedContainerName }" name already exists`
@@ -222,9 +220,8 @@ export function validateCanSubmitChanges( select ) {
 			);
 
 			const containers = getContainers( accountID );
-			const normalizedContainerName = getNormalizedContainerName(
-				ampContainerName
-			);
+			const normalizedContainerName =
+				getNormalizedContainerName( ampContainerName );
 			invariant(
 				isUniqueContainerName( ampContainerName, containers ),
 				`an AMP container with "${ normalizedContainerName }" name already exists`

@@ -17,6 +17,11 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+
+/**
  * Internal dependencies
  */
 import { SetupMain } from './components/setup';
@@ -27,11 +32,13 @@ import { isFeatureEnabled } from '../../features';
 
 export { registerStore } from './datastore';
 
-const ifTwgIsEnabled = ( func ) => ( ...args ) => {
-	if ( isFeatureEnabled( 'twgModule' ) ) {
-		func( ...args );
-	}
-};
+const ifTwgIsEnabled =
+	( func ) =>
+	( ...args ) => {
+		if ( isFeatureEnabled( 'twgModule' ) ) {
+			func( ...args );
+		}
+	};
 
 export const registerModule = ifTwgIsEnabled( ( modules ) => {
 	modules.registerModule( 'thank-with-google', {
@@ -40,5 +47,15 @@ export const registerModule = ifTwgIsEnabled( ( modules ) => {
 		SettingsViewComponent: SettingsView,
 		SetupComponent: SetupMain,
 		Icon: ThankWithGoogleIcon,
+		features: [
+			__(
+				'Virtual stickers and personal messages from your supporters',
+				'google-site-kit'
+			),
+			__(
+				'Revenue from any paid virtual stickers supporters send you',
+				'google-site-kit'
+			),
+		],
 	} );
 } );

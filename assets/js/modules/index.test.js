@@ -63,9 +63,8 @@ describe( 'all modules', () => {
 					...indexExports
 				} = require( `${ componentDirPath }/index.js` );
 				const indexExportNames = Object.keys( indexExports ).sort();
-				const componentNames = getComponentNames(
-					componentDirPath
-				).sort();
+				const componentNames =
+					getComponentNames( componentDirPath ).sort();
 
 				expect( indexExportNames ).toEqual( componentNames );
 			}

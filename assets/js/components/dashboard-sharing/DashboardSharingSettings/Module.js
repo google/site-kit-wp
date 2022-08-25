@@ -21,7 +21,6 @@
  */
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
-import { Tooltip } from '@material-ui/core';
 
 /**
  * WordPress dependencies
@@ -42,6 +41,7 @@ import {
 import Data from 'googlesitekit-data';
 import ModuleIcon from '../../ModuleIcon';
 import UserRoleSelect from '../UserRoleSelect';
+import Tooltip from '../../Tooltip';
 import { Select } from '../../../material-components';
 import useViewContext from '../../../hooks/useViewContext';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
@@ -157,8 +157,10 @@ export default function Module( { moduleSlug, moduleName, ownerUsername } ) {
 				'googlesitekit-dashboard-sharing-settings__module',
 				'googlesitekit-dashboard-sharing-settings__row',
 				{
-					'googlesitekit-dashboard-sharing-settings__row--editing': isEditingUserRoles,
-					'googlesitekit-dashboard-sharing-settings__row--disabled': isLocked,
+					'googlesitekit-dashboard-sharing-settings__row--editing':
+						isEditingUserRoles,
+					'googlesitekit-dashboard-sharing-settings__row--disabled':
+						isLocked,
 				}
 			) }
 			ref={ moduleRef }
@@ -206,10 +208,6 @@ export default function Module( { moduleSlug, moduleName, ownerUsername } ) {
 									'This service requires general access to Google APIs rather than access to a specific user-owned property/entity, so view access is manageable by any admin signed in with Google.',
 									'google-site-kit'
 								) }
-								classes={ {
-									popper: 'googlesitekit-tooltip-popper',
-									tooltip: 'googlesitekit-tooltip',
-								} }
 							>
 								<span className="googlesitekit-dashboard-sharing-settings__tooltip-icon">
 									<Icon icon={ info } size={ 18 } />
@@ -267,10 +265,6 @@ export default function Module( { moduleSlug, moduleName, ownerUsername } ) {
 													ownerUsername
 											  )
 									}
-									classes={ {
-										popper: 'googlesitekit-tooltip-popper',
-										tooltip: 'googlesitekit-tooltip',
-									} }
 								>
 									<span className="googlesitekit-dashboard-sharing-settings__tooltip-icon">
 										<Icon icon={ info } size={ 18 } />

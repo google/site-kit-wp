@@ -79,7 +79,8 @@ describe( 'SettingsModules', () => {
 	} );
 
 	it( 'should redirect from #admin to #/admin-settings', async () => {
-		const coreUserTrackingSettingsEndpointRegExp = /^\/google-site-kit\/v1\/core\/user\/data\/tracking/;
+		const coreUserTrackingSettingsEndpointRegExp =
+			/^\/google-site-kit\/v1\/core\/user\/data\/tracking/;
 		const coreUserTrackingResponse = {
 			status: 200,
 			body: { enabled: false },

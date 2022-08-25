@@ -290,9 +290,7 @@ describe( 'setting up the Analytics module with an existing account and no exist
 
 			await proceedToSetUpAnalytics();
 
-			await expect(
-				page
-			).toMatchElement(
+			await expect( page ).toMatchElement(
 				'.googlesitekit-analytics__select-account .mdc-select__selected-text',
 				{ text: '' }
 			);

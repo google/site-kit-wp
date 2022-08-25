@@ -123,9 +123,8 @@ export function validateCanSubmitChanges( select ) {
 		getWebDataStreamID,
 	} = createStrictSelect( select )( MODULES_ANALYTICS_4 );
 
-	const { haveSettingsChanged: haveUASettingsChanged } = createStrictSelect(
-		select
-	)( MODULES_ANALYTICS );
+	const { haveSettingsChanged: haveUASettingsChanged } =
+		createStrictSelect( select )( MODULES_ANALYTICS );
 
 	// Check if we have GA4 settings changed only if we are sure that there is no UA changes.
 	if ( ! haveUASettingsChanged() ) {

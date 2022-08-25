@@ -226,13 +226,11 @@ describe( 'modules/tagmanager accounts', () => {
 			} );
 
 			it( 'supports asynchronous container resolution', async () => {
-				const {
-					account,
-					containers,
-				} = factories.buildAccountWithContainers( {
-					container: { usageContext: [ CONTEXT_WEB ] },
-					count: 1,
-				} );
+				const { account, containers } =
+					factories.buildAccountWithContainers( {
+						container: { usageContext: [ CONTEXT_WEB ] },
+						count: 1,
+					} );
 				const accountID = account.accountId; // eslint-disable-line sitekit/acronym-case
 				const { publicId, containerId } = containers[ 0 ]; // eslint-disable-line sitekit/acronym-case
 				let resolveResponse;
@@ -309,13 +307,11 @@ describe( 'modules/tagmanager accounts', () => {
 
 			describe( 'with no AMP', () => {
 				it( 'selects the web container for the selected account when there is only one web container', async () => {
-					const {
-						account,
-						containers,
-					} = factories.buildAccountWithContainers( {
-						container: { usageContext: [ CONTEXT_WEB ] },
-						count: 1,
-					} );
+					const { account, containers } =
+						factories.buildAccountWithContainers( {
+							container: { usageContext: [ CONTEXT_WEB ] },
+							count: 1,
+						} );
 					const accountID = account.accountId; // eslint-disable-line sitekit/acronym-case
 					const { publicId, containerId } = containers[ 0 ]; // eslint-disable-line sitekit/acronym-case
 					registry
@@ -347,13 +343,11 @@ describe( 'modules/tagmanager accounts', () => {
 				} );
 
 				it( 'does not select a web container for the selected account when there are multiple web containers', async () => {
-					const {
-						account,
-						containers,
-					} = factories.buildAccountWithContainers( {
-						container: { usageContext: [ CONTEXT_WEB ] },
-						count: 3,
-					} );
+					const { account, containers } =
+						factories.buildAccountWithContainers( {
+							container: { usageContext: [ CONTEXT_WEB ] },
+							count: 3,
+						} );
 					const accountID = account.accountId; // eslint-disable-line sitekit/acronym-case
 					registry
 						.dispatch( MODULES_TAGMANAGER )
@@ -422,13 +416,11 @@ describe( 'modules/tagmanager accounts', () => {
 				);
 
 				it( 'selects the AMP container for the selected account when there is only one AMP container', async () => {
-					const {
-						account,
-						containers,
-					} = factories.buildAccountWithContainers( {
-						container: { usageContext: [ CONTEXT_AMP ] },
-						count: 1,
-					} );
+					const { account, containers } =
+						factories.buildAccountWithContainers( {
+							container: { usageContext: [ CONTEXT_AMP ] },
+							count: 1,
+						} );
 					const accountID = account.accountId; // eslint-disable-line sitekit/acronym-case
 					const { publicId, containerId } = containers[ 0 ]; // eslint-disable-line sitekit/acronym-case
 					registry
@@ -460,13 +452,11 @@ describe( 'modules/tagmanager accounts', () => {
 				} );
 
 				it( 'does not select an AMP container for the selected account when there are multiple AMP containers', async () => {
-					const {
-						account,
-						containers,
-					} = factories.buildAccountWithContainers( {
-						container: { usageContext: [ CONTEXT_AMP ] },
-						count: 3,
-					} );
+					const { account, containers } =
+						factories.buildAccountWithContainers( {
+							container: { usageContext: [ CONTEXT_AMP ] },
+							count: 3,
+						} );
 					const accountID = account.accountId; // eslint-disable-line sitekit/acronym-case
 					registry
 						.dispatch( MODULES_TAGMANAGER )

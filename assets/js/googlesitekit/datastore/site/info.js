@@ -248,41 +248,42 @@ export const selectors = {
 	 * @return {(string|undefined)} This site's admin URL.
 	 */
 	getAdminURL: createRegistrySelector(
-		( select ) => ( state, page, args = {} ) => {
-			const { adminURL } = select( CORE_SITE ).getSiteInfo() || {};
+		( select ) =>
+			( state, page, args = {} ) => {
+				const { adminURL } = select( CORE_SITE ).getSiteInfo() || {};
 
-			// Return adminURL if undefined, or if no page supplied.
-			if ( adminURL === undefined || page === undefined ) {
-				return adminURL;
-			}
-
-			const baseURL =
-				adminURL[ adminURL.length - 1 ] === '/'
-					? adminURL
-					: `${ adminURL }/`;
-			let pageArg = page;
-			let phpFile = 'admin.php';
-
-			// If page argument is full format (i.e. 'admin.php?page=google-site-kit'), extract php file and pageArg, returning early with adminURL if no 'page' param found.
-			if ( page.indexOf( '.php?' ) !== -1 ) {
-				const splitPage = page.split( '?' );
-				pageArg = queryString.parse( splitPage.pop() ).page;
-
-				if ( ! pageArg ) {
+				// Return adminURL if undefined, or if no page supplied.
+				if ( adminURL === undefined || page === undefined ) {
 					return adminURL;
 				}
 
-				phpFile = splitPage.shift();
+				const baseURL =
+					adminURL[ adminURL.length - 1 ] === '/'
+						? adminURL
+						: `${ adminURL }/`;
+				let pageArg = page;
+				let phpFile = 'admin.php';
+
+				// If page argument is full format (i.e. 'admin.php?page=google-site-kit'), extract php file and pageArg, returning early with adminURL if no 'page' param found.
+				if ( page.indexOf( '.php?' ) !== -1 ) {
+					const splitPage = page.split( '?' );
+					pageArg = queryString.parse( splitPage.pop() ).page;
+
+					if ( ! pageArg ) {
+						return adminURL;
+					}
+
+					phpFile = splitPage.shift();
+				}
+
+				// Since page should be first query arg, create queryArgs without 'page' to prevent a 'page' in args from overriding it.
+				const { page: extraPage, ...queryArgs } = args; // eslint-disable-line no-unused-vars
+
+				return addQueryArgs( `${ baseURL }${ phpFile }`, {
+					page: pageArg,
+					...queryArgs,
+				} );
 			}
-
-			// Since page should be first query arg, create queryArgs without 'page' to prevent a 'page' in args from overriding it.
-			const { page: extraPage, ...queryArgs } = args; // eslint-disable-line no-unused-vars
-
-			return addQueryArgs( `${ baseURL }${ phpFile }`, {
-				page: pageArg,
-				...queryArgs,
-			} );
-		}
 	),
 
 	/**
@@ -533,7 +534,7 @@ export const selectors = {
 	/**
 	 * Gets the admin widgets editor URL.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.81.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(string|null)} The proxy support URL.
@@ -543,7 +544,7 @@ export const selectors = {
 	/**
 	 * Gets the public post types.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.81.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {Array.<Object>} The public post types.

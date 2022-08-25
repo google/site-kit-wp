@@ -24,9 +24,17 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
+import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import BannerNotification from '../../../../../components/notifications/BannerNotification';
+import SuccessGreenSVG from '../../../../../../svg/graphics/success-green.svg';
+
+const { useSelect } = Data;
 
 export default function SuccessBanner() {
+	const ga4DocumentationLinkURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getDocumentationLinkURL( 'ga4' )
+	);
 	return (
 		<BannerNotification
 			id="ga4-activation-banner"
@@ -38,7 +46,12 @@ export default function SuccessBanner() {
 				'GA4 is collecting data for your site. You’ll only see Universal Analytics data on your dashboard for now.',
 				'google-site-kit'
 			) }
-			dismiss={ __( 'OK, got it!', 'google-site-kit' ) }
+			dismiss={ __( 'OK, Got it!', 'google-site-kit' ) }
+			WinImageSVG={ SuccessGreenSVG }
+			format="smaller"
+			type="win-success"
+			learnMoreLabel={ __( 'Learn more about GA4', 'google-site-kit' ) }
+			learnMoreURL={ ga4DocumentationLinkURL }
 		/>
 	);
 }

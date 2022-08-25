@@ -35,8 +35,10 @@ import { MODULES_ANALYTICS_4 } from '../../analytics-4/datastore/constants';
 describe( 'modules/analytics properties', () => {
 	let registry;
 
-	const propertiesProfilesEndpoint = /^\/google-site-kit\/v1\/modules\/analytics\/data\/properties-profiles/;
-	const ga4PropertiesEndpoint = /^\/google-site-kit\/v1\/modules\/analytics-4\/data\/properties/;
+	const propertiesProfilesEndpoint =
+		/^\/google-site-kit\/v1\/modules\/analytics\/data\/properties-profiles/;
+	const ga4PropertiesEndpoint =
+		/^\/google-site-kit\/v1\/modules\/analytics-4\/data\/properties/;
 
 	beforeAll( () => {
 		API.setUsingCache( false );

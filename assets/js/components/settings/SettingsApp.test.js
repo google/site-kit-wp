@@ -35,7 +35,8 @@ import {
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 
-const coreUserTrackingSettingsEndpointRegExp = /^\/google-site-kit\/v1\/core\/user\/data\/tracking/;
+const coreUserTrackingSettingsEndpointRegExp =
+	/^\/google-site-kit\/v1\/core\/user\/data\/tracking/;
 const coreUserTrackingResponse = { status: 200, body: { enabled: false } };
 
 describe( 'SettingsApp', () => {
