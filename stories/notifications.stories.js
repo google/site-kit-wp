@@ -132,7 +132,7 @@ storiesOf( 'Global/Notifications', module )
 				) }
 				dismiss={ __( 'OK, Got it!', 'google-site-kit' ) }
 				learnMoreURL="http://google.com"
-				learnMoreLabel={ __( 'Learn More', 'google-site-kit' ) }
+				learnMoreLabel={ __( 'Learn more', 'google-site-kit' ) }
 				learnMoreDescription={ __(
 					'about the particular win',
 					'google-site-kit'
@@ -181,7 +181,7 @@ storiesOf( 'Global/Notifications', module )
 				id="notification-id"
 				title={ __( 'Index Warning', 'google-site-kit' ) }
 				description={ __(
-					'Indexed, though blocked by robots.text.',
+					'Indexed, though blocked by robots.txt.',
 					'google-site-kit'
 				) }
 				learnMoreURL="http://google.com"
