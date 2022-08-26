@@ -1556,7 +1556,7 @@ final class Modules {
 	 * @return bool True on success, false on failure.
 	 */
 	public function delete_dashboard_sharing_settings() {
-		return $this->options->delete( 'googlesitekit_dashboard_sharing' );
+		return $this->options->delete( Module_Sharing_Settings::OPTION );
 	}
 
 }
