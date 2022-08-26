@@ -195,4 +195,64 @@ describe( 'module/analytics service store', () => {
 			} );
 		} );
 	} );
+
+	describe( 'getServiceEntityAccessURL', () => {
+		it( 'returns `undefined` when no accountID is set', () => {
+			expect(
+				registry.select( MODULES_ANALYTICS ).getAccountID()
+			).toBeFalsy();
+
+			expect(
+				registry.select( MODULES_ANALYTICS ).getServiceEntityAccessURL()
+			).toBeUndefined();
+		} );
+
+		it( 'returns `undefined` when no internalWebPropertyID is set', () => {
+			registry.dispatch( MODULES_ANALYTICS ).setAccountID( '12345' );
+			expect(
+				registry.select( MODULES_ANALYTICS ).getInternalWebPropertyID()
+			).toBeFalsy();
+
+			expect(
+				registry.select( MODULES_ANALYTICS ).getServiceEntityAccessURL()
+			).toBeUndefined();
+		} );
+
+		it( 'returns `undefined` when no profileID is set', () => {
+			registry.dispatch( MODULES_ANALYTICS ).setAccountID( '12345' );
+			registry
+				.dispatch( MODULES_ANALYTICS )
+				.setInternalWebPropertyID( '34567' );
+			expect(
+				registry.select( MODULES_ANALYTICS ).getProfileID()
+			).toBeFalsy();
+
+			expect(
+				registry.select( MODULES_ANALYTICS ).getServiceEntityAccessURL()
+			).toBeUndefined();
+		} );
+
+		it( 'returns a service entity access URL for the current account, property, and profile', () => {
+			const [ accountID, internalWebPropertyID, profileID ] = [
+				'12345',
+				'34567',
+				'56789',
+			];
+
+			registry.dispatch( MODULES_ANALYTICS ).setAccountID( accountID );
+			registry
+				.dispatch( MODULES_ANALYTICS )
+				.setInternalWebPropertyID( internalWebPropertyID );
+			registry.dispatch( MODULES_ANALYTICS ).setProfileID( profileID );
+
+			const reportServiceURL = registry
+				.select( MODULES_ANALYTICS )
+				.getServiceEntityAccessURL();
+			const url = new URL( reportServiceURL );
+			expect( reportServiceURL.startsWith( baseURI ) ).toBe( true );
+			expect( url.hash ).toBe(
+				`#/report/report-home/a${ accountID }w${ internalWebPropertyID }p${ profileID }/`
+			);
+		} );
+	} );
 } );
