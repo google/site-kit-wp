@@ -82,7 +82,7 @@ export default function ResetSharingSettings() {
 			</p>
 			{ errorNotice && <ErrorText message={ errorNotice } /> }
 			<DialogFooter>
-				<Button onClick={ onReset } disabled={ isResetting }>
+				<Button onClick={ onReset } disabled={ isResetting } danger>
 					{ __( 'Reset', 'google-site-kit' ) }
 				</Button>
 				<Spinner isSaving={ isResetting } />

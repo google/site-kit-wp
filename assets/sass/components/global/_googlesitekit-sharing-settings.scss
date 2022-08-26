@@ -319,6 +319,7 @@
 
 	.googlesitekit-dashboard-sharing-settings__footer {
 		display: flex;
+		flex-basis: 100%;
 		flex-direction: column;
 		gap: 24px;
 		width: 100%;
@@ -344,6 +345,7 @@
 	.googlesitekit-dashboard-sharing-settings__footer-actions {
 		align-items: center;
 		display: flex;
+		flex: 1;
 		flex-direction: row;
 		gap: 32px;
 		justify-content: flex-end;
@@ -352,6 +354,16 @@
 			box-shadow: 0 -1px 4px 2px rgba(60, 64, 67, 0.15);
 			padding: 16px;
 		}
+	}
+
+	.googlesitekit-dashboard-sharing-settings__footer-actions-right {
+		align-items: center;
+		display: flex;
+		flex: 1;
+		flex-direction: row;
+		gap: 32px;
+		grid-gap: 32px;
+		justify-content: flex-end;
 	}
 
 	p.googlesitekit-dashboard-sharing-settings__notice {

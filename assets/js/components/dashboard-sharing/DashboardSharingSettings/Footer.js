@@ -53,6 +53,12 @@ export default function Footer( { closeDialog, openResetDialog } ) {
 	const isSaving = useSelect( ( select ) =>
 		select( CORE_MODULES ).isDoingSubmitSharingChanges()
 	);
+	const haveSharingSettingsChangedManagement = useSelect( ( select ) =>
+		select( CORE_MODULES ).haveSharingSettingsExpanded( 'management' )
+	);
+	const haveSharingSettingsChangedRoles = useSelect( ( select ) =>
+		select( CORE_MODULES ).haveSharingSettingsExpanded( 'sharedRoles' )
+	);
 
 	const { saveSharingSettings } = useDispatch( CORE_MODULES );
 	const { setValue } = useDispatch( CORE_UI );
@@ -79,33 +85,45 @@ export default function Footer( { closeDialog, openResetDialog } ) {
 		closeDialog();
 	}, [ closeDialog, viewContext ] );
 
+	const showNotice =
+		errorNotice ||
+		haveSharingSettingsChangedManagement ||
+		haveSharingSettingsChangedRoles;
+
 	return (
 		<div className="googlesitekit-dashboard-sharing-settings__footer">
-			<div className="googlesitekit-dashboard-sharing-settings__footer-notice">
-				{ errorNotice && <ErrorText message={ errorNotice } /> }
-				{ ! errorNotice && <Notice /> }
-			</div>
+			{ showNotice && (
+				<div className="googlesitekit-dashboard-sharing-settings__footer-notice">
+					{ errorNotice && <ErrorText message={ errorNotice } /> }
+					{ ! errorNotice && <Notice /> }
+				</div>
+			) }
 
 			<div className="googlesitekit-dashboard-sharing-settings__footer-actions">
-				<Link
-					onClick={ () => {
-						openResetDialog();
-					} }
-				>
-					{ __( 'Reset sharing permissions', 'google-site-kit' ) }
-				</Link>
+				<div className="googlesitekit-dashboard-sharing-settings__footer-actions-left">
+					<Link
+						onClick={ () => {
+							openResetDialog();
+						} }
+						danger
+					>
+						{ __( 'Reset sharing permissions', 'google-site-kit' ) }
+					</Link>
+				</div>
 
-				<Link onClick={ onCancel }>
-					{ __( 'Cancel', 'google-site-kit' ) }
-				</Link>
+				<div className="googlesitekit-dashboard-sharing-settings__footer-actions-right">
+					<Link onClick={ onCancel }>
+						{ __( 'Cancel', 'google-site-kit' ) }
+					</Link>
 
-				<Button
-					onClick={ onApply }
-					disabled={ isSaving || ! canSubmitSharingChanges }
-				>
-					{ __( 'Apply', 'google-site-kit' ) }
-					{ isSaving && <Spinner isSaving={ isSaving } /> }
-				</Button>
+					<Button
+						onClick={ onApply }
+						disabled={ isSaving || ! canSubmitSharingChanges }
+					>
+						{ __( 'Apply', 'google-site-kit' ) }
+						{ isSaving && <Spinner isSaving={ isSaving } /> }
+					</Button>
+				</div>
 			</div>
 		</div>
 	);
