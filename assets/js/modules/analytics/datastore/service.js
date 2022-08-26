@@ -107,6 +107,31 @@ export const selectors = {
 				return selectors.getServiceURL( state, { path } );
 			}
 	),
+
+	/**
+	 * Gets an entity access URL on the service.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {string|undefined} The entity access URL to the service.
+	 */
+	getServiceEntityAccessURL: createRegistrySelector(
+		( select ) => ( state ) => {
+			const accountID = select( MODULES_ANALYTICS ).getAccountID();
+			const internalWebPropertyID =
+				select( MODULES_ANALYTICS ).getInternalWebPropertyID();
+			const profileID = select( MODULES_ANALYTICS ).getProfileID();
+
+			if ( ! accountID || ! internalWebPropertyID || ! profileID ) {
+				return undefined;
+			}
+
+			const path = escapeURI`/report/report-home/a${ accountID }w${ internalWebPropertyID }p${ profileID }/`;
+
+			return selectors.getServiceURL( state, { path } );
+		}
+	),
 };
 
 const store = {
