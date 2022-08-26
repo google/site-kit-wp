@@ -123,7 +123,7 @@ describe( 'AMP Admin Bar compatibility', () => {
 		await expect( adminBarApp ).toMatchElement(
 			'.googlesitekit-analytics-cta button',
 			{
-				text: /Set up analytics/i,
+				text: /Set up google analytics/i,
 			}
 		);
 		// More details link
