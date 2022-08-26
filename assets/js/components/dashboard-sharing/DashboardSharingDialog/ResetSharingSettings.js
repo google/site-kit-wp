@@ -36,11 +36,10 @@ import Link from '../../Link';
 import Button from '../../Button';
 import { DialogFooter } from '../../../material-components';
 import Spinner from '../../Spinner';
+import ErrorText from '../../ErrorText';
 const { useDispatch } = Data;
 
 export default function ResetSharingSettings() {
-	// TODO: Error handling.
-	// eslint-disable-next-line no-unused-vars
 	const [ errorNotice, setErrorNotice ] = useState( null );
 	const [ isResetting, setIsResetting ] = useState( false );
 
@@ -81,6 +80,7 @@ export default function ResetSharingSettings() {
 					'google-site-kit'
 				) }
 			</p>
+			{ errorNotice && <ErrorText message={ errorNotice } /> }
 			<DialogFooter>
 				<Button onClick={ onReset } disabled={ isResetting }>
 					{ __( 'Reset', 'google-site-kit' ) }
