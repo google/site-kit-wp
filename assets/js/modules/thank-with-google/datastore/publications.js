@@ -20,6 +20,10 @@
  * External dependencies
  */
 import invariant from 'invariant';
+
+/**
+ * WordPress dependencies
+ */
 import { addQueryArgs } from '@wordpress/url';
 
 /**
