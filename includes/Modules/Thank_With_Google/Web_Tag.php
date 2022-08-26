@@ -51,7 +51,7 @@ class Web_Tag extends Module_Web_Tag {
 	/**
 	 * Color theme.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.82.0
 	 * @var string
 	 */
 	private $color_theme;
@@ -81,7 +81,7 @@ class Web_Tag extends Module_Web_Tag {
 	/**
 	 * Sets the color theme.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.82.0
 	 *
 	 * @param string $color_theme Color theme.
 	 */

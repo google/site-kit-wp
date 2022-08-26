@@ -46,7 +46,7 @@ export default function SuccessBanner() {
 				'GA4 is collecting data for your site. You’ll only see Universal Analytics data on your dashboard for now.',
 				'google-site-kit'
 			) }
-			dismiss={ __( 'OK, got it!', 'google-site-kit' ) }
+			dismiss={ __( 'OK, Got it!', 'google-site-kit' ) }
 			WinImageSVG={ SuccessGreenSVG }
 			format="smaller"
 			type="win-success"

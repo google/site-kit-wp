@@ -25,7 +25,7 @@ import { stringToDate } from '../../../util/date-range/string-to-date';
 /**
  * Gets the time in seconds to expire a dismissal of the GA4 Activation Banner.
  *
- * @since n.e.x.t
+ * @since 1.82.0
  *
  * @param {string} referenceDateString Date on which to calculate the expiry for the dismissal.
  * @return {number} Time in seconds for a dismissal to expire.
