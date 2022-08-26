@@ -282,7 +282,7 @@ final class AdSense extends Module
 						$this->validate_report_metrics( $metrics );
 					} catch ( Invalid_Report_Metrics_Exception $exception ) {
 						return new WP_Error(
-							'invalid_analytics_report_metrics',
+							'invalid_adsense_report_metrics',
 							$exception->getMessage()
 						);
 					}
