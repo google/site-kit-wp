@@ -24,12 +24,16 @@ import {
 	createTestRegistry,
 	WithTestRegistry,
 	provideModules,
+	provideModuleRegistrations,
 } from '../../../tests/js/utils';
+import WithRegistrySetup from '../../../tests/js/WithRegistrySetup';
 import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../util/errors';
 import { MODULES_ANALYTICS } from '../modules/analytics/datastore/constants';
 
-const Template = ( args ) => (
-	<ReportError moduleSlug="test-module" { ...args } />
+const Template = ( { setupRegistry = () => {}, ...args } ) => (
+	<WithRegistrySetup func={ setupRegistry }>
+		<ReportError moduleSlug="test-module" { ...args } />
+	</WithRegistrySetup>
 );
 
 export const DefaultReportError = Template.bind( {} );
@@ -62,6 +66,43 @@ ReportErrorWithInsufficientPermissions.args = {
 		data: {
 			reason: ERROR_REASON_INSUFFICIENT_PERMISSIONS,
 		},
+	},
+};
+
+export const ReportErrorWithInsufficientPermissionsWithRequestAccess =
+	Template.bind( {} );
+ReportErrorWithInsufficientPermissionsWithRequestAccess.storyName =
+	'ReportError with insufficient permissions with request access';
+ReportErrorWithInsufficientPermissionsWithRequestAccess.args = {
+	error: {
+		code: 'test-error-code',
+		message: 'Test error message',
+		data: {
+			reason: ERROR_REASON_INSUFFICIENT_PERMISSIONS,
+		},
+	},
+	moduleSlug: 'analytics',
+	setupRegistry: ( registry ) => {
+		provideModules( registry, [
+			{
+				active: true,
+				connected: true,
+				slug: 'analytics',
+			},
+		] );
+		provideModuleRegistrations( registry );
+
+		const [ accountID, internalWebPropertyID, profileID ] = [
+			'12345',
+			'34567',
+			'56789',
+		];
+
+		registry.dispatch( MODULES_ANALYTICS ).setAccountID( accountID );
+		registry
+			.dispatch( MODULES_ANALYTICS )
+			.setInternalWebPropertyID( internalWebPropertyID );
+		registry.dispatch( MODULES_ANALYTICS ).setProfileID( profileID );
 	},
 };
 
