@@ -39,7 +39,7 @@ describe( 'module/analytics service store', () => {
 
 	let registry;
 
-	beforeAll( () => {
+	beforeEach( () => {
 		registry = createTestRegistry();
 		provideUserInfo( registry, userData );
 		registry
@@ -47,7 +47,7 @@ describe( 'module/analytics service store', () => {
 			.receiveGetSettings( fixtures.settings.default );
 	} );
 
-	afterAll( () => {
+	afterEach( () => {
 		unsubscribeFromAll( registry );
 	} );
 
