@@ -68,9 +68,10 @@ const WPDashboardClicks = ( { WidgetReportError } ) => {
 	);
 	const loading = useSelect(
 		( select ) =>
-			! select(
-				MODULES_SEARCH_CONSOLE
-			).hasFinishedResolution( 'getReport', [ reportArgs ] )
+			! select( MODULES_SEARCH_CONSOLE ).hasFinishedResolution(
+				'getReport',
+				[ reportArgs ]
+			)
 	);
 
 	if ( loading || isGatheringData === undefined ) {

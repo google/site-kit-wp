@@ -53,13 +53,8 @@ const ModuleOverviewWidget = ( {
 	const [ selectedStats, setSelectedStats ] = useState( 0 );
 	const adsenseSetupV2Enabled = useFeature( 'adsenseSetupV2' );
 
-	const {
-		startDate,
-		endDate,
-		compareStartDate,
-		compareEndDate,
-	} = useSelect( ( select ) =>
-		select( CORE_USER ).getDateRangeDates( { compare: true } )
+	const { startDate, endDate, compareStartDate, compareEndDate } = useSelect(
+		( select ) => select( CORE_USER ).getDateRangeDates( { compare: true } )
 	);
 
 	const currentRangeArgs = {

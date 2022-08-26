@@ -55,7 +55,8 @@ export default function AdBlockerWarning( { context } ) {
 	return (
 		<div
 			className={ classnames( 'googlesitekit-settings-module-warning', {
-				[ `googlesitekit-settings-module-warning--${ context }` ]: context,
+				[ `googlesitekit-settings-module-warning--${ context }` ]:
+					context,
 			} ) }
 		>
 			{ createInterpolateElement(

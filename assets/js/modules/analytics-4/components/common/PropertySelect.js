@@ -62,9 +62,10 @@ export default function PropertySelect( { label, hasModuleAccess } ) {
 			! select( MODULES_ANALYTICS ).hasFinishedResolution(
 				'getAccounts'
 			) ||
-			! select(
-				MODULES_ANALYTICS_4
-			).hasFinishedResolution( 'getProperties', [ accountID ] ) ||
+			! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
+				'getProperties',
+				[ accountID ]
+			) ||
 			select( MODULES_ANALYTICS ).hasFinishedSelectingAccount() === false
 	);
 

@@ -49,9 +49,10 @@ export default function SettingsForm() {
 	const { existingTag, hasResolvedGetExistingTag } = useSelect(
 		( select ) => ( {
 			existingTag: select( MODULES_ADSENSE ).getExistingTag(),
-			hasResolvedGetExistingTag: select(
-				MODULES_ADSENSE
-			).hasFinishedResolution( 'getExistingTag' ),
+			hasResolvedGetExistingTag:
+				select( MODULES_ADSENSE ).hasFinishedResolution(
+					'getExistingTag'
+				),
 		} )
 	);
 

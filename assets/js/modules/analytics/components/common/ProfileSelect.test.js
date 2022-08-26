@@ -170,10 +170,11 @@ describe( 'ProfileSelect', () => {
 			.getExistingTag();
 		expect( existingTagPropertyID ).toEqual( currentPropertyID );
 
-		const existingTagProfiles = fixtures.accountsPropertiesProfiles.profiles.filter(
-			// eslint-disable-next-line sitekit/acronym-case
-			( { webPropertyId } ) => webPropertyId === existingTagPropertyID
-		);
+		const existingTagProfiles =
+			fixtures.accountsPropertiesProfiles.profiles.filter(
+				// eslint-disable-next-line sitekit/acronym-case
+				( { webPropertyId } ) => webPropertyId === existingTagPropertyID
+			);
 
 		const listItems = getAllByRole( 'menuitem', { hidden: true } );
 		expect( listItems ).toHaveLength( existingTagProfiles.length + 1 );

@@ -50,19 +50,16 @@ const WIDGET_CLICKS = 'adminBarClicks';
 const WIDGET_VISITORS = 'adminBarUniqueVisitors';
 const WIDGET_SESSIONS = 'adminBarSessions';
 // Search Console widgets.
-const AdminBarImpressionsWidget = withWidgetComponentProps(
-	WIDGET_IMPRESSIONS
-)( AdminBarImpressions );
-const AdminBarClicksWidget = withWidgetComponentProps( WIDGET_CLICKS )(
-	AdminBarClicks
-);
+const AdminBarImpressionsWidget =
+	withWidgetComponentProps( WIDGET_IMPRESSIONS )( AdminBarImpressions );
+const AdminBarClicksWidget =
+	withWidgetComponentProps( WIDGET_CLICKS )( AdminBarClicks );
 // Analytics Widgets.
 const AdminBarUniqueVisitorsWidget = withWidgetComponentProps(
 	WIDGET_VISITORS
 )( AdminBarUniqueVisitors );
-const AdminBarSessionsWidget = withWidgetComponentProps( WIDGET_SESSIONS )(
-	AdminBarSessions
-);
+const AdminBarSessionsWidget =
+	withWidgetComponentProps( WIDGET_SESSIONS )( AdminBarSessions );
 
 export default function AdminBarWidgets() {
 	const analyticsModuleConnected = useSelect( ( select ) =>

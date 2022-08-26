@@ -90,9 +90,10 @@ export default function WPDashboardPopularPages( props ) {
 	);
 
 	const loading = useSelect( ( select ) => {
-		const reportLoaded = select(
-			MODULES_ANALYTICS
-		).hasFinishedResolution( 'getReport', [ reportArgs ] );
+		const reportLoaded = select( MODULES_ANALYTICS ).hasFinishedResolution(
+			'getReport',
+			[ reportArgs ]
+		);
 
 		const hasLoadedPageTitles = undefined !== error || undefined !== titles;
 

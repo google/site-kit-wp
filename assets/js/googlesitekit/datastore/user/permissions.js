@@ -111,10 +111,8 @@ const baseActions = {
 	*refreshCapabilities() {
 		const { dispatch } = yield Data.commonActions.getRegistry();
 
-		const {
-			response,
-			error,
-		} = yield fetchRefreshCapabilitiesStore.actions.fetchRefreshCapabilities();
+		const { response, error } =
+			yield fetchRefreshCapabilitiesStore.actions.fetchRefreshCapabilities();
 
 		if ( error ) {
 			return dispatch( CORE_USER ).setPermissionScopeError( error );
@@ -251,22 +249,23 @@ const baseSelectors = {
 	 * @return {(boolean|undefined)} TRUE if the current user has this capability, otherwise FALSE. If capabilities ain't loaded yet, returns undefined.
 	 */
 	hasCapability: createRegistrySelector(
-		( select ) => ( state, capability, ...args ) => {
-			const capabilities = select( CORE_USER ).getCapabilities();
+		( select ) =>
+			( state, capability, ...args ) => {
+				const capabilities = select( CORE_USER ).getCapabilities();
 
-			if ( args.length > 0 ) {
-				capability = getMetaCapabilityPropertyName(
-					capability,
-					...args
-				);
+				if ( args.length > 0 ) {
+					capability = getMetaCapabilityPropertyName(
+						capability,
+						...args
+					);
+				}
+
+				if ( capabilities ) {
+					return !! capabilities[ capability ];
+				}
+
+				return undefined;
 			}
-
-			if ( capabilities ) {
-				return !! capabilities[ capability ];
-			}
-
-			return undefined;
-		}
 	),
 
 	/**

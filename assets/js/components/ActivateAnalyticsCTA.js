@@ -38,9 +38,8 @@ const { useSelect } = Data;
 
 export default function ActivateAnalyticsCTA( { children } ) {
 	const activateModuleCallback = useActivateModuleCallback( 'analytics' );
-	const completeModuleActivationCallback = useCompleteModuleActivationCallback(
-		'analytics'
-	);
+	const completeModuleActivationCallback =
+		useCompleteModuleActivationCallback( 'analytics' );
 	const analyticsModuleActive = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleActive( 'analytics' )
 	);

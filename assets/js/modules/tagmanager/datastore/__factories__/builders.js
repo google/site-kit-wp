@@ -238,8 +238,7 @@ export const liveContainerVersionBuilder = build(
 			description: null,
 			name: null,
 			fingerprint: Date.now().toString(),
-			path:
-				'accounts/{accountId}/containers/{containerId}/versions/{containerVersionId}',
+			path: 'accounts/{accountId}/containers/{containerId}/versions/{containerVersionId}',
 			tag: undefined, // required, but depends on container type.
 			tagManagerUrl:
 				'https://tagmanager.google.com/#/versions/accounts/{accountId}/containers/{containerId}/versions/{containerVersionId}?apiLink=version',

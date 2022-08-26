@@ -135,10 +135,10 @@ describe( 'SettingsModule', () => {
 	it( 'should change route when "Edit" link is clicked and switch to SettingsEditComponent', async () => {
 		history.push( '/connected-services/analytics' );
 
-		const {
-			getByRole,
-			queryByTestID,
-		} = render( <SettingsModuleWithWrapper />, { history, registry } );
+		const { getByRole, queryByTestID } = render(
+			<SettingsModuleWithWrapper />,
+			{ history, registry }
+		);
 
 		fireEvent.click( getByRole( 'link', { name: /edit/i } ) );
 
@@ -151,11 +151,10 @@ describe( 'SettingsModule', () => {
 	it( 'should change route when "Cancel" link is clicked and switch to SettingsViewComponent', async () => {
 		history.push( '/connected-services/analytics/edit' );
 
-		const {
-			getByRole,
-			queryByTestID,
-			findByTestID,
-		} = render( <SettingsModuleWithWrapper />, { history, registry } );
+		const { getByRole, queryByTestID, findByTestID } = render(
+			<SettingsModuleWithWrapper />,
+			{ history, registry }
+		);
 
 		fireEvent.click( getByRole( 'button', { name: /cancel/i } ) );
 
@@ -191,10 +190,10 @@ describe( 'SettingsModule', () => {
 	it( 'should open accordion on click and change route and DOM correctly', async () => {
 		history.push( '/connected-services' );
 
-		const {
-			getByRole,
-			queryByTestID,
-		} = render( <SettingsModuleWithWrapper />, { history, registry } );
+		const { getByRole, queryByTestID } = render(
+			<SettingsModuleWithWrapper />,
+			{ history, registry }
+		);
 
 		fireEvent.click( getByRole( 'tab' ) );
 		expect( global.location.hash ).toEqual(
@@ -206,10 +205,10 @@ describe( 'SettingsModule', () => {
 	it( 'should close accordion on click and change route & DOM correctly', async () => {
 		history.push( '/connected-services/analytics' );
 
-		const {
-			getByRole,
-			queryByTestID,
-		} = render( <SettingsModuleWithWrapper />, { history, registry } );
+		const { getByRole, queryByTestID } = render(
+			<SettingsModuleWithWrapper />,
+			{ history, registry }
+		);
 
 		fireEvent.click( getByRole( 'tab' ) );
 		expect( global.location.hash ).toEqual( '#/connected-services' );

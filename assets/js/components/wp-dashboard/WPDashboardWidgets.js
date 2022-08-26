@@ -57,9 +57,8 @@ const WIDGET_POPULAR_PAGES = 'wpDashboardPopularPages';
 const WPDashboardImpressionsWidget = withWidgetComponentProps(
 	WIDGET_IMPRESSIONS
 )( WPDashboardImpressions );
-const WPDashboardClicksWidget = withWidgetComponentProps( WIDGET_CLICKS )(
-	WPDashboardClicks
-);
+const WPDashboardClicksWidget =
+	withWidgetComponentProps( WIDGET_CLICKS )( WPDashboardClicks );
 
 // Analytics Widgets.
 const WPDashboardUniqueVisitorsWidget = withWidgetComponentProps(

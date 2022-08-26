@@ -29,9 +29,8 @@ import {
 import WPDashboardClicks from './WPDashboardClicks';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 
-const WidgetWithComponentProps = withWidgetComponentProps( 'widget-slug' )(
-	WPDashboardClicks
-);
+const WidgetWithComponentProps =
+	withWidgetComponentProps( 'widget-slug' )( WPDashboardClicks );
 
 const Template = ( { setupRegistry = () => {}, ...args } ) => (
 	<WithRegistrySetup func={ setupRegistry }>

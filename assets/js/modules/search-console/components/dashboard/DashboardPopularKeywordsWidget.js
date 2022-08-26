@@ -81,9 +81,10 @@ function DashboardPopularKeywordsWidget( props ) {
 	);
 	const loading = useSelect(
 		( select ) =>
-			! select(
-				MODULES_SEARCH_CONSOLE
-			).hasFinishedResolution( 'getReport', [ reportArgs ] )
+			! select( MODULES_SEARCH_CONSOLE ).hasFinishedResolution(
+				'getReport',
+				[ reportArgs ]
+			)
 	);
 	const baseServiceURL = useSelect( ( select ) => {
 		if ( viewOnlyDashboard ) {

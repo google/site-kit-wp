@@ -122,7 +122,8 @@ class DataBlock extends Component {
 					`googlesitekit-data-block--${ context }`,
 					{
 						'googlesitekit-data-block--selected': selected,
-						'googlesitekit-data-block--is-gathering-data': gatheringData,
+						'googlesitekit-data-block--is-gathering-data':
+							gatheringData,
 					}
 				) }
 				tabIndex={
@@ -173,7 +174,8 @@ class DataBlock extends Component {
 								className={ classnames(
 									'googlesitekit-data-block__change',
 									{
-										'googlesitekit-data-block__change--no-change': ! change,
+										'googlesitekit-data-block__change--no-change':
+											! change,
 									}
 								) }
 							>

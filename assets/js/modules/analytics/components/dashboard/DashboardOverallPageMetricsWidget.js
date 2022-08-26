@@ -242,12 +242,8 @@ function DashboardOverallPageMetricsWidget( { Widget, WidgetReportError } ) {
 		select( MODULES_ANALYTICS ).isGatheringData()
 	);
 
-	const {
-		report,
-		serviceURL,
-		isLoading,
-		error,
-	} = useOverallPageMetricsReport();
+	const { report, serviceURL, isLoading, error } =
+		useOverallPageMetricsReport();
 
 	const currentDayCount = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeNumberOfDays()

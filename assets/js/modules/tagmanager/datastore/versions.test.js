@@ -108,14 +108,12 @@ describe( 'modules/tagmanager versions', () => {
 				);
 
 				it( 'returns an array including the property ID found in the current web container', () => {
-					const liveContainerVersion = factories.buildLiveContainerVersionWeb(
-						{ propertyID: 'UA-12345-1' }
-					);
-					const {
-						accountID,
-						containerID,
-						internalContainerID,
-					} = parseIDs( liveContainerVersion );
+					const liveContainerVersion =
+						factories.buildLiveContainerVersionWeb( {
+							propertyID: 'UA-12345-1',
+						} );
+					const { accountID, containerID, internalContainerID } =
+						parseIDs( liveContainerVersion );
 					registry
 						.dispatch( MODULES_TAGMANAGER )
 						.setAccountID( accountID );
@@ -140,12 +138,10 @@ describe( 'modules/tagmanager versions', () => {
 				} );
 
 				it( 'returns an array of `null` if the selected container has no Analytics property tags', () => {
-					const liveContainerVersion = factories.buildLiveContainerVersionWeb();
-					const {
-						accountID,
-						containerID,
-						internalContainerID,
-					} = parseIDs( liveContainerVersion );
+					const liveContainerVersion =
+						factories.buildLiveContainerVersionWeb();
+					const { accountID, containerID, internalContainerID } =
+						parseIDs( liveContainerVersion );
 					registry
 						.dispatch( MODULES_TAGMANAGER )
 						.setAccountID( accountID );
@@ -207,14 +203,12 @@ describe( 'modules/tagmanager versions', () => {
 				);
 
 				it( 'returns an array including the property ID found in the current AMP container', () => {
-					const liveContainerVersion = factories.buildLiveContainerVersionAMP(
-						{ propertyID: 'UA-12345-1' }
-					);
-					const {
-						accountID,
-						containerID,
-						internalContainerID,
-					} = parseIDs( liveContainerVersion );
+					const liveContainerVersion =
+						factories.buildLiveContainerVersionAMP( {
+							propertyID: 'UA-12345-1',
+						} );
+					const { accountID, containerID, internalContainerID } =
+						parseIDs( liveContainerVersion );
 					registry
 						.dispatch( MODULES_TAGMANAGER )
 						.setAccountID( accountID );
@@ -239,12 +233,10 @@ describe( 'modules/tagmanager versions', () => {
 				} );
 
 				it( 'returns an array of `null` if the selected container has no Analytics property tags', () => {
-					const liveContainerVersion = factories.buildLiveContainerVersionAMP();
-					const {
-						accountID,
-						containerID,
-						internalContainerID,
-					} = parseIDs( liveContainerVersion );
+					const liveContainerVersion =
+						factories.buildLiveContainerVersionAMP();
+					const { accountID, containerID, internalContainerID } =
+						parseIDs( liveContainerVersion );
 					registry
 						.dispatch( MODULES_TAGMANAGER )
 						.setAccountID( accountID );
@@ -344,12 +336,10 @@ describe( 'modules/tagmanager versions', () => {
 				} );
 
 				it( 'returns undefined if the live container data is not loaded yet for either container', () => {
-					const liveContainerVersionWeb = factories.buildLiveContainerVersionWeb();
-					const {
-						accountID,
-						containerID,
-						internalContainerID,
-					} = parseIDs( liveContainerVersionWeb );
+					const liveContainerVersionWeb =
+						factories.buildLiveContainerVersionWeb();
+					const { accountID, containerID, internalContainerID } =
+						parseIDs( liveContainerVersionWeb );
 					registry
 						.dispatch( MODULES_TAGMANAGER )
 						.setAccountID( accountID );
@@ -365,7 +355,8 @@ describe( 'modules/tagmanager versions', () => {
 							liveContainerVersionWeb,
 							{ accountID, internalContainerID }
 						);
-					const liveContainerVersionAMP = factories.buildLiveContainerVersionWeb();
+					const liveContainerVersionAMP =
+						factories.buildLiveContainerVersionWeb();
 					const { ampContainerID, internalAMPContainerID } = parseIDs(
 						liveContainerVersionAMP
 					);
@@ -391,12 +382,12 @@ describe( 'modules/tagmanager versions', () => {
 
 		describe( 'getLiveContainerAnalyticsTag', () => {
 			it( 'returns the Universal Analytics tag object from the live container object', () => {
-				const liveContainerVersion = factories.buildLiveContainerVersionWeb(
-					{ propertyID: 'UA-12345-1' }
-				);
-				const { accountID, internalContainerID } = parseIDs(
-					liveContainerVersion
-				);
+				const liveContainerVersion =
+					factories.buildLiveContainerVersionWeb( {
+						propertyID: 'UA-12345-1',
+					} );
+				const { accountID, internalContainerID } =
+					parseIDs( liveContainerVersion );
 				registry
 					.dispatch( MODULES_TAGMANAGER )
 					.receiveGetLiveContainerVersion( liveContainerVersion, {
@@ -420,12 +411,12 @@ describe( 'modules/tagmanager versions', () => {
 			} );
 
 			it( 'returns the Universal Analytics tag object from the live container object for an AMP container', () => {
-				const liveContainerVersion = factories.buildLiveContainerVersionAMP(
-					{ propertyID: 'UA-12345-1' }
-				);
-				const { accountID, internalContainerID } = parseIDs(
-					liveContainerVersion
-				);
+				const liveContainerVersion =
+					factories.buildLiveContainerVersionAMP( {
+						propertyID: 'UA-12345-1',
+					} );
+				const { accountID, internalContainerID } =
+					parseIDs( liveContainerVersion );
 				registry
 					.dispatch( MODULES_TAGMANAGER )
 					.receiveGetLiveContainerVersion( liveContainerVersion, {
@@ -449,10 +440,10 @@ describe( 'modules/tagmanager versions', () => {
 			} );
 
 			it( 'returns null if the live container version does not contain a Universal Analytics tag', () => {
-				const liveContainerVersion = factories.buildLiveContainerVersionWeb();
-				const { accountID, internalContainerID } = parseIDs(
-					liveContainerVersion
-				);
+				const liveContainerVersion =
+					factories.buildLiveContainerVersionWeb();
+				const { accountID, internalContainerID } =
+					parseIDs( liveContainerVersion );
 				registry
 					.dispatch( MODULES_TAGMANAGER )
 					.receiveGetLiveContainerVersion( liveContainerVersion, {
@@ -512,9 +503,8 @@ describe( 'modules/tagmanager versions', () => {
 			it( 'gets the propertyID associated with the Universal Analytics tag settings variable', () => {
 				const liveContainerVersion =
 					fixtures.liveContainerVersions.web.gaWithVariable;
-				const { accountID, internalContainerID } = parseIDs(
-					liveContainerVersion
-				);
+				const { accountID, internalContainerID } =
+					parseIDs( liveContainerVersion );
 				registry
 					.dispatch( MODULES_TAGMANAGER )
 					.receiveGetLiveContainerVersion( liveContainerVersion, {
@@ -535,9 +525,8 @@ describe( 'modules/tagmanager versions', () => {
 			it( 'gets the propertyID associated with the Universal Analytics tag settings when provided directly', () => {
 				const liveContainerVersion =
 					fixtures.liveContainerVersions.web.gaWithOverride;
-				const { accountID, internalContainerID } = parseIDs(
-					liveContainerVersion
-				);
+				const { accountID, internalContainerID } =
+					parseIDs( liveContainerVersion );
 				registry
 					.dispatch( MODULES_TAGMANAGER )
 					.receiveGetLiveContainerVersion( liveContainerVersion, {
@@ -556,12 +545,12 @@ describe( 'modules/tagmanager versions', () => {
 			} );
 
 			it( 'gets the propertyID associated with the Universal Analytics tag for an AMP container', () => {
-				const liveContainerVersion = factories.buildLiveContainerVersionAMP(
-					{ propertyID: 'UA-123456789-1' }
-				);
-				const { accountID, internalContainerID } = parseIDs(
-					liveContainerVersion
-				);
+				const liveContainerVersion =
+					factories.buildLiveContainerVersionAMP( {
+						propertyID: 'UA-123456789-1',
+					} );
+				const { accountID, internalContainerID } =
+					parseIDs( liveContainerVersion );
 				registry
 					.dispatch( MODULES_TAGMANAGER )
 					.receiveGetLiveContainerVersion( liveContainerVersion, {
@@ -580,10 +569,10 @@ describe( 'modules/tagmanager versions', () => {
 			} );
 
 			it( 'returns null if no Analytics tag exists in the container', () => {
-				const liveContainerVersion = factories.buildLiveContainerVersionWeb();
-				const { accountID, internalContainerID } = parseIDs(
-					liveContainerVersion
-				);
+				const liveContainerVersion =
+					factories.buildLiveContainerVersionWeb();
+				const { accountID, internalContainerID } =
+					parseIDs( liveContainerVersion );
 				registry
 					.dispatch( MODULES_TAGMANAGER )
 					.receiveGetLiveContainerVersion( liveContainerVersion, {
@@ -602,10 +591,10 @@ describe( 'modules/tagmanager versions', () => {
 			} );
 
 			it( 'returns undefined if the live container version is not loaded yet', () => {
-				const liveContainerVersion = factories.buildLiveContainerVersionWeb();
-				const { accountID, internalContainerID } = parseIDs(
-					liveContainerVersion
-				);
+				const liveContainerVersion =
+					factories.buildLiveContainerVersionWeb();
+				const { accountID, internalContainerID } =
+					parseIDs( liveContainerVersion );
 
 				muteFetch(
 					/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/live-container-version/
@@ -625,9 +614,8 @@ describe( 'modules/tagmanager versions', () => {
 			it( 'returns the variable object from the live container object by variable name', () => {
 				const liveContainerVersion =
 					fixtures.liveContainerVersions.web.noGAWithVariable;
-				const { accountID, internalContainerID } = parseIDs(
-					liveContainerVersion
-				);
+				const { accountID, internalContainerID } =
+					parseIDs( liveContainerVersion );
 				registry
 					.dispatch( MODULES_TAGMANAGER )
 					.receiveGetLiveContainerVersion( liveContainerVersion, {
@@ -652,9 +640,8 @@ describe( 'modules/tagmanager versions', () => {
 			it( 'returns null if no variable exists by the given name', () => {
 				const liveContainerVersion =
 					fixtures.liveContainerVersions.web.noGAWithVariable;
-				const { accountID, internalContainerID } = parseIDs(
-					liveContainerVersion
-				);
+				const { accountID, internalContainerID } =
+					parseIDs( liveContainerVersion );
 				registry
 					.dispatch( MODULES_TAGMANAGER )
 					.receiveGetLiveContainerVersion( liveContainerVersion, {
@@ -720,10 +707,10 @@ describe( 'modules/tagmanager versions', () => {
 
 		describe( 'getLiveContainerVersion', () => {
 			it( 'uses a resolver to make a network request', async () => {
-				const liveContainerVersion = factories.buildLiveContainerVersionWeb();
-				const { accountID, internalContainerID } = parseIDs(
-					liveContainerVersion
-				);
+				const liveContainerVersion =
+					factories.buildLiveContainerVersionWeb();
+				const { accountID, internalContainerID } =
+					parseIDs( liveContainerVersion );
 
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/live-container-version/,
@@ -752,10 +739,10 @@ describe( 'modules/tagmanager versions', () => {
 			} );
 
 			it( 'does not make a network request if the container version is already present', async () => {
-				const liveContainerVersion = factories.buildLiveContainerVersionWeb();
-				const { accountID, internalContainerID } = parseIDs(
-					liveContainerVersion
-				);
+				const liveContainerVersion =
+					factories.buildLiveContainerVersionWeb();
+				const { accountID, internalContainerID } =
+					parseIDs( liveContainerVersion );
 
 				registry
 					.dispatch( MODULES_TAGMANAGER )
@@ -1039,9 +1026,8 @@ describe( 'modules/tagmanager versions', () => {
 				registry
 					.dispatch( MODULES_TAGMANAGER )
 					.setAccountID( accountID );
-				const liveContainerVersionWeb = factories.buildLiveContainerVersionWeb(
-					{ accountID }
-				);
+				const liveContainerVersionWeb =
+					factories.buildLiveContainerVersionWeb( { accountID } );
 				parseIDs(
 					liveContainerVersionWeb,
 					( { containerID, internalContainerID } ) => {
@@ -1059,9 +1045,8 @@ describe( 'modules/tagmanager versions', () => {
 							);
 					}
 				);
-				const liveContainerVersionAMP = factories.buildLiveContainerVersionAMP(
-					{ accountID }
-				);
+				const liveContainerVersionAMP =
+					factories.buildLiveContainerVersionAMP( { accountID } );
 				parseIDs(
 					liveContainerVersionAMP,
 					( { containerID, internalContainerID } ) => {

@@ -80,28 +80,30 @@ export default function ContainerSelect( {
 					publicId: CONTAINER_CREATE,
 					name: __( 'Set up a new container', 'google-site-kit' ),
 				} )
-				.map( (
-					{ publicId, name, containerId } // eslint-disable-line sitekit/acronym-case
-				) => (
-					<Option
-						key={ publicId } // eslint-disable-line sitekit/acronym-case
-						value={ publicId } // eslint-disable-line sitekit/acronym-case
-						data-internal-id={ containerId } // eslint-disable-line sitekit/acronym-case
-					>
-						{ publicId === CONTAINER_CREATE // eslint-disable-line sitekit/acronym-case
-							? name
-							: sprintf(
-									/* translators: %1$s: container name, %2$s: container ID */
-									_x(
-										'%1$s (%2$s)',
-										'Tag Manager container name and ID',
-										'google-site-kit'
-									),
-									name,
-									publicId // eslint-disable-line sitekit/acronym-case
-							  ) }
-					</Option>
-				) ) }
+				.map(
+					(
+						{ publicId, name, containerId } // eslint-disable-line sitekit/acronym-case
+					) => (
+						<Option
+							key={ publicId } // eslint-disable-line sitekit/acronym-case
+							value={ publicId } // eslint-disable-line sitekit/acronym-case
+							data-internal-id={ containerId } // eslint-disable-line sitekit/acronym-case
+						>
+							{ publicId === CONTAINER_CREATE // eslint-disable-line sitekit/acronym-case
+								? name
+								: sprintf(
+										/* translators: %1$s: container name, %2$s: container ID */
+										_x(
+											'%1$s (%2$s)',
+											'Tag Manager container name and ID',
+											'google-site-kit'
+										),
+										name,
+										publicId // eslint-disable-line sitekit/acronym-case
+								  ) }
+						</Option>
+					)
+				) }
 		</Select>
 	);
 }

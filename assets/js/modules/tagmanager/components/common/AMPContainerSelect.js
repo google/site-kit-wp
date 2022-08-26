@@ -63,9 +63,8 @@ export default function AMPContainerSelect( { hasModuleAccess } ) {
 		select( CORE_SITE ).isSecondaryAMP()
 	);
 
-	const { setAMPContainerID, setInternalAMPContainerID } = useDispatch(
-		MODULES_TAGMANAGER
-	);
+	const { setAMPContainerID, setInternalAMPContainerID } =
+		useDispatch( MODULES_TAGMANAGER );
 	const onSelect = useCallback(
 		( index, item ) => {
 			const {
