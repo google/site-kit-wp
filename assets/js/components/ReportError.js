@@ -57,7 +57,7 @@ export default function ReportError( { moduleSlug, error } ) {
 		select( CORE_MODULES ).getModuleStoreName( moduleSlug )
 	);
 	const requestAccessURL = useSelect( ( select ) =>
-		typeof select( storeName ).getServiceEntityAccessURL === 'function'
+		typeof select( storeName )?.getServiceEntityAccessURL === 'function'
 			? select( storeName ).getServiceEntityAccessURL()
 			: null
 	);
