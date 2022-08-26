@@ -296,7 +296,7 @@ final class AdSense extends Module
 						$this->validate_report_dimensions( $dimensions );
 					} catch ( Invalid_Report_Dimensions_Exception $exception ) {
 						return new WP_Error(
-							'invalid_analytics_report_dimensions',
+							'invalid_adsense_report_dimensions',
 							$exception->getMessage()
 						);
 					}
