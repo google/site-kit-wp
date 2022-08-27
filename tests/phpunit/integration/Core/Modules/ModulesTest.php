@@ -1297,10 +1297,9 @@ class ModulesTest extends TestCase {
 	public function test_delete_dashboard_sharing_settings() {
 		$this->enable_feature( 'dashboardSharing' );
 
-		$context  = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-		$modules  = new Modules( $context );
-		$options  = new Options( $context );
-		$settings = $modules->get_module_sharing_settings()->get();
+		$context          = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$modules          = new Modules( $context );
+		$sharing_settings = $modules->get_module_sharing_settings();
 
 		$modules->register();
 
@@ -1311,6 +1310,7 @@ class ModulesTest extends TestCase {
 			),
 		);
 
+		$settings = $sharing_settings->get();
 		$this->assertEqualSets(
 			$default_settings,
 			$settings
@@ -1323,16 +1323,15 @@ class ModulesTest extends TestCase {
 			),
 		);
 
-		$options->set(
-			Module_Sharing_Settings::OPTION,
-			$updated_settings
-		);
+		$sharing_settings->set( $updated_settings );
+		$settings = $sharing_settings->get();
 		$this->assertEqualSets(
 			$updated_settings,
 			$settings
 		);
 
 		$modules->delete_dashboard_sharing_settings();
+		$settings = $sharing_settings->get();
 		$this->assertEqualSets(
 			$default_settings,
 			$settings
