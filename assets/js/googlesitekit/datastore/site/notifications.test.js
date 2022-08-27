@@ -30,7 +30,8 @@ import { CORE_SITE } from './constants';
 describe( 'core/site notifications', () => {
 	let registry;
 
-	const markNotificationsEndpoint = /^\/google-site-kit\/v1\/core\/site\/data\/mark-notification/;
+	const markNotificationsEndpoint =
+		/^\/google-site-kit\/v1\/core\/site\/data\/mark-notification/;
 
 	beforeEach( () => {
 		registry = createTestRegistry();

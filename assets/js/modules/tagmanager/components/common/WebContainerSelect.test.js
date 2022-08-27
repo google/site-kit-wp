@@ -320,4 +320,31 @@ describe( 'WebContainerSelect', () => {
 		).not.toBeInTheDocument();
 		expect( container ).toBeEmptyDOMElement();
 	} );
+
+	it( 'should disable the web container select if the user does not have module access', () => {
+		const { account } = factories.buildAccountWithContainers();
+		const accountID = account.accountId; // eslint-disable-line sitekit/acronym-case
+		registry.dispatch( MODULES_TAGMANAGER ).setAccountID( accountID );
+		registry
+			.dispatch( MODULES_TAGMANAGER )
+			.receiveGetAccounts( [ account ] );
+		registry
+			.dispatch( MODULES_TAGMANAGER )
+			.finishResolution( 'getAccounts', [] );
+
+		const { container } = render(
+			<WebContainerSelect hasModuleAccess={ false } />,
+			{
+				registry,
+			}
+		);
+
+		// Verify that the Web container select dropdown is disabled.
+		[
+			'.googlesitekit-tagmanager__select-container--web',
+			'.mdc-select--disabled',
+		].forEach( ( className ) => {
+			expect( container.querySelector( className ) ).toBeInTheDocument();
+		} );
+	} );
 } );

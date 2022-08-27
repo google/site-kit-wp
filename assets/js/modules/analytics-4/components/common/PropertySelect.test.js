@@ -30,12 +30,8 @@ import * as fixtures from '../../datastore/__fixtures__';
 import * as analyticsFixtures from '../../../analytics/datastore/__fixtures__';
 import { fireEvent, act, render } from '../../../../../../tests/js/test-utils';
 
-const {
-	createProperty,
-	createWebDataStream,
-	properties,
-	webDataStreams,
-} = fixtures;
+const { createProperty, createWebDataStream, properties, webDataStreams } =
+	fixtures;
 const { accounts } = analyticsFixtures.accountsPropertiesProfiles;
 const accountID = createProperty._accountID;
 const propertyID = createWebDataStream._propertyID;
@@ -61,9 +57,10 @@ const setupRegistry = ( { dispatch } ) => {
 	dispatch( MODULES_ANALYTICS_4 ).receiveGetWebDataStreams( webDataStreams, {
 		propertyID,
 	} );
-	dispatch(
-		MODULES_ANALYTICS_4
-	).finishResolution( 'receiveGetWebDataStreams', { propertyID } );
+	dispatch( MODULES_ANALYTICS_4 ).finishResolution(
+		'receiveGetWebDataStreams',
+		{ propertyID }
+	);
 };
 
 const setupEmptyRegistry = ( { dispatch } ) => {
@@ -147,11 +144,10 @@ describe( 'PropertySelect', () => {
 	} );
 
 	it( 'should update propertyID in the store when a new item is selected', async () => {
-		const {
-			getAllByRole,
-			container,
-			registry,
-		} = render( <PropertySelect />, { setupRegistry } );
+		const { getAllByRole, container, registry } = render(
+			<PropertySelect />,
+			{ setupRegistry }
+		);
 		const allProperties = registry
 			.select( MODULES_ANALYTICS_4 )
 			.getProperties( accountID );

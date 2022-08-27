@@ -87,7 +87,8 @@ export default function ReportTable( {
 									className={ classnames(
 										'googlesitekit-table__head-item',
 										{
-											'googlesitekit-table__head-item--primary': primary,
+											'googlesitekit-table__head-item--primary':
+												primary,
 										},
 										{ 'hidden-on-mobile': hideOnMobile },
 										columnClassName
@@ -152,7 +153,8 @@ export default function ReportTable( {
 												className={ classnames(
 													'googlesitekit-table__body-item',
 													{
-														'hidden-on-mobile': hideOnMobile,
+														'hidden-on-mobile':
+															hideOnMobile,
 													},
 													columnClassName
 												) }

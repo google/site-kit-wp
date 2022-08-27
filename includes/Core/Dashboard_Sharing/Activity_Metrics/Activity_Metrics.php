@@ -16,7 +16,7 @@ use Google\Site_Kit\Core\Storage\User_Options;
 /**
  * Class for handling active consumers.
  *
- * @since n.e.x.t
+ * @since 1.82.0
  * @access private
  * @ignore
  */
@@ -25,7 +25,7 @@ class Activity_Metrics {
 	/**
 	 * Active_Consumers instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.82.0
 	 * @var Active_Consumers
 	 */
 	protected $active_consumers;
@@ -33,7 +33,7 @@ class Activity_Metrics {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.82.0
 	 *
 	 * @param Context      $context Plugin context.
 	 * @param User_Options $user_options Optional. User option API. Default is a new instance.
@@ -45,7 +45,7 @@ class Activity_Metrics {
 	/**
 	 * Registers functionality.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.82.0
 	 */
 	public function register() {
 		$this->active_consumers->register();

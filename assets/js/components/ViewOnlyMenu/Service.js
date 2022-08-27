@@ -71,7 +71,7 @@ export default function Service( { module } ) {
 							owner.login
 						),
 						{
-							strong: <strong />,
+							strong: <strong title={ owner.login } />,
 						}
 					) }
 				</span>

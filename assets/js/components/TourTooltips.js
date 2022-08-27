@@ -72,8 +72,7 @@ export const floaterProps = {
 			spread: 16,
 		},
 		floater: {
-			filter:
-				'drop-shadow(rgba(60, 64, 67, 0.3) 0px 1px 2px) drop-shadow(rgba(60, 64, 67, 0.15) 0px 2px 6px)',
+			filter: 'drop-shadow(rgba(60, 64, 67, 0.3) 0px 1px 2px) drop-shadow(rgba(60, 64, 67, 0.15) 0px 2px 6px)',
 		},
 	},
 };

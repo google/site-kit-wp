@@ -199,9 +199,8 @@ describe( 'core/modules sharing-settings', () => {
 			] )(
 				'dispatches a request to save sharing settings and %s dispatch setOwnerID action based on the `newOwnerIDs` availability',
 				async ( _, newOwnerIDs, ownerID ) => {
-					global[
-						dashboardSharingDataBaseVar
-					] = dashboardSharingData;
+					global[ dashboardSharingDataBaseVar ] =
+						dashboardSharingData;
 
 					provideModules( registry );
 					provideModuleRegistrations( registry );
