@@ -1300,7 +1300,7 @@ class ModulesTest extends TestCase {
 		$context  = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$modules  = new Modules( $context );
 		$options  = new Options( $context );
-		$settings = $modules->get_module_sharing_settings();
+		$settings = $modules->get_module_sharing_settings()->get();
 
 		$modules->register();
 
