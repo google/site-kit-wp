@@ -1295,48 +1295,46 @@ class ModulesTest extends TestCase {
 	}
 
 	public function test_delete_dashboard_sharing_settings() {
-		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-
 		$this->enable_feature( 'dashboardSharing' );
 
-		remove_all_filters( 'option_' . Module_Sharing_Settings::OPTION );
+		$context  = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$modules  = new Modules( $context );
+		$options  = new Options( $context );
+		$settings = $modules->get_module_sharing_settings();
 
-		$modules = new Modules( $context );
 		$modules->register();
 
-		$default_sharing_settings = array(
+		$default_settings = array(
 			'pagespeed-insights' => array(
 				'sharedRoles' => array(),
 				'management'  => 'all_admins',
 			),
 		);
 
-		$settings = apply_filters( 'option_' . Module_Sharing_Settings::OPTION, array() );
 		$this->assertEqualSets(
-			$default_sharing_settings,
+			$default_settings,
 			$settings
 		);
 
-		$updated_sharing_settings = array(
+		$updated_settings = array(
 			'pagespeed-insights' => array(
 				'sharedRoles' => array( 'editor', 'subscriber' ),
 				'management'  => 'owner',
 			),
 		);
 
-		$options = new Options( $context );
 		$options->set(
 			Module_Sharing_Settings::OPTION,
-			$updated_sharing_settings
+			$updated_settings
 		);
 		$this->assertEqualSets(
-			$updated_sharing_settings,
+			$updated_settings,
 			$settings
 		);
 
 		$modules->delete_dashboard_sharing_settings();
 		$this->assertEqualSets(
-			$default_sharing_settings,
+			$default_settings,
 			$settings
 		);
 	}
