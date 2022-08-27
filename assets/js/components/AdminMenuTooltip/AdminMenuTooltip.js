@@ -13,9 +13,8 @@ const { useDispatch } = Data;
 export function AdminMenuTooltip( { onDismiss, tooltipStateKey, ...props } ) {
 	const { setValue } = useDispatch( CORE_UI );
 
-	const { rehideAdminMenu, rehideAdminSubMenu } = useTooltipState(
-		tooltipStateKey
-	);
+	const { rehideAdminMenu, rehideAdminSubMenu } =
+		useTooltipState( tooltipStateKey );
 
 	const handleDismissTooltip = useCallback( async () => {
 		// If the WordPress admin menu was closed, re-close it.
