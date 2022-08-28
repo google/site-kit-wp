@@ -17,11 +17,6 @@
  */
 
 /**
- * WordPress dependencies
- */
-import { Fragment } from '@wordpress/element';
-
-/**
  * Internal dependencies
  */
 import { useFeature } from '../../hooks/useFeature';
@@ -30,9 +25,5 @@ import { ActivationBanner } from '../../modules/analytics-4/components/dashboard
 export default function EntityBannerNotifications() {
 	const ga4ActivationBannerEnabled = useFeature( 'ga4ActivationBanner' );
 
-	return (
-		<Fragment>
-			{ ga4ActivationBannerEnabled && <ActivationBanner /> }
-		</Fragment>
-	);
+	return ga4ActivationBannerEnabled && <ActivationBanner />;
 }

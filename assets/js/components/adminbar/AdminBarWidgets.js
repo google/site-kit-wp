@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import classnames from 'classnames';
-
-/**
  * WordPress dependencies
  */
 import { Fragment } from '@wordpress/element';
@@ -35,10 +30,8 @@ import AdminBarClicks from './AdminBarClicks';
 import AdminBarUniqueVisitors from './AdminBarUniqueVisitors';
 import AdminBarSessions from './AdminBarSessions';
 import AdminBarActivateAnalyticsCTA from './AdminBarActivateAnalyticsCTA';
-import AdminBarZeroData from './AdminBarZeroData';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { Row, Cell } from '../../material-components';
-import { HIDDEN_CLASS } from '../../googlesitekit/widgets/util/constants';
 import { withWidgetComponentProps } from '../../googlesitekit/widgets/util/get-widget-component-props';
 const { useSelect } = Data;
 
@@ -67,13 +60,9 @@ export default function AdminBarWidgets() {
 		select( CORE_MODULES ).isModuleActive( 'analytics' )
 	);
 
-	// True if _all_ admin bar widgets have zero data.
-	const zeroData = ! analyticsModuleConnected;
-
 	return (
 		<Fragment>
-			{ zeroData && <AdminBarZeroData /> }
-			<Row className={ classnames( { [ HIDDEN_CLASS ]: zeroData } ) }>
+			<Row>
 				<Cell lgSize={ 3 } mdSize={ 2 }>
 					<AdminBarImpressionsWidget />
 				</Cell>

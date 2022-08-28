@@ -98,10 +98,8 @@ const WPDashboardWidgets = () => {
 				</Fragment>
 			) }
 
-			<Fragment>
-				<WPDashboardImpressionsWidget />
-				<WPDashboardClicksWidget />
-			</Fragment>
+			<WPDashboardImpressionsWidget />
+			<WPDashboardClicksWidget />
 
 			{ ( ! analyticsModuleConnected || ! analyticsModuleActive ) && (
 				<div className="googlesitekit-wp-dashboard-stats__cta">
