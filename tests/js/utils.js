@@ -217,10 +217,26 @@ export const provideSiteInfo = ( registry, extraData = {} ) => {
 		proxyPermissionsURL:
 			'https://sitekit.withgoogle.com/site-management/permissions/',
 		proxySetupURL: 'https://sitekit.withgoogle.com/site-management/setup/',
+		proxySupportLinkURL: 'https://sitekit.withgoogle.com/support/',
+		widgetsAdminURL: 'http://example.com/wp-admin/widgets.php',
 		referenceSiteURL: 'http://example.com',
 		siteName: 'My Site Name',
 		timezone: 'America/Detroit',
 		usingProxy: true,
+		postTypes: [
+			{
+				slug: 'post',
+				label: 'Posts',
+			},
+			{
+				slug: 'page',
+				label: 'Pages',
+			},
+			{
+				slug: 'attachment',
+				label: 'Media',
+			},
+		],
 	};
 
 	registry.dispatch( CORE_SITE ).receiveSiteInfo( {

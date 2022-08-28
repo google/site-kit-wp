@@ -111,6 +111,8 @@
 			font-size: $fs-body-sm;
 			letter-spacing: $ls-xs;
 			margin-left: auto;
+			overflow: hidden;
+			text-overflow: ellipsis;
 		}
 
 		.googlesitekit-opt-in {

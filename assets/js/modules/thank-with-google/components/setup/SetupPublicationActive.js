@@ -24,7 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { Fragment, useCallback } from '@wordpress/element';
+import { useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -33,6 +33,7 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import { MODULES_THANK_WITH_GOOGLE } from '../../datastore/constants';
 import Button from '../../../../components/Button';
+import SetupPublicationScreen from './SetupPublicationScreen';
 const { useDispatch } = Data;
 
 export default function SetupPublicationActive( { currentPublicationID } ) {
@@ -43,14 +44,23 @@ export default function SetupPublicationActive( { currentPublicationID } ) {
 	}, [ currentPublicationID, setPublicationID ] );
 
 	return (
-		<Fragment>
-			<div>
-				TODO: UI for setup publication active - SetupPublicationActive
-			</div>
-			<Button onClick={ handleSetupCustomize }>
+		<SetupPublicationScreen
+			title={ __( 'Congratulations!', 'google-site-kit' ) }
+			description={ __(
+				'Your account is now active. To get started, customize the appearance of Thank with Google on your site.',
+				'google-site-kit'
+			) }
+		>
+			<Button
+				onClick={ handleSetupCustomize }
+				aria-label={ __(
+					'Customize Thank with Google',
+					'google-site-kit'
+				) }
+			>
 				{ __( 'Customize Thank with Google', 'google-site-kit' ) }
 			</Button>
-		</Fragment>
+		</SetupPublicationScreen>
 	);
 }
 

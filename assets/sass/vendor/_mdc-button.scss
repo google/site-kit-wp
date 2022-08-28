@@ -89,6 +89,11 @@
 		}
 	}
 
+	&--inverse {
+
+		@include mdc-button-filled-accessible($c-surfaces-inverse-surface);
+	}
+
 	.mdc-button__icon {
 
 		&--image {

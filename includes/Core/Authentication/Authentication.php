@@ -775,7 +775,7 @@ final class Authentication {
 		$input = $this->context->input();
 		$nonce = $input->filter( INPUT_GET, 'nonce' );
 		if ( ! wp_verify_nonce( $nonce, self::ACTION_CONNECT ) ) {
-			self::invalid_nonce_error( self::ACTION_CONNECT );
+			$this->invalid_nonce_error( self::ACTION_CONNECT );
 		}
 
 		if ( ! current_user_can( Permissions::AUTHENTICATE ) ) {
@@ -804,7 +804,7 @@ final class Authentication {
 	private function handle_disconnect() {
 		$nonce = $this->context->input()->filter( INPUT_GET, 'nonce' );
 		if ( ! wp_verify_nonce( $nonce, self::ACTION_DISCONNECT ) ) {
-			self::invalid_nonce_error( self::ACTION_DISCONNECT );
+			$this->invalid_nonce_error( self::ACTION_DISCONNECT );
 		}
 
 		if ( ! current_user_can( Permissions::AUTHENTICATE ) ) {
@@ -839,6 +839,7 @@ final class Authentication {
 		$data['proxyPermissionsURL'] = '';
 		$data['usingProxy']          = false;
 		$data['isAuthenticated']     = $this->is_authenticated();
+		$data['setupErrorCode']      = null;
 		$data['setupErrorMessage']   = null;
 		$data['setupErrorRedoURL']   = null;
 		$data['proxySupportLinkURL'] = null;
@@ -858,6 +859,7 @@ final class Authentication {
 			// We'll also remove the existing access code in the user options,
 			// because it isn't valid (given there was a setup error).
 			if ( ! empty( $error_code ) ) {
+				$data['setupErrorCode']    = $error_code;
 				$data['setupErrorMessage'] = $auth_client->get_error_message( $error_code );
 
 				// Get credentials needed to authenticate with the proxy
@@ -1112,12 +1114,14 @@ final class Authentication {
 					$connected_url = $this->connected_proxy_url->get();
 					$current_url   = $this->context->get_canonical_home_url();
 					$content       = '<p>' . sprintf(
-						/* translators: 1: Plugin name. 2: Message. 3: Proxy setup URL. 4: Reconnect string. */
-						__( '%1$s: %2$s <a href="%3$s">%4$s</a>', 'google-site-kit' ),
+						/* translators: 1: Plugin name. 2: URL change message. 3: Proxy setup URL. 4: Reconnect string. 5: Proxy support link for the url-has-changed help page. 6: Help link message. */
+						__( '%1$s: %2$s <a href="%3$s">%4$s</a>. <a target="_blank" href="%5$s">%6$s</a>', 'google-site-kit' ),
 						esc_html__( 'Site Kit by Google', 'google-site-kit' ),
 						esc_html__( 'Looks like the URL of your site has changed. In order to continue using Site Kit, you’ll need to reconnect, so that your plugin settings are updated with the new URL.', 'google-site-kit' ),
 						esc_url( $this->get_proxy_setup_url() ),
-						esc_html__( 'Reconnect', 'google-site-kit' )
+						esc_html__( 'Reconnect', 'google-site-kit' ),
+						esc_url( $this->get_proxy_support_link_url() . '/?doc=url-has-changed' ),
+						esc_html__( 'Get help', 'google-site-kit' )
 					) . '</p>';
 
 					// Only show the comparison if URLs don't match as it is possible
@@ -1298,7 +1302,7 @@ final class Authentication {
 	private function handle_proxy_permissions() {
 		$nonce = $this->context->input()->filter( INPUT_GET, 'nonce' );
 		if ( ! wp_verify_nonce( $nonce, Google_Proxy::ACTION_PERMISSIONS ) ) {
-			self::invalid_nonce_error( Google_Proxy::ACTION_PERMISSIONS );
+			$this->invalid_nonce_error( Google_Proxy::ACTION_PERMISSIONS );
 		}
 
 		if ( ! current_user_can( Permissions::AUTHENTICATE ) ) {
@@ -1334,11 +1338,11 @@ final class Authentication {
 	/**
 	 * Gets the proxy support URL.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.80.0
 	 *
 	 * @return string|null Support URL.
 	 */
-	private function get_proxy_support_link_url() {
+	public function get_proxy_support_link_url() {
 		return $this->google_proxy->url( Google_Proxy::SUPPORT_LINK_URI );
 	}
 
@@ -1453,7 +1457,7 @@ final class Authentication {
 	 *
 	 * @param string $action Action name.
 	 */
-	public static function invalid_nonce_error( $action ) {
+	public function invalid_nonce_error( $action ) {
 		if ( strpos( $action, 'googlesitekit_proxy_' ) !== 0 ) {
 			wp_nonce_ays( $action );
 			return;
@@ -1462,9 +1466,11 @@ final class Authentication {
 		$html  = __( 'The link you followed has expired.', 'google-site-kit' );
 		$html .= '</p><p>';
 		$html .= sprintf(
-			'<a href="%s">%s</a>',
+			'<a href="%s">%s</a>. <a href="%s" target="_blank">%s</a>.',
 			esc_url( Plugin::instance()->context()->admin_url( 'splash' ) ),
-			__( 'Please try again.', 'google-site-kit' )
+			__( 'Please try again', 'google-site-kit' ),
+			esc_url( $this->get_proxy_support_link_url() . '?error_id=nonce_expired' ),
+			__( 'Get help', 'google-site-kit' )
 		);
 		wp_die( $html, __( 'Something went wrong.', 'google-site-kit' ), 403 ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	}

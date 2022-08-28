@@ -4,7 +4,7 @@ Contributors:      google
 Requires at least: 4.7
 Tested up to:      6.0
 Requires PHP:      5.6
-Stable tag:        1.79.0
+Stable tag:        1.82.0
 License:           Apache License 2.0
 License URI:       https://www.apache.org/licenses/LICENSE-2.0
 Tags:              google, search-console, analytics, adsense, pagespeed-insights, optimize, tag-manager, site-kit
@@ -37,7 +37,7 @@ Site Kit shows key metrics and insights from different Google products:
 * **Optimize:** Use Site Kit to easily set up Optimize- no code editing required. Then, set up A/B tests in Optimize.
 
 == Installation ==
-**Note**: Make sure that your website is live. If your website isn't live yet, Site Kit can't show you any data. 
+**Note**: Make sure that your website is live. If your website isn't live yet, Site Kit can't show you any data.
 However, if you have a staging environment in addition to your production site, Site Kit can display data from your production site in the staging environment. Learn how to use [Site Kit with a staging environment](https://sitekit.withgoogle.com/documentation/using-site-kit/staging/).
 
 = Installation from within WordPress =
@@ -90,9 +90,11 @@ If you are still seeing this message after a few days, feel free to get in touch
 
 If you’re new to AdSense when you connect via Site Kit, your new AdSense account and your site will need to be manually reviewed and approved for ads by the AdSense team. Ads will not display until your account and site have been approved. [Check out this guide for more information about the approval process and timeline.](https://support.google.com/adsense/answer/76228)
 
-You can check your approval status in Site Kit by going to Settings > Connected Services > AdSense and clicking “Check your site status.” This link will direct you to AdSense. If you see “Ready,” your account and site have been approved and should be displaying ads. If you see “Getting ready…,” your account and site are still under review and your site will not display ads until they have been approved.
+You can check your approval status in Site Kit by going to **Settings > Connected Services > AdSense** and clicking **Check your site status**. This link will direct you to AdSense. If you see “Ready,” your account and site have been approved and should be displaying ads. If you see “Getting ready…,” your account and site are still under review and your site will not display ads until they have been approved.
 
-If the AdSense snippet is successfully embedded on your site **and** your account and site have been approved, but your site is still not showing ads, [contact the AdSense Help Center for assistance](https://support.google.com/adsense/#topic=3373519).
+If Site Kit has successfully added the AdSense snippet to your site and your account and site have been approved, but your site is still not showing ads, [contact the AdSense Help Center for assistance](https://support.google.com/adsense/#topic=3373519).
+
+You can find more information on how Site Kit works with AdSense in our [Managing AdSense guide](https://sitekit.withgoogle.com/documentation/using-site-kit/managing-adsense/).
 
 = Is Site Kit GDPR compliant? =
 
@@ -105,6 +107,94 @@ By default, Site Kit does anonymize IP addresses upon activation of the Google A
 Please create a new topic on our [WordPress.org support forum](https://wordpress.org/support/plugin/google-site-kit/). Be sure to follow the [support forum guidelines](https://wordpress.org/support/guidelines/) when posting.
 
 == Changelog ==
+
+= 1.82.0 =
+
+**Added**
+
+* Add the Google Analytics 4 Activation Banner to the Entity Dashboard. See [#5673](https://github.com/google/site-kit-wp/issues/5673).
+* Implement the design for the Success component from the Analytics-4 module. See [#5274](https://github.com/google/site-kit-wp/issues/5274).
+* Add logic for GA4 Activation banner timing. See [#5272](https://github.com/google/site-kit-wp/issues/5272).
+* Add a "button with spinner" component. See [#5271](https://github.com/google/site-kit-wp/issues/5271).
+
+**Enhanced**
+
+* Limit shared requests for Analytics reports to metrics and dimensions used by the Site Kit dashboard. See [#5711](https://github.com/google/site-kit-wp/issues/5711).
+* Flatten Thank with Google placement options in settings. See [#5683](https://github.com/google/site-kit-wp/issues/5683).
+* Show a list of features on the Thank with Google disconnection modal. See [#5661](https://github.com/google/site-kit-wp/issues/5661).
+* Ensure Thank with Google API results are filtered properly. See [#5653](https://github.com/google/site-kit-wp/issues/5653).
+* Update Thank with Google JS snippet parameters to reflect API updates. See [#5535](https://github.com/google/site-kit-wp/issues/5535).
+* Truncate long usernames in Dashboard Sharing. See [#5500](https://github.com/google/site-kit-wp/issues/5500).
+* Only allow users with Tag Manager access to edit Tag Manager settings in the UI. See [#5495](https://github.com/google/site-kit-wp/issues/5495).
+* Add the "Get Help" link to the compatibility error notice. See [#5483](https://github.com/google/site-kit-wp/issues/5483).
+* Update tooltip styles. See [#5444](https://github.com/google/site-kit-wp/issues/5444).
+* Refresh user permissions on module recovery. See [#5416](https://github.com/google/site-kit-wp/issues/5416).
+
+**Fixed**
+
+* Fix js errors in the storybook stories. See [#5585](https://github.com/google/site-kit-wp/issues/5585).
+
+= 1.81.0 =
+
+**Enhanced**
+
+* Update the Thank with Google logo. See [#5655](https://github.com/google/site-kit-wp/issues/5655).
+* Add Thank with Google PHP client library. See [#5650](https://github.com/google/site-kit-wp/issues/5650).
+* Add a help link to sign in screen when Dashboard Sharing has been enabled by another admin. See [#5559](https://github.com/google/site-kit-wp/issues/5559).
+* Add a "Get help" link to Ad Blocker warning for AdSense module. See [#5558](https://github.com/google/site-kit-wp/issues/5558).
+* Add Thank with Google API functionality and scopes. See [#5534](https://github.com/google/site-kit-wp/issues/5534).
+* Implement UI for the Thank with Google settings. See [#5531](https://github.com/google/site-kit-wp/issues/5531).
+* Add the Thank with Google Setup UI. See [#5529](https://github.com/google/site-kit-wp/issues/5529).
+* Add "get help" links to error messages. See [#5507](https://github.com/google/site-kit-wp/issues/5507).
+* Update support documentation links to use the new URL structure. See [#5485](https://github.com/google/site-kit-wp/issues/5485).
+* Add a "get help" link to the message that appears when a request to the authentication proxy fails. See [#5484](https://github.com/google/site-kit-wp/issues/5484).
+* Add the "get help" link to the error message displayed when an invalid nonce is provided. See [#5482](https://github.com/google/site-kit-wp/issues/5482).
+* Add a help link to the "site URL has changed" notice when Site Kit detects your site URL has changed. See [#5481](https://github.com/google/site-kit-wp/issues/5481).
+* Determine and show whether and where the Thank with Google supporter wall widget is placed. See [#5462](https://github.com/google/site-kit-wp/issues/5462).
+* Implement Thank with Google settings view UI. See [#5456](https://github.com/google/site-kit-wp/issues/5456).
+* Add new "Thank with Google: Supporter Wall" WordPress widget. See [#5451](https://github.com/google/site-kit-wp/issues/5451).
+* Improve keyboard accessibility/behaviour when selecting user roles in Dashboard Sharing modal. See [#5440](https://github.com/google/site-kit-wp/issues/5440).
+
+**Fixed**
+
+* Remove radio button from top-level Thank with Google "Manual" position control. See [#5623](https://github.com/google/site-kit-wp/issues/5623).
+
+= 1.80.0 =
+
+**Enhanced**
+
+* Update the open text survey question entry field to allow multiline text input. See [#5612](https://github.com/google/site-kit-wp/issues/5612).
+* Update the Thank with Google module's owned settings. See [#5587](https://github.com/google/site-kit-wp/issues/5587).
+* Include specific copy for Thank with Google on the setup success banner. See [#5536](https://github.com/google/site-kit-wp/issues/5536).
+* Add automatic status updates to Thank with Google setup screen. See [#5532](https://github.com/google/site-kit-wp/issues/5532).
+* Implement the Thank with Google setup UI for the no publication scenario. See [#5528](https://github.com/google/site-kit-wp/issues/5528).
+* Implement the Thank with Google setup UI for the publication in review scenario. See [#5527](https://github.com/google/site-kit-wp/issues/5527).
+* Implement the Thank with Google setup UI. See [#5526](https://github.com/google/site-kit-wp/issues/5526).
+* Implement Thank with Google setup UI for the publication setup completed scenario. See [#5525](https://github.com/google/site-kit-wp/issues/5525).
+* Show selected Thank with Google color in settings view. See [#5524](https://github.com/google/site-kit-wp/issues/5524).
+* Update the AdSense settings to display the site status when available. See [#5503](https://github.com/google/site-kit-wp/issues/5503).
+* Improve notice UX/sizing when adjusting Dashboard Sharing settings "view access" setting. See [#5489](https://github.com/google/site-kit-wp/issues/5489).
+* When setup fails with an error from the proxy, show a "get help" link that leads to the relevant support page for the given error code. See [#5479](https://github.com/google/site-kit-wp/issues/5479).
+* Improve validation for Thank with Google settings. See [#5461](https://github.com/google/site-kit-wp/issues/5461).
+* Add a new enhanced radio button component that allows for using graphics for choices. See [#5459](https://github.com/google/site-kit-wp/issues/5459).
+* Add "US only" label to Thank with Google module. See [#5457](https://github.com/google/site-kit-wp/issues/5457).
+* Scaffold Thank with Google module setup flow logic for different scenarios. See [#5455](https://github.com/google/site-kit-wp/issues/5455).
+* Add new selector `getAccountChooserURL` to the `core/user` store. See [#5453](https://github.com/google/site-kit-wp/issues/5453).
+* Implement Thank with Google tag placement infrastructure. See [#5450](https://github.com/google/site-kit-wp/issues/5450).
+* Update module recovery notification to display feedback for errors. See [#5318](https://github.com/google/site-kit-wp/issues/5318).
+
+**Fixed**
+
+* Update location of module recovery alert to be grouped with normal notifications. See [#5550](https://github.com/google/site-kit-wp/issues/5550).
+* Prevent error from appearing when sharing data exists for a non-existent module. See [#5488](https://github.com/google/site-kit-wp/issues/5488).
+* Avoid tracking Google Analytics events for Dashboard Sharing settings when no change is made. See [#5487](https://github.com/google/site-kit-wp/issues/5487).
+* Fix permissions modal issue on non Site Kit pages. See [#5424](https://github.com/google/site-kit-wp/issues/5424).
+
+= 1.79.1 =
+
+**Fixed**
+
+* Fix an issue that could cause Site Kit's dashboard to crash when a theme/plugin loads the Google Web Font Loader JS on Site Kit screens. See [#5572](https://github.com/google/site-kit-wp/issues/5572).
 
 = 1.79.0 =
 

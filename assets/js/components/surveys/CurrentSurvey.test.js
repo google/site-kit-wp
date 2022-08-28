@@ -39,11 +39,12 @@ import {
 	invalidQuestionTypeSurvey,
 } from './__fixtures__';
 
-// Text input should only allow up to 100 characters of input.
+// Text input should only allow up to 200 characters of input.
 const STRING_100_CHARACTERS =
 	'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec suscipit auctor dui, id faucibus nisl';
+const STRING_200_CHARACTERS = STRING_100_CHARACTERS + STRING_100_CHARACTERS;
 
-const STRING_110_CHARACTERS = `${ STRING_100_CHARACTERS } rhoncus n`;
+const STRING_210_CHARACTERS = `${ STRING_200_CHARACTERS } rhoncus n`;
 
 describe( 'CurrentSurvey', () => {
 	const surveyEventRegexp =
@@ -97,17 +98,17 @@ describe( 'CurrentSurvey', () => {
 			).toBeInTheDocument();
 		} );
 
-		it( 'should limit text input to 100 characters', async () => {
+		it( 'should limit text input to 200 characters', async () => {
 			const { getByLabelText } = render( <CurrentSurvey />, {
 				registry,
 			} );
 
 			fireEvent.change( getByLabelText( 'Write here' ), {
-				target: { value: STRING_110_CHARACTERS },
+				target: { value: STRING_210_CHARACTERS },
 			} );
 
 			expect( getByLabelText( 'Write here' ) ).toHaveValue(
-				STRING_100_CHARACTERS
+				STRING_200_CHARACTERS
 			);
 		} );
 
@@ -280,7 +281,7 @@ describe( 'CurrentSurvey', () => {
 			).not.toBeDisabled();
 		} );
 
-		it( 'should enforce a maxiumum text input length of 100 characters', () => {
+		it( 'should enforce a maxiumum text input length of 200 characters', () => {
 			const { getByText, getByLabelText } = render( <CurrentSurvey />, {
 				registry,
 			} );
@@ -288,12 +289,12 @@ describe( 'CurrentSurvey', () => {
 			fireEvent.click( getByText( 'Other' ) );
 
 			fireEvent.change( getByLabelText( 'Text input for option Other' ), {
-				target: { value: STRING_110_CHARACTERS },
+				target: { value: STRING_210_CHARACTERS },
 			} );
 
 			expect(
 				getByLabelText( 'Text input for option Other' )
-			).toHaveValue( STRING_100_CHARACTERS );
+			).toHaveValue( STRING_200_CHARACTERS );
 		} );
 
 		it( 'should submit answer in correct shape', async () => {
@@ -522,12 +523,12 @@ describe( 'CurrentSurvey', () => {
 
 			// Check that text input limits input to 100 characters.
 			fireEvent.change( getByLabelText( 'Text input for option Other' ), {
-				target: { value: STRING_110_CHARACTERS },
+				target: { value: STRING_210_CHARACTERS },
 			} );
 
 			expect(
 				getByLabelText( 'Text input for option Other' )
-			).toHaveValue( STRING_100_CHARACTERS );
+			).toHaveValue( STRING_200_CHARACTERS );
 		} );
 
 		it( 'should submit answer in correct shape', async () => {

@@ -16,11 +16,49 @@
  * limitations under the License.
  */
 
+/**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+
+/**
+ * Internal dependencies
+ */
+import Data from 'googlesitekit-data';
+import { MODULES_THANK_WITH_GOOGLE } from '../../datastore/constants';
+import Button from '../../../../components/Button';
+import SetupPublicationScreen from './SetupPublicationScreen';
+const { useSelect } = Data;
+
 export default function SetupPublicationActionRequired() {
+	const currentPublication = useSelect( ( select ) =>
+		select( MODULES_THANK_WITH_GOOGLE ).getCurrentPublication()
+	);
+	const currentPublicationURL = useSelect( ( select ) =>
+		select( MODULES_THANK_WITH_GOOGLE ).getServicePublicationURL(
+			// eslint-disable-next-line sitekit/acronym-case
+			currentPublication.publicationId
+		)
+	);
+
 	return (
-		<div>
-			TODO: UI for publication action required -
-			SetupPublicationActionRequired
-		</div>
+		<SetupPublicationScreen
+			title={ __( 'Complete your account setup', 'google-site-kit' ) }
+			description={ __(
+				'Finish the setup to customize and add Thank with Google on your site.',
+				'google-site-kit'
+			) }
+		>
+			<Button
+				href={ currentPublicationURL }
+				target="_blank"
+				aria-label={ __(
+					'Complete your Thank with Google account setup',
+					'google-site-kit'
+				) }
+			>
+				{ __( 'Complete setup', 'google-site-kit' ) }
+			</Button>
+		</SetupPublicationScreen>
 	);
 }

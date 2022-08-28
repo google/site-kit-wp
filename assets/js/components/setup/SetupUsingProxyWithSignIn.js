@@ -24,7 +24,11 @@ import punycode from 'punycode';
 /**
  * WordPress dependencies
  */
-import { Fragment, useCallback } from '@wordpress/element';
+import {
+	createInterpolateElement,
+	Fragment,
+	useCallback,
+} from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 import { getQueryArg, addQueryArgs } from '@wordpress/url';
 
@@ -87,6 +91,7 @@ export default function SetupUsingProxyWithSignIn() {
 		connectedProxyURL,
 		homeURL,
 		hasMultipleAdmins,
+		secondAdminLearnMoreLink,
 	} = useSelect( ( select ) => {
 		const site = select( CORE_SITE );
 		const user = select( CORE_USER );
@@ -101,11 +106,17 @@ export default function SetupUsingProxyWithSignIn() {
 			homeURL: untrailingslashit( site.getHomeURL() ),
 			isConnected: site.isConnected(),
 			hasMultipleAdmins: site.hasMultipleAdmins(),
+			secondAdminLearnMoreLink:
+				site.getDocumentationLinkURL( 'already-configured' ),
 		};
 	} );
 
 	const dashboardURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' )
+	);
+
+	const changedURLHelpLink = useSelect( ( select ) =>
+		select( CORE_SITE ).getDocumentationLinkURL( 'url-has-changed' )
 	);
 
 	const hasViewableModules = useSelect(
@@ -180,6 +191,7 @@ export default function SetupUsingProxyWithSignIn() {
 
 	let title;
 	let description;
+	let showLearnMoreLink = false;
 	let cellDetailsProp = {
 		smSize: 4,
 		mdSize: 8,
@@ -193,6 +205,8 @@ export default function SetupUsingProxyWithSignIn() {
 			lgSize: 8,
 		};
 	}
+
+	let getHelpURL = null;
 
 	if ( 'revoked' === getQueryArg( location.href, 'googlesitekit_context' ) ) {
 		title = sprintf(
@@ -212,6 +226,8 @@ export default function SetupUsingProxyWithSignIn() {
 			'Looks like the URL of your site has changed. In order to continue using Site Kit, you’ll need to reconnect, so that your plugin settings are updated with the new URL.',
 			'google-site-kit'
 		);
+
+		getHelpURL = changedURLHelpLink;
 	} else if ( isSecondAdmin ) {
 		title = __(
 			'Connect your Google account to Site Kit',
@@ -221,6 +237,7 @@ export default function SetupUsingProxyWithSignIn() {
 			'Site Kit has already been configured by another admin of this site. To use Site Kit as well, sign in with your Google account which has access to Google services for this site (e.g. Google Analytics). Once you complete the 3 setup steps, you’ll see stats from all activated Google products.',
 			'google-site-kit'
 		);
+		showLearnMoreLink = true;
 	} else {
 		title = __( 'Set up Site Kit', 'google-site-kit' );
 		description = __(
@@ -301,8 +318,46 @@ export default function SetupUsingProxyWithSignIn() {
 												</h1>
 
 												<p className="googlesitekit-setup__description">
-													{ description }
+													{ ! showLearnMoreLink &&
+														description }
+
+													{ showLearnMoreLink &&
+														createInterpolateElement(
+															sprintf(
+																/* translators: 1: The description. 2: The learn more link. */
+																__(
+																	'%1$s <Link>%2$s</Link>',
+																	'google-site-kit'
+																),
+																description,
+																__(
+																	'Learn more',
+																	'google-site-kit'
+																)
+															),
+															{
+																Link: (
+																	<Link
+																		href={
+																			secondAdminLearnMoreLink
+																		}
+																		external
+																	/>
+																),
+															}
+														) }
 												</p>
+												{ getHelpURL && (
+													<Link
+														href={ getHelpURL }
+														external
+													>
+														{ __(
+															'Get help',
+															'google-site-kit'
+														) }
+													</Link>
+												) }
 												{ DISCONNECTED_REASON_CONNECTED_URL_MISMATCH ===
 													disconnectedReason &&
 													connectedProxyURL !==

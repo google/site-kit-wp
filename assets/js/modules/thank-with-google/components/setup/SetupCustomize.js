@@ -24,7 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { Fragment, useCallback } from '@wordpress/element';
+import { useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -33,9 +33,14 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import { MODULES_THANK_WITH_GOOGLE } from '../../datastore/constants';
 import Button from '../../../../components/Button';
+import { Cell } from '../../../../material-components';
+import { CTAPlacement, ColorRadio, PostTypesSelect } from '../common';
+import SetupHeader from './SetupHeader';
 const { useDispatch, useSelect } = Data;
 
-export default function SetupCustomize( { finishSetup } ) {
+export default function SetupCustomize( props ) {
+	const { finishSetup } = props;
+
 	const canSubmitChanges = useSelect( ( select ) =>
 		select( MODULES_THANK_WITH_GOOGLE ).canSubmitChanges()
 	);
@@ -45,27 +50,39 @@ export default function SetupCustomize( { finishSetup } ) {
 	const handleSubmitChanges = useCallback( async () => {
 		const { error } = await submitChanges();
 		if ( ! error ) {
-			finishSetup();
+			finishSetup?.();
 		}
 	}, [ submitChanges, finishSetup ] );
 
 	return (
-		<Fragment>
-			<div>TODO: UI for setup customize - SetupCustomize</div>
+		<Cell size={ 12 }>
+			<SetupHeader />
+
+			<div className="googlesitekit-setup-module__publication-screen googlesitekit-twg-setup-customize">
+				<p>
+					{ __(
+						'Customize the appearance of Thank with Google on your site',
+						'google-site-kit'
+					) }
+				</p>
+
+				<div className="googlesitekit-setup-module__inputs">
+					<CTAPlacement />
+					<ColorRadio />
+					<PostTypesSelect />
+				</div>
+			</div>
+
 			<Button
 				disabled={ ! canSubmitChanges }
 				onClick={ handleSubmitChanges }
 			>
 				{ __( 'Configure Thank with Google', 'google-site-kit' ) }
 			</Button>
-		</Fragment>
+		</Cell>
 	);
 }
 
 SetupCustomize.propTypes = {
 	finishSetup: PropTypes.func,
-};
-
-SetupCustomize.defaultProps = {
-	finishSetup: () => {},
 };

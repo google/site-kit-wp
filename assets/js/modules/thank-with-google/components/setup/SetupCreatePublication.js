@@ -16,6 +16,46 @@
  * limitations under the License.
  */
 
+/**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+
+/**
+ * Internal dependencies
+ */
+import Data from 'googlesitekit-data';
+import { MODULES_THANK_WITH_GOOGLE } from '../../datastore/constants';
+import Button from '../../../../components/Button';
+import SetupPublicationScreen from './SetupPublicationScreen';
+const { useSelect } = Data;
+
 export default function SetupCreatePublication() {
-	return <div>TODO: UI to create publication - SetupCreatePublication</div>;
+	const createPublicationURL = useSelect( ( select ) =>
+		select( MODULES_THANK_WITH_GOOGLE ).getServiceCreatePublicationURL()
+	);
+
+	return (
+		<SetupPublicationScreen
+			title={ __(
+				'Create your Thank with Google account',
+				'google-site-kit'
+			) }
+			description={ __(
+				'To get started, create an account. Currently available only in the US.',
+				'google-site-kit'
+			) }
+		>
+			<Button
+				href={ createPublicationURL }
+				target="_blank"
+				aria-label={ __(
+					'Create your Thank with Google account',
+					'google-site-kit'
+				) }
+			>
+				{ __( 'Create account', 'google-site-kit' ) }
+			</Button>
+		</SetupPublicationScreen>
+	);
 }

@@ -30,6 +30,7 @@ import {
 	fireEvent,
 	createTestRegistry,
 	provideModules,
+	provideSiteInfo,
 } from '../../../../tests/js/test-utils';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
@@ -55,6 +56,10 @@ describe( 'SettingsApp', () => {
 		registry
 			.dispatch( CORE_SITE )
 			.receiveGetAdminBarSettings( { enabled: true } );
+
+		provideSiteInfo( registry, {
+			proxySupportLinkURL: 'https://test.com',
+		} );
 
 		provideModules( registry, [
 			{

@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import fetchMock from 'fetch-mock';
+
+/**
  * Internal dependencies
  */
 import {
@@ -27,12 +32,12 @@ import {
 	provideSiteInfo,
 	provideUserAuthentication,
 	WithTestRegistry,
-} from '../../../../tests/js/utils';
-import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
-import { VIEW_CONTEXT_DASHBOARD } from '../../googlesitekit/constants';
-import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
-import { Provider as ViewContextProvider } from '../Root/ViewContextContext';
-import ModuleRecoveryAlert from './ModuleRecoveryAlert';
+} from '../../../../../tests/js/utils';
+import WithRegistrySetup from '../../../../../tests/js/WithRegistrySetup';
+import { VIEW_CONTEXT_DASHBOARD } from '../../../googlesitekit/constants';
+import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
+import { Provider as ViewContextProvider } from '../../Root/ViewContextContext';
+import ModuleRecoveryAlert from '.';
 
 const Template = ( { setupRegistry = () => {}, ...args } ) => (
 	<WithRegistrySetup func={ setupRegistry }>
@@ -149,6 +154,74 @@ MultipleRecoverableModuleNoAccess.args = {
 MultipleRecoverableModuleNoAccess.scenario = {
 	label: 'Global/ModuleRecoveryAlert/Multiple Recoverable Modules (no access)',
 	delay: 250,
+};
+
+export const SingleRecoverableModuleError = Template.bind( {} );
+SingleRecoverableModuleError.storyName =
+	'Single Recoverable Module with Error Message';
+SingleRecoverableModuleError.args = {
+	setupRegistry: ( registry ) => {
+		const errorResponse = {
+			code: 'module_not_recoverable',
+			message: 'Module is not recoverable.',
+			data: { status: 403 },
+		};
+
+		fetchMock.post(
+			/^\/google-site-kit\/v1\/core\/modules\/data\/recover-module/,
+			{ body: errorResponse, status: 403 }
+		);
+
+		registry
+			.dispatch( CORE_MODULES )
+			.receiveRecoverableModules( [ 'search-console' ] );
+		registry
+			.dispatch( CORE_MODULES )
+			.receiveCheckModuleAccess(
+				{ access: true },
+				{ slug: 'search-console' }
+			);
+		registry
+			.dispatch( CORE_MODULES )
+			.recoverModules( [ 'search-console' ] );
+	},
+};
+
+export const MultipleRecoverableModuleErrors = Template.bind( {} );
+MultipleRecoverableModuleErrors.storyName =
+	'Multiple Recoverable Modules with Error Messages';
+MultipleRecoverableModuleErrors.args = {
+	setupRegistry: ( registry ) => {
+		const errorResponse = {
+			code: 'module_not_recoverable',
+			message: 'Module is not recoverable.',
+			data: { status: 403 },
+		};
+
+		fetchMock.post(
+			/^\/google-site-kit\/v1\/core\/modules\/data\/recover-module/,
+			{ body: errorResponse, status: 403 }
+		);
+
+		registry
+			.dispatch( CORE_MODULES )
+			.receiveRecoverableModules( [ 'search-console', 'analytics' ] );
+		registry
+			.dispatch( CORE_MODULES )
+			.receiveCheckModuleAccess(
+				{ access: true },
+				{ slug: 'search-console' }
+			);
+		registry
+			.dispatch( CORE_MODULES )
+			.receiveCheckModuleAccess(
+				{ access: true },
+				{ slug: 'analytics' }
+			);
+		registry
+			.dispatch( CORE_MODULES )
+			.recoverModules( [ 'search-console', 'analytics' ] );
+	},
 };
 
 export default {

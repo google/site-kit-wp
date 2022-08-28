@@ -29,6 +29,13 @@ class Thank_With_GoogleTest extends TestCase {
 	private $context;
 
 	/**
+	 * Options instance.
+	 *
+	 * @var Options
+	 */
+	private $options;
+
+	/**
 	 * Thank_With_Google instance.
 	 *
 	 * @var Thank_With_Google
@@ -39,33 +46,125 @@ class Thank_With_GoogleTest extends TestCase {
 		parent::set_up();
 
 		$this->context           = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-		$this->thank_with_google = new Thank_With_Google( $this->context );
+		$this->options           = new Options( $this->context );
+		$this->thank_with_google = new Thank_With_Google( $this->context, $this->options );
+
+		$this->options->set(
+			Settings::OPTION,
+			array(
+				'publicationID' => '12345',
+				'colorTheme'    => 'blue',
+				'ctaPlacement'  => 'static_auto',
+				'ctaPostTypes'  => array( 'post' ),
+			)
+		);
+	}
+
+	public function test_register() {
+		remove_all_actions( 'googlesitekit_auth_scopes' );
+
+		$this->thank_with_google->register();
+
+		$this->assertTrue( has_filter( 'googlesitekit_auth_scopes' ) );
+	}
+
+	public function test_web_tag_hooks_are_added_when_tag_is_registered() {
+		remove_all_actions( 'template_redirect' );
+
+		$this->thank_with_google->register();
+
+		remove_all_actions( 'wp_enqueue_scripts' );
+		remove_all_filters( 'the_content' );
+
+		do_action( 'template_redirect' );
+		$this->assertTrue( has_action( 'wp_enqueue_scripts' ) );
+		$this->assertTrue( has_filter( 'the_content' ) );
+	}
+
+	public function test_web_tag_hooks_are_not_added_when_tag_is_blocked() {
+		remove_all_actions( 'template_redirect' );
+
+		$this->thank_with_google->register();
+
+		remove_all_actions( 'wp_enqueue_scripts' );
+		remove_all_filters( 'the_content' );
+
+		add_filter( 'googlesitekit_' . Thank_With_Google::MODULE_SLUG . '_tag_blocked', '__return_true' );
+
+		do_action( 'template_redirect' );
+
+		$this->assertFalse( has_action( 'wp_enqueue_scripts' ) );
+		$this->assertFalse( has_filter( 'the_content' ) );
+	}
+
+	public function test_web_tag_snippet_is_not_enqueued_for_non_singular_pages() {
+		remove_all_actions( 'template_redirect' );
+		remove_all_actions( 'wp_enqueue_scripts' );
+
+		$this->thank_with_google->register();
+
+		// Hook `wp_print_footer_scripts` on placeholder action for capturing.
+		add_action( '__test_print_scripts', 'wp_print_footer_scripts' );
+
+		do_action( 'template_redirect' );
+		do_action( 'wp_enqueue_scripts' );
+
+		$output = $this->capture_action( '__test_print_scripts' );
+
+		$this->assertEmpty( $output );
+	}
+
+	public function test_web_tag_is_enqueued_for_singular_pages() {
+		$post_ID = $this->factory()->post->create();
+		$this->go_to( get_permalink( $post_ID ) );
+
+		remove_all_actions( 'template_redirect' );
+		remove_all_actions( 'wp_enqueue_scripts' );
+
+		$this->thank_with_google->register();
+
+		// Hook `wp_print_footer_scripts` on placeholder action for capturing.
+		add_action( '__test_print_scripts', 'wp_print_footer_scripts' );
+
+		do_action( 'template_redirect' );
+		do_action( 'wp_enqueue_scripts' );
+
+		$output = $this->capture_action( '__test_print_scripts' );
+
+		$this->assertStringContainsString( 'Thank with Google snippet added by Site Kit', $output );
+		$this->assertStringContainsString( '"style":"inline"', $output );
+		$this->assertStringContainsString( '"isPartOfProductId":"12345:default",', $output );
 	}
 
 	public function test_is_connected() {
-		$options           = new Options( $this->context );
-		$thank_with_google = new Thank_With_Google( $this->context, $options );
+		$this->options->delete( Settings::OPTION );
 
-		$options->set(
+		$this->assertFalse( $this->thank_with_google->is_connected() );
+
+		$this->options->set(
 			Settings::OPTION,
 			array(
-				'publicationID'   => '12345',
-				'colorTheme'      => 'light',
-				'buttonPlacement' => 'bottom',
-				'buttonPostTypes' => array( 'post' ),
+				'publicationID' => '12345',
+				'colorTheme'    => 'blue',
+				'ctaPlacement'  => 'static_auto',
+				'ctaPostTypes'  => array( 'post' ),
 			)
 		);
 
-		$this->assertTrue( $thank_with_google->is_connected() );
+		$this->assertTrue( $this->thank_with_google->is_connected() );
 	}
 
 	public function test_on_deactivation() {
-		$thank_with_google = new Thank_With_Google( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		$options           = new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		$options->set( Settings::OPTION, 'test-value' );
+		$this->assertOptionExists( Settings::OPTION );
 
-		$thank_with_google->on_deactivation();
+		$this->thank_with_google->on_deactivation();
 
 		$this->assertOptionNotExists( Settings::OPTION );
+	}
+
+	public function test_service_classes_exist() {
+		$this->assertTrue(
+			class_exists( 'Google\Site_Kit_Dependencies\Google_Service_SubscribewithGoogle' )
+		);
 	}
 }

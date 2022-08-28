@@ -24,23 +24,29 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { _x, __ } from '@wordpress/i18n';
+import { useCallback } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import ThankWithGoogleIcon from '../../../../../svg/graphics/thank-with-google.svg';
+import {
+	MODULES_THANK_WITH_GOOGLE,
+	ONBOARDING_STATE_COMPLETE,
+	ONBOARDING_STATE_ACTION_REQUIRED,
+	ONBOARDING_STATE_PENDING_VERIFICATION,
+} from '../../datastore/constants';
+import { useRefocus } from '../../../../hooks/useRefocus';
+import { Grid, Row, Cell } from '../../../../material-components';
 import ProgressBar from '../../../../components/ProgressBar';
-import Badge from '../../../../components/Badge';
-import { MODULES_THANK_WITH_GOOGLE } from '../../datastore/constants';
+import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import SetupCreatePublication from './SetupCreatePublication';
 import SetupCustomize from './SetupCustomize';
 import SetupPublicationActive from './SetupPublicationActive';
 import SetupPublicationActionRequired from './SetupPublicationActionRequired';
 import SetupPublicationPendingVerification from './SetupPublicationPendingVerification';
-import StoreErrorNotices from '../../../../components/StoreErrorNotices';
-const { useSelect } = Data;
+import SetupHeader from './SetupHeader';
+const { useDispatch, useSelect } = Data;
 
 export default function SetupMain( { finishSetup } ) {
 	const hasErrors = useSelect( ( select ) =>
@@ -53,64 +59,76 @@ export default function SetupMain( { finishSetup } ) {
 		select( MODULES_THANK_WITH_GOOGLE ).getCurrentPublication()
 	);
 
+	const { resetPublications } = useDispatch( MODULES_THANK_WITH_GOOGLE );
+
+	const reset = useCallback( () => {
+		// Reset if the publication ID hasn't been set yet.
+		if ( ! publicationID ) {
+			resetPublications();
+		}
+	}, [ publicationID, resetPublications ] );
+
+	// Reset all fetched data when user re-focuses window.
+	useRefocus( reset, 15000 );
+
 	let viewComponent;
 
 	if ( hasErrors ) {
 		viewComponent = (
-			<StoreErrorNotices
-				moduleSlug="thank-with-google"
-				storeName={ MODULES_THANK_WITH_GOOGLE }
-			/>
+			<Cell size={ 12 }>
+				<SetupHeader />
+				<StoreErrorNotices
+					moduleSlug="thank-with-google"
+					storeName={ MODULES_THANK_WITH_GOOGLE }
+				/>
+			</Cell>
 		);
 	} else if ( currentPublication === undefined ) {
-		viewComponent = <ProgressBar />;
+		viewComponent = (
+			<Cell size={ 12 }>
+				<SetupHeader />
+				<ProgressBar height={ 210 } />
+			</Cell>
+		);
 	} else if ( currentPublication === null ) {
 		viewComponent = <SetupCreatePublication />;
-	} else if ( currentPublication.state === 'ACTION_REQUIRED' ) {
+	} else if (
+		currentPublication.onboardingState === ONBOARDING_STATE_ACTION_REQUIRED
+	) {
 		viewComponent = <SetupPublicationActionRequired />;
-	} else if ( currentPublication.state === 'PENDING_VERIFICATION' ) {
+	} else if (
+		currentPublication.onboardingState ===
+		ONBOARDING_STATE_PENDING_VERIFICATION
+	) {
 		viewComponent = <SetupPublicationPendingVerification />;
-	} else if ( currentPublication.state === 'ACTIVE' && ! publicationID ) {
+	} else if (
+		currentPublication.onboardingState === ONBOARDING_STATE_COMPLETE &&
+		! publicationID
+	) {
 		viewComponent = (
 			<SetupPublicationActive
 				// eslint-disable-next-line sitekit/acronym-case
 				currentPublicationID={ currentPublication.publicationId }
 			/>
 		);
-	} else if ( currentPublication.state === 'ACTIVE' && publicationID ) {
+	} else if (
+		currentPublication.onboardingState === ONBOARDING_STATE_COMPLETE &&
+		publicationID
+	) {
 		viewComponent = <SetupCustomize finishSetup={ finishSetup } />;
 	}
 
 	return (
 		<div className="googlesitekit-setup-module googlesitekit-setup-module--thank-with-google">
-			<div className="googlesitekit-setup-module__header">
-				<div className="googlesitekit-setup-module__heading">
-					<div className="googlesitekit-setup-module__logo">
-						<ThankWithGoogleIcon width="33" height="33" />
-					</div>
-
-					<h2 className="googlesitekit-heading-3 googlesitekit-setup-module__title">
-						{ _x(
-							'Thank with Google',
-							'Service name',
-							'google-site-kit'
-						) }
-					</h2>
-				</div>
-
-				<Badge label={ __( 'Experimental', 'google-site-kit' ) } />
-				<Badge label={ __( 'US Only', 'google-site-kit' ) } />
-			</div>
-
-			{ viewComponent }
+			<Grid>
+				<Row className="googlesitekit-setup__content">
+					{ viewComponent }
+				</Row>
+			</Grid>
 		</div>
 	);
 }
 
 SetupMain.propTypes = {
 	finishSetup: PropTypes.func,
-};
-
-SetupMain.defaultProps = {
-	finishSetup: () => {},
 };

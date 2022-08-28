@@ -228,21 +228,18 @@ export default function GoogleChart( props ) {
 	merge( chartOptions, {
 		hAxis: {
 			textStyle: {
-				fontName: 'Google Sans Text',
 				fontSize: 10,
 				color: '#5f6561',
 			},
 		},
 		vAxis: {
 			textStyle: {
-				fontName: 'Google Sans Text',
 				color: '#5f6561',
 				fontSize: 10,
 			},
 		},
 		legend: {
 			textStyle: {
-				fontName: 'Google Sans Text',
 				color: '#131418',
 				fontSize: 12,
 			},

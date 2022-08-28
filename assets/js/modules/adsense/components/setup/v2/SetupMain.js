@@ -26,7 +26,7 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { _x } from '@wordpress/i18n';
-import { useEffect, useState } from '@wordpress/element';
+import { useCallback, useEffect, useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -48,6 +48,7 @@ import {
 	ACCOUNT_STATUS_MULTIPLE,
 } from '../../../util/status';
 import useViewContext from '../../../../../hooks/useViewContext';
+import { useRefocus } from '../../../../../hooks/useRefocus';
 const { useSelect, useDispatch } = Data;
 
 export default function SetupMain( { finishSetup } ) {
@@ -206,52 +207,23 @@ export default function SetupMain( { finishSetup } ) {
 		submitChanges,
 	] );
 
-	// Reset all fetched data when user re-focuses tab.
-	useEffect( () => {
-		let timeout;
-		let needReset = false;
+	const reset = useCallback( () => {
+		// Do not reset if account status has not been determined yet, or
+		// if the account is approved.
+		if (
+			undefined === accountStatus ||
+			ACCOUNT_STATUS_READY === accountStatus
+		) {
+			return;
+		}
 
-		// Count 15  seconds once user focuses elsewhere.
-		const countIdleTime = () => {
-			timeout = global.setTimeout( () => {
-				needReset = true;
-			}, 15000 );
-		};
-
-		// Reset when user re-focuses after 15 seconds or more.
-		const reset = () => {
-			global.clearTimeout( timeout );
-
-			// Do not reset if user has been away for less than 15 seconds.
-			if ( ! needReset ) {
-				return;
-			}
-			needReset = false;
-
-			// Do not reset if account status has not been determined yet, or
-			// if the account is approved.
-			if (
-				undefined === accountStatus ||
-				ACCOUNT_STATUS_READY === accountStatus
-			) {
-				return;
-			}
-
-			// Unset any potential error.
-			clearError();
-			// Reset all data to force re-fetch.
-			resetAccounts();
-			resetAlerts();
-			resetClients();
-			resetSites();
-		};
-		global.addEventListener( 'focus', reset );
-		global.addEventListener( 'blur', countIdleTime );
-		return () => {
-			global.removeEventListener( 'focus', reset );
-			global.removeEventListener( 'blur', countIdleTime );
-			global.clearTimeout( timeout );
-		};
+		// Unset any potential error.
+		clearError();
+		// Reset all data to force re-fetch.
+		resetAccounts();
+		resetAlerts();
+		resetClients();
+		resetSites();
 	}, [
 		accountStatus,
 		clearError,
@@ -260,6 +232,9 @@ export default function SetupMain( { finishSetup } ) {
 		resetClients,
 		resetSites,
 	] );
+
+	// Reset all fetched data when user re-focuses window.
+	useRefocus( reset, 15000 );
 
 	useEffect( () => {
 		if ( accountStatus !== undefined ) {

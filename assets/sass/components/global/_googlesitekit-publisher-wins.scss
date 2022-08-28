@@ -60,7 +60,8 @@
 			margin-left: $grid-gap-phone / 2;
 		}
 
-		& + .googlesitekit-cta-link {
+		& + .googlesitekit-cta-link,
+		& + .googlesitekit-publisher-win__actions {
 			margin-top: $grid-gap-phone;
 
 			@media (min-width: $bp-desktop) {
@@ -161,7 +162,7 @@
 		}
 	}
 
-	.mdc-button + .googlesitekit-cta-link {
+	.spinner + .googlesitekit-cta-link {
 		margin-left: $grid-gap-desktop;
 	}
 

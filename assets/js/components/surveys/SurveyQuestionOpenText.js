@@ -34,8 +34,7 @@ import SurveyHeader from './SurveyHeader';
 import { TextField, Input, HelperText } from '../../material-components';
 import Button from '../Button';
 import VisuallyHidden from '../VisuallyHidden';
-
-const MAXIMUM_CHARACTER_LIMIT = 100;
+import { SURVEY_INPUT_MAX_CHARACTER_LIMIT } from './constants';
 
 const SurveyQuestionOpenText = ( {
 	question,
@@ -53,7 +52,9 @@ const SurveyQuestionOpenText = ( {
 
 	const onChange = useCallback(
 		( event ) => {
-			setValue( event.target.value.slice( 0, MAXIMUM_CHARACTER_LIMIT ) );
+			setValue(
+				event.target.value.slice( 0, SURVEY_INPUT_MAX_CHARACTER_LIMIT )
+			);
 		},
 		[ setValue ]
 	);
@@ -79,9 +80,13 @@ const SurveyQuestionOpenText = ( {
 					}
 					onChange={ onChange }
 					label={ placeholder }
-					noLabel
+					textarea
 				>
-					<Input id={ instanceID } value={ value } />
+					<Input
+						inputType="textarea"
+						id={ instanceID }
+						value={ value }
+					/>
 				</TextField>
 			</div>
 			<div className="googlesitekit-survey__footer">
