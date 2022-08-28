@@ -179,11 +179,8 @@ storiesOf( 'Analytics Module/Settings', module )
 		'Edit, open with all settings w/o GA4',
 		( args, { registry } ) => {
 			const { dispatch } = registry;
-			const {
-				accounts,
-				properties,
-				profiles,
-			} = accountsPropertiesProfiles;
+			const { accounts, properties, profiles } =
+				accountsPropertiesProfiles;
 
 			/* eslint-disable sitekit/acronym-case */
 			const {
@@ -251,11 +248,8 @@ storiesOf( 'Analytics Module/Settings', module )
 		'Edit, open with all settings w/ GA4',
 		( args, { registry } ) => {
 			const { dispatch } = registry;
-			const {
-				accounts,
-				properties,
-				profiles,
-			} = accountsPropertiesProfiles;
+			const { accounts, properties, profiles } =
+				accountsPropertiesProfiles;
 
 			/* eslint-disable sitekit/acronym-case */
 			const {
@@ -347,11 +341,8 @@ storiesOf( 'Analytics Module/Settings', module )
 		'Edit, open with all settings w/ GA4, w/o module access',
 		( args, { registry } ) => {
 			const { dispatch } = registry;
-			const {
-				accounts,
-				properties,
-				profiles,
-			} = accountsPropertiesProfiles;
+			const { accounts, properties, profiles } =
+				accountsPropertiesProfiles;
 
 			/* eslint-disable sitekit/acronym-case */
 			const {
@@ -453,11 +444,8 @@ storiesOf( 'Analytics Module/Settings', module )
 		'Edit, open when creating new view',
 		( args, { registry } ) => {
 			const { dispatch } = registry;
-			const {
-				accounts,
-				properties,
-				profiles,
-			} = accountsPropertiesProfiles;
+			const { accounts, properties, profiles } =
+				accountsPropertiesProfiles;
 
 			// eslint-disable-next-line sitekit/acronym-case
 			const { accountId, webPropertyId, id: profileID } = profiles[ 0 ];

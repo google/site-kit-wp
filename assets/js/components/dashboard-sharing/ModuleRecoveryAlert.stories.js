@@ -99,8 +99,7 @@ MultipleRecoverableModule.args = {
 	},
 };
 MultipleRecoverableModule.scenario = {
-	label:
-		'Global/ModuleRecoveryAlert/Multiple Recoverable Modules (with access)',
+	label: 'Global/ModuleRecoveryAlert/Multiple Recoverable Modules (with access)',
 	delay: 250,
 };
 
@@ -148,8 +147,7 @@ MultipleRecoverableModuleNoAccess.args = {
 	},
 };
 MultipleRecoverableModuleNoAccess.scenario = {
-	label:
-		'Global/ModuleRecoveryAlert/Multiple Recoverable Modules (no access)',
+	label: 'Global/ModuleRecoveryAlert/Multiple Recoverable Modules (no access)',
 	delay: 250,
 };
 

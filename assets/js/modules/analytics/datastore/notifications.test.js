@@ -55,8 +55,7 @@ describe( 'modules/analytics notifications', () => {
 					),
 					learnMore: {
 						label: 'Learn more',
-						url:
-							'https://sitekit.withgoogle.com/documentation/using-site-kit/ga4/',
+						url: 'https://sitekit.withgoogle.com/documentation/using-site-kit/ga4/',
 					},
 				} );
 			} );

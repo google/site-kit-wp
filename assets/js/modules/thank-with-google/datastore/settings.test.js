@@ -60,7 +60,8 @@ describe( 'modules/thank-with-google settings', () => {
 		data: { status: 500 },
 	};
 
-	const fetchPattern = /^\/google-site-kit\/v1\/modules\/thank-with-google\/data\/settings/;
+	const fetchPattern =
+		/^\/google-site-kit\/v1\/modules\/thank-with-google\/data\/settings/;
 
 	beforeAll( () => {
 		API.setUsingCache( false );

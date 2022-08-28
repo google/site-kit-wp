@@ -179,9 +179,8 @@ describe( 'TourTooltips', () => {
 	} );
 
 	it( 'should remove `googlesitekit-showing-feature-tour` class from `body` when tour ends', async () => {
-		const { baseElement, getByRole } = renderTourTooltipsWithMockUI(
-			registry
-		);
+		const { baseElement, getByRole } =
+			renderTourTooltipsWithMockUI( registry );
 
 		expect(
 			baseElement.classList.contains(
@@ -199,9 +198,8 @@ describe( 'TourTooltips', () => {
 	} );
 
 	it( 'should end tour when close icon is clicked', async () => {
-		const { getByRole, queryByRole } = renderTourTooltipsWithMockUI(
-			registry
-		);
+		const { getByRole, queryByRole } =
+			renderTourTooltipsWithMockUI( registry );
 
 		fireEvent.click( getByRole( 'button', { name: /close/i } ) );
 
@@ -212,9 +210,8 @@ describe( 'TourTooltips', () => {
 	it( 'should end tour when "Got it" button is clicked', async () => {
 		registry.dispatch( CORE_UI ).setValue( STEP_KEY, FINAL_STEP );
 
-		const { getByRole, queryByRole } = renderTourTooltipsWithMockUI(
-			registry
-		);
+		const { getByRole, queryByRole } =
+			renderTourTooltipsWithMockUI( registry );
 
 		fireEvent.click( getByRole( 'button', { name: /got it/i } ) );
 

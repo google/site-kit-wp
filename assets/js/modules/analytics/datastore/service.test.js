@@ -178,9 +178,8 @@ describe( 'module/analytics service store', () => {
 						.select( MODULES_ANALYTICS )
 						.getServiceReportURL( type );
 
-					const decodedServiceURL = decodeServiceURL(
-						reportServiceURL
-					);
+					const decodedServiceURL =
+						decodeServiceURL( reportServiceURL );
 					const url = new URL( decodedServiceURL );
 
 					expect( decodedServiceURL.startsWith( baseURI ) ).toBe(
@@ -197,9 +196,8 @@ describe( 'module/analytics service store', () => {
 						.select( MODULES_ANALYTICS )
 						.getServiceReportURL( type, reportArgs );
 
-					const decodedServiceURL = decodeServiceURL(
-						reportServiceURL
-					);
+					const decodedServiceURL =
+						decodeServiceURL( reportServiceURL );
 
 					const url = new URL( decodedServiceURL );
 

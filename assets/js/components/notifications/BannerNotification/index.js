@@ -335,9 +335,11 @@ function BannerNotification( {
 			className={ classnames( className, 'googlesitekit-publisher-win', {
 				[ `googlesitekit-publisher-win--${ format }` ]: format,
 				[ `googlesitekit-publisher-win--${ type }` ]: type,
-				[ `googlesitekit-publisher-win--${ closedClass }` ]: closedClass,
+				[ `googlesitekit-publisher-win--${ closedClass }` ]:
+					closedClass,
 				'googlesitekit-publisher-win--rounded': rounded,
-				'googlesitekit-publisher-win--no-bottom-padding': noBottomPadding,
+				'googlesitekit-publisher-win--no-bottom-padding':
+					noBottomPadding,
 			} ) }
 		>
 			<Grid

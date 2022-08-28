@@ -58,9 +58,8 @@ const WIDGET_POPULAR_PAGES = 'wpDashboardPopularPages';
 const WPDashboardImpressionsWidget = withWidgetComponentProps(
 	WIDGET_IMPRESSIONS
 )( WPDashboardImpressions );
-const WPDashboardClicksWidget = withWidgetComponentProps( WIDGET_CLICKS )(
-	WPDashboardClicks
-);
+const WPDashboardClicksWidget =
+	withWidgetComponentProps( WIDGET_CLICKS )( WPDashboardClicks );
 
 // Analytics Widgets.
 const WPDashboardUniqueVisitorsWidget = withWidgetComponentProps(
@@ -74,11 +73,8 @@ const WPDashboardPopularPagesWidget = withWidgetComponentProps(
 )( WPDashboardPopularPages );
 
 // Special widget states.
-const [
-	ActivateModuleCTA,
-	CompleteModuleActivationCTA,
-	ReportZero,
-] = SPECIAL_WIDGET_STATES;
+const [ ActivateModuleCTA, CompleteModuleActivationCTA, ReportZero ] =
+	SPECIAL_WIDGET_STATES;
 
 const WPDashboardWidgets = () => {
 	const analyticsModule = useSelect( ( select ) =>

@@ -46,7 +46,8 @@ const STRING_100_CHARACTERS =
 const STRING_110_CHARACTERS = `${ STRING_100_CHARACTERS } rhoncus n`;
 
 describe( 'CurrentSurvey', () => {
-	const surveyEventRegexp = /^\/google-site-kit\/v1\/core\/user\/data\/survey-event/;
+	const surveyEventRegexp =
+		/^\/google-site-kit\/v1\/core\/user\/data\/survey-event/;
 
 	let registry;
 
@@ -671,11 +672,10 @@ describe( 'CurrentSurvey', () => {
 	it( 'should advance to the next question when a question is answered in a multi-question survey', async () => {
 		provideCurrentSurvey( registry, multiQuestionSurvey );
 
-		const {
-			getByLabelText,
-			getByText,
-			findByText,
-		} = render( <CurrentSurvey />, { registry } );
+		const { getByLabelText, getByText, findByText } = render(
+			<CurrentSurvey />,
+			{ registry }
+		);
 
 		fireEvent.click( getByLabelText( 'Unhappy' ) );
 
@@ -714,11 +714,10 @@ describe( 'CurrentSurvey', () => {
 	it( 'should not trigger an early completion if a trigger condition is met; all questions must be answered first', async () => {
 		provideCurrentSurvey( registry, multiQuestionSurvey );
 
-		const {
-			getByLabelText,
-			getByText,
-			findByText,
-		} = render( <CurrentSurvey />, { registry } );
+		const { getByLabelText, getByText, findByText } = render(
+			<CurrentSurvey />,
+			{ registry }
+		);
 
 		// Even though the fixtures have a `trigger_completion` for this answer to
 		// this question, it should not be shown until all questions are answered.
@@ -739,11 +738,10 @@ describe( 'CurrentSurvey', () => {
 	it( 'should show the completion for the first matching trigger', async () => {
 		provideCurrentSurvey( registry, multiQuestionSurvey );
 
-		const {
-			getByLabelText,
-			getByText,
-			findByText,
-		} = render( <CurrentSurvey />, { registry } );
+		const { getByLabelText, getByText, findByText } = render(
+			<CurrentSurvey />,
+			{ registry }
+		);
 
 		// Answering with this value causes the completion trigger to be met.
 		fireEvent.click( getByLabelText( 'Delighted' ) );
@@ -1014,17 +1012,11 @@ describe( 'CurrentSurvey', () => {
 	describe( 'conditional questions', () => {
 		let surveyComponent;
 
-		const [
-			firstQuestion,
-			secondQuestion,
-			thirdQuestion,
-		] = multiQuestionConditionalSurvey.survey_payload.question;
+		const [ firstQuestion, secondQuestion, thirdQuestion ] =
+			multiQuestionConditionalSurvey.survey_payload.question;
 
-		const [
-			defaultCompletion,
-			firstCompletion,
-			secondCompletion,
-		] = multiQuestionConditionalSurvey.survey_payload.completion;
+		const [ defaultCompletion, firstCompletion, secondCompletion ] =
+			multiQuestionConditionalSurvey.survey_payload.completion;
 
 		beforeEach( () => {
 			provideCurrentSurvey( registry, multiQuestionConditionalSurvey );

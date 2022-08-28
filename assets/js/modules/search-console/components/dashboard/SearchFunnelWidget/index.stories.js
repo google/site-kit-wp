@@ -121,9 +121,8 @@ const analyticsArgs = [
 	},
 ];
 
-const WidgetWithComponentProps = withWidgetComponentProps( 'widget-slug' )(
-	SearchFunnelWidget
-);
+const WidgetWithComponentProps =
+	withWidgetComponentProps( 'widget-slug' )( SearchFunnelWidget );
 
 const Template = ( { setupRegistry = () => {}, viewContext, ...args } ) => (
 	<WithRegistrySetup func={ setupRegistry }>

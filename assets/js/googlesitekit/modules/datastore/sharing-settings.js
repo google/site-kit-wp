@@ -156,12 +156,10 @@ const baseActions = {
 			.select( CORE_MODULES )
 			.getSharingSettings();
 
-		const {
-			response,
-			error,
-		} = yield fetchSaveSharingSettingsStore.actions.fetchSaveSharingSettings(
-			sharingSettings
-		);
+		const { response, error } =
+			yield fetchSaveSharingSettingsStore.actions.fetchSaveSharingSettings(
+				sharingSettings
+			);
 
 		// Update module owner IDs in the sharing settings modules.
 		if ( ! error && Object.keys( response.newOwnerIDs ).length ) {
@@ -359,10 +357,8 @@ const baseResolvers = {
 
 function validateCanSubmitSharingChanges( select ) {
 	const strictSelect = createStrictSelect( select );
-	const {
-		isDoingSubmitSharingChanges,
-		haveSharingSettingsChanged,
-	} = strictSelect( CORE_MODULES );
+	const { isDoingSubmitSharingChanges, haveSharingSettingsChanged } =
+		strictSelect( CORE_MODULES );
 
 	invariant(
 		! isDoingSubmitSharingChanges(),

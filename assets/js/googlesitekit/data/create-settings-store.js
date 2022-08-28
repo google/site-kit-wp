@@ -199,12 +199,10 @@ export const createSettingsStore = (
 			yield clearError( 'saveSettings', [] );
 
 			const values = registry.select( STORE_NAME ).getSettings();
-			const {
-				response,
-				error,
-			} = yield fetchSaveSettingsStore.actions.fetchSaveSettings(
-				values
-			);
+			const { response, error } =
+				yield fetchSaveSettingsStore.actions.fetchSaveSettings(
+					values
+				);
 			if ( error ) {
 				// Store error manually since saveSettings signature differs from fetchSaveSettings.
 				yield receiveError( error, 'saveSettings', [] );
@@ -360,9 +358,8 @@ export const createSettingsStore = (
 		 * @return {boolean} `true` if the module's "own settings" have changed; `false` if not.
 		 */
 		haveOwnedSettingsChanged: createRegistrySelector( ( select ) => () => {
-			const ownedSettingsSlugsToCheck = select(
-				STORE_NAME
-			).getOwnedSettingsSlugs();
+			const ownedSettingsSlugsToCheck =
+				select( STORE_NAME ).getOwnedSettingsSlugs();
 
 			return select( STORE_NAME ).haveSettingsChanged(
 				ownedSettingsSlugsToCheck
@@ -495,9 +492,8 @@ export function makeDefaultRollbackChanges( storeName ) {
 export function makeDefaultCanSubmitChanges( storeName ) {
 	return ( select ) => {
 		const strictSelect = createStrictSelect( select );
-		const { haveSettingsChanged, isDoingSubmitChanges } = strictSelect(
-			storeName
-		);
+		const { haveSettingsChanged, isDoingSubmitChanges } =
+			strictSelect( storeName );
 
 		invariant( ! isDoingSubmitChanges(), INVARIANT_DOING_SUBMIT_CHANGES );
 		invariant( haveSettingsChanged(), INVARIANT_SETTINGS_NOT_CHANGED );

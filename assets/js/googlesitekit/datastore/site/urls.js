@@ -122,9 +122,8 @@ export const selectors = {
 		( select ) => ( state, slug ) => {
 			invariant( slug, 'A slug is required.' );
 
-			const proxySupportLink = select(
-				CORE_SITE
-			).getProxySupportLinkURL();
+			const proxySupportLink =
+				select( CORE_SITE ).getProxySupportLinkURL();
 
 			return `${ proxySupportLink }?doc=${ encodeURIComponent( slug ) }`;
 		}
@@ -143,9 +142,8 @@ export const selectors = {
 		( select ) => ( state, error ) => {
 			invariant( error, 'An error is required.' );
 
-			const proxySupportLink = select(
-				CORE_SITE
-			).getProxySupportLinkURL();
+			const proxySupportLink =
+				select( CORE_SITE ).getProxySupportLinkURL();
 
 			if ( error.id && ! isNumeric( error.id ) ) {
 				return `${ proxySupportLink }?error_id=${ encodeURIComponent(

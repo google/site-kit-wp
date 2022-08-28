@@ -88,20 +88,21 @@ const baseSelectors = {
 	 * @return {(Array.<Object>|undefined)} A list of idea hub ideas; `undefined` if not loaded.
 	 */
 	getNewIdeasSlice: createRegistrySelector(
-		( select ) => ( state, options = {} ) => {
-			const newIdeas = select( MODULES_IDEA_HUB ).getNewIdeas();
-			if ( newIdeas === undefined ) {
-				return undefined;
-			}
+		( select ) =>
+			( state, options = {} ) => {
+				const newIdeas = select( MODULES_IDEA_HUB ).getNewIdeas();
+				if ( newIdeas === undefined ) {
+					return undefined;
+				}
 
-			const offset = options?.offset || 0;
-			const length = options.length
-				? offset + options.length
-				: newIdeas.length;
-			return 'offset' in options || 'length' in options
-				? newIdeas.slice( offset, length )
-				: newIdeas;
-		}
+				const offset = options?.offset || 0;
+				const length = options.length
+					? offset + options.length
+					: newIdeas.length;
+				return 'offset' in options || 'length' in options
+					? newIdeas.slice( offset, length )
+					: newIdeas;
+			}
 	),
 };
 

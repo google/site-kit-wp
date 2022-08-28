@@ -55,9 +55,8 @@ export default function WebContainerSelect() {
 		select( CORE_SITE ).isSecondaryAMP()
 	);
 
-	const { setContainerID, setInternalContainerID } = useDispatch(
-		MODULES_TAGMANAGER
-	);
+	const { setContainerID, setInternalContainerID } =
+		useDispatch( MODULES_TAGMANAGER );
 	const onSelect = useCallback(
 		( index, item ) => {
 			const {

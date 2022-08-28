@@ -45,28 +45,28 @@ export const selectors = {
 	 * @return {string} The URL to the service.
 	 */
 	getServiceURL: createRegistrySelector(
-		( select ) => ( state, { path, query } = {} ) => {
-			let serviceURL = 'https://search.google.com/search-console';
+		( select ) =>
+			( state, { path, query } = {} ) => {
+				let serviceURL = 'https://search.google.com/search-console';
 
-			if ( query ) {
-				serviceURL = addQueryArgs( serviceURL, query );
+				if ( query ) {
+					serviceURL = addQueryArgs( serviceURL, query );
+				}
+
+				if ( path ) {
+					const sanitizedPath = `/${ path.replace( /^\//, '' ) }`;
+					serviceURL = `${ serviceURL }#${ sanitizedPath }`;
+				}
+
+				const accountChooserBaseURI =
+					select( CORE_USER ).getAccountChooserURL( serviceURL );
+
+				if ( accountChooserBaseURI === undefined ) {
+					return undefined;
+				}
+
+				return accountChooserBaseURI;
 			}
-
-			if ( path ) {
-				const sanitizedPath = `/${ path.replace( /^\//, '' ) }`;
-				serviceURL = `${ serviceURL }#${ sanitizedPath }`;
-			}
-
-			const accountChooserBaseURI = select(
-				CORE_USER
-			).getAccountChooserURL( serviceURL );
-
-			if ( accountChooserBaseURI === undefined ) {
-				return undefined;
-			}
-
-			return accountChooserBaseURI;
-		}
 	),
 
 	/**
@@ -80,26 +80,30 @@ export const selectors = {
 	 * @return {string} The URL to the service.
 	 */
 	getServiceReportURL: createRegistrySelector(
-		( select ) => ( state, reportArgs = {} ) => {
-			const propertyID = select( MODULES_SEARCH_CONSOLE ).getPropertyID();
-			const isDomainProperty = selectors.isDomainProperty( state );
-			const referenceSiteURL = select( CORE_SITE ).getReferenceSiteURL();
-			const {
-				page = isDomainProperty
-					? `*${ untrailingslashit( referenceSiteURL ) }`
-					: undefined,
-				...args
-			} = reportArgs;
+		( select ) =>
+			( state, reportArgs = {} ) => {
+				const propertyID = select(
+					MODULES_SEARCH_CONSOLE
+				).getPropertyID();
+				const isDomainProperty = selectors.isDomainProperty( state );
+				const referenceSiteURL =
+					select( CORE_SITE ).getReferenceSiteURL();
+				const {
+					page = isDomainProperty
+						? `*${ untrailingslashit( referenceSiteURL ) }`
+						: undefined,
+					...args
+				} = reportArgs;
 
-			const path = '/performance/search-analytics';
-			const query = {
-				page,
-				...args,
-				resource_id: propertyID,
-			};
+				const path = '/performance/search-analytics';
+				const query = {
+					page,
+					...args,
+					resource_id: propertyID,
+				};
 
-			return selectors.getServiceURL( state, { path, query } );
-		}
+				return selectors.getServiceURL( state, { path, query } );
+			}
 	),
 
 	/**

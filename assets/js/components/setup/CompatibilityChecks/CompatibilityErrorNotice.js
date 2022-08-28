@@ -40,13 +40,8 @@ import {
 } from './constants';
 
 const helperCTA = ( developerPlugin ) => {
-	const {
-		installed,
-		active,
-		installURL,
-		activateURL,
-		configureURL,
-	} = developerPlugin;
+	const { installed, active, installURL, activateURL, configureURL } =
+		developerPlugin;
 
 	if ( ! installed && installURL ) {
 		return {
@@ -81,8 +76,7 @@ const helperCTA = ( developerPlugin ) => {
 			'google-site-kit'
 		),
 		children: __( 'Learn how', 'google-site-kit' ),
-		href:
-			'https://sitekit.withgoogle.com/documentation/using-site-kit/staging/',
+		href: 'https://sitekit.withgoogle.com/documentation/using-site-kit/staging/',
 		external: true,
 	};
 };

@@ -33,11 +33,13 @@ import IdeaHubIcon from '../../../svg/graphics/idea-hub.svg';
 import { SettingsView } from './components/settings';
 import SetupMain from './components/setup/SetupMain';
 
-const ifIdeaHubIsEnabled = ( func ) => ( ...args ) => {
-	if ( isFeatureEnabled( 'ideaHubModule' ) ) {
-		func( ...args );
-	}
-};
+const ifIdeaHubIsEnabled =
+	( func ) =>
+	( ...args ) => {
+		if ( isFeatureEnabled( 'ideaHubModule' ) ) {
+			func( ...args );
+		}
+	};
 
 export const registerStore = ifIdeaHubIsEnabled( registerDataStore );
 

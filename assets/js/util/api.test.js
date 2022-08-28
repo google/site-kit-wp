@@ -47,11 +47,8 @@ describe( 'trackAPIError', () => {
 			},
 		} );
 		expect( dataLayerPushSpy ).toHaveBeenCalledTimes( 3 );
-		const [
-			event,
-			eventName,
-			eventData,
-		] = dataLayerPushSpy.mock.calls[ 2 ][ 0 ];
+		const [ event, eventName, eventData ] =
+			dataLayerPushSpy.mock.calls[ 2 ][ 0 ];
 		expect( event ).toEqual( 'event' );
 		expect( eventName ).toEqual(
 			'test-method:test-type/test-identifier/data/test-datapoint'
@@ -76,11 +73,8 @@ describe( 'trackAPIError', () => {
 			},
 		} );
 		expect( dataLayerPushSpy ).toHaveBeenCalledTimes( 1 );
-		const [
-			event,
-			eventName,
-			eventData,
-		] = dataLayerPushSpy.mock.calls[ 0 ][ 0 ];
+		const [ event, eventName, eventData ] =
+			dataLayerPushSpy.mock.calls[ 0 ][ 0 ];
 		expect( event ).toEqual( 'event' );
 		expect( eventName ).toEqual(
 			'test-method:test-type/test-identifier/data/test-datapoint'
@@ -104,11 +98,8 @@ describe( 'trackAPIError', () => {
 			},
 		} );
 		expect( dataLayerPushSpy ).toHaveBeenCalledTimes( 1 );
-		const [
-			event,
-			eventName,
-			eventData,
-		] = dataLayerPushSpy.mock.calls[ 0 ][ 0 ];
+		const [ event, eventName, eventData ] =
+			dataLayerPushSpy.mock.calls[ 0 ][ 0 ];
 		expect( event ).toEqual( 'event' );
 		expect( eventName ).toEqual(
 			'test-method:test-type/test-identifier/data/test-datapoint'

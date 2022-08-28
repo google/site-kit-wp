@@ -111,11 +111,8 @@ function SourceLinkSearch( { metric } ) {
 				return null;
 			}
 
-			const {
-				getServiceReportURL,
-				getPropertyID,
-				isDomainProperty,
-			} = select( MODULES_SEARCH_CONSOLE );
+			const { getServiceReportURL, getPropertyID, isDomainProperty } =
+				select( MODULES_SEARCH_CONSOLE );
 			const referenceSiteURL = untrailingslashit(
 				select( CORE_SITE ).getReferenceSiteURL()
 			);

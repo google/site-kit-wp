@@ -39,9 +39,8 @@ const { useSelect, useDispatch } = Data;
 export default function AccountCreateLegacy() {
 	const { accounts, hasResolvedAccounts } = useSelect( ( select ) => ( {
 		accounts: select( MODULES_ANALYTICS ).getAccounts(),
-		hasResolvedAccounts: select( MODULES_ANALYTICS ).hasFinishedResolution(
-			'getAccounts'
-		),
+		hasResolvedAccounts:
+			select( MODULES_ANALYTICS ).hasFinishedResolution( 'getAccounts' ),
 	} ) );
 	const accountID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getAccountID()

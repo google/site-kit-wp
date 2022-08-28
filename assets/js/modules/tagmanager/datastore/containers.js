@@ -144,14 +144,12 @@ const baseActions = {
 			);
 		},
 		function* ( accountID, usageContext, { containerName } ) {
-			const {
-				response,
-				error,
-			} = yield fetchCreateContainerStore.actions.fetchCreateContainer(
-				accountID,
-				usageContext,
-				{ containerName }
-			);
+			const { response, error } =
+				yield fetchCreateContainerStore.actions.fetchCreateContainer(
+					accountID,
+					usageContext,
+					{ containerName }
+				);
 
 			return { response, error };
 		}
@@ -243,27 +241,32 @@ const baseActions = {
 
 const baseControls = {
 	[ WAIT_FOR_CONTAINERS ]: createRegistryControl(
-		( registry ) => ( { payload: { accountID } } ) => {
-			// Select first to ensure resolution is always triggered.
-			registry.select( MODULES_TAGMANAGER ).getContainers( accountID );
-			const areContainersLoaded = () =>
+		( registry ) =>
+			( { payload: { accountID } } ) => {
+				// Select first to ensure resolution is always triggered.
 				registry
 					.select( MODULES_TAGMANAGER )
-					.hasFinishedResolution( 'getContainers', [ accountID ] );
+					.getContainers( accountID );
+				const areContainersLoaded = () =>
+					registry
+						.select( MODULES_TAGMANAGER )
+						.hasFinishedResolution( 'getContainers', [
+							accountID,
+						] );
 
-			if ( areContainersLoaded() ) {
-				return;
-			}
+				if ( areContainersLoaded() ) {
+					return;
+				}
 
-			return new Promise( ( resolve ) => {
-				const unsubscribe = registry.subscribe( () => {
-					if ( areContainersLoaded() ) {
-						unsubscribe();
-						resolve();
-					}
+				return new Promise( ( resolve ) => {
+					const unsubscribe = registry.subscribe( () => {
+						if ( areContainersLoaded() ) {
+							unsubscribe();
+							resolve();
+						}
+					} );
 				} );
-			} );
-		}
+			}
 	),
 };
 
@@ -297,9 +300,8 @@ const baseSelectors = {
 	getContainerByID: createRegistrySelector(
 		( select ) => ( state, accountID, containerID ) => {
 			// Select all containers of the account to find the container, regardless of usageContext.
-			const containers = select( MODULES_TAGMANAGER ).getContainers(
-				accountID
-			);
+			const containers =
+				select( MODULES_TAGMANAGER ).getContainers( accountID );
 
 			if ( containers === undefined ) {
 				return undefined;
@@ -325,9 +327,8 @@ const baseSelectors = {
 	 */
 	getWebContainers: createRegistrySelector(
 		( select ) => ( state, accountID ) => {
-			const containers = select( MODULES_TAGMANAGER ).getContainers(
-				accountID
-			);
+			const containers =
+				select( MODULES_TAGMANAGER ).getContainers( accountID );
 
 			if ( ! Array.isArray( containers ) ) {
 				return undefined;
@@ -350,9 +351,8 @@ const baseSelectors = {
 	 */
 	getAMPContainers: createRegistrySelector(
 		( select ) => ( state, accountID ) => {
-			const containers = select( MODULES_TAGMANAGER ).getContainers(
-				accountID
-			);
+			const containers =
+				select( MODULES_TAGMANAGER ).getContainers( accountID );
 
 			if ( ! Array.isArray( containers ) ) {
 				return undefined;

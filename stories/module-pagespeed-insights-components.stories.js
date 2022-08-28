@@ -53,9 +53,10 @@ storiesOf( 'PageSpeed Insights Module/Components', module )
 					strategy: STRATEGY_MOBILE,
 				}
 			);
-			dispatch(
-				MODULES_PAGESPEED_INSIGHTS
-			).finishResolution( 'getReport', [ url, STRATEGY_MOBILE ] );
+			dispatch( MODULES_PAGESPEED_INSIGHTS ).finishResolution(
+				'getReport',
+				[ url, STRATEGY_MOBILE ]
+			);
 
 			dispatch( MODULES_PAGESPEED_INSIGHTS ).receiveGetReport(
 				fixtures.pagespeedDesktop,
@@ -64,9 +65,10 @@ storiesOf( 'PageSpeed Insights Module/Components', module )
 					strategy: STRATEGY_DESKTOP,
 				}
 			);
-			dispatch(
-				MODULES_PAGESPEED_INSIGHTS
-			).finishResolution( 'getReport', [ url, STRATEGY_DESKTOP ] );
+			dispatch( MODULES_PAGESPEED_INSIGHTS ).finishResolution(
+				'getReport',
+				[ url, STRATEGY_DESKTOP ]
+			);
 
 			dispatch( CORE_SITE ).receiveSiteInfo( {
 				referenceSiteURL: url,
@@ -130,9 +132,10 @@ storiesOf( 'PageSpeed Insights Module/Components', module )
 					strategy: STRATEGY_MOBILE,
 				}
 			);
-			dispatch(
-				MODULES_PAGESPEED_INSIGHTS
-			).finishResolution( 'getReport', [ url, STRATEGY_MOBILE ] );
+			dispatch( MODULES_PAGESPEED_INSIGHTS ).finishResolution(
+				'getReport',
+				[ url, STRATEGY_MOBILE ]
+			);
 
 			dispatch( MODULES_PAGESPEED_INSIGHTS ).receiveGetReport(
 				fixtures.pagespeedDesktopNoFieldData,
@@ -141,9 +144,10 @@ storiesOf( 'PageSpeed Insights Module/Components', module )
 					strategy: STRATEGY_DESKTOP,
 				}
 			);
-			dispatch(
-				MODULES_PAGESPEED_INSIGHTS
-			).finishResolution( 'getReport', [ url, STRATEGY_DESKTOP ] );
+			dispatch( MODULES_PAGESPEED_INSIGHTS ).finishResolution(
+				'getReport',
+				[ url, STRATEGY_DESKTOP ]
+			);
 
 			dispatch( CORE_SITE ).receiveSiteInfo( {
 				referenceSiteURL: url,
@@ -181,17 +185,19 @@ storiesOf( 'PageSpeed Insights Module/Components', module )
 				'getReport',
 				[ url, STRATEGY_MOBILE ]
 			);
-			dispatch(
-				MODULES_PAGESPEED_INSIGHTS
-			).finishResolution( 'getReport', [ url, STRATEGY_MOBILE ] );
+			dispatch( MODULES_PAGESPEED_INSIGHTS ).finishResolution(
+				'getReport',
+				[ url, STRATEGY_MOBILE ]
+			);
 			dispatch( MODULES_PAGESPEED_INSIGHTS ).receiveError(
 				desktopError,
 				'getReport',
 				[ url, STRATEGY_DESKTOP ]
 			);
-			dispatch(
-				MODULES_PAGESPEED_INSIGHTS
-			).finishResolution( 'getReport', [ url, STRATEGY_DESKTOP ] );
+			dispatch( MODULES_PAGESPEED_INSIGHTS ).finishResolution(
+				'getReport',
+				[ url, STRATEGY_DESKTOP ]
+			);
 			dispatch( CORE_SITE ).receiveSiteInfo( {
 				referenceSiteURL: url,
 				currentEntityURL: null,
