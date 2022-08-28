@@ -140,7 +140,7 @@ final class Modules {
 	 * @since 1.75.0
 	 * @var REST_Dashboard_Sharing_Controller
 	 */
-	private $rest_controller;
+	private $rest_dashboard_sharing_controller;
 
 	/**
 	 * Core module class names.
