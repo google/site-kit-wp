@@ -859,7 +859,7 @@ describe( 'modules/analytics accounts', () => {
 						.select( MODULES_ANALYTICS )
 						.getAccountTicketTermsOfServiceURL()
 				).toEqual(
-					'https://analytics.google.com/analytics/web/?provisioningSignup=false&authuser=test%40gmail.com#/termsofservice/test-account-ticket-id'
+					'https://accounts.google.com/accountchooser?continue=https%3A%2F%2Fanalytics.google.com%2Fanalytics%2Fweb%2F%3FprovisioningSignup%3Dfalse%23%2Ftermsofservice%2Ftest-account-ticket-id&Email=test%40gmail.com'
 				);
 			} );
 
@@ -892,7 +892,7 @@ describe( 'modules/analytics accounts', () => {
 						.select( MODULES_ANALYTICS )
 						.getAccountTicketTermsOfServiceURL()
 				).toEqual(
-					'https://analytics.google.com/analytics/web/?provisioningSignup=false&authuser=test%40gmail.com#/termsofservice/test-account-ticket-id'
+					'https://accounts.google.com/accountchooser?continue=https%3A%2F%2Fanalytics.google.com%2Fanalytics%2Fweb%2F%3FprovisioningSignup%3Dfalse%23%2Ftermsofservice%2Ftest-account-ticket-id&Email=test%40gmail.com'
 				);
 			} );
 		} );

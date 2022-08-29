@@ -193,7 +193,11 @@ describe( 'Analytics write scope requests', () => {
 
 		// They should be redirected to the Analytics TOS.
 		await page.waitForRequest( ( req ) =>
-			req.url().match( 'analytics.google.com/analytics/web' )
+			req
+				.url()
+				.match(
+					encodeURIComponent( 'analytics.google.com/analytics/web' )
+				)
 		);
 	} );
 
