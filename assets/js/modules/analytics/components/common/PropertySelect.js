@@ -43,6 +43,11 @@ export default function PropertySelect( { hasModuleAccess } ) {
 				isResolvingProperties: false,
 			};
 
+			if ( hasModuleAccess === false ) {
+				data.properties = null;
+				return data;
+			}
+
 			if ( data.accountID ) {
 				data.properties = select( MODULES_ANALYTICS ).getProperties(
 					data.accountID
