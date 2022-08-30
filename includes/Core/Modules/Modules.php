@@ -215,14 +215,17 @@ final class Modules {
 			return true;
 		}
 
-		if ( ! is_ssl() ) {
-			if ( isset( $_SERVER['HTTP_X_FORWARDED_PROTO'] ) && 'https' === $_SERVER['HTTP_X_FORWARDED_PROTO'] ) {
-				return true;
-			}
-			return false;
+		if ( is_ssl() ) {
+			return true;
 		}
 
-		return true;
+		if ( isset( $_SERVER['HTTP_X_FORWARDED_PROTO'] ) && 'https' === $_SERVER['HTTP_X_FORWARDED_PROTO'] ) {
+			return true;
+		}
+
+		// Because we aren't in development mode and haven't detected SSL being enabled, TwG should
+		// not be enabled.
+		return false;
 	}
 
 	/**
