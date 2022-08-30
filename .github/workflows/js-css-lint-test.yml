@@ -52,12 +52,15 @@ jobs:
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/setup-node@v3
+      - name: Setup Node.js (.nvmrc)
+        uses: actions/setup-node@v3
         with:
           node-version-file: .nvmrc
           cache: npm
         env:
           PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: true
+      - name: npm install
+        run: npm ci
       - name: CSS Lint
         run: npm run lint:css
       - name: JS Lint
