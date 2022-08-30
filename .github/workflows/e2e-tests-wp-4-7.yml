@@ -92,8 +92,10 @@ jobs:
       - name: Composer Install
         uses: ./.github/actions/composer
 
-      - name: Install node_modules
-        uses: ./.github/actions/npm
+      - uses: actions/setup-node@v3
+        with:
+          node-version-file: .nvmrc
+          cache: npm
 
       - name: Build
         run: npm run build:test

@@ -57,8 +57,10 @@ jobs:
     if: false == ( ( github.event_name == 'pull_request' && ( github.event.action == 'closed' || github.event.pull_request.draft == true || contains( github.head_ref, 'dependabot/' ) ) ) || github.event.pull_request.head.repo.fork )
     steps:
       - uses: actions/checkout@v2
-      - name: Install node_modules
-        uses: ./.github/actions/npm
+      - uses: actions/setup-node@v3
+        with:
+          node-version-file: .nvmrc
+          cache: npm
       - name: Build Storybook
         run: npm run build:storybook
       - name: Upload artifacts

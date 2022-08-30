@@ -52,8 +52,10 @@ jobs:
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v2
-      - name: Install node_modules
-        uses: ./.github/actions/npm
+      - uses: actions/setup-node@v3
+        with:
+          node-version-file: .nvmrc
+          cache: npm
         env:
           PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: true
       - name: CSS Lint
