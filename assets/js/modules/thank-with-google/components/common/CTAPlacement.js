@@ -24,7 +24,11 @@ import { useCallback, useState, Fragment } from '@wordpress/element';
  */
 import Data from 'googlesitekit-data';
 import { MODULES_THANK_WITH_GOOGLE } from '../../datastore/constants';
-import { TYPE_FIXED, TYPE_OVERLAY } from '../../util/settings';
+import {
+	getPlacementType,
+	TYPE_FIXED,
+	TYPE_OVERLAY,
+} from '../../util/settings';
 import TypeRadio from './TypeRadio';
 import ProminenceRadio from './ProminenceRadio';
 import PositionRadio from './PositionRadio';
@@ -35,10 +39,7 @@ export default function CTAPlacement() {
 		select( MODULES_THANK_WITH_GOOGLE ).getCTAPlacement()
 	);
 
-	const defaultType =
-		ctaPlacement?.substring( 0, 7 ) === 'static_'
-			? TYPE_FIXED
-			: TYPE_OVERLAY;
+	const defaultType = getPlacementType( ctaPlacement );
 
 	const [ type, setType ] = useState( defaultType );
 	const onChange = useCallback( setType, [ setType ] );

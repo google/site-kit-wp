@@ -105,15 +105,14 @@ export function getColorThemes() {
  * @return {string} "Fixed" or "Overlay" depending on if ctaPlacement is static or dynamic.
  */
 export function getType( ctaPlacement ) {
-	if ( ! ctaPlacement ) {
-		return '';
+	switch ( getPlacementType( ctaPlacement ) ) {
+		case 'fixed':
+			return __( 'Fixed', 'google-site-kit' );
+		case 'overlay':
+			return __( 'Overlay', 'google-site-kit' );
+		default:
+			return '';
 	}
-
-	if ( 'static' === ctaPlacement.substring( 0, 6 ) ) {
-		return __( 'Fixed', 'google-site-kit' );
-	}
-
-	return __( 'Overlay', 'google-site-kit' );
 }
 
 /**
@@ -166,4 +165,24 @@ export function getCTAPostTypesString( ctaPostTypes, postTypes ) {
 		return __( 'All post types', 'google-site-kit' );
 	}
 	return enabledPostTypes.map( ( postType ) => postType.label ).join( ', ' );
+}
+
+/**
+ * Gets the placement type based on the ctaPlacement setting.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} ctaPlacement The ctaPlacement setting value.
+ * @return {string} "fixed" or "overlay" depending on if ctaPlacement is static or dynamic.
+ */
+export function getPlacementType( ctaPlacement ) {
+	if ( ! ctaPlacement ) {
+		return null;
+	}
+
+	if ( 'static' === ctaPlacement.substring( 0, 6 ) ) {
+		return TYPE_FIXED;
+	}
+
+	return TYPE_OVERLAY;
 }

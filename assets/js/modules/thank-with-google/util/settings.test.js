@@ -27,7 +27,12 @@ import {
 	CTA_PLACEMENT_DYNAMIC_LOW,
 	CTA_PLACEMENT_STATIC_BELOW_1ST_PARAGRAPH,
 } from '../datastore/constants';
-import { getType, getProminence, getCTAPostTypesString } from './settings';
+import {
+	getType,
+	getProminence,
+	getCTAPostTypesString,
+	getPlacementType,
+} from './settings';
 
 describe( 'getType', () => {
 	it.each( [
@@ -145,4 +150,29 @@ describe( 'getCTAPostTypesString', () => {
 
 		expect( getCTAPostTypesString( [], postTypes ) ).toBe( '' );
 	} );
+} );
+
+describe( 'getPlacementType', () => {
+	it.each( [
+		CTA_PLACEMENT_STATIC_AUTO,
+		CTA_PLACEMENT_STATIC_ABOVE_CONTENT,
+		CTA_PLACEMENT_STATIC_BELOW_CONTENT,
+		CTA_PLACEMENT_STATIC_BELOW_1ST_PARAGRAPH,
+	] )( 'should return "fixed" for %s cta placement', ( ctaPlacement ) => {
+		expect( getPlacementType( ctaPlacement ) ).toBe( 'fixed' );
+	} );
+
+	it.each( [ CTA_PLACEMENT_DYNAMIC_HIGH, CTA_PLACEMENT_DYNAMIC_LOW ] )(
+		'should return "overlay" for %s',
+		( ctaPlacement ) => {
+			expect( getPlacementType( ctaPlacement ) ).toBe( 'overlay' );
+		}
+	);
+
+	it.each( [ undefined, null, '' ] )(
+		'should return null for %s',
+		( ctaPlacement ) => {
+			expect( getPlacementType( ctaPlacement ) ).toBe( null );
+		}
+	);
 } );
