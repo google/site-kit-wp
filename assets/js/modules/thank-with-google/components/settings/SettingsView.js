@@ -34,7 +34,7 @@ import Link from '../../../../components/Link';
 import ProgressBar from '../../../../components/ProgressBar';
 import {
 	getColorThemes,
-	getType,
+	getPlacementTypeLabel,
 	getProminence,
 	getCTAPostTypesString,
 } from '../../util/settings';
@@ -134,7 +134,9 @@ export default function SettingsView() {
 						{ __( 'Type', 'google-site-kit' ) }
 					</h5>
 					<p className="googlesitekit-settings-module__meta-item-data">
-						<DisplaySetting value={ getType( ctaPlacement ) } />
+						<DisplaySetting
+							value={ getPlacementTypeLabel( ctaPlacement ) }
+						/>
 					</p>
 				</Cell>
 				<Cell className="googlesitekit-settings-module__meta-item">

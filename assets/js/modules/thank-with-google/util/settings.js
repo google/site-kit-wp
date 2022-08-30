@@ -97,14 +97,14 @@ export function getColorThemes() {
 }
 
 /**
- * Gets the type value based on the ctaPlacement setting.
+ * Gets the placement type label based on the ctaPlacement setting.
  *
  * @since 1.81.0
  *
  * @param {string} ctaPlacement The ctaPlacement setting value.
  * @return {string} "Fixed" or "Overlay" depending on if ctaPlacement is static or dynamic.
  */
-export function getType( ctaPlacement ) {
+export function getPlacementTypeLabel( ctaPlacement ) {
 	switch ( getPlacementType( ctaPlacement ) ) {
 		case 'fixed':
 			return __( 'Fixed', 'google-site-kit' );

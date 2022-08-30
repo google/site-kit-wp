@@ -28,33 +28,33 @@ import {
 	CTA_PLACEMENT_STATIC_BELOW_1ST_PARAGRAPH,
 } from '../datastore/constants';
 import {
-	getType,
+	getPlacementTypeLabel,
 	getProminence,
 	getCTAPostTypesString,
 	getPlacementType,
 } from './settings';
 
-describe( 'getType', () => {
+describe( 'getPlacementTypeLabel', () => {
 	it.each( [
 		CTA_PLACEMENT_STATIC_AUTO,
 		CTA_PLACEMENT_STATIC_ABOVE_CONTENT,
 		CTA_PLACEMENT_STATIC_BELOW_CONTENT,
 		CTA_PLACEMENT_STATIC_BELOW_1ST_PARAGRAPH,
 	] )( 'should return "Fixed" for %s cta placement', ( ctaPlacement ) => {
-		expect( getType( ctaPlacement ) ).toBe( 'Fixed' );
+		expect( getPlacementTypeLabel( ctaPlacement ) ).toBe( 'Fixed' );
 	} );
 
 	it.each( [ CTA_PLACEMENT_DYNAMIC_HIGH, CTA_PLACEMENT_DYNAMIC_LOW ] )(
 		'should return "Overlay" for %s',
 		( ctaPlacement ) => {
-			expect( getType( ctaPlacement ) ).toBe( 'Overlay' );
+			expect( getPlacementTypeLabel( ctaPlacement ) ).toBe( 'Overlay' );
 		}
 	);
 
 	it.each( [ undefined, null, '' ] )(
 		'should return "" for %s',
 		( ctaPlacement ) => {
-			expect( getType( ctaPlacement ) ).toBe( '' );
+			expect( getPlacementTypeLabel( ctaPlacement ) ).toBe( '' );
 		}
 	);
 } );
