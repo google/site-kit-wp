@@ -24,7 +24,8 @@ import { useCallback, useState, Fragment } from '@wordpress/element';
  */
 import Data from 'googlesitekit-data';
 import { MODULES_THANK_WITH_GOOGLE } from '../../datastore/constants';
-import TypeRadio, { TYPE_OVERLAY, TYPE_FIXED } from './TypeRadio';
+import { TYPE_FIXED, TYPE_OVERLAY } from '../../util/settings';
+import TypeRadio from './TypeRadio';
 import ProminenceRadio from './ProminenceRadio';
 import PositionRadio from './PositionRadio';
 const { useSelect } = Data;

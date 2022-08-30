@@ -41,6 +41,9 @@ import {
 	CTA_PLACEMENT_STATIC_BELOW_1ST_PARAGRAPH,
 } from '../datastore/constants';
 
+export const TYPE_OVERLAY = 'overlay';
+export const TYPE_FIXED = 'fixed';
+
 /**
  * Gets color themes supported by Thank with Google.
  *
