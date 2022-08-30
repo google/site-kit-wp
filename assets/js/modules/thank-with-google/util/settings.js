@@ -39,6 +39,8 @@ import {
 	CTA_PLACEMENT_DYNAMIC_HIGH,
 	CTA_PLACEMENT_DYNAMIC_LOW,
 	CTA_PLACEMENT_STATIC_BELOW_1ST_PARAGRAPH,
+	TYPE_FIXED,
+	TYPE_OVERLAY,
 } from '../datastore/constants';
 
 /**
@@ -94,34 +96,33 @@ export function getColorThemes() {
 }
 
 /**
- * Gets the type value based on the ctaPlacement setting.
+ * Gets the placement type label based on the ctaPlacement setting.
  *
  * @since 1.81.0
  *
  * @param {string} ctaPlacement The ctaPlacement setting value.
  * @return {string} "Fixed" or "Overlay" depending on if ctaPlacement is static or dynamic.
  */
-export function getType( ctaPlacement ) {
-	if ( ! ctaPlacement ) {
-		return '';
+export function getPlacementTypeLabel( ctaPlacement ) {
+	switch ( getPlacementType( ctaPlacement ) ) {
+		case TYPE_FIXED:
+			return __( 'Fixed', 'google-site-kit' );
+		case TYPE_OVERLAY:
+			return __( 'Overlay', 'google-site-kit' );
+		default:
+			return '';
 	}
-
-	if ( 'static' === ctaPlacement.substring( 0, 6 ) ) {
-		return __( 'Fixed', 'google-site-kit' );
-	}
-
-	return __( 'Overlay', 'google-site-kit' );
 }
 
 /**
- * Gets the prominence value based on the ctaPlacement setting.
+ * Gets the placement label based on the ctaPlacement setting.
  *
  * @since 1.81.0
  *
  * @param {string} ctaPlacement The ctaPlacement setting value.
- * @return {string} Prominence value depending on the ctaPlacement setting.
+ * @return {string} Placement label depending on the ctaPlacement setting.
  */
-export function getProminence( ctaPlacement ) {
+export function getPlacementLabel( ctaPlacement ) {
 	switch ( ctaPlacement ) {
 		case CTA_PLACEMENT_STATIC_AUTO:
 			return __( 'Auto', 'google-site-kit' );
@@ -163,4 +164,24 @@ export function getCTAPostTypesString( ctaPostTypes, postTypes ) {
 		return __( 'All post types', 'google-site-kit' );
 	}
 	return enabledPostTypes.map( ( postType ) => postType.label ).join( ', ' );
+}
+
+/**
+ * Gets the placement type based on the ctaPlacement setting.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} ctaPlacement The ctaPlacement setting value.
+ * @return {string} "fixed" or "overlay" depending on if ctaPlacement is static or dynamic.
+ */
+export function getPlacementType( ctaPlacement ) {
+	if ( ! ctaPlacement ) {
+		return null;
+	}
+
+	if ( 'static' === ctaPlacement.substring( 0, 6 ) ) {
+		return TYPE_FIXED;
+	}
+
+	return TYPE_OVERLAY;
 }
