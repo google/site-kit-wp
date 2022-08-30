@@ -17,6 +17,7 @@ use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
+use Google\Site_Kit\Core\Util\Build_Mode;
 use Google\Site_Kit\Modules\AdSense;
 use Google\Site_Kit\Modules\Analytics;
 use Google\Site_Kit\Modules\Analytics_4;
@@ -450,6 +451,9 @@ class ModulesTest extends TestCase {
 	 * @param array<string> $expected        The array of expected module slugs.
 	 */
 	public function test_feature_flag_enabled_modules( $feature_flag, $feature_enabled, $module_slug, array $expected ) {
+		// This is needed for Thank with Google.
+		$_SERVER['HTTPS'] = 'on';
+
 		add_filter(
 			'googlesitekit_is_feature_enabled',
 			function ( $is_enabled, $feature ) use ( $feature_flag, $feature_enabled ) {
@@ -478,6 +482,9 @@ class ModulesTest extends TestCase {
 		foreach ( $expected as $slug ) {
 			$this->assertArrayHasKey( $slug, $modules->get_available_modules() );
 		}
+
+		// Reset HTTPs.
+		unset( $_SERVER['HTTPS'] );
 	}
 
 	public function provider_feature_flag_modules() {
