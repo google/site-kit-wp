@@ -104,6 +104,39 @@ class ModulesTest extends TestCase {
 		);
 	}
 
+	public function test_should_enable_twg__feature_flag_not_enabled() {
+		$this->assertEquals( false, Modules::should_enable_twg() );
+	}
+
+	public function test_should_enable_twg_development() {
+		$this->enable_feature( 'twgModule' );
+		Build_Mode::set_mode( Build_Mode::MODE_DEVELOPMENT );
+		$this->assertEquals( true, Modules::should_enable_twg() );
+		// Reset build mode.
+		Build_Mode::set_mode( Build_Mode::MODE_PRODUCTION );
+	}
+
+	public function test_should_enable_twg_non_ssl() {
+		$this->enable_feature( 'twgModule' );
+		$this->assertEquals( false, Modules::should_enable_twg() );
+	}
+
+	public function test_should_enable_twg_behind_proxy() {
+		$this->enable_feature( 'twgModule' );
+		$_SERVER['HTTP_X_FORWARDED_PROTO'] = 'https';
+		$this->assertEquals( true, Modules::should_enable_twg() );
+		// Reset HTTP_X_FORWARDED_PROTO.
+		unset( $_SERVER['HTTP_X_FORWARDED_PROTO'] );
+	}
+
+	public function test_should_enable_twg_ssl() {
+		$this->enable_feature( 'twgModule' );
+		$_SERVER['HTTPS'] = 'on';
+		$this->assertEquals( true, Modules::should_enable_twg() );
+		// Reset HTTPS.
+		unset( $_SERVER['HTTPS'] );
+	}
+
 	public function test_register() {
 		$modules     = new Modules( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$fake_module = new FakeModule( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
