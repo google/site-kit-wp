@@ -37,6 +37,9 @@ import {
 	getPlacementTypeLabel,
 	getPlacementLabel,
 	getCTAPostTypesString,
+	getPlacementType,
+	TYPE_FIXED,
+	TYPE_OVERLAY,
 } from '../../util/settings';
 const { useSelect } = Data;
 
@@ -104,6 +107,8 @@ export default function SettingsView() {
 			( { colorThemeID } ) => colorThemeID === colorTheme
 		) || {};
 
+	const placementType = getPlacementType( ctaPlacement );
+
 	return (
 		<Grid>
 			<StoreErrorNotices
@@ -152,7 +157,10 @@ export default function SettingsView() {
 			<Row>
 				<Cell className="googlesitekit-settings-module__meta-item">
 					<h5 className="googlesitekit-settings-module__meta-item-type">
-						{ __( 'Prominence', 'google-site-kit' ) }
+						{ TYPE_FIXED === placementType &&
+							__( 'Position', 'google-site-kit' ) }
+						{ TYPE_OVERLAY === placementType &&
+							__( 'Prominence', 'google-site-kit' ) }
 					</h5>
 					<p className="googlesitekit-settings-module__meta-item-data">
 						<DisplaySetting
