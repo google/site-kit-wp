@@ -105,9 +105,9 @@ export function getColorThemes() {
  */
 export function getPlacementTypeLabel( ctaPlacement ) {
 	switch ( getPlacementType( ctaPlacement ) ) {
-		case 'fixed':
+		case TYPE_FIXED:
 			return __( 'Fixed', 'google-site-kit' );
-		case 'overlay':
+		case TYPE_OVERLAY:
 			return __( 'Overlay', 'google-site-kit' );
 		default:
 			return '';
