@@ -29,7 +29,7 @@ import {
 } from '../datastore/constants';
 import {
 	getPlacementTypeLabel,
-	getProminence,
+	getPlacementLabel,
 	getCTAPostTypesString,
 	getPlacementType,
 } from './settings';
@@ -59,7 +59,7 @@ describe( 'getPlacementTypeLabel', () => {
 	);
 } );
 
-describe( 'getProminence', () => {
+describe( 'getPlacementLabel', () => {
 	it.each( [
 		[ CTA_PLACEMENT_STATIC_AUTO, 'Auto' ],
 		[ CTA_PLACEMENT_STATIC_ABOVE_CONTENT, 'Above the post' ],
@@ -70,14 +70,14 @@ describe( 'getProminence', () => {
 	] )(
 		'for %s cta placement should return %s',
 		( ctaPlacement, expected ) => {
-			expect( getProminence( ctaPlacement ) ).toBe( expected );
+			expect( getPlacementLabel( ctaPlacement ) ).toBe( expected );
 		}
 	);
 
 	it.each( [ [ null ], [ undefined ], [ '' ] ] )(
 		'should return an empty string when cta placement is %s',
 		( ctaPlacement ) => {
-			expect( getProminence( ctaPlacement ) ).toBe( '' );
+			expect( getPlacementLabel( ctaPlacement ) ).toBe( '' );
 		}
 	);
 } );

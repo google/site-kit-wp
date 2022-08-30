@@ -116,14 +116,14 @@ export function getPlacementTypeLabel( ctaPlacement ) {
 }
 
 /**
- * Gets the prominence value based on the ctaPlacement setting.
+ * Gets the placement label based on the ctaPlacement setting.
  *
  * @since 1.81.0
  *
  * @param {string} ctaPlacement The ctaPlacement setting value.
- * @return {string} Prominence value depending on the ctaPlacement setting.
+ * @return {string} Placement label depending on the ctaPlacement setting.
  */
-export function getProminence( ctaPlacement ) {
+export function getPlacementLabel( ctaPlacement ) {
 	switch ( ctaPlacement ) {
 		case CTA_PLACEMENT_STATIC_AUTO:
 			return __( 'Auto', 'google-site-kit' );

@@ -35,7 +35,7 @@ import ProgressBar from '../../../../components/ProgressBar';
 import {
 	getColorThemes,
 	getPlacementTypeLabel,
-	getProminence,
+	getPlacementLabel,
 	getCTAPostTypesString,
 } from '../../util/settings';
 const { useSelect } = Data;
@@ -156,7 +156,7 @@ export default function SettingsView() {
 					</h5>
 					<p className="googlesitekit-settings-module__meta-item-data">
 						<DisplaySetting
-							value={ getProminence( ctaPlacement ) }
+							value={ getPlacementLabel( ctaPlacement ) }
 						/>
 					</p>
 				</Cell>
