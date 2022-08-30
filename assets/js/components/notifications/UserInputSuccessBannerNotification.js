@@ -55,7 +55,7 @@ export default function UserInputSuccessBannerNotification() {
 				'google-site-kit'
 			) }
 			SmallImageSVG={ MilestoneBlueSVG }
-			dismiss={ __( 'OK, got it!', 'google-site-kit' ) }
+			dismiss={ __( 'OK, Got it!', 'google-site-kit' ) }
 			format="small"
 			onDismiss={ handleOnDismiss }
 		/>

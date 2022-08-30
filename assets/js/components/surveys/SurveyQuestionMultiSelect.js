@@ -38,8 +38,7 @@ import Checkbox from '../Checkbox';
 import SurveyHeader from './SurveyHeader';
 import { TextField, Input, HelperText } from '../../material-components';
 import VisuallyHidden from '../VisuallyHidden';
-
-const MAXIMUM_CHARACTER_LIMIT = 100;
+import { SURVEY_INPUT_MAX_CHARACTER_LIMIT } from './constants';
 
 const SurveyQuestionMultiSelect = ( {
 	question,
@@ -92,7 +91,7 @@ const SurveyQuestionMultiSelect = ( {
 				...selectedValues[ answer_ordinal ],
 				answer_text: event.target.value?.slice(
 					0,
-					MAXIMUM_CHARACTER_LIMIT
+					SURVEY_INPUT_MAX_CHARACTER_LIMIT
 				),
 			},
 		};
@@ -122,9 +121,8 @@ const SurveyQuestionMultiSelect = ( {
 			// eslint-disable-next-line camelcase
 			if ( write_in ) {
 				// eslint-disable-next-line camelcase
-				const { selected, answer_text } = selectedValues[
-					answer_ordinal
-				];
+				const { selected, answer_text } =
+					selectedValues[ answer_ordinal ];
 				if ( selected && answer_text.length === 0 ) {
 					return true;
 				}

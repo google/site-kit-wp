@@ -26,6 +26,7 @@ import {
 	provideModules,
 } from '../../../tests/js/utils';
 import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../util/errors';
+import { MODULES_ANALYTICS } from '../modules/analytics/datastore/constants';
 
 const Template = ( args ) => (
 	<ReportError moduleSlug="test-module" { ...args } />
@@ -62,6 +63,143 @@ ReportErrorWithInsufficientPermissions.args = {
 			reason: ERROR_REASON_INSUFFICIENT_PERMISSIONS,
 		},
 	},
+};
+
+export const ReportErrorWithRetryButton = Template.bind( {} );
+ReportErrorWithRetryButton.storyName = 'ReportError with Retry Button';
+ReportErrorWithRetryButton.args = {
+	error: {
+		code: 'test-error-code',
+		message: 'Test error message',
+		data: {
+			reason: 'Data Error',
+		},
+		selectorData: {
+			args: [
+				{
+					dimensions: [ 'ga:date' ],
+					metrics: [ { expression: 'ga:users' } ],
+					startDate: '2020-08-11',
+					endDate: '2020-09-07',
+				},
+			],
+			name: 'getReport',
+			storeName: MODULES_ANALYTICS,
+		},
+	},
+};
+
+export const MultipleReportErrorsWithRetryButton = Template.bind( {} );
+MultipleReportErrorsWithRetryButton.storyName =
+	'Multiple Report Errors with Retry Button';
+MultipleReportErrorsWithRetryButton.args = {
+	error: [
+		{
+			code: 'test-error-code',
+			message: 'Test error message one',
+			data: {
+				reason: 'Data Error',
+			},
+			selectorData: {
+				args: [
+					{
+						dimensions: [ 'ga:date' ],
+						metrics: [ { expression: 'ga:users' } ],
+						startDate: '2020-08-11',
+						endDate: '2020-09-07',
+					},
+				],
+				name: 'getReport',
+				storeName: MODULES_ANALYTICS,
+			},
+		},
+		{
+			code: 'test-error-code',
+			message: 'Test error message two',
+			data: {
+				reason: 'Data Error',
+			},
+			selectorData: {
+				args: [
+					{
+						dimensions: [ 'ga:date' ],
+						metrics: [ { expression: 'ga:users' } ],
+						startDate: '2020-08-11',
+						endDate: '2020-09-07',
+					},
+				],
+				name: 'getReport',
+				storeName: MODULES_ANALYTICS,
+			},
+		},
+		{
+			code: 'test-error-code',
+			message: 'Test error message three',
+			data: {
+				reason: 'Data Error',
+			},
+			selectorData: {
+				args: [
+					{
+						dimensions: [ 'ga:date' ],
+						metrics: [ { expression: 'ga:users' } ],
+						startDate: '2020-08-11',
+						endDate: '2020-09-07',
+					},
+				],
+				name: 'getReport',
+				storeName: MODULES_ANALYTICS,
+			},
+		},
+	],
+};
+
+export const MultipleUniqueReportErrorsWithRetryButtonWith = Template.bind(
+	{}
+);
+MultipleUniqueReportErrorsWithRetryButtonWith.storyName =
+	'Multiple Unique Report Errors with Retry Button';
+MultipleUniqueReportErrorsWithRetryButtonWith.args = {
+	error: [
+		{
+			code: 'test-error-code',
+			message: 'Test error message',
+			data: {
+				reason: 'Data Error',
+			},
+			selectorData: {
+				args: [
+					{
+						dimensions: [ 'ga:date' ],
+						metrics: [ { expression: 'ga:users' } ],
+						startDate: '2020-08-11',
+						endDate: '2020-09-07',
+					},
+				],
+				name: 'getReport',
+				storeName: MODULES_ANALYTICS,
+			},
+		},
+		{
+			code: 'test-error-code',
+			message: 'Test error message',
+			data: {
+				reason: 'Data Error',
+			},
+			selectorData: {
+				args: [
+					{
+						dimensions: [ 'ga:date' ],
+						metrics: [ { expression: 'ga:users' } ],
+						startDate: '2020-08-11',
+						endDate: '2020-09-07',
+					},
+				],
+				name: 'getReport',
+				storeName: MODULES_ANALYTICS,
+			},
+		},
+	],
 };
 
 export default {

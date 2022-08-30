@@ -19,7 +19,6 @@
 .googlesitekit-publisher-win {
 
 	@include googlesitekit-inner-padding;
-	@include shadow;
 	background: $c-base;
 	opacity: 1;
 	position: relative;
@@ -61,7 +60,8 @@
 			margin-left: $grid-gap-phone / 2;
 		}
 
-		& + .googlesitekit-cta-link {
+		& + .googlesitekit-cta-link,
+		& + .googlesitekit-publisher-win__actions {
 			margin-top: $grid-gap-phone;
 
 			@media (min-width: $bp-desktop) {
@@ -131,7 +131,8 @@
 	}
 
 	.googlesitekit-publisher-win__detect {
-		font-size: 0.75rem;
+		font-size: $fs-body-sm;
+		letter-spacing: $ls-xs;
 
 		@media (min-width: $bp-desktop) {
 			margin-left: 48px;
@@ -141,7 +142,8 @@
 	.googlesitekit-publisher-win__link {
 
 		a {
-			font-size: 1.1rem;
+			font-size: $fs-body-lg;
+			letter-spacing: $ls-m;
 		}
 	}
 
@@ -160,7 +162,7 @@
 		}
 	}
 
-	.mdc-button + .googlesitekit-cta-link {
+	.spinner + .googlesitekit-cta-link {
 		margin-left: $grid-gap-desktop;
 	}
 
@@ -173,7 +175,8 @@
 
 	.googlesitekit-publisher-win__module-name {
 		display: inline-block;
-		font-size: 0.875rem;
+		font-size: $fs-body-sm;
+		letter-spacing: $ls-xs;
 		line-height: 1;
 		margin-bottom: -1px;
 		vertical-align: bottom;
@@ -185,10 +188,6 @@
 			max-height: 85px;
 			max-width: 85px;
 		}
-	}
-
-	.googlesitekit-subheader & {
-		box-shadow: none;
 	}
 
 	&.googlesitekit-publisher-win--no-bottom-padding {
@@ -208,5 +207,9 @@
 		svg {
 			display: block;
 		}
+	}
+
+	&.googlesitekit-publisher-win--rounded {
+		border-radius: $br-md;
 	}
 }

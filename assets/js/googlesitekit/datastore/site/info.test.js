@@ -42,6 +42,13 @@ describe( 'core/site site info', () => {
 		siteName: 'Something Test',
 		timezone: 'America/Denver',
 		usingProxy: true,
+		widgetsAdminURL: 'http://example.com/wp-admin/widgets.php',
+		postTypes: [
+			{
+				slug: 'post',
+				label: 'Post',
+			},
+		],
 	};
 	const entityInfoVar = '_googlesitekitEntityData';
 	const entityInfo = {
@@ -246,9 +253,13 @@ describe( 'core/site site info', () => {
 			[ 'getProxySetupURL', 'proxySetupURL' ],
 			[ 'getProxyPermissionsURL', 'proxyPermissionsURL' ],
 			[ 'getSiteName', 'siteName' ],
+			[ 'getSetupErrorCode', 'setupErrorCode' ],
 			[ 'getSetupErrorMessage', 'setupErrorMessage' ],
 			[ 'getSetupErrorRedoURL', 'setupErrorRedoURL' ],
+			[ 'getProxySupportLinkURL', 'proxySupportLinkURL' ],
+			[ 'getWidgetsAdminURL', 'widgetsAdminURL' ],
 			[ 'getTimezone', 'timezone' ],
+			[ 'getPostTypes', 'postTypes' ],
 			[ 'isUsingProxy', 'usingProxy' ],
 			[ 'isAMP', 'ampMode' ],
 			[ 'isPrimaryAMP', 'ampMode' ],

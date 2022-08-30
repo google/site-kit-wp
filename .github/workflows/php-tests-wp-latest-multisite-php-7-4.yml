@@ -69,6 +69,6 @@ jobs:
           extensions: mysqli, runkit7, uopz
           php-version: "7.4"
       - name: Set up PHP test data
-        run: tests/bin/install-wp-tests.sh ${MYSQL_DATABASE} ${MYSQL_USER} ${MYSQL_PASSWORD} ${DB_HOST}:${DB_PORT} ${WP_VERSION}
+        run: tests/phpunit/bin/install-wp-tests.sh ${MYSQL_DATABASE} ${MYSQL_USER} ${MYSQL_PASSWORD} ${DB_HOST}:${DB_PORT} ${WP_VERSION}
       - name: Run Unit Tests
         run: composer test:multisite -- --verbose

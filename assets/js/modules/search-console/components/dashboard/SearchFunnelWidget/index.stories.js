@@ -24,6 +24,7 @@ import {
 	provideModuleRegistrations,
 	provideModules,
 	provideSiteInfo,
+	provideUserAuthentication,
 	provideUserCapabilities,
 	WithTestRegistry,
 } from '../../../../../../../tests/js/utils';
@@ -120,9 +121,8 @@ const analyticsArgs = [
 	},
 ];
 
-const WidgetWithComponentProps = withWidgetComponentProps( 'widget-slug' )(
-	SearchFunnelWidget
-);
+const WidgetWithComponentProps =
+	withWidgetComponentProps( 'widget-slug' )( SearchFunnelWidget );
 
 const Template = ( { setupRegistry = () => {}, viewContext, ...args } ) => (
 	<WithRegistrySetup func={ setupRegistry }>
@@ -258,6 +258,7 @@ export const ReadyWithCreateGoalCTA = Template.bind( {} );
 ReadyWithCreateGoalCTA.storyName = 'Ready with Create Goal CTA';
 ReadyWithCreateGoalCTA.args = {
 	setupRegistry: ( registry ) => {
+		provideUserAuthentication( registry );
 		provideSearchConsoleMockReport( registry, searchConsoleArgs );
 		for ( const options of analyticsArgs ) {
 			provideAnalyticsMockReport( registry, options );

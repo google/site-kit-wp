@@ -100,6 +100,29 @@ const normalizeModules = memize( ( serverDefinitions, clientDefinitions ) => {
 		}, {} );
 } );
 
+/**
+ * Gets a memoized object mapping recoverable module slugs to their corresponding
+ * module objects.
+ *
+ * @since 1.78.0
+ *
+ * @param {Object} modules            Module definitions.
+ * @param {Array}  recoverableModules Array of recoverable module slugs.
+ * @return {Object} Map of recoverable module slugs to their corresponding module objects.
+ */
+const calculateRecoverableModules = memize( ( modules, recoverableModules ) =>
+	Object.values( modules ).reduce( ( recoverable, module ) => {
+		if ( recoverableModules.includes( module.slug ) ) {
+			return {
+				...recoverable,
+				[ module.slug ]: module,
+			};
+		}
+
+		return recoverable;
+	}, {} )
+);
+
 const fetchGetModulesStore = createFetchStore( {
 	baseName: 'getModules',
 	controlCallback: () => {
@@ -265,13 +288,11 @@ const baseActions = {
 			invariant( active !== undefined, 'active is required.' );
 		},
 		function* ( slug, active ) {
-			const {
-				response,
-				error,
-			} = yield fetchSetModuleActivationStore.actions.fetchSetModuleActivation(
-				slug,
-				active
-			);
+			const { response, error } =
+				yield fetchSetModuleActivationStore.actions.fetchSetModuleActivation(
+					slug,
+					active
+				);
 			if ( response?.success === true ) {
 				// Fetch (or re-fetch) all modules, with their updated status.
 				// TODO: This is temporary disabled until Site Kit no longer relies
@@ -448,26 +469,22 @@ const baseActions = {
 		function* ( slug ) {
 			const { dispatch, select } = yield Data.commonActions.getRegistry();
 
-			const {
-				response,
-				error,
-			} = yield fetchRecoverModuleStore.actions.fetchRecoverModule(
-				slug
-			);
-
-			if ( response?.ownerID ) {
-				const storeName = select( CORE_MODULES ).getModuleStoreName(
+			const { response, error } =
+				yield fetchRecoverModuleStore.actions.fetchRecoverModule(
 					slug
 				);
+
+			if ( response?.ownerID ) {
+				const storeName =
+					select( CORE_MODULES ).getModuleStoreName( slug );
 				// Reload the module's settings from the server.
 				yield dispatch( storeName ).fetchGetSettings();
 
 				// Reload all modules from the server.
 				yield fetchGetModulesStore.actions.fetchGetModules();
 
-				const recoverableModules = select(
-					CORE_MODULES
-				).getRecoverableModules();
+				const recoverableModules =
+					select( CORE_MODULES ).getRecoverableModules();
 
 				if ( recoverableModules?.[ slug ] ) {
 					// Remove the module from the list of recoverable modules in state.
@@ -500,7 +517,7 @@ const baseActions = {
 	 *
 	 * Recovers multiple modules (based on the slugs provided).
 	 *
-	 * @since n.e.x.t
+	 * @since 1.77.0
 	 *
 	 * @param {Array.<string>} slugs Array of slugs of the modules to recover.
 	 * @return {Object} Object with `{response, error}`.
@@ -517,17 +534,14 @@ const baseActions = {
 			const errors = [];
 
 			for ( const slug of slugs ) {
-				const {
-					response,
-					error,
-				} = yield fetchRecoverModuleStore.actions.fetchRecoverModule(
-					slug
-				);
-
-				if ( response?.ownerID ) {
-					const storeName = select( CORE_MODULES ).getModuleStoreName(
+				const { response, error } =
+					yield fetchRecoverModuleStore.actions.fetchRecoverModule(
 						slug
 					);
+
+				if ( response?.ownerID ) {
+					const storeName =
+						select( CORE_MODULES ).getModuleStoreName( slug );
 					// Reload the module's settings from the server.
 					yield dispatch( storeName ).fetchGetSettings();
 
@@ -541,9 +555,11 @@ const baseActions = {
 				// Reload all modules from the server.
 				yield fetchGetModulesStore.actions.fetchGetModules();
 
-				const recoverableModules = select(
-					CORE_MODULES
-				).getRecoverableModules();
+				const recoverableModules =
+					select( CORE_MODULES ).getRecoverableModules();
+
+				// Refresh user capabilities from the server.
+				yield dispatch( CORE_USER ).refreshCapabilities();
 
 				if ( recoverableModules ) {
 					// Remove the recovered modules from the list of recoverable modules in state.
@@ -587,7 +603,7 @@ const baseActions = {
 	 * from a global variable (`_googlesitekitDashboardSharingData`), set by PHP
 	 * in the `before_print` callback for `googlesitekit-datastore-site`.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.77.0
 	 * @private
 	 *
 	 * @param {Object} sharedOwnershipModules Shared ownership modules, usually supplied via a global variable from PHP.
@@ -607,26 +623,32 @@ const baseActions = {
 
 export const baseControls = {
 	[ REFETCH_AUTHENTICATION ]: createRegistryControl(
-		( { dispatch } ) => () => {
-			return dispatch( CORE_USER ).fetchGetAuthentication();
-		}
+		( { dispatch } ) =>
+			() => {
+				return dispatch( CORE_USER ).fetchGetAuthentication();
+			}
 	),
 	[ SELECT_MODULE_REAUTH_URL ]: createRegistryControl(
-		( { select } ) => ( { payload } ) => {
-			const { slug } = payload;
-			const storeName = select( CORE_MODULES ).getModuleStoreName( slug );
+		( { select } ) =>
+			( { payload } ) => {
+				const { slug } = payload;
+				const storeName =
+					select( CORE_MODULES ).getModuleStoreName( slug );
 
-			// If a storeName wasn't specified on registerModule we assume there is no store for this module
-			if ( ! storeName ) {
-				return;
-			}
+				// If a storeName wasn't specified on registerModule we assume there is no store for this module
+				if ( ! storeName ) {
+					return;
+				}
 
-			const getAdminReauthURL = select( storeName )?.getAdminReauthURL;
-			if ( getAdminReauthURL ) {
-				return getAdminReauthURL();
+				const getAdminReauthURL =
+					select( storeName )?.getAdminReauthURL;
+				if ( getAdminReauthURL ) {
+					return getAdminReauthURL();
+				}
+				return select( CORE_SITE ).getAdminURL(
+					'googlesitekit-dashboard'
+				);
 			}
-			return select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' );
-		}
 	),
 };
 
@@ -788,9 +810,8 @@ const baseResolvers = {
 			return;
 		}
 
-		const {
-			recoverableModules,
-		} = global._googlesitekitDashboardSharingData;
+		const { recoverableModules } =
+			global._googlesitekitDashboardSharingData;
 		yield baseActions.receiveRecoverableModules( recoverableModules );
 	},
 
@@ -808,9 +829,8 @@ const baseResolvers = {
 			return;
 		}
 
-		const {
-			sharedOwnershipModules,
-		} = global._googlesitekitDashboardSharingData;
+		const { sharedOwnershipModules } =
+			global._googlesitekitDashboardSharingData;
 		yield baseActions.receiveSharedOwnershipModules(
 			sharedOwnershipModules
 		);
@@ -1244,19 +1264,7 @@ const baseSelectors = {
 			return undefined;
 		}
 
-		return Object.values( modules ).reduce(
-			( recoverableModules, module ) => {
-				if ( state.recoverableModules.includes( module.slug ) ) {
-					return {
-						...recoverableModules,
-						[ module.slug ]: module,
-					};
-				}
-
-				return recoverableModules;
-			},
-			{}
-		);
+		return calculateRecoverableModules( modules, state.recoverableModules );
 	} ),
 
 	/**
@@ -1264,7 +1272,7 @@ const baseSelectors = {
 	 *
 	 * Returns an Object/map of objects, keyed by slug as same as `getModules`.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.77.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(Object|undefined)} Shared ownership modules available on the site; `undefined` if not loaded.

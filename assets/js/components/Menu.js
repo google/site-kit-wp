@@ -75,6 +75,7 @@ const Menu = forwardRef(
 
 			const menuComponent = new MDCMenu( menuRef.current );
 			menuComponent.listen( 'MDCMenu:selected', handleMenuSelected );
+			menuComponent.quickOpen = true;
 
 			setMenu( menuComponent );
 

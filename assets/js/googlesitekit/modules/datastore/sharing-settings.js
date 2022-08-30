@@ -41,6 +41,7 @@ const RECEIVE_GET_SHARING_SETTINGS = 'RECEIVE_GET_SHARING_SETTINGS';
 const RECEIVE_SHAREABLE_ROLES = 'RECEIVE_SHAREABLE_ROLES';
 const START_SUBMIT_SHARING_CHANGES = 'START_SUBMIT_SHARING_CHANGES';
 const FINISH_SUBMIT_SHARING_CHANGES = 'FINISH_SUBMIT_SHARING_CHANGES';
+const ROLLBACK_SHARING_SETTINGS = 'ROLLBACK_SHARING_SETTINGS';
 
 // Invariant error messages.
 export const INVARIANT_DOING_SUBMIT_SHARING_CHANGES =
@@ -84,7 +85,7 @@ const baseActions = {
 	/**
 	 * Sets the sharing settings management of a given module.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.77.0
 	 *
 	 * @param {string} moduleSlug Module slug.
 	 * @param {string} management New management for a module, one of all_admins | owner.
@@ -111,7 +112,7 @@ const baseActions = {
 	/**
 	 * Sets the sharing settings shared roles of a given module.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.77.0
 	 *
 	 * @param {string}   moduleSlug Module slug.
 	 * @param {string[]} roles      List of roles the module is shared with.
@@ -139,7 +140,7 @@ const baseActions = {
 	 * Save sharingSettings for dashboard sharing.
 	 * Update ownerID from the response for the modules in the sharingSettings state.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.77.0
 	 *
 	 * @return {Object} Object with `{response, error}`.
 	 */
@@ -155,12 +156,10 @@ const baseActions = {
 			.select( CORE_MODULES )
 			.getSharingSettings();
 
-		const {
-			response,
-			error,
-		} = yield fetchSaveSharingSettingsStore.actions.fetchSaveSharingSettings(
-			sharingSettings
-		);
+		const { response, error } =
+			yield fetchSaveSharingSettingsStore.actions.fetchSaveSharingSettings(
+				sharingSettings
+			);
 
 		// Update module owner IDs in the sharing settings modules.
 		if ( ! error && Object.keys( response.newOwnerIDs ).length ) {
@@ -191,7 +190,7 @@ const baseActions = {
 	 * from a global variable (`_googlesitekitDashboardSharingData`), set by PHP
 	 * in the `before_print` callback for `googlesitekit-datastore-site`.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.77.0
 	 *
 	 * @param {Object} sharingSettings Sharing settings for modules with `management` and `sharedRoles` properties.
 	 * @return {Object} Action for RECEIVE_GET_SHARING_SETTINGS.
@@ -212,7 +211,7 @@ const baseActions = {
 	 * from a global variable (`_googlesitekitDashboardSharingData`), set by PHP
 	 * in the `before_print` callback for `googlesitekit-datastore-site`.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.77.0
 	 *
 	 * @param {Object} shareableRoles Shareable Roles for modules with `management` and `sharedRoles` properties.
 	 * @return {Object} Action for RECEIVE_SHAREABLE_ROLES.
@@ -222,6 +221,20 @@ const baseActions = {
 		return {
 			payload: { shareableRoles },
 			type: RECEIVE_SHAREABLE_ROLES,
+		};
+	},
+
+	/**
+	 * Restores the sharing settings to the currently saved values.
+	 *
+	 * @since 1.78.0
+	 *
+	 * @return {Object} Action for ROLLBACK_SHARING_SETTINGS.
+	 */
+	rollbackSharingSettings() {
+		return {
+			payload: {},
+			type: ROLLBACK_SHARING_SETTINGS,
 		};
 	},
 };
@@ -291,6 +304,13 @@ const baseReducer = ( state, { type, payload } ) => {
 			};
 		}
 
+		case ROLLBACK_SHARING_SETTINGS: {
+			return {
+				...state,
+				sharingSettings: state.savedSharingSettings,
+			};
+		}
+
 		default: {
 			return state;
 		}
@@ -337,10 +357,8 @@ const baseResolvers = {
 
 function validateCanSubmitSharingChanges( select ) {
 	const strictSelect = createStrictSelect( select );
-	const {
-		isDoingSubmitSharingChanges,
-		haveSharingSettingsChanged,
-	} = strictSelect( CORE_MODULES );
+	const { isDoingSubmitSharingChanges, haveSharingSettingsChanged } =
+		strictSelect( CORE_MODULES );
 
 	invariant(
 		! isDoingSubmitSharingChanges(),
@@ -364,7 +382,7 @@ const baseSelectors = {
 	/**
 	 * Gets the current dashboard sharing settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.77.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(Object|undefined)} Sharing Settings object. Returns undefined if it is not loaded yet.
@@ -377,7 +395,7 @@ const baseSelectors = {
 	/**
 	 * Gets the current dashboard shareable roles.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.77.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(Object|undefined)} Shareable Roles object. Returns undefined if it is not loaded yet.
@@ -392,7 +410,7 @@ const baseSelectors = {
 	 *
 	 * Returns the module's sharing management string.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.77.0
 	 *
 	 * @param {Object} state      Data store's state.
 	 * @param {string} moduleSlug Module slug.
@@ -416,7 +434,7 @@ const baseSelectors = {
 	 *
 	 * Returns the module's shared roles list.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.77.0
 	 *
 	 * @param {Object} state      Data store's state.
 	 * @param {string} moduleSlug Module slug.
@@ -438,7 +456,7 @@ const baseSelectors = {
 	/**
 	 * Indicates whether the current sharing settings have changed from what is saved.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.77.0
 	 *
 	 * @param {Object}     state Data store's state.
 	 * @param {Array|null} keys  Sharing Settings keys to check; if not provided, all sharing settings are checked.
@@ -458,9 +476,101 @@ const baseSelectors = {
 	},
 
 	/**
+	 * Compares current sharing settings management OR sharedRoles have changed from what is saved.
+	 *
+	 * @since 1.78.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @param {string} key   Sharing Settings property key to check; one of `management` | `sharedRoles`.
+	 * @return {boolean|undefined} True if the sharing settings have changed, false otherwise, `undefined` if not yet loaded.
+	 */
+	haveSharingSettingsExpanded( state, key ) {
+		const validKeys = [ 'management', 'sharedRoles' ];
+		invariant(
+			validKeys.includes( key ),
+			`key must be one of: ${ validKeys.join( ', ' ) }.`
+		);
+		const { sharingSettings, savedSharingSettings } = state;
+
+		if (
+			sharingSettings === undefined ||
+			savedSharingSettings === undefined
+		) {
+			return undefined;
+		}
+
+		// Return `true` if the management setting for any module has been
+		// changed from `owner` to `all_admins`.
+		if ( key === 'management' ) {
+			return Object.keys( sharingSettings ).some( ( moduleSlug ) => {
+				const hasInitialManagementChanged =
+					savedSharingSettings[ moduleSlug ]?.management !==
+					sharingSettings[ moduleSlug ]?.management;
+
+				return (
+					hasInitialManagementChanged &&
+					sharingSettings[ moduleSlug ]?.management === 'all_admins'
+				);
+			} );
+		}
+
+		// Return `true` if sharing settings for any module contain roles
+		// that haven't been previously selected.
+		if ( key === 'sharedRoles' ) {
+			return Object.keys( sharingSettings ).some( ( moduleSlug ) => {
+				return (
+					sharingSettings[ moduleSlug ]?.sharedRoles?.filter(
+						( currentRole ) =>
+							! savedSharingSettings[
+								moduleSlug
+							]?.sharedRoles?.includes( currentRole )
+					).length > 0
+				);
+			} );
+		}
+
+		return false;
+	},
+
+	/**
+	 * Indicates whether the current sharing settings have changed from what is saved for the given module.
+	 *
+	 * @since 1.80.0
+	 *
+	 * @param {Object}     state      Data store's state.
+	 * @param {string}     moduleSlug Module slug.
+	 * @param {Array|null} keys       Sharing Settings keys to check; if not provided, all sharing settings are checked.
+	 * @return {boolean|undefined} True if the given module's sharing settings have changed; false otherwise; `undefined` if not yet loaded.
+	 */
+	haveModuleSharingSettingsChanged( state, moduleSlug, keys = null ) {
+		invariant( moduleSlug, 'moduleSlug is required.' );
+
+		const { sharingSettings, savedSharingSettings } = state;
+
+		if (
+			sharingSettings === undefined ||
+			savedSharingSettings === undefined
+		) {
+			return undefined;
+		}
+
+		if ( keys ) {
+			return ! isEqual(
+				pick( sharingSettings[ moduleSlug ], keys ),
+				pick( savedSharingSettings[ moduleSlug ], keys )
+			);
+		}
+
+		return ! isEqual(
+			sharingSettings[ moduleSlug ],
+			savedSharingSettings[ moduleSlug ]
+		);
+	},
+
+	/**
 	 * Checks whether sharing settings changes are currently being submitted.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.77.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {boolean} TRUE if submitting, otherwise FALSE.

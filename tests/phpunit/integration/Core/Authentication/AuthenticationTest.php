@@ -126,6 +126,7 @@ class AuthenticationTest extends TestCase {
 				'initialVersion',
 				'userInputState',
 				'verified',
+				'hasMultipleAdmins',
 			),
 			array_keys( $user_data )
 		);
@@ -142,6 +143,7 @@ class AuthenticationTest extends TestCase {
 				'userInputState',
 				'verified',
 				'user',
+				'hasMultipleAdmins',
 			),
 			array_keys( $user_data )
 		);
@@ -831,7 +833,7 @@ class AuthenticationTest extends TestCase {
 			do_action( $action );
 			$this->fail( 'Expected WPDieException to be thrown' );
 		} catch ( Exception $e ) {
-			$this->assertEquals( 'The link you followed has expired.</p><p><a href="http://example.org/wp-admin/admin.php?page=googlesitekit-splash">Please try again.</a>', $e->getMessage() );
+			$this->assertEquals( 'The link you followed has expired.</p><p><a href="http://example.org/wp-admin/admin.php?page=googlesitekit-splash">Please try again</a>. <a href="https://sitekit.withgoogle.com/support?error_id=nonce_expired" target="_blank">Get help</a>.', $e->getMessage() );
 		}
 
 		$_GET['nonce'] = wp_create_nonce( Google_Proxy::ACTION_PERMISSIONS );
@@ -922,13 +924,13 @@ class AuthenticationTest extends TestCase {
 
 		// Test experimental features are checked solely within the database via options.
 		$this->assertFalse( apply_filters( 'googlesitekit_is_feature_enabled', false, 'ideaHubModule' ) );
-		$this->assertFalse( apply_filters( 'googlesitekit_is_feature_enabled', false, 'swgModule' ) );
+		$this->assertFalse( apply_filters( 'googlesitekit_is_feature_enabled', false, 'twgModule' ) );
 		// Update the active modules and test if they are checked.
 		update_option( 'googlesitekit_active_modules', array( 'idea-hub' ) );
 		$this->assertTrue( apply_filters( 'googlesitekit_is_feature_enabled', false, 'ideaHubModule' ) );
-		$this->assertFalse( apply_filters( 'googlesitekit_is_feature_enabled', false, 'swgModule' ) );
-		update_option( 'googlesitekit_active_modules', array( 'idea-hub', 'subscribe-with-google' ) );
-		$this->assertTrue( apply_filters( 'googlesitekit_is_feature_enabled', false, 'swgModule' ) );
+		$this->assertFalse( apply_filters( 'googlesitekit_is_feature_enabled', false, 'twgModule' ) );
+		update_option( 'googlesitekit_active_modules', array( 'idea-hub', 'thank-with-google' ) );
+		$this->assertTrue( apply_filters( 'googlesitekit_is_feature_enabled', false, 'twgModule' ) );
 
 		// Till this point, no requests should have been made to the Google Proxy server.
 		$this->assertEmpty( $proxy_server_requests );
@@ -1022,7 +1024,8 @@ class AuthenticationTest extends TestCase {
 
 	public function test_invalid_nonce_error_non_sitekit_action() {
 		try {
-			Authentication::invalid_nonce_error( 'log-out' );
+			$authentication = new Authentication( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+			$authentication->invalid_nonce_error( 'log-out' );
 		} catch ( WPDieException $exception ) {
 			$this->assertStringStartsWith( 'You are attempting to log out of Test Blog', $exception->getMessage() );
 			return;
@@ -1032,9 +1035,10 @@ class AuthenticationTest extends TestCase {
 
 	public function test_invalid_nonce_error_sitekit_action() {
 		try {
-			Authentication::invalid_nonce_error( 'googlesitekit_proxy_foo_action' );
+			$authentication = new Authentication( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+			$authentication->invalid_nonce_error( 'googlesitekit_proxy_foo_action' );
 		} catch ( WPDieException $exception ) {
-			$this->assertEquals( 'The link you followed has expired.</p><p><a href="http://example.org/wp-admin/admin.php?page=googlesitekit-splash">Please try again.</a>', $exception->getMessage() );
+			$this->assertEquals( 'The link you followed has expired.</p><p><a href="http://example.org/wp-admin/admin.php?page=googlesitekit-splash">Please try again</a>. <a href="https://sitekit.withgoogle.com/support?error_id=nonce_expired" target="_blank">Get help</a>.', $exception->getMessage() );
 			return;
 		}
 		$this->fail( 'Expected WPDieException!' );

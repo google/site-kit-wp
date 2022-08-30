@@ -21,6 +21,7 @@
  */
 import compareVersions from 'compare-versions';
 import invariant from 'invariant';
+import isPlainObject from 'lodash/isPlainObject';
 
 /**
  * Internal dependencies
@@ -42,9 +43,11 @@ export const FEATURE_TOUR_LAST_DISMISSED_AT = 'feature_tour_last_dismissed_at';
 
 // Actions.
 const DISMISS_TOUR = 'DISMISS_TOUR';
+const RECEIVE_CURRENT_TOUR = 'RECEIVE_CURRENT_TOUR';
 const RECEIVE_READY_TOURS = 'RECEIVE_READY_TOURS';
 const RECEIVE_TOURS = 'RECEIVE_TOURS';
 const CHECK_TOUR_REQUIREMENTS = 'CHECK_TOUR_REQUIREMENTS';
+const CHECK_ON_DEMAND_TOUR_REQUIREMENTS = 'CHECK_ON_DEMAND_TOUR_REQUIREMENTS';
 const RECEIVE_LAST_DISMISSED_AT = 'RECEIVE_LAST_DISMISSED_AT';
 
 // Controls.
@@ -80,8 +83,8 @@ const baseInitialState = {
 	dismissedTourSlugs: undefined,
 	// Array of tour objects.
 	tours: featureTours,
-	// Map of [viewContext]: ordered array of tour objects.
-	viewTours: {},
+	// Current active tour
+	currentTour: null,
 };
 
 const baseActions = {
@@ -101,9 +104,8 @@ const baseActions = {
 			const { select } = yield getRegistry();
 
 			if ( select( CORE_USER ).isFetchingDismissTour( slug ) ) {
-				const response = select(
-					CORE_USER
-				).getDismissedFeatureTourSlugs();
+				const response =
+					select( CORE_USER ).getDismissedFeatureTourSlugs();
 				return { response, error: undefined };
 			}
 
@@ -120,6 +122,14 @@ const baseActions = {
 			return yield fetchDismissTourStore.actions.fetchDismissTour( slug );
 		}
 	),
+
+	receiveCurrentTour( tour ) {
+		invariant( isPlainObject( tour ), 'tour must be a plain object.' );
+		return {
+			payload: { tour },
+			type: RECEIVE_CURRENT_TOUR,
+		};
+	},
 
 	receiveFeatureToursForView( viewTours, { viewContext } = {} ) {
 		invariant( Array.isArray( viewTours ), 'viewTours must be an array.' );
@@ -163,46 +173,120 @@ const baseActions = {
 			};
 		}
 	),
+
+	*triggerTour( tour ) {
+		const { select } = yield getRegistry();
+
+		if ( ! select( CORE_USER ).getCurrentTour() ) {
+			yield baseActions.receiveCurrentTour( tour );
+		}
+	},
+
+	*triggerOnDemandTour( tour ) {
+		const tourQualifies = yield {
+			payload: { tour },
+			type: CHECK_ON_DEMAND_TOUR_REQUIREMENTS,
+		};
+
+		if ( tourQualifies ) {
+			yield baseActions.triggerTour( tour );
+		}
+	},
+
+	*triggerTourForView( viewContext ) {
+		const { select, __experimentalResolveSelect } = yield getRegistry();
+
+		yield Data.commonActions.await(
+			__experimentalResolveSelect( CORE_USER ).getLastDismissedAt()
+		);
+
+		if ( select( CORE_USER ).areFeatureToursOnCooldown() ) {
+			return {};
+		}
+
+		const tours = select( CORE_USER ).getAllFeatureTours();
+
+		for ( const tour of tours ) {
+			const tourQualifies = yield {
+				payload: { tour, viewContext },
+				type: CHECK_TOUR_REQUIREMENTS,
+			};
+
+			if ( tourQualifies ) {
+				return yield baseActions.triggerTour( tour );
+			}
+		}
+	},
 };
 
 const baseControls = {
 	[ CHECK_TOUR_REQUIREMENTS ]: createRegistryControl(
-		( registry ) => async ( { payload } ) => {
-			const { tour, viewContext } = payload;
+		( registry ) =>
+			async ( { payload } ) => {
+				const { tour, viewContext } = payload;
 
-			// Check the view context.
-			if ( ! tour.contexts.includes( viewContext ) ) {
-				return false;
+				// Check the view context.
+				if ( ! tour.contexts.includes( viewContext ) ) {
+					return false;
+				}
+
+				// Only tours with a version after a user's initial Site Kit version should qualify.
+				const initialVersion = registry
+					.select( CORE_USER )
+					.getInitialSiteKitVersion();
+				if ( ! initialVersion ) {
+					return false;
+				} else if (
+					compareVersions.compare(
+						initialVersion,
+						tour.version,
+						'>='
+					)
+				) {
+					return false;
+				}
+
+				// Check if the tour has already been dismissed.
+				// Here we need to first await the underlying selector with the asynchronous resolver.
+				await registry
+					.__experimentalResolveSelect( CORE_USER )
+					.getDismissedFeatureTourSlugs();
+				if (
+					registry.select( CORE_USER ).isTourDismissed( tour.slug )
+				) {
+					return false;
+				}
+
+				// If the tour has additional requirements, check those as well.
+				if ( tour.checkRequirements ) {
+					return !! ( await tour.checkRequirements( registry ) );
+				}
+
+				return true;
 			}
+	),
+	[ CHECK_ON_DEMAND_TOUR_REQUIREMENTS ]: createRegistryControl(
+		( registry ) =>
+			async ( { payload } ) => {
+				const { tour } = payload;
+				// Check if the tour has already been dismissed.
+				// Here we need to first await the underlying selector with the asynchronous resolver.
+				await registry
+					.__experimentalResolveSelect( CORE_USER )
+					.getDismissedFeatureTourSlugs();
+				if (
+					registry.select( CORE_USER ).isTourDismissed( tour.slug )
+				) {
+					return false;
+				}
 
-			// Only tours with a version after a user's initial Site Kit version should qualify.
-			const initialVersion = registry
-				.select( CORE_USER )
-				.getInitialSiteKitVersion();
-			if ( ! initialVersion ) {
-				return false;
-			} else if (
-				compareVersions.compare( initialVersion, tour.version, '>=' )
-			) {
-				return false;
+				// If the tour has additional requirements, check those as well.
+				if ( tour.checkRequirements ) {
+					return !! ( await tour.checkRequirements( registry ) );
+				}
+
+				return true;
 			}
-
-			// Check if the tour has already been dismissed.
-			// Here we need to first await the underlying selector with the asynchronous resolver.
-			await registry
-				.__experimentalResolveSelect( CORE_USER )
-				.getDismissedFeatureTourSlugs();
-			if ( registry.select( CORE_USER ).isTourDismissed( tour.slug ) ) {
-				return false;
-			}
-
-			// If the tour has additional requirements, check those as well.
-			if ( tour.checkRequirements ) {
-				return !! ( await tour.checkRequirements( registry ) );
-			}
-
-			return true;
-		}
 	),
 	[ CACHE_LAST_DISMISSED_AT ]: async ( { payload } ) => {
 		const { timestamp } = payload;
@@ -223,7 +307,16 @@ const baseReducer = ( state, { type, payload } ) => {
 			}
 			return {
 				...state,
+				currentTour:
+					state.currentTour?.slug === slug ? null : state.currentTour,
 				dismissedTourSlugs: dismissedTourSlugs.concat( slug ),
+			};
+		}
+
+		case RECEIVE_CURRENT_TOUR: {
+			return {
+				...state,
+				currentTour: payload.tour,
 			};
 		}
 
@@ -268,24 +361,6 @@ const baseResolvers = {
 		}
 	},
 
-	*getFeatureToursForView( viewContext ) {
-		const registry = yield getRegistry();
-		const tours = registry.select( CORE_USER ).getAllFeatureTours();
-		const viewTours = [];
-
-		for ( const tour of tours ) {
-			const tourQualifies = yield {
-				payload: { tour, viewContext },
-				type: CHECK_TOUR_REQUIREMENTS,
-			};
-
-			if ( tourQualifies ) {
-				viewTours.push( tour );
-			}
-		}
-		yield actions.receiveFeatureToursForView( viewTours, { viewContext } );
-	},
-
 	*getLastDismissedAt() {
 		const { value: lastDismissedAt } = yield Data.commonActions.await(
 			getItem( FEATURE_TOUR_LAST_DISMISSED_AT )
@@ -296,6 +371,18 @@ const baseResolvers = {
 };
 
 const baseSelectors = {
+	/**
+	 * Gets the currently active tour object.
+	 *
+	 * @since 1.79.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(Object|null)} Active tour object.
+	 */
+	getCurrentTour( state ) {
+		return state.currentTour;
+	},
+
 	/**
 	 * Gets the list of dismissed tour slugs.
 	 *
@@ -309,20 +396,6 @@ const baseSelectors = {
 	 */
 	getDismissedFeatureTourSlugs( state ) {
 		return state.dismissedTourSlugs;
-	},
-
-	/**
-	 * Gets a list of tour objects that qualify for the given view context.
-	 *
-	 * @since 1.29.0
-	 *
-	 * @param {Object} state       Data store's state.
-	 * @param {string} viewContext View context.
-	 * @return {(Object[]|undefined)} Array of qualifying tour objects
-	 *                                `undefined` while readiness is being resolved.
-	 */
-	getFeatureToursForView( state, viewContext ) {
-		return state.viewTours[ viewContext ];
 	},
 
 	/**
@@ -350,9 +423,8 @@ const baseSelectors = {
 	 *                               `false` if not dismissed.
 	 */
 	isTourDismissed: createRegistrySelector( ( select ) => ( state, slug ) => {
-		const dismissedTourSlugs = select(
-			CORE_USER
-		).getDismissedFeatureTourSlugs();
+		const dismissedTourSlugs =
+			select( CORE_USER ).getDismissedFeatureTourSlugs();
 
 		if ( undefined === dismissedTourSlugs ) {
 			return undefined;

@@ -110,9 +110,8 @@ function DashboardIdeasWidget( props ) {
 		select( CORE_SITE ).isUsingProxy()
 	);
 
-	const [ queryParamRoute, setQueryParamRoute ] = useQueryArg(
-		'idea-hub-tab'
-	);
+	const [ queryParamRoute, setQueryParamRoute ] =
+		useQueryArg( 'idea-hub-tab' );
 
 	const [ activeTabIndex, setActiveTabIndex ] = useState(
 		DashboardIdeasWidget.tabToIndex[ queryParamRoute ] ||
@@ -260,7 +259,8 @@ function DashboardIdeasWidget( props ) {
 
 	// Any time the pagination value changes, scroll to the top of the container.
 	useUpdateEffect( () => {
-		const tabBarRectangle = tabBarHeaderRef?.current?.getBoundingClientRect();
+		const tabBarRectangle =
+			tabBarHeaderRef?.current?.getBoundingClientRect();
 
 		if ( ! tabBarRectangle ) {
 			return;

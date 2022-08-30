@@ -79,9 +79,8 @@ const loadIdeaHubNotices = async () => {
 
 		// We haven't shown any notice for this post before, so let's check for
 		// Idea Hub postmeta.
-		const postMeta = select( 'core/editor' ).getEditedPostAttribute(
-			'meta'
-		);
+		const postMeta =
+			select( 'core/editor' ).getEditedPostAttribute( 'meta' );
 
 		if (
 			// eslint-disable-next-line camelcase

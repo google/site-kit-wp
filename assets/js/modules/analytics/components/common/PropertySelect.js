@@ -117,30 +117,32 @@ export default function PropertySelect( { hasModuleAccess } ) {
 					id: PROPERTY_CREATE,
 					name: __( 'Set up a new property', 'google-site-kit' ),
 				} )
-				.map( (
-					// eslint-disable-next-line sitekit/acronym-case
-					{ id, name, internalWebPropertyId },
-					index
-				) => (
-					<Option
-						key={ index }
-						value={ id }
-						data-internal-id={ internalWebPropertyId } // eslint-disable-line sitekit/acronym-case
-					>
-						{ internalWebPropertyId // eslint-disable-line sitekit/acronym-case
-							? sprintf(
-									/* translators: %1$s: property name, %2$s: property ID */
-									_x(
-										'%1$s (%2$s)',
-										'Analytics property name and ID',
-										'google-site-kit'
-									),
-									name,
-									id
-							  )
-							: name }
-					</Option>
-				) ) }
+				.map(
+					(
+						// eslint-disable-next-line sitekit/acronym-case
+						{ id, name, internalWebPropertyId },
+						index
+					) => (
+						<Option
+							key={ index }
+							value={ id }
+							data-internal-id={ internalWebPropertyId } // eslint-disable-line sitekit/acronym-case
+						>
+							{ internalWebPropertyId // eslint-disable-line sitekit/acronym-case
+								? sprintf(
+										/* translators: %1$s: property name, %2$s: property ID */
+										_x(
+											'%1$s (%2$s)',
+											'Analytics property name and ID',
+											'google-site-kit'
+										),
+										name,
+										id
+								  )
+								: name }
+						</Option>
+					)
+				) }
 		</Select>
 	);
 }

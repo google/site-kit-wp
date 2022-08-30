@@ -22,6 +22,7 @@ use Google\Site_Kit\Core\Storage\Transients;
 use Google\Site_Kit\Core\Admin\Notice;
 use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
+use Google\Site_Kit\Core\Authentication\Google_Proxy;
 use Google\Site_Kit\Core\Util\User_Input_Settings;
 use Google\Site_Kit\Plugin;
 use WP_Error;
@@ -31,7 +32,7 @@ use WP_REST_Response;
 use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Util\BC_Functions;
 use Google\Site_Kit\Modules\Idea_Hub;
-use Google\Site_Kit\Modules\Subscribe_With_Google;
+use Google\Site_Kit\Modules\Thank_With_Google;
 
 /**
  * Authentication Class.
@@ -365,14 +366,17 @@ final class Authentication {
 					$user['user']['picture'] = $profile_data['photo'];
 				}
 
-				$user['connectURL']     = esc_url_raw( $this->get_connect_url() );
-				$user['initialVersion'] = $this->initial_version->get();
-				$user['userInputState'] = $this->user_input_state->get();
-				$user['verified']       = $this->verification->has();
+				$user['connectURL']        = esc_url_raw( $this->get_connect_url() );
+				$user['hasMultipleAdmins'] = $this->has_multiple_admins->get();
+				$user['initialVersion']    = $this->initial_version->get();
+				$user['userInputState']    = $this->user_input_state->get();
+				$user['verified']          = $this->verification->has();
 
 				return $user;
 			}
 		);
+
+		add_filter( 'googlesitekit_inline_tracking_data', $this->get_method_proxy( 'inline_js_tracking_data' ) );
 
 		// Synchronize site fields on shutdown when select options change.
 		$option_updated = function () {
@@ -771,7 +775,7 @@ final class Authentication {
 		$input = $this->context->input();
 		$nonce = $input->filter( INPUT_GET, 'nonce' );
 		if ( ! wp_verify_nonce( $nonce, self::ACTION_CONNECT ) ) {
-			self::invalid_nonce_error( self::ACTION_CONNECT );
+			$this->invalid_nonce_error( self::ACTION_CONNECT );
 		}
 
 		if ( ! current_user_can( Permissions::AUTHENTICATE ) ) {
@@ -800,7 +804,7 @@ final class Authentication {
 	private function handle_disconnect() {
 		$nonce = $this->context->input()->filter( INPUT_GET, 'nonce' );
 		if ( ! wp_verify_nonce( $nonce, self::ACTION_DISCONNECT ) ) {
-			self::invalid_nonce_error( self::ACTION_DISCONNECT );
+			$this->invalid_nonce_error( self::ACTION_DISCONNECT );
 		}
 
 		if ( ! current_user_can( Permissions::AUTHENTICATE ) ) {
@@ -835,14 +839,17 @@ final class Authentication {
 		$data['proxyPermissionsURL'] = '';
 		$data['usingProxy']          = false;
 		$data['isAuthenticated']     = $this->is_authenticated();
+		$data['setupErrorCode']      = null;
 		$data['setupErrorMessage']   = null;
 		$data['setupErrorRedoURL']   = null;
+		$data['proxySupportLinkURL'] = null;
 
 		if ( $this->credentials->using_proxy() ) {
 			$auth_client                 = $this->get_oauth_client();
 			$data['proxySetupURL']       = esc_url_raw( $this->get_proxy_setup_url() );
 			$data['proxyPermissionsURL'] = esc_url_raw( $this->get_proxy_permissions_url() );
 			$data['usingProxy']          = true;
+			$data['proxySupportLinkURL'] = esc_url_raw( $this->get_proxy_support_link_url() );
 
 			// Check for an error in the proxy setup.
 			$error_code = $this->user_options->get( OAuth_Client::OPTION_ERROR_CODE );
@@ -852,6 +859,7 @@ final class Authentication {
 			// We'll also remove the existing access code in the user options,
 			// because it isn't valid (given there was a setup error).
 			if ( ! empty( $error_code ) ) {
+				$data['setupErrorCode']    = $error_code;
 				$data['setupErrorMessage'] = $auth_client->get_error_message( $error_code );
 
 				// Get credentials needed to authenticate with the proxy
@@ -951,6 +959,21 @@ final class Authentication {
 		if ( ! isset( $data['hasSearchConsoleProperty'] ) ) {
 			$data['hasSearchConsoleProperty'] = false;
 		}
+
+		return $data;
+	}
+
+	/**
+	 * Adds / modifies tracking relevant data to pass to JS.
+	 *
+	 * @since 1.78.0
+	 *
+	 * @param array $data Inline JS data.
+	 * @return array Filtered $data.
+	 */
+	private function inline_js_tracking_data( $data ) {
+		$data['isAuthenticated'] = $this->is_authenticated();
+		$data['userRoles']       = wp_get_current_user()->roles;
 
 		return $data;
 	}
@@ -1091,12 +1114,14 @@ final class Authentication {
 					$connected_url = $this->connected_proxy_url->get();
 					$current_url   = $this->context->get_canonical_home_url();
 					$content       = '<p>' . sprintf(
-						/* translators: 1: Plugin name. 2: Message. 3: Proxy setup URL. 4: Reconnect string. */
-						__( '%1$s: %2$s <a href="%3$s">%4$s</a>', 'google-site-kit' ),
+						/* translators: 1: Plugin name. 2: URL change message. 3: Proxy setup URL. 4: Reconnect string. 5: Proxy support link for the url-has-changed help page. 6: Help link message. */
+						__( '%1$s: %2$s <a href="%3$s">%4$s</a>. <a target="_blank" href="%5$s">%6$s</a>', 'google-site-kit' ),
 						esc_html__( 'Site Kit by Google', 'google-site-kit' ),
 						esc_html__( 'Looks like the URL of your site has changed. In order to continue using Site Kit, you’ll need to reconnect, so that your plugin settings are updated with the new URL.', 'google-site-kit' ),
 						esc_url( $this->get_proxy_setup_url() ),
-						esc_html__( 'Reconnect', 'google-site-kit' )
+						esc_html__( 'Reconnect', 'google-site-kit' ),
+						esc_url( $this->get_proxy_support_link_url() . '/?doc=url-has-changed' ),
+						esc_html__( 'Get help', 'google-site-kit' )
 					) . '</p>';
 
 					// Only show the comparison if URLs don't match as it is possible
@@ -1277,7 +1302,7 @@ final class Authentication {
 	private function handle_proxy_permissions() {
 		$nonce = $this->context->input()->filter( INPUT_GET, 'nonce' );
 		if ( ! wp_verify_nonce( $nonce, Google_Proxy::ACTION_PERMISSIONS ) ) {
-			self::invalid_nonce_error( Google_Proxy::ACTION_PERMISSIONS );
+			$this->invalid_nonce_error( Google_Proxy::ACTION_PERMISSIONS );
 		}
 
 		if ( ! current_user_can( Permissions::AUTHENTICATE ) ) {
@@ -1308,6 +1333,17 @@ final class Authentication {
 			),
 			admin_url( 'index.php' )
 		);
+	}
+
+	/**
+	 * Gets the proxy support URL.
+	 *
+	 * @since 1.80.0
+	 *
+	 * @return string|null Support URL.
+	 */
+	public function get_proxy_support_link_url() {
+		return $this->google_proxy->url( Google_Proxy::SUPPORT_LINK_URI );
 	}
 
 	/**
@@ -1343,12 +1379,12 @@ final class Authentication {
 		$features               = $this->options->get( $remote_features_option );
 
 		if ( false === $features ) {
-			// The experimental features (ideaHubModule and swgModule) are checked within Modules::construct() which
+			// The experimental features (ideaHubModule and twgModule) are checked within Modules::construct() which
 			// runs before Modules::register() where the `googlesitekit_features_request_data` filter is registered.
 			// Without this filter, some necessary context data is not sent when a request to Google_Proxy::get_features() is
 			// made. So we avoid making this request and solely check the active modules in the database to see if these
 			// features are enabled.
-			if ( in_array( $feature_name, array( 'ideaHubModule', 'swgModule' ), true ) ) {
+			if ( in_array( $feature_name, array( 'ideaHubModule', 'twgModule' ), true ) ) {
 				$active_modules = $this->options->get( Modules::OPTION_ACTIVE_MODULES );
 
 				if ( ! is_array( $active_modules ) ) {
@@ -1359,8 +1395,8 @@ final class Authentication {
 					return in_array( Idea_Hub::MODULE_SLUG, $active_modules, true );
 				}
 
-				if ( 'swgModule' === $feature_name ) {
-					return in_array( Subscribe_With_Google::MODULE_SLUG, $active_modules, true );
+				if ( 'twgModule' === $feature_name ) {
+					return in_array( Thank_With_Google::MODULE_SLUG, $active_modules, true );
 				}
 			}
 
@@ -1421,7 +1457,7 @@ final class Authentication {
 	 *
 	 * @param string $action Action name.
 	 */
-	public static function invalid_nonce_error( $action ) {
+	public function invalid_nonce_error( $action ) {
 		if ( strpos( $action, 'googlesitekit_proxy_' ) !== 0 ) {
 			wp_nonce_ays( $action );
 			return;
@@ -1430,9 +1466,11 @@ final class Authentication {
 		$html  = __( 'The link you followed has expired.', 'google-site-kit' );
 		$html .= '</p><p>';
 		$html .= sprintf(
-			'<a href="%s">%s</a>',
+			'<a href="%s">%s</a>. <a href="%s" target="_blank">%s</a>.',
 			esc_url( Plugin::instance()->context()->admin_url( 'splash' ) ),
-			__( 'Please try again.', 'google-site-kit' )
+			__( 'Please try again', 'google-site-kit' ),
+			esc_url( $this->get_proxy_support_link_url() . '?error_id=nonce_expired' ),
+			__( 'Get help', 'google-site-kit' )
 		);
 		wp_die( $html, __( 'Something went wrong.', 'google-site-kit' ), 403 ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	}

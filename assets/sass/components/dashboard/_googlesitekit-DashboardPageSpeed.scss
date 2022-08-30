@@ -19,7 +19,10 @@
 .googlesitekit-pagespeed-widget {
 
 	.googlesitekit-cta-link {
-
+		font-size: $fs-body-md;
+		font-weight: $fw-medium;
+		letter-spacing: $ls-s;
+		line-height: $lh-body-md;
 		white-space: nowrap;
 	}
 
@@ -35,10 +38,9 @@
 	}
 
 	.googlesitekit-pagespeed-widget__header {
-
 		align-items: flex-end;
-		background: $c-header-gray;
-		box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.1);
+		border-bottom: 1px solid $c-utility-divider;
+		border-radius: $br-sm $br-sm 0 0;
 		display: flex;
 		justify-content: space-between;
 
@@ -52,9 +54,6 @@
 	.googlesitekit-pagespeed-widget__data-src-tabs {
 
 		button.mdc-tab {
-			font-size: 0.875rem;
-			letter-spacing: 0.25px;
-			line-height: 1.25rem;
 			margin: 0 10px;
 			text-transform: none;
 
@@ -69,11 +68,6 @@
 	.googlesitekit-pagespeed-widget__device-size-tab-bar-wrapper {
 		padding: 12px;
 		width: auto;
-
-		.googlesitekit-device-size-tab-bar {
-
-			@include shadow;
-		}
 	}
 
 	.googlesitekit-pagespeed-insights-web-vitals-metrics--field-data-unavailable {
@@ -102,14 +96,16 @@
 		}
 
 		h3 {
-			font-size: 1.25rem;
-			line-height: 1.75rem;
+			font-family: $f-secondary;
+			font-size: $fs-title-lg;
+			line-height: $lh-title-lg;
 			margin: 0 0 0.25rem;
 		}
 
 		p {
-			font-size: 0.875rem;
-			line-height: 1.25rem;
+			font-size: $fs-body-md;
+			letter-spacing: $ls-s;
+			line-height: $lh-body-md;
 			margin: 0.25rem 0;
 		}
 
@@ -119,12 +115,25 @@
 	}
 
 	.googlesitekit-pagespeed-report__footer {
-		gap: 16px;
+		border-top: 1px solid $c-utility-divider;
+		gap: $grid-gap-phone;
 		justify-content: flex-end;
 		padding-top: 0;
 
-		p {
+		p,
+		.googlesitekit-cta-link {
+			font-size: $fs-body-sm;
+			font-weight: $fw-medium;
+			letter-spacing: $ls-xs;
+			line-height: $lh-body-sm;
 			text-align: right;
+		}
+
+		button.googlesitekit-cta-link {
+			color: $c-surfaces-on-surface-variant;
+			font-size: $fs-body-md;
+			font-weight: $fw-medium;
+			line-height: $lh-body-md;
 		}
 
 		&--with-action {
@@ -143,10 +152,8 @@
 		}
 
 		p {
-			color: $c-gray-cx;
-			font-size: 0.875rem;
-			letter-spacing: 0.2px;
-			line-height: 1.25rem;
+			color: $c-surfaces-on-surface-variant;
+			letter-spacing: 0.25px;
 		}
 	}
 
@@ -185,15 +192,16 @@
 		padding: $grid-gap-phone $grid-gap-phone 0;
 
 		.googlesitekit-pagespeed-recommendations__title {
-			color: $c-black;
-			font-size: 1rem;
+			font-family: $f-secondary;
+			font-size: $fs-title-md;
+			font-weight: $fw-bold;
 			letter-spacing: 0.1px;
-			line-height: 1.5rem;
+			line-height: $lh-title-md;
 		}
 
 		.googlesitekit-accordion {
-			border-top-left-radius: 8px;
-			border-top-right-radius: 8px;
+			border-top-left-radius: $br-sm;
+			border-top-right-radius: $br-sm;
 			color: $c-black;
 
 			& + .googlesitekit-accordion {
@@ -201,8 +209,8 @@
 			}
 
 			&:last-of-type {
-				border-bottom-left-radius: 8px;
-				border-bottom-right-radius: 8px;
+				border-bottom-left-radius: $br-sm;
+				border-bottom-right-radius: $br-sm;
 			}
 		}
 

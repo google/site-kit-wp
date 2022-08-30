@@ -18,11 +18,23 @@
 
 .googlesitekit-plugin {
 
+	.googlesitekit-subheader {
+		background-color: $c-base;
+		position: relative;
+		z-index: 11;
+
+		@media (min-width: $bp-tablet) {
+			padding: 0 10px;
+		}
+
+		&:not(:empty) {
+			border-bottom: 1px solid $c-utility-divider;
+		}
+	}
+
 	.googlesitekit-header {
 
 		@include googlesitekit-inner-padding;
-		@include shadow;
-
 		background-color: $c-base;
 		left: 0;
 		position: sticky;
@@ -51,18 +63,6 @@
 			}
 		}
 
-		&.googlesitekit-header--has-subheader {
-
-			.googlesitekit-plugin--has-scrolled & {
-
-				@include shadow;
-			}
-		}
-
-		&.googlesitekit-header--has-navigation {
-			box-shadow: none;
-		}
-
 		.googlesitekit-header__logo {
 			// prevent the logo from wrapping towards the tablet and mobile breakpoints
 			min-width: 150px;
@@ -77,7 +77,8 @@
 			background-color: transparent;
 			cursor: pointer;
 			display: flex;
-			font-size: 0.75rem;
+			font-size: $fs-body-sm;
+			letter-spacing: $ls-xs;
 			margin-right: -8px;
 			padding: 8px;
 			transition: background-color $t-default ease-in-out, color $t-default ease-in-out;
@@ -113,7 +114,7 @@
 			}
 
 			.mdc-button__label {
-				font-weight: $fw-primary-normal;
+				font-weight: $fw-normal;
 			}
 		}
 
@@ -133,6 +134,7 @@
 			}
 
 			.mdc-button--dropdown {
+				color: $c-surfaces-on-surface-variant;
 				padding-right: $grid-gap-desktop;
 
 				@media (max-width: $bp-mobileOnly) {
@@ -178,26 +180,24 @@
 				padding: 4px;
 			}
 		}
-	}
 
-	.googlesitekit-subheader {
-		background-color: $c-base;
-		position: relative;
-		z-index: 11;
+		.googlesitekit-header__children {
+			align-items: center;
+			display: flex;
+			gap: $grid-gap-phone;
+			justify-content: flex-end;
 
-		@media (min-width: $bp-tablet) {
-			padding: 0 10px;
-		}
-	}
+			@media (min-width: $bp-desktop) {
+				gap: $grid-gap-desktop;
+			}
 
-	.googlesitekit-header__children {
-		align-items: center;
-		display: flex;
-		gap: $grid-gap-phone;
-		justify-content: flex-end;
+			div > button > .mdc-button__label {
+				display: none;
 
-		@media (min-width: $bp-desktop) {
-			gap: $grid-gap-desktop;
+				@media ( min-width: $width-wpAdminBarTablet + 1 + px ) {
+					display: inline-block;
+				}
+			}
 		}
 	}
 }

@@ -48,6 +48,7 @@ import { ZeroDataMessage } from '../../common';
 import Header from './Header';
 import Footer from './Footer';
 import { useFeature } from '../../../../../hooks/useFeature';
+import useViewOnly from '../../../../../hooks/useViewOnly';
 const { useSelect, useInViewSelect } = Data;
 
 function ModulePopularPagesWidget( props ) {
@@ -64,6 +65,8 @@ function ModulePopularPagesWidget( props ) {
 	);
 
 	const zeroDataStates = useFeature( 'zeroDataStates' );
+
+	const viewOnlyDashboard = useViewOnly();
 
 	const args = {
 		...dates,
@@ -110,9 +113,10 @@ function ModulePopularPagesWidget( props ) {
 	);
 
 	const loaded = useSelect( ( select ) => {
-		const reportLoaded = select(
-			MODULES_ANALYTICS
-		).hasFinishedResolution( 'getReport', [ args ] );
+		const reportLoaded = select( MODULES_ANALYTICS ).hasFinishedResolution(
+			'getReport',
+			[ args ]
+		);
 
 		return undefined !== error || ( reportLoaded && undefined !== titles );
 	} );
@@ -148,16 +152,20 @@ function ModulePopularPagesWidget( props ) {
 			primary: true,
 			Component: ( { row } ) => {
 				const [ title, url ] = row.dimensions;
-				const serviceURL = useSelect( ( select ) =>
-					select( MODULES_ANALYTICS ).getServiceReportURL(
+				const serviceURL = useSelect( ( select ) => {
+					if ( viewOnlyDashboard ) {
+						return null;
+					}
+
+					return select( MODULES_ANALYTICS ).getServiceReportURL(
 						'content-drilldown',
 						{
 							'explorer-table.plotKeys': '[]',
 							'_r.drilldown': `analytics.pagePath:${ url }`,
 							...generateDateRangeArgs( dates ),
 						}
-					)
-				);
+					);
+				} );
 
 				return (
 					<DetailsPermaLinks

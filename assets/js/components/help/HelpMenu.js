@@ -41,6 +41,7 @@ import Menu from '../Menu';
 import HelpMenuLink from './HelpMenuLink';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import useViewContext from '../../hooks/useViewContext';
+import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 const { useSelect } = Data;
 
 export default function HelpMenu( { children } ) {
@@ -69,6 +70,12 @@ export default function HelpMenu( { children } ) {
 		setMenuOpen( false );
 	}, [] );
 
+	const fixCommonIssuesURL = useSelect( ( select ) => {
+		return select( CORE_SITE ).getDocumentationLinkURL(
+			'fix-common-issues'
+		);
+	} );
+
 	return (
 		<div
 			ref={ menuWrapperRef }
@@ -93,7 +100,7 @@ export default function HelpMenu( { children } ) {
 				{ children }
 				<HelpMenuLink
 					gaEventLabel="fix_common_issues"
-					href="https://sitekit.withgoogle.com/documentation/troubleshooting/fix-common-issues/"
+					href={ fixCommonIssuesURL }
 				>
 					{ __( 'Fix common issues', 'google-site-kit' ) }
 				</HelpMenuLink>

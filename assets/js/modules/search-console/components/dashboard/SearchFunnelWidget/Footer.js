@@ -45,11 +45,18 @@ import {
 import { generateDateRangeArgs as generateAnalyticsDateRangeArgs } from '../../../../analytics/util/report-date-range-args';
 import SourceLink from '../../../../../components/SourceLink';
 import Data from 'googlesitekit-data';
+import useViewOnly from '../../../../../hooks/useViewOnly';
 const { useSelect } = Data;
 
 function SourceLinkAnalytics( { id } ) {
+	const viewOnlyDashboard = useViewOnly();
+
 	const serviceURL = useSelect(
 		( select ) => {
+			if ( viewOnlyDashboard ) {
+				return null;
+			}
+
 			const { getServiceReportURL } = select( MODULES_ANALYTICS );
 			const url = select( CORE_SITE ).getCurrentEntityURL();
 			const rangeDates = select( CORE_USER ).getDateRangeDates( {
@@ -96,13 +103,16 @@ function SourceLinkAnalytics( { id } ) {
 }
 
 function SourceLinkSearch( { metric } ) {
+	const viewOnlyDashboard = useViewOnly();
+
 	const serviceURL = useSelect(
 		( select ) => {
-			const {
-				getServiceReportURL,
-				getPropertyID,
-				isDomainProperty,
-			} = select( MODULES_SEARCH_CONSOLE );
+			if ( viewOnlyDashboard ) {
+				return null;
+			}
+
+			const { getServiceReportURL, getPropertyID, isDomainProperty } =
+				select( MODULES_SEARCH_CONSOLE );
 			const referenceSiteURL = untrailingslashit(
 				select( CORE_SITE ).getReferenceSiteURL()
 			);

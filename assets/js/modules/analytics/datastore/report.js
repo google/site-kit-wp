@@ -85,12 +85,8 @@ const fetchGetReportStore = createFetchStore( {
 			'Either date range or start/end dates must be provided for Analytics report.'
 		);
 
-		const {
-			metrics,
-			dimensions,
-			dimensionFilters,
-			orderby,
-		} = normalizeReportOptions( options );
+		const { metrics, dimensions, dimensionFilters, orderby } =
+			normalizeReportOptions( options );
 
 		invariant(
 			metrics.length,
@@ -147,10 +143,8 @@ const baseResolvers = {
 
 		// If the report was requested with AdSense metrics, set `adsenseLinked` accordingly.
 		if (
-			normalizeReportOptions(
-				options
-			).metrics.some( ( { expression } ) =>
-				/^ga:adsense/.test( expression )
+			normalizeReportOptions( options ).metrics.some(
+				( { expression } ) => /^ga:adsense/.test( expression )
 			)
 		) {
 			if ( isRestrictedMetricsError( error, 'ga:adsense' ) ) {
@@ -207,82 +201,85 @@ const baseSelectors = {
 	 * @return {(Object|undefined)} A map with url as the key and page title as the value. `undefined` if not loaded.
 	 */
 	getPageTitles: createRegistrySelector(
-		( select ) => ( state, report, { startDate, endDate } = {} ) => {
-			if ( ! Array.isArray( report ) ) {
-				return;
-			}
-
-			const pagePaths = []; // Array of pagePaths.
-			const REQUEST_MULTIPLIER = 5;
-
-			/*
-			 * Iterate the report, finding which dimension contains the
-			 * ga:pagePath metric which we add to the array of pagePaths.
-			 */
-			( report || [] ).forEach( ( { columnHeader, data } ) => {
-				if (
-					Array.isArray( columnHeader?.dimensions ) &&
-					Array.isArray( data?.rows ) &&
-					columnHeader.dimensions.includes( 'ga:pagePath' )
-				) {
-					const pagePathIndex = columnHeader.dimensions.indexOf(
-						'ga:pagePath'
-					);
-					( data?.rows || [] ).forEach( ( { dimensions } ) => {
-						if (
-							! pagePaths.includes( dimensions[ pagePathIndex ] )
-						) {
-							pagePaths.push( dimensions[ pagePathIndex ] );
-						}
-					} );
+		( select ) =>
+			( state, report, { startDate, endDate } = {} ) => {
+				if ( ! Array.isArray( report ) ) {
+					return;
 				}
-			} );
 
-			const urlTitleMap = {};
-			if ( ! pagePaths.length ) {
+				const pagePaths = []; // Array of pagePaths.
+				const REQUEST_MULTIPLIER = 5;
+
+				/*
+				 * Iterate the report, finding which dimension contains the
+				 * ga:pagePath metric which we add to the array of pagePaths.
+				 */
+				( report || [] ).forEach( ( { columnHeader, data } ) => {
+					if (
+						Array.isArray( columnHeader?.dimensions ) &&
+						Array.isArray( data?.rows ) &&
+						columnHeader.dimensions.includes( 'ga:pagePath' )
+					) {
+						const pagePathIndex =
+							columnHeader.dimensions.indexOf( 'ga:pagePath' );
+						( data?.rows || [] ).forEach( ( { dimensions } ) => {
+							if (
+								! pagePaths.includes(
+									dimensions[ pagePathIndex ]
+								)
+							) {
+								pagePaths.push( dimensions[ pagePathIndex ] );
+							}
+						} );
+					}
+				} );
+
+				const urlTitleMap = {};
+				if ( ! pagePaths.length ) {
+					return urlTitleMap;
+				}
+
+				const options = {
+					startDate,
+					endDate,
+					dimensions: [ 'ga:pagePath', 'ga:pageTitle' ],
+					dimensionFilters: { 'ga:pagePath': pagePaths.sort() },
+					metrics: [
+						{ expression: 'ga:pageviews', alias: 'Pageviews' },
+					],
+					orderby: [
+						{ fieldName: 'ga:pageviews', sortOrder: 'DESCENDING' },
+					],
+					limit: REQUEST_MULTIPLIER * pagePaths.length,
+				};
+
+				const pageTitlesReport =
+					select( MODULES_ANALYTICS ).getReport( options );
+				if ( undefined === pageTitlesReport ) {
+					return;
+				}
+
+				( pageTitlesReport?.[ 0 ]?.data?.rows || [] ).forEach(
+					( { dimensions } ) => {
+						if ( ! urlTitleMap[ dimensions[ 0 ] ] ) {
+							// key is the url, value is the page title.
+							urlTitleMap[ dimensions[ 0 ] ] = dimensions[ 1 ];
+						}
+					}
+				);
+
+				pagePaths.forEach( ( pagePath ) => {
+					if ( ! urlTitleMap[ pagePath ] ) {
+						// If we don't have a title for the pagePath, we use '(unknown)'.
+						urlTitleMap[ pagePath ] = __(
+							'(unknown)',
+							'google-site-kit'
+						);
+					}
+				} );
+
 				return urlTitleMap;
 			}
-
-			const options = {
-				startDate,
-				endDate,
-				dimensions: [ 'ga:pagePath', 'ga:pageTitle' ],
-				dimensionFilters: { 'ga:pagePath': pagePaths.sort() },
-				metrics: [ { expression: 'ga:pageviews', alias: 'Pageviews' } ],
-				orderby: [
-					{ fieldName: 'ga:pageviews', sortOrder: 'DESCENDING' },
-				],
-				limit: REQUEST_MULTIPLIER * pagePaths.length,
-			};
-
-			const pageTitlesReport = select( MODULES_ANALYTICS ).getReport(
-				options
-			);
-			if ( undefined === pageTitlesReport ) {
-				return;
-			}
-
-			( pageTitlesReport?.[ 0 ]?.data?.rows || [] ).forEach(
-				( { dimensions } ) => {
-					if ( ! urlTitleMap[ dimensions[ 0 ] ] ) {
-						// key is the url, value is the page title.
-						urlTitleMap[ dimensions[ 0 ] ] = dimensions[ 1 ];
-					}
-				}
-			);
-
-			pagePaths.forEach( ( pagePath ) => {
-				if ( ! urlTitleMap[ pagePath ] ) {
-					// If we don't have a title for the pagePath, we use '(unknown)'.
-					urlTitleMap[ pagePath ] = __(
-						'(unknown)',
-						'google-site-kit'
-					);
-				}
-			} );
-
-			return urlTitleMap;
-		}
 	),
 
 	/**

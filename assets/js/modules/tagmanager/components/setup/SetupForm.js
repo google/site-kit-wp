@@ -108,7 +108,6 @@ export default function SetupForm( { finishSetup } ) {
 					submitMode === SETUP_MODE_WITH_ANALYTICS &&
 					! analyticsModuleActive
 				) {
-					await throwOnError( () => activateModule( 'analytics' ) );
 					const { response, error } = await activateModule(
 						'analytics'
 					);
@@ -164,9 +163,10 @@ export default function SetupForm( { finishSetup } ) {
 		[ submitForm, isSetupWithAnalytics ]
 	);
 	// Click handler for secondary option when setting up with option to include Analytics.
-	const onSetupWithoutAnalytics = useCallback( () => submitForm(), [
-		submitForm,
-	] );
+	const onSetupWithoutAnalytics = useCallback(
+		() => submitForm(),
+		[ submitForm ]
+	);
 
 	return (
 		<form

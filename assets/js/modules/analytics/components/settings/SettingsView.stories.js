@@ -70,10 +70,8 @@ export default {
 	decorators: [
 		( Story ) => {
 			const setupRegistry = ( registry ) => {
-				const accounts = fixtures.accountsPropertiesProfiles.accounts.slice(
-					0,
-					1
-				);
+				const accounts =
+					fixtures.accountsPropertiesProfiles.accounts.slice( 0, 1 );
 				const properties = [
 					{
 						...fixtures.accountsPropertiesProfiles.properties[ 0 ],

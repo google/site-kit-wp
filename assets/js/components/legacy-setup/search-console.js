@@ -53,12 +53,10 @@ class SearchConsole extends Component {
 		};
 
 		this.handleURLSelect = this.handleURLSelect.bind( this );
-		this.insertPropertyToSearchConsole = this.insertPropertyToSearchConsole.bind(
-			this
-		);
-		this.submitPropertyEventHandler = this.submitPropertyEventHandler.bind(
-			this
-		);
+		this.insertPropertyToSearchConsole =
+			this.insertPropertyToSearchConsole.bind( this );
+		this.submitPropertyEventHandler =
+			this.submitPropertyEventHandler.bind( this );
 	}
 
 	async componentDidMount() {

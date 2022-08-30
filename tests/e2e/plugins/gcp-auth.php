@@ -27,9 +27,7 @@ require_once __DIR__ . '/gcp-credentials.php';
 add_filter(
 	'get_user_option_googlesitekit_access_token',
 	function () {
-		return ( new Data_Encryption() )->encrypt(
-			serialize( 'test-access-token' ) // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_serialize
-		);
+		return ( new Data_Encryption() )->encrypt( 'test-access-token' );
 	}
 );
 

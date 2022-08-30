@@ -27,7 +27,6 @@ import { render } from '@wordpress/element';
  */
 import { clearWebStorage } from './util';
 import Root from './components/Root';
-import './components/legacy-notifications';
 import {
 	VIEW_CONTEXT_DASHBOARD,
 	VIEW_CONTEXT_DASHBOARD_VIEW_ONLY,

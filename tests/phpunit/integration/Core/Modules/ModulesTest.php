@@ -26,7 +26,7 @@ use Google\Site_Kit\Modules\Optimize;
 use Google\Site_Kit\Modules\PageSpeed_Insights;
 use Google\Site_Kit\Modules\Search_Console;
 use Google\Site_Kit\Modules\Site_Verification;
-use Google\Site_Kit\Modules\Subscribe_With_Google;
+use Google\Site_Kit\Modules\Thank_With_Google;
 use Google\Site_Kit\Modules\Tag_Manager;
 use Google\Site_Kit\Tests\TestCase;
 use Google\Site_Kit\Tests\FakeHttpClient;
@@ -175,6 +175,17 @@ class ModulesTest extends TestCase {
 		}
 
 		$this->fail( 'Failed to catch exception thrown for non-existent module in get_module_dependencies.' );
+	}
+
+	public function test_module_exists() {
+		$fake_module = new FakeModule( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$modules     = new Modules( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+
+		$this->force_set_property( $modules, 'modules', array( 'fake-module' => $fake_module ) );
+		$this->assertTrue( $modules->module_exists( 'fake-module' ) );
+
+		$module_slug = 'non-existent-module';
+		$this->assertFalse( $modules->module_exists( $module_slug ) );
 	}
 
 	public function test_get_module_dependants() {
@@ -501,22 +512,22 @@ class ModulesTest extends TestCase {
 			$default_modules,
 		);
 
-		yield 'should include the `subscribe-with-google` module when enabled' => array(
+		yield 'should include the `thank-with-google` module when enabled' => array(
 			// Module feature flag.
-			'swgModule',
+			'twgModule',
 			// Module enabled or disabled
 			true,
-			Subscribe_With_Google::MODULE_SLUG,
+			Thank_With_Google::MODULE_SLUG,
 			// Expected
-			array_merge( $default_modules, array( Subscribe_With_Google::MODULE_SLUG ) ),
+			array_merge( $default_modules, array( Thank_With_Google::MODULE_SLUG ) ),
 		);
 
-		yield 'should not include the `subscribe-with-google` module when enabled' => array(
+		yield 'should not include the `thank-with-google` module when enabled' => array(
 			// Module feature flag.
-			'swgModule',
+			'twgModule',
 			// Module enabled or disabled
 			false,
-			Subscribe_With_Google::MODULE_SLUG,
+			Thank_With_Google::MODULE_SLUG,
 			// Expected
 			$default_modules,
 		);

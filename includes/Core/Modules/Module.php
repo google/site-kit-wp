@@ -114,6 +114,14 @@ abstract class Module {
 	private $google_services;
 
 	/**
+	 * Whether module is using shared credentials or not.
+	 *
+	 * @since 1.82.0
+	 * @var bool
+	 */
+	protected $is_using_shared_credentials = false;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since 1.0.0
@@ -271,7 +279,7 @@ abstract class Module {
 	/**
 	 * Gets the datapoint definition instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.77.0
 	 *
 	 * @param string $datapoint_id Datapoint ID.
 	 * @return Datapoint Datapoint instance.
@@ -330,6 +338,9 @@ abstract class Module {
 			$datapoint    = $this->get_datapoint_definition( "{$data->method}:{$data->datapoint}" );
 			$oauth_client = $this->get_oauth_client_for_datapoint( $datapoint );
 
+			// Always reset this property first to ensure it is only set true for the current request.
+			$this->is_using_shared_credentials = false;
+
 			$this->validate_datapoint_scopes( $datapoint, $oauth_client );
 			$this->validate_base_scopes( $oauth_client );
 
@@ -343,8 +354,11 @@ abstract class Module {
 			// even if a different client will be the one to execute the request because
 			// the default instance is what services are setup with.
 			$restore_defers[] = $this->get_client()->withDefer( true );
-			if ( $this->get_client() !== $oauth_client ) {
+			if ( $this->authentication->get_oauth_client() !== $oauth_client ) {
 				$restore_defers[] = $oauth_client->get_client()->withDefer( true );
+
+				// Set request as using shared credentials if oAuth clients do not match.
+				$this->is_using_shared_credentials = true;
 			}
 
 			$request = $this->create_data_request( $data );
@@ -368,6 +382,11 @@ abstract class Module {
 			foreach ( $restore_defers as $restore_defer ) {
 				$restore_defer();
 			}
+
+			// Reset shared credentials usage property after the request
+			// is made, regardless of whether or not it completed successfully
+			// or encountered an error.
+			$this->is_using_shared_credentials = false;
 		}
 
 		if ( is_wp_error( $response ) ) {
@@ -380,7 +399,7 @@ abstract class Module {
 	/**
 	 * Validates necessary scopes for the given datapoint.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.77.0
 	 *
 	 * @param Datapoint    $datapoint    Datapoint instance.
 	 * @param OAuth_Client $oauth_client OAuth_Client instance.
@@ -399,7 +418,7 @@ abstract class Module {
 	/**
 	 * Validates necessary scopes for the module.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.77.0
 	 *
 	 * @param OAuth_Client $oauth_client OAuth_Client instance.
 	 * @throws Insufficient_Scopes_Exception Thrown if required scopes are not satisfied.
@@ -566,7 +585,7 @@ abstract class Module {
 	/**
 	 * Gets the oAuth client instance to use for the given datapoint.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.77.0
 	 *
 	 * @param Datapoint $datapoint Datapoint definition.
 	 * @return OAuth_Client OAuth_Client instance.
@@ -577,9 +596,17 @@ abstract class Module {
 			&& $this->is_shareable()
 			&& $datapoint->is_shareable()
 			&& $this->get_owner_id() !== get_current_user_id()
+			&& ! $this->is_recoverable()
 			&& current_user_can( Permissions::READ_SHARED_MODULE_DATA, $this->slug )
 		) {
-			return $this->get_owner_oauth_client();
+			$oauth_client = $this->get_owner_oauth_client();
+
+			try {
+				$this->validate_base_scopes( $oauth_client );
+				return $oauth_client;
+			} catch ( Exception $exception ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
+				// Fallthrough to default oauth client if scopes are unsatisfied.
+			}
 		}
 
 		return $this->authentication->get_oauth_client();
@@ -835,5 +862,23 @@ abstract class Module {
 		}
 
 		return false;
+	}
+
+	/**
+	 * Checks whether the module is recoverable.
+	 *
+	 * @since 1.78.0
+	 *
+	 * @return bool
+	 */
+	public function is_recoverable() {
+		/**
+		 * Filters the recoverable status of the module.
+		 *
+		 * @since 1.78.0
+		 * @param bool   $_    Whether or not the module is recoverable. Default: false
+		 * @param string $slug Module slug.
+		 */
+		return (bool) apply_filters( 'googlesitekit_is_module_recoverable', false, $this->slug );
 	}
 }

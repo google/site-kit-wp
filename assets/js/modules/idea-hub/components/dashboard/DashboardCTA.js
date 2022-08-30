@@ -65,6 +65,10 @@ export default function DashboardCTA( { Widget, WidgetNull } ) {
 		select( CORE_USER ).isItemDismissed( DISMISS_ITEM_IDEA_HUB_CTA )
 	);
 
+	const documentationURL = useSelect( ( select ) => {
+		return select( CORE_SITE ).getDocumentationLinkURL( 'idea-hub' );
+	} );
+
 	const intersectionEntry = useIntersection( trackingRef, {
 		threshold: 0.25,
 	} );
@@ -156,7 +160,7 @@ export default function DashboardCTA( { Widget, WidgetNull } ) {
 							{
 								a: (
 									<Link
-										href="https://sitekit.withgoogle.com/documentation/using-site-kit/idea-hub/"
+										href={ documentationURL }
 										external
 										onClick={ onLearnMoreLinkClick }
 									/>
@@ -173,7 +177,7 @@ export default function DashboardCTA( { Widget, WidgetNull } ) {
 				<div className="googlesitekit-idea-hub__dashboard-cta-footer">
 					<Button onClick={ onSetupButtonClick }>
 						{ active && ! connected
-							? __( 'Complete set up', 'google-site-kit' )
+							? __( 'Complete setup', 'google-site-kit' )
 							: __( 'Set up', 'google-site-kit' ) }
 					</Button>
 

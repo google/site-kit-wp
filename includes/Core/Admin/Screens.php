@@ -126,6 +126,8 @@ final class Screens {
 			function() {
 				// Redirect dashboard to splash if no dashboard access (yet).
 				$this->no_access_redirect_dashboard_to_splash();
+				// Redirect splash to (shared) dashboard if splash is dismissed.
+				$this->no_access_redirect_splash_to_dashboard();
 
 				// Redirect module pages to dashboard.
 				$this->no_access_redirect_module_to_dashboard();
@@ -283,6 +285,30 @@ final class Screens {
 	}
 
 	/**
+	 * Redirects from the splash to the dashboard screen if permissions to access the splash are currently not met.
+	 *
+	 * Admins always have the ability to view the splash page, so this redirects non-admins who have access
+	 * to view the shared dashboard if the splash has been dismissed.
+	 * Currently the dismissal check is built into the capability for VIEW_SPLASH so this is implied.
+	 *
+	 * @since 1.77.0
+	 */
+	private function no_access_redirect_splash_to_dashboard() {
+		global $plugin_page;
+
+		if ( ! isset( $plugin_page ) || self::PREFIX . 'splash' !== $plugin_page ) {
+			return;
+		}
+
+		if ( current_user_can( Permissions::VIEW_DASHBOARD ) ) {
+			wp_safe_redirect(
+				$this->context->admin_url()
+			);
+			exit;
+		}
+	}
+
+	/**
 	 * Redirects module pages to the dashboard or splash based on user capability.
 	 *
 	 * @since 1.69.0
@@ -413,6 +439,7 @@ final class Screens {
 						$this->authentication->is_authenticated() ||
 						(
 							Feature_Flags::enabled( 'dashboardSharing' ) &&
+							! current_user_can( Permissions::AUTHENTICATE ) &&
 							$dismissed_items->is_dismissed( 'shared_dashboard_splash' ) &&
 							current_user_can( Permissions::VIEW_SHARED_DASHBOARD )
 						)

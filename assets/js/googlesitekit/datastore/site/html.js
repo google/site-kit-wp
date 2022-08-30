@@ -63,7 +63,10 @@ const fetchHTMLForURLStore = createFetchStore( {
 		// If response contains HTML, return that. Return null in other cases.
 		try {
 			const html = await response.text();
-			return html !== undefined ? html : null;
+			if ( html === '' || html === undefined ) {
+				return null;
+			}
+			return html;
 		} catch {
 			return null;
 		}
@@ -141,10 +144,11 @@ const baseActions = {
 
 const baseControls = {
 	[ WAIT_FOR_HTML_FOR_URL ]: createRegistryControl(
-		( registry ) => ( { payload: { url } } ) =>
-			registry
-				.__experimentalResolveSelect( CORE_SITE )
-				.getHTMLForURL( url )
+		( registry ) =>
+			( { payload: { url } } ) =>
+				registry
+					.__experimentalResolveSelect( CORE_SITE )
+					.getHTMLForURL( url )
 	),
 	[ CHECK_FOR_SETUP_TAG ]: createRegistryControl(
 		( registry ) => async () => {

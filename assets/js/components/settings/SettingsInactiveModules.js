@@ -62,6 +62,7 @@ export default function SettingsInactiveModules() {
 				format="small"
 				SmallImageSVG={ AwardSVG }
 				type="win-success"
+				rounded
 			/>
 		);
 	}
@@ -73,6 +74,7 @@ export default function SettingsInactiveModules() {
 				'Connect More Services to Gain More Insights',
 				'google-site-kit'
 			) }
+			rounded
 			relative
 		>
 			<Grid>

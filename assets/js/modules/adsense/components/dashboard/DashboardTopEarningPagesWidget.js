@@ -48,12 +48,17 @@ import {
 import { numFmt } from '../../../../util';
 import { getCurrencyFormat } from '../../util/currency';
 import { useFeature } from '../../../../hooks/useFeature';
+import useViewOnly from '../../../../hooks/useViewOnly';
 const { useSelect, useInViewSelect } = Data;
 
 function DashboardTopEarningPagesWidget( props ) {
-	const { Widget, WidgetReportZero, WidgetReportError } = props;
+	const { Widget, WidgetReportZero, WidgetReportError, WidgetNull } = props;
+
+	const isViewOnly = useViewOnly();
 
 	const zeroDataStates = useFeature( 'zeroDataStates' );
+
+	const viewOnlyDashboard = useViewOnly();
 
 	const isGatheringData = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).isGatheringData()
@@ -96,31 +101,36 @@ function DashboardTopEarningPagesWidget( props ) {
 		} )
 	);
 
-	const {
-		analyticsMainURL,
-		error,
-		loading,
-		isAdSenseLinked,
-		isAdblockerActive,
-	} = useSelect( ( select ) => {
-		return {
-			analyticsMainURL: select( MODULES_ANALYTICS ).getServiceReportURL(
-				'content-publisher-overview',
-				generateDateRangeArgs( { startDate, endDate } )
-			),
-			error: select( MODULES_ANALYTICS ).getErrorForSelector(
-				'getReport',
-				[ args ]
-			),
-			loading: ! select(
-				MODULES_ANALYTICS
-			).hasFinishedResolution( 'getReport', [ args ] ),
-			isAdSenseLinked: select( MODULES_ANALYTICS ).getAdsenseLinked(),
-			isAdblockerActive: select( MODULES_ADSENSE ).isAdBlockerActive(),
-		};
-	} );
+	const error = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [ args ] )
+	);
+
+	const loading = useSelect(
+		( select ) =>
+			! select( MODULES_ANALYTICS ).hasFinishedResolution( 'getReport', [
+				args,
+			] )
+	);
+
+	const isAdSenseLinked = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getAdsenseLinked()
+	);
+
+	const isAdblockerActive = useSelect( ( select ) =>
+		select( MODULES_ADSENSE ).isAdBlockerActive()
+	);
 
 	const currencyFormat = getCurrencyFormat( adsenseData );
+
+	const analyticsMainURL = useSelect( ( select ) => {
+		if ( viewOnlyDashboard ) {
+			return null;
+		}
+		return select( MODULES_ANALYTICS ).getServiceReportURL(
+			'content-publisher-overview',
+			generateDateRangeArgs( { startDate, endDate } )
+		);
+	} );
 
 	const Footer = () => (
 		<SourceLink
@@ -147,9 +157,13 @@ function DashboardTopEarningPagesWidget( props ) {
 		);
 	}
 
+	if ( ! isAdSenseLinked && isViewOnly ) {
+		return <WidgetNull />;
+	}
+
 	// A restricted metrics error will cause this value to change in the resolver
 	// so this check should happen before an error, which is only relevant if they are linked.
-	if ( ! isAdSenseLinked ) {
+	if ( ! isAdSenseLinked && ! isViewOnly ) {
 		return (
 			<Widget Footer={ Footer }>
 				<AdSenseLinkCTA />
@@ -180,7 +194,14 @@ function DashboardTopEarningPagesWidget( props ) {
 			primary: true,
 			Component: ( { row } ) => {
 				const [ title, url ] = row.dimensions;
-				return <Link href={ url } children={ title } external />;
+				return (
+					<Link
+						href={ url }
+						children={ title }
+						external
+						hideExternalIndicator
+					/>
+				);
 			},
 		},
 		{

@@ -38,9 +38,8 @@ const preloadedData = {
 describe( 'Preloading Middleware', () => {
 	it( 'returns a preloaded response when present', async () => {
 		const requestURI = 'test/path/a';
-		const preloadingMiddleware = createPreloadingMiddleware(
-			preloadedData
-		);
+		const preloadingMiddleware =
+			createPreloadingMiddleware( preloadedData );
 
 		const requestOptions = {
 			method: 'GET',
@@ -59,9 +58,8 @@ describe( 'Preloading Middleware', () => {
 		const firstRequestURI = 'test/path/a';
 		const secondRequestURI = 'test/path/b';
 
-		const preloadingMiddleware = createPreloadingMiddleware(
-			preloadedData
-		);
+		const preloadingMiddleware =
+			createPreloadingMiddleware( preloadedData );
 
 		const firstResponseNext = jest.fn();
 		const secondResponseNext = jest.fn();
@@ -113,9 +111,8 @@ describe( 'Preloading Middleware', () => {
 
 	it( 'returns a preloaded response only once for each preloaded request', async () => {
 		const requestURI = 'test/path/a';
-		const preloadingMiddleware = createPreloadingMiddleware(
-			preloadedData
-		);
+		const preloadingMiddleware =
+			createPreloadingMiddleware( preloadedData );
 
 		const requestOptions = {
 			method: 'GET',

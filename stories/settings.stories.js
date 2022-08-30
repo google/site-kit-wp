@@ -22,8 +22,6 @@
 import { storiesOf } from '@storybook/react';
 import Tab from '@material/react-tab';
 import TabBar from '@material/react-tab-bar';
-import { Router } from 'react-router-dom';
-import { createHashHistory } from 'history';
 
 /**
  * WordPress dependencies
@@ -39,15 +37,16 @@ import SettingsAdmin from '../assets/js/components/settings/SettingsAdmin';
 import { Grid } from '../assets/js/material-components';
 import {
 	provideModuleRegistrations,
+	provideModules,
 	provideSiteInfo,
 	WithTestRegistry,
 	untilResolved,
 } from '../tests/js/utils';
 import { CORE_MODULES } from '../assets/js/googlesitekit/modules/datastore/constants';
 import { CORE_USER } from '../assets/js/googlesitekit/datastore/user/constants';
-import { withConnected } from '../assets/js/googlesitekit/modules/datastore/__fixtures__';
 import settingsData from '../.storybook/__fixtures__/_googlesitekitLegacyData';
 import { CORE_SITE } from '../assets/js/googlesitekit/datastore/site/constants';
+import WithRegistrySetup from '../tests/js/WithRegistrySetup';
 
 /**
  * Add components to the settings page.
@@ -94,62 +93,64 @@ storiesOf( 'Settings', module )
 		'Connected Services',
 		() => {
 			const setupRegistry = ( registry ) => {
-				registry
-					.dispatch( CORE_MODULES )
-					.receiveGetModules(
-						withConnected(
-							'adsense',
-							'analytics',
-							'pagespeed-insights',
-							'search-console'
-						)
-					);
+				provideModules(
+					registry,
+					[
+						'adsense',
+						'analytics',
+						'pagespeed-insights',
+						'search-console',
+					].map( ( slug ) => ( {
+						slug,
+						active: true,
+						connected: true,
+					} ) )
+				);
 				provideModuleRegistrations( registry );
 			};
 
-			const history = createHashHistory();
-
 			return (
-				<WithTestRegistry callback={ setupRegistry }>
-					<Router history={ history }>
-						<SettingsModules />
-					</Router>
-				</WithTestRegistry>
+				<WithRegistrySetup func={ setupRegistry }>
+					<SettingsModules />
+				</WithRegistrySetup>
 			);
 		},
 		{
 			options: {
 				delay: 100, // Wait for screen to render.
 			},
+			route: '/connected-services',
 		}
 	)
-	.add( 'Connect More Services', () => {
-		const setupRegistry = async ( registry ) => {
-			registry
-				.dispatch( CORE_MODULES )
-				.receiveGetModules(
-					withConnected(
-						'adsense',
-						'pagespeed-insights',
-						'search-console'
+	.add(
+		'Connect More Services',
+		() => {
+			const setupRegistry = async ( registry ) => {
+				provideModules(
+					registry,
+					[ 'adsense', 'pagespeed-insights', 'search-console' ].map(
+						( slug ) => ( {
+							slug,
+							active: true,
+							connected: true,
+						} )
 					)
 				);
-			provideModuleRegistrations( registry );
-			registry.select( CORE_MODULES ).getModule( 'adsense' );
-			await untilResolved( registry, CORE_MODULES ).getModules();
-		};
+				provideModuleRegistrations( registry );
+				registry.select( CORE_MODULES ).getModule( 'adsense' );
+				await untilResolved( registry, CORE_MODULES ).getModules();
+			};
 
-		const history = createHashHistory();
-		history.push( '/connect-more-services' );
-
-		return (
-			<WithTestRegistry callback={ setupRegistry }>
-				<Router history={ history }>
+			return (
+				<WithRegistrySetup func={ setupRegistry }>
 					<SettingsModules />
-				</Router>
-			</WithTestRegistry>
-		);
-	} )
+				</WithRegistrySetup>
+			);
+		},
+		{
+			route: '/connect-more-services',
+		}
+	)
 	.add(
 		'Admin Settings',
 		() => {

@@ -94,9 +94,10 @@ export default function WPDashboardPopularPages( props ) {
 	);
 
 	const loading = useSelect( ( select ) => {
-		const reportLoaded = select(
-			MODULES_ANALYTICS
-		).hasFinishedResolution( 'getReport', [ reportArgs ] );
+		const reportLoaded = select( MODULES_ANALYTICS ).hasFinishedResolution(
+			'getReport',
+			[ reportArgs ]
+		);
 
 		const hasLoadedPageTitles = undefined !== error || undefined !== titles;
 
@@ -132,9 +133,9 @@ export default function WPDashboardPopularPages( props ) {
 
 	return (
 		<div className="googlesitekit-search-console-widget">
-			<h2 className="googlesitekit-search-console-widget__title">
+			<h3>
 				{ __( 'Top content over the last 28 days', 'google-site-kit' ) }
-			</h2>
+			</h3>
 			<TableOverflowContainer>
 				<ReportTable
 					rows={ rows }

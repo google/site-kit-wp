@@ -20,7 +20,11 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { useCallback, Fragment } from '@wordpress/element';
+import {
+	useCallback,
+	createInterpolateElement,
+	Fragment,
+} from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -30,6 +34,7 @@ import OptIn from '../OptIn';
 import Header from '../Header';
 import Button from '../Button';
 import Layout from '../layout/Layout';
+import Link from '../Link';
 import HelpMenu from '../help/HelpMenu';
 import SideKickSVG from '../../../svg/graphics/view-only-setup-sidekick.svg';
 import { SHARED_DASHBOARD_SPLASH_ITEM_KEY } from './constants';
@@ -50,6 +55,12 @@ export default function SetupUsingProxyViewOnly() {
 	const dashboardURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' )
 	);
+
+	const documentationURL = useSelect( ( select ) => {
+		return select( CORE_SITE ).getDocumentationLinkURL(
+			'dashboard-sharing'
+		);
+	} );
 
 	const onButtonClick = useCallback( () => {
 		Promise.all( [
@@ -74,7 +85,7 @@ export default function SetupUsingProxyViewOnly() {
 				<Grid>
 					<Row>
 						<Cell size={ 12 }>
-							<Layout>
+							<Layout rounded>
 								<section className="googlesitekit-setup__splash">
 									<Grid>
 										<Row className="googlesitekit-setup__content">
@@ -102,10 +113,31 @@ export default function SetupUsingProxyViewOnly() {
 														'google-site-kit'
 													) }
 												</h1>
-
 												<p className="googlesitekit-setup__description">
+													{ createInterpolateElement(
+														__(
+															"An administrator has granted you access to view this site's Dashboard to view stats from all shared Google services. <a>Learn more</a>",
+															'google-site-kit'
+														),
+														{
+															a: (
+																<Link
+																	aria-label={ __(
+																		'Learn more about dashboard sharing',
+																		'google-site-kit'
+																	) }
+																	href={
+																		documentationURL
+																	}
+																	external
+																/>
+															),
+														}
+													) }
+												</p>
+												<p>
 													{ __(
-														'Get insights about how people find and use your site, how to improve and monetize your content, directly in your WordPress dashboard',
+														'Get insights about how people find and use your site as well as how to improve and monetize your content, directly in your WordPress dashboard.',
 														'google-site-kit'
 													) }
 												</p>

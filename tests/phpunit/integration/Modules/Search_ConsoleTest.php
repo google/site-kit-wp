@@ -65,6 +65,108 @@ class Search_ConsoleTest extends TestCase {
 		$this->assertTrue( apply_filters( 'googlesitekit_setup_complete', true ) );
 	}
 
+	public function test_register__add_googlesitekit_authorize_user_action() {
+		$search_console = new Search_Console( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+
+		remove_all_actions( 'googlesitekit_authorize_user' );
+		$this->assertFalse( has_action( 'googlesitekit_authorize_user' ) );
+
+		$search_console->register();
+
+		$this->assertTrue( has_action( 'googlesitekit_authorize_user' ) );
+	}
+
+	public function test_register__property_id_saved_if_not_set() {
+		$search_console = new Search_Console( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		remove_all_actions( 'googlesitekit_authorize_user' );
+
+		$admin = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $admin );
+
+		$search_console->register();
+
+		// Test propertyID is merged if it doesn't exist.
+		update_option(
+			'googlesitekit_search-console_settings',
+			array(
+				'propertyID' => '',
+				'ownerID'    => '',
+			)
+		);
+
+		$test_token_response['search_console_property'] = 'https://example.com';
+		do_action( 'googlesitekit_authorize_user', $test_token_response );
+
+		$this->assertEqualSets(
+			array(
+				'propertyID' => 'https://example.com',
+				'ownerID'    => '',
+			),
+			get_option( 'googlesitekit_search-console_settings' )
+		);
+	}
+
+	public function test_register__property_id_saved_if_current_owner() {
+		$search_console = new Search_Console( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		remove_all_actions( 'googlesitekit_authorize_user' );
+
+		$admin = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $admin );
+
+		$search_console->register();
+
+		// Test propertyID is merged if the authorised user is also the owner of Search Console.
+		update_option(
+			'googlesitekit_search-console_settings',
+			array(
+				'propertyID' => 'https://example1.com',
+				'ownerID'    => $admin,
+			)
+		);
+
+		$test_token_response['search_console_property'] = 'https://example2.com';
+		do_action( 'googlesitekit_authorize_user', $test_token_response );
+
+		$this->assertEqualSets(
+			array(
+				'propertyID' => 'https://example2.com',
+				'ownerID'    => $admin,
+			),
+			get_option( 'googlesitekit_search-console_settings' )
+		);
+	}
+
+	public function test_register__property_id_not_updated() {
+		$search_console = new Search_Console( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		remove_all_actions( 'googlesitekit_authorize_user' );
+
+		$admin = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $admin );
+
+		$search_console->register();
+
+		// Test propertyID is not merged if the authorised user (another admin)
+		// is not the owner of Search Console.
+		update_option(
+			'googlesitekit_search-console_settings',
+			array(
+				'propertyID' => 'https://example1.com',
+				'ownerID'    => $admin + 10, // Make sure $admin is never the owner.
+			)
+		);
+
+		$test_token_response['search_console_property'] = 'https://example2.com';
+		do_action( 'googlesitekit_authorize_user', $test_token_response );
+
+		$this->assertEqualSets(
+			array(
+				'propertyID' => 'https://example1.com',
+				'ownerID'    => $admin + 10,
+			),
+			get_option( 'googlesitekit_search-console_settings' )
+		);
+	}
+
 	public function test_get_datapoints() {
 		$search_console = new Search_Console( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 

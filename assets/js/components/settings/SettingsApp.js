@@ -70,9 +70,10 @@ function SettingsApp() {
 							/>
 						</Cell>
 						<Cell size={ 12 }>
-							<Layout>
+							<Layout transparent rounded>
 								<TabBar
 									activeIndex={ activeTab }
+									className="googlesitekit-tab-bar__settings"
 									handleActiveIndexUpdate={ handleTabChange }
 								>
 									<Tab

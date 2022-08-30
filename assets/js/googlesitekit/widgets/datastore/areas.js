@@ -176,7 +176,7 @@ export const selectors = {
 	 * Returns `false` if the widget area is NOT active.
 	 *
 	 * @since 1.47.0
-	 * @since n.e.x.t Add options.modules parameter.
+	 * @since 1.77.0 Add options.modules parameter.
 	 *
 	 * @param {Object}         state             Data store's state.
 	 * @param {string}         slug              Widget area's slug.
@@ -185,20 +185,21 @@ export const selectors = {
 	 * @return {boolean} `true`/`false` based on whether widget area is active.
 	 */
 	isWidgetAreaActive: createRegistrySelector(
-		( select ) => ( state, widgetAreaSlug, options = {} ) => {
-			invariant(
-				widgetAreaSlug,
-				'widgetAreaSlug is required to check a widget area is active.'
-			);
-
-			const { modules } = options;
-
-			return select( CORE_WIDGETS )
-				.getWidgets( widgetAreaSlug, { modules } )
-				.some( ( widget ) =>
-					select( CORE_WIDGETS ).isWidgetActive( widget.slug )
+		( select ) =>
+			( state, widgetAreaSlug, options = {} ) => {
+				invariant(
+					widgetAreaSlug,
+					'widgetAreaSlug is required to check a widget area is active.'
 				);
-		}
+
+				const { modules } = options;
+
+				return select( CORE_WIDGETS )
+					.getWidgets( widgetAreaSlug, { modules } )
+					.some( ( widget ) =>
+						select( CORE_WIDGETS ).isWidgetActive( widget.slug )
+					);
+			}
 	),
 
 	/**

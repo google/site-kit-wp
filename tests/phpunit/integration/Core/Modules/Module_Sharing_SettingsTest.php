@@ -248,6 +248,16 @@ class Module_Sharing_SettingsTest extends SettingsTestCase {
 			)
 		);
 
+		// Modules with `empty` values are ignored.
+		$this->assertFalse(
+			$this->settings->merge(
+				array(
+					'search-console' => array(),
+					'analytics'      => array(),
+				)
+			)
+		);
+
 		// Merges settings with valid partials and keeps the rest.
 		$test_sharing_settings = array(
 			'search-console'     => array(

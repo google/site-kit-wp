@@ -20,7 +20,6 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
-import { CircularProgress } from '@material-ui/core';
 
 /**
  * Internal dependencies
@@ -36,6 +35,7 @@ import {
 	MODULES_IDEA_HUB,
 	IDEA_HUB_BUTTON_VIEW,
 } from '../../../datastore/constants';
+import { CircularProgress } from '../../../../../material-components';
 import Null from '../../../../../components/Null';
 import Button from '../../../../../components/Button';
 import useViewOnly from '../../../../../hooks/useViewOnly';
@@ -72,7 +72,11 @@ export default function IdeaActivityButton( {
 			disabled={ inProgress }
 			href={ href || undefined }
 			icon={
-				inProgress ? <CircularProgress size={ 24 } /> : <ActivityIcon />
+				inProgress ? (
+					<CircularProgress size={ 24 } />
+				) : (
+					<ActivityIcon width={ 24 } height={ 24 } />
+				)
 			}
 			title={ titlesMap[ activity ] }
 		>

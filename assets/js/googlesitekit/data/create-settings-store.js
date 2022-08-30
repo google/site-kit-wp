@@ -199,12 +199,10 @@ export const createSettingsStore = (
 			yield clearError( 'saveSettings', [] );
 
 			const values = registry.select( STORE_NAME ).getSettings();
-			const {
-				response,
-				error,
-			} = yield fetchSaveSettingsStore.actions.fetchSaveSettings(
-				values
-			);
+			const { response, error } =
+				yield fetchSaveSettingsStore.actions.fetchSaveSettings(
+					values
+				);
 			if ( error ) {
 				// Store error manually since saveSettings signature differs from fetchSaveSettings.
 				yield receiveError( error, 'saveSettings', [] );
@@ -281,7 +279,7 @@ export const createSettingsStore = (
 		 * Indicates whether the current settings have changed from what is saved.
 		 *
 		 * @since 1.6.0
-		 * @since n.e.x.t Added ability to filter settings using `keys` argument.
+		 * @since 1.77.0 Added ability to filter settings using `keys` argument.
 		 *
 		 * @param {Object}     state Data store's state.
 		 * @param {Array|null} keys  Settings keys to check; if not provided, all settings are checked.
@@ -342,7 +340,7 @@ export const createSettingsStore = (
 		/**
 		 * Gets the owned settings slugs for this module.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.77.0
 		 *
 		 * @param {Object} state Data store's state.
 		 * @return {Array|null} The array of owned settings slugs for this module if they exist. Returns `null` if no owned settings slugs exist.
@@ -354,15 +352,14 @@ export const createSettingsStore = (
 		/**
 		 * Returns `true` if a module's "own settings" have changed; `false` if not.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.77.0
 		 *
 		 * @param {Object} state Data store's state.
 		 * @return {boolean} `true` if the module's "own settings" have changed; `false` if not.
 		 */
 		haveOwnedSettingsChanged: createRegistrySelector( ( select ) => () => {
-			const ownedSettingsSlugsToCheck = select(
-				STORE_NAME
-			).getOwnedSettingsSlugs();
+			const ownedSettingsSlugsToCheck =
+				select( STORE_NAME ).getOwnedSettingsSlugs();
 
 			return select( STORE_NAME ).haveSettingsChanged(
 				ownedSettingsSlugsToCheck
@@ -495,9 +492,8 @@ export function makeDefaultRollbackChanges( storeName ) {
 export function makeDefaultCanSubmitChanges( storeName ) {
 	return ( select ) => {
 		const strictSelect = createStrictSelect( select );
-		const { haveSettingsChanged, isDoingSubmitChanges } = strictSelect(
-			storeName
-		);
+		const { haveSettingsChanged, isDoingSubmitChanges } =
+			strictSelect( storeName );
 
 		invariant( ! isDoingSubmitChanges(), INVARIANT_DOING_SUBMIT_CHANGES );
 		invariant( haveSettingsChanged(), INVARIANT_SETTINGS_NOT_CHANGED );
