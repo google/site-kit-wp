@@ -23,12 +23,12 @@ import { useCallback, useState, Fragment } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { MODULES_THANK_WITH_GOOGLE } from '../../datastore/constants';
 import {
-	getPlacementType,
+	MODULES_THANK_WITH_GOOGLE,
 	TYPE_FIXED,
 	TYPE_OVERLAY,
-} from '../../util/settings';
+} from '../../datastore/constants';
+import { getPlacementType } from '../../util/settings';
 import TypeRadio from './TypeRadio';
 import ProminenceRadio from './ProminenceRadio';
 import PositionRadio from './PositionRadio';

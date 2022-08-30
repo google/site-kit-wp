@@ -29,7 +29,7 @@ import { useCallback, useState } from '@wordpress/element';
  * Internal dependencies
  */
 import ImageRadio from '../../../../components/ImageRadio';
-import { TYPE_FIXED, TYPE_OVERLAY } from '../../util/settings';
+import { TYPE_FIXED, TYPE_OVERLAY } from '../../datastore/constants';
 
 export default function TypeRadio( props ) {
 	const { defaultType = TYPE_OVERLAY, onUpdate } = props;

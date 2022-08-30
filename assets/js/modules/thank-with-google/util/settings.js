@@ -39,10 +39,9 @@ import {
 	CTA_PLACEMENT_DYNAMIC_HIGH,
 	CTA_PLACEMENT_DYNAMIC_LOW,
 	CTA_PLACEMENT_STATIC_BELOW_1ST_PARAGRAPH,
+	TYPE_FIXED,
+	TYPE_OVERLAY,
 } from '../datastore/constants';
-
-export const TYPE_OVERLAY = 'overlay';
-export const TYPE_FIXED = 'fixed';
 
 /**
  * Gets color themes supported by Thank with Google.

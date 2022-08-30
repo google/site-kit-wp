@@ -26,7 +26,11 @@ import { __ } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import { MODULES_THANK_WITH_GOOGLE } from '../../datastore/constants';
+import {
+	MODULES_THANK_WITH_GOOGLE,
+	TYPE_FIXED,
+	TYPE_OVERLAY,
+} from '../../datastore/constants';
 import { Cell, Grid, Row } from '../../../../material-components';
 import DisplaySetting from '../../../../components/DisplaySetting';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
@@ -38,8 +42,6 @@ import {
 	getPlacementLabel,
 	getCTAPostTypesString,
 	getPlacementType,
-	TYPE_FIXED,
-	TYPE_OVERLAY,
 } from '../../util/settings';
 const { useSelect } = Data;
 
