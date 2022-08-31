@@ -21,7 +21,6 @@
  */
 import { getWidgetLayout } from './get-widget-layout';
 import ReportZero from '../../../components/ReportZero';
-import ActivateModuleCTA from '../../../components/ActivateModuleCTA';
 import { WIDGET_WIDTHS } from '../datastore/constants';
 import Null from '../../../components/Null';
 
@@ -53,10 +52,6 @@ describe( 'getWidgetLayout', () => {
 		Component: ReportZero,
 		metadata: { moduleSlug },
 	} );
-	const getActivateModuleCTAState = ( moduleSlug ) => ( {
-		Component: ActivateModuleCTA,
-		metadata: { moduleSlug },
-	} );
 	const getNullState = () => ( { Component: Null, metadata: {} } );
 
 	it( 'computes expected columnWidths', () => {
@@ -76,10 +71,7 @@ describe( 'getWidgetLayout', () => {
 			test1: getRegularState(),
 			test2: getReportZeroState( 'search-console' ),
 			test3: getReportZeroState( 'analytics' ),
-			test4: getActivateModuleCTAState( 'adsense' ),
-			test5: getActivateModuleCTAState( 'adsense' ),
-			test6: getActivateModuleCTAState( 'adsense' ),
-			test7: getNullState(),
+			test4: getNullState(),
 		};
 
 		// Phone and tablet column widths are static based on the widget width.
