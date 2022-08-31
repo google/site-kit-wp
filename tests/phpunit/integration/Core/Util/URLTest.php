@@ -21,29 +21,69 @@ class URLTest extends TestCase {
 	/**
 	 * @dataProvider data_urls
 	 */
-	public function test_parse( $url, $expected ) {
+	public function test_parse( $url, $component, $expected ) {
 		$this->assertEquals(
 			$expected,
-			URL::parse( $url )
+			URL::parse( $url, $component )
 		);
 	}
 
 	public function data_urls() {
 		return array(
-			'http://éxämplę.test'                    => array(
+			'Simple URL and requesting all components' => array(
 				'http://éxämplę.test',
+				-1,
 				array(
 					'scheme' => 'http',
 					'host'   => 'éxämplę.test',
 				),
 			),
-			'https://www.éxämplę.test/sub-directory' => array(
-				'https://www.éxämplę.test/sub-directory',
+			'URL with all components and requesting all components' => array(
+				'https://www.éxämplę.test:8080/sub-diręctory?nämé=john&surnäme=doé#änchor',
+				-1,
 				array(
-					'scheme' => 'https',
-					'host'   => 'www.éxämplę.test',
-					'path'   => '/sub-directory',
+					'scheme'   => 'https',
+					'host'     => 'www.éxämplę.test',
+					'port'     => '8080',
+					'path'     => '/sub-diręctory',
+					'query'    => 'nämé=john&surnäme=doé',
+					'fragment' => 'änchor',
 				),
+			),
+			'URL with all components and requesting URL scheme' => array(
+				'https://www.éxämplę.test:8080/sub-diręctory?nämé=john&surnäme=doé#änchor',
+				PHP_URL_SCHEME,
+				'https',
+			),
+			'Schemeless URL with all components and requesting URL scheme' => array(
+				'www.éxämplę.test:8080/sub-diręctory?nämé=john&surnäme=doé#änchor',
+				PHP_URL_SCHEME,
+				null,
+			),
+			'URL with all components and requesting URL host' => array(
+				'https://www.éxämplę.test:8080/sub-diręctory?nämé=john&surnäme=doé#änchor',
+				PHP_URL_HOST,
+				'www.éxämplę.test',
+			),
+			'Schemeless URL with all components and requesting URL port' => array(
+				'www.éxämplę.test:8080/sub-diręctory?nämé=john&surnäme=doé#änchor',
+				PHP_URL_PORT,
+				'8080',
+			),
+			'URL with all components and requesting URL path' => array(
+				'https://www.éxämplę.test:8080/sub-diręctory?nämé=john&surnäme=doé#änchor',
+				PHP_URL_PATH,
+				'/sub-diręctory',
+			),
+			'URL with all components and requesting URL query params' => array(
+				'https://www.éxämplę.test:8080/sub-diręctory?nämé=john&surnäme=doé#änchor',
+				PHP_URL_QUERY,
+				'nämé=john&surnäme=doé',
+			),
+			'URL with all components and requesting URL fragment' => array(
+				'https://www.éxämplę.test:8080/sub-diręctory?nämé=john&surnäme=doé#änchor',
+				PHP_URL_FRAGMENT,
+				'änchor',
 			),
 		);
 	}
