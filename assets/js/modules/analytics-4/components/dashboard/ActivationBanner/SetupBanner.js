@@ -33,7 +33,10 @@ import {
 } from '../../../../analytics-4/components/common';
 import ErrorNotice from '../../../../../components/ErrorNotice';
 import SpinnerButton from '../../../../../components/SpinnerButton';
-import { MODULES_ANALYTICS_4 } from '../../../datastore/constants';
+import {
+	MODULES_ANALYTICS_4,
+	PROPERTY_CREATE,
+} from '../../../datastore/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import useExistingTagEffect from '../../../../analytics-4/hooks/useExistingTagEffect';
 import { getBannerDismissalExpiryTime } from '../../../utils/banner-dismissal-expiry';
@@ -55,7 +58,8 @@ export default function SetupBanner( {} ) {
 		select( CORE_USER ).getReferenceDate()
 	);
 
-	const { submitChanges } = useDispatch( MODULES_ANALYTICS_4 );
+	const { submitChanges, selectProperty } =
+		useDispatch( MODULES_ANALYTICS_4 );
 
 	const handleSubmitChanges = useCallback( async () => {
 		const { error } = await submitChanges();
@@ -114,30 +118,34 @@ export default function SetupBanner( {} ) {
 				) }
 			</div>
 		);
-	} else if ( existingTag ) {
-		title = __(
-			'No existing Google Analytics 4 property found, Site Kit will help you create a new one and insert it on your site',
-			'google-site-kit'
-		);
-		ctaLabel = __( 'Create property', 'google-site-kit' );
-		footer = sprintf(
-			/* translators: %s: The existing tag ID. */
-			__(
-				'A GA4 tag %s is found on this site but this property is not associated with your Google Analytics account. You can always add/edit this in the Site Kit Settings.',
-				'google-site-kit'
-			),
-			existingTag
-		);
 	} else {
-		title = __(
-			'No existing Google Analytics 4 property found, Site Kit will help you create a new one and insert it on your site',
-			'google-site-kit'
-		);
-		ctaLabel = __( 'Create property', 'google-site-kit' );
-		footer = __(
-			'You can always add/edit this in the Site Kit Settings.',
-			'google-site-kit'
-		);
+		selectProperty( PROPERTY_CREATE );
+
+		if ( existingTag ) {
+			title = __(
+				'No existing Google Analytics 4 property found, Site Kit will help you create a new one and insert it on your site',
+				'google-site-kit'
+			);
+			ctaLabel = __( 'Create property', 'google-site-kit' );
+			footer = sprintf(
+				/* translators: %s: The existing tag ID. */
+				__(
+					'A GA4 tag %s is found on this site but this property is not associated with your Google Analytics account. You can always add/edit this in the Site Kit Settings.',
+					'google-site-kit'
+				),
+				existingTag
+			);
+		} else {
+			title = __(
+				'No existing Google Analytics 4 property found, Site Kit will help you create a new one and insert it on your site',
+				'google-site-kit'
+			);
+			ctaLabel = __( 'Create property', 'google-site-kit' );
+			footer = __(
+				'You can always add/edit this in the Site Kit Settings.',
+				'google-site-kit'
+			);
+		}
 	}
 
 	return (
