@@ -34,7 +34,6 @@ import { sprintf } from '@wordpress/i18n';
 import ChangeArrow from './ChangeArrow';
 import SourceLink from './SourceLink';
 import GatheringDataNotice, { NOTICE_STYLE } from './GatheringDataNotice';
-import { isFeatureEnabled } from '../features';
 import { numFmt } from '../util';
 
 class DataBlock extends Component {
@@ -114,8 +113,6 @@ class DataBlock extends Component {
 			datapoint === undefined
 				? datapoint
 				: numFmt( datapoint, datapointUnit || undefined );
-
-		const zeroDataStatesEnabled = isFeatureEnabled( 'zeroDataStates' );
 
 		return (
 			<div
@@ -214,7 +211,7 @@ class DataBlock extends Component {
 					</Fragment>
 				) }
 
-				{ gatheringData && zeroDataStatesEnabled && (
+				{ gatheringData && (
 					<GatheringDataNotice style={ gatheringDataNoticeStyle } />
 				) }
 			</div>

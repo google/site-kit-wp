@@ -38,6 +38,7 @@ use WP_REST_Request;
 use WP_REST_Response;
 use WP_Error;
 use Exception;
+use Google\Site_Kit\Core\Util\Build_Mode;
 
 /**
  * Class managing the different modules.
@@ -140,7 +141,7 @@ final class Modules {
 	 * @since 1.75.0
 	 * @var REST_Dashboard_Sharing_Controller
 	 */
-	private $rest_controller;
+	private $rest_dashboard_sharing_controller;
 
 	/**
 	 * Core module class names.
@@ -188,13 +189,43 @@ final class Modules {
 		if ( Feature_Flags::enabled( 'ideaHubModule' ) ) {
 			$this->core_modules[ Idea_Hub::MODULE_SLUG ] = Idea_Hub::class;
 		}
-		if ( Feature_Flags::enabled( 'twgModule' ) ) {
+
+		if ( self::should_enable_twg() ) {
 			$this->core_modules[ Thank_With_Google::MODULE_SLUG ] = Thank_With_Google::class;
 		}
 
 		if ( Feature_Flags::enabled( 'dashboardSharing' ) ) {
 			$this->rest_dashboard_sharing_controller = new REST_Dashboard_Sharing_Controller( $this );
 		}
+	}
+
+	/**
+	 * Determines if Thank with Google module should be enabled.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return bool True if the module should be enabled, false otherwise.
+	 */
+	public static function should_enable_twg() {
+		if ( ! Feature_Flags::enabled( 'twgModule' ) ) {
+			return false;
+		}
+
+		if ( Build_Mode::get_mode() === Build_Mode::MODE_DEVELOPMENT ) {
+			return true;
+		}
+
+		if ( is_ssl() ) {
+			return true;
+		}
+
+		if ( isset( $_SERVER['HTTP_X_FORWARDED_PROTO'] ) && 'https' === $_SERVER['HTTP_X_FORWARDED_PROTO'] ) {
+			return true;
+		}
+
+		// Because we aren't in development mode and haven't detected SSL being enabled, TwG should
+		// not be enabled.
+		return false;
 	}
 
 	/**

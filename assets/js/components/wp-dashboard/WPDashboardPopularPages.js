@@ -41,14 +41,10 @@ import TableOverflowContainer from '../../components/TableOverflowContainer';
 import ReportTable from '../ReportTable';
 import DetailsPermaLinks from '../DetailsPermaLinks';
 import { numFmt } from '../../util';
-import { isFeatureEnabled } from '../../features';
-import { isZeroReport } from '../../modules/analytics/util';
 const { useSelect, useInViewSelect } = Data;
 
 export default function WPDashboardPopularPages( props ) {
-	const { WidgetReportZero, WidgetReportError } = props;
-
-	const zeroDataStatesEnabled = isFeatureEnabled( 'zeroDataStates' );
+	const { WidgetReportError } = props;
 
 	const isGatheringData = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).isGatheringData()
@@ -110,14 +106,6 @@ export default function WPDashboardPopularPages( props ) {
 
 	if ( error ) {
 		return <WidgetReportError moduleSlug="analytics" error={ error } />;
-	}
-
-	if (
-		! zeroDataStatesEnabled &&
-		isGatheringData &&
-		isZeroReport( report )
-	) {
-		return <WidgetReportZero moduleSlug="analytics" />;
 	}
 
 	// data.rows is not guaranteed to be set so we need a fallback.

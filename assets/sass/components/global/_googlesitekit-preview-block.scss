@@ -33,7 +33,7 @@
 	}
 
 	&__wrapper {
-		animation: pulse 1s infinite ease-in-out;
+		animation: googlesitekit-pulse 1s infinite ease-in-out;
 		animation-direction: alternate;
 		flex: 1 1 auto;
 
@@ -48,7 +48,7 @@
 	}
 }
 
-@keyframes pulse {
+@keyframes googlesitekit-pulse {
 
 	0% {
 		background-color: $c-surfaces-surface-1;

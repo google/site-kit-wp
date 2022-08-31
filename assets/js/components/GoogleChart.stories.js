@@ -106,9 +106,6 @@ LineChartGatheringData.args = {
 	},
 	gatheringData: true,
 };
-LineChartGatheringData.parameters = {
-	features: [ 'zeroDataStates' ],
-};
 
 export default {
 	title: 'Components/GoogleChart',
