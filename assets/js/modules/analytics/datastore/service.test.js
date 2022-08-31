@@ -267,8 +267,10 @@ describe( 'module/analytics service store', () => {
 			const reportServiceURL = registry
 				.select( MODULES_ANALYTICS )
 				.getServiceEntityAccessURL();
-			const url = new URL( reportServiceURL );
-			expect( reportServiceURL.startsWith( baseURI ) ).toBe( true );
+			const decodedServiceURL = decodeServiceURL( reportServiceURL );
+			const url = new URL( decodedServiceURL );
+
+			expect( decodedServiceURL.startsWith( baseURI ) ).toBe( true );
 			expect( url.hash ).toBe(
 				`#/report/report-home/a${ accountID }w${ internalWebPropertyID }p${ profileID }/`
 			);
