@@ -57,13 +57,19 @@ export default function PropertySelect( { label, hasModuleAccess } ) {
 	const accountID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getAccountID()
 	);
-	const properties = useSelect(
-		( select ) =>
-			select( MODULES_ANALYTICS_4 ).getProperties( accountID ) || []
-	);
+
+	const properties = useSelect( ( select ) => {
+		if ( hasModuleAccess === false ) {
+			return null;
+		}
+
+		return select( MODULES_ANALYTICS_4 ).getProperties( accountID ) || [];
+	} );
+
 	const propertyID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getPropertyID()
 	);
+
 	const isLoading = useSelect(
 		( select ) =>
 			! select( MODULES_ANALYTICS ).hasFinishedResolution(

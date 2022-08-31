@@ -89,6 +89,24 @@ describe( 'PropertySelect', () => {
 		expect( listItems ).toHaveLength( properties.length + 1 );
 	} );
 
+	it( 'should disable the property select if the user does not have module access', () => {
+		const { container, getAllByRole } = render(
+			<PropertySelect hasModuleAccess={ false } />,
+			{ setupRegistry }
+		);
+
+		const listItems = getAllByRole( 'menuitem', { hidden: true } );
+		expect( listItems ).toHaveLength( 1 );
+
+		// Verify that the Property select dropdown is disabled.
+		[
+			'.googlesitekit-analytics__select-property',
+			'.mdc-select--disabled',
+		].forEach( ( className ) => {
+			expect( container.querySelector( className ) ).toBeInTheDocument();
+		} );
+	} );
+
 	it( 'should not render if account ID is not valid', async () => {
 		const { container, registry } = render( <PropertySelect />, {
 			setupRegistry,

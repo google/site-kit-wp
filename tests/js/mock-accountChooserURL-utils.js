@@ -1,5 +1,5 @@
 /**
- * EntityBannerNotifications component.
+ * Helper functions for mocking accountChooserURL URL's.
  *
  * Site Kit by Google, Copyright 2022 Google LLC
  *
@@ -17,13 +17,30 @@
  */
 
 /**
- * Internal dependencies
+ * Decodes an account chooser URLs `continue` argument.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} receivedURL The URL to decode.
+ * @return {string} The decoded URL.
  */
-import { useFeature } from '../../hooks/useFeature';
-import { ActivationBanner } from '../../modules/analytics-4/components/dashboard';
+export const decodeServiceURL = ( receivedURL ) => {
+	const url = new URL( receivedURL );
 
-export default function EntityBannerNotifications() {
-	const ga4ActivationBannerEnabled = useFeature( 'ga4ActivationBanner' );
+	const received = Array.from( url.searchParams ).reduce(
+		( object, [ key, value ] ) => {
+			object[ key ] = value;
 
-	return ga4ActivationBannerEnabled && <ActivationBanner />;
-}
+			return object;
+		},
+		{}
+	);
+
+	if ( ! received.continue ) {
+		return;
+	}
+
+	const serviceURL = decodeURIComponent( received.continue );
+
+	return serviceURL;
+};
