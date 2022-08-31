@@ -108,15 +108,17 @@ export const selectors = {
 	 *
 	 * @return {string} The entity access URL to the service.
 	 */
-	getServiceEntityAccessURL: createRegistrySelector( ( select ) => () => {
-		const baseURI = 'https://search.google.com/search-console';
-		const propertyID = select( MODULES_SEARCH_CONSOLE ).getPropertyID();
-		const queryArgs = {
-			resource_id: propertyID,
-		};
+	getServiceEntityAccessURL: createRegistrySelector(
+		( select ) => ( state ) => {
+			const propertyID = select( MODULES_SEARCH_CONSOLE ).getPropertyID();
 
-		return addQueryArgs( baseURI, queryArgs );
-	} ),
+			const query = {
+				resource_id: propertyID,
+			};
+
+			return selectors.getServiceURL( state, { query } );
+		}
+	),
 
 	/**
 	 * Checks whether the Search Console property is a domain property.
