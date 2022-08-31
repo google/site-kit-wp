@@ -123,11 +123,6 @@ describe( 'date range filtering on dashboard views', () => {
 			),
 			switchDateRange( 'last 28 days', 'last 7 days' ),
 		] );
-
-		// Ensure Search Console shows no data.
-		await expect( page ).toMatchElement( '.googlesitekit-cta__title', {
-			text: /Search Console Gathering Data/i,
-		} );
 	} );
 
 	it( 'loads new data when the date range is changed on a dashboard details view for a single post', async () => {

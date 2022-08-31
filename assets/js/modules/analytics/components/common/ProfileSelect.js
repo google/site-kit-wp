@@ -44,9 +44,15 @@ export default function ProfileSelect( { hasModuleAccess } ) {
 	const profileID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getProfileID()
 	);
-	const profiles = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).getProfiles( accountID, propertyID )
-	);
+
+	const profiles = useSelect( ( select ) => {
+		if ( hasModuleAccess === false ) {
+			return null;
+		}
+
+		return select( MODULES_ANALYTICS ).getProfiles( accountID, propertyID );
+	} );
+
 	const isLoading = useSelect( ( select ) => {
 		return (
 			! select( MODULES_ANALYTICS ).hasFinishedResolution(

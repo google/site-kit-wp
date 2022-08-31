@@ -30,19 +30,15 @@ import {
 	MODULES_SEARCH_CONSOLE,
 } from '../../modules/search-console/datastore/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import { isZeroReport } from '../../modules/search-console/util';
 import DataBlock from '../DataBlock';
 import PreviewBlock from '../PreviewBlock';
 import { NOTICE_STYLE } from '../GatheringDataNotice';
 import { calculateChange } from '../../util';
 import sumObjectListValue from '../../util/sum-object-list-value';
 import { partitionReport } from '../../util/partition-report';
-import { useFeature } from '../../hooks/useFeature';
 const { useSelect, useInViewSelect } = Data;
 
-const WPDashboardImpressions = ( { WidgetReportZero, WidgetReportError } ) => {
-	const zeroDataStatesEnabled = useFeature( 'zeroDataStates' );
-
+const WPDashboardImpressions = ( { WidgetReportError } ) => {
 	const isGatheringData = useInViewSelect( ( select ) =>
 		select( MODULES_SEARCH_CONSOLE ).isGatheringData()
 	);
@@ -88,10 +84,6 @@ const WPDashboardImpressions = ( { WidgetReportZero, WidgetReportError } ) => {
 		);
 	}
 
-	if ( ! zeroDataStatesEnabled && isGatheringData && isZeroReport( data ) ) {
-		return <WidgetReportZero moduleSlug="search-console" />;
-	}
-
 	const { compareRange, currentRange } = partitionReport( data, {
 		dateRangeLength,
 	} );
@@ -105,12 +97,10 @@ const WPDashboardImpressions = ( { WidgetReportZero, WidgetReportError } ) => {
 		totalImpressions
 	);
 
-	const gatheringDataProps = zeroDataStatesEnabled
-		? {
-				gatheringData: isGatheringData,
-				gatheringDataNoticeStyle: NOTICE_STYLE.SMALL,
-		  }
-		: {};
+	const gatheringDataProps = {
+		gatheringData: isGatheringData,
+		gatheringDataNoticeStyle: NOTICE_STYLE.SMALL,
+	};
 
 	return (
 		<DataBlock

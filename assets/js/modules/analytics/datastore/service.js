@@ -51,22 +51,25 @@ export const selectors = {
 	getServiceURL: createRegistrySelector(
 		( select ) =>
 			( state, { path, query } = {} ) => {
-				const userEmail = select( CORE_USER ).getEmail();
+				let serviceURL = 'https://analytics.google.com/analytics/web/';
 
-				if ( userEmail === undefined ) {
+				if ( query ) {
+					serviceURL = addQueryArgs( serviceURL, query );
+				}
+
+				if ( path ) {
+					const sanitizedPath = `/${ path.replace( /^\//, '' ) }`;
+					serviceURL = `${ serviceURL }#${ sanitizedPath }`;
+				}
+
+				const accountChooserBaseURI =
+					select( CORE_USER ).getAccountChooserURL( serviceURL );
+
+				if ( accountChooserBaseURI === undefined ) {
 					return undefined;
 				}
 
-				const baseURI = 'https://analytics.google.com/analytics/web/';
-				const queryParams = query
-					? { ...query, authuser: userEmail }
-					: { authuser: userEmail };
-				const baseURIWithQuery = addQueryArgs( baseURI, queryParams );
-				if ( path ) {
-					const sanitizedPath = `/${ path.replace( /^\//, '' ) }`;
-					return `${ baseURIWithQuery }#${ sanitizedPath }`;
-				}
-				return baseURIWithQuery;
+				return accountChooserBaseURI;
 			}
 	),
 

@@ -26,6 +26,7 @@ import {
 } from '../../../../../tests/js/utils';
 import { MODULES_OPTIMIZE } from './constants';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
+import { decodeServiceURL } from '../../../../../tests/js/mock-accountChooserURL-utils';
 
 describe( 'module/optimize service store', () => {
 	const userData = {
@@ -53,25 +54,28 @@ describe( 'module/optimize service store', () => {
 				const serviceURL = registry
 					.select( MODULES_OPTIMIZE )
 					.getServiceURL();
-				expect( serviceURL ).toBe(
-					`${ baseURI }?authuser=${ encodeURIComponent(
-						userData.email
-					) }`
+
+				expect( serviceURL ).toMatchInlineSnapshot(
+					'"https://accounts.google.com/accountchooser?continue=https%3A%2F%2Foptimize.google.com%2Foptimize%2Fhome%2F&Email=admin%40example.com"'
 				);
 			} );
 
 			it( 'adds the path parameter', () => {
-				const expectedURL = `${ baseURI }?authuser=${ encodeURIComponent(
-					userData.email
-				) }#/test/path/to/deeplink`;
 				const serviceURLNoSlashes = registry
 					.select( MODULES_OPTIMIZE )
 					.getServiceURL( { path: 'test/path/to/deeplink' } );
-				expect( serviceURLNoSlashes ).toEqual( expectedURL );
+
+				expect( serviceURLNoSlashes ).toMatchInlineSnapshot(
+					'"https://accounts.google.com/accountchooser?continue=https%3A%2F%2Foptimize.google.com%2Foptimize%2Fhome%2F%23%2Ftest%2Fpath%2Fto%2Fdeeplink&Email=admin%40example.com"'
+				);
+
 				const serviceURLWithLeadingSlash = registry
 					.select( MODULES_OPTIMIZE )
 					.getServiceURL( { path: '/test/path/to/deeplink' } );
-				expect( serviceURLWithLeadingSlash ).toEqual( expectedURL );
+
+				expect( serviceURLWithLeadingSlash ).toMatchInlineSnapshot(
+					'"https://accounts.google.com/accountchooser?continue=https%3A%2F%2Foptimize.google.com%2Foptimize%2Fhome%2F%23%2Ftest%2Fpath%2Fto%2Fdeeplink&Email=admin%40example.com"'
+				);
 			} );
 
 			it( 'adds query args', async () => {
@@ -84,9 +88,14 @@ describe( 'module/optimize service store', () => {
 				const serviceURL = registry
 					.select( MODULES_OPTIMIZE )
 					.getServiceURL( { path, query } );
-				expect( serviceURL.startsWith( baseURI ) ).toBe( true );
-				expect( serviceURL.endsWith( `#${ path }` ) ).toBe( true );
-				expect( serviceURL ).toMatchQueryParameters( query );
+
+				const decodedServiceURL = decodeServiceURL( serviceURL );
+
+				expect( decodedServiceURL.startsWith( baseURI ) ).toBe( true );
+				expect( decodedServiceURL.endsWith( `#${ path }` ) ).toBe(
+					true
+				);
+				expect( decodedServiceURL ).toMatchQueryParameters( query );
 			} );
 		} );
 	} );
