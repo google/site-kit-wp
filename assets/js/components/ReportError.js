@@ -176,7 +176,7 @@ export default function ReportError( { moduleSlug, error } ) {
 						{ __( 'Retry', 'google-site-kit' ) }
 					</Button>
 					<span className="googlesitekit-error-retry-text">
-						{ __( "Retry didn't work?", 'google-site-kit' ) }{ ' ' }
+						{ __( 'Retry didn’t work?', 'google-site-kit' ) }{ ' ' }
 					</span>
 					<Link href={ errorTroubleshootingLinkURL } external>
 						{ __( 'Get help', 'google-site-kit' ) }
