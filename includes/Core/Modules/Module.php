@@ -25,6 +25,7 @@ use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
 use Google\Site_Kit\Core\REST_API\Exception\Invalid_Datapoint_Exception;
 use Google\Site_Kit\Core\REST_API\Data_Request;
+use Google\Site_Kit\Core\Util\URL;
 use Google\Site_Kit_Dependencies\Google\Service as Google_Service;
 use Google\Site_Kit_Dependencies\Google_Service_Exception;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
@@ -501,8 +502,8 @@ abstract class Module {
 	 * @return array List of permutations.
 	 */
 	final protected function permute_site_url( $site_url ) {
-		$hostname = wp_parse_url( $site_url, PHP_URL_HOST );
-		$path     = wp_parse_url( $site_url, PHP_URL_PATH );
+		$hostname = URL::parse( $site_url, PHP_URL_HOST );
+		$path     = URL::parse( $site_url, PHP_URL_PATH );
 
 		return array_reduce(
 			$this->permute_site_hosts( $hostname ),
