@@ -190,15 +190,18 @@ describe( 'module/search-console service store', () => {
 			beforeEach( () => {
 				registry
 					.dispatch( MODULES_SEARCH_CONSOLE )
-					.setPropertyID( propertyID );
+					.setPropertyID( domainPropertyID );
 			} );
 
 			it( 'adds the `resource_id` query arg for the current property ID', () => {
 				const serviceURL = registry
 					.select( MODULES_SEARCH_CONSOLE )
 					.getServiceEntityAccessURL();
-				expect( serviceURL ).toMatchQueryParameters( {
-					resource_id: propertyID,
+
+				const decodedServiceURL = decodeServiceURL( serviceURL );
+
+				expect( decodedServiceURL ).toMatchQueryParameters( {
+					resource_id: domainPropertyID,
 				} );
 			} );
 		} );
