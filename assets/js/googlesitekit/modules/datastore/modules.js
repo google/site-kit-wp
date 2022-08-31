@@ -449,66 +449,6 @@ const baseActions = {
 	},
 
 	/**
-	 * Recovers a module on the server.
-	 *
-	 * Recover a module (based on the slug provided).
-	 *
-	 * @since 1.74.0
-	 *
-	 * @param {string} slug Slug of the module to recover.
-	 * @return {Object} Object with `{response, error}`.
-	 */
-	recoverModule: createValidatedAction(
-		( slug ) => {
-			invariant( slug, 'slug is required' );
-		},
-		function* ( slug ) {
-			const { dispatch, select } = yield Data.commonActions.getRegistry();
-
-			const { response, error } =
-				yield fetchRecoverModuleStore.actions.fetchRecoverModule(
-					slug
-				);
-
-			if ( response?.ownerID ) {
-				const storeName =
-					select( CORE_MODULES ).getModuleStoreName( slug );
-				// Reload the module's settings from the server.
-				yield dispatch( storeName ).fetchGetSettings();
-
-				// Reload all modules from the server.
-				yield fetchGetModulesStore.actions.fetchGetModules();
-
-				const recoverableModules =
-					select( CORE_MODULES ).getRecoverableModules();
-
-				if ( recoverableModules?.[ slug ] ) {
-					// Remove the module from the list of recoverable modules in state.
-					yield baseActions.receiveRecoverableModules(
-						Object.keys( recoverableModules ).filter(
-							( recoverableModuleSlug ) =>
-								recoverableModuleSlug !== slug
-						)
-					);
-				}
-
-				return {
-					response: {
-						success: true,
-					},
-				};
-			}
-
-			return {
-				response: {
-					success: false,
-				},
-				error,
-			};
-		}
-	),
-
-	/**
 	 * Recovers multiple modules on the server.
 	 *
 	 * Recovers multiple modules (based on the slugs provided).
