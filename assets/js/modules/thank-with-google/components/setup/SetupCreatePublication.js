@@ -42,7 +42,7 @@ export default function SetupCreatePublication() {
 				'google-site-kit'
 			) }
 			description={ __(
-				'To get started, create an account. Currently available only in the US.',
+				"To get started, create an account. Currently available only in the US. If setup failed because you're outside the US, disconnect Thank with Google in your Settings.",
 				'google-site-kit'
 			) }
 		>
