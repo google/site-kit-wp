@@ -456,7 +456,7 @@ describe( 'ReportError', () => {
 		expect(
 			getByRole( 'link', { name: /get help/i } )
 		).toBeInTheDocument();
-		expect( queryByText( /retry didn't work/i ) ).not.toBeInTheDocument();
+		expect( queryByText( /retry didn’t work/i ) ).not.toBeInTheDocument();
 	} );
 
 	it( 'should render `Get help` link with prefix text on retryable error', () => {
@@ -493,6 +493,6 @@ describe( 'ReportError', () => {
 		expect(
 			getByRole( 'link', { name: /get help/i } )
 		).toBeInTheDocument();
-		expect( queryByText( /retry didn't work/i ) ).toBeInTheDocument();
+		expect( queryByText( /retry didn’t work/i ) ).toBeInTheDocument();
 	} );
 } );
