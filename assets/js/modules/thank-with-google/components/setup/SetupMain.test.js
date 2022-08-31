@@ -140,7 +140,7 @@ describe( 'SetupMain', () => {
 		} );
 
 		expect( container ).toHaveTextContent(
-			"To get started, create an account. Currently available only in the US. If setup failed because you're outside the US, disconnect Thank with Google in your Settings."
+			'To get started, create an account. Currently available only in the US. If setup failed because you’re outside the US, disconnect Thank with Google in your Settings.'
 		);
 	} );
 
