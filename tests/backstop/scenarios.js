@@ -88,9 +88,8 @@ storyFiles.forEach( ( storyFile ) => {
 				stories[ node.left.object.name ] = {};
 			}
 
-			stories[ node.left.object.name ][
-				node.left.property.name
-			] = nodeValue;
+			stories[ node.left.object.name ][ node.left.property.name ] =
+				nodeValue;
 		},
 	} );
 

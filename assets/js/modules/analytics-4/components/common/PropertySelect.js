@@ -46,25 +46,39 @@ import useViewContext from '../../../../hooks/useViewContext';
 const { useSelect, useDispatch } = Data;
 
 export default function PropertySelect( { label, hasModuleAccess } ) {
+	// Analytics accounts need to be loaded in order to load the properties,
+	// otherwise this component will stay in a loading state forever.
+	// eslint-disable-next-line no-unused-vars
+	const accounts = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getAccounts()
+	);
+
 	// TODO: Update this select hook to pull accountID from the modules/analytics-4 datastore when GA4 module becomes separated from the Analytics one
 	const accountID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getAccountID()
 	);
-	const properties = useSelect(
-		( select ) =>
-			select( MODULES_ANALYTICS_4 ).getProperties( accountID ) || []
-	);
+
+	const properties = useSelect( ( select ) => {
+		if ( hasModuleAccess === false ) {
+			return null;
+		}
+
+		return select( MODULES_ANALYTICS_4 ).getProperties( accountID ) || [];
+	} );
+
 	const propertyID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getPropertyID()
 	);
+
 	const isLoading = useSelect(
 		( select ) =>
 			! select( MODULES_ANALYTICS ).hasFinishedResolution(
 				'getAccounts'
 			) ||
-			! select(
-				MODULES_ANALYTICS_4
-			).hasFinishedResolution( 'getProperties', [ accountID ] ) ||
+			! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
+				'getProperties',
+				[ accountID ]
+			) ||
 			select( MODULES_ANALYTICS ).hasFinishedSelectingAccount() === false
 	);
 

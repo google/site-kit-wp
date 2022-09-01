@@ -358,9 +358,8 @@ describe( 'modules/analytics report', () => {
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/report/
 				);
 
-				const { isGatheringData } = registry.select(
-					MODULES_ANALYTICS
-				);
+				const { isGatheringData } =
+					registry.select( MODULES_ANALYTICS );
 
 				expect( isGatheringData() ).toBeUndefined();
 			} );
@@ -373,9 +372,8 @@ describe( 'modules/analytics report', () => {
 					}
 				);
 
-				const { isGatheringData } = registry.select(
-					MODULES_ANALYTICS
-				);
+				const { isGatheringData } =
+					registry.select( MODULES_ANALYTICS );
 
 				expect( isGatheringData() ).toBeUndefined();
 
@@ -395,9 +393,8 @@ describe( 'modules/analytics report', () => {
 					}
 				);
 
-				const { isGatheringData } = registry.select(
-					MODULES_ANALYTICS
-				);
+				const { isGatheringData } =
+					registry.select( MODULES_ANALYTICS );
 
 				expect( isGatheringData() ).toBeUndefined();
 
@@ -417,9 +414,8 @@ describe( 'modules/analytics report', () => {
 					}
 				);
 
-				const { isGatheringData } = registry.select(
-					MODULES_ANALYTICS
-				);
+				const { isGatheringData } =
+					registry.select( MODULES_ANALYTICS );
 
 				expect( isGatheringData() ).toBeUndefined();
 
@@ -451,9 +447,8 @@ describe( 'modules/analytics report', () => {
 					{ body: [ { data: { rows: null } } ] }
 				);
 
-				const { hasZeroData, isGatheringData } = registry.select(
-					MODULES_ANALYTICS
-				);
+				const { hasZeroData, isGatheringData } =
+					registry.select( MODULES_ANALYTICS );
 
 				expect( hasZeroData() ).toBeUndefined();
 
@@ -492,9 +487,8 @@ describe( 'modules/analytics report', () => {
 					}
 				);
 
-				const { hasZeroData, isGatheringData } = registry.select(
-					MODULES_ANALYTICS
-				);
+				const { hasZeroData, isGatheringData } =
+					registry.select( MODULES_ANALYTICS );
 
 				expect( hasZeroData() ).toBeUndefined();
 

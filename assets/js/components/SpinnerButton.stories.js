@@ -1,7 +1,5 @@
 /**
- * Admin Bar Zero Data Component Stories.
- *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2022 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,22 +17,18 @@
 /**
  * Internal dependencies
  */
-import AdminBarZeroData from './AdminBarZeroData';
+import SpinnerButton from './SpinnerButton';
 
-const Template = ( args ) => <AdminBarZeroData { ...args } />;
+const Template = ( args ) => <SpinnerButton { ...args } />;
 
-export const Ready = Template.bind( {} );
-Ready.storyName = 'Gathering Data (Legacy)';
+export const DefaultButton = Template.bind( {} );
+DefaultButton.storyName = 'Default Button';
+DefaultButton.args = {
+	children: 'Default Button',
+	onClick: () => new Promise( ( resolve ) => setTimeout( resolve, 5000 ) ),
+};
 
 export default {
-	title: 'Views/AdminBarApp/AdminBarZeroData',
-	decorators: [
-		( Story ) => (
-			<div className="googlesitekit-widget">
-				<div className="googlesitekit-widget__body">
-					<Story />
-				</div>
-			</div>
-		),
-	],
+	title: 'Components/SpinnerButton',
+	component: SpinnerButton,
 };

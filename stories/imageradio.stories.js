@@ -81,6 +81,7 @@ storiesOf( 'Global', module ).add( 'Image Radios', () => (
 				id="image-radio-story"
 				name="image-radio-story"
 				value="story"
+				onChange={ ( e ) => e }
 				image={ image }
 				label="Image Radio"
 				description="This is a description"
@@ -91,6 +92,7 @@ storiesOf( 'Global', module ).add( 'Image Radios', () => (
 				id="image-radio-story"
 				name="image-radio-story"
 				value="story"
+				onChange={ ( e ) => e }
 				image={ image }
 				label="Image Radio"
 				description="This is a description"
@@ -104,6 +106,7 @@ storiesOf( 'Global', module ).add( 'Image Radios', () => (
 				id="image-radio-story"
 				name="image-radio-story"
 				value="story"
+				onChange={ ( e ) => e }
 				label="Image Radio"
 				description="This is a description"
 			>
@@ -115,6 +118,7 @@ storiesOf( 'Global', module ).add( 'Image Radios', () => (
 				id="image-radio-story"
 				name="image-radio-story"
 				value="story"
+				onChange={ ( e ) => e }
 				label="Image Radio"
 				description="This is a description"
 				checked

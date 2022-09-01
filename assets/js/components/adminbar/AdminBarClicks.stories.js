@@ -29,9 +29,8 @@ import {
 import AdminBarClicks from './AdminBarClicks';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 
-const WidgetWithComponentProps = withWidgetComponentProps( 'widget-slug' )(
-	AdminBarClicks
-);
+const WidgetWithComponentProps =
+	withWidgetComponentProps( 'widget-slug' )( AdminBarClicks );
 
 const Template = ( { setupRegistry = () => {}, ...args } ) => (
 	<WithRegistrySetup func={ setupRegistry }>
@@ -45,25 +44,16 @@ Ready.args = {
 	setupRegistry: setupSearchConsoleMockReports,
 };
 
-export const GatheringDataLegacy = Template.bind( {} );
-GatheringDataLegacy.storyName = 'Gathering Data (Legacy)';
-
 export const GatheringData = Template.bind( {} );
 GatheringData.storyName = 'Gathering Data';
 GatheringData.args = {
 	setupRegistry: setupSearchConsoleGatheringData,
-};
-GatheringData.parameters = {
-	features: [ 'zeroDataStates' ],
 };
 
 export const ZeroData = Template.bind( {} );
 ZeroData.storyName = 'Zero Data';
 ZeroData.args = {
 	setupRegistry: setupSearchConsoleAnalyticsZeroData,
-};
-ZeroData.parameters = {
-	features: [ 'zeroDataStates' ],
 };
 
 export default {

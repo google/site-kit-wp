@@ -81,9 +81,8 @@ describe( 'core/site developer plugin state', () => {
 						responseDeveloperPluginState
 					);
 
-				const { developerPluginState } = registry.stores[
-					CORE_SITE
-				].store.getState();
+				const { developerPluginState } =
+					registry.stores[ CORE_SITE ].store.getState();
 
 				expect( developerPluginState ).toMatchObject(
 					responseDeveloperPluginState

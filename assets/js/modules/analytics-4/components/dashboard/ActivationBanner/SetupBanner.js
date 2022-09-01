@@ -19,6 +19,7 @@
 /**
  * WordPress dependencies
  */
+import { Fragment } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 
 /**
@@ -26,8 +27,14 @@ import { __, sprintf } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import BannerNotification from '../../../../../components/notifications/BannerNotification';
-import { Grid, Row, Cell } from '../../../../../material-components';
+import {
+	PropertySelect,
+	UseSnippetSwitch,
+} from '../../../../analytics-4/components/common';
+import useExistingTagEffect from '../../../../analytics-4/hooks/useExistingTagEffect';
 import { MODULES_ANALYTICS_4 } from '../../../datastore/constants';
+import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
+import { getBannerDismissalExpiryTime } from '../../../utils/banner-dismissal-expiry';
 const { useSelect } = Data;
 
 export default function SetupBanner( { onCTAClick } ) {
@@ -38,9 +45,16 @@ export default function SetupBanner( { onCTAClick } ) {
 		select( MODULES_ANALYTICS_4 ).getExistingTag()
 	);
 
+	useExistingTagEffect();
+
+	const referenceDateString = useSelect( ( select ) =>
+		select( CORE_USER ).getReferenceDate()
+	);
+
 	let title;
 	let ctaLabel;
 	let footer;
+	let children;
 
 	if ( ga4MeasurementID ) {
 		title = __(
@@ -51,6 +65,40 @@ export default function SetupBanner( { onCTAClick } ) {
 		footer = __(
 			'You can always add/edit this in the Site Kit Settings.',
 			'google-site-kit'
+		);
+		children = (
+			<div className="googlesitekit-ga4-setup-banner__field-group">
+				<PropertySelect
+					label={ __(
+						'Google Analytics 4 Property',
+						'google-site-kit'
+					) }
+				/>
+				{ existingTag && (
+					<UseSnippetSwitch
+						description={
+							<Fragment>
+								<p>
+									{ sprintf(
+										/* translators: %s: existing tag ID */
+										__(
+											'A tag %s for the selected property already exists on the site.',
+											'google-site-kit'
+										),
+										existingTag
+									) }
+								</p>
+								<p>
+									{ __(
+										'Make sure you remove it if you decide to place the same GA4 tag via Site Kit, otherwise they will be duplicated.',
+										'google-site-kit'
+									) }
+								</p>
+							</Fragment>
+						}
+					/>
+				) }
+			</div>
 		);
 	} else if ( existingTag ) {
 		title = __(
@@ -79,21 +127,20 @@ export default function SetupBanner( { onCTAClick } ) {
 	}
 
 	return (
-		<Grid>
-			<Row>
-				<Cell lgSize={ 8 } mdSize={ 8 }>
-					<BannerNotification
-						id="ga4-activation-banner"
-						className="googlesitekit-ga4-setup-banner"
-						title={ title }
-						ctaLabel={ ctaLabel }
-						ctaLink={ onCTAClick ? '#' : null }
-						onCTAClick={ onCTAClick }
-						footer={ <p>{ footer }</p> }
-						dismiss={ __( 'Cancel', 'google-site-kit' ) }
-					/>
-				</Cell>
-			</Row>
-		</Grid>
+		<BannerNotification
+			id="ga4-activation-banner"
+			className="googlesitekit-ga4-setup-banner"
+			title={ title }
+			ctaLabel={ ctaLabel }
+			ctaLink={ onCTAClick ? '#' : null }
+			onCTAClick={ onCTAClick }
+			footer={ <p>{ footer }</p> }
+			dismiss={ __( 'Cancel', 'google-site-kit' ) }
+			dismissExpires={ getBannerDismissalExpiryTime(
+				referenceDateString
+			) }
+		>
+			{ children }
+		</BannerNotification>
 	);
 }

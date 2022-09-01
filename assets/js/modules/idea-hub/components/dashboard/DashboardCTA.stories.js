@@ -24,9 +24,8 @@ import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util/get-widget-component-props';
 import DashboardCTA from './DashboardCTA';
 
-const WidgetWithComponentProps = withWidgetComponentProps( 'idea-hub' )(
-	DashboardCTA
-);
+const WidgetWithComponentProps =
+	withWidgetComponentProps( 'idea-hub' )( DashboardCTA );
 
 const Template = ( { setupRegistry, ...args } ) => (
 	<WithRegistrySetup func={ setupRegistry }>

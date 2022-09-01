@@ -34,23 +34,17 @@ import { Grid, Row, Cell } from '../../../../../material-components';
 import { extractSearchConsoleDashboardData } from '../../../util';
 import { calculateChange } from '../../../../../util';
 import { CORE_MODULES } from '../../../../../googlesitekit/modules/datastore/constants';
-import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import { MODULES_ANALYTICS } from '../../../../analytics/datastore/constants';
 import { CORE_LOCATION } from '../../../../../googlesitekit/datastore/location/constants';
 import { MODULES_SEARCH_CONSOLE } from '../../../datastore/constants';
-import { useFeature } from '../../../../../hooks/useFeature';
 import useDashboardType, {
 	DASHBOARD_TYPE_MAIN,
 	DASHBOARD_TYPE_ENTITY,
 } from '../../../../../hooks/useDashboardType';
-import CompleteModuleActivationCTA from '../../../../../components/CompleteModuleActivationCTA';
-import ActivateModuleCTA from '../../../../../components/ActivateModuleCTA';
 import ActivateAnalyticsCTA from './ActivateAnalyticsCTA';
 import CreateGoalCTA from './CreateGoalCTA';
-import CTA from '../../../../../components/notifications/CTA';
 import DataBlock from '../../../../../components/DataBlock';
 import ProgressBar from '../../../../../components/ProgressBar';
-import ReportZero from '../../../../../components/ReportZero';
 import RecoverableModules from '../../../../../components/RecoverableModules';
 import {
 	BREAKPOINT_SMALL,
@@ -84,7 +78,6 @@ const Overview = ( {
 	showRecoverableAnalytics,
 } ) => {
 	const dashboardType = useDashboardType();
-	const zeroDataStatesEnabled = useFeature( 'zeroDataStates' );
 	const breakpoint = useBreakpoint();
 
 	const viewOnly = useViewOnly();
@@ -112,13 +105,7 @@ const Overview = ( {
 	const isNavigatingToReauthURL = useSelect( ( select ) =>
 		select( CORE_LOCATION ).isNavigatingTo( adminReauthURL )
 	);
-	const isAnalyticsGatheringData = useInViewSelect( ( select ) =>
-		analyticsModuleActiveAndConnected &&
-		canViewSharedAnalytics &&
-		! showRecoverableAnalytics
-			? select( MODULES_ANALYTICS ).isGatheringData()
-			: false
-	);
+
 	const isSearchConsoleGatheringData = useInViewSelect( ( select ) =>
 		select( MODULES_SEARCH_CONSOLE ).isGatheringData()
 	);
@@ -168,15 +155,9 @@ const Overview = ( {
 	}
 
 	const showAnalytics =
-		( ( canViewSharedAnalytics &&
-			analyticsModuleConnected &&
-			! isAnalyticsGatheringData &&
-			! zeroDataStatesEnabled &&
-			! error ) ||
-			( canViewSharedAnalytics &&
-				analyticsModuleConnected &&
-				zeroDataStatesEnabled &&
-				! error ) ) &&
+		canViewSharedAnalytics &&
+		analyticsModuleConnected &&
+		! error &&
 		! showRecoverableAnalytics;
 
 	const showGoalsCTA =
@@ -187,7 +168,7 @@ const Overview = ( {
 
 	const quarterCellProps = {
 		smSize: 2,
-		mdSize: showGoalsCTA && zeroDataStatesEnabled ? 4 : 2,
+		mdSize: showGoalsCTA ? 4 : 2,
 		lgSize: 3,
 	};
 
@@ -214,13 +195,6 @@ const Overview = ( {
 		mdSize: 8,
 		lgSize: 12,
 	};
-
-	const supportURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getGoogleSupportURL( {
-			path: '/analytics/answer/1032415',
-			hash: 'create_or_edit_goals',
-		} )
-	);
 
 	// Collection of all the data blocks to be displayed
 	const dataBlocks = [
@@ -341,16 +315,9 @@ const Overview = ( {
 					( ! analyticsModuleConnected || ! analyticsModuleActive ) &&
 					! isNavigatingToReauthURL && (
 						<Cell { ...halfCellProps }>
-							{ zeroDataStatesEnabled &&
-								BREAKPOINT_SMALL !== breakpoint && (
-									<ActivateAnalyticsCTA />
-								) }
-							{ ! zeroDataStatesEnabled &&
-								( analyticsModuleActive ? (
-									<CompleteModuleActivationCTA moduleSlug="analytics" />
-								) : (
-									<ActivateModuleCTA moduleSlug="analytics" />
-								) ) }
+							{ BREAKPOINT_SMALL !== breakpoint && (
+								<ActivateAnalyticsCTA />
+							) }
 						</Cell>
 					) }
 
@@ -366,39 +333,9 @@ const Overview = ( {
 						</Cell>
 					) }
 
-				{ canViewSharedAnalytics &&
-					isAnalyticsGatheringData &&
-					! error &&
-					! zeroDataStatesEnabled && (
-						<Cell { ...halfCellProps }>
-							{ /* We need to use ReportZero rather than WidgetReportZero to not associate a zero state for the whole widget. */ }
-							<ReportZero moduleSlug="analytics" />
-						</Cell>
-					) }
-
 				{ showAnalytics && (
 					<Cell { ...quarterCellProps } smSize={ 4 }>
-						{ showGoalsCTA && zeroDataStatesEnabled && (
-							<CreateGoalCTA />
-						) }
-						{ showGoalsCTA && ! zeroDataStatesEnabled && (
-							<CTA
-								title={ __(
-									'Use goals to measure success',
-									'google-site-kit'
-								) }
-								description={ __(
-									'Goals measure how well your site or app fulfills your target objectives',
-									'google-site-kit'
-								) }
-								ctaLink={ supportURL }
-								ctaLabel={ __(
-									'Create a new goal',
-									'google-site-kit'
-								) }
-								ctaLinkExternal
-							/>
-						) }
+						{ showGoalsCTA && <CreateGoalCTA /> }
 					</Cell>
 				) }
 

@@ -84,11 +84,8 @@ storiesOf( 'Analytics Module/Setup', module )
 	.add(
 		'Start',
 		( args, { registry } ) => {
-			const {
-				accounts,
-				properties,
-				profiles,
-			} = fixtures.accountsPropertiesProfiles;
+			const { accounts, properties, profiles } =
+				fixtures.accountsPropertiesProfiles;
 			registry
 				.dispatch( MODULES_ANALYTICS )
 				.receiveGetSettings( { ...fixtures.defaultSettings } );
@@ -123,12 +120,8 @@ storiesOf( 'Analytics Module/Setup', module )
 	.add(
 		'Start (with matched property)',
 		( args, { registry } ) => {
-			const {
-				accounts,
-				properties,
-				profiles,
-				matchedProperty,
-			} = fixtures.accountsPropertiesProfiles;
+			const { accounts, properties, profiles, matchedProperty } =
+				fixtures.accountsPropertiesProfiles;
 			registry
 				.dispatch( MODULES_ANALYTICS )
 				.receiveGetSettings( { ...fixtures.defaultSettings } );
@@ -173,11 +166,8 @@ storiesOf( 'Analytics Module/Setup', module )
 	.add(
 		'Create new view',
 		( args, { registry } ) => {
-			const {
-				accounts,
-				properties,
-				profiles,
-			} = fixtures.accountsPropertiesProfiles;
+			const { accounts, properties, profiles } =
+				fixtures.accountsPropertiesProfiles;
 			// eslint-disable-next-line sitekit/acronym-case
 			const { accountId, webPropertyId } = profiles[ 0 ];
 			// eslint-disable-next-line sitekit/acronym-case
@@ -254,11 +244,8 @@ storiesOf( 'Analytics Module/Setup', module )
 	.add(
 		'Create Account Legacy (new account option)',
 		( args, { registry } ) => {
-			const {
-				accounts,
-				properties,
-				profiles,
-			} = fixtures.accountsPropertiesProfiles;
+			const { accounts, properties, profiles } =
+				fixtures.accountsPropertiesProfiles;
 			registry
 				.dispatch( MODULES_ANALYTICS )
 				.receiveGetExistingTag( null );
@@ -293,11 +280,8 @@ storiesOf( 'Analytics Module/Setup', module )
 	.add(
 		'Create Account (scope not granted)',
 		( args, { registry } ) => {
-			const {
-				accounts,
-				properties,
-				profiles,
-			} = fixtures.accountsPropertiesProfiles;
+			const { accounts, properties, profiles } =
+				fixtures.accountsPropertiesProfiles;
 			registry.dispatch( CORE_SITE ).receiveSiteInfo( {
 				usingProxy: true,
 				referenceSiteURL: 'http://example.com',
@@ -343,11 +327,8 @@ storiesOf( 'Analytics Module/Setup', module )
 	.add(
 		'Create Account (scope granted)',
 		( args, { registry } ) => {
-			const {
-				accounts,
-				properties,
-				profiles,
-			} = fixtures.accountsPropertiesProfiles;
+			const { accounts, properties, profiles } =
+				fixtures.accountsPropertiesProfiles;
 			registry.dispatch( CORE_SITE ).receiveSiteInfo( {
 				usingProxy: true,
 				referenceSiteURL: 'http://example.com',
@@ -393,11 +374,8 @@ storiesOf( 'Analytics Module/Setup', module )
 	.add(
 		'Create Account GA4',
 		( args, { registry } ) => {
-			const {
-				accounts,
-				properties,
-				profiles,
-			} = fixtures.accountsPropertiesProfiles;
+			const { accounts, properties, profiles } =
+				fixtures.accountsPropertiesProfiles;
 
 			provideSiteInfo( registry );
 			provideUserAuthentication( registry, {
@@ -444,11 +422,8 @@ storiesOf( 'Analytics Module/Setup', module )
 	.add(
 		'Nothing selected',
 		( args, { registry } ) => {
-			const {
-				accounts,
-				properties,
-				profiles,
-			} = fixtures.accountsPropertiesProfiles;
+			const { accounts, properties, profiles } =
+				fixtures.accountsPropertiesProfiles;
 			registry
 				.dispatch( MODULES_ANALYTICS )
 				.receiveGetSettings( { ...fixtures.defaultSettings } );

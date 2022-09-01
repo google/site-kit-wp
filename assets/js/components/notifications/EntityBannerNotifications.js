@@ -17,25 +17,13 @@
  */
 
 /**
- * WordPress dependencies
- */
-import { Fragment } from '@wordpress/element';
-
-/**
  * Internal dependencies
  */
 import { useFeature } from '../../hooks/useFeature';
-import ZeroDataStateNotifications from './ZeroDataStateNotifications';
 import { ActivationBanner } from '../../modules/analytics-4/components/dashboard';
 
 export default function EntityBannerNotifications() {
-	const zeroDataStatesEnabled = useFeature( 'zeroDataStates' );
 	const ga4ActivationBannerEnabled = useFeature( 'ga4ActivationBanner' );
 
-	return (
-		<Fragment>
-			{ zeroDataStatesEnabled && <ZeroDataStateNotifications /> }
-			{ ga4ActivationBannerEnabled && <ActivationBanner /> }
-		</Fragment>
-	);
+	return ga4ActivationBannerEnabled && <ActivationBanner />;
 }

@@ -164,10 +164,8 @@ export default function WidgetAreaRenderer( { slug, contextID } ) {
 				OverrideComponent={
 					overrideComponents[ i ]
 						? () => {
-								const {
-									Component,
-									metadata,
-								} = overrideComponents[ i ];
+								const { Component, metadata } =
+									overrideComponents[ i ];
 								return <Component { ...metadata } />;
 						  }
 						: undefined

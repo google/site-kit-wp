@@ -24,6 +24,7 @@ import { useState } from '@wordpress/element';
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
 import ReminderBanner from './ReminderBanner';
 import SetupBanner from './SetupBanner';
 import SuccessBanner from './SuccessBanner';
@@ -32,9 +33,19 @@ import {
 	ACTIVATION_STEP_SETUP,
 	ACTIVATION_STEP_SUCCESS,
 } from '../../../constants';
+import { CORE_MODULES } from '../../../../../googlesitekit/modules/datastore/constants';
+const { useSelect } = Data;
 
 export default function ActivationBanner() {
 	const [ step, setStep ] = useState( ACTIVATION_STEP_REMINDER );
+
+	const uaConnected = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleConnected( 'analytics' )
+	);
+
+	const ga4Connected = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
+	);
 
 	const handleCTAClick = () => {
 		if ( step === ACTIVATION_STEP_REMINDER ) {
@@ -47,6 +58,10 @@ export default function ActivationBanner() {
 
 		return { dismissOnCTAClick: false };
 	};
+
+	if ( ! uaConnected || ga4Connected ) {
+		return null;
+	}
 
 	switch ( step ) {
 		case ACTIVATION_STEP_REMINDER:

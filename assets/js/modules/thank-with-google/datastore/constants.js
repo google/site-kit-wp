@@ -29,3 +29,6 @@ export const CTA_PLACEMENT_STATIC_ABOVE_CONTENT = 'static_above-content';
 export const CTA_PLACEMENT_STATIC_BELOW_CONTENT = 'static_below-content';
 export const CTA_PLACEMENT_STATIC_BELOW_1ST_PARAGRAPH =
 	'static_below-first-paragraph';
+
+export const TYPE_OVERLAY = 'overlay';
+export const TYPE_FIXED = 'fixed';

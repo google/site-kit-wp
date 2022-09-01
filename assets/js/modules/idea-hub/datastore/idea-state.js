@@ -110,12 +110,10 @@ const baseActions = {
 	 * @return {Object} Object with `response` and `error`.
 	 */
 	*updateIdeaState( ideaState ) {
-		const {
-			response,
-			error,
-		} = yield fetchPostUpdateIdeaStateStore.actions.fetchUpdateIdeaState(
-			ideaState
-		);
+		const { response, error } =
+			yield fetchPostUpdateIdeaStateStore.actions.fetchUpdateIdeaState(
+				ideaState
+			);
 
 		if ( ! error ) {
 			yield moduleDataActions.incrementInteractions();

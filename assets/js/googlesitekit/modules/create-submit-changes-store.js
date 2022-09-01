@@ -130,12 +130,14 @@ export function createSubmitChangesStore( args ) {
 
 	const controls = {
 		[ SUBMIT_CHANGES ]: createRegistryControl(
-			( registry ) => ( ...actionArgs ) =>
-				submitChanges( registry, ...actionArgs )
+			( registry ) =>
+				( ...actionArgs ) =>
+					submitChanges( registry, ...actionArgs )
 		),
 		[ ROLLBACK_CHANGES ]: createRegistryControl(
-			( registry ) => ( ...actionArgs ) =>
-				rollbackChanges( registry, ...actionArgs )
+			( registry ) =>
+				( ...actionArgs ) =>
+					rollbackChanges( registry, ...actionArgs )
 		),
 	};
 

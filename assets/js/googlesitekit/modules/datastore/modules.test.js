@@ -452,6 +452,14 @@ describe( 'core/modules modules', () => {
 					}
 				);
 
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/core\/user\/data\/permissions/,
+					{
+						body: {},
+						status: 200,
+					}
+				);
+
 				const initialModules = registry
 					.select( CORE_MODULES )
 					.getModules();
@@ -469,7 +477,7 @@ describe( 'core/modules modules', () => {
 					tagmanager: true,
 				} );
 
-				expect( fetchMock ).toHaveFetchedTimes( 6 );
+				expect( fetchMock ).toHaveFetchedTimes( 7 );
 
 				// Ensure the proper body parameters were sent.
 				expect( fetchMock ).toHaveFetched(
@@ -520,6 +528,11 @@ describe( 'core/modules modules', () => {
 				// Ensure fetchGetModules have been called.
 				expect( fetchMock ).toHaveFetched(
 					/^\/google-site-kit\/v1\/core\/modules\/data\/list/
+				);
+
+				// Ensure `refreshCapabilities` has been called.
+				expect( fetchMock ).toHaveFetched(
+					/^\/google-site-kit\/v1\/core\/user\/data\/permissions/
 				);
 
 				// Ensure the module has been removed from the recoverable modules list.
@@ -586,6 +599,14 @@ describe( 'core/modules modules', () => {
 					}
 				);
 
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/core\/user\/data\/permissions/,
+					{
+						body: {},
+						status: 200,
+					}
+				);
+
 				const initialModules = registry
 					.select( CORE_MODULES )
 					.getModules();
@@ -607,7 +628,7 @@ describe( 'core/modules modules', () => {
 					errorResponse.message
 				);
 
-				expect( fetchMock ).toHaveFetchedTimes( 5 );
+				expect( fetchMock ).toHaveFetchedTimes( 6 );
 
 				// Ensure the proper body parameters were sent.
 				expect( fetchMock ).toHaveFetched(
@@ -1762,9 +1783,8 @@ describe( 'core/modules modules', () => {
 			} );
 
 			it( 'should return undefined if `modules` list cannot be loaded', () => {
-				global[
-					dashboardSharingDataBaseVar
-				] = sharedOwnershipModulesList;
+				global[ dashboardSharingDataBaseVar ] =
+					sharedOwnershipModulesList;
 
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
@@ -1793,9 +1813,8 @@ describe( 'core/modules modules', () => {
 			} );
 
 			it( 'should return the modules object for each shared ownership module', async () => {
-				global[
-					dashboardSharingDataBaseVar
-				] = sharedOwnershipModulesList;
+				global[ dashboardSharingDataBaseVar ] =
+					sharedOwnershipModulesList;
 
 				provideModules( registry, FIXTURES );
 

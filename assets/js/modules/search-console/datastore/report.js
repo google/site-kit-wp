@@ -141,9 +141,8 @@ const baseSelectors = {
 		};
 
 		const url = select( CORE_SITE ).getCurrentEntityURL();
-		const { compareStartDate: startDate, endDate } = select(
-			CORE_USER
-		).getDateRangeDates( rangeArgs );
+		const { compareStartDate: startDate, endDate } =
+			select( CORE_USER ).getDateRangeDates( rangeArgs );
 
 		const args = {
 			dimensions: 'date',
@@ -191,9 +190,8 @@ const baseSelectors = {
 		};
 
 		const url = select( CORE_SITE ).getCurrentEntityURL();
-		const { compareStartDate: startDate, endDate } = select(
-			CORE_USER
-		).getDateRangeDates( rangeArgs );
+		const { compareStartDate: startDate, endDate } =
+			select( CORE_USER ).getDateRangeDates( rangeArgs );
 
 		const args = {
 			dimensions: 'date',

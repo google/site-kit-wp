@@ -39,7 +39,8 @@ function GatheringDataNotice( { style } ) {
 	return (
 		<div
 			className={ classnames( 'googlesitekit-gathering-data-notice', {
-				[ `googlesitekit-gathering-data-notice--has-style-${ style }` ]: !! style,
+				[ `googlesitekit-gathering-data-notice--has-style-${ style }` ]:
+					!! style,
 			} ) }
 		>
 			<span>{ __( 'Gathering data…', 'google-site-kit' ) }</span>

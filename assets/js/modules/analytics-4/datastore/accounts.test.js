@@ -31,7 +31,8 @@ import * as fixtures from './__fixtures__';
 describe( 'modules/analytics-4 accounts', () => {
 	let registry;
 
-	const accountSummariesEndpoint = /^\/google-site-kit\/v1\/modules\/analytics-4\/data\/account-summaries/;
+	const accountSummariesEndpoint =
+		/^\/google-site-kit\/v1\/modules\/analytics-4\/data\/account-summaries/;
 
 	beforeAll( () => {
 		API.setUsingCache( false );

@@ -310,4 +310,31 @@ describe( 'AMPContainerSelect', () => {
 		).not.toBeInTheDocument();
 		expect( container ).toBeEmptyDOMElement();
 	} );
+
+	it( 'should disable the AMP container select if the user does not have module access', () => {
+		const { account } = factories.buildAccountWithContainers();
+		const accountID = account.accountId; // eslint-disable-line sitekit/acronym-case
+		registry.dispatch( MODULES_TAGMANAGER ).setAccountID( accountID );
+		registry
+			.dispatch( MODULES_TAGMANAGER )
+			.receiveGetAccounts( [ account ] );
+		registry
+			.dispatch( MODULES_TAGMANAGER )
+			.finishResolution( 'getAccounts', [] );
+
+		const { container } = render(
+			<AMPContainerSelect hasModuleAccess={ false } />,
+			{
+				registry,
+			}
+		);
+
+		// Verify that the AMP container select dropdown is disabled.
+		[
+			'.googlesitekit-tagmanager__select-container--amp',
+			'.mdc-select--disabled',
+		].forEach( ( className ) => {
+			expect( container.querySelector( className ) ).toBeInTheDocument();
+		} );
+	} );
 } );

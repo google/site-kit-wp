@@ -16,8 +16,11 @@ use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Dismissals\Dismissed_Items;
 use Google\Site_Kit\Core\Modules\Module_With_Owner;
 use Google\Site_Kit\Core\Modules\Modules;
+use Google\Site_Kit\Core\REST_API\REST_Route;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Util\Feature_Flags;
+use WP_REST_Response;
+use WP_REST_Server;
 use WP_User;
 
 /**
@@ -222,6 +225,13 @@ final class Permissions {
 			},
 			10,
 			4
+		);
+
+		add_filter(
+			'googlesitekit_rest_routes',
+			function( $routes ) {
+				return array_merge( $routes, $this->get_rest_routes() );
+			}
 		);
 
 		add_filter(
@@ -681,6 +691,32 @@ final class Permissions {
 		}
 
 		return $allcaps;
+	}
+
+	/**
+	 * Gets related REST routes.
+	 *
+	 * @since 1.82.0
+	 *
+	 * @return array List of REST_Route objects.
+	 */
+	private function get_rest_routes() {
+		return array(
+			new REST_Route(
+				'core/user/data/permissions',
+				array(
+					array(
+						'methods'             => WP_REST_Server::READABLE,
+						'callback'            => function() {
+							return new WP_REST_Response( $this->check_all_for_current_user() );
+						},
+						'permission_callback' => function() {
+							return current_user_can( Permissions::VIEW_SPLASH );
+						},
+					),
+				)
+			),
+		);
 	}
 
 	/**

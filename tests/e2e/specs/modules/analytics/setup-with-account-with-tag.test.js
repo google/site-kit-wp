@@ -141,21 +141,15 @@ describe( 'setting up the Analytics module with an existing account and existing
 			}
 		);
 
-		await expect(
-			page
-		).toMatchElement(
+		await expect( page ).toMatchElement(
 			'.googlesitekit-analytics__select-account .mdc-select__selected-text',
 			{ text: /test account a/i }
 		);
-		await expect(
-			page
-		).toMatchElement(
+		await expect( page ).toMatchElement(
 			'.googlesitekit-analytics__select-property .mdc-select__selected-text',
 			{ text: /test property x/i }
 		);
-		await expect(
-			page
-		).toMatchElement(
+		await expect( page ).toMatchElement(
 			'.googlesitekit-analytics__select-profile .mdc-select__selected-text',
 			{ text: /test profile x/i }
 		);
