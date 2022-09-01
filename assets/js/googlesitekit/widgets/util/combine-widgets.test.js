@@ -23,8 +23,8 @@ import { combineWidgets } from './combine-widgets';
 import { getWidgetLayout } from './get-widget-layout';
 import { WIDGET_WIDTHS } from '../datastore/constants';
 import ReportZero from '../../../components/ReportZero';
-import CompleteModuleActivationCTA from '../../../components/CompleteModuleActivationCTA';
 import Null from '../../../components/Null';
+import RecoverableModules from '../../../components/RecoverableModules';
 
 describe( 'combineWidgets', () => {
 	const getQuarterWidget = ( slug ) => ( {
@@ -39,9 +39,9 @@ describe( 'combineWidgets', () => {
 		Component: ReportZero,
 		metadata: { moduleSlug },
 	} );
-	const getCompleteModuleActivationCTAState = ( moduleSlug ) => ( {
-		Component: CompleteModuleActivationCTA,
-		metadata: { moduleSlug },
+	const getRecoverableModulesState = ( moduleSlugs ) => ( {
+		Component: RecoverableModules,
+		metadata: { moduleSlugs },
 	} );
 	const getNullState = () => ( { Component: Null, metadata: {} } );
 
@@ -164,18 +164,21 @@ describe( 'combineWidgets', () => {
 	it( 'combines adjacent widgets of the same component and metadata only within the same row', () => {
 		const widgets = [
 			getHalfWidget( 'test1' ),
-			// getHalfWidget( 'test2' ),
-			// getHalfWidget( 'test3' ),
-			// getHalfWidget( 'test4' ),
+			getHalfWidget( 'test2' ),
+			getHalfWidget( 'test3' ),
+			getHalfWidget( 'test4' ),
 		];
 		const widgetStates = {
 			// Only test3 and test4 will be combined. While test2 is adjacent and has matching state, it is within
 			// the previous row, so should not be included in the combination.
 			test1: getReportZeroState( 'search-console' ),
+			test2: getRecoverableModulesState( [ 'analytics' ] ),
+			test3: getRecoverableModulesState( [ 'analytics' ] ),
+			test4: getRecoverableModulesState( [ 'analytics' ] ),
 		};
 		const expected = {
-			gridColumnWidths: [ 6, 6 ],
-			overrideComponents: [ widgetStates.test1, null ],
+			gridColumnWidths: [ 6, 6, 0, 12 ],
+			overrideComponents: [ null, null, null, widgetStates.test4 ],
 		};
 
 		const layout = getWidgetLayout( widgets, widgetStates );
@@ -197,12 +200,12 @@ describe( 'combineWidgets', () => {
 		const widgetStates = {
 			// Only test1 and test2 will be combined. test3 has matching state but is within the following row,
 			// test4 and test6 are not adjacent so they won't be combined despite having the same state.
-			test1: getCompleteModuleActivationCTAState( 'search-console' ),
-			test2: getCompleteModuleActivationCTAState( 'search-console' ),
-			test3: getCompleteModuleActivationCTAState( 'search-console' ),
-			test4: getCompleteModuleActivationCTAState( 'analytics' ),
+			test1: getRecoverableModulesState( [ 'search-console' ] ),
+			test2: getRecoverableModulesState( [ 'search-console' ] ),
+			test3: getRecoverableModulesState( [ 'search-console' ] ),
+			test4: getRecoverableModulesState( [ 'analytics' ] ),
 			test5: getRegularState(),
-			test6: getCompleteModuleActivationCTAState( 'analytics' ),
+			test6: getRecoverableModulesState( [ 'analytics' ] ),
 			test7: getNullState( 'analytics' ),
 		};
 		const expected = {
