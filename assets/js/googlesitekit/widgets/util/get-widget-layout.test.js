@@ -23,6 +23,7 @@ import { getWidgetLayout } from './get-widget-layout';
 import ReportZero from '../../../components/ReportZero';
 import { WIDGET_WIDTHS } from '../datastore/constants';
 import Null from '../../../components/Null';
+import RecoverableModules from '../../../components/RecoverableModules';
 
 describe( 'getWidgetLayout', () => {
 	const quarter = { width: WIDGET_WIDTHS.QUARTER };
@@ -52,6 +53,10 @@ describe( 'getWidgetLayout', () => {
 		Component: ReportZero,
 		metadata: { moduleSlug },
 	} );
+	const getRecoverableModulesState = ( moduleSlugs ) => ( {
+		Component: RecoverableModules,
+		metadata: { moduleSlugs },
+	} );
 	const getNullState = () => ( { Component: Null, metadata: {} } );
 
 	it( 'computes expected columnWidths', () => {
@@ -71,7 +76,10 @@ describe( 'getWidgetLayout', () => {
 			test1: getRegularState(),
 			test2: getReportZeroState( 'search-console' ),
 			test3: getReportZeroState( 'analytics' ),
-			test4: getNullState(),
+			test4: getRecoverableModulesState( [ 'adsense' ] ),
+			test5: getRecoverableModulesState( [ 'adsense' ] ),
+			test6: getRecoverableModulesState( [ 'adsense' ] ),
+			test7: getNullState(),
 		};
 
 		// Phone and tablet column widths are static based on the widget width.
