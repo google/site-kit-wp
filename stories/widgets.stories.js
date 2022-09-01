@@ -82,12 +82,6 @@ function getReportZeroWidget( moduleSlug ) {
 	);
 }
 
-function getActivateModuleCTAWidget( moduleSlug ) {
-	return ( { WidgetActivateModuleCTA } ) => (
-		<WidgetActivateModuleCTA moduleSlug={ moduleSlug } />
-	);
-}
-
 function getCompleteModuleActivationCTAWidget( moduleSlug ) {
 	return ( { WidgetCompleteModuleActivationCTA } ) => (
 		<WidgetCompleteModuleActivationCTA moduleSlug={ moduleSlug } />
@@ -285,10 +279,6 @@ storiesOf( 'Global/Widgets/Widget Area', module )
 						Component: getReportZeroWidget( 'analytics' ),
 						width: QUARTER,
 					},
-					{
-						Component: getActivateModuleCTAWidget( 'adsense' ),
-						width: QUARTER,
-					},
 				],
 				[
 					{
@@ -311,18 +301,6 @@ storiesOf( 'Global/Widgets/Widget Area', module )
 				[
 					{
 						Component: getReportZeroWidget( 'search-console' ),
-						width: HALF,
-					},
-					{
-						Component: getActivateModuleCTAWidget( 'analytics' ),
-						width: HALF,
-					},
-					{
-						Component: getActivateModuleCTAWidget( 'analytics' ),
-						width: HALF,
-					},
-					{
-						Component: getActivateModuleCTAWidget( 'analytics' ),
 						width: HALF,
 					},
 				],

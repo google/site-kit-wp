@@ -23,7 +23,6 @@ import { combineWidgets } from './combine-widgets';
 import { getWidgetLayout } from './get-widget-layout';
 import { WIDGET_WIDTHS } from '../datastore/constants';
 import ReportZero from '../../../components/ReportZero';
-import ActivateModuleCTA from '../../../components/ActivateModuleCTA';
 import CompleteModuleActivationCTA from '../../../components/CompleteModuleActivationCTA';
 import Null from '../../../components/Null';
 
@@ -38,10 +37,6 @@ describe( 'combineWidgets', () => {
 	const getRegularState = () => null;
 	const getReportZeroState = ( moduleSlug ) => ( {
 		Component: ReportZero,
-		metadata: { moduleSlug },
-	} );
-	const getActivateModuleCTAState = ( moduleSlug ) => ( {
-		Component: ActivateModuleCTA,
 		metadata: { moduleSlug },
 	} );
 	const getCompleteModuleActivationCTAState = ( moduleSlug ) => ( {
@@ -123,7 +118,6 @@ describe( 'combineWidgets', () => {
 			test1: getRegularState(),
 			test2: getReportZeroState( 'search-console' ),
 			test3: getReportZeroState( 'analytics' ),
-			test4: getActivateModuleCTAState( 'adsense' ),
 		};
 		const expected = {
 			gridColumnWidths: [ 3, 3, 3, 3 ],
@@ -170,21 +164,18 @@ describe( 'combineWidgets', () => {
 	it( 'combines adjacent widgets of the same component and metadata only within the same row', () => {
 		const widgets = [
 			getHalfWidget( 'test1' ),
-			getHalfWidget( 'test2' ),
-			getHalfWidget( 'test3' ),
-			getHalfWidget( 'test4' ),
+			// getHalfWidget( 'test2' ),
+			// getHalfWidget( 'test3' ),
+			// getHalfWidget( 'test4' ),
 		];
 		const widgetStates = {
 			// Only test3 and test4 will be combined. While test2 is adjacent and has matching state, it is within
 			// the previous row, so should not be included in the combination.
 			test1: getReportZeroState( 'search-console' ),
-			test2: getActivateModuleCTAState( 'analytics' ),
-			test3: getActivateModuleCTAState( 'analytics' ),
-			test4: getActivateModuleCTAState( 'analytics' ),
 		};
 		const expected = {
-			gridColumnWidths: [ 6, 6, 0, 12 ],
-			overrideComponents: [ null, null, null, widgetStates.test4 ],
+			gridColumnWidths: [ 6, 6 ],
+			overrideComponents: [ widgetStates.test1, null ],
 		};
 
 		const layout = getWidgetLayout( widgets, widgetStates );
