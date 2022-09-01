@@ -27,8 +27,8 @@ import memize from 'memize';
 import Widget from '../components/Widget';
 import WidgetReportZero from '../components/WidgetReportZero';
 import WidgetReportError from '../components/WidgetReportError';
-import WidgetCompleteModuleActivationCTA from '../components/WidgetCompleteModuleActivationCTA';
 import WidgetNull from '../components/WidgetNull';
+import WidgetRecoverableModules from '../components/WidgetRecoverableModules';
 
 /**
  * Gets the props to pass to a widget's component.
@@ -43,11 +43,11 @@ export const getWidgetComponentProps = memize( ( widgetSlug ) => {
 	// component does not need to (re-)specify the widget slug.
 	return {
 		Widget: withWidgetSlug( widgetSlug )( Widget ),
+		WidgetRecoverableModules: withWidgetSlug( widgetSlug )(
+			WidgetRecoverableModules
+		),
 		WidgetReportZero: withWidgetSlug( widgetSlug )( WidgetReportZero ),
 		WidgetReportError: withWidgetSlug( widgetSlug )( WidgetReportError ),
-		WidgetCompleteModuleActivationCTA: withWidgetSlug( widgetSlug )(
-			WidgetCompleteModuleActivationCTA
-		),
 		WidgetNull: withWidgetSlug( widgetSlug )( WidgetNull ),
 	};
 } );
