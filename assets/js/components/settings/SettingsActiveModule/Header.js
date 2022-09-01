@@ -102,39 +102,39 @@ export default function Header( { slug } ) {
 		>
 			<Grid>
 				<Row>
-					<Cell lgSize={ 6 } mdSize={ 4 } smSize={ 4 }>
-						<div className="googlesitekit-settings-module__heading">
-							<ModuleIcon
-								slug={ slug }
-								size={ 24 }
-								className="googlesitekit-settings-module__heading-icon"
-							/>
+					<Cell
+						lgSize={ 6 }
+						mdSize={ 4 }
+						smSize={ 4 }
+						className="googlesitekit-settings-module__heading"
+					>
+						<ModuleIcon
+							slug={ slug }
+							size={ 24 }
+							className="googlesitekit-settings-module__heading-icon"
+						/>
 
-							<h3 className="googlesitekit-heading-4 googlesitekit-settings-module__title">
-								{ name }
-							</h3>
+						<h3 className="googlesitekit-heading-4 googlesitekit-settings-module__title">
+							{ name }
+						</h3>
 
-							<div className="googlesitekit-settings-module__heading-badges">
-								{ EXPERIMENTAL_MODULES.includes( slug ) && (
-									<Badge
-										label={ __(
-											'Experimental',
-											'google-site-kit'
-										) }
-										hasLeftSpacing={ true }
-									/>
-								) }
+						<div className="googlesitekit-settings-module__heading-badges">
+							{ EXPERIMENTAL_MODULES.includes( slug ) && (
+								<Badge
+									label={ __(
+										'Experimental',
+										'google-site-kit'
+									) }
+									hasLeftSpacing={ true }
+								/>
+							) }
 
-								{ 'thank-with-google' === slug && (
-									<Badge
-										label={ __(
-											'US Only',
-											'google-site-kit'
-										) }
-										hasLeftSpacing={ true }
-									/>
-								) }
-							</div>
+							{ 'thank-with-google' === slug && (
+								<Badge
+									label={ __( 'US Only', 'google-site-kit' ) }
+									hasLeftSpacing={ true }
+								/>
+							) }
 						</div>
 					</Cell>
 
