@@ -17,10 +17,12 @@
 BIN_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
 ROOT_DIR=$(dirname "$BIN_DIR")
 
-IMAGE=googlesitekit/vrt:6.1.1
+VERSION=6.1.1
+IMAGE=googlesitekit/vrt:$VERSION
 
-# Pull the backstopjs image if it doesn't exist yet.
-docker image inspect $IMAGE -f "{{.Id}}" >/dev/null 2>&1 || docker pull $IMAGE
+# Build the backstopjs image if it doesn't exist yet.
+docker image inspect $IMAGE -f "{{.Id}}" >/dev/null 2>&1 ||
+	docker build -t $IMAGE --build-arg BACKSTOPJS_VERSION=$VERSION $ROOT_DIR/docker/backstopjs
 
 # Run the backstopjs command.
 docker run --rm -it --mount type=bind,source="$ROOT_DIR",target="/src" $IMAGE $1 --config=/src/tests/backstop/config.js
