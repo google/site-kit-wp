@@ -82,9 +82,9 @@ function getReportZeroWidget( moduleSlug ) {
 	);
 }
 
-function getCompleteModuleActivationCTAWidget( moduleSlug ) {
-	return ( { WidgetCompleteModuleActivationCTA } ) => (
-		<WidgetCompleteModuleActivationCTA moduleSlug={ moduleSlug } />
+function getRecoverableModulesWidget( moduleSlugs ) {
+	return ( { WidgetRecoverableModules } ) => (
+		<WidgetRecoverableModules moduleSlugs={ moduleSlugs } />
 	);
 }
 
@@ -279,6 +279,12 @@ storiesOf( 'Global/Widgets/Widget Area', module )
 						Component: getReportZeroWidget( 'analytics' ),
 						width: QUARTER,
 					},
+					{
+						Component: getRecoverableModulesWidget( [
+							'analytics',
+						] ),
+						width: QUARTER,
+					},
 				],
 				[
 					{
@@ -303,32 +309,33 @@ storiesOf( 'Global/Widgets/Widget Area', module )
 						Component: getReportZeroWidget( 'search-console' ),
 						width: HALF,
 					},
+					{
+						Component: getReportZeroWidget( 'analytics' ),
+						width: HALF,
+					},
+					{
+						Component: getRecoverableModulesWidget( [
+							'analytics',
+							'search-console',
+						] ),
+						width: FULL,
+					},
 				],
 				[
 					{
-						Component:
-							getCompleteModuleActivationCTAWidget(
-								'search-console'
-							),
+						Component: getRegularWidget(),
+						width: FULL,
+					},
+					{
+						Component: getRegularWidget(),
 						width: HALF,
 					},
 					{
-						Component:
-							getCompleteModuleActivationCTAWidget(
-								'search-console'
-							),
+						Component: getRegularWidget(),
 						width: HALF,
 					},
 					{
-						Component:
-							getCompleteModuleActivationCTAWidget(
-								'search-console'
-							),
-						width: QUARTER,
-					},
-					{
-						Component:
-							getCompleteModuleActivationCTAWidget( 'analytics' ),
+						Component: getRegularWidget(),
 						width: QUARTER,
 					},
 					{
@@ -336,8 +343,11 @@ storiesOf( 'Global/Widgets/Widget Area', module )
 						width: QUARTER,
 					},
 					{
-						Component:
-							getCompleteModuleActivationCTAWidget( 'analytics' ),
+						Component: getRegularWidget(),
+						width: QUARTER,
+					},
+					{
+						Component: getRegularWidget(),
 						width: QUARTER,
 					},
 				]
