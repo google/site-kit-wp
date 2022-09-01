@@ -59,15 +59,8 @@ export default function Header( { slug } ) {
 	const module = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModule( slug )
 	);
-	const connected = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleConnected( slug )
-	);
 
 	const onHeaderClick = useCallback( () => {
-		if ( ! connected ) {
-			return null;
-		}
-
 		history.push( `/connected-services${ isOpen ? '' : `/${ slug }` }` );
 
 		if ( isOpen ) {
@@ -83,21 +76,18 @@ export default function Header( { slug } ) {
 			'view_module_settings',
 			slug
 		);
-	}, [ connected, history, isOpen, slug, viewContext ] );
+	}, [ history, isOpen, slug, viewContext ] );
 
 	if ( ! module ) {
 		return null;
 	}
 
-	const { name } = module;
+	const { name, connected } = module;
 
 	return (
 		<div
 			className={ classnames( 'googlesitekit-settings-module__header', {
 				'googlesitekit-settings-module__header--open': isOpen,
-				'googlesitekit-settings-module__header--connected': connected,
-				'googlesitekit-settings-module__header--not-connected':
-					! connected,
 			} ) }
 			id={ `googlesitekit-settings-module__header--${ slug }` }
 			type="button"
