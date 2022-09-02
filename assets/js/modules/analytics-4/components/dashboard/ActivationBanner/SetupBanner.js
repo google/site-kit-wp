@@ -42,7 +42,7 @@ import useExistingTagEffect from '../../../../analytics-4/hooks/useExistingTagEf
 import { getBannerDismissalExpiryTime } from '../../../utils/banner-dismissal-expiry';
 const { useDispatch, useSelect } = Data;
 
-export default function SetupBanner( {} ) {
+export default function SetupBanner( { onCTAClick } ) {
 	const [ errorNotice, setErrorNotice ] = useState( null );
 
 	const ga4MeasurementID = useSelect( ( select ) =>
@@ -66,8 +66,13 @@ export default function SetupBanner( {} ) {
 
 		if ( error ) {
 			setErrorNotice( error );
+
+			return;
 		}
-	}, [ submitChanges ] );
+
+		// Ask the parent component to show the success banner.
+		onCTAClick();
+	}, [ onCTAClick, submitChanges ] );
 
 	let title;
 	let ctaLabel;
