@@ -20,7 +20,7 @@
  * WordPress dependencies
  */
 import { Fragment } from '@wordpress/element';
-import { sprintf, __ } from '@wordpress/i18n';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -80,13 +80,15 @@ export default function SupporterWall() {
 						external={ hasSupporterWallSidebar }
 						hideExternalIndicator
 					>
-						{ sprintf(
-							/* translators: %s is replaced with the appropriate action term */
-							__( '%s supporter wall widget', 'google-site-kit' ),
-							hasSupporterWallSidebar
-								? __( 'Edit', 'google-site-kit' )
-								: __( 'Activate', 'google-site-kit' )
-						) }
+						{ hasSupporterWallSidebar
+							? __(
+									'Edit supporter wall widget',
+									'google-site-kit'
+							  )
+							: __(
+									'Activate supporter wall widget',
+									'google-site-kit'
+							  ) }
 					</Link>
 				</Fragment>
 			) }
