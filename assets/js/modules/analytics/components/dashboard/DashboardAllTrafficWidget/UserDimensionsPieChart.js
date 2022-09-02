@@ -58,15 +58,12 @@ import PieChartZeroData from '../../../../../../svg/icons/pie-chart-zero-data.sv
 import GatheringDataNotice, {
 	NOTICE_STYLE,
 } from '../../../../../components/GatheringDataNotice';
-import { useFeature } from '../../../../../hooks/useFeature';
 import useViewContext from '../../../../../hooks/useViewContext';
 const { useDispatch, useSelect } = Data;
 
 export default function UserDimensionsPieChart( props ) {
 	const { dimensionName, dimensionValue, gatheringData, loaded, report } =
 		props;
-
-	const zeroDataStatesEnabled = useFeature( 'zeroDataStates' );
 
 	const [ selectable, setSelectable ] = useState( false );
 	const viewContext = useViewContext();
@@ -526,7 +523,7 @@ export default function UserDimensionsPieChart( props ) {
 		options.tooltip.trigger = 'focus';
 	}
 
-	const showZeroDataChart = zeroDataStatesEnabled && hasZeroData;
+	const showZeroDataChart = hasZeroData;
 
 	return (
 		<div className="googlesitekit-widget--analyticsAllTraffic__dimensions-container">

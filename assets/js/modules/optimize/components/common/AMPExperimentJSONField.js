@@ -69,7 +69,7 @@ export default function AMPExperimentJSONField() {
 					href="https://developers.google.com/optimize/devguides/amp-experiments"
 					external
 				>
-					{ __( 'Learn More', 'google-site-kit' ) }
+					{ __( 'Learn more', 'google-site-kit' ) }
 				</Link>
 			</p>
 			<TextField

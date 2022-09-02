@@ -75,9 +75,7 @@ ReadyWithActivateAnalyticsCTA.args = {
 		setupSearchConsoleMockReports( registry );
 	},
 };
-ReadyWithActivateAnalyticsCTA.parameters = {
-	features: [ 'zeroDataStates' ],
-};
+
 ReadyWithActivateAnalyticsCTA.scenario = {
 	label: 'Views/WPDashboardApp/WPDashboardWidgets/ReadyWithActivateAnalyticsCTA',
 	delay: 3000,
@@ -100,26 +98,17 @@ ReadyWithCompleteAnalyticsActivationCTA.args = {
 		setupSearchConsoleMockReports( registry );
 	},
 };
-ReadyWithCompleteAnalyticsActivationCTA.parameters = {
-	features: [ 'zeroDataStates' ],
-};
 
 export const GatheringData = Template.bind( {} );
 GatheringData.storyName = 'Gathering Data';
 GatheringData.args = {
 	setupRegistry: setupSearchConsoleAnalyticsGatheringData,
 };
-GatheringData.parameters = {
-	features: [ 'zeroDataStates' ],
-};
 
 export const ZeroData = Template.bind( {} );
 ZeroData.storyName = 'Zero Data';
 ZeroData.args = {
 	setupRegistry: setupSearchConsoleAnalyticsZeroData,
-};
-ZeroData.parameters = {
-	features: [ 'zeroDataStates' ],
 };
 
 export default {
