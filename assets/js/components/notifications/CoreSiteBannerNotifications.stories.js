@@ -30,6 +30,8 @@ const Template = ( { setupRegistry } ) => (
 	</WithRegistrySetup>
 );
 
+const delay = 350; // Needed for fonts to render properly.
+
 const notification1 = {
 	id: 'test-notification',
 	title: 'Google Analytics 5 Beta',
@@ -67,7 +69,7 @@ NotificationCTA.args = {
 NotificationCTA.scenario = {
 	label: 'Global/CoreSiteBannerNotifications1',
 	readySelector: '.googlesitekit-publisher-win',
-	delay: 250, // Needed for fonts to render properly.
+	delay,
 };
 
 export const NoNotifications = Template.bind( {} );
@@ -79,7 +81,7 @@ NoNotifications.args = {
 };
 NoNotifications.scenario = {
 	label: 'Global/CoreSiteBannerNotifications2',
-	delay: 250,
+	delay,
 };
 
 export const NotificationCTAWithSurvey = Template.bind( {} );
@@ -100,7 +102,7 @@ NotificationCTAWithSurvey.args = {
 };
 NotificationCTAWithSurvey.scenario = {
 	label: 'Global/CoreSiteBannerNotifications3',
-	delay: 250,
+	delay,
 };
 
 export const NotificationCTAWithSurveyShortDelay = Template.bind( {} );
@@ -124,7 +126,7 @@ NotificationCTAWithSurveyShortDelay.args = {
 };
 NotificationCTAWithSurveyShortDelay.scenario = {
 	label: 'Global/CoreSiteBannerNotifications4',
-	delay: 250,
+	delay,
 };
 
 export const NotificationCTAWithSurveyLongerDelay = Template.bind( {} );
@@ -149,7 +151,7 @@ NotificationCTAWithSurveyLongerDelay.args = {
 NotificationCTAWithSurveyLongerDelay.scenario = {
 	label: 'Global/CoreSiteBannerNotifications5',
 	readySelector: '.googlesitekit-publisher-win',
-	delay: 250,
+	delay,
 };
 
 export default {
