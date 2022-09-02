@@ -19,6 +19,7 @@
 /**
  * External dependencies
  */
+import classnames from 'classnames';
 import PropTypes from 'prop-types';
 import uniqWith from 'lodash/uniqWith';
 
@@ -51,6 +52,14 @@ const { useSelect, useDispatch } = Data;
 export default function ReportError( { moduleSlug, error } ) {
 	const module = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModule( moduleSlug )
+	);
+	const storeName = useSelect( ( select ) =>
+		select( CORE_MODULES ).getModuleStoreName( moduleSlug )
+	);
+	const requestAccessURL = useSelect( ( select ) =>
+		typeof select( storeName )?.getServiceEntityAccessURL === 'function'
+			? select( storeName ).getServiceEntityAccessURL()
+			: null
 	);
 
 	const errors = Array.isArray( error ) ? error : [ error ];
@@ -151,8 +160,16 @@ export default function ReportError( { moduleSlug, error } ) {
 		} );
 	}, [ dispatch, retryableErrors ] );
 
+	const showRequestAccessURL =
+		requestAccessURL && hasInsufficientPermissionsError;
+
 	return (
 		<CTA title={ title } description={ description } error>
+			{ showRequestAccessURL && (
+				<Button href={ requestAccessURL } target="_blank">
+					{ __( 'Request access', 'google-site-kit' ) }
+				</Button>
+			) }
 			{ showRetry ? (
 				<Fragment>
 					<Button onClick={ handleRetry }>
@@ -166,7 +183,14 @@ export default function ReportError( { moduleSlug, error } ) {
 					</Link>
 				</Fragment>
 			) : (
-				<Link href={ errorTroubleshootingLinkURL } external>
+				<Link
+					className={ classnames( {
+						'googlesitekit-error-get-help-text':
+							showRequestAccessURL,
+					} ) }
+					href={ errorTroubleshootingLinkURL }
+					external
+				>
 					{ __( 'Get help', 'google-site-kit' ) }
 				</Link>
 			) }
