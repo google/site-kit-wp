@@ -94,10 +94,7 @@ describe( 'Overview', () => {
 	it( 'should render the Search Funnel Overview, including the Activate Analytics CTA', async () => {
 		const { container, getByText, waitForRegistry } = render(
 			<Overview { ...overviewProps } />,
-			{
-				features: [ 'zeroDataStates' ],
-				registry,
-			}
+			{ registry }
 		);
 
 		await waitForRegistry();
@@ -118,10 +115,7 @@ describe( 'Overview', () => {
 
 		const { container, queryByText, waitForRegistry } = render(
 			<Overview { ...overviewProps } />,
-			{
-				features: [ 'zeroDataStates' ],
-				registry,
-			}
+			{ registry }
 		);
 
 		await waitForRegistry();

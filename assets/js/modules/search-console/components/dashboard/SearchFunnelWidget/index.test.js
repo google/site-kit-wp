@@ -71,10 +71,7 @@ describe( 'SearchFunnelWidget', () => {
 	it( 'should render the Search Funnel Widget, including the Activate Analytics CTA', async () => {
 		const { container, getByText } = render(
 			<SearchFunnelWidget { ...widgetComponentProps } />,
-			{
-				features: [ 'zeroDataStates' ],
-				registry,
-			}
+			{ registry }
 		);
 
 		await waitForElementToBeRemoved(
@@ -97,10 +94,7 @@ describe( 'SearchFunnelWidget', () => {
 
 		const { container, queryByText } = render(
 			<SearchFunnelWidget { ...widgetComponentProps } />,
-			{
-				features: [ 'zeroDataStates' ],
-				registry,
-			}
+			{ registry }
 		);
 
 		await waitForElementToBeRemoved(
