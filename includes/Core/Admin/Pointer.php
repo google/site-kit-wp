@@ -44,14 +44,14 @@ final class Pointer {
 	 * @param array  $args {
 	 *     Associative array of pointer arguments.
 	 *
-	 *     @type string         $title           Required. Pointer title.
-	 *     @type string         $content         Required. Pointer content. May contain inline HTML tags.
-	 *     @type string         $target_id       Required. ID of the element the pointer should be attached to.
-	 *     @type string|array   $position        Optional. Position of the pointer. Can be 'top', 'bottom', 'left', 'right',
-	 *                                           or an array of `edge` and `align`. Default 'top'.
-	 *     @type callable       $active_callback Optional. Callback function to determine whether the pointer is active in
-	 *                                           the current context. The current admin screen's hook suffix is passed to
-	 *                                           the callback. Default is that the pointer is active unconditionally.
+	 *     @type string       $title           Required. Pointer title.
+	 *     @type string       $content         Required. Pointer content. May contain inline HTML tags.
+	 *     @type string       $target_id       Required. ID of the element the pointer should be attached to.
+	 *     @type string|array $position        Optional. Position of the pointer. Can be 'top', 'bottom', 'left', 'right',
+	 *                                         or an array of `edge` and `align`. Default 'top'.
+	 *     @type callable     $active_callback Optional. Callback function to determine whether the pointer is active in
+	 *                                         the current context. The current admin screen's hook suffix is passed to
+	 *                                         the callback. Default is that the pointer is active unconditionally.
 	 * }
 	 */
 	public function __construct( $slug, array $args ) {
