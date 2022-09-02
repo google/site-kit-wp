@@ -46,22 +46,58 @@ export default function ZeroDataStateNotifications() {
 
 		return select( CORE_USER ).canViewSharedModule( 'analytics' );
 	} );
+	const showRecoverableAnalytics = useSelect( ( select ) => {
+		if ( ! viewOnly ) {
+			return false;
+		}
+
+		const recoverableModules =
+			select( CORE_MODULES ).getRecoverableModules();
+
+		if ( recoverableModules === undefined ) {
+			return undefined;
+		}
+
+		return Object.keys( recoverableModules ).includes( 'analytics' );
+	} );
+	const showRecoverableSearchConsole = useSelect( ( select ) => {
+		if ( ! viewOnly ) {
+			return false;
+		}
+
+		const recoverableModules =
+			select( CORE_MODULES ).getRecoverableModules();
+
+		if ( recoverableModules === undefined ) {
+			return undefined;
+		}
+
+		return Object.keys( recoverableModules ).includes( 'search-console' );
+	} );
 
 	const analyticsGatheringData = useInViewSelect( ( select ) =>
-		isAnalyticsConnected && canViewSharedAnalytics
+		isAnalyticsConnected &&
+		canViewSharedAnalytics &&
+		false === showRecoverableAnalytics
 			? select( MODULES_ANALYTICS ).isGatheringData()
 			: false
 	);
-	const searchConsoleGatheringData = useInViewSelect( ( select ) =>
-		select( MODULES_SEARCH_CONSOLE ).isGatheringData()
+	const searchConsoleGatheringData = useInViewSelect(
+		( select ) =>
+			false === showRecoverableSearchConsole &&
+			select( MODULES_SEARCH_CONSOLE ).isGatheringData()
 	);
 	const analyticsHasZeroData = useInViewSelect( ( select ) =>
-		isAnalyticsConnected && canViewSharedAnalytics
+		isAnalyticsConnected &&
+		canViewSharedAnalytics &&
+		false === showRecoverableAnalytics
 			? select( MODULES_ANALYTICS ).hasZeroData()
 			: false
 	);
-	const searchConsoleHasZeroData = useInViewSelect( ( select ) =>
-		select( MODULES_SEARCH_CONSOLE ).hasZeroData()
+	const searchConsoleHasZeroData = useInViewSelect(
+		( select ) =>
+			false === showRecoverableSearchConsole &&
+			select( MODULES_SEARCH_CONSOLE ).hasZeroData()
 	);
 
 	// If any of the checks for gathering data or zero data states have

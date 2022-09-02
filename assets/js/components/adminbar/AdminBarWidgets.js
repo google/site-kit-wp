@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import classnames from 'classnames';
-
-/**
  * WordPress dependencies
  */
 import { Fragment } from '@wordpress/element';
@@ -35,16 +30,9 @@ import AdminBarClicks from './AdminBarClicks';
 import AdminBarUniqueVisitors from './AdminBarUniqueVisitors';
 import AdminBarSessions from './AdminBarSessions';
 import AdminBarActivateAnalyticsCTA from './AdminBarActivateAnalyticsCTA';
-import ActivateModuleCTA from '../ActivateModuleCTA';
-import CompleteModuleActivationCTA from '../CompleteModuleActivationCTA';
-import AdminBarZeroData from './AdminBarZeroData';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { Row, Cell } from '../../material-components';
-import { CORE_WIDGETS } from '../../googlesitekit/widgets/datastore/constants';
-import { HIDDEN_CLASS } from '../../googlesitekit/widgets/util/constants';
-import ReportZero from '../ReportZero';
 import { withWidgetComponentProps } from '../../googlesitekit/widgets/util/get-widget-component-props';
-import { useFeature } from '../../hooks/useFeature';
 const { useSelect } = Data;
 
 // Widget slugs.
@@ -65,8 +53,6 @@ const AdminBarSessionsWidget =
 	withWidgetComponentProps( WIDGET_SESSIONS )( AdminBarSessions );
 
 export default function AdminBarWidgets() {
-	const zeroDataStatesEnabled = useFeature( 'zeroDataStates' );
-
 	const analyticsModuleAvailable = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleAvailable( 'analytics' )
 	);
@@ -77,46 +63,13 @@ export default function AdminBarWidgets() {
 		select( CORE_MODULES ).isModuleActive( 'analytics' )
 	);
 
-	const searchConsoleZeroData = useSelect( ( select ) => {
-		return (
-			select( CORE_WIDGETS ).getWidgetState( WIDGET_IMPRESSIONS )
-				?.Component === ReportZero &&
-			select( CORE_WIDGETS ).getWidgetState( WIDGET_CLICKS )
-				?.Component === ReportZero
-		);
-	} );
-
-	const analyticsZeroData = useSelect( ( select ) => {
-		return (
-			select( CORE_WIDGETS ).getWidgetState( WIDGET_VISITORS )
-				?.Component === ReportZero &&
-			select( CORE_WIDGETS ).getWidgetState( WIDGET_SESSIONS )
-				?.Component === ReportZero
-		);
-	} );
-
-	// True if _all_ admin bar widgets have zero data.
-	const zeroData =
-		( searchConsoleZeroData && analyticsZeroData ) ||
-		( searchConsoleZeroData && ! analyticsModuleConnected );
-
 	return (
 		<Fragment>
-			{ zeroData && <AdminBarZeroData /> }
-			<Row className={ classnames( { [ HIDDEN_CLASS ]: zeroData } ) }>
-				<Cell
-					lgSize={ searchConsoleZeroData ? 6 : 3 }
-					mdSize={ searchConsoleZeroData ? 4 : 2 }
-				>
+			<Row>
+				<Cell lgSize={ 3 } mdSize={ 2 }>
 					<AdminBarImpressionsWidget />
 				</Cell>
-				<Cell
-					lgSize={ 3 }
-					mdSize={ 2 }
-					className={ classnames( {
-						[ HIDDEN_CLASS ]: searchConsoleZeroData,
-					} ) }
-				>
+				<Cell lgSize={ 3 } mdSize={ 2 }>
 					<AdminBarClicksWidget />
 				</Cell>
 
@@ -135,15 +88,7 @@ export default function AdminBarWidgets() {
 					! analyticsModuleConnected ) ||
 					! analyticsModuleActive ) && (
 					<Cell lgSize={ 6 } mdSize={ 4 }>
-						{ zeroDataStatesEnabled && (
-							<AdminBarActivateAnalyticsCTA />
-						) }
-						{ ! zeroDataStatesEnabled &&
-							( analyticsModuleActive ? (
-								<CompleteModuleActivationCTA moduleSlug="analytics" />
-							) : (
-								<ActivateModuleCTA moduleSlug="analytics" />
-							) ) }
+						<AdminBarActivateAnalyticsCTA />
 					</Cell>
 				) }
 			</Row>

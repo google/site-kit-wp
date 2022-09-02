@@ -17,6 +17,7 @@ use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
+use Google\Site_Kit\Core\Util\Build_Mode;
 use Google\Site_Kit\Modules\AdSense;
 use Google\Site_Kit\Modules\Analytics;
 use Google\Site_Kit\Modules\Analytics_4;
@@ -139,6 +140,39 @@ class ModulesTest extends TestCase {
 			),
 			array_map( 'get_class', $modules->get_active_modules() )
 		);
+	}
+
+	public function test_should_enable_twg__feature_flag_not_enabled() {
+		$this->assertEquals( false, Modules::should_enable_twg() );
+	}
+
+	public function test_should_enable_twg_development() {
+		$this->enable_feature( 'twgModule' );
+		Build_Mode::set_mode( Build_Mode::MODE_DEVELOPMENT );
+		$this->assertEquals( true, Modules::should_enable_twg() );
+		// Reset build mode.
+		Build_Mode::set_mode( Build_Mode::MODE_PRODUCTION );
+	}
+
+	public function test_should_enable_twg_non_ssl() {
+		$this->enable_feature( 'twgModule' );
+		$this->assertEquals( false, Modules::should_enable_twg() );
+	}
+
+	public function test_should_enable_twg_behind_proxy() {
+		$this->enable_feature( 'twgModule' );
+		$_SERVER['HTTP_X_FORWARDED_PROTO'] = 'https';
+		$this->assertEquals( true, Modules::should_enable_twg() );
+		// Reset HTTP_X_FORWARDED_PROTO.
+		unset( $_SERVER['HTTP_X_FORWARDED_PROTO'] );
+	}
+
+	public function test_should_enable_twg_ssl() {
+		$this->enable_feature( 'twgModule' );
+		$_SERVER['HTTPS'] = 'on';
+		$this->assertEquals( true, Modules::should_enable_twg() );
+		// Reset HTTPS.
+		unset( $_SERVER['HTTPS'] );
 	}
 
 	public function test_register() {
@@ -488,6 +522,9 @@ class ModulesTest extends TestCase {
 	 * @param array<string> $expected        The array of expected module slugs.
 	 */
 	public function test_feature_flag_enabled_modules( $feature_flag, $feature_enabled, $module_slug, array $expected ) {
+		// This is needed for Thank with Google.
+		$_SERVER['HTTPS'] = 'on';
+
 		add_filter(
 			'googlesitekit_is_feature_enabled',
 			function ( $is_enabled, $feature ) use ( $feature_flag, $feature_enabled ) {
@@ -516,6 +553,9 @@ class ModulesTest extends TestCase {
 		foreach ( $expected as $slug ) {
 			$this->assertArrayHasKey( $slug, $modules->get_available_modules() );
 		}
+
+		// Reset HTTPs.
+		unset( $_SERVER['HTTPS'] );
 	}
 
 	public function provider_feature_flag_modules() {

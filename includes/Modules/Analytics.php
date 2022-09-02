@@ -1361,7 +1361,7 @@ final class Analytics extends Module
 	 */
 	protected function validate_report_metrics( $metrics ) {
 		if ( false === $this->is_using_shared_credentials ) {
-			return null;
+			return;
 		}
 
 		$valid_metrics = apply_filters(
@@ -1420,7 +1420,7 @@ final class Analytics extends Module
 	 */
 	protected function validate_report_dimensions( $dimensions ) {
 		if ( false === $this->is_using_shared_credentials ) {
-			return null;
+			return;
 		}
 
 		$valid_dimensions = apply_filters(
