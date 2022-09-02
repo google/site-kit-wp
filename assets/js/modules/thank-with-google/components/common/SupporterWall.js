@@ -66,7 +66,10 @@ export default function SupporterWall() {
 							</h5>
 							<p className="googlesitekit-twg-supporter-wall__value">
 								<DisplaySetting
-									value={ supporterWallSidebars.join( ', ' ) }
+									value={ supporterWallSidebars.join(
+										/* translators: used between list items, there is a space after the comma. */
+										__( ', ', 'google-site-kit' )
+									) }
 								/>
 							</p>
 						</Fragment>
