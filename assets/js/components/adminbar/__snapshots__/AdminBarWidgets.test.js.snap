@@ -165,23 +165,63 @@ exports[`AdminBarWidgets should render the Admin Bar Widgets, including the Acti
       class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-4-tablet"
     >
       <div
-        class="googlesitekit-cta"
+        class="googlesitekit-analytics-cta"
       >
-        <h3
-          class="googlesitekit-cta__title"
+        <div
+          class="googlesitekit-analytics-cta__preview-graphs"
         >
-          Learn more about what visitors do on your site
-        </h3>
-        <p
-          class="googlesitekit-cta__description"
+          <div
+            class="googlesitekit-analytics-cta__preview-graph"
+          >
+            <h3
+              class="googlesitekit-analytics-cta__preview-graph--title"
+            >
+              Traffic
+            </h3>
+            <div>
+              <svg />
+            </div>
+          </div>
+          <div
+            class="googlesitekit-analytics-cta__preview-graph"
+          >
+            <h3
+              class="googlesitekit-analytics-cta__preview-graph--title"
+            >
+              Unique visitors from Search
+            </h3>
+            <div>
+              <svg />
+            </div>
+            <div
+              class="googlesitekit-analytics-cta__preview-graph--icons"
+            >
+              <svg />
+              <span
+                class="googlesitekit-analytics-cta__preview-graph--bar"
+              />
+            </div>
+          </div>
+        </div>
+        <div
+          class="googlesitekit-analytics-cta__details"
         >
-          Connect with Google Analytics to see unique visitors, goal completions, top pages and more
-        </p>
-        <button
-          class="googlesitekit-cta-link googlesitekit-cta-link--arrow"
-        >
-          Set up Analytics
-        </button>
+          <p
+            class="googlesitekit-analytics-cta--description"
+          >
+            See how many people visit your site from Search and track how you’re achieving your goals.
+          </p>
+          <button
+            class="mdc-button mdc-button--raised"
+            target="_self"
+          >
+            <span
+              class="mdc-button__label"
+            >
+              Set up Google Analytics
+            </span>
+          </button>
+        </div>
       </div>
     </div>
   </div>

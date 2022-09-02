@@ -62,9 +62,7 @@ describe( 'AdminBarWidgets', () => {
 
 		expect( container ).toMatchSnapshot();
 
-		expect(
-			getByText( /Connect with Google Analytics/ )
-		).toBeInTheDocument();
+		expect( getByText( /Set up Google Analytics/ ) ).toBeInTheDocument();
 	} );
 
 	it( 'should not render the Activate Analytics CTA when the Analytics module is not available', async () => {
@@ -87,7 +85,7 @@ describe( 'AdminBarWidgets', () => {
 		expect( container ).toMatchSnapshot();
 
 		expect(
-			queryByText( /Connect with Google Analytics/ )
+			queryByText( /Set up Google Analytics/ )
 		).not.toBeInTheDocument();
 	} );
 } );
