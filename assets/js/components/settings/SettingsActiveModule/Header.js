@@ -21,12 +21,12 @@
  */
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
-import { useParams } from 'react-router-dom';
+import { useHistory, useParams } from 'react-router-dom';
 
 /**
  * WordPress dependencies
  */
-import { useCallback } from '@wordpress/element';
+import { Fragment, useCallback } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 
 /**
@@ -36,7 +36,7 @@ import Data from 'googlesitekit-data';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { EXPERIMENTAL_MODULES } from '../../dashboard-sharing/DashboardSharingSettings/constants';
 import { Grid, Row, Cell } from '../../../material-components';
-import Link from '../../Link';
+import Button from '../../Button';
 import ModuleIcon from '../../ModuleIcon';
 import Badge from '../../Badge';
 import { trackEvent } from '../../../util';
@@ -45,15 +45,24 @@ const { useSelect } = Data;
 
 export default function Header( { slug } ) {
 	const viewContext = useViewContext();
+	const history = useHistory();
 
 	const { moduleSlug } = useParams();
 	const isOpen = moduleSlug === slug;
 
+	const storeName = useSelect( ( select ) =>
+		select( CORE_MODULES ).getModuleStoreName( slug )
+	);
+	const adminReauthURL = useSelect( ( select ) =>
+		select( storeName )?.getAdminReauthURL?.()
+	);
 	const module = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModule( slug )
 	);
 
 	const onHeaderClick = useCallback( () => {
+		history.push( `/connected-services${ isOpen ? '' : `/${ slug }` }` );
+
 		if ( isOpen ) {
 			return trackEvent(
 				`${ viewContext }_module-list`,
@@ -61,12 +70,13 @@ export default function Header( { slug } ) {
 				slug
 			);
 		}
+
 		return trackEvent(
 			`${ viewContext }_module-list`,
 			'view_module_settings',
 			slug
 		);
-	}, [ isOpen, slug, viewContext ] );
+	}, [ history, isOpen, slug, viewContext ] );
 
 	if ( ! module ) {
 		return null;
@@ -75,7 +85,7 @@ export default function Header( { slug } ) {
 	const { name, connected } = module;
 
 	return (
-		<Link
+		<div
 			className={ classnames( 'googlesitekit-settings-module__header', {
 				'googlesitekit-settings-module__header--open': isOpen,
 			} ) }
@@ -87,42 +97,44 @@ export default function Header( { slug } ) {
 			aria-controls={ `googlesitekit-settings-module__content--${ slug }` }
 			to={ `/connected-services${ isOpen ? '' : `/${ slug }` }` }
 			onClick={ onHeaderClick }
+			onKeyDown={ onHeaderClick }
+			tabIndex="-1"
 		>
 			<Grid>
 				<Row>
-					<Cell lgSize={ 6 } mdSize={ 4 } smSize={ 4 }>
-						<div className="googlesitekit-settings-module__heading">
-							<ModuleIcon
-								slug={ slug }
-								size={ 24 }
-								className="googlesitekit-settings-module__heading-icon"
-							/>
+					<Cell
+						lgSize={ 6 }
+						mdSize={ 4 }
+						smSize={ 4 }
+						className="googlesitekit-settings-module__heading"
+					>
+						<ModuleIcon
+							slug={ slug }
+							size={ 24 }
+							className="googlesitekit-settings-module__heading-icon"
+						/>
 
-							<h3 className="googlesitekit-heading-4 googlesitekit-settings-module__title">
-								{ name }
-							</h3>
+						<h3 className="googlesitekit-heading-4 googlesitekit-settings-module__title">
+							{ name }
+						</h3>
 
-							<div className="googlesitekit-settings-module__heading-badges">
-								{ EXPERIMENTAL_MODULES.includes( slug ) && (
-									<Badge
-										label={ __(
-											'Experimental',
-											'google-site-kit'
-										) }
-										hasLeftSpacing={ true }
-									/>
-								) }
+						<div className="googlesitekit-settings-module__heading-badges">
+							{ EXPERIMENTAL_MODULES.includes( slug ) && (
+								<Badge
+									label={ __(
+										'Experimental',
+										'google-site-kit'
+									) }
+									hasLeftSpacing={ true }
+								/>
+							) }
 
-								{ 'thank-with-google' === slug && (
-									<Badge
-										label={ __(
-											'US Only',
-											'google-site-kit'
-										) }
-										hasLeftSpacing={ true }
-									/>
-								) }
-							</div>
+							{ 'thank-with-google' === slug && (
+								<Badge
+									label={ __( 'US Only', 'google-site-kit' ) }
+									hasLeftSpacing={ true }
+								/>
+							) }
 						</div>
 					</Cell>
 
@@ -133,51 +145,33 @@ export default function Header( { slug } ) {
 						alignMiddle
 						mdAlignRight
 					>
-						<p
-							className={ classnames(
-								'googlesitekit-settings-module__status',
-								{
-									'googlesitekit-settings-module__status--connected':
-										connected,
-									'googlesitekit-settings-module__status--not-connected':
-										! connected,
-								}
-							) }
-						>
-							{ connected
-								? sprintf(
-										/* translators: %s: module name. */
-										__(
-											'%s is connected',
-											'google-site-kit'
-										),
-										name
-								  )
-								: sprintf(
-										/* translators: %s: module name. */
-										__(
-											'%s is not connected',
-											'google-site-kit'
-										),
-										name
-								  ) }
+						{ connected && (
+							<p className="googlesitekit-settings-module__status">
+								{ __( 'Connected', 'google-site-kit' ) }
 
-							<span
-								className={ classnames(
-									'googlesitekit-settings-module__status-icon',
-									{
-										'googlesitekit-settings-module__status-icon--connected':
-											connected,
-										'googlesitekit-settings-module__status-icon--not-connected':
-											! connected,
-									}
-								) }
-							/>
-						</p>
+								<span className="googlesitekit-settings-module__status-icon googlesitekit-settings-module__status-icon--connected" />
+							</p>
+						) }
+
+						{ ! connected && (
+							<Fragment>
+								<Button href={ adminReauthURL }>
+									{ sprintf(
+										/* translators: %s: module name. */
+										__(
+											'Complete setup for %s',
+											'google-site-kit'
+										),
+										name
+									) }
+								</Button>
+								<span className="googlesitekit-settings-module__status-icon googlesitekit-settings-module__status-icon--not-connected" />
+							</Fragment>
+						) }
 					</Cell>
 				</Row>
 			</Grid>
-		</Link>
+		</div>
 	);
 }
 
