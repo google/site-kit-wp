@@ -42,7 +42,7 @@ export default function SupporterWall() {
 	);
 
 	const hasSupporterWallSidebar =
-		supporterWallSidebars && supporterWallSidebars.length > 0;
+		supporterWallSidebars && supporterWallSidebars?.length > 0;
 
 	return (
 		<div className="googlesitekit-twg-setting-field googlesitekit-twg-supporter-wall">
