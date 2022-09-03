@@ -22,7 +22,7 @@
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import map from 'lodash/map';
-import { useMount } from 'react-use';
+import { useMount, useMountedState } from 'react-use';
 
 /*
  * WordPress dependencies
@@ -113,6 +113,7 @@ function BannerNotification( {
 		setItem( cacheKeyDismissed, new Date(), { ttl: null } );
 
 	const breakpoint = useBreakpoint();
+	const isMounted = useMountedState();
 
 	useMount( async () => {
 		if ( dismissExpires > 0 ) {
@@ -161,7 +162,9 @@ function BannerNotification( {
 		if ( onCTAClick ) {
 			setIsAwaitingCTAResponse( true );
 			( { dismissOnCTAClick = true } = ( await onCTAClick( e ) ) || {} );
-			setIsAwaitingCTAResponse( false );
+			if ( isMounted() ) {
+				setIsAwaitingCTAResponse( false );
+			}
 		}
 
 		if ( isDismissible && dismissOnCTAClick ) {
