@@ -483,7 +483,7 @@ BannerNotification.propTypes = {
 	className: PropTypes.string,
 	title: PropTypes.string.isRequired,
 	description: PropTypes.node,
-	descriptionIcon: PropTypes.elementType,
+	descriptionIcon: PropTypes.node,
 	learnMoreURL: PropTypes.string,
 	learnMoreDescription: PropTypes.string,
 	learnMoreLabel: PropTypes.string,
