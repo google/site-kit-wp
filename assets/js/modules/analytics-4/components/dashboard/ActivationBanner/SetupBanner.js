@@ -32,6 +32,7 @@ import {
 	UseSnippetSwitch,
 } from '../../../../analytics-4/components/common';
 import useExistingTagEffect from '../../../../analytics-4/hooks/useExistingTagEffect';
+import { MODULES_ANALYTICS } from '../../../../analytics/datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../../datastore/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { ACTIVATION_ACKNOWLEDGEMENT_TOOLTIP_STATE_KEY } from '../../../constants';
@@ -42,9 +43,12 @@ import { getBannerDismissalExpiryTime } from '../../../utils/banner-dismissal-ex
 const { useSelect } = Data;
 
 export default function SetupBanner( { onCTAClick } ) {
-	const ga4MeasurementID = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getMeasurementID()
-	);
+	const hasExistingProperty = useSelect( ( select ) => {
+		const accountID = select( MODULES_ANALYTICS ).getAccountID();
+		const properties =
+			select( MODULES_ANALYTICS_4 ).getProperties( accountID ) || [];
+		return properties.length > 0;
+	} );
 	const existingTag = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getExistingTag()
 	);
@@ -89,7 +93,7 @@ export default function SetupBanner( { onCTAClick } ) {
 	let footer;
 	let children;
 
-	if ( ga4MeasurementID ) {
+	if ( hasExistingProperty ) {
 		title = __(
 			'Connect the Google Analytics 4 property that’s associated with your existing Universal Analytics property',
 			'google-site-kit'

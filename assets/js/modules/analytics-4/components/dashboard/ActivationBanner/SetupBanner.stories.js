@@ -31,6 +31,12 @@ import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants
 import * as fixtures from '../../../../analytics/datastore/__fixtures__';
 import * as ga4Fixtures from '../../../../analytics-4/datastore/__fixtures__';
 
+const { createProperty, createWebDataStream, properties, webDataStreams } =
+	ga4Fixtures;
+const { accounts, properties: uaProps } = fixtures.accountsPropertiesProfiles;
+const accountID = createProperty._accountID;
+const propertyID = createWebDataStream._propertyID;
+
 const Template = ( args ) => <SetupBanner { ...args } />;
 
 export const NoPropertyNoTag = Template.bind( {} );
@@ -43,11 +49,23 @@ WithPropertyNoTag.decorators = [
 		const setupRegistry = ( registry ) => {
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
-				.setPropertyID( ga4Fixtures.webDataStreams[ 0 ]._propertyID );
-			registry.dispatch( MODULES_ANALYTICS_4 ).setMeasurementID(
-				// eslint-disable-next-line sitekit/acronym-case
-				ga4Fixtures.webDataStreams[ 0 ].webStreamData.measurementId
-			);
+				.receiveGetProperties( properties, {
+					accountID,
+				} );
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.finishResolution( 'getProperties', [ accountID ] );
+
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveGetWebDataStreams( webDataStreams, {
+					propertyID,
+				} );
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.finishResolution( 'receiveGetWebDataStreams', {
+					propertyID,
+				} );
 		};
 
 		return (
@@ -65,11 +83,24 @@ WithPropertyAndTag.decorators = [
 		const setupRegistry = ( registry ) => {
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
-				.setPropertyID( ga4Fixtures.webDataStreams[ 0 ]._propertyID );
-			registry.dispatch( MODULES_ANALYTICS_4 ).setMeasurementID(
-				// eslint-disable-next-line sitekit/acronym-case
-				ga4Fixtures.webDataStreams[ 0 ].webStreamData.measurementId
-			);
+				.receiveGetProperties( properties, {
+					accountID,
+				} );
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.finishResolution( 'getProperties', [ accountID ] );
+
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveGetWebDataStreams( webDataStreams, {
+					propertyID,
+				} );
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.finishResolution( 'receiveGetWebDataStreams', {
+					propertyID,
+				} );
+
 			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetExistingTag(
 				// eslint-disable-next-line sitekit/acronym-case
 				ga4Fixtures.webDataStreams[ 0 ].webStreamData.measurementId
@@ -111,17 +142,6 @@ export default {
 	},
 	decorators: [
 		( Story ) => {
-			const {
-				createProperty,
-				createWebDataStream,
-				properties,
-				webDataStreams,
-			} = ga4Fixtures;
-			const { accounts, properties: uaProps } =
-				fixtures.accountsPropertiesProfiles;
-			const accountID = createProperty._accountID;
-			const propertyID = createWebDataStream._propertyID;
-
 			const setupRegistry = ( registry ) => {
 				provideModules( registry, [
 					{
@@ -159,26 +179,6 @@ export default {
 				registry
 					.dispatch( MODULES_ANALYTICS )
 					.finishResolution( 'getProperties', [ accountID ] );
-
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveGetProperties( properties, {
-						accountID,
-					} );
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.finishResolution( 'getProperties', [ accountID ] );
-
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveGetWebDataStreams( webDataStreams, {
-						propertyID,
-					} );
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.finishResolution( 'receiveGetWebDataStreams', {
-						propertyID,
-					} );
 
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
