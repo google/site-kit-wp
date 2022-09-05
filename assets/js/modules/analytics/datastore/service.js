@@ -110,6 +110,18 @@ export const selectors = {
 				return selectors.getServiceURL( state, { path } );
 			}
 	),
+
+	/**
+	 * Gets an entity access URL on the service.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {string|undefined} The entity access URL to the service.
+	 */
+	getServiceEntityAccessURL: createRegistrySelector(
+		() => ( state ) => selectors.getServiceReportURL( state, 'report-home' )
+	),
 };
 
 const store = {

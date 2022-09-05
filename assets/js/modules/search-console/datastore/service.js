@@ -107,6 +107,25 @@ export const selectors = {
 	),
 
 	/**
+	 * Gets an entity access URL on the service.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {string} The entity access URL to the service.
+	 */
+	getServiceEntityAccessURL: createRegistrySelector(
+		( select ) => ( state ) => {
+			const propertyID = select( MODULES_SEARCH_CONSOLE ).getPropertyID();
+
+			const query = {
+				resource_id: propertyID,
+			};
+
+			return selectors.getServiceURL( state, { query } );
+		}
+	),
+
+	/**
 	 * Checks whether the Search Console property is a domain property.
 	 *
 	 * @since 1.20.0
