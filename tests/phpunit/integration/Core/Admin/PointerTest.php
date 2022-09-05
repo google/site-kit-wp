@@ -73,6 +73,49 @@ class PointerTest extends TestCase {
 		$this->assertEquals( 'test-target-id', $pointer->get_target_id() );
 	}
 
+	public function test_get_position_string() {
+		$pointer = new Pointer(
+			'test-slug',
+			array(
+				'position' => 'bottom',
+			)
+		);
+
+		$this->assertEquals(
+			'bottom',
+			$pointer->get_position()
+		);
+	}
+
+	public function test_get_position_array() {
+		$pointer = new Pointer(
+			'test-slug',
+			array(
+				'position' => array(
+					'edge'  => 'top',
+					'align' => 'left',
+				),
+			)
+		);
+
+		$this->assertEquals(
+			array(
+				'edge'  => 'top',
+				'align' => 'left',
+			),
+			$pointer->get_position()
+		);
+	}
+
+	public function test_get_position_default() {
+		$pointer = new Pointer( 'test-slug', array() );
+
+		$this->assertEquals(
+			'top',
+			$pointer->get_position()
+		);
+	}
+
 	/**
 	 * @dataProvider data_is_active
 	 *
