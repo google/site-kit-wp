@@ -163,12 +163,13 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 	} else {
 		selectProperty( PROPERTY_CREATE );
 
+		title = __(
+			'No existing Google Analytics 4 property found, Site Kit will help you create a new one and insert it on your site',
+			'google-site-kit'
+		);
+		ctaLabel = __( 'Create property', 'google-site-kit' );
+
 		if ( existingTag ) {
-			title = __(
-				'No existing Google Analytics 4 property found, Site Kit will help you create a new one and insert it on your site',
-				'google-site-kit'
-			);
-			ctaLabel = __( 'Create property', 'google-site-kit' );
 			footer = sprintf(
 				/* translators: %s: The existing tag ID. */
 				__(
@@ -178,11 +179,6 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 				existingTag
 			);
 		} else {
-			title = __(
-				'No existing Google Analytics 4 property found, Site Kit will help you create a new one and insert it on your site',
-				'google-site-kit'
-			);
-			ctaLabel = __( 'Create property', 'google-site-kit' );
 			footer = __(
 				'You can always add/edit this in the Site Kit Settings.',
 				'google-site-kit'
