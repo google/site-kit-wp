@@ -37,6 +37,7 @@ import AdSenseAlerts from './AdSenseAlerts';
 import ActivationBanner from '../../modules/analytics-4/components/dashboard/ActivationBanner';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import useViewOnly from '../../hooks/useViewOnly';
+import ZeroDataStateNotifications from './ZeroDataStateNotifications';
 const { useSelect } = Data;
 
 export default function BannerNotifications() {
@@ -58,6 +59,7 @@ export default function BannerNotifications() {
 
 	return (
 		<Fragment>
+			<ZeroDataStateNotifications />
 			{ ! viewOnly && (
 				<Fragment>
 					{ ( 'authentication_success' === notification ||
