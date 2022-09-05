@@ -131,6 +131,7 @@
 		"element-closest": "^3.0.2",
 		"focus-trap-react": "^6.0.0",
 		"formdata-polyfill": "^3.0.20",
+		"immer": "^9.0.15",
 		"intersection-observer": "^0.12.0",
 		"intl": "^1.2.5",
 		"intl-locales-supported": "^1.8.12",
