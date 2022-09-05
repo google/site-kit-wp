@@ -34,6 +34,10 @@ import {
 import useExistingTagEffect from '../../../../analytics-4/hooks/useExistingTagEffect';
 import { MODULES_ANALYTICS_4 } from '../../../datastore/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
+import { ACTIVATION_ACKNOWLEDGEMENT_TOOLTIP_STATE_KEY } from '../../../constants';
+import { useTooltipState } from '../../../../../components/AdminMenuTooltip/useTooltipState';
+import { useShowTooltip } from '../../../../../components/AdminMenuTooltip/useShowTooltip';
+import { AdminMenuTooltip } from '../../../../../components/AdminMenuTooltip/AdminMenuTooltip';
 import { getBannerDismissalExpiryTime } from '../../../utils/banner-dismissal-expiry';
 const { useSelect } = Data;
 
@@ -50,6 +54,35 @@ export default function SetupBanner( { onCTAClick } ) {
 	const referenceDateString = useSelect( ( select ) =>
 		select( CORE_USER ).getReferenceDate()
 	);
+
+	const { isTooltipVisible } = useTooltipState(
+		ACTIVATION_ACKNOWLEDGEMENT_TOOLTIP_STATE_KEY
+	);
+
+	const showTooltip = useShowTooltip(
+		ACTIVATION_ACKNOWLEDGEMENT_TOOLTIP_STATE_KEY
+	);
+
+	if ( isTooltipVisible ) {
+		return (
+			<Fragment>
+				<AdminMenuTooltip
+					title={ __(
+						'You can connect Google Analytics 4 later here',
+						'google-site-kit'
+					) }
+					content={ __(
+						'You can configure the Google Analytics 4 property inside the Site Kit Settings later.',
+						'google-site-kit'
+					) }
+					dismissLabel={ __( 'Remind me later', 'google-site-kit' ) }
+					tooltipStateKey={
+						ACTIVATION_ACKNOWLEDGEMENT_TOOLTIP_STATE_KEY
+					}
+				/>
+			</Fragment>
+		);
+	}
 
 	let title;
 	let ctaLabel;
@@ -139,6 +172,7 @@ export default function SetupBanner( { onCTAClick } ) {
 			dismissExpires={ getBannerDismissalExpiryTime(
 				referenceDateString
 			) }
+			onDismiss={ showTooltip }
 		>
 			{ children }
 		</BannerNotification>

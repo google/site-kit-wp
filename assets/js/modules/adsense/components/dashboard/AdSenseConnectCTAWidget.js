@@ -36,27 +36,24 @@ import {
 	ADSENSE_CTA_WIDGET_DISMISSED_ITEM_KEY,
 	ADSENSE_CTA_WIDGET_TOOLTIP_STATE_KEY,
 } from '../../constants';
-import { CORE_UI } from '../../../../googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
-import JoyrideTooltip from '../../../../components/JoyrideTooltip';
 import useViewContext from '../../../../hooks/useViewContext';
 import { trackEvent } from '../../../../util';
+
+import {
+	useShowTooltip,
+	useTooltipState,
+	AdminMenuTooltip,
+} from '../../../../components/AdminMenuTooltip';
+
 const { useDispatch, useSelect } = Data;
 
 function AdSenseConnectCTAWidget( { Widget, WidgetNull } ) {
 	const { dismissItem } = useDispatch( CORE_USER );
-	const { setValue } = useDispatch( CORE_UI );
 
-	const { isTooltipVisible, rehideAdminMenu, rehideAdminSubMenu } = useSelect(
-		( select ) =>
-			select( CORE_UI ).getValue(
-				ADSENSE_CTA_WIDGET_TOOLTIP_STATE_KEY
-			) || {
-				isTooltipVisible: false,
-				rehideAdminMenu: false,
-				rehideAdminSubMenu: false,
-			}
+	const { isTooltipVisible } = useTooltipState(
+		ADSENSE_CTA_WIDGET_TOOLTIP_STATE_KEY
 	);
 
 	const viewContext = useViewContext();
@@ -70,83 +67,21 @@ function AdSenseConnectCTAWidget( { Widget, WidgetNull } ) {
 		)
 	);
 
-	const onDismissModule = useCallback( async () => {
-		// Check if the WordPress admin menu is open, and if not, open it.
-		// The admin menu is hidden via responsive CSS. This is a simple and effective way to check if it's visible.
-		const isAdminMenuOpen =
-			document.querySelector( '#adminmenu' ).offsetHeight > 0;
-
-		if ( ! isAdminMenuOpen ) {
-			const adminMenuToggle = document.getElementById(
-				'wp-admin-bar-menu-toggle'
-			);
-
-			if ( adminMenuToggle ) {
-				adminMenuToggle.click();
-
-				// On iOS, at least, this is necessary, without it the settings menu item
-				// is not scrolled into view when the Tooltip is shown.
-				await new Promise( ( resolve ) => {
-					setTimeout( resolve, 0 );
-				} );
-			}
-		}
-
-		// Check if the Site Kit admin submenu is hidden, and if so, show it.
-		const adminSubMenuSelector =
-			"#adminmenu [href*='page=googlesitekit-dashboard']";
-		const isAdminSubMenuHidden = !! document.querySelector(
-			`${ adminSubMenuSelector }[aria-haspopup=true]`
-		);
-
-		if ( isAdminSubMenuHidden ) {
-			document.querySelector( adminSubMenuSelector ).click();
-		}
-
-		setValue( ADSENSE_CTA_WIDGET_TOOLTIP_STATE_KEY, {
-			isTooltipVisible: true,
-			rehideAdminMenu: ! isAdminMenuOpen,
-			rehideAdminSubMenu: isAdminSubMenuHidden,
-		} );
-	}, [ setValue ] );
+	const showTooltip = useShowTooltip( ADSENSE_CTA_WIDGET_TOOLTIP_STATE_KEY );
 
 	const handleDismissTooltip = useCallback( async () => {
-		// If the WordPress admin menu was closed, re-close it.
-		if ( rehideAdminMenu ) {
-			const isAdminMenuOpen =
-				document.querySelector( '#adminmenu' ).offsetHeight > 0;
-
-			if ( isAdminMenuOpen ) {
-				document.getElementById( 'wp-admin-bar-menu-toggle' )?.click();
-			}
-		}
-
-		// If the Site Kit admin submenu was hidden, re-hide it.
-		if ( rehideAdminSubMenu ) {
-			// Click on the body to close the submenu.
-			document.querySelector( 'body' ).click();
-		}
-
 		await trackEvent(
 			`${ viewContext }_adsense-cta-widget`,
 			'dismiss_tooltip'
 		);
 		await dismissItem( ADSENSE_CTA_WIDGET_DISMISSED_ITEM_KEY );
-
-		setValue( ADSENSE_CTA_WIDGET_TOOLTIP_STATE_KEY, undefined );
-	}, [
-		dismissItem,
-		rehideAdminMenu,
-		rehideAdminSubMenu,
-		setValue,
-		viewContext,
-	] );
+	}, [ dismissItem, viewContext ] );
 
 	if ( isTooltipVisible ) {
 		return (
 			<Fragment>
 				<WidgetNull />
-				<JoyrideTooltip
+				<AdminMenuTooltip
 					title={ __(
 						'You can always connect AdSense from here later',
 						'google-site-kit'
@@ -156,8 +91,8 @@ function AdSenseConnectCTAWidget( { Widget, WidgetNull } ) {
 						'google-site-kit'
 					) }
 					dismissLabel={ __( 'Got it', 'google-site-kit' ) }
-					target="#adminmenu [href*='page=googlesitekit-settings']"
 					onDismiss={ handleDismissTooltip }
+					tooltipStateKey={ ADSENSE_CTA_WIDGET_TOOLTIP_STATE_KEY }
 				/>
 			</Fragment>
 		);
@@ -169,7 +104,7 @@ function AdSenseConnectCTAWidget( { Widget, WidgetNull } ) {
 
 	return (
 		<Widget noPadding>
-			<AdSenseConnectCTA onDismissModule={ onDismissModule } />
+			<AdSenseConnectCTA onDismissModule={ showTooltip } />
 		</Widget>
 	);
 }
