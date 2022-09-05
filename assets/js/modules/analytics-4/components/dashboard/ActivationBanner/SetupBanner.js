@@ -37,8 +37,13 @@ import {
 	MODULES_ANALYTICS_4,
 	PROPERTY_CREATE,
 } from '../../../datastore/constants';
-import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import useExistingTagEffect from '../../../../analytics-4/hooks/useExistingTagEffect';
+import { MODULES_ANALYTICS } from '../../../../analytics/datastore/constants';
+import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
+import { ACTIVATION_ACKNOWLEDGEMENT_TOOLTIP_STATE_KEY } from '../../../constants';
+import { useTooltipState } from '../../../../../components/AdminMenuTooltip/useTooltipState';
+import { useShowTooltip } from '../../../../../components/AdminMenuTooltip/useShowTooltip';
+import { AdminMenuTooltip } from '../../../../../components/AdminMenuTooltip/AdminMenuTooltip';
 import { getBannerDismissalExpiryTime } from '../../../utils/banner-dismissal-expiry';
 const { useDispatch, useSelect } = Data;
 
@@ -48,6 +53,13 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 	const ga4MeasurementID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getMeasurementID()
 	);
+
+	const hasExistingProperty = useSelect( ( select ) => {
+		const accountID = select( MODULES_ANALYTICS ).getAccountID();
+		const properties =
+			select( MODULES_ANALYTICS_4 ).getProperties( accountID ) || [];
+		return properties.length > 0;
+	} );
 	const existingTag = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getExistingTag()
 	);
@@ -74,12 +86,41 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 		onSubmitSuccess();
 	}, [ onSubmitSuccess, submitChanges ] );
 
+	const { isTooltipVisible } = useTooltipState(
+		ACTIVATION_ACKNOWLEDGEMENT_TOOLTIP_STATE_KEY
+	);
+
+	const showTooltip = useShowTooltip(
+		ACTIVATION_ACKNOWLEDGEMENT_TOOLTIP_STATE_KEY
+	);
+
+	if ( isTooltipVisible ) {
+		return (
+			<Fragment>
+				<AdminMenuTooltip
+					title={ __(
+						'You can connect Google Analytics 4 later here',
+						'google-site-kit'
+					) }
+					content={ __(
+						'You can configure the Google Analytics 4 property inside the Site Kit Settings later.',
+						'google-site-kit'
+					) }
+					dismissLabel={ __( 'Remind me later', 'google-site-kit' ) }
+					tooltipStateKey={
+						ACTIVATION_ACKNOWLEDGEMENT_TOOLTIP_STATE_KEY
+					}
+				/>
+			</Fragment>
+		);
+	}
+
 	let title;
 	let ctaLabel;
 	let footer;
 	let children;
 
-	if ( ga4MeasurementID ) {
+	if ( hasExistingProperty ) {
 		title = __(
 			'Connect the Google Analytics 4 property that’s associated with your existing Universal Analytics property',
 			'google-site-kit'
@@ -170,6 +211,7 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 			dismissExpires={ getBannerDismissalExpiryTime(
 				referenceDateString
 			) }
+			onDismiss={ showTooltip }
 		>
 			{ errorNotice && <ErrorNotice error={ errorNotice } /> }
 			{ children }
