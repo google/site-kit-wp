@@ -50,10 +50,6 @@ const { useDispatch, useSelect } = Data;
 export default function SetupBanner( { onSubmitSuccess } ) {
 	const [ errorNotice, setErrorNotice ] = useState( null );
 
-	const ga4MeasurementID = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getMeasurementID()
-	);
-
 	const hasExistingProperty = useSelect( ( select ) => {
 		const accountID = select( MODULES_ANALYTICS ).getAccountID();
 		const properties =
@@ -200,11 +196,9 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 			className="googlesitekit-ga4-setup-banner"
 			title={ title }
 			ctaComponent={
-				! ga4MeasurementID && (
-					<SpinnerButton onClick={ handleSubmitChanges }>
-						{ ctaLabel }
-					</SpinnerButton>
-				)
+				<SpinnerButton onClick={ handleSubmitChanges }>
+					{ ctaLabel }
+				</SpinnerButton>
 			}
 			footer={ <p>{ footer }</p> }
 			dismiss={ __( 'Cancel', 'google-site-kit' ) }
