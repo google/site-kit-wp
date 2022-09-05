@@ -240,6 +240,7 @@ export default function SettingsView() {
 							href={ siteStatusURL }
 							className="googlesitekit-settings-module__cta-button"
 							external
+							disabled={ siteStatusURL === undefined }
 						>
 							{ siteStatusLinkLabel }
 						</Link>
