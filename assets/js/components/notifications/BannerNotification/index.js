@@ -147,7 +147,9 @@ function BannerNotification( {
 		setTimeout( async () => {
 			await persistDismissal();
 
-			setIsDismissed( true );
+			if ( isMounted() ) {
+				setIsDismissed( true );
+			}
 
 			// Emit an event for the notification counter to listen for.
 			const event = new Event( 'notificationDismissed' );
