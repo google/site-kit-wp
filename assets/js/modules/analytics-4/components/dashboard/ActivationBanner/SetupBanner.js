@@ -45,6 +45,8 @@ import { useTooltipState } from '../../../../../components/AdminMenuTooltip/useT
 import { useShowTooltip } from '../../../../../components/AdminMenuTooltip/useShowTooltip';
 import { AdminMenuTooltip } from '../../../../../components/AdminMenuTooltip/AdminMenuTooltip';
 import { getBannerDismissalExpiryTime } from '../../../utils/banner-dismissal-expiry';
+import { Cell, Grid, Row } from '../../../../../material-components';
+import ProgressBar from '../../../../../components/ProgressBar';
 const { useDispatch, useSelect } = Data;
 
 export default function SetupBanner( { onSubmitSuccess } ) {
@@ -52,9 +54,27 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 
 	const hasExistingProperty = useSelect( ( select ) => {
 		const accountID = select( MODULES_ANALYTICS ).getAccountID();
+
 		const properties =
-			select( MODULES_ANALYTICS_4 ).getProperties( accountID ) || [];
-		return properties.length > 0;
+			select( MODULES_ANALYTICS_4 ).getProperties( accountID );
+
+		if ( properties === undefined ) {
+			return undefined;
+		}
+
+		if ( properties.length === 0 ) {
+			return false;
+		}
+
+		// Make a call here to ensure getAccounts is resolved before rendering the PropertySelect
+		// component, to avoid showing a ProgressBar in the PropertySelect.
+		const accounts = select( MODULES_ANALYTICS ).getAccounts();
+
+		if ( accounts === undefined ) {
+			return undefined;
+		}
+
+		return true;
 	} );
 	const existingTag = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getExistingTag()
@@ -89,6 +109,18 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 	const showTooltip = useShowTooltip(
 		ACTIVATION_ACKNOWLEDGEMENT_TOOLTIP_STATE_KEY
 	);
+
+	if ( hasExistingProperty === undefined ) {
+		return (
+			<Grid>
+				<Row>
+					<Cell>
+						<ProgressBar />
+					</Cell>
+				</Row>
+			</Grid>
+		);
+	}
 
 	if ( isTooltipVisible ) {
 		return (
