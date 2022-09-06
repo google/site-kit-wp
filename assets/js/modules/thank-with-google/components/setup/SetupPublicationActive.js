@@ -45,9 +45,9 @@ export default function SetupPublicationActive( { currentPublicationID } ) {
 
 	return (
 		<SetupPublicationScreen
-			title={ __( 'Congratulations!', 'google-site-kit' ) }
+			title={ __( 'Setup almost complete!', 'google-site-kit' ) }
 			description={ __(
-				'Your account is now active. To get started, customize the appearance of Thank with Google on your site.',
+				'Thank with Google is now active. To complete setup, customize its appearance on your site.',
 				'google-site-kit'
 			) }
 		>

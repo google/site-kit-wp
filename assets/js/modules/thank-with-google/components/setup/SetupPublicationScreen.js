@@ -50,7 +50,7 @@ export default function SetupPublicationScreen( props ) {
 				className="googlesitekit-setup__icon"
 			>
 				<Suspense fallback={ <div /> }>
-					<ThankWithGoogleSetup width={ 360 } height={ 210 } />
+					<ThankWithGoogleSetup width={ 391 } height={ 222 } />
 				</Suspense>
 			</Cell>
 			<Cell smSize={ 4 } mdSize={ 8 } lgSize={ 6 } lgOrder={ 1 }>

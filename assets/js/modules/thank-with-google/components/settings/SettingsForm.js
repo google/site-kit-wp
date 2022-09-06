@@ -26,7 +26,12 @@ import { Fragment } from '@wordpress/element';
  */
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import { MODULES_THANK_WITH_GOOGLE } from '../../datastore/constants';
-import { CTAPlacement, ColorRadio, PostTypesSelect } from '../common';
+import {
+	CTAPlacement,
+	ColorRadio,
+	PostTypesSelect,
+	SupporterWall,
+} from '../common';
 
 export default function SettingsForm() {
 	return (
@@ -38,6 +43,7 @@ export default function SettingsForm() {
 
 			<div className="googlesitekit-setup-module__inputs">
 				<CTAPlacement />
+				<SupporterWall />
 				<ColorRadio />
 				<PostTypesSelect />
 			</div>

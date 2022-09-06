@@ -120,11 +120,7 @@ class Pointers {
 				jQuery( function() {
 					var options = {
 						content: "<h3>%s</h3>%s",
-						position: {
-							edge:  "left",
-							align: "right",
-						},
-						pointerClass: "wp-pointer arrow-top",
+						position: %s,
 						pointerWidth: 420,
 						close: function() {
 							jQuery.post(
@@ -142,6 +138,7 @@ class Pointers {
 				',
 				esc_js( $pointer->get_title() ),
 				$content,
+				wp_json_encode( $pointer->get_position() ),
 				esc_js( $slug ),
 				esc_js( $pointer->get_target_id() )
 			),
