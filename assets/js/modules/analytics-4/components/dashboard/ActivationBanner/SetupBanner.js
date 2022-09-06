@@ -154,8 +154,8 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 		return (
 			<Grid>
 				<Row>
-					<Cell>
-						<ProgressBar size={ 12 } />
+					<Cell size={ 12 }>
+						<ProgressBar />
 					</Cell>
 				</Row>
 			</Grid>
