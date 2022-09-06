@@ -1,7 +1,5 @@
 /**
- * Admin Bar Zero Data Component Stories.
- *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2022 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,25 +14,31 @@
  * limitations under the License.
  */
 
-/**
- * Internal dependencies
- */
-import AdminBarZeroData from './AdminBarZeroData';
+.googlesitekit-plugin {
 
-const Template = ( args ) => <AdminBarZeroData { ...args } />;
+	.googlesitekit-twg-supporter-wall {
 
-export const Ready = Template.bind( {} );
-Ready.storyName = 'Gathering Data (Legacy)';
+		> p {
+			max-width: 34.25rem;
+		}
 
-export default {
-	title: 'Views/AdminBarApp/AdminBarZeroData',
-	decorators: [
-		( Story ) => (
-			<div className="googlesitekit-widget">
-				<div className="googlesitekit-widget__body">
-					<Story />
-				</div>
-			</div>
-		),
-	],
-};
+		.googlesitekit-twg-supporter-wall__headline {
+			color: $c-surfaces-on-surface-variant;
+			font-size: $fs-body-sm;
+			font-weight: $fw-normal;
+			line-height: $lh-headline-sm;
+			margin: 0;
+		}
+
+		.googlesitekit-twg-supporter-wall__value {
+			color: $c-surfaces-on-surface;
+			font-size: $fs-body-md;
+			margin: 5px 0 0;
+		}
+
+		.googlesitekit-twg-supporter-wall__link {
+			display: block;
+			margin-top: 30px;
+		}
+	}
+}

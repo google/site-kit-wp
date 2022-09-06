@@ -173,9 +173,8 @@ WithExistingGTMPropertyNonMatching.decorators = [
 		const setupRegistry = ( registry ) => {
 			const propertyID = properties[ 1 ].id;
 
-			const { buildAndReceiveWebAndAMP } = createBuildAndReceivers(
-				registry
-			);
+			const { buildAndReceiveWebAndAMP } =
+				createBuildAndReceivers( registry );
 			buildAndReceiveWebAndAMP( {
 				accountID,
 				webPropertyID: propertyID,
@@ -199,9 +198,8 @@ WithExistingGTMPropertyMatching.decorators = [
 		const setupRegistry = ( registry ) => {
 			const propertyID = properties[ 0 ].id;
 
-			const { buildAndReceiveWebAndAMP } = createBuildAndReceivers(
-				registry
-			);
+			const { buildAndReceiveWebAndAMP } =
+				createBuildAndReceivers( registry );
 			buildAndReceiveWebAndAMP( {
 				accountID,
 				webPropertyID: propertyID,
@@ -217,8 +215,7 @@ WithExistingGTMPropertyMatching.decorators = [
 	},
 ];
 WithExistingGTMPropertyMatching.scenario = {
-	label:
-		'Modules/Analytics/Settings/SettingsEdit/WithExistingGTMPropertyMatching',
+	label: 'Modules/Analytics/Settings/SettingsEdit/WithExistingGTMPropertyMatching',
 	delay: 250,
 };
 

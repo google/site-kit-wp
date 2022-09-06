@@ -57,9 +57,8 @@ export default function AccountCreate() {
 	const [ isNavigating, setIsNavigating ] = useState( false );
 	const { accounts, hasResolvedAccounts } = useSelect( ( select ) => ( {
 		accounts: select( MODULES_ANALYTICS ).getAccounts(),
-		hasResolvedAccounts: select( MODULES_ANALYTICS ).hasFinishedResolution(
-			'getAccounts'
-		),
+		hasResolvedAccounts:
+			select( MODULES_ANALYTICS ).hasFinishedResolution( 'getAccounts' ),
 	} ) );
 	const accountTicketTermsOfServiceURL = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getAccountTicketTermsOfServiceURL()
@@ -181,9 +180,10 @@ export default function AccountCreate() {
 
 	// If the user clicks "Back", rollback settings to restore saved values, if any.
 	const { rollbackSettings } = useDispatch( MODULES_ANALYTICS );
-	const handleBack = useCallback( () => rollbackSettings(), [
-		rollbackSettings,
-	] );
+	const handleBack = useCallback(
+		() => rollbackSettings(),
+		[ rollbackSettings ]
+	);
 
 	if (
 		isDoingCreateAccount ||

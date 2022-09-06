@@ -218,9 +218,8 @@ const baseSelectors = {
 	 * @param {Object} state Data store's state.
 	 * @return {(Array|undefined)} Array of scopes.
 	 */
-	getUnsatisfiedScopes: createGetAuthenticationSelector(
-		'unsatisfiedScopes'
-	),
+	getUnsatisfiedScopes:
+		createGetAuthenticationSelector( 'unsatisfiedScopes' ),
 
 	/**
 	 * Checks reauthentication status for this user.
@@ -245,9 +244,8 @@ const baseSelectors = {
 	 * @param {Object} state Data store's state.
 	 * @return {(string|undefined)} The current disconnected reason.
 	 */
-	getDisconnectedReason: createGetAuthenticationSelector(
-		'disconnectedReason'
-	),
+	getDisconnectedReason:
+		createGetAuthenticationSelector( 'disconnectedReason' ),
 
 	/**
 	 * Gets the connected proxy URL.
@@ -257,9 +255,8 @@ const baseSelectors = {
 	 * @param {Object} state Data store's state.
 	 * @return {(string|undefined)} The current connected proxy URL.
 	 */
-	getConnectedProxyURL: createGetAuthenticationSelector(
-		'connectedProxyURL'
-	),
+	getConnectedProxyURL:
+		createGetAuthenticationSelector( 'connectedProxyURL' ),
 
 	/**
 	 * Gets the previous connected proxy URL.

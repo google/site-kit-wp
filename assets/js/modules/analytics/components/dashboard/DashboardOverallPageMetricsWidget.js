@@ -41,9 +41,7 @@ import whenActive from '../../../../util/when-active';
 import { generateDateRangeArgs } from '../../util/report-date-range-args';
 import { calculateChange, getURLPath } from '../../../../util';
 import parseDimensionStringToDate from '../../util/parseDimensionStringToDate';
-import { isZeroReport } from '../../util';
 import WidgetHeaderTitle from '../../../../googlesitekit/widgets/components/WidgetHeaderTitle';
-import { isFeatureEnabled } from '../../../../features';
 import useViewOnly from '../../../../hooks/useViewOnly';
 const { useSelect, useInViewSelect } = Data;
 
@@ -239,22 +237,13 @@ function calculateOverallPageMetricsData( report ) {
 	);
 }
 
-function DashboardOverallPageMetricsWidget( {
-	Widget,
-	WidgetReportZero,
-	WidgetReportError,
-} ) {
-	const zeroDataStatesEnabled = isFeatureEnabled( 'zeroDataStates' );
+function DashboardOverallPageMetricsWidget( { Widget, WidgetReportError } ) {
 	const isGatheringData = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).isGatheringData()
 	);
 
-	const {
-		report,
-		serviceURL,
-		isLoading,
-		error,
-	} = useOverallPageMetricsReport();
+	const { report, serviceURL, isLoading, error } =
+		useOverallPageMetricsReport();
 
 	const currentDayCount = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeNumberOfDays()
@@ -296,18 +285,6 @@ function DashboardOverallPageMetricsWidget( {
 		return (
 			<Widget Footer={ Footer }>
 				<WidgetReportError moduleSlug="analytics" error={ error } />
-			</Widget>
-		);
-	}
-
-	if (
-		isGatheringData &&
-		isZeroReport( report ) &&
-		! zeroDataStatesEnabled
-	) {
-		return (
-			<Widget Footer={ Footer }>
-				<WidgetReportZero moduleSlug="analytics" />
 			</Widget>
 		);
 	}

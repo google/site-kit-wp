@@ -19,7 +19,13 @@
 /**
  * Internal dependencies
  */
-import { createTestRegistry, provideModules } from '../../../tests/js/utils';
+import {
+	createTestRegistry,
+	provideModuleRegistrations,
+	provideModules,
+	provideUserInfo,
+	unsubscribeFromAll,
+} from '../../../tests/js/utils';
 import {
 	ERROR_CODE_MISSING_REQUIRED_SCOPE,
 	ERROR_REASON_INSUFFICIENT_PERMISSIONS,
@@ -85,7 +91,10 @@ describe( 'ReportError', () => {
 		);
 	} );
 
-	afterEach( () => invalidateResolutionSpy.mockReset() );
+	afterEach( () => {
+		invalidateResolutionSpy.mockReset();
+		unsubscribeFromAll( registry );
+	} );
 
 	it( 'renders the error message', () => {
 		const { container } = render(
@@ -148,6 +157,58 @@ describe( 'ReportError', () => {
 		expect( container.querySelector( 'h3' ).textContent ).toEqual(
 			'Insufficient permissions in Test Module'
 		);
+	} );
+
+	it( 'renders the insufficient permission error along with the `Request access` button if it exists for a module', () => {
+		const userData = {
+			id: 1,
+			email: 'admin@example.com',
+			name: 'admin',
+			picture: 'https://path/to/image',
+		};
+		provideModules( registry, [
+			{
+				active: true,
+				connected: true,
+				slug: 'analytics',
+			},
+		] );
+		provideModuleRegistrations( registry );
+		provideUserInfo( registry, userData );
+
+		const [ accountID, internalWebPropertyID, profileID ] = [
+			'12345',
+			'34567',
+			'56789',
+		];
+
+		registry.dispatch( MODULES_ANALYTICS ).setAccountID( accountID );
+		registry
+			.dispatch( MODULES_ANALYTICS )
+			.setInternalWebPropertyID( internalWebPropertyID );
+		registry.dispatch( MODULES_ANALYTICS ).setProfileID( profileID );
+
+		const { container, queryByText } = render(
+			<ReportError
+				moduleSlug="analytics"
+				error={ {
+					code: 'test-error-code',
+					message: 'Test error message',
+					data: {
+						reason: ERROR_REASON_INSUFFICIENT_PERMISSIONS,
+					},
+				} }
+			/>,
+			{
+				registry,
+			}
+		);
+
+		expect( container.querySelector( 'h3' ).textContent ).toEqual(
+			'Insufficient permissions in Analytics'
+		);
+		// Verify the `Request access` button is rendered.
+		expect( queryByText( /request access/i ) ).toBeInTheDocument();
 	} );
 
 	it( "should not render the `Retry` button if the error's `selectorData.name` is not `getReport`", () => {

@@ -76,7 +76,8 @@ describe( 'core/user feature-tours', () => {
 
 	describe( 'actions', () => {
 		describe( 'dismissTour', () => {
-			const fetchDismissTourRegExp = /^\/google-site-kit\/v1\/core\/user\/data\/dismiss-tour/;
+			const fetchDismissTourRegExp =
+				/^\/google-site-kit\/v1\/core\/user\/data\/dismiss-tour/;
 
 			it( 'requires a slug parameter', () => {
 				expect( () =>
@@ -404,7 +405,8 @@ describe( 'core/user feature-tours', () => {
 	} );
 
 	describe( 'selectors', () => {
-		const fetchGetDismissedToursRegExp = /^\/google-site-kit\/v1\/core\/user\/data\/dismissed-tours/;
+		const fetchGetDismissedToursRegExp =
+			/^\/google-site-kit\/v1\/core\/user\/data\/dismissed-tours/;
 
 		describe( 'getDismissedFeatureTourSlugs', () => {
 			it( 'returns the initial state before the resolver runs', () => {

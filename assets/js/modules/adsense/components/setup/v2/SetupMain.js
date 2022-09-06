@@ -66,14 +66,11 @@ export default function SetupMain( { finishSetup } ) {
 		submitChanges,
 	} = useDispatch( MODULES_ADSENSE );
 
-	const [
-		isAwaitingBackgroundSubmit,
-		setIsAwaitingBackgroundSubmit,
-	] = useState( false );
+	const [ isAwaitingBackgroundSubmit, setIsAwaitingBackgroundSubmit ] =
+		useState( false );
 	// Submit changes for determined parameters in the background when they are valid.
-	const [ isSubmittingInBackground, setIsSubmittingInBackground ] = useState(
-		false
-	);
+	const [ isSubmittingInBackground, setIsSubmittingInBackground ] =
+		useState( false );
 	const isAdBlockerActive = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).isAdBlockerActive()
 	);

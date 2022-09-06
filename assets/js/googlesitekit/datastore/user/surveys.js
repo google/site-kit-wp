@@ -175,11 +175,8 @@ const baseActions = {
 		},
 		function* ( triggerID, options = {} ) {
 			const { ttl = 0 } = options;
-			const {
-				select,
-				dispatch,
-				__experimentalResolveSelect,
-			} = yield Data.commonActions.getRegistry();
+			const { select, dispatch, __experimentalResolveSelect } =
+				yield Data.commonActions.getRegistry();
 
 			// Bail if there is already a current survey.
 			if ( select( CORE_USER ).getCurrentSurvey() ) {
@@ -200,9 +197,8 @@ const baseActions = {
 				__experimentalResolveSelect( CORE_USER ).getSurveyTimeouts()
 			);
 
-			const isTimedOut = select( CORE_USER ).isSurveyTimedOut(
-				triggerID
-			);
+			const isTimedOut =
+				select( CORE_USER ).isSurveyTimedOut( triggerID );
 			const isTimingOut = select( CORE_USER ).isTimingOutSurvey(
 				triggerID,
 				ttl
@@ -211,12 +207,10 @@ const baseActions = {
 			// Both isTimedOut and isTimingOut variables are already resolved since they depend on
 			// the getSurveyTimeouts selector which we've resolved just before getting these variables.
 			if ( ! isTimedOut && ! isTimingOut ) {
-				const {
-					response,
-					error,
-				} = yield fetchTriggerSurveyStore.actions.fetchTriggerSurvey(
-					triggerID
-				);
+				const { response, error } =
+					yield fetchTriggerSurveyStore.actions.fetchTriggerSurvey(
+						triggerID
+					);
 
 				if ( error ) {
 					return { response, error };
@@ -267,13 +261,11 @@ const baseActions = {
 			const { select } = yield Data.commonActions.getRegistry();
 			const session = select( CORE_USER ).getCurrentSurveySession();
 			if ( session ) {
-				const {
-					response,
-					error,
-				} = yield fetchSendSurveyEventStore.actions.fetchSendSurveyEvent(
-					event,
-					session
-				);
+				const { response, error } =
+					yield fetchSendSurveyEventStore.actions.fetchSendSurveyEvent(
+						event,
+						session
+					);
 				return { response, error };
 			}
 		}

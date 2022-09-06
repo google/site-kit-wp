@@ -328,27 +328,29 @@ storiesOf( 'Global/Widgets/Widget Area', module )
 				],
 				[
 					{
-						Component: getCompleteModuleActivationCTAWidget(
-							'search-console'
-						),
+						Component:
+							getCompleteModuleActivationCTAWidget(
+								'search-console'
+							),
 						width: HALF,
 					},
 					{
-						Component: getCompleteModuleActivationCTAWidget(
-							'search-console'
-						),
+						Component:
+							getCompleteModuleActivationCTAWidget(
+								'search-console'
+							),
 						width: HALF,
 					},
 					{
-						Component: getCompleteModuleActivationCTAWidget(
-							'search-console'
-						),
+						Component:
+							getCompleteModuleActivationCTAWidget(
+								'search-console'
+							),
 						width: QUARTER,
 					},
 					{
-						Component: getCompleteModuleActivationCTAWidget(
-							'analytics'
-						),
+						Component:
+							getCompleteModuleActivationCTAWidget( 'analytics' ),
 						width: QUARTER,
 					},
 					{
@@ -356,9 +358,8 @@ storiesOf( 'Global/Widgets/Widget Area', module )
 						width: QUARTER,
 					},
 					{
-						Component: getCompleteModuleActivationCTAWidget(
-							'analytics'
-						),
+						Component:
+							getCompleteModuleActivationCTAWidget( 'analytics' ),
 						width: QUARTER,
 					},
 				]

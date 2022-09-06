@@ -823,9 +823,8 @@ describe( 'modules/tagmanager settings', () => {
 				} );
 
 				it( 'should throw if a new container name is invalid', () => {
-					const {
-						buildAndReceiveWebAndAMP,
-					} = createBuildAndReceivers( registry );
+					const { buildAndReceiveWebAndAMP } =
+						createBuildAndReceivers( registry );
 					const { accountID } = buildAndReceiveWebAndAMP( {
 						webPropertyID: 'UA-12345-1',
 						ampPropertyID: 'UA-12345-1',
@@ -862,9 +861,8 @@ describe( 'modules/tagmanager settings', () => {
 				} );
 
 				it( 'supports creating an AMP container', () => {
-					const {
-						buildAndReceiveWebAndAMP,
-					} = createBuildAndReceivers( registry );
+					const { buildAndReceiveWebAndAMP } =
+						createBuildAndReceivers( registry );
 					const { accountID } = buildAndReceiveWebAndAMP( {
 						webPropertyID: 'UA-12345-1',
 						ampPropertyID: 'UA-12345-1',
@@ -1124,9 +1122,8 @@ describe( 'modules/tagmanager settings', () => {
 				} );
 
 				it( 'supports creating a web container', () => {
-					const {
-						buildAndReceiveWebAndAMP,
-					} = createBuildAndReceivers( registry );
+					const { buildAndReceiveWebAndAMP } =
+						createBuildAndReceivers( registry );
 					const { accountID } = buildAndReceiveWebAndAMP( {
 						webPropertyID: 'UA-12345-1',
 						ampPropertyID: 'UA-12345-1',
@@ -1155,9 +1152,8 @@ describe( 'modules/tagmanager settings', () => {
 				} );
 
 				it( 'supports creating an AMP container', () => {
-					const {
-						buildAndReceiveWebAndAMP,
-					} = createBuildAndReceivers( registry );
+					const { buildAndReceiveWebAndAMP } =
+						createBuildAndReceivers( registry );
 					const { accountID } = buildAndReceiveWebAndAMP( {
 						webPropertyID: 'UA-12345-1',
 						ampPropertyID: 'UA-12345-1',
@@ -1247,9 +1243,8 @@ describe( 'modules/tagmanager settings', () => {
 						registry.select( MODULES_TAGMANAGER ).canSubmitChanges()
 					).toBe( false );
 
-					const normalizedAMPContainerName = getNormalizedContainerName(
-						containers[ 1 ].name
-					);
+					const normalizedAMPContainerName =
+						getNormalizedContainerName( containers[ 1 ].name );
 					expect( () =>
 						registry
 							.select( MODULES_TAGMANAGER )
@@ -1288,9 +1283,8 @@ describe( 'modules/tagmanager settings', () => {
 					registry
 						.dispatch( MODULES_ANALYTICS )
 						.receiveGetSettings( { propertyID: '' } );
-					const {
-						buildAndReceiveWebAndAMP,
-					} = createBuildAndReceivers( registry );
+					const { buildAndReceiveWebAndAMP } =
+						createBuildAndReceivers( registry );
 
 					// Matching property IDs
 					buildAndReceiveWebAndAMP( {
@@ -1327,9 +1321,8 @@ describe( 'modules/tagmanager settings', () => {
 					registry
 						.dispatch( MODULES_ANALYTICS )
 						.receiveGetSettings( { propertyID: '' } );
-					const {
-						buildAndReceiveWebAndAMP,
-					} = createBuildAndReceivers( registry );
+					const { buildAndReceiveWebAndAMP } =
+						createBuildAndReceivers( registry );
 					buildAndReceiveWebAndAMP( {
 						webPropertyID: 'UA-12345-1',
 						ampPropertyID: 'UA-12345-1',

@@ -43,9 +43,8 @@ export default function AccountSelect( { hasModuleAccess } ) {
 
 	const { accounts, hasResolvedAccounts } = useSelect( ( select ) => ( {
 		accounts: select( MODULES_TAGMANAGER ).getAccounts(),
-		hasResolvedAccounts: select( MODULES_TAGMANAGER ).hasFinishedResolution(
-			'getAccounts'
-		),
+		hasResolvedAccounts:
+			select( MODULES_TAGMANAGER ).hasFinishedResolution( 'getAccounts' ),
 	} ) );
 
 	const accountID = useSelect( ( select ) =>
@@ -102,16 +101,18 @@ export default function AccountSelect( { hasModuleAccess } ) {
 					accountId: ACCOUNT_CREATE, // eslint-disable-line sitekit/acronym-case
 					name: __( 'Set up a new account', 'google-site-kit' ),
 				} )
-				.map( (
-					{ accountId, name } // eslint-disable-line sitekit/acronym-case
-				) => (
-					<Option
-						key={ accountId } // eslint-disable-line sitekit/acronym-case
-						value={ accountId } // eslint-disable-line sitekit/acronym-case
-					>
-						{ name }
-					</Option>
-				) ) }
+				.map(
+					(
+						{ accountId, name } // eslint-disable-line sitekit/acronym-case
+					) => (
+						<Option
+							key={ accountId } // eslint-disable-line sitekit/acronym-case
+							value={ accountId } // eslint-disable-line sitekit/acronym-case
+						>
+							{ name }
+						</Option>
+					)
+				) }
 		</Select>
 	);
 }

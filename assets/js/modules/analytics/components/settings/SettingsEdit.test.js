@@ -76,11 +76,8 @@ describe( 'SettingsEdit', () => {
 			status: 200,
 		} );
 
-		const {
-			accounts,
-			properties,
-			profiles,
-		} = fixtures.accountsPropertiesProfiles;
+		const { accounts, properties, profiles } =
+			fixtures.accountsPropertiesProfiles;
 		const existingTag = {
 			/* eslint-disable sitekit/acronym-case */
 			accountID: profiles[ 0 ].accountId,

@@ -104,9 +104,8 @@ describe( 'core/modules settings', () => {
 				// Check isDoingSubmitChanges is true while submitChanges is being performed
 				let checkIsDoingSubmitChanges;
 				submitChanges.mockImplementation( ( { select } ) => {
-					checkIsDoingSubmitChanges = select(
-						CORE_MODULES
-					).isDoingSubmitChanges( slug );
+					checkIsDoingSubmitChanges =
+						select( CORE_MODULES ).isDoingSubmitChanges( slug );
 				} );
 				await registry.dispatch( CORE_MODULES ).submitChanges( slug );
 				expect( checkIsDoingSubmitChanges ).toBe( true );

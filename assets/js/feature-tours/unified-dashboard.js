@@ -89,9 +89,8 @@ const unifiedDashboard = {
 			const tooltipElement = global.document.querySelector(
 				'.googlesitekit-tour-tooltip'
 			);
-			const wpAdminBarElement = global.document.querySelector(
-				'#wpadminbar'
-			);
+			const wpAdminBarElement =
+				global.document.querySelector( '#wpadminbar' );
 
 			if ( tooltipElement && wpAdminBarElement ) {
 				global.scrollTo( {

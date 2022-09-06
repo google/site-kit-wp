@@ -62,9 +62,10 @@ export default function SettingsEdit() {
 			MODULES_SEARCH_CONSOLE
 		).hasFinishedResolution( 'getSettings' );
 
-		const isResolvingModuleAccess = select(
-			CORE_MODULES
-		).isResolving( 'hasModuleAccess', [ 'search-console' ] );
+		const isResolvingModuleAccess = select( CORE_MODULES ).isResolving(
+			'hasModuleAccess',
+			[ 'search-console' ]
+		);
 
 		return (
 			! hasResolvedModuleOwner ||

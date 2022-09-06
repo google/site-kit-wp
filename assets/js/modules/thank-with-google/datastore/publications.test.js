@@ -17,11 +17,18 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { addQueryArgs } from '@wordpress/url';
+
+/**
  * Internal dependencies
  */
 import {
 	createTestRegistry,
 	freezeFetch,
+	provideSiteInfo,
+	provideUserInfo,
 	subscribeUntil,
 	unsubscribeFromAll,
 	untilResolved,
@@ -32,6 +39,8 @@ import {
 	ONBOARDING_STATE_COMPLETE,
 	ONBOARDING_STATE_PENDING_VERIFICATION,
 } from './constants';
+import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
+import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 
 describe( 'modules/thank-with-google publications', () => {
 	let registry;
@@ -345,6 +354,52 @@ describe( 'modules/thank-with-google publications', () => {
 
 				expect( publication ).toEqual(
 					publicationOnboardingActionRequiredStateC
+				);
+			} );
+		} );
+
+		describe( 'getServiceCreatePublicationURL', () => {
+			it( 'returns an account chooser URL with the home URL appended to the publisher center URL', () => {
+				provideSiteInfo( registry );
+				provideUserInfo( registry );
+
+				const homeURL = registry.select( CORE_SITE ).getHomeURL();
+				const publisherCenterURL = addQueryArgs(
+					'https://publishercenter.google.com/',
+					{
+						sk_url: encodeURIComponent( homeURL ),
+					}
+				);
+				const expectedAccountChooserURL = registry
+					.select( CORE_USER )
+					.getAccountChooserURL( publisherCenterURL );
+
+				const createPublicationURL = registry
+					.select( MODULES_THANK_WITH_GOOGLE )
+					.getServiceCreatePublicationURL();
+
+				expect( createPublicationURL ).toBe(
+					expectedAccountChooserURL
+				);
+			} );
+		} );
+
+		describe( 'getServicePublicationURL', () => {
+			it( 'should throw an error if no publicationID is given', () => {
+				expect( () =>
+					registry
+						.select( MODULES_THANK_WITH_GOOGLE )
+						.getServicePublicationURL()
+				).toThrow( 'A publicationID is required.' );
+			} );
+
+			it( 'returns a publisher center URL for an existing publication', () => {
+				const publicationURL = registry
+					.select( MODULES_THANK_WITH_GOOGLE )
+					.getServicePublicationURL( 'test-publication-a' );
+
+				expect( publicationURL ).toBe(
+					'https://publishercenter.google.com/publications/test-publication-a/overview'
 				);
 			} );
 		} );

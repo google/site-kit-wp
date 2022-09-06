@@ -47,7 +47,7 @@ export default function ActivationBanner() {
 		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
 	);
 
-	const handleCTAClick = () => {
+	const handleSubmit = () => {
 		if ( step === ACTIVATION_STEP_REMINDER ) {
 			setStep( ACTIVATION_STEP_SETUP );
 		}
@@ -65,9 +65,9 @@ export default function ActivationBanner() {
 
 	switch ( step ) {
 		case ACTIVATION_STEP_REMINDER:
-			return <ReminderBanner onCTAClick={ handleCTAClick } />;
+			return <ReminderBanner onSubmitSuccess={ handleSubmit } />;
 		case ACTIVATION_STEP_SETUP:
-			return <SetupBanner onCTAClick={ handleCTAClick } />;
+			return <SetupBanner onSubmitSuccess={ handleSubmit } />;
 		case ACTIVATION_STEP_SUCCESS:
 			return <SuccessBanner />;
 		default:

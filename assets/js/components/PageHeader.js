@@ -27,15 +27,8 @@ import PropTypes from 'prop-types';
 import { Cell, Row } from '../material-components';
 
 export default function PageHeader( props ) {
-	const {
-		title,
-		icon,
-		className,
-		status,
-		statusText,
-		fullWidth,
-		children,
-	} = props;
+	const { title, icon, className, status, statusText, fullWidth, children } =
+		props;
 
 	const titleCellProps = fullWidth
 		? {

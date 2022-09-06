@@ -38,9 +38,10 @@ export default function SetupErrorNotice() {
 		// Check if saving Analytics settings failed.
 		useSelect( ( select ) => {
 			const settings = select( MODULES_ANALYTICS ).getSettings();
-			return select(
-				MODULES_ANALYTICS
-			).getErrorForAction( 'saveSettings', [ settings ] );
+			return select( MODULES_ANALYTICS ).getErrorForAction(
+				'saveSettings',
+				[ settings ]
+			);
 		} ),
 	].filter( Boolean );
 

@@ -92,22 +92,22 @@ const baseSelectors = {
 	 * @return {(Array.<Object>|undefined)} A list of idea hub ideas; `undefined` if not loaded.
 	 */
 	getDraftPostIdeasSlice: createRegistrySelector(
-		( select ) => ( state, options = {} ) => {
-			const draftPostIdeas = select(
-				MODULES_IDEA_HUB
-			).getDraftPostIdeas();
-			if ( draftPostIdeas === undefined ) {
-				return undefined;
-			}
+		( select ) =>
+			( state, options = {} ) => {
+				const draftPostIdeas =
+					select( MODULES_IDEA_HUB ).getDraftPostIdeas();
+				if ( draftPostIdeas === undefined ) {
+					return undefined;
+				}
 
-			const offset = options?.offset || 0;
-			const length = options.length
-				? offset + options.length
-				: draftPostIdeas.length;
-			return 'offset' in options || 'length' in options
-				? draftPostIdeas.slice( offset, length )
-				: draftPostIdeas;
-		}
+				const offset = options?.offset || 0;
+				const length = options.length
+					? offset + options.length
+					: draftPostIdeas.length;
+				return 'offset' in options || 'length' in options
+					? draftPostIdeas.slice( offset, length )
+					: draftPostIdeas;
+			}
 	),
 };
 

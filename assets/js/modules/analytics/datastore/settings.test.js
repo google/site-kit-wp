@@ -53,8 +53,10 @@ import { MODULES_TAGMANAGER } from '../../tagmanager/datastore/constants';
 describe( 'modules/analytics settings', () => {
 	let registry;
 
-	const gaSettingsEndpoint = /^\/google-site-kit\/v1\/modules\/analytics\/data\/settings/;
-	const ga4SettingsEndpoint = /^\/google-site-kit\/v1\/modules\/analytics-4\/data\/settings/;
+	const gaSettingsEndpoint =
+		/^\/google-site-kit\/v1\/modules\/analytics\/data\/settings/;
+	const ga4SettingsEndpoint =
+		/^\/google-site-kit\/v1\/modules\/analytics-4\/data\/settings/;
 
 	const validSettings = {
 		accountID: '12345',
@@ -144,9 +146,7 @@ describe( 'modules/analytics settings', () => {
 				const result = await registry
 					.dispatch( MODULES_ANALYTICS )
 					.submitChanges();
-				expect(
-					fetchMock
-				).toHaveFetched(
+				expect( fetchMock ).toHaveFetched(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-property/,
 					{ body: { data: { accountID: '12345' } } }
 				);
@@ -177,9 +177,7 @@ describe( 'modules/analytics settings', () => {
 
 				await registry.dispatch( MODULES_ANALYTICS ).submitChanges();
 
-				expect(
-					fetchMock
-				).toHaveFetched(
+				expect( fetchMock ).toHaveFetched(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-property/,
 					{ body: { data: { accountID: '12345' } } }
 				);

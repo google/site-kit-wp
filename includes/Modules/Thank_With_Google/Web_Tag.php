@@ -181,7 +181,10 @@ class Web_Tag extends Module_Web_Tag {
 			return $content;
 		}
 
-		$cta_placeholder = '<div counter-button style="height: 34px; visibility: hidden; box-sizing: content-box; padding: 12px 0; display: inline-block; overflow: hidden;"></div><button twg-button style="height: 42px; visibility: hidden; margin: 12px 0;"></button>';
+		$cta_placeholder = '<div class="googlesitekit-twg-wrapper" style="display: flex; align-items: center; flex-wrap: wrap; gap: 0 10px;">'
+			. '<div counter-button style="height: 34px; visibility: hidden; box-sizing: content-box; padding: 12px 0; display: inline-block; overflow: hidden;"></div>'
+			. '<button twg-button style="height: 42px; visibility: hidden; margin: 12px 0;"></button>'
+			. '</div>';
 		$cta_placeholder = $this->add_snippet_comments( $cta_placeholder );
 
 		if ( empty( $content ) ) {

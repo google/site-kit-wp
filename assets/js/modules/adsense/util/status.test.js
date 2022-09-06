@@ -80,8 +80,7 @@ const afcClientB = {
 };
 
 const graylistedAlert = {
-	name:
-		'accounts/pub-2833782679114991/alerts/ef158442-c283-3866-a3af-5f9cf7e190f3',
+	name: 'accounts/pub-2833782679114991/alerts/ef158442-c283-3866-a3af-5f9cf7e190f3',
 	severity: 'SEVERE',
 	message:
 		'Your account has been graylisted. Please fix the issues in your AdSense panel.',
@@ -89,8 +88,7 @@ const graylistedAlert = {
 };
 
 const otherAlert = {
-	name:
-		'accounts/pub-2833782679114991/alerts/e38f3957-be27-31cc-8d33-ba4b1f6e84c2',
+	name: 'accounts/pub-2833782679114991/alerts/e38f3957-be27-31cc-8d33-ba4b1f6e84c2',
 	severity: 'SEVERE',
 	message:
 		'Please fix the problems with the ads.txt file to avoid negative impact on revenue.',
@@ -98,22 +96,19 @@ const otherAlert = {
 };
 
 const exampleURLChannelA = {
-	name:
-		'accounts/pub-2833782679114991/adclients/ca-pub-2833782679114991/urlchannels/example.com',
+	name: 'accounts/pub-2833782679114991/adclients/ca-pub-2833782679114991/urlchannels/example.com',
 	reportingDimensionId: 'ca-pub-2833782679114991:example.com', // eslint-disable-line sitekit/acronym-case
 	uriPattern: 'example.com',
 };
 
 const otherURLChannelA = {
-	name:
-		'accounts/pub-2833782679114991/adclients/ca-pub-2833782679114991/urlchannels/other-website.org',
+	name: 'accounts/pub-2833782679114991/adclients/ca-pub-2833782679114991/urlchannels/other-website.org',
 	reportingDimensionId: 'ca-pub-2833782679114991:other-website.org', // eslint-disable-line sitekit/acronym-case
 	uriPattern: 'other-website.org',
 };
 
 const otherURLChannelB = {
-	name:
-		'accounts/pub-2833782679114991/adclients/ca-pub-2833782679114991/urlchannels/Camel-Case-weBSite.org',
+	name: 'accounts/pub-2833782679114991/adclients/ca-pub-2833782679114991/urlchannels/Camel-Case-weBSite.org',
 	reportingDimensionId: 'ca-pub-2833782679114991:Camel-Case-weBSite.org', // eslint-disable-line sitekit/acronym-case
 	uriPattern: 'Camel-Case-weBSite.org',
 };

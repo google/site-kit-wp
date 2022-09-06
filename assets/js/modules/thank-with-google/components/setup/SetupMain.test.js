@@ -140,7 +140,7 @@ describe( 'SetupMain', () => {
 		} );
 
 		expect( container ).toHaveTextContent(
-			'To get started, create an account. Currently available only in the US.'
+			'To get started, create an account. Currently available only in the US. If setup failed because you’re outside the US, disconnect Thank with Google in your Settings.'
 		);
 	} );
 
@@ -188,7 +188,7 @@ describe( 'SetupMain', () => {
 		} );
 
 		expect( container ).toHaveTextContent(
-			'Your account is now active. To get started, customize the appearance of Thank with Google on your site.'
+			'Thank with Google is now active. To complete setup, customize its appearance on your site.'
 		);
 		const button = queryByRole( 'button' );
 		expect( button ).toBeInTheDocument();

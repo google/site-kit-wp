@@ -51,9 +51,8 @@ const CoreSiteBannerNotification = ( {
 	learnMoreURL,
 	title,
 } ) => {
-	const { dismissNotification, acceptNotification } = useDispatch(
-		CORE_SITE
-	);
+	const { dismissNotification, acceptNotification } =
+		useDispatch( CORE_SITE );
 	const viewContext = useViewContext();
 
 	useMount( () => {
