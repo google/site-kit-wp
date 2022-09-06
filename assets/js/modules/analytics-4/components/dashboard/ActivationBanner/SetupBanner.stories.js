@@ -138,7 +138,7 @@ NoPropertyWithTag.decorators = [
 export default {
 	title: 'Modules/Analytics4/SetupBanner',
 	args: {
-		onCTAClick: () => {},
+		onSubmitSuccess: () => {},
 	},
 	decorators: [
 		( Story ) => {

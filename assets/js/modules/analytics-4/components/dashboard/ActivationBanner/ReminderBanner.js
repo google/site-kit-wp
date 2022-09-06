@@ -35,7 +35,7 @@ import { AdminMenuTooltip } from '../../../../../components/AdminMenuTooltip/Adm
 import { getBannerDismissalExpiryTime } from '../../../utils/banner-dismissal-expiry';
 const { useSelect } = Data;
 
-export default function ReminderBanner( { onCTAClick } ) {
+export default function ReminderBanner( { onSubmitSuccess } ) {
 	const referenceDateString = useSelect( ( select ) =>
 		select( CORE_USER ).getReferenceDate()
 	);
@@ -79,8 +79,8 @@ export default function ReminderBanner( { onCTAClick } ) {
 			/* TODO: Internationalize title below */
 			description={ 'Placeholder description text to replace.' }
 			ctaLabel={ __( 'Set up now', 'google-site-kit' ) }
-			ctaLink={ onCTAClick ? '#' : null }
-			onCTAClick={ onCTAClick }
+			ctaLink={ onSubmitSuccess ? '#' : null }
+			onCTAClick={ onSubmitSuccess }
 			dismiss={ __( 'Remind me later', 'google-site-kit' ) }
 			dismissExpires={ getBannerDismissalExpiryTime(
 				referenceDateString

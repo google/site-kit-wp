@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { Fragment } from '@wordpress/element';
+import { Fragment, useCallback, useState } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 
 /**
@@ -31,18 +31,25 @@ import {
 	PropertySelect,
 	UseSnippetSwitch,
 } from '../../../../analytics-4/components/common';
+import ErrorNotice from '../../../../../components/ErrorNotice';
+import SpinnerButton from '../../../../../components/SpinnerButton';
+import {
+	MODULES_ANALYTICS_4,
+	PROPERTY_CREATE,
+} from '../../../datastore/constants';
 import useExistingTagEffect from '../../../../analytics-4/hooks/useExistingTagEffect';
 import { MODULES_ANALYTICS } from '../../../../analytics/datastore/constants';
-import { MODULES_ANALYTICS_4 } from '../../../datastore/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { ACTIVATION_ACKNOWLEDGEMENT_TOOLTIP_STATE_KEY } from '../../../constants';
 import { useTooltipState } from '../../../../../components/AdminMenuTooltip/useTooltipState';
 import { useShowTooltip } from '../../../../../components/AdminMenuTooltip/useShowTooltip';
 import { AdminMenuTooltip } from '../../../../../components/AdminMenuTooltip/AdminMenuTooltip';
 import { getBannerDismissalExpiryTime } from '../../../utils/banner-dismissal-expiry';
-const { useSelect } = Data;
+const { useDispatch, useSelect } = Data;
 
-export default function SetupBanner( { onCTAClick } ) {
+export default function SetupBanner( { onSubmitSuccess } ) {
+	const [ errorNotice, setErrorNotice ] = useState( null );
+
 	const hasExistingProperty = useSelect( ( select ) => {
 		const accountID = select( MODULES_ANALYTICS ).getAccountID();
 		const properties =
@@ -58,6 +65,22 @@ export default function SetupBanner( { onCTAClick } ) {
 	const referenceDateString = useSelect( ( select ) =>
 		select( CORE_USER ).getReferenceDate()
 	);
+
+	const { submitChanges, selectProperty } =
+		useDispatch( MODULES_ANALYTICS_4 );
+
+	const handleSubmitChanges = useCallback( async () => {
+		const { error } = await submitChanges();
+
+		if ( error ) {
+			setErrorNotice( error );
+
+			return;
+		}
+
+		// Ask the parent component to show the success banner.
+		onSubmitSuccess();
+	}, [ onSubmitSuccess, submitChanges ] );
 
 	const { isTooltipVisible } = useTooltipState(
 		ACTIVATION_ACKNOWLEDGEMENT_TOOLTIP_STATE_KEY
@@ -137,30 +160,30 @@ export default function SetupBanner( { onCTAClick } ) {
 				) }
 			</div>
 		);
-	} else if ( existingTag ) {
-		title = __(
-			'No existing Google Analytics 4 property found, Site Kit will help you create a new one and insert it on your site',
-			'google-site-kit'
-		);
-		ctaLabel = __( 'Create property', 'google-site-kit' );
-		footer = sprintf(
-			/* translators: %s: The existing tag ID. */
-			__(
-				'A GA4 tag %s is found on this site but this property is not associated with your Google Analytics account. You can always add/edit this in the Site Kit Settings.',
-				'google-site-kit'
-			),
-			existingTag
-		);
 	} else {
+		selectProperty( PROPERTY_CREATE );
+
 		title = __(
 			'No existing Google Analytics 4 property found, Site Kit will help you create a new one and insert it on your site',
 			'google-site-kit'
 		);
 		ctaLabel = __( 'Create property', 'google-site-kit' );
-		footer = __(
-			'You can always add/edit this in the Site Kit Settings.',
-			'google-site-kit'
-		);
+
+		if ( existingTag ) {
+			footer = sprintf(
+				/* translators: %s: The existing tag ID. */
+				__(
+					'A GA4 tag %s is found on this site but this property is not associated with your Google Analytics account. You can always add/edit this in the Site Kit Settings.',
+					'google-site-kit'
+				),
+				existingTag
+			);
+		} else {
+			footer = __(
+				'You can always add/edit this in the Site Kit Settings.',
+				'google-site-kit'
+			);
+		}
 	}
 
 	return (
@@ -168,9 +191,11 @@ export default function SetupBanner( { onCTAClick } ) {
 			id="ga4-activation-banner"
 			className="googlesitekit-ga4-setup-banner"
 			title={ title }
-			ctaLabel={ ctaLabel }
-			ctaLink={ onCTAClick ? '#' : null }
-			onCTAClick={ onCTAClick }
+			ctaComponent={
+				<SpinnerButton onClick={ handleSubmitChanges }>
+					{ ctaLabel }
+				</SpinnerButton>
+			}
 			footer={ <p>{ footer }</p> }
 			dismiss={ __( 'Cancel', 'google-site-kit' ) }
 			dismissExpires={ getBannerDismissalExpiryTime(
@@ -178,6 +203,7 @@ export default function SetupBanner( { onCTAClick } ) {
 			) }
 			onDismiss={ showTooltip }
 		>
+			{ errorNotice && <ErrorNotice error={ errorNotice } /> }
 			{ children }
 		</BannerNotification>
 	);
