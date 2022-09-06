@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { Fragment, useCallback, useState } from '@wordpress/element';
+import { Fragment, useCallback, useEffect, useState } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 
 /**
@@ -49,33 +49,72 @@ import { Cell, Grid, Row } from '../../../../../material-components';
 import ProgressBar from '../../../../../components/ProgressBar';
 const { useDispatch, useSelect } = Data;
 
+const VARIANT = {
+	EXISTING_PROPERTY: 'EXISTING_PROPERTY',
+	NO_EXISTING_PROPERTY: 'NO_EXISTING_PROPERTY',
+};
+
 export default function SetupBanner( { onSubmitSuccess } ) {
 	const [ errorNotice, setErrorNotice ] = useState( null );
+	const [ variant, setVariant ] = useState( null );
 
-	const hasExistingProperty = useSelect( ( select ) => {
-		const accountID = select( MODULES_ANALYTICS ).getAccountID();
+	const { submitChanges, selectProperty, matchAndSelectProperty } =
+		useDispatch( MODULES_ANALYTICS_4 );
 
-		const properties =
-			select( MODULES_ANALYTICS_4 ).getProperties( accountID );
+	const accountID = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getAccountID()
+	);
+	const properties = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getProperties( accountID )
+	);
+
+	// Call getAccounts to ensure it can be resolved before rendering the PropertySelect
+	// component, to avoid showing a ProgressBar in the PropertySelect.
+	const accounts = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getAccounts()
+	);
+
+	const ga4PropertyID = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getPropertyID()
+	);
+
+	const determineVariant = useCallback( async () => {
+		if ( variant !== null ) {
+			return;
+		}
 
 		if ( properties === undefined ) {
-			return undefined;
+			return;
 		}
 
 		if ( properties.length === 0 ) {
-			return false;
+			setVariant( VARIANT.NO_EXISTING_PROPERTY );
+			return;
 		}
-
-		// Make a call here to ensure getAccounts is resolved before rendering the PropertySelect
-		// component, to avoid showing a ProgressBar in the PropertySelect.
-		const accounts = select( MODULES_ANALYTICS ).getAccounts();
 
 		if ( accounts === undefined ) {
-			return undefined;
+			return;
 		}
 
-		return true;
-	} );
+		if ( ! ga4PropertyID ) {
+			// Ensure the PropertySelect dropdown will be populated with a selected option.
+			await matchAndSelectProperty( accountID, PROPERTY_CREATE );
+		}
+
+		setVariant( VARIANT.EXISTING_PROPERTY );
+	}, [
+		accountID,
+		accounts,
+		ga4PropertyID,
+		matchAndSelectProperty,
+		properties,
+		variant,
+	] );
+
+	useEffect( () => {
+		determineVariant();
+	}, [ determineVariant ] );
+
 	const existingTag = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getExistingTag()
 	);
@@ -85,9 +124,6 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 	const referenceDateString = useSelect( ( select ) =>
 		select( CORE_USER ).getReferenceDate()
 	);
-
-	const { submitChanges, selectProperty } =
-		useDispatch( MODULES_ANALYTICS_4 );
 
 	const handleSubmitChanges = useCallback( async () => {
 		const { error } = await submitChanges();
@@ -110,12 +146,12 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 		ACTIVATION_ACKNOWLEDGEMENT_TOOLTIP_STATE_KEY
 	);
 
-	if ( hasExistingProperty === undefined ) {
+	if ( variant === null ) {
 		return (
 			<Grid>
 				<Row>
 					<Cell>
-						<ProgressBar />
+						<ProgressBar size={ 12 } />
 					</Cell>
 				</Row>
 			</Grid>
@@ -148,7 +184,7 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 	let footer;
 	let children;
 
-	if ( hasExistingProperty ) {
+	if ( variant === VARIANT.EXISTING_PROPERTY ) {
 		title = __(
 			'Connect the Google Analytics 4 property that’s associated with your existing Universal Analytics property',
 			'google-site-kit'
