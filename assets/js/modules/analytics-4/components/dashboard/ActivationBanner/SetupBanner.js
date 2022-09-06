@@ -79,6 +79,10 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 	);
 
 	const determineVariant = useCallback( async () => {
+		// Ensure variant is only set once, to avoid flickering between variants. For example
+		// when properties.length is zero we are in the "no existing property" variant, and we
+		// want to avoid changing to the "existing property" variant mid-way through the form
+		// submission as a result of adding a property.
 		if ( variant !== null ) {
 			return;
 		}
