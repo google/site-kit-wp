@@ -45,11 +45,13 @@ class Web_Tag extends Module_Web_Tag {
 	}
 
 	/**
-	 * Outputs the AdSense script tag.
+	 * Gets the AdSense script tag attributes.
 	 *
-	 * @since 1.24.0
+	 * @since n.e.x.t
+	 *
+	 * @return array Array of attributes.
 	 */
-	protected function render() {
+	private function get_tag_attributes() {
 		// If we haven't completed the account connection yet, we still insert the AdSense tag
 		// because it is required for account verification.
 
@@ -89,10 +91,30 @@ class Web_Tag extends Module_Web_Tag {
 
 			$adsense_attributes = array_merge( $adsense_attributes, $auto_ads_opt_sanitized );
 		}
+		return array_merge( $adsense_script_attributes, $adsense_attributes );
+	}
 
-		printf( "\n<!-- %s -->\n", esc_html__( 'Google AdSense snippet added by Site Kit', 'google-site-kit' ) );
-		BC_Functions::wp_print_script_tag( array_merge( $adsense_script_attributes, $adsense_attributes ) );
-		printf( "\n<!-- %s -->\n", esc_html__( 'End Google AdSense snippet added by Site Kit', 'google-site-kit' ) );
+	/**
+	 * Outputs the AdSense script tag.
+	 *
+	 * @since 1.24.0
+	 */
+	protected function render() {
+		echo $this->get(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+	}
+
+	/**
+	 * Gets the adsense script tag.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string Gets the AdSense snippet to render via a REST endpoint.
+	 */
+	public function get() {
+		$snippet_comment_begin = sprintf( "\n<!-- %s -->\n", esc_html__( 'Google AdSense snippet added by Site Kit', 'google-site-kit' ) );
+		$tag                   = BC_Functions::wp_get_script_tag( $this->get_tag_attributes() );
+		$snippet_comment_end   = sprintf( "\n<!-- %s -->\n", esc_html__( 'End Google AdSense snippet added by Site Kit', 'google-site-kit' ) );
+		return $snippet_comment_begin . $tag . $snippet_comment_end;
 	}
 
 }

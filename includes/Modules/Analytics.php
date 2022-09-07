@@ -1220,11 +1220,38 @@ final class Analytics extends Module
 	}
 
 	/**
-	 * Registers the Analytics tag.
+	 * Registers the Analytics tag snippet.
 	 *
 	 * @since 1.24.0
 	 */
 	private function register_tag() {
+		$tag = $this->build_tag();
+		if ( $tag ) {
+			$tag->register();
+		}
+	}
+
+	/**
+	 * Fetches the Analytics tag snippet.
+	 *
+	 * @since 1.24.0
+	 */
+	public function get_tag() {
+		$tag = $this->build_tag();
+		if ( $tag && $tag instanceof Web_Tag ) {
+			return $tag->get();
+		}
+	}
+
+	/**
+	 * Prepares the Analytics tag snippet if it can be registered.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return AMP_Tag|Web_Tag|null The tag object if it can be registered and
+	 * passes all tag guards or null otherwise.
+	 */
+	private function build_tag() {
 		$settings = $this->get_settings()->get();
 
 		if ( $this->context->is_amp() ) {
@@ -1234,22 +1261,24 @@ final class Analytics extends Module
 		}
 
 		if ( $tag->is_tag_blocked() ) {
-			return;
+			return null;
 		}
 
 		$tag->use_guard( new Tag_Verify_Guard( $this->context->input() ) );
 		$tag->use_guard( new Tag_Guard( $this->get_settings() ) );
 		$tag->use_guard( new Tag_Environment_Type_Guard() );
 
-		if ( $tag->can_register() ) {
-			$tag->set_anonymize_ip( $settings['anonymizeIP'] );
-			$tag->set_home_domain(
-				wp_parse_url( $this->context->get_canonical_home_url(), PHP_URL_HOST )
-			);
-			$tag->set_ads_conversion_id( $settings['adsConversionID'] );
-
-			$tag->register();
+		if ( ! $tag->can_register() ) {
+			return null;
 		}
+
+		$tag->set_anonymize_ip( $settings['anonymizeIP'] );
+		$tag->set_home_domain(
+			wp_parse_url( $this->context->get_canonical_home_url(), PHP_URL_HOST )
+		);
+		$tag->set_ads_conversion_id( $settings['adsConversionID'] );
+
+		return $tag;
 	}
 
 	/**

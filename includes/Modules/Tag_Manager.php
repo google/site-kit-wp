@@ -519,11 +519,13 @@ final class Tag_Manager extends Module
 	}
 
 	/**
-	 * Registers the Tag Manager tag.
+	 * Prepares the Tag Manager tag snippet.
 	 *
-	 * @since 1.24.0
+	 * @since n.e.x.t
+	 *
+	 * @return AMP_Tag|Web_Tag|null The tag object or null if a tag guard fails.
 	 */
-	private function register_tag() {
+	private function build_tag() {
 		$is_amp          = $this->context->is_amp();
 		$module_settings = $this->get_settings();
 		$settings        = $module_settings->get();
@@ -532,15 +534,70 @@ final class Tag_Manager extends Module
 			? new AMP_Tag( $settings['ampContainerID'], self::MODULE_SLUG )
 			: new Web_Tag( $settings['containerID'], self::MODULE_SLUG );
 
-		if ( ! $tag->is_tag_blocked() ) {
-			$tag->use_guard( new Tag_Verify_Guard( $this->context->input() ) );
-			$tag->use_guard( new Tag_Guard( $module_settings, $is_amp ) );
-			$tag->use_guard( new Tag_Environment_Type_Guard() );
-
-			if ( $tag->can_register() ) {
-				$tag->register();
-			}
+		if ( $tag->is_tag_blocked() ) {
+			return null;
 		}
+
+		$tag->use_guard( new Tag_Verify_Guard( $this->context->input() ) );
+		$tag->use_guard( new Tag_Guard( $module_settings, $is_amp ) );
+		$tag->use_guard( new Tag_Environment_Type_Guard() );
+
+		if ( ! $tag->can_register() ) {
+			return null;
+		}
+
+		return $tag;
+	}
+
+	/**
+	 * Registers the Tag Manager tag snippet.
+	 *
+	 * @since 1.24.0
+	 */
+	private function register_tag() {
+		$tag = $this->build_tag();
+
+		if ( $tag ) {
+			$tag->register();
+		}
+	}
+
+	/**
+	 * Fetches the Tag Manager tag snippet.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string The Tag Manager JS snippet.
+	 */
+	public function get_tag() {
+		$tag = $this->build_tag();
+
+		if ( $tag && $tag instanceof Web_Tag ) {
+			return $tag->get();
+		}
+
+		return array();
+	}
+
+	/**
+	 * Fetches the Tag Manager tag snippets.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array The Tag Manager JS snippets.
+	 */
+	public function get_tags() {
+		$tag = $this->build_tag();
+
+		if ( $tag && $tag instanceof Web_Tag ) {
+			return array(
+				'head'      => $tag->get_head(),
+				'body_open' => $tag->get_body_open(),
+				'footer'    => $tag->get_footer(),
+			);
+		}
+
+		return array();
 	}
 
 	/**
