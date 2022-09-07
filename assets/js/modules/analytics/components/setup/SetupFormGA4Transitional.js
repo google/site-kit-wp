@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import { useUnmount } from 'react-use';
+
+/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
@@ -97,6 +102,8 @@ export default function SetupFormGA4Transitional() {
 		select( CORE_UI ).getValue( HIDE_GA4_PROPERTY_SELECT_TOOLTIP )
 	);
 
+	useUnmount( markTooltipAsDisplayed );
+
 	const primaryPropertyID =
 		propertyType === PROPERTY_TYPE_UA ? propertyID : ga4PropertyID;
 	const showAssociatedPropertyNotice =
@@ -171,7 +178,10 @@ export default function SetupFormGA4Transitional() {
 					{ propertyType === PROPERTY_TYPE_UA && (
 						<Fragment>
 							<div className="googlesitekit-setup-module__inputs">
-								<GA4PropertySelect className="googlesitekit-analytics-4__select-property" />
+								<GA4PropertySelect
+									className="googlesitekit-analytics-4__select-property"
+									onChange={ markTooltipAsDisplayed }
+								/>
 								{ isAnalyticsConnected && ! hideGA4Tooltip && (
 									<JoyrideTooltip
 										title={ __(
@@ -191,7 +201,6 @@ export default function SetupFormGA4Transitional() {
 											'Learn more',
 											'google-site-kit'
 										) }
-										onShow={ markTooltipAsDisplayed }
 									/>
 								) }
 							</div>
