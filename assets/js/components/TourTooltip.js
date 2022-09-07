@@ -51,11 +51,9 @@ export default function TourTooltip( {
 		<div
 			className={ classnames(
 				'googlesitekit-tour-tooltip',
-				stepClassName,
-				{
-					...tooltipProps,
-				}
+				stepClassName
 			) }
+			{ ...tooltipProps }
 		>
 			<Card className="googlesitekit-tooltip-card">
 				<div className="googlesitekit-tooltip-body">
