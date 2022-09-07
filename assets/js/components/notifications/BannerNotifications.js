@@ -59,7 +59,6 @@ export default function BannerNotifications() {
 
 	return (
 		<Fragment>
-			<ZeroDataStateNotifications />
 			{ ! viewOnly && (
 				<Fragment>
 					{ ( 'authentication_success' === notification ||
@@ -70,6 +69,7 @@ export default function BannerNotifications() {
 					{ dashboardSharingEnabled && <ModuleRecoveryAlert /> }
 				</Fragment>
 			) }
+			<ZeroDataStateNotifications />
 			{ ga4ActivationBannerEnabled && <ActivationBanner /> }
 			{ ! viewOnly && (
 				<Fragment>
