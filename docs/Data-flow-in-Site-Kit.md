@@ -84,9 +84,24 @@ const fetchGetConnectionStore = createFetchStore( {
 
 REST API endpoints are defined for each module, using three methods for the `Module` class. These cover:
 
-1. REST API routes (`get_datapoint_definitions`)
-2. Data request to make to a 3rd-party API, if needed (`create_data_request`)
-3. Response parsing for the optional data request (`parse_data_response`)
+1. Set up remote requests (`setup_services`)
+2. REST API routes (`get_datapoint_definitions`)
+3. Data request to make to a 3rd-party API, if needed (`create_data_request`)
+4. Response parsing for the optional data request (`parse_data_response`)
+
+### Set up remote requests
+
+Each module can set up the services that will be used to make third-party requests. The `setup_services` method returns an array of service identifier to service object instances. These "service objects" can be used to interact with a third-party API.
+
+The identifier is referenced in the datapoint definitions in `get_datapoint_definitions` and the service instance when making the request in `create_data_request`. Here is an example `setup_services` implementation from the Search Console module.
+
+```php
+  protected function setup_services( Google_Site_Kit_Client $client ) {
+    return array(
+      'searchconsole' => new Google_Service_SearchConsole( $client ),
+    );
+  }
+```
 
 ### REST API routes
 
