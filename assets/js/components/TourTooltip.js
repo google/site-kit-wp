@@ -45,8 +45,18 @@ export default function TourTooltip( {
 			active: indicatorIndex === index,
 		} );
 
+	const stepClassName = step.className;
+
 	return (
-		<div className="googlesitekit-tour-tooltip" { ...tooltipProps }>
+		<div
+			className={ classnames(
+				'googlesitekit-tour-tooltip',
+				stepClassName,
+				{
+					...tooltipProps,
+				}
+			) }
+		>
 			<Card className="googlesitekit-tooltip-card">
 				<div className="googlesitekit-tooltip-body">
 					<h2 className="googlesitekit-tooltip-title">
@@ -77,13 +87,16 @@ export default function TourTooltip( {
 								{ backProps.title }
 							</Button>
 						) }
-						<Button
-							className="googlesitekit-tooltip-button"
-							text
-							{ ...primaryProps }
-						>
-							{ primaryProps.title }
-						</Button>
+						{ step.cta }
+						{ primaryProps.title && (
+							<Button
+								className="googlesitekit-tooltip-button"
+								text
+								{ ...primaryProps }
+							>
+								{ primaryProps.title }
+							</Button>
+						) }
 					</div>
 				</CardActions>
 				<Button
@@ -113,6 +126,8 @@ TourTooltip.propTypes = {
 	step: PropTypes.shape( {
 		content: PropTypes.node.isRequired,
 		title: PropTypes.node.isRequired,
+		cta: PropTypes.element,
+		className: PropTypes.string,
 	} ).isRequired,
 	tooltipProps: PropTypes.object.isRequired,
 };

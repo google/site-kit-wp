@@ -34,6 +34,9 @@ export default function JoyrideTooltip( {
 	dismissLabel,
 	target,
 	onDismiss = () => {},
+	cta = false,
+	onShow = () => {},
+	className,
 } ) {
 	const steps = [
 		{
@@ -43,6 +46,8 @@ export default function JoyrideTooltip( {
 			disableBeacon: true,
 			isFixed: true,
 			placement: 'auto',
+			cta,
+			className,
 		},
 	];
 
@@ -54,6 +59,9 @@ export default function JoyrideTooltip( {
 	return (
 		<Joyride
 			callback={ ( { type } ) => {
+				if ( type === EVENTS.TOUR_START ) {
+					onShow();
+				}
 				if ( type === EVENTS.STEP_AFTER ) {
 					// This is not strictly necessary as the tooltip will hide without it, but this allows the consumer of the component to clean up post-dismiss.
 					onDismiss();
@@ -74,8 +82,10 @@ export default function JoyrideTooltip( {
 
 JoyrideTooltip.propTypes = {
 	title: PropTypes.string.isRequired,
-	content: PropTypes.string.isRequired,
-	dismissLabel: PropTypes.string.isRequired,
+	content: PropTypes.string,
+	dismissLabel: PropTypes.string,
 	target: PropTypes.string.isRequired,
 	onDismiss: PropTypes.func,
+	onShow: PropTypes.func,
+	className: PropTypes.string,
 };
