@@ -472,18 +472,20 @@ function BannerNotification( {
 					) }
 				</Row>
 			</Grid>
-			<div className="googlesitekit-publisher-win__secondary-pane-divider"></div>
 			{ secondaryPane && (
-				<Grid>
-					<Row>
-						<Cell
-							className="googlesitekit-publisher-win__secondary-pane"
-							size={ 12 }
-						>
-							{ secondaryPane }
-						</Cell>
-					</Row>
-				</Grid>
+				<Fragment>
+					<div className="googlesitekit-publisher-win__secondary-pane-divider"></div>
+					<Grid className="googlesitekit-publisher-win__secondary-pane">
+						<Row>
+							<Cell
+								className="googlesitekit-publisher-win__secondary-pane"
+								size={ 12 }
+							>
+								{ secondaryPane }
+							</Cell>
+						</Row>
+					</Grid>
+				</Fragment>
 			) }
 		</section>
 	);
