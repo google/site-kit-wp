@@ -27,6 +27,7 @@ import { Fragment } from '@wordpress/element';
  */
 import Data from 'googlesitekit-data';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
+import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import { ACTIVATION_ACKNOWLEDGEMENT_TOOLTIP_STATE_KEY } from '../../../constants';
 import BannerNotification from '../../../../../components/notifications/BannerNotification';
 import { useTooltipState } from '../../../../../components/AdminMenuTooltip/useTooltipState';
@@ -44,6 +45,10 @@ export default function ReminderBanner( { onSubmitSuccess } ) {
 	const referenceDateString = useSelect( ( select ) =>
 		select( CORE_USER ).getReferenceDate()
 	);
+
+	const documentationURL = useSelect( ( select ) => {
+		return select( CORE_SITE ).getDocumentationLinkURL( 'ga4' );
+	} );
 
 	const { isTooltipVisible } = useTooltipState(
 		ACTIVATION_ACKNOWLEDGEMENT_TOOLTIP_STATE_KEY
@@ -100,7 +105,7 @@ export default function ReminderBanner( { onSubmitSuccess } ) {
 	) {
 		const remainingDays = 30 - referenceDate.getDate();
 		title = sprintf(
-			/* translators: %s: Idea post name */
+			/* translators: %d: Number of days remaining before the user can setup Google Analytics 4 */
 			__(
 				'You only have %d more days to setup Google Analytics 4',
 				'google-site-kit'
@@ -128,15 +133,27 @@ export default function ReminderBanner( { onSubmitSuccess } ) {
 	const secondaryPane = (
 		<section>
 			<ul>
-				<li>Full cross-device and cross-platform reporting</li>
 				<li>
-					Set up advanced conversion tracking, e.g. when visitors
-					submit a form or add an item to cart
+					{ __(
+						'Full cross-device and cross-platform reporting',
+						'google-site-kit'
+					) }
 				</li>
-				<li>Get detailed insights on how users navigate your site</li>
+				<li>
+					{ __(
+						'Set up advanced conversion tracking, e.g. when visitors submit a form or add an item to cart',
+						'google-site-kit'
+					) }
+				</li>
+				<li>
+					{ __(
+						'Get detailed insights on how users navigate your site',
+						'google-site-kit'
+					) }
+				</li>
 			</ul>
-			<Link href="https://site-kit-dev.appspot.com/documentation/using-site-kit/ga4/">
-				Learn more about GA4
+			<Link href={ documentationURL }>
+				{ __( 'Learn more about GA4', 'google-site-kit' ) }
 			</Link>
 		</section>
 	);
