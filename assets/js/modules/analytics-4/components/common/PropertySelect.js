@@ -49,6 +49,7 @@ export default function PropertySelect( {
 	label,
 	hasModuleAccess,
 	className,
+	onChange = () => {},
 } ) {
 	// Analytics accounts need to be loaded in order to load the properties,
 	// otherwise this component will stay in a loading state forever.
@@ -89,7 +90,7 @@ export default function PropertySelect( {
 	const { selectProperty } = useDispatch( MODULES_ANALYTICS_4 );
 	const viewContext = useViewContext();
 
-	const onChange = useCallback(
+	const onPropertyChange = useCallback(
 		( index, item ) => {
 			const newPropertyID = item.dataset.value;
 			if ( propertyID !== newPropertyID ) {
@@ -99,9 +100,10 @@ export default function PropertySelect( {
 						: 'change_property';
 				selectProperty( newPropertyID );
 				trackEvent( `${ viewContext }_analytics`, action, 'ga4' );
+				onChange();
 			}
 		},
-		[ propertyID, selectProperty, viewContext ]
+		[ onChange, propertyID, selectProperty, viewContext ]
 	);
 
 	if ( ! isValidAccountID( accountID ) ) {
@@ -143,7 +145,7 @@ export default function PropertySelect( {
 			) }
 			label={ label || __( 'Property', 'google-site-kit' ) }
 			value={ propertyID }
-			onEnhancedChange={ onChange }
+			onEnhancedChange={ onPropertyChange }
 			disabled={ ! isValidAccountID( accountID ) }
 			enhanced
 			outlined
@@ -180,4 +182,5 @@ PropertySelect.propTypes = {
 	label: PropTypes.string,
 	hasModuleAccess: PropTypes.bool,
 	className: PropTypes.string,
+	onChange: PropTypes.func,
 };
