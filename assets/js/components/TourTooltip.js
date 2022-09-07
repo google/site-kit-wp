@@ -45,13 +45,11 @@ export default function TourTooltip( {
 			active: indicatorIndex === index,
 		} );
 
-	const stepClassName = step.className;
-
 	return (
 		<div
 			className={ classnames(
 				'googlesitekit-tour-tooltip',
-				stepClassName
+				step.className
 			) }
 			{ ...tooltipProps }
 		>
@@ -122,7 +120,7 @@ TourTooltip.propTypes = {
 	primaryProps: PropTypes.object.isRequired,
 	size: PropTypes.number.isRequired,
 	step: PropTypes.shape( {
-		content: PropTypes.node.isRequired,
+		content: PropTypes.node,
 		title: PropTypes.node.isRequired,
 		cta: PropTypes.element,
 		className: PropTypes.string,
