@@ -36,6 +36,7 @@ export default function JoyrideTooltip( {
 	onDismiss = () => {},
 	cta = false,
 	className,
+	styles = {},
 } ) {
 	const steps = [
 		{
@@ -70,7 +71,18 @@ export default function JoyrideTooltip( {
 			locale={ joyrideLocale }
 			run
 			steps={ steps }
-			styles={ joyrideStyles }
+			styles={ {
+				...joyrideStyles,
+				...styles,
+				options: {
+					...joyrideStyles.options,
+					...styles?.options,
+				},
+				spotlight: {
+					...joyrideStyles.spotlight,
+					...styles?.spotlight,
+				},
+			} }
 			tooltipComponent={ TourTooltip }
 		/>
 	);
@@ -84,4 +96,5 @@ JoyrideTooltip.propTypes = {
 	onDismiss: PropTypes.func,
 	onShow: PropTypes.func,
 	className: PropTypes.string,
+	styles: PropTypes.object,
 };
