@@ -82,7 +82,7 @@ export default function Header( { slug } ) {
 		);
 	}, [ history, isOpen, slug, viewContext ] );
 
-	const onActionClick = useCallback( ( e ) => e.stopPropagation(), [] );
+	const onActionClick = useCallback( ( event ) => event.stopPropagation(), [] );
 
 	if ( ! module ) {
 		return null;
