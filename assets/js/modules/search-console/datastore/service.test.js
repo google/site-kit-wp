@@ -120,11 +120,9 @@ describe( 'module/search-console service store', () => {
 
 				const decodedServiceURL = decodeServiceURL( serviceURL );
 
-				expect(
-					decodedServiceURL.endsWith(
-						'#/performance/search-analytics'
-					)
-				).toBe( true );
+				expect( new URL( decodedServiceURL ).pathname ).toMatch(
+					new RegExp( '/performance/search-analytics$' )
+				);
 			} );
 
 			it( 'adds the `resource_id` query arg for the current property ID', () => {

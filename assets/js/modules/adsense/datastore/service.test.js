@@ -72,7 +72,9 @@ describe( 'module/adsense service store', () => {
 					.getServiceURL();
 
 				expect( serviceURL ).toMatchInlineSnapshot(
-					'"https://accounts.google.com/accountchooser?continue=https%3A%2F%2Fwww.google.com%2Fadsense%2Fnew&Email=admin%40example.com"'
+					`"https://accounts.google.com/accountchooser?continue=${ encodeURIComponent(
+						'https://www.google.com/adsense/new/u/0'
+					) }&Email=admin%40example.com"`
 				);
 			} );
 
@@ -82,7 +84,9 @@ describe( 'module/adsense service store', () => {
 					.getServiceURL( { path: 'test/path/to/deeplink' } );
 
 				expect( serviceURLNoSlashes ).toMatchInlineSnapshot(
-					'"https://accounts.google.com/accountchooser?continue=https%3A%2F%2Fwww.google.com%2Fadsense%2Fnew%23%2Ftest%2Fpath%2Fto%2Fdeeplink&Email=admin%40example.com"'
+					`"https://accounts.google.com/accountchooser?continue=${ encodeURIComponent(
+						'https://www.google.com/adsense/new/u/0/test/path/to/deeplink'
+					) }&Email=admin%40example.com"`
 				);
 
 				const serviceURLWithLeadingSlash = registry
@@ -90,7 +94,9 @@ describe( 'module/adsense service store', () => {
 					.getServiceURL( { path: '/test/path/to/deeplink' } );
 
 				expect( serviceURLWithLeadingSlash ).toMatchInlineSnapshot(
-					'"https://accounts.google.com/accountchooser?continue=https%3A%2F%2Fwww.google.com%2Fadsense%2Fnew%23%2Ftest%2Fpath%2Fto%2Fdeeplink&Email=admin%40example.com"'
+					`"https://accounts.google.com/accountchooser?continue=${ encodeURIComponent(
+						'https://www.google.com/adsense/new/u/0/test/path/to/deeplink'
+					) }&Email=admin%40example.com"`
 				);
 			} );
 
@@ -188,8 +194,8 @@ describe( 'module/adsense service store', () => {
 					.getServiceReportURL();
 
 				expect(
-					decodeServiceURL( resultingURL ).endsWith( correctPath )
-				).toBe( true );
+					new URL( decodeServiceURL( resultingURL ) ).pathname
+				).toMatch( new RegExp( `${ correctPath }$` ) );
 			} );
 
 			it( 'should append `reportArgs` arguments to the `query` if received', () => {
