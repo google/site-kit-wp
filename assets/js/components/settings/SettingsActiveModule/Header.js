@@ -82,6 +82,8 @@ export default function Header( { slug } ) {
 		);
 	}, [ history, isOpen, slug, viewContext ] );
 
+	const onActionClick = useCallback( ( e ) => e.stopPropagation(), [] );
+
 	if ( ! module ) {
 		return null;
 	}
@@ -162,7 +164,10 @@ export default function Header( { slug } ) {
 							slug === 'analytics' &&
 							! isGA4Connected && (
 								<Fragment>
-									<Button href={ adminReauthURL }>
+									<Button
+										href={ adminReauthURL }
+										onClick={ onActionClick }
+									>
 										{ __(
 											'Connect Google Analytics 4',
 											'google-site-kit'
@@ -174,7 +179,10 @@ export default function Header( { slug } ) {
 
 						{ ! connected && (
 							<Fragment>
-								<Button href={ adminReauthURL }>
+								<Button
+									href={ adminReauthURL }
+									onClick={ onActionClick }
+								>
 									{ sprintf(
 										/* translators: %s: module name. */
 										__(
