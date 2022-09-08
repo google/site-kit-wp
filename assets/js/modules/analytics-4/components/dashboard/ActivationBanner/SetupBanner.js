@@ -54,6 +54,7 @@ import { getBannerDismissalExpiryTime } from '../../../utils/banner-dismissal-ex
 import { Cell, Grid, Row } from '../../../../../material-components';
 import ProgressBar from '../../../../../components/ProgressBar';
 import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
+import { isPermissionScopeError } from '../../../../../util/errors';
 const { useDispatch, useSelect } = Data;
 
 const VARIANT = {
@@ -142,26 +143,23 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 	const { setValues } = useDispatch( CORE_FORMS );
 
 	const handleSubmitChanges = useCallback( async () => {
-		if (
-			variant === VARIANT.NO_EXISTING_PROPERTY &&
-			hasEditScope === false
-		) {
-			setValues( GA4_ACTIVATION_BANNER_STATE_KEY, {
-				returnToSetupStep: true,
-			} );
-		}
-
 		const { error } = await submitChanges();
 
 		if ( error ) {
-			setErrorNotice( error );
+			if ( isPermissionScopeError( error ) ) {
+				setValues( GA4_ACTIVATION_BANNER_STATE_KEY, {
+					returnToSetupStep: true,
+				} );
+			} else {
+				setErrorNotice( error );
+			}
 
 			return;
 		}
 
 		// Ask the parent component to show the success banner.
 		onSubmitSuccess();
-	}, [ hasEditScope, onSubmitSuccess, setValues, submitChanges, variant ] );
+	}, [ onSubmitSuccess, setValues, submitChanges ] );
 
 	const { isTooltipVisible } = useTooltipState(
 		ACTIVATION_ACKNOWLEDGEMENT_TOOLTIP_STATE_KEY
