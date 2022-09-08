@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import { useUnmount } from 'react-use';
+
+/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
@@ -26,7 +31,11 @@ import { Fragment } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { HIDE_GA4_PROPERTY_SELECT_TOOLTIP } from '../../constants';
 import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
+import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import { CORE_UI } from '../../../../googlesitekit/datastore/ui/constants';
 import {
 	MODULES_ANALYTICS,
 	PROFILE_CREATE,
@@ -47,9 +56,15 @@ import {
 } from '../common';
 import SetupUseSnippetSwitchUA from './SetupUseSnippetSwitch';
 import { SetupUseSnippetSwitch as SetupUseSnippetSwitchGA4 } from '../../../analytics-4/components/setup';
-const { useSelect } = Data;
+import JoyrideTooltip from '../../../../components/JoyrideTooltip';
+import Button from '../../../../components/Button';
+const { useSelect, useDispatch } = Data;
 
 export default function SetupFormGA4Transitional() {
+	const isAnalyticsConnected = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleConnected( 'analytics' )
+	);
+
 	const accounts =
 		useSelect( ( select ) => select( MODULES_ANALYTICS ).getAccounts() ) ||
 		[];
@@ -74,6 +89,20 @@ export default function SetupFormGA4Transitional() {
 	const ga4PropertyID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getPropertyID()
 	);
+
+	const documentationURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getDocumentationLinkURL( 'ga4' )
+	);
+
+	const { setValue } = useDispatch( CORE_UI );
+	const markTooltipAsDisplayed = () =>
+		setValue( HIDE_GA4_PROPERTY_SELECT_TOOLTIP, true );
+
+	const hideGA4Tooltip = useSelect( ( select ) =>
+		select( CORE_UI ).getValue( HIDE_GA4_PROPERTY_SELECT_TOOLTIP )
+	);
+
+	useUnmount( markTooltipAsDisplayed );
 
 	const primaryPropertyID =
 		propertyType === PROPERTY_TYPE_UA ? propertyID : ga4PropertyID;
@@ -149,7 +178,39 @@ export default function SetupFormGA4Transitional() {
 					{ propertyType === PROPERTY_TYPE_UA && (
 						<Fragment>
 							<div className="googlesitekit-setup-module__inputs">
-								<GA4PropertySelect />
+								<GA4PropertySelect
+									className="googlesitekit-analytics-4__select-property"
+									onChange={ markTooltipAsDisplayed }
+								/>
+								{ isAnalyticsConnected && ! hideGA4Tooltip && (
+									<JoyrideTooltip
+										className="googlesitekit-analytics-setup-callout"
+										title={ __(
+											'Set up a new GA4 property from here.',
+											'google-site-kit'
+										) }
+										target=".googlesitekit-analytics-4__select-property"
+										cta={
+											<Button
+												className="googlesitekit-tooltip-button"
+												href={ documentationURL }
+												target="_blank"
+												text
+											>
+												{ __(
+													'Learn more',
+													'google-site-kit'
+												) }
+											</Button>
+										}
+										styles={ {
+											options: {
+												arrowColor: '#3367D6', // $c-mariner
+												backgroundColor: '#3367D6', // $c-mariner
+											},
+										} }
+									/>
+								) }
 							</div>
 
 							{ hasExistingGA4Tag && (

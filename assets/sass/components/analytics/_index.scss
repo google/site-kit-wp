@@ -1,7 +1,7 @@
 /**
- * Analytics module constants
+ * Analytics styles.
  *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2022 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,5 +16,4 @@
  * limitations under the License.
  */
 
-export const AREA_MODULE_ANALYTICS_MAIN = 'moduleAnalyticsMain';
-export const HIDE_GA4_PROPERTY_SELECT_TOOLTIP = 'hideGA4PropertySelectTooltip';
+@import "googlesitekit-analytics-setup";

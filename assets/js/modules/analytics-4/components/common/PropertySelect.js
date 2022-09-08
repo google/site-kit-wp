@@ -45,7 +45,12 @@ import { trackEvent } from '../../../../util';
 import useViewContext from '../../../../hooks/useViewContext';
 const { useSelect, useDispatch } = Data;
 
-export default function PropertySelect( { label, hasModuleAccess } ) {
+export default function PropertySelect( {
+	label,
+	hasModuleAccess,
+	className,
+	onChange = () => {},
+} ) {
 	// Analytics accounts need to be loaded in order to load the properties,
 	// otherwise this component will stay in a loading state forever.
 	// eslint-disable-next-line no-unused-vars
@@ -85,7 +90,7 @@ export default function PropertySelect( { label, hasModuleAccess } ) {
 	const { selectProperty } = useDispatch( MODULES_ANALYTICS_4 );
 	const viewContext = useViewContext();
 
-	const onChange = useCallback(
+	const onPropertyChange = useCallback(
 		( index, item ) => {
 			const newPropertyID = item.dataset.value;
 			if ( propertyID !== newPropertyID ) {
@@ -95,9 +100,10 @@ export default function PropertySelect( { label, hasModuleAccess } ) {
 						: 'change_property';
 				selectProperty( newPropertyID );
 				trackEvent( `${ viewContext }_analytics`, action, 'ga4' );
+				onChange();
 			}
 		},
-		[ propertyID, selectProperty, viewContext ]
+		[ onChange, propertyID, selectProperty, viewContext ]
 	);
 
 	if ( ! isValidAccountID( accountID ) ) {
@@ -113,7 +119,10 @@ export default function PropertySelect( { label, hasModuleAccess } ) {
 	if ( hasModuleAccess === false ) {
 		return (
 			<Select
-				className="googlesitekit-analytics__select-property"
+				className={ classnames(
+					'googlesitekit-analytics__select-property',
+					className
+				) }
 				label={ label || __( 'Property', 'google-site-kit' ) }
 				value={ propertyID }
 				enhanced
@@ -129,13 +138,14 @@ export default function PropertySelect( { label, hasModuleAccess } ) {
 		<Select
 			className={ classnames(
 				'googlesitekit-analytics__select-property',
+				className,
 				{
 					'mdc-select--invalid': ! isValidSelection,
 				}
 			) }
 			label={ label || __( 'Property', 'google-site-kit' ) }
 			value={ propertyID }
-			onEnhancedChange={ onChange }
+			onEnhancedChange={ onPropertyChange }
 			disabled={ ! isValidAccountID( accountID ) }
 			enhanced
 			outlined
@@ -170,4 +180,7 @@ export default function PropertySelect( { label, hasModuleAccess } ) {
 
 PropertySelect.propTypes = {
 	label: PropTypes.string,
+	hasModuleAccess: PropTypes.bool,
+	className: PropTypes.string,
+	onChange: PropTypes.func,
 };
