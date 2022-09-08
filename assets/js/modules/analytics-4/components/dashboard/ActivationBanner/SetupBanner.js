@@ -54,7 +54,7 @@ import { getBannerDismissalExpiryTime } from '../../../utils/banner-dismissal-ex
 import { Cell, Grid, Row } from '../../../../../material-components';
 import ProgressBar from '../../../../../components/ProgressBar';
 import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
-import { isPermissionScopeError } from '../../../../../util/errors';
+import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '../../../../../util/errors';
 const { useDispatch, useSelect } = Data;
 
 const VARIANT = {
@@ -140,26 +140,52 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 		select( CORE_USER ).getReferenceDate()
 	);
 
+	const { setPermissionScopeError } = useDispatch( CORE_USER );
 	const { setValues } = useDispatch( CORE_FORMS );
 
 	const handleSubmitChanges = useCallback( async () => {
-		const { error } = await submitChanges();
+		const scopes = [];
 
-		if ( error ) {
-			if ( isPermissionScopeError( error ) ) {
-				setValues( GA4_ACTIVATION_BANNER_STATE_KEY, {
-					returnToSetupStep: true,
-				} );
-			} else {
-				setErrorNotice( error );
-			}
+		if ( hasEditScope === false ) {
+			scopes.push( EDIT_SCOPE );
+		}
 
+		// If scope not granted, trigger scope error right away. These are
+		// typically handled automatically based on API responses, but
+		// this particular case has some special handling to improve UX.
+		if ( scopes.length > 0 ) {
+			setValues( GA4_ACTIVATION_BANNER_STATE_KEY, {
+				returnToSetupStep: true,
+			} );
+			setPermissionScopeError( {
+				code: ERROR_CODE_MISSING_REQUIRED_SCOPE,
+				message: __(
+					'Additional permissions are required to create a new GA4 property.',
+					'google-site-kit'
+				),
+				data: {
+					status: 403,
+					scopes,
+					skipModal: true,
+				},
+			} );
 			return;
+		}
+
+		const { error } = await submitChanges();
+		if ( error ) {
+			setErrorNotice( error );
 		}
 
 		// Ask the parent component to show the success banner.
 		onSubmitSuccess();
-	}, [ onSubmitSuccess, setValues, submitChanges ] );
+	}, [
+		hasEditScope,
+		onSubmitSuccess,
+		setPermissionScopeError,
+		setValues,
+		submitChanges,
+	] );
 
 	const { isTooltipVisible } = useTooltipState(
 		ACTIVATION_ACKNOWLEDGEMENT_TOOLTIP_STATE_KEY
