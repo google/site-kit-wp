@@ -171,7 +171,7 @@ const baseSelectors = {
 	/**
 	 * Gets the link to create new publication.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.83.0
 	 *
 	 * @return {string} Create publication URL.
 	 */
@@ -190,7 +190,7 @@ const baseSelectors = {
 	/**
 	 * Gets the link of an existing publication.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.83.0
 	 *
 	 * @param {Object} _state        Data store's state.
 	 * @param {string} publicationID The ID of the publication to get link for.

@@ -169,7 +169,7 @@ export function getCTAPostTypesString( ctaPostTypes, postTypes ) {
 /**
  * Gets the placement type based on the ctaPlacement setting.
  *
- * @since n.e.x.t
+ * @since 1.83.0
  *
  * @param {string} ctaPlacement The ctaPlacement setting value.
  * @return {string} "fixed" or "overlay" depending on if ctaPlacement is static or dynamic.
