@@ -1,5 +1,5 @@
 /**
- * EntityBannerNotifications component.
+ * Create Immer reducer utility function.
  *
  * Site Kit by Google, Copyright 2022 Google LLC
  *
@@ -17,24 +17,18 @@
  */
 
 /**
- * WordPress dependencies
+ * External dependencies
  */
-import { Fragment } from '@wordpress/element';
+import produce from 'immer';
 
 /**
- * Internal dependencies
+ * Creates an Immer-enabled reducer.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Function} reducerFunction A reducer function that follows the curried Immer recipe pattern.
+ * @return {Function} An Immer-enabled reducer.
  */
-import { useFeature } from '../../hooks/useFeature';
-import { ActivationBanner } from '../../modules/analytics-4/components/dashboard';
-import ZeroDataNotifications from './ZeroDataStateNotifications';
-
-export default function EntityBannerNotifications() {
-	const ga4ActivationBannerEnabled = useFeature( 'ga4ActivationBanner' );
-
-	return (
-		<Fragment>
-			<ZeroDataNotifications />
-			{ ga4ActivationBannerEnabled && <ActivationBanner /> }
-		</Fragment>
-	);
+export function createReducer( reducerFunction ) {
+	return produce( reducerFunction );
 }

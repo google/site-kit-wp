@@ -16,7 +16,7 @@ use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 /**
  * Class for managing pointers.
  *
- * @since n.e.x.t
+ * @since 1.83.0
  * @access private
  * @ignore
  */
@@ -27,7 +27,7 @@ class Pointers {
 	/**
 	 * Registers functionality through WordPress hooks.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.83.0
 	 */
 	public function register() {
 		add_action( 'admin_enqueue_scripts', $this->get_method_proxy( 'enqueue_pointers' ) );
@@ -36,7 +36,7 @@ class Pointers {
 	/**
 	 * Enqueues pointer scripts.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.83.0
 	 *
 	 * @param string $hook_suffix The current admin page.
 	 */
@@ -77,7 +77,7 @@ class Pointers {
 	/**
 	 * Gets pointers.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.83.0
 	 *
 	 * @return Pointer[] Array of pointers.
 	 */
@@ -85,7 +85,7 @@ class Pointers {
 		/**
 		 * Filters the list of available pointers.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.83.0
 		 *
 		 * @param array $pointers List of Pointer instances.
 		 */
@@ -102,7 +102,7 @@ class Pointers {
 	/**
 	 * Prints script for a given pointer.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.83.0
 	 *
 	 * @param Pointer $pointer Pointer to print.
 	 */
@@ -132,7 +132,7 @@ class Pointers {
 							);
 						}
 					};
-		
+
 					jQuery( "#%s" ).pointer( options ).pointer( "open" );
 				} );
 				',

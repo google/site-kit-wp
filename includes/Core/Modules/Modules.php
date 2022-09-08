@@ -202,7 +202,7 @@ final class Modules {
 	/**
 	 * Determines if Thank with Google module should be enabled.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.83.0
 	 *
 	 * @return bool True if the module should be enabled, false otherwise.
 	 */

@@ -19,7 +19,7 @@
 /**
  * Decodes an account chooser URLs `continue` argument.
  *
- * @since n.e.x.t
+ * @since 1.83.0
  *
  * @param {string} receivedURL The URL to decode.
  * @return {string} The decoded URL.
