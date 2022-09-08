@@ -142,7 +142,7 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 	const { setValues } = useDispatch( CORE_FORMS );
 
 	const handleSubmitChanges = useCallback( async () => {
-		if ( hasEditScope === false ) {
+		if ( VARIANT.NO_EXISTING_PROPERTY && hasEditScope === false ) {
 			setValues( GA4_ACTIVATION_BANNER_STATE, {
 				returnToSetupStep: true,
 			} );
