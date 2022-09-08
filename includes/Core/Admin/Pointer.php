@@ -13,7 +13,7 @@ namespace Google\Site_Kit\Core\Admin;
 /**
  * Class representing a single pointer.
  *
- * @since n.e.x.t
+ * @since 1.83.0
  * @access private
  * @ignore
  */
@@ -22,7 +22,7 @@ final class Pointer {
 	/**
 	 * Unique pointer slug.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.83.0
 	 * @var string
 	 */
 	private $slug;
@@ -30,7 +30,7 @@ final class Pointer {
 	/**
 	 * Pointer arguments.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.83.0
 	 * @var array
 	 */
 	private $args = array();
@@ -38,7 +38,7 @@ final class Pointer {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.83.0
 	 *
 	 * @param string $slug Unique pointer slug.
 	 * @param array  $args {
@@ -71,7 +71,7 @@ final class Pointer {
 	/**
 	 * Gets the pointer slug.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.83.0
 	 *
 	 * @return string Unique pointer slug.
 	 */
@@ -82,7 +82,7 @@ final class Pointer {
 	/**
 	 * Gets the pointer title.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.83.0
 	 *
 	 * @return string Pointer title.
 	 */
@@ -93,7 +93,7 @@ final class Pointer {
 	/**
 	 * Gets the pointer content.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.83.0
 	 *
 	 * @return string Pointer content.
 	 */
@@ -108,7 +108,7 @@ final class Pointer {
 	/**
 	 * Gets the pointer target ID.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.83.0
 	 *
 	 * @return string Pointer target ID.
 	 */
@@ -119,7 +119,7 @@ final class Pointer {
 	/**
 	 * Gets the pointer position.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.83.0
 	 *
 	 * @return string|array Pointer position.
 	 */
@@ -132,7 +132,7 @@ final class Pointer {
 	 *
 	 * This method executes the active callback in order to determine whether the pointer should be active or not.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.83.0
 	 *
 	 * @param string $hook_suffix The current admin screen hook suffix.
 	 * @return bool True if the pointer is active, false otherwise.
