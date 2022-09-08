@@ -30,7 +30,7 @@ class URLTest extends TestCase {
 
 	public function data_urls() {
 		return array(
-			'Simple URL and requesting all components' => array(
+			'Simple URL and requesting all components'   => array(
 				'http://éxämplę.test',
 				-1,
 				array(
@@ -43,6 +43,26 @@ class URLTest extends TestCase {
 				-1,
 				array(
 					'scheme'   => 'https',
+					'host'     => 'www.éxämplę.test',
+					'port'     => '8080',
+					'path'     => '/sub-diręctory',
+					'query'    => 'nämé=john&surnäme=doé',
+					'fragment' => 'änchor',
+				),
+			),
+			'Relative URL but requesting all components' => array(
+				'/sub-diręctory?nämé=john&surnäme=doé#änchor',
+				-1,
+				array(
+					'path'     => '/sub-diręctory',
+					'query'    => 'nämé=john&surnäme=doé',
+					'fragment' => 'änchor',
+				),
+			),
+			'Schemeless URL beginning with slashes which have all other components and requesting all components' => array(
+				'//www.éxämplę.test:8080/sub-diręctory?nämé=john&surnäme=doé#änchor',
+				-1,
+				array(
 					'host'     => 'www.éxämplę.test',
 					'port'     => '8080',
 					'path'     => '/sub-diręctory',

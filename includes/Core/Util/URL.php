@@ -35,17 +35,17 @@ class URL {
 	 *               PHP_URL_PORT - integer when it does. See parse_url()'s return values.
 	 */
 	public static function parse( $url, $component = -1 ) {
-		if ( ! mb_strlen( $url, 'UTF-8' ) !== strlen( $url ) ) {
+		$url = (string) $url;
+
+		if ( mb_strlen( $url, 'UTF-8' ) === strlen( $url ) ) {
 			return wp_parse_url( $url, $component );
 		}
 
 		$to_unset = array();
-		$url      = (string) $url;
-
-		if ( '//' === substr( $url, 0, 2 ) ) {
+		if ( '//' === mb_substr( $url, 0, 2 ) ) {
 			$to_unset[] = 'scheme';
 			$url        = 'placeholder:' . $url;
-		} elseif ( '/' === substr( $url, 0, 1 ) ) {
+		} elseif ( '/' === mb_substr( $url, 0, 1 ) ) {
 			$to_unset[] = 'scheme';
 			$to_unset[] = 'host';
 			$url        = 'placeholder://placeholder' . $url;
@@ -70,6 +70,7 @@ class URL {
 	/**
 	 * Replacement for parse_url which is UTF-8 multi-byte character aware.
 	 *
+	 * @since n.e.x.t
 	 * @param string $url The URL to parse.
 	 * @return mixed False on parse failure; Array of URL components on success
 	 */
