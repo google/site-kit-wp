@@ -82,7 +82,7 @@ const fetchGetConnectionStore = createFetchStore( {
 
 ## Defining REST API endpoints on the server
 
-REST API endpoints are defined for each module, using three methods for the `Module` class. These cover:
+REST API endpoints are defined for each module, using four methods for the `Module` class. These cover:
 
 1. Set up remote requests (`setup_services`)
 2. REST API routes (`get_datapoint_definitions`)
