@@ -315,7 +315,7 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 					{ ctaLabel }
 				</SpinnerButton>
 			}
-			footer={ <p>{ footer }</p> }
+			footer={ footer }
 			dismiss={ __( 'Cancel', 'google-site-kit' ) }
 			dismissExpires={ getBannerDismissalExpiryTime(
 				referenceDateString
