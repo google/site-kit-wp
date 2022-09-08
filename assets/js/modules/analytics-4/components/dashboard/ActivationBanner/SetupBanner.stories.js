@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import fetchMock from 'fetch-mock';
+
+/**
  * Internal dependencies
  */
 import SetupBanner from './SetupBanner';
@@ -44,6 +49,44 @@ NoPropertyNoTag.storyName = 'No GA4 Property - No Existing Tag';
 NoPropertyNoTag.decorators = [
 	( Story ) => {
 		const setupRegistry = ( registry ) => {
+			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties( [], {
+				accountID,
+			} );
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.finishResolution( 'getProperties', [ accountID ] );
+		};
+
+		return (
+			<WithRegistrySetup func={ setupRegistry }>
+				<Story />
+			</WithRegistrySetup>
+		);
+	},
+];
+
+export const NoPropertyNoTagNoEditScope = Template.bind( {} );
+NoPropertyNoTagNoEditScope.storyName =
+	'No GA4 Property - No Tag - No Edit Scope';
+NoPropertyNoTagNoEditScope.decorators = [
+	( Story ) => {
+		const setupRegistry = ( registry ) => {
+			const grantedScope =
+				'https://www.googleapis.com/auth/granted.scope';
+
+			fetchMock.getOnce(
+				/^\/google-site-kit\/v1\/core\/user\/data\/authentication/,
+				{
+					body: {
+						authenticated: true,
+						requiredScopes: [],
+						grantedScopes: [ grantedScope ],
+						unsatisfiedScopes: [],
+					},
+					status: 200,
+				}
+			);
+
 			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties( [], {
 				accountID,
 			} );

@@ -38,15 +38,23 @@ import {
 	PROPERTY_CREATE,
 } from '../../../datastore/constants';
 import useExistingTagEffect from '../../../../analytics-4/hooks/useExistingTagEffect';
-import { MODULES_ANALYTICS } from '../../../../analytics/datastore/constants';
+import {
+	EDIT_SCOPE,
+	MODULES_ANALYTICS,
+} from '../../../../analytics/datastore/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
-import { ACTIVATION_ACKNOWLEDGEMENT_TOOLTIP_STATE_KEY } from '../../../constants';
+import {
+	ACTIVATION_ACKNOWLEDGEMENT_TOOLTIP_STATE_KEY,
+	GA4_ACTIVATION_BANNER_STATE_KEY,
+} from '../../../constants';
 import { useTooltipState } from '../../../../../components/AdminMenuTooltip/useTooltipState';
 import { useShowTooltip } from '../../../../../components/AdminMenuTooltip/useShowTooltip';
 import { AdminMenuTooltip } from '../../../../../components/AdminMenuTooltip/AdminMenuTooltip';
 import { getBannerDismissalExpiryTime } from '../../../utils/banner-dismissal-expiry';
 import { Cell, Grid, Row } from '../../../../../material-components';
 import ProgressBar from '../../../../../components/ProgressBar';
+import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
+import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '../../../../../util/errors';
 const { useDispatch, useSelect } = Data;
 
 const VARIANT = {
@@ -119,6 +127,9 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 		determineVariant();
 	}, [ determineVariant ] );
 
+	const hasEditScope = useSelect( ( select ) =>
+		select( CORE_USER ).hasScope( EDIT_SCOPE )
+	);
 	const existingTag = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getExistingTag()
 	);
@@ -129,18 +140,52 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 		select( CORE_USER ).getReferenceDate()
 	);
 
-	const handleSubmitChanges = useCallback( async () => {
-		const { error } = await submitChanges();
+	const { setPermissionScopeError } = useDispatch( CORE_USER );
+	const { setValues } = useDispatch( CORE_FORMS );
 
+	const handleSubmitChanges = useCallback( async () => {
+		const scopes = [];
+
+		if ( hasEditScope === false ) {
+			scopes.push( EDIT_SCOPE );
+		}
+
+		// If scope not granted, trigger scope error right away. These are
+		// typically handled automatically based on API responses, but
+		// this particular case has some special handling to improve UX.
+		if ( scopes.length > 0 ) {
+			setValues( GA4_ACTIVATION_BANNER_STATE_KEY, {
+				returnToSetupStep: true,
+			} );
+			setPermissionScopeError( {
+				code: ERROR_CODE_MISSING_REQUIRED_SCOPE,
+				message: __(
+					'Additional permissions are required to create a new GA4 property.',
+					'google-site-kit'
+				),
+				data: {
+					status: 403,
+					scopes,
+					skipModal: true,
+				},
+			} );
+			return;
+		}
+
+		const { error } = await submitChanges();
 		if ( error ) {
 			setErrorNotice( error );
-
-			return;
 		}
 
 		// Ask the parent component to show the success banner.
 		onSubmitSuccess();
-	}, [ onSubmitSuccess, submitChanges ] );
+	}, [
+		hasEditScope,
+		onSubmitSuccess,
+		setPermissionScopeError,
+		setValues,
+		submitChanges,
+	] );
 
 	const { isTooltipVisible } = useTooltipState(
 		ACTIVATION_ACKNOWLEDGEMENT_TOOLTIP_STATE_KEY
@@ -241,21 +286,49 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 		);
 		ctaLabel = __( 'Create property', 'google-site-kit' );
 
+		const footerLines = [];
+
 		if ( existingTag ) {
-			footer = sprintf(
-				/* translators: %s: The existing tag ID. */
-				__(
-					'A GA4 tag %s is found on this site but this property is not associated with your Google Analytics account. You can always add/edit this in the Site Kit Settings.',
-					'google-site-kit'
-				),
-				existingTag
-			);
-		} else {
-			footer = __(
-				'You can always add/edit this in the Site Kit Settings.',
-				'google-site-kit'
+			footerLines.push(
+				sprintf(
+					/* translators: %s: The existing tag ID. */
+					__(
+						'A GA4 tag %s is found on this site but this property is not associated with your Google Analytics account.',
+						'google-site-kit'
+					),
+					existingTag
+				)
 			);
 		}
+
+		if ( hasEditScope === false ) {
+			footerLines.push(
+				__(
+					'You will need to give Site Kit permission to create an Analytics property on your behalf.',
+					'google-site-kit'
+				)
+			);
+		}
+
+		footerLines.push(
+			__(
+				'You can always add/edit this in the Site Kit Settings.',
+				'google-site-kit'
+			)
+		);
+
+		footer = (
+			<Fragment>
+				{ footerLines.map( ( line, index ) => (
+					<p
+						className="googlesitekit-ga4-setup-banner__footer-text"
+						key={ index }
+					>
+						{ line }
+					</p>
+				) ) }
+			</Fragment>
+		);
 	}
 
 	return (
@@ -268,7 +341,7 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 					{ ctaLabel }
 				</SpinnerButton>
 			}
-			footer={ <p>{ footer }</p> }
+			footer={ footer }
 			dismiss={ __( 'Cancel', 'google-site-kit' ) }
 			dismissExpires={ getBannerDismissalExpiryTime(
 				referenceDateString

@@ -22,3 +22,5 @@ export const ACTIVATION_STEP_SUCCESS = 2;
 
 export const ACTIVATION_ACKNOWLEDGEMENT_TOOLTIP_STATE_KEY =
 	'activation-acknowledgement-tooltip-state';
+
+export const GA4_ACTIVATION_BANNER_STATE_KEY = 'ga4-activation-banner-state';

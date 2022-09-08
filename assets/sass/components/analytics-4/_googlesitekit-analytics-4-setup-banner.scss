@@ -45,4 +45,12 @@
 			row-gap: 24px;
 		}
 	}
+
+	.googlesitekit-ga4-setup-banner__footer-text {
+		margin: 0.5em 0;
+
+		&:first-child {
+			margin-top: 1em;
+		}
+	}
 }
