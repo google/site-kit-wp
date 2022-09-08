@@ -142,7 +142,10 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 	const { setValues } = useDispatch( CORE_FORMS );
 
 	const handleSubmitChanges = useCallback( async () => {
-		if ( VARIANT.NO_EXISTING_PROPERTY && hasEditScope === false ) {
+		if (
+			variant === VARIANT.NO_EXISTING_PROPERTY &&
+			hasEditScope === false
+		) {
 			setValues( GA4_ACTIVATION_BANNER_STATE, {
 				returnToSetupStep: true,
 			} );
@@ -158,7 +161,7 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 
 		// Ask the parent component to show the success banner.
 		onSubmitSuccess();
-	}, [ hasEditScope, onSubmitSuccess, setValues, submitChanges ] );
+	}, [ hasEditScope, onSubmitSuccess, setValues, submitChanges, variant ] );
 
 	const { isTooltipVisible } = useTooltipState(
 		ACTIVATION_ACKNOWLEDGEMENT_TOOLTIP_STATE_KEY
