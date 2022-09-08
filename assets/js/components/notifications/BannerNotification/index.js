@@ -278,7 +278,11 @@ function BannerNotification( {
 			) }
 			{ description && (
 				<div className="googlesitekit-publisher-win__desc">
-					{ descriptionIcon && <div>{ descriptionIcon }</div> }
+					{ descriptionIcon && (
+						<div className="googlesitekit-publisher-win__icon">
+							{ descriptionIcon }
+						</div>
+					) }
 					<p>
 						{ isValidElement( description ) ? (
 							description

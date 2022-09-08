@@ -25,7 +25,6 @@
 			display: inline-flex;
 
 			.googlesitekit-ga4-reminder-banner__description-icon {
-
 				margin-right: 10px;
 				vertical-align: middle;
 
@@ -45,6 +44,10 @@
 			}
 		}
 
+		.googlesitekit-publisher-win__icon {
+			min-height: 22px;
+		}
+
 		.googlesitekit-publisher-win__secondary-pane {
 
 			ul {
@@ -55,8 +58,6 @@
 					padding-left: $grid-gap-phone;
 				}
 			}
-
 		}
-
 	}
 }
