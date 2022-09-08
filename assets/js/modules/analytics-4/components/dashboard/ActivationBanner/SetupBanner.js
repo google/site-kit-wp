@@ -262,26 +262,49 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 		);
 		ctaLabel = __( 'Create property', 'google-site-kit' );
 
+		const footerLines = [];
+
 		if ( existingTag ) {
-			footer = sprintf(
-				/* translators: %s: The existing tag ID. */
-				__(
-					'A GA4 tag %s is found on this site but this property is not associated with your Google Analytics account. You can always add/edit this in the Site Kit Settings.',
-					'google-site-kit'
-				),
-				existingTag
-			);
-		} else if ( hasEditScope === false ) {
-			footer = __(
-				'You will need to give Site Kit permission to create an Analytics property on your behalf. You can always add/edit this in the Site Kit Settings.',
-				'google-site-kit'
-			);
-		} else {
-			footer = __(
-				'You can always add/edit this in the Site Kit Settings.',
-				'google-site-kit'
+			footerLines.push(
+				sprintf(
+					/* translators: %s: The existing tag ID. */
+					__(
+						'A GA4 tag %s is found on this site but this property is not associated with your Google Analytics account.',
+						'google-site-kit'
+					),
+					existingTag
+				)
 			);
 		}
+
+		if ( hasEditScope === false ) {
+			footerLines.push(
+				__(
+					'You will need to give Site Kit permission to create an Analytics property on your behalf.',
+					'google-site-kit'
+				)
+			);
+		}
+
+		footerLines.push(
+			__(
+				'You can always add/edit this in the Site Kit Settings.',
+				'google-site-kit'
+			)
+		);
+
+		footer = (
+			<Fragment>
+				{ footerLines.map( ( line, index ) => (
+					<p
+						className="googlesitekit-ga4-setup-banner__footer-text"
+						key={ index }
+					>
+						{ line }
+					</p>
+				) ) }
+			</Fragment>
+		);
 	}
 
 	return (
