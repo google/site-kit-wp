@@ -43,11 +43,15 @@ import {
 	MODULES_ANALYTICS,
 } from '../../../../analytics/datastore/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
-import { ACTIVATION_ACKNOWLEDGEMENT_TOOLTIP_STATE_KEY } from '../../../constants';
+import {
+	ACTIVATION_ACKNOWLEDGEMENT_TOOLTIP_STATE_KEY,
+	GA4_ACTIVATION_BANNER_STATE,
+} from '../../../constants';
 import { useTooltipState } from '../../../../../components/AdminMenuTooltip/useTooltipState';
 import { useShowTooltip } from '../../../../../components/AdminMenuTooltip/useShowTooltip';
 import { AdminMenuTooltip } from '../../../../../components/AdminMenuTooltip/AdminMenuTooltip';
 import { getBannerDismissalExpiryTime } from '../../../utils/banner-dismissal-expiry';
+import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
 const { useDispatch, useSelect } = Data;
 
 export default function SetupBanner( { onSubmitSuccess } ) {
@@ -74,8 +78,15 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 
 	const { submitChanges, selectProperty } =
 		useDispatch( MODULES_ANALYTICS_4 );
+	const { setValues } = useDispatch( CORE_FORMS );
 
 	const handleSubmitChanges = useCallback( async () => {
+		if ( hasExistingProperty === false && hasEditScope === false ) {
+			setValues( GA4_ACTIVATION_BANNER_STATE, {
+				returnToSetupStep: true,
+			} );
+		}
+
 		const { error } = await submitChanges();
 
 		if ( error ) {
@@ -86,7 +97,13 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 
 		// Ask the parent component to show the success banner.
 		onSubmitSuccess();
-	}, [ onSubmitSuccess, submitChanges ] );
+	}, [
+		hasEditScope,
+		hasExistingProperty,
+		onSubmitSuccess,
+		setValues,
+		submitChanges,
+	] );
 
 	const { isTooltipVisible } = useTooltipState(
 		ACTIVATION_ACKNOWLEDGEMENT_TOOLTIP_STATE_KEY
