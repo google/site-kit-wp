@@ -32,7 +32,7 @@ import {
 	ACTIVATION_STEP_REMINDER,
 	ACTIVATION_STEP_SETUP,
 	ACTIVATION_STEP_SUCCESS,
-	GA4_ACTIVATION_BANNER_STATE,
+	GA4_ACTIVATION_BANNER_STATE_KEY,
 } from '../../../constants';
 import { CORE_MODULES } from '../../../../../googlesitekit/modules/datastore/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
@@ -56,7 +56,7 @@ export default function ActivationBanner() {
 	);
 	const returnToSetupStep = useSelect( ( select ) =>
 		select( CORE_FORMS ).getValue(
-			GA4_ACTIVATION_BANNER_STATE,
+			GA4_ACTIVATION_BANNER_STATE_KEY,
 			'returnToSetupStep'
 		)
 	);
@@ -66,7 +66,7 @@ export default function ActivationBanner() {
 	useEffect( () => {
 		if ( hasEditScope && returnToSetupStep ) {
 			setStep( ACTIVATION_STEP_SETUP );
-			setValues( GA4_ACTIVATION_BANNER_STATE, {
+			setValues( GA4_ACTIVATION_BANNER_STATE_KEY, {
 				returnToSetupStep: false,
 			} );
 		}

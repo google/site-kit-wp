@@ -45,7 +45,7 @@ import {
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import {
 	ACTIVATION_ACKNOWLEDGEMENT_TOOLTIP_STATE_KEY,
-	GA4_ACTIVATION_BANNER_STATE,
+	GA4_ACTIVATION_BANNER_STATE_KEY,
 } from '../../../constants';
 import { useTooltipState } from '../../../../../components/AdminMenuTooltip/useTooltipState';
 import { useShowTooltip } from '../../../../../components/AdminMenuTooltip/useShowTooltip';
@@ -146,7 +146,7 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 			variant === VARIANT.NO_EXISTING_PROPERTY &&
 			hasEditScope === false
 		) {
-			setValues( GA4_ACTIVATION_BANNER_STATE, {
+			setValues( GA4_ACTIVATION_BANNER_STATE_KEY, {
 				returnToSetupStep: true,
 			} );
 		}
