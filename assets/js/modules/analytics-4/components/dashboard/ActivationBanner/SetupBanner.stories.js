@@ -70,7 +70,7 @@ NoPropertyNoTagNoEditScope.storyName =
 	'No GA4 Property - No Tag - No Edit Scope';
 NoPropertyNoTagNoEditScope.decorators = [
 	( Story ) => {
-		const setupRegistry = () => {
+		const setupRegistry = ( registry ) => {
 			const grantedScope =
 				'https://www.googleapis.com/auth/granted.scope';
 
@@ -86,6 +86,13 @@ NoPropertyNoTagNoEditScope.decorators = [
 					status: 200,
 				}
 			);
+
+			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties( [], {
+				accountID,
+			} );
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.finishResolution( 'getProperties', [ accountID ] );
 		};
 
 		return (
