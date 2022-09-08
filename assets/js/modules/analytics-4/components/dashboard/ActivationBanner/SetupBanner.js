@@ -38,7 +38,10 @@ import {
 	PROPERTY_CREATE,
 } from '../../../datastore/constants';
 import useExistingTagEffect from '../../../../analytics-4/hooks/useExistingTagEffect';
-import { MODULES_ANALYTICS } from '../../../../analytics/datastore/constants';
+import {
+	EDIT_SCOPE,
+	MODULES_ANALYTICS,
+} from '../../../../analytics/datastore/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { ACTIVATION_ACKNOWLEDGEMENT_TOOLTIP_STATE_KEY } from '../../../constants';
 import { useTooltipState } from '../../../../../components/AdminMenuTooltip/useTooltipState';
@@ -56,6 +59,9 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 			select( MODULES_ANALYTICS_4 ).getProperties( accountID ) || [];
 		return properties.length > 0;
 	} );
+	const hasEditScope = useSelect( ( select ) =>
+		select( CORE_USER ).hasScope( EDIT_SCOPE )
+	);
 	const existingTag = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getExistingTag()
 	);
@@ -177,6 +183,11 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 					'google-site-kit'
 				),
 				existingTag
+			);
+		} else if ( hasEditScope === false ) {
+			footer = __(
+				'You will need to give Site Kit permission to create an Analytics property on your behalf. You can always add/edit this in the Site Kit Settings.',
+				'google-site-kit'
 			);
 		} else {
 			footer = __(
