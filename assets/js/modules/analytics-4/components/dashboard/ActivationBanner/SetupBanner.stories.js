@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import fetchMock from 'fetch-mock';
+
+/**
  * Internal dependencies
  */
 import SetupBanner from './SetupBanner';
@@ -41,6 +46,37 @@ const Template = ( args ) => <SetupBanner { ...args } />;
 
 export const NoPropertyNoTag = Template.bind( {} );
 NoPropertyNoTag.storyName = 'No GA4 Property - No Existing Tag';
+
+export const NoPropertyNoTagNoEditScope = Template.bind( {} );
+NoPropertyNoTagNoEditScope.storyName =
+	'No GA4 Property - No Tag - No Edit Scope';
+NoPropertyNoTagNoEditScope.decorators = [
+	( Story ) => {
+		const setupRegistry = () => {
+			const grantedScope =
+				'https://www.googleapis.com/auth/granted.scope';
+
+			fetchMock.getOnce(
+				/^\/google-site-kit\/v1\/core\/user\/data\/authentication/,
+				{
+					body: {
+						authenticated: true,
+						requiredScopes: [],
+						grantedScopes: [ grantedScope ],
+						unsatisfiedScopes: [],
+					},
+					status: 200,
+				}
+			);
+		};
+
+		return (
+			<WithRegistrySetup func={ setupRegistry }>
+				<Story />
+			</WithRegistrySetup>
+		);
+	},
+];
 
 export const WithPropertyNoTag = Template.bind( {} );
 WithPropertyNoTag.storyName = 'Existing GA4 Property - No Existing Tag';
