@@ -47,7 +47,7 @@ final class Google_URL_Normalizer {
 	protected function decode_unicode_url_or_domain( $url ) {
 		$encoder_class = class_exists( '\WpOrg\Requests\IdnaEncoder' ) ? '\WpOrg\Requests\IdnaEncoder' : '\Requests_IDNAEncoder';
 
-		$parts = wp_parse_url( $url );
+		$parts = URL::parse( $url );
 		if ( ! $parts || ! isset( $parts['host'] ) || '' === $parts['host'] ) {
 			return $encoder_class::encode( $url );
 		}

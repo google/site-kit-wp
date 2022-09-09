@@ -23,6 +23,7 @@ use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Core\Util\Scopes;
+use Google\Site_Kit\Core\Util\URL;
 use Google\Site_Kit_Dependencies\Google\Service\PeopleService as Google_Service_PeopleService;
 
 /**
@@ -466,7 +467,7 @@ final class OAuth_Client extends OAuth_Client_Base {
 		$redirect_url = $this->user_options->get( self::OPTION_REDIRECT_URL );
 
 		if ( $redirect_url ) {
-			$parts  = wp_parse_url( $redirect_url );
+			$parts  = URL::parse( $redirect_url );
 			$reauth = strpos( $parts['query'], 'reAuth=true' );
 			if ( false === $reauth ) {
 				$redirect_url = add_query_arg( array( 'notification' => 'authentication_success' ), $redirect_url );

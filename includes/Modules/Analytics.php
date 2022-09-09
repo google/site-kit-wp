@@ -64,6 +64,7 @@ use WP_Error;
 use Exception;
 use Google\Site_Kit\Core\Modules\Module_With_Service_Entity;
 use Google\Site_Kit\Core\Util\BC_Functions;
+use Google\Site_Kit\Core\Util\URL;
 
 /**
  * Class representing the Analytics module.
@@ -710,7 +711,7 @@ final class Analytics extends Module
 					);
 				}
 				$property = new Google_Service_Analytics_Webproperty();
-				$property->setName( wp_parse_url( $this->context->get_reference_site_url(), PHP_URL_HOST ) );
+				$property->setName( URL::parse( $this->context->get_reference_site_url(), PHP_URL_HOST ) );
 				$property->setWebsiteUrl( $this->context->get_reference_site_url() );
 				return $this->get_service( 'analytics' )->management_webproperties->insert( $data['accountID'], $property );
 		}
@@ -951,7 +952,7 @@ final class Analytics extends Module
 			array_unique(
 				array_map(
 					function ( $site_url ) {
-						return wp_parse_url( $site_url, PHP_URL_HOST );
+						return URL::parse( $site_url, PHP_URL_HOST );
 					},
 					$this->permute_site_url( $this->context->get_reference_site_url() )
 				)
@@ -1244,7 +1245,7 @@ final class Analytics extends Module
 		if ( $tag->can_register() ) {
 			$tag->set_anonymize_ip( $settings['anonymizeIP'] );
 			$tag->set_home_domain(
-				wp_parse_url( $this->context->get_canonical_home_url(), PHP_URL_HOST )
+				URL::parse( $this->context->get_canonical_home_url(), PHP_URL_HOST )
 			);
 			$tag->set_ads_conversion_id( $settings['adsConversionID'] );
 

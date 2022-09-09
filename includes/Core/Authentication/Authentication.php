@@ -31,6 +31,7 @@ use WP_REST_Request;
 use WP_REST_Response;
 use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Util\BC_Functions;
+use Google\Site_Kit\Core\Util\URL;
 use Google\Site_Kit\Modules\Idea_Hub;
 use Google\Site_Kit\Modules\Thank_With_Google;
 
@@ -989,7 +990,7 @@ final class Authentication {
 	 */
 	private function allowed_redirect_hosts( $hosts ) {
 		$hosts[] = 'accounts.google.com';
-		$hosts[] = wp_parse_url( $this->google_proxy->url(), PHP_URL_HOST );
+		$hosts[] = URL::parse( $this->google_proxy->url(), PHP_URL_HOST );
 
 		return $hosts;
 	}
