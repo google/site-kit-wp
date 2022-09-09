@@ -23,7 +23,7 @@ import classnames from 'classnames';
 /**
  * WordPress dependencies
  */
-import { useState, useCallback } from '@wordpress/element';
+import { useState, useCallback, useEffect } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -32,7 +32,12 @@ import { CircularProgress } from '../material-components';
 import Button from './Button';
 
 export default function SpinnerButton( props ) {
-	const { className, onClick = () => {}, ...restProps } = props;
+	const {
+		className,
+		onClick = () => {},
+		forceProcessing = false,
+		...restProps
+	} = props;
 
 	const [ processing, setProcessing ] = useState( false );
 
@@ -44,6 +49,10 @@ export default function SpinnerButton( props ) {
 		},
 		[ onClick ]
 	);
+
+	useEffect( () => {
+		setProcessing( forceProcessing );
+	}, [ forceProcessing ] );
 
 	return (
 		<Button
@@ -66,4 +75,5 @@ export default function SpinnerButton( props ) {
 SpinnerButton.propTypes = {
 	className: PropTypes.string,
 	onClick: PropTypes.func,
+	forceProcessing: PropTypes.bool,
 };
