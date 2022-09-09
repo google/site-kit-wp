@@ -66,6 +66,7 @@ const VARIANT = {
 export default function SetupBanner( { onSubmitSuccess } ) {
 	const [ errorNotice, setErrorNotice ] = useState( null );
 	const [ variant, setVariant ] = useState( null );
+	const [ forceProcessing, setForceProcessing ] = useState( false );
 
 	const { submitChanges, selectProperty, matchAndSelectProperty } =
 		useDispatch( MODULES_ANALYTICS_4 );
@@ -186,6 +187,7 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 			// Ask the parent component to show the success banner.
 			onSubmitSuccess();
 		}
+		setForceProcessing( false );
 	}, [
 		hasEditScope,
 		onSubmitSuccess,
@@ -198,6 +200,8 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 	// resubmit the form.
 	useEffect( () => {
 		if ( autoSubmit && hasEditScope ) {
+			// Force the SpinnerButton to show the processing state.
+			setForceProcessing( true );
 			handleSubmitChanges();
 		}
 	}, [ autoSubmit, handleSubmitChanges, hasEditScope ] );
@@ -352,7 +356,10 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 			className="googlesitekit-ga4-setup-banner"
 			title={ title }
 			ctaComponent={
-				<SpinnerButton onClick={ handleSubmitChanges }>
+				<SpinnerButton
+					onClick={ handleSubmitChanges }
+					forceProcessing={ forceProcessing }
+				>
 					{ ctaLabel }
 				</SpinnerButton>
 			}
