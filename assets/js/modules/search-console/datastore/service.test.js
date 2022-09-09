@@ -84,9 +84,9 @@ describe( 'module/search-console service store', () => {
 					.select( MODULES_SEARCH_CONSOLE )
 					.getServiceURL( { path: '/test/path/to/deeplink' } );
 
-				expect( serviceURL ).toMatchInlineSnapshot(
-					'"https://accounts.google.com/accountchooser?continue=https%3A%2F%2Fsearch.google.com%2Fsearch-console%23%2Ftest%2Fpath%2Fto%2Fdeeplink&Email=admin%40example.com"'
-				);
+				expect(
+					new URL( decodeServiceURL( serviceURL ) ).pathname
+				).toMatch( new RegExp( '/test/path/to/deeplink$' ) );
 			} );
 
 			it( 'merges given query args to the base service URL args', async () => {
