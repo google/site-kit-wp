@@ -37,7 +37,6 @@ describe( 'module/adsense service store', () => {
 		name: 'admin',
 		picture: 'https://path/to/image',
 	};
-	const baseURI = 'https://www.google.com/adsense/new';
 
 	const settings = {
 		accountID: 'pub-12345678',
@@ -71,11 +70,14 @@ describe( 'module/adsense service store', () => {
 					.select( MODULES_ADSENSE )
 					.getServiceURL();
 
-				expect( serviceURL ).toMatchInlineSnapshot(
-					`"https://accounts.google.com/accountchooser?continue=${ encodeURIComponent(
-						'https://www.google.com/adsense/new/u/0'
-					) }&Email=admin%40example.com"`
-				);
+				expect( new URL( serviceURL ) ).toMatchObject( {
+					origin: 'https://accounts.google.com',
+					pathname: '/accountchooser',
+				} );
+				expect( serviceURL ).toMatchQueryParameters( {
+					continue: 'https://www.google.com/adsense/new/u/0',
+					Email: 'admin@example.com',
+				} );
 			} );
 
 			it( 'prepends a forward slash to to the path if missing', () => {
@@ -83,21 +85,18 @@ describe( 'module/adsense service store', () => {
 					.select( MODULES_ADSENSE )
 					.getServiceURL( { path: 'test/path/to/deeplink' } );
 
-				expect( serviceURLNoSlashes ).toMatchInlineSnapshot(
-					`"https://accounts.google.com/accountchooser?continue=${ encodeURIComponent(
-						'https://www.google.com/adsense/new/u/0/test/path/to/deeplink'
-					) }&Email=admin%40example.com"`
-				);
+				expect(
+					new URL( decodeServiceURL( serviceURLNoSlashes ) ).pathname
+				).toMatch( new RegExp( '/test/path/to/deeplink$' ) );
 
 				const serviceURLWithLeadingSlash = registry
 					.select( MODULES_ADSENSE )
 					.getServiceURL( { path: '/test/path/to/deeplink' } );
 
-				expect( serviceURLWithLeadingSlash ).toMatchInlineSnapshot(
-					`"https://accounts.google.com/accountchooser?continue=${ encodeURIComponent(
-						'https://www.google.com/adsense/new/u/0/test/path/to/deeplink'
-					) }&Email=admin%40example.com"`
-				);
+				expect(
+					new URL( decodeServiceURL( serviceURLWithLeadingSlash ) )
+						.pathname
+				).toMatch( new RegExp( '/test/path/to/deeplink$' ) );
 			} );
 
 			it( 'adds query args', async () => {
@@ -109,14 +108,6 @@ describe( 'module/adsense service store', () => {
 				const serviceURL = registry
 					.select( MODULES_ADSENSE )
 					.getServiceURL( { path, query } );
-
-				expect(
-					serviceURL.startsWith(
-						`https://accounts.google.com/accountchooser?continue=${ encodeURIComponent(
-							baseURI
-						) }`
-					)
-				).toBe( true );
 
 				expect( decodeServiceURL( serviceURL ) ).toMatchQueryParameters(
 					query
