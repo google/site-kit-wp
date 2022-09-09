@@ -18,6 +18,8 @@
 
 export const MODULES_THANK_WITH_GOOGLE = 'modules/thank-with-google';
 
+export const PUBLISHER_CENTER_URL = 'https://publishercenter.google.com';
+
 export const ONBOARDING_STATE_COMPLETE = 'ONBOARDING_COMPLETE';
 export const ONBOARDING_STATE_ACTION_REQUIRED = 'ONBOARDING_ACTION_REQUIRED';
 export const ONBOARDING_STATE_PENDING_VERIFICATION = 'PENDING_VERIFICATION';
