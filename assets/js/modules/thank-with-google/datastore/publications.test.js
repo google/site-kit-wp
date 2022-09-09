@@ -33,6 +33,7 @@ import {
 	ONBOARDING_STATE_ACTION_REQUIRED,
 	ONBOARDING_STATE_COMPLETE,
 	ONBOARDING_STATE_PENDING_VERIFICATION,
+	PUBLISHER_CENTER_URL,
 } from './constants';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
@@ -358,10 +359,9 @@ describe( 'modules/thank-with-google publications', () => {
 				provideSiteInfo( registry );
 				provideUserInfo( registry );
 
-				const homeURL = registry.select( CORE_SITE ).getHomeURL();
-				const publisherCenterURL =
-					'https://publishercenter.google.com/?sk_url=' +
-					encodeURIComponent( homeURL );
+				const publisherCenterURL = `${ PUBLISHER_CENTER_URL }?sk_url=${ encodeURIComponent(
+					registry.select( CORE_SITE ).getHomeURL()
+				) }`;
 				const expectedAccountChooserURL = registry
 					.select( CORE_USER )
 					.getAccountChooserURL( publisherCenterURL );

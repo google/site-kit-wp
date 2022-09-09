@@ -36,13 +36,12 @@ import { actions as errorStoreActions } from '../../../googlesitekit/data/create
 import {
 	MODULES_THANK_WITH_GOOGLE,
 	ONBOARDING_STATE_COMPLETE,
+	PUBLISHER_CENTER_URL,
 } from './constants';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 
 const { createRegistrySelector } = Data;
-
-const PUBLISHER_CENTER_URL = 'https://publishercenter.google.com/';
 
 // Actions
 const RESET_PUBLICATIONS = 'RESET_PUBLICATIONS';
@@ -199,7 +198,7 @@ const baseSelectors = {
 	getServicePublicationURL: ( _state, publicationID ) => {
 		invariant( publicationID, 'A publicationID is required.' );
 
-		return `${ PUBLISHER_CENTER_URL }publications/${ encodeURIComponent(
+		return `${ PUBLISHER_CENTER_URL }/publications/${ encodeURIComponent(
 			publicationID
 		) }/overview`;
 	},
