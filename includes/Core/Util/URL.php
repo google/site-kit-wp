@@ -64,13 +64,13 @@ class URL {
 		}
 
 		return _get_component_from_parsed_url_array( $parts, $component );
-
 	}
 
 	/**
 	 * Replacement for parse_url which is UTF-8 multi-byte character aware.
 	 *
 	 * @since n.e.x.t
+	 *
 	 * @param string $url The URL to parse.
 	 * @return mixed False on parse failure; Array of URL components on success
 	 */
