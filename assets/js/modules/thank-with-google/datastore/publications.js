@@ -42,6 +42,8 @@ import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 
 const { createRegistrySelector } = Data;
 
+const PUBLISHER_CENTER_URL = 'https://publishercenter.google.com/';
+
 // Actions
 const RESET_PUBLICATIONS = 'RESET_PUBLICATIONS';
 
@@ -177,10 +179,8 @@ const baseSelectors = {
 	 */
 	getServiceCreatePublicationURL: createRegistrySelector(
 		( select ) => () => {
-			const homeURL = select( CORE_SITE ).getHomeURL();
-
-			const url = addQueryArgs( 'https://publishercenter.google.com/', {
-				sk_url: encodeURIComponent( homeURL ),
+			const url = addQueryArgs( PUBLISHER_CENTER_URL, {
+				sk_url: select( CORE_SITE ).getHomeURL(),
 			} );
 
 			return select( CORE_USER ).getAccountChooserURL( url );
@@ -199,7 +199,7 @@ const baseSelectors = {
 	getServicePublicationURL: ( _state, publicationID ) => {
 		invariant( publicationID, 'A publicationID is required.' );
 
-		return `https://publishercenter.google.com/publications/${ encodeURIComponent(
+		return `${ PUBLISHER_CENTER_URL }publications/${ encodeURIComponent(
 			publicationID
 		) }/overview`;
 	},
