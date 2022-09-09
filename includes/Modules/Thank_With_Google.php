@@ -316,8 +316,8 @@ final class Thank_With_Google extends Module
 
 					if (
 						// Only show the "All sidebars" text if there is more
-						// than two sidebars.
-						$actual_sidebars_count >= 2 &&
+						// than one sidebar.
+						$actual_sidebars_count > 1 &&
 						count( $sidebars ) === $actual_sidebars_count
 					) {
 						return array( __( 'All sidebars', 'google-site-kit' ) );
