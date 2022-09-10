@@ -184,7 +184,6 @@ export default function SetupFormGA4Transitional() {
 								/>
 								{ isAnalyticsConnected && ! hideGA4Tooltip && (
 									<JoyrideTooltip
-										className="googlesitekit-analytics-setup-callout"
 										title={ __(
 											'Set up a new GA4 property from here.',
 											'google-site-kit'
@@ -203,12 +202,6 @@ export default function SetupFormGA4Transitional() {
 												) }
 											</Button>
 										}
-										styles={ {
-											options: {
-												arrowColor: '#3367D6', // $c-mariner
-												backgroundColor: '#3367D6', // $c-mariner
-											},
-										} }
 									/>
 								) }
 							</div>
