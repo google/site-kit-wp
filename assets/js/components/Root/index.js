@@ -22,7 +22,7 @@
 import PropTypes from 'prop-types';
 import {
 	ThemeProvider,
-	createTheme,
+	createMuiTheme,
 	unstable_createMuiStrictModeTheme, // eslint-disable-line camelcase
 } from '@material-ui/core';
 
@@ -49,7 +49,7 @@ import { isSiteKitScreen } from '../../util/is-site-kit-screen';
 export default function Root( { children, registry, viewContext = null } ) {
 	const theme =
 		process.env.NODE_ENV === 'production'
-			? createTheme
+			? createMuiTheme
 			: unstable_createMuiStrictModeTheme; // eslint-disable-line camelcase
 
 	const [ inViewState ] = useState( {
