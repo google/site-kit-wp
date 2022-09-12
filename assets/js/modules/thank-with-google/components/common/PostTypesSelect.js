@@ -15,11 +15,6 @@
  */
 
 /**
- * External dependencies
- */
-import { Chip, ChipCheckmark } from '@material/react-chips';
-
-/**
  * WordPress dependencies
  */
 import { useCallback } from '@wordpress/element';
@@ -32,6 +27,7 @@ import { ENTER } from '@wordpress/keycodes';
 import Data from 'googlesitekit-data';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { MODULES_THANK_WITH_GOOGLE } from '../../datastore/constants';
+import Chip from '../../../../components/Chip';
 const { useSelect, useDispatch } = Data;
 
 export default function PostTypesSelect() {
@@ -69,15 +65,11 @@ export default function PostTypesSelect() {
 
 	const options = postTypes?.map( ( { slug, label } ) => (
 		<Chip
-			chipCheckmark={ <ChipCheckmark /> }
-			data-chip-id={ slug }
-			id={ slug }
 			key={ slug }
+			id={ slug }
 			label={ label }
 			onClick={ toggleChip }
-			onKeyUp={ toggleChip }
 			selected={ ctaPostTypes?.includes( slug ) }
-			className="googlesitekit-twg-post-type-select__chip"
 		/>
 	) );
 

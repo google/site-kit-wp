@@ -20,59 +20,6 @@
 		align-items: center;
 		display: flex;
 		flex-wrap: wrap;
-	}
-
-	.googlesitekit-twg-post-type-select__chip {
-		background-color: $c-surfaces-surface-2;
-		border: none;
-		border-radius: $br-md;
-		color: $c-surfaces-on-surface;
-		flex-direction: row-reverse;
-		font-size: $fs-body-sm;
-		justify-content: center;
-		letter-spacing: $ls-xs;
-		line-height: $lh-body-sm;
-		margin: 0 12px 12px 0;
-		min-width: 80px;
-		padding: 13px 12px;
-
-		@media (min-width: $bp-tablet) {
-			padding: 3px 12px;
-		}
-
-		&:last-child {
-			margin-right: 0;
-		}
-
-		.mdc-chip__checkmark {
-			margin: 0;
-		}
-
-		.mdc-chip__checkmark-svg {
-			transition: none;
-		}
-
-		.mdc-chip__text {
-			padding: 0 12px;
-		}
-
-		&.mdc-chip--selected {
-			background-color: $c-content-primary-container;
-			border-color: $c-content-primary-container;
-			gap: 6px;
-
-			.mdc-chip__checkmark-path {
-				stroke: $c-surfaces-on-surface;
-			}
-
-			.mdc-chip__checkmark-svg {
-				height: 18px;
-				width: 18px;
-			}
-
-			.mdc-chip__text {
-				padding: 0;
-			}
-		}
+		gap: 10px;
 	}
 }
