@@ -52,7 +52,13 @@ export default function PostTypesSelect() {
 				return;
 			}
 
-			if ( ctaPostTypes?.includes( chipID ) ) {
+			if ( chipID === 'all' ) {
+				if ( ctaPostTypes?.length === postTypes?.length ) {
+					setCTAPostTypes( [] );
+				} else {
+					setCTAPostTypes( postTypes.map( ( { slug } ) => slug ) );
+				}
+			} else if ( ctaPostTypes?.includes( chipID ) ) {
 				setCTAPostTypes(
 					ctaPostTypes.filter( ( postType ) => postType !== chipID )
 				);
@@ -60,7 +66,7 @@ export default function PostTypesSelect() {
 				setCTAPostTypes( [ ...( ctaPostTypes || [] ), chipID ] );
 			}
 		},
-		[ ctaPostTypes, setCTAPostTypes ]
+		[ ctaPostTypes, postTypes, setCTAPostTypes ]
 	);
 
 	const options = postTypes?.map( ( { slug, label } ) => (
@@ -83,6 +89,12 @@ export default function PostTypesSelect() {
 				) }
 			</p>
 			<div className="googlesitekit-twg-post-type-select__options">
+				<Chip
+					id="all"
+					label={ __( 'All', 'google-site-kit' ) }
+					onClick={ toggleChip }
+					selected={ ctaPostTypes?.length === postTypes?.length }
+				/>
 				{ options }
 			</div>
 		</div>
