@@ -23,7 +23,7 @@ import ReminderBanner from './ReminderBanner';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
 
-const Template = () => <ReminderBanner onCTAClick={ () => {} } />;
+const Template = () => <ReminderBanner onSubmitSuccess={ () => {} } />;
 
 export const InitialNotice = Template.bind( {} );
 InitialNotice.storyName = 'Before 1 June 2023';
