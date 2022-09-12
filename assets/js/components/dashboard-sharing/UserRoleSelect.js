@@ -21,7 +21,6 @@
  */
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
-import { Chip, ChipCheckmark } from '@material/react-chips';
 
 /**
  * WordPress dependencies
@@ -42,6 +41,7 @@ import {
 import Data from 'googlesitekit-data';
 import Button from '../Button';
 import Link from '../Link';
+import Chip from '../Chip';
 import ShareIcon from '../../../svg/icons/share.svg';
 import CloseIcon from '../../../svg/icons/close.svg';
 import useViewContext from '../../hooks/useViewContext';
@@ -219,31 +219,24 @@ const UserRoleSelect = forwardRef(
 							ref={ roleSelectRef }
 						>
 							<Chip
-								chipCheckmark={ <ChipCheckmark /> }
-								data-chip-id={ ALL_CHIP_ID }
 								id={ ALL_CHIP_ID }
 								label={ ALL_CHIP_DISPLAY_NAME }
 								onClick={ toggleChip }
-								onKeyDown={ toggleChip }
 								selected={
 									sharedRoles?.length ===
 									shareableRoles?.length
 								}
-								className="googlesitekit-user-role-select__chip googlesitekit-user-role-select__chip--all"
+								className="googlesitekit-user-role-select__chip--all"
 							/>
 
 							{ shareableRoles.map(
 								( { id, displayName }, index ) => (
 									<Chip
-										chipCheckmark={ <ChipCheckmark /> }
-										data-chip-id={ id }
-										id={ id }
 										key={ index }
+										id={ id }
 										label={ displayName }
 										onClick={ toggleChip }
-										onKeyDown={ toggleChip }
 										selected={ sharedRoles?.includes( id ) }
-										className="googlesitekit-user-role-select__chip"
 									/>
 								)
 							) }
