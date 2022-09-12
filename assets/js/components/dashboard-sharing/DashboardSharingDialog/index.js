@@ -20,36 +20,55 @@
  * External dependencies
  */
 import { useWindowScroll } from 'react-use';
-import classnames from 'classnames';
 
 /**
  * WordPress dependencies
  */
-import { Fragment, useCallback, useRef } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
+import {
+	createInterpolateElement,
+	useEffect,
+	useCallback,
+	useRef,
+} from '@wordpress/element';
+import { arrowLeft, Icon } from '@wordpress/icons';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import Portal from '../../Portal';
-import ResetSharingSettings from './ResetSharingSettings';
 import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
-import { BREAKPOINT_SMALL, useBreakpoint } from '../../../hooks/useBreakpoint';
-import { Dialog } from '../../../material-components';
+import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
+import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
+import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import {
 	EDITING_USER_ROLE_SELECT_SLUG_KEY,
 	RESET_SETTINGS_DIALOG,
 	SETTINGS_DIALOG,
 } from '../DashboardSharingSettings/constants';
-import SharingSettings from './SharingSettings';
+import { BREAKPOINT_SMALL, useBreakpoint } from '../../../hooks/useBreakpoint';
 import sharingSettingsTour from '../../../feature-tours/dashboard-sharing-settings';
-import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
+import Portal from '../../Portal';
+import {
+	Dialog,
+	DialogContent,
+	DialogFooter,
+} from '../../../material-components';
+import Button from '../../Button';
+import ShareIcon from '../../../../svg/icons/share.svg';
+import Link from '../../Link';
+import DashboardSharingSettings from '../DashboardSharingSettings';
+import Footer from './Footer';
+
 const { useSelect, useDispatch } = Data;
 
 export default function DashboardSharingDialog() {
 	const breakpoint = useBreakpoint();
 	const { y } = useWindowScroll();
+
 	const { setValue } = useDispatch( CORE_UI );
+	const { triggerOnDemandTour } = useDispatch( CORE_USER );
+	const { rollbackSharingSettings } = useDispatch( CORE_MODULES );
 
 	const settingsDialogOpen = useSelect(
 		( select ) => !! select( CORE_UI ).getValue( SETTINGS_DIALOG )
@@ -60,15 +79,16 @@ export default function DashboardSharingDialog() {
 	const editingUserRoleSelect = useSelect( ( select ) =>
 		select( CORE_UI ).getValue( EDITING_USER_ROLE_SELECT_SLUG_KEY )
 	);
-
-	const closeDialog = useCallback( () => {
-		setValue( SETTINGS_DIALOG, false );
-		setValue( EDITING_USER_ROLE_SELECT_SLUG_KEY, undefined );
-		setValue( RESET_SETTINGS_DIALOG, false );
-	}, [ setValue ] );
+	const haveSettingsChanged = useSelect( ( select ) =>
+		select( CORE_MODULES ).haveSharingSettingsChanged()
+	);
+	const documentationURL = useSelect( ( select ) => {
+		return select( CORE_SITE ).getDocumentationLinkURL(
+			'dashboard-sharing'
+		);
+	} );
 
 	const triggeredTourRef = useRef();
-	const { triggerOnDemandTour } = useDispatch( CORE_USER );
 	const handleTriggerOnDemandTour = useCallback( () => {
 		if ( ! triggeredTourRef.current ) {
 			triggeredTourRef.current = true;
@@ -85,25 +105,136 @@ export default function DashboardSharingDialog() {
 		dialogStyles.height = `calc(100% - 46px + ${ y < 46 ? y : 46 }px)`;
 	}
 
+	// Rollback any temporary selections to saved values if settings have changed and modal is closed.
+	useEffect( () => {
+		if ( ! settingsDialogOpen && haveSettingsChanged ) {
+			rollbackSharingSettings();
+		}
+	}, [ settingsDialogOpen, haveSettingsChanged, rollbackSharingSettings ] );
+
+	const openSettingsDialog = useCallback( () => {
+		setValue( SETTINGS_DIALOG, true );
+	}, [ setValue ] );
+
+	const closeSettingsDialog = useCallback( () => {
+		setValue( SETTINGS_DIALOG, false );
+		setValue( EDITING_USER_ROLE_SELECT_SLUG_KEY, undefined );
+	}, [ setValue ] );
+
+	const openResetDialog = useCallback( () => {
+		closeSettingsDialog();
+		setValue( RESET_SETTINGS_DIALOG, true );
+	}, [ closeSettingsDialog, setValue ] );
+
+	const closeResetDialog = useCallback( () => {
+		setValue( RESET_SETTINGS_DIALOG, false );
+		openSettingsDialog();
+	}, [ openSettingsDialog, setValue ] );
+
+	const closeDialog = useCallback( () => {
+		if ( resetDialogOpen ) {
+			closeResetDialog();
+
+			return null;
+		}
+
+		closeSettingsDialog();
+	}, [ closeResetDialog, closeSettingsDialog, resetDialogOpen ] );
+
 	return (
 		<Portal>
 			<Dialog
 				open={ settingsDialogOpen || resetDialogOpen }
 				onOpen={ handleTriggerOnDemandTour }
 				onClose={ closeDialog }
-				className={ classnames(
-					'googlesitekit-sharing-settings-dialog',
-					{ 'googlesitekit-dialog': settingsDialogOpen }
-				) }
+				className="googlesitekit-dialog googlesitekit-sharing-settings-dialog"
 				style={ dialogStyles }
 				escapeKeyAction={
 					editingUserRoleSelect === undefined ? 'close' : ''
 				}
 			>
-				<Fragment>
-					{ resetDialogOpen && <ResetSharingSettings /> }
-					{ settingsDialogOpen && <SharingSettings /> }
-				</Fragment>
+				<div
+					className="googlesitekit-dialog__back-wrapper"
+					aria-hidden={ breakpoint !== BREAKPOINT_SMALL }
+				>
+					<Button
+						aria-label={ __( 'Back', 'google-site-kit' ) }
+						className="googlesitekit-dialog__back"
+						onClick={ closeDialog }
+					>
+						<Icon icon={ arrowLeft } />
+					</Button>
+				</div>
+				<DialogContent className="googlesitekit-dialog__content">
+					<div className="googlesitekit-dialog__header">
+						{ settingsDialogOpen && (
+							<div
+								className="googlesitekit-dialog__header-icon"
+								aria-hidden={ breakpoint === BREAKPOINT_SMALL }
+							>
+								<span>
+									<ShareIcon width={ 20 } height={ 20 } />
+								</span>
+							</div>
+						) }
+
+						<div className="googlesitekit-dialog__header-titles">
+							<h2 className="googlesitekit-dialog__title">
+								{ settingsDialogOpen &&
+									__(
+										'Dashboard sharing & permissions',
+										'google-site-kit'
+									) }
+
+								{ resetDialogOpen &&
+									__(
+										'Reset Dashboard Sharing permissions',
+										'google-site-kit'
+									) }
+							</h2>
+
+							<p className="googlesitekit-dialog__subtitle">
+								{ settingsDialogOpen &&
+									createInterpolateElement(
+										__(
+											'Share a view-only version of your Site Kit dashboard with other WordPress roles. <a>Learn more</a>',
+											'google-site-kit'
+										),
+										{
+											a: (
+												<Link
+													aria-label={ __(
+														'Learn more about dashboard sharing',
+														'google-site-kit'
+													) }
+													href={ documentationURL }
+													external
+												/>
+											),
+										}
+									) }
+
+								{ resetDialogOpen &&
+									__(
+										'Warning: Resetting these permissions will remove view-only access for all users. Are you sure you want to reset all Dashboard Sharing permissions?',
+										'google-site-kit'
+									) }
+							</p>
+						</div>
+					</div>
+
+					{ settingsDialogOpen && (
+						<div className="googlesitekit-dialog__main">
+							<DashboardSharingSettings />
+						</div>
+					) }
+				</DialogContent>
+				<DialogFooter className="googlesitekit-dialog__footer">
+					<Footer
+						closeDialog={ closeDialog }
+						openResetDialog={ openResetDialog }
+					/>
+				</DialogFooter>
 			</Dialog>
 		</Portal>
 	);
