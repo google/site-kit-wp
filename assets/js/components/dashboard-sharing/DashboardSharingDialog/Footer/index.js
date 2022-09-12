@@ -31,22 +31,29 @@ import { useCallback, useState } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import Link from '../../Link';
-import Button from '../../Button';
+import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
+import { CORE_UI } from '../../../../googlesitekit/datastore/ui/constants';
+import {
+	EDITING_USER_ROLE_SELECT_SLUG_KEY,
+	RESET_SETTINGS_DIALOG,
+	SETTINGS_DIALOG,
+} from '../../DashboardSharingSettings/constants';
+import useViewContext from '../../../../hooks/useViewContext';
+import { trackEvent } from '../../../../util';
+import Link from '../../../Link';
+import Button from '../../../Button';
 import Notice from './Notice';
-import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
-import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
-import Spinner from '../../Spinner';
-import { EDITING_USER_ROLE_SELECT_SLUG_KEY } from './constants';
-import ErrorText from '../../ErrorText';
-import { trackEvent } from '../../../util';
-import useViewContext from '../../../hooks/useViewContext';
+import Spinner from '../../../Spinner';
+import ErrorText from '../../../ErrorText';
+
 const { useSelect, useDispatch } = Data;
 
 export default function Footer( { closeDialog, openResetDialog } ) {
 	const viewContext = useViewContext();
 
 	const [ errorNotice, setErrorNotice ] = useState( null );
+	const [ isResetting, setIsResetting ] = useState( false );
+
 	const canSubmitSharingChanges = useSelect( ( select ) =>
 		select( CORE_MODULES ).canSubmitSharingChanges()
 	);
@@ -59,9 +66,16 @@ export default function Footer( { closeDialog, openResetDialog } ) {
 	const haveSharingSettingsChangedRoles = useSelect( ( select ) =>
 		select( CORE_MODULES ).haveSharingSettingsExpanded( 'sharedRoles' )
 	);
+	const settingsDialogOpen = useSelect(
+		( select ) => !! select( CORE_UI ).getValue( SETTINGS_DIALOG )
+	);
+	const resetDialogOpen = useSelect(
+		( select ) => !! select( CORE_UI ).getValue( RESET_SETTINGS_DIALOG )
+	);
 
 	const { saveSharingSettings } = useDispatch( CORE_MODULES );
 	const { setValue } = useDispatch( CORE_UI );
+	const { resetSharingSettings } = useDispatch( CORE_MODULES );
 
 	const onApply = useCallback( async () => {
 		setErrorNotice( null );
@@ -79,6 +93,21 @@ export default function Footer( { closeDialog, openResetDialog } ) {
 
 		closeDialog();
 	}, [ viewContext, saveSharingSettings, setValue, closeDialog ] );
+
+	const onReset = useCallback( async () => {
+		setErrorNotice( null );
+		setIsResetting( true );
+
+		const { error } = await resetSharingSettings();
+		if ( error ) {
+			setErrorNotice( error.message );
+			return;
+		}
+
+		setIsResetting( false );
+
+		closeDialog();
+	}, [ closeDialog, resetSharingSettings ] );
 
 	const onCancel = useCallback( () => {
 		trackEvent( `${ viewContext }_sharing`, 'settings_cancel' );
@@ -100,29 +129,44 @@ export default function Footer( { closeDialog, openResetDialog } ) {
 			) }
 
 			<div className="googlesitekit-dashboard-sharing-settings__footer-actions">
-				<div className="googlesitekit-dashboard-sharing-settings__footer-actions-left">
-					<Link
-						onClick={ () => {
-							openResetDialog();
-						} }
-						danger
-					>
-						{ __( 'Reset sharing permissions', 'google-site-kit' ) }
-					</Link>
-				</div>
+				{ settingsDialogOpen && (
+					<div className="googlesitekit-dashboard-sharing-settings__footer-actions-left">
+						<Link onClick={ openResetDialog } danger>
+							{ __(
+								'Reset sharing permissions',
+								'google-site-kit'
+							) }
+						</Link>
+					</div>
+				) }
 
 				<div className="googlesitekit-dashboard-sharing-settings__footer-actions-right">
 					<Link onClick={ onCancel }>
 						{ __( 'Cancel', 'google-site-kit' ) }
 					</Link>
 
-					<Button
-						onClick={ onApply }
-						disabled={ isSaving || ! canSubmitSharingChanges }
-					>
-						{ __( 'Apply', 'google-site-kit' ) }
-						{ isSaving && <Spinner isSaving={ isSaving } /> }
-					</Button>
+					{ settingsDialogOpen && (
+						<Button
+							onClick={ onApply }
+							disabled={ isSaving || ! canSubmitSharingChanges }
+						>
+							{ __( 'Apply', 'google-site-kit' ) }
+							{ isSaving && <Spinner isSaving={ isSaving } /> }
+						</Button>
+					) }
+
+					{ resetDialogOpen && (
+						<Button
+							onClick={ onReset }
+							disabled={ isResetting }
+							danger
+						>
+							{ __( 'Reset', 'google-site-kit' ) }
+							{ isResetting && (
+								<Spinner isSaving={ isResetting } />
+							) }
+						</Button>
+					) }
 				</div>
 			</div>
 		</div>
