@@ -23,11 +23,19 @@ import Chip from './Chip';
 
 const Template = ( args ) => <Chip { ...args } />;
 
-export const DefaultButton = Template.bind( {} );
-DefaultButton.storyName = 'Default Chip';
-DefaultButton.args = {
+export const DefaultChip = Template.bind( {} );
+DefaultChip.storyName = 'Default Chip';
+DefaultChip.args = {
 	id: 'default',
 	label: 'Default Chip',
+};
+
+export const SelectedChip = Template.bind( {} );
+SelectedChip.storyName = 'Selected Chip';
+SelectedChip.args = {
+	id: 'selected',
+	label: 'Selected Chip',
+	selected: true,
 };
 
 export default {
