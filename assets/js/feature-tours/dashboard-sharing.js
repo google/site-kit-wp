@@ -29,8 +29,8 @@ import { VIEW_CONTEXT_DASHBOARD } from '../googlesitekit/constants';
 import { isFeatureEnabled } from '../features';
 import settingsTour from './dashboard-sharing-settings';
 import { CORE_UI } from '../googlesitekit/datastore/ui/constants';
-import { UI_KEY_DIALOG_OPEN } from '../components/dashboard-sharing/DashboardSharingSettingsButton';
 import { CORE_USER } from '../googlesitekit/datastore/user/constants';
+import { SETTINGS_DIALOG } from '../components/dashboard-sharing/DashboardSharingSettings/constants';
 
 let viewedAllSteps;
 
@@ -57,16 +57,16 @@ const dashboardSharing = {
 	callback: ( data, { select, dispatch } ) => {
 		const { action, index, size, type } = data;
 
-		const dialogOpen = select( CORE_UI ).getValue( UI_KEY_DIALOG_OPEN );
+		const dialogOpen = select( CORE_UI ).getValue( SETTINGS_DIALOG );
 
 		// Open sharing settings when transitioning to the second step from the first.
 		if ( ACTIONS.NEXT === action && index === 0 ) {
-			dispatch( CORE_UI ).setValue( UI_KEY_DIALOG_OPEN, true );
+			dispatch( CORE_UI ).setValue( SETTINGS_DIALOG, true );
 		}
 
 		// Close the dialog if the tour is ended or we end up back on the first step.
 		if ( ACTIONS.STOP === action || ( index === 0 && dialogOpen ) ) {
-			dispatch( CORE_UI ).setValue( UI_KEY_DIALOG_OPEN, false );
+			dispatch( CORE_UI ).setValue( SETTINGS_DIALOG, false );
 		}
 
 		if (

@@ -1579,4 +1579,15 @@ final class Modules {
 		return $module_owners;
 	}
 
+	/**
+	 * Deletes sharing settings.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return bool True on success, false on failure.
+	 */
+	public function delete_dashboard_sharing_settings() {
+		return $this->options->delete( Module_Sharing_Settings::OPTION );
+	}
+
 }
