@@ -31,6 +31,7 @@ import { addQueryArgs } from '@wordpress/url';
  */
 import Data from 'googlesitekit-data';
 import { CORE_USER } from './constants';
+import { escapeURI } from '../../../util/escape-uri';
 
 const { createRegistrySelector } = Data;
 
@@ -410,16 +411,13 @@ export const selectors = {
 			invariant( destinationURL, 'destinationURL is required' );
 
 			const userEmail = select( CORE_USER ).getEmail();
-
 			if ( userEmail === undefined ) {
 				return undefined;
 			}
 
 			// The `Email` parameter is case sensitive;
 			// the capital E is required for the account chooser URL.
-			return `https://accounts.google.com/accountchooser?continue=${ encodeURIComponent(
-				destinationURL
-			) }&Email=${ encodeURIComponent( userEmail ) }`;
+			return escapeURI`https://accounts.google.com/accountchooser?continue=${ destinationURL }&Email=${ userEmail }`;
 		}
 	),
 

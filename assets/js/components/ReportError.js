@@ -19,7 +19,6 @@
 /**
  * External dependencies
  */
-import classnames from 'classnames';
 import PropTypes from 'prop-types';
 import uniqWith from 'lodash/uniqWith';
 
@@ -165,35 +164,30 @@ export default function ReportError( { moduleSlug, error } ) {
 
 	return (
 		<CTA title={ title } description={ description } error>
-			{ showRequestAccessURL && (
-				<Button href={ requestAccessURL } target="_blank">
-					{ __( 'Request access', 'google-site-kit' ) }
-				</Button>
-			) }
-			{ showRetry ? (
-				<Fragment>
-					<Button onClick={ handleRetry }>
-						{ __( 'Retry', 'google-site-kit' ) }
+			<div className="googlesitekit-error-cta-wrapper">
+				{ showRequestAccessURL && (
+					<Button href={ requestAccessURL } target="_blank">
+						{ __( 'Request access', 'google-site-kit' ) }
 					</Button>
-					<span className="googlesitekit-error-retry-text">
-						{ __( 'Retry didn’t work?', 'google-site-kit' ) }{ ' ' }
-					</span>
+				) }
+				{ showRetry ? (
+					<Fragment>
+						<Button onClick={ handleRetry }>
+							{ __( 'Retry', 'google-site-kit' ) }
+						</Button>
+						<span className="googlesitekit-error-retry-text">
+							{ __( 'Retry didn’t work?', 'google-site-kit' ) }{ ' ' }
+						</span>
+						<Link href={ errorTroubleshootingLinkURL } external>
+							{ __( 'Get help', 'google-site-kit' ) }
+						</Link>
+					</Fragment>
+				) : (
 					<Link href={ errorTroubleshootingLinkURL } external>
 						{ __( 'Get help', 'google-site-kit' ) }
 					</Link>
-				</Fragment>
-			) : (
-				<Link
-					className={ classnames( {
-						'googlesitekit-error-get-help-text':
-							showRequestAccessURL,
-					} ) }
-					href={ errorTroubleshootingLinkURL }
-					external
-				>
-					{ __( 'Get help', 'google-site-kit' ) }
-				</Link>
-			) }
+				) }
+			</div>
 		</CTA>
 	);
 }
