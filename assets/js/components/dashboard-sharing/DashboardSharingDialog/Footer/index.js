@@ -73,7 +73,8 @@ export default function Footer( { closeDialog, openResetDialog } ) {
 		( select ) => !! select( CORE_UI ).getValue( RESET_SETTINGS_DIALOG )
 	);
 
-	const { resetSharingSettings, saveSharingSettings } = useDispatch( CORE_MODULES );
+	const { resetSharingSettings, saveSharingSettings } =
+		useDispatch( CORE_MODULES );
 	const { setValue } = useDispatch( CORE_UI );
 
 	const onApply = useCallback( async () => {
