@@ -115,9 +115,9 @@ export default function PropertySelect( {
 	}
 
 	const isValidSelection =
-		propertyID === undefined
-			? isValidPropertySelection( propertyID )
-			: true;
+		propertyID === undefined || propertyID === ''
+			? true
+			: isValidPropertySelection( propertyID );
 
 	if ( hasModuleAccess === false ) {
 		return (
