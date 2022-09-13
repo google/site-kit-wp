@@ -23,6 +23,9 @@ import PropTypes from 'prop-types';
 import {
 	ThemeProvider,
 	createMuiTheme,
+	// We're using the to avoid `StrictMode` warnings. It's a temporary
+	// workaround until we can upgrade `material-ui/core` to v5+.
+	// See: https://github.com/google/site-kit-wp/issues/5378
 	unstable_createMuiStrictModeTheme, // eslint-disable-line camelcase
 } from '@material-ui/core';
 
