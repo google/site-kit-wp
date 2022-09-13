@@ -127,7 +127,7 @@ const UserRoleSelect = forwardRef(
 
 		const toggleChip = useCallback(
 			( { type, target, keyCode } ) => {
-				if ( type === 'keydown' && keyCode !== ENTER ) {
+				if ( type === 'keyup' && keyCode !== ENTER ) {
 					return;
 				}
 
