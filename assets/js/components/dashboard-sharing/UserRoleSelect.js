@@ -249,7 +249,11 @@ const UserRoleSelect = forwardRef(
 							) }
 						</div>
 						<Button
-							aria-label={ __( 'Done', 'google-site-kit' ) }
+							aria-label={ __(
+								'Done editing roles',
+								'google-site-kit'
+							) }
+							title={ __( 'Done', 'google-site-kit' ) }
 							className="googlesitekit-user-role-select__button"
 							onClick={ toggleEditMode }
 							icon={ <CheckIcon width={ 18 } height={ 18 } /> }
