@@ -178,7 +178,7 @@ const baseSelectors = {
 	 */
 	getServiceCreatePublicationURL: createRegistrySelector(
 		( select ) => () => {
-			const url = addQueryArgs( PUBLISHER_CENTER_URL, {
+			const url = addQueryArgs( `${ PUBLISHER_CENTER_URL }/onboarding`, {
 				sk_url: select( CORE_SITE ).getHomeURL(),
 			} );
 
