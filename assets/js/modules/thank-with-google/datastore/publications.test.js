@@ -359,7 +359,7 @@ describe( 'modules/thank-with-google publications', () => {
 				provideSiteInfo( registry );
 				provideUserInfo( registry );
 
-				const publisherCenterURL = `${ PUBLISHER_CENTER_URL }?sk_url=${ encodeURIComponent(
+				const publisherCenterURL = `${ PUBLISHER_CENTER_URL }/onboarding?sk_url=${ encodeURIComponent(
 					registry.select( CORE_SITE ).getHomeURL()
 				) }`;
 				const expectedAccountChooserURL = registry
