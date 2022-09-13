@@ -46,6 +46,7 @@ export default function ImageRadio( props ) {
 		children,
 		description,
 		ariaLabel,
+		...otherProps
 	} = props;
 
 	const formFieldRef = useCallback( ( element ) => {
@@ -86,6 +87,7 @@ export default function ImageRadio( props ) {
 						className={ classnames( 'mdc-image-radio__content', {
 							'mdc-image-radio__content--no-image': ! image,
 						} ) }
+						{ ...otherProps }
 					>
 						{ image ? image : label }
 					</div>
