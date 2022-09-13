@@ -116,7 +116,7 @@ export default function FieldReportMetrics( { data, error } ) {
 							'google-site-kit'
 						) }
 						displayValue={ sprintf(
-							/* translators: %s: number of seconds */
+							/* translators: 1: number of seconds */
 							_x( '%s s', 'duration', 'google-site-kit' ),
 							lcpSeconds
 						) }
@@ -146,7 +146,7 @@ export default function FieldReportMetrics( { data, error } ) {
 							'google-site-kit'
 						) }
 						displayValue={ sprintf(
-							/* translators: %s: number of milliseconds */
+							/* translators: 1: number of milliseconds */
 							_x( '%s ms', 'duration', 'google-site-kit' ),
 							firstInputDelay.percentile
 						) }
@@ -165,7 +165,7 @@ export default function FieldReportMetrics( { data, error } ) {
 								'google-site-kit'
 							) }
 							displayValue={ sprintf(
-								/* translators: %s: number of milliseconds */
+								/* translators: 1: number of milliseconds */
 								_x( '%s ms', 'duration', 'google-site-kit' ),
 								interactionToNextPaint.percentile
 							) }

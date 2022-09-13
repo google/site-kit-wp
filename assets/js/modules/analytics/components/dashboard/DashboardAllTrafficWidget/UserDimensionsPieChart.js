@@ -218,7 +218,7 @@ export default function UserDimensionsPieChart( props ) {
 				? row.metrics[ 0 ].values[ 0 ]
 				: absOthers.current;
 			const statInfo = sprintf(
-				/* translators: 1: numeric value of users, 2: up or down arrow , 3: different change in percentage, %%: percent symbol */
+				/* translators: 1: numeric value of users, 2: up or down arrow , 3: different change in percentage, 5: percent symbol */
 				_x(
 					'Users: <strong>%1$s</strong> <em>%2$s %3$s%%</em>',
 					'Stat information for the user dimensions chart tooltip',
@@ -239,7 +239,7 @@ export default function UserDimensionsPieChart( props ) {
 
 			let tooltip = `<p>
 					${
-						/* translators: %s: dimension label */ sprintf(
+						/* translators: 1: dimension label */ sprintf(
 							__( '%s:', 'google-site-kit' ),
 							rowData[ 0 ].toUpperCase()
 						)
@@ -283,7 +283,7 @@ export default function UserDimensionsPieChart( props ) {
 					otherSupportURL,
 
 					sprintf(
-						/* translators: %s: pie slice label */
+						/* translators: 1: pie slice label */
 						__(
 							'Learn more about what "%s" means',
 							'google-site-kit'
@@ -299,7 +299,7 @@ export default function UserDimensionsPieChart( props ) {
 					notSetSupportURL,
 
 					sprintf(
-						/* translators: %s: pie slice label */
+						/* translators: 1: pie slice label */
 						__(
 							'Learn more about what "%s" means',
 							'google-site-kit'
