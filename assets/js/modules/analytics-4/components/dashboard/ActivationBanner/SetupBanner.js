@@ -40,6 +40,7 @@ import {
 import useExistingTagEffect from '../../../../analytics-4/hooks/useExistingTagEffect';
 import {
 	EDIT_SCOPE,
+	FORM_SETUP,
 	MODULES_ANALYTICS,
 } from '../../../../analytics/datastore/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
@@ -65,6 +66,7 @@ const VARIANT = {
 export default function SetupBanner( { onSubmitSuccess } ) {
 	const [ errorNotice, setErrorNotice ] = useState( null );
 	const [ variant, setVariant ] = useState( null );
+	const [ isSaving, setIsSaving ] = useState( false );
 
 	const { submitChanges, selectProperty, matchAndSelectProperty } =
 		useDispatch( MODULES_ANALYTICS_4 );
@@ -133,6 +135,9 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 	const existingTag = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getExistingTag()
 	);
+	const autoSubmit = useSelect( ( select ) =>
+		select( CORE_FORMS ).getValue( FORM_SETUP, 'autoSubmit' )
+	);
 
 	useExistingTagEffect();
 
@@ -154,6 +159,7 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 		// typically handled automatically based on API responses, but
 		// this particular case has some special handling to improve UX.
 		if ( scopes.length > 0 ) {
+			setValues( FORM_SETUP, { autoSubmit: true } );
 			setValues( GA4_ACTIVATION_BANNER_STATE_KEY, {
 				returnToSetupStep: true,
 			} );
@@ -172,13 +178,19 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 			return;
 		}
 
+		setIsSaving( true );
+
 		const { error } = await submitChanges();
+
 		if ( error ) {
 			setErrorNotice( error );
+		} else {
+			setValues( FORM_SETUP, { autoSubmit: false } );
+			// Ask the parent component to show the success banner.
+			onSubmitSuccess();
 		}
 
-		// Ask the parent component to show the success banner.
-		onSubmitSuccess();
+		setIsSaving( false );
 	}, [
 		hasEditScope,
 		onSubmitSuccess,
@@ -186,6 +198,14 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 		setValues,
 		submitChanges,
 	] );
+
+	// If the user lands back on this component with autoSubmit and the edit scope,
+	// resubmit the form.
+	useEffect( () => {
+		if ( autoSubmit && hasEditScope ) {
+			handleSubmitChanges();
+		}
+	}, [ autoSubmit, handleSubmitChanges, hasEditScope ] );
 
 	const { isTooltipVisible } = useTooltipState(
 		ACTIVATION_ACKNOWLEDGEMENT_TOOLTIP_STATE_KEY
@@ -334,7 +354,10 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 			className="googlesitekit-ga4-setup-banner"
 			title={ title }
 			ctaComponent={
-				<SpinnerButton onClick={ handleSubmitChanges }>
+				<SpinnerButton
+					onClick={ handleSubmitChanges }
+					isSaving={ isSaving }
+				>
 					{ ctaLabel }
 				</SpinnerButton>
 			}
