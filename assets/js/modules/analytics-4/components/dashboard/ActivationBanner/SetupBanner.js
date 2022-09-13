@@ -230,8 +230,8 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 
 	let title;
 	let ctaLabel;
-	let footer;
 	let children;
+	const footerMessages = [];
 
 	if ( variant === VARIANT.EXISTING_PROPERTY ) {
 		title = __(
@@ -239,10 +239,6 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 			'google-site-kit'
 		);
 		ctaLabel = __( 'Connect', 'google-site-kit' );
-		footer = __(
-			'You can always add/edit this in the Site Kit Settings.',
-			'google-site-kit'
-		);
 		children = (
 			<div className="googlesitekit-ga4-setup-banner__field-group">
 				<PropertySelect
@@ -277,6 +273,22 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 				) }
 			</div>
 		);
+
+		if ( hasEditScope === false ) {
+			footerMessages.push(
+				__(
+					'You will need to give Site Kit permission to create an Analytics property on your behalf.',
+					'google-site-kit'
+				)
+			);
+		}
+
+		footerMessages.push(
+			__(
+				'You can always add/edit this in the Site Kit Settings.',
+				'google-site-kit'
+			)
+		);
 	} else {
 		selectProperty( PROPERTY_CREATE );
 
@@ -286,10 +298,8 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 		);
 		ctaLabel = __( 'Create property', 'google-site-kit' );
 
-		const footerLines = [];
-
 		if ( existingTag ) {
-			footerLines.push(
+			footerMessages.push(
 				sprintf(
 					/* translators: %s: The existing tag ID. */
 					__(
@@ -302,7 +312,7 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 		}
 
 		if ( hasEditScope === false ) {
-			footerLines.push(
+			footerMessages.push(
 				__(
 					'You will need to give Site Kit permission to create an Analytics property on your behalf.',
 					'google-site-kit'
@@ -310,24 +320,11 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 			);
 		}
 
-		footerLines.push(
+		footerMessages.push(
 			__(
 				'You can always add/edit this in the Site Kit Settings.',
 				'google-site-kit'
 			)
-		);
-
-		footer = (
-			<Fragment>
-				{ footerLines.map( ( line, index ) => (
-					<p
-						className="googlesitekit-ga4-setup-banner__footer-text"
-						key={ index }
-					>
-						{ line }
-					</p>
-				) ) }
-			</Fragment>
 		);
 	}
 
@@ -341,7 +338,18 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 					{ ctaLabel }
 				</SpinnerButton>
 			}
-			footer={ footer }
+			footer={
+				<Fragment>
+					{ footerMessages.map( ( message, index ) => (
+						<p
+							className="googlesitekit-ga4-setup-banner__footer-text"
+							key={ index }
+						>
+							{ message }
+						</p>
+					) ) }
+				</Fragment>
+			}
 			dismiss={ __( 'Cancel', 'google-site-kit' ) }
 			dismissExpires={ getBannerDismissalExpiryTime(
 				referenceDateString
