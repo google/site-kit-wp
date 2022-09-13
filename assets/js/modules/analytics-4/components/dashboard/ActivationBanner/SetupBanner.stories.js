@@ -178,9 +178,9 @@ WithPropertyAndTag.decorators = [
 ];
 
 export const WithPropertyAndTagNoEditScope = Template.bind( {} );
-WithPropertyAndTag.storyName =
+WithPropertyAndTagNoEditScope.storyName =
 	'Existing GA4 Property - Existing Tag (No edit scope)';
-WithPropertyAndTag.decorators = [
+WithPropertyAndTagNoEditScope.decorators = [
 	( Story ) => {
 		const setupRegistry = ( registry ) => {
 			const grantedScope =
