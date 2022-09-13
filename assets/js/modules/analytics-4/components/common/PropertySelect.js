@@ -114,7 +114,10 @@ export default function PropertySelect( {
 		return <ProgressBar height={ 100 } small />;
 	}
 
-	const isValidSelection = isValidPropertySelection( propertyID );
+	const isValidSelection =
+		propertyID === undefined || propertyID === ''
+			? true
+			: isValidPropertySelection( propertyID );
 
 	if ( hasModuleAccess === false ) {
 		return (
