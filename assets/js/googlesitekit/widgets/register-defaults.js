@@ -32,7 +32,7 @@ import { WIDGET_AREA_STYLES, WIDGET_WIDTHS } from './datastore/constants';
 
 const { ...ADDITIONAL_WIDGET_CONTEXTS } = WIDGET_CONTEXTS;
 
-const { AREA_DASHBOARD_ACQUISITION, ...ADDITIONAL_WIDGET_AREAS } = WIDGET_AREAS;
+const { ...ADDITIONAL_WIDGET_AREAS } = WIDGET_AREAS;
 
 /**
  * Defines default widget areas for a given context.
@@ -42,16 +42,12 @@ const { AREA_DASHBOARD_ACQUISITION, ...ADDITIONAL_WIDGET_AREAS } = WIDGET_AREAS;
  * @param {Object} widgetsAPI Widgets API.
  */
 export function registerDefaults( widgetsAPI ) {
-	widgetsAPI.registerWidget(
-		WIDGET_URL_SEARCH,
-		{
-			priority: 100,
-			width: [ WIDGET_WIDTHS.HALF, WIDGET_WIDTHS.FULL ],
-			Component: URLSearchWidget,
-			wrapWidget: false,
-		},
-		[ AREA_DASHBOARD_ACQUISITION ]
-	);
+	widgetsAPI.registerWidget( WIDGET_URL_SEARCH, {
+		priority: 100,
+		width: [ WIDGET_WIDTHS.HALF, WIDGET_WIDTHS.FULL ],
+		Component: URLSearchWidget,
+		wrapWidget: false,
+	} );
 
 	const {
 		CONTEXT_MAIN_DASHBOARD_TRAFFIC,
