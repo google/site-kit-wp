@@ -129,7 +129,7 @@ export default function Footer( { closeDialog, openResetDialog } ) {
 			) }
 
 			<div className="googlesitekit-dashboard-sharing-settings__footer-actions">
-				{ settingsDialogOpen && (
+				{ settingsDialogOpen && ! showNotice && (
 					<div className="googlesitekit-dashboard-sharing-settings__footer-actions-left">
 						<Link onClick={ openResetDialog } danger>
 							{ __(
