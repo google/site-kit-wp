@@ -75,6 +75,7 @@ export default function PostTypesSelect() {
 			id={ slug }
 			label={ label }
 			onClick={ toggleChip }
+			onKeyUp={ toggleChip }
 			selected={ ctaPostTypes?.includes( slug ) }
 		/>
 	) );
@@ -93,6 +94,7 @@ export default function PostTypesSelect() {
 					id="all"
 					label={ __( 'All', 'google-site-kit' ) }
 					onClick={ toggleChip }
+					onKeyUp={ toggleChip }
 					selected={ ctaPostTypes?.length === postTypes?.length }
 				/>
 				{ options }

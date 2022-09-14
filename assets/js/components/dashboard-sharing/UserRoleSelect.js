@@ -127,7 +127,7 @@ const UserRoleSelect = forwardRef(
 
 		const toggleChip = useCallback(
 			( { type, target, keyCode } ) => {
-				if ( type === 'keyup' && keyCode !== ENTER ) {
+				if ( type === 'keydown' && keyCode !== ENTER ) {
 					return;
 				}
 
@@ -222,6 +222,7 @@ const UserRoleSelect = forwardRef(
 								id={ ALL_CHIP_ID }
 								label={ ALL_CHIP_DISPLAY_NAME }
 								onClick={ toggleChip }
+								onKeyDown={ toggleChip }
 								selected={
 									sharedRoles?.length ===
 									shareableRoles?.length
@@ -236,6 +237,7 @@ const UserRoleSelect = forwardRef(
 										id={ id }
 										label={ displayName }
 										onClick={ toggleChip }
+										onKeyDown={ toggleChip }
 										selected={ sharedRoles?.includes( id ) }
 									/>
 								)

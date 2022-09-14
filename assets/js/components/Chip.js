@@ -38,7 +38,6 @@ export default function Chip( {
 			id={ id }
 			label={ label }
 			onClick={ onClick }
-			onKeyUp={ onClick }
 			selected={ selected }
 			className={ classnames( 'googlesitekit-chip', className ) }
 			{ ...props }

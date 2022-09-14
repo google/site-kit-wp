@@ -372,7 +372,7 @@ describe( 'CurrentSurvey', () => {
 			'[data-chip-id="contributor"]'
 		);
 		expect( contributorElement ).toHaveClass( 'mdc-chip--selected' );
-		fireEvent.keyUp( contributorElement, { keyCode: ENTER } );
+		fireEvent.keyDown( contributorElement, { keyCode: ENTER } );
 		expect( contributorElement ).not.toHaveClass( 'mdc-chip--selected' );
 	} );
 } );
