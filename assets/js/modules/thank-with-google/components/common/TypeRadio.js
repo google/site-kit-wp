@@ -49,7 +49,7 @@ export default function TypeRadio( props ) {
 	return (
 		<div className="googlesitekit-twg-setting-field googlesitekit-twg-type-radio">
 			<h4>{ __( 'Type', 'google-site-kit' ) }</h4>
-			<div className="googlesitekit-twg-type-radio__options">
+			<div className="googlesitekit-image-radio-options">
 				<ImageRadio
 					id={ `type-${ TYPE_OVERLAY }` }
 					name="type"

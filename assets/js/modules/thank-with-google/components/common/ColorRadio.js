@@ -68,7 +68,7 @@ export default function ColorRadio() {
 					'google-site-kit'
 				) }
 			</p>
-			<div className="googlesitekit-twg-color-radio__options">
+			<div className="googlesitekit-twg-color-radio__options googlesitekit-image-radio-options">
 				{ colors }
 			</div>
 		</div>

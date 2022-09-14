@@ -21,6 +21,7 @@
 		flex-wrap: wrap;
 
 		.googlesitekit-image-radio {
+			width: fit-content;
 
 			.image-radio .mdc-image-radio__background .mdc-image-radio__content {
 				border-radius: 50%;
@@ -37,6 +38,10 @@
 					top: 50%;
 					transform: translate(-50%, -50%);
 					width: 50px;
+				}
+
+				&[aria-checked="true"] {
+					border: 0.25rem solid $c-surfaces-surface;
 				}
 			}
 

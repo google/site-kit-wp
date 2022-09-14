@@ -1,9 +1,19 @@
 .googlesitekit-plugin {
 
+	.googlesitekit-image-radio-options {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 24px;
+	}
+
 	.googlesitekit-image-radio {
 		display: flex;
 		flex-direction: column;
 		width: 100%;
+
+		@media (min-width: $bp-tablet) {
+			max-width: 16.5rem;
+		}
 
 		& > label {
 			color: $c-user-input-note;
@@ -107,7 +117,6 @@
 			}
 
 			.mdc-image-radio__content[aria-checked="true"] {
-				border: 0.25rem solid $c-surfaces-surface;
 				outline: 0.1875rem solid $c-content-primary;
 			}
 		}
