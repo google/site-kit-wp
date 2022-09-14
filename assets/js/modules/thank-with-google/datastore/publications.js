@@ -178,7 +178,7 @@ const baseSelectors = {
 	 */
 	getServiceCreatePublicationURL: createRegistrySelector(
 		( select ) => () => {
-			const url = addQueryArgs( PUBLISHER_CENTER_URL, {
+			const url = addQueryArgs( `${ PUBLISHER_CENTER_URL }/onboarding`, {
 				sk_url: select( CORE_SITE ).getHomeURL(),
 			} );
 
@@ -195,13 +195,17 @@ const baseSelectors = {
 	 * @param {string} publicationID The ID of the publication to get link for.
 	 * @return {string} Publication link.
 	 */
-	getServicePublicationURL: ( _state, publicationID ) => {
-		invariant( publicationID, 'A publicationID is required.' );
+	getServicePublicationURL: createRegistrySelector(
+		( select ) => ( _state, publicationID ) => {
+			invariant( publicationID, 'A publicationID is required.' );
 
-		return `${ PUBLISHER_CENTER_URL }/publications/${ encodeURIComponent(
-			publicationID
-		) }/overview`;
-	},
+			const url = `${ PUBLISHER_CENTER_URL }/${ encodeURIComponent(
+				publicationID
+			) }/home`;
+
+			return select( CORE_USER ).getAccountChooserURL( url );
+		}
+	),
 };
 
 const store = Data.combineStores( fetchGetPublicationsStore, {

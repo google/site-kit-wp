@@ -359,7 +359,7 @@ describe( 'modules/thank-with-google publications', () => {
 				provideSiteInfo( registry );
 				provideUserInfo( registry );
 
-				const publisherCenterURL = `${ PUBLISHER_CENTER_URL }?sk_url=${ encodeURIComponent(
+				const publisherCenterURL = `${ PUBLISHER_CENTER_URL }/onboarding?sk_url=${ encodeURIComponent(
 					registry.select( CORE_SITE ).getHomeURL()
 				) }`;
 				const expectedAccountChooserURL = registry
@@ -386,13 +386,23 @@ describe( 'modules/thank-with-google publications', () => {
 			} );
 
 			it( 'returns a publisher center URL for an existing publication', () => {
+				provideUserInfo( registry );
+
+				const publicationID = 'test-publication-a';
+
+				const publisherCenterURL = `${ PUBLISHER_CENTER_URL }/${ encodeURIComponent(
+					publicationID
+				) }/home`;
+
+				const expectedAccountChooserURL = registry
+					.select( CORE_USER )
+					.getAccountChooserURL( publisherCenterURL );
+
 				const publicationURL = registry
 					.select( MODULES_THANK_WITH_GOOGLE )
-					.getServicePublicationURL( 'test-publication-a' );
+					.getServicePublicationURL( publicationID );
 
-				expect( publicationURL ).toBe(
-					'https://publishercenter.google.com/publications/test-publication-a/overview'
-				);
+				expect( publicationURL ).toBe( expectedAccountChooserURL );
 			} );
 		} );
 	} );
