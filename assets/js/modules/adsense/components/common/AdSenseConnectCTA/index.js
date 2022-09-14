@@ -46,7 +46,9 @@ import { CORE_LOCATION } from '../../../../../googlesitekit/datastore/location/c
 import { trackEvent } from '../../../../../util';
 import ContentAutoUpdate from './ContentAutoUpdate';
 import Link from '../../../../../components/Link';
-import Button from '../../../../../components/Button';
+// import Button from '../../../../../components/Button';
+import M3Button from '../../../../../components/material3/M3Button';
+import M3Switch from '../../../../../components/material3/M3Switch';
 import useViewContext from '../../../../../hooks/useViewContext';
 const { useSelect, useDispatch } = Data;
 
@@ -132,24 +134,26 @@ export default function AdSenseConnectCTA( { onDismissModule } ) {
 					<Cell { ...cellProps }>
 						<div className="googlesitekit-setup-module__action">
 							{ ! adSenseModuleActive && (
-								<Button onClick={ handleConnect }>
+								<M3Button onClick={ handleConnect }>
 									{ __( 'Connect now', 'google-site-kit' ) }
-								</Button>
+								</M3Button>
 							) }
 
 							{ adSenseModuleActive &&
 								! adSenseModuleConnected && (
-									<Button onClick={ handleCompleteSetup }>
+									<M3Button onClick={ handleCompleteSetup }>
 										{ __(
 											'Complete setup',
 											'google-site-kit'
 										) }
-									</Button>
+									</M3Button>
 								) }
 
 							<Link onClick={ handleDismissModule }>
 								{ __( 'Maybe later', 'google-site-kit' ) }
 							</Link>
+
+							<M3Switch />
 						</div>
 					</Cell>
 					<Cell

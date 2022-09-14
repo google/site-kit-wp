@@ -43,6 +43,7 @@ import { calculateChange, getURLPath } from '../../../../util';
 import parseDimensionStringToDate from '../../util/parseDimensionStringToDate';
 import WidgetHeaderTitle from '../../../../googlesitekit/widgets/components/WidgetHeaderTitle';
 import useViewOnly from '../../../../hooks/useViewOnly';
+import M3Switch from '../../../../components/material3/M3Switch';
 const { useSelect, useInViewSelect } = Data;
 
 /**
@@ -323,6 +324,9 @@ function DashboardOverallPageMetricsWidget( { Widget, WidgetReportError } ) {
 							</Cell>
 						)
 					) }
+					<Cell>
+						<M3Switch />
+					</Cell>
 				</Row>
 			</Grid>
 		</Widget>

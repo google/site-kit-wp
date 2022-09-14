@@ -222,6 +222,7 @@ final class Assets {
 		$font_families = array(
 			'Google+Sans+Text:400,500',
 			'Google+Sans+Display:400,500,700',
+			'Roboto:300,400,500',
 		);
 
 		$filtered_font_families = apply_filters( 'googlesitekit_font_families', $font_families );

@@ -172,6 +172,22 @@ const createRules = ( mode ) => [
 		],
 		...noAMDParserRule,
 	},
+	{
+		test: RegExp( 'node_modules/@material/web/.*\.js' ),
+		use: [
+			{
+				loader: 'babel-loader',
+				options: {
+					sourceMap: mode !== 'production',
+					babelrc: false,
+					configFile: false,
+					cacheDirectory: true,
+					presets: [ '@wordpress/default', '@babel/preset-react' ],
+				},
+			},
+		],
+		...noAMDParserRule,
+	},
 ];
 
 const createMinimizerRules = ( mode ) => [

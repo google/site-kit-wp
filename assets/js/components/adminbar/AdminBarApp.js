@@ -32,6 +32,8 @@ import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { decodeHTMLEntity, trackEvent } from '../../util';
 import AdminBarWidgets from './AdminBarWidgets';
+import M3Checkbox from '../../components/material3/M3Checkbox';
+import M3Switch from '../../components/material3/M3Switch';
 import useViewContext from '../../hooks/useViewContext';
 const { useSelect } = Data;
 
@@ -94,7 +96,7 @@ export default function AdminBarApp() {
 						<AdminBarWidgets />
 					</Cell>
 
-					<Cell alignMiddle size={ 2 }>
+					<Cell alignMiddle size={ 1 }>
 						<Link
 							className="googlesitekit-adminbar__link"
 							href="#"
@@ -102,6 +104,11 @@ export default function AdminBarApp() {
 						>
 							{ __( 'More details', 'google-site-kit' ) }
 						</Link>
+					</Cell>
+
+					<Cell alignMiddle size={ 1 }>
+						<M3Checkbox />
+						<M3Switch />
 					</Cell>
 				</Row>
 			</Grid>
