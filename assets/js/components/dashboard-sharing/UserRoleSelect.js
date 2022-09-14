@@ -43,7 +43,7 @@ import Data from 'googlesitekit-data';
 import Button from '../Button';
 import Link from '../Link';
 import ShareIcon from '../../../svg/icons/share.svg';
-import CloseIcon from '../../../svg/icons/close.svg';
+import CheckIcon from '../../../svg/icons/check.svg';
 import useViewContext from '../../hooks/useViewContext';
 import { useKeyCodesInside } from '../../hooks/useKeyCodesInside';
 import { trackEvent } from '../../util';
@@ -249,10 +249,14 @@ const UserRoleSelect = forwardRef(
 							) }
 						</div>
 						<Button
-							aria-label={ __( 'Close', 'google-site-kit' ) }
+							aria-label={ __(
+								'Done editing roles',
+								'google-site-kit'
+							) }
+							title={ __( 'Done', 'google-site-kit' ) }
 							className="googlesitekit-user-role-select__button"
 							onClick={ toggleEditMode }
-							icon={ <CloseIcon width={ 18 } height={ 18 } /> }
+							icon={ <CheckIcon width={ 18 } height={ 18 } /> }
 							tabIndex={ isLocked ? -1 : undefined }
 						/>
 					</Fragment>
