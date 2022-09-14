@@ -218,7 +218,7 @@ export default function UserDimensionsPieChart( props ) {
 				? row.metrics[ 0 ].values[ 0 ]
 				: absOthers.current;
 			const statInfo = sprintf(
-				/* translators: 1: numeric value of users, 2: up or down arrow , 3: different change in percentage, 5: percent symbol */
+				/* translators: 1: numeric value of users, 2: up or down arrow , 3: different change in percentage, %%: percent symbol */
 				_x(
 					'Users: <strong>%1$s</strong> <em>%2$s %3$s%%</em>',
 					'Stat information for the user dimensions chart tooltip',

@@ -110,7 +110,7 @@ export const getSiteStatsDataForGoogleChart = (
 		);
 		const svgArrow = getChartDifferenceArrow( difference );
 		const statInfo = sprintf(
-			/* translators: 1: selected stat label, 2: numeric value of selected stat, 3: up or down arrow , 4: different change in percentage, 5: percent symbol */
+			/* translators: 1: selected stat label, 2: numeric value of selected stat, 3: up or down arrow , 4: different change in percentage, %%: percent symbol */
 			_x(
 				'%1$s: <strong>%2$s</strong> <em>%3$s %4$s%%</em>',
 				'Stat information for chart tooltip',
