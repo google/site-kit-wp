@@ -20,6 +20,7 @@
  * External dependencies
  */
 import { useWindowScroll } from 'react-use';
+import classnames from 'classnames';
 
 /**
  * WordPress dependencies
@@ -193,7 +194,15 @@ export default function DashboardSharingDialog() {
 									) }
 							</h2>
 
-							<p className="googlesitekit-dialog__subtitle">
+							<p
+								className={ classnames(
+									'googlesitekit-dialog__subtitle',
+									{
+										'googlesitekit-dialog__subtitle--emphasis':
+											resetDialogOpen,
+									}
+								) }
+							>
 								{ settingsDialogOpen &&
 									createInterpolateElement(
 										__(
