@@ -21,6 +21,7 @@
  */
 import { __ } from '@wordpress/i18n';
 import { useEffect, useCallback } from '@wordpress/element';
+import { addQueryArgs } from '@wordpress/url';
 
 /**
  * Internal dependencies
@@ -41,7 +42,11 @@ const AuthenticatedPermissionsModal = () => {
 	const connectURL = useSelect( ( select ) =>
 		select( CORE_USER ).getConnectURL( {
 			additionalScopes: permissionsError?.data?.scopes,
-			redirectURL: global.location.href,
+			redirectURL: permissionsError?.data?.skipNotification
+				? addQueryArgs( global.location.href, {
+						skipNotification: true,
+				  } )
+				: global.location.href,
 		} )
 	);
 

@@ -344,7 +344,12 @@ final class OAuth_Client extends OAuth_Client_Base {
 			$additional_scopes = array();
 		}
 
-		$redirect_url = add_query_arg( array( 'notification' => 'authentication_success' ), $redirect_url );
+		$parts             = URL::parse( $redirect_url );
+		$skip_notification = strpos( $parts['query'], 'skipNotification=true' );
+
+		if ( false === $skip_notification ) {
+			$redirect_url = add_query_arg( array( 'notification' => 'authentication_success' ), $redirect_url );
+		}
 		// Ensure we remove error query string.
 		$redirect_url = remove_query_arg( 'error', $redirect_url );
 
@@ -467,9 +472,10 @@ final class OAuth_Client extends OAuth_Client_Base {
 		$redirect_url = $this->user_options->get( self::OPTION_REDIRECT_URL );
 
 		if ( $redirect_url ) {
-			$parts  = URL::parse( $redirect_url );
-			$reauth = strpos( $parts['query'], 'reAuth=true' );
-			if ( false === $reauth ) {
+			$parts             = URL::parse( $redirect_url );
+			$reauth            = strpos( $parts['query'], 'reAuth=true' );
+			$skip_notification = strpos( $parts['query'], 'skipNotification=true' );
+			if ( false === $reauth && false === $skip_notification ) {
 				$redirect_url = add_query_arg( array( 'notification' => 'authentication_success' ), $redirect_url );
 			}
 			$this->user_options->delete( self::OPTION_REDIRECT_URL );

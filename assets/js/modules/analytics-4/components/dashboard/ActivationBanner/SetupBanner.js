@@ -173,6 +173,7 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 					status: 403,
 					scopes,
 					skipModal: true,
+					skipNotification: true,
 				},
 			} );
 			return;
