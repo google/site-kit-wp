@@ -21,6 +21,7 @@
 		flex-wrap: wrap;
 
 		.googlesitekit-image-radio {
+			width: fit-content;
 
 			.image-radio .mdc-image-radio__background {
 
@@ -45,6 +46,10 @@
 
 				.mdc-image-radio__content[aria-checked="true"] {
 					outline: 0.1875rem solid;
+				}
+
+				&[aria-checked="true"] {
+					border: 0.25rem solid $c-surfaces-surface;
 				}
 			}
 
