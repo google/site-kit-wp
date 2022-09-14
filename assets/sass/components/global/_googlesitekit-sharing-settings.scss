@@ -398,56 +398,6 @@
 		}
 	}
 
-	.googlesitekit-user-role-select__chip {
-		background-color: transparent;
-		border: 1px solid $c-utility-outline;
-		border-radius: $br-xs;
-		color: $c-surfaces-on-surface;
-		flex-direction: row-reverse;
-		font-size: $fs-body-sm;
-		justify-content: center;
-		letter-spacing: $ls-xs;
-		line-height: $lh-body-sm;
-		margin: 0;
-		min-width: 80px;
-		padding: 13px 12px;
-
-		@media (min-width: $bp-tablet) {
-			padding: 3px 12px;
-		}
-
-		.mdc-chip__checkmark {
-			margin: 0;
-		}
-
-		.mdc-chip__checkmark-svg {
-			transition: none;
-		}
-
-		.mdc-chip__text {
-			padding: 0 12px;
-		}
-
-		&.mdc-chip--selected {
-			background-color: $c-content-primary-container;
-			border-color: $c-content-primary-container;
-			gap: 6px;
-
-			.mdc-chip__checkmark-path {
-				stroke: $c-surfaces-on-surface;
-			}
-
-			.mdc-chip__checkmark-svg {
-				height: 18px;
-				width: 18px;
-			}
-
-			.mdc-chip__text {
-				padding: 0;
-			}
-		}
-	}
-
 	.googlesitekit-dashboard-sharing-settings--has-multiple-admins {
 
 		.googlesitekit-dashboard-sharing-settings__column--product {
