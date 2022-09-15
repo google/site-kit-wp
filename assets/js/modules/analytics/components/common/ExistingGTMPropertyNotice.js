@@ -38,9 +38,9 @@ export default function ExistingGTMPropertyNotice() {
 		select( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID()
 	);
 
-	// if ( ! gtmAnalyticsPropertyID ) {
-	// 	return null;
-	// }
+	if ( ! gtmAnalyticsPropertyID ) {
+		return null;
+	}
 
 	if ( gtmAnalyticsPropertyID === propertyID ) {
 		return (
