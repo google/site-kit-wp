@@ -24,11 +24,9 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import URLSearchWidget from '../../googlesitekit/widgets/components/URLSearchWidget';
 import * as WIDGET_CONTEXTS from './default-contexts';
 import * as WIDGET_AREAS from './default-areas';
-import { WIDGET_URL_SEARCH } from './default-widgets';
-import { WIDGET_AREA_STYLES, WIDGET_WIDTHS } from './datastore/constants';
+import { WIDGET_AREA_STYLES } from './datastore/constants';
 
 const { ...ADDITIONAL_WIDGET_CONTEXTS } = WIDGET_CONTEXTS;
 
@@ -42,13 +40,6 @@ const { ...ADDITIONAL_WIDGET_AREAS } = WIDGET_AREAS;
  * @param {Object} widgetsAPI Widgets API.
  */
 export function registerDefaults( widgetsAPI ) {
-	widgetsAPI.registerWidget( WIDGET_URL_SEARCH, {
-		priority: 100,
-		width: [ WIDGET_WIDTHS.HALF, WIDGET_WIDTHS.FULL ],
-		Component: URLSearchWidget,
-		wrapWidget: false,
-	} );
-
 	const {
 		CONTEXT_MAIN_DASHBOARD_TRAFFIC,
 		CONTEXT_MAIN_DASHBOARD_CONTENT,
