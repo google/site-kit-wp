@@ -217,13 +217,15 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 
 	if ( variant === null ) {
 		return (
-			<Grid>
-				<Row>
-					<Cell size={ 12 }>
-						<ProgressBar />
-					</Cell>
-				</Row>
-			</Grid>
+			<div className="googlesitekit-publisher-win">
+				<Grid>
+					<Row>
+						<Cell size={ 12 }>
+							<ProgressBar />
+						</Cell>
+					</Row>
+				</Grid>
+			</div>
 		);
 	}
 
