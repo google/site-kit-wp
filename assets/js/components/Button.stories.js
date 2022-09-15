@@ -25,42 +25,44 @@ import HelpIcon from '../../svg/icons/help.svg';
 const Template = ( args ) => <Button { ...args } />;
 
 export const DefaultButton = Template.bind( {} );
-DefaultButton.storyName = 'Default Button';
+DefaultButton.storyName = 'Default';
 DefaultButton.args = {
 	children: 'Default Button',
-	href: '#',
+	onClick() {
+		global.console.log( 'clicked' );
+	},
 };
 
 export const HoverButton = Template.bind( {} );
-HoverButton.storyName = 'Default Button Hover';
+HoverButton.storyName = 'Default Hover';
 HoverButton.args = {
 	children: 'Default Button Hover',
 	className: 'googlesitekit-button--hover',
 };
 
 export const LinkButton = Template.bind( {} );
-LinkButton.storyName = 'Default Button Link';
+LinkButton.storyName = 'Default Link';
 LinkButton.args = {
 	children: 'Default Button Link',
 	href: '#',
 };
 
 export const DangerButton = Template.bind( {} );
-DangerButton.storyName = 'Danger Button';
+DangerButton.storyName = 'Danger';
 DangerButton.args = {
 	children: 'Danger Button',
 	danger: true,
 };
 
 export const DisabledButton = Template.bind( {} );
-DisabledButton.storyName = 'Disabled Button';
+DisabledButton.storyName = 'Disabled';
 DisabledButton.args = {
 	children: 'Disabled Button',
 	disabled: true,
 };
 
 export const IconButton = Template.bind( {} );
-IconButton.storyName = 'Icon Button with Tooltip';
+IconButton.storyName = 'Icon with Tooltip';
 IconButton.args = {
 	icon: <HelpIcon width="20" height="20" />,
 	'aria-label': 'Help',

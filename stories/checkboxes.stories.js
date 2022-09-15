@@ -35,11 +35,22 @@ storiesOf( 'Global', module ).add(
 					id="googlesitekit-checkbox-1"
 					name="googlesitekit__checkbox"
 					onChange={ ( e ) => {
-						global.console.log( e.target.value );
+						global.console.log(
+							'onChange',
+							e.target.value,
+							e.target.checked
+						);
+					} }
+					onKeyDown={ ( e ) => {
+						global.console.log(
+							'onKeyDown',
+							e.target.value,
+							e.target.checked
+						);
 					} }
 					value="value-1"
 				>
-					Default Checkbox
+					<b>Default</b> Checkbox
 				</Checkbox>
 			</div>
 
