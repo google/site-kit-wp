@@ -61,8 +61,10 @@ class Module_Sharing_Settings extends Setting {
 			foreach ( $option as $module_slug => $sharing_settings ) {
 				$sanitized_option[ $module_slug ] = array();
 
+				$filtered_shared_roles = $this->filter_shared_roles( $sharing_settings['sharedRoles'] );
+
 				if ( isset( $sharing_settings['sharedRoles'] ) ) {
-					$sanitized_option[ $module_slug ]['sharedRoles'] = $this->sanitize_string_list( $sharing_settings['sharedRoles'] );
+					$sanitized_option[ $module_slug ]['sharedRoles'] = $this->sanitize_string_list( $filtered_shared_roles );
 				}
 
 				if ( isset( $sharing_settings['management'] ) ) {
@@ -102,6 +104,31 @@ class Module_Sharing_Settings extends Setting {
 	}
 
 	/**
+	 * Filters the shared roles to only include roles with the edit_posts capability.
+	 *
+	 * @since n.e.x.t.
+	 *
+	 * @param array $shared_roles The shared roles list.
+	 * @return boolean The sanitized shared roles list.
+	 */
+	private function filter_shared_roles( $shared_roles ) {
+		$shared_roles = array_filter(
+			$shared_roles,
+			function( $role_slug ) {
+				$role = get_role( $role_slug );
+
+				if ( empty( $role ) || ! $role->has_cap( 'edit_posts' ) ) {
+					return false;
+				}
+
+				return true;
+			}
+		);
+
+		return $shared_roles;
+	}
+
+	/**
 	 * Gets the settings after filling in default values.
 	 *
 	 * @since 1.50.0
@@ -112,12 +139,16 @@ class Module_Sharing_Settings extends Setting {
 		$settings = parent::get();
 
 		foreach ( $settings as $module_slug => $sharing_settings ) {
+			$filtered_shared_roles = $this->filter_shared_roles( $sharing_settings['sharedRoles'] );
+
 			if ( ! isset( $sharing_settings['sharedRoles'] ) || ! is_array( $sharing_settings['sharedRoles'] ) ) {
 				$settings[ $module_slug ]['sharedRoles'] = array();
 			}
 			if ( ! isset( $sharing_settings['management'] ) || ! in_array( $sharing_settings['management'], array( 'all_admins', 'owner' ), true ) ) {
 				$settings[ $module_slug ]['management'] = 'owner';
 			}
+
+			$settings[ $module_slug ]['sharedRoles'] = $filtered_shared_roles;
 		}
 
 		return $settings;
