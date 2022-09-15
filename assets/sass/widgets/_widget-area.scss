@@ -21,7 +21,6 @@
 }
 
 .googlesitekit-widget-area-header {
-
 	// Use the existing MDC grid margins (--mdc-layout-grid-margin-phone,
 	// --mdc-layout-grid-margin-desktop, etc.) for the margins between the
 	// widget header and body.
@@ -38,7 +37,7 @@
 	.googlesitekit-widget-area-header__title {
 		color: $c-neutral-n-900;
 		font-weight: $fw-medium;
-		margin: 0 0 0.125rem 0;
+		margin: 0 0 0.125rem;
 	}
 
 	.googlesitekit-widget-area-header__subtitle {

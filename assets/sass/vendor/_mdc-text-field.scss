@@ -15,6 +15,7 @@
 	.mdc-notched-outline__notch {
 		// Override added padding from mdc styles.
 		padding-right: 0;
+
 		// !important needed to override inline style from component.
 		width: auto !important;
 	}
@@ -55,7 +56,7 @@
 
 	&--textarea .mdc-text-field__input {
 		box-shadow: none;
-		padding: 8px 12px 12px 12px;
+		padding: 8px 12px 12px;
 	}
 
 	&--textarea:not(.mdc-text-field--disabled) .mdc-text-field__input:focus { // :not comes from MDC

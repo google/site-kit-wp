@@ -41,8 +41,8 @@
 		"lint": "npm run lint:js && npm run lint:css",
 		"lint:js": "eslint --no-eslintrc --config .eslintrc.json --ignore-path .eslintignore --ext js,jsx,ts,tsx .",
 		"lint:js-fix": "prettier --write --config .prettierrc.js --ignore-path .prettierignore \"**/*.{js,jsx,ts,tsx,.yml,.yaml}\"",
-		"lint:css": "stylelint ./assets/sass --syntax scss",
-		"lint:css-fix": "stylelint ./assets/sass --syntax scss --fix",
+		"lint:css": "stylelint ./assets/sass",
+		"lint:css-fix": "stylelint ./assets/sass --fix",
 		"env:start": "./bin/local-env/start.sh",
 		"env:stop": "./bin/local-env/stop.sh",
 		"env:reset-site": "./bin/local-env/install-wordpress.sh --reset-site"
@@ -66,7 +66,7 @@
 			"eslint"
 		],
 		"assets/sass/**/*.scss": [
-			"stylelint --syntax scss"
+			"stylelint"
 		],
 		"*.php": [
 			"./vendor/bin/phpcs"
@@ -182,6 +182,7 @@
 		"@wordpress/jest-console": "^3.9.0",
 		"@wordpress/jest-preset-default": "7.1.1",
 		"@wordpress/prettier-config": "^1.1.1",
+		"@wordpress/stylelint-config": "^21.0.0",
 		"amphtml-validator": "^1.0.35",
 		"archiver": "^5.0.2",
 		"babel-jest": "^26.6.3",
@@ -219,6 +220,7 @@
 		"lint-staged": "^10.2.11",
 		"mini-css-extract-plugin": "^0.9.0",
 		"node-fetch": "^2.6.7",
+		"postcss": "^8.4.16",
 		"postcss-import-url": "^5.1.0",
 		"postcss-loader": "^3.0.0",
 		"postcss-preset-env": "^6.7.0",
@@ -232,11 +234,11 @@
 		"sass-loader": "^9.0.2",
 		"semver-compare": "^1.0.0",
 		"semver-regex": "^3.1.4",
-		"stylelint": "^13.6.1",
-		"stylelint-config-wordpress": "^17.0.0",
-		"stylelint-declaration-use-variable": "^1.7.2",
-		"stylelint-order": "^4.1.0",
-		"stylelint-scss": "^3.18.0",
+		"stylelint": "^14.11.0",
+		"stylelint-config-standard-scss": "^5.0.0",
+		"stylelint-declaration-strict-value": "^1.9.0",
+		"stylelint-order": "^5.0.0",
+		"stylelint-scss": "^4.3.0",
 		"terser-webpack-plugin": "^3.0.6",
 		"webpack": "^4.43.0",
 		"webpack-bundle-analyzer": "^3.8.0",
