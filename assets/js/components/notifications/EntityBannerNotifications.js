@@ -33,8 +33,8 @@ export default function EntityBannerNotifications() {
 
 	return (
 		<Fragment>
-			<ZeroDataNotifications />
 			{ ga4ActivationBannerEnabled && <ActivationBanner /> }
+			<ZeroDataNotifications />
 		</Fragment>
 	);
 }
