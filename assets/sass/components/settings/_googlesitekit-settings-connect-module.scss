@@ -64,6 +64,12 @@
 			color: $c-disabled;
 		}
 
+		.googlesitekit-settings-connect-module__badges {
+			display: flex;
+			flex-wrap: wrap;
+			grid-gap: 10px 12px;
+		}
+
 		.googlesitekit-settings-connect-module__text {
 			font-size: $fs-body-md;
 			letter-spacing: $ls-s;

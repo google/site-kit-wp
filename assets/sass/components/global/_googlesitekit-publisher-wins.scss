@@ -20,12 +20,28 @@
 
 	@include googlesitekit-inner-padding;
 	background: $c-base;
+	display: flex;
+	flex-direction: column;
 	opacity: 1;
 	position: relative;
 	transition:
 		opacity $t-default ease-in-out,
 		visibility $t-default ease-in-out;
 	visibility: visible;
+
+	@media (min-width: $bp-tablet) {
+		flex-direction: row;
+
+		.googlesitekit-publisher-win__secondary-pane-divider {
+			border-left: 1px solid $c-athens-gray;
+			height: 106px;
+			margin: auto 30px;
+		}
+	}
+
+	.mdc-layout-grid {
+		flex: 1 1 0;
+	}
 
 	// Only show one notification at a time.
 	& + .googlesitekit-publisher-win {

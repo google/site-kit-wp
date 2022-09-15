@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { Fragment, useCallback, useState } from '@wordpress/element';
+import { Fragment, useCallback, useEffect, useState } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 
 /**
@@ -38,26 +38,105 @@ import {
 	PROPERTY_CREATE,
 } from '../../../datastore/constants';
 import useExistingTagEffect from '../../../../analytics-4/hooks/useExistingTagEffect';
-import { MODULES_ANALYTICS } from '../../../../analytics/datastore/constants';
+import {
+	EDIT_SCOPE,
+	FORM_SETUP,
+	MODULES_ANALYTICS,
+} from '../../../../analytics/datastore/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
-import { ACTIVATION_ACKNOWLEDGEMENT_TOOLTIP_STATE_KEY } from '../../../constants';
+import {
+	ACTIVATION_ACKNOWLEDGEMENT_TOOLTIP_STATE_KEY,
+	GA4_ACTIVATION_BANNER_STATE_KEY,
+} from '../../../constants';
 import { useTooltipState } from '../../../../../components/AdminMenuTooltip/useTooltipState';
 import { useShowTooltip } from '../../../../../components/AdminMenuTooltip/useShowTooltip';
 import { AdminMenuTooltip } from '../../../../../components/AdminMenuTooltip/AdminMenuTooltip';
 import { getBannerDismissalExpiryTime } from '../../../utils/banner-dismissal-expiry';
+import { Cell, Grid, Row } from '../../../../../material-components';
+import ProgressBar from '../../../../../components/ProgressBar';
+import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
+import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '../../../../../util/errors';
 const { useDispatch, useSelect } = Data;
+
+const VARIANT = {
+	EXISTING_PROPERTY: 'EXISTING_PROPERTY',
+	NO_EXISTING_PROPERTY: 'NO_EXISTING_PROPERTY',
+};
 
 export default function SetupBanner( { onSubmitSuccess } ) {
 	const [ errorNotice, setErrorNotice ] = useState( null );
+	const [ variant, setVariant ] = useState( null );
+	const [ isSaving, setIsSaving ] = useState( false );
 
-	const hasExistingProperty = useSelect( ( select ) => {
-		const accountID = select( MODULES_ANALYTICS ).getAccountID();
-		const properties =
-			select( MODULES_ANALYTICS_4 ).getProperties( accountID ) || [];
-		return properties.length > 0;
-	} );
+	const { submitChanges, selectProperty, matchAndSelectProperty } =
+		useDispatch( MODULES_ANALYTICS_4 );
+
+	const accountID = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getAccountID()
+	);
+	const properties = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getProperties( accountID )
+	);
+
+	// Call getAccounts to ensure it can be resolved before rendering the PropertySelect
+	// component, to avoid showing a ProgressBar in the PropertySelect.
+	const accounts = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getAccounts()
+	);
+
+	const ga4PropertyID = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getPropertyID()
+	);
+
+	const determineVariant = useCallback( async () => {
+		// Ensure variant is only set once, to avoid flickering between variants. For example
+		// when properties.length is zero we are in the "no existing property" variant, and we
+		// want to avoid changing to the "existing property" variant mid-way through the form
+		// submission as a result of adding a property.
+		if ( variant !== null ) {
+			return;
+		}
+
+		if ( properties === undefined ) {
+			return;
+		}
+
+		if ( properties.length === 0 ) {
+			setVariant( VARIANT.NO_EXISTING_PROPERTY );
+			return;
+		}
+
+		if ( accounts === undefined ) {
+			return;
+		}
+
+		if ( ! ga4PropertyID ) {
+			// Ensure the PropertySelect dropdown will be populated with a selected option.
+			await matchAndSelectProperty( accountID, PROPERTY_CREATE );
+		}
+
+		setVariant( VARIANT.EXISTING_PROPERTY );
+	}, [
+		accountID,
+		accounts,
+		ga4PropertyID,
+		matchAndSelectProperty,
+		properties,
+		variant,
+	] );
+
+	useEffect( () => {
+		determineVariant();
+	}, [ determineVariant ] );
+
+	const hasEditScope = useSelect( ( select ) =>
+		select( CORE_USER ).hasScope( EDIT_SCOPE )
+	);
 	const existingTag = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getExistingTag()
+	);
+	const autoSubmit = useSelect( ( select ) =>
+		select( CORE_FORMS ).getValue( FORM_SETUP, 'autoSubmit' )
 	);
 
 	useExistingTagEffect();
@@ -66,21 +145,67 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 		select( CORE_USER ).getReferenceDate()
 	);
 
-	const { submitChanges, selectProperty } =
-		useDispatch( MODULES_ANALYTICS_4 );
+	const { setPermissionScopeError } = useDispatch( CORE_USER );
+	const { setValues } = useDispatch( CORE_FORMS );
 
 	const handleSubmitChanges = useCallback( async () => {
+		const scopes = [];
+
+		if ( hasEditScope === false ) {
+			scopes.push( EDIT_SCOPE );
+		}
+
+		// If scope not granted, trigger scope error right away. These are
+		// typically handled automatically based on API responses, but
+		// this particular case has some special handling to improve UX.
+		if ( scopes.length > 0 ) {
+			setValues( FORM_SETUP, { autoSubmit: true } );
+			setValues( GA4_ACTIVATION_BANNER_STATE_KEY, {
+				returnToSetupStep: true,
+			} );
+			setPermissionScopeError( {
+				code: ERROR_CODE_MISSING_REQUIRED_SCOPE,
+				message: __(
+					'Additional permissions are required to create a new GA4 property.',
+					'google-site-kit'
+				),
+				data: {
+					status: 403,
+					scopes,
+					skipModal: true,
+				},
+			} );
+			return;
+		}
+
+		setIsSaving( true );
+
 		const { error } = await submitChanges();
 
 		if ( error ) {
 			setErrorNotice( error );
-
-			return;
+		} else {
+			setValues( FORM_SETUP, { autoSubmit: false } );
+			// Ask the parent component to show the success banner.
+			onSubmitSuccess();
 		}
 
-		// Ask the parent component to show the success banner.
-		onSubmitSuccess();
-	}, [ onSubmitSuccess, submitChanges ] );
+		setIsSaving( false );
+	}, [
+		hasEditScope,
+		onSubmitSuccess,
+		setPermissionScopeError,
+		setValues,
+		submitChanges,
+	] );
+
+	// If the user lands back on this component with autoSubmit and the edit scope,
+	// resubmit the form.
+	useEffect( () => {
+		if ( autoSubmit && hasEditScope ) {
+			handleSubmitChanges();
+		}
+	}, [ autoSubmit, handleSubmitChanges, hasEditScope ] );
 
 	const { isTooltipVisible } = useTooltipState(
 		ACTIVATION_ACKNOWLEDGEMENT_TOOLTIP_STATE_KEY
@@ -89,6 +214,18 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 	const showTooltip = useShowTooltip(
 		ACTIVATION_ACKNOWLEDGEMENT_TOOLTIP_STATE_KEY
 	);
+
+	if ( variant === null ) {
+		return (
+			<Grid>
+				<Row>
+					<Cell size={ 12 }>
+						<ProgressBar />
+					</Cell>
+				</Row>
+			</Grid>
+		);
+	}
 
 	if ( isTooltipVisible ) {
 		return (
@@ -113,19 +250,15 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 
 	let title;
 	let ctaLabel;
-	let footer;
 	let children;
+	const footerMessages = [];
 
-	if ( hasExistingProperty ) {
+	if ( variant === VARIANT.EXISTING_PROPERTY ) {
 		title = __(
 			'Connect the Google Analytics 4 property that’s associated with your existing Universal Analytics property',
 			'google-site-kit'
 		);
 		ctaLabel = __( 'Connect', 'google-site-kit' );
-		footer = __(
-			'You can always add/edit this in the Site Kit Settings.',
-			'google-site-kit'
-		);
 		children = (
 			<div className="googlesitekit-ga4-setup-banner__field-group">
 				<PropertySelect
@@ -160,6 +293,22 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 				) }
 			</div>
 		);
+
+		if ( hasEditScope === false ) {
+			footerMessages.push(
+				__(
+					'You will need to give Site Kit permission to create an Analytics property on your behalf.',
+					'google-site-kit'
+				)
+			);
+		}
+
+		footerMessages.push(
+			__(
+				'You can always add/edit this in the Site Kit Settings.',
+				'google-site-kit'
+			)
+		);
 	} else {
 		selectProperty( PROPERTY_CREATE );
 
@@ -170,20 +319,33 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 		ctaLabel = __( 'Create property', 'google-site-kit' );
 
 		if ( existingTag ) {
-			footer = sprintf(
-				/* translators: %s: The existing tag ID. */
-				__(
-					'A GA4 tag %s is found on this site but this property is not associated with your Google Analytics account. You can always add/edit this in the Site Kit Settings.',
-					'google-site-kit'
-				),
-				existingTag
-			);
-		} else {
-			footer = __(
-				'You can always add/edit this in the Site Kit Settings.',
-				'google-site-kit'
+			footerMessages.push(
+				sprintf(
+					/* translators: %s: The existing tag ID. */
+					__(
+						'A GA4 tag %s is found on this site but this property is not associated with your Google Analytics account.',
+						'google-site-kit'
+					),
+					existingTag
+				)
 			);
 		}
+
+		if ( hasEditScope === false ) {
+			footerMessages.push(
+				__(
+					'You will need to give Site Kit permission to create an Analytics property on your behalf.',
+					'google-site-kit'
+				)
+			);
+		}
+
+		footerMessages.push(
+			__(
+				'You can always add/edit this in the Site Kit Settings.',
+				'google-site-kit'
+			)
+		);
 	}
 
 	return (
@@ -192,11 +354,25 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 			className="googlesitekit-ga4-setup-banner"
 			title={ title }
 			ctaComponent={
-				<SpinnerButton onClick={ handleSubmitChanges }>
+				<SpinnerButton
+					onClick={ handleSubmitChanges }
+					isSaving={ isSaving }
+				>
 					{ ctaLabel }
 				</SpinnerButton>
 			}
-			footer={ <p>{ footer }</p> }
+			footer={
+				<Fragment>
+					{ footerMessages.map( ( message, index ) => (
+						<p
+							className="googlesitekit-ga4-setup-banner__footer-text"
+							key={ index }
+						>
+							{ message }
+						</p>
+					) ) }
+				</Fragment>
+			}
 			dismiss={ __( 'Cancel', 'google-site-kit' ) }
 			dismissExpires={ getBannerDismissalExpiryTime(
 				referenceDateString

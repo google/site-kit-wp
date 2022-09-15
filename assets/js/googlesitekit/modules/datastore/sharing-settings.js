@@ -81,6 +81,26 @@ const fetchSaveSharingSettingsStore = createFetchStore( {
 	},
 } );
 
+const fetchResetSharingSettingsStore = createFetchStore( {
+	baseName: 'resetSharingSettings',
+	controlCallback: ( {} ) => {
+		return API.set(
+			'core',
+			'modules',
+			'sharing-settings',
+			{},
+			{ method: 'DELETE' }
+		);
+	},
+	reducerCallback: ( state ) => {
+		return {
+			...state,
+			savedSharingSettings: {},
+			sharingSettings: {},
+		};
+	},
+} );
+
 const baseActions = {
 	/**
 	 * Sets the sharing settings management of a given module.
@@ -173,6 +193,32 @@ const baseActions = {
 				registry.dispatch( storeName ).setOwnerID( ownerID );
 			}
 		}
+
+		yield {
+			type: FINISH_SUBMIT_SHARING_CHANGES,
+			payload: {},
+		};
+
+		return { response, error };
+	},
+
+	/**
+	 * Resets sharingSettings for dashboard sharing.
+	 *
+	 * Reset sharingSettings for dashboard sharing.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {Object} Object with `{response, error}`.
+	 */
+	*resetSharingSettings() {
+		yield {
+			type: START_SUBMIT_SHARING_CHANGES,
+			payload: {},
+		};
+
+		const { response, error } =
+			yield fetchResetSharingSettingsStore.actions.fetchResetSharingSettings();
 
 		yield {
 			type: FINISH_SUBMIT_SHARING_CHANGES,
@@ -580,13 +626,17 @@ const baseSelectors = {
 	},
 };
 
-const store = Data.combineStores( fetchSaveSharingSettingsStore, {
-	initialState: baseInitialState,
-	actions: baseActions,
-	selectors: baseSelectors,
-	reducer: baseReducer,
-	resolvers: baseResolvers,
-} );
+const store = Data.combineStores(
+	fetchSaveSharingSettingsStore,
+	fetchResetSharingSettingsStore,
+	{
+		initialState: baseInitialState,
+		actions: baseActions,
+		selectors: baseSelectors,
+		reducer: baseReducer,
+		resolvers: baseResolvers,
+	}
+);
 
 export const initialState = store.initialState;
 export const actions = store.actions;

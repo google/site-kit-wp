@@ -45,6 +45,7 @@ use Google\Site_Kit_Dependencies\Google\Service\Adsense as Google_Service_Adsens
 use Google\Site_Kit_Dependencies\Google\Service\Adsense\Alert as Google_Service_Adsense_Alert;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 use Exception;
+use Google\Site_Kit\Core\Util\URL;
 use WP_Error;
 
 /**
@@ -595,7 +596,7 @@ final class AdSense extends Module
 		}
 
 		// @see https://developers.google.com/adsense/management/reporting/filtering?hl=en#OR
-		$site_hostname         = wp_parse_url( $this->context->get_reference_site_url(), PHP_URL_HOST );
+		$site_hostname         = URL::parse( $this->context->get_reference_site_url(), PHP_URL_HOST );
 		$opt_params['filters'] = join(
 			',',
 			array_map(
@@ -861,7 +862,7 @@ final class AdSense extends Module
 	/**
 	 * Validates the report metrics.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.83.0
 	 *
 	 * @param string[] $metrics The metrics to validate.
 	 * @throws Invalid_Report_Metrics_Exception Thrown if the metrics are invalid.
@@ -906,7 +907,7 @@ final class AdSense extends Module
 	/**
 	 * Validates the report dimensions.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.83.0
 	 *
 	 * @param string[] $dimensions The dimensions to validate.
 	 * @throws Invalid_Report_Dimensions_Exception Thrown if the dimensions are invalid.

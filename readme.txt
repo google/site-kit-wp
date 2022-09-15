@@ -4,7 +4,7 @@ Contributors:      google
 Requires at least: 4.7
 Tested up to:      6.0
 Requires PHP:      5.6
-Stable tag:        1.82.0
+Stable tag:        1.83.0
 License:           Apache License 2.0
 License URI:       https://www.apache.org/licenses/LICENSE-2.0
 Tags:              google, search-console, analytics, adsense, pagespeed-insights, optimize, tag-manager, site-kit
@@ -107,6 +107,47 @@ By default, Site Kit does anonymize IP addresses upon activation of the Google A
 Please create a new topic on our [WordPress.org support forum](https://wordpress.org/support/plugin/google-site-kit/). Be sure to follow the [support forum guidelines](https://wordpress.org/support/guidelines/) when posting.
 
 == Changelog ==
+
+= 1.83.0 =
+
+**Added**
+
+* Show a tooltip to acknowledge dismissing the GA4 Activation Banner. See [#5279](https://github.com/google/site-kit-wp/issues/5279).
+* Enable the GA4 Activation Banner create/connect a property and measurement ID. See [#5277](https://github.com/google/site-kit-wp/issues/5277).
+* Add a dropdown/toggle to GA4 activation banner when there is an existing GA4 property. See [#5276](https://github.com/google/site-kit-wp/issues/5276).
+
+**Enhanced**
+
+* Fix Thank with Google button and counter margins. See [#5744](https://github.com/google/site-kit-wp/issues/5744).
+* Add wrapping element to inline Thank With Google CTA button and counter. See [#5743](https://github.com/google/site-kit-wp/issues/5743).
+* Correct the size of the Thank with Google setup graphic. See [#5740](https://github.com/google/site-kit-wp/issues/5740).
+* Update the wording on the Thank with Google "setup publication" screen. See [#5738](https://github.com/google/site-kit-wp/issues/5738).
+* Add the Thank with Google Supporter Wall Widget to settings. See [#5736](https://github.com/google/site-kit-wp/issues/5736).
+* Update Thank with Google links to lead to appropriate publication center pages. See [#5722](https://github.com/google/site-kit-wp/issues/5722).
+* Limit shared requests for AdSense reports to metrics and dimensions used by the Site Kit dashboard. See [#5712](https://github.com/google/site-kit-wp/issues/5712).
+* Require SSL for Thank with Google to be enabled. See [#5710](https://github.com/google/site-kit-wp/issues/5710).
+* Fix inconsistencies with strings which are intended to be the same. See [#5659](https://github.com/google/site-kit-wp/issues/5659).
+* On the modules headers in the Settings > Connected Services tab, update the status text and show a CTA for continuing the module setup. See [#5620](https://github.com/google/site-kit-wp/issues/5620).
+* Use Google Account chooser URLs for external service/report URLs. See [#5548](https://github.com/google/site-kit-wp/issues/5548).
+* Add WP admin pointer for view-only dashboard access "Site Kit" menu item. See [#5486](https://github.com/google/site-kit-wp/issues/5486).
+* Disable AdSense "Check your site status" link while settings are loading to prevent unexpected behavior. See [#5410](https://github.com/google/site-kit-wp/issues/5410).
+* Add "Request access" button to permission error messages for modules where their service supports it. See [#5308](https://github.com/google/site-kit-wp/issues/5308).
+* Remove zeroDataStates feature flag and unused code. See [#5148](https://github.com/google/site-kit-wp/issues/5148).
+
+**Changed**
+
+* Update copy on the Thank with Google "No account" setup step. See [#5739](https://github.com/google/site-kit-wp/issues/5739).
+* Update Prettier dependency and update automated source code formatting. See [#5541](https://github.com/google/site-kit-wp/issues/5541).
+* Update Visual Regression test code to run on ARM-based Macs. See [#4619](https://github.com/google/site-kit-wp/issues/4619).
+
+**Fixed**
+
+* Prevent updating Banner Notification component state when unmounted. See [#5760](https://github.com/google/site-kit-wp/issues/5760).
+* Fix placement label issue on the Thank with Google settings page. See [#5737](https://github.com/google/site-kit-wp/issues/5737).
+* Prefix all `keyframes` names to avoid global namespace conflict. See [#5662](https://github.com/google/site-kit-wp/issues/5662).
+* Fix propType warnings in the `ImageRadio` component. See [#5639](https://github.com/google/site-kit-wp/issues/5639).
+* Update the `ZeroDataStateNotifications` component to not attempt data requests for recoverable modules in view-only context. See [#5505](https://github.com/google/site-kit-wp/issues/5505).
+* Fix duplicate error-related messaging in Analytics settings when admin does not have access. See [#5429](https://github.com/google/site-kit-wp/issues/5429).
 
 = 1.82.0 =
 

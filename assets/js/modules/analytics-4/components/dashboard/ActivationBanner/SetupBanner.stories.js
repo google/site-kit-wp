@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import fetchMock from 'fetch-mock';
+
+/**
  * Internal dependencies
  */
 import SetupBanner from './SetupBanner';
@@ -41,6 +46,62 @@ const Template = ( args ) => <SetupBanner { ...args } />;
 
 export const NoPropertyNoTag = Template.bind( {} );
 NoPropertyNoTag.storyName = 'No GA4 Property - No Existing Tag';
+NoPropertyNoTag.decorators = [
+	( Story ) => {
+		const setupRegistry = ( registry ) => {
+			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties( [], {
+				accountID,
+			} );
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.finishResolution( 'getProperties', [ accountID ] );
+		};
+
+		return (
+			<WithRegistrySetup func={ setupRegistry }>
+				<Story />
+			</WithRegistrySetup>
+		);
+	},
+];
+
+export const NoPropertyNoTagNoEditScope = Template.bind( {} );
+NoPropertyNoTagNoEditScope.storyName =
+	'No GA4 Property - No Tag - No Edit Scope';
+NoPropertyNoTagNoEditScope.decorators = [
+	( Story ) => {
+		const setupRegistry = ( registry ) => {
+			const grantedScope =
+				'https://www.googleapis.com/auth/granted.scope';
+
+			fetchMock.getOnce(
+				/^\/google-site-kit\/v1\/core\/user\/data\/authentication/,
+				{
+					body: {
+						authenticated: true,
+						requiredScopes: [],
+						grantedScopes: [ grantedScope ],
+						unsatisfiedScopes: [],
+					},
+					status: 200,
+				}
+			);
+
+			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties( [], {
+				accountID,
+			} );
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.finishResolution( 'getProperties', [ accountID ] );
+		};
+
+		return (
+			<WithRegistrySetup func={ setupRegistry }>
+				<Story />
+			</WithRegistrySetup>
+		);
+	},
+];
 
 export const WithPropertyNoTag = Template.bind( {} );
 WithPropertyNoTag.storyName = 'Existing GA4 Property - No Existing Tag';
@@ -116,11 +177,75 @@ WithPropertyAndTag.decorators = [
 	},
 ];
 
+export const WithPropertyAndTagNoEditScope = Template.bind( {} );
+WithPropertyAndTagNoEditScope.storyName =
+	'Existing GA4 Property - Existing Tag (No edit scope)';
+WithPropertyAndTagNoEditScope.decorators = [
+	( Story ) => {
+		const setupRegistry = ( registry ) => {
+			const grantedScope =
+				'https://www.googleapis.com/auth/granted.scope';
+
+			fetchMock.getOnce(
+				/^\/google-site-kit\/v1\/core\/user\/data\/authentication/,
+				{
+					body: {
+						authenticated: true,
+						requiredScopes: [],
+						grantedScopes: [ grantedScope ],
+						unsatisfiedScopes: [],
+					},
+					status: 200,
+				}
+			);
+
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveGetProperties( properties, {
+					accountID,
+				} );
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.finishResolution( 'getProperties', [ accountID ] );
+
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveGetWebDataStreams( webDataStreams, {
+					propertyID,
+				} );
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.finishResolution( 'receiveGetWebDataStreams', {
+					propertyID,
+				} );
+
+			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetExistingTag(
+				// eslint-disable-next-line sitekit/acronym-case
+				ga4Fixtures.webDataStreams[ 0 ].webStreamData.measurementId
+			);
+			registry.dispatch( MODULES_ANALYTICS_4 ).setUseSnippet( false );
+		};
+
+		return (
+			<WithRegistrySetup func={ setupRegistry }>
+				<Story />
+			</WithRegistrySetup>
+		);
+	},
+];
+
 export const NoPropertyWithTag = Template.bind( {} );
 NoPropertyWithTag.storyName = 'No GA4 Property - Existing Tag';
 NoPropertyWithTag.decorators = [
 	( Story ) => {
 		const setupRegistry = ( registry ) => {
+			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties( [], {
+				accountID,
+			} );
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.finishResolution( 'getProperties', [ accountID ] );
+
 			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetExistingTag(
 				// eslint-disable-next-line sitekit/acronym-case
 				ga4Fixtures.webDataStreams[ 0 ].webStreamData.measurementId

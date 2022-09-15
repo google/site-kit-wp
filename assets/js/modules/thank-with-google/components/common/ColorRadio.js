@@ -45,7 +45,7 @@ export default function ColorRadio() {
 	);
 
 	const colors = getColorThemes()?.map(
-		( { colorThemeID, name, svg: SVG } ) => (
+		( { colorThemeID, name, svg: SVG, colorCode } ) => (
 			<ImageRadio
 				key={ colorThemeID }
 				id={ colorThemeID }
@@ -55,6 +55,7 @@ export default function ColorRadio() {
 				image={ <SVG /> }
 				onChange={ onChange }
 				checked={ currentColor === colorThemeID }
+				style={ { outlineColor: colorCode } }
 			/>
 		)
 	);
@@ -68,7 +69,7 @@ export default function ColorRadio() {
 					'google-site-kit'
 				) }
 			</p>
-			<div className="googlesitekit-twg-color-radio__options">
+			<div className="googlesitekit-twg-color-radio__options googlesitekit-image-radio-options">
 				{ colors }
 			</div>
 		</div>

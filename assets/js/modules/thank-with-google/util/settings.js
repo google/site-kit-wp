@@ -56,41 +56,49 @@ export function getColorThemes() {
 			colorThemeID: 'blue',
 			name: __( 'Blue', 'google-site-kit' ),
 			svg: BlueSVG,
+			colorCode: '#1967d2',
 		},
 		{
 			colorThemeID: 'cyan',
 			name: __( 'Cyan', 'google-site-kit' ),
 			svg: CyanSVG,
+			colorCode: '#007b83',
 		},
 		{
 			colorThemeID: 'green',
 			name: __( 'Green', 'google-site-kit' ),
 			svg: GreenSVG,
+			colorCode: '#188038',
 		},
 		{
 			colorThemeID: 'purple',
 			name: __( 'Purple', 'google-site-kit' ),
 			svg: PurpleSVG,
+			colorCode: '#8e24aa',
 		},
 		{
 			colorThemeID: 'pink',
 			name: __( 'Pink', 'google-site-kit' ),
 			svg: PinkSVG,
+			colorCode: '#d01884',
 		},
 		{
 			colorThemeID: 'orange',
 			name: __( 'Orange', 'google-site-kit' ),
 			svg: OrangeSVG,
+			colorCode: '#B06000',
 		},
 		{
 			colorThemeID: 'brown',
 			name: __( 'Brown', 'google-site-kit' ),
 			svg: BrownSVG,
+			colorCode: '#795548',
 		},
 		{
 			colorThemeID: 'black',
 			name: __( 'Black', 'google-site-kit' ),
 			svg: BlackSVG,
+			colorCode: '#202124',
 		},
 	];
 }
@@ -169,7 +177,7 @@ export function getCTAPostTypesString( ctaPostTypes, postTypes ) {
 /**
  * Gets the placement type based on the ctaPlacement setting.
  *
- * @since n.e.x.t
+ * @since 1.83.0
  *
  * @param {string} ctaPlacement The ctaPlacement setting value.
  * @return {string} "fixed" or "overlay" depending on if ctaPlacement is static or dynamic.

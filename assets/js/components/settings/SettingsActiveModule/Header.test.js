@@ -49,11 +49,17 @@ describe( 'Header', () => {
 				// Intentionally not connected here with both settings components for tests below.
 				connected: false,
 			},
+			{
+				slug: 'analytics-4',
+				active: true,
+				// Intentionally not connected here with both settings components for tests below.
+				connected: false,
+			},
 		] );
 	} );
 
 	it( 'should render "Connected" for a connected module', () => {
-		const { container } = render( <Header slug="analytics" />, {
+		const { container } = render( <Header slug="pagespeed-insights" />, {
 			registry,
 		} );
 
@@ -68,5 +74,15 @@ describe( 'Header', () => {
 		const button = queryByRole( 'button' );
 		expect( button ).toBeInTheDocument();
 		expect( button ).toHaveTextContent( 'Complete setup for Tag Manager' );
+	} );
+
+	it( 'should render a button to connect GA4 if Analytics is connected but GA4 is not', () => {
+		const { queryByRole } = render( <Header slug="analytics" />, {
+			registry,
+		} );
+
+		const button = queryByRole( 'button' );
+		expect( button ).toBeInTheDocument();
+		expect( button ).toHaveTextContent( 'Connect Google Analytics 4' );
 	} );
 } );

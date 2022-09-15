@@ -17,11 +17,6 @@
  */
 
 /**
- * WordPress dependencies
- */
-import { addQueryArgs } from '@wordpress/url';
-
-/**
  * Internal dependencies
  */
 import {
@@ -38,6 +33,7 @@ import {
 	ONBOARDING_STATE_ACTION_REQUIRED,
 	ONBOARDING_STATE_COMPLETE,
 	ONBOARDING_STATE_PENDING_VERIFICATION,
+	PUBLISHER_CENTER_URL,
 } from './constants';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
@@ -363,13 +359,9 @@ describe( 'modules/thank-with-google publications', () => {
 				provideSiteInfo( registry );
 				provideUserInfo( registry );
 
-				const homeURL = registry.select( CORE_SITE ).getHomeURL();
-				const publisherCenterURL = addQueryArgs(
-					'https://publishercenter.google.com/',
-					{
-						sk_url: encodeURIComponent( homeURL ),
-					}
-				);
+				const publisherCenterURL = `${ PUBLISHER_CENTER_URL }/onboarding?sk_url=${ encodeURIComponent(
+					registry.select( CORE_SITE ).getHomeURL()
+				) }`;
 				const expectedAccountChooserURL = registry
 					.select( CORE_USER )
 					.getAccountChooserURL( publisherCenterURL );
@@ -394,13 +386,23 @@ describe( 'modules/thank-with-google publications', () => {
 			} );
 
 			it( 'returns a publisher center URL for an existing publication', () => {
+				provideUserInfo( registry );
+
+				const publicationID = 'test-publication-a';
+
+				const publisherCenterURL = `${ PUBLISHER_CENTER_URL }/${ encodeURIComponent(
+					publicationID
+				) }/home`;
+
+				const expectedAccountChooserURL = registry
+					.select( CORE_USER )
+					.getAccountChooserURL( publisherCenterURL );
+
 				const publicationURL = registry
 					.select( MODULES_THANK_WITH_GOOGLE )
-					.getServicePublicationURL( 'test-publication-a' );
+					.getServicePublicationURL( publicationID );
 
-				expect( publicationURL ).toBe(
-					'https://publishercenter.google.com/publications/test-publication-a/overview'
-				);
+				expect( publicationURL ).toBe( expectedAccountChooserURL );
 			} );
 		} );
 	} );

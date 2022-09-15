@@ -202,7 +202,7 @@ final class Modules {
 	/**
 	 * Determines if Thank with Google module should be enabled.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.83.0
 	 *
 	 * @return bool True if the module should be enabled, false otherwise.
 	 */
@@ -1577,6 +1577,17 @@ final class Modules {
 			$module_owners[ $module_slug ] = $module->get_owner_id();
 		}
 		return $module_owners;
+	}
+
+	/**
+	 * Deletes sharing settings.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return bool True on success, false on failure.
+	 */
+	public function delete_dashboard_sharing_settings() {
+		return $this->options->delete( Module_Sharing_Settings::OPTION );
 	}
 
 }

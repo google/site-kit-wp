@@ -49,13 +49,13 @@ export const selectors = {
 			( state, { path, query } = {} ) => {
 				let serviceURL = 'https://search.google.com/search-console';
 
-				if ( query ) {
-					serviceURL = addQueryArgs( serviceURL, query );
-				}
-
 				if ( path ) {
 					const sanitizedPath = `/${ path.replace( /^\//, '' ) }`;
-					serviceURL = `${ serviceURL }#${ sanitizedPath }`;
+					serviceURL = `${ serviceURL }${ sanitizedPath }`;
+				}
+
+				if ( query ) {
+					serviceURL = addQueryArgs( serviceURL, query );
 				}
 
 				const accountChooserBaseURI =
@@ -109,7 +109,7 @@ export const selectors = {
 	/**
 	 * Gets an entity access URL on the service.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.83.0
 	 *
 	 * @return {string} The entity access URL to the service.
 	 */

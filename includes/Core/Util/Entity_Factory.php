@@ -515,7 +515,7 @@ final class Entity_Factory {
 			return $entity;
 		}
 
-		$url_parts   = wp_parse_url( $url );
+		$url_parts   = URL::parse( $url );
 		$current_url = $entity->get_url();
 
 		if ( ! empty( $url_parts['query'] ) ) {

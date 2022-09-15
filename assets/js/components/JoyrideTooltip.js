@@ -34,6 +34,9 @@ export default function JoyrideTooltip( {
 	dismissLabel,
 	target,
 	onDismiss = () => {},
+	cta = false,
+	className,
+	styles = {},
 } ) {
 	const steps = [
 		{
@@ -43,6 +46,8 @@ export default function JoyrideTooltip( {
 			disableBeacon: true,
 			isFixed: true,
 			placement: 'auto',
+			cta,
+			className,
 		},
 	];
 
@@ -66,7 +71,18 @@ export default function JoyrideTooltip( {
 			locale={ joyrideLocale }
 			run
 			steps={ steps }
-			styles={ joyrideStyles }
+			styles={ {
+				...joyrideStyles,
+				...styles,
+				options: {
+					...joyrideStyles.options,
+					...styles?.options,
+				},
+				spotlight: {
+					...joyrideStyles.spotlight,
+					...styles?.spotlight,
+				},
+			} }
 			tooltipComponent={ TourTooltip }
 		/>
 	);
@@ -74,8 +90,11 @@ export default function JoyrideTooltip( {
 
 JoyrideTooltip.propTypes = {
 	title: PropTypes.string.isRequired,
-	content: PropTypes.string.isRequired,
-	dismissLabel: PropTypes.string.isRequired,
+	content: PropTypes.string,
+	dismissLabel: PropTypes.string,
 	target: PropTypes.string.isRequired,
 	onDismiss: PropTypes.func,
+	onShow: PropTypes.func,
+	className: PropTypes.string,
+	styles: PropTypes.object,
 };

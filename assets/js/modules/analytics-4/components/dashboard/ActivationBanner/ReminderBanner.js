@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 import { Fragment } from '@wordpress/element';
 
 /**
@@ -27,18 +27,28 @@ import { Fragment } from '@wordpress/element';
  */
 import Data from 'googlesitekit-data';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
+import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import { ACTIVATION_ACKNOWLEDGEMENT_TOOLTIP_STATE_KEY } from '../../../constants';
 import BannerNotification from '../../../../../components/notifications/BannerNotification';
 import { useTooltipState } from '../../../../../components/AdminMenuTooltip/useTooltipState';
 import { useShowTooltip } from '../../../../../components/AdminMenuTooltip/useShowTooltip';
 import { AdminMenuTooltip } from '../../../../../components/AdminMenuTooltip/AdminMenuTooltip';
 import { getBannerDismissalExpiryTime } from '../../../utils/banner-dismissal-expiry';
+import Link from '../../../../../components/Link';
+import { stringToDate } from '../../../../../util';
+import InfoIcon from '../../../../../../svg/icons/info.svg';
+import ErrorIcon from '../../../../../../svg/icons/error.svg';
+
 const { useSelect } = Data;
 
 export default function ReminderBanner( { onSubmitSuccess } ) {
 	const referenceDateString = useSelect( ( select ) =>
 		select( CORE_USER ).getReferenceDate()
 	);
+
+	const documentationURL = useSelect( ( select ) => {
+		return select( CORE_SITE ).getDocumentationLinkURL( 'ga4' );
+	} );
 
 	const { isTooltipVisible } = useTooltipState(
 		ACTIVATION_ACKNOWLEDGEMENT_TOOLTIP_STATE_KEY
@@ -69,15 +79,92 @@ export default function ReminderBanner( { onSubmitSuccess } ) {
 		);
 	}
 
+	let title;
+	let description = __(
+		'Your current Universal Analytics will stop recording stats on July 1st, 2023',
+		'google-site-kit'
+	);
+	let descriptionIcon = (
+		<InfoIcon
+			height="14"
+			width="14"
+			className="googlesitekit-ga4-reminder-banner__description-icon googlesitekit-ga4-reminder-banner__description-icon--info"
+		/>
+	);
+
+	const referenceDate = stringToDate( referenceDateString );
+
+	if ( referenceDate < stringToDate( '2023-06-01' ) ) {
+		title = __(
+			'Set up Google Analytics 4 now to join the future of Analytics',
+			'google-site-kit'
+		);
+	} else if (
+		stringToDate( '2023-06-01' ) <= referenceDate &&
+		referenceDate < stringToDate( '2023-07-01' )
+	) {
+		const remainingDays = 30 - referenceDate.getDate();
+		title = sprintf(
+			/* translators: %d: Number of days remaining before the user can setup Google Analytics 4 */
+			__(
+				'You only have %d more days to setup Google Analytics 4',
+				'google-site-kit'
+			),
+			remainingDays
+		);
+		descriptionIcon = (
+			<ErrorIcon
+				height="14"
+				width="14"
+				className="googlesitekit-ga4-reminder-banner__description-icon googlesitekit-ga4-reminder-banner__description-icon--error"
+			/>
+		);
+	} else {
+		title = __(
+			'Your current Universal Analytics stopped recording stats on July 1st, 2023',
+			'google-site-kit'
+		);
+		description = __(
+			'Set up Google Analytics 4 now to resume recording stats',
+			'google-site-kit'
+		);
+	}
+
+	const secondaryPane = (
+		<section>
+			<ul>
+				<li>
+					{ __(
+						'Full cross-device and cross-platform reporting',
+						'google-site-kit'
+					) }
+				</li>
+				<li>
+					{ __(
+						'Set up advanced conversion tracking, e.g. when visitors submit a form or add an item to cart',
+						'google-site-kit'
+					) }
+				</li>
+				<li>
+					{ __(
+						'Get detailed insights on how users navigate your site',
+						'google-site-kit'
+					) }
+				</li>
+			</ul>
+			<Link href={ documentationURL }>
+				{ __( 'Learn more about GA4', 'google-site-kit' ) }
+			</Link>
+		</section>
+	);
+
 	return (
 		<BannerNotification
 			id="ga4-activation-banner"
-			title={ __(
-				'Set up Google Analytics 4 now to join the future of Analytics',
-				'google-site-kit'
-			) }
-			/* TODO: Internationalize title below */
-			description={ 'Placeholder description text to replace.' }
+			className="googlesitekit-ga4-reminder-banner"
+			title={ title }
+			description={ description }
+			descriptionIcon={ descriptionIcon }
 			ctaLabel={ __( 'Set up now', 'google-site-kit' ) }
 			ctaLink={ onSubmitSuccess ? '#' : null }
 			onCTAClick={ onSubmitSuccess }
@@ -85,6 +172,7 @@ export default function ReminderBanner( { onSubmitSuccess } ) {
 			dismissExpires={ getBannerDismissalExpiryTime(
 				referenceDateString
 			) }
+			secondaryPane={ secondaryPane }
 			onDismiss={ showTooltip }
 		/>
 	);

@@ -75,6 +75,7 @@ function BannerNotification( {
 	ctaLink,
 	ctaTarget,
 	description,
+	descriptionIcon,
 	dismiss,
 	dismissExpires,
 	format,
@@ -99,6 +100,7 @@ function BannerNotification( {
 	WinImageSVG,
 	rounded = false,
 	footer,
+	secondaryPane,
 	ctaComponent,
 } ) {
 	// Closed notifications are invisible, but still occupy space.
@@ -276,6 +278,11 @@ function BannerNotification( {
 			) }
 			{ description && (
 				<div className="googlesitekit-publisher-win__desc">
+					{ descriptionIcon && (
+						<div className="googlesitekit-publisher-win__icon">
+							{ descriptionIcon }
+						</div>
+					) }
 					<p>
 						{ isValidElement( description ) ? (
 							description
@@ -469,6 +476,21 @@ function BannerNotification( {
 					) }
 				</Row>
 			</Grid>
+			{ secondaryPane && (
+				<Fragment>
+					<div className="googlesitekit-publisher-win__secondary-pane-divider"></div>
+					<Grid className="googlesitekit-publisher-win__secondary-pane">
+						<Row>
+							<Cell
+								className="googlesitekit-publisher-win__secondary-pane"
+								size={ 12 }
+							>
+								{ secondaryPane }
+							</Cell>
+						</Row>
+					</Grid>
+				</Fragment>
+			) }
 		</section>
 	);
 }
@@ -478,6 +500,7 @@ BannerNotification.propTypes = {
 	className: PropTypes.string,
 	title: PropTypes.string.isRequired,
 	description: PropTypes.node,
+	descriptionIcon: PropTypes.node,
 	learnMoreURL: PropTypes.string,
 	learnMoreDescription: PropTypes.string,
 	learnMoreLabel: PropTypes.string,
@@ -506,6 +529,7 @@ BannerNotification.propTypes = {
 	noBottomPadding: PropTypes.bool,
 	rounded: PropTypes.bool,
 	footer: PropTypes.node,
+	secondaryPane: PropTypes.node,
 };
 
 BannerNotification.defaultProps = {
