@@ -61,9 +61,9 @@ class Module_Sharing_Settings extends Setting {
 			foreach ( $option as $module_slug => $sharing_settings ) {
 				$sanitized_option[ $module_slug ] = array();
 
-				$filtered_shared_roles = $this->filter_shared_roles( $this->sanitize_string_list( $sharing_settings['sharedRoles'] ) );
-
 				if ( isset( $sharing_settings['sharedRoles'] ) ) {
+					$filtered_shared_roles = $this->filter_shared_roles( $this->sanitize_string_list( $sharing_settings['sharedRoles'] ) );
+
 					$sanitized_option[ $module_slug ]['sharedRoles'] = $filtered_shared_roles;
 				}
 
@@ -139,8 +139,6 @@ class Module_Sharing_Settings extends Setting {
 		$settings = parent::get();
 
 		foreach ( $settings as $module_slug => $sharing_settings ) {
-			$filtered_shared_roles = $this->filter_shared_roles( $sharing_settings['sharedRoles'] );
-
 			if ( ! isset( $sharing_settings['sharedRoles'] ) || ! is_array( $sharing_settings['sharedRoles'] ) ) {
 				$settings[ $module_slug ]['sharedRoles'] = array();
 			}
@@ -148,7 +146,10 @@ class Module_Sharing_Settings extends Setting {
 				$settings[ $module_slug ]['management'] = 'owner';
 			}
 
-			$settings[ $module_slug ]['sharedRoles'] = $filtered_shared_roles;
+			if ( isset( $sharing_settings['sharedRoles'] ) && is_array( $sharing_settings['sharedRoles'] ) ) {
+				$filtered_shared_roles                   = $this->filter_shared_roles( $sharing_settings['sharedRoles'] );
+				$settings[ $module_slug ]['sharedRoles'] = $filtered_shared_roles;
+			}
 		}
 
 		return $settings;
