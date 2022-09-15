@@ -1040,7 +1040,7 @@ class ModulesTest extends TestCase {
 		// Test adding a new shared role updates the owner.
 		$test_updated_sharing_settings = array(
 			'pagespeed-insights' => array(
-				'sharedRoles' => array( 'editor', 'subscriber' ),
+				'sharedRoles' => array( 'editor', 'editor' ),
 				'management'  => 'owner',
 			),
 		);
@@ -1358,7 +1358,7 @@ class ModulesTest extends TestCase {
 
 		$updated_settings = array(
 			'pagespeed-insights' => array(
-				'sharedRoles' => array( 'editor', 'subscriber' ),
+				'sharedRoles' => array( 'editor' ),
 				'management'  => 'owner',
 			),
 		);
