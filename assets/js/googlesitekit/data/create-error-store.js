@@ -272,6 +272,40 @@ export function createErrorStore( storeName ) {
 		},
 
 		/**
+		 * Gets the meta-data for a given error object, or null if the error is not found.
+		 *
+		 * Returns meta-data in the format:
+		 *
+		 * ```
+		 *	{
+		 *		baseName: <string>,
+		 *		args: <Array>
+		 *	}
+		 * ```
+		 *
+		 * @since n.e.x.t
+		 *
+		 * @param {Object} state Data store's state.
+		 * @param {Object} error Error object.
+		 * @return {Object|null} Meta-data for the given error object, or null if the error is not found.
+		 */
+		getMetaDataForError( state, error ) {
+			const key = Object.keys( state.errors ).find(
+				( errorKey ) => state.errors[ errorKey ] === error
+			);
+
+			if ( key ) {
+				const baseName = key.substring( 0, key.indexOf( '::' ) );
+				return {
+					baseName,
+					args: state.errorArgs[ key ],
+				};
+			}
+
+			return null;
+		},
+
+		/**
 		 * Determines whether the datastore has errors or not.
 		 *
 		 * @since 1.15.0
