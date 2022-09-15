@@ -30,6 +30,7 @@ const CLEAR_ERRORS = 'CLEAR_ERRORS';
  * Internal dependencies
  */
 import { stringifyObject } from '../../util';
+import { createReducer } from './create-reducer';
 
 export function generateErrorKey( baseName, args ) {
 	if ( args && Array.isArray( args ) ) {
@@ -95,66 +96,57 @@ export function createErrorStore( storeName ) {
 		error: undefined,
 	};
 
-	function reducer( state, { type, payload } ) {
+	const reducer = createReducer( ( state, { type, payload } ) => {
 		switch ( type ) {
 			case RECEIVE_ERROR: {
 				const { baseName, args, error } = payload;
 
 				if ( baseName ) {
-					return {
-						...state,
-						errors: {
-							...( state.errors || {} ),
-							[ generateErrorKey( baseName, args ) ]: error,
-						},
-					};
+					state.errors[ generateErrorKey( baseName, args ) ] = error;
+				} else {
+					// @TODO: remove once all instances of the legacy behavior have been removed.
+					state.error = error;
 				}
-
-				// @TODO: remove once all instances of the legacy behavior have been removed.
-				return { ...state, error };
+				break;
 			}
 
 			case CLEAR_ERROR: {
 				const { baseName, args } = payload;
-				const newState = { ...state };
 				if ( baseName ) {
 					const key = generateErrorKey( baseName, args );
-					newState.errors = { ...( state.errors || {} ) };
-					delete newState.errors[ key ];
+					delete state.errors[ key ];
 				} else {
 					// @TODO: remove it once all instances of the legacy behavior have been removed.
-					newState.error = undefined;
+					state.error = undefined;
 				}
 
-				return newState;
+				break;
 			}
 
 			case CLEAR_ERRORS: {
 				const { baseName } = payload;
-				const newState = { ...state };
 				if ( baseName ) {
-					newState.errors = { ...( state.errors || {} ) };
-					for ( const key in newState.errors ) {
+					for ( const key in state.errors ) {
 						if (
 							key === baseName ||
 							key.startsWith( `${ baseName }::` )
 						) {
-							delete newState.errors[ key ];
+							delete state.errors[ key ];
 						}
 					}
 				} else {
-					newState.errors = {};
+					state.errors = {};
 					// @TODO: remove it once all instances of the legacy behavior have been removed.
-					newState.error = undefined;
+					state.error = undefined;
 				}
-				return newState;
+				break;
 			}
 
 			default: {
-				return state;
+				break;
 			}
 		}
-	}
+	} );
 
 	const controls = {};
 
