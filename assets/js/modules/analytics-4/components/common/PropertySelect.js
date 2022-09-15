@@ -75,7 +75,7 @@ export default function PropertySelect( {
 		select( MODULES_ANALYTICS_4 ).getPropertyID()
 	);
 
-	const isLoading = useSelect(
+	let isLoading = useSelect(
 		( select ) =>
 			! select( MODULES_ANALYTICS ).hasFinishedResolution(
 				'getAccounts'
@@ -88,6 +88,37 @@ export default function PropertySelect( {
 	);
 
 	const { selectProperty } = useDispatch( MODULES_ANALYTICS_4 );
+
+	const measurementIDs = {};
+
+	useSelect( ( select ) => {
+		if ( ! properties.length ) {
+			return null;
+		}
+
+		const propertyMeasurementMapping = properties.map( ( property ) => {
+			const currentPropertyID = property._id;
+
+			const dataStream =
+				select( MODULES_ANALYTICS_4 ).getWebDataStreamsBatch(
+					currentPropertyID
+				);
+
+			if ( ! Object.keys( dataStream ).length ) {
+				isLoading = true;
+				return null;
+			}
+
+			const measurementID =
+				dataStream[ currentPropertyID ][ 0 ].webStreamData
+					.measurementId; // eslint-disable-line sitekit/acronym-case
+			isLoading = false;
+			return ( measurementIDs[ currentPropertyID ] = measurementID );
+		} );
+
+		return propertyMeasurementMapping;
+	} );
+
 	const viewContext = useViewContext();
 
 	const onPropertyChange = useCallback(
@@ -173,7 +204,7 @@ export default function PropertySelect( {
 										'google-site-kit'
 									),
 									displayName,
-									_id
+									measurementIDs[ _id ]
 							  ) }
 					</Option>
 				) ) }
