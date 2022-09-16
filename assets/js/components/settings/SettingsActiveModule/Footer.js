@@ -202,7 +202,7 @@ export default function Footer( props ) {
 				danger
 			>
 				{ sprintf(
-					/* translators: %s: module name */
+					/* translators: 1: module name */
 					__( 'Disconnect %s from Site Kit', 'google-site-kit' ),
 					name
 				) }
@@ -221,7 +221,7 @@ export default function Footer( props ) {
 				external
 			>
 				{ sprintf(
-					/* translators: %s: module name */
+					/* translators: 1: module name */
 					__( 'See full details in %s', 'google-site-kit' ),
 					name
 				) }

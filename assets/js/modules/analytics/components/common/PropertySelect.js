@@ -135,7 +135,7 @@ export default function PropertySelect( { hasModuleAccess } ) {
 						>
 							{ internalWebPropertyId // eslint-disable-line sitekit/acronym-case
 								? sprintf(
-										/* translators: %1$s: property name, %2$s: property ID */
+										/* translators: 1: property name, 2: property ID */
 										_x(
 											'%1$s (%2$s)',
 											'Analytics property name and ID',

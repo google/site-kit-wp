@@ -308,7 +308,7 @@ abstract class OAuth_Client_Base {
 			case 'unsupported_grant_type':
 				return __( 'Unable to receive access token because of an unsupported grant type.', 'google-site-kit' );
 			default:
-				/* translators: %s: error code from API */
+				/* translators: 1: error code from API */
 				return sprintf( __( 'Unknown Error (code: %s).', 'google-site-kit' ), $error_code );
 		}
 	}

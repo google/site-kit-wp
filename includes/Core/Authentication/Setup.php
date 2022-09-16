@@ -176,7 +176,7 @@ class Setup {
 		if ( ! filter_var( $oauth_setup_redirect, FILTER_VALIDATE_URL ) ) {
 			wp_die(
 				sprintf(
-					/* translators: %s: Get help link. */
+					/* translators: 1: Get help link. */
 					esc_html__( 'The request to the authentication proxy has failed. Please, try again later. %s.', 'google-site-kit' ),
 					wp_kses(
 						$oauth_proxy_failed_help_link,

@@ -427,7 +427,7 @@ export default function SetupMain( { finishSetup } ) {
 					viewComponent = (
 						<ErrorText
 							message={ sprintf(
-								/* translators: %s: invalid account status identifier */
+								/* translators: 1: invalid account status identifier */
 								__(
 									'Invalid account status: %s',
 									'google-site-kit'
@@ -457,7 +457,7 @@ export default function SetupMain( { finishSetup } ) {
 					viewComponent = (
 						<ErrorText
 							message={ sprintf(
-								/* translators: %s: invalid site status identifier */
+								/* translators: 1: invalid site status identifier */
 								__(
 									'Invalid site status: %s',
 									'google-site-kit'

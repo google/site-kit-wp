@@ -277,7 +277,7 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 							<Fragment>
 								<p>
 									{ sprintf(
-										/* translators: %s: existing tag ID */
+										/* translators: 1: existing tag ID */
 										__(
 											'A tag %s for the selected property already exists on the site.',
 											'google-site-kit'
@@ -325,7 +325,7 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 		if ( existingTag ) {
 			footerMessages.push(
 				sprintf(
-					/* translators: %s: The existing tag ID. */
+					/* translators: 1: The existing tag ID. */
 					__(
 						'A GA4 tag %s is found on this site but this property is not associated with your Google Analytics account.',
 						'google-site-kit'

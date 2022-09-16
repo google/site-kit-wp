@@ -281,7 +281,7 @@ class Notifications {
 	private function missing_required_param( $param ) {
 		return new WP_Error(
 			'missing_required_param',
-			/* translators: %s: Missing parameter name */
+			/* translators: 1: Missing parameter name */
 			sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), $param ),
 			array( 'status' => 400 )
 		);

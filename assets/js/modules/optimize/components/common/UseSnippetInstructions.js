@@ -77,7 +77,7 @@ export default function UseSnippetInstructions() {
 				<p
 					dangerouslySetInnerHTML={ sanitizeHTML(
 						sprintf(
-							/* translators: %s: Analytics connect URL in Site Kit */
+							/* translators: 1: Analytics connect URL in Site Kit */
 							__(
 								'<a href="%s">Click here</a> to connect Google Analytics',
 								'google-site-kit'
@@ -107,7 +107,7 @@ export default function UseSnippetInstructions() {
 				<p
 					dangerouslySetInnerHTML={ sanitizeHTML(
 						sprintf(
-							/* translators: %s: external URL with instructions */
+							/* translators: 1: external URL with instructions */
 							__(
 								'<a href="%s">Click here</a> for how to implement Optimize tag through your Tag Manager',
 								'google-site-kit'
@@ -140,7 +140,7 @@ export default function UseSnippetInstructions() {
 				<p
 					dangerouslySetInnerHTML={ sanitizeHTML(
 						sprintf(
-							/* translators: %s: external URL with instructions */
+							/* translators: 1: external URL with instructions */
 							__(
 								'<a href="%s">Click here</a> for how to implement Optimize tag in Google Analytics Code Snippet',
 								'google-site-kit'

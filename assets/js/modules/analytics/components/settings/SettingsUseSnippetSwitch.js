@@ -72,7 +72,7 @@ export default function SettingsUseSnippetSwitch() {
 				<Fragment>
 					<p>
 						{ sprintf(
-							/* translators: %s: existing tag ID */
+							/* translators: 1: existing tag ID */
 							__(
 								'A tag %s for the selected property already exists on the site.',
 								'google-site-kit'
@@ -91,7 +91,7 @@ export default function SettingsUseSnippetSwitch() {
 				<Fragment>
 					<p>
 						{ sprintf(
-							/* translators: %s: existing tag ID */
+							/* translators: 1: existing tag ID */
 							__(
 								'An existing tag %s was found on the page.',
 								'google-site-kit'

@@ -17,7 +17,7 @@
 /**
  * WordPress dependencies
  */
-import { useCallback, useState, Fragment } from '@wordpress/element';
+import { useCallback, useState, Fragment, useEffect } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -43,6 +43,10 @@ export default function CTAPlacement() {
 
 	const [ type, setType ] = useState( defaultType );
 	const onChange = useCallback( setType, [ setType ] );
+
+	useEffect( () => {
+		setType( defaultType );
+	}, [ defaultType ] );
 
 	return (
 		<Fragment>

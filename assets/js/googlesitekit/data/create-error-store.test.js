@@ -327,6 +327,29 @@ describe( 'createErrorStore store', () => {
 			} );
 		} );
 
+		describe( 'getMetaDataForError', () => {
+			it( 'returns null when there is no meta-data found for the error', () => {
+				dispatch.receiveError( errorNotFound, baseName, args );
+
+				expect( select.getMetaDataForError( errorForbidden ) ).toEqual(
+					null
+				);
+			} );
+
+			it( 'returns the meta-data for an error object', () => {
+				// Populate multiple errors to verify the we're correctly looking up the error.
+				dispatch.receiveError( errorNotFound, baseName, [ 'foo' ] );
+				dispatch.receiveError( errorForbidden, 'otherBasename', [
+					'bar',
+				] );
+
+				expect( select.getMetaDataForError( errorNotFound ) ).toEqual( {
+					baseName,
+					args: [ 'foo' ],
+				} );
+			} );
+		} );
+
 		describe( 'hasErrors', () => {
 			it( 'returns `false` if there are no errors', () => {
 				expect( select.hasErrors() ).toBe( false );

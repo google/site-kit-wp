@@ -44,7 +44,7 @@ define( 'GOOGLESITEKIT_PHP_MINIMUM', '5.6.0' );
 function googlesitekit_activate_plugin( $network_wide ) {
 	if ( version_compare( PHP_VERSION, GOOGLESITEKIT_PHP_MINIMUM, '<' ) ) {
 		wp_die(
-			/* translators: %s: version number */
+			/* translators: 1: version number */
 			esc_html( sprintf( __( 'Site Kit requires PHP version %s', 'google-site-kit' ), GOOGLESITEKIT_PHP_MINIMUM ) ),
 			esc_html__( 'Error Activating', 'google-site-kit' )
 		);

@@ -203,7 +203,7 @@ final class Idea_Hub extends Module
 				}
 				$idea = $this->get_post_idea( $post->ID );
 				if ( '' === $post->post_title && 'draft' === $post->post_status ) {
-					/* translators: %s: Idea Hub Idea Title */
+					/* translators: 1: Idea Hub Idea Title */
 					$post_states['draft'] = sprintf( __( 'Idea Hub Draft “%s”', 'google-site-kit' ), $idea['text'] );
 				} else {
 					$post_states['idea-hub'] = __( 'inspired by Idea Hub', 'google-site-kit' );
@@ -312,7 +312,7 @@ final class Idea_Hub extends Module
 			array(
 				'content'         => function() use ( $escape_and_wrap_notice_content ) {
 					$message_body = sprintf(
-						/* translators: %s: URL to saved ideas */
+						/* translators: 1: URL to saved ideas */
 						__( 'Want some inspiration for a new post? <a href="%s">Revisit your saved ideas</a> in Site Kit.', 'google-site-kit' ),
 						esc_url( $this->context->admin_url( 'dashboard', array( 'idea-hub-tab' => 'saved-ideas' ) ) )
 					);
@@ -355,7 +355,7 @@ final class Idea_Hub extends Module
 			array(
 				'content'         => function() use ( $escape_and_wrap_notice_content ) {
 					$message_body = sprintf(
-						/* translators: %s: URL to saved ideas */
+						/* translators: 1: URL to saved ideas */
 						__( 'Want some inspiration for a new post? <a href="%s">Review your new ideas</a> in Site Kit.', 'google-site-kit' ),
 						esc_url( $this->context->admin_url( 'dashboard', array( 'idea-hub-tab' => 'new-ideas' ) ) )
 					);
@@ -547,7 +547,7 @@ final class Idea_Hub extends Module
 				if ( ! isset( $data['idea'] ) ) {
 					return new WP_Error(
 						'missing_required_param',
-						/* translators: %s: Missing parameter name */
+						/* translators: 1: Missing parameter name */
 						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'idea' ),
 						array( 'status' => 400 )
 					);
@@ -557,7 +557,7 @@ final class Idea_Hub extends Module
 					if ( ! isset( $idea[ $parameter_name ] ) ) {
 						return new WP_Error(
 							'missing_required_param',
-							/* translators: %s: Missing parameter name */
+							/* translators: 1: Missing parameter name */
 							sprintf( __( 'Request idea parameter is empty: %s.', 'google-site-kit' ), $parameter_name ),
 							array( 'status' => 400 )
 						);
@@ -567,7 +567,7 @@ final class Idea_Hub extends Module
 						return new WP_Error(
 							'wrong_parameter_type',
 							sprintf(
-								/* translators: %1$s: parameter name, %2$s expected type, %3$s received type */
+								/* translators: 1: parameter name, 2: expected type, 3: received type */
 								__( 'Wrong parameter type for %1$s, expected %2$s, received %3$s', 'google-site-kit' ),
 								$parameter_name,
 								$expected_parameter_type,
@@ -617,7 +617,7 @@ final class Idea_Hub extends Module
 				if ( ! isset( $data['name'] ) ) {
 					return new WP_Error(
 						'missing_required_param',
-						/* translators: %s: Missing parameter name */
+						/* translators: 1: Missing parameter name */
 						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'name' ),
 						array( 'status' => 400 )
 					);

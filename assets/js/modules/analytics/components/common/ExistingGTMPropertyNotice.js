@@ -46,7 +46,7 @@ export default function ExistingGTMPropertyNotice() {
 		return (
 			<p>
 				{ sprintf(
-					/* translators: %s: GTM property ID */
+					/* translators: 1: GTM property ID */
 					__(
 						'A Google Tag Manager container with a tag for the selected property, %s. was found on your site, so Site Kit will not place its own tag. If you would prefer to have Site Kit insert this tag, remove it from your Google Tag Manager container and update later in Settings.',
 						'google-site-kit'
@@ -60,9 +60,9 @@ export default function ExistingGTMPropertyNotice() {
 	return (
 		<p>
 			{ sprintf(
-				/* translators: %s: GTM property ID */
+				/* translators: 1: GTM property ID */
 				__(
-					'An existing Google Tag Manager property was found on your site with the ID %s.',
+					'An existing Google Analytics property with the ID %s was found on your site, added by Google Tag Manager.',
 					'google-site-kit'
 				),
 				gtmAnalyticsPropertyID

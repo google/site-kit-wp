@@ -104,7 +104,7 @@ export default function SetupCreateAccount() {
 				{ ! existingTag &&
 					createInterpolateElement(
 						sprintf(
-							/* translators: %s: user email address */
+							/* translators: 1: user email address */
 							__(
 								'Already use AdSense? Add %s as a user to an existing AdSense account. <a>Learn more</a>',
 								'google-site-kit'

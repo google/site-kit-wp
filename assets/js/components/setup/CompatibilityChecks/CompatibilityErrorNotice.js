@@ -151,7 +151,7 @@ export default function CompatibilityErrorNotice( { error } ) {
 						<br/>
 						${
 							sprintf(
-								/* translators: %1$s: Support Forum URL, %2$s: Error message */ // eslint-disable-line indent
+								/* translators: 1: Support Forum URL, 2: Error message */ // eslint-disable-line indent
 								__(
 									'To get more help, ask a question on our <a href="%1$s">support forum</a> and include the text of the original error message: %2$s',
 									'google-site-kit'

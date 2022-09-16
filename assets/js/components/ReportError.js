@@ -87,7 +87,7 @@ export default function ReportError( { moduleSlug, error } ) {
 	const getMessage = ( err ) => {
 		if ( isInsufficientPermissionsError( err ) ) {
 			title = sprintf(
-				/* translators: %s: module name */
+				/* translators: 1: module name */
 				__( 'Insufficient permissions in %s', 'google-site-kit' ),
 				module?.name
 			);
@@ -118,13 +118,13 @@ export default function ReportError( { moduleSlug, error } ) {
 
 	if ( ! hasInsufficientPermissionsError && uniqueErrors.length === 1 ) {
 		title = sprintf(
-			/* translators: %s: module name */
+			/* translators: 1: module name */
 			__( 'Data error in %s', 'google-site-kit' ),
 			module?.name
 		);
 	} else if ( ! hasInsufficientPermissionsError && uniqueErrors.length > 1 ) {
 		title = sprintf(
-			/* translators: %s: module name */
+			/* translators: 1: module name */
 			__( 'Data errors in %s', 'google-site-kit' ),
 			module?.name
 		);
