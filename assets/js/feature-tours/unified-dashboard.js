@@ -42,10 +42,7 @@ const unifiedDashboard = {
 	steps: [
 		{
 			target: '.googlesitekit-navigation',
-			title: __(
-				'New! Navigate your dashboard easily with the dashboard tabs',
-				'google-site-kit'
-			),
+			title: __( 'New! Navigate your dashboard', 'google-site-kit' ),
 			content: __(
 				'Jump straight to the relevant section in your dashboard with just one click - no more scrolling.',
 				'google-site-kit'
