@@ -67,9 +67,9 @@ export default function BannerNotifications() {
 					) }
 					{ isAuthenticated && <CoreSiteBannerNotifications /> }
 					{ dashboardSharingEnabled && <ModuleRecoveryAlert /> }
+					{ ga4ActivationBannerEnabled && <ActivationBanner /> }
 				</Fragment>
 			) }
-			{ ga4ActivationBannerEnabled && <ActivationBanner /> }
 			<ZeroDataStateNotifications />
 			{ ! viewOnly && (
 				<Fragment>
