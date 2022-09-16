@@ -92,6 +92,7 @@ export function createErrorStore( storeName ) {
 
 	const initialState = {
 		errors: {},
+		errorArgs: {},
 		error: undefined,
 	};
 
@@ -101,11 +102,16 @@ export function createErrorStore( storeName ) {
 				const { baseName, args, error } = payload;
 
 				if ( baseName ) {
+					const key = generateErrorKey( baseName, args );
 					return {
 						...state,
 						errors: {
 							...( state.errors || {} ),
-							[ generateErrorKey( baseName, args ) ]: error,
+							[ key ]: error,
+						},
+						errorArgs: {
+							...( state.errorArgs || {} ),
+							[ key ]: args,
 						},
 					};
 				}
@@ -120,7 +126,9 @@ export function createErrorStore( storeName ) {
 				if ( baseName ) {
 					const key = generateErrorKey( baseName, args );
 					newState.errors = { ...( state.errors || {} ) };
+					newState.errorArgs = { ...( state.errorArgs || {} ) };
 					delete newState.errors[ key ];
+					delete newState.errorArgs[ key ];
 				} else {
 					// @TODO: remove it once all instances of the legacy behavior have been removed.
 					newState.error = undefined;
@@ -134,16 +142,19 @@ export function createErrorStore( storeName ) {
 				const newState = { ...state };
 				if ( baseName ) {
 					newState.errors = { ...( state.errors || {} ) };
+					newState.errorArgs = { ...( state.errorArgs || {} ) };
 					for ( const key in newState.errors ) {
 						if (
 							key === baseName ||
 							key.startsWith( `${ baseName }::` )
 						) {
 							delete newState.errors[ key ];
+							delete newState.errorArgs[ key ];
 						}
 					}
 				} else {
 					newState.errors = {};
+					newState.errorArgs = {};
 					// @TODO: remove it once all instances of the legacy behavior have been removed.
 					newState.error = undefined;
 				}
