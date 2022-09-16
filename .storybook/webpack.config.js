@@ -75,5 +75,21 @@ module.exports = async ( { config } ) => {
 
 	config.module.rules.push( mainConfig.svgRule );
 
+	config.module.rules.push( {
+		test: RegExp( 'node_modules/@material/web/.*\\.js' ),
+		use: [
+			{
+				loader: 'babel-loader',
+				options: {
+					sourceMap: true,
+					babelrc: false,
+					configFile: false,
+					cacheDirectory: true,
+					presets: [ '@wordpress/default', '@babel/preset-react' ],
+				},
+			},
+		],
+	} );
+
 	return config;
 };
