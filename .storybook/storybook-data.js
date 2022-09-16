@@ -81,6 +81,19 @@ module.exports = [
 		},
 	},
 	{
+		id: 'global-notifications--module-setup-complete',
+		kind: 'Global/Notifications',
+		name: 'Module Setup Complete',
+		story: 'Module Setup Complete',
+		parameters: {
+			fileName: './stories/notifications.stories.js',
+			options: {
+				hierarchyRootSeparator: '|',
+				hierarchySeparator: {},
+			},
+		},
+	},
+	{
 		id: 'global-notifications--small-with-image',
 		kind: 'Global/Notifications',
 		name: 'Small with Image',
