@@ -69,8 +69,8 @@ export default function BannerNotifications() {
 					{ dashboardSharingEnabled && <ModuleRecoveryAlert /> }
 				</Fragment>
 			) }
-			<ZeroDataStateNotifications />
 			{ ga4ActivationBannerEnabled && <ActivationBanner /> }
+			<ZeroDataStateNotifications />
 			{ ! viewOnly && (
 				<Fragment>
 					{ userInputEnabled && (

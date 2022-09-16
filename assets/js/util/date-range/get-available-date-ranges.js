@@ -31,7 +31,7 @@ import { _n, sprintf } from '@wordpress/i18n';
 export function getAvailableDateRanges() {
 	const label = ( days ) =>
 		sprintf(
-			/* translators: %s: number of days */
+			/* translators: 1: number of days */
 			_n( 'Last %s day', 'Last %s days', days, 'google-site-kit' ),
 			days
 		);

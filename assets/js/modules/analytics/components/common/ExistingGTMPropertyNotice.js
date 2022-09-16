@@ -46,9 +46,9 @@ export default function ExistingGTMPropertyNotice() {
 		return (
 			<p>
 				{ sprintf(
-					/* translators: %s: GTM property ID */
+					/* translators: 1: GTM property ID */
 					__(
-						'An existing Google Tag Manager property was found on your site with the ID %s. Since it refers to the same property selected here, Site Kit will not place its own tag and rely on the existing one. If later on you decide to remove this property, Site Kit can place a new tag for you.',
+						'An existing Google Analytics property with the ID %s was found on your site, added by Google Tag Manager. Since it refers to the same property selected here, Site Kit will not place its own tag and rely on the existing one. If later on you decide to remove this property, Site Kit can place a new tag for you.',
 						'google-site-kit'
 					),
 					gtmAnalyticsPropertyID
@@ -60,9 +60,9 @@ export default function ExistingGTMPropertyNotice() {
 	return (
 		<p>
 			{ sprintf(
-				/* translators: %s: GTM property ID */
+				/* translators: 1: GTM property ID */
 				__(
-					'An existing Google Tag Manager property was found on your site with the ID %s.',
+					'An existing Google Analytics property with the ID %s was found on your site, added by Google Tag Manager.',
 					'google-site-kit'
 				),
 				gtmAnalyticsPropertyID

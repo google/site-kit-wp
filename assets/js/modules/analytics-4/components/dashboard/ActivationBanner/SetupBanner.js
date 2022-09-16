@@ -216,14 +216,18 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 	);
 
 	if ( variant === null ) {
+		// Wrap in the googlesitekit-publisher-win class to ensure the output is treated in the same way as BannerNotification,
+		// with only one instance visible on the screen at a time.
 		return (
-			<Grid>
-				<Row>
-					<Cell size={ 12 }>
-						<ProgressBar />
-					</Cell>
-				</Row>
-			</Grid>
+			<div className="googlesitekit-publisher-win">
+				<Grid>
+					<Row>
+						<Cell size={ 12 }>
+							<ProgressBar />
+						</Cell>
+					</Row>
+				</Grid>
+			</div>
 		);
 	}
 
@@ -273,7 +277,7 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 							<Fragment>
 								<p>
 									{ sprintf(
-										/* translators: %s: existing tag ID */
+										/* translators: 1: existing tag ID */
 										__(
 											'A tag %s for the selected property already exists on the site.',
 											'google-site-kit'
@@ -321,7 +325,7 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 		if ( existingTag ) {
 			footerMessages.push(
 				sprintf(
-					/* translators: %s: The existing tag ID. */
+					/* translators: 1: The existing tag ID. */
 					__(
 						'A GA4 tag %s is found on this site but this property is not associated with your Google Analytics account.',
 						'google-site-kit'

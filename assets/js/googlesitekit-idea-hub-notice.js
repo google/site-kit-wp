@@ -89,7 +89,7 @@ const loadIdeaHubNotices = async () => {
 		) {
 			dispatch( 'core/notices' ).createInfoNotice(
 				sprintf(
-					/* translators: %s: Idea post name */
+					/* translators: 1: Idea post name */
 					__(
 						'This post was created from an idea you picked in Site Kit’s Idea Hub: %s',
 						'google-site-kit'
