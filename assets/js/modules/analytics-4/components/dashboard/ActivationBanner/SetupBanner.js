@@ -216,14 +216,18 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 	);
 
 	if ( variant === null ) {
+		// Wrap in the googlesitekit-publisher-win class to ensure the output is treated in the same way as BannerNotification,
+		// with only one instance visible on the screen at a time.
 		return (
-			<Grid>
-				<Row>
-					<Cell size={ 12 }>
-						<ProgressBar />
-					</Cell>
-				</Row>
-			</Grid>
+			<div className="googlesitekit-publisher-win">
+				<Grid>
+					<Row>
+						<Cell size={ 12 }>
+							<ProgressBar />
+						</Cell>
+					</Row>
+				</Grid>
+			</div>
 		);
 	}
 
