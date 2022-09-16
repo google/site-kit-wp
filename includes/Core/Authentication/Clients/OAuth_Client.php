@@ -344,10 +344,10 @@ final class OAuth_Client extends OAuth_Client_Base {
 			$additional_scopes = array();
 		}
 
-		$parts = URL::parse( $redirect_url );
+		$url_query = URL::parse( $redirect_url, PHP_URL_QUERY );
 
-		if ( isset( $parts['query'] ) ) {
-			parse_str( $parts['query'], $query_args );
+		if ( $url_query ) {
+			parse_str( $url_query, $query_args );
 		}
 
 		if ( empty( $query_args['notification'] ) ) {
@@ -475,10 +475,10 @@ final class OAuth_Client extends OAuth_Client_Base {
 		$redirect_url = $this->user_options->get( self::OPTION_REDIRECT_URL );
 
 		if ( $redirect_url ) {
-			$parts = URL::parse( $redirect_url );
+			$url_query = URL::parse( $redirect_url, PHP_URL_QUERY );
 
-			if ( isset( $parts['query'] ) ) {
-				parse_str( $parts['query'], $query_args );
+			if ( $url_query ) {
+				parse_str( $url_query, $query_args );
 			}
 
 			$reauth = isset( $query_args['reAuth'] ) && 'true' === $query_args['reAuth'];
