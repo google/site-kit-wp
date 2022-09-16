@@ -34,3 +34,5 @@ export const CTA_PLACEMENT_STATIC_BELOW_1ST_PARAGRAPH =
 
 export const TYPE_OVERLAY = 'overlay';
 export const TYPE_FIXED = 'fixed';
+
+export const COLOR_RADIO_DEFAULT = 'blue';

@@ -23,7 +23,7 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { useCallback, useState } from '@wordpress/element';
+import { useCallback, useEffect, useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -45,6 +45,10 @@ export default function TypeRadio( props ) {
 		},
 		[ setType, onUpdate ]
 	);
+
+	useEffect( () => {
+		setType( defaultType );
+	}, [ defaultType ] );
 
 	return (
 		<div className="googlesitekit-twg-setting-field googlesitekit-twg-type-radio">
