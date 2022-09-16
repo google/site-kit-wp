@@ -344,7 +344,15 @@ final class OAuth_Client extends OAuth_Client_Base {
 			$additional_scopes = array();
 		}
 
-		$redirect_url = add_query_arg( array( 'notification' => 'authentication_success' ), $redirect_url );
+		$parts = URL::parse( $redirect_url );
+
+		if ( isset( $parts['query'] ) ) {
+			parse_str( $parts['query'], $query_args );
+		}
+
+		if ( empty( $query_args['notification'] ) ) {
+			$redirect_url = add_query_arg( array( 'notification' => 'authentication_success' ), $redirect_url );
+		}
 		// Ensure we remove error query string.
 		$redirect_url = remove_query_arg( 'error', $redirect_url );
 
@@ -467,9 +475,15 @@ final class OAuth_Client extends OAuth_Client_Base {
 		$redirect_url = $this->user_options->get( self::OPTION_REDIRECT_URL );
 
 		if ( $redirect_url ) {
-			$parts  = URL::parse( $redirect_url );
-			$reauth = strpos( $parts['query'], 'reAuth=true' );
-			if ( false === $reauth ) {
+			$parts = URL::parse( $redirect_url );
+
+			if ( isset( $parts['query'] ) ) {
+				parse_str( $parts['query'], $query_args );
+			}
+
+			$reauth = isset( $query_args['reAuth'] ) && 'true' === $query_args['reAuth'];
+
+			if ( false === $reauth && empty( $query_args['notification'] ) ) {
 				$redirect_url = add_query_arg( array( 'notification' => 'authentication_success' ), $redirect_url );
 			}
 			$this->user_options->delete( self::OPTION_REDIRECT_URL );
