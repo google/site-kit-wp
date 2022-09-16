@@ -232,7 +232,7 @@ export default function Module( { moduleSlug, moduleName, ownerUsername } ) {
 							<p className="googlesitekit-dashboard-sharing-settings__note">
 								{ createInterpolateElement(
 									sprintf(
-										/* translators: %s: user who manages the module. */
+										/* translators: 1: user who manages the module. */
 										__(
 											'<span>Managed by</span> <strong>%s</strong>',
 											'google-site-kit'
@@ -249,7 +249,7 @@ export default function Module( { moduleSlug, moduleName, ownerUsername } ) {
 									title={
 										hasSharingCapability
 											? sprintf(
-													/* translators: %s: name of the user who manages the module. */
+													/* translators: 1: name of the user who manages the module. */
 													__(
 														'%s has connected this and given managing permissions to all admins. You can change who can view this on the dashboard.',
 														'google-site-kit'
@@ -257,7 +257,7 @@ export default function Module( { moduleSlug, moduleName, ownerUsername } ) {
 													ownerUsername
 											  )
 											: sprintf(
-													/* translators: %s: name of the user who manages the module. */
+													/* translators: 1: name of the user who manages the module. */
 													__(
 														'Contact %s to change who can manage view access for this module.',
 														'google-site-kit'

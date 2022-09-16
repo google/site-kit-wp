@@ -114,7 +114,7 @@ class SearchConsole extends Component {
 				throw {
 					code: 'multiple_properties_matched',
 					message: sprintf(
-						/* translators: %d: the number of matching properties */
+						/* translators: 1: the number of matching properties */
 						__(
 							'We found %d existing accounts. Please choose which one to use below.',
 							'google-site-kit'
@@ -198,7 +198,7 @@ class SearchConsole extends Component {
 			let label = site.siteURL;
 			if ( label.startsWith( 'sc-domain:' ) ) {
 				label = sprintf(
-					/* translators: %s: Search Console property domain name */
+					/* translators: 1: Search Console property domain name */
 					__( '%s (domain property)', 'google-site-kit' ),
 					label.replace( /^sc-domain:/, '' )
 				);

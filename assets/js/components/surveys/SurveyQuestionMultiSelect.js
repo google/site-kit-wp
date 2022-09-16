@@ -192,7 +192,7 @@ const SurveyQuestionMultiSelect = ( {
 													htmlFor={ `${ id }-write-in` }
 												>
 													{ sprintf(
-														/* translators: %s: Option name */
+														/* translators: 1: Option name */
 														__(
 															'Text input for option %s',
 															'google-site-kit'
@@ -229,7 +229,7 @@ const SurveyQuestionMultiSelect = ( {
 				{ minChoices > 1 && (
 					<HelperText persistent>
 						{ sprintf(
-							/* translators: %s: the number of answers. */
+							/* translators: 1: the number of answers. */
 							__(
 								'Choose at least %s answers',
 								'google-site-kit'

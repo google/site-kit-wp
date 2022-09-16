@@ -119,7 +119,7 @@ export default function UnsatisfiedScopesAlert() {
 	switch ( messageID ) {
 		case MESSAGE_MULTIPLE:
 			message = sprintf(
-				/* translators: %s: List of product names */
+				/* translators: 1: List of product names */
 				__(
 					'Site Kit can’t access all relevant data because you haven’t granted all permissions requested during setup. To use Site Kit, you’ll need to redo the setup for: %s – make sure to approve all permissions at the authentication stage.',
 					'google-site-kit'
@@ -129,7 +129,7 @@ export default function UnsatisfiedScopesAlert() {
 			break;
 		case MESSAGE_SINGULAR:
 			message = sprintf(
-				/* translators: %1$s: Product name */
+				/* translators: 1: Product name */
 				__(
 					'Site Kit can’t access the relevant data from %1$s because you haven’t granted all permissions requested during setup. To use Site Kit, you’ll need to redo the setup for %1$s – make sure to approve all permissions at the authentication stage.',
 					'google-site-kit'
