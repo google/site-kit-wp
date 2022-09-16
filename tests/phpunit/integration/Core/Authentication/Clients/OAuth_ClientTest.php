@@ -271,7 +271,9 @@ class OAuth_ClientTest extends TestCase {
 		list( $client_id ) = $this->fake_site_connection();
 		$user_id           = $this->factory()->user->create();
 		wp_set_current_user( $user_id );
-		$client = new OAuth_Client( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
+		$user_options = new User_Options( $context );
+		$client       = new OAuth_Client( $context, null, $user_options );
 
 		$base_scopes        = $client->get_required_scopes();
 		$post_auth_redirect = 'http://example.com/test/redirect/url';
@@ -317,6 +319,9 @@ class OAuth_ClientTest extends TestCase {
 			explode( ' ', $params['scope'] ),
 			array_merge( $base_scopes, $extra_scopes )
 		);
+
+		// Verify the notification query parameter has been added to the redirect URL.
+		$this->assertEquals( add_query_arg( 'notification', 'authentication_success', $post_auth_redirect ), $user_options->get( OAuth_Client::OPTION_REDIRECT_URL ) );
 	}
 
 	public function test_get_authentication_url__with_additional_scopes() {
@@ -343,6 +348,22 @@ class OAuth_ClientTest extends TestCase {
 		$this->assertContains( 'http', $requested_scopes );
 		$this->assertContains( 'example.com/test/scope/a', $requested_scopes );
 		$this->assertContains( 'https://example.com/test/scope/c', $requested_scopes );
+	}
+
+	public function test_get_authentication_url__with_notification() {
+		$user_id = $this->factory()->user->create();
+		wp_set_current_user( $user_id );
+		$this->fake_site_connection();
+		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
+		$user_options = new User_Options( $context );
+		$client       = new OAuth_Client( $context, null, $user_options );
+
+		// Pass in a redirect URL with a notification query parameter.
+		$post_auth_redirect = 'http://example.com/test/redirect/url?notification=some_notification_value';
+		$client->get_authentication_url( $post_auth_redirect );
+
+		// Verify the redirect URL is preserved, including the original notification query parameter.
+		$this->assertEquals( $post_auth_redirect, $user_options->get( OAuth_Client::OPTION_REDIRECT_URL ) );
 	}
 
 	public function test_authorize_user() {
@@ -418,6 +439,7 @@ class OAuth_ClientTest extends TestCase {
 
 		try {
 			$client->authorize_user();
+			$this->fail( 'Expected to throw a RedirectException!' );
 		} catch ( RedirectException $redirect ) {
 			$this->assertStringStartsWith( "$success_redirect?", $redirect->get_location() );
 			$this->assertStringContainsString( 'notification=authentication_success', $redirect->get_location() );
@@ -426,6 +448,60 @@ class OAuth_ClientTest extends TestCase {
 		$profile = $user_options->get( Profile::OPTION );
 		$this->assertEquals( 'fresh@foo.com', $profile['email'] );
 		$this->assertEquals( 'https://example.com/fresh.jpg', $profile['photo'] );
+	}
+
+	public function test_authorize_user__with_redirect_url_notification() {
+		$user_id = $this->factory()->user->create();
+		wp_set_current_user( $user_id );
+		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
+		$user_options = new User_Options( $context );
+		$client       = new OAuth_Client( $context, null, $user_options );
+		$this->fake_site_connection();
+
+		// Add a notification query parameter to the redirect URL.
+		$success_redirect = add_query_arg( 'notification', 'some_notification_value', admin_url( 'success-redirect' ) );
+
+		$client->get_authentication_url( $success_redirect );
+		// No other way around this but to mock the Google_Site_Kit_Client
+		$google_client_mock = $this->getMockBuilder( 'Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client' )
+			->setMethods( array( 'fetchAccessTokenWithAuthCode' ) )->getMock();
+		$http_client        = new FakeHttpClient();
+		$http_client->set_request_handler(
+			function ( Request $request ) {
+				$url = parse_url( $request->getUrl() );
+				if ( 'people.googleapis.com' !== $url['host'] || '/v1/people/me' !== $url['path'] ) {
+					return new Response( 200 );
+				}
+
+				return new Response(
+					200,
+					array(),
+					Stream::factory(
+						json_encode(
+							array(
+								'emailAddresses' => array(
+									array( 'value' => 'fresh@foo.com' ),
+								),
+								'photos'         => array(
+									array( 'url' => 'https://example.com/fresh.jpg' ),
+								),
+							)
+						)
+					)
+				);
+			}
+		);
+		$google_client_mock->setHttpClient( $http_client );
+		$google_client_mock->method( 'fetchAccessTokenWithAuthCode' )->willReturn( array( 'access_token' => 'test-access-token' ) );
+		$this->force_set_property( $client, 'google_client', $google_client_mock );
+
+		try {
+			$client->authorize_user();
+			$this->fail( 'Expected to throw a RedirectException!' );
+		} catch ( RedirectException $redirect ) {
+			// Verify the redirect URL is preserved, including the original notification query parameter.
+			$this->assertEquals( $success_redirect, $redirect->get_location() );
+		}
 	}
 
 	public function test_should_update_owner_id() {
