@@ -35,7 +35,7 @@ body.googlesitekit-showing-feature-tour--dashboardSharing {
 	modal to be displayed but still hidden by putting it behind/underneath
 	everything else until it is opened when called for in the tour.
 	*/
-	.googlesitekit-sharing-settings-dialog:not(.mdc-dialog--open):not(.mdc-dialog--opening) {
+	.googlesitekit-sharing-settings-dialog:not(.mdc-dialog--open, .mdc-dialog--opening) {
 		display: flex !important;
 		opacity: 0;
 		z-index: -99;
