@@ -93,7 +93,6 @@ export function createErrorStore( storeName ) {
 
 	const initialState = {
 		errors: {},
-		errorArgs: {},
 		error: undefined,
 	};
 
@@ -103,9 +102,7 @@ export function createErrorStore( storeName ) {
 				const { baseName, args, error } = payload;
 
 				if ( baseName ) {
-					const key = generateErrorKey( baseName, args );
-					state.errors[ key ] = error;
-					state.errorArgs[ key ] = args;
+					state.errors[ generateErrorKey( baseName, args ) ] = error;
 				} else {
 					// @TODO: remove once all instances of the legacy behavior have been removed.
 					state.error = error;
@@ -118,7 +115,6 @@ export function createErrorStore( storeName ) {
 				if ( baseName ) {
 					const key = generateErrorKey( baseName, args );
 					delete state.errors[ key ];
-					delete state.errorArgs[ key ];
 				} else {
 					// @TODO: remove it once all instances of the legacy behavior have been removed.
 					state.error = undefined;
@@ -136,12 +132,10 @@ export function createErrorStore( storeName ) {
 							key.startsWith( `${ baseName }::` )
 						) {
 							delete state.errors[ key ];
-							delete state.errorArgs[ key ];
 						}
 					}
 				} else {
 					state.errors = {};
-					state.errorArgs = {};
 					// @TODO: remove it once all instances of the legacy behavior have been removed.
 					state.error = undefined;
 				}
