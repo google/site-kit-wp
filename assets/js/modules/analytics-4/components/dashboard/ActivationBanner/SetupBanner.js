@@ -20,6 +20,7 @@
  * WordPress dependencies
  */
 import { Fragment, useCallback, useEffect, useState } from '@wordpress/element';
+import { addQueryArgs } from '@wordpress/url';
 import { __, sprintf } from '@wordpress/i18n';
 
 /**
@@ -163,6 +164,11 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 			setValues( GA4_ACTIVATION_BANNER_STATE_KEY, {
 				returnToSetupStep: true,
 			} );
+
+			const redirectURL = addQueryArgs( global.location.href, {
+				notification: 'ga4_setup',
+			} );
+
 			setPermissionScopeError( {
 				code: ERROR_CODE_MISSING_REQUIRED_SCOPE,
 				message: __(
@@ -173,6 +179,7 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 					status: 403,
 					scopes,
 					skipModal: true,
+					redirectURL,
 				},
 			} );
 			return;
