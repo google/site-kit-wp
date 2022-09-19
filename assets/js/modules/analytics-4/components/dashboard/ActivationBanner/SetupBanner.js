@@ -104,6 +104,7 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 
 		if ( properties.length === 0 ) {
 			setVariant( VARIANT.NO_EXISTING_PROPERTY );
+			selectProperty( PROPERTY_CREATE );
 			return;
 		}
 
@@ -123,6 +124,7 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 		ga4PropertyID,
 		matchAndSelectProperty,
 		properties,
+		selectProperty,
 		variant,
 	] );
 
@@ -321,8 +323,6 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 			)
 		);
 	} else {
-		selectProperty( PROPERTY_CREATE );
-
 		title = __(
 			'No existing Google Analytics 4 property found, Site Kit will help you create a new one and insert it on your site',
 			'google-site-kit'
