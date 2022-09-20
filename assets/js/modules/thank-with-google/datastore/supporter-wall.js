@@ -86,6 +86,21 @@ const baseResolvers = {
 
 		yield fetchGetSupporterWallSidebars.actions.fetchGetSupporterWallSidebars();
 	},
+
+	*getPromptSupporterWall() {
+		const registry = yield Data.commonActions.getRegistry();
+		const promptSupporterWall = registry
+			.select( MODULES_THANK_WITH_GOOGLE )
+			.getPromptSupporterWall();
+
+		// If there are already promptSupporterWall loaded in the state, consider it fulfilled
+		// and don't make an API request.
+		if ( promptSupporterWall !== undefined ) {
+			return;
+		}
+
+		yield fetchGetPromptSupporterWallStore.actions.fetchGetPromptSupporterWall();
+	},
 };
 
 const baseSelectors = {
