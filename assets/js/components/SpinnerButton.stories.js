@@ -28,6 +28,13 @@ DefaultButton.args = {
 	onClick: () => new Promise( ( resolve ) => setTimeout( resolve, 5000 ) ),
 };
 
+export const ButtonWithSpinner = Template.bind( {} );
+ButtonWithSpinner.storyName = 'Button with the Spinner';
+ButtonWithSpinner.args = {
+	children: 'Spinner Button',
+	isSaving: true,
+};
+
 export default {
 	title: 'Components/SpinnerButton',
 	component: SpinnerButton,

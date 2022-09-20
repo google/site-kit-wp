@@ -23,6 +23,7 @@ use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Core\Util\Scopes;
+use Google\Site_Kit\Core\Util\URL;
 use Google\Site_Kit_Dependencies\Google\Service\PeopleService as Google_Service_PeopleService;
 
 /**
@@ -343,7 +344,15 @@ final class OAuth_Client extends OAuth_Client_Base {
 			$additional_scopes = array();
 		}
 
-		$redirect_url = add_query_arg( array( 'notification' => 'authentication_success' ), $redirect_url );
+		$url_query = URL::parse( $redirect_url, PHP_URL_QUERY );
+
+		if ( $url_query ) {
+			parse_str( $url_query, $query_args );
+		}
+
+		if ( empty( $query_args['notification'] ) ) {
+			$redirect_url = add_query_arg( array( 'notification' => 'authentication_success' ), $redirect_url );
+		}
 		// Ensure we remove error query string.
 		$redirect_url = remove_query_arg( 'error', $redirect_url );
 
@@ -466,9 +475,15 @@ final class OAuth_Client extends OAuth_Client_Base {
 		$redirect_url = $this->user_options->get( self::OPTION_REDIRECT_URL );
 
 		if ( $redirect_url ) {
-			$parts  = wp_parse_url( $redirect_url );
-			$reauth = strpos( $parts['query'], 'reAuth=true' );
-			if ( false === $reauth ) {
+			$url_query = URL::parse( $redirect_url, PHP_URL_QUERY );
+
+			if ( $url_query ) {
+				parse_str( $url_query, $query_args );
+			}
+
+			$reauth = isset( $query_args['reAuth'] ) && 'true' === $query_args['reAuth'];
+
+			if ( false === $reauth && empty( $query_args['notification'] ) ) {
 				$redirect_url = add_query_arg( array( 'notification' => 'authentication_success' ), $redirect_url );
 			}
 			$this->user_options->delete( self::OPTION_REDIRECT_URL );

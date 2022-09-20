@@ -17,6 +17,7 @@ use Google\Site_Kit_Dependencies\Google\Auth\HttpHandler\HttpHandlerFactory;
 use Google\Site_Kit_Dependencies\Google\Auth\HttpHandler\HttpClientCache;
 use Google\Site_Kit_Dependencies\GuzzleHttp\ClientInterface;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
+use Google\Site_Kit\Core\Util\URL;
 use Exception;
 use InvalidArgumentException;
 use LogicException;
@@ -229,9 +230,9 @@ class Google_Site_Kit_Client extends Google_Client {
 		$user_id = get_current_user_id();
 		$url     = get_home_url();
 
-		$scheme = wp_parse_url( $url, PHP_URL_SCHEME );
-		$host   = wp_parse_url( $url, PHP_URL_HOST );
-		$path   = wp_parse_url( $url, PHP_URL_PATH );
+		$scheme = URL::parse( $url, PHP_URL_SCHEME );
+		$host   = URL::parse( $url, PHP_URL_HOST );
+		$path   = URL::parse( $url, PHP_URL_PATH );
 
 		return "{$scheme}://{$user_id}@{$host}{$path}";
 	}

@@ -45,6 +45,7 @@ use Google\Site_Kit_Dependencies\Google\Service\Adsense as Google_Service_Adsens
 use Google\Site_Kit_Dependencies\Google\Service\Adsense\Alert as Google_Service_Adsense_Alert;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 use Exception;
+use Google\Site_Kit\Core\Util\URL;
 use WP_Error;
 
 /**
@@ -226,12 +227,12 @@ final class AdSense extends Module
 					$option            = $this->get_settings()->get();
 					$data['accountID'] = $option['accountID'];
 					if ( empty( $data['accountID'] ) ) {
-						/* translators: %s: Missing parameter name */
+						/* translators: 1: Missing parameter name */
 						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ), array( 'status' => 400 ) );
 					}
 					$data['clientID'] = $option['clientID'];
 					if ( empty( $data['clientID'] ) ) {
-						/* translators: %s: Missing parameter name */
+						/* translators: 1: Missing parameter name */
 						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'clientID' ), array( 'status' => 400 ) );
 					}
 				}
@@ -242,7 +243,7 @@ final class AdSense extends Module
 					$option            = $this->get_settings()->get();
 					$data['accountID'] = $option['accountID'];
 					if ( empty( $data['accountID'] ) ) {
-						/* translators: %s: Missing parameter name */
+						/* translators: 1: Missing parameter name */
 						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ), array( 'status' => 400 ) );
 					}
 				}
@@ -252,7 +253,7 @@ final class AdSense extends Module
 				if ( ! isset( $data['accountID'] ) ) {
 					return new WP_Error(
 						'missing_required_param',
-						/* translators: %s: Missing parameter name */
+						/* translators: 1: Missing parameter name */
 						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ),
 						array( 'status' => 400 )
 					);
@@ -355,7 +356,7 @@ final class AdSense extends Module
 				if ( ! isset( $data['accountID'] ) ) {
 					return new WP_Error(
 						'missing_required_param',
-						/* translators: %s: Missing parameter name */
+						/* translators: 1: Missing parameter name */
 						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ),
 						array( 'status' => 400 )
 					);
@@ -366,7 +367,7 @@ final class AdSense extends Module
 				if ( ! isset( $data['accountID'] ) ) {
 					return new WP_Error(
 						'missing_required_param',
-						/* translators: %s: Missing parameter name */
+						/* translators: 1: Missing parameter name */
 						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ),
 						array( 'status' => 400 )
 					);
@@ -374,7 +375,7 @@ final class AdSense extends Module
 				if ( ! isset( $data['clientID'] ) ) {
 					return new WP_Error(
 						'missing_required_param',
-						/* translators: %s: Missing parameter name */
+						/* translators: 1: Missing parameter name */
 						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'clientID' ),
 						array( 'status' => 400 )
 					);
@@ -595,7 +596,7 @@ final class AdSense extends Module
 		}
 
 		// @see https://developers.google.com/adsense/management/reporting/filtering?hl=en#OR
-		$site_hostname         = wp_parse_url( $this->context->get_reference_site_url(), PHP_URL_HOST );
+		$site_hostname         = URL::parse( $this->context->get_reference_site_url(), PHP_URL_HOST );
 		$opt_params['filters'] = join(
 			',',
 			array_map(
@@ -885,7 +886,7 @@ final class AdSense extends Module
 
 		if ( count( $invalid_metrics ) > 0 ) {
 			$message = sprintf(
-				/* translators: %s is replaced with a comma separated list of the invalid metrics. */
+				/* translators: 1: is replaced with a comma separated list of the invalid metrics. */
 				_n(
 					'Unsupported metric requested: %s',
 					'Unsupported metrics requested: %s',
@@ -927,7 +928,7 @@ final class AdSense extends Module
 
 		if ( count( $invalid_dimensions ) > 0 ) {
 			$message = sprintf(
-				/* translators: %s is replaced with a comma separated list of the invalid dimensions. */
+				/* translators: 1: is replaced with a comma separated list of the invalid dimensions. */
 				_n(
 					'Unsupported dimension requested: %s',
 					'Unsupported dimensions requested: %s',

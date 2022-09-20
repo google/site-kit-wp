@@ -53,7 +53,7 @@
 			display: flex;
 			flex-wrap: wrap;
 			grid-gap: 10px 12px;
-			margin: 15px 0 10px 0;
+			margin: 15px 0 10px;
 		}
 
 		.googlesitekit-settings-connect-module__title {
@@ -62,6 +62,12 @@
 
 		&--disabled .googlesitekit-settings-connect-module__title {
 			color: $c-disabled;
+		}
+
+		.googlesitekit-settings-connect-module__badges {
+			display: flex;
+			flex-wrap: wrap;
+			grid-gap: 10px 12px;
 		}
 
 		.googlesitekit-settings-connect-module__text {

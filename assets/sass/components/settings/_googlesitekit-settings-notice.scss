@@ -71,11 +71,9 @@
 
 	.mdc-text-field:not(.mdc-text-field--disabled) {
 
-
 		.mdc-text-field__input {
 			color: $c-text-notice-info;
 		}
-
 
 		&:not(.mdc-text-field--focused) {
 
@@ -89,7 +87,6 @@
 			}
 		}
 	}
-
 
 	// TODO: decouple select styles from type-specific colors.
 	.mdc-select:not(.mdc-select--disabled) {

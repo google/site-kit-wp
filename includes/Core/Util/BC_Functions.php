@@ -75,7 +75,7 @@ class BC_Functions {
 			}
 		}
 
-		$path_parts = parse_url( $path ); // phpcs:ignore WordPress.WP.AlternativeFunctions.parse_url_parse_url
+		$path_parts = URL::parse( $path );
 		if ( false === $path_parts ) {
 			return $memo;
 		}

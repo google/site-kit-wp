@@ -373,7 +373,6 @@ final class Modules {
 		add_filter(
 			'googlesitekit_dashboard_sharing_data',
 			function ( $data ) {
-				$data['recoverableModules']     = array_keys( $this->get_recoverable_modules() );
 				$data['sharedOwnershipModules'] = array_keys( $this->get_shared_ownership_modules() );
 
 				return $data;
@@ -592,7 +591,7 @@ final class Modules {
 		$modules = $this->get_available_modules();
 
 		if ( ! isset( $modules[ $slug ] ) ) {
-			/* translators: %s: module slug */
+			/* translators: 1: module slug */
 			throw new Exception( sprintf( __( 'Invalid module slug %s.', 'google-site-kit' ), $slug ) );
 		}
 
@@ -630,7 +629,7 @@ final class Modules {
 		$modules = $this->get_available_modules();
 
 		if ( ! isset( $modules[ $slug ] ) ) {
-			/* translators: %s: module slug */
+			/* translators: 1: module slug */
 			throw new Exception( sprintf( __( 'Invalid module slug %s.', 'google-site-kit' ), $slug ) );
 		}
 
@@ -651,7 +650,7 @@ final class Modules {
 		$modules = $this->get_available_modules();
 
 		if ( ! isset( $modules[ $slug ] ) ) {
-			/* translators: %s: module slug */
+			/* translators: 1: module slug */
 			throw new Exception( sprintf( __( 'Invalid module slug %s.', 'google-site-kit' ), $slug ) );
 		}
 
@@ -936,7 +935,7 @@ final class Modules {
 								$dependency_slugs = $this->get_module_dependencies( $slug );
 								foreach ( $dependency_slugs as $dependency_slug ) {
 									if ( ! $this->is_module_active( $dependency_slug ) ) {
-										/* translators: %s: module name */
+										/* translators: 1: module name */
 										return new WP_Error( 'inactive_dependencies', sprintf( __( 'Module cannot be activated because of inactive dependency %s.', 'google-site-kit' ), $modules[ $dependency_slug ]->name ), array( 'status' => 500 ) );
 									}
 								}
@@ -949,7 +948,7 @@ final class Modules {
 								foreach ( $dependant_slugs as $dependant_slug ) {
 									if ( $this->is_module_active( $dependant_slug ) ) {
 										if ( ! $this->deactivate_module( $dependant_slug ) ) {
-											/* translators: %s: module name */
+											/* translators: 1: module name */
 											return new WP_Error( 'cannot_deactivate_dependant', sprintf( __( 'Module cannot be deactivated because deactivation of dependant %s failed.', 'google-site-kit' ), $modules[ $dependant_slug ]->name ), array( 'status' => 500 ) );
 										}
 									}
@@ -1293,6 +1292,7 @@ final class Modules {
 			'order'        => $module->order,
 			'forceActive'  => $module->force_active,
 			'shareable'    => $module->is_shareable(),
+			'recoverable'  => $module->is_recoverable(),
 			'active'       => $this->is_module_active( $module->slug ),
 			'connected'    => $this->is_module_connected( $module->slug ),
 			'dependencies' => $this->get_module_dependencies( $module->slug ),
@@ -1577,6 +1577,17 @@ final class Modules {
 			$module_owners[ $module_slug ] = $module->get_owner_id();
 		}
 		return $module_owners;
+	}
+
+	/**
+	 * Deletes sharing settings.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return bool True on success, false on failure.
+	 */
+	public function delete_dashboard_sharing_settings() {
+		return $this->options->delete( Module_Sharing_Settings::OPTION );
 	}
 
 }

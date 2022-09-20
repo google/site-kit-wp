@@ -1,4 +1,6 @@
 /**
+ * Chip Component Stories.
+ *
  * Site Kit by Google, Copyright 2022 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,10 +16,29 @@
  * limitations under the License.
  */
 
-.googlesitekit-plugin {
+/**
+ * Internal dependencies
+ */
+import Chip from './Chip';
 
-	.googlesitekit-twg-type-radio__options {
-		display: flex;
-		flex-wrap: wrap;
-	}
-}
+const Template = ( args ) => <Chip { ...args } />;
+
+export const DefaultChip = Template.bind( {} );
+DefaultChip.storyName = 'Default Chip';
+DefaultChip.args = {
+	id: 'default',
+	label: 'Default Chip',
+};
+
+export const SelectedChip = Template.bind( {} );
+SelectedChip.storyName = 'Selected Chip';
+SelectedChip.args = {
+	id: 'selected',
+	label: 'Selected Chip',
+	selected: true,
+};
+
+export default {
+	title: 'Components/Chip',
+	component: Chip,
+};

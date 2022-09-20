@@ -60,6 +60,10 @@ export default function Header( { slug } ) {
 		select( CORE_MODULES ).getModule( slug )
 	);
 
+	const isGA4Connected = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
+	);
+
 	const onHeaderClick = useCallback( () => {
 		history.push( `/connected-services${ isOpen ? '' : `/${ slug }` }` );
 
@@ -150,13 +154,31 @@ export default function Header( { slug } ) {
 						alignMiddle
 						mdAlignRight
 					>
-						{ connected && (
-							<p className="googlesitekit-settings-module__status">
-								{ __( 'Connected', 'google-site-kit' ) }
+						{ connected &&
+							( slug !== 'analytics' || isGA4Connected ) && (
+								<p className="googlesitekit-settings-module__status">
+									{ __( 'Connected', 'google-site-kit' ) }
 
-								<span className="googlesitekit-settings-module__status-icon googlesitekit-settings-module__status-icon--connected" />
-							</p>
-						) }
+									<span className="googlesitekit-settings-module__status-icon googlesitekit-settings-module__status-icon--connected" />
+								</p>
+							) }
+
+						{ connected &&
+							slug === 'analytics' &&
+							! isGA4Connected && (
+								<Fragment>
+									<Button
+										href={ adminReauthURL }
+										onClick={ onActionClick }
+									>
+										{ __(
+											'Connect Google Analytics 4',
+											'google-site-kit'
+										) }
+									</Button>
+									<span className="googlesitekit-settings-module__status-icon googlesitekit-settings-module__status-icon--not-connected" />
+								</Fragment>
+							) }
 
 						{ ! connected && (
 							<Fragment>
@@ -165,7 +187,7 @@ export default function Header( { slug } ) {
 									onClick={ onActionClick }
 								>
 									{ sprintf(
-										/* translators: %s: module name. */
+										/* translators: 1: module name. */
 										__(
 											'Complete setup for %s',
 											'google-site-kit'

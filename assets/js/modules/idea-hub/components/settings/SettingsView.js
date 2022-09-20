@@ -36,7 +36,7 @@ export default function SettingsView() {
 	);
 
 	return createInterpolateElement(
-		/* translators: %s is the URL to the Site Kit dashboard. */
+		/* translators: 1: is the URL to the Site Kit dashboard. */
 		__(
 			'To view ideas for new content, <a>visit the dashboard</a>',
 			'google-site-kit'

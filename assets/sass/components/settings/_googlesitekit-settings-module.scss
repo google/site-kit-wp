@@ -136,6 +136,8 @@
 		.googlesitekit-settings-module__heading {
 			align-items: center;
 			display: flex;
+			flex-wrap: wrap;
+			row-gap: 12px;
 		}
 
 		.googlesitekit-settings-module__title {
@@ -164,7 +166,7 @@
 		}
 
 		.googlesitekit-settings-module__meta-header {
-			margin: 0 0 8px 0;
+			margin: 0 0 8px;
 		}
 
 		.googlesitekit-settings-module__fields-group {
@@ -237,7 +239,7 @@
 			font-weight: $fw-bold;
 			letter-spacing: $ls-xs;
 			line-height: $lh-body-sm;
-			margin: 0 0 8px 0;
+			margin: 0 0 8px;
 		}
 
 		.googlesitekit-settings-module__meta-item-data {
@@ -290,17 +292,6 @@
 			font-size: $fs-body-sm;
 			letter-spacing: $ls-xs;
 			margin-left: 24px;
-		}
-
-		&.googlesitekit-settings-module--thank-with-google {
-
-			.googlesitekit-settings-module__title {
-				width: min-content;
-
-				@media (min-width: $bp-desktop) {
-					min-width: 145px;
-				}
-			}
 		}
 	}
 }

@@ -31,6 +31,7 @@ import {
 	freezeFetch,
 	provideModules,
 	unsubscribeFromAll,
+	act,
 } from '../../../../../../tests/js/test-utils';
 import SetupMain from './SetupMain';
 
@@ -195,7 +196,7 @@ describe( 'SetupMain', () => {
 		expect( button ).toHaveTextContent( 'Customize Thank with Google' );
 	} );
 
-	it( 'should render the publication customize screen if the current publication onboardingState is `ONBOARDING_COMPLETE` and the module setting publicationID is already set', () => {
+	it( 'should render the publication customize screen if the current publication onboardingState is `ONBOARDING_COMPLETE` and the module setting publicationID is already set', async () => {
 		registry
 			.dispatch( MODULES_THANK_WITH_GOOGLE )
 			.receiveGetPublications( publicationWithOnboardingCompleteState );
@@ -206,6 +207,11 @@ describe( 'SetupMain', () => {
 
 		const { container, queryByRole } = render( <SetupMain />, {
 			registry,
+		} );
+
+		// wait for the next tick
+		await act( () => {
+			return new Promise( ( resolve ) => setImmediate( resolve ) );
 		} );
 
 		expect( container ).toHaveTextContent(

@@ -53,7 +53,7 @@
 
 		.googlesitekit-setup-module__title {
 			display: inline-block;
-			margin: 0 0 10px 0;
+			margin: 0 0 10px;
 		}
 
 		.googlesitekit-setup-module__text--no-margin {
@@ -125,12 +125,18 @@
 					}
 
 					.mdc-text-field-helper-line {
-						margin: $grid-gap-phone/2 0 0;
+						margin: ($grid-gap-phone / 2) 0 0;
 
 						@media (min-width: $bp-tablet) {
 							margin: 0;
 						}
 					}
+				}
+
+				&.googlesitekit-twg-setting-field {
+					margin-bottom: 0;
+					margin-right: 0;
+					width: 100%;
 				}
 			}
 

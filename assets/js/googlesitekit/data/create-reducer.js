@@ -1,7 +1,7 @@
 /**
- * Modules List stories.
+ * Create Immer reducer utility function.
  *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2022 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,27 +19,16 @@
 /**
  * External dependencies
  */
-import { storiesOf } from '@storybook/react';
+import produce from 'immer';
 
 /**
- * Internal dependencies
+ * Creates an Immer-enabled reducer.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Function} reducerFunction A reducer function that follows the curried Immer recipe pattern.
+ * @return {Function} An Immer-enabled reducer.
  */
-import ModulesList from '../assets/js/components/ModulesList';
-import {
-	provideModuleRegistrations,
-	provideModules,
-	WithTestRegistry,
-} from '../tests/js/utils';
-
-storiesOf( 'Global', module ).add( 'Modules List', () => {
-	const setupRegistry = ( registry ) => {
-		provideModules( registry );
-		provideModuleRegistrations( registry );
-	};
-
-	return (
-		<WithTestRegistry callback={ setupRegistry }>
-			<ModulesList />
-		</WithTestRegistry>
-	);
-} );
+export function createReducer( reducerFunction ) {
+	return produce( reducerFunction );
+}

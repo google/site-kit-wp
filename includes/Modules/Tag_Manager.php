@@ -35,6 +35,7 @@ use Google\Site_Kit\Core\Tags\Guards\Tag_Verify_Guard;
 use Google\Site_Kit\Core\Util\BC_Functions;
 use Google\Site_Kit\Core\Util\Debug_Data;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
+use Google\Site_Kit\Core\Util\URL;
 use Google\Site_Kit\Modules\Tag_Manager\AMP_Tag;
 use Google\Site_Kit\Modules\Tag_Manager\Settings;
 use Google\Site_Kit\Modules\Tag_Manager\Tag_Guard;
@@ -260,7 +261,7 @@ final class Tag_Manager extends Module
 				return $this->get_tagmanager_service()->accounts->listAccounts();
 			case 'GET:containers':
 				if ( ! isset( $data['accountID'] ) ) {
-					/* translators: %s: Missing parameter name */
+					/* translators: 1: Missing parameter name */
 					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ), array( 'status' => 400 ) );
 				}
 				return $this->get_tagmanager_service()->accounts_containers->listAccountsContainers( "accounts/{$data['accountID']}" );
@@ -268,7 +269,7 @@ final class Tag_Manager extends Module
 				if ( ! isset( $data['accountID'] ) ) {
 					return new WP_Error(
 						'missing_required_param',
-						/* translators: %s: Missing parameter name */
+						/* translators: 1: Missing parameter name */
 						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ),
 						array( 'status' => 400 )
 					);
@@ -295,7 +296,7 @@ final class Tag_Manager extends Module
 					$container_name = $data['name'];
 				} else {
 					// Use site name for container, fallback to domain of reference URL.
-					$container_name = get_bloginfo( 'name' ) ?: wp_parse_url( $this->context->get_reference_site_url(), PHP_URL_HOST );
+					$container_name = get_bloginfo( 'name' ) ?: URL::parse( $this->context->get_reference_site_url(), PHP_URL_HOST );
 					// Prevent naming conflict (Tag Manager does not allow more than one with same name).
 					if ( self::USAGE_CONTEXT_AMP === $usage_context ) {
 						$container_name .= ' AMP';
@@ -311,7 +312,7 @@ final class Tag_Manager extends Module
 				if ( ! isset( $data['accountID'] ) ) {
 					return new WP_Error(
 						'missing_required_param',
-						/* translators: %s: Missing parameter name */
+						/* translators: 1: Missing parameter name */
 						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ),
 						array( 'status' => 400 )
 					);
@@ -319,7 +320,7 @@ final class Tag_Manager extends Module
 				if ( ! isset( $data['internalContainerID'] ) ) {
 					return new WP_Error(
 						'missing_required_param',
-						/* translators: %s: Missing parameter name */
+						/* translators: 1: Missing parameter name */
 						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'internalContainerID' ),
 						array( 'status' => 400 )
 					);
@@ -347,7 +348,7 @@ final class Tag_Manager extends Module
 		$restore_defer = $this->with_client_defer( false );
 
 		// Use site name for container, fallback to domain of reference URL.
-		$container_name = get_bloginfo( 'name' ) ?: wp_parse_url( $this->context->get_reference_site_url(), PHP_URL_HOST );
+		$container_name = get_bloginfo( 'name' ) ?: URL::parse( $this->context->get_reference_site_url(), PHP_URL_HOST );
 		// Prevent naming conflict (Tag Manager does not allow more than one with same name).
 		if ( self::USAGE_CONTEXT_AMP === $usage_context ) {
 			$container_name .= ' AMP';

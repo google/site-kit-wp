@@ -137,6 +137,10 @@
 			margin: 0;
 		}
 
+		.googlesitekit-dialog__subtitle--emphasis {
+			font-size: $fs-body-md;
+		}
+
 		.googlesitekit-dialog__footer {
 			border-top: 1px solid $c-utility-divider;
 			justify-content: flex-end;

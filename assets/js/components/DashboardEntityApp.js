@@ -166,7 +166,7 @@ function DashboardEntityApp() {
 												<p>
 													{ createInterpolateElement(
 														sprintf(
-															/* translators: %s: current entity URL. */
+															/* translators: 1: current entity URL. */
 															__(
 																'It looks like the URL %s is not part of this site or is not based on standard WordPress content types, therefore there is no data available to display. Visit our <link1>support forums</link1> or <link2><VisuallyHidden>Site Kit</VisuallyHidden> website</link2> for support or further information.',
 																'google-site-kit'

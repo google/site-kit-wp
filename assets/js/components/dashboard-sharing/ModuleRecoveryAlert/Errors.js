@@ -33,7 +33,7 @@ export default function Errors( { recoveryErrors } ) {
 			{ Object.keys( recoveryErrors ).length === 1 && (
 				<p>
 					{ sprintf(
-						/* translators: %s: Error message */
+						/* translators: 1: Error message */
 						__( 'Error: %s', 'google-site-kit' ),
 						Object.values( recoveryErrors )[ 0 ].message
 					) }
