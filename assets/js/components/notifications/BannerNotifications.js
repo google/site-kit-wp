@@ -46,6 +46,7 @@ export default function BannerNotifications() {
 	const ideaHubModuleEnabled = useFeature( 'ideaHubModule' );
 	const userInputEnabled = useFeature( 'userInput' );
 	const ga4ActivationBannerEnabled = useFeature( 'ga4ActivationBanner' );
+	const twgEnabled = useFeature( 'twgModule' );
 
 	const viewOnly = useViewOnly();
 
@@ -71,7 +72,7 @@ export default function BannerNotifications() {
 					{ ga4ActivationBannerEnabled && <ActivationBanner /> }
 				</Fragment>
 			) }
-			<ThankWithGoogleSupporterWallNotification />
+			{ twgEnabled && <ThankWithGoogleSupporterWallNotification /> }
 			<ZeroDataStateNotifications />
 			{ ! viewOnly && (
 				<Fragment>
