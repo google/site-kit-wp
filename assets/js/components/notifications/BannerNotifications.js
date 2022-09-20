@@ -38,7 +38,7 @@ import ActivationBanner from '../../modules/analytics-4/components/dashboard/Act
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import useViewOnly from '../../hooks/useViewOnly';
 import ZeroDataStateNotifications from './ZeroDataStateNotifications';
-import ThankWithGooglePromptSupporterWall from './ThankWithGooglePromptSupporterWall';
+import ThankWithGoogleSupporterWallNotification from './ThankWithGoogleSupporterWallNotification';
 const { useSelect } = Data;
 
 export default function BannerNotifications() {
@@ -71,7 +71,7 @@ export default function BannerNotifications() {
 					{ ga4ActivationBannerEnabled && <ActivationBanner /> }
 				</Fragment>
 			) }
-			<ThankWithGooglePromptSupporterWall />
+			<ThankWithGoogleSupporterWallNotification />
 			<ZeroDataStateNotifications />
 			{ ! viewOnly && (
 				<Fragment>

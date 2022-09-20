@@ -1,5 +1,5 @@
 /**
- * ThankWithGooglePromptSupporterWall Component Stories.
+ * ThankWithGoogleSupporterWallNotification Component Stories.
  *
  * Site Kit by Google, Copyright 2022 Google LLC
  *
@@ -19,18 +19,18 @@
 /**
  * Internal dependencies
  */
-import ThankWithGooglePromptSupporterWall from './ThankWithGooglePromptSupporterWall';
+import ThankWithGoogleSupporterWallNotification from './ThankWithGoogleSupporterWallNotification';
 import { provideModules, provideSiteInfo } from '../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import { MODULES_THANK_WITH_GOOGLE } from '../../modules/thank-with-google/datastore/constants';
 
-const Template = () => <ThankWithGooglePromptSupporterWall />;
+const Template = () => <ThankWithGoogleSupporterWallNotification />;
 
 export const Ready = Template.bind( {} );
 Ready.storyName = 'Ready';
 
 export default {
-	title: 'Components/ThankWithGooglePromptSupporterWall',
+	title: 'Components/ThankWithGoogleSupporterWallNotification',
 	decorators: [
 		( Story ) => {
 			const setupRegistry = ( registry ) => {
