@@ -44,8 +44,31 @@ const fetchGetSupporterWallSidebars = createFetchStore( {
 	},
 } );
 
+const fetchGetPromptSupporterWallStore = createFetchStore( {
+	baseName: 'getPromptSupporterWall',
+	storeName: MODULES_THANK_WITH_GOOGLE,
+	controlCallback: () => {
+		return API.get(
+			'modules',
+			'thank-with-google',
+			'prompt-supporter-wall',
+			null,
+			{
+				useCache: false,
+			}
+		);
+	},
+	reducerCallback: ( state, promptSupporterWall ) => {
+		return {
+			...state,
+			promptSupporterWall,
+		};
+	},
+} );
+
 const baseInitialState = {
 	supporterWallSidebars: undefined,
+	promptSupporterWall: undefined,
 };
 
 const baseResolvers = {
@@ -79,11 +102,15 @@ const baseSelectors = {
 	},
 };
 
-const store = Data.combineStores( fetchGetSupporterWallSidebars, {
-	initialState: baseInitialState,
-	resolvers: baseResolvers,
-	selectors: baseSelectors,
-} );
+const store = Data.combineStores(
+	fetchGetSupporterWallSidebars,
+	fetchGetPromptSupporterWallStore,
+	{
+		initialState: baseInitialState,
+		resolvers: baseResolvers,
+		selectors: baseSelectors,
+	}
+);
 
 export const initialState = store.initialState;
 export const actions = store.actions;
