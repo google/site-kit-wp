@@ -10,11 +10,15 @@
 
 namespace Google\Site_Kit\Modules;
 
+use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Assets\Asset;
+use Google\Site_Kit\Core\Assets\Assets;
+use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Assets\Script;
 use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_Settings;
+use Google\Site_Kit\Core\Modules\Module_With_Activation;
 use Google\Site_Kit\Core\Modules\Module_With_Assets;
 use Google\Site_Kit\Core\Modules\Module_With_Assets_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Deactivation;
@@ -26,6 +30,9 @@ use Google\Site_Kit\Core\Modules\Module_With_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\REST_API\Exception\Invalid_Datapoint_Exception;
+use Google\Site_Kit\Core\Storage\Options;
+use Google\Site_Kit\Core\Storage\Transients;
+use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Environment_Type_Guard;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Verify_Guard;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
@@ -47,7 +54,7 @@ use WP_Error;
  * @ignore
  */
 final class Thank_With_Google extends Module
-	implements Module_With_Assets, Module_With_Deactivation, Module_With_Owner, Module_With_Scopes, Module_With_Settings {
+	implements Module_With_Assets, Module_With_Activation, Module_With_Deactivation, Module_With_Owner, Module_With_Scopes, Module_With_Settings {
 	use Method_Proxy_Trait;
 	use Module_With_Assets_Trait;
 	use Module_With_Owner_Trait;
@@ -58,6 +65,42 @@ final class Thank_With_Google extends Module
 	 * Module slug name.
 	 */
 	const MODULE_SLUG = 'thank-with-google';
+
+	/**
+	 * Transient created on module activation.
+	 */
+	const TRANSIENT_SETUP_TIMER = 'googlesitekit_thank_with_google_setup';
+
+	/**
+	 * Transients instance.
+	 *
+	 * @since n.e.x.t
+	 * @var Transients
+	 */
+	private $transients;
+
+	/**
+	 * Constructor.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param Context        $context        Plugin context.
+	 * @param Options        $options        Optional. Option API instance. Default is a new instance.
+	 * @param User_Options   $user_options   Optional. User Option API instance. Default is a new instance.
+	 * @param Authentication $authentication Optional. Authentication instance. Default is a new instance.
+	 * @param Assets         $assets         Optional. Assets API instance. Default is a new instance.
+	 */
+	public function __construct(
+		Context $context,
+		Options $options = null,
+		User_Options $user_options = null,
+		Authentication $authentication = null,
+		Assets $assets = null
+	) {
+		parent::__construct( $context, $options, $user_options, $authentication, $assets );
+
+		$this->transients = new Transients( $this->context );
+	}
 
 	/**
 	 * Registers functionality through WordPress hooks.
@@ -139,6 +182,16 @@ final class Thank_With_Google extends Module
 		}
 
 		return parent::is_connected();
+	}
+
+	/**
+	 * Starts a seven day timer which is used to display the supporter wall
+	 * banner notification prompt.
+	 *
+	 * @since n.e.x.t
+	 */
+	public function on_activation() {
+		$this->transients->set( self::TRANSIENT_SETUP_TIMER, time(), WEEK_IN_SECONDS );
 	}
 
 	/**
@@ -228,6 +281,7 @@ final class Thank_With_Google extends Module
 		return array(
 			'GET:publications'            => array( 'service' => 'subscribewithgoogle' ),
 			'GET:supporter-wall-sidebars' => array( 'service' => '' ),
+			'GET:prompt-supporter-wall'   => array( 'service' => '' ),
 		);
 	}
 
@@ -324,6 +378,15 @@ final class Thank_With_Google extends Module
 					}
 
 					return array_values( $sidebars );
+				};
+			case 'GET:prompt-supporter-wall':
+				return function() {
+					$is_connected    = $this->is_connected();
+					$setup_transient = $this->transients->get( self::TRANSIENT_SETUP_TIMER );
+					if ( $is_connected && $setup_transient ) {
+						return true;
+					}
+					return false;
 				};
 		}
 
