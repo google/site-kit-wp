@@ -33,7 +33,7 @@ const { useSelect } = Data;
 
 export default function ThankWithGooglePromptSupporterWall() {
 	const promptSupporterWall = useSelect( ( select ) =>
-		select( MODULES_THANK_WITH_GOOGLE ).getPromptSupporterWall()
+		select( MODULES_THANK_WITH_GOOGLE ).getSupporterWallPrompt()
 	);
 	const supporterWallURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getWidgetsAdminURL()

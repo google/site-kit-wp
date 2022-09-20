@@ -27,8 +27,8 @@ import { MODULES_THANK_WITH_GOOGLE } from './constants';
 describe( 'modules/thank-with-google supporter-wall', () => {
 	const supporterWallSidebarsEndpoint =
 		/^\/google-site-kit\/v1\/modules\/thank-with-google\/data\/supporter-wall-sidebars/;
-	const promptSupporterWallEndpoint =
-		/^\/google-site-kit\/v1\/modules\/thank-with-google\/data\/prompt-supporter-wall/;
+	const supporterWallPromptEndpoint =
+		/^\/google-site-kit\/v1\/modules\/thank-with-google\/data\/supporter-wall-prompt/;
 
 	let registry;
 
@@ -112,28 +112,28 @@ describe( 'modules/thank-with-google supporter-wall', () => {
 			} );
 		} );
 
-		describe( 'getPromptSupporterWall', () => {
-			it( 'should use a resolver to get prompt transient state when requested', async () => {
-				fetchMock.getOnce( promptSupporterWallEndpoint, {
+		describe( 'getSupporterWallPrompt', () => {
+			it( 'should use a resolver to get supporter wall prompt data when requested', async () => {
+				fetchMock.getOnce( supporterWallPromptEndpoint, {
 					body: true,
 				} );
 
-				// The prompt supporter wall state will be `undefined` whilst loading.
+				// The supporter wall prompt state will be `undefined` whilst loading.
 				expect(
 					registry
 						.select( MODULES_THANK_WITH_GOOGLE )
-						.getPromptSupporterWall()
+						.getSupporterWallPrompt()
 				).toBeUndefined();
 
 				// Wait for loading to complete.
 				await untilResolved(
 					registry,
 					MODULES_THANK_WITH_GOOGLE
-				).getPromptSupporterWall();
+				).getSupporterWallPrompt();
 
 				const promptSupporterWall = registry
 					.select( MODULES_THANK_WITH_GOOGLE )
-					.getPromptSupporterWall();
+					.getSupporterWallPrompt();
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( promptSupporterWall ).toEqual( true );
@@ -146,23 +146,23 @@ describe( 'modules/thank-with-google supporter-wall', () => {
 					data: { status: 500 },
 				};
 
-				fetchMock.getOnce( promptSupporterWallEndpoint, {
+				fetchMock.getOnce( supporterWallPromptEndpoint, {
 					body: response,
 					status: 500,
 				} );
 
 				registry
 					.select( MODULES_THANK_WITH_GOOGLE )
-					.getPromptSupporterWall();
+					.getSupporterWallPrompt();
 
 				await untilResolved(
 					registry,
 					MODULES_THANK_WITH_GOOGLE
-				).getPromptSupporterWall();
+				).getSupporterWallPrompt();
 
 				const promptSupporterWall = registry
 					.select( MODULES_THANK_WITH_GOOGLE )
-					.getPromptSupporterWall();
+					.getSupporterWallPrompt();
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( promptSupporterWall ).toEqual( undefined );
@@ -172,11 +172,11 @@ describe( 'modules/thank-with-google supporter-wall', () => {
 			it( 'should not make a network request if data is already in state', () => {
 				registry
 					.dispatch( MODULES_THANK_WITH_GOOGLE )
-					.receiveGetPromptSupporterWall( true );
+					.receiveGetSupporterWallPrompt( true );
 
 				const promptSupporterWall = registry
 					.select( MODULES_THANK_WITH_GOOGLE )
-					.getPromptSupporterWall();
+					.getSupporterWallPrompt();
 
 				expect( fetchMock ).not.toHaveFetched();
 				expect( promptSupporterWall ).toEqual( true );

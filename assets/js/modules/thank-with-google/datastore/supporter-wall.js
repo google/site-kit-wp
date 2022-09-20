@@ -44,14 +44,14 @@ const fetchGetSupporterWallSidebars = createFetchStore( {
 	},
 } );
 
-const fetchGetPromptSupporterWallStore = createFetchStore( {
-	baseName: 'getPromptSupporterWall',
+const fetchGetSupporterWallPromptStore = createFetchStore( {
+	baseName: 'getSupporterWallPrompt',
 	storeName: MODULES_THANK_WITH_GOOGLE,
 	controlCallback: () => {
 		return API.get(
 			'modules',
 			'thank-with-google',
-			'prompt-supporter-wall',
+			'supporter-wall-prompt',
 			null,
 			{
 				useCache: false,
@@ -87,11 +87,11 @@ const baseResolvers = {
 		yield fetchGetSupporterWallSidebars.actions.fetchGetSupporterWallSidebars();
 	},
 
-	*getPromptSupporterWall() {
+	*getSupporterWallPrompt() {
 		const registry = yield Data.commonActions.getRegistry();
 		const promptSupporterWall = registry
 			.select( MODULES_THANK_WITH_GOOGLE )
-			.getPromptSupporterWall();
+			.getSupporterWallPrompt();
 
 		// If there are already promptSupporterWall loaded in the state, consider it fulfilled
 		// and don't make an API request.
@@ -99,7 +99,7 @@ const baseResolvers = {
 			return;
 		}
 
-		yield fetchGetPromptSupporterWallStore.actions.fetchGetPromptSupporterWall();
+		yield fetchGetSupporterWallPromptStore.actions.fetchGetSupporterWallPrompt();
 	},
 };
 
@@ -117,21 +117,21 @@ const baseSelectors = {
 	},
 
 	/**
-	 * Gets the transient state for the supporter wall from the server.
+	 * Gets the the supporter wall prompt data from the server.
 	 *
 	 * @since n.e.x.t
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(boolean|undefined| null)} `true` if the transient state for the supporter wall is available, `false` if not; `undefined` if it is not loaded yet.
 	 */
-	getPromptSupporterWall( state ) {
+	getSupporterWallPrompt( state ) {
 		return state.promptSupporterWall;
 	},
 };
 
 const store = Data.combineStores(
 	fetchGetSupporterWallSidebars,
-	fetchGetPromptSupporterWallStore,
+	fetchGetSupporterWallPromptStore,
 	{
 		initialState: baseInitialState,
 		resolvers: baseResolvers,
