@@ -272,6 +272,59 @@ final class Thank_With_Google extends Module
 	}
 
 	/**
+	 * Gets the supporter wall sidebars.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array list of supporter wall sidebars, otherwise an empty list.
+	 */
+	protected function get_supporter_wall_sidebars() {
+		$sidebars      = array();
+		$all_sidebars  = wp_get_sidebars_widgets();
+		$block_widgets = get_option( 'widget_block' );
+
+		$pattern = sprintf( '/^%s[0-9]+$/i', preg_quote( Supporter_Wall_Widget::WIDGET_ID . '-', '/' ) );
+		$substr  = sprintf( '"idBase":"%s"', Supporter_Wall_Widget::WIDGET_ID );
+
+		$actual_sidebars_count = 0;
+		foreach ( $all_sidebars as $sidebar_id => $widgets ) {
+			// Skip the inactive widgets sidebar because it is not an actual sidebar.
+			if ( 'wp_inactive_widgets' === $sidebar_id ) {
+				continue;
+			}
+
+			$actual_sidebars_count++;
+
+			$sidebar = wp_get_sidebar( $sidebar_id );
+			foreach ( $widgets as $widget ) {
+				$block_match = array();
+				if ( preg_match( $pattern, $widget ) ) {
+					$sidebars[ $sidebar_id ] = $sidebar['name'];
+					break;
+				} elseif (
+					preg_match( '/block-(\d+)/', $widget, $block_match ) &&
+					stripos( $block_widgets[ $block_match[1] ]['content'], $substr ) > 0
+				) {
+					$sidebars[ $sidebar_id ] = ucfirst( $sidebar['name'] );
+					break;
+				}
+			}
+		}
+
+		if (
+				// Only show the "All sidebars" text if there is more
+				// than one sidebar.
+				$actual_sidebars_count > 1 &&
+				count( $sidebars ) === $actual_sidebars_count
+			) {
+			return array( __( 'All sidebars', 'google-site-kit' ) );
+		}
+
+		return array_values( $sidebars );
+
+	}
+
+	/**
 	 * Gets map of datapoint to definition data for each.
 	 *
 	 * @since 1.79.0
@@ -281,7 +334,7 @@ final class Thank_With_Google extends Module
 		return array(
 			'GET:publications'            => array( 'service' => 'subscribewithgoogle' ),
 			'GET:supporter-wall-sidebars' => array( 'service' => '' ),
-			'GET:prompt-supporter-wall'   => array( 'service' => '' ),
+			'GET:supporter-wall-prompt'   => array( 'service' => '' ),
 		);
 	}
 
@@ -336,54 +389,14 @@ final class Thank_With_Google extends Module
 				);
 			case 'GET:supporter-wall-sidebars':
 				return function() {
-					$sidebars      = array();
-					$all_sidebars  = wp_get_sidebars_widgets();
-					$block_widgets = get_option( 'widget_block' );
-
-					$pattern = sprintf( '/^%s[0-9]+$/i', preg_quote( Supporter_Wall_Widget::WIDGET_ID . '-', '/' ) );
-					$substr  = sprintf( '"idBase":"%s"', Supporter_Wall_Widget::WIDGET_ID );
-
-					$actual_sidebars_count = 0;
-					foreach ( $all_sidebars as $sidebar_id => $widgets ) {
-						// Skip the inactive widgets sidebar because it is not an actual sidebar.
-						if ( 'wp_inactive_widgets' === $sidebar_id ) {
-							continue;
-						}
-
-						$actual_sidebars_count++;
-
-						$sidebar = wp_get_sidebar( $sidebar_id );
-						foreach ( $widgets as $widget ) {
-							$block_match = array();
-							if ( preg_match( $pattern, $widget ) ) {
-								$sidebars[ $sidebar_id ] = $sidebar['name'];
-								break;
-							} elseif (
-								preg_match( '/block-(\d+)/', $widget, $block_match ) &&
-								stripos( $block_widgets[ $block_match[1] ]['content'], $substr ) > 0
-							) {
-								$sidebars[ $sidebar_id ] = ucfirst( $sidebar['name'] );
-								break;
-							}
-						}
-					}
-
-					if (
-						// Only show the "All sidebars" text if there is more
-						// than one sidebar.
-						$actual_sidebars_count > 1 &&
-						count( $sidebars ) === $actual_sidebars_count
-					) {
-						return array( __( 'All sidebars', 'google-site-kit' ) );
-					}
-
-					return array_values( $sidebars );
+					return $this->get_supporter_wall_sidebars();
 				};
-			case 'GET:prompt-supporter-wall':
+			case 'GET:supporter-wall-prompt':
 				return function() {
-					$is_connected    = $this->is_connected();
-					$setup_transient = $this->transients->get( self::TRANSIENT_SETUP_TIMER );
-					if ( $is_connected && $setup_transient ) {
+					$supporter_wall_sidebars = $this->get_supporter_wall_sidebars();
+					$is_connected            = $this->is_connected();
+					$setup_transient         = $this->transients->get( self::TRANSIENT_SETUP_TIMER );
+					if ( $is_connected && empty( $supporter_wall_sidebars ) && ! $setup_transient ) {
 						return true;
 					}
 					return false;
