@@ -131,12 +131,12 @@ describe( 'modules/thank-with-google supporter-wall', () => {
 					MODULES_THANK_WITH_GOOGLE
 				).getSupporterWallPrompt();
 
-				const promptSupporterWall = registry
+				const supporterWallPrompt = registry
 					.select( MODULES_THANK_WITH_GOOGLE )
 					.getSupporterWallPrompt();
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
-				expect( promptSupporterWall ).toEqual( true );
+				expect( supporterWallPrompt ).toEqual( true );
 			} );
 
 			it( 'should dispatch an error if the request fails', async () => {
@@ -160,12 +160,12 @@ describe( 'modules/thank-with-google supporter-wall', () => {
 					MODULES_THANK_WITH_GOOGLE
 				).getSupporterWallPrompt();
 
-				const promptSupporterWall = registry
+				const supporterWallPrompt = registry
 					.select( MODULES_THANK_WITH_GOOGLE )
 					.getSupporterWallPrompt();
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
-				expect( promptSupporterWall ).toEqual( undefined );
+				expect( supporterWallPrompt ).toEqual( undefined );
 				expect( console ).toHaveErrored();
 			} );
 
@@ -174,12 +174,12 @@ describe( 'modules/thank-with-google supporter-wall', () => {
 					.dispatch( MODULES_THANK_WITH_GOOGLE )
 					.receiveGetSupporterWallPrompt( true );
 
-				const promptSupporterWall = registry
+				const supporterWallPrompt = registry
 					.select( MODULES_THANK_WITH_GOOGLE )
 					.getSupporterWallPrompt();
 
 				expect( fetchMock ).not.toHaveFetched();
-				expect( promptSupporterWall ).toEqual( true );
+				expect( supporterWallPrompt ).toEqual( true );
 			} );
 		} );
 	} );

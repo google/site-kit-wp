@@ -58,17 +58,17 @@ const fetchGetSupporterWallPromptStore = createFetchStore( {
 			}
 		);
 	},
-	reducerCallback: ( state, promptSupporterWall ) => {
+	reducerCallback: ( state, supporterWallPrompt ) => {
 		return {
 			...state,
-			promptSupporterWall,
+			supporterWallPrompt,
 		};
 	},
 } );
 
 const baseInitialState = {
 	supporterWallSidebars: undefined,
-	promptSupporterWall: undefined,
+	supporterWallPrompt: undefined,
 };
 
 const baseResolvers = {
@@ -89,13 +89,13 @@ const baseResolvers = {
 
 	*getSupporterWallPrompt() {
 		const registry = yield Data.commonActions.getRegistry();
-		const promptSupporterWall = registry
+		const supporterWallPrompt = registry
 			.select( MODULES_THANK_WITH_GOOGLE )
 			.getSupporterWallPrompt();
 
-		// If there are already promptSupporterWall loaded in the state, consider it fulfilled
+		// If there are already supporterWallPrompt loaded in the state, consider it fulfilled
 		// and don't make an API request.
-		if ( promptSupporterWall !== undefined ) {
+		if ( supporterWallPrompt !== undefined ) {
 			return;
 		}
 
@@ -125,7 +125,7 @@ const baseSelectors = {
 	 * @return {(boolean|undefined| null)} `true` if the transient state for the supporter wall is available, `false` if not; `undefined` if it is not loaded yet.
 	 */
 	getSupporterWallPrompt( state ) {
-		return state.promptSupporterWall;
+		return state.supporterWallPrompt;
 	},
 };
 
