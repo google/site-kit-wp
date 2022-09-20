@@ -115,6 +115,18 @@ const baseSelectors = {
 	getSupporterWallSidebars( state ) {
 		return state.supporterWallSidebars;
 	},
+
+	/**
+	 * Gets the transient state for the supporter wall from the server.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(boolean|undefined| null)} `true` if the transient state for the supporter wall is available, `false` if not; `undefined` if it is not loaded yet.
+	 */
+	getPromptSupporterWall( state ) {
+		return state.promptSupporterWall;
+	},
 };
 
 const store = Data.combineStores(
