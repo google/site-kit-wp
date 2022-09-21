@@ -24,7 +24,7 @@ import produce from 'immer';
 /**
  * Creates an Immer-enabled reducer.
  *
- * @since n.e.x.t
+ * @since 1.84.0
  *
  * @param {Function} reducerFunction A reducer function that follows the curried Immer recipe pattern.
  * @return {Function} An Immer-enabled reducer.

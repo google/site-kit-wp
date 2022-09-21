@@ -13,7 +13,7 @@ namespace Google\Site_Kit\Core\Util;
 /**
  * Class for custom URL parsing methods.
  *
- * @since n.e.x.t
+ * @since 1.84.0
  * @access private
  * @ignore
  */
@@ -23,7 +23,7 @@ class URL {
 	 * Parses URLs with UTF-8 multi-byte characters,
 	 * otherwise similar to `wp_parse_url()`.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.84.0
 	 *
 	 * @param string $url       The URL to parse.
 	 * @param int    $component The specific component to retrieve. Use one of the PHP
@@ -69,7 +69,7 @@ class URL {
 	/**
 	 * Replacement for parse_url which is UTF-8 multi-byte character aware.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.84.0
 	 *
 	 * @param string $url The URL to parse.
 	 * @return mixed False on parse failure; Array of URL components on success
