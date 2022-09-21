@@ -45,7 +45,7 @@ export default function ThankWithGoogleSupporterWallNotification() {
 
 	return (
 		<BannerNotification
-			id="twg-prompt-supporter-wall"
+			id="twg-supporter-wall-prompt"
 			title={ __(
 				'Add a Thank with Google supporter wall',
 				'google-site-kit'
