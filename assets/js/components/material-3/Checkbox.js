@@ -70,38 +70,64 @@ export default function Checkbox( {
 	onContextMenu,
 } ) {
 	const ref = useRef( null );
-	const [ index, setIndex ] = useState( 0 );
+
+	// This is a reference to the Hackathon approach, which forced a rerender of the web component
+	// by setting a new key for each change. For production it's preferable to avoid this rendering overhead.
+	// const [ index, setIndex ] = useState( 0 );
 
 	useEffect( () => {
 		const { current } = ref;
 
-		// current.handleChange;
-
 		const change = ( event ) => {
 			console.log( 'change', event );
-			event.preventDefault();
-			event.stopPropagation();
-			onChange?.( event );
-			setIndex( index + 1 );
-		};
 
-		const cancelEvent = ( event ) => {
-			console.log( 'cancelEvent', event );
+			// Preventing default behaviour has no effect here.
 			// event.preventDefault();
-
 			// event.stopPropagation();
+
+			onChange?.( event );
+
+			// Need to maintain/restore state to use as a controlled input.
+			// This works for a regular checkbox, but not (yet?) for a Material checkbox.
+			// current.checked = checked;
+			// current.indeterminate = indeterminate;
+
+			// setIndex( index + 1 );
 		};
 
 		current?.addEventListener( 'change', change );
-		current?.addEventListener( 'click', cancelEvent );
-		// current?.addEventListener( 'pointerdown', cancelEvent );
-		// current?.addEventListener( 'pointerup', cancelEvent );
+		// The 'action' event is dispatched by the ActionElement base class of the Material checkbox. See ActionElement source for details.
+		// current?.addEventListener( 'action', cancelEvent );
+
+		const click = ( event ) => {
+			console.log( 'click', event );
+
+			// Prevent default and manually dispatch a change event, in order to retain checkbox state and use as a controlled input.
+			event.preventDefault();
+
+			if ( disabled ) {
+				return;
+			}
+
+			// Could simply invoke onChange here, forgoing the event bubbling etc.
+			current.dispatchEvent(
+				new Event( 'change', {
+					bubbles: true,
+					composed: true,
+				} )
+			);
+		};
+
+		// The click event is triggered by both mouse and keyboard entry (space key) on Chrome, need to confirm other browsers.
+		current?.addEventListener( 'click', click );
+
 		return () => {
 			current?.removeEventListener( 'change', change );
-			current?.removeEventListener( 'click', cancelEvent );
+			current?.removeEventListener( 'click', click );
 		};
-	}, [ onChange, index, setIndex ] );
-	// }, [ ref.current, onChange, index, setIndex ] );
+	}, [ onChange ] );
+
+	// TODO: Change theme colour to match expected ?
 
 	return (
 		<md-checkbox
