@@ -294,7 +294,7 @@ final class Modules {
 			function( $assets ) use ( $available_modules ) {
 				foreach ( $available_modules as $module ) {
 					if ( $module instanceof Module_With_Assets ) {
-						$assets = array_merge( $assets, $module->get_assets() );
+						$assets = array_merge( $assets, $module->get_assets( $available_modules ) );
 					}
 				}
 				return $assets;
@@ -812,9 +812,9 @@ final class Modules {
 		$available_modules = $this->get_available_modules();
 		array_walk(
 			$available_modules,
-			function( Module $module ) {
+			function( Module $module ) use ( $available_modules ) {
 				if ( $module instanceof Module_With_Assets ) {
-					$module->enqueue_assets();
+					$module->enqueue_assets( $available_modules );
 				}
 			}
 		);

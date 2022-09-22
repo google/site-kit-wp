@@ -195,10 +195,12 @@ final class Thank_With_Google extends Module
 	 * Sets up the module's assets to register.
 	 *
 	 * @since 1.78.0
+	 * @since n.e.x.t Added the $available_modules parameter.
 	 *
+	 * @param array $available_modules Associative array of module slug to module instance, as returned from {@see Modules::get_available_modules()}.
 	 * @return Asset[] List of Asset objects.
 	 */
-	protected function setup_assets() {
+	protected function setup_assets( array $available_modules ) {
 		$base_url = $this->context->url( 'dist/assets/' );
 
 		return array(
