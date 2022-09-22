@@ -87,11 +87,10 @@ class ModulesTest extends TestCase {
 		);
 
 		// Analytics is no longer present due to the filter above.
-		// Optimize is no longer present due to its dependency on Analytics.
+		// Analytics-4 and Optimize are no longer present due to their dependency on Analytics.
 		$this->assertEqualSetsWithIndex(
 			array(
 				'adsense'            => 'Google\\Site_Kit\\Modules\\AdSense',
-				'analytics-4'        => 'Google\\Site_Kit\\Modules\\Analytics_4',
 				'pagespeed-insights' => 'Google\\Site_Kit\\Modules\\PageSpeed_Insights',
 				'search-console'     => 'Google\\Site_Kit\\Modules\\Search_Console',
 				'site-verification'  => 'Google\\Site_Kit\\Modules\\Site_Verification',
