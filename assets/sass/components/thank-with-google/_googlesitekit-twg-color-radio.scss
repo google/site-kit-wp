@@ -26,13 +26,14 @@
 			.image-radio .mdc-image-radio__background {
 
 				.mdc-image-radio__content {
+					border: none;
 					border-radius: 50%;
-					height: 44px;
+					height: 36px;
 					min-height: 0;
 					outline: none;
 					overflow: hidden;
 					position: relative;
-					width: 44px;
+					width: 36px;
 
 					svg {
 						height: 50px;
@@ -45,7 +46,8 @@
 				}
 
 				.mdc-image-radio__content[aria-checked="true"] {
-					outline: 0.1875rem solid;
+					outline: 2px solid;
+					outline-offset: 7px;
 				}
 
 				&[aria-checked="true"] {
