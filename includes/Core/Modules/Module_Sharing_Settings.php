@@ -109,9 +109,9 @@ class Module_Sharing_Settings extends Setting {
 	 * @since n.e.x.t.
 	 *
 	 * @param array $shared_roles The shared roles list.
-	 * @return boolean The sanitized shared roles list.
+	 * @return string[] The sanitized shared roles list.
 	 */
-	private function filter_shared_roles( $shared_roles ) {
+	private function filter_shared_roles( array $shared_roles ) {
 		$filtered_shared_roles = array_filter(
 			$shared_roles,
 			function( $role_slug ) {
