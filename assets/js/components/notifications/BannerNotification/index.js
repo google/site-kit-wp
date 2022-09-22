@@ -23,6 +23,7 @@ import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import map from 'lodash/map';
 import { useMount, useMountedState } from 'react-use';
+import { stringToDate } from '../../../util/date-range/string-to-date';
 
 /*
  * WordPress dependencies
@@ -203,7 +204,7 @@ function BannerNotification( {
 		const { value: dismissed } = await getItem( cacheKeyDismissed );
 
 		if ( dismissed ) {
-			const expiration = new Date( dismissed );
+			const expiration = stringToDate( dismissed );
 			expiration.setSeconds(
 				expiration.getSeconds() + parseInt( dismissExpires, 10 )
 			);

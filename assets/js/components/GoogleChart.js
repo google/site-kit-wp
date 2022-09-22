@@ -29,6 +29,7 @@ import { Chart } from 'react-google-charts';
 import set from 'lodash/set';
 import cloneDeep from 'lodash/cloneDeep';
 import merge from 'lodash/merge';
+import { stringToDate } from '../util/date-range/string-to-date';
 
 /**
  * WordPress dependencies
@@ -214,11 +215,19 @@ export default function GoogleChart( props ) {
 			set( chartOptions, 'vAxis.viewWindow.max', 100 );
 		}
 		if ( ! options?.hAxis?.viewWindow?.min ) {
-			set( chartOptions, 'hAxis.viewWindow.min', new Date( startDate ) );
+			set(
+				chartOptions,
+				'hAxis.viewWindow.min',
+				stringToDate( startDate )
+			);
 			delete chartOptions.hAxis.ticks;
 		}
 		if ( ! options?.hAxis?.viewWindow?.max ) {
-			set( chartOptions, 'hAxis.viewWindow.max', new Date( endDate ) );
+			set(
+				chartOptions,
+				'hAxis.viewWindow.max',
+				stringToDate( endDate )
+			);
 			delete chartOptions.hAxis.ticks;
 		}
 	}

@@ -20,6 +20,7 @@
  * External dependencies
  */
 import each from 'lodash/each';
+import { stringToDate } from '../../../util/date-range/string-to-date';
 
 export * from './is-zero-report';
 export * from './parsing';
@@ -39,7 +40,7 @@ export function reduceAdSenseData( rows ) {
 	];
 
 	each( rows, ( row ) => {
-		const date = new Date( row.cells[ 0 ].value );
+		const date = stringToDate( row.cells[ 0 ].value );
 		dataMap.push( [
 			date,
 			row.cells[ 2 ].value,

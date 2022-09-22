@@ -24,6 +24,7 @@ import faker from 'faker';
 import md5 from 'md5';
 import { range } from 'rxjs';
 import { map, reduce, take } from 'rxjs/operators';
+import { stringToDate } from '../../../util/date-range/string-to-date';
 import isPlainObject from 'lodash/isPlainObject';
 
 /**
@@ -69,8 +70,8 @@ export function getSearchConsoleMockResponse( args ) {
 
 	const report = [];
 
-	const startDate = new Date( args.startDate );
-	const endDate = new Date( args.endDate );
+	const startDate = stringToDate( args.startDate );
+	const endDate = stringToDate( args.endDate );
 	const dayInMilliseconds = 24 * 60 * 60 * 1000;
 	const totalDays = 1 + ( endDate - startDate ) / dayInMilliseconds; // +1 to include the endDate into the dates range.
 
@@ -78,9 +79,7 @@ export function getSearchConsoleMockResponse( args ) {
 	const ops = [
 		// Converts range number to a date string.
 		map( ( item ) =>
-			getDateString(
-				new Date( startDate ).setDate( startDate.getDate() + item )
-			)
+			getDateString( startDate.setDate( startDate.getDate() + item ) )
 		),
 		// Add dimension and metric values.
 		map( ( date ) => ( {
