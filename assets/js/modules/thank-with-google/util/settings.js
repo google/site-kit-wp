@@ -160,6 +160,10 @@ export function getPlacementLabel( ctaPlacement ) {
  * @return {string} Formatted string of ctaPostTypes.
  */
 export function getCTAPostTypesString( ctaPostTypes, postTypes ) {
+	if ( ! ctaPostTypes ) {
+		return '';
+	}
+
 	if ( ! postTypes || postTypes.length === 0 ) {
 		return ctaPostTypes.join( ', ' );
 	}

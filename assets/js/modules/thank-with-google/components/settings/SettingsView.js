@@ -72,15 +72,6 @@ export default function SettingsView() {
 		select( MODULES_THANK_WITH_GOOGLE ).getCTAPostTypes()
 	);
 
-	// Bail if the values aren't ready.
-	if (
-		[ publicationID, ctaPlacement, colorTheme, ctaPostTypes ].includes(
-			undefined
-		)
-	) {
-		return null;
-	}
-
 	let supporterWall;
 
 	if ( supporterWallSidebars === undefined ) {
