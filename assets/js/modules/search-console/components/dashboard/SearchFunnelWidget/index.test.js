@@ -21,7 +21,6 @@ import {
 	createTestRegistry,
 	provideModules,
 	provideUserCapabilities,
-	waitForElementToBeRemoved,
 	provideUserInfo,
 	provideUserAuthentication,
 	provideSiteInfo,
@@ -69,14 +68,12 @@ describe( 'SearchFunnelWidget', () => {
 	} );
 
 	it( 'should render the Search Funnel Widget, including the Activate Analytics CTA', async () => {
-		const { container, getByText } = render(
+		const { container, getByText, waitForRegistry } = render(
 			<SearchFunnelWidget { ...widgetComponentProps } />,
 			{ registry }
 		);
 
-		await waitForElementToBeRemoved(
-			document.querySelector( '.googlesitekit-preview-block' )
-		);
+		await waitForRegistry();
 
 		expect( container ).toMatchSnapshot();
 
@@ -92,14 +89,12 @@ describe( 'SearchFunnelWidget', () => {
 				)
 			);
 
-		const { container, queryByText } = render(
+		const { container, queryByText, waitForRegistry } = render(
 			<SearchFunnelWidget { ...widgetComponentProps } />,
 			{ registry }
 		);
 
-		await waitForElementToBeRemoved(
-			document.querySelector( '.googlesitekit-preview-block' )
-		);
+		await waitForRegistry();
 
 		expect( container ).toMatchSnapshot();
 

@@ -21,7 +21,6 @@ import {
 	createTestRegistry,
 	provideModules,
 	provideUserCapabilities,
-	waitForElementToBeRemoved,
 } from '../../../../tests/js/test-utils';
 import coreModulesFixture from '../../googlesitekit/modules/datastore/__fixtures__';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
@@ -52,13 +51,14 @@ describe( 'AdminBarWidgets', () => {
 	} );
 
 	it( 'should render the Admin Bar Widgets, including the Activate Analytics CTA', async () => {
-		const { container, getByText } = render( <AdminBarWidgets />, {
-			registry,
-		} );
-
-		await waitForElementToBeRemoved(
-			document.querySelector( '.googlesitekit-preview-block' )
+		const { container, getByText, waitForRegistry } = render(
+			<AdminBarWidgets />,
+			{
+				registry,
+			}
 		);
+
+		await waitForRegistry();
 
 		expect( container ).toMatchSnapshot();
 
@@ -74,13 +74,14 @@ describe( 'AdminBarWidgets', () => {
 				)
 			);
 
-		const { container, queryByText } = render( <AdminBarWidgets />, {
-			registry,
-		} );
-
-		await waitForElementToBeRemoved(
-			document.querySelector( '.googlesitekit-preview-block' )
+		const { container, queryByText, waitForRegistry } = render(
+			<AdminBarWidgets />,
+			{
+				registry,
+			}
 		);
+
+		await waitForRegistry();
 
 		expect( container ).toMatchSnapshot();
 
