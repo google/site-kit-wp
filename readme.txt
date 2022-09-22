@@ -4,7 +4,7 @@ Contributors:      google
 Requires at least: 4.7
 Tested up to:      6.0
 Requires PHP:      5.6
-Stable tag:        1.83.0
+Stable tag:        1.84.0
 License:           Apache License 2.0
 License URI:       https://www.apache.org/licenses/LICENSE-2.0
 Tags:              google, search-console, analytics, adsense, pagespeed-insights, optimize, tag-manager, site-kit
@@ -108,13 +108,42 @@ Please create a new topic on our [WordPress.org support forum](https://wordpress
 
 == Changelog ==
 
+= 1.84.0 =
+
+**Enhanced**
+
+* Show an informative message on the GA4 Activation Banner for the variants of the Setup Banner where a GA4 property does exist, when "Set up a new property" is selected while the edit scope is missing. See [#5805](https://github.com/google/site-kit-wp/issues/5805).
+* Add default values for Thank with Google settings on the customization screen. See [#5757](https://github.com/google/site-kit-wp/issues/5757).
+* Fix layout for module names when displayed with badges on the Settings page in mobile viewports. See [#5749](https://github.com/google/site-kit-wp/issues/5749).
+* Improve layout of services badges in mobile viewport. See [#5746](https://github.com/google/site-kit-wp/issues/5746).
+* Show button to complete Google Analytics 4 setup in settings. See [#5621](https://github.com/google/site-kit-wp/issues/5621).
+* Add selector to retrieve meta-data for a given error. See [#5618](https://github.com/google/site-kit-wp/issues/5618).
+* Finalize Thank with Google links to the Publisher Center. See [#5537](https://github.com/google/site-kit-wp/issues/5537).
+* Remove legacy widget area constants. See [#5476](https://github.com/google/site-kit-wp/issues/5476).
+* Add a button to reset Dashboard Sharing permissions. See [#5445](https://github.com/google/site-kit-wp/issues/5445).
+* Update the icon on the button for exiting the "Edit roles" UI on the Dashboard Sharing modal. See [#5437](https://github.com/google/site-kit-wp/issues/5437).
+* Improve recoverable modules list handling in Dashboard Sharing. See [#5287](https://github.com/google/site-kit-wp/issues/5287).
+* Automatically continue creating/connecting a GA4 property on the GA4 Activation Banner upon return from the OAuth flow. See [#5282](https://github.com/google/site-kit-wp/issues/5282).
+* Redirect to the OAuth flow from the GA4 Activation Banner to provide the Analytics edit scope when needed. See [#5278](https://github.com/google/site-kit-wp/issues/5278).
+* Add a GA4 upgrade reminder notification for users who have not connected Google Analytics 4. See [#5273](https://github.com/google/site-kit-wp/issues/5273).
+* Add `createReducer` utility that uses Immer. See [#4864](https://github.com/google/site-kit-wp/issues/4864).
+
+**Changed**
+
+* Update the design of the "chip" components in the Thank with Google settings. See [#5754](https://github.com/google/site-kit-wp/issues/5754).
+* In the Analytics set up, change the wording when an existing Analytics property was found via GTM. See [#5648](https://github.com/google/site-kit-wp/issues/5648).
+* Remove unused `ModulesList` and `ModulesListItem`, and their related Storybook stories. Props GP391018. See [#5471](https://github.com/google/site-kit-wp/issues/5471).
+
+**Fixed**
+
+* Ensure GA4 activation banner is displayed when returning from granting additional scopes after setting up GA4 instead of generic success banner. See [#5837](https://github.com/google/site-kit-wp/issues/5837).
+* Move the GA4 Activation Banner above the Zero State Banners in the list of banner notifications so that it shows up with higher priority. See [#5823](https://github.com/google/site-kit-wp/issues/5823).
+* Fix issue with buttons in Thank with Google settings on very small screens. See [#5752](https://github.com/google/site-kit-wp/issues/5752).
+* Fix color selection outline in Thank with Google settings. See [#5751](https://github.com/google/site-kit-wp/issues/5751).
+* Fix React `StrictMode` warning when using Material button tooltips in development mode. See [#5378](https://github.com/google/site-kit-wp/issues/5378).
+* Fix issues in permutation site URLs with multi-byte UTF-8 IDN domains. See [#4776](https://github.com/google/site-kit-wp/issues/4776).
+
 = 1.83.0 =
-
-**Added**
-
-* Show a tooltip to acknowledge dismissing the GA4 Activation Banner. See [#5279](https://github.com/google/site-kit-wp/issues/5279).
-* Enable the GA4 Activation Banner create/connect a property and measurement ID. See [#5277](https://github.com/google/site-kit-wp/issues/5277).
-* Add a dropdown/toggle to GA4 activation banner when there is an existing GA4 property. See [#5276](https://github.com/google/site-kit-wp/issues/5276).
 
 **Enhanced**
 
@@ -132,6 +161,9 @@ Please create a new topic on our [WordPress.org support forum](https://wordpress
 * Add WP admin pointer for view-only dashboard access "Site Kit" menu item. See [#5486](https://github.com/google/site-kit-wp/issues/5486).
 * Disable AdSense "Check your site status" link while settings are loading to prevent unexpected behavior. See [#5410](https://github.com/google/site-kit-wp/issues/5410).
 * Add "Request access" button to permission error messages for modules where their service supports it. See [#5308](https://github.com/google/site-kit-wp/issues/5308).
+* Show a tooltip to acknowledge dismissing the GA4 Activation Banner. See [#5279](https://github.com/google/site-kit-wp/issues/5279).
+* Enable the GA4 Activation Banner create/connect a property and measurement ID. See [#5277](https://github.com/google/site-kit-wp/issues/5277).
+* Add a dropdown/toggle to GA4 activation banner when there is an existing GA4 property. See [#5276](https://github.com/google/site-kit-wp/issues/5276).
 * Remove zeroDataStates feature flag and unused code. See [#5148](https://github.com/google/site-kit-wp/issues/5148).
 
 **Changed**
