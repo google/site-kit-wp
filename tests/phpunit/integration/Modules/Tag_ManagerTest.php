@@ -12,6 +12,7 @@ namespace Google\Site_Kit\Tests\Modules;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Modules\Module;
+use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Modules\Module_With_Owner;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Storage\Options;
@@ -358,6 +359,84 @@ class Tag_ManagerTest extends TestCase {
 			),
 			$tagmanager->get_datapoints()
 		);
+	}
+
+	public function test_get_assets() {
+		$context    = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$modules    = new Modules( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$tagmanager = new Tag_Manager( $context );
+
+		add_filter(
+			'googlesitekit_available_modules',
+			function() {
+				// Specify the Analytics module here to provide a clear distinction between this test case
+				// and test_get_assets__no_analytics below.
+				return array( 'analytics' );
+			}
+		);
+
+		$assets = $tagmanager->get_assets( $modules->get_available_modules() );
+
+		$this->assertCount( 1, $assets );
+
+		$script = $assets[0];
+		$script->register( $context );
+
+		$dependency = wp_scripts()->registered['googlesitekit-modules-tagmanager'];
+
+		$this->assertEquals( $context->url( 'dist/assets/' ) . 'js/googlesitekit-modules-tagmanager.js', $dependency->src );
+		$this->assertEqualSets(
+			array(
+				'googlesitekit-api',
+				'googlesitekit-data',
+				'googlesitekit-datastore-site',
+				'googlesitekit-modules',
+				'googlesitekit-vendor',
+				'googlesitekit-modules-analytics',
+			),
+			$dependency->deps
+		);
+
+		wp_deregister_script( 'googlesitekit-modules-tagmanager' );
+	}
+
+	public function test_get_assets__no_analytics() {
+		$context    = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$modules    = new Modules( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$tagmanager = new Tag_Manager( $context );
+
+		add_filter(
+			'googlesitekit_available_modules',
+			function() {
+				// Ensure the Analytics module is not available.
+				return array();
+			}
+		);
+
+		$assets = $tagmanager->get_assets( $modules->get_available_modules() );
+
+		$this->assertCount( 1, $assets );
+
+		$script = $assets[0];
+		$script->register( $context );
+
+		$dependency = wp_scripts()->registered['googlesitekit-modules-tagmanager'];
+
+		$this->assertEquals( $context->url( 'dist/assets/' ) . 'js/googlesitekit-modules-tagmanager.js', $dependency->src );
+
+		// Verify the 'googlesitekit-module-analytics' asset is not a dependency.
+		$this->assertEqualSets(
+			array(
+				'googlesitekit-api',
+				'googlesitekit-data',
+				'googlesitekit-datastore-site',
+				'googlesitekit-modules',
+				'googlesitekit-vendor',
+			),
+			$dependency->deps
+		);
+
+		wp_deregister_script( 'googlesitekit-modules-tagmanager' );
 	}
 
 	/**
