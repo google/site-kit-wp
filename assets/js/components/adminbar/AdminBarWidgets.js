@@ -84,13 +84,13 @@ export default function AdminBarWidgets() {
 					</Fragment>
 				) }
 
-				{ ( ( analyticsModuleAvailable &&
-					! analyticsModuleConnected ) ||
-					! analyticsModuleActive ) && (
-					<Cell lgSize={ 6 } mdSize={ 4 }>
-						<AdminBarActivateAnalyticsCTA />
-					</Cell>
-				) }
+				{ analyticsModuleAvailable &&
+					( ! analyticsModuleConnected ||
+						! analyticsModuleActive ) && (
+						<Cell lgSize={ 6 } mdSize={ 4 }>
+							<AdminBarActivateAnalyticsCTA />
+						</Cell>
+					) }
 			</Row>
 		</Fragment>
 	);
