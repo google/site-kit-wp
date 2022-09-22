@@ -51,7 +51,7 @@ class Dashboard_Sharing {
 	/**
 	 * View_Only_Pointer instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.83.0
 	 * @var View_Only_Pointer
 	 */
 	protected $view_only_pointer;

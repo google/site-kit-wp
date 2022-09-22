@@ -235,7 +235,7 @@ function SetupSuccessBannerNotification() {
 					<BannerNotification
 						id={ winData.id }
 						title={ sprintf(
-							/* translators: %s: the name of a module that setup was completed for */
+							/* translators: 1: the name of a module that setup was completed for */
 							__(
 								'Congrats on completing the setup for %s!',
 								'google-site-kit'

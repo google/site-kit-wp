@@ -22,7 +22,7 @@
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import map from 'lodash/map';
-import { useMount } from 'react-use';
+import { useMount, useMountedState } from 'react-use';
 
 /*
  * WordPress dependencies
@@ -75,6 +75,7 @@ function BannerNotification( {
 	ctaLink,
 	ctaTarget,
 	description,
+	descriptionIcon,
 	dismiss,
 	dismissExpires,
 	format,
@@ -99,6 +100,8 @@ function BannerNotification( {
 	WinImageSVG,
 	rounded = false,
 	footer,
+	secondaryPane,
+	ctaComponent,
 } ) {
 	// Closed notifications are invisible, but still occupy space.
 	const [ isClosed, setIsClosed ] = useState( false );
@@ -113,6 +116,7 @@ function BannerNotification( {
 		setItem( cacheKeyDismissed, new Date(), { ttl: null } );
 
 	const breakpoint = useBreakpoint();
+	const isMounted = useMountedState();
 
 	useMount( async () => {
 		if ( dismissExpires > 0 ) {
@@ -146,7 +150,9 @@ function BannerNotification( {
 		setTimeout( async () => {
 			await persistDismissal();
 
-			setIsDismissed( true );
+			if ( isMounted() ) {
+				setIsDismissed( true );
+			}
 
 			// Emit an event for the notification counter to listen for.
 			const event = new Event( 'notificationDismissed' );
@@ -161,7 +167,9 @@ function BannerNotification( {
 		if ( onCTAClick ) {
 			setIsAwaitingCTAResponse( true );
 			( { dismissOnCTAClick = true } = ( await onCTAClick( e ) ) || {} );
-			setIsAwaitingCTAResponse( false );
+			if ( isMounted() ) {
+				setIsAwaitingCTAResponse( false );
+			}
 		}
 
 		if ( isDismissible && dismissOnCTAClick ) {
@@ -270,6 +278,11 @@ function BannerNotification( {
 			) }
 			{ description && (
 				<div className="googlesitekit-publisher-win__desc">
+					{ descriptionIcon && (
+						<div className="googlesitekit-publisher-win__icon">
+							{ descriptionIcon }
+						</div>
+					) }
 					<p>
 						{ isValidElement( description ) ? (
 							description
@@ -334,7 +347,7 @@ function BannerNotification( {
 
 	// ctaLink links are always buttons, in which case the dismiss should be a Link.
 	// If there is only a dismiss however, it should be the primary action with a Button.
-	const DismissComponent = ctaLink ? Link : Button;
+	const DismissComponent = ctaLink || ctaComponent ? Link : Button;
 
 	return (
 		<section
@@ -398,8 +411,13 @@ function BannerNotification( {
 							</Fragment>
 						) }
 
-						{ ( ctaLink || isDismissible || dismiss ) && (
+						{ ( ctaLink ||
+							isDismissible ||
+							dismiss ||
+							ctaComponent ) && (
 							<div className="googlesitekit-publisher-win__actions">
+								{ ctaComponent }
+
 								{ ctaLink && (
 									<Button
 										className="googlesitekit-notification__cta"
@@ -458,6 +476,21 @@ function BannerNotification( {
 					) }
 				</Row>
 			</Grid>
+			{ secondaryPane && (
+				<Fragment>
+					<div className="googlesitekit-publisher-win__secondary-pane-divider"></div>
+					<Grid className="googlesitekit-publisher-win__secondary-pane">
+						<Row>
+							<Cell
+								className="googlesitekit-publisher-win__secondary-pane"
+								size={ 12 }
+							>
+								{ secondaryPane }
+							</Cell>
+						</Row>
+					</Grid>
+				</Fragment>
+			) }
 		</section>
 	);
 }
@@ -467,6 +500,7 @@ BannerNotification.propTypes = {
 	className: PropTypes.string,
 	title: PropTypes.string.isRequired,
 	description: PropTypes.node,
+	descriptionIcon: PropTypes.node,
 	learnMoreURL: PropTypes.string,
 	learnMoreDescription: PropTypes.string,
 	learnMoreLabel: PropTypes.string,
@@ -495,6 +529,7 @@ BannerNotification.propTypes = {
 	noBottomPadding: PropTypes.bool,
 	rounded: PropTypes.bool,
 	footer: PropTypes.node,
+	secondaryPane: PropTypes.node,
 };
 
 BannerNotification.defaultProps = {

@@ -24,7 +24,10 @@ import { useCallback } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { MODULES_THANK_WITH_GOOGLE } from '../../datastore/constants';
+import {
+	MODULES_THANK_WITH_GOOGLE,
+	COLOR_RADIO_DEFAULT,
+} from '../../datastore/constants';
 import ImageRadio from '../../../../components/ImageRadio';
 import { getColorThemes } from '../../util/settings';
 const { useSelect, useDispatch } = Data;
@@ -38,14 +41,14 @@ export default function ColorRadio() {
 
 	const onChange = useCallback(
 		( { target } = {} ) => {
-			const { value: color = 'blue' } = target || {};
+			const { value: color = COLOR_RADIO_DEFAULT } = target || {};
 			setColorTheme( color );
 		},
 		[ setColorTheme ]
 	);
 
 	const colors = getColorThemes()?.map(
-		( { colorThemeID, name, svg: SVG } ) => (
+		( { colorThemeID, name, svg: SVG, colorCode } ) => (
 			<ImageRadio
 				key={ colorThemeID }
 				id={ colorThemeID }
@@ -55,6 +58,7 @@ export default function ColorRadio() {
 				image={ <SVG /> }
 				onChange={ onChange }
 				checked={ currentColor === colorThemeID }
+				style={ { outlineColor: colorCode } }
 			/>
 		)
 	);
@@ -68,7 +72,7 @@ export default function ColorRadio() {
 					'google-site-kit'
 				) }
 			</p>
-			<div className="googlesitekit-twg-color-radio__options">
+			<div className="googlesitekit-twg-color-radio__options googlesitekit-image-radio-options">
 				{ colors }
 			</div>
 		</div>

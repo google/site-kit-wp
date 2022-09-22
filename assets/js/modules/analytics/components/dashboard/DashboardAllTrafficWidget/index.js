@@ -342,7 +342,6 @@ function DashboardAllTrafficWidget( props ) {
 							loaded={ pieChartLoaded && ! firstLoad }
 							report={ pieChartReport }
 						/>
-						)
 					</Cell>
 				</Row>
 			</Grid>

@@ -13,7 +13,7 @@ namespace Google\Site_Kit\Core\Admin;
 /**
  * Class representing a single pointer.
  *
- * @since n.e.x.t
+ * @since 1.83.0
  * @access private
  * @ignore
  */
@@ -22,7 +22,7 @@ final class Pointer {
 	/**
 	 * Unique pointer slug.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.83.0
 	 * @var string
 	 */
 	private $slug;
@@ -30,7 +30,7 @@ final class Pointer {
 	/**
 	 * Pointer arguments.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.83.0
 	 * @var array
 	 */
 	private $args = array();
@@ -38,18 +38,20 @@ final class Pointer {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.83.0
 	 *
 	 * @param string $slug Unique pointer slug.
 	 * @param array  $args {
 	 *     Associative array of pointer arguments.
 	 *
-	 *     @type string   $title           Required pointer title.
-	 *     @type string   $content         Required pointer content. May contain inline HTML tags.
-	 *     @type string   $target_id       ID of the element the pointer should be attached to.
-	 *     @type callable $active_callback Callback function to determine whether the pointer is active in the
-	 *                                     current context. The current admin screen's hook suffix is passed to
-	 *                                     the callback. Default is that the pointer is active unconditionally.
+	 *     @type string       $title           Required. Pointer title.
+	 *     @type string       $content         Required. Pointer content. May contain inline HTML tags.
+	 *     @type string       $target_id       Required. ID of the element the pointer should be attached to.
+	 *     @type string|array $position        Optional. Position of the pointer. Can be 'top', 'bottom', 'left', 'right',
+	 *                                         or an array of `edge` and `align`. Default 'top'.
+	 *     @type callable     $active_callback Optional. Callback function to determine whether the pointer is active in
+	 *                                         the current context. The current admin screen's hook suffix is passed to
+	 *                                         the callback. Default is that the pointer is active unconditionally.
 	 * }
 	 */
 	public function __construct( $slug, array $args ) {
@@ -60,6 +62,7 @@ final class Pointer {
 				'title'           => '',
 				'content'         => '',
 				'target_id'       => '',
+				'position'        => 'top',
 				'active_callback' => null,
 			)
 		);
@@ -68,7 +71,7 @@ final class Pointer {
 	/**
 	 * Gets the pointer slug.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.83.0
 	 *
 	 * @return string Unique pointer slug.
 	 */
@@ -79,7 +82,7 @@ final class Pointer {
 	/**
 	 * Gets the pointer title.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.83.0
 	 *
 	 * @return string Pointer title.
 	 */
@@ -90,7 +93,7 @@ final class Pointer {
 	/**
 	 * Gets the pointer content.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.83.0
 	 *
 	 * @return string Pointer content.
 	 */
@@ -105,7 +108,7 @@ final class Pointer {
 	/**
 	 * Gets the pointer target ID.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.83.0
 	 *
 	 * @return string Pointer target ID.
 	 */
@@ -114,11 +117,22 @@ final class Pointer {
 	}
 
 	/**
+	 * Gets the pointer position.
+	 *
+	 * @since 1.83.0
+	 *
+	 * @return string|array Pointer position.
+	 */
+	public function get_position() {
+		return $this->args['position'];
+	}
+
+	/**
 	 * Checks whether the pointer is active.
 	 *
 	 * This method executes the active callback in order to determine whether the pointer should be active or not.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.83.0
 	 *
 	 * @param string $hook_suffix The current admin screen hook suffix.
 	 * @return bool True if the pointer is active, false otherwise.

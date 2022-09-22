@@ -41,8 +41,16 @@
 			column-gap: 30px;
 			display: flex;
 			flex-wrap: wrap;
-			margin: 25px 0 10px 0;
+			margin: 25px 0 10px;
 			row-gap: 24px;
+		}
+	}
+
+	.googlesitekit-ga4-setup-banner__footer-text {
+		margin: 0.5em 0;
+
+		&:first-child {
+			margin-top: 1em;
 		}
 	}
 }

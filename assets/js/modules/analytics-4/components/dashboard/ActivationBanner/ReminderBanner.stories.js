@@ -20,12 +20,59 @@
  * Internal dependencies
  */
 import ReminderBanner from './ReminderBanner';
+import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
+import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
 
-const Template = () => <ReminderBanner />;
+const Template = () => <ReminderBanner onSubmitSuccess={ () => {} } />;
 
-export const Default = Template.bind( {} );
-Default.storyName = 'ReminderBanner';
+export const InitialNotice = Template.bind( {} );
+InitialNotice.storyName = 'Before 1 June 2023';
+InitialNotice.decorators = [
+	( Story ) => {
+		const setupRegistry = ( registry ) => {
+			registry.dispatch( CORE_USER ).setReferenceDate( '2023-05-31' );
+		};
+
+		return (
+			<WithRegistrySetup func={ setupRegistry }>
+				<Story />
+			</WithRegistrySetup>
+		);
+	},
+];
+
+export const LastMonth = Template.bind( {} );
+LastMonth.storyName = 'During June 2023';
+LastMonth.decorators = [
+	( Story ) => {
+		const setupRegistry = ( registry ) => {
+			registry.dispatch( CORE_USER ).setReferenceDate( '2023-06-01' );
+		};
+
+		return (
+			<WithRegistrySetup func={ setupRegistry }>
+				<Story />
+			</WithRegistrySetup>
+		);
+	},
+];
+
+export const PostCutoff = Template.bind( {} );
+PostCutoff.storyName = 'After 30 June 2023';
+PostCutoff.decorators = [
+	( Story ) => {
+		const setupRegistry = ( registry ) => {
+			registry.dispatch( CORE_USER ).setReferenceDate( '2023-07-01' );
+		};
+
+		return (
+			<WithRegistrySetup func={ setupRegistry }>
+				<Story />
+			</WithRegistrySetup>
+		);
+	},
+];
 
 export default {
-	title: 'Modules/Analytics4',
+	title: 'Modules/Analytics4/ReminderBanner',
 };

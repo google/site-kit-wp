@@ -21,7 +21,6 @@
  */
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
-import { Chip, ChipCheckmark } from '@material/react-chips';
 
 /**
  * WordPress dependencies
@@ -42,8 +41,9 @@ import {
 import Data from 'googlesitekit-data';
 import Button from '../Button';
 import Link from '../Link';
+import Chip from '../Chip';
 import ShareIcon from '../../../svg/icons/share.svg';
-import CloseIcon from '../../../svg/icons/close.svg';
+import CheckIcon from '../../../svg/icons/check.svg';
 import useViewContext from '../../hooks/useViewContext';
 import { useKeyCodesInside } from '../../hooks/useKeyCodesInside';
 import { trackEvent } from '../../util';
@@ -219,8 +219,6 @@ const UserRoleSelect = forwardRef(
 							ref={ roleSelectRef }
 						>
 							<Chip
-								chipCheckmark={ <ChipCheckmark /> }
-								data-chip-id={ ALL_CHIP_ID }
 								id={ ALL_CHIP_ID }
 								label={ ALL_CHIP_DISPLAY_NAME }
 								onClick={ toggleChip }
@@ -229,30 +227,31 @@ const UserRoleSelect = forwardRef(
 									sharedRoles?.length ===
 									shareableRoles?.length
 								}
-								className="googlesitekit-user-role-select__chip googlesitekit-user-role-select__chip--all"
+								className="googlesitekit-user-role-select__chip--all"
 							/>
 
 							{ shareableRoles.map(
 								( { id, displayName }, index ) => (
 									<Chip
-										chipCheckmark={ <ChipCheckmark /> }
-										data-chip-id={ id }
-										id={ id }
 										key={ index }
+										id={ id }
 										label={ displayName }
 										onClick={ toggleChip }
 										onKeyDown={ toggleChip }
 										selected={ sharedRoles?.includes( id ) }
-										className="googlesitekit-user-role-select__chip"
 									/>
 								)
 							) }
 						</div>
 						<Button
-							aria-label={ __( 'Close', 'google-site-kit' ) }
+							aria-label={ __(
+								'Done editing roles',
+								'google-site-kit'
+							) }
+							title={ __( 'Done', 'google-site-kit' ) }
 							className="googlesitekit-user-role-select__button"
 							onClick={ toggleEditMode }
-							icon={ <CloseIcon width={ 18 } height={ 18 } /> }
+							icon={ <CheckIcon width={ 18 } height={ 18 } /> }
 							tabIndex={ isLocked ? -1 : undefined }
 						/>
 					</Fragment>

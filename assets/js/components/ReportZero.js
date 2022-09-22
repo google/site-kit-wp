@@ -43,12 +43,12 @@ export default function ReportZero( { moduleSlug } ) {
 	return (
 		<CTA
 			title={ sprintf(
-				/* translators: %s: Module name */
+				/* translators: 1: Module name */
 				__( '%s Gathering Data', 'google-site-kit' ),
 				module?.name
 			) }
 			description={ sprintf(
-				/* translators: %s: Module name */
+				/* translators: 1: Module name */
 				__(
 					'%s data is not yet available, please check back later',
 					'google-site-kit'

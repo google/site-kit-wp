@@ -21,22 +21,35 @@
 		flex-wrap: wrap;
 
 		.googlesitekit-image-radio {
+			width: fit-content;
 
-			.image-radio .mdc-image-radio__background .mdc-image-radio__content {
-				border-radius: 50%;
-				height: 43px;
-				min-height: 0;
-				overflow: hidden;
-				position: relative;
-				width: 43px;
+			.image-radio .mdc-image-radio__background {
 
-				svg {
-					height: 50px;
-					left: 50%;
-					position: absolute;
-					top: 50%;
-					transform: translate(-50%, -50%);
-					width: 50px;
+				.mdc-image-radio__content {
+					border-radius: 50%;
+					height: 44px;
+					min-height: 0;
+					outline: none;
+					overflow: hidden;
+					position: relative;
+					width: 44px;
+
+					svg {
+						height: 50px;
+						left: 50%;
+						position: absolute;
+						top: 50%;
+						transform: translate(-50%, -50%);
+						width: 50px;
+					}
+				}
+
+				.mdc-image-radio__content[aria-checked="true"] {
+					outline: 0.1875rem solid;
+				}
+
+				&[aria-checked="true"] {
+					border: 0.25rem solid $c-surfaces-surface;
 				}
 			}
 
@@ -45,5 +58,4 @@
 			}
 		}
 	}
-
 }

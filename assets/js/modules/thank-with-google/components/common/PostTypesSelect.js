@@ -15,11 +15,6 @@
  */
 
 /**
- * External dependencies
- */
-import { Chip, ChipCheckmark } from '@material/react-chips';
-
-/**
  * WordPress dependencies
  */
 import { useCallback } from '@wordpress/element';
@@ -32,6 +27,7 @@ import { ENTER } from '@wordpress/keycodes';
 import Data from 'googlesitekit-data';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { MODULES_THANK_WITH_GOOGLE } from '../../datastore/constants';
+import Chip from '../../../../components/Chip';
 const { useSelect, useDispatch } = Data;
 
 export default function PostTypesSelect() {
@@ -56,7 +52,13 @@ export default function PostTypesSelect() {
 				return;
 			}
 
-			if ( ctaPostTypes?.includes( chipID ) ) {
+			if ( chipID === 'all' ) {
+				if ( ctaPostTypes?.length === postTypes?.length ) {
+					setCTAPostTypes( [] );
+				} else {
+					setCTAPostTypes( postTypes.map( ( { slug } ) => slug ) );
+				}
+			} else if ( ctaPostTypes?.includes( chipID ) ) {
 				setCTAPostTypes(
 					ctaPostTypes.filter( ( postType ) => postType !== chipID )
 				);
@@ -64,20 +66,17 @@ export default function PostTypesSelect() {
 				setCTAPostTypes( [ ...( ctaPostTypes || [] ), chipID ] );
 			}
 		},
-		[ ctaPostTypes, setCTAPostTypes ]
+		[ ctaPostTypes, postTypes, setCTAPostTypes ]
 	);
 
 	const options = postTypes?.map( ( { slug, label } ) => (
 		<Chip
-			chipCheckmark={ <ChipCheckmark /> }
-			data-chip-id={ slug }
-			id={ slug }
 			key={ slug }
+			id={ slug }
 			label={ label }
 			onClick={ toggleChip }
 			onKeyUp={ toggleChip }
 			selected={ ctaPostTypes?.includes( slug ) }
-			className="googlesitekit-twg-post-type-select__chip"
 		/>
 	) );
 
@@ -91,6 +90,13 @@ export default function PostTypesSelect() {
 				) }
 			</p>
 			<div className="googlesitekit-twg-post-type-select__options">
+				<Chip
+					id="all"
+					label={ __( 'All', 'google-site-kit' ) }
+					onClick={ toggleChip }
+					onKeyUp={ toggleChip }
+					selected={ ctaPostTypes?.length === postTypes?.length }
+				/>
 				{ options }
 			</div>
 		</div>

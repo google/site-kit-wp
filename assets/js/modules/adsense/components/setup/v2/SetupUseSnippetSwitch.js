@@ -75,7 +75,7 @@ export default function SetupUseSnippetSwitch() {
 	} else if ( existingTag ) {
 		// Existing tag without permission.
 		uncheckedMessage = sprintf(
-			/* translators: %1$s: existing account ID, %2$s: current account ID */
+			/* translators: 1: existing account ID, 2: current account ID */
 			__(
 				'Site Kit detected AdSense code for a different account %1$s on your site. In order to configure AdSense for your current account %2$s, we recommend you use Site Kit to place the code instead.',
 				'google-site-kit'

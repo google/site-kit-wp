@@ -21,29 +21,18 @@ import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
 /**
- * WordPress dependencies
- */
-import { useState, useCallback } from '@wordpress/element';
-
-/**
  * Internal dependencies
  */
 import { CircularProgress } from '../material-components';
 import Button from './Button';
 
 export default function SpinnerButton( props ) {
-	const { className, onClick = () => {}, ...restProps } = props;
-
-	const [ processing, setProcessing ] = useState( false );
-
-	const handleClick = useCallback(
-		async ( ...params ) => {
-			setProcessing( true );
-			await onClick( ...params );
-			setProcessing( false );
-		},
-		[ onClick ]
-	);
+	const {
+		className,
+		onClick = () => {},
+		isSaving = false,
+		...restProps
+	} = props;
 
 	return (
 		<Button
@@ -51,13 +40,13 @@ export default function SpinnerButton( props ) {
 				className,
 				'googlesitekit-button-icon--spinner',
 				{
-					'googlesitekit-button-icon--spinner__running': processing,
+					'googlesitekit-button-icon--spinner__running': isSaving,
 				}
 			) }
 			trailingIcon={
-				processing ? <CircularProgress size={ 14 } /> : undefined
+				isSaving ? <CircularProgress size={ 14 } /> : undefined
 			}
-			onClick={ handleClick }
+			onClick={ onClick }
 			{ ...restProps }
 		/>
 	);
@@ -66,4 +55,5 @@ export default function SpinnerButton( props ) {
 SpinnerButton.propTypes = {
 	className: PropTypes.string,
 	onClick: PropTypes.func,
+	isSaving: PropTypes.bool,
 };

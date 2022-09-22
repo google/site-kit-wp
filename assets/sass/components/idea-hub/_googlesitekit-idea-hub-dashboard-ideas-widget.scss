@@ -40,7 +40,7 @@
 		font-weight: $fw-bold;
 		justify-content: space-between;
 		line-height: $lh-title-md;
-		margin: 0 0 12px 0;
+		margin: 0 0 12px;
 		padding: 0 120px 12px 0;
 		position: relative;
 
@@ -85,11 +85,11 @@
 
 	.googlesitekit-idea-hub__body {
 		display: flex;
-		margin: 0 $grid-gap-phone*-1;
+		margin: 0 ($grid-gap-phone * -1);
 		overflow-x: hidden;
 
 		@media (min-width: $bp-desktop) {
-			margin: 0 $grid-gap-desktop*-1;
+			margin: 0 ($grid-gap-desktop * -1);
 		}
 	}
 
@@ -192,7 +192,7 @@
 
 			@media (min-width: $bp-xlarge) {
 				justify-content: flex-end;
-				margin: 0 0 0 ($grid-gap-desktop/2);
+				margin: 0 0 0 ($grid-gap-desktop / 2);
 			}
 
 			&:empty {

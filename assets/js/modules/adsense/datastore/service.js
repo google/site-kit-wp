@@ -48,15 +48,17 @@ export const selectors = {
 	getServiceURL: createRegistrySelector(
 		( select ) =>
 			( state, { path, query } = {} ) => {
-				let serviceURL = 'https://www.google.com/adsense/new';
-
-				if ( query ) {
-					serviceURL = addQueryArgs( serviceURL, query );
-				}
+				// Note: /u/0 is necessary to keep here in order for paths to be resolved properly;
+				// AccountChooser will update this part of the URL accordingly.
+				let serviceURL = 'https://www.google.com/adsense/new/u/0';
 
 				if ( path ) {
 					const sanitizedPath = `/${ path.replace( /^\//, '' ) }`;
-					serviceURL = `${ serviceURL }#${ sanitizedPath }`;
+					serviceURL = `${ serviceURL }${ sanitizedPath }`;
+				}
+
+				if ( query ) {
+					serviceURL = addQueryArgs( serviceURL, query );
 				}
 
 				const accountChooserBaseURI =

@@ -92,7 +92,7 @@ export default function ContainerSelect( {
 							{ publicId === CONTAINER_CREATE // eslint-disable-line sitekit/acronym-case
 								? name
 								: sprintf(
-										/* translators: %1$s: container name, %2$s: container ID */
+										/* translators: 1: container name, 2: container ID */
 										_x(
 											'%1$s (%2$s)',
 											'Tag Manager container name and ID',

@@ -35,7 +35,7 @@ export default function SettingsView() {
 	);
 
 	const content = sprintf(
-		/* translators: %s is the URL to the Site Kit dashboard. */
+		/* translators: 1: is the URL to the Site Kit dashboard. */
 		__(
 			'To view insights, <a href="%s">visit the dashboard</a>',
 			'google-site-kit'

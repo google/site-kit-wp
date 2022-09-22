@@ -23,14 +23,29 @@ import {
 	createTestRegistry,
 	render,
 	provideModules,
+	unsubscribeFromAll,
 } from '../../../../../../../tests/js/test-utils';
 import ActivationBanner from './index';
 
 describe( 'ActivationBanner', () => {
 	let registry;
 
-	it( 'does not render when UA is not connected', () => {
+	beforeEach( () => {
 		registry = createTestRegistry();
+
+		fetchMock.getOnce(
+			/^\/google-site-kit\/v1\/core\/user\/data\/authentication/,
+			{
+				authenticated: true,
+			}
+		);
+	} );
+
+	afterEach( () => {
+		unsubscribeFromAll( registry );
+	} );
+
+	it( 'does not render when UA is not connected', () => {
 		provideModules( registry, [
 			{
 				slug: 'analytics',
@@ -46,8 +61,6 @@ describe( 'ActivationBanner', () => {
 	} );
 
 	it( 'does not render when UA and GA4 are both connected', () => {
-		registry = createTestRegistry();
-
 		provideModules( registry, [
 			{
 				slug: 'analytics',
@@ -68,8 +81,6 @@ describe( 'ActivationBanner', () => {
 	} );
 
 	it( 'does render when UA is connected but GA4 is not connected', () => {
-		registry = createTestRegistry();
-
 		provideModules( registry, [
 			{
 				slug: 'analytics',

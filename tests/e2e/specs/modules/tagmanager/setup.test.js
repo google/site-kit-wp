@@ -206,7 +206,10 @@ describe( 'Tag Manager module setup', () => {
 			// Ensure expected tag is placed.
 			await Promise.all( [
 				page.goto( createURL( '/' ) ),
-				page.waitForNavigation(),
+				page.waitForNavigation( {
+					waitUntil: 'networkidle2',
+					timeout: 0,
+				} ),
 			] );
 			await expect( page ).toMatchElement(
 				'script[src^="https://www.googletagmanager.com/gtm.js?id=GTM-ABCXYZ"]'
@@ -299,7 +302,10 @@ describe( 'Tag Manager module setup', () => {
 			// Ensure expected tag is placed.
 			await Promise.all( [
 				page.goto( createURL( '/' ) ),
-				page.waitForNavigation(),
+				page.waitForNavigation( {
+					waitUntil: 'networkidle2',
+					timeout: 0,
+				} ),
 			] );
 			await expect( page ).toMatchElement(
 				'script[src^="https://www.googletagmanager.com/gtm.js?id=GTM-BCDWXY"]'
@@ -417,9 +423,13 @@ describe( 'Tag Manager module setup', () => {
 							text: /Congrats on completing the setup for Tag Manager!/i,
 						}
 					);
-					await page.goto( createURL( '/', 'amp' ), {
-						waitUntil: 'load',
-					} );
+					await Promise.all( [
+						page.goto( createURL( '/', 'amp' ) ),
+						page.waitForNavigation( {
+							waitUntil: 'networkidle2',
+							timeout: 0,
+						} ),
+					] );
 				} );
 
 				it( 'validates homepage AMP for logged-in users', async () => {

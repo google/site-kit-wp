@@ -22,3 +22,4 @@ export { default as PositionRadio } from './PositionRadio';
 export { default as ColorRadio } from './ColorRadio';
 export { default as PostTypesSelect } from './PostTypesSelect';
 export { default as CTAPlacement } from './CTAPlacement';
+export { default as SupporterWall } from './SupporterWall';

@@ -49,13 +49,13 @@ export const selectors = {
 			( state, { path, query } = {} ) => {
 				let serviceURL = 'https://search.google.com/search-console';
 
-				if ( query ) {
-					serviceURL = addQueryArgs( serviceURL, query );
-				}
-
 				if ( path ) {
 					const sanitizedPath = `/${ path.replace( /^\//, '' ) }`;
-					serviceURL = `${ serviceURL }#${ sanitizedPath }`;
+					serviceURL = `${ serviceURL }${ sanitizedPath }`;
+				}
+
+				if ( query ) {
+					serviceURL = addQueryArgs( serviceURL, query );
 				}
 
 				const accountChooserBaseURI =
@@ -104,6 +104,25 @@ export const selectors = {
 
 				return selectors.getServiceURL( state, { path, query } );
 			}
+	),
+
+	/**
+	 * Gets an entity access URL on the service.
+	 *
+	 * @since 1.83.0
+	 *
+	 * @return {string} The entity access URL to the service.
+	 */
+	getServiceEntityAccessURL: createRegistrySelector(
+		( select ) => ( state ) => {
+			const propertyID = select( MODULES_SEARCH_CONSOLE ).getPropertyID();
+
+			const query = {
+				resource_id: propertyID,
+			};
+
+			return selectors.getServiceURL( state, { query } );
+		}
 	),
 
 	/**

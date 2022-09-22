@@ -1,7 +1,7 @@
 /**
- * Widgets API default widgets
+ * Chip Component Stories.
  *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2022 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,29 @@
  * limitations under the License.
  */
 
-export const WIDGET_URL_SEARCH = 'urlSearch';
+/**
+ * Internal dependencies
+ */
+import Chip from './Chip';
+
+const Template = ( args ) => <Chip { ...args } />;
+
+export const DefaultChip = Template.bind( {} );
+DefaultChip.storyName = 'Default Chip';
+DefaultChip.args = {
+	id: 'default',
+	label: 'Default Chip',
+};
+
+export const SelectedChip = Template.bind( {} );
+SelectedChip.storyName = 'Selected Chip';
+SelectedChip.args = {
+	id: 'selected',
+	label: 'Selected Chip',
+	selected: true,
+};
 
 export default {
-	WIDGET_URL_SEARCH,
+	title: 'Components/Chip',
+	component: Chip,
 };

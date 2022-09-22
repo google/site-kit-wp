@@ -62,9 +62,14 @@ describe( 'module/search-console service store', () => {
 					.select( MODULES_SEARCH_CONSOLE )
 					.getServiceURL();
 
-				expect( serviceURL ).toMatchInlineSnapshot(
-					'"https://accounts.google.com/accountchooser?continue=https%3A%2F%2Fsearch.google.com%2Fsearch-console&Email=admin%40example.com"'
-				);
+				expect( new URL( serviceURL ) ).toMatchObject( {
+					origin: 'https://accounts.google.com',
+					pathname: '/accountchooser',
+				} );
+				expect( serviceURL ).toMatchQueryParameters( {
+					continue: 'https://search.google.com/search-console',
+					Email: 'admin@example.com',
+				} );
 			} );
 
 			it( 'appends the given path (without leading slash) to the path of the base URL', () => {
@@ -73,10 +78,8 @@ describe( 'module/search-console service store', () => {
 					.getServiceURL( { path: 'test/path/to/deeplink' } );
 
 				expect(
-					serviceURL.endsWith(
-						'%2Ftest%2Fpath%2Fto%2Fdeeplink&Email=admin%40example.com'
-					)
-				).toBe( true );
+					new URL( decodeServiceURL( serviceURL ) ).pathname
+				).toMatch( new RegExp( '/test/path/to/deeplink$' ) );
 			} );
 
 			it( 'appends the given path (with leading slash) to the path of the base URL', () => {
@@ -84,9 +87,9 @@ describe( 'module/search-console service store', () => {
 					.select( MODULES_SEARCH_CONSOLE )
 					.getServiceURL( { path: '/test/path/to/deeplink' } );
 
-				expect( serviceURL ).toMatchInlineSnapshot(
-					'"https://accounts.google.com/accountchooser?continue=https%3A%2F%2Fsearch.google.com%2Fsearch-console%23%2Ftest%2Fpath%2Fto%2Fdeeplink&Email=admin%40example.com"'
-				);
+				expect(
+					new URL( decodeServiceURL( serviceURL ) ).pathname
+				).toMatch( new RegExp( '/test/path/to/deeplink$' ) );
 			} );
 
 			it( 'merges given query args to the base service URL args', async () => {
@@ -120,11 +123,9 @@ describe( 'module/search-console service store', () => {
 
 				const decodedServiceURL = decodeServiceURL( serviceURL );
 
-				expect(
-					decodedServiceURL.endsWith(
-						'#/performance/search-analytics'
-					)
-				).toBe( true );
+				expect( new URL( decodedServiceURL ).pathname ).toMatch(
+					new RegExp( '/performance/search-analytics$' )
+				);
 			} );
 
 			it( 'adds the `resource_id` query arg for the current property ID', () => {
@@ -182,6 +183,26 @@ describe( 'module/search-console service store', () => {
 				expect( decodedServiceURL ).toMatchQueryParameters( {
 					resource_id: domainPropertyID,
 					page: `*${ referenceSiteURL }`,
+				} );
+			} );
+		} );
+
+		describe( 'getServiceEntityAccessURL', () => {
+			beforeEach( () => {
+				registry
+					.dispatch( MODULES_SEARCH_CONSOLE )
+					.setPropertyID( domainPropertyID );
+			} );
+
+			it( 'adds the `resource_id` query arg for the current property ID', () => {
+				const serviceURL = registry
+					.select( MODULES_SEARCH_CONSOLE )
+					.getServiceEntityAccessURL();
+
+				const decodedServiceURL = decodeServiceURL( serviceURL );
+
+				expect( decodedServiceURL ).toMatchQueryParameters( {
+					resource_id: domainPropertyID,
 				} );
 			} );
 		} );

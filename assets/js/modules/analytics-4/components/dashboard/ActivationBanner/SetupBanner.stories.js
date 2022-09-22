@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import fetchMock from 'fetch-mock';
+
+/**
  * Internal dependencies
  */
 import SetupBanner from './SetupBanner';
@@ -31,10 +36,72 @@ import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants
 import * as fixtures from '../../../../analytics/datastore/__fixtures__';
 import * as ga4Fixtures from '../../../../analytics-4/datastore/__fixtures__';
 
+const { createProperty, createWebDataStream, properties, webDataStreams } =
+	ga4Fixtures;
+const { accounts, properties: uaProps } = fixtures.accountsPropertiesProfiles;
+const accountID = createProperty._accountID;
+const propertyID = createWebDataStream._propertyID;
+
 const Template = ( args ) => <SetupBanner { ...args } />;
 
 export const NoPropertyNoTag = Template.bind( {} );
 NoPropertyNoTag.storyName = 'No GA4 Property - No Existing Tag';
+NoPropertyNoTag.decorators = [
+	( Story ) => {
+		const setupRegistry = ( registry ) => {
+			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties( [], {
+				accountID,
+			} );
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.finishResolution( 'getProperties', [ accountID ] );
+		};
+
+		return (
+			<WithRegistrySetup func={ setupRegistry }>
+				<Story />
+			</WithRegistrySetup>
+		);
+	},
+];
+
+export const NoPropertyNoTagNoEditScope = Template.bind( {} );
+NoPropertyNoTagNoEditScope.storyName =
+	'No GA4 Property - No Tag - No Edit Scope';
+NoPropertyNoTagNoEditScope.decorators = [
+	( Story ) => {
+		const setupRegistry = ( registry ) => {
+			const grantedScope =
+				'https://www.googleapis.com/auth/granted.scope';
+
+			fetchMock.getOnce(
+				/^\/google-site-kit\/v1\/core\/user\/data\/authentication/,
+				{
+					body: {
+						authenticated: true,
+						requiredScopes: [],
+						grantedScopes: [ grantedScope ],
+						unsatisfiedScopes: [],
+					},
+					status: 200,
+				}
+			);
+
+			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties( [], {
+				accountID,
+			} );
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.finishResolution( 'getProperties', [ accountID ] );
+		};
+
+		return (
+			<WithRegistrySetup func={ setupRegistry }>
+				<Story />
+			</WithRegistrySetup>
+		);
+	},
+];
 
 export const WithPropertyNoTag = Template.bind( {} );
 WithPropertyNoTag.storyName = 'Existing GA4 Property - No Existing Tag';
@@ -43,11 +110,23 @@ WithPropertyNoTag.decorators = [
 		const setupRegistry = ( registry ) => {
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
-				.setPropertyID( ga4Fixtures.webDataStreams[ 0 ]._propertyID );
-			registry.dispatch( MODULES_ANALYTICS_4 ).setMeasurementID(
-				// eslint-disable-next-line sitekit/acronym-case
-				ga4Fixtures.webDataStreams[ 0 ].webStreamData.measurementId
-			);
+				.receiveGetProperties( properties, {
+					accountID,
+				} );
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.finishResolution( 'getProperties', [ accountID ] );
+
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveGetWebDataStreams( webDataStreams, {
+					propertyID,
+				} );
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.finishResolution( 'receiveGetWebDataStreams', {
+					propertyID,
+				} );
 		};
 
 		return (
@@ -65,11 +144,81 @@ WithPropertyAndTag.decorators = [
 		const setupRegistry = ( registry ) => {
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
-				.setPropertyID( ga4Fixtures.webDataStreams[ 0 ]._propertyID );
-			registry.dispatch( MODULES_ANALYTICS_4 ).setMeasurementID(
+				.receiveGetProperties( properties, {
+					accountID,
+				} );
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.finishResolution( 'getProperties', [ accountID ] );
+
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveGetWebDataStreams( webDataStreams, {
+					propertyID,
+				} );
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.finishResolution( 'receiveGetWebDataStreams', {
+					propertyID,
+				} );
+
+			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetExistingTag(
 				// eslint-disable-next-line sitekit/acronym-case
 				ga4Fixtures.webDataStreams[ 0 ].webStreamData.measurementId
 			);
+			registry.dispatch( MODULES_ANALYTICS_4 ).setUseSnippet( false );
+		};
+
+		return (
+			<WithRegistrySetup func={ setupRegistry }>
+				<Story />
+			</WithRegistrySetup>
+		);
+	},
+];
+
+export const WithPropertyAndTagNoEditScope = Template.bind( {} );
+WithPropertyAndTagNoEditScope.storyName =
+	'Existing GA4 Property - Existing Tag (No edit scope)';
+WithPropertyAndTagNoEditScope.decorators = [
+	( Story ) => {
+		const setupRegistry = ( registry ) => {
+			const grantedScope =
+				'https://www.googleapis.com/auth/granted.scope';
+
+			fetchMock.getOnce(
+				/^\/google-site-kit\/v1\/core\/user\/data\/authentication/,
+				{
+					body: {
+						authenticated: true,
+						requiredScopes: [],
+						grantedScopes: [ grantedScope ],
+						unsatisfiedScopes: [],
+					},
+					status: 200,
+				}
+			);
+
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveGetProperties( properties, {
+					accountID,
+				} );
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.finishResolution( 'getProperties', [ accountID ] );
+
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveGetWebDataStreams( webDataStreams, {
+					propertyID,
+				} );
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.finishResolution( 'receiveGetWebDataStreams', {
+					propertyID,
+				} );
+
 			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetExistingTag(
 				// eslint-disable-next-line sitekit/acronym-case
 				ga4Fixtures.webDataStreams[ 0 ].webStreamData.measurementId
@@ -90,6 +239,13 @@ NoPropertyWithTag.storyName = 'No GA4 Property - Existing Tag';
 NoPropertyWithTag.decorators = [
 	( Story ) => {
 		const setupRegistry = ( registry ) => {
+			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties( [], {
+				accountID,
+			} );
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.finishResolution( 'getProperties', [ accountID ] );
+
 			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetExistingTag(
 				// eslint-disable-next-line sitekit/acronym-case
 				ga4Fixtures.webDataStreams[ 0 ].webStreamData.measurementId
@@ -107,21 +263,10 @@ NoPropertyWithTag.decorators = [
 export default {
 	title: 'Modules/Analytics4/SetupBanner',
 	args: {
-		onCTAClick: () => {},
+		onSubmitSuccess: () => {},
 	},
 	decorators: [
 		( Story ) => {
-			const {
-				createProperty,
-				createWebDataStream,
-				properties,
-				webDataStreams,
-			} = ga4Fixtures;
-			const { accounts, properties: uaProps } =
-				fixtures.accountsPropertiesProfiles;
-			const accountID = createProperty._accountID;
-			const propertyID = createWebDataStream._propertyID;
-
 			const setupRegistry = ( registry ) => {
 				provideModules( registry, [
 					{
@@ -159,26 +304,6 @@ export default {
 				registry
 					.dispatch( MODULES_ANALYTICS )
 					.finishResolution( 'getProperties', [ accountID ] );
-
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveGetProperties( properties, {
-						accountID,
-					} );
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.finishResolution( 'getProperties', [ accountID ] );
-
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveGetWebDataStreams( webDataStreams, {
-						propertyID,
-					} );
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.finishResolution( 'receiveGetWebDataStreams', {
-						propertyID,
-					} );
 
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )

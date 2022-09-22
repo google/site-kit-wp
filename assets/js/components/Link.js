@@ -157,7 +157,9 @@ const Link = forwardRef(
 				} ) }
 				disabled={ disabled }
 				href={
-					type === LINK || type === EXTERNAL_LINK ? href : undefined
+					( type === LINK || type === EXTERNAL_LINK ) && ! disabled
+						? href
+						: undefined
 				}
 				onClick={ onClick }
 				rel={

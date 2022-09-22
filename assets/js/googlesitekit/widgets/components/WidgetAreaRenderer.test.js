@@ -32,7 +32,6 @@ import {
 	WIDGET_AREA_STYLES,
 } from '../datastore/constants';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
-import { CORE_MODULES } from '../../modules/datastore/constants';
 import {
 	createTestRegistry,
 	render,
@@ -710,11 +709,13 @@ describe( 'WidgetAreaRenderer', () => {
 		).toHaveLength( 1 );
 	} );
 
-	it( 'should combine multiple widgets in RecoverableModules state with the same metadata into a single widget', () => {
-		provideModules( registry );
-		registry
-			.dispatch( CORE_MODULES )
-			.receiveRecoverableModules( [ 'search-console' ] );
+	it( 'should combine multiple widgets in RecoverableModules state with the same metadata into a single widget', async () => {
+		provideModules( registry, [
+			{
+				slug: 'search-console',
+				recoverable: true,
+			},
+		] );
 
 		provideUserCapabilities( registry, {
 			[ PERMISSION_VIEW_DASHBOARD ]: true,
@@ -734,7 +735,7 @@ describe( 'WidgetAreaRenderer', () => {
 			},
 		] );
 
-		const { container } = render(
+		const { container, waitForRegistry } = render(
 			<WidgetAreaRenderer slug={ areaName } />,
 			{
 				registry,
@@ -742,6 +743,8 @@ describe( 'WidgetAreaRenderer', () => {
 				features: [ 'dashboardSharing' ],
 			}
 		);
+
+		await waitForRegistry();
 
 		const visibleWidgetSelector =
 			'.googlesitekit-widget-area-widgets > .mdc-layout-grid__inner > .mdc-layout-grid__cell > .googlesitekit-widget';

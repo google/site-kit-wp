@@ -17,7 +17,7 @@ use Google\Site_Kit\Core\Util\Feature_Flags;
 /**
  * Class for view-only pointer.
  *
- * @since n.e.x.t.
+ * @since 1.83.0.
  * @access private
  * @ignore
  */
@@ -28,7 +28,7 @@ final class View_Only_Pointer {
 	/**
 	 * Registers functionality through WordPress hooks.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.83.0
 	 */
 	public function register() {
 		add_filter(
@@ -43,7 +43,7 @@ final class View_Only_Pointer {
 	/**
 	 * Gets the view-only pointer.
 	 *
-	 * @since n.e.x.t.
+	 * @since 1.83.0.
 	 *
 	 * @return Pointer Admin notice instance.
 	 */

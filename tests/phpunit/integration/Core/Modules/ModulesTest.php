@@ -1372,4 +1372,48 @@ class ModulesTest extends TestCase {
 		$this->assertEqualSetsWithIndex( $expected, $settings );
 	}
 
+	public function test_delete_dashboard_sharing_settings() {
+		$this->enable_feature( 'dashboardSharing' );
+
+		$context          = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$modules          = new Modules( $context );
+		$sharing_settings = $modules->get_module_sharing_settings();
+
+		$modules->register();
+
+		$default_settings = array(
+			'pagespeed-insights' => array(
+				'sharedRoles' => array(),
+				'management'  => 'all_admins',
+			),
+		);
+
+		$settings = $sharing_settings->get();
+		$this->assertEqualSets(
+			$default_settings,
+			$settings
+		);
+
+		$updated_settings = array(
+			'pagespeed-insights' => array(
+				'sharedRoles' => array( 'editor', 'subscriber' ),
+				'management'  => 'owner',
+			),
+		);
+
+		$sharing_settings->set( $updated_settings );
+		$settings = $sharing_settings->get();
+		$this->assertEqualSets(
+			$updated_settings,
+			$settings
+		);
+
+		$modules->delete_dashboard_sharing_settings();
+		$settings = $sharing_settings->get();
+		$this->assertEqualSets(
+			$default_settings,
+			$settings
+		);
+	}
+
 }
