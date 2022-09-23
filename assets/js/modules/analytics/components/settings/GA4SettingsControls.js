@@ -181,7 +181,7 @@ export default function GA4SettingsControls( { hasModuleAccess } ) {
 						{ enableGA4PropertyTooltip && hasModuleAccess && (
 							<JoyrideTooltip
 								title={ __(
-									'Set up a new GA4 property from here.',
+									'Set up your Google Analytics 4 property here',
 									'google-site-kit'
 								) }
 								target=".googlesitekit-analytics-4__select-property"
