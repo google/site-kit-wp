@@ -176,6 +176,12 @@ export default function GA4SettingsControls( { hasModuleAccess } ) {
 								'google-site-kit'
 							) }
 							hasModuleAccess={ hasModuleAccess }
+							onChange={ () =>
+								enableGA4PropertyTooltip &&
+								setValues( FORM_SETUP, {
+									enableGA4PropertyTooltip: false,
+								} )
+							}
 						/>
 
 						{ enableGA4PropertyTooltip && hasModuleAccess && (
