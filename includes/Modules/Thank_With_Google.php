@@ -54,7 +54,7 @@ use WP_Error;
  * @ignore
  */
 final class Thank_With_Google extends Module
-	implements Module_With_Assets, Module_With_Activation, Module_With_Deactivation, Module_With_Owner, Module_With_Scopes, Module_With_Settings {
+	implements Module_With_Assets, Module_With_Deactivation, Module_With_Owner, Module_With_Scopes, Module_With_Settings {
 	use Method_Proxy_Trait;
 	use Module_With_Assets_Trait;
 	use Module_With_Owner_Trait;
@@ -78,6 +78,14 @@ final class Thank_With_Google extends Module
 	 * @var Transients
 	 */
 	private $transients;
+
+	/**
+	 * Internal flag for whether the module is connected before completing the setup.
+	 *
+	 * @since n.e.x.t
+	 * @var bool
+	 */
+	private $pre_update_is_connected;
 
 	/**
 	 * Constructor.
@@ -109,6 +117,22 @@ final class Thank_With_Google extends Module
 	 */
 	public function register() {
 		$this->register_scopes_hook();
+
+		add_action(
+			'googlesitekit_pre_save_settings_' . self::MODULE_SLUG,
+			function() {
+				$this->pre_update_is_connected = $this->is_connected();
+			}
+		);
+
+		add_action(
+			'googlesitekit_save_settings_' . self::MODULE_SLUG,
+			function() {
+				if ( ! $this->pre_update_is_connected && $this->is_connected() ) {
+					$this->transients->set( self::TRANSIENT_SETUP_TIMER, time(), WEEK_IN_SECONDS );
+				}
+			}
+		);
 
 		if ( ! $this->is_connected() ) {
 			return;
@@ -182,16 +206,6 @@ final class Thank_With_Google extends Module
 		}
 
 		return parent::is_connected();
-	}
-
-	/**
-	 * Starts a seven day timer which is used to display the supporter wall
-	 * banner notification prompt.
-	 *
-	 * @since n.e.x.t
-	 */
-	public function on_activation() {
-		$this->transients->set( self::TRANSIENT_SETUP_TIMER, time(), WEEK_IN_SECONDS );
 	}
 
 	/**
