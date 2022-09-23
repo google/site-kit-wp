@@ -43,7 +43,7 @@ const unifiedDashboard = {
 		{
 			target: '.googlesitekit-navigation',
 			title: __(
-				'New! Navigate your dashboard easily with the dashboard tabs',
+				'New! Navigate your dashboard easily',
 				'google-site-kit'
 			),
 			content: __(
