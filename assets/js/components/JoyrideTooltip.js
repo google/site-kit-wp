@@ -19,8 +19,10 @@
 /**
  * External dependencies
  */
+import { useState } from '@wordpress/element';
 import { PropTypes } from 'prop-types';
 import Joyride, { EVENTS } from 'react-joyride';
+import { useTimeoutFn } from 'react-use';
 
 /**
  * Internal dependencies
@@ -38,6 +40,23 @@ export default function JoyrideTooltip( {
 	className,
 	styles = {},
 } ) {
+	const checkIfTargetExists = () =>
+		!! global.document.querySelector( target );
+
+	const [ targetExists, setTargetExists ] = useState( checkIfTargetExists );
+	const [ , cancel ] = useTimeoutFn( () => {
+		if ( checkIfTargetExists() ) {
+			setTargetExists( true );
+			cancel();
+		}
+	}, 250 );
+
+	// Joyride expects the step's target to be in the DOM immediately
+	// so we need to wait for it in some cases, e.g. loading data.
+	if ( ! targetExists ) {
+		return null;
+	}
+
 	const steps = [
 		{
 			title,
