@@ -83,8 +83,7 @@ export default function SettingsEdit() {
 	const hasAnalytics4Access = useSelect( ( select ) => {
 		const moduleOwnerID = select( MODULES_ANALYTICS_4 ).getOwnerID();
 
-		// No need to check access if no owner or the user is the owner.
-		if ( ! moduleOwnerID || moduleOwnerID === loggedInUserID ) {
+		if ( moduleOwnerID === loggedInUserID ) {
 			return true;
 		}
 
