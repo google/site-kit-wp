@@ -380,6 +380,15 @@ final class Modules {
 		);
 
 		add_filter(
+			'googlesitekit_module_exists',
+			function ( $exists, $slug ) {
+				return $this->module_exists( $slug );
+			},
+			10,
+			2
+		);
+
+		add_filter(
 			'googlesitekit_is_module_recoverable',
 			function ( $recoverable, $slug ) {
 				return $this->is_module_recoverable( $slug );
