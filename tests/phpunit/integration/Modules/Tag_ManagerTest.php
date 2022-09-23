@@ -363,19 +363,9 @@ class Tag_ManagerTest extends TestCase {
 
 	public function test_get_assets() {
 		$context    = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-		$modules    = new Modules( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$tagmanager = new Tag_Manager( $context );
 
-		add_filter(
-			'googlesitekit_available_modules',
-			function() {
-				// Specify the Analytics module here to provide a clear distinction between this test case
-				// and test_get_assets__no_analytics below.
-				return array( 'analytics' );
-			}
-		);
-
-		$assets = $tagmanager->get_assets( $modules->get_available_modules() );
+		$assets = $tagmanager->get_assets();
 
 		$this->assertCount( 1, $assets );
 
@@ -402,18 +392,20 @@ class Tag_ManagerTest extends TestCase {
 
 	public function test_get_assets__no_analytics() {
 		$context    = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-		$modules    = new Modules( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$tagmanager = new Tag_Manager( $context );
 
+		// Override the googlesitekit_module_exists filter to ensure the Analytics module is not available.
+		remove_all_filters( 'googlesitekit_module_exists' );
 		add_filter(
-			'googlesitekit_available_modules',
-			function() {
-				// Ensure the Analytics module is not available.
-				return array();
-			}
+			'googlesitekit_module_exists',
+			function( $exists, $slug ) {
+				return 'analytics' === $slug ? false : true;
+			},
+			10,
+			2
 		);
 
-		$assets = $tagmanager->get_assets( $modules->get_available_modules() );
+		$assets = $tagmanager->get_assets();
 
 		$this->assertCount( 1, $assets );
 

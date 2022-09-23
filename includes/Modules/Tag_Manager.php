@@ -509,9 +509,11 @@ final class Tag_Manager extends Module
 			'googlesitekit-vendor',
 		);
 
+		$analytics_exists = apply_filters( 'googlesitekit_module_exists', false, 'analytics' );
+
 		// Note that the Tag Manager bundle will make use of the Analytics bundle if it's available,
 		// but can also function without it, hence the conditional include of the Analytics bundle here.
-		if ( isset( $available_modules['analytics'] ) ) {
+		if ( $analytics_exists ) {
 			$dependencies[] = 'googlesitekit-modules-analytics';
 		}
 
