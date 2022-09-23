@@ -1126,7 +1126,11 @@ final class Modules {
 								return new WP_Error( 'invalid_module_slug', __( 'Module does not support settings.', 'google-site-kit' ), array( 'status' => 400 ) );
 							}
 
+							do_action( 'googlesitekit_pre_save_settings_' . $slug );
+
 							$module->get_settings()->merge( (array) $request['data'] );
+
+							do_action( 'googlesitekit_save_settings_' . $slug );
 
 							return new WP_REST_Response( $module->get_settings()->get() );
 						},
