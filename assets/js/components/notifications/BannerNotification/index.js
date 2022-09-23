@@ -23,7 +23,6 @@ import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import map from 'lodash/map';
 import { useMount, useMountedState } from 'react-use';
-import { stringToDate } from '../../../util/date-range/string-to-date';
 
 /*
  * WordPress dependencies
@@ -59,6 +58,7 @@ import {
 	getImageCellSizeProperties,
 	getImageCellOrderProperties,
 } from './utils';
+import { stringToDate } from '../../../util/date-range/string-to-date';
 
 export const LEARN_MORE_TARGET = {
 	EXTERNAL: 'external',

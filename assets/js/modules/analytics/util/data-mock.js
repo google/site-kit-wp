@@ -24,6 +24,10 @@ import faker from 'faker';
 import castArray from 'lodash/castArray';
 import { zip, from, Observable } from 'rxjs';
 import { map, reduce, take } from 'rxjs/operators';
+
+/**
+ * Internal dependencies
+ */
 import { MODULES_ANALYTICS } from '../datastore/constants';
 import { stringToDate } from '../../../util/date-range/string-to-date';
 

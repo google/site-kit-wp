@@ -24,7 +24,6 @@ import faker from 'faker';
 import md5 from 'md5';
 import { range } from 'rxjs';
 import { map, reduce, take } from 'rxjs/operators';
-import { stringToDate } from '../../../util/date-range/string-to-date';
 import isPlainObject from 'lodash/isPlainObject';
 
 /**
@@ -32,6 +31,7 @@ import isPlainObject from 'lodash/isPlainObject';
  */
 import { MODULES_SEARCH_CONSOLE } from '../datastore/constants';
 import { getDateString, isValidDateString } from '../../../util';
+import { stringToDate } from '../../../util/date-range/string-to-date';
 
 /**
  * Generates mock data for Search Console reports.

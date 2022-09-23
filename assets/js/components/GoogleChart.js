@@ -29,7 +29,6 @@ import { Chart } from 'react-google-charts';
 import set from 'lodash/set';
 import cloneDeep from 'lodash/cloneDeep';
 import merge from 'lodash/merge';
-import { stringToDate } from '../util/date-range/string-to-date';
 
 /**
  * WordPress dependencies
@@ -47,6 +46,7 @@ import {
 import PreviewBlock from './PreviewBlock';
 import { CORE_USER } from '../googlesitekit/datastore/user/constants';
 import GatheringDataNotice, { NOTICE_STYLE } from './GatheringDataNotice';
+import { stringToDate } from '../util/date-range/string-to-date';
 import Data from 'googlesitekit-data';
 const { useSelect } = Data;
 
