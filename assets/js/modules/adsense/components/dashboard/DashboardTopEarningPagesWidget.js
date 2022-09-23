@@ -108,9 +108,12 @@ function DashboardTopEarningPagesWidget( props ) {
 			] )
 	);
 
-	const isAdSenseLinked = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).getAdsenseLinked()
-	);
+	const isAdSenseLinked = useSelect( ( select ) => {
+		if ( viewOnlyDashboard && loading ) {
+			return undefined;
+		}
+		return select( MODULES_ANALYTICS ).getAdsenseLinked();
+	} );
 
 	const isAdblockerActive = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).isAdBlockerActive()
