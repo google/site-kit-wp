@@ -33,14 +33,12 @@ trait Module_With_Assets_Trait {
 	 * Gets the assets to register for the module.
 	 *
 	 * @since 1.7.0
-	 * @since n.e.x.t Added the $available_modules parameter.
 	 *
-	 * @param array $available_modules Associative array of module slug to module instance, as returned from {@see Modules::get_available_modules()}.
 	 * @return Asset[] List of Asset objects.
 	 */
-	public function get_assets( array $available_modules ) {
+	public function get_assets() {
 		if ( null === $this->registerable_assets ) {
-			$this->registerable_assets = $this->setup_assets( $available_modules );
+			$this->registerable_assets = $this->setup_assets();
 		}
 
 		return $this->registerable_assets;
@@ -54,13 +52,11 @@ trait Module_With_Assets_Trait {
 	 *
 	 * @since 1.7.0
 	 * @since 1.37.0 Added the $asset_context argument; only enqueue assets in the correct context.
-	 * @since n.e.x.t Added the $available_modules parameter.
 	 *
-	 * @param array  $available_modules Associative array of module slug to module instance, as returned from {@see Modules::get_available_modules()}.
 	 * @param string $asset_context The page context to load this asset, see `Asset::CONTEXT_*` constants.
 	 */
-	public function enqueue_assets( array $available_modules, $asset_context = Asset::CONTEXT_ADMIN_SITEKIT ) {
-		$assets = $this->get_assets( $available_modules );
+	public function enqueue_assets( $asset_context = Asset::CONTEXT_ADMIN_SITEKIT ) {
+		$assets = $this->get_assets();
 		array_walk(
 			$assets,
 			function( Asset $asset, $index, $asset_context ) {
@@ -76,10 +72,8 @@ trait Module_With_Assets_Trait {
 	 * Sets up the module's assets to register.
 	 *
 	 * @since 1.7.0
-	 * @since n.e.x.t Added the $available_modules parameter.
 	 *
-	 * @param array $available_modules Associative array of module slug to module instance, as returned from {@see Modules::get_available_modules()}.
 	 * @return Asset[] List of Asset objects.
 	 */
-	abstract protected function setup_assets( array $available_modules );
+	abstract protected function setup_assets();
 }

@@ -1180,12 +1180,10 @@ final class Analytics extends Module
 	 * Sets up the module's assets to register.
 	 *
 	 * @since 1.8.0
-	 * @since n.e.x.t Added the $available_modules parameter.
 	 *
-	 * @param array $available_modules Associative array of module slug to module instance, as returned from {@see Modules::get_available_modules()}.
 	 * @return Asset[] List of Asset objects.
 	 */
-	protected function setup_assets( array $available_modules ) {
+	protected function setup_assets() {
 		$base_url = $this->context->url( 'dist/assets/' );
 
 		return array(
