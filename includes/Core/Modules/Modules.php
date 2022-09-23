@@ -1586,7 +1586,7 @@ final class Modules {
 	/**
 	 * Deletes sharing settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.84.0
 	 *
 	 * @return bool True on success, false on failure.
 	 */

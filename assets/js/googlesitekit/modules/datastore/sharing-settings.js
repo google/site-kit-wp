@@ -207,7 +207,7 @@ const baseActions = {
 	 *
 	 * Reset sharingSettings for dashboard sharing.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.84.0
 	 *
 	 * @return {Object} Object with `{response, error}`.
 	 */
