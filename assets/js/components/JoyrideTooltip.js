@@ -19,10 +19,14 @@
 /**
  * External dependencies
  */
-import { useState } from '@wordpress/element';
 import { PropTypes } from 'prop-types';
 import Joyride, { EVENTS } from 'react-joyride';
 import { useTimeoutFn } from 'react-use';
+
+/**
+ * WordPress dependencies
+ */
+import { useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
