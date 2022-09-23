@@ -83,9 +83,16 @@ export default function SettingsEdit() {
 	const hasAnalytics4Access = useSelect( ( select ) => {
 		const moduleOwnerID = select( MODULES_ANALYTICS_4 ).getOwnerID();
 
-		if ( moduleOwnerID === loggedInUserID ) {
+		// No need to check access if no owner or the user is the owner.
+		if ( ! moduleOwnerID || moduleOwnerID === loggedInUserID ) {
 			return true;
 		}
+
+		// Prevent the access check from erroring if GA4 isn't connected yet.
+		if ( ! select( CORE_MODULES ).isModuleConnected( 'analytics-4' ) ) {
+			return true;
+		}
+
 		return select( CORE_MODULES ).hasModuleAccess( 'analytics-4' );
 	} );
 	const isLoadingAnalytics4Access = useSelect( ( select ) => {
