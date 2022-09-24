@@ -15,8 +15,13 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+
+      - name: Setup Node.js (.nvmrc)
+        uses: actions/setup-node@v3
         with:
-          fetch-depth: 0
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+
       - name: Configure git
         run: |
           git config --global user.email "action@github.com"
@@ -24,7 +29,6 @@ jobs:
       - name: Set legacy-peer-deps
         run: npm config set legacy-peer-deps true
       - name: Update Browserslist database and create PR if applicable
-        id: run-update-action
         uses: c2corg/browserslist-update-action@v2
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
