@@ -24,10 +24,9 @@ jobs:
 
       - name: Configure git
         run: |
-          git config --global user.email "action@github.com"
-          git config --global user.name "GitHub Action"
-      - name: Set legacy-peer-deps
-        run: npm config set legacy-peer-deps true
+          git config --global user.email "actions@github.com"
+          git config --global user.name "GitHub Actions"
+
       - name: Update Browserslist database and create PR if applicable
         uses: c2corg/browserslist-update-action@v2
         with:
