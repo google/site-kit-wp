@@ -18,7 +18,6 @@ use Google\Site_Kit\Core\Assets\Script;
 use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_Settings;
-use Google\Site_Kit\Core\Modules\Module_With_Activation;
 use Google\Site_Kit\Core\Modules\Module_With_Assets;
 use Google\Site_Kit\Core\Modules\Module_With_Assets_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Deactivation;
@@ -80,7 +79,7 @@ final class Thank_With_Google extends Module
 	private $transients;
 
 	/**
-	 * Internal flag for whether the module is connected before completing the setup.
+	 * Internal flag for whether the module is connected before saving/updating its settings.
 	 *
 	 * @since n.e.x.t
 	 * @var bool
