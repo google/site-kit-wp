@@ -21,7 +21,7 @@
  */
 import { PropTypes } from 'prop-types';
 import Joyride, { EVENTS } from 'react-joyride';
-import { useTimeoutFn } from 'react-use';
+import { useInterval } from 'react-use';
 
 /**
  * WordPress dependencies
@@ -48,12 +48,15 @@ export default function JoyrideTooltip( {
 		!! global.document.querySelector( target );
 
 	const [ targetExists, setTargetExists ] = useState( checkIfTargetExists );
-	const [ , cancel ] = useTimeoutFn( () => {
-		if ( checkIfTargetExists() ) {
-			setTargetExists( true );
-			cancel();
-		}
-	}, 250 );
+	useInterval(
+		() => {
+			if ( checkIfTargetExists() ) {
+				setTargetExists( true );
+			}
+		},
+		// An delay of null will stop the interval.
+		targetExists ? null : 250
+	);
 
 	// Joyride expects the step's target to be in the DOM immediately
 	// so we need to wait for it in some cases, e.g. loading data.
