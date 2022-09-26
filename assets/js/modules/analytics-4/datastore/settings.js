@@ -35,6 +35,7 @@ import {
 	INVARIANT_DOING_SUBMIT_CHANGES,
 	INVARIANT_SETTINGS_NOT_CHANGED,
 } from '../../../googlesitekit/data/create-settings-store';
+import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import {
 	FORM_SETUP,
@@ -99,6 +100,10 @@ export async function submitChanges( { select, dispatch } ) {
 	}
 
 	await API.invalidateCache( 'modules', 'analytics-4' );
+
+	// Refresh the list of modules, primarily in order to refresh the connected status of this module.
+	dispatch( CORE_MODULES ).invalidateResolution( 'getModules', [] );
+	dispatch( CORE_MODULES ).fetchGetModules();
 
 	return {};
 }
