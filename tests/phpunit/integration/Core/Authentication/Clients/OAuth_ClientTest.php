@@ -57,6 +57,7 @@ class OAuth_ClientTest extends TestCase {
 
 		delete_user_option( $user_id, OAuth_Client::OPTION_ERROR_CODE );
 		$fake_http_client = new FakeHttpClient();
+		// Set the request handler to return a response with a new access token.
 		$fake_http_client->set_request_handler(
 			function ( Request $request ) {
 				if ( 0 !== strpos( $request->getUrl(), 'https://oauth2.googleapis.com/token' ) ) {
@@ -82,6 +83,7 @@ class OAuth_ClientTest extends TestCase {
 		$client->refresh_token();
 
 		$this->assertEmpty( get_user_option( OAuth_Client::OPTION_ERROR_CODE, $user_id ) );
+		// Make sure the access token was updated for the user.
 		$this->assertEquals( 'new-test-access-token', $client->get_access_token() );
 	}
 
