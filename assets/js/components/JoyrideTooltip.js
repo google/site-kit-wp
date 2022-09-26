@@ -26,7 +26,7 @@ import { useInterval } from 'react-use';
 /**
  * WordPress dependencies
  */
-import { useState } from '@wordpress/element';
+import { useEffect, useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -57,6 +57,21 @@ export default function JoyrideTooltip( {
 		// An delay of null will stop the interval.
 		targetExists ? null : 250
 	);
+
+	useEffect( () => {
+		if ( targetExists ) {
+			const targetElement = global.document.querySelector( target );
+			const resizeObserver = new ResizeObserver( () => {
+				// Dispatch a window resize event to trigger the tooltip to reposition.
+				global.dispatchEvent( new Event( 'resize' ) );
+			} );
+			resizeObserver.observe( targetElement );
+
+			return () => {
+				resizeObserver.disconnect();
+			};
+		}
+	}, [ target, targetExists ] );
 
 	// Joyride expects the step's target to be in the DOM immediately
 	// so we need to wait for it in some cases, e.g. loading data.
