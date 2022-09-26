@@ -15,6 +15,10 @@ module.exports = async ( { config } ) => {
 				if ( api === 'i18n' ) {
 					return require.resolve( '@wordpress/i18n' );
 				}
+
+				if ( api === 'element' ) {
+					return require.resolve( '@wordpress/element' );
+				}
 			}
 
 			return path.resolve( `assets/js/${ global }-${ api }.js` );

@@ -316,6 +316,7 @@ final class Assets {
 			'googlesitekit-tracking-data',
 			'googlesitekit-runtime',
 			'googlesitekit-i18n',
+			'googlesitekit-element',
 			'googlesitekit-vendor',
 			'googlesitekit-commons',
 			'googlesitekit-base',
@@ -419,6 +420,12 @@ final class Assets {
 				)
 			),
 			new Script(
+				'googlesitekit-element',
+				array(
+					'src' => $base_url . 'js/googlesitekit-element.js',
+				)
+			),
+			new Script(
 				'googlesitekit-runtime',
 				array(
 					'src' => $base_url . 'js/runtime.js',
@@ -444,6 +451,7 @@ final class Assets {
 				array(
 					'src'          => $base_url . 'js/googlesitekit-vendor.js',
 					'dependencies' => array(
+						'googlesitekit-element',
 						'googlesitekit-i18n',
 						'googlesitekit-runtime',
 						'googlesitekit-polyfills',
