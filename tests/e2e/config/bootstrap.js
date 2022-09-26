@@ -189,7 +189,7 @@ function observeConsoleLogging() {
 		if (
 			text.startsWith( 'Powered by AMP' ) ||
 			text.startsWith( 'data_error unknown response key' ) ||
-			text.startsWith( 'You are probably offline' ) ||
+			text.startsWith( 'You are probably offline.' ) ||
 			text.includes(
 				'No triggers were found in the config. No analytics data will be sent.'
 			)
