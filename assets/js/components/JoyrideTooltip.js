@@ -59,7 +59,7 @@ export default function JoyrideTooltip( {
 	);
 
 	useEffect( () => {
-		if ( targetExists ) {
+		if ( targetExists && global.ResizeObserver ) {
 			const targetElement = global.document.querySelector( target );
 			const resizeObserver = new ResizeObserver( () => {
 				// Dispatch a window resize event to trigger the tooltip to reposition.
