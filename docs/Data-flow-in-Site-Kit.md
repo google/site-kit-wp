@@ -6,7 +6,7 @@ At a high level, data in Site Kit is obtained from client-side fetch requests to
 
 Because of Site Kit's large install base, it has users with environments ranging from slow, shared web servers to very fast, cloud compute instances. But because many WordPress sites are hosted on basic, slow servers—and because much of Site Kit's data does not vary wildly by the minute or even hour, we aggressively cache HTTP responses for at least an hour in `sessionStorage` when it is data like an Analytics Report or PageSpeed Insights test run.
 
-This limits the number of repeated requests to the WordPress REST API we make—both improving the perceived speed of Site Kit and minimising high loads on shared WordPress instances.
+This limits the number of repeated requests to the WordPress REST API we make—both improving the perceived speed of Site Kit and minimizing high loads on shared WordPress instances.
 
 ## Request lifecycle
 
