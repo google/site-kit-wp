@@ -160,10 +160,10 @@ export default function GA4SettingsControls( { hasModuleAccess } ) {
 
 	useEffect( () => {
 		// Ensure preselection of the GA4 property works when navigating from the "Connect Google Analytics 4" CTA button.
-		if ( enableGA4 && ! propertyID && matchedProperty ) {
+		if ( enableGA4 && ! propertyID && matchedWebDataStream ) {
 			onActivate();
 		}
-	}, [ enableGA4, matchedProperty, onActivate, propertyID ] );
+	}, [ enableGA4, matchedWebDataStream, onActivate, propertyID ] );
 
 	if ( isAdminAPIWorking === undefined ) {
 		return <ProgressBar height={ isDisabled ? 180 : 212 } small />;
