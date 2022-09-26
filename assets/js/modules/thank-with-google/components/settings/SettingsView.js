@@ -31,7 +31,6 @@ import {
 	TYPE_FIXED,
 	TYPE_OVERLAY,
 } from '../../datastore/constants';
-import { Cell, Grid, Row } from '../../../../material-components';
 import DisplaySetting from '../../../../components/DisplaySetting';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import Link from '../../../../components/Link';
@@ -103,31 +102,25 @@ export default function SettingsView() {
 	const placementType = getPlacementType( ctaPlacement );
 
 	return (
-		<Grid>
+		<div className="googlesitekit-setup-module googlesitekit-setup-module--thank-with-google">
 			<StoreErrorNotices
 				moduleSlug="thank-with-google"
 				storeName={ MODULES_THANK_WITH_GOOGLE }
 			/>
 
-			<Row>
-				<Cell className="googlesitekit-settings-module__meta-item">
+			<div className="googlesitekit-settings-module__meta-items">
+				<div className="googlesitekit-settings-module__meta-item">
 					<h5 className="googlesitekit-settings-module__meta-item-type">
 						{ __( 'Publication ID', 'google-site-kit' ) }
 					</h5>
 					<p className="googlesitekit-settings-module__meta-item-data">
 						<DisplaySetting value={ publicationID } />
 					</p>
-				</Cell>
-				<Cell className="googlesitekit-settings-module__meta-item">
-					<h5 className="googlesitekit-settings-module__meta-item-type">
-						{ __( 'Supporter Wall Widget', 'google-site-kit' ) }
-					</h5>
-					{ supporterWall }
-				</Cell>
-			</Row>
+				</div>
+			</div>
 
-			<Row>
-				<Cell className="googlesitekit-settings-module__meta-item">
+			<div className="googlesitekit-settings-module__meta-items">
+				<div className="googlesitekit-settings-module__meta-item">
 					<h5 className="googlesitekit-settings-module__meta-item-type">
 						{ __( 'Type', 'google-site-kit' ) }
 					</h5>
@@ -136,19 +129,8 @@ export default function SettingsView() {
 							value={ getPlacementTypeLabel( ctaPlacement ) }
 						/>
 					</p>
-				</Cell>
-				<Cell className="googlesitekit-settings-module__meta-item">
-					<h5 className="googlesitekit-settings-module__meta-item-type">
-						{ __( 'Color', 'google-site-kit' ) }
-					</h5>
-					<p className="googlesitekit-settings-module__meta-item-data">
-						<DisplaySetting value={ colorName } />
-					</p>
-				</Cell>
-			</Row>
-
-			<Row>
-				<Cell className="googlesitekit-settings-module__meta-item">
+				</div>
+				<div className="googlesitekit-settings-module__meta-item">
 					<h5 className="googlesitekit-settings-module__meta-item-type">
 						{ TYPE_FIXED === placementType &&
 							__( 'Position', 'google-site-kit' ) }
@@ -160,8 +142,19 @@ export default function SettingsView() {
 							value={ getPlacementLabel( ctaPlacement ) }
 						/>
 					</p>
-				</Cell>
-				<Cell className="googlesitekit-settings-module__meta-item">
+				</div>
+				<div className="googlesitekit-settings-module__meta-item">
+					<h5 className="googlesitekit-settings-module__meta-item-type">
+						{ __( 'Color', 'google-site-kit' ) }
+					</h5>
+					<p className="googlesitekit-settings-module__meta-item-data">
+						<DisplaySetting value={ colorName } />
+					</p>
+				</div>
+			</div>
+
+			<div className="googlesitekit-settings-module__meta-items">
+				<div className="googlesitekit-settings-module__meta-item">
 					<h5 className="googlesitekit-settings-module__meta-item-type">
 						{ __( 'Post Types', 'google-site-kit' ) }
 					</h5>
@@ -173,8 +166,17 @@ export default function SettingsView() {
 							) }
 						/>
 					</p>
-				</Cell>
-			</Row>
-		</Grid>
+				</div>
+			</div>
+
+			<div className="googlesitekit-settings-module__meta-items">
+				<div className="googlesitekit-settings-module__meta-item">
+					<h5 className="googlesitekit-settings-module__meta-item-type">
+						{ __( 'Supporter Wall Widget', 'google-site-kit' ) }
+					</h5>
+					{ supporterWall }
+				</div>
+			</div>
+		</div>
 	);
 }
