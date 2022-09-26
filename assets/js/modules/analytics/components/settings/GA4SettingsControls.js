@@ -27,8 +27,10 @@ import { useUpdateEffect } from 'react-use';
 import { __, _x, sprintf } from '@wordpress/i18n';
 import {
 	createInterpolateElement,
+	Fragment,
 	useState,
 	useCallback,
+	useEffect,
 } from '@wordpress/element';
 
 /**
@@ -51,6 +53,9 @@ import SettingsUseSnippetSwitch from '../../../analytics-4/components/settings/S
 import SettingsNotice from '../../../../components/SettingsNotice/SettingsNotice';
 import { TYPE_INFO } from '../../../../components/SettingsNotice';
 import WarningIcon from '../../../../../../assets/svg/icons/warning-icon.svg';
+import JoyrideTooltip from '../../../../components/JoyrideTooltip';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import Button from '../../../../components/Button';
 const { useSelect, useDispatch } = Data;
 
 export default function GA4SettingsControls( { hasModuleAccess } ) {
@@ -73,6 +78,10 @@ export default function GA4SettingsControls( { hasModuleAccess } ) {
 	const enableGA4 = useSelect( ( select ) =>
 		select( CORE_FORMS ).getValue( FORM_SETUP, 'enableGA4' )
 	);
+	const enableGA4PropertyTooltip = useSelect( ( select ) =>
+		select( CORE_FORMS ).getValue( FORM_SETUP, 'enableGA4PropertyTooltip' )
+	);
+	const { setValues } = useDispatch( CORE_FORMS );
 
 	const propertyID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getPropertyID()
@@ -80,6 +89,10 @@ export default function GA4SettingsControls( { hasModuleAccess } ) {
 
 	const module = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModule( 'analytics-4' )
+	);
+
+	const documentationURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getDocumentationLinkURL( 'ga4' )
 	);
 
 	const formattedOwnerName = module?.owner?.login
@@ -145,6 +158,13 @@ export default function GA4SettingsControls( { hasModuleAccess } ) {
 
 	const isDisabled = ! propertyID && ! enableGA4;
 
+	useEffect( () => {
+		// Ensure preselection of the GA4 property works when navigating from the "Connect Google Analytics 4" CTA button.
+		if ( enableGA4 && ! propertyID && matchedProperty ) {
+			onActivate();
+		}
+	}, [ enableGA4, matchedProperty, onActivate, propertyID ] );
+
 	if ( isAdminAPIWorking === undefined ) {
 		return <ProgressBar height={ isDisabled ? 180 : 212 } small />;
 	}
@@ -157,13 +177,49 @@ export default function GA4SettingsControls( { hasModuleAccess } ) {
 		<div className="googlesitekit-settings-module__fields-group">
 			<div className="googlesitekit-setup-module__inputs">
 				{ ! isDisabled && (
-					<PropertySelect
-						label={ __(
-							'Google Analytics 4 Property',
-							'google-site-kit'
+					<Fragment>
+						<PropertySelect
+							label={ __(
+								'Google Analytics 4 Property',
+								'google-site-kit'
+							) }
+							hasModuleAccess={ hasModuleAccess }
+							onChange={ () =>
+								enableGA4PropertyTooltip &&
+								setValues( FORM_SETUP, {
+									enableGA4PropertyTooltip: false,
+								} )
+							}
+						/>
+
+						{ enableGA4PropertyTooltip && hasModuleAccess && (
+							<JoyrideTooltip
+								title={ __(
+									'Set up your Google Analytics 4 property here',
+									'google-site-kit'
+								) }
+								target=".googlesitekit-analytics-4__select-property"
+								onDismiss={ () =>
+									setValues( FORM_SETUP, {
+										enableGA4PropertyTooltip: false,
+									} )
+								}
+								cta={
+									<Button
+										className="googlesitekit-tooltip-button"
+										href={ documentationURL }
+										target="_blank"
+										text
+									>
+										{ __(
+											'Learn more',
+											'google-site-kit'
+										) }
+									</Button>
+								}
+							/>
 						) }
-						hasModuleAccess={ hasModuleAccess }
-					/>
+					</Fragment>
 				) }
 				{ isDisabled && (
 					<Select

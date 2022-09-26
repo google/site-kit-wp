@@ -86,6 +86,12 @@ export default function SettingsEdit() {
 		if ( moduleOwnerID === loggedInUserID ) {
 			return true;
 		}
+
+		// Prevent the access check from erroring if GA4 isn't connected yet.
+		if ( ! select( CORE_MODULES ).isModuleConnected( 'analytics-4' ) ) {
+			return true;
+		}
+
 		return select( CORE_MODULES ).hasModuleAccess( 'analytics-4' );
 	} );
 	const isLoadingAnalytics4Access = useSelect( ( select ) => {
