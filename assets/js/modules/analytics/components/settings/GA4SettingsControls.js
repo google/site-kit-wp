@@ -30,6 +30,7 @@ import {
 	Fragment,
 	useState,
 	useCallback,
+	useEffect,
 } from '@wordpress/element';
 
 /**
@@ -156,6 +157,13 @@ export default function GA4SettingsControls( { hasModuleAccess } ) {
 	] );
 
 	const isDisabled = ! propertyID && ! enableGA4;
+
+	useEffect( () => {
+		// Ensure preselection of the GA4 property works when navigating from the "Connect Google Analytics 4" CTA button.
+		if ( enableGA4 && ! propertyID && matchedProperty ) {
+			onActivate();
+		}
+	}, [ enableGA4, matchedProperty, onActivate, propertyID ] );
 
 	if ( isAdminAPIWorking === undefined ) {
 		return <ProgressBar height={ isDisabled ? 180 : 212 } small />;
