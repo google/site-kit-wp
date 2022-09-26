@@ -43,9 +43,9 @@ export default function SettingsForm() {
 
 			<div className="googlesitekit-setup-module__inputs">
 				<CTAPlacement />
-				<SupporterWall />
 				<ColorRadio />
 				<PostTypesSelect />
+				<SupporterWall />
 			</div>
 		</Fragment>
 	);
