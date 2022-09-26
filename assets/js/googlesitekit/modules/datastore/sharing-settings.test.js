@@ -1068,6 +1068,10 @@ describe( 'core/modules sharing-settings', () => {
 
 		describe( 'haveSharingSettingsUpdated', () => {
 			it( 'informs whether saved sharing settings differ from the initial default ones', () => {
+				global[ dashboardSharingDataBaseVar ] = {
+					defaultSharedOwnershipModuleSettings,
+				};
+
 				// Initially false.
 				expect(
 					registry.select( CORE_MODULES ).haveSharingSettingsUpdated()
