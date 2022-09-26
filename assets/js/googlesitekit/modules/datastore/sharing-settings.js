@@ -21,6 +21,7 @@
  */
 import invariant from 'invariant';
 import isEqual from 'lodash/isEqual';
+import isEmpty from 'lodash/isEmpty';
 import pick from 'lodash/pick';
 
 /**
@@ -699,6 +700,35 @@ const baseSelectors = {
 		const { defaultSharedOwnershipModuleSettings } = state;
 		return defaultSharedOwnershipModuleSettings;
 	},
+
+	/**
+	 * Indicates whether the sharing settings have updated from default.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {boolean} True if the sharing settings have updated, false otherwise.
+	 */
+	haveSharingSettingsUpdated: createRegistrySelector(
+		( select ) => ( state ) => {
+			const { savedSharingSettings } = state;
+
+			if ( ! savedSharingSettings ) {
+				return false;
+			}
+
+			if ( isEmpty( savedSharingSettings ) ) {
+				return false;
+			}
+
+			const defaultSharingSettings =
+				select(
+					CORE_MODULES
+				).getDefaultSharedOwnershipModuleSettings();
+
+			return ! isEqual( savedSharingSettings, defaultSharingSettings );
+		}
+	),
 };
 
 const store = Data.combineStores(
