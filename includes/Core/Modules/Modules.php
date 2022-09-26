@@ -388,8 +388,8 @@ final class Modules {
 			2
 		);
 
-		add_filter( 'option_' . Module_Sharing_Settings::OPTION, $this->get_method_proxy( 'filter_shared_ownership_module_settings' ) );
-		add_filter( 'default_option_' . Module_Sharing_Settings::OPTION, $this->get_method_proxy( 'filter_shared_ownership_module_settings' ), 20 );
+		add_filter( 'option_' . Module_Sharing_Settings::OPTION, $this->get_method_proxy( 'populate_default_shared_ownership_module_settings' ) );
+		add_filter( 'default_option_' . Module_Sharing_Settings::OPTION, $this->get_method_proxy( 'populate_default_shared_ownership_module_settings' ), 20 );
 
 		add_action(
 			'add_option_' . Module_Sharing_Settings::OPTION,
@@ -1550,7 +1550,7 @@ final class Modules {
 	 * @param array $sharing_settings The dashboard_sharing settings option fetched from the database.
 	 * @return array Dashboard sharing settings option with default settings inserted for shared ownership modules.
 	 */
-	protected function filter_shared_ownership_module_settings( $sharing_settings ) {
+	protected function populate_default_shared_ownership_module_settings( $sharing_settings ) {
 		$shared_ownership_modules = array_keys( $this->get_shared_ownership_modules() );
 		foreach ( $shared_ownership_modules as $shared_ownership_module ) {
 			if ( ! isset( $sharing_settings[ $shared_ownership_module ] ) ) {
