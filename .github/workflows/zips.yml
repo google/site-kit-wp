@@ -81,10 +81,10 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-composer-
       - name: Composer Install
-        uses: php-actions/composer@v4
+        uses: shivammathur/setup-php@v2
         with:
-          dev: no
-          php_version: 7.3
+          php-version: '7.3'
+          tools: composer:2.1
       - name: Read .nvmrc
         run: echo "##[set-output name=NVMRC;]$(cat .nvmrc)"
         id: nvm
