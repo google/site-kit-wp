@@ -24,13 +24,14 @@ import each from 'lodash/each';
 /*
  * Internal dependencies
  */
+import { stringToDate } from '../../../util/date-range/string-to-date';
+
 export * from './is-zero-report';
 export * from './parsing';
 export * from './site-stats-data';
 export * from './status';
 export * from './validation';
 export * from './url';
-import { stringToDate } from '../../../util/date-range/string-to-date';
 
 export function reduceAdSenseData( rows ) {
 	const dataMap = [
