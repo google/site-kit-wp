@@ -373,7 +373,8 @@ final class Modules {
 		add_filter(
 			'googlesitekit_dashboard_sharing_data',
 			function ( $data ) {
-				$data['sharedOwnershipModules'] = array_keys( $this->get_shared_ownership_modules() );
+				$data['sharedOwnershipModules']               = array_keys( $this->get_shared_ownership_modules() );
+				$data['defaultSharedOwnershipModuleSettings'] = $this->populate_default_shared_ownership_module_settings( array() );
 
 				return $data;
 			}
