@@ -36,6 +36,8 @@ use Google\Site_Kit\Tests\Fake_Site_Connection_Trait;
 use Google\Site_Kit\Tests\FakeHttpClient;
 use Google\Site_Kit\Tests\MutableInput;
 use Google\Site_Kit\Tests\TestCase;
+use Google\Site_Kit_Dependencies\GuzzleHttp\Message\Response;
+use Google\Site_Kit_Dependencies\GuzzleHttp\Stream\Stream;
 use WP_Error;
 use WP_Screen;
 use WPDieException;
@@ -316,11 +318,33 @@ class AuthenticationTest extends TestCase {
 		$user_options->set( OAuth_Client::OPTION_ACCESS_TOKEN_EXPIRES_IN, 295 );
 		// Token should refresh now as all conditions have been met.
 		do_action( 'current_screen', WP_Screen::get( 'toplevel_page_googlesitekit-dashboard' ) );
-		// The FakeHttpClient set for the $oauth_client->google_client object above always returns a 200
-		// code with an EMPTY response for a successful HTTP request to fetch an OAuth2 refresh token in
-		// Google_Site_Kit_Client::fetch_auth_token(). Attempting to decode the empty response as JSON
-		// fails, albeit still denotes a successful request.
-		$this->assertEquals( 'Invalid JSON response', get_user_option( OAuth_Client::OPTION_ERROR_CODE, $user_id ) );
+
+		delete_user_option( $user_id, OAuth_Client::OPTION_ERROR_CODE );
+		$fake_http_client = new FakeHttpClient();
+		// Set the request handler to return a response with a new access token.
+		$fake_http_client->set_request_handler(
+			function () {
+				return new Response(
+					200,
+					array(),
+					Stream::factory(
+						json_encode(
+							array(
+								'access_token' => 'new-test-access-token',
+								'expires_in'   => 3599,
+								'token_type'   => 'Bearer',
+							)
+						)
+					)
+				);
+			}
+		);
+		$oauth_client->get_client()->setHttpClient( $fake_http_client );
+		$oauth_client->refresh_token();
+
+		$this->assertEmpty( get_user_option( OAuth_Client::OPTION_ERROR_CODE, $user_id ) );
+		// Make sure the access token was updated.
+		$this->assertEquals( 'new-test-access-token', $oauth_client->get_access_token() );
 	}
 
 	public function test_register_maybe_refresh_token_for_screen__admin_without_shared_modules() {
@@ -355,9 +379,17 @@ class AuthenticationTest extends TestCase {
 		$permissions->register();
 
 		$oauth_client = $auth->get_oauth_client();
+		// Fake a valid authentication token on the OAuth client.
+		$this->assertTrue(
+			$oauth_client->set_token(
+				array(
+					'access_token'  => 'test-access-token',
+					'refresh_token' => 'test-refresh-token',
+				)
+			)
+		);
 		// The FakeHttpClient returns 200 by default.
 		$oauth_client->get_client()->setHttpClient( new FakeHttpClient() );
-		$user_options->set( OAuth_Client::OPTION_ACCESS_TOKEN_EXPIRES_IN, 295 );
 
 		// Create owners for shareable modules and generate their oauth tokens.
 		$pagespeed_insights_owner_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
@@ -376,11 +408,34 @@ class AuthenticationTest extends TestCase {
 
 		// Token should not be refreshed for the editor who is not an authenticated admin.
 		$this->assertFalse( get_user_option( OAuth_Client::OPTION_ERROR_CODE, $editor_id ) );
-		// The FakeHttpClient set for the $oauth_client->google_client object above always returns a 200
-		// code with an EMPTY response for a successful HTTP request to fetch an OAuth2 refresh token in
-		// Google_Site_Kit_Client::fetch_auth_token(). Attempting to decode the empty response as JSON
-		// fails, albeit still denotes a successful request.
-		$this->assertEquals( 'Invalid JSON response', get_user_option( OAuth_Client::OPTION_ERROR_CODE, $pagespeed_insights_owner_id ) );
+
+		delete_user_option( $pagespeed_insights_owner_id, OAuth_Client::OPTION_ERROR_CODE );
+		$fake_http_client = new FakeHttpClient();
+		// Set the request handler to return a response with a new access token.
+		$fake_http_client->set_request_handler(
+			function () {
+				return new Response(
+					200,
+					array(),
+					Stream::factory(
+						json_encode(
+							array(
+								'access_token' => 'new-test-access-token',
+								'expires_in'   => 3599,
+								'token_type'   => 'Bearer',
+							)
+						)
+					)
+				);
+			}
+		);
+		$oauth_client->get_client()->setHttpClient( $fake_http_client );
+		$oauth_client->refresh_token();
+
+		$this->assertEmpty( get_user_option( OAuth_Client::OPTION_ERROR_CODE, $pagespeed_insights_owner_id ) );
+		// Make sure the access token was updated for the owner of the PageSpeed Insights module.
+		$this->assertEquals( 'new-test-access-token', $oauth_client->get_access_token() );
+
 		// Token should not be refreshed for the owner of search console as search console is not shared with editors.
 		$this->assertFalse( get_user_option( OAuth_Client::OPTION_ERROR_CODE, $search_console_owner_id ) );
 	}
