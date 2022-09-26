@@ -42,13 +42,17 @@ import {
 	CORE_USER,
 	PERMISSION_MANAGE_OPTIONS,
 } from '../../googlesitekit/datastore/user/constants';
+import { MODULES_THANK_WITH_GOOGLE } from '../../modules/thank-with-google/datastore/constants';
 import { trackEvent } from '../../util/tracking';
 import useViewContext from '../../hooks/useViewContext';
+import { useFeature } from '../../hooks/useFeature';
 const { useSelect } = Data;
 
 function SetupSuccessBannerNotification() {
 	const slug = getQueryParameter( 'slug' );
 	const viewContext = useViewContext();
+	const twgEnabled = useFeature( 'twgModule' );
+
 	const modules = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModules()
 	);
@@ -78,6 +82,17 @@ function SetupSuccessBannerNotification() {
 	} );
 	const settingsAdminURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-settings' )
+	);
+	const publicationID = useSelect(
+		( select ) =>
+			twgEnabled && select( MODULES_THANK_WITH_GOOGLE ).getPublicationID()
+	);
+	const publicationURL = useSelect(
+		( select ) =>
+			publicationID &&
+			select( MODULES_THANK_WITH_GOOGLE ).getServicePublicationURL(
+				publicationID
+			)
 	);
 
 	useMount( () => {
@@ -210,7 +225,7 @@ function SetupSuccessBannerNotification() {
 						'open the administrator panel.',
 						'google-site-kit'
 					),
-					url: 'https://publishercenter.google.com/',
+					url: publicationURL,
 					target: LEARN_MORE_TARGET.EXTERNAL,
 				};
 			}
@@ -220,7 +235,7 @@ function SetupSuccessBannerNotification() {
 					<BannerNotification
 						id={ winData.id }
 						title={ sprintf(
-							/* translators: %s: the name of a module that setup was completed for */
+							/* translators: 1: the name of a module that setup was completed for */
 							__(
 								'Congrats on completing the setup for %s!',
 								'google-site-kit'

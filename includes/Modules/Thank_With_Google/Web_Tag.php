@@ -49,6 +49,14 @@ class Web_Tag extends Module_Web_Tag {
 	private $cta_post_types;
 
 	/**
+	 * Color theme.
+	 *
+	 * @since 1.82.0
+	 * @var string
+	 */
+	private $color_theme;
+
+	/**
 	 * Sets the current CTA placement.
 	 *
 	 * @since 1.80.0
@@ -68,6 +76,17 @@ class Web_Tag extends Module_Web_Tag {
 	 */
 	public function set_cta_post_types( $cta_post_types ) {
 		$this->cta_post_types = $cta_post_types;
+	}
+
+	/**
+	 * Sets the color theme.
+	 *
+	 * @since 1.82.0
+	 *
+	 * @param string $color_theme Color theme.
+	 */
+	public function set_color_theme( $color_theme ) {
+		$this->color_theme = $color_theme;
 	}
 
 	/**
@@ -103,33 +122,35 @@ class Web_Tag extends Module_Web_Tag {
 	 * @since 1.80.0
 	 */
 	protected function enqueue_twg_script() {
-		$twg_src = 'https://news.google.com/thank/js/v1/thank.js';
+		$is_singular = $this->is_singular_cta_post_type_entity();
+		$is_static   = $this->has_static_cta_placement();
 
-		$is_singular_cta_post_type_entity = $this->is_singular_cta_post_type_entity();
+		$subscription = array(
+			'type'              => 'Blog',
+			'isPartOfType'      => array( 'Blog', 'Product' ),
+			'isPartOfProductId' => $this->tag_id . ':default',
+			'postTitle'         => $is_singular ? get_the_title() : '',
+			'permalink'         => $is_singular ? get_permalink() : '',
+			'pluginVersion'     => GOOGLESITEKIT_VERSION,
+			'colorTheme'        => $this->color_theme,
+			'promptSettings'    => array(
+				'style' => $is_static ? 'inline' : 'floating',
+			),
+		);
+
+		if ( self::PLACEMENT_DYNAMIC_LOW === $this->cta_placement ) {
+			$subscription['promptSettings']['floatingPromptProminence'] = 'low';
+		} elseif ( self::PLACEMENT_DYNAMIC_HIGH === $this->cta_placement ) {
+			$subscription['promptSettings']['floatingPromptProminence'] = 'high';
+		}
 
 		$twg_inline_script = sprintf(
-			"
-			(self.SWG_BASIC = self.SWG_BASIC || []).push(subscriptions => {
-				subscriptions.init({
-					type: 'Blog',
-					isPartOfType: ['Blog', 'Product'],
-					isPartOfProductId: '%s:default',
-					buttonPosition: '%s',
-					permalink: '%s',
-					pluginVersion: '%s',
-					postTitle: '%s'
-				});
-			});
-			",
-			esc_js( $this->tag_id ),
-			esc_js( $this->has_static_cta_placement() ? 'inline' : 'floating' ),
-			esc_js( $is_singular_cta_post_type_entity ? get_permalink() : '' ),
-			esc_js( GOOGLESITEKIT_VERSION ),
-			esc_js( $is_singular_cta_post_type_entity ? get_the_title() : '' )
+			'(self.SWG_BASIC=self.SWG_BASIC||[]).push(function(subscriptions){subscriptions.init(%s);});',
+			wp_json_encode( $subscription )
 		);
 
 		// phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion
-		wp_register_script( 'google_thankjs', $twg_src, array(), null, true );
+		wp_register_script( 'google_thankjs', 'https://news.google.com/thank/js/v1/thank.js', array(), null, true );
 		wp_add_inline_script( 'google_thankjs', $twg_inline_script, 'before' );
 
 		$filter_google_thankjs = function ( $tag, $handle ) {
@@ -142,7 +163,7 @@ class Web_Tag extends Module_Web_Tag {
 
 		add_filter( 'script_loader_tag', $filter_google_thankjs, 10, 2 );
 
-		if ( $is_singular_cta_post_type_entity ) {
+		if ( $is_singular ) {
 			wp_enqueue_script( 'google_thankjs' );
 		}
 	}
@@ -160,7 +181,10 @@ class Web_Tag extends Module_Web_Tag {
 			return $content;
 		}
 
-		$cta_placeholder = '<div counter-button style="height: 34px; visibility: hidden; box-sizing: content-box; padding: 12px 0; display: inline-block; overflow: hidden;"></div><button twg-button style="height: 42px; visibility: hidden; margin: 12px 0;"></button>';
+		$cta_placeholder = '<div class="googlesitekit-twg-wrapper" style="display: flex; align-items: center; flex-wrap: wrap; gap: 0 10px;">'
+			. '<div counter-button style="height: 34px; visibility: hidden; box-sizing: content-box; padding: 12px 0; display: inline-block; overflow: hidden;"></div>'
+			. '<button twg-button style="height: 42px; visibility: hidden; margin: 12px 0;"></button>'
+			. '</div>';
 		$cta_placeholder = $this->add_snippet_comments( $cta_placeholder );
 
 		if ( empty( $content ) ) {
@@ -213,4 +237,5 @@ class Web_Tag extends Module_Web_Tag {
 		$after  = sprintf( "\n<!-- %s -->\n", esc_html__( 'End Thank with Google snippet added by Site Kit', 'google-site-kit' ) );
 		return $before . $code . $after;
 	}
+
 }

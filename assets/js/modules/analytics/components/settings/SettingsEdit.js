@@ -65,13 +65,13 @@ export default function SettingsEdit() {
 		return select( CORE_MODULES ).hasModuleAccess( 'analytics' );
 	} );
 	const isLoadingAnalyticsAccess = useSelect( ( select ) => {
-		const hasResolvedModuleOwner = select(
-			MODULES_ANALYTICS
-		).hasFinishedResolution( 'getSettings' );
+		const hasResolvedModuleOwner =
+			select( MODULES_ANALYTICS ).hasFinishedResolution( 'getSettings' );
 
-		const isResolvingModuleAccess = select(
-			CORE_MODULES
-		).isResolving( 'hasModuleAccess', [ 'analytics' ] );
+		const isResolvingModuleAccess = select( CORE_MODULES ).isResolving(
+			'hasModuleAccess',
+			[ 'analytics' ]
+		);
 
 		return (
 			! hasResolvedModuleOwner ||
@@ -89,13 +89,15 @@ export default function SettingsEdit() {
 		return select( CORE_MODULES ).hasModuleAccess( 'analytics-4' );
 	} );
 	const isLoadingAnalytics4Access = useSelect( ( select ) => {
-		const hasResolvedModuleOwner = select(
-			MODULES_ANALYTICS_4
-		).hasFinishedResolution( 'getSettings' );
+		const hasResolvedModuleOwner =
+			select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
+				'getSettings'
+			);
 
-		const isResolvingModuleAccess = select(
-			CORE_MODULES
-		).isResolving( 'hasModuleAccess', [ 'analytics-4' ] );
+		const isResolvingModuleAccess = select( CORE_MODULES ).isResolving(
+			'hasModuleAccess',
+			[ 'analytics-4' ]
+		);
 
 		return (
 			! hasResolvedModuleOwner ||

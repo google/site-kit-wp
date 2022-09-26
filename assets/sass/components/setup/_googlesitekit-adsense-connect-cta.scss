@@ -36,6 +36,7 @@
 		.googlesitekit-setup-module--adsense__stage-caption {
 			color: $c-subtle;
 			display: flex;
+
 			// Set each caption to the same grid cell to overlay them
 			// in order to fade in/out.
 			grid-column-start: 1;
@@ -109,13 +110,12 @@
 				background-image: linear-gradient(0deg, $c-brand 0%, $c-brand 100%);
 				background-repeat: no-repeat;
 			}
-
 		}
 
 		--adsense-connect-cta-fade-in-duration: 7.5s;
 		--adsense-connect-cta-fade-out-duration: 500ms;
 
-		@keyframes fade-in {
+		@keyframes googlesitekit-fade-in {
 
 			0% {
 				opacity: 0;
@@ -130,7 +130,7 @@
 			}
 		}
 
-		@keyframes fade-out {
+		@keyframes googlesitekit-fade-out {
 
 			0% {
 				opacity: 1;
@@ -145,7 +145,7 @@
 			}
 		}
 
-		@keyframes caption-indicator-enter {
+		@keyframes googlesitekit-caption-indicator-enter {
 
 			from {
 				background-size: 100% 0%;
@@ -156,7 +156,7 @@
 			}
 		}
 
-		@keyframes caption-indicator-leave {
+		@keyframes googlesitekit-caption-indicator-leave {
 
 			from {
 				background-size: 100% 100%;
@@ -168,27 +168,27 @@
 		}
 
 		.googlesitekit-setup-module--adsense__stage-caption--current--enter {
-			animation: fade-in var(--adsense-connect-cta-fade-in-duration) linear forwards;
+			animation: googlesitekit-fade-in var(--adsense-connect-cta-fade-in-duration) linear forwards;
 
 			@media (min-width: $bp-nonMobile) {
 				animation: none;
 			}
 
 			.googlesitekit-setup-module--adsense__stage-caption-indicator {
-				animation: caption-indicator-enter 500ms linear forwards;
+				animation: googlesitekit-caption-indicator-enter 500ms linear forwards;
 				background-position: 0% 0%;
 			}
 		}
 
 		.googlesitekit-setup-module--adsense__stage-caption--current--leave {
-			animation: fade-out var(--adsense-connect-cta-fade-out-duration) linear forwards;
+			animation: googlesitekit-fade-out var(--adsense-connect-cta-fade-out-duration) linear forwards;
 
 			@media (min-width: $bp-nonMobile) {
 				animation: none;
 			}
 
 			.googlesitekit-setup-module--adsense__stage-caption-indicator {
-				animation: caption-indicator-leave 500ms linear forwards;
+				animation: googlesitekit-caption-indicator-leave 500ms linear forwards;
 				background-position: 0% 100%;
 			}
 		}
@@ -210,6 +210,7 @@
 		.googlesitekit-setup-module--adsense__stage-image {
 			align-items: center;
 			display: flex;
+
 			// Set each image container to the same grid cell to overlay them
 			// in order to fade in/out.
 			grid-column-start: 1;
@@ -231,11 +232,11 @@
 		}
 
 		.googlesitekit-setup-module--adsense__stage-image--current--enter {
-			animation: fade-in var(--adsense-connect-cta-fade-in-duration) linear forwards;
+			animation: googlesitekit-fade-in var(--adsense-connect-cta-fade-in-duration) linear forwards;
 		}
 
 		.googlesitekit-setup-module--adsense__stage-image--current--leave {
-			animation: fade-out var(--adsense-connect-cta-fade-out-duration) linear forwards;
+			animation: googlesitekit-fade-out var(--adsense-connect-cta-fade-out-duration) linear forwards;
 		}
 
 		.googlesitekit-setup-module--adsense__stage-indicator {
@@ -269,7 +270,7 @@
 
 				--adsense-connect-cta-indicator-duration: 500ms;
 
-				@keyframes indicator-enter {
+				@keyframes googlesitekit-indicator-enter {
 
 					from {
 						background-size: 0% 100%;
@@ -280,7 +281,7 @@
 					}
 				}
 
-				@keyframes indicator-leave {
+				@keyframes googlesitekit-indicator-leave {
 
 					from {
 						background-size: 100% 100%;
@@ -292,13 +293,12 @@
 				}
 
 				&.googlesitekit-setup-module--adsense__stage-indicator--current--enter {
-					animation: indicator-enter var(--adsense-connect-cta-indicator-duration) linear forwards;
+					animation: googlesitekit-indicator-enter var(--adsense-connect-cta-indicator-duration) linear forwards;
 					background-position: 0% 0%;
-
 				}
 
 				&.googlesitekit-setup-module--adsense__stage-indicator--current--leave {
-					animation: indicator-leave var(--adsense-connect-cta-indicator-duration) linear forwards;
+					animation: googlesitekit-indicator-leave var(--adsense-connect-cta-indicator-duration) linear forwards;
 					background-position: 100% 0%;
 				}
 			}

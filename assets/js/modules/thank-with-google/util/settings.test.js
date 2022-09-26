@@ -27,34 +27,39 @@ import {
 	CTA_PLACEMENT_DYNAMIC_LOW,
 	CTA_PLACEMENT_STATIC_BELOW_1ST_PARAGRAPH,
 } from '../datastore/constants';
-import { getType, getProminence, getCTAPostTypesString } from './settings';
+import {
+	getPlacementTypeLabel,
+	getPlacementLabel,
+	getCTAPostTypesString,
+	getPlacementType,
+} from './settings';
 
-describe( 'getType', () => {
+describe( 'getPlacementTypeLabel', () => {
 	it.each( [
 		CTA_PLACEMENT_STATIC_AUTO,
 		CTA_PLACEMENT_STATIC_ABOVE_CONTENT,
 		CTA_PLACEMENT_STATIC_BELOW_CONTENT,
 		CTA_PLACEMENT_STATIC_BELOW_1ST_PARAGRAPH,
 	] )( 'should return "Fixed" for %s cta placement', ( ctaPlacement ) => {
-		expect( getType( ctaPlacement ) ).toBe( 'Fixed' );
+		expect( getPlacementTypeLabel( ctaPlacement ) ).toBe( 'Fixed' );
 	} );
 
 	it.each( [ CTA_PLACEMENT_DYNAMIC_HIGH, CTA_PLACEMENT_DYNAMIC_LOW ] )(
 		'should return "Overlay" for %s',
 		( ctaPlacement ) => {
-			expect( getType( ctaPlacement ) ).toBe( 'Overlay' );
+			expect( getPlacementTypeLabel( ctaPlacement ) ).toBe( 'Overlay' );
 		}
 	);
 
 	it.each( [ undefined, null, '' ] )(
 		'should return "" for %s',
 		( ctaPlacement ) => {
-			expect( getType( ctaPlacement ) ).toBe( '' );
+			expect( getPlacementTypeLabel( ctaPlacement ) ).toBe( '' );
 		}
 	);
 } );
 
-describe( 'getProminence', () => {
+describe( 'getPlacementLabel', () => {
 	it.each( [
 		[ CTA_PLACEMENT_STATIC_AUTO, 'Auto' ],
 		[ CTA_PLACEMENT_STATIC_ABOVE_CONTENT, 'Above the post' ],
@@ -65,14 +70,14 @@ describe( 'getProminence', () => {
 	] )(
 		'for %s cta placement should return %s',
 		( ctaPlacement, expected ) => {
-			expect( getProminence( ctaPlacement ) ).toBe( expected );
+			expect( getPlacementLabel( ctaPlacement ) ).toBe( expected );
 		}
 	);
 
 	it.each( [ [ null ], [ undefined ], [ '' ] ] )(
 		'should return an empty string when cta placement is %s',
 		( ctaPlacement ) => {
-			expect( getProminence( ctaPlacement ) ).toBe( '' );
+			expect( getPlacementLabel( ctaPlacement ) ).toBe( '' );
 		}
 	);
 } );
@@ -145,4 +150,44 @@ describe( 'getCTAPostTypesString', () => {
 
 		expect( getCTAPostTypesString( [], postTypes ) ).toBe( '' );
 	} );
+
+	it( 'returns an empty string if ctaPostTypes is falsey', () => {
+		const postTypes = [
+			{
+				slug: 'post',
+				label: 'Posts',
+			},
+			{
+				slug: 'page',
+				label: 'Pages',
+			},
+		];
+
+		expect( getCTAPostTypesString( false, postTypes ) ).toBe( '' );
+	} );
+} );
+
+describe( 'getPlacementType', () => {
+	it.each( [
+		CTA_PLACEMENT_STATIC_AUTO,
+		CTA_PLACEMENT_STATIC_ABOVE_CONTENT,
+		CTA_PLACEMENT_STATIC_BELOW_CONTENT,
+		CTA_PLACEMENT_STATIC_BELOW_1ST_PARAGRAPH,
+	] )( 'should return "fixed" for %s cta placement', ( ctaPlacement ) => {
+		expect( getPlacementType( ctaPlacement ) ).toBe( 'fixed' );
+	} );
+
+	it.each( [ CTA_PLACEMENT_DYNAMIC_HIGH, CTA_PLACEMENT_DYNAMIC_LOW ] )(
+		'should return "overlay" for %s',
+		( ctaPlacement ) => {
+			expect( getPlacementType( ctaPlacement ) ).toBe( 'overlay' );
+		}
+	);
+
+	it.each( [ undefined, null, '' ] )(
+		'should return null for %s',
+		( ctaPlacement ) => {
+			expect( getPlacementType( ctaPlacement ) ).toBe( null );
+		}
+	);
 } );

@@ -23,15 +23,13 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { useCallback, useState } from '@wordpress/element';
+import { useCallback, useEffect, useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import ImageRadio from '../../../../components/ImageRadio';
-
-export const TYPE_OVERLAY = 'overlay';
-export const TYPE_FIXED = 'fixed';
+import { TYPE_FIXED, TYPE_OVERLAY } from '../../datastore/constants';
 
 export default function TypeRadio( props ) {
 	const { defaultType = TYPE_OVERLAY, onUpdate } = props;
@@ -48,10 +46,14 @@ export default function TypeRadio( props ) {
 		[ setType, onUpdate ]
 	);
 
+	useEffect( () => {
+		setType( defaultType );
+	}, [ defaultType ] );
+
 	return (
 		<div className="googlesitekit-twg-setting-field googlesitekit-twg-type-radio">
 			<h4>{ __( 'Type', 'google-site-kit' ) }</h4>
-			<div className="googlesitekit-twg-type-radio__options">
+			<div className="googlesitekit-image-radio-options">
 				<ImageRadio
 					id={ `type-${ TYPE_OVERLAY }` }
 					name="type"

@@ -39,9 +39,10 @@ export async function toHaveTracking(
 	let pass, message;
 
 	try {
-		await expect(
-			instance
-		).toMatchElement( 'script[data-googlesitekit-gtag]', { timeout } );
+		await expect( instance ).toMatchElement(
+			'script[data-googlesitekit-gtag]',
+			{ timeout }
+		);
 		pass = true;
 		message = () => 'Expected tracking not to be loaded';
 	} catch {

@@ -180,10 +180,8 @@ export default function SetupMain( { finishSetup } ) {
 	} = useDispatch( MODULES_ADSENSE );
 
 	// Allow flagging when a background submission should happen.
-	const [
-		isAwaitingBackgroundSubmit,
-		setIsAwaitingBackgroundSubmit,
-	] = useState( false );
+	const [ isAwaitingBackgroundSubmit, setIsAwaitingBackgroundSubmit ] =
+		useState( false );
 
 	// Update current account ID setting on-the-fly.
 	useEffect( () => {
@@ -274,9 +272,8 @@ export default function SetupMain( { finishSetup } ) {
 	] );
 
 	// Submit changes for determined parameters in the background when they are valid.
-	const [ isSubmittingInBackground, setIsSubmittingInBackground ] = useState(
-		false
-	);
+	const [ isSubmittingInBackground, setIsSubmittingInBackground ] =
+		useState( false );
 	// If a background submission should happen and changes are valid to be
 	// submitted, do that here. This is wrapped in a separate useEffect hook
 	// and relies on isAwaitingBackgroundSubmit since the above useEffect hook
@@ -430,7 +427,7 @@ export default function SetupMain( { finishSetup } ) {
 					viewComponent = (
 						<ErrorText
 							message={ sprintf(
-								/* translators: %s: invalid account status identifier */
+								/* translators: 1: invalid account status identifier */
 								__(
 									'Invalid account status: %s',
 									'google-site-kit'
@@ -460,7 +457,7 @@ export default function SetupMain( { finishSetup } ) {
 					viewComponent = (
 						<ErrorText
 							message={ sprintf(
-								/* translators: %s: invalid site status identifier */
+								/* translators: 1: invalid site status identifier */
 								__(
 									'Invalid site status: %s',
 									'google-site-kit'

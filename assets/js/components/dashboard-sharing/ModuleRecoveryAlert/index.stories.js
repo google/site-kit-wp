@@ -47,13 +47,18 @@ const Template = ( { setupRegistry = () => {}, ...args } ) => (
 	</WithRegistrySetup>
 );
 
+const provideModulesWithRecoverable = ( registry, recoverableModules ) => {
+	provideModules(
+		registry,
+		recoverableModules.map( ( slug ) => ( { slug, recoverable: true } ) )
+	);
+};
+
 export const LoadingRecoverableModules = Template.bind( {} );
 LoadingRecoverableModules.storyName = 'Loading Recoverable Modules';
 LoadingRecoverableModules.args = {
 	setupRegistry: ( registry ) => {
-		registry
-			.dispatch( CORE_MODULES )
-			.receiveRecoverableModules( [ 'search-console' ] );
+		provideModulesWithRecoverable( registry, [ 'search-console' ] );
 	},
 };
 LoadingRecoverableModules.scenario = {
@@ -65,9 +70,7 @@ export const SingleRecoverableModule = Template.bind( {} );
 SingleRecoverableModule.storyName = 'Single Recoverable Module (with access)';
 SingleRecoverableModule.args = {
 	setupRegistry: ( registry ) => {
-		registry
-			.dispatch( CORE_MODULES )
-			.receiveRecoverableModules( [ 'search-console' ] );
+		provideModulesWithRecoverable( registry, [ 'search-console' ] );
 		registry
 			.dispatch( CORE_MODULES )
 			.receiveCheckModuleAccess(
@@ -86,9 +89,10 @@ MultipleRecoverableModule.storyName =
 	'Multiple Recoverable Modules (with access)';
 MultipleRecoverableModule.args = {
 	setupRegistry: ( registry ) => {
-		registry
-			.dispatch( CORE_MODULES )
-			.receiveRecoverableModules( [ 'search-console', 'analytics' ] );
+		provideModulesWithRecoverable( registry, [
+			'search-console',
+			'analytics',
+		] );
 		registry
 			.dispatch( CORE_MODULES )
 			.receiveCheckModuleAccess(
@@ -104,8 +108,7 @@ MultipleRecoverableModule.args = {
 	},
 };
 MultipleRecoverableModule.scenario = {
-	label:
-		'Global/ModuleRecoveryAlert/Multiple Recoverable Modules (with access)',
+	label: 'Global/ModuleRecoveryAlert/Multiple Recoverable Modules (with access)',
 	delay: 250,
 };
 
@@ -114,9 +117,7 @@ SingleRecoverableModuleNoAccess.storyName =
 	'Single Recoverable Module (no access)';
 SingleRecoverableModuleNoAccess.args = {
 	setupRegistry: ( registry ) => {
-		registry
-			.dispatch( CORE_MODULES )
-			.receiveRecoverableModules( [ 'search-console' ] );
+		provideModulesWithRecoverable( registry, [ 'search-console' ] );
 		registry
 			.dispatch( CORE_MODULES )
 			.receiveCheckModuleAccess(
@@ -135,9 +136,10 @@ MultipleRecoverableModuleNoAccess.storyName =
 	'Multiple Recoverable Modules (no access)';
 MultipleRecoverableModuleNoAccess.args = {
 	setupRegistry: ( registry ) => {
-		registry
-			.dispatch( CORE_MODULES )
-			.receiveRecoverableModules( [ 'search-console', 'analytics' ] );
+		provideModulesWithRecoverable( registry, [
+			'search-console',
+			'analytics',
+		] );
 		registry
 			.dispatch( CORE_MODULES )
 			.receiveCheckModuleAccess(
@@ -153,8 +155,7 @@ MultipleRecoverableModuleNoAccess.args = {
 	},
 };
 MultipleRecoverableModuleNoAccess.scenario = {
-	label:
-		'Global/ModuleRecoveryAlert/Multiple Recoverable Modules (no access)',
+	label: 'Global/ModuleRecoveryAlert/Multiple Recoverable Modules (no access)',
 	delay: 250,
 };
 
@@ -174,9 +175,7 @@ SingleRecoverableModuleError.args = {
 			{ body: errorResponse, status: 403 }
 		);
 
-		registry
-			.dispatch( CORE_MODULES )
-			.receiveRecoverableModules( [ 'search-console' ] );
+		provideModulesWithRecoverable( registry, [ 'search-console' ] );
 		registry
 			.dispatch( CORE_MODULES )
 			.receiveCheckModuleAccess(
@@ -205,9 +204,10 @@ MultipleRecoverableModuleErrors.args = {
 			{ body: errorResponse, status: 403 }
 		);
 
-		registry
-			.dispatch( CORE_MODULES )
-			.receiveRecoverableModules( [ 'search-console', 'analytics' ] );
+		provideModulesWithRecoverable( registry, [
+			'search-console',
+			'analytics',
+		] );
 		registry
 			.dispatch( CORE_MODULES )
 			.receiveCheckModuleAccess(
@@ -235,7 +235,6 @@ export default {
 			provideUserAuthentication( registry );
 			provideSiteInfo( registry );
 			provideSiteConnection( registry );
-			provideModules( registry );
 			provideModuleRegistrations( registry );
 
 			return (

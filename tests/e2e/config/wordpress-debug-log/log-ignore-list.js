@@ -16,6 +16,7 @@ export const logIgnoreList = {
 		'PHP Deprecated:  implode(): Passing glue string after array is deprecated. Swap the parameters in /var/www/html/wp-includes/class-wp-editor.php on line 708',
 		'PHP Deprecated:  implode(): Passing glue string after array is deprecated. Swap the parameters in /var/www/html/wp-includes/SimplePie/Parse/Date.php on line 545',
 		'PHP Deprecated:  implode(): Passing glue string after array is deprecated. Swap the parameters in /var/www/html/wp-includes/SimplePie/Parse/Date.php on line 546',
+		"PHP Deprecated:  The behavior of unparenthesized expressions containing both '.' and '+'/'-' will change in PHP 8: '+'/'-' will take a higher precedence in /var/www/html/wp-admin/includes/class-wp-ajax-upgrader-skin.php on line 103",
 
 		// Undefined variables in compact() are fixed in later WP versions.
 		'PHP Notice:  compact(): Undefined variable: context in /var/www/html/wp-includes/post.php on line 3222',

@@ -79,7 +79,8 @@ export default function ViewOnlyMenu() {
 				'googlesitekit-dropdown-menu__icon-menu',
 				'mdc-menu-surface--anchor',
 				{
-					'googlesitekit-view-only-menu--user-can-authenticate': canAuthenticate,
+					'googlesitekit-view-only-menu--user-can-authenticate':
+						canAuthenticate,
 				}
 			) }
 		>

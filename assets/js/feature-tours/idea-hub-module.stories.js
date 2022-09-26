@@ -77,9 +77,8 @@ const mockEndpoints = ( args ) => {
 	} );
 };
 
-const WidgetWithComponentProps = withWidgetComponentProps( 'idea-hub' )(
-	DashboardIdeasWidget
-);
+const WidgetWithComponentProps =
+	withWidgetComponentProps( 'idea-hub' )( DashboardIdeasWidget );
 
 const tourProps = {
 	...ideaHubModuleFeatureTour,

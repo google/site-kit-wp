@@ -39,7 +39,6 @@ import {
 import { numFmt } from '../../../../../util';
 import whenActive from '../../../../../util/when-active';
 import { generateDateRangeArgs } from '../../../util/report-date-range-args';
-import { isZeroReport } from '../../../util';
 import TableOverflowContainer from '../../../../../components/TableOverflowContainer';
 import DetailsPermaLinks from '../../../../../components/DetailsPermaLinks';
 import ReportTable from '../../../../../components/ReportTable';
@@ -47,12 +46,11 @@ import PreviewTable from '../../../../../components/PreviewTable';
 import { ZeroDataMessage } from '../../common';
 import Header from './Header';
 import Footer from './Footer';
-import { useFeature } from '../../../../../hooks/useFeature';
 import useViewOnly from '../../../../../hooks/useViewOnly';
 const { useSelect, useInViewSelect } = Data;
 
 function ModulePopularPagesWidget( props ) {
-	const { Widget, WidgetReportError, WidgetReportZero } = props;
+	const { Widget, WidgetReportError } = props;
 
 	const isGatheringData = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).isGatheringData()
@@ -63,8 +61,6 @@ function ModulePopularPagesWidget( props ) {
 			offsetDays: DATE_RANGE_OFFSET,
 		} )
 	);
-
-	const zeroDataStates = useFeature( 'zeroDataStates' );
 
 	const viewOnlyDashboard = useViewOnly();
 
@@ -113,9 +109,10 @@ function ModulePopularPagesWidget( props ) {
 	);
 
 	const loaded = useSelect( ( select ) => {
-		const reportLoaded = select(
-			MODULES_ANALYTICS
-		).hasFinishedResolution( 'getReport', [ args ] );
+		const reportLoaded = select( MODULES_ANALYTICS ).hasFinishedResolution(
+			'getReport',
+			[ args ]
+		);
 
 		return undefined !== error || ( reportLoaded && undefined !== titles );
 	} );
@@ -132,14 +129,6 @@ function ModulePopularPagesWidget( props ) {
 		return (
 			<Widget Header={ Header } Footer={ Footer }>
 				<WidgetReportError moduleSlug="analytics" error={ error } />
-			</Widget>
-		);
-	}
-
-	if ( ! zeroDataStates && isGatheringData && isZeroReport( report ) ) {
-		return (
-			<Widget Header={ Header } Footer={ Footer }>
-				<WidgetReportZero moduleSlug="analytics" />
 			</Widget>
 		);
 	}

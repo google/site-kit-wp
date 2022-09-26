@@ -34,7 +34,6 @@ import { sprintf } from '@wordpress/i18n';
 import ChangeArrow from './ChangeArrow';
 import SourceLink from './SourceLink';
 import GatheringDataNotice, { NOTICE_STYLE } from './GatheringDataNotice';
-import { isFeatureEnabled } from '../features';
 import { numFmt } from '../util';
 
 class DataBlock extends Component {
@@ -115,8 +114,6 @@ class DataBlock extends Component {
 				? datapoint
 				: numFmt( datapoint, datapointUnit || undefined );
 
-		const zeroDataStatesEnabled = isFeatureEnabled( 'zeroDataStates' );
-
 		return (
 			<div
 				className={ classnames(
@@ -125,7 +122,8 @@ class DataBlock extends Component {
 					`googlesitekit-data-block--${ context }`,
 					{
 						'googlesitekit-data-block--selected': selected,
-						'googlesitekit-data-block--is-gathering-data': gatheringData,
+						'googlesitekit-data-block--is-gathering-data':
+							gatheringData,
 					}
 				) }
 				tabIndex={
@@ -176,7 +174,8 @@ class DataBlock extends Component {
 								className={ classnames(
 									'googlesitekit-data-block__change',
 									{
-										'googlesitekit-data-block__change--no-change': ! change,
+										'googlesitekit-data-block__change--no-change':
+											! change,
 									}
 								) }
 							>
@@ -212,7 +211,7 @@ class DataBlock extends Component {
 					</Fragment>
 				) }
 
-				{ gatheringData && zeroDataStatesEnabled && (
+				{ gatheringData && (
 					<GatheringDataNotice style={ gatheringDataNoticeStyle } />
 				) }
 			</div>

@@ -39,6 +39,8 @@ import {
 	CTA_PLACEMENT_DYNAMIC_HIGH,
 	CTA_PLACEMENT_DYNAMIC_LOW,
 	CTA_PLACEMENT_STATIC_BELOW_1ST_PARAGRAPH,
+	TYPE_FIXED,
+	TYPE_OVERLAY,
 } from '../datastore/constants';
 
 /**
@@ -54,74 +56,81 @@ export function getColorThemes() {
 			colorThemeID: 'blue',
 			name: __( 'Blue', 'google-site-kit' ),
 			svg: BlueSVG,
+			colorCode: '#1967d2',
 		},
 		{
 			colorThemeID: 'cyan',
 			name: __( 'Cyan', 'google-site-kit' ),
 			svg: CyanSVG,
+			colorCode: '#007b83',
 		},
 		{
 			colorThemeID: 'green',
 			name: __( 'Green', 'google-site-kit' ),
 			svg: GreenSVG,
+			colorCode: '#188038',
 		},
 		{
 			colorThemeID: 'purple',
 			name: __( 'Purple', 'google-site-kit' ),
 			svg: PurpleSVG,
+			colorCode: '#8e24aa',
 		},
 		{
 			colorThemeID: 'pink',
 			name: __( 'Pink', 'google-site-kit' ),
 			svg: PinkSVG,
+			colorCode: '#d01884',
 		},
 		{
 			colorThemeID: 'orange',
 			name: __( 'Orange', 'google-site-kit' ),
 			svg: OrangeSVG,
+			colorCode: '#B06000',
 		},
 		{
 			colorThemeID: 'brown',
 			name: __( 'Brown', 'google-site-kit' ),
 			svg: BrownSVG,
+			colorCode: '#795548',
 		},
 		{
 			colorThemeID: 'black',
 			name: __( 'Black', 'google-site-kit' ),
 			svg: BlackSVG,
+			colorCode: '#202124',
 		},
 	];
 }
 
 /**
- * Gets the type value based on the ctaPlacement setting.
+ * Gets the placement type label based on the ctaPlacement setting.
  *
  * @since 1.81.0
  *
  * @param {string} ctaPlacement The ctaPlacement setting value.
  * @return {string} "Fixed" or "Overlay" depending on if ctaPlacement is static or dynamic.
  */
-export function getType( ctaPlacement ) {
-	if ( ! ctaPlacement ) {
-		return '';
+export function getPlacementTypeLabel( ctaPlacement ) {
+	switch ( getPlacementType( ctaPlacement ) ) {
+		case TYPE_FIXED:
+			return __( 'Fixed', 'google-site-kit' );
+		case TYPE_OVERLAY:
+			return __( 'Overlay', 'google-site-kit' );
+		default:
+			return '';
 	}
-
-	if ( 'static' === ctaPlacement.substring( 0, 6 ) ) {
-		return __( 'Fixed', 'google-site-kit' );
-	}
-
-	return __( 'Overlay', 'google-site-kit' );
 }
 
 /**
- * Gets the prominence value based on the ctaPlacement setting.
+ * Gets the placement label based on the ctaPlacement setting.
  *
  * @since 1.81.0
  *
  * @param {string} ctaPlacement The ctaPlacement setting value.
- * @return {string} Prominence value depending on the ctaPlacement setting.
+ * @return {string} Placement label depending on the ctaPlacement setting.
  */
-export function getProminence( ctaPlacement ) {
+export function getPlacementLabel( ctaPlacement ) {
 	switch ( ctaPlacement ) {
 		case CTA_PLACEMENT_STATIC_AUTO:
 			return __( 'Auto', 'google-site-kit' );
@@ -151,6 +160,10 @@ export function getProminence( ctaPlacement ) {
  * @return {string} Formatted string of ctaPostTypes.
  */
 export function getCTAPostTypesString( ctaPostTypes, postTypes ) {
+	if ( ! ctaPostTypes ) {
+		return '';
+	}
+
 	if ( ! postTypes || postTypes.length === 0 ) {
 		return ctaPostTypes.join( ', ' );
 	}
@@ -163,4 +176,24 @@ export function getCTAPostTypesString( ctaPostTypes, postTypes ) {
 		return __( 'All post types', 'google-site-kit' );
 	}
 	return enabledPostTypes.map( ( postType ) => postType.label ).join( ', ' );
+}
+
+/**
+ * Gets the placement type based on the ctaPlacement setting.
+ *
+ * @since 1.83.0
+ *
+ * @param {string} ctaPlacement The ctaPlacement setting value.
+ * @return {string} "fixed" or "overlay" depending on if ctaPlacement is static or dynamic.
+ */
+export function getPlacementType( ctaPlacement ) {
+	if ( ! ctaPlacement ) {
+		return null;
+	}
+
+	if ( 'static' === ctaPlacement.substring( 0, 6 ) ) {
+		return TYPE_FIXED;
+	}
+
+	return TYPE_OVERLAY;
 }

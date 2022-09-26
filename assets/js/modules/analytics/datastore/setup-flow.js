@@ -46,9 +46,8 @@ const baseSelectors = {
 	getSetupFlowMode: createRegistrySelector( ( select ) => () => {
 		// Check to see if the Admin API is working—if it's `false` we should also use
 		// the legacy analytics because the API isn't working properly.
-		const isAdminAPIWorking = select(
-			MODULES_ANALYTICS_4
-		).isAdminAPIWorking();
+		const isAdminAPIWorking =
+			select( MODULES_ANALYTICS_4 ).isAdminAPIWorking();
 		if ( isAdminAPIWorking === false ) {
 			return SETUP_FLOW_MODE_LEGACY;
 		}
@@ -71,9 +70,8 @@ const baseSelectors = {
 			return SETUP_FLOW_MODE_UA;
 		}
 
-		const ga4Properties = select( MODULES_ANALYTICS_4 ).getProperties(
-			accountID
-		);
+		const ga4Properties =
+			select( MODULES_ANALYTICS_4 ).getProperties( accountID );
 
 		if ( ga4Properties === undefined ) {
 			return undefined;
@@ -85,9 +83,8 @@ const baseSelectors = {
 			return SETUP_FLOW_MODE_UA;
 		}
 
-		const uaProperties = select( MODULES_ANALYTICS ).getProperties(
-			accountID
-		);
+		const uaProperties =
+			select( MODULES_ANALYTICS ).getProperties( accountID );
 
 		if ( uaProperties === undefined ) {
 			return undefined;

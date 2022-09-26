@@ -46,7 +46,13 @@ export default function TourTooltip( {
 		} );
 
 	return (
-		<div className="googlesitekit-tour-tooltip" { ...tooltipProps }>
+		<div
+			className={ classnames(
+				'googlesitekit-tour-tooltip',
+				step.className
+			) }
+			{ ...tooltipProps }
+		>
 			<Card className="googlesitekit-tooltip-card">
 				<div className="googlesitekit-tooltip-body">
 					<h2 className="googlesitekit-tooltip-title">
@@ -77,13 +83,16 @@ export default function TourTooltip( {
 								{ backProps.title }
 							</Button>
 						) }
-						<Button
-							className="googlesitekit-tooltip-button"
-							text
-							{ ...primaryProps }
-						>
-							{ primaryProps.title }
-						</Button>
+						{ step.cta }
+						{ primaryProps.title && (
+							<Button
+								className="googlesitekit-tooltip-button"
+								text
+								{ ...primaryProps }
+							>
+								{ primaryProps.title }
+							</Button>
+						) }
 					</div>
 				</CardActions>
 				<Button
@@ -111,8 +120,10 @@ TourTooltip.propTypes = {
 	primaryProps: PropTypes.object.isRequired,
 	size: PropTypes.number.isRequired,
 	step: PropTypes.shape( {
-		content: PropTypes.node.isRequired,
+		content: PropTypes.node,
 		title: PropTypes.node.isRequired,
+		cta: PropTypes.oneOfType( [ PropTypes.element, PropTypes.bool ] ),
+		className: PropTypes.string,
 	} ).isRequired,
 	tooltipProps: PropTypes.object.isRequired,
 };

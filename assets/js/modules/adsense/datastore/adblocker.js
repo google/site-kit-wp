@@ -153,9 +153,8 @@ export const selectors = {
 	 */
 	getAdBlockerWarningMessage: Data.createRegistrySelector(
 		( select ) => () => {
-			const isAdBlockerActive = select(
-				MODULES_ADSENSE
-			).isAdBlockerActive();
+			const isAdBlockerActive =
+				select( MODULES_ADSENSE ).isAdBlockerActive();
 
 			if ( undefined === isAdBlockerActive ) {
 				return undefined;
@@ -165,9 +164,8 @@ export const selectors = {
 				return null;
 			}
 
-			const isModuleConnected = select( CORE_MODULES ).isModuleConnected(
-				'adsense'
-			);
+			const isModuleConnected =
+				select( CORE_MODULES ).isModuleConnected( 'adsense' );
 
 			if ( isModuleConnected ) {
 				return __(

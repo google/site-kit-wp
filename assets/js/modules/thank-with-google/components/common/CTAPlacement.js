@@ -17,14 +17,19 @@
 /**
  * WordPress dependencies
  */
-import { useCallback, useState, Fragment } from '@wordpress/element';
+import { useCallback, useState, Fragment, useEffect } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { MODULES_THANK_WITH_GOOGLE } from '../../datastore/constants';
-import TypeRadio, { TYPE_OVERLAY, TYPE_FIXED } from './TypeRadio';
+import {
+	MODULES_THANK_WITH_GOOGLE,
+	TYPE_FIXED,
+	TYPE_OVERLAY,
+} from '../../datastore/constants';
+import { getPlacementType } from '../../util/settings';
+import TypeRadio from './TypeRadio';
 import ProminenceRadio from './ProminenceRadio';
 import PositionRadio from './PositionRadio';
 const { useSelect } = Data;
@@ -34,13 +39,14 @@ export default function CTAPlacement() {
 		select( MODULES_THANK_WITH_GOOGLE ).getCTAPlacement()
 	);
 
-	const defaultType =
-		ctaPlacement?.substring( 0, 7 ) === 'static_'
-			? TYPE_FIXED
-			: TYPE_OVERLAY;
+	const defaultType = getPlacementType( ctaPlacement );
 
 	const [ type, setType ] = useState( defaultType );
 	const onChange = useCallback( setType, [ setType ] );
+
+	useEffect( () => {
+		setType( defaultType );
+	}, [ defaultType ] );
 
 	return (
 		<Fragment>

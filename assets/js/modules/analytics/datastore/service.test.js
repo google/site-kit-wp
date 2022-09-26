@@ -27,6 +27,7 @@ import {
 } from '../../../../../tests/js/utils';
 import * as fixtures from './__fixtures__';
 import { MODULES_ANALYTICS } from './constants';
+import { decodeServiceURL } from '../../../../../tests/js/mock-accountChooserURL-utils';
 
 describe( 'module/analytics service store', () => {
 	const userData = {
@@ -39,7 +40,7 @@ describe( 'module/analytics service store', () => {
 
 	let registry;
 
-	beforeAll( () => {
+	beforeEach( () => {
 		registry = createTestRegistry();
 		provideUserInfo( registry, userData );
 		registry
@@ -47,7 +48,7 @@ describe( 'module/analytics service store', () => {
 			.receiveGetSettings( fixtures.settings.default );
 	} );
 
-	afterAll( () => {
+	afterEach( () => {
 		unsubscribeFromAll( registry );
 	} );
 
@@ -57,25 +58,28 @@ describe( 'module/analytics service store', () => {
 				const serviceURL = registry
 					.select( MODULES_ANALYTICS )
 					.getServiceURL();
-				expect( serviceURL ).toBe(
-					`${ baseURI }?authuser=${ encodeURIComponent(
-						userData.email
-					) }`
+
+				expect( serviceURL ).toMatchInlineSnapshot(
+					'"https://accounts.google.com/accountchooser?continue=https%3A%2F%2Fanalytics.google.com%2Fanalytics%2Fweb%2F&Email=admin%40example.com"'
 				);
 			} );
 
 			it( 'adds the path parameter', () => {
-				const expectedURL = `${ baseURI }?authuser=${ encodeURIComponent(
-					userData.email
-				) }#/test/path/to/deeplink`;
 				const serviceURLNoSlashes = registry
 					.select( MODULES_ANALYTICS )
 					.getServiceURL( { path: 'test/path/to/deeplink' } );
-				expect( serviceURLNoSlashes ).toEqual( expectedURL );
+
+				expect( serviceURLNoSlashes ).toMatchInlineSnapshot(
+					'"https://accounts.google.com/accountchooser?continue=https%3A%2F%2Fanalytics.google.com%2Fanalytics%2Fweb%2F%23%2Ftest%2Fpath%2Fto%2Fdeeplink&Email=admin%40example.com"'
+				);
+
 				const serviceURLWithLeadingSlash = registry
 					.select( MODULES_ANALYTICS )
 					.getServiceURL( { path: '/test/path/to/deeplink' } );
-				expect( serviceURLWithLeadingSlash ).toEqual( expectedURL );
+
+				expect( serviceURLWithLeadingSlash ).toMatchInlineSnapshot(
+					'"https://accounts.google.com/accountchooser?continue=https%3A%2F%2Fanalytics.google.com%2Fanalytics%2Fweb%2F%23%2Ftest%2Fpath%2Fto%2Fdeeplink&Email=admin%40example.com"'
+				);
 			} );
 
 			it( 'adds query args', async () => {
@@ -88,9 +92,13 @@ describe( 'module/analytics service store', () => {
 				const serviceURL = registry
 					.select( MODULES_ANALYTICS )
 					.getServiceURL( { path, query } );
-				expect( serviceURL.startsWith( baseURI ) ).toBe( true );
-				expect( serviceURL.endsWith( `#${ path }` ) ).toBe( true );
-				expect( serviceURL ).toMatchQueryParameters( query );
+				const decodedServiceURL = decodeServiceURL( serviceURL );
+
+				expect( decodedServiceURL.startsWith( baseURI ) ).toBe( true );
+				expect( decodedServiceURL.endsWith( `#${ path }` ) ).toBe(
+					true
+				);
+				expect( decodedServiceURL ).toMatchQueryParameters( query );
 			} );
 		} );
 
@@ -169,8 +177,12 @@ describe( 'module/analytics service store', () => {
 					const reportServiceURL = registry
 						.select( MODULES_ANALYTICS )
 						.getServiceReportURL( type );
-					const url = new URL( reportServiceURL );
-					expect( reportServiceURL.startsWith( baseURI ) ).toBe(
+
+					const decodedServiceURL =
+						decodeServiceURL( reportServiceURL );
+					const url = new URL( decodedServiceURL );
+
+					expect( decodedServiceURL.startsWith( baseURI ) ).toBe(
 						true
 					);
 					expect( url.hash ).toBe(
@@ -183,16 +195,85 @@ describe( 'module/analytics service store', () => {
 					const reportServiceURL = registry
 						.select( MODULES_ANALYTICS )
 						.getServiceReportURL( type, reportArgs );
-					const url = new URL( reportServiceURL );
-					expect( reportServiceURL.startsWith( baseURI ) ).toBe(
+
+					const decodedServiceURL =
+						decodeServiceURL( reportServiceURL );
+
+					const url = new URL( decodedServiceURL );
+
+					expect( decodedServiceURL.startsWith( baseURI ) ).toBe(
 						true
 					);
-					// For more details about how `reportArgs` are handled, see assets/js/modules/analytics/util/report-args.test.js.
+
+					// For more details about how `reportArgs` are handled,
+					// see `assets/js/modules/analytics/util/report-args.test.js`.
 					expect( url.hash ).toBe(
 						`#/report/${ type }/a${ accountID }w${ internalWebPropertyID }p${ profileID }/foo=bar/`
 					);
 				} );
 			} );
+		} );
+	} );
+
+	describe( 'getServiceEntityAccessURL', () => {
+		it( 'returns `undefined` when no accountID is set', () => {
+			expect(
+				registry.select( MODULES_ANALYTICS ).getAccountID()
+			).toBeFalsy();
+
+			expect(
+				registry.select( MODULES_ANALYTICS ).getServiceEntityAccessURL()
+			).toBeUndefined();
+		} );
+
+		it( 'returns `undefined` when no internalWebPropertyID is set', () => {
+			registry.dispatch( MODULES_ANALYTICS ).setAccountID( '12345' );
+			expect(
+				registry.select( MODULES_ANALYTICS ).getInternalWebPropertyID()
+			).toBeFalsy();
+
+			expect(
+				registry.select( MODULES_ANALYTICS ).getServiceEntityAccessURL()
+			).toBeUndefined();
+		} );
+
+		it( 'returns `undefined` when no profileID is set', () => {
+			registry.dispatch( MODULES_ANALYTICS ).setAccountID( '12345' );
+			registry
+				.dispatch( MODULES_ANALYTICS )
+				.setInternalWebPropertyID( '34567' );
+			expect(
+				registry.select( MODULES_ANALYTICS ).getProfileID()
+			).toBeFalsy();
+
+			expect(
+				registry.select( MODULES_ANALYTICS ).getServiceEntityAccessURL()
+			).toBeUndefined();
+		} );
+
+		it( 'returns a service entity access URL for the current account, property, and profile', () => {
+			const [ accountID, internalWebPropertyID, profileID ] = [
+				'12345',
+				'34567',
+				'56789',
+			];
+
+			registry.dispatch( MODULES_ANALYTICS ).setAccountID( accountID );
+			registry
+				.dispatch( MODULES_ANALYTICS )
+				.setInternalWebPropertyID( internalWebPropertyID );
+			registry.dispatch( MODULES_ANALYTICS ).setProfileID( profileID );
+
+			const reportServiceURL = registry
+				.select( MODULES_ANALYTICS )
+				.getServiceEntityAccessURL();
+			const decodedServiceURL = decodeServiceURL( reportServiceURL );
+			const url = new URL( decodedServiceURL );
+
+			expect( decodedServiceURL.startsWith( baseURI ) ).toBe( true );
+			expect( url.hash ).toBe(
+				`#/report/report-home/a${ accountID }w${ internalWebPropertyID }p${ profileID }/`
+			);
 		} );
 	} );
 } );

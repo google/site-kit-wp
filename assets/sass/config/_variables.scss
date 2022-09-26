@@ -29,6 +29,7 @@ $c-mercury: #ebeef0;
 $c-silver: #b8bdb9;
 $c-silver-2: #cbd0d3;
 $c-header-gray: #f8fafb;
+$c-athens-gray: #edf0f4;
 $c-jumbo: #999f9b; // 3.82 contrast
 $c-boulder: #7b807d;
 $c-gray-cx: #7b807d;
@@ -74,8 +75,12 @@ $c-pizazz: #fece72;
 $c-tundora: #464b48;
 $c-aqua-haze: #ebeef0;
 $c-salomie-40: rgba(255, 220, 130, 0.4);
+$c-mine-shaft: #333;
+$c-boulder: #757575;
+$c-mariner: #3367d6;
 
-// WordPress core pallete (see https://make.wordpress.org/core/2021/02/23/standardization-of-wp-admin-colors-in-wordpress-5-7/)
+// WordPress core pallete
+// see https://make.wordpress.org/core/2021/02/23/standardization-of-wp-admin-colors-in-wordpress-5-7/
 // For use primarily outside of Site Kit screens.
 $wp-colors: (
 	white: #fff,
@@ -299,6 +304,7 @@ $mdc-layout-grid-breakpoints: (
 
 // Base64 images for reuse
 $icon-checked: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2212%22%20viewBox%3D%220%200%2016%2012%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cg%20fill%3D%22%23FFF%22%20fill-rule%3D%22evenodd%22%3E%3Cpath%20d%3D%22M0%206.414L1.415%205l5.292%205.292-1.414%201.415z%22%2F%3E%3Cpath%20d%3D%22M14.146.146l1.415%201.414L5.414%2011.707%204%2010.292z%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E");
+$icon-tick: url("data:image/svg+xml,%3Csvg width='10' height='9' viewBox='0 0 10 9' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 4.5L4 7.5L9 1.5' stroke='%233c7251' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E%0A");
 
 $mdc-button-min-height: 40px;
 $mdc-typography-font-family: $f-primary;

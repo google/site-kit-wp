@@ -177,7 +177,7 @@ export default function DashboardCTA( { Widget, WidgetNull } ) {
 				<div className="googlesitekit-idea-hub__dashboard-cta-footer">
 					<Button onClick={ onSetupButtonClick }>
 						{ active && ! connected
-							? __( 'Complete set up', 'google-site-kit' )
+							? __( 'Complete setup', 'google-site-kit' )
 							: __( 'Set up', 'google-site-kit' ) }
 					</Button>
 

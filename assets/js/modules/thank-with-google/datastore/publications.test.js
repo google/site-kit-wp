@@ -22,6 +22,8 @@
 import {
 	createTestRegistry,
 	freezeFetch,
+	provideSiteInfo,
+	provideUserInfo,
 	subscribeUntil,
 	unsubscribeFromAll,
 	untilResolved,
@@ -31,7 +33,10 @@ import {
 	ONBOARDING_STATE_ACTION_REQUIRED,
 	ONBOARDING_STATE_COMPLETE,
 	ONBOARDING_STATE_PENDING_VERIFICATION,
+	PUBLISHER_CENTER_URL,
 } from './constants';
+import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
+import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 
 describe( 'modules/thank-with-google publications', () => {
 	let registry;
@@ -346,6 +351,58 @@ describe( 'modules/thank-with-google publications', () => {
 				expect( publication ).toEqual(
 					publicationOnboardingActionRequiredStateC
 				);
+			} );
+		} );
+
+		describe( 'getServiceCreatePublicationURL', () => {
+			it( 'returns an account chooser URL with the home URL appended to the publisher center URL', () => {
+				provideSiteInfo( registry );
+				provideUserInfo( registry );
+
+				const publisherCenterURL = `${ PUBLISHER_CENTER_URL }/onboarding?sk_url=${ encodeURIComponent(
+					registry.select( CORE_SITE ).getHomeURL()
+				) }`;
+				const expectedAccountChooserURL = registry
+					.select( CORE_USER )
+					.getAccountChooserURL( publisherCenterURL );
+
+				const createPublicationURL = registry
+					.select( MODULES_THANK_WITH_GOOGLE )
+					.getServiceCreatePublicationURL();
+
+				expect( createPublicationURL ).toBe(
+					expectedAccountChooserURL
+				);
+			} );
+		} );
+
+		describe( 'getServicePublicationURL', () => {
+			it( 'should throw an error if no publicationID is given', () => {
+				expect( () =>
+					registry
+						.select( MODULES_THANK_WITH_GOOGLE )
+						.getServicePublicationURL()
+				).toThrow( 'A publicationID is required.' );
+			} );
+
+			it( 'returns a publisher center URL for an existing publication', () => {
+				provideUserInfo( registry );
+
+				const publicationID = 'test-publication-a';
+
+				const publisherCenterURL = `${ PUBLISHER_CENTER_URL }/${ encodeURIComponent(
+					publicationID
+				) }/home`;
+
+				const expectedAccountChooserURL = registry
+					.select( CORE_USER )
+					.getAccountChooserURL( publisherCenterURL );
+
+				const publicationURL = registry
+					.select( MODULES_THANK_WITH_GOOGLE )
+					.getServicePublicationURL( publicationID );
+
+				expect( publicationURL ).toBe( expectedAccountChooserURL );
 			} );
 		} );
 	} );

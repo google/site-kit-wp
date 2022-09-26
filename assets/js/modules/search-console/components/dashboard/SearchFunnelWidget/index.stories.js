@@ -121,9 +121,8 @@ const analyticsArgs = [
 	},
 ];
 
-const WidgetWithComponentProps = withWidgetComponentProps( 'widget-slug' )(
-	SearchFunnelWidget
-);
+const WidgetWithComponentProps =
+	withWidgetComponentProps( 'widget-slug' )( SearchFunnelWidget );
 
 const Template = ( { setupRegistry = () => {}, viewContext, ...args } ) => (
 	<WithRegistrySetup func={ setupRegistry }>
@@ -221,9 +220,7 @@ ReadyWithActivateAnalyticsCTA.args = {
 		provideSearchConsoleMockReport( registry, searchConsoleArgs );
 	},
 };
-ReadyWithActivateAnalyticsCTA.parameters = {
-	features: [ 'zeroDataStates' ],
-};
+
 ReadyWithActivateAnalyticsCTA.scenario = {
 	label: 'SearchConsole/SearchFunnelWidget/ReadyWithActivateAnalyticsCTA',
 	delay: 3000,
@@ -251,9 +248,6 @@ ReadyWithCompleteAnalyticsActivationCTA.args = {
 		provideModuleRegistrations( registry );
 	},
 };
-ReadyWithCompleteAnalyticsActivationCTA.parameters = {
-	features: [ 'zeroDataStates' ],
-};
 
 export const ReadyWithCreateGoalCTA = Template.bind( {} );
 ReadyWithCreateGoalCTA.storyName = 'Ready with Create Goal CTA';
@@ -266,9 +260,7 @@ ReadyWithCreateGoalCTA.args = {
 		}
 	},
 };
-ReadyWithCreateGoalCTA.parameters = {
-	features: [ 'zeroDataStates' ],
-};
+
 ReadyWithCreateGoalCTA.scenario = {
 	label: 'SearchConsole/SearchFunnelWidget/ReadyWithCreateGoalCTA',
 	delay: 3000,
@@ -342,24 +334,6 @@ ErrorAnalytics.args = {
 			.dispatch( MODULES_ANALYTICS )
 			.finishResolution( 'getReport', [ analyticsArgs[ 0 ] ] );
 	},
-};
-
-export const GatheringDataZeroDataStates = Template.bind( {} );
-GatheringDataZeroDataStates.storyName = 'Gathering w/ zeroDataStates';
-GatheringDataZeroDataStates.args = {
-	setupRegistry: ( registry ) => {
-		registry
-			.dispatch( MODULES_SEARCH_CONSOLE )
-			.receiveGetReport( [], { options: searchConsoleArgs } );
-		for ( const options of analyticsArgs ) {
-			registry
-				.dispatch( MODULES_ANALYTICS )
-				.receiveGetReport( [], { options } );
-		}
-	},
-};
-GatheringDataZeroDataStates.parameters = {
-	features: [ 'zeroDataStates' ],
 };
 
 export const ReadyEntityDashboard = Template.bind( {} );

@@ -44,7 +44,6 @@ import {
  * Internal dependencies
  */
 import PreviewBlock from './PreviewBlock';
-import { useFeature } from '../hooks/useFeature';
 import { CORE_USER } from '../googlesitekit/datastore/user/constants';
 import GatheringDataNotice, { NOTICE_STYLE } from './GatheringDataNotice';
 import Data from 'googlesitekit-data';
@@ -72,7 +71,6 @@ export default function GoogleChart( props ) {
 		gatheringData = false,
 		...otherProps
 	} = props;
-	const zeroDataStatesEnabled = useFeature( 'zeroDataStates' );
 
 	const { startDate, endDate } = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeDates()
@@ -208,7 +206,7 @@ export default function GoogleChart( props ) {
 	}
 
 	const chartOptions = cloneDeep( options );
-	if ( zeroDataStatesEnabled && gatheringData && chartType === 'LineChart' ) {
+	if ( gatheringData && chartType === 'LineChart' ) {
 		if ( ! options?.vAxis?.viewWindow?.min ) {
 			set( chartOptions, 'vAxis.viewWindow.min', 0 );
 		}
@@ -299,7 +297,7 @@ export default function GoogleChart( props ) {
 				options={ chartOptions }
 				{ ...otherProps }
 			/>
-			{ zeroDataStatesEnabled && gatheringData && isChartLoaded && (
+			{ gatheringData && isChartLoaded && (
 				<GatheringDataNotice style={ NOTICE_STYLE.OVERLAY } />
 			) }
 			{ children }

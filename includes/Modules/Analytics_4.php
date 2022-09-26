@@ -34,6 +34,7 @@ use Google\Site_Kit\Core\Tags\Guards\Tag_Verify_Guard;
 use Google\Site_Kit\Core\Util\BC_Functions;
 use Google\Site_Kit\Core\Util\Debug_Data;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
+use Google\Site_Kit\Core\Util\URL;
 use Google\Site_Kit\Modules\Analytics\Settings as Analytics_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Settings;
 use Google\Site_Kit\Modules\Analytics_4\Tag_Guard;
@@ -226,7 +227,7 @@ final class Analytics_4 extends Module
 
 		$property = new Google_Service_GoogleAnalyticsAdmin_GoogleAnalyticsAdminV1alphaProperty();
 		$property->setParent( self::normalize_account_id( $account_id ) );
-		$property->setDisplayName( wp_parse_url( $this->context->get_reference_site_url(), PHP_URL_HOST ) );
+		$property->setDisplayName( URL::parse( $this->context->get_reference_site_url(), PHP_URL_HOST ) );
 		$property->setTimeZone( $timezone );
 
 		return $this->get_service( 'analyticsadmin' )->properties->create( $property );
@@ -246,7 +247,7 @@ final class Analytics_4 extends Module
 		$data->setDefaultUri( $site_url );
 
 		$datastream = new GoogleAnalyticsAdminV1alphaDataStream();
-		$datastream->setDisplayName( wp_parse_url( $site_url, PHP_URL_HOST ) );
+		$datastream->setDisplayName( URL::parse( $site_url, PHP_URL_HOST ) );
 		$datastream->setType( 'WEB_DATA_STREAM' );
 		$datastream->setWebStreamData( $data );
 
@@ -342,7 +343,7 @@ final class Analytics_4 extends Module
 				if ( ! isset( $data['accountID'] ) ) {
 					return new WP_Error(
 						'missing_required_param',
-						/* translators: %s: Missing parameter name */
+						/* translators: 1: Missing parameter name */
 						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ),
 						array( 'status' => 400 )
 					);
@@ -353,7 +354,7 @@ final class Analytics_4 extends Module
 				if ( ! isset( $data['propertyID'] ) ) {
 					return new WP_Error(
 						'missing_required_param',
-						/* translators: %s: Missing parameter name */
+						/* translators: 1: Missing parameter name */
 						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'propertyID' ),
 						array( 'status' => 400 )
 					);
@@ -364,7 +365,7 @@ final class Analytics_4 extends Module
 				if ( ! isset( $data['accountID'] ) ) {
 					return new WP_Error(
 						'missing_required_param',
-						/* translators: %s: Missing parameter name */
+						/* translators: 1: Missing parameter name */
 						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ),
 						array( 'status' => 400 )
 					);
@@ -379,7 +380,7 @@ final class Analytics_4 extends Module
 				if ( ! isset( $data['propertyID'] ) ) {
 					return new WP_Error(
 						'missing_required_param',
-						/* translators: %s: Missing parameter name */
+						/* translators: 1: Missing parameter name */
 						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'propertyID' ),
 						array( 'status' => 400 )
 					);
@@ -390,7 +391,7 @@ final class Analytics_4 extends Module
 				if ( ! isset( $data['propertyID'] ) ) {
 					return new WP_Error(
 						'missing_required_param',
-						/* translators: %s: Missing parameter name */
+						/* translators: 1: Missing parameter name */
 						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'propertyID' ),
 						array( 'status' => 400 )
 					);
@@ -408,7 +409,7 @@ final class Analytics_4 extends Module
 				if ( ! isset( $data['propertyIDs'] ) ) {
 					return new WP_Error(
 						'missing_required_param',
-						/* translators: %s: Missing parameter name */
+						/* translators: 1: Missing parameter name */
 						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'propertyIDs' ),
 						array( 'status' => 400 )
 					);
@@ -417,7 +418,7 @@ final class Analytics_4 extends Module
 				if ( ! is_array( $data['propertyIDs'] ) || count( $data['propertyIDs'] ) > 10 ) {
 					return new WP_Error(
 						'rest_invalid_param',
-						/* translators: %s: List of invalid parameters. */
+						/* translators: 1: List of invalid parameters. */
 						sprintf( __( 'Invalid parameter(s): %s', 'google-site-kit' ), 'propertyIDs' ),
 						array( 'status' => 400 )
 					);

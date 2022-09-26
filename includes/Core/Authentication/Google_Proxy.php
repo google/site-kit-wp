@@ -15,6 +15,7 @@ use Google\Site_Kit\Core\Util\Feature_Flags;
 use Exception;
 use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
 use Google\Site_Kit\Core\Storage\User_Options;
+use Google\Site_Kit\Core\Util\URL;
 use WP_Error;
 
 /**
@@ -113,7 +114,7 @@ class Google_Proxy {
 			'user_input_flow',
 		);
 
-		$home_path = wp_parse_url( $this->context->get_canonical_home_url(), PHP_URL_PATH );
+		$home_path = URL::parse( $this->context->get_canonical_home_url(), PHP_URL_PATH );
 		if ( ! $home_path || '/' === $home_path ) {
 			$supports[] = 'file_verification';
 		}

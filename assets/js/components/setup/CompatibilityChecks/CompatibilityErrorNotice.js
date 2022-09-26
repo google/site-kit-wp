@@ -38,15 +38,11 @@ import {
 	ERROR_TOKEN_MISMATCH,
 	ERROR_WP_PRE_V5,
 } from './constants';
+import GetHelpLink from './GetHelpLink';
 
 const helperCTA = ( developerPlugin, stagingDocumentationURL ) => {
-	const {
-		installed,
-		active,
-		installURL,
-		activateURL,
-		configureURL,
-	} = developerPlugin;
+	const { installed, active, installURL, activateURL, configureURL } =
+		developerPlugin;
 
 	if ( ! installed && installURL ) {
 		return {
@@ -104,7 +100,8 @@ export default function CompatibilityErrorNotice( { error } ) {
 					{ __(
 						'Site Kit cannot access the WordPress REST API. Please ensure it is enabled on your site.',
 						'google-site-kit'
-					) }
+					) }{ ' ' }
+					<GetHelpLink errorCode={ error } />
 				</p>
 			);
 		case ERROR_INVALID_HOSTNAME:
@@ -138,7 +135,8 @@ export default function CompatibilityErrorNotice( { error } ) {
 					{ __(
 						'Looks like Site Kit is unable to place or detect tags on your site. This can be caused by using certain caching or maintenance mode plugins or your site’s frontend is configured on a different host or infrastructure than your administration dashboard.',
 						'google-site-kit'
-					) }
+					) }{ ' ' }
+					<GetHelpLink errorCode={ error } />
 				</p>
 			);
 		case ERROR_GOOGLE_API_CONNECTION_FAIL:
@@ -153,7 +151,7 @@ export default function CompatibilityErrorNotice( { error } ) {
 						<br/>
 						${
 							sprintf(
-								/* translators: %1$s: Support Forum URL, %2$s: Error message */ // eslint-disable-line indent
+								/* translators: 1: Support Forum URL, 2: Error message */ // eslint-disable-line indent
 								__(
 									'To get more help, ask a question on our <a href="%1$s">support forum</a> and include the text of the original error message: %2$s',
 									'google-site-kit'
@@ -172,32 +170,13 @@ export default function CompatibilityErrorNotice( { error } ) {
 			);
 		case ERROR_AMP_CDN_RESTRICTED:
 			return (
-				<p
-					dangerouslySetInnerHTML={ sanitizeHTML(
-						`
-						${ __(
-							'Looks like the AMP CDN is restricted in your region, which could interfere with setup on the Site Kit service.',
-							'google-site-kit'
-						) }
-						<br/>
-						${
-							sprintf(
-								/* translators: %1$s: Support Forum URL, %2$s: Error message */ // eslint-disable-line indent
-								__(
-									'To get more help, ask a question on our <a href="%1$s">support forum</a> and include the text of the original error message: %2$s',
-									'google-site-kit'
-								), // eslint-disable-line indent
-								'https://wordpress.org/support/plugin/google-site-kit/', // eslint-disable-line indent
-								`<br/>${ error }` // eslint-disable-line indent
-							) /* eslint-disable-line indent */
-						}
-						`,
-						{
-							ALLOWED_TAGS: [ 'a', 'br' ],
-							ALLOWED_ATTR: [ 'href' ],
-						}
-					) }
-				/>
+				<p>
+					{ __(
+						'Looks like the AMP CDN is restricted in your region, which could interfere with setup on the Site Kit service.',
+						'google-site-kit'
+					) }{ ' ' }
+					<GetHelpLink errorCode={ error } />
+				</p>
 			);
 		case ERROR_WP_PRE_V5:
 			return (

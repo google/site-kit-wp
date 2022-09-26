@@ -1,7 +1,7 @@
 // Outside .googlesitekit-plugin because some menus are moved to the body.
 .mdc-menu-surface {
 
-	@include elevation-3();
+	@include elevation-3;
 	@include mdc-menu-surface-shape-radius($br-sm);
 }
 

@@ -183,12 +183,10 @@ describe( 'modules/tagmanager containers', () => {
 
 		describe( 'selectContainerByID', () => {
 			it( 'sets the containerID and internalContainerID for a web container', async () => {
-				const {
-					account,
-					containers,
-				} = factories.buildAccountWithContainers( {
-					container: { usageContext: [ CONTEXT_WEB ] },
-				} );
+				const { account, containers } =
+					factories.buildAccountWithContainers( {
+						container: { usageContext: [ CONTEXT_WEB ] },
+					} );
 				// eslint-disable-next-line sitekit/acronym-case
 				const accountID = account.accountId;
 
@@ -227,12 +225,10 @@ describe( 'modules/tagmanager containers', () => {
 			} );
 
 			it( 'sets the ampContainerID and internalAMPContainerID for an AMP container', async () => {
-				const {
-					account,
-					containers,
-				} = factories.buildAccountWithContainers( {
-					container: { usageContext: [ CONTEXT_AMP ] },
-				} );
+				const { account, containers } =
+					factories.buildAccountWithContainers( {
+						container: { usageContext: [ CONTEXT_AMP ] },
+					} );
 				// eslint-disable-next-line sitekit/acronym-case
 				const accountID = account.accountId;
 
@@ -332,10 +328,8 @@ describe( 'modules/tagmanager containers', () => {
 			} );
 
 			it( 'returns the full container object for a container in state with a matching publicId', () => {
-				const {
-					account,
-					containers,
-				} = factories.buildAccountWithContainers( { count: 5 } );
+				const { account, containers } =
+					factories.buildAccountWithContainers( { count: 5 } );
 				// eslint-disable-next-line sitekit/acronym-case
 				const accountID = account.accountId;
 				registry
@@ -354,10 +348,8 @@ describe( 'modules/tagmanager containers', () => {
 
 		describe( 'getContainers', () => {
 			it( 'uses a resolver to make a network request', async () => {
-				const {
-					account,
-					containers,
-				} = factories.buildAccountWithContainers();
+				const { account, containers } =
+					factories.buildAccountWithContainers();
 				// eslint-disable-next-line sitekit/acronym-case
 				const accountID = account.accountId;
 
@@ -394,10 +386,8 @@ describe( 'modules/tagmanager containers', () => {
 			} );
 
 			it( 'does not make a network request if containers for this account are already present', async () => {
-				const {
-					account,
-					containers,
-				} = factories.buildAccountWithContainers();
+				const { account, containers } =
+					factories.buildAccountWithContainers();
 				// eslint-disable-next-line sitekit/acronym-case
 				const accountID = account.accountId;
 

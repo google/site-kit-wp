@@ -37,9 +37,12 @@ import * as fixtures from './__fixtures__';
 describe( 'modules/analytics-4 properties', () => {
 	let registry;
 
-	const createPropertyEndpoint = /^\/google-site-kit\/v1\/modules\/analytics-4\/data\/create-property/;
-	const propertiesEndpoint = /^\/google-site-kit\/v1\/modules\/analytics-4\/data\/properties/;
-	const propertyEndpoint = /^\/google-site-kit\/v1\/modules\/analytics-4\/data\/property/;
+	const createPropertyEndpoint =
+		/^\/google-site-kit\/v1\/modules\/analytics-4\/data\/create-property/;
+	const propertiesEndpoint =
+		/^\/google-site-kit\/v1\/modules\/analytics-4\/data\/properties/;
+	const propertyEndpoint =
+		/^\/google-site-kit\/v1\/modules\/analytics-4\/data\/property/;
 
 	beforeAll( () => {
 		API.setUsingCache( false );

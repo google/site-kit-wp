@@ -25,6 +25,7 @@ use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
 use Google\Site_Kit\Core\REST_API\Exception\Invalid_Datapoint_Exception;
 use Google\Site_Kit\Core\REST_API\Data_Request;
+use Google\Site_Kit\Core\Util\URL;
 use Google\Site_Kit_Dependencies\Google\Service as Google_Service;
 use Google\Site_Kit_Dependencies\Google_Service_Exception;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
@@ -112,6 +113,14 @@ abstract class Module {
 	 * @var array|null
 	 */
 	private $google_services;
+
+	/**
+	 * Whether module is using shared credentials or not.
+	 *
+	 * @since 1.82.0
+	 * @var bool
+	 */
+	protected $is_using_shared_credentials = false;
 
 	/**
 	 * Constructor.
@@ -330,6 +339,9 @@ abstract class Module {
 			$datapoint    = $this->get_datapoint_definition( "{$data->method}:{$data->datapoint}" );
 			$oauth_client = $this->get_oauth_client_for_datapoint( $datapoint );
 
+			// Always reset this property first to ensure it is only set true for the current request.
+			$this->is_using_shared_credentials = false;
+
 			$this->validate_datapoint_scopes( $datapoint, $oauth_client );
 			$this->validate_base_scopes( $oauth_client );
 
@@ -345,6 +357,9 @@ abstract class Module {
 			$restore_defers[] = $this->get_client()->withDefer( true );
 			if ( $this->authentication->get_oauth_client() !== $oauth_client ) {
 				$restore_defers[] = $oauth_client->get_client()->withDefer( true );
+
+				// Set request as using shared credentials if oAuth clients do not match.
+				$this->is_using_shared_credentials = true;
 			}
 
 			$request = $this->create_data_request( $data );
@@ -368,6 +383,11 @@ abstract class Module {
 			foreach ( $restore_defers as $restore_defer ) {
 				$restore_defer();
 			}
+
+			// Reset shared credentials usage property after the request
+			// is made, regardless of whether or not it completed successfully
+			// or encountered an error.
+			$this->is_using_shared_credentials = false;
 		}
 
 		if ( is_wp_error( $response ) ) {
@@ -410,7 +430,7 @@ abstract class Module {
 		}
 		if ( ! $oauth_client->has_sufficient_scopes( $this->get_scopes() ) ) {
 			$message = sprintf(
-				/* translators: %s: module name */
+				/* translators: 1: module name */
 				__( 'Site Kit can’t access the relevant data from %s because you haven’t granted all permissions requested during setup.', 'google-site-kit' ),
 				$this->name
 			);
@@ -482,8 +502,8 @@ abstract class Module {
 	 * @return array List of permutations.
 	 */
 	final protected function permute_site_url( $site_url ) {
-		$hostname = wp_parse_url( $site_url, PHP_URL_HOST );
-		$path     = wp_parse_url( $site_url, PHP_URL_PATH );
+		$hostname = URL::parse( $site_url, PHP_URL_HOST );
+		$path     = URL::parse( $site_url, PHP_URL_PATH );
 
 		return array_reduce(
 			$this->permute_site_hosts( $hostname ),
@@ -620,7 +640,7 @@ abstract class Module {
 		}
 
 		if ( ! isset( $this->google_services[ $identifier ] ) ) {
-			/* translators: %s: service identifier */
+			/* translators: 1: service identifier */
 			throw new Exception( sprintf( __( 'Google service identified by %s does not exist.', 'google-site-kit' ), $identifier ) );
 		}
 

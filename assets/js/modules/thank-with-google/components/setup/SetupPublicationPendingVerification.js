@@ -24,10 +24,23 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
+import { MODULES_THANK_WITH_GOOGLE } from '../../datastore/constants';
 import Button from '../../../../components/Button';
 import SetupPublicationScreen from './SetupPublicationScreen';
+const { useSelect } = Data;
 
 export default function SetupPublicationPendingVerification() {
+	const currentPublication = useSelect( ( select ) =>
+		select( MODULES_THANK_WITH_GOOGLE ).getCurrentPublication()
+	);
+	const currentPublicationURL = useSelect( ( select ) =>
+		select( MODULES_THANK_WITH_GOOGLE ).getServicePublicationURL(
+			// eslint-disable-next-line sitekit/acronym-case
+			currentPublication.publicationId
+		)
+	);
+
 	return (
 		<SetupPublicationScreen
 			title={ __(
@@ -40,7 +53,7 @@ export default function SetupPublicationPendingVerification() {
 			) }
 		>
 			<Button
-				href="https://publishercenter.google.com/"
+				href={ currentPublicationURL }
 				target="_blank"
 				aria-label={ __(
 					'Check your status on Thank with Google Publisher Center',

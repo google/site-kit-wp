@@ -121,9 +121,8 @@ const SurveyQuestionMultiSelect = ( {
 			// eslint-disable-next-line camelcase
 			if ( write_in ) {
 				// eslint-disable-next-line camelcase
-				const { selected, answer_text } = selectedValues[
-					answer_ordinal
-				];
+				const { selected, answer_text } =
+					selectedValues[ answer_ordinal ];
 				if ( selected && answer_text.length === 0 ) {
 					return true;
 				}
@@ -193,7 +192,7 @@ const SurveyQuestionMultiSelect = ( {
 													htmlFor={ `${ id }-write-in` }
 												>
 													{ sprintf(
-														/* translators: %s: Option name */
+														/* translators: 1: Option name */
 														__(
 															'Text input for option %s',
 															'google-site-kit'
@@ -230,7 +229,7 @@ const SurveyQuestionMultiSelect = ( {
 				{ minChoices > 1 && (
 					<HelperText persistent>
 						{ sprintf(
-							/* translators: %s: the number of answers. */
+							/* translators: 1: the number of answers. */
 							__(
 								'Choose at least %s answers',
 								'google-site-kit'

@@ -18,22 +18,24 @@ use Google\Site_Kit\Core\Modules\Module_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Assets;
 use Google\Site_Kit\Core\Modules\Module_With_Assets_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Deactivation;
+use Google\Site_Kit\Core\Modules\Module_With_Owner;
+use Google\Site_Kit\Core\Modules\Module_With_Owner_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
-use Google\Site_Kit\Core\Modules\Module_With_Owner;
-use Google\Site_Kit\Core\Modules\Module_With_Owner_Trait;
+use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\REST_API\Exception\Invalid_Datapoint_Exception;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Environment_Type_Guard;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Verify_Guard;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
-use Google\Site_Kit\Core\REST_API\Data_Request;
+use Google\Site_Kit\Modules\Search_Console\Settings as Search_Console_Settings;
 use Google\Site_Kit\Modules\Thank_With_Google\Settings;
 use Google\Site_Kit\Modules\Thank_With_Google\Supporter_Wall_Widget;
 use Google\Site_Kit\Modules\Thank_With_Google\Web_Tag;
 use Google\Site_Kit_Dependencies\Google_Service_SubscribewithGoogle;
 use Google\Site_Kit_Dependencies\Google_Service_SubscribewithGoogle_ListPublicationsResponse;
+use Google\Site_Kit_Dependencies\Google_Service_SubscribewithGoogle_Publication;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 use WP_Error;
 
@@ -245,8 +247,39 @@ final class Thank_With_Google extends Module
 				$service = $this->get_service( 'subscribewithgoogle' );
 				/* @var $service Google_Service_SubscribewithGoogle phpcs:ignore Squiz.PHP.CommentedOutCode.Found */
 
-				/* @TODO filter by verified domains */
-				return $service->publications->listPublications();
+				$sc_settings    = $this->options->get( Search_Console_Settings::OPTION );
+				$sc_property_id = $sc_settings['propertyID'];
+				$raw_url        = str_replace(
+					array( 'sc-domain:', 'https://', 'http://', 'www.' ),
+					'',
+					$sc_property_id
+				);
+
+				if ( 0 === strpos( $sc_property_id, 'sc-domain:' ) ) { // Domain property.
+					$filter = join(
+						' OR ',
+						array_map(
+							function ( $host ) {
+								return sprintf( 'domain = "%s"', $host );
+							},
+							$this->permute_site_hosts( $raw_url )
+						)
+					);
+				} else { // URL property.
+					$filter = join(
+						' OR ',
+						array_map(
+							function ( $host ) {
+								return sprintf( 'site_url = "%s"', $host );
+							},
+							$this->permute_site_url( $raw_url )
+						)
+					);
+				}
+
+				return $service->publications->listPublications(
+					array( 'filter' => $filter )
+				);
 			case 'GET:supporter-wall-sidebars':
 				return function() {
 					$sidebars      = array();
@@ -281,7 +314,12 @@ final class Thank_With_Google extends Module
 						}
 					}
 
-					if ( count( $sidebars ) === $actual_sidebars_count ) {
+					if (
+						// Only show the "All sidebars" text if there is more
+						// than one sidebar.
+						$actual_sidebars_count > 1 &&
+						count( $sidebars ) === $actual_sidebars_count
+					) {
 						return array( __( 'All sidebars', 'google-site-kit' ) );
 					}
 
@@ -305,7 +343,23 @@ final class Thank_With_Google extends Module
 		switch ( "{$data->method}:{$data->datapoint}" ) {
 			case 'GET:publications':
 				/* @var $response Google_Service_SubscribewithGoogle_ListPublicationsResponse phpcs:ignore Squiz.PHP.CommentedOutCode.Found */
-				return (array) $response->getPublications();
+				$publications = array_filter(
+					(array) $response->getPublications(),
+					function ( Google_Service_SubscribewithGoogle_Publication $publication ) {
+						// Require only TwG-enabled publications.
+						if ( empty( $publication['paymentOptions']['thankStickers'] ) ) {
+							return false;
+						}
+						// If onboarding isn't completed, other criteria won't be available.
+						if ( 'ONBOARDING_COMPLETE' !== $publication->getOnboardingState() ) {
+							return true;
+						}
+
+						// This is left as array access as it is not guaranteed to be set.
+						return ! empty( $publication['publicationPredicates']['businessPredicates']['supportsSiteKit'] );
+					}
+				);
+				return array_values( $publications );
 		}
 
 		return parent::parse_data_response( $data, $response );
@@ -352,6 +406,7 @@ final class Thank_With_Google extends Module
 		if ( $tag->can_register() ) {
 			$tag->set_cta_placement( $settings['ctaPlacement'] );
 			$tag->set_cta_post_types( $settings['ctaPostTypes'] );
+			$tag->set_color_theme( $settings['colorTheme'] );
 
 			$tag->register();
 		}

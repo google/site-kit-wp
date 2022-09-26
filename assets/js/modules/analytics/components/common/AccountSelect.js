@@ -41,9 +41,8 @@ export default function AccountSelect( { hasModuleAccess } ) {
 
 	const { accounts, hasResolvedAccounts } = useSelect( ( select ) => ( {
 		accounts: select( MODULES_ANALYTICS ).getAccounts(),
-		hasResolvedAccounts: select( MODULES_ANALYTICS ).hasFinishedResolution(
-			'getAccounts'
-		),
+		hasResolvedAccounts:
+			select( MODULES_ANALYTICS ).hasFinishedResolution( 'getAccounts' ),
 	} ) );
 
 	const { selectAccount } = useDispatch( MODULES_ANALYTICS );

@@ -26,7 +26,11 @@ import { __ } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import { MODULES_THANK_WITH_GOOGLE } from '../../datastore/constants';
+import {
+	MODULES_THANK_WITH_GOOGLE,
+	TYPE_FIXED,
+	TYPE_OVERLAY,
+} from '../../datastore/constants';
 import { Cell, Grid, Row } from '../../../../material-components';
 import DisplaySetting from '../../../../components/DisplaySetting';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
@@ -34,9 +38,10 @@ import Link from '../../../../components/Link';
 import ProgressBar from '../../../../components/ProgressBar';
 import {
 	getColorThemes,
-	getType,
-	getProminence,
+	getPlacementTypeLabel,
+	getPlacementLabel,
 	getCTAPostTypesString,
+	getPlacementType,
 } from '../../util/settings';
 const { useSelect } = Data;
 
@@ -67,15 +72,6 @@ export default function SettingsView() {
 		select( MODULES_THANK_WITH_GOOGLE ).getCTAPostTypes()
 	);
 
-	// Bail if the values aren't ready.
-	if (
-		[ publicationID, ctaPlacement, colorTheme, ctaPostTypes ].includes(
-			undefined
-		)
-	) {
-		return null;
-	}
-
 	let supporterWall;
 
 	if ( supporterWallSidebars === undefined ) {
@@ -103,6 +99,8 @@ export default function SettingsView() {
 		getColorThemes().find(
 			( { colorThemeID } ) => colorThemeID === colorTheme
 		) || {};
+
+	const placementType = getPlacementType( ctaPlacement );
 
 	return (
 		<Grid>
@@ -134,7 +132,9 @@ export default function SettingsView() {
 						{ __( 'Type', 'google-site-kit' ) }
 					</h5>
 					<p className="googlesitekit-settings-module__meta-item-data">
-						<DisplaySetting value={ getType( ctaPlacement ) } />
+						<DisplaySetting
+							value={ getPlacementTypeLabel( ctaPlacement ) }
+						/>
 					</p>
 				</Cell>
 				<Cell className="googlesitekit-settings-module__meta-item">
@@ -150,11 +150,14 @@ export default function SettingsView() {
 			<Row>
 				<Cell className="googlesitekit-settings-module__meta-item">
 					<h5 className="googlesitekit-settings-module__meta-item-type">
-						{ __( 'Prominence', 'google-site-kit' ) }
+						{ TYPE_FIXED === placementType &&
+							__( 'Position', 'google-site-kit' ) }
+						{ TYPE_OVERLAY === placementType &&
+							__( 'Prominence', 'google-site-kit' ) }
 					</h5>
 					<p className="googlesitekit-settings-module__meta-item-data">
 						<DisplaySetting
-							value={ getProminence( ctaPlacement ) }
+							value={ getPlacementLabel( ctaPlacement ) }
 						/>
 					</p>
 				</Cell>

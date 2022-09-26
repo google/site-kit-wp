@@ -110,9 +110,8 @@ function DashboardIdeasWidget( props ) {
 		select( CORE_SITE ).isUsingProxy()
 	);
 
-	const [ queryParamRoute, setQueryParamRoute ] = useQueryArg(
-		'idea-hub-tab'
-	);
+	const [ queryParamRoute, setQueryParamRoute ] =
+		useQueryArg( 'idea-hub-tab' );
 
 	const [ activeTabIndex, setActiveTabIndex ] = useState(
 		DashboardIdeasWidget.tabToIndex[ queryParamRoute ] ||
@@ -260,7 +259,8 @@ function DashboardIdeasWidget( props ) {
 
 	// Any time the pagination value changes, scroll to the top of the container.
 	useUpdateEffect( () => {
-		const tabBarRectangle = tabBarHeaderRef?.current?.getBoundingClientRect();
+		const tabBarRectangle =
+			tabBarHeaderRef?.current?.getBoundingClientRect();
 
 		if ( ! tabBarRectangle ) {
 			return;
@@ -354,7 +354,7 @@ function DashboardIdeasWidget( props ) {
 							{ savedIdeas?.length > 0 &&
 								createInterpolateElement(
 									sprintf(
-										/* translators: %s: number of saved Idea Hub ideas */
+										/* translators: 1: number of saved Idea Hub ideas */
 										__(
 											'Saved <span>(%s)</span>',
 											'google-site-kit'
@@ -373,7 +373,7 @@ function DashboardIdeasWidget( props ) {
 							{ draftIdeas?.length > 0 &&
 								createInterpolateElement(
 									sprintf(
-										/* translators: %s: number of draft Idea Hub ideas */
+										/* translators: 1: number of draft Idea Hub ideas */
 										__(
 											'Drafts <span>(%s)</span>',
 											'google-site-kit'

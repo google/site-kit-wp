@@ -30,8 +30,7 @@ const { hasMultipleAdmins } = global._googlesitekitUserData || {};
 
 const steps = [
 	{
-		target:
-			'.googlesitekit-dashboard-sharing-settings__main .googlesitekit-dashboard-sharing-settings__column--view',
+		target: '.googlesitekit-dashboard-sharing-settings__main .googlesitekit-dashboard-sharing-settings__column--view',
 		title: __( 'Manage view access for other roles', 'google-site-kit' ),
 		content: __(
 			'Grant access to the view-only dashboard for each service for the specific roles you want. Users will see the Site Kit dashboard with only the services that have been shared with them without needing to sign-in with Google.',
@@ -43,8 +42,7 @@ const steps = [
 
 if ( hasMultipleAdmins ) {
 	steps.push( {
-		target:
-			'.googlesitekit-dashboard-sharing-settings__main .googlesitekit-dashboard-sharing-settings__column--manage',
+		target: '.googlesitekit-dashboard-sharing-settings__main .googlesitekit-dashboard-sharing-settings__column--manage',
 		title: __( 'Share management with other admins', 'google-site-kit' ),
 		content: __(
 			'By default only the user who connects a service can control who it is shared with. This setting optionally lets these users allow any other admin signed in with Google to manage the roles a service is shared with.',

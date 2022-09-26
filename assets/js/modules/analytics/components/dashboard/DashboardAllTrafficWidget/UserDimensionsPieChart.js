@@ -58,20 +58,12 @@ import PieChartZeroData from '../../../../../../svg/icons/pie-chart-zero-data.sv
 import GatheringDataNotice, {
 	NOTICE_STYLE,
 } from '../../../../../components/GatheringDataNotice';
-import { useFeature } from '../../../../../hooks/useFeature';
 import useViewContext from '../../../../../hooks/useViewContext';
 const { useDispatch, useSelect } = Data;
 
 export default function UserDimensionsPieChart( props ) {
-	const {
-		dimensionName,
-		dimensionValue,
-		gatheringData,
-		loaded,
-		report,
-	} = props;
-
-	const zeroDataStatesEnabled = useFeature( 'zeroDataStates' );
+	const { dimensionName, dimensionValue, gatheringData, loaded, report } =
+		props;
 
 	const [ selectable, setSelectable ] = useState( false );
 	const viewContext = useViewContext();
@@ -247,7 +239,7 @@ export default function UserDimensionsPieChart( props ) {
 
 			let tooltip = `<p>
 					${
-						/* translators: %s: dimension label */ sprintf(
+						/* translators: 1: dimension label */ sprintf(
 							__( '%s:', 'google-site-kit' ),
 							rowData[ 0 ].toUpperCase()
 						)
@@ -291,7 +283,7 @@ export default function UserDimensionsPieChart( props ) {
 					otherSupportURL,
 
 					sprintf(
-						/* translators: %s: pie slice label */
+						/* translators: 1: pie slice label */
 						__(
 							'Learn more about what "%s" means',
 							'google-site-kit'
@@ -307,7 +299,7 @@ export default function UserDimensionsPieChart( props ) {
 					notSetSupportURL,
 
 					sprintf(
-						/* translators: %s: pie slice label */
+						/* translators: 1: pie slice label */
 						__(
 							'Learn more about what "%s" means',
 							'google-site-kit'
@@ -531,7 +523,7 @@ export default function UserDimensionsPieChart( props ) {
 		options.tooltip.trigger = 'focus';
 	}
 
-	const showZeroDataChart = zeroDataStatesEnabled && hasZeroData;
+	const showZeroDataChart = hasZeroData;
 
 	return (
 		<div className="googlesitekit-widget--analyticsAllTraffic__dimensions-container">
@@ -540,8 +532,10 @@ export default function UserDimensionsPieChart( props ) {
 				className={ classnames(
 					'googlesitekit-widget--analyticsAllTraffic__dimensions-chart',
 					{
-						'googlesitekit-widget--analyticsAllTraffic__slice-selected': !! dimensionValue,
-						'googlesitekit-widget--analyticsAllTraffic__selectable': selectable,
+						'googlesitekit-widget--analyticsAllTraffic__slice-selected':
+							!! dimensionValue,
+						'googlesitekit-widget--analyticsAllTraffic__selectable':
+							selectable,
 					}
 				) }
 			>
@@ -577,8 +571,10 @@ export default function UserDimensionsPieChart( props ) {
 					>
 						<div
 							className={ classnames( {
-								'googlesitekit-widget--analyticsAllTraffic__dimensions-chart-gathering-data': gatheringData,
-								'googlesitekit-widget--analyticsAllTraffic__dimensions-chart-title': ! gatheringData,
+								'googlesitekit-widget--analyticsAllTraffic__dimensions-chart-gathering-data':
+									gatheringData,
+								'googlesitekit-widget--analyticsAllTraffic__dimensions-chart-title':
+									! gatheringData,
 							} ) }
 							dangerouslySetInnerHTML={ title }
 						/>
@@ -597,7 +593,8 @@ export default function UserDimensionsPieChart( props ) {
 					className={ classnames(
 						'googlesitekit-widget--analyticsAllTraffic__legend',
 						{
-							'googlesitekit-widget--analyticsAllTraffic__legend--single': isSingleSliceReport,
+							'googlesitekit-widget--analyticsAllTraffic__legend--single':
+								isSingleSliceReport,
 						}
 					) }
 					role="region"
@@ -617,8 +614,10 @@ export default function UserDimensionsPieChart( props ) {
 									className={ classnames(
 										'googlesitekit-widget--analyticsAllTraffic__legend-slice',
 										{
-											'googlesitekit-widget--analyticsAllTraffic__legend-active': isActive,
-											'googlesitekit-widget--analyticsAllTraffic__legend-others': isOthers,
+											'googlesitekit-widget--analyticsAllTraffic__legend-active':
+												isActive,
+											'googlesitekit-widget--analyticsAllTraffic__legend-others':
+												isOthers,
 										}
 									) }
 									disabled={ gatheringData }

@@ -16,17 +16,6 @@
  * limitations under the License.
  */
 
-export const AREA_DASHBOARD_ALL_TRAFFIC = 'dashboardAllTraffic';
-export const AREA_DASHBOARD_SEARCH_FUNNEL = 'dashboardSearchFunnel';
-export const AREA_DASHBOARD_ACQUISITION = 'dashboardAcquisition';
-export const AREA_DASHBOARD_SPEED = 'dashboardSpeed';
-export const AREA_DASHBOARD_EARNINGS = 'dashboardEarnings';
-
-export const AREA_PAGE_DASHBOARD_SEARCH_FUNNEL = 'pageDashboardSearchFunnel';
-export const AREA_PAGE_DASHBOARD_ALL_TRAFFIC = 'pageDashboardAllTraffic';
-export const AREA_PAGE_DASHBOARD_ACQUISITION = 'pageDashboardAcquisition';
-export const AREA_PAGE_DASHBOARD_SPEED = 'pageDashboardSpeed';
-
 // Main dashboard
 export const AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY =
 	'mainDashboardTrafficPrimary';
@@ -46,16 +35,6 @@ export const AREA_ENTITY_DASHBOARD_MONETIZATION_PRIMARY =
 	'entityDashboardMonetizationPrimary';
 
 export default {
-	AREA_DASHBOARD_ALL_TRAFFIC,
-	AREA_DASHBOARD_SEARCH_FUNNEL,
-	AREA_DASHBOARD_ACQUISITION,
-	AREA_DASHBOARD_SPEED,
-	AREA_DASHBOARD_EARNINGS,
-	AREA_PAGE_DASHBOARD_SEARCH_FUNNEL,
-	AREA_PAGE_DASHBOARD_ALL_TRAFFIC,
-	AREA_PAGE_DASHBOARD_ACQUISITION,
-	AREA_PAGE_DASHBOARD_SPEED,
-
 	// Main dashboard
 	AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY,
 	AREA_MAIN_DASHBOARD_CONTENT_PRIMARY,

@@ -382,7 +382,7 @@ final class Screens {
 								if ( ! array_key_exists( $setup_module_slug, $active_modules ) ) {
 									try {
 										$module_details = $this->modules->get_module( $setup_module_slug );
-										/* translators: %s: The module name */
+										/* translators: 1: The module name */
 										$message        = sprintf( __( 'The %s module cannot be set up as it has not been activated yet.', 'google-site-kit' ), $module_details->name );
 									} catch ( \Exception $e ) {
 										$message = $e->getMessage();

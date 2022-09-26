@@ -88,39 +88,40 @@ export const createInfoStore = (
 		 *                              undefined if not loaded yet.
 		 */
 		getAdminReauthURL: createRegistrySelector(
-			( select ) => ( state, reAuth = true ) => {
-				const needsReauthentication = select(
-					CORE_USER
-				).needsReauthentication();
-				if ( needsReauthentication === undefined ) {
-					return undefined;
+			( select ) =>
+				( state, reAuth = true ) => {
+					const needsReauthentication =
+						select( CORE_USER ).needsReauthentication();
+					if ( needsReauthentication === undefined ) {
+						return undefined;
+					}
+
+					const noSetupQueryArgs = {};
+					if ( ! requiresSetup && reAuth === true ) {
+						noSetupQueryArgs.notification =
+							'authentication_success';
+						noSetupQueryArgs.reAuth = undefined;
+					}
+
+					const redirectURL = select( storeName ).getAdminScreenURL( {
+						slug,
+						reAuth,
+						...noSetupQueryArgs,
+					} );
+					if ( redirectURL === undefined ) {
+						return undefined;
+					}
+
+					if ( ! needsReauthentication ) {
+						return redirectURL;
+					}
+
+					const connectURL = select( CORE_USER ).getConnectURL( {
+						redirectURL,
+					} );
+
+					return addQueryArgs( connectURL, { status: reAuth } );
 				}
-
-				const noSetupQueryArgs = {};
-				if ( ! requiresSetup && reAuth === true ) {
-					noSetupQueryArgs.notification = 'authentication_success';
-					noSetupQueryArgs.reAuth = undefined;
-				}
-
-				const redirectURL = select( storeName ).getAdminScreenURL( {
-					slug,
-					reAuth,
-					...noSetupQueryArgs,
-				} );
-				if ( redirectURL === undefined ) {
-					return undefined;
-				}
-
-				if ( ! needsReauthentication ) {
-					return redirectURL;
-				}
-
-				const connectURL = select( CORE_USER ).getConnectURL( {
-					redirectURL,
-				} );
-
-				return addQueryArgs( connectURL, { status: reAuth } );
-			}
 		),
 	};
 

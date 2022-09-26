@@ -130,7 +130,7 @@
 			font-size: $fs-title-sm;
 			font-weight: $fw-bold;
 			line-height: $lh-title-sm;
-			margin: 0 0 17px 0;
+			margin: 0 0 17px;
 		}
 	}
 
@@ -197,8 +197,7 @@
 
 		@media (min-width: $bp-xlarge) {
 			align-items: center;
-			flex-direction: row;
-			flex-wrap: nowrap;
+			flex-flow: row nowrap;
 		}
 
 		label {

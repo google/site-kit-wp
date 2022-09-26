@@ -29,12 +29,8 @@ import { Grid, Row, Cell } from '../../../../../material-components';
 import GoogleChart from '../../../../../components/GoogleChart';
 
 export default function Stats( props ) {
-	const {
-		metrics,
-		currentRangeData,
-		previousRangeData,
-		selectedStats,
-	} = props;
+	const { metrics, currentRangeData, previousRangeData, selectedStats } =
+		props;
 
 	const dataMap = getSiteStatsDataForGoogleChart(
 		currentRangeData,
@@ -82,8 +78,9 @@ export default function Stats( props ) {
 			ticks: dates,
 		},
 		vAxis: {
-			format:
-				formats[ currentRangeData.headers[ selectedStats + 1 ].type ],
+			format: formats[
+				currentRangeData.headers[ selectedStats + 1 ].type
+			],
 			gridlines: {
 				color: '#eee',
 			},

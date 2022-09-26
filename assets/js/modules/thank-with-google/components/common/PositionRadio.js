@@ -64,55 +64,62 @@ export default function PositionRadio() {
 				</Radio>
 				<p>
 					{ __(
-						'The prompt is automatically placed where it may perform best',
+						'The prompt is automatically placed where it will perform best',
 						'google-site-kit'
 					) }
 				</p>
-			</div>
-			<div className="googlesitekit-twg-position-radio__option">
-				<h5>{ __( 'Manual', 'google-site-kit' ) }</h5>
+				<Radio
+					id={ `cta-placement-${ CTA_PLACEMENT_STATIC_ABOVE_CONTENT }` }
+					name="cta-placement"
+					value={ CTA_PLACEMENT_STATIC_ABOVE_CONTENT }
+					checked={
+						ctaPlacement === CTA_PLACEMENT_STATIC_ABOVE_CONTENT
+					}
+					onChange={ onChange }
+				>
+					{ __( 'Above the post', 'google-site-kit' ) }
+				</Radio>
 				<p>
 					{ __(
-						'Choose where you want to display Thank with Google on the page',
+						'The prompt is placed before the main post content',
 						'google-site-kit'
 					) }
 				</p>
-				<div className="googlesitekit-twg-position-radio__suboptions">
-					<Radio
-						id={ `cta-placement-${ CTA_PLACEMENT_STATIC_ABOVE_CONTENT }` }
-						name="cta-placement"
-						value={ CTA_PLACEMENT_STATIC_ABOVE_CONTENT }
-						checked={
-							ctaPlacement === CTA_PLACEMENT_STATIC_ABOVE_CONTENT
-						}
-						onChange={ onChange }
-					>
-						{ __( 'Above the post', 'google-site-kit' ) }
-					</Radio>
-					<Radio
-						id={ `cta-placement-${ CTA_PLACEMENT_STATIC_BELOW_CONTENT }` }
-						name="cta-placement"
-						value={ CTA_PLACEMENT_STATIC_BELOW_CONTENT }
-						checked={
-							ctaPlacement === CTA_PLACEMENT_STATIC_BELOW_CONTENT
-						}
-						onChange={ onChange }
-					>
-						{ __( 'Below the post', 'google-site-kit' ) }
-					</Radio>
-					<Radio
-						id={ `cta-placement-${ CTA_PLACEMENT_STATIC_BELOW_1ST_PARAGRAPH }` }
-						name="cta-placement"
-						value={ CTA_PLACEMENT_STATIC_BELOW_1ST_PARAGRAPH }
-						checked={
-							ctaPlacement ===
-							CTA_PLACEMENT_STATIC_BELOW_1ST_PARAGRAPH
-						}
-						onChange={ onChange }
-					>
-						{ __( 'Below the 1st paragraph', 'google-site-kit' ) }
-					</Radio>
-				</div>
+				<Radio
+					id={ `cta-placement-${ CTA_PLACEMENT_STATIC_BELOW_CONTENT }` }
+					name="cta-placement"
+					value={ CTA_PLACEMENT_STATIC_BELOW_CONTENT }
+					checked={
+						ctaPlacement === CTA_PLACEMENT_STATIC_BELOW_CONTENT
+					}
+					onChange={ onChange }
+				>
+					{ __( 'Below the post', 'google-site-kit' ) }
+				</Radio>
+				<p>
+					{ __(
+						'The prompt is placed after the main post content',
+						'google-site-kit'
+					) }
+				</p>
+				<Radio
+					id={ `cta-placement-${ CTA_PLACEMENT_STATIC_BELOW_1ST_PARAGRAPH }` }
+					name="cta-placement"
+					value={ CTA_PLACEMENT_STATIC_BELOW_1ST_PARAGRAPH }
+					checked={
+						ctaPlacement ===
+						CTA_PLACEMENT_STATIC_BELOW_1ST_PARAGRAPH
+					}
+					onChange={ onChange }
+				>
+					{ __( 'Below the 1st paragraph', 'google-site-kit' ) }
+				</Radio>
+				<p>
+					{ __(
+						'The prompt is placed after the first paragraph in the main post content',
+						'google-site-kit'
+					) }
+				</p>
 			</div>
 		</div>
 	);

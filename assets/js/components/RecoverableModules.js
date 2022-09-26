@@ -53,7 +53,7 @@ export default function RecoverableModules( { moduleSlugs } ) {
 	const description =
 		moduleNames.length === 1
 			? sprintf(
-					/* translators: %s: Module name */
+					/* translators: 1: Module name */
 					__(
 						'%s data was previously shared by an admin who no longer has access. Please contact another admin to restore it.',
 						'google-site-kit'
@@ -61,7 +61,7 @@ export default function RecoverableModules( { moduleSlugs } ) {
 					moduleNames[ 0 ]
 			  )
 			: sprintf(
-					/* translators: %s: List of module names */
+					/* translators: 1: List of module names */
 					__(
 						'The data for the following modules was previously shared by an admin who no longer has access: %s. Please contact another admin to restore it.',
 						'google-site-kit'

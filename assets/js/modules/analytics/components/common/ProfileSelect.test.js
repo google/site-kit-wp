@@ -170,10 +170,11 @@ describe( 'ProfileSelect', () => {
 			.getExistingTag();
 		expect( existingTagPropertyID ).toEqual( currentPropertyID );
 
-		const existingTagProfiles = fixtures.accountsPropertiesProfiles.profiles.filter(
-			// eslint-disable-next-line sitekit/acronym-case
-			( { webPropertyId } ) => webPropertyId === existingTagPropertyID
-		);
+		const existingTagProfiles =
+			fixtures.accountsPropertiesProfiles.profiles.filter(
+				// eslint-disable-next-line sitekit/acronym-case
+				( { webPropertyId } ) => webPropertyId === existingTagPropertyID
+			);
 
 		const listItems = getAllByRole( 'menuitem', { hidden: true } );
 		expect( listItems ).toHaveLength( existingTagProfiles.length + 1 );
@@ -188,6 +189,24 @@ describe( 'ProfileSelect', () => {
 			)
 		).not.toHaveClass( 'mdc-select--disabled' );
 		expect( apiFetchMock ).not.toHaveBeenCalled();
+	} );
+
+	it( 'should disable the profile select if the user does not have module access', () => {
+		const { container, getAllByRole } = render(
+			<ProfileSelect hasModuleAccess={ false } />,
+			{ setupRegistry: setupRegistryWithExistingTag }
+		);
+
+		const listItems = getAllByRole( 'menuitem', { hidden: true } );
+		expect( listItems ).toHaveLength( 1 );
+
+		// Verify that the Profile select dropdown is disabled.
+		[
+			'.googlesitekit-analytics__select-profile',
+			'.mdc-select--disabled',
+		].forEach( ( className ) => {
+			expect( container.querySelector( className ) ).toBeInTheDocument();
+		} );
 	} );
 
 	it( 'should not render if account ID is not valid', async () => {

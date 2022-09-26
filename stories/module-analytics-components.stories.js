@@ -169,19 +169,12 @@ generateAnalyticsWidgetStories( {
 				allTrafficReports.data[ 4 ],
 			],
 		},
-		'Zero Data (zeroDataStates enabled)': {
+		'Zero Data': {
 			options: allTrafficReports.options,
 			data: allTrafficReports.data.map(
 				replaceValuesInAnalyticsReportWithZeroData
 			),
-			features: [ 'zeroDataStates' ],
-			storyName: 'Zero Data (zeroDataStates enabled)',
-		},
-		'Gathering Data (zeroDataStates enabled)': {
-			options: allTrafficReports.options,
-			data: allTrafficReports.data.map( () => null ),
-			features: [ 'zeroDataStates' ],
-			storyName: 'Gathering Data (zeroDataStates enabled)',
+			storyName: 'Zero Data',
 		},
 	},
 	wrapWidget: false,
@@ -247,19 +240,12 @@ generateAnalyticsWidgetStories( {
 	...allTrafficPageReports,
 	Component: DashboardAllTrafficWidget,
 	additionalVariants: {
-		'Zero Data (zeroDataStates enabled)': {
+		'Zero Data': {
 			options: allTrafficPageReports.options,
 			data: allTrafficPageReports.data.map(
 				replaceValuesInAnalyticsReportWithZeroData
 			),
-			features: [ 'zeroDataStates' ],
-			storyName: 'Zero Data (zeroDataStates enabled)',
-		},
-		'Gathering Data (zeroDataStates enabled)': {
-			options: allTrafficReports.options,
-			data: allTrafficReports.data.map( () => null ),
-			features: [ 'zeroDataStates' ],
-			storyName: 'Gathering Data (zeroDataStates enabled)',
+			storyName: 'Zero Data',
 		},
 	},
 	wrapWidget: false,

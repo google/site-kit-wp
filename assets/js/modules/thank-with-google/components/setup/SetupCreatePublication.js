@@ -24,10 +24,17 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
+import { MODULES_THANK_WITH_GOOGLE } from '../../datastore/constants';
 import Button from '../../../../components/Button';
 import SetupPublicationScreen from './SetupPublicationScreen';
+const { useSelect } = Data;
 
 export default function SetupCreatePublication() {
+	const createPublicationURL = useSelect( ( select ) =>
+		select( MODULES_THANK_WITH_GOOGLE ).getServiceCreatePublicationURL()
+	);
+
 	return (
 		<SetupPublicationScreen
 			title={ __(
@@ -35,12 +42,12 @@ export default function SetupCreatePublication() {
 				'google-site-kit'
 			) }
 			description={ __(
-				'To get started, create an account. Currently available only in the US.',
+				'To get started, create an account. Currently available only in the US. If setup failed because you’re outside the US, disconnect Thank with Google in your Settings.',
 				'google-site-kit'
 			) }
 		>
 			<Button
-				href="https://publishercenter.google.com/"
+				href={ createPublicationURL }
 				target="_blank"
 				aria-label={ __(
 					'Create your Thank with Google account',

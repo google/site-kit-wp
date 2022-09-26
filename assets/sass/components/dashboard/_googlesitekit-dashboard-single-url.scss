@@ -19,11 +19,10 @@
 .googlesitekit-dashboard-single-url {
 
 	.googlesitekit-dashboard-single-url__heading {
-		margin: 10px 0 0 0;
+		margin: 10px 0 0;
 	}
 
 	.googlesitekit-dashboard-single-url__entity-header {
-
 		// Use the same spacing as is used in layout grids.
 		@each $size in map-keys($mdc-layout-grid-columns) {
 
@@ -36,6 +35,6 @@
 	}
 
 	.googlesitekit-dashboard-single-url__title {
-		margin: 0 0 10px 0;
+		margin: 0 0 10px;
 	}
 }
