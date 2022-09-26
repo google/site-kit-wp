@@ -24,7 +24,9 @@ import {
 	createTestRegistry,
 	unsubscribeFromAll,
 } from '../../../../../tests/js/utils';
-import { withActive } from '../../../googlesitekit/modules/datastore/__fixtures__';
+import FIXTURES, {
+	withActive,
+} from '../../../googlesitekit/modules/datastore/__fixtures__';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { MODULES_ANALYTICS } from '../../analytics/datastore/constants';
 import { MODULES_ANALYTICS_4, PROPERTY_CREATE } from './constants';
@@ -49,6 +51,8 @@ describe( 'modules/analytics-4 settings', () => {
 		/^\/google-site-kit\/v1\/modules\/analytics-4\/data\/create-property/;
 	const createWebDataStreamsEndpoint =
 		/^\/google-site-kit\/v1\/modules\/analytics-4\/data\/create-webdatastream/;
+	const getModulesEndpoint =
+		/^\/google-site-kit\/v1\/core\/modules\/data\/list/;
 
 	beforeAll( () => {
 		API.setUsingCache( false );
@@ -94,6 +98,11 @@ describe( 'modules/analytics-4 settings', () => {
 					const { data } = JSON.parse( opts.body );
 					// Return the same settings passed to the API.
 					return { body: data, status: 200 };
+				} );
+
+				fetchMock.getOnce( getModulesEndpoint, {
+					body: FIXTURES,
+					status: 200,
 				} );
 
 				const result = await registry
@@ -174,6 +183,11 @@ describe( 'modules/analytics-4 settings', () => {
 					return { body: data, status: 200 };
 				} );
 
+				fetchMock.getOnce( getModulesEndpoint, {
+					body: FIXTURES,
+					status: 200,
+				} );
+
 				const result = await registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.submitChanges();
@@ -238,6 +252,11 @@ describe( 'modules/analytics-4 settings', () => {
 
 				fetchMock.postOnce( settingsEndpoint, {
 					body: validSettings,
+					status: 200,
+				} );
+
+				fetchMock.getOnce( getModulesEndpoint, {
+					body: FIXTURES,
 					status: 200,
 				} );
 

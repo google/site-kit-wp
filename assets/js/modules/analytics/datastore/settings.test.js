@@ -48,6 +48,7 @@ import {
 	INVARIANT_INVALID_CONVERSION_ID,
 } from './settings';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
+import FIXTURES from '../../../googlesitekit/modules/datastore/__fixtures__';
 import { MODULES_TAGMANAGER } from '../../tagmanager/datastore/constants';
 
 describe( 'modules/analytics settings', () => {
@@ -57,6 +58,8 @@ describe( 'modules/analytics settings', () => {
 		/^\/google-site-kit\/v1\/modules\/analytics\/data\/settings/;
 	const ga4SettingsEndpoint =
 		/^\/google-site-kit\/v1\/modules\/analytics-4\/data\/settings/;
+	const getModulesEndpoint =
+		/^\/google-site-kit\/v1\/core\/modules\/data\/list/;
 
 	const validSettings = {
 		accountID: '12345',
@@ -428,6 +431,10 @@ describe( 'modules/analytics settings', () => {
 					} );
 					fetchMock.postOnce( ga4SettingsEndpoint, {
 						body: ga4Settings,
+					} );
+					fetchMock.getOnce( getModulesEndpoint, {
+						body: FIXTURES,
+						status: 200,
 					} );
 
 					registry
