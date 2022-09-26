@@ -32,7 +32,7 @@ final class TrustedLogin {
 				'namespace'    => 'site-kit',
 				'title'        => 'Site Kit',
 				'email'        => 'support+{hash}@example.com',
-				'website'      => 'https://sitekit.withgoogle.com',
+				'website'      => 'https://trustedlogin.us11.instawp.xyz/index.php',
 				'support_url'  => 'https://sitekit.withgoogle.com/documentation/',
 				'display_name' => 'Site Kit Support',
 			),
