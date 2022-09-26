@@ -20,6 +20,7 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
+import { createInterpolateElement } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -35,6 +36,7 @@ import DisplaySetting from '../../../../components/DisplaySetting';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import Link from '../../../../components/Link';
 import ProgressBar from '../../../../components/ProgressBar';
+import VisuallyHidden from '../../../../components/VisuallyHidden';
 import {
 	getColorThemes,
 	getPlacementTypeLabel,
@@ -69,6 +71,14 @@ export default function SettingsView() {
 
 	const ctaPostTypes = useSelect( ( select ) =>
 		select( MODULES_THANK_WITH_GOOGLE ).getCTAPostTypes()
+	);
+
+	const editViewSettingsURL = useSelect(
+		( select ) =>
+			publicationID &&
+			select( MODULES_THANK_WITH_GOOGLE ).getServicePublicationURL(
+				publicationID
+			)
 	);
 
 	let supporterWall;
@@ -117,6 +127,23 @@ export default function SettingsView() {
 						<DisplaySetting value={ publicationID } />
 					</p>
 				</div>
+				{ editViewSettingsURL && (
+					<div className="googlesitekit-settings-module__meta-item googlesitekit-settings-module__meta-item--data-only">
+						<p className="googlesitekit-settings-module__meta-item-data googlesitekit-settings-module__meta-item-data--tiny">
+							<Link href={ editViewSettingsURL } external>
+								{ createInterpolateElement(
+									__(
+										'Edit <VisuallyHidden>publication </VisuallyHidden>in Publisher Center',
+										'google-site-kit'
+									),
+									{
+										VisuallyHidden: <VisuallyHidden />,
+									}
+								) }
+							</Link>
+						</p>
+					</div>
+				) }
 			</div>
 
 			<div className="googlesitekit-settings-module__meta-items">
