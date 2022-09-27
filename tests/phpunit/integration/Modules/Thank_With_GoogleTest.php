@@ -68,14 +68,14 @@ class Thank_With_GoogleTest extends TestCase {
 
 	public function test_register__before_module_is_connected() {
 		remove_all_actions( 'googlesitekit_auth_scopes' );
-		remove_all_actions( 'googlesitekit_pre_save_settings_' . $this->thank_with_google::MODULE_SLUG );
-		remove_all_actions( 'googlesitekit_save_settings_' . $this->thank_with_google::MODULE_SLUG );
+		remove_all_actions( 'googlesitekit_pre_save_settings_' . Thank_With_Google::MODULE_SLUG );
+		remove_all_actions( 'googlesitekit_save_settings_' . Thank_With_Google::MODULE_SLUG );
 
 		$this->thank_with_google->register();
 
 		$this->assertTrue( has_filter( 'googlesitekit_auth_scopes' ) );
-		$this->assertTrue( has_action( 'googlesitekit_pre_save_settings_' . $this->thank_with_google::MODULE_SLUG ) );
-		$this->assertTrue( has_action( 'googlesitekit_save_settings_' . $this->thank_with_google::MODULE_SLUG ) );
+		$this->assertTrue( has_action( 'googlesitekit_pre_save_settings_' . Thank_With_Google::MODULE_SLUG ) );
+		$this->assertTrue( has_action( 'googlesitekit_save_settings_' . Thank_With_Google::MODULE_SLUG ) );
 	}
 
 	public function test_register__after_module_is_connected() {
@@ -91,14 +91,14 @@ class Thank_With_GoogleTest extends TestCase {
 		$this->assertTrue( $this->thank_with_google->is_connected() );
 
 		remove_all_actions( 'googlesitekit_auth_scopes' );
-		remove_all_actions( 'googlesitekit_pre_save_settings_' . $this->thank_with_google::MODULE_SLUG );
-		remove_all_actions( 'googlesitekit_save_settings_' . $this->thank_with_google::MODULE_SLUG );
+		remove_all_actions( 'googlesitekit_pre_save_settings_' . Thank_With_Google::MODULE_SLUG );
+		remove_all_actions( 'googlesitekit_save_settings_' . Thank_With_Google::MODULE_SLUG );
 
 		$this->thank_with_google->register();
 
 		$this->assertTrue( has_filter( 'googlesitekit_auth_scopes' ) );
-		$this->assertTrue( has_action( 'googlesitekit_pre_save_settings_' . $this->thank_with_google::MODULE_SLUG ) );
-		$this->assertTrue( has_action( 'googlesitekit_save_settings_' . $this->thank_with_google::MODULE_SLUG ) );
+		$this->assertTrue( has_action( 'googlesitekit_pre_save_settings_' . Thank_With_Google::MODULE_SLUG ) );
+		$this->assertTrue( has_action( 'googlesitekit_save_settings_' . Thank_With_Google::MODULE_SLUG ) );
 	}
 
 	public function test_data_settings_endpoint__transient_timer_success() {
@@ -112,11 +112,11 @@ class Thank_With_GoogleTest extends TestCase {
 
 		$this->options->delete( Settings::OPTION );
 		$this->assertFalse( $this->thank_with_google->is_connected() );
-		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/modules/' . $this->thank_with_google::MODULE_SLUG . '/data/settings' );
+		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/modules/' . Thank_With_Google::MODULE_SLUG . '/data/settings' );
 
 		$request->set_body_params(
 			array(
-				'slug' => $this->thank_with_google::MODULE_SLUG,
+				'slug' => Thank_With_Google::MODULE_SLUG,
 				'data' => array(
 					'publicationID' => '12345',
 					'colorTheme'    => 'blue',
@@ -128,7 +128,7 @@ class Thank_With_GoogleTest extends TestCase {
 		$response = rest_get_server()->dispatch( $request );
 		$this->assertEquals( 200, $response->get_status() );
 		$transients = new Transients( $this->context );
-		$this->assertIsNumeric( $transients->get( $this->thank_with_google::TRANSIENT_SETUP_TIMER ) );
+		$this->assertIsNumeric( $transients->get( Thank_With_Google::TRANSIENT_SETUP_TIMER ) );
 
 		// Reset the build mode.
 		Build_Mode::set_mode( Build_Mode::MODE_PRODUCTION );
