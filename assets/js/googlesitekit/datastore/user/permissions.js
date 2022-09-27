@@ -108,10 +108,21 @@ const baseActions = {
 	/**
 	 * Refreshes user capabilities.
 	 *
-	 * @since 1.82.0
+	 * @since 1.82.0*
+	 *
+	 * @return {Object} Redux-style action.
 	 */
 	*refreshCapabilities() {
-		yield fetchGetCapabilitiesStore.actions.fetchGetCapabilities();
+		const { dispatch } = yield Data.commonActions.getRegistry();
+
+		const { response, error } =
+			yield fetchGetCapabilitiesStore.actions.fetchGetCapabilities();
+
+		if ( error ) {
+			yield dispatch( CORE_USER ).setPermissionScopeError( error );
+		}
+
+		return { response, error };
 	},
 };
 
