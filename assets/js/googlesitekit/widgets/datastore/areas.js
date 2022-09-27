@@ -27,6 +27,7 @@ import invariant from 'invariant';
 import Data from 'googlesitekit-data';
 import { CORE_WIDGETS, WIDGET_AREA_STYLES } from './constants';
 import { sortByProperty } from '../../../util/sort-by-property';
+import { createReducer } from '../../../../js/googlesitekit/data/create-reducer';
 
 const { createRegistrySelector } = Data;
 
@@ -118,53 +119,46 @@ export const actions = {
 
 export const controls = {};
 
-export const reducer = ( state, { type, payload } ) => {
+export const reducer = createReducer( ( draft, { type, payload } ) => {
 	switch ( type ) {
 		case ASSIGN_WIDGET_AREA: {
 			const { slug, contextSlugs } = payload;
 
-			const { contextAssignments } = state;
 			contextSlugs.forEach( ( contextSlug ) => {
-				if ( contextAssignments[ contextSlug ] === undefined ) {
-					contextAssignments[ contextSlug ] = [];
+				if ( draft.contextAssignments[ contextSlug ] === undefined ) {
+					draft.contextAssignments[ contextSlug ] = [];
 				}
 
-				if ( ! contextAssignments[ contextSlug ].includes( slug ) ) {
-					contextAssignments[ contextSlug ].push( slug );
+				if (
+					! draft.contextAssignments[ contextSlug ].includes( slug )
+				) {
+					draft.contextAssignments[ contextSlug ].push( slug );
 				}
 			} );
 
-			return {
-				...state,
-				contextAssignments,
-			};
+			return draft;
 		}
 
 		case REGISTER_WIDGET_AREA: {
 			const { slug, settings } = payload;
 
-			if ( state.areas[ slug ] !== undefined ) {
+			if ( draft.areas[ slug ] !== undefined ) {
 				global.console.warn(
 					`Could not register widget area with slug "${ slug }". Widget area "${ slug }" is already registered.`
 				);
 
-				return state;
+				return draft;
 			}
 
-			return {
-				...state,
-				areas: {
-					...state.areas,
-					[ slug ]: { ...settings, slug },
-				},
-			};
+			draft.areas[ slug ] = { ...settings, slug };
+			return draft;
 		}
 
 		default: {
-			return state;
+			return draft;
 		}
 	}
-};
+} );
 
 export const resolvers = {};
 

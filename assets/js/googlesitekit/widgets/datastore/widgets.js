@@ -28,6 +28,7 @@ import intersection from 'lodash/intersection';
 import Data from 'googlesitekit-data';
 import { isInactiveWidgetState, normalizeWidgetModules } from '../util';
 import { CORE_WIDGETS, WIDGET_WIDTHS } from './constants';
+import { createReducer } from '../../../../js/googlesitekit/data/create-reducer';
 
 const { createRegistrySelector } = Data;
 
@@ -176,88 +177,64 @@ export const actions = {
 
 export const controls = {};
 
-export const reducer = ( state, { type, payload } ) => {
+export const reducer = createReducer( ( draft, { type, payload } ) => {
 	switch ( type ) {
 		case ASSIGN_WIDGET: {
 			const { slug, areaSlugs } = payload;
 
-			const { areaAssignments } = state;
 			areaSlugs.forEach( ( areaSlug ) => {
-				if ( areaAssignments[ areaSlug ] === undefined ) {
-					areaAssignments[ areaSlug ] = [];
+				if ( draft.areaAssignments[ areaSlug ] === undefined ) {
+					draft.areaAssignments[ areaSlug ] = [];
 				}
 
-				if ( ! areaAssignments[ areaSlug ].includes( slug ) ) {
-					areaAssignments[ areaSlug ].push( slug );
+				if ( ! draft.areaAssignments[ areaSlug ].includes( slug ) ) {
+					draft.areaAssignments[ areaSlug ].push( slug );
 				}
 			} );
 
-			return {
-				...state,
-				areaAssignments,
-			};
+			return draft;
 		}
 
 		case REGISTER_WIDGET: {
 			const { slug, settings } = payload;
 
-			if ( state.widgets[ slug ] !== undefined ) {
+			if ( draft.widgets[ slug ] !== undefined ) {
 				global.console.warn(
 					`Could not register widget with slug "${ slug }". Widget "${ slug }" is already registered.`
 				);
 
-				return state;
+				return draft;
 			}
 
-			return {
-				...state,
-				widgets: {
-					...state.widgets,
-					[ slug ]: {
-						...settings,
-						slug,
-					},
-				},
-			};
+			draft.widgets[ slug ] = { ...settings, slug };
+			return draft;
 		}
 
 		case SET_WIDGET_STATE: {
 			const { slug, Component, metadata } = payload;
 
-			return {
-				...state,
-				widgetStates: {
-					...state.widgetStates,
-					[ slug ]: {
-						Component,
-						metadata,
-					},
-				},
-			};
+			draft.widgetStates[ slug ] = { Component, metadata };
+			return draft;
 		}
 
 		case UNSET_WIDGET_STATE: {
 			const { slug, Component, metadata } = payload;
 
-			const widgetStates = { ...state.widgetStates };
 			if (
-				widgetStates?.[ slug ]?.Component === Component &&
-				widgetStates?.[ slug ]?.metadata === metadata
+				draft.widgetStates?.[ slug ]?.Component === Component &&
+				draft.widgetStates?.[ slug ]?.metadata === metadata
 			) {
-				delete widgetStates[ slug ];
+				return draft;
 			}
 
-			return {
-				...state,
-				widgetStates,
-			};
+			return draft;
 		}
 
 		default: {
-			return state;
+			return draft;
 		}
 	}
-};
+} );
 
 export const resolvers = {};
 
