@@ -121,12 +121,24 @@ class ModulesTest extends TestCase {
 		$this->assertEquals( false, Modules::should_enable_twg() );
 	}
 
-	public function test_should_enable_twg_behind_proxy() {
+	public function test_should_enable_twg_ssl_home_url() {
 		$this->enable_feature( 'twgModule' );
-		$_SERVER['HTTP_X_FORWARDED_PROTO'] = 'https';
+
+		$home_url_hook = function() {
+			return 'http://non-https.site';
+		};
+
+		add_filter( 'home_url', $home_url_hook );
+		$this->assertEquals( false, Modules::should_enable_twg() );
+		remove_filter( 'home_url', $home_url_hook );
+
+		$home_url_hook = function() {
+			return 'https://with-https.site';
+		};
+
+		add_filter( 'home_url', $home_url_hook );
 		$this->assertEquals( true, Modules::should_enable_twg() );
-		// Reset HTTP_X_FORWARDED_PROTO.
-		unset( $_SERVER['HTTP_X_FORWARDED_PROTO'] );
+		remove_filter( 'home_url', $home_url_hook );
 	}
 
 	public function test_should_enable_twg_ssl() {
@@ -135,6 +147,7 @@ class ModulesTest extends TestCase {
 		$this->assertEquals( true, Modules::should_enable_twg() );
 		// Reset HTTPS.
 		unset( $_SERVER['HTTPS'] );
+		$this->assertEquals( false, Modules::should_enable_twg() );
 	}
 
 	public function test_register() {
