@@ -16,6 +16,7 @@ use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\Transients;
 use Google\Site_Kit\Core\Storage\User_Options;
+use Google\Site_Kit\Core\Util\Build_Mode;
 use Google\Site_Kit\Modules\Thank_With_Google;
 use Google\Site_Kit\Modules\Thank_With_Google\Settings;
 use Google\Site_Kit\Tests\TestCase;
@@ -48,8 +49,6 @@ class Thank_With_GoogleTest extends TestCase {
 	private $thank_with_google;
 
 	public function set_up() {
-		$this->enable_feature( 'twgModule' );
-
 		parent::set_up();
 
 		$this->context           = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
@@ -103,6 +102,11 @@ class Thank_With_GoogleTest extends TestCase {
 	}
 
 	public function test_data_settings_endpoint__transient_timer_success() {
+		$this->enable_feature( 'twgModule' );
+		// Set the build mode to development so TwG is added to the registry of active modules.
+		// Enabling the feature flag alone is not enough.
+		Build_Mode::set_mode( Build_Mode::MODE_DEVELOPMENT );
+
 		$this->setup_modules_to_test_rest_endpoint();
 		$this->thank_with_google->register();
 
@@ -125,6 +129,9 @@ class Thank_With_GoogleTest extends TestCase {
 		$this->assertEquals( 200, $response->get_status() );
 		$transients = new Transients( $this->context );
 		$this->assertIsNumeric( $transients->get( $this->thank_with_google::TRANSIENT_SETUP_TIMER ) );
+
+		// Reset the build mode.
+		Build_Mode::set_mode( Build_Mode::MODE_PRODUCTION );
 	}
 
 	private function setup_modules_to_test_rest_endpoint() {
