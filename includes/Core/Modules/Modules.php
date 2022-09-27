@@ -39,6 +39,7 @@ use WP_REST_Response;
 use WP_Error;
 use Exception;
 use Google\Site_Kit\Core\Util\Build_Mode;
+use Google\Site_Kit\Core\Util\URL;
 
 /**
  * Class managing the different modules.
@@ -215,11 +216,7 @@ final class Modules {
 			return true;
 		}
 
-		if ( is_ssl() ) {
-			return true;
-		}
-
-		if ( isset( $_SERVER['HTTP_X_FORWARDED_PROTO'] ) && 'https' === $_SERVER['HTTP_X_FORWARDED_PROTO'] ) {
+		if ( 'https' === URL::parse( home_url(), PHP_URL_SCHEME ) ) {
 			return true;
 		}
 
