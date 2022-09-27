@@ -11,10 +11,15 @@
 namespace Google\Site_Kit\Tests\Modules;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Modules\Modules;
+use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Core\Storage\Options;
+use Google\Site_Kit\Core\Storage\Transients;
+use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Modules\Thank_With_Google;
 use Google\Site_Kit\Modules\Thank_With_Google\Settings;
 use Google\Site_Kit\Tests\TestCase;
+use WP_REST_Request;
 
 /**
  * @group Modules
@@ -43,6 +48,8 @@ class Thank_With_GoogleTest extends TestCase {
 	private $thank_with_google;
 
 	public function set_up() {
+		$this->enable_feature( 'twgModule' );
+
 		parent::set_up();
 
 		$this->context           = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
@@ -60,12 +67,78 @@ class Thank_With_GoogleTest extends TestCase {
 		);
 	}
 
-	public function test_register() {
+	public function test_register__before_module_is_connected() {
 		remove_all_actions( 'googlesitekit_auth_scopes' );
+		remove_all_actions( 'googlesitekit_pre_save_settings_' . $this->thank_with_google::MODULE_SLUG );
+		remove_all_actions( 'googlesitekit_save_settings_' . $this->thank_with_google::MODULE_SLUG );
 
 		$this->thank_with_google->register();
 
 		$this->assertTrue( has_filter( 'googlesitekit_auth_scopes' ) );
+		$this->assertTrue( has_action( 'googlesitekit_pre_save_settings_' . $this->thank_with_google::MODULE_SLUG ) );
+		$this->assertTrue( has_action( 'googlesitekit_save_settings_' . $this->thank_with_google::MODULE_SLUG ) );
+	}
+
+	public function test_register__after_module_is_connected() {
+		$this->options->set(
+			Settings::OPTION,
+			array(
+				'publicationID' => '12345',
+				'colorTheme'    => 'blue',
+				'ctaPlacement'  => 'static_auto',
+				'ctaPostTypes'  => array( 'post' ),
+			)
+		);
+		$this->assertTrue( $this->thank_with_google->is_connected() );
+
+		remove_all_actions( 'googlesitekit_auth_scopes' );
+		remove_all_actions( 'googlesitekit_pre_save_settings_' . $this->thank_with_google::MODULE_SLUG );
+		remove_all_actions( 'googlesitekit_save_settings_' . $this->thank_with_google::MODULE_SLUG );
+
+		$this->thank_with_google->register();
+
+		$this->assertTrue( has_filter( 'googlesitekit_auth_scopes' ) );
+		$this->assertTrue( has_action( 'googlesitekit_pre_save_settings_' . $this->thank_with_google::MODULE_SLUG ) );
+		$this->assertTrue( has_action( 'googlesitekit_save_settings_' . $this->thank_with_google::MODULE_SLUG ) );
+	}
+
+	public function test_data_settings_endpoint__transient_timer_success() {
+		$this->setup_modules_to_test_rest_endpoint();
+		$this->thank_with_google->register();
+
+		$this->options->delete( Settings::OPTION );
+		$this->assertFalse( $this->thank_with_google->is_connected() );
+		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/modules/' . $this->thank_with_google::MODULE_SLUG . '/data/settings' );
+
+		$request->set_body_params(
+			array(
+				'slug' => $this->thank_with_google::MODULE_SLUG,
+				'data' => array(
+					'publicationID' => '12345',
+					'colorTheme'    => 'blue',
+					'ctaPlacement'  => 'static_auto',
+					'ctaPostTypes'  => array( 'post' ),
+				),
+			)
+		);
+		$response = rest_get_server()->dispatch( $request );
+		$this->assertEquals( 200, $response->get_status() );
+		$transients = new Transients( $this->context );
+		$this->assertIsNumeric( $transients->get( $this->thank_with_google::TRANSIENT_SETUP_TIMER ) );
+	}
+
+	private function setup_modules_to_test_rest_endpoint() {
+		$user         = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
+		$user_options = new User_Options( $this->context, $user->ID );
+		$modules      = new Modules( $this->context, $this->options, $user_options );
+		wp_set_current_user( $user->ID );
+
+		// This ensures the REST server is initialized fresh for each test using it.
+		unset( $GLOBALS['wp_rest_server'] );
+		remove_all_filters( 'googlesitekit_rest_routes' );
+
+		$modules->register();
+		return $modules;
 	}
 
 	public function test_web_tag_hooks_are_added_when_tag_is_registered() {
