@@ -60,6 +60,7 @@ return array(
 			->path( '#^true/#' )
 			->path( '#^trustedlogin/#' )
 			->path( '#^paragonie/#' )
+			->path( '#^katzgrau/#' )
 			->in( 'vendor' ),
 
 		// Google API service infrastructure classes.
@@ -123,6 +124,12 @@ return array(
 			if ( preg_match( '#.*trustedlogin/client/.*#', $file_path ) ) {
 				$contents = str_replace( $prefix . '\\WP_Error', 'WP_Error', $contents );
 				$contents = str_replace( $prefix . '\\WP_User', 'WP_User', $contents );
+				$contents = str_replace( $prefix . '\\WP_Admin_Bar', 'WP_Admin_Bar', $contents );
+
+				$prefix   = str_replace( '\\', '\\\\', $prefix );
+				$contents = str_replace( $prefix . '\\\\WP_Error', 'WP_Error', $contents );
+				$contents = str_replace( $prefix . '\\\\WP_User', 'WP_User', $contents );
+				$contents = str_replace( $prefix . '\\\\WP_Admin_Bar', 'WP_Admin_Bar', $contents );
 			}
 
 			return $contents;
