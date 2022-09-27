@@ -769,6 +769,30 @@ const baseResolvers = {
 			sharedOwnershipModules
 		);
 	},
+
+	*getModule() {
+		const registry = yield Data.commonActions.getRegistry();
+
+		yield Data.commonActions.await(
+			registry.__experimentalResolveSelect( CORE_MODULES ).getModules()
+		);
+	},
+
+	*isModuleActive() {
+		const registry = yield Data.commonActions.getRegistry();
+
+		yield Data.commonActions.await(
+			registry.__experimentalResolveSelect( CORE_MODULES ).getModules()
+		);
+	},
+
+	*isModuleConnected() {
+		const registry = yield Data.commonActions.getRegistry();
+
+		yield Data.commonActions.await(
+			registry.__experimentalResolveSelect( CORE_MODULES ).getModules()
+		);
+	},
 };
 
 const baseSelectors = {
