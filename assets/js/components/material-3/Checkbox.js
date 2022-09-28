@@ -20,8 +20,6 @@
  * External dependencies
  */
 import '@material/web/checkbox/checkbox';
-import { Checkbox as MaterialCheckbox } from '@material/web/checkbox/lib/checkbox.js';
-// import { ActionElement } from '@material/web/actionelement/action-element.js';
 import PropTypes from 'prop-types';
 
 /**
@@ -29,88 +27,24 @@ import PropTypes from 'prop-types';
  */
 import { useEffect, useRef, useState } from '@wordpress/element';
 
-/**
- * Internal dependencies
- */
-
-global.MaterialCheckbox = MaterialCheckbox;
-// console.log( 'MaterialCheckbox', MaterialCheckbox );
-// delete MaterialCheckbox.prototype.handleChange;
-// MaterialCheckbox.prototype.handleChange = function () {
-// 	this.dispatchEvent(
-// 		new Event( 'change', {
-// 			bubbles: true,
-// 			composed: true,
-// 		} )
-// 	);
-// };
-
-function ObjectModifier( original, overrides ) {
-	const proxy = new Proxy( original, {
-		get: ( target, prop ) => overrides[ prop ] || target[ prop ],
-	} );
-	return new original.constructor( original.type, proxy );
-}
-
 export default function Checkbox( {
 	checked,
 	indeterminate,
 	disabled,
 	name,
 	value,
-
-	ariaLabel,
-	ariaLabelledBy,
-	ariaDescribedBy,
-
-	reducedTouchTarget,
-
 	onChange,
-	onFocus,
-	onBlur,
-	onPointerDown,
-	onPointerEnter,
-	onPointerUp,
-	onPointerCancel,
-	onPointerLeave,
-	onClick,
-	onContextMenu,
+	onKeyDown,
 } ) {
 	console.log( 'Checkbox render. checked:', checked );
 	const ref = useRef( null );
 
-	// This is a reference to the Hackathon approach, which forced a rerender of the web component
-	// by setting a new key for each change. For production it's preferable to avoid this rendering overhead.
-	// Also this approach does not appear work for the TextField component.
-	// Update - we may need this after all.
+	// Use this state in a key prop on the web component to force a rerender.
+	// This is a workaround for the fact the web component doesn't update visually when the checked property is changed.
 	const [ index, setIndex ] = useState( 0 );
-
-	// const controlledState = useRef( {} );
-	// controlledState.current.checked = checked;
 
 	useEffect( () => {
 		const { current } = ref;
-
-		const change = ( event ) => {
-			console.log( 'change', event );
-
-			// Preventing default behaviour has no effect here.
-			// event.preventDefault();
-			// event.stopPropagation();
-
-			onChange?.( event );
-
-			// Need to maintain/restore state to use as a controlled input.
-			// This works [actually not quite] for a regular checkbox, but not (yet?) for a Material checkbox.
-			// current.checked = checked;
-			// current.indeterminate = indeterminate;
-
-			setIndex( index + 1 );
-		};
-
-		current?.addEventListener( 'change', change );
-		// The 'action' event is dispatched by the ActionElement base class of the Material checkbox. See ActionElement source for details.
-		// current?.addEventListener( 'action', cancelEvent );
 
 		const click = ( event ) => {
 			console.log( 'click', event );
@@ -122,35 +56,37 @@ export default function Checkbox( {
 				return;
 			}
 
-			// onChange?.( event );
-
 			current.checked = current.checked ? undefined : true;
 
-			// Could simply invoke onChange here, forgoing the event bubbling etc.
 			current.dispatchEvent(
 				new Event( 'change', {
 					bubbles: true,
 					composed: true,
 				} )
 			);
+		};
 
-			// console.log(
-			// 	'restoring checked: current.checked, checked',
-			// 	current.checked,
-			// 	// checked
-			// 	controlledState.current.checked
-			// );
+		const change = ( event ) => {
+			console.log( 'change', event );
 
-			// current.checked = checked;
-			// current.checked = controlledState.current.checked;
+			// Preventing default behaviour has no effect here.
+			// event.preventDefault();
+
+			onChange?.( event );
+
+			setIndex( index + 1 );
 		};
 
 		// The click event is triggered by both mouse and keyboard entry (space key) on Chrome, need to confirm other browsers.
 		current?.addEventListener( 'click', click );
+		current?.addEventListener( 'change', change );
+
+		// The 'action' event is dispatched by the ActionElement base class of the Material checkbox. See ActionElement source for details.
+		// current?.addEventListener( 'action', cancelEvent );
 
 		return () => {
-			current?.removeEventListener( 'change', change );
 			current?.removeEventListener( 'click', click );
+			current?.removeEventListener( 'change', change );
 		};
 	}, [ checked, disabled, index, onChange ] );
 
@@ -165,20 +101,6 @@ export default function Checkbox( {
 			disabled={ disabled }
 			name={ name }
 			value={ value }
-			aria-label={ ariaLabel }
-			aria-labelledby={ ariaLabelledBy }
-			aria-describedby={ ariaDescribedBy }
-			reducedtouchtarget={ reducedTouchTarget }
-			// onchange={ onChange }
-			// onfocus={ onFocus }
-			// onblur={ onBlur }
-			// onpointerdown={ onPointerDown }
-			// onpointerenter={ onPointerEnter }
-			// onpointerup={ onPointerUp }
-			// onpointercancel={ onPointerCancel }
-			// onpointerleave={ onPointerLeave }
-			// onclick={ onClick }
-			// oncontextmenu={ onContextMenu }
 		></md-checkbox>
 	);
 }
@@ -205,13 +127,5 @@ Checkbox.propTypes = {
 
 	// Event handlers.
 	onChange: PropTypes.func,
-	onFocus: PropTypes.func,
-	onBlur: PropTypes.func,
-	onPointerDown: PropTypes.func,
-	onPointerEnter: PropTypes.func,
-	onPointerUp: PropTypes.func,
-	onPointerCancel: PropTypes.func,
-	onPointerLeave: PropTypes.func,
-	onClick: PropTypes.func,
-	onContextMenu: PropTypes.func,
+	onKeyDown: PropTypes.func,
 };
