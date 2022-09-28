@@ -16,6 +16,8 @@
  * limitations under the License.
  */
 
+import { useState } from '@wordpress/element';
+
 /**
  * External dependencies
  */
@@ -35,7 +37,11 @@ storiesOf( 'Global', module ).add(
 					id="googlesitekit-checkbox-1"
 					name="googlesitekit__checkbox"
 					onChange={ ( e ) => {
-						global.console.log( e.target.value );
+						global.console.log(
+							'value, checked',
+							e.target.value,
+							e.target.checked
+						);
 					} }
 					value="value-1"
 				>
@@ -49,7 +55,11 @@ storiesOf( 'Global', module ).add(
 					name="googlesitekit__checkbox"
 					id="googlesitekit-checkbox-2"
 					onChange={ ( e ) => {
-						global.console.log( e.target.value );
+						global.console.log(
+							'value, checked',
+							e.target.value,
+							e.target.checked
+						);
 					} }
 					value="value-2"
 				>
@@ -63,7 +73,11 @@ storiesOf( 'Global', module ).add(
 					id="googlesitekit-checkbox-3"
 					name="googlesitekit__checkbox"
 					onChange={ ( e ) => {
-						global.console.log( e.target.value );
+						global.console.log(
+							'value, checked',
+							e.target.value,
+							e.target.checked
+						);
 					} }
 					value="value-3"
 				>
@@ -78,3 +92,26 @@ storiesOf( 'Global', module ).add(
 		},
 	}
 );
+
+storiesOf( 'Global', module ).add( 'Interactive Checkbox', () => {
+	const [ checked, setChecked ] = useState( false );
+	return (
+		<Checkbox
+			id="googlesitekit-checkbox-4"
+			name="googlesitekit__checkbox"
+			onChange={ ( e ) => {
+				global.console.log(
+					'e.target, value, checked',
+					e.target,
+					e.target.value,
+					e.target.checked
+				);
+				setChecked( e.target.checked );
+			} }
+			value="value-4"
+			checked={ checked }
+		>
+			Interactive Checkbox
+		</Checkbox>
+	);
+} );

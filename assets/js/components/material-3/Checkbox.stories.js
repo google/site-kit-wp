@@ -16,6 +16,8 @@
  * limitations under the License.
  */
 
+import { useState } from '@wordpress/element';
+
 /**
  * Internal dependencies
  */
@@ -41,6 +43,25 @@ CheckedCheckbox.args = {
 	value: 'value-1',
 	checked: true,
 };
+
+export const InteractiveCheckbox = () => {
+	const [ checked, setChecked ] = useState( undefined );
+	return (
+		<Checkbox
+			onChange={ ( e ) => {
+				global.console.log(
+					'value, checked',
+					e.target.value,
+					e.target.checked
+				);
+				setChecked( e.target.checked ? true : undefined );
+			} }
+			value={ 'value-1' }
+			checked={ checked }
+		/>
+	);
+};
+InteractiveCheckbox.storyName = 'Interactive Checkbox';
 
 export const DisabledCheckbox = Template.bind( {} );
 DisabledCheckbox.storyName = 'Disabled Checkbox';

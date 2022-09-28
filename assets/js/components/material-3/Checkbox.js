@@ -45,6 +45,13 @@ global.MaterialCheckbox = MaterialCheckbox;
 // 	);
 // };
 
+function ObjectModifier( original, overrides ) {
+	const proxy = new Proxy( original, {
+		get: ( target, prop ) => overrides[ prop ] || target[ prop ],
+	} );
+	return new original.constructor( original.type, proxy );
+}
+
 export default function Checkbox( {
 	checked,
 	indeterminate,
@@ -69,11 +76,17 @@ export default function Checkbox( {
 	onClick,
 	onContextMenu,
 } ) {
+	console.log( 'Checkbox render. checked:', checked );
 	const ref = useRef( null );
 
 	// This is a reference to the Hackathon approach, which forced a rerender of the web component
 	// by setting a new key for each change. For production it's preferable to avoid this rendering overhead.
-	// const [ index, setIndex ] = useState( 0 );
+	// Also this approach does not appear work for the TextField component.
+	// Update - we may need this after all.
+	const [ index, setIndex ] = useState( 0 );
+
+	// const controlledState = useRef( {} );
+	// controlledState.current.checked = checked;
 
 	useEffect( () => {
 		const { current } = ref;
@@ -88,11 +101,11 @@ export default function Checkbox( {
 			onChange?.( event );
 
 			// Need to maintain/restore state to use as a controlled input.
-			// This works for a regular checkbox, but not (yet?) for a Material checkbox.
+			// This works [actually not quite] for a regular checkbox, but not (yet?) for a Material checkbox.
 			// current.checked = checked;
 			// current.indeterminate = indeterminate;
 
-			// setIndex( index + 1 );
+			setIndex( index + 1 );
 		};
 
 		current?.addEventListener( 'change', change );
@@ -109,6 +122,10 @@ export default function Checkbox( {
 				return;
 			}
 
+			// onChange?.( event );
+
+			current.checked = current.checked ? undefined : true;
+
 			// Could simply invoke onChange here, forgoing the event bubbling etc.
 			current.dispatchEvent(
 				new Event( 'change', {
@@ -116,6 +133,16 @@ export default function Checkbox( {
 					composed: true,
 				} )
 			);
+
+			// console.log(
+			// 	'restoring checked: current.checked, checked',
+			// 	current.checked,
+			// 	// checked
+			// 	controlledState.current.checked
+			// );
+
+			// current.checked = checked;
+			// current.checked = controlledState.current.checked;
 		};
 
 		// The click event is triggered by both mouse and keyboard entry (space key) on Chrome, need to confirm other browsers.
@@ -125,13 +152,13 @@ export default function Checkbox( {
 			current?.removeEventListener( 'change', change );
 			current?.removeEventListener( 'click', click );
 		};
-	}, [ onChange ] );
+	}, [ checked, disabled, index, onChange ] );
 
 	// TODO: Change theme colour to match expected ?
 
 	return (
 		<md-checkbox
-			// key={ `checkbox-${ name }-${ index }` }
+			key={ `checkbox-${ name }-${ index }` }
 			ref={ ref }
 			checked={ checked }
 			indeterminate={ indeterminate }
