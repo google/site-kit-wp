@@ -16,6 +16,9 @@
  * limitations under the License.
  */
 
+// Mocking tabbable as per https://github.com/focus-trap/tabbable#testing-in-jsdom
+// Load the tabbable version used by focus-trap-react since another version of tabbable is
+// being used by MDC components.
 const lib = jest.requireActual( 'focus-trap-react/node_modules/tabbable' );
 
 const tabbable = {
