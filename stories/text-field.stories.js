@@ -35,7 +35,12 @@ storiesOf( 'Global', module ).add( 'Text Fields', () => (
 				floatingLabelClassName="mdc-floating-label--float-above"
 				outlined
 			>
-				<Input value="https://www.sitekitbygoogle.com" />
+				<Input
+					value="https://www.sitekitbygoogle.com"
+					onChange={ ( e ) => {
+						console.log( 'onChange', e.target.value );
+					} }
+				/>
 			</TextField>
 		</div>
 		<div style={ { marginBottom: '50px' } }>
