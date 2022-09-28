@@ -20,6 +20,7 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
+import { Fragment } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -50,10 +51,22 @@ export default function ThankWithGoogleSupporterWallNotification() {
 				'Add a Thank with Google supporter wall',
 				'google-site-kit'
 			) }
-			description={ __(
-				'A supporter wall widget shows the list of everyone who has supported your site using Thank with Google. It’s a nice way to thank your supporters back. You can find and add the supporter wall widget from your site’s Appearance settings.',
-				'google-site-kit'
-			) }
+			description={
+				<Fragment>
+					<p>
+						{ __(
+							'A supporter wall widget shows the list of everyone who has supported your site using Thank with Google. It’s a nice way to thank your supporters back.',
+							'google-site-kit'
+						) }
+					</p>
+					<p>
+						{ __(
+							'You can find and add the supporter wall widget from your site’s Appearance settings.',
+							'google-site-kit'
+						) }
+					</p>
+				</Fragment>
+			}
 			ctaLabel={ __( 'Add Supporter Wall widget', 'google-site-kit' ) }
 			ctaLink={ supporterWallURL }
 			dismiss={ __( 'Maybe later', 'google-site-kit' ) }
