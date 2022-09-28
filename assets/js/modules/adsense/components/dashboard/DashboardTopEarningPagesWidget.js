@@ -52,8 +52,6 @@ const { useSelect, useInViewSelect } = Data;
 function DashboardTopEarningPagesWidget( props ) {
 	const { Widget, WidgetReportError, WidgetNull } = props;
 
-	const isViewOnly = useViewOnly();
-
 	const viewOnlyDashboard = useViewOnly();
 
 	const isGatheringData = useInViewSelect( ( select ) =>
@@ -108,9 +106,12 @@ function DashboardTopEarningPagesWidget( props ) {
 			] )
 	);
 
-	const isAdSenseLinked = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).getAdsenseLinked()
-	);
+	const isAdSenseLinked = useSelect( ( select ) => {
+		if ( viewOnlyDashboard && loading ) {
+			return undefined;
+		}
+		return select( MODULES_ANALYTICS ).getAdsenseLinked();
+	} );
 
 	const isAdblockerActive = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).isAdBlockerActive()
@@ -153,13 +154,13 @@ function DashboardTopEarningPagesWidget( props ) {
 		);
 	}
 
-	if ( ! isAdSenseLinked && isViewOnly ) {
+	if ( ! isAdSenseLinked && viewOnlyDashboard ) {
 		return <WidgetNull />;
 	}
 
 	// A restricted metrics error will cause this value to change in the resolver
 	// so this check should happen before an error, which is only relevant if they are linked.
-	if ( ! isAdSenseLinked && ! isViewOnly ) {
+	if ( ! isAdSenseLinked && ! viewOnlyDashboard ) {
 		return (
 			<Widget Footer={ Footer }>
 				<AdSenseLinkCTA />
