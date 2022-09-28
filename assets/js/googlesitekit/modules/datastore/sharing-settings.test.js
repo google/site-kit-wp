@@ -1037,7 +1037,7 @@ describe( 'core/modules sharing-settings', () => {
 				).toBeUndefined();
 			} );
 
-			it( 'should return an empty object if there is no `defaultSharedOwnershipModuleSettings`', async () => {
+			it( 'should return an empty object if there is no `defaultSharedOwnershipModuleSettings`', () => {
 				global[ dashboardSharingDataBaseVar ] = {
 					defaultSharedOwnershipModuleSettings: {},
 				};
@@ -1051,7 +1051,7 @@ describe( 'core/modules sharing-settings', () => {
 				);
 			} );
 
-			it( 'should return the `defaultSharedOwnershipModuleSettings` object', async () => {
+			it( 'should return the `defaultSharedOwnershipModuleSettings` object', () => {
 				global[ dashboardSharingDataBaseVar ] = {
 					defaultSharedOwnershipModuleSettings,
 				};
