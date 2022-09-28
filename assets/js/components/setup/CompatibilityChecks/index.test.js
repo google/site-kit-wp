@@ -135,7 +135,15 @@ describe( 'CompatibilityChecks', () => {
 		// Mock request to health-checks.
 		fetchMock.getOnce(
 			/^\/google-site-kit\/v1\/core\/site\/data\/health-checks/,
-			{ body: { checks: { googleAPI: { pass: true } } }, status: 200 }
+			{
+				body: {
+					checks: {
+						googleAPI: { pass: true },
+						skService: { pass: true },
+					},
+				},
+				status: 200,
+			}
 		);
 
 		// Mock request to AMP project.
@@ -195,7 +203,15 @@ describe( 'CompatibilityChecks', () => {
 		// Mock request to health-checks.
 		fetchMock.getOnce(
 			/^\/google-site-kit\/v1\/core\/site\/data\/health-checks/,
-			{ body: { checks: { googleAPI: { pass: true } } }, status: 200 }
+			{
+				body: {
+					checks: {
+						googleAPI: { pass: true },
+						skService: { pass: true },
+					},
+				},
+				status: 200,
+			}
 		);
 
 		// Mock request to AMP project.
