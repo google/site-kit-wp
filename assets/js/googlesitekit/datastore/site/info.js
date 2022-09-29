@@ -21,6 +21,7 @@
  */
 import invariant from 'invariant';
 import queryString from 'query-string';
+import { compare } from 'compare-versions';
 
 /**
  * WordPress dependencies
@@ -633,6 +634,26 @@ export const selectors = {
 	 * @return {(Object|undefined)} The WordPress version object.
 	 */
 	getWPVersion: getSiteInfoProperty( 'wpVersion' ),
+
+	/**
+	 * Determines whether the current WordPress site's has the minimum required version.
+	 * Currently, the minimum required version is 5.2.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {string} minVersion The minimum required version.
+	 * @return {(boolean|undefined)} An array with permutations.
+	 */
+	hasMinimumWordPressVersion: createRegistrySelector(
+		( select ) =>
+			( state, minVersion = '5.2' ) => {
+				const { version } = select( CORE_SITE ).getWPVersion();
+				if ( ! version ) {
+					return undefined;
+				}
+				return compare( minVersion, version, '<=' );
+			}
+	),
 };
 
 export default {
