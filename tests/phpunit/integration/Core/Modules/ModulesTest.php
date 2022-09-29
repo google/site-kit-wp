@@ -192,6 +192,10 @@ class ModulesTest extends TestCase {
 			'/' . REST_Routes::REST_ROOT . '/core/modules/data/list',
 			apply_filters( 'googlesitekit_apifetch_preload_paths', array() )
 		);
+
+		$this->assertTrue( has_filter( 'googlesitekit_module_exists' ) );
+		$this->assertTrue( apply_filters( 'googlesitekit_module_exists', null, 'fake-module' ) );
+		$this->assertFalse( apply_filters( 'googlesitekit_module_exists', null, 'non-existent-module' ) );
 	}
 
 	public function test_get_module() {
