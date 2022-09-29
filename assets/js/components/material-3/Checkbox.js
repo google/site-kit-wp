@@ -27,6 +27,8 @@ import PropTypes from 'prop-types';
  */
 import { useEffect, useRef, useState } from '@wordpress/element';
 
+const log = ( ...args ) => console.__proto__.log.call( console, ...args );
+
 export default function Checkbox( {
 	checked,
 	disabled,
@@ -35,7 +37,7 @@ export default function Checkbox( {
 	onChange,
 	onKeyDown,
 } ) {
-	console.log( 'Checkbox render. checked:', checked );
+	log( 'Checkbox render. checked:', checked );
 	const ref = useRef( null );
 
 	// Use this state in a key prop on the web component to force a rerender.
@@ -47,7 +49,7 @@ export default function Checkbox( {
 		const { current } = ref;
 
 		const click = ( event ) => {
-			console.log( 'click', event );
+			log( 'click', event );
 
 			// Prevent default and manually dispatch a change event, in order to retain checkbox state and use as a controlled input.
 			event.preventDefault();
@@ -68,7 +70,7 @@ export default function Checkbox( {
 		};
 
 		const change = ( event ) => {
-			console.log( 'change', event );
+			log( 'change', event );
 
 			// Preventing default behaviour has no effect here.
 			// event.preventDefault();
@@ -80,7 +82,7 @@ export default function Checkbox( {
 
 		// Keydown events work fine without any special logic.
 		const keydown = ( event ) => {
-			console.log( 'keydown', event );
+			log( 'keydown', event );
 
 			onKeyDown?.( event );
 		};
@@ -106,7 +108,8 @@ export default function Checkbox( {
 		<md-checkbox
 			key={ `checkbox-${ name }-${ index }` }
 			ref={ ref }
-			// Seems that these boolean attributes will treat a defined value as true, and an undefined value as false. So cooerce `false` to `undefined`. Need to look further into this.
+			// Lit boolean attributes treat anything non-null|undefined as true. Coerce to undefined if false.
+			// See https://lit.dev/docs/v1/components/properties/#attributes
 			checked={ checked || undefined }
 			disabled={ disabled || undefined }
 			name={ name }

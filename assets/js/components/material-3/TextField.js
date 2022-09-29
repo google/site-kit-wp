@@ -100,7 +100,8 @@ export default function TextField( {
 	return (
 		<md-outlined-text-field
 			ref={ ref }
-			// Seems that these boolean attributes will treat a defined value as true, and an undefined value as false. So cooerce `false` to `undefined`. Need to look further into this.
+			// Lit boolean attributes treat anything non-null|undefined as true. Coerce to undefined if false.
+			// See https://lit.dev/docs/v1/components/properties/#attributes
 			disabled={ disabled || undefined }
 			readonly={ readOnly || undefined }
 			name={ name }
