@@ -39,7 +39,7 @@ export default function Checkbox( {
 	const ref = useRef( null );
 
 	// Use this state in a key prop on the web component to force a rerender.
-	// This is a workaround for the fact the web component doesn't update visually when the checked property is changed programmatically.
+	// This is a workaround for the fact the web component doesn't update visually when the checked property is changed programmatically. Hopefully this will be fixed in a future update to the web component.
 	// It has a side effect of unfocusing the checkbox when changed via keyboard input which needs to be addressed.
 	const [ index, setIndex ] = useState( 0 );
 
@@ -78,6 +78,7 @@ export default function Checkbox( {
 			setIndex( index + 1 );
 		};
 
+		// Keydown events work fine without any special logic.
 		const keydown = ( event ) => {
 			console.log( 'keydown', event );
 

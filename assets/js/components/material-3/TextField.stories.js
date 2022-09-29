@@ -29,7 +29,7 @@ export const DefaultTextField = Template.bind( {} );
 DefaultTextField.storyName = 'Default TextField';
 DefaultTextField.args = {
 	onChange: ( e ) => {
-		global.console.log( e.target.value );
+		global.console.log( '[story] change:', e.target.value );
 	},
 	value: 'value-1',
 };
@@ -39,7 +39,7 @@ export const InteractiveTextField = () => {
 	return (
 		<TextField
 			onChange={ ( e ) => {
-				global.console.log( e.target.value );
+				global.console.log( '[story] change:', e.target.value );
 				setValue( e.target.value );
 			} }
 			value={ value }
@@ -52,7 +52,7 @@ export const ReadOnlyTextField = Template.bind( {} );
 ReadOnlyTextField.storyName = 'Read Only TextField';
 ReadOnlyTextField.args = {
 	onChange: ( e ) => {
-		global.console.log( e.target.value );
+		global.console.log( '[story] change:', e.target.value );
 	},
 	value: 'value-1',
 	readOnly: true,
@@ -62,7 +62,7 @@ export const DisabledTextField = Template.bind( {} );
 DisabledTextField.storyName = 'Disabled TextField';
 DisabledTextField.args = {
 	onChange: ( e ) => {
-		global.console.log( e.target.value );
+		global.console.log( '[story] change:', e.target.value );
 	},
 	value: 'value-1',
 	disabled: true,

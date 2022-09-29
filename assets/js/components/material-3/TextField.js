@@ -27,79 +27,34 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { useEffect, useRef, useState } from '@wordpress/element';
+import { useEffect, useRef } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 
 export default function TextField( {
-	checked,
-	indeterminate,
 	disabled,
 	readOnly,
 	name,
 	value,
 
-	ariaLabel,
-	ariaLabelledBy,
-	ariaDescribedBy,
-
-	reducedTouchTarget,
-
 	onChange,
-	onFocus,
-	onBlur,
-	onPointerDown,
-	onPointerEnter,
-	onPointerUp,
-	onPointerCancel,
-	onPointerLeave,
-	onClick,
-	onContextMenu,
 } ) {
 	console.log( 'TextField render. value:', value );
 
 	const ref = useRef( null );
 
-	// This is a reference to the Hackathon approach, which forced a rerender of the web component
-	// by setting a new key for each change. For production it's preferable to avoid this rendering overhead.
-	// Anyhow while this may be needed for the Checkbox component, it doesn't appear to work here for the TextField component.
-	// const [ index, setIndex ] = useState( 0 );
-
+	// Taking a different approach to Checkbox here, this is more efficient than forcing rerenders with an incrementing key - plus that approach doesn't seem to work for the text input anyway.
 	const controlledState = useRef( {} );
 	controlledState.current.value = value;
 
 	useEffect( () => {
 		const { current } = ref;
 
-		const change = ( event ) => {
-			console.log( 'change', event );
-
-			// Preventing default behaviour has no effect here.
-			// event.preventDefault();
-			// event.stopPropagation();
-
-			onChange?.( event );
-
-			// Need to maintain/restore state to use as a controlled input.
-			// Update: Not quite working yet.
-			// current.value = value;
-
-			// setIndex( index + 1 );
-		};
-
-		current?.addEventListener( 'change', change );
-		// The 'action' event is dispatched by the ActionElement base class of the Material textfield. See ActionElement source for details.
-		// current?.addEventListener( 'action', cancelEvent );
-
 		const input = ( event ) => {
 			console.log( 'input', event );
 
-			// event.preventDefault();
-			// event.stopPropagation();
-
-			// Could simply invoke onChange here, forgoing the event bubbling etc.
 			current.dispatchEvent(
 				new Event( 'change', {
 					bubbles: true,
@@ -108,49 +63,48 @@ export default function TextField( {
 			);
 
 			console.log(
-				'restoring value. current.value, value',
+				'restoring value. current, controlled:',
 				current.value,
-				// value
 				controlledState.current.value
 			);
-			// current.value = value;
+
 			current.value = controlledState.current.value;
 		};
 
+		const keydown = ( event ) => {
+			console.log( 'keydown', event );
+
+			// This is necessary to prevent keydown events leaking through to ancestor elements.
+			// For a practical example, if this is removed, pressing "s" in the input in Storybook will toggle the Storybook sidebar. This does not occur for the existing TextField component.
+			// We may need to do the same for other events e.g. keyup.
+			event.stopPropagation();
+		};
+
+		const change = ( event ) => {
+			console.log( 'change', event );
+
+			onChange?.( event );
+		};
+
 		current?.addEventListener( 'input', input );
+		current?.addEventListener( 'keydown', keydown );
+		current?.addEventListener( 'change', change );
 
 		return () => {
-			current?.removeEventListener( 'change', change );
 			current?.removeEventListener( 'input', change );
+			current?.removeEventListener( 'keydown', keydown );
+			current?.removeEventListener( 'change', change );
 		};
-	}, [ disabled, onChange, value ] );
-
-	// TODO: Change theme colour to match expected ?
+	}, [ onChange ] );
 
 	return (
 		<md-outlined-text-field
-			// key={ `textfield-${ name }-${ index }` }
 			ref={ ref }
-			// checked={ checked }
-			// indeterminate={ indeterminate }
-			disabled={ disabled }
-			readonly={ readOnly }
+			// Seems that these boolean attributes will treat a defined value as true, and an undefined value as false. So cooerce `false` to `undefined`. Need to look further into this.
+			disabled={ disabled || undefined }
+			readonly={ readOnly || undefined }
 			name={ name }
 			value={ value }
-			// aria-label={ ariaLabel }
-			// aria-labelledby={ ariaLabelledBy }
-			// aria-describedby={ ariaDescribedBy }
-			// reducedtouchtarget={ reducedTouchTarget }
-			// onchange={ onChange }
-			// onfocus={ onFocus }
-			// onblur={ onBlur }
-			// onpointerdown={ onPointerDown }
-			// onpointerenter={ onPointerEnter }
-			// onpointerup={ onPointerUp }
-			// onpointercancel={ onPointerCancel }
-			// onpointerleave={ onPointerLeave }
-			// onclick={ onClick }
-			// oncontextmenu={ onContextMenu }
 		></md-outlined-text-field>
 	);
 }
@@ -170,13 +124,4 @@ TextField.propTypes = {
 
 	// Event handlers.
 	onChange: PropTypes.func,
-	// onFocus: PropTypes.func,
-	// onBlur: PropTypes.func,
-	// onPointerDown: PropTypes.func,
-	// onPointerEnter: PropTypes.func,
-	// onPointerUp: PropTypes.func,
-	// onPointerCancel: PropTypes.func,
-	// onPointerLeave: PropTypes.func,
-	// onClick: PropTypes.func,
-	// onContextMenu: PropTypes.func,
 };
