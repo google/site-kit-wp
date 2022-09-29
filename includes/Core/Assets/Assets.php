@@ -760,6 +760,27 @@ final class Assets {
 	}
 
 	/**
+	 * Gets the update core URL for the user whoc can update the WordPress core.
+	 *
+	 * If the multisite is enabled, gets the update core URL for the network admin.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string The update core URL.
+	 */
+	private function get_update_core_url() {
+		if ( ! current_user_can( 'update_core' ) ) {
+			return null;
+		}
+
+		if ( is_multisite() ) {
+			return admin_url( 'network/update-core.php' );
+		}
+
+		return admin_url( 'update-core.php' );
+	}
+
+	/**
 	 * Gets the inline data specific to the current entity.
 	 *
 	 * @since 1.7.0
