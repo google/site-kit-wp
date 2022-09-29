@@ -38,7 +38,14 @@ storiesOf( 'Global', module ).add(
 					name="googlesitekit__checkbox"
 					onChange={ ( e ) => {
 						global.console.log(
-							'value, checked',
+							'[story] change: value, checked',
+							e.target.value,
+							e.target.checked
+						);
+					} }
+					onKeyDown={ ( e ) => {
+						global.console.log(
+							'[story] keydown: value, checked',
 							e.target.value,
 							e.target.checked
 						);
@@ -56,7 +63,14 @@ storiesOf( 'Global', module ).add(
 					id="googlesitekit-checkbox-2"
 					onChange={ ( e ) => {
 						global.console.log(
-							'value, checked',
+							'[story] change: value, checked',
+							e.target.value,
+							e.target.checked
+						);
+					} }
+					onKeyDown={ ( e ) => {
+						global.console.log(
+							'[story] keydown: value, checked',
 							e.target.value,
 							e.target.checked
 						);
@@ -74,7 +88,14 @@ storiesOf( 'Global', module ).add(
 					name="googlesitekit__checkbox"
 					onChange={ ( e ) => {
 						global.console.log(
-							'value, checked',
+							'[story] change: value, checked',
+							e.target.value,
+							e.target.checked
+						);
+					} }
+					onKeyDown={ ( e ) => {
+						global.console.log(
+							'[story] keydown: value, checked',
 							e.target.value,
 							e.target.checked
 						);
@@ -101,12 +122,19 @@ storiesOf( 'Global', module ).add( 'Interactive Checkbox', () => {
 			name="googlesitekit__checkbox"
 			onChange={ ( e ) => {
 				global.console.log(
-					'e.target, value, checked',
+					'[story] change: e.target, value, checked',
 					e.target,
 					e.target.value,
 					e.target.checked
 				);
 				setChecked( e.target.checked );
+			} }
+			onKeyDown={ ( e ) => {
+				global.console.log(
+					'[story] keydown: value, checked',
+					e.target.value,
+					e.target.checked
+				);
 			} }
 			value="value-4"
 			checked={ checked }

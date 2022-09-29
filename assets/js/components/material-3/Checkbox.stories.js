@@ -29,7 +29,10 @@ export const DefaultCheckbox = Template.bind( {} );
 DefaultCheckbox.storyName = 'Default Checkbox';
 DefaultCheckbox.args = {
 	onChange: ( e ) => {
-		global.console.log( e.target.value );
+		global.console.log( '[story] change', e.target.value );
+	},
+	onKeyDown: ( e ) => {
+		global.console.log( '[story] keydown', e.target.value );
 	},
 	value: 'value-1',
 };
@@ -38,23 +41,33 @@ export const CheckedCheckbox = Template.bind( {} );
 CheckedCheckbox.storyName = 'Checked Checkbox';
 CheckedCheckbox.args = {
 	onChange: ( e ) => {
-		global.console.log( e.target.value );
+		global.console.log( '[story] change', e.target.value );
+	},
+	onKeyDown: ( e ) => {
+		global.console.log( '[story] keydown', e.target.value );
 	},
 	value: 'value-1',
 	checked: true,
 };
 
 export const InteractiveCheckbox = () => {
-	const [ checked, setChecked ] = useState( undefined );
+	const [ checked, setChecked ] = useState( false );
 	return (
 		<Checkbox
 			onChange={ ( e ) => {
 				global.console.log(
-					'value, checked',
+					'[story] change: value, checked',
 					e.target.value,
 					e.target.checked
 				);
-				setChecked( e.target.checked ? true : undefined );
+				setChecked( e.target.checked );
+			} }
+			onKeyDown={ ( e ) => {
+				global.console.log(
+					'[story] keydown: value, checked',
+					e.target.value,
+					e.target.checked
+				);
 			} }
 			value={ 'value-1' }
 			checked={ checked }
@@ -67,7 +80,10 @@ export const DisabledCheckbox = Template.bind( {} );
 DisabledCheckbox.storyName = 'Disabled Checkbox';
 DisabledCheckbox.args = {
 	onChange: ( e ) => {
-		global.console.log( e.target.value );
+		global.console.log( '[story] change', e.target.value );
+	},
+	onKeyDown: ( e ) => {
+		global.console.log( '[story] keydown', e.target.value );
 	},
 	value: 'value-1',
 	disabled: true,

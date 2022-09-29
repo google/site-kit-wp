@@ -29,7 +29,6 @@ import { useEffect, useRef, useState } from '@wordpress/element';
 
 export default function Checkbox( {
 	checked,
-	indeterminate,
 	disabled,
 	name,
 	value,
@@ -40,7 +39,8 @@ export default function Checkbox( {
 	const ref = useRef( null );
 
 	// Use this state in a key prop on the web component to force a rerender.
-	// This is a workaround for the fact the web component doesn't update visually when the checked property is changed.
+	// This is a workaround for the fact the web component doesn't update visually when the checked property is changed programmatically.
+	// It has a side effect of unfocusing the checkbox when changed via keyboard input which needs to be addressed.
 	const [ index, setIndex ] = useState( 0 );
 
 	useEffect( () => {
@@ -57,6 +57,7 @@ export default function Checkbox( {
 			}
 
 			current.checked = current.checked ? undefined : true;
+			// current.checked = ! current.checked;
 
 			current.dispatchEvent(
 				new Event( 'change', {
@@ -77,9 +78,16 @@ export default function Checkbox( {
 			setIndex( index + 1 );
 		};
 
+		const keydown = ( event ) => {
+			console.log( 'keydown', event );
+
+			onKeyDown?.( event );
+		};
+
 		// The click event is triggered by both mouse and keyboard entry (space key) on Chrome, need to confirm other browsers.
 		current?.addEventListener( 'click', click );
 		current?.addEventListener( 'change', change );
+		current?.addEventListener( 'keydown', keydown );
 
 		// The 'action' event is dispatched by the ActionElement base class of the Material checkbox. See ActionElement source for details.
 		// current?.addEventListener( 'action', cancelEvent );
@@ -87,8 +95,9 @@ export default function Checkbox( {
 		return () => {
 			current?.removeEventListener( 'click', click );
 			current?.removeEventListener( 'change', change );
+			current?.removeEventListener( 'keydown', keydown );
 		};
-	}, [ checked, disabled, index, onChange ] );
+	}, [ checked, disabled, index, onChange, onKeyDown ] );
 
 	// TODO: Change theme colour to match expected ?
 
@@ -96,9 +105,9 @@ export default function Checkbox( {
 		<md-checkbox
 			key={ `checkbox-${ name }-${ index }` }
 			ref={ ref }
-			checked={ checked }
-			indeterminate={ indeterminate }
-			disabled={ disabled }
+			// Seems that these boolean attributes will treat a defined value as true, and an undefined value as false. So cooerce `false` to `undefined`. Need to look further into this.
+			checked={ checked || undefined }
+			disabled={ disabled || undefined }
 			name={ name }
 			value={ value }
 		></md-checkbox>
@@ -114,18 +123,17 @@ export default function Checkbox( {
 Checkbox.propTypes = {
 	// Fundamental checkbox attributes.
 	checked: PropTypes.bool,
-	indeterminate: PropTypes.bool,
 	disabled: PropTypes.bool,
 	name: PropTypes.string,
 	value: PropTypes.string,
 
-	// Accessibility attributes.
-	ariaLabel: PropTypes.string,
-	ariaLabelledBy: PropTypes.string,
-	ariaDescribedBy: PropTypes.string,
-	reducedTouchTarget: PropTypes.bool,
-
 	// Event handlers.
 	onChange: PropTypes.func,
 	onKeyDown: PropTypes.func,
+
+	// Accessibility attributes.
+	// ariaLabel: PropTypes.string,
+	// ariaLabelledBy: PropTypes.string,
+	// ariaDescribedBy: PropTypes.string,
+	// reducedTouchTarget: PropTypes.bool,
 };
