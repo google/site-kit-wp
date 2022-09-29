@@ -35,6 +35,13 @@ class Tag_ManagerTest extends TestCase {
 	use Module_With_Owner_ContractTests;
 	use Module_With_Service_Entity_ContractTests;
 
+	public function tear_down() {
+		parent::tear_down();
+
+		// We have to clean up for the test cases which register this script.
+		wp_deregister_script( 'googlesitekit-modules-tagmanager' );
+	}
+
 	public function test_register() {
 		$tagmanager = new Tag_Manager( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		remove_all_filters( 'googlesitekit_auth_scopes' );
@@ -386,8 +393,6 @@ class Tag_ManagerTest extends TestCase {
 			),
 			$dependency->deps
 		);
-
-		wp_deregister_script( 'googlesitekit-modules-tagmanager' );
 	}
 
 	public function test_get_assets__no_analytics() {
@@ -416,7 +421,6 @@ class Tag_ManagerTest extends TestCase {
 
 		$this->assertEquals( $context->url( 'dist/assets/' ) . 'js/googlesitekit-modules-tagmanager.js', $dependency->src );
 
-		// Verify the 'googlesitekit-module-analytics' asset is not a dependency.
 		$this->assertEqualSets(
 			array(
 				'googlesitekit-api',
@@ -428,7 +432,11 @@ class Tag_ManagerTest extends TestCase {
 			$dependency->deps
 		);
 
-		wp_deregister_script( 'googlesitekit-modules-tagmanager' );
+		// This is implied from the above assertion, but let's be explicit about what we are trying to test.
+		$this->assertNotContains(
+			'googlesitekit-module-analytics',
+			$dependency->deps
+		);
 	}
 
 	/**
