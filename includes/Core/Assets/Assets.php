@@ -693,6 +693,7 @@ final class Assets {
 			'adminURL'         => esc_url_raw( trailingslashit( admin_url() ) ),
 			'assetsURL'        => esc_url_raw( $this->context->url( 'dist/assets/' ) ),
 			'widgetsAdminURL'  => esc_url_raw( $this->get_widgets_admin_url() ),
+			'updateCoreURL'    => esc_url_raw( $this->get_update_core_url() ),
 			'blogPrefix'       => $wpdb->get_blog_prefix(),
 			'ampMode'          => $this->context->get_amp_mode(),
 			'isNetworkMode'    => $this->context->is_network_mode(),
