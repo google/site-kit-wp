@@ -111,6 +111,7 @@ export const reducer = ( state, { payload, type } ) => {
 				proxySupportLinkURL,
 				widgetsAdminURL,
 				postTypes,
+				wpVersion,
 			} = payload.siteInfo;
 
 			return {
@@ -136,6 +137,7 @@ export const reducer = ( state, { payload, type } ) => {
 					proxySupportLinkURL,
 					widgetsAdminURL,
 					postTypes,
+					wpVersion,
 				},
 			};
 		}
@@ -186,6 +188,7 @@ export const resolvers = {
 			proxySupportLinkURL,
 			widgetsAdminURL,
 			postTypes,
+			wpVersion,
 		} = global._googlesitekitBaseData;
 
 		const {
@@ -216,6 +219,7 @@ export const resolvers = {
 			webStoriesActive,
 			proxySupportLinkURL,
 			widgetsAdminURL,
+			wpVersion,
 		} );
 	},
 };
@@ -619,6 +623,16 @@ export const selectors = {
 
 		return permutations;
 	} ),
+
+	/**
+	 * Gets the WordPress version object.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(Object|undefined)} The WordPress version object.
+	 */
+	getWPVersion: getSiteInfoProperty( 'wpVersion' ),
 };
 
 export default {
