@@ -21,6 +21,7 @@
  */
 import invariant from 'invariant';
 import intersection from 'lodash/intersection';
+import { original } from 'immer';
 
 /**
  * Internal dependencies
@@ -222,9 +223,9 @@ export const reducer = createReducer( ( draft, { type, payload } ) => {
 
 			if (
 				draft.widgetStates?.[ slug ]?.Component === Component &&
-				draft.widgetStates?.[ slug ]?.metadata === metadata
+				original( draft.widgetStates?.[ slug ]?.metadata ) === metadata
 			) {
-				return draft;
+				delete draft.widgetStates[ slug ];
 			}
 
 			return draft;
