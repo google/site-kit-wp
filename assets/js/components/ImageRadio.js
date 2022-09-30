@@ -80,7 +80,11 @@ export default function ImageRadio( props ) {
 					checked={ checked }
 					tabIndex={ tabIndex }
 				/>
-				<div className="mdc-image-radio__background">
+				<div
+					className={ classnames( 'mdc-image-radio__background', {
+						'mdc-image-radio__background--checked': checked,
+					} ) }
+				>
 					<div
 						role="radio"
 						aria-checked={ checked }

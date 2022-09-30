@@ -30,7 +30,6 @@
 					border-width: 3.5px;
 					height: 43px;
 					min-height: 0;
-					outline: none;
 					overflow: hidden;
 					position: relative;
 					width: 43px;
@@ -43,6 +42,11 @@
 						transform: translate(-50%, -50%);
 						width: 50px;
 					}
+				}
+
+				&::after {
+					border: none;
+					content: "";
 				}
 
 				.mdc-image-radio__content[aria-checked="true"] {
