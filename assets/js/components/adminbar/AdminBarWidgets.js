@@ -53,6 +53,9 @@ const AdminBarSessionsWidget =
 	withWidgetComponentProps( WIDGET_SESSIONS )( AdminBarSessions );
 
 export default function AdminBarWidgets() {
+	const analyticsModuleAvailable = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleAvailable( 'analytics' )
+	);
 	const analyticsModuleConnected = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleConnected( 'analytics' )
 	);
@@ -81,11 +84,13 @@ export default function AdminBarWidgets() {
 					</Fragment>
 				) }
 
-				{ ( ! analyticsModuleConnected || ! analyticsModuleActive ) && (
-					<Cell lgSize={ 6 } mdSize={ 4 }>
-						<AdminBarActivateAnalyticsCTA />
-					</Cell>
-				) }
+				{ analyticsModuleAvailable &&
+					( ! analyticsModuleConnected ||
+						! analyticsModuleActive ) && (
+						<Cell lgSize={ 6 } mdSize={ 4 }>
+							<AdminBarActivateAnalyticsCTA />
+						</Cell>
+					) }
 			</Row>
 		</Fragment>
 	);

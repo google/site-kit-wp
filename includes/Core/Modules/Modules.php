@@ -378,6 +378,15 @@ final class Modules {
 		);
 
 		add_filter(
+			'googlesitekit_module_exists',
+			function ( $exists, $slug ) {
+				return $this->module_exists( $slug );
+			},
+			10,
+			2
+		);
+
+		add_filter(
 			'googlesitekit_is_module_recoverable',
 			function ( $recoverable, $slug ) {
 				return $this->is_module_recoverable( $slug );
@@ -515,6 +524,7 @@ final class Modules {
 	 * Gets the available modules.
 	 *
 	 * @since 1.0.0
+	 * @since n.e.x.t Filter out modules which are missing any of the dependencies specified in `depends_on`.
 	 *
 	 * @return array Available modules as $slug => $module pairs.
 	 */
@@ -539,10 +549,24 @@ final class Modules {
 				}
 			);
 
+			// Remove any modules which are missing dependencies. This may occur as the result of a dependency
+			// being removed via the googlesitekit_available_modules filter.
+			$this->modules = array_filter(
+				$this->modules,
+				function( Module $module ) {
+					foreach ( $module->depends_on as $dependency ) {
+						if ( ! isset( $this->modules[ $dependency ] ) ) {
+							return false;
+						}
+					}
+					return true;
+				}
+			);
+
 			// Set up dependency maps.
 			foreach ( $this->modules as $module ) {
 				foreach ( $module->depends_on as $dependency ) {
-					if ( ! isset( $this->modules[ $dependency ] ) || $module->slug === $dependency ) {
+					if ( $module->slug === $dependency ) {
 						continue;
 					}
 
