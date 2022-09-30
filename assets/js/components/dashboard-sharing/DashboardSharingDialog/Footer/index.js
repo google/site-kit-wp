@@ -66,6 +66,9 @@ export default function Footer( { closeDialog, openResetDialog } ) {
 	const haveSharingSettingsChangedRoles = useSelect( ( select ) =>
 		select( CORE_MODULES ).haveSharingSettingsExpanded( 'sharedRoles' )
 	);
+	const haveSharingSettingsUpdated = useSelect( ( select ) =>
+		select( CORE_MODULES ).haveSharingSettingsUpdated()
+	);
 	const settingsDialogOpen = useSelect(
 		( select ) => !! select( CORE_UI ).getValue( SETTINGS_DIALOG )
 	);
@@ -129,16 +132,18 @@ export default function Footer( { closeDialog, openResetDialog } ) {
 			) }
 
 			<div className="googlesitekit-dashboard-sharing-settings__footer-actions">
-				{ settingsDialogOpen && ! showNotice && (
-					<div className="googlesitekit-dashboard-sharing-settings__footer-actions-left">
-						<Link onClick={ openResetDialog } danger>
-							{ __(
-								'Reset sharing permissions',
-								'google-site-kit'
-							) }
-						</Link>
-					</div>
-				) }
+				{ haveSharingSettingsUpdated &&
+					settingsDialogOpen &&
+					! showNotice && (
+						<div className="googlesitekit-dashboard-sharing-settings__footer-actions-left">
+							<Link onClick={ openResetDialog } danger>
+								{ __(
+									'Reset sharing permissions',
+									'google-site-kit'
+								) }
+							</Link>
+						</div>
+					) }
 
 				<div className="googlesitekit-dashboard-sharing-settings__footer-actions-right">
 					<Link onClick={ onCancel }>

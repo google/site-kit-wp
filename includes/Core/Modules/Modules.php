@@ -370,7 +370,8 @@ final class Modules {
 		add_filter(
 			'googlesitekit_dashboard_sharing_data',
 			function ( $data ) {
-				$data['sharedOwnershipModules'] = array_keys( $this->get_shared_ownership_modules() );
+				$data['sharedOwnershipModules']               = array_keys( $this->get_shared_ownership_modules() );
+				$data['defaultSharedOwnershipModuleSettings'] = $this->populate_default_shared_ownership_module_settings( array() );
 
 				return $data;
 			}
@@ -385,8 +386,8 @@ final class Modules {
 			2
 		);
 
-		add_filter( 'option_' . Module_Sharing_Settings::OPTION, $this->get_method_proxy( 'filter_shared_ownership_module_settings' ) );
-		add_filter( 'default_option_' . Module_Sharing_Settings::OPTION, $this->get_method_proxy( 'filter_shared_ownership_module_settings' ), 20 );
+		add_filter( 'option_' . Module_Sharing_Settings::OPTION, $this->get_method_proxy( 'populate_default_shared_ownership_module_settings' ) );
+		add_filter( 'default_option_' . Module_Sharing_Settings::OPTION, $this->get_method_proxy( 'populate_default_shared_ownership_module_settings' ), 20 );
 
 		add_action(
 			'add_option_' . Module_Sharing_Settings::OPTION,
@@ -1537,21 +1538,21 @@ final class Modules {
 	}
 
 	/**
-	 * Inserts default settings for shared ownership modules.
+	 * Inserts default settings for shared ownership modules in passed dashboard sharing settings.
 	 *
 	 * Sharing settings for shared ownership modules such as pagespeed-insights
-	 * and idea-hub should always be manageable by "all admins". This filter inserts
+	 * and idea-hub should always be manageable by "all admins". This function inserts
 	 * this 'default' setting for their respective module slugs even when the
 	 * dashboard_sharing settings option is not defined in the database or when settings
-	 * are not set for these modules. This filter is applied after every attempt to fetch
-	 * the googlesitekit-dashboard_sharing settings option from the database.
+	 * are not set for these modules.
 	 *
 	 * @since 1.75.0
+	 * @since n.e.x.t Renamed from filter_shared_ownership_module_settings to populate_default_shared_ownership_module_settings.
 	 *
 	 * @param array $sharing_settings The dashboard_sharing settings option fetched from the database.
 	 * @return array Dashboard sharing settings option with default settings inserted for shared ownership modules.
 	 */
-	protected function filter_shared_ownership_module_settings( $sharing_settings ) {
+	protected function populate_default_shared_ownership_module_settings( $sharing_settings ) {
 		$shared_ownership_modules = array_keys( $this->get_shared_ownership_modules() );
 		foreach ( $shared_ownership_modules as $shared_ownership_module ) {
 			if ( ! isset( $sharing_settings[ $shared_ownership_module ] ) ) {
