@@ -189,11 +189,20 @@ function observeConsoleLogging() {
 		if (
 			text.startsWith( 'Powered by AMP' ) ||
 			text.startsWith( 'data_error unknown response key' ) ||
-			text.startsWith( 'You are probably offline.' ) ||
 			text.includes(
 				'No triggers were found in the config. No analytics data will be sent.'
 			)
 		) {
+			return;
+		}
+
+		// Ignore errors thrown by `@wordpress/api-fetch`. These are actual,
+		// legimate request failures, but they can happen during a navigation
+		// (or when actually offline).
+		//
+		// We ignore them as they are not indicative of a problem with the
+		// test and usually make E2E tests fail erroneously.
+		if ( text.startsWith( 'You are probably offline.' ) ) {
 			return;
 		}
 
