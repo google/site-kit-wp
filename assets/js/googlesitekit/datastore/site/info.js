@@ -665,7 +665,8 @@ export const selectors = {
 				if ( ! version ) {
 					return undefined;
 				}
-				return compare( minVersion, version, '<=' );
+				const [ validVersion ] = version.split( '-' );
+				return compare( minVersion, validVersion, '<=' );
 			}
 	),
 };
