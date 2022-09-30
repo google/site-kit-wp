@@ -28,11 +28,15 @@ import classnames from 'classnames';
 import { forwardRef } from '@wordpress/element';
 
 const Grid = forwardRef(
-	( { alignLeft, fill, className, children, ...otherProps }, ref ) => {
+	(
+		{ alignLeft, fill, className, children, collapsed, ...otherProps },
+		ref
+	) => {
 		return (
 			<div
 				className={ classnames( 'mdc-layout-grid', className, {
 					'mdc-layout-grid--align-left': alignLeft,
+					'mdc-layout-grid--collapsed': collapsed,
 					'mdc-layout-grid--fill': fill,
 				} ) }
 				{ ...otherProps }
@@ -48,6 +52,7 @@ Grid.propTypes = {
 	alignLeft: PropTypes.bool,
 	fill: PropTypes.bool,
 	className: PropTypes.string,
+	collapsed: PropTypes.bool,
 	children: PropTypes.node,
 };
 
