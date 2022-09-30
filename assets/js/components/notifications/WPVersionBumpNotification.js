@@ -27,27 +27,23 @@ import { __, sprintf } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import BannerNotification from './BannerNotification';
-import {
-	CORE_USER,
-	PERMISSION_UPDATE_CORE,
-} from '../../googlesitekit/datastore/user/constants';
 import { getTimeInSeconds } from '../../util';
 const { useSelect } = Data;
 
 export default function WPVersionBumpNotification() {
-	const canUpdateCore = useSelect( ( select ) =>
-		select( CORE_USER ).hasCapability( PERMISSION_UPDATE_CORE )
-	);
 	const hasMinimumWPVersion = useSelect( ( select ) =>
 		select( CORE_SITE ).hasMinimumWordPressVersion()
 	);
 	const { version } = useSelect( ( select ) =>
 		select( CORE_SITE ).getWPVersion()
 	);
-	const updateCoreURL = useSelect( ( select ) => {
-		const dashboardURL = select( CORE_SITE ).getAdminURL();
-		return `${ dashboardURL }update-core.php`;
-	} );
+
+	// The `Update WordPress` CTA should be displayed if the user has `update_core` capability.
+	// The `updateCoreURL` property will be available if the user has the `update_core` capability.
+	// Otherwise, it will be `undefined`. See Assets::get_update_core_url() method.
+	const updateCoreURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getUpdateCoreURL()
+	);
 
 	if ( hasMinimumWPVersion || version === undefined ) {
 		return null;
@@ -68,12 +64,8 @@ export default function WPVersionBumpNotification() {
 				),
 				version
 			) }
-			ctaLabel={
-				canUpdateCore
-					? __( 'Update WordPress', 'google-site-kit' )
-					: undefined
-			}
-			ctaLink={ canUpdateCore ? updateCoreURL : undefined }
+			ctaLabel={ __( 'Update WordPress', 'google-site-kit' ) }
+			ctaLink={ updateCoreURL }
 			dismiss={ __( 'Maybe later', 'google-site-kit' ) }
 			dismissExpires={ getTimeInSeconds( 'day' ) * 3 }
 			isDismissible
