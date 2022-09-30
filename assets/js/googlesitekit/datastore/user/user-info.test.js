@@ -29,13 +29,15 @@ import { CORE_USER } from './constants';
 
 describe( 'core/user userInfo', () => {
 	const userDataGlobal = '_googlesitekitUserData';
+	const user = {
+		id: 1,
+		email: 'admin@example.com',
+		name: 'admin',
+		picture: 'https://path/to/image',
+		full_name: 'Dr Funkenstein',
+	};
 	const userData = {
-		user: {
-			id: 1,
-			email: 'admin@example.com',
-			name: 'admin',
-			picture: 'https://path/to/image',
-		},
+		user,
 		connectURL:
 			'http://example.com/wp-admin/index.php?action=googlesitekit_connect&nonce=abc123',
 		initialVersion: '1.0.0',
@@ -63,7 +65,6 @@ describe( 'core/user userInfo', () => {
 			} );
 
 			it( 'receives and sets userInfo', async () => {
-				const { user } = userData;
 				await registry.dispatch( CORE_USER ).receiveUserInfo( user );
 				expect( registry.select( CORE_USER ).getUser() ).toMatchObject(
 					user
@@ -245,8 +246,7 @@ describe( 'core/user userInfo', () => {
 
 				const userInfo = registry.select( CORE_USER ).getUser();
 
-				const { user } = initialState;
-				expect( userInfo ).toEqual( user );
+				expect( userInfo ).toEqual( initialState.user );
 				expect( console ).toHaveErrored();
 			} );
 		} );
@@ -314,11 +314,12 @@ describe( 'core/user userInfo', () => {
 		} );
 
 		describe.each( [
-			[ 'getID' ],
-			[ 'getName' ],
-			[ 'getEmail' ],
-			[ 'getPicture' ],
-		] )( '%s()', ( selector ) => {
+			[ 'getID', user.id ],
+			[ 'getName', user.name ],
+			[ 'getEmail', user.email ],
+			[ 'getPicture', user.picture ],
+			[ 'getFullName', user.full_name ],
+		] )( '%s()', ( selector, expectedValue ) => {
 			it( 'uses a resolver to load user info then returns the info when this specific selector is used', async () => {
 				// Set up the global
 				global[ userDataGlobal ] = userData;
@@ -341,6 +342,21 @@ describe( 'core/user userInfo', () => {
 
 				expect( result ).toEqual( undefined );
 				expect( console ).toHaveErrored();
+			} );
+			it( 'will return the correct value when data is available', async () => {
+				// Set up the global
+				global[ userDataGlobal ] = userData;
+
+				registry.select( CORE_USER )[ selector ]();
+				await subscribeUntil(
+					registry,
+					() =>
+						registry.select( CORE_USER )[ selector ]() !== undefined
+				);
+
+				const result = registry.select( CORE_USER )[ selector ]();
+
+				expect( result ).toEqual( expectedValue );
 			} );
 		} );
 		describe( 'getUserInputState', () => {

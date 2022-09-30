@@ -399,6 +399,21 @@ export const selectors = {
 	} ),
 
 	/**
+	 * Gets the full name name for this user.
+	 *
+	 * Returns full name of the user or `undefined` if the user info is not available/loaded.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(string|undefined)} The user's full name.
+	 */
+	getFullName: createRegistrySelector( ( select ) => () => {
+		const user = select( CORE_USER ).getUser();
+		return user !== undefined ? user.full_name : user;
+	} ),
+
+	/**
 	 * Gets an account chooser url with the current user's email.
 	 *
 	 * @since 1.80.0
