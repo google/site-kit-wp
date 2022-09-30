@@ -48,6 +48,8 @@ const Grid = forwardRef(
 	}
 );
 
+Grid.displayName = 'Grid';
+
 Grid.propTypes = {
 	alignLeft: PropTypes.bool,
 	fill: PropTypes.bool,
