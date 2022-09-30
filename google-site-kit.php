@@ -53,7 +53,7 @@ function googlesitekit_activate_plugin( $network_wide ) {
 
 	if ( version_compare( get_bloginfo( 'version' ), GOOGLESITEKIT_WP_MINIMUM, '<' ) ) {
 		wp_die(
-			/* translators: 1: version number */
+			/* translators: %s: version number */
 			esc_html( sprintf( __( 'Site Kit requires WordPress version %s or higher', 'google-site-kit' ), GOOGLESITEKIT_WP_MINIMUM ) ),
 			esc_html__( 'Error Activating', 'google-site-kit' )
 		);
