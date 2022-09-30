@@ -258,6 +258,8 @@ describe( 'core/site site info', () => {
 			[ 'getSetupErrorRedoURL', 'setupErrorRedoURL' ],
 			[ 'getProxySupportLinkURL', 'proxySupportLinkURL' ],
 			[ 'getWidgetsAdminURL', 'widgetsAdminURL' ],
+			[ 'getWPVersion', 'wpVersion' ],
+			[ 'getUpdateCoreURL', 'updateCoreURL' ],
 			[ 'getTimezone', 'timezone' ],
 			[ 'getPostTypes', 'postTypes' ],
 			[ 'isUsingProxy', 'usingProxy' ],
@@ -485,6 +487,66 @@ describe( 'core/site site info', () => {
 					'https://www.example.com/subsite',
 					'http://www.example.com/subsite',
 				] );
+			} );
+		} );
+
+		describe( 'hasMinimumWordPressVersion', () => {
+			it( 'should return `undefined` if the `version` property is not available', () => {
+				provideSiteInfo( registry );
+
+				expect(
+					registry.select( CORE_SITE ).hasMinimumWordPressVersion()
+				).toBeUndefined();
+			} );
+
+			it( 'should return `false` if the WordPress version is below `5.2`', () => {
+				provideSiteInfo( registry, {
+					wpVersion: {
+						major: 5,
+						minor: 0,
+						version: '5.0.0',
+					},
+				} );
+
+				expect(
+					registry.select( CORE_SITE ).hasMinimumWordPressVersion()
+				).toBe( false );
+			} );
+
+			it( 'should return `true` if the WordPress version is `5.2` or above', () => {
+				provideSiteInfo( registry, {
+					wpVersion: {
+						major: 5,
+						minor: 0,
+						version: '5.2.0',
+					},
+				} );
+
+				expect(
+					registry.select( CORE_SITE ).hasMinimumWordPressVersion()
+				).toBe( true );
+			} );
+
+			it( 'should compare the WordPress site version to the provided minimum version', () => {
+				provideSiteInfo( registry, {
+					wpVersion: {
+						major: 5,
+						minor: 0,
+						version: '5.2.0',
+					},
+				} );
+
+				expect(
+					registry
+						.select( CORE_SITE )
+						.hasMinimumWordPressVersion( '5.3' )
+				).toBe( false );
+
+				expect(
+					registry
+						.select( CORE_SITE )
+						.hasMinimumWordPressVersion( '5.2' )
+				).toBe( true );
 			} );
 		} );
 	} );
