@@ -713,7 +713,7 @@ const baseSelectors = {
 		( select ) => ( state ) => {
 			const { savedSharingSettings } = state;
 
-			if ( ! savedSharingSettings || isEmpty( savedSharingSettings ) ) {
+			if ( isEmpty( savedSharingSettings ) ) {
 				return false;
 			}
 
