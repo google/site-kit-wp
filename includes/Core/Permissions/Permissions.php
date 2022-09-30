@@ -41,7 +41,6 @@ final class Permissions {
 	const VIEW_WP_DASHBOARD_WIDGET = 'googlesitekit_view_wp_dashboard_widget';
 	const VIEW_ADMIN_BAR_MENU      = 'googlesitekit_view_admin_bar_menu';
 	const MANAGE_OPTIONS           = 'googlesitekit_manage_options';
-	const UPDATE_CORE              = 'googlesitekit_update_core';
 
 
 	/*
@@ -172,9 +171,6 @@ final class Permissions {
 			// Allow administrators and up to manage options and set up the plugin.
 			self::MANAGE_OPTIONS           => 'manage_options',
 			self::SETUP                    => 'manage_options',
-
-			// Allow administrators and up to update WordPress core.
-			self::UPDATE_CORE              => 'update_core',
 		);
 
 		$this->meta_to_core = array(
@@ -741,7 +737,6 @@ final class Permissions {
 			self::VIEW_AUTHENTICATED_DASHBOARD,
 			self::VIEW_WP_DASHBOARD_WIDGET,
 			self::VIEW_ADMIN_BAR_MENU,
-			self::UPDATE_CORE,
 		);
 
 		if ( Feature_Flags::enabled( 'dashboardSharing' ) ) {
