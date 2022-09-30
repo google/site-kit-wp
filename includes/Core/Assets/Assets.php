@@ -693,7 +693,6 @@ final class Assets {
 			'adminURL'         => esc_url_raw( trailingslashit( admin_url() ) ),
 			'assetsURL'        => esc_url_raw( $this->context->url( 'dist/assets/' ) ),
 			'widgetsAdminURL'  => esc_url_raw( $this->get_widgets_admin_url() ),
-			'updateCoreURL'    => esc_url_raw( $this->get_update_core_url() ),
 			'blogPrefix'       => $wpdb->get_blog_prefix(),
 			'ampMode'          => $this->context->get_amp_mode(),
 			'isNetworkMode'    => $this->context->is_network_mode(),
@@ -758,27 +757,6 @@ final class Assets {
 		}
 
 		return null;
-	}
-
-	/**
-	 * Gets the update core URL for the user whoc can update the WordPress core.
-	 *
-	 * If the multisite is enabled, gets the update core URL for the network admin.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @return string The update core URL.
-	 */
-	private function get_update_core_url() {
-		if ( ! current_user_can( 'update_core' ) ) {
-			return null;
-		}
-
-		if ( is_multisite() ) {
-			return admin_url( 'network/update-core.php' );
-		}
-
-		return admin_url( 'update-core.php' );
 	}
 
 	/**

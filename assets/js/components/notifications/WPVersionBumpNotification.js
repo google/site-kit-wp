@@ -62,7 +62,7 @@ export default function WPVersionBumpNotification() {
 
 	// The `Update WordPress` CTA should be displayed if the user has `update_core` capability.
 	// The `updateCoreURL` property will be available if the user has the `update_core` capability.
-	// Otherwise, it will be `undefined`. See Assets::get_update_core_url() method.
+	// Otherwise, it will be `undefined`. See Authentication::get_update_core_url() method.
 	const updateCoreURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getUpdateCoreURL()
 	);
