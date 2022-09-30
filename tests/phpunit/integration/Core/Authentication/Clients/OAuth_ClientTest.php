@@ -425,6 +425,9 @@ class OAuth_ClientTest extends TestCase {
 								'photos'         => array(
 									array( 'url' => 'https://example.com/fresh.jpg' ),
 								),
+								'names'          => array(
+									array( 'displayName' => 'Dr Funkenstein' ),
+								),
 							)
 						)
 					)
@@ -448,6 +451,7 @@ class OAuth_ClientTest extends TestCase {
 		$profile = $user_options->get( Profile::OPTION );
 		$this->assertEquals( 'fresh@foo.com', $profile['email'] );
 		$this->assertEquals( 'https://example.com/fresh.jpg', $profile['photo'] );
+		$this->assertEquals( 'Dr Funkenstein', $profile['full_name'] );
 	}
 
 	public function test_authorize_user__with_redirect_url_notification() {
@@ -484,6 +488,9 @@ class OAuth_ClientTest extends TestCase {
 								),
 								'photos'         => array(
 									array( 'url' => 'https://example.com/fresh.jpg' ),
+								),
+								'names'          => array(
+									array( 'displayName' => 'Dr Funkenstein' ),
 								),
 							)
 						)
@@ -615,6 +622,9 @@ class OAuth_ClientTest extends TestCase {
 								),
 								'photos'         => array(
 									array( 'url' => 'https://example.com/fresh.jpg' ),
+								),
+								'names'          => array(
+									array( 'displayName' => 'Dr Funkenstein' ),
 								),
 							)
 						)
