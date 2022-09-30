@@ -1537,16 +1537,15 @@ final class Modules {
 	}
 
 	/**
-	 * Inserts default settings for shared ownership modules.
+	 * Inserts default settings for shared ownership modules in passed dashboard sharing settings.
 	 *
 	 * Sharing settings for shared ownership modules such as pagespeed-insights
 	 * and idea-hub should always be manageable by "all admins". This filter inserts
 	 * this 'default' setting for their respective module slugs even when the
 	 * dashboard_sharing settings option is not defined in the database or when settings
-	 * are not set for these modules. This filter is applied after every attempt to fetch
-	 * the googlesitekit-dashboard_sharing settings option from the database.
+	 * are not set for these modules.
 	 *
-	 * @since 1.75.0
+	 * @since n.e.x.t
 	 *
 	 * @param array $sharing_settings The dashboard_sharing settings option fetched from the database.
 	 * @return array Dashboard sharing settings option with default settings inserted for shared ownership modules.
