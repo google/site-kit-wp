@@ -17,9 +17,15 @@
  */
 
 /**
+ * External dependencies
+ */
+import { useMount } from 'react-use';
+
+/**
  * WordPress dependencies
  */
 import { __, sprintf } from '@wordpress/i18n';
+import { useCallback } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -27,10 +33,26 @@ import { __, sprintf } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import BannerNotification from './BannerNotification';
-import { getTimeInSeconds } from '../../util';
+import { getTimeInSeconds, trackEvent } from '../../util';
+import useViewContext from '../../hooks/useViewContext';
 const { useSelect } = Data;
 
 export default function WPVersionBumpNotification() {
+	const viewContext = useViewContext();
+	const eventCategory = `${ viewContext }_wp52-version-notification`;
+
+	const handleOnDismiss = useCallback( () => {
+		trackEvent( eventCategory, 'dismiss_notification' );
+	}, [ eventCategory ] );
+
+	const handleOnCTAClick = useCallback( () => {
+		trackEvent( eventCategory, 'confirm_notification' );
+	}, [ eventCategory ] );
+
+	useMount( () => {
+		trackEvent( eventCategory, 'view_notification' );
+	} );
+
 	const hasMinimumWPVersion = useSelect( ( select ) =>
 		select( CORE_SITE ).hasMinimumWordPressVersion()
 	);
@@ -68,6 +90,8 @@ export default function WPVersionBumpNotification() {
 			ctaLink={ updateCoreURL }
 			dismiss={ __( 'Maybe later', 'google-site-kit' ) }
 			dismissExpires={ getTimeInSeconds( 'day' ) * 3 }
+			onCTAClick={ handleOnCTAClick }
+			onDismiss={ handleOnDismiss }
 			isDismissible
 		/>
 	);
