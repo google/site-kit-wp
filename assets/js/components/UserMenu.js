@@ -58,6 +58,9 @@ export default function UserMenu() {
 	const userPicture = useSelect( ( select ) =>
 		select( CORE_USER ).getPicture()
 	);
+	const userFullName = useSelect( ( select ) =>
+		select( CORE_USER ).getFullName()
+	);
 	const postDisconnectURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-splash', {
 			googlesitekit_context: 'revoked',
@@ -185,6 +188,13 @@ export default function UserMenu() {
 					aria-controls="user-menu"
 					aria-label={ __( 'Account', 'google-site-kit' ) }
 					tooltip
+					customizedTooltip={
+						<Fragment>
+							<strong>Google Account</strong>
+							<p>{ userFullName }</p>
+							<p>{ userEmail }</p>
+						</Fragment>
+					}
 				/>
 
 				<Menu
