@@ -113,6 +113,7 @@ export const reducer = ( state, { payload, type } ) => {
 				widgetsAdminURL,
 				postTypes,
 				wpVersion,
+				updateCoreURL,
 			} = payload.siteInfo;
 
 			return {
@@ -139,6 +140,7 @@ export const reducer = ( state, { payload, type } ) => {
 					widgetsAdminURL,
 					postTypes,
 					wpVersion,
+					updateCoreURL,
 				},
 			};
 		}
@@ -190,6 +192,7 @@ export const resolvers = {
 			widgetsAdminURL,
 			postTypes,
 			wpVersion,
+			updateCoreURL,
 		} = global._googlesitekitBaseData;
 
 		const {
@@ -221,6 +224,7 @@ export const resolvers = {
 			proxySupportLinkURL,
 			widgetsAdminURL,
 			wpVersion,
+			updateCoreURL,
 		} );
 	},
 };
@@ -631,9 +635,19 @@ export const selectors = {
 	 * @since n.e.x.t
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {(Object|undefined)} The WordPress version object.
+	 * @return {(Object|undefined)} WordPress version object.
 	 */
 	getWPVersion: getSiteInfoProperty( 'wpVersion' ),
+
+	/**
+	 * Gets the WordPress update core URL.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(Object|undefined)} WordPress update core URL.
+	 */
+	getUpdateCoreURL: getSiteInfoProperty( 'updateCoreURL' ),
 
 	/**
 	 * Determines whether the current WordPress site's has the minimum required version.
@@ -642,12 +656,12 @@ export const selectors = {
 	 * @since n.e.x.t
 	 *
 	 * @param {string} minVersion The minimum required version.
-	 * @return {(boolean|undefined)} An array with permutations.
+	 * @return {(boolean|undefined)} `true` if the WordPress site's version is greater than or equal to the minimum required version, `false` if not. Returns `undefined` if not loaded.
 	 */
 	hasMinimumWordPressVersion: createRegistrySelector(
 		( select ) =>
 			( state, minVersion = '5.2' ) => {
-				const { version } = select( CORE_SITE ).getWPVersion();
+				const { version } = select( CORE_SITE ).getWPVersion() || {};
 				if ( ! version ) {
 					return undefined;
 				}
