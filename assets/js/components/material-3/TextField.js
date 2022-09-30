@@ -1,4 +1,3 @@
-// TODO: Check if the TextField approach works for text input.
 /**
  * TextField component.
  *
@@ -21,7 +20,6 @@
  * External dependencies
  */
 import '@material/web/textfield/outlined-text-field';
-// import { ActionElement } from '@material/web/actionelement/action-element.js';
 import PropTypes from 'prop-types';
 
 /**
@@ -100,7 +98,7 @@ export default function TextField( {
 	return (
 		<md-outlined-text-field
 			ref={ ref }
-			// Lit boolean attributes treat anything non-null|undefined as true. Coerce to undefined if false.
+			// Lit boolean attributes treat anything non-null|undefined as true. Coerce to undefined if false. TODO: Use null instead of undefined?
 			// See https://lit.dev/docs/v1/components/properties/#attributes
 			disabled={ disabled || undefined }
 			readonly={ readOnly || undefined }

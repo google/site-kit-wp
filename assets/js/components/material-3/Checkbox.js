@@ -108,7 +108,7 @@ export default function Checkbox( {
 		<md-checkbox
 			key={ `checkbox-${ name }-${ index }` }
 			ref={ ref }
-			// Lit boolean attributes treat anything non-null|undefined as true. Coerce to undefined if false.
+			// Lit boolean attributes treat anything non-null|undefined as true. Coerce to undefined if false. TODO: Use null instead of undefined?
 			// See https://lit.dev/docs/v1/components/properties/#attributes
 			checked={ checked || undefined }
 			disabled={ disabled || undefined }
