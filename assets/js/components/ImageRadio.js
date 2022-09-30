@@ -39,6 +39,7 @@ export default function ImageRadio( props ) {
 		name,
 		value,
 		checked = false,
+		checkedBorderColor,
 		tabIndex = undefined,
 		onKeyDown = null,
 		image,
@@ -84,6 +85,7 @@ export default function ImageRadio( props ) {
 					className={ classnames( 'mdc-image-radio__background', {
 						'mdc-image-radio__background--checked': checked,
 					} ) }
+					style={ { '--border-color': checkedBorderColor } }
 				>
 					<div
 						role="radio"
@@ -112,6 +114,7 @@ ImageRadio.propTypes = {
 	name: PropTypes.string.isRequired,
 	value: PropTypes.string.isRequired,
 	checked: PropTypes.bool,
+	checkedBorderColor: PropTypes.string,
 	tabIndex: PropTypes.oneOfType( [ PropTypes.number, PropTypes.string ] ),
 	label: PropTypes.string,
 	children: PropTypes.string,
