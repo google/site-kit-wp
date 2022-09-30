@@ -11,7 +11,7 @@ on:
     # suite on GitHub Actions when all that's changing are tests and not code
     # that would affect E2E behavior.
     paths:
-      - '.github/workflows/e2e-tests-wp-4-7.yml'
+      - '.github/workflows/e2e-tests-wp-5-2.yml'
       - '.babelrc'
       - 'assets/**'
       - 'includes/**'
@@ -42,7 +42,7 @@ on:
     # suite on GitHub Actions when all that's changing are tests and not code
     # that would affect E2E behavior.
     paths:
-      - '.github/workflows/e2e-tests-wp-4-7.yml'
+      - '.github/workflows/e2e-tests-wp-5-2.yml'
       - '.babelrc'
       - 'assets/**'
       - 'includes/**'
@@ -69,15 +69,15 @@ on:
       - ready_for_review
 
 concurrency:
-  group: e2e-tests-wp-4-7-${{ github.ref }}
+  group: e2e-tests-wp-5-2-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  e2e-tests-wp-4-7-amp-1:
-    name: E2E (WordPress 4.7, AMP 1.x)
+  e2e-tests-wp-5-2-amp-1:
+    name: E2E (WordPress 5.2, AMP 1.x)
 
     env:
-      WP_VERSION: 4.7.19
+      WP_VERSION: 5.2.16
       AMP_VERSION: 1.5.5
 
     runs-on: ubuntu-latest
