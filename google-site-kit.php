@@ -29,6 +29,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 define( 'GOOGLESITEKIT_VERSION', '1.84.0' );
 define( 'GOOGLESITEKIT_PLUGIN_MAIN_FILE', __FILE__ );
 define( 'GOOGLESITEKIT_PHP_MINIMUM', '5.6.0' );
+define( 'GOOGLESITEKIT_WP_MINIMUM', '4.7.0' );
 
 /**
  * Handles plugin activation.
@@ -45,7 +46,15 @@ function googlesitekit_activate_plugin( $network_wide ) {
 	if ( version_compare( PHP_VERSION, GOOGLESITEKIT_PHP_MINIMUM, '<' ) ) {
 		wp_die(
 			/* translators: 1: version number */
-			esc_html( sprintf( __( 'Site Kit requires PHP version %s', 'google-site-kit' ), GOOGLESITEKIT_PHP_MINIMUM ) ),
+			esc_html( sprintf( __( 'Site Kit requires PHP version %s or higher', 'google-site-kit' ), GOOGLESITEKIT_PHP_MINIMUM ) ),
+			esc_html__( 'Error Activating', 'google-site-kit' )
+		);
+	}
+
+	if ( version_compare( get_bloginfo( 'version' ), GOOGLESITEKIT_WP_MINIMUM, '<' ) ) {
+		wp_die(
+			/* translators: %s: version number */
+			esc_html( sprintf( __( 'Site Kit requires WordPress version %s or higher', 'google-site-kit' ), GOOGLESITEKIT_WP_MINIMUM ) ),
 			esc_html__( 'Error Activating', 'google-site-kit' )
 		);
 	}
@@ -107,6 +116,9 @@ function googlesitekit_opcache_reset() {
 }
 add_action( 'upgrader_process_complete', 'googlesitekit_opcache_reset' );
 
-if ( version_compare( PHP_VERSION, GOOGLESITEKIT_PHP_MINIMUM, '>=' ) ) {
+if (
+	version_compare( PHP_VERSION, GOOGLESITEKIT_PHP_MINIMUM, '>=' ) &&
+	version_compare( get_bloginfo( 'version' ), GOOGLESITEKIT_WP_MINIMUM, '>=' )
+) {
 	require_once plugin_dir_path( __FILE__ ) . 'includes/loader.php';
 }
