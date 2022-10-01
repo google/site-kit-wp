@@ -29,6 +29,7 @@ import { CORE_USER } from '../assets/js/googlesitekit/datastore/user/constants';
 import {
 	createTestRegistry,
 	provideUserAuthentication,
+	provideUserCapabilities,
 	WithTestRegistry,
 } from '../tests/js/utils';
 
@@ -50,6 +51,8 @@ storiesOf( 'Setup / Using GCP', module ).add(
 		provideUserAuthentication( registry, {
 			authenticated: false,
 		} );
+
+		provideUserCapabilities( registry );
 
 		return (
 			<WithTestRegistry registry={ registry }>
