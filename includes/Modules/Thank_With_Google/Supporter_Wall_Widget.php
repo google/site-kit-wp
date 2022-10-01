@@ -43,6 +43,13 @@ class Supporter_Wall_Widget extends WP_Widget {
 	 * @param array $instance The widget instance.
 	 */
 	public function form( $instance ) {
+		$instance = wp_parse_args(
+			$instance,
+			array(
+				'title' => __( 'Thank with Google Supporters', 'google-site-kit' ),
+			)
+		);
+
 		$title    = ! empty( $instance['title'] ) ? $instance['title'] : '';
 		$title_id = $this->get_field_id( 'title' );
 
