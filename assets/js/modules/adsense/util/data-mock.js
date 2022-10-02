@@ -258,11 +258,12 @@ export function getAdSenseMockResponse( args ) {
 	// This is the list of operations that we will apply to the range (array) of numbers.
 	const ops = [
 		// Converts range number to a date string.
-		map( ( item ) =>
-			getDateString(
-				new Date( startDate ).setDate( startDate.getDate() + item )
-			)
-		),
+		map( ( item ) => {
+			const updatedMilliseconds = new Date( startDate ).setDate(
+				startDate.getDate() + item
+			);
+			return getDateString( new Date( updatedMilliseconds ) );
+		} ),
 		// Add dimension and metric values.
 		map( ( date ) => [
 			...factory.createDimensionValues( date, dimensions ),

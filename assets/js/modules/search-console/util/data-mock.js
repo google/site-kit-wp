@@ -78,9 +78,12 @@ export function getSearchConsoleMockResponse( args ) {
 	// This is the list of operations that we will apply to the range (array) of numbers.
 	const ops = [
 		// Converts range number to a date string.
-		map( ( item ) =>
-			getDateString( startDate.setDate( startDate.getDate() + item ) )
-		),
+		map( ( item ) => {
+			const updatedMilliseconds = new Date( startDate ).setDate(
+				startDate.getDate() + item
+			);
+			return getDateString( new Date( updatedMilliseconds ) );
+		} ),
 		// Add dimension and metric values.
 		map( ( date ) => ( {
 			clicks: faker.datatype.number( { min: 0, max: 150 } ),
