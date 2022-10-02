@@ -178,61 +178,61 @@ export const actions = {
 
 export const controls = {};
 
-export const reducer = createReducer( ( draft, { type, payload } ) => {
+export const reducer = createReducer( ( state, { type, payload } ) => {
 	switch ( type ) {
 		case ASSIGN_WIDGET: {
 			const { slug, areaSlugs } = payload;
 
 			areaSlugs.forEach( ( areaSlug ) => {
-				if ( draft.areaAssignments[ areaSlug ] === undefined ) {
-					draft.areaAssignments[ areaSlug ] = [];
+				if ( state.areaAssignments[ areaSlug ] === undefined ) {
+					state.areaAssignments[ areaSlug ] = [];
 				}
 
-				if ( ! draft.areaAssignments[ areaSlug ].includes( slug ) ) {
-					draft.areaAssignments[ areaSlug ].push( slug );
+				if ( ! state.areaAssignments[ areaSlug ].includes( slug ) ) {
+					state.areaAssignments[ areaSlug ].push( slug );
 				}
 			} );
 
-			return draft;
+			return state;
 		}
 
 		case REGISTER_WIDGET: {
 			const { slug, settings } = payload;
 
-			if ( draft.widgets[ slug ] !== undefined ) {
+			if ( state.widgets[ slug ] !== undefined ) {
 				global.console.warn(
 					`Could not register widget with slug "${ slug }". Widget "${ slug }" is already registered.`
 				);
 
-				return draft;
+				return state;
 			}
 
-			draft.widgets[ slug ] = { ...settings, slug };
-			return draft;
+			state.widgets[ slug ] = { ...settings, slug };
+			return state;
 		}
 
 		case SET_WIDGET_STATE: {
 			const { slug, Component, metadata } = payload;
 
-			draft.widgetStates[ slug ] = { Component, metadata };
-			return draft;
+			state.widgetStates[ slug ] = { Component, metadata };
+			return state;
 		}
 
 		case UNSET_WIDGET_STATE: {
 			const { slug, Component, metadata } = payload;
 
 			if (
-				draft.widgetStates?.[ slug ]?.Component === Component &&
-				original( draft.widgetStates?.[ slug ]?.metadata ) === metadata
+				state.widgetStates?.[ slug ]?.Component === Component &&
+				original( state.widgetStates?.[ slug ]?.metadata ) === metadata
 			) {
-				delete draft.widgetStates[ slug ];
+				delete state.widgetStates[ slug ];
 			}
 
-			return draft;
+			return state;
 		}
 
 		default: {
-			return draft;
+			return state;
 		}
 	}
 } );
