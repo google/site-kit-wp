@@ -123,7 +123,7 @@ class REST_Dashboard_Sharing_ControllerTest extends TestCase {
 			array(
 				'data' => array(
 					'search-console' => array(
-						'sharedRoles' => array( 'editor', 'subscriber' ),
+						'sharedRoles' => array( 'editor', 'contributor' ),
 					),
 					'analytics'      => array(
 						'sharedRoles' => array( 'editor' ),
@@ -139,7 +139,7 @@ class REST_Dashboard_Sharing_ControllerTest extends TestCase {
 				// admin_1 is the owner and can add/edit search-console settings but
 				// NOT analytics settings.
 				'search-console'     => array(
-					'sharedRoles' => array( 'editor', 'subscriber' ),
+					'sharedRoles' => array( 'editor', 'contributor' ),
 					'management'  => 'owner',
 				),
 				// Default settings always saved for shared ownership modules.
@@ -242,7 +242,7 @@ class REST_Dashboard_Sharing_ControllerTest extends TestCase {
 					'management'  => 'owner',
 				),
 				'analytics'      => array(
-					'sharedRoles' => array( 'contributor', 'subscriber' ),
+					'sharedRoles' => array( 'contributor', 'editor' ),
 					'management'  => 'all_admins',
 				),
 			)
@@ -285,7 +285,7 @@ class REST_Dashboard_Sharing_ControllerTest extends TestCase {
 					'management'  => 'owner',
 				),
 				'analytics'          => array(
-					'sharedRoles' => array( 'contributor', 'subscriber' ),
+					'sharedRoles' => array( 'contributor', 'editor' ),
 					'management'  => 'all_admins',
 				),
 				'pagespeed-insights' => array(

@@ -152,7 +152,7 @@ export default function ReminderBanner( { onSubmitSuccess } ) {
 					) }
 				</li>
 			</ul>
-			<Link href={ documentationURL }>
+			<Link href={ documentationURL } external>
 				{ __( 'Learn more about GA4', 'google-site-kit' ) }
 			</Link>
 		</section>

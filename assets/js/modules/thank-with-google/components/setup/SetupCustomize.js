@@ -24,7 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { useCallback, useEffect } from '@wordpress/element';
+import { Fragment, useCallback, useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -37,7 +37,6 @@ import {
 	COLOR_RADIO_DEFAULT,
 } from '../../datastore/constants';
 import Button from '../../../../components/Button';
-import { Cell } from '../../../../material-components';
 import { CTAPlacement, ColorRadio, PostTypesSelect } from '../common';
 import SetupHeader from './SetupHeader';
 const { useDispatch, useSelect } = Data;
@@ -81,7 +80,7 @@ export default function SetupCustomize( props ) {
 	}, [ shouldSetDefaults, setColorTheme, setCTAPlacement ] );
 
 	return (
-		<Cell size={ 12 }>
+		<Fragment>
 			<SetupHeader />
 
 			<div className="googlesitekit-setup-module__publication-screen googlesitekit-twg-setup-customize">
@@ -105,7 +104,7 @@ export default function SetupCustomize( props ) {
 			>
 				{ __( 'Configure Thank with Google', 'google-site-kit' ) }
 			</Button>
-		</Cell>
+		</Fragment>
 	);
 }
 

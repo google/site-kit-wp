@@ -27,13 +27,15 @@ import { Fragment } from '@wordpress/element';
 import { useFeature } from '../../hooks/useFeature';
 import { ActivationBanner } from '../../modules/analytics-4/components/dashboard';
 import ZeroDataNotifications from './ZeroDataStateNotifications';
+import useViewOnly from '../../hooks/useViewOnly';
 
 export default function EntityBannerNotifications() {
+	const viewOnly = useViewOnly();
 	const ga4ActivationBannerEnabled = useFeature( 'ga4ActivationBanner' );
 
 	return (
 		<Fragment>
-			{ ga4ActivationBannerEnabled && <ActivationBanner /> }
+			{ ! viewOnly && ga4ActivationBannerEnabled && <ActivationBanner /> }
 			<ZeroDataNotifications />
 		</Fragment>
 	);

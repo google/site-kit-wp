@@ -47,7 +47,7 @@ Ready.args = {
 };
 
 export const AnalyticsInactive = Template.bind( {} );
-AnalyticsInactive.storyName = 'Inactive: Analytics';
+AnalyticsInactive.storyName = 'Inactive: Analytics Setup CTA';
 AnalyticsInactive.args = {
 	setupRegistry: ( registry ) => {
 		// Set up the search console module store but provide no data.
@@ -62,18 +62,9 @@ AnalyticsInactive.args = {
 	},
 };
 
-export const AnalyticsInactiveNew = Template.bind( {} );
-AnalyticsInactiveNew.storyName = 'Inactive: Analytics New CTA';
-AnalyticsInactiveNew.args = {
-	setupRegistry: ( registry ) => {
-		provideModules( registry );
-		setupSearchConsoleMockReports( registry );
-	},
-};
-
 export const AnalyticsInactiveNewCompleteActivation = Template.bind( {} );
 AnalyticsInactiveNewCompleteActivation.storyName =
-	'Inactive: Analytics New Complete Activation CTA';
+	'Inactive: Analytics Complete Activation CTA';
 AnalyticsInactiveNewCompleteActivation.args = {
 	setupRegistry: ( registry ) => {
 		// Set up the analytics module store but provide no data.
