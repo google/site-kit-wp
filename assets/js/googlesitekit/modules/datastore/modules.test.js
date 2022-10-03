@@ -1291,6 +1291,72 @@ describe( 'core/modules modules', () => {
 			} );
 		} );
 
+		describe( 'isModuleAvailable', () => {
+			beforeEach( () => {
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
+					{
+						body: FIXTURES.filter(
+							( { slug } ) => slug !== 'analytics'
+						),
+						status: 200,
+					}
+				);
+			} );
+
+			it( 'returns true if a module is available', async () => {
+				// Search console is available in our fixtures.
+				const slug = 'search-console';
+				const isAvailable = registry
+					.select( CORE_MODULES )
+					.isModuleAvailable( slug );
+				// The modules will be undefined whilst loading, so this will return `undefined`.
+				expect( isAvailable ).toBeUndefined();
+
+				// Wait for loading to complete.
+				await untilResolved( registry, CORE_MODULES ).getModules();
+
+				const isAvailableLoaded = registry
+					.select( CORE_MODULES )
+					.isModuleAvailable( slug );
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect( isAvailableLoaded ).toEqual( true );
+			} );
+
+			it( 'returns false if a module is not available', async () => {
+				const slug = 'analytics';
+				const isAvailable = registry
+					.select( CORE_MODULES )
+					.isModuleAvailable( slug );
+				// The modules will be undefined whilst loading, so this will return `undefined`.
+				expect( isAvailable ).toBeUndefined();
+
+				// Wait for loading to complete.
+				await untilResolved( registry, CORE_MODULES ).getModules();
+
+				const isAvailableLoaded = registry
+					.select( CORE_MODULES )
+					.isModuleAvailable( slug );
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect( isAvailableLoaded ).toEqual( false );
+			} );
+
+			it( 'returns undefined if modules is not yet available', async () => {
+				muteFetch(
+					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
+					[]
+				);
+
+				const isAvailable = registry
+					.select( CORE_MODULES )
+					.isModuleAvailable( 'analytics' );
+
+				expect( isAvailable ).toBeUndefined();
+			} );
+		} );
+
 		describe( 'isModuleActive', () => {
 			beforeEach( () => {
 				fetchMock.getOnce(

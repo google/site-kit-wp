@@ -58,7 +58,7 @@ export default function ColorRadio() {
 				image={ <SVG /> }
 				onChange={ onChange }
 				checked={ currentColor === colorThemeID }
-				style={ { outlineColor: colorCode } }
+				checkedBorderColor={ colorCode }
 			/>
 		)
 	);
