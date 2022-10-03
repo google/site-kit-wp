@@ -307,15 +307,6 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 			</div>
 		);
 
-		if ( hasEditScope === false ) {
-			footerMessages.push(
-				__(
-					'You will need to give Site Kit permission to create an Analytics property on your behalf.',
-					'google-site-kit'
-				)
-			);
-		}
-
 		footerMessages.push(
 			__(
 				'You can always add/edit this in the Site Kit Settings.',
@@ -350,13 +341,6 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 				)
 			);
 		}
-
-		footerMessages.push(
-			__(
-				'You can always add/edit this in the Site Kit Settings.',
-				'google-site-kit'
-			)
-		);
 	}
 
 	return (
