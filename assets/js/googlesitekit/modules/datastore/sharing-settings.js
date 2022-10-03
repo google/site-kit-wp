@@ -709,22 +709,30 @@ const baseSelectors = {
 	 * @param {Object} state Data store's state.
 	 * @return {boolean} True if the sharing settings have updated, false otherwise.
 	 */
-	haveSharingSettingsUpdated: createRegistrySelector(
-		( select ) => ( state ) => {
-			const { savedSharingSettings } = state;
+	haveSharingSettingsUpdated( state ) {
+		const { savedSharingSettings, sharedOwnershipModules } = state;
 
-			if ( isEmpty( savedSharingSettings ) ) {
-				return false;
-			}
-
-			const defaultSharingSettings =
-				select(
-					CORE_MODULES
-				).getDefaultSharedOwnershipModuleSettings();
-
-			return ! isEqual( savedSharingSettings, defaultSharingSettings );
+		if (
+			isEmpty( savedSharingSettings ) ||
+			isEmpty( sharedOwnershipModules )
+		) {
+			return false;
 		}
-	),
+
+		return Object.keys( savedSharingSettings ).some( ( moduleSlug ) => {
+			const { sharedRoles, management } =
+				savedSharingSettings[ moduleSlug ];
+
+			const isSharedOwnershipModule =
+				sharedOwnershipModules.includes( moduleSlug );
+
+			const defaultManagement = isSharedOwnershipModule
+				? 'all_admins'
+				: 'owner';
+
+			return sharedRoles.length > 0 || management !== defaultManagement;
+		} );
+	},
 };
 
 const store = Data.combineStores(
