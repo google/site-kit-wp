@@ -34,6 +34,7 @@ import { MODULES_ADSENSE } from '../datastore/constants';
 import { getDateString, isValidDateString } from '../../../util';
 import { validateMetrics } from './report-validation';
 import { dateInstanceToAdSenseDate } from './date';
+import { stringToDate } from '../../../util/date-range/string-to-date';
 
 const METRIC_RATIO = 'METRIC_RATIO';
 const METRIC_TALLY = 'METRIC_TALLY';
@@ -249,19 +250,20 @@ export function getAdSenseMockResponse( args ) {
 		rows: [],
 	};
 
-	const startDate = new Date( args.startDate );
-	const endDate = new Date( args.endDate );
+	const startDate = stringToDate( args.startDate );
+	const endDate = stringToDate( args.endDate );
 	const dayInMilliseconds = 24 * 60 * 60 * 1000;
 	const totalDays = 1 + ( endDate - startDate ) / dayInMilliseconds; // +1 to include the endDate into the dates range.
 
 	// This is the list of operations that we will apply to the range (array) of numbers.
 	const ops = [
 		// Converts range number to a date string.
-		map( ( item ) =>
-			getDateString(
-				new Date( startDate ).setDate( startDate.getDate() + item )
-			)
-		),
+		map( ( item ) => {
+			const updatedMilliseconds = new Date( startDate ).setDate(
+				startDate.getDate() + item
+			);
+			return getDateString( new Date( updatedMilliseconds ) );
+		} ),
 		// Add dimension and metric values.
 		map( ( date ) => [
 			...factory.createDimensionValues( date, dimensions ),
