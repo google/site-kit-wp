@@ -32,6 +32,10 @@
     "jsdoc/require-returns": "error",
     "jsdoc/no-undefined-types": "error",
     "jsdoc/valid-types": "error",
+    "complexity": [
+      "error",
+      20
+    ],
     "no-restricted-globals": [
       "error",
       {
