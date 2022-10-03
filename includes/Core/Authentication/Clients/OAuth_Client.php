@@ -399,8 +399,8 @@ final class OAuth_Client extends OAuth_Client_Base {
 	 * @since 1.49.0 Uses the new `Google_Proxy::setup_url_v2` method when the `serviceSetupV2` feature flag is enabled.
 	 */
 	public function authorize_user() {
-		$code       = $this->context->input()->filter( INPUT_GET, 'code', FILTER_SANITIZE_STRING );
-		$error_code = $this->context->input()->filter( INPUT_GET, 'error', FILTER_SANITIZE_STRING );
+		$code       = htmlspecialchars( $this->context->input()->filter( INPUT_GET, 'code' ) );
+		$error_code = htmlspecialchars( $this->context->input()->filter( INPUT_GET, 'error' ) );
 		// If the OAuth redirects with an error code, handle it.
 		if ( ! empty( $error_code ) ) {
 			$this->user_options->set( self::OPTION_ERROR_CODE, $error_code );
@@ -450,7 +450,7 @@ final class OAuth_Client extends OAuth_Client_Base {
 		if ( isset( $token_response['scope'] ) ) {
 			$scopes = explode( ' ', sanitize_text_field( $token_response['scope'] ) );
 		} elseif ( $this->context->input()->filter( INPUT_GET, 'scope' ) ) {
-			$scope  = $this->context->input()->filter( INPUT_GET, 'scope', FILTER_SANITIZE_STRING );
+			$scope  = htmlspecialchars( $this->context->input()->filter( INPUT_GET, 'scope' ) );
 			$scopes = explode( ' ', $scope );
 		} else {
 			$scopes = $this->get_required_scopes();

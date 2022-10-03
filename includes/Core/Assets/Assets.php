@@ -911,17 +911,13 @@ final class Assets {
 	 * @return array The inline data to be output.
 	 */
 	private function get_inline_data() {
-		$current_user = wp_get_current_user();
-		$site_url     = $this->context->get_reference_site_url();
-		$input        = $this->context->input();
-		$page         = $input->filter( INPUT_GET, 'page', FILTER_SANITIZE_STRING );
+		$site_url = $this->context->get_reference_site_url();
+		$input    = $this->context->input();
 
 		$admin_data = array(
 			'siteURL'      => esc_url_raw( $site_url ),
 			'resetSession' => $input->filter( INPUT_GET, 'googlesitekit_reset_session', FILTER_VALIDATE_BOOLEAN ),
 		);
-
-		$current_entity = $this->context->get_reference_entity();
 
 		return array(
 

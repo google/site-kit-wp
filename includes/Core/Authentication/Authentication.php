@@ -305,7 +305,7 @@ final class Authentication {
 			'admin_init',
 			function() {
 				if (
-					'googlesitekit-dashboard' === $this->context->input()->filter( INPUT_GET, 'page', FILTER_SANITIZE_STRING )
+					'googlesitekit-dashboard' === htmlspecialchars( $this->context->input()->filter( INPUT_GET, 'page' ) )
 					&& User_Input_State::VALUE_REQUIRED === $this->user_input_state->get()
 				) {
 					wp_safe_redirect( $this->context->admin_url( 'user-input' ) );
