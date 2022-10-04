@@ -85,7 +85,7 @@ export default function ActivationBanner() {
 	);
 
 	const setupBannerErrors = useSelect( ( select ) => {
-		const returnObj = {};
+		const errors = {};
 
 		Object.keys( setupBannerSelectors ).forEach( ( selector ) => {
 			const { store, args } = setupBannerSelectors[ selector ];
@@ -95,12 +95,17 @@ export default function ActivationBanner() {
 				args || []
 			);
 
-			if ( error ) {
-				returnObj[ selector ] = error;
+			if (
+				error &&
+				! Object.values( errors ).some(
+					( err ) => err.message === error.message
+				)
+			) {
+				errors[ selector ] = error;
 			}
 		} );
 
-		return returnObj;
+		return errors;
 	} );
 
 	const hasSetupBannerError = ! isEmpty( setupBannerErrors );
