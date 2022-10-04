@@ -37,13 +37,17 @@ const CLEAR_PERMISSION_SCOPE_ERROR = 'CLEAR_PERMISSION_SCOPE_ERROR';
 const SET_PERMISSION_SCOPE_ERROR = 'SET_PERMISSION_SCOPE_ERROR';
 const RECEIVE_CAPABILITIES = 'RECEIVE_CAPABILITIES';
 
-const fetchRefreshCapabilitiesStore = createFetchStore( {
-	baseName: 'refreshCapabilities',
+const fetchGetCapabilitiesStore = createFetchStore( {
+	baseName: 'getCapabilities',
 	controlCallback: () => {
 		return API.get( 'core', 'user', 'permissions', undefined, {
 			useCache: false,
 		} );
 	},
+	reducerCallback: ( state, capabilities ) => ( {
+		...state,
+		capabilities,
+	} ),
 } );
 
 const baseInitialState = {
@@ -112,17 +116,13 @@ const baseActions = {
 		const { dispatch } = yield Data.commonActions.getRegistry();
 
 		const { response, error } =
-			yield fetchRefreshCapabilitiesStore.actions.fetchRefreshCapabilities();
+			yield fetchGetCapabilitiesStore.actions.fetchGetCapabilities();
 
 		if ( error ) {
-			return dispatch( CORE_USER ).setPermissionScopeError( error );
+			yield dispatch( CORE_USER ).setPermissionScopeError( error );
 		}
 
-		global._googlesitekitUserData = {
-			permissions: response,
-		};
-
-		return dispatch( CORE_USER ).receiveCapabilities( response );
+		return { response, error };
 	},
 };
 
@@ -169,13 +169,7 @@ const baseResolvers = {
 			return;
 		}
 
-		if ( ! global._googlesitekitUserData?.permissions ) {
-			global.console.error( 'Could not load core/user permissions.' );
-		}
-
-		yield actions.receiveCapabilities(
-			global._googlesitekitUserData?.permissions
-		);
+		yield fetchGetCapabilitiesStore.actions.fetchGetCapabilities();
 	},
 };
 
@@ -297,7 +291,7 @@ const baseSelectors = {
 	),
 };
 
-const store = Data.combineStores( fetchRefreshCapabilitiesStore, {
+const store = Data.combineStores( fetchGetCapabilitiesStore, {
 	initialState: baseInitialState,
 	actions: baseActions,
 	controls: baseControls,
