@@ -649,7 +649,7 @@ export const selectors = {
 	getUpdateCoreURL: getSiteInfoProperty( 'updateCoreURL' ),
 
 	/**
-	 * Determines whether the current WordPress site's has the minimum required version.
+	 * Determines whether the current WordPress site has the minimum required version.
 	 * Currently, the minimum required version is 5.2.
 	 *
 	 * @since n.e.x.t

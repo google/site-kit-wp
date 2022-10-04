@@ -826,9 +826,9 @@ final class Authentication {
 	}
 
 	/**
-	 * Gets the update core URL for the user whoc can update the WordPress core.
+	 * Gets the update core URL if the user can update the WordPress core version.
 	 *
-	 * If the multisite is enabled, gets the update core URL for the network admin.
+	 * If the site is multisite, it gets the update core URL for the network admin.
 	 *
 	 * @since n.e.x.t
 	 *
