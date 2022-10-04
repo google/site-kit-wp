@@ -20,9 +20,23 @@
  * Internal dependencies
  */
 import { renderHook, actHook as act } from '../../../tests/js/test-utils';
+import {
+	getViewportWidth,
+	setViewportWidth,
+} from '../../../tests/js/viewport-width-utils';
 import { useBreakpoint } from './useBreakpoint';
 
 describe( 'useBreakpoint', () => {
+	let originalViewportWidth;
+
+	beforeEach( () => {
+		originalViewportWidth = getViewportWidth();
+	} );
+
+	afterEach( () => {
+		setViewportWidth( originalViewportWidth );
+	} );
+
 	it.each( [
 		[ 'should return small if the window width is <= 600px', 600, 'small' ],
 		[
@@ -50,18 +64,11 @@ describe( 'useBreakpoint', () => {
 			1281,
 			'xlarge',
 		],
-	] )( '%s', async ( _, args, expected ) => {
+	] )( '%s', async ( _, viewportWidth, expected ) => {
 		let result;
 		await act( async () => {
 			( { result } = await renderHook( () => {
-				Object.defineProperty(
-					global.window.document.documentElement,
-					'clientWidth',
-					{
-						value: args,
-						configurable: true,
-					}
-				);
+				setViewportWidth( viewportWidth );
 
 				global.window.dispatchEvent(
 					new global.window.Event( 'resize' )

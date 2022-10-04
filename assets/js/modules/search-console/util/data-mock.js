@@ -31,6 +31,7 @@ import isPlainObject from 'lodash/isPlainObject';
  */
 import { MODULES_SEARCH_CONSOLE } from '../datastore/constants';
 import { getDateString, isValidDateString } from '../../../util';
+import { stringToDate } from '../../../util/date-range/string-to-date';
 
 /**
  * Generates mock data for Search Console reports.
@@ -69,19 +70,20 @@ export function getSearchConsoleMockResponse( args ) {
 
 	const report = [];
 
-	const startDate = new Date( args.startDate );
-	const endDate = new Date( args.endDate );
+	const startDate = stringToDate( args.startDate );
+	const endDate = stringToDate( args.endDate );
 	const dayInMilliseconds = 24 * 60 * 60 * 1000;
 	const totalDays = 1 + ( endDate - startDate ) / dayInMilliseconds; // +1 to include the endDate into the dates range.
 
 	// This is the list of operations that we will apply to the range (array) of numbers.
 	const ops = [
 		// Converts range number to a date string.
-		map( ( item ) =>
-			getDateString(
-				new Date( startDate ).setDate( startDate.getDate() + item )
-			)
-		),
+		map( ( item ) => {
+			const updatedMilliseconds = new Date( startDate ).setDate(
+				startDate.getDate() + item
+			);
+			return getDateString( new Date( updatedMilliseconds ) );
+		} ),
 		// Add dimension and metric values.
 		map( ( date ) => ( {
 			clicks: faker.datatype.number( { min: 0, max: 150 } ),

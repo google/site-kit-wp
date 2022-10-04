@@ -21,6 +21,7 @@
  */
 import invariant from 'invariant';
 import isEqual from 'lodash/isEqual';
+import isEmpty from 'lodash/isEmpty';
 import pick from 'lodash/pick';
 
 /**
@@ -42,6 +43,8 @@ const RECEIVE_SHAREABLE_ROLES = 'RECEIVE_SHAREABLE_ROLES';
 const START_SUBMIT_SHARING_CHANGES = 'START_SUBMIT_SHARING_CHANGES';
 const FINISH_SUBMIT_SHARING_CHANGES = 'FINISH_SUBMIT_SHARING_CHANGES';
 const ROLLBACK_SHARING_SETTINGS = 'ROLLBACK_SHARING_SETTINGS';
+const RECEIVE_DEFAULT_SHARED_OWNERSHIP_MODULE_SETTINGS =
+	'RECEIVE_DEFAULT_SHARED_OWNERSHIP_MODULE_SETTINGS';
 
 // Invariant error messages.
 export const INVARIANT_DOING_SUBMIT_SHARING_CHANGES =
@@ -56,6 +59,7 @@ const baseInitialState = {
 	savedSharingSettings: undefined,
 	shareableRoles: undefined,
 	isDoingSubmitSharingChanges: undefined,
+	defaultSharedOwnershipModuleSettings: undefined,
 };
 
 const fetchSaveSharingSettingsStore = createFetchStore( {
@@ -283,6 +287,32 @@ const baseActions = {
 			type: ROLLBACK_SHARING_SETTINGS,
 		};
 	},
+
+	/**
+	 * Receives defaultSharedOwnershipModuleSettings for dashboard sharing.
+	 * Stores defaultSharedOwnershipModuleSettings in the datastore.
+	 *
+	 * Because this is frequently-accessed data, this is usually sourced
+	 * from a global variable (`_googlesitekitDashboardSharingData`), set by PHP
+	 * in the `before_print` callback for `googlesitekit-datastore-site`.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} defaultSharedOwnershipModuleSettings Default sharing settings for the shared ownership modules.
+	 * @return {Object} Action for RECEIVE_DEFAULT_SHARED_OWNERSHIP_MODULE_SETTINGS.
+	 */
+	receiveDefaultSharedOwnershipModuleSettings(
+		defaultSharedOwnershipModuleSettings
+	) {
+		invariant(
+			defaultSharedOwnershipModuleSettings,
+			'defaultSharedOwnershipModuleSettings is required.'
+		);
+		return {
+			payload: { defaultSharedOwnershipModuleSettings },
+			type: RECEIVE_DEFAULT_SHARED_OWNERSHIP_MODULE_SETTINGS,
+		};
+	},
 };
 
 const baseReducer = ( state, { type, payload } ) => {
@@ -357,6 +387,14 @@ const baseReducer = ( state, { type, payload } ) => {
 			};
 		}
 
+		case RECEIVE_DEFAULT_SHARED_OWNERSHIP_MODULE_SETTINGS:
+			const { defaultSharedOwnershipModuleSettings } = payload;
+
+			return {
+				...state,
+				defaultSharedOwnershipModuleSettings,
+			};
+
 		default: {
 			return state;
 		}
@@ -398,6 +436,31 @@ const baseResolvers = {
 
 		const { roles } = global._googlesitekitDashboardSharingData;
 		yield actions.receiveShareableRoles( roles );
+	},
+
+	*getDefaultSharedOwnershipModuleSettings() {
+		const registry = yield Data.commonActions.getRegistry();
+
+		if (
+			registry
+				.select( CORE_MODULES )
+				.getDefaultSharedOwnershipModuleSettings()
+		) {
+			return;
+		}
+
+		if ( ! global._googlesitekitDashboardSharingData ) {
+			global.console.error(
+				'Could not load core/modules dashboard sharing.'
+			);
+			return;
+		}
+
+		const { defaultSharedOwnershipModuleSettings } =
+			global._googlesitekitDashboardSharingData;
+		yield baseActions.receiveDefaultSharedOwnershipModuleSettings(
+			defaultSharedOwnershipModuleSettings
+		);
 	},
 };
 
@@ -623,6 +686,52 @@ const baseSelectors = {
 	 */
 	isDoingSubmitSharingChanges( state ) {
 		return !! state.isDoingSubmitSharingChanges;
+	},
+
+	/**
+	 * Gets the default sharing settings for shared ownership modules.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(Object|undefined)} Sharing Settings object. Returns undefined if it is not loaded yet.
+	 */
+	getDefaultSharedOwnershipModuleSettings( state ) {
+		const { defaultSharedOwnershipModuleSettings } = state;
+		return defaultSharedOwnershipModuleSettings;
+	},
+
+	/**
+	 * Indicates whether the sharing settings have updated from default.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {boolean} True if the sharing settings have updated, false otherwise.
+	 */
+	haveSharingSettingsUpdated( state ) {
+		const { savedSharingSettings, sharedOwnershipModules } = state;
+
+		if (
+			isEmpty( savedSharingSettings ) ||
+			isEmpty( sharedOwnershipModules )
+		) {
+			return false;
+		}
+
+		return Object.keys( savedSharingSettings ).some( ( moduleSlug ) => {
+			const { sharedRoles, management } =
+				savedSharingSettings[ moduleSlug ];
+
+			const isSharedOwnershipModule =
+				sharedOwnershipModules.includes( moduleSlug );
+
+			const defaultManagement = isSharedOwnershipModule
+				? 'all_admins'
+				: 'owner';
+
+			return sharedRoles.length > 0 || management !== defaultManagement;
+		} );
 	},
 };
 

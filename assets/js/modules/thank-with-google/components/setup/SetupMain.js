@@ -24,7 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { useCallback } from '@wordpress/element';
+import { Fragment, useCallback } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -37,7 +37,6 @@ import {
 	ONBOARDING_STATE_PENDING_VERIFICATION,
 } from '../../datastore/constants';
 import { useRefocus } from '../../../../hooks/useRefocus';
-import { Grid, Row, Cell } from '../../../../material-components';
 import ProgressBar from '../../../../components/ProgressBar';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import SetupCreatePublication from './SetupCreatePublication';
@@ -75,20 +74,20 @@ export default function SetupMain( { finishSetup } ) {
 
 	if ( hasErrors ) {
 		viewComponent = (
-			<Cell size={ 12 }>
+			<Fragment>
 				<SetupHeader />
 				<StoreErrorNotices
 					moduleSlug="thank-with-google"
 					storeName={ MODULES_THANK_WITH_GOOGLE }
 				/>
-			</Cell>
+			</Fragment>
 		);
 	} else if ( currentPublication === undefined ) {
 		viewComponent = (
-			<Cell size={ 12 }>
+			<Fragment>
 				<SetupHeader />
 				<ProgressBar height={ 210 } />
-			</Cell>
+			</Fragment>
 		);
 	} else if ( currentPublication === null ) {
 		viewComponent = <SetupCreatePublication />;
@@ -120,11 +119,7 @@ export default function SetupMain( { finishSetup } ) {
 
 	return (
 		<div className="googlesitekit-setup-module googlesitekit-setup-module--thank-with-google">
-			<Grid>
-				<Row className="googlesitekit-setup__content">
-					{ viewComponent }
-				</Row>
-			</Grid>
+			{ viewComponent }
 		</div>
 	);
 }

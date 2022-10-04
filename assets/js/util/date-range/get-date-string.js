@@ -31,20 +31,17 @@ import { isValidDateInstance } from './is-valid-date-instance';
  * Parses the given Date instance and returns a date string (YYYY-MM-DD).
  *
  * @since 1.18.0
+ * @since n.e.x.t Updated the function signature to only accept a Date argument.
  *
- * @param {string|number|Date} date Date to parse into a string. Must be valid date value to be passed into Date constructor.
+ * @param {Date} date Date to parse into a string.
  * @return {string}                 The parsed date string (YYYY-MM-DD).
  */
 export const getDateString = ( date ) => {
-	const dateInstance = new Date( date );
-	invariant(
-		isValidDateInstance( dateInstance ),
-		INVALID_DATE_INSTANCE_ERROR
-	);
+	invariant( isValidDateInstance( date ), INVALID_DATE_INSTANCE_ERROR );
 
-	const month = `${ dateInstance.getMonth() + 1 }`;
-	const day = `${ dateInstance.getDate() }`;
-	const year = dateInstance.getFullYear();
+	const month = `${ date.getMonth() + 1 }`;
+	const day = `${ date.getDate() }`;
+	const year = date.getFullYear();
 
 	return [
 		year,

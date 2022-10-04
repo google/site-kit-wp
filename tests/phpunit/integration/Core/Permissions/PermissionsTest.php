@@ -84,7 +84,7 @@ class PermissionsTest extends TestCase {
 
 		$this->assertTrue( has_filter( 'map_meta_cap' ) );
 		$this->assertTrue( has_filter( 'googlesitekit_rest_routes' ) );
-		$this->assertTrue( has_filter( 'googlesitekit_user_data' ) );
+		$this->assertTrue( has_filter( 'googlesitekit_apifetch_preload_paths' ) );
 		$this->assertTrue( has_filter( 'user_has_cap' ) );
 	}
 
@@ -99,7 +99,7 @@ class PermissionsTest extends TestCase {
 
 		$this->assertTrue( has_filter( 'map_meta_cap' ) );
 		$this->assertTrue( has_filter( 'googlesitekit_rest_routes' ) );
-		$this->assertTrue( has_filter( 'googlesitekit_user_data' ) );
+		$this->assertTrue( has_filter( 'googlesitekit_apifetch_preload_paths' ) );
 		$this->assertFalse( has_filter( 'user_has_cap' ) );
 	}
 
