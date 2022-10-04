@@ -26,7 +26,6 @@ import {
 } from '../../../../tests/js/utils';
 import {
 	setupSearchConsoleAnalyticsMockReports,
-	setupAnalyticsMockReports,
 	setupSearchConsoleMockReports,
 	setupSearchConsoleAnalyticsGatheringData,
 	setupSearchConsoleAnalyticsZeroData,
@@ -47,20 +46,8 @@ Ready.args = {
 	setupRegistry: setupSearchConsoleAnalyticsMockReports,
 };
 
-export const GatheringDataLegacy = Template.bind( {} );
-GatheringDataLegacy.storyName = 'Gathering Data (Legacy)';
-
-export const AnalyticsGatheringDataLegacy = Template.bind( {} );
-AnalyticsGatheringDataLegacy.storyName = 'Gathering Data (Legacy): Analytics';
-AnalyticsGatheringDataLegacy.args = {
-	setupRegistry: ( registry ) => {
-		setupSearchConsoleMockReports( registry );
-		setupAnalyticsMockReports( registry, [] );
-	},
-};
-
 export const AnalyticsInactive = Template.bind( {} );
-AnalyticsInactive.storyName = 'Inactive: Analytics';
+AnalyticsInactive.storyName = 'Inactive: Analytics Setup CTA';
 AnalyticsInactive.args = {
 	setupRegistry: ( registry ) => {
 		// Set up the search console module store but provide no data.
@@ -75,21 +62,9 @@ AnalyticsInactive.args = {
 	},
 };
 
-export const AnalyticsInactiveNew = Template.bind( {} );
-AnalyticsInactiveNew.storyName = 'Inactive: Analytics New CTA';
-AnalyticsInactiveNew.args = {
-	setupRegistry: ( registry ) => {
-		provideModules( registry );
-		setupSearchConsoleMockReports( registry );
-	},
-};
-AnalyticsInactiveNew.parameters = {
-	features: [ 'zeroDataStates' ],
-};
-
 export const AnalyticsInactiveNewCompleteActivation = Template.bind( {} );
 AnalyticsInactiveNewCompleteActivation.storyName =
-	'Inactive: Analytics New Complete Activation CTA';
+	'Inactive: Analytics Complete Activation CTA';
 AnalyticsInactiveNewCompleteActivation.args = {
 	setupRegistry: ( registry ) => {
 		// Set up the analytics module store but provide no data.
@@ -105,42 +80,17 @@ AnalyticsInactiveNewCompleteActivation.args = {
 		setupSearchConsoleMockReports( registry );
 	},
 };
-AnalyticsInactiveNewCompleteActivation.parameters = {
-	features: [ 'zeroDataStates' ],
-};
-
-export const SearchConsoleGatheringDataLegacy = Template.bind( {} );
-SearchConsoleGatheringDataLegacy.storyName =
-	'Gathering Data (Legacy): Search Console';
-SearchConsoleGatheringDataLegacy.args = {
-	setupRegistry: ( registry ) => {
-		provideModules( registry, [
-			{
-				slug: 'search-console',
-				active: true,
-				connected: true,
-			},
-		] );
-		setupSearchConsoleMockReports( registry, [] );
-	},
-};
 
 export const GatheringData = Template.bind( {} );
 GatheringData.storyName = 'Gathering Data';
 GatheringData.args = {
 	setupRegistry: setupSearchConsoleAnalyticsGatheringData,
 };
-GatheringData.parameters = {
-	features: [ 'zeroDataStates' ],
-};
 
 export const ZeroData = Template.bind( {} );
 ZeroData.storyName = 'Zero Data';
 ZeroData.args = {
 	setupRegistry: setupSearchConsoleAnalyticsZeroData,
-};
-ZeroData.parameters = {
-	features: [ 'zeroDataStates' ],
 };
 
 export default {

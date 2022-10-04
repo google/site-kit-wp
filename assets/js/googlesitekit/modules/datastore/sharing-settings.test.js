@@ -72,6 +72,21 @@ describe( 'core/modules sharing-settings', () => {
 		settings: sharingSettings,
 		roles: shareableRoles,
 	};
+	const defaultSharedOwnershipModuleSettings = {
+		'pagespeed-insights': {
+			sharedRoles: [],
+			management: 'all_admins',
+		},
+		'idea-hub': {
+			sharedRoles: [],
+			management: 'all_admins',
+		},
+	};
+	const sharedOwnershipModules = [
+		'analytics',
+		'search-console',
+		'tagmanager',
+	];
 
 	let registry;
 	let store;
@@ -199,9 +214,8 @@ describe( 'core/modules sharing-settings', () => {
 			] )(
 				'dispatches a request to save sharing settings and %s dispatch setOwnerID action based on the `newOwnerIDs` availability',
 				async ( _, newOwnerIDs, ownerID ) => {
-					global[
-						dashboardSharingDataBaseVar
-					] = dashboardSharingData;
+					global[ dashboardSharingDataBaseVar ] =
+						dashboardSharingData;
 
 					provideModules( registry );
 					provideModuleRegistrations( registry );
@@ -309,6 +323,30 @@ describe( 'core/modules sharing-settings', () => {
 				expect( store.getState().sharingSettings ).toMatchObject(
 					store.getState().savedSharingSettings
 				);
+			} );
+		} );
+
+		describe( 'receiveDefaultSharedOwnershipModuleSettings', () => {
+			it( 'requires the defaultSharedOwnershipModuleSettings param', () => {
+				expect( () => {
+					registry
+						.dispatch( CORE_MODULES )
+						.receiveDefaultSharedOwnershipModuleSettings();
+				} ).toThrow(
+					'defaultSharedOwnershipModuleSettings is required'
+				);
+			} );
+
+			it( 'receives defaultSharedOwnershipModuleSettings and sets it to the state', () => {
+				registry
+					.dispatch( CORE_MODULES )
+					.receiveDefaultSharedOwnershipModuleSettings(
+						defaultSharedOwnershipModuleSettings
+					);
+
+				expect(
+					store.getState().defaultSharedOwnershipModuleSettings
+				).toMatchObject( defaultSharedOwnershipModuleSettings );
 			} );
 		} );
 	} );
@@ -818,6 +856,273 @@ describe( 'core/modules sharing-settings', () => {
 					registry
 						.select( CORE_MODULES )
 						.haveSharingSettingsExpanded( 'sharedRoles' )
+				).toBe( true );
+			} );
+		} );
+
+		describe( 'haveModuleSharingSettingsChanged', () => {
+			const moduleSlug = 'search-console';
+			it( 'requires the moduleSlug param', () => {
+				expect( () => {
+					registry
+						.select( CORE_MODULES )
+						.haveModuleSharingSettingsChanged();
+				} ).toThrow( 'moduleSlug is required.' );
+			} );
+
+			it( 'should return undefined if `sharingSettings` or `savedSharingSettings` cannot be loaded', () => {
+				global[ dashboardSharingDataBaseVar ] = undefined;
+
+				expect(
+					registry
+						.select( CORE_MODULES )
+						.haveModuleSharingSettingsChanged( moduleSlug )
+				).toBeUndefined();
+			} );
+
+			it( 'informs whether client-side sharing settings differ from server-side ones for the given module', () => {
+				global[ dashboardSharingDataBaseVar ] = undefined;
+
+				// Initially undefined.
+				expect(
+					registry
+						.select( CORE_MODULES )
+						.haveModuleSharingSettingsChanged(
+							moduleSlug,
+							'management'
+						)
+				).toBeUndefined();
+
+				global[ dashboardSharingDataBaseVar ] = dashboardSharingData;
+				registry.select( CORE_MODULES ).getSharingSettings();
+
+				// Still false after getting the sharing settings from the global variable.
+				expect(
+					registry
+						.select( CORE_MODULES )
+						.haveModuleSharingSettingsChanged(
+							moduleSlug,
+							'management'
+						)
+				).toBe( false );
+
+				// True after updating module's `management` on the client.
+				registry
+					.dispatch( CORE_MODULES )
+					.setSharingManagement( moduleSlug, 'owner' );
+				expect(
+					registry
+						.select( CORE_MODULES )
+						.haveModuleSharingSettingsChanged(
+							moduleSlug,
+							'management'
+						)
+				).toBe( true );
+
+				// False after updating module's `management` back to original server value on client.
+				registry
+					.dispatch( CORE_MODULES )
+					.setSharingManagement( moduleSlug, 'all_admins' );
+				expect(
+					registry
+						.select( CORE_MODULES )
+						.haveModuleSharingSettingsChanged(
+							moduleSlug,
+							'management'
+						)
+				).toBe( false );
+
+				// True after updating module's `sharedRoles` on the client.
+				registry
+					.dispatch( CORE_MODULES )
+					.setSharedRoles( moduleSlug, [ 'editor' ] );
+				expect(
+					registry
+						.select( CORE_MODULES )
+						.haveModuleSharingSettingsChanged(
+							moduleSlug,
+							'sharedRoles'
+						)
+				).toBe( true );
+
+				// False after updating module's `sharedRoles` back to original server value on client.
+				registry
+					.dispatch( CORE_MODULES )
+					.setSharedRoles( moduleSlug, [ 'editor', 'subscriber' ] );
+				expect(
+					registry
+						.select( CORE_MODULES )
+						.haveModuleSharingSettingsChanged(
+							moduleSlug,
+							'sharedRoles'
+						)
+				).toBe( false );
+			} );
+
+			it( 'compares all keys when keys argument is not supplied', async () => {
+				global[ dashboardSharingDataBaseVar ] = dashboardSharingData;
+				registry.select( CORE_MODULES ).getSharingSettings();
+
+				// Update the sharing settings so they differ. All values are being checked here.
+				registry
+					.dispatch( CORE_MODULES )
+					.setSharingManagement( moduleSlug, 'owner' );
+				expect(
+					registry
+						.select( CORE_MODULES )
+						.haveModuleSharingSettingsChanged( moduleSlug )
+				).toBe( true );
+			} );
+
+			it( 'compares selected keys when keys argument is supplied', async () => {
+				global[ dashboardSharingDataBaseVar ] = dashboardSharingData;
+				registry.select( CORE_MODULES ).getSharingSettings();
+
+				// Update the sharing settings so they differ. Only `search-console` should trigger
+				// a truthy return value. `analytics` should return a falsy value.
+				registry
+					.dispatch( CORE_MODULES )
+					.setSharingManagement( moduleSlug, 'owner' );
+				expect(
+					registry
+						.select( CORE_MODULES )
+						.haveModuleSharingSettingsChanged(
+							moduleSlug,
+							'management'
+						)
+				).toBe( true );
+				expect(
+					registry
+						.select( CORE_MODULES )
+						.haveModuleSharingSettingsChanged(
+							'analytics',
+							'management'
+						)
+				).toBe( false );
+
+				// Checking all keys should be possible.
+				expect(
+					registry
+						.select( CORE_MODULES )
+						.haveModuleSharingSettingsChanged( moduleSlug, [
+							'management',
+							'sharedRoles',
+						] )
+				).toBe( true );
+				expect(
+					registry
+						.select( CORE_MODULES )
+						.haveModuleSharingSettingsChanged( 'analytics', [
+							'management',
+							'sharedRoles',
+						] )
+				).toBe( false );
+
+				// Checking no values should be possible, and should not be treated as
+				// a `null` keys array.
+				expect(
+					registry
+						.select( CORE_MODULES )
+						.haveModuleSharingSettingsChanged( moduleSlug, [] )
+				).toBe( false );
+			} );
+		} );
+
+		describe( 'getDefaultSharedOwnershipModuleSettings', () => {
+			it( 'should return undefined if `defaultSharedOwnershipModuleSettings` cannot be loaded', () => {
+				global[ dashboardSharingDataBaseVar ] = undefined;
+
+				const defaultSharedOwnershipModuleSettingsObj = registry
+					.select( CORE_MODULES )
+					.getDefaultSharedOwnershipModuleSettings();
+
+				expect( console ).toHaveErrored();
+				expect(
+					defaultSharedOwnershipModuleSettingsObj
+				).toBeUndefined();
+			} );
+
+			it( 'should return an empty object if there is no `defaultSharedOwnershipModuleSettings`', () => {
+				global[ dashboardSharingDataBaseVar ] = {
+					defaultSharedOwnershipModuleSettings: {},
+				};
+
+				const defaultSharedOwnershipModuleSettingsObj = registry
+					.select( CORE_MODULES )
+					.getDefaultSharedOwnershipModuleSettings();
+
+				expect( defaultSharedOwnershipModuleSettingsObj ).toMatchObject(
+					{}
+				);
+			} );
+
+			it( 'should return the `defaultSharedOwnershipModuleSettings` object', () => {
+				global[ dashboardSharingDataBaseVar ] = {
+					defaultSharedOwnershipModuleSettings,
+				};
+
+				const defaultSharedOwnershipModuleSettingsObj = registry
+					.select( CORE_MODULES )
+					.getDefaultSharedOwnershipModuleSettings();
+
+				expect( defaultSharedOwnershipModuleSettingsObj ).toMatchObject(
+					defaultSharedOwnershipModuleSettings
+				);
+			} );
+		} );
+
+		describe( 'haveSharingSettingsUpdated', () => {
+			it( 'informs whether saved sharing settings differ from the initial default ones', () => {
+				// Initially false.
+				expect(
+					registry.select( CORE_MODULES ).haveSharingSettingsUpdated()
+				).toBe( false );
+
+				registry
+					.dispatch( CORE_MODULES )
+					.receiveGetSharingSettings( {} );
+
+				// False if savedSharingSettings is an empty object
+				expect(
+					registry.select( CORE_MODULES ).haveSharingSettingsUpdated()
+				).toBe( false );
+
+				registry
+					.dispatch( CORE_MODULES )
+					.receiveSharedOwnershipModules( {} );
+
+				// False if sharedOwnershipModules is an empty object
+				expect(
+					registry.select( CORE_MODULES ).haveSharingSettingsUpdated()
+				).toBe( false );
+
+				registry
+					.dispatch( CORE_MODULES )
+					.receiveSharedOwnershipModules( sharedOwnershipModules );
+
+				registry.dispatch( CORE_MODULES ).receiveGetSharingSettings( {
+					analytics: {
+						sharedRoles: [],
+						management: 'all_admins',
+					},
+					adsense: {
+						sharedRoles: [],
+						management: 'owner',
+					},
+				} );
+
+				// False after using the default sharing settings.
+				expect(
+					registry.select( CORE_MODULES ).haveSharingSettingsUpdated()
+				).toBe( false );
+
+				registry
+					.dispatch( CORE_MODULES )
+					.receiveGetSharingSettings( sharingSettings );
+
+				// True after updating the settings.
+				expect(
+					registry.select( CORE_MODULES ).haveSharingSettingsUpdated()
 				).toBe( true );
 			} );
 		} );

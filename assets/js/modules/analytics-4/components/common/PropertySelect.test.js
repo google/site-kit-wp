@@ -30,12 +30,8 @@ import * as fixtures from '../../datastore/__fixtures__';
 import * as analyticsFixtures from '../../../analytics/datastore/__fixtures__';
 import { fireEvent, act, render } from '../../../../../../tests/js/test-utils';
 
-const {
-	createProperty,
-	createWebDataStream,
-	properties,
-	webDataStreams,
-} = fixtures;
+const { createProperty, createWebDataStream, properties, webDataStreams } =
+	fixtures;
 const { accounts } = analyticsFixtures.accountsPropertiesProfiles;
 const accountID = createProperty._accountID;
 const propertyID = createWebDataStream._propertyID;
@@ -61,9 +57,10 @@ const setupRegistry = ( { dispatch } ) => {
 	dispatch( MODULES_ANALYTICS_4 ).receiveGetWebDataStreams( webDataStreams, {
 		propertyID,
 	} );
-	dispatch(
-		MODULES_ANALYTICS_4
-	).finishResolution( 'receiveGetWebDataStreams', { propertyID } );
+	dispatch( MODULES_ANALYTICS_4 ).finishResolution(
+		'receiveGetWebDataStreams',
+		{ propertyID }
+	);
 };
 
 const setupEmptyRegistry = ( { dispatch } ) => {
@@ -90,6 +87,24 @@ describe( 'PropertySelect', () => {
 		// Note: we do length + 1 here because there should also be an item for
 		// "Set up a new property".
 		expect( listItems ).toHaveLength( properties.length + 1 );
+	} );
+
+	it( 'should disable the property select if the user does not have module access', () => {
+		const { container, getAllByRole } = render(
+			<PropertySelect hasModuleAccess={ false } />,
+			{ setupRegistry }
+		);
+
+		const listItems = getAllByRole( 'menuitem', { hidden: true } );
+		expect( listItems ).toHaveLength( 1 );
+
+		// Verify that the Property select dropdown is disabled.
+		[
+			'.googlesitekit-analytics__select-property',
+			'.mdc-select--disabled',
+		].forEach( ( className ) => {
+			expect( container.querySelector( className ) ).toBeInTheDocument();
+		} );
 	} );
 
 	it( 'should not render if account ID is not valid', async () => {
@@ -147,11 +162,10 @@ describe( 'PropertySelect', () => {
 	} );
 
 	it( 'should update propertyID in the store when a new item is selected', async () => {
-		const {
-			getAllByRole,
-			container,
-			registry,
-		} = render( <PropertySelect />, { setupRegistry } );
+		const { getAllByRole, container, registry } = render(
+			<PropertySelect />,
+			{ setupRegistry }
+		);
 		const allProperties = registry
 			.select( MODULES_ANALYTICS_4 )
 			.getProperties( accountID );

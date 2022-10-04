@@ -692,6 +692,7 @@ final class Assets {
 			'referenceSiteURL' => esc_url_raw( trailingslashit( $site_url ) ),
 			'adminURL'         => esc_url_raw( trailingslashit( admin_url() ) ),
 			'assetsURL'        => esc_url_raw( $this->context->url( 'dist/assets/' ) ),
+			'widgetsAdminURL'  => esc_url_raw( $this->get_widgets_admin_url() ),
 			'blogPrefix'       => $wpdb->get_blog_prefix(),
 			'ampMode'          => $this->context->get_amp_mode(),
 			'isNetworkMode'    => $this->context->is_network_mode(),
@@ -699,6 +700,7 @@ final class Assets {
 			'siteName'         => wp_specialchars_decode( get_bloginfo( 'name' ), ENT_QUOTES ),
 			'enabledFeatures'  => Feature_Flags::get_enabled_features(),
 			'webStoriesActive' => defined( 'WEBSTORIES_VERSION' ),
+			'postTypes'        => $this->get_post_types(),
 		);
 
 		/**
@@ -711,6 +713,50 @@ final class Assets {
 		 * @param array $data Base data.
 		 */
 		return apply_filters( 'googlesitekit_inline_base_data', $inline_data );
+	}
+
+	/**
+	 * Gets the available public post type slugs and their labels.
+	 *
+	 * @since 1.81.0
+	 *
+	 * @return array Available post types array with their respective slugs and labels.
+	 */
+	private function get_post_types() {
+		$post_types     = array();
+		$all_post_types = get_post_types( array( 'public' => true ), 'objects' );
+		foreach ( $all_post_types as $post_type_slug => $post_type_obj ) {
+			$post_types[] = array(
+				'slug'  => $post_type_slug,
+				'label' => $post_type_obj->label,
+			);
+		}
+		return $post_types;
+	}
+
+	/**
+	 * Gets the widgets admin edit page or block editor URL depending
+	 * on the current theme.
+	 *
+	 * Themes which have FSE support do not have the old widgets admin screen. Such
+	 * themes only have the option to edit widgets directly in the block editor.
+	 *
+	 * @since 1.81.0
+	 *
+	 * @return string The admin widgets page or block editor URL.
+	 */
+	private function get_widgets_admin_url() {
+		$current_theme = wp_get_theme();
+
+		if ( method_exists( $current_theme, 'is_block_theme' ) && $current_theme->is_block_theme() ) {
+			return admin_url( 'site-editor.php' );
+		}
+
+		if ( count( $GLOBALS['wp_registered_sidebars'] ) > 0 ) {
+			return admin_url( 'widgets.php' );
+		}
+
+		return null;
 	}
 
 	/**

@@ -42,10 +42,14 @@ describe( 'core/user surveys', () => {
 		},
 	};
 
-	const surveyTriggerEndpoint = /^\/google-site-kit\/v1\/core\/user\/data\/survey-trigger/;
-	const surveyEventEndpoint = /^\/google-site-kit\/v1\/core\/user\/data\/survey-event/;
-	const surveyTimeoutEndpoint = /^\/google-site-kit\/v1\/core\/user\/data\/survey-timeout/;
-	const surveyTimeoutsEndpoint = /^\/google-site-kit\/v1\/core\/user\/data\/survey-timeouts/;
+	const surveyTriggerEndpoint =
+		/^\/google-site-kit\/v1\/core\/user\/data\/survey-trigger/;
+	const surveyEventEndpoint =
+		/^\/google-site-kit\/v1\/core\/user\/data\/survey-event/;
+	const surveyTimeoutEndpoint =
+		/^\/google-site-kit\/v1\/core\/user\/data\/survey-timeout/;
+	const surveyTimeoutsEndpoint =
+		/^\/google-site-kit\/v1\/core\/user\/data\/survey-timeouts/;
 
 	describe( 'actions', () => {
 		describe( 'setSurveyTimeout', () => {

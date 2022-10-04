@@ -38,6 +38,8 @@ use WP_REST_Request;
 use WP_REST_Response;
 use WP_Error;
 use Exception;
+use Google\Site_Kit\Core\Util\Build_Mode;
+use Google\Site_Kit\Core\Util\URL;
 
 /**
  * Class managing the different modules.
@@ -140,7 +142,7 @@ final class Modules {
 	 * @since 1.75.0
 	 * @var REST_Dashboard_Sharing_Controller
 	 */
-	private $rest_controller;
+	private $rest_dashboard_sharing_controller;
 
 	/**
 	 * Core module class names.
@@ -188,13 +190,39 @@ final class Modules {
 		if ( Feature_Flags::enabled( 'ideaHubModule' ) ) {
 			$this->core_modules[ Idea_Hub::MODULE_SLUG ] = Idea_Hub::class;
 		}
-		if ( Feature_Flags::enabled( 'twgModule' ) ) {
+
+		if ( self::should_enable_twg() ) {
 			$this->core_modules[ Thank_With_Google::MODULE_SLUG ] = Thank_With_Google::class;
 		}
 
 		if ( Feature_Flags::enabled( 'dashboardSharing' ) ) {
 			$this->rest_dashboard_sharing_controller = new REST_Dashboard_Sharing_Controller( $this );
 		}
+	}
+
+	/**
+	 * Determines if Thank with Google module should be enabled.
+	 *
+	 * @since 1.83.0
+	 *
+	 * @return bool True if the module should be enabled, false otherwise.
+	 */
+	public static function should_enable_twg() {
+		if ( ! Feature_Flags::enabled( 'twgModule' ) ) {
+			return false;
+		}
+
+		if ( Build_Mode::get_mode() === Build_Mode::MODE_DEVELOPMENT ) {
+			return true;
+		}
+
+		if ( 'https' === URL::parse( home_url(), PHP_URL_SCHEME ) ) {
+			return true;
+		}
+
+		// Because we aren't in development mode and haven't detected SSL being enabled, TwG should
+		// not be enabled.
+		return false;
 	}
 
 	/**
@@ -342,11 +370,20 @@ final class Modules {
 		add_filter(
 			'googlesitekit_dashboard_sharing_data',
 			function ( $data ) {
-				$data['recoverableModules']     = array_keys( $this->get_recoverable_modules() );
-				$data['sharedOwnershipModules'] = array_keys( $this->get_shared_ownership_modules() );
+				$data['sharedOwnershipModules']               = array_keys( $this->get_shared_ownership_modules() );
+				$data['defaultSharedOwnershipModuleSettings'] = $this->populate_default_shared_ownership_module_settings( array() );
 
 				return $data;
 			}
+		);
+
+		add_filter(
+			'googlesitekit_module_exists',
+			function ( $exists, $slug ) {
+				return $this->module_exists( $slug );
+			},
+			10,
+			2
 		);
 
 		add_filter(
@@ -358,8 +395,8 @@ final class Modules {
 			2
 		);
 
-		add_filter( 'option_' . Module_Sharing_Settings::OPTION, $this->get_method_proxy( 'filter_shared_ownership_module_settings' ) );
-		add_filter( 'default_option_' . Module_Sharing_Settings::OPTION, $this->get_method_proxy( 'filter_shared_ownership_module_settings' ), 20 );
+		add_filter( 'option_' . Module_Sharing_Settings::OPTION, $this->get_method_proxy( 'populate_default_shared_ownership_module_settings' ) );
+		add_filter( 'default_option_' . Module_Sharing_Settings::OPTION, $this->get_method_proxy( 'populate_default_shared_ownership_module_settings' ), 20 );
 
 		add_action(
 			'add_option_' . Module_Sharing_Settings::OPTION,
@@ -367,6 +404,10 @@ final class Modules {
 				array_walk(
 					$values,
 					function( $value, $module_slug ) {
+						if ( ! $this->module_exists( $module_slug ) ) {
+							return;
+						}
+
 						$module = $this->get_module( $module_slug );
 
 						if ( ! $module instanceof Module_With_Service_Entity ) {
@@ -392,6 +433,10 @@ final class Modules {
 					array_walk(
 						$values,
 						function( $value, $module_slug ) use ( $old_values ) {
+							if ( ! $this->module_exists( $module_slug ) ) {
+								return;
+							}
+
 							$module = $this->get_module( $module_slug );
 
 							if ( ! $module instanceof Module_With_Service_Entity ) {
@@ -479,6 +524,7 @@ final class Modules {
 	 * Gets the available modules.
 	 *
 	 * @since 1.0.0
+	 * @since n.e.x.t Filter out modules which are missing any of the dependencies specified in `depends_on`.
 	 *
 	 * @return array Available modules as $slug => $module pairs.
 	 */
@@ -503,10 +549,24 @@ final class Modules {
 				}
 			);
 
+			// Remove any modules which are missing dependencies. This may occur as the result of a dependency
+			// being removed via the googlesitekit_available_modules filter.
+			$this->modules = array_filter(
+				$this->modules,
+				function( Module $module ) {
+					foreach ( $module->depends_on as $dependency ) {
+						if ( ! isset( $this->modules[ $dependency ] ) ) {
+							return false;
+						}
+					}
+					return true;
+				}
+			);
+
 			// Set up dependency maps.
 			foreach ( $this->modules as $module ) {
 				foreach ( $module->depends_on as $dependency ) {
-					if ( ! isset( $this->modules[ $dependency ] ) || $module->slug === $dependency ) {
+					if ( $module->slug === $dependency ) {
 						continue;
 					}
 
@@ -553,11 +613,28 @@ final class Modules {
 		$modules = $this->get_available_modules();
 
 		if ( ! isset( $modules[ $slug ] ) ) {
-			/* translators: %s: module slug */
+			/* translators: 1: module slug */
 			throw new Exception( sprintf( __( 'Invalid module slug %s.', 'google-site-kit' ), $slug ) );
 		}
 
 		return $modules[ $slug ];
+	}
+
+	/**
+	 * Checks if the module exists.
+	 *
+	 * @since 1.80.0
+	 *
+	 * @param string $slug Module slug.
+	 * @return bool True if the module exists, false otherwise.
+	 */
+	public function module_exists( $slug ) {
+		try {
+			$this->get_module( $slug );
+			return true;
+		} catch ( Exception $e ) {
+			return false;
+		}
 	}
 
 	/**
@@ -574,7 +651,7 @@ final class Modules {
 		$modules = $this->get_available_modules();
 
 		if ( ! isset( $modules[ $slug ] ) ) {
-			/* translators: %s: module slug */
+			/* translators: 1: module slug */
 			throw new Exception( sprintf( __( 'Invalid module slug %s.', 'google-site-kit' ), $slug ) );
 		}
 
@@ -595,7 +672,7 @@ final class Modules {
 		$modules = $this->get_available_modules();
 
 		if ( ! isset( $modules[ $slug ] ) ) {
-			/* translators: %s: module slug */
+			/* translators: 1: module slug */
 			throw new Exception( sprintf( __( 'Invalid module slug %s.', 'google-site-kit' ), $slug ) );
 		}
 
@@ -880,7 +957,7 @@ final class Modules {
 								$dependency_slugs = $this->get_module_dependencies( $slug );
 								foreach ( $dependency_slugs as $dependency_slug ) {
 									if ( ! $this->is_module_active( $dependency_slug ) ) {
-										/* translators: %s: module name */
+										/* translators: 1: module name */
 										return new WP_Error( 'inactive_dependencies', sprintf( __( 'Module cannot be activated because of inactive dependency %s.', 'google-site-kit' ), $modules[ $dependency_slug ]->name ), array( 'status' => 500 ) );
 									}
 								}
@@ -893,7 +970,7 @@ final class Modules {
 								foreach ( $dependant_slugs as $dependant_slug ) {
 									if ( $this->is_module_active( $dependant_slug ) ) {
 										if ( ! $this->deactivate_module( $dependant_slug ) ) {
-											/* translators: %s: module name */
+											/* translators: 1: module name */
 											return new WP_Error( 'cannot_deactivate_dependant', sprintf( __( 'Module cannot be deactivated because deactivation of dependant %s failed.', 'google-site-kit' ), $modules[ $dependant_slug ]->name ), array( 'status' => 500 ) );
 										}
 									}
@@ -1071,7 +1148,11 @@ final class Modules {
 								return new WP_Error( 'invalid_module_slug', __( 'Module does not support settings.', 'google-site-kit' ), array( 'status' => 400 ) );
 							}
 
+							do_action( 'googlesitekit_pre_save_settings_' . $slug );
+
 							$module->get_settings()->merge( (array) $request['data'] );
+
+							do_action( 'googlesitekit_save_settings_' . $slug );
 
 							return new WP_REST_Response( $module->get_settings()->get() );
 						},
@@ -1237,6 +1318,7 @@ final class Modules {
 			'order'        => $module->order,
 			'forceActive'  => $module->force_active,
 			'shareable'    => $module->is_shareable(),
+			'recoverable'  => $module->is_recoverable(),
 			'active'       => $this->is_module_active( $module->slug ),
 			'connected'    => $this->is_module_connected( $module->slug ),
 			'dependencies' => $this->get_module_dependencies( $module->slug ),
@@ -1480,21 +1562,21 @@ final class Modules {
 	}
 
 	/**
-	 * Inserts default settings for shared ownership modules.
+	 * Inserts default settings for shared ownership modules in passed dashboard sharing settings.
 	 *
 	 * Sharing settings for shared ownership modules such as pagespeed-insights
-	 * and idea-hub should always be manageable by "all admins". This filter inserts
+	 * and idea-hub should always be manageable by "all admins". This function inserts
 	 * this 'default' setting for their respective module slugs even when the
 	 * dashboard_sharing settings option is not defined in the database or when settings
-	 * are not set for these modules. This filter is applied after every attempt to fetch
-	 * the googlesitekit-dashboard_sharing settings option from the database.
+	 * are not set for these modules.
 	 *
 	 * @since 1.75.0
+	 * @since n.e.x.t Renamed from filter_shared_ownership_module_settings to populate_default_shared_ownership_module_settings.
 	 *
 	 * @param array $sharing_settings The dashboard_sharing settings option fetched from the database.
 	 * @return array Dashboard sharing settings option with default settings inserted for shared ownership modules.
 	 */
-	protected function filter_shared_ownership_module_settings( $sharing_settings ) {
+	protected function populate_default_shared_ownership_module_settings( $sharing_settings ) {
 		$shared_ownership_modules = array_keys( $this->get_shared_ownership_modules() );
 		foreach ( $shared_ownership_modules as $shared_ownership_module ) {
 			if ( ! isset( $sharing_settings[ $shared_ownership_module ] ) ) {
@@ -1521,6 +1603,17 @@ final class Modules {
 			$module_owners[ $module_slug ] = $module->get_owner_id();
 		}
 		return $module_owners;
+	}
+
+	/**
+	 * Deletes sharing settings.
+	 *
+	 * @since 1.84.0
+	 *
+	 * @return bool True on success, false on failure.
+	 */
+	public function delete_dashboard_sharing_settings() {
+		return $this->options->delete( Module_Sharing_Settings::OPTION );
 	}
 
 }

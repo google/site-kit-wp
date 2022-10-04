@@ -28,9 +28,11 @@ import {
 	ERROR_INVALID_HOSTNAME,
 	ERROR_TOKEN_MISMATCH,
 	ERROR_WP_PRE_V5,
+	ERROR_SK_SERVICE_CONNECTION_FAIL,
 } from './constants';
 
-const isIP = /^(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]\d|\d)(?:\.(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]\d|\d)){3}$/;
+const isIP =
+	/^(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]\d|\d)(?:\.(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]\d|\d)){3}$/;
 
 const invalidTLDs = /\.(example|invalid|localhost|test)$/;
 
@@ -84,6 +86,10 @@ export const checkHealthChecks = async () => {
 
 	if ( ! response?.checks?.googleAPI?.pass ) {
 		throw ERROR_GOOGLE_API_CONNECTION_FAIL;
+	}
+
+	if ( ! response?.checks?.skService?.pass ) {
+		throw ERROR_SK_SERVICE_CONNECTION_FAIL;
 	}
 };
 // Check that client can connect to AMP Project.

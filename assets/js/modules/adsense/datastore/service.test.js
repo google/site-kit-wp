@@ -28,6 +28,7 @@ import { ACCOUNT_STATUS_APPROVED, SITE_STATUS_ADDED } from '../util/status';
 import { MODULES_ADSENSE } from './constants';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
+import { decodeServiceURL } from '../../../../../tests/js/mock-accountChooserURL-utils';
 
 describe( 'module/adsense service store', () => {
 	const userData = {
@@ -36,7 +37,7 @@ describe( 'module/adsense service store', () => {
 		name: 'admin',
 		picture: 'https://path/to/image',
 	};
-	const baseURI = 'https://www.google.com/adsense/new/u/0';
+
 	const settings = {
 		accountID: 'pub-12345678',
 		clientID: 'ca-pub-12345678',
@@ -68,47 +69,49 @@ describe( 'module/adsense service store', () => {
 				const serviceURL = registry
 					.select( MODULES_ADSENSE )
 					.getServiceURL();
-				expect( serviceURL ).toBe(
-					`${ baseURI }?authuser=${ encodeURIComponent(
-						userData.email
-					) }`
-				);
+
+				expect( new URL( serviceURL ) ).toMatchObject( {
+					origin: 'https://accounts.google.com',
+					pathname: '/accountchooser',
+				} );
+				expect( serviceURL ).toMatchQueryParameters( {
+					continue: 'https://www.google.com/adsense/new/u/0',
+					Email: 'admin@example.com',
+				} );
 			} );
 
 			it( 'prepends a forward slash to to the path if missing', () => {
-				const expectedURL = `${ baseURI }/test/path/to/deeplink?authuser=${ encodeURIComponent(
-					userData.email
-				) }`;
-
 				const serviceURLNoSlashes = registry
 					.select( MODULES_ADSENSE )
 					.getServiceURL( { path: 'test/path/to/deeplink' } );
-				expect( serviceURLNoSlashes ).toEqual( expectedURL );
+
+				expect(
+					new URL( decodeServiceURL( serviceURLNoSlashes ) ).pathname
+				).toMatch( new RegExp( '/test/path/to/deeplink$' ) );
+
 				const serviceURLWithLeadingSlash = registry
 					.select( MODULES_ADSENSE )
 					.getServiceURL( { path: '/test/path/to/deeplink' } );
-				expect( serviceURLWithLeadingSlash ).toEqual( expectedURL );
+
+				expect(
+					new URL( decodeServiceURL( serviceURLWithLeadingSlash ) )
+						.pathname
+				).toMatch( new RegExp( '/test/path/to/deeplink$' ) );
 			} );
 
 			it( 'adds query args', async () => {
 				const path = '/test/path/to/deeplink';
 				const query = {
-					authuser: userData.email,
 					param1: '1',
 					param2: '2',
 				};
 				const serviceURL = registry
 					.select( MODULES_ADSENSE )
 					.getServiceURL( { path, query } );
-				expect( serviceURL.startsWith( baseURI ) ).toBe( true );
-				expect(
-					serviceURL.endsWith(
-						`${ path }?authuser=${ encodeURIComponent(
-							userData.email
-						) }&param1=1&param2=2`
-					)
-				).toBe( true );
-				expect( serviceURL ).toMatchQueryParameters( query );
+
+				expect( decodeServiceURL( serviceURL ) ).toMatchQueryParameters(
+					query
+				);
 			} );
 		} );
 
@@ -140,17 +143,6 @@ describe( 'module/adsense service store', () => {
 				expect( url ).toBeUndefined();
 			} );
 
-			it( 'should construct the correct `path` for the URL', () => {
-				const correctPath = `${ settings.accountID }/home`;
-
-				const resultingURL = registry
-					.select( MODULES_ADSENSE )
-					.getServiceAccountSiteURL();
-				const { pathname } = new URL( resultingURL );
-
-				expect( pathname.endsWith( correctPath ) ).toBe( true );
-			} );
-
 			it( 'should construct the correct query params for the URL', () => {
 				const { host: referenceSiteURL } = new URL(
 					siteInfo.referenceSiteURL
@@ -159,8 +151,10 @@ describe( 'module/adsense service store', () => {
 				const resultingURL = registry
 					.select( MODULES_ADSENSE )
 					.getServiceAccountSiteURL();
-				expect( resultingURL ).toMatchQueryParameters( {
-					authuser: userData.email,
+
+				expect(
+					decodeServiceURL( resultingURL )
+				).toMatchQueryParameters( {
 					source: 'site-kit',
 					url: referenceSiteURL,
 				} );
@@ -189,9 +183,10 @@ describe( 'module/adsense service store', () => {
 				const resultingURL = registry
 					.select( MODULES_ADSENSE )
 					.getServiceReportURL();
-				const { pathname } = new URL( resultingURL );
 
-				expect( pathname.endsWith( correctPath ) ).toBe( true );
+				expect(
+					new URL( decodeServiceURL( resultingURL ) ).pathname
+				).toMatch( new RegExp( `${ correctPath }$` ) );
 			} );
 
 			it( 'should append `reportArgs` arguments to the `query` if received', () => {
@@ -200,7 +195,7 @@ describe( 'module/adsense service store', () => {
 					.select( MODULES_ADSENSE )
 					.getServiceReportURL( reportArgs );
 
-				expect( url ).toMatchQueryParameters( {
+				expect( decodeServiceURL( url ) ).toMatchQueryParameters( {
 					...reportArgs,
 				} );
 			} );
@@ -215,7 +210,7 @@ describe( 'module/adsense service store', () => {
 					.getServiceReportURL( reportArgs );
 				const domain = new URL( siteInfo.referenceSiteURL ).host;
 
-				expect( url ).toMatchQueryParameters( {
+				expect( decodeServiceURL( url ) ).toMatchQueryParameters( {
 					...reportArgs,
 					dd: `1YsiteY1Y${ domain }Y${ domain }`,
 				} );
@@ -232,7 +227,7 @@ describe( 'module/adsense service store', () => {
 					.select( MODULES_ADSENSE )
 					.getServiceReportURL( reportArgs );
 
-				expect( url ).toMatchQueryParameters( {
+				expect( decodeServiceURL( url ) ).toMatchQueryParameters( {
 					...reportArgs,
 				} );
 			} );

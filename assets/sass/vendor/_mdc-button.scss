@@ -3,7 +3,7 @@
 
 	@include mdc-button-ink-color($c-content-primary);
 	box-shadow: none;
-	text-transform: capitalize;
+	text-transform: none;
 
 	@media (max-width: $bp-desktop) {
 		min-width: auto;
@@ -23,7 +23,6 @@
 		padding-bottom: 8px;
 		padding-top: 8px;
 		text-align: center;
-		text-transform: capitalize;
 
 		&:hover {
 			text-decoration: none;
@@ -62,7 +61,7 @@
 			text-decoration: none;
 		}
 
-		@media (max-width: $bp-mobileOnly ) {
+		@media (max-width: $bp-mobileOnly) {
 			background-image: none;
 		}
 	}
@@ -88,6 +87,11 @@
 		@media (min-width: $bp-xlarge) {
 			max-width: 450px;
 		}
+	}
+
+	&--inverse {
+
+		@include mdc-button-filled-accessible($c-surfaces-inverse-surface);
 	}
 
 	.mdc-button__icon {

@@ -62,6 +62,9 @@ export default function SetupForm( { finishSetup } ) {
 	const singleAnalyticsPropertyID = useSelect( ( select ) =>
 		select( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID()
 	);
+	const analyticsModuleAvailable = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleAvailable( 'analytics' )
+	);
 	const analyticsModuleActive = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleActive( 'analytics' )
 	);
@@ -147,7 +150,9 @@ export default function SetupForm( { finishSetup } ) {
 	}, [ hasEditScope, initialAutoSubmit, submitForm, initialSubmitMode ] );
 
 	const isSetupWithAnalytics = !! (
-		singleAnalyticsPropertyID && ! analyticsModuleActive
+		singleAnalyticsPropertyID &&
+		analyticsModuleAvailable &&
+		! analyticsModuleActive
 	);
 
 	// Form submit behavior now varies based on which button is clicked.
@@ -163,9 +168,10 @@ export default function SetupForm( { finishSetup } ) {
 		[ submitForm, isSetupWithAnalytics ]
 	);
 	// Click handler for secondary option when setting up with option to include Analytics.
-	const onSetupWithoutAnalytics = useCallback( () => submitForm(), [
-		submitForm,
-	] );
+	const onSetupWithoutAnalytics = useCallback(
+		() => submitForm(),
+		[ submitForm ]
+	);
 
 	return (
 		<form

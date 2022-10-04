@@ -96,7 +96,7 @@ export default function PropertySelect( { hasModuleAccess } ) {
 				<Option key={ siteURL } value={ siteURL }>
 					{ siteURL.startsWith( 'sc-domain:' )
 						? sprintf(
-								/* translators: %s: domain name */
+								/* translators: 1: domain name */
 								__( '%s (domain property)', 'google-site-kit' ),
 								siteURL.replace( /^sc-domain:/, '' )
 						  )

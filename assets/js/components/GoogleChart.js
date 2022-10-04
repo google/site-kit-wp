@@ -44,9 +44,9 @@ import {
  * Internal dependencies
  */
 import PreviewBlock from './PreviewBlock';
-import { useFeature } from '../hooks/useFeature';
 import { CORE_USER } from '../googlesitekit/datastore/user/constants';
 import GatheringDataNotice, { NOTICE_STYLE } from './GatheringDataNotice';
+import { stringToDate } from '../util/date-range/string-to-date';
 import Data from 'googlesitekit-data';
 const { useSelect } = Data;
 
@@ -72,7 +72,6 @@ export default function GoogleChart( props ) {
 		gatheringData = false,
 		...otherProps
 	} = props;
-	const zeroDataStatesEnabled = useFeature( 'zeroDataStates' );
 
 	const { startDate, endDate } = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeDates()
@@ -208,7 +207,7 @@ export default function GoogleChart( props ) {
 	}
 
 	const chartOptions = cloneDeep( options );
-	if ( zeroDataStatesEnabled && gatheringData && chartType === 'LineChart' ) {
+	if ( gatheringData && chartType === 'LineChart' ) {
 		if ( ! options?.vAxis?.viewWindow?.min ) {
 			set( chartOptions, 'vAxis.viewWindow.min', 0 );
 		}
@@ -216,11 +215,19 @@ export default function GoogleChart( props ) {
 			set( chartOptions, 'vAxis.viewWindow.max', 100 );
 		}
 		if ( ! options?.hAxis?.viewWindow?.min ) {
-			set( chartOptions, 'hAxis.viewWindow.min', new Date( startDate ) );
+			set(
+				chartOptions,
+				'hAxis.viewWindow.min',
+				stringToDate( startDate )
+			);
 			delete chartOptions.hAxis.ticks;
 		}
 		if ( ! options?.hAxis?.viewWindow?.max ) {
-			set( chartOptions, 'hAxis.viewWindow.max', new Date( endDate ) );
+			set(
+				chartOptions,
+				'hAxis.viewWindow.max',
+				stringToDate( endDate )
+			);
 			delete chartOptions.hAxis.ticks;
 		}
 	}
@@ -228,21 +235,18 @@ export default function GoogleChart( props ) {
 	merge( chartOptions, {
 		hAxis: {
 			textStyle: {
-				fontName: 'Google Sans Text',
 				fontSize: 10,
 				color: '#5f6561',
 			},
 		},
 		vAxis: {
 			textStyle: {
-				fontName: 'Google Sans Text',
 				color: '#5f6561',
 				fontSize: 10,
 			},
 		},
 		legend: {
 			textStyle: {
-				fontName: 'Google Sans Text',
 				color: '#131418',
 				fontSize: 12,
 			},
@@ -302,7 +306,7 @@ export default function GoogleChart( props ) {
 				options={ chartOptions }
 				{ ...otherProps }
 			/>
-			{ zeroDataStatesEnabled && gatheringData && isChartLoaded && (
+			{ gatheringData && isChartLoaded && (
 				<GatheringDataNotice style={ NOTICE_STYLE.OVERLAY } />
 			) }
 			{ children }

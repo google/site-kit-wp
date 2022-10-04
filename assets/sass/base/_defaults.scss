@@ -153,7 +153,7 @@
 
 	.hidden-on-mobile {
 
-		@media (max-width: $bp-mobileOnly ) {
+		@media (max-width: $bp-mobileOnly) {
 			display: none;
 		}
 	}

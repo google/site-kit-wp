@@ -37,16 +37,13 @@ import {
 	ERROR_INVALID_HOSTNAME,
 	ERROR_TOKEN_MISMATCH,
 	ERROR_WP_PRE_V5,
+	ERROR_SK_SERVICE_CONNECTION_FAIL,
 } from './constants';
+import GetHelpLink from './GetHelpLink';
 
-const helperCTA = ( developerPlugin ) => {
-	const {
-		installed,
-		active,
-		installURL,
-		activateURL,
-		configureURL,
-	} = developerPlugin;
+const helperCTA = ( developerPlugin, stagingDocumentationURL ) => {
+	const { installed, active, installURL, activateURL, configureURL } =
+		developerPlugin;
 
 	if ( ! installed && installURL ) {
 		return {
@@ -81,8 +78,7 @@ const helperCTA = ( developerPlugin ) => {
 			'google-site-kit'
 		),
 		children: __( 'Learn how', 'google-site-kit' ),
-		href:
-			'https://sitekit.withgoogle.com/documentation/using-site-kit/staging/',
+		href: stagingDocumentationURL,
 		external: true,
 	};
 };
@@ -94,6 +90,10 @@ export default function CompatibilityErrorNotice( { error } ) {
 		) || {};
 	const { installed } = developerPlugin;
 
+	const documentationURL = useSelect( ( select ) => {
+		return select( CORE_SITE ).getDocumentationLinkURL( 'staging' );
+	} );
+
 	switch ( error ) {
 		case ERROR_API_UNAVAILABLE:
 			return (
@@ -101,7 +101,8 @@ export default function CompatibilityErrorNotice( { error } ) {
 					{ __(
 						'Site Kit cannot access the WordPress REST API. Please ensure it is enabled on your site.',
 						'google-site-kit'
-					) }
+					) }{ ' ' }
+					<GetHelpLink errorCode={ error } />
 				</p>
 			);
 		case ERROR_INVALID_HOSTNAME:
@@ -124,7 +125,9 @@ export default function CompatibilityErrorNotice( { error } ) {
 							) }
 						</span>
 					) }{ ' ' }
-					<Link { ...helperCTA( developerPlugin ) } />
+					<Link
+						{ ...helperCTA( developerPlugin, documentationURL ) }
+					/>
 				</p>
 			);
 		case ERROR_TOKEN_MISMATCH:
@@ -133,7 +136,8 @@ export default function CompatibilityErrorNotice( { error } ) {
 					{ __(
 						'Looks like Site Kit is unable to place or detect tags on your site. This can be caused by using certain caching or maintenance mode plugins or your site’s frontend is configured on a different host or infrastructure than your administration dashboard.',
 						'google-site-kit'
-					) }
+					) }{ ' ' }
+					<GetHelpLink errorCode={ error } />
 				</p>
 			);
 		case ERROR_GOOGLE_API_CONNECTION_FAIL:
@@ -148,7 +152,7 @@ export default function CompatibilityErrorNotice( { error } ) {
 						<br/>
 						${
 							sprintf(
-								/* translators: %1$s: Support Forum URL, %2$s: Error message */ // eslint-disable-line indent
+								/* translators: 1: Support Forum URL, 2: Error message */ // eslint-disable-line indent
 								__(
 									'To get more help, ask a question on our <a href="%1$s">support forum</a> and include the text of the original error message: %2$s',
 									'google-site-kit'
@@ -167,17 +171,36 @@ export default function CompatibilityErrorNotice( { error } ) {
 			);
 		case ERROR_AMP_CDN_RESTRICTED:
 			return (
+				<p>
+					{ __(
+						'Looks like the AMP CDN is restricted in your region, which could interfere with setup on the Site Kit service.',
+						'google-site-kit'
+					) }{ ' ' }
+					<GetHelpLink errorCode={ error } />
+				</p>
+			);
+		case ERROR_WP_PRE_V5:
+			return (
+				<p>
+					{ __(
+						'Looks like you’re using a version of WordPress that’s older than 5.0. You can still install and use Site Kit, but some of its features might not work (for example translations).',
+						'google-site-kit'
+					) }
+				</p>
+			);
+		case ERROR_SK_SERVICE_CONNECTION_FAIL:
+			return (
 				<p
 					dangerouslySetInnerHTML={ sanitizeHTML(
 						`
 						${ __(
-							'Looks like the AMP CDN is restricted in your region, which could interfere with setup on the Site Kit service.',
+							'Looks like your site is having a technical issue with connecting to the Site Kit authentication service.',
 							'google-site-kit'
 						) }
 						<br/>
 						${
 							sprintf(
-								/* translators: %1$s: Support Forum URL, %2$s: Error message */ // eslint-disable-line indent
+								/* translators: 1: Support Forum URL, 2: Error message */ // eslint-disable-line indent
 								__(
 									'To get more help, ask a question on our <a href="%1$s">support forum</a> and include the text of the original error message: %2$s',
 									'google-site-kit'
@@ -193,15 +216,6 @@ export default function CompatibilityErrorNotice( { error } ) {
 						}
 					) }
 				/>
-			);
-		case ERROR_WP_PRE_V5:
-			return (
-				<p>
-					{ __(
-						'Looks like you’re using a version of WordPress that’s older than 5.0. You can still install and use Site Kit, but some of its features might not work (for example translations).',
-						'google-site-kit'
-					) }
-				</p>
 			);
 	}
 }

@@ -21,7 +21,6 @@
  */
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
-import { Tooltip } from '@material-ui/core';
 
 /**
  * WordPress dependencies
@@ -33,6 +32,7 @@ import {
 	useCallback,
 	useEffect,
 	useState,
+	useRef,
 } from '@wordpress/element';
 
 /**
@@ -41,6 +41,7 @@ import {
 import Data from 'googlesitekit-data';
 import ModuleIcon from '../../ModuleIcon';
 import UserRoleSelect from '../UserRoleSelect';
+import Tooltip from '../../Tooltip';
 import { Select } from '../../../material-components';
 import useViewContext from '../../../hooks/useViewContext';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
@@ -68,6 +69,7 @@ const viewAccessOptions = [
 
 export default function Module( { moduleSlug, moduleName, ownerUsername } ) {
 	const viewContext = useViewContext();
+	const moduleRef = useRef();
 
 	const [ manageViewAccess, setManageViewAccess ] = useState( undefined );
 	const hasMultipleAdmins = useSelect( ( select ) =>
@@ -113,18 +115,35 @@ export default function Module( { moduleSlug, moduleName, ownerUsername } ) {
 		}
 	}, [ management, sharedOwnershipModule ] );
 
+	const haveSharingSettingsManagementChanged = useSelect( ( select ) =>
+		select( CORE_MODULES ).haveModuleSharingSettingsChanged(
+			moduleSlug,
+			'management'
+		)
+	);
+
+	useEffect( () => {
+		if ( haveSharingSettingsManagementChanged ) {
+			trackEvent(
+				`${ viewContext }_sharing`,
+				`change_management_${ management }`,
+				moduleSlug
+			);
+		}
+	}, [
+		haveSharingSettingsManagementChanged,
+		management,
+		moduleSlug,
+		viewContext,
+	] );
+
 	const handleOnChange = useCallback(
 		( event ) => {
 			const value = event.target.value;
 			setManageViewAccess( value );
 			setSharingManagement( moduleSlug, value );
-			trackEvent(
-				`${ viewContext }_sharing`,
-				`change_management_${ value }`,
-				moduleSlug
-			);
 		},
-		[ setSharingManagement, setManageViewAccess, moduleSlug, viewContext ]
+		[ setSharingManagement, setManageViewAccess, moduleSlug ]
 	);
 
 	const isEditingUserRoles = moduleSlug === editingUserRolesSlug;
@@ -138,10 +157,13 @@ export default function Module( { moduleSlug, moduleName, ownerUsername } ) {
 				'googlesitekit-dashboard-sharing-settings__module',
 				'googlesitekit-dashboard-sharing-settings__row',
 				{
-					'googlesitekit-dashboard-sharing-settings__row--editing': isEditingUserRoles,
-					'googlesitekit-dashboard-sharing-settings__row--disabled': isLocked,
+					'googlesitekit-dashboard-sharing-settings__row--editing':
+						isEditingUserRoles,
+					'googlesitekit-dashboard-sharing-settings__row--disabled':
+						isLocked,
 				}
 			) }
+			ref={ moduleRef }
 		>
 			<div className="googlesitekit-dashboard-sharing-settings__column--product">
 				<ModuleIcon slug={ moduleSlug } size={ 48 } />
@@ -156,6 +178,7 @@ export default function Module( { moduleSlug, moduleName, ownerUsername } ) {
 					<UserRoleSelect
 						moduleSlug={ moduleSlug }
 						isLocked={ isLocked }
+						ref={ moduleRef }
 					/>
 				) }
 
@@ -185,10 +208,6 @@ export default function Module( { moduleSlug, moduleName, ownerUsername } ) {
 									'This service requires general access to Google APIs rather than access to a specific user-owned property/entity, so view access is manageable by any admin signed in with Google.',
 									'google-site-kit'
 								) }
-								classes={ {
-									popper: 'googlesitekit-tooltip-popper',
-									tooltip: 'googlesitekit-tooltip',
-								} }
 							>
 								<span className="googlesitekit-dashboard-sharing-settings__tooltip-icon">
 									<Icon icon={ info } size={ 18 } />
@@ -213,7 +232,7 @@ export default function Module( { moduleSlug, moduleName, ownerUsername } ) {
 							<p className="googlesitekit-dashboard-sharing-settings__note">
 								{ createInterpolateElement(
 									sprintf(
-										/* translators: %s: user who manages the module. */
+										/* translators: 1: user who manages the module. */
 										__(
 											'<span>Managed by</span> <strong>%s</strong>',
 											'google-site-kit'
@@ -230,7 +249,7 @@ export default function Module( { moduleSlug, moduleName, ownerUsername } ) {
 									title={
 										hasSharingCapability
 											? sprintf(
-													/* translators: %s: name of the user who manages the module. */
+													/* translators: 1: name of the user who manages the module. */
 													__(
 														'%s has connected this and given managing permissions to all admins. You can change who can view this on the dashboard.',
 														'google-site-kit'
@@ -238,7 +257,7 @@ export default function Module( { moduleSlug, moduleName, ownerUsername } ) {
 													ownerUsername
 											  )
 											: sprintf(
-													/* translators: %s: name of the user who manages the module. */
+													/* translators: 1: name of the user who manages the module. */
 													__(
 														'Contact %s to change who can manage view access for this module.',
 														'google-site-kit'
@@ -246,10 +265,6 @@ export default function Module( { moduleSlug, moduleName, ownerUsername } ) {
 													ownerUsername
 											  )
 									}
-									classes={ {
-										popper: 'googlesitekit-tooltip-popper',
-										tooltip: 'googlesitekit-tooltip',
-									} }
 								>
 									<span className="googlesitekit-dashboard-sharing-settings__tooltip-icon">
 										<Icon icon={ info } size={ 18 } />

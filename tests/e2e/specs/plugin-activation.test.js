@@ -125,9 +125,7 @@ describe( 'plugin activation notice', () => {
 			await page.waitForSelector( '.googlesitekit-wizard-step__title' );
 
 			// Ensure we're on the first step.
-			await expect(
-				page
-			).toMatchElement(
+			await expect( page ).toMatchElement(
 				'.googlesitekit-wizard-progress-step__number--inprogress',
 				{ text: '1' }
 			);

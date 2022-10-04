@@ -16,4 +16,10 @@
  * limitations under the License.
  */
 
-export { default as PublicationIDInput } from './PublicationIDInput';
+export { default as ProminenceRadio } from './ProminenceRadio';
+export { default as TypeRadio } from './TypeRadio';
+export { default as PositionRadio } from './PositionRadio';
+export { default as ColorRadio } from './ColorRadio';
+export { default as PostTypesSelect } from './PostTypesSelect';
+export { default as CTAPlacement } from './CTAPlacement';
+export { default as SupporterWall } from './SupporterWall';

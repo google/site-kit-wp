@@ -19,7 +19,13 @@
 /**
  * Internal dependencies
  */
-import { createTestRegistry, provideModules } from '../../../tests/js/utils';
+import {
+	createTestRegistry,
+	provideModuleRegistrations,
+	provideModules,
+	provideUserInfo,
+	unsubscribeFromAll,
+} from '../../../tests/js/utils';
 import {
 	ERROR_CODE_MISSING_REQUIRED_SCOPE,
 	ERROR_REASON_INSUFFICIENT_PERMISSIONS,
@@ -85,7 +91,10 @@ describe( 'ReportError', () => {
 		);
 	} );
 
-	afterEach( () => invalidateResolutionSpy.mockReset() );
+	afterEach( () => {
+		invalidateResolutionSpy.mockReset();
+		unsubscribeFromAll( registry );
+	} );
 
 	it( 'renders the error message', () => {
 		const { container } = render(
@@ -148,6 +157,58 @@ describe( 'ReportError', () => {
 		expect( container.querySelector( 'h3' ).textContent ).toEqual(
 			'Insufficient permissions in Test Module'
 		);
+	} );
+
+	it( 'renders the insufficient permission error along with the `Request access` button if it exists for a module', () => {
+		const userData = {
+			id: 1,
+			email: 'admin@example.com',
+			name: 'admin',
+			picture: 'https://path/to/image',
+		};
+		provideModules( registry, [
+			{
+				active: true,
+				connected: true,
+				slug: 'analytics',
+			},
+		] );
+		provideModuleRegistrations( registry );
+		provideUserInfo( registry, userData );
+
+		const [ accountID, internalWebPropertyID, profileID ] = [
+			'12345',
+			'34567',
+			'56789',
+		];
+
+		registry.dispatch( MODULES_ANALYTICS ).setAccountID( accountID );
+		registry
+			.dispatch( MODULES_ANALYTICS )
+			.setInternalWebPropertyID( internalWebPropertyID );
+		registry.dispatch( MODULES_ANALYTICS ).setProfileID( profileID );
+
+		const { container, queryByText } = render(
+			<ReportError
+				moduleSlug="analytics"
+				error={ {
+					code: 'test-error-code',
+					message: 'Test error message',
+					data: {
+						reason: ERROR_REASON_INSUFFICIENT_PERMISSIONS,
+					},
+				} }
+			/>,
+			{
+				registry,
+			}
+		);
+
+		expect( container.querySelector( 'h3' ).textContent ).toEqual(
+			'Insufficient permissions in Analytics'
+		);
+		// Verify the `Request access` button is rendered.
+		expect( queryByText( /request access/i ) ).toBeInTheDocument();
 	} );
 
 	it( "should not render the `Retry` button if the error's `selectorData.name` is not `getReport`", () => {
@@ -252,7 +313,7 @@ describe( 'ReportError', () => {
 	} );
 
 	it( 'should render the `Retry` button if the error selector name is `getReport`', () => {
-		const { queryByText } = render(
+		const { getByRole } = render(
 			<ReportError
 				moduleSlug="analytics"
 				error={ {
@@ -280,11 +341,11 @@ describe( 'ReportError', () => {
 			}
 		);
 
-		expect( queryByText( /retry/i ) ).toBeInTheDocument();
+		expect( getByRole( 'button', { name: /retry/i } ) ).toBeInTheDocument();
 	} );
 
 	it( 'should dispatch the `invalidateResolution` action for each retry-able error', () => {
-		const { queryByText, getByRole } = render(
+		const { getByRole } = render(
 			<ReportError
 				moduleSlug="analytics"
 				error={ [
@@ -311,7 +372,7 @@ describe( 'ReportError', () => {
 			}
 		);
 
-		expect( queryByText( /retry/i ) ).toBeInTheDocument();
+		expect( getByRole( 'button', { name: /retry/i } ) ).toBeInTheDocument();
 
 		fireEvent.click( getByRole( 'button', { name: /retry/i } ) );
 
@@ -329,7 +390,7 @@ describe( 'ReportError', () => {
 			}
 		);
 
-		expect( queryByText( /retry/i ) ).toBeInTheDocument();
+		expect( getByRole( 'button', { name: /retry/i } ) ).toBeInTheDocument();
 
 		// Verify that the error descriptions are listed one by one if the errors are different.
 		expect( queryByText( /Test error message one/i ) ).toBeInTheDocument();
@@ -351,7 +412,7 @@ describe( 'ReportError', () => {
 			}
 		);
 
-		expect( queryByText( /retry/i ) ).toBeInTheDocument();
+		expect( getByRole( 'button', { name: /retry/i } ) ).toBeInTheDocument();
 
 		// Verify that the error descriptions are listed one by one if the errors are different.
 		expect( queryByText( /Test error message one/i ) ).toBeInTheDocument();
@@ -367,5 +428,71 @@ describe( 'ReportError', () => {
 
 		fireEvent.click( getByRole( 'button', { name: /retry/i } ) );
 		expect( invalidateResolutionSpy ).toHaveBeenCalledTimes( 4 );
+	} );
+
+	it( 'shold render `Get help` ulink without prefix text on non-retryable error', () => {
+		const { getByRole, queryByText } = render(
+			<ReportError
+				moduleSlug="analytics"
+				// Non-Retryable Error
+				error={ {
+					code: ERROR_CODE_MISSING_REQUIRED_SCOPE,
+					message: 'Test error message',
+					data: {
+						reason: '',
+					},
+					selectorData: {
+						args: [],
+						name: 'getAccountID',
+						storeName: MODULES_ANALYTICS,
+					},
+				} }
+			/>,
+			{
+				registry,
+			}
+		);
+
+		expect(
+			getByRole( 'link', { name: /get help/i } )
+		).toBeInTheDocument();
+		expect( queryByText( /retry didn’t work/i ) ).not.toBeInTheDocument();
+	} );
+
+	it( 'should render `Get help` link with prefix text on retryable error', () => {
+		const { getByRole, queryByText } = render(
+			<ReportError
+				moduleSlug="analytics"
+				// Retryable Error
+				error={ {
+					code: 'test-error-code',
+					message: 'Test error message',
+					data: {
+						reason: '',
+					},
+					selectorData: {
+						args: [
+							{
+								dimensions: [ 'ga:date' ],
+								metrics: [ { expression: 'ga:users' } ],
+								startDate: '2020-08-11',
+								endDate: '2020-09-07',
+							},
+						],
+						name: 'getReport',
+						storeName: MODULES_ANALYTICS,
+					},
+				} }
+			/>,
+			{
+				registry,
+			}
+		);
+
+		expect( getByRole( 'button', { name: /retry/i } ) ).toBeInTheDocument();
+		expect(
+			getByRole( 'link', { name: /get help/i } )
+		).toBeInTheDocument();
+		expect( queryByText( /retry didn’t work/i ) ).toBeInTheDocument();
 	} );
 } );

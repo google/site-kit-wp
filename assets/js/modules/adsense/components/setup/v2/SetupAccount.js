@@ -66,9 +66,8 @@ export default function SetupAccount( { account, finishSetup } ) {
 		select( MODULES_ADSENSE ).getAFCClient( accountID )
 	);
 
-	const { setClientID, setAccountStatus, setSiteStatus } = useDispatch(
-		MODULES_ADSENSE
-	);
+	const { setClientID, setAccountStatus, setSiteStatus } =
+		useDispatch( MODULES_ADSENSE );
 
 	useEffect( () => {
 		if ( afcClient?._id && clientID !== afcClient._id ) {

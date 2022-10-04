@@ -41,6 +41,9 @@ import { getInsufficientPermissionsErrorDescription } from '../util/insufficient
 import { purify } from '../util/purify';
 import ErrorText from '../components/ErrorText';
 import CTA from './notifications/CTA';
+import Button from './Button';
+import Link from './Link';
+import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
 
 const { useSelect, useDispatch } = Data;
 
@@ -48,14 +51,42 @@ export default function ReportError( { moduleSlug, error } ) {
 	const module = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModule( moduleSlug )
 	);
+	const storeName = useSelect( ( select ) =>
+		select( CORE_MODULES ).getModuleStoreName( moduleSlug )
+	);
+	const requestAccessURL = useSelect( ( select ) =>
+		typeof select( storeName )?.getServiceEntityAccessURL === 'function'
+			? select( storeName ).getServiceEntityAccessURL()
+			: null
+	);
+
+	const errors = Array.isArray( error ) ? error : [ error ];
+
+	const retryableErrors = errors.filter(
+		( err ) =>
+			!! err?.selectorData?.storeName &&
+			err.selectorData?.name === 'getReport' &&
+			! isInsufficientPermissionsError( err ) &&
+			! isPermissionScopeError( err ) &&
+			! isAuthError( err )
+	);
+
+	const showRetry = !! retryableErrors.length;
+
+	const errorTroubleshootingLinkURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getErrorTroubleshootingLinkURL(
+			showRetry ? retryableErrors[ 0 ] : errors[ 0 ]
+		)
+	);
 
 	const dispatch = useDispatch();
+
 	let title;
 
 	const getMessage = ( err ) => {
 		if ( isInsufficientPermissionsError( err ) ) {
 			title = sprintf(
-				/* translators: %s: module name */
+				/* translators: 1: module name */
 				__( 'Insufficient permissions in %s', 'google-site-kit' ),
 				module?.name
 			);
@@ -69,7 +100,6 @@ export default function ReportError( { moduleSlug, error } ) {
 		return err.message;
 	};
 
-	const errors = Array.isArray( error ) ? error : [ error ];
 	const uniqueErrors = uniqWith(
 		errors.map( ( err ) => ( {
 			...err,
@@ -87,13 +117,13 @@ export default function ReportError( { moduleSlug, error } ) {
 
 	if ( ! hasInsufficientPermissionsError && uniqueErrors.length === 1 ) {
 		title = sprintf(
-			/* translators: %s: module name */
+			/* translators: 1: module name */
 			__( 'Data error in %s', 'google-site-kit' ),
 			module?.name
 		);
 	} else if ( ! hasInsufficientPermissionsError && uniqueErrors.length > 1 ) {
 		title = sprintf(
-			/* translators: %s: module name */
+			/* translators: 1: module name */
 			__( 'Data errors in %s', 'google-site-kit' ),
 			module?.name
 		);
@@ -118,12 +148,6 @@ export default function ReportError( { moduleSlug, error } ) {
 		</Fragment>
 	);
 
-	const retryableErrors = errors.filter(
-		( err ) =>
-			err?.selectorData?.name === 'getReport' && isErrorRetryable( err )
-	);
-	const showRetry = !! retryableErrors.length;
-
 	const handleRetry = useCallback( () => {
 		retryableErrors.forEach( ( err ) => {
 			const { selectorData } = err;
@@ -134,17 +158,36 @@ export default function ReportError( { moduleSlug, error } ) {
 		} );
 	}, [ dispatch, retryableErrors ] );
 
+	const showRequestAccessURL =
+		requestAccessURL && hasInsufficientPermissionsError;
+
 	return (
-		<CTA
-			title={ title }
-			description={ description }
-			ctaType={ showRetry ? 'button' : undefined }
-			ctaLabel={
-				showRetry ? __( 'Retry', 'google-site-kit' ) : undefined
-			}
-			onClick={ showRetry ? handleRetry : undefined }
-			error
-		/>
+		<CTA title={ title } description={ description } error>
+			<div className="googlesitekit-error-cta-wrapper">
+				{ showRequestAccessURL && (
+					<Button href={ requestAccessURL } target="_blank">
+						{ __( 'Request access', 'google-site-kit' ) }
+					</Button>
+				) }
+				{ showRetry ? (
+					<Fragment>
+						<Button onClick={ handleRetry }>
+							{ __( 'Retry', 'google-site-kit' ) }
+						</Button>
+						<span className="googlesitekit-error-retry-text">
+							{ __( 'Retry didn’t work?', 'google-site-kit' ) }{ ' ' }
+						</span>
+						<Link href={ errorTroubleshootingLinkURL } external>
+							{ __( 'Get help', 'google-site-kit' ) }
+						</Link>
+					</Fragment>
+				) : (
+					<Link href={ errorTroubleshootingLinkURL } external>
+						{ __( 'Get help', 'google-site-kit' ) }
+					</Link>
+				) }
+			</div>
+		</CTA>
 	);
 }
 

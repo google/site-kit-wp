@@ -8,7 +8,7 @@
  * @link      https://sitekit.withgoogle.com
  */
 
-use Isolated\Symfony\Component\Finder\Finder;
+use Symfony\Component\Finder\Finder;
 
 // Google API services to include classes for.
 $google_services = implode(
@@ -88,6 +88,12 @@ return array(
 			->name( '#^autoload.php$#' )
 			->depth( '== 0' )
 			->in( 'vendor/google/apiclient-services' ),
+
+		// Temporary SwG client.
+		Finder::create()
+			->files()
+			->name( '#\.php$#' )
+			->in( 'vendor/google/apiclient-services-subscribewithgoogle' ),
 	),
 	'files-whitelist'            => array(
 
@@ -109,6 +115,12 @@ return array(
 			if ( false !== strpos( $file_path, 'vendor/google/apiclient/' ) ) {
 				$contents = str_replace( "'Google_", "'" . $prefix . '\Google_', $contents );
 				$contents = str_replace( '"Google_', '"' . $prefix . '\Google_', $contents );
+			}
+			if ( false !== strpos( $file_path, 'apiclient-services-subscribewithgoogle' ) ) {
+				// Rewrite 'Class_Name' to Class_Name::class to inherit namespace.
+				$contents = preg_replace( '/\'(Google_[^\']+)\'/', '\\1::class', $contents );
+				// Rewrite "Class_Name" to Class_Name::class to inherit namespace.
+				$contents = preg_replace( '/"(Google_[^"]+)"/', '\\1::class', $contents );
 			}
 			return $contents;
 		},

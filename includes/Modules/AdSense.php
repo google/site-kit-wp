@@ -23,6 +23,8 @@ use Google\Site_Kit\Core\Modules\Module_With_Assets_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Owner;
 use Google\Site_Kit\Core\Modules\Module_With_Owner_Trait;
 use Google\Site_Kit\Core\REST_API\Exception\Invalid_Datapoint_Exception;
+use Google\Site_Kit\Core\Validation\Exception\Invalid_Report_Metrics_Exception;
+use Google\Site_Kit\Core\Validation\Exception\Invalid_Report_Dimensions_Exception;
 use Google\Site_Kit\Core\Assets\Asset;
 use Google\Site_Kit\Core\Assets\Script;
 use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
@@ -43,6 +45,7 @@ use Google\Site_Kit_Dependencies\Google\Service\Adsense as Google_Service_Adsens
 use Google\Site_Kit_Dependencies\Google\Service\Adsense\Alert as Google_Service_Adsense_Alert;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 use Exception;
+use Google\Site_Kit\Core\Util\URL;
 use WP_Error;
 
 /**
@@ -224,12 +227,12 @@ final class AdSense extends Module
 					$option            = $this->get_settings()->get();
 					$data['accountID'] = $option['accountID'];
 					if ( empty( $data['accountID'] ) ) {
-						/* translators: %s: Missing parameter name */
+						/* translators: 1: Missing parameter name */
 						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ), array( 'status' => 400 ) );
 					}
 					$data['clientID'] = $option['clientID'];
 					if ( empty( $data['clientID'] ) ) {
-						/* translators: %s: Missing parameter name */
+						/* translators: 1: Missing parameter name */
 						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'clientID' ), array( 'status' => 400 ) );
 					}
 				}
@@ -240,7 +243,7 @@ final class AdSense extends Module
 					$option            = $this->get_settings()->get();
 					$data['accountID'] = $option['accountID'];
 					if ( empty( $data['accountID'] ) ) {
-						/* translators: %s: Missing parameter name */
+						/* translators: 1: Missing parameter name */
 						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ), array( 'status' => 400 ) );
 					}
 				}
@@ -250,7 +253,7 @@ final class AdSense extends Module
 				if ( ! isset( $data['accountID'] ) ) {
 					return new WP_Error(
 						'missing_required_param',
-						/* translators: %s: Missing parameter name */
+						/* translators: 1: Missing parameter name */
 						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ),
 						array( 'status' => 400 )
 					);
@@ -276,11 +279,29 @@ final class AdSense extends Module
 
 				$metrics = $this->parse_string_list( $data['metrics'] );
 				if ( ! empty( $metrics ) ) {
+					try {
+						$this->validate_report_metrics( $metrics );
+					} catch ( Invalid_Report_Metrics_Exception $exception ) {
+						return new WP_Error(
+							'invalid_adsense_report_metrics',
+							$exception->getMessage()
+						);
+					}
+
 					$args['metrics'] = $metrics;
 				}
 
 				$dimensions = $this->parse_string_list( $data['dimensions'] );
 				if ( ! empty( $dimensions ) ) {
+					try {
+						$this->validate_report_dimensions( $dimensions );
+					} catch ( Invalid_Report_Dimensions_Exception $exception ) {
+						return new WP_Error(
+							'invalid_adsense_report_dimensions',
+							$exception->getMessage()
+						);
+					}
+
 					$args['dimensions'] = $dimensions;
 				}
 
@@ -335,7 +356,7 @@ final class AdSense extends Module
 				if ( ! isset( $data['accountID'] ) ) {
 					return new WP_Error(
 						'missing_required_param',
-						/* translators: %s: Missing parameter name */
+						/* translators: 1: Missing parameter name */
 						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ),
 						array( 'status' => 400 )
 					);
@@ -346,7 +367,7 @@ final class AdSense extends Module
 				if ( ! isset( $data['accountID'] ) ) {
 					return new WP_Error(
 						'missing_required_param',
-						/* translators: %s: Missing parameter name */
+						/* translators: 1: Missing parameter name */
 						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ),
 						array( 'status' => 400 )
 					);
@@ -354,7 +375,7 @@ final class AdSense extends Module
 				if ( ! isset( $data['clientID'] ) ) {
 					return new WP_Error(
 						'missing_required_param',
-						/* translators: %s: Missing parameter name */
+						/* translators: 1: Missing parameter name */
 						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'clientID' ),
 						array( 'status' => 400 )
 					);
@@ -575,7 +596,7 @@ final class AdSense extends Module
 		}
 
 		// @see https://developers.google.com/adsense/management/reporting/filtering?hl=en#OR
-		$site_hostname         = wp_parse_url( $this->context->get_reference_site_url(), PHP_URL_HOST );
+		$site_hostname         = URL::parse( $this->context->get_reference_site_url(), PHP_URL_HOST );
 		$opt_params['filters'] = join(
 			',',
 			array_map(
@@ -838,4 +859,90 @@ final class AdSense extends Module
 		return true;
 	}
 
+	/**
+	 * Validates the report metrics.
+	 *
+	 * @since 1.83.0
+	 *
+	 * @param string[] $metrics The metrics to validate.
+	 * @throws Invalid_Report_Metrics_Exception Thrown if the metrics are invalid.
+	 */
+	protected function validate_report_metrics( $metrics ) {
+		if ( false === $this->is_using_shared_credentials ) {
+			return;
+		}
+
+		$valid_metrics = apply_filters(
+			'googlesitekit_shareable_adsense_metrics',
+			array(
+				'ESTIMATED_EARNINGS',
+				'IMPRESSIONS',
+				'PAGE_VIEWS_CTR',
+				'PAGE_VIEWS_RPM',
+			)
+		);
+
+		$invalid_metrics = array_diff( $metrics, $valid_metrics );
+
+		if ( count( $invalid_metrics ) > 0 ) {
+			$message = sprintf(
+				/* translators: 1: is replaced with a comma separated list of the invalid metrics. */
+				_n(
+					'Unsupported metric requested: %s',
+					'Unsupported metrics requested: %s',
+					count( $invalid_metrics ),
+					'google-site-kit'
+				),
+				join(
+					/* translators: used between list items, there is a space after the comma. */
+					__( ', ', 'google-site-kit' ),
+					$invalid_metrics
+				)
+			);
+
+			throw new Invalid_Report_Metrics_Exception( $message );
+		}
+	}
+
+	/**
+	 * Validates the report dimensions.
+	 *
+	 * @since 1.83.0
+	 *
+	 * @param string[] $dimensions The dimensions to validate.
+	 * @throws Invalid_Report_Dimensions_Exception Thrown if the dimensions are invalid.
+	 */
+	protected function validate_report_dimensions( $dimensions ) {
+		if ( false === $this->is_using_shared_credentials ) {
+			return;
+		}
+
+		$valid_dimensions = apply_filters(
+			'googlesitekit_shareable_adsense_dimensions',
+			array(
+				'DATE',
+			)
+		);
+
+		$invalid_dimensions = array_diff( $dimensions, $valid_dimensions );
+
+		if ( count( $invalid_dimensions ) > 0 ) {
+			$message = sprintf(
+				/* translators: 1: is replaced with a comma separated list of the invalid dimensions. */
+				_n(
+					'Unsupported dimension requested: %s',
+					'Unsupported dimensions requested: %s',
+					count( $invalid_dimensions ),
+					'google-site-kit'
+				),
+				join(
+					/* translators: used between list items, there is a space after the comma. */
+					__( ', ', 'google-site-kit' ),
+					$invalid_dimensions
+				)
+			);
+
+			throw new Invalid_Report_Dimensions_Exception( $message );
+		}
+	}
 }

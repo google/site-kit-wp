@@ -23,7 +23,6 @@
 #wpadminbar {
 
 	.googlesitekit-adminbar {
-
 		// General
 		* {
 			font-family: $f-primary;
@@ -223,7 +222,6 @@
 
 			@extend .googlesitekit-cta__description;
 		}
-
 	}
 
 	&.nojs .googlesitekit-noscript {
@@ -243,7 +241,6 @@
 			@extend .mdc-layout-grid__cell;
 			@extend .mdc-layout-grid__cell--span-12-tablet;
 		}
-
 	}
 
 	// Higher-specificity overrides.

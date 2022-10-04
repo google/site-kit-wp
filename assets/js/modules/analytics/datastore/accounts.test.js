@@ -49,7 +49,8 @@ describe( 'modules/analytics accounts', () => {
 	let registry;
 	let store;
 
-	const propertiesEndpoint = /^\/google-site-kit\/v1\/modules\/analytics\/data\/accounts-properties-profiles/;
+	const propertiesEndpoint =
+		/^\/google-site-kit\/v1\/modules\/analytics\/data\/accounts-properties-profiles/;
 
 	beforeAll( () => {
 		API.setUsingCache( false );
@@ -712,12 +713,8 @@ describe( 'modules/analytics accounts', () => {
 			} );
 
 			it( 'sets account, property, and profile IDs in the store, if a matchedProperty is received and an account is not selected yet', async () => {
-				const {
-					accounts,
-					properties,
-					profiles,
-					matchedProperty,
-				} = fixtures.accountsPropertiesProfiles;
+				const { accounts, properties, profiles, matchedProperty } =
+					fixtures.accountsPropertiesProfiles;
 				const matchedProfile = {
 					...fixtures.profiles[ 0 ],
 					id: '123456',
@@ -862,7 +859,7 @@ describe( 'modules/analytics accounts', () => {
 						.select( MODULES_ANALYTICS )
 						.getAccountTicketTermsOfServiceURL()
 				).toEqual(
-					'https://analytics.google.com/analytics/web/?provisioningSignup=false&authuser=test%40gmail.com#/termsofservice/test-account-ticket-id'
+					'https://accounts.google.com/accountchooser?continue=https%3A%2F%2Fanalytics.google.com%2Fanalytics%2Fweb%2F%3FprovisioningSignup%3Dfalse%23%2Ftermsofservice%2Ftest-account-ticket-id&Email=test%40gmail.com'
 				);
 			} );
 
@@ -895,7 +892,7 @@ describe( 'modules/analytics accounts', () => {
 						.select( MODULES_ANALYTICS )
 						.getAccountTicketTermsOfServiceURL()
 				).toEqual(
-					'https://analytics.google.com/analytics/web/?provisioningSignup=false&authuser=test%40gmail.com#/termsofservice/test-account-ticket-id'
+					'https://accounts.google.com/accountchooser?continue=https%3A%2F%2Fanalytics.google.com%2Fanalytics%2Fweb%2F%3FprovisioningSignup%3Dfalse%23%2Ftermsofservice%2Ftest-account-ticket-id&Email=test%40gmail.com'
 				);
 			} );
 		} );

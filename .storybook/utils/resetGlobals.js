@@ -67,15 +67,6 @@ export const resetGlobals = () => {
 		initialVersion: '',
 		verified: true,
 		userInputState: 'completed',
-		permissions: {
-			googlesitekit_authenticate: true,
-			googlesitekit_setup: true,
-			googlesitekit_view_posts_insights: true,
-			googlesitekit_view_dashboard: true,
-			googlesitekit_view_module_details: true,
-			googlesitekit_manage_options: true,
-			googlesitekit_publish_posts: true,
-		},
 	};
 	global._googlesitekitTrackingData = {
 		referenceSiteURL: 'http://example.com/',

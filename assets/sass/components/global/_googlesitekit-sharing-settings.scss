@@ -53,7 +53,7 @@
 
 		.googlesitekit-dialog__footer {
 
-			@media (max-width: $bp-mobileOnly ) {
+			@media (max-width: $bp-mobileOnly) {
 				border-color: transparent;
 				box-shadow: none;
 				padding: 0;
@@ -104,18 +104,7 @@
 
 	.googlesitekit-user-role-select--open {
 		align-items: flex-start;
-
-		.googlesitekit-user-role-select__button {
-			left: calc(50% + #{$grid-gap-phone});
-			position: absolute;
-			top: calc((48px + #{$grid-gap-phone}) * -1);
-
-			@media (min-width: $bp-tablet) {
-				left: auto;
-				position: relative;
-				top: auto;
-			}
-		}
+		row-gap: 8px;
 	}
 
 	.googlesitekit-dashboard-sharing-settings {
@@ -227,14 +216,12 @@
 		.googlesitekit-dashboard-sharing-settings__column--product {
 			align-items: center;
 			display: flex;
-			flex-direction: row;
-			flex-wrap: nowrap;
+			flex-flow: row nowrap;
 			gap: 12px;
 
 			@media (min-width: $bp-desktop) {
 				align-items: center;
-				flex-direction: row;
-				flex-wrap: nowrap;
+				flex-flow: row nowrap;
 				gap: 16px;
 			}
 		}
@@ -330,6 +317,7 @@
 
 	.googlesitekit-dashboard-sharing-settings__footer {
 		display: flex;
+		flex-basis: 100%;
 		flex-direction: column;
 		gap: 24px;
 		width: 100%;
@@ -345,8 +333,9 @@
 	}
 
 	.googlesitekit-dashboard-sharing-settings__footer-notice {
+		margin: -0.625rem 0;
 
-		@media (max-width: $bp-mobileOnly ) {
+		@media (max-width: $bp-mobileOnly) {
 			padding: 16px 16px 0;
 		}
 	}
@@ -354,14 +343,25 @@
 	.googlesitekit-dashboard-sharing-settings__footer-actions {
 		align-items: center;
 		display: flex;
+		flex: 1;
 		flex-direction: row;
 		gap: 32px;
 		justify-content: flex-end;
 
-		@media (max-width: $bp-mobileOnly ) {
+		@media (max-width: $bp-mobileOnly) {
 			box-shadow: 0 -1px 4px 2px rgba(60, 64, 67, 0.15);
 			padding: 16px;
 		}
+	}
+
+	.googlesitekit-dashboard-sharing-settings__footer-actions-right {
+		align-items: center;
+		display: flex;
+		flex: 1;
+		flex-direction: row;
+		gap: 32px;
+		grid-gap: 32px;
+		justify-content: flex-end;
 	}
 
 	p.googlesitekit-dashboard-sharing-settings__notice {
@@ -377,10 +377,6 @@
 
 		@media (min-width: $bp-tablet) {
 			padding: 8px;
-		}
-
-		@media (min-width: $bp-desktop) {
-			max-width: 400px;
 		}
 
 		&:empty {
@@ -400,56 +396,6 @@
 		}
 	}
 
-	.googlesitekit-user-role-select__chip {
-		background-color: transparent;
-		border: 1px solid $c-utility-outline;
-		border-radius: $br-xs;
-		color: $c-surfaces-on-surface;
-		flex-direction: row-reverse;
-		font-size: $fs-body-sm;
-		justify-content: center;
-		letter-spacing: $ls-xs;
-		line-height: $lh-body-sm;
-		margin: 0;
-		min-width: 80px;
-		padding: 13px 12px;
-
-		@media (min-width: $bp-tablet) {
-			padding: 3px 12px;
-		}
-
-		.mdc-chip__checkmark {
-			margin: 0;
-		}
-
-		.mdc-chip__checkmark-svg {
-			transition: none;
-		}
-
-		.mdc-chip__text {
-			padding: 0 12px;
-		}
-
-		&.mdc-chip--selected {
-			background-color: $c-content-primary-container;
-			border-color: $c-content-primary-container;
-			gap: 6px;
-
-			.mdc-chip__checkmark-path {
-				stroke: $c-surfaces-on-surface;
-			}
-
-			.mdc-chip__checkmark-svg {
-				height: 18px;
-				width: 18px;
-			}
-
-			.mdc-chip__text {
-				padding: 0;
-			}
-		}
-	}
-
 	.googlesitekit-dashboard-sharing-settings--has-multiple-admins {
 
 		.googlesitekit-dashboard-sharing-settings__column--product {
@@ -462,17 +408,6 @@
 				align-items: center;
 				flex-direction: row;
 				max-width: none;
-			}
-		}
-
-		.googlesitekit-user-role-select--open {
-
-			.googlesitekit-user-role-select__button {
-				left: calc(25% + 16px);
-
-				@media (min-width: $bp-tablet) {
-					left: auto;
-				}
 			}
 		}
 	}

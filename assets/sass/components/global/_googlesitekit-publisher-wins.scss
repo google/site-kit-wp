@@ -20,12 +20,28 @@
 
 	@include googlesitekit-inner-padding;
 	background: $c-base;
+	display: flex;
+	flex-direction: column;
 	opacity: 1;
 	position: relative;
 	transition:
 		opacity $t-default ease-in-out,
 		visibility $t-default ease-in-out;
 	visibility: visible;
+
+	@media (min-width: $bp-tablet) {
+		flex-direction: row;
+
+		.googlesitekit-publisher-win__secondary-pane-divider {
+			border-left: 1px solid $c-athens-gray;
+			height: 106px;
+			margin: auto 30px;
+		}
+	}
+
+	.mdc-layout-grid {
+		flex: 1 1 0;
+	}
 
 	// Only show one notification at a time.
 	& + .googlesitekit-publisher-win {
@@ -60,7 +76,8 @@
 			margin-left: $grid-gap-phone / 2;
 		}
 
-		& + .googlesitekit-cta-link {
+		& + .googlesitekit-cta-link,
+		& + .googlesitekit-publisher-win__actions {
 			margin-top: $grid-gap-phone;
 
 			@media (min-width: $bp-desktop) {
@@ -121,7 +138,7 @@
 			max-width: 100%;
 		}
 
-		@media (max-width: $bp-mobileOnly ), (min-width: $bp-desktop) {
+		@media (max-width: $bp-mobileOnly), (min-width: $bp-desktop) {
 
 			svg {
 				width: 200px;
@@ -161,7 +178,7 @@
 		}
 	}
 
-	.mdc-button + .googlesitekit-cta-link {
+	.spinner + .googlesitekit-cta-link {
 		margin-left: $grid-gap-desktop;
 	}
 
@@ -190,7 +207,6 @@
 	}
 
 	&.googlesitekit-publisher-win--no-bottom-padding {
-
 		// Add padding to the content area in case the height of the SVG is less.
 		.googlesitekit-publisher-win__content {
 			padding-bottom: $grid-gap-phone;

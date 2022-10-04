@@ -30,18 +30,23 @@ import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import useQueryArg from '../../hooks/useQueryArg';
 import SetupSuccessBannerNotification from './SetupSuccessBannerNotification';
 import CoreSiteBannerNotifications from './CoreSiteBannerNotifications';
+import ModuleRecoveryAlert from '../dashboard-sharing/ModuleRecoveryAlert';
 import IdeaHubPromptBannerNotification from './IdeaHubPromptBannerNotification';
 import UserInputPromptBannerNotification from './UserInputPromptBannerNotification';
 import AdSenseAlerts from './AdSenseAlerts';
-import ZeroDataStateNotifications from './ZeroDataStateNotifications';
+import ActivationBanner from '../../modules/analytics-4/components/dashboard/ActivationBanner';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import useViewOnly from '../../hooks/useViewOnly';
+import ZeroDataStateNotifications from './ZeroDataStateNotifications';
+import ThankWithGoogleSupporterWallNotification from './ThankWithGoogleSupporterWallNotification';
 const { useSelect } = Data;
 
 export default function BannerNotifications() {
+	const dashboardSharingEnabled = useFeature( 'dashboardSharing' );
 	const ideaHubModuleEnabled = useFeature( 'ideaHubModule' );
 	const userInputEnabled = useFeature( 'userInput' );
-	const zeroDataStatesEnabled = useFeature( 'zeroDataStates' );
+	const ga4ActivationBannerEnabled = useFeature( 'ga4ActivationBanner' );
+	const twgEnabled = useFeature( 'twgModule' );
 
 	const viewOnly = useViewOnly();
 
@@ -63,9 +68,14 @@ export default function BannerNotifications() {
 						<SetupSuccessBannerNotification />
 					) }
 					{ isAuthenticated && <CoreSiteBannerNotifications /> }
+					{ dashboardSharingEnabled && <ModuleRecoveryAlert /> }
+					{ ga4ActivationBannerEnabled && <ActivationBanner /> }
+					{ twgEnabled && (
+						<ThankWithGoogleSupporterWallNotification />
+					) }
 				</Fragment>
 			) }
-			{ zeroDataStatesEnabled && <ZeroDataStateNotifications /> }
+			<ZeroDataStateNotifications />
 			{ ! viewOnly && (
 				<Fragment>
 					{ userInputEnabled && (

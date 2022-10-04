@@ -15,6 +15,7 @@ use Google\Site_Kit\Core\Util\Feature_Flags;
 use Exception;
 use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
 use Google\Site_Kit\Core\Storage\User_Options;
+use Google\Site_Kit\Core\Util\URL;
 use WP_Error;
 
 /**
@@ -39,6 +40,7 @@ class Google_Proxy {
 	const FEATURES_URI              = '/site-management/features/';
 	const SURVEY_TRIGGER_URI        = '/survey/trigger/';
 	const SURVEY_EVENT_URI          = '/survey/event/';
+	const SUPPORT_LINK_URI          = '/support';
 	const ACTION_EXCHANGE_SITE_CODE = 'googlesitekit_proxy_exchange_site_code';
 	const ACTION_SETUP              = 'googlesitekit_proxy_setup';
 	const ACTION_SETUP_START        = 'googlesitekit_proxy_setup_start';
@@ -112,7 +114,7 @@ class Google_Proxy {
 			'user_input_flow',
 		);
 
-		$home_path = wp_parse_url( $this->context->get_canonical_home_url(), PHP_URL_PATH );
+		$home_path = URL::parse( $this->context->get_canonical_home_url(), PHP_URL_PATH );
 		if ( ! $home_path || '/' === $home_path ) {
 			$supports[] = 'file_verification';
 		}

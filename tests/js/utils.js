@@ -217,10 +217,26 @@ export const provideSiteInfo = ( registry, extraData = {} ) => {
 		proxyPermissionsURL:
 			'https://sitekit.withgoogle.com/site-management/permissions/',
 		proxySetupURL: 'https://sitekit.withgoogle.com/site-management/setup/',
+		proxySupportLinkURL: 'https://sitekit.withgoogle.com/support/',
+		widgetsAdminURL: 'http://example.com/wp-admin/widgets.php',
 		referenceSiteURL: 'http://example.com',
 		siteName: 'My Site Name',
 		timezone: 'America/Detroit',
 		usingProxy: true,
+		postTypes: [
+			{
+				slug: 'post',
+				label: 'Posts',
+			},
+			{
+				slug: 'page',
+				label: 'Pages',
+			},
+			{
+				slug: 'attachment',
+				label: 'Media',
+			},
+		],
 	};
 
 	registry.dispatch( CORE_SITE ).receiveSiteInfo( {
@@ -320,10 +336,8 @@ export const provideModuleRegistrations = ( registry, extraData = [] ) => {
 	const extraDataBySlug = extraData.reduce( ( acc, { slug, ...data } ) => {
 		return { ...acc, [ slug ]: { slug, ...data } };
 	}, {} );
-	const {
-		registerModule: realRegisterModule,
-		...Modules
-	} = coreModules.createModules( registry );
+	const { registerModule: realRegisterModule, ...Modules } =
+		coreModules.createModules( registry );
 	// Decorate `Modules.registerModule` with a function to apply extra data.
 	const registeredModules = {};
 	const testRegisterModule = ( slug, settings ) => {
@@ -444,13 +458,14 @@ export const subscribeWithUnsubscribe = ( registry, ...args ) => {
 export const untilResolved = ( registry, storeName ) => {
 	return mapValues(
 		registry.stores[ storeName ].resolvers || {},
-		( resolverFn, resolverName ) => ( ...args ) => {
-			return subscribeUntil( registry, () =>
-				registry
-					.select( storeName )
-					.hasFinishedResolution( resolverName, args )
-			);
-		}
+		( resolverFn, resolverName ) =>
+			( ...args ) => {
+				return subscribeUntil( registry, () =>
+					registry
+						.select( storeName )
+						.hasFinishedResolution( resolverName, args )
+				);
+			}
 	);
 };
 

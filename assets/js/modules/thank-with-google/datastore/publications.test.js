@@ -22,23 +22,55 @@
 import {
 	createTestRegistry,
 	freezeFetch,
+	provideSiteInfo,
+	provideUserInfo,
+	subscribeUntil,
 	unsubscribeFromAll,
 	untilResolved,
 } from '../../../../../tests/js/utils';
-import { MODULES_THANK_WITH_GOOGLE } from './constants';
+import {
+	MODULES_THANK_WITH_GOOGLE,
+	ONBOARDING_STATE_ACTION_REQUIRED,
+	ONBOARDING_STATE_COMPLETE,
+	ONBOARDING_STATE_PENDING_VERIFICATION,
+	PUBLISHER_CENTER_URL,
+} from './constants';
+import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
+import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 
 describe( 'modules/thank-with-google publications', () => {
 	let registry;
-	const PUBLICATIONS = [
-		{
-			publicationID: 'TEST-PUBLICATION-ID',
-			displayName: 'Test publication title',
-			verifiedDomains: [ 'https://example.com' ],
-			paymentOptions: {
-				virtualGifts: true,
-			},
-			state: 'ACTIVE',
+
+	const publicationWithOnboardingCompleteStateA = {
+		// eslint-disable-next-line sitekit/acronym-case
+		publicationId: 'test-publication-a',
+		displayName: 'Test publication title',
+		verifiedDomains: [ 'https://example.com' ],
+		paymentOptions: {
+			thankStickers: true,
 		},
+		onboardingState: ONBOARDING_STATE_COMPLETE,
+	};
+	const publicationWithOnboardingCompleteStateB = {
+		...publicationWithOnboardingCompleteStateA,
+		// eslint-disable-next-line sitekit/acronym-case
+		publicationId: 'test-publication-b',
+	};
+	const publicationOnboardingActionRequiredStateC = {
+		...publicationWithOnboardingCompleteStateA,
+		// eslint-disable-next-line sitekit/acronym-case
+		publicationId: 'test-publication-c',
+		onboardingState: ONBOARDING_STATE_ACTION_REQUIRED,
+	};
+	const publicationPendingVerificationD = {
+		...publicationWithOnboardingCompleteStateA,
+		// eslint-disable-next-line sitekit/acronym-case
+		publicationId: 'test-publication-d',
+		onboardingState: ONBOARDING_STATE_PENDING_VERIFICATION,
+	};
+	const publicationWithOnboardingCompleteState = [
+		publicationWithOnboardingCompleteStateA,
+		publicationWithOnboardingCompleteStateB,
 	];
 
 	beforeEach( () => {
@@ -49,12 +81,79 @@ describe( 'modules/thank-with-google publications', () => {
 		unsubscribeFromAll( registry );
 	} );
 
+	describe( 'actions', () => {
+		describe( 'resetAccounts', () => {
+			it( 'sets publications back to their initial values', () => {
+				registry
+					.dispatch( MODULES_THANK_WITH_GOOGLE )
+					.receiveGetPublications(
+						publicationWithOnboardingCompleteState
+					);
+
+				// Verify the defined state.
+				expect(
+					registry
+						.select( MODULES_THANK_WITH_GOOGLE )
+						.getPublications()
+				).toEqual( publicationWithOnboardingCompleteState );
+
+				registry
+					.dispatch( MODULES_THANK_WITH_GOOGLE )
+					.resetPublications();
+
+				// getPublications() will trigger a request again.
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/modules\/thank-with-google\/data\/publications/,
+					{
+						body: publicationWithOnboardingCompleteState,
+						status: 200,
+					}
+				);
+
+				// Now it should have reverted to the initial undefined state.
+				expect(
+					registry
+						.select( MODULES_THANK_WITH_GOOGLE )
+						.getPublications()
+				).toBeUndefined();
+			} );
+
+			it( 'invalidates the resolver for getPublications', async () => {
+				registry
+					.dispatch( MODULES_THANK_WITH_GOOGLE )
+					.receiveGetPublications(
+						publicationWithOnboardingCompleteState
+					);
+				registry.select( MODULES_THANK_WITH_GOOGLE ).getPublications();
+
+				await subscribeUntil( registry, () =>
+					registry
+						.select( MODULES_THANK_WITH_GOOGLE )
+						.hasFinishedResolution( 'getPublications' )
+				);
+
+				registry
+					.dispatch( MODULES_THANK_WITH_GOOGLE )
+					.resetPublications();
+
+				expect(
+					registry
+						.select( MODULES_THANK_WITH_GOOGLE )
+						.hasFinishedResolution( 'getPublications' )
+				).toBe( false );
+			} );
+		} );
+	} );
+
 	describe( 'selectors', () => {
 		describe( 'getPublications', () => {
 			it( 'uses a resolver to get all the publications when requested', async () => {
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/thank-with-google\/data\/publications/,
-					{ body: PUBLICATIONS, status: 200 }
+					{
+						body: publicationWithOnboardingCompleteState,
+						status: 200,
+					}
 				);
 
 				// The publications will be `undefined` whilst loading.
@@ -75,7 +174,9 @@ describe( 'modules/thank-with-google publications', () => {
 					.getPublications();
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
-				expect( publications ).toEqual( PUBLICATIONS );
+				expect( publications ).toEqual(
+					publicationWithOnboardingCompleteState
+				);
 			} );
 
 			it( 'dispatches an error if the request fails', async () => {
@@ -121,14 +222,18 @@ describe( 'modules/thank-with-google publications', () => {
 			it( 'does not make a network request if data is already in state', () => {
 				registry
 					.dispatch( MODULES_THANK_WITH_GOOGLE )
-					.receiveGetPublications( PUBLICATIONS );
+					.receiveGetPublications(
+						publicationWithOnboardingCompleteState
+					);
 
 				const publications = registry
 					.select( MODULES_THANK_WITH_GOOGLE )
 					.getPublications();
 
 				expect( fetchMock ).not.toHaveFetched();
-				expect( publications ).toEqual( PUBLICATIONS );
+				expect( publications ).toEqual(
+					publicationWithOnboardingCompleteState
+				);
 			} );
 		} );
 
@@ -160,98 +265,144 @@ describe( 'modules/thank-with-google publications', () => {
 			it( 'returns the publication if that is the only one in the list', () => {
 				registry
 					.dispatch( MODULES_THANK_WITH_GOOGLE )
-					.receiveGetPublications( PUBLICATIONS );
+					.receiveGetPublications(
+						publicationWithOnboardingCompleteState
+					);
+
+				registry
+					.dispatch( MODULES_THANK_WITH_GOOGLE )
+					.setPublicationID( null );
 
 				const publication = registry
 					.select( MODULES_THANK_WITH_GOOGLE )
 					.getCurrentPublication();
 
-				expect( publication ).toEqual( PUBLICATIONS[ 0 ] );
+				expect( publication ).toEqual(
+					publicationWithOnboardingCompleteState[ 0 ]
+				);
 			} );
 
-			it( 'returns the publication if the publicationID is set and the publication is in the list', () => {
+			it( 'returns the publication that matches the publicationID when present', () => {
 				registry
 					.dispatch( MODULES_THANK_WITH_GOOGLE )
 					.receiveGetPublications( [
-						...PUBLICATIONS,
-						// The following publication doesn't have the publicationID.
-						{
-							displayName: 'Test publication title',
-							verifiedDomains: [ 'https://example.com' ],
-							paymentOptions: {
-								virtualGifts: true,
-							},
-						},
+						publicationWithOnboardingCompleteStateA,
+						publicationWithOnboardingCompleteStateB,
 					] );
 
+				registry
+					.dispatch( MODULES_THANK_WITH_GOOGLE )
+					.setPublicationID( 'test-publication-b' );
+
 				const publication = registry
 					.select( MODULES_THANK_WITH_GOOGLE )
 					.getCurrentPublication();
 
-				expect( publication ).toEqual( PUBLICATIONS[ 0 ] );
+				// eslint-disable-next-line sitekit/acronym-case
+				expect( publication.publicationId ).toEqual(
+					'test-publication-b'
+				);
 			} );
 
-			it( 'returns the publication if the publicationId is not set and the state is set to ACTIVE', () => {
-				const publicationsWithActiveState = [
-					{
-						displayName: 'Test publication title',
-						verifiedDomains: [ 'https://example.com' ],
-						paymentOptions: {
-							virtualGifts: true,
-						},
-					},
-					// The following publication doesn't have the publicationID.
-					// However, it has the state set to ACTIVE.
-					{
-						displayName: 'Test publication another title',
-						verifiedDomains: [ 'https://example.com' ],
-						paymentOptions: {
-							virtualGifts: true,
-						},
-						state: 'ACTIVE',
-					},
-				];
+			it( 'returns the first publication with `ONBOARDING_COMPLETE` onboardingState when no publication matches the publicationID', () => {
 				registry
 					.dispatch( MODULES_THANK_WITH_GOOGLE )
-					.receiveGetPublications( publicationsWithActiveState );
+					.receiveGetPublications(
+						publicationWithOnboardingCompleteState
+					);
+
+				registry
+					.dispatch( MODULES_THANK_WITH_GOOGLE )
+					.setPublicationID( 'test-publication--non-matching' );
 
 				const publication = registry
 					.select( MODULES_THANK_WITH_GOOGLE )
 					.getCurrentPublication();
 
 				expect( publication ).toEqual(
-					publicationsWithActiveState[ 1 ]
+					publicationWithOnboardingCompleteState[ 0 ]
+				);
+				expect( publication.onboardingState ).toBe(
+					ONBOARDING_STATE_COMPLETE
+				);
+				// eslint-disable-next-line sitekit/acronym-case
+				expect( publication.publicationId ).not.toBe(
+					'test-publication--non-matching'
 				);
 			} );
 
-			it( 'returns the first publication from the list if the publicationId is not set and the state is not set to ACTIVE', () => {
-				const publicationsWithoutIDAndActive = [
-					{
-						displayName: 'Test publication title',
-						verifiedDomains: [ 'https://example.com' ],
-						paymentOptions: {
-							virtualGifts: true,
-						},
-					},
-					{
-						displayName: 'Test publication another title',
-						verifiedDomains: [ 'https://example.com' ],
-						paymentOptions: {
-							virtualGifts: true,
-						},
-					},
+			it( 'returns the first publication when no publication matches the publicationID or has `ONBOARDING_COMPLETE` onboardingState', () => {
+				const inactivePublications = [
+					publicationOnboardingActionRequiredStateC,
+					publicationPendingVerificationD,
 				];
 				registry
 					.dispatch( MODULES_THANK_WITH_GOOGLE )
-					.receiveGetPublications( publicationsWithoutIDAndActive );
+					.receiveGetPublications( inactivePublications );
+
+				registry
+					.dispatch( MODULES_THANK_WITH_GOOGLE )
+					.setPublicationID( 'test-publication--non-matching' );
 
 				const publication = registry
 					.select( MODULES_THANK_WITH_GOOGLE )
 					.getCurrentPublication();
 
 				expect( publication ).toEqual(
-					publicationsWithoutIDAndActive[ 0 ]
+					publicationOnboardingActionRequiredStateC
 				);
+			} );
+		} );
+
+		describe( 'getServiceCreatePublicationURL', () => {
+			it( 'returns an account chooser URL with the home URL appended to the publisher center URL', () => {
+				provideSiteInfo( registry );
+				provideUserInfo( registry );
+
+				const publisherCenterURL = `${ PUBLISHER_CENTER_URL }/onboarding?sk_url=${ encodeURIComponent(
+					registry.select( CORE_SITE ).getHomeURL()
+				) }`;
+				const expectedAccountChooserURL = registry
+					.select( CORE_USER )
+					.getAccountChooserURL( publisherCenterURL );
+
+				const createPublicationURL = registry
+					.select( MODULES_THANK_WITH_GOOGLE )
+					.getServiceCreatePublicationURL();
+
+				expect( createPublicationURL ).toBe(
+					expectedAccountChooserURL
+				);
+			} );
+		} );
+
+		describe( 'getServicePublicationURL', () => {
+			it( 'should throw an error if no publicationID is given', () => {
+				expect( () =>
+					registry
+						.select( MODULES_THANK_WITH_GOOGLE )
+						.getServicePublicationURL()
+				).toThrow( 'A publicationID is required.' );
+			} );
+
+			it( 'returns a publisher center URL for an existing publication', () => {
+				provideUserInfo( registry );
+
+				const publicationID = 'test-publication-a';
+
+				const publisherCenterURL = `${ PUBLISHER_CENTER_URL }/${ encodeURIComponent(
+					publicationID
+				) }/home`;
+
+				const expectedAccountChooserURL = registry
+					.select( CORE_USER )
+					.getAccountChooserURL( publisherCenterURL );
+
+				const publicationURL = registry
+					.select( MODULES_THANK_WITH_GOOGLE )
+					.getServicePublicationURL( publicationID );
+
+				expect( publicationURL ).toBe( expectedAccountChooserURL );
 			} );
 		} );
 	} );

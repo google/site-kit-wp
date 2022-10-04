@@ -309,7 +309,7 @@ final class Entity_Factory {
 				$tax    = get_taxonomy( $term->taxonomy );
 				$title  = $term->name;
 				$prefix = sprintf(
-					/* translators: %s: Taxonomy singular name. */
+					/* translators: 1: Taxonomy singular name. */
 					_x( '%s:', 'taxonomy term archive title prefix', 'default' ),
 					$tax->labels->singular_name
 				);
@@ -515,7 +515,7 @@ final class Entity_Factory {
 			return $entity;
 		}
 
-		$url_parts   = wp_parse_url( $url );
+		$url_parts   = URL::parse( $url );
 		$current_url = $entity->get_url();
 
 		if ( ! empty( $url_parts['query'] ) ) {

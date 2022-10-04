@@ -21,7 +21,6 @@
  */
 import {
 	render,
-	waitFor,
 	createTestRegistry,
 } from '../../../../../../tests/js/test-utils';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
@@ -76,11 +75,8 @@ describe( 'SettingsEdit', () => {
 			status: 200,
 		} );
 
-		const {
-			accounts,
-			properties,
-			profiles,
-		} = fixtures.accountsPropertiesProfiles;
+		const { accounts, properties, profiles } =
+			fixtures.accountsPropertiesProfiles;
 		const existingTag = {
 			/* eslint-disable sitekit/acronym-case */
 			accountID: profiles[ 0 ].accountId,
@@ -107,9 +103,10 @@ describe( 'SettingsEdit', () => {
 			.dispatch( MODULES_ANALYTICS )
 			.receiveGetExistingTag( existingTag.propertyID );
 
-		await waitFor( () => {
-			render( <SettingsEdit />, { registry } );
+		const { waitForRegistry } = render( <SettingsEdit />, {
+			registry,
 		} );
+		await waitForRegistry();
 
 		expect(
 			registry.select( MODULES_ANALYTICS ).getAccountID()

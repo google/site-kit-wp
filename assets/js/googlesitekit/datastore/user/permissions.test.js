@@ -26,10 +26,9 @@ import {
 import { CORE_USER, PERMISSION_MANAGE_OPTIONS } from './constants';
 import FIXTURES from '../../modules/datastore/__fixtures__';
 import { CORE_MODULES } from '../../modules/datastore/constants';
+import fetchMock from 'fetch-mock';
 
 describe( 'core/user authentication', () => {
-	const capabilitiesBaseVar = '_googlesitekitUserData';
-
 	const capabilities = {
 		permissions: {
 			googlesitekit_view_dashboard: true,
@@ -69,10 +68,6 @@ describe( 'core/user authentication', () => {
 		registry = createTestRegistry();
 	} );
 
-	afterEach( () => {
-		delete global[ capabilitiesBaseVar ];
-	} );
-
 	describe( 'actions', () => {
 		describe( 'setPermissionScopeError', () => {
 			it( 'requires the error param', () => {
@@ -90,6 +85,90 @@ describe( 'core/user authentication', () => {
 				expect(
 					registry.select( CORE_USER ).getPermissionScopeError()
 				).toEqual( someError );
+			} );
+		} );
+
+		describe( 'refreshCapabilities', () => {
+			it( 'updates capabilities from server', async () => {
+				registry
+					.dispatch( CORE_USER )
+					.receiveGetCapabilities( capabilities.permissions );
+
+				expect(
+					registry.select( CORE_USER ).getCapabilities()
+				).toEqual( capabilities.permissions );
+
+				const updatedCapabilities = {
+					googlesitekit_view_dashboard: true,
+					googlesitekit_manage_options: true,
+					'googlesitekit_read_shared_module_data::["site-verification"]': true,
+					'googlesitekit_read_shared_module_data::["tagmanager"]': true,
+					'googlesitekit_read_shared_module_data::["optimize"]': false,
+					'googlesitekit_read_shared_module_data::["adsense"]': false,
+					'googlesitekit_manage_module_sharing_options::["search-console"]': true,
+					'googlesitekit_read_shared_module_data::["search-console"]': false,
+					'googlesitekit_read_shared_module_data::["analytics"]': false,
+					'googlesitekit_read_shared_module_data::["pagespeed-insights"]': false,
+					'googlesitekit_read_shared_module_data::["idea-hub"]': false,
+				};
+
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/core\/user\/data\/permissions/,
+					{
+						body: updatedCapabilities,
+						status: 200,
+					}
+				);
+
+				await registry.dispatch( CORE_USER ).refreshCapabilities();
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect(
+					registry.select( CORE_USER ).getCapabilities()
+				).toEqual( updatedCapabilities );
+			} );
+
+			it( 'sets permissionScopeError when API throws an error', async () => {
+				registry
+					.dispatch( CORE_USER )
+					.receiveGetCapabilities( capabilities.permissions );
+
+				expect(
+					registry.select( CORE_USER ).getCapabilities()
+				).toEqual( capabilities.permissions );
+
+				const error = {
+					code: 'rest_forbidden',
+					message: 'Sorry, you are not allowed to do that.',
+					data: { status: 401 },
+				};
+
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/core\/user\/data\/permissions/,
+					{
+						body: error,
+						status: 401,
+					}
+				);
+
+				await registry.dispatch( CORE_USER ).refreshCapabilities();
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect( console ).toHaveErroredWith(
+					'Google Site Kit API Error',
+					'method:GET',
+					'datapoint:permissions',
+					'type:core',
+					'identifier:user',
+					'error:"Sorry, you are not allowed to do that."'
+				);
+				expect(
+					registry.select( CORE_USER ).getPermissionScopeError()
+				).toEqual( error );
+				// Permissions should be unchanged.
+				expect(
+					registry.select( CORE_USER ).getCapabilities()
+				).toEqual( capabilities.permissions );
 			} );
 		} );
 	} );
@@ -116,28 +195,37 @@ describe( 'core/user authentication', () => {
 
 		describe( 'hasCapability', () => {
 			it( 'should return undefined if capabilities cannot be loaded', () => {
-				global[ capabilitiesBaseVar ] = undefined;
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/core\/user\/data\/permissions/,
+					{
+						body: capabilities.permissions,
+						status: 200,
+					}
+				);
 
 				const hasCapability = registry
 					.select( CORE_USER )
 					.hasCapability( 'unavailable_capability' );
 
-				expect( console ).toHaveErrored();
 				expect( hasCapability ).toBeUndefined();
 			} );
 
 			it( 'should return FALSE if base capability is unavailable', () => {
-				global[ capabilitiesBaseVar ] = capabilities;
+				registry
+					.dispatch( CORE_USER )
+					.receiveGetCapabilities( capabilities.permissions );
 
-				const hasCapability = registry
-					.select( CORE_USER )
-					.hasCapability( 'unavailable_capability' );
-
-				expect( hasCapability ).toBe( false );
+				expect(
+					registry
+						.select( CORE_USER )
+						.hasCapability( 'unavailable_capability' )
+				).toBe( false );
 			} );
 
 			it( 'should return TRUE if base capability is available with the value TRUE', () => {
-				global[ capabilitiesBaseVar ] = capabilities;
+				registry
+					.dispatch( CORE_USER )
+					.receiveGetCapabilities( capabilities.permissions );
 
 				const hasCapability = registry
 					.select( CORE_USER )
@@ -147,7 +235,10 @@ describe( 'core/user authentication', () => {
 			} );
 
 			it( 'should return FALSE if meta capability is unavailable', () => {
-				global[ capabilitiesBaseVar ] = capabilities;
+				registry
+					.dispatch( CORE_USER )
+					.receiveGetCapabilities( capabilities.permissions );
+
 				const stringifySpy = jest.spyOn( JSON, 'stringify' );
 
 				const hasCapability = registry
@@ -164,7 +255,10 @@ describe( 'core/user authentication', () => {
 			} );
 
 			it( 'should return TRUE if meta capability is available with the value TRUE', () => {
-				global[ capabilitiesBaseVar ] = capabilities;
+				registry
+					.dispatch( CORE_USER )
+					.receiveGetCapabilities( capabilities.permissions );
+
 				const stringifySpy = jest.spyOn( JSON, 'stringify' );
 
 				const hasCapability = registry
@@ -196,11 +290,14 @@ describe( 'core/user authentication', () => {
 			} );
 
 			it( 'should return an empty array if viewable permissions are not available', async () => {
+				registry
+					.dispatch( CORE_USER )
+					.receiveGetCapabilities( capabilities.permissions );
+
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
 					{ body: FIXTURES, status: 200 }
 				);
-				global[ capabilitiesBaseVar ] = capabilities;
 
 				const initialViewableModules = registry
 					.select( CORE_USER )
@@ -223,11 +320,16 @@ describe( 'core/user authentication', () => {
 			} );
 
 			it( 'should return the list of module slugs if the viewable permissions are available', async () => {
+				registry
+					.dispatch( CORE_USER )
+					.receiveGetCapabilities(
+						capabilitiesWithPermission.permissions
+					);
+
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
 					{ body: FIXTURES, status: 200 }
 				);
-				global[ capabilitiesBaseVar ] = capabilitiesWithPermission;
 
 				const initialViewableModules = registry
 					.select( CORE_USER )
@@ -298,7 +400,15 @@ describe( 'core/user authentication', () => {
 				expect( canViewSharedModule ).toBe( false );
 			} );
 
-			it( 'should return undefined if the capabilities are not loaded', () => {
+			it( 'should return undefined if the capabilities are not loaded', async () => {
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/core\/user\/data\/permissions/,
+					{
+						body: capabilities.permissions,
+						status: 200,
+					}
+				);
+
 				registry.dispatch( CORE_MODULES ).receiveGetModules( [
 					{
 						slug: 'search-console',
@@ -306,20 +416,19 @@ describe( 'core/user authentication', () => {
 						shareable: true,
 					},
 				] );
-				global[ capabilitiesBaseVar ] = undefined;
 
 				const canViewSharedModule = registry
 					.select( CORE_USER )
 					.canViewSharedModule( 'search-console' );
 
-				expect( console ).toHaveErroredWith(
-					'Could not load core/user permissions.'
-				);
-
 				expect( canViewSharedModule ).toBeUndefined();
 			} );
 
-			it( 'should return FALSE if the module is shared but the user does not have the view permission', () => {
+			it( 'should return FALSE if the module is shared but the user does not have the view permission', async () => {
+				registry
+					.dispatch( CORE_USER )
+					.receiveGetCapabilities( capabilities.permissions );
+
 				registry.dispatch( CORE_MODULES ).receiveGetModules( [
 					{
 						slug: 'search-console',
@@ -327,7 +436,6 @@ describe( 'core/user authentication', () => {
 						shareable: true,
 					},
 				] );
-				global[ capabilitiesBaseVar ] = capabilities;
 
 				const canViewSharedModule = registry
 					.select( CORE_USER )
@@ -336,7 +444,13 @@ describe( 'core/user authentication', () => {
 				expect( canViewSharedModule ).toBe( false );
 			} );
 
-			it( 'should return TRUE if the module is shared and the user has the view permission', () => {
+			it( 'should return TRUE if the module is shared and the user has the view permission', async () => {
+				registry
+					.dispatch( CORE_USER )
+					.receiveGetCapabilities(
+						capabilitiesWithPermission.permissions
+					);
+
 				registry.dispatch( CORE_MODULES ).receiveGetModules( [
 					{
 						slug: 'search-console',
@@ -344,7 +458,6 @@ describe( 'core/user authentication', () => {
 						shareable: true,
 					},
 				] );
-				global[ capabilitiesBaseVar ] = capabilitiesWithPermission;
 
 				const canViewSharedModule = registry
 					.select( CORE_USER )

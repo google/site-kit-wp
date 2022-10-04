@@ -37,6 +37,7 @@ import { trackEvent } from '../../../../util';
 import Switch from '../../../../components/Switch';
 import Link from '../../../../components/Link';
 import useViewContext from '../../../../hooks/useViewContext';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 const { useSelect, useDispatch } = Data;
 
 export default function GA4ActivateSwitch( props ) {
@@ -46,6 +47,10 @@ export default function GA4ActivateSwitch( props ) {
 	const enableGA4 = useSelect( ( select ) =>
 		select( CORE_FORMS ).getValue( FORM_SETUP, 'enableGA4' )
 	);
+
+	const documentationURL = useSelect( ( select ) => {
+		return select( CORE_SITE ).getDocumentationLinkURL( 'ga4' );
+	} );
 
 	const { setValues } = useDispatch( CORE_FORMS );
 	const onChange = useCallback( () => {
@@ -66,10 +71,7 @@ export default function GA4ActivateSwitch( props ) {
 							'Activate Google Analytics 4 and place code on your site.',
 							'google-site-kit'
 						) }{ ' ' }
-						<Link
-							href="https://sitekit.withgoogle.com/documentation/using-site-kit/ga4/"
-							external
-						>
+						<Link href={ documentationURL } external>
 							{ __( 'Learn more', 'google-site-kit' ) }
 						</Link>
 					</Fragment>

@@ -28,71 +28,14 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import {
-	provideModuleRegistrations,
-	provideSiteInfo,
-	WithTestRegistry,
-} from '../tests/js/utils';
+import { provideSiteInfo, WithTestRegistry } from '../tests/js/utils';
 import UserInputSuccessBannerNotification from '../assets/js/components/notifications/UserInputSuccessBannerNotification';
-import ModulesList from '../assets/js/components/ModulesList';
 import BannerNotification from '../assets/js/components/notifications/BannerNotification';
 import UserInputPromptBannerNotification from '../assets/js/components/notifications/UserInputPromptBannerNotification';
 import { CORE_USER } from '../assets/js/googlesitekit/datastore/user/constants';
-import { MODULES_ADSENSE } from '../assets/js/modules/adsense/datastore/constants';
-import { CORE_MODULES } from '../assets/js/googlesitekit/modules/datastore/constants';
-import { withConnected } from '../assets/js/googlesitekit/modules/datastore/__fixtures__';
-import SuccessGreenSVG from '../assets/svg/graphics/success-green.svg';
 import AwardSVG from '../assets/svg/graphics/award.svg';
 
 storiesOf( 'Global/Notifications', module )
-	.add(
-		'Module Setup Complete',
-		() => {
-			const setupRegistry = ( registry ) => {
-				registry
-					.dispatch( CORE_MODULES )
-					.receiveGetModules(
-						withConnected(
-							'search-console',
-							'analytics',
-							'pagespeed-insights'
-						)
-					);
-				provideModuleRegistrations( registry );
-				registry
-					.dispatch( MODULES_ADSENSE )
-					.receiveIsAdBlockerActive( false );
-			};
-
-			return (
-				<WithTestRegistry callback={ setupRegistry }>
-					<BannerNotification
-						id="notification-id"
-						title={ __(
-							'Congrats on completing the setup for Analytics!',
-							'google-site-kit'
-						) }
-						WinImageSVG={ SuccessGreenSVG }
-						dismiss={ __( 'OK, Got it!', 'google-site-kit' ) }
-						format="large"
-						type="win-success"
-					>
-						<ModulesList
-							moduleSlugs={ [
-								'search-console',
-								'adsense',
-								'analytics',
-								'pagespeed-insights',
-							] }
-						/>
-					</BannerNotification>
-				</WithTestRegistry>
-			);
-		},
-		{
-			padding: 0,
-		}
-	)
 	.add(
 		'Small with Image',
 		() => (
@@ -132,7 +75,7 @@ storiesOf( 'Global/Notifications', module )
 				) }
 				dismiss={ __( 'OK, Got it!', 'google-site-kit' ) }
 				learnMoreURL="http://google.com"
-				learnMoreLabel={ __( 'Learn More', 'google-site-kit' ) }
+				learnMoreLabel={ __( 'Learn more', 'google-site-kit' ) }
 				learnMoreDescription={ __(
 					'about the particular win',
 					'google-site-kit'
@@ -181,7 +124,7 @@ storiesOf( 'Global/Notifications', module )
 				id="notification-id"
 				title={ __( 'Index Warning', 'google-site-kit' ) }
 				description={ __(
-					'Indexed, though blocked by robots.text.',
+					'Indexed, though blocked by robots.txt.',
 					'google-site-kit'
 				) }
 				learnMoreURL="http://google.com"

@@ -54,10 +54,8 @@ const steps = [ ...USER_INPUT_QUESTIONS_LIST, 'preview' ];
 export default function UserInputQuestionnaire() {
 	const viewContext = useViewContext();
 	const [ activeSlug, setActiveSlug ] = useQueryArg( 'question', steps[ 0 ] );
-	const [
-		shouldScrollToActiveQuestion,
-		setShouldScrollToActiveQuestion,
-	] = useState( false );
+	const [ shouldScrollToActiveQuestion, setShouldScrollToActiveQuestion ] =
+		useState( false );
 	const [ redirectURL ] = useQueryArg( 'redirect_url' );
 	const [ single, setSingle ] = useQueryArg( 'single', false );
 
@@ -77,14 +75,14 @@ export default function UserInputQuestionnaire() {
 	);
 	const { isSavingSettings, error, answeredUntilIndex } = useSelect(
 		( select ) => {
-			const userInputSettings = select(
-				CORE_USER
-			).getUserInputSettings();
+			const userInputSettings =
+				select( CORE_USER ).getUserInputSettings();
 
 			return {
-				isSavingSettings: select( CORE_USER ).isSavingUserInputSettings(
-					userInputSettings
-				),
+				isSavingSettings:
+					select( CORE_USER ).isSavingUserInputSettings(
+						userInputSettings
+					),
 				error: select( CORE_USER ).getErrorForAction(
 					'saveUserInputSettings',
 					[]

@@ -17,20 +17,42 @@
  */
 
 /**
+ * External dependencies
+ */
+import invariant from 'invariant';
+
+/**
+ * WordPress dependencies
+ */
+import { addQueryArgs } from '@wordpress/url';
+
+/**
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
-import { MODULES_THANK_WITH_GOOGLE } from './constants';
+import { actions as errorStoreActions } from '../../../googlesitekit/data/create-error-store';
+import {
+	MODULES_THANK_WITH_GOOGLE,
+	ONBOARDING_STATE_COMPLETE,
+	PUBLISHER_CENTER_URL,
+} from './constants';
+import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
+import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 
 const { createRegistrySelector } = Data;
+
+// Actions
+const RESET_PUBLICATIONS = 'RESET_PUBLICATIONS';
 
 const fetchGetPublicationsStore = createFetchStore( {
 	baseName: 'getPublications',
 	storeName: MODULES_THANK_WITH_GOOGLE,
 	controlCallback: () => {
-		return API.get( 'modules', 'thank-with-google', 'publications' );
+		return API.get( 'modules', 'thank-with-google', 'publications', null, {
+			useCache: false,
+		} );
 	},
 	reducerCallback: ( state, publications ) => {
 		return {
@@ -42,6 +64,38 @@ const fetchGetPublicationsStore = createFetchStore( {
 
 const baseInitialState = {
 	publications: undefined,
+};
+
+const baseActions = {
+	*resetPublications() {
+		const { dispatch } = yield Data.commonActions.getRegistry();
+
+		yield {
+			type: RESET_PUBLICATIONS,
+			payload: {},
+		};
+
+		yield errorStoreActions.clearErrors( 'getPublications' );
+
+		return dispatch(
+			MODULES_THANK_WITH_GOOGLE
+		).invalidateResolutionForStoreSelector( 'getPublications' );
+	},
+};
+
+const baseReducer = ( state, { type } ) => {
+	switch ( type ) {
+		case RESET_PUBLICATIONS: {
+			return {
+				...state,
+				publications: baseInitialState.publications,
+			};
+		}
+
+		default: {
+			return state;
+		}
+	}
 };
 
 const baseResolvers = {
@@ -65,7 +119,7 @@ const baseSelectors = {
 	/**
 	 * Gets the list of publications from the server.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.79.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(Array|undefined|null)} Publications array list. Returns undefined if it is not loaded yet.
@@ -79,11 +133,11 @@ const baseSelectors = {
 	 *
 	 * Returns the first item if only one publication is available in the list.
 	 * If there are multiple publications in the list, returns one of them based on the following logic:
-	 * - If the `publicationID` is set and that publication is in the list.
-	 * - Otherwise, if any of the publications has its `state` field set to `ACTIVE`.
+	 * - If the `publicationID` module setting is already set and that publication is in the list.
+	 * - Otherwise, if any of the publications has its `onboardingState` field set to `ONBOARDING_COMPLETE`.
 	 * - Otherwise, returns the first one in the list.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.79.0
 	 *
 	 * @return {(Object|undefined|null)} Publication object. Returns undefined if it is not loaded yet.
 	 * 																	Returns null if the publications list is empty.
@@ -97,20 +151,67 @@ const baseSelectors = {
 			return undefined;
 		}
 
-		if ( publications.length === 0 ) {
+		if ( ! publications?.length ) {
 			return null;
 		}
 
+		const publicationID = select(
+			MODULES_THANK_WITH_GOOGLE
+		).getPublicationID();
+
 		return (
-			publications.find( ( p ) => p.publicationID ) ||
-			publications.find( ( p ) => p.state === 'ACTIVE' ) ||
+			// eslint-disable-next-line sitekit/acronym-case
+			publications.find( ( p ) => p.publicationId === publicationID ) ||
+			publications.find(
+				( p ) => p.onboardingState === ONBOARDING_STATE_COMPLETE
+			) ||
 			publications[ 0 ]
 		);
 	} ),
+
+	/**
+	 * Gets the link to create new publication.
+	 *
+	 * @since 1.83.0
+	 *
+	 * @return {string} Create publication URL.
+	 */
+	getServiceCreatePublicationURL: createRegistrySelector(
+		( select ) => () => {
+			const url = addQueryArgs( `${ PUBLISHER_CENTER_URL }/onboarding`, {
+				sk_url: select( CORE_SITE ).getHomeURL(),
+			} );
+
+			return select( CORE_USER ).getAccountChooserURL( url );
+		}
+	),
+
+	/**
+	 * Gets the link of an existing publication.
+	 *
+	 * @since 1.83.0
+	 *
+	 * @param {Object} _state        Data store's state.
+	 * @param {string} publicationID The ID of the publication to get link for.
+	 * @return {string} Publication link.
+	 */
+	getServicePublicationURL: createRegistrySelector(
+		( select ) => ( _state, publicationID ) => {
+			invariant( publicationID, 'A publicationID is required.' );
+
+			const url = `${ PUBLISHER_CENTER_URL }/${ encodeURIComponent(
+				publicationID
+			) }/home`;
+
+			return select( CORE_USER ).getAccountChooserURL( url );
+		}
+	),
 };
 
 const store = Data.combineStores( fetchGetPublicationsStore, {
 	initialState: baseInitialState,
+	actions: baseActions,
+	reducer: baseReducer,
 	resolvers: baseResolvers,
 	selectors: baseSelectors,
 } );

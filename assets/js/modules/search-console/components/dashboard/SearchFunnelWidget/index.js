@@ -51,11 +51,7 @@ import SearchConsoleStats from './SearchConsoleStats';
 import AnalyticsStats from './AnalyticsStats';
 import ActivateAnalyticsCTA from './ActivateAnalyticsCTA';
 import { CORE_MODULES } from '../../../../../googlesitekit/modules/datastore/constants';
-import ActivateModuleCTA from '../../../../../components/ActivateModuleCTA';
-import CompleteModuleActivationCTA from '../../../../../components/CompleteModuleActivationCTA';
 import { Grid, Row, Cell } from '../../../../../material-components';
-import ReportZero from '../../../../../components/ReportZero';
-import { useFeature } from '../../../../../hooks/useFeature';
 import {
 	BREAKPOINT_SMALL,
 	useBreakpoint,
@@ -63,20 +59,22 @@ import {
 import useViewOnly from '../../../../../hooks/useViewOnly';
 const { useSelect, useInViewSelect } = Data;
 
-const SearchFunnelWidget = ( {
-	Widget,
-	WidgetReportZero,
-	WidgetReportError,
-} ) => {
+const SearchFunnelWidget = ( { Widget, WidgetReportError } ) => {
 	const [ selectedStats, setSelectedStats ] = useState( 0 );
-
-	const zeroDataStatesEnabled = useFeature( 'zeroDataStates' );
 
 	const breakpoint = useBreakpoint();
 
 	const viewOnly = useViewOnly();
 
+	const isAnalyticsAvailable = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleAvailable( 'analytics' )
+	);
+
 	const canViewSharedAnalytics = useSelect( ( select ) => {
+		if ( ! isAnalyticsAvailable ) {
+			return false;
+		}
+
 		if ( ! viewOnly ) {
 			return true;
 		}
@@ -115,9 +113,8 @@ const SearchFunnelWidget = ( {
 			return false;
 		}
 
-		const recoverableModules = select(
-			CORE_MODULES
-		).getRecoverableModules();
+		const recoverableModules =
+			select( CORE_MODULES ).getRecoverableModules();
 
 		if ( recoverableModules === undefined ) {
 			return undefined;
@@ -203,9 +200,10 @@ const SearchFunnelWidget = ( {
 
 	const searchConsoleLoading = useSelect(
 		( select ) =>
-			! select(
-				MODULES_SEARCH_CONSOLE
-			).hasFinishedResolution( 'getReport', [ searchConsoleReportArgs ] )
+			! select( MODULES_SEARCH_CONSOLE ).hasFinishedResolution(
+				'getReport',
+				[ searchConsoleReportArgs ]
+			)
 	);
 
 	const analyticsOverviewLoading = useSelect( ( select ) => {
@@ -363,42 +361,6 @@ const SearchFunnelWidget = ( {
 		);
 	}
 
-	if ( isSearchConsoleGatheringData && ! zeroDataStatesEnabled ) {
-		const halfCellProps = {
-			smSize: 4,
-			mdSize: 4,
-			lgSize: 6,
-		};
-
-		return (
-			<Widget Header={ Header } Footer={ WidgetFooter }>
-				{ isAnalyticsConnected && isAnalyticsActive && (
-					<WidgetReportZero moduleSlug="search-console" />
-				) }
-
-				{ canViewSharedAnalytics &&
-					( ! isAnalyticsConnected || ! isAnalyticsActive ) && (
-						<Row>
-							<Cell { ...halfCellProps }>
-								<ReportZero moduleSlug="search-console" />
-							</Cell>
-
-							<Cell { ...halfCellProps }>
-								{ ! isAnalyticsActive && (
-									<ActivateModuleCTA moduleSlug="analytics" />
-								) }
-
-								{ isAnalyticsActive &&
-									! isAnalyticsConnected && (
-										<CompleteModuleActivationCTA moduleSlug="analytics" />
-									) }
-							</Cell>
-						</Row>
-					) }
-			</Widget>
-		);
-	}
-
 	return (
 		<Widget noPadding Header={ Header } Footer={ WidgetFooter }>
 			<Overview
@@ -429,8 +391,7 @@ const SearchFunnelWidget = ( {
 				/>
 			) }
 
-			{ zeroDataStatesEnabled &&
-				canViewSharedAnalytics &&
+			{ canViewSharedAnalytics &&
 				( ! isAnalyticsActive || ! isAnalyticsConnected ) &&
 				BREAKPOINT_SMALL === breakpoint && (
 					<Grid>

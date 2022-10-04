@@ -24,71 +24,12 @@ import {
 	VIEW_CONTEXT_DASHBOARD,
 	VIEW_CONTEXT_DASHBOARD_VIEW_ONLY,
 } from '../../googlesitekit/constants';
+import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { CORE_WIDGETS } from '../../googlesitekit/widgets/datastore/constants';
-import {
-	CONTEXT_MAIN_DASHBOARD_CONTENT,
-	CONTEXT_MAIN_DASHBOARD_SPEED,
-	CONTEXT_MAIN_DASHBOARD_TRAFFIC,
-} from '../../googlesitekit/widgets/default-contexts';
+import { CONTEXT_MAIN_DASHBOARD_SPEED } from '../../googlesitekit/widgets/default-contexts';
 import DashboardNavigation from './';
-
-/**
- * Dispatches required actions to registry to make sure widget contexts for Traffic, Content & Speed are active.
- *
- * @since 1.47.0
- *
- * @param {Object} registry The registry object.
- */
-export const setupDefaultChips = ( registry ) => {
-	// Traffic
-	registry.dispatch( CORE_WIDGETS ).registerWidgetArea( 'TrafficArea', {
-		title: 'Traffic',
-		subtitle: 'Traffic Widget Area',
-		style: 'composite',
-	} );
-	registry
-		.dispatch( CORE_WIDGETS )
-		.assignWidgetArea( 'TrafficArea', CONTEXT_MAIN_DASHBOARD_TRAFFIC );
-	registry.dispatch( CORE_WIDGETS ).registerWidget( 'TrafficWidget', {
-		Component: () => <div>Traffic Widget</div>,
-	} );
-	registry
-		.dispatch( CORE_WIDGETS )
-		.assignWidget( 'TrafficWidget', 'TrafficArea' );
-
-	// Content
-	registry.dispatch( CORE_WIDGETS ).registerWidgetArea( 'ContentArea', {
-		title: 'Content',
-		subtitle: 'Content Widget Area',
-		style: 'composite',
-	} );
-	registry
-		.dispatch( CORE_WIDGETS )
-		.assignWidgetArea( 'ContentArea', CONTEXT_MAIN_DASHBOARD_CONTENT );
-	registry.dispatch( CORE_WIDGETS ).registerWidget( 'ContentWidget', {
-		Component: () => <div>Content Widget</div>,
-	} );
-	registry
-		.dispatch( CORE_WIDGETS )
-		.assignWidget( 'ContentWidget', 'ContentArea' );
-
-	// Speed
-	registry.dispatch( CORE_WIDGETS ).registerWidgetArea( 'SpeedArea', {
-		title: 'Speed',
-		subtitle: 'Speed Widget Area',
-		style: 'composite',
-	} );
-	registry
-		.dispatch( CORE_WIDGETS )
-		.assignWidgetArea( 'SpeedArea', CONTEXT_MAIN_DASHBOARD_SPEED );
-	registry.dispatch( CORE_WIDGETS ).registerWidget( 'SpeedWidget', {
-		Component: () => <div>Speed Widget</div>,
-	} );
-	registry
-		.dispatch( CORE_WIDGETS )
-		.assignWidget( 'SpeedWidget', 'SpeedArea' );
-};
+import { setupDefaultChips } from './test-utils';
 
 describe( 'Dashboard Navigation', () => {
 	let previousSiteKitUserData;
@@ -114,18 +55,16 @@ describe( 'Dashboard Navigation', () => {
 	} );
 
 	it( 'always uses `ANCHOR_ID_TRAFFIC` as the default chip when not viewing a shared dashboard', async () => {
-		global._googlesitekitUserData = {
-			permissions: {
-				googlesitekit_view_dashboard: true,
-				googlesitekit_manage_options: true,
-				'googlesitekit_manage_module_sharing_options::["search-console"]': true,
-				'googlesitekit_read_shared_module_data::["search-console"]': true,
-				'googlesitekit_read_shared_module_data::["analytics"]': false,
-			},
-		};
-
 		const { container } = render( <DashboardNavigation />, {
 			setupRegistry: ( registry ) => {
+				registry.dispatch( CORE_USER ).receiveGetCapabilities( {
+					googlesitekit_view_dashboard: true,
+					googlesitekit_manage_options: true,
+					'googlesitekit_manage_module_sharing_options::["search-console"]': true,
+					'googlesitekit_read_shared_module_data::["search-console"]': true,
+					'googlesitekit_read_shared_module_data::["analytics"]': false,
+				} );
+
 				registry.dispatch( CORE_MODULES ).receiveGetModules( [
 					{
 						slug: 'search-console',
@@ -150,18 +89,16 @@ describe( 'Dashboard Navigation', () => {
 	} );
 
 	it( 'uses `ANCHOR_ID_TRAFFIC` as the chip viewing a shared dashboard with the traffic section enabled', () => {
-		global._googlesitekitUserData = {
-			permissions: {
-				googlesitekit_view_dashboard: true,
-				googlesitekit_manage_options: true,
-				'googlesitekit_manage_module_sharing_options::["search-console"]': true,
-				'googlesitekit_read_shared_module_data::["search-console"]': true,
-				'googlesitekit_read_shared_module_data::["analytics"]': false,
-			},
-		};
-
 		const { container } = render( <DashboardNavigation />, {
 			setupRegistry: ( registry ) => {
+				registry.dispatch( CORE_USER ).receiveGetCapabilities( {
+					googlesitekit_view_dashboard: true,
+					googlesitekit_manage_options: true,
+					'googlesitekit_manage_module_sharing_options::["search-console"]': true,
+					'googlesitekit_read_shared_module_data::["search-console"]': true,
+					'googlesitekit_read_shared_module_data::["analytics"]': false,
+				} );
+
 				registry.dispatch( CORE_MODULES ).receiveGetModules( [
 					{
 						slug: 'search-console',
@@ -186,19 +123,17 @@ describe( 'Dashboard Navigation', () => {
 	} );
 
 	it( 'uses `ANCHOR_ID_CONTENT` as the chip viewing a shared dashboard with the traffic sections unavailable', async () => {
-		global._googlesitekitUserData = {
-			permissions: {
-				googlesitekit_view_dashboard: true,
-				googlesitekit_manage_options: true,
-				'googlesitekit_manage_module_sharing_options::["search-console"]': false,
-				'googlesitekit_read_shared_module_data::["search-console"]': false,
-				'googlesitekit_read_shared_module_data::["analytics"]': false,
-				'googlesitekit_read_shared_module_data::["pagespeed-insights"]': true,
-			},
-		};
-
 		const { container } = render( <DashboardNavigation />, {
 			setupRegistry: ( registry ) => {
+				registry.dispatch( CORE_USER ).receiveGetCapabilities( {
+					googlesitekit_view_dashboard: true,
+					googlesitekit_manage_options: true,
+					'googlesitekit_manage_module_sharing_options::["search-console"]': false,
+					'googlesitekit_read_shared_module_data::["search-console"]': false,
+					'googlesitekit_read_shared_module_data::["analytics"]': false,
+					'googlesitekit_read_shared_module_data::["pagespeed-insights"]': true,
+				} );
+
 				registry.dispatch( CORE_MODULES ).receiveGetModules( [
 					{
 						slug: 'pagespeed-insights',

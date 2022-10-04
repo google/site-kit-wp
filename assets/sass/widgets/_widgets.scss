@@ -33,7 +33,7 @@
 		&__header {
 			border-bottom: 1px solid $c-border-light;
 
-			@media ( min-width: $bp-tablet ) {
+			@media (min-width: $bp-tablet) {
 				display: flex;
 				justify-content: space-between;
 			}
@@ -105,7 +105,7 @@
 		.googlesitekit-widget__header--cta {
 			margin: $grid-gap-phone 0 0;
 
-			@media ( min-width: $bp-tablet ) {
+			@media (min-width: $bp-tablet) {
 				margin: 0;
 			}
 

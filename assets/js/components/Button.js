@@ -22,7 +22,6 @@
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
 import useMergedRef from '@react-hook/merged-ref';
-import { Tooltip } from '@material-ui/core';
 
 /**
  * WordPress dependencies
@@ -34,6 +33,7 @@ import { _x } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { MDCRipple } from '../material-components';
+import Tooltip from './Tooltip';
 
 const Button = forwardRef(
 	(
@@ -50,6 +50,7 @@ const Button = forwardRef(
 			'aria-label': ariaLabel,
 			title,
 			tooltip,
+			inverse,
 			...extraProps
 		},
 		ref
@@ -93,6 +94,7 @@ const Button = forwardRef(
 				className={ classnames( 'mdc-button', className, {
 					'mdc-button--raised': ! text,
 					'mdc-button--danger': danger,
+					'mdc-button--inverse': inverse,
 				} ) }
 				href={ disabled ? undefined : href }
 				ref={ mergedRefs }
@@ -115,13 +117,7 @@ const Button = forwardRef(
 			( icon && ( title || ariaLabel ) && children === undefined )
 		) {
 			return (
-				<Tooltip
-					title={ title || ariaLabel }
-					classes={ {
-						popper: 'googlesitekit-tooltip-popper',
-						tooltip: 'googlesitekit-tooltip',
-					} }
-				>
+				<Tooltip title={ title || ariaLabel }>
 					{ ButtonComponent }
 				</Tooltip>
 			);
@@ -145,6 +141,7 @@ Button.propTypes = {
 	trailingIcon: PropTypes.element,
 	title: PropTypes.string,
 	tooltip: PropTypes.bool,
+	inverse: PropTypes.bool,
 };
 
 Button.defaultProps = {
@@ -158,6 +155,7 @@ Button.defaultProps = {
 	trailingIcon: null,
 	title: null,
 	tooltip: false,
+	inverse: false,
 };
 
 export default Button;

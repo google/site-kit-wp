@@ -41,7 +41,8 @@ const AuthenticatedPermissionsModal = () => {
 	const connectURL = useSelect( ( select ) =>
 		select( CORE_USER ).getConnectURL( {
 			additionalScopes: permissionsError?.data?.scopes,
-			redirectURL: global.location.href,
+			redirectURL:
+				permissionsError?.data?.redirectURL || global.location.href,
 		} )
 	);
 

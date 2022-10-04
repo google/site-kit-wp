@@ -112,9 +112,16 @@ export default function SetupModule( { slug, name, description } ) {
 				>
 					{ name }
 				</h3>
-				{ EXPERIMENTAL_MODULES.includes( slug ) && (
-					<Badge label={ __( 'Experimental', 'google-site-kit' ) } />
-				) }
+				<div className="googlesitekit-settings-connect-module__badges">
+					{ EXPERIMENTAL_MODULES.includes( slug ) && (
+						<Badge
+							label={ __( 'Experimental', 'google-site-kit' ) }
+						/>
+					) }
+					{ 'thank-with-google' === slug && (
+						<Badge label={ __( 'US Only', 'google-site-kit' ) } />
+					) }
+				</div>
 			</div>
 			<p className="googlesitekit-settings-connect-module__text">
 				{ description }
@@ -130,7 +137,7 @@ export default function SetupModule( { slug, name, description } ) {
 					arrow
 				>
 					{ sprintf(
-						/* translators: %s: module name */
+						/* translators: 1: module name */
 						__( 'Set up %s', 'google-site-kit' ),
 						name
 					) }

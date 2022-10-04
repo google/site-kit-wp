@@ -17,6 +17,7 @@ use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
+use Google\Site_Kit\Core\Util\Build_Mode;
 use Google\Site_Kit\Modules\AdSense;
 use Google\Site_Kit\Modules\Analytics;
 use Google\Site_Kit\Modules\Analytics_4;
@@ -47,12 +48,49 @@ class ModulesTest extends TestCase {
 			$modules->get_available_modules()
 		);
 
-		$this->assertEqualSets(
+		$this->assertEqualSetsWithIndex(
 			array(
 				'adsense'            => 'Google\\Site_Kit\\Modules\\AdSense',
 				'analytics'          => 'Google\\Site_Kit\\Modules\\Analytics',
 				'analytics-4'        => 'Google\\Site_Kit\\Modules\\Analytics_4',
 				'optimize'           => 'Google\\Site_Kit\\Modules\\Optimize',
+				'pagespeed-insights' => 'Google\\Site_Kit\\Modules\\PageSpeed_Insights',
+				'search-console'     => 'Google\\Site_Kit\\Modules\\Search_Console',
+				'site-verification'  => 'Google\\Site_Kit\\Modules\\Site_Verification',
+				'tagmanager'         => 'Google\\Site_Kit\\Modules\\Tag_Manager',
+			),
+			$available
+		);
+	}
+
+	public function test_get_available_modules__missing_dependency() {
+		$modules = new Modules( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+
+		add_filter(
+			'googlesitekit_available_modules',
+			function( $modules ) {
+				return array_filter(
+					$modules,
+					function( $module ) {
+						// Remove Analytics from the list of available modules.
+						return 'analytics' !== $module;
+					}
+				);
+			}
+		);
+
+		$available = array_map(
+			function ( $instance ) {
+				return get_class( $instance );
+			},
+			$modules->get_available_modules()
+		);
+
+		// Analytics is no longer present due to the filter above.
+		// Analytics-4 and Optimize are no longer present due to their dependency on Analytics.
+		$this->assertEqualSetsWithIndex(
+			array(
+				'adsense'            => 'Google\\Site_Kit\\Modules\\AdSense',
 				'pagespeed-insights' => 'Google\\Site_Kit\\Modules\\PageSpeed_Insights',
 				'search-console'     => 'Google\\Site_Kit\\Modules\\Search_Console',
 				'site-verification'  => 'Google\\Site_Kit\\Modules\\Site_Verification',
@@ -74,7 +112,7 @@ class ModulesTest extends TestCase {
 			'pagespeed-insights' => 'Google\\Site_Kit\\Modules\\PageSpeed_Insights',
 		);
 
-		$this->assertEqualSets(
+		$this->assertEqualSetsWithIndex(
 			$always_on_modules + $default_active_modules,
 			array_map( 'get_class', $modules->get_active_modules() )
 		);
@@ -84,7 +122,7 @@ class ModulesTest extends TestCase {
 		// Active modules will fallback to legacy option if set.
 		update_option( 'googlesitekit-active-modules', array( 'analytics' ) );
 
-		$this->assertEqualSets(
+		$this->assertEqualSetsWithIndex(
 			$always_on_modules + array(
 				'analytics'   => 'Google\\Site_Kit\\Modules\\Analytics',
 				'analytics-4' => 'Google\\Site_Kit\\Modules\\Analytics_4',
@@ -101,6 +139,52 @@ class ModulesTest extends TestCase {
 			),
 			array_map( 'get_class', $modules->get_active_modules() )
 		);
+	}
+
+	public function test_should_enable_twg__feature_flag_not_enabled() {
+		$this->assertEquals( false, Modules::should_enable_twg() );
+	}
+
+	public function test_should_enable_twg_development() {
+		$this->enable_feature( 'twgModule' );
+		Build_Mode::set_mode( Build_Mode::MODE_DEVELOPMENT );
+		$this->assertEquals( true, Modules::should_enable_twg() );
+		// Reset build mode.
+		Build_Mode::set_mode( Build_Mode::MODE_PRODUCTION );
+	}
+
+	public function test_should_enable_twg_non_ssl() {
+		$this->enable_feature( 'twgModule' );
+		$this->assertEquals( false, Modules::should_enable_twg() );
+	}
+
+	public function test_should_enable_twg_ssl_home_url() {
+		$this->enable_feature( 'twgModule' );
+
+		$home_url_hook = function() {
+			return 'http://non-https.site';
+		};
+
+		add_filter( 'home_url', $home_url_hook );
+		$this->assertEquals( false, Modules::should_enable_twg() );
+		remove_filter( 'home_url', $home_url_hook );
+
+		$home_url_hook = function() {
+			return 'https://with-https.site';
+		};
+
+		add_filter( 'home_url', $home_url_hook );
+		$this->assertEquals( true, Modules::should_enable_twg() );
+		remove_filter( 'home_url', $home_url_hook );
+	}
+
+	public function test_should_enable_twg_ssl() {
+		$this->enable_feature( 'twgModule' );
+		$_SERVER['HTTPS'] = 'on';
+		$this->assertEquals( true, Modules::should_enable_twg() );
+		// Reset HTTPS.
+		unset( $_SERVER['HTTPS'] );
+		$this->assertEquals( false, Modules::should_enable_twg() );
 	}
 
 	public function test_register() {
@@ -121,6 +205,10 @@ class ModulesTest extends TestCase {
 			'/' . REST_Routes::REST_ROOT . '/core/modules/data/list',
 			apply_filters( 'googlesitekit_apifetch_preload_paths', array() )
 		);
+
+		$this->assertTrue( has_filter( 'googlesitekit_module_exists' ) );
+		$this->assertTrue( apply_filters( 'googlesitekit_module_exists', null, 'fake-module' ) );
+		$this->assertFalse( apply_filters( 'googlesitekit_module_exists', null, 'non-existent-module' ) );
 	}
 
 	public function test_get_module() {
@@ -175,6 +263,17 @@ class ModulesTest extends TestCase {
 		}
 
 		$this->fail( 'Failed to catch exception thrown for non-existent module in get_module_dependencies.' );
+	}
+
+	public function test_module_exists() {
+		$fake_module = new FakeModule( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$modules     = new Modules( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+
+		$this->force_set_property( $modules, 'modules', array( 'fake-module' => $fake_module ) );
+		$this->assertTrue( $modules->module_exists( 'fake-module' ) );
+
+		$module_slug = 'non-existent-module';
+		$this->assertFalse( $modules->module_exists( $module_slug ) );
 	}
 
 	public function test_get_module_dependants() {
@@ -439,6 +538,9 @@ class ModulesTest extends TestCase {
 	 * @param array<string> $expected        The array of expected module slugs.
 	 */
 	public function test_feature_flag_enabled_modules( $feature_flag, $feature_enabled, $module_slug, array $expected ) {
+		// This is needed for Thank with Google.
+		$_SERVER['HTTPS'] = 'on';
+
 		add_filter(
 			'googlesitekit_is_feature_enabled',
 			function ( $is_enabled, $feature ) use ( $feature_flag, $feature_enabled ) {
@@ -467,6 +569,9 @@ class ModulesTest extends TestCase {
 		foreach ( $expected as $slug ) {
 			$this->assertArrayHasKey( $slug, $modules->get_available_modules() );
 		}
+
+		// Reset HTTPs.
+		unset( $_SERVER['HTTPS'] );
 	}
 
 	public function provider_feature_flag_modules() {
@@ -529,7 +634,7 @@ class ModulesTest extends TestCase {
 
 		$shareable_active_modules = array_map( 'get_class', $modules->get_shareable_modules() );
 
-		$this->assertEqualSets(
+		$this->assertEqualSetsWithIndex(
 			array(
 				'search-console'     => 'Google\\Site_Kit\\Modules\\Search_Console',
 				'pagespeed-insights' => 'Google\\Site_Kit\\Modules\\PageSpeed_Insights',
@@ -546,7 +651,7 @@ class ModulesTest extends TestCase {
 
 		// Check shared ownership for modules activated by default.
 		$modules = new Modules( $context );
-		$this->assertEqualSets(
+		$this->assertEqualSetsWithIndex(
 			array(
 				'pagespeed-insights' => 'Google\\Site_Kit\\Modules\\PageSpeed_Insights',
 			),
@@ -575,7 +680,7 @@ class ModulesTest extends TestCase {
 
 		// Verify shared ownership for active and connected modules.
 		$modules = new Modules( $context );
-		$this->assertEqualSets(
+		$this->assertEqualSetsWithIndex(
 			array(
 				'idea-hub'           => 'Google\\Site_Kit\\Modules\\Idea_Hub',
 				'pagespeed-insights' => 'Google\\Site_Kit\\Modules\\PageSpeed_Insights',
@@ -989,7 +1094,7 @@ class ModulesTest extends TestCase {
 		// Test adding a new shared role updates the owner.
 		$test_updated_sharing_settings = array(
 			'pagespeed-insights' => array(
-				'sharedRoles' => array( 'editor', 'subscriber' ),
+				'sharedRoles' => array( 'editor', 'editor' ),
 				'management'  => 'owner',
 			),
 		);
@@ -1257,7 +1362,7 @@ class ModulesTest extends TestCase {
 			'analytics'          => 2,
 			'pagespeed-insights' => 0,
 		);
-		$this->assertEqualSets( $expected_module_owners, $modules->get_shareable_modules_owners() );
+		$this->assertEqualSetsWithIndex( $expected_module_owners, $modules->get_shareable_modules_owners() );
 	}
 
 	public function test_shared_ownership_module_default_settings() {
@@ -1277,10 +1382,54 @@ class ModulesTest extends TestCase {
 		);
 
 		$settings = apply_filters( 'option_' . Module_Sharing_Settings::OPTION, array() );
-		$this->assertEqualSets( $expected, $settings );
+		$this->assertEqualSetsWithIndex( $expected, $settings );
 
 		$settings = apply_filters( 'default_option_' . Module_Sharing_Settings::OPTION, array(), '', '' );
-		$this->assertEqualSets( $expected, $settings );
+		$this->assertEqualSetsWithIndex( $expected, $settings );
+	}
+
+	public function test_delete_dashboard_sharing_settings() {
+		$this->enable_feature( 'dashboardSharing' );
+
+		$context          = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$modules          = new Modules( $context );
+		$sharing_settings = $modules->get_module_sharing_settings();
+
+		$modules->register();
+
+		$default_settings = array(
+			'pagespeed-insights' => array(
+				'sharedRoles' => array(),
+				'management'  => 'all_admins',
+			),
+		);
+
+		$settings = $sharing_settings->get();
+		$this->assertEqualSets(
+			$default_settings,
+			$settings
+		);
+
+		$updated_settings = array(
+			'pagespeed-insights' => array(
+				'sharedRoles' => array( 'editor' ),
+				'management'  => 'owner',
+			),
+		);
+
+		$sharing_settings->set( $updated_settings );
+		$settings = $sharing_settings->get();
+		$this->assertEqualSets(
+			$updated_settings,
+			$settings
+		);
+
+		$modules->delete_dashboard_sharing_settings();
+		$settings = $sharing_settings->get();
+		$this->assertEqualSets(
+			$default_settings,
+			$settings
+		);
 	}
 
 }

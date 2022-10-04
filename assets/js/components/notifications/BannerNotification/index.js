@@ -22,7 +22,7 @@
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import map from 'lodash/map';
-import { useMount } from 'react-use';
+import { useMount, useMountedState } from 'react-use';
 
 /*
  * WordPress dependencies
@@ -49,6 +49,7 @@ import ErrorIcon from '../../../../svg/icons/error.svg';
 import Link from '../../Link';
 import Badge from '../../Badge';
 import ModuleIcon from '../../ModuleIcon';
+import Spinner from '../../Spinner';
 import { getItem, setItem, deleteItem } from '../../../googlesitekit/api/cache';
 import { useBreakpoint } from '../../../hooks/useBreakpoint';
 import {
@@ -57,6 +58,7 @@ import {
 	getImageCellSizeProperties,
 	getImageCellOrderProperties,
 } from './utils';
+import { stringToDate } from '../../../util/date-range/string-to-date';
 
 export const LEARN_MORE_TARGET = {
 	EXTERNAL: 'external',
@@ -74,6 +76,7 @@ function BannerNotification( {
 	ctaLink,
 	ctaTarget,
 	description,
+	descriptionIcon,
 	dismiss,
 	dismissExpires,
 	format,
@@ -97,11 +100,16 @@ function BannerNotification( {
 	type,
 	WinImageSVG,
 	rounded = false,
+	footer,
+	secondaryPane,
+	ctaComponent,
 } ) {
 	// Closed notifications are invisible, but still occupy space.
 	const [ isClosed, setIsClosed ] = useState( false );
 	// Start with an undefined dismissed state due to async resolution.
 	const [ isDismissed, setIsDismissed ] = useState( false );
+	const [ isAwaitingCTAResponse, setIsAwaitingCTAResponse ] =
+		useState( false );
 	const cacheKeyDismissed = `notification::dismissed::${ id }`;
 	// Persists the notification dismissal to browser storage.
 	// Dismissed notifications don't expire.
@@ -109,6 +117,7 @@ function BannerNotification( {
 		setItem( cacheKeyDismissed, new Date(), { ttl: null } );
 
 	const breakpoint = useBreakpoint();
+	const isMounted = useMountedState();
 
 	useMount( async () => {
 		if ( dismissExpires > 0 ) {
@@ -142,7 +151,9 @@ function BannerNotification( {
 		setTimeout( async () => {
 			await persistDismissal();
 
-			setIsDismissed( true );
+			if ( isMounted() ) {
+				setIsDismissed( true );
+			}
 
 			// Emit an event for the notification counter to listen for.
 			const event = new Event( 'notificationDismissed' );
@@ -153,11 +164,16 @@ function BannerNotification( {
 	async function handleCTAClick( e ) {
 		e.persist();
 
+		let dismissOnCTAClick = true;
 		if ( onCTAClick ) {
-			await onCTAClick( e );
+			setIsAwaitingCTAResponse( true );
+			( { dismissOnCTAClick = true } = ( await onCTAClick( e ) ) || {} );
+			if ( isMounted() ) {
+				setIsAwaitingCTAResponse( false );
+			}
 		}
 
-		if ( isDismissible ) {
+		if ( isDismissible && dismissOnCTAClick ) {
 			dismissNotification();
 		}
 	}
@@ -188,7 +204,7 @@ function BannerNotification( {
 		const { value: dismissed } = await getItem( cacheKeyDismissed );
 
 		if ( dismissed ) {
-			const expiration = new Date( dismissed );
+			const expiration = stringToDate( dismissed );
 			expiration.setSeconds(
 				expiration.getSeconds() + parseInt( dismissExpires, 10 )
 			);
@@ -263,6 +279,11 @@ function BannerNotification( {
 			) }
 			{ description && (
 				<div className="googlesitekit-publisher-win__desc">
+					{ descriptionIcon && (
+						<div className="googlesitekit-publisher-win__icon">
+							{ descriptionIcon }
+						</div>
+					) }
 					<p>
 						{ isValidElement( description ) ? (
 							description
@@ -327,7 +348,7 @@ function BannerNotification( {
 
 	// ctaLink links are always buttons, in which case the dismiss should be a Link.
 	// If there is only a dismiss however, it should be the primary action with a Button.
-	const DismissComponent = ctaLink ? Link : Button;
+	const DismissComponent = ctaLink || ctaComponent ? Link : Button;
 
 	return (
 		<section
@@ -335,9 +356,11 @@ function BannerNotification( {
 			className={ classnames( className, 'googlesitekit-publisher-win', {
 				[ `googlesitekit-publisher-win--${ format }` ]: format,
 				[ `googlesitekit-publisher-win--${ type }` ]: type,
-				[ `googlesitekit-publisher-win--${ closedClass }` ]: closedClass,
+				[ `googlesitekit-publisher-win--${ closedClass }` ]:
+					closedClass,
 				'googlesitekit-publisher-win--rounded': rounded,
-				'googlesitekit-publisher-win--no-bottom-padding': noBottomPadding,
+				'googlesitekit-publisher-win--no-bottom-padding':
+					noBottomPadding,
 			} ) }
 		>
 			<Grid
@@ -389,21 +412,43 @@ function BannerNotification( {
 							</Fragment>
 						) }
 
-						{ ctaLink && (
-							<Button
-								className="googlesitekit-notification__cta"
-								href={ ctaLink }
-								target={ ctaTarget }
-								onClick={ handleCTAClick }
-							>
-								{ ctaLabel }
-							</Button>
+						{ ( ctaLink ||
+							isDismissible ||
+							dismiss ||
+							ctaComponent ) && (
+							<div className="googlesitekit-publisher-win__actions">
+								{ ctaComponent }
+
+								{ ctaLink && (
+									<Button
+										className="googlesitekit-notification__cta"
+										href={ ctaLink }
+										target={ ctaTarget }
+										onClick={ handleCTAClick }
+										disabled={ isAwaitingCTAResponse }
+									>
+										{ ctaLabel }
+									</Button>
+								) }
+
+								<Spinner isSaving={ isAwaitingCTAResponse } />
+
+								{ isDismissible &&
+									dismiss &&
+									! isAwaitingCTAResponse && (
+										<DismissComponent
+											onClick={ handleDismiss }
+										>
+											{ dismiss }
+										</DismissComponent>
+									) }
+							</div>
 						) }
 
-						{ isDismissible && dismiss && (
-							<DismissComponent onClick={ handleDismiss }>
-								{ dismiss }
-							</DismissComponent>
+						{ footer && (
+							<div className="googlesitekit-publisher-win__footer">
+								{ footer }
+							</div>
 						) }
 					</Cell>
 
@@ -432,6 +477,21 @@ function BannerNotification( {
 					) }
 				</Row>
 			</Grid>
+			{ secondaryPane && (
+				<Fragment>
+					<div className="googlesitekit-publisher-win__secondary-pane-divider"></div>
+					<Grid className="googlesitekit-publisher-win__secondary-pane">
+						<Row>
+							<Cell
+								className="googlesitekit-publisher-win__secondary-pane"
+								size={ 12 }
+							>
+								{ secondaryPane }
+							</Cell>
+						</Row>
+					</Grid>
+				</Fragment>
+			) }
 		</section>
 	);
 }
@@ -441,6 +501,7 @@ BannerNotification.propTypes = {
 	className: PropTypes.string,
 	title: PropTypes.string.isRequired,
 	description: PropTypes.node,
+	descriptionIcon: PropTypes.node,
 	learnMoreURL: PropTypes.string,
 	learnMoreDescription: PropTypes.string,
 	learnMoreLabel: PropTypes.string,
@@ -468,6 +529,8 @@ BannerNotification.propTypes = {
 	badgeLabel: PropTypes.string,
 	noBottomPadding: PropTypes.bool,
 	rounded: PropTypes.bool,
+	footer: PropTypes.node,
+	secondaryPane: PropTypes.node,
 };
 
 BannerNotification.defaultProps = {

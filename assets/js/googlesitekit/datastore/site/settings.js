@@ -85,12 +85,10 @@ const baseActions = {
 	 * @return {Object} Object with `response` and `error`.
 	 */
 	*setShowAdminBar( enabled ) {
-		const {
-			response,
-			error,
-		} = yield fetchSetAdminBarSettingsStore.actions.fetchSetAdminBarSettings(
-			{ enabled }
-		);
+		const { response, error } =
+			yield fetchSetAdminBarSettingsStore.actions.fetchSetAdminBarSettings(
+				{ enabled }
+			);
 		return { response, error };
 	},
 };

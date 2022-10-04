@@ -79,9 +79,8 @@ const loadIdeaHubNotices = async () => {
 
 		// We haven't shown any notice for this post before, so let's check for
 		// Idea Hub postmeta.
-		const postMeta = select( 'core/editor' ).getEditedPostAttribute(
-			'meta'
-		);
+		const postMeta =
+			select( 'core/editor' ).getEditedPostAttribute( 'meta' );
 
 		if (
 			// eslint-disable-next-line camelcase
@@ -90,7 +89,7 @@ const loadIdeaHubNotices = async () => {
 		) {
 			dispatch( 'core/notices' ).createInfoNotice(
 				sprintf(
-					/* translators: %s: Idea post name */
+					/* translators: 1: Idea post name */
 					__(
 						'This post was created from an idea you picked in Site Kit’s Idea Hub: %s',
 						'google-site-kit'

@@ -123,14 +123,14 @@ describe( 'AccountCreate', () => {
 
 			expect( openSpy ).toHaveBeenCalledTimes( 1 );
 			expect( openSpy ).toHaveBeenCalledWith(
-				expect.stringMatching( /^https:\/\/tagmanager.google.com\/\?/ ),
+				expect.stringMatching( /tagmanager.google.com/ ),
 				'_blank'
 			);
 			expect( openSpy ).toHaveBeenCalledWith(
 				expect.stringContaining(
-					`authuser=${ encodeURIComponent(
-						'user@example.com'
-					) }#/admin/accounts/create`
+					`${ encodeURIComponent(
+						'/admin/accounts/create'
+					) }&Email=${ encodeURIComponent( 'user@example.com' ) }`
 				),
 				'_blank'
 			);

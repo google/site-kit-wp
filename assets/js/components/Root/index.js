@@ -20,6 +20,14 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import {
+	ThemeProvider,
+	createMuiTheme,
+	// We're using the to avoid `StrictMode` warnings. It's a temporary
+	// workaround until we can upgrade `material-ui/core` to v5+.
+	// See: https://github.com/google/site-kit-wp/issues/5378
+	unstable_createMuiStrictModeTheme, // eslint-disable-line camelcase
+} from '@material-ui/core';
 
 /**
  * WordPress dependencies
@@ -39,8 +47,14 @@ import { FeatureToursDesktop } from '../FeatureToursDesktop';
 import CurrentSurveyPortal from '../surveys/CurrentSurveyPortal';
 import { Provider as ViewContextProvider } from './ViewContextContext';
 import InViewProvider from '../InViewProvider';
+import { isSiteKitScreen } from '../../util/is-site-kit-screen';
 
 export default function Root( { children, registry, viewContext = null } ) {
+	const theme =
+		process.env.NODE_ENV === 'production'
+			? createMuiTheme
+			: unstable_createMuiStrictModeTheme; // eslint-disable-line camelcase
+
 	const [ inViewState ] = useState( {
 		key: 'Root',
 		value: true,
@@ -52,19 +66,25 @@ export default function Root( { children, registry, viewContext = null } ) {
 				<Data.RegistryProvider value={ registry }>
 					<FeaturesProvider value={ enabledFeatures }>
 						<ViewContextProvider value={ viewContext }>
-							<ErrorHandler>
-								<RestoreSnapshots>
-									{ children }
-									{ /*
-									TODO: Replace `FeatureToursDesktop` with `FeatureTours`
-									once tour conflicts in smaller viewports are resolved.
-									@see https://github.com/google/site-kit-wp/issues/3003
-								*/ }
-									{ viewContext && <FeatureToursDesktop /> }
-									<CurrentSurveyPortal />
-								</RestoreSnapshots>
-								<PermissionsModal />
-							</ErrorHandler>
+							<ThemeProvider theme={ theme() }>
+								<ErrorHandler>
+									<RestoreSnapshots>
+										{ children }
+										{ /*
+											TODO: Replace `FeatureToursDesktop` with `FeatureTours`
+											once tour conflicts in smaller viewports are resolved.
+											@see https://github.com/google/site-kit-wp/issues/3003
+										*/ }
+										{ viewContext && (
+											<FeatureToursDesktop />
+										) }
+										<CurrentSurveyPortal />
+									</RestoreSnapshots>
+									{ isSiteKitScreen( viewContext ) && (
+										<PermissionsModal />
+									) }
+								</ErrorHandler>
+							</ThemeProvider>
 						</ViewContextProvider>
 					</FeaturesProvider>
 				</Data.RegistryProvider>

@@ -43,7 +43,7 @@ const unifiedDashboard = {
 		{
 			target: '.googlesitekit-navigation',
 			title: __(
-				'New! Navigate your dashboard easily with the dashboard tabs',
+				'New! Navigate your dashboard easily',
 				'google-site-kit'
 			),
 			content: __(
@@ -89,9 +89,8 @@ const unifiedDashboard = {
 			const tooltipElement = global.document.querySelector(
 				'.googlesitekit-tour-tooltip'
 			);
-			const wpAdminBarElement = global.document.querySelector(
-				'#wpadminbar'
-			);
+			const wpAdminBarElement =
+				global.document.querySelector( '#wpadminbar' );
 
 			if ( tooltipElement && wpAdminBarElement ) {
 				global.scrollTo( {

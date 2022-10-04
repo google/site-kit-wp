@@ -33,8 +33,7 @@ import { sprintf, __ } from '@wordpress/i18n';
 import Radio from '../Radio';
 import { TextField, Input } from '../../material-components';
 import VisuallyHidden from '../VisuallyHidden';
-
-const MAXIMUM_CHARACTER_LIMIT = 100;
+import { SURVEY_INPUT_MAX_CHARACTER_LIMIT } from './constants';
 
 const SurveyQuestionSingleSelectChoice = ( {
 	value,
@@ -63,7 +62,7 @@ const SurveyQuestionSingleSelectChoice = ( {
 					<VisuallyHidden>
 						<label htmlFor={ uniqueID }>
 							{ sprintf(
-								/* translators: %s: Option name */
+								/* translators: 1: Option name */
 								__(
 									'Text input for option %s',
 									'google-site-kit'
@@ -79,7 +78,7 @@ const SurveyQuestionSingleSelectChoice = ( {
 								setWriteIn(
 									event.target.value.slice(
 										0,
-										MAXIMUM_CHARACTER_LIMIT
+										SURVEY_INPUT_MAX_CHARACTER_LIMIT
 									)
 								)
 							}

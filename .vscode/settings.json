@@ -1,23 +1,28 @@
 {
-  "search.exclude": {
-    ".storybook/data": true,
-    "dist/": true,
-    "node_modules/": true,
-    "third-party/": true,
-    "vendor/": true
-  },
-  "files.exclude": {
-    "dist/": true,
-    "node_modules/": true,
-    "third-party/": true,
-    "vendor/": true
-  },
-  "jest.autoEnable": false,
-  "jest.pathToConfig": "./tests/js/jest.config.js",
-  "editor.codeActionsOnSave": {
-    "source.fixAll": true,
-    "source.fixAll.eslint": true
-  },
-  "phpcs.enable": true,
-  "phpcs.executablePath": "vendor/bin/phpcs"
+	"search.exclude": {
+		".storybook/data": true,
+		"dist/": true,
+		"node_modules/": true,
+		"third-party/": true,
+		"vendor/": true
+	},
+	"files.exclude": {
+		"dist/": true,
+		"node_modules/": true,
+		"third-party/": true,
+		"vendor/": true
+	},
+	"jest.autoEnable": false,
+	"jest.pathToConfig": "./tests/js/jest.config.js",
+	"editor.defaultFormatter": "esbenp.prettier-vscode",
+	"[javascript]": {
+		"editor.formatOnSave": true
+	},
+	"editor.codeActionsOnSave": {
+		"source.fixAll": true,
+		"source.fixAll.eslint": true
+	},
+	"phpcs.enable": true,
+	"phpcs.executablePath": "vendor/bin/phpcs",
+	"stylelint.validate": [ "css", "scss" ]
 }

@@ -24,7 +24,12 @@ import faker from 'faker';
 import castArray from 'lodash/castArray';
 import { zip, from, Observable } from 'rxjs';
 import { map, reduce, take } from 'rxjs/operators';
+
+/**
+ * Internal dependencies
+ */
 import { MODULES_ANALYTICS } from '../datastore/constants';
+import { stringToDate } from '../../../util/date-range/string-to-date';
 
 const ANALYTICS_METRIC_TYPES = {
 	'ga:users': 'INTEGER',
@@ -226,10 +231,10 @@ export function getAnalyticsMockResponse( args ) {
 			// Generates a stream (an array) of dates when the dimension is ga:date.
 			streams.push(
 				new Observable( ( observer ) => {
-					const currentDate = new Date(
+					const currentDate = stringToDate(
 						args.compareStartDate || args.startDate
 					);
-					const end = new Date( args.endDate );
+					const end = stringToDate( args.endDate );
 
 					while ( currentDate.getTime() <= end.getTime() ) {
 						observer.next(
@@ -253,9 +258,8 @@ export function getAnalyticsMockResponse( args ) {
 				new Observable( ( observer ) => {
 					for ( let i = 1; i <= 90; i++ ) {
 						// 90 is the max number of dates in the longest date range.
-						const val = ANALYTICS_DIMENSION_OPTIONS[ dimension ](
-							i
-						);
+						const val =
+							ANALYTICS_DIMENSION_OPTIONS[ dimension ]( i );
 						if ( val ) {
 							observer.next( val );
 						} else {

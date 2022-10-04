@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 
-
 .googlesitekit-plugin .mdc-button {
 
 	&.googlesitekit-button-icon {
@@ -27,11 +26,21 @@
 
 	&.googlesitekit-button-icon--phone {
 
-		@media (max-width: $bp-mobileOnly ) {
+		@media (max-width: $bp-mobileOnly) {
 			min-height: auto;
 			min-width: auto;
 			padding: 8px;
 		}
 	}
-}
 
+	&.googlesitekit-button-icon--spinner__running {
+
+		.mdc-button__label {
+			margin-right: 8px;
+		}
+
+		svg circle {
+			stroke: $c-white;
+		}
+	}
+}

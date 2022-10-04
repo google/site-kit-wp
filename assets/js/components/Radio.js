@@ -32,17 +32,20 @@ import { useCallback } from '@wordpress/element';
  */
 import { MDCFormField, MDCRadio } from '../material-components';
 
-const Radio = ( {
-	onClick,
-	id,
-	name,
-	value,
-	checked,
-	disabled,
-	children,
-	tabIndex,
-	onKeyDown,
-} ) => {
+export default function Radio( props ) {
+	const {
+		id,
+		name,
+		value,
+		checked = false,
+		disabled = false,
+		children,
+		tabIndex,
+		onKeyDown = null,
+		onClick = null,
+		onChange = null,
+	} = props;
+
 	const formFieldRef = useCallback( ( el ) => {
 		if ( el !== null ) {
 			const formField = new MDCFormField( el );
@@ -72,6 +75,7 @@ const Radio = ( {
 					checked={ checked }
 					disabled={ disabled }
 					tabIndex={ tabIndex }
+					onChange={ onChange }
 					readOnly
 				/>
 				<div className="mdc-radio__background">
@@ -82,11 +86,12 @@ const Radio = ( {
 			<label htmlFor={ id }>{ children }</label>
 		</div>
 	);
-};
+}
 
 Radio.propTypes = {
 	onClick: PropTypes.func,
 	onKeyDown: PropTypes.func,
+	onChange: PropTypes.func,
 	id: PropTypes.string.isRequired,
 	name: PropTypes.string.isRequired,
 	value: PropTypes.string.isRequired,
@@ -95,13 +100,3 @@ Radio.propTypes = {
 	children: PropTypes.string.isRequired,
 	tabIndex: PropTypes.oneOfType( [ PropTypes.number, PropTypes.string ] ),
 };
-
-Radio.defaultProps = {
-	onClick: null,
-	onKeyDown: null,
-	checked: false,
-	disabled: false,
-	tabIndex: undefined,
-};
-
-export default Radio;

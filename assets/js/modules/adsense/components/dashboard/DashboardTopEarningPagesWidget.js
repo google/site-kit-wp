@@ -35,7 +35,6 @@ import { MODULES_ADSENSE } from '../../datastore/constants';
 import whenActive from '../../../../util/when-active';
 import PreviewTable from '../../../../components/PreviewTable';
 import SourceLink from '../../../../components/SourceLink';
-import { isZeroReport } from '../../../analytics/util';
 import TableOverflowContainer from '../../../../components/TableOverflowContainer';
 import ReportTable from '../../../../components/ReportTable';
 import Link from '../../../../components/Link';
@@ -47,16 +46,11 @@ import {
 } from '../../../analytics/components/common';
 import { numFmt } from '../../../../util';
 import { getCurrencyFormat } from '../../util/currency';
-import { useFeature } from '../../../../hooks/useFeature';
 import useViewOnly from '../../../../hooks/useViewOnly';
 const { useSelect, useInViewSelect } = Data;
 
 function DashboardTopEarningPagesWidget( props ) {
-	const { Widget, WidgetReportZero, WidgetReportError, WidgetNull } = props;
-
-	const isViewOnly = useViewOnly();
-
-	const zeroDataStates = useFeature( 'zeroDataStates' );
+	const { Widget, WidgetReportError, WidgetNull } = props;
 
 	const viewOnlyDashboard = useViewOnly();
 
@@ -112,9 +106,12 @@ function DashboardTopEarningPagesWidget( props ) {
 			] )
 	);
 
-	const isAdSenseLinked = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).getAdsenseLinked()
-	);
+	const isAdSenseLinked = useSelect( ( select ) => {
+		if ( viewOnlyDashboard && loading ) {
+			return undefined;
+		}
+		return select( MODULES_ANALYTICS ).getAdsenseLinked();
+	} );
 
 	const isAdblockerActive = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).isAdBlockerActive()
@@ -157,13 +154,13 @@ function DashboardTopEarningPagesWidget( props ) {
 		);
 	}
 
-	if ( ! isAdSenseLinked && isViewOnly ) {
+	if ( ! isAdSenseLinked && viewOnlyDashboard ) {
 		return <WidgetNull />;
 	}
 
 	// A restricted metrics error will cause this value to change in the resolver
 	// so this check should happen before an error, which is only relevant if they are linked.
-	if ( ! isAdSenseLinked && ! isViewOnly ) {
+	if ( ! isAdSenseLinked && ! viewOnlyDashboard ) {
 		return (
 			<Widget Footer={ Footer }>
 				<AdSenseLinkCTA />
@@ -175,14 +172,6 @@ function DashboardTopEarningPagesWidget( props ) {
 		return (
 			<Widget Footer={ Footer }>
 				<WidgetReportError moduleSlug="analytics" error={ error } />
-			</Widget>
-		);
-	}
-
-	if ( ! zeroDataStates && isGatheringData && isZeroReport( data ) ) {
-		return (
-			<Widget Footer={ Footer }>
-				<WidgetReportZero moduleSlug="analytics" />
 			</Widget>
 		);
 	}

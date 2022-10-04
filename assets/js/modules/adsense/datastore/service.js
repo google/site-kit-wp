@@ -46,25 +46,30 @@ export const selectors = {
 	 * @return {(string|undefined)} The URL to the service, or `undefined` if not loaded.
 	 */
 	getServiceURL: createRegistrySelector(
-		( select ) => ( state, { path, query } = {} ) => {
-			const userEmail = select( CORE_USER ).getEmail();
-			if ( userEmail === undefined ) {
-				return undefined;
-			}
+		( select ) =>
+			( state, { path, query } = {} ) => {
+				// Note: /u/0 is necessary to keep here in order for paths to be resolved properly;
+				// AccountChooser will update this part of the URL accordingly.
+				let serviceURL = 'https://www.google.com/adsense/new/u/0';
 
-			const baseURI = 'https://www.google.com/adsense/new/u/0';
-			const queryParams = query
-				? { ...query, authuser: userEmail }
-				: { authuser: userEmail };
-			if ( path ) {
-				const sanitizedPath = `/${ path.replace( /^\//, '' ) }`;
-				return addQueryArgs(
-					`${ baseURI }${ sanitizedPath }`,
-					queryParams
-				);
+				if ( path ) {
+					const sanitizedPath = `/${ path.replace( /^\//, '' ) }`;
+					serviceURL = `${ serviceURL }${ sanitizedPath }`;
+				}
+
+				if ( query ) {
+					serviceURL = addQueryArgs( serviceURL, query );
+				}
+
+				const accountChooserBaseURI =
+					select( CORE_USER ).getAccountChooserURL( serviceURL );
+
+				if ( accountChooserBaseURI === undefined ) {
+					return undefined;
+				}
+
+				return accountChooserBaseURI;
 			}
-			return addQueryArgs( baseURI, queryParams );
-		}
 	),
 
 	/**

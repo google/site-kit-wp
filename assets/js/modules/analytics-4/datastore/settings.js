@@ -45,6 +45,7 @@ import {
 	PROPERTY_CREATE,
 	WEBDATASTREAM_CREATE,
 } from './constants';
+import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 
 // Invariant error messages.
 export const INVARIANT_INVALID_PROPERTY_SELECTION =
@@ -96,6 +97,14 @@ export async function submitChanges( { select, dispatch } ) {
 		if ( error ) {
 			return { error };
 		}
+
+		if (
+			select( CORE_MODULES ).isModuleConnected( 'analytics' ) &&
+			! select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
+		) {
+			// Refresh modules from server if GA4 was connected after initial setup.
+			await dispatch( CORE_MODULES ).fetchGetModules();
+		}
 	}
 
 	await API.invalidateCache( 'modules', 'analytics-4' );
@@ -123,9 +132,8 @@ export function validateCanSubmitChanges( select ) {
 		getWebDataStreamID,
 	} = createStrictSelect( select )( MODULES_ANALYTICS_4 );
 
-	const { haveSettingsChanged: haveUASettingsChanged } = createStrictSelect(
-		select
-	)( MODULES_ANALYTICS );
+	const { haveSettingsChanged: haveUASettingsChanged } =
+		createStrictSelect( select )( MODULES_ANALYTICS );
 
 	// Check if we have GA4 settings changed only if we are sure that there is no UA changes.
 	if ( ! haveUASettingsChanged() ) {

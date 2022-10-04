@@ -219,11 +219,8 @@ describe( 'useExistingTagEffect', () => {
 			// eslint-disable-next-line sitekit/acronym-case
 			{ accountId: account.accountId, usageContext: [ CONTEXT_WEB ] }
 		);
-		const [
-			existingContainer,
-			anotherContainer,
-			thirdContainer,
-		] = containers;
+		const [ existingContainer, anotherContainer, thirdContainer ] =
+			containers;
 
 		registry
 			.dispatch( MODULES_TAGMANAGER )

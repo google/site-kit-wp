@@ -27,8 +27,10 @@ import {
 } from '../../../../../tests/js/utils';
 
 describe( 'core/user dismissed-items', () => {
-	const fetchGetDismissedItems = /^\/google-site-kit\/v1\/core\/user\/data\/dismissed-items/;
-	const fetchDismissItem = /^\/google-site-kit\/v1\/core\/user\/data\/dismiss-item/;
+	const fetchGetDismissedItems =
+		/^\/google-site-kit\/v1\/core\/user\/data\/dismissed-items/;
+	const fetchDismissItem =
+		/^\/google-site-kit\/v1\/core\/user\/data\/dismiss-item/;
 
 	let registry;
 

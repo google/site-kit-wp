@@ -103,7 +103,7 @@
 		font-size: $fs-title-sm;
 		font-weight: $fw-bold;
 		line-height: $lh-title-sm;
-		margin: 0 0 12px 0;
+		margin: 0 0 12px;
 
 		.googlesitekit-adminbar & {
 			font-size: $fs-body-lg;
@@ -162,7 +162,6 @@
 	.googlesitekit-data-block__change--no-change {
 		visibility: hidden;
 	}
-
 
 	.googlesitekit-data-block__sparkline {
 		margin-top: $grid-gap-phone / 2;

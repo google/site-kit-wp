@@ -246,9 +246,8 @@ export const getCanUseSnippet = createRegistrySelector( ( select ) => () => {
 		return undefined;
 	}
 
-	const isTagManagerConnected = select( CORE_MODULES ).isModuleConnected(
-		'tagmanager'
-	);
+	const isTagManagerConnected =
+		select( CORE_MODULES ).isModuleConnected( 'tagmanager' );
 
 	if ( ! isTagManagerConnected || ! select( MODULES_TAGMANAGER ) ) {
 		return analyticsSettings.canUseSnippet;

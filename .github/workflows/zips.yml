@@ -70,6 +70,10 @@ jobs:
     if: false == ( ( github.event_name == 'pull_request' && ( github.event.action == 'closed' || github.event.pull_request.draft == true || contains( github.head_ref, 'dependabot/' ) ) ) || github.event.pull_request.head.repo.fork )
     steps:
       - uses: actions/checkout@v2
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '7.3'
+          tools: composer:2.1
       - name: Get Composer Cache Directory
         id: composer-cache
         run: |
@@ -81,10 +85,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-composer-
       - name: Composer Install
-        uses: php-actions/composer@v4
-        with:
-          dev: no
-          php_version: 7.3
+        run: composer install --no-interaction --no-progress --no-dev
       - name: Read .nvmrc
         run: echo "##[set-output name=NVMRC;]$(cat .nvmrc)"
         id: nvm

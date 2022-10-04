@@ -101,12 +101,16 @@ export const reducer = ( state, { payload, type } ) => {
 				proxyPermissionsURL,
 				proxySetupURL,
 				referenceSiteURL,
+				setupErrorCode,
 				setupErrorMessage,
 				setupErrorRedoURL,
 				siteName,
 				timezone,
 				usingProxy,
 				webStoriesActive,
+				proxySupportLinkURL,
+				widgetsAdminURL,
+				postTypes,
 			} = payload.siteInfo;
 
 			return {
@@ -122,12 +126,16 @@ export const reducer = ( state, { payload, type } ) => {
 					proxyPermissionsURL,
 					proxySetupURL,
 					referenceSiteURL,
+					setupErrorCode,
 					setupErrorMessage,
 					setupErrorRedoURL,
 					siteName,
 					timezone,
 					usingProxy,
 					webStoriesActive,
+					proxySupportLinkURL,
+					widgetsAdminURL,
+					postTypes,
 				},
 			};
 		}
@@ -168,12 +176,16 @@ export const resolvers = {
 			proxyPermissionsURL,
 			proxySetupURL,
 			referenceSiteURL,
+			setupErrorCode,
 			setupErrorMessage,
 			setupErrorRedoURL,
 			siteName,
 			timezone,
 			usingProxy,
 			webStoriesActive,
+			proxySupportLinkURL,
+			widgetsAdminURL,
+			postTypes,
 		} = global._googlesitekitBaseData;
 
 		const {
@@ -194,12 +206,16 @@ export const resolvers = {
 			proxyPermissionsURL,
 			proxySetupURL,
 			referenceSiteURL,
+			setupErrorCode,
 			setupErrorMessage,
 			setupErrorRedoURL,
 			siteName,
 			timezone,
+			postTypes,
 			usingProxy: !! usingProxy,
 			webStoriesActive,
+			proxySupportLinkURL,
+			widgetsAdminURL,
 		} );
 	},
 };
@@ -232,41 +248,42 @@ export const selectors = {
 	 * @return {(string|undefined)} This site's admin URL.
 	 */
 	getAdminURL: createRegistrySelector(
-		( select ) => ( state, page, args = {} ) => {
-			const { adminURL } = select( CORE_SITE ).getSiteInfo() || {};
+		( select ) =>
+			( state, page, args = {} ) => {
+				const { adminURL } = select( CORE_SITE ).getSiteInfo() || {};
 
-			// Return adminURL if undefined, or if no page supplied.
-			if ( adminURL === undefined || page === undefined ) {
-				return adminURL;
-			}
-
-			const baseURL =
-				adminURL[ adminURL.length - 1 ] === '/'
-					? adminURL
-					: `${ adminURL }/`;
-			let pageArg = page;
-			let phpFile = 'admin.php';
-
-			// If page argument is full format (i.e. 'admin.php?page=google-site-kit'), extract php file and pageArg, returning early with adminURL if no 'page' param found.
-			if ( page.indexOf( '.php?' ) !== -1 ) {
-				const splitPage = page.split( '?' );
-				pageArg = queryString.parse( splitPage.pop() ).page;
-
-				if ( ! pageArg ) {
+				// Return adminURL if undefined, or if no page supplied.
+				if ( adminURL === undefined || page === undefined ) {
 					return adminURL;
 				}
 
-				phpFile = splitPage.shift();
+				const baseURL =
+					adminURL[ adminURL.length - 1 ] === '/'
+						? adminURL
+						: `${ adminURL }/`;
+				let pageArg = page;
+				let phpFile = 'admin.php';
+
+				// If page argument is full format (i.e. 'admin.php?page=google-site-kit'), extract php file and pageArg, returning early with adminURL if no 'page' param found.
+				if ( page.indexOf( '.php?' ) !== -1 ) {
+					const splitPage = page.split( '?' );
+					pageArg = queryString.parse( splitPage.pop() ).page;
+
+					if ( ! pageArg ) {
+						return adminURL;
+					}
+
+					phpFile = splitPage.shift();
+				}
+
+				// Since page should be first query arg, create queryArgs without 'page' to prevent a 'page' in args from overriding it.
+				const { page: extraPage, ...queryArgs } = args; // eslint-disable-line no-unused-vars
+
+				return addQueryArgs( `${ baseURL }${ phpFile }`, {
+					page: pageArg,
+					...queryArgs,
+				} );
 			}
-
-			// Since page should be first query arg, create queryArgs without 'page' to prevent a 'page' in args from overriding it.
-			const { page: extraPage, ...queryArgs } = args; // eslint-disable-line no-unused-vars
-
-			return addQueryArgs( `${ baseURL }${ phpFile }`, {
-				page: pageArg,
-				...queryArgs,
-			} );
-		}
 	),
 
 	/**
@@ -472,6 +489,16 @@ export const selectors = {
 	getSiteName: getSiteInfoProperty( 'siteName' ),
 
 	/**
+	 * Gets a setup error code, if one exists.
+	 *
+	 * @since 1.80.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(string|undefined)} An error code from setup, if one exists. Will be `null` if no error exists; `undefined` when loading.
+	 */
+	getSetupErrorCode: getSiteInfoProperty( 'setupErrorCode' ),
+
+	/**
 	 * Gets a setup error message, if one exists.
 	 *
 	 * @since 1.77.0
@@ -493,6 +520,36 @@ export const selectors = {
 	 * @return {(string|null|undefined)} The setup URL, if one exists. Will be `null` if no error exists and thus the setup redo URL doesn't exist; `undefined` when loading.
 	 */
 	getSetupErrorRedoURL: getSiteInfoProperty( 'setupErrorRedoURL' ),
+
+	/**
+	 * Gets the proxy support URL.
+	 *
+	 * @since 1.80.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(string|null)} The proxy support URL.
+	 */
+	getProxySupportLinkURL: getSiteInfoProperty( 'proxySupportLinkURL' ),
+
+	/**
+	 * Gets the admin widgets editor URL.
+	 *
+	 * @since 1.81.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(string|null)} The proxy support URL.
+	 */
+	getWidgetsAdminURL: getSiteInfoProperty( 'widgetsAdminURL' ),
+
+	/**
+	 * Gets the public post types.
+	 *
+	 * @since 1.81.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {Array.<Object>} The public post types.
+	 */
+	getPostTypes: getSiteInfoProperty( 'postTypes' ),
 
 	/**
 	 * Gets the 'permaLink' query parameter.
