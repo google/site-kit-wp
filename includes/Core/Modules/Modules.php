@@ -225,8 +225,6 @@ final class Modules {
 	 * @since 1.0.0
 	 */
 	public function register() {
-		$this->rest_modules_controller->register();
-
 		add_filter(
 			'googlesitekit_features_request_data',
 			function( $body ) {
@@ -258,6 +256,7 @@ final class Modules {
 			}
 		);
 
+		$this->rest_modules_controller->register();
 		$this->sharing_settings->register();
 
 		if ( Feature_Flags::enabled( 'dashboardSharing' ) ) {

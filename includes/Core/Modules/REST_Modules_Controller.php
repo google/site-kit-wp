@@ -258,7 +258,7 @@ class REST_Modules_Controller {
 										return new WP_Error( 'inactive_dependencies', sprintf( __( 'Module cannot be activated because of inactive dependency %s.', 'google-site-kit' ), $modules[ $dependency_slug ]->name ), array( 'status' => 500 ) );
 									}
 								}
-								if ( ! $this->activate_module( $slug ) ) {
+								if ( ! $this->modules->activate_module( $slug ) ) {
 									return new WP_Error( 'cannot_activate_module', __( 'An internal error occurred while trying to activate the module.', 'google-site-kit' ), array( 'status' => 500 ) );
 								}
 							} else {
@@ -266,13 +266,13 @@ class REST_Modules_Controller {
 								$dependant_slugs = $this->modules->get_module_dependants( $slug );
 								foreach ( $dependant_slugs as $dependant_slug ) {
 									if ( $this->modules->is_module_active( $dependant_slug ) ) {
-										if ( ! $this->deactivate_module( $dependant_slug ) ) {
+										if ( ! $this->modules->deactivate_module( $dependant_slug ) ) {
 											/* translators: 1: module name */
 											return new WP_Error( 'cannot_deactivate_dependant', sprintf( __( 'Module cannot be deactivated because deactivation of dependant %s failed.', 'google-site-kit' ), $modules[ $dependant_slug ]->name ), array( 'status' => 500 ) );
 										}
 									}
 								}
-								if ( ! $this->deactivate_module( $slug ) ) {
+								if ( ! $this->modules->deactivate_module( $slug ) ) {
 									return new WP_Error( 'cannot_deactivate_module', __( 'An internal error occurred while trying to deactivate the module.', 'google-site-kit' ), array( 'status' => 500 ) );
 								}
 							}
@@ -600,7 +600,7 @@ class REST_Modules_Controller {
 	/**
 	 * Prepares module data for a REST response according to the schema.
 	 *
-	 * @since 1.3.0
+	 * @since n.e.x.t
 	 *
 	 * @param Module $module Module instance.
 	 * @return array Module REST response data.

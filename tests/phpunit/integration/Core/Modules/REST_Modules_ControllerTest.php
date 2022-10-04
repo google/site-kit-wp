@@ -21,16 +21,32 @@ use WP_REST_Request;
 
 class REST_Modules_ControllerTest extends TestCase {
 
+	public function set_up() {
+		parent::set_up();
+
+		$this->user         = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
+		$this->context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$this->options      = new Options( $this->context );
+		$this->user_options = new User_Options( $this->context, $this->user->ID );
+		$this->modules      = new Modules( $this->context, $this->options, $this->user_options );
+		wp_set_current_user( $this->user->ID );
+
+		// This ensures the REST server is initialized fresh for each test using it.
+		unset( $GLOBALS['wp_rest_server'] );
+		remove_all_filters( 'googlesitekit_rest_routes' );
+
+		$this->modules->register();
+	}
+
 	public function test_register() {
-		$modules     = new Modules( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		$fake_module = new FakeModule( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$fake_module = new FakeModule( $this->context );
 		$fake_module->set_force_active( true );
 		remove_all_filters( 'googlesitekit_apifetch_preload_paths' );
 
-		$this->force_set_property( $modules, 'modules', array( 'fake-module' => $fake_module ) );
+		$this->force_set_property( $this->modules, 'modules', array( 'fake-module' => $fake_module ) );
 
 		$this->assertFalse( $fake_module->is_registered() );
-		$modules->register();
+		$this->modules->register();
 		$this->assertTrue( $fake_module->is_registered() );
 
 		$this->assertTrue( has_filter( 'googlesitekit_apifetch_preload_paths' ) );
@@ -41,25 +57,7 @@ class REST_Modules_ControllerTest extends TestCase {
 		);
 	}
 
-	private function setup_modules_to_test_rest_endpoint() {
-		$user         = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
-		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-		$options      = new Options( $context );
-		$user_options = new User_Options( $context, $user->ID );
-		$modules      = new Modules( $context, $options, $user_options );
-		wp_set_current_user( $user->ID );
-
-		// This ensures the REST server is initialized fresh for each test using it.
-		unset( $GLOBALS['wp_rest_server'] );
-		remove_all_filters( 'googlesitekit_rest_routes' );
-
-		$modules->register();
-		return $modules;
-	}
-
 	public function test_check_access_rest_endpoint__no_get_method() {
-		$this->setup_modules_to_test_rest_endpoint();
-
 		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/modules/data/check-access' );
 		$response = rest_get_server()->dispatch( $request );
 
@@ -67,8 +65,6 @@ class REST_Modules_ControllerTest extends TestCase {
 	}
 
 	public function test_check_access_rest_endpoint__requires_module_slug() {
-		$this->setup_modules_to_test_rest_endpoint();
-
 		$request  = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/modules/data/check-access' );
 		$response = rest_get_server()->dispatch( $request );
 
@@ -77,8 +73,6 @@ class REST_Modules_ControllerTest extends TestCase {
 	}
 
 	public function test_check_access_rest_endpoint__requires_module_connected() {
-		$this->setup_modules_to_test_rest_endpoint();
-
 		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/modules/data/check-access' );
 		$request->set_body_params(
 			array(
@@ -95,7 +89,6 @@ class REST_Modules_ControllerTest extends TestCase {
 
 	public function test_check_access_rest_endpoint__shareable_module_does_not_have_service_entity() {
 		$this->enable_feature( 'dashboardSharing' );
-		$this->setup_modules_to_test_rest_endpoint();
 
 		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/modules/data/check-access' );
 		$request->set_body_params(
@@ -112,9 +105,7 @@ class REST_Modules_ControllerTest extends TestCase {
 	}
 
 	public function test_check_access_rest_endpoint__unshareable_module_does_not_have_service_entity() {
-		$modules = $this->setup_modules_to_test_rest_endpoint();
-
-		$optimize = $modules->get_module( 'optimize' );
+		$optimize = $this->modules->get_module( 'optimize' );
 		$optimize->get_settings()->merge( array( 'optimizeID' => 'GTM-XXXXX' ) );
 
 		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/modules/data/check-access' );
@@ -132,9 +123,7 @@ class REST_Modules_ControllerTest extends TestCase {
 	}
 
 	public function test_check_access_rest_endpoint__success() {
-		$modules = $this->setup_modules_to_test_rest_endpoint();
-
-		$analytics = $modules->get_module( 'analytics' );
+		$analytics = $this->modules->get_module( 'analytics' );
 		$analytics->get_client()->setHttpClient( new FakeHttpClient() );
 		$analytics->get_settings()->merge(
 			array(
@@ -165,8 +154,6 @@ class REST_Modules_ControllerTest extends TestCase {
 	}
 
 	public function test_recover_module_rest_endpoint__no_get_method() {
-		$this->setup_modules_to_test_rest_endpoint();
-
 		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/modules/data/recover-module' );
 		$response = rest_get_server()->dispatch( $request );
 
@@ -174,8 +161,6 @@ class REST_Modules_ControllerTest extends TestCase {
 	}
 
 	public function test_recover_module_rest_endpoint__requires_module_slug() {
-		$this->setup_modules_to_test_rest_endpoint();
-
 		$request  = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/modules/data/recover-module' );
 		$response = rest_get_server()->dispatch( $request );
 
@@ -184,8 +169,6 @@ class REST_Modules_ControllerTest extends TestCase {
 	}
 
 	public function test_recover_module_rest_endpoint__invalid_module_slug() {
-		$this->setup_modules_to_test_rest_endpoint();
-
 		$request  = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/modules/data/recover-module' );
 		$response = rest_get_server()->dispatch( $request );
 		$request->set_body_params(
@@ -201,8 +184,6 @@ class REST_Modules_ControllerTest extends TestCase {
 	}
 
 	public function test_recover_module_rest_endpoint__requires_shareable_module() {
-		$this->setup_modules_to_test_rest_endpoint();
-
 		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/modules/data/recover-module' );
 		$request->set_body_params(
 			array(
@@ -219,7 +200,6 @@ class REST_Modules_ControllerTest extends TestCase {
 
 	public function test_recover_module_rest_endpoint__requires_recoverable_module() {
 		$this->enable_feature( 'dashboardSharing' );
-		$this->setup_modules_to_test_rest_endpoint();
 
 		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/modules/data/recover-module' );
 		$request->set_body_params(
@@ -237,10 +217,9 @@ class REST_Modules_ControllerTest extends TestCase {
 
 	public function test_recover_module_rest_endpoint__requires_accessible_module() {
 		$this->enable_feature( 'dashboardSharing' );
-		$modules = $this->setup_modules_to_test_rest_endpoint();
 
 		// Make search-console a recoverable module
-		$search_console = $modules->get_module( 'search-console' );
+		$search_console = $this->modules->get_module( 'search-console' );
 		$search_console->get_settings()->merge(
 			array(
 				'propertyID' => '123456789',
@@ -270,10 +249,9 @@ class REST_Modules_ControllerTest extends TestCase {
 
 	public function test_recover_module_rest_endpoint__success() {
 		$this->enable_feature( 'dashboardSharing' );
-		$modules = $this->setup_modules_to_test_rest_endpoint();
 
 		// Make search-console a recoverable module
-		$search_console = $modules->get_module( 'search-console' );
+		$search_console = $this->modules->get_module( 'search-console' );
 		$search_console->get_settings()->merge(
 			array(
 				'propertyID' => '123456789',
