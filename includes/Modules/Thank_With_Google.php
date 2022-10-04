@@ -29,6 +29,7 @@ use Google\Site_Kit\Core\Modules\Module_With_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\REST_API\Exception\Invalid_Datapoint_Exception;
+use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\Transients;
 use Google\Site_Kit\Core\Storage\User_Options;
@@ -130,6 +131,18 @@ final class Thank_With_Google extends Module
 				if ( ! $this->pre_update_is_connected && $this->is_connected() ) {
 					$this->transients->set( self::TRANSIENT_SETUP_TIMER, time(), WEEK_IN_SECONDS );
 				}
+			}
+		);
+
+		add_filter(
+			'googlesitekit_apifetch_preload_paths',
+			function ( $paths ) {
+				return array_merge(
+					$paths,
+					array(
+						'/' . REST_Routes::REST_ROOT . '/modules/thank-with-google/data/supporter-wall-prompt',
+					)
+				);
 			}
 		);
 
@@ -410,9 +423,9 @@ final class Thank_With_Google extends Module
 					$is_connected            = $this->is_connected();
 					$setup_transient         = $this->transients->get( self::TRANSIENT_SETUP_TIMER );
 					if ( $is_connected && empty( $supporter_wall_sidebars ) && ! $setup_transient ) {
-						return true;
+						return array( 'supporterWallPrompt' => true );
 					}
-					return false;
+					return array( 'supporterWallPrompt' => false );
 				};
 		}
 
