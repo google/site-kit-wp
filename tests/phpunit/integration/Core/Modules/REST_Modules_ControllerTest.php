@@ -39,15 +39,8 @@ class REST_Modules_ControllerTest extends TestCase {
 	}
 
 	public function test_register() {
-		$fake_module = new FakeModule( $this->context );
-		$fake_module->set_force_active( true );
 		remove_all_filters( 'googlesitekit_apifetch_preload_paths' );
-
-		$this->force_set_property( $this->modules, 'modules', array( 'fake-module' => $fake_module ) );
-
-		$this->assertFalse( $fake_module->is_registered() );
 		$this->modules->register();
-		$this->assertTrue( $fake_module->is_registered() );
 
 		$this->assertTrue( has_filter( 'googlesitekit_apifetch_preload_paths' ) );
 		$this->assertTrue( has_filter( 'googlesitekit_features_request_data' ) );
@@ -286,5 +279,243 @@ class REST_Modules_ControllerTest extends TestCase {
 			$response->get_data()
 		);
 		$this->assertEquals( 200, $response->get_status() );
+	}
+
+	public function test_list_rest_endpoint__get_method() {
+		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/modules/data/list' );
+		$response = rest_get_server()->dispatch( $request );
+
+		$this->assertEquals( 200, $response->get_status() );
+		$this->assertNotEmpty( $response->get_data() );
+	}
+
+	public function test_list_rest_endpoint__no_post_method() {
+		$request  = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/modules/data/list' );
+		$response = rest_get_server()->dispatch( $request );
+
+		$this->assertEquals( 404, $response->get_status() );
+	}
+
+	public function test_activation_rest_endpoint__no_get_method() {
+		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/modules/data/activation' );
+		$response = rest_get_server()->dispatch( $request );
+
+		$this->assertEquals( 404, $response->get_status() );
+	}
+
+	public function test_activation_rest_endpoint__requires_module_slug() {
+		$request  = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/modules/data/activation' );
+		$response = rest_get_server()->dispatch( $request );
+
+		$this->assertEquals( 'rest_missing_callback_param', $response->get_data()['code'] );
+		$this->assertEquals( 400, $response->get_status() );
+	}
+
+	public function test_activation_rest_endpoint__requires_valid_module_slug() {
+		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/modules/data/activation' );
+		$request->set_body_params(
+			array(
+				'data' => array(
+					'slug' => 'fake-module',
+				),
+			)
+		);
+		$response = rest_get_server()->dispatch( $request );
+
+		$this->assertEquals( 'invalid_module_slug', $response->get_data()['code'] );
+		$this->assertEquals( 500, $response->get_status() );
+	}
+
+	public function test_activation_rest_endpoint__prevent_inactive_dependencies_activation() {
+		$this->modules->deactivate_module( 'analytics' );
+
+		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/modules/data/activation' );
+		$request->set_body_params(
+			array(
+				'data' => array(
+					'slug'   => 'optimize',
+					'active' => true,
+				),
+			)
+		);
+		$response = rest_get_server()->dispatch( $request );
+
+		$this->assertEquals( 'inactive_dependencies', $response->get_data()['code'] );
+		$this->assertEquals( 500, $response->get_status() );
+	}
+
+	public function test_activation_rest_endpoint__activate_module() {
+		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/modules/data/activation' );
+		$request->set_body_params(
+			array(
+				'data' => array(
+					'slug'   => 'analytics',
+					'active' => true,
+				),
+			)
+		);
+		$response = rest_get_server()->dispatch( $request );
+
+		$this->assertTrue( $response->get_data()['success'] );
+		$this->assertEquals( 200, $response->get_status() );
+	}
+
+	public function test_activation_rest_endpoint__deactivate_module() {
+		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/modules/data/activation' );
+		$request->set_body_params(
+			array(
+				'data' => array(
+					'slug'   => 'analytics',
+					'active' => false,
+				),
+			)
+		);
+		$response = rest_get_server()->dispatch( $request );
+
+		$this->assertTrue( $response->get_data()['success'] );
+		$this->assertEquals( 200, $response->get_status() );
+	}
+
+	public function test_activation_rest_endpoint__deactivate_dependant_module() {
+		$this->modules->activate_module( 'analytics' );
+		$this->modules->activate_module( 'optimize' );
+
+		$this->assertTrue( $this->modules->is_module_active( 'optimize' ) );
+
+		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/modules/data/activation' );
+		$request->set_body_params(
+			array(
+				'data' => array(
+					'slug'   => 'analytics',
+					'active' => false,
+				),
+			)
+		);
+		rest_get_server()->dispatch( $request );
+
+		$this->assertNotTrue( $this->modules->is_module_active( 'optimize' ) );
+	}
+
+	public function test_info_rest_endpoint__no_post_method() {
+		$request  = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/modules/data/info' );
+		$response = rest_get_server()->dispatch( $request );
+
+		$this->assertEquals( 404, $response->get_status() );
+	}
+
+	public function test_info_rest_endpoint__require_module_slug() {
+		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/modules/data/info' );
+		$response = rest_get_server()->dispatch( $request );
+
+		$this->assertEquals( 'invalid_module_slug', $response->get_data()['code'] );
+		$this->assertEquals( 500, $response->get_status() );
+	}
+
+	public function test_info_rest_endpoint__require_valid_module_slug() {
+		$request = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/modules/data/info' );
+		$request->set_body_params(
+			array(
+				'data' => array(
+					'slug' => 'fake-module',
+				),
+			)
+		);
+		$response = rest_get_server()->dispatch( $request );
+
+		$this->assertEquals( 'invalid_module_slug', $response->get_data()['code'] );
+		$this->assertEquals( 500, $response->get_status() );
+	}
+
+	public function test_info_rest_endpoint__valid_module_slug() {
+		$request = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/modules/data/info' );
+		$request->set_query_params( array( 'slug' => 'analytics' ) );
+		$response = rest_get_server()->dispatch( $request );
+
+		$this->assertNotEmpty( $response->get_data() );
+		$this->assertEquals( 200, $response->get_status() );
+	}
+
+	public function test_notifications_rest_endpoint__no_post_method() {
+		$request  = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/modules/analytics/data/notifications' );
+		$response = rest_get_server()->dispatch( $request );
+
+		$this->assertEquals( 400, $response->get_status() );
+	}
+
+	public function test_notifications_rest_endpoint__require_valid_slug() {
+		$request  = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/modules/fake-module/data/notifications' );
+		$response = rest_get_server()->dispatch( $request );
+
+		$this->assertEquals( 404, $response->get_status() );
+	}
+
+	public function test_settings_rest_endpoint__get_method() {
+		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/modules/analytics/data/settings' );
+		$response = rest_get_server()->dispatch( $request );
+
+		$this->assertEquals( 200, $response->get_status() );
+	}
+
+	public function test_settings_rest_endpoint__get_invalid_slug() {
+		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/modules/fake-module/data/settings' );
+		$response = rest_get_server()->dispatch( $request );
+
+		$this->assertEquals( 404, $response->get_status() );
+	}
+
+	public function test_settings_rest_endpoint__post_method() {
+		$request  = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/modules/analytics/data/settings' );
+		$response = rest_get_server()->dispatch( $request );
+
+		$this->assertEquals( 200, $response->get_status() );
+	}
+
+	public function test_settings_rest_endpoint__post_invalid_slug() {
+		$request  = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/modules/fake-module/data/settings' );
+		$response = rest_get_server()->dispatch( $request );
+
+		$this->assertEquals( 404, $response->get_status() );
+	}
+
+	public function test_datapoint_rest_endpoint__get_method() {
+		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/modules/analytics/data/accounts-properties-profiles' );
+		$response = rest_get_server()->dispatch( $request );
+
+		$this->assertEquals( 'missing_required_scopes', $response->get_data()['code'] );
+	}
+
+	public function test_datapoint_rest_endpoint__get_invalid_slug() {
+		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/modules/fake-module/data/accounts-properties-profiles' );
+		$response = rest_get_server()->dispatch( $request );
+
+		$this->assertEquals( 'invalid_module_slug', $response->get_data()['code'] );
+	}
+
+	public function test_datapoint_rest_endpoint__get_invalid_datapoint() {
+		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/modules/analytics/data/fake-datapoint' );
+		$response = rest_get_server()->dispatch( $request );
+
+		$this->assertEquals( 'invalid_datapoint', $response->get_data()['code'] );
+	}
+
+	public function test_datapoint_rest_endpoint__post_method() {
+		$request  = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/modules/analytics/data/create-account-ticket' );
+		$response = rest_get_server()->dispatch( $request );
+
+		$this->assertEquals( 'missing_required_scopes', $response->get_data()['code'] );
+	}
+
+	public function test_datapoint_rest_endpoint__post_invalid_slug() {
+		$request  = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/modules/fake-module/data/accounts-properties-profiles' );
+		$response = rest_get_server()->dispatch( $request );
+
+		$this->assertEquals( 'invalid_module_slug', $response->get_data()['code'] );
+	}
+
+	public function test_datapoint_rest_endpoint__post_invalid_datapoint() {
+		$request  = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/modules/analytics/data/fake-datapoint' );
+		$response = rest_get_server()->dispatch( $request );
+
+		$this->assertEquals( 'invalid_datapoint', $response->get_data()['code'] );
 	}
 }
