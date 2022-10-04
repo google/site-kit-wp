@@ -24,6 +24,7 @@ import {
 	VIEW_CONTEXT_DASHBOARD,
 	VIEW_CONTEXT_DASHBOARD_VIEW_ONLY,
 } from '../../googlesitekit/constants';
+import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { CORE_WIDGETS } from '../../googlesitekit/widgets/datastore/constants';
 import { CONTEXT_MAIN_DASHBOARD_SPEED } from '../../googlesitekit/widgets/default-contexts';
@@ -54,18 +55,16 @@ describe( 'Dashboard Navigation', () => {
 	} );
 
 	it( 'always uses `ANCHOR_ID_TRAFFIC` as the default chip when not viewing a shared dashboard', async () => {
-		global._googlesitekitUserData = {
-			permissions: {
-				googlesitekit_view_dashboard: true,
-				googlesitekit_manage_options: true,
-				'googlesitekit_manage_module_sharing_options::["search-console"]': true,
-				'googlesitekit_read_shared_module_data::["search-console"]': true,
-				'googlesitekit_read_shared_module_data::["analytics"]': false,
-			},
-		};
-
 		const { container } = render( <DashboardNavigation />, {
 			setupRegistry: ( registry ) => {
+				registry.dispatch( CORE_USER ).receiveGetCapabilities( {
+					googlesitekit_view_dashboard: true,
+					googlesitekit_manage_options: true,
+					'googlesitekit_manage_module_sharing_options::["search-console"]': true,
+					'googlesitekit_read_shared_module_data::["search-console"]': true,
+					'googlesitekit_read_shared_module_data::["analytics"]': false,
+				} );
+
 				registry.dispatch( CORE_MODULES ).receiveGetModules( [
 					{
 						slug: 'search-console',
@@ -90,18 +89,16 @@ describe( 'Dashboard Navigation', () => {
 	} );
 
 	it( 'uses `ANCHOR_ID_TRAFFIC` as the chip viewing a shared dashboard with the traffic section enabled', () => {
-		global._googlesitekitUserData = {
-			permissions: {
-				googlesitekit_view_dashboard: true,
-				googlesitekit_manage_options: true,
-				'googlesitekit_manage_module_sharing_options::["search-console"]': true,
-				'googlesitekit_read_shared_module_data::["search-console"]': true,
-				'googlesitekit_read_shared_module_data::["analytics"]': false,
-			},
-		};
-
 		const { container } = render( <DashboardNavigation />, {
 			setupRegistry: ( registry ) => {
+				registry.dispatch( CORE_USER ).receiveGetCapabilities( {
+					googlesitekit_view_dashboard: true,
+					googlesitekit_manage_options: true,
+					'googlesitekit_manage_module_sharing_options::["search-console"]': true,
+					'googlesitekit_read_shared_module_data::["search-console"]': true,
+					'googlesitekit_read_shared_module_data::["analytics"]': false,
+				} );
+
 				registry.dispatch( CORE_MODULES ).receiveGetModules( [
 					{
 						slug: 'search-console',
@@ -126,19 +123,17 @@ describe( 'Dashboard Navigation', () => {
 	} );
 
 	it( 'uses `ANCHOR_ID_CONTENT` as the chip viewing a shared dashboard with the traffic sections unavailable', async () => {
-		global._googlesitekitUserData = {
-			permissions: {
-				googlesitekit_view_dashboard: true,
-				googlesitekit_manage_options: true,
-				'googlesitekit_manage_module_sharing_options::["search-console"]': false,
-				'googlesitekit_read_shared_module_data::["search-console"]': false,
-				'googlesitekit_read_shared_module_data::["analytics"]': false,
-				'googlesitekit_read_shared_module_data::["pagespeed-insights"]': true,
-			},
-		};
-
 		const { container } = render( <DashboardNavigation />, {
 			setupRegistry: ( registry ) => {
+				registry.dispatch( CORE_USER ).receiveGetCapabilities( {
+					googlesitekit_view_dashboard: true,
+					googlesitekit_manage_options: true,
+					'googlesitekit_manage_module_sharing_options::["search-console"]': false,
+					'googlesitekit_read_shared_module_data::["search-console"]': false,
+					'googlesitekit_read_shared_module_data::["analytics"]': false,
+					'googlesitekit_read_shared_module_data::["pagespeed-insights"]': true,
+				} );
+
 				registry.dispatch( CORE_MODULES ).receiveGetModules( [
 					{
 						slug: 'pagespeed-insights',
