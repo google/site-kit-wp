@@ -28,6 +28,8 @@ import { Fragment } from '@wordpress/element';
 import Data from 'googlesitekit-data';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
+import { MODULES_ANALYTICS } from '../../../../analytics/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../../../datastore/constants';
 import { ACTIVATION_ACKNOWLEDGEMENT_TOOLTIP_STATE_KEY } from '../../../constants';
 import BannerNotification from '../../../../../components/notifications/BannerNotification';
 import { useTooltipState } from '../../../../../components/AdminMenuTooltip/useTooltipState';
@@ -35,11 +37,12 @@ import { useShowTooltip } from '../../../../../components/AdminMenuTooltip/useSh
 import { AdminMenuTooltip } from '../../../../../components/AdminMenuTooltip/AdminMenuTooltip';
 import { getBannerDismissalExpiryTime } from '../../../utils/banner-dismissal-expiry';
 import Link from '../../../../../components/Link';
+import ErrorNotice from '../../../../../components/ErrorNotice';
 import { stringToDate } from '../../../../../util';
 import InfoIcon from '../../../../../../svg/icons/info.svg';
 import ErrorIcon from '../../../../../../svg/icons/error.svg';
 
-const { useSelect } = Data;
+const { useSelect, useDispatch } = Data;
 
 export default function ReminderBanner( { onSubmitSuccess } ) {
 	const referenceDateString = useSelect( ( select ) =>
@@ -49,6 +52,18 @@ export default function ReminderBanner( { onSubmitSuccess } ) {
 	const documentationURL = useSelect( ( select ) => {
 		return select( CORE_SITE ).getDocumentationLinkURL( 'ga4' );
 	} );
+
+	const accountID = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getAccountID()
+	);
+	const propertiesError = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getErrorForSelector( 'getProperties', [
+			accountID,
+		] )
+	);
+
+	const { clearErrors, invalidateResolution } =
+		useDispatch( MODULES_ANALYTICS_4 );
 
 	const { isTooltipVisible } = useTooltipState(
 		ACTIVATION_ACKNOWLEDGEMENT_TOOLTIP_STATE_KEY
@@ -167,13 +182,24 @@ export default function ReminderBanner( { onSubmitSuccess } ) {
 			descriptionIcon={ descriptionIcon }
 			ctaLabel={ __( 'Set up now', 'google-site-kit' ) }
 			ctaLink={ onSubmitSuccess ? '#' : null }
-			onCTAClick={ onSubmitSuccess }
+			onCTAClick={ async () => {
+				if ( propertiesError ) {
+					await clearErrors( 'getProperties' );
+					await invalidateResolution( 'getProperties', [
+						accountID,
+					] );
+				}
+
+				onSubmitSuccess();
+			} }
 			dismiss={ __( 'Remind me later', 'google-site-kit' ) }
 			dismissExpires={ getBannerDismissalExpiryTime(
 				referenceDateString
 			) }
 			secondaryPane={ secondaryPane }
 			onDismiss={ showTooltip }
-		/>
+		>
+			{ propertiesError && <ErrorNotice error={ propertiesError } /> }
+		</BannerNotification>
 	);
 }

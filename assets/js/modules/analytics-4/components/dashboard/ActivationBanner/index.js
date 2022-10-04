@@ -60,6 +60,12 @@ export default function ActivationBanner() {
 			'returnToSetupStep'
 		)
 	);
+	const returnToReminderStep = useSelect( ( select ) =>
+		select( CORE_FORMS ).getValue(
+			GA4_ACTIVATION_BANNER_STATE_KEY,
+			'returnToReminderStep'
+		)
+	);
 
 	const { setValues } = useDispatch( CORE_FORMS );
 
@@ -71,6 +77,15 @@ export default function ActivationBanner() {
 			} );
 		}
 	}, [ hasEditScope, registry, returnToSetupStep, setValues ] );
+
+	useEffect( () => {
+		if ( returnToReminderStep ) {
+			setStep( ACTIVATION_STEP_REMINDER );
+			setValues( GA4_ACTIVATION_BANNER_STATE_KEY, {
+				returnToReminderStep: false,
+			} );
+		}
+	}, [ returnToReminderStep, setValues ] );
 
 	const handleSubmit = useCallback( () => {
 		if ( step === ACTIVATION_STEP_REMINDER ) {

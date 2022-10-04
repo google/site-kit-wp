@@ -78,6 +78,11 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 	const properties = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getProperties( accountID )
 	);
+	const propertiesError = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getErrorForSelector( 'getProperties', [
+			accountID,
+		] )
+	);
 
 	// Call getAccounts to ensure it can be resolved before rendering the PropertySelect
 	// component, to avoid showing a ProgressBar in the PropertySelect.
@@ -215,6 +220,16 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 			handleSubmitChanges();
 		}
 	}, [ autoSubmit, handleSubmitChanges, hasEditScope ] );
+
+	// If the getProperties selector encounters an error, return the user to the
+	// reminder step.
+	useEffect( () => {
+		if ( propertiesError ) {
+			setValues( GA4_ACTIVATION_BANNER_STATE_KEY, {
+				returnToReminderStep: true,
+			} );
+		}
+	}, [ propertiesError, setValues ] );
 
 	const { isTooltipVisible } = useTooltipState(
 		ACTIVATION_ACKNOWLEDGEMENT_TOOLTIP_STATE_KEY
