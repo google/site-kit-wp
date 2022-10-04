@@ -159,11 +159,18 @@ export default function ReminderBanner( { onSubmitSuccess, errors } ) {
 		</section>
 	);
 
+	// Show unique errors.
 	const errorNotice =
 		errors &&
 		Object.values( errors )
 			.reduce( ( acc, error ) => {
-				if ( ! acc.some( ( err ) => err.message === error.message ) ) {
+				if (
+					! acc.some(
+						( err ) =>
+							err.code === error.code &&
+							err.message === error.message
+					)
+				) {
 					acc.push( error );
 				}
 

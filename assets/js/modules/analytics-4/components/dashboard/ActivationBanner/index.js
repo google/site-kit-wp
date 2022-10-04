@@ -74,7 +74,7 @@ export default function ActivationBanner() {
 		select( MODULES_ANALYTICS ).getAccountID()
 	);
 
-	// Collection of selectors on which the Setup Banner depends on.
+	// Collection of selectors which the Setup Banner depends on.
 	const setupBannerSelectors = useMemo(
 		() => ( {
 			getProperties: { store: MODULES_ANALYTICS_4, args: [ accountID ] },
