@@ -83,6 +83,9 @@ class User_TransientsTest extends TestCase {
 	public function test_network_mode_get_using_external_cache() {
 		$this->network_activate_site_kit();
 
+		// Force enable network mode.
+		add_filter( 'googlesitekit_is_network_mode', '__return_true' );
+
 		list( $user_transients, $user_id ) = $this->using_external_cache();
 		wp_cache_set( "user_{$user_id}_testkey2", 'qwerty2', 'site-transient', 1000 );
 		$this->assertEquals( 'qwerty2', $user_transients->get( 'testkey2' ) );
@@ -99,6 +102,9 @@ class User_TransientsTest extends TestCase {
 	 */
 	public function test_network_mode_set_using_external_cache() {
 		$this->network_activate_site_kit();
+
+		// Force enable network mode.
+		add_filter( 'googlesitekit_is_network_mode', '__return_true' );
 
 		list( $user_transients, $user_id ) = $this->using_external_cache();
 		$user_transients->set( 'testkey4', 'qwerty4', 1000 );
@@ -119,6 +125,9 @@ class User_TransientsTest extends TestCase {
 	 */
 	public function test_network_mode_delete_using_external_cache() {
 		$this->network_activate_site_kit();
+
+		// Force enable network mode.
+		add_filter( 'googlesitekit_is_network_mode', '__return_true' );
 
 		list( $user_transients, $user_id ) = $this->using_external_cache();
 		wp_cache_set( "user_{$user_id}_testkey6", 'qwerty6', 'site-transient', 1000 );
