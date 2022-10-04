@@ -354,7 +354,7 @@ function DashboardIdeasWidget( props ) {
 							{ savedIdeas?.length > 0 &&
 								createInterpolateElement(
 									sprintf(
-										/* translators: 1: number of saved Idea Hub ideas */
+										/* translators: %s: number of saved Idea Hub ideas */
 										__(
 											'Saved <span>(%s)</span>',
 											'google-site-kit'
@@ -373,7 +373,7 @@ function DashboardIdeasWidget( props ) {
 							{ draftIdeas?.length > 0 &&
 								createInterpolateElement(
 									sprintf(
-										/* translators: 1: number of draft Idea Hub ideas */
+										/* translators: %s: number of draft Idea Hub ideas */
 										__(
 											'Drafts <span>(%s)</span>',
 											'google-site-kit'

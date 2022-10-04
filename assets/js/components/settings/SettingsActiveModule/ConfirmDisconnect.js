@@ -126,7 +126,7 @@ export default function ConfirmDisconnect( { slug } ) {
 	const { name } = module;
 
 	const title = sprintf(
-		/* translators: 1: module name */
+		/* translators: %s: module name */
 		__( 'Disconnect %s from Site Kit?', 'google-site-kit' ),
 		name
 	);
@@ -135,7 +135,7 @@ export default function ConfirmDisconnect( { slug } ) {
 
 	const subtitle = hasFeatures
 		? sprintf(
-				/* translators: 1: module name */
+				/* translators: %s: module name */
 				__(
 					'By disconnecting the %s module from Site Kit, you will no longer have access to:',
 					'google-site-kit'

@@ -134,7 +134,7 @@ export const createDurationFormat = ( durationInSeconds, options = {} ) => {
 		 */
 		formatDecimal() {
 			const formattedSeconds = sprintf(
-				// translators: 1: number of seconds with "s" as the abbreviated unit.
+				// translators: %s: number of seconds with "s" as the abbreviated unit.
 				__( '%ds', 'google-site-kit' ),
 				seconds
 			);
@@ -144,12 +144,12 @@ export const createDurationFormat = ( durationInSeconds, options = {} ) => {
 			}
 
 			const formattedMinutes = sprintf(
-				// translators: 1: number of minutes with "m" as the abbreviated unit.
+				// translators: %s: number of minutes with "m" as the abbreviated unit.
 				__( '%dm', 'google-site-kit' ),
 				minutes
 			);
 			const formattedHours = sprintf(
-				// translators: 1: number of hours with "h" as the abbreviated unit.
+				// translators: %s: number of hours with "h" as the abbreviated unit.
 				__( '%dh', 'google-site-kit' ),
 				hours
 			);
@@ -209,7 +209,7 @@ export const readableLargeNumber = ( number ) => {
 	// Numbers over 1,000,000 round normally and display a single decimal unless the decimal is 0.
 	if ( 1000000 <= number ) {
 		return sprintf(
-			// translators: 1: an abbreviated number in millions.
+			// translators: %s: an abbreviated number in millions.
 			__( '%sM', 'google-site-kit' ),
 			numberFormat(
 				prepareForReadableLargeNumber( number ),
@@ -221,7 +221,7 @@ export const readableLargeNumber = ( number ) => {
 	// Numbers between 10,000 and 1,000,000 round normally and have no decimals
 	if ( 10000 <= number ) {
 		return sprintf(
-			// translators: 1: an abbreviated number in thousands.
+			// translators: %s: an abbreviated number in thousands.
 			__( '%sK', 'google-site-kit' ),
 			numberFormat( prepareForReadableLargeNumber( number ) )
 		);
@@ -230,7 +230,7 @@ export const readableLargeNumber = ( number ) => {
 	// Numbers between 1,000 and 10,000 round normally and display a single decimal unless the decimal is 0.
 	if ( 1000 <= number ) {
 		return sprintf(
-			// translators: 1: an abbreviated number in thousands.
+			// translators: %s: an abbreviated number in thousands.
 			__( '%sK', 'google-site-kit' ),
 			numberFormat(
 				prepareForReadableLargeNumber( number ),

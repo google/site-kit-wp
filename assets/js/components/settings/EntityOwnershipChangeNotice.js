@@ -69,7 +69,7 @@ export default function EntityOwnershipChangeNotice( { slug } ) {
 		<SettingsNotice
 			type={ TYPE_WARNING }
 			notice={ sprintf(
-				/* translators: 1: module name. */
+				/* translators: %s: module name. */
 				__(
 					'By clicking confirm changes, you’re granting other users view-only access to data from %s via your Google account. You can always manage this later in the dashboard sharing settings.',
 					'google-site-kit'
