@@ -191,6 +191,8 @@ export default function ReminderBanner( { onSubmitSuccess } ) {
 				}
 
 				onSubmitSuccess();
+
+				return { dismissOnCTAClick: false };
 			} }
 			dismiss={ __( 'Remind me later', 'google-site-kit' ) }
 			dismissExpires={ getBannerDismissalExpiryTime(
