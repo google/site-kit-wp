@@ -46,7 +46,7 @@ export default function ReportDetailsLink() {
 		<p>
 			{ createInterpolateElement(
 				sprintf(
-					/* translators: 1: link with translated service name */
+					/* translators: %s: link with translated service name */
 					__( 'View details at %s', 'google-site-kit' ),
 					`<a>${ _x(
 						'PageSpeed Insights',

@@ -252,7 +252,7 @@ function DashboardOverallPageMetricsWidget( { Widget, WidgetReportError } ) {
 	const Header = () => (
 		<WidgetHeaderTitle
 			title={ sprintf(
-				/* translators: 1: number of days */
+				/* translators: %s: number of days */
 				_n(
 					'Overall page metrics over the last %s day',
 					'Overall page metrics over the last %s days',
