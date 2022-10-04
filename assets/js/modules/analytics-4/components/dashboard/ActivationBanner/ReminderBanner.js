@@ -35,13 +35,14 @@ import { useShowTooltip } from '../../../../../components/AdminMenuTooltip/useSh
 import { AdminMenuTooltip } from '../../../../../components/AdminMenuTooltip/AdminMenuTooltip';
 import { getBannerDismissalExpiryTime } from '../../../utils/banner-dismissal-expiry';
 import Link from '../../../../../components/Link';
+import ErrorNotice from '../../../../../components/ErrorNotice';
 import { stringToDate } from '../../../../../util';
 import InfoIcon from '../../../../../../svg/icons/info.svg';
 import ErrorIcon from '../../../../../../svg/icons/error.svg';
 
 const { useSelect } = Data;
 
-export default function ReminderBanner( { onSubmitSuccess } ) {
+export default function ReminderBanner( { onSubmitSuccess, errors } ) {
 	const referenceDateString = useSelect( ( select ) =>
 		select( CORE_USER ).getReferenceDate()
 	);
@@ -174,6 +175,13 @@ export default function ReminderBanner( { onSubmitSuccess } ) {
 			) }
 			secondaryPane={ secondaryPane }
 			onDismiss={ showTooltip }
-		></BannerNotification>
+		>
+			{ Object.keys( errors ).map( ( error ) => (
+				<ErrorNotice
+					key={ errors[ error ].code }
+					error={ errors[ error ] }
+				/>
+			) ) }
+		</BannerNotification>
 	);
 }
