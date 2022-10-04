@@ -56,6 +56,9 @@ export default function BannerNotifications() {
 	const adSenseModuleActive = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleActive( 'adsense' )
 	);
+	const twGModuleAvailable = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleAvailable( 'thank-with-google' )
+	);
 
 	const [ notification ] = useQueryArg( 'notification' );
 
@@ -70,7 +73,7 @@ export default function BannerNotifications() {
 					{ isAuthenticated && <CoreSiteBannerNotifications /> }
 					{ dashboardSharingEnabled && <ModuleRecoveryAlert /> }
 					{ ga4ActivationBannerEnabled && <ActivationBanner /> }
-					{ twgEnabled && (
+					{ twgEnabled && twGModuleAvailable && (
 						<ThankWithGoogleSupporterWallNotification />
 					) }
 				</Fragment>
