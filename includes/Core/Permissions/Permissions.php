@@ -716,7 +716,7 @@ final class Permissions {
 							return new WP_REST_Response( $this->check_all_for_current_user() );
 						},
 						'permission_callback' => function() {
-							return current_user_can( Permissions::VIEW_SPLASH );
+							return current_user_can( Permissions::VIEW_SPLASH ) || current_user_can( Permissions::VIEW_DASHBOARD );
 						},
 					),
 				)
