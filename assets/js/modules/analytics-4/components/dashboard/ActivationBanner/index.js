@@ -95,12 +95,7 @@ export default function ActivationBanner() {
 				args || []
 			);
 
-			if (
-				error &&
-				! Object.values( errors ).some(
-					( err ) => err.message === error.message
-				)
-			) {
+			if ( error ) {
 				errors[ selector ] = error;
 			}
 		} );

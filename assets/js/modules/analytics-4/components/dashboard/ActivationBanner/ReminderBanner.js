@@ -159,6 +159,20 @@ export default function ReminderBanner( { onSubmitSuccess, errors } ) {
 		</section>
 	);
 
+	const errorNotice =
+		errors &&
+		Object.values( errors )
+			.reduce( ( acc, error ) => {
+				if ( ! acc.some( ( err ) => err.message === error.message ) ) {
+					acc.push( error );
+				}
+
+				return acc;
+			}, [] )
+			.map( ( error ) => (
+				<ErrorNotice key={ error.code } error={ error } />
+			) );
+
 	return (
 		<BannerNotification
 			id="ga4-activation-banner"
@@ -176,12 +190,7 @@ export default function ReminderBanner( { onSubmitSuccess, errors } ) {
 			secondaryPane={ secondaryPane }
 			onDismiss={ showTooltip }
 		>
-			{ Object.keys( errors ).map( ( error ) => (
-				<ErrorNotice
-					key={ errors[ error ].code }
-					error={ errors[ error ] }
-				/>
-			) ) }
+			{ errorNotice }
 		</BannerNotification>
 	);
 }
