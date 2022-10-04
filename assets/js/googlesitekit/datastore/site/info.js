@@ -21,7 +21,6 @@
  */
 import invariant from 'invariant';
 import queryString from 'query-string';
-import { compare } from 'compare-versions';
 
 /**
  * WordPress dependencies
@@ -665,8 +664,30 @@ export const selectors = {
 				if ( ! version ) {
 					return undefined;
 				}
-				const [ validVersion ] = version.split( '-' );
-				return compare( minVersion, validVersion, '<=' );
+
+				const v1parts = version.split( '.' );
+				const v2parts = minVersion.split( '.' );
+
+				for (
+					let i = 0;
+					i < Math.max( v1parts.length, v2parts.length );
+					i++
+				) {
+					const v1part = parseInt( v1parts[ i ], 10 );
+					const v2part = parseInt( v2parts[ i ], 10 );
+
+					// Returns `false` if the version is less than the minimum required version.
+					if ( v1part < v2part ) {
+						return false;
+					}
+					// Returns `true` if the version is greater than the minimum required version.
+					if ( v1part > v2part ) {
+						return true;
+					}
+				}
+
+				// Returns `true` if the version is equal to the minimum required version.
+				return true;
 			}
 	),
 };
