@@ -1,5 +1,5 @@
 /**
- * WPVersionBumpNotification Component Stories.
+ * WordPress Version Upgrade Notification Component Stories.
  *
  * Site Kit by Google, Copyright 2022 Google LLC
  *
