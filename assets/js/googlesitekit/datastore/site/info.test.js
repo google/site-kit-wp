@@ -539,6 +539,12 @@ describe( 'core/site site info', () => {
 						.select( CORE_SITE )
 						.hasMinimumWordPressVersion( '5.2' )
 				).toBe( true );
+
+				expect(
+					registry
+						.select( CORE_SITE )
+						.hasMinimumWordPressVersion( '5.1' )
+				).toBe( true );
 			} );
 		} );
 	} );
