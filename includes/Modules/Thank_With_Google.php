@@ -419,10 +419,12 @@ final class Thank_With_Google extends Module
 				};
 			case 'GET:supporter-wall-prompt':
 				return function() {
+					if ( ! $this->is_connected() ) {
+						return new WP_Error( 'module_not_connected', __( 'Module is not connected.', 'google-site-kit' ), array( 'status' => 400 ) );
+					}
 					$supporter_wall_sidebars = $this->get_supporter_wall_sidebars();
-					$is_connected            = $this->is_connected();
 					$setup_transient         = $this->transients->get( self::TRANSIENT_SETUP_TIMER );
-					if ( $is_connected && empty( $supporter_wall_sidebars ) && ! $setup_transient ) {
+					if ( empty( $supporter_wall_sidebars ) && ! $setup_transient ) {
 						return array( 'supporterWallPrompt' => true );
 					}
 					return array( 'supporterWallPrompt' => false );
