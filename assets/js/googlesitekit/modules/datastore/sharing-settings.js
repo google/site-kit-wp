@@ -296,7 +296,7 @@ const baseActions = {
 	 * from a global variable (`_googlesitekitDashboardSharingData`), set by PHP
 	 * in the `before_print` callback for `googlesitekit-datastore-site`.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.85.0
 	 *
 	 * @param {Object} defaultSharedOwnershipModuleSettings Default sharing settings for the shared ownership modules.
 	 * @return {Object} Action for RECEIVE_DEFAULT_SHARED_OWNERSHIP_MODULE_SETTINGS.
@@ -691,7 +691,7 @@ const baseSelectors = {
 	/**
 	 * Gets the default sharing settings for shared ownership modules.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.85.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(Object|undefined)} Sharing Settings object. Returns undefined if it is not loaded yet.
@@ -704,7 +704,7 @@ const baseSelectors = {
 	/**
 	 * Indicates whether the sharing settings have updated from default.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.85.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {boolean} True if the sharing settings have updated, false otherwise.

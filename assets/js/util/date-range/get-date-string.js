@@ -31,7 +31,7 @@ import { isValidDateInstance } from './is-valid-date-instance';
  * Parses the given Date instance and returns a date string (YYYY-MM-DD).
  *
  * @since 1.18.0
- * @since n.e.x.t Updated the function signature to only accept a Date argument.
+ * @since 1.85.0 Updated the function signature to only accept a Date argument.
  *
  * @param {Date} date Date to parse into a string.
  * @return {string}                 The parsed date string (YYYY-MM-DD).

@@ -106,7 +106,7 @@ class Module_Sharing_Settings extends Setting {
 	/**
 	 * Filters the shared roles to only include roles with the edit_posts capability.
 	 *
-	 * @since n.e.x.t.
+	 * @since 1.85.0.
 	 *
 	 * @param array $shared_roles The shared roles list.
 	 * @return string[] The sanitized shared roles list.
