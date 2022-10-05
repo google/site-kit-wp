@@ -134,18 +134,6 @@ final class Thank_With_Google extends Module
 			}
 		);
 
-		add_filter(
-			'googlesitekit_apifetch_preload_paths',
-			function ( $paths ) {
-				return array_merge(
-					$paths,
-					array(
-						'/' . REST_Routes::REST_ROOT . '/modules/thank-with-google/data/supporter-wall-prompt',
-					)
-				);
-			}
-		);
-
 		if ( ! $this->is_connected() ) {
 			return;
 		}
@@ -168,6 +156,18 @@ final class Thank_With_Google extends Module
 				) {
 					$this->register_tag();
 				}
+			}
+		);
+
+		add_filter(
+			'googlesitekit_apifetch_preload_paths',
+			function ( $paths ) {
+				return array_merge(
+					$paths,
+					array(
+						'/' . REST_Routes::REST_ROOT . '/modules/thank-with-google/data/supporter-wall-prompt',
+					)
+				);
 			}
 		);
 
