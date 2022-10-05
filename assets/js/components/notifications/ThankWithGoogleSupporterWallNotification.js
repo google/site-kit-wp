@@ -54,13 +54,13 @@ export default function ThankWithGoogleSupporterWallNotification() {
 			) }
 			description={
 				<Fragment>
-					<span className="googlesitekit-twg-supporter-wall-banner__description">
+					<span className="googlesitekit-display-block">
 						{ __(
 							'A supporter wall widget shows the list of everyone who has supported your site using Thank with Google. It’s a nice way to thank your supporters back.',
 							'google-site-kit'
 						) }
 					</span>
-					<span className="googlesitekit-twg-supporter-wall-banner__description">
+					<span className="googlesitekit-display-block">
 						{ __(
 							'You can find and add the supporter wall widget from your site’s Appearance settings.',
 							'google-site-kit'
