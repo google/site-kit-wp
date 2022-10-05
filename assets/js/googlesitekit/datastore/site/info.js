@@ -654,41 +654,27 @@ export const selectors = {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param {string} minVersion The minimum required version.
+	 * @param {string} minimumWPVersion The minimum required WordPress version.
 	 * @return {(boolean|undefined)} `true` if the WordPress site's version is greater than or equal to the minimum required version, `false` if not. Returns `undefined` if not loaded.
 	 */
 	hasMinimumWordPressVersion: createRegistrySelector(
-		( select ) =>
-			( state, minVersion = '5.2' ) => {
-				const { version } = select( CORE_SITE ).getWPVersion() || {};
-				if ( ! version ) {
-					return undefined;
-				}
+		( select ) => ( state, minimumWPVersion ) => {
+			invariant( minimumWPVersion, 'minimumWPVersion is required.' );
 
-				const v1parts = version.split( '.' );
-				const v2parts = minVersion.split( '.' );
-
-				for (
-					let i = 0;
-					i < Math.max( v1parts.length, v2parts.length );
-					i++
-				) {
-					const v1part = parseInt( v1parts[ i ], 10 );
-					const v2part = parseInt( v2parts[ i ], 10 );
-
-					// Returns `false` if the version is less than the minimum required version.
-					if ( v1part < v2part ) {
-						return false;
-					}
-					// Returns `true` if the version is greater than the minimum required version.
-					if ( v1part > v2part ) {
-						return true;
-					}
-				}
-
-				// Returns `true` if the version is equal to the minimum required version.
-				return true;
+			const { major, minor } = select( CORE_SITE ).getWPVersion() || {};
+			if ( major === undefined || minor === undefined ) {
+				return undefined;
 			}
+
+			const [ minimumMajor, minimumMinor = 0 ] = minimumWPVersion
+				.split( '.' )
+				.map( ( v ) => parseInt( v, 10 ) );
+
+			return (
+				minimumMajor < major ||
+				( minimumMajor === major && minimumMinor <= minor )
+			);
+		}
 	),
 };
 
