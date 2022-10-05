@@ -1467,9 +1467,11 @@ final class Authentication {
 		$html  = __( 'The link you followed has expired.', 'google-site-kit' );
 		$html .= '</p><p>';
 		$html .= sprintf(
-			'<a href="%s">%s</a>. <a href="%s" target="_blank">%s</a>.',
+			/* translators: 1: Admin splash URL. 2: Try again string. 3: Retry string. 4: Support link URL. 5: Get help string. */
+			__( '<a href="%1$s">%2$s</a>. %3$s <a href="%4$s" target="_blank">%5$s</a>.', 'google-site-kit' ),
 			esc_url( Plugin::instance()->context()->admin_url( 'splash' ) ),
 			__( 'Please try again', 'google-site-kit' ),
+			__( 'Retry didn\'t work?', 'google-site-kit' ),
 			esc_url( $this->get_proxy_support_link_url() . '?error_id=nonce_expired' ),
 			__( 'Get help', 'google-site-kit' )
 		);
