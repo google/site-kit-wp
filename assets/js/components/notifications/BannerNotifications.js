@@ -46,7 +46,6 @@ export default function BannerNotifications() {
 	const ideaHubModuleEnabled = useFeature( 'ideaHubModule' );
 	const userInputEnabled = useFeature( 'userInput' );
 	const ga4ActivationBannerEnabled = useFeature( 'ga4ActivationBanner' );
-	const twgEnabled = useFeature( 'twgModule' );
 
 	const viewOnly = useViewOnly();
 
@@ -55,6 +54,9 @@ export default function BannerNotifications() {
 	);
 	const adSenseModuleActive = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleActive( 'adsense' )
+	);
+	const twGModuleConnected = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleConnected( 'thank-with-google' )
 	);
 
 	const [ notification ] = useQueryArg( 'notification' );
@@ -70,7 +72,7 @@ export default function BannerNotifications() {
 					{ isAuthenticated && <CoreSiteBannerNotifications /> }
 					{ dashboardSharingEnabled && <ModuleRecoveryAlert /> }
 					{ ga4ActivationBannerEnabled && <ActivationBanner /> }
-					{ twgEnabled && (
+					{ twGModuleConnected && (
 						<ThankWithGoogleSupporterWallNotification />
 					) }
 				</Fragment>

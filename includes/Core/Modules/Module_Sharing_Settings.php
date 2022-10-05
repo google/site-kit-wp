@@ -125,7 +125,7 @@ class Module_Sharing_Settings extends Setting {
 			}
 		);
 
-		return $filtered_shared_roles;
+		return array_values( $filtered_shared_roles );
 	}
 
 	/**

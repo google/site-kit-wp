@@ -47,24 +47,25 @@ export default function ThankWithGoogleSupporterWallNotification() {
 	return (
 		<BannerNotification
 			id="twg-supporter-wall-prompt"
+			className="googlesitekit-twg-supporter-wall-banner"
 			title={ __(
 				'Add a Thank with Google supporter wall',
 				'google-site-kit'
 			) }
 			description={
 				<Fragment>
-					<p>
+					<span className="googlesitekit-display-block">
 						{ __(
 							'A supporter wall widget shows the list of everyone who has supported your site using Thank with Google. It’s a nice way to thank your supporters back.',
 							'google-site-kit'
 						) }
-					</p>
-					<p>
+					</span>
+					<span className="googlesitekit-display-block">
 						{ __(
 							'You can find and add the supporter wall widget from your site’s Appearance settings.',
 							'google-site-kit'
 						) }
-					</p>
+					</span>
 				</Fragment>
 			}
 			ctaLabel={ __( 'Add Supporter Wall widget', 'google-site-kit' ) }

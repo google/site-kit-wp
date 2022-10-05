@@ -58,7 +58,7 @@ const fetchGetSupporterWallPromptStore = createFetchStore( {
 			}
 		);
 	},
-	reducerCallback: ( state, supporterWallPrompt ) => {
+	reducerCallback: ( state, { supporterWallPrompt } ) => {
 		return {
 			...state,
 			supporterWallPrompt,
