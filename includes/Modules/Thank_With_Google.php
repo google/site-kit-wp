@@ -74,7 +74,7 @@ final class Thank_With_Google extends Module
 	/**
 	 * Transients instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.85.0
 	 * @var Transients
 	 */
 	private $transients;
@@ -82,7 +82,7 @@ final class Thank_With_Google extends Module
 	/**
 	 * Internal flag for whether the module is connected before saving/updating its settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.85.0
 	 * @var bool
 	 */
 	private $pre_update_is_connected;
@@ -90,7 +90,7 @@ final class Thank_With_Google extends Module
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.85.0
 	 *
 	 * @param Context        $context        Plugin context.
 	 * @param Options        $options        Optional. Option API instance. Default is a new instance.
@@ -300,7 +300,7 @@ final class Thank_With_Google extends Module
 	/**
 	 * Gets the supporter wall sidebars.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.85.0
 	 *
 	 * @return array list of supporter wall sidebars, otherwise an empty list.
 	 */

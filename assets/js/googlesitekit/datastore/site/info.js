@@ -631,7 +631,7 @@ export const selectors = {
 	/**
 	 * Gets the WordPress version object.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.85.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(Object|undefined)} WordPress version object.
@@ -641,7 +641,7 @@ export const selectors = {
 	/**
 	 * Gets the WordPress update core URL.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.85.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(Object|undefined)} WordPress update core URL.
@@ -652,7 +652,7 @@ export const selectors = {
 	 * Determines whether the current WordPress site has the minimum required version.
 	 * Currently, the minimum required version is 5.2.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.85.0
 	 *
 	 * @param {string} minimumWPVersion The minimum required WordPress version.
 	 * @return {(boolean|undefined)} `true` if the WordPress site's version is greater than or equal to the minimum required version, `false` if not. Returns `undefined` if not loaded.

@@ -1014,7 +1014,7 @@ const baseSelectors = {
 	 * Returns `false` if the module is not available.
 	 * Returns `undefined` if state is still loading.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.85.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @param {string} slug  Module slug.

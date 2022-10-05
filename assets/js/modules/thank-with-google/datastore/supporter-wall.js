@@ -119,7 +119,7 @@ const baseSelectors = {
 	/**
 	 * Gets the the supporter wall prompt data from the server.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.85.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(boolean|undefined| null)} `true` if the transient state for the supporter wall is available, `false` if not; `undefined` if it is not loaded yet.

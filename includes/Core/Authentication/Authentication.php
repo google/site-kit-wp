@@ -830,7 +830,7 @@ final class Authentication {
 	 *
 	 * If the site is multisite, it gets the update core URL for the network admin.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.85.0
 	 *
 	 * @return string The update core URL.
 	 */

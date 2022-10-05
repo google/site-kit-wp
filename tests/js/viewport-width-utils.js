@@ -19,7 +19,7 @@
 /**
  * Retrieves the viewport width.
  *
- * @since n.e.x.t
+ * @since 1.85.0
  *
  * @return {number} The current viewport width.
  */
@@ -30,7 +30,7 @@ export function getViewportWidth() {
 /**
  * Sets the viewport width.
  *
- * @since n.e.x.t
+ * @since 1.85.0
  *
  * @param {number} viewportWidth The viewport width to set.
  */
