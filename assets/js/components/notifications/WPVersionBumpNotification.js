@@ -54,7 +54,7 @@ export default function WPVersionBumpNotification() {
 	} );
 
 	const hasMinimumWPVersion = useSelect( ( select ) =>
-		select( CORE_SITE ).hasMinimumWordPressVersion()
+		select( CORE_SITE ).hasMinimumWordPressVersion( '5.2' )
 	);
 	const { version } = useSelect( ( select ) =>
 		select( CORE_SITE ).getWPVersion()
