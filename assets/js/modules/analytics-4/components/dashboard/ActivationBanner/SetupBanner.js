@@ -154,7 +154,7 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 	const handleSubmitChanges = useCallback( async () => {
 		const scopes = [];
 
-		if ( hasEditScope === false ) {
+		if ( hasEditScope === false && ga4PropertyID === PROPERTY_CREATE ) {
 			scopes.push( EDIT_SCOPE );
 		}
 
@@ -206,6 +206,7 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 		setPermissionScopeError,
 		setValues,
 		submitChanges,
+		ga4PropertyID,
 	] );
 
 	// If the user lands back on this component with autoSubmit and the edit scope,
@@ -307,7 +308,7 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 			</div>
 		);
 
-		if ( hasEditScope === false ) {
+		if ( hasEditScope === false && ga4PropertyID === PROPERTY_CREATE ) {
 			footerMessages.push(
 				__(
 					'You will need to give Site Kit permission to create an Analytics property on your behalf.',
