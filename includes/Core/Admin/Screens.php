@@ -392,7 +392,7 @@ final class Screens {
 								}
 							}
 							?>
-							<div id="js-googlesitekit-dashboard" data-view-only="<?php echo esc_attr( $is_view_only ); ?>" data-setup-module-slug="<?php echo esc_attr( $setup_module_slug ); ?>" class="googlesitekit-page"></div>
+							<div id="js-googlesitekit-main-dashboard" data-view-only="<?php echo esc_attr( $is_view_only ); ?>" data-setup-module-slug="<?php echo esc_attr( $setup_module_slug ); ?>" class="googlesitekit-page"></div>
 							<?php
 						}
 					},

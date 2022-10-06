@@ -28,7 +28,7 @@ import { render } from '@wordpress/element';
 import { clearWebStorage } from './util';
 import Root from './components/Root';
 import DashboardSplashApp from './components/dashboard-splash/DashboardSplashApp';
-import { VIEW_CONTEXT_DASHBOARD_SPLASH } from './googlesitekit/constants';
+import { VIEW_CONTEXT_SPLASH } from './googlesitekit/constants';
 
 // Initialize the app once the DOM is ready.
 domReady( () => {
@@ -42,7 +42,7 @@ domReady( () => {
 
 	if ( renderTarget ) {
 		render(
-			<Root viewContext={ VIEW_CONTEXT_DASHBOARD_SPLASH }>
+			<Root viewContext={ VIEW_CONTEXT_SPLASH }>
 				<DashboardSplashApp />
 			</Root>,
 			renderTarget

@@ -291,7 +291,8 @@ function* webpackConfig( env, argv ) {
 				'./assets/js/googlesitekit-activation.js',
 			'googlesitekit-adminbar': './assets/js/googlesitekit-adminbar.js',
 			'googlesitekit-settings': './assets/js/googlesitekit-settings.js',
-			'googlesitekit-dashboard': './assets/js/googlesitekit-dashboard.js',
+			'googlesitekit-main-dashboard':
+				'./assets/js/googlesitekit-main-dashboard.js',
 			'googlesitekit-dashboard-details':
 				'./assets/js/googlesitekit-dashboard-details.js',
 			'googlesitekit-dashboard-splash':

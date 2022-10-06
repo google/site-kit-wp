@@ -590,7 +590,7 @@ final class Assets {
 			new Script(
 				'googlesitekit-dashboard',
 				array(
-					'src'          => $base_url . 'js/googlesitekit-dashboard.js',
+					'src'          => $base_url . 'js/googlesitekit-main-dashboard.js',
 					'dependencies' => $dependencies_for_dashboard_sharing,
 				)
 			),
