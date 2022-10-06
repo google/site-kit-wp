@@ -41,20 +41,18 @@ const ideaHubModule = {
 	contexts: [ VIEW_CONTEXT_DASHBOARD, VIEW_CONTEXT_DASHBOARD_VIEW_ONLY ],
 	version: '1.43.0',
 	checkRequirements: async ( registry ) => {
-		const isIdeaHubModuleActive = registry
-			.__experimentalResolveSelect( CORE_MODULES )
-			.isModuleActive( 'idea-hub' );
-		const isIdeaHubModuleConnected = registry
-			.__experimentalResolveSelect( CORE_MODULES )
-			.isModuleConnected( 'idea-hub' );
+		const { __experimentalResolveSelect } = registry;
+		const isIdeaHubModuleConnected = await __experimentalResolveSelect(
+			CORE_MODULES
+		).isModuleConnected( 'idea-hub' );
 
-		if ( ! isIdeaHubModuleActive || ! isIdeaHubModuleConnected ) {
+		if ( ! isIdeaHubModuleConnected ) {
 			return false;
 		}
 
-		const newIdeas = await registry
-			.__experimentalResolveSelect( MODULES_IDEA_HUB )
-			.getNewIdeas();
+		const newIdeas = await __experimentalResolveSelect(
+			MODULES_IDEA_HUB
+		).getNewIdeas();
 
 		return !! newIdeas.length;
 	},
