@@ -742,7 +742,7 @@ const baseResolvers = {
 			registry.__experimentalResolveSelect( CORE_MODULES ).getModules()
 		);
 
-		const recoverableModules = Object.entries( modules ).reduce(
+		const recoverableModules = Object.entries( modules || {} ).reduce(
 			( moduleList, [ moduleSlug, module ] ) => {
 				if ( module.recoverable ) {
 					moduleList.push( moduleSlug );
