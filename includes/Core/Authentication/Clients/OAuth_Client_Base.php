@@ -255,6 +255,10 @@ abstract class OAuth_Client_Base {
 	 * @return bool True on success, false on failure.
 	 */
 	public function set_token( array $token ) {
+		// Remove the error code from the user options so it doesn't
+		// appear again.
+		$this->user_options->delete( OAuth_Client::OPTION_ERROR_CODE );
+
 		return $this->token->set( $token );
 	}
 

@@ -39,6 +39,10 @@ class User_OptionsTest extends TestCase {
 	 */
 	public function test_network_mode_get() {
 		$this->network_activate_site_kit();
+
+		// Force enable network mode.
+		add_filter( 'googlesitekit_is_network_mode', '__return_true' );
+
 		$user_id = $this->factory()->user->create();
 		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$options = new User_Options( $context, $user_id );
@@ -67,6 +71,10 @@ class User_OptionsTest extends TestCase {
 	 */
 	public function test_network_mode_set() {
 		$this->network_activate_site_kit();
+
+		// Force enable network mode.
+		add_filter( 'googlesitekit_is_network_mode', '__return_true' );
+
 		$user_id = $this->factory()->user->create();
 		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$options = new User_Options( $context, $user_id );
@@ -96,6 +104,10 @@ class User_OptionsTest extends TestCase {
 	 */
 	public function test_network_mode_delete() {
 		$this->network_activate_site_kit();
+
+		// Force enable network mode.
+		add_filter( 'googlesitekit_is_network_mode', '__return_true' );
+
 		$user_id = $this->factory()->user->create();
 		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$options = new User_Options( $context, $user_id );

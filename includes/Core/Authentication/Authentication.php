@@ -826,6 +826,27 @@ final class Authentication {
 	}
 
 	/**
+	 * Gets the update core URL if the user can update the WordPress core version.
+	 *
+	 * If the site is multisite, it gets the update core URL for the network admin.
+	 *
+	 * @since 1.85.0
+	 *
+	 * @return string The update core URL.
+	 */
+	private function get_update_core_url() {
+		if ( ! current_user_can( 'update_core' ) ) {
+			return null;
+		}
+
+		if ( is_multisite() ) {
+			return admin_url( 'network/update-core.php' );
+		}
+
+		return admin_url( 'update-core.php' );
+	}
+
+	/**
 	 * Modifies the base data to pass to JS.
 	 *
 	 * @since 1.2.0
@@ -844,6 +865,7 @@ final class Authentication {
 		$data['setupErrorMessage']   = null;
 		$data['setupErrorRedoURL']   = null;
 		$data['proxySupportLinkURL'] = null;
+		$data['updateCoreURL']       = null;
 
 		if ( $this->credentials->using_proxy() ) {
 			$auth_client                 = $this->get_oauth_client();
@@ -851,6 +873,7 @@ final class Authentication {
 			$data['proxyPermissionsURL'] = esc_url_raw( $this->get_proxy_permissions_url() );
 			$data['usingProxy']          = true;
 			$data['proxySupportLinkURL'] = esc_url_raw( $this->get_proxy_support_link_url() );
+			$data['updateCoreURL']       = esc_url_raw( $this->get_update_core_url() );
 
 			// Check for an error in the proxy setup.
 			$error_code = $this->user_options->get( OAuth_Client::OPTION_ERROR_CODE );

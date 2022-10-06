@@ -82,6 +82,10 @@ class SettingTest extends TestCase {
 		$setting = new FakeSetting( new Options( $this->context ) );
 		delete_network_option( null, FakeSetting::OPTION );
 		$this->network_activate_site_kit();
+
+		// Force enable network mode.
+		add_filter( 'googlesitekit_is_network_mode', '__return_true' );
+
 		$this->assertTrue( $this->context->is_network_mode() );
 
 		$this->assertFalse( $setting->get() );
@@ -105,6 +109,10 @@ class SettingTest extends TestCase {
 	public function test_network_mode_set() {
 		$setting = new FakeSetting( new Options( $this->context ) );
 		$this->network_activate_site_kit();
+
+		// Force enable network mode.
+		add_filter( 'googlesitekit_is_network_mode', '__return_true' );
+
 		$this->assertTrue( $this->context->is_network_mode() );
 
 		$this->assertFalse( get_network_option( null, FakeSetting::OPTION ) );
@@ -129,6 +137,10 @@ class SettingTest extends TestCase {
 	public function test_network_mode_delete() {
 		$setting = new FakeSetting( new Options( $this->context ) );
 		$this->network_activate_site_kit();
+
+		// Force enable network mode.
+		add_filter( 'googlesitekit_is_network_mode', '__return_true' );
+
 		$this->assertTrue( $this->context->is_network_mode() );
 
 		update_network_option( null, FakeSetting::OPTION, 'test-value' );

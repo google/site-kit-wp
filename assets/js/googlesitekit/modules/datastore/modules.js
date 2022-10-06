@@ -769,6 +769,30 @@ const baseResolvers = {
 			sharedOwnershipModules
 		);
 	},
+
+	*getModule() {
+		const registry = yield Data.commonActions.getRegistry();
+
+		yield Data.commonActions.await(
+			registry.__experimentalResolveSelect( CORE_MODULES ).getModules()
+		);
+	},
+
+	*isModuleActive() {
+		const registry = yield Data.commonActions.getRegistry();
+
+		yield Data.commonActions.await(
+			registry.__experimentalResolveSelect( CORE_MODULES ).getModules()
+		);
+	},
+
+	*isModuleConnected() {
+		const registry = yield Data.commonActions.getRegistry();
+
+		yield Data.commonActions.await(
+			registry.__experimentalResolveSelect( CORE_MODULES ).getModules()
+		);
+	},
 };
 
 const baseSelectors = {
@@ -977,6 +1001,44 @@ const baseSelectors = {
 			}
 
 			return module.storeName;
+		}
+	),
+
+	/**
+	 * Checks a module's availability status.
+	 *
+	 * Note that an otherwise valid module may be removed from the list of available modules
+	 * by making use of the the googlesitekit_available_modules filter in PHP.
+	 *
+	 * Returns `true` if the module is available.
+	 * Returns `false` if the module is not available.
+	 * Returns `undefined` if state is still loading.
+	 *
+	 * @since 1.85.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @param {string} slug  Module slug.
+	 * @return {(boolean|undefined)} `true` when the module is available.
+	 * 									  `false` when the module is not available.
+	 * 									  `undefined` if state is still loading.
+	 */
+	isModuleAvailable: createRegistrySelector(
+		( select ) => ( state, slug ) => {
+			const module = select( CORE_MODULES ).getModule( slug );
+
+			// Return `undefined` if modules haven't been loaded yet.
+			if ( module === undefined ) {
+				return undefined;
+			}
+
+			// A module with this slug couldn't be found; return `false` to signify the
+			// unavailable state.
+			if ( module === null ) {
+				return false;
+			}
+
+			// Otherwise, the module exists and is available.
+			return true;
 		}
 	),
 
