@@ -39,6 +39,7 @@ import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import useViewOnly from '../../hooks/useViewOnly';
 import ZeroDataStateNotifications from './ZeroDataStateNotifications';
 import ThankWithGoogleSupporterWallNotification from './ThankWithGoogleSupporterWallNotification';
+import WPVersionBumpNotification from './WPVersionBumpNotification';
 const { useSelect } = Data;
 
 export default function BannerNotifications() {
@@ -46,7 +47,6 @@ export default function BannerNotifications() {
 	const ideaHubModuleEnabled = useFeature( 'ideaHubModule' );
 	const userInputEnabled = useFeature( 'userInput' );
 	const ga4ActivationBannerEnabled = useFeature( 'ga4ActivationBanner' );
-	const twgEnabled = useFeature( 'twgModule' );
 
 	const viewOnly = useViewOnly();
 
@@ -55,6 +55,9 @@ export default function BannerNotifications() {
 	);
 	const adSenseModuleActive = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleActive( 'adsense' )
+	);
+	const twGModuleConnected = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleConnected( 'thank-with-google' )
 	);
 
 	const [ notification ] = useQueryArg( 'notification' );
@@ -68,9 +71,10 @@ export default function BannerNotifications() {
 						<SetupSuccessBannerNotification />
 					) }
 					{ isAuthenticated && <CoreSiteBannerNotifications /> }
+					<WPVersionBumpNotification />
 					{ dashboardSharingEnabled && <ModuleRecoveryAlert /> }
 					{ ga4ActivationBannerEnabled && <ActivationBanner /> }
-					{ twgEnabled && (
+					{ twGModuleConnected && (
 						<ThankWithGoogleSupporterWallNotification />
 					) }
 				</Fragment>

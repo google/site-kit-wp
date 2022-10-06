@@ -111,6 +111,8 @@ export const reducer = ( state, { payload, type } ) => {
 				proxySupportLinkURL,
 				widgetsAdminURL,
 				postTypes,
+				wpVersion,
+				updateCoreURL,
 			} = payload.siteInfo;
 
 			return {
@@ -136,6 +138,8 @@ export const reducer = ( state, { payload, type } ) => {
 					proxySupportLinkURL,
 					widgetsAdminURL,
 					postTypes,
+					wpVersion,
+					updateCoreURL,
 				},
 			};
 		}
@@ -186,6 +190,8 @@ export const resolvers = {
 			proxySupportLinkURL,
 			widgetsAdminURL,
 			postTypes,
+			wpVersion,
+			updateCoreURL,
 		} = global._googlesitekitBaseData;
 
 		const {
@@ -216,6 +222,8 @@ export const resolvers = {
 			webStoriesActive,
 			proxySupportLinkURL,
 			widgetsAdminURL,
+			wpVersion,
+			updateCoreURL,
 		} );
 	},
 };
@@ -619,6 +627,55 @@ export const selectors = {
 
 		return permutations;
 	} ),
+
+	/**
+	 * Gets the WordPress version object.
+	 *
+	 * @since 1.85.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(Object|undefined)} WordPress version object.
+	 */
+	getWPVersion: getSiteInfoProperty( 'wpVersion' ),
+
+	/**
+	 * Gets the WordPress update core URL.
+	 *
+	 * @since 1.85.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(Object|undefined)} WordPress update core URL.
+	 */
+	getUpdateCoreURL: getSiteInfoProperty( 'updateCoreURL' ),
+
+	/**
+	 * Determines whether the current WordPress site has the minimum required version.
+	 * Currently, the minimum required version is 5.2.
+	 *
+	 * @since 1.85.0
+	 *
+	 * @param {string} minimumWPVersion The minimum required WordPress version.
+	 * @return {(boolean|undefined)} `true` if the WordPress site's version is greater than or equal to the minimum required version, `false` if not. Returns `undefined` if not loaded.
+	 */
+	hasMinimumWordPressVersion: createRegistrySelector(
+		( select ) => ( state, minimumWPVersion ) => {
+			invariant( minimumWPVersion, 'minimumWPVersion is required.' );
+
+			const { major, minor } = select( CORE_SITE ).getWPVersion() || {};
+			if ( major === undefined || minor === undefined ) {
+				return undefined;
+			}
+
+			const [ minimumMajor, minimumMinor = 0 ] = minimumWPVersion
+				.split( '.' )
+				.map( ( v ) => parseInt( v, 10 ) );
+
+			return (
+				minimumMajor < major ||
+				( minimumMajor === major && minimumMinor <= minor )
+			);
+		}
+	),
 };
 
 export default {

@@ -769,6 +769,30 @@ const baseResolvers = {
 			sharedOwnershipModules
 		);
 	},
+
+	*getModule() {
+		const registry = yield Data.commonActions.getRegistry();
+
+		yield Data.commonActions.await(
+			registry.__experimentalResolveSelect( CORE_MODULES ).getModules()
+		);
+	},
+
+	*isModuleActive() {
+		const registry = yield Data.commonActions.getRegistry();
+
+		yield Data.commonActions.await(
+			registry.__experimentalResolveSelect( CORE_MODULES ).getModules()
+		);
+	},
+
+	*isModuleConnected() {
+		const registry = yield Data.commonActions.getRegistry();
+
+		yield Data.commonActions.await(
+			registry.__experimentalResolveSelect( CORE_MODULES ).getModules()
+		);
+	},
 };
 
 const baseSelectors = {
@@ -990,7 +1014,7 @@ const baseSelectors = {
 	 * Returns `false` if the module is not available.
 	 * Returns `undefined` if state is still loading.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.85.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @param {string} slug  Module slug.
