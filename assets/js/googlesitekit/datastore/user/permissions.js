@@ -169,6 +169,22 @@ const baseResolvers = {
 			return;
 		}
 
+		// Temporary hack to preserve previous behavior when resolved from global.
+		// This is necessary for now to avoid a delay if the preloaded data
+		// has already expired.
+		// We'll still fetch it in case something has changed,
+		// but receive the preloaded right away.
+		const preloadedPermissions =
+			global._googlesitekitAPIFetchData?.preloadedData?.[
+				'/google-site-kit/v1/core/user/data/permissions'
+			]?.body;
+
+		if ( preloadedPermissions ) {
+			yield fetchGetCapabilitiesStore.actions.receiveGetCapabilities( {
+				...preloadedPermissions, // dereference.
+			} );
+		}
+
 		yield fetchGetCapabilitiesStore.actions.fetchGetCapabilities();
 	},
 };
