@@ -649,6 +649,15 @@ const baseReducer = ( state, { type, payload } ) => {
 	}
 };
 
+function* waitForModules() {
+	const { __experimentalResolveSelect } =
+		yield Data.commonActions.getRegistry();
+
+	yield Data.commonActions.await(
+		__experimentalResolveSelect( CORE_MODULES ).getModules()
+	);
+}
+
 const baseResolvers = {
 	*getModules() {
 		const registry = yield Data.commonActions.getRegistry();
@@ -767,29 +776,11 @@ const baseResolvers = {
 		);
 	},
 
-	*getModule() {
-		const registry = yield Data.commonActions.getRegistry();
+	getModule: waitForModules,
 
-		yield Data.commonActions.await(
-			registry.__experimentalResolveSelect( CORE_MODULES ).getModules()
-		);
-	},
+	isModuleActive: waitForModules,
 
-	*isModuleActive() {
-		const registry = yield Data.commonActions.getRegistry();
-
-		yield Data.commonActions.await(
-			registry.__experimentalResolveSelect( CORE_MODULES ).getModules()
-		);
-	},
-
-	*isModuleConnected() {
-		const registry = yield Data.commonActions.getRegistry();
-
-		yield Data.commonActions.await(
-			registry.__experimentalResolveSelect( CORE_MODULES ).getModules()
-		);
-	},
+	isModuleConnected: waitForModules,
 };
 
 const baseSelectors = {
