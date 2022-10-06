@@ -28,6 +28,10 @@ import ErrorText from '../../../../components/ErrorText';
 const { useSelect } = Data;
 
 export default function SetupErrorNotice() {
+	const analyticsModuleAvailable = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleAvailable( 'analytics' )
+	);
+
 	const analyticsErrors = [
 		// Check if activating Analytics failed.
 		useSelect( ( select ) =>
@@ -37,6 +41,10 @@ export default function SetupErrorNotice() {
 		),
 		// Check if saving Analytics settings failed.
 		useSelect( ( select ) => {
+			if ( ! analyticsModuleAvailable ) {
+				return false;
+			}
+
 			const settings = select( MODULES_ANALYTICS ).getSettings();
 			return select( MODULES_ANALYTICS ).getErrorForAction(
 				'saveSettings',

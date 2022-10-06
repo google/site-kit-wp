@@ -76,7 +76,14 @@ const Dialog = ( {
 			tabIndex="-1"
 		>
 			<div className="mdc-dialog__scrim">&nbsp;</div>
-			<FocusTrap active={ dialogActive }>
+			<FocusTrap
+				active={ dialogActive }
+				focusTrapOptions={ {
+					tabbableOptions: {
+						displayCheck: 'legacy-full',
+					},
+				} }
+			>
 				<div>
 					<div className="mdc-dialog__container">
 						<div className="mdc-dialog__surface">

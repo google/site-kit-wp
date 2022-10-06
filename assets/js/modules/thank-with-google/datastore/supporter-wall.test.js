@@ -27,6 +27,8 @@ import { MODULES_THANK_WITH_GOOGLE } from './constants';
 describe( 'modules/thank-with-google supporter-wall', () => {
 	const supporterWallSidebarsEndpoint =
 		/^\/google-site-kit\/v1\/modules\/thank-with-google\/data\/supporter-wall-sidebars/;
+	const supporterWallPromptEndpoint =
+		/^\/google-site-kit\/v1\/modules\/thank-with-google\/data\/supporter-wall-prompt/;
 
 	let registry;
 
@@ -107,6 +109,79 @@ describe( 'modules/thank-with-google supporter-wall', () => {
 
 				expect( fetchMock ).not.toHaveFetched();
 				expect( sidebars ).toEqual( [ 'Sidebar 2' ] );
+			} );
+		} );
+
+		describe( 'getSupporterWallPrompt', () => {
+			it( 'should use a resolver to get supporter wall prompt data when requested', async () => {
+				fetchMock.getOnce( supporterWallPromptEndpoint, {
+					body: { supporterWallPrompt: true },
+				} );
+
+				// The supporter wall prompt state will be `undefined` whilst loading.
+				expect(
+					registry
+						.select( MODULES_THANK_WITH_GOOGLE )
+						.getSupporterWallPrompt()
+				).toBeUndefined();
+
+				// Wait for loading to complete.
+				await untilResolved(
+					registry,
+					MODULES_THANK_WITH_GOOGLE
+				).getSupporterWallPrompt();
+
+				const supporterWallPrompt = registry
+					.select( MODULES_THANK_WITH_GOOGLE )
+					.getSupporterWallPrompt();
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect( supporterWallPrompt ).toEqual( true );
+			} );
+
+			it( 'should dispatch an error if the request fails', async () => {
+				const response = {
+					code: 'internal_server_error',
+					message: 'Internal server error',
+					data: { status: 500 },
+				};
+
+				fetchMock.getOnce( supporterWallPromptEndpoint, {
+					body: response,
+					status: 500,
+				} );
+
+				registry
+					.select( MODULES_THANK_WITH_GOOGLE )
+					.getSupporterWallPrompt();
+
+				await untilResolved(
+					registry,
+					MODULES_THANK_WITH_GOOGLE
+				).getSupporterWallPrompt();
+
+				const supporterWallPrompt = registry
+					.select( MODULES_THANK_WITH_GOOGLE )
+					.getSupporterWallPrompt();
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect( supporterWallPrompt ).toEqual( undefined );
+				expect( console ).toHaveErrored();
+			} );
+
+			it( 'should not make a network request if data is already in state', () => {
+				registry
+					.dispatch( MODULES_THANK_WITH_GOOGLE )
+					.receiveGetSupporterWallPrompt( {
+						supporterWallPrompt: true,
+					} );
+
+				const supporterWallPrompt = registry
+					.select( MODULES_THANK_WITH_GOOGLE )
+					.getSupporterWallPrompt();
+
+				expect( fetchMock ).not.toHaveFetched();
+				expect( supporterWallPrompt ).toEqual( true );
 			} );
 		} );
 	} );

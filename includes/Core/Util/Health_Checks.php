@@ -35,12 +35,20 @@ class Health_Checks {
 	protected $authentication;
 
 	/**
+	 * Google_Proxy instance.
+	 *
+	 * @var Google_Proxy
+	 */
+	protected $google_proxy;
+
+	/**
 	 * Constructor.
 	 *
 	 * @param Authentication $authentication Authentication instance.
 	 */
 	public function __construct( Authentication $authentication ) {
 		$this->authentication = $authentication;
+		$this->google_proxy   = $authentication->get_google_proxy();
 	}
 
 	/**
@@ -76,6 +84,7 @@ class Health_Checks {
 						'callback'            => function() {
 							$checks = array(
 								'googleAPI' => $this->check_google_api(),
+								'skService' => $this->check_service_connectivity(),
 							);
 
 							return compact( 'checks' );
@@ -125,6 +134,33 @@ class Health_Checks {
 		return array(
 			'pass'     => $pass,
 			'errorMsg' => $error_msg,
+		);
+	}
+
+	/**
+	 * Checks connection to Site Kit service.
+	 *
+	 * @since 1.85.0
+	 *
+	 * @return array Results data.
+	 */
+	private function check_service_connectivity() {
+		$service_url = $this->google_proxy->url();
+		$response    = wp_remote_head( $service_url );
+
+		if ( is_wp_error( $response ) ) {
+			return array(
+				'pass'     => false,
+				'errorMsg' => $response->get_error_message(),
+			);
+		}
+
+		$status_code = wp_remote_retrieve_response_code( $response );
+		$pass        = is_int( $status_code ) && $status_code < 400;
+
+		return array(
+			'pass'     => $pass,
+			'errorMsg' => $pass ? '' : 'connection_fail',
 		);
 	}
 }

@@ -52,6 +52,10 @@ class OptionsTest extends TestCase {
 		$options = new Options( $context );
 		delete_network_option( null, 'test_option' );
 		$this->network_activate_site_kit();
+
+		// Force enable network mode.
+		add_filter( 'googlesitekit_is_network_mode', '__return_true' );
+
 		$this->assertTrue( $context->is_network_mode() );
 
 		$this->assertFalse( $options->get( 'test_option' ) );
@@ -76,6 +80,10 @@ class OptionsTest extends TestCase {
 		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$options = new Options( $context );
 		$this->network_activate_site_kit();
+
+		// Force enable network mode.
+		add_filter( 'googlesitekit_is_network_mode', '__return_true' );
+
 		$this->assertTrue( $context->is_network_mode() );
 
 		$this->assertFalse( get_network_option( null, 'test_option' ) );
@@ -101,6 +109,10 @@ class OptionsTest extends TestCase {
 		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$options = new Options( $context );
 		$this->network_activate_site_kit();
+
+		// Force enable network mode.
+		add_filter( 'googlesitekit_is_network_mode', '__return_true' );
+
 		$this->assertTrue( $context->is_network_mode() );
 
 		update_network_option( null, 'test_option', 'test-value' );

@@ -44,8 +44,31 @@ const fetchGetSupporterWallSidebars = createFetchStore( {
 	},
 } );
 
+const fetchGetSupporterWallPromptStore = createFetchStore( {
+	baseName: 'getSupporterWallPrompt',
+	storeName: MODULES_THANK_WITH_GOOGLE,
+	controlCallback: () => {
+		return API.get(
+			'modules',
+			'thank-with-google',
+			'supporter-wall-prompt',
+			null,
+			{
+				useCache: false,
+			}
+		);
+	},
+	reducerCallback: ( state, { supporterWallPrompt } ) => {
+		return {
+			...state,
+			supporterWallPrompt,
+		};
+	},
+} );
+
 const baseInitialState = {
 	supporterWallSidebars: undefined,
+	supporterWallPrompt: undefined,
 };
 
 const baseResolvers = {
@@ -63,6 +86,21 @@ const baseResolvers = {
 
 		yield fetchGetSupporterWallSidebars.actions.fetchGetSupporterWallSidebars();
 	},
+
+	*getSupporterWallPrompt() {
+		const registry = yield Data.commonActions.getRegistry();
+		const supporterWallPrompt = registry
+			.select( MODULES_THANK_WITH_GOOGLE )
+			.getSupporterWallPrompt();
+
+		// If there are already supporterWallPrompt loaded in the state, consider it fulfilled
+		// and don't make an API request.
+		if ( supporterWallPrompt !== undefined ) {
+			return;
+		}
+
+		yield fetchGetSupporterWallPromptStore.actions.fetchGetSupporterWallPrompt();
+	},
 };
 
 const baseSelectors = {
@@ -77,13 +115,29 @@ const baseSelectors = {
 	getSupporterWallSidebars( state ) {
 		return state.supporterWallSidebars;
 	},
+
+	/**
+	 * Gets the the supporter wall prompt data from the server.
+	 *
+	 * @since 1.85.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(boolean|undefined| null)} `true` if the transient state for the supporter wall is available, `false` if not; `undefined` if it is not loaded yet.
+	 */
+	getSupporterWallPrompt( state ) {
+		return state.supporterWallPrompt;
+	},
 };
 
-const store = Data.combineStores( fetchGetSupporterWallSidebars, {
-	initialState: baseInitialState,
-	resolvers: baseResolvers,
-	selectors: baseSelectors,
-} );
+const store = Data.combineStores(
+	fetchGetSupporterWallSidebars,
+	fetchGetSupporterWallPromptStore,
+	{
+		initialState: baseInitialState,
+		resolvers: baseResolvers,
+		selectors: baseSelectors,
+	}
+);
 
 export const initialState = store.initialState;
 export const actions = store.actions;

@@ -63,10 +63,7 @@ class SetupUsingGCP extends Component {
 			needReauthenticate,
 		} = global._googlesitekitLegacyData.setup;
 
-		const { canSetup } = props;
-
 		this.state = {
-			canSetup,
 			isAuthenticated,
 			isVerified,
 			needReauthenticate,
@@ -214,7 +211,6 @@ class SetupUsingGCP extends Component {
 
 	render() {
 		const {
-			canSetup,
 			isAuthenticated,
 			isVerified,
 			needReauthenticate,
@@ -223,7 +219,7 @@ class SetupUsingGCP extends Component {
 			isSiteKitConnected,
 		} = this.state;
 
-		const { redirectURL } = this.props;
+		const { canSetup, redirectURL } = this.props;
 
 		if ( this.isSetupFinished() ) {
 			delay(

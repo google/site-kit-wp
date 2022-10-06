@@ -72,6 +72,21 @@ describe( 'core/modules sharing-settings', () => {
 		settings: sharingSettings,
 		roles: shareableRoles,
 	};
+	const defaultSharedOwnershipModuleSettings = {
+		'pagespeed-insights': {
+			sharedRoles: [],
+			management: 'all_admins',
+		},
+		'idea-hub': {
+			sharedRoles: [],
+			management: 'all_admins',
+		},
+	};
+	const sharedOwnershipModules = [
+		'analytics',
+		'search-console',
+		'tagmanager',
+	];
 
 	let registry;
 	let store;
@@ -308,6 +323,30 @@ describe( 'core/modules sharing-settings', () => {
 				expect( store.getState().sharingSettings ).toMatchObject(
 					store.getState().savedSharingSettings
 				);
+			} );
+		} );
+
+		describe( 'receiveDefaultSharedOwnershipModuleSettings', () => {
+			it( 'requires the defaultSharedOwnershipModuleSettings param', () => {
+				expect( () => {
+					registry
+						.dispatch( CORE_MODULES )
+						.receiveDefaultSharedOwnershipModuleSettings();
+				} ).toThrow(
+					'defaultSharedOwnershipModuleSettings is required'
+				);
+			} );
+
+			it( 'receives defaultSharedOwnershipModuleSettings and sets it to the state', () => {
+				registry
+					.dispatch( CORE_MODULES )
+					.receiveDefaultSharedOwnershipModuleSettings(
+						defaultSharedOwnershipModuleSettings
+					);
+
+				expect(
+					store.getState().defaultSharedOwnershipModuleSettings
+				).toMatchObject( defaultSharedOwnershipModuleSettings );
 			} );
 		} );
 	} );
@@ -986,6 +1025,105 @@ describe( 'core/modules sharing-settings', () => {
 						.select( CORE_MODULES )
 						.haveModuleSharingSettingsChanged( moduleSlug, [] )
 				).toBe( false );
+			} );
+		} );
+
+		describe( 'getDefaultSharedOwnershipModuleSettings', () => {
+			it( 'should return undefined if `defaultSharedOwnershipModuleSettings` cannot be loaded', () => {
+				global[ dashboardSharingDataBaseVar ] = undefined;
+
+				const defaultSharedOwnershipModuleSettingsObj = registry
+					.select( CORE_MODULES )
+					.getDefaultSharedOwnershipModuleSettings();
+
+				expect( console ).toHaveErrored();
+				expect(
+					defaultSharedOwnershipModuleSettingsObj
+				).toBeUndefined();
+			} );
+
+			it( 'should return an empty object if there is no `defaultSharedOwnershipModuleSettings`', () => {
+				global[ dashboardSharingDataBaseVar ] = {
+					defaultSharedOwnershipModuleSettings: {},
+				};
+
+				const defaultSharedOwnershipModuleSettingsObj = registry
+					.select( CORE_MODULES )
+					.getDefaultSharedOwnershipModuleSettings();
+
+				expect( defaultSharedOwnershipModuleSettingsObj ).toMatchObject(
+					{}
+				);
+			} );
+
+			it( 'should return the `defaultSharedOwnershipModuleSettings` object', () => {
+				global[ dashboardSharingDataBaseVar ] = {
+					defaultSharedOwnershipModuleSettings,
+				};
+
+				const defaultSharedOwnershipModuleSettingsObj = registry
+					.select( CORE_MODULES )
+					.getDefaultSharedOwnershipModuleSettings();
+
+				expect( defaultSharedOwnershipModuleSettingsObj ).toMatchObject(
+					defaultSharedOwnershipModuleSettings
+				);
+			} );
+		} );
+
+		describe( 'haveSharingSettingsUpdated', () => {
+			it( 'informs whether saved sharing settings differ from the initial default ones', () => {
+				// Initially false.
+				expect(
+					registry.select( CORE_MODULES ).haveSharingSettingsUpdated()
+				).toBe( false );
+
+				registry
+					.dispatch( CORE_MODULES )
+					.receiveGetSharingSettings( {} );
+
+				// False if savedSharingSettings is an empty object
+				expect(
+					registry.select( CORE_MODULES ).haveSharingSettingsUpdated()
+				).toBe( false );
+
+				registry
+					.dispatch( CORE_MODULES )
+					.receiveSharedOwnershipModules( {} );
+
+				// False if sharedOwnershipModules is an empty object
+				expect(
+					registry.select( CORE_MODULES ).haveSharingSettingsUpdated()
+				).toBe( false );
+
+				registry
+					.dispatch( CORE_MODULES )
+					.receiveSharedOwnershipModules( sharedOwnershipModules );
+
+				registry.dispatch( CORE_MODULES ).receiveGetSharingSettings( {
+					analytics: {
+						sharedRoles: [],
+						management: 'all_admins',
+					},
+					adsense: {
+						sharedRoles: [],
+						management: 'owner',
+					},
+				} );
+
+				// False after using the default sharing settings.
+				expect(
+					registry.select( CORE_MODULES ).haveSharingSettingsUpdated()
+				).toBe( false );
+
+				registry
+					.dispatch( CORE_MODULES )
+					.receiveGetSharingSettings( sharingSettings );
+
+				// True after updating the settings.
+				expect(
+					registry.select( CORE_MODULES ).haveSharingSettingsUpdated()
+				).toBe( true );
 			} );
 		} );
 	} );
