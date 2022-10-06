@@ -36,6 +36,7 @@ import ErrorText from './ErrorText';
 import Button from './Button';
 
 const { useDispatch } = Data;
+
 export default function ErrorNotice( {
 	error,
 	shouldDisplayError = () => true,
@@ -50,7 +51,7 @@ export default function ErrorNotice( {
 		);
 	}, [ dispatch, error ] );
 
-	// Do not display if no error, or if the error is for missing scopes.
+	// Do not display if there is no error, or if the error is for missing scopes.
 	if (
 		! error ||
 		isPermissionScopeError( error ) ||
