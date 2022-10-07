@@ -84,24 +84,19 @@ export default function ActivationBanner() {
 		[ accountID ]
 	);
 
-	const setupBannerErrors = useSelect( ( select ) => {
-		const errors = {};
-
-		Object.keys( setupBannerSelectors ).forEach( ( selector ) => {
+	const setupBannerErrors = useSelect( ( select ) =>
+		Object.keys( setupBannerSelectors ).reduce( ( acc, selector ) => {
 			const { store, args } = setupBannerSelectors[ selector ];
-
 			const error = select( store ).getErrorForSelector(
 				selector,
 				args || []
 			);
-
-			if ( error ) {
-				errors[ selector ] = error;
-			}
-		} );
-
-		return errors;
-	} );
+			return {
+				...acc,
+				...( error ? { [ selector ]: error } : {} ),
+			};
+		}, {} )
+	);
 
 	const hasSetupBannerError = ! isEmpty( setupBannerErrors );
 
@@ -132,14 +127,16 @@ export default function ActivationBanner() {
 						const { store, args } =
 							setupBannerSelectors[ selector ];
 
-						await dispatch( store ).clearError(
-							selector,
-							args || []
-						);
-						await dispatch( store ).invalidateResolution(
-							selector,
-							args || []
-						);
+						await Promise.all( [
+							dispatch( store ).clearError(
+								selector,
+								args || []
+							),
+							dispatch( store ).invalidateResolution(
+								selector,
+								args || []
+							),
+						] );
 					}
 				);
 			}
