@@ -35,7 +35,7 @@ import {
 // Initialize the app once the DOM is ready.
 domReady( () => {
 	const renderTarget = document.getElementById(
-		'js-googlesitekit-dashboard-details'
+		'js-googlesitekit-entity-dashboard'
 	);
 
 	if ( renderTarget ) {
