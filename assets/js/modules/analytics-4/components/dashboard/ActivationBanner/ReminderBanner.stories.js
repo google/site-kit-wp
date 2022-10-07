@@ -23,7 +23,7 @@ import ReminderBanner from './ReminderBanner';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
 
-const Template = () => <ReminderBanner onSubmitSuccess={ () => {} } />;
+const Template = ( args ) => <ReminderBanner { ...args } />;
 
 export const InitialNotice = Template.bind( {} );
 InitialNotice.storyName = 'Before 1 June 2023';
@@ -73,6 +73,34 @@ PostCutoff.decorators = [
 	},
 ];
 
+export const Error = Template.bind( {} );
+Error.storyName = 'Error';
+Error.args = {
+	errors: {
+		getProperties: {
+			code: 'fetch_error',
+			message: 'You are probably offline.',
+		},
+	},
+};
+
 export default {
 	title: 'Modules/Analytics4/ReminderBanner',
+	component: ReminderBanner,
+	args: {
+		onSubmitSuccess: () => {},
+	},
+	decorators: [
+		( Story ) => {
+			const setupRegistry = ( registry ) => {
+				registry.dispatch( CORE_USER ).setReferenceDate( '2023-05-31' );
+			};
+
+			return (
+				<WithRegistrySetup func={ setupRegistry }>
+					<Story />
+				</WithRegistrySetup>
+			);
+		},
+	],
 };
