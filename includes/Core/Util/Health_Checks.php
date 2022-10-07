@@ -140,7 +140,7 @@ class Health_Checks {
 	/**
 	 * Checks connection to Site Kit service.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.85.0
 	 *
 	 * @return array Results data.
 	 */

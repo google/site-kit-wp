@@ -41,7 +41,7 @@ import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constan
 const { useSelect, useDispatch, useRegistry } = Data;
 
 export default function ActivationBanner() {
-	const [ step, setStep ] = useState( ACTIVATION_STEP_REMINDER );
+	const [ step, setStep ] = useState( null );
 
 	const registry = useRegistry();
 
@@ -84,9 +84,11 @@ export default function ActivationBanner() {
 		return { dismissOnCTAClick: false };
 	}, [ returnToSetupStep, step ] );
 
-	if ( ! uaConnected || ga4Connected ) {
-		return null;
-	}
+	useEffect( () => {
+		if ( step === null && uaConnected && ! ga4Connected ) {
+			setStep( ACTIVATION_STEP_REMINDER );
+		}
+	}, [ ga4Connected, step, uaConnected ] );
 
 	switch ( step ) {
 		case ACTIVATION_STEP_REMINDER:
