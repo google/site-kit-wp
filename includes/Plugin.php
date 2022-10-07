@@ -64,7 +64,7 @@ final class Plugin {
 	 * @since 1.0.0
 	 */
 	public function register() {
-		if ( $this->context->is_network_active() ) {
+		if ( $this->context->is_network_mode() ) {
 			add_action(
 				'network_admin_notices',
 				function() {
@@ -73,15 +73,12 @@ final class Plugin {
 						<p>
 							<?php
 							echo wp_kses(
-								__( 'The Site Kit by Google plugin is <strong>not yet compatible</strong> for use in a WordPress multisite network, but we&#8217;re actively working on that.', 'google-site-kit' ),
+								__( 'The Site Kit by Google plugin does <strong>not yet offer</strong> a network mode, but we&#8217;re actively working on that.', 'google-site-kit' ),
 								array(
 									'strong' => array(),
 								)
 							);
 							?>
-						</p>
-						<p>
-							<?php esc_html_e( 'Meanwhile, we recommend deactivating it in the network and re-activating it for an individual site.', 'google-site-kit' ); ?>
 						</p>
 					</div>
 					<?php

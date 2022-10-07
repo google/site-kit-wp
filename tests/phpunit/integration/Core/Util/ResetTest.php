@@ -72,6 +72,10 @@ class ResetTest extends TestCase {
 	 */
 	public function test_network_mode_all() {
 		$this->network_activate_site_kit();
+
+		// Force enable network mode.
+		add_filter( 'googlesitekit_is_network_mode', '__return_true' );
+
 		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$this->assertTrue( $context->is_network_mode() );
 

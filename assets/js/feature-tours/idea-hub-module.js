@@ -44,21 +44,18 @@ const ideaHubModule = {
 	],
 	version: '1.43.0',
 	checkRequirements: async ( registry ) => {
-		await registry.__experimentalResolveSelect( CORE_MODULES ).getModules();
-		const isIdeaHubModuleActive = registry
-			.select( CORE_MODULES )
-			.isModuleActive( 'idea-hub' );
-		const isIdeaHubModuleConnected = registry
-			.select( CORE_MODULES )
-			.isModuleConnected( 'idea-hub' );
+		const { __experimentalResolveSelect } = registry;
+		const isIdeaHubModuleConnected = await __experimentalResolveSelect(
+			CORE_MODULES
+		).isModuleConnected( 'idea-hub' );
 
-		if ( ! isIdeaHubModuleActive || ! isIdeaHubModuleConnected ) {
+		if ( ! isIdeaHubModuleConnected ) {
 			return false;
 		}
 
-		const newIdeas = await registry
-			.__experimentalResolveSelect( MODULES_IDEA_HUB )
-			.getNewIdeas();
+		const newIdeas = await __experimentalResolveSelect(
+			MODULES_IDEA_HUB
+		).getNewIdeas();
 
 		return !! newIdeas.length;
 	},
