@@ -121,7 +121,7 @@ export default function SettingsView() {
 			<div className="googlesitekit-settings-module__meta-items">
 				<div className="googlesitekit-settings-module__meta-item">
 					<h5 className="googlesitekit-settings-module__meta-item-type">
-						{ __( 'Publication ID', 'google-site-kit' ) }
+						{ __( 'Thank with Google ID', 'google-site-kit' ) }
 					</h5>
 					<p className="googlesitekit-settings-module__meta-item-data">
 						<DisplaySetting value={ publicationID } />
@@ -133,7 +133,7 @@ export default function SettingsView() {
 							<Link href={ editViewSettingsURL } external>
 								{ createInterpolateElement(
 									__(
-										'Edit <VisuallyHidden>publication </VisuallyHidden>in Publisher Center',
+										'Edit <VisuallyHidden>publication </VisuallyHidden>in Thank with Google profile',
 										'google-site-kit'
 									),
 									{

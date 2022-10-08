@@ -56,7 +56,7 @@ export default function SetupPublicationPendingVerification() {
 				href={ currentPublicationURL }
 				target="_blank"
 				aria-label={ __(
-					'Check your status on Thank with Google Publisher Center',
+					'Check your status on Thank with Google profile',
 					'google-site-kit'
 				) }
 				inverse
