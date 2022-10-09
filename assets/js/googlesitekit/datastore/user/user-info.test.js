@@ -344,7 +344,7 @@ describe( 'core/user userInfo', () => {
 				expect( console ).toHaveErrored();
 			} );
 			it( 'will return the correct value when data is available', async () => {
-				// Set up the global
+				// Set up the global.
 				global[ userDataGlobal ] = userData;
 
 				registry.select( CORE_USER )[ selector ]();

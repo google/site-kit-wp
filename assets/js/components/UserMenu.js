@@ -190,9 +190,11 @@ export default function UserMenu() {
 					tooltip
 					customizedTooltip={
 						<Fragment>
-							<strong>Google Account</strong>
-							<p>{ userFullName }</p>
-							<p>{ userEmail }</p>
+							<strong>{ __( 'Google Account' ) }</strong>
+							<br />
+							{ userFullName }
+							<br />
+							{ userEmail }
 						</Fragment>
 					}
 				/>

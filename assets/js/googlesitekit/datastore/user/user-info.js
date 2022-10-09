@@ -410,7 +410,12 @@ export const selectors = {
 	 */
 	getFullName: createRegistrySelector( ( select ) => () => {
 		const user = select( CORE_USER ).getUser();
-		return user !== undefined ? user.full_name : user;
+		
+		if ( user === undefined ) {
+			return undefined;
+		}
+		
+		return user.full_name;
 	} ),
 
 	/**
