@@ -93,12 +93,14 @@ class Thank_With_GoogleTest extends TestCase {
 		remove_all_actions( 'googlesitekit_auth_scopes' );
 		remove_all_actions( 'googlesitekit_pre_save_settings_' . Thank_With_Google::MODULE_SLUG );
 		remove_all_actions( 'googlesitekit_save_settings_' . Thank_With_Google::MODULE_SLUG );
+		remove_all_filters( 'googlesitekit_apifetch_preload_paths' );
 
 		$this->thank_with_google->register();
 
 		$this->assertTrue( has_filter( 'googlesitekit_auth_scopes' ) );
 		$this->assertTrue( has_action( 'googlesitekit_pre_save_settings_' . Thank_With_Google::MODULE_SLUG ) );
 		$this->assertTrue( has_action( 'googlesitekit_save_settings_' . Thank_With_Google::MODULE_SLUG ) );
+		$this->assertTrue( has_filter( 'googlesitekit_apifetch_preload_paths' ) );
 	}
 
 	public function test_data_settings_endpoint__transient_timer_success() {

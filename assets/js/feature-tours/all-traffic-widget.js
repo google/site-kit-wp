@@ -38,13 +38,14 @@ const allTrafficWidget = {
 	version: '1.25.0',
 	gaEventCategory: ( viewContext ) => `${ viewContext }_all-traffic-widget`,
 	checkRequirements: async ( registry ) => {
-		// Here we need to wait for the underlying selector to be resolved before selecting `isModuleConnected`.
-		await registry.__experimentalResolveSelect( CORE_MODULES ).getModules();
-		if (
-			! registry.select( CORE_MODULES ).isModuleConnected( 'analytics' )
-		) {
+		const connected = await registry
+			.__experimentalResolveSelect( CORE_MODULES )
+			.isModuleConnected( 'analytics' );
+
+		if ( ! connected ) {
 			return false;
 		}
+
 		// Wait for All Traffic widget to finish loading.
 		await new Promise( ( resolve ) => {
 			const resolveWhenLoaded = () => {

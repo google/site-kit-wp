@@ -48,12 +48,49 @@ class ModulesTest extends TestCase {
 			$modules->get_available_modules()
 		);
 
-		$this->assertEqualSets(
+		$this->assertEqualSetsWithIndex(
 			array(
 				'adsense'            => 'Google\\Site_Kit\\Modules\\AdSense',
 				'analytics'          => 'Google\\Site_Kit\\Modules\\Analytics',
 				'analytics-4'        => 'Google\\Site_Kit\\Modules\\Analytics_4',
 				'optimize'           => 'Google\\Site_Kit\\Modules\\Optimize',
+				'pagespeed-insights' => 'Google\\Site_Kit\\Modules\\PageSpeed_Insights',
+				'search-console'     => 'Google\\Site_Kit\\Modules\\Search_Console',
+				'site-verification'  => 'Google\\Site_Kit\\Modules\\Site_Verification',
+				'tagmanager'         => 'Google\\Site_Kit\\Modules\\Tag_Manager',
+			),
+			$available
+		);
+	}
+
+	public function test_get_available_modules__missing_dependency() {
+		$modules = new Modules( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+
+		add_filter(
+			'googlesitekit_available_modules',
+			function( $modules ) {
+				return array_filter(
+					$modules,
+					function( $module ) {
+						// Remove Analytics from the list of available modules.
+						return 'analytics' !== $module;
+					}
+				);
+			}
+		);
+
+		$available = array_map(
+			function ( $instance ) {
+				return get_class( $instance );
+			},
+			$modules->get_available_modules()
+		);
+
+		// Analytics is no longer present due to the filter above.
+		// Analytics-4 and Optimize are no longer present due to their dependency on Analytics.
+		$this->assertEqualSetsWithIndex(
+			array(
+				'adsense'            => 'Google\\Site_Kit\\Modules\\AdSense',
 				'pagespeed-insights' => 'Google\\Site_Kit\\Modules\\PageSpeed_Insights',
 				'search-console'     => 'Google\\Site_Kit\\Modules\\Search_Console',
 				'site-verification'  => 'Google\\Site_Kit\\Modules\\Site_Verification',
@@ -75,7 +112,7 @@ class ModulesTest extends TestCase {
 			'pagespeed-insights' => 'Google\\Site_Kit\\Modules\\PageSpeed_Insights',
 		);
 
-		$this->assertEqualSets(
+		$this->assertEqualSetsWithIndex(
 			$always_on_modules + $default_active_modules,
 			array_map( 'get_class', $modules->get_active_modules() )
 		);
@@ -85,7 +122,7 @@ class ModulesTest extends TestCase {
 		// Active modules will fallback to legacy option if set.
 		update_option( 'googlesitekit-active-modules', array( 'analytics' ) );
 
-		$this->assertEqualSets(
+		$this->assertEqualSetsWithIndex(
 			$always_on_modules + array(
 				'analytics'   => 'Google\\Site_Kit\\Modules\\Analytics',
 				'analytics-4' => 'Google\\Site_Kit\\Modules\\Analytics_4',
@@ -168,6 +205,10 @@ class ModulesTest extends TestCase {
 			'/' . REST_Routes::REST_ROOT . '/core/modules/data/list',
 			apply_filters( 'googlesitekit_apifetch_preload_paths', array() )
 		);
+
+		$this->assertTrue( has_filter( 'googlesitekit_module_exists' ) );
+		$this->assertTrue( apply_filters( 'googlesitekit_module_exists', null, 'fake-module' ) );
+		$this->assertFalse( apply_filters( 'googlesitekit_module_exists', null, 'non-existent-module' ) );
 	}
 
 	public function test_get_module() {
@@ -593,7 +634,7 @@ class ModulesTest extends TestCase {
 
 		$shareable_active_modules = array_map( 'get_class', $modules->get_shareable_modules() );
 
-		$this->assertEqualSets(
+		$this->assertEqualSetsWithIndex(
 			array(
 				'search-console'     => 'Google\\Site_Kit\\Modules\\Search_Console',
 				'pagespeed-insights' => 'Google\\Site_Kit\\Modules\\PageSpeed_Insights',
@@ -610,7 +651,7 @@ class ModulesTest extends TestCase {
 
 		// Check shared ownership for modules activated by default.
 		$modules = new Modules( $context );
-		$this->assertEqualSets(
+		$this->assertEqualSetsWithIndex(
 			array(
 				'pagespeed-insights' => 'Google\\Site_Kit\\Modules\\PageSpeed_Insights',
 			),
@@ -639,7 +680,7 @@ class ModulesTest extends TestCase {
 
 		// Verify shared ownership for active and connected modules.
 		$modules = new Modules( $context );
-		$this->assertEqualSets(
+		$this->assertEqualSetsWithIndex(
 			array(
 				'idea-hub'           => 'Google\\Site_Kit\\Modules\\Idea_Hub',
 				'pagespeed-insights' => 'Google\\Site_Kit\\Modules\\PageSpeed_Insights',
@@ -1321,7 +1362,7 @@ class ModulesTest extends TestCase {
 			'analytics'          => 2,
 			'pagespeed-insights' => 0,
 		);
-		$this->assertEqualSets( $expected_module_owners, $modules->get_shareable_modules_owners() );
+		$this->assertEqualSetsWithIndex( $expected_module_owners, $modules->get_shareable_modules_owners() );
 	}
 
 	public function test_shared_ownership_module_default_settings() {
@@ -1341,10 +1382,10 @@ class ModulesTest extends TestCase {
 		);
 
 		$settings = apply_filters( 'option_' . Module_Sharing_Settings::OPTION, array() );
-		$this->assertEqualSets( $expected, $settings );
+		$this->assertEqualSetsWithIndex( $expected, $settings );
 
 		$settings = apply_filters( 'default_option_' . Module_Sharing_Settings::OPTION, array(), '', '' );
-		$this->assertEqualSets( $expected, $settings );
+		$this->assertEqualSetsWithIndex( $expected, $settings );
 	}
 
 	public function test_delete_dashboard_sharing_settings() {

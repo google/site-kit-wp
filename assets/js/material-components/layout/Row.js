@@ -39,6 +39,8 @@ const Row = forwardRef( ( { className, children, ...otherProps }, ref ) => {
 	);
 } );
 
+Row.displayName = 'Row';
+
 Row.propTypes = {
 	className: PropTypes.string,
 	children: PropTypes.node,

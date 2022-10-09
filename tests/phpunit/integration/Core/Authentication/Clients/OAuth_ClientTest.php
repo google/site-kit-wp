@@ -55,19 +55,36 @@ class OAuth_ClientTest extends TestCase {
 			)
 		);
 
+		delete_user_option( $user_id, OAuth_Client::OPTION_ERROR_CODE );
+		$fake_http_client = new FakeHttpClient();
+		// Set the request handler to return a response with a new access token.
+		$fake_http_client->set_request_handler(
+			function ( Request $request ) {
+				if ( 0 !== strpos( $request->getUrl(), 'https://oauth2.googleapis.com/token' ) ) {
+					return new Response( 200 );
+				}
+
+				return new Response(
+					200,
+					array(),
+					Stream::factory(
+						json_encode(
+							array(
+								'access_token' => 'new-test-access-token',
+								'expires_in'   => 3599,
+								'token_type'   => 'Bearer',
+							)
+						)
+					)
+				);
+			}
+		);
+		$client->get_client()->setHttpClient( $fake_http_client );
 		$client->refresh_token();
 
-		// If the request completely fails (cURL error), ignore that.
-		$http_error = (string) get_user_option( OAuth_Client::OPTION_ERROR_CODE, $user_id );
-		if ( 0 !== strpos( $http_error, 'cURL error' ) ) {
-			$this->assertEquals( 'invalid_client', get_user_option( OAuth_Client::OPTION_ERROR_CODE, $user_id ) );
-		}
-
-		$client->get_client()->setHttpClient( new FakeHttpClient() );
-		$client->refresh_token();
-
-		// There is no actual response, so attempting to decode JSON fails.
-		$this->assertEquals( 'Invalid JSON response', get_user_option( OAuth_Client::OPTION_ERROR_CODE, $user_id ) );
+		$this->assertEmpty( get_user_option( OAuth_Client::OPTION_ERROR_CODE, $user_id ) );
+		// Make sure the access token was updated for the user.
+		$this->assertEquals( 'new-test-access-token', $client->get_access_token() );
 	}
 
 	public function test_revoke_token() {

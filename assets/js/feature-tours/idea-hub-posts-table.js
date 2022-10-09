@@ -38,9 +38,9 @@ const ideaHubPostsTable = {
 			return false;
 		}
 
-		await registry.__experimentalResolveSelect( CORE_MODULES ).getModules();
-
-		return registry.select( CORE_MODULES ).isModuleConnected( 'idea-hub' );
+		return registry
+			.__experimentalResolveSelect( CORE_MODULES )
+			.isModuleConnected( 'idea-hub' );
 	},
 	steps: [
 		{
