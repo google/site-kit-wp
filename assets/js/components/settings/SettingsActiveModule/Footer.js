@@ -41,6 +41,7 @@ import Spinner from '../../Spinner';
 import Link from '../../Link';
 import { clearWebStorage, trackEvent } from '../../../util';
 import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
+import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import useViewContext from '../../../hooks/useViewContext';
 const { useDispatch, useSelect } = Data;
 
@@ -71,6 +72,9 @@ export default function Footer( props ) {
 	);
 	const isSaving = useSelect( ( select ) =>
 		select( CORE_UI ).getValue( isSavingKey )
+	);
+	const accountChooserBaseURI = useSelect( ( select ) =>
+		select( CORE_USER ).getAccountChooserURL( module.homepage )
 	);
 
 	const { submitChanges } = useDispatch( CORE_MODULES );
@@ -140,7 +144,7 @@ export default function Footer( props ) {
 		return null;
 	}
 
-	const { name, homepage, forceActive } = module;
+	const { name, forceActive } = module;
 	let primaryColumn = null;
 	let secondaryColumn = null;
 
@@ -213,10 +217,10 @@ export default function Footer( props ) {
 				/>
 			</Link>
 		);
-	} else if ( ! isEditing && homepage ) {
+	} else if ( ! isEditing && accountChooserBaseURI ) {
 		secondaryColumn = (
 			<Link
-				href={ homepage }
+				href={ accountChooserBaseURI }
 				className="googlesitekit-settings-module__cta-button"
 				external
 			>
