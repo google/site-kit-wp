@@ -89,10 +89,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Read .nvmrc
-        run: echo "##[set-output name=NVMRC;]$(cat .nvmrc)"
-        id: nvm
-
       - name: Setup Node.js (.nvmrc)
         uses: actions/setup-node@v3
         with:
