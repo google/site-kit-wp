@@ -190,7 +190,10 @@ export default function UserMenu() {
 					tooltip
 					customizedTooltip={
 						<Fragment>
-							<strong>{ __( 'Google Account' ) }</strong>
+							<strong>
+								{ __( 'Google Account', 'google-site-kit' ) }
+							</strong>
+							<br />
 							<br />
 							{ userFullName }
 							<br />
