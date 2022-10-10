@@ -59,6 +59,7 @@ const RECEIVE_CHECK_REQUIREMENTS_ERROR = 'RECEIVE_CHECK_REQUIREMENTS_ERROR';
 const RECEIVE_CHECK_REQUIREMENTS_SUCCESS = 'RECEIVE_CHECK_REQUIREMENTS_SUCCESS';
 const RECEIVE_RECOVERABLE_MODULES = 'RECEIVE_RECOVERABLE_MODULES';
 const RECEIVE_SHARED_OWNERSHIP_MODULES = 'RECEIVE_SHARED_OWNERSHIP_MODULES';
+const CLEAR_RECOVERED_MODULES = 'CLEAR_RECOVERED_MODULES';
 
 const moduleDefaults = {
 	slug: '',
@@ -196,8 +197,11 @@ const fetchRecoverModuleStore = createFetchStore( {
 	controlCallback: ( { slug } ) => {
 		return API.set( 'core', 'modules', 'recover-module', { slug } );
 	},
-	argsToParams: ( slug ) => {
-		return { slug };
+	reducerCallback: ( state, recoveredModules ) => {
+		return {
+			...state,
+			recoveredModules,
+		};
 	},
 	validateParams: ( { slug } ) => {
 		invariant( slug, 'slug is required.' );
@@ -215,6 +219,7 @@ const baseInitialState = {
 	moduleAccess: {},
 	recoverableModules: undefined,
 	sharedOwnershipModules: undefined,
+	recoveredModules: undefined,
 };
 
 const baseActions = {
@@ -550,6 +555,20 @@ const baseActions = {
 			type: RECEIVE_SHARED_OWNERSHIP_MODULES,
 		};
 	},
+
+	/**
+	 * Clears the recoveredModules in the state.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {Object} Action for RECEIVE_SHARED_OWNERSHIP_MODULES.
+	 */
+	clearRecoveredModules() {
+		return {
+			payload: {},
+			type: CLEAR_RECOVERED_MODULES,
+		};
+	},
 };
 
 export const baseControls = {
@@ -640,6 +659,13 @@ const baseReducer = ( state, { type, payload } ) => {
 			return {
 				...state,
 				sharedOwnershipModules,
+			};
+		}
+
+		case CLEAR_RECOVERED_MODULES: {
+			return {
+				...state,
+				recoveredModules: undefined,
 			};
 		}
 
@@ -1290,6 +1316,10 @@ const baseSelectors = {
 			);
 		}
 	),
+
+	getRecoveredModules( state ) {
+		return state.recoveredModules;
+	},
 };
 
 const store = Data.combineStores(
