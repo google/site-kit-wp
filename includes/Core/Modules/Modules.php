@@ -1250,6 +1250,14 @@ final class Modules {
 							$data = $request['data'];
 							$slugs = isset( $data['slugs'] ) ? $data['slugs'] : array();
 
+							if ( ! is_array( $slugs ) || empty( $slugs ) ) {
+								return new WP_Error(
+									'invalid_param',
+									__( 'Request parameter slugs is not valid.', 'google-site-kit' ),
+									array( 'status' => 400 )
+								);
+							}
+
 							$response = array(
 								'success' => array(),
 								'error'   => array(),
