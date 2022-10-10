@@ -471,6 +471,7 @@ final class Assets {
 				array(
 					'src'          => $base_url . 'js/googlesitekit-base.js',
 					'dependencies' => array(
+						'googlesitekit-element',
 						'googlesitekit-base-data',
 						'googlesitekit-i18n',
 					),
@@ -568,6 +569,7 @@ final class Assets {
 				array(
 					'src'          => $base_url . 'js/googlesitekit-widgets.js',
 					'dependencies' => array(
+						'googlesitekit-element',
 						'googlesitekit-data',
 						'googlesitekit-i18n',
 					),
