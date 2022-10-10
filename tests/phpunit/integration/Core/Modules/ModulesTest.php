@@ -899,8 +899,7 @@ class ModulesTest extends TestCase {
 	public function test_recover_module_rest_endpoint__invalid_module_slug() {
 		$this->setup_modules_to_test_rest_endpoint();
 
-		$request  = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/modules/data/recover-modules' );
-		$response = rest_get_server()->dispatch( $request );
+		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/modules/data/recover-modules' );
 		$request->set_body_params(
 			array(
 				'data' => array(
@@ -908,6 +907,7 @@ class ModulesTest extends TestCase {
 				),
 			)
 		);
+		$response = rest_get_server()->dispatch( $request );
 
 		$this->assertEquals( 'invalid_module_slug', $response->get_data()['error']['non-existent-module']['code'] );
 		$this->assertEquals( 200, $response->get_status() );
