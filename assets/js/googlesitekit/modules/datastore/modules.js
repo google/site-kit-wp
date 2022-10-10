@@ -192,10 +192,10 @@ const fetchCheckModuleAccessStore = createFetchStore( {
 	},
 } );
 
-const fetchRecoverModuleStore = createFetchStore( {
-	baseName: 'recoverModule',
-	controlCallback: ( { slug } ) => {
-		return API.set( 'core', 'modules', 'recover-module', { slug } );
+const fetchRecoverModulesStore = createFetchStore( {
+	baseName: 'recoverModules',
+	controlCallback: ( { slugs } ) => {
+		return API.set( 'core', 'modules', 'recover-modules', { slugs } );
 	},
 	reducerCallback: ( state, recoveredModules ) => {
 		return {
@@ -203,8 +203,11 @@ const fetchRecoverModuleStore = createFetchStore( {
 			recoveredModules,
 		};
 	},
-	validateParams: ( { slug } ) => {
-		invariant( slug, 'slug is required.' );
+	argsToParams: ( slugs ) => {
+		return { slugs };
+	},
+	validateParams: ( { slugs } ) => {
+		invariant( slugs, 'slugs is required.' );
 	},
 } );
 
@@ -469,30 +472,25 @@ const baseActions = {
 		},
 		function* ( slugs ) {
 			const { dispatch, select } = yield Data.commonActions.getRegistry();
+			const { response } =
+				yield fetchRecoverModulesStore.actions.fetchRecoverModules(
+					slugs
+				);
+			const { success } = response;
 
-			const recoveredModules = [];
+			const successfulRecoveries = Object.keys( success ).filter(
+				( slug ) => !! success[ slug ]
+			);
 
-			const errors = [];
+			for ( const slug of successfulRecoveries ) {
+				const storeName =
+					select( CORE_MODULES ).getModuleStoreName( slug );
 
-			for ( const slug of slugs ) {
-				const { response, error } =
-					yield fetchRecoverModuleStore.actions.fetchRecoverModule(
-						slug
-					);
-
-				if ( response?.ownerID ) {
-					const storeName =
-						select( CORE_MODULES ).getModuleStoreName( slug );
-					// Reload the module's settings from the server.
-					yield dispatch( storeName ).fetchGetSettings();
-
-					recoveredModules.push( slug );
-				} else {
-					errors.push( [ slug, error ] );
-				}
+				// Reload the module's settings from the server.
+				yield dispatch( storeName ).fetchGetSettings();
 			}
 
-			if ( recoveredModules.length ) {
+			if ( successfulRecoveries.length ) {
 				// Reload all modules from the server.
 				yield fetchGetModulesStore.actions.fetchGetModules();
 
@@ -507,27 +505,7 @@ const baseActions = {
 				yield dispatch( CORE_USER ).refreshCapabilities();
 			}
 
-			const response = {
-				success: {
-					...Object.fromEntries(
-						recoveredModules.map( ( slug ) => [ slug, true ] )
-					),
-					...Object.fromEntries(
-						errors.map( ( [ slug ] ) => [ slug, false ] )
-					),
-				},
-			};
-
-			if ( errors.length ) {
-				return {
-					response,
-					error: Object.fromEntries( errors ),
-				};
-			}
-
-			return {
-				response,
-			};
+			return { response };
 		}
 	),
 
@@ -1326,7 +1304,7 @@ const store = Data.combineStores(
 	fetchGetModulesStore,
 	fetchSetModuleActivationStore,
 	fetchCheckModuleAccessStore,
-	fetchRecoverModuleStore,
+	fetchRecoverModulesStore,
 	{
 		initialState: baseInitialState,
 		actions: baseActions,
