@@ -649,6 +649,15 @@ const baseReducer = ( state, { type, payload } ) => {
 	}
 };
 
+function* waitForModules() {
+	const { __experimentalResolveSelect } =
+		yield Data.commonActions.getRegistry();
+
+	yield Data.commonActions.await(
+		__experimentalResolveSelect( CORE_MODULES ).getModules()
+	);
+}
+
 const baseResolvers = {
 	*getModules() {
 		const registry = yield Data.commonActions.getRegistry();
@@ -662,10 +671,11 @@ const baseResolvers = {
 
 	*canActivateModule( slug ) {
 		const registry = yield Data.commonActions.getRegistry();
-		yield Data.commonActions.await(
-			registry.__experimentalResolveSelect( CORE_MODULES ).getModules()
+		const { select, __experimentalResolveSelect } = registry;
+		const module = yield Data.commonActions.await(
+			__experimentalResolveSelect( CORE_MODULES ).getModule( slug )
 		);
-		const module = registry.select( CORE_MODULES ).getModule( slug );
+		// At this point, all modules are loaded so we can safely select getModule below.
 
 		if ( ! module ) {
 			return;
@@ -674,9 +684,8 @@ const baseResolvers = {
 		const inactiveModules = [];
 
 		module.dependencies.forEach( ( dependencySlug ) => {
-			const dependedentModule = registry
-				.select( CORE_MODULES )
-				.getModule( dependencySlug );
+			const dependedentModule =
+				select( CORE_MODULES ).getModule( dependencySlug );
 			if ( ! dependedentModule?.active ) {
 				inactiveModules.push( dependedentModule.name );
 			}
@@ -729,14 +738,11 @@ const baseResolvers = {
 
 	*getRecoverableModules() {
 		const registry = yield Data.commonActions.getRegistry();
-
-		yield Data.commonActions.await(
+		const modules = yield Data.commonActions.await(
 			registry.__experimentalResolveSelect( CORE_MODULES ).getModules()
 		);
 
-		const modules = registry.select( CORE_MODULES ).getModules() || {};
-
-		const recoverableModules = Object.entries( modules ).reduce(
+		const recoverableModules = Object.entries( modules || {} ).reduce(
 			( moduleList, [ moduleSlug, module ] ) => {
 				if ( module.recoverable ) {
 					moduleList.push( moduleSlug );
@@ -770,29 +776,11 @@ const baseResolvers = {
 		);
 	},
 
-	*getModule() {
-		const registry = yield Data.commonActions.getRegistry();
+	getModule: waitForModules,
 
-		yield Data.commonActions.await(
-			registry.__experimentalResolveSelect( CORE_MODULES ).getModules()
-		);
-	},
+	isModuleActive: waitForModules,
 
-	*isModuleActive() {
-		const registry = yield Data.commonActions.getRegistry();
-
-		yield Data.commonActions.await(
-			registry.__experimentalResolveSelect( CORE_MODULES ).getModules()
-		);
-	},
-
-	*isModuleConnected() {
-		const registry = yield Data.commonActions.getRegistry();
-
-		yield Data.commonActions.await(
-			registry.__experimentalResolveSelect( CORE_MODULES ).getModules()
-		);
-	},
+	isModuleConnected: waitForModules,
 };
 
 const baseSelectors = {
