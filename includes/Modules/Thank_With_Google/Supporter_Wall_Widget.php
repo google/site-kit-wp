@@ -50,7 +50,7 @@ class Supporter_Wall_Widget extends WP_Widget {
 			)
 		);
 
-		$title    = ! empty( $instance['title'] ) ? $instance['title'] : '';
+		$title    = $instance['title'];
 		$title_id = $this->get_field_id( 'title' );
 
 		?>
