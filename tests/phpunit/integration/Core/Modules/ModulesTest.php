@@ -877,6 +877,70 @@ class ModulesTest extends TestCase {
 		$this->assertEquals( 200, $response->get_status() );
 	}
 
+	public function test_data_rest_endpoint__requires_active_module() {
+		$modules     = $this->setup_modules_to_test_rest_endpoint();
+		$fake_module = new FakeModule( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$this->force_set_property( $modules, 'modules', array( 'fake-module' => $fake_module ) );
+
+		delete_option( Modules::OPTION_ACTIVE_MODULES );
+		$this->assertFalse( $modules->is_module_active( 'fake-module' ) );
+
+		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/modules/fake-module/data/test-request' );
+		$response = rest_get_server()->dispatch( $request );
+
+		$this->assertEquals( 403, $response->get_status() );
+		$this->assertEquals( 'module_not_active', $response->get_data()['code'] );
+		$this->assertEquals( 'Module must be active to request data.', $response->get_data()['message'] );
+
+		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/modules/fake-module/data/test-request' );
+		$request->set_body_params(
+			array(
+				'data' => array(
+					'foo' => 'bar',
+				),
+			)
+		);
+		$response = rest_get_server()->dispatch( $request );
+
+		$this->assertEquals( 403, $response->get_status() );
+		$this->assertEquals( 'module_not_active', $response->get_data()['code'] );
+		$this->assertEquals( 'Module must be active to request data.', $response->get_data()['message'] );
+	}
+
+	public function test_data_rest_endpoint__success() {
+		$modules     = $this->setup_modules_to_test_rest_endpoint();
+		$fake_module = new FakeModule( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$this->force_set_property( $modules, 'modules', array( 'fake-module' => $fake_module ) );
+
+		update_option( Modules::OPTION_ACTIVE_MODULES, array( 'fake-module' ) );
+		$this->assertTrue( $modules->is_module_active( 'fake-module' ) );
+
+		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/modules/fake-module/data/test-request' );
+		$response = rest_get_server()->dispatch( $request );
+
+		$this->assertEquals( 200, $response->get_status() );
+		$data = $response->get_data();
+		$this->assertIsObject( $data );
+		$this->assertEquals( 'GET', $data->method );
+		$this->assertEquals( 'test-request', $data->datapoint );
+
+		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/modules/fake-module/data/test-request' );
+		$request->set_body_params(
+			array(
+				'data' => array(
+					'foo' => 'bar',
+				),
+			)
+		);
+		$response = rest_get_server()->dispatch( $request );
+
+		$this->assertEquals( 200, $response->get_status() );
+		$data = $response->get_data();
+		$this->assertIsObject( $data );
+		$this->assertEquals( 'POST', $data->method );
+		$this->assertEquals( 'test-request', $data->datapoint );
+	}
+
 	public function test_recover_module_rest_endpoint__no_get_method() {
 		$this->setup_modules_to_test_rest_endpoint();
 
