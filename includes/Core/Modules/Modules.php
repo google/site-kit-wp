@@ -1341,6 +1341,12 @@ final class Modules {
 								}
 							}
 
+							// Cast error array to an object so JSON encoded response is
+							// always an object, even when the error array is empty.
+							if ( ! $response['error'] ) {
+								$response['error'] = (object) array();
+							}
+
 							return new WP_REST_Response( $response );
 						},
 						'permission_callback' => $can_setup,
