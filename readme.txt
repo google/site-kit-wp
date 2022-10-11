@@ -112,6 +112,7 @@ Please create a new topic on our [WordPress.org support forum](https://wordpress
 
 **Enhanced**
 
+* Prevent loading plugin core if minimum WordPress version is not met. See [#5926](https://github.com/google/site-kit-wp/issues/5926).
 * Show banner notification to sites using a WordPress version older than 5.2 to inform about upcoming version requirement change. See [#5873](https://github.com/google/site-kit-wp/issues/5873).
 * Hide the "Reset sharing permissions" button when settings are already using the default settings. See [#5840](https://github.com/google/site-kit-wp/issues/5840).
 * Improve reliability of the check for SSL when determining Thank with Google module availability. See [#5806](https://github.com/google/site-kit-wp/issues/5806).
