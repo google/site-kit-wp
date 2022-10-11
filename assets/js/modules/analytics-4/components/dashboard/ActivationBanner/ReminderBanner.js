@@ -35,14 +35,13 @@ import { useShowTooltip } from '../../../../../components/AdminMenuTooltip/useSh
 import { AdminMenuTooltip } from '../../../../../components/AdminMenuTooltip/AdminMenuTooltip';
 import { getBannerDismissalExpiryTime } from '../../../utils/banner-dismissal-expiry';
 import Link from '../../../../../components/Link';
-import ErrorNotice from '../../../../../components/ErrorNotice';
 import { stringToDate } from '../../../../../util';
 import InfoIcon from '../../../../../../svg/icons/info.svg';
 import ErrorIcon from '../../../../../../svg/icons/error.svg';
 
 const { useSelect } = Data;
 
-export default function ReminderBanner( { onSubmitSuccess, errors } ) {
+export default function ReminderBanner( { onSubmitSuccess, children } ) {
 	const referenceDateString = useSelect( ( select ) =>
 		select( CORE_USER ).getReferenceDate()
 	);
@@ -159,27 +158,6 @@ export default function ReminderBanner( { onSubmitSuccess, errors } ) {
 		</section>
 	);
 
-	// Show unique errors.
-	const errorNotice =
-		errors &&
-		Object.values( errors )
-			.reduce( ( acc, error ) => {
-				if (
-					! acc.some(
-						( err ) =>
-							err.code === error.code &&
-							err.message === error.message
-					)
-				) {
-					acc.push( error );
-				}
-
-				return acc;
-			}, [] )
-			.map( ( error ) => (
-				<ErrorNotice key={ error.code } error={ error } />
-			) );
-
 	return (
 		<BannerNotification
 			id="ga4-activation-banner"
@@ -197,7 +175,7 @@ export default function ReminderBanner( { onSubmitSuccess, errors } ) {
 			secondaryPane={ secondaryPane }
 			onDismiss={ showTooltip }
 		>
-			{ errorNotice }
+			{ children }
 		</BannerNotification>
 	);
 }

@@ -33,6 +33,7 @@ import Data from 'googlesitekit-data';
 import ReminderBanner from './ReminderBanner';
 import SetupBanner from './SetupBanner';
 import SuccessBanner from './SuccessBanner';
+import ErrorNotice from '../../../../../components/ErrorNotice';
 import {
 	ACTIVATION_STEP_REMINDER,
 	ACTIVATION_STEP_SETUP,
@@ -169,15 +170,33 @@ export default function ActivationBanner() {
 		return null;
 	}
 
+	// Show unique errors.
+	const errorNotice =
+		hasSetupBannerError &&
+		Object.values( setupBannerErrors )
+			.reduce( ( acc, error ) => {
+				if (
+					! acc.some(
+						( err ) =>
+							err.code === error.code &&
+							err.message === error.message
+					)
+				) {
+					acc.push( error );
+				}
+
+				return acc;
+			}, [] )
+			.map( ( error ) => (
+				<ErrorNotice key={ error.code } error={ error } />
+			) );
+
 	switch ( step ) {
 		case ACTIVATION_STEP_REMINDER:
 			return (
-				<ReminderBanner
-					onSubmitSuccess={ handleSubmit }
-					errors={
-						! isEmpty( setupBannerErrors ) && setupBannerErrors
-					}
-				/>
+				<ReminderBanner onSubmitSuccess={ handleSubmit }>
+					{ errorNotice }
+				</ReminderBanner>
 			);
 		case ACTIVATION_STEP_SETUP:
 			return <SetupBanner onSubmitSuccess={ handleSubmit } />;
