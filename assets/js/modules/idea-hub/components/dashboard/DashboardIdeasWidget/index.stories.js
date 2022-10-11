@@ -30,7 +30,7 @@ import { getWidgetComponentProps } from '../../../../../googlesitekit/widgets/ut
 import { provideModules } from '../../../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
 import { Provider as ViewContextProvider } from '../../../../../components/Root/ViewContextContext';
-import { VIEW_CONTEXT_DASHBOARD_VIEW_ONLY } from '../../../../../googlesitekit/constants';
+import { VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY } from '../../../../../googlesitekit/constants';
 import {
 	MODULES_IDEA_HUB,
 	IDEA_HUB_ACTIVITY_CREATING_DRAFT,
@@ -212,7 +212,7 @@ ActivitiesDone.args = {
 export const ViewOnlyDashboard = Template.bind( {} );
 ViewOnlyDashboard.storyName = 'View Only Dashboard';
 ViewOnlyDashboard.args = {
-	viewContext: VIEW_CONTEXT_DASHBOARD_VIEW_ONLY,
+	viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 };
 
 export default {

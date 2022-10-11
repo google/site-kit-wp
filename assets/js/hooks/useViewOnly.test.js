@@ -21,9 +21,9 @@
  */
 import { renderHook } from '../../../tests/js/test-utils';
 import {
-	VIEW_CONTEXT_DASHBOARD,
-	VIEW_CONTEXT_DASHBOARD_VIEW_ONLY,
-	VIEW_CONTEXT_PAGE_DASHBOARD_VIEW_ONLY,
+	VIEW_CONTEXT_MAIN_DASHBOARD,
+	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+	VIEW_CONTEXT_ENTITY_DASHBOARD_VIEW_ONLY,
 } from '../googlesitekit/constants';
 import useViewOnly from './useViewOnly';
 
@@ -36,23 +36,23 @@ describe( 'useViewOnly', () => {
 
 	it( 'should return false for any context other than a *_VIEW_ONLY context', () => {
 		const { result } = renderHook( () => useViewOnly(), {
-			viewContext: VIEW_CONTEXT_DASHBOARD,
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 		} );
 
 		expect( result.current ).toBe( false );
 	} );
 
-	it( 'should return true when the current view context is VIEW_CONTEXT_DASHBOARD_VIEW_ONLY', () => {
+	it( 'should return true when the current view context is VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY', () => {
 		const { result } = renderHook( () => useViewOnly(), {
-			viewContext: VIEW_CONTEXT_DASHBOARD_VIEW_ONLY,
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 		} );
 
 		expect( result.current ).toBe( true );
 	} );
 
-	it( 'should return true when the current view context is VIEW_CONTEXT_PAGE_DASHBOARD_VIEW_ONLY', () => {
+	it( 'should return true when the current view context is VIEW_CONTEXT_ENTITY_DASHBOARD_VIEW_ONLY', () => {
 		const { result } = renderHook( () => useViewOnly(), {
-			viewContext: VIEW_CONTEXT_PAGE_DASHBOARD_VIEW_ONLY,
+			viewContext: VIEW_CONTEXT_ENTITY_DASHBOARD_VIEW_ONLY,
 		} );
 
 		expect( result.current ).toBe( true );

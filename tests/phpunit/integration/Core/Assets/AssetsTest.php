@@ -187,10 +187,10 @@ class AssetsTest extends TestCase {
 		$assets->register();
 
 		// Enqueue script that has 'googlesitekit-commons' as dependency.
-		$assets->enqueue_asset( 'googlesitekit-dashboard' );
+		$assets->enqueue_asset( 'googlesitekit-main-dashboard' );
 
 		// Ensure that 'googlesitekit-commons' is enqueued too.
-		$this->assertTrue( wp_script_is( 'googlesitekit-dashboard', 'enqueued' ) );
+		$this->assertTrue( wp_script_is( 'googlesitekit-main-dashboard', 'enqueued' ) );
 		$this->assertTrue( wp_script_is( 'googlesitekit-commons', 'enqueued' ) );
 
 		do_action( 'wp_print_scripts' );
