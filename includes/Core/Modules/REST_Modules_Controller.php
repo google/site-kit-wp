@@ -63,10 +63,10 @@ class REST_Modules_Controller {
 			}
 		);
 
-		$active_modules = $this->modules->get_active_modules();
 		add_filter(
 			'googlesitekit_apifetch_preload_paths',
-			function ( $paths ) use ( $active_modules ) {
+			function ( $paths ) {
+				$active_modules = $this->modules->get_active_modules();
 				$modules_routes = array(
 					'/' . REST_Routes::REST_ROOT . '/core/modules/data/list',
 				);
@@ -78,7 +78,7 @@ class REST_Modules_Controller {
 						}
 						return null;
 					},
-					array_values( $active_modules )
+					$this->modules->get_active_modules()
 				);
 
 				return array_merge( $paths, $modules_routes, array_filter( $settings_routes ) );
@@ -149,6 +149,14 @@ class REST_Modules_Controller {
 						'type' => 'string',
 					),
 					'readonly'    => true,
+				),
+				'shareable'    => array(
+					'type'        => 'boolean',
+					'description' => __( 'Whether the module is shareable.', 'google-site-kit' ),
+				),
+				'recoverable'  => array(
+					'type'        => 'boolean',
+					'description' => __( 'Whether the module is recoverable.', 'google-site-kit' ),
 				),
 				'owner'        => array(
 					'type'       => 'object',
