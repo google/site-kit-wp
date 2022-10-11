@@ -112,6 +112,13 @@ export default function ActivationBanner() {
 		}
 	}, [ hasEditScope, registry, returnToSetupStep, setValues ] );
 
+	// If any errors are encountered, we change the current form step the user is
+	// on to essentially "reset" the banner back to the first step. If the user
+	// tried to proceed but was offline, for instance, this would be detected and
+	// return them to the first step of the banner rather than forcing an infinite
+	// loading screen due to an error.
+	//
+	// See: https://github.com/google/site-kit-wp/issues/5928
 	useEffect( () => {
 		if ( hasSetupBannerError ) {
 			setStep( ACTIVATION_STEP_REMINDER );
