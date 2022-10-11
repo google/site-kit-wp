@@ -85,10 +85,10 @@ export default function ReminderBanner( { onSubmitSuccess } ) {
 		'google-site-kit'
 	);
 	let descriptionIcon = (
-		<InfoIcon
+		<ErrorIcon
 			height="14"
 			width="14"
-			className="googlesitekit-ga4-reminder-banner__description-icon googlesitekit-ga4-reminder-banner__description-icon--info"
+			className="googlesitekit-ga4-reminder-banner__description-icon googlesitekit-ga4-reminder-banner__description-icon--error"
 		/>
 	);
 
@@ -98,6 +98,13 @@ export default function ReminderBanner( { onSubmitSuccess } ) {
 		title = __(
 			'Set up Google Analytics 4 now to join the future of Analytics',
 			'google-site-kit'
+		);
+		descriptionIcon = (
+			<InfoIcon
+				height="14"
+				width="14"
+				className="googlesitekit-ga4-reminder-banner__description-icon googlesitekit-ga4-reminder-banner__description-icon--info"
+			/>
 		);
 	} else if (
 		stringToDate( '2023-06-01' ) <= referenceDate &&
@@ -111,13 +118,6 @@ export default function ReminderBanner( { onSubmitSuccess } ) {
 				'google-site-kit'
 			),
 			remainingDays
-		);
-		descriptionIcon = (
-			<ErrorIcon
-				height="14"
-				width="14"
-				className="googlesitekit-ga4-reminder-banner__description-icon googlesitekit-ga4-reminder-banner__description-icon--error"
-			/>
 		);
 	} else {
 		title = __(
