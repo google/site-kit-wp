@@ -218,7 +218,7 @@ final class Search_Console extends Module
 				if ( empty( $data['siteURL'] ) ) {
 					return new WP_Error(
 						'missing_required_param',
-						/* translators: 1: Missing parameter name */
+						/* translators: %s: Missing parameter name */
 						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'siteURL' ),
 						array( 'status' => 400 )
 					);

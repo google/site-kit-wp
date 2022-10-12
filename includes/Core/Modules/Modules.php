@@ -613,7 +613,7 @@ final class Modules {
 		$modules = $this->get_available_modules();
 
 		if ( ! isset( $modules[ $slug ] ) ) {
-			/* translators: 1: module slug */
+			/* translators: %s: module slug */
 			throw new Exception( sprintf( __( 'Invalid module slug %s.', 'google-site-kit' ), $slug ) );
 		}
 
@@ -651,7 +651,7 @@ final class Modules {
 		$modules = $this->get_available_modules();
 
 		if ( ! isset( $modules[ $slug ] ) ) {
-			/* translators: 1: module slug */
+			/* translators: %s: module slug */
 			throw new Exception( sprintf( __( 'Invalid module slug %s.', 'google-site-kit' ), $slug ) );
 		}
 
@@ -672,7 +672,7 @@ final class Modules {
 		$modules = $this->get_available_modules();
 
 		if ( ! isset( $modules[ $slug ] ) ) {
-			/* translators: 1: module slug */
+			/* translators: %s: module slug */
 			throw new Exception( sprintf( __( 'Invalid module slug %s.', 'google-site-kit' ), $slug ) );
 		}
 
@@ -957,7 +957,7 @@ final class Modules {
 								$dependency_slugs = $this->get_module_dependencies( $slug );
 								foreach ( $dependency_slugs as $dependency_slug ) {
 									if ( ! $this->is_module_active( $dependency_slug ) ) {
-										/* translators: 1: module name */
+										/* translators: %s: module name */
 										return new WP_Error( 'inactive_dependencies', sprintf( __( 'Module cannot be activated because of inactive dependency %s.', 'google-site-kit' ), $modules[ $dependency_slug ]->name ), array( 'status' => 500 ) );
 									}
 								}
@@ -970,7 +970,7 @@ final class Modules {
 								foreach ( $dependant_slugs as $dependant_slug ) {
 									if ( $this->is_module_active( $dependant_slug ) ) {
 										if ( ! $this->deactivate_module( $dependant_slug ) ) {
-											/* translators: 1: module name */
+											/* translators: %s: module name */
 											return new WP_Error( 'cannot_deactivate_dependant', sprintf( __( 'Module cannot be deactivated because deactivation of dependant %s failed.', 'google-site-kit' ), $modules[ $dependant_slug ]->name ), array( 'status' => 500 ) );
 										}
 									}

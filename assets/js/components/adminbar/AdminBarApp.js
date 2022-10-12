@@ -77,7 +77,7 @@ export default function AdminBarApp() {
 								: currentEntityURL }
 							<p className="googlesitekit-adminbar__title--date-range">
 								{ sprintf(
-									/* translators: 1: number of days */
+									/* translators: %s: number of days */
 									_n(
 										'over the last %s day',
 										'over the last %s days',

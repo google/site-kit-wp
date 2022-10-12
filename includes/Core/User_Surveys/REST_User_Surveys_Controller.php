@@ -198,7 +198,7 @@ class REST_User_Surveys_Controller {
 						if ( empty( $data['slug'] ) ) {
 							return new WP_Error(
 								'missing_required_param',
-								/* translators: 1: Missing parameter name */
+								/* translators: %s: Missing parameter name */
 								sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'slug' ),
 								array( 'status' => 400 )
 							);

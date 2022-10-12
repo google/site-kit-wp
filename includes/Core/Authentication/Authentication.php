@@ -1154,12 +1154,12 @@ final class Authentication {
 						$content .= sprintf(
 							'<ul><li>%s</li><li>%s</li></ul>',
 							sprintf(
-								/* translators: 1: Previous URL */
+								/* translators: %s: Previous URL */
 								esc_html__( 'Old URL: %s', 'google-site-kit' ),
 								$connected_url
 							),
 							sprintf(
-								/* translators: 1: Current URL */
+								/* translators: %s: Current URL */
 								esc_html__( 'New URL: %s', 'google-site-kit' ),
 								$current_url
 							)
