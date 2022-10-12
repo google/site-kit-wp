@@ -28,8 +28,6 @@ import { Fragment } from '@wordpress/element';
 import Data from 'googlesitekit-data';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
-import { CORE_MODULES } from '../../../../../googlesitekit/modules/datastore/constants';
-import { MODULES_ANALYTICS } from '../../../../analytics/datastore/constants';
 import { ACTIVATION_ACKNOWLEDGEMENT_TOOLTIP_STATE_KEY } from '../../../constants';
 import BannerNotification from '../../../../../components/notifications/BannerNotification';
 import { useTooltipState } from '../../../../../components/AdminMenuTooltip/useTooltipState';
@@ -42,42 +40,13 @@ import InfoIcon from '../../../../../../svg/icons/info.svg';
 import ErrorIcon from '../../../../../../svg/icons/error.svg';
 import ProgressBar from '../../../../../components/ProgressBar';
 import ReminderBannerNoAccess from './ReminderBannerNoAccess';
+import useModuleAccess from '../../../../../hooks/useModuleAcess';
 
 const { useSelect } = Data;
 
 export default function ReminderBanner( { onSubmitSuccess } ) {
-	const loggedInUserID = useSelect( ( select ) =>
-		select( CORE_USER ).getID()
-	);
-	const hasResolvedUser = useSelect( ( select ) =>
-		select( CORE_USER ).hasFinishedResolution( 'getUser' )
-	);
-
-	const hasAnalyticsAccess = useSelect( ( select ) => {
-		const moduleOwnerID = select( MODULES_ANALYTICS ).getOwnerID();
-
-		if ( moduleOwnerID === loggedInUserID ) {
-			return true;
-		}
-
-		return select( CORE_MODULES ).hasModuleAccess( 'analytics' );
-	} );
-	const isLoadingAnalyticsAccess = useSelect( ( select ) => {
-		const hasResolvedModuleOwner =
-			select( MODULES_ANALYTICS ).hasFinishedResolution( 'getSettings' );
-
-		const isResolvingModuleAccess = select( CORE_MODULES ).isResolving(
-			'hasModuleAccess',
-			[ 'analytics' ]
-		);
-
-		return (
-			! hasResolvedModuleOwner ||
-			! hasResolvedUser ||
-			isResolvingModuleAccess
-		);
-	} );
-
+	const { hasModuleAccess, isLoadingModuleAccess } =
+		useModuleAccess( 'analytics' );
 	const referenceDateString = useSelect( ( select ) =>
 		select( CORE_USER ).getReferenceDate()
 	);
@@ -115,7 +84,7 @@ export default function ReminderBanner( { onSubmitSuccess } ) {
 		);
 	}
 
-	if ( isLoadingAnalyticsAccess ) {
+	if ( isLoadingModuleAccess ) {
 		return <ProgressBar />;
 	}
 
@@ -139,7 +108,7 @@ export default function ReminderBanner( { onSubmitSuccess } ) {
 			'Set up Google Analytics 4 now to join the future of Analytics',
 			'google-site-kit'
 		);
-		if ( hasAnalyticsAccess ) {
+		if ( hasModuleAccess ) {
 			descriptionIcon = (
 				<InfoIcon
 					height="14"
@@ -200,7 +169,7 @@ export default function ReminderBanner( { onSubmitSuccess } ) {
 		</section>
 	);
 
-	if ( ! hasAnalyticsAccess ) {
+	if ( ! hasModuleAccess ) {
 		return (
 			<ReminderBannerNoAccess
 				title={ title }
