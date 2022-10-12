@@ -362,9 +362,10 @@ final class Authentication {
 			'googlesitekit_user_data',
 			function( $user ) {
 				if ( $this->profile->has() ) {
-					$profile_data            = $this->profile->get();
-					$user['user']['email']   = $profile_data['email'];
-					$user['user']['picture'] = $profile_data['photo'];
+					$profile_data              = $this->profile->get();
+					$user['user']['email']     = $profile_data['email'];
+					$user['user']['picture']   = $profile_data['photo'];
+					$user['user']['full_name'] = $profile_data['full_name'];
 				}
 
 				$user['connectURL']        = esc_url_raw( $this->get_connect_url() );

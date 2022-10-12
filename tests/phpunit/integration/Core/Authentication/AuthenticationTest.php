@@ -134,9 +134,10 @@ class AuthenticationTest extends TestCase {
 		);
 
 		// When a profile is set, additional data is added.
-		$email = 'wapuu.wordpress@gmail.com';
-		$photo = 'https://wapu.us/wp-content/uploads/2017/11/WapuuFinal-100x138.png';
-		$auth->profile()->set( compact( 'email', 'photo' ) );
+		$email     = 'wapuu.wordpress@gmail.com';
+		$photo     = 'https://wapu.us/wp-content/uploads/2017/11/WapuuFinal-100x138.png';
+		$full_name = 'Wapuu WordPress';
+		$auth->profile()->set( compact( 'email', 'photo', 'full_name' ) );
 		$user_data = apply_filters( 'googlesitekit_user_data', array() );
 		$this->assertEqualSets(
 			array(
@@ -151,6 +152,7 @@ class AuthenticationTest extends TestCase {
 		);
 		$this->assertEquals( $email, $user_data['user']['email'] );
 		$this->assertEquals( $photo, $user_data['user']['picture'] );
+		$this->assertEquals( $full_name, $user_data['user']['full_name'] );
 	}
 
 	/**
