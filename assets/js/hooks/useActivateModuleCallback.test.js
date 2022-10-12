@@ -29,7 +29,7 @@ import {
 } from '../../../tests/js/test-utils';
 import { mockLocation } from '../../../tests/js/mock-browser-utils';
 import * as tracking from '../util/tracking';
-import { VIEW_CONTEXT_DASHBOARD } from '../googlesitekit/constants';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../googlesitekit/constants';
 import {
 	CORE_USER,
 	PERMISSION_MANAGE_OPTIONS,
@@ -94,7 +94,7 @@ describe( 'useActivateModuleCallback', () => {
 
 		const { result } = renderHook(
 			() => useActivateModuleCallback( 'analytics' ),
-			{ viewContext: VIEW_CONTEXT_DASHBOARD, registry }
+			{ viewContext: VIEW_CONTEXT_MAIN_DASHBOARD, registry }
 		);
 
 		fetchMock.postOnce(
@@ -111,7 +111,7 @@ describe( 'useActivateModuleCallback', () => {
 		await result.current();
 
 		expect( mockTrackEvent ).toHaveBeenCalledWith(
-			'dashboard_widget-activation-cta',
+			'mainDashboard_widget-activation-cta',
 			'activate_module',
 			'analytics'
 		);
