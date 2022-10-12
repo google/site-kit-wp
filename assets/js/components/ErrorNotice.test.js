@@ -53,7 +53,7 @@ describe( 'ErrorNotice', () => {
 					code: 'test-error-code',
 					message: 'Test error message',
 					data: {
-						reason: ERROR_REASON_INSUFFICIENT_PERMISSIONS,
+						reason: '',
 					},
 					selectorData: {
 						args: [],
@@ -81,7 +81,7 @@ describe( 'ErrorNotice', () => {
 					},
 					selectorData: {
 						args: [],
-						name: 'getAccountID',
+						name: 'getReport',
 						storeName: MODULES_ANALYTICS,
 					},
 				} }
@@ -105,7 +105,7 @@ describe( 'ErrorNotice', () => {
 					},
 					selectorData: {
 						args: [],
-						name: 'getAccountID',
+						name: 'getReport',
 						storeName: MODULES_ANALYTICS,
 					},
 				} }
@@ -130,7 +130,7 @@ describe( 'ErrorNotice', () => {
 					},
 					selectorData: {
 						args: [],
-						name: 'getAccountID',
+						name: 'getReport',
 						storeName: MODULES_ANALYTICS,
 					},
 				} }
@@ -209,7 +209,7 @@ describe( 'ErrorNotice', () => {
 		expect( invalidateResolutionSpy ).toHaveBeenCalledTimes( 1 );
 	} );
 
-	it( 'should not render the retry button if the error is not retryable', () => {
+	it( 'should not render the retry button if the store name is not available', () => {
 		const { queryByText } = render(
 			<ErrorNotice
 				error={ {
@@ -229,7 +229,7 @@ describe( 'ErrorNotice', () => {
 							},
 						],
 						name: 'getReport',
-						storeName: MODULES_ANALYTICS,
+						storeName: '',
 					},
 				} }
 			/>,
