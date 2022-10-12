@@ -17,14 +17,9 @@
  */
 
 /**
- * External dependencies
- */
-import isEmpty from 'lodash/isEmpty';
-
-/**
  * WordPress dependencies
  */
-import { useState, useCallback, useEffect, useMemo } from '@wordpress/element';
+import { useState, useCallback, useEffect } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -75,31 +70,19 @@ export default function ActivationBanner() {
 		select( MODULES_ANALYTICS ).getAccountID()
 	);
 
-	// Collection of selectors which the Setup Banner depends on.
-	const setupBannerSelectors = useMemo(
-		() => ( {
-			getProperties: { store: MODULES_ANALYTICS_4, args: [ accountID ] },
-			getAccounts: { store: MODULES_ANALYTICS },
-			getSettings: { store: MODULES_ANALYTICS_4 },
-		} ),
-		[ accountID ]
-	);
-
-	const setupBannerErrors = useSelect( ( select ) =>
-		Object.keys( setupBannerSelectors ).reduce( ( acc, selector ) => {
-			const { store, args } = setupBannerSelectors[ selector ];
-			const error = select( store ).getErrorForSelector(
-				selector,
-				args || []
-			);
-			return {
-				...acc,
-				...( error ? { [ selector ]: error } : {} ),
-			};
-		}, {} )
-	);
-
-	const hasSetupBannerError = ! isEmpty( setupBannerErrors );
+	// These are the selectors the Setup Banner uses; if any of them have encountered
+	// an error we should reset the banner step and display the error on the welcome
+	// step.
+	const setupBannerErrors = useSelect( ( select ) => {
+		return [
+			select( MODULES_ANALYTICS_4 ).getErrorForSelector(
+				'getProperties',
+				[ accountID ]
+			),
+			select( MODULES_ANALYTICS ).getErrorForSelector( 'getAccounts' ),
+			select( MODULES_ANALYTICS_4 ).getErrorForSelector( 'getSettings' ),
+		].filter( ( error ) => error !== undefined );
+	} );
 
 	const dispatch = useDispatch();
 	const { setValues } = dispatch( CORE_FORMS );
@@ -121,32 +104,43 @@ export default function ActivationBanner() {
 	//
 	// See: https://github.com/google/site-kit-wp/issues/5928
 	useEffect( () => {
-		if ( hasSetupBannerError ) {
+		if ( setupBannerErrors.length > 0 ) {
 			setStep( ACTIVATION_STEP_REMINDER );
 		}
-	}, [ hasSetupBannerError ] );
+	}, [ setupBannerErrors.length ] );
 
 	const handleSubmit = useCallback( async () => {
 		if ( step === ACTIVATION_STEP_REMINDER ) {
 			// Clear errors before navigating to Setup Banner.
-			if ( hasSetupBannerError ) {
-				Object.keys( setupBannerErrors ).forEach(
-					async ( selector ) => {
-						const { store, args } =
-							setupBannerSelectors[ selector ];
+			if ( setupBannerErrors.length > 0 ) {
+				await Promise.all( [
+					dispatch( MODULES_ANALYTICS_4 ).clearError(
+						'getProperties',
+						[ accountID ]
+					),
+					dispatch( MODULES_ANALYTICS_4 ).invalidateResolution(
+						'getProperties',
+						[ accountID ]
+					),
 
-						await Promise.all( [
-							dispatch( store ).clearError(
-								selector,
-								args || []
-							),
-							dispatch( store ).invalidateResolution(
-								selector,
-								args || []
-							),
-						] );
-					}
-				);
+					dispatch( MODULES_ANALYTICS ).clearError(
+						'getAccounts',
+						[]
+					),
+					dispatch( MODULES_ANALYTICS ).invalidateResolution(
+						'getAccounts',
+						[]
+					),
+
+					dispatch( MODULES_ANALYTICS_4 ).clearError(
+						'getSettings',
+						[]
+					),
+					dispatch( MODULES_ANALYTICS_4 ).invalidateResolution(
+						'getSettings',
+						[]
+					),
+				] );
 			}
 
 			setStep( ACTIVATION_STEP_SETUP );
@@ -160,10 +154,9 @@ export default function ActivationBanner() {
 	}, [
 		step,
 		returnToSetupStep,
-		hasSetupBannerError,
-		setupBannerErrors,
-		setupBannerSelectors,
+		setupBannerErrors.length,
 		dispatch,
+		accountID,
 	] );
 
 	if ( ! uaConnected || ga4Connected ) {
@@ -172,20 +165,21 @@ export default function ActivationBanner() {
 
 	// Show unique errors.
 	const errorNotice =
-		hasSetupBannerError &&
-		Object.values( setupBannerErrors )
+		setupBannerErrors.length > 0 &&
+		setupBannerErrors
 			.reduce( ( acc, error ) => {
+				// If the error is already in our array of errors, skip it.
 				if (
-					! acc.some(
+					acc.some(
 						( err ) =>
 							err.code === error.code &&
 							err.message === error.message
 					)
 				) {
-					acc.push( error );
+					return acc;
 				}
 
-				return acc;
+				return [ ...acc, error ];
 			}, [] )
 			.map( ( error ) => (
 				<ErrorNotice key={ error.code } error={ error } />
