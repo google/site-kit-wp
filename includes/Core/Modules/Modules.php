@@ -1190,6 +1190,11 @@ final class Modules {
 							} catch ( Exception $e ) {
 								return new WP_Error( 'invalid_module_slug', __( 'Invalid module slug.', 'google-site-kit' ), array( 'status' => 404 ) );
 							}
+
+							if ( ! $this->is_module_active( $slug ) ) {
+								return new WP_Error( 'module_not_active', __( 'Module must be active to request data.', 'google-site-kit' ), array( 'status' => 403 ) );
+							}
+
 							$data = $module->get_data( $request['datapoint'], $request->get_params() );
 							if ( is_wp_error( $data ) ) {
 								return $data;
@@ -1207,6 +1212,11 @@ final class Modules {
 							} catch ( Exception $e ) {
 								return new WP_Error( 'invalid_module_slug', __( 'Invalid module slug.', 'google-site-kit' ), array( 'status' => 404 ) );
 							}
+
+							if ( ! $this->is_module_active( $slug ) ) {
+								return new WP_Error( 'module_not_active', __( 'Module must be active to request data.', 'google-site-kit' ), array( 'status' => 403 ) );
+							}
+
 							$data = isset( $request['data'] ) ? (array) $request['data'] : array();
 							$data = $module->set_data( $request['datapoint'], $data );
 							if ( is_wp_error( $data ) ) {
