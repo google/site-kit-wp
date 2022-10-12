@@ -20,12 +20,14 @@
  * Internal dependencies
  */
 import {
+	act,
 	createTestRegistry,
 	render,
 	provideModules,
 	unsubscribeFromAll,
 } from '../../../../../../../tests/js/test-utils';
 import ActivationBanner from './index';
+import { MODULES_ANALYTICS } from '../../../../analytics/datastore/constants';
 
 describe( 'ActivationBanner', () => {
 	let registry;
@@ -80,23 +82,35 @@ describe( 'ActivationBanner', () => {
 		expect( container.childElementCount ).toBe( 0 );
 	} );
 
-	it( 'does render when UA is connected but GA4 is not connected', () => {
-		provideModules( registry, [
-			{
-				slug: 'analytics',
-				active: true,
-				connected: true,
-			},
-			{
-				slug: 'analytics-4',
-				active: true,
-				connected: false,
-			},
-		] );
+	it( 'does render when UA is connected but GA4 is not connected', async () => {
+		act( () => {
+			provideModules( registry, [
+				{
+					slug: 'analytics',
+					active: true,
+					connected: true,
+					owner: { id: 1, login: 'test-owner-username' },
+				},
+				{
+					slug: 'analytics-4',
+					active: true,
+					connected: false,
+				},
+			] );
+			fetchMock.postOnce(
+				/^\/google-site-kit\/v1\/core\/modules\/data\/check-access/,
+				{ body: { access: true } }
+			);
+			registry
+				.dispatch( MODULES_ANALYTICS )
+				.receiveGetSettings( { ownerID: 1 } );
+		} );
 
-		const { container } = render( <ActivationBanner />, {
+		const { container, waitForRegistry } = render( <ActivationBanner />, {
 			registry,
 		} );
+		await waitForRegistry();
+
 		expect( container.childElementCount ).toBe( 1 );
 	} );
 } );
