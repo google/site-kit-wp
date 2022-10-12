@@ -21,6 +21,7 @@
  */
 import PropTypes from 'prop-types';
 import { useHistory, useParams } from 'react-router-dom';
+import isEmpty from 'lodash/isEmpty';
 
 /**
  * WordPress dependencies
@@ -73,9 +74,12 @@ export default function Footer( props ) {
 	const isSaving = useSelect( ( select ) =>
 		select( CORE_UI ).getValue( isSavingKey )
 	);
-	const accountChooserBaseURI = useSelect( ( select ) =>
-		select( CORE_USER ).getAccountChooserURL( module.homepage )
-	);
+	const moduleHomepage = useSelect( ( select ) => {
+		if ( isEmpty( module ) || ! module.homepage ) {
+			return undefined;
+		}
+		return select( CORE_USER ).getAccountChooserURL( module.homepage );
+	} );
 
 	const { submitChanges } = useDispatch( CORE_MODULES );
 	const { clearErrors } = useDispatch( `modules/${ slug }` );
@@ -217,10 +221,10 @@ export default function Footer( props ) {
 				/>
 			</Link>
 		);
-	} else if ( ! isEditing && accountChooserBaseURI ) {
+	} else if ( ! isEditing && moduleHomepage ) {
 		secondaryColumn = (
 			<Link
-				href={ accountChooserBaseURI }
+				href={ moduleHomepage }
 				className="googlesitekit-settings-module__cta-button"
 				external
 			>
