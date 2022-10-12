@@ -89,34 +89,29 @@ export default function PropertySelect( {
 
 	const { selectProperty } = useDispatch( MODULES_ANALYTICS_4 );
 
-	const measurementIDs = {};
-
-	useSelect( ( select ) => {
+	const measurementIDs = useSelect( ( select ) => {
 		if ( ! properties.length ) {
 			return null;
 		}
-
-		const propertyMeasurementMapping = properties.map( ( property ) => {
+		return properties.reduce( ( acc, property ) => {
 			const currentPropertyID = property._id;
-
 			const dataStream =
 				select( MODULES_ANALYTICS_4 ).getWebDataStreamsBatch(
 					currentPropertyID
 				);
-
 			if ( ! Object.keys( dataStream ).length ) {
 				isLoading = true;
 				return null;
 			}
-
 			const measurementID =
 				dataStream[ currentPropertyID ][ 0 ].webStreamData
 					.measurementId; // eslint-disable-line sitekit/acronym-case
 			isLoading = false;
-			return ( measurementIDs[ currentPropertyID ] = measurementID );
-		} );
-
-		return propertyMeasurementMapping;
+			return {
+				...acc,
+				[ currentPropertyID ]: measurementID,
+			};
+		}, {} );
 	} );
 
 	const viewContext = useViewContext();
