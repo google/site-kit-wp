@@ -41,7 +41,7 @@ import ErrorIcon from '../../../../../../svg/icons/error.svg';
 
 const { useSelect } = Data;
 
-export default function ReminderBanner( { onSubmitSuccess } ) {
+export default function ReminderBanner( { onSubmitSuccess, children } ) {
 	const referenceDateString = useSelect( ( select ) =>
 		select( CORE_USER ).getReferenceDate()
 	);
@@ -174,6 +174,8 @@ export default function ReminderBanner( { onSubmitSuccess } ) {
 			) }
 			secondaryPane={ secondaryPane }
 			onDismiss={ showTooltip }
-		/>
+		>
+			{ children }
+		</BannerNotification>
 	);
 }
