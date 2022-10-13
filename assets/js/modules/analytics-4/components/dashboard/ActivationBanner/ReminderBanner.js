@@ -45,8 +45,11 @@ import useModuleAccess from '../../../../../hooks/useModuleAcess';
 const { useSelect } = Data;
 
 export default function ReminderBanner( { onSubmitSuccess } ) {
-	const { hasModuleAccess, isLoadingModuleAccess } =
-		useModuleAccess( 'analytics' );
+	const {
+		hasModuleAccess: hasAnalyticsAccess,
+		isLoadingModuleAccess: isLoadingAnalyticsAccess,
+	} = useModuleAccess( 'analytics' );
+
 	const referenceDateString = useSelect( ( select ) =>
 		select( CORE_USER ).getReferenceDate()
 	);
@@ -84,7 +87,7 @@ export default function ReminderBanner( { onSubmitSuccess } ) {
 		);
 	}
 
-	if ( isLoadingModuleAccess ) {
+	if ( isLoadingAnalyticsAccess ) {
 		return <ProgressBar />;
 	}
 
@@ -108,7 +111,7 @@ export default function ReminderBanner( { onSubmitSuccess } ) {
 			'Set up Google Analytics 4 now to join the future of Analytics',
 			'google-site-kit'
 		);
-		if ( hasModuleAccess ) {
+		if ( hasAnalyticsAccess ) {
 			descriptionIcon = (
 				<InfoIcon
 					height="14"
@@ -169,7 +172,7 @@ export default function ReminderBanner( { onSubmitSuccess } ) {
 		</section>
 	);
 
-	if ( ! hasModuleAccess ) {
+	if ( ! hasAnalyticsAccess ) {
 		return (
 			<ReminderBannerNoAccess
 				title={ title }
