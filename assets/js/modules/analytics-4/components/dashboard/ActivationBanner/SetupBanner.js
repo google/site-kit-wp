@@ -374,17 +374,13 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 				</SpinnerButton>
 			}
 			footer={
-				footerMessages.length ? (
+				!! footerMessages.length && (
 					<ul className="googlesitekit-ga4-setup-banner__footer-text-list">
 						{ footerMessages.map( ( message, index ) => (
-							<li key={ index }>
-								{ `${ message }${
-									footerMessages.length > 1 ? '.' : ''
-								}` }
-							</li>
+							<li key={ index }>{ message }</li>
 						) ) }
 					</ul>
-				) : null
+				)
 			}
 			dismiss={ __( 'Cancel', 'google-site-kit' ) }
 			dismissExpires={ getBannerDismissalExpiryTime(
