@@ -44,7 +44,9 @@ describe( 'ErrorNotice', () => {
 		);
 	} );
 
-	afterEach( () => invalidateResolutionSpy.mockReset() );
+	afterEach( () => {
+		invalidateResolutionSpy.mockReset();
+	} );
 
 	it( "should not render the `Retry` button if the error's `selectorData.name` is not `getReport`", () => {
 		const { queryByText } = render(
