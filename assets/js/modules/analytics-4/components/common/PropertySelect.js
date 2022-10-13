@@ -90,7 +90,7 @@ export default function PropertySelect( {
 	const { selectProperty } = useDispatch( MODULES_ANALYTICS_4 );
 
 	const measurementIDs = useSelect( ( select ) => {
-		if ( ! properties.length ) {
+		if ( ! properties?.length ) {
 			return null;
 		}
 		return properties.reduce( ( acc, property ) => {
