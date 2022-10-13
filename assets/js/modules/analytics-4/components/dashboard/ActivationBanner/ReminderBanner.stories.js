@@ -17,13 +17,22 @@
  */
 
 /**
+ * External dependencies
+ */
+import fetchMock from 'fetch-mock';
+
+/**
  * Internal dependencies
  */
 import ReminderBanner from './ReminderBanner';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
 import { MODULES_ANALYTICS } from '../../../../analytics/datastore/constants';
-import { provideUserInfo } from '../../../../../../../tests/js/utils';
+import {
+	provideModuleRegistrations,
+	provideModules,
+	provideUserInfo,
+} from '../../../../../../../tests/js/utils';
 
 const Template = () => <ReminderBanner onSubmitSuccess={ () => {} } />;
 
@@ -50,6 +59,10 @@ InitialNoticeWithoutAccess.decorators = [
 		const setupRegistry = ( registry ) => {
 			registry.dispatch( CORE_USER ).setReferenceDate( '2023-05-31' );
 			provideUserInfo( registry, { id: 2 } );
+			fetchMock.postOnce(
+				/^\/google-site-kit\/v1\/core\/modules\/data\/check-access/,
+				{ body: { access: false } }
+			);
 		};
 
 		return (
@@ -97,10 +110,11 @@ export default {
 	decorators: [
 		( Story ) => {
 			const setupRegistry = ( registry ) => {
+				provideModules( registry );
+				provideModuleRegistrations( registry );
 				registry
 					.dispatch( MODULES_ANALYTICS )
 					.receiveGetSettings( { ownerID: 1 } );
-				provideUserInfo( registry );
 			};
 
 			return (
