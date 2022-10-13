@@ -38,7 +38,7 @@ function ErrorText( { message, reconnectURL } ) {
 	}
 
 	let error = sprintf(
-		/* translators: 1: Error message */
+		/* translators: %s: Error message */
 		__( 'Error: %s', 'google-site-kit' ),
 		message
 	);
@@ -48,7 +48,7 @@ function ErrorText( { message, reconnectURL } ) {
 			error +
 			' ' +
 			sprintf(
-				/* translators: 1: Reconnect URL */
+				/* translators: %s: Reconnect URL */
 				__(
 					'To fix this, <a href="%s">redo the plugin setup</a>.',
 					'google-site-kit'

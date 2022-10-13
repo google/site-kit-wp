@@ -362,9 +362,10 @@ final class Authentication {
 			'googlesitekit_user_data',
 			function( $user ) {
 				if ( $this->profile->has() ) {
-					$profile_data            = $this->profile->get();
-					$user['user']['email']   = $profile_data['email'];
-					$user['user']['picture'] = $profile_data['photo'];
+					$profile_data              = $this->profile->get();
+					$user['user']['email']     = $profile_data['email'];
+					$user['user']['picture']   = $profile_data['photo'];
+					$user['user']['full_name'] = $profile_data['full_name'];
 				}
 
 				$user['connectURL']        = esc_url_raw( $this->get_connect_url() );
@@ -1154,12 +1155,12 @@ final class Authentication {
 						$content .= sprintf(
 							'<ul><li>%s</li><li>%s</li></ul>',
 							sprintf(
-								/* translators: 1: Previous URL */
+								/* translators: %s: Previous URL */
 								esc_html__( 'Old URL: %s', 'google-site-kit' ),
 								$connected_url
 							),
 							sprintf(
-								/* translators: 1: Current URL */
+								/* translators: %s: Current URL */
 								esc_html__( 'New URL: %s', 'google-site-kit' ),
 								$current_url
 							)

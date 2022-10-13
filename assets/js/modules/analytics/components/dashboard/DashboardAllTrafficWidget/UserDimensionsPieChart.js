@@ -239,7 +239,7 @@ export default function UserDimensionsPieChart( props ) {
 
 			let tooltip = `<p>
 					${
-						/* translators: 1: dimension label */ sprintf(
+						/* translators: %s: dimension label */ sprintf(
 							__( '%s:', 'google-site-kit' ),
 							rowData[ 0 ].toUpperCase()
 						)
@@ -283,7 +283,7 @@ export default function UserDimensionsPieChart( props ) {
 					otherSupportURL,
 
 					sprintf(
-						/* translators: 1: pie slice label */
+						/* translators: %s: pie slice label */
 						__(
 							'Learn more about what "%s" means',
 							'google-site-kit'
@@ -299,7 +299,7 @@ export default function UserDimensionsPieChart( props ) {
 					notSetSupportURL,
 
 					sprintf(
-						/* translators: 1: pie slice label */
+						/* translators: %s: pie slice label */
 						__(
 							'Learn more about what "%s" means',
 							'google-site-kit'

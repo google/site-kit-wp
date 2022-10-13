@@ -40,6 +40,11 @@ describe( 'ActivationBanner', () => {
 				authenticated: true,
 			}
 		);
+
+		fetchMock.getOnce(
+			/^\/google-site-kit\/v1\/modules\/analytics\/data\/settings/,
+			{ body: {}, status: 200 }
+		);
 	} );
 
 	afterEach( () => {

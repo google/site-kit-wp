@@ -37,7 +37,7 @@ const Header = () => {
 	return (
 		<WidgetHeaderTitle
 			title={ sprintf(
-				/* translators: 1: number of days */
+				/* translators: %s: number of days */
 				_n(
 					'Search traffic over the last %s day',
 					'Search traffic over the last %s days',

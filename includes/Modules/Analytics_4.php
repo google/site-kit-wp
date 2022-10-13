@@ -343,7 +343,7 @@ final class Analytics_4 extends Module
 				if ( ! isset( $data['accountID'] ) ) {
 					return new WP_Error(
 						'missing_required_param',
-						/* translators: 1: Missing parameter name */
+						/* translators: %s: Missing parameter name */
 						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ),
 						array( 'status' => 400 )
 					);
@@ -354,7 +354,7 @@ final class Analytics_4 extends Module
 				if ( ! isset( $data['propertyID'] ) ) {
 					return new WP_Error(
 						'missing_required_param',
-						/* translators: 1: Missing parameter name */
+						/* translators: %s: Missing parameter name */
 						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'propertyID' ),
 						array( 'status' => 400 )
 					);
@@ -365,7 +365,7 @@ final class Analytics_4 extends Module
 				if ( ! isset( $data['accountID'] ) ) {
 					return new WP_Error(
 						'missing_required_param',
-						/* translators: 1: Missing parameter name */
+						/* translators: %s: Missing parameter name */
 						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ),
 						array( 'status' => 400 )
 					);
@@ -380,7 +380,7 @@ final class Analytics_4 extends Module
 				if ( ! isset( $data['propertyID'] ) ) {
 					return new WP_Error(
 						'missing_required_param',
-						/* translators: 1: Missing parameter name */
+						/* translators: %s: Missing parameter name */
 						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'propertyID' ),
 						array( 'status' => 400 )
 					);
@@ -391,7 +391,7 @@ final class Analytics_4 extends Module
 				if ( ! isset( $data['propertyID'] ) ) {
 					return new WP_Error(
 						'missing_required_param',
-						/* translators: 1: Missing parameter name */
+						/* translators: %s: Missing parameter name */
 						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'propertyID' ),
 						array( 'status' => 400 )
 					);
@@ -409,7 +409,7 @@ final class Analytics_4 extends Module
 				if ( ! isset( $data['propertyIDs'] ) ) {
 					return new WP_Error(
 						'missing_required_param',
-						/* translators: 1: Missing parameter name */
+						/* translators: %s: Missing parameter name */
 						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'propertyIDs' ),
 						array( 'status' => 400 )
 					);
@@ -418,7 +418,7 @@ final class Analytics_4 extends Module
 				if ( ! is_array( $data['propertyIDs'] ) || count( $data['propertyIDs'] ) > 10 ) {
 					return new WP_Error(
 						'rest_invalid_param',
-						/* translators: 1: List of invalid parameters. */
+						/* translators: %s: List of invalid parameters. */
 						sprintf( __( 'Invalid parameter(s): %s', 'google-site-kit' ), 'propertyIDs' ),
 						array( 'status' => 400 )
 					);

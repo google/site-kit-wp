@@ -44,7 +44,7 @@ import useModuleAccess from '../../../../../hooks/useModuleAcess';
 
 const { useSelect } = Data;
 
-export default function ReminderBanner( { onSubmitSuccess } ) {
+export default function ReminderBanner( { onSubmitSuccess, children } ) {
 	const {
 		hasModuleAccess: hasAnalyticsAccess,
 		isLoadingModuleAccess: isLoadingAnalyticsAccess,
@@ -126,7 +126,7 @@ export default function ReminderBanner( { onSubmitSuccess } ) {
 	) {
 		const remainingDays = 30 - referenceDate.getDate();
 		title = sprintf(
-			/* translators: 1: Number of days remaining before the user can setup Google Analytics 4 */
+			/* translators: %s: Number of days remaining before the user can setup Google Analytics 4 */
 			__(
 				'You only have %d more days to setup Google Analytics 4',
 				'google-site-kit'
@@ -202,6 +202,8 @@ export default function ReminderBanner( { onSubmitSuccess } ) {
 			) }
 			secondaryPane={ secondaryPane }
 			onDismiss={ showTooltip }
-		/>
+		>
+			{ children }
+		</BannerNotification>
 	);
 }

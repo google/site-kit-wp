@@ -106,7 +106,7 @@ export default function SetupAccountCreate() {
 					) }
 				{ ! existingTag &&
 					sprintf(
-						/* translators: 1: user email address */
+						/* translators: %s: user email address */
 						__(
 							'Already use AdSense? Add %s as a user to an existing AdSense account.',
 							'google-site-kit'
