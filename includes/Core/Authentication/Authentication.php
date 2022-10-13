@@ -1491,11 +1491,10 @@ final class Authentication {
 		$html  = __( 'The link you followed has expired.', 'google-site-kit' );
 		$html .= '</p><p>';
 		$html .= sprintf(
-			'<a href="%s">%s</a>. <a href="%s" target="_blank">%s</a>.',
+			/* translators: 1: Admin splash URL. 2: Support link URL. */
+			__( '<a href="%1$s">Please try again</a>. Retry didn’t work? <a href="%2$s" target="_blank">Get help</a>.', 'google-site-kit' ),
 			esc_url( Plugin::instance()->context()->admin_url( 'splash' ) ),
-			__( 'Please try again', 'google-site-kit' ),
-			esc_url( $this->get_proxy_support_link_url() . '?error_id=nonce_expired' ),
-			__( 'Get help', 'google-site-kit' )
+			esc_url( $this->get_proxy_support_link_url() . '?error_id=nonce_expired' )
 		);
 		wp_die( $html, __( 'Something went wrong.', 'google-site-kit' ), 403 ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	}
