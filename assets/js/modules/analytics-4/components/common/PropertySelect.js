@@ -90,6 +90,8 @@ export default function PropertySelect( {
 	const { selectProperty } = useDispatch( MODULES_ANALYTICS_4 );
 
 	const measurementIDs = useSelect( ( select ) => {
+		// We should conditionally check the properties length here
+		// because the properties will be null if the user does not have access to the module.
 		if ( ! properties?.length ) {
 			return null;
 		}
