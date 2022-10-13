@@ -376,8 +376,8 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 			footer={
 				!! footerMessages.length && (
 					<ul className="googlesitekit-ga4-setup-banner__footer-text-list">
-						{ footerMessages.map( ( message, index ) => (
-							<li key={ index }>{ message }</li>
+						{ footerMessages.map( ( message ) => (
+							<li key={ message }>{ message }</li>
 						) ) }
 					</ul>
 				)
