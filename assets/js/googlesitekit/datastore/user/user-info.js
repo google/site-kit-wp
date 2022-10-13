@@ -406,7 +406,7 @@ export const selectors = {
 	 * @since n.e.x.t
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {(string|undefined)} The user's full name.
+	 * @return {(string|null|undefined)} The user's full name; will be set to `null` if not available in the user's profile data and `undefined` while loading.
 	 */
 	getFullName: createRegistrySelector( ( select ) => () => {
 		const user = select( CORE_USER ).getUser();

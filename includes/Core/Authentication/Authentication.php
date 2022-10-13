@@ -372,7 +372,7 @@ final class Authentication {
 					//
 					// If it isn't detected, we schedule the profile to be
 					// updated in the background so it's available ASAP.
-					if ( ! empty( $profile_data['full_name'] ) ) {
+					if ( isset( $profile_data['full_name'] ) ) {
 						$user['user']['full_name'] = $profile_data['full_name'];
 					} else {
 						$this->cron_refresh_profile_data(
