@@ -30,8 +30,13 @@ import * as fixtures from '../../datastore/__fixtures__';
 import * as analyticsFixtures from '../../../analytics/datastore/__fixtures__';
 import { fireEvent, act, render } from '../../../../../../tests/js/test-utils';
 
-const { createProperty, createWebDataStream, properties, webDataStreams } =
-	fixtures;
+const {
+	createProperty,
+	createWebDataStream,
+	properties,
+	webDataStreams,
+	webDataStreamsBatch,
+} = fixtures;
 const { accounts } = analyticsFixtures.accountsPropertiesProfiles;
 const accountID = createProperty._accountID;
 const propertyID = createWebDataStream._propertyID;
@@ -60,6 +65,12 @@ const setupRegistry = ( { dispatch } ) => {
 	dispatch( MODULES_ANALYTICS_4 ).finishResolution(
 		'receiveGetWebDataStreams',
 		{ propertyID }
+	);
+	dispatch( MODULES_ANALYTICS_4 ).receiveGetWebDataStreamsBatch(
+		webDataStreamsBatch,
+		{
+			propertyIDs: properties.map( ( { _id } ) => _id ),
+		}
 	);
 };
 
