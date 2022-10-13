@@ -362,10 +362,25 @@ final class Authentication {
 			'googlesitekit_user_data',
 			function( $user ) {
 				if ( $this->profile->has() ) {
-					$profile_data              = $this->profile->get();
-					$user['user']['email']     = $profile_data['email'];
-					$user['user']['picture']   = $profile_data['photo'];
-					$user['user']['full_name'] = $profile_data['full_name'];
+					$profile_data            = $this->profile->get();
+					$user['user']['email']   = $profile_data['email'];
+					$user['user']['picture'] = $profile_data['photo'];
+
+					// Older versions of Site Kit (before 1.86.0) did not
+					// fetch the user's full name, so we need to check for
+					// that attribute before using it.
+					//
+					// If it isn't detected, we schedule the profile to be
+					// updated in the background so it's available ASAP.
+					if ( ! empty( $profile_data['full_name'] ) ) {
+						$user['user']['full_name'] = $profile_data['full_name'];
+					} else {
+						$this->cron_refresh_profile_data(
+							$this->user_options->get_user_id()
+						);
+
+						$user['user']['full_name'] = null;
+					}
 				}
 
 				$user['connectURL']        = esc_url_raw( $this->get_connect_url() );
