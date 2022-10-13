@@ -97,7 +97,7 @@ export function isAuthError( error ) {
 export function isErrorRetryable( error ) {
 	return (
 		!! error?.selectorData?.storeName &&
-		error.selectorData?.name === 'getReport' &&
+		error.selectorData.name === 'getReport' &&
 		! isInsufficientPermissionsError( error ) &&
 		! isPermissionScopeError( error ) &&
 		! isAuthError( error )
