@@ -75,7 +75,7 @@ export default function Footer( props ) {
 		select( CORE_UI ).getValue( isSavingKey )
 	);
 	const moduleHomepage = useSelect( ( select ) => {
-		if ( isEmpty( module ) || ! module.homepage ) {
+		if ( ! module || isEmpty( module.homepage ) ) {
 			return undefined;
 		}
 		return select( CORE_USER ).getAccountChooserURL( module.homepage );
