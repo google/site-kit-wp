@@ -365,22 +365,14 @@ final class Authentication {
 					$profile_data            = $this->profile->get();
 					$user['user']['email']   = $profile_data['email'];
 					$user['user']['picture'] = $profile_data['photo'];
-
-					// Older versions of Site Kit (before 1.86.0) did not
+					// Older versions of Site Kit (before n.e.x.t) did not
 					// fetch the user's full name, so we need to check for
 					// that attribute before using it.
 					//
-					// If it isn't detected, we schedule the profile to be
-					// updated in the background so it's available ASAP.
-					if ( isset( $profile_data['full_name'] ) ) {
-						$user['user']['full_name'] = $profile_data['full_name'];
-					} else {
-						$this->cron_refresh_profile_data(
-							$this->user_options->get_user_id()
-						);
-
-						$user['user']['full_name'] = null;
-					}
+					// WP Cron will eventually update the profile data with
+					// this `full_name` attribute, but this prevents errors
+					// when a user upgrades to n.e.x.t but cron hasn't run yet.
+					$user['user']['full_name'] = isset( $profile_data['full_name'] ) ? $profile_data['full_name'] : null;
 				}
 
 				$user['connectURL']        = esc_url_raw( $this->get_connect_url() );
