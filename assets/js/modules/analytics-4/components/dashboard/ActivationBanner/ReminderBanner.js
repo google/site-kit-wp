@@ -50,6 +50,14 @@ export default function ReminderBanner( { onSubmitSuccess, children } ) {
 		isLoadingModuleAccess: isLoadingAnalyticsAccess,
 	} = useModuleAccess( 'analytics' );
 
+	// These are the results from the new getModuleAccess selector.
+	// const {
+	// 	hasModuleAccess: hasAnalyticsAccessNew,
+	// 	isLoadingModuleAccess: isLoadingAnalyticsAccessNew,
+	// } = useSelect( ( select ) =>
+	// 	select( CORE_USER ).getModuleAccess( 'analytics' )
+	// );
+
 	const referenceDateString = useSelect( ( select ) =>
 		select( CORE_USER ).getReferenceDate()
 	);
