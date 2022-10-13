@@ -18,6 +18,7 @@ use Google\Site_Kit\Core\Authentication\Google_Proxy;
 use Google\Site_Kit\Core\Authentication\Owner_ID;
 use Google\Site_Kit\Core\Authentication\Profile;
 use Google\Site_Kit\Core\Authentication\Token;
+use Google\Site_Kit\Core\Dashboard_Sharing\Activity_Metrics\Activity_Metrics;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
@@ -46,6 +47,14 @@ final class OAuth_Client extends OAuth_Client_Base {
 	 * @var Owner_ID
 	 */
 	private $owner_id;
+
+	/**
+	 * Activity_Metrics instance.
+	 *
+	 * @since n.e.x.t
+	 * @var Activity_Metrics
+	 */
+	private $activity_metrics;
 
 	/**
 	 * Constructor.
@@ -79,7 +88,8 @@ final class OAuth_Client extends OAuth_Client_Base {
 			$token
 		);
 
-		$this->owner_id = new Owner_ID( $this->options );
+		$this->owner_id         = new Owner_ID( $this->options );
+		$this->activity_metrics = new Activity_Metrics( $this->context, $this->user_options );
 	}
 
 	/**
@@ -99,8 +109,10 @@ final class OAuth_Client extends OAuth_Client_Base {
 			return;
 		}
 
+		$active_consumers = $this->activity_metrics->get_for_refresh_token();
+
 		try {
-			$token_response = $this->get_client()->fetchAccessTokenWithRefreshToken( $token['refresh_token'] );
+			$token_response = $this->get_client()->fetchAccessTokenWithRefreshToken( $token['refresh_token'], $active_consumers );
 		} catch ( \Exception $e ) {
 			$this->handle_fetch_token_exception( $e );
 			return;
