@@ -368,10 +368,6 @@ final class Authentication {
 					// Older versions of Site Kit (before n.e.x.t) did not
 					// fetch the user's full name, so we need to check for
 					// that attribute before using it.
-					//
-					// WP Cron will eventually update the profile data with
-					// this `full_name` attribute, but this prevents errors
-					// when a user upgrades to n.e.x.t but cron hasn't run yet.
 					$user['user']['full_name'] = isset( $profile_data['full_name'] ) ? $profile_data['full_name'] : null;
 				}
 
