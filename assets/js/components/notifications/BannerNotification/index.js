@@ -284,10 +284,11 @@ function BannerNotification( {
 							{ descriptionIcon }
 						</div>
 					) }
-					<p>
-						{ isValidElement( description ) ? (
-							description
-						) : (
+
+					{ isValidElement( description ) ? (
+						description
+					) : (
+						<p>
 							<span
 								dangerouslySetInnerHTML={ sanitizeHTML(
 									description,
@@ -302,30 +303,32 @@ function BannerNotification( {
 									}
 								) }
 							/>
-						) }
+						</p>
+					) }
 
-						{ learnMoreLabel && (
-							<Fragment>
-								{ ' ' }
-								<Link
-									onClick={ handleLearnMore }
-									href={ learnMoreURL }
-									external={
-										learnMoreTarget ===
-										LEARN_MORE_TARGET.EXTERNAL
-									}
-								>
-									{ learnMoreLabel }
-								</Link>
-								{ learnMoreDescription }
-							</Fragment>
-						) }
-						{ pageIndex && (
+					{ learnMoreLabel && (
+						<p>
+							{ ' ' }
+							<Link
+								onClick={ handleLearnMore }
+								href={ learnMoreURL }
+								external={
+									learnMoreTarget ===
+									LEARN_MORE_TARGET.EXTERNAL
+								}
+							>
+								{ learnMoreLabel }
+							</Link>
+							{ learnMoreDescription }
+						</p>
+					) }
+					{ pageIndex && (
+						<p>
 							<span className="googlesitekit-publisher-win__detect">
 								{ pageIndex }
 							</span>
-						) }
-					</p>
+						</p>
+					) }
 				</div>
 			) }
 			{ children }

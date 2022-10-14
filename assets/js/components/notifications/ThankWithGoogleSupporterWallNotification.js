@@ -20,7 +20,6 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { Fragment } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -53,7 +52,7 @@ export default function ThankWithGoogleSupporterWallNotification() {
 				'google-site-kit'
 			) }
 			description={
-				<Fragment>
+				<p>
 					<span className="googlesitekit-display-block">
 						{ __(
 							'A supporter wall widget shows the list of everyone who has supported your site using Thank with Google. It’s a nice way to thank your supporters back.',
@@ -66,7 +65,7 @@ export default function ThankWithGoogleSupporterWallNotification() {
 							'google-site-kit'
 						) }
 					</span>
-				</Fragment>
+				</p>
 			}
 			ctaLabel={ __( 'Add Supporter Wall widget', 'google-site-kit' ) }
 			ctaLink={ supporterWallURL }
