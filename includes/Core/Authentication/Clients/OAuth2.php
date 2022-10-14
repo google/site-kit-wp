@@ -25,14 +25,14 @@ use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 class OAuth2 extends Google_Service_OAuth2 {
 
 	/**
-	 * Overrides generateCredentialsRequest with active consumers.
+	 * Overrides generateCredentialsRequest with additional parameters.
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param array $active_consumers Optional. Array of active consumers.
+	 * @param array $extra_params Optional. Array of extra parameters to fetch with.
 	 * @return RequestInterface Token credentials request.
 	 */
-	public function generateCredentialsRequest( $active_consumers = array() ) {
+	public function generateCredentialsRequest( $extra_params = array() ) {
 		$request    = parent::generateCredentialsRequest();
 		$grant_type = $this->getGrantType();
 
@@ -42,7 +42,7 @@ class OAuth2 extends Google_Service_OAuth2 {
 
 		$params = array_merge(
 			Query::parse( Utils::copyToString( $request->getBody() ) ),
-			$active_consumers
+			$extra_params
 		);
 
 		return Utils::modifyRequest( $request, $params );
