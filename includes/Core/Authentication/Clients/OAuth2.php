@@ -40,9 +40,11 @@ class OAuth2 extends Google_Service_OAuth2 {
 			return $request;
 		}
 
-		$params = array_merge(
-			Query::parse( Utils::copyToString( $request->getBody() ) ),
-			$extra_params
+		$params = array(
+			'body' => array_merge(
+				Query::parse( Utils::copyToString( $request->getBody() ) ),
+				$extra_params
+			),
 		);
 
 		return Utils::modifyRequest( $request, $params );
