@@ -36,14 +36,16 @@ class OAuth2 extends Google_Service_OAuth2 {
 		$request    = parent::generateCredentialsRequest();
 		$grant_type = $this->getGrantType();
 
-		if ( 'refresh_token' !== $grant_type ) {
+		if ( empty( $extra_params ) || 'refresh_token' !== $grant_type ) {
 			return $request;
 		}
 
 		$params = array(
-			'body' => array_merge(
-				Query::parse( Utils::copyToString( $request->getBody() ) ),
-				$extra_params
+			'body' => Query::build(
+				array_merge(
+					Query::parse( Utils::copyToString( $request->getBody() ) ),
+					$extra_params
+				)
 			),
 		);
 
