@@ -282,4 +282,26 @@ class Google_Site_Kit_Client extends Google_Client {
 		throw new Google_OAuth_Exception( $error );
 	}
 
+	/**
+	 * Create a default Google OAuth2 object.
+	 *
+	 * @return OAuth2 Crated OAuth2 instance.
+	 */
+	protected function createOAuth2Service() {
+		$auth = new OAuth2(
+			array(
+				'clientId'           => $this->getClientId(),
+				'clientSecret'       => $this->getClientSecret(),
+				'authorizationUri'   => self::OAUTH2_AUTH_URL,
+				'tokenCredentialUri' => self::OAUTH2_TOKEN_URI,
+				'redirectUri'        => $this->getRedirectUri(),
+				'issuer'             => $this->getConfig( 'client_id' ),
+				'signingKey'         => $this->getConfig( 'signing_key' ),
+				'signingAlgorithm'   => $this->getConfig( 'signing_algorithm' ),
+			)
+		);
+
+		return $auth;
+	}
+
 }
