@@ -24,6 +24,7 @@ import {
 	createTestRegistry,
 	muteFetch,
 	provideModules,
+	provideUserInfo,
 	unsubscribeFromAll,
 	untilResolved,
 } from '../../../../../tests/js/utils';
@@ -34,6 +35,7 @@ import {
 	ERROR_CODE_INSUFFICIENT_MODULE_DEPENDENCIES,
 } from './constants';
 import FIXTURES, { withActive } from './__fixtures__';
+import { MODULES_ANALYTICS } from '../../../modules/analytics/datastore/constants';
 
 describe( 'core/modules modules', () => {
 	const dashboardSharingDataBaseVar = '_googlesitekitDashboardSharingData';
@@ -1612,6 +1614,27 @@ describe( 'core/modules modules', () => {
 					.hasModuleAccess( 'search-console' );
 
 				expect( moduleAccess ).toBeUndefined();
+			} );
+		} );
+
+		describe( 'userHasModuleAccess', () => {
+			it( 'should not make a network request if logged in user is the module owner', async () => {
+				provideModules( registry, [
+					{
+						slug: 'analytics',
+						storeName: MODULES_ANALYTICS,
+					},
+				] );
+				provideUserInfo( registry ); // Sets current logged in user_id to 1.
+				registry
+					.dispatch( MODULES_ANALYTICS )
+					.receiveGetSettings( { ownerID: 1 } );
+				const moduleAccess = registry
+					.select( CORE_MODULES )
+					.userHasModuleAccess( 'analytics' );
+
+				expect( fetchMock ).toHaveFetchedTimes( 0 );
+				expect( moduleAccess.hasModuleAccess ).toBe( true );
 			} );
 		} );
 
