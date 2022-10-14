@@ -52,16 +52,15 @@ export default function ReminderBannerNoAccess( {
 		: __( 'Another admin', 'google-site-kit' );
 
 	description = createInterpolateElement(
-		description +
-			'. <br />' +
-			sprintf(
-				/* translators: 1: module owner's name, 2: module name */
-				__(
-					'%1$s configured Analytics and you don’t have access to this Analytics property. Contact them to share access or change the Analytics property.',
-					'google-site-kit'
-				),
-				formattedOwnerName
+		sprintf(
+			/* translators: 1. Original reminder description text, 2: module owner's name */
+			__(
+				'%1$s.<br />%2$s configured Analytics and you don’t have access to this Analytics property. Contact them to share access or change the Analytics property.',
+				'google-site-kit'
 			),
+			description,
+			formattedOwnerName
+		),
 		{
 			strong: <strong />,
 			br: <br />,
