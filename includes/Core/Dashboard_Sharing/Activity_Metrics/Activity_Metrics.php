@@ -59,7 +59,12 @@ class Activity_Metrics {
 	 * @return array Array of active consumers formatted for refresh token.
 	 */
 	public function get_for_refresh_token() {
-		$active_consumers    = $this->active_consumers->get();
+		$active_consumers = $this->active_consumers->get();
+
+		if ( empty( $active_consumers ) ) {
+			return array();
+		}
+
 		$formatted_consumers = array();
 
 		foreach ( $active_consumers as $id => $roles ) {
