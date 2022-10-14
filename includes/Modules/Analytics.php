@@ -277,10 +277,10 @@ final class Analytics extends Module
 		}
 
 		// Check for a returned error.
-		$error = htmlspecialchars( $input->filter( INPUT_GET, 'error' ) );
+		$error = $input->filter( INPUT_GET, 'error' );
 		if ( ! empty( $error ) ) {
 			wp_safe_redirect(
-				$this->context->admin_url( 'module-analytics', array( 'error_code' => $error ) )
+				$this->context->admin_url( 'module-analytics', array( 'error_code' => htmlspecialchars( $error ) ) )
 			);
 			exit;
 		}
