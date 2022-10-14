@@ -38,7 +38,11 @@ import {
 	accountsPropertiesProfiles,
 	defaultSettings,
 } from '../assets/js/modules/analytics/datastore/__fixtures__';
-import { defaultSettings as ga4DefaultSettings } from '../assets/js/modules/analytics-4/datastore/__fixtures__';
+import {
+	defaultSettings as ga4DefaultSettings,
+	webDataStreamsBatch,
+	properties as ga4Properties,
+} from '../assets/js/modules/analytics-4/datastore/__fixtures__';
 
 /* eslint-disable sitekit/acronym-case */
 const { useRegistry } = Data;
@@ -323,6 +327,13 @@ storiesOf( 'Analytics Module/Settings', module )
 					},
 				],
 				{ propertyID: '1001' }
+			);
+
+			dispatch( MODULES_ANALYTICS_4 ).receiveGetWebDataStreamsBatch(
+				webDataStreamsBatch,
+				{
+					propertyIDs: ga4Properties.map( ( { _id } ) => _id ),
+				}
 			);
 
 			return (
