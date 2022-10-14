@@ -305,44 +305,6 @@ const baseSelectors = {
 			);
 		}
 	),
-
-	/**
-	 * Returns if the current logged in user has access to a given module.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param {string} moduleSlug The module slug.
-	 * @return {Object} The result of the module access check and if the check is still loading.
-	 */
-	getModuleAccess: createRegistrySelector(
-		( select ) => ( state, moduleSlug ) => {
-			const storeName =
-				select( CORE_MODULES ).getModuleStoreName( moduleSlug );
-
-			const loggedInUserID = select( CORE_USER ).getID();
-			const moduleOwnerID = select( storeName )?.getOwnerID();
-
-			const hasModuleAccess =
-				moduleOwnerID === loggedInUserID ||
-				select( CORE_MODULES ).hasModuleAccess( moduleSlug );
-
-			const hasResolvedUser =
-				select( CORE_USER ).hasFinishedResolution( 'getUser' );
-			const hasResolvedModuleOwner =
-				select( storeName )?.hasFinishedResolution( 'getSettings' );
-			const isResolvingModuleAccess = select( CORE_MODULES ).isResolving(
-				'hasModuleAccess',
-				[ moduleSlug ]
-			);
-
-			const isLoadingModuleAccess =
-				! hasResolvedModuleOwner ||
-				! hasResolvedUser ||
-				isResolvingModuleAccess;
-
-			return { hasModuleAccess, isLoadingModuleAccess };
-		}
-	),
 };
 
 const store = Data.combineStores( fetchGetCapabilitiesStore, {

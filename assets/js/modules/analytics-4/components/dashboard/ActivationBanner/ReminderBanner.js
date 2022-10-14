@@ -40,7 +40,7 @@ import InfoIcon from '../../../../../../svg/icons/info.svg';
 import ErrorIcon from '../../../../../../svg/icons/error.svg';
 import ProgressBar from '../../../../../components/ProgressBar';
 import ReminderBannerNoAccess from './ReminderBannerNoAccess';
-import useModuleAccess from '../../../../../hooks/useModuleAcess';
+import { CORE_MODULES } from '../../../../../googlesitekit/modules/datastore/constants';
 
 const { useSelect } = Data;
 
@@ -48,15 +48,9 @@ export default function ReminderBanner( { onSubmitSuccess, children } ) {
 	const {
 		hasModuleAccess: hasAnalyticsAccess,
 		isLoadingModuleAccess: isLoadingAnalyticsAccess,
-	} = useModuleAccess( 'analytics' );
-
-	// These are the results from the new getModuleAccess selector.
-	// const {
-	// 	hasModuleAccess: hasAnalyticsAccessNew,
-	// 	isLoadingModuleAccess: isLoadingAnalyticsAccessNew,
-	// } = useSelect( ( select ) =>
-	// 	select( CORE_USER ).getModuleAccess( 'analytics' )
-	// );
+	} = useSelect( ( select ) =>
+		select( CORE_MODULES ).userHasModuleAccess( 'analytics' )
+	);
 
 	const referenceDateString = useSelect( ( select ) =>
 		select( CORE_USER ).getReferenceDate()
