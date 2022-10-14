@@ -95,8 +95,7 @@ export default function SettingsView() {
 		supporterWall = (
 			<Fragment>
 				<p className="googlesitekit-settings-module__meta-item-info">
-					A supporter wall widget shows the list of people who
-					supported your site using Thank with Google
+					{ __( 'A supporter wall widget shows the list of people who supported your site using Thank with Google.' ) }
 				</p>
 				<p className="googlesitekit-settings-module__meta-item-data">
 					<Link
