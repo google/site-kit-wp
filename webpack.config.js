@@ -135,7 +135,7 @@ const siteKitExternals = {
 	'googlesitekit-modules': [ 'googlesitekit', 'modules' ],
 	'googlesitekit-widgets': [ 'googlesitekit', 'widgets' ],
 	'@wordpress/i18n': [ 'googlesitekit', 'i18n' ],
-	'googlesitekit-components': [ 'googlesitekit', 'components' ],
+	'googlesitekit-components': [ 'googlesitekit', 'components-gm2' ],
 };
 
 const externals = { ...siteKitExternals };
