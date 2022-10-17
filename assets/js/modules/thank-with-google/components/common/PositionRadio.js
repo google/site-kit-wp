@@ -24,6 +24,7 @@ import { useCallback } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { Radio } from 'googlesitekit-components';
 import {
 	MODULES_THANK_WITH_GOOGLE,
 	CTA_PLACEMENT_STATIC_ABOVE_CONTENT,
@@ -31,7 +32,6 @@ import {
 	CTA_PLACEMENT_STATIC_BELOW_1ST_PARAGRAPH,
 	CTA_PLACEMENT_STATIC_BELOW_CONTENT,
 } from '../../datastore/constants';
-import Radio from '../../../../components/Radio';
 const { useSelect, useDispatch } = Data;
 
 export default function PositionRadio() {

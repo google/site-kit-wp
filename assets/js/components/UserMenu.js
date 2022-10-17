@@ -38,10 +38,8 @@ import { ESCAPE, TAB } from '@wordpress/keycodes';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { Button, Dialog, Menu } from 'googlesitekit-components';
 import { clearWebStorage, trackEvent } from '../util';
-import Dialog from './Dialog';
-import Button from './Button';
-import Menu from './Menu';
 import Portal from './Portal';
 import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../googlesitekit/datastore/user/constants';

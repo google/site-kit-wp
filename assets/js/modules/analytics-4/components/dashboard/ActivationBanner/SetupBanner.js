@@ -27,6 +27,7 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { ProgressBar } from 'googlesitekit-components';
 import BannerNotification from '../../../../../components/notifications/BannerNotification';
 import {
 	PropertySelect,
@@ -54,7 +55,6 @@ import { useShowTooltip } from '../../../../../components/AdminMenuTooltip/useSh
 import { AdminMenuTooltip } from '../../../../../components/AdminMenuTooltip/AdminMenuTooltip';
 import { getBannerDismissalExpiryTime } from '../../../utils/banner-dismissal-expiry';
 import { Cell, Grid, Row } from '../../../../../material-components';
-import ProgressBar from '../../../../../components/ProgressBar';
 import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
 import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '../../../../../util/errors';
 const { useDispatch, useSelect } = Data;

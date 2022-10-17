@@ -29,7 +29,7 @@ import { useState } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import Button from '../Button';
+import { Button } from 'googlesitekit-components';
 import SurveyHeader from './SurveyHeader';
 import SurveyQuestionSingleSelectChoice from './SurveyQuestionSingleSelectChoice';
 

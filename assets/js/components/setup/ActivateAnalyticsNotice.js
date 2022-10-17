@@ -26,12 +26,12 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { Checkbox } from 'googlesitekit-components';
 import {
 	ANALYTICS_NOTICE_FORM_NAME,
 	ANALYTICS_NOTICE_CHECKBOX,
 } from './constants';
 import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
-import Checkbox from '../Checkbox';
 import AnalyticsSetupSidekickSVG from '../../../svg/graphics/analytics-setup-sidekick.svg';
 const { useSelect, useDispatch } = Data;
 

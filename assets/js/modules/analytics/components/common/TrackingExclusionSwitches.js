@@ -26,8 +26,8 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { Switch } from 'googlesitekit-components';
 import { MODULES_ANALYTICS } from '../../datastore/constants';
-import Switch from '../../../../components/Switch';
 const { useSelect, useDispatch } = Data;
 
 export const TRACKING_LOGGED_IN_USERS = 'loggedinUsers';

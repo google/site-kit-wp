@@ -37,13 +37,13 @@ import {
 /*
  * Internal dependencies
  */
+import { Button } from 'googlesitekit-components';
 import GoogleLogoIcon from '../../../../svg/graphics/logo-g.svg';
 import { Cell, Grid, Row } from '../../../material-components';
 import { getContextScrollTop } from '../../../util/scroll';
 import { isHashOnly } from '../../../util/urls';
 import { sanitizeHTML } from '../../../util/sanitize';
 import DataBlock from '../../DataBlock';
-import Button from '../../Button';
 import Warning from '../../../../svg/icons/warning.svg';
 import ErrorIcon from '../../../../svg/icons/error.svg';
 import Link from '../../Link';

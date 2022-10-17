@@ -29,7 +29,7 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Button from '../Button';
+import { Button } from 'googlesitekit-components';
 
 export default function UserInputPreviewGroup( {
 	questionNumber,

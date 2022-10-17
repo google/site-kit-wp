@@ -37,6 +37,7 @@ import {
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { Button, ProgressBar } from 'googlesitekit-components';
 import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 import {
 	MODULES_ANALYTICS_4,
@@ -48,14 +49,12 @@ import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/consta
 import { Select, Option } from '../../../../material-components';
 import { GA4ActivateSwitch } from '../common';
 import { PropertySelect } from '../../../analytics-4/components/common';
-import ProgressBar from '../../../../components/ProgressBar';
 import SettingsUseSnippetSwitch from '../../../analytics-4/components/settings/SettingsUseSnippetSwitch';
 import SettingsNotice from '../../../../components/SettingsNotice/SettingsNotice';
 import { TYPE_INFO } from '../../../../components/SettingsNotice';
 import WarningIcon from '../../../../../../assets/svg/icons/warning-icon.svg';
 import JoyrideTooltip from '../../../../components/JoyrideTooltip';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import Button from '../../../../components/Button';
 const { useSelect, useDispatch } = Data;
 
 export default function GA4SettingsControls( { hasModuleAccess } ) {

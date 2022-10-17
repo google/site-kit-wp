@@ -26,7 +26,7 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import Button from '../../../../components/Button';
+import { Button } from 'googlesitekit-components';
 import { MODULES_ADSENSE } from '../../datastore/constants';
 import { parseAccountID } from '../../util/parsing';
 import { ACCOUNT_STATUS_APPROVED } from '../../util/status';

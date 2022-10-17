@@ -26,6 +26,7 @@ import { useCallback, useState, useEffect } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { Button, ProgressBar } from 'googlesitekit-components';
 import {
 	MODULES_ANALYTICS,
 	FORM_ACCOUNT_CREATE,
@@ -40,9 +41,7 @@ import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '../../../../../util/errors';
 import { trackEvent } from '../../../../../util';
 import { getAccountDefaults } from '../../../util/account';
 import { Cell } from '../../../../../material-components';
-import Button from '../../../../../components/Button';
 import Link from '../../../../../components/Link';
-import ProgressBar from '../../../../../components/ProgressBar';
 import StoreErrorNotices from '../../../../../components/StoreErrorNotices';
 import GA4PropertyNotice from '../GA4PropertyNotice';
 import TimezoneSelect from './TimezoneSelect';

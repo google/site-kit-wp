@@ -30,6 +30,7 @@ import { Fragment, useCallback } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { ProgressBar } from 'googlesitekit-components';
 import {
 	MODULES_THANK_WITH_GOOGLE,
 	ONBOARDING_STATE_COMPLETE,
@@ -37,7 +38,6 @@ import {
 	ONBOARDING_STATE_PENDING_VERIFICATION,
 } from '../../datastore/constants';
 import { useRefocus } from '../../../../hooks/useRefocus';
-import ProgressBar from '../../../../components/ProgressBar';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import SetupCreatePublication from './SetupCreatePublication';
 import SetupCustomize from './SetupCustomize';
