@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import Button from './Button';
-import HelpIcon from '../../svg/icons/help.svg';
+import HelpIcon from '../../../svg/icons/help.svg';
 
 const Template = ( args ) => <Button { ...args } />;
 
