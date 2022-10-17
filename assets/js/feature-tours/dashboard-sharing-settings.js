@@ -31,7 +31,6 @@ import { __ } from '@wordpress/i18n';
  */
 import { isFeatureEnabled } from '../features';
 import { CORE_USER } from '../googlesitekit/datastore/user/constants';
-import dashboardSharing from './dashboard-sharing';
 
 const { hasMultipleAdmins } = global._googlesitekitUserData || {};
 
@@ -67,10 +66,9 @@ export default {
 	callback: ( { type }, { select, dispatch } ) => {
 		if (
 			EVENTS.TOOLTIP === type &&
-			select( CORE_USER ).isTourDismissed( dashboardSharing.slug ) ===
-				false
+			select( CORE_USER ).isTourDismissed( 'dashboardSharing' ) === false
 		) {
-			dispatch( CORE_USER ).dismissTour( dashboardSharing.slug );
+			dispatch( CORE_USER ).dismissTour( 'dashboardSharing' );
 		}
 	},
 };
