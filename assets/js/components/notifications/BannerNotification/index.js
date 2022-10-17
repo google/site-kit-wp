@@ -290,6 +290,7 @@ function BannerNotification( {
 					) : (
 						<p>
 							<span
+								className="googlesitekit-publisher-win__inner-html"
 								dangerouslySetInnerHTML={ sanitizeHTML(
 									description,
 									{
