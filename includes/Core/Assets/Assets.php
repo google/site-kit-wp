@@ -472,8 +472,7 @@ final class Assets {
 			new Script(
 				'googlesitekit-components',
 				array(
-					'src'          => $base_url . 'js/googlesitekit-components-gm2.js',
-					'dependencies' => $dependencies,
+					'src' => $base_url . 'js/googlesitekit-components-gm2.js',
 				)
 			),
 			new Script(
@@ -587,6 +586,7 @@ final class Assets {
 					'dependencies' => array(
 						'googlesitekit-data',
 						'googlesitekit-i18n',
+						'googlesitekit-components',
 					),
 				)
 			),
