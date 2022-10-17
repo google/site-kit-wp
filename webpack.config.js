@@ -287,6 +287,8 @@ function* webpackConfig( env, argv ) {
 			'googlesitekit-idea-hub-post-list':
 				'./assets/js/googlesitekit-idea-hub-post-list.js',
 			'googlesitekit-polyfills': './assets/js/googlesitekit-polyfills.js',
+			'googlesitekit-components-gm2':
+				'./assets/js/googlesitekit-components-gm2.js',
 			// Old Modules
 			'googlesitekit-activation':
 				'./assets/js/googlesitekit-activation.js',
@@ -300,8 +302,6 @@ function* webpackConfig( env, argv ) {
 			'googlesitekit-wp-dashboard':
 				'./assets/js/googlesitekit-wp-dashboard.js',
 			'googlesitekit-base': './assets/js/googlesitekit-base.js',
-			'googlesitekit-components':
-				'./assets/js/googlesitekit-components-gm2.js',
 		},
 		externals,
 		output: {
