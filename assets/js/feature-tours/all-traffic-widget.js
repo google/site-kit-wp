@@ -25,8 +25,8 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import {
-	VIEW_CONTEXT_DASHBOARD,
-	VIEW_CONTEXT_DASHBOARD_VIEW_ONLY,
+	VIEW_CONTEXT_MAIN_DASHBOARD,
+	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 } from '../googlesitekit/constants';
 import { CORE_UI } from '../googlesitekit/datastore/ui/constants';
 import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
@@ -34,17 +34,21 @@ import { UI_ALL_TRAFFIC_LOADED } from '../modules/analytics/datastore/constants'
 
 const allTrafficWidget = {
 	slug: 'allTrafficWidget',
-	contexts: [ VIEW_CONTEXT_DASHBOARD, VIEW_CONTEXT_DASHBOARD_VIEW_ONLY ],
+	contexts: [
+		VIEW_CONTEXT_MAIN_DASHBOARD,
+		VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+	],
 	version: '1.25.0',
 	gaEventCategory: ( viewContext ) => `${ viewContext }_all-traffic-widget`,
 	checkRequirements: async ( registry ) => {
-		// Here we need to wait for the underlying selector to be resolved before selecting `isModuleConnected`.
-		await registry.__experimentalResolveSelect( CORE_MODULES ).getModules();
-		if (
-			! registry.select( CORE_MODULES ).isModuleConnected( 'analytics' )
-		) {
+		const connected = await registry
+			.__experimentalResolveSelect( CORE_MODULES )
+			.isModuleConnected( 'analytics' );
+
+		if ( ! connected ) {
 			return false;
 		}
+
 		// Wait for All Traffic widget to finish loading.
 		await new Promise( ( resolve ) => {
 			const resolveWhenLoaded = () => {

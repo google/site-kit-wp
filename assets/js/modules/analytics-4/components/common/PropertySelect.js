@@ -141,8 +141,11 @@ export default function PropertySelect( {
 		<Select
 			className={ classnames(
 				'googlesitekit-analytics__select-property',
+				'googlesitekit-analytics-4__select-property',
 				className,
 				{
+					'googlesitekit-analytics-4__select-property--with-access':
+						hasModuleAccess === true,
 					'mdc-select--invalid': ! isValidSelection,
 				}
 			) }

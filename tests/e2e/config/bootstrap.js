@@ -196,6 +196,16 @@ function observeConsoleLogging() {
 			return;
 		}
 
+		// Ignore errors thrown by `@wordpress/api-fetch`. These are actual,
+		// legimate request failures, but they can happen during a navigation
+		// (or when actually offline).
+		//
+		// We ignore them as they are not indicative of a problem with the
+		// test and usually make E2E tests fail erroneously.
+		if ( text.startsWith( 'You are probably offline.' ) ) {
+			return;
+		}
+
 		// WordPress 5.3 logs when a block is saved and causes console logs
 		// that should not cause failures.
 		if ( text.startsWith( 'Block successfully updated for' ) ) {

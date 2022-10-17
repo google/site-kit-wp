@@ -38,10 +38,20 @@ import Link from '../../../../../components/Link';
 import { stringToDate } from '../../../../../util';
 import InfoIcon from '../../../../../../svg/icons/info.svg';
 import ErrorIcon from '../../../../../../svg/icons/error.svg';
+import ProgressBar from '../../../../../components/ProgressBar';
+import ReminderBannerNoAccess from './ReminderBannerNoAccess';
+import { CORE_MODULES } from '../../../../../googlesitekit/modules/datastore/constants';
 
 const { useSelect } = Data;
 
-export default function ReminderBanner( { onSubmitSuccess } ) {
+export default function ReminderBanner( { onSubmitSuccess, children } ) {
+	const {
+		hasModuleAccess: hasAnalyticsAccess,
+		isLoadingModuleAccess: isLoadingAnalyticsAccess,
+	} = useSelect( ( select ) =>
+		select( CORE_MODULES ).userHasModuleAccess( 'analytics' )
+	);
+
 	const referenceDateString = useSelect( ( select ) =>
 		select( CORE_USER ).getReferenceDate()
 	);
@@ -79,16 +89,20 @@ export default function ReminderBanner( { onSubmitSuccess } ) {
 		);
 	}
 
+	if ( isLoadingAnalyticsAccess ) {
+		return <ProgressBar />;
+	}
+
 	let title;
 	let description = __(
 		'Your current Universal Analytics will stop recording stats on July 1st, 2023',
 		'google-site-kit'
 	);
 	let descriptionIcon = (
-		<InfoIcon
+		<ErrorIcon
 			height="14"
 			width="14"
-			className="googlesitekit-ga4-reminder-banner__description-icon googlesitekit-ga4-reminder-banner__description-icon--info"
+			className="googlesitekit-ga4-reminder-banner__description-icon googlesitekit-ga4-reminder-banner__description-icon--error"
 		/>
 	);
 
@@ -99,25 +113,27 @@ export default function ReminderBanner( { onSubmitSuccess } ) {
 			'Set up Google Analytics 4 now to join the future of Analytics',
 			'google-site-kit'
 		);
+		if ( hasAnalyticsAccess ) {
+			descriptionIcon = (
+				<InfoIcon
+					height="14"
+					width="14"
+					className="googlesitekit-ga4-reminder-banner__description-icon googlesitekit-ga4-reminder-banner__description-icon--info"
+				/>
+			);
+		}
 	} else if (
 		stringToDate( '2023-06-01' ) <= referenceDate &&
 		referenceDate < stringToDate( '2023-07-01' )
 	) {
 		const remainingDays = 30 - referenceDate.getDate();
 		title = sprintf(
-			/* translators: 1: Number of days remaining before the user can setup Google Analytics 4 */
+			/* translators: %s: Number of days remaining before the user can setup Google Analytics 4 */
 			__(
 				'You only have %d more days to setup Google Analytics 4',
 				'google-site-kit'
 			),
 			remainingDays
-		);
-		descriptionIcon = (
-			<ErrorIcon
-				height="14"
-				width="14"
-				className="googlesitekit-ga4-reminder-banner__description-icon googlesitekit-ga4-reminder-banner__description-icon--error"
-			/>
 		);
 	} else {
 		title = __(
@@ -152,11 +168,25 @@ export default function ReminderBanner( { onSubmitSuccess } ) {
 					) }
 				</li>
 			</ul>
-			<Link href={ documentationURL }>
+			<Link href={ documentationURL } external>
 				{ __( 'Learn more about GA4', 'google-site-kit' ) }
 			</Link>
 		</section>
 	);
+
+	if ( ! hasAnalyticsAccess ) {
+		return (
+			<ReminderBannerNoAccess
+				title={ title }
+				description={ description }
+				descriptionIcon={ descriptionIcon }
+				dismissExpires={ getBannerDismissalExpiryTime(
+					referenceDateString
+				) }
+				onDismiss={ showTooltip }
+			/>
+		);
+	}
 
 	return (
 		<BannerNotification
@@ -174,6 +204,8 @@ export default function ReminderBanner( { onSubmitSuccess } ) {
 			) }
 			secondaryPane={ secondaryPane }
 			onDismiss={ showTooltip }
-		/>
+		>
+			{ children }
+		</BannerNotification>
 	);
 }

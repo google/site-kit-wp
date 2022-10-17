@@ -72,6 +72,9 @@ export default function SetupUsingProxyWithSignIn() {
 
 	const dashboardSharingEnabled = useFeature( 'dashboardSharing' );
 
+	const analyticsModuleAvailable = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleAvailable( 'analytics' )
+	);
 	const analyticsModuleActive = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleActive( 'analytics' )
 	);
@@ -210,7 +213,7 @@ export default function SetupUsingProxyWithSignIn() {
 
 	if ( 'revoked' === getQueryArg( location.href, 'googlesitekit_context' ) ) {
 		title = sprintf(
-			/* translators: 1: is the site's hostname. (e.g. example.com) */
+			/* translators: %s: is the site's hostname. (e.g. example.com) */
 			__( 'You revoked access to Site Kit for %s', 'google-site-kit' ),
 			punycode.toUnicode( new URL( siteURL ).hostname )
 		);
@@ -364,7 +367,7 @@ export default function SetupUsingProxyWithSignIn() {
 														homeURL && (
 														<p>
 															{ sprintf(
-																/* translators: 1: Previous Connected Proxy URL */
+																/* translators: %s: Previous Connected Proxy URL */
 																__(
 																	'— Old URL: %s',
 																	'google-site-kit'
@@ -373,7 +376,7 @@ export default function SetupUsingProxyWithSignIn() {
 															) }
 															<br />
 															{ sprintf(
-																/* translators: 1: Connected Proxy URL */
+																/* translators: %s: Connected Proxy URL */
 																__(
 																	'— New URL: %s',
 																	'google-site-kit'
@@ -383,9 +386,10 @@ export default function SetupUsingProxyWithSignIn() {
 														</p>
 													) }
 
-												{ ! analyticsModuleActive && (
-													<ActivateAnalyticsNotice />
-												) }
+												{ analyticsModuleAvailable &&
+													! analyticsModuleActive && (
+														<ActivateAnalyticsNotice />
+													) }
 
 												<CompatibilityChecks>
 													{ ( {

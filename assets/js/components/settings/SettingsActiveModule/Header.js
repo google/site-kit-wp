@@ -41,7 +41,9 @@ import ModuleIcon from '../../ModuleIcon';
 import Badge from '../../Badge';
 import { trackEvent } from '../../../util';
 import useViewContext from '../../../hooks/useViewContext';
-const { useSelect } = Data;
+import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
+import { FORM_SETUP } from '../../../modules/analytics/datastore/constants';
+const { useSelect, useDispatch } = Data;
 
 export default function Header( { slug } ) {
 	const viewContext = useViewContext();
@@ -63,6 +65,8 @@ export default function Header( { slug } ) {
 	const isGA4Connected = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
 	);
+
+	const { setValues } = useDispatch( CORE_FORMS );
 
 	const onHeaderClick = useCallback( () => {
 		history.push( `/connected-services${ isOpen ? '' : `/${ slug }` }` );
@@ -168,8 +172,19 @@ export default function Header( { slug } ) {
 							! isGA4Connected && (
 								<Fragment>
 									<Button
-										href={ adminReauthURL }
-										onClick={ onActionClick }
+										onClick={ ( event ) => {
+											// Prevent this click from toggling the header too.
+											event.stopPropagation();
+											setValues( FORM_SETUP, {
+												// Pre-enable GA4 controls.
+												enableGA4: true,
+												// Enable tooltip highlighting GA4 property select.
+												enableGA4PropertyTooltip: true,
+											} );
+											history.push(
+												`/connected-services/${ slug }/edit`
+											);
+										} }
 									>
 										{ __(
 											'Connect Google Analytics 4',
@@ -187,7 +202,7 @@ export default function Header( { slug } ) {
 									onClick={ onActionClick }
 								>
 									{ sprintf(
-										/* translators: 1: module name. */
+										/* translators: %s: module name. */
 										__(
 											'Complete setup for %s',
 											'google-site-kit'

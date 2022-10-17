@@ -58,6 +58,7 @@ import {
 	getImageCellSizeProperties,
 	getImageCellOrderProperties,
 } from './utils';
+import { stringToDate } from '../../../util/date-range/string-to-date';
 
 export const LEARN_MORE_TARGET = {
 	EXTERNAL: 'external',
@@ -203,7 +204,7 @@ function BannerNotification( {
 		const { value: dismissed } = await getItem( cacheKeyDismissed );
 
 		if ( dismissed ) {
-			const expiration = new Date( dismissed );
+			const expiration = stringToDate( dismissed );
 			expiration.setSeconds(
 				expiration.getSeconds() + parseInt( dismissExpires, 10 )
 			);

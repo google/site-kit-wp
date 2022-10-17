@@ -1,7 +1,7 @@
 /**
- * UserMenu stories.
+ * Viewport width utilities.
  *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2022 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,29 +17,30 @@
  */
 
 /**
- * External dependencies
+ * Retrieves the viewport width.
+ *
+ * @since 1.85.0
+ *
+ * @return {number} The current viewport width.
  */
-import { storiesOf } from '@storybook/react';
+export function getViewportWidth() {
+	return global.window.document.documentElement.clientWidth;
+}
 
 /**
- * Internal dependencies
+ * Sets the viewport width.
+ *
+ * @since 1.85.0
+ *
+ * @param {number} viewportWidth The viewport width to set.
  */
-import {
-	provideSiteInfo,
-	provideUserInfo,
-	WithTestRegistry,
-} from '../tests/js/utils';
-import UserMenu from '../assets/js/components/UserMenu';
-
-storiesOf( 'Global', module ).add( 'UserMenu', () => {
-	const setupRegistry = ( registry ) => {
-		provideSiteInfo( registry );
-		provideUserInfo( registry );
-	};
-
-	return (
-		<WithTestRegistry callback={ setupRegistry }>
-			<UserMenu />
-		</WithTestRegistry>
+export function setViewportWidth( viewportWidth ) {
+	Object.defineProperty(
+		global.window.document.documentElement,
+		'clientWidth',
+		{
+			configurable: true,
+			value: viewportWidth,
+		}
 	);
-} );
+}

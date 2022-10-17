@@ -28,8 +28,8 @@ import { render } from '@wordpress/element';
 import { clearWebStorage } from './util';
 import Root from './components/Root';
 import {
-	VIEW_CONTEXT_DASHBOARD,
-	VIEW_CONTEXT_DASHBOARD_VIEW_ONLY,
+	VIEW_CONTEXT_MAIN_DASHBOARD,
+	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 	VIEW_CONTEXT_MODULE_SETUP,
 } from './googlesitekit/constants';
 import DashboardEntryPoint from './components/DashboardEntryPoint';
@@ -41,7 +41,7 @@ domReady( () => {
 	}
 
 	const renderTarget = document.getElementById(
-		'js-googlesitekit-dashboard'
+		'js-googlesitekit-main-dashboard'
 	);
 
 	if ( renderTarget ) {
@@ -50,8 +50,8 @@ domReady( () => {
 		let viewContext = VIEW_CONTEXT_MODULE_SETUP;
 		if ( ! setupModuleSlug ) {
 			viewContext = viewOnly
-				? VIEW_CONTEXT_DASHBOARD_VIEW_ONLY
-				: VIEW_CONTEXT_DASHBOARD;
+				? VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY
+				: VIEW_CONTEXT_MAIN_DASHBOARD;
 		}
 
 		render(

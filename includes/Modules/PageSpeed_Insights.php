@@ -95,7 +95,7 @@ final class PageSpeed_Insights extends Module
 					return new WP_Error(
 						'missing_required_param',
 						sprintf(
-							/* translators: 1: Missing parameter name */
+							/* translators: %s: Missing parameter name */
 							__( 'Request parameter is empty: %s.', 'google-site-kit' ),
 							'strategy'
 						),

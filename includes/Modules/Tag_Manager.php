@@ -261,7 +261,7 @@ final class Tag_Manager extends Module
 				return $this->get_tagmanager_service()->accounts->listAccounts();
 			case 'GET:containers':
 				if ( ! isset( $data['accountID'] ) ) {
-					/* translators: 1: Missing parameter name */
+					/* translators: %s: Missing parameter name */
 					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ), array( 'status' => 400 ) );
 				}
 				return $this->get_tagmanager_service()->accounts_containers->listAccountsContainers( "accounts/{$data['accountID']}" );
@@ -269,7 +269,7 @@ final class Tag_Manager extends Module
 				if ( ! isset( $data['accountID'] ) ) {
 					return new WP_Error(
 						'missing_required_param',
-						/* translators: 1: Missing parameter name */
+						/* translators: %s: Missing parameter name */
 						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ),
 						array( 'status' => 400 )
 					);
@@ -312,7 +312,7 @@ final class Tag_Manager extends Module
 				if ( ! isset( $data['accountID'] ) ) {
 					return new WP_Error(
 						'missing_required_param',
-						/* translators: 1: Missing parameter name */
+						/* translators: %s: Missing parameter name */
 						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ),
 						array( 'status' => 400 )
 					);
@@ -320,7 +320,7 @@ final class Tag_Manager extends Module
 				if ( ! isset( $data['internalContainerID'] ) ) {
 					return new WP_Error(
 						'missing_required_param',
-						/* translators: 1: Missing parameter name */
+						/* translators: %s: Missing parameter name */
 						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'internalContainerID' ),
 						array( 'status' => 400 )
 					);
@@ -501,19 +501,28 @@ final class Tag_Manager extends Module
 	protected function setup_assets() {
 		$base_url = $this->context->url( 'dist/assets/' );
 
+		$dependencies = array(
+			'googlesitekit-api',
+			'googlesitekit-data',
+			'googlesitekit-datastore-site',
+			'googlesitekit-modules',
+			'googlesitekit-vendor',
+		);
+
+		$analytics_exists = apply_filters( 'googlesitekit_module_exists', false, 'analytics' );
+
+		// Note that the Tag Manager bundle will make use of the Analytics bundle if it's available,
+		// but can also function without it, hence the conditional include of the Analytics bundle here.
+		if ( $analytics_exists ) {
+			$dependencies[] = 'googlesitekit-modules-analytics';
+		}
+
 		return array(
 			new Script(
 				'googlesitekit-modules-tagmanager',
 				array(
 					'src'          => $base_url . 'js/googlesitekit-modules-tagmanager.js',
-					'dependencies' => array(
-						'googlesitekit-api',
-						'googlesitekit-data',
-						'googlesitekit-datastore-site',
-						'googlesitekit-modules',
-						'googlesitekit-modules-analytics',
-						'googlesitekit-vendor',
-					),
+					'dependencies' => $dependencies,
 				)
 			),
 		);

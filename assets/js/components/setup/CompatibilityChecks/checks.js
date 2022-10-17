@@ -28,6 +28,7 @@ import {
 	ERROR_INVALID_HOSTNAME,
 	ERROR_TOKEN_MISMATCH,
 	ERROR_WP_PRE_V5,
+	ERROR_SK_SERVICE_CONNECTION_FAIL,
 } from './constants';
 
 const isIP =
@@ -85,6 +86,10 @@ export const checkHealthChecks = async () => {
 
 	if ( ! response?.checks?.googleAPI?.pass ) {
 		throw ERROR_GOOGLE_API_CONNECTION_FAIL;
+	}
+
+	if ( ! response?.checks?.skService?.pass ) {
+		throw ERROR_SK_SERVICE_CONNECTION_FAIL;
 	}
 };
 // Check that client can connect to AMP Project.

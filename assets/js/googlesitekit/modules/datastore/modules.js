@@ -649,6 +649,15 @@ const baseReducer = ( state, { type, payload } ) => {
 	}
 };
 
+function* waitForModules() {
+	const { __experimentalResolveSelect } =
+		yield Data.commonActions.getRegistry();
+
+	yield Data.commonActions.await(
+		__experimentalResolveSelect( CORE_MODULES ).getModules()
+	);
+}
+
 const baseResolvers = {
 	*getModules() {
 		const registry = yield Data.commonActions.getRegistry();
@@ -662,10 +671,11 @@ const baseResolvers = {
 
 	*canActivateModule( slug ) {
 		const registry = yield Data.commonActions.getRegistry();
-		yield Data.commonActions.await(
-			registry.__experimentalResolveSelect( CORE_MODULES ).getModules()
+		const { select, __experimentalResolveSelect } = registry;
+		const module = yield Data.commonActions.await(
+			__experimentalResolveSelect( CORE_MODULES ).getModule( slug )
 		);
-		const module = registry.select( CORE_MODULES ).getModule( slug );
+		// At this point, all modules are loaded so we can safely select getModule below.
 
 		if ( ! module ) {
 			return;
@@ -674,9 +684,8 @@ const baseResolvers = {
 		const inactiveModules = [];
 
 		module.dependencies.forEach( ( dependencySlug ) => {
-			const dependedentModule = registry
-				.select( CORE_MODULES )
-				.getModule( dependencySlug );
+			const dependedentModule =
+				select( CORE_MODULES ).getModule( dependencySlug );
 			if ( ! dependedentModule?.active ) {
 				inactiveModules.push( dependedentModule.name );
 			}
@@ -729,14 +738,11 @@ const baseResolvers = {
 
 	*getRecoverableModules() {
 		const registry = yield Data.commonActions.getRegistry();
-
-		yield Data.commonActions.await(
+		const modules = yield Data.commonActions.await(
 			registry.__experimentalResolveSelect( CORE_MODULES ).getModules()
 		);
 
-		const modules = registry.select( CORE_MODULES ).getModules() || {};
-
-		const recoverableModules = Object.entries( modules ).reduce(
+		const recoverableModules = Object.entries( modules || {} ).reduce(
 			( moduleList, [ moduleSlug, module ] ) => {
 				if ( module.recoverable ) {
 					moduleList.push( moduleSlug );
@@ -769,6 +775,12 @@ const baseResolvers = {
 			sharedOwnershipModules
 		);
 	},
+
+	getModule: waitForModules,
+
+	isModuleActive: waitForModules,
+
+	isModuleConnected: waitForModules,
 };
 
 const baseSelectors = {
@@ -981,6 +993,44 @@ const baseSelectors = {
 	),
 
 	/**
+	 * Checks a module's availability status.
+	 *
+	 * Note that an otherwise valid module may be removed from the list of available modules
+	 * by making use of the the googlesitekit_available_modules filter in PHP.
+	 *
+	 * Returns `true` if the module is available.
+	 * Returns `false` if the module is not available.
+	 * Returns `undefined` if state is still loading.
+	 *
+	 * @since 1.85.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @param {string} slug  Module slug.
+	 * @return {(boolean|undefined)} `true` when the module is available.
+	 * 									  `false` when the module is not available.
+	 * 									  `undefined` if state is still loading.
+	 */
+	isModuleAvailable: createRegistrySelector(
+		( select ) => ( state, slug ) => {
+			const module = select( CORE_MODULES ).getModule( slug );
+
+			// Return `undefined` if modules haven't been loaded yet.
+			if ( module === undefined ) {
+				return undefined;
+			}
+
+			// A module with this slug couldn't be found; return `false` to signify the
+			// unavailable state.
+			if ( module === null ) {
+				return false;
+			}
+
+			// Otherwise, the module exists and is available.
+			return true;
+		}
+	),
+
+	/**
 	 * Checks a module's activation status.
 	 *
 	 * Returns `true` if the module exists and is active.
@@ -1179,6 +1229,43 @@ const baseSelectors = {
 	hasModuleAccess( state, slug ) {
 		return state.moduleAccess[ slug ];
 	},
+
+	/**
+	 * Returns if the current logged in user has access to a given module.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {string} slug The module slug.
+	 * @return {Object} The result of the module access check and if the check is still loading.
+	 */
+	userHasModuleAccess: createRegistrySelector(
+		( select ) => ( state, slug ) => {
+			const storeName = select( CORE_MODULES ).getModuleStoreName( slug );
+
+			const loggedInUserID = select( CORE_USER ).getID();
+			const moduleOwnerID = select( storeName )?.getOwnerID();
+
+			const hasModuleAccess =
+				moduleOwnerID === loggedInUserID ||
+				select( CORE_MODULES ).hasModuleAccess( slug );
+
+			const hasResolvedUser =
+				select( CORE_USER ).hasFinishedResolution( 'getUser' );
+			const hasResolvedModuleOwner =
+				select( storeName )?.hasFinishedResolution( 'getSettings' );
+			const isResolvingModuleAccess = select( CORE_MODULES ).isResolving(
+				'hasModuleAccess',
+				[ slug ]
+			);
+
+			const isLoadingModuleAccess =
+				! hasResolvedModuleOwner ||
+				! hasResolvedUser ||
+				isResolvingModuleAccess;
+
+			return { hasModuleAccess, isLoadingModuleAccess };
+		}
+	),
 
 	/**
 	 * Gets the list of recoverable modules for dashboard sharing.

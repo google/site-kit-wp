@@ -30,7 +30,6 @@
 					border-width: 3.5px;
 					height: 43px;
 					min-height: 0;
-					outline: none;
 					overflow: hidden;
 					position: relative;
 					width: 43px;
@@ -45,12 +44,14 @@
 					}
 				}
 
-				.mdc-image-radio__content[aria-checked="true"] {
-					outline: 0.1875rem solid;
+				&::after {
+					border: none;
 				}
 
-				&[aria-checked="true"] {
-					border: 0.25rem solid $c-surfaces-surface;
+				&--checked::after {
+					border: 0.1875rem solid var(--border-color);
+					border-radius: 50%;
+					transform: scale(1.15);
 				}
 			}
 

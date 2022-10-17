@@ -4,7 +4,7 @@ Contributors:      google
 Requires at least: 4.7
 Tested up to:      6.0
 Requires PHP:      5.6
-Stable tag:        1.84.0
+Stable tag:        1.85.0
 License:           Apache License 2.0
 License URI:       https://www.apache.org/licenses/LICENSE-2.0
 Tags:              google, search-console, analytics, adsense, pagespeed-insights, optimize, tag-manager, site-kit
@@ -107,6 +107,29 @@ By default, Site Kit does anonymize IP addresses upon activation of the Google A
 Please create a new topic on our [WordPress.org support forum](https://wordpress.org/support/plugin/google-site-kit/). Be sure to follow the [support forum guidelines](https://wordpress.org/support/guidelines/) when posting.
 
 == Changelog ==
+
+= 1.85.0 =
+
+**Enhanced**
+
+* Prevent loading plugin core if minimum WordPress version is not met. See [#5926](https://github.com/google/site-kit-wp/issues/5926).
+* Show banner notification to sites using a WordPress version older than 5.2 to inform about upcoming version requirement change. See [#5873](https://github.com/google/site-kit-wp/issues/5873).
+* Hide the "Reset sharing permissions" button when settings are already using the default settings. See [#5840](https://github.com/google/site-kit-wp/issues/5840).
+* Improve reliability of the check for SSL when determining Thank with Google module availability. See [#5806](https://github.com/google/site-kit-wp/issues/5806).
+* Include an option to "Edit in Publisher Center" in the Thank with Google settings view. See [#5755](https://github.com/google/site-kit-wp/issues/5755).
+* Update Thank with Google settings view to display without delay for consistency with other modules. See [#5750](https://github.com/google/site-kit-wp/issues/5750).
+* Add conditional reminder to set up the Supporter Wall widget for Thank with Google. See [#5538](https://github.com/google/site-kit-wp/issues/5538).
+* Add check for Site Kit service connectivity to pre-setup checks. See [#4628](https://github.com/google/site-kit-wp/issues/4628).
+
+**Fixed**
+
+* Add an external link indicator to the "Learn more about GA4" link in the GA4 Activation Banner. See [#5930](https://github.com/google/site-kit-wp/issues/5930).
+* Ensure the GA4 Activation Banner does not appear on the Entity Dashboard when in view only mode. See [#5870](https://github.com/google/site-kit-wp/issues/5870).
+* Skip Search Console requests on view-only dashboard when not shared with the user. See [#5815](https://github.com/google/site-kit-wp/issues/5815).
+* Update Thank with Google setup and settings views for consistency with other modules and major browsers. See [#5689](https://github.com/google/site-kit-wp/issues/5689).
+* Ensure the AdSense Linked status is correctly available in the Top Earning Pages widget when in view-only mode. See [#5493](https://github.com/google/site-kit-wp/issues/5493).
+* Ensure the user role select always displays properly based on current shareable roles. See [#5435](https://github.com/google/site-kit-wp/issues/5435).
+* Decouple core and modules from Analytics module availability. See [#5071](https://github.com/google/site-kit-wp/issues/5071).
 
 = 1.84.0 =
 

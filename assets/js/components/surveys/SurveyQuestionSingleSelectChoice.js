@@ -62,7 +62,7 @@ const SurveyQuestionSingleSelectChoice = ( {
 					<VisuallyHidden>
 						<label htmlFor={ uniqueID }>
 							{ sprintf(
-								/* translators: 1: Option name */
+								/* translators: %s: Option name */
 								__(
 									'Text input for option %s',
 									'google-site-kit'

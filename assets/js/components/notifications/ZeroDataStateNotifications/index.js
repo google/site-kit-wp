@@ -46,6 +46,13 @@ export default function ZeroDataStateNotifications() {
 
 		return select( CORE_USER ).canViewSharedModule( 'analytics' );
 	} );
+	const canViewSharedSearchConsole = useSelect( ( select ) => {
+		if ( ! viewOnly ) {
+			return true;
+		}
+
+		return select( CORE_USER ).canViewSharedModule( 'search-console' );
+	} );
 	const showRecoverableAnalytics = useSelect( ( select ) => {
 		if ( ! viewOnly ) {
 			return false;
@@ -84,6 +91,7 @@ export default function ZeroDataStateNotifications() {
 	);
 	const searchConsoleGatheringData = useInViewSelect(
 		( select ) =>
+			canViewSharedSearchConsole &&
 			false === showRecoverableSearchConsole &&
 			select( MODULES_SEARCH_CONSOLE ).isGatheringData()
 	);
@@ -96,6 +104,7 @@ export default function ZeroDataStateNotifications() {
 	);
 	const searchConsoleHasZeroData = useInViewSelect(
 		( select ) =>
+			canViewSharedSearchConsole &&
 			false === showRecoverableSearchConsole &&
 			select( MODULES_SEARCH_CONSOLE ).hasZeroData()
 	);

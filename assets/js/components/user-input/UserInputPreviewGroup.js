@@ -42,7 +42,7 @@ export default function UserInputPreviewGroup( {
 	const notEmpty = ( value ) => value.length > 0;
 
 	const sprintfTemplate =
-		/* translators: 1: other option */
+		/* translators: %s: other option */
 		questionNumber < 5 ? __( 'Other: %s', 'google-site-kit' ) : '%s';
 
 	return (
