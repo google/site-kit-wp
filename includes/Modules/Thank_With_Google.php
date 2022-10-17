@@ -291,6 +291,7 @@ final class Thank_With_Google extends Module
 						'googlesitekit-datastore-site',
 						'googlesitekit-modules',
 						'googlesitekit-vendor',
+						'googlesitekit-components',
 					),
 				)
 			),
