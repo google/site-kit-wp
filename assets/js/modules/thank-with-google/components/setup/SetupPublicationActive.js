@@ -34,14 +34,22 @@ import Data from 'googlesitekit-data';
 import { MODULES_THANK_WITH_GOOGLE } from '../../datastore/constants';
 import Button from '../../../../components/Button';
 import SetupPublicationScreen from './SetupPublicationScreen';
+import { trackEvent } from '../../../../util';
+import useViewContext from '../../../../hooks/useViewContext';
 const { useDispatch } = Data;
 
 export default function SetupPublicationActive( { currentPublicationID } ) {
 	const { setPublicationID } = useDispatch( MODULES_THANK_WITH_GOOGLE );
 
-	const handleSetupCustomize = useCallback( () => {
+	const viewContext = useViewContext();
+
+	const handleSetupCustomize = useCallback( async () => {
+		await trackEvent(
+			`${ viewContext }_thank-with-google`,
+			'review_publication_state'
+		);
 		setPublicationID( currentPublicationID );
-	}, [ currentPublicationID, setPublicationID ] );
+	}, [ currentPublicationID, setPublicationID, viewContext ] );
 
 	return (
 		<SetupPublicationScreen
