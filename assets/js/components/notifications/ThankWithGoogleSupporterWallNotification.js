@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import { useMount } from 'react-use';
+
+/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
@@ -30,9 +35,18 @@ import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { MODULES_THANK_WITH_GOOGLE } from '../../modules/thank-with-google/datastore/constants';
 import SupporterWallPromptSVG from '../../../svg/graphics/twg-supporter-wall.svg';
 import BannerNotification from './BannerNotification';
+import useViewContext from '../../hooks/useViewContext';
+import { trackEvent } from '../../util';
 const { useSelect } = Data;
 
 export default function ThankWithGoogleSupporterWallNotification() {
+	const viewContext = useViewContext();
+	const eventCategory = `${ viewContext }_thank-with-google-supporter-wall-notification`;
+
+	useMount( () => {
+		trackEvent( eventCategory, 'view_notification' );
+	} );
+
 	const supporterWallPrompt = useSelect( ( select ) =>
 		select( MODULES_THANK_WITH_GOOGLE ).getSupporterWallPrompt()
 	);
