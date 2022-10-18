@@ -25,7 +25,7 @@ import { render } from '../../../../../tests/js/test-utils';
 describe( 'BannerNotification', () => {
 	describe( 'attribute description with text', () => {
 		it( 'should render span with dangerouslySetInnerHTML', () => {
-			const { container } = render(
+			const { container, getByText } = render(
 				<BannerNotification
 					id="fake"
 					title={ 'Hey there!' }
@@ -38,6 +38,11 @@ describe( 'BannerNotification', () => {
 					'.googlesitekit-publisher-win__inner-html'
 				)
 			).toBeInTheDocument();
+			expect(
+				getByText( /I am string, not React elemet/ )
+			).toBeInTheDocument();
+
+			expect( container ).toMatchSnapshot();
 		} );
 
 		it( 'should render React element', () => {
@@ -60,6 +65,8 @@ describe( 'BannerNotification', () => {
 			expect(
 				container.querySelector( '.sk-react-element' )
 			).toBeInTheDocument();
+
+			expect( container ).toMatchSnapshot();
 		} );
 	} );
 } );
