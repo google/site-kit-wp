@@ -20,6 +20,7 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
+import { useCallback } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -28,6 +29,8 @@ import Data from 'googlesitekit-data';
 import { MODULES_THANK_WITH_GOOGLE } from '../../datastore/constants';
 import Button from '../../../../components/Button';
 import SetupPublicationScreen from './SetupPublicationScreen';
+import { trackEvent } from '../../../../util';
+import useViewContext from '../../../../hooks/useViewContext';
 const { useSelect } = Data;
 
 export default function SetupPublicationActionRequired() {
@@ -41,6 +44,15 @@ export default function SetupPublicationActionRequired() {
 		)
 	);
 
+	const viewContext = useViewContext();
+
+	const onCompleteSetup = useCallback( async () => {
+		await trackEvent(
+			`${ viewContext }_thank-with-google`,
+			'complete_publication_setup'
+		);
+	}, [ viewContext ] );
+
 	return (
 		<SetupPublicationScreen
 			title={ __( 'Complete your account setup', 'google-site-kit' ) }
@@ -51,6 +63,7 @@ export default function SetupPublicationActionRequired() {
 		>
 			<Button
 				href={ currentPublicationURL }
+				onClick={ onCompleteSetup }
 				target="_blank"
 				aria-label={ __(
 					'Complete your Thank with Google account setup',
