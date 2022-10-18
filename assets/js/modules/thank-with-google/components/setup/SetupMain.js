@@ -30,24 +30,24 @@ import { Fragment, useCallback, useEffect } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import {
-	MODULES_THANK_WITH_GOOGLE,
-	ONBOARDING_STATE_COMPLETE,
-	ONBOARDING_STATE_ACTION_REQUIRED,
-	ONBOARDING_STATE_PENDING_VERIFICATION,
-	ONBOARDING_STATE_NO_ACCOUNT,
-} from '../../datastore/constants';
-import { useRefocus } from '../../../../hooks/useRefocus';
 import ProgressBar from '../../../../components/ProgressBar';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
+import { useRefocus } from '../../../../hooks/useRefocus';
+import useViewContext from '../../../../hooks/useViewContext';
+import { trackEvent } from '../../../../util';
+import {
+	MODULES_THANK_WITH_GOOGLE,
+	ONBOARDING_STATE_ACTION_REQUIRED,
+	ONBOARDING_STATE_COMPLETE,
+	ONBOARDING_STATE_NO_ACCOUNT,
+	ONBOARDING_STATE_PENDING_VERIFICATION,
+} from '../../datastore/constants';
 import SetupCreatePublication from './SetupCreatePublication';
 import SetupCustomize from './SetupCustomize';
-import SetupPublicationActive from './SetupPublicationActive';
-import SetupPublicationActionRequired from './SetupPublicationActionRequired';
-import SetupPublicationPendingVerification from './SetupPublicationPendingVerification';
 import SetupHeader from './SetupHeader';
-import { trackEvent } from '../../../../util';
-import useViewContext from '../../../../hooks/useViewContext';
+import SetupPublicationActionRequired from './SetupPublicationActionRequired';
+import SetupPublicationActive from './SetupPublicationActive';
+import SetupPublicationPendingVerification from './SetupPublicationPendingVerification';
 const { useDispatch, useSelect } = Data;
 
 export default function SetupMain( { finishSetup } ) {

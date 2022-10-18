@@ -19,18 +19,18 @@
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
 import { useCallback } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { MODULES_THANK_WITH_GOOGLE } from '../../datastore/constants';
 import Button from '../../../../components/Button';
-import SetupPublicationScreen from './SetupPublicationScreen';
-import { trackEvent } from '../../../../util';
 import useViewContext from '../../../../hooks/useViewContext';
+import { trackEvent } from '../../../../util';
+import { MODULES_THANK_WITH_GOOGLE } from '../../datastore/constants';
+import SetupPublicationScreen from './SetupPublicationScreen';
 const { useSelect } = Data;
 
 export default function SetupCreatePublication() {
@@ -40,7 +40,7 @@ export default function SetupCreatePublication() {
 
 	const viewContext = useViewContext();
 
-	const onCreatePublication = useCallback( async () => {
+	const handleCreatePublication = useCallback( async () => {
 		await trackEvent(
 			`${ viewContext }_thank-with-google`,
 			'create_publication'
@@ -60,7 +60,7 @@ export default function SetupCreatePublication() {
 		>
 			<Button
 				href={ createPublicationURL }
-				onClick={ onCreatePublication }
+				onClick={ handleCreatePublication }
 				target="_blank"
 				aria-label={ __(
 					'Create your Thank with Google account',

@@ -31,11 +31,11 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { MODULES_THANK_WITH_GOOGLE } from '../../datastore/constants';
 import Button from '../../../../components/Button';
-import SetupPublicationScreen from './SetupPublicationScreen';
-import { trackEvent } from '../../../../util';
 import useViewContext from '../../../../hooks/useViewContext';
+import { trackEvent } from '../../../../util';
+import { MODULES_THANK_WITH_GOOGLE } from '../../datastore/constants';
+import SetupPublicationScreen from './SetupPublicationScreen';
 const { useDispatch } = Data;
 
 export default function SetupPublicationActive( { currentPublicationID } ) {
