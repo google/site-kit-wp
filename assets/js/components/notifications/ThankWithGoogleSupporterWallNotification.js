@@ -51,6 +51,8 @@ export default function ThankWithGoogleSupporterWallNotification() {
 	const eventCategory = `${ viewContext }_thank-with-google-supporter-wall-notification`;
 
 	useMount( () => {
+		// Only trigger the view event if the notification is visible.
+		// Otherwise, the view event will be triggered even if the notification isn't visual.
 		if ( supporterWallPrompt ) {
 			trackEvent( eventCategory, 'view_notification' );
 		}
