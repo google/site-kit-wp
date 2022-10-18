@@ -76,7 +76,7 @@ export default function PostTypesSelect() {
 			trackEvent(
 				`${ viewContext }_thank-with-google`,
 				'change_cta_post_types',
-				newCTAPostTypes.toString()
+				newCTAPostTypes.join( ',' )
 			);
 		},
 		[ ctaPostTypes, postTypes, setCTAPostTypes, viewContext ]
