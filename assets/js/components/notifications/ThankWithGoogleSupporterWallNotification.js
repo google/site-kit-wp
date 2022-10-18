@@ -17,15 +17,10 @@
  */
 
 /**
- * External dependencies
- */
-import { useMount } from 'react-use';
-
-/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { Fragment, useCallback } from '@wordpress/element';
+import { Fragment, useCallback, useEffect, useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -47,16 +42,20 @@ export default function ThankWithGoogleSupporterWallNotification() {
 		select( CORE_SITE ).getWidgetsAdminURL()
 	);
 
+	const [ viewNotificationSent, setViewNotificationSent ] = useState( false );
+
 	const viewContext = useViewContext();
 	const eventCategory = `${ viewContext }_thank-with-google-supporter-wall-notification`;
 
-	useMount( () => {
-		// Only trigger the view event if the notification is visible.
-		// Otherwise, the view event will be triggered even if the notification isn't visual.
-		if ( supporterWallPrompt ) {
+	useEffect( () => {
+		// Only trigger the view event if the notification is visible and we haven't
+		// already sent this notification.
+		if ( ! viewNotificationSent && supporterWallPrompt ) {
 			trackEvent( eventCategory, 'view_notification' );
+			// Don't send the view event again.
+			setViewNotificationSent( true );
 		}
-	} );
+	}, [ eventCategory, supporterWallPrompt, viewNotificationSent ] );
 
 	const handleOnCTAClick = useCallback( () => {
 		trackEvent( eventCategory, 'confirm_notification' );
