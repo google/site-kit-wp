@@ -20,6 +20,7 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
+import { useCallback } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -28,6 +29,8 @@ import Data from 'googlesitekit-data';
 import { MODULES_THANK_WITH_GOOGLE } from '../../datastore/constants';
 import Button from '../../../../components/Button';
 import SetupPublicationScreen from './SetupPublicationScreen';
+import { trackEvent } from '../../../../util';
+import useViewContext from '../../../../hooks/useViewContext';
 const { useSelect } = Data;
 
 export default function SetupPublicationPendingVerification() {
@@ -40,6 +43,15 @@ export default function SetupPublicationPendingVerification() {
 			currentPublication.publicationId
 		)
 	);
+
+	const viewContext = useViewContext();
+
+	const onCheckStatus = useCallback( async () => {
+		await trackEvent(
+			`${ viewContext }_thank-with-google`,
+			'review_publication_state'
+		);
+	}, [ viewContext ] );
 
 	return (
 		<SetupPublicationScreen
@@ -55,6 +67,7 @@ export default function SetupPublicationPendingVerification() {
 			<Button
 				href={ currentPublicationURL }
 				target="_blank"
+				onClick={ onCheckStatus }
 				aria-label={ __(
 					'Check your status on Thank with Google profile',
 					'google-site-kit'
