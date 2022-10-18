@@ -46,7 +46,7 @@ export default function SetupPublicationActive( { currentPublicationID } ) {
 	const handleSetupCustomize = useCallback( async () => {
 		await trackEvent(
 			`${ viewContext }_thank-with-google`,
-			'review_publication_state'
+			'customize'
 		);
 		setPublicationID( currentPublicationID );
 	}, [ currentPublicationID, setPublicationID, viewContext ] );
