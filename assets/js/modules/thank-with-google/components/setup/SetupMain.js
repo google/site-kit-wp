@@ -85,12 +85,13 @@ export default function SetupMain( { finishSetup } ) {
 				'receive_publication_state',
 				ONBOARDING_STATE_NO_ACCOUNT
 			);
+		} else {
+			trackEvent(
+				`${ viewContext }_thank-with-google`,
+				'receive_publication_state',
+				currentPublication.onboardingState
+			);
 		}
-		trackEvent(
-			`${ viewContext }_thank-with-google`,
-			'receive_publication_state',
-			currentPublication.onboardingState
-		);
 	}, [ currentPublication, viewContext ] );
 
 	let viewComponent;
