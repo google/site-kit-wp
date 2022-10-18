@@ -44,10 +44,7 @@ export default function SetupPublicationActive( { currentPublicationID } ) {
 	const viewContext = useViewContext();
 
 	const handleSetupCustomize = useCallback( async () => {
-		await trackEvent(
-			`${ viewContext }_thank-with-google`,
-			'customize'
-		);
+		await trackEvent( `${ viewContext }_thank-with-google`, 'customize' );
 		setPublicationID( currentPublicationID );
 	}, [ currentPublicationID, setPublicationID, viewContext ] );
 
