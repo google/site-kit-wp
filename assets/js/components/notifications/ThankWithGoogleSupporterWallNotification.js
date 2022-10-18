@@ -40,11 +40,20 @@ import { trackEvent } from '../../util';
 const { useSelect } = Data;
 
 export default function ThankWithGoogleSupporterWallNotification() {
+	const supporterWallPrompt = useSelect( ( select ) =>
+		select( MODULES_THANK_WITH_GOOGLE ).getSupporterWallPrompt()
+	);
+	const supporterWallURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getWidgetsAdminURL()
+	);
+
 	const viewContext = useViewContext();
 	const eventCategory = `${ viewContext }_thank-with-google-supporter-wall-notification`;
 
 	useMount( () => {
-		trackEvent( eventCategory, 'view_notification' );
+		if ( supporterWallPrompt ) {
+			trackEvent( eventCategory, 'view_notification' );
+		}
 	} );
 
 	const handleOnCTAClick = useCallback( () => {
@@ -54,13 +63,6 @@ export default function ThankWithGoogleSupporterWallNotification() {
 	const handleOnDismiss = useCallback( () => {
 		trackEvent( eventCategory, 'dismiss_notification' );
 	}, [ eventCategory ] );
-
-	const supporterWallPrompt = useSelect( ( select ) =>
-		select( MODULES_THANK_WITH_GOOGLE ).getSupporterWallPrompt()
-	);
-	const supporterWallURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getWidgetsAdminURL()
-	);
 
 	if ( ! supporterWallPrompt ) {
 		return null;
