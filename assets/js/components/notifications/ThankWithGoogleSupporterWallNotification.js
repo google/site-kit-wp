@@ -51,6 +51,10 @@ export default function ThankWithGoogleSupporterWallNotification() {
 		trackEvent( eventCategory, 'confirm_notification' );
 	}, [ eventCategory ] );
 
+	const handleOnDismiss = useCallback( () => {
+		trackEvent( eventCategory, 'dismiss_notification' );
+	}, [ eventCategory ] );
+
 	const supporterWallPrompt = useSelect( ( select ) =>
 		select( MODULES_THANK_WITH_GOOGLE ).getSupporterWallPrompt()
 	);
@@ -92,6 +96,7 @@ export default function ThankWithGoogleSupporterWallNotification() {
 			isDismissible
 			format="large"
 			onCTAClick={ handleOnCTAClick }
+			onDismiss={ handleOnDismiss }
 			WinImageSVG={ () => <SupporterWallPromptSVG height="195" /> }
 		/>
 	);
