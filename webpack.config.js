@@ -68,6 +68,13 @@ const manifestArgs = ( mode ) => ( {
 					file.path,
 					file.chunk.contentHash.javascript
 				);
+			} else if ( file.chunk.name === 'googlesitekit-components-gm2' ) {
+				// Exception for 'googlesitekit-components' because of having a different handle
+				// than the file name.
+				seedObj[ 'googlesitekit-components' ] = entry(
+					file.path,
+					file.chunk.contentHash.javascript
+				);
 			} else if ( file.isInitial ) {
 				// Normal entries.
 				seedObj[ file.chunk.name ] = entry(
