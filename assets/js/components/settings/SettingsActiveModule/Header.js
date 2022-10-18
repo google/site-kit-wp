@@ -26,7 +26,8 @@ import { useHistory, useParams } from 'react-router-dom';
 /**
  * WordPress dependencies
  */
-import { Fragment, useCallback } from '@wordpress/element';
+import { Fragment, useCallback, useRef } from '@wordpress/element';
+import { ESCAPE, ENTER } from '@wordpress/keycodes';
 import { __, sprintf } from '@wordpress/i18n';
 
 /**
@@ -36,6 +37,7 @@ import Data from 'googlesitekit-data';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { EXPERIMENTAL_MODULES } from '../../dashboard-sharing/DashboardSharingSettings/constants';
 import { Grid, Row, Cell } from '../../../material-components';
+import { useKeyCodesInside } from '../../../hooks/useKeyCodesInside';
 import Button from '../../Button';
 import ModuleIcon from '../../ModuleIcon';
 import Badge from '../../Badge';
@@ -48,6 +50,7 @@ const { useSelect, useDispatch } = Data;
 export default function Header( { slug } ) {
 	const viewContext = useViewContext();
 	const history = useHistory();
+	const headerRef = useRef();
 
 	const { moduleSlug } = useParams();
 	const isOpen = moduleSlug === slug;
@@ -68,28 +71,43 @@ export default function Header( { slug } ) {
 
 	const { setValues } = useDispatch( CORE_FORMS );
 
-	const onHeaderClick = useCallback( () => {
-		history.push( `/connected-services${ isOpen ? '' : `/${ slug }` }` );
-
+	const openHeader = useCallback( () => {
 		if ( isOpen ) {
-			return trackEvent(
-				`${ viewContext }_module-list`,
-				'close_module_settings',
-				slug
-			);
+			return;
 		}
 
-		return trackEvent(
+		history.push( `/connected-services/${ slug }` );
+		trackEvent(
 			`${ viewContext }_module-list`,
 			'view_module_settings',
 			slug
 		);
-	}, [ history, isOpen, slug, viewContext ] );
+	}, [ history, slug, viewContext, isOpen ] );
+
+	const closeHeader = useCallback( () => {
+		if ( ! isOpen ) {
+			return;
+		}
+
+		history.push( '/connected-services' );
+		trackEvent(
+			`${ viewContext }_module-list`,
+			'close_module_settings',
+			slug
+		);
+	}, [ history, slug, viewContext, isOpen ] );
 
 	const onActionClick = useCallback(
 		( event ) => event.stopPropagation(),
 		[]
 	);
+
+	useKeyCodesInside(
+		[ ENTER ],
+		headerRef,
+		isOpen ? closeHeader : openHeader
+	);
+	useKeyCodesInside( [ ESCAPE ], headerRef, closeHeader );
 
 	if ( ! module ) {
 		return null;
@@ -98,6 +116,7 @@ export default function Header( { slug } ) {
 	const { name, connected } = module;
 
 	return (
+		// eslint-disable-next-line jsx-a11y/click-events-have-key-events
 		<div
 			className={ classnames( 'googlesitekit-settings-module__header', {
 				'googlesitekit-settings-module__header--open': isOpen,
@@ -109,9 +128,9 @@ export default function Header( { slug } ) {
 			aria-expanded={ isOpen }
 			aria-controls={ `googlesitekit-settings-module__content--${ slug }` }
 			to={ `/connected-services${ isOpen ? '' : `/${ slug }` }` }
-			onClick={ onHeaderClick }
-			onKeyDown={ onHeaderClick }
-			tabIndex="-1"
+			onClick={ isOpen ? closeHeader : openHeader }
+			ref={ headerRef }
+			tabIndex="0"
 		>
 			<Grid>
 				<Row>

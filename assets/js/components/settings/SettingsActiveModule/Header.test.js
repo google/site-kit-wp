@@ -17,6 +17,17 @@
  */
 
 /**
+ * External dependencies
+ */
+import { createHashHistory } from 'history';
+import { Switch, Route } from 'react-router-dom';
+
+/**
+ * WordPress dependencies
+ */
+import { ENTER, ESCAPE } from '@wordpress/keycodes';
+
+/**
  * Internal dependencies
  */
 import Header from '.';
@@ -24,12 +35,30 @@ import {
 	render,
 	createTestRegistry,
 	provideModules,
+	fireEvent,
 } from '../../../../../tests/js/test-utils';
 
 describe( 'Header', () => {
+	const history = createHashHistory();
 	let registry;
 
+	const HeaderAwareRouter = () => {
+		return (
+			<Switch>
+				<Route
+					path={ [
+						'/connected-services/:moduleSlug',
+						'/connected-services',
+					] }
+				>
+					<Header slug="pagespeed-insights" />,
+				</Route>
+			</Switch>
+		);
+	};
+
 	beforeEach( () => {
+		global.location.hash = '';
 		registry = createTestRegistry();
 
 		provideModules( registry, [
@@ -84,5 +113,65 @@ describe( 'Header', () => {
 		const button = queryByRole( 'button' );
 		expect( button ).toBeInTheDocument();
 		expect( button ).toHaveTextContent( 'Connect Google Analytics 4' );
+	} );
+
+	it( 'should open the tab when ENTER key is pressed', () => {
+		history.push( '/connected-services' );
+
+		const { container } = render( <HeaderAwareRouter />, {
+			registry,
+			history,
+		} );
+
+		const headerElement = container.querySelector(
+			'.googlesitekit-settings-module__header'
+		);
+
+		fireEvent.keyDown( headerElement, { keyCode: ENTER } );
+		expect(
+			headerElement.classList.contains(
+				'googlesitekit-settings-module__header--open'
+			)
+		).toBe( true );
+	} );
+
+	it( 'should close the tab if opened when ENTER key is pressed', () => {
+		history.push( '/connected-services/pagespeed-insights' );
+
+		const { container } = render( <HeaderAwareRouter />, {
+			registry,
+			history,
+		} );
+
+		const headerElement = container.querySelector(
+			'.googlesitekit-settings-module__header'
+		);
+
+		fireEvent.keyDown( headerElement, { keyCode: ENTER } );
+		expect(
+			headerElement.classList.contains(
+				'googlesitekit-settings-module__header--open'
+			)
+		).toBe( false );
+	} );
+
+	it( 'should close the tab if opened when ESCAPE key is pressed', () => {
+		history.push( '/connected-services/pagespeed-insights' );
+
+		const { container } = render( <HeaderAwareRouter />, {
+			registry,
+			history,
+		} );
+
+		const headerElement = container.querySelector(
+			'.googlesitekit-settings-module__header'
+		);
+
+		fireEvent.keyDown( headerElement, { keyCode: ESCAPE } );
+		expect(
+			headerElement.classList.contains(
+				'googlesitekit-settings-module__header--open'
+			)
+		).toBe( false );
 	} );
 } );
