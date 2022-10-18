@@ -27,10 +27,14 @@ import { ENTER } from '@wordpress/keycodes';
 import Data from 'googlesitekit-data';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { MODULES_THANK_WITH_GOOGLE } from '../../datastore/constants';
+import { trackEvent } from '../../../../util';
+import useViewContext from '../../../../hooks/useViewContext';
 import Chip from '../../../../components/Chip';
 const { useSelect, useDispatch } = Data;
 
 export default function PostTypesSelect() {
+	const viewContext = useViewContext();
+
 	const postTypes = useSelect( ( select ) =>
 		select( CORE_SITE ).getPostTypes()
 	);
@@ -52,21 +56,30 @@ export default function PostTypesSelect() {
 				return;
 			}
 
+			let newCTAPostTypes;
+
 			if ( chipID === 'all' ) {
 				if ( ctaPostTypes?.length === postTypes?.length ) {
-					setCTAPostTypes( [] );
+					newCTAPostTypes = [];
 				} else {
-					setCTAPostTypes( postTypes.map( ( { slug } ) => slug ) );
+					newCTAPostTypes = postTypes.map( ( { slug } ) => slug );
 				}
 			} else if ( ctaPostTypes?.includes( chipID ) ) {
-				setCTAPostTypes(
-					ctaPostTypes.filter( ( postType ) => postType !== chipID )
+				newCTAPostTypes = ctaPostTypes.filter(
+					( postType ) => postType !== chipID
 				);
 			} else {
-				setCTAPostTypes( [ ...( ctaPostTypes || [] ), chipID ] );
+				newCTAPostTypes = [ ...( ctaPostTypes || [] ), chipID ];
 			}
+
+			setCTAPostTypes( newCTAPostTypes );
+			trackEvent(
+				`${ viewContext }_thank-with-google`,
+				'change_cta_post_types',
+				newCTAPostTypes.toString()
+			);
 		},
-		[ ctaPostTypes, postTypes, setCTAPostTypes ]
+		[ ctaPostTypes, postTypes, setCTAPostTypes, viewContext ]
 	);
 
 	const options = postTypes?.map( ( { slug, label } ) => (
