@@ -24,7 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { Fragment, useCallback } from '@wordpress/element';
+import { Fragment, useCallback, useEffect } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -35,6 +35,7 @@ import {
 	ONBOARDING_STATE_COMPLETE,
 	ONBOARDING_STATE_ACTION_REQUIRED,
 	ONBOARDING_STATE_PENDING_VERIFICATION,
+	ONBOARDING_STATE_NO_ACCOUNT,
 } from '../../datastore/constants';
 import { useRefocus } from '../../../../hooks/useRefocus';
 import ProgressBar from '../../../../components/ProgressBar';
@@ -45,6 +46,8 @@ import SetupPublicationActive from './SetupPublicationActive';
 import SetupPublicationActionRequired from './SetupPublicationActionRequired';
 import SetupPublicationPendingVerification from './SetupPublicationPendingVerification';
 import SetupHeader from './SetupHeader';
+import { trackEvent } from '../../../../util';
+import useViewContext from '../../../../hooks/useViewContext';
 const { useDispatch, useSelect } = Data;
 
 export default function SetupMain( { finishSetup } ) {
@@ -69,6 +72,26 @@ export default function SetupMain( { finishSetup } ) {
 
 	// Reset all fetched data when user re-focuses window.
 	useRefocus( reset, 15000 );
+
+	const viewContext = useViewContext();
+
+	useEffect( () => {
+		if ( currentPublication === undefined ) {
+			return;
+		}
+		if ( currentPublication === null ) {
+			trackEvent(
+				`${ viewContext }_thank-with-google`,
+				'receive_publication_state',
+				ONBOARDING_STATE_NO_ACCOUNT
+			);
+		}
+		trackEvent(
+			`${ viewContext }_thank-with-google`,
+			'receive_publication_state',
+			currentPublication.onboardingState
+		);
+	}, [ currentPublication, viewContext ] );
 
 	let viewComponent;
 
