@@ -27,4 +27,14 @@ if ( typeof global.googlesitekit === 'undefined' ) {
 
 global.googlesitekit.components = Components;
 
-export default Components;
+export const {
+	Button,
+	Checkbox,
+	Chip,
+	Dialog,
+	Menu,
+	ProgressBar,
+	Radio,
+	Switch,
+	Tooltip,
+} = Components;
