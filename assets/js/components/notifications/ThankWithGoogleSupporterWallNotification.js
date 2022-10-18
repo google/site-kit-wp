@@ -25,7 +25,7 @@ import { useMount } from 'react-use';
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { Fragment } from '@wordpress/element';
+import { Fragment, useCallback } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -46,6 +46,10 @@ export default function ThankWithGoogleSupporterWallNotification() {
 	useMount( () => {
 		trackEvent( eventCategory, 'view_notification' );
 	} );
+
+	const handleOnCTAClick = useCallback( () => {
+		trackEvent( eventCategory, 'confirm_notification' );
+	}, [ eventCategory ] );
 
 	const supporterWallPrompt = useSelect( ( select ) =>
 		select( MODULES_THANK_WITH_GOOGLE ).getSupporterWallPrompt()
@@ -87,6 +91,7 @@ export default function ThankWithGoogleSupporterWallNotification() {
 			dismiss={ __( 'Maybe later', 'google-site-kit' ) }
 			isDismissible
 			format="large"
+			onCTAClick={ handleOnCTAClick }
 			WinImageSVG={ () => <SupporterWallPromptSVG height="195" /> }
 		/>
 	);
