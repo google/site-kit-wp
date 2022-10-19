@@ -403,7 +403,7 @@ export const selectors = {
 	 *
 	 * Returns full name of the user or `undefined` if the user info is not available/loaded.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.86.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(string|null|undefined)} The user's full name; will be set to `null` if not available in the user's profile data and `undefined` while loading.

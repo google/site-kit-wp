@@ -365,7 +365,7 @@ final class Authentication {
 					$profile_data            = $this->profile->get();
 					$user['user']['email']   = $profile_data['email'];
 					$user['user']['picture'] = $profile_data['photo'];
-					// Older versions of Site Kit (before n.e.x.t) did not
+					// Older versions of Site Kit (before 1.86.0) did not
 					// fetch the user's full name, so we need to check for
 					// that attribute before using it.
 					$user['user']['full_name'] = isset( $profile_data['full_name'] ) ? $profile_data['full_name'] : null;

@@ -89,7 +89,7 @@ export function isAuthError( error ) {
 /**
  * Checks if the given error can be retried.
  *
- * @since n.e.x.t
+ * @since 1.86.0
  *
  * @param {Object} error The error object to check.
  * @return {boolean} TRUE if the error is retryable, otherwise FALSE.
