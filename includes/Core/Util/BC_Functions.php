@@ -202,7 +202,7 @@ class BC_Functions {
 	 *
 	 * Retrieves the registered sidebar with the given ID.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.86.0
 	 *
 	 * @global array $wp_registered_sidebars The registered sidebars.
 	 *

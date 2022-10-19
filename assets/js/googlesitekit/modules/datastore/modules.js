@@ -1233,7 +1233,7 @@ const baseSelectors = {
 	/**
 	 * Returns if the current logged in user has access to a given module.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.86.0
 	 *
 	 * @param {string} slug The module slug.
 	 * @return {Object} The result of the module access check and if the check is still loading.
