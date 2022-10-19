@@ -94,7 +94,7 @@ export default function SetupAccountSite( { site, finishSetup } ) {
 			return (
 				<ErrorText
 					message={ sprintf(
-						/* translators: 1: invalid site state identifier */
+						/* translators: %s: invalid site state identifier */
 						__( 'Invalid site state %s', 'google-site-kit' ),
 						state
 					) }

@@ -20,15 +20,15 @@
  * Internal dependencies
  */
 import {
-	VIEW_CONTEXT_DASHBOARD,
-	VIEW_CONTEXT_PAGE_DASHBOARD,
-	VIEW_CONTEXT_DASHBOARD_VIEW_ONLY,
-	VIEW_CONTEXT_PAGE_DASHBOARD_VIEW_ONLY,
+	VIEW_CONTEXT_MAIN_DASHBOARD,
+	VIEW_CONTEXT_ENTITY_DASHBOARD,
+	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+	VIEW_CONTEXT_ENTITY_DASHBOARD_VIEW_ONLY,
 } from '../googlesitekit/constants';
 import useViewContext from './useViewContext';
 
-export const DASHBOARD_TYPE_MAIN = VIEW_CONTEXT_DASHBOARD;
-export const DASHBOARD_TYPE_ENTITY = VIEW_CONTEXT_PAGE_DASHBOARD;
+export const DASHBOARD_TYPE_MAIN = VIEW_CONTEXT_MAIN_DASHBOARD;
+export const DASHBOARD_TYPE_ENTITY = VIEW_CONTEXT_ENTITY_DASHBOARD;
 
 /**
  * Determines dashboard type from the view context.
@@ -41,15 +41,15 @@ export default function useDashboardType() {
 	const viewContext = useViewContext();
 
 	if (
-		viewContext === VIEW_CONTEXT_DASHBOARD ||
-		viewContext === VIEW_CONTEXT_DASHBOARD_VIEW_ONLY
+		viewContext === VIEW_CONTEXT_MAIN_DASHBOARD ||
+		viewContext === VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY
 	) {
 		return DASHBOARD_TYPE_MAIN;
 	}
 
 	if (
-		viewContext === VIEW_CONTEXT_PAGE_DASHBOARD ||
-		viewContext === VIEW_CONTEXT_PAGE_DASHBOARD_VIEW_ONLY
+		viewContext === VIEW_CONTEXT_ENTITY_DASHBOARD ||
+		viewContext === VIEW_CONTEXT_ENTITY_DASHBOARD_VIEW_ONLY
 	) {
 		return DASHBOARD_TYPE_ENTITY;
 	}

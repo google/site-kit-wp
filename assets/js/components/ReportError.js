@@ -34,9 +34,8 @@ import { __, sprintf } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
 import {
-	isAuthError,
+	isErrorRetryable,
 	isInsufficientPermissionsError,
-	isPermissionScopeError,
 } from '../util/errors';
 import { getInsufficientPermissionsErrorDescription } from '../util/insufficient-permissions-error-description';
 import { purify } from '../util/purify';
@@ -63,14 +62,7 @@ export default function ReportError( { moduleSlug, error } ) {
 
 	const errors = Array.isArray( error ) ? error : [ error ];
 
-	const retryableErrors = errors.filter(
-		( err ) =>
-			!! err?.selectorData?.storeName &&
-			err.selectorData?.name === 'getReport' &&
-			! isInsufficientPermissionsError( err ) &&
-			! isPermissionScopeError( err ) &&
-			! isAuthError( err )
-	);
+	const retryableErrors = errors.filter( isErrorRetryable );
 
 	const showRetry = !! retryableErrors.length;
 
@@ -87,7 +79,7 @@ export default function ReportError( { moduleSlug, error } ) {
 	const getMessage = ( err ) => {
 		if ( isInsufficientPermissionsError( err ) ) {
 			title = sprintf(
-				/* translators: 1: module name */
+				/* translators: %s: module name */
 				__( 'Insufficient permissions in %s', 'google-site-kit' ),
 				module?.name
 			);
@@ -118,13 +110,13 @@ export default function ReportError( { moduleSlug, error } ) {
 
 	if ( ! hasInsufficientPermissionsError && uniqueErrors.length === 1 ) {
 		title = sprintf(
-			/* translators: 1: module name */
+			/* translators: %s: module name */
 			__( 'Data error in %s', 'google-site-kit' ),
 			module?.name
 		);
 	} else if ( ! hasInsufficientPermissionsError && uniqueErrors.length > 1 ) {
 		title = sprintf(
-			/* translators: 1: module name */
+			/* translators: %s: module name */
 			__( 'Data errors in %s', 'google-site-kit' ),
 			module?.name
 		);

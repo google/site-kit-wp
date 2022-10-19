@@ -309,7 +309,7 @@ final class Entity_Factory {
 				$tax    = get_taxonomy( $term->taxonomy );
 				$title  = $term->name;
 				$prefix = sprintf(
-					/* translators: 1: Taxonomy singular name. */
+					/* translators: %s: Taxonomy singular name. */
 					_x( '%s:', 'taxonomy term archive title prefix', 'default' ),
 					$tax->labels->singular_name
 				);

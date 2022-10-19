@@ -21,8 +21,8 @@
  */
 import { render } from '../../../../../../../tests/js/test-utils';
 import {
-	VIEW_CONTEXT_DASHBOARD,
-	VIEW_CONTEXT_DASHBOARD_VIEW_ONLY,
+	VIEW_CONTEXT_MAIN_DASHBOARD,
+	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 } from '../../../../../googlesitekit/constants';
 import Footer from './Footer';
 
@@ -47,7 +47,7 @@ describe( 'Footer', () => {
 		const { container } = render(
 			<Footer metrics={ metrics } selectedStats={ 0 } />,
 			{
-				viewContext: VIEW_CONTEXT_DASHBOARD_VIEW_ONLY,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 			}
 		);
 
@@ -62,7 +62,7 @@ describe( 'Footer', () => {
 		const { container } = render(
 			<Footer metrics={ metrics } selectedStats={ 1 } />,
 			{
-				viewContext: VIEW_CONTEXT_DASHBOARD_VIEW_ONLY,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 			}
 		);
 
@@ -82,7 +82,7 @@ describe( 'Footer', () => {
 		const { container } = render(
 			<Footer metrics={ metrics } selectedStats={ 0 } />,
 			{
-				viewContext: VIEW_CONTEXT_DASHBOARD,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			}
 		);
 
@@ -102,7 +102,7 @@ describe( 'Footer', () => {
 		const { container } = render(
 			<Footer metrics={ metrics } selectedStats={ 1 } />,
 			{
-				viewContext: VIEW_CONTEXT_DASHBOARD,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			}
 		);
 

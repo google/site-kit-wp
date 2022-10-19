@@ -35,6 +35,7 @@ use Google\Site_Kit\Core\Storage\Transients;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Environment_Type_Guard;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Verify_Guard;
+use Google\Site_Kit\Core\Util\BC_Functions;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Modules\Search_Console\Settings as Search_Console_Settings;
 use Google\Site_Kit\Modules\Thank_With_Google\Settings;
@@ -321,7 +322,7 @@ final class Thank_With_Google extends Module
 
 			$actual_sidebars_count++;
 
-			$sidebar = wp_get_sidebar( $sidebar_id );
+			$sidebar = BC_Functions::wp_get_sidebar( $sidebar_id );
 			foreach ( $widgets as $widget ) {
 				$block_match = array();
 				if ( preg_match( $pattern, $widget ) ) {

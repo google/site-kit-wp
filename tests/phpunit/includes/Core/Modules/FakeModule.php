@@ -113,7 +113,8 @@ class FakeModule extends Module
 	 */
 	protected function get_datapoint_definitions() {
 		return array(
-			'GET:test-request' => array( 'service' => '' ),
+			'GET:test-request'  => array( 'service' => '' ),
+			'POST:test-request' => array( 'service' => '' ),
 		);
 	}
 
@@ -132,6 +133,11 @@ class FakeModule extends Module
 
 		switch ( "$method:$datapoint" ) {
 			case 'GET:test-request':
+				return function () use ( $method, $datapoint, $data ) {
+					$data = $data->data;
+					return json_encode( compact( 'method', 'datapoint', 'data' ) );
+				};
+			case 'POST:test-request':
 				return function () use ( $method, $datapoint, $data ) {
 					$data = $data->data;
 					return json_encode( compact( 'method', 'datapoint', 'data' ) );
@@ -158,6 +164,8 @@ class FakeModule extends Module
 
 		switch ( "$method:$datapoint" ) {
 			case 'GET:test-request':
+				return json_decode( $response, $data['asArray'] );
+			case 'POST:test-request':
 				return json_decode( $response, $data['asArray'] );
 		}
 

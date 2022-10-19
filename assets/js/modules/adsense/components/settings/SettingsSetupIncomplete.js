@@ -43,14 +43,14 @@ export default function SettingsSetupIncomplete() {
 
 	let statusText, actionText;
 	if ( isPendingStatus ) {
-		/* translators: 1: link with next step */
+		/* translators: %s: link with next step */
 		statusText = __(
 			'Site Kit has placed AdSense code on your site: %s',
 			'google-site-kit'
 		);
 		actionText = __( 'check module page', 'google-site-kit' );
 	} else {
-		/* translators: 1: link with next step */
+		/* translators: %s: link with next step */
 		statusText = __( 'Setup incomplete: %s', 'google-site-kit' );
 		actionText = __( 'continue module setup', 'google-site-kit' );
 	}

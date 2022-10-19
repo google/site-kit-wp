@@ -24,7 +24,7 @@ import { Provider as ViewContextProvider } from '../Root/ViewContextContext';
 import { CORE_WIDGETS } from '../../googlesitekit/widgets/datastore/constants';
 import { CONTEXT_MAIN_DASHBOARD_MONETIZATION } from '../../googlesitekit/widgets/default-contexts';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
-import { VIEW_CONTEXT_DASHBOARD } from '../../googlesitekit/constants';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
 import { setupDefaultChips } from './test-utils';
 
 const Template = ( { setupRegistry, viewContext, ...args } ) => (
@@ -63,7 +63,7 @@ DefaultDashboardNavigation.args = {
 			.dispatch( CORE_WIDGETS )
 			.assignWidget( 'MonetizationWidget', 'MonetizationArea' );
 	},
-	viewContext: VIEW_CONTEXT_DASHBOARD,
+	viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 };
 
 export const MonetizationHiddenDashboardNavigation = Template.bind( {} );
@@ -72,7 +72,7 @@ MonetizationHiddenDashboardNavigation.args = {
 	setupRegistry: ( registry ) => {
 		setupDefaultChips( registry );
 	},
-	viewContext: VIEW_CONTEXT_DASHBOARD,
+	viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 };
 
 export default {

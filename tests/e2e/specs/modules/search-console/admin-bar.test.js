@@ -177,7 +177,7 @@ describe( 'Site Kit admin bar component display', () => {
 		await adminBarApp.dispose();
 	} );
 
-	it( 'links "More details" to the dashboard details view for the current post', async () => {
+	it( 'links "More details" to the entity dashboard view for the current post', async () => {
 		const { searchConsole } = adminBarMockResponses;
 		// Data is requested when the Admin Bar app loads on first hover
 		mockBatchResponse = Object.assign( {}, searchConsole );

@@ -119,7 +119,6 @@ exports[`SetupUsingProxyWithSignIn should not render the Activate Analytics noti
               aria-label="Account"
               class="mdc-button googlesitekit-header__dropdown mdc-button--dropdown googlesitekit-border-radius-round--tablet googlesitekit-border-radius-round--phone googlesitekit-border-radius-round googlesitekit-button-icon"
               target="_self"
-              title="Account"
             >
               <i
                 aria-hidden="true"
@@ -387,7 +386,6 @@ exports[`SetupUsingProxyWithSignIn should render the setup page, including the A
               aria-label="Account"
               class="mdc-button googlesitekit-header__dropdown mdc-button--dropdown googlesitekit-border-radius-round--tablet googlesitekit-border-radius-round--phone googlesitekit-border-radius-round googlesitekit-button-icon"
               target="_self"
-              title="Account"
             >
               <i
                 aria-hidden="true"

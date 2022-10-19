@@ -79,7 +79,7 @@ export default function WPVersionBumpNotification() {
 				'google-site-kit'
 			) }
 			description={ sprintf(
-				/* translators: 1: WordPress version number */
+				/* translators: %s: WordPress version number */
 				__(
 					'Your WordPress version %s is out of date. Site Kit will require minimum WordPress version 5.2 with release 1.88.0 on November 21, 2022. If you don’t update WordPress, you won’t be able to receive the latest Site Kit features and enhancements.',
 					'google-site-kit'
