@@ -76,22 +76,18 @@ export default function SetupMain( { finishSetup } ) {
 	const viewContext = useViewContext();
 
 	useEffect( () => {
+		// Don't track an event if the current publication is still loading.
 		if ( currentPublication === undefined ) {
 			return;
 		}
-		if ( currentPublication === null ) {
-			trackEvent(
-				`${ viewContext }_thank-with-google`,
-				'receive_publication_state',
-				ONBOARDING_STATE_NO_ACCOUNT
-			);
-		} else {
-			trackEvent(
-				`${ viewContext }_thank-with-google`,
-				'receive_publication_state',
-				currentPublication.onboardingState
-			);
-		}
+
+		trackEvent(
+			`${ viewContext }_thank-with-google`,
+			'receive_publication_state',
+			currentPublication === null
+				? ONBOARDING_STATE_NO_ACCOUNT
+				: currentPublication.onboardingState
+		);
 	}, [ currentPublication, viewContext ] );
 
 	let viewComponent;
