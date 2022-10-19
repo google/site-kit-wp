@@ -183,6 +183,10 @@
 				padding: 12px $grid-gap-desktop 18px $grid-gap-desktop;
 			}
 		}
+
+		&--hidden {
+			visibility: hidden;
+		}
 	}
 
 	.googlesitekit-pagespeed--recommendations {
