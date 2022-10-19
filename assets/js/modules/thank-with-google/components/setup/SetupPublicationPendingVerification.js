@@ -46,8 +46,8 @@ export default function SetupPublicationPendingVerification() {
 
 	const viewContext = useViewContext();
 
-	const handleCheckStatus = useCallback( async () => {
-		await trackEvent(
+	const handleCheckStatus = useCallback( () => {
+		trackEvent(
 			`${ viewContext }_thank-with-google`,
 			'review_publication_state'
 		);

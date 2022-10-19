@@ -40,8 +40,8 @@ export default function SetupCreatePublication() {
 
 	const viewContext = useViewContext();
 
-	const handleCreatePublication = useCallback( async () => {
-		await trackEvent(
+	const handleCreatePublication = useCallback( () => {
+		trackEvent(
 			`${ viewContext }_thank-with-google`,
 			'create_publication'
 		);

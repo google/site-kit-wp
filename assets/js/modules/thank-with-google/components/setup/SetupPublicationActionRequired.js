@@ -46,8 +46,8 @@ export default function SetupPublicationActionRequired() {
 
 	const viewContext = useViewContext();
 
-	const handleCompleteSetup = useCallback( async () => {
-		await trackEvent(
+	const handleCompleteSetup = useCallback( () => {
+		trackEvent(
 			`${ viewContext }_thank-with-google`,
 			'complete_publication_setup'
 		);
