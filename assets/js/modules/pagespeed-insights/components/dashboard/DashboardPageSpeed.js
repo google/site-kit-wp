@@ -41,7 +41,7 @@ import { __ } from '@wordpress/i18n';
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
-import { ProgressBar } from 'googlesitekit-components';
+import { Button, ProgressBar } from 'googlesitekit-components';
 import { Cell, Grid, Row } from '../../../../material-components';
 import DeviceSizeTabBar from '../../../../components/DeviceSizeTabBar';
 import Link from '../../../../components/Link';
@@ -58,12 +58,17 @@ import {
 	STRATEGY_DESKTOP,
 	DATA_SRC_FIELD,
 	DATA_SRC_LAB,
+	DATA_SRC_RECOMMENDATIONS,
 	UI_STRATEGY,
 	UI_DATA_SOURCE,
 } from '../../datastore/constants';
 import Spinner from '../../../../components/Spinner';
 import useViewContext from '../../../../hooks/useViewContext';
 const { useSelect, useDispatch, useInViewSelect } = Data;
+
+const TAB_INDEX_LAB = 0;
+const TAB_INDEX_FIELD = 1;
+const TAB_INDEX_RECOMMENDATIONS = 2;
 
 export default function DashboardPageSpeed() {
 	const trackingRef = useRef();
@@ -139,6 +144,10 @@ export default function DashboardPageSpeed() {
 		() => setValues( { [ UI_DATA_SOURCE ]: DATA_SRC_LAB } ),
 		[ setValues ]
 	);
+	const setDataSrcRecommendations = useCallback(
+		() => setValues( { [ UI_DATA_SOURCE ]: DATA_SRC_RECOMMENDATIONS } ),
+		[ setValues ]
+	);
 	const intersectionEntry = useIntersection( trackingRef, {
 		threshold: 0.25,
 	} );
@@ -164,12 +173,21 @@ export default function DashboardPageSpeed() {
 		( dataSrcIndex ) => {
 			let eventLabel;
 
-			if ( dataSrcIndex === 0 ) {
-				setDataSrcLab();
-				eventLabel = 'lab';
-			} else {
-				setDataSrcField();
-				eventLabel = 'field';
+			switch ( dataSrcIndex ) {
+				case TAB_INDEX_LAB:
+					setDataSrcLab();
+					eventLabel = 'lab';
+					break;
+				case TAB_INDEX_FIELD:
+					setDataSrcField();
+					eventLabel = 'field';
+					break;
+				case TAB_INDEX_RECOMMENDATIONS:
+					setDataSrcRecommendations();
+					eventLabel = 'recommendations';
+					break;
+				default:
+					break;
 			}
 
 			trackEvent(
@@ -178,7 +196,12 @@ export default function DashboardPageSpeed() {
 				eventLabel
 			);
 		},
-		[ setDataSrcField, setDataSrcLab, viewContext ]
+		[
+			setDataSrcField,
+			setDataSrcLab,
+			setDataSrcRecommendations,
+			viewContext,
+		]
 	);
 
 	// Update the active tab for "mobile" or "desktop".
@@ -222,6 +245,47 @@ export default function DashboardPageSpeed() {
 	const reportError =
 		strategy === STRATEGY_MOBILE ? errorMobile : errorDesktop;
 
+	const finishedResolution = useSelect( ( select ) =>
+		select( MODULES_PAGESPEED_INSIGHTS ).hasFinishedResolution(
+			'getReport',
+			[ referenceURL, strategy ]
+		)
+	);
+	const recommendations = useSelect(
+		( select ) => {
+			if ( reportError ) {
+				return [];
+			}
+
+			const allAudits = select(
+				MODULES_PAGESPEED_INSIGHTS
+			).getAuditsWithStackPack( referenceURL, strategy, 'wordpress' );
+			if ( ! allAudits || ! Object.keys( allAudits ).length ) {
+				return [];
+			}
+
+			const audits = [];
+			Object.keys( allAudits ).forEach( ( auditSlug ) => {
+				const audit = allAudits[ auditSlug ];
+				if (
+					( audit.scoreDisplayMode !== 'numeric' &&
+						audit.scoreDisplayMode !== 'binary' ) ||
+					audit.score >= 0.9
+				) {
+					return;
+				}
+
+				audits.push( {
+					id: audit.id,
+					title: audit.title,
+				} );
+			} );
+
+			return audits;
+		},
+		[ referenceURL, strategy, finishedResolution ]
+	);
+
 	// Set the default data source based on report data.
 	useEffect( () => {
 		if (
@@ -261,9 +325,11 @@ export default function DashboardPageSpeed() {
 			>
 				<div className="googlesitekit-pagespeed-widget__data-src-tabs">
 					<TabBar
-						activeIndex={ [ DATA_SRC_LAB, DATA_SRC_FIELD ].indexOf(
-							dataSrc
-						) }
+						activeIndex={ [
+							DATA_SRC_LAB,
+							DATA_SRC_FIELD,
+							DATA_SRC_RECOMMENDATIONS,
+						].indexOf( dataSrc ) }
 						handleActiveIndexUpdate={ updateActiveTab }
 					>
 						<Tab
@@ -286,6 +352,17 @@ export default function DashboardPageSpeed() {
 								className="mdc-tab__text-label"
 							>
 								{ __( 'In the Field', 'google-site-kit' ) }
+							</span>
+						</Tab>
+						<Tab
+							focusOnActivate={ false }
+							aria-labelledby={ `googlesitekit-pagespeed-widget__data-src-tab-${ DATA_SRC_RECOMMENDATIONS }` }
+						>
+							<span
+								id={ `googlesitekit-pagespeed-widget__data-src-tab-${ DATA_SRC_RECOMMENDATIONS }` }
+								className="mdc-tab__text-label"
+							>
+								{ __( 'How to improve', 'google-site-kit' ) }
 							</span>
 						</Tab>
 					</TabBar>
@@ -320,17 +397,33 @@ export default function DashboardPageSpeed() {
 						error={ reportError }
 					/>
 				) }
+				{ dataSrc === DATA_SRC_RECOMMENDATIONS && (
+					<Recommendations
+						className={ classnames( {
+							'googlesitekit-pagespeed-widget__refreshing':
+								isFetching,
+						} ) }
+						recommendations={ recommendations }
+						referenceURL={ referenceURL }
+						strategy={ strategy }
+					/>
+				) }
 			</section>
 
-			{ ! reportError && (
-				<Recommendations
-					className={ classnames( {
-						'googlesitekit-pagespeed-widget__refreshing':
-							isFetching,
-					} ) }
-					referenceURL={ referenceURL }
-					strategy={ strategy }
-				/>
+			{ ( dataSrc === DATA_SRC_LAB || dataSrc === DATA_SRC_FIELD ) && (
+				<div className="googlesitekit-pagespeed-report__row">
+					<Button
+						className={ classnames( {
+							'googlesitekit-pagespeed__recommendations-cta--hidden':
+								! recommendations?.length,
+						} ) }
+						onClick={ () =>
+							updateActiveTab( TAB_INDEX_RECOMMENDATIONS )
+						}
+					>
+						{ __( 'How to improve', 'google-site-kit' ) }
+					</Button>
+				</div>
 			) }
 
 			<div

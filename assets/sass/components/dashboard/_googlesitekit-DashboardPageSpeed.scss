@@ -228,4 +228,17 @@
 			}
 		}
 	}
+
+	.googlesitekit-pagespeed__recommendations-cta--hidden {
+		visibility: hidden;
+	}
+
+	.googlesitekit-pagespeed__zero-recommendations {
+		display: flex;
+		justify-content: center;
+
+		svg {
+			max-height: 150px;
+		}
+	}
 }

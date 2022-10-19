@@ -122,6 +122,51 @@ storiesOf( 'PageSpeed Insights Module/Components', module )
 			</WithTestRegistry>
 		);
 	} )
+	.add( 'Dashboard widget (No Recommendations)', () => {
+		const url = fixtures.pagespeedMobile.loadingExperience.id;
+		const setupRegistry = ( { dispatch } ) => {
+			dispatch( MODULES_PAGESPEED_INSIGHTS ).receiveGetReport(
+				fixtures.pagespeedMobileNoStackPacks,
+				{
+					url,
+					strategy: STRATEGY_MOBILE,
+				}
+			);
+			dispatch( MODULES_PAGESPEED_INSIGHTS ).finishResolution(
+				'getReport',
+				[ url, STRATEGY_MOBILE ]
+			);
+
+			dispatch( MODULES_PAGESPEED_INSIGHTS ).receiveGetReport(
+				fixtures.pagespeedDesktopNoStackPacks,
+				{
+					url,
+					strategy: STRATEGY_DESKTOP,
+				}
+			);
+			dispatch( MODULES_PAGESPEED_INSIGHTS ).finishResolution(
+				'getReport',
+				[ url, STRATEGY_DESKTOP ]
+			);
+
+			dispatch( CORE_SITE ).receiveSiteInfo( {
+				referenceSiteURL: url,
+				currentEntityURL: null,
+			} );
+			dispatch( CORE_MODULES ).receiveGetModules( [
+				{
+					slug: 'pagespeed-insights',
+					active: true,
+					connected: true,
+				},
+			] );
+		};
+		return (
+			<WithTestRegistry callback={ setupRegistry }>
+				<DashboardPageSpeedWidget { ...widgetComponentProps } />
+			</WithTestRegistry>
+		);
+	} )
 	.add( 'Dashboard widget (Field Data Unavailable)', () => {
 		const url = fixtures.pagespeedMobile.loadingExperience.id;
 		const setupRegistry = ( { dispatch } ) => {
