@@ -47,6 +47,12 @@ export default function SetupPublicationPendingVerification() {
 	const viewContext = useViewContext();
 
 	const handleCheckStatus = useCallback( () => {
+		// We don't need to wait for this to finish (eg. use `await` and then
+		// `navigateTo()`), because the link this event is attached to will
+		// open in a new tab/window.
+		//
+		// It's safe to call this track event without waiting for it to
+		// complete/abort before moving to the navigation step.
 		trackEvent(
 			`${ viewContext }_thank-with-google`,
 			'review_publication_state'
