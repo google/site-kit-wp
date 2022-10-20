@@ -66,7 +66,6 @@ class REST_Modules_Controller {
 		add_filter(
 			'googlesitekit_apifetch_preload_paths',
 			function ( $paths ) {
-				$active_modules = $this->modules->get_active_modules();
 				$modules_routes = array(
 					'/' . REST_Routes::REST_ROOT . '/core/modules/data/list',
 				);
@@ -453,7 +452,6 @@ class REST_Modules_Controller {
 							}
 
 							do_action( 'googlesitekit_pre_save_settings_' . $slug );
-
 							$module->get_settings()->merge( (array) $request['data'] );
 
 							do_action( 'googlesitekit_save_settings_' . $slug );
