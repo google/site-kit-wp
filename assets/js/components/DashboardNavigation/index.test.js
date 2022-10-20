@@ -21,8 +21,8 @@
  */
 import { render } from '../../../../tests/js/test-utils';
 import {
-	VIEW_CONTEXT_DASHBOARD,
-	VIEW_CONTEXT_DASHBOARD_VIEW_ONLY,
+	VIEW_CONTEXT_MAIN_DASHBOARD,
+	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 } from '../../googlesitekit/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
@@ -80,7 +80,7 @@ describe( 'Dashboard Navigation', () => {
 
 				setupDefaultChips( registry );
 			},
-			viewContext: VIEW_CONTEXT_DASHBOARD,
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 		} );
 
 		expect(
@@ -114,7 +114,7 @@ describe( 'Dashboard Navigation', () => {
 
 				setupDefaultChips( registry );
 			},
-			viewContext: VIEW_CONTEXT_DASHBOARD_VIEW_ONLY,
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 		} );
 
 		expect(
@@ -165,7 +165,7 @@ describe( 'Dashboard Navigation', () => {
 					.dispatch( CORE_WIDGETS )
 					.assignWidget( 'SpeedWidget', 'SpeedArea' );
 			},
-			viewContext: VIEW_CONTEXT_DASHBOARD_VIEW_ONLY,
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 		} );
 
 		expect(

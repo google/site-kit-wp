@@ -574,23 +574,23 @@ final class Assets {
 			),
 			// End JSR Assets.
 			new Script(
-				'googlesitekit-dashboard-splash',
+				'googlesitekit-splash',
 				array(
-					'src'          => $base_url . 'js/googlesitekit-dashboard-splash.js',
+					'src'          => $base_url . 'js/googlesitekit-splash.js',
 					'dependencies' => $dependencies,
 				)
 			),
 			new Script(
-				'googlesitekit-dashboard-details',
+				'googlesitekit-entity-dashboard',
 				array(
-					'src'          => $base_url . 'js/googlesitekit-dashboard-details.js',
+					'src'          => $base_url . 'js/googlesitekit-entity-dashboard.js',
 					'dependencies' => $dependencies_for_dashboard_sharing,
 				)
 			),
 			new Script(
-				'googlesitekit-dashboard',
+				'googlesitekit-main-dashboard',
 				array(
-					'src'          => $base_url . 'js/googlesitekit-dashboard.js',
+					'src'          => $base_url . 'js/googlesitekit-main-dashboard.js',
 					'dependencies' => $dependencies_for_dashboard_sharing,
 				)
 			),

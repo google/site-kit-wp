@@ -235,7 +235,7 @@ const allTrafficPageReports = generateData( [
 ] );
 
 generateAnalyticsWidgetStories( {
-	group: 'Analytics Module/Components/Page Dashboard/All Traffic Widget',
+	group: 'Analytics Module/Components/Entity Dashboard/All Traffic Widget',
 	referenceDate: '2021-01-06',
 	...allTrafficPageReports,
 	Component: DashboardAllTrafficWidget,

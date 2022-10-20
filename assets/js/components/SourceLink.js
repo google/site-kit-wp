@@ -45,7 +45,7 @@ function SourceLink( { name, href, className, external } ) {
 		<div className={ classnames( 'googlesitekit-source-link', className ) }>
 			{ createInterpolateElement(
 				sprintf(
-					/* translators: 1: source link */
+					/* translators: %s: source link */
 					__( 'Source: %s', 'google-site-kit' ),
 					`<a>${ name }</a>`
 				),

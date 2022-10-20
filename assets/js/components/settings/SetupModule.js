@@ -137,7 +137,7 @@ export default function SetupModule( { slug, name, description } ) {
 					arrow
 				>
 					{ sprintf(
-						/* translators: 1: module name */
+						/* translators: %s: module name */
 						__( 'Set up %s', 'google-site-kit' ),
 						name
 					) }

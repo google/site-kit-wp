@@ -30,15 +30,18 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import {
-	VIEW_CONTEXT_DASHBOARD,
-	VIEW_CONTEXT_DASHBOARD_VIEW_ONLY,
+	VIEW_CONTEXT_MAIN_DASHBOARD,
+	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 } from '../googlesitekit/constants';
 import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
 import { MODULES_IDEA_HUB } from '../modules/idea-hub/datastore/constants';
 
 const ideaHubModule = {
 	slug: 'ideaHubModule',
-	contexts: [ VIEW_CONTEXT_DASHBOARD, VIEW_CONTEXT_DASHBOARD_VIEW_ONLY ],
+	contexts: [
+		VIEW_CONTEXT_MAIN_DASHBOARD,
+		VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+	],
 	version: '1.43.0',
 	checkRequirements: async ( registry ) => {
 		const { __experimentalResolveSelect } = registry;

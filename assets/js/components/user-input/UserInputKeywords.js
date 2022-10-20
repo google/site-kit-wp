@@ -191,7 +191,7 @@ export default function UserInputKeywords( { slug, max, next, isActive } ) {
 						<VisuallyHidden>
 							<label htmlFor={ `${ slug }-keyword-${ i }` }>
 								{ sprintf(
-									/* translators: 1: is the keyword number; 1, 2, or 3 */
+									/* translators: %s: is the keyword number; 1, 2, or 3 */
 									__( 'Keyword %s', 'google-site-kit' ),
 									i + 1 // Keys are zero-indexed; this starts keyword at "1".
 								) }

@@ -196,4 +196,36 @@ class BC_Functions {
 	protected static function wp_print_inline_script_tag( $javascript, $attributes = array() ) {
 		echo self::wp_get_inline_script_tag( $javascript, $attributes ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	}
+
+	/**
+	 * A fallback for the wp_get_sidebar function introduced in the WordPress version 5.9.0.
+	 *
+	 * Retrieves the registered sidebar with the given ID.
+	 *
+	 * @since 1.86.0
+	 *
+	 * @global array $wp_registered_sidebars The registered sidebars.
+	 *
+	 * @param string $id The sidebar ID.
+	 * @return array|null The discovered sidebar, or null if it is not registered.
+	 */
+	protected static function wp_get_sidebar( $id ) {
+		global $wp_registered_sidebars;
+
+		foreach ( (array) $wp_registered_sidebars as $sidebar ) {
+			if ( $sidebar['id'] === $id ) {
+				return $sidebar;
+			}
+		}
+
+		if ( 'wp_inactive_widgets' === $id ) {
+			return array(
+				'id'   => 'wp_inactive_widgets',
+				'name' => __( 'Inactive widgets', 'default' ),
+			);
+		}
+
+		return null;
+	}
+
 }

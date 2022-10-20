@@ -1235,6 +1235,43 @@ const baseSelectors = {
 	},
 
 	/**
+	 * Returns if the current logged in user has access to a given module.
+	 *
+	 * @since 1.86.0
+	 *
+	 * @param {string} slug The module slug.
+	 * @return {Object} The result of the module access check and if the check is still loading.
+	 */
+	userHasModuleAccess: createRegistrySelector(
+		( select ) => ( state, slug ) => {
+			const storeName = select( CORE_MODULES ).getModuleStoreName( slug );
+
+			const loggedInUserID = select( CORE_USER ).getID();
+			const moduleOwnerID = select( storeName )?.getOwnerID();
+
+			const hasModuleAccess =
+				moduleOwnerID === loggedInUserID ||
+				select( CORE_MODULES ).hasModuleAccess( slug );
+
+			const hasResolvedUser =
+				select( CORE_USER ).hasFinishedResolution( 'getUser' );
+			const hasResolvedModuleOwner =
+				select( storeName )?.hasFinishedResolution( 'getSettings' );
+			const isResolvingModuleAccess = select( CORE_MODULES ).isResolving(
+				'hasModuleAccess',
+				[ slug ]
+			);
+
+			const isLoadingModuleAccess =
+				! hasResolvedModuleOwner ||
+				! hasResolvedUser ||
+				isResolvingModuleAccess;
+
+			return { hasModuleAccess, isLoadingModuleAccess };
+		}
+	),
+
+	/**
 	 * Gets the list of recoverable modules for dashboard sharing.
 	 *
 	 * Returns an Object/map of objects, keyed by slug as same as `getModules`.

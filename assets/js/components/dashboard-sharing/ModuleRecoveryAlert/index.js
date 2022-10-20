@@ -167,7 +167,7 @@ export default function ModuleRecoveryAlert() {
 	} else if ( userAccessibleModules.length === 0 ) {
 		if ( recoverableModulesList.length === 1 ) {
 			description = sprintf(
-				/* translators: 1: module name. */
+				/* translators: %s: module name. */
 				__(
 					'%s data was previously shared with other users on the site by another admin who no longer has access. To restore access, the module must be recovered by another admin who has access.',
 					'google-site-kit'
@@ -193,7 +193,7 @@ export default function ModuleRecoveryAlert() {
 		}
 	} else if ( userAccessibleModules.length === 1 ) {
 		description = sprintf(
-			/* translators: 1: module name. */
+			/* translators: %s: module name. */
 			__(
 				'%s data was previously shared with other users on the site by another admin who no longer has access. To restore access, you may recover the module as the new owner.',
 				'google-site-kit'

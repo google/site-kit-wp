@@ -202,7 +202,7 @@ export default function Header( { slug } ) {
 									onClick={ onActionClick }
 								>
 									{ sprintf(
-										/* translators: 1: module name. */
+										/* translators: %s: module name. */
 										__(
 											'Complete setup for %s',
 											'google-site-kit'
