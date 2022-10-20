@@ -65,6 +65,7 @@ import { AdBlockerWarning, ErrorNotices } from '../common';
 import useViewContext from '../../../../hooks/useViewContext';
 const { useSelect, useDispatch } = Data;
 
+// eslint-disable-next-line complexity
 export default function SetupMain( { finishSetup } ) {
 	const viewContext = useViewContext();
 	const eventCategory = `${ viewContext }_adsense`;
