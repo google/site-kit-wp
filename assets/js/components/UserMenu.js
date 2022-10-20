@@ -58,9 +58,7 @@ export default function UserMenu() {
 	const userPicture = useSelect( ( select ) =>
 		select( CORE_USER ).getPicture()
 	);
-	const userFullName = useSelect( ( select ) =>
-		select( CORE_USER ).getFullName()
-	);
+	const userFullName = false;
 	const postDisconnectURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-splash', {
 			googlesitekit_context: 'revoked',
@@ -196,7 +194,7 @@ export default function UserMenu() {
 							<br />
 							<br />
 							{ userFullName }
-							<br />
+							{ userFullName && <br /> }
 							{ userEmail }
 						</Fragment>
 					}
