@@ -53,14 +53,6 @@ export default function LabReportMetrics( { data, error } ) {
 		);
 	}
 
-	if (
-		! largestContentfulPaint ||
-		! cumulativeLayoutShift ||
-		! totalBlockingTime
-	) {
-		return null;
-	}
-
 	return (
 		<div className="googlesitekit-pagespeed-insights-web-vitals-metrics">
 			<div className="googlesitekit-pagespeed-report__row googlesitekit-pagespeed-report__row--first">
@@ -90,9 +82,11 @@ export default function LabReportMetrics( { data, error } ) {
 							'Time it takes for the page to load',
 							'google-site-kit'
 						) }
-						displayValue={ largestContentfulPaint.displayValue }
+						displayValue={
+							largestContentfulPaint?.displayValue || ''
+						}
 						category={ getScoreCategory(
-							largestContentfulPaint.score
+							largestContentfulPaint?.score || 0
 						) }
 					/>
 					<ReportMetric
@@ -105,9 +99,11 @@ export default function LabReportMetrics( { data, error } ) {
 							'How stable the elements on the page are',
 							'google-site-kit'
 						) }
-						displayValue={ cumulativeLayoutShift.displayValue }
+						displayValue={
+							cumulativeLayoutShift?.displayValue || ''
+						}
 						category={ getScoreCategory(
-							cumulativeLayoutShift.score
+							cumulativeLayoutShift?.score || 0
 						) }
 					/>
 					<ReportMetric
@@ -116,8 +112,10 @@ export default function LabReportMetrics( { data, error } ) {
 							'How long people had to wait after the page loaded before they could click something',
 							'google-site-kit'
 						) }
-						displayValue={ totalBlockingTime.displayValue }
-						category={ getScoreCategory( totalBlockingTime.score ) }
+						displayValue={ totalBlockingTime?.displayValue || '' }
+						category={ getScoreCategory(
+							totalBlockingTime?.score || 0
+						) }
 						isLast
 					/>
 					<ReportMetric

@@ -27,13 +27,7 @@ import { useIntersection } from 'react-use';
 /**
  * WordPress dependencies
  */
-import {
-	Fragment,
-	useCallback,
-	useEffect,
-	useRef,
-	useState,
-} from '@wordpress/element';
+import { useCallback, useEffect, useRef, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -296,155 +290,171 @@ export default function DashboardPageSpeed() {
 		}
 	}, [ reportMobile, reportDesktop, setDataSrcField ] );
 
-	if ( ! referenceURL || ( isFetching && ! reportData ) || ! dataSrc ) {
-		return (
-			<Grid
-				id="googlesitekit-pagespeed-header" // Used by jump link.
-			>
-				<Row>
-					<Cell size={ 12 }>
-						<ProgressBar />
-						<p className="googlesitekit-text-align-center">
-							{ __(
-								'PageSpeed Insights is preparing data…',
-								'google-site-kit'
-							) }
-						</p>
-					</Cell>
-				</Row>
-			</Grid>
-		);
-	}
+	const isLoading =
+		! referenceURL || ( isFetching && ! reportData ) || ! dataSrc;
 
 	return (
-		<Fragment>
-			<header
-				id="googlesitekit-pagespeed-header" // Used by jump link.
-				className="googlesitekit-pagespeed-widget__header"
-				ref={ trackingRef }
-			>
-				<div className="googlesitekit-pagespeed-widget__data-src-tabs">
-					<TabBar
-						activeIndex={ [
-							DATA_SRC_LAB,
-							DATA_SRC_FIELD,
-							DATA_SRC_RECOMMENDATIONS,
-						].indexOf( dataSrc ) }
-						handleActiveIndexUpdate={ updateActiveTab }
-					>
-						<Tab
-							focusOnActivate={ false }
-							aria-labelledby={ `googlesitekit-pagespeed-widget__data-src-tab-${ DATA_SRC_LAB }` }
-						>
-							<span
-								id={ `googlesitekit-pagespeed-widget__data-src-tab-${ DATA_SRC_LAB }` }
-								className="mdc-tab__text-label"
-							>
-								{ __( 'In the Lab', 'google-site-kit' ) }
-							</span>
-						</Tab>
-						<Tab
-							focusOnActivate={ false }
-							aria-labelledby={ `googlesitekit-pagespeed-widget__data-src-tab-${ DATA_SRC_FIELD }` }
-						>
-							<span
-								id={ `googlesitekit-pagespeed-widget__data-src-tab-${ DATA_SRC_FIELD }` }
-								className="mdc-tab__text-label"
-							>
-								{ __( 'In the Field', 'google-site-kit' ) }
-							</span>
-						</Tab>
-						<Tab
-							focusOnActivate={ false }
-							aria-labelledby={ `googlesitekit-pagespeed-widget__data-src-tab-${ DATA_SRC_RECOMMENDATIONS }` }
-						>
-							<span
-								id={ `googlesitekit-pagespeed-widget__data-src-tab-${ DATA_SRC_RECOMMENDATIONS }` }
-								className="mdc-tab__text-label"
-							>
-								{ __( 'How to improve', 'google-site-kit' ) }
-							</span>
-						</Tab>
-					</TabBar>
-				</div>
-				<div className="googlesitekit-pagespeed-widget__device-size-tab-bar-wrapper">
-					<DeviceSizeTabBar
-						activeTab={ strategy }
-						handleDeviceSizeUpdate={ updateActiveDeviceSize }
-					/>
-				</div>
-			</header>
-			{ isFetching && (
-				<div className="googlesitekit-pagespeed-widget__refreshing-progress-bar-wrapper">
-					<ProgressBar compress />
-				</div>
+		<div
+			id="googlesitekit-pagespeed-header" // Used by jump link.
+			className={ classnames(
+				'googlesitekit-pagespeed-widget__content-wrapper',
+				{
+					'googlesitekit-pagespeed-widget__content-wrapper--loading':
+						isLoading,
+				}
 			) }
-
-			<section
-				className={ classnames( {
-					'googlesitekit-pagespeed-widget__refreshing': isFetching,
-				} ) }
-			>
-				{ dataSrc === DATA_SRC_LAB && (
-					<LabReportMetrics
-						data={ reportData }
-						error={ reportError }
-					/>
-				) }
-				{ dataSrc === DATA_SRC_FIELD && (
-					<FieldReportMetrics
-						data={ reportData }
-						error={ reportError }
-					/>
-				) }
-				{ dataSrc === DATA_SRC_RECOMMENDATIONS && (
-					<Recommendations
-						className={ classnames( {
-							'googlesitekit-pagespeed-widget__refreshing':
-								isFetching,
-						} ) }
-						recommendations={ recommendations }
-						referenceURL={ referenceURL }
-						strategy={ strategy }
-					/>
-				) }
-			</section>
-
-			{ ( dataSrc === DATA_SRC_LAB || dataSrc === DATA_SRC_FIELD ) && (
-				<div className="googlesitekit-pagespeed-report__row">
-					<Button
-						className={ classnames( {
-							'googlesitekit-pagespeed__recommendations-cta--hidden':
-								! recommendations?.length,
-						} ) }
-						onClick={ () =>
-							updateActiveTab( TAB_INDEX_RECOMMENDATIONS )
-						}
-					>
-						{ __( 'How to improve', 'google-site-kit' ) }
-					</Button>
-				</div>
+		>
+			{ isLoading && (
+				<Grid className="googlesitekit-pagespeed-widget__progress-bar">
+					<Row>
+						<Cell size={ 12 }>
+							<ProgressBar />
+							<p className="googlesitekit-text-align-center">
+								{ __(
+									'PageSpeed Insights is preparing data…',
+									'google-site-kit'
+								) }
+							</p>
+						</Cell>
+					</Row>
+				</Grid>
 			) }
-
-			<div
-				className={ classnames(
-					'googlesitekit-pagespeed-report__footer',
-					{
-						'googlesitekit-pagespeed-report__footer--with-action':
-							dataSrc === DATA_SRC_LAB,
-					}
-				) }
-			>
-				{ dataSrc === DATA_SRC_LAB && (
-					<div>
-						<Link onClick={ updateReport } disabled={ isFetching }>
-							{ __( 'Run test again', 'google-site-kit' ) }
-						</Link>
-						<Spinner isSaving={ isFetching } />
+			<div className="googlesitekit-pagespeed-widget__content">
+				<header
+					className="googlesitekit-pagespeed-widget__header"
+					ref={ trackingRef }
+				>
+					<div className="googlesitekit-pagespeed-widget__data-src-tabs">
+						<TabBar
+							activeIndex={ [
+								DATA_SRC_LAB,
+								DATA_SRC_FIELD,
+								DATA_SRC_RECOMMENDATIONS,
+							].indexOf( dataSrc ) }
+							handleActiveIndexUpdate={ updateActiveTab }
+						>
+							<Tab
+								focusOnActivate={ false }
+								aria-labelledby={ `googlesitekit-pagespeed-widget__data-src-tab-${ DATA_SRC_LAB }` }
+							>
+								<span
+									id={ `googlesitekit-pagespeed-widget__data-src-tab-${ DATA_SRC_LAB }` }
+									className="mdc-tab__text-label"
+								>
+									{ __( 'In the Lab', 'google-site-kit' ) }
+								</span>
+							</Tab>
+							<Tab
+								focusOnActivate={ false }
+								aria-labelledby={ `googlesitekit-pagespeed-widget__data-src-tab-${ DATA_SRC_FIELD }` }
+							>
+								<span
+									id={ `googlesitekit-pagespeed-widget__data-src-tab-${ DATA_SRC_FIELD }` }
+									className="mdc-tab__text-label"
+								>
+									{ __( 'In the Field', 'google-site-kit' ) }
+								</span>
+							</Tab>
+							<Tab
+								focusOnActivate={ false }
+								aria-labelledby={ `googlesitekit-pagespeed-widget__data-src-tab-${ DATA_SRC_RECOMMENDATIONS }` }
+							>
+								<span
+									id={ `googlesitekit-pagespeed-widget__data-src-tab-${ DATA_SRC_RECOMMENDATIONS }` }
+									className="mdc-tab__text-label"
+								>
+									{ __(
+										'How to improve',
+										'google-site-kit'
+									) }
+								</span>
+							</Tab>
+						</TabBar>
+					</div>
+					<div className="googlesitekit-pagespeed-widget__device-size-tab-bar-wrapper">
+						<DeviceSizeTabBar
+							activeTab={ strategy }
+							handleDeviceSizeUpdate={ updateActiveDeviceSize }
+						/>
+					</div>
+				</header>
+				{ isFetching && ! isLoading && (
+					<div className="googlesitekit-pagespeed-widget__refreshing-progress-bar-wrapper">
+						<ProgressBar compress />
 					</div>
 				) }
-				<ReportDetailsLink />
+
+				<section
+					className={ classnames( {
+						'googlesitekit-pagespeed-widget__refreshing':
+							isFetching,
+					} ) }
+				>
+					{ dataSrc === DATA_SRC_LAB && (
+						<LabReportMetrics
+							data={ reportData }
+							error={ reportError }
+						/>
+					) }
+					{ dataSrc === DATA_SRC_FIELD && (
+						<FieldReportMetrics
+							data={ reportData }
+							error={ reportError }
+						/>
+					) }
+					{ dataSrc === DATA_SRC_RECOMMENDATIONS && (
+						<Recommendations
+							className={ classnames( {
+								'googlesitekit-pagespeed-widget__refreshing':
+									isFetching,
+							} ) }
+							recommendations={ recommendations }
+							referenceURL={ referenceURL }
+							strategy={ strategy }
+						/>
+					) }
+				</section>
+
+				{ ( dataSrc === DATA_SRC_LAB ||
+					dataSrc === DATA_SRC_FIELD ) && (
+					<div className="googlesitekit-pagespeed-report__row">
+						<Button
+							className={ classnames( {
+								'googlesitekit-pagespeed__recommendations-cta--hidden':
+									! recommendations?.length,
+							} ) }
+							onClick={ () =>
+								updateActiveTab( TAB_INDEX_RECOMMENDATIONS )
+							}
+						>
+							{ __( 'How to improve', 'google-site-kit' ) }
+						</Button>
+					</div>
+				) }
+
+				<div
+					className={ classnames(
+						'googlesitekit-pagespeed-report__footer',
+						{
+							'googlesitekit-pagespeed-report__footer--with-action':
+								dataSrc === DATA_SRC_LAB,
+						}
+					) }
+				>
+					{ dataSrc === DATA_SRC_LAB && ! isLoading && (
+						<div>
+							<Link
+								onClick={ updateReport }
+								disabled={ isFetching }
+							>
+								{ __( 'Run test again', 'google-site-kit' ) }
+							</Link>
+							<Spinner isSaving={ isFetching } />
+						</div>
+					) }
+					<ReportDetailsLink />
+				</div>
 			</div>
-		</Fragment>
+		</div>
 	);
 }
