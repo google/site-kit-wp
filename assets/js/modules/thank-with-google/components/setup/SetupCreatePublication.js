@@ -19,14 +19,17 @@
 /**
  * WordPress dependencies
  */
+import { useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { MODULES_THANK_WITH_GOOGLE } from '../../datastore/constants';
 import Button from '../../../../components/Button';
+import useViewContext from '../../../../hooks/useViewContext';
+import { trackEvent } from '../../../../util';
+import { MODULES_THANK_WITH_GOOGLE } from '../../datastore/constants';
 import SetupPublicationScreen from './SetupPublicationScreen';
 const { useSelect } = Data;
 
@@ -34,6 +37,21 @@ export default function SetupCreatePublication() {
 	const createPublicationURL = useSelect( ( select ) =>
 		select( MODULES_THANK_WITH_GOOGLE ).getServiceCreatePublicationURL()
 	);
+
+	const viewContext = useViewContext();
+
+	const handleCreatePublication = useCallback( () => {
+		// We don't need to wait for this to finish (eg. use `await` and then
+		// `navigateTo()`), because the link this event is attached to will
+		// open in a new tab/window.
+		//
+		// It's safe to call this track event without waiting for it to
+		// complete/abort before moving to the navigation step.
+		trackEvent(
+			`${ viewContext }_thank-with-google`,
+			'create_publication'
+		);
+	}, [ viewContext ] );
 
 	return (
 		<SetupPublicationScreen
@@ -48,6 +66,7 @@ export default function SetupCreatePublication() {
 		>
 			<Button
 				href={ createPublicationURL }
+				onClick={ handleCreatePublication }
 				target="_blank"
 				aria-label={ __(
 					'Create your Thank with Google account',

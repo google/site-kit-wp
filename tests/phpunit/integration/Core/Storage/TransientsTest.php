@@ -33,6 +33,10 @@ class TransientsTest extends TestCase {
 	 */
 	public function test_network_mode_get() {
 		$this->network_activate_site_kit();
+
+		// Force enable network mode.
+		add_filter( 'googlesitekit_is_network_mode', '__return_true' );
+
 		$context    = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$transients = new Transients( $context );
 		$this->assertTrue( $context->is_network_mode() );
@@ -57,6 +61,10 @@ class TransientsTest extends TestCase {
 	 */
 	public function test_network_mode_set() {
 		$this->network_activate_site_kit();
+
+		// Force enable network mode.
+		add_filter( 'googlesitekit_is_network_mode', '__return_true' );
+
 		$context    = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$transients = new Transients( $context );
 		$this->assertTrue( $context->is_network_mode() );
@@ -84,6 +92,10 @@ class TransientsTest extends TestCase {
 	 */
 	public function test_network_mode_delete() {
 		$this->network_activate_site_kit();
+
+		// Force enable network mode.
+		add_filter( 'googlesitekit_is_network_mode', '__return_true' );
+
 		$context    = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$transients = new Transients( $context );
 		$this->assertTrue( $context->is_network_mode() );

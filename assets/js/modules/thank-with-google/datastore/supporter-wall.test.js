@@ -115,7 +115,7 @@ describe( 'modules/thank-with-google supporter-wall', () => {
 		describe( 'getSupporterWallPrompt', () => {
 			it( 'should use a resolver to get supporter wall prompt data when requested', async () => {
 				fetchMock.getOnce( supporterWallPromptEndpoint, {
-					body: true,
+					body: { supporterWallPrompt: true },
 				} );
 
 				// The supporter wall prompt state will be `undefined` whilst loading.
@@ -172,7 +172,9 @@ describe( 'modules/thank-with-google supporter-wall', () => {
 			it( 'should not make a network request if data is already in state', () => {
 				registry
 					.dispatch( MODULES_THANK_WITH_GOOGLE )
-					.receiveGetSupporterWallPrompt( true );
+					.receiveGetSupporterWallPrompt( {
+						supporterWallPrompt: true,
+					} );
 
 				const supporterWallPrompt = registry
 					.select( MODULES_THANK_WITH_GOOGLE )

@@ -430,7 +430,7 @@ abstract class Module {
 		}
 		if ( ! $oauth_client->has_sufficient_scopes( $this->get_scopes() ) ) {
 			$message = sprintf(
-				/* translators: 1: module name */
+				/* translators: %s: module name */
 				__( 'Site Kit can’t access the relevant data from %s because you haven’t granted all permissions requested during setup.', 'google-site-kit' ),
 				$this->name
 			);
@@ -640,7 +640,7 @@ abstract class Module {
 		}
 
 		if ( ! isset( $this->google_services[ $identifier ] ) ) {
-			/* translators: 1: service identifier */
+			/* translators: %s: service identifier */
 			throw new Exception( sprintf( __( 'Google service identified by %s does not exist.', 'google-site-kit' ), $identifier ) );
 		}
 

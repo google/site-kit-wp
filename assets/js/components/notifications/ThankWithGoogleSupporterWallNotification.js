@@ -20,7 +20,7 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { Fragment } from '@wordpress/element';
+import { Fragment, useCallback, useEffect, useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -30,6 +30,8 @@ import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { MODULES_THANK_WITH_GOOGLE } from '../../modules/thank-with-google/datastore/constants';
 import SupporterWallPromptSVG from '../../../svg/graphics/twg-supporter-wall.svg';
 import BannerNotification from './BannerNotification';
+import useViewContext from '../../hooks/useViewContext';
+import { trackEvent } from '../../util';
 const { useSelect } = Data;
 
 export default function ThankWithGoogleSupporterWallNotification() {
@@ -40,6 +42,29 @@ export default function ThankWithGoogleSupporterWallNotification() {
 		select( CORE_SITE ).getWidgetsAdminURL()
 	);
 
+	const [ viewNotificationSent, setViewNotificationSent ] = useState( false );
+
+	const viewContext = useViewContext();
+	const eventCategory = `${ viewContext }_thank-with-google-supporter-wall-notification`;
+
+	useEffect( () => {
+		// Only trigger the view event if the notification is visible and we haven't
+		// already sent this notification.
+		if ( ! viewNotificationSent && supporterWallPrompt ) {
+			trackEvent( eventCategory, 'view_notification' );
+			// Don't send the view event again.
+			setViewNotificationSent( true );
+		}
+	}, [ eventCategory, supporterWallPrompt, viewNotificationSent ] );
+
+	const handleOnCTAClick = useCallback( () => {
+		trackEvent( eventCategory, 'confirm_notification' );
+	}, [ eventCategory ] );
+
+	const handleOnDismiss = useCallback( () => {
+		trackEvent( eventCategory, 'dismiss_notification' );
+	}, [ eventCategory ] );
+
 	if ( ! supporterWallPrompt ) {
 		return null;
 	}
@@ -47,24 +72,25 @@ export default function ThankWithGoogleSupporterWallNotification() {
 	return (
 		<BannerNotification
 			id="twg-supporter-wall-prompt"
+			className="googlesitekit-twg-supporter-wall-banner"
 			title={ __(
 				'Add a Thank with Google supporter wall',
 				'google-site-kit'
 			) }
 			description={
 				<Fragment>
-					<p>
+					<span className="googlesitekit-display-block">
 						{ __(
 							'A supporter wall widget shows the list of everyone who has supported your site using Thank with Google. It’s a nice way to thank your supporters back.',
 							'google-site-kit'
 						) }
-					</p>
-					<p>
+					</span>
+					<span className="googlesitekit-display-block">
 						{ __(
 							'You can find and add the supporter wall widget from your site’s Appearance settings.',
 							'google-site-kit'
 						) }
-					</p>
+					</span>
 				</Fragment>
 			}
 			ctaLabel={ __( 'Add Supporter Wall widget', 'google-site-kit' ) }
@@ -72,6 +98,8 @@ export default function ThankWithGoogleSupporterWallNotification() {
 			dismiss={ __( 'Maybe later', 'google-site-kit' ) }
 			isDismissible
 			format="large"
+			onCTAClick={ handleOnCTAClick }
+			onDismiss={ handleOnDismiss }
 			WinImageSVG={ () => <SupporterWallPromptSVG height="195" /> }
 		/>
 	);

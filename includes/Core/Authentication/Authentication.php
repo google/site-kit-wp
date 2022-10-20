@@ -365,6 +365,10 @@ final class Authentication {
 					$profile_data            = $this->profile->get();
 					$user['user']['email']   = $profile_data['email'];
 					$user['user']['picture'] = $profile_data['photo'];
+					// Older versions of Site Kit (before 1.86.0) did not
+					// fetch the user's full name, so we need to check for
+					// that attribute before using it.
+					$user['user']['full_name'] = isset( $profile_data['full_name'] ) ? $profile_data['full_name'] : null;
 				}
 
 				$user['connectURL']        = esc_url_raw( $this->get_connect_url() );
@@ -826,6 +830,27 @@ final class Authentication {
 	}
 
 	/**
+	 * Gets the update core URL if the user can update the WordPress core version.
+	 *
+	 * If the site is multisite, it gets the update core URL for the network admin.
+	 *
+	 * @since 1.85.0
+	 *
+	 * @return string The update core URL.
+	 */
+	private function get_update_core_url() {
+		if ( ! current_user_can( 'update_core' ) ) {
+			return null;
+		}
+
+		if ( is_multisite() ) {
+			return admin_url( 'network/update-core.php' );
+		}
+
+		return admin_url( 'update-core.php' );
+	}
+
+	/**
 	 * Modifies the base data to pass to JS.
 	 *
 	 * @since 1.2.0
@@ -844,6 +869,7 @@ final class Authentication {
 		$data['setupErrorMessage']   = null;
 		$data['setupErrorRedoURL']   = null;
 		$data['proxySupportLinkURL'] = null;
+		$data['updateCoreURL']       = null;
 
 		if ( $this->credentials->using_proxy() ) {
 			$auth_client                 = $this->get_oauth_client();
@@ -851,6 +877,7 @@ final class Authentication {
 			$data['proxyPermissionsURL'] = esc_url_raw( $this->get_proxy_permissions_url() );
 			$data['usingProxy']          = true;
 			$data['proxySupportLinkURL'] = esc_url_raw( $this->get_proxy_support_link_url() );
+			$data['updateCoreURL']       = esc_url_raw( $this->get_update_core_url() );
 
 			// Check for an error in the proxy setup.
 			$error_code = $this->user_options->get( OAuth_Client::OPTION_ERROR_CODE );
@@ -1131,12 +1158,12 @@ final class Authentication {
 						$content .= sprintf(
 							'<ul><li>%s</li><li>%s</li></ul>',
 							sprintf(
-								/* translators: 1: Previous URL */
+								/* translators: %s: Previous URL */
 								esc_html__( 'Old URL: %s', 'google-site-kit' ),
 								$connected_url
 							),
 							sprintf(
-								/* translators: 1: Current URL */
+								/* translators: %s: Current URL */
 								esc_html__( 'New URL: %s', 'google-site-kit' ),
 								$current_url
 							)
@@ -1467,11 +1494,10 @@ final class Authentication {
 		$html  = __( 'The link you followed has expired.', 'google-site-kit' );
 		$html .= '</p><p>';
 		$html .= sprintf(
-			'<a href="%s">%s</a>. <a href="%s" target="_blank">%s</a>.',
+			/* translators: 1: Admin splash URL. 2: Support link URL. */
+			__( '<a href="%1$s">Please try again</a>. Retry didn’t work? <a href="%2$s" target="_blank">Get help</a>.', 'google-site-kit' ),
 			esc_url( Plugin::instance()->context()->admin_url( 'splash' ) ),
-			__( 'Please try again', 'google-site-kit' ),
-			esc_url( $this->get_proxy_support_link_url() . '?error_id=nonce_expired' ),
-			__( 'Get help', 'google-site-kit' )
+			esc_url( $this->get_proxy_support_link_url() . '?error_id=nonce_expired' )
 		);
 		wp_die( $html, __( 'Something went wrong.', 'google-site-kit' ), 403 ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	}

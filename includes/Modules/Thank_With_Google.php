@@ -29,11 +29,13 @@ use Google\Site_Kit\Core\Modules\Module_With_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\REST_API\Exception\Invalid_Datapoint_Exception;
+use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\Transients;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Environment_Type_Guard;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Verify_Guard;
+use Google\Site_Kit\Core\Util\BC_Functions;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Modules\Search_Console\Settings as Search_Console_Settings;
 use Google\Site_Kit\Modules\Thank_With_Google\Settings;
@@ -73,7 +75,7 @@ final class Thank_With_Google extends Module
 	/**
 	 * Transients instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.85.0
 	 * @var Transients
 	 */
 	private $transients;
@@ -81,7 +83,7 @@ final class Thank_With_Google extends Module
 	/**
 	 * Internal flag for whether the module is connected before saving/updating its settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.85.0
 	 * @var bool
 	 */
 	private $pre_update_is_connected;
@@ -89,7 +91,7 @@ final class Thank_With_Google extends Module
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.85.0
 	 *
 	 * @param Context        $context        Plugin context.
 	 * @param Options        $options        Optional. Option API instance. Default is a new instance.
@@ -155,6 +157,18 @@ final class Thank_With_Google extends Module
 				) {
 					$this->register_tag();
 				}
+			}
+		);
+
+		add_filter(
+			'googlesitekit_apifetch_preload_paths',
+			function ( $paths ) {
+				return array_merge(
+					$paths,
+					array(
+						'/' . REST_Routes::REST_ROOT . '/modules/thank-with-google/data/supporter-wall-prompt',
+					)
+				);
 			}
 		);
 
@@ -287,7 +301,7 @@ final class Thank_With_Google extends Module
 	/**
 	 * Gets the supporter wall sidebars.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.85.0
 	 *
 	 * @return array list of supporter wall sidebars, otherwise an empty list.
 	 */
@@ -308,7 +322,7 @@ final class Thank_With_Google extends Module
 
 			$actual_sidebars_count++;
 
-			$sidebar = wp_get_sidebar( $sidebar_id );
+			$sidebar = BC_Functions::wp_get_sidebar( $sidebar_id );
 			foreach ( $widgets as $widget ) {
 				$block_match = array();
 				if ( preg_match( $pattern, $widget ) ) {
@@ -407,12 +421,11 @@ final class Thank_With_Google extends Module
 			case 'GET:supporter-wall-prompt':
 				return function() {
 					$supporter_wall_sidebars = $this->get_supporter_wall_sidebars();
-					$is_connected            = $this->is_connected();
 					$setup_transient         = $this->transients->get( self::TRANSIENT_SETUP_TIMER );
-					if ( $is_connected && empty( $supporter_wall_sidebars ) && ! $setup_transient ) {
-						return true;
+					if ( empty( $supporter_wall_sidebars ) && ! $setup_transient ) {
+						return array( 'supporterWallPrompt' => true );
 					}
-					return false;
+					return array( 'supporterWallPrompt' => false );
 				};
 		}
 

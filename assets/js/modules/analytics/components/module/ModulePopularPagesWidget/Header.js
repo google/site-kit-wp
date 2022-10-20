@@ -34,7 +34,7 @@ export default function Header() {
 		select( CORE_USER ).getDateRangeNumberOfDays()
 	);
 	const title = sprintf(
-		/* translators: 1: number of days */
+		/* translators: %s: number of days */
 		_n(
 			'Top content over the last %s day',
 			'Top content over the last %s days',

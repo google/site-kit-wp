@@ -30,32 +30,32 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import {
-	VIEW_CONTEXT_DASHBOARD,
-	VIEW_CONTEXT_DASHBOARD_VIEW_ONLY,
+	VIEW_CONTEXT_MAIN_DASHBOARD,
+	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 } from '../googlesitekit/constants';
 import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
 import { MODULES_IDEA_HUB } from '../modules/idea-hub/datastore/constants';
 
 const ideaHubModule = {
 	slug: 'ideaHubModule',
-	contexts: [ VIEW_CONTEXT_DASHBOARD, VIEW_CONTEXT_DASHBOARD_VIEW_ONLY ],
+	contexts: [
+		VIEW_CONTEXT_MAIN_DASHBOARD,
+		VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+	],
 	version: '1.43.0',
 	checkRequirements: async ( registry ) => {
-		await registry.__experimentalResolveSelect( CORE_MODULES ).getModules();
-		const isIdeaHubModuleActive = registry
-			.select( CORE_MODULES )
-			.isModuleActive( 'idea-hub' );
-		const isIdeaHubModuleConnected = registry
-			.select( CORE_MODULES )
-			.isModuleConnected( 'idea-hub' );
+		const { __experimentalResolveSelect } = registry;
+		const isIdeaHubModuleConnected = await __experimentalResolveSelect(
+			CORE_MODULES
+		).isModuleConnected( 'idea-hub' );
 
-		if ( ! isIdeaHubModuleActive || ! isIdeaHubModuleConnected ) {
+		if ( ! isIdeaHubModuleConnected ) {
 			return false;
 		}
 
-		const newIdeas = await registry
-			.__experimentalResolveSelect( MODULES_IDEA_HUB )
-			.getNewIdeas();
+		const newIdeas = await __experimentalResolveSelect(
+			MODULES_IDEA_HUB
+		).getNewIdeas();
 
 		return !! newIdeas.length;
 	},

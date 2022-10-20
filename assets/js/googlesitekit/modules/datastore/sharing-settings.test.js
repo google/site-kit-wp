@@ -82,6 +82,11 @@ describe( 'core/modules sharing-settings', () => {
 			management: 'all_admins',
 		},
 	};
+	const sharedOwnershipModules = [
+		'analytics',
+		'search-console',
+		'tagmanager',
+	];
 
 	let registry;
 	let store;
@@ -1068,10 +1073,6 @@ describe( 'core/modules sharing-settings', () => {
 
 		describe( 'haveSharingSettingsUpdated', () => {
 			it( 'informs whether saved sharing settings differ from the initial default ones', () => {
-				global[ dashboardSharingDataBaseVar ] = {
-					defaultSharedOwnershipModuleSettings,
-				};
-
 				// Initially false.
 				expect(
 					registry.select( CORE_MODULES ).haveSharingSettingsUpdated()
@@ -1088,11 +1089,29 @@ describe( 'core/modules sharing-settings', () => {
 
 				registry
 					.dispatch( CORE_MODULES )
-					.receiveGetSharingSettings(
-						defaultSharedOwnershipModuleSettings
-					);
+					.receiveSharedOwnershipModules( {} );
 
-				// False after getting the default sharing settings.
+				// False if sharedOwnershipModules is an empty object
+				expect(
+					registry.select( CORE_MODULES ).haveSharingSettingsUpdated()
+				).toBe( false );
+
+				registry
+					.dispatch( CORE_MODULES )
+					.receiveSharedOwnershipModules( sharedOwnershipModules );
+
+				registry.dispatch( CORE_MODULES ).receiveGetSharingSettings( {
+					analytics: {
+						sharedRoles: [],
+						management: 'all_admins',
+					},
+					adsense: {
+						sharedRoles: [],
+						management: 'owner',
+					},
+				} );
+
+				// False after using the default sharing settings.
 				expect(
 					registry.select( CORE_MODULES ).haveSharingSettingsUpdated()
 				).toBe( false );

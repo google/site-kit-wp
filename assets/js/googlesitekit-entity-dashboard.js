@@ -28,14 +28,14 @@ import { render } from '@wordpress/element';
 import DashboardEntityApp from './components/DashboardEntityApp';
 import Root from './components/Root';
 import {
-	VIEW_CONTEXT_PAGE_DASHBOARD,
-	VIEW_CONTEXT_PAGE_DASHBOARD_VIEW_ONLY,
+	VIEW_CONTEXT_ENTITY_DASHBOARD,
+	VIEW_CONTEXT_ENTITY_DASHBOARD_VIEW_ONLY,
 } from './googlesitekit/constants';
 
 // Initialize the app once the DOM is ready.
 domReady( () => {
 	const renderTarget = document.getElementById(
-		'js-googlesitekit-dashboard-details'
+		'js-googlesitekit-entity-dashboard'
 	);
 
 	if ( renderTarget ) {
@@ -45,8 +45,8 @@ domReady( () => {
 			<Root
 				viewContext={
 					viewOnly
-						? VIEW_CONTEXT_PAGE_DASHBOARD_VIEW_ONLY
-						: VIEW_CONTEXT_PAGE_DASHBOARD
+						? VIEW_CONTEXT_ENTITY_DASHBOARD_VIEW_ONLY
+						: VIEW_CONTEXT_ENTITY_DASHBOARD
 				}
 			>
 				<DashboardEntityApp />

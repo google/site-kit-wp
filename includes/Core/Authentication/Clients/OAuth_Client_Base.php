@@ -255,6 +255,10 @@ abstract class OAuth_Client_Base {
 	 * @return bool True on success, false on failure.
 	 */
 	public function set_token( array $token ) {
+		// Remove the error code from the user options so it doesn't
+		// appear again.
+		$this->user_options->delete( OAuth_Client::OPTION_ERROR_CODE );
+
 		return $this->token->set( $token );
 	}
 
@@ -308,7 +312,7 @@ abstract class OAuth_Client_Base {
 			case 'unsupported_grant_type':
 				return __( 'Unable to receive access token because of an unsupported grant type.', 'google-site-kit' );
 			default:
-				/* translators: 1: error code from API */
+				/* translators: %s: error code from API */
 				return sprintf( __( 'Unknown Error (code: %s).', 'google-site-kit' ), $error_code );
 		}
 	}

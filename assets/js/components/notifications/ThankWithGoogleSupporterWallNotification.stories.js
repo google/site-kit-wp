@@ -37,7 +37,9 @@ export default {
 				provideSiteInfo( registry );
 				registry
 					.dispatch( MODULES_THANK_WITH_GOOGLE )
-					.receiveGetSupporterWallPrompt( true );
+					.receiveGetSupporterWallPrompt( {
+						supporterWallPrompt: true,
+					} );
 
 				provideModules( registry, [
 					{

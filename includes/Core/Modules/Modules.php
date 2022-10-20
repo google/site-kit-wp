@@ -524,7 +524,7 @@ final class Modules {
 	 * Gets the available modules.
 	 *
 	 * @since 1.0.0
-	 * @since n.e.x.t Filter out modules which are missing any of the dependencies specified in `depends_on`.
+	 * @since 1.85.0 Filter out modules which are missing any of the dependencies specified in `depends_on`.
 	 *
 	 * @return array Available modules as $slug => $module pairs.
 	 */
@@ -613,7 +613,7 @@ final class Modules {
 		$modules = $this->get_available_modules();
 
 		if ( ! isset( $modules[ $slug ] ) ) {
-			/* translators: 1: module slug */
+			/* translators: %s: module slug */
 			throw new Exception( sprintf( __( 'Invalid module slug %s.', 'google-site-kit' ), $slug ) );
 		}
 
@@ -651,7 +651,7 @@ final class Modules {
 		$modules = $this->get_available_modules();
 
 		if ( ! isset( $modules[ $slug ] ) ) {
-			/* translators: 1: module slug */
+			/* translators: %s: module slug */
 			throw new Exception( sprintf( __( 'Invalid module slug %s.', 'google-site-kit' ), $slug ) );
 		}
 
@@ -672,7 +672,7 @@ final class Modules {
 		$modules = $this->get_available_modules();
 
 		if ( ! isset( $modules[ $slug ] ) ) {
-			/* translators: 1: module slug */
+			/* translators: %s: module slug */
 			throw new Exception( sprintf( __( 'Invalid module slug %s.', 'google-site-kit' ), $slug ) );
 		}
 
@@ -957,7 +957,7 @@ final class Modules {
 								$dependency_slugs = $this->get_module_dependencies( $slug );
 								foreach ( $dependency_slugs as $dependency_slug ) {
 									if ( ! $this->is_module_active( $dependency_slug ) ) {
-										/* translators: 1: module name */
+										/* translators: %s: module name */
 										return new WP_Error( 'inactive_dependencies', sprintf( __( 'Module cannot be activated because of inactive dependency %s.', 'google-site-kit' ), $modules[ $dependency_slug ]->name ), array( 'status' => 500 ) );
 									}
 								}
@@ -970,7 +970,7 @@ final class Modules {
 								foreach ( $dependant_slugs as $dependant_slug ) {
 									if ( $this->is_module_active( $dependant_slug ) ) {
 										if ( ! $this->deactivate_module( $dependant_slug ) ) {
-											/* translators: 1: module name */
+											/* translators: %s: module name */
 											return new WP_Error( 'cannot_deactivate_dependant', sprintf( __( 'Module cannot be deactivated because deactivation of dependant %s failed.', 'google-site-kit' ), $modules[ $dependant_slug ]->name ), array( 'status' => 500 ) );
 										}
 									}
@@ -1190,6 +1190,11 @@ final class Modules {
 							} catch ( Exception $e ) {
 								return new WP_Error( 'invalid_module_slug', __( 'Invalid module slug.', 'google-site-kit' ), array( 'status' => 404 ) );
 							}
+
+							if ( ! $this->is_module_active( $slug ) ) {
+								return new WP_Error( 'module_not_active', __( 'Module must be active to request data.', 'google-site-kit' ), array( 'status' => 403 ) );
+							}
+
 							$data = $module->get_data( $request['datapoint'], $request->get_params() );
 							if ( is_wp_error( $data ) ) {
 								return $data;
@@ -1207,6 +1212,11 @@ final class Modules {
 							} catch ( Exception $e ) {
 								return new WP_Error( 'invalid_module_slug', __( 'Invalid module slug.', 'google-site-kit' ), array( 'status' => 404 ) );
 							}
+
+							if ( ! $this->is_module_active( $slug ) ) {
+								return new WP_Error( 'module_not_active', __( 'Module must be active to request data.', 'google-site-kit' ), array( 'status' => 403 ) );
+							}
+
 							$data = isset( $request['data'] ) ? (array) $request['data'] : array();
 							$data = $module->set_data( $request['datapoint'], $data );
 							if ( is_wp_error( $data ) ) {
@@ -1571,7 +1581,7 @@ final class Modules {
 	 * are not set for these modules.
 	 *
 	 * @since 1.75.0
-	 * @since n.e.x.t Renamed from filter_shared_ownership_module_settings to populate_default_shared_ownership_module_settings.
+	 * @since 1.85.0 Renamed from filter_shared_ownership_module_settings to populate_default_shared_ownership_module_settings.
 	 *
 	 * @param array $sharing_settings The dashboard_sharing settings option fetched from the database.
 	 * @return array Dashboard sharing settings option with default settings inserted for shared ownership modules.

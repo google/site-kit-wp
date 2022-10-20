@@ -258,6 +258,7 @@ export const provideUserInfo = ( registry, extraData = {} ) => {
 	const defaults = {
 		id: 1,
 		name: 'Wapuu WordPress',
+		full_name: 'Wapuu WordPress PhD',
 		email: 'wapuu.wordpress@gmail.com',
 		picture:
 			'https://wapu.us/wp-content/uploads/2017/11/WapuuFinal-100x138.png',

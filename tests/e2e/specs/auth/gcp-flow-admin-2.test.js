@@ -114,7 +114,9 @@ describe( 'the set up flow for the second administrator', () => {
 			page.waitForNavigation(),
 		] );
 
-		await expect( page ).toMatchElement( '#js-googlesitekit-dashboard' );
+		await expect( page ).toMatchElement(
+			'#js-googlesitekit-main-dashboard'
+		);
 		await expect( page ).toMatchElement(
 			'.googlesitekit-publisher-win__title',
 			{

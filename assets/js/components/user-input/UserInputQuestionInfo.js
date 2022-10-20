@@ -56,7 +56,7 @@ export default function UserInputQuestionInfo( {
 		>
 			<p className="googlesitekit-user-input__question-number">
 				{ sprintf(
-					/* translators: 1: the number of the question */
+					/* translators: %s: the number of the question */
 					__( '%s out of 5', 'google-site-kit' ),
 					questionNumber
 				) }
