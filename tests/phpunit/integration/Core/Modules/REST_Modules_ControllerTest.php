@@ -45,6 +45,9 @@ class REST_Modules_ControllerTest extends TestCase {
 		$fake_module = new FakeModule( $this->context );
 		$fake_module->set_force_active( $force_active );
 
+		$fake_module_settings = new FakeModuleSettings( $this->options );
+		$fake_module_settings->register();
+
 		$this->force_set_property( $this->modules, 'modules', array( 'fake-module' => $fake_module ) );
 	}
 
