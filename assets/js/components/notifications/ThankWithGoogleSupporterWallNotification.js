@@ -20,7 +20,7 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { Fragment } from '@wordpress/element';
+import { Fragment, useCallback, useEffect, useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -30,6 +30,8 @@ import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { MODULES_THANK_WITH_GOOGLE } from '../../modules/thank-with-google/datastore/constants';
 import SupporterWallPromptSVG from '../../../svg/graphics/twg-supporter-wall.svg';
 import BannerNotification from './BannerNotification';
+import useViewContext from '../../hooks/useViewContext';
+import { trackEvent } from '../../util';
 const { useSelect } = Data;
 
 export default function ThankWithGoogleSupporterWallNotification() {
@@ -39,6 +41,29 @@ export default function ThankWithGoogleSupporterWallNotification() {
 	const supporterWallURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getWidgetsAdminURL()
 	);
+
+	const [ viewNotificationSent, setViewNotificationSent ] = useState( false );
+
+	const viewContext = useViewContext();
+	const eventCategory = `${ viewContext }_thank-with-google-supporter-wall-notification`;
+
+	useEffect( () => {
+		// Only trigger the view event if the notification is visible and we haven't
+		// already sent this notification.
+		if ( ! viewNotificationSent && supporterWallPrompt ) {
+			trackEvent( eventCategory, 'view_notification' );
+			// Don't send the view event again.
+			setViewNotificationSent( true );
+		}
+	}, [ eventCategory, supporterWallPrompt, viewNotificationSent ] );
+
+	const handleOnCTAClick = useCallback( () => {
+		trackEvent( eventCategory, 'confirm_notification' );
+	}, [ eventCategory ] );
+
+	const handleOnDismiss = useCallback( () => {
+		trackEvent( eventCategory, 'dismiss_notification' );
+	}, [ eventCategory ] );
 
 	if ( ! supporterWallPrompt ) {
 		return null;
@@ -73,6 +98,8 @@ export default function ThankWithGoogleSupporterWallNotification() {
 			dismiss={ __( 'Maybe later', 'google-site-kit' ) }
 			isDismissible
 			format="large"
+			onCTAClick={ handleOnCTAClick }
+			onDismiss={ handleOnDismiss }
 			WinImageSVG={ () => <SupporterWallPromptSVG height="195" /> }
 		/>
 	);

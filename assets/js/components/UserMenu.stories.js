@@ -17,29 +17,34 @@
  */
 
 /**
- * External dependencies
- */
-import { storiesOf } from '@storybook/react';
-
-/**
  * Internal dependencies
  */
 import {
 	provideSiteInfo,
 	provideUserInfo,
 	WithTestRegistry,
-} from '../tests/js/utils';
-import UserMenu from '../assets/js/components/UserMenu';
+} from '../../../tests/js/utils';
+import UserMenu from './UserMenu';
 
-storiesOf( 'Global', module ).add( 'UserMenu', () => {
-	const setupRegistry = ( registry ) => {
-		provideSiteInfo( registry );
-		provideUserInfo( registry );
-	};
+const Template = ( args ) => <UserMenu { ...args } />;
 
-	return (
-		<WithTestRegistry callback={ setupRegistry }>
-			<UserMenu />
-		</WithTestRegistry>
-	);
-} );
+export const DefaultUserMenu = Template.bind( {} );
+
+export default {
+	title: 'Components/UserMenu',
+	component: UserMenu,
+	decorators: [
+		( Story ) => {
+			const setupRegistry = ( registry ) => {
+				provideSiteInfo( registry );
+				provideUserInfo( registry );
+			};
+
+			return (
+				<WithTestRegistry callback={ setupRegistry }>
+					<Story />
+				</WithTestRegistry>
+			);
+		},
+	],
+};

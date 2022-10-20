@@ -21,7 +21,6 @@ use Google\Site_Kit\Core\Authentication\Token;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
-use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Core\Util\Scopes;
 use Google\Site_Kit\Core\Util\URL;
 use Google\Site_Kit_Dependencies\Google\Service\PeopleService as Google_Service_PeopleService;
@@ -507,13 +506,14 @@ final class OAuth_Client extends OAuth_Client_Base {
 	public function refresh_profile_data( $retry_after = 0 ) {
 		try {
 			$people_service = new Google_Service_PeopleService( $this->get_client() );
-			$response       = $people_service->people->get( 'people/me', array( 'personFields' => 'emailAddresses,photos' ) );
+			$response       = $people_service->people->get( 'people/me', array( 'personFields' => 'emailAddresses,photos,names' ) );
 
-			if ( isset( $response['emailAddresses'][0]['value'], $response['photos'][0]['url'] ) ) {
+			if ( isset( $response['emailAddresses'][0]['value'], $response['photos'][0]['url'], $response['names'][0]['displayName'] ) ) {
 				$this->profile->set(
 					array(
-						'email' => $response['emailAddresses'][0]['value'],
-						'photo' => $response['photos'][0]['url'],
+						'email'     => $response['emailAddresses'][0]['value'],
+						'photo'     => $response['photos'][0]['url'],
+						'full_name' => $response['names'][0]['displayName'],
 					)
 				);
 			}

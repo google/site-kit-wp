@@ -573,7 +573,7 @@ final class Modules {
 		$modules = $this->get_available_modules();
 
 		if ( ! isset( $modules[ $slug ] ) ) {
-			/* translators: 1: module slug */
+			/* translators: %s: module slug */
 			throw new Exception( sprintf( __( 'Invalid module slug %s.', 'google-site-kit' ), $slug ) );
 		}
 
@@ -611,7 +611,7 @@ final class Modules {
 		$modules = $this->get_available_modules();
 
 		if ( ! isset( $modules[ $slug ] ) ) {
-			/* translators: 1: module slug */
+			/* translators: %s: module slug */
 			throw new Exception( sprintf( __( 'Invalid module slug %s.', 'google-site-kit' ), $slug ) );
 		}
 
@@ -632,7 +632,7 @@ final class Modules {
 		$modules = $this->get_available_modules();
 
 		if ( ! isset( $modules[ $slug ] ) ) {
-			/* translators: 1: module slug */
+			/* translators: %s: module slug */
 			throw new Exception( sprintf( __( 'Invalid module slug %s.', 'google-site-kit' ), $slug ) );
 		}
 

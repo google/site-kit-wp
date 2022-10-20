@@ -63,7 +63,7 @@ export default function Service( { module } ) {
 				<span className="googlesitekit-view-only-menu__service--owner">
 					{ createInterpolateElement(
 						sprintf(
-							/* translators: 1: module owner Google Account email address */
+							/* translators: %s: module owner Google Account email address */
 							__(
 								'Shared by <strong>%s</strong>',
 								'google-site-kit'

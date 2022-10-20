@@ -630,4 +630,64 @@ class REST_Modules_ControllerTest extends TestCase {
 		);
 		$this->assertEquals( 200, $response->get_status() );
 	}
+
+	public function test_data_rest_endpoint__requires_active_module() {
+		$this->setup_fake_module();
+
+		delete_option( Modules::OPTION_ACTIVE_MODULES );
+		$this->assertFalse( $modules->is_module_active( 'fake-module' ) );
+
+		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/modules/fake-module/data/test-request' );
+		$response = rest_get_server()->dispatch( $request );
+
+		$this->assertEquals( 403, $response->get_status() );
+		$this->assertEquals( 'module_not_active', $response->get_data()['code'] );
+		$this->assertEquals( 'Module must be active to request data.', $response->get_data()['message'] );
+
+		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/modules/fake-module/data/test-request' );
+		$request->set_body_params(
+			array(
+				'data' => array(
+					'foo' => 'bar',
+				),
+			)
+		);
+		$response = rest_get_server()->dispatch( $request );
+
+		$this->assertEquals( 403, $response->get_status() );
+		$this->assertEquals( 'module_not_active', $response->get_data()['code'] );
+		$this->assertEquals( 'Module must be active to request data.', $response->get_data()['message'] );
+	}
+
+	public function test_data_rest_endpoint__success() {
+		$this->setup_fake_module();
+
+		update_option( Modules::OPTION_ACTIVE_MODULES, array( 'fake-module' ) );
+		$this->assertTrue( $modules->is_module_active( 'fake-module' ) );
+
+		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/modules/fake-module/data/test-request' );
+		$response = rest_get_server()->dispatch( $request );
+
+		$this->assertEquals( 200, $response->get_status() );
+		$data = $response->get_data();
+		$this->assertIsObject( $data );
+		$this->assertEquals( 'GET', $data->method );
+		$this->assertEquals( 'test-request', $data->datapoint );
+
+		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/modules/fake-module/data/test-request' );
+		$request->set_body_params(
+			array(
+				'data' => array(
+					'foo' => 'bar',
+				),
+			)
+		);
+		$response = rest_get_server()->dispatch( $request );
+
+		$this->assertEquals( 200, $response->get_status() );
+		$data = $response->get_data();
+		$this->assertIsObject( $data );
+		$this->assertEquals( 'POST', $data->method );
+		$this->assertEquals( 'test-request', $data->datapoint );
+	}
 }

@@ -94,7 +94,7 @@ export default function SetupAccountApproved() {
 		// Existing tag without permission.
 		showProfile = true;
 		checkedMessage = sprintf(
-			/* translators: 1: account ID */
+			/* translators: %s: account ID */
 			__(
 				'Site Kit detected AdSense code for a different account %s on your site. For a better ads experience, you should remove AdSense code that’s not linked to this AdSense account.',
 				'google-site-kit'

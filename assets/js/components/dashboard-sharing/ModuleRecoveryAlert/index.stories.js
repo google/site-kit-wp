@@ -34,14 +34,14 @@ import {
 	WithTestRegistry,
 } from '../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../tests/js/WithRegistrySetup';
-import { VIEW_CONTEXT_DASHBOARD } from '../../../googlesitekit/constants';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../googlesitekit/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { Provider as ViewContextProvider } from '../../Root/ViewContextContext';
 import ModuleRecoveryAlert from '.';
 
 const Template = ( { setupRegistry = () => {}, ...args } ) => (
 	<WithRegistrySetup func={ setupRegistry }>
-		<ViewContextProvider value={ VIEW_CONTEXT_DASHBOARD }>
+		<ViewContextProvider value={ VIEW_CONTEXT_MAIN_DASHBOARD }>
 			<ModuleRecoveryAlert { ...args } />
 		</ViewContextProvider>
 	</WithRegistrySetup>

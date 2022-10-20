@@ -20,7 +20,7 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { createInterpolateElement } from '@wordpress/element';
+import { createInterpolateElement, Fragment } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -93,14 +93,22 @@ export default function SettingsView() {
 		);
 	} else {
 		supporterWall = (
-			<p className="googlesitekit-settings-module__meta-item-data">
-				<Link
-					href={ supporterWallURL }
-					className="googlesitekit-settings-module__cta-button"
-				>
-					{ __( 'Add supporter wall', 'google-site-kit' ) }
-				</Link>
-			</p>
+			<Fragment>
+				<p className="googlesitekit-settings-module__meta-item-info">
+					{ __(
+						'A supporter wall widget shows the list of people who supported your site using Thank with Google.',
+						'google-site-kit'
+					) }
+				</p>
+				<p className="googlesitekit-settings-module__meta-item-data">
+					<Link
+						href={ supporterWallURL }
+						className="googlesitekit-settings-module__cta-button"
+					>
+						{ __( 'Add supporter wall', 'google-site-kit' ) }
+					</Link>
+				</p>
+			</Fragment>
 		);
 	}
 
@@ -121,7 +129,7 @@ export default function SettingsView() {
 			<div className="googlesitekit-settings-module__meta-items">
 				<div className="googlesitekit-settings-module__meta-item">
 					<h5 className="googlesitekit-settings-module__meta-item-type">
-						{ __( 'Publication ID', 'google-site-kit' ) }
+						{ __( 'Thank with Google ID', 'google-site-kit' ) }
 					</h5>
 					<p className="googlesitekit-settings-module__meta-item-data">
 						<DisplaySetting value={ publicationID } />
@@ -133,7 +141,7 @@ export default function SettingsView() {
 							<Link href={ editViewSettingsURL } external>
 								{ createInterpolateElement(
 									__(
-										'Edit <VisuallyHidden>publication </VisuallyHidden>in Publisher Center',
+										'Edit <VisuallyHidden>publication </VisuallyHidden>in Thank with Google profile',
 										'google-site-kit'
 									),
 									{

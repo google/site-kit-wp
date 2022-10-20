@@ -25,8 +25,8 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import {
-	VIEW_CONTEXT_DASHBOARD,
-	VIEW_CONTEXT_DASHBOARD_VIEW_ONLY,
+	VIEW_CONTEXT_MAIN_DASHBOARD,
+	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 } from '../googlesitekit/constants';
 import { CORE_UI } from '../googlesitekit/datastore/ui/constants';
 import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
@@ -34,7 +34,10 @@ import { UI_ALL_TRAFFIC_LOADED } from '../modules/analytics/datastore/constants'
 
 const allTrafficWidget = {
 	slug: 'allTrafficWidget',
-	contexts: [ VIEW_CONTEXT_DASHBOARD, VIEW_CONTEXT_DASHBOARD_VIEW_ONLY ],
+	contexts: [
+		VIEW_CONTEXT_MAIN_DASHBOARD,
+		VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+	],
 	version: '1.25.0',
 	gaEventCategory: ( viewContext ) => `${ viewContext }_all-traffic-widget`,
 	checkRequirements: async ( registry ) => {

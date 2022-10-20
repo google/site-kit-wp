@@ -287,7 +287,7 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 							<Fragment>
 								<p>
 									{ sprintf(
-										/* translators: 1: existing tag ID */
+										/* translators: %s: existing tag ID */
 										__(
 											'A tag %s for the selected property already exists on the site.',
 											'google-site-kit'
@@ -311,7 +311,7 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 		if ( hasEditScope === false && ga4PropertyID === PROPERTY_CREATE ) {
 			footerMessages.push(
 				__(
-					'You will need to give Site Kit permission to create an Analytics property on your behalf.',
+					'You will need to give Site Kit permission to create an Analytics property on your behalf',
 					'google-site-kit'
 				)
 			);
@@ -319,7 +319,7 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 
 		footerMessages.push(
 			__(
-				'You can always add/edit this in the Site Kit Settings.',
+				'You can always add/edit this in the Site Kit Settings',
 				'google-site-kit'
 			)
 		);
@@ -333,9 +333,9 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 		if ( existingTag ) {
 			footerMessages.push(
 				sprintf(
-					/* translators: 1: The existing tag ID. */
+					/* translators: %s: The existing tag ID. */
 					__(
-						'A GA4 tag %s is found on this site but this property is not associated with your Google Analytics account.',
+						'A GA4 tag %s is found on this site but this property is not associated with your Google Analytics account',
 						'google-site-kit'
 					),
 					existingTag
@@ -346,7 +346,7 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 		if ( hasEditScope === false ) {
 			footerMessages.push(
 				__(
-					'You will need to give Site Kit permission to create an Analytics property on your behalf.',
+					'You will need to give Site Kit permission to create an Analytics property on your behalf',
 					'google-site-kit'
 				)
 			);
@@ -354,7 +354,7 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 
 		footerMessages.push(
 			__(
-				'You can always add/edit this in the Site Kit Settings.',
+				'You can always add/edit this in the Site Kit Settings',
 				'google-site-kit'
 			)
 		);
@@ -374,16 +374,13 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 				</SpinnerButton>
 			}
 			footer={
-				<Fragment>
-					{ footerMessages.map( ( message, index ) => (
-						<p
-							className="googlesitekit-ga4-setup-banner__footer-text"
-							key={ index }
-						>
-							{ message }
-						</p>
-					) ) }
-				</Fragment>
+				!! footerMessages.length && (
+					<ul className="googlesitekit-ga4-setup-banner__footer-text-list">
+						{ footerMessages.map( ( message ) => (
+							<li key={ message }>{ message }</li>
+						) ) }
+					</ul>
+				)
 			}
 			dismiss={ __( 'Cancel', 'google-site-kit' ) }
 			dismissExpires={ getBannerDismissalExpiryTime(
