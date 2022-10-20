@@ -58,7 +58,9 @@ export default function UserMenu() {
 	const userPicture = useSelect( ( select ) =>
 		select( CORE_USER ).getPicture()
 	);
-	const userFullName = false;
+	const userFullName = useSelect( ( select ) =>
+		select( CORE_USER ).getFullName()
+	);
 	const postDisconnectURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-splash', {
 			googlesitekit_context: 'revoked',
