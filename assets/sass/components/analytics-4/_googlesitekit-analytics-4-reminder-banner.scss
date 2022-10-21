@@ -59,5 +59,13 @@
 				}
 			}
 		}
+
+		.googlesitekit-error-notice__retry-button {
+			margin-bottom: $grid-gap-phone;
+
+			@media (min-width: $bp-desktop) {
+				margin-bottom: $grid-gap-desktop;
+			}
+		}
 	}
 }

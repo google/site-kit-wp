@@ -83,13 +83,22 @@ export default function ActivationBanner() {
 	// step.
 	const setupBannerErrors = useSelect( ( select ) => {
 		return [
-			select( MODULES_ANALYTICS_4 ).getErrorForSelector(
-				'getProperties',
-				[ accountID ]
-			),
-			select( MODULES_ANALYTICS ).getErrorForSelector( 'getAccounts' ),
-			select( MODULES_ANALYTICS_4 ).getErrorForSelector( 'getSettings' ),
-		].filter( ( error ) => error !== undefined );
+			{
+				error: select( MODULES_ANALYTICS_4 ).getError(
+					'getProperties',
+					[ accountID ]
+				),
+				storeName: MODULES_ANALYTICS_4,
+			},
+			{
+				error: select( MODULES_ANALYTICS ).getError( 'getAccounts' ),
+				storeName: MODULES_ANALYTICS,
+			},
+			{
+				error: select( MODULES_ANALYTICS_4 ).getError( 'getSettings' ),
+				storeName: MODULES_ANALYTICS_4,
+			},
+		].filter( ( { error } ) => error !== undefined );
 	} );
 
 	const dispatch = useDispatch();
@@ -189,11 +198,13 @@ export default function ActivationBanner() {
 	const errorNotice =
 		setupBannerErrors.length > 0 &&
 		setupBannerErrors
-			.reduce( ( acc, error ) => {
+			.reduce( ( acc, setupBannerError ) => {
+				const { error } = setupBannerError;
+
 				// If the error is already in our array of errors, skip it.
 				if (
 					acc.some(
-						( err ) =>
+						( { error: err } ) =>
 							err.code === error.code &&
 							err.message === error.message
 					)
@@ -201,10 +212,14 @@ export default function ActivationBanner() {
 					return acc;
 				}
 
-				return [ ...acc, error ];
+				return [ ...acc, setupBannerError ];
 			}, [] )
-			.map( ( error ) => (
-				<ErrorNotice key={ error.code } error={ error } />
+			.map( ( { error, storeName } ) => (
+				<ErrorNotice
+					key={ error.code }
+					error={ error }
+					storeName={ storeName }
+				/>
 			) );
 
 	switch ( step ) {
