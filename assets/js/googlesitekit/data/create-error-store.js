@@ -66,7 +66,9 @@ export const actions = {
 			},
 		};
 	},
-	clearError( baseName, args ) {
+
+	// @TODO: remove clearMatchingLegacyError option once all instances of the legacy behavior have been removed.
+	clearError( baseName, args, { clearMatchingLegacyError = false } = {} ) {
 		if ( baseName ) {
 			invariant(
 				args && Array.isArray( args ),
@@ -79,6 +81,7 @@ export const actions = {
 			payload: {
 				baseName,
 				args,
+				clearMatchingLegacyError,
 			},
 		};
 	},
@@ -132,6 +135,15 @@ export function createErrorStore( storeName ) {
 					const key = generateErrorKey( baseName, args );
 					newState.errors = { ...( state.errors || {} ) };
 					newState.errorArgs = { ...( state.errorArgs || {} ) };
+
+					// @TODO: remove this block once all instances of the legacy behavior have been removed.
+					if (
+						payload.clearMatchingLegacyError &&
+						newState.error === newState.errors[ key ]
+					) {
+						delete newState.error;
+					}
+
 					delete newState.errors[ key ];
 					delete newState.errorArgs[ key ];
 				} else {
