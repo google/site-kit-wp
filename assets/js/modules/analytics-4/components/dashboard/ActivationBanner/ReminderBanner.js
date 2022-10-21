@@ -41,15 +41,34 @@ import ProgressBar from '../../../../../components/ProgressBar';
 import ReminderBannerNoAccess from './ReminderBannerNoAccess';
 import { CORE_MODULES } from '../../../../../googlesitekit/modules/datastore/constants';
 import { Cell, Grid, Row } from '../../../../../material-components';
+import { MODULES_ANALYTICS } from '../../../../analytics/datastore/constants';
 
 const { useSelect } = Data;
 
-export default function ReminderBanner( { onSubmitSuccess, children } ) {
-	const {
-		hasModuleAccess: hasAnalyticsAccess,
-		isLoadingModuleAccess: isLoadingAnalyticsAccess,
-	} = useSelect( ( select ) =>
-		select( CORE_MODULES ).userHasModuleAccess( 'analytics' )
+export default function ReminderBanner( {
+	isDismissed,
+	onSubmitSuccess,
+	children,
+} ) {
+	const hasAnalyticsAccess = useSelect( ( select ) => {
+		if ( isDismissed ) {
+			return undefined;
+		}
+		const userID = select( CORE_USER ).getID();
+		const analyticsOwnerID = select( MODULES_ANALYTICS ).getOwnerID();
+
+		if ( userID === undefined || analyticsOwnerID === undefined ) {
+			return undefined;
+		}
+
+		if ( analyticsOwnerID === userID ) {
+			return true;
+		}
+
+		return select( CORE_MODULES ).hasModuleAccess( 'analytics' );
+	} );
+	const isLoadingAnalyticsAccess = useSelect( ( select ) =>
+		select( CORE_MODULES ).isResolving( 'hasModuleAccess', [ 'analytics' ] )
 	);
 
 	const referenceDateString = useSelect( ( select ) =>
@@ -85,7 +104,7 @@ export default function ReminderBanner( { onSubmitSuccess, children } ) {
 		);
 	}
 
-	if ( isLoadingAnalyticsAccess ) {
+	if ( isLoadingAnalyticsAccess && ! isDismissed ) {
 		// Wrap in the googlesitekit-publisher-win class to ensure the ProgressBar is treated in the
 		// same way as a BannerNotification, with only one instance visible on the screen at a time.
 		return (
@@ -182,7 +201,7 @@ export default function ReminderBanner( { onSubmitSuccess, children } ) {
 		</section>
 	);
 
-	if ( ! hasAnalyticsAccess ) {
+	if ( hasAnalyticsAccess === false ) {
 		return (
 			<ReminderBannerNoAccess
 				title={ title }
