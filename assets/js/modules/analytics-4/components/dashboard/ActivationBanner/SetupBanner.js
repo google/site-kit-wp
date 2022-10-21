@@ -95,6 +95,9 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 	const getMeasurementID = useSelect(
 		( select ) => select( MODULES_ANALYTICS_4 ).getMeasurementID
 	);
+	const measurementID = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getMeasurementID()
+	);
 
 	const determineVariant = useCallback( async () => {
 		// Ensure variant is only set once, to avoid flickering between variants. For example
@@ -324,7 +327,7 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 
 		if (
 			hasEditScope === false &&
-			( ga4PropertyID === PROPERTY_CREATE || ! getMeasurementID() )
+			( ga4PropertyID === PROPERTY_CREATE || ! measurementID )
 		) {
 			footerMessages.push(
 				__(
