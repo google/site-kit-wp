@@ -20,7 +20,6 @@
  * WordPress dependencies
  */
 import { __, sprintf } from '@wordpress/i18n';
-import { Fragment } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -71,22 +70,18 @@ export default function ReminderBanner( { onSubmitSuccess, children } ) {
 
 	if ( isTooltipVisible ) {
 		return (
-			<Fragment>
-				<AdminMenuTooltip
-					title={ __(
-						'You can connect Google Analytics 4 later here',
-						'google-site-kit'
-					) }
-					content={ __(
-						'You can configure the Google Analytics 4 property inside the Site Kit Settings later.',
-						'google-site-kit'
-					) }
-					dismissLabel={ __( 'Got it', 'google-site-kit' ) }
-					tooltipStateKey={
-						ACTIVATION_ACKNOWLEDGEMENT_TOOLTIP_STATE_KEY
-					}
-				/>
-			</Fragment>
+			<AdminMenuTooltip
+				title={ __(
+					'You can connect Google Analytics 4 later here',
+					'google-site-kit'
+				) }
+				content={ __(
+					'You can configure the Google Analytics 4 property inside the Site Kit Settings later.',
+					'google-site-kit'
+				) }
+				dismissLabel={ __( 'Got it', 'google-site-kit' ) }
+				tooltipStateKey={ ACTIVATION_ACKNOWLEDGEMENT_TOOLTIP_STATE_KEY }
+			/>
 		);
 	}
 
