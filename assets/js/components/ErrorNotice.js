@@ -39,17 +39,17 @@ const { useDispatch } = Data;
 
 export default function ErrorNotice( {
 	error,
+	selectorData,
 	shouldDisplayError = () => true,
 } ) {
 	const dispatch = useDispatch();
 
 	const handleRetry = useCallback( () => {
-		const { selectorData } = error;
 		dispatch( selectorData.storeName ).invalidateResolution(
 			selectorData.name,
 			selectorData.args
 		);
-	}, [ dispatch, error ] );
+	}, [ dispatch, selectorData ] );
 
 	// Do not display if there is no error, or if the error is for missing scopes.
 	if (
@@ -60,7 +60,7 @@ export default function ErrorNotice( {
 		return null;
 	}
 
-	const shouldDisplayRetry = isErrorRetryable( error );
+	const shouldDisplayRetry = isErrorRetryable( error, selectorData );
 
 	return (
 		<Fragment>
@@ -81,5 +81,6 @@ ErrorNotice.propTypes = {
 	error: PropTypes.shape( {
 		message: PropTypes.string,
 	} ),
+	selectorData: PropTypes.object,
 	shouldDisplayError: PropTypes.func,
 };

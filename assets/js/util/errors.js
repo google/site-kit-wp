@@ -91,13 +91,13 @@ export function isAuthError( error ) {
  *
  * @since 1.86.0
  *
- * @param {Object} error The error object to check.
+ * @param {Object} error          The error object to check.
+ * @param {Object} [selectorData] The error's associated selector data object.
  * @return {boolean} TRUE if the error is retryable, otherwise FALSE.
  */
-export function isErrorRetryable( error ) {
+export function isErrorRetryable( error, selectorData ) {
 	return (
-		!! error?.selectorData?.storeName &&
-		error.selectorData.name === 'getReport' &&
+		!! selectorData?.storeName &&
 		! isInsufficientPermissionsError( error ) &&
 		! isPermissionScopeError( error ) &&
 		! isAuthError( error )

@@ -40,6 +40,20 @@ export default function StoreErrorNotices( {
 	const module = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModule( moduleSlug )
 	);
+	const selectorDataMap = useSelect(
+		( select ) =>
+			errors.reduce( ( dataMap, error ) => {
+				const selectorData =
+					select( storeName ).getSelectorDataForError( error );
+
+				if ( selectorData ) {
+					dataMap.set( error, selectorData );
+				}
+
+				return dataMap;
+			}, new Map() ),
+		[ errors ]
+	);
 
 	const existingErrorMessages = [];
 
@@ -57,7 +71,9 @@ export default function StoreErrorNotices( {
 			return true;
 		} )
 
-		.map( ( error ) => {
+		.map( ( error, key ) => {
+			const selectorData = selectorDataMap.get( error );
+
 			if ( isInsufficientPermissionsError( error ) ) {
 				error = {
 					...error,
@@ -67,15 +83,16 @@ export default function StoreErrorNotices( {
 					),
 				};
 			}
-			return error;
-		} )
-		.map( ( error, key ) => (
-			<ErrorNotice
-				key={ key }
-				error={ error }
-				shouldDisplayError={ shouldDisplayError }
-			/>
-		) );
+
+			return (
+				<ErrorNotice
+					key={ key }
+					error={ error }
+					selectorData={ selectorData }
+					shouldDisplayError={ shouldDisplayError }
+				/>
+			);
+		} );
 }
 
 StoreErrorNotices.propTypes = {

@@ -62,7 +62,11 @@ export default function ReportError( { moduleSlug, error } ) {
 
 	const errors = Array.isArray( error ) ? error : [ error ];
 
-	const retryableErrors = errors.filter( isErrorRetryable );
+	const retryableErrors = errors.filter(
+		( err ) =>
+			isErrorRetryable( err, err.selectorData ) &&
+			err.selectorData.name === 'getReport'
+	);
 
 	const showRetry = !! retryableErrors.length;
 

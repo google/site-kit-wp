@@ -17,6 +17,11 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { createRegistrySelector } from '@wordpress/data';
+
+/**
  * External dependencies
  */
 import invariant from 'invariant';
@@ -317,6 +322,48 @@ export function createErrorStore( storeName ) {
 
 			return null;
 		},
+
+		/**
+		 * Gets the selector data for a given error object, or null if no selector data is available.
+		 *
+		 * Returns selector data in the format:
+		 *
+		 * ```
+		 *	{
+		 *		storeName: <string>,
+		 *		name: <string>,
+		 *		args: <Array>
+		 *	}
+		 * ```
+		 *
+		 * @since 1.84.0
+		 *
+		 * @param {Object} state Data store's state.
+		 * @param {Object} error Error object.
+		 * @return {Object|null} Selector data for the given error object, or null if no selector data is available.
+		 */
+		getSelectorDataForError: createRegistrySelector(
+			( select ) => ( state, error ) => {
+				const metaData =
+					select( storeName ).getMetaDataForError( error );
+
+				if ( metaData ) {
+					const { baseName: name, args } = metaData;
+
+					const isSelector = !! select( storeName )[ name ];
+
+					if ( isSelector ) {
+						return {
+							storeName,
+							name,
+							args,
+						};
+					}
+				}
+
+				return null;
+			}
+		),
 
 		/**
 		 * Determines whether the datastore has errors or not.
