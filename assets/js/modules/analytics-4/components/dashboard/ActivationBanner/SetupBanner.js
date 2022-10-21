@@ -194,6 +194,8 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 
 		const { error } = await submitChanges();
 
+		setIsSaving( false );
+
 		if ( error ) {
 			setErrorNotice( error );
 		} else {
@@ -202,8 +204,6 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 			// This should be called last because it will unmount this component.
 			onSubmitSuccess();
 		}
-
-		setIsSaving( false );
 	}, [
 		hasEditScope,
 		onSubmitSuccess,
