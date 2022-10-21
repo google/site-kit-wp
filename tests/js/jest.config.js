@@ -37,6 +37,13 @@ module.exports = {
 	// Matches aliases in webpack.config.js.
 	moduleNameMapper: {
 		// New (JSR) modules.
+		// In the future when the "components" entry point uses GM3 and
+		// the filename is `'googlesitekit-components'`, we can revert to
+		// using a more concise catch-all name mapper, eg.
+		// `'^googlesitekit-(.+)$': '<rootDir>assets/js/googlesitekit-$1',`
+		//
+		// After that, these manually-mapped `googlesitekit-$X` entries can
+		// be removed.
 		'googlesitekit-api': '<rootDir>assets/js/googlesitekit-api',
 		'googlesitekit-data': '<rootDir>assets/js/googlesitekit-data',
 		'googlesitekit-modules': '<rootDir>assets/js/googlesitekit-modules',
