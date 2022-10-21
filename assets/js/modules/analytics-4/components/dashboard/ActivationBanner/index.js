@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import { usePromise } from 'react-use';
+
+/**
  * WordPress dependencies
  */
 import { useState, useCallback, useEffect } from '@wordpress/element';
@@ -43,10 +48,13 @@ import {
 } from '../../../../analytics/datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../../datastore/constants';
 import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
+import { getItem } from '../../../../../googlesitekit/api/cache';
 const { useSelect, useDispatch, useRegistry } = Data;
 
 export default function ActivationBanner() {
 	const [ step, setStep ] = useState( null );
+	const [ isDismissed, setIsDismissed ] = useState();
+	const awaitWhileMounted = usePromise();
 
 	const registry = useRegistry();
 
@@ -160,10 +168,22 @@ export default function ActivationBanner() {
 	] );
 
 	useEffect( () => {
+		( async () => {
+			const { cacheHit } = await awaitWhileMounted(
+				getItem( 'notification::dismissed::ga4-activation-banner' )
+			);
+			setIsDismissed( cacheHit );
+		} )();
+	} );
+
+	useEffect( () => {
+		if ( isDismissed === undefined ) {
+			return;
+		}
 		if ( step === null && uaConnected && ! ga4Connected ) {
 			setStep( ACTIVATION_STEP_REMINDER );
 		}
-	}, [ ga4Connected, step, uaConnected ] );
+	}, [ ga4Connected, step, uaConnected, isDismissed ] );
 
 	// Show unique errors.
 	const errorNotice =
@@ -190,7 +210,10 @@ export default function ActivationBanner() {
 	switch ( step ) {
 		case ACTIVATION_STEP_REMINDER:
 			return (
-				<ReminderBanner onSubmitSuccess={ handleSubmit }>
+				<ReminderBanner
+					isDismissed={ isDismissed }
+					onSubmitSuccess={ handleSubmit }
+				>
 					{ errorNotice }
 				</ReminderBanner>
 			);
