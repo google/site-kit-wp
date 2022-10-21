@@ -92,6 +92,13 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 		select( MODULES_ANALYTICS_4 ).getPropertyID()
 	);
 
+	const getMeasurementID = useSelect(
+		( select ) => select( MODULES_ANALYTICS_4 ).getMeasurementID
+	);
+	const measurementID = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getMeasurementID()
+	);
+
 	const determineVariant = useCallback( async () => {
 		// Ensure variant is only set once, to avoid flickering between variants. For example
 		// when properties.length is zero we are in the "no existing property" variant, and we
@@ -157,7 +164,10 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 	const handleSubmitChanges = useCallback( async () => {
 		const scopes = [];
 
-		if ( hasEditScope === false && getPropertyID() === PROPERTY_CREATE ) {
+		if (
+			hasEditScope === false &&
+			( getPropertyID() === PROPERTY_CREATE || ! getMeasurementID() )
+		) {
 			scopes.push( EDIT_SCOPE );
 		}
 
@@ -210,9 +220,10 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 		setPermissionScopeError,
 		setValues,
 		submitChanges,
-		// Here we pass the selector through to avoid creating a new
+		// Here we pass the selectors through to avoid creating a new
 		// callback when the property ID changes on creation.
 		getPropertyID,
+		getMeasurementID,
 	] );
 
 	// If the user lands back on this component with autoSubmit and the edit scope,
@@ -314,7 +325,10 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 			</div>
 		);
 
-		if ( hasEditScope === false && ga4PropertyID === PROPERTY_CREATE ) {
+		if (
+			hasEditScope === false &&
+			( ga4PropertyID === PROPERTY_CREATE || ! measurementID )
+		) {
 			footerMessages.push(
 				__(
 					'You will need to give Site Kit permission to create an Analytics property on your behalf',
