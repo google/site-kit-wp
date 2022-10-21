@@ -40,20 +40,6 @@ export default function StoreErrorNotices( {
 	const module = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModule( moduleSlug )
 	);
-	const selectorDataMap = useSelect(
-		( select ) =>
-			errors.reduce( ( dataMap, error ) => {
-				const selectorData =
-					select( storeName ).getSelectorDataForError( error );
-
-				if ( selectorData ) {
-					dataMap.set( error, selectorData );
-				}
-
-				return dataMap;
-			}, new Map() ),
-		[ errors ]
-	);
 
 	const existingErrorMessages = [];
 
@@ -72,23 +58,21 @@ export default function StoreErrorNotices( {
 		} )
 
 		.map( ( error, key ) => {
-			const selectorData = selectorDataMap.get( error );
+			let { message } = error;
 
 			if ( isInsufficientPermissionsError( error ) ) {
-				error = {
-					...error,
-					message: getInsufficientPermissionsErrorDescription(
-						error.message,
-						module
-					),
-				};
+				message = getInsufficientPermissionsErrorDescription(
+					message,
+					module
+				);
 			}
 
 			return (
 				<ErrorNotice
 					key={ key }
 					error={ error }
-					selectorData={ selectorData }
+					storeName={ storeName }
+					message={ message }
 					shouldDisplayError={ shouldDisplayError }
 				/>
 			);

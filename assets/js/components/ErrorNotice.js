@@ -35,14 +35,23 @@ import { isPermissionScopeError, isErrorRetryable } from '../util/errors';
 import ErrorText from './ErrorText';
 import Button from './Button';
 
-const { useDispatch } = Data;
+const { useSelect, useDispatch } = Data;
 
 export default function ErrorNotice( {
 	error,
-	selectorData,
+	storeName,
+	message = error.message,
 	shouldDisplayError = () => true,
 } ) {
 	const dispatch = useDispatch();
+
+	const selectorData = useSelect( ( select ) => {
+		if ( ! storeName ) {
+			return null;
+		}
+
+		return select( storeName ).getSelectorDataForError( error );
+	} );
 
 	const handleRetry = useCallback( () => {
 		dispatch( selectorData.storeName ).invalidateResolution(
@@ -65,7 +74,7 @@ export default function ErrorNotice( {
 	return (
 		<Fragment>
 			<ErrorText
-				message={ error.message }
+				message={ message }
 				reconnectURL={ error.data?.reconnectURL }
 			/>
 			{ shouldDisplayRetry && (
@@ -81,6 +90,7 @@ ErrorNotice.propTypes = {
 	error: PropTypes.shape( {
 		message: PropTypes.string,
 	} ),
-	selectorData: PropTypes.object,
+	storeName: PropTypes.string,
+	message: PropTypes.string,
 	shouldDisplayError: PropTypes.func,
 };
