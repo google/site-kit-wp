@@ -48,6 +48,8 @@ module.exports = {
 		'googlesitekit-data': '<rootDir>assets/js/googlesitekit-data',
 		'googlesitekit-modules': '<rootDir>assets/js/googlesitekit-modules',
 		'googlesitekit-widgets': '<rootDir>assets/js/googlesitekit-widgets',
+		// This component has a (temporary) filename override because
+		// it currently references the "GM2+" versions of these components.
 		'googlesitekit-components':
 			'<rootDir>assets/js/googlesitekit-components-gm2',
 		// Necessary mock to prevent test failures caused by SVGR
