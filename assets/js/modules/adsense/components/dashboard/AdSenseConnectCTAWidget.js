@@ -98,15 +98,13 @@ function AdSenseConnectCTAWidget( { Widget, WidgetNull } ) {
 		);
 	}
 
-	if ( adSenseModuleConnected || hasDismissedWidget ) {
-		return <WidgetNull />;
-	}
-
-	return (
+	if ( adSenseModuleConnected === false && hasDismissedWidget === false ) {
 		<Widget noPadding>
 			<AdSenseConnectCTA onDismissModule={ showTooltip } />
-		</Widget>
-	);
+		</Widget>;
+	}
+
+	return <WidgetNull />;
 }
 
 AdSenseConnectCTAWidget.propTypes = {
