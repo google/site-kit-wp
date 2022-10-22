@@ -24,27 +24,30 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { Fragment, useCallback } from '@wordpress/element';
+import { Fragment, useCallback, useEffect } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
 import { ProgressBar } from 'googlesitekit-components';
+import StoreErrorNotices from '../../../../components/StoreErrorNotices';
+import { useRefocus } from '../../../../hooks/useRefocus';
+import useViewContext from '../../../../hooks/useViewContext';
+import { trackEvent } from '../../../../util';
 import {
 	MODULES_THANK_WITH_GOOGLE,
-	ONBOARDING_STATE_COMPLETE,
 	ONBOARDING_STATE_ACTION_REQUIRED,
+	ONBOARDING_STATE_COMPLETE,
+	ONBOARDING_STATE_NO_ACCOUNT,
 	ONBOARDING_STATE_PENDING_VERIFICATION,
 } from '../../datastore/constants';
-import { useRefocus } from '../../../../hooks/useRefocus';
-import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import SetupCreatePublication from './SetupCreatePublication';
 import SetupCustomize from './SetupCustomize';
-import SetupPublicationActive from './SetupPublicationActive';
-import SetupPublicationActionRequired from './SetupPublicationActionRequired';
-import SetupPublicationPendingVerification from './SetupPublicationPendingVerification';
 import SetupHeader from './SetupHeader';
+import SetupPublicationActionRequired from './SetupPublicationActionRequired';
+import SetupPublicationActive from './SetupPublicationActive';
+import SetupPublicationPendingVerification from './SetupPublicationPendingVerification';
 const { useDispatch, useSelect } = Data;
 
 export default function SetupMain( { finishSetup } ) {
@@ -69,6 +72,23 @@ export default function SetupMain( { finishSetup } ) {
 
 	// Reset all fetched data when user re-focuses window.
 	useRefocus( reset, 15000 );
+
+	const viewContext = useViewContext();
+
+	useEffect( () => {
+		// Don't track an event if the current publication is still loading.
+		if ( currentPublication === undefined ) {
+			return;
+		}
+
+		trackEvent(
+			`${ viewContext }_thank-with-google`,
+			'receive_publication_state',
+			currentPublication === null
+				? ONBOARDING_STATE_NO_ACCOUNT
+				: currentPublication.onboardingState
+		);
+	}, [ currentPublication, viewContext ] );
 
 	let viewComponent;
 

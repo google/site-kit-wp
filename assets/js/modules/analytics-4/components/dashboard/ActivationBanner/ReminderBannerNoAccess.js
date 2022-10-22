@@ -55,7 +55,7 @@ export default function ReminderBannerNoAccess( {
 		sprintf(
 			/* translators: 1. Original reminder description text, 2: module owner's name */
 			__(
-				'%1$s.<br />%2$s configured Analytics and you don’t have access to this Analytics property. Contact them to share access or change the Analytics property.',
+				'%1$s.<br />%2$s configured Analytics and you don’t have access to its configured property. Contact them to share access or set up Google Analytics 4.',
 				'google-site-kit'
 			),
 			description,

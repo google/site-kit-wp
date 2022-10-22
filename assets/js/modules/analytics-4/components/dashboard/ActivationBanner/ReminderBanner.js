@@ -41,6 +41,7 @@ import InfoIcon from '../../../../../../svg/icons/info.svg';
 import ErrorIcon from '../../../../../../svg/icons/error.svg';
 import ReminderBannerNoAccess from './ReminderBannerNoAccess';
 import { CORE_MODULES } from '../../../../../googlesitekit/modules/datastore/constants';
+import { Cell, Grid, Row } from '../../../../../material-components';
 
 const { useSelect } = Data;
 
@@ -90,7 +91,19 @@ export default function ReminderBanner( { onSubmitSuccess, children } ) {
 	}
 
 	if ( isLoadingAnalyticsAccess ) {
-		return <ProgressBar />;
+		// Wrap in the googlesitekit-publisher-win class to ensure the ProgressBar is treated in the
+		// same way as a BannerNotification, with only one instance visible on the screen at a time.
+		return (
+			<div className="googlesitekit-publisher-win">
+				<Grid>
+					<Row>
+						<Cell size={ 12 }>
+							<ProgressBar />
+						</Cell>
+					</Row>
+				</Grid>
+			</div>
+		);
 	}
 
 	let title;

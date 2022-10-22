@@ -32,6 +32,8 @@ import { __ } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import { Button } from 'googlesitekit-components';
+import useViewContext from '../../../../hooks/useViewContext';
+import { trackEvent } from '../../../../util';
 import { MODULES_THANK_WITH_GOOGLE } from '../../datastore/constants';
 import SetupPublicationScreen from './SetupPublicationScreen';
 const { useDispatch } = Data;
@@ -39,9 +41,12 @@ const { useDispatch } = Data;
 export default function SetupPublicationActive( { currentPublicationID } ) {
 	const { setPublicationID } = useDispatch( MODULES_THANK_WITH_GOOGLE );
 
-	const handleSetupCustomize = useCallback( () => {
+	const viewContext = useViewContext();
+
+	const handleSetupCustomize = useCallback( async () => {
+		await trackEvent( `${ viewContext }_thank-with-google`, 'customize' );
 		setPublicationID( currentPublicationID );
-	}, [ currentPublicationID, setPublicationID ] );
+	}, [ currentPublicationID, setPublicationID, viewContext ] );
 
 	return (
 		<SetupPublicationScreen

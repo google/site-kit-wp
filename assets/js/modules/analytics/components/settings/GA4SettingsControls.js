@@ -175,6 +175,15 @@ export default function GA4SettingsControls( { hasModuleAccess } ) {
 		propertyID,
 	] );
 
+	useEffect( () => {
+		if ( enableGA4PropertyTooltip && propertyID ) {
+			// Hide the tooltip once the property is selected.
+			setValues( FORM_SETUP, {
+				enableGA4PropertyTooltip: false,
+			} );
+		}
+	}, [ enableGA4PropertyTooltip, propertyID, setValues ] );
+
 	if ( isAdminAPIWorking === undefined ) {
 		return <ProgressBar height={ isDisabled ? 180 : 212 } small />;
 	}
