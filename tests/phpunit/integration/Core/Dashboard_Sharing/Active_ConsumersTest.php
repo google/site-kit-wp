@@ -81,6 +81,30 @@ class Active_ConsumersTest extends TestCase {
 		$this->assertEquals( array( 1 => array( 'a', 'c' ) ), $this->get_value() );
 	}
 
+	public function test_add_active_consumers() {
+		$active_consumers = new Active_Consumers( $this->user_options );
+		$active_consumers->register();
+
+		$this->assertEmpty( $active_consumers->get() );
+
+		$active_consumers->add( 1, array( 'editor' ) );
+		$this->assertEquals(
+			array(
+				1 => array( 'editor' ),
+			),
+			$active_consumers->get()
+		);
+
+		$active_consumers->add( 2, array( 'contributor', 'editor' ) );
+		$this->assertEquals(
+			array(
+				1 => array( 'editor' ),
+				2 => array( 'contributor', 'editor' ),
+			),
+			$active_consumers->get()
+		);
+	}
+
 	/**
 	 * Gets the value directly to isolate tested method.
 	 *
