@@ -132,6 +132,57 @@ describe( 'createErrorStore store', () => {
 					generateErrorKey( baseName, args )
 				);
 			} );
+
+			it( 'clears the legacy error when clearMatchingLegacyError is set and the legacy error is the same object as the matched error', () => {
+				dispatch.receiveError( errorForbidden, baseName, args );
+				dispatch.receiveError( errorForbidden );
+
+				expect( select.getError( baseName, args ) ).toBe(
+					errorForbidden
+				);
+				expect( select.getError() ).toBe( errorForbidden );
+
+				dispatch.clearError( baseName, args, {
+					clearMatchingLegacyError: true,
+				} );
+
+				expect( select.getError( baseName, args ) ).toBeUndefined();
+				expect( select.getError() ).toBeUndefined();
+			} );
+
+			it( 'does not clear the legacy error when clearMatchingLegacyError is set and the legacy error is not the same object as the matched error', () => {
+				dispatch.receiveError( errorForbidden, baseName, args );
+				dispatch.receiveError( errorNotFound );
+
+				expect( select.getError( baseName, args ) ).toBe(
+					errorForbidden
+				);
+				expect( select.getError() ).toBe( errorNotFound );
+
+				dispatch.clearError( baseName, args, {
+					clearMatchingLegacyError: true,
+				} );
+
+				expect( select.getError( baseName, args ) ).toBeUndefined();
+				expect( select.getError() ).toBe( errorNotFound );
+			} );
+
+			it( 'does not clear the legacy error when clearMatchingLegacyError is not set', () => {
+				dispatch.receiveError( errorForbidden, baseName, args );
+				dispatch.receiveError( errorForbidden );
+
+				expect( select.getError( baseName, args ) ).toBe(
+					errorForbidden
+				);
+				expect( select.getError() ).toBe( errorForbidden );
+
+				dispatch.clearError( baseName, args, {
+					clearMatchingLegacyError: false,
+				} );
+
+				expect( select.getError( baseName, args ) ).toBeUndefined();
+				expect( select.getError() ).toBe( errorForbidden );
+			} );
 		} );
 
 		describe( 'clearErrors', () => {
