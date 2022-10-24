@@ -362,10 +362,13 @@ final class Authentication {
 			'googlesitekit_user_data',
 			function( $user ) {
 				if ( $this->profile->has() ) {
-					$profile_data              = $this->profile->get();
-					$user['user']['email']     = $profile_data['email'];
-					$user['user']['picture']   = $profile_data['photo'];
-					$user['user']['full_name'] = $profile_data['full_name'];
+					$profile_data            = $this->profile->get();
+					$user['user']['email']   = $profile_data['email'];
+					$user['user']['picture'] = $profile_data['photo'];
+					// Older versions of Site Kit (before 1.86.0) did not
+					// fetch the user's full name, so we need to check for
+					// that attribute before using it.
+					$user['user']['full_name'] = isset( $profile_data['full_name'] ) ? $profile_data['full_name'] : null;
 				}
 
 				$user['connectURL']        = esc_url_raw( $this->get_connect_url() );
@@ -1491,11 +1494,10 @@ final class Authentication {
 		$html  = __( 'The link you followed has expired.', 'google-site-kit' );
 		$html .= '</p><p>';
 		$html .= sprintf(
-			'<a href="%s">%s</a>. <a href="%s" target="_blank">%s</a>.',
+			/* translators: 1: Admin splash URL. 2: Support link URL. */
+			__( '<a href="%1$s">Please try again</a>. Retry didn’t work? <a href="%2$s" target="_blank">Get help</a>.', 'google-site-kit' ),
 			esc_url( Plugin::instance()->context()->admin_url( 'splash' ) ),
-			__( 'Please try again', 'google-site-kit' ),
-			esc_url( $this->get_proxy_support_link_url() . '?error_id=nonce_expired' ),
-			__( 'Get help', 'google-site-kit' )
+			esc_url( $this->get_proxy_support_link_url() . '?error_id=nonce_expired' )
 		);
 		wp_die( $html, __( 'Something went wrong.', 'google-site-kit' ), 403 ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	}

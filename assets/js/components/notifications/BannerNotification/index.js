@@ -33,10 +33,12 @@ import {
 	Fragment,
 	isValidElement,
 } from '@wordpress/element';
+import { isURL } from '@wordpress/url';
 
 /*
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
 import GoogleLogoIcon from '../../../../svg/graphics/logo-g.svg';
 import { Cell, Grid, Row } from '../../../material-components';
 import { getContextScrollTop } from '../../../util/scroll';
@@ -59,6 +61,8 @@ import {
 	getImageCellOrderProperties,
 } from './utils';
 import { stringToDate } from '../../../util/date-range/string-to-date';
+import { CORE_LOCATION } from '../../../googlesitekit/datastore/location/constants';
+const { useSelect, useDispatch } = Data;
 
 export const LEARN_MORE_TARGET = {
 	EXTERNAL: 'external',
@@ -161,8 +165,18 @@ function BannerNotification( {
 		}, 350 );
 	}
 
+	const isNavigatingToCTALink = useSelect( ( select ) =>
+		select( CORE_LOCATION ).isNavigatingTo( ctaLink || '' )
+	);
+
+	const { navigateTo } = useDispatch( CORE_LOCATION );
 	async function handleCTAClick( e ) {
 		e.persist();
+
+		if ( isURL( ctaLink ) && ctaTarget !== '_blank' ) {
+			e.preventDefault();
+			navigateTo( ctaLink );
+		}
 
 		let dismissOnCTAClick = true;
 		if ( onCTAClick ) {
@@ -216,11 +230,17 @@ function BannerNotification( {
 	}
 
 	// isDismissed will be undefined until resolved from browser storage.
-	if ( isDismissible && ( undefined === isDismissed || isDismissed ) ) {
+	// isNavigatingToCTALink will be true until the navigation is complete.
+	if (
+		! isNavigatingToCTALink &&
+		isDismissible &&
+		( undefined === isDismissed || isDismissed )
+	) {
 		return null;
 	}
 
-	const closedClass = isClosed ? 'is-closed' : 'is-open';
+	const closedClass =
+		! isNavigatingToCTALink && isClosed ? 'is-closed' : 'is-open';
 	const inlineLayout = 'large' === format && 'win-stats-increase' === type;
 
 	const imageCellSizeProperties = getImageCellSizeProperties( format );
@@ -429,13 +449,21 @@ function BannerNotification( {
 										href={ ctaLink }
 										target={ ctaTarget }
 										onClick={ handleCTAClick }
-										disabled={ isAwaitingCTAResponse }
+										disabled={
+											isAwaitingCTAResponse ||
+											isNavigatingToCTALink
+										}
 									>
 										{ ctaLabel }
 									</Button>
 								) }
 
-								<Spinner isSaving={ isAwaitingCTAResponse } />
+								<Spinner
+									isSaving={
+										isAwaitingCTAResponse ||
+										isNavigatingToCTALink
+									}
+								/>
 
 								{ isDismissible &&
 									dismiss &&

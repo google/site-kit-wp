@@ -20,6 +20,7 @@
  * Internal dependencies
  */
 import {
+	act,
 	createTestRegistry,
 	render,
 	provideModules,
@@ -85,23 +86,26 @@ describe( 'ActivationBanner', () => {
 		expect( container.childElementCount ).toBe( 0 );
 	} );
 
-	it( 'does render when UA is connected but GA4 is not connected', () => {
-		provideModules( registry, [
-			{
-				slug: 'analytics',
-				active: true,
-				connected: true,
-			},
-			{
-				slug: 'analytics-4',
-				active: true,
-				connected: false,
-			},
-		] );
+	it( 'does render when UA is connected but GA4 is not connected', async () => {
+		act( () => {
+			provideModules( registry, [
+				{
+					slug: 'analytics',
+					active: true,
+					connected: true,
+				},
+				{
+					slug: 'analytics-4',
+					active: true,
+					connected: false,
+				},
+			] );
+		} );
 
-		const { container } = render( <ActivationBanner />, {
+		const { container, waitForRegistry } = render( <ActivationBanner />, {
 			registry,
 		} );
+		await waitForRegistry();
 		expect( container.childElementCount ).toBe( 1 );
 	} );
 } );
