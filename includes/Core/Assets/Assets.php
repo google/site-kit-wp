@@ -459,12 +459,19 @@ final class Assets {
 				)
 			),
 			new Script(
+				'googlesitekit-element',
+				array(
+					'src' => $base_url . 'js/googlesitekit-element.js',
+				)
+			),
+			new Script(
 				'googlesitekit-base',
 				array(
 					'src'          => $base_url . 'js/googlesitekit-base.js',
 					'dependencies' => array(
 						'googlesitekit-base-data',
 						'googlesitekit-i18n',
+						'googlesitekit-element',
 					),
 					'execution'    => 'defer',
 				)
