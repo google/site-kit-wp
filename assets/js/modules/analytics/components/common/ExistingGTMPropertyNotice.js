@@ -35,13 +35,13 @@ export default function ExistingGTMPropertyNotice() {
 		select( MODULES_ANALYTICS ).getPropertyID()
 	);
 
-	const isTagManagerAvaliable = useSelect( ( select ) =>
+	const isTagManagerAvailable = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleAvailable( 'tagmanager' )
 	);
 
 	const gtmAnalyticsPropertyID = useSelect(
 		( select ) =>
-			isTagManagerAvaliable &&
+			isTagManagerAvailable &&
 			select( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID()
 	);
 

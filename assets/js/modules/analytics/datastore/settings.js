@@ -246,10 +246,10 @@ export const getCanUseSnippet = createRegistrySelector( ( select ) => () => {
 		return undefined;
 	}
 
-	const isTagManagerAvaliable =
+	const isTagManagerAvailable =
 		select( CORE_MODULES ).isModuleAvailable( 'tagmanager' );
 	const isTagManagerConnected =
-		isTagManagerAvaliable &&
+		isTagManagerAvailable &&
 		select( CORE_MODULES ).isModuleConnected( 'tagmanager' );
 
 	if ( ! isTagManagerConnected || ! select( MODULES_TAGMANAGER ) ) {

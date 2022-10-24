@@ -51,17 +51,17 @@ export default function SettingsForm( {
 	const useAnalyticsSnippet = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getUseSnippet()
 	);
-	const isTagManagerAvaliable = useSelect( ( select ) =>
+	const isTagManagerAvailable = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleAvailable( 'tagmanager' )
 	);
 	const useTagManagerSnippet = useSelect(
 		( select ) =>
-			isTagManagerAvaliable &&
+			isTagManagerAvailable &&
 			select( MODULES_TAGMANAGER ).getUseSnippet()
 	);
 	const analyticsSinglePropertyID = useSelect(
 		( select ) =>
-			isTagManagerAvaliable &&
+			isTagManagerAvailable &&
 			select( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID()
 	);
 	const showTrackingExclusion =
