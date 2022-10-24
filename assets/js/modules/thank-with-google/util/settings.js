@@ -24,14 +24,6 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import BlueSVG from '../../../../svg/graphics/twg-blue.svg';
-import CyanSVG from '../../../../svg/graphics/twg-cyan.svg';
-import GreenSVG from '../../../../svg/graphics/twg-green.svg';
-import PurpleSVG from '../../../../svg/graphics/twg-purple.svg';
-import PinkSVG from '../../../../svg/graphics/twg-pink.svg';
-import OrangeSVG from '../../../../svg/graphics/twg-orange.svg';
-import BrownSVG from '../../../../svg/graphics/twg-brown.svg';
-import BlackSVG from '../../../../svg/graphics/twg-black.svg';
 import {
 	CTA_PLACEMENT_STATIC_AUTO,
 	CTA_PLACEMENT_STATIC_ABOVE_CONTENT,
@@ -55,49 +47,57 @@ export function getColorThemes() {
 		{
 			colorThemeID: 'blue',
 			name: __( 'Blue', 'google-site-kit' ),
-			svg: BlueSVG,
+			colorPrimary: '#1967D2',
+			colorSecondary: '#E3F2FD',
 			colorCode: '#1967d2',
 		},
 		{
 			colorThemeID: 'cyan',
 			name: __( 'Cyan', 'google-site-kit' ),
-			svg: CyanSVG,
+			colorPrimary: '#007B83',
+			colorSecondary: '#E0F7FA',
 			colorCode: '#007b83',
 		},
 		{
 			colorThemeID: 'green',
 			name: __( 'Green', 'google-site-kit' ),
-			svg: GreenSVG,
+			colorPrimary: '#188038',
+			colorSecondary: '#E6F4EA',
 			colorCode: '#188038',
 		},
 		{
 			colorThemeID: 'purple',
 			name: __( 'Purple', 'google-site-kit' ),
-			svg: PurpleSVG,
+			colorPrimary: '#8E24AA',
+			colorSecondary: '#F3E5F5',
 			colorCode: '#8e24aa',
 		},
 		{
 			colorThemeID: 'pink',
 			name: __( 'Pink', 'google-site-kit' ),
-			svg: PinkSVG,
+			colorPrimary: '#D01884',
+			colorSecondary: '#FCE4EC',
 			colorCode: '#d01884',
 		},
 		{
 			colorThemeID: 'orange',
 			name: __( 'Orange', 'google-site-kit' ),
-			svg: OrangeSVG,
+			colorPrimary: '#B06000',
+			colorSecondary: '#FFF8E1',
 			colorCode: '#B06000',
 		},
 		{
 			colorThemeID: 'brown',
 			name: __( 'Brown', 'google-site-kit' ),
-			svg: BrownSVG,
+			colorPrimary: '#795548',
+			colorSecondary: '#EFEBE9',
 			colorCode: '#795548',
 		},
 		{
 			colorThemeID: 'black',
 			name: __( 'Black', 'google-site-kit' ),
-			svg: BlackSVG,
+			colorPrimary: '#202124',
+			colorSecondary: '#F1F3F4',
 			colorCode: '#202124',
 		},
 	];
