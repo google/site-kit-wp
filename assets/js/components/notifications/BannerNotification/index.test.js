@@ -23,50 +23,48 @@ import BannerNotification from './index';
 import { render } from '../../../../../tests/js/test-utils';
 
 describe( 'BannerNotification', () => {
-	describe( 'attribute description with text', () => {
-		it( 'should render span with dangerouslySetInnerHTML', () => {
-			const { container, getByText } = render(
-				<BannerNotification
-					id="fake"
-					title={ 'Hey there!' }
-					description={ 'I am string, not React elemet' }
-				/>
-			);
+	it( 'should render span with dangerouslySetInnerHTML', () => {
+		const { container, getByText } = render(
+			<BannerNotification
+				id="fake"
+				title={ 'Hey there!' }
+				description={ 'I am string, not React elemet' }
+			/>
+		);
 
-			expect(
-				container.querySelector(
-					'.googlesitekit-publisher-win__inner-html'
-				)
-			).toBeInTheDocument();
-			expect(
-				getByText( /I am string, not React elemet/ )
-			).toBeInTheDocument();
+		expect(
+			container.querySelector(
+				'.googlesitekit-publisher-win__inner-html'
+			)
+		).toBeInTheDocument();
+		expect(
+			getByText( /I am string, not React elemet/ )
+		).toBeInTheDocument();
 
-			expect( container ).toMatchSnapshot();
-		} );
+		expect( container ).toMatchSnapshot();
+	} );
 
-		it( 'should render React element', () => {
-			const { container } = render(
-				<BannerNotification
-					id="fake"
-					title={ 'Hey there!' }
-					description={
-						<p className="sk-react-element">I am React elemet</p>
-					}
-				/>
-			);
+	it( 'should render React element', () => {
+		const { container } = render(
+			<BannerNotification
+				id="fake"
+				title={ 'Hey there!' }
+				description={
+					<p className="sk-react-element">I am React elemet</p>
+				}
+			/>
+		);
 
-			expect(
-				container.querySelector(
-					'.googlesitekit-publisher-win__inner-html'
-				)
-			).toBeFalsy();
+		expect(
+			container.querySelector(
+				'.googlesitekit-publisher-win__inner-html'
+			)
+		).toBeFalsy();
 
-			expect(
-				container.querySelector( '.sk-react-element' )
-			).toBeInTheDocument();
+		expect(
+			container.querySelector( '.sk-react-element' )
+		).toBeInTheDocument();
 
-			expect( container ).toMatchSnapshot();
-		} );
+		expect( container ).toMatchSnapshot();
 	} );
 } );
