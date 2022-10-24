@@ -194,7 +194,7 @@ export default function UserMenu() {
 							<br />
 							<br />
 							{ userFullName }
-							<br />
+							{ userFullName && <br /> }
 							{ userEmail }
 						</Fragment>
 					}

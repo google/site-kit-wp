@@ -19,14 +19,18 @@
 /**
  * Internal dependencies
  */
-import { createTestRegistry, provideModules } from '../../../tests/js/utils';
+import {
+	createTestRegistry,
+	provideModules,
+	untilResolved,
+} from '../../../tests/js/utils';
 import {
 	ERROR_CODE_MISSING_REQUIRED_SCOPE,
 	ERROR_REASON_INSUFFICIENT_PERMISSIONS,
 } from '../util/errors';
 import { fireEvent, render } from '../../../tests/js/test-utils';
 import ErrorNotice from './ErrorNotice';
-import { MODULES_ANALYTICS } from '../modules/analytics/datastore/constants';
+import { MODULES_TAGMANAGER } from '../modules/tagmanager/datastore/constants';
 
 describe( 'ErrorNotice', () => {
 	let registry;
@@ -39,7 +43,7 @@ describe( 'ErrorNotice', () => {
 			{ slug: moduleName, name: 'Test Module' },
 		] );
 		invalidateResolutionSpy = jest.spyOn(
-			registry.dispatch( MODULES_ANALYTICS ),
+			registry.dispatch( MODULES_TAGMANAGER ),
 			'invalidateResolution'
 		);
 	} );
@@ -48,161 +52,105 @@ describe( 'ErrorNotice', () => {
 		invalidateResolutionSpy.mockReset();
 	} );
 
-	it( "should not render the `Retry` button if the error's `selectorData.name` is not `getReport`", () => {
-		const { queryByText } = render(
-			<ErrorNotice
-				error={ {
-					code: 'test-error-code',
-					message: 'Test error message',
-					data: {
-						reason: '',
-					},
-					selectorData: {
-						args: [],
-						name: 'getAccountID',
-						storeName: MODULES_ANALYTICS,
-					},
-				} }
-			/>,
+	async function renderErrorNotice( { error, storeName } ) {
+		fetchMock.get(
+			/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/accounts/,
+			{
+				body: error,
+				status: 403,
+			}
+		);
+
+		registry.select( MODULES_TAGMANAGER ).getAccounts();
+
+		await untilResolved( registry, MODULES_TAGMANAGER ).getAccounts();
+
+		expect( console ).toHaveErrored();
+
+		const selectorError = registry
+			.select( MODULES_TAGMANAGER )
+			.getError( 'getAccounts', [] );
+
+		return render(
+			<ErrorNotice error={ selectorError } storeName={ storeName } />,
 			{
 				registry,
 			}
 		);
+	}
+
+	it( 'should not render the `Retry` button if the error reason is `ERROR_REASON_INSUFFICIENT_PERMISSIONS`', async () => {
+		const { queryByText } = await renderErrorNotice( {
+			error: {
+				code: 'test-error-code',
+				message: 'Test error message',
+				data: {
+					reason: ERROR_REASON_INSUFFICIENT_PERMISSIONS,
+				},
+			},
+			storeName: MODULES_TAGMANAGER,
+		} );
 
 		expect( queryByText( /retry/i ) ).not.toBeInTheDocument();
 	} );
 
-	it( 'should not render the `Retry` button if the error reason is `ERROR_REASON_INSUFFICIENT_PERMISSIONS`', () => {
-		const { queryByText } = render(
-			<ErrorNotice
-				error={ {
-					code: 'test-error-code',
-					message: 'Test error message',
-					data: {
-						reason: ERROR_REASON_INSUFFICIENT_PERMISSIONS,
-					},
-					selectorData: {
-						args: [],
-						name: 'getReport',
-						storeName: MODULES_ANALYTICS,
-					},
-				} }
-			/>,
-			{
-				registry,
-			}
-		);
+	it( 'should not render the `Retry` button if the error reason is `ERROR_CODE_MISSING_REQUIRED_SCOPE`', async () => {
+		const { queryByText } = await renderErrorNotice( {
+			error: {
+				code: ERROR_CODE_MISSING_REQUIRED_SCOPE,
+				message: 'Test error message',
+				data: {
+					reason: '',
+				},
+			},
+			storeName: MODULES_TAGMANAGER,
+		} );
 
 		expect( queryByText( /retry/i ) ).not.toBeInTheDocument();
 	} );
 
-	it( 'should not render the `Retry` button if the error reason is `ERROR_CODE_MISSING_REQUIRED_SCOPE`', () => {
-		const { queryByText } = render(
-			<ErrorNotice
-				error={ {
-					code: ERROR_CODE_MISSING_REQUIRED_SCOPE,
-					message: 'Test error message',
-					data: {
-						reason: '',
-					},
-					selectorData: {
-						args: [],
-						name: 'getReport',
-						storeName: MODULES_ANALYTICS,
-					},
-				} }
-			/>,
-			{
-				registry,
-			}
-		);
+	it( 'should not render the `Retry` button if the error is an auth error', async () => {
+		const { queryByText } = await renderErrorNotice( {
+			error: {
+				code: 'test-error-code',
+				message: 'Test error message',
+				data: {
+					reason: '',
+					reconnectURL: 'example.com',
+				},
+			},
+			storeName: MODULES_TAGMANAGER,
+		} );
 
 		expect( queryByText( /retry/i ) ).not.toBeInTheDocument();
 	} );
 
-	it( 'should not render the `Retry` button if the error is an auth error', () => {
-		const { queryByText } = render(
-			<ErrorNotice
-				error={ {
-					code: 'test-error-code',
-					message: 'Test error message',
-					data: {
-						reason: '',
-						reconnectURL: 'example.com',
-					},
-					selectorData: {
-						args: [],
-						name: 'getReport',
-						storeName: MODULES_ANALYTICS,
-					},
-				} }
-			/>,
-			{
-				registry,
-			}
-		);
-
-		expect( queryByText( /retry/i ) ).not.toBeInTheDocument();
-	} );
-
-	it( 'should render the `Retry` button if the error is retryable', () => {
-		const { queryByText } = render(
-			<ErrorNotice
-				error={ {
-					code: 'test-error-code',
-					message: 'Test error message',
-					data: {
-						reason: '',
-					},
-					selectorData: {
-						args: [
-							{
-								dimensions: [ 'ga:date' ],
-								metrics: [ { expression: 'ga:users' } ],
-								startDate: '2020-08-11',
-								endDate: '2020-09-07',
-							},
-						],
-						name: 'getReport',
-						storeName: MODULES_ANALYTICS,
-					},
-				} }
-			/>,
-			{
-				registry,
-			}
-		);
+	it( 'should render the `Retry` button if the error is retryable', async () => {
+		const { queryByText } = await renderErrorNotice( {
+			error: {
+				code: 'test-error-code',
+				message: 'Test error message',
+				data: {
+					reason: '',
+				},
+			},
+			storeName: MODULES_TAGMANAGER,
+		} );
 
 		expect( queryByText( /retry/i ) ).toBeInTheDocument();
 	} );
 
-	it( 'should dispatch the `invalidateResolution` if the error is retryable', () => {
-		const { queryByText, getByRole } = render(
-			<ErrorNotice
-				error={ {
-					code: 'test-error-code',
-					message: 'Test error message',
-					data: {
-						reason: '',
-					},
-					selectorData: {
-						args: [
-							{
-								dimensions: [ 'ga:date' ],
-								metrics: [ { expression: 'ga:users' } ],
-								startDate: '2020-08-11',
-								endDate: '2020-09-07',
-							},
-						],
-						name: 'getReport',
-						storeName: MODULES_ANALYTICS,
-					},
-				} }
-			/>,
-			{
-				registry,
-			}
-		);
+	it( 'should dispatch the `invalidateResolution` if the error is retryable', async () => {
+		const { queryByText, getByRole } = await renderErrorNotice( {
+			error: {
+				code: 'test-error-code',
+				message: 'Test error message',
+				data: {
+					reason: '',
+				},
+			},
+			storeName: MODULES_TAGMANAGER,
+		} );
 
 		expect( queryByText( /retry/i ) ).toBeInTheDocument();
 
@@ -211,34 +159,18 @@ describe( 'ErrorNotice', () => {
 		expect( invalidateResolutionSpy ).toHaveBeenCalledTimes( 1 );
 	} );
 
-	it( 'should not render the retry button if the store name is not available', () => {
-		const { queryByText } = render(
-			<ErrorNotice
-				error={ {
-					code: 'test-error-code',
-					message: 'Test error message',
-					data: {
-						reason: '',
-						reconnectURL: 'example.com',
-					},
-					selectorData: {
-						args: [
-							{
-								dimensions: [ 'ga:date' ],
-								metrics: [ { expression: 'ga:users' } ],
-								startDate: '2020-08-11',
-								endDate: '2020-09-07',
-							},
-						],
-						name: 'getReport',
-						storeName: '',
-					},
-				} }
-			/>,
-			{
-				registry,
-			}
-		);
+	it( 'should not render the retry button if the store name is not available', async () => {
+		const { queryByText } = await renderErrorNotice( {
+			error: {
+				code: 'test-error-code',
+				message: 'Test error message',
+				data: {
+					reason: '',
+					reconnectURL: 'example.com',
+				},
+			},
+			storeName: '',
+		} );
 
 		expect( queryByText( /retry/i ) ).not.toBeInTheDocument();
 	} );

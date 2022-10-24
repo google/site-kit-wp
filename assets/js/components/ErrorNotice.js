@@ -35,21 +35,30 @@ import { Button } from 'googlesitekit-components';
 import { isPermissionScopeError, isErrorRetryable } from '../util/errors';
 import ErrorText from './ErrorText';
 
-const { useDispatch } = Data;
+const { useSelect, useDispatch } = Data;
 
 export default function ErrorNotice( {
 	error,
+	storeName,
+	message = error.message,
 	shouldDisplayError = () => true,
 } ) {
 	const dispatch = useDispatch();
 
+	const selectorData = useSelect( ( select ) => {
+		if ( ! storeName ) {
+			return null;
+		}
+
+		return select( storeName ).getSelectorDataForError( error );
+	} );
+
 	const handleRetry = useCallback( () => {
-		const { selectorData } = error;
 		dispatch( selectorData.storeName ).invalidateResolution(
 			selectorData.name,
 			selectorData.args
 		);
-	}, [ dispatch, error ] );
+	}, [ dispatch, selectorData ] );
 
 	// Do not display if there is no error, or if the error is for missing scopes.
 	if (
@@ -60,12 +69,12 @@ export default function ErrorNotice( {
 		return null;
 	}
 
-	const shouldDisplayRetry = isErrorRetryable( error );
+	const shouldDisplayRetry = isErrorRetryable( error, selectorData );
 
 	return (
 		<Fragment>
 			<ErrorText
-				message={ error.message }
+				message={ message }
 				reconnectURL={ error.data?.reconnectURL }
 			/>
 			{ shouldDisplayRetry && (
@@ -81,5 +90,7 @@ ErrorNotice.propTypes = {
 	error: PropTypes.shape( {
 		message: PropTypes.string,
 	} ),
+	storeName: PropTypes.string,
+	message: PropTypes.string,
 	shouldDisplayError: PropTypes.func,
 };

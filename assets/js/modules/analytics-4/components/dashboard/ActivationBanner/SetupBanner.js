@@ -85,8 +85,18 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 		select( MODULES_ANALYTICS ).getAccounts()
 	);
 
+	const getPropertyID = useSelect(
+		( select ) => select( MODULES_ANALYTICS_4 ).getPropertyID
+	);
 	const ga4PropertyID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getPropertyID()
+	);
+
+	const getMeasurementID = useSelect(
+		( select ) => select( MODULES_ANALYTICS_4 ).getMeasurementID
+	);
+	const measurementID = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getMeasurementID()
 	);
 
 	const determineVariant = useCallback( async () => {
@@ -112,7 +122,7 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 			return;
 		}
 
-		if ( ! ga4PropertyID ) {
+		if ( ! getPropertyID() ) {
 			// Ensure the PropertySelect dropdown will be populated with a selected option.
 			await matchAndSelectProperty( accountID, PROPERTY_CREATE );
 		}
@@ -121,7 +131,7 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 	}, [
 		accountID,
 		accounts,
-		ga4PropertyID,
+		getPropertyID,
 		matchAndSelectProperty,
 		properties,
 		selectProperty,
@@ -154,7 +164,10 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 	const handleSubmitChanges = useCallback( async () => {
 		const scopes = [];
 
-		if ( hasEditScope === false && ga4PropertyID === PROPERTY_CREATE ) {
+		if (
+			hasEditScope === false &&
+			( getPropertyID() === PROPERTY_CREATE || ! getMeasurementID() )
+		) {
 			scopes.push( EDIT_SCOPE );
 		}
 
@@ -191,22 +204,26 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 
 		const { error } = await submitChanges();
 
+		setIsSaving( false );
+
 		if ( error ) {
 			setErrorNotice( error );
 		} else {
 			setValues( FORM_SETUP, { autoSubmit: false } );
 			// Ask the parent component to show the success banner.
+			// This should be called last because it will unmount this component.
 			onSubmitSuccess();
 		}
-
-		setIsSaving( false );
 	}, [
 		hasEditScope,
 		onSubmitSuccess,
 		setPermissionScopeError,
 		setValues,
 		submitChanges,
-		ga4PropertyID,
+		// Here we pass the selectors through to avoid creating a new
+		// callback when the property ID changes on creation.
+		getPropertyID,
+		getMeasurementID,
 	] );
 
 	// If the user lands back on this component with autoSubmit and the edit scope,
@@ -308,7 +325,10 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 			</div>
 		);
 
-		if ( hasEditScope === false && ga4PropertyID === PROPERTY_CREATE ) {
+		if (
+			hasEditScope === false &&
+			( ga4PropertyID === PROPERTY_CREATE || ! measurementID )
+		) {
 			footerMessages.push(
 				__(
 					'You will need to give Site Kit permission to create an Analytics property on your behalf',
