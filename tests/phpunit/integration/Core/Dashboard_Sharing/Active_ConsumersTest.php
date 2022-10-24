@@ -85,8 +85,10 @@ class Active_ConsumersTest extends TestCase {
 		$active_consumers = new Active_Consumers( $this->user_options );
 		$active_consumers->register();
 
+		// Verify the active consumers list is empty.
 		$this->assertEmpty( $active_consumers->get() );
 
+		// Verify the new user is added to the active consumers list.
 		$active_consumers->add( 1, array( 'editor' ) );
 		$this->assertEquals(
 			array(
@@ -95,7 +97,18 @@ class Active_ConsumersTest extends TestCase {
 			$active_consumers->get()
 		);
 
+		// Verify the new user is added to the active consumers list along with the existing user.
 		$active_consumers->add( 2, array( 'contributor', 'editor' ) );
+		$this->assertEquals(
+			array(
+				1 => array( 'editor' ),
+				2 => array( 'contributor', 'editor' ),
+			),
+			$active_consumers->get()
+		);
+
+		// Verify that adding the same user again does not result in duplicates or updating the value.
+		$active_consumers->add( 1, array( 'author' ) );
 		$this->assertEquals(
 			array(
 				1 => array( 'editor' ),
