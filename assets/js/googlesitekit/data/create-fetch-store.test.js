@@ -31,8 +31,10 @@ import { createRegistry } from '@wordpress/data';
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
+import Data from 'googlesitekit-data';
 import { subscribeUntil, unsubscribeFromAll } from '../../../../tests/js/utils';
 import { createFetchStore } from './create-fetch-store';
+import { createErrorStore } from './create-error-store';
 
 const TEST_STORE = 'test/some-data';
 const STORE_PARAMS = {
@@ -224,26 +226,91 @@ describe( 'createFetchStore store', () => {
 				} );
 			} );
 
-			it( 'dispatches an error if the request fails', async () => {
-				const errorResponse = {
-					code: 'internal_server_error',
-					message: 'Internal server error',
-					data: { status: 500 },
-				};
-				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/core\/test\/data\/some-data/,
-					{ body: errorResponse, status: 500 }
-				);
+			describe( 'error handling', () => {
+				beforeEach( () => {
+					registry = createRegistry();
 
-				const { response, error } = await dispatch.fetchGetSomeData(
-					{},
-					'value-to-key-response-by'
-				);
+					storeDefinition = Data.combineStores(
+						createFetchStore( STORE_PARAMS ),
+						createErrorStore( TEST_STORE )
+					);
+					registry.registerStore( TEST_STORE, storeDefinition );
+					dispatch = registry.dispatch( TEST_STORE );
+					store = registry.stores[ TEST_STORE ].store;
+					select = registry.select( TEST_STORE );
+				} );
 
-				expect( console ).toHaveErrored();
-				expect( error ).toEqual( errorResponse );
-				expect( response ).toEqual( undefined );
-				expect( store.getState().data ).toEqual( undefined );
+				it( 'dispatches an error if the request fails', async () => {
+					const errorResponse = {
+						code: 'internal_server_error',
+						message: 'Internal server error',
+						data: { status: 500 },
+					};
+					fetchMock.getOnce(
+						/^\/google-site-kit\/v1\/core\/test\/data\/some-data/,
+						{ body: errorResponse, status: 500 }
+					);
+
+					const errorArgs = [ {}, 'value-to-key-response-by' ];
+
+					const { response, error } = await dispatch.fetchGetSomeData(
+						...errorArgs
+					);
+
+					expect( console ).toHaveErrored();
+					expect( error ).toEqual( errorResponse );
+					expect( response ).toEqual( undefined );
+					expect( store.getState().data ).toEqual( undefined );
+
+					// Verify that the error is stored in the store.
+					expect(
+						select.getError( STORE_PARAMS.baseName, errorArgs )
+					).toEqual( errorResponse );
+					// @TODO: remove assertion once all instances of the legacy usage have been removed.
+					expect( select.getError() ).toEqual( errorResponse );
+				} );
+
+				it( 'clears previously set errors when re-fetching', async () => {
+					const errorResponse = {
+						code: 'internal_server_error',
+						message: 'Internal server error',
+						data: { status: 500 },
+					};
+					fetchMock.getOnce(
+						/^\/google-site-kit\/v1\/core\/test\/data\/some-data/,
+						{ body: errorResponse, status: 500 }
+					);
+
+					const errorArgs = [ {}, 'value-to-key-response-by' ];
+
+					await dispatch.fetchGetSomeData( ...errorArgs );
+
+					expect( console ).toHaveErrored();
+
+					// Verify that the error is stored in the store.
+					expect(
+						select.getError( STORE_PARAMS.baseName, errorArgs )
+					).toEqual( errorResponse );
+					// @TODO: remove assertion once all instances of the legacy usage have been removed.
+					expect( select.getError() ).toEqual( errorResponse );
+
+					fetchMock.getOnce(
+						/^\/google-site-kit\/v1\/core\/test\/data\/some-data/,
+						{
+							body: {},
+							status: 200,
+						}
+					);
+
+					await dispatch.fetchGetSomeData( ...errorArgs );
+
+					// Verify that the error has been removed from the store.
+					expect(
+						select.getError( STORE_PARAMS.baseName, errorArgs )
+					).toBeUndefined();
+					// @TODO: remove assertion once all instances of the legacy usage have been removed.
+					expect( select.getError() ).toBeUndefined();
+				} );
 			} );
 
 			it( 'sets flag for request being in progress', async () => {
