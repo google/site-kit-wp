@@ -348,7 +348,7 @@ export function createErrorStore( storeName ) {
 		 *	}
 		 * ```
 		 *
-		 * @since 1.84.0
+		 * @since n.e.x.t
 		 *
 		 * @param {Object} state Data store's state.
 		 * @param {Object} error Error object.
