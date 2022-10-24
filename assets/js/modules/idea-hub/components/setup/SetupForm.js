@@ -26,10 +26,9 @@ import { useCallback } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { Button, Checkbox } from 'googlesitekit-components';
 import { MODULES_IDEA_HUB } from '../../datastore/constants';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
-import Checkbox from '../../../../components/Checkbox';
-import Button from '../../../../components/Button';
 import SettingsNotice from '../../../../components/SettingsNotice';
 const { useSelect, useDispatch } = Data;
 

@@ -29,7 +29,7 @@ import { Fragment } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import Button from '../../../../../../components/Button';
+import { Button } from 'googlesitekit-components';
 import { ErrorNotices } from '../../../common';
 import SetupUseSnippetSwitch from '../SetupUseSnippetSwitch';
 import Link from '../../../../../../components/Link';

@@ -32,10 +32,10 @@ import { Icon, check, stack } from '@wordpress/icons';
 /**
  * Internal dependencies
  */
+import { Button } from 'googlesitekit-components';
 import ViewContextContext from '../Root/ViewContextContext';
 import Notification from '../notifications/BannerNotification';
 import Link from '../Link';
-import Button from '../Button';
 import { trackEvent } from '../../util';
 
 class ErrorHandler extends Component {

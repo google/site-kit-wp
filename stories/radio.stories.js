@@ -24,7 +24,7 @@ import { storiesOf } from '@storybook/react';
 /**
  * Internal dependencies
  */
-import Radio from '../assets/js/components/Radio';
+import { Radio } from 'googlesitekit-components';
 
 storiesOf( 'Global', module ).add( 'Radios', () => (
 	<div>

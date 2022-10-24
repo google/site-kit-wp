@@ -32,12 +32,12 @@ import { ESCAPE } from '@wordpress/keycodes';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { Dialog } from 'googlesitekit-components';
 import { CORE_LOCATION } from '../../../googlesitekit/datastore/location/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
 import { clearWebStorage, trackEvent } from '../../../util';
-import Dialog from '../../Dialog';
 import useViewContext from '../../../hooks/useViewContext';
 const { useSelect, useDispatch } = Data;
 

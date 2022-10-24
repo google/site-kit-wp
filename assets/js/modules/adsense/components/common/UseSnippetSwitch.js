@@ -32,7 +32,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import Switch from '../../../../components/Switch';
+import { Switch } from 'googlesitekit-components';
 import SettingsNotice from '../../../../components/SettingsNotice';
 import { trackEvent } from '../../../../util';
 import { MODULES_ADSENSE } from '../../datastore/constants';

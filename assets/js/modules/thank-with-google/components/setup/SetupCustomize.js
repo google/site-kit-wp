@@ -31,12 +31,12 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { Button } from 'googlesitekit-components';
 import {
 	MODULES_THANK_WITH_GOOGLE,
 	CTA_PLACEMENT_DYNAMIC_LOW,
 	COLOR_RADIO_DEFAULT,
 } from '../../datastore/constants';
-import Button from '../../../../components/Button';
 import { CTAPlacement, ColorRadio, PostTypesSelect } from '../common';
 import SetupHeader from './SetupHeader';
 const { useDispatch, useSelect } = Data;

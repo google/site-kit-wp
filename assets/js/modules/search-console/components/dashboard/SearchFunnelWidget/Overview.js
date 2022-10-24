@@ -30,6 +30,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { ProgressBar } from 'googlesitekit-components';
 import { Grid, Row, Cell } from '../../../../../material-components';
 import { extractSearchConsoleDashboardData } from '../../../util';
 import { calculateChange } from '../../../../../util';
@@ -44,7 +45,6 @@ import useDashboardType, {
 import ActivateAnalyticsCTA from './ActivateAnalyticsCTA';
 import CreateGoalCTA from './CreateGoalCTA';
 import DataBlock from '../../../../../components/DataBlock';
-import ProgressBar from '../../../../../components/ProgressBar';
 import RecoverableModules from '../../../../../components/RecoverableModules';
 import {
 	BREAKPOINT_SMALL,

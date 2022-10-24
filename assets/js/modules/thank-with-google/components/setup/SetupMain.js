@@ -30,7 +30,7 @@ import { Fragment, useCallback, useEffect } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import ProgressBar from '../../../../components/ProgressBar';
+import { ProgressBar } from 'googlesitekit-components';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import { useRefocus } from '../../../../hooks/useRefocus';
 import useViewContext from '../../../../hooks/useViewContext';

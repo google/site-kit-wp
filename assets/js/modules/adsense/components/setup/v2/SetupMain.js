@@ -32,7 +32,7 @@ import { useCallback, useEffect, useState } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import ProgressBar from '../../../../../components/ProgressBar';
+import { ProgressBar } from 'googlesitekit-components';
 import AdSenseIcon from '../../../../../../svg/graphics/adsense.svg';
 import SetupAccount from './SetupAccount';
 import SetupCreateAccount from './SetupCreateAccount';

@@ -24,6 +24,7 @@ import { useCallback } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { Radio } from 'googlesitekit-components';
 import {
 	MODULES_THANK_WITH_GOOGLE,
 	CTA_PLACEMENT_STATIC_ABOVE_CONTENT,
@@ -32,7 +33,6 @@ import {
 	CTA_PLACEMENT_STATIC_BELOW_CONTENT,
 } from '../../datastore/constants';
 import useViewContext from '../../../../hooks/useViewContext';
-import Radio from '../../../../components/Radio';
 import { trackEvent } from '../../../../util';
 const { useSelect, useDispatch } = Data;
 

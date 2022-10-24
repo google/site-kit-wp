@@ -31,10 +31,10 @@ import { Fragment, useCallback } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { Switch } from 'googlesitekit-components';
 import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 import { FORM_SETUP } from '../../datastore/constants';
 import { trackEvent } from '../../../../util';
-import Switch from '../../../../components/Switch';
 import Link from '../../../../components/Link';
 import useViewContext from '../../../../hooks/useViewContext';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';

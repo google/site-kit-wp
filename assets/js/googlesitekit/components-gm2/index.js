@@ -1,7 +1,7 @@
 /**
- * Switch Component Stories.
+ * Google Site Kit components.
  *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2022 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,30 +17,28 @@
  */
 
 /**
- * External dependencies
- */
-import { storiesOf } from '@storybook/react';
-
-/**
  * Internal dependencies
  */
-import { Switch } from 'googlesitekit-components';
+import Button from './Button';
+import Checkbox from './Checkbox';
+import Chip from './Chip';
+import Dialog from './Dialog';
+import Menu from './Menu';
+import ProgressBar from './ProgressBar';
+import Radio from './Radio';
+import Switch from './Switch';
+import Tooltip from './Tooltip';
 
-storiesOf( 'Global', module ).add( 'Switches', () => (
-	<div>
-		<div>
-			<Switch id="switch-story" label="Unswitched" hideLabel={ false } />
-		</div>
-		<div>
-			<Switch
-				id="switch-story"
-				label="Switched"
-				hideLabel={ false }
-				checked
-			/>
-		</div>
-		<div>
-			<Switch id="switch-story" label="Hidden Label" checked />
-		</div>
-	</div>
-) );
+const Components = {
+	Button,
+	Checkbox,
+	Chip,
+	Dialog,
+	Menu,
+	ProgressBar,
+	Radio,
+	Switch,
+	Tooltip,
+};
+
+export default Components;
