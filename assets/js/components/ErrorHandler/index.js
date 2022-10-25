@@ -92,6 +92,7 @@ class ErrorHandler extends Component {
 		return (
 			<Notification
 				id="googlesitekit-error"
+				className="googlesitekit-error-handler"
 				title={ __(
 					'Site Kit encountered an error',
 					'google-site-kit'
