@@ -65,6 +65,7 @@ function getDatapointAndChange( [ report ], selectedStat, divider = 1 ) {
 	};
 }
 
+// eslint-disable-next-line complexity
 const Overview = ( {
 	analyticsData,
 	analyticsGoalsData,

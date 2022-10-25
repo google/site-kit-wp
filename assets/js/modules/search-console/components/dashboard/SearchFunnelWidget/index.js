@@ -59,6 +59,7 @@ import {
 import useViewOnly from '../../../../../hooks/useViewOnly';
 const { useSelect, useInViewSelect } = Data;
 
+// eslint-disable-next-line complexity
 const SearchFunnelWidget = ( { Widget, WidgetReportError } ) => {
 	const [ selectedStats, setSelectedStats ] = useState( 0 );
 

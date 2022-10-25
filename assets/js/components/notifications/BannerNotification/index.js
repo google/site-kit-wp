@@ -69,6 +69,7 @@ export const LEARN_MORE_TARGET = {
 	INTERNAL: 'internal',
 };
 
+// eslint-disable-next-line complexity
 function BannerNotification( {
 	anchorLink,
 	anchorLinkLabel,
