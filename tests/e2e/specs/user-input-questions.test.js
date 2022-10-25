@@ -48,9 +48,10 @@ const wpConditionalDescribe = () => {
 
 wpConditionalDescribe()( 'User Input Settings', () => {
 	async function fillInInputSettings() {
-		await step( 'select role', async () => {
+		await step( 'select goals', async () => {
 			await page.waitForSelector( '.googlesitekit-user-input__question' );
-			await expect( page ).toClick( '#role-owner_with_team' );
+			await expect( page ).toClick( '#goals-publish_blog' );
+			await expect( page ).toClick( '#goals-share_portfolio' );
 		} );
 
 		await step( 'select post frequency', async () => {
@@ -60,14 +61,6 @@ wpConditionalDescribe()( 'User Input Settings', () => {
 			await expect( page ).toClick( '#postFrequency-monthly' );
 		} );
 
-		await step( 'select goals', async () => {
-			await expect( page ).toClick(
-				'.googlesitekit-user-input__buttons--next'
-			);
-			await expect( page ).toClick( '#goals-publish_blog' );
-			await expect( page ).toClick( '#goals-share_portfolio' );
-		} );
-
 		await step( 'select help needed', async () => {
 			await expect( page ).toClick(
 				'.googlesitekit-user-input__buttons--next'
@@ -75,15 +68,6 @@ wpConditionalDescribe()( 'User Input Settings', () => {
 			await expect( page ).toClick( '#helpNeeded-retaining_visitors' );
 			await expect( page ).toClick( '#helpNeeded-improving_performance' );
 			await expect( page ).toClick( '#helpNeeded-help_better_rank' );
-		} );
-
-		await step( 'enter keywords', async () => {
-			await expect( page ).toClick(
-				'.googlesitekit-user-input__buttons--next'
-			);
-			await expect( page ).toFill( '#searchTerms-keyword-0', 'One' );
-			await expect( page ).toFill( '#searchTerms-keyword-1', 'Two' );
-			await expect( page ).toFill( '#searchTerms-keyword-2', 'Three' );
 		} );
 
 		await step(

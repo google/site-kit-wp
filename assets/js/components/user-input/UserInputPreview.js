@@ -51,7 +51,6 @@ export default function UserInputPreview( props ) {
 		USER_INPUT_ANSWERS_PURPOSE,
 		USER_INPUT_ANSWERS_GOALS,
 		USER_INPUT_ANSWERS_POST_FREQUENCY,
-		USER_INPUT_ANSWERS_ROLE,
 	} = getUserInputAnswers();
 	const [ page ] = useQueryArg( 'page' );
 
@@ -119,17 +118,6 @@ export default function UserInputPreview( props ) {
 										settings?.helpNeeded?.values || []
 									}
 									options={ USER_INPUT_ANSWERS_GOALS }
-								/>
-
-								<UserInputPreviewGroup
-									questionNumber={ 4 }
-									title={ __(
-										'Which best describes your team/role relation to this site?',
-										'google-site-kit'
-									) }
-									edit={ goTo.bind( null, 4, 'user-input' ) }
-									values={ settings?.role?.values || [] }
-									options={ USER_INPUT_ANSWERS_ROLE }
 								/>
 							</Cell>
 							<Cell lgSize={ 6 } mdSize={ 8 } smSize={ 4 }>

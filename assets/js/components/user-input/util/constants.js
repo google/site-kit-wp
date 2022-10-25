@@ -99,23 +99,5 @@ export function getUserInputAnswers() {
 				'google-site-kit'
 			),
 		},
-		USER_INPUT_ANSWERS_ROLE: {
-			owner: __(
-				'I am the owner and sole creator and admin',
-				'google-site-kit'
-			),
-			owner_with_team: __(
-				'I am the owner of the site and have a team who works on this site',
-				'google-site-kit'
-			),
-			in_house_team: __(
-				'I am part of the in-house team in a content creation, growth, SEO or technical role',
-				'google-site-kit'
-			),
-			part_type_freelancer: __(
-				'I am a part-time or freelance consultant who is helping with this site',
-				'google-site-kit'
-			),
-		},
 	};
 }
