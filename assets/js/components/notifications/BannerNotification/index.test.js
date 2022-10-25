@@ -17,52 +17,58 @@
  */
 
 /**
+ * External dependencies
+ */
+import { getByText } from '@testing-library/dom';
+
+/**
  * Internal dependencies
  */
 import BannerNotification from './index';
 import { render } from '../../../../../tests/js/test-utils';
 
 describe( 'BannerNotification', () => {
-	it( 'should render span with dangerouslySetInnerHTML', () => {
-		const { container, getByText } = render(
+	it( 'should wrap the description in a paragraph when the description is not a React element', () => {
+		const { container } = render(
 			<BannerNotification
 				id="fake"
-				title={ 'Hey there!' }
-				description={ 'I am string, not React elemet' }
+				title="Hey there!"
+				description="I am string, not React element"
 			/>
 		);
 
 		expect(
-			container.querySelector(
-				'.googlesitekit-publisher-win__inner-html'
+			getByText(
+				container.querySelector(
+					'.googlesitekit-publisher-win__desc > p'
+				),
+				/I am string, not React element/
 			)
 		).toBeInTheDocument();
-		expect(
-			getByText( /I am string, not React elemet/ )
-		).toBeInTheDocument();
+
+		expect( container.querySelector( '.sk-react-element' ) ).toBeFalsy();
 
 		expect( container ).toMatchSnapshot();
 	} );
 
-	it( 'should render React element', () => {
+	it( 'should not wrap the description in a paragraph when the description is a React element', () => {
 		const { container } = render(
 			<BannerNotification
 				id="fake"
-				title={ 'Hey there!' }
+				title="Hey there!"
 				description={
-					<p className="sk-react-element">I am React elemet</p>
+					<p className="sk-react-element">I am React element</p>
 				}
 			/>
 		);
 
 		expect(
-			container.querySelector(
-				'.googlesitekit-publisher-win__inner-html'
+			getByText(
+				container.querySelector(
+					'.googlesitekit-publisher-win__desc > .sk-react-element'
+				),
+				/I am React element/
 			)
-		).toBeFalsy();
-
-		expect(
-			container.querySelector( '.sk-react-element' )
 		).toBeInTheDocument();
 
 		expect( container ).toMatchSnapshot();
