@@ -165,18 +165,13 @@ function BannerNotification( {
 		}, 350 );
 	}
 
-	const isNavigatingToCTALink = useSelect( ( select ) =>
-		select( CORE_LOCATION ).isNavigatingTo( ctaLink || '' )
+	const isNavigating = useSelect( ( select ) =>
+		select( CORE_LOCATION ).isNavigating()
 	);
 
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 	async function handleCTAClick( e ) {
 		e.persist();
-
-		if ( isURL( ctaLink ) && ctaTarget !== '_blank' ) {
-			e.preventDefault();
-			navigateTo( ctaLink );
-		}
 
 		let dismissOnCTAClick = true;
 		if ( onCTAClick ) {
@@ -189,6 +184,15 @@ function BannerNotification( {
 
 		if ( isDismissible && dismissOnCTAClick ) {
 			dismissNotification();
+		}
+
+		if (
+			isURL( ctaLink ) &&
+			ctaTarget !== '_blank' &&
+			! e.defaultPrevented
+		) {
+			e.preventDefault();
+			navigateTo( ctaLink );
 		}
 	}
 
@@ -230,17 +234,16 @@ function BannerNotification( {
 	}
 
 	// isDismissed will be undefined until resolved from browser storage.
-	// isNavigatingToCTALink will be true until the navigation is complete.
+	// isNavigating will be true until the navigation is complete.
 	if (
-		! isNavigatingToCTALink &&
+		! isNavigating &&
 		isDismissible &&
 		( undefined === isDismissed || isDismissed )
 	) {
 		return null;
 	}
 
-	const closedClass =
-		! isNavigatingToCTALink && isClosed ? 'is-closed' : 'is-open';
+	const closedClass = ! isNavigating && isClosed ? 'is-closed' : 'is-open';
 	const inlineLayout = 'large' === format && 'win-stats-increase' === type;
 
 	const imageCellSizeProperties = getImageCellSizeProperties( format );
@@ -447,7 +450,7 @@ function BannerNotification( {
 										onClick={ handleCTAClick }
 										disabled={
 											isAwaitingCTAResponse ||
-											isNavigatingToCTALink
+											isNavigating
 										}
 									>
 										{ ctaLabel }
@@ -456,14 +459,14 @@ function BannerNotification( {
 
 								<Spinner
 									isSaving={
-										isAwaitingCTAResponse ||
-										isNavigatingToCTALink
+										isAwaitingCTAResponse || isNavigating
 									}
 								/>
 
 								{ isDismissible &&
 									dismiss &&
-									! isAwaitingCTAResponse && (
+									! isAwaitingCTAResponse &&
+									! isNavigating && (
 										<DismissComponent
 											onClick={ handleDismiss }
 										>
