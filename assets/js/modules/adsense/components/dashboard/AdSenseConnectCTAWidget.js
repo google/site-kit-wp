@@ -100,9 +100,11 @@ function AdSenseConnectCTAWidget( { Widget, WidgetNull } ) {
 
 	// Checking if === false explicitly, as they can be undefined
 	if ( adSenseModuleConnected === false && hasDismissedWidget === false ) {
-		<Widget noPadding>
-			<AdSenseConnectCTA onDismissModule={ showTooltip } />
-		</Widget>;
+		return (
+			<Widget noPadding>
+				<AdSenseConnectCTA onDismissModule={ showTooltip } />
+			</Widget>
+		);
 	}
 
 	return <WidgetNull />;
