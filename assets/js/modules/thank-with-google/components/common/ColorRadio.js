@@ -59,7 +59,7 @@ export default function ColorRadio() {
 	);
 
 	const colors = getColorThemes()?.map(
-		( { colorThemeID, name, colorPrimary, colorSecondary, colorCode } ) => (
+		( { colorThemeID, name, colorPrimary, colorSecondary } ) => (
 			<ImageRadio
 				key={ colorThemeID }
 				id={ colorThemeID }
@@ -74,7 +74,7 @@ export default function ColorRadio() {
 				}
 				onChange={ onChange }
 				checked={ currentColor === colorThemeID }
-				checkedBorderColor={ colorCode }
+				checkedBorderColor={ colorPrimary }
 			/>
 		)
 	);
