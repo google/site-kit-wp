@@ -98,7 +98,8 @@ function AdSenseConnectCTAWidget( { Widget, WidgetNull } ) {
 		);
 	}
 
-	// Checking if === false explicitly, as they can be undefined
+	// Check for `false` explicitly, as these variables will be `undefined`
+	// while loading.
 	if ( adSenseModuleConnected === false && hasDismissedWidget === false ) {
 		return (
 			<Widget noPadding>
