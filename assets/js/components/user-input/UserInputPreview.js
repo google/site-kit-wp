@@ -33,7 +33,7 @@ import { Fragment, useEffect, useRef } from '@wordpress/element';
 import Data from 'googlesitekit-data';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { Cell, Row } from '../../material-components';
-import { getUserInputAnwsers } from './util/constants';
+import { getUserInputAnswers } from './util/constants';
 import Button from '../Button';
 import UserInputPreviewGroup from './UserInputPreviewGroup';
 import UserInputQuestionNotice from './UserInputQuestionNotice';
@@ -48,11 +48,11 @@ export default function UserInputPreview( props ) {
 		select( CORE_USER ).getUserInputSettings()
 	);
 	const {
+		USER_INPUT_ANSWERS_PURPOSE,
 		USER_INPUT_ANSWERS_GOALS,
-		USER_INPUT_ANSWERS_HELP_NEEDED,
 		USER_INPUT_ANSWERS_POST_FREQUENCY,
 		USER_INPUT_ANSWERS_ROLE,
-	} = getUserInputAnwsers();
+	} = getUserInputAnswers();
 	const [ page ] = useQueryArg( 'page' );
 
 	useEffect( () => {
@@ -85,12 +85,12 @@ export default function UserInputPreview( props ) {
 								<UserInputPreviewGroup
 									questionNumber={ 1 }
 									title={ __(
-										'Which best describes your team/role relation to this site?',
+										'What are the goals of this site?',
 										'google-site-kit'
 									) }
 									edit={ goTo.bind( null, 1, 'user-input' ) }
-									values={ settings?.role?.values || [] }
-									options={ USER_INPUT_ANSWERS_ROLE }
+									values={ settings?.goals?.values || [] }
+									options={ USER_INPUT_ANSWERS_PURPOSE }
 								/>
 
 								<UserInputPreviewGroup
@@ -111,28 +111,28 @@ export default function UserInputPreview( props ) {
 								<UserInputPreviewGroup
 									questionNumber={ 3 }
 									title={ __(
-										'What are the goals of this site?',
-										'google-site-kit'
-									) }
-									edit={ goTo.bind( null, 3, 'user-input' ) }
-									values={ settings?.goals?.values || [] }
-									options={ USER_INPUT_ANSWERS_GOALS }
-								/>
-							</Cell>
-							<Cell lgSize={ 6 } mdSize={ 8 } smSize={ 4 }>
-								<UserInputPreviewGroup
-									questionNumber={ 4 }
-									title={ __(
 										'What do you need help most with for this site?',
 										'google-site-kit'
 									) }
-									edit={ goTo.bind( null, 4, 'user-input' ) }
+									edit={ goTo.bind( null, 3, 'user-input' ) }
 									values={
 										settings?.helpNeeded?.values || []
 									}
-									options={ USER_INPUT_ANSWERS_HELP_NEEDED }
+									options={ USER_INPUT_ANSWERS_GOALS }
 								/>
 
+								<UserInputPreviewGroup
+									questionNumber={ 4 }
+									title={ __(
+										'Which best describes your team/role relation to this site?',
+										'google-site-kit'
+									) }
+									edit={ goTo.bind( null, 4, 'user-input' ) }
+									values={ settings?.role?.values || [] }
+									options={ USER_INPUT_ANSWERS_ROLE }
+								/>
+							</Cell>
+							<Cell lgSize={ 6 } mdSize={ 8 } smSize={ 4 }>
 								<UserInputPreviewGroup
 									questionNumber={ 5 }
 									title={ __(

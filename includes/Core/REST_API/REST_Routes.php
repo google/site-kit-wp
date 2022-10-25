@@ -194,7 +194,7 @@ final class REST_Routes {
 										'type'       => 'object',
 										'required'   => true,
 										'properties' => array(
-											'role'        => array(
+											'purpose' => array(
 												'type'  => 'array',
 												'items' => array( 'type' => 'string' ),
 											),
@@ -202,15 +202,7 @@ final class REST_Routes {
 												'type'  => 'array',
 												'items' => array( 'type' => 'string' ),
 											),
-											'goals'       => array(
-												'type'  => 'array',
-												'items' => array( 'type' => 'string' ),
-											),
-											'helpNeeded'  => array(
-												'type'  => 'array',
-												'items' => array( 'type' => 'string' ),
-											),
-											'searchTerms' => array(
+											'goals'   => array(
 												'type'  => 'array',
 												'items' => array( 'type' => 'string' ),
 											),
