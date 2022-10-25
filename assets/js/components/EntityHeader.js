@@ -31,7 +31,7 @@ import { useCallback, useEffect, useRef, useState } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import Button from './Button';
+import { Button } from 'googlesitekit-components';
 import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
 import BackspaceIcon from '../../svg/icons/keyboard-backspace.svg';
 import { CORE_LOCATION } from '../googlesitekit/datastore/location/constants';

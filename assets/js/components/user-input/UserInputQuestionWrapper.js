@@ -31,8 +31,8 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { Button } from 'googlesitekit-components';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import Button from '../Button';
 import { Row, Cell } from '../../material-components';
 import UserInputQuestionInfo from './UserInputQuestionInfo';
 import ErrorNotice from '../ErrorNotice';

@@ -24,7 +24,7 @@ import { storiesOf } from '@storybook/react';
 /**
  * Internal dependencies
  */
-import ProgressBar from '../assets/js/components/ProgressBar';
+import { ProgressBar } from 'googlesitekit-components';
 
 storiesOf( 'Global', module ).add(
 	'Progress Bars',

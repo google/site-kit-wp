@@ -33,11 +33,11 @@ import { Fragment, useCallback } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { Button } from 'googlesitekit-components';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { Cell, Grid, Row } from '../../../material-components';
 import PencilIcon from '../../../../svg/icons/pencil.svg';
 import TrashIcon from '../../../../svg/icons/trash.svg';
-import Button from '../../Button';
 import Spinner from '../../Spinner';
 import Link from '../../Link';
 import { clearWebStorage, trackEvent } from '../../../util';

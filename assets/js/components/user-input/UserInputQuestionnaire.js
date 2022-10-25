@@ -26,7 +26,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import ProgressBar from '../ProgressBar';
+import { ProgressBar } from 'googlesitekit-components';
 import UserInputQuestionWrapper from './UserInputQuestionWrapper';
 import UserInputSelectOptions from './UserInputSelectOptions';
 import UserInputPreview from './UserInputPreview';

@@ -26,7 +26,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import Switch from '../../../../components/Switch';
+import { Switch } from 'googlesitekit-components';
 import Link from '../../../../components/Link';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { MODULES_OPTIMIZE } from '../../datastore/constants';

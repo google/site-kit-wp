@@ -507,6 +507,7 @@ final class Tag_Manager extends Module
 			'googlesitekit-datastore-site',
 			'googlesitekit-modules',
 			'googlesitekit-vendor',
+			'googlesitekit-components',
 		);
 
 		$analytics_exists = apply_filters( 'googlesitekit_module_exists', false, 'analytics' );

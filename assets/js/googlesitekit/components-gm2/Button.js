@@ -32,7 +32,7 @@ import { _x } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { MDCRipple } from '../material-components';
+import { MDCRipple } from '../../material-components';
 import Tooltip from './Tooltip';
 
 const Button = forwardRef(

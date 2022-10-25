@@ -26,8 +26,8 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { Button } from 'googlesitekit-components';
 import SetupUseSnippetSwitch from './SetupUseSnippetSwitch';
-import Button from '../../../../../components/Button';
 import { MODULES_ADSENSE } from '../../../datastore/constants';
 import { ErrorNotices } from '../../common';
 import { trackEvent } from '../../../../../util';

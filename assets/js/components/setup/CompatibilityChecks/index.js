@@ -30,10 +30,10 @@ import PropTypes from 'prop-types';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { ProgressBar } from 'googlesitekit-components';
 const { useRegistry } = Data;
 import Warning from '../../../../svg/icons/warning.svg';
 import { Grid } from '../../../material-components';
-import ProgressBar from '../../ProgressBar';
 import { useChecks } from '../../../hooks/useChecks';
 import CompatibilityErrorNotice from './CompatibilityErrorNotice';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';

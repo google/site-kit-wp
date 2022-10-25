@@ -36,11 +36,11 @@ import { getQueryArg, addQueryArgs } from '@wordpress/url';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { Button } from 'googlesitekit-components';
 import WelcomeSVG from '../../../svg/graphics/welcome.svg';
 import WelcomeAnalyticsSVG from '../../../svg/graphics/welcome-analytics.svg';
 import { trackEvent, untrailingslashit } from '../../util';
 import Header from '../Header';
-import Button from '../Button';
 import ResetButton from '../ResetButton';
 import Layout from '../layout/Layout';
 import BannerNotification from '../notifications/BannerNotification';

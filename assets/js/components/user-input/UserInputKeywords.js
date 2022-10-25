@@ -33,9 +33,9 @@ import { ENTER, BACKSPACE } from '@wordpress/keycodes';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { Button } from 'googlesitekit-components';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { Cell, Input, TextField } from '../../material-components';
-import Button from '../Button';
 import CloseIcon from '../../../svg/icons/close.svg';
 import { COMMA } from '../../util/key-codes';
 import VisuallyHidden from '../VisuallyHidden';

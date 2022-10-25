@@ -30,7 +30,7 @@ import { sprintf, __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Radio from '../Radio';
+import { Radio } from 'googlesitekit-components';
 import { TextField, Input } from '../../material-components';
 import VisuallyHidden from '../VisuallyHidden';
 import { SURVEY_INPUT_MAX_CHARACTER_LIMIT } from './constants';

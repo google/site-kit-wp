@@ -31,7 +31,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import Button from '../Button';
+import { Button } from 'googlesitekit-components';
 import Logo from '../Logo';
 import { Grid, Row, Cell } from '../../material-components';
 import { trackEvent } from '../../util';

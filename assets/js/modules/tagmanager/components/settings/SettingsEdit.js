@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import ProgressBar from '../../../../components/ProgressBar';
+import { ProgressBar } from 'googlesitekit-components';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import { MODULES_TAGMANAGER, ACCOUNT_CREATE } from '../../datastore/constants';
