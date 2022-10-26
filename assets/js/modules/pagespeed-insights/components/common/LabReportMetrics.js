@@ -83,7 +83,7 @@ export default function LabReportMetrics( { data, error } ) {
 							'google-site-kit'
 						) }
 						displayValue={
-							largestContentfulPaint?.displayValue || ''
+							largestContentfulPaint?.displayValue || '0'
 						}
 						category={ getScoreCategory(
 							largestContentfulPaint?.score || 0
@@ -100,7 +100,7 @@ export default function LabReportMetrics( { data, error } ) {
 							'google-site-kit'
 						) }
 						displayValue={
-							cumulativeLayoutShift?.displayValue || ''
+							cumulativeLayoutShift?.displayValue || '0'
 						}
 						category={ getScoreCategory(
 							cumulativeLayoutShift?.score || 0
@@ -112,7 +112,7 @@ export default function LabReportMetrics( { data, error } ) {
 							'How long people had to wait after the page loaded before they could click something',
 							'google-site-kit'
 						) }
-						displayValue={ totalBlockingTime?.displayValue || '' }
+						displayValue={ totalBlockingTime?.displayValue || '0' }
 						category={ getScoreCategory(
 							totalBlockingTime?.score || 0
 						) }
