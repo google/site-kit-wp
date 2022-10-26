@@ -194,15 +194,21 @@ class Web_Tag extends Module_Web_Tag {
 		}
 
 		if ( $this->has_static_cta_placement() ) {
+			// Treat auto placement as above the content.
 			if ( in_array( $this->cta_placement, array( self::PLACEMENT_STATIC_AUTO, self::PLACEMENT_STATIC_ABOVE_CONTENT ), true ) ) {
+				// If CTA placement is above the content, the counter is placed below the content.
 				$content = $cta_placeholder . $content . $counter_placeholder;
 			} elseif ( self::PLACEMENT_STATIC_BELOW_CONTENT === $this->cta_placement ) {
+				// If CTA placement is below the content, the counter is not displayed.
 				$content = $content . $cta_placeholder;
 			} elseif ( self::PLACEMENT_STATIC_BELOW_FIRST_P === $this->cta_placement ) {
+				// If CTA placement is below first paragraph, the counter is placed below the content.
 				$content = substr_replace( $content, $cta_placeholder, strpos( $content, '</p>' ) + 4, 0 ) // strlen( '</p>' ) is 4.
 					. $counter_placeholder;
 			}
 		} else {
+			// If CTA placement is dynamic, the counter is placed below the content.
+			// Note that the CTA placeholder is not added here because it is added by the script.
 			$content = $content . $counter_placeholder;
 		}
 
