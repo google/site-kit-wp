@@ -27,6 +27,7 @@ import {
 	ERROR_REASON_INSUFFICIENT_PERMISSIONS,
 	ERROR_REASON_FORBIDDEN,
 	isAuthError,
+	isErrorRetryable,
 } from './errors';
 
 describe( 'Error Utilities', () => {
@@ -164,6 +165,69 @@ describe( 'Error Utilities', () => {
 			expect( fn( true ) ).toBe( false );
 			expect( fn( 'error' ) ).toBe( false );
 			expect( fn( 123 ) ).toBe( false );
+		} );
+	} );
+
+	describe( 'isErrorRetryable', () => {
+		it( 'should return FALSE when there is no selectorData', () => {
+			expect( isErrorRetryable( { code: 'some-error' } ) ).toBe( false );
+		} );
+
+		it( 'should return FALSE when there is no storeName in the selectorData', () => {
+			expect(
+				isErrorRetryable(
+					{ code: 'some-error' },
+					{ name: 'some-selector' }
+				)
+			).toBe( false );
+		} );
+
+		it( 'should return FALSE when passed an insufficient permissions error', () => {
+			expect(
+				isErrorRetryable(
+					{
+						data: {
+							reason: ERROR_REASON_INSUFFICIENT_PERMISSIONS,
+						},
+					},
+					{ name: 'some-selector', storeName: 'some-store' }
+				)
+			).toBe( false );
+		} );
+
+		it( 'should return FALSE when passed a permission scope error', () => {
+			expect(
+				isErrorRetryable(
+					{
+						code: ERROR_CODE_MISSING_REQUIRED_SCOPE,
+					},
+					{ name: 'some-selector', storeName: 'some-store' }
+				)
+			).toBe( false );
+		} );
+
+		it( 'should return FALSE when passed an auth error', () => {
+			expect(
+				isErrorRetryable(
+					{
+						data: {
+							reconnectURL: 'example.com',
+						},
+					},
+					{ name: 'some-selector', storeName: 'some-store' }
+				)
+			).toBe( false );
+		} );
+
+		it( 'should return TRUE when passed a retryable error', () => {
+			expect(
+				isErrorRetryable(
+					{
+						code: 'some-error',
+					},
+					{ name: 'some-selector', storeName: 'some-store' }
+				)
+			).toBe( true );
 		} );
 	} );
 } );

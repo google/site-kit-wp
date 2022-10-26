@@ -68,6 +68,13 @@ const manifestArgs = ( mode ) => ( {
 					file.path,
 					file.chunk.contentHash.javascript
 				);
+			} else if ( file.chunk.name === 'googlesitekit-components-gm2' ) {
+				// Exception for 'googlesitekit-components' because of having a different handle
+				// than the file name.
+				seedObj[ 'googlesitekit-components' ] = entry(
+					file.path,
+					file.chunk.contentHash.javascript
+				);
 			} else if ( file.isInitial ) {
 				// Normal entries.
 				seedObj[ file.chunk.name ] = entry(
@@ -134,6 +141,7 @@ const siteKitExternals = {
 	'googlesitekit-data': [ 'googlesitekit', 'data' ],
 	'googlesitekit-modules': [ 'googlesitekit', 'modules' ],
 	'googlesitekit-widgets': [ 'googlesitekit', 'widgets' ],
+	'googlesitekit-components': [ 'googlesitekit', 'components' ],
 	'@wordpress/i18n': [ 'googlesitekit', 'i18n' ],
 	'@wordpress/element': [ 'googlesitekit', 'element' ],
 };
@@ -289,6 +297,8 @@ function* webpackConfig( env, argv ) {
 			'googlesitekit-idea-hub-post-list':
 				'./assets/js/googlesitekit-idea-hub-post-list.js',
 			'googlesitekit-polyfills': './assets/js/googlesitekit-polyfills.js',
+			'googlesitekit-components-gm2':
+				'./assets/js/googlesitekit-components-gm2.js',
 			// Old Modules
 			'googlesitekit-activation':
 				'./assets/js/googlesitekit-activation.js',

@@ -26,8 +26,8 @@ import fetchMock from 'fetch-mock';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { Button } from 'googlesitekit-components';
 import Link from '../assets/js/components/Link';
-import Button from '../assets/js/components/Button';
 import TourTooltips from '../assets/js/components/TourTooltips';
 import { CORE_USER } from '../assets/js/googlesitekit/datastore/user/constants';
 import { WithTestRegistry } from '../tests/js/utils';

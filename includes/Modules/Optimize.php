@@ -251,6 +251,7 @@ final class Optimize extends Module
 						'googlesitekit-modules',
 						'googlesitekit-datastore-site',
 						'googlesitekit-datastore-forms',
+						'googlesitekit-components',
 					),
 				)
 			),

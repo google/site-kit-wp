@@ -24,7 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * Internal dependencies
  */
-import Button from '../Button';
+import { Button } from 'googlesitekit-components';
 import SurveyHeader from './SurveyHeader';
 
 const SurveyCompletion = ( {

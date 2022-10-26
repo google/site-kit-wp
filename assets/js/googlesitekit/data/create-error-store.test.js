@@ -24,6 +24,7 @@ import { createRegistry } from '@wordpress/data';
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
 import { createErrorStore, generateErrorKey } from './create-error-store';
 
 const TEST_STORE = 'test/some-data';
@@ -130,6 +131,57 @@ describe( 'createErrorStore store', () => {
 				expect( store.getState().errors ).not.toHaveProperty(
 					generateErrorKey( baseName, args )
 				);
+			} );
+
+			it( 'clears the legacy error when clearMatchingLegacyError is set and the legacy error is the same object as the matched error', () => {
+				dispatch.receiveError( errorForbidden, baseName, args );
+				dispatch.receiveError( errorForbidden );
+
+				expect( select.getError( baseName, args ) ).toBe(
+					errorForbidden
+				);
+				expect( select.getError() ).toBe( errorForbidden );
+
+				dispatch.clearError( baseName, args, {
+					clearMatchingLegacyError: true,
+				} );
+
+				expect( select.getError( baseName, args ) ).toBeUndefined();
+				expect( select.getError() ).toBeUndefined();
+			} );
+
+			it( 'does not clear the legacy error when clearMatchingLegacyError is set and the legacy error is not the same object as the matched error', () => {
+				dispatch.receiveError( errorForbidden, baseName, args );
+				dispatch.receiveError( errorNotFound );
+
+				expect( select.getError( baseName, args ) ).toBe(
+					errorForbidden
+				);
+				expect( select.getError() ).toBe( errorNotFound );
+
+				dispatch.clearError( baseName, args, {
+					clearMatchingLegacyError: true,
+				} );
+
+				expect( select.getError( baseName, args ) ).toBeUndefined();
+				expect( select.getError() ).toBe( errorNotFound );
+			} );
+
+			it( 'does not clear the legacy error when clearMatchingLegacyError is not set', () => {
+				dispatch.receiveError( errorForbidden, baseName, args );
+				dispatch.receiveError( errorForbidden );
+
+				expect( select.getError( baseName, args ) ).toBe(
+					errorForbidden
+				);
+				expect( select.getError() ).toBe( errorForbidden );
+
+				dispatch.clearError( baseName, args, {
+					clearMatchingLegacyError: false,
+				} );
+
+				expect( select.getError( baseName, args ) ).toBeUndefined();
+				expect( select.getError() ).toBe( errorForbidden );
 			} );
 		} );
 
@@ -345,6 +397,55 @@ describe( 'createErrorStore store', () => {
 
 				expect( select.getMetaDataForError( errorNotFound ) ).toEqual( {
 					baseName,
+					args: [ 'foo' ],
+				} );
+			} );
+		} );
+
+		describe( 'getSelectorDataForError', () => {
+			beforeEach( () => {
+				registry = createRegistry();
+
+				storeDefinition = Data.combineStores(
+					{
+						selectors: {
+							getFoo: () => 'some-data',
+						},
+					},
+					createErrorStore( TEST_STORE )
+				);
+				registry.registerStore( TEST_STORE, storeDefinition );
+				dispatch = registry.dispatch( TEST_STORE );
+				store = registry.stores[ TEST_STORE ].store;
+				select = registry.select( TEST_STORE );
+			} );
+
+			it( 'returns null when there is no meta-data found for the error', () => {
+				dispatch.receiveError( errorNotFound, baseName, args );
+
+				expect(
+					select.getSelectorDataForError( errorForbidden )
+				).toEqual( null );
+			} );
+
+			it( 'returns null when there is no selector found for the error', () => {
+				dispatch.receiveError( errorNotFound, 'getBar', args );
+
+				expect(
+					select.getSelectorDataForError( errorNotFound )
+				).toEqual( null );
+			} );
+
+			it( 'returns the selector data for an error object', () => {
+				// Populate multiple errors to verify the we're correctly looking up the error.
+				dispatch.receiveError( errorNotFound, baseName, [ 'foo' ] );
+				dispatch.receiveError( errorForbidden, 'getBar', [ 'bar' ] );
+
+				expect(
+					select.getSelectorDataForError( errorNotFound )
+				).toEqual( {
+					storeName: TEST_STORE,
+					name: baseName,
 					args: [ 'foo' ],
 				} );
 			} );

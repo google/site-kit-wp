@@ -24,6 +24,7 @@ import { useCallback, lazy, Suspense } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { ProgressBar } from 'googlesitekit-components';
 import {
 	MODULES_THANK_WITH_GOOGLE,
 	CTA_PLACEMENT_DYNAMIC_HIGH,
@@ -32,7 +33,6 @@ import {
 import useViewContext from '../../../../hooks/useViewContext';
 import { trackEvent } from '../../../../util';
 import ImageRadio from '../../../../components/ImageRadio';
-import ProgressBar from '../../../../components/ProgressBar';
 const { useSelect, useDispatch } = Data;
 
 const DynamicLowSVG = lazy( () =>

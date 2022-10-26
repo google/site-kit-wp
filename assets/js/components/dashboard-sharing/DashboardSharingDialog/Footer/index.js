@@ -31,6 +31,7 @@ import { useCallback, useState } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { Button } from 'googlesitekit-components';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import { CORE_UI } from '../../../../googlesitekit/datastore/ui/constants';
 import {
@@ -41,7 +42,6 @@ import {
 import useViewContext from '../../../../hooks/useViewContext';
 import { trackEvent } from '../../../../util';
 import Link from '../../../Link';
-import Button from '../../../Button';
 import Notice from './Notice';
 import Spinner from '../../../Spinner';
 import ErrorText from '../../../ErrorText';

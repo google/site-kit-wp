@@ -20,6 +20,13 @@ module.exports = async ( { config } ) => {
 				if ( api === 'element' ) {
 					return require.resolve( '@wordpress/element' );
 				}
+
+				// Set "googlesitekit-components" to googlesitekit-components-gm2.js.
+				if ( api === 'components' ) {
+					return path.resolve(
+						'assets/js/googlesitekit-components-gm2.js'
+					);
+				}
 			}
 
 			return path.resolve( `assets/js/${ global }-${ api }.js` );
