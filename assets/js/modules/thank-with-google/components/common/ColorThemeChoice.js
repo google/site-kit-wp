@@ -53,9 +53,10 @@ ColorThemeChoice.propTypes = {
 	colorSecondary: PropTypes.string.isRequired,
 };
 
+// The default color props are for the blue option, which appears first in the list.
 ColorThemeChoice.defaultProps = {
-	colorPrimary: '#E3F2FD',
-	colorSecondary: '#1967D2',
+	colorPrimary: '#1967D2',
+	colorSecondary: '#E3F2FD',
 };
 
 export default ColorThemeChoice;
