@@ -30,7 +30,7 @@ class Web_Tag extends Module_Web_Tag {
 	const PLACEMENT_STATIC_AUTO          = 'static_auto';
 	const PLACEMENT_STATIC_ABOVE_CONTENT = 'static_above-content';
 	const PLACEMENT_STATIC_BELOW_CONTENT = 'static_below-content';
-	const PLACEMENT_STATIC_AFTER_1ST_P   = 'static_below-first-paragraph';
+	const PLACEMENT_STATIC_BELOW_FIRST_P = 'static_below-first-paragraph';
 
 	/**
 	 * CTA placement.
@@ -198,7 +198,7 @@ class Web_Tag extends Module_Web_Tag {
 				$content = $cta_placeholder . $content . $counter_placeholder;
 			} elseif ( self::PLACEMENT_STATIC_BELOW_CONTENT === $this->cta_placement ) {
 				$content = $content . $cta_placeholder;
-			} elseif ( self::PLACEMENT_STATIC_AFTER_1ST_P === $this->cta_placement ) {
+			} elseif ( self::PLACEMENT_STATIC_BELOW_FIRST_P === $this->cta_placement ) {
 				$content = substr_replace( $content, $cta_placeholder, strpos( $content, '</p>' ) + 4, 0 ) // strlen( '</p>' ) is 4.
 					. $counter_placeholder;
 			}
