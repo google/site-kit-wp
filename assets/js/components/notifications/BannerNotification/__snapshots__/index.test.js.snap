@@ -28,6 +28,7 @@ exports[`BannerNotification should not wrap the description in a paragraph when 
             >
               I am React element
             </p>
+            <p />
           </div>
           <div
             class="googlesitekit-publisher-win__actions"
@@ -71,6 +72,7 @@ exports[`BannerNotification should wrap the description in a paragraph when the 
               <span>
                 I am string, not React element
               </span>
+               
             </p>
           </div>
           <div

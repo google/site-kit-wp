@@ -281,6 +281,30 @@ function BannerNotification( {
 		</Fragment>
 	);
 
+	const learnMoreAndPageIndex = (
+		<Fragment>
+			{ learnMoreLabel && (
+				<Fragment>
+					<Link
+						onClick={ handleLearnMore }
+						href={ learnMoreURL }
+						external={
+							learnMoreTarget === LEARN_MORE_TARGET.EXTERNAL
+						}
+					>
+						{ learnMoreLabel }
+					</Link>
+					{ learnMoreDescription }
+				</Fragment>
+			) }
+			{ pageIndex && (
+				<span className="googlesitekit-publisher-win__detect">
+					{ pageIndex }
+				</span>
+			) }
+		</Fragment>
+	);
+
 	const inlineMarkup = (
 		<Fragment>
 			{ title && (
@@ -306,7 +330,10 @@ function BannerNotification( {
 					) }
 
 					{ isValidElement( description ) ? (
-						description
+						<Fragment>
+							{ description }
+							<p>{ learnMoreAndPageIndex }</p>
+						</Fragment>
 					) : (
 						<p>
 							<span
@@ -322,31 +349,8 @@ function BannerNotification( {
 										ALLOWED_ATTR: [ 'href' ],
 									}
 								) }
-							/>
-						</p>
-					) }
-
-					{ learnMoreLabel && (
-						<p>
-							{ ' ' }
-							<Link
-								onClick={ handleLearnMore }
-								href={ learnMoreURL }
-								external={
-									learnMoreTarget ===
-									LEARN_MORE_TARGET.EXTERNAL
-								}
-							>
-								{ learnMoreLabel }
-							</Link>
-							{ learnMoreDescription }
-						</p>
-					) }
-					{ pageIndex && (
-						<p>
-							<span className="googlesitekit-publisher-win__detect">
-								{ pageIndex }
-							</span>
+							/>{ ' ' }
+							{ learnMoreAndPageIndex }
 						</p>
 					) }
 				</div>
