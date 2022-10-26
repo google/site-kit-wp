@@ -2,9 +2,9 @@
 
 Contributors:      google
 Requires at least: 4.7
-Tested up to:      6.0
+Tested up to:      6.1
 Requires PHP:      5.6
-Stable tag:        1.85.0
+Stable tag:        1.86.0
 License:           Apache License 2.0
 License URI:       https://www.apache.org/licenses/LICENSE-2.0
 Tags:              google, search-console, analytics, adsense, pagespeed-insights, optimize, tag-manager, site-kit
@@ -107,6 +107,32 @@ By default, Site Kit does anonymize IP addresses upon activation of the Google A
 Please create a new topic on our [WordPress.org support forum](https://wordpress.org/support/plugin/google-site-kit/). Be sure to follow the [support forum guidelines](https://wordpress.org/support/guidelines/) when posting.
 
 == Changelog ==
+
+= 1.86.0 =
+
+**Enhanced**
+
+* Measure interactions with Thank with Google supporter wall banner notification. See [#6014](https://github.com/google/site-kit-wp/issues/6014).
+* Measure interactions when changing Thank with Google configuration. See [#6013](https://github.com/google/site-kit-wp/issues/6013).
+* Measure interactions related to publication setup for Thank with Google. See [#6012](https://github.com/google/site-kit-wp/issues/6012).
+* Update Thank with Google copy in settings and setup screens. See [#5963](https://github.com/google/site-kit-wp/issues/5963).
+* Adjust copy in GA4 banner to exclude full-stops/periods. See [#5927](https://github.com/google/site-kit-wp/issues/5927).
+* Update "translators" placeholder comments when there is only one placeholder in a localization string. See [#5924](https://github.com/google/site-kit-wp/issues/5924).
+* Hide help tooltip in GA4 settings screen after a property is selected. See [#5921](https://github.com/google/site-kit-wp/issues/5921).
+* Fix bug that could cause user without Analytics access to see incorrect Analytics update UI in GA4 activation banner. See [#5912](https://github.com/google/site-kit-wp/issues/5912).
+* Only request Analytics edit scopes in the GA4 Activation banner when required to create a new property. See [#5882](https://github.com/google/site-kit-wp/issues/5882).
+* Allow WordPress Multisite network activation of Site Kit (currently only for per-site use). See [#5871](https://github.com/google/site-kit-wp/issues/5871).
+* Add default title to the Supporter Wall widget for Thank with Google. See [#5785](https://github.com/google/site-kit-wp/issues/5785).
+* Add more context to the "Supporter Wall" setting in Thank with Google settings. See [#5756](https://github.com/google/site-kit-wp/issues/5756).
+* Show user account info in user menu. See [#5724](https://github.com/google/site-kit-wp/issues/5724).
+* Add user account email to "Details" link to improve deep-link user experience. See [#5642](https://github.com/google/site-kit-wp/issues/5642).
+* Add a "Retry" button for most errors in the plugin, except for some auth and other select errors. See [#5494](https://github.com/google/site-kit-wp/issues/5494).
+
+**Fixed**
+
+* Require modules to be active when making API requests against them. See [#5970](https://github.com/google/site-kit-wp/issues/5970).
+* Fix bug that could cause GA4 Success banner after activation not to appear. See [#5945](https://github.com/google/site-kit-wp/issues/5945).
+* Fix bug in GA4 activation banner setup that could cause a loading screen to remain when a network error is encountered. See [#5928](https://github.com/google/site-kit-wp/issues/5928).
 
 = 1.85.0 =
 

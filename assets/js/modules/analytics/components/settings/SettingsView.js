@@ -41,6 +41,7 @@ import VisuallyHidden from '../../../../components/VisuallyHidden';
 import { escapeURI } from '../../../../util/escape-uri';
 const { useSelect } = Data;
 
+// eslint-disable-next-line complexity
 export default function SettingsView() {
 	const ga4PropertyID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getPropertyID()

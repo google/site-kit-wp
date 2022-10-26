@@ -38,11 +38,11 @@ import { __, _x } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { Button } from 'googlesitekit-components';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import { CORE_LOCATION } from '../../../../googlesitekit/datastore/location/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import Button from '../../../../components/Button';
 import Link from '../../../../components/Link';
 import Badge from '../../../../components/Badge';
 import { trackEvent } from '../../../../util';

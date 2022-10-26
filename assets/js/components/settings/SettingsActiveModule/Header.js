@@ -34,11 +34,11 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { Button } from 'googlesitekit-components';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { EXPERIMENTAL_MODULES } from '../../dashboard-sharing/DashboardSharingSettings/constants';
 import { Grid, Row, Cell } from '../../../material-components';
 import { useKeyCodesInside } from '../../../hooks/useKeyCodesInside';
-import Button from '../../Button';
 import ModuleIcon from '../../ModuleIcon';
 import Badge from '../../Badge';
 import { trackEvent } from '../../../util';

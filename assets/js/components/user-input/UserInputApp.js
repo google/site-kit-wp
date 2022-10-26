@@ -26,13 +26,13 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { ProgressBar } from 'googlesitekit-components';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { useFeature } from '../../hooks/useFeature';
 import { Grid, Row, Cell } from '../../material-components';
 import Header from '../Header';
 import HelpMenu from '../help/HelpMenu';
 import PageHeader from '../PageHeader';
-import ProgressBar from '../ProgressBar';
 import UserInputQuestionnaire from './UserInputQuestionnaire';
 const { useSelect } = Data;
 

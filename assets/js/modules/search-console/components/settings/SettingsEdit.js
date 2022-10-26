@@ -20,10 +20,10 @@
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { ProgressBar } from 'googlesitekit-components';
 import { MODULES_SEARCH_CONSOLE } from '../../datastore/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
-import ProgressBar from '../../../../components/ProgressBar';
 import SettingsForm from './SettingsForm';
 const { useSelect } = Data;
 

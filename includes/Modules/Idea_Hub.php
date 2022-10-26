@@ -780,6 +780,7 @@ final class Idea_Hub extends Module
 						'googlesitekit-api',
 						'googlesitekit-data',
 						'googlesitekit-modules',
+						'googlesitekit-components',
 					),
 				)
 			),
@@ -794,6 +795,7 @@ final class Idea_Hub extends Module
 						'googlesitekit-datastore-ui',
 						'googlesitekit-datastore-user',
 						'googlesitekit-modules',
+						'googlesitekit-components',
 					),
 				)
 			),
@@ -807,6 +809,7 @@ final class Idea_Hub extends Module
 						'wp-api-fetch',
 						'wp-polyfill',
 						'wp-url',
+						'googlesitekit-components',
 					),
 					'load_contexts' => array( Asset::CONTEXT_ADMIN_POST_EDITOR ),
 				)

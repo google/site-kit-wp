@@ -33,6 +33,7 @@ import { compose } from '@wordpress/compose';
  */
 import Data from 'googlesitekit-data';
 import API from 'googlesitekit-api';
+import { Button } from 'googlesitekit-components';
 import { VIEW_CONTEXT_SPLASH } from '../../googlesitekit/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import {
@@ -41,7 +42,6 @@ import {
 } from '../../googlesitekit/datastore/user/constants';
 import { Cell, Grid, Row } from '../../material-components';
 import Header from '../Header';
-import Button from '../Button';
 import Layout from '../layout/Layout';
 import { trackEvent, clearWebStorage } from '../../util';
 import STEPS from './wizard-steps';

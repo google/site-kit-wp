@@ -32,7 +32,7 @@ import { ENTER } from '@wordpress/keycodes';
 /**
  * Internal dependencies
  */
-import { MDCSwitch } from '../material-components';
+import { MDCSwitch } from '../../material-components';
 
 const Switch = ( { onClick, label, checked, disabled, hideLabel } ) => {
 	// eslint-disable-next-line sitekit/acronym-case

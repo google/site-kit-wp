@@ -39,9 +39,9 @@ import {
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { Tooltip } from 'googlesitekit-components';
 import ModuleIcon from '../../ModuleIcon';
 import UserRoleSelect from '../UserRoleSelect';
-import Tooltip from '../../Tooltip';
 import { Select } from '../../../material-components';
 import useViewContext from '../../../hooks/useViewContext';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';

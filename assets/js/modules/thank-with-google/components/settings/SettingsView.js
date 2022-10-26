@@ -26,6 +26,7 @@ import { createInterpolateElement, Fragment } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { ProgressBar } from 'googlesitekit-components';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import {
 	MODULES_THANK_WITH_GOOGLE,
@@ -35,7 +36,6 @@ import {
 import DisplaySetting from '../../../../components/DisplaySetting';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import Link from '../../../../components/Link';
-import ProgressBar from '../../../../components/ProgressBar';
 import VisuallyHidden from '../../../../components/VisuallyHidden';
 import {
 	getColorThemes,

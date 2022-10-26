@@ -31,8 +31,8 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { Switch } from 'googlesitekit-components';
 import { MODULES_TAGMANAGER } from '../../datastore/constants';
-import Switch from '../../../../components/Switch';
 import { trackEvent } from '../../../../util';
 import useViewContext from '../../../../hooks/useViewContext';
 const { useSelect, useDispatch } = Data;

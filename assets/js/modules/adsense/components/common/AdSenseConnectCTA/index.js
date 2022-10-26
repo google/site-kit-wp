@@ -38,6 +38,7 @@ import {
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { Button } from 'googlesitekit-components';
 import { MODULES_ADSENSE } from '../../../datastore/constants';
 import { Grid, Row, Cell } from '../../../../../material-components';
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
@@ -46,7 +47,6 @@ import { CORE_LOCATION } from '../../../../../googlesitekit/datastore/location/c
 import { trackEvent } from '../../../../../util';
 import ContentAutoUpdate from './ContentAutoUpdate';
 import Link from '../../../../../components/Link';
-import Button from '../../../../../components/Button';
 import useViewContext from '../../../../../hooks/useViewContext';
 const { useSelect, useDispatch } = Data;
 

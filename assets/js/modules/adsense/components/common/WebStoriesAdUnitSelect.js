@@ -26,8 +26,8 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { ProgressBar } from 'googlesitekit-components';
 import { Select, Option } from '../../../../material-components';
-import ProgressBar from '../../../../components/ProgressBar';
 import { MODULES_ADSENSE } from '../../datastore/constants';
 const { useSelect, useDispatch } = Data;
 

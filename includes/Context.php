@@ -162,7 +162,7 @@ class Context {
 		 *
 		 * This is always false by default since Site Kit does not support a network mode yet.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.86.0
 		 *
 		 * @param bool $active Whether network mode is active.
 		 */

@@ -30,8 +30,8 @@ import { _x, __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { ProgressBar } from 'googlesitekit-components';
 import IdeaHubIcon from '../../../../../svg/graphics/idea-hub.svg';
-import ProgressBar from '../../../../components/ProgressBar';
 import SetupForm from './SetupForm';
 import Badge from '../../../../components/Badge';
 import { MODULES_IDEA_HUB } from '../../datastore/constants';

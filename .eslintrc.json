@@ -32,6 +32,10 @@
     "jsdoc/require-returns": "error",
     "jsdoc/no-undefined-types": "error",
     "jsdoc/valid-types": "error",
+    "complexity": [
+      "error",
+      20
+    ],
     "no-restricted-globals": [
       "error",
       {
@@ -82,7 +86,8 @@
       "googlesitekit-api",
       "googlesitekit-widgets",
       "@wordpress/i18n__non-shim",
-      "@wordpress/api-fetch__non-shim"
+      "@wordpress/api-fetch__non-shim",
+      "googlesitekit-components"
     ],
     "import/resolver": {
       "alias": {
