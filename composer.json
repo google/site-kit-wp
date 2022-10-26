@@ -7,7 +7,6 @@
   "require-dev": {
     "automattic/vipwpcs": "^2",
     "dealerdirect/phpcodesniffer-composer-installer": "^0.7.0",
-    "google/site-kit-wp-phpunit-polyfill": "^0.1.0",
     "phpcompatibility/phpcompatibility-wp": "^2.1",
     "phpunit/phpunit": "^5 || ^6 || ^7 || ^8 || ^9",
     "roave/security-advisories": "dev-latest",
@@ -54,10 +53,6 @@
     "wordpress-install-dir": "vendor/roots/wordpress"
   },
   "repositories": [
-    {
-      "type": "path",
-      "url": "packages/wp-phpunit-polyfill"
-    },
     {
       "type": "path",
       "url": "packages/apiclient-services-subscribewithgoogle",
