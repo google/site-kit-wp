@@ -25,7 +25,7 @@ import { Switch, Route } from 'react-router-dom';
 /**
  * WordPress dependencies
  */
-import { ENTER, ESCAPE } from '@wordpress/keycodes';
+import { DOWN, ENTER, ESCAPE, UP } from '@wordpress/keycodes';
 
 /**
  * Internal dependencies
@@ -173,5 +173,38 @@ describe( 'Header', () => {
 				'googlesitekit-settings-module__header--open'
 			)
 		).toBe( false );
+	} );
+
+	it( 'should not toggle the tab if any other key is pressed', () => {
+		// Ensure the tab is closed.
+		history.push( '/connected-services' );
+
+		const { container } = render( <HeaderAwareRouter />, {
+			registry,
+			history,
+		} );
+
+		const headerElement = container.querySelector(
+			'.googlesitekit-settings-module__header'
+		);
+
+		fireEvent.keyDown( headerElement, { keyCode: DOWN } );
+		// Ensure the tab is still closed after pressing the DOWN key.
+		expect(
+			headerElement.classList.contains(
+				'googlesitekit-settings-module__header--open'
+			)
+		).toBe( false );
+
+		// Ensure the tab is open.
+		history.push( '/connected-services/pagespeed-insights' );
+
+		fireEvent.keyDown( headerElement, { keyCode: UP } );
+		// Ensure the tab is still open after pressing the UP key.
+		expect(
+			headerElement.classList.contains(
+				'googlesitekit-settings-module__header--open'
+			)
+		).toBe( true );
 	} );
 } );
