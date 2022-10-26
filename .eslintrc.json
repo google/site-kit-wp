@@ -85,9 +85,10 @@
       "googlesitekit-modules",
       "googlesitekit-api",
       "googlesitekit-widgets",
+      "googlesitekit-components",
       "@wordpress/i18n__non-shim",
       "@wordpress/api-fetch__non-shim",
-      "googlesitekit-components"
+      "@wordpress/element__non-shim"
     ],
     "import/resolver": {
       "alias": {
