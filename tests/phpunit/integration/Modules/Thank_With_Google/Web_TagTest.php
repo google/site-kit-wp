@@ -97,7 +97,7 @@ class Web_TagTest extends TestCase {
 	}
 
 	public function test_content_placeholder_inserted_static_below_first_paragraph() {
-		$this->web_tag->set_cta_placement( Web_Tag::PLACEMENT_STATIC_AFTER_1ST_P );
+		$this->web_tag->set_cta_placement( Web_Tag::PLACEMENT_STATIC_BELOW_FIRST_P );
 
 		$this->create_post_and_go_to_it();
 
