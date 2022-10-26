@@ -48,6 +48,7 @@ class Web_TagTest extends TestCase {
 
 		$this->assertStringNotContainsString( 'Thank with Google snippet added by Site Kit', $output );
 		$this->assertStringNotContainsString( '<button twg-button', $output );
+		$this->assertStringNotContainsString( '<div counter-button', $output );
 	}
 
 	public function test_content_placeholder_inserted_on_cta_post_types() {
@@ -59,20 +60,31 @@ class Web_TagTest extends TestCase {
 
 		$this->assertStringContainsString( 'Thank with Google snippet added by Site Kit', $output );
 		$this->assertStringContainsString( '<button twg-button', $output );
+		$this->assertStringContainsString( '<div counter-button', $output );
 	}
 
-	public function test_content_placeholder_not_inserted_on_dynamic_cta_placement() {
+	public function test_content_cta_placeholder_not_inserted_on_dynamic_cta_placement() {
 		$this->web_tag->set_cta_placement( Web_Tag::PLACEMENT_DYNAMIC_LOW );
 
 		$this->create_post_and_go_to_it();
 
 		$output = apply_filters( 'the_content', $this->dummy_content );
 
-		$this->assertStringNotContainsString( 'Thank with Google snippet added by Site Kit', $output );
 		$this->assertStringNotContainsString( '<button twg-button', $output );
 	}
 
-	public function test_content_placeholder_inserted_static_below_content() {
+	public function test_content_counter_placeholder_inserted_on_dynamic_cta_placement() {
+		$this->web_tag->set_cta_placement( Web_Tag::PLACEMENT_DYNAMIC_LOW );
+
+		$this->create_post_and_go_to_it();
+
+		$output = apply_filters( 'the_content', $this->dummy_content );
+
+		$this->assertStringContainsString( 'Thank with Google snippet added by Site Kit', $output );
+		$this->assertStringContainsString( '<div counter-button', $output );
+	}
+
+	public function test_content_cta_placeholder_inserted_static_below_content() {
 		$this->web_tag->set_cta_placement( Web_Tag::PLACEMENT_STATIC_BELOW_CONTENT );
 
 		$this->create_post_and_go_to_it();
@@ -84,6 +96,17 @@ class Web_TagTest extends TestCase {
 		$this->assertStringContainsString( '<button twg-button', $output );
 	}
 
+	public function test_content_counter_placeholder_not_inserted_static_below_content() {
+		$this->web_tag->set_cta_placement( Web_Tag::PLACEMENT_STATIC_BELOW_CONTENT );
+
+		$this->create_post_and_go_to_it();
+
+		$output = apply_filters( 'the_content', $this->dummy_content );
+
+		$this->assertStringStartsWith( $this->dummy_content, $output );
+		$this->assertStringContainsString( 'Thank with Google snippet added by Site Kit', $output );
+		$this->assertStringNotContainsString( '<div counter-button', $output ); }
+
 	public function test_content_placeholder_inserted_static_above_content() {
 		$this->web_tag->set_cta_placement( Web_Tag::PLACEMENT_STATIC_ABOVE_CONTENT );
 
@@ -91,9 +114,9 @@ class Web_TagTest extends TestCase {
 
 		$output = apply_filters( 'the_content', $this->dummy_content );
 
-		$this->assertStringEndsWith( $this->dummy_content, $output );
 		$this->assertStringContainsString( 'Thank with Google snippet added by Site Kit', $output );
 		$this->assertStringContainsString( '<button twg-button', $output );
+		$this->assertStringContainsString( '<div counter-button', $output );
 	}
 
 	public function test_content_placeholder_inserted_static_below_first_paragraph() {
@@ -103,10 +126,22 @@ class Web_TagTest extends TestCase {
 
 		$output = apply_filters( 'the_content', $this->dummy_content );
 
-		$this->assertStringStartsWith( '<p>Hello World</p>', $output );
-		$this->assertStringEndsWith( '<p>Goodbye World</p>', $output );
+		$this->assertStringStartsWith(
+			'<p>Hello World</p>'
+			. PHP_EOL
+			. '<!-- Thank with Google snippet added by Site Kit -->'
+			. PHP_EOL
+			. '<button twg-button',
+			$output
+		);
+		$this->assertStringEndsWith(
+			'<div counter-button style="height: 34px; visibility: hidden; box-sizing: content-box; padding: 12px 0; display: inline-block; overflow: hidden;"></div>'
+			. PHP_EOL
+			. '<!-- End Thank with Google snippet added by Site Kit -->'
+			. PHP_EOL,
+			$output
+		);
 		$this->assertStringContainsString( 'Thank with Google snippet added by Site Kit', $output );
-		$this->assertStringContainsString( '<button twg-button', $output );
 	}
 
 	private function create_post_and_go_to_it() {
