@@ -32,8 +32,8 @@ import UserInputSelectOptions from './UserInputSelectOptions';
 import UserInputPreview from './UserInputPreview';
 import {
 	USER_INPUT_QUESTIONS_LIST,
-	USER_INPUT_QUESTION_POST_FREQUENCY,
 	USER_INPUT_QUESTIONS_PURPOSE,
+	USER_INPUT_QUESTION_POST_FREQUENCY,
 	USER_INPUT_QUESTIONS_GOALS,
 	getUserInputAnswers,
 } from './util/constants';
