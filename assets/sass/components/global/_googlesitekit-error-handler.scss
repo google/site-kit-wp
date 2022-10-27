@@ -20,18 +20,14 @@
 
 	.googlesitekit-error-handler {
 
-		.googlesitekit-publisher-win__desc > p {
+		.googlesitekit-publisher-win__desc p {
 			align-items: center;
 			display: flex;
 			flex-wrap: wrap;
-		}
-
-		.googlesitekit-cta-link {
-			margin-left: $grid-gap-phone;
-			margin-right: 0;
+			gap: $grid-gap-phone;
 
 			@media (min-width: $bp-tablet) {
-				margin-left: $grid-gap-desktop;
+				gap: $grid-gap-desktop;
 			}
 		}
 	}
