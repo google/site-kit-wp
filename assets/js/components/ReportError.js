@@ -70,11 +70,17 @@ export default function ReportError( { moduleSlug, error } ) {
 
 	const showRetry = !! retryableErrors.length;
 
-	const errorTroubleshootingLinkURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getErrorTroubleshootingLinkURL(
-			showRetry ? retryableErrors[ 0 ] : errors[ 0 ]
-		)
-	);
+	const errorTroubleshootingLinkURL = useSelect( ( select ) => {
+		const err = {
+			...( showRetry ? retryableErrors[ 0 ] : errors[ 0 ] ),
+		};
+
+		if ( isInsufficientPermissionsError( err ) ) {
+			err.code = `${ moduleSlug }_insufficient_permissions`;
+		}
+
+		return select( CORE_SITE ).getErrorTroubleshootingLinkURL( err );
+	} );
 
 	const dispatch = useDispatch();
 

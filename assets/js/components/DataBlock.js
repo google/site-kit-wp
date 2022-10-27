@@ -57,6 +57,7 @@ class DataBlock extends Component {
 		}
 	}
 
+	// eslint-disable-next-line complexity
 	render() {
 		const {
 			className,

@@ -141,8 +141,9 @@ const siteKitExternals = {
 	'googlesitekit-data': [ 'googlesitekit', 'data' ],
 	'googlesitekit-modules': [ 'googlesitekit', 'modules' ],
 	'googlesitekit-widgets': [ 'googlesitekit', 'widgets' ],
-	'@wordpress/i18n': [ 'googlesitekit', 'i18n' ],
 	'googlesitekit-components': [ 'googlesitekit', 'components' ],
+	'@wordpress/i18n': [ 'googlesitekit', 'i18n' ],
+	'@wordpress/element': [ 'googlesitekit', 'element' ],
 };
 
 const externals = { ...siteKitExternals };
@@ -207,6 +208,7 @@ const resolve = {
 		),
 		'@wordpress/api-fetch$': path.resolve( 'assets/js/api-fetch-shim.js' ),
 		'@wordpress/i18n__non-shim': require.resolve( '@wordpress/i18n' ),
+		'@wordpress/element__non-shim': require.resolve( '@wordpress/element' ),
 	},
 	modules: [ projectPath( '.' ), 'node_modules' ],
 };
@@ -271,6 +273,7 @@ function* webpackConfig( env, argv ) {
 				'./assets/js/googlesitekit-datastore-ui.js',
 			'googlesitekit-modules': './assets/js/googlesitekit-modules.js',
 			'googlesitekit-widgets': './assets/js/googlesitekit-widgets.js',
+			'googlesitekit-element': './assets/js/googlesitekit-element.js',
 			'googlesitekit-modules-adsense':
 				'./assets/js/googlesitekit-modules-adsense.js',
 			'googlesitekit-modules-analytics':
@@ -330,7 +333,7 @@ function* webpackConfig( env, argv ) {
 		},
 		plugins: [
 			new ProvidePlugin( {
-				React: '@wordpress/element',
+				React: '@wordpress/element__non-shim',
 			} ),
 			new WebpackBar( {
 				name: 'Module Entry Points',
