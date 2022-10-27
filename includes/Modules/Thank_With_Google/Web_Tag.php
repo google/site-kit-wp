@@ -144,9 +144,13 @@ class Web_Tag extends Module_Web_Tag {
 			$subscription['promptSettings']['floatingPromptProminence'] = 'high';
 		}
 
+		$json_encoded_subscription = wp_json_encode( $subscription );
+		if ( ! $json_encoded_subscription ) {
+			$json_encoded_subscription = 'null';
+		}
 		$twg_inline_script = sprintf(
 			'(self.SWG_BASIC=self.SWG_BASIC||[]).push(function(subscriptions){subscriptions.init(%s);});',
-			wp_json_encode( $subscription )
+			$json_encoded_subscription
 		);
 
 		// phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion
