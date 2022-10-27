@@ -122,26 +122,6 @@ export default function DashboardPageSpeed() {
 	const { setValues } = useDispatch( CORE_UI );
 	const { invalidateResolution } = useDispatch( MODULES_PAGESPEED_INSIGHTS );
 
-	const setStrategyMobile = useCallback(
-		() => setValues( { [ UI_STRATEGY ]: STRATEGY_MOBILE } ),
-		[ setValues ]
-	);
-	const setStrategyDesktop = useCallback(
-		() => setValues( { [ UI_STRATEGY ]: STRATEGY_DESKTOP } ),
-		[ setValues ]
-	);
-	const setDataSrcField = useCallback(
-		() => setValues( { [ UI_DATA_SOURCE ]: DATA_SRC_FIELD } ),
-		[ setValues ]
-	);
-	const setDataSrcLab = useCallback(
-		() => setValues( { [ UI_DATA_SOURCE ]: DATA_SRC_LAB } ),
-		[ setValues ]
-	);
-	const setDataSrcRecommendations = useCallback(
-		() => setValues( { [ UI_DATA_SOURCE ]: DATA_SRC_RECOMMENDATIONS } ),
-		[ setValues ]
-	);
 	const intersectionEntry = useIntersection( trackingRef, {
 		threshold: 0.25,
 	} );
@@ -169,15 +149,17 @@ export default function DashboardPageSpeed() {
 
 			switch ( dataSrcIndex ) {
 				case TAB_INDEX_LAB:
-					setDataSrcLab();
+					setValues( { [ UI_DATA_SOURCE ]: DATA_SRC_LAB } );
 					eventLabel = 'lab';
 					break;
 				case TAB_INDEX_FIELD:
-					setDataSrcField();
+					setValues( { [ UI_DATA_SOURCE ]: DATA_SRC_FIELD } );
 					eventLabel = 'field';
 					break;
 				case TAB_INDEX_RECOMMENDATIONS:
-					setDataSrcRecommendations();
+					setValues( {
+						[ UI_DATA_SOURCE ]: DATA_SRC_RECOMMENDATIONS,
+					} );
 					eventLabel = 'recommendations';
 					break;
 				default:
@@ -190,24 +172,19 @@ export default function DashboardPageSpeed() {
 				eventLabel
 			);
 		},
-		[
-			setDataSrcField,
-			setDataSrcLab,
-			setDataSrcRecommendations,
-			viewContext,
-		]
+		[ setValues, viewContext ]
 	);
 
 	// Update the active tab for "mobile" or "desktop".
 	const updateActiveDeviceSize = useCallback(
 		( { slug } ) => {
 			if ( slug === STRATEGY_DESKTOP ) {
-				setStrategyDesktop();
+				setValues( { [ UI_STRATEGY ]: STRATEGY_DESKTOP } );
 			} else {
-				setStrategyMobile();
+				setValues( { [ UI_STRATEGY ]: STRATEGY_MOBILE } );
 			}
 		},
-		[ setStrategyDesktop, setStrategyMobile ]
+		[ setValues ]
 	);
 
 	const updateReport = useCallback(
@@ -286,9 +263,9 @@ export default function DashboardPageSpeed() {
 			reportMobile?.loadingExperience?.metrics &&
 			reportDesktop?.loadingExperience?.metrics
 		) {
-			setDataSrcField();
+			setValues( { [ UI_DATA_SOURCE ]: DATA_SRC_FIELD } );
 		}
-	}, [ reportMobile, reportDesktop, setDataSrcField ] );
+	}, [ reportMobile, reportDesktop, setValues ] );
 
 	const isLoading =
 		! referenceURL || ( isFetching && ! reportData ) || ! dataSrc;
