@@ -124,13 +124,17 @@ function SetupSuccessBannerNotification() {
 					'complete_user_setup',
 					isUsingProxy ? 'proxy' : 'custom-oauth'
 				);
-				
+
 				setCompleteUserSetupSent( true );
 			}
 
 			// If the site doesn't yet have multiple admins, this is the initial
 			// site setup so we can log the "site setup complete" event.
-			if ( slug === null && ! completeSiteSetup && hasMultipleAdmins === false ) {
+			if (
+				slug === null &&
+				! completeSiteSetup &&
+				hasMultipleAdmins === false
+			) {
 				trackEvent(
 					`${ viewContext }_authentication-success-notification`,
 					'complete_site_setup',
@@ -138,6 +142,7 @@ function SetupSuccessBannerNotification() {
 				);
 
 				setCompleteSiteSetup( true );
+			}
 		}
 	}, [
 		canManageOptions,
@@ -178,7 +183,11 @@ function SetupSuccessBannerNotification() {
 		return null;
 	}
 
-	if ( notification === 'authentication_success' && slug && ! modules[ slug ]?.active ) {
+	if (
+		notification === 'authentication_success' &&
+		slug &&
+		! modules[ slug ]?.active
+	) {
 		return null;
 	}
 
