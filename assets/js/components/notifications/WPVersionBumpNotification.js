@@ -17,15 +17,10 @@
  */
 
 /**
- * External dependencies
- */
-import { useMount } from 'react-use';
-
-/**
  * WordPress dependencies
  */
 import { __, sprintf } from '@wordpress/i18n';
-import { useCallback } from '@wordpress/element';
+import { useCallback, useEffect, useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -49,10 +44,6 @@ export default function WPVersionBumpNotification() {
 		trackEvent( eventCategory, 'confirm_notification' );
 	}, [ eventCategory ] );
 
-	useMount( () => {
-		trackEvent( eventCategory, 'view_notification' );
-	} );
-
 	const hasMinimumWPVersion = useSelect( ( select ) =>
 		select( CORE_SITE ).hasMinimumWordPressVersion( '5.2' )
 	);
@@ -66,6 +57,28 @@ export default function WPVersionBumpNotification() {
 	const updateCoreURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getUpdateCoreURL()
 	);
+
+	const [ viewNotificationSent, setViewNotificationSent ] = useState( false );
+
+	useEffect( () => {
+		// Only trigger the view event if the notification is visible and we haven't
+		// already sent this notification.
+		if (
+			! viewNotificationSent &&
+			hasMinimumWPVersion === false &&
+			version !== undefined
+		) {
+			trackEvent( eventCategory, 'view_notification' );
+			// Don't send the view event again.
+			setViewNotificationSent( true );
+		}
+	}, [
+		eventCategory,
+		hasMinimumWPVersion,
+		version,
+		viewContext,
+		viewNotificationSent,
+	] );
 
 	if ( hasMinimumWPVersion || version === undefined ) {
 		return null;
