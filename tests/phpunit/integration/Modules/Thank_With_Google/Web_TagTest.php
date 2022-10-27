@@ -80,8 +80,13 @@ class Web_TagTest extends TestCase {
 
 		$output = apply_filters( 'the_content', $this->dummy_content );
 
-		$this->assertStringContainsString( 'Thank with Google snippet added by Site Kit', $output );
-		$this->assertStringContainsString( '<div counter-button', $output );
+		$this->assertStringEndsWith(
+			'<div counter-button style="height: 34px; visibility: hidden; box-sizing: content-box; padding: 12px 0; display: inline-block; overflow: hidden;"></div>'
+			. PHP_EOL
+			. '<!-- End Thank with Google snippet added by Site Kit -->'
+			. PHP_EOL,
+			$output
+		);
 	}
 
 	public function test_content_cta_placeholder_inserted_static_below_content() {
@@ -114,9 +119,19 @@ class Web_TagTest extends TestCase {
 
 		$output = apply_filters( 'the_content', $this->dummy_content );
 
-		$this->assertStringContainsString( 'Thank with Google snippet added by Site Kit', $output );
-		$this->assertStringContainsString( '<button twg-button', $output );
-		$this->assertStringContainsString( '<div counter-button', $output );
+		$this->assertStringStartsNotWith(
+			'<!-- Thank with Google snippet added by Site Kit -->'
+			. PHP_EOL
+			. '<button twg-button',
+			$output
+		);
+		$this->assertStringEndsWith(
+			'<div counter-button style="height: 34px; visibility: hidden; box-sizing: content-box; padding: 12px 0; display: inline-block; overflow: hidden;"></div>'
+			. PHP_EOL
+			. '<!-- End Thank with Google snippet added by Site Kit -->'
+			. PHP_EOL,
+			$output
+		);
 	}
 
 	public function test_content_placeholder_inserted_static_below_first_paragraph() {
@@ -134,6 +149,7 @@ class Web_TagTest extends TestCase {
 			. '<button twg-button',
 			$output
 		);
+		$this->assertStringContainsString( '<p>Goodbye World</p>', $output );
 		$this->assertStringEndsWith(
 			'<div counter-button style="height: 34px; visibility: hidden; box-sizing: content-box; padding: 12px 0; display: inline-block; overflow: hidden;"></div>'
 			. PHP_EOL
@@ -141,7 +157,6 @@ class Web_TagTest extends TestCase {
 			. PHP_EOL,
 			$output
 		);
-		$this->assertStringContainsString( 'Thank with Google snippet added by Site Kit', $output );
 	}
 
 	private function create_post_and_go_to_it() {
