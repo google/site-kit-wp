@@ -28,7 +28,7 @@ class OAuth2Test extends TestCase {
 	 * @param RequestInterface $request The request to parse body for.
 	 * @return array The parsed body.
 	 */
-	private static function getParsedRequestBody( $request ) {
+	private static function get_parsed_request_body( $request ) {
 		return Query::parse( Utils::copyToString( $request->getBody() ) );
 	}
 
@@ -38,12 +38,12 @@ class OAuth2Test extends TestCase {
 
 		// Request with no params should have an empty body.
 		$request = $auth->generateCredentialsRequest();
-		$this->assertEquals( array(), self::getParsedRequestBody( $request ) );
+		$this->assertEquals( array(), self::get_parsed_request_body( $request ) );
 
 		// Request with params should also have an empty body, unless a refresh token is set.
 		$extra_params = array( 'active_consumers' => '1:a,b,c 2:x,y,z' );
 		$request      = $auth->generateCredentialsRequest( $extra_params );
-		$this->assertEquals( array(), self::getParsedRequestBody( $request ) );
+		$this->assertEquals( array(), self::get_parsed_request_body( $request ) );
 
 		// Request with refresh token and params should have them in the body accordingly.
 		$refresh_token = 'test-refresh-token';
@@ -57,7 +57,7 @@ class OAuth2Test extends TestCase {
 				),
 				$extra_params
 			),
-			self::getParsedRequestBody( $request )
+			self::get_parsed_request_body( $request )
 		);
 	}
 }
