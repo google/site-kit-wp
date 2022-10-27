@@ -285,7 +285,7 @@ class Google_Site_Kit_Client extends Google_Client {
 	/**
 	 * Create a default Google OAuth2 object.
 	 *
-	 * @return OAuth2 Crated OAuth2 instance.
+	 * @return OAuth2 Created OAuth2 instance.
 	 */
 	protected function createOAuth2Service() {
 		$auth = new OAuth2(
