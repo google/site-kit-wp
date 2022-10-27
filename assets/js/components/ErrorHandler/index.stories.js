@@ -37,7 +37,6 @@ export const Default = Template.bind( {} );
 Default.storyName = 'Default';
 Default.scenario = {
 	label: 'Global/ErrorHandler',
-	delay: 250,
 };
 
 export default {
