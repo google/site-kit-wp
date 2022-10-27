@@ -19,9 +19,13 @@
 /**
  * Internal dependencies
  */
-import { waitForElement } from '@testing-library/react';
 import ErrorHandler from './';
-import ErrorComponent from './ErrorComponent';
+
+const ErrorComponent = () => {
+	throw new Error(
+		'Something bad happened. 💣 (On purpose; ErrorComponent was used to simulate an error.)'
+	);
+};
 
 const Template = () => (
 	<ErrorHandler>
@@ -31,19 +35,8 @@ const Template = () => (
 
 export const Default = Template.bind( {} );
 Default.storyName = 'Default';
-Default.decorators = [
-	( Story ) => {
-		setTimeout( async () => {
-			await waitForElement( () => document.querySelector( 'button' ) );
-			document.querySelector( 'button' ).click();
-		}, 0 );
-
-		return <Story />;
-	},
-];
 Default.scenario = {
 	label: 'Global/ErrorHandler',
-	clickSelector: 'button',
 	delay: 250,
 };
 
