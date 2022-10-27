@@ -118,27 +118,26 @@ function SetupSuccessBannerNotification() {
 
 			// Only trigger these events if this is a site/plugin setup event,
 			// and not setup of an individual module (eg. AdSense, Analytics, etc.)
-			if ( slug === null ) {
-				if ( ! completeUserSetupSent ) {
-					trackEvent(
-						`${ viewContext }_authentication-success-notification`,
-						'complete_user_setup',
-						isUsingProxy ? 'proxy' : 'custom-oauth'
-					);
-					setCompleteUserSetupSent( true );
-				}
-
-				// If the site doesn't yet have multiple admins, this is the initial
-				// site setup so we can log the "site setup complete" event.
-				if ( ! completeSiteSetup && hasMultipleAdmins === false ) {
-					trackEvent(
-						`${ viewContext }_authentication-success-notification`,
-						'complete_site_setup',
-						isUsingProxy ? 'proxy' : 'custom-oauth'
-					);
-					setCompleteSiteSetup( true );
-				}
+			if ( slug === null && ! completeUserSetupSent ) {
+				trackEvent(
+					`${ viewContext }_authentication-success-notification`,
+					'complete_user_setup',
+					isUsingProxy ? 'proxy' : 'custom-oauth'
+				);
+				
+				setCompleteUserSetupSent( true );
 			}
+
+			// If the site doesn't yet have multiple admins, this is the initial
+			// site setup so we can log the "site setup complete" event.
+			if ( slug === null && ! completeSiteSetup && hasMultipleAdmins === false ) {
+				trackEvent(
+					`${ viewContext }_authentication-success-notification`,
+					'complete_site_setup',
+					isUsingProxy ? 'proxy' : 'custom-oauth'
+				);
+
+				setCompleteSiteSetup( true );
 		}
 	}, [
 		canManageOptions,
@@ -175,14 +174,12 @@ function SetupSuccessBannerNotification() {
 		return null;
 	}
 
-	if ( notification === 'authentication_success' ) {
-		if ( ! canManageOptions ) {
-			return null;
-		}
+	if ( notification === 'authentication_success' && ! canManageOptions ) {
+		return null;
+	}
 
-		if ( slug && ! modules[ slug ]?.active ) {
-			return null;
-		}
+	if ( notification === 'authentication_success' && slug && ! modules[ slug ]?.active ) {
+		return null;
 	}
 
 	const winData = {
