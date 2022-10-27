@@ -255,7 +255,6 @@ export default function UserInputQuestionnaire() {
 					<UserInputSelectOptions
 						isActive={ activeSlug === USER_INPUT_QUESTIONS_PURPOSE }
 						slug={ USER_INPUT_QUESTIONS_PURPOSE }
-						max={ 2 }
 						options={ USER_INPUT_ANSWERS_PURPOSE }
 						next={ nextCallback }
 					/>

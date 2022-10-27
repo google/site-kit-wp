@@ -21,9 +21,9 @@
  */
 import { __ } from '@wordpress/i18n';
 
+export const USER_INPUT_QUESTIONS_PURPOSE = 'purpose';
 export const USER_INPUT_QUESTION_POST_FREQUENCY = 'postFrequency';
-export const USER_INPUT_QUESTIONS_PURPOSE = 'goals';
-export const USER_INPUT_QUESTIONS_GOALS = 'helpNeeded';
+export const USER_INPUT_QUESTIONS_GOALS = 'goals';
 
 export const USER_INPUT_QUESTIONS_LIST = [
 	USER_INPUT_QUESTIONS_PURPOSE,
