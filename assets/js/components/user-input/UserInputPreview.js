@@ -48,8 +48,8 @@ export default function UserInputPreview( props ) {
 	);
 	const {
 		USER_INPUT_ANSWERS_PURPOSE,
-		USER_INPUT_ANSWERS_GOALS,
 		USER_INPUT_ANSWERS_POST_FREQUENCY,
+		USER_INPUT_ANSWERS_GOALS,
 	} = getUserInputAnswers();
 	const [ page ] = useQueryArg( 'page' );
 
