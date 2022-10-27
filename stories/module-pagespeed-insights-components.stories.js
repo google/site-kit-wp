@@ -26,10 +26,6 @@ import { storiesOf } from '@storybook/react';
  */
 import DashboardPageSpeedWidget from '../assets/js/modules/pagespeed-insights/components/dashboard/DashboardPageSpeedWidget';
 import { CORE_SITE } from '../assets/js/googlesitekit/datastore/site/constants';
-import {
-	CORE_USER,
-	PERMISSION_MANAGE_OPTIONS,
-} from '../assets/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '../assets/js/googlesitekit/modules/datastore/constants';
 import * as fixtures from '../assets/js/modules/pagespeed-insights/datastore/__fixtures__';
 import {
@@ -252,30 +248,6 @@ storiesOf( 'PageSpeed Insights Module/Components', module )
 					slug: 'pagespeed-insights',
 					active: true,
 					connected: true,
-				},
-			] );
-		};
-		return (
-			<WithTestRegistry callback={ setupRegistry }>
-				<DashboardPageSpeedWidget { ...widgetComponentProps } />
-			</WithTestRegistry>
-		);
-	} )
-	.add( 'Dashboard widget (CTA)', () => {
-		const url = fixtures.pagespeedMobile.loadingExperience.id;
-		const setupRegistry = ( { dispatch } ) => {
-			dispatch( CORE_SITE ).receiveSiteInfo( {
-				referenceSiteURL: url,
-				currentEntityURL: null,
-			} );
-			dispatch( CORE_USER ).receiveCapabilities( {
-				[ PERMISSION_MANAGE_OPTIONS ]: true,
-			} );
-			dispatch( CORE_MODULES ).receiveGetModules( [
-				{
-					slug: 'pagespeed-insights',
-					active: false,
-					connected: false,
 				},
 			] );
 		};
