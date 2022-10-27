@@ -50,6 +50,7 @@ import { stringToDate } from '../util/date-range/string-to-date';
 import Data from 'googlesitekit-data';
 const { useSelect } = Data;
 
+// eslint-disable-next-line complexity
 export default function GoogleChart( props ) {
 	const {
 		chartEvents,

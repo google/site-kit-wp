@@ -69,6 +69,7 @@ export const LEARN_MORE_TARGET = {
 	INTERNAL: 'internal',
 };
 
+// eslint-disable-next-line complexity
 function BannerNotification( {
 	anchorLink,
 	anchorLinkLabel,
@@ -165,18 +166,13 @@ function BannerNotification( {
 		}, 350 );
 	}
 
-	const isNavigatingToCTALink = useSelect( ( select ) =>
-		select( CORE_LOCATION ).isNavigatingTo( ctaLink || '' )
+	const isNavigating = useSelect( ( select ) =>
+		select( CORE_LOCATION ).isNavigating()
 	);
 
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 	async function handleCTAClick( e ) {
 		e.persist();
-
-		if ( isURL( ctaLink ) && ctaTarget !== '_blank' ) {
-			e.preventDefault();
-			navigateTo( ctaLink );
-		}
 
 		let dismissOnCTAClick = true;
 		if ( onCTAClick ) {
@@ -189,6 +185,15 @@ function BannerNotification( {
 
 		if ( isDismissible && dismissOnCTAClick ) {
 			dismissNotification();
+		}
+
+		if (
+			isURL( ctaLink ) &&
+			ctaTarget !== '_blank' &&
+			! e.defaultPrevented
+		) {
+			e.preventDefault();
+			navigateTo( ctaLink );
 		}
 	}
 
@@ -230,17 +235,16 @@ function BannerNotification( {
 	}
 
 	// isDismissed will be undefined until resolved from browser storage.
-	// isNavigatingToCTALink will be true until the navigation is complete.
+	// isNavigating will be true until the navigation is complete.
 	if (
-		! isNavigatingToCTALink &&
+		! isNavigating &&
 		isDismissible &&
 		( undefined === isDismissed || isDismissed )
 	) {
 		return null;
 	}
 
-	const closedClass =
-		! isNavigatingToCTALink && isClosed ? 'is-closed' : 'is-open';
+	const closedClass = ! isNavigating && isClosed ? 'is-closed' : 'is-open';
 	const inlineLayout = 'large' === format && 'win-stats-increase' === type;
 
 	const imageCellSizeProperties = getImageCellSizeProperties( format );
@@ -281,6 +285,30 @@ function BannerNotification( {
 		</Fragment>
 	);
 
+	const learnMoreAndPageIndex = (
+		<Fragment>
+			{ learnMoreLabel && (
+				<Fragment>
+					<Link
+						onClick={ handleLearnMore }
+						href={ learnMoreURL }
+						external={
+							learnMoreTarget === LEARN_MORE_TARGET.EXTERNAL
+						}
+					>
+						{ learnMoreLabel }
+					</Link>
+					{ learnMoreDescription }
+				</Fragment>
+			) }
+			{ pageIndex && (
+				<span className="googlesitekit-publisher-win__detect">
+					{ pageIndex }
+				</span>
+			) }
+		</Fragment>
+	);
+
 	const inlineMarkup = (
 		<Fragment>
 			{ title && (
@@ -304,10 +332,14 @@ function BannerNotification( {
 							{ descriptionIcon }
 						</div>
 					) }
-					<p>
-						{ isValidElement( description ) ? (
-							description
-						) : (
+
+					{ isValidElement( description ) ? (
+						<Fragment>
+							{ description }
+							<p>{ learnMoreAndPageIndex }</p>
+						</Fragment>
+					) : (
+						<p>
 							<span
 								dangerouslySetInnerHTML={ sanitizeHTML(
 									description,
@@ -321,31 +353,10 @@ function BannerNotification( {
 										ALLOWED_ATTR: [ 'href' ],
 									}
 								) }
-							/>
-						) }
-
-						{ learnMoreLabel && (
-							<Fragment>
-								{ ' ' }
-								<Link
-									onClick={ handleLearnMore }
-									href={ learnMoreURL }
-									external={
-										learnMoreTarget ===
-										LEARN_MORE_TARGET.EXTERNAL
-									}
-								>
-									{ learnMoreLabel }
-								</Link>
-								{ learnMoreDescription }
-							</Fragment>
-						) }
-						{ pageIndex && (
-							<span className="googlesitekit-publisher-win__detect">
-								{ pageIndex }
-							</span>
-						) }
-					</p>
+							/>{ ' ' }
+							{ learnMoreAndPageIndex }
+						</p>
+					) }
 				</div>
 			) }
 			{ children }
@@ -447,7 +458,7 @@ function BannerNotification( {
 										onClick={ handleCTAClick }
 										disabled={
 											isAwaitingCTAResponse ||
-											isNavigatingToCTALink
+											isNavigating
 										}
 									>
 										{ ctaLabel }
@@ -456,14 +467,14 @@ function BannerNotification( {
 
 								<Spinner
 									isSaving={
-										isAwaitingCTAResponse ||
-										isNavigatingToCTALink
+										isAwaitingCTAResponse || isNavigating
 									}
 								/>
 
 								{ isDismissible &&
 									dismiss &&
-									! isAwaitingCTAResponse && (
+									! isAwaitingCTAResponse &&
+									! isNavigating && (
 										<DismissComponent
 											onClick={ handleDismiss }
 										>

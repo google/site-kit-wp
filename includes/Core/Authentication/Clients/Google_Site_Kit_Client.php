@@ -10,9 +10,9 @@
 
 namespace Google\Site_Kit\Core\Authentication\Clients;
 
+use Google\Site_Kit\Core\Authentication\Clients\OAuth2;
 use Google\Site_Kit\Core\Authentication\Exception\Google_OAuth_Exception;
 use Google\Site_Kit_Dependencies\Google_Client;
-use Google\Site_Kit_Dependencies\Google\Auth\OAuth2;
 use Google\Site_Kit_Dependencies\Google\Auth\HttpHandler\HttpHandlerFactory;
 use Google\Site_Kit_Dependencies\Google\Auth\HttpHandler\HttpClientCache;
 use Google\Site_Kit_Dependencies\GuzzleHttp\ClientInterface;
@@ -161,11 +161,12 @@ class Google_Site_Kit_Client extends Google_Client {
 	 * @since 1.2.0 Ported from Google_Site_Kit_Proxy_Client.
 	 *
 	 * @param string $refresh_token Optional. Refresh token. Unused here.
+	 * @param array  $extra_params  Optional. Array of extra parameters to fetch with.
 	 * @return array Access token.
 	 *
 	 * @throws LogicException Thrown when no refresh token is available.
 	 */
-	public function fetchAccessTokenWithRefreshToken( $refresh_token = null ) {
+	public function fetchAccessTokenWithRefreshToken( $refresh_token = null, $extra_params = array() ) {
 		if ( null === $refresh_token ) {
 			$refresh_token = $this->getRefreshToken();
 			if ( ! $refresh_token ) {
@@ -179,7 +180,7 @@ class Google_Site_Kit_Client extends Google_Client {
 
 		$http_handler = HttpHandlerFactory::build( $this->getHttpClient() );
 
-		$token_response = $this->fetchAuthToken( $auth, $http_handler );
+		$token_response = $this->fetchAuthToken( $auth, $http_handler, $extra_params );
 		if ( $token_response && isset( $token_response['access_token'] ) ) {
 			$token_response['created'] = time();
 			if ( ! isset( $token_response['refresh_token'] ) ) {
@@ -247,14 +248,15 @@ class Google_Site_Kit_Client extends Google_Client {
 	 *
 	 * @param OAuth2        $auth         OAuth2 instance.
 	 * @param callable|null $http_handler Optional. HTTP handler callback. Default null.
+	 * @param array         $extra_params Optional. Array of extra parameters to fetch with.
 	 * @return array Access token.
 	 */
-	protected function fetchAuthToken( OAuth2 $auth, callable $http_handler = null ) {
+	protected function fetchAuthToken( OAuth2 $auth, callable $http_handler = null, $extra_params = array() ) {
 		if ( is_null( $http_handler ) ) {
 			$http_handler = HttpHandlerFactory::build( HttpClientCache::getHttpClient() );
 		}
 
-		$request     = $auth->generateCredentialsRequest();
+		$request     = $auth->generateCredentialsRequest( $extra_params );
 		$response    = $http_handler( $request );
 		$credentials = $auth->parseTokenResponse( $response );
 		if ( ! empty( $credentials['error'] ) ) {
@@ -278,6 +280,28 @@ class Google_Site_Kit_Client extends Google_Client {
 	 */
 	protected function handleAuthTokenErrorResponse( $error, array $data ) {
 		throw new Google_OAuth_Exception( $error );
+	}
+
+	/**
+	 * Create a default Google OAuth2 object.
+	 *
+	 * @return OAuth2 Created OAuth2 instance.
+	 */
+	protected function createOAuth2Service() {
+		$auth = new OAuth2(
+			array(
+				'clientId'           => $this->getClientId(),
+				'clientSecret'       => $this->getClientSecret(),
+				'authorizationUri'   => self::OAUTH2_AUTH_URL,
+				'tokenCredentialUri' => self::OAUTH2_TOKEN_URI,
+				'redirectUri'        => $this->getRedirectUri(),
+				'issuer'             => $this->getConfig( 'client_id' ),
+				'signingKey'         => $this->getConfig( 'signing_key' ),
+				'signingAlgorithm'   => $this->getConfig( 'signing_algorithm' ),
+			)
+		);
+
+		return $auth;
 	}
 
 }

@@ -32,6 +32,8 @@ import ImageRadio from '../../../../components/ImageRadio';
 import { getColorThemes } from '../../util/settings';
 import { trackEvent } from '../../../../util';
 import useViewContext from '../../../../hooks/useViewContext';
+import ColorThemeChoice from './ColorThemeChoice';
+
 const { useSelect, useDispatch } = Data;
 
 export default function ColorRadio() {
@@ -57,17 +59,22 @@ export default function ColorRadio() {
 	);
 
 	const colors = getColorThemes()?.map(
-		( { colorThemeID, name, svg: SVG, colorCode } ) => (
+		( { colorThemeID, name, colorPrimary, colorSecondary } ) => (
 			<ImageRadio
 				key={ colorThemeID }
 				id={ colorThemeID }
 				name="color-theme"
 				value={ colorThemeID }
 				description={ name }
-				image={ <SVG /> }
+				image={
+					<ColorThemeChoice
+						colorPrimary={ colorPrimary }
+						colorSecondary={ colorSecondary }
+					/>
+				}
 				onChange={ onChange }
 				checked={ currentColor === colorThemeID }
-				checkedBorderColor={ colorCode }
+				checkedBorderColor={ colorPrimary }
 			/>
 		)
 	);

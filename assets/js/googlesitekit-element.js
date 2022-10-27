@@ -1,7 +1,7 @@
 /**
- * Thank with Google common components.
+ * Site Kit Element.
  *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2022 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,7 @@
  * limitations under the License.
  */
 
-export { default as ProminenceRadio } from './ProminenceRadio';
-export { default as TypeRadio } from './TypeRadio';
-export { default as PositionRadio } from './PositionRadio';
-export { default as ColorRadio } from './ColorRadio';
-export { default as PostTypesSelect } from './PostTypesSelect';
-export { default as CTAPlacement } from './CTAPlacement';
-export { default as SupporterWall } from './SupporterWall';
-export { default as ColorThemeChoice } from './ColorThemeChoice';
+import * as Element from '@wordpress/element__non-shim';
+
+global.googlesitekit = global.googlesitekit || {};
+global.googlesitekit.element = global.googlesitekit.element || Element;

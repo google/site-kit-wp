@@ -142,6 +142,34 @@ storiesOf( 'Global/Notifications', module )
 		}
 	)
 	.add(
+		'Small with Element Description',
+		() => (
+			<BannerNotification
+				id="notification-id"
+				title={ __( 'Index Warning', 'google-site-kit' ) }
+				description={
+					<p>
+						{ __(
+							'This description is a React element.',
+							'google-site-kit'
+						) }
+					</p>
+				}
+				learnMoreURL="http://google.com"
+				learnMoreLabel={ __( 'Learn more', 'google-site-kit' ) }
+				dismiss={ __( 'Dismiss', 'google-site-kit' ) }
+				format="small"
+				ctaLink="http://google.com"
+				ctaLabel={ __( 'Validate', 'google-site-kit' ) }
+				type="win-warning"
+				pageIndex="First detected: 2/13/18"
+			/>
+		),
+		{
+			padding: 0,
+		}
+	)
+	.add(
 		'User Input Prompt Notification',
 		() => {
 			const setupRegistry = ( registry ) => {
