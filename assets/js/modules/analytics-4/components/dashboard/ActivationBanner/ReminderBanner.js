@@ -20,12 +20,12 @@
  * WordPress dependencies
  */
 import { __, sprintf } from '@wordpress/i18n';
-import { Fragment } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { ProgressBar } from 'googlesitekit-components';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import { ACTIVATION_ACKNOWLEDGEMENT_TOOLTIP_STATE_KEY } from '../../../constants';
@@ -38,10 +38,39 @@ import Link from '../../../../../components/Link';
 import { stringToDate } from '../../../../../util';
 import InfoIcon from '../../../../../../svg/icons/info.svg';
 import ErrorIcon from '../../../../../../svg/icons/error.svg';
+import ReminderBannerNoAccess from './ReminderBannerNoAccess';
+import { CORE_MODULES } from '../../../../../googlesitekit/modules/datastore/constants';
+import { Cell, Grid, Row } from '../../../../../material-components';
+import { MODULES_ANALYTICS } from '../../../../analytics/datastore/constants';
 
 const { useSelect } = Data;
 
-export default function ReminderBanner( { onSubmitSuccess, children } ) {
+export default function ReminderBanner( {
+	isDismissed,
+	onSubmitSuccess,
+	children,
+} ) {
+	const hasAnalyticsAccess = useSelect( ( select ) => {
+		if ( isDismissed ) {
+			return undefined;
+		}
+		const userID = select( CORE_USER ).getID();
+		const analyticsOwnerID = select( MODULES_ANALYTICS ).getOwnerID();
+
+		if ( userID === undefined || analyticsOwnerID === undefined ) {
+			return undefined;
+		}
+
+		if ( analyticsOwnerID === userID ) {
+			return true;
+		}
+
+		return select( CORE_MODULES ).hasModuleAccess( 'analytics' );
+	} );
+	const isLoadingAnalyticsAccess = useSelect( ( select ) =>
+		select( CORE_MODULES ).isResolving( 'hasModuleAccess', [ 'analytics' ] )
+	);
+
 	const referenceDateString = useSelect( ( select ) =>
 		select( CORE_USER ).getReferenceDate()
 	);
@@ -60,22 +89,34 @@ export default function ReminderBanner( { onSubmitSuccess, children } ) {
 
 	if ( isTooltipVisible ) {
 		return (
-			<Fragment>
-				<AdminMenuTooltip
-					title={ __(
-						'You can connect Google Analytics 4 later here',
-						'google-site-kit'
-					) }
-					content={ __(
-						'You can configure the Google Analytics 4 property inside the Site Kit Settings later.',
-						'google-site-kit'
-					) }
-					dismissLabel={ __( 'Got it', 'google-site-kit' ) }
-					tooltipStateKey={
-						ACTIVATION_ACKNOWLEDGEMENT_TOOLTIP_STATE_KEY
-					}
-				/>
-			</Fragment>
+			<AdminMenuTooltip
+				title={ __(
+					'You can connect Google Analytics 4 later here',
+					'google-site-kit'
+				) }
+				content={ __(
+					'You can configure the Google Analytics 4 property inside the Site Kit Settings later.',
+					'google-site-kit'
+				) }
+				dismissLabel={ __( 'Got it', 'google-site-kit' ) }
+				tooltipStateKey={ ACTIVATION_ACKNOWLEDGEMENT_TOOLTIP_STATE_KEY }
+			/>
+		);
+	}
+
+	if ( isLoadingAnalyticsAccess && ! isDismissed ) {
+		// Wrap in the googlesitekit-publisher-win class to ensure the ProgressBar is treated in the
+		// same way as a BannerNotification, with only one instance visible on the screen at a time.
+		return (
+			<div className="googlesitekit-publisher-win">
+				<Grid>
+					<Row>
+						<Cell size={ 12 }>
+							<ProgressBar />
+						</Cell>
+					</Row>
+				</Grid>
+			</div>
 		);
 	}
 
@@ -85,10 +126,10 @@ export default function ReminderBanner( { onSubmitSuccess, children } ) {
 		'google-site-kit'
 	);
 	let descriptionIcon = (
-		<InfoIcon
+		<ErrorIcon
 			height="14"
 			width="14"
-			className="googlesitekit-ga4-reminder-banner__description-icon googlesitekit-ga4-reminder-banner__description-icon--info"
+			className="googlesitekit-ga4-reminder-banner__description-icon googlesitekit-ga4-reminder-banner__description-icon--error"
 		/>
 	);
 
@@ -99,6 +140,15 @@ export default function ReminderBanner( { onSubmitSuccess, children } ) {
 			'Set up Google Analytics 4 now to join the future of Analytics',
 			'google-site-kit'
 		);
+		if ( hasAnalyticsAccess ) {
+			descriptionIcon = (
+				<InfoIcon
+					height="14"
+					width="14"
+					className="googlesitekit-ga4-reminder-banner__description-icon googlesitekit-ga4-reminder-banner__description-icon--info"
+				/>
+			);
+		}
 	} else if (
 		stringToDate( '2023-06-01' ) <= referenceDate &&
 		referenceDate < stringToDate( '2023-07-01' )
@@ -111,13 +161,6 @@ export default function ReminderBanner( { onSubmitSuccess, children } ) {
 				'google-site-kit'
 			),
 			remainingDays
-		);
-		descriptionIcon = (
-			<ErrorIcon
-				height="14"
-				width="14"
-				className="googlesitekit-ga4-reminder-banner__description-icon googlesitekit-ga4-reminder-banner__description-icon--error"
-			/>
 		);
 	} else {
 		title = __(
@@ -157,6 +200,20 @@ export default function ReminderBanner( { onSubmitSuccess, children } ) {
 			</Link>
 		</section>
 	);
+
+	if ( hasAnalyticsAccess === false ) {
+		return (
+			<ReminderBannerNoAccess
+				title={ title }
+				description={ description }
+				descriptionIcon={ descriptionIcon }
+				dismissExpires={ getBannerDismissalExpiryTime(
+					referenceDateString
+				) }
+				onDismiss={ showTooltip }
+			/>
+		);
+	}
 
 	return (
 		<BannerNotification

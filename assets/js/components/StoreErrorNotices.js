@@ -57,25 +57,26 @@ export default function StoreErrorNotices( {
 			return true;
 		} )
 
-		.map( ( error ) => {
+		.map( ( error, key ) => {
+			let { message } = error;
+
 			if ( isInsufficientPermissionsError( error ) ) {
-				error = {
-					...error,
-					message: getInsufficientPermissionsErrorDescription(
-						error.message,
-						module
-					),
-				};
+				message = getInsufficientPermissionsErrorDescription(
+					message,
+					module
+				);
 			}
-			return error;
-		} )
-		.map( ( error, key ) => (
-			<ErrorNotice
-				key={ key }
-				error={ error }
-				shouldDisplayError={ shouldDisplayError }
-			/>
-		) );
+
+			return (
+				<ErrorNotice
+					key={ key }
+					error={ error }
+					storeName={ storeName }
+					message={ message }
+					shouldDisplayError={ shouldDisplayError }
+				/>
+			);
+		} );
 }
 
 StoreErrorNotices.propTypes = {

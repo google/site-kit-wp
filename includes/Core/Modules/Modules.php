@@ -1252,53 +1252,120 @@ final class Modules {
 				)
 			),
 			new REST_Route(
-				'core/modules/data/recover-module',
+				'core/modules/data/recover-modules',
 				array(
 					array(
 						'methods'             => WP_REST_Server::EDITABLE,
 						'callback'            => function( WP_REST_Request $request ) {
 							$data = $request['data'];
-							$slug = isset( $data['slug'] ) ? $data['slug'] : '';
-							try {
-								$module = $this->get_module( $slug );
-							} catch ( Exception $e ) {
-								return new WP_Error( 'invalid_module_slug', $e->getMessage(), array( 'status' => 404 ) );
+							$slugs = isset( $data['slugs'] ) ? $data['slugs'] : array();
+
+							if ( ! is_array( $slugs ) || empty( $slugs ) ) {
+								return new WP_Error(
+									'invalid_param',
+									__( 'Request parameter slugs is not valid.', 'google-site-kit' ),
+									array( 'status' => 400 )
+								);
 							}
 
-							if ( ! $module->is_shareable() ) {
-								return new WP_Error( 'module_not_shareable', __( 'Module is not shareable.', 'google-site-kit' ), array( 'status' => 404 ) );
-							}
-
-							if ( ! $this->is_module_recoverable( $module ) ) {
-								return new WP_Error( 'module_not_recoverable', __( 'Module is not recoverable.', 'google-site-kit' ), array( 'status' => 403 ) );
-							}
-
-							$check_access_endpoint = '/' . REST_Routes::REST_ROOT . '/' . self::REST_ENDPOINT_CHECK_ACCESS;
-							$check_access_request = new WP_REST_Request( 'POST', $check_access_endpoint );
-							$check_access_request->set_body_params(
-								array(
-									'data' => array(
-										'slug' => $slug,
-									),
-								)
+							$response = array(
+								'success' => array(),
+								'error'   => array(),
 							);
-							$check_access_response = rest_do_request( $check_access_request );
 
-							if ( is_wp_error( $check_access_response ) ) {
-								return $check_access_response;
+							foreach ( $slugs as $slug ) {
+								try {
+									$module = $this->get_module( $slug );
+								} catch ( Exception $e ) {
+									$response = $this->handle_module_recovery_error(
+										$slug,
+										$response,
+										new WP_Error(
+											'invalid_module_slug',
+											$e->getMessage(),
+											array( 'status' => 404 )
+										)
+									);
+									continue;
+								}
+
+								if ( ! $module->is_shareable() ) {
+									$response = $this->handle_module_recovery_error(
+										$slug,
+										$response,
+										new WP_Error(
+											'module_not_shareable',
+											__( 'Module is not shareable.', 'google-site-kit' ),
+											array( 'status' => 404 )
+										)
+									);
+									continue;
+								}
+
+								if ( ! $this->is_module_recoverable( $module ) ) {
+									$response = $this->handle_module_recovery_error(
+										$slug,
+										$response,
+										new WP_Error(
+											'module_not_recoverable',
+											__( 'Module is not recoverable.', 'google-site-kit' ),
+											array( 'status' => 403 )
+										)
+									);
+									continue;
+								}
+
+								$check_access_endpoint = '/' . REST_Routes::REST_ROOT . '/' . self::REST_ENDPOINT_CHECK_ACCESS;
+								$check_access_request = new WP_REST_Request( 'POST', $check_access_endpoint );
+								$check_access_request->set_body_params(
+									array(
+										'data' => array(
+											'slug' => $slug,
+										),
+									)
+								);
+								$check_access_response = rest_do_request( $check_access_request );
+
+								if ( is_wp_error( $check_access_response ) ) {
+									$response = $this->handle_module_recovery_error(
+										$slug,
+										$response,
+										$check_access_response
+									);
+									continue;
+								}
+								$access = isset( $check_access_response->data['access'] ) ? $check_access_response->data['access'] : false;
+								if ( ! $access ) {
+									$response = $this->handle_module_recovery_error(
+										$slug,
+										$response,
+										new WP_Error(
+											'module_not_accessible',
+											__( 'Module is not accessible by current user.', 'google-site-kit' ),
+											array( 'status' => 403 )
+										)
+									);
+									continue;
+								}
+
+								// Update the module's ownerID to the ID of the user making the request.
+								$module_setting_updates = array(
+									'ownerID' => get_current_user_id(),
+								);
+								$recovered_module = $module->get_settings()->merge( $module_setting_updates );
+
+								if ( $recovered_module ) {
+									$response['success'][ $slug ] = true;
+								}
 							}
-							$access = isset( $check_access_response->data['access'] ) ? $check_access_response->data['access'] : false;
-							if ( ! $access ) {
-								return new WP_Error( 'module_not_accessible', __( 'Module is not accessible by current user.', 'google-site-kit' ), array( 'status' => 403 ) );
+
+							// Cast error array to an object so JSON encoded response is
+							// always an object, even when the error array is empty.
+							if ( ! $response['error'] ) {
+								$response['error'] = (object) array();
 							}
 
-							// Update the module's ownerID to the ID of the user making the request.
-							$module_setting_updates = array(
-								'ownerID' => get_current_user_id(),
-							);
-							$module->get_settings()->merge( $module_setting_updates );
-
-							return new WP_REST_Response( $module_setting_updates );
+							return new WP_REST_Response( $response );
 						},
 						'permission_callback' => $can_setup,
 					),
@@ -1626,4 +1693,39 @@ final class Modules {
 		return $this->options->delete( Module_Sharing_Settings::OPTION );
 	}
 
+	/**
+	 * Prepares error data to pass with WP_REST_Response.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param WP_Error $error Error (WP_Error) to prepare.
+	 *
+	 * @return array Formatted error response suitable for the client.
+	 */
+	protected function prepare_error_response( $error ) {
+		return array(
+			'code'    => $error->get_error_code(),
+			'message' => $error->get_error_message(),
+			'data'    => $error->get_error_data(),
+		);
+	}
+
+	/**
+	 * Updates response with error encounted during module recovery.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string   $slug The module slug.
+	 * @param array    $response The existing response.
+	 * @param WP_Error $error The error encountered.
+	 *
+	 * @return array The updated response with error included.
+	 */
+	protected function handle_module_recovery_error( $slug, $response, $error ) {
+		$response['success'][ $slug ] = false;
+		$response['error'][ $slug ]   = $this->prepare_error_response(
+			$error
+		);
+		return $response;
+	}
 }

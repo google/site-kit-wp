@@ -34,8 +34,8 @@ import { useDebounce } from '../hooks/useDebounce';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { Dialog } from 'googlesitekit-components';
 import { clearWebStorage } from '../util';
-import Dialog from './Dialog';
 import Portal from './Portal';
 import Link from './Link';
 import { CORE_SITE } from '../googlesitekit/datastore/site/constants';

@@ -26,7 +26,7 @@ import fetchMock from 'fetch-mock';
  */
 import Data from 'googlesitekit-data';
 import API from 'googlesitekit-api';
-import Button from '../components/Button';
+import { Button } from 'googlesitekit-components';
 import TourTooltips from '../components/TourTooltips';
 import ideaHubModuleFeatureTour from './idea-hub-module';
 import { CORE_USER } from '../googlesitekit/datastore/user/constants';

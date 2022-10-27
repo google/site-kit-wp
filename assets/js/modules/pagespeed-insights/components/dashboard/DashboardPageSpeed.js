@@ -41,9 +41,9 @@ import { __ } from '@wordpress/i18n';
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
+import { ProgressBar } from 'googlesitekit-components';
 import { Cell, Grid, Row } from '../../../../material-components';
 import DeviceSizeTabBar from '../../../../components/DeviceSizeTabBar';
-import ProgressBar from '../../../../components/ProgressBar';
 import Link from '../../../../components/Link';
 import LabReportMetrics from '../common/LabReportMetrics';
 import FieldReportMetrics from '../common/FieldReportMetrics';

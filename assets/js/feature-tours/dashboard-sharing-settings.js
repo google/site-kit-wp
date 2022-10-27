@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import { EVENTS } from 'react-joyride';
+
+/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
@@ -25,6 +30,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { isFeatureEnabled } from '../features';
+import { CORE_USER } from '../googlesitekit/datastore/user/constants';
 
 const { hasMultipleAdmins } = global._googlesitekitUserData || {};
 
@@ -57,4 +63,12 @@ export default {
 	gaEventCategory: ( viewContext ) => `${ viewContext }_dashboard-sharing`,
 	checkRequirements: () => isFeatureEnabled( 'dashboardSharing' ),
 	steps,
+	callback: ( { type }, { select, dispatch } ) => {
+		if (
+			EVENTS.TOOLTIP === type &&
+			select( CORE_USER ).isTourDismissed( 'dashboardSharing' ) === false
+		) {
+			dispatch( CORE_USER ).dismissTour( 'dashboardSharing' );
+		}
+	},
 };

@@ -25,17 +25,17 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { Component, Fragment } from '@wordpress/element';
+import { Component } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { Icon, check, stack } from '@wordpress/icons';
 
 /**
  * Internal dependencies
  */
+import { Button } from 'googlesitekit-components';
 import ViewContextContext from '../Root/ViewContextContext';
 import Notification from '../notifications/BannerNotification';
 import Link from '../Link';
-import Button from '../Button';
 import { trackEvent } from '../../util';
 
 class ErrorHandler extends Component {
@@ -97,7 +97,7 @@ class ErrorHandler extends Component {
 					'google-site-kit'
 				) }
 				description={
-					<Fragment>
+					<p>
 						<Button
 							trailingIcon={ icon }
 							onClick={ this.onErrorClick }
@@ -113,7 +113,7 @@ class ErrorHandler extends Component {
 						>
 							{ __( 'Report this problem', 'google-site-kit' ) }
 						</Link>
-					</Fragment>
+					</p>
 				}
 				isDismissible={ false }
 				format="small"

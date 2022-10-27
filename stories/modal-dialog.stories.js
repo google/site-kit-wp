@@ -24,7 +24,7 @@ import { storiesOf } from '@storybook/react';
 /**
  * Internal dependencies
  */
-import Dialog from '../assets/js/components/Dialog';
+import { Dialog } from 'googlesitekit-components';
 
 storiesOf( 'Global', module ).add(
 	'Modal Dialog',

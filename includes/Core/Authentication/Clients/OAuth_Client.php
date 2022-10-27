@@ -19,12 +19,14 @@ use Google\Site_Kit\Core\Authentication\Owner_ID;
 use Google\Site_Kit\Core\Authentication\Profile;
 use Google\Site_Kit\Core\Authentication\Token;
 use Google\Site_Kit\Core\Dashboard_Sharing\Activity_Metrics\Activity_Metrics;
+use Google\Site_Kit\Core\Dashboard_Sharing\Activity_Metrics\Active_Consumers;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Util\Scopes;
 use Google\Site_Kit\Core\Util\URL;
 use Google\Site_Kit_Dependencies\Google\Service\PeopleService as Google_Service_PeopleService;
+use WP_User;
 
 /**
  * Class for connecting to Google APIs via OAuth.
@@ -55,6 +57,14 @@ final class OAuth_Client extends OAuth_Client_Base {
 	 * @var Activity_Metrics
 	 */
 	private $activity_metrics;
+
+	/**
+	 * Active_Consumers instance.
+	 *
+	 * @since n.e.x.t
+	 * @var Active_Consumers
+	 */
+	private $active_consumers;
 
 	/**
 	 * Constructor.
@@ -90,6 +100,7 @@ final class OAuth_Client extends OAuth_Client_Base {
 
 		$this->owner_id         = new Owner_ID( $this->options );
 		$this->activity_metrics = new Activity_Metrics( $this->context, $this->user_options );
+		$this->active_consumers = new Active_Consumers( $this->user_options );
 	}
 
 	/**
@@ -634,5 +645,16 @@ final class OAuth_Client extends OAuth_Client_Base {
 		return current_user_can( Permissions::VIEW_DASHBOARD )
 			? $this->context->admin_url( 'dashboard' )
 			: $this->context->admin_url( 'splash' );
+	}
+
+	/**
+	 * Adds a user to the active consumers list.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param WP_User $user User object.
+	 */
+	public function add_active_consumer( WP_User $user ) {
+		$this->active_consumers->add( $user->ID, $user->roles );
 	}
 }

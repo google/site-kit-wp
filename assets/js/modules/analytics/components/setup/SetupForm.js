@@ -31,7 +31,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import Button from '../../../../components/Button';
+import { Button } from 'googlesitekit-components';
 import {
 	SETUP_FLOW_MODE_LEGACY,
 	SETUP_FLOW_MODE_UA,

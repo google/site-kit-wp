@@ -24,13 +24,15 @@ import { useCallback, lazy, Suspense } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { ProgressBar } from 'googlesitekit-components';
 import {
 	MODULES_THANK_WITH_GOOGLE,
 	CTA_PLACEMENT_DYNAMIC_HIGH,
 	CTA_PLACEMENT_DYNAMIC_LOW,
 } from '../../datastore/constants';
+import useViewContext from '../../../../hooks/useViewContext';
+import { trackEvent } from '../../../../util';
 import ImageRadio from '../../../../components/ImageRadio';
-import ProgressBar from '../../../../components/ProgressBar';
 const { useSelect, useDispatch } = Data;
 
 const DynamicLowSVG = lazy( () =>
@@ -41,6 +43,8 @@ const DynamicHighSVG = lazy( () =>
 );
 
 export default function ProminenceRadio() {
+	const viewContext = useViewContext();
+
 	const { setCTAPlacement } = useDispatch( MODULES_THANK_WITH_GOOGLE );
 
 	const ctaPlacement = useSelect( ( select ) =>
@@ -51,8 +55,13 @@ export default function ProminenceRadio() {
 		( { target } = {} ) => {
 			const { value: placement } = target || {};
 			setCTAPlacement( placement );
+			trackEvent(
+				`${ viewContext }_thank-with-google`,
+				'change_cta_prominence',
+				placement.split( '_' ).pop()
+			);
 		},
-		[ setCTAPlacement ]
+		[ setCTAPlacement, viewContext ]
 	);
 
 	return (

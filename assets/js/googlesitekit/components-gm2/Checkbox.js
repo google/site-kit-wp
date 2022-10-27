@@ -30,7 +30,7 @@ import { Fragment } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import Spinner from '../components/Spinner';
+import Spinner from '../../components/Spinner';
 
 export default function Checkbox( props ) {
 	const {

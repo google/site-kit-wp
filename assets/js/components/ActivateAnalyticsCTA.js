@@ -30,10 +30,10 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { Button } from 'googlesitekit-components';
 import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
 import useActivateModuleCallback from '../hooks/useActivateModuleCallback';
 import useCompleteModuleActivationCallback from '../hooks/useCompleteModuleActivationCallback';
-import Button from './Button';
 const { useSelect } = Data;
 
 export default function ActivateAnalyticsCTA( { children } ) {

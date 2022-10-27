@@ -50,7 +50,7 @@ describe( 'ActivationBanner', () => {
 		unsubscribeFromAll( registry );
 	} );
 
-	it( 'does not render when UA is not connected', () => {
+	it( 'does not render when UA is not connected', async () => {
 		provideModules( registry, [
 			{
 				slug: 'analytics',
@@ -59,13 +59,14 @@ describe( 'ActivationBanner', () => {
 			},
 		] );
 
-		const { container } = render( <ActivationBanner />, {
+		const { container, waitForRegistry } = render( <ActivationBanner />, {
 			registry,
 		} );
+		await waitForRegistry();
 		expect( container.childElementCount ).toBe( 0 );
 	} );
 
-	it( 'does not render when UA and GA4 are both connected', () => {
+	it( 'does not render when UA and GA4 are both connected', async () => {
 		provideModules( registry, [
 			{
 				slug: 'analytics',
@@ -79,13 +80,14 @@ describe( 'ActivationBanner', () => {
 			},
 		] );
 
-		const { container } = render( <ActivationBanner />, {
+		const { container, waitForRegistry } = render( <ActivationBanner />, {
 			registry,
 		} );
+		await waitForRegistry();
 		expect( container.childElementCount ).toBe( 0 );
 	} );
 
-	it( 'does render when UA is connected but GA4 is not connected', () => {
+	it( 'does render when UA is connected but GA4 is not connected', async () => {
 		provideModules( registry, [
 			{
 				slug: 'analytics',
@@ -99,9 +101,10 @@ describe( 'ActivationBanner', () => {
 			},
 		] );
 
-		const { container } = render( <ActivationBanner />, {
+		const { container, waitForRegistry } = render( <ActivationBanner />, {
 			registry,
 		} );
+		await waitForRegistry();
 		expect( container.childElementCount ).toBe( 1 );
 	} );
 } );
