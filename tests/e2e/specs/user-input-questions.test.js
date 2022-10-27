@@ -48,10 +48,9 @@ const wpConditionalDescribe = () => {
 
 wpConditionalDescribe()( 'User Input Settings', () => {
 	async function fillInInputSettings() {
-		await step( 'select goals', async () => {
+		await step( 'select purpose', async () => {
 			await page.waitForSelector( '.googlesitekit-user-input__question' );
-			await expect( page ).toClick( '#goals-publish_blog' );
-			await expect( page ).toClick( '#goals-share_portfolio' );
+			await expect( page ).toClick( '#purpose-publish_blog' );
 		} );
 
 		await step( 'select post frequency', async () => {
@@ -61,13 +60,13 @@ wpConditionalDescribe()( 'User Input Settings', () => {
 			await expect( page ).toClick( '#postFrequency-monthly' );
 		} );
 
-		await step( 'select help needed', async () => {
+		await step( 'select goals', async () => {
 			await expect( page ).toClick(
 				'.googlesitekit-user-input__buttons--next'
 			);
-			await expect( page ).toClick( '#helpNeeded-retaining_visitors' );
-			await expect( page ).toClick( '#helpNeeded-improving_performance' );
-			await expect( page ).toClick( '#helpNeeded-help_better_rank' );
+			await expect( page ).toClick( '#goals-retaining_visitors' );
+			await expect( page ).toClick( '#goals-improving_performance' );
+			await expect( page ).toClick( '#goals-help_better_rank' );
 		} );
 
 		await step(
