@@ -66,7 +66,7 @@ wpConditionalDescribe()( 'User Input Settings', () => {
 			);
 			await expect( page ).toClick( '#goals-retaining_visitors' );
 			await expect( page ).toClick( '#goals-improving_performance' );
-			await expect( page ).toClick( '#goals-help_content_performance' );
+			await expect( page ).toClick( '#goals-help_better_rank' );
 		} );
 
 		await step(
