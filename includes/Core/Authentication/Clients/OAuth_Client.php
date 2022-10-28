@@ -514,7 +514,11 @@ final class OAuth_Client extends OAuth_Client_Base {
 			$redirect_url = $this->context->admin_url( 'splash', array( 'notification' => 'authentication_success' ) );
 		}
 
-		wp_safe_redirect( $redirect_url );
+		// We use `wp_redirect` here instead of `wp_safe_redirect` to allow
+		// UTF-8 characters.
+		//
+		// See: https://github.com/google/site-kit-wp/issues/5868.
+		wp_redirect( $redirect_url ); // phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect
 		exit();
 	}
 
