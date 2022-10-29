@@ -69,11 +69,9 @@ export default function GA4SettingsControls( { hasModuleAccess } ) {
 	const properties = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getProperties( accountID )
 	);
-
 	const isAdminAPIWorking = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).isAdminAPIWorking()
 	);
-
 	const enableGA4 = useSelect( ( select ) =>
 		select( CORE_FORMS ).getValue( FORM_SETUP, 'enableGA4' )
 	);
@@ -175,15 +173,6 @@ export default function GA4SettingsControls( { hasModuleAccess } ) {
 		propertyID,
 	] );
 
-	useEffect( () => {
-		if ( enableGA4PropertyTooltip && propertyID ) {
-			// Hide the tooltip once the property is selected.
-			setValues( FORM_SETUP, {
-				enableGA4PropertyTooltip: false,
-			} );
-		}
-	}, [ enableGA4PropertyTooltip, propertyID, setValues ] );
-
 	if ( isAdminAPIWorking === undefined ) {
 		return <ProgressBar height={ isDisabled ? 180 : 212 } small />;
 	}
@@ -211,33 +200,35 @@ export default function GA4SettingsControls( { hasModuleAccess } ) {
 							}
 						/>
 
-						{ enableGA4PropertyTooltip && hasModuleAccess && (
-							<JoyrideTooltip
-								title={ __(
-									'Set up your Google Analytics 4 property here',
-									'google-site-kit'
-								) }
-								target=".googlesitekit-analytics-4__select-property"
-								onDismiss={ () =>
-									setValues( FORM_SETUP, {
-										enableGA4PropertyTooltip: false,
-									} )
-								}
-								cta={
-									<Button
-										className="googlesitekit-tooltip-button"
-										href={ documentationURL }
-										target="_blank"
-										text
-									>
-										{ __(
-											'Learn more',
-											'google-site-kit'
-										) }
-									</Button>
-								}
-							/>
-						) }
+						{ module &&
+							enableGA4PropertyTooltip &&
+							hasModuleAccess && (
+								<JoyrideTooltip
+									title={ __(
+										'Set up your Google Analytics 4 property here',
+										'google-site-kit'
+									) }
+									target=".googlesitekit-analytics-4__select-property"
+									onDismiss={ () =>
+										setValues( FORM_SETUP, {
+											enableGA4PropertyTooltip: false,
+										} )
+									}
+									cta={
+										<Button
+											className="googlesitekit-tooltip-button"
+											href={ documentationURL }
+											target="_blank"
+											text
+										>
+											{ __(
+												'Learn more',
+												'google-site-kit'
+											) }
+										</Button>
+									}
+								/>
+							) }
 					</Fragment>
 				) }
 				{ isDisabled && (
