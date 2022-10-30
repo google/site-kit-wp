@@ -115,7 +115,7 @@ export default function Footer( props ) {
 		if ( slug === 'analytics' ) {
 			dismissGA4PropertyTooltip();
 		}
-	}, [ clearErrors, history, viewContext, slug ] );
+	}, [ clearErrors, history, viewContext, slug, dismissGA4PropertyTooltip ] );
 
 	const handleConfirm = useCallback(
 		async ( event ) => {
@@ -150,6 +150,7 @@ export default function Footer( props ) {
 			clearErrors,
 			history,
 			viewContext,
+			dismissGA4PropertyTooltip,
 		]
 	);
 
