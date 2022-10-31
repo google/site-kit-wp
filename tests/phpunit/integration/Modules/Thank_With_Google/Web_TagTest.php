@@ -81,7 +81,7 @@ class Web_TagTest extends TestCase {
 		$output = apply_filters( 'the_content', $this->dummy_content );
 
 		$this->assertStringEndsWith(
-			'<div counter-button style="height: 34px; visibility: hidden; box-sizing: content-box; padding: 12px 0; display: inline-block; overflow: hidden;"></div>'
+			'<div counter-button style="height: 34px; visibility: hidden; box-sizing: content-box; padding: 12px 0; display: inline-block; overflow: hidden;"></div></div>'
 			. PHP_EOL
 			. '<!-- End Thank with Google snippet added by Site Kit -->'
 			. PHP_EOL,
@@ -122,11 +122,11 @@ class Web_TagTest extends TestCase {
 		$this->assertStringStartsNotWith(
 			'<!-- Thank with Google snippet added by Site Kit -->'
 			. PHP_EOL
-			. '<button twg-button',
+			. '<div class="googlesitekit-twg-wrapper"><button twg-button',
 			$output
 		);
 		$this->assertStringEndsWith(
-			'<div counter-button style="height: 34px; visibility: hidden; box-sizing: content-box; padding: 12px 0; display: inline-block; overflow: hidden;"></div>'
+			'<div counter-button style="height: 34px; visibility: hidden; box-sizing: content-box; padding: 12px 0; display: inline-block; overflow: hidden;"></div></div>'
 			. PHP_EOL
 			. '<!-- End Thank with Google snippet added by Site Kit -->'
 			. PHP_EOL,
@@ -146,12 +146,12 @@ class Web_TagTest extends TestCase {
 			. PHP_EOL
 			. '<!-- Thank with Google snippet added by Site Kit -->'
 			. PHP_EOL
-			. '<button twg-button',
+			. '<div class="googlesitekit-twg-wrapper"><button twg-button',
 			$output
 		);
 		$this->assertStringContainsString( '<p>Goodbye World</p>', $output );
 		$this->assertStringEndsWith(
-			'<div counter-button style="height: 34px; visibility: hidden; box-sizing: content-box; padding: 12px 0; display: inline-block; overflow: hidden;"></div>'
+			'<div counter-button style="height: 34px; visibility: hidden; box-sizing: content-box; padding: 12px 0; display: inline-block; overflow: hidden;"></div></div>'
 			. PHP_EOL
 			. '<!-- End Thank with Google snippet added by Site Kit -->'
 			. PHP_EOL,
