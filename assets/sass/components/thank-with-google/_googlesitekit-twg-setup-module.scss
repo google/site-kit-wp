@@ -1,4 +1,6 @@
 /**
+ * Thank with Google - Setup Module styles.
+ *
  * Site Kit by Google, Copyright 2022 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,10 +16,35 @@
  * limitations under the License.
  */
 
-@import "googlesitekit-twg-settings";
-@import "googlesitekit-twg-setup";
-@import "googlesitekit-twg-color-radio";
-@import "googlesitekit-twg-post-types-select";
-@import "googlesitekit-twg-position-radio";
-@import "googlesitekit-twg-supporter-wall";
-@import "googlesitekit-twg-setup-module";
+.googlesitekit-plugin {
+
+	.googlesitekit-setup-module--thank-with-google {
+
+		.googlesitekit-setup-module__logo {
+			margin-right: 4px;
+		}
+
+		.googlesitekit-setup-module__title {
+			flex-basis: 100%;
+
+			@media (min-width: $bp-desktop) {
+				flex-basis: auto;
+			}
+		}
+
+		.googlesitekit-setup__icon {
+			margin-top: 20px;
+
+			@media (min-width: $bp-desktop) {
+				margin-top: 0;
+			}
+		}
+
+		.googlesitekit-setup-module__badges {
+
+			@media (min-width: $bp-desktop) {
+				order: 2;
+			}
+		}
+	}
+}
