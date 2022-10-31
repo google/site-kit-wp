@@ -186,11 +186,11 @@ class Web_Tag extends Module_Web_Tag {
 		}
 
 		$cta_placeholder = $this->add_snippet_comments(
-			'<button twg-button style="height: 42px; visibility: hidden; margin: 12px 0;"></button>'
+			'<div><button twg-button style="height: 42px; visibility: hidden; margin: 12px 0;"></button></div>'
 		);
 
 		$counter_placeholder = $this->add_snippet_comments(
-			'<div counter-button style="height: 34px; visibility: hidden; box-sizing: content-box; padding: 12px 0; display: inline-block; overflow: hidden;"></div>'
+			'<div><div counter-button style="height: 34px; visibility: hidden; box-sizing: content-box; padding: 12px 0; display: inline-block; overflow: hidden;"></div></div>'
 		);
 
 		if ( empty( $content ) ) {
