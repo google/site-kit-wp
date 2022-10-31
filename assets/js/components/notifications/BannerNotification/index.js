@@ -166,8 +166,8 @@ function BannerNotification( {
 		}, 350 );
 	}
 
-	const isNavigating = useSelect( ( select ) =>
-		select( CORE_LOCATION ).isNavigating()
+	const isNavigatingToCTALink = useSelect( ( select ) =>
+		select( CORE_LOCATION ).isNavigatingTo( ctaLink || '' )
 	);
 
 	const { navigateTo } = useDispatch( CORE_LOCATION );
@@ -237,14 +237,15 @@ function BannerNotification( {
 	// isDismissed will be undefined until resolved from browser storage.
 	// isNavigating will be true until the navigation is complete.
 	if (
-		! isNavigating &&
+		! isNavigatingToCTALink &&
 		isDismissible &&
 		( undefined === isDismissed || isDismissed )
 	) {
 		return null;
 	}
 
-	const closedClass = ! isNavigating && isClosed ? 'is-closed' : 'is-open';
+	const closedClass =
+		! isNavigatingToCTALink && isClosed ? 'is-closed' : 'is-open';
 	const inlineLayout = 'large' === format && 'win-stats-increase' === type;
 
 	const imageCellSizeProperties = getImageCellSizeProperties( format );
@@ -458,7 +459,7 @@ function BannerNotification( {
 										onClick={ handleCTAClick }
 										disabled={
 											isAwaitingCTAResponse ||
-											isNavigating
+											isNavigatingToCTALink
 										}
 									>
 										{ ctaLabel }
@@ -467,14 +468,15 @@ function BannerNotification( {
 
 								<Spinner
 									isSaving={
-										isAwaitingCTAResponse || isNavigating
+										isAwaitingCTAResponse ||
+										isNavigatingToCTALink
 									}
 								/>
 
 								{ isDismissible &&
 									dismiss &&
 									! isAwaitingCTAResponse &&
-									! isNavigating && (
+									! isNavigatingToCTALink && (
 										<DismissComponent
 											onClick={ handleDismiss }
 										>
