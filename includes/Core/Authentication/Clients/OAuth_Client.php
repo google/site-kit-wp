@@ -134,6 +134,7 @@ final class OAuth_Client extends OAuth_Client_Base {
 			return;
 		}
 
+		$this->active_consumers->delete();
 		$this->set_token( $token_response );
 	}
 
