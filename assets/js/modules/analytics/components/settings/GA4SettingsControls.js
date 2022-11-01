@@ -88,6 +88,10 @@ export default function GA4SettingsControls( { hasModuleAccess } ) {
 		select( CORE_MODULES ).getModule( 'analytics-4' )
 	);
 
+	const isModuleConnected = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
+	);
+
 	const documentationURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getDocumentationLinkURL( 'ga4' )
 	);
@@ -200,7 +204,7 @@ export default function GA4SettingsControls( { hasModuleAccess } ) {
 							}
 						/>
 
-						{ module &&
+						{ isModuleConnected &&
 							enableGA4PropertyTooltip &&
 							hasModuleAccess && (
 								<JoyrideTooltip

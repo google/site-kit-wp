@@ -112,6 +112,7 @@ export default function Footer( props ) {
 		);
 		await clearErrors();
 		history.push( `/connected-services/${ slug }` );
+
 		if ( slug === 'analytics' ) {
 			dismissGA4PropertyTooltip();
 		}
@@ -135,6 +136,7 @@ export default function Footer( props ) {
 				);
 				await clearErrors();
 				history.push( `/connected-services/${ slug }` );
+
 				if ( slug === 'analytics' ) {
 					dismissGA4PropertyTooltip();
 				}
