@@ -72,17 +72,16 @@ export default function ErrorNotice( {
 	const shouldDisplayRetry = isErrorRetryable( error, selectorData );
 
 	return (
-		<div className="googlesitekit-error-notice__wrapper">
-			<ErrorText
-				message={ message }
-				reconnectURL={ error.data?.reconnectURL }
-			/>
+		<ErrorText
+			message={ message }
+			reconnectURL={ error.data?.reconnectURL }
+		>
 			{ shouldDisplayRetry && (
 				<Link onClick={ handleRetry }>
-					{ __( 'Retry', 'google-site-kit' ) }
+					{ __( ' Retry', 'google-site-kit' ) }
 				</Link>
 			) }
-		</div>
+		</ErrorText>
 	);
 }
 

@@ -19,6 +19,12 @@
 .googlesitekit-error-text {
 	color: $c-error;
 	font-weight: 500;
+	margin: 1rem 0;
+
+	p {
+		display: inline;
+		margin-right: 1em;
+	}
 }
 
 .googlesitekit-error-retry-text {
@@ -28,11 +34,6 @@
 
 .googlesitekit-error-cta-wrapper {
 	align-items: center;
-	display: flex;
-	gap: 1rem;
-}
-
-.googlesitekit-error-notice__wrapper {
 	display: flex;
 	gap: 1rem;
 }

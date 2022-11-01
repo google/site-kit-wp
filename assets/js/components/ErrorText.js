@@ -32,7 +32,7 @@ import { sprintf, __ } from '@wordpress/i18n';
  */
 import { sanitizeHTML } from '../util';
 
-function ErrorText( { message, reconnectURL } ) {
+function ErrorText( { message, reconnectURL, children } ) {
 	if ( ! message ) {
 		return null;
 	}
@@ -67,6 +67,7 @@ function ErrorText( { message, reconnectURL } ) {
 			<p
 				dangerouslySetInnerHTML={ sanitizeHTML( error, sanitizeArgs ) }
 			/>
+			{ children }
 		</div>
 	);
 }
