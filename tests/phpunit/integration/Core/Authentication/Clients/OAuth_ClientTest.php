@@ -14,6 +14,7 @@ use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
 use Google\Site_Kit\Core\Authentication\Owner_ID;
 use Google\Site_Kit\Core\Authentication\Profile;
+use Google\Site_Kit\Core\Dashboard_Sharing\Activity_Metrics\Active_Consumers;
 use Google\Site_Kit\Tests\Exception\RedirectException;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Options;
@@ -36,7 +37,19 @@ class OAuth_ClientTest extends TestCase {
 		$this->fake_site_connection();
 		$user_id = $this->factory()->user->create();
 		wp_set_current_user( $user_id );
-		$client = new OAuth_Client( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+
+		$context          = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$client           = new OAuth_Client( $context );
+		$user_options     = new User_Options( $context );
+		$active_consumers = new Active_Consumers( $user_options );
+
+		$active_consumers->register();
+		$active_consumers->set(
+			array(
+				1 => array( 'editor', 'author' ),
+				2 => array( 'contributor', 'editor' ),
+			)
+		);
 
 		// Make sure we're starting with a clean slate
 		$this->assertFalse( get_user_option( OAuth_Client::OPTION_ERROR_CODE, $user_id ) );
@@ -83,6 +96,10 @@ class OAuth_ClientTest extends TestCase {
 		$client->refresh_token();
 
 		$this->assertEmpty( get_user_option( OAuth_Client::OPTION_ERROR_CODE, $user_id ) );
+
+		// Verify that the active consumers meta was deleted.
+		$this->assertEmpty( $active_consumers->get() );
+
 		// Make sure the access token was updated for the user.
 		$this->assertEquals( 'new-test-access-token', $client->get_access_token() );
 	}
