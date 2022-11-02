@@ -37,6 +37,8 @@ import {
 	provideModules,
 	fireEvent,
 } from '../../../../../tests/js/test-utils';
+import { MODULES_ANALYTICS } from '../../../modules/analytics/datastore/constants';
+import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 
 describe( 'Header', () => {
 	const history = createHashHistory();
@@ -85,6 +87,7 @@ describe( 'Header', () => {
 				connected: false,
 			},
 		] );
+		registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
 	} );
 
 	it( 'should render "Connected" for a connected module', () => {
@@ -113,6 +116,25 @@ describe( 'Header', () => {
 		const button = queryByRole( 'button' );
 		expect( button ).toBeInTheDocument();
 		expect( button ).toHaveTextContent( 'Connect Google Analytics 4' );
+	} );
+
+	it( 'should not render the button to connect GA4 if Analytics is connected without access to it but GA4 is not', () => {
+		registry
+			.dispatch( MODULES_ANALYTICS )
+			.receiveGetSettings( { ownerID: 100 } );
+		registry
+			.dispatch( CORE_MODULES )
+			.receiveCheckModuleAccess(
+				{ access: false },
+				{ slug: 'analytics' }
+			);
+		const { queryByRole } = render( <Header slug="analytics" />, {
+			registry,
+		} );
+
+		expect(
+			queryByRole( 'button', { name: /connect google analytics 4/i } )
+		).not.toBeInTheDocument();
 	} );
 
 	it( 'should open the tab when ENTER key is pressed', () => {
