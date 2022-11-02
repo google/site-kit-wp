@@ -79,6 +79,94 @@ WithoutModuleAccess.args = {
 	hasAnalyticsAccess: false,
 	hasAnalytics4Access: false,
 };
+WithoutModuleAccess.decorators = [
+	( Story ) => {
+		const setupRegistry = ( registry ) => {
+			registry.dispatch( MODULES_ANALYTICS_4 ).setPropertyID( null );
+		};
+
+		return (
+			<WithRegistrySetup func={ setupRegistry }>
+				<Story />
+			</WithRegistrySetup>
+		);
+	},
+];
+
+export const WithoutAnalyticsAccess = Template.bind( null );
+WithoutAnalyticsAccess.storyName = 'Settings w/o Analytics access';
+WithoutAnalyticsAccess.args = {
+	hasAnalyticsAccess: false,
+	hasAnalytics4Access: true,
+};
+WithoutAnalyticsAccess.decorators = [
+	( Story ) => {
+		const setupRegistry = ( registry ) => {
+			registry.dispatch( MODULES_ANALYTICS_4 ).setPropertyID( null );
+		};
+
+		return (
+			<WithRegistrySetup func={ setupRegistry }>
+				<Story />
+			</WithRegistrySetup>
+		);
+	},
+];
+
+export const WithoutAnalytics4Access = Template.bind( null );
+WithoutAnalytics4Access.storyName = 'Settings w/o Analytics-4 access';
+WithoutAnalytics4Access.args = {
+	hasAnalyticsAccess: true,
+	hasAnalytics4Access: false,
+};
+WithoutAnalytics4Access.decorators = [
+	( Story ) => {
+		const setupRegistry = ( registry ) => {
+			registry.dispatch( MODULES_ANALYTICS_4 ).setPropertyID( null );
+		};
+
+		return (
+			<WithRegistrySetup func={ setupRegistry }>
+				<Story />
+			</WithRegistrySetup>
+		);
+	},
+];
+
+export const Analytics4NotConnectedAndNoUAAccess = Template.bind( null );
+Analytics4NotConnectedAndNoUAAccess.storyName =
+	'GA4 not connected and no UA access';
+Analytics4NotConnectedAndNoUAAccess.args = {
+	hasAnalyticsAccess: false,
+	hasAnalytics4Access: false,
+};
+Analytics4NotConnectedAndNoUAAccess.decorators = [
+	( Story ) => {
+		const setupRegistry = ( registry ) => {
+			provideModules( registry, [
+				{
+					slug: 'analytics',
+					active: true,
+					connected: true,
+					owner: { login: 'test-owner-username' },
+				},
+				{
+					slug: 'analytics-4',
+					active: true,
+					connected: false,
+				},
+			] );
+
+			registry.dispatch( MODULES_ANALYTICS_4 ).setPropertyID( null );
+		};
+
+		return (
+			<WithRegistrySetup func={ setupRegistry }>
+				<Story />
+			</WithRegistrySetup>
+		);
+	},
+];
 
 export const OwnedSettingsChanged = Template.bind( null );
 OwnedSettingsChanged.storyName = 'Owned Settings Changed';
