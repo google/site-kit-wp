@@ -69,7 +69,7 @@ export default function SettingsControls( { hasModuleAccess } ) {
 						sprintf(
 							/* translators: 1: module owner's name, 2: module name */
 							__(
-								'%1$s configured %2$s and you don’t have access to this Analytics property. Contact them to share access or change the Analytics property.',
+								'%1$s configured %2$s and you don’t have access to its configured property. Contact them to share access or change the configured property.',
 								'google-site-kit'
 							),
 							formattedOwnerName,
