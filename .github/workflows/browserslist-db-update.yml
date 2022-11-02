@@ -8,8 +8,32 @@ on:
   workflow_dispatch:
 
 jobs:
+  close-existing-pr:
+    name: Close existing PR
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check if branch exists
+        id: check-branch
+        continue-on-error: true
+        uses: fjogeleit/http-request-action@v1
+        with:
+          url: 'https://api.github.com/repos/${{ github.repository }}/git/ref/heads/update/browserslist-db'
+          method: 'GET'
+          bearerToken: ${{ secrets.GITHUB_TOKEN }}
+          customHeaders: '{"Accept": "application/vnd.github+json"}'
+
+      - name: Delete branch
+        if: steps.check-branch.outcome == 'success'
+        uses: fjogeleit/http-request-action@v1
+        with:
+          url: 'https://api.github.com/repos/${{ github.repository }}/git/refs/heads/update/browserslist-db'
+          method: 'DELETE'
+          bearerToken: ${{ secrets.GITHUB_TOKEN }}
+          customHeaders: '{"Accept": "application/vnd.github+json"}'
+
   update-browserslist-database:
     name: Create PR containing Browserslist updates
+    needs: close-existing-pr
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
