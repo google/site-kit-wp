@@ -34,6 +34,7 @@ import {
 	act,
 } from '../../../../../tests/js/test-utils';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
+import { MODULES_ANALYTICS } from '../../../modules/analytics/datastore/constants';
 
 describe( 'SettingsModule', () => {
 	const SettingsModuleWithWrapper = ( { slug = 'analytics' } ) => (
@@ -93,6 +94,7 @@ describe( 'SettingsModule', () => {
 				),
 			},
 		] );
+		registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
 	} );
 
 	it( 'should display SettingsViewComponent when on module view route', async () => {
