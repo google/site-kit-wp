@@ -32,6 +32,7 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { Button } from 'googlesitekit-components';
 import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
 import {
 	isErrorRetryable,
@@ -41,7 +42,6 @@ import { getInsufficientPermissionsErrorDescription } from '../util/insufficient
 import { purify } from '../util/purify';
 import ErrorText from '../components/ErrorText';
 import CTA from './notifications/CTA';
-import Button from './Button';
 import Link from './Link';
 import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
 
@@ -70,11 +70,17 @@ export default function ReportError( { moduleSlug, error } ) {
 
 	const showRetry = !! retryableErrors.length;
 
-	const errorTroubleshootingLinkURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getErrorTroubleshootingLinkURL(
-			showRetry ? retryableErrors[ 0 ] : errors[ 0 ]
-		)
-	);
+	const errorTroubleshootingLinkURL = useSelect( ( select ) => {
+		const err = {
+			...( showRetry ? retryableErrors[ 0 ] : errors[ 0 ] ),
+		};
+
+		if ( isInsufficientPermissionsError( err ) ) {
+			err.code = `${ moduleSlug }_insufficient_permissions`;
+		}
+
+		return select( CORE_SITE ).getErrorTroubleshootingLinkURL( err );
+	} );
 
 	const dispatch = useDispatch();
 

@@ -30,7 +30,7 @@ class Web_Tag extends Module_Web_Tag {
 	const PLACEMENT_STATIC_AUTO          = 'static_auto';
 	const PLACEMENT_STATIC_ABOVE_CONTENT = 'static_above-content';
 	const PLACEMENT_STATIC_BELOW_CONTENT = 'static_below-content';
-	const PLACEMENT_STATIC_AFTER_1ST_P   = 'static_below-first-paragraph';
+	const PLACEMENT_STATIC_BELOW_FIRST_P = 'static_below-first-paragraph';
 
 	/**
 	 * CTA placement.
@@ -144,9 +144,13 @@ class Web_Tag extends Module_Web_Tag {
 			$subscription['promptSettings']['floatingPromptProminence'] = 'high';
 		}
 
+		$json_encoded_subscription = wp_json_encode( $subscription );
+		if ( ! $json_encoded_subscription ) {
+			$json_encoded_subscription = 'null';
+		}
 		$twg_inline_script = sprintf(
 			'(self.SWG_BASIC=self.SWG_BASIC||[]).push(function(subscriptions){subscriptions.init(%s);});',
-			wp_json_encode( $subscription )
+			$json_encoded_subscription
 		);
 
 		// phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion
@@ -177,26 +181,39 @@ class Web_Tag extends Module_Web_Tag {
 	 * @return string Content of the post.
 	 */
 	protected function update_the_content( $content ) {
-		if ( ! $this->is_singular_cta_post_type_entity() || ! $this->has_static_cta_placement() ) {
+		if ( ! $this->is_singular_cta_post_type_entity() ) {
 			return $content;
 		}
 
-		$cta_placeholder = '<div class="googlesitekit-twg-wrapper" style="display: flex; align-items: center; flex-wrap: wrap; gap: 0 10px;">'
-			. '<div counter-button style="height: 34px; visibility: hidden; box-sizing: content-box; padding: 12px 0; display: inline-block; overflow: hidden;"></div>'
-			. '<button twg-button style="height: 42px; visibility: hidden; margin: 12px 0;"></button>'
-			. '</div>';
-		$cta_placeholder = $this->add_snippet_comments( $cta_placeholder );
+		$cta_placeholder = $this->add_snippet_comments(
+			'<div class="googlesitekit-twg-wrapper"><button twg-button style="height: 42px; visibility: hidden; margin: 12px 0;"></button></div>'
+		);
+
+		$counter_placeholder = $this->add_snippet_comments(
+			'<div class="googlesitekit-twg-wrapper"><div counter-button style="height: 34px; visibility: hidden; box-sizing: content-box; padding: 12px 0; display: inline-block; overflow: hidden;"></div></div>'
+		);
 
 		if ( empty( $content ) ) {
-			return $cta_placeholder;
+			return $cta_placeholder . $counter_placeholder;
 		}
 
-		if ( in_array( $this->cta_placement, array( self::PLACEMENT_STATIC_AUTO, self::PLACEMENT_STATIC_BELOW_CONTENT ), true ) ) {
-			$content = $content . $cta_placeholder;
-		} elseif ( self::PLACEMENT_STATIC_ABOVE_CONTENT === $this->cta_placement ) {
-			$content = $cta_placeholder . $content;
-		} elseif ( self::PLACEMENT_STATIC_AFTER_1ST_P === $this->cta_placement ) {
-			$content = substr_replace( $content, $cta_placeholder, strpos( $content, '</p>' ) + 4, 0 ); // strlen( '</p>' ) is 4.
+		if ( $this->has_static_cta_placement() ) {
+			// Treat auto placement as above the content.
+			if ( in_array( $this->cta_placement, array( self::PLACEMENT_STATIC_AUTO, self::PLACEMENT_STATIC_ABOVE_CONTENT ), true ) ) {
+				// If CTA placement is above the content, the counter is placed below the content.
+				$content = $cta_placeholder . $content . $counter_placeholder;
+			} elseif ( self::PLACEMENT_STATIC_BELOW_CONTENT === $this->cta_placement ) {
+				// If CTA placement is below the content, the counter is not displayed.
+				$content = $content . $cta_placeholder;
+			} elseif ( self::PLACEMENT_STATIC_BELOW_FIRST_P === $this->cta_placement ) {
+				// If CTA placement is below first paragraph, the counter is placed below the content.
+				$content = substr_replace( $content, $cta_placeholder, strpos( $content, '</p>' ) + 4, 0 ) // strlen( '</p>' ) is 4.
+					. $counter_placeholder;
+			}
+		} else {
+			// If CTA placement is dynamic, the counter is placed below the content.
+			// Note that the CTA placeholder is not added here because it is added by the script.
+			$content = $content . $counter_placeholder;
 		}
 
 		return $content;

@@ -31,8 +31,8 @@ import { __, _x, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { ProgressBar } from 'googlesitekit-components';
 import AdSenseIcon from '../../../../../svg/graphics/adsense.svg';
-import ProgressBar from '../../../../components/ProgressBar';
 import ErrorText from '../../../../components/ErrorText';
 import { MODULES_ADSENSE } from '../../datastore/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
@@ -65,6 +65,7 @@ import { AdBlockerWarning, ErrorNotices } from '../common';
 import useViewContext from '../../../../hooks/useViewContext';
 const { useSelect, useDispatch } = Data;
 
+// eslint-disable-next-line complexity
 export default function SetupMain( { finishSetup } ) {
 	const viewContext = useViewContext();
 	const eventCategory = `${ viewContext }_adsense`;

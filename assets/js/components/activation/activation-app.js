@@ -17,21 +17,16 @@
  */
 
 /**
- * External dependencies
- */
-import { useMount } from 'react-use';
-
-/**
  * WordPress dependencies
  */
-import { useCallback } from '@wordpress/element';
+import { useCallback, useEffect, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import Button from '../Button';
+import { Button } from 'googlesitekit-components';
 import Logo from '../Logo';
 import { Grid, Row, Cell } from '../../material-components';
 import { trackEvent } from '../../util';
@@ -58,14 +53,22 @@ export function ActivationApp() {
 		select( CORE_USER ).hasCapability( PERMISSION_VIEW_DASHBOARD )
 	);
 
-	useMount( () => {
-		trackEvent( viewContext, 'view_notification' );
-	} );
+	const [ viewNotificationSent, setViewNotificationSent ] = useState( false );
 
 	const buttonURL = canViewDashboard ? dashboardURL : splashURL;
 	const buttonLabel = canViewDashboard
 		? __( 'Go to Dashboard', 'google-site-kit' )
 		: __( 'Start setup', 'google-site-kit' );
+
+	useEffect( () => {
+		// Only trigger the view event if the notification is visible and we haven't
+		// already sent this notification.
+		if ( ! viewNotificationSent && buttonURL ) {
+			trackEvent( viewContext, 'view_notification' );
+			// Don't send the view event again.
+			setViewNotificationSent( true );
+		}
+	}, [ viewContext, buttonURL, viewNotificationSent ] );
 
 	const onButtonClick = useCallback(
 		async ( event ) => {

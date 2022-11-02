@@ -153,7 +153,7 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 				Web_Tag::PLACEMENT_STATIC_AUTO,
 				Web_Tag::PLACEMENT_STATIC_ABOVE_CONTENT,
 				Web_Tag::PLACEMENT_STATIC_BELOW_CONTENT,
-				Web_Tag::PLACEMENT_STATIC_AFTER_1ST_P,
+				Web_Tag::PLACEMENT_STATIC_BELOW_FIRST_P,
 			),
 			true
 		) ) {

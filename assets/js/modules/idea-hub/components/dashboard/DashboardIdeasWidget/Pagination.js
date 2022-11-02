@@ -31,7 +31,7 @@ import { useCallback, useEffect } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import Button from '../../../../../components/Button';
+import { Button } from 'googlesitekit-components';
 import {
 	IDEA_HUB_IDEAS_PER_PAGE,
 	MODULES_IDEA_HUB,

@@ -32,9 +32,9 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { Checkbox } from 'googlesitekit-components';
 import { CORE_USER } from '../googlesitekit/datastore/user/constants';
 import { toggleTracking, trackEvent } from '../util/tracking';
-import Checkbox from './Checkbox';
 import Link from './Link';
 import useViewContext from '../hooks/useViewContext';
 const { useSelect, useDispatch } = Data;

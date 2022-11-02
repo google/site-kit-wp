@@ -25,11 +25,11 @@ import { ENTER } from '@wordpress/keycodes';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { Chip } from 'googlesitekit-components';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { MODULES_THANK_WITH_GOOGLE } from '../../datastore/constants';
 import { trackEvent } from '../../../../util';
 import useViewContext from '../../../../hooks/useViewContext';
-import Chip from '../../../../components/Chip';
 const { useSelect, useDispatch } = Data;
 
 export default function PostTypesSelect() {

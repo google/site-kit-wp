@@ -44,6 +44,7 @@ export default function ReportMetric( {
 	category,
 	experimental,
 	isLast,
+	isHidden,
 } ) {
 	// Normalize the category case.
 	category = category.toLowerCase();
@@ -55,6 +56,7 @@ export default function ReportMetric( {
 				'googlesitekit-pagespeed-report-metric',
 				{
 					'googlesitekit-pagespeed-report__row--last': isLast,
+					'googlesitekit-pagespeed-report__row--hidden': isHidden,
 				}
 			) }
 		>
@@ -122,4 +124,5 @@ ReportMetric.propTypes = {
 	category: PropTypes.string.isRequired,
 	experimental: PropTypes.bool,
 	isLast: PropTypes.bool,
+	isHidden: PropTypes.bool,
 };

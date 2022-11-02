@@ -26,12 +26,11 @@ import { sprintf, __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { Checkbox, ProgressBar } from 'googlesitekit-components';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { getTimeInSeconds } from '../../../util';
-import Checkbox from '../../Checkbox';
 import BannerNotification from '../../notifications/BannerNotification';
-import ProgressBar from '../../ProgressBar';
 import Errors from './Errors';
 
 const { useDispatch, useSelect } = Data;
@@ -80,12 +79,16 @@ export default function ModuleRecoveryAlert() {
 			return undefined;
 		}
 
+		const recoveredModules = select( CORE_MODULES ).getRecoveredModules();
+
+		if ( ! recoveredModules ) {
+			return {};
+		}
+
 		const modules = Object.keys( recoverableModules );
 
 		const getRecoveryError = ( module ) =>
-			select( CORE_MODULES ).getErrorForAction( 'recoverModule', [
-				module,
-			] );
+			recoveredModules?.error?.[ module ];
 
 		return modules
 			.filter( ( module ) => !! getRecoveryError( module ) )
@@ -101,7 +104,8 @@ export default function ModuleRecoveryAlert() {
 			);
 	} );
 
-	const { recoverModules, clearErrors } = useDispatch( CORE_MODULES );
+	const { recoverModules, clearRecoveredModules } =
+		useDispatch( CORE_MODULES );
 
 	const isLoading =
 		userAccessibleModules === undefined || checkboxes === null;
@@ -122,14 +126,14 @@ export default function ModuleRecoveryAlert() {
 			( module ) => checkboxes[ module ]
 		);
 
-		await clearErrors( 'recoverModule' );
+		await clearRecoveredModules();
 		await recoverModules( modulesToRecover );
 
 		setRecoveringModules( false );
 		setCheckboxes( null );
 
 		return { dismissOnCTAClick: false };
-	}, [ checkboxes, clearErrors, recoverModules ] );
+	}, [ checkboxes, clearRecoveredModules, recoverModules ] );
 
 	useEffect( () => {
 		if ( userAccessibleModules !== undefined && checkboxes === null ) {

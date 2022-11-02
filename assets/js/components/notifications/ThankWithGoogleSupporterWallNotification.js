@@ -20,26 +20,34 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { Fragment, useCallback, useEffect, useState } from '@wordpress/element';
+import { useCallback, useEffect, useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { MODULES_THANK_WITH_GOOGLE } from '../../modules/thank-with-google/datastore/constants';
 import SupporterWallPromptSVG from '../../../svg/graphics/twg-supporter-wall.svg';
 import BannerNotification from './BannerNotification';
 import useViewContext from '../../hooks/useViewContext';
 import { trackEvent } from '../../util';
-const { useSelect } = Data;
+const { useSelect, useDispatch } = Data;
+
+const NOTIFICATION_ID = 'twg-supporter-wall-prompt';
 
 export default function ThankWithGoogleSupporterWallNotification() {
+	const { dismissItem } = useDispatch( CORE_USER );
+
 	const supporterWallPrompt = useSelect( ( select ) =>
 		select( MODULES_THANK_WITH_GOOGLE ).getSupporterWallPrompt()
 	);
 	const supporterWallURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getWidgetsAdminURL()
+	);
+	const isItemDismissed = useSelect( ( select ) =>
+		select( CORE_USER ).isItemDismissed( NOTIFICATION_ID )
 	);
 
 	const [ viewNotificationSent, setViewNotificationSent ] = useState( false );
@@ -61,24 +69,25 @@ export default function ThankWithGoogleSupporterWallNotification() {
 		trackEvent( eventCategory, 'confirm_notification' );
 	}, [ eventCategory ] );
 
-	const handleOnDismiss = useCallback( () => {
+	const handleOnDismiss = useCallback( async () => {
+		await dismissItem( NOTIFICATION_ID );
 		trackEvent( eventCategory, 'dismiss_notification' );
-	}, [ eventCategory ] );
+	}, [ dismissItem, eventCategory ] );
 
-	if ( ! supporterWallPrompt ) {
+	if ( ! supporterWallPrompt || isItemDismissed ) {
 		return null;
 	}
 
 	return (
 		<BannerNotification
-			id="twg-supporter-wall-prompt"
+			id={ NOTIFICATION_ID }
 			className="googlesitekit-twg-supporter-wall-banner"
 			title={ __(
 				'Add a Thank with Google supporter wall',
 				'google-site-kit'
 			) }
 			description={
-				<Fragment>
+				<p>
 					<span className="googlesitekit-display-block">
 						{ __(
 							'A supporter wall widget shows the list of everyone who has supported your site using Thank with Google. It’s a nice way to thank your supporters back.',
@@ -91,7 +100,7 @@ export default function ThankWithGoogleSupporterWallNotification() {
 							'google-site-kit'
 						) }
 					</span>
-				</Fragment>
+				</p>
 			}
 			ctaLabel={ __( 'Add Supporter Wall widget', 'google-site-kit' ) }
 			ctaLink={ supporterWallURL }
