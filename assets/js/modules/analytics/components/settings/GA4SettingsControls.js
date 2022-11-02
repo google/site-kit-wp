@@ -204,7 +204,7 @@ export default function GA4SettingsControls( { hasModuleAccess } ) {
 							}
 						/>
 
-						{ isModuleConnected &&
+						{ ! isModuleConnected &&
 							enableGA4PropertyTooltip &&
 							hasModuleAccess && (
 								<JoyrideTooltip
