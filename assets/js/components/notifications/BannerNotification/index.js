@@ -313,11 +313,21 @@ function BannerNotification( {
 	const inlineMarkup = (
 		<Fragment>
 			{ title && (
-				<h3 className="googlesitekit-heading-2 googlesitekit-publisher-win__title">
-					{ title }
+				<div className="googlesitekit-publisher-win__title-image-wrapper">
+					<h3 className="googlesitekit-heading-2 googlesitekit-publisher-win__title">
+						{ title }
 
-					{ badgeLabel && <Badge label={ badgeLabel } /> }
-				</h3>
+						{ badgeLabel && <Badge label={ badgeLabel } /> }
+					</h3>
+
+					{ WinImageSVG && (
+						<div
+							className={ `googlesitekit-publisher-win__image-${ format } googlesitekit-non-mobile-display-none` }
+						>
+							<WinImageSVG width={ 75 } height={ 75 } />
+						</div>
+					) }
+				</div>
 			) }
 			{ anchorLink && anchorLinkLabel && (
 				<p className="googlesitekit-publisher-win__link">
@@ -500,11 +510,12 @@ function BannerNotification( {
 							alignBottom={
 								format === 'larger' && noBottomPadding
 							}
+							className="googlesitekit-display-none googlesitekit-non-mobile-display-block"
 						>
 							<div
 								className={ `googlesitekit-publisher-win__image-${ format }` }
 							>
-								<WinImageSVG />
+								<WinImageSVG width={ 105 } height={ 105 } />
 							</div>
 						</Cell>
 					) }
