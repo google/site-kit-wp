@@ -26,7 +26,13 @@ import { useHistory, useParams } from 'react-router-dom';
 /**
  * WordPress dependencies
  */
-import { Fragment, useCallback, useRef } from '@wordpress/element';
+import {
+	Fragment,
+	useCallback,
+	useRef,
+	useState,
+	useEffect,
+} from '@wordpress/element';
 import { ESCAPE, ENTER } from '@wordpress/keycodes';
 import { __, sprintf } from '@wordpress/i18n';
 
@@ -48,6 +54,8 @@ import { FORM_SETUP } from '../../../modules/analytics/datastore/constants';
 const { useSelect, useDispatch } = Data;
 
 export default function Header( { slug } ) {
+	const [ viewNotificationSent, setViewNotificationSent ] = useState( false );
+
 	const viewContext = useViewContext();
 	const history = useHistory();
 	const headerRef = useRef();
@@ -109,11 +117,51 @@ export default function Header( { slug } ) {
 	);
 	useKeyCodesInside( [ ESCAPE ], headerRef, closeHeader );
 
+	const { name, connected } = module;
+
+	const eventCategory = `${ viewContext }_module-list`;
+	useEffect( () => {
+		// Only trigger the view event if the notification is visible and we haven't
+		// already sent this notification.
+		if (
+			! viewNotificationSent &&
+			connected &&
+			slug === 'analytics' &&
+			! isGA4Connected
+		) {
+			trackEvent( eventCategory, 'view_ga4_button' );
+			// Don't send the view event again.
+			setViewNotificationSent( true );
+		}
+	}, [
+		eventCategory,
+		connected,
+		slug,
+		viewNotificationSent,
+		isGA4Connected,
+	] );
+
+	const handleConnectGA4ButtonClick = useCallback(
+		async ( event ) => {
+			// Prevent this click from toggling the header too.
+			event.stopPropagation();
+
+			await trackEvent( eventCategory, 'click_ga4_button' );
+
+			setValues( FORM_SETUP, {
+				// Pre-enable GA4 controls.
+				enableGA4: true,
+				// Enable tooltip highlighting GA4 property select.
+				enableGA4PropertyTooltip: true,
+			} );
+			history.push( `/connected-services/${ slug }/edit` );
+		},
+		[ eventCategory, history, setValues, slug ]
+	);
+
 	if ( ! module ) {
 		return null;
 	}
-
-	const { name, connected } = module;
 
 	return (
 		// eslint-disable-next-line jsx-a11y/click-events-have-key-events
@@ -191,19 +239,7 @@ export default function Header( { slug } ) {
 							! isGA4Connected && (
 								<Fragment>
 									<Button
-										onClick={ ( event ) => {
-											// Prevent this click from toggling the header too.
-											event.stopPropagation();
-											setValues( FORM_SETUP, {
-												// Pre-enable GA4 controls.
-												enableGA4: true,
-												// Enable tooltip highlighting GA4 property select.
-												enableGA4PropertyTooltip: true,
-											} );
-											history.push(
-												`/connected-services/${ slug }/edit`
-											);
-										} }
+										onClick={ handleConnectGA4ButtonClick }
 									>
 										{ __(
 											'Connect Google Analytics 4',
