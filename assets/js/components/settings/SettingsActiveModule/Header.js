@@ -44,7 +44,11 @@ import Badge from '../../Badge';
 import { trackEvent } from '../../../util';
 import useViewContext from '../../../hooks/useViewContext';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
-import { FORM_SETUP } from '../../../modules/analytics/datastore/constants';
+import {
+	FORM_SETUP,
+	MODULES_ANALYTICS,
+} from '../../../modules/analytics/datastore/constants';
+import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 const { useSelect, useDispatch } = Data;
 
 export default function Header( { slug } ) {
@@ -68,6 +72,17 @@ export default function Header( { slug } ) {
 	const isGA4Connected = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
 	);
+	const loggedInUserID = useSelect( ( select ) =>
+		select( CORE_USER ).getID()
+	);
+	const hasAnalyticsAccess = useSelect( ( select ) => {
+		const moduleOwnerID = select( MODULES_ANALYTICS ).getOwnerID();
+
+		if ( moduleOwnerID === loggedInUserID ) {
+			return true;
+		}
+		return select( CORE_MODULES ).hasModuleAccess( 'analytics' );
+	} );
 
 	const { setValues } = useDispatch( CORE_FORMS );
 
@@ -188,6 +203,7 @@ export default function Header( { slug } ) {
 
 						{ connected &&
 							slug === 'analytics' &&
+							hasAnalyticsAccess &&
 							! isGA4Connected && (
 								<Fragment>
 									<Button
