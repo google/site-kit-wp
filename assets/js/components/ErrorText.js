@@ -68,7 +68,7 @@ function ErrorText( { message, reconnectURL, children } ) {
 			<p
 				dangerouslySetInnerHTML={ sanitizeHTML( error, sanitizeArgs ) }
 			/>
-			{ children && <Fragment>&nbsp; { children }</Fragment> }
+			{ children && <Fragment>&nbsp;{ children }</Fragment> }
 		</div>
 	);
 }
