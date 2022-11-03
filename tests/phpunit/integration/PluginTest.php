@@ -55,7 +55,7 @@ class PluginTest extends TestCase {
 			$this->assertEquals( $plugin_data['RequiresPHP'], '5.6' );
 		}
 		if ( array_key_exists( 'RequiresWP', $plugin_data ) ) {
-			$this->assertEquals( $plugin_data['RequiresWP'], '4.7' );
+			$this->assertEquals( $plugin_data['RequiresWP'], '5.2' );
 		}
 
 		// These fields are available in all versions of WordPress we support,
