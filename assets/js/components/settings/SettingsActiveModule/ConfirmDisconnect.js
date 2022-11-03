@@ -32,12 +32,12 @@ import { ESCAPE } from '@wordpress/keycodes';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { Dialog } from 'googlesitekit-components';
 import { CORE_LOCATION } from '../../../googlesitekit/datastore/location/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
 import { clearWebStorage, trackEvent } from '../../../util';
-import Dialog from '../../Dialog';
 import useViewContext from '../../../hooks/useViewContext';
 const { useSelect, useDispatch } = Data;
 
@@ -126,7 +126,7 @@ export default function ConfirmDisconnect( { slug } ) {
 	const { name } = module;
 
 	const title = sprintf(
-		/* translators: 1: module name */
+		/* translators: %s: module name */
 		__( 'Disconnect %s from Site Kit?', 'google-site-kit' ),
 		name
 	);
@@ -135,7 +135,7 @@ export default function ConfirmDisconnect( { slug } ) {
 
 	const subtitle = hasFeatures
 		? sprintf(
-				/* translators: 1: module name */
+				/* translators: %s: module name */
 				__(
 					'By disconnecting the %s module from Site Kit, you will no longer have access to:',
 					'google-site-kit'

@@ -26,9 +26,9 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { Switch } from 'googlesitekit-components';
 import { MODULES_ANALYTICS } from '../../datastore/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import Switch from '../../../../components/Switch';
 import Link from '../../../../components/Link';
 
 const { useSelect, useDispatch } = Data;

@@ -30,7 +30,7 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import Button from '../../../../../components/Button';
+import { Button } from 'googlesitekit-components';
 import Link from '../../../../../components/Link';
 import { trackEvent } from '../../../../../util';
 import { parseAccountID } from '../../../util/parsing';
@@ -104,7 +104,7 @@ export default function SetupCreateAccount() {
 				{ ! existingTag &&
 					createInterpolateElement(
 						sprintf(
-							/* translators: 1: user email address */
+							/* translators: %s: user email address */
 							__(
 								'Already use AdSense? Add %s as a user to an existing AdSense account. <a>Learn more</a>',
 								'google-site-kit'

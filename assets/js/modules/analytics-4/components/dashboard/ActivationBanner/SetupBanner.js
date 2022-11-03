@@ -27,6 +27,7 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { ProgressBar } from 'googlesitekit-components';
 import BannerNotification from '../../../../../components/notifications/BannerNotification';
 import {
 	PropertySelect,
@@ -54,9 +55,10 @@ import { useShowTooltip } from '../../../../../components/AdminMenuTooltip/useSh
 import { AdminMenuTooltip } from '../../../../../components/AdminMenuTooltip/AdminMenuTooltip';
 import { getBannerDismissalExpiryTime } from '../../../utils/banner-dismissal-expiry';
 import { Cell, Grid, Row } from '../../../../../material-components';
-import ProgressBar from '../../../../../components/ProgressBar';
 import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
 import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '../../../../../util/errors';
+import useViewContext from '../../../../../hooks/useViewContext';
+import { trackEvent } from '../../../../../util';
 const { useDispatch, useSelect } = Data;
 
 const VARIANT = {
@@ -68,6 +70,10 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 	const [ errorNotice, setErrorNotice ] = useState( null );
 	const [ variant, setVariant ] = useState( null );
 	const [ isSaving, setIsSaving ] = useState( false );
+	const [ viewNotificationSent, setViewNotificationSent ] = useState( false );
+
+	const viewContext = useViewContext();
+	const eventCategory = `${ viewContext }_ga4-setup-notification`;
 
 	const { submitChanges, selectProperty, matchAndSelectProperty } =
 		useDispatch( MODULES_ANALYTICS_4 );
@@ -85,8 +91,18 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 		select( MODULES_ANALYTICS ).getAccounts()
 	);
 
+	const getPropertyID = useSelect(
+		( select ) => select( MODULES_ANALYTICS_4 ).getPropertyID
+	);
 	const ga4PropertyID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getPropertyID()
+	);
+
+	const getMeasurementID = useSelect(
+		( select ) => select( MODULES_ANALYTICS_4 ).getMeasurementID
+	);
+	const measurementID = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getMeasurementID()
 	);
 
 	const determineVariant = useCallback( async () => {
@@ -112,7 +128,7 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 			return;
 		}
 
-		if ( ! ga4PropertyID ) {
+		if ( ! getPropertyID() ) {
 			// Ensure the PropertySelect dropdown will be populated with a selected option.
 			await matchAndSelectProperty( accountID, PROPERTY_CREATE );
 		}
@@ -121,7 +137,7 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 	}, [
 		accountID,
 		accounts,
-		ga4PropertyID,
+		getPropertyID,
 		matchAndSelectProperty,
 		properties,
 		selectProperty,
@@ -154,7 +170,10 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 	const handleSubmitChanges = useCallback( async () => {
 		const scopes = [];
 
-		if ( hasEditScope === false && ga4PropertyID === PROPERTY_CREATE ) {
+		if (
+			hasEditScope === false &&
+			( getPropertyID() === PROPERTY_CREATE || ! getMeasurementID() )
+		) {
 			scopes.push( EDIT_SCOPE );
 		}
 
@@ -189,24 +208,43 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 
 		setIsSaving( true );
 
+		if ( ! autoSubmit ) {
+			if (
+				variant === VARIANT.NO_EXISTING_PROPERTY ||
+				ga4PropertyID === PROPERTY_CREATE
+			) {
+				trackEvent( eventCategory, 'create_property' );
+			} else {
+				trackEvent( eventCategory, 'connect_property' );
+			}
+		}
+
 		const { error } = await submitChanges();
+
+		setIsSaving( false );
 
 		if ( error ) {
 			setErrorNotice( error );
 		} else {
 			setValues( FORM_SETUP, { autoSubmit: false } );
 			// Ask the parent component to show the success banner.
+			// This should be called last because it will unmount this component.
 			onSubmitSuccess();
 		}
-
-		setIsSaving( false );
 	}, [
+		autoSubmit,
+		eventCategory,
+		variant,
+		ga4PropertyID,
 		hasEditScope,
 		onSubmitSuccess,
 		setPermissionScopeError,
 		setValues,
 		submitChanges,
-		ga4PropertyID,
+		// Here we pass the selectors through to avoid creating a new
+		// callback when the property ID changes on creation.
+		getPropertyID,
+		getMeasurementID,
 	] );
 
 	// If the user lands back on this component with autoSubmit and the edit scope,
@@ -216,6 +254,16 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 			handleSubmitChanges();
 		}
 	}, [ autoSubmit, handleSubmitChanges, hasEditScope ] );
+
+	useEffect( () => {
+		// Only trigger the view event if the notification is visible and we haven't
+		// already sent this notification.
+		if ( ! viewNotificationSent && ! autoSubmit && !! variant ) {
+			trackEvent( eventCategory, 'view_notification' );
+			// Don't send the view event again.
+			setViewNotificationSent( true );
+		}
+	}, [ eventCategory, autoSubmit, variant, viewNotificationSent ] );
 
 	const { isTooltipVisible } = useTooltipState(
 		ACTIVATION_ACKNOWLEDGEMENT_TOOLTIP_STATE_KEY
@@ -287,7 +335,7 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 							<Fragment>
 								<p>
 									{ sprintf(
-										/* translators: 1: existing tag ID */
+										/* translators: %s: existing tag ID */
 										__(
 											'A tag %s for the selected property already exists on the site.',
 											'google-site-kit'
@@ -308,10 +356,13 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 			</div>
 		);
 
-		if ( hasEditScope === false && ga4PropertyID === PROPERTY_CREATE ) {
+		if (
+			hasEditScope === false &&
+			( ga4PropertyID === PROPERTY_CREATE || ! measurementID )
+		) {
 			footerMessages.push(
 				__(
-					'You will need to give Site Kit permission to create an Analytics property on your behalf.',
+					'You will need to give Site Kit permission to create an Analytics property on your behalf',
 					'google-site-kit'
 				)
 			);
@@ -319,7 +370,7 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 
 		footerMessages.push(
 			__(
-				'You can always add/edit this in the Site Kit Settings.',
+				'You can always add/edit this in the Site Kit Settings',
 				'google-site-kit'
 			)
 		);
@@ -333,9 +384,9 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 		if ( existingTag ) {
 			footerMessages.push(
 				sprintf(
-					/* translators: 1: The existing tag ID. */
+					/* translators: %s: The existing tag ID. */
 					__(
-						'A GA4 tag %s is found on this site but this property is not associated with your Google Analytics account.',
+						'A GA4 tag %s is found on this site but this property is not associated with your Google Analytics account',
 						'google-site-kit'
 					),
 					existingTag
@@ -346,7 +397,7 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 		if ( hasEditScope === false ) {
 			footerMessages.push(
 				__(
-					'You will need to give Site Kit permission to create an Analytics property on your behalf.',
+					'You will need to give Site Kit permission to create an Analytics property on your behalf',
 					'google-site-kit'
 				)
 			);
@@ -354,7 +405,7 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 
 		footerMessages.push(
 			__(
-				'You can always add/edit this in the Site Kit Settings.',
+				'You can always add/edit this in the Site Kit Settings',
 				'google-site-kit'
 			)
 		);
@@ -374,16 +425,13 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 				</SpinnerButton>
 			}
 			footer={
-				<Fragment>
-					{ footerMessages.map( ( message, index ) => (
-						<p
-							className="googlesitekit-ga4-setup-banner__footer-text"
-							key={ index }
-						>
-							{ message }
-						</p>
-					) ) }
-				</Fragment>
+				!! footerMessages.length && (
+					<ul className="googlesitekit-ga4-setup-banner__footer-text-list">
+						{ footerMessages.map( ( message ) => (
+							<li key={ message }>{ message }</li>
+						) ) }
+					</ul>
+				)
 			}
 			dismiss={ __( 'Cancel', 'google-site-kit' ) }
 			dismissExpires={ getBannerDismissalExpiryTime(

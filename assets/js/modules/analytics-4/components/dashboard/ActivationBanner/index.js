@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import { usePromise } from 'react-use';
+
+/**
  * WordPress dependencies
  */
 import { useState, useCallback, useEffect } from '@wordpress/element';
@@ -28,6 +33,7 @@ import Data from 'googlesitekit-data';
 import ReminderBanner from './ReminderBanner';
 import SetupBanner from './SetupBanner';
 import SuccessBanner from './SuccessBanner';
+import ErrorNotice from '../../../../../components/ErrorNotice';
 import {
 	ACTIVATION_STEP_REMINDER,
 	ACTIVATION_STEP_SETUP,
@@ -36,12 +42,19 @@ import {
 } from '../../../constants';
 import { CORE_MODULES } from '../../../../../googlesitekit/modules/datastore/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
-import { EDIT_SCOPE } from '../../../../analytics/datastore/constants';
+import {
+	EDIT_SCOPE,
+	MODULES_ANALYTICS,
+} from '../../../../analytics/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../../../datastore/constants';
 import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
+import { getItem } from '../../../../../googlesitekit/api/cache';
 const { useSelect, useDispatch, useRegistry } = Data;
 
 export default function ActivationBanner() {
 	const [ step, setStep ] = useState( null );
+	const [ isDismissed, setIsDismissed ] = useState();
+	const awaitWhileMounted = usePromise();
 
 	const registry = useRegistry();
 
@@ -61,7 +74,26 @@ export default function ActivationBanner() {
 		)
 	);
 
-	const { setValues } = useDispatch( CORE_FORMS );
+	const accountID = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getAccountID()
+	);
+
+	// These are the selectors the Setup Banner uses; if any of them have encountered
+	// an error we should reset the banner step and display the error on the welcome
+	// step.
+	const setupBannerErrors = useSelect( ( select ) => {
+		return [
+			select( MODULES_ANALYTICS_4 ).getErrorForSelector(
+				'getProperties',
+				[ accountID ]
+			),
+			select( MODULES_ANALYTICS ).getErrorForSelector( 'getAccounts' ),
+			select( MODULES_ANALYTICS_4 ).getErrorForSelector( 'getSettings' ),
+		].filter( ( error ) => error !== undefined );
+	} );
+
+	const dispatch = useDispatch();
+	const { setValues } = dispatch( CORE_FORMS );
 
 	useEffect( () => {
 		if ( hasEditScope && returnToSetupStep ) {
@@ -72,8 +104,53 @@ export default function ActivationBanner() {
 		}
 	}, [ hasEditScope, registry, returnToSetupStep, setValues ] );
 
-	const handleSubmit = useCallback( () => {
+	// If any errors are encountered, we change the current form step the user is
+	// on to essentially "reset" the banner back to the first step. If the user
+	// tried to proceed but was offline, for instance, this would be detected and
+	// return them to the first step of the banner rather than forcing an infinite
+	// loading screen due to an error.
+	//
+	// See: https://github.com/google/site-kit-wp/issues/5928
+	useEffect( () => {
+		if ( setupBannerErrors.length > 0 ) {
+			setStep( ACTIVATION_STEP_REMINDER );
+		}
+	}, [ setupBannerErrors.length ] );
+
+	const handleSubmit = useCallback( async () => {
 		if ( step === ACTIVATION_STEP_REMINDER ) {
+			// Clear errors before navigating to Setup Banner.
+			if ( setupBannerErrors.length > 0 ) {
+				await Promise.all( [
+					dispatch( MODULES_ANALYTICS_4 ).clearError(
+						'getProperties',
+						[ accountID ]
+					),
+					dispatch( MODULES_ANALYTICS_4 ).invalidateResolution(
+						'getProperties',
+						[ accountID ]
+					),
+
+					dispatch( MODULES_ANALYTICS ).clearError(
+						'getAccounts',
+						[]
+					),
+					dispatch( MODULES_ANALYTICS ).invalidateResolution(
+						'getAccounts',
+						[]
+					),
+
+					dispatch( MODULES_ANALYTICS_4 ).clearError(
+						'getSettings',
+						[]
+					),
+					dispatch( MODULES_ANALYTICS_4 ).invalidateResolution(
+						'getSettings',
+						[]
+					),
+				] );
+			}
+
 			setStep( ACTIVATION_STEP_SETUP );
 		}
 
@@ -82,17 +159,64 @@ export default function ActivationBanner() {
 		}
 
 		return { dismissOnCTAClick: false };
-	}, [ returnToSetupStep, step ] );
+	}, [
+		step,
+		returnToSetupStep,
+		setupBannerErrors.length,
+		dispatch,
+		accountID,
+	] );
 
 	useEffect( () => {
+		( async () => {
+			const { cacheHit } = await awaitWhileMounted(
+				getItem( 'notification::dismissed::ga4-activation-banner' )
+			);
+			setIsDismissed( cacheHit );
+		} )();
+	} );
+
+	useEffect( () => {
+		if ( isDismissed === undefined ) {
+			return;
+		}
 		if ( step === null && uaConnected && ! ga4Connected ) {
 			setStep( ACTIVATION_STEP_REMINDER );
 		}
-	}, [ ga4Connected, step, uaConnected ] );
+	}, [ ga4Connected, step, uaConnected, isDismissed ] );
+
+	// Show unique errors.
+	const errorNotice =
+		setupBannerErrors.length > 0 &&
+		setupBannerErrors
+			.reduce( ( acc, error ) => {
+				// If the error is already in our array of errors, skip it.
+				if (
+					acc.some(
+						( err ) =>
+							err.code === error.code &&
+							err.message === error.message
+					)
+				) {
+					return acc;
+				}
+
+				return [ ...acc, error ];
+			}, [] )
+			.map( ( error ) => (
+				<ErrorNotice key={ error.code } error={ error } />
+			) );
 
 	switch ( step ) {
 		case ACTIVATION_STEP_REMINDER:
-			return <ReminderBanner onSubmitSuccess={ handleSubmit } />;
+			return (
+				<ReminderBanner
+					isDismissed={ isDismissed }
+					onSubmitSuccess={ handleSubmit }
+				>
+					{ errorNotice }
+				</ReminderBanner>
+			);
 		case ACTIVATION_STEP_SETUP:
 			return <SetupBanner onSubmitSuccess={ handleSubmit } />;
 		case ACTIVATION_STEP_SUCCESS:

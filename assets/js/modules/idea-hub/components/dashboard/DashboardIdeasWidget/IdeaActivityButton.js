@@ -25,6 +25,7 @@ import PropTypes from 'prop-types';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { Button } from 'googlesitekit-components';
 import {
 	classNamesMap,
 	titlesMap,
@@ -37,7 +38,6 @@ import {
 } from '../../../datastore/constants';
 import { CircularProgress } from '../../../../../material-components';
 import Null from '../../../../../components/Null';
-import Button from '../../../../../components/Button';
 import useViewOnly from '../../../../../hooks/useViewOnly';
 
 const { useSelect } = Data;

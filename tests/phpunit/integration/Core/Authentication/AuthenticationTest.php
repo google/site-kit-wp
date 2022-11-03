@@ -134,9 +134,10 @@ class AuthenticationTest extends TestCase {
 		);
 
 		// When a profile is set, additional data is added.
-		$email = 'wapuu.wordpress@gmail.com';
-		$photo = 'https://wapu.us/wp-content/uploads/2017/11/WapuuFinal-100x138.png';
-		$auth->profile()->set( compact( 'email', 'photo' ) );
+		$email     = 'wapuu.wordpress@gmail.com';
+		$photo     = 'https://wapu.us/wp-content/uploads/2017/11/WapuuFinal-100x138.png';
+		$full_name = 'Wapuu WordPress';
+		$auth->profile()->set( compact( 'email', 'photo', 'full_name' ) );
 		$user_data = apply_filters( 'googlesitekit_user_data', array() );
 		$this->assertEqualSets(
 			array(
@@ -151,6 +152,7 @@ class AuthenticationTest extends TestCase {
 		);
 		$this->assertEquals( $email, $user_data['user']['email'] );
 		$this->assertEquals( $photo, $user_data['user']['picture'] );
+		$this->assertEquals( $full_name, $user_data['user']['full_name'] );
 	}
 
 	/**
@@ -888,7 +890,7 @@ class AuthenticationTest extends TestCase {
 			do_action( $action );
 			$this->fail( 'Expected WPDieException to be thrown' );
 		} catch ( Exception $e ) {
-			$this->assertEquals( 'The link you followed has expired.</p><p><a href="http://example.org/wp-admin/admin.php?page=googlesitekit-splash">Please try again</a>. <a href="https://sitekit.withgoogle.com/support?error_id=nonce_expired" target="_blank">Get help</a>.', $e->getMessage() );
+			$this->assertEquals( 'The link you followed has expired.</p><p><a href="http://example.org/wp-admin/admin.php?page=googlesitekit-splash">Please try again</a>. Retry didn’t work? <a href="https://sitekit.withgoogle.com/support?error_id=nonce_expired" target="_blank">Get help</a>.', $e->getMessage() );
 		}
 
 		$_GET['nonce'] = wp_create_nonce( Google_Proxy::ACTION_PERMISSIONS );
@@ -1093,7 +1095,7 @@ class AuthenticationTest extends TestCase {
 			$authentication = new Authentication( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 			$authentication->invalid_nonce_error( 'googlesitekit_proxy_foo_action' );
 		} catch ( WPDieException $exception ) {
-			$this->assertEquals( 'The link you followed has expired.</p><p><a href="http://example.org/wp-admin/admin.php?page=googlesitekit-splash">Please try again</a>. <a href="https://sitekit.withgoogle.com/support?error_id=nonce_expired" target="_blank">Get help</a>.', $exception->getMessage() );
+			$this->assertEquals( 'The link you followed has expired.</p><p><a href="http://example.org/wp-admin/admin.php?page=googlesitekit-splash">Please try again</a>. Retry didn’t work? <a href="https://sitekit.withgoogle.com/support?error_id=nonce_expired" target="_blank">Get help</a>.', $exception->getMessage() );
 			return;
 		}
 		$this->fail( 'Expected WPDieException!' );

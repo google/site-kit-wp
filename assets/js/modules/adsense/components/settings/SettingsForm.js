@@ -26,6 +26,7 @@ import { Fragment } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { ProgressBar } from 'googlesitekit-components';
 import { MODULES_ADSENSE } from '../../datastore/constants';
 import { parseAccountID } from '../../util/parsing';
 import {
@@ -33,7 +34,6 @@ import {
 	UseSnippetSwitch,
 	AutoAdExclusionSwitches,
 } from '../common';
-import ProgressBar from '../../../../components/ProgressBar';
 import WebStoriesAdUnitSelect from '../common/WebStoriesAdUnitSelect';
 import Link from '../../../../components/Link';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
@@ -71,7 +71,7 @@ export default function SettingsForm() {
 	} else if ( existingTag ) {
 		// Existing tag without permission.
 		checkedMessage = sprintf(
-			/* translators: 1: account ID */
+			/* translators: %s: account ID */
 			__(
 				'Site Kit detected AdSense code for a different account %s on your site. For a better ads experience, you should remove AdSense code that’s not linked to this AdSense account.',
 				'google-site-kit'

@@ -21,8 +21,8 @@
  */
 import WidgetRenderer from './WidgetRenderer';
 import {
-	VIEW_CONTEXT_DASHBOARD,
-	VIEW_CONTEXT_DASHBOARD_VIEW_ONLY,
+	VIEW_CONTEXT_MAIN_DASHBOARD,
+	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 } from '../../../googlesitekit/constants';
 import { CORE_WIDGETS } from '../datastore/constants';
 import { provideModules, render } from '../../../../../tests/js/test-utils';
@@ -102,7 +102,7 @@ describe( 'WidgetRenderer', () => {
 				setupRegistry: setupRegistry( {
 					recoverableModules: [ 'search-console' ],
 				} ),
-				viewContext: VIEW_CONTEXT_DASHBOARD_VIEW_ONLY,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 				features: [ 'dashboardSharing' ],
 			}
 		);
@@ -126,7 +126,7 @@ describe( 'WidgetRenderer', () => {
 						'pagespeed-insights',
 					],
 				} ),
-				viewContext: VIEW_CONTEXT_DASHBOARD_VIEW_ONLY,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 				features: [ 'dashboardSharing' ],
 			}
 		);
@@ -147,7 +147,7 @@ describe( 'WidgetRenderer', () => {
 				setupRegistry: setupRegistry( {
 					recoverableModules: [ 'search-console' ],
 				} ),
-				viewContext: VIEW_CONTEXT_DASHBOARD,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 				features: [ 'dashboardSharing' ],
 			}
 		);

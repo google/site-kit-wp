@@ -74,7 +74,7 @@ export function getInsufficientPermissionsErrorDescription(
 
 	if ( ! message ) {
 		message = sprintf(
-			/* translators: 1: module name */
+			/* translators: %s: module name */
 			__(
 				'Your Google account does not have sufficient permissions to access %s data, so you won’t be able to see stats from it on the Site Kit dashboard.',
 				'google-site-kit'
@@ -85,7 +85,7 @@ export function getInsufficientPermissionsErrorDescription(
 
 	if ( owner && owner.login ) {
 		userInfo = sprintf(
-			/* translators: 1: owner name */
+			/* translators: %s: owner name */
 			__(
 				'This service was originally connected by the administrator "%s" — you can contact them for more information.',
 				'google-site-kit'

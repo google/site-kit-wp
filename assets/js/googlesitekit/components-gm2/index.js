@@ -1,7 +1,7 @@
 /**
- * UserMenu stories.
+ * Google Site Kit components.
  *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2022 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,29 +17,28 @@
  */
 
 /**
- * External dependencies
- */
-import { storiesOf } from '@storybook/react';
-
-/**
  * Internal dependencies
  */
-import {
-	provideSiteInfo,
-	provideUserInfo,
-	WithTestRegistry,
-} from '../tests/js/utils';
-import UserMenu from '../assets/js/components/UserMenu';
+import Button from './Button';
+import Checkbox from './Checkbox';
+import Chip from './Chip';
+import Dialog from './Dialog';
+import Menu from './Menu';
+import ProgressBar from './ProgressBar';
+import Radio from './Radio';
+import Switch from './Switch';
+import Tooltip from './Tooltip';
 
-storiesOf( 'Global', module ).add( 'UserMenu', () => {
-	const setupRegistry = ( registry ) => {
-		provideSiteInfo( registry );
-		provideUserInfo( registry );
-	};
+const Components = {
+	Button,
+	Checkbox,
+	Chip,
+	Dialog,
+	Menu,
+	ProgressBar,
+	Radio,
+	Switch,
+	Tooltip,
+};
 
-	return (
-		<WithTestRegistry callback={ setupRegistry }>
-			<UserMenu />
-		</WithTestRegistry>
-	);
-} );
+export default Components;

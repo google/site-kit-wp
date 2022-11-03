@@ -20,6 +20,7 @@ use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
+use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Modules\AdSense;
 use Google\Site_Kit\Modules\AdSense\Settings;
@@ -496,6 +497,8 @@ class AdSenseTest extends TestCase {
 		$authentication->get_oauth_client()->set_granted_scopes(
 			$adsense->get_scopes()
 		);
+		update_option( Modules::OPTION_ACTIVE_MODULES, array( 'adsense' ) );
+
 		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/modules/adsense/data/sites' );
 		$response = rest_get_server()->dispatch( $request );
 

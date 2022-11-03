@@ -40,8 +40,8 @@ import {
 	unsubscribeFromAll,
 } from '../../../../../tests/js/test-utils';
 import {
-	VIEW_CONTEXT_DASHBOARD,
-	VIEW_CONTEXT_DASHBOARD_VIEW_ONLY,
+	VIEW_CONTEXT_MAIN_DASHBOARD,
+	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 } from '../../constants';
 import {
 	PERMISSION_READ_SHARED_MODULE_DATA,
@@ -172,7 +172,7 @@ describe( 'WidgetAreaRenderer', () => {
 		const widgets = registry.select( CORE_WIDGETS ).getWidgets( areaName );
 		const { container } = render(
 			<WidgetAreaRenderer slug={ areaName } />,
-			{ registry, viewContext: VIEW_CONTEXT_DASHBOARD_VIEW_ONLY }
+			{ registry, viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY }
 		);
 
 		// There should be three widgets registered in the datastore.
@@ -216,7 +216,7 @@ describe( 'WidgetAreaRenderer', () => {
 		const widgets = registry.select( CORE_WIDGETS ).getWidgets( areaName );
 		const { container } = render(
 			<WidgetAreaRenderer slug={ areaName } />,
-			{ registry, viewContext: VIEW_CONTEXT_DASHBOARD }
+			{ registry, viewContext: VIEW_CONTEXT_MAIN_DASHBOARD }
 		);
 
 		// There should be three widgets registered in the datastore.
@@ -739,7 +739,7 @@ describe( 'WidgetAreaRenderer', () => {
 			<WidgetAreaRenderer slug={ areaName } />,
 			{
 				registry,
-				viewContext: VIEW_CONTEXT_DASHBOARD_VIEW_ONLY,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 				features: [ 'dashboardSharing' ],
 			}
 		);

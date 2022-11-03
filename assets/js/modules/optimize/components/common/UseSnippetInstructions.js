@@ -45,11 +45,18 @@ export default function UseSnippetInstructions() {
 	const analyticsUseSnippet = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getUseSnippet()
 	);
-	const gtmActive = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleActive( 'tagmanager' )
+	const isTagManagerAvailable = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleAvailable( 'tagmanager' )
 	);
-	const gtmUseSnippet = useSelect( ( select ) =>
-		select( MODULES_TAGMANAGER ).getUseSnippet()
+	const gtmActive = useSelect(
+		( select ) =>
+			isTagManagerAvailable &&
+			select( CORE_MODULES ).isModuleActive( 'tagmanager' )
+	);
+	const gtmUseSnippet = useSelect(
+		( select ) =>
+			isTagManagerAvailable &&
+			select( MODULES_TAGMANAGER ).getUseSnippet()
 	);
 	const settingsURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-settings' )
@@ -77,7 +84,7 @@ export default function UseSnippetInstructions() {
 				<p
 					dangerouslySetInnerHTML={ sanitizeHTML(
 						sprintf(
-							/* translators: 1: Analytics connect URL in Site Kit */
+							/* translators: %s: Analytics connect URL in Site Kit */
 							__(
 								'<a href="%s">Click here</a> to connect Google Analytics',
 								'google-site-kit'
@@ -107,7 +114,7 @@ export default function UseSnippetInstructions() {
 				<p
 					dangerouslySetInnerHTML={ sanitizeHTML(
 						sprintf(
-							/* translators: 1: external URL with instructions */
+							/* translators: %s: external URL with instructions */
 							__(
 								'<a href="%s">Click here</a> for how to implement Optimize tag through your Tag Manager',
 								'google-site-kit'
@@ -140,7 +147,7 @@ export default function UseSnippetInstructions() {
 				<p
 					dangerouslySetInnerHTML={ sanitizeHTML(
 						sprintf(
-							/* translators: 1: external URL with instructions */
+							/* translators: %s: external URL with instructions */
 							__(
 								'<a href="%s">Click here</a> for how to implement Optimize tag in Google Analytics Code Snippet',
 								'google-site-kit'

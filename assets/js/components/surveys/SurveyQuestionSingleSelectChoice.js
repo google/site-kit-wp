@@ -30,7 +30,7 @@ import { sprintf, __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Radio from '../Radio';
+import { Radio } from 'googlesitekit-components';
 import { TextField, Input } from '../../material-components';
 import VisuallyHidden from '../VisuallyHidden';
 import { SURVEY_INPUT_MAX_CHARACTER_LIMIT } from './constants';
@@ -62,7 +62,7 @@ const SurveyQuestionSingleSelectChoice = ( {
 					<VisuallyHidden>
 						<label htmlFor={ uniqueID }>
 							{ sprintf(
-								/* translators: 1: Option name */
+								/* translators: %s: Option name */
 								__(
 									'Text input for option %s',
 									'google-site-kit'

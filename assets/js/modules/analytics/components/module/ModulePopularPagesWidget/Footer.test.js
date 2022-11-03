@@ -21,15 +21,15 @@
  */
 import { render } from '../../../../../../../tests/js/test-utils';
 import {
-	VIEW_CONTEXT_DASHBOARD,
-	VIEW_CONTEXT_DASHBOARD_VIEW_ONLY,
+	VIEW_CONTEXT_MAIN_DASHBOARD,
+	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 } from '../../../../../googlesitekit/constants';
 import Footer from './Footer';
 
 describe( 'Footer', () => {
 	it( 'should not make a analytics settings requests when the view context is "view only"', async () => {
 		const { container } = render( <Footer />, {
-			viewContext: VIEW_CONTEXT_DASHBOARD_VIEW_ONLY,
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 		} );
 
 		expect( fetchMock ).not.toHaveFetched(
@@ -46,7 +46,7 @@ describe( 'Footer', () => {
 		);
 
 		const { container } = render( <Footer />, {
-			viewContext: VIEW_CONTEXT_DASHBOARD,
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 		} );
 
 		expect( fetchMock ).toHaveFetched(

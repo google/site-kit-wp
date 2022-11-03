@@ -29,7 +29,7 @@ import { useCallback } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import Button from '../../components/Button';
+import { Button } from 'googlesitekit-components';
 import IconSurveyUnhappy from '../../../svg/icons/survey-unhappy.svg';
 import IconSurveyDissatisfied from '../../../svg/icons/survey-dissatisfied.svg';
 import IconSurveyNeutral from '../../../svg/icons/survey-neutral.svg';

@@ -26,6 +26,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { Button } from 'googlesitekit-components';
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import {
@@ -33,7 +34,6 @@ import {
 	PERMISSION_AUTHENTICATE,
 } from '../../googlesitekit/datastore/user/constants';
 import { trackEvent } from '../../util';
-import Button from '../../components/Button';
 import Link from '../../components/Link';
 import useViewContext from '../../hooks/useViewContext';
 const { useDispatch, useSelect } = Data;

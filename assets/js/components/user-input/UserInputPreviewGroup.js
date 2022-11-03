@@ -29,7 +29,7 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Button from '../Button';
+import { Button } from 'googlesitekit-components';
 
 export default function UserInputPreviewGroup( {
 	questionNumber,
@@ -42,7 +42,7 @@ export default function UserInputPreviewGroup( {
 	const notEmpty = ( value ) => value.length > 0;
 
 	const sprintfTemplate =
-		/* translators: 1: other option */
+		/* translators: %s: other option */
 		questionNumber < 5 ? __( 'Other: %s', 'google-site-kit' ) : '%s';
 
 	return (

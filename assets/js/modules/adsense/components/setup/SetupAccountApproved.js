@@ -26,7 +26,7 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import Button from '../../../../components/Button';
+import { Button } from 'googlesitekit-components';
 import { MODULES_ADSENSE } from '../../datastore/constants';
 import { parseAccountID } from '../../util/parsing';
 import { ACCOUNT_STATUS_APPROVED } from '../../util/status';
@@ -94,7 +94,7 @@ export default function SetupAccountApproved() {
 		// Existing tag without permission.
 		showProfile = true;
 		checkedMessage = sprintf(
-			/* translators: 1: account ID */
+			/* translators: %s: account ID */
 			__(
 				'Site Kit detected AdSense code for a different account %s on your site. For a better ads experience, you should remove AdSense code that’s not linked to this AdSense account.',
 				'google-site-kit'

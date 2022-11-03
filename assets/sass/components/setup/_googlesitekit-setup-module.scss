@@ -255,9 +255,11 @@
 			}
 		}
 
-		.googlesitekit-setup-module__heading {
+		.googlesitekit-setup-module__badges {
 			align-items: center;
 			display: flex;
+			flex-wrap: wrap;
+			gap: 10px 12px;
 		}
 	}
 }

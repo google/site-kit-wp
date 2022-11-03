@@ -31,10 +31,10 @@ import { Fragment, useEffect, useRef } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { Button } from 'googlesitekit-components';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { Cell, Row } from '../../material-components';
 import { getUserInputAnwsers } from './util/constants';
-import Button from '../Button';
 import UserInputPreviewGroup from './UserInputPreviewGroup';
 import UserInputQuestionNotice from './UserInputQuestionNotice';
 import useQueryArg from '../../hooks/useQueryArg';

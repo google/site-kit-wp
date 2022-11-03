@@ -33,8 +33,7 @@ import { sprintf, __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Button from '../Button';
-import Checkbox from '../Checkbox';
+import { Button, Checkbox } from 'googlesitekit-components';
 import SurveyHeader from './SurveyHeader';
 import { TextField, Input, HelperText } from '../../material-components';
 import VisuallyHidden from '../VisuallyHidden';
@@ -192,7 +191,7 @@ const SurveyQuestionMultiSelect = ( {
 													htmlFor={ `${ id }-write-in` }
 												>
 													{ sprintf(
-														/* translators: 1: Option name */
+														/* translators: %s: Option name */
 														__(
 															'Text input for option %s',
 															'google-site-kit'
@@ -229,7 +228,7 @@ const SurveyQuestionMultiSelect = ( {
 				{ minChoices > 1 && (
 					<HelperText persistent>
 						{ sprintf(
-							/* translators: 1: the number of answers. */
+							/* translators: %s: the number of answers. */
 							__(
 								'Choose at least %s answers',
 								'google-site-kit'

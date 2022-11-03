@@ -261,6 +261,11 @@
 			}
 		}
 
+		.googlesitekit-settings-module__meta-item-info {
+			color: $c-user-input-note;
+			font-size: 0.75rem;
+		}
+
 		.googlesitekit-settings-module__edit-button-icon,
 		.googlesitekit-settings-module__remove-button-icon {
 			margin-left: $grid-gap-phone;

@@ -877,75 +877,139 @@ class ModulesTest extends TestCase {
 		$this->assertEquals( 200, $response->get_status() );
 	}
 
+	public function test_data_rest_endpoint__requires_active_module() {
+		$modules     = $this->setup_modules_to_test_rest_endpoint();
+		$fake_module = new FakeModule( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$this->force_set_property( $modules, 'modules', array( 'fake-module' => $fake_module ) );
+
+		delete_option( Modules::OPTION_ACTIVE_MODULES );
+		$this->assertFalse( $modules->is_module_active( 'fake-module' ) );
+
+		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/modules/fake-module/data/test-request' );
+		$response = rest_get_server()->dispatch( $request );
+
+		$this->assertEquals( 403, $response->get_status() );
+		$this->assertEquals( 'module_not_active', $response->get_data()['code'] );
+		$this->assertEquals( 'Module must be active to request data.', $response->get_data()['message'] );
+
+		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/modules/fake-module/data/test-request' );
+		$request->set_body_params(
+			array(
+				'data' => array(
+					'foo' => 'bar',
+				),
+			)
+		);
+		$response = rest_get_server()->dispatch( $request );
+
+		$this->assertEquals( 403, $response->get_status() );
+		$this->assertEquals( 'module_not_active', $response->get_data()['code'] );
+		$this->assertEquals( 'Module must be active to request data.', $response->get_data()['message'] );
+	}
+
+	public function test_data_rest_endpoint__success() {
+		$modules     = $this->setup_modules_to_test_rest_endpoint();
+		$fake_module = new FakeModule( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$this->force_set_property( $modules, 'modules', array( 'fake-module' => $fake_module ) );
+
+		update_option( Modules::OPTION_ACTIVE_MODULES, array( 'fake-module' ) );
+		$this->assertTrue( $modules->is_module_active( 'fake-module' ) );
+
+		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/modules/fake-module/data/test-request' );
+		$response = rest_get_server()->dispatch( $request );
+
+		$this->assertEquals( 200, $response->get_status() );
+		$data = $response->get_data();
+		$this->assertIsObject( $data );
+		$this->assertEquals( 'GET', $data->method );
+		$this->assertEquals( 'test-request', $data->datapoint );
+
+		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/modules/fake-module/data/test-request' );
+		$request->set_body_params(
+			array(
+				'data' => array(
+					'foo' => 'bar',
+				),
+			)
+		);
+		$response = rest_get_server()->dispatch( $request );
+
+		$this->assertEquals( 200, $response->get_status() );
+		$data = $response->get_data();
+		$this->assertIsObject( $data );
+		$this->assertEquals( 'POST', $data->method );
+		$this->assertEquals( 'test-request', $data->datapoint );
+	}
+
 	public function test_recover_module_rest_endpoint__no_get_method() {
 		$this->setup_modules_to_test_rest_endpoint();
 
-		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/modules/data/recover-module' );
+		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/modules/data/recover-modules' );
 		$response = rest_get_server()->dispatch( $request );
 
 		$this->assertEquals( 'rest_no_route', $response->get_data()['code'] );
 	}
 
-	public function test_recover_module_rest_endpoint__requires_module_slug() {
+	public function test_recover_module_rest_endpoint__requires_module_slugs() {
 		$this->setup_modules_to_test_rest_endpoint();
 
-		$request  = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/modules/data/recover-module' );
+		$request  = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/modules/data/recover-modules' );
 		$response = rest_get_server()->dispatch( $request );
 
-		$this->assertEquals( 'invalid_module_slug', $response->get_data()['code'] );
-		$this->assertEquals( 404, $response->get_status() );
+		$this->assertEquals( 'invalid_param', $response->get_data()['code'] );
+		$this->assertEquals( 400, $response->get_status() );
 	}
 
 	public function test_recover_module_rest_endpoint__invalid_module_slug() {
 		$this->setup_modules_to_test_rest_endpoint();
 
-		$request  = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/modules/data/recover-module' );
-		$response = rest_get_server()->dispatch( $request );
+		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/modules/data/recover-modules' );
 		$request->set_body_params(
 			array(
 				'data' => array(
-					'slug' => 'non-existent-module',
+					'slugs' => array( 'non-existent-module' ),
 				),
 			)
 		);
+		$response = rest_get_server()->dispatch( $request );
 
-		$this->assertEquals( 'invalid_module_slug', $response->get_data()['code'] );
-		$this->assertEquals( 404, $response->get_status() );
+		$this->assertEquals( 'invalid_module_slug', $response->get_data()['error']['non-existent-module']['code'] );
+		$this->assertEquals( 200, $response->get_status() );
 	}
 
 	public function test_recover_module_rest_endpoint__requires_shareable_module() {
 		$this->setup_modules_to_test_rest_endpoint();
 
-		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/modules/data/recover-module' );
+		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/modules/data/recover-modules' );
 		$request->set_body_params(
 			array(
 				'data' => array(
-					'slug' => 'search-console',
+					'slugs' => array( 'search-console' ),
 				),
 			)
 		);
 		$response = rest_get_server()->dispatch( $request );
 
-		$this->assertEquals( 'module_not_shareable', $response->get_data()['code'] );
-		$this->assertEquals( 404, $response->get_status() );
+		$this->assertEquals( 'module_not_shareable', $response->get_data()['error']['search-console']['code'] );
+		$this->assertEquals( 200, $response->get_status() );
 	}
 
 	public function test_recover_module_rest_endpoint__requires_recoverable_module() {
 		$this->enable_feature( 'dashboardSharing' );
 		$this->setup_modules_to_test_rest_endpoint();
 
-		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/modules/data/recover-module' );
+		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/modules/data/recover-modules' );
 		$request->set_body_params(
 			array(
 				'data' => array(
-					'slug' => 'search-console',
+					'slugs' => array( 'search-console' ),
 				),
 			)
 		);
 		$response = rest_get_server()->dispatch( $request );
 
-		$this->assertEquals( 'module_not_recoverable', $response->get_data()['code'] );
-		$this->assertEquals( 403, $response->get_status() );
+		$this->assertEquals( 'module_not_recoverable', $response->get_data()['error']['search-console']['code'] );
+		$this->assertEquals( 200, $response->get_status() );
 	}
 
 	public function test_recover_module_rest_endpoint__requires_accessible_module() {
@@ -967,18 +1031,18 @@ class ModulesTest extends TestCase {
 		);
 		add_option( 'googlesitekit_dashboard_sharing', $test_sharing_settings );
 
-		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/modules/data/recover-module' );
+		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/modules/data/recover-modules' );
 		$request->set_body_params(
 			array(
 				'data' => array(
-					'slug' => 'search-console',
+					'slugs' => array( 'search-console' ),
 				),
 			)
 		);
 		$response = rest_get_server()->dispatch( $request );
 
-		$this->assertEquals( 'module_not_accessible', $response->get_data()['code'] );
-		$this->assertEquals( 403, $response->get_status() );
+		$this->assertEquals( 'module_not_accessible', $response->get_data()['error']['search-console']['code'] );
+		$this->assertEquals( 200, $response->get_status() );
 	}
 
 	public function test_recover_module_rest_endpoint__success() {
@@ -1003,20 +1067,22 @@ class ModulesTest extends TestCase {
 		// Make search-console service requests accessible
 		$search_console->get_client()->setHttpClient( new FakeHttpClient() );
 
-		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/modules/data/recover-module' );
+		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/modules/data/recover-modules' );
 		$request->set_body_params(
 			array(
 				'data' => array(
-					'slug' => 'search-console',
+					'slugs' => array( 'search-console' ),
 				),
 			)
 		);
 		$response = rest_get_server()->dispatch( $request );
 
-		$current_user = wp_get_current_user();
 		$this->assertEquals(
 			array(
-				'ownerID' => $current_user->ID,
+				'success' => array(
+					'search-console' => true,
+				),
+				'error'   => (object) array(),
 			),
 			$response->get_data()
 		);

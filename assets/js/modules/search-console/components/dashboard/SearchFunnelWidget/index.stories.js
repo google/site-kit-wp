@@ -31,9 +31,9 @@ import {
 import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
 import { Provider as ViewContextProvider } from '../../../../../components/Root/ViewContextContext';
 import {
-	VIEW_CONTEXT_DASHBOARD,
-	VIEW_CONTEXT_DASHBOARD_VIEW_ONLY,
-	VIEW_CONTEXT_PAGE_DASHBOARD,
+	VIEW_CONTEXT_MAIN_DASHBOARD,
+	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+	VIEW_CONTEXT_ENTITY_DASHBOARD,
 } from '../../../../../googlesitekit/constants';
 import {
 	CORE_USER,
@@ -126,7 +126,9 @@ const WidgetWithComponentProps =
 
 const Template = ( { setupRegistry = () => {}, viewContext, ...args } ) => (
 	<WithRegistrySetup func={ setupRegistry }>
-		<ViewContextProvider value={ viewContext || VIEW_CONTEXT_DASHBOARD }>
+		<ViewContextProvider
+			value={ viewContext || VIEW_CONTEXT_MAIN_DASHBOARD }
+		>
 			<WidgetWithComponentProps { ...args } />
 		</ViewContextProvider>
 	</WithRegistrySetup>
@@ -346,7 +348,7 @@ ReadyEntityDashboard.args = {
 			provideAnalyticsMockReport( registry, options );
 		}
 	},
-	viewContext: VIEW_CONTEXT_PAGE_DASHBOARD,
+	viewContext: VIEW_CONTEXT_ENTITY_DASHBOARD,
 };
 
 export const ViewOnlySearchConsoleOnlyReady = Template.bind( {} );
@@ -384,7 +386,7 @@ ViewOnlySearchConsoleOnlyReady.args = {
 		}
 		registry.dispatch( MODULES_ANALYTICS ).receiveGetGoals( goals );
 	},
-	viewContext: VIEW_CONTEXT_DASHBOARD_VIEW_ONLY,
+	viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 };
 ViewOnlySearchConsoleOnlyReady.parameters = {
 	features: [ 'dashboardSharing' ],

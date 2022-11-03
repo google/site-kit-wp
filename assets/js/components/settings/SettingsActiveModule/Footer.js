@@ -21,6 +21,7 @@
  */
 import PropTypes from 'prop-types';
 import { useHistory, useParams } from 'react-router-dom';
+import isEmpty from 'lodash/isEmpty';
 
 /**
  * WordPress dependencies
@@ -32,15 +33,16 @@ import { Fragment, useCallback } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { Button } from 'googlesitekit-components';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { Cell, Grid, Row } from '../../../material-components';
 import PencilIcon from '../../../../svg/icons/pencil.svg';
 import TrashIcon from '../../../../svg/icons/trash.svg';
-import Button from '../../Button';
 import Spinner from '../../Spinner';
 import Link from '../../Link';
 import { clearWebStorage, trackEvent } from '../../../util';
 import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
+import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import useViewContext from '../../../hooks/useViewContext';
 const { useDispatch, useSelect } = Data;
 
@@ -72,6 +74,12 @@ export default function Footer( props ) {
 	const isSaving = useSelect( ( select ) =>
 		select( CORE_UI ).getValue( isSavingKey )
 	);
+	const moduleHomepage = useSelect( ( select ) => {
+		if ( ! module || isEmpty( module.homepage ) ) {
+			return undefined;
+		}
+		return select( CORE_USER ).getAccountChooserURL( module.homepage );
+	} );
 
 	const { submitChanges } = useDispatch( CORE_MODULES );
 	const { clearErrors } = useDispatch( `modules/${ slug }` );
@@ -140,7 +148,7 @@ export default function Footer( props ) {
 		return null;
 	}
 
-	const { name, homepage, forceActive } = module;
+	const { name, forceActive } = module;
 	let primaryColumn = null;
 	let secondaryColumn = null;
 
@@ -202,7 +210,7 @@ export default function Footer( props ) {
 				danger
 			>
 				{ sprintf(
-					/* translators: 1: module name */
+					/* translators: %s: module name */
 					__( 'Disconnect %s from Site Kit', 'google-site-kit' ),
 					name
 				) }
@@ -213,15 +221,15 @@ export default function Footer( props ) {
 				/>
 			</Link>
 		);
-	} else if ( ! isEditing && homepage ) {
+	} else if ( ! isEditing && moduleHomepage ) {
 		secondaryColumn = (
 			<Link
-				href={ homepage }
+				href={ moduleHomepage }
 				className="googlesitekit-settings-module__cta-button"
 				external
 			>
 				{ sprintf(
-					/* translators: 1: module name */
+					/* translators: %s: module name */
 					__( 'See full details in %s', 'google-site-kit' ),
 					name
 				) }

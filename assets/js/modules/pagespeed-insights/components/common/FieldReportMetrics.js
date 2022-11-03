@@ -33,6 +33,7 @@ import { __, _x, sprintf } from '@wordpress/i18n';
 import ReportMetric from './ReportMetric';
 import MetricsLearnMoreLink from './MetricsLearnMoreLink';
 import ErrorText from '../../../../components/ErrorText';
+import { CATEGORY_AVERAGE } from '../../util/constants';
 
 export default function FieldReportMetrics( { data, error } ) {
 	const {
@@ -116,7 +117,7 @@ export default function FieldReportMetrics( { data, error } ) {
 							'google-site-kit'
 						) }
 						displayValue={ sprintf(
-							/* translators: 1: number of seconds */
+							/* translators: %s: number of seconds */
 							_x( '%s s', 'duration', 'google-site-kit' ),
 							lcpSeconds
 						) }
@@ -146,34 +147,35 @@ export default function FieldReportMetrics( { data, error } ) {
 							'google-site-kit'
 						) }
 						displayValue={ sprintf(
-							/* translators: 1: number of milliseconds */
+							/* translators: %s: number of milliseconds */
 							_x( '%s ms', 'duration', 'google-site-kit' ),
 							firstInputDelay.percentile
 						) }
 						category={ firstInputDelay.category }
 						isLast={ ! interactionToNextPaint }
 					/>
-					{ !! interactionToNextPaint && (
-						<ReportMetric
-							title={ _x(
-								'Interaction to Next Paint',
-								'core web vitals name',
-								'google-site-kit'
-							) }
-							description={ __(
-								'How quickly your page responds when people interact with it',
-								'google-site-kit'
-							) }
-							displayValue={ sprintf(
-								/* translators: 1: number of milliseconds */
-								_x( '%s ms', 'duration', 'google-site-kit' ),
-								interactionToNextPaint.percentile
-							) }
-							category={ interactionToNextPaint.category }
-							experimental
-							isLast
-						/>
-					) }
+					<ReportMetric
+						title={ _x(
+							'Interaction to Next Paint',
+							'core web vitals name',
+							'google-site-kit'
+						) }
+						description={ __(
+							'How quickly your page responds when people interact with it',
+							'google-site-kit'
+						) }
+						displayValue={ sprintf(
+							/* translators: %s: number of milliseconds */
+							_x( '%s ms', 'duration', 'google-site-kit' ),
+							interactionToNextPaint?.percentile
+						) }
+						category={
+							interactionToNextPaint?.category || CATEGORY_AVERAGE
+						}
+						experimental
+						isLast={ !! interactionToNextPaint }
+						isHidden={ ! interactionToNextPaint }
+					/>
 				</tbody>
 			</table>
 		</div>

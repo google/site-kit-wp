@@ -39,9 +39,9 @@ import {
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { Tooltip } from 'googlesitekit-components';
 import ModuleIcon from '../../ModuleIcon';
 import UserRoleSelect from '../UserRoleSelect';
-import Tooltip from '../../Tooltip';
 import { Select } from '../../../material-components';
 import useViewContext from '../../../hooks/useViewContext';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
@@ -232,7 +232,7 @@ export default function Module( { moduleSlug, moduleName, ownerUsername } ) {
 							<p className="googlesitekit-dashboard-sharing-settings__note">
 								{ createInterpolateElement(
 									sprintf(
-										/* translators: 1: user who manages the module. */
+										/* translators: %s: user who manages the module. */
 										__(
 											'<span>Managed by</span> <strong>%s</strong>',
 											'google-site-kit'
@@ -249,7 +249,7 @@ export default function Module( { moduleSlug, moduleName, ownerUsername } ) {
 									title={
 										hasSharingCapability
 											? sprintf(
-													/* translators: 1: name of the user who manages the module. */
+													/* translators: %s: name of the user who manages the module. */
 													__(
 														'%s has connected this and given managing permissions to all admins. You can change who can view this on the dashboard.',
 														'google-site-kit'
@@ -257,7 +257,7 @@ export default function Module( { moduleSlug, moduleName, ownerUsername } ) {
 													ownerUsername
 											  )
 											: sprintf(
-													/* translators: 1: name of the user who manages the module. */
+													/* translators: %s: name of the user who manages the module. */
 													__(
 														'Contact %s to change who can manage view access for this module.',
 														'google-site-kit'
