@@ -30,9 +30,11 @@ import SettingsNotice, {
 	TYPE_INFO,
 	TYPE_SUGGESTION,
 } from '../assets/js/components/SettingsNotice';
+import ErrorNotice from '../assets/js/components/ErrorNotice';
 import WarningIcon from '../assets/svg/icons/warning-icon.svg';
 import Link from '../assets/js/components/Link';
 import { CORE_SITE } from '../assets/js/googlesitekit/datastore/site/constants';
+import { MODULES_TAGMANAGER } from '../assets/js/modules/tagmanager/datastore/constants';
 const { useSelect } = Data;
 
 const LearnMore = () => {
@@ -95,4 +97,12 @@ storiesOf( 'Global/Notices', module )
 			LearnMore={ LearnMore }
 			notice="This is a suggestion."
 		/>
-	) );
+	) )
+	.add( 'ErrorNotice', () => {
+		return (
+			<ErrorNotice
+				error={ new Error( 'This is error message' ) }
+				dataStore={ MODULES_TAGMANAGER }
+			/>
+		);
+	} );

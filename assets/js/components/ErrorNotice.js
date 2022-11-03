@@ -78,7 +78,7 @@ export default function ErrorNotice( {
 		>
 			{ shouldDisplayRetry && (
 				<Link onClick={ handleRetry }>
-					{ __( ' Retry', 'google-site-kit' ) }
+					{ __( 'Retry', 'google-site-kit' ) }
 				</Link>
 			) }
 		</ErrorText>
