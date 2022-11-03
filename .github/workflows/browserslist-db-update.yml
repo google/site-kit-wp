@@ -26,6 +26,7 @@ jobs:
           customHeaders: '{"Accept": "application/vnd.github+json"}'
 
       - name: Delete branch
+        id: delete-branch
         if: steps.check-branch.outcome == 'success'
         uses: fjogeleit/http-request-action@v1
         with:
@@ -33,10 +34,14 @@ jobs:
           method: 'DELETE'
           bearerToken: ${{ secrets.GITHUB_TOKEN }}
           customHeaders: '{"Accept": "application/vnd.github+json"}'
+    outputs:
+      check-branch-status: ${{ steps.check-branch.outputs.requestError && fromJson( steps.check-branch.outputs.requestError ).status || false }}
+      delete-branch-outcome: ${{ steps.delete-branch.outcome }}
 
   update-browserslist-database:
     name: Create PR containing Browserslist updates
     needs: close-existing-pr
+    if: ${{ needs.close-existing-pr.outputs.delete-branch-outcome == 'success' || needs.close-existing-pr.outputs.check-branch-status == '404' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
