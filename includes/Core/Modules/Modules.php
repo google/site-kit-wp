@@ -1696,7 +1696,7 @@ final class Modules {
 	/**
 	 * Prepares error data to pass with WP_REST_Response.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.87.0
 	 *
 	 * @param WP_Error $error Error (WP_Error) to prepare.
 	 *
@@ -1713,7 +1713,7 @@ final class Modules {
 	/**
 	 * Updates response with error encounted during module recovery.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.87.0
 	 *
 	 * @param string   $slug The module slug.
 	 * @param array    $response The existing response.

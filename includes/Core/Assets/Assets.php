@@ -299,7 +299,7 @@ final class Assets {
 	/**
 	 * Forms an array of dependencies based on the necessary context.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.87.0
 	 *
 	 * @param string $context The context for which dependencies should be formed.
 	 * @return array The array of dependencies.
