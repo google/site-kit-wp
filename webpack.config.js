@@ -209,6 +209,7 @@ const resolve = {
 		'@wordpress/api-fetch$': path.resolve( 'assets/js/api-fetch-shim.js' ),
 		'@wordpress/i18n__non-shim': require.resolve( '@wordpress/i18n' ),
 		'@wordpress/element__non-shim': require.resolve( '@wordpress/element' ),
+		react: path.resolve( 'assets/js/googlesitekit-element.js' ),
 	},
 	modules: [ projectPath( '.' ), 'node_modules' ],
 };
@@ -273,7 +274,6 @@ function* webpackConfig( env, argv ) {
 				'./assets/js/googlesitekit-datastore-ui.js',
 			'googlesitekit-modules': './assets/js/googlesitekit-modules.js',
 			'googlesitekit-widgets': './assets/js/googlesitekit-widgets.js',
-			'googlesitekit-element': './assets/js/googlesitekit-element.js',
 			'googlesitekit-modules-adsense':
 				'./assets/js/googlesitekit-modules-adsense.js',
 			'googlesitekit-modules-analytics':
@@ -408,6 +408,7 @@ function* webpackConfig( env, argv ) {
 	yield {
 		entry: {
 			'googlesitekit-i18n': './assets/js/googlesitekit-i18n.js',
+			'googlesitekit-element': './assets/js/googlesitekit-element.js',
 			// Analytics advanced tracking script to be injected in the frontend.
 			'analytics-advanced-tracking':
 				'./assets/js/analytics-advanced-tracking.js',

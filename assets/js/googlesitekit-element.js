@@ -20,3 +20,5 @@ import * as Element from '@wordpress/element__non-shim';
 
 global.googlesitekit = global.googlesitekit || {};
 global.googlesitekit.element = global.googlesitekit.element || Element;
+
+export * from '@wordpress/element__non-shim';
