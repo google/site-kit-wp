@@ -101,7 +101,7 @@ export default function ReminderBanner( {
 	useMount( () => {
 		if (
 			! isTooltipVisible &&
-			( ! isLoadingAnalyticsAccess || isDismissed )
+			! ( isLoadingAnalyticsAccess || isDismissed )
 		) {
 			trackEvent( eventCategory, 'view_notification' );
 		}
