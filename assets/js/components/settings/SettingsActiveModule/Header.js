@@ -143,7 +143,8 @@ export default function Header( { slug } ) {
 
 	const handleConnectGA4ButtonClick = useCallback(
 		async ( event ) => {
-			// Prevent this click from toggling the header too.
+			// Prevent this click from toggling the header, which is
+			// the default action for a click on any element in the header.
 			event.stopPropagation();
 
 			await trackEvent( eventCategory, 'click_ga4_button' );

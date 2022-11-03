@@ -99,7 +99,12 @@ export default function ReminderBanner( {
 	const eventCategory = `${ viewContext }_ga4-reminder-notification`;
 
 	useMount( () => {
-		trackEvent( eventCategory, 'view_notification' );
+		if (
+			! isTooltipVisible &&
+			( ! isLoadingAnalyticsAccess || isDismissed )
+		) {
+			trackEvent( eventCategory, 'view_notification' );
+		}
 	} );
 
 	const handleCTAClick = useCallback( async () => {
@@ -112,10 +117,9 @@ export default function ReminderBanner( {
 		showTooltip();
 	}, [ eventCategory, showTooltip ] );
 
-	const handleLearnMore = useCallback(
-		() => trackEvent( eventCategory, 'click_learn_more_link' ),
-		[ eventCategory ]
-	);
+	const handleLearnMore = useCallback( () => {
+		trackEvent( eventCategory, 'click_learn_more_link' );
+	}, [ eventCategory ] );
 
 	if ( isTooltipVisible ) {
 		return (
