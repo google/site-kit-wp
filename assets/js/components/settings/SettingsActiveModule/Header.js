@@ -76,6 +76,10 @@ export default function Header( { slug } ) {
 		select( CORE_USER ).getID()
 	);
 	const hasAnalyticsAccess = useSelect( ( select ) => {
+		if ( ! ( slug === 'analytics' && module?.connected ) ) {
+			return false;
+		}
+
 		const moduleOwnerID = select( MODULES_ANALYTICS ).getOwnerID();
 
 		if ( moduleOwnerID === loggedInUserID ) {
