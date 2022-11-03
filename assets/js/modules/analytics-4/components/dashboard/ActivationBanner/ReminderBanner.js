@@ -17,9 +17,15 @@
  */
 
 /**
+ * External dependencies
+ */
+import { useMount } from 'react-use';
+
+/**
  * WordPress dependencies
  */
 import { __, sprintf } from '@wordpress/i18n';
+import { useCallback } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -36,12 +42,14 @@ import { AdminMenuTooltip } from '../../../../../components/AdminMenuTooltip/Adm
 import { getBannerDismissalExpiryTime } from '../../../utils/banner-dismissal-expiry';
 import Link from '../../../../../components/Link';
 import { stringToDate } from '../../../../../util';
+import { trackEvent } from '../../../../../util/tracking';
 import InfoIcon from '../../../../../../svg/icons/info.svg';
 import ErrorIcon from '../../../../../../svg/icons/error.svg';
 import ReminderBannerNoAccess from './ReminderBannerNoAccess';
 import { CORE_MODULES } from '../../../../../googlesitekit/modules/datastore/constants';
 import { Cell, Grid, Row } from '../../../../../material-components';
 import { MODULES_ANALYTICS } from '../../../../analytics/datastore/constants';
+import useViewContext from '../../../../../hooks/useViewContext';
 
 const { useSelect } = Data;
 
@@ -86,6 +94,32 @@ export default function ReminderBanner( {
 	const showTooltip = useShowTooltip(
 		ACTIVATION_ACKNOWLEDGEMENT_TOOLTIP_STATE_KEY
 	);
+
+	const viewContext = useViewContext();
+	const eventCategory = `${ viewContext }_ga4-reminder-notification`;
+
+	useMount( () => {
+		if (
+			! isTooltipVisible &&
+			! ( isLoadingAnalyticsAccess || isDismissed )
+		) {
+			trackEvent( eventCategory, 'view_notification' );
+		}
+	} );
+
+	const handleCTAClick = useCallback( async () => {
+		await trackEvent( eventCategory, 'confirm_notification' );
+		return onSubmitSuccess();
+	}, [ eventCategory, onSubmitSuccess ] );
+
+	const handleDismiss = useCallback( async () => {
+		await trackEvent( eventCategory, 'dismiss_notification' );
+		showTooltip();
+	}, [ eventCategory, showTooltip ] );
+
+	const handleLearnMore = useCallback( () => {
+		trackEvent( eventCategory, 'click_learn_more_link' );
+	}, [ eventCategory ] );
 
 	if ( isTooltipVisible ) {
 		return (
@@ -195,7 +229,11 @@ export default function ReminderBanner( {
 					) }
 				</li>
 			</ul>
-			<Link href={ documentationURL } external>
+			<Link
+				onClick={ handleLearnMore }
+				href={ documentationURL }
+				external
+			>
 				{ __( 'Learn more about GA4', 'google-site-kit' ) }
 			</Link>
 		</section>
@@ -210,7 +248,7 @@ export default function ReminderBanner( {
 				dismissExpires={ getBannerDismissalExpiryTime(
 					referenceDateString
 				) }
-				onDismiss={ showTooltip }
+				onDismiss={ handleDismiss }
 			/>
 		);
 	}
@@ -224,13 +262,13 @@ export default function ReminderBanner( {
 			descriptionIcon={ descriptionIcon }
 			ctaLabel={ __( 'Set up now', 'google-site-kit' ) }
 			ctaLink={ onSubmitSuccess ? '#' : null }
-			onCTAClick={ onSubmitSuccess }
+			onCTAClick={ handleCTAClick }
 			dismiss={ __( 'Remind me later', 'google-site-kit' ) }
 			dismissExpires={ getBannerDismissalExpiryTime(
 				referenceDateString
 			) }
 			secondaryPane={ secondaryPane }
-			onDismiss={ showTooltip }
+			onDismiss={ handleDismiss }
 		>
 			{ children }
 		</BannerNotification>

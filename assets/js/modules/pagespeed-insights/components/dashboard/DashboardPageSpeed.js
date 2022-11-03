@@ -222,7 +222,7 @@ export default function DashboardPageSpeed() {
 			[ referenceURL, strategy ]
 		)
 	);
-	const recommendations = useSelect(
+	const recommendations = useInViewSelect(
 		( select ) => {
 			if ( reportError ) {
 				return [];
