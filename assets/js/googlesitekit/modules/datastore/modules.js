@@ -537,7 +537,7 @@ const baseActions = {
 	/**
 	 * Clears the recoveredModules in the state.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.87.0
 	 *
 	 * @return {Object} Action for RECEIVE_SHARED_OWNERSHIP_MODULES.
 	 */
