@@ -21,16 +21,19 @@
 	z-index: 99999;
 }
 
-.googlesitekit-tooltip.MuiTooltip-tooltip {
-	background-color: $c-surfaces-inverse-surface;
-	border-radius: 32px;
-	color: $c-surfaces-inverse-on-surface;
-	font-family: $f-primary;
-	font-size: $fs-body-md;
-	font-weight: $fw-normal;
-	padding: 14px 16px;
-}
+.googlesitekit-tooltip {
 
-.googlesitekit-tooltip .MuiTooltip-arrow {
-	color: $c-surfaces-inverse-surface;
+	&.MuiTooltip-tooltip {
+		background-color: $c-surfaces-inverse-surface;
+		border-radius: 32px;
+		color: $c-surfaces-inverse-on-surface;
+		font-family: $f-primary;
+		font-size: $fs-body-md;
+		font-weight: $fw-medium;
+		padding: 14.5px 19px;
+	}
+
+	.MuiTooltip-arrow {
+		color: $c-surfaces-inverse-surface;
+	}
 }
