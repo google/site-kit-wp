@@ -37,7 +37,7 @@ describe( 'Checkbox', () => {
 	it( 'should render the checkbox', () => {
 		const { container } = render( <Checkbox /> );
 		// log( 'container', container );
-		expect( 1 ).toBe( 1 );
+		// expect( 1 ).toBe( 1 );
 
 		// Snapshotting not working, produces the following error:
 		// PrettyFormatPluginError: Invalid string lengthRangeError: Invalid string length
@@ -49,7 +49,7 @@ describe( 'Checkbox', () => {
 		//   return <md-checkbox></md-checkbox>;
 		// }
 
-		// expect( container ).toMatchSnapshot();
+		expect( container ).toMatchSnapshot();
 	} );
 
 	describe( 'controlled input behaviour', () => {

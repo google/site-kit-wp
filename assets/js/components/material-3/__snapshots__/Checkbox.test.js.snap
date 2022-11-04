@@ -1,0 +1,9 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Checkbox should render the checkbox 1`] = `
+<div>
+  <md-checkbox
+    role="checkbox"
+  />
+</div>
+`;

@@ -34,7 +34,6 @@ module.exports = {
 		'<rootDir>/node_modules',
 		'<rootDir>/build',
 	],
-	testEnvironment: 'jest-environment-jsdom-sixteen',
 	transformIgnorePatterns: [ '<rootDir>/node_modules/(?!@material/web)/.*' ],
 	// Matches aliases in webpack.config.js.
 	moduleNameMapper: {
