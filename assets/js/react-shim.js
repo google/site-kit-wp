@@ -46,11 +46,15 @@ const {
 	Profiler,
 	StrictMode,
 	Suspense,
+	// eslint-disable-next-line camelcase
+	unstable_SuspenseList,
 	createElement,
 	cloneElement,
 	createFactory,
 	isValidElement,
 	version,
+	// eslint-disable-next-line camelcase
+	unstable_withSuspenseConfig,
 	__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED,
 } = global.googlesitekit._react || { default: React, ...ReactExports };
 
@@ -79,11 +83,13 @@ if ( global.googlesitekit._react === undefined ) {
 		Profiler,
 		StrictMode,
 		Suspense,
+		unstable_SuspenseList,
 		createElement,
 		cloneElement,
 		createFactory,
 		isValidElement,
 		version,
+		unstable_withSuspenseConfig,
 		__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED,
 	};
 }
@@ -113,10 +119,14 @@ export {
 	Profiler,
 	StrictMode,
 	Suspense,
+	// eslint-disable-next-line camelcase
+	unstable_SuspenseList,
 	createElement,
 	cloneElement,
 	createFactory,
 	isValidElement,
 	version,
+	// eslint-disable-next-line camelcase
+	unstable_withSuspenseConfig,
 	__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED,
 };
