@@ -16,11 +16,6 @@ module.exports = async ( { config } ) => {
 					return require.resolve( '@wordpress/i18n' );
 				}
 
-				// Revert "@wordpress/element: [ googlesitekit, element ]" external back to the original @wordpress/element.
-				if ( api === 'element' ) {
-					return require.resolve( '@wordpress/element' );
-				}
-
 				// Set "googlesitekit-components" to googlesitekit-components-gm2.js.
 				if ( api === 'components' ) {
 					return path.resolve(

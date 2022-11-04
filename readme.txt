@@ -129,7 +129,6 @@ This version marks the 100th release of Site Kit 🎉
 * Dismiss main dashboard sharing tour if sharing settings tour is shown first. See [#5520](https://github.com/google/site-kit-wp/issues/5520).
 * Add multi-module support to module recovery API endpoint. See [#5298](https://github.com/google/site-kit-wp/issues/5298).
 * Update PageSpeed Insights widget to avoid layout shifts between loading and loaded states. See [#4878](https://github.com/google/site-kit-wp/issues/4878).
-* Expose the `@wordpress/element` version used in the plugin as a property of the `global.googlesitekit` object. See [#4863](https://github.com/google/site-kit-wp/issues/4863).
 
 **Changed**
 
