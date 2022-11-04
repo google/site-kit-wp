@@ -77,6 +77,17 @@
     "curly": [
       "error",
       "all"
+    ],
+    "no-restricted-imports": [
+      "error",
+      {
+        "paths": [
+          {
+            "name": "react",
+            "message": "Please use @wordpress/element instead."
+          }
+        ]
+      }
     ]
   },
   "settings": {
