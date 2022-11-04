@@ -211,7 +211,7 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 		if ( ! autoSubmit ) {
 			if (
 				variant === VARIANT.NO_EXISTING_PROPERTY ||
-				ga4PropertyID === PROPERTY_CREATE
+				getPropertyID() === PROPERTY_CREATE
 			) {
 				trackEvent( eventCategory, 'create_property' );
 			} else {
@@ -235,7 +235,6 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 		autoSubmit,
 		eventCategory,
 		variant,
-		ga4PropertyID,
 		hasEditScope,
 		onSubmitSuccess,
 		setPermissionScopeError,
