@@ -209,7 +209,8 @@ const resolve = {
 		'@wordpress/api-fetch$': path.resolve( 'assets/js/api-fetch-shim.js' ),
 		'@wordpress/i18n__non-shim': require.resolve( '@wordpress/i18n' ),
 		'@wordpress/element__non-shim': require.resolve( '@wordpress/element' ),
-		react: path.resolve( 'assets/js/googlesitekit-element.js' ),
+		'react__non-shim': require.resolve( 'react' ),
+		react: path.resolve( 'assets/js/react-shim.js' ),
 	},
 	modules: [ projectPath( '.' ), 'node_modules' ],
 };
