@@ -19,6 +19,7 @@
 /**
  * External dependencies
  */
+import memize from 'memize';
 import PropTypes from 'prop-types';
 import uniqWith from 'lodash/uniqWith';
 
@@ -68,12 +69,16 @@ export default function ReportError( { moduleSlug, error } ) {
 			err.selectorData.name === 'getReport'
 	);
 
+	const determineError = memize( ( errorsA, errorsB ) => {
+		return {
+			...( errorsA.length ? errorsA[ 0 ] : errorsB[ 0 ] ),
+		};
+	} );
+
 	const showRetry = !! retryableErrors.length;
 
 	const errorTroubleshootingLinkURL = useSelect( ( select ) => {
-		const err = {
-			...( showRetry ? retryableErrors[ 0 ] : errors[ 0 ] ),
-		};
+		const err = determineError( retryableErrors, errors );
 
 		if ( isInsufficientPermissionsError( err ) ) {
 			err.code = `${ moduleSlug }_insufficient_permissions`;
