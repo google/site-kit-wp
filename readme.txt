@@ -110,20 +110,15 @@ Please create a new topic on our [WordPress.org support forum](https://wordpress
 
 = 1.87.0 =
 
-This version marks the 100th release of Site Kit 🎉
+**This version marks the 100th release of Site Kit 🎉**
 
 **Enhanced**
 
-* Adjust the Thank with Google counter/button position depending on the placement configuration. See [#6065](https://github.com/google/site-kit-wp/issues/6065).
-* Do not attempt to render TwG subscription data unconditionally in the frontend if JSON encoding fails. See [#6064](https://github.com/google/site-kit-wp/issues/6064).
 * Implement custom Analytics events for the GA4 Activation Banner. See [#6042](https://github.com/google/site-kit-wp/issues/6042).
 * Update the `ReportError` component to add the module slug to the insufficient error codes. See [#5987](https://github.com/google/site-kit-wp/issues/5987).
-* Persist Thank with Google supporter wall notification dismissal. See [#5979](https://github.com/google/site-kit-wp/issues/5979).
 * Ensure Banner Notifications stay visible and display a spinner when navigating to links via the CTA. See [#5974](https://github.com/google/site-kit-wp/issues/5974).
 * Enhance the BannerNotification component to better support a description which is a React element. See [#5972](https://github.com/google/site-kit-wp/issues/5972).
 * Add a `googlesitekit.components` global and entrypoint with Material 2 components. See [#5958](https://github.com/google/site-kit-wp/issues/5958).
-* Refactor Thank with Google color choices to a shared component. See [#5948](https://github.com/google/site-kit-wp/issues/5948).
-* Adjust Thank with Google banner in mobile view to match designs. See [#5747](https://github.com/google/site-kit-wp/issues/5747).
 * Send active consumers data alongside the request to refresh an access token. See [#5569](https://github.com/google/site-kit-wp/issues/5569).
 * Update shared user metadata when accessing shared dashboard. See [#5568](https://github.com/google/site-kit-wp/issues/5568).
 * Dismiss main dashboard sharing tour if sharing settings tour is shown first. See [#5520](https://github.com/google/site-kit-wp/issues/5520).
