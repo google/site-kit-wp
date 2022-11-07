@@ -33,7 +33,7 @@ import { sprintf, __ } from '@wordpress/i18n';
  */
 import { sanitizeHTML } from '../util';
 
-function ErrorText( { message, reconnectURL, children } ) {
+function ErrorText( { message, reconnectURL = '', children = null } ) {
 	if ( ! message ) {
 		return null;
 	}
@@ -68,7 +68,7 @@ function ErrorText( { message, reconnectURL, children } ) {
 			<p
 				dangerouslySetInnerHTML={ sanitizeHTML( error, sanitizeArgs ) }
 			/>
-			{ children && <Fragment>&nbsp;{ children }</Fragment> }
+			{ children && <Fragment> { children }</Fragment> }
 		</div>
 	);
 }
@@ -77,11 +77,6 @@ ErrorText.propTypes = {
 	message: PropTypes.string.isRequired,
 	reconnectURL: PropTypes.string,
 	children: PropTypes.element,
-};
-
-ErrorText.defaultProps = {
-	reconnectURL: '',
-	children: null,
 };
 
 export default ErrorText;
