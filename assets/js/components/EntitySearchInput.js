@@ -44,6 +44,7 @@ import useDashboardType, {
 	DASHBOARD_TYPE_ENTITY,
 } from '../hooks/useDashboardType';
 import useViewContext from '../hooks/useViewContext';
+import { useHistory } from 'react-router-dom';
 
 const { useSelect, useDispatch } = Data;
 
@@ -77,18 +78,23 @@ function EntitySearchInput() {
 			: null
 	);
 
+	const history = useHistory();
+
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 
 	useEffect( () => {
-		if ( detailsURL ) {
+		if ( match?.url ) {
 			trackEvent(
 				`${ viewContext }_headerbar_urlsearch`,
 				'open_urldetails'
 			).finally( () => {
-				navigateTo( detailsURL );
+				// navigateTo( detailsURL );
+				history.push(
+					`/dashboard/${ encodeURIComponent( match.url ) }`
+				);
 			} );
 		}
-	}, [ detailsURL, navigateTo, viewContext ] );
+	}, [ detailsURL, navigateTo, viewContext, history, match ] );
 
 	useMount( () => {
 		if ( dashboardType === DASHBOARD_TYPE_ENTITY ) {

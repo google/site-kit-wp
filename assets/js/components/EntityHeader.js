@@ -34,7 +34,6 @@ import Data from 'googlesitekit-data';
 import { Button } from 'googlesitekit-components';
 import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
 import BackspaceIcon from '../../svg/icons/keyboard-backspace.svg';
-import { CORE_LOCATION } from '../googlesitekit/datastore/location/constants';
 import Link from './Link';
 import { shortenURL } from '../util/urls';
 import { trackEvent } from '../util';
@@ -42,7 +41,8 @@ import useDashboardType, {
 	DASHBOARD_TYPE_ENTITY,
 } from '../hooks/useDashboardType';
 import useViewContext from '../hooks/useViewContext';
-const { useSelect, useDispatch } = Data;
+import { useHistory } from 'react-router-dom';
+const { useSelect } = Data;
 
 const EntityHeader = () => {
 	const viewContext = useViewContext();
@@ -89,15 +89,11 @@ const EntityHeader = () => {
 		};
 	}, [ entityURL, headerDetailsRef, setURL ] );
 
-	const { navigateTo } = useDispatch( CORE_LOCATION );
-	const returnURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' )
-	);
-
+	const history = useHistory();
 	const onClick = useCallback( () => {
 		trackEvent( `${ viewContext }_navigation`, 'return_to_dashboard' );
-		navigateTo( returnURL );
-	}, [ returnURL, navigateTo, viewContext ] );
+		history.push( '/dashboard' );
+	}, [ viewContext, history ] );
 
 	if (
 		DASHBOARD_TYPE_ENTITY !== dashboardType ||

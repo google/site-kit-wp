@@ -22,11 +22,13 @@
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import { useMutationObserver } from 'react-use-observer';
+import { useHistory } from 'react-router-dom';
 
 /**
  * WordPress dependencies
  */
 import { Fragment } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -43,12 +45,16 @@ import ViewOnlyMenu from './ViewOnlyMenu';
 import { useFeature } from '../hooks/useFeature';
 import useViewOnly from '../hooks/useViewOnly';
 import useDashboardType from '../hooks/useDashboardType';
+import SettingsSvg from '../../svg/icons/cog.svg';
+import Button from '../googlesitekit/components-gm2/Button';
+
 const { useSelect } = Data;
 
 const Header = ( { children, subHeader, showNavigation } ) => {
 	const dashboardSharingEnabled = useFeature( 'dashboardSharing' );
 	const isDashboard = !! useDashboardType();
 	const isViewOnly = useViewOnly();
+	const history = useHistory();
 
 	const isAuthenticated = useSelect( ( select ) =>
 		select( CORE_USER ).isAuthenticated()
@@ -85,6 +91,22 @@ const Header = ( { children, subHeader, showNavigation } ) => {
 							alignMiddle
 						>
 							{ children }
+
+							{ isAuthenticated && (
+								<Button
+									className="googlesitekit-header__button googlesitekit-border-radius-round googlesitekit-button-icon googlesitekit-border-radius-round googlesitekit-button-icon"
+									onClick={ () =>
+										history.push( '/settings' )
+									}
+									aria-label={ __(
+										'Settings',
+										'google-site-kit'
+									) }
+									icon={
+										<SettingsSvg width="24" height="24" />
+									}
+								/>
+							) }
 
 							{ ! isAuthenticated &&
 								dashboardSharingEnabled &&

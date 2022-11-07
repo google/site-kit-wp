@@ -125,30 +125,12 @@ final class Screens {
 			'admin_page_access_denied',
 			function() {
 				// Redirect dashboard to splash if no dashboard access (yet).
-				$this->no_access_redirect_dashboard_to_splash();
+//				$this->no_access_redirect_dashboard_to_splash();
 				// Redirect splash to (shared) dashboard if splash is dismissed.
-				$this->no_access_redirect_splash_to_dashboard();
+//				$this->no_access_redirect_splash_to_dashboard();
 
 				// Redirect module pages to dashboard.
-				$this->no_access_redirect_module_to_dashboard();
-			}
-		);
-
-		// Ensure the menu icon always is rendered correctly, without enqueueing a global CSS file.
-		add_action(
-			'admin_head',
-			function() {
-				?>
-				<style type="text/css">
-					#adminmenu .toplevel_page_googlesitekit-dashboard img {
-						width: 16px;
-					}
-					#adminmenu .toplevel_page_googlesitekit-dashboard.current img,
-					#adminmenu .toplevel_page_googlesitekit-dashboard.wp-has-current-submenu img {
-						opacity: 1;
-					}
-				</style>
-				<?php
+//				$this->no_access_redirect_module_to_dashboard();
 			}
 		);
 
@@ -176,7 +158,7 @@ final class Screens {
 
 				$sitekit_index = false;
 				foreach ( $menu_order as $key => $value ) {
-					if ( strpos( $value, self::PREFIX ) === 0 ) {
+					if ( $value === 'google-site-kit' ) {
 						$sitekit_index = $key;
 						$sitekit_value = $value;
 						break;
@@ -351,6 +333,27 @@ final class Screens {
 	 * @return array List of Screen instances.
 	 */
 	private function get_screens() {
+		// There can be only one...
+		return array(
+			new Screen(
+				'google-site-kit',
+				array(
+					'title'            => __( 'Dashboard', 'google-site-kit' ),
+					'capability'       => Permissions::VIEW_SPLASH,
+					'enqueue_callback' => function( Assets $assets ) {
+						$assets->enqueue_asset( 'googlesitekit-main' );
+					},
+					'render_callback' => function () {
+						?>
+
+						<div id="js-googlesitekit-main" class="googlesitekit-page"></div>
+
+						<?php
+					}
+				)
+			)
+		);
+
 		$screens = array(
 			new Screen(
 				self::PREFIX . 'dashboard',

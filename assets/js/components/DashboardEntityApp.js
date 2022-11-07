@@ -24,7 +24,11 @@ import classnames from 'classnames';
 /**
  * WordPress dependencies
  */
-import { createInterpolateElement, Fragment } from '@wordpress/element';
+import {
+	createInterpolateElement,
+	Fragment,
+	useEffect,
+} from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 
 /**
@@ -61,11 +65,20 @@ import EntityBannerNotifications from './notifications/EntityBannerNotifications
 import DashboardSharingSettingsButton from './dashboard-sharing/DashboardSharingSettingsButton';
 import { useFeature } from '../hooks/useFeature';
 import useViewOnly from '../hooks/useViewOnly';
+import { useParams } from 'react-router-dom';
+import { useDispatch } from '@wordpress/data';
 const { useSelect } = Data;
 
 function DashboardEntityApp() {
 	const viewOnlyDashboard = useViewOnly();
 	const dashboardSharingEnabled = useFeature( 'dashboardSharing' );
+	const params = useParams();
+	const permalinkParam = decodeURIComponent( params.permaLink );
+
+	const { fetchSetCurrentEntity } = useDispatch( CORE_SITE );
+	useEffect( () => {
+		fetchSetCurrentEntity( permalinkParam );
+	}, [ fetchSetCurrentEntity, permalinkParam ] );
 
 	const viewableModules = useSelect( ( select ) => {
 		if ( ! viewOnlyDashboard ) {
@@ -78,12 +91,7 @@ function DashboardEntityApp() {
 	const currentEntityURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getCurrentEntityURL()
 	);
-	const permaLink = useSelect( ( select ) =>
-		select( CORE_SITE ).getPermaLinkParam()
-	);
-	const dashboardURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' )
-	);
+	const permaLink = permalinkParam;
 
 	const widgetContextOptions = {
 		modules: viewableModules ? viewableModules : undefined,
@@ -137,13 +145,21 @@ function DashboardEntityApp() {
 
 	if ( currentEntityURL === null ) {
 		return (
-			<div className="googlesitekit-widget-context googlesitekit-module-page googlesitekit-dashboard-single-url">
+			<div className="googlesitekit-dashboard-single-url">
 				<ScrollEffect />
+				<Header>
+					<EntitySearchInput />
+					<DateRangeSelector />
+					{ dashboardSharingEnabled && ! viewOnlyDashboard && (
+						<DashboardSharingSettingsButton />
+					) }
+					<HelpMenu />
+				</Header>
 				<Grid>
 					<Row>
 						<Cell size={ 12 }>
 							<Fragment>
-								<Link href={ dashboardURL } back small>
+								<Link to="/dashboard" back small>
 									{ __(
 										'Back to the Site Kit Dashboard',
 										'google-site-kit'

@@ -300,12 +300,11 @@ function* webpackConfig( env, argv ) {
 			'googlesitekit-activation':
 				'./assets/js/googlesitekit-activation.js',
 			'googlesitekit-adminbar': './assets/js/googlesitekit-adminbar.js',
-			'googlesitekit-settings': './assets/js/googlesitekit-settings.js',
-			'googlesitekit-main-dashboard':
-				'./assets/js/googlesitekit-main-dashboard.js',
-			'googlesitekit-entity-dashboard':
-				'./assets/js/googlesitekit-entity-dashboard.js',
-			'googlesitekit-splash': './assets/js/googlesitekit-splash.js',
+			'googlesitekit-main': './assets/js/googlesitekit-main.js',
+			// 'googlesitekit-settings': './assets/js/googlesitekit-settings.js',
+			// 'googlesitekit-main-dashboard': './assets/js/googlesitekit-main-dashboard.js',
+			// 'googlesitekit-entity-dashboard':'./assets/js/googlesitekit-entity-dashboard.js',
+			// 'googlesitekit-splash': './assets/js/googlesitekit-splash.js',
 			'googlesitekit-wp-dashboard':
 				'./assets/js/googlesitekit-wp-dashboard.js',
 			'googlesitekit-base': './assets/js/googlesitekit-base.js',

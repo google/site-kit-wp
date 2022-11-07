@@ -17,23 +17,21 @@
  */
 
 .googlesitekit-plugin {
-
 	.googlesitekit-subheader {
 		background-color: $c-base;
 		position: relative;
 		z-index: 11;
 
-		@media (min-width: $bp-tablet) {
+		@media ( min-width: $bp-tablet ) {
 			padding: 0 10px;
 		}
 
-		&:not(:empty) {
+		&:not( :empty ) {
 			border-bottom: 1px solid $c-utility-divider;
 		}
 	}
 
 	.googlesitekit-header {
-
 		@include googlesitekit-inner-padding;
 		background-color: $c-base;
 		left: 0;
@@ -53,12 +51,11 @@
 		}
 
 		body.admin-bar & {
-
-			@media (min-width: $width-tablet + 1 + px) {
+			@media ( min-width: $width-tablet + 1 + px ) {
 				top: 46px;
 			}
 
-			@media (min-width: $bp-wpAdminBarTablet) {
+			@media ( min-width: $bp-wpAdminBarTablet ) {
 				top: 32px;
 			}
 		}
@@ -67,32 +64,37 @@
 			// prevent the logo from wrapping towards the tablet and mobile breakpoints
 			min-width: 150px;
 
-			@media (max-width: $bp-xsmallOnly) {
+			@media ( max-width: $bp-xsmallOnly ) {
 				min-width: 100px;
 			}
 		}
 
 		.googlesitekit-header__button {
-			align-items: center;
 			background-color: transparent;
-			cursor: pointer;
-			display: flex;
-			font-size: $fs-body-sm;
-			letter-spacing: $ls-xs;
-			margin-right: -8px;
-			padding: 8px;
-			transition: background-color $t-default ease-in-out, color $t-default ease-in-out;
+			box-shadow: none;
+			color: $c-surfaces-on-surface-variant;
+
+			&:focus,
+			&:hover {
+				background-color: $c-alabaster;
+				color: rgba( 0, 0, 0, 0.87 );
+
+				&::before,
+				&::after {
+					background-color: rgba( 0, 0, 0, 0.87 );
+				}
+			}
 
 			&:hover {
-				background-color: $c-background-brand;
-				color: $c-base;
-				text-decoration: none;
+				&::before {
+					opacity: 0.04;
+				}
 			}
 
-			svg {
-				fill: currentColor;
-				margin-left: $grid-gap-phone / 2;
-			}
+			// svg {
+			// 	fill: currentColor;
+			// 	margin-left: $grid-gap-phone / 2;
+			// }
 		}
 
 		.googlesitekit-dropdown-menu {
@@ -119,16 +121,14 @@
 		}
 
 		.googlesitekit-date-range-selector {
-
-			@media (max-width: $bp-mobileOnly) {
-
+			@media ( max-width: $bp-mobileOnly ) {
 				background: none;
 			}
 
 			svg {
 				margin-right: 0;
 
-				@media (min-width: $bp-tablet) {
+				@media ( min-width: $bp-tablet ) {
 					margin-right: $grid-gap-phone / 2;
 				}
 			}
@@ -137,15 +137,14 @@
 				color: $c-surfaces-on-surface-variant;
 				padding-right: $grid-gap-desktop;
 
-				@media (max-width: $bp-mobileOnly) {
+				@media ( max-width: $bp-mobileOnly ) {
 					background: none;
 					margin-right: 0;
 					padding-right: 8px;
 				}
 
 				svg {
-
-					@media (max-width: $bp-mobileOnly) {
+					@media ( max-width: $bp-mobileOnly ) {
 						margin-right: 0;
 					}
 				}
@@ -157,18 +156,14 @@
 		}
 
 		.googlesitekit-user-selector {
-
 			.mdc-button__label {
-
-				@media (max-width: $bp-wpAdminBarTablet) {
-
+				@media ( max-width: $bp-wpAdminBarTablet ) {
 					@include screen-reader-only;
 				}
 			}
 
 			.mdc-button__icon {
-
-				@media (max-width: $bp-wpAdminBarTablet) {
+				@media ( max-width: $bp-wpAdminBarTablet ) {
 					margin-right: 0;
 				}
 			}
@@ -187,14 +182,14 @@
 			gap: $grid-gap-phone;
 			justify-content: flex-end;
 
-			@media (min-width: $bp-desktop) {
+			@media ( min-width: $bp-desktop ) {
 				gap: $grid-gap-desktop;
 			}
 
 			div > button > .mdc-button__label {
 				display: none;
 
-				@media (min-width: $width-wpAdminBarTablet + 1 + px) {
+				@media ( min-width: $width-wpAdminBarTablet + 1 + px ) {
 					display: inline-block;
 				}
 			}

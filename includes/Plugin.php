@@ -10,6 +10,7 @@
 
 namespace Google\Site_Kit;
 
+use Google\Site_Kit\Core\Entity\REST_Entity_Controller;
 use Google\Site_Kit\Core\Util\Build_Mode;
 use Google\Site_Kit\Core\Util\Feature_Flags;
 
@@ -199,6 +200,7 @@ final class Plugin {
 				( new Core\Util\Migration_1_3_0( $this->context, $options, $user_options ) )->register();
 				( new Core\Util\Migration_1_8_1( $this->context, $options, $user_options, $authentication ) )->register();
 				( new Core\Dashboard_Sharing\Dashboard_Sharing( $this->context, $user_options ) )->register();
+				( new REST_Entity_Controller( $this->context ) )->register();
 
 				// If a login is happening (runs after 'init'), update current user in dependency chain.
 				add_action(

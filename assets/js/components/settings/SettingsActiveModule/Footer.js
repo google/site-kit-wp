@@ -94,7 +94,7 @@ export default function Footer( props ) {
 			slug
 		);
 		await clearErrors();
-		history.push( `/connected-services/${ slug }` );
+		history.push( `/settings/connected-services/${ slug }` );
 	}, [ clearErrors, history, viewContext, slug ] );
 
 	const handleConfirm = useCallback(
@@ -114,7 +114,7 @@ export default function Footer( props ) {
 					slug
 				);
 				await clearErrors();
-				history.push( `/connected-services/${ slug }` );
+				history.push( `/settings/connected-services/${ slug }` );
 				clearWebStorage();
 			}
 		},
@@ -189,7 +189,7 @@ export default function Footer( props ) {
 		primaryColumn = (
 			<Link
 				className="googlesitekit-settings-module__edit-button"
-				to={ `/connected-services/${ slug }/edit` }
+				to={ `/settings/connected-services/${ slug }/edit` }
 				onClick={ handleEdit }
 			>
 				{ __( 'Edit', 'google-site-kit' ) }

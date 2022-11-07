@@ -599,6 +599,22 @@ final class Assets {
 			),
 			// End JSR Assets.
 			new Script(
+				'googlesitekit-main',
+				array(
+					'src'          => $base_url . 'js/googlesitekit-main.js',
+					'dependencies' => array(
+						'googlesitekit-base',
+						'googlesitekit-data',
+						'googlesitekit-widgets',
+						'googlesitekit-datastore-user',
+						'googlesitekit-datastore-location',
+						'googlesitekit-datastore-site',
+						'googlesitekit-datastore-forms',
+						'googlesitekit-datastore-ui',
+					),
+				)
+			),
+			new Script(
 				'googlesitekit-splash',
 				array(
 					'src'          => $base_url . 'js/googlesitekit-splash.js',

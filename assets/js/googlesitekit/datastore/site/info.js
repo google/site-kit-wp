@@ -30,9 +30,11 @@ import { addQueryArgs, getQueryArg } from '@wordpress/url';
 /**
  * Internal dependencies
  */
+import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { CORE_SITE, AMP_MODE_PRIMARY, AMP_MODE_SECONDARY } from './constants';
 import { normalizeURL, untrailingslashit } from '../../../util';
+import { createFetchStore } from '../../data/create-fetch-store';
 
 const { createRegistrySelector } = Data;
 
@@ -46,6 +48,27 @@ function getSiteInfoProperty( propName ) {
 // Actions
 const RECEIVE_SITE_INFO = 'RECEIVE_SITE_INFO';
 const RECEIVE_PERMALINK_PARAM = 'RECEIVE_PERMALINK_PARAM';
+
+const fetchSetCurrentEntityStore = createFetchStore( {
+	baseName: 'setCurrentEntity',
+	controlCallback: ( { permalink } ) =>
+		API.set( 'core', 'site', 'find-entity', {
+			permalink,
+		} ),
+	reducerCallback: ( state, response /* , params */ ) => {
+		return {
+			...state,
+			siteInfo: {
+				...state.siteInfo,
+				currentEntityID: parseInt( response.id, 10 ) || 0,
+				currentEntityTitle: response.title,
+				currentEntityType: response.type,
+				currentEntityURL: response.url,
+			},
+		};
+	},
+	argsToParams: ( permalink ) => ( { permalink } ),
+} );
 
 export const initialState = {
 	siteInfo: undefined,
@@ -678,11 +701,14 @@ export const selectors = {
 	),
 };
 
-export default {
-	initialState,
-	actions,
-	controls,
-	reducer,
-	resolvers,
-	selectors,
-};
+export default Data.combineStores(
+	{
+		initialState,
+		actions,
+		controls,
+		reducer,
+		resolvers,
+		selectors,
+	},
+	fetchSetCurrentEntityStore
+);

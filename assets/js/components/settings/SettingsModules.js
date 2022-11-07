@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { Redirect, Route, Switch } from 'react-router-dom';
+import { Redirect, Route, Switch, useRouteMatch } from 'react-router-dom';
 
 /**
  * Internal dependencies
@@ -32,6 +32,7 @@ import SettingsInactiveModules from './SettingsInactiveModules';
 const { useSelect } = Data;
 
 function SettingsModules() {
+	const { path } = useRouteMatch();
 	const modules = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModules()
 	);
@@ -43,34 +44,34 @@ function SettingsModules() {
 	return (
 		<Switch>
 			{ /* Settings Module Routes */ }
-			<Route path="/connected-services/:moduleSlug/:action">
+			<Route path={ `${ path }/connected-services/:moduleSlug/:action` }>
 				<SettingsActiveModules />
 			</Route>
-			<Route path="/connected-services/:moduleSlug">
+			<Route path={ `${ path }/connected-services/:moduleSlug` }>
 				<SettingsActiveModules />
 			</Route>
-			<Route path="/connected-services">
+			<Route path={ `${ path }/connected-services` }>
 				<SettingsActiveModules />
 			</Route>
-			<Route path="/connect-more-services">
+			<Route path={ `${ path }/connect-more-services` }>
 				<SettingsInactiveModules />
 			</Route>
-			<Route path="/admin-settings">
+			<Route path={ `${ path }/admin-settings` }>
 				<SettingsAdmin />
 			</Route>
 
 			{ /* Redirects for routes that existed before React Router implementation. */ }
 			<Redirect
 				from="/settings/:moduleSlug/edit"
-				to="/connected-services/:moduleSlug/edit"
+				to="/settings/connected-services/:moduleSlug/edit"
 			/>
 			<Redirect
 				from="/settings/:moduleSlug"
-				to="/connected-services/:moduleSlug"
+				to="/settings/connected-services/:moduleSlug"
 			/>
-			<Redirect from="/settings" to="/connected-services" />
-			<Redirect from="/connect" to="/connect-more-services" />
-			<Redirect from="/admin" to="/admin-settings" />
+			<Redirect from="/settings" to="/settings/connected-services" />
+			<Redirect from="/connect" to="/settings/connect-more-services" />
+			<Redirect from="/admin" to="/settings/admin-settings" />
 
 			{ /* Fallback to `/connected-services` route if no match found. */ }
 			<Redirect to="/connected-services" />

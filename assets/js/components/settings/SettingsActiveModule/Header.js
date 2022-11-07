@@ -84,7 +84,7 @@ export default function Header( { slug } ) {
 			return;
 		}
 
-		history.push( `/connected-services/${ slug }` );
+		history.push( `/settings/connected-services/${ slug }` );
 		trackEvent(
 			`${ viewContext }_module-list`,
 			'view_module_settings',
@@ -97,7 +97,7 @@ export default function Header( { slug } ) {
 			return;
 		}
 
-		history.push( '/connected-services' );
+		history.push( '/settings/connected-services' );
 		trackEvent(
 			`${ viewContext }_module-list`,
 			'close_module_settings',
@@ -155,7 +155,7 @@ export default function Header( { slug } ) {
 				// Enable tooltip highlighting GA4 property select.
 				enableGA4PropertyTooltip: true,
 			} );
-			history.push( `/connected-services/${ slug }/edit` );
+			history.push( `/settings/connected-services/${ slug }/edit` );
 		},
 		[ eventCategory, history, setValues, slug ]
 	);
@@ -176,7 +176,7 @@ export default function Header( { slug } ) {
 			aria-selected={ isOpen }
 			aria-expanded={ isOpen }
 			aria-controls={ `googlesitekit-settings-module__content--${ slug }` }
-			to={ `/connected-services${ isOpen ? '' : `/${ slug }` }` }
+			to={ `/settings/connected-services${ isOpen ? '' : `/${ slug }` }` }
 			onClick={ isOpen ? closeHeader : openHeader }
 			ref={ headerRef }
 			tabIndex="0"

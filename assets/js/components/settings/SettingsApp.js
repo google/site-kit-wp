@@ -21,7 +21,7 @@
  */
 import Tab from '@material/react-tab';
 import TabBar from '@material/react-tab-bar';
-import { withRouter, Link, useLocation } from 'react-router-dom';
+import { withRouter, Link, useLocation, useRouteMatch } from 'react-router-dom';
 
 /**
  * WordPress dependencies
@@ -42,11 +42,13 @@ import { trackEvent } from '../../util/tracking';
 import useViewContext from '../../hooks/useViewContext';
 
 function SettingsApp() {
+	const { url } = useRouteMatch();
+
 	const location = useLocation();
 	// Prevent pushing to hash history if it would send you to the same URL.
 	// (Without this React Router will trigger a warning.)
 	const shouldReplaceHistory = ( path ) => false && basePath === path;
-	const [ , basePath ] = location.pathname.split( '/' );
+	const [ , , basePath ] = location.pathname.split( '/' );
 	const activeTab = SettingsApp.basePathToTabIndex[ basePath ];
 
 	const viewContext = useViewContext();
@@ -78,7 +80,7 @@ function SettingsApp() {
 								>
 									<Tab
 										tag={ Link }
-										to="/connected-services"
+										to={ `${ url }/connected-services` }
 										replace={ shouldReplaceHistory(
 											'connected-services'
 										) }
@@ -92,7 +94,7 @@ function SettingsApp() {
 									</Tab>
 									<Tab
 										tag={ Link }
-										to="/connect-more-services"
+										to={ `${ url }/connect-more-services` }
 										replace={ shouldReplaceHistory(
 											'connect-more-services'
 										) }
@@ -106,7 +108,7 @@ function SettingsApp() {
 									</Tab>
 									<Tab
 										tag={ Link }
-										to="/admin-settings"
+										to={ `${ url }/admin-settings` }
 										replace={ shouldReplaceHistory(
 											'admin-settings'
 										) }
