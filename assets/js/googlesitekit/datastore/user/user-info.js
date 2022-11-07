@@ -38,7 +38,7 @@ const { createRegistrySelector } = Data;
 const RECEIVE_CONNECT_URL = 'RECEIVE_CONNECT_URL';
 const RECEIVE_USER_INFO = 'RECEIVE_USER_INFO';
 const RECEIVE_USER_IS_VERIFIED = 'RECEIVE_USER_IS_VERIFIED';
-const RECEIVE_USER_INPUT_STATE = 'RECEIVE_USER_INPUT_STATE';
+const RECEIVE_IS_USER_INPUT_COMPLETE = 'RECEIVE_IS_USER_INPUT_COMPLETE';
 const RECEIVE_USER_INITIAL_SITE_KIT_VERSION =
 	'RECEIVE_USER_INITIAL_SITE_KIT_VERSION';
 
@@ -135,14 +135,14 @@ export const actions = {
 	 * @since 1.20.0
 	 * @private
 	 *
-	 * @param {Object} userInputState User input state.
+	 * @param {Object} isUserInputComplete User input state.
 	 * @return {Object} Redux-style action.
 	 */
-	receiveUserInputState( userInputState ) {
-		invariant( userInputState, 'userInputState is required.' );
+	receiveIsUserInputComplete( isUserInputComplete ) {
+		invariant( isUserInputComplete, 'isUserInputComplete is required.' );
 		return {
-			payload: { userInputState },
-			type: RECEIVE_USER_INPUT_STATE,
+			payload: { isUserInputComplete },
+			type: RECEIVE_IS_USER_INPUT_COMPLETE,
 		};
 	},
 };
@@ -179,11 +179,11 @@ export const reducer = ( state, { type, payload } ) => {
 				verified,
 			};
 		}
-		case RECEIVE_USER_INPUT_STATE: {
-			const { userInputState } = payload;
+		case RECEIVE_IS_USER_INPUT_COMPLETE: {
+			const { isUserInputComplete } = payload;
 			return {
 				...state,
-				userInputState,
+				isUserInputComplete,
 			};
 		}
 		default: {
@@ -257,10 +257,10 @@ export const resolvers = {
 		yield actions.receiveUserIsVerified( verified );
 	},
 
-	*getUserInputState() {
+	*getIsUserInputComplete() {
 		const { select } = yield Data.commonActions.getRegistry();
 
-		if ( select( CORE_USER ).getUserInputState() ) {
+		if ( select( CORE_USER ).getIsUserInputComplete() ) {
 			return;
 		}
 
@@ -268,8 +268,8 @@ export const resolvers = {
 			global.console.error( 'Could not load core/user info.' );
 			return;
 		}
-		const { userInputState } = global._googlesitekitUserData;
-		yield actions.receiveUserInputState( userInputState );
+		const { isUserInputComplete } = global._googlesitekitUserData;
+		yield actions.receiveIsUserInputComplete( isUserInputComplete );
 	},
 };
 
@@ -477,9 +477,9 @@ export const selectors = {
 	 * @param {Object} state Data store's state.
 	 * @return {string} The user input state.
 	 */
-	getUserInputState( state ) {
-		const { userInputState } = state;
-		return userInputState;
+	getIsUserInputComplete( state ) {
+		const { isUserInputComplete } = state;
+		return isUserInputComplete;
 	},
 };
 
