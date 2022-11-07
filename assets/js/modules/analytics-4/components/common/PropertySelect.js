@@ -204,7 +204,7 @@ export default function PropertySelect( {
 										'google-site-kit'
 									),
 									displayName,
-									measurementIDs[ _id ]
+									measurementIDs?.[ _id ]
 							  ) }
 					</Option>
 				) ) }
