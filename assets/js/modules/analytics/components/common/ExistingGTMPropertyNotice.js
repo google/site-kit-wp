@@ -27,6 +27,7 @@ import { sprintf, __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import { MODULES_ANALYTICS } from '../../datastore/constants';
 import { MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
+import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 const { useSelect } = Data;
 
 export default function ExistingGTMPropertyNotice() {
@@ -34,8 +35,14 @@ export default function ExistingGTMPropertyNotice() {
 		select( MODULES_ANALYTICS ).getPropertyID()
 	);
 
-	const gtmAnalyticsPropertyID = useSelect( ( select ) =>
-		select( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID()
+	const isTagManagerAvailable = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleAvailable( 'tagmanager' )
+	);
+
+	const gtmAnalyticsPropertyID = useSelect(
+		( select ) =>
+			isTagManagerAvailable &&
+			select( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID()
 	);
 
 	if ( ! gtmAnalyticsPropertyID ) {
@@ -48,7 +55,7 @@ export default function ExistingGTMPropertyNotice() {
 				{ sprintf(
 					/* translators: %s: GTM property ID */
 					__(
-						'An existing Google Tag Manager property was found on your site with the ID %s. Since it refers to the same property selected here, Site Kit will not place its own tag and rely on the existing one. If later on you decide to remove this property, Site Kit can place a new tag for you.',
+						'A Google Tag Manager container with a tag for the selected property, %s, was found on your site, so Site Kit will not place its own tag. If you would prefer to have Site Kit insert this tag, remove it from your Google Tag Manager container and update later in Settings.',
 						'google-site-kit'
 					),
 					gtmAnalyticsPropertyID
@@ -62,7 +69,7 @@ export default function ExistingGTMPropertyNotice() {
 			{ sprintf(
 				/* translators: %s: GTM property ID */
 				__(
-					'An existing Google Tag Manager property was found on your site with the ID %s.',
+					'An existing Google Analytics property with the ID %s was found on your site, added by Google Tag Manager.',
 					'google-site-kit'
 				),
 				gtmAnalyticsPropertyID

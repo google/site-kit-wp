@@ -33,17 +33,19 @@ import {
 	Fragment,
 	isValidElement,
 } from '@wordpress/element';
+import { isURL } from '@wordpress/url';
 
 /*
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
+import { Button } from 'googlesitekit-components';
 import GoogleLogoIcon from '../../../../svg/graphics/logo-g.svg';
 import { Cell, Grid, Row } from '../../../material-components';
 import { getContextScrollTop } from '../../../util/scroll';
 import { isHashOnly } from '../../../util/urls';
 import { sanitizeHTML } from '../../../util/sanitize';
 import DataBlock from '../../DataBlock';
-import Button from '../../Button';
 import Warning from '../../../../svg/icons/warning.svg';
 import ErrorIcon from '../../../../svg/icons/error.svg';
 import Link from '../../Link';
@@ -58,12 +60,16 @@ import {
 	getImageCellSizeProperties,
 	getImageCellOrderProperties,
 } from './utils';
+import { stringToDate } from '../../../util/date-range/string-to-date';
+import { CORE_LOCATION } from '../../../googlesitekit/datastore/location/constants';
+const { useSelect, useDispatch } = Data;
 
 export const LEARN_MORE_TARGET = {
 	EXTERNAL: 'external',
 	INTERNAL: 'internal',
 };
 
+// eslint-disable-next-line complexity
 function BannerNotification( {
 	anchorLink,
 	anchorLinkLabel,
@@ -160,6 +166,11 @@ function BannerNotification( {
 		}, 350 );
 	}
 
+	const isNavigatingToCTALink = useSelect( ( select ) =>
+		select( CORE_LOCATION ).isNavigatingTo( ctaLink || '' )
+	);
+
+	const { navigateTo } = useDispatch( CORE_LOCATION );
 	async function handleCTAClick( e ) {
 		e.persist();
 
@@ -174,6 +185,15 @@ function BannerNotification( {
 
 		if ( isDismissible && dismissOnCTAClick ) {
 			dismissNotification();
+		}
+
+		if (
+			isURL( ctaLink ) &&
+			ctaTarget !== '_blank' &&
+			! e.defaultPrevented
+		) {
+			e.preventDefault();
+			navigateTo( ctaLink );
 		}
 	}
 
@@ -203,7 +223,7 @@ function BannerNotification( {
 		const { value: dismissed } = await getItem( cacheKeyDismissed );
 
 		if ( dismissed ) {
-			const expiration = new Date( dismissed );
+			const expiration = stringToDate( dismissed );
 			expiration.setSeconds(
 				expiration.getSeconds() + parseInt( dismissExpires, 10 )
 			);
@@ -215,11 +235,17 @@ function BannerNotification( {
 	}
 
 	// isDismissed will be undefined until resolved from browser storage.
-	if ( isDismissible && ( undefined === isDismissed || isDismissed ) ) {
+	// isNavigating will be true until the navigation is complete.
+	if (
+		! isNavigatingToCTALink &&
+		isDismissible &&
+		( undefined === isDismissed || isDismissed )
+	) {
 		return null;
 	}
 
-	const closedClass = isClosed ? 'is-closed' : 'is-open';
+	const closedClass =
+		! isNavigatingToCTALink && isClosed ? 'is-closed' : 'is-open';
 	const inlineLayout = 'large' === format && 'win-stats-increase' === type;
 
 	const imageCellSizeProperties = getImageCellSizeProperties( format );
@@ -260,14 +286,48 @@ function BannerNotification( {
 		</Fragment>
 	);
 
+	const learnMoreAndPageIndex = (
+		<Fragment>
+			{ learnMoreLabel && (
+				<Fragment>
+					<Link
+						onClick={ handleLearnMore }
+						href={ learnMoreURL }
+						external={
+							learnMoreTarget === LEARN_MORE_TARGET.EXTERNAL
+						}
+					>
+						{ learnMoreLabel }
+					</Link>
+					{ learnMoreDescription }
+				</Fragment>
+			) }
+			{ pageIndex && (
+				<span className="googlesitekit-publisher-win__detect">
+					{ pageIndex }
+				</span>
+			) }
+		</Fragment>
+	);
+
 	const inlineMarkup = (
 		<Fragment>
 			{ title && (
-				<h3 className="googlesitekit-heading-2 googlesitekit-publisher-win__title">
-					{ title }
+				<div className="googlesitekit-publisher-win__title-image-wrapper">
+					<h3 className="googlesitekit-heading-2 googlesitekit-publisher-win__title">
+						{ title }
 
-					{ badgeLabel && <Badge label={ badgeLabel } /> }
-				</h3>
+						{ badgeLabel && <Badge label={ badgeLabel } /> }
+					</h3>
+
+					{ WinImageSVG && (
+						<div
+							className={ `googlesitekit-publisher-win__image-${ format } googlesitekit-non-mobile-display-none` }
+						>
+							<WinImageSVG width={ 75 } height={ 75 } />
+						</div>
+					) }
+				</div>
 			) }
 			{ anchorLink && anchorLinkLabel && (
 				<p className="googlesitekit-publisher-win__link">
@@ -283,10 +343,14 @@ function BannerNotification( {
 							{ descriptionIcon }
 						</div>
 					) }
-					<p>
-						{ isValidElement( description ) ? (
-							description
-						) : (
+
+					{ isValidElement( description ) ? (
+						<Fragment>
+							{ description }
+							<p>{ learnMoreAndPageIndex }</p>
+						</Fragment>
+					) : (
+						<p>
 							<span
 								dangerouslySetInnerHTML={ sanitizeHTML(
 									description,
@@ -300,31 +364,10 @@ function BannerNotification( {
 										ALLOWED_ATTR: [ 'href' ],
 									}
 								) }
-							/>
-						) }
-
-						{ learnMoreLabel && (
-							<Fragment>
-								{ ' ' }
-								<Link
-									onClick={ handleLearnMore }
-									href={ learnMoreURL }
-									external={
-										learnMoreTarget ===
-										LEARN_MORE_TARGET.EXTERNAL
-									}
-								>
-									{ learnMoreLabel }
-								</Link>
-								{ learnMoreDescription }
-							</Fragment>
-						) }
-						{ pageIndex && (
-							<span className="googlesitekit-publisher-win__detect">
-								{ pageIndex }
-							</span>
-						) }
-					</p>
+							/>{ ' ' }
+							{ learnMoreAndPageIndex }
+						</p>
+					) }
 				</div>
 			) }
 			{ children }
@@ -424,17 +467,26 @@ function BannerNotification( {
 										href={ ctaLink }
 										target={ ctaTarget }
 										onClick={ handleCTAClick }
-										disabled={ isAwaitingCTAResponse }
+										disabled={
+											isAwaitingCTAResponse ||
+											isNavigatingToCTALink
+										}
 									>
 										{ ctaLabel }
 									</Button>
 								) }
 
-								<Spinner isSaving={ isAwaitingCTAResponse } />
+								<Spinner
+									isSaving={
+										isAwaitingCTAResponse ||
+										isNavigatingToCTALink
+									}
+								/>
 
 								{ isDismissible &&
 									dismiss &&
-									! isAwaitingCTAResponse && (
+									! isAwaitingCTAResponse &&
+									! isNavigatingToCTALink && (
 										<DismissComponent
 											onClick={ handleDismiss }
 										>
@@ -458,11 +510,12 @@ function BannerNotification( {
 							alignBottom={
 								format === 'larger' && noBottomPadding
 							}
+							className="googlesitekit-display-none googlesitekit-non-mobile-display-block"
 						>
 							<div
 								className={ `googlesitekit-publisher-win__image-${ format }` }
 							>
-								<WinImageSVG />
+								<WinImageSVG width={ 105 } height={ 105 } />
 							</div>
 						</Cell>
 					) }

@@ -30,59 +30,33 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
-import {
-	MODULES_PAGESPEED_INSIGHTS,
-	STRATEGY_MOBILE,
-	STRATEGY_DESKTOP,
-} from '../../datastore/constants';
+import { STRATEGY_MOBILE, STRATEGY_DESKTOP } from '../../datastore/constants';
+import ZeroRecommendations from '../../../../../svg/graphics/zero-state-yellow.svg';
 import Recommendation from './Recommendation';
-const { useSelect } = Data;
+import { Cell, Grid, Row } from '../../../../material-components';
 
 export default function Recommendations( {
 	className,
+	recommendations,
 	referenceURL,
 	strategy,
 } ) {
-	const finishedResolution = useSelect( ( select ) =>
-		select( MODULES_PAGESPEED_INSIGHTS ).hasFinishedResolution(
-			'getReport',
-			[ referenceURL, strategy ]
-		)
-	);
-	const recommendations = useSelect(
-		( select ) => {
-			const allAudits = select(
-				MODULES_PAGESPEED_INSIGHTS
-			).getAuditsWithStackPack( referenceURL, strategy, 'wordpress' );
-			if ( ! allAudits || ! Object.keys( allAudits ).length ) {
-				return [];
-			}
-
-			const audits = [];
-			Object.keys( allAudits ).forEach( ( auditSlug ) => {
-				const audit = allAudits[ auditSlug ];
-				if (
-					( audit.scoreDisplayMode !== 'numeric' &&
-						audit.scoreDisplayMode !== 'binary' ) ||
-					audit.score >= 0.9
-				) {
-					return;
-				}
-
-				audits.push( {
-					id: audit.id,
-					title: audit.title,
-				} );
-			} );
-
-			return audits;
-		},
-		[ referenceURL, strategy, finishedResolution ]
-	);
-
 	if ( ! recommendations?.length ) {
-		return null;
+		return (
+			<Grid>
+				<Row>
+					<Cell>
+						{ __(
+							'No recommendations for now.',
+							'google-site-kit'
+						) }
+					</Cell>
+					<Cell className="googlesitekit-pagespeed__zero-recommendations">
+						<ZeroRecommendations />
+					</Cell>
+				</Row>
+			</Grid>
+		);
 	}
 
 	return (
@@ -114,6 +88,7 @@ export default function Recommendations( {
 
 Recommendations.propTypes = {
 	className: PropTypes.string,
+	recommendations: PropTypes.arrayOf( PropTypes.object ),
 	referenceURL: PropTypes.string.isRequired,
 	strategy: PropTypes.oneOf( [ STRATEGY_MOBILE, STRATEGY_DESKTOP ] )
 		.isRequired,

@@ -25,12 +25,12 @@ import PropTypes from 'prop-types';
  *
  * WordPress dependencies
  */
-import { Fragment, lazy, Suspense } from '@wordpress/element';
+import { lazy, Suspense } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
-import { Cell } from '../../../../material-components';
+import { Grid, Row, Cell } from '../../../../material-components';
 import SetupHeader from './SetupHeader';
 
 const ThankWithGoogleSetup = lazy( () =>
@@ -41,31 +41,32 @@ export default function SetupPublicationScreen( props ) {
 	const { title, description, children } = props;
 
 	return (
-		<Fragment>
-			<Cell
-				smSize={ 4 }
-				mdSize={ 8 }
-				lgSize={ 6 }
-				lgOrder={ 2 }
-				className="googlesitekit-setup__icon"
-			>
-				<Suspense fallback={ <div /> }>
-					<ThankWithGoogleSetup width={ 391 } height={ 222 } />
-				</Suspense>
-			</Cell>
-			<Cell smSize={ 4 } mdSize={ 8 } lgSize={ 6 } lgOrder={ 1 }>
-				<SetupHeader />
+		<Grid collapsed>
+			<SetupHeader />
+			<Row>
+				<Cell
+					smSize={ 4 }
+					mdSize={ 8 }
+					lgSize={ 6 }
+					lgOrder={ 2 }
+					className="googlesitekit-setup__icon"
+				>
+					<Suspense fallback={ <div /> }>
+						<ThankWithGoogleSetup width={ 391 } height={ 222 } />
+					</Suspense>
+				</Cell>
+				<Cell smSize={ 4 } mdSize={ 8 } lgSize={ 6 } lgOrder={ 1 }>
+					<div className="googlesitekit-setup-module__publication-screen">
+						<h3 className="googlesitekit-heading-3 googlesitekit-setup-module__title">
+							{ title }
+						</h3>
+						<p>{ description }</p>
+					</div>
 
-				<div className="googlesitekit-setup-module__publication-screen">
-					<h3 className="googlesitekit-heading-3 googlesitekit-setup-module__title">
-						{ title }
-					</h3>
-					<p>{ description }</p>
-				</div>
-
-				{ children }
-			</Cell>
-		</Fragment>
+					{ children }
+				</Cell>
+			</Row>
+		</Grid>
 	);
 }
 

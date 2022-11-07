@@ -40,6 +40,7 @@ import {
 import GoogleChart from '../../../../../components/GoogleChart';
 import parseDimensionStringToDate from '../../../util/parseDimensionStringToDate';
 import ReportError from '../../../../../components/ReportError';
+import { stringToDate } from '../../../../../util/date-range/string-to-date';
 const { useSelect } = Data;
 
 const X_SMALL_ONLY_MEDIA_QUERY = '(max-width: 450px)';
@@ -160,19 +161,19 @@ export default function UserCountGraph( props ) {
 	}
 
 	// Create the start and end ticks, applying the outer offset.
-	const startTick = new Date( startDate );
-	startTick.setDate( new Date( startDate ).getDate() + outerTickOffset );
-	const endTick = new Date( endDate );
-	endTick.setDate( new Date( endDate ).getDate() - outerTickOffset );
+	const startTick = stringToDate( startDate );
+	startTick.setDate( stringToDate( startDate ).getDate() + outerTickOffset );
+	const endTick = stringToDate( endDate );
+	endTick.setDate( stringToDate( endDate ).getDate() - outerTickOffset );
 	const midTicks = [];
 
 	// Create the mid ticks.
 	const tickDenominator = totalTicks - 1; // Used to place the midTicks and even intervals across the axis.
 	totalTicks = totalTicks - 2; // The start and end ticks are already set.
 	while ( totalTicks > 0 ) {
-		const midTick = new Date( endDate );
+		const midTick = stringToDate( endDate );
 		midTick.setDate(
-			new Date( endDate ).getDate() -
+			stringToDate( endDate ).getDate() -
 				totalTicks * ( dateRangeNumberOfDays / tickDenominator )
 		);
 		midTicks.push( midTick );

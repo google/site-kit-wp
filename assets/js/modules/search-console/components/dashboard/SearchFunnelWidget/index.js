@@ -59,6 +59,7 @@ import {
 import useViewOnly from '../../../../../hooks/useViewOnly';
 const { useSelect, useInViewSelect } = Data;
 
+// eslint-disable-next-line complexity
 const SearchFunnelWidget = ( { Widget, WidgetReportError } ) => {
 	const [ selectedStats, setSelectedStats ] = useState( 0 );
 
@@ -66,7 +67,15 @@ const SearchFunnelWidget = ( { Widget, WidgetReportError } ) => {
 
 	const viewOnly = useViewOnly();
 
+	const isAnalyticsAvailable = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleAvailable( 'analytics' )
+	);
+
 	const canViewSharedAnalytics = useSelect( ( select ) => {
+		if ( ! isAnalyticsAvailable ) {
+			return false;
+		}
+
 		if ( ! viewOnly ) {
 			return true;
 		}

@@ -21,8 +21,8 @@
  */
 import { render } from '../../../tests/js/test-utils';
 import {
-	VIEW_CONTEXT_DASHBOARD,
-	VIEW_CONTEXT_DASHBOARD_VIEW_ONLY,
+	VIEW_CONTEXT_MAIN_DASHBOARD,
+	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 } from '../googlesitekit/constants';
 import SourceLink from './SourceLink';
 
@@ -35,7 +35,7 @@ describe( 'SourceLink', () => {
 				external
 			/>,
 			{
-				viewContext: VIEW_CONTEXT_DASHBOARD_VIEW_ONLY,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 			}
 		);
 
@@ -51,7 +51,7 @@ describe( 'SourceLink', () => {
 				external
 			/>,
 			{
-				viewContext: VIEW_CONTEXT_DASHBOARD,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			}
 		);
 

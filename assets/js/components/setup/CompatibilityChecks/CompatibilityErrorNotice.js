@@ -37,6 +37,7 @@ import {
 	ERROR_INVALID_HOSTNAME,
 	ERROR_TOKEN_MISMATCH,
 	ERROR_WP_PRE_V5,
+	ERROR_SK_SERVICE_CONNECTION_FAIL,
 } from './constants';
 import GetHelpLink from './GetHelpLink';
 
@@ -151,7 +152,7 @@ export default function CompatibilityErrorNotice( { error } ) {
 						<br/>
 						${
 							sprintf(
-								/* translators: %1$s: Support Forum URL, %2$s: Error message */ // eslint-disable-line indent
+								/* translators: 1: Support Forum URL, 2: Error message */ // eslint-disable-line indent
 								__(
 									'To get more help, ask a question on our <a href="%1$s">support forum</a> and include the text of the original error message: %2$s',
 									'google-site-kit'
@@ -186,6 +187,35 @@ export default function CompatibilityErrorNotice( { error } ) {
 						'google-site-kit'
 					) }
 				</p>
+			);
+		case ERROR_SK_SERVICE_CONNECTION_FAIL:
+			return (
+				<p
+					dangerouslySetInnerHTML={ sanitizeHTML(
+						`
+						${ __(
+							'Looks like your site is having a technical issue with connecting to the Site Kit authentication service.',
+							'google-site-kit'
+						) }
+						<br/>
+						${
+							sprintf(
+								/* translators: 1: Support Forum URL, 2: Error message */ // eslint-disable-line indent
+								__(
+									'To get more help, ask a question on our <a href="%1$s">support forum</a> and include the text of the original error message: %2$s',
+									'google-site-kit'
+								), // eslint-disable-line indent
+								'https://wordpress.org/support/plugin/google-site-kit/', // eslint-disable-line indent
+								`<br/>${ error }` // eslint-disable-line indent
+							) /* eslint-disable-line indent */
+						}
+						`,
+						{
+							ALLOWED_TAGS: [ 'a', 'br' ],
+							ALLOWED_ATTR: [ 'href' ],
+						}
+					) }
+				/>
 			);
 	}
 }

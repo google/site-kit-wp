@@ -31,12 +31,12 @@ import { _x, __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { ProgressBar } from 'googlesitekit-components';
 import { Select, Option } from '../../../../material-components';
 import {
 	MODULES_TAGMANAGER,
 	CONTAINER_CREATE,
 } from '../../datastore/constants';
-import ProgressBar from '../../../../components/ProgressBar';
 import { isValidAccountID } from '../../util';
 const { useSelect } = Data;
 
@@ -92,7 +92,7 @@ export default function ContainerSelect( {
 							{ publicId === CONTAINER_CREATE // eslint-disable-line sitekit/acronym-case
 								? name
 								: sprintf(
-										/* translators: %1$s: container name, %2$s: container ID */
+										/* translators: 1: container name, 2: container ID */
 										_x(
 											'%1$s (%2$s)',
 											'Tag Manager container name and ID',

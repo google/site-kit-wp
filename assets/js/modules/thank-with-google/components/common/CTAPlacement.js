@@ -17,7 +17,7 @@
 /**
  * WordPress dependencies
  */
-import { useCallback, useState, Fragment } from '@wordpress/element';
+import { useCallback, useState, Fragment, useEffect } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -29,12 +29,16 @@ import {
 	TYPE_OVERLAY,
 } from '../../datastore/constants';
 import { getPlacementType } from '../../util/settings';
+import { trackEvent } from '../../../../util';
+import useViewContext from '../../../../hooks/useViewContext';
 import TypeRadio from './TypeRadio';
 import ProminenceRadio from './ProminenceRadio';
 import PositionRadio from './PositionRadio';
 const { useSelect } = Data;
 
 export default function CTAPlacement() {
+	const viewContext = useViewContext();
+
 	const ctaPlacement = useSelect( ( select ) =>
 		select( MODULES_THANK_WITH_GOOGLE ).getCTAPlacement()
 	);
@@ -42,7 +46,22 @@ export default function CTAPlacement() {
 	const defaultType = getPlacementType( ctaPlacement );
 
 	const [ type, setType ] = useState( defaultType );
-	const onChange = useCallback( setType, [ setType ] );
+
+	const onChange = useCallback(
+		( newType ) => {
+			setType( newType );
+			trackEvent(
+				`${ viewContext }_thank-with-google`,
+				'change_cta_type',
+				newType
+			);
+		},
+		[ setType, viewContext ]
+	);
+
+	useEffect( () => {
+		setType( defaultType );
+	}, [ defaultType ] );
 
 	return (
 		<Fragment>

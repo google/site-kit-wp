@@ -17,4 +17,3 @@
  */
 
 export const AREA_MODULE_ANALYTICS_MAIN = 'moduleAnalyticsMain';
-export const HIDE_GA4_PROPERTY_SELECT_TOOLTIP = 'hideGA4PropertySelectTooltip';

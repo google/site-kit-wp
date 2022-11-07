@@ -17,6 +17,11 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { createRegistrySelector } from '@wordpress/data';
+
+/**
  * External dependencies
  */
 import invariant from 'invariant';
@@ -61,7 +66,9 @@ export const actions = {
 			},
 		};
 	},
-	clearError( baseName, args ) {
+
+	// @TODO: remove clearMatchingLegacyError option once all instances of the legacy behavior have been removed.
+	clearError( baseName, args, { clearMatchingLegacyError = false } = {} ) {
 		if ( baseName ) {
 			invariant(
 				args && Array.isArray( args ),
@@ -74,6 +81,7 @@ export const actions = {
 			payload: {
 				baseName,
 				args,
+				clearMatchingLegacyError,
 			},
 		};
 	},
@@ -92,6 +100,7 @@ export function createErrorStore( storeName ) {
 
 	const initialState = {
 		errors: {},
+		errorArgs: {},
 		error: undefined,
 	};
 
@@ -101,11 +110,16 @@ export function createErrorStore( storeName ) {
 				const { baseName, args, error } = payload;
 
 				if ( baseName ) {
+					const key = generateErrorKey( baseName, args );
 					return {
 						...state,
 						errors: {
 							...( state.errors || {} ),
-							[ generateErrorKey( baseName, args ) ]: error,
+							[ key ]: error,
+						},
+						errorArgs: {
+							...( state.errorArgs || {} ),
+							[ key ]: args,
 						},
 					};
 				}
@@ -120,7 +134,18 @@ export function createErrorStore( storeName ) {
 				if ( baseName ) {
 					const key = generateErrorKey( baseName, args );
 					newState.errors = { ...( state.errors || {} ) };
+					newState.errorArgs = { ...( state.errorArgs || {} ) };
+
+					// @TODO: remove this block once all instances of the legacy behavior have been removed.
+					if (
+						payload.clearMatchingLegacyError &&
+						newState.error === newState.errors[ key ]
+					) {
+						delete newState.error;
+					}
+
 					delete newState.errors[ key ];
+					delete newState.errorArgs[ key ];
 				} else {
 					// @TODO: remove it once all instances of the legacy behavior have been removed.
 					newState.error = undefined;
@@ -134,16 +159,19 @@ export function createErrorStore( storeName ) {
 				const newState = { ...state };
 				if ( baseName ) {
 					newState.errors = { ...( state.errors || {} ) };
+					newState.errorArgs = { ...( state.errorArgs || {} ) };
 					for ( const key in newState.errors ) {
 						if (
 							key === baseName ||
 							key.startsWith( `${ baseName }::` )
 						) {
 							delete newState.errors[ key ];
+							delete newState.errorArgs[ key ];
 						}
 					}
 				} else {
 					newState.errors = {};
+					newState.errorArgs = {};
 					// @TODO: remove it once all instances of the legacy behavior have been removed.
 					newState.error = undefined;
 				}
@@ -272,6 +300,82 @@ export function createErrorStore( storeName ) {
 
 			return Array.from( errorsSet );
 		},
+
+		/**
+		 * Gets the meta-data for a given error object, or null if the error is not found.
+		 *
+		 * Returns meta-data in the format:
+		 *
+		 * ```
+		 *	{
+		 *		baseName: <string>,
+		 *		args: <Array>
+		 *	}
+		 * ```
+		 *
+		 * @since 1.84.0
+		 *
+		 * @param {Object} state Data store's state.
+		 * @param {Object} error Error object.
+		 * @return {Object|null} Meta-data for the given error object, or null if the error is not found.
+		 */
+		getMetaDataForError( state, error ) {
+			const key = Object.keys( state.errors ).find(
+				( errorKey ) => state.errors[ errorKey ] === error
+			);
+
+			if ( key ) {
+				const baseName = key.substring( 0, key.indexOf( '::' ) );
+				return {
+					baseName,
+					args: state.errorArgs[ key ],
+				};
+			}
+
+			return null;
+		},
+
+		/**
+		 * Gets the selector data for a given error object, or null if no selector data is available.
+		 *
+		 * Returns selector data in the format:
+		 *
+		 * ```
+		 *	{
+		 *		storeName: <string>,
+		 *		name: <string>,
+		 *		args: <Array>
+		 *	}
+		 * ```
+		 *
+		 * @since 1.87.0
+		 *
+		 * @param {Object} state Data store's state.
+		 * @param {Object} error Error object.
+		 * @return {Object|null} Selector data for the given error object, or null if no selector data is available.
+		 */
+		getSelectorDataForError: createRegistrySelector(
+			( select ) => ( state, error ) => {
+				const metaData =
+					select( storeName ).getMetaDataForError( error );
+
+				if ( metaData ) {
+					const { baseName: name, args } = metaData;
+
+					const isSelector = !! select( storeName )[ name ];
+
+					if ( isSelector ) {
+						return {
+							storeName,
+							name,
+							args,
+						};
+					}
+				}
+
+				return null;
+			}
+		),
 
 		/**
 		 * Determines whether the datastore has errors or not.

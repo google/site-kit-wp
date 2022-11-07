@@ -56,8 +56,7 @@
 			}
 		}
 
-		.googlesitekit-modules-list__module--pagespeed
-		.googlesitekit-settings-connect-module__wrapper {
+		.googlesitekit-modules-list__module--pagespeed .googlesitekit-settings-connect-module__wrapper {
 			flex-wrap: wrap;
 		}
 
@@ -78,11 +77,10 @@
 			font-size: $fs-body-lg;
 			font-weight: 500;
 			letter-spacing: $ls-m;
-			margin: 0 0 10px 0;
+			margin: 0 0 10px;
 		}
 
-		.googlesitekit-modules-list__module--disabled
-		.googlesitekit-settings-connect-module__title {
+		.googlesitekit-modules-list__module--disabled .googlesitekit-settings-connect-module__title {
 			color: $c-disabled;
 		}
 

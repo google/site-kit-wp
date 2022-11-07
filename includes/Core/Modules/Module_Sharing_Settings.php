@@ -62,7 +62,9 @@ class Module_Sharing_Settings extends Setting {
 				$sanitized_option[ $module_slug ] = array();
 
 				if ( isset( $sharing_settings['sharedRoles'] ) ) {
-					$sanitized_option[ $module_slug ]['sharedRoles'] = $this->sanitize_string_list( $sharing_settings['sharedRoles'] );
+					$filtered_shared_roles = $this->filter_shared_roles( $this->sanitize_string_list( $sharing_settings['sharedRoles'] ) );
+
+					$sanitized_option[ $module_slug ]['sharedRoles'] = $filtered_shared_roles;
 				}
 
 				if ( isset( $sharing_settings['management'] ) ) {
@@ -102,6 +104,31 @@ class Module_Sharing_Settings extends Setting {
 	}
 
 	/**
+	 * Filters the shared roles to only include roles with the edit_posts capability.
+	 *
+	 * @since 1.85.0.
+	 *
+	 * @param array $shared_roles The shared roles list.
+	 * @return string[] The sanitized shared roles list.
+	 */
+	private function filter_shared_roles( array $shared_roles ) {
+		$filtered_shared_roles = array_filter(
+			$shared_roles,
+			function( $role_slug ) {
+				$role = get_role( $role_slug );
+
+				if ( empty( $role ) || ! $role->has_cap( 'edit_posts' ) ) {
+					return false;
+				}
+
+				return true;
+			}
+		);
+
+		return array_values( $filtered_shared_roles );
+	}
+
+	/**
 	 * Gets the settings after filling in default values.
 	 *
 	 * @since 1.50.0
@@ -117,6 +144,11 @@ class Module_Sharing_Settings extends Setting {
 			}
 			if ( ! isset( $sharing_settings['management'] ) || ! in_array( $sharing_settings['management'], array( 'all_admins', 'owner' ), true ) ) {
 				$settings[ $module_slug ]['management'] = 'owner';
+			}
+
+			if ( isset( $sharing_settings['sharedRoles'] ) && is_array( $sharing_settings['sharedRoles'] ) ) {
+				$filtered_shared_roles                   = $this->filter_shared_roles( $sharing_settings['sharedRoles'] );
+				$settings[ $module_slug ]['sharedRoles'] = $filtered_shared_roles;
 			}
 		}
 

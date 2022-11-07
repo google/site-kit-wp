@@ -36,11 +36,11 @@ import { getQueryArg, addQueryArgs } from '@wordpress/url';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { Button } from 'googlesitekit-components';
 import WelcomeSVG from '../../../svg/graphics/welcome.svg';
 import WelcomeAnalyticsSVG from '../../../svg/graphics/welcome-analytics.svg';
 import { trackEvent, untrailingslashit } from '../../util';
 import Header from '../Header';
-import Button from '../Button';
 import ResetButton from '../ResetButton';
 import Layout from '../layout/Layout';
 import BannerNotification from '../notifications/BannerNotification';
@@ -72,6 +72,9 @@ export default function SetupUsingProxyWithSignIn() {
 
 	const dashboardSharingEnabled = useFeature( 'dashboardSharing' );
 
+	const analyticsModuleAvailable = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleAvailable( 'analytics' )
+	);
 	const analyticsModuleActive = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleActive( 'analytics' )
 	);
@@ -210,7 +213,7 @@ export default function SetupUsingProxyWithSignIn() {
 
 	if ( 'revoked' === getQueryArg( location.href, 'googlesitekit_context' ) ) {
 		title = sprintf(
-			/* translators: %s is the site's hostname. (e.g. example.com) */
+			/* translators: %s: is the site's hostname. (e.g. example.com) */
 			__( 'You revoked access to Site Kit for %s', 'google-site-kit' ),
 			punycode.toUnicode( new URL( siteURL ).hostname )
 		);
@@ -383,9 +386,10 @@ export default function SetupUsingProxyWithSignIn() {
 														</p>
 													) }
 
-												{ ! analyticsModuleActive && (
-													<ActivateAnalyticsNotice />
-												) }
+												{ analyticsModuleAvailable &&
+													! analyticsModuleActive && (
+														<ActivateAnalyticsNotice />
+													) }
 
 												<CompatibilityChecks>
 													{ ( {

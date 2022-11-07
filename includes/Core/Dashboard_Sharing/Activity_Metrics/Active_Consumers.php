@@ -93,4 +93,20 @@ class Active_Consumers extends User_Setting {
 			return $results;
 		};
 	}
+
+	/**
+	 * Adds a consumer to the active consumers list.
+	 *
+	 * @since 1.87.0
+	 *
+	 * @param int      $user_id User ID.
+	 * @param string[] $roles User roles.
+	 */
+	public function add( $user_id, $roles ) {
+		$active_consumers = $this->get();
+		if ( ! array_key_exists( $user_id, $active_consumers ) ) {
+			$active_consumers[ $user_id ] = $roles;
+			$this->set( $active_consumers );
+		}
+	}
 }

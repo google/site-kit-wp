@@ -17,11 +17,22 @@
  */
 
 /**
+ * External dependencies
+ */
+import fetchMock from 'fetch-mock';
+
+/**
  * Internal dependencies
  */
 import ReminderBanner from './ReminderBanner';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
+import { MODULES_ANALYTICS } from '../../../../analytics/datastore/constants';
+import {
+	provideModuleRegistrations,
+	provideModules,
+	provideUserInfo,
+} from '../../../../../../../tests/js/utils';
 
 const Template = () => <ReminderBanner onSubmitSuccess={ () => {} } />;
 
@@ -31,6 +42,27 @@ InitialNotice.decorators = [
 	( Story ) => {
 		const setupRegistry = ( registry ) => {
 			registry.dispatch( CORE_USER ).setReferenceDate( '2023-05-31' );
+		};
+
+		return (
+			<WithRegistrySetup func={ setupRegistry }>
+				<Story />
+			</WithRegistrySetup>
+		);
+	},
+];
+
+export const InitialNoticeWithoutAccess = Template.bind( {} );
+InitialNoticeWithoutAccess.storyName = 'Before 1 June 2023 - Without Access';
+InitialNoticeWithoutAccess.decorators = [
+	( Story ) => {
+		const setupRegistry = ( registry ) => {
+			registry.dispatch( CORE_USER ).setReferenceDate( '2023-05-31' );
+			provideUserInfo( registry, { id: 2 } );
+			fetchMock.postOnce(
+				/^\/google-site-kit\/v1\/core\/modules\/data\/check-access/,
+				{ body: { access: false } }
+			);
 		};
 
 		return (
@@ -75,4 +107,21 @@ PostCutoff.decorators = [
 
 export default {
 	title: 'Modules/Analytics4/ReminderBanner',
+	decorators: [
+		( Story ) => {
+			const setupRegistry = ( registry ) => {
+				provideModules( registry );
+				provideModuleRegistrations( registry );
+				registry
+					.dispatch( MODULES_ANALYTICS )
+					.receiveGetSettings( { ownerID: 1 } );
+			};
+
+			return (
+				<WithRegistrySetup func={ setupRegistry }>
+					<Story />
+				</WithRegistrySetup>
+			);
+		},
+	],
 };

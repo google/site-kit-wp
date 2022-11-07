@@ -98,7 +98,7 @@ export default function TotalUserCount( props ) {
 	const currentDateRangeDays = getAvailableDateRanges()[ dateRange ]?.days;
 	if ( currentDateRangeDays ) {
 		currentDateRangeLabel = sprintf(
-			/* translators: %s number of days */
+			/* translators: %s: number of days */
 			__( 'compared to the previous %s days', 'google-site-kit' ),
 			currentDateRangeDays
 		);

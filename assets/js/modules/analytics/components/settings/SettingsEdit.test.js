@@ -21,7 +21,6 @@
  */
 import {
 	render,
-	waitFor,
 	createTestRegistry,
 } from '../../../../../../tests/js/test-utils';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
@@ -48,6 +47,64 @@ describe( 'SettingsEdit', () => {
 				connected: true,
 			},
 		] );
+	} );
+
+	it( 'should not make any GTM API request and renders the settings screen without errors if GTM is not available', async () => {
+		registry.dispatch( CORE_MODULES ).receiveGetModules( [
+			{
+				slug: 'analytics',
+				active: true,
+				connected: true,
+			},
+		] );
+
+		fetchMock.get( /analytics\/data\/settings/, { body: {} } );
+		fetchMock.get( /analytics-4\/data\/settings/, { body: {} } );
+
+		fetchMock.get( /\example.com/, {
+			body: [],
+			status: 200,
+		} );
+
+		const { accounts, properties, profiles } =
+			fixtures.accountsPropertiesProfiles;
+
+		const existingTag = {
+			/* eslint-disable sitekit/acronym-case */
+			accountID: profiles[ 0 ].accountId,
+			propertyID: profiles[ 0 ].webPropertyId,
+			/* eslint-enable */
+		};
+
+		const { accountID, propertyID } = existingTag;
+
+		registry.dispatch( MODULES_ANALYTICS ).receiveGetAccounts( accounts );
+		registry
+			.dispatch( MODULES_ANALYTICS )
+			.receiveGetProperties( properties, { accountID } );
+		registry
+			.dispatch( MODULES_ANALYTICS )
+			.receiveGetProfiles( profiles, { accountID, propertyID } );
+
+		const { waitForRegistry, container } = render( <SettingsEdit />, {
+			registry,
+		} );
+		await waitForRegistry();
+
+		// Verify GTM is not available.
+		expect(
+			registry.select( CORE_MODULES ).isModuleAvailable( 'tagmanager' )
+		).toBe( false );
+
+		// Verify no requests were made to GTM module.
+		expect( fetchMock ).not.toHaveFetched( /tagmanager\/data/ );
+
+		// Verify that the Account select dropdown is rendered in the settings screen.
+		expect(
+			container.querySelector(
+				'.googlesitekit-analytics__select-account'
+			)
+		).toBeInTheDocument();
 	} );
 
 	it( 'does not set the account ID or property ID of an existing tag when present', async () => {
@@ -104,9 +161,10 @@ describe( 'SettingsEdit', () => {
 			.dispatch( MODULES_ANALYTICS )
 			.receiveGetExistingTag( existingTag.propertyID );
 
-		await waitFor( () => {
-			render( <SettingsEdit />, { registry } );
+		const { waitForRegistry } = render( <SettingsEdit />, {
+			registry,
 		} );
+		await waitForRegistry();
 
 		expect(
 			registry.select( MODULES_ANALYTICS ).getAccountID()

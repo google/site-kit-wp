@@ -31,6 +31,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { Button } from 'googlesitekit-components';
 import {
 	MODULES_TAGMANAGER,
 	FORM_SETUP,
@@ -49,7 +50,6 @@ import {
 	WebContainerSelect,
 	TagCheckProgress,
 } from '../common';
-import Button from '../../../../components/Button';
 import Link from '../../../../components/Link';
 import SetupErrorNotice from './SetupErrorNotice';
 import SetupUseSnippetSwitch from './SetupUseSnippetSwitch';
@@ -61,6 +61,9 @@ export default function SetupForm( { finishSetup } ) {
 	);
 	const singleAnalyticsPropertyID = useSelect( ( select ) =>
 		select( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID()
+	);
+	const analyticsModuleAvailable = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleAvailable( 'analytics' )
 	);
 	const analyticsModuleActive = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleActive( 'analytics' )
@@ -147,7 +150,9 @@ export default function SetupForm( { finishSetup } ) {
 	}, [ hasEditScope, initialAutoSubmit, submitForm, initialSubmitMode ] );
 
 	const isSetupWithAnalytics = !! (
-		singleAnalyticsPropertyID && ! analyticsModuleActive
+		singleAnalyticsPropertyID &&
+		analyticsModuleAvailable &&
+		! analyticsModuleActive
 	);
 
 	// Form submit behavior now varies based on which button is clicked.

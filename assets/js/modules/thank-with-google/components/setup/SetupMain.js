@@ -24,28 +24,30 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { useCallback } from '@wordpress/element';
+import { Fragment, useCallback, useEffect } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { ProgressBar } from 'googlesitekit-components';
+import StoreErrorNotices from '../../../../components/StoreErrorNotices';
+import { useRefocus } from '../../../../hooks/useRefocus';
+import useViewContext from '../../../../hooks/useViewContext';
+import { trackEvent } from '../../../../util';
 import {
 	MODULES_THANK_WITH_GOOGLE,
-	ONBOARDING_STATE_COMPLETE,
 	ONBOARDING_STATE_ACTION_REQUIRED,
+	ONBOARDING_STATE_COMPLETE,
+	ONBOARDING_STATE_NO_ACCOUNT,
 	ONBOARDING_STATE_PENDING_VERIFICATION,
 } from '../../datastore/constants';
-import { useRefocus } from '../../../../hooks/useRefocus';
-import { Grid, Row, Cell } from '../../../../material-components';
-import ProgressBar from '../../../../components/ProgressBar';
-import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import SetupCreatePublication from './SetupCreatePublication';
 import SetupCustomize from './SetupCustomize';
-import SetupPublicationActive from './SetupPublicationActive';
-import SetupPublicationActionRequired from './SetupPublicationActionRequired';
-import SetupPublicationPendingVerification from './SetupPublicationPendingVerification';
 import SetupHeader from './SetupHeader';
+import SetupPublicationActionRequired from './SetupPublicationActionRequired';
+import SetupPublicationActive from './SetupPublicationActive';
+import SetupPublicationPendingVerification from './SetupPublicationPendingVerification';
 const { useDispatch, useSelect } = Data;
 
 export default function SetupMain( { finishSetup } ) {
@@ -71,24 +73,41 @@ export default function SetupMain( { finishSetup } ) {
 	// Reset all fetched data when user re-focuses window.
 	useRefocus( reset, 15000 );
 
+	const viewContext = useViewContext();
+
+	useEffect( () => {
+		// Don't track an event if the current publication is still loading.
+		if ( currentPublication === undefined ) {
+			return;
+		}
+
+		trackEvent(
+			`${ viewContext }_thank-with-google`,
+			'receive_publication_state',
+			currentPublication === null
+				? ONBOARDING_STATE_NO_ACCOUNT
+				: currentPublication.onboardingState
+		);
+	}, [ currentPublication, viewContext ] );
+
 	let viewComponent;
 
 	if ( hasErrors ) {
 		viewComponent = (
-			<Cell size={ 12 }>
+			<Fragment>
 				<SetupHeader />
 				<StoreErrorNotices
 					moduleSlug="thank-with-google"
 					storeName={ MODULES_THANK_WITH_GOOGLE }
 				/>
-			</Cell>
+			</Fragment>
 		);
 	} else if ( currentPublication === undefined ) {
 		viewComponent = (
-			<Cell size={ 12 }>
+			<Fragment>
 				<SetupHeader />
 				<ProgressBar height={ 210 } />
-			</Cell>
+			</Fragment>
 		);
 	} else if ( currentPublication === null ) {
 		viewComponent = <SetupCreatePublication />;
@@ -120,11 +139,7 @@ export default function SetupMain( { finishSetup } ) {
 
 	return (
 		<div className="googlesitekit-setup-module googlesitekit-setup-module--thank-with-google">
-			<Grid>
-				<Row className="googlesitekit-setup__content">
-					{ viewComponent }
-				</Row>
-			</Grid>
+			{ viewComponent }
 		</div>
 	);
 }

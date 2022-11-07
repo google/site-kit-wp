@@ -69,7 +69,16 @@
 		visibility: hidden;
 	}
 
+	.googlesitekit-publisher-win__image-smaller {
+
+		svg {
+			max-height: 105px;
+			width: 100%;
+		}
+	}
+
 	.googlesitekit-publisher-win__title {
+		flex: 1;
 		margin: 0;
 
 		.googlesitekit-badge {
@@ -83,6 +92,10 @@
 			@media (min-width: $bp-desktop) {
 				margin-top: $grid-gap-desktop;
 			}
+		}
+
+		.googlesitekit-publisher-win__image-smaller {
+			flex-basis: 75px;
 		}
 	}
 
@@ -113,14 +126,6 @@
 		}
 	}
 
-	.googlesitekit-publisher-win__image-smaller {
-
-		svg {
-			max-height: 69px;
-			width: 100%;
-		}
-	}
-
 	.googlesitekit-publisher-win__image-large {
 		margin-bottom: $grid-gap-desktop;
 		text-align: center;
@@ -138,7 +143,7 @@
 			max-width: 100%;
 		}
 
-		@media (max-width: $bp-mobileOnly ), (min-width: $bp-desktop) {
+		@media (max-width: $bp-mobileOnly), (min-width: $bp-desktop) {
 
 			svg {
 				width: 200px;
@@ -206,8 +211,13 @@
 		}
 	}
 
-	&.googlesitekit-publisher-win--no-bottom-padding {
+	.googlesitekit-publisher-win__title-image-wrapper {
+		display: flex;
+		flex-wrap: nowrap;
+		gap: $grid-gap-phone;
+	}
 
+	&.googlesitekit-publisher-win--no-bottom-padding {
 		// Add padding to the content area in case the height of the SVG is less.
 		.googlesitekit-publisher-win__content {
 			padding-bottom: $grid-gap-phone;

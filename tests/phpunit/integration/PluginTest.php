@@ -55,7 +55,7 @@ class PluginTest extends TestCase {
 			$this->assertEquals( $plugin_data['RequiresPHP'], '5.6' );
 		}
 		if ( array_key_exists( 'RequiresWP', $plugin_data ) ) {
-			$this->assertEquals( $plugin_data['RequiresWP'], '4.7' );
+			$this->assertEquals( $plugin_data['RequiresWP'], '5.2' );
 		}
 
 		// These fields are available in all versions of WordPress we support,
@@ -102,6 +102,10 @@ class PluginTest extends TestCase {
 	 */
 	public function test_network_mode_register() {
 		$this->network_activate_site_kit();
+
+		// Force enable network mode.
+		add_filter( 'googlesitekit_is_network_mode', '__return_true' );
+
 		$plugin = new Plugin( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$this->assertTrue( $plugin->context()->is_network_mode() );
 		remove_all_actions( 'network_admin_notices' );
@@ -113,7 +117,7 @@ class PluginTest extends TestCase {
 		$network_admin_notices = ob_get_clean();
 
 		// Regex is case-insensitive and dotall (s) to match over multiple lines.
-		$this->assertMatchesRegularExpression( '#<div class="notice notice-warning.*?not yet compatible.*?</div>#is', $network_admin_notices );
+		$this->assertMatchesRegularExpression( '#<div class="notice notice-warning.*?not yet offer.*?</div>#is', $network_admin_notices );
 	}
 
 	public function test_load_and_instance() {

@@ -57,14 +57,16 @@ import {
 import { Provider as ViewContextProvider } from './Root/ViewContextContext';
 import { getMetaCapabilityPropertyName } from '../googlesitekit/datastore/util/permissions';
 import {
-	VIEW_CONTEXT_PAGE_DASHBOARD,
-	VIEW_CONTEXT_DASHBOARD,
-	VIEW_CONTEXT_DASHBOARD_VIEW_ONLY,
+	VIEW_CONTEXT_ENTITY_DASHBOARD,
+	VIEW_CONTEXT_MAIN_DASHBOARD,
+	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 } from '../googlesitekit/constants';
 
 const Template = ( { setupRegistry = () => {}, viewContext, ...args } ) => (
 	<WithRegistrySetup func={ setupRegistry }>
-		<ViewContextProvider value={ viewContext || VIEW_CONTEXT_DASHBOARD }>
+		<ViewContextProvider
+			value={ viewContext || VIEW_CONTEXT_MAIN_DASHBOARD }
+		>
 			<Header { ...args } />
 		</ViewContextProvider>
 	</WithRegistrySetup>
@@ -153,7 +155,7 @@ HeaderWithSubHeaderEntityBanner.storyName =
 	'Plugin Header with Sub Header and Entity Header Banner';
 HeaderWithSubHeaderEntityBanner.args = {
 	subHeader: <UserInputSuccessBannerNotification />,
-	viewContext: VIEW_CONTEXT_PAGE_DASHBOARD,
+	viewContext: VIEW_CONTEXT_ENTITY_DASHBOARD,
 	setupRegistry: ( registry ) => {
 		provideSiteInfo( registry, {
 			currentEntityTitle:
@@ -210,7 +212,7 @@ HeaderViewOnly.args = {
 			<HelpMenu />
 		</Fragment>
 	),
-	viewContext: VIEW_CONTEXT_DASHBOARD_VIEW_ONLY,
+	viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 	setupRegistry: ( registry ) => {
 		provideSiteConnection( registry );
 		provideModules( registry, [

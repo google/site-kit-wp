@@ -125,7 +125,7 @@ describe( 'date range filtering on dashboard views', () => {
 		] );
 	} );
 
-	it( 'loads new data when the date range is changed on a dashboard details view for a single post', async () => {
+	it( 'loads new data when the date range is changed on an entity dashboard view for a single post', async () => {
 		const { last28Days, last14Days } = dashboardDetailsRequests;
 
 		await visitAdminPage( 'admin.php', 'page=googlesitekit-dashboard' );

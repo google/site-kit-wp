@@ -30,6 +30,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { ProgressBar } from 'googlesitekit-components';
 import { Grid, Row, Cell } from '../../../../../material-components';
 import { extractSearchConsoleDashboardData } from '../../../util';
 import { calculateChange } from '../../../../../util';
@@ -44,7 +45,6 @@ import useDashboardType, {
 import ActivateAnalyticsCTA from './ActivateAnalyticsCTA';
 import CreateGoalCTA from './CreateGoalCTA';
 import DataBlock from '../../../../../components/DataBlock';
-import ProgressBar from '../../../../../components/ProgressBar';
 import RecoverableModules from '../../../../../components/RecoverableModules';
 import {
 	BREAKPOINT_SMALL,
@@ -65,6 +65,7 @@ function getDatapointAndChange( [ report ], selectedStat, divider = 1 ) {
 	};
 }
 
+// eslint-disable-next-line complexity
 const Overview = ( {
 	analyticsData,
 	analyticsGoalsData,
@@ -82,7 +83,15 @@ const Overview = ( {
 
 	const viewOnly = useViewOnly();
 
+	const analyticsModuleAvailable = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleAvailable( 'analytics' )
+	);
+
 	const canViewSharedAnalytics = useSelect( ( select ) => {
+		if ( ! analyticsModuleAvailable ) {
+			return false;
+		}
+
 		if ( ! viewOnly ) {
 			return true;
 		}
@@ -99,13 +108,13 @@ const Overview = ( {
 	const analyticsModuleActiveAndConnected =
 		analyticsModuleActive && analyticsModuleConnected;
 
-	const adminReauthURL = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).getAdminReauthURL()
-	);
-	const isNavigatingToReauthURL = useSelect( ( select ) =>
-		select( CORE_LOCATION ).isNavigatingTo( adminReauthURL )
-	);
-
+	const isNavigatingToReauthURL = useSelect( ( select ) => {
+		if ( ! analyticsModuleAvailable ) {
+			return false;
+		}
+		const adminReauthURL = select( MODULES_ANALYTICS ).getAdminReauthURL();
+		return select( CORE_LOCATION ).isNavigatingTo( adminReauthURL );
+	} );
 	const isSearchConsoleGatheringData = useInViewSelect( ( select ) =>
 		select( MODULES_SEARCH_CONSOLE ).isGatheringData()
 	);

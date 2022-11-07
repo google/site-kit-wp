@@ -24,28 +24,41 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { useCallback } from '@wordpress/element';
+import { Fragment, useCallback, useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { MODULES_THANK_WITH_GOOGLE } from '../../datastore/constants';
-import Button from '../../../../components/Button';
-import { Cell } from '../../../../material-components';
+import { Button } from 'googlesitekit-components';
+import {
+	MODULES_THANK_WITH_GOOGLE,
+	CTA_PLACEMENT_DYNAMIC_LOW,
+	COLOR_RADIO_DEFAULT,
+} from '../../datastore/constants';
 import { CTAPlacement, ColorRadio, PostTypesSelect } from '../common';
 import SetupHeader from './SetupHeader';
 const { useDispatch, useSelect } = Data;
 
 export default function SetupCustomize( props ) {
 	const { finishSetup } = props;
+	const { setColorTheme, setCTAPlacement, submitChanges } = useDispatch(
+		MODULES_THANK_WITH_GOOGLE
+	);
+
+	const settings = useSelect( ( select ) =>
+		select( MODULES_THANK_WITH_GOOGLE ).getSettings()
+	);
+	const hasResolvedSettings = useSelect( ( select ) =>
+		select( MODULES_THANK_WITH_GOOGLE ).hasFinishedResolution(
+			'getSettings'
+		)
+	);
 
 	const canSubmitChanges = useSelect( ( select ) =>
 		select( MODULES_THANK_WITH_GOOGLE ).canSubmitChanges()
 	);
-
-	const { submitChanges } = useDispatch( MODULES_THANK_WITH_GOOGLE );
 
 	const handleSubmitChanges = useCallback( async () => {
 		const { error } = await submitChanges();
@@ -54,8 +67,20 @@ export default function SetupCustomize( props ) {
 		}
 	}, [ submitChanges, finishSetup ] );
 
+	const shouldSetDefaults =
+		hasResolvedSettings &&
+		! settings?.colorTheme &&
+		! settings?.ctaPlacement;
+
+	useEffect( () => {
+		if ( shouldSetDefaults ) {
+			setColorTheme( COLOR_RADIO_DEFAULT );
+			setCTAPlacement( CTA_PLACEMENT_DYNAMIC_LOW );
+		}
+	}, [ shouldSetDefaults, setColorTheme, setCTAPlacement ] );
+
 	return (
-		<Cell size={ 12 }>
+		<Fragment>
 			<SetupHeader />
 
 			<div className="googlesitekit-setup-module__publication-screen googlesitekit-twg-setup-customize">
@@ -79,7 +104,7 @@ export default function SetupCustomize( props ) {
 			>
 				{ __( 'Configure Thank with Google', 'google-site-kit' ) }
 			</Button>
-		</Cell>
+		</Fragment>
 	);
 }
 

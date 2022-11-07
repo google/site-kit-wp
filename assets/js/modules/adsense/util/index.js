@@ -21,6 +21,11 @@
  */
 import each from 'lodash/each';
 
+/*
+ * Internal dependencies
+ */
+import { stringToDate } from '../../../util/date-range/string-to-date';
+
 export * from './is-zero-report';
 export * from './parsing';
 export * from './site-stats-data';
@@ -39,7 +44,7 @@ export function reduceAdSenseData( rows ) {
 	];
 
 	each( rows, ( row ) => {
-		const date = new Date( row.cells[ 0 ].value );
+		const date = stringToDate( row.cells[ 0 ].value );
 		dataMap.push( [
 			date,
 			row.cells[ 2 ].value,

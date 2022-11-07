@@ -30,7 +30,6 @@
 		}
 
 		.image-radio {
-
 			/**
 			* The material radio button has an inline ripple size property,
 			* that is used for the animation. The !important here is to override this,
@@ -53,12 +52,26 @@
 					display: flex;
 					justify-content: center;
 					min-height: 12.1875rem;
-					outline: 0.0625rem solid $c-jumbo;
 
 					svg {
 						object-fit: contain;
 						width: 100%;
 					}
+				}
+
+				&::after {
+					border: 0.0625rem solid $c-jumbo;
+					border-radius: 0.5625rem;
+					content: "";
+					height: 100%;
+					left: 0;
+					position: absolute;
+					top: 0;
+					width: 100%;
+				}
+
+				&--checked::after {
+					border: 0.1875rem solid $c-content-primary;
 				}
 
 				.mdc-image-radio__content--no-image {
@@ -114,10 +127,6 @@
 						content: unset;
 					}
 				}
-			}
-
-			.mdc-image-radio__content[aria-checked="true"] {
-				outline: 0.1875rem solid $c-content-primary;
 			}
 		}
 	}

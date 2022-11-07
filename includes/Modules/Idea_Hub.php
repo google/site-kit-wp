@@ -567,7 +567,7 @@ final class Idea_Hub extends Module
 						return new WP_Error(
 							'wrong_parameter_type',
 							sprintf(
-								/* translators: %1$s: parameter name, %2$s expected type, %3$s received type */
+								/* translators: 1: parameter name, 2: expected type, 3: received type */
 								__( 'Wrong parameter type for %1$s, expected %2$s, received %3$s', 'google-site-kit' ),
 								$parameter_name,
 								$expected_parameter_type,
@@ -780,6 +780,7 @@ final class Idea_Hub extends Module
 						'googlesitekit-api',
 						'googlesitekit-data',
 						'googlesitekit-modules',
+						'googlesitekit-components',
 					),
 				)
 			),
@@ -794,6 +795,7 @@ final class Idea_Hub extends Module
 						'googlesitekit-datastore-ui',
 						'googlesitekit-datastore-user',
 						'googlesitekit-modules',
+						'googlesitekit-components',
 					),
 				)
 			),
@@ -807,6 +809,7 @@ final class Idea_Hub extends Module
 						'wp-api-fetch',
 						'wp-polyfill',
 						'wp-url',
+						'googlesitekit-components',
 					),
 					'load_contexts' => array( Asset::CONTEXT_ADMIN_POST_EDITOR ),
 				)

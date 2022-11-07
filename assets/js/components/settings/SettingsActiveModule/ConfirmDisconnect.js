@@ -32,12 +32,12 @@ import { ESCAPE } from '@wordpress/keycodes';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { Dialog } from 'googlesitekit-components';
 import { CORE_LOCATION } from '../../../googlesitekit/datastore/location/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
 import { clearWebStorage, trackEvent } from '../../../util';
-import Dialog from '../../Dialog';
 import useViewContext from '../../../hooks/useViewContext';
 const { useSelect, useDispatch } = Data;
 
@@ -147,7 +147,7 @@ export default function ConfirmDisconnect( { slug } ) {
 	let dependentModulesText = null;
 	if ( dependentModules.length > 0 ) {
 		dependentModulesText = sprintf(
-			/* translators: %1$s: module name, %2$s: list of dependent modules */
+			/* translators: 1: module name, 2: list of dependent modules */
 			__(
 				'these active modules depend on %1$s and will also be disconnected: %2$s',
 				'google-site-kit'

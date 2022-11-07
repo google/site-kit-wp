@@ -219,6 +219,14 @@ describe( 'core/modules modules', () => {
 			it( 'dispatches requests to recover modules', async () => {
 				const slugs = [ 'analytics', 'tagmanager' ];
 
+				const recoverModulesResponse = {
+					success: {
+						analytics: true,
+						tagmanager: true,
+					},
+					error: {},
+				};
+
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
 					{
@@ -227,9 +235,8 @@ describe( 'core/modules modules', () => {
 					}
 				);
 				fetchMock.post(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/recover-module/,
-					{ body: { ownerID: 1 } },
-					{ repeat: 2 }
+					/^\/google-site-kit\/v1\/core\/modules\/data\/recover-modules/,
+					{ body: recoverModulesResponse }
 				);
 
 				fetchMock.getOnce(
@@ -310,26 +317,15 @@ describe( 'core/modules modules', () => {
 					tagmanager: true,
 				} );
 
-				expect( fetchMock ).toHaveFetchedTimes( 7 );
+				expect( fetchMock ).toHaveFetchedTimes( 6 );
 
 				// Ensure the proper body parameters were sent.
 				expect( fetchMock ).toHaveFetched(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/recover-module/,
+					/^\/google-site-kit\/v1\/core\/modules\/data\/recover-modules/,
 					{
 						body: {
 							data: {
-								slug: 'analytics',
-							},
-						},
-					}
-				);
-
-				expect( fetchMock ).toHaveFetched(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/recover-module/,
-					{
-						body: {
-							data: {
-								slug: 'tagmanager',
+								slugs: [ 'analytics', 'tagmanager' ],
 							},
 						},
 					}
@@ -391,6 +387,20 @@ describe( 'core/modules modules', () => {
 			it( 'encounters an error if the any module is not recoverable', async () => {
 				const slugs = [ 'analytics', 'tagmanager' ];
 
+				const recoverModulesResponse = {
+					success: {
+						analytics: true,
+						tagmanager: false,
+					},
+					error: {
+						tagmanager: {
+							code: 'module_not_recoverable',
+							message: 'Module is not recoverable.',
+							data: { status: 403 },
+						},
+					},
+				};
+
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
 					{
@@ -399,20 +409,9 @@ describe( 'core/modules modules', () => {
 					}
 				);
 
-				const errorResponse = {
-					code: 'module_not_recoverable',
-					message: 'Module is not recoverable.',
-					data: { status: 403 },
-				};
-
 				fetchMock.postOnce(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/recover-module/,
-					{ body: { ownerID: 1 } }
-				);
-
-				fetchMock.postOnce(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/recover-module/,
-					{ body: errorResponse, status: 403 }
+					/^\/google-site-kit\/v1\/core\/modules\/data\/recover-modules/,
+					{ body: recoverModulesResponse, status: 200 }
 				);
 
 				fetchMock.getOnce(
@@ -476,39 +475,27 @@ describe( 'core/modules modules', () => {
 					}
 				);
 
-				const { response, error } = await registry
+				const { response } = await registry
 					.dispatch( CORE_MODULES )
 					.recoverModules( slugs );
 
-				expect( console ).toHaveErrored();
 				expect( response.success ).toStrictEqual( {
 					analytics: true,
 					tagmanager: false,
 				} );
-				expect( error.tagmanager.message ).toBe(
-					errorResponse.message
+				expect( response.error.tagmanager.message ).toBe(
+					recoverModulesResponse.error.tagmanager.message
 				);
 
-				expect( fetchMock ).toHaveFetchedTimes( 6 );
+				expect( fetchMock ).toHaveFetchedTimes( 5 );
 
 				// Ensure the proper body parameters were sent.
 				expect( fetchMock ).toHaveFetched(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/recover-module/,
+					/^\/google-site-kit\/v1\/core\/modules\/data\/recover-modules/,
 					{
 						body: {
 							data: {
-								slug: 'analytics',
-							},
-						},
-					}
-				);
-
-				expect( fetchMock ).toHaveFetched(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/recover-module/,
-					{
-						body: {
-							data: {
-								slug: 'tagmanager',
+								slugs: [ 'analytics', 'tagmanager' ],
 							},
 						},
 					}
@@ -1288,6 +1275,72 @@ describe( 'core/modules modules', () => {
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( namesLoaded ).toMatchObject( {} );
+			} );
+		} );
+
+		describe( 'isModuleAvailable', () => {
+			beforeEach( () => {
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
+					{
+						body: FIXTURES.filter(
+							( { slug } ) => slug !== 'analytics'
+						),
+						status: 200,
+					}
+				);
+			} );
+
+			it( 'returns true if a module is available', async () => {
+				// Search console is available in our fixtures.
+				const slug = 'search-console';
+				const isAvailable = registry
+					.select( CORE_MODULES )
+					.isModuleAvailable( slug );
+				// The modules will be undefined whilst loading, so this will return `undefined`.
+				expect( isAvailable ).toBeUndefined();
+
+				// Wait for loading to complete.
+				await untilResolved( registry, CORE_MODULES ).getModules();
+
+				const isAvailableLoaded = registry
+					.select( CORE_MODULES )
+					.isModuleAvailable( slug );
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect( isAvailableLoaded ).toEqual( true );
+			} );
+
+			it( 'returns false if a module is not available', async () => {
+				const slug = 'analytics';
+				const isAvailable = registry
+					.select( CORE_MODULES )
+					.isModuleAvailable( slug );
+				// The modules will be undefined whilst loading, so this will return `undefined`.
+				expect( isAvailable ).toBeUndefined();
+
+				// Wait for loading to complete.
+				await untilResolved( registry, CORE_MODULES ).getModules();
+
+				const isAvailableLoaded = registry
+					.select( CORE_MODULES )
+					.isModuleAvailable( slug );
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect( isAvailableLoaded ).toEqual( false );
+			} );
+
+			it( 'returns undefined if modules is not yet available', async () => {
+				muteFetch(
+					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
+					[]
+				);
+
+				const isAvailable = registry
+					.select( CORE_MODULES )
+					.isModuleAvailable( 'analytics' );
+
+				expect( isAvailable ).toBeUndefined();
 			} );
 		} );
 

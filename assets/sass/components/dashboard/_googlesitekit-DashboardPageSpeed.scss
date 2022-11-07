@@ -37,6 +37,24 @@
 		}
 	}
 
+	.googlesitekit-pagespeed-widget__content-wrapper {
+		position: relative;
+	}
+
+	.googlesitekit-pagespeed-widget__content-wrapper--loading {
+		.googlesitekit-pagespeed-widget__content {
+			visibility: hidden;
+		}
+	}
+
+	.googlesitekit-pagespeed-widget__progress-bar {
+		left: 50%;
+		position: absolute;
+		top: 50%;
+		transform: translate(-50%, -50%);
+		width: 100%;
+	}
+
 	.googlesitekit-pagespeed-widget__header {
 		align-items: flex-end;
 		border-bottom: 1px solid $c-utility-divider;
@@ -44,7 +62,7 @@
 		display: flex;
 		justify-content: space-between;
 
-		@media (max-width: $bp-xsmallOnly ) {
+		@media (max-width: $bp-mobileOnly) {
 			align-items: center;
 			flex-direction: column-reverse;
 			justify-content: flex-end;
@@ -62,6 +80,11 @@
 				border-top-right-radius: 3px;
 				height: 3px;
 			}
+
+			@media (max-width: $bp-xsmallOnly) {
+				margin: 0 6px;
+				padding: 0 6px;
+			}
 		}
 	}
 
@@ -78,7 +101,7 @@
 		justify-content: center;
 		padding: $grid-gap-phone;
 
-		@media ( min-width: $bp-tablet ) {
+		@media (min-width: $bp-tablet) {
 			min-height: 285px;
 			padding: $grid-gap-desktop;
 		}
@@ -91,7 +114,7 @@
 		max-width: 600px;
 		width: 75%;
 
-		@media (max-width: $bp-mobileOnly ) {
+		@media (max-width: $bp-mobileOnly) {
 			width: 100%;
 		}
 
@@ -147,7 +170,7 @@
 		display: flex;
 		padding: 18px $grid-gap-phone;
 
-		@media ( min-width: $bp-tablet ) {
+		@media (min-width: $bp-tablet) {
 			padding: 18px $grid-gap-desktop;
 		}
 
@@ -167,7 +190,7 @@
 		&--first {
 			padding: 12px $grid-gap-phone 8px $grid-gap-phone;
 
-			@media ( min-width: $bp-tablet ) {
+			@media (min-width: $bp-tablet) {
 				padding: 18px $grid-gap-desktop 12px $grid-gap-desktop;
 			}
 		}
@@ -179,9 +202,13 @@
 		&--last {
 			padding: 8px $grid-gap-phone 12px $grid-gap-phone;
 
-			@media ( min-width: $bp-tablet ) {
+			@media (min-width: $bp-tablet) {
 				padding: 12px $grid-gap-desktop 18px $grid-gap-desktop;
 			}
+		}
+
+		&--hidden {
+			visibility: hidden;
 		}
 	}
 
@@ -219,13 +246,26 @@
 			margin-bottom: $grid-gap-phone;
 		}
 
-		@media ( min-width: $bp-tablet ) {
+		@media (min-width: $bp-tablet) {
 			padding: $grid-gap-desktop $grid-gap-desktop 0;
 
 			.googlesitekit-pagespeed-recommendations__title,
 			.googlesitekit-accordion:last-child {
 				margin-bottom: $grid-gap-desktop;
 			}
+		}
+	}
+
+	.googlesitekit-pagespeed__recommendations-cta--hidden {
+		visibility: hidden;
+	}
+
+	.googlesitekit-pagespeed__zero-recommendations {
+		display: flex;
+		justify-content: center;
+
+		svg {
+			max-height: 150px;
 		}
 	}
 }

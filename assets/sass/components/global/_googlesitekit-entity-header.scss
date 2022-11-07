@@ -42,15 +42,15 @@
 
 		body.admin-bar & {
 
-			@media ( min-width: $width-tablet + 1 + px ) {
+			@media (min-width: $width-tablet + 1 + px) {
 				top: 183px;
 			}
 
-			@media ( min-width: $bp-wpAdminBarTablet ) {
+			@media (min-width: $bp-wpAdminBarTablet) {
 				top: 169px;
 			}
 
-			@media ( min-width: $width-desktop + 1 + px ) {
+			@media (min-width: $width-desktop + 1 + px) {
 				top: 185px;
 			}
 		}

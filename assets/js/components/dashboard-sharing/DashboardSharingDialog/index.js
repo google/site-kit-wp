@@ -20,6 +20,7 @@
  * External dependencies
  */
 import { useWindowScroll } from 'react-use';
+import classnames from 'classnames';
 
 /**
  * WordPress dependencies
@@ -37,6 +38,7 @@ import { arrowLeft, Icon } from '@wordpress/icons';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { Button } from 'googlesitekit-components';
 import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
@@ -54,7 +56,6 @@ import {
 	DialogContent,
 	DialogFooter,
 } from '../../../material-components';
-import Button from '../../Button';
 import ShareIcon from '../../../../svg/icons/share.svg';
 import Link from '../../Link';
 import DashboardSharingSettings from '../DashboardSharingSettings';
@@ -193,7 +194,15 @@ export default function DashboardSharingDialog() {
 									) }
 							</h2>
 
-							<p className="googlesitekit-dialog__subtitle">
+							<p
+								className={ classnames(
+									'googlesitekit-dialog__subtitle',
+									{
+										'googlesitekit-dialog__subtitle--emphasis':
+											resetDialogOpen,
+									}
+								) }
+							>
 								{ settingsDialogOpen &&
 									createInterpolateElement(
 										__(

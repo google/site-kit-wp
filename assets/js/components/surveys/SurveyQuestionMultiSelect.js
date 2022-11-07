@@ -33,8 +33,7 @@ import { sprintf, __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Button from '../Button';
-import Checkbox from '../Checkbox';
+import { Button, Checkbox } from 'googlesitekit-components';
 import SurveyHeader from './SurveyHeader';
 import { TextField, Input, HelperText } from '../../material-components';
 import VisuallyHidden from '../VisuallyHidden';

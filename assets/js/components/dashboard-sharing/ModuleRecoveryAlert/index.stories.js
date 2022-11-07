@@ -34,14 +34,14 @@ import {
 	WithTestRegistry,
 } from '../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../tests/js/WithRegistrySetup';
-import { VIEW_CONTEXT_DASHBOARD } from '../../../googlesitekit/constants';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../googlesitekit/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { Provider as ViewContextProvider } from '../../Root/ViewContextContext';
 import ModuleRecoveryAlert from '.';
 
 const Template = ( { setupRegistry = () => {}, ...args } ) => (
 	<WithRegistrySetup func={ setupRegistry }>
-		<ViewContextProvider value={ VIEW_CONTEXT_DASHBOARD }>
+		<ViewContextProvider value={ VIEW_CONTEXT_MAIN_DASHBOARD }>
 			<ModuleRecoveryAlert { ...args } />
 		</ViewContextProvider>
 	</WithRegistrySetup>
@@ -164,15 +164,22 @@ SingleRecoverableModuleError.storyName =
 	'Single Recoverable Module with Error Message';
 SingleRecoverableModuleError.args = {
 	setupRegistry: ( registry ) => {
-		const errorResponse = {
-			code: 'module_not_recoverable',
-			message: 'Module is not recoverable.',
-			data: { status: 403 },
+		const response = {
+			success: {
+				'search-console': false,
+			},
+			error: {
+				'search-console': {
+					code: 'module_not_recoverable',
+					message: 'Module is not recoverable.',
+					data: { status: 403 },
+				},
+			},
 		};
 
 		fetchMock.post(
-			/^\/google-site-kit\/v1\/core\/modules\/data\/recover-module/,
-			{ body: errorResponse, status: 403 }
+			/^\/google-site-kit\/v1\/core\/modules\/data\/recover-modules/,
+			{ body: response, status: 200 }
 		);
 
 		provideModulesWithRecoverable( registry, [ 'search-console' ] );
@@ -193,15 +200,28 @@ MultipleRecoverableModuleErrors.storyName =
 	'Multiple Recoverable Modules with Error Messages';
 MultipleRecoverableModuleErrors.args = {
 	setupRegistry: ( registry ) => {
-		const errorResponse = {
-			code: 'module_not_recoverable',
-			message: 'Module is not recoverable.',
-			data: { status: 403 },
+		const response = {
+			success: {
+				'search-console': false,
+				analytics: false,
+			},
+			error: {
+				'search-console': {
+					code: 'module_not_recoverable',
+					message: 'Module is not recoverable.',
+					data: { status: 403 },
+				},
+				analytics: {
+					code: 'module_not_recoverable',
+					message: 'Module is not recoverable.',
+					data: { status: 403 },
+				},
+			},
 		};
 
 		fetchMock.post(
-			/^\/google-site-kit\/v1\/core\/modules\/data\/recover-module/,
-			{ body: errorResponse, status: 403 }
+			/^\/google-site-kit\/v1\/core\/modules\/data\/recover-modules/,
+			{ body: response, status: 200 }
 		);
 
 		provideModulesWithRecoverable( registry, [

@@ -297,21 +297,14 @@ final class Assets {
 	}
 
 	/**
-	 * Gets all plugin assets.
+	 * Forms an array of dependencies based on the necessary context.
 	 *
-	 * The method will lazy-load assets in an internal property so that the processing only happens once.
+	 * @since 1.87.0
 	 *
-	 * @since 1.0.0
-	 *
-	 * @return Asset[] Associative array of asset $handle => $instance pairs.
+	 * @param string $context The context for which dependencies should be formed.
+	 * @return array The array of dependencies.
 	 */
-	private function get_assets() {
-		if ( $this->assets ) {
-			return $this->assets;
-		}
-
-		$base_url = $this->context->url( 'dist/assets/' );
-
+	private function get_asset_dependencies( $context = '' ) {
 		$dependencies = array(
 			'googlesitekit-tracking-data',
 			'googlesitekit-runtime',
@@ -328,9 +321,34 @@ final class Assets {
 			'googlesitekit-widgets',
 		);
 
-		$dependencies_for_dashboard_sharing = Feature_Flags::enabled( 'dashboardSharing' )
-			? array_merge( $dependencies, array( 'googlesitekit-dashboard-sharing-data' ) )
-			: $dependencies;
+		if ( 'dashboard' === $context || 'dashboard-sharing' === $context ) {
+			array_push( $dependencies, 'googlesitekit-components' );
+		}
+
+		if ( 'dashboard-sharing' === $context && Feature_Flags::enabled( 'dashboardSharing' ) ) {
+			array_push( $dependencies, 'googlesitekit-dashboard-sharing-data' );
+		}
+
+		return $dependencies;
+	}
+
+	/**
+	 * Gets all plugin assets.
+	 *
+	 * The method will lazy-load assets in an internal property so that the processing only happens once.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return Asset[] Associative array of asset $handle => $instance pairs.
+	 */
+	private function get_assets() {
+		if ( $this->assets ) {
+			return $this->assets;
+		}
+
+		$base_url = $this->context->url( 'dist/assets/' );
+
+		$dependencies = $this->get_asset_dependencies();
 
 		// Register plugin scripts.
 		$assets = array(
@@ -452,10 +470,16 @@ final class Assets {
 			),
 			// Admin assets.
 			new Script(
+				'googlesitekit-components',
+				array(
+					'src' => $base_url . 'js/googlesitekit-components-gm2.js',
+				)
+			),
+			new Script(
 				'googlesitekit-activation',
 				array(
 					'src'          => $base_url . 'js/googlesitekit-activation.js',
-					'dependencies' => $dependencies,
+					'dependencies' => $this->get_asset_dependencies( 'dashboard' ),
 				)
 			),
 			new Script(
@@ -562,6 +586,7 @@ final class Assets {
 					'dependencies' => array(
 						'googlesitekit-data',
 						'googlesitekit-i18n',
+						'googlesitekit-components',
 					),
 				)
 			),
@@ -569,36 +594,36 @@ final class Assets {
 				'googlesitekit-user-input',
 				array(
 					'src'          => $base_url . 'js/googlesitekit-user-input.js',
-					'dependencies' => $dependencies,
+					'dependencies' => $this->get_asset_dependencies( 'dashboard' ),
 				)
 			),
 			// End JSR Assets.
 			new Script(
-				'googlesitekit-dashboard-splash',
+				'googlesitekit-splash',
 				array(
-					'src'          => $base_url . 'js/googlesitekit-dashboard-splash.js',
-					'dependencies' => $dependencies,
+					'src'          => $base_url . 'js/googlesitekit-splash.js',
+					'dependencies' => $this->get_asset_dependencies( 'dashboard' ),
 				)
 			),
 			new Script(
-				'googlesitekit-dashboard-details',
+				'googlesitekit-entity-dashboard',
 				array(
-					'src'          => $base_url . 'js/googlesitekit-dashboard-details.js',
-					'dependencies' => $dependencies_for_dashboard_sharing,
+					'src'          => $base_url . 'js/googlesitekit-entity-dashboard.js',
+					'dependencies' => $this->get_asset_dependencies( 'dashboard-sharing' ),
 				)
 			),
 			new Script(
-				'googlesitekit-dashboard',
+				'googlesitekit-main-dashboard',
 				array(
-					'src'          => $base_url . 'js/googlesitekit-dashboard.js',
-					'dependencies' => $dependencies_for_dashboard_sharing,
+					'src'          => $base_url . 'js/googlesitekit-main-dashboard.js',
+					'dependencies' => $this->get_asset_dependencies( 'dashboard-sharing' ),
 				)
 			),
 			new Script(
 				'googlesitekit-settings',
 				array(
 					'src'          => $base_url . 'js/googlesitekit-settings.js',
-					'dependencies' => $dependencies,
+					'dependencies' => $this->get_asset_dependencies( 'dashboard' ),
 				)
 			),
 			new Stylesheet(

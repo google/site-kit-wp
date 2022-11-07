@@ -26,7 +26,7 @@ import { Fragment, useCallback } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import Button from '../Button';
+import { Button } from 'googlesitekit-components';
 import ShareIcon from '../../../svg/icons/share.svg';
 import useViewContext from '../../hooks/useViewContext';
 import { trackEvent } from '../../util';

@@ -27,6 +27,8 @@ import round from 'lodash/round';
  */
 import { calculateChange } from '../../../util';
 import { partitionReport } from '../../../util/partition-report';
+import { stringToDate } from '../../../util/date-range/string-to-date';
+
 export * from './is-zero-report';
 export * from './site-stats-data';
 export * from './report-date-range-args';
@@ -50,7 +52,7 @@ function reduceSearchConsoleData( rows ) {
 	const count = rows.length;
 
 	each( rows, ( row ) => {
-		const date = new Date( row.keys[ 0 ] );
+		const date = stringToDate( row.keys[ 0 ] );
 		dataMap.push( [
 			date.getMonth() + 1 + '/' + date.getUTCDate(),
 			row.clicks,

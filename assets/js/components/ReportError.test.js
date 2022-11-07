@@ -211,6 +211,31 @@ describe( 'ReportError', () => {
 		expect( queryByText( /request access/i ) ).toBeInTheDocument();
 	} );
 
+	it( 'renders the help link with the moduleSlug_insufficient_permissions string when ERROR_REASON_INSUFFICIENT_PERMISSIONS is provided as reason', () => {
+		const { container } = render(
+			<ReportError
+				moduleSlug={ moduleName }
+				error={ {
+					code: 'test-error-code',
+					message: 'Test error message',
+					data: {
+						reason: ERROR_REASON_INSUFFICIENT_PERMISSIONS,
+					},
+				} }
+			/>,
+			{
+				registry,
+			}
+		);
+
+		expect( container.querySelector( 'a' ) ).toHaveAttribute(
+			'href',
+			expect.stringContaining(
+				`error_id=${ moduleName }_insufficient_permissions`
+			)
+		);
+	} );
+
 	it( "should not render the `Retry` button if the error's `selectorData.name` is not `getReport`", () => {
 		const { queryByText } = render(
 			<ReportError

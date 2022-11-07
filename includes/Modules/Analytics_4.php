@@ -509,6 +509,7 @@ final class Analytics_4 extends Module
 			'order'       => 3,
 			'homepage'    => __( 'https://analytics.google.com/analytics/web', 'google-site-kit' ),
 			'internal'    => true,
+			'depends_on'  => array( 'analytics' ),
 		);
 	}
 
@@ -563,6 +564,7 @@ final class Analytics_4 extends Module
 						'googlesitekit-modules',
 						'googlesitekit-datastore-site',
 						'googlesitekit-datastore-forms',
+						'googlesitekit-components',
 					),
 				)
 			),

@@ -23,5 +23,6 @@
 		"source.fixAll.eslint": true
 	},
 	"phpcs.enable": true,
-	"phpcs.executablePath": "vendor/bin/phpcs"
+	"phpcs.executablePath": "vendor/bin/phpcs",
+	"stylelint.validate": [ "css", "scss" ]
 }

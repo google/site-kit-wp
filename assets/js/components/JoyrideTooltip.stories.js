@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import Button from './Button';
+import { Button } from 'googlesitekit-components';
 import JoyrideTooltip from './JoyrideTooltip';
 
 const Template = ( args ) => <JoyrideTooltip { ...args } />;

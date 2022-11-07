@@ -28,7 +28,8 @@
 			}
 		}
 
-		.googlesitekit-publisher-win__footer p {
+		.googlesitekit-publisher-win__footer p,
+		.googlesitekit-publisher-win__footer ul {
 			color: $c-boulder;
 
 			@media (min-width: $bp-desktop) {
@@ -41,16 +42,24 @@
 			column-gap: 30px;
 			display: flex;
 			flex-wrap: wrap;
-			margin: 25px 0 10px 0;
+			margin: 25px 0 10px;
 			row-gap: 24px;
 		}
 	}
 
-	.googlesitekit-ga4-setup-banner__footer-text {
-		margin: 0.5em 0;
+	.googlesitekit-ga4-setup-banner__footer-text-list {
+		list-style-type: none;
+		margin: 0;
 
-		&:first-child {
-			margin-top: 1em;
+		li {
+			font-size: 14px;
+			letter-spacing: 0.25px;
+			line-height: 1.5;
+			margin: 0.5em 0;
+
+			&:first-child {
+				margin-top: 1em;
+			}
 		}
 	}
 }

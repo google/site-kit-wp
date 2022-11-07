@@ -36,6 +36,7 @@
 		.googlesitekit-setup-module--adsense__stage-caption {
 			color: $c-subtle;
 			display: flex;
+
 			// Set each caption to the same grid cell to overlay them
 			// in order to fade in/out.
 			grid-column-start: 1;
@@ -109,7 +110,6 @@
 				background-image: linear-gradient(0deg, $c-brand 0%, $c-brand 100%);
 				background-repeat: no-repeat;
 			}
-
 		}
 
 		--adsense-connect-cta-fade-in-duration: 7.5s;
@@ -210,6 +210,7 @@
 		.googlesitekit-setup-module--adsense__stage-image {
 			align-items: center;
 			display: flex;
+
 			// Set each image container to the same grid cell to overlay them
 			// in order to fade in/out.
 			grid-column-start: 1;
@@ -294,7 +295,6 @@
 				&.googlesitekit-setup-module--adsense__stage-indicator--current--enter {
 					animation: googlesitekit-indicator-enter var(--adsense-connect-cta-indicator-duration) linear forwards;
 					background-position: 0% 0%;
-
 				}
 
 				&.googlesitekit-setup-module--adsense__stage-indicator--current--leave {

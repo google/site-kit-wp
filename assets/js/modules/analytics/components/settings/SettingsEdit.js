@@ -20,6 +20,7 @@
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { ProgressBar } from 'googlesitekit-components';
 import { MODULES_ANALYTICS, ACCOUNT_CREATE } from '../../datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
@@ -28,7 +29,6 @@ import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import useExistingTagEffect from '../../hooks/useExistingTagEffect';
 import useExistingGA4TagEffect from '../../../analytics-4/hooks/useExistingTagEffect';
 import SettingsForm from './SettingsForm';
-import ProgressBar from '../../../../components/ProgressBar';
 import { AccountCreate, AccountCreateLegacy } from '../common';
 const { useSelect } = Data;
 
@@ -86,6 +86,12 @@ export default function SettingsEdit() {
 		if ( moduleOwnerID === loggedInUserID ) {
 			return true;
 		}
+
+		// Prevent the access check from erroring if GA4 isn't connected yet.
+		if ( ! select( CORE_MODULES ).isModuleConnected( 'analytics-4' ) ) {
+			return true;
+		}
+
 		return select( CORE_MODULES ).hasModuleAccess( 'analytics-4' );
 	} );
 	const isLoadingAnalytics4Access = useSelect( ( select ) => {

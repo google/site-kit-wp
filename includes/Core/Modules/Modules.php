@@ -39,6 +39,7 @@ use WP_REST_Response;
 use WP_Error;
 use Exception;
 use Google\Site_Kit\Core\Util\Build_Mode;
+use Google\Site_Kit\Core\Util\URL;
 
 /**
  * Class managing the different modules.
@@ -215,11 +216,7 @@ final class Modules {
 			return true;
 		}
 
-		if ( is_ssl() ) {
-			return true;
-		}
-
-		if ( isset( $_SERVER['HTTP_X_FORWARDED_PROTO'] ) && 'https' === $_SERVER['HTTP_X_FORWARDED_PROTO'] ) {
+		if ( 'https' === URL::parse( home_url(), PHP_URL_SCHEME ) ) {
 			return true;
 		}
 
@@ -373,10 +370,20 @@ final class Modules {
 		add_filter(
 			'googlesitekit_dashboard_sharing_data',
 			function ( $data ) {
-				$data['sharedOwnershipModules'] = array_keys( $this->get_shared_ownership_modules() );
+				$data['sharedOwnershipModules']               = array_keys( $this->get_shared_ownership_modules() );
+				$data['defaultSharedOwnershipModuleSettings'] = $this->populate_default_shared_ownership_module_settings( array() );
 
 				return $data;
 			}
+		);
+
+		add_filter(
+			'googlesitekit_module_exists',
+			function ( $exists, $slug ) {
+				return $this->module_exists( $slug );
+			},
+			10,
+			2
 		);
 
 		add_filter(
@@ -388,8 +395,8 @@ final class Modules {
 			2
 		);
 
-		add_filter( 'option_' . Module_Sharing_Settings::OPTION, $this->get_method_proxy( 'filter_shared_ownership_module_settings' ) );
-		add_filter( 'default_option_' . Module_Sharing_Settings::OPTION, $this->get_method_proxy( 'filter_shared_ownership_module_settings' ), 20 );
+		add_filter( 'option_' . Module_Sharing_Settings::OPTION, $this->get_method_proxy( 'populate_default_shared_ownership_module_settings' ) );
+		add_filter( 'default_option_' . Module_Sharing_Settings::OPTION, $this->get_method_proxy( 'populate_default_shared_ownership_module_settings' ), 20 );
 
 		add_action(
 			'add_option_' . Module_Sharing_Settings::OPTION,
@@ -517,6 +524,7 @@ final class Modules {
 	 * Gets the available modules.
 	 *
 	 * @since 1.0.0
+	 * @since 1.85.0 Filter out modules which are missing any of the dependencies specified in `depends_on`.
 	 *
 	 * @return array Available modules as $slug => $module pairs.
 	 */
@@ -541,10 +549,24 @@ final class Modules {
 				}
 			);
 
+			// Remove any modules which are missing dependencies. This may occur as the result of a dependency
+			// being removed via the googlesitekit_available_modules filter.
+			$this->modules = array_filter(
+				$this->modules,
+				function( Module $module ) {
+					foreach ( $module->depends_on as $dependency ) {
+						if ( ! isset( $this->modules[ $dependency ] ) ) {
+							return false;
+						}
+					}
+					return true;
+				}
+			);
+
 			// Set up dependency maps.
 			foreach ( $this->modules as $module ) {
 				foreach ( $module->depends_on as $dependency ) {
-					if ( ! isset( $this->modules[ $dependency ] ) || $module->slug === $dependency ) {
+					if ( $module->slug === $dependency ) {
 						continue;
 					}
 
@@ -1126,7 +1148,11 @@ final class Modules {
 								return new WP_Error( 'invalid_module_slug', __( 'Module does not support settings.', 'google-site-kit' ), array( 'status' => 400 ) );
 							}
 
+							do_action( 'googlesitekit_pre_save_settings_' . $slug );
+
 							$module->get_settings()->merge( (array) $request['data'] );
+
+							do_action( 'googlesitekit_save_settings_' . $slug );
 
 							return new WP_REST_Response( $module->get_settings()->get() );
 						},
@@ -1164,6 +1190,11 @@ final class Modules {
 							} catch ( Exception $e ) {
 								return new WP_Error( 'invalid_module_slug', __( 'Invalid module slug.', 'google-site-kit' ), array( 'status' => 404 ) );
 							}
+
+							if ( ! $this->is_module_active( $slug ) ) {
+								return new WP_Error( 'module_not_active', __( 'Module must be active to request data.', 'google-site-kit' ), array( 'status' => 403 ) );
+							}
+
 							$data = $module->get_data( $request['datapoint'], $request->get_params() );
 							if ( is_wp_error( $data ) ) {
 								return $data;
@@ -1181,6 +1212,11 @@ final class Modules {
 							} catch ( Exception $e ) {
 								return new WP_Error( 'invalid_module_slug', __( 'Invalid module slug.', 'google-site-kit' ), array( 'status' => 404 ) );
 							}
+
+							if ( ! $this->is_module_active( $slug ) ) {
+								return new WP_Error( 'module_not_active', __( 'Module must be active to request data.', 'google-site-kit' ), array( 'status' => 403 ) );
+							}
+
 							$data = isset( $request['data'] ) ? (array) $request['data'] : array();
 							$data = $module->set_data( $request['datapoint'], $data );
 							if ( is_wp_error( $data ) ) {
@@ -1216,53 +1252,120 @@ final class Modules {
 				)
 			),
 			new REST_Route(
-				'core/modules/data/recover-module',
+				'core/modules/data/recover-modules',
 				array(
 					array(
 						'methods'             => WP_REST_Server::EDITABLE,
 						'callback'            => function( WP_REST_Request $request ) {
 							$data = $request['data'];
-							$slug = isset( $data['slug'] ) ? $data['slug'] : '';
-							try {
-								$module = $this->get_module( $slug );
-							} catch ( Exception $e ) {
-								return new WP_Error( 'invalid_module_slug', $e->getMessage(), array( 'status' => 404 ) );
+							$slugs = isset( $data['slugs'] ) ? $data['slugs'] : array();
+
+							if ( ! is_array( $slugs ) || empty( $slugs ) ) {
+								return new WP_Error(
+									'invalid_param',
+									__( 'Request parameter slugs is not valid.', 'google-site-kit' ),
+									array( 'status' => 400 )
+								);
 							}
 
-							if ( ! $module->is_shareable() ) {
-								return new WP_Error( 'module_not_shareable', __( 'Module is not shareable.', 'google-site-kit' ), array( 'status' => 404 ) );
-							}
-
-							if ( ! $this->is_module_recoverable( $module ) ) {
-								return new WP_Error( 'module_not_recoverable', __( 'Module is not recoverable.', 'google-site-kit' ), array( 'status' => 403 ) );
-							}
-
-							$check_access_endpoint = '/' . REST_Routes::REST_ROOT . '/' . self::REST_ENDPOINT_CHECK_ACCESS;
-							$check_access_request = new WP_REST_Request( 'POST', $check_access_endpoint );
-							$check_access_request->set_body_params(
-								array(
-									'data' => array(
-										'slug' => $slug,
-									),
-								)
+							$response = array(
+								'success' => array(),
+								'error'   => array(),
 							);
-							$check_access_response = rest_do_request( $check_access_request );
 
-							if ( is_wp_error( $check_access_response ) ) {
-								return $check_access_response;
+							foreach ( $slugs as $slug ) {
+								try {
+									$module = $this->get_module( $slug );
+								} catch ( Exception $e ) {
+									$response = $this->handle_module_recovery_error(
+										$slug,
+										$response,
+										new WP_Error(
+											'invalid_module_slug',
+											$e->getMessage(),
+											array( 'status' => 404 )
+										)
+									);
+									continue;
+								}
+
+								if ( ! $module->is_shareable() ) {
+									$response = $this->handle_module_recovery_error(
+										$slug,
+										$response,
+										new WP_Error(
+											'module_not_shareable',
+											__( 'Module is not shareable.', 'google-site-kit' ),
+											array( 'status' => 404 )
+										)
+									);
+									continue;
+								}
+
+								if ( ! $this->is_module_recoverable( $module ) ) {
+									$response = $this->handle_module_recovery_error(
+										$slug,
+										$response,
+										new WP_Error(
+											'module_not_recoverable',
+											__( 'Module is not recoverable.', 'google-site-kit' ),
+											array( 'status' => 403 )
+										)
+									);
+									continue;
+								}
+
+								$check_access_endpoint = '/' . REST_Routes::REST_ROOT . '/' . self::REST_ENDPOINT_CHECK_ACCESS;
+								$check_access_request = new WP_REST_Request( 'POST', $check_access_endpoint );
+								$check_access_request->set_body_params(
+									array(
+										'data' => array(
+											'slug' => $slug,
+										),
+									)
+								);
+								$check_access_response = rest_do_request( $check_access_request );
+
+								if ( is_wp_error( $check_access_response ) ) {
+									$response = $this->handle_module_recovery_error(
+										$slug,
+										$response,
+										$check_access_response
+									);
+									continue;
+								}
+								$access = isset( $check_access_response->data['access'] ) ? $check_access_response->data['access'] : false;
+								if ( ! $access ) {
+									$response = $this->handle_module_recovery_error(
+										$slug,
+										$response,
+										new WP_Error(
+											'module_not_accessible',
+											__( 'Module is not accessible by current user.', 'google-site-kit' ),
+											array( 'status' => 403 )
+										)
+									);
+									continue;
+								}
+
+								// Update the module's ownerID to the ID of the user making the request.
+								$module_setting_updates = array(
+									'ownerID' => get_current_user_id(),
+								);
+								$recovered_module = $module->get_settings()->merge( $module_setting_updates );
+
+								if ( $recovered_module ) {
+									$response['success'][ $slug ] = true;
+								}
 							}
-							$access = isset( $check_access_response->data['access'] ) ? $check_access_response->data['access'] : false;
-							if ( ! $access ) {
-								return new WP_Error( 'module_not_accessible', __( 'Module is not accessible by current user.', 'google-site-kit' ), array( 'status' => 403 ) );
+
+							// Cast error array to an object so JSON encoded response is
+							// always an object, even when the error array is empty.
+							if ( ! $response['error'] ) {
+								$response['error'] = (object) array();
 							}
 
-							// Update the module's ownerID to the ID of the user making the request.
-							$module_setting_updates = array(
-								'ownerID' => get_current_user_id(),
-							);
-							$module->get_settings()->merge( $module_setting_updates );
-
-							return new WP_REST_Response( $module_setting_updates );
+							return new WP_REST_Response( $response );
 						},
 						'permission_callback' => $can_setup,
 					),
@@ -1536,21 +1639,21 @@ final class Modules {
 	}
 
 	/**
-	 * Inserts default settings for shared ownership modules.
+	 * Inserts default settings for shared ownership modules in passed dashboard sharing settings.
 	 *
 	 * Sharing settings for shared ownership modules such as pagespeed-insights
-	 * and idea-hub should always be manageable by "all admins". This filter inserts
+	 * and idea-hub should always be manageable by "all admins". This function inserts
 	 * this 'default' setting for their respective module slugs even when the
 	 * dashboard_sharing settings option is not defined in the database or when settings
-	 * are not set for these modules. This filter is applied after every attempt to fetch
-	 * the googlesitekit-dashboard_sharing settings option from the database.
+	 * are not set for these modules.
 	 *
 	 * @since 1.75.0
+	 * @since 1.85.0 Renamed from filter_shared_ownership_module_settings to populate_default_shared_ownership_module_settings.
 	 *
 	 * @param array $sharing_settings The dashboard_sharing settings option fetched from the database.
 	 * @return array Dashboard sharing settings option with default settings inserted for shared ownership modules.
 	 */
-	protected function filter_shared_ownership_module_settings( $sharing_settings ) {
+	protected function populate_default_shared_ownership_module_settings( $sharing_settings ) {
 		$shared_ownership_modules = array_keys( $this->get_shared_ownership_modules() );
 		foreach ( $shared_ownership_modules as $shared_ownership_module ) {
 			if ( ! isset( $sharing_settings[ $shared_ownership_module ] ) ) {
@@ -1582,7 +1685,7 @@ final class Modules {
 	/**
 	 * Deletes sharing settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.84.0
 	 *
 	 * @return bool True on success, false on failure.
 	 */
@@ -1590,4 +1693,39 @@ final class Modules {
 		return $this->options->delete( Module_Sharing_Settings::OPTION );
 	}
 
+	/**
+	 * Prepares error data to pass with WP_REST_Response.
+	 *
+	 * @since 1.87.0
+	 *
+	 * @param WP_Error $error Error (WP_Error) to prepare.
+	 *
+	 * @return array Formatted error response suitable for the client.
+	 */
+	protected function prepare_error_response( $error ) {
+		return array(
+			'code'    => $error->get_error_code(),
+			'message' => $error->get_error_message(),
+			'data'    => $error->get_error_data(),
+		);
+	}
+
+	/**
+	 * Updates response with error encounted during module recovery.
+	 *
+	 * @since 1.87.0
+	 *
+	 * @param string   $slug The module slug.
+	 * @param array    $response The existing response.
+	 * @param WP_Error $error The error encountered.
+	 *
+	 * @return array The updated response with error included.
+	 */
+	protected function handle_module_recovery_error( $slug, $response, $error ) {
+		$response['success'][ $slug ] = false;
+		$response['error'][ $slug ]   = $this->prepare_error_response(
+			$error
+		);
+		return $response;
+	}
 }

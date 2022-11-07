@@ -45,11 +45,18 @@ export default function UseSnippetInstructions() {
 	const analyticsUseSnippet = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getUseSnippet()
 	);
-	const gtmActive = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleActive( 'tagmanager' )
+	const isTagManagerAvailable = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleAvailable( 'tagmanager' )
 	);
-	const gtmUseSnippet = useSelect( ( select ) =>
-		select( MODULES_TAGMANAGER ).getUseSnippet()
+	const gtmActive = useSelect(
+		( select ) =>
+			isTagManagerAvailable &&
+			select( CORE_MODULES ).isModuleActive( 'tagmanager' )
+	);
+	const gtmUseSnippet = useSelect(
+		( select ) =>
+			isTagManagerAvailable &&
+			select( MODULES_TAGMANAGER ).getUseSnippet()
 	);
 	const settingsURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-settings' )

@@ -24,14 +24,6 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import BlueSVG from '../../../../svg/graphics/twg-blue.svg';
-import CyanSVG from '../../../../svg/graphics/twg-cyan.svg';
-import GreenSVG from '../../../../svg/graphics/twg-green.svg';
-import PurpleSVG from '../../../../svg/graphics/twg-purple.svg';
-import PinkSVG from '../../../../svg/graphics/twg-pink.svg';
-import OrangeSVG from '../../../../svg/graphics/twg-orange.svg';
-import BrownSVG from '../../../../svg/graphics/twg-brown.svg';
-import BlackSVG from '../../../../svg/graphics/twg-black.svg';
 import {
 	CTA_PLACEMENT_STATIC_AUTO,
 	CTA_PLACEMENT_STATIC_ABOVE_CONTENT,
@@ -55,50 +47,50 @@ export function getColorThemes() {
 		{
 			colorThemeID: 'blue',
 			name: __( 'Blue', 'google-site-kit' ),
-			svg: BlueSVG,
-			colorCode: '#1967d2',
+			colorPrimary: '#1967D2',
+			colorSecondary: '#E3F2FD',
 		},
 		{
 			colorThemeID: 'cyan',
 			name: __( 'Cyan', 'google-site-kit' ),
-			svg: CyanSVG,
-			colorCode: '#007b83',
+			colorPrimary: '#007B83',
+			colorSecondary: '#E0F7FA',
 		},
 		{
 			colorThemeID: 'green',
 			name: __( 'Green', 'google-site-kit' ),
-			svg: GreenSVG,
-			colorCode: '#188038',
+			colorPrimary: '#188038',
+			colorSecondary: '#E6F4EA',
 		},
 		{
 			colorThemeID: 'purple',
 			name: __( 'Purple', 'google-site-kit' ),
-			svg: PurpleSVG,
-			colorCode: '#8e24aa',
+			colorPrimary: '#8E24AA',
+			colorSecondary: '#F3E5F5',
 		},
 		{
 			colorThemeID: 'pink',
 			name: __( 'Pink', 'google-site-kit' ),
-			svg: PinkSVG,
-			colorCode: '#d01884',
+			colorPrimary: '#D01884',
+			colorSecondary: '#FCE4EC',
 		},
 		{
 			colorThemeID: 'orange',
 			name: __( 'Orange', 'google-site-kit' ),
-			svg: OrangeSVG,
-			colorCode: '#B06000',
+			colorPrimary: '#B06000',
+			colorSecondary: '#FFF8E1',
 		},
 		{
 			colorThemeID: 'brown',
 			name: __( 'Brown', 'google-site-kit' ),
-			svg: BrownSVG,
-			colorCode: '#795548',
+			colorPrimary: '#795548',
+			colorSecondary: '#EFEBE9',
 		},
 		{
 			colorThemeID: 'black',
 			name: __( 'Black', 'google-site-kit' ),
-			svg: BlackSVG,
-			colorCode: '#202124',
+			colorPrimary: '#202124',
+			colorSecondary: '#F1F3F4',
 		},
 	];
 }
@@ -160,6 +152,10 @@ export function getPlacementLabel( ctaPlacement ) {
  * @return {string} Formatted string of ctaPostTypes.
  */
 export function getCTAPostTypesString( ctaPostTypes, postTypes ) {
+	if ( ! ctaPostTypes ) {
+		return '';
+	}
+
 	if ( ! postTypes || postTypes.length === 0 ) {
 		return ctaPostTypes.join( ', ' );
 	}

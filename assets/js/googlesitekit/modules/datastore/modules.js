@@ -59,6 +59,7 @@ const RECEIVE_CHECK_REQUIREMENTS_ERROR = 'RECEIVE_CHECK_REQUIREMENTS_ERROR';
 const RECEIVE_CHECK_REQUIREMENTS_SUCCESS = 'RECEIVE_CHECK_REQUIREMENTS_SUCCESS';
 const RECEIVE_RECOVERABLE_MODULES = 'RECEIVE_RECOVERABLE_MODULES';
 const RECEIVE_SHARED_OWNERSHIP_MODULES = 'RECEIVE_SHARED_OWNERSHIP_MODULES';
+const CLEAR_RECOVERED_MODULES = 'CLEAR_RECOVERED_MODULES';
 
 const moduleDefaults = {
 	slug: '',
@@ -191,16 +192,22 @@ const fetchCheckModuleAccessStore = createFetchStore( {
 	},
 } );
 
-const fetchRecoverModuleStore = createFetchStore( {
-	baseName: 'recoverModule',
-	controlCallback: ( { slug } ) => {
-		return API.set( 'core', 'modules', 'recover-module', { slug } );
+const fetchRecoverModulesStore = createFetchStore( {
+	baseName: 'recoverModules',
+	controlCallback: ( { slugs } ) => {
+		return API.set( 'core', 'modules', 'recover-modules', { slugs } );
 	},
-	argsToParams: ( slug ) => {
-		return { slug };
+	reducerCallback: ( state, recoveredModules ) => {
+		return {
+			...state,
+			recoveredModules,
+		};
 	},
-	validateParams: ( { slug } ) => {
-		invariant( slug, 'slug is required.' );
+	argsToParams: ( slugs ) => {
+		return { slugs };
+	},
+	validateParams: ( { slugs } ) => {
+		invariant( slugs, 'slugs is required.' );
 	},
 } );
 
@@ -215,6 +222,7 @@ const baseInitialState = {
 	moduleAccess: {},
 	recoverableModules: undefined,
 	sharedOwnershipModules: undefined,
+	recoveredModules: undefined,
 };
 
 const baseActions = {
@@ -464,30 +472,25 @@ const baseActions = {
 		},
 		function* ( slugs ) {
 			const { dispatch, select } = yield Data.commonActions.getRegistry();
+			const { response } =
+				yield fetchRecoverModulesStore.actions.fetchRecoverModules(
+					slugs
+				);
+			const { success } = response;
 
-			const recoveredModules = [];
+			const successfulRecoveries = Object.keys( success ).filter(
+				( slug ) => !! success[ slug ]
+			);
 
-			const errors = [];
+			for ( const slug of successfulRecoveries ) {
+				const storeName =
+					select( CORE_MODULES ).getModuleStoreName( slug );
 
-			for ( const slug of slugs ) {
-				const { response, error } =
-					yield fetchRecoverModuleStore.actions.fetchRecoverModule(
-						slug
-					);
-
-				if ( response?.ownerID ) {
-					const storeName =
-						select( CORE_MODULES ).getModuleStoreName( slug );
-					// Reload the module's settings from the server.
-					yield dispatch( storeName ).fetchGetSettings();
-
-					recoveredModules.push( slug );
-				} else {
-					errors.push( [ slug, error ] );
-				}
+				// Reload the module's settings from the server.
+				yield dispatch( storeName ).fetchGetSettings();
 			}
 
-			if ( recoveredModules.length ) {
+			if ( successfulRecoveries.length ) {
 				// Reload all modules from the server.
 				yield fetchGetModulesStore.actions.fetchGetModules();
 
@@ -502,27 +505,7 @@ const baseActions = {
 				yield dispatch( CORE_USER ).refreshCapabilities();
 			}
 
-			const response = {
-				success: {
-					...Object.fromEntries(
-						recoveredModules.map( ( slug ) => [ slug, true ] )
-					),
-					...Object.fromEntries(
-						errors.map( ( [ slug ] ) => [ slug, false ] )
-					),
-				},
-			};
-
-			if ( errors.length ) {
-				return {
-					response,
-					error: Object.fromEntries( errors ),
-				};
-			}
-
-			return {
-				response,
-			};
+			return { response };
 		}
 	),
 
@@ -548,6 +531,20 @@ const baseActions = {
 		return {
 			payload: { sharedOwnershipModules },
 			type: RECEIVE_SHARED_OWNERSHIP_MODULES,
+		};
+	},
+
+	/**
+	 * Clears the recoveredModules in the state.
+	 *
+	 * @since 1.87.0
+	 *
+	 * @return {Object} Action for RECEIVE_SHARED_OWNERSHIP_MODULES.
+	 */
+	clearRecoveredModules() {
+		return {
+			payload: {},
+			type: CLEAR_RECOVERED_MODULES,
 		};
 	},
 };
@@ -643,11 +640,27 @@ const baseReducer = ( state, { type, payload } ) => {
 			};
 		}
 
+		case CLEAR_RECOVERED_MODULES: {
+			return {
+				...state,
+				recoveredModules: undefined,
+			};
+		}
+
 		default: {
 			return state;
 		}
 	}
 };
+
+function* waitForModules() {
+	const { __experimentalResolveSelect } =
+		yield Data.commonActions.getRegistry();
+
+	yield Data.commonActions.await(
+		__experimentalResolveSelect( CORE_MODULES ).getModules()
+	);
+}
 
 const baseResolvers = {
 	*getModules() {
@@ -662,10 +675,11 @@ const baseResolvers = {
 
 	*canActivateModule( slug ) {
 		const registry = yield Data.commonActions.getRegistry();
-		yield Data.commonActions.await(
-			registry.__experimentalResolveSelect( CORE_MODULES ).getModules()
+		const { select, __experimentalResolveSelect } = registry;
+		const module = yield Data.commonActions.await(
+			__experimentalResolveSelect( CORE_MODULES ).getModule( slug )
 		);
-		const module = registry.select( CORE_MODULES ).getModule( slug );
+		// At this point, all modules are loaded so we can safely select getModule below.
 
 		if ( ! module ) {
 			return;
@@ -674,9 +688,8 @@ const baseResolvers = {
 		const inactiveModules = [];
 
 		module.dependencies.forEach( ( dependencySlug ) => {
-			const dependedentModule = registry
-				.select( CORE_MODULES )
-				.getModule( dependencySlug );
+			const dependedentModule =
+				select( CORE_MODULES ).getModule( dependencySlug );
 			if ( ! dependedentModule?.active ) {
 				inactiveModules.push( dependedentModule.name );
 			}
@@ -729,14 +742,11 @@ const baseResolvers = {
 
 	*getRecoverableModules() {
 		const registry = yield Data.commonActions.getRegistry();
-
-		yield Data.commonActions.await(
+		const modules = yield Data.commonActions.await(
 			registry.__experimentalResolveSelect( CORE_MODULES ).getModules()
 		);
 
-		const modules = registry.select( CORE_MODULES ).getModules() || {};
-
-		const recoverableModules = Object.entries( modules ).reduce(
+		const recoverableModules = Object.entries( modules || {} ).reduce(
 			( moduleList, [ moduleSlug, module ] ) => {
 				if ( module.recoverable ) {
 					moduleList.push( moduleSlug );
@@ -769,6 +779,12 @@ const baseResolvers = {
 			sharedOwnershipModules
 		);
 	},
+
+	getModule: waitForModules,
+
+	isModuleActive: waitForModules,
+
+	isModuleConnected: waitForModules,
 };
 
 const baseSelectors = {
@@ -977,6 +993,44 @@ const baseSelectors = {
 			}
 
 			return module.storeName;
+		}
+	),
+
+	/**
+	 * Checks a module's availability status.
+	 *
+	 * Note that an otherwise valid module may be removed from the list of available modules
+	 * by making use of the the googlesitekit_available_modules filter in PHP.
+	 *
+	 * Returns `true` if the module is available.
+	 * Returns `false` if the module is not available.
+	 * Returns `undefined` if state is still loading.
+	 *
+	 * @since 1.85.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @param {string} slug  Module slug.
+	 * @return {(boolean|undefined)} `true` when the module is available.
+	 * 									  `false` when the module is not available.
+	 * 									  `undefined` if state is still loading.
+	 */
+	isModuleAvailable: createRegistrySelector(
+		( select ) => ( state, slug ) => {
+			const module = select( CORE_MODULES ).getModule( slug );
+
+			// Return `undefined` if modules haven't been loaded yet.
+			if ( module === undefined ) {
+				return undefined;
+			}
+
+			// A module with this slug couldn't be found; return `false` to signify the
+			// unavailable state.
+			if ( module === null ) {
+				return false;
+			}
+
+			// Otherwise, the module exists and is available.
+			return true;
 		}
 	),
 
@@ -1240,13 +1294,17 @@ const baseSelectors = {
 			);
 		}
 	),
+
+	getRecoveredModules( state ) {
+		return state.recoveredModules;
+	},
 };
 
 const store = Data.combineStores(
 	fetchGetModulesStore,
 	fetchSetModuleActivationStore,
 	fetchCheckModuleAccessStore,
-	fetchRecoverModuleStore,
+	fetchRecoverModulesStore,
 	{
 		initialState: baseInitialState,
 		actions: baseActions,

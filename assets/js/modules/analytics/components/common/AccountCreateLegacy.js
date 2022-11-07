@@ -26,9 +26,8 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import Button from '../../../../components/Button';
+import { Button, ProgressBar } from 'googlesitekit-components';
 import Link from '../../../../components/Link';
-import ProgressBar from '../../../../components/ProgressBar';
 import { trackEvent } from '../../../../util';
 import { MODULES_ANALYTICS, ACCOUNT_CREATE } from '../../datastore/constants';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';

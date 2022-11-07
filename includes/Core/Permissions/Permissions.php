@@ -17,6 +17,7 @@ use Google\Site_Kit\Core\Dismissals\Dismissed_Items;
 use Google\Site_Kit\Core\Modules\Module_With_Owner;
 use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\REST_API\REST_Route;
+use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Util\Feature_Flags;
 use WP_REST_Response;
@@ -235,10 +236,14 @@ final class Permissions {
 		);
 
 		add_filter(
-			'googlesitekit_user_data',
-			function( $data ) {
-				$data['permissions'] = $this->check_all_for_current_user();
-				return $data;
+			'googlesitekit_apifetch_preload_paths',
+			function ( $paths ) {
+				return array_merge(
+					$paths,
+					array(
+						'/' . REST_Routes::REST_ROOT . '/core/user/data/permissions',
+					)
+				);
 			}
 		);
 
@@ -711,7 +716,7 @@ final class Permissions {
 							return new WP_REST_Response( $this->check_all_for_current_user() );
 						},
 						'permission_callback' => function() {
-							return current_user_can( Permissions::VIEW_SPLASH );
+							return current_user_can( Permissions::VIEW_SPLASH ) || current_user_can( Permissions::VIEW_DASHBOARD );
 						},
 					),
 				)

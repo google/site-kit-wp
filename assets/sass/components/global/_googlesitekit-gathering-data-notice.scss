@@ -25,7 +25,6 @@
 		line-height: $lh-headline-md;
 		padding: 0;
 	}
-
 }
 
 @mixin overlay {
@@ -89,7 +88,6 @@
 			@include notice-text;
 		}
 	}
-
 }
 
 #wpadminbar {

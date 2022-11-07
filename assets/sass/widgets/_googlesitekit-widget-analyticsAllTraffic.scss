@@ -62,7 +62,7 @@
 			margin: 0 10px;
 			padding: 0 20px;
 
-			@media ( min-width: $bp-tablet ) and ( max-width: $bp-xlarge ) {
+			@media (min-width: $bp-tablet) and (max-width: $bp-xlarge) {
 				margin: 0;
 				padding: 0 10px;
 			}
@@ -112,12 +112,12 @@
 
 	.googlesitekit-widget--analyticsAllTraffic__user-count-chart {
 
-		@media ( min-width: $bp-desktop ) {
+		@media (min-width: $bp-desktop) {
 			position: relative;
 			top: 16px;
 		}
 
-		@media ( min-width: $bp-xlarge ) {
+		@media (min-width: $bp-xlarge) {
 			top: 0;
 		}
 	}
@@ -149,7 +149,7 @@
 	.googlesitekit-widget--analyticsAllTraffic__totalcount--loading {
 		margin: 0 0 10px;
 
-		@media ( min-width: $bp-xlarge ) {
+		@media (min-width: $bp-xlarge) {
 			// Override `PreviewBlock` height definition, since it doesn't
 			// support flexible sizes per breakpoint.
 			// TODO: Remove and achieve via `PreviewBlock` extra props instead.
@@ -163,8 +163,7 @@
 		width: 100%;
 	}
 
-	.googlesitekit-widget--analyticsAllTraffic__dimensions-chart
-	.googlesitekit-chart-loading {
+	.googlesitekit-widget--analyticsAllTraffic__dimensions-chart .googlesitekit-chart-loading {
 		padding-bottom: 32px;
 		padding-top: 32px;
 	}
@@ -173,7 +172,7 @@
 		padding: $grid-gap-phone;
 		text-align: center;
 
-		@media ( min-width: $bp-desktop ) {
+		@media (min-width: $bp-desktop) {
 			padding: $grid-gap-desktop;
 		}
 
@@ -181,7 +180,7 @@
 			align-items: center;
 			min-height: 120px;
 
-			@media ( min-width: $bp-desktop ) {
+			@media (min-width: $bp-desktop) {
 				min-height: 270px;
 			}
 		}
@@ -263,7 +262,7 @@
 	.googlesitekit-widget--analyticsAllTraffic__tabs--small {
 		text-align: center;
 
-		@media ( min-width: $bp-tablet ) {
+		@media (min-width: $bp-tablet) {
 			display: none;
 		}
 	}
@@ -280,7 +279,7 @@
 
 	.googlesitekit-widget--analyticsAllTraffic__totals {
 		// HACK: Fixes jumping of widget when a dimension is selected.
-		@media ( min-width: $bp-desktop ) {
+		@media (min-width: $bp-desktop) {
 			margin-bottom: $grid-gap-desktop * -1;
 		}
 
@@ -289,7 +288,7 @@
 			height: auto;
 			margin-top: $grid-gap-phone;
 
-			@media ( min-width: $bp-desktop ) {
+			@media (min-width: $bp-desktop) {
 				margin-top: $grid-gap-desktop;
 			}
 		}

@@ -150,6 +150,21 @@ describe( 'getCTAPostTypesString', () => {
 
 		expect( getCTAPostTypesString( [], postTypes ) ).toBe( '' );
 	} );
+
+	it( 'returns an empty string if ctaPostTypes is falsey', () => {
+		const postTypes = [
+			{
+				slug: 'post',
+				label: 'Posts',
+			},
+			{
+				slug: 'page',
+				label: 'Pages',
+			},
+		];
+
+		expect( getCTAPostTypesString( false, postTypes ) ).toBe( '' );
+	} );
 } );
 
 describe( 'getPlacementType', () => {

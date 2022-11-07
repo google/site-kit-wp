@@ -689,6 +689,7 @@ final class AdSense extends Module
 						'googlesitekit-modules',
 						'googlesitekit-datastore-site',
 						'googlesitekit-datastore-user',
+						'googlesitekit-components',
 					),
 				)
 			),
@@ -886,7 +887,7 @@ final class AdSense extends Module
 
 		if ( count( $invalid_metrics ) > 0 ) {
 			$message = sprintf(
-				/* translators: %s is replaced with a comma separated list of the invalid metrics. */
+				/* translators: %s: is replaced with a comma separated list of the invalid metrics. */
 				_n(
 					'Unsupported metric requested: %s',
 					'Unsupported metrics requested: %s',
@@ -928,7 +929,7 @@ final class AdSense extends Module
 
 		if ( count( $invalid_dimensions ) > 0 ) {
 			$message = sprintf(
-				/* translators: %s is replaced with a comma separated list of the invalid dimensions. */
+				/* translators: %s: is replaced with a comma separated list of the invalid dimensions. */
 				_n(
 					'Unsupported dimension requested: %s',
 					'Unsupported dimensions requested: %s',

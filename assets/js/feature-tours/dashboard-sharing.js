@@ -25,7 +25,7 @@ import { EVENTS, ACTIONS } from 'react-joyride';
 /*
  * Internal dependencies
  */
-import { VIEW_CONTEXT_DASHBOARD } from '../googlesitekit/constants';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../googlesitekit/constants';
 import { isFeatureEnabled } from '../features';
 import settingsTour from './dashboard-sharing-settings';
 import { CORE_UI } from '../googlesitekit/datastore/ui/constants';
@@ -36,7 +36,7 @@ let viewedAllSteps;
 
 const dashboardSharing = {
 	slug: 'dashboardSharing',
-	contexts: [ VIEW_CONTEXT_DASHBOARD ],
+	contexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 	// TODO: This version should be changed when the feature flag is removed
 	// to the actual upcoming version.
 	version: '1.85.0',

@@ -12,6 +12,7 @@ namespace Google\Site_Kit\Tests\Modules;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Modules\Module;
+use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Modules\Module_With_Owner;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Storage\Options;
@@ -33,6 +34,13 @@ class Tag_ManagerTest extends TestCase {
 	use Module_With_Scopes_ContractTests;
 	use Module_With_Owner_ContractTests;
 	use Module_With_Service_Entity_ContractTests;
+
+	public function tear_down() {
+		parent::tear_down();
+
+		// We have to clean up for the test cases which register this script.
+		wp_deregister_script( 'googlesitekit-modules-tagmanager' );
+	}
 
 	public function test_register() {
 		$tagmanager = new Tag_Manager( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
@@ -357,6 +365,79 @@ class Tag_ManagerTest extends TestCase {
 				'live-container-version',
 			),
 			$tagmanager->get_datapoints()
+		);
+	}
+
+	public function test_get_assets() {
+		$context    = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$tagmanager = new Tag_Manager( $context );
+
+		$assets = $tagmanager->get_assets();
+
+		$this->assertCount( 1, $assets );
+
+		$script = $assets[0];
+		$script->register( $context );
+
+		$dependency = wp_scripts()->registered['googlesitekit-modules-tagmanager'];
+
+		$this->assertEquals( $context->url( 'dist/assets/' ) . 'js/googlesitekit-modules-tagmanager.js', $dependency->src );
+		$this->assertEqualSets(
+			array(
+				'googlesitekit-api',
+				'googlesitekit-data',
+				'googlesitekit-datastore-site',
+				'googlesitekit-modules',
+				'googlesitekit-vendor',
+				'googlesitekit-modules-analytics',
+				'googlesitekit-components',
+			),
+			$dependency->deps
+		);
+	}
+
+	public function test_get_assets__no_analytics() {
+		$context    = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$tagmanager = new Tag_Manager( $context );
+
+		// Override the googlesitekit_module_exists filter to ensure the Analytics module is not available.
+		remove_all_filters( 'googlesitekit_module_exists' );
+		add_filter(
+			'googlesitekit_module_exists',
+			function( $exists, $slug ) {
+				return 'analytics' === $slug ? false : true;
+			},
+			10,
+			2
+		);
+
+		$assets = $tagmanager->get_assets();
+
+		$this->assertCount( 1, $assets );
+
+		$script = $assets[0];
+		$script->register( $context );
+
+		$dependency = wp_scripts()->registered['googlesitekit-modules-tagmanager'];
+
+		$this->assertEquals( $context->url( 'dist/assets/' ) . 'js/googlesitekit-modules-tagmanager.js', $dependency->src );
+
+		$this->assertEqualSets(
+			array(
+				'googlesitekit-api',
+				'googlesitekit-data',
+				'googlesitekit-datastore-site',
+				'googlesitekit-modules',
+				'googlesitekit-vendor',
+				'googlesitekit-components',
+			),
+			$dependency->deps
+		);
+
+		// This is implied from the above assertion, but let's be explicit about what we are trying to test.
+		$this->assertNotContains(
+			'googlesitekit-module-analytics',
+			$dependency->deps
 		);
 	}
 
