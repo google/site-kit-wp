@@ -22,9 +22,7 @@
 import MediaErrorHandler from './';
 
 const ErrorComponent = () => {
-	throw new Error(
-		'Something bad happened. 💣 (On purpose; ErrorComponent was used to simulate an error.)'
-	);
+	throw new Error();
 };
 
 const Template = () => (
