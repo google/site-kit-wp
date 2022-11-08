@@ -1,7 +1,7 @@
 /**
- * UserMenu stories.
+ * ErrorNotice stories.
  *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2022 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,18 +21,15 @@
  */
 
 import ErrorNotice from './ErrorNotice';
-import { MODULES_TAGMANAGER } from '../modules/tagmanager/datastore/constants';
 
 const Template = ( args ) => <ErrorNotice { ...args } />;
+
+export const Default = Template.bind( {} );
+Default.args = {
+	error: new Error( 'This is error text' ),
+};
 
 export default {
 	title: 'Components/ErrorNotice',
 	component: ErrorNotice,
-};
-
-export const Default = Template.bind( {} );
-Default.args = {
-	primary: true,
-	error: new Error( 'This is error text' ),
-	storeName: MODULES_TAGMANAGER,
 };

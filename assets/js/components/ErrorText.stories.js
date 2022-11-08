@@ -1,7 +1,7 @@
 /**
- * UserMenu stories.
+ * ErrorText stories.
  *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2022 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,28 +21,30 @@
  */
 
 import ErrorText from './ErrorText';
-
-export default {
-	title: 'Components/ErrorText',
-	component: ErrorText,
-};
+import Link from './Link';
 
 const Template = ( args ) => <ErrorText { ...args } />;
 
 export const Default = Template.bind( {} );
 Default.args = {
-	primary: true,
-	message: 'This is error text',
+	message: 'This is error text.',
 };
 
 export const ReconnectURL = Template.bind( {} );
 ReconnectURL.args = {
-	message: 'This is error text',
+	message: 'This is error text.',
 	reconnectURL: 'https://some.true.url',
 };
 
 export const WithChildren = Template.bind( {} );
 WithChildren.args = {
-	message: 'This is error text',
-	children: <span style={ { color: 'blue' } }>with children</span>,
+	message: 'This is error text.',
+	children: (
+		<Link onClick={ () => global.console.log( 'Clicked' ) }>Link</Link>
+	),
+};
+
+export default {
+	title: 'Components/ErrorText',
+	component: ErrorText,
 };
