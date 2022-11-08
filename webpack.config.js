@@ -180,6 +180,22 @@ const createRules = ( mode ) => [
 		],
 		...noAMDParserRule,
 	},
+	{
+		test: RegExp( 'node_modules/@material/web/.*.js' ),
+		use: [
+			{
+				loader: 'babel-loader',
+				options: {
+					sourceMap: mode !== 'production',
+					babelrc: false,
+					configFile: false,
+					cacheDirectory: true,
+					presets: [ '@wordpress/default', '@babel/preset-react' ],
+				},
+			},
+		],
+		...noAMDParserRule,
+	},
 ];
 
 const createMinimizerRules = ( mode ) => [
@@ -296,6 +312,8 @@ function* webpackConfig( env, argv ) {
 			'googlesitekit-polyfills': './assets/js/googlesitekit-polyfills.js',
 			'googlesitekit-components-gm2':
 				'./assets/js/googlesitekit-components-gm2.js',
+			'googlesitekit-components-gm3':
+				'./assets/js/googlesitekit-components-gm3.js',
 			// Old Modules
 			'googlesitekit-activation':
 				'./assets/js/googlesitekit-activation.js',
@@ -389,7 +407,16 @@ function* webpackConfig( env, argv ) {
 							? 'googlesitekit-vendor-[contenthash].js'
 							: 'googlesitekit-vendor.js',
 						enforce: true,
-						test: /[\\/]node_modules[\\/]/,
+						test: ( module ) => {
+							return (
+								/[\\/]node_modules[\\/]/.test(
+									module.resource
+								) &&
+								! /[\\/]@material[\\/]web[\\/]/.test(
+									module.resource
+								)
+							);
+						},
 					},
 				},
 			},
