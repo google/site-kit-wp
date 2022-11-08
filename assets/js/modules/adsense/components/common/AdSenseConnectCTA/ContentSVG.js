@@ -24,8 +24,8 @@ import { PropTypes } from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
 import { lazy, Suspense } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -45,10 +45,7 @@ const LazyContentSVG2 = lazy( () =>
 function ErrorHandler( { children } ) {
 	return (
 		<MediaErrorHandler
-			errorMessage={ __(
-				'Error: Failed to load graphic.',
-				'google-site-kit'
-			) }
+			errorMessage={ __( 'Failed to load graphic.', 'google-site-kit' ) }
 		>
 			{ children }
 		</MediaErrorHandler>

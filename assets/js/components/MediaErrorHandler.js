@@ -25,6 +25,12 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { Component } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
+
+/**
+ * Internal dependencies
+ */
+import ErrorText from './ErrorText';
 
 class MediaErrorHandler extends Component {
 	constructor( props ) {
@@ -45,17 +51,17 @@ class MediaErrorHandler extends Component {
 		const { children, errorMessage } = this.props;
 		const { error } = this.state;
 
-		if ( error && errorMessage && '' !== errorMessage ) {
-			return <p>{ errorMessage }</p>;
+		// If there is no caught error, render the children components normally.
+		if ( ! error ) {
+			return children;
 		}
 
-		// If there is no caught error, render the children components normally.
-		return children;
+		return <ErrorText message={ errorMessage } />;
 	}
 }
 
 MediaErrorHandler.defaultProps = {
-	errorMessage: '',
+	errorMessage: __( 'Failed to load media.', 'google-site-kit' ),
 };
 
 MediaErrorHandler.propTypes = {
