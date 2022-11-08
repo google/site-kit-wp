@@ -26,7 +26,14 @@ import { useHistory, useParams } from 'react-router-dom';
 /**
  * WordPress dependencies
  */
-import { Fragment, useCallback } from '@wordpress/element';
+import {
+	Fragment,
+	useCallback,
+	useRef,
+	useState,
+	useEffect,
+} from '@wordpress/element';
+import { ESCAPE, ENTER } from '@wordpress/keycodes';
 import { __, sprintf } from '@wordpress/i18n';
 
 /**
@@ -37,6 +44,7 @@ import { Button } from 'googlesitekit-components';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { EXPERIMENTAL_MODULES } from '../../dashboard-sharing/DashboardSharingSettings/constants';
 import { Grid, Row, Cell } from '../../../material-components';
+import { useKeyCodesInside } from '../../../hooks/useKeyCodesInside';
 import ModuleIcon from '../../ModuleIcon';
 import Badge from '../../Badge';
 import { trackEvent } from '../../../util';
@@ -46,8 +54,11 @@ import { FORM_SETUP } from '../../../modules/analytics/datastore/constants';
 const { useSelect, useDispatch } = Data;
 
 export default function Header( { slug } ) {
+	const [ viewNotificationSent, setViewNotificationSent ] = useState( false );
+
 	const viewContext = useViewContext();
 	const history = useHistory();
+	const headerRef = useRef();
 
 	const { moduleSlug } = useParams();
 	const isOpen = moduleSlug === slug;
@@ -68,36 +79,93 @@ export default function Header( { slug } ) {
 
 	const { setValues } = useDispatch( CORE_FORMS );
 
-	const onHeaderClick = useCallback( () => {
-		history.push( `/connected-services${ isOpen ? '' : `/${ slug }` }` );
-
+	const openHeader = useCallback( () => {
 		if ( isOpen ) {
-			return trackEvent(
-				`${ viewContext }_module-list`,
-				'close_module_settings',
-				slug
-			);
+			return;
 		}
 
-		return trackEvent(
+		history.push( `/connected-services/${ slug }` );
+		trackEvent(
 			`${ viewContext }_module-list`,
 			'view_module_settings',
 			slug
 		);
-	}, [ history, isOpen, slug, viewContext ] );
+	}, [ history, slug, viewContext, isOpen ] );
+
+	const closeHeader = useCallback( () => {
+		if ( ! isOpen ) {
+			return;
+		}
+
+		history.push( '/connected-services' );
+		trackEvent(
+			`${ viewContext }_module-list`,
+			'close_module_settings',
+			slug
+		);
+	}, [ history, slug, viewContext, isOpen ] );
 
 	const onActionClick = useCallback(
 		( event ) => event.stopPropagation(),
 		[]
 	);
 
+	useKeyCodesInside(
+		[ ENTER ],
+		headerRef,
+		isOpen ? closeHeader : openHeader
+	);
+	useKeyCodesInside( [ ESCAPE ], headerRef, closeHeader );
+
+	const { name, connected } = module;
+
+	const eventCategory = `${ viewContext }_module-list`;
+	useEffect( () => {
+		// Only trigger the view event if the notification is visible and we haven't
+		// already sent this notification.
+		if (
+			! viewNotificationSent &&
+			connected &&
+			slug === 'analytics' &&
+			! isGA4Connected
+		) {
+			trackEvent( eventCategory, 'view_ga4_button' );
+			// Don't send the view event again.
+			setViewNotificationSent( true );
+		}
+	}, [
+		eventCategory,
+		connected,
+		slug,
+		viewNotificationSent,
+		isGA4Connected,
+	] );
+
+	const handleConnectGA4ButtonClick = useCallback(
+		async ( event ) => {
+			// Prevent this click from toggling the header, which is
+			// the default action for a click on any element in the header.
+			event.stopPropagation();
+
+			await trackEvent( eventCategory, 'click_ga4_button' );
+
+			setValues( FORM_SETUP, {
+				// Pre-enable GA4 controls.
+				enableGA4: true,
+				// Enable tooltip highlighting GA4 property select.
+				enableGA4PropertyTooltip: true,
+			} );
+			history.push( `/connected-services/${ slug }/edit` );
+		},
+		[ eventCategory, history, setValues, slug ]
+	);
+
 	if ( ! module ) {
 		return null;
 	}
 
-	const { name, connected } = module;
-
 	return (
+		// eslint-disable-next-line jsx-a11y/click-events-have-key-events
 		<div
 			className={ classnames( 'googlesitekit-settings-module__header', {
 				'googlesitekit-settings-module__header--open': isOpen,
@@ -109,9 +177,9 @@ export default function Header( { slug } ) {
 			aria-expanded={ isOpen }
 			aria-controls={ `googlesitekit-settings-module__content--${ slug }` }
 			to={ `/connected-services${ isOpen ? '' : `/${ slug }` }` }
-			onClick={ onHeaderClick }
-			onKeyDown={ onHeaderClick }
-			tabIndex="-1"
+			onClick={ isOpen ? closeHeader : openHeader }
+			ref={ headerRef }
+			tabIndex="0"
 		>
 			<Grid>
 				<Row>
@@ -172,19 +240,7 @@ export default function Header( { slug } ) {
 							! isGA4Connected && (
 								<Fragment>
 									<Button
-										onClick={ ( event ) => {
-											// Prevent this click from toggling the header too.
-											event.stopPropagation();
-											setValues( FORM_SETUP, {
-												// Pre-enable GA4 controls.
-												enableGA4: true,
-												// Enable tooltip highlighting GA4 property select.
-												enableGA4PropertyTooltip: true,
-											} );
-											history.push(
-												`/connected-services/${ slug }/edit`
-											);
-										} }
+										onClick={ handleConnectGA4ButtonClick }
 									>
 										{ __(
 											'Connect Google Analytics 4',

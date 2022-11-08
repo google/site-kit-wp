@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import fetchMock from 'fetch-mock';
+
+/**
  * Internal dependencies
  */
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
@@ -46,6 +51,25 @@ const notification1 = {
 };
 
 /**
+ * Mocks the response for the notifications endpoint.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Array} body Notifications response body.
+ *
+ */
+const mockEndpoint = ( body = [] ) => {
+	fetchMock.reset();
+	fetchMock.getOnce(
+		/^\/google-site-kit\/v1\/core\/site\/data\/notifications/,
+		{
+			body,
+			status: 200,
+		}
+	);
+};
+
+/**
  * DashboardCoreSiteAlerts renders notifications after a five second timeout
  * and only if there has been no survey available in that time period.
  *
@@ -61,6 +85,7 @@ export const NotificationCTA = Template.bind( {} );
 NotificationCTA.storyName = 'Has Notifications - Displayed';
 NotificationCTA.args = {
 	setupRegistry: ( registry ) => {
+		mockEndpoint( [ notification1 ] );
 		registry
 			.dispatch( CORE_SITE )
 			.receiveGetNotifications( [ notification1 ], {} );
@@ -76,6 +101,7 @@ export const NoNotifications = Template.bind( {} );
 NoNotifications.storyName = 'Has No Notifications - Not Displayed';
 NoNotifications.args = {
 	setupRegistry: ( registry ) => {
+		mockEndpoint( [] );
 		registry.dispatch( CORE_SITE ).receiveGetNotifications( [], {} );
 	},
 };
@@ -89,6 +115,7 @@ NotificationCTAWithSurvey.storyName =
 	'Has Notifications, and Survey - Not Displayed';
 NotificationCTAWithSurvey.args = {
 	setupRegistry: ( registry ) => {
+		mockEndpoint( [ notification1 ] );
 		registry
 			.dispatch( CORE_SITE )
 			.receiveGetNotifications( [ notification1 ], {} );
@@ -110,6 +137,7 @@ NotificationCTAWithSurveyShortDelay.storyName =
 	'Has Notifications, with Survey in three seconds - Not Displayed';
 NotificationCTAWithSurveyShortDelay.args = {
 	setupRegistry: ( registry ) => {
+		mockEndpoint( [ notification1 ] );
 		registry
 			.dispatch( CORE_SITE )
 			.receiveGetNotifications( [ notification1 ], {} );
@@ -134,6 +162,7 @@ NotificationCTAWithSurveyLongerDelay.storyName =
 	'Has Notifications, with Survey in six seconds - Displayed';
 NotificationCTAWithSurveyLongerDelay.args = {
 	setupRegistry: ( registry ) => {
+		mockEndpoint( [ notification1 ] );
 		registry
 			.dispatch( CORE_SITE )
 			.receiveGetNotifications( [ notification1 ], {} );

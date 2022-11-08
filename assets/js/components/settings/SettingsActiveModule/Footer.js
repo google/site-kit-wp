@@ -34,7 +34,9 @@ import { Fragment, useCallback } from '@wordpress/element';
  */
 import Data from 'googlesitekit-data';
 import { Button } from 'googlesitekit-components';
+import { FORM_SETUP } from '../../../modules/analytics/datastore/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
+import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import { Cell, Grid, Row } from '../../../material-components';
 import PencilIcon from '../../../../svg/icons/pencil.svg';
 import TrashIcon from '../../../../svg/icons/trash.svg';
@@ -74,6 +76,21 @@ export default function Footer( props ) {
 	const isSaving = useSelect( ( select ) =>
 		select( CORE_UI ).getValue( isSavingKey )
 	);
+	const enableGA4PropertyTooltip = useSelect( ( select ) =>
+		select( CORE_FORMS ).getValue( FORM_SETUP, 'enableGA4PropertyTooltip' )
+	);
+
+	const { setValues } = useDispatch( CORE_FORMS );
+
+	const dismissGA4PropertyTooltip = useCallback( () => {
+		if ( slug !== 'analytics' || ! enableGA4PropertyTooltip ) {
+			return null;
+		}
+		setValues( FORM_SETUP, {
+			enableGA4PropertyTooltip: false,
+		} );
+	}, [ slug, enableGA4PropertyTooltip, setValues ] );
+
 	const moduleHomepage = useSelect( ( select ) => {
 		if ( ! module || isEmpty( module.homepage ) ) {
 			return undefined;
@@ -95,7 +112,11 @@ export default function Footer( props ) {
 		);
 		await clearErrors();
 		history.push( `/connected-services/${ slug }` );
-	}, [ clearErrors, history, viewContext, slug ] );
+
+		if ( slug === 'analytics' ) {
+			dismissGA4PropertyTooltip();
+		}
+	}, [ clearErrors, history, viewContext, slug, dismissGA4PropertyTooltip ] );
 
 	const handleConfirm = useCallback(
 		async ( event ) => {
@@ -115,6 +136,10 @@ export default function Footer( props ) {
 				);
 				await clearErrors();
 				history.push( `/connected-services/${ slug }` );
+
+				if ( slug === 'analytics' ) {
+					dismissGA4PropertyTooltip();
+				}
 				clearWebStorage();
 			}
 		},
@@ -127,6 +152,7 @@ export default function Footer( props ) {
 			clearErrors,
 			history,
 			viewContext,
+			dismissGA4PropertyTooltip,
 		]
 	);
 

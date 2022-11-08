@@ -7,7 +7,7 @@ on:
       - main
     # Only run if PHP-related files changed.
     paths:
-      - '.github/workflows/php-tests-wp-4-7-php-5-6.yml'
+      - '.github/workflows/php-tests-wp-5-2-php-5-6.yml'
       - includes/**
       - tests/phpunit/**
       - /*.php
@@ -21,7 +21,7 @@ on:
       - 'feature/**'
     # Only run if PHP-related files changed.
     paths:
-      - '.github/workflows/php-tests-wp-4-7-php-5-6.yml'
+      - '.github/workflows/php-tests-wp-5-2-php-5-6.yml'
       - includes/**
       - tests/phpunit/**
       - /*.php
@@ -34,12 +34,12 @@ on:
       - synchronize
 
 concurrency:
-  group: php-tests-wp-4-7-php-5-6-${{ github.ref }}
+  group: php-tests-wp-5-2-php-5-6-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  php-tests-wp-4-7-php-5-6:
-    name: PHP (PHP 5.6, WordPress 4.7)
+  php-tests-wp-5-2-php-5-6:
+    name: PHP (PHP 5.6, WordPress 5.2)
     runs-on: ubuntu-latest
     timeout-minutes: 20
     services:
@@ -56,7 +56,7 @@ jobs:
       MYSQL_USER: root
       MYSQL_PASSWORD: wordpress
       MYSQL_DATABASE: wordpress_test
-      WP_VERSION: '4.7'
+      WP_VERSION: '5.2'
     steps:
       - uses: actions/checkout@v2
       - uses: shivammathur/setup-php@v2

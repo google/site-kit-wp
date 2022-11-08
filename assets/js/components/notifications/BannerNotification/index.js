@@ -174,11 +174,6 @@ function BannerNotification( {
 	async function handleCTAClick( e ) {
 		e.persist();
 
-		if ( isURL( ctaLink ) && ctaTarget !== '_blank' ) {
-			e.preventDefault();
-			navigateTo( ctaLink );
-		}
-
 		let dismissOnCTAClick = true;
 		if ( onCTAClick ) {
 			setIsAwaitingCTAResponse( true );
@@ -190,6 +185,15 @@ function BannerNotification( {
 
 		if ( isDismissible && dismissOnCTAClick ) {
 			dismissNotification();
+		}
+
+		if (
+			isURL( ctaLink ) &&
+			ctaTarget !== '_blank' &&
+			! e.defaultPrevented
+		) {
+			e.preventDefault();
+			navigateTo( ctaLink );
 		}
 	}
 
@@ -231,7 +235,7 @@ function BannerNotification( {
 	}
 
 	// isDismissed will be undefined until resolved from browser storage.
-	// isNavigatingToCTALink will be true until the navigation is complete.
+	// isNavigating will be true until the navigation is complete.
 	if (
 		! isNavigatingToCTALink &&
 		isDismissible &&
@@ -282,14 +286,48 @@ function BannerNotification( {
 		</Fragment>
 	);
 
+	const learnMoreAndPageIndex = (
+		<Fragment>
+			{ learnMoreLabel && (
+				<Fragment>
+					<Link
+						onClick={ handleLearnMore }
+						href={ learnMoreURL }
+						external={
+							learnMoreTarget === LEARN_MORE_TARGET.EXTERNAL
+						}
+					>
+						{ learnMoreLabel }
+					</Link>
+					{ learnMoreDescription }
+				</Fragment>
+			) }
+			{ pageIndex && (
+				<span className="googlesitekit-publisher-win__detect">
+					{ pageIndex }
+				</span>
+			) }
+		</Fragment>
+	);
+
 	const inlineMarkup = (
 		<Fragment>
 			{ title && (
-				<h3 className="googlesitekit-heading-2 googlesitekit-publisher-win__title">
-					{ title }
+				<div className="googlesitekit-publisher-win__title-image-wrapper">
+					<h3 className="googlesitekit-heading-2 googlesitekit-publisher-win__title">
+						{ title }
 
-					{ badgeLabel && <Badge label={ badgeLabel } /> }
-				</h3>
+						{ badgeLabel && <Badge label={ badgeLabel } /> }
+					</h3>
+
+					{ WinImageSVG && (
+						<div
+							className={ `googlesitekit-publisher-win__image-${ format } googlesitekit-non-mobile-display-none` }
+						>
+							<WinImageSVG width={ 75 } height={ 75 } />
+						</div>
+					) }
+				</div>
 			) }
 			{ anchorLink && anchorLinkLabel && (
 				<p className="googlesitekit-publisher-win__link">
@@ -305,10 +343,14 @@ function BannerNotification( {
 							{ descriptionIcon }
 						</div>
 					) }
-					<p>
-						{ isValidElement( description ) ? (
-							description
-						) : (
+
+					{ isValidElement( description ) ? (
+						<Fragment>
+							{ description }
+							<p>{ learnMoreAndPageIndex }</p>
+						</Fragment>
+					) : (
+						<p>
 							<span
 								dangerouslySetInnerHTML={ sanitizeHTML(
 									description,
@@ -322,31 +364,10 @@ function BannerNotification( {
 										ALLOWED_ATTR: [ 'href' ],
 									}
 								) }
-							/>
-						) }
-
-						{ learnMoreLabel && (
-							<Fragment>
-								{ ' ' }
-								<Link
-									onClick={ handleLearnMore }
-									href={ learnMoreURL }
-									external={
-										learnMoreTarget ===
-										LEARN_MORE_TARGET.EXTERNAL
-									}
-								>
-									{ learnMoreLabel }
-								</Link>
-								{ learnMoreDescription }
-							</Fragment>
-						) }
-						{ pageIndex && (
-							<span className="googlesitekit-publisher-win__detect">
-								{ pageIndex }
-							</span>
-						) }
-					</p>
+							/>{ ' ' }
+							{ learnMoreAndPageIndex }
+						</p>
+					) }
 				</div>
 			) }
 			{ children }
@@ -464,7 +485,8 @@ function BannerNotification( {
 
 								{ isDismissible &&
 									dismiss &&
-									! isAwaitingCTAResponse && (
+									! isAwaitingCTAResponse &&
+									! isNavigatingToCTALink && (
 										<DismissComponent
 											onClick={ handleDismiss }
 										>
@@ -488,11 +510,12 @@ function BannerNotification( {
 							alignBottom={
 								format === 'larger' && noBottomPadding
 							}
+							className="googlesitekit-display-none googlesitekit-non-mobile-display-block"
 						>
 							<div
 								className={ `googlesitekit-publisher-win__image-${ format }` }
 							>
-								<WinImageSVG />
+								<WinImageSVG width={ 105 } height={ 105 } />
 							</div>
 						</Cell>
 					) }
