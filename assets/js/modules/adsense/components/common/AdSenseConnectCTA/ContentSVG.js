@@ -42,37 +42,24 @@ const LazyContentSVG2 = lazy( () =>
 	import( '../../../../../../svg/graphics/adsense-connect-2.svg' )
 );
 
-function ErrorHandler( { children } ) {
+function LazyContentSVG( { stage } ) {
+	const graphics = {
+		0: <LazyContentSVG0 />,
+		1: <LazyContentSVG1 />,
+		2: <LazyContentSVG2 />,
+	};
+
+	if ( ! graphics[ stage ] ) {
+		return null;
+	}
+
 	return (
 		<MediaErrorHandler
 			errorMessage={ __( 'Failed to load graphic.', 'google-site-kit' ) }
 		>
-			{ children }
+			{ graphics[ stage ] }
 		</MediaErrorHandler>
 	);
-}
-
-function LazyContentSVG( { stage } ) {
-	switch ( stage ) {
-		case 0:
-			return (
-				<ErrorHandler>
-					<LazyContentSVG0 />
-				</ErrorHandler>
-			);
-		case 1:
-			return (
-				<ErrorHandler>
-					<LazyContentSVG1 />
-				</ErrorHandler>
-			);
-		case 2:
-			return (
-				<ErrorHandler>
-					<LazyContentSVG2 />
-				</ErrorHandler>
-			);
-	}
 }
 
 export default function ContentSVG( { stage } ) {
