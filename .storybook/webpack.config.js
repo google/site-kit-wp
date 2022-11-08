@@ -16,10 +16,10 @@ module.exports = async ( { config } ) => {
 					return require.resolve( '@wordpress/i18n' );
 				}
 
-				// Set "googlesitekit-components" to googlesitekit-components-gm2.js.
+				// Set "googlesitekit-components" to the entry point which can load GM2 or GM3 components.
 				if ( api === 'components' ) {
 					return path.resolve(
-						'assets/js/googlesitekit-components-gm2.js'
+						'.storybook/assets/js/googlesitekit-components.js'
 					);
 				}
 			}
@@ -45,34 +45,54 @@ module.exports = async ( { config } ) => {
 		} ),
 	];
 
-	config.module.rules.push( {
-		test: /\.scss$/,
-		use: [
-			MiniCssExtractPlugin.loader,
-			'css-loader',
-			{
-				loader: 'postcss-loader',
-				options: {
-					config: {
-						path: './',
+	config.module.rules.push(
+		{
+			test: /\.scss$/,
+			use: [
+				MiniCssExtractPlugin.loader,
+				'css-loader',
+				{
+					loader: 'postcss-loader',
+					options: {
+						config: {
+							path: './',
+						},
 					},
 				},
-			},
-			{
-				loader: 'sass-loader',
-				options: {
-					implementation: require( 'sass' ),
-					additionalData: `$wp-version: "${ process.env.npm_package_config_storybook_wordpress_version }";`,
-					sassOptions: {
-						includePaths: [
-							path.resolve( __dirname, '../node_modules/' ),
+				{
+					loader: 'sass-loader',
+					options: {
+						implementation: require( 'sass' ),
+						additionalData: `$wp-version: "${ process.env.npm_package_config_storybook_wordpress_version }";`,
+						sassOptions: {
+							includePaths: [
+								path.resolve( __dirname, '../node_modules/' ),
+							],
+						},
+					},
+				},
+			],
+			include: path.resolve( __dirname, '../' ),
+		},
+		{
+			test: RegExp( 'node_modules/@material/web/.*.js' ),
+			use: [
+				{
+					loader: 'babel-loader',
+					options: {
+						sourceMap: true,
+						babelrc: false,
+						configFile: false,
+						cacheDirectory: true,
+						presets: [
+							'@wordpress/default',
+							'@babel/preset-react',
 						],
 					},
 				},
-			},
-		],
-		include: path.resolve( __dirname, '../' ),
-	} );
+			],
+		}
+	);
 
 	// exclude existing svg rule created by storybook before pushing custom rule
 	const fileLoaderRule = config.module.rules.find(
