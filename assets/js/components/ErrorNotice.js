@@ -76,11 +76,11 @@ export default function ErrorNotice( {
 			message={ message }
 			reconnectURL={ error.data?.reconnectURL }
 		>
-			{ shouldDisplayRetry && (
+			{ shouldDisplayRetry ? (
 				<Link onClick={ handleRetry }>
 					{ __( 'Retry', 'google-site-kit' ) }
 				</Link>
-			) }
+			) : null }
 		</ErrorText>
 	);
 }
