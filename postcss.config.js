@@ -20,10 +20,12 @@ const presetEnv = require( 'postcss-preset-env' );
 const importURL = require( 'postcss-import-url' );
 const autoprefixer = require( 'autoprefixer' );
 const cssnano = require( 'cssnano' );
+const tailwindcss = require( 'tailwindcss' );
 
 const plugins = [
 	presetEnv(),
 	importURL( { resolveUrls: true } ),
+	tailwindcss(),
 	autoprefixer( { grid: true } ),
 ];
 

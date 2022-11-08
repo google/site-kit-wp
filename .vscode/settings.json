@@ -7,7 +7,7 @@
 		"vendor/": true
 	},
 	"files.exclude": {
-		"dist/": true,
+		"dist/": false,
 		"node_modules/": true,
 		"third-party/": true,
 		"vendor/": true

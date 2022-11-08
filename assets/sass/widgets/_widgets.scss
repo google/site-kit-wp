@@ -19,31 +19,6 @@
 .googlesitekit-plugin {
 
 	.googlesitekit-widget {
-		background: $c-base;
-		border-radius: $br-sm;
-		display: flex;
-		flex-direction: column;
-		height: 100%;
-		padding: 0;
-
-		&__body {
-			flex: 1;
-		}
-
-		&__header {
-			border-bottom: 1px solid $c-border-light;
-
-			@media (min-width: $bp-tablet) {
-				display: flex;
-				justify-content: space-between;
-			}
-
-			&-title {
-				font-size: $fs-title-md;
-				line-height: $lh-title-md;
-				margin: 0;
-			}
-		}
 
 		&__footer {
 			border-top: 1px solid $c-border-light;

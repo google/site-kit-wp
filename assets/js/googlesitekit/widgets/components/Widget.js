@@ -33,7 +33,11 @@ const Widget = ( {
 	return (
 		<div
 			className={ classnames(
-				'googlesitekit-widget',
+				'googlesitekit-tw-bg-white',
+				'googlesitekit-tw-rounded-sm',
+				'googlesitekit-tw-flex',
+				'googlesitekit-tw-flex-col',
+				'googlesitekit-tw-h-full',
 				`googlesitekit-widget--${ widgetSlug }`,
 				{ 'googlesitekit-widget--no-padding': noPadding },
 				{ 'googlesitekit-widget--with-header': Header },
@@ -41,11 +45,17 @@ const Widget = ( {
 			) }
 		>
 			{ Header && (
-				<div className="googlesitekit-widget__header">
+				<div className="googlesitekit-widget__header googlesitekit-tw-border-b googlesitekit-tw-border-solid googlesitekit-tw-border-neutral-n-50 md:googlesitekit-tw-flex md:googlesitekit-tw-justify-between">
 					<Header />
 				</div>
 			) }
-			<div className="googlesitekit-widget__body">{ children }</div>
+			<div
+				className={ classnames( 'googlesitekit-tw-flex-1', {
+					'googlesitekit-tw-p-0': noPadding,
+				} ) }
+			>
+				{ children }
+			</div>
 			{ Footer && (
 				<div className="googlesitekit-widget__footer">
 					<Footer />
