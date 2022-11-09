@@ -224,6 +224,10 @@ final class Assets {
 			'Google+Sans+Display:400,500,700',
 		);
 
+		if ( Feature_Flags::enabled( 'gm3Components' ) ) {
+			$font_families[] = 'Roboto:300,400,500';
+		}
+
 		$filtered_font_families = apply_filters( 'googlesitekit_font_families', $font_families );
 
 		if ( empty( $filtered_font_families ) ) {
