@@ -82,6 +82,20 @@ class Script extends Asset {
 						break;
 					}
 				}
+
+				if ( ! isset( $hash ) ) {
+					error_log(
+						'No hash found! ' . print_r(
+							array(
+								'src'      => $src,
+								'handle'   => $this->handle,
+								'filename' => $filename,
+								'entry'    => $entry,
+							),
+							true
+						)
+					);
+				}
 			} else {
 				// Otherwise, `$entry` will be a single entry in the format filename => hash.
 				list( $filename, $hash ) = $entry;
