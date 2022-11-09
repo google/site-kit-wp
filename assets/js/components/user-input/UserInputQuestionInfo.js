@@ -64,7 +64,11 @@ export default function UserInputQuestionInfo( {
 
 			<h1>{ title }</h1>
 
-			{ description && <p>{ description }</p> }
+			{ description && (
+				<p className="googlesitekit-user-input__question-instructions--description">
+					{ description }
+				</p>
+			) }
 
 			<UserInputQuestionNotice />
 
