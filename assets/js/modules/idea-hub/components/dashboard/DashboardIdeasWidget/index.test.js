@@ -87,6 +87,7 @@ describe( 'Idea Hub', () => {
 				{ registry }
 			);
 
+			// eslint-disable-next-line require-await
 			await act( async () => {
 				fireEvent.click( getByRole( 'tab', { name: args } ) );
 			} );

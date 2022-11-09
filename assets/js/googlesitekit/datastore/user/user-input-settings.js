@@ -42,7 +42,7 @@ function fetchStoreReducerCallback( state, inputSettings ) {
 
 const fetchGetUserInputSettingsStore = createFetchStore( {
 	baseName: 'getUserInputSettings',
-	controlCallback: async () =>
+	controlCallback: () =>
 		API.get( 'core', 'user', 'user-input-settings', undefined, {
 			useCache: false,
 		} ),
@@ -196,16 +196,16 @@ export const baseControls = {
 	[ GET_CACHED_USER_INPUT_SETTINGS ]: () => {
 		return getItem( CACHE_KEY_NAME );
 	},
-	[ SET_CACHED_USER_INPUT_SETTING ]: createRegistryControl(
-		( registry ) =>
-			async ( { payload: { settingID, values } } ) => {
-				const settings =
-					registry.select( CORE_USER ).getUserInputSettings() || {};
+	[ SET_CACHED_USER_INPUT_SETTING ]: createRegistryControl( ( registry ) =>
+		// eslint-disable-next-line require-await
+		async ( { payload: { settingID, values } } ) => {
+			const settings =
+				registry.select( CORE_USER ).getUserInputSettings() || {};
 
-				settings[ settingID ] = { values };
+			settings[ settingID ] = { values };
 
-				return setItem( CACHE_KEY_NAME, settings );
-			}
+			return setItem( CACHE_KEY_NAME, settings );
+		}
 	),
 };
 

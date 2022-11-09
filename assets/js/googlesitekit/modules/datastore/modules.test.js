@@ -1118,7 +1118,7 @@ describe( 'core/modules modules', () => {
 				expect( console ).toHaveErrored();
 			} );
 
-			it( 'returns undefined if modules is not yet available', async () => {
+			it( 'returns undefined if modules is not yet available', () => {
 				// This triggers a network request, so ignore the error.
 				muteFetch(
 					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
@@ -1221,7 +1221,7 @@ describe( 'core/modules modules', () => {
 			[ 'getModuleDependencyNames', 'dependencies' ],
 			[ 'getModuleDependantNames', 'dependants' ],
 		] )( '%s', ( selector, collectionName ) => {
-			it( 'returns undefined when no modules are loaded', async () => {
+			it( 'returns undefined when no modules are loaded', () => {
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
 					{ body: FIXTURES, status: 200 }
@@ -1330,7 +1330,7 @@ describe( 'core/modules modules', () => {
 				expect( isAvailableLoaded ).toEqual( false );
 			} );
 
-			it( 'returns undefined if modules is not yet available', async () => {
+			it( 'returns undefined if modules is not yet available', () => {
 				muteFetch(
 					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
 					[]
@@ -1410,7 +1410,7 @@ describe( 'core/modules modules', () => {
 				expect( isActiveLoaded ).toEqual( null );
 			} );
 
-			it( 'returns undefined if modules is not yet available', async () => {
+			it( 'returns undefined if modules is not yet available', () => {
 				muteFetch(
 					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
 					[]
@@ -1481,7 +1481,7 @@ describe( 'core/modules modules', () => {
 				}
 			);
 
-			it( 'returns undefined if modules is not yet available', async () => {
+			it( 'returns undefined if modules is not yet available', () => {
 				muteFetch(
 					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
 					[]
@@ -1496,7 +1496,7 @@ describe( 'core/modules modules', () => {
 		} );
 
 		describe( 'getModuleFeatures', () => {
-			it( 'returns undefined when no modules are loaded', async () => {
+			it( 'returns undefined when no modules are loaded', () => {
 				muteFetch(
 					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
 					[]
@@ -1509,7 +1509,7 @@ describe( 'core/modules modules', () => {
 				expect( featuresLoaded ).toBeUndefined();
 			} );
 
-			it( 'returns features when modules are loaded', async () => {
+			it( 'returns features when modules are loaded', () => {
 				registry.dispatch( CORE_MODULES ).receiveGetModules( FIXTURES );
 
 				const featuresLoaded = registry
@@ -1521,7 +1521,7 @@ describe( 'core/modules modules', () => {
 				);
 			} );
 
-			it( 'returns an empty object when requesting features for a non-existent module', async () => {
+			it( 'returns an empty object when requesting features for a non-existent module', () => {
 				registry.dispatch( CORE_MODULES ).receiveGetModules( FIXTURES );
 
 				const featuresLoaded = registry
@@ -1712,7 +1712,7 @@ describe( 'core/modules modules', () => {
 				expect( modules ).toBeUndefined();
 			} );
 
-			it( 'should return an empty object if there is no `sharedOwnershipModules`', async () => {
+			it( 'should return an empty object if there is no `sharedOwnershipModules`', () => {
 				global[ dashboardSharingDataBaseVar ] = {
 					sharedOwnershipModules: [],
 				};
@@ -1726,7 +1726,7 @@ describe( 'core/modules modules', () => {
 				expect( sharedOwnershipModules ).toMatchObject( {} );
 			} );
 
-			it( 'should return the modules object for each shared ownership module', async () => {
+			it( 'should return the modules object for each shared ownership module', () => {
 				global[ dashboardSharingDataBaseVar ] =
 					sharedOwnershipModulesList;
 

@@ -47,7 +47,7 @@ describe( 'useGAPropertyIDEffect', () => {
 
 		await act(
 			() =>
-				new Promise( async ( resolve ) => {
+				new Promise( ( resolve ) => {
 					renderHook( () => useGAPropertyIDEffect(), { registry } );
 					resolve();
 				} )

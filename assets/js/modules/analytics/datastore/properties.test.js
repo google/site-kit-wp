@@ -86,7 +86,7 @@ describe( 'modules/analytics properties', () => {
 				] );
 			} );
 
-			it( 'sets isDoingCreateProperty', async () => {
+			it( 'sets isDoingCreateProperty', () => {
 				const accountID = fixtures.createProperty.accountId; // eslint-disable-line sitekit/acronym-case
 				fetchMock.post(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-property/,

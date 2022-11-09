@@ -33,6 +33,7 @@ const ideaHubPostsTable = {
 	contexts: [ VIEW_CONTEXT_POSTS_LIST ],
 	version: '1.43.0',
 	gaEventCategory: IDEA_HUB_GA_CATEGORY_POSTS,
+	// eslint-disable-next-line require-await
 	checkRequirements: async ( registry ) => {
 		if ( ! document.querySelector( '.googlesitekit-idea-hub__post' ) ) {
 			return false;

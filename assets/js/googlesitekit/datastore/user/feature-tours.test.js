@@ -598,7 +598,7 @@ describe( 'core/user feature-tours', () => {
 				).toEqual( false );
 			} );
 
-			it( 'returns false for an expired lastDismissedAt value in the cache', async () => {
+			it( 'returns false for an expired lastDismissedAt value in the cache', () => {
 				registry.dispatch( CORE_USER ).receiveLastDismissedAt( null );
 
 				expect(

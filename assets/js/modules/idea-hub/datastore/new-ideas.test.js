@@ -146,7 +146,7 @@ describe( 'modules/idea-hub new-ideas', () => {
 				expect( newIdeas ).toEqual( fixtures.newIdeas.slice( 2 ) );
 			} );
 
-			it( 'should adjust idea results when only length parameter is supplied', async () => {
+			it( 'should adjust idea results when only length parameter is supplied', () => {
 				const newIdeas = registry
 					.select( MODULES_IDEA_HUB )
 					.getNewIdeasSlice( { length: 3 } );

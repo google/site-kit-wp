@@ -220,7 +220,7 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 				);
 			} );
 
-			it( 'should not make a network request if webdatastreams for this account are already present', async () => {
+			it( 'should not make a network request if webdatastreams for this account are already present', () => {
 				const testPropertyID = '12345';
 				const propertyID = testPropertyID;
 
@@ -414,7 +414,7 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 			} );
 
-			it( 'should not make a network request if webdatastreams for the selected properties are already present', async () => {
+			it( 'should not make a network request if webdatastreams for the selected properties are already present', () => {
 				for ( const [ propertyID, webdatastreams ] of Object.entries(
 					fixtures.webDataStreamsBatch
 				) ) {

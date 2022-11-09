@@ -65,7 +65,7 @@ describe( 'module/adsense service store', () => {
 				registry.dispatch( CORE_USER ).receiveUserInfo( userData );
 			} );
 
-			it( 'retrieves the correct URL with no arguments', async () => {
+			it( 'retrieves the correct URL with no arguments', () => {
 				const serviceURL = registry
 					.select( MODULES_ADSENSE )
 					.getServiceURL();
@@ -99,7 +99,7 @@ describe( 'module/adsense service store', () => {
 				).toMatch( new RegExp( '/test/path/to/deeplink$' ) );
 			} );
 
-			it( 'adds query args', async () => {
+			it( 'adds query args', () => {
 				const path = '/test/path/to/deeplink';
 				const query = {
 					param1: '1',

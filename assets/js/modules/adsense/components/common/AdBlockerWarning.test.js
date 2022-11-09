@@ -54,7 +54,7 @@ const setupNoAdBlockerRegistry = ( registry ) => {
 };
 
 describe( 'AdBlockerWarning', () => {
-	it( 'should render the warning when an AdBlocker is active and module is not connected', async () => {
+	it( 'should render the warning when an AdBlocker is active and module is not connected', () => {
 		const { container } = render( <AdBlockerWarning />, {
 			setupRegistry: setupAdBlockerNotConnectedRegistry,
 		} );
@@ -66,7 +66,7 @@ describe( 'AdBlockerWarning', () => {
 		expect( container.textContent ).toContain( 'to set up AdSense' );
 	} );
 
-	it( 'should render the warning when an AdBlocker is active and module is connected', async () => {
+	it( 'should render the warning when an AdBlocker is active and module is connected', () => {
 		const { container } = render( <AdBlockerWarning />, {
 			setupRegistry: setupAdBlockerConnectedRegistry,
 		} );
@@ -78,7 +78,7 @@ describe( 'AdBlockerWarning', () => {
 		expect( container.textContent ).toContain( 'latest AdSense data' );
 	} );
 
-	it( 'should render nothing when no AdBlocker is active', async () => {
+	it( 'should render nothing when no AdBlocker is active', () => {
 		const { container } = render( <AdBlockerWarning />, {
 			setupRegistry: setupNoAdBlockerRegistry,
 		} );

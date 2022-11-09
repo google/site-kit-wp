@@ -54,6 +54,7 @@ async function proceedToSetUpAnalytics() {
 	);
 }
 
+// eslint-disable-next-line require-await
 const setReferenceURL = async () => {
 	return wpApiFetch( {
 		path: 'google-site-kit/v1/e2e/reference-url',

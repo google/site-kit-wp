@@ -230,6 +230,7 @@ export const get = async (
 	datapoint,
 	data,
 	{ cacheTTL = HOUR_IN_SECONDS, useCache = undefined, signal } = {}
+	// eslint-disable-next-line require-await
 ) => {
 	return siteKitRequest( type, identifier, datapoint, {
 		cacheTTL,

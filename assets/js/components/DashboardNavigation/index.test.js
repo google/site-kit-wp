@@ -54,7 +54,7 @@ describe( 'Dashboard Navigation', () => {
 		expect( container.querySelector( '.mdc-chip--selected' ) ).toBeNull();
 	} );
 
-	it( 'always uses `ANCHOR_ID_TRAFFIC` as the default chip when not viewing a shared dashboard', async () => {
+	it( 'always uses `ANCHOR_ID_TRAFFIC` as the default chip when not viewing a shared dashboard', () => {
 		const { container } = render( <DashboardNavigation />, {
 			setupRegistry: ( registry ) => {
 				registry.dispatch( CORE_USER ).receiveGetCapabilities( {
@@ -122,7 +122,7 @@ describe( 'Dashboard Navigation', () => {
 		).toHaveTextContent( 'Traffic' );
 	} );
 
-	it( 'uses `ANCHOR_ID_CONTENT` as the chip viewing a shared dashboard with the traffic sections unavailable', async () => {
+	it( 'uses `ANCHOR_ID_CONTENT` as the chip viewing a shared dashboard with the traffic sections unavailable', () => {
 		const { container } = render( <DashboardNavigation />, {
 			setupRegistry: ( registry ) => {
 				registry.dispatch( CORE_USER ).receiveGetCapabilities( {

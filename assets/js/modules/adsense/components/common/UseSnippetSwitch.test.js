@@ -47,7 +47,7 @@ const getSetupRegistry = ( useSnippetValue ) => {
 describe( 'UseSnippetSwitch', () => {
 	afterEach( () => apiFetchMock.mockClear() );
 
-	it( 'should update useSnippet in the store when toggled', async () => {
+	it( 'should update useSnippet in the store when toggled', () => {
 		const { container, registry } = render( <UseSnippetSwitch />, {
 			setupRegistry: getSetupRegistry( false ),
 		} );
@@ -68,7 +68,7 @@ describe( 'UseSnippetSwitch', () => {
 		expect( apiFetchMock ).not.toHaveBeenCalled();
 	} );
 
-	it( 'should render nothing when useSnippet is undefined', async () => {
+	it( 'should render nothing when useSnippet is undefined', () => {
 		const { container } = render( <UseSnippetSwitch />, {
 			setupRegistry: getSetupRegistry( undefined ),
 		} );

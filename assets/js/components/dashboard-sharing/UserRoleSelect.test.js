@@ -73,7 +73,7 @@ describe( 'CurrentSurvey', () => {
 		delete global[ dashboardSharingDataBaseVar ];
 	} );
 
-	it( 'should not render anything if there are no shareableRoles', async () => {
+	it( 'should not render anything if there are no shareableRoles', () => {
 		const { container } = render(
 			<UserRoleSelect moduleSlug="search-console" />,
 			{
@@ -85,7 +85,7 @@ describe( 'CurrentSurvey', () => {
 		expect( container.firstChild ).toBeNull();
 	} );
 
-	it( 'should render the share icon button if there are shareableRoles', async () => {
+	it( 'should render the share icon button if there are shareableRoles', () => {
 		registry
 			.dispatch( CORE_MODULES )
 			.receiveShareableRoles( shareableRoles );
@@ -103,7 +103,7 @@ describe( 'CurrentSurvey', () => {
 		).toBeInTheDocument();
 	} );
 
-	it( 'should render the "Add roles" button if there are no shared roles yet for the module', async () => {
+	it( 'should render the "Add roles" button if there are no shared roles yet for the module', () => {
 		registry
 			.dispatch( CORE_MODULES )
 			.receiveShareableRoles( shareableRoles );
@@ -130,7 +130,7 @@ describe( 'CurrentSurvey', () => {
 		expect( addRolesElement.textContent ).toEqual( 'Add roles' );
 	} );
 
-	it( 'should display the selected roles as comma separated roles', async () => {
+	it( 'should display the selected roles as comma separated roles', () => {
 		registry
 			.dispatch( CORE_MODULES )
 			.receiveShareableRoles( shareableRoles );
@@ -153,7 +153,7 @@ describe( 'CurrentSurvey', () => {
 		);
 	} );
 
-	it( 'should toggle the chips when the share button is clicked', async () => {
+	it( 'should toggle the chips when the share button is clicked', () => {
 		registry
 			.dispatch( CORE_MODULES )
 			.receiveShareableRoles( shareableRoles );
@@ -187,7 +187,7 @@ describe( 'CurrentSurvey', () => {
 		).not.toBeInTheDocument();
 	} );
 
-	it( 'should display the "All" chip as selected if all the roles are selected', async () => {
+	it( 'should display the "All" chip as selected if all the roles are selected', () => {
 		registry
 			.dispatch( CORE_MODULES )
 			.receiveShareableRoles( shareableRoles );
@@ -222,7 +222,7 @@ describe( 'CurrentSurvey', () => {
 		).toHaveClass( 'mdc-chip--selected' );
 	} );
 
-	it( 'should select/deselect all the chips if the "All" chip is clicked', async () => {
+	it( 'should select/deselect all the chips if the "All" chip is clicked', () => {
 		registry
 			.dispatch( CORE_MODULES )
 			.receiveShareableRoles( shareableRoles );
@@ -265,7 +265,7 @@ describe( 'CurrentSurvey', () => {
 		).toHaveLength( 0 );
 	} );
 
-	it( 'should deselect the "All" chip if a role is deselected', async () => {
+	it( 'should deselect the "All" chip if a role is deselected', () => {
 		registry
 			.dispatch( CORE_MODULES )
 			.receiveShareableRoles( shareableRoles );
@@ -304,7 +304,7 @@ describe( 'CurrentSurvey', () => {
 		expect( allChipElement ).not.toHaveClass( 'mdc-chip--selected' );
 	} );
 
-	it( 'should select/deselect a chip upon clicking', async () => {
+	it( 'should select/deselect a chip upon clicking', () => {
 		registry
 			.dispatch( CORE_MODULES )
 			.receiveShareableRoles( shareableRoles );
@@ -340,7 +340,7 @@ describe( 'CurrentSurvey', () => {
 		expect( contributorElement ).not.toHaveClass( 'mdc-chip--selected' );
 	} );
 
-	it( 'should select/deselect a chip upon pressing the ENTER key', async () => {
+	it( 'should select/deselect a chip upon pressing the ENTER key', () => {
 		registry
 			.dispatch( CORE_MODULES )
 			.receiveShareableRoles( shareableRoles );

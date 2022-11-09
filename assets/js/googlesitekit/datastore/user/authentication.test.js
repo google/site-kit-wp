@@ -228,7 +228,7 @@ describe( 'core/user authentication', () => {
 				expect( missingScope ).toEqual( false );
 			} );
 
-			it( 'returns undefined if scope info is not available', async () => {
+			it( 'returns undefined if scope info is not available', () => {
 				muteFetch( coreUserDataEndpointRegExp );
 				const hasProvisioningScope = registry
 					.select( CORE_USER )
@@ -300,7 +300,7 @@ describe( 'core/user authentication', () => {
 				expect( console ).toHaveErrored();
 			} );
 
-			it( 'returns undefined if authentication info is not available', async () => {
+			it( 'returns undefined if authentication info is not available', () => {
 				muteFetch( coreUserDataEndpointRegExp );
 				expect(
 					registry.select( CORE_USER )[ selector ]()
