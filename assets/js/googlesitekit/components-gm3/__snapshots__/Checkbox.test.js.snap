@@ -1,0 +1,50 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Checkbox controlled input behaviour should allow updating of the checked state 1`] = `
+<div>
+  <md-checkbox
+    role="checkbox"
+  />
+</div>
+`;
+
+exports[`Checkbox controlled input behaviour should allow updating of the checked state 2`] = `
+<div>
+  <md-checkbox
+    checked="true"
+    role="checkbox"
+  />
+</div>
+`;
+
+exports[`Checkbox controlled input behaviour should allow updating of the checked state 3`] = `
+<div>
+  <md-checkbox
+    role="checkbox"
+  />
+</div>
+`;
+
+exports[`Checkbox controlled input behaviour should correctly invoke onChange and retain its unchecked state when clicked 1`] = `
+<div>
+  <md-checkbox
+    role="checkbox"
+  />
+</div>
+`;
+
+exports[`Checkbox controlled input behaviour should correctly invoke onChange and retain its unchecked state when clicked 2`] = `
+<div>
+  <md-checkbox
+    role="checkbox"
+  />
+</div>
+`;
+
+exports[`Checkbox should render the checkbox 1`] = `
+<div>
+  <md-checkbox
+    role="checkbox"
+  />
+</div>
+`;
