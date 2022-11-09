@@ -69,7 +69,23 @@ class Script extends Asset {
 		$version = $this->args['version'];
 
 		if ( $src ) {
-			list( $filename, $hash ) = Manifest::get( $this->handle );
+			$entry = Manifest::get( $this->handle );
+
+			if ( is_array( $entry[0] ) ) {
+				// If the first entry item is an array, we can assume `$entry` is an array of entries in the format filename => hash.
+				// In this scenario we want to use the filename provided in `$src` and its associated hash.
+				$filename = basename( $src );
+
+				foreach ( $entry as $entry_pair ) {
+					if ( $entry_pair[0] === $filename ) {
+						$hash = $entry_pair[1];
+						break;
+					}
+				}
+			} else {
+				// Otherwise, `$entry` will be a single entry in the format filename => hash.
+				list( $filename, $hash ) = $entry;
+			}
 
 			if ( $filename ) {
 				$src     = $context->url( 'dist/assets/js/' . $filename );

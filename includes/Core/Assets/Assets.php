@@ -473,6 +473,11 @@ final class Assets {
 				'googlesitekit-components',
 				array(
 					'src' => $base_url . 'js/googlesitekit-components-gm2.js',
+					'src' => $base_url . (
+						Feature_Flags::enabled( 'gm3Components' )
+							? 'js/googlesitekit-components-gm3.js'
+							: 'js/googlesitekit-components-gm2.js'
+						),
 				)
 			),
 			new Script(
