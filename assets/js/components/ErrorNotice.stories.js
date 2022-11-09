@@ -20,8 +20,8 @@
  * Internal dependencies
  */
 import { provideModules } from '../../../tests/js/utils';
-import WithRegistrySetup from '../../../tests/js/WithRegistrySetup';
 import { MODULES_ANALYTICS } from '../modules/analytics/datastore/constants';
+import WithRegistrySetup from '../../../tests/js/WithRegistrySetup';
 import ErrorNotice from './ErrorNotice';
 
 const notFoundError = {
