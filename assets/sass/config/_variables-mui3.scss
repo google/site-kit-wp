@@ -208,3 +208,26 @@ $br-lg: 100px;
 $ls-xs: 0.2px;
 $ls-s: 0.25px;
 $ls-m: 0.5px;
+
+/*
+ * @material/web - web component tweaks. PoC only.
+ *
+ * See https://lit.dev/docs/v1/components/styles/#theming
+ */
+
+html {
+	// Variable names taken from inspecting the rendered components in devtools.
+	// Looks like we should be able to glean them from the SASS though.
+	// E.g.
+	// - Globals: https://github.com/material-components/material-web/blob/d3fa2c2ba4e2319bd2d0bfd8b18729bcb0bb4707/tokens/latest/_md-sys-color.scss
+	// - Component: https://github.com/material-components/material-web/blob/9152fed0b934ff1aef999b61c8577113fe5ac527/checkbox/lib/_checkbox-theme.scss
+
+	// Global styles
+	--md-sys-color-primary: #{$c-content-primary};
+	--md-sys-color-on-surface: #{$c-surfaces-on-surface};
+
+	// Component styles
+	// --md-checkbox-selected-container-color: #{$c-site-kit-sk-1000};
+	// --md-checkbox-unselected-hover-state-layer-color:
+	// --md-checkbox-unselected-focus-state-layer-color:
+}
