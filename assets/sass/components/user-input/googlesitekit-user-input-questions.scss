@@ -118,10 +118,5 @@
 
 	.googlesitekit-user-input__question--progress {
 		margin: 0 auto;
-		max-width: calc(100% - #{$grid-gap-phone * 2});
-
-		@media (min-width: $bp-desktop) {
-			max-width: calc(100% - #{$grid-gap-desktop * 2});
-		}
 	}
 }

@@ -19,8 +19,8 @@
 .googlesitekit-plugin {
 
 	.googlesitekit-user-input__header {
-		padding-bottom: 50px;
-		padding-top: 50px;
+		padding-bottom: 30px;
+		padding-top: 30px;
 
 		.mdc-layout-grid__inner {
 			align-items: center;
@@ -29,14 +29,15 @@
 
 	.googlesitekit-user-input__heading {
 		font-family: $f-secondary;
-		font-size: $fs-headline-md;
+		font-size: $fs-headline-xsm;
+		font-weight: $fw-normal;
 		line-height: $lh-headline-md;
 	}
 
 	.googlesitekit-user-input__subtitle {
-		color: $c-secondary;
-		font-size: $fs-title-md;
-		line-height: $lh-title-md;
+		color: $c-surfaces-on-surface-variant;
+		font-size: $fs-title-sm;
+		line-height: $lh-title-sm;
 	}
 
 	.googlesitekit-user-input__content {

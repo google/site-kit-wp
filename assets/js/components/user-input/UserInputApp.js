@@ -77,7 +77,7 @@ export default function UserInputApp() {
 											smSize={ 4 }
 										>
 											<PageHeader
-												className="googlesitekit-heading-2 googlesitekit-user-input__heading"
+												className="googlesitekit-heading-3 googlesitekit-user-input__heading"
 												title={ __(
 													'Customize Site Kit to match your goals',
 													'google-site-kit'
