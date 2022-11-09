@@ -19,14 +19,46 @@
 /**
  * Internal dependencies
  */
-
+import { provideModules } from '../../../tests/js/utils';
+import WithRegistrySetup from '../../../tests/js/WithRegistrySetup';
+import { MODULES_ANALYTICS } from '../modules/analytics/datastore/constants';
 import ErrorNotice from './ErrorNotice';
 
-const Template = ( args ) => <ErrorNotice { ...args } />;
+const notFoundError = {
+	code: 404,
+	message: 'Not found',
+	data: {
+		status: 404,
+	},
+};
+
+const Template = ( { setupRegistry = () => {}, ...args } ) => (
+	<WithRegistrySetup func={ setupRegistry }>
+		<ErrorNotice { ...args } />
+	</WithRegistrySetup>
+);
 
 export const Default = Template.bind( {} );
 Default.args = {
 	error: new Error( 'This is error text' ),
+};
+
+export const WithRetryLink = Template.bind( {} );
+WithRetryLink.args = {
+	error: notFoundError,
+	storeName: MODULES_ANALYTICS,
+	setupRegistry: ( registry ) => {
+		provideModules( registry, [
+			{
+				active: true,
+				connected: true,
+				slug: 'analytics',
+			},
+		] );
+		registry
+			.dispatch( MODULES_ANALYTICS )
+			.receiveError( notFoundError, 'getReport', [] );
+	},
 };
 
 export default {
