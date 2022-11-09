@@ -19,7 +19,6 @@
 /**
  * Internal dependencies
  */
-
 import ErrorText from './ErrorText';
 import Link from './Link';
 
@@ -39,9 +38,7 @@ ReconnectURL.args = {
 export const WithChildren = Template.bind( {} );
 WithChildren.args = {
 	message: 'This is error text.',
-	children: (
-		<Link onClick={ () => global.console.log( 'Clicked' ) }>Link</Link>
-	),
+	children: <Link>Link</Link>,
 };
 
 export default {
