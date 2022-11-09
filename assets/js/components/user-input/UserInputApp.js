@@ -34,6 +34,7 @@ import Header from '../Header';
 import HelpMenu from '../help/HelpMenu';
 import PageHeader from '../PageHeader';
 import UserInputQuestionnaire from './UserInputQuestionnaire';
+import Layout from '../layout/Layout';
 const { useSelect } = Data;
 
 export default function UserInputApp() {
@@ -66,50 +67,52 @@ export default function UserInputApp() {
 						</Grid>
 					) }
 					{ hasFinishedGettingInputSettings && (
-						<Fragment>
-							<Grid className="googlesitekit-user-input__header">
-								<Row>
-									<Cell
-										lgSize={ 6 }
-										mdSize={ 8 }
-										smSize={ 4 }
-									>
-										<PageHeader
-											className="googlesitekit-heading-2 googlesitekit-user-input__heading"
-											title={ __(
-												'Customize Site Kit to match your goals',
-												'google-site-kit'
-											) }
-											fullWidth
-										/>
-									</Cell>
-									<Cell
-										lgSize={ 6 }
-										mdSize={ 8 }
-										smSize={ 4 }
-									>
-										<span className="googlesitekit-user-input__subtitle">
-											{ __(
-												'Get metrics and suggestions that are specific to your site by telling Site Kit more about your site',
-												'google-site-kit'
-											) }
-										</span>
-									</Cell>
-								</Row>
-							</Grid>
+						<Grid>
+							<Layout rounded>
+								<Grid className="googlesitekit-user-input__header">
+									<Row>
+										<Cell
+											lgSize={ 6 }
+											mdSize={ 8 }
+											smSize={ 4 }
+										>
+											<PageHeader
+												className="googlesitekit-heading-2 googlesitekit-user-input__heading"
+												title={ __(
+													'Customize Site Kit to match your goals',
+													'google-site-kit'
+												) }
+												fullWidth
+											/>
+										</Cell>
+										<Cell
+											lgSize={ 6 }
+											mdSize={ 8 }
+											smSize={ 4 }
+										>
+											<span className="googlesitekit-user-input__subtitle">
+												{ __(
+													'Get metrics and suggestions that are specific to your site by telling Site Kit more about your site',
+													'google-site-kit'
+												) }
+											</span>
+										</Cell>
+									</Row>
+								</Grid>
 
-							<Grid className="googlesitekit-user-input__content">
-								<Row>
-									<Cell
-										lgSize={ 12 }
-										mdSize={ 8 }
-										smSize={ 4 }
-									>
-										<UserInputQuestionnaire />
-									</Cell>
-								</Row>
-							</Grid>
-						</Fragment>
+								<Grid className="googlesitekit-user-input__content">
+									<Row>
+										<Cell
+											lgSize={ 12 }
+											mdSize={ 8 }
+											smSize={ 4 }
+										>
+											<UserInputQuestionnaire />
+										</Cell>
+									</Row>
+								</Grid>
+							</Layout>
+						</Grid>
 					) }
 				</div>
 			</div>
