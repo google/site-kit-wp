@@ -99,6 +99,7 @@
 			font-size: $fs-body-sm;
 			letter-spacing: $ls-s;
 			line-height: $lh-display-sm;
+			margin: 0 0 1em;
 
 			@media (min-width: $bp-desktop) {
 				font-size: $fs-body-md;
@@ -112,7 +113,7 @@
 			font-size: $fs-body-sm;
 			letter-spacing: $ls-s;
 			line-height: $lh-display-sm;
-			margin: 0 0 13px;
+			margin: 0 0 3px;
 		}
 
 		.googlesitekit-user-input__question-instructions--notice + p {
@@ -126,6 +127,7 @@
 		display: flex;
 		font-size: $fs-body-sm;
 		letter-spacing: $ls-xs;
+		margin-top: 4px;
 
 		img {
 			border-radius: 50%;
