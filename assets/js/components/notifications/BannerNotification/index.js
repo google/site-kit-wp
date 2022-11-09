@@ -104,10 +104,10 @@ function BannerNotification( {
 	title,
 	type,
 	WinImageSVG,
-	smWinImageSVGWidth = 75,
-	smWinImageSVGHeight = 75,
-	mdWinImageSVGWidth = 105,
-	mdWinImageSVGHeight = 105,
+	smallWinImageSVGWidth = 75,
+	smallWinImageSVGHeight = 75,
+	mediumWinImageSVGWidth = 105,
+	mediumWinImageSVGHeight = 105,
 	rounded = false,
 	footer,
 	secondaryPane,
@@ -329,8 +329,8 @@ function BannerNotification( {
 							className={ `googlesitekit-publisher-win__image-${ format } googlesitekit-non-mobile-display-none` }
 						>
 							<WinImageSVG
-								width={ smWinImageSVGWidth }
-								height={ smWinImageSVGHeight }
+								width={ smallWinImageSVGWidth }
+								height={ smallWinImageSVGHeight }
 							/>
 						</div>
 					) }
@@ -523,8 +523,8 @@ function BannerNotification( {
 								className={ `googlesitekit-publisher-win__image-${ format }` }
 							>
 								<WinImageSVG
-									width={ mdWinImageSVGWidth }
-									height={ mdWinImageSVGHeight }
+									width={ mediumWinImageSVGWidth }
+									height={ mediumWinImageSVGHeight }
 								/>
 							</div>
 						</Cell>
@@ -593,10 +593,10 @@ BannerNotification.propTypes = {
 	rounded: PropTypes.bool,
 	footer: PropTypes.node,
 	secondaryPane: PropTypes.node,
-	smWinImageSVGWidth: PropTypes.number,
-	smWinImageSVGHeight: PropTypes.number,
-	mdWinImageSVGWidth: PropTypes.number,
-	mdWinImageSVGHeight: PropTypes.number,
+	smallWinImageSVGWidth: PropTypes.number,
+	smallWinImageSVGHeight: PropTypes.number,
+	mediumWinImageSVGWidth: PropTypes.number,
+	mediumWinImageSVGHeight: PropTypes.number,
 };
 
 BannerNotification.defaultProps = {
