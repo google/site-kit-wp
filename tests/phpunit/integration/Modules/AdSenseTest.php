@@ -167,6 +167,8 @@ class AdSenseTest extends TestCase {
 
 		$this->assertStringContainsString( 'pagead2.googlesyndication.com/pagead/js/adsbygoogle.js', $output );
 
+		$this->assertStringContainsString( '&ca-host-pub-2644536267352236', $output );
+
 		if ( $enabled ) {
 			$this->assertMatchesRegularExpression( '/\sdata-block-on-consent\b/', $output );
 		} else {
