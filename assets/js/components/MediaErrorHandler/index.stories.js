@@ -31,11 +31,20 @@ const Template = () => (
 	</MediaErrorHandler>
 );
 
+const NoErrorsTemplate = () => (
+	<MediaErrorHandler>
+		<div>There are no errors here.</div>
+	</MediaErrorHandler>
+);
+
 export const Default = Template.bind( {} );
 Default.storyName = 'Default';
 Default.scenario = {
 	label: 'Global/MediaErrorHandler',
 };
+
+export const NoErrors = NoErrorsTemplate.bind( {} );
+NoErrors.storyName = 'No Errors';
 
 export default {
 	title: 'Components/MediaErrorHandler',
