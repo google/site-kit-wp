@@ -135,9 +135,13 @@ describe( 'TourTooltips', () => {
 	it( 'should switch to next step when next button is clicked', async () => {
 		const { getByRole } = renderTourTooltipsWithMockUI( registry );
 
-		fireEvent.click( getByRole( 'button', { name: /next/i } ) );
+		fireEvent.click(
+			document.querySelector( '[role=button][aria-label=Next]' )
+		);
 
-		getByRole( 'heading', { name: /title for step 2/i } );
+		expect( getByRole( 'heading', { hidden: true } ) ).toHaveTextContent(
+			'Title for step 2'
+		);
 	} );
 
 	it( 'should not render next step button if on last step', async () => {
