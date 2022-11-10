@@ -116,6 +116,14 @@
 			margin: 0 0 3px;
 		}
 
+		p.googlesitekit-user-input__question-instructions--notice {
+			margin: 0 0 1em;
+
+			@media (min-width: $bp-desktop) {
+				margin: 0 0 16px;
+			}
+		}
+
 		.googlesitekit-user-input__question-instructions--notice + p {
 			margin-top: auto;
 		}
