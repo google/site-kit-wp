@@ -65,4 +65,14 @@
 		line-height: $lh-body-sm;
 		margin: 0;
 	}
+
+	.googlesitekit-user-input__footer {
+		border-top: 1px solid $c-mercury;
+		margin: 42px 0 0;
+		padding: 17px;
+
+		@media (min-width: $bp-desktop) {
+			padding: 28px 24px;
+		}
+	}
 }

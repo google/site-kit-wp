@@ -20,7 +20,10 @@
 
 	.googlesitekit-user-input__question {
 		background-color: $c-white;
-		border-bottom: 1px solid $c-mercury;
+		border-radius: 0 0 24px 24px;
+	}
+
+	.googlesitekit-user-input__question-contents {
 		padding: 17px;
 		position: relative;
 
@@ -91,7 +94,7 @@
 			color: $c-surfaces-on-surface-variant;
 			font-size: $fs-body-sm;
 			letter-spacing: $ls-s;
-			line-height: $lh-display-sm;
+			line-height: $lh-body-sm;
 			margin: 0 0 3px;
 		}
 

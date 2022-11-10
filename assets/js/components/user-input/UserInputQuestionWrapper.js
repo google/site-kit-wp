@@ -36,6 +36,8 @@ import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { Row, Cell } from '../../material-components';
 import UserInputQuestionInfo from './UserInputQuestionInfo';
 import ErrorNotice from '../ErrorNotice';
+import CancelUserInputButton from './CancelUserInputButton';
+import Link from '../Link';
 const { useSelect } = Data;
 
 export default function UserInputQuestionWrapper( props ) {
@@ -87,35 +89,42 @@ export default function UserInputQuestionWrapper( props ) {
 				'googlesitekit-user-input__question--next': ! isActive,
 			} ) }
 		>
-			<Row>
-				<Cell lgSize={ 12 } mdSize={ 8 } smSize={ 4 }>
-					<Row>
-						{ title && (
-							<UserInputQuestionInfo
-								title={ title }
-								description={ description }
-								scope={ scope }
-								questionNumber={ questionNumber }
-								author={ author }
-							/>
-						) }
+			<div className="googlesitekit-user-input__question-contents">
+				<Row>
+					<Cell lgSize={ 12 } mdSize={ 8 } smSize={ 4 }>
+						<Row>
+							{ title && (
+								<UserInputQuestionInfo
+									title={ title }
+									description={ description }
+									scope={ scope }
+									questionNumber={ questionNumber }
+									author={ author }
+								/>
+							) }
 
-						{ children }
-					</Row>
+							{ children }
+						</Row>
 
-					{ error && <ErrorNotice error={ error } /> }
-
-					{ isActive && (
-						<div className="googlesitekit-user-input__buttons">
+						{ error && <ErrorNotice error={ error } /> }
+					</Cell>
+				</Row>
+			</div>
+			{ isActive && (
+				<div className="googlesitekit-user-input__footer">
+					<div className="googlesitekit-user-input__buttons">
+						<div className="googlesitekit-user-input__buttons-left">
+							<CancelUserInputButton />
+						</div>
+						<div className="googlesitekit-user-input__buttons-right">
 							{ back && (
-								<Button
+								<Link
 									className="googlesitekit-user-input__buttons--back"
 									onClick={ back }
-									text
 								>
 									{ backLabel ||
 										__( 'Back', 'google-site-kit' ) }
-								</Button>
+								</Link>
 							) }
 							{ next && (
 								<Button
@@ -130,9 +139,9 @@ export default function UserInputQuestionWrapper( props ) {
 								</Button>
 							) }
 						</div>
-					) }
-				</Cell>
-			</Row>
+					</div>
+				</div>
+			) }
 		</div>
 	);
 }

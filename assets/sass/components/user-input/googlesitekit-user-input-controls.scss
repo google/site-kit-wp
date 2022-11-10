@@ -18,27 +18,6 @@
 
 .googlesitekit-plugin {
 
-	.googlesitekit-user-input__buttons {
-		display: flex;
-		justify-content: flex-end;
-		margin: 42px 0 0;
-
-		button {
-			border-radius: $br-lg;
-			font-size: $fs-body-md;
-			height: auto;
-			letter-spacing: $ls-s;
-			line-height: $lh-body-md;
-			margin-left: 20px;
-			padding: 10px 33px;
-			text-transform: none;
-
-			&.mdc-button--raised {
-				border: none;
-			}
-		}
-	}
-
 	.googlesitekit-user-input__select-options {
 		margin: 0 0 20px;
 	}
@@ -172,6 +151,29 @@
 
 	.googlesitekit-user-input__text-options > div:last-child {
 		margin-right: 0;
+	}
+
+	.googlesitekit-user-input__buttons {
+		align-items: center;
+		display: flex;
+		justify-content: space-between;
+
+		button {
+			letter-spacing: $ls-s;
+
+			&:not(:first-child) {
+				margin-left: 20px;
+			}
+
+			&.mdc-button {
+				border: none;
+				padding: 10px 33px;
+			}
+
+			&.googlesitekit-cta-link {
+				color: $c-surfaces-on-background-variant;
+			}
+		}
 	}
 
 	p.googlesitekit-user-input__select-instruction {
