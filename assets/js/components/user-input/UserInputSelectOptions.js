@@ -26,7 +26,7 @@ import PropTypes from 'prop-types';
  */
 import { useCallback, useEffect, useState, useRef } from '@wordpress/element';
 import { ENTER } from '@wordpress/keycodes';
-import { __ } from '@wordpress/i18n';
+import { sprintf, _n, __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -200,6 +200,20 @@ export default function UserInputSelectOptions( {
 
 	return (
 		<Cell lgStart={ 6 } lgSize={ 6 } mdSize={ 8 } smSize={ 4 }>
+			<p className="googlesitekit-user-input__select-instruction">
+				<span>
+					{ sprintf(
+						/* translators: %s: number of answers allowed. */
+						_n(
+							'Select only %d answer',
+							'Select up to %d answers',
+							max,
+							'google-site-kit'
+						),
+						max
+					) }
+				</span>
+			</p>
 			<div
 				className="googlesitekit-user-input__select-options"
 				ref={ optionsRef }
@@ -257,33 +271,6 @@ export default function UserInputSelectOptions( {
 					</label>
 				</div>
 			</div>
-
-			<p className="googlesitekit-user-input__note">
-				{ max === 1 && (
-					<span>
-						{ __(
-							'Choose up to one (1) answer',
-							'google-site-kit'
-						) }
-					</span>
-				) }
-				{ max === 2 && (
-					<span>
-						{ __(
-							'Choose up to two (2) answers',
-							'google-site-kit'
-						) }
-					</span>
-				) }
-				{ max === 3 && (
-					<span>
-						{ __(
-							'Choose up to three (3) answers',
-							'google-site-kit'
-						) }
-					</span>
-				) }
-			</p>
 		</Cell>
 	);
 }

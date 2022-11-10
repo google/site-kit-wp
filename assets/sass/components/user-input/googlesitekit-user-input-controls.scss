@@ -45,7 +45,6 @@
 
 	.googlesitekit-user-input__select-option {
 		align-items: center;
-		border-bottom: 1px solid $c-mercury;
 		display: flex;
 		padding: 20px 0;
 
@@ -80,6 +79,10 @@
 		.mdc-checkbox--disabled + label {
 			opacity: 0.25;
 		}
+	}
+
+	.googlesitekit-user-input__select-option:not(:last-child) {
+		border-bottom: 1px solid $c-mercury;
 	}
 
 	.googlesitekit-user-input__text-options {
@@ -169,5 +172,20 @@
 
 	.googlesitekit-user-input__text-options > div:last-child {
 		margin-right: 0;
+	}
+
+	p.googlesitekit-user-input__select-instruction {
+		border-bottom: 1px solid $c-mercury;
+		color: $c-surfaces-on-surface;
+		font-size: $fs-body-sm;
+		line-height: $lh-body-sm;
+		margin: 0;
+		padding-bottom: 15px;
+
+		@media (min-width: $bp-tablet) {
+			color: $c-surfaces-on-surface-variant;
+			font-size: $fs-title-lg;
+			font-weight: $fw-medium;
+		}
 	}
 }
