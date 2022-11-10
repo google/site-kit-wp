@@ -25,8 +25,8 @@ const ErrorComponent = () => {
 	throw new Error();
 };
 
-const Template = () => (
-	<MediaErrorHandler>
+const Template = ( args ) => (
+	<MediaErrorHandler { ...args }>
 		<ErrorComponent />
 	</MediaErrorHandler>
 );
@@ -41,6 +41,12 @@ export const Default = Template.bind( {} );
 Default.storyName = 'Default';
 Default.scenario = {
 	label: 'Global/MediaErrorHandler',
+};
+
+export const WithCustomErrorMessage = Template.bind( {} );
+WithCustomErrorMessage.storyName = 'With Custom Error Message';
+WithCustomErrorMessage.args = {
+	errorMessage: 'This is a custom error message 🐞',
 };
 
 export const NoErrors = NoErrorsTemplate.bind( {} );
