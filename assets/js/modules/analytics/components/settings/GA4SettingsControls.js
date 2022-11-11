@@ -287,7 +287,6 @@ export default function GA4SettingsControls( {
 				hasAnalyticsAccess={ hasAnalyticsAccess }
 				hasAnalytics4Access={ hasAnalytics4Access }
 				ownerName={ formattedOwnerName }
-				moduleName={ module?.name }
 			/>
 		</div>
 	);
