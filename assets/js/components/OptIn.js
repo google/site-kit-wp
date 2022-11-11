@@ -106,9 +106,7 @@ export default function OptIn( {
 							a: (
 								<Link
 									key="link"
-									href={
-										'https://policies.google.com/privacy'
-									}
+									href="https://policies.google.com/privacy"
 									external
 								/>
 							),
