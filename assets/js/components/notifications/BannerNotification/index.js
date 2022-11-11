@@ -104,6 +104,10 @@ function BannerNotification( {
 	title,
 	type,
 	WinImageSVG,
+	smallWinImageSVGWidth = 75,
+	smallWinImageSVGHeight = 75,
+	mediumWinImageSVGWidth = 105,
+	mediumWinImageSVGHeight = 105,
 	rounded = false,
 	footer,
 	secondaryPane,
@@ -313,11 +317,24 @@ function BannerNotification( {
 	const inlineMarkup = (
 		<Fragment>
 			{ title && (
-				<h3 className="googlesitekit-heading-2 googlesitekit-publisher-win__title">
-					{ title }
+				<div className="googlesitekit-publisher-win__title-image-wrapper">
+					<h3 className="googlesitekit-heading-2 googlesitekit-publisher-win__title">
+						{ title }
 
-					{ badgeLabel && <Badge label={ badgeLabel } /> }
-				</h3>
+						{ badgeLabel && <Badge label={ badgeLabel } /> }
+					</h3>
+
+					{ WinImageSVG && (
+						<div
+							className={ `googlesitekit-publisher-win__image-${ format } googlesitekit-non-mobile-display-none` }
+						>
+							<WinImageSVG
+								width={ smallWinImageSVGWidth }
+								height={ smallWinImageSVGHeight }
+							/>
+						</div>
+					) }
+				</div>
 			) }
 			{ anchorLink && anchorLinkLabel && (
 				<p className="googlesitekit-publisher-win__link">
@@ -500,11 +517,15 @@ function BannerNotification( {
 							alignBottom={
 								format === 'larger' && noBottomPadding
 							}
+							className="googlesitekit-display-none googlesitekit-non-mobile-display-block"
 						>
 							<div
 								className={ `googlesitekit-publisher-win__image-${ format }` }
 							>
-								<WinImageSVG />
+								<WinImageSVG
+									width={ mediumWinImageSVGWidth }
+									height={ mediumWinImageSVGHeight }
+								/>
 							</div>
 						</Cell>
 					) }
@@ -572,6 +593,10 @@ BannerNotification.propTypes = {
 	rounded: PropTypes.bool,
 	footer: PropTypes.node,
 	secondaryPane: PropTypes.node,
+	smallWinImageSVGWidth: PropTypes.number,
+	smallWinImageSVGHeight: PropTypes.number,
+	mediumWinImageSVGWidth: PropTypes.number,
+	mediumWinImageSVGHeight: PropTypes.number,
 };
 
 BannerNotification.defaultProps = {

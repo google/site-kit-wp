@@ -53,7 +53,7 @@ final class OAuth_Client extends OAuth_Client_Base {
 	/**
 	 * Activity_Metrics instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.87.0
 	 * @var Activity_Metrics
 	 */
 	private $activity_metrics;
@@ -61,7 +61,7 @@ final class OAuth_Client extends OAuth_Client_Base {
 	/**
 	 * Active_Consumers instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.87.0
 	 * @var Active_Consumers
 	 */
 	private $active_consumers;
@@ -651,7 +651,7 @@ final class OAuth_Client extends OAuth_Client_Base {
 	/**
 	 * Adds a user to the active consumers list.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.87.0
 	 *
 	 * @param WP_User $user User object.
 	 */

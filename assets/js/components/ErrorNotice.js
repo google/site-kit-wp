@@ -24,14 +24,14 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { Fragment, useCallback } from '@wordpress/element';
+import { useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { Button } from 'googlesitekit-components';
+import Link from './Link';
 import { isPermissionScopeError, isErrorRetryable } from '../util/errors';
 import ErrorText from './ErrorText';
 
@@ -72,17 +72,16 @@ export default function ErrorNotice( {
 	const shouldDisplayRetry = isErrorRetryable( error, selectorData );
 
 	return (
-		<Fragment>
-			<ErrorText
-				message={ message }
-				reconnectURL={ error.data?.reconnectURL }
-			/>
-			{ shouldDisplayRetry && (
-				<Button onClick={ handleRetry }>
+		<ErrorText
+			message={ message }
+			reconnectURL={ error.data?.reconnectURL }
+		>
+			{ shouldDisplayRetry ? (
+				<Link onClick={ handleRetry }>
 					{ __( 'Retry', 'google-site-kit' ) }
-				</Button>
-			) }
-		</Fragment>
+				</Link>
+			) : null }
+		</ErrorText>
 	);
 }
 

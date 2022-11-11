@@ -18,7 +18,7 @@ use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 /**
  * Class for connecting to Google APIs via OAuth2.
  *
- * @since n.e.x.t
+ * @since 1.87.0
  * @access private
  * @ignore
  */
@@ -27,7 +27,7 @@ class OAuth2 extends Google_Service_OAuth2 {
 	/**
 	 * Overrides generateCredentialsRequest with additional parameters.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.87.0
 	 *
 	 * @param array $extra_params Optional. Array of extra parameters to fetch with.
 	 * @return RequestInterface Token credentials request.

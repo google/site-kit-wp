@@ -19,6 +19,11 @@
 .googlesitekit-error-text {
 	color: $c-error;
 	font-weight: 500;
+	margin: 1rem 0;
+
+	p {
+		display: inline;
+	}
 }
 
 .googlesitekit-error-retry-text {

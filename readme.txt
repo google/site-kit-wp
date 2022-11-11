@@ -1,10 +1,10 @@
 === Site Kit by Google - Analytics, Search Console, AdSense, Speed ===
 
 Contributors:      google
-Requires at least: 4.7
+Requires at least: 5.2
 Tested up to:      6.1
 Requires PHP:      5.6
-Stable tag:        1.86.0
+Stable tag:        1.87.0
 License:           Apache License 2.0
 License URI:       https://www.apache.org/licenses/LICENSE-2.0
 Tags:              google, search-console, analytics, adsense, pagespeed-insights, optimize, tag-manager, site-kit
@@ -74,7 +74,7 @@ The Site Kit plugin is free and open source, and will remain so. Individual Goog
 
 In order to successfully install and use Site Kit, your site must meet the following requirements:
 
-* WordPress version 4.7+
+* WordPress version 5.2+
 * PHP version 5.6+
 * Modern browser – Internet Explorer is not supported
 * Is publicly accessible – it isn’t in maintenance mode, accessible only via password, or otherwise blocked
@@ -107,6 +107,35 @@ By default, Site Kit does anonymize IP addresses upon activation of the Google A
 Please create a new topic on our [WordPress.org support forum](https://wordpress.org/support/plugin/google-site-kit/). Be sure to follow the [support forum guidelines](https://wordpress.org/support/guidelines/) when posting.
 
 == Changelog ==
+
+= 1.87.0 =
+
+**This version marks the 100th release of Site Kit 🎉**
+
+**Enhanced**
+
+* Implement custom Analytics events for the GA4 Activation Banner. See [#6042](https://github.com/google/site-kit-wp/issues/6042).
+* Update the `ReportError` component to add the module slug to the insufficient error codes. See [#5987](https://github.com/google/site-kit-wp/issues/5987).
+* Ensure Banner Notifications stay visible and display a spinner when navigating to links via the CTA. See [#5974](https://github.com/google/site-kit-wp/issues/5974).
+* Enhance the BannerNotification component to better support a description which is a React element. See [#5972](https://github.com/google/site-kit-wp/issues/5972).
+* Add a `googlesitekit.components` global and entrypoint with Material 2 components. See [#5958](https://github.com/google/site-kit-wp/issues/5958).
+* Send active consumers data alongside the request to refresh an access token. See [#5569](https://github.com/google/site-kit-wp/issues/5569).
+* Update shared user metadata when accessing shared dashboard. See [#5568](https://github.com/google/site-kit-wp/issues/5568).
+* Dismiss main dashboard sharing tour if sharing settings tour is shown first. See [#5520](https://github.com/google/site-kit-wp/issues/5520).
+* Add multi-module support to module recovery API endpoint. See [#5298](https://github.com/google/site-kit-wp/issues/5298).
+* Update PageSpeed Insights widget to avoid layout shifts between loading and loaded states. See [#4878](https://github.com/google/site-kit-wp/issues/4878).
+
+**Changed**
+
+* Update and simplify GitHub workflows to use v3 version of `setup-node` action. See [#5786](https://github.com/google/site-kit-wp/issues/5786).
+
+**Fixed**
+
+* Fix bug that could cause a notification view event to be sent even when the notification doesn't appear. See [#6023](https://github.com/google/site-kit-wp/issues/6023).
+* Fix bug that caused AdSense graphics in CTA banner to be loaded when not needed. See [#6006](https://github.com/google/site-kit-wp/issues/6006).
+* Update the error boundary component styling to provide appropriate spacing between the main CTA button and the link to "Report this problem". See [#6005](https://github.com/google/site-kit-wp/issues/6005).
+* Fix module settings open/close issue when any key is pressed. See [#5915](https://github.com/google/site-kit-wp/issues/5915).
+* Fix bug that caused errors to appear in Analytics module when Tag Manager module is not available. See [#5074](https://github.com/google/site-kit-wp/issues/5074).
 
 = 1.86.0 =
 
