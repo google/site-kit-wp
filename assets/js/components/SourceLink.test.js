@@ -31,7 +31,7 @@ describe( 'SourceLink', () => {
 		const { container } = render(
 			<SourceLink
 				name="Analytics"
-				href={ 'https://analytics.google.com/test' }
+				href="https://analytics.google.com/test"
 				external
 			/>,
 			{
@@ -47,7 +47,7 @@ describe( 'SourceLink', () => {
 		const { container } = render(
 			<SourceLink
 				name="Analytics"
-				href={ 'https://analytics.google.com/test' }
+				href="https://analytics.google.com/test"
 				external
 			/>,
 			{

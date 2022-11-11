@@ -85,15 +85,6 @@
 			margin-left: $grid-gap-phone / 2;
 		}
 
-		& + .googlesitekit-cta-link,
-		& + .googlesitekit-publisher-win__actions {
-			margin-top: $grid-gap-phone;
-
-			@media (min-width: $bp-desktop) {
-				margin-top: $grid-gap-desktop;
-			}
-		}
-
 		.googlesitekit-publisher-win__image-smaller {
 			flex-basis: 75px;
 		}
@@ -215,6 +206,15 @@
 		display: flex;
 		flex-wrap: nowrap;
 		gap: $grid-gap-phone;
+
+		+ .googlesitekit-cta-link,
+		+ .googlesitekit-publisher-win__actions {
+			margin-top: $grid-gap-phone;
+
+			@media (min-width: $bp-desktop) {
+				margin-top: $grid-gap-desktop;
+			}
+		}
 	}
 
 	&.googlesitekit-publisher-win--no-bottom-padding {

@@ -25,11 +25,13 @@ import { PropTypes } from 'prop-types';
  * WordPress dependencies
  */
 import { lazy, Suspense } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import PreviewBlock from '../../../../../components/PreviewBlock';
+import MediaErrorHandler from '../../../../../components/MediaErrorHandler';
 const LazyContentSVG0 = lazy( () =>
 	import( '../../../../../../svg/graphics/adsense-connect-0.svg' )
 );
@@ -41,14 +43,23 @@ const LazyContentSVG2 = lazy( () =>
 );
 
 function LazyContentSVG( { stage } ) {
-	switch ( stage ) {
-		case 0:
-			return <LazyContentSVG0 />;
-		case 1:
-			return <LazyContentSVG1 />;
-		case 2:
-			return <LazyContentSVG2 />;
+	const graphics = {
+		0: <LazyContentSVG0 />,
+		1: <LazyContentSVG1 />,
+		2: <LazyContentSVG2 />,
+	};
+
+	if ( ! graphics[ stage ] ) {
+		return null;
 	}
+
+	return (
+		<MediaErrorHandler
+			errorMessage={ __( 'Failed to load graphic.', 'google-site-kit' ) }
+		>
+			{ graphics[ stage ] }
+		</MediaErrorHandler>
+	);
 }
 
 export default function ContentSVG( { stage } ) {
