@@ -73,13 +73,14 @@ WithGA4andUASnippet.scenario = {
 	delay: 250,
 };
 
-export const WithoutModuleAccess = Template.bind( null );
-WithoutModuleAccess.storyName = 'Settings w/o module access';
-WithoutModuleAccess.args = {
+export const WithoutUAAndGA4AccessActivateSwitch = Template.bind( null );
+WithoutUAAndGA4AccessActivateSwitch.storyName =
+	'Settings w/o UA and GA4 access with Activate Switch';
+WithoutUAAndGA4AccessActivateSwitch.args = {
 	hasAnalyticsAccess: false,
 	hasAnalytics4Access: false,
 };
-WithoutModuleAccess.decorators = [
+WithoutUAAndGA4AccessActivateSwitch.decorators = [
 	( Story ) => {
 		const setupRegistry = ( registry ) => {
 			registry.dispatch( MODULES_ANALYTICS_4 ).setPropertyID( null );
@@ -92,6 +93,14 @@ WithoutModuleAccess.decorators = [
 		);
 	},
 ];
+
+export const WithoutUAAndGA4AccessSnippetSwitch = Template.bind( null );
+WithoutUAAndGA4AccessSnippetSwitch.storyName =
+	'Settings w/o UA and GA4 access with Snippet Switch';
+WithoutUAAndGA4AccessSnippetSwitch.args = {
+	hasAnalyticsAccess: false,
+	hasAnalytics4Access: false,
+};
 
 export const WithoutAnalyticsAccess = Template.bind( null );
 WithoutAnalyticsAccess.storyName = 'Settings w/o Analytics access';
