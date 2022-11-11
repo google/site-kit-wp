@@ -36,17 +36,7 @@ import {
 	setSearchConsoleProperty,
 } from '../utils';
 
-const wpConditionalDescribe = () => {
-	// Only run for non WP 4.x versions
-	if ( process.env.WP_VERSION?.[ 0 ] !== '4' ) {
-		return describe;
-	}
-	return () => {
-		it( 'is skipped for WP 4.x', () => {} );
-	}; // no-op
-};
-
-wpConditionalDescribe()( 'User Input Settings', () => {
+describe( 'User Input Settings', () => {
 	async function fillInInputSettings() {
 		await step( 'select purpose', async () => {
 			await page.waitForSelector( '.googlesitekit-user-input__question' );
