@@ -36,7 +36,6 @@ import WarningIcon from '../../../../../../assets/svg/icons/warning-icon.svg';
 
 export default function GA4SettingsNotice( {
 	ownerName,
-	moduleName,
 	isGA4Connected,
 	hasAnalyticsAccess,
 	hasAnalytics4Access,
@@ -48,13 +47,12 @@ export default function GA4SettingsNotice( {
 				Icon={ WarningIcon }
 				notice={ createInterpolateElement(
 					sprintf(
-						/* translators: 1: module owner's name, 2: module name */
+						/* translators: %s: module owner's name */
 						__(
-							'%1$s configured %2$s and you don’t have access to its configured property. Contact them to share access or setup Google Analytics 4.',
+							'%s configured Analytics and you don’t have access to its configured property. Contact them to share access or setup Google Analytics 4.',
 							'google-site-kit'
 						),
-						ownerName,
-						moduleName
+						ownerName
 					),
 					{
 						strong: <strong />,
@@ -71,13 +69,12 @@ export default function GA4SettingsNotice( {
 				Icon={ WarningIcon }
 				notice={ createInterpolateElement(
 					sprintf(
-						/* translators: 1: module owner's name, 2: module name */
+						/* translators: %s: module owner's name */
 						__(
-							'%1$s configured %2$s and you don’t have access to its configured property. Contact them to share access or change the configured Google Analytics 4 property.',
+							'%s configured Analytics and you don’t have access to its configured property. Contact them to share access or change the configured Google Analytics 4 property.',
 							'google-site-kit'
 						),
-						ownerName,
-						moduleName
+						ownerName
 					),
 					{
 						strong: <strong />,
@@ -94,13 +91,12 @@ export default function GA4SettingsNotice( {
 				Icon={ WarningIcon }
 				notice={ createInterpolateElement(
 					sprintf(
-						/* translators: 1: module owner's name, 2: module name */
+						/* translators: %s: module owner's name */
 						__(
-							'%1$s configured %2$s and you don’t have access to its configured property. Contact them to share access or change the configured property.',
+							'%s configured Analytics 4 and you don’t have access to its configured property. Contact them to share access or change the configured property.',
 							'google-site-kit'
 						),
-						ownerName,
-						moduleName
+						ownerName
 					),
 					{
 						strong: <strong />,
@@ -116,7 +112,6 @@ export default function GA4SettingsNotice( {
 // eslint-disable-next-line sitekit/acronym-case
 GA4SettingsNotice.propTypes = {
 	ownerName: PropTypes.string,
-	moduleName: PropTypes.string,
 	isGA4Connected: PropTypes.bool,
 	hasAnalyticsAccess: PropTypes.bool,
 	hasAnalytics4Access: PropTypes.bool,
