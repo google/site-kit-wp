@@ -45,9 +45,6 @@ Ready.args = {
 	setupRegistry: setupSearchConsoleMockReports,
 };
 
-export const DataUnavailable = Template.bind( {} );
-DataUnavailable.storyName = 'Data Unavailable';
-
 export const GatheringData = Template.bind( {} );
 GatheringData.storyName = 'Gathering Data';
 GatheringData.args = {
