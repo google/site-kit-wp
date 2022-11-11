@@ -38,37 +38,50 @@ import {
 
 describe( 'User Input Settings', () => {
 	async function fillInInputSettings() {
+		await page.waitForSelector(
+			'.googlesitekit-user-input__question--active'
+		);
+
 		await step( 'select purpose', async () => {
-			await page.waitForSelector( '.googlesitekit-user-input__question' );
 			await expect( page ).toClick( '#purpose-publish_blog' );
 		} );
 
+		await expect( page ).toClick(
+			'.googlesitekit-user-input__question--active .googlesitekit-user-input__buttons--next'
+		);
+
+		await pageWait();
+
 		await step( 'select post frequency', async () => {
-			await expect( page ).toClick(
-				'.googlesitekit-user-input__buttons--next'
-			);
 			await expect( page ).toClick( '#postFrequency-monthly' );
 		} );
 
+		await expect( page ).toClick(
+			'.googlesitekit-user-input__question--active .googlesitekit-user-input__buttons--next'
+		);
+
+		await pageWait();
+
 		await step( 'select goals', async () => {
-			await expect( page ).toClick(
-				'.googlesitekit-user-input__buttons--next'
-			);
 			await expect( page ).toClick( '#goals-retaining_visitors' );
 			await expect( page ).toClick( '#goals-improving_performance' );
 			await expect( page ).toClick( '#goals-help_better_rank' );
 		} );
 
-		await step(
-			'go to preview page',
-			expect( page ).toClick( '.googlesitekit-user-input__buttons--next' )
-		);
+		await step( 'go to preview page', async () => {
+			await expect( page ).toClick(
+				'.googlesitekit-user-input__question--active .googlesitekit-user-input__buttons--next'
+			);
+		} );
+
+		await pageWait();
 
 		await step(
 			'wait for settings submission',
 			Promise.all( [
 				expect( page ).toClick(
-					'.googlesitekit-user-input__buttons--next'
+					'.googlesitekit-user-input__preview button',
+					{ text: /submit/i }
 				),
 				page.waitForNavigation(),
 			] )
