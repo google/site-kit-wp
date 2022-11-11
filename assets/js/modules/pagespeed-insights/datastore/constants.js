@@ -24,6 +24,7 @@ export const STRATEGY_DESKTOP = 'desktop';
 // Report data sources.
 export const DATA_SRC_LAB = 'data_lab';
 export const DATA_SRC_FIELD = 'data_field';
+export const DATA_SRC_RECOMMENDATIONS = 'data_recommendations';
 
 // Dashboard widgets using the UI store.
 export const UI_STRATEGY = 'dashboardPageSpeedWidgetStrategy';

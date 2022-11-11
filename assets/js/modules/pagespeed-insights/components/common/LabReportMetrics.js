@@ -32,6 +32,7 @@ import { __, _x } from '@wordpress/i18n';
 import ReportMetric from './ReportMetric';
 import MetricsLearnMoreLink from './MetricsLearnMoreLink';
 import { getScoreCategory } from '../../util';
+import { CATEGORY_AVERAGE } from '../../util/constants';
 import ErrorText from '../../../../components/ErrorText';
 
 export default function LabReportMetrics( { data, error } ) {
@@ -50,14 +51,6 @@ export default function LabReportMetrics( { data, error } ) {
 				</div>
 			</div>
 		);
-	}
-
-	if (
-		! largestContentfulPaint ||
-		! cumulativeLayoutShift ||
-		! totalBlockingTime
-	) {
-		return null;
 	}
 
 	return (
@@ -89,9 +82,11 @@ export default function LabReportMetrics( { data, error } ) {
 							'Time it takes for the page to load',
 							'google-site-kit'
 						) }
-						displayValue={ largestContentfulPaint.displayValue }
+						displayValue={
+							largestContentfulPaint?.displayValue || '0'
+						}
 						category={ getScoreCategory(
-							largestContentfulPaint.score
+							largestContentfulPaint?.score || 0
 						) }
 					/>
 					<ReportMetric
@@ -104,9 +99,11 @@ export default function LabReportMetrics( { data, error } ) {
 							'How stable the elements on the page are',
 							'google-site-kit'
 						) }
-						displayValue={ cumulativeLayoutShift.displayValue }
+						displayValue={
+							cumulativeLayoutShift?.displayValue || '0'
+						}
 						category={ getScoreCategory(
-							cumulativeLayoutShift.score
+							cumulativeLayoutShift?.score || 0
 						) }
 					/>
 					<ReportMetric
@@ -115,9 +112,22 @@ export default function LabReportMetrics( { data, error } ) {
 							'How long people had to wait after the page loaded before they could click something',
 							'google-site-kit'
 						) }
-						displayValue={ totalBlockingTime.displayValue }
-						category={ getScoreCategory( totalBlockingTime.score ) }
+						displayValue={ totalBlockingTime?.displayValue || '0' }
+						category={ getScoreCategory(
+							totalBlockingTime?.score || 0
+						) }
 						isLast
+					/>
+					<ReportMetric
+						title={ __( 'Filler Content', 'google-site-kit' ) }
+						description={ __(
+							'This is a piece of filler content which is hidden in order to provide a consistent height for the widget.',
+							'google-site-kit'
+						) }
+						displayValue="0"
+						category={ CATEGORY_AVERAGE }
+						experimental
+						isHidden
 					/>
 				</tbody>
 			</table>

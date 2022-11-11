@@ -32,6 +32,7 @@
     "jsdoc/require-returns": "error",
     "jsdoc/no-undefined-types": "error",
     "jsdoc/valid-types": "error",
+    "react/jsx-curly-brace-presence": "error",
     "complexity": [
       "error",
       20
@@ -87,8 +88,7 @@
       "googlesitekit-widgets",
       "googlesitekit-components",
       "@wordpress/i18n__non-shim",
-      "@wordpress/api-fetch__non-shim",
-      "@wordpress/element__non-shim"
+      "@wordpress/api-fetch__non-shim"
     ],
     "import/resolver": {
       "alias": {

@@ -1,5 +1,5 @@
 /**
- * Site Kit Element.
+ * ErrorHandler Component Stories.
  *
  * Site Kit by Google, Copyright 2022 Google LLC
  *
@@ -16,7 +16,30 @@
  * limitations under the License.
  */
 
-import * as Element from '@wordpress/element__non-shim';
+/**
+ * Internal dependencies
+ */
+import ErrorHandler from './';
 
-global.googlesitekit = global.googlesitekit || {};
-global.googlesitekit.element = global.googlesitekit.element || Element;
+const ErrorComponent = () => {
+	throw new Error(
+		'Something bad happened. 💣 (On purpose; ErrorComponent was used to simulate an error.)'
+	);
+};
+
+const Template = () => (
+	<ErrorHandler>
+		<ErrorComponent />
+	</ErrorHandler>
+);
+
+export const Default = Template.bind( {} );
+Default.storyName = 'Default';
+Default.scenario = {
+	label: 'Global/ErrorHandler',
+};
+
+export default {
+	title: 'Components/ErrorHandler',
+	component: ErrorHandler,
+};

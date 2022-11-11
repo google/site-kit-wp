@@ -97,7 +97,7 @@ class Active_Consumers extends User_Setting {
 	/**
 	 * Adds a consumer to the active consumers list.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.87.0
 	 *
 	 * @param int      $user_id User ID.
 	 * @param string[] $roles User roles.

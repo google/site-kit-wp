@@ -25,19 +25,18 @@ import { storiesOf } from '@storybook/react';
  * Internal dependencies
  */
 import DashboardPageSpeedWidget from '../assets/js/modules/pagespeed-insights/components/dashboard/DashboardPageSpeedWidget';
-import { CORE_SITE } from '../assets/js/googlesitekit/datastore/site/constants';
-import {
-	CORE_USER,
-	PERMISSION_MANAGE_OPTIONS,
-} from '../assets/js/googlesitekit/datastore/user/constants';
-import { CORE_MODULES } from '../assets/js/googlesitekit/modules/datastore/constants';
 import * as fixtures from '../assets/js/modules/pagespeed-insights/datastore/__fixtures__';
 import {
 	MODULES_PAGESPEED_INSIGHTS,
 	STRATEGY_MOBILE,
 	STRATEGY_DESKTOP,
 } from '../assets/js/modules/pagespeed-insights/datastore/constants';
-import { WithTestRegistry, freezeFetch } from '../tests/js/utils';
+import {
+	WithTestRegistry,
+	freezeFetch,
+	provideSiteInfo,
+	provideModules,
+} from '../tests/js/utils';
 import { getWidgetComponentProps } from '../assets/js/googlesitekit/widgets/util';
 
 const widgetComponentProps = getWidgetComponentProps( 'dashboardPageSpeed' );
@@ -45,7 +44,8 @@ const widgetComponentProps = getWidgetComponentProps( 'dashboardPageSpeed' );
 storiesOf( 'PageSpeed Insights Module/Components', module )
 	.add( 'Dashboard widget', () => {
 		const url = fixtures.pagespeedMobile.loadingExperience.id;
-		const setupRegistry = ( { dispatch } ) => {
+		const setupRegistry = ( registry ) => {
+			const { dispatch } = registry;
 			dispatch( MODULES_PAGESPEED_INSIGHTS ).receiveGetReport(
 				fixtures.pagespeedMobile,
 				{
@@ -70,11 +70,10 @@ storiesOf( 'PageSpeed Insights Module/Components', module )
 				[ url, STRATEGY_DESKTOP ]
 			);
 
-			dispatch( CORE_SITE ).receiveSiteInfo( {
+			provideSiteInfo( registry, {
 				referenceSiteURL: url,
-				currentEntityURL: null,
 			} );
-			dispatch( CORE_MODULES ).receiveGetModules( [
+			provideModules( registry, [
 				{
 					slug: 'pagespeed-insights',
 					active: true,
@@ -94,7 +93,8 @@ storiesOf( 'PageSpeed Insights Module/Components', module )
 			/^\/google-site-kit\/v1\/modules\/pagespeed-insights\/data\/pagespeed/
 		);
 		const url = fixtures.pagespeedMobile.loadingExperience.id;
-		const setupRegistry = ( { dispatch } ) => {
+		const setupRegistry = ( registry ) => {
+			const { dispatch } = registry;
 			// Component will be loading as long as both reports are not present.
 			// Omit receiving mobile here to trigger the request only once.
 			dispatch( MODULES_PAGESPEED_INSIGHTS ).receiveGetReport(
@@ -104,11 +104,55 @@ storiesOf( 'PageSpeed Insights Module/Components', module )
 					strategy: STRATEGY_DESKTOP,
 				}
 			);
-			dispatch( CORE_SITE ).receiveSiteInfo( {
+			provideSiteInfo( registry, {
 				referenceSiteURL: url,
-				currentEntityURL: null,
 			} );
-			dispatch( CORE_MODULES ).receiveGetModules( [
+			provideModules( registry, [
+				{
+					slug: 'pagespeed-insights',
+					active: true,
+					connected: true,
+				},
+			] );
+		};
+		return (
+			<WithTestRegistry callback={ setupRegistry }>
+				<DashboardPageSpeedWidget { ...widgetComponentProps } />
+			</WithTestRegistry>
+		);
+	} )
+	.add( 'Dashboard widget (No Recommendations)', () => {
+		const url = fixtures.pagespeedMobile.loadingExperience.id;
+		const setupRegistry = ( registry ) => {
+			const { dispatch } = registry;
+			dispatch( MODULES_PAGESPEED_INSIGHTS ).receiveGetReport(
+				fixtures.pagespeedMobileNoStackPacks,
+				{
+					url,
+					strategy: STRATEGY_MOBILE,
+				}
+			);
+			dispatch( MODULES_PAGESPEED_INSIGHTS ).finishResolution(
+				'getReport',
+				[ url, STRATEGY_MOBILE ]
+			);
+
+			dispatch( MODULES_PAGESPEED_INSIGHTS ).receiveGetReport(
+				fixtures.pagespeedDesktopNoStackPacks,
+				{
+					url,
+					strategy: STRATEGY_DESKTOP,
+				}
+			);
+			dispatch( MODULES_PAGESPEED_INSIGHTS ).finishResolution(
+				'getReport',
+				[ url, STRATEGY_DESKTOP ]
+			);
+
+			provideSiteInfo( registry, {
+				referenceSiteURL: url,
+			} );
+			provideModules( registry, [
 				{
 					slug: 'pagespeed-insights',
 					active: true,
@@ -124,7 +168,8 @@ storiesOf( 'PageSpeed Insights Module/Components', module )
 	} )
 	.add( 'Dashboard widget (Field Data Unavailable)', () => {
 		const url = fixtures.pagespeedMobile.loadingExperience.id;
-		const setupRegistry = ( { dispatch } ) => {
+		const setupRegistry = ( registry ) => {
+			const { dispatch } = registry;
 			dispatch( MODULES_PAGESPEED_INSIGHTS ).receiveGetReport(
 				fixtures.pagespeedMobileNoFieldData,
 				{
@@ -149,11 +194,10 @@ storiesOf( 'PageSpeed Insights Module/Components', module )
 				[ url, STRATEGY_DESKTOP ]
 			);
 
-			dispatch( CORE_SITE ).receiveSiteInfo( {
+			provideSiteInfo( registry, {
 				referenceSiteURL: url,
-				currentEntityURL: null,
 			} );
-			dispatch( CORE_MODULES ).receiveGetModules( [
+			provideModules( registry, [
 				{
 					slug: 'pagespeed-insights',
 					active: true,
@@ -169,7 +213,8 @@ storiesOf( 'PageSpeed Insights Module/Components', module )
 	} )
 	.add( 'Dashboard widget (Errors for Mobile and Desktop)', () => {
 		const url = fixtures.pagespeedMobile.loadingExperience.id;
-		const setupRegistry = ( { dispatch } ) => {
+		const setupRegistry = ( registry ) => {
+			const { dispatch } = registry;
 			const mobileError = {
 				code: 'fetching_mobile_data_failed',
 				message:
@@ -198,39 +243,14 @@ storiesOf( 'PageSpeed Insights Module/Components', module )
 				'getReport',
 				[ url, STRATEGY_DESKTOP ]
 			);
-			dispatch( CORE_SITE ).receiveSiteInfo( {
+			provideSiteInfo( registry, {
 				referenceSiteURL: url,
-				currentEntityURL: null,
 			} );
-			dispatch( CORE_MODULES ).receiveGetModules( [
+			provideModules( registry, [
 				{
 					slug: 'pagespeed-insights',
 					active: true,
 					connected: true,
-				},
-			] );
-		};
-		return (
-			<WithTestRegistry callback={ setupRegistry }>
-				<DashboardPageSpeedWidget { ...widgetComponentProps } />
-			</WithTestRegistry>
-		);
-	} )
-	.add( 'Dashboard widget (CTA)', () => {
-		const url = fixtures.pagespeedMobile.loadingExperience.id;
-		const setupRegistry = ( { dispatch } ) => {
-			dispatch( CORE_SITE ).receiveSiteInfo( {
-				referenceSiteURL: url,
-				currentEntityURL: null,
-			} );
-			dispatch( CORE_USER ).receiveCapabilities( {
-				[ PERMISSION_MANAGE_OPTIONS ]: true,
-			} );
-			dispatch( CORE_MODULES ).receiveGetModules( [
-				{
-					slug: 'pagespeed-insights',
-					active: false,
-					connected: false,
 				},
 			] );
 		};
