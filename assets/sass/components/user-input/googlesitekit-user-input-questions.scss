@@ -127,6 +127,18 @@
 		}
 	}
 
+	p.googlesitekit-user-input__question-notice {
+		color: $c-surfaces-on-surface-variant;
+		font-size: $fs-body-sm;
+		letter-spacing: $ls-s;
+		line-height: $lh-body-sm;
+		margin: 0 0 1em;
+
+		@media (min-width: $bp-desktop) {
+			margin: 0 0 16px;
+		}
+	}
+
 	.googlesitekit-user-input__question--progress {
 		margin: 0 auto;
 	}
