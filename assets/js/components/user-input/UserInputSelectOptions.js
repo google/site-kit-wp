@@ -199,7 +199,13 @@ export default function UserInputSelectOptions( {
 	} );
 
 	return (
-		<Cell lgStart={ 6 } lgSize={ 6 } mdSize={ 8 } smSize={ 4 }>
+		<Cell
+			className="googlesitekit-user-input__select-options-wrapper"
+			lgStart={ 6 }
+			lgSize={ 6 }
+			mdSize={ 8 }
+			smSize={ 4 }
+		>
 			<p className="googlesitekit-user-input__select-instruction">
 				<span>
 					{ sprintf(

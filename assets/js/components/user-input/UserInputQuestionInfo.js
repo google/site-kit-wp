@@ -48,55 +48,65 @@ export default function UserInputQuestionInfo( {
 	);
 
 	return (
-		<Cell
-			className="googlesitekit-user-input__question-instructions"
-			lgSize={ 5 }
-			mdSize={ 8 }
-			smSize={ 4 }
-		>
-			<p className="googlesitekit-user-input__question-number">
-				{ sprintf(
-					/* translators: %s: the number of the question */
-					__( '%s out of 5', 'google-site-kit' ),
-					questionNumber
-				) }
-			</p>
-
-			<h1>{ title }</h1>
-
-			{ description && (
-				<p className="googlesitekit-user-input__question-instructions--description">
-					{ description }
-				</p>
-			) }
-
-			<UserInputQuestionNotice />
-
-			{ scope === 'site' && hasMultipleUser && (
-				<p>
-					{ __(
-						'The goals you pick will apply to the entire WordPress site: any other admins with access to Site Kit can see them and edit them in Settings.',
-						'google-site-kit'
+		<Fragment>
+			<Cell
+				className="googlesitekit-user-input__question-instructions"
+				lgSize={ 5 }
+				mdSize={ 8 }
+				smSize={ 4 }
+			>
+				<p className="googlesitekit-user-input__question-number">
+					{ sprintf(
+						/* translators: %s: the number of the question */
+						__( '%s out of 5', 'google-site-kit' ),
+						questionNumber
 					) }
 				</p>
-			) }
 
-			{ author && author.photo && author.name && (
-				<Fragment>
+				<h1>{ title }</h1>
+
+				{ description && (
+					<p className="googlesitekit-user-input__question-instructions--description">
+						{ description }
+					</p>
+				) }
+
+				<UserInputQuestionNotice className="googlesitekit-non-desktop-display-none" />
+			</Cell>
+			<Cell
+				className="googlesitekit-user-input__question-info"
+				lgSize={ 5 }
+				mdSize={ 8 }
+				smSize={ 4 }
+				smOrder={ 3 }
+			>
+				<UserInputQuestionNotice className="googlesitekit-desktop-display-none " />
+				{ scope === 'site' && hasMultipleUser && (
 					<p>
 						{ __(
-							'This question has last been answered by:',
+							'The goals you pick will apply to the entire WordPress site: any other admins with access to Site Kit can see them and edit them in Settings.',
 							'google-site-kit'
 						) }
 					</p>
+				) }
 
-					<div className="googlesitekit-user-input__question-instructions--author">
-						<img alt={ author.name } src={ author.photo } />
-						{ author.name }
-					</div>
-				</Fragment>
-			) }
-		</Cell>
+				{ author && author.photo && author.name && (
+					<Fragment>
+						<p>
+							{ __(
+								'This question has last been answered by:',
+								'google-site-kit'
+							) }
+						</p>
+
+						<div className="googlesitekit-user-input__question-info--author">
+							<img alt={ author.name } src={ author.photo } />
+							{ author.name }
+						</div>
+					</Fragment>
+				) }
+			</Cell>
+		</Fragment>
 	);
 }
 

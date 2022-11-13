@@ -75,6 +75,11 @@
 			padding: 28px 24px;
 		}
 	}
+
+	.googlesitekit-user-input__select-options-wrapper {
+		grid-row: span 2;
+	}
+
 	p.googlesitekit-user-input__select-instruction {
 		border-bottom: 1px solid $c-mercury;
 		color: $c-surfaces-on-surface;

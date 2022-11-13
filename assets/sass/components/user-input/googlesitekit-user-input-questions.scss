@@ -89,29 +89,19 @@
 				margin: 0 0 16px;
 			}
 		}
+	}
 
-		.googlesitekit-user-input__question-instructions--description ~ p {
+	.googlesitekit-user-input__question-info {
+		p {
 			color: $c-surfaces-on-surface-variant;
 			font-size: $fs-body-sm;
 			letter-spacing: $ls-s;
 			line-height: $lh-body-sm;
 			margin: 0 0 3px;
 		}
-
-		p.googlesitekit-user-input__question-instructions--notice {
-			margin: 0 0 1em;
-
-			@media (min-width: $bp-desktop) {
-				margin: 0 0 16px;
-			}
-		}
-
-		.googlesitekit-user-input__question-instructions--notice + p {
-			margin-top: auto;
-		}
 	}
 
-	.googlesitekit-user-input__question-instructions--author {
+	.googlesitekit-user-input__question-info--author {
 		align-items: center;
 		color: $c-scarpa-flow;
 		display: flex;
