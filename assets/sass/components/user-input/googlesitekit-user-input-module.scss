@@ -67,12 +67,35 @@
 	}
 
 	.googlesitekit-user-input__footer {
+		display: flex;
+		flex-direction: column;
+		justify-content: space-between;
+
+		@media (min-width: $bp-desktop) {
+			align-items: center;
+			border-top: 1px solid $c-mercury;
+			flex-direction: row;
+			margin: 42px 0 0;
+			padding: 28px 24px;
+		}
+	}
+
+	.googlesitekit-user-input__footer-left {
+		padding: 17px 17px 33px;
+
+		@media (min-width: $bp-desktop) {
+			order: 2;
+			padding: 0;
+		}
+	}
+
+	.googlesitekit-user-input__footer-right {
 		border-top: 1px solid $c-mercury;
-		margin: 42px 0 0;
 		padding: 17px;
 
 		@media (min-width: $bp-desktop) {
-			padding: 28px 24px;
+			border: none;
+			padding: 0;
 		}
 	}
 

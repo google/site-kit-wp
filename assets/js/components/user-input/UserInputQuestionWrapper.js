@@ -111,34 +111,30 @@ export default function UserInputQuestionWrapper( props ) {
 				</Row>
 			</div>
 			{ isActive && (
-				<div className="googlesitekit-user-input__footer">
-					<div className="googlesitekit-user-input__buttons">
-						<div className="googlesitekit-user-input__buttons-left">
-							<CancelUserInputButton />
-						</div>
-						<div className="googlesitekit-user-input__buttons-right">
-							{ back && (
-								<Link
-									className="googlesitekit-user-input__buttons--back"
-									onClick={ back }
-								>
-									{ backLabel ||
-										__( 'Back', 'google-site-kit' ) }
-								</Link>
-							) }
-							{ next && (
-								<Button
-									className="googlesitekit-user-input__buttons--next"
-									onClick={ next }
-									disabled={
-										values.length === 0 || hasInvalidValues
-									}
-								>
-									{ nextLabel ||
-										__( 'Next', 'google-site-kit' ) }
-								</Button>
-							) }
-						</div>
+				<div className="googlesitekit-user-input__footer googlesitekit-user-input__buttons">
+					<div className="googlesitekit-user-input__footer-left">
+						{ back && (
+							<Link
+								className="googlesitekit-user-input__buttons--back"
+								onClick={ back }
+							>
+								{ backLabel || __( 'Back', 'google-site-kit' ) }
+							</Link>
+						) }
+						{ next && (
+							<Button
+								className="googlesitekit-user-input__buttons--next"
+								onClick={ next }
+								disabled={
+									values.length === 0 || hasInvalidValues
+								}
+							>
+								{ nextLabel || __( 'Next', 'google-site-kit' ) }
+							</Button>
+						) }
+					</div>
+					<div className="googlesitekit-user-input__footer-right">
+						<CancelUserInputButton />
 					</div>
 				</div>
 			) }

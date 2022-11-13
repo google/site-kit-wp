@@ -154,9 +154,6 @@
 	}
 
 	.googlesitekit-user-input__buttons {
-		align-items: center;
-		display: flex;
-		justify-content: space-between;
 
 		button {
 			letter-spacing: $ls-s;
@@ -167,7 +164,7 @@
 
 			&.mdc-button {
 				border: none;
-				padding: 10px 33px;
+				padding: 10px 16px;
 			}
 
 			&.googlesitekit-cta-link {
