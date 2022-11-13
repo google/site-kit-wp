@@ -49,4 +49,16 @@
 			display: block;
 		}
 	}
+
+	.googlesitekit-desktop-display-none {
+		@media (min-width: $bp-desktop) {
+			display: none;
+		}
+	}
+
+	.googlesitekit-non-desktop-display-none {
+		@media (max-width: $bp-desktop) {
+			display: none;
+		}
+	}
 }
