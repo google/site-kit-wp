@@ -20,6 +20,7 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import classnames from 'classnames';
 
 /**
  * WordPress dependencies
@@ -34,7 +35,7 @@ import { sprintf, _n, __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import { Checkbox, Radio } from 'googlesitekit-components';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import { Cell, Input, TextField } from '../../material-components';
+import { Cell, HelperText, Input, TextField } from '../../material-components';
 const { useSelect, useDispatch } = Data;
 
 export default function UserInputSelectOptions( {
@@ -50,6 +51,7 @@ export default function UserInputSelectOptions( {
 	const [ other, setOther ] = useState(
 		values.filter( ( value ) => ! options[ value ] )[ 0 ] || ''
 	);
+	const [ hasOtherError, setHasOtherError ] = useState( false );
 	const { setUserInputSetting } = useDispatch( CORE_USER );
 	const inputRef = useRef();
 	const optionsRef = useRef();
@@ -162,6 +164,12 @@ export default function UserInputSelectOptions( {
 		[ max, setUserInputSetting, slug, values, options ]
 	);
 
+	const onOtherBlur = useCallback( ( { target } ) => {
+		const { value } = target;
+
+		setHasOtherError( '' === value );
+	}, [] );
+
 	const onClickProps = {
 		[ max > 1 ? 'onChange' : 'onClick' ]: onClick,
 	};
@@ -244,28 +252,45 @@ export default function UserInputSelectOptions( {
 						{ __( 'Other:', 'google-site-kit' ) }
 					</ListComponent>
 
-					<TextField
-						label={ __(
-							'Type your own answer',
-							'google-site-kit'
-						) }
-						noLabel
-					>
-						<Input
-							id={ `${ slug }-select-options` }
-							value={ other }
-							onChange={ onOtherChange }
-							ref={ inputRef }
-							disabled={ disabled }
-							tabIndex={
-								! values.includes( other.trim() ) || ! isActive
-									? '-1'
-									: undefined
+					<div className="googlesitekit-user-input__select-option-text-field">
+						<TextField
+							className={ classnames( {
+								'mdc-text-field--error': hasOtherError,
+							} ) }
+							label={ __(
+								'Type your own answer',
+								'google-site-kit'
+							) }
+							helperText={
+								hasOtherError && (
+									<HelperText persistent>
+										{ __(
+											'Your answer is required here',
+											'google-site-kit'
+										) }
+									</HelperText>
+								)
 							}
-							onKeyDown={ onKeyDown }
-							maxLength={ 100 }
-						/>
-					</TextField>
+							noLabel
+						>
+							<Input
+								id={ `${ slug }-select-options` }
+								value={ other }
+								onChange={ onOtherChange }
+								onBlur={ onOtherBlur }
+								ref={ inputRef }
+								disabled={ disabled }
+								tabIndex={
+									! values.includes( other.trim() ) ||
+									! isActive
+										? '-1'
+										: undefined
+								}
+								onKeyDown={ onKeyDown }
+								maxLength={ 100 }
+							/>
+						</TextField>
+					</div>
 					<label
 						htmlFor={ `${ slug }-select-options` }
 						className="screen-reader-text"

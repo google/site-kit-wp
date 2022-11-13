@@ -60,6 +60,15 @@
 		}
 	}
 
+	.googlesitekit-user-input__select-option-text-field {
+
+		.mdc-text-field--error .mdc-line-ripple--active {
+			background-color: $c-black;
+			opacity: 1;
+			transform: scaleX(1);
+		}
+	}
+
 	.googlesitekit-user-input__select-option:not(:last-child) {
 		border-bottom: 1px solid $c-mercury;
 	}
