@@ -364,7 +364,7 @@ describe( 'core/modules sharing-settings', () => {
 				expect( sharingSettingsObj ).toBeUndefined();
 			} );
 
-			it( 'should return an empty object if there is no `settings`', async () => {
+			it( 'should return an empty object if there is no `settings`', () => {
 				global[ dashboardSharingDataBaseVar ] = {
 					settings: {},
 				};
@@ -376,7 +376,7 @@ describe( 'core/modules sharing-settings', () => {
 				expect( sharingSettingsObj ).toMatchObject( {} );
 			} );
 
-			it( 'should return the `sharingSettings` object', async () => {
+			it( 'should return the `sharingSettings` object', () => {
 				global[ dashboardSharingDataBaseVar ] = dashboardSharingData;
 
 				const sharingSettingsObj = registry
@@ -399,7 +399,7 @@ describe( 'core/modules sharing-settings', () => {
 				expect( shareableRolesObj ).toBeUndefined();
 			} );
 
-			it( 'should return an empty array if there is no `roles`', async () => {
+			it( 'should return an empty array if there is no `roles`', () => {
 				global[ dashboardSharingDataBaseVar ] = {
 					roles: [],
 				};
@@ -411,7 +411,7 @@ describe( 'core/modules sharing-settings', () => {
 				expect( shareableRolesObj ).toMatchObject( [] );
 			} );
 
-			it( 'should return the `shareableRoles` object', async () => {
+			it( 'should return the `shareableRoles` object', () => {
 				global[ dashboardSharingDataBaseVar ] = dashboardSharingData;
 
 				const shareableRolesObj = registry
@@ -449,7 +449,7 @@ describe( 'core/modules sharing-settings', () => {
 				expect( sharingManagement ).toBeNull();
 			} );
 
-			it( 'should return the `management` string for the given module', async () => {
+			it( 'should return the `management` string for the given module', () => {
 				global[ dashboardSharingDataBaseVar ] = dashboardSharingData;
 
 				const sharingManagement = registry
@@ -487,7 +487,7 @@ describe( 'core/modules sharing-settings', () => {
 				expect( sharedRoles ).toBeNull();
 			} );
 
-			it( 'should return the `sharedRoles` array for the given module', async () => {
+			it( 'should return the `sharedRoles` array for the given module', () => {
 				global[ dashboardSharingDataBaseVar ] = dashboardSharingData;
 
 				const sharedRoles = registry
@@ -499,7 +499,7 @@ describe( 'core/modules sharing-settings', () => {
 		} );
 
 		describe( 'haveSharingSettingsChanged', () => {
-			it( 'informs whether client-side sharing-settings differ from server-side ones', async () => {
+			it( 'informs whether client-side sharing-settings differ from server-side ones', () => {
 				global[ dashboardSharingDataBaseVar ] = undefined;
 
 				// Initially false.
@@ -551,7 +551,7 @@ describe( 'core/modules sharing-settings', () => {
 				).toBe( false );
 			} );
 
-			it( 'compares all keys when keys argument is not supplied', async () => {
+			it( 'compares all keys when keys argument is not supplied', () => {
 				global[ dashboardSharingDataBaseVar ] = dashboardSharingData;
 				registry.select( CORE_MODULES ).getSharingSettings();
 
@@ -564,7 +564,7 @@ describe( 'core/modules sharing-settings', () => {
 				).toBe( true );
 			} );
 
-			it( 'compares select keys when keys argument is supplied', async () => {
+			it( 'compares select keys when keys argument is supplied', () => {
 				global[ dashboardSharingDataBaseVar ] = dashboardSharingData;
 				registry.select( CORE_MODULES ).getSharingSettings();
 
@@ -959,7 +959,7 @@ describe( 'core/modules sharing-settings', () => {
 				).toBe( false );
 			} );
 
-			it( 'compares all keys when keys argument is not supplied', async () => {
+			it( 'compares all keys when keys argument is not supplied', () => {
 				global[ dashboardSharingDataBaseVar ] = dashboardSharingData;
 				registry.select( CORE_MODULES ).getSharingSettings();
 
@@ -974,7 +974,7 @@ describe( 'core/modules sharing-settings', () => {
 				).toBe( true );
 			} );
 
-			it( 'compares selected keys when keys argument is supplied', async () => {
+			it( 'compares selected keys when keys argument is supplied', () => {
 				global[ dashboardSharingDataBaseVar ] = dashboardSharingData;
 				registry.select( CORE_MODULES ).getSharingSettings();
 

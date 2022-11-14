@@ -34,6 +34,7 @@ export default function createTrackEvent(
 	 * @param {number} [value]  Optional. A non-negative integer that will appear as the event value.
 	 * @return {Promise} Promise that always resolves.
 	 */
+	// eslint-disable-next-line require-await
 	return async function trackEvent( category, action, label, value ) {
 		const {
 			activeModules,

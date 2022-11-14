@@ -122,7 +122,7 @@ describe( 'core/user surveys', () => {
 				} ).toThrow( 'options.ttl must be a number' );
 			} );
 
-			it( 'should not throw when called with only a triggerID', async () => {
+			it( 'should not throw when called with only a triggerID', () => {
 				provideUserAuthentication( registry );
 
 				muteFetch( surveyTriggerEndpoint );
@@ -296,7 +296,7 @@ describe( 'core/user surveys', () => {
 
 	describe( 'selectors', () => {
 		describe( 'getCurrentSurvey', () => {
-			it( 'returns null when no current survey is set', async () => {
+			it( 'returns null when no current survey is set', () => {
 				expect(
 					registry.select( CORE_USER ).getCurrentSurvey()
 				).toBeNull();
@@ -314,7 +314,7 @@ describe( 'core/user surveys', () => {
 		} );
 
 		describe( 'getCurrentSurveySession', () => {
-			it( 'returns null when no current survey session is set', async () => {
+			it( 'returns null when no current survey session is set', () => {
 				expect(
 					registry.select( CORE_USER ).getCurrentSurveySession()
 				).toBeNull();

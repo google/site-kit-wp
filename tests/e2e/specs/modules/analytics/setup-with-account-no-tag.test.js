@@ -54,7 +54,7 @@ async function proceedToSetUpAnalytics() {
 	);
 }
 
-const setReferenceURL = async () => {
+const setReferenceURL = () => {
 	return wpApiFetch( {
 		path: 'google-site-kit/v1/e2e/reference-url',
 		method: 'post',

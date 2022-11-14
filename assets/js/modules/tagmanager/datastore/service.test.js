@@ -50,7 +50,7 @@ describe( 'module/tagmanager service store', () => {
 
 	describe( 'selectors', () => {
 		describe( 'getServiceURL', () => {
-			it( 'retrieves the correct URL with no arguments', async () => {
+			it( 'retrieves the correct URL with no arguments', () => {
 				const serviceURL = registry
 					.select( MODULES_TAGMANAGER )
 					.getServiceURL();
@@ -78,7 +78,7 @@ describe( 'module/tagmanager service store', () => {
 				);
 			} );
 
-			it( 'adds query args', async () => {
+			it( 'adds query args', () => {
 				const path = '/test/path/to/deeplink';
 				const query = {
 					authuser: userData.email,

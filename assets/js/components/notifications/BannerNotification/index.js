@@ -217,7 +217,7 @@ function BannerNotification( {
 		[ anchorLink, breakpoint ]
 	);
 
-	async function handleLearnMore( e ) {
+	function handleLearnMore( e ) {
 		e.persist();
 
 		onLearnMoreClick?.();

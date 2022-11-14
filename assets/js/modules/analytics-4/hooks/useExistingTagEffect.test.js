@@ -41,7 +41,7 @@ describe( 'useExistingTagEffect', () => {
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetExistingTag( null );
 	} );
 
-	it( 'should not update the "use snippet" setting if there is no existing tag or measurementID', async () => {
+	it( 'should not update the "use snippet" setting if there is no existing tag or measurementID', () => {
 		act( () => {
 			renderHook( () => useExistingTagEffect(), { registry } );
 		} );
@@ -79,7 +79,7 @@ describe( 'useExistingTagEffect', () => {
 		).toBeUndefined();
 	} );
 
-	it( 'should disable the "use snippet" setting if the existing tag matches the measurementID', async () => {
+	it( 'should disable the "use snippet" setting if the existing tag matches the measurementID', () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveGetExistingTag( measurementID );
@@ -115,7 +115,7 @@ describe( 'useExistingTagEffect', () => {
 		);
 	} );
 
-	it( 'should enable the "use snippet" setting if the existing tag does not match the measurementID', async () => {
+	it( 'should enable the "use snippet" setting if the existing tag does not match the measurementID', () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveGetExistingTag( measurementID );
@@ -151,7 +151,7 @@ describe( 'useExistingTagEffect', () => {
 		);
 	} );
 
-	it( 'does not change the useSnippet value when there is already a measurement ID on page load (measurement ID is same as existing tag)', async () => {
+	it( 'does not change the useSnippet value when there is already a measurement ID on page load (measurement ID is same as existing tag)', () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveGetExistingTag( measurementID );
@@ -196,7 +196,7 @@ describe( 'useExistingTagEffect', () => {
 		);
 	} );
 
-	it( 'does not change the useSnippet value when there is already a measurement ID on page load (measurement ID is not the same as existing tag)', async () => {
+	it( 'does not change the useSnippet value when there is already a measurement ID on page load (measurement ID is not the same as existing tag)', () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveGetExistingTag( measurementID );

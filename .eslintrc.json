@@ -32,6 +32,7 @@
     "jsdoc/require-returns": "error",
     "jsdoc/no-undefined-types": "error",
     "jsdoc/valid-types": "error",
+    "require-await": "error",
     "react/jsx-curly-brace-presence": "error",
     "complexity": [
       "error",

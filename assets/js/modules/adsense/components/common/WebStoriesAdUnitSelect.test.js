@@ -66,7 +66,7 @@ describe( 'WebStoriesAdUnitSelect', () => {
 		expect( listItems ).toHaveLength( fixtures.adunits.length + 1 ); // + 1 accounts for the default value "Select ad unit".
 	} );
 
-	it( 'should render a loading state when ad units are undefined', async () => {
+	it( 'should render a loading state when ad units are undefined', () => {
 		freezeFetch(
 			/^\/google-site-kit\/v1\/modules\/adsense\/data\/adunits/
 		);
@@ -84,7 +84,7 @@ describe( 'WebStoriesAdUnitSelect', () => {
 		expect( queryByRole( 'progressbar' ) ).toBeInTheDocument();
 	} );
 
-	it( 'should update webStoriesAdUnit in the store when a new item is clicked', async () => {
+	it( 'should update webStoriesAdUnit in the store when a new item is clicked', () => {
 		const { getByText, container, registry } = render(
 			<WebStoriesAdUnitSelect />,
 			{ setupRegistry }

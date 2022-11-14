@@ -353,7 +353,7 @@ describe( 'modules/analytics report', () => {
 		} );
 
 		describe( 'isGatheringData', () => {
-			it( 'should return undefined if getReport is not resolved yet', async () => {
+			it( 'should return undefined if getReport is not resolved yet', () => {
 				freezeFetch(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/report/
 				);
@@ -429,7 +429,7 @@ describe( 'modules/analytics report', () => {
 		} );
 
 		describe( 'hasZeroData', () => {
-			it( 'should return undefined if getReport or isGatheringData is not resolved yet', async () => {
+			it( 'should return undefined if getReport or isGatheringData is not resolved yet', () => {
 				freezeFetch(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/report/
 				);
