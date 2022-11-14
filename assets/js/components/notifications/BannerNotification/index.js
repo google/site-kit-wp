@@ -530,8 +530,10 @@ function BannerNotification( {
 									className={ `googlesitekit-publisher-win__image-${ format }` }
 								>
 									<WinImageSVG
-										width={ mediumWinImageSVGWidth }
-										height={ mediumWinImageSVGHeight }
+										style={ {
+											maxWidth: mediumWinImageSVGWidth,
+											maxHeight: mediumWinImageSVGHeight,
+										} }
 									/>
 								</div>
 							</Cell>
