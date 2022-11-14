@@ -105,6 +105,7 @@ function BannerNotification( {
 	title,
 	type,
 	WinImageSVG,
+	showSmallWinImage = true,
 	smallWinImageSVGWidth = 75,
 	smallWinImageSVGHeight = 75,
 	mediumWinImageSVGWidth = 105,
@@ -330,7 +331,7 @@ function BannerNotification( {
 						{ badgeLabel && <Badge label={ badgeLabel } /> }
 					</h3>
 
-					{ WinImageSVG && ! isMinWidthTablet && (
+					{ WinImageSVG && ! isMinWidthTablet && showSmallWinImage && (
 						<div
 							className={ `googlesitekit-publisher-win__image-${ format }` }
 						>
@@ -516,24 +517,25 @@ function BannerNotification( {
 						) }
 					</Cell>
 
-					{ WinImageSVG && isMinWidthTablet && (
-						<Cell
-							{ ...imageCellSizeProperties }
-							{ ...imageCellOrderProperties }
-							alignBottom={
-								format === 'larger' && noBottomPadding
-							}
-						>
-							<div
-								className={ `googlesitekit-publisher-win__image-${ format }` }
+					{ WinImageSVG &&
+						( isMinWidthTablet || ! showSmallWinImage ) && (
+							<Cell
+								{ ...imageCellSizeProperties }
+								{ ...imageCellOrderProperties }
+								alignBottom={
+									format === 'larger' && noBottomPadding
+								}
 							>
-								<WinImageSVG
-									width={ mediumWinImageSVGWidth }
-									height={ mediumWinImageSVGHeight }
-								/>
-							</div>
-						</Cell>
-					) }
+								<div
+									className={ `googlesitekit-publisher-win__image-${ format }` }
+								>
+									<WinImageSVG
+										width={ mediumWinImageSVGWidth }
+										height={ mediumWinImageSVGHeight }
+									/>
+								</div>
+							</Cell>
+						) }
 
 					{ ( 'win-error' === type || 'win-warning' === type ) && (
 						<Cell size={ 1 }>
@@ -598,6 +600,7 @@ BannerNotification.propTypes = {
 	rounded: PropTypes.bool,
 	footer: PropTypes.node,
 	secondaryPane: PropTypes.node,
+	showSmallWinImage: PropTypes.bool,
 	smallWinImageSVGWidth: PropTypes.number,
 	smallWinImageSVGHeight: PropTypes.number,
 	mediumWinImageSVGWidth: PropTypes.number,
