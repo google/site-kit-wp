@@ -224,13 +224,12 @@ export const siteKitRequest = async (
  * @param {Object}  options.signal   Abort the fetch request.
  * @return {Promise} A promise for the `fetch` request.
  */
-export const get = async (
+export const get = (
 	type,
 	identifier,
 	datapoint,
 	data,
 	{ cacheTTL = HOUR_IN_SECONDS, useCache = undefined, signal } = {}
-	// eslint-disable-next-line require-await
 ) => {
 	return siteKitRequest( type, identifier, datapoint, {
 		cacheTTL,

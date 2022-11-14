@@ -17,8 +17,7 @@ module.exports = async ( page, scenario ) => {
 	} );
 
 	// SET COOKIES
-	// eslint-disable-next-line require-await
-	const setCookies = async () => {
+	const setCookies = () => {
 		return Promise.all(
 			cookies.map( async ( cookie ) => {
 				await page.setCookie( cookie );

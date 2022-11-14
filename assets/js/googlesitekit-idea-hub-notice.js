@@ -31,8 +31,7 @@ const editorNoticeKey = ( postID ) => {
 	return `modules::idea-hub::dismissed-editor-notice-${ postID }`;
 };
 
-// eslint-disable-next-line require-await
-const loadIdeaHubNotices = async () => {
+const loadIdeaHubNotices = () => {
 	const shownNotices = [];
 
 	const hasNotice = ( postID ) => {
