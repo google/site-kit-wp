@@ -23,6 +23,7 @@ import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import map from 'lodash/map';
 import { useMount, useMountedState } from 'react-use';
+import { useWindowWidth } from '@react-hook/window-size/throttled';
 
 /*
  * WordPress dependencies
@@ -125,8 +126,13 @@ function BannerNotification( {
 	const persistDismissal = () =>
 		setItem( cacheKeyDismissed, new Date(), { ttl: null } );
 
+	const windowWidth = useWindowWidth();
 	const breakpoint = useBreakpoint();
 	const isMounted = useMountedState();
+
+	// There is a 1px difference between the tablet breakpoint determination in `useBreakpoint` and the `min-width: $bp-tablet` breakpoint the `@mixin googlesitekit-inner-padding` uses,
+	// which in turn is used by the notification. This why we are using `useWindowWidth` here, instead of the breakpoint returned by `useBreakpoint`.
+	const isMinWidthTablet = windowWidth >= 600;
 
 	useMount( async () => {
 		if ( dismissExpires > 0 ) {
@@ -324,9 +330,9 @@ function BannerNotification( {
 						{ badgeLabel && <Badge label={ badgeLabel } /> }
 					</h3>
 
-					{ WinImageSVG && (
+					{ WinImageSVG && ! isMinWidthTablet && (
 						<div
-							className={ `googlesitekit-publisher-win__image-${ format } googlesitekit-non-mobile-display-none` }
+							className={ `googlesitekit-publisher-win__image-${ format }` }
 						>
 							<WinImageSVG
 								width={ smallWinImageSVGWidth }
@@ -510,14 +516,13 @@ function BannerNotification( {
 						) }
 					</Cell>
 
-					{ WinImageSVG && (
+					{ WinImageSVG && isMinWidthTablet && (
 						<Cell
 							{ ...imageCellSizeProperties }
 							{ ...imageCellOrderProperties }
 							alignBottom={
 								format === 'larger' && noBottomPadding
 							}
-							className="googlesitekit-display-none googlesitekit-non-mobile-display-block"
 						>
 							<div
 								className={ `googlesitekit-publisher-win__image-${ format }` }
