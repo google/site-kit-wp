@@ -32,6 +32,7 @@ import { useEffect, useState } from '@wordpress/element';
  * Internal dependencies
  */
 import TourTooltip from './TourTooltip';
+import Portal from './Portal';
 import { joyrideStyles, floaterProps } from './TourTooltips';
 
 export default function JoyrideTooltip( {
@@ -43,6 +44,7 @@ export default function JoyrideTooltip( {
 	cta = false,
 	className,
 	styles = {},
+	slug = '',
 } ) {
 	const checkIfTargetExists = () =>
 		!! global.document.querySelector( target );
@@ -98,34 +100,36 @@ export default function JoyrideTooltip( {
 	};
 
 	return (
-		<Joyride
-			callback={ ( { type } ) => {
-				if ( type === EVENTS.STEP_AFTER ) {
-					// This is not strictly necessary as the tooltip will hide without it, but this allows the consumer of the component to clean up post-dismiss.
-					onDismiss();
-				}
-			} }
-			disableOverlay
-			disableScrolling
-			spotlightPadding={ 0 }
-			floaterProps={ floaterProps }
-			locale={ joyrideLocale }
-			run
-			steps={ steps }
-			styles={ {
-				...joyrideStyles,
-				...styles,
-				options: {
-					...joyrideStyles.options,
-					...styles?.options,
-				},
-				spotlight: {
-					...joyrideStyles.spotlight,
-					...styles?.spotlight,
-				},
-			} }
-			tooltipComponent={ TourTooltip }
-		/>
+		<Portal slug={ slug }>
+			<Joyride
+				callback={ ( { type } ) => {
+					if ( type === EVENTS.STEP_AFTER ) {
+						// This is not strictly necessary as the tooltip will hide without it, but this allows the consumer of the component to clean up post-dismiss.
+						onDismiss();
+					}
+				} }
+				disableOverlay
+				disableScrolling
+				spotlightPadding={ 0 }
+				floaterProps={ floaterProps }
+				locale={ joyrideLocale }
+				run
+				steps={ steps }
+				styles={ {
+					...joyrideStyles,
+					...styles,
+					options: {
+						...joyrideStyles.options,
+						...styles?.options,
+					},
+					spotlight: {
+						...joyrideStyles.spotlight,
+						...styles?.spotlight,
+					},
+				} }
+				tooltipComponent={ TourTooltip }
+			/>
+		</Portal>
 	);
 }
 
@@ -138,4 +142,5 @@ JoyrideTooltip.propTypes = {
 	onShow: PropTypes.func,
 	className: PropTypes.string,
 	styles: PropTypes.object,
+	slug: PropTypes.string,
 };
