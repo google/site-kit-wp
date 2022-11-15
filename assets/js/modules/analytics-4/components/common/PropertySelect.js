@@ -75,7 +75,7 @@ export default function PropertySelect( {
 		select( MODULES_ANALYTICS_4 ).getPropertyID()
 	);
 
-	let isLoading = useSelect(
+	const isLoading = useSelect(
 		( select ) =>
 			! select( MODULES_ANALYTICS ).hasFinishedResolution(
 				'getAccounts'
@@ -95,20 +95,24 @@ export default function PropertySelect( {
 		if ( ! properties?.length ) {
 			return null;
 		}
+
 		return properties.reduce( ( acc, property ) => {
 			const currentPropertyID = property._id;
 			const dataStream =
 				select( MODULES_ANALYTICS_4 ).getWebDataStreamsBatch(
 					currentPropertyID
 				);
-			if ( ! Object.keys( dataStream ).length ) {
-				isLoading = true;
+
+			if (
+				! Object.keys( dataStream ).length ||
+				! Object.values( dataStream[ currentPropertyID ] ).length
+			) {
 				return null;
 			}
+
 			const measurementID =
 				dataStream[ currentPropertyID ][ 0 ].webStreamData
 					.measurementId; // eslint-disable-line sitekit/acronym-case
-			isLoading = false;
 			return {
 				...acc,
 				[ currentPropertyID ]: measurementID,
