@@ -20,11 +20,13 @@
  * WordPress dependencies
  */
 import { lazy, Suspense } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import PreviewBlock from '../../../../components/PreviewBlock';
+import MediaErrorHandler from '../../../../components/MediaErrorHandler';
 const LazyIdeaHubPromptSVG = lazy( () =>
 	import( '../../../../../svg/graphics/idea-hub-prompt.svg' )
 );
@@ -32,7 +34,14 @@ const LazyIdeaHubPromptSVG = lazy( () =>
 export default function IdeaHubPromptSVG( props ) {
 	return (
 		<Suspense fallback={ <PreviewBlock width="100%" height="39.77%" /> }>
-			<LazyIdeaHubPromptSVG { ...props } />
+			<MediaErrorHandler
+				errorMessage={ __(
+					'Failed to load graphic.',
+					'google-site-kit'
+				) }
+			>
+				<LazyIdeaHubPromptSVG { ...props } />
+			</MediaErrorHandler>
 		</Suspense>
 	);
 }
