@@ -201,7 +201,7 @@ export default function PropertySelect( {
 						{ _id === PROPERTY_CREATE
 							? displayName
 							: sprintf(
-									/* translators: 1: Property name. 2: Property ID. */
+									/* translators: 1: Property name. 2: Measurement ID. */
 									_x(
 										'%1$s (%2$s)',
 										'Analytics property name and ID',
