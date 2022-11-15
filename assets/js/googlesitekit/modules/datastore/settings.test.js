@@ -82,7 +82,7 @@ describe( 'core/modules settings', () => {
 				).toBe( testReturnValue );
 			} );
 
-			it( 'should throw an error if submitChanges has been called without a module slug', async () => {
+			it( 'should throw an error if submitChanges has been called without a module slug', () => {
 				expect( () => {
 					registry.dispatch( CORE_MODULES ).submitChanges();
 				} ).toThrow();

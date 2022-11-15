@@ -82,7 +82,7 @@ describe( 'WidgetContextRenderer', () => {
 			.assignWidget( 'TestWidget2', 'TestArea2' );
 
 		const { container } = render(
-			<WidgetContextRenderer slug={ 'TestContext' } />,
+			<WidgetContextRenderer slug="TestContext" />,
 			{ registry }
 		);
 
@@ -108,7 +108,7 @@ describe( 'WidgetContextRenderer', () => {
 			.assignWidget( 'TestWidget1', 'TestArea1' );
 
 		const { container } = render(
-			<WidgetContextRenderer slug={ 'TestContext' } />,
+			<WidgetContextRenderer slug="TestContext" />,
 			{ registry }
 		);
 

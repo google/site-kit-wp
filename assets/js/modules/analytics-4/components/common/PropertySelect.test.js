@@ -30,8 +30,13 @@ import * as fixtures from '../../datastore/__fixtures__';
 import * as analyticsFixtures from '../../../analytics/datastore/__fixtures__';
 import { fireEvent, act, render } from '../../../../../../tests/js/test-utils';
 
-const { createProperty, createWebDataStream, properties, webDataStreams } =
-	fixtures;
+const {
+	createProperty,
+	createWebDataStream,
+	properties,
+	webDataStreams,
+	webDataStreamsBatch,
+} = fixtures;
 const { accounts } = analyticsFixtures.accountsPropertiesProfiles;
 const accountID = createProperty._accountID;
 const propertyID = createWebDataStream._propertyID;
@@ -61,6 +66,12 @@ const setupRegistry = ( { dispatch } ) => {
 		'receiveGetWebDataStreams',
 		{ propertyID }
 	);
+	dispatch( MODULES_ANALYTICS_4 ).receiveGetWebDataStreamsBatch(
+		webDataStreamsBatch,
+		{
+			propertyIDs: properties.map( ( { _id } ) => _id ),
+		}
+	);
 };
 
 const setupEmptyRegistry = ( { dispatch } ) => {
@@ -78,7 +89,7 @@ const setupEmptyRegistry = ( { dispatch } ) => {
 };
 
 describe( 'PropertySelect', () => {
-	it( 'should render an option for each analytics property of the currently selected account.', async () => {
+	it( 'should render an option for each analytics property of the currently selected account.', () => {
 		const { getAllByRole } = render( <PropertySelect />, {
 			setupRegistry,
 		} );
@@ -107,7 +118,7 @@ describe( 'PropertySelect', () => {
 		} );
 	} );
 
-	it( 'should not render if account ID is not valid', async () => {
+	it( 'should not render if account ID is not valid', () => {
 		const { container, registry } = render( <PropertySelect />, {
 			setupRegistry,
 		} );
@@ -149,7 +160,7 @@ describe( 'PropertySelect', () => {
 		).toBeInTheDocument();
 	} );
 
-	it( 'should render a select box with only an option to create a new property if no properties are available.', async () => {
+	it( 'should render a select box with only an option to create a new property if no properties are available.', () => {
 		const { getAllByRole } = render( <PropertySelect />, {
 			setupRegistry: setupEmptyRegistry,
 		} );
@@ -161,7 +172,7 @@ describe( 'PropertySelect', () => {
 		);
 	} );
 
-	it( 'should update propertyID in the store when a new item is selected', async () => {
+	it( 'should update propertyID in the store when a new item is selected', () => {
 		const { getAllByRole, container, registry } = render(
 			<PropertySelect />,
 			{ setupRegistry }

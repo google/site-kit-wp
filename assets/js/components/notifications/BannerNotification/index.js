@@ -23,6 +23,7 @@ import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import map from 'lodash/map';
 import { useMount, useMountedState } from 'react-use';
+import { useWindowWidth } from '@react-hook/window-size/throttled';
 
 /*
  * WordPress dependencies
@@ -104,6 +105,11 @@ function BannerNotification( {
 	title,
 	type,
 	WinImageSVG,
+	showSmallWinImage = true,
+	smallWinImageSVGWidth = 75,
+	smallWinImageSVGHeight = 75,
+	mediumWinImageSVGWidth = 105,
+	mediumWinImageSVGHeight = 105,
 	rounded = false,
 	footer,
 	secondaryPane,
@@ -121,8 +127,13 @@ function BannerNotification( {
 	const persistDismissal = () =>
 		setItem( cacheKeyDismissed, new Date(), { ttl: null } );
 
+	const windowWidth = useWindowWidth();
 	const breakpoint = useBreakpoint();
 	const isMounted = useMountedState();
+
+	// There is a 1px difference between the tablet breakpoint determination in `useBreakpoint` and the `min-width: $bp-tablet` breakpoint the `@mixin googlesitekit-inner-padding` uses,
+	// which in turn is used by the notification. This why we are using `useWindowWidth` here, instead of the breakpoint returned by `useBreakpoint`.
+	const isMinWidthTablet = windowWidth >= 600;
 
 	useMount( async () => {
 		if ( dismissExpires > 0 ) {
@@ -213,7 +224,7 @@ function BannerNotification( {
 		[ anchorLink, breakpoint ]
 	);
 
-	async function handleLearnMore( e ) {
+	function handleLearnMore( e ) {
 		e.persist();
 
 		onLearnMoreClick?.();
@@ -313,11 +324,24 @@ function BannerNotification( {
 	const inlineMarkup = (
 		<Fragment>
 			{ title && (
-				<h3 className="googlesitekit-heading-2 googlesitekit-publisher-win__title">
-					{ title }
+				<div className="googlesitekit-publisher-win__title-image-wrapper">
+					<h3 className="googlesitekit-heading-2 googlesitekit-publisher-win__title">
+						{ title }
 
-					{ badgeLabel && <Badge label={ badgeLabel } /> }
-				</h3>
+						{ badgeLabel && <Badge label={ badgeLabel } /> }
+					</h3>
+
+					{ WinImageSVG && ! isMinWidthTablet && showSmallWinImage && (
+						<div
+							className={ `googlesitekit-publisher-win__image-${ format }` }
+						>
+							<WinImageSVG
+								width={ smallWinImageSVGWidth }
+								height={ smallWinImageSVGHeight }
+							/>
+						</div>
+					) }
+				</div>
 			) }
 			{ anchorLink && anchorLinkLabel && (
 				<p className="googlesitekit-publisher-win__link">
@@ -493,21 +517,27 @@ function BannerNotification( {
 						) }
 					</Cell>
 
-					{ WinImageSVG && (
-						<Cell
-							{ ...imageCellSizeProperties }
-							{ ...imageCellOrderProperties }
-							alignBottom={
-								format === 'larger' && noBottomPadding
-							}
-						>
-							<div
-								className={ `googlesitekit-publisher-win__image-${ format }` }
+					{ WinImageSVG &&
+						( isMinWidthTablet || ! showSmallWinImage ) && (
+							<Cell
+								{ ...imageCellSizeProperties }
+								{ ...imageCellOrderProperties }
+								alignBottom={
+									format === 'larger' && noBottomPadding
+								}
 							>
-								<WinImageSVG />
-							</div>
-						</Cell>
-					) }
+								<div
+									className={ `googlesitekit-publisher-win__image-${ format }` }
+								>
+									<WinImageSVG
+										style={ {
+											maxWidth: mediumWinImageSVGWidth,
+											maxHeight: mediumWinImageSVGHeight,
+										} }
+									/>
+								</div>
+							</Cell>
+						) }
 
 					{ ( 'win-error' === type || 'win-warning' === type ) && (
 						<Cell size={ 1 }>
@@ -572,6 +602,11 @@ BannerNotification.propTypes = {
 	rounded: PropTypes.bool,
 	footer: PropTypes.node,
 	secondaryPane: PropTypes.node,
+	showSmallWinImage: PropTypes.bool,
+	smallWinImageSVGWidth: PropTypes.number,
+	smallWinImageSVGHeight: PropTypes.number,
+	mediumWinImageSVGWidth: PropTypes.number,
+	mediumWinImageSVGHeight: PropTypes.number,
 };
 
 BannerNotification.defaultProps = {

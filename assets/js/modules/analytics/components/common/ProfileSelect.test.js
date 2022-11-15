@@ -145,7 +145,7 @@ describe( 'ProfileSelect', () => {
 	afterEach( () => apiFetchMock.mockClear() );
 	afterAll( () => jest.restoreAllMocks() );
 
-	it( 'should render an option for each profile of the currently selected account and property.', async () => {
+	it( 'should render an option for each profile of the currently selected account and property.', () => {
 		const { getAllByRole } = render( <ProfileSelect />, { setupRegistry } );
 
 		const listItems = getAllByRole( 'menuitem', { hidden: true } );
@@ -156,7 +156,7 @@ describe( 'ProfileSelect', () => {
 		);
 	} );
 
-	it( 'should display profile options of an existing account when present, and not be disabled.', async () => {
+	it( 'should display profile options of an existing account when present, and not be disabled.', () => {
 		const { container, getAllByRole, registry } = render(
 			<ProfileSelect />,
 			{ setupRegistry: setupRegistryWithExistingTag }
@@ -300,7 +300,7 @@ describe( 'ProfileSelect', () => {
 		).toBeInTheDocument();
 	} );
 
-	it( 'should render a select box with only an option to create a new property if no properties are available.', async () => {
+	it( 'should render a select box with only an option to create a new property if no properties are available.', () => {
 		const { getAllByRole } = render( <ProfileSelect />, {
 			setupRegistry: setupEmptyRegistry,
 		} );
@@ -310,7 +310,7 @@ describe( 'ProfileSelect', () => {
 		expect( listItems[ 0 ].textContent ).toMatch( /set up a new view/i );
 	} );
 
-	it( 'should update profileID in the store when a new item is selected', async () => {
+	it( 'should update profileID in the store when a new item is selected', () => {
 		const { getByText, container, registry } = render( <ProfileSelect />, {
 			setupRegistry,
 		} );

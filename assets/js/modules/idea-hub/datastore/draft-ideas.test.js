@@ -129,7 +129,7 @@ describe( 'modules/idea-hub draft-ideas', () => {
 		} );
 
 		describe( 'removeIdeaFromNewAndSavedIdeas', () => {
-			it( 'removes idea from newIdeas if exists', async () => {
+			it( 'removes idea from newIdeas if exists', () => {
 				registry
 					.dispatch( MODULES_IDEA_HUB )
 					.receiveGetNewIdeas( fixtures.newIdeas, {
@@ -174,7 +174,7 @@ describe( 'modules/idea-hub draft-ideas', () => {
 				).toEqual( [] );
 			} );
 
-			it( 'removes idea from savedIdeas if exists', async () => {
+			it( 'removes idea from savedIdeas if exists', () => {
 				registry
 					.dispatch( MODULES_IDEA_HUB )
 					.receiveGetSavedIdeas( fixtures.savedIdeas, {

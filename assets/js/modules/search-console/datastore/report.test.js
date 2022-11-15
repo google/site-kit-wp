@@ -160,7 +160,7 @@ describe( 'modules/search-console report', () => {
 		} );
 
 		describe( 'isGatheringData', () => {
-			it( 'should return undefined if getReport is not resolved yet', async () => {
+			it( 'should return undefined if getReport is not resolved yet', () => {
 				freezeFetch( searchAnalyticsRegexp );
 
 				const { isGatheringData } = registry.select(
@@ -227,7 +227,7 @@ describe( 'modules/search-console report', () => {
 		} );
 
 		describe( 'hasZeroData', () => {
-			it( 'should return undefined if getReport or isGatheringData is not resolved yet', async () => {
+			it( 'should return undefined if getReport or isGatheringData is not resolved yet', () => {
 				freezeFetch( searchAnalyticsRegexp );
 
 				const { hasZeroData } = registry.select(

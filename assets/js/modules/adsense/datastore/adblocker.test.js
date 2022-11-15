@@ -161,7 +161,7 @@ describe( 'modules/adsense adblocker', () => {
 			} );
 		} );
 		describe( 'getAdBlockerWarningMessage', () => {
-			it( 'returns undefined if ad blocker state is unresolved.', async () => {
+			it( 'returns undefined if ad blocker state is unresolved.', () => {
 				muteFetch( 'path:/favicon.ico' );
 				expect(
 					registry
@@ -170,7 +170,7 @@ describe( 'modules/adsense adblocker', () => {
 				).toBe( undefined );
 			} );
 
-			it( 'returns null if ad blocker is not active', async () => {
+			it( 'returns null if ad blocker is not active', () => {
 				registry
 					.dispatch( MODULES_ADSENSE )
 					.receiveIsAdBlockerActive( false );
@@ -182,7 +182,7 @@ describe( 'modules/adsense adblocker', () => {
 				).toBe( null );
 			} );
 
-			it( 'returns correct message if ad blocker is active and module is not connected', async () => {
+			it( 'returns correct message if ad blocker is active and module is not connected', () => {
 				provideModules( registry, [
 					{
 						slug: 'adsense',
@@ -202,7 +202,7 @@ describe( 'modules/adsense adblocker', () => {
 				).toContain( 'to set up AdSense' );
 			} );
 
-			it( 'returns correct message if ad blocker is active and module is connected', async () => {
+			it( 'returns correct message if ad blocker is active and module is connected', () => {
 				provideModules( registry, [
 					{
 						slug: 'adsense',

@@ -27,11 +27,11 @@ import {
 import SourceLink from './SourceLink';
 
 describe( 'SourceLink', () => {
-	it( 'should not render the SourceLink when the view context is "view only"', async () => {
+	it( 'should not render the SourceLink when the view context is "view only"', () => {
 		const { container } = render(
 			<SourceLink
 				name="Analytics"
-				href={ 'https://analytics.google.com/test' }
+				href="https://analytics.google.com/test"
 				external
 			/>,
 			{
@@ -43,11 +43,11 @@ describe( 'SourceLink', () => {
 		expect( container.firstChild ).toBeNull();
 	} );
 
-	it( 'should render the SourceLink normally when the view context is NOT "view only"', async () => {
+	it( 'should render the SourceLink normally when the view context is NOT "view only"', () => {
 		const { container } = render(
 			<SourceLink
 				name="Analytics"
-				href={ 'https://analytics.google.com/test' }
+				href="https://analytics.google.com/test"
 				external
 			/>,
 			{

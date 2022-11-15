@@ -1,7 +1,7 @@
 === Site Kit by Google - Analytics, Search Console, AdSense, Speed ===
 
 Contributors:      google
-Requires at least: 4.7
+Requires at least: 5.2
 Tested up to:      6.1
 Requires PHP:      5.6
 Stable tag:        1.87.0
@@ -74,7 +74,7 @@ The Site Kit plugin is free and open source, and will remain so. Individual Goog
 
 In order to successfully install and use Site Kit, your site must meet the following requirements:
 
-* WordPress version 4.7+
+* WordPress version 5.2+
 * PHP version 5.6+
 * Modern browser – Internet Explorer is not supported
 * Is publicly accessible – it isn’t in maintenance mode, accessible only via password, or otherwise blocked

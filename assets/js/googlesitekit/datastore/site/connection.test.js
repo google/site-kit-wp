@@ -215,7 +215,7 @@ describe( 'core/site connection', () => {
 				expect( console ).toHaveErrored();
 			} );
 
-			it( 'returns undefined if connection info is not available', async () => {
+			it( 'returns undefined if connection info is not available', () => {
 				muteFetch(
 					/^\/google-site-kit\/v1\/core\/site\/data\/connection/
 				);

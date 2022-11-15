@@ -137,14 +137,6 @@ final class Modules {
 	private $assets;
 
 	/**
-	 * REST_Dashboard_Sharing_Controller instance.
-	 *
-	 * @since 1.75.0
-	 * @var REST_Dashboard_Sharing_Controller
-	 */
-	private $rest_dashboard_sharing_controller;
-
-	/**
 	 * Core module class names.
 	 *
 	 * @since 1.21.0
@@ -187,16 +179,18 @@ final class Modules {
 
 		$this->core_modules[ Analytics_4::MODULE_SLUG ] = Analytics_4::class;
 
+		// Preferably no features should be checked here, or any time prior to
+		// Modules::register() being called to add the 'googlesitekit_features_request_data'
+		// filter callback. For any feature flags checked in this method, a workaround needs
+		// to be added to Authentication::filter_features_via_proxy() so that the remote
+		// features request is not triggered too early.
+
 		if ( Feature_Flags::enabled( 'ideaHubModule' ) ) {
 			$this->core_modules[ Idea_Hub::MODULE_SLUG ] = Idea_Hub::class;
 		}
 
 		if ( self::should_enable_twg() ) {
 			$this->core_modules[ Thank_With_Google::MODULE_SLUG ] = Thank_With_Google::class;
-		}
-
-		if ( Feature_Flags::enabled( 'dashboardSharing' ) ) {
-			$this->rest_dashboard_sharing_controller = new REST_Dashboard_Sharing_Controller( $this );
 		}
 	}
 
@@ -283,7 +277,7 @@ final class Modules {
 		$this->sharing_settings->register();
 
 		if ( Feature_Flags::enabled( 'dashboardSharing' ) ) {
-			$this->rest_dashboard_sharing_controller->register();
+			( new REST_Dashboard_Sharing_Controller( $this ) )->register();
 		}
 
 		add_filter(

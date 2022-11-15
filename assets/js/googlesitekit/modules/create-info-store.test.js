@@ -47,7 +47,7 @@ describe( 'createInfoStore store', () => {
 	} );
 
 	describe( 'storeName', () => {
-		it( 'throws an error if storeName is not passed', async () => {
+		it( 'throws an error if storeName is not passed', () => {
 			expect( () => {
 				createInfoStore( MODULE_SLUG );
 			} ).toThrow();
