@@ -38,7 +38,6 @@ class Layout extends Component {
 		const {
 			header,
 			footer,
-			children,
 			title,
 			headerCTALabel,
 			headerCTALink,
@@ -68,7 +67,6 @@ class Layout extends Component {
 						ctaLink={ headerCTALink }
 					/>
 				) }
-				{ children }
 				{ footer && (
 					<LayoutFooter
 						ctaLabel={ footerCTALabel }

@@ -115,19 +115,22 @@ storyFiles.forEach( ( storyFile ) => {
 	}
 } );
 
-const legacyScenarios = legacyStorybookScenarios.map( ( story ) => {
-	return {
-		label: `${ story.kind }/${ story.name }`,
-		url: `${ rootURL }${ story.id }`,
-		readySelector: story.parameters.options.readySelector,
-		hoverSelector: story.parameters.options.hoverSelector,
-		clickSelector: story.parameters.options.clickSelector,
-		clickSelectors: story.parameters.options.clickSelectors,
-		postInteractionWait: story.parameters.options.postInteractionWait,
-		delay: story.parameters.options.delay,
-		onReadyScript: story.parameters.options.onReadyScript,
-		misMatchThreshold: story.parameters.options.misMatchThreshold,
-	};
-} );
+const legacyScenarios = legacyStorybookScenarios
+	.filter( ( story ) => story.name === 'Layout with Header Footer and CTAs' )
+	.map( ( story ) => {
+		return {
+			label: `${ story.kind }/${ story.name }`,
+			url: `${ rootURL }${ story.id }`,
+			readySelector: story.parameters.options.readySelector,
+			hoverSelector: story.parameters.options.hoverSelector,
+			clickSelector: story.parameters.options.clickSelector,
+			clickSelectors: story.parameters.options.clickSelectors,
+			postInteractionWait: story.parameters.options.postInteractionWait,
+			delay: story.parameters.options.delay,
+			onReadyScript: story.parameters.options.onReadyScript,
+			misMatchThreshold: story.parameters.options.misMatchThreshold,
+		};
+	} );
 
-module.exports = [ ...legacyScenarios, ...csfScenarios ];
+// module.exports = [ ...legacyScenarios, ...csfScenarios ];
+module.exports = [ ...legacyScenarios ];
