@@ -36,66 +36,52 @@ import {
 	setSearchConsoleProperty,
 } from '../utils';
 
-const wpConditionalDescribe = () => {
-	// Only run for non WP 4.x versions
-	if ( process.env.WP_VERSION?.[ 0 ] !== '4' ) {
-		return describe;
-	}
-	return () => {
-		it( 'is skipped for WP 4.x', () => {} );
-	}; // no-op
-};
-
-wpConditionalDescribe()( 'User Input Settings', () => {
+describe( 'User Input Settings', () => {
 	async function fillInInputSettings() {
-		await step( 'select role', async () => {
-			await page.waitForSelector( '.googlesitekit-user-input__question' );
-			await expect( page ).toClick( '#role-owner_with_team' );
+		await page.waitForSelector(
+			'.googlesitekit-user-input__question--active'
+		);
+
+		await step( 'select purpose', async () => {
+			await expect( page ).toClick( '#purpose-publish_blog' );
 		} );
 
+		await expect( page ).toClick(
+			'.googlesitekit-user-input__question--active .googlesitekit-user-input__buttons--next'
+		);
+
+		await pageWait();
+
 		await step( 'select post frequency', async () => {
-			await expect( page ).toClick(
-				'.googlesitekit-user-input__buttons--next'
-			);
 			await expect( page ).toClick( '#postFrequency-monthly' );
 		} );
 
-		await step( 'select goals', async () => {
-			await expect( page ).toClick(
-				'.googlesitekit-user-input__buttons--next'
-			);
-			await expect( page ).toClick( '#goals-publish_blog' );
-			await expect( page ).toClick( '#goals-share_portfolio' );
-		} );
-
-		await step( 'select help needed', async () => {
-			await expect( page ).toClick(
-				'.googlesitekit-user-input__buttons--next'
-			);
-			await expect( page ).toClick( '#helpNeeded-retaining_visitors' );
-			await expect( page ).toClick( '#helpNeeded-improving_performance' );
-			await expect( page ).toClick( '#helpNeeded-help_better_rank' );
-		} );
-
-		await step( 'enter keywords', async () => {
-			await expect( page ).toClick(
-				'.googlesitekit-user-input__buttons--next'
-			);
-			await expect( page ).toFill( '#searchTerms-keyword-0', 'One' );
-			await expect( page ).toFill( '#searchTerms-keyword-1', 'Two' );
-			await expect( page ).toFill( '#searchTerms-keyword-2', 'Three' );
-		} );
-
-		await step(
-			'go to preview page',
-			expect( page ).toClick( '.googlesitekit-user-input__buttons--next' )
+		await expect( page ).toClick(
+			'.googlesitekit-user-input__question--active .googlesitekit-user-input__buttons--next'
 		);
+
+		await pageWait();
+
+		await step( 'select goals', async () => {
+			await expect( page ).toClick( '#goals-retaining_visitors' );
+			await expect( page ).toClick( '#goals-improving_performance' );
+			await expect( page ).toClick( '#goals-help_better_rank' );
+		} );
+
+		await step( 'go to preview page', async () => {
+			await expect( page ).toClick(
+				'.googlesitekit-user-input__question--active .googlesitekit-user-input__buttons--next'
+			);
+		} );
+
+		await pageWait();
 
 		await step(
 			'wait for settings submission',
 			Promise.all( [
 				expect( page ).toClick(
-					'.googlesitekit-user-input__buttons--next'
+					'.googlesitekit-user-input__preview button',
+					{ text: /submit/i }
 				),
 				page.waitForNavigation(),
 			] )

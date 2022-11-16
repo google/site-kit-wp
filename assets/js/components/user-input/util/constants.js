@@ -21,18 +21,14 @@
  */
 import { __ } from '@wordpress/i18n';
 
-export const USER_INPUT_QUESTION_ROLE = 'role';
+export const USER_INPUT_QUESTIONS_PURPOSE = 'purpose';
 export const USER_INPUT_QUESTION_POST_FREQUENCY = 'postFrequency';
-export const USER_INPUT_QUESTION_GOALS = 'goals';
-export const USER_INPUT_QUESTION_HELP_NEEDED = 'helpNeeded';
-export const USER_INPUT_QUESTION_SEARCH_TERMS = 'searchTerms';
+export const USER_INPUT_QUESTIONS_GOALS = 'goals';
 
 export const USER_INPUT_QUESTIONS_LIST = [
-	USER_INPUT_QUESTION_ROLE,
+	USER_INPUT_QUESTIONS_PURPOSE,
 	USER_INPUT_QUESTION_POST_FREQUENCY,
-	USER_INPUT_QUESTION_GOALS,
-	USER_INPUT_QUESTION_HELP_NEEDED,
-	USER_INPUT_QUESTION_SEARCH_TERMS,
+	USER_INPUT_QUESTIONS_GOALS,
 ];
 
 /**
@@ -43,33 +39,9 @@ export const USER_INPUT_QUESTIONS_LIST = [
  *
  * @return {Object} Answers object.
  */
-export function getUserInputAnwsers() {
+export function getUserInputAnswers() {
 	return {
-		USER_INPUT_ANSWERS_ROLE: {
-			owner: __(
-				'I am the owner and sole creator and admin',
-				'google-site-kit'
-			),
-			owner_with_team: __(
-				'I am the owner of the site and have a team who works on this site',
-				'google-site-kit'
-			),
-			in_house_team: __(
-				'I am part of the in-house team in a content creation, growth, SEO or technical role',
-				'google-site-kit'
-			),
-			part_type_freelancer: __(
-				'I am a part-time or freelance consultant who is helping with this site',
-				'google-site-kit'
-			),
-		},
-		USER_INPUT_ANSWERS_POST_FREQUENCY: {
-			never: __( 'Never', 'google-site-kit' ),
-			daily: __( 'Daily / multiple times a day', 'google-site-kit' ),
-			weekly: __( 'Weekly / multiple times a week', 'google-site-kit' ),
-			monthly: __( 'Monthly or less', 'google-site-kit' ),
-		},
-		USER_INPUT_ANSWERS_GOALS: {
+		USER_INPUT_ANSWERS_PURPOSE: {
 			sell_products_or_service: __(
 				'Sell products or services',
 				'google-site-kit'
@@ -86,26 +58,32 @@ export function getUserInputAnwsers() {
 				'google-site-kit'
 			),
 		},
-		USER_INPUT_ANSWERS_HELP_NEEDED: {
+		USER_INPUT_ANSWERS_POST_FREQUENCY: {
+			never: __( 'Never', 'google-site-kit' ),
+			daily: __( 'Daily', 'google-site-kit' ),
+			weekly: __( 'Weekly', 'google-site-kit' ),
+			monthly: __( 'Monthly', 'google-site-kit' ),
+		},
+		USER_INPUT_ANSWERS_GOALS: {
 			retaining_visitors: __(
-				'Retaining visitors, turning them into loyal readers or customers',
+				'Retain visitors, turn them into loyal readers or customers',
 				'google-site-kit'
 			),
 			improving_performance: __(
-				'Improving speed and performance',
+				'Improve speed and performance',
 				'google-site-kit'
 			),
 			finding_new_topics: __(
-				'Finding new topics to write about that connect with my audience',
+				'Find new topics to write about that connect with my audience',
 				'google-site-kit'
 			),
-			growing_audience: __( 'Growing my audience', 'google-site-kit' ),
+			growing_audience: __( 'Grow my audience', 'google-site-kit' ),
 			expanding_business: __(
-				'Expanding my business into new cities, states or markets',
+				'Expand my business into new cities, states or markets',
 				'google-site-kit'
 			),
 			generating_revenue: __(
-				'Generating more revenue',
+				'Generate more revenue',
 				'google-site-kit'
 			),
 			help_better_rank: __(
@@ -113,7 +91,7 @@ export function getUserInputAnwsers() {
 				'google-site-kit'
 			),
 			understanding_content_performance: __(
-				'Understanding which content is performing best',
+				'Understand which content is performing best',
 				'google-site-kit'
 			),
 			encourage_to_post: __(

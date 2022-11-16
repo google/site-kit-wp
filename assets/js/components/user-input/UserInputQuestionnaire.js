@@ -29,16 +29,13 @@ import Data from 'googlesitekit-data';
 import { ProgressBar } from 'googlesitekit-components';
 import UserInputQuestionWrapper from './UserInputQuestionWrapper';
 import UserInputSelectOptions from './UserInputSelectOptions';
-import UserInputKeywords from './UserInputKeywords';
 import UserInputPreview from './UserInputPreview';
 import {
 	USER_INPUT_QUESTIONS_LIST,
-	USER_INPUT_QUESTION_ROLE,
+	USER_INPUT_QUESTIONS_PURPOSE,
 	USER_INPUT_QUESTION_POST_FREQUENCY,
-	USER_INPUT_QUESTION_GOALS,
-	USER_INPUT_QUESTION_HELP_NEEDED,
-	USER_INPUT_QUESTION_SEARCH_TERMS,
-	getUserInputAnwsers,
+	USER_INPUT_QUESTIONS_GOALS,
+	getUserInputAnswers,
 } from './util/constants';
 import useQueryArg from '../../hooks/useQueryArg';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
@@ -111,11 +108,10 @@ export default function UserInputQuestionnaire() {
 	}, [ activeSlug, viewContext ] );
 
 	const {
+		USER_INPUT_ANSWERS_PURPOSE,
 		USER_INPUT_ANSWERS_GOALS,
-		USER_INPUT_ANSWERS_HELP_NEEDED,
 		USER_INPUT_ANSWERS_POST_FREQUENCY,
-		USER_INPUT_ANSWERS_ROLE,
-	} = getUserInputAnwsers();
+	} = getUserInputAnswers();
 
 	const isSettings = single === 'settings';
 
@@ -237,17 +233,18 @@ export default function UserInputQuestionnaire() {
 		<div>
 			{ settingsProgress }
 
-			{ activeSlugIndex <= steps.indexOf( USER_INPUT_QUESTION_ROLE ) && (
+			{ activeSlugIndex <=
+				steps.indexOf( USER_INPUT_QUESTIONS_PURPOSE ) && (
 				<UserInputQuestionWrapper
-					slug={ USER_INPUT_QUESTION_ROLE }
-					isActive={ activeSlug === USER_INPUT_QUESTION_ROLE }
+					slug={ USER_INPUT_QUESTIONS_PURPOSE }
+					isActive={ activeSlug === USER_INPUT_QUESTIONS_PURPOSE }
 					questionNumber={ 1 }
 					title={ __(
-						'Which best describes your team/role in relation to this site?',
+						'What is the main purpose of this site?',
 						'google-site-kit'
 					) }
 					description={ __(
-						'This will help Site Kit show tips that help you specifically in your role',
+						'Based on your answer, Site Kit will tailor the metrics you see on your dashboard to help you track how close you’re getting to your specific goals',
 						'google-site-kit'
 					) }
 					next={ nextCallback }
@@ -255,9 +252,9 @@ export default function UserInputQuestionnaire() {
 					error={ error }
 				>
 					<UserInputSelectOptions
-						isActive={ activeSlug === USER_INPUT_QUESTION_ROLE }
-						slug={ USER_INPUT_QUESTION_ROLE }
-						options={ USER_INPUT_ANSWERS_ROLE }
+						isActive={ activeSlug === USER_INPUT_QUESTIONS_PURPOSE }
+						slug={ USER_INPUT_QUESTIONS_PURPOSE }
+						options={ USER_INPUT_ANSWERS_PURPOSE }
 						next={ nextCallback }
 					/>
 				</UserInputQuestionWrapper>
@@ -272,7 +269,7 @@ export default function UserInputQuestionnaire() {
 					}
 					questionNumber={ 2 }
 					title={ __(
-						'How often do you create new posts for this site?',
+						'How often do you create new content for this site?',
 						'google-site-kit'
 					) }
 					description={ __(
@@ -295,42 +292,14 @@ export default function UserInputQuestionnaire() {
 				</UserInputQuestionWrapper>
 			) }
 
-			{ activeSlugIndex <= steps.indexOf( USER_INPUT_QUESTION_GOALS ) && (
+			{ activeSlugIndex <=
+				steps.indexOf( USER_INPUT_QUESTIONS_GOALS ) && (
 				<UserInputQuestionWrapper
-					slug={ USER_INPUT_QUESTION_GOALS }
-					isActive={ activeSlug === USER_INPUT_QUESTION_GOALS }
+					slug={ USER_INPUT_QUESTIONS_GOALS }
+					isActive={ activeSlug === USER_INPUT_QUESTIONS_GOALS }
 					questionNumber={ 3 }
 					title={ __(
-						'What are the goals of this site?',
-						'google-site-kit'
-					) }
-					description={ __(
-						'Based on your answer, Site Kit will tailor the metrics you see on your dashboard to help you track how close you’re getting to your specific goals',
-						'google-site-kit'
-					) }
-					next={ nextCallback }
-					nextLabel={ nextLabel }
-					back={ backCallback }
-					error={ error }
-				>
-					<UserInputSelectOptions
-						isActive={ activeSlug === USER_INPUT_QUESTION_GOALS }
-						slug={ USER_INPUT_QUESTION_GOALS }
-						max={ 2 }
-						options={ USER_INPUT_ANSWERS_GOALS }
-						next={ nextCallback }
-					/>
-				</UserInputQuestionWrapper>
-			) }
-
-			{ activeSlugIndex <=
-				steps.indexOf( USER_INPUT_QUESTION_HELP_NEEDED ) && (
-				<UserInputQuestionWrapper
-					slug={ USER_INPUT_QUESTION_HELP_NEEDED }
-					isActive={ activeSlug === USER_INPUT_QUESTION_HELP_NEEDED }
-					questionNumber={ 4 }
-					title={ __(
-						'What do you need help most with for this site?',
+						'What are your top goals for this site?',
 						'google-site-kit'
 					) }
 					description={ __(
@@ -343,47 +312,10 @@ export default function UserInputQuestionnaire() {
 					error={ error }
 				>
 					<UserInputSelectOptions
-						isActive={
-							activeSlug === USER_INPUT_QUESTION_HELP_NEEDED
-						}
-						slug={ USER_INPUT_QUESTION_HELP_NEEDED }
+						isActive={ activeSlug === USER_INPUT_QUESTIONS_GOALS }
+						slug={ USER_INPUT_QUESTIONS_GOALS }
 						max={ 3 }
-						options={ USER_INPUT_ANSWERS_HELP_NEEDED }
-						next={ nextCallback }
-					/>
-				</UserInputQuestionWrapper>
-			) }
-
-			{ activeSlugIndex <=
-				steps.indexOf( USER_INPUT_QUESTION_SEARCH_TERMS ) && (
-				<UserInputQuestionWrapper
-					slug={ USER_INPUT_QUESTION_SEARCH_TERMS }
-					isActive={ activeSlug === USER_INPUT_QUESTION_SEARCH_TERMS }
-					questionNumber={ 5 }
-					title={ __(
-						'To help us identify opportunities for your site, enter the top three search terms that best describe your site’s content',
-						'google-site-kit'
-					) }
-					description={ __(
-						'Site Kit will keep you informed if people start finding you in Search for these terms',
-						'google-site-kit'
-					) }
-					next={ nextCallback }
-					nextLabel={
-						nextLabel === undefined
-							? __( 'Preview', 'google-site-kit' )
-							: nextLabel
-					}
-					back={ backCallback }
-					error={ error }
-					allowEmptyValues
-				>
-					<UserInputKeywords
-						isActive={
-							activeSlug === USER_INPUT_QUESTION_SEARCH_TERMS
-						}
-						slug={ USER_INPUT_QUESTION_SEARCH_TERMS }
-						max={ 3 }
+						options={ USER_INPUT_ANSWERS_GOALS }
 						next={ nextCallback }
 					/>
 				</UserInputQuestionWrapper>
