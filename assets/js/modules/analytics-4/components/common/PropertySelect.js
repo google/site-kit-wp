@@ -107,7 +107,7 @@ export default function PropertySelect( {
 				! Object.keys( dataStream ).length ||
 				! Object.values( dataStream[ currentPropertyID ] ).length
 			) {
-				return null;
+				return acc;
 			}
 
 			const measurementID =
