@@ -249,7 +249,6 @@ export default function UserInputQuestionnaire() {
 					) }
 					next={ nextCallback }
 					nextLabel={ nextLabel }
-					back={ backCallback }
 					error={ error }
 				>
 					<UserInputSelectOptions
