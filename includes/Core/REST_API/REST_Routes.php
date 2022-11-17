@@ -162,7 +162,7 @@ final class REST_Routes {
 			return current_user_can( Permissions::AUTHENTICATE );
 		};
 
-		$user_input_properties = $this->user_input_settings::get_properties();
+		$user_input_properties = User_Input_Settings::get_properties();
 
 		$routes = array(
 			new REST_Route(

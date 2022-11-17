@@ -42,6 +42,24 @@ class User_Input_Settings {
 	protected $user_input_user_settings;
 
 	/**
+	 * User Input properties.
+	 *
+	 * @since n.e.x.t
+	 * @var array|ArrayAccess
+	 */
+	private static $properties = array(
+		'purpose'       => array(
+			'scope' => 'site',
+		),
+		'postFrequency' => array(
+			'scope' => 'user',
+		),
+		'goals'         => array(
+			'scope' => 'user',
+		),
+	);
+
+	/**
 	 * Constructor.
 	 *
 	 * @since n.e.x.t
@@ -74,17 +92,7 @@ class User_Input_Settings {
 	 * @return array The user input properties.
 	 */
 	public static function get_properties() {
-		return array(
-			'purpose'       => array(
-				'scope' => 'site',
-			),
-			'postFrequency' => array(
-				'scope' => 'user',
-			),
-			'goals'         => array(
-				'scope' => 'user',
-			),
-		);
+		return static::$properties;
 	}
 
 	/**
@@ -104,7 +112,7 @@ class User_Input_Settings {
 
 		// If there are no settings, return default empty values.
 		if ( empty( $settings ) ) {
-			$properties = self::get_properties();
+			$properties = static::$properties;
 
 			array_walk(
 				$properties,
@@ -175,7 +183,7 @@ class User_Input_Settings {
 	 * @return array|WP_Error User input settings.
 	 */
 	public function set_settings( $settings ) {
-		$properties    = self::get_properties();
+		$properties    = static::$properties;
 		$site_settings = array();
 		$user_settings = array();
 
