@@ -162,6 +162,8 @@ final class REST_Routes {
 			return current_user_can( Permissions::AUTHENTICATE );
 		};
 
+		$user_input_properties = $this->user_input_settings::get_properties();
+
 		$routes = array(
 			new REST_Route(
 				'core/user/data/user-input-settings',
@@ -201,19 +203,12 @@ final class REST_Routes {
 									'settings' => array(
 										'type'       => 'object',
 										'required'   => true,
-										'properties' => array(
-											'purpose' => array(
+										'properties' => array_fill_keys(
+											array_keys( $user_input_properties ),
+											array(
 												'type'  => 'array',
 												'items' => array( 'type' => 'string' ),
-											),
-											'postFrequency' => array(
-												'type'  => 'array',
-												'items' => array( 'type' => 'string' ),
-											),
-											'goals'   => array(
-												'type'  => 'array',
-												'items' => array( 'type' => 'string' ),
-											),
+											)
 										),
 									),
 								),
