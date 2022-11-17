@@ -322,6 +322,50 @@ const baseSelectors = {
 	getWebDataStreamsBatch( state, propertyIDs ) {
 		return pick( state.webdatastreams, propertyIDs );
 	},
+
+	/**
+	 * Gets the matched measurement IDs for the given properties.
+	 *
+	 * @since 1.88.0
+	 *
+	 * @param {Object}         state      Data store's state.
+	 * @param {Array.<Object>} properties GA4 properties array of objects.
+	 * @return {(Object|null)} Matched property ID as the key and measurement ID as the value; otherwise, an empty object. Null if no properties are provided.
+	 */
+	getMatchedMeasurementIDByPropertyID: createRegistrySelector(
+		( select ) => ( state, properties ) => {
+			if ( ! properties?.length ) {
+				return null;
+			}
+
+			return properties.reduce( ( acc, property ) => {
+				const currentPropertyID = property?._id;
+				if ( ! currentPropertyID ) {
+					return acc;
+				}
+
+				const dataStream =
+					select( MODULES_ANALYTICS_4 ).getWebDataStreamsBatch(
+						currentPropertyID
+					);
+
+				if (
+					! Object.keys( dataStream ).length ||
+					! Object.values( dataStream[ currentPropertyID ] ).length
+				) {
+					return acc;
+				}
+
+				const measurementID =
+					dataStream[ currentPropertyID ][ 0 ].webStreamData
+						.measurementId; // eslint-disable-line sitekit/acronym-case
+				return {
+					...acc,
+					[ currentPropertyID ]: measurementID,
+				};
+			}, {} );
+		}
+	),
 };
 
 const store = Data.combineStores(
