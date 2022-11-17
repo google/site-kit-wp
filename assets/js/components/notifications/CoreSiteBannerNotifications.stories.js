@@ -53,7 +53,7 @@ const notification1 = {
 /**
  * Mocks the response for the notifications endpoint.
  *
- * @since n.e.x.t
+ * @since 1.88.0
  *
  * @param {Array} body Notifications response body.
  *
