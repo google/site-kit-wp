@@ -2,6 +2,8 @@
 
 Site Kit is a one-stop solution for WordPress users to use everything Google has to offer to make them successful on the web.
 
+You can download it directly from the WordPress plugin downloader but you can also download it directly from this GitHub repository from the Releases section
+
 Learn more: [https://sitekit.withgoogle.com](https://sitekit.withgoogle.com)
 
 ## Contributing
@@ -12,3 +14,4 @@ Any kind of contribution to Site Kit by Google is welcome. Head over to the [Con
 
 * WordPress >= 5.2
 * PHP >= 5.6
+* A server that is allowed to connect to external servers (Google)
