@@ -438,6 +438,12 @@ storiesOf( 'Analytics Module/Settings', module )
 				],
 				{ propertyID: '1001' }
 			);
+			dispatch( MODULES_ANALYTICS_4 ).receiveGetWebDataStreamsBatch(
+				webDataStreamsBatch,
+				{
+					propertyIDs: ga4Properties.map( ( { _id } ) => _id ),
+				}
+			);
 
 			return (
 				<Settings
