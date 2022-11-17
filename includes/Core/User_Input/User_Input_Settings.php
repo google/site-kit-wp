@@ -108,12 +108,11 @@ class User_Input_Settings {
 			'user' => $this->user_input_user_settings->get(),
 		);
 
-		$settings = array_merge( $data['site'], $data['user'] );
+		$properties = static::$properties;
+		$settings   = array_merge( $data['site'], $data['user'] );
 
 		// If there are no settings, return default empty values.
 		if ( empty( $settings ) ) {
-			$properties = static::$properties;
-
 			array_walk(
 				$properties,
 				function ( &$property ) {
@@ -142,6 +141,14 @@ class User_Input_Settings {
 				'photo' => get_avatar_url( $answered_by ),
 				'name'  => get_the_author_meta( 'user_email', $answered_by ),
 			);
+		}
+
+		// If there are un-answered questions, return default empty values for them.
+		foreach ( $properties as $property_key => $property_value ) {
+			if ( ! isset( $settings[ $property_key ] ) ) {
+				$settings[ $property_key ]           = $property_value;
+				$settings[ $property_key ]['values'] = array();
+			}
 		}
 
 		return $settings;
