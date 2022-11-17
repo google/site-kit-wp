@@ -75,6 +75,7 @@
 	&.googlesitekit-cta--error {
 		background-color: $c-utility-error-container;
 
+		a,
 		.googlesitekit-cta__title {
 			color: $c-utility-on-error-container;
 		}
