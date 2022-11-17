@@ -14,7 +14,7 @@ use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Authentication\Authentication;
-use Google\Site_Kit\Core\Util\User_Input_Settings;
+use Google\Site_Kit\Core\User_Input\User_Input_Settings;
 use WP_REST_Server;
 use WP_REST_Request;
 use WP_Error;
@@ -55,6 +55,14 @@ final class REST_Routes {
 	protected $modules;
 
 	/**
+	 * User_Input_Settings instance.
+	 *
+	 * @since n.e.x.t
+	 * @var User_Input_Settings
+	 */
+	protected $user_input_settings;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since 1.0.0
@@ -75,6 +83,8 @@ final class REST_Routes {
 			$modules = new Modules( $this->context, null, null, $this->authentication );
 		}
 		$this->modules = $modules;
+
+		$this->user_input_settings = new User_Input_Settings( $this->context );
 	}
 
 	/**
@@ -158,17 +168,15 @@ final class REST_Routes {
 				array(
 					array(
 						'methods'             => WP_REST_Server::READABLE,
-						'callback'            => function( WP_REST_Request $request ) {
-							$user_input_settings = new User_Input_Settings( $this->context, $this->authentication );
-							return rest_ensure_response( $user_input_settings->get_settings() );
+						'callback'            => function() {
+							return rest_ensure_response( $this->user_input_settings->get_settings() );
 						},
 						'permission_callback' => $can_authenticate,
 					),
 					array(
 						'methods'             => WP_REST_Server::CREATABLE,
 						'callback'            => function( WP_REST_Request $request ) {
-							$user_input_settings = new User_Input_Settings( $this->context, $this->authentication );
-							$data                = $request->get_param( 'data' );
+							$data = $request->get_param( 'data' );
 
 							if ( ! isset( $data['settings'] ) || ! is_array( $data['settings'] ) ) {
 								return new WP_Error(
@@ -179,7 +187,7 @@ final class REST_Routes {
 							}
 
 							return rest_ensure_response(
-								$user_input_settings->set_settings(
+								$this->user_input_settings->set_settings(
 									$data['settings']
 								)
 							);
