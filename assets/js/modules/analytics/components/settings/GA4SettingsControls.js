@@ -178,7 +178,7 @@ export default function GA4SettingsControls( { hasModuleAccess } ) {
 	] );
 
 	const measurementIDs = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getMatchedMeasurementIDByPropertyID(
+		select( MODULES_ANALYTICS_4 ).getMatchedMeasurementIDsByPropertyIDs(
 			properties
 		)
 	);

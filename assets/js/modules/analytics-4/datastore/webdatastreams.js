@@ -332,7 +332,7 @@ const baseSelectors = {
 	 * @param {Array.<Object>} properties GA4 properties array of objects.
 	 * @return {(Object|null)} Object with matched property ID as the key and measurement ID as the value, or an empty object if no matches are found. Null if no properties are provided.
 	 */
-	getMatchedMeasurementIDByPropertyID: createRegistrySelector(
+	getMatchedMeasurementIDsByPropertyIDs: createRegistrySelector(
 		( select ) => ( state, properties ) => {
 			if ( ! properties?.length ) {
 				return null;
