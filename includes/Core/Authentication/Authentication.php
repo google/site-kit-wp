@@ -23,7 +23,7 @@ use Google\Site_Kit\Core\Admin\Notice;
 use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Core\Authentication\Google_Proxy;
-use Google\Site_Kit\Core\Util\User_Input_Settings;
+use Google\Site_Kit\Core\User_Input\User_Input_Settings;
 use Google\Site_Kit\Plugin;
 use WP_Error;
 use WP_REST_Server;
@@ -253,7 +253,7 @@ final class Authentication {
 		$this->transients           = $transients ?: new Transients( $this->context );
 		$this->modules              = new Modules( $this->context, $this->options, $this->user_options, $this );
 		$this->user_input_state     = new User_Input_State( $this->user_options );
-		$this->user_input_settings  = new User_Input_Settings( $context, $this, $transients );
+		$this->user_input_settings  = new User_Input_Settings( $context );
 		$this->google_proxy         = new Google_Proxy( $this->context );
 		$this->credentials          = new Credentials( new Encrypted_Options( $this->options ) );
 		$this->verification         = new Verification( $this->user_options );
@@ -285,6 +285,7 @@ final class Authentication {
 		$this->disconnected_reason->register();
 		$this->user_input_state->register();
 		$this->initial_version->register();
+		$this->user_input_settings->register();
 
 		add_filter( 'allowed_redirect_hosts', $this->get_method_proxy( 'allowed_redirect_hosts' ) );
 		add_filter( 'googlesitekit_admin_data', $this->get_method_proxy( 'inline_js_admin_data' ) );
