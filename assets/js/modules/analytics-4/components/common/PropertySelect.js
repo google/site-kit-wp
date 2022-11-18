@@ -89,36 +89,11 @@ export default function PropertySelect( {
 
 	const { selectProperty } = useDispatch( MODULES_ANALYTICS_4 );
 
-	const measurementIDs = useSelect( ( select ) => {
-		// We should conditionally check the properties length here
-		// because the properties will be null if the user does not have access to the module.
-		if ( ! properties?.length ) {
-			return null;
-		}
-
-		return properties.reduce( ( acc, property ) => {
-			const currentPropertyID = property._id;
-			const dataStream =
-				select( MODULES_ANALYTICS_4 ).getWebDataStreamsBatch(
-					currentPropertyID
-				);
-
-			if (
-				! Object.keys( dataStream ).length ||
-				! Object.values( dataStream[ currentPropertyID ] ).length
-			) {
-				return acc;
-			}
-
-			const measurementID =
-				dataStream[ currentPropertyID ][ 0 ].webStreamData
-					.measurementId; // eslint-disable-line sitekit/acronym-case
-			return {
-				...acc,
-				[ currentPropertyID ]: measurementID,
-			};
-		}, {} );
-	} );
+	const measurementIDs = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getMatchedMeasurementIDsByPropertyIDs(
+			properties
+		)
+	);
 
 	const viewContext = useViewContext();
 

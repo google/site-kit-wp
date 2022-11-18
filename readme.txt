@@ -112,7 +112,6 @@ Please create a new topic on our [WordPress.org support forum](https://wordpress
 
 **Enhanced**
 
-* Change "Retry" button in inline error notice to visually appear like an inline link. See [#6055](https://github.com/google/site-kit-wp/issues/6055).
 * Render one-off tooltips in a portal. See [#6049](https://github.com/google/site-kit-wp/issues/6049).
 * Update code integrating with Gutenberg to use React hooks instead, following the new WordPress version requirement of 5.2. See [#5876](https://github.com/google/site-kit-wp/issues/5876).
 * Remove now unnecessary polyfills for WordPress versions older than 5.2, according to new version requirement. See [#5875](https://github.com/google/site-kit-wp/issues/5875).
