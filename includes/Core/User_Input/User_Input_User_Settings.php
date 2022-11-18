@@ -10,7 +10,9 @@
 
 namespace Google\Site_Kit\Core\User_Input;
 
+use Closure;
 use Google\Site_Kit\Core\Storage\User_Setting;
+use Google\Site_Kit\Core\User_Input\User_Input_Settings;
 
 /**
  * Class for handling the user specific settings in User Input.
@@ -25,6 +27,11 @@ class User_Input_User_Settings extends User_Setting {
 	 * The user option name for this setting.
 	 */
 	const OPTION = 'googlesitekit_user_input_settings';
+
+	/**
+	 * The scope for which the settings are handled by this class.
+	 */
+	const SCOPE = 'user';
 
 	/**
 	 * Gets the expected value type.
@@ -46,5 +53,61 @@ class User_Input_User_Settings extends User_Setting {
 	 */
 	protected function get_default() {
 		return array();
+	}
+
+	/**
+	 * Gets the callback for sanitizing the setting's value before saving.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return Closure
+	 */
+	protected function get_sanitize_callback() {
+		$properties = array_filter(
+			User_Input_Settings::get_properties(),
+			function ( $property ) {
+				return static::SCOPE === $property['scope'];
+			}
+		);
+
+		return function ( $settings ) use ( $properties ) {
+			if ( ! is_array( $settings ) ) {
+				return $this->get();
+			}
+
+			$results = array();
+
+			foreach ( $settings as $setting_key => $setting_values ) {
+				// Ensure all the data is valid.
+				if (
+					! in_array( $setting_key, array_keys( $properties ), true ) ||
+					! is_array( $setting_values ) ||
+					! isset( $setting_values['scope'] ) ||
+					! isset( $setting_values['values'] ) ||
+					static::SCOPE !== $setting_values['scope'] ||
+					! is_array( $setting_values['values'] )
+				) {
+					continue;
+				}
+
+				$valid_values          = array();
+				$valid_values['scope'] = $setting_values['scope'];
+				$valid_answers         = array();
+
+				foreach ( $setting_values['values'] as $answer ) {
+					if ( is_string( $answer ) ) {
+						$valid_answers[] = $answer;
+					}
+				}
+
+				$valid_values['values'] = $valid_answers;
+
+				if ( ! empty( $valid_values ) ) {
+					$results[ $setting_key ] = $valid_values;
+				}
+			}
+
+			return $results;
+		};
 	}
 }
