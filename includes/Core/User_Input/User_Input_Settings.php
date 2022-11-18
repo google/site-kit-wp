@@ -212,4 +212,83 @@ class User_Input_Settings {
 
 		return $this->get_settings();
 	}
+
+	/**
+	 * Method re-usable by scoped classes to sanitize settings.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param User_Input_Site_Settings|User_Input_User_Settings $setting Instance of either setting class.
+	 * @param array                                             $settings Settings to sanitize.
+	 * @param string                                            $scope Scope of the settings, either 'site' or 'user'.
+	 * @return array Sanitized settings.
+	 */
+	public static function sanitize_settings( $setting, $settings, $scope ) {
+		$valid_scopes = array( 'site', 'user' );
+
+		if (
+			! isset( $setting ) ||
+			! isset( $settings ) ||
+			! isset( $scope ) ||
+			! is_array( $settings ) ||
+			! in_array( $scope, $valid_scopes, true )
+		) {
+			return $setting->get();
+		}
+
+		$properties = array_filter(
+			static::get_properties(),
+			function ( $property ) use ( $scope ) {
+				return $scope === $property['scope'];
+			}
+		);
+
+		$results = array();
+
+		foreach ( $settings as $setting_key => $setting_values ) {
+			// Ensure all the data is valid.
+			if (
+				! in_array( $setting_key, array_keys( $properties ), true ) ||
+				! is_array( $setting_values ) ||
+				! isset( $setting_values['scope'] ) ||
+				! isset( $setting_values['values'] ) ||
+				$scope !== $setting_values['scope'] ||
+				! is_array( $setting_values['values'] )
+			) {
+				continue;
+			}
+
+			if (
+				'site' === $scope && (
+					! isset( $setting_values['answeredBy'] ) ||
+					! is_int( $setting_values['answeredBy'] )
+				)
+			) {
+				continue;
+			}
+
+			$valid_values          = array();
+			$valid_values['scope'] = $setting_values['scope'];
+
+			if ( 'site' === $scope ) {
+				$valid_values['answeredBy'] = $setting_values['answeredBy'];
+			}
+
+			$valid_answers = array();
+
+			foreach ( $setting_values['values'] as $answer ) {
+				if ( is_string( $answer ) ) {
+					$valid_answers[] = $answer;
+				}
+			}
+
+			$valid_values['values'] = $valid_answers;
+
+			if ( ! empty( $valid_values ) ) {
+				$results[ $setting_key ] = $valid_values;
+			}
+		}
+
+		return $results;
+	}
 }

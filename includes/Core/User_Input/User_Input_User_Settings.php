@@ -63,51 +63,8 @@ class User_Input_User_Settings extends User_Setting {
 	 * @return Closure
 	 */
 	protected function get_sanitize_callback() {
-		$properties = array_filter(
-			User_Input_Settings::get_properties(),
-			function ( $property ) {
-				return static::SCOPE === $property['scope'];
-			}
-		);
-
-		return function ( $settings ) use ( $properties ) {
-			if ( ! is_array( $settings ) ) {
-				return $this->get();
-			}
-
-			$results = array();
-
-			foreach ( $settings as $setting_key => $setting_values ) {
-				// Ensure all the data is valid.
-				if (
-					! in_array( $setting_key, array_keys( $properties ), true ) ||
-					! is_array( $setting_values ) ||
-					! isset( $setting_values['scope'] ) ||
-					! isset( $setting_values['values'] ) ||
-					static::SCOPE !== $setting_values['scope'] ||
-					! is_array( $setting_values['values'] )
-				) {
-					continue;
-				}
-
-				$valid_values          = array();
-				$valid_values['scope'] = $setting_values['scope'];
-				$valid_answers         = array();
-
-				foreach ( $setting_values['values'] as $answer ) {
-					if ( is_string( $answer ) ) {
-						$valid_answers[] = $answer;
-					}
-				}
-
-				$valid_values['values'] = $valid_answers;
-
-				if ( ! empty( $valid_values ) ) {
-					$results[ $setting_key ] = $valid_values;
-				}
-			}
-
-			return $results;
+		return function ( $settings ) {
+			return User_Input_Settings::sanitize_settings( $this, $settings, 'user' );
 		};
 	}
 }

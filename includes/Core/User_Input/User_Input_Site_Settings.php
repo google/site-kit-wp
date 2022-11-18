@@ -61,54 +61,8 @@ class User_Input_Site_Settings extends Setting {
 	 * @return callable Callback method that filters or type casts invalid setting values.
 	 */
 	protected function get_sanitize_callback() {
-		$properties = array_filter(
-			User_Input_Settings::get_properties(),
-			function ( $property ) {
-				return static::SCOPE === $property['scope'];
-			}
-		);
-
-		return function ( $settings ) use ( $properties ) {
-			if ( ! is_array( $settings ) ) {
-				return $this->get();
-			}
-
-			$results = array();
-
-			foreach ( $settings as $setting_key => $setting_values ) {
-				// Ensure all the data is valid.
-				if (
-					! in_array( $setting_key, array_keys( $properties ), true ) ||
-					! is_array( $setting_values ) ||
-					! isset( $setting_values['scope'] ) ||
-					! isset( $setting_values['values'] ) ||
-					! isset( $setting_values['answeredBy'] ) ||
-					static::SCOPE !== $setting_values['scope'] ||
-					! is_array( $setting_values['values'] ) ||
-					! is_int( $setting_values['answeredBy'] )
-				) {
-					continue;
-				}
-
-				$valid_values               = array();
-				$valid_values['scope']      = $setting_values['scope'];
-				$valid_values['answeredBy'] = $setting_values['answeredBy'];
-				$valid_answers              = array();
-
-				foreach ( $setting_values['values'] as $answer ) {
-					if ( is_string( $answer ) ) {
-						$valid_answers[] = $answer;
-					}
-				}
-
-				$valid_values['values'] = $valid_answers;
-
-				if ( ! empty( $valid_values ) ) {
-					$results[ $setting_key ] = $valid_values;
-				}
-			}
-
-			return $results;
+		return function ( $settings ) {
+			return User_Input_Settings::sanitize_settings( $this, $settings, 'site' );
 		};
 	}
 }
