@@ -11,6 +11,8 @@
 namespace Google\Site_Kit\Core\User_Input;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Authentication\Authentication;
+use Google\Site_Kit\Core\Authentication\User_Input_State;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\User_Input\User_Input_Site_Settings;
@@ -24,6 +26,14 @@ use Google\Site_Kit\Core\User_Input\User_Input_User_Settings;
  * @ignore
  */
 class User_Input_Settings {
+
+	/**
+	 * Authentication instance.
+	 *
+	 * @since n.e.x.t
+	 * @var Authentication
+	 */
+	private $authentication;
 
 	/**
 	 * User_Input_Site_Settings instance.
@@ -64,12 +74,14 @@ class User_Input_Settings {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param Context $context Plugin context.
+	 * @param Context        $context         Plugin context.
+	 * @param Authentication $authentication  Optional. Authentication instance. Default a new instance.
 	 */
-	public function __construct( Context $context ) {
+	public function __construct( Context $context, Authentication $authentication = null ) {
 		$options      = new Options( $context );
 		$user_options = new User_Options( $context );
 
+		$this->authentication           = $authentication ?: new Authentication( $context );
 		$this->user_input_site_settings = new User_Input_Site_Settings( $options );
 		$this->user_input_user_settings = new User_Input_User_Settings( $user_options );
 	}
@@ -210,7 +222,14 @@ class User_Input_Settings {
 		$this->user_input_site_settings->set( $site_settings );
 		$this->user_input_user_settings->set( $user_settings );
 
-		return $this->get_settings();
+		$updated_settings = $this->get_settings();
+		$is_empty         = $this->are_settings_empty( $updated_settings );
+
+		if ( ! is_null( $is_empty ) ) {
+			$this->authentication->get_user_input_state()->set( $is_empty ? User_Input_State::VALUE_MISSING : User_Input_State::VALUE_COMPLETED );
+		}
+
+		return $updated_settings;
 	}
 
 	/**

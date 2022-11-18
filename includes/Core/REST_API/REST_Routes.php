@@ -84,7 +84,7 @@ final class REST_Routes {
 		}
 		$this->modules = $modules;
 
-		$this->user_input_settings = new User_Input_Settings( $this->context );
+		$this->user_input_settings = new User_Input_Settings( $this->context, $this->authentication );
 	}
 
 	/**
