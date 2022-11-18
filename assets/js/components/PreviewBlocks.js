@@ -26,18 +26,7 @@ import PropTypes from 'prop-types';
  */
 import PreviewBlock from './PreviewBlock';
 
-function PreviewBlocks( {
-	width,
-	height,
-	shape,
-	count,
-	smallWidth,
-	smallHeight,
-	tabletWidth,
-	tabletHeight,
-	desktopWidth,
-	desktopHeight,
-} ) {
+function PreviewBlocks( { width, height, shape, count } ) {
 	const toReturn = [];
 	let i = 0;
 	while ( i++ < count ) {
@@ -46,12 +35,6 @@ function PreviewBlocks( {
 				width={ width }
 				height={ height }
 				shape={ shape }
-				smallWidth={ smallWidth }
-				smallHeight={ smallHeight }
-				tabletWidth={ tabletWidth }
-				tabletHeight={ tabletHeight }
-				desktopWidth={ desktopWidth }
-				desktopHeight={ desktopHeight }
 				key={ i }
 			/>
 		);
@@ -65,12 +48,6 @@ PreviewBlocks.propTypes = {
 	height: PropTypes.string,
 	shape: PropTypes.string,
 	count: PropTypes.number,
-	smallWidth: PropTypes.string,
-	smallHeight: PropTypes.string,
-	tabletWidth: PropTypes.string,
-	tabletHeight: PropTypes.string,
-	desktopWidth: PropTypes.string,
-	desktopHeight: PropTypes.string,
 };
 
 PreviewBlocks.defaultProps = {
