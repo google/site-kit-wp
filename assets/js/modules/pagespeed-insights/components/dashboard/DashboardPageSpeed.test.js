@@ -108,7 +108,7 @@ const setupRegistryNoFieldDataDesktop = ( { dispatch } ) => {
 describe( 'DashboardPageSpeed', () => {
 	afterEach( fetchMock.mockClear );
 
-	it( 'renders a preview blocks while reports are requested', async () => {
+	it( 'renders preview blocks while reports are requested', async () => {
 		freezeFetch(
 			/^\/google-site-kit\/v1\/modules\/pagespeed-insights\/data\/pagespeed/
 		);
