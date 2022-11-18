@@ -160,7 +160,7 @@ class User_Input_Settings {
 	 * @since n.e.x.t
 	 *
 	 * @param array $settings The settings to check.
-	 * @return boolean|null TRUE if at least one of the settings has empty values, otherwise FALSE. If a request to the proxy server fails, it will return NULL.
+	 * @return boolean|null TRUE if at least one of the settings has empty values, otherwise FALSE.
 	 */
 	public function are_settings_empty( $settings = array() ) {
 		if ( empty( $settings ) ) {
