@@ -44,7 +44,7 @@ export default function DashboardPageSpeedLoading() {
 				<PreviewBlocks
 					count={ 5 }
 					smallWidth="100%"
-					smallHeight="118px"
+					smallHeight="90px"
 					width="100%"
 					height="78px"
 				/>
