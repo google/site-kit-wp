@@ -108,7 +108,7 @@ const setupRegistryNoFieldDataDesktop = ( { dispatch } ) => {
 describe( 'DashboardPageSpeed', () => {
 	afterEach( fetchMock.mockClear );
 
-	it( 'renders a preview blocks while reports are requested', async () => {
+	it( 'renders a progress bar while reports are requested', async () => {
 		freezeFetch(
 			/^\/google-site-kit\/v1\/modules\/pagespeed-insights\/data\/pagespeed/
 		);
@@ -116,17 +116,12 @@ describe( 'DashboardPageSpeed', () => {
 		freezeFetch(
 			/^\/google-site-kit\/v1\/modules\/pagespeed-insights\/data\/pagespeed/
 		);
-		const { container } = render( <DashboardPageSpeed />, {
+		const { queryByRole } = render( <DashboardPageSpeed />, {
 			setupRegistry: setupRegistryNoReports,
 		} );
-		const widgetElement = container.querySelector(
-			'#googlesitekit-pagespeed-header'
-		);
 
 		await waitFor( () => {
-			expect( widgetElement ).toHaveClass(
-				'googlesitekit-pagespeed-widget__content-wrapper--loading'
-			);
+			expect( queryByRole( 'progressbar' ) ).toBeInTheDocument();
 		} );
 	} );
 

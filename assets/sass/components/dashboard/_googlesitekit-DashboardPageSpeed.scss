@@ -41,6 +41,20 @@
 		position: relative;
 	}
 
+	.googlesitekit-pagespeed-widget__content-wrapper--loading {
+		.googlesitekit-pagespeed-widget__content {
+			visibility: hidden;
+		}
+	}
+
+	.googlesitekit-pagespeed-widget__progress-bar {
+		left: 50%;
+		position: absolute;
+		top: 50%;
+		transform: translate(-50%, -50%);
+		width: 100%;
+	}
+
 	.googlesitekit-pagespeed-widget__header {
 		align-items: flex-end;
 		border-bottom: 1px solid $c-utility-divider;
@@ -252,35 +266,6 @@
 
 		svg {
 			max-height: 150px;
-		}
-	}
-
-	.googlesitekit-pagespeed-widget__content-wrapper--loading {
-
-		.googlesitekit-pagespeed-widget__data-src-tabs {
-			display: flex;
-			gap: 12px;
-
-			@media (min-width: $bp-tablet) {
-				gap: 20px;
-				padding-left: 24px;
-			}
-		}
-
-		.googlesitekit-pagespeed-widget__device-size-tab-bar-wrapper {
-			display: flex;
-			padding-right: 24px;
-		}
-
-		.googlesitekit-pagespeed-widget__values {
-
-			.googlesitekit-preview-block {
-				padding: 18px 16px;
-
-				@media (min-width: $bp-tablet) {
-					padding: 18px 24px;
-				}
-			}
 		}
 	}
 }
