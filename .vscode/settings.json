@@ -18,6 +18,9 @@
 	"[javascript]": {
 		"editor.formatOnSave": true
 	},
+	"[scss]": {
+		"editor.defaultFormatter": "stylelint.vscode-stylelint"
+	},
 	"editor.codeActionsOnSave": {
 		"source.fixAll": true,
 		"source.fixAll.eslint": true
