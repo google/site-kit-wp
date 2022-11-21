@@ -95,7 +95,7 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 					$option['useSnippet'] = (bool) $option['useSnippet'];
 				}
 				if ( isset( $option['googleTagID'] ) && ! empty( $option['googleTagID'] ) ) {
-					if ( ! preg_match( '/^(G|GT|AW)-/', $option['googleTagID'] ) ) {
+					if ( ! preg_match( '/^(G|GT|AW)-[a-zA-Z0-9]+$/', $option['googleTagID'] ) ) {
 						return false;
 					}
 				}

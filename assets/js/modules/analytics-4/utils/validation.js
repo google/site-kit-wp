@@ -20,6 +20,7 @@
  * Internal dependencies
  */
 import { PROPERTY_CREATE, WEBDATASTREAM_CREATE } from '../datastore/constants';
+import { isValidAccountID } from '../../tagmanager/util/validation';
 
 /**
  * Checks whether the given property ID appears to be valid.
@@ -92,4 +93,47 @@ export function isValidMeasurementID( measurementID ) {
 		typeof measurementID === 'string' &&
 		/^G-[a-zA-Z0-9]+$/.test( measurementID )
 	);
+}
+
+/**
+ * Checks whether the given googleTagId appears to be valid.
+ *
+ * @since n.e.x.t
+ *
+ * @param {*} googleTagID Google Tag ID to check.
+ * @return {boolean} TRUE if the googleTagID is valid, otherwise FALSE.
+ */
+export function isValidGoogleTagID( googleTagID ) {
+	return (
+		typeof googleTagID === 'string' &&
+		/^(G|GT|AW)-[a-zA-Z0-9]+$/.test( googleTagID )
+	);
+}
+
+/**
+ * Checks whether the given googleTagAccountID appears to be valid.
+ *
+ * @alias module:tagmanager/utils/validation.isValidAccountID
+ *
+ * @since n.e.x.t
+ *
+ * @param {*} googleTagAccountID Google Tag ID to check.
+ * @return {boolean} TRUE if the googleTagAccountID is valid, otherwise FALSE.
+ */
+export function isValidGoogleTagAccountID( googleTagAccountID ) {
+	return isValidAccountID( googleTagAccountID );
+}
+
+/**
+ * Checks whether the given googleTagContainerID appears to be valid.
+ *
+ * @alias module:tagmanager/utils/validation.isValidAccountID
+ *
+ * @since n.e.x.t
+ *
+ * @param {*} googleTagContainerID Google Tag ID to check.
+ * @return {boolean} TRUE if the googleTagContainerID is valid, otherwise FALSE.
+ */
+export function isValidGoogleTagContainerID( googleTagContainerID ) {
+	return isValidAccountID( googleTagContainerID );
 }
