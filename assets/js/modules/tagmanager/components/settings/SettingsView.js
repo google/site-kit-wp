@@ -138,7 +138,7 @@ export default function SettingsView() {
 							<Link href={ editViewSettingsURL } external>
 								{ createInterpolateElement(
 									__(
-										'Edit <VisuallyHidden>publication </VisuallyHidden>in Tag Manager',
+										'Edit <VisuallyHidden>container </VisuallyHidden>in Tag Manager',
 										'google-site-kit'
 									),
 									{
