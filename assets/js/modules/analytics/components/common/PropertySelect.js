@@ -35,31 +35,28 @@ import useViewContext from '../../../../hooks/useViewContext';
 const { useSelect, useDispatch } = Data;
 
 export default function PropertySelect( { hasModuleAccess } ) {
-	const { accountID, properties, isResolvingProperties } = useSelect(
-		( select ) => {
-			const data = {
-				accountID: select( MODULES_ANALYTICS ).getAccountID(),
-				properties: [],
-				isResolvingProperties: false,
-			};
-
-			if ( hasModuleAccess === false ) {
-				data.properties = null;
-				return data;
-			}
-
-			if ( data.accountID ) {
-				data.properties = select( MODULES_ANALYTICS ).getProperties(
-					data.accountID
-				);
-				data.isResolvingProperties = select(
-					MODULES_ANALYTICS
-				).isResolving( 'getProperties', [ data.accountID ] );
-			}
-
-			return data;
-		}
+	const accountID = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getAccountID()
 	);
+
+	const properties = useSelect( ( select ) => {
+		if ( hasModuleAccess === false ) {
+			return null;
+		}
+		if ( ! accountID ) {
+			return [];
+		}
+		return select( MODULES_ANALYTICS ).getProperties( accountID );
+	} );
+
+	const isResolvingProperties = useSelect( ( select ) => {
+		if ( hasModuleAccess === false || ! accountID ) {
+			return false;
+		}
+		select( MODULES_ANALYTICS ).isResolving( 'getProperties', [
+			accountID,
+		] );
+	} );
 
 	const propertyID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getPropertyID()

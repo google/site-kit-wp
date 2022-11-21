@@ -54,11 +54,12 @@ const { useDispatch, useSelect } = Data;
 
 export default function AccountCreate() {
 	const [ isNavigating, setIsNavigating ] = useState( false );
-	const { accounts, hasResolvedAccounts } = useSelect( ( select ) => ( {
-		accounts: select( MODULES_ANALYTICS ).getAccounts(),
-		hasResolvedAccounts:
-			select( MODULES_ANALYTICS ).hasFinishedResolution( 'getAccounts' ),
-	} ) );
+	const accounts = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getAccounts()
+	);
+	const hasResolvedAccounts = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).hasFinishedResolution( 'getAccounts' )
+	);
 	const accountTicketTermsOfServiceURL = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getAccountTicketTermsOfServiceURL()
 	);

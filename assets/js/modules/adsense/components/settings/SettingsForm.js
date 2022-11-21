@@ -46,14 +46,11 @@ export default function SettingsForm() {
 	const clientID = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getClientID()
 	);
-	const { existingTag, hasResolvedGetExistingTag } = useSelect(
-		( select ) => ( {
-			existingTag: select( MODULES_ADSENSE ).getExistingTag(),
-			hasResolvedGetExistingTag:
-				select( MODULES_ADSENSE ).hasFinishedResolution(
-					'getExistingTag'
-				),
-		} )
+	const existingTag = useSelect( ( select ) =>
+		select( MODULES_ADSENSE ).getExistingTag()
+	);
+	const hasResolvedGetExistingTag = useSelect( ( select ) =>
+		select( MODULES_ADSENSE ).hasFinishedResolution( 'getExistingTag' )
 	);
 
 	if ( ! hasResolvedGetExistingTag ) {

@@ -35,15 +35,16 @@ const { useSelect, useDispatch } = Data;
 
 export default function AccountSelect( { hasModuleAccess } ) {
 	const viewContext = useViewContext();
+
 	const accountID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getAccountID()
 	);
-
-	const { accounts, hasResolvedAccounts } = useSelect( ( select ) => ( {
-		accounts: select( MODULES_ANALYTICS ).getAccounts(),
-		hasResolvedAccounts:
-			select( MODULES_ANALYTICS ).hasFinishedResolution( 'getAccounts' ),
-	} ) );
+	const accounts = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getAccounts()
+	);
+	const hasResolvedAccounts = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).hasFinishedResolution( 'getAccounts' )
+	);
 
 	const { selectAccount } = useDispatch( MODULES_ANALYTICS );
 	const onChange = useCallback(
