@@ -26,7 +26,9 @@ Selectors can have associated resolvers that trigger requests, using asynchronou
 
 ### Step 2: Client `fetch` request
 
-Client makes a `fetch` request (using our `API.get`/`API.set` functions, which use `@wordpress/api-fetch` internally) to the WordPress REST API, usually a custom endpoint defined by Site Kit. (If cached data exists, the request is skipped—go to step 5.)
+Client makes a `fetch` request (using our `API.get`/`API.set` functions, which uses `siteKitRequest` internally) to the WordPress REST API, usually a custom endpoint defined by Site Kit.
+
+[If cached data exists, the request is skipped](#step-6-caching), regardless of how many requests are made. We also have a custom `@wordpress/api-fetch` middleware ([see: `preloadMiddleware`](https://github.com/google/site-kit-wp/blob/develop/assets/js/googlesitekit/api/middleware/preloading.js)) that allows us to preload request data onto the page from the server, but this data is used only for the initial request. Subsequent requests will go through the normal request lifecycle outlined in this doc.
 
 ### Step 3: REST API handler
 
