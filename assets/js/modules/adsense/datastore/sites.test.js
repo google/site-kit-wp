@@ -153,7 +153,7 @@ describe( 'modules/adsense sites', () => {
 				[ 'some-other-tld.ie', fixtures.sites[ 2 ] ],
 			] )(
 				'finds the site in this account that matches the domain: %s',
-				async ( domain, expected ) => {
+				( domain, expected ) => {
 					const accountID = fixtures.clients[ 0 ]._accountID;
 					const site = registry
 						.select( MODULES_ADSENSE )
@@ -167,7 +167,7 @@ describe( 'modules/adsense sites', () => {
 				[ 'some-other-tld.com' ],
 			] )(
 				'returns null when no site matches the given domain: %s',
-				async ( domain ) => {
+				( domain ) => {
 					const accountID = fixtures.clients[ 0 ]._accountID;
 					const site = registry
 						.select( MODULES_ADSENSE )
@@ -176,7 +176,7 @@ describe( 'modules/adsense sites', () => {
 				}
 			);
 
-			it( 'returns null when no site matches the given domain', async () => {
+			it( 'returns null when no site matches the given domain', () => {
 				const accountID = fixtures.clients[ 0 ]._accountID;
 
 				const site = registry

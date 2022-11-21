@@ -1393,12 +1393,10 @@ final class Analytics extends Module
 		);
 
 		if ( count( $invalid_metrics ) > 0 ) {
-			$message = sprintf(
+			$message = count( $invalid_metrics ) > 1 ? sprintf(
 				/* translators: %s: is replaced with a comma separated list of the invalid metrics. */
-				_n(
-					'Unsupported metric requested: %s',
+				__(
 					'Unsupported metrics requested: %s',
-					count( $invalid_metrics ),
 					'google-site-kit'
 				),
 				join(
@@ -1406,6 +1404,13 @@ final class Analytics extends Module
 					__( ', ', 'google-site-kit' ),
 					$invalid_metrics
 				)
+			) : sprintf(
+				/* translators: %s: is replaced with the invalid metric. */
+				__(
+					'Unsupported metric requested: %s',
+					'google-site-kit'
+				),
+				$invalid_metrics
 			);
 
 			throw new Invalid_Report_Metrics_Exception( $message );
@@ -1449,12 +1454,10 @@ final class Analytics extends Module
 		);
 
 		if ( count( $invalid_dimensions ) > 0 ) {
-			$message = sprintf(
+			$message = count( $invalid_dimensions ) > 1 ? sprintf(
 				/* translators: %s: is replaced with a comma separated list of the invalid dimensions. */
-				_n(
-					'Unsupported dimension requested: %s',
+				__(
 					'Unsupported dimensions requested: %s',
-					count( $invalid_dimensions ),
 					'google-site-kit'
 				),
 				join(
@@ -1462,6 +1465,13 @@ final class Analytics extends Module
 					__( ', ', 'google-site-kit' ),
 					$invalid_dimensions
 				)
+			) : sprintf(
+				/* translators: %s: is replaced with the invalid dimension. */
+				__(
+					'Unsupported dimension requested: %s',
+					'google-site-kit'
+				),
+				$invalid_dimensions
 			);
 
 			throw new Invalid_Report_Dimensions_Exception( $message );

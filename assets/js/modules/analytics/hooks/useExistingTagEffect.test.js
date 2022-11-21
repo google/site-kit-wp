@@ -45,7 +45,7 @@ describe( 'useExistingTagEffect', () => {
 		registry.dispatch( MODULES_ANALYTICS ).receiveGetExistingTag( null );
 	} );
 
-	it( 'should not select an existing tag if it is available and should not disable the "use snippet" setting if the existing tag does not match the propertyID', async () => {
+	it( 'should not select an existing tag if it is available and should not disable the "use snippet" setting if the existing tag does not match the propertyID', () => {
 		fetchMock.getOnce(
 			/^\/google-site-kit\/v1\/modules\/analytics\/data\/properties-profiles/,
 			{ body: { properties: [] }, status: 200 }

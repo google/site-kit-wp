@@ -220,7 +220,7 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 				);
 			} );
 
-			it( 'should not make a network request if webdatastreams for this account are already present', async () => {
+			it( 'should not make a network request if webdatastreams for this account are already present', () => {
 				const testPropertyID = '12345';
 				const propertyID = testPropertyID;
 
@@ -414,7 +414,7 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 			} );
 
-			it( 'should not make a network request if webdatastreams for the selected properties are already present', async () => {
+			it( 'should not make a network request if webdatastreams for the selected properties are already present', () => {
 				for ( const [ propertyID, webdatastreams ] of Object.entries(
 					fixtures.webDataStreamsBatch
 				) ) {
@@ -484,6 +484,98 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 					webDataStreamsBatchEndpoint
 				);
 				expect( fetchMock ).toHaveFetchedTimes( 2 );
+			} );
+		} );
+
+		describe( 'getMatchedMeasurementIDsByPropertyIDs', () => {
+			it( 'should return null if the properties are empty', () => {
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getMatchedMeasurementIDsByPropertyIDs( [] )
+				).toBeNull();
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getMatchedMeasurementIDsByPropertyIDs( null )
+				).toBeNull();
+			} );
+
+			it( 'should return an empty object if the properties are not matched', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetWebDataStreamsBatch(
+						fixtures.webDataStreamsBatch,
+						{
+							propertyIDs: fixtures.properties.map(
+								( { _id } ) => _id
+							),
+						}
+					);
+
+				const matchedProperties = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getMatchedMeasurementIDsByPropertyIDs( [
+						{
+							_id: '1100',
+							_accountID: '100',
+							name: 'properties/1100',
+						},
+					] );
+				expect( matchedProperties ).toEqual( {} );
+			} );
+
+			it( 'should return an object with matched property id as the key and measurement id as the value', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetWebDataStreamsBatch(
+						fixtures.webDataStreamsBatch,
+						{
+							propertyIDs: fixtures.properties.map(
+								( { _id } ) => _id
+							),
+						}
+					);
+
+				const matchedProperties = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getMatchedMeasurementIDsByPropertyIDs(
+						fixtures.properties
+					);
+				expect( matchedProperties ).toEqual( {
+					1000: '1A2BCD345E',
+					1001: '155BC2366E',
+				} );
+			} );
+
+			it( 'should skip matching if the property id is not found in the property object', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetWebDataStreamsBatch(
+						fixtures.webDataStreamsBatch,
+						{
+							propertyIDs: fixtures.properties.map(
+								( { _id } ) => _id
+							),
+						}
+					);
+
+				const matchedProperties = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getMatchedMeasurementIDsByPropertyIDs( [
+						...fixtures.properties,
+						// Add an object that does not have the _id property.
+						// Hence, it should be skipped from the matching.
+						{
+							_accountID: '100',
+							name: 'properties/1100',
+						},
+					] );
+				expect( matchedProperties ).toEqual( {
+					1000: '1A2BCD345E',
+					1001: '155BC2366E',
+				} );
 			} );
 		} );
 	} );

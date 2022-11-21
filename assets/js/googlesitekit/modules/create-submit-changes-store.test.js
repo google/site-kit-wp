@@ -75,7 +75,7 @@ describe( 'createSubmitChangesStore', () => {
 					Data.combineStores(
 						Data.commonStore,
 						createSubmitChangesStore( {
-							submitChanges: async () => ( { error } ),
+							submitChanges: () => ( { error } ),
 						} ),
 						createErrorStore( storeName )
 					)
@@ -105,7 +105,7 @@ describe( 'createSubmitChangesStore', () => {
 					Data.combineStores(
 						Data.commonStore,
 						createSubmitChangesStore( {
-							submitChanges: async () => ( { error } ),
+							submitChanges: () => ( { error } ),
 						} ),
 						createErrorStore( storeName )
 					)
@@ -182,7 +182,7 @@ describe( 'createSubmitChangesStore', () => {
 						Data.commonStore,
 						createErrorStore( storeName ),
 						createSubmitChangesStore( {
-							submitChanges: async () => {
+							submitChanges: () => {
 								expect(
 									registry
 										.select( storeName )
@@ -205,7 +205,7 @@ describe( 'createSubmitChangesStore', () => {
 					Data.combineStores(
 						Data.commonStore,
 						createSubmitChangesStore( {
-							submitChanges: async () => ( {} ),
+							submitChanges: () => ( {} ),
 						} ),
 						createErrorStore( storeName )
 					)

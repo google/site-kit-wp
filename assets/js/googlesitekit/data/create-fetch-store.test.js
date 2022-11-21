@@ -101,7 +101,7 @@ describe( 'createFetchStore store', () => {
 		it( 'includes the expected actions', () => {
 			const fetchStoreDefinition = createFetchStore( {
 				baseName: 'SaveSomeData',
-				controlCallback: async () => true,
+				controlCallback: () => true,
 			} );
 
 			expect( Object.keys( fetchStoreDefinition.actions ) ).toEqual( [
@@ -128,7 +128,7 @@ describe( 'createFetchStore store', () => {
 			it( 'yields the expected actions for an arguments error', () => {
 				const fetchStoreDefinition = createFetchStore( {
 					baseName: 'SaveSomeData',
-					controlCallback: async () => true,
+					controlCallback: () => true,
 					argsToParams: ( requiredParam ) => {
 						return {
 							requiredParam,
@@ -150,7 +150,7 @@ describe( 'createFetchStore store', () => {
 			it( 'yields the expected actions for a success request', () => {
 				const fetchStoreDefinition = createFetchStore( {
 					baseName: 'SaveSomeData',
-					controlCallback: async () => true,
+					controlCallback: () => true,
 				} );
 
 				const action = fetchStoreDefinition.actions.fetchSaveSomeData();
@@ -177,7 +177,7 @@ describe( 'createFetchStore store', () => {
 			it( 'yields the expected actions for an error request', () => {
 				const fetchStoreDefinition = createFetchStore( {
 					baseName: 'SaveSomeData',
-					controlCallback: async () => true,
+					controlCallback: () => true,
 				} );
 
 				const action = fetchStoreDefinition.actions.fetchSaveSomeData();
@@ -358,7 +358,7 @@ describe( 'createFetchStore store', () => {
 				} );
 				const fetchStoreDefinition = createFetchStore( {
 					baseName: 'SaveSomeData',
-					controlCallback: async () => true,
+					controlCallback: () => true,
 					argsToParams: ( requiredParam ) => {
 						return {
 							requiredParam,
@@ -403,7 +403,7 @@ describe( 'createFetchStore store', () => {
 				const validateParams = jest.fn();
 				const fetchStoreDefinition = createFetchStore( {
 					baseName: 'SaveSomeData',
-					controlCallback: async () => true,
+					controlCallback: () => true,
 					reducerCallback: ( state ) => state,
 					argsToParams: () => ( {} ),
 					validateParams,
@@ -425,7 +425,7 @@ describe( 'createFetchStore store', () => {
 		it( 'includes the expected selectors', () => {
 			const fetchStoreDefinition = createFetchStore( {
 				baseName: 'SaveSomeData',
-				controlCallback: async () => true,
+				controlCallback: () => true,
 			} );
 
 			expect( Object.keys( fetchStoreDefinition.selectors ) ).toEqual( [

@@ -400,7 +400,7 @@ describe( 'core/user authentication', () => {
 				expect( canViewSharedModule ).toBe( false );
 			} );
 
-			it( 'should return undefined if the capabilities are not loaded', async () => {
+			it( 'should return undefined if the capabilities are not loaded', () => {
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/core\/user\/data\/permissions/,
 					{
@@ -424,7 +424,7 @@ describe( 'core/user authentication', () => {
 				expect( canViewSharedModule ).toBeUndefined();
 			} );
 
-			it( 'should return FALSE if the module is shared but the user does not have the view permission', async () => {
+			it( 'should return FALSE if the module is shared but the user does not have the view permission', () => {
 				registry
 					.dispatch( CORE_USER )
 					.receiveGetCapabilities( capabilities.permissions );
@@ -444,7 +444,7 @@ describe( 'core/user authentication', () => {
 				expect( canViewSharedModule ).toBe( false );
 			} );
 
-			it( 'should return TRUE if the module is shared and the user has the view permission', async () => {
+			it( 'should return TRUE if the module is shared and the user has the view permission', () => {
 				registry
 					.dispatch( CORE_USER )
 					.receiveGetCapabilities(

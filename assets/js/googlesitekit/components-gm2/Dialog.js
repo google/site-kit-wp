@@ -27,8 +27,8 @@ import classnames from 'classnames';
  * WordPress dependencies
  */
 import { useInstanceId } from '@wordpress/compose';
-import { useCallback } from '@wordpress/element';
-import { __ } from '@wordpress/i18n';
+import { createInterpolateElement, useCallback } from '@wordpress/element';
+import { sprintf, __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -119,10 +119,19 @@ const Dialog = ( {
 							) }
 							{ dependentModules && (
 								<p className="mdc-dialog__dependecies">
-									<strong>
-										{ __( 'Note: ', 'google-site-kit' ) }
-									</strong>
-									{ dependentModules }
+									{ createInterpolateElement(
+										sprintf(
+											/* translators: %s is replaced with the dependent modules. */
+											__(
+												'<strong>Note:</strong> %s',
+												'google-site-kit'
+											),
+											dependentModules
+										),
+										{
+											strong: <strong />,
+										}
+									) }
 								</p>
 							) }
 							<footer className="mdc-dialog__actions">

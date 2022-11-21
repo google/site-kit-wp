@@ -68,7 +68,7 @@ describe( 'AccountSelect', () => {
 		).toBe( true );
 	} );
 
-	it( 'should have a "Set up a new account" item at the end of the list', async () => {
+	it( 'should have a "Set up a new account" item at the end of the list', () => {
 		registry
 			.dispatch( MODULES_TAGMANAGER )
 			.receiveGetAccounts( fixtures.accounts );
@@ -82,7 +82,7 @@ describe( 'AccountSelect', () => {
 		expect( listItems.pop() ).toHaveTextContent( /set up a new account/i );
 	} );
 
-	it( 'should render a loading state when accounts are undefined', async () => {
+	it( 'should render a loading state when accounts are undefined', () => {
 		freezeFetch(
 			/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/accounts/
 		);
@@ -98,7 +98,7 @@ describe( 'AccountSelect', () => {
 		expect( queryByRole( 'progressbar' ) ).toBeInTheDocument();
 	} );
 
-	it( 'should render a select box with only the set up option when no accounts exist', async () => {
+	it( 'should render a select box with only the set up option when no accounts exist', () => {
 		registry.dispatch( MODULES_TAGMANAGER ).receiveGetAccounts( [] );
 		registry
 			.dispatch( MODULES_TAGMANAGER )
@@ -111,7 +111,7 @@ describe( 'AccountSelect', () => {
 		expect( listItems.pop() ).toHaveTextContent( /set up a new account/i );
 	} );
 
-	it( 'should update accountID in the store when a new item is clicked', async () => {
+	it( 'should update accountID in the store when a new item is clicked', () => {
 		registry
 			.dispatch( MODULES_TAGMANAGER )
 			.receiveGetAccounts( fixtures.accounts );

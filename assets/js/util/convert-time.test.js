@@ -53,7 +53,7 @@ describe( 'convertSecondsToArray', () => {
 			196,
 			[ 0, 3, 16, 0 ],
 		],
-	] )( '%s', async ( _, args, expected ) => {
+	] )( '%s', ( _, args, expected ) => {
 		const secondsArray = convertSecondsToArray( args );
 		expect( secondsArray ).toEqual( expected );
 	} );

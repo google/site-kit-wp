@@ -75,7 +75,7 @@ export default function PropertySelect( {
 		select( MODULES_ANALYTICS_4 ).getPropertyID()
 	);
 
-	let isLoading = useSelect(
+	const isLoading = useSelect(
 		( select ) =>
 			! select( MODULES_ANALYTICS ).hasFinishedResolution(
 				'getAccounts'
@@ -89,32 +89,11 @@ export default function PropertySelect( {
 
 	const { selectProperty } = useDispatch( MODULES_ANALYTICS_4 );
 
-	const measurementIDs = useSelect( ( select ) => {
-		// We should conditionally check the properties length here
-		// because the properties will be null if the user does not have access to the module.
-		if ( ! properties?.length ) {
-			return null;
-		}
-		return properties.reduce( ( acc, property ) => {
-			const currentPropertyID = property._id;
-			const dataStream =
-				select( MODULES_ANALYTICS_4 ).getWebDataStreamsBatch(
-					currentPropertyID
-				);
-			if ( ! Object.keys( dataStream ).length ) {
-				isLoading = true;
-				return null;
-			}
-			const measurementID =
-				dataStream[ currentPropertyID ][ 0 ].webStreamData
-					.measurementId; // eslint-disable-line sitekit/acronym-case
-			isLoading = false;
-			return {
-				...acc,
-				[ currentPropertyID ]: measurementID,
-			};
-		}, {} );
-	} );
+	const measurementIDs = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getMatchedMeasurementIDsByPropertyIDs(
+			properties
+		)
+	);
 
 	const viewContext = useViewContext();
 
@@ -197,14 +176,14 @@ export default function PropertySelect( {
 						{ _id === PROPERTY_CREATE
 							? displayName
 							: sprintf(
-									/* translators: 1: Property name. 2: Property ID. */
+									/* translators: 1: Property name. 2: Measurement ID. */
 									_x(
 										'%1$s (%2$s)',
 										'Analytics property name and ID',
 										'google-site-kit'
 									),
 									displayName,
-									measurementIDs?.[ _id ]
+									measurementIDs?.[ _id ] || ''
 							  ) }
 					</Option>
 				) ) }

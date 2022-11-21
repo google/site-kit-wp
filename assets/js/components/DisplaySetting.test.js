@@ -49,7 +49,7 @@ describe( 'DisplaySetting', () => {
 	} );
 
 	it( 'returns unicode value for &nbsp; if value prop is empty string', () => {
-		const { container } = render( <DisplaySetting value={ '' } /> );
+		const { container } = render( <DisplaySetting value="" /> );
 		expect( container.textContent ).toBe( '\u00A0' ); // Use toBe() matcher instead of toHaveTextContent() to preserve &nbsp;
 	} );
 } );
