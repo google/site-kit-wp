@@ -19,6 +19,7 @@
 		"editor.formatOnSave": true
 	},
 	"[scss]": {
+		"editor.formatOnSave": true,
 		"editor.defaultFormatter": "stylelint.vscode-stylelint"
 	},
 	"editor.codeActionsOnSave": {
