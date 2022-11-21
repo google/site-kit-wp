@@ -22,7 +22,7 @@ API requests should never be made directly by a component using `fetch`, `@wordp
 
 Actions will have associated controls that use our `API.get`/`API.set` libraries to trigger requests and then update the datastore appropriately with loading states, error messages, and results.
 
-Selectors will have associated resolvers that trigger requests, usually using asynchronous actions like the ones mentioned above.
+Selectors can have associated resolvers that trigger requests, using asynchronous actions like the ones mentioned above. These are created using [`createFetchStore`](https://github.com/google/site-kit-wp/blob/develop/assets/js/googlesitekit/data/create-fetch-store.js). Some selectors do not have their own resolver, but depend on another selector with a resolver. Be aware of this when waiting for a selector to resolve; some selectors will trigger resolvers up the selector hierarchy.
 
 ### Step 2: Client `fetch` request
 
