@@ -43,8 +43,8 @@ export default function Service( { module } ) {
 		select( CORE_USER ).hasCapability( PERMISSION_AUTHENTICATE )
 	);
 
-	const { name, owner } = useSelect( ( select ) =>
-		select( CORE_MODULES ).getModule( module )
+	const { name, owner } = useSelect(
+		( select ) => select( CORE_MODULES ).getModule( module ) || {}
 	);
 
 	const Icon = useSelect( ( select ) =>

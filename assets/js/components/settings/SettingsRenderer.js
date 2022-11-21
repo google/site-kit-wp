@@ -45,7 +45,7 @@ export default function SettingsRenderer( { slug } ) {
 		moduleLoaded,
 		connected,
 	} = useSelect( ( select ) => {
-		const module = select( CORE_MODULES ).getModule( slug );
+		const module = select( CORE_MODULES ).getModule( slug ) || {};
 		return {
 			...module,
 			moduleLoaded: !! module,
