@@ -27,8 +27,12 @@ docker image inspect $IMAGE -f "{{.Id}}" >/dev/null 2>&1 ||
 # Run the backstopjs command.
 docker run --rm -t --mount type=bind,source="$ROOT_DIR",target="/src" $IMAGE $1 --config=/src/tests/backstop/config.js
 
+DOCKER_EXIT_CODE=$?
+
 # Display a link to the report only after the "test" command.
 if [ $1 == "test" ]; then
 	echo ""
 	echo "To see the VRT report open this URL in your browser: file://$ROOT_DIR/tests/backstop/html_report/index.html"
 fi
+
+exit $DOCKER_EXIT_CODE
