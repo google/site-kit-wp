@@ -33,7 +33,8 @@ import ReportMetric from './ReportMetric';
 import MetricsLearnMoreLink from './MetricsLearnMoreLink';
 import { getScoreCategory } from '../../util';
 import { CATEGORY_AVERAGE } from '../../util/constants';
-import ErrorText from '../../../../components/ErrorText';
+// import ErrorText from '../../../../components/ErrorText';
+import { useErrors } from '../../../../hooks/useErrors';
 
 export default function LabReportMetrics( { data, error } ) {
 	const largestContentfulPaint =
@@ -43,11 +44,41 @@ export default function LabReportMetrics( { data, error } ) {
 	const totalBlockingTime =
 		data?.lighthouseResult?.audits?.[ 'total-blocking-time' ];
 
+	// Remove this.
+	error = {
+		code: 'test-error-code',
+		message: 'Test error message',
+		data: {},
+		selectorData: {
+			args: [
+				{
+					dimensions: [ 'ga:date' ],
+					metrics: [ { expression: 'ga:users' } ],
+					startDate: '2020-08-11',
+					endDate: '2020-09-07',
+				},
+			],
+			name: 'getReport',
+			storeName: 'modules/analytics',
+		},
+	};
+
+	// View it in `pagespeed-insights-module-components` stories.
+
+	const { description, retryElement } = useErrors(
+		'pagespeed-insights',
+		error
+	);
+
 	if ( error ) {
 		return (
 			<div className="googlesitekit-pagespeed-insights-web-vitals-metrics">
 				<div className="googlesitekit-pagespeed-report__row googlesitekit-pagespeed-report__row--first">
-					<ErrorText message={ error.message } />
+					{ /* <ErrorText message={ error.message } /> */ }
+					<div className="googlesitekit-error-cta-wrapper">
+						{ description }
+						{ retryElement }
+					</div>
 				</div>
 			</div>
 		);
