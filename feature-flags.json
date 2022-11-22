@@ -2,8 +2,8 @@
 	"adsenseSetupV2",
 	"dashboardSharing",
 	"ga4ActivationBanner",
+	"ga4Reporting",
 	"ideaHubModule",
 	"twgModule",
-	"userInput",
-	"ga4Reporting"
+	"userInput"
 ]
