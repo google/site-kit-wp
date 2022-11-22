@@ -84,12 +84,16 @@ const fetchGetConnectionStore = createFetchStore( {
 
 ## Defining REST API endpoints on the server
 
-REST API endpoints are defined for each module, using four methods for the `Module` class. These cover:
+REST API endpoints are defined for each request.
+
+For modules—a common request type, API endpoints are created using four methods for the `Module` class. These cover:
 
 1. Set up remote requests (`setup_services`)
 2. REST API routes (`get_datapoint_definitions`)
 3. Data request to make to a 3rd-party API, if needed (`create_data_request`)
 4. Response parsing for the optional data request (`parse_data_response`)
+
+In the case of non-module REST routes, `get_rest_routes()` is used directly to create routes for a particular route. See examples of the `get_rest_routes()` method used by files like `Authentication.php` or `Notifications.php` to see how non-modules register REST routes.
 
 ### Set up remote requests
 
