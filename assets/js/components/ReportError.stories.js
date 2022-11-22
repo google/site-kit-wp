@@ -46,6 +46,50 @@ DefaultReportError.args = {
 	},
 };
 
+export const InvalidError = Template.bind( {} );
+InvalidError.storyName = 'Invalid ReportError';
+InvalidError.args = {
+	error: {
+		code: 'invalid_json',
+		message: 'Test error message',
+		data: {},
+		selectorData: {
+			args: [
+				{
+					dimensions: [ 'ga:date' ],
+					metrics: [ { expression: 'ga:users' } ],
+					startDate: '2020-08-11',
+					endDate: '2020-09-07',
+				},
+			],
+			name: 'getReport',
+			storeName: MODULES_ANALYTICS,
+		},
+	},
+};
+
+export const InternalServerError = Template.bind( {} );
+InternalServerError.storyName = 'Internal Server ReportError';
+InternalServerError.args = {
+	error: {
+		code: 'internal_server_error',
+		message: 'Test error message',
+		data: {},
+		selectorData: {
+			args: [
+				{
+					dimensions: [ 'ga:date' ],
+					metrics: [ { expression: 'ga:users' } ],
+					startDate: '2020-08-11',
+					endDate: '2020-09-07',
+				},
+			],
+			name: 'getReport',
+			storeName: MODULES_ANALYTICS,
+		},
+	},
+};
+
 export const ReportErrorWithHTMLTags = Template.bind( {} );
 ReportErrorWithHTMLTags.storyName = 'ReportError with HTML tags';
 ReportErrorWithHTMLTags.args = {
