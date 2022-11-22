@@ -25,7 +25,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { useEffect, useRef, useState } from '@wordpress/element';
+import { useEffect, useRef } from '@wordpress/element';
 
 // Avoid console.log in tests.
 const log = process?.stdout
@@ -45,11 +45,6 @@ export default function Checkbox( {
 } ) {
 	log( 'Checkbox render. checked:', checked );
 	const ref = useRef( null );
-
-	// Use this state in a key prop on the web component to force a rerender.
-	// This is a workaround for the fact the web component doesn't update visually when the checked property is changed programmatically. Seemingly this glitch only occurs once the rendered md-checkbox has been clicked.
-	// This workaround has a side effect of unfocusing the checkbox when changed via keyboard input which needs to be addressed.
-	const [ index, setIndex ] = useState( 0 );
 
 	useEffect( () => {
 		const { current } = ref;
@@ -79,8 +74,6 @@ export default function Checkbox( {
 			log( 'change', event );
 
 			onChange?.( event );
-
-			setIndex( index + 1 );
 		};
 
 		// Keydown events work fine without any special logic.
@@ -103,11 +96,14 @@ export default function Checkbox( {
 			current?.removeEventListener( 'change', change );
 			current?.removeEventListener( 'keydown', keydown );
 		};
-	}, [ checked, disabled, index, onChange, onKeyDown ] );
+	}, [ checked, disabled, onChange, onKeyDown ] );
 
 	return (
 		<md-checkbox
-			key={ `checkbox-${ name }-${ index }` }
+			// Use the `checked` value in the key on the web component to force a rerender.
+			// This is a workaround for the fact the web component doesn't update visually when the checked property is changed programmatically. Seemingly this glitch only occurs once the rendered md-checkbox has been clicked.
+			// This workaround has a side effect of unfocusing the checkbox when changed via keyboard input which needs to be addressed.
+			key={ `checkbox-${ name }-${ checked }` }
 			ref={ ref }
 			role="checkbox"
 			// Lit boolean attributes treat anything non-null|undefined as true. Coerce to undefined if false. TODO: Use null instead of undefined?
