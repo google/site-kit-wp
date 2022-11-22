@@ -97,7 +97,7 @@ In the case of non-module REST routes, `get_rest_routes()` is used directly to c
 
 ### Set up remote requests
 
-Each module can set up the services that will be used to make third-party requests. The `setup_services` method returns an array of service identifier to service object instances. These "service objects" can be used to interact with a third-party API.
+When communicating with Google APIs, files can set up the services that will be used to make Google API requests. Class instances of the `Google_Service` type can use `setup_services` method returns an array of service identifier to service object instances. These "service objects" can be used to interact with a Google APIs.
 
 The identifier is referenced in the datapoint definitions in `get_datapoint_definitions` and the service instance when making the request in `create_data_request`. Here is an example `setup_services` implementation from the Search Console module.
 
