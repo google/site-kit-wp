@@ -152,10 +152,21 @@ protected function create_data_request( Data_Request $data ) {
 
 ### Response parsing for data requests
 
-Any custom data handling, code to run after receiving data, etc. can be defined in the `parse_data_response` method. At its most basic, it can return the response from the remote API without modification or any other action:
+Any custom data handling, code to run after receiving data, etc. can be defined in the `parse_data_response` method. At its most basic, this could return the response from the remote API without modification or any other action:
 
 ```php
 protected function parse_data_response( Data_Request $data, $response ) {
   return $response;
 }
+```
+
+In practise, we don't return full responses from Google, because they include things like pagination and other info not relevant to Site Kit requests. Instead, we will return the actual "data" the request was meant to fetch, but not the metadata.
+
+An example of this is `listAccounts` response, which returns only the accounts and not the associated response metadata:
+
+```php
+protected function parse_data_response( Data_Request $data, $response ) {
+  switch ( "{$data->method}:{$data->datapoint}" ) {
+   case 'GET:accounts':
+    return array_map( array( self::class, 'filter_account_with_ids' ), $response->getAccounts() );
 ```
