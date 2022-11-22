@@ -82,6 +82,8 @@ const fetchGetConnectionStore = createFetchStore( {
 } );
 ```
 
+More documentation on `createFetchStore`, including detailed usage examples, can be [found in the function's documentation](https://github.com/google/site-kit-wp/blob/develop/assets/js/googlesitekit/data/create-fetch-store.js).
+
 ## Defining REST API endpoints on the server
 
 REST API endpoints are defined for each request.
