@@ -29,11 +29,6 @@ class User_Input_User_Settings extends User_Setting {
 	const OPTION = 'googlesitekit_user_input_settings';
 
 	/**
-	 * The scope for which the settings are handled by this class.
-	 */
-	const SCOPE = 'user';
-
-	/**
 	 * Gets the expected value type.
 	 *
 	 * @since n.e.x.t
