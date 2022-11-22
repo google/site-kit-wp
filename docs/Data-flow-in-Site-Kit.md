@@ -55,7 +55,7 @@ Most `GET` requests that are reading data, especially in the case of report data
 
 Generally speaking, we cache report data that does not vary (either much or at all) every hour.
 
-If the WordPress REST API returns a non-`2xx` HTTP response code (or the request fails entirely), the client will not save any data for this request in a cache and will instead log the error using a Redux (`@wordpress/data`) action. Usually the client will display this error in an appropriate fashion. Again: failed request data is never cached in `sessionStorage`.
+If the WordPress REST API returns a non-`2xx` HTTP response code (or the request fails entirely), the client will not save any data for this request in a cache and will instead log the error using a Redux (`@wordpress/data`) action. Usually the client will display this error in an appropriate fashion. Typically, failed request data is not cached in `sessionStorage`.
 
 If the data was retrieved from the cache, the cache will not be modified. Cached data is stored with a time-to-live and will be cleared/ignored if "stale".
 
