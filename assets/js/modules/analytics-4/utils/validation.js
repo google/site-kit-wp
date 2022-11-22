@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import { PROPERTY_CREATE, WEBDATASTREAM_CREATE } from '../datastore/constants';
-import { isValidAccountID } from '../../tagmanager/util/validation';
+import { isValidNumericID } from '../../../util';
 
 /**
  * Checks whether the given property ID appears to be valid.
@@ -121,7 +121,7 @@ export function isValidGoogleTagID( googleTagID ) {
  * @return {boolean} TRUE if the googleTagAccountID is valid, otherwise FALSE.
  */
 export function isValidGoogleTagAccountID( googleTagAccountID ) {
-	return isValidAccountID( googleTagAccountID );
+	return isValidNumericID( googleTagAccountID );
 }
 
 /**
@@ -135,5 +135,5 @@ export function isValidGoogleTagAccountID( googleTagAccountID ) {
  * @return {boolean} TRUE if the googleTagContainerID is valid, otherwise FALSE.
  */
 export function isValidGoogleTagContainerID( googleTagContainerID ) {
-	return isValidAccountID( googleTagContainerID );
+	return isValidNumericID( googleTagContainerID );
 }
