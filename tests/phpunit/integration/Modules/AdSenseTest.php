@@ -165,7 +165,7 @@ class AdSenseTest extends TestCase {
 
 		$this->assertStringContainsString( 'Google AdSense snippet added by Site Kit', $output );
 
-		$this->assertStringContainsString( 'pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-12345678&host=ca-host-pub-2644536267352236', $output );
+		$this->assertStringContainsString( 'pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-12345678&amp;host=ca-host-pub-2644536267352236', $output );
 
 		if ( $enabled ) {
 			$this->assertMatchesRegularExpression( '/\sdata-block-on-consent\b/', $output );
