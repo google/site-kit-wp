@@ -36,6 +36,8 @@ import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { Row, Cell } from '../../material-components';
 import UserInputQuestionInfo from './UserInputQuestionInfo';
 import ErrorNotice from '../ErrorNotice';
+import CancelUserInputButton from './CancelUserInputButton';
+import Link from '../Link';
 const { useSelect } = Data;
 
 export default function UserInputQuestionWrapper( props ) {
@@ -87,52 +89,55 @@ export default function UserInputQuestionWrapper( props ) {
 				'googlesitekit-user-input__question--next': ! isActive,
 			} ) }
 		>
-			<Row>
-				<Cell lgSize={ 12 } mdSize={ 8 } smSize={ 4 }>
-					<Row>
-						{ title && (
-							<UserInputQuestionInfo
-								title={ title }
-								description={ description }
-								scope={ scope }
-								questionNumber={ questionNumber }
-								author={ author }
-							/>
+			<div className="googlesitekit-user-input__question-contents">
+				<Row>
+					<Cell lgSize={ 12 } mdSize={ 8 } smSize={ 4 }>
+						<Row>
+							{ title && (
+								<UserInputQuestionInfo
+									title={ title }
+									description={ description }
+									scope={ scope }
+									questionNumber={ questionNumber }
+									author={ author }
+								/>
+							) }
+
+							{ children }
+						</Row>
+
+						{ error && <ErrorNotice error={ error } /> }
+					</Cell>
+				</Row>
+			</div>
+			{ isActive && (
+				<div className="googlesitekit-user-input__footer googlesitekit-user-input__buttons">
+					<div className="googlesitekit-user-input__footer-nav">
+						{ next && (
+							<Button
+								className="googlesitekit-user-input__buttons--next"
+								onClick={ next }
+								disabled={
+									values.length === 0 || hasInvalidValues
+								}
+							>
+								{ nextLabel || __( 'Next', 'google-site-kit' ) }
+							</Button>
 						) }
-
-						{ children }
-					</Row>
-
-					{ error && <ErrorNotice error={ error } /> }
-
-					{ isActive && (
-						<div className="googlesitekit-user-input__buttons">
-							{ back && (
-								<Button
-									className="googlesitekit-user-input__buttons--back"
-									onClick={ back }
-									text
-								>
-									{ backLabel ||
-										__( 'Back', 'google-site-kit' ) }
-								</Button>
-							) }
-							{ next && (
-								<Button
-									className="googlesitekit-user-input__buttons--next"
-									onClick={ next }
-									disabled={
-										values.length === 0 || hasInvalidValues
-									}
-								>
-									{ nextLabel ||
-										__( 'Next', 'google-site-kit' ) }
-								</Button>
-							) }
-						</div>
-					) }
-				</Cell>
-			</Row>
+						{ back && (
+							<Link
+								className="googlesitekit-user-input__buttons--back"
+								onClick={ back }
+							>
+								{ backLabel || __( 'Back', 'google-site-kit' ) }
+							</Link>
+						) }
+					</div>
+					<div className="googlesitekit-user-input__footer-cancel">
+						<CancelUserInputButton />
+					</div>
+				</div>
+			) }
 		</div>
 	);
 }

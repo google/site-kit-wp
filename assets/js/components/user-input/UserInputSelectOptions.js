@@ -20,13 +20,14 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import classnames from 'classnames';
 
 /**
  * WordPress dependencies
  */
 import { useCallback, useEffect, useState, useRef } from '@wordpress/element';
 import { ENTER } from '@wordpress/keycodes';
-import { __ } from '@wordpress/i18n';
+import { sprintf, _n, __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -34,7 +35,7 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import { Checkbox, Radio } from 'googlesitekit-components';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import { Cell, Input, TextField } from '../../material-components';
+import { Cell, HelperText, Input, TextField } from '../../material-components';
 const { useSelect, useDispatch } = Data;
 
 export default function UserInputSelectOptions( {
@@ -50,6 +51,7 @@ export default function UserInputSelectOptions( {
 	const [ other, setOther ] = useState(
 		values.filter( ( value ) => ! options[ value ] )[ 0 ] || ''
 	);
+	const [ hasOtherError, setHasOtherError ] = useState( false );
 	const { setUserInputSetting } = useDispatch( CORE_USER );
 	const inputRef = useRef();
 	const optionsRef = useRef();
@@ -162,6 +164,12 @@ export default function UserInputSelectOptions( {
 		[ max, setUserInputSetting, slug, values, options ]
 	);
 
+	const onOtherBlur = useCallback( ( { target } ) => {
+		const { value } = target;
+
+		setHasOtherError( '' === value );
+	}, [] );
+
 	const onClickProps = {
 		[ max > 1 ? 'onChange' : 'onClick' ]: onClick,
 	};
@@ -199,7 +207,27 @@ export default function UserInputSelectOptions( {
 	} );
 
 	return (
-		<Cell lgStart={ 6 } lgSize={ 6 } mdSize={ 8 } smSize={ 4 }>
+		<Cell
+			className="googlesitekit-user-input__select-options-wrapper"
+			lgStart={ 6 }
+			lgSize={ 6 }
+			mdSize={ 8 }
+			smSize={ 4 }
+		>
+			<p className="googlesitekit-user-input__select-instruction">
+				<span>
+					{ sprintf(
+						/* translators: %s: number of answers allowed. */
+						_n(
+							'Select only %d answer',
+							'Select up to %d answers',
+							max,
+							'google-site-kit'
+						),
+						max
+					) }
+				</span>
+			</p>
 			<div
 				className="googlesitekit-user-input__select-options"
 				ref={ optionsRef }
@@ -224,28 +252,45 @@ export default function UserInputSelectOptions( {
 						{ __( 'Other:', 'google-site-kit' ) }
 					</ListComponent>
 
-					<TextField
-						label={ __(
-							'Type your own answer',
-							'google-site-kit'
-						) }
-						noLabel
-					>
-						<Input
-							id={ `${ slug }-select-options` }
-							value={ other }
-							onChange={ onOtherChange }
-							ref={ inputRef }
-							disabled={ disabled }
-							tabIndex={
-								! values.includes( other.trim() ) || ! isActive
-									? '-1'
-									: undefined
+					<div className="googlesitekit-user-input__select-option-text-field">
+						<TextField
+							className={ classnames( {
+								'mdc-text-field--error': hasOtherError,
+							} ) }
+							label={ __(
+								'Type your own answer',
+								'google-site-kit'
+							) }
+							helperText={
+								hasOtherError && (
+									<HelperText persistent>
+										{ __(
+											'Your answer is required here',
+											'google-site-kit'
+										) }
+									</HelperText>
+								)
 							}
-							onKeyDown={ onKeyDown }
-							maxLength={ 100 }
-						/>
-					</TextField>
+							noLabel
+						>
+							<Input
+								id={ `${ slug }-select-options` }
+								value={ other }
+								onChange={ onOtherChange }
+								onBlur={ onOtherBlur }
+								ref={ inputRef }
+								disabled={ disabled }
+								tabIndex={
+									! values.includes( other.trim() ) ||
+									! isActive
+										? '-1'
+										: undefined
+								}
+								onKeyDown={ onKeyDown }
+								maxLength={ 100 }
+							/>
+						</TextField>
+					</div>
 					<label
 						htmlFor={ `${ slug }-select-options` }
 						className="screen-reader-text"
@@ -257,33 +302,6 @@ export default function UserInputSelectOptions( {
 					</label>
 				</div>
 			</div>
-
-			<p className="googlesitekit-user-input__note">
-				{ max === 1 && (
-					<span>
-						{ __(
-							'Choose up to one (1) answer',
-							'google-site-kit'
-						) }
-					</span>
-				) }
-				{ max === 2 && (
-					<span>
-						{ __(
-							'Choose up to two (2) answers',
-							'google-site-kit'
-						) }
-					</span>
-				) }
-				{ max === 3 && (
-					<span>
-						{ __(
-							'Choose up to three (3) answers',
-							'google-site-kit'
-						) }
-					</span>
-				) }
-			</p>
 		</Cell>
 	);
 }
