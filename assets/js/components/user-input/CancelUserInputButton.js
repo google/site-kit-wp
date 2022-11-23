@@ -1,5 +1,5 @@
 /**
- * Cancel User Input Action.
+ * Cancel User Input Button Component.
  *
  * Site Kit by Google, Copyright 2022 Google LLC
  *
