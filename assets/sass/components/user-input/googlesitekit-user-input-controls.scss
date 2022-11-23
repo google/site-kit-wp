@@ -41,6 +41,10 @@
 			input {
 				border: none;
 				padding: 0;
+
+				&:placeholder-shown {
+					text-overflow: ellipsis;
+				}
 			}
 		}
 
