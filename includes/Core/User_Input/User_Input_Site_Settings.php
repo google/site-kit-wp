@@ -57,7 +57,7 @@ class User_Input_Site_Settings extends Setting {
 	 */
 	protected function get_sanitize_callback() {
 		return function ( $settings ) {
-			return User_Input_Settings::sanitize_settings( $this, $settings, 'site' );
+			return User_Input::sanitize_settings( $this, $settings, 'site' );
 		};
 	}
 }

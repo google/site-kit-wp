@@ -28,7 +28,7 @@ use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
-use Google\Site_Kit\Core\User_Input\User_Input_Settings;
+use Google\Site_Kit\Core\User_Input\User_Input;
 use Google\Site_Kit\Modules\PageSpeed_Insights\Settings as PageSpeed_Insights_Settings;
 use Google\Site_Kit\Modules\Search_Console\Settings as Search_Console_Settings;
 use Google\Site_Kit\Tests\Exception\RedirectException;
@@ -465,14 +465,14 @@ class AuthenticationTest extends TestCase {
 		$auth->register();
 
 		$user_input_state = $this->force_get_property( $auth, 'user_input_state' );
-		// Mocking User_Input_Settings here to avoid adding a ton of complexity
+		// Mocking User_Input here to avoid adding a ton of complexity
 		// from intercepting a request to the proxy, returning, settings etc.
-		$mock_user_input_settings = $this->getMockBuilder( User_Input_Settings::class )
+		$mock_user_input = $this->getMockBuilder( User_Input::class )
 			->disableOriginalConstructor()
 			->disableProxyingToOriginalMethods()
 			->setMethods( array( 'set_settings' ) )
 			->getMock();
-		$this->force_set_property( $auth, 'user_input_settings', $mock_user_input_settings );
+		$this->force_set_property( $auth, 'user_input', $mock_user_input );
 
 		$this->assertEmpty( $user_input_state->get() );
 		do_action( 'googlesitekit_authorize_user', array(), array(), array() );
@@ -488,14 +488,14 @@ class AuthenticationTest extends TestCase {
 		$auth->register();
 
 		$user_input_state = $this->force_get_property( $auth, 'user_input_state' );
-		// Mocking User_Input_Settings here to avoid adding a ton of complexity
+		// Mocking User_Input here to avoid adding a ton of complexity
 		// from intercepting a request to the proxy, returning, settings etc.
-		$mock_user_input_settings = $this->getMockBuilder( User_Input_Settings::class )
+		$mock_user_input = $this->getMockBuilder( User_Input::class )
 			->disableOriginalConstructor()
 			->disableProxyingToOriginalMethods()
 			->setMethods( array( 'set_settings' ) )
 			->getMock();
-		$this->force_set_property( $auth, 'user_input_settings', $mock_user_input_settings );
+		$this->force_set_property( $auth, 'user_input', $mock_user_input );
 
 		$this->assertEmpty( $user_input_state->get() );
 
@@ -527,14 +527,14 @@ class AuthenticationTest extends TestCase {
 		$auth->register();
 
 		$user_input_state = $this->force_get_property( $auth, 'user_input_state' );
-		// Mocking User_Input_Settings here to avoid adding a ton of complexity
+		// Mocking User_Input here to avoid adding a ton of complexity
 		// from intercepting a request to the proxy, returning, settings etc.
-		$mock_user_input_settings = $this->getMockBuilder( User_Input_Settings::class )
+		$mock_user_input = $this->getMockBuilder( User_Input::class )
 			->setMethods( array( 'set_settings' ) )
 			->disableProxyingToOriginalMethods()
 			->disableOriginalConstructor()
 			->getMock();
-		$this->force_set_property( $auth, 'user_input_settings', $mock_user_input_settings );
+		$this->force_set_property( $auth, 'user_input', $mock_user_input );
 
 		$this->assertEmpty( $user_input_state->get() );
 		do_action( 'googlesitekit_authorize_user', array(), array(), array() );

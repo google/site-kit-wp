@@ -12,7 +12,6 @@ namespace Google\Site_Kit\Core\User_Input;
 
 use Closure;
 use Google\Site_Kit\Core\Storage\User_Setting;
-use Google\Site_Kit\Core\User_Input\User_Input_Settings;
 
 /**
  * Class for handling the user specific settings in User Input.
@@ -59,7 +58,7 @@ class User_Input_User_Settings extends User_Setting {
 	 */
 	protected function get_sanitize_callback() {
 		return function ( $settings ) {
-			return User_Input_Settings::sanitize_settings( $this, $settings, 'user' );
+			return User_Input::sanitize_settings( $this, $settings, 'user' );
 		};
 	}
 }

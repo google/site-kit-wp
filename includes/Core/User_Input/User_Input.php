@@ -1,6 +1,6 @@
 <?php
 /**
- * Class Google\Site_Kit\Core\User_Input\User_Input_Settings
+ * Class Google\Site_Kit\Core\User_Input\User_Input
  *
  * @package   Google\Site_Kit\Core\User_Input
  * @copyright 2022 Google LLC
@@ -13,10 +13,15 @@ namespace Google\Site_Kit\Core\User_Input;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Authentication\User_Input_State;
+use Google\Site_Kit\Core\Permissions\Permissions;
+use Google\Site_Kit\Core\REST_API\REST_Route;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\User_Input\User_Input_Site_Settings;
 use Google\Site_Kit\Core\User_Input\User_Input_User_Settings;
+use WP_Error;
+use WP_REST_Request;
+use WP_REST_Server;
 
 /**
  * Class managing requests to user input settings endpoint.
@@ -25,7 +30,7 @@ use Google\Site_Kit\Core\User_Input\User_Input_User_Settings;
  * @access private
  * @ignore
  */
-class User_Input_Settings {
+class User_Input {
 
 	/**
 	 * Authentication instance.
