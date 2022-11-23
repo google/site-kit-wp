@@ -95,8 +95,8 @@ describe( 'modules/analytics-4 validations', () => {
 		} );
 
 		it( 'should return FALSE when a invalid googleTagId is passed', () => {
-			expect( isValidGoogleTagID( '' ) ).toBe( false );
-			expect( isValidGoogleTagID( 'X' ) ).toBe( false );
+			expect( isValidGoogleTagAccountID( '' ) ).toBe( false );
+			expect( isValidGoogleTagAccountID( 'X' ) ).toBe( false );
 		} );
 	} );
 
