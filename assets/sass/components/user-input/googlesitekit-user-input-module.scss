@@ -74,7 +74,7 @@
 		@media (min-width: $bp-desktop) {
 			align-items: center;
 			border-top: 1px solid $c-mercury;
-			flex-direction: row;
+			flex-direction: row-reverse;
 			margin: 42px 0 0;
 			padding: 28px 24px;
 		}
@@ -88,7 +88,6 @@
 
 		@media (min-width: $bp-desktop) {
 			flex-direction: row-reverse;
-			order: 2;
 			padding: 0;
 		}
 	}
