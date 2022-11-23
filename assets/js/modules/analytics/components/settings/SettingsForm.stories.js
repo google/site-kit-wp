@@ -73,14 +73,14 @@ WithGA4andUASnippet.scenario = {
 	delay: 250,
 };
 
-export const WithoutUAAndGA4AccessActivateSwitch = Template.bind( null );
-WithoutUAAndGA4AccessActivateSwitch.storyName =
-	'Settings w/o UA and GA4 access with Activate Switch';
-WithoutUAAndGA4AccessActivateSwitch.args = {
+export const WithoutUAAndGA4AccessGA4NotConnected = Template.bind( null );
+WithoutUAAndGA4AccessGA4NotConnected.storyName =
+	'Settings w/o UA and GA4 access, GA4 not connected';
+WithoutUAAndGA4AccessGA4NotConnected.args = {
 	hasAnalyticsAccess: false,
 	hasAnalytics4Access: false,
 };
-WithoutUAAndGA4AccessActivateSwitch.decorators = [
+WithoutUAAndGA4AccessGA4NotConnected.decorators = [
 	( Story ) => {
 		const setupRegistry = ( registry ) => {
 			registry.dispatch( MODULES_ANALYTICS_4 ).setPropertyID( null );
@@ -94,62 +94,38 @@ WithoutUAAndGA4AccessActivateSwitch.decorators = [
 	},
 ];
 
-export const WithoutUAAndGA4AccessSnippetSwitch = Template.bind( null );
-WithoutUAAndGA4AccessSnippetSwitch.storyName =
-	'Settings w/o UA and GA4 access with Snippet Switch';
-WithoutUAAndGA4AccessSnippetSwitch.args = {
+export const WithoutUAAndGA4AccessGA4Connected = Template.bind( null );
+WithoutUAAndGA4AccessGA4Connected.storyName =
+	'Settings w/o UA and GA4 access, GA4 connected';
+WithoutUAAndGA4AccessGA4Connected.args = {
 	hasAnalyticsAccess: false,
 	hasAnalytics4Access: false,
 };
 
-export const WithoutAnalyticsAccess = Template.bind( null );
-WithoutAnalyticsAccess.storyName = 'Settings w/o Analytics access';
-WithoutAnalyticsAccess.args = {
+export const WithoutUAAccessGA4Connected = Template.bind( null );
+WithoutUAAccessGA4Connected.storyName =
+	'Settings w/o Analytics access, GA4 connected';
+WithoutUAAccessGA4Connected.args = {
 	hasAnalyticsAccess: false,
 	hasAnalytics4Access: true,
 };
-WithoutAnalyticsAccess.decorators = [
-	( Story ) => {
-		const setupRegistry = ( registry ) => {
-			registry.dispatch( MODULES_ANALYTICS_4 ).setPropertyID( null );
-		};
 
-		return (
-			<WithRegistrySetup func={ setupRegistry }>
-				<Story />
-			</WithRegistrySetup>
-		);
-	},
-];
-
-export const WithoutAnalytics4Access = Template.bind( null );
-WithoutAnalytics4Access.storyName = 'Settings w/o Analytics-4 access';
-WithoutAnalytics4Access.args = {
+export const WithoutGA4AccessGA4Connected = Template.bind( null );
+WithoutGA4AccessGA4Connected.storyName =
+	'Settings w/o Analytics-4 access, GA4 connected';
+WithoutGA4AccessGA4Connected.args = {
 	hasAnalyticsAccess: true,
 	hasAnalytics4Access: false,
 };
-WithoutAnalytics4Access.decorators = [
-	( Story ) => {
-		const setupRegistry = ( registry ) => {
-			registry.dispatch( MODULES_ANALYTICS_4 ).setPropertyID( null );
-		};
 
-		return (
-			<WithRegistrySetup func={ setupRegistry }>
-				<Story />
-			</WithRegistrySetup>
-		);
-	},
-];
-
-export const Analytics4NotConnectedAndNoUAAccess = Template.bind( null );
-Analytics4NotConnectedAndNoUAAccess.storyName =
-	'GA4 not connected and no UA access';
-Analytics4NotConnectedAndNoUAAccess.args = {
+export const WithoutUAAndGA4AccessFallbackOwnerName = Template.bind( null );
+WithoutUAAndGA4AccessFallbackOwnerName.storyName =
+	'Settings w/o UA and GA4 access, fallback owner name';
+WithoutUAAndGA4AccessFallbackOwnerName.args = {
 	hasAnalyticsAccess: false,
 	hasAnalytics4Access: false,
 };
-Analytics4NotConnectedAndNoUAAccess.decorators = [
+WithoutUAAndGA4AccessFallbackOwnerName.decorators = [
 	( Story ) => {
 		const setupRegistry = ( registry ) => {
 			provideModules( registry, [
@@ -157,7 +133,6 @@ Analytics4NotConnectedAndNoUAAccess.decorators = [
 					slug: 'analytics',
 					active: true,
 					connected: true,
-					owner: { login: 'test-owner-username' },
 				},
 				{
 					slug: 'analytics-4',
@@ -165,7 +140,6 @@ Analytics4NotConnectedAndNoUAAccess.decorators = [
 					connected: false,
 				},
 			] );
-
 			registry.dispatch( MODULES_ANALYTICS_4 ).setPropertyID( null );
 		};
 
@@ -326,12 +300,13 @@ export default {
 						slug: 'analytics',
 						active: true,
 						connected: true,
-						owner: { login: 'test-owner-username' },
+						owner: { login: 'analytics-owner-username' },
 					},
 					{
 						slug: 'analytics-4',
 						active: true,
 						connected: true,
+						owner: { login: 'analytics_4-owner-username' },
 					},
 				] );
 				provideSiteInfo( registry );
