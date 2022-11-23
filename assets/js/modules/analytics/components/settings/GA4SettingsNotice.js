@@ -30,16 +30,34 @@ import { createInterpolateElement } from '@wordpress/element';
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
 import SettingsNotice from '../../../../components/SettingsNotice/SettingsNotice';
 import { TYPE_INFO } from '../../../../components/SettingsNotice';
 import WarningIcon from '../../../../../../assets/svg/icons/warning-icon.svg';
+import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
+const { useSelect } = Data;
+
+function getFormattedOwnerName( module ) {
+	return module?.owner?.login
+		? `<strong>${ module.owner.login }</strong>`
+		: __( 'Another admin', 'google-site-kit' );
+}
 
 export default function GA4SettingsNotice( {
-	ownerName,
 	isGA4Connected,
 	hasAnalyticsAccess,
 	hasAnalytics4Access,
 } ) {
+	const uaModule = useSelect( ( select ) =>
+		select( CORE_MODULES ).getModule( 'analytics' )
+	);
+	const ga4Module = useSelect( ( select ) =>
+		select( CORE_MODULES ).getModule( 'analytics-4' )
+	);
+
+	const formattedUAOwnerName = getFormattedOwnerName( uaModule );
+	const formattedGA4OwnerName = getFormattedOwnerName( ga4Module );
+
 	if ( ! isGA4Connected && ! hasAnalyticsAccess ) {
 		return (
 			<SettingsNotice
@@ -52,7 +70,7 @@ export default function GA4SettingsNotice( {
 							'%s configured Analytics and you don’t have access to its configured property. Contact them to share access or setup Google Analytics 4.',
 							'google-site-kit'
 						),
-						ownerName
+						formattedUAOwnerName
 					),
 					{
 						strong: <strong />,
@@ -74,7 +92,7 @@ export default function GA4SettingsNotice( {
 							'%s configured Analytics and you don’t have access to its configured property. Contact them to share access or change the configured Google Analytics 4 property.',
 							'google-site-kit'
 						),
-						ownerName
+						formattedUAOwnerName
 					),
 					{
 						strong: <strong />,
@@ -96,7 +114,7 @@ export default function GA4SettingsNotice( {
 							'%s configured Analytics 4 and you don’t have access to its configured property. Contact them to share access or change the configured property.',
 							'google-site-kit'
 						),
-						ownerName
+						formattedGA4OwnerName
 					),
 					{
 						strong: <strong />,
@@ -111,7 +129,6 @@ export default function GA4SettingsNotice( {
 
 // eslint-disable-next-line sitekit/acronym-case
 GA4SettingsNotice.propTypes = {
-	ownerName: PropTypes.string,
 	isGA4Connected: PropTypes.bool,
 	hasAnalyticsAccess: PropTypes.bool,
 	hasAnalytics4Access: PropTypes.bool,
