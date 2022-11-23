@@ -75,14 +75,26 @@ WithGA4andUASnippet.scenario = {
 
 export const WithoutUAAndGA4AccessGA4NotConnected = Template.bind( null );
 WithoutUAAndGA4AccessGA4NotConnected.storyName =
-	'Settings w/o UA and GA4 access, GA4 not connected';
+	'Settings w/o UA access, GA4 not connected';
 WithoutUAAndGA4AccessGA4NotConnected.args = {
 	hasAnalyticsAccess: false,
-	hasAnalytics4Access: false,
+	hasAnalytics4Access: true, // if GA4 is not connected, hasAnalytics4Access is assumed true
 };
 WithoutUAAndGA4AccessGA4NotConnected.decorators = [
 	( Story ) => {
 		const setupRegistry = ( registry ) => {
+			provideModules( registry, [
+				{
+					slug: 'analytics',
+					active: true,
+					connected: true,
+				},
+				{
+					slug: 'analytics-4',
+					active: true,
+					connected: false,
+				},
+			] );
 			registry.dispatch( MODULES_ANALYTICS_4 ).setPropertyID( null );
 		};
 
@@ -94,36 +106,12 @@ WithoutUAAndGA4AccessGA4NotConnected.decorators = [
 	},
 ];
 
-export const WithoutUAAndGA4AccessGA4Connected = Template.bind( null );
-WithoutUAAndGA4AccessGA4Connected.storyName =
-	'Settings w/o UA and GA4 access, GA4 connected';
-WithoutUAAndGA4AccessGA4Connected.args = {
-	hasAnalyticsAccess: false,
-	hasAnalytics4Access: false,
-};
-
-export const WithoutUAAccessGA4Connected = Template.bind( null );
-WithoutUAAccessGA4Connected.storyName =
-	'Settings w/o Analytics access, GA4 connected';
-WithoutUAAccessGA4Connected.args = {
-	hasAnalyticsAccess: false,
-	hasAnalytics4Access: true,
-};
-
-export const WithoutGA4AccessGA4Connected = Template.bind( null );
-WithoutGA4AccessGA4Connected.storyName =
-	'Settings w/o Analytics-4 access, GA4 connected';
-WithoutGA4AccessGA4Connected.args = {
-	hasAnalyticsAccess: true,
-	hasAnalytics4Access: false,
-};
-
 export const WithoutUAAndGA4AccessFallbackOwnerName = Template.bind( null );
 WithoutUAAndGA4AccessFallbackOwnerName.storyName =
-	'Settings w/o UA and GA4 access, fallback owner name';
+	'Settings w/o UA access, GA4 not connected, fallback owner name';
 WithoutUAAndGA4AccessFallbackOwnerName.args = {
 	hasAnalyticsAccess: false,
-	hasAnalytics4Access: false,
+	hasAnalytics4Access: true, // if GA4 is not connected, hasAnalytics4Access is assumed true
 };
 WithoutUAAndGA4AccessFallbackOwnerName.decorators = [
 	( Story ) => {
@@ -150,6 +138,29 @@ WithoutUAAndGA4AccessFallbackOwnerName.decorators = [
 		);
 	},
 ];
+
+export const WithoutUAAndGA4AccessGA4Connected = Template.bind( null );
+WithoutUAAndGA4AccessGA4Connected.storyName =
+	'Settings w/o UA and GA4 access, GA4 connected';
+WithoutUAAndGA4AccessGA4Connected.args = {
+	hasAnalyticsAccess: false,
+	hasAnalytics4Access: false,
+};
+
+export const WithoutUAAccessGA4Connected = Template.bind( null );
+WithoutUAAccessGA4Connected.storyName = 'Settings w/o UA access, GA4 connected';
+WithoutUAAccessGA4Connected.args = {
+	hasAnalyticsAccess: false,
+	hasAnalytics4Access: true,
+};
+
+export const WithoutGA4AccessGA4Connected = Template.bind( null );
+WithoutGA4AccessGA4Connected.storyName =
+	'Settings w/o GA4 access, GA4 connected';
+WithoutGA4AccessGA4Connected.args = {
+	hasAnalyticsAccess: true,
+	hasAnalytics4Access: false,
+};
 
 export const OwnedSettingsChanged = Template.bind( null );
 OwnedSettingsChanged.storyName = 'Owned Settings Changed';
