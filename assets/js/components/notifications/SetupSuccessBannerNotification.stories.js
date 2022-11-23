@@ -49,6 +49,9 @@ Site.parameters = {
 		slug: undefined,
 	},
 };
+Site.scenario = {
+	label: 'Global/SetupSuccessBannerNotification/Site',
+};
 
 export const Module = Template.bind( {} );
 Module.storyName = 'Authentication Success - Generic Module';
@@ -58,6 +61,9 @@ Module.parameters = {
 		notification: 'authentication_success',
 		slug: 'tagmanager',
 	},
+};
+Module.scenario = {
+	label: 'Global/SetupSuccessBannerNotification/Module',
 };
 
 export const ModuleWithDescription = Template.bind( {} );
@@ -70,6 +76,9 @@ ModuleWithDescription.parameters = {
 		slug: 'analytics',
 	},
 };
+ModuleWithDescription.scenario = {
+	label: 'Global/SetupSuccessBannerNotification/ModuleWithDescription',
+};
 
 export const PageSpeedInsights = Template.bind( {} );
 PageSpeedInsights.storyName = 'Authentication Success - Page Speed Insights';
@@ -80,6 +89,9 @@ PageSpeedInsights.parameters = {
 		slug: 'pagespeed-insights',
 	},
 };
+PageSpeedInsights.scenario = {
+	label: 'Global/SetupSuccessBannerNotification/PageSpeedInsights',
+};
 
 export const IdeaHub = Template.bind( {} );
 IdeaHub.storyName = 'Authentication Success - Idea Hub';
@@ -89,6 +101,9 @@ IdeaHub.parameters = {
 		notification: 'authentication_success',
 		slug: 'idea-hub',
 	},
+};
+IdeaHub.scenario = {
+	label: 'Global/SetupSuccessBannerNotification/IdeaHub',
 };
 
 export const UserInputSuccess = Template.bind( {} );
@@ -108,6 +123,9 @@ ThankWithGoogle.parameters = {
 		slug: 'thank-with-google',
 	},
 	features: [ 'twgModule' ],
+};
+ThankWithGoogle.scenario = {
+	label: 'Global/SetupSuccessBannerNotification/ThankWithGoogle',
 };
 
 export default {
