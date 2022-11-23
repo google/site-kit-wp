@@ -777,6 +777,12 @@ final class Analytics extends Module
 			case 'GET:accounts-properties-profiles':
 				/* @var Google_Service_Analytics_Accounts $response listManagementAccounts response. */
 				$accounts            = (array) $response->getItems();
+				$accounts            = wp_list_sort(
+					$accounts,
+					'name',
+					'ASC',
+					true
+				);
 				$account_ids         = array_map(
 					function ( Google_Service_Analytics_Account $account ) {
 						return $account->getId();
@@ -829,11 +835,23 @@ final class Analytics extends Module
 			case 'GET:profiles':
 				// TODO: Parse this response to a regular array.
 				$response = $response->getItems();
+				$response = wp_list_sort(
+					$response,
+					'name',
+					'ASC',
+					true
+				);
 
 				return $response;
 			case 'GET:properties-profiles':
 				/* @var Google_Service_Analytics_Webproperties $response listManagementWebproperties response. */
 				$properties     = (array) $response->getItems();
+				$properties     = wp_list_sort(
+					$properties,
+					'name',
+					'ASC',
+					true
+				);
 				$found_property = null;
 				$response       = array(
 					'properties' => $properties,

@@ -401,7 +401,12 @@ final class AdSense extends Module
 		switch ( "{$data->method}:{$data->datapoint}" ) {
 			case 'GET:accounts':
 				$accounts = array_filter( $response->getAccounts(), array( self::class, 'is_account_not_closed' ) );
-				return array_map( array( self::class, 'filter_account_with_ids' ), $accounts );
+				return wp_list_sort(
+					array_map( array( self::class, 'filter_account_with_ids' ), $accounts ),
+					'displayName',
+					'ASC',
+					true
+				);
 			case 'GET:adunits':
 				return array_map( array( self::class, 'filter_adunit_with_ids' ), $response->getAdUnits() );
 			case 'GET:alerts':

@@ -480,7 +480,12 @@ final class Analytics_4 extends Module
 			case 'POST:create-webdatastream':
 				return self::filter_webdatastream_with_ids( $response );
 			case 'GET:properties':
-				return array_map( array( self::class, 'filter_property_with_ids' ), $response->getProperties() );
+				return wp_list_sort(
+					array_map( array( self::class, 'filter_property_with_ids' ), $response->getProperties() ),
+					'displayName',
+					'ASC',
+					true
+				);
 			case 'GET:property':
 				return self::filter_property_with_ids( $response );
 			case 'GET:webdatastreams':

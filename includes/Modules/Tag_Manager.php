@@ -385,12 +385,22 @@ final class Tag_Manager extends Module
 		switch ( "{$data->method}:{$data->datapoint}" ) {
 			case 'GET:accounts':
 				/* @var Google_Service_TagManager_ListAccountsResponse $response List accounts response. */
-				return $response->getAccount();
+				return wp_list_sort(
+					$response->getAccount(),
+					'name',
+					'ASC',
+					true
+				);
 			case 'GET:accounts-containers':
 				/* @var Google_Service_TagManager_ListAccountsResponse $response List accounts response. */
 				$response = array(
 					// TODO: Parse this response to a regular array.
-					'accounts'   => $response->getAccount(),
+					'accounts'   => wp_list_sort(
+						$response->getAccount(),
+						'name',
+						'ASC',
+						true
+					),
 					'containers' => array(),
 				);
 				if ( 0 === count( $response['accounts'] ) ) {
@@ -426,7 +436,12 @@ final class Tag_Manager extends Module
 					}
 				);
 
-				return array_values( $containers );
+				return wp_list_sort(
+					array_values( $containers ),
+					'name',
+					'ASC',
+					true
+				);
 		}
 
 		return parent::parse_data_response( $data, $response );
