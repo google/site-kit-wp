@@ -167,10 +167,6 @@
 		button {
 			letter-spacing: $ls-s;
 
-			&:not(:first-child) {
-				margin-left: 20px;
-			}
-
 			&.mdc-button {
 				border: none;
 				padding: 10px 16px;

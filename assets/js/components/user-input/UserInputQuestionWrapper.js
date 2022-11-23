@@ -112,15 +112,7 @@ export default function UserInputQuestionWrapper( props ) {
 			</div>
 			{ isActive && (
 				<div className="googlesitekit-user-input__footer googlesitekit-user-input__buttons">
-					<div className="googlesitekit-user-input__footer-left">
-						{ back && (
-							<Link
-								className="googlesitekit-user-input__buttons--back"
-								onClick={ back }
-							>
-								{ backLabel || __( 'Back', 'google-site-kit' ) }
-							</Link>
-						) }
+					<div className="googlesitekit-user-input__footer-nav">
 						{ next && (
 							<Button
 								className="googlesitekit-user-input__buttons--next"
@@ -132,8 +124,16 @@ export default function UserInputQuestionWrapper( props ) {
 								{ nextLabel || __( 'Next', 'google-site-kit' ) }
 							</Button>
 						) }
+						{ back && (
+							<Link
+								className="googlesitekit-user-input__buttons--back"
+								onClick={ back }
+							>
+								{ backLabel || __( 'Back', 'google-site-kit' ) }
+							</Link>
+						) }
 					</div>
-					<div className="googlesitekit-user-input__footer-right">
+					<div className="googlesitekit-user-input__footer-cancel">
 						<CancelUserInputButton />
 					</div>
 				</div>

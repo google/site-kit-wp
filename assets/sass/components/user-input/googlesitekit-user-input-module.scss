@@ -80,16 +80,20 @@
 		}
 	}
 
-	.googlesitekit-user-input__footer-left {
+	.googlesitekit-user-input__footer-nav {
+		align-items: center;
+		column-gap: 20px;
+		display: flex;
 		padding: 17px 17px 33px;
 
 		@media (min-width: $bp-desktop) {
+			flex-direction: row-reverse;
 			order: 2;
 			padding: 0;
 		}
 	}
 
-	.googlesitekit-user-input__footer-right {
+	.googlesitekit-user-input__footer-cancel {
 		border-top: 1px solid $c-mercury;
 		padding: 17px;
 
