@@ -780,8 +780,7 @@ final class Analytics extends Module
 				$accounts            = wp_list_sort(
 					$accounts,
 					'name',
-					'ASC',
-					true
+					'ASC'
 				);
 				$account_ids         = array_map(
 					function ( Google_Service_Analytics_Account $account ) {
@@ -838,8 +837,7 @@ final class Analytics extends Module
 				$response = wp_list_sort(
 					$response,
 					'name',
-					'ASC',
-					true
+					'ASC'
 				);
 
 				return $response;
@@ -849,8 +847,7 @@ final class Analytics extends Module
 				$properties     = wp_list_sort(
 					$properties,
 					'name',
-					'ASC',
-					true
+					'ASC'
 				);
 				$found_property = null;
 				$response       = array(

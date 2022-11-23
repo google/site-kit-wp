@@ -404,8 +404,7 @@ final class AdSense extends Module
 				return wp_list_sort(
 					array_map( array( self::class, 'filter_account_with_ids' ), $accounts ),
 					'displayName',
-					'ASC',
-					true
+					'ASC'
 				);
 			case 'GET:adunits':
 				return array_map( array( self::class, 'filter_adunit_with_ids' ), $response->getAdUnits() );

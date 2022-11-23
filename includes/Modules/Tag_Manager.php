@@ -388,8 +388,7 @@ final class Tag_Manager extends Module
 				return wp_list_sort(
 					$response->getAccount(),
 					'name',
-					'ASC',
-					true
+					'ASC'
 				);
 			case 'GET:accounts-containers':
 				/* @var Google_Service_TagManager_ListAccountsResponse $response List accounts response. */
@@ -398,8 +397,7 @@ final class Tag_Manager extends Module
 					'accounts'   => wp_list_sort(
 						$response->getAccount(),
 						'name',
-						'ASC',
-						true
+						'ASC'
 					),
 					'containers' => array(),
 				);
@@ -439,8 +437,7 @@ final class Tag_Manager extends Module
 				return wp_list_sort(
 					array_values( $containers ),
 					'name',
-					'ASC',
-					true
+					'ASC'
 				);
 		}
 

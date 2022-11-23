@@ -289,8 +289,7 @@ final class Search_Console extends Module
 				$entries = wp_list_sort(
 					$entries,
 					'name',
-					'ASC',
-					true
+					'ASC'
 				);
 				$strict  = filter_var( $data['strict'], FILTER_VALIDATE_BOOLEAN );
 

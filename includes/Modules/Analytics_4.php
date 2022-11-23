@@ -483,8 +483,7 @@ final class Analytics_4 extends Module
 				return wp_list_sort(
 					array_map( array( self::class, 'filter_property_with_ids' ), $response->getProperties() ),
 					'displayName',
-					'ASC',
-					true
+					'ASC'
 				);
 			case 'GET:property':
 				return self::filter_property_with_ids( $response );
