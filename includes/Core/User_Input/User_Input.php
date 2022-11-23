@@ -57,12 +57,12 @@ class User_Input {
 	protected $user_input_user_settings;
 
 	/**
-	 * User Input properties.
+	 * User Input questions.
 	 *
 	 * @since n.e.x.t
 	 * @var array|ArrayAccess
 	 */
-	private static $properties = array(
+	private static $questions = array(
 		'purpose'       => array(
 			'scope' => 'site',
 		),
@@ -157,10 +157,10 @@ class User_Input {
 								'required'   => true,
 								'properties' => array(
 									'settings' => array(
-										'type'       => 'object',
-										'required'   => true,
-										'properties' => array_fill_keys(
-											array_keys( static::$properties ),
+										'type'      => 'object',
+										'required'  => true,
+										'questions' => array_fill_keys(
+											array_keys( static::$questions ),
 											array(
 												'type'  => 'array',
 												'items' => array( 'type' => 'string' ),
@@ -177,17 +177,6 @@ class User_Input {
 	}
 
 	/**
-	 * Gets the set of user input properties.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @return array The user input properties.
-	 */
-	public static function get_properties() {
-		return static::$properties;
-	}
-
-	/**
 	 * Gets user input settings.
 	 *
 	 * @since n.e.x.t
@@ -200,19 +189,19 @@ class User_Input {
 			'user' => $this->user_input_user_settings->get(),
 		);
 
-		$properties = static::$properties;
-		$settings   = array_merge( $data['site'], $data['user'] );
+		$questions = static::$questions;
+		$settings  = array_merge( $data['site'], $data['user'] );
 
 		// If there are no settings, return default empty values.
 		if ( empty( $settings ) ) {
 			array_walk(
-				$properties,
-				function ( &$property ) {
-					$property['values'] = array();
+				$questions,
+				function ( &$question ) {
+					$question['values'] = array();
 				}
 			);
 
-			return $properties;
+			return $questions;
 		}
 
 		$user_id = get_current_user_id();
@@ -236,10 +225,10 @@ class User_Input {
 		}
 
 		// If there are un-answered questions, return default empty values for them.
-		foreach ( $properties as $property_key => $property_value ) {
-			if ( ! isset( $settings[ $property_key ] ) ) {
-				$settings[ $property_key ]           = $property_value;
-				$settings[ $property_key ]['values'] = array();
+		foreach ( $questions as $question_key => $question_value ) {
+			if ( ! isset( $settings[ $question_key ] ) ) {
+				$settings[ $question_key ]           = $question_value;
+				$settings[ $question_key ]['values'] = array();
 			}
 		}
 
@@ -282,14 +271,14 @@ class User_Input {
 	 * @return array|WP_Error User input settings.
 	 */
 	public function set_settings( $settings ) {
-		$properties    = static::$properties;
+		$questions     = static::$questions;
 		$site_settings = array();
 		$user_settings = array();
 
 		foreach ( $settings as $setting_key => $answers ) {
 			$setting_data           = array();
 			$setting_data['values'] = $answers;
-			$setting_data['scope']  = $properties[ $setting_key ]['scope'];
+			$setting_data['scope']  = $questions[ $setting_key ]['scope'];
 
 			if ( 'site' === $setting_data['scope'] ) {
 				$setting_data['answeredBy']    = get_current_user_id();
@@ -335,10 +324,10 @@ class User_Input {
 			return $setting->get();
 		}
 
-		$properties = array_filter(
-			static::get_properties(),
-			function ( $property ) use ( $scope ) {
-				return $scope === $property['scope'];
+		$questions = array_filter(
+			static::$questions,
+			function ( $question ) use ( $scope ) {
+				return $scope === $question['scope'];
 			}
 		);
 
@@ -347,7 +336,7 @@ class User_Input {
 		foreach ( $settings as $setting_key => $setting_values ) {
 			// Ensure all the data is valid.
 			if (
-				! in_array( $setting_key, array_keys( $properties ), true ) ||
+				! in_array( $setting_key, array_keys( $questions ), true ) ||
 				! is_array( $setting_values ) ||
 				! isset( $setting_values['scope'] ) ||
 				! isset( $setting_values['values'] ) ||
