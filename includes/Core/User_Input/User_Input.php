@@ -39,20 +39,20 @@ class User_Input {
 	private $authentication;
 
 	/**
-	 * User_Input_Site_Settings instance.
+	 * Site_Specific_Questions instance.
 	 *
 	 * @since n.e.x.t
-	 * @var User_Input_Site_Settings
+	 * @var Site_Specific_Questions
 	 */
-	protected $user_input_site_settings;
+	protected $site_specific_questions;
 
 	/**
-	 * User_Input_User_Settings instance.
+	 * User_Specific_Questions instance.
 	 *
 	 * @since n.e.x.t
-	 * @var User_Input_User_Settings
+	 * @var User_Specific_Questions
 	 */
-	protected $user_input_user_settings;
+	protected $user_specific_questions;
 
 	/**
 	 * User Input questions.
@@ -88,9 +88,9 @@ class User_Input {
 		Options $options = null,
 		User_Options $user_options = null
 	) {
-		$this->authentication           = $authentication ?: new Authentication( $context );
-		$this->user_input_site_settings = new User_Input_Site_Settings( $options ?: new Options( $context ) );
-		$this->user_input_user_settings = new User_Input_User_Settings( $user_options ?: new User_Options( $context ) );
+		$this->authentication          = $authentication ?: new Authentication( $context );
+		$this->site_specific_questions = new Site_Specific_Questions( $options ?: new Options( $context ) );
+		$this->user_specific_questions = new User_Specific_Questions( $user_options ?: new User_Options( $context ) );
 	}
 
 	/**
@@ -99,8 +99,8 @@ class User_Input {
 	 * @since n.e.x.t
 	 */
 	public function register() {
-		$this->user_input_site_settings->register();
-		$this->user_input_user_settings->register();
+		$this->site_specific_questions->register();
+		$this->user_specific_questions->register();
 
 		add_filter(
 			'googlesitekit_rest_routes',
@@ -129,7 +129,7 @@ class User_Input {
 					array(
 						'methods'             => WP_REST_Server::READABLE,
 						'callback'            => function() {
-							return rest_ensure_response( $this->get_settings() );
+							return rest_ensure_response( $this->get_answers() );
 						},
 						'permission_callback' => $can_authenticate,
 					),
@@ -147,7 +147,7 @@ class User_Input {
 							}
 
 							return rest_ensure_response(
-								$this->set_settings(
+								$this->set_answers(
 									$data['settings']
 								)
 							);
@@ -185,10 +185,10 @@ class User_Input {
 	 *
 	 * @return array|WP_Error User input settings.
 	 */
-	public function get_settings() {
+	public function get_answers() {
 		$data = array(
-			'site' => $this->user_input_site_settings->get(),
-			'user' => $this->user_input_user_settings->get(),
+			'site' => $this->site_specific_questions->get(),
+			'user' => $this->user_specific_questions->get(),
 		);
 
 		$questions = static::$questions;
@@ -247,7 +247,7 @@ class User_Input {
 	 */
 	public function are_settings_empty( $settings = array() ) {
 		if ( empty( $settings ) ) {
-			$settings = $this->get_settings();
+			$settings = $this->get_answers();
 
 			if ( is_wp_error( $settings ) ) {
 				return null;
@@ -272,7 +272,7 @@ class User_Input {
 	 * @param array $settings User settings.
 	 * @return array|WP_Error User input settings.
 	 */
-	public function set_settings( $settings ) {
+	public function set_answers( $settings ) {
 		$questions     = static::$questions;
 		$site_settings = array();
 		$user_settings = array();
@@ -290,10 +290,10 @@ class User_Input {
 			}
 		}
 
-		$this->user_input_site_settings->set( $site_settings );
-		$this->user_input_user_settings->set( $user_settings );
+		$this->site_specific_questions->set( $site_settings );
+		$this->user_specific_questions->set( $user_settings );
 
-		$updated_settings = $this->get_settings();
+		$updated_settings = $this->get_answers();
 		$is_empty         = $this->are_settings_empty( $updated_settings );
 
 		if ( ! is_null( $is_empty ) ) {
@@ -308,9 +308,9 @@ class User_Input {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param User_Input_Site_Settings|User_Input_User_Settings $setting Instance of either setting class.
-	 * @param array                                             $settings Settings to sanitize.
-	 * @param string                                            $scope Scope of the settings, either 'site' or 'user'.
+	 * @param Site_Specific_Questions|User_Specific_Questions $setting  Instance of either setting class.
+	 * @param array                                           $settings Settings to sanitize.
+	 * @param string                                          $scope    Scope of the settings, either 'site' or 'user'.
 	 * @return array Sanitized settings.
 	 */
 	public static function sanitize_settings( $setting, $settings, $scope ) {

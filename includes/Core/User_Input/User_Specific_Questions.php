@@ -1,6 +1,6 @@
 <?php
 /**
- * Class Google\Site_Kit\Core\User_Input\User_Input_User_Settings
+ * Class Google\Site_Kit\Core\User_Input\User_Specific_Questions
  *
  * @package   Google\Site_Kit\Core\User_Input
  * @copyright 2022 Google LLC
@@ -20,7 +20,7 @@ use Google\Site_Kit\Core\Storage\User_Setting;
  * @access private
  * @ignore
  */
-class User_Input_User_Settings extends User_Setting {
+class User_Specific_Questions extends User_Setting {
 
 	/**
 	 * The user option name for this setting.

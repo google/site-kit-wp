@@ -1,6 +1,6 @@
 <?php
 /**
- * User_Input_User_SettingsTest
+ * User_Specific_QuestionsTest
  *
  * @package   Google\Site_Kit\Tests\Core\User_Input
  * @copyright 2022 Google LLC
@@ -12,10 +12,10 @@ namespace Google\Site_Kit\Tests\Core\User_Input;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Storage\User_Options;
-use Google\Site_Kit\Core\User_Input\User_Input_User_Settings;
+use Google\Site_Kit\Core\User_Input\User_Specific_Questions;
 use Google\Site_Kit\Tests\TestCase;
 
-class User_Input_User_SettingsTest extends TestCase {
+class User_Specific_QuestionsTest extends TestCase {
 
 	/**
 	 * @var User_Options
@@ -27,38 +27,38 @@ class User_Input_User_SettingsTest extends TestCase {
 		$user_id            = $this->factory()->user->create();
 		$context            = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$this->user_options = new User_Options( $context, $user_id );
-		$meta_key           = $this->user_options->get_meta_key( User_Input_User_Settings::OPTION );
+		$meta_key           = $this->user_options->get_meta_key( User_Specific_Questions::OPTION );
 		unregister_meta_key( 'user', $meta_key );
 		// Needed to unregister the instance registered during plugin bootstrap.
 		remove_all_filters( "sanitize_user_meta_{$meta_key}" );
 	}
 
 	public function test_get_sanitize_callback() {
-		$user_input_user_settings = new User_Input_User_Settings( $this->user_options );
-		$user_input_user_settings->register();
+		$user_specific_questions = new User_Specific_Questions( $this->user_options );
+		$user_specific_questions->register();
 
-		$this->assertEmpty( $user_input_user_settings->get() );
+		$this->assertEmpty( $user_specific_questions->get() );
 
 		// Setting the value to a non-array will result in an empty array.
-		$user_input_user_settings->set( false );
-		$this->assertEquals( array(), $user_input_user_settings->get() );
+		$user_specific_questions->set( false );
+		$this->assertEquals( array(), $user_specific_questions->get() );
 
-		$user_input_user_settings->set( 123 );
-		$this->assertEquals( array(), $user_input_user_settings->get() );
+		$user_specific_questions->set( 123 );
+		$this->assertEquals( array(), $user_specific_questions->get() );
 
 		// Setting the value to an array but with non-scoped keys will
 		// result in an empty array.
-		$user_input_user_settings->set( array( 'purpose' => array() ) );
-		$this->assertEquals( array(), $user_input_user_settings->get() );
+		$user_specific_questions->set( array( 'purpose' => array() ) );
+		$this->assertEquals( array(), $user_specific_questions->get() );
 
 		// Setting the value to an array with scoped keys but a non-array
 		// value will result in an empty array.
-		$user_input_user_settings->set( array( 'goals' => 'a' ) );
-		$this->assertEquals( array(), $user_input_user_settings->get() );
+		$user_specific_questions->set( array( 'goals' => 'a' ) );
+		$this->assertEquals( array(), $user_specific_questions->get() );
 
 		// Setting the value to an associative array with scoped keys and array
 		// with valid values as the value works as expected.
-		$user_input_user_settings->set(
+		$user_specific_questions->set(
 			array(
 				'goals' => array(
 					'scope'  => 'user',
@@ -73,7 +73,7 @@ class User_Input_User_SettingsTest extends TestCase {
 					'values' => array( 'goal1', 'goal2' ),
 				),
 			),
-			$user_input_user_settings->get()
+			$user_specific_questions->get()
 		);
 	}
 }

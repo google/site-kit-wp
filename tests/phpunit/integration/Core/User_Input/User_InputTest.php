@@ -12,8 +12,8 @@ namespace Google\Site_Kit\Tests\Core\User_Input;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\User_Input\User_Input;
-use Google\Site_Kit\Core\User_Input\User_Input_Site_Settings;
-use Google\Site_Kit\Core\User_Input\User_Input_User_Settings;
+use Google\Site_Kit\Core\User_Input\Site_Specific_Questions;
+use Google\Site_Kit\Core\User_Input\User_Specific_Questions;
 use Google\Site_Kit\Tests\TestCase;
 
 class User_InputTest extends TestCase {
@@ -109,17 +109,17 @@ class User_InputTest extends TestCase {
 		$this->assertFalse( $this->user_input->are_settings_empty( $data ) );
 	}
 
-	public function test_get_settings() {
+	public function test_get_answers() {
 		// If settings are not set, it returns empty default values.
 		$this->assertEquals(
 			static::$empty_settings,
-			$this->user_input->get_settings()
+			$this->user_input->get_answers()
 		);
 
 		// If settings are partially set, it returns empty default values for unanswered questions.
 		update_user_option(
 			$this->user_id,
-			User_Input_User_Settings::OPTION,
+			User_Specific_Questions::OPTION,
 			array(
 				'postFrequency' => array(
 					'values' => array( 'daily' ),
@@ -147,12 +147,12 @@ class User_InputTest extends TestCase {
 					'scope'  => 'user',
 				),
 			),
-			$this->user_input->get_settings()
+			$this->user_input->get_answers()
 		);
 
 		// Returns all set settings as expected.
 		update_option(
-			User_Input_Site_Settings::OPTION,
+			Site_Specific_Questions::OPTION,
 			array(
 				'purpose' => array(
 					'values'     => array( 'purpose1' ),
@@ -164,7 +164,7 @@ class User_InputTest extends TestCase {
 
 		update_user_option(
 			$this->user_id,
-			User_Input_User_Settings::OPTION,
+			User_Specific_Questions::OPTION,
 			array(
 				'postFrequency' => array(
 					'values' => array( 'daily' ),
@@ -179,12 +179,12 @@ class User_InputTest extends TestCase {
 
 		$this->assertEquals(
 			static::$dummy_settings,
-			$this->user_input->get_settings()
+			$this->user_input->get_answers()
 		);
 	}
 
-	public function test_set_settings() {
-		$response = $this->user_input->set_settings(
+	public function test_set_answers() {
+		$response = $this->user_input->set_answers(
 			array(
 				'purpose'       => array( 'purpose1' ),
 				'postFrequency' => array( 'daily' ),
