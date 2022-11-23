@@ -80,10 +80,6 @@ export default function GA4SettingsControls( {
 		select( MODULES_ANALYTICS_4 ).getPropertyID()
 	);
 
-	const module = useSelect( ( select ) =>
-		select( CORE_MODULES ).getModule( 'analytics-4' )
-	);
-
 	const isModuleConnected = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
 	);
@@ -98,10 +94,6 @@ export default function GA4SettingsControls( {
 
 	const hasModuleAccess =
 		isGA4Connected && hasAnalyticsAccess && hasAnalytics4Access;
-
-	const formattedOwnerName = module?.owner?.login
-		? `<strong>${ module.owner.login }</strong>`
-		: __( 'Another admin', 'google-site-kit' );
 
 	const {
 		matchAccountProperty,
@@ -294,7 +286,6 @@ export default function GA4SettingsControls( {
 				isGA4Connected={ isGA4Connected }
 				hasAnalyticsAccess={ hasAnalyticsAccess }
 				hasAnalytics4Access={ hasAnalytics4Access }
-				ownerName={ formattedOwnerName }
 			/>
 		</div>
 	);
