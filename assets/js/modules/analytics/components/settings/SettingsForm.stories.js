@@ -88,6 +88,7 @@ WithoutUAAndGA4AccessGA4NotConnected.decorators = [
 					slug: 'analytics',
 					active: true,
 					connected: true,
+					owner: { login: 'analytics-owner-username' },
 				},
 				{
 					slug: 'analytics-4',
