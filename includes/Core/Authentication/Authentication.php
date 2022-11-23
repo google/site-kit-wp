@@ -1254,7 +1254,7 @@ final class Authentication {
 
 		// Refresh user input settings from the proxy.
 		// This will ensure the user input state is updated as well.
-		$this->user_input->set_settings( null );
+		$this->user_input->set_answers( null );
 
 		if ( User_Input_State::VALUE_COMPLETED !== $this->user_input_state->get() ) {
 			$this->user_input_state->set( User_Input_State::VALUE_REQUIRED );
