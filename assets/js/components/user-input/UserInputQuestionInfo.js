@@ -83,10 +83,15 @@ export default function UserInputQuestionInfo( {
 				<UserInputQuestionNotice className="googlesitekit-desktop-display-none " />
 				{ scope === 'site' && hasMultipleUser && (
 					<p>
-						{ __(
-							'The goals you pick will apply to the entire WordPress site: any other admins with access to Site Kit can see them and edit them in Settings.',
-							'google-site-kit'
-						) }
+						{ author
+							? __(
+									'This answer can be edited by all Site Kit admins.',
+									'google-site-kit'
+							  )
+							: __(
+									'Your answers will apply to the entire WordPress site: any other admins with access to Site Kit can see them and edit them.',
+									'google-site-kit'
+							  ) }
 					</p>
 				) }
 
@@ -94,7 +99,7 @@ export default function UserInputQuestionInfo( {
 					<Fragment>
 						<p>
 							{ __(
-								'This question has last been answered by:',
+								'This question has been answered by:',
 								'google-site-kit'
 							) }
 						</p>
