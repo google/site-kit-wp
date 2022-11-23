@@ -50,11 +50,15 @@
 	}
 
 	.googlesitekit-user-input__question-number {
-		color: $c-silver;
+		color: $c-interactive-on-disable-container;
 		font-family: $f-secondary;
 		font-size: $fs-display-sm;
 		line-height: $lh-display-sm;
 		margin: 0 0 13px;
+
+		@media (min-width: $bp-desktop) {
+			color: $c-surfaces-on-surface;
+		}
 	}
 
 	.googlesitekit-user-input__question-instructions {
