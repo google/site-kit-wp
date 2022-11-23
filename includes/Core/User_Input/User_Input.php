@@ -17,8 +17,6 @@ use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\REST_Route;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
-use Google\Site_Kit\Core\User_Input\User_Input_Site_Settings;
-use Google\Site_Kit\Core\User_Input\User_Input_User_Settings;
 use WP_Error;
 use WP_REST_Request;
 use WP_REST_Server;
@@ -81,14 +79,18 @@ class User_Input {
 	 *
 	 * @param Context        $context         Plugin context.
 	 * @param Authentication $authentication  Optional. Authentication instance. Default a new instance.
+	 * @param Options        $options         Optional. Options instance. Default a new instance.
+	 * @param User_Options   $user_options    Optional. User_Options instance. Default a new instance.
 	 */
-	public function __construct( Context $context, Authentication $authentication = null ) {
-		$options      = new Options( $context );
-		$user_options = new User_Options( $context );
-
+	public function __construct(
+		Context $context,
+		Authentication $authentication = null,
+		Options $options = null,
+		User_Options $user_options = null
+	) {
 		$this->authentication           = $authentication ?: new Authentication( $context );
-		$this->user_input_site_settings = new User_Input_Site_Settings( $options );
-		$this->user_input_user_settings = new User_Input_User_Settings( $user_options );
+		$this->user_input_site_settings = new User_Input_Site_Settings( $options ?: new Options( $context ) );
+		$this->user_input_user_settings = new User_Input_User_Settings( $user_options ?: new User_Options( $context ) );
 	}
 
 	/**
