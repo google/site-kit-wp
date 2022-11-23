@@ -99,6 +99,81 @@ class User_Input {
 	public function register() {
 		$this->user_input_site_settings->register();
 		$this->user_input_user_settings->register();
+
+		add_filter(
+			'googlesitekit_rest_routes',
+			function( $routes ) {
+				return array_merge( $routes, $this->get_rest_routes() );
+			}
+		);
+	}
+
+	/**
+	 * Gets related REST routes.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array List of REST_Route objects.
+	 */
+	private function get_rest_routes() {
+		$can_authenticate = function() {
+			return current_user_can( Permissions::AUTHENTICATE );
+		};
+
+		return array(
+			new REST_Route(
+				'core/user/data/user-input-settings',
+				array(
+					array(
+						'methods'             => WP_REST_Server::READABLE,
+						'callback'            => function() {
+							return rest_ensure_response( $this->get_settings() );
+						},
+						'permission_callback' => $can_authenticate,
+					),
+					array(
+						'methods'             => WP_REST_Server::CREATABLE,
+						'callback'            => function( WP_REST_Request $request ) {
+							$data = $request->get_param( 'data' );
+
+							if ( ! isset( $data['settings'] ) || ! is_array( $data['settings'] ) ) {
+								return new WP_Error(
+									'rest_missing_callback_param',
+									__( 'Missing settings data.', 'google-site-kit' ),
+									array( 'status' => 400 )
+								);
+							}
+
+							return rest_ensure_response(
+								$this->set_settings(
+									$data['settings']
+								)
+							);
+						},
+						'permission_callback' => $can_authenticate,
+						'args'                => array(
+							'data' => array(
+								'type'       => 'object',
+								'required'   => true,
+								'properties' => array(
+									'settings' => array(
+										'type'       => 'object',
+										'required'   => true,
+										'properties' => array_fill_keys(
+											array_keys( static::$properties ),
+											array(
+												'type'  => 'array',
+												'items' => array( 'type' => 'string' ),
+											)
+										),
+									),
+								),
+							),
+						),
+					),
+				)
+			),
+		);
 	}
 
 	/**
