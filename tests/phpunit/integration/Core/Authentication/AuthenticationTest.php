@@ -470,7 +470,7 @@ class AuthenticationTest extends TestCase {
 		$mock_user_input = $this->getMockBuilder( User_Input::class )
 			->disableOriginalConstructor()
 			->disableProxyingToOriginalMethods()
-			->setMethods( array( 'set_settings' ) )
+			->setMethods( array( 'set_answers' ) )
 			->getMock();
 		$this->force_set_property( $auth, 'user_input', $mock_user_input );
 
@@ -493,7 +493,7 @@ class AuthenticationTest extends TestCase {
 		$mock_user_input = $this->getMockBuilder( User_Input::class )
 			->disableOriginalConstructor()
 			->disableProxyingToOriginalMethods()
-			->setMethods( array( 'set_settings' ) )
+			->setMethods( array( 'set_answers' ) )
 			->getMock();
 		$this->force_set_property( $auth, 'user_input', $mock_user_input );
 
@@ -530,7 +530,7 @@ class AuthenticationTest extends TestCase {
 		// Mocking User_Input here to avoid adding a ton of complexity
 		// from intercepting a request to the proxy, returning, settings etc.
 		$mock_user_input = $this->getMockBuilder( User_Input::class )
-			->setMethods( array( 'set_settings' ) )
+			->setMethods( array( 'set_answers' ) )
 			->disableProxyingToOriginalMethods()
 			->disableOriginalConstructor()
 			->getMock();
