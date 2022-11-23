@@ -224,7 +224,7 @@ export const siteKitRequest = async (
  * @param {Object}  options.signal   Abort the fetch request.
  * @return {Promise} A promise for the `fetch` request.
  */
-export const get = async (
+export const get = (
 	type,
 	identifier,
 	datapoint,

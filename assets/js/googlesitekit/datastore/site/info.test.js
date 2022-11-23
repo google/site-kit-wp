@@ -230,7 +230,7 @@ describe( 'core/site site info', () => {
 				expect( global[ entityInfoVar ] ).not.toEqual( undefined );
 			} );
 
-			it( 'will return initial state (undefined) when no data is available', async () => {
+			it( 'will return initial state (undefined) when no data is available', () => {
 				expect( global[ baseInfoVar ] ).toEqual( undefined );
 				expect( global[ entityInfoVar ] ).toEqual( undefined );
 
@@ -286,7 +286,7 @@ describe( 'core/site site info', () => {
 				} );
 			} );
 
-			it( 'will return initial state (undefined) when no data is available', async () => {
+			it( 'will return initial state (undefined) when no data is available', () => {
 				expect( global[ baseInfoVar ] ).toEqual( undefined );
 				expect( global[ entityInfoVar ] ).toEqual( undefined );
 
@@ -326,7 +326,7 @@ describe( 'core/site site info', () => {
 				expect( isAMP ).toEqual( false );
 			} );
 
-			it( 'will return initial state (undefined) when no data is available', async () => {
+			it( 'will return initial state (undefined) when no data is available', () => {
 				expect( global[ baseInfoVar ] ).toEqual( undefined );
 				expect( global[ entityInfoVar ] ).toEqual( undefined );
 

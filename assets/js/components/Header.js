@@ -26,6 +26,7 @@ import { useMutationObserver } from 'react-use-observer';
 /**
  * WordPress dependencies
  */
+import { __ } from '@wordpress/i18n';
 import { Fragment } from '@wordpress/element';
 
 /**
@@ -43,6 +44,8 @@ import ViewOnlyMenu from './ViewOnlyMenu';
 import { useFeature } from '../hooks/useFeature';
 import useViewOnly from '../hooks/useViewOnly';
 import useDashboardType from '../hooks/useDashboardType';
+import Link from './Link';
+import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
 const { useSelect } = Data;
 
 const Header = ( { children, subHeader, showNavigation } ) => {
@@ -50,6 +53,9 @@ const Header = ( { children, subHeader, showNavigation } ) => {
 	const isDashboard = !! useDashboardType();
 	const isViewOnly = useViewOnly();
 
+	const dashboardURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' )
+	);
 	const isAuthenticated = useSelect( ( select ) =>
 		select( CORE_USER ).isAuthenticated()
 	);
@@ -75,7 +81,16 @@ const Header = ( { children, subHeader, showNavigation } ) => {
 							className="googlesitekit-header__logo"
 							alignMiddle
 						>
-							<Logo />
+							<Link
+								aria-label={ __(
+									'Go to dashboard',
+									'google-site-kit'
+								) }
+								className="googlesitekit-header__logo-link"
+								href={ dashboardURL }
+							>
+								<Logo />
+							</Link>
 						</Cell>
 						<Cell
 							smSize={ 3 }

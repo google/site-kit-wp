@@ -39,7 +39,7 @@ describe( 'core/site reset', () => {
 
 	describe( 'actions', () => {
 		describe( 'fetchReset', () => {
-			it( 'sets isDoingReset ', async () => {
+			it( 'sets isDoingReset ', () => {
 				const response = true;
 				fetchMock.postOnce(
 					/^\/google-site-kit\/v1\/core\/site\/data\/reset/,

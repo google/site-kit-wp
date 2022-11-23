@@ -58,7 +58,7 @@ export const registerModule = ifIdeaHubIsEnabled( ( modules ) => {
 	} );
 } );
 
-export const registerWidgets = ifIdeaHubIsEnabled( async ( widgets ) => {
+export const registerWidgets = ifIdeaHubIsEnabled( ( widgets ) => {
 	if ( ! widgets ) {
 		return;
 	}

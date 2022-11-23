@@ -49,7 +49,7 @@ describe( 'module/pagespeed-insights service store', () => {
 
 	describe( 'selectors', () => {
 		describe( 'getServiceURL', () => {
-			it( 'retrieves the correct URL with no arguments', async () => {
+			it( 'retrieves the correct URL with no arguments', () => {
 				const serviceURL = registry
 					.select( MODULES_PAGESPEED_INSIGHTS )
 					.getServiceURL();
@@ -68,7 +68,7 @@ describe( 'module/pagespeed-insights service store', () => {
 				expect( serviceURLWithLeadingSlash ).toEqual( expectedURL );
 			} );
 
-			it( 'adds query args', async () => {
+			it( 'adds query args', () => {
 				const path = '/test/path/to/deeplink';
 				const query = {
 					param1: '1',

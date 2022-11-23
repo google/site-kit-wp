@@ -87,13 +87,13 @@ describe( 'ResetButton', () => {
 			);
 		} );
 
-		it( 'should open the dialog', async () => {
+		it( 'should open the dialog', () => {
 			expect(
 				document.querySelector( '.mdc-dialog--open' )
 			).toBeInTheDocument();
 		} );
 
-		it( 'should show reset and cancel buttons', async () => {
+		it( 'should show reset and cancel buttons', () => {
 			expect(
 				document.querySelector(
 					'.mdc-dialog--open .mdc-dialog__cancel-button'
@@ -106,7 +106,7 @@ describe( 'ResetButton', () => {
 			).toBeInTheDocument();
 		} );
 
-		it( 'should close the modal on clicking cancel', async () => {
+		it( 'should close the modal on clicking cancel', () => {
 			fireEvent.click(
 				document.querySelector(
 					'.mdc-dialog--open .mdc-dialog__cancel-button'
@@ -117,7 +117,7 @@ describe( 'ResetButton', () => {
 			).not.toBeInTheDocument();
 		} );
 
-		it( 'should close the modal on pressing escape key', async () => {
+		it( 'should close the modal on pressing escape key', () => {
 			fireEvent.keyUp( global, { keyCode: ESCAPE } );
 			expect(
 				document.querySelector( '.mdc-dialog--open' )

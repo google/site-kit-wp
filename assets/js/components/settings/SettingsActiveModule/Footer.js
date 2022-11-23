@@ -160,15 +160,20 @@ export default function Footer( props ) {
 		setValue( dialogActiveKey, ! dialogActive );
 	}, [ dialogActive, dialogActiveKey, setValue ] );
 
-	const handleEdit = useCallback(
-		() =>
-			trackEvent(
-				`${ viewContext }_module-list`,
-				'edit_module_settings',
-				slug
-			),
-		[ slug, viewContext ]
-	);
+	const handleEdit = useCallback( () => {
+		trackEvent(
+			`${ viewContext }_module-list`,
+			'edit_module_settings',
+			slug
+		);
+
+		setValues( FORM_SETUP, {
+			// Pre-enable GA4 controls.
+			enableGA4: true,
+			// Enable tooltip highlighting GA4 property select.
+			enableGA4PropertyTooltip: true,
+		} );
+	}, [ setValues, slug, viewContext ] );
 
 	if ( ! module ) {
 		return null;

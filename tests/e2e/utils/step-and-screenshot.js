@@ -20,7 +20,7 @@
  * Node dependencies
  */
 import path from 'path';
-import { mkdir } from 'fs/promises';
+import { mkdir, rm } from 'fs/promises';
 
 const screenshotsIndex = new Map();
 
@@ -88,4 +88,19 @@ export function step( name, cb, { screenshotArgs = {} } = {} ) {
 			reject( err );
 		}
 	} );
+}
+
+/**
+ * Empties the screenshots directory.
+ *
+ * @since n.e.x.t
+ */
+export async function clearScreenshots() {
+	const { resolve, join } = path;
+	const rootDir = resolve( __dirname, '..' );
+	const screenshotsDir = join( rootDir, 'screenshots' );
+
+	await rm( screenshotsDir, { recursive: true, force: true } );
+
+	await mkdir( screenshotsDir );
 }

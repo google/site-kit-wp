@@ -90,6 +90,7 @@ export const resetDefaultStorageOrder = () => {
  * @param {string} type Browser storage to test. Should be one of `localStorage` or `sessionStorage`.
  * @return {boolean} True if the given storage is available, false otherwise.
  */
+// eslint-disable-next-line require-await
 export const isStorageAvailable = async ( type ) => {
 	const storage = global[ type ];
 

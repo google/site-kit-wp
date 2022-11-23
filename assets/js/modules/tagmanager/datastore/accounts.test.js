@@ -80,7 +80,7 @@ describe( 'modules/tagmanager accounts', () => {
 
 	describe( 'actions', () => {
 		describe( 'resetAccounts', () => {
-			it( 'sets accounts and related values back to their initial values', async () => {
+			it( 'sets accounts and related values back to their initial values', () => {
 				registry.dispatch( MODULES_TAGMANAGER ).setSettings( {
 					accountID: '12345',
 					ampContainerID: 'GTM-XYZ123',

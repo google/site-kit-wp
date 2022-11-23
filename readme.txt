@@ -4,7 +4,7 @@ Contributors:      google
 Requires at least: 5.2
 Tested up to:      6.1
 Requires PHP:      5.6
-Stable tag:        1.87.0
+Stable tag:        1.88.0
 License:           Apache License 2.0
 License URI:       https://www.apache.org/licenses/LICENSE-2.0
 Tags:              google, search-console, analytics, adsense, pagespeed-insights, optimize, tag-manager, site-kit
@@ -107,6 +107,26 @@ By default, Site Kit does anonymize IP addresses upon activation of the Google A
 Please create a new topic on our [WordPress.org support forum](https://wordpress.org/support/plugin/google-site-kit/). Be sure to follow the [support forum guidelines](https://wordpress.org/support/guidelines/) when posting.
 
 == Changelog ==
+
+= 1.88.0 =
+
+**Enhanced**
+
+* Render one-off tooltips in a portal. See [#6049](https://github.com/google/site-kit-wp/issues/6049).
+* Update code integrating with Gutenberg to use React hooks instead, following the new WordPress version requirement of 5.2. See [#5876](https://github.com/google/site-kit-wp/issues/5876).
+* Remove now unnecessary polyfills for WordPress versions older than 5.2, according to new version requirement. See [#5875](https://github.com/google/site-kit-wp/issues/5875).
+* Raise minimum WordPress version requirement from 4.7 to 5.2. See [#5874](https://github.com/google/site-kit-wp/issues/5874).
+* Show Measurement ID instead of Property ID in Analytics 4 Property Select Dropdown when there is an existing GA4 Tag. See [#5145](https://github.com/google/site-kit-wp/issues/5145).
+* Link the Site Kit logo on the entity dashboard to the main dashboard. See [#4793](https://github.com/google/site-kit-wp/issues/4793).
+
+**Fixed**
+
+* Avoid using _n() as a shortcut for singular/plural without using a number. See [#6069](https://github.com/google/site-kit-wp/issues/6069).
+* Update Tooltip styles to match GM2+ designs. See [#6059](https://github.com/google/site-kit-wp/issues/6059).
+* Fix bug where the GA4 reminder tooltip in Analytics Settings was not appearing properly. See [#6045](https://github.com/google/site-kit-wp/issues/6045).
+* Fix console error when viewing CoreSiteBannerNotifications stories. See [#5978](https://github.com/google/site-kit-wp/issues/5978).
+* Increase size of banner icons in setup notification. See [#5934](https://github.com/google/site-kit-wp/issues/5934).
+* Prevent dashboard from crashing when async SVG fails to load. See [#5605](https://github.com/google/site-kit-wp/issues/5605).
 
 = 1.87.0 =
 

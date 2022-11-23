@@ -95,7 +95,7 @@ describe( 'SettingsModule', () => {
 		] );
 	} );
 
-	it( 'should display SettingsViewComponent when on module view route', async () => {
+	it( 'should display SettingsViewComponent when on module view route', () => {
 		history.push( '/connected-services/analytics' );
 
 		const { queryByTestID } = render( <SettingsModuleWithWrapper />, {
@@ -106,7 +106,7 @@ describe( 'SettingsModule', () => {
 		expect( queryByTestID( 'view-component' ) ).toBeInTheDocument();
 	} );
 
-	it( 'should display SettingsEditComponent when on module edit route', async () => {
+	it( 'should display SettingsEditComponent when on module edit route', () => {
 		history.push( '/connected-services/analytics/edit' );
 
 		const { queryByTestID } = render( <SettingsModuleWithWrapper />, {
@@ -132,7 +132,7 @@ describe( 'SettingsModule', () => {
 		expect( queryByTestID( 'view-component' ) ).toBeInTheDocument();
 	} );
 
-	it( 'should change route when "Edit" link is clicked and switch to SettingsEditComponent', async () => {
+	it( 'should change route when "Edit" link is clicked and switch to SettingsEditComponent', () => {
 		history.push( '/connected-services/analytics' );
 
 		const { getByRole, queryByTestID } = render(
@@ -187,7 +187,7 @@ describe( 'SettingsModule', () => {
 		expect( queryByTestID( 'view-component' ) ).toBeInTheDocument();
 	} );
 
-	it( 'should open accordion on click and change route and DOM correctly', async () => {
+	it( 'should open accordion on click and change route and DOM correctly', () => {
 		history.push( '/connected-services' );
 
 		const { getByRole, queryByTestID } = render(
@@ -202,7 +202,7 @@ describe( 'SettingsModule', () => {
 		expect( queryByTestID( 'view-component' ) ).toBeInTheDocument();
 	} );
 
-	it( 'should close accordion on click and change route & DOM correctly', async () => {
+	it( 'should close accordion on click and change route & DOM correctly', () => {
 		history.push( '/connected-services/analytics' );
 
 		const { getByRole, queryByTestID } = render(

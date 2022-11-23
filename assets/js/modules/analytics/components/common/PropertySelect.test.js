@@ -110,7 +110,7 @@ const setupEmptyRegistry = ( { dispatch } ) => {
 };
 
 describe( 'PropertySelect', () => {
-	it( 'should render an option for each analytics property of the currently selected account.', async () => {
+	it( 'should render an option for each analytics property of the currently selected account.', () => {
 		const { getAllByRole } = render( <PropertySelect />, {
 			setupRegistry,
 		} );
@@ -123,7 +123,7 @@ describe( 'PropertySelect', () => {
 		);
 	} );
 
-	it( 'should pre-select an existing tag when present', async () => {
+	it( 'should pre-select an existing tag when present', () => {
 		const { container } = render( <PropertySelect />, {
 			setupRegistry: setupRegistryWithExistingTag,
 		} );
@@ -190,7 +190,7 @@ describe( 'PropertySelect', () => {
 		).toBeInTheDocument();
 	} );
 
-	it( 'should render a select box with only an option to create a new property if no properties are available.', async () => {
+	it( 'should render a select box with only an option to create a new property if no properties are available.', () => {
 		const { getAllByRole } = render( <PropertySelect />, {
 			setupRegistry: setupEmptyRegistry,
 		} );
@@ -202,7 +202,7 @@ describe( 'PropertySelect', () => {
 		);
 	} );
 
-	it( 'should update propertyID in the store when a new item is selected', async () => {
+	it( 'should update propertyID in the store when a new item is selected', () => {
 		const { getAllByRole, container, registry } = render(
 			<PropertySelect />,
 			{ setupRegistry }
