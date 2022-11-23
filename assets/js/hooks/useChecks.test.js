@@ -25,7 +25,7 @@ import { useChecks } from './useChecks';
 
 describe( 'useChecks', () => {
 	it( 'should return { complete:true, error: undefined } successful check runs.', async () => {
-		const checks = [ async () => Promise.resolve() ];
+		const checks = [ () => Promise.resolve() ];
 		let result;
 		await act( async () => {
 			( { result } = await renderHook( () => useChecks( checks ) ) );
@@ -53,13 +53,13 @@ describe( 'useChecks', () => {
 	it( 'returns the first error thrown by a check', async () => {
 		muteFetch( /^\/google-site-kit\/v1\/core\/site\/data\/connection/ );
 		const checks = [
-			async () => true,
-			async () => {
+			() => true,
+			() => {
 				setTimeout( () => {
 					throw 'error1';
 				}, 1 );
 			},
-			async () => {
+			() => {
 				throw 'error2';
 			},
 		];

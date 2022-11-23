@@ -1,5 +1,5 @@
 /**
- * ErrorText stories.
+ * E2E setup for screenshots.
  *
  * Site Kit by Google, Copyright 2022 Google LLC
  *
@@ -19,29 +19,6 @@
 /**
  * Internal dependencies
  */
-import ErrorText from './ErrorText';
-import Link from './Link';
+import { clearScreenshots } from '../utils';
 
-const Template = ( args ) => <ErrorText { ...args } />;
-
-export const Default = Template.bind( {} );
-Default.args = {
-	message: 'This is error text.',
-};
-
-export const ReconnectURL = Template.bind( {} );
-ReconnectURL.args = {
-	message: 'This is error text.',
-	reconnectURL: 'https://some.true.url',
-};
-
-export const WithChildren = Template.bind( {} );
-WithChildren.args = {
-	message: 'This is error text.',
-	children: <Link>Link</Link>,
-};
-
-export default {
-	title: 'Components/ErrorText',
-	component: ErrorText,
-};
+clearScreenshots();

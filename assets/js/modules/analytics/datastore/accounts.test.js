@@ -118,7 +118,7 @@ describe( 'modules/analytics accounts', () => {
 				);
 			} );
 
-			it( 'sets isDoingCreateAccount ', async () => {
+			it( 'sets isDoingCreateAccount ', () => {
 				fetchMock.post(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-account-ticket/,
 					{ body: fixtures.createAccount, status: 200 }

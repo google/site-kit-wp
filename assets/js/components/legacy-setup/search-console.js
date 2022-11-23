@@ -58,7 +58,7 @@ class SearchConsole extends Component {
 			this.submitPropertyEventHandler.bind( this );
 	}
 
-	async componentDidMount() {
+	componentDidMount() {
 		const { isAuthenticated, shouldSetup } = this.props;
 
 		if ( ! isAuthenticated || ! shouldSetup ) {

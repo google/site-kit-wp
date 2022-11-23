@@ -180,6 +180,12 @@ export default function GA4SettingsControls( {
 		propertyID,
 	] );
 
+	const measurementIDs = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getMatchedMeasurementIDsByPropertyIDs(
+			properties
+		)
+	);
+
 	if ( isAdminAPIWorking === undefined ) {
 		return <ProgressBar height={ isDisabled ? 180 : 212 } small />;
 	}
@@ -262,7 +268,9 @@ export default function GA4SettingsControls( {
 											'google-site-kit'
 										),
 										matchedProperty.displayName,
-										matchedProperty._id
+										measurementIDs?.[
+											matchedProperty._id
+										] || ''
 								  ) }
 						</Option>
 					</Select>

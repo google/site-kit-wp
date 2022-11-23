@@ -175,7 +175,7 @@ describe( 'core/user dismissed-items', () => {
 		} );
 
 		describe( 'isDismissingItem', () => {
-			it( 'returns true while item dismissal is in progress', async () => {
+			it( 'returns true while item dismissal is in progress', () => {
 				const slug = 'foo-bar';
 
 				muteFetch( fetchDismissItem );

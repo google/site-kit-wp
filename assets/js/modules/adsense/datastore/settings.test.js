@@ -329,7 +329,7 @@ describe( 'modules/adsense settings', () => {
 				expect( fetchMock ).not.toHaveFetched();
 			} );
 
-			it( 'does not override original account status when receiving settings again', async () => {
+			it( 'does not override original account status when receiving settings again', () => {
 				// Set original value.
 				const value = 'a-status';
 				registry
@@ -407,7 +407,7 @@ describe( 'modules/adsense settings', () => {
 				expect( fetchMock ).not.toHaveFetched();
 			} );
 
-			it( 'does not override original useSnippet when receiving settings again', async () => {
+			it( 'does not override original useSnippet when receiving settings again', () => {
 				// Set original value.
 				const value = true;
 				registry

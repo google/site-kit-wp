@@ -104,7 +104,7 @@ describe( 'WidgetAreaRenderer', () => {
 		unsubscribeFromAll( registry );
 	} );
 
-	it( 'should return the same number of elements as widgets from a selector', async () => {
+	it( 'should return the same number of elements as widgets from a selector', () => {
 		createWidgets( registry, areaName, [
 			{
 				Component: WidgetComponent,
@@ -135,7 +135,7 @@ describe( 'WidgetAreaRenderer', () => {
 		).toHaveLength( 3 );
 	} );
 
-	it( 'should only render widgets the user has access to in a view-only viewContext', async () => {
+	it( 'should only render widgets the user has access to in a view-only viewContext', () => {
 		createWidgets( registry, areaName, [
 			{
 				Component: WidgetComponent,
@@ -190,7 +190,7 @@ describe( 'WidgetAreaRenderer', () => {
 		);
 	} );
 
-	it( 'should render all widgets when not in a view-only viewContext', async () => {
+	it( 'should render all widgets when not in a view-only viewContext', () => {
 		createWidgets( registry, areaName, [
 			{
 				Component: WidgetComponent,
@@ -232,7 +232,7 @@ describe( 'WidgetAreaRenderer', () => {
 		expect( container.firstChild ).toHaveTextContent( 'AdSense is here' );
 	} );
 
-	it( 'should treat widgets that render no content as zero-width (ignoring them)', async () => {
+	it( 'should treat widgets that render no content as zero-width (ignoring them)', () => {
 		createWidgets( registry, areaName, [
 			{
 				Component: WidgetComponent,
@@ -406,7 +406,7 @@ describe( 'WidgetAreaRenderer', () => {
 		],
 	] )(
 		'should resize widgets in a row that spans 9 columns to fill the full 12 columns (%s)',
-		async ( testName, widgets ) => {
+		( testName, widgets ) => {
 			createWidgets( registry, areaName, widgets );
 
 			const { container } = render(
@@ -475,7 +475,7 @@ describe( 'WidgetAreaRenderer', () => {
 		],
 	] )(
 		'should not resize widgets in a row that is smaller than 9 columns (%s)',
-		async ( testName, widgets ) => {
+		( testName, widgets ) => {
 			createWidgets( registry, areaName, widgets );
 
 			const { container } = render(
@@ -574,7 +574,7 @@ describe( 'WidgetAreaRenderer', () => {
 		],
 	] )(
 		'should not resize widgets that fit into a 12-column grid (%s)',
-		async ( testName, widgets ) => {
+		( testName, widgets ) => {
 			createWidgets( registry, areaName, widgets );
 
 			const { container } = render(
@@ -590,7 +590,7 @@ describe( 'WidgetAreaRenderer', () => {
 		}
 	);
 
-	it( 'should output boxes style without extra grid markup', async () => {
+	it( 'should output boxes style without extra grid markup', () => {
 		createWidgets( registry, areaName, [
 			{
 				Component: WidgetComponent,
@@ -624,7 +624,7 @@ describe( 'WidgetAreaRenderer', () => {
 		).toHaveLength( 0 );
 	} );
 
-	it( 'should output composite style with extra grid markup', async () => {
+	it( 'should output composite style with extra grid markup', () => {
 		registry = createTestRegistryWithArea(
 			areaName,
 			WIDGET_AREA_STYLES.COMPOSITE
@@ -662,7 +662,7 @@ describe( 'WidgetAreaRenderer', () => {
 		).toHaveLength( 1 );
 	} );
 
-	it( 'should render a hidden widget area when it has no active widget', async () => {
+	it( 'should render a hidden widget area when it has no active widget', () => {
 		createWidgets( registry, areaName, [
 			{
 				Component: WidgetComponentEmpty,
@@ -686,7 +686,7 @@ describe( 'WidgetAreaRenderer', () => {
 		).toHaveClass( 'googlesitekit-hidden' );
 	} );
 
-	it( 'should render the widget area title, subtitle and icon', async () => {
+	it( 'should render the widget area title, subtitle and icon', () => {
 		createWidgets( registry, areaName, [
 			{
 				Component: WidgetComponent,

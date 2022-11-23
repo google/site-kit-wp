@@ -69,7 +69,7 @@ describe( 'modules/analytics-4 settings', () => {
 
 	describe( 'actions', () => {
 		describe( 'submitChanges', () => {
-			beforeEach( async () => {
+			beforeEach( () => {
 				registry.dispatch( MODULES_ANALYTICS ).setSettings( {
 					accountID: fixtures.createProperty._accountID,
 				} );

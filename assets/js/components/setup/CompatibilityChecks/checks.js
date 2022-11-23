@@ -43,6 +43,7 @@ const invalidIPRanges = [
 	{ subnet: '192.168.0.0', mask: 16 },
 ];
 // Check for a known non-public/reserved domain.
+// eslint-disable-next-line require-await
 export const checkHostname = async () => {
 	const { hostname, port } = global.location;
 
@@ -103,6 +104,7 @@ export const checkAMPConnectivity = async () => {
 	}
 };
 // Check that the current version of WordPress is 5.0+.
+// eslint-disable-next-line require-await
 export const checkWPVersion = async () => {
 	const { wpVersion } = global._googlesitekitBaseData || {};
 	// Throw only if we can get the current version, otherwise ignore it.

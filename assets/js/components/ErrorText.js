@@ -21,7 +21,6 @@
  */
 import PropTypes from 'prop-types';
 import { isURL } from '@wordpress/url';
-import { Fragment } from '@wordpress/element';
 
 /**
  * WordPress dependencies
@@ -33,7 +32,7 @@ import { sprintf, __ } from '@wordpress/i18n';
  */
 import { sanitizeHTML } from '../util';
 
-function ErrorText( { message, reconnectURL = '', children = null } ) {
+function ErrorText( { message, reconnectURL } ) {
 	if ( ! message ) {
 		return null;
 	}
@@ -68,7 +67,6 @@ function ErrorText( { message, reconnectURL = '', children = null } ) {
 			<p
 				dangerouslySetInnerHTML={ sanitizeHTML( error, sanitizeArgs ) }
 			/>
-			{ children && <Fragment> { children }</Fragment> }
 		</div>
 	);
 }
@@ -76,7 +74,10 @@ function ErrorText( { message, reconnectURL = '', children = null } ) {
 ErrorText.propTypes = {
 	message: PropTypes.string.isRequired,
 	reconnectURL: PropTypes.string,
-	children: PropTypes.element,
+};
+
+ErrorText.defaultProps = {
+	reconnectURL: '',
 };
 
 export default ErrorText;

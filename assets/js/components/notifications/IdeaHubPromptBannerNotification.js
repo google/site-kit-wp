@@ -144,6 +144,7 @@ export default function IdeaHubPromptBannerNotification() {
 			learnMoreLabel={ __( 'Learn more', 'google-site-kit' ) }
 			learnMoreURL={ ideaHubSupportURL }
 			WinImageSVG={ IdeaHubPromptSVG }
+			showSmallWinImage={ false }
 			mediumWinImageSVGWidth={ 765 }
 			mediumWinImageSVGHeight={ 304 }
 			noBottomPadding

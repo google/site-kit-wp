@@ -95,7 +95,7 @@ describe( 'SettingsApp', () => {
 		registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
 	} );
 
-	it( 'should switch to "/connected-services" route when corresponding tab is clicked.', async () => {
+	it( 'should switch to "/connected-services" route when corresponding tab is clicked.', () => {
 		fetchMock.getOnce(
 			coreUserTrackingSettingsEndpointRegExp,
 			coreUserTrackingResponse
@@ -114,7 +114,7 @@ describe( 'SettingsApp', () => {
 		expect( global.location.hash ).toEqual( '#/connected-services' );
 	} );
 
-	it( 'should switch to "/connect-more-services" route when corresponding tab is clicked.', async () => {
+	it( 'should switch to "/connect-more-services" route when corresponding tab is clicked.', () => {
 		const { getAllByRole } = render( <SettingsApp />, {
 			history,
 			registry,

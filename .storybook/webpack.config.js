@@ -4,6 +4,7 @@ const mainConfig = require( '../webpack.config' );
 const mapValues = require( 'lodash/mapValues' );
 const { ProvidePlugin } = require( 'webpack' );
 
+// eslint-disable-next-line require-await
 module.exports = async ( { config } ) => {
 	// Site Kit loads its API packages as externals,
 	// so we need to convert those to aliases for Storybook to be able to resolve them.

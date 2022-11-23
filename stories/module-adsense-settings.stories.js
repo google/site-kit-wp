@@ -100,10 +100,7 @@ storiesOf( 'AdSense Module/Settings', module )
 		'View, closed',
 		( args, { registry } ) => {
 			return (
-				<Settings
-					registry={ registry }
-					route={ '/connected-services' }
-				/>
+				<Settings registry={ registry } route="/connected-services" />
 			);
 		},
 		{
@@ -122,7 +119,7 @@ storiesOf( 'AdSense Module/Settings', module )
 
 			return (
 				<Settings
-					route={ '/connected-services/adsense' }
+					route="/connected-services/adsense"
 					registry={ registry }
 				/>
 			);
@@ -140,7 +137,7 @@ storiesOf( 'AdSense Module/Settings', module )
 
 			return (
 				<Settings
-					route={ '/connected-services/adsense' }
+					route="/connected-services/adsense"
 					registry={ registry }
 				/>
 			);
@@ -159,7 +156,7 @@ storiesOf( 'AdSense Module/Settings', module )
 
 			return (
 				<Settings
-					route={ '/connected-services/adsense/edit' }
+					route="/connected-services/adsense/edit"
 					registry={ registry }
 				/>
 			);
@@ -181,7 +178,7 @@ storiesOf( 'AdSense Module/Settings', module )
 
 			return (
 				<Settings
-					route={ '/connected-services/adsense/edit' }
+					route="/connected-services/adsense/edit"
 					registry={ registry }
 				/>
 			);
@@ -203,7 +200,7 @@ storiesOf( 'AdSense Module/Settings', module )
 
 			return (
 				<Settings
-					route={ '/connected-services/adsense/edit' }
+					route="/connected-services/adsense/edit"
 					registry={ registry }
 				/>
 			);
