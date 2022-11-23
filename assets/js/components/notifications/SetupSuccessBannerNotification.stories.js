@@ -30,6 +30,7 @@ import {
 	WithTestRegistry,
 	provideModules,
 	provideModuleRegistrations,
+	provideUserCapabilities,
 } from '../../../../tests/js/utils';
 import {
 	CTA_PLACEMENT_STATIC_AUTO,
@@ -125,6 +126,7 @@ export default {
 				},
 			] );
 			provideModuleRegistrations( registry );
+			provideUserCapabilities( registry );
 
 			registry.dispatch( MODULES_THANK_WITH_GOOGLE ).receiveGetSettings( {
 				publicationID: 'example.com',
