@@ -17,6 +17,9 @@ use Google\Site_Kit\Modules\Analytics_4\Settings;
 use Google\Site_Kit\Tests\Core\Storage\Setting_With_Owned_Keys_ContractTests;
 use Google\Site_Kit\Tests\Modules\SettingsTestCase;
 
+
+const GOOGLE_TAG_IDS = array( 'G-XXXX', 'GT-XXXX', 'AW-XXXX' );
+
 /**
  * @group Modules
  * @group Analytics
@@ -102,9 +105,7 @@ class SettingsTest extends SettingsTestCase {
 		$options = get_option( $options_key );
 		$testcase->assertEquals( '', $options['googleTagID'] );
 
-		$google_tag_ids_valid = array( 'G-XXXX', 'GT-XXXX', 'AW-XXXX' );
-
-		foreach ( $google_tag_ids_valid as $tag_id ) {
+		foreach ( GOOGLE_TAG_IDS as $tag_id ) {
 			$options                = $settings->get();
 			$options['googleTagID'] = $tag_id;
 			$settings->set( $options );
