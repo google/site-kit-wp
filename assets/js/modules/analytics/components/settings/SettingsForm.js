@@ -78,7 +78,10 @@ export default function SettingsForm( {
 
 			<SettingsControls hasModuleAccess={ hasAnalyticsAccess } />
 
-			<GA4SettingsControls hasModuleAccess={ hasAnalytics4Access } />
+			<GA4SettingsControls
+				hasAnalyticsAccess={ hasAnalyticsAccess }
+				hasAnalytics4Access={ hasAnalytics4Access }
+			/>
 
 			{ isValidAccountID( accountID ) && (
 				<Fragment>
