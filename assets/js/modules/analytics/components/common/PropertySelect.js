@@ -43,9 +43,11 @@ export default function PropertySelect( { hasModuleAccess } ) {
 		if ( hasModuleAccess === false ) {
 			return null;
 		}
+
 		if ( ! accountID ) {
 			return [];
 		}
+
 		return select( MODULES_ANALYTICS ).getProperties( accountID );
 	} );
 
@@ -53,7 +55,8 @@ export default function PropertySelect( { hasModuleAccess } ) {
 		if ( hasModuleAccess === false || ! accountID ) {
 			return false;
 		}
-		select( MODULES_ANALYTICS ).isResolving( 'getProperties', [
+
+		return select( MODULES_ANALYTICS ).isResolving( 'getProperties', [
 			accountID,
 		] );
 	} );
