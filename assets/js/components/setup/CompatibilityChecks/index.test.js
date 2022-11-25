@@ -53,6 +53,7 @@ describe( 'CompatibilityChecks', () => {
 	const homeURL = 'http://example.com';
 
 	beforeEach( () => {
+		jest.useFakeTimers();
 		registry = createTestRegistry();
 		// Mock global.location.hostname with value that won't throw error in first check.
 		Object.defineProperty( global.window, 'location', {

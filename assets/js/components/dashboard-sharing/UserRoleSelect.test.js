@@ -26,6 +26,7 @@ import { ENTER } from '@wordpress/keycodes';
  */
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import {
+	act,
 	render,
 	fireEvent,
 	createTestRegistry,
@@ -66,6 +67,7 @@ describe( 'CurrentSurvey', () => {
 	let registry;
 
 	beforeEach( () => {
+		jest.useFakeTimers();
 		registry = createTestRegistry();
 	} );
 
@@ -80,6 +82,8 @@ describe( 'CurrentSurvey', () => {
 				registry,
 			}
 		);
+
+		jest.runAllTimers();
 
 		expect( console ).toHaveErrored();
 		expect( container.firstChild ).toBeNull();
@@ -97,6 +101,10 @@ describe( 'CurrentSurvey', () => {
 				registry,
 			}
 		);
+
+		act( () => {
+			jest.runAllTimers();
+		} );
 
 		expect(
 			container.querySelector( '.googlesitekit-user-role-select__button' )
@@ -122,6 +130,10 @@ describe( 'CurrentSurvey', () => {
 			}
 		);
 
+		act( () => {
+			jest.runAllTimers();
+		} );
+
 		const addRolesElement = container.querySelector(
 			'.googlesitekit-user-role-select__add-roles'
 		);
@@ -142,6 +154,10 @@ describe( 'CurrentSurvey', () => {
 				registry,
 			}
 		);
+
+		act( () => {
+			jest.runAllTimers();
+		} );
 
 		const currentRolesElement = container.querySelector(
 			'.googlesitekit-user-role-select__current-roles'
@@ -165,6 +181,10 @@ describe( 'CurrentSurvey', () => {
 				registry,
 			}
 		);
+
+		act( () => {
+			jest.runAllTimers();
+		} );
 
 		fireEvent.click(
 			container.querySelector( '.googlesitekit-user-role-select__button' )
@@ -211,6 +231,10 @@ describe( 'CurrentSurvey', () => {
 			}
 		);
 
+		act( () => {
+			jest.runAllTimers();
+		} );
+
 		fireEvent.click(
 			container.querySelector( '.googlesitekit-user-role-select__button' )
 		);
@@ -240,6 +264,10 @@ describe( 'CurrentSurvey', () => {
 				registry,
 			}
 		);
+
+		act( () => {
+			jest.runAllTimers();
+		} );
 
 		fireEvent.click(
 			container.querySelector( '.googlesitekit-user-role-select__button' )
@@ -289,6 +317,10 @@ describe( 'CurrentSurvey', () => {
 			}
 		);
 
+		act( () => {
+			jest.runAllTimers();
+		} );
+
 		fireEvent.click(
 			container.querySelector( '.googlesitekit-user-role-select__button' )
 		);
@@ -328,6 +360,10 @@ describe( 'CurrentSurvey', () => {
 			}
 		);
 
+		act( () => {
+			jest.runAllTimers();
+		} );
+
 		fireEvent.click(
 			container.querySelector( '.googlesitekit-user-role-select__button' )
 		);
@@ -363,6 +399,10 @@ describe( 'CurrentSurvey', () => {
 				registry,
 			}
 		);
+
+		act( () => {
+			jest.runAllTimers();
+		} );
 
 		fireEvent.click(
 			container.querySelector( '.googlesitekit-user-role-select__button' )

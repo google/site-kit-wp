@@ -46,6 +46,8 @@ describe( 'createNotificationsStore store', () => {
 	} );
 
 	beforeEach( () => {
+		jest.useFakeTimers();
+
 		registry = createRegistry();
 
 		storeDefinition = createNotificationsStore( ...STORE_ARGS );
@@ -149,6 +151,8 @@ describe( 'createNotificationsStore store', () => {
 			} );
 
 			it( 'does not remove server notifications and emits a warning if they are sent to removeNotification', async () => {
+				jest.useRealTimers();
+
 				const serverNotifications = [ { id: 'server_notification' } ];
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/core\/site\/data\/notifications/,
@@ -212,6 +216,8 @@ describe( 'createNotificationsStore store', () => {
 	describe( 'selectors', () => {
 		describe( 'getNotifications', () => {
 			it( 'uses a resolver to make a network request', async () => {
+				jest.useRealTimers();
+
 				const response = [ { id: 'test_notification' } ];
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/core\/site\/data\/notifications/,
@@ -257,6 +263,8 @@ describe( 'createNotificationsStore store', () => {
 			} );
 
 			it( 'dispatches an error if the request fails', async () => {
+				jest.useRealTimers();
+
 				const response = {
 					code: 'internal_server_error',
 					message: 'Internal server error',

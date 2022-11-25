@@ -30,6 +30,8 @@ describe( 'AdminBarWidgets', () => {
 	let registry;
 
 	beforeEach( () => {
+		jest.useFakeTimers();
+
 		registry = createTestRegistry();
 
 		provideModules( registry );
@@ -58,6 +60,8 @@ describe( 'AdminBarWidgets', () => {
 			}
 		);
 
+		jest.runAllTimers();
+
 		await waitForRegistry();
 
 		expect( container ).toMatchSnapshot();
@@ -80,6 +84,8 @@ describe( 'AdminBarWidgets', () => {
 				registry,
 			}
 		);
+
+		jest.runAllTimers();
 
 		await waitForRegistry();
 

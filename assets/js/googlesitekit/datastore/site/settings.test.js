@@ -137,6 +137,7 @@ describe( 'core/site urls', () => {
 
 		describe( 'getShowAdminBar', () => {
 			it( 'should return undefined when admin bar settings are being resolved still', () => {
+				jest.useFakeTimers();
 				muteFetch( adminBarSettingsEndpoint );
 				expect(
 					registry.select( CORE_SITE ).getShowAdminBar()

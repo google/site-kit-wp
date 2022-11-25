@@ -36,6 +36,10 @@ const preloadedData = {
 };
 
 describe( 'Preloading Middleware', () => {
+	beforeAll( () => {
+		jest.useFakeTimers();
+	} );
+
 	it( 'returns a preloaded response when present', async () => {
 		const requestURI = 'test/path/a';
 		const preloadingMiddleware =

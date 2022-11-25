@@ -47,6 +47,7 @@ describe( 'core/site connection', () => {
 	} );
 
 	beforeEach( () => {
+		jest.useRealTimers();
 		registry = createTestRegistry();
 		store = registry.stores[ CORE_SITE ].store;
 		select = registry.select( CORE_SITE );
@@ -158,6 +159,8 @@ describe( 'core/site connection', () => {
 
 				const connection = select.getConnection();
 
+				await untilResolved( registry, CORE_SITE ).getConnection();
+
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( connection ).toEqual( undefined );
 				expect( console ).toHaveErrored();
@@ -216,6 +219,7 @@ describe( 'core/site connection', () => {
 			} );
 
 			it( 'returns undefined if connection info is not available', () => {
+				jest.useFakeTimers();
 				muteFetch(
 					/^\/google-site-kit\/v1\/core\/site\/data\/connection/
 				);

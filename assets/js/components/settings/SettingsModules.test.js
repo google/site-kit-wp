@@ -41,6 +41,7 @@ describe( 'SettingsModules', () => {
 	let savedLocationHash;
 
 	beforeAll( () => {
+		jest.useFakeTimers();
 		savedLocationHash = global.location.hash;
 	} );
 
