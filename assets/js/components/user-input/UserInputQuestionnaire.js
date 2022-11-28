@@ -71,36 +71,20 @@ export default function UserInputQuestionnaire() {
 	const dashboardURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' )
 	);
-	const { isSavingSettings, error, answeredUntilIndex } = useSelect(
-		( select ) => {
-			const userInputSettings =
-				select( CORE_USER ).getUserInputSettings();
+	const { isSavingSettings, error } = useSelect( ( select ) => {
+		const userInputSettings = select( CORE_USER ).getUserInputSettings();
 
-			return {
-				isSavingSettings:
-					select( CORE_USER ).isSavingUserInputSettings(
-						userInputSettings
-					),
-				error: select( CORE_USER ).getErrorForAction(
-					'saveUserInputSettings',
-					[]
+		return {
+			isSavingSettings:
+				select( CORE_USER ).isSavingUserInputSettings(
+					userInputSettings
 				),
-				answeredUntilIndex: USER_INPUT_QUESTIONS_LIST.findIndex(
-					( question ) =>
-						userInputSettings?.[ question ]?.values?.length === 0
-				),
-			};
-		}
-	);
-
-	useEffect( () => {
-		if ( answeredUntilIndex === -1 ) {
-			return;
-		}
-		if ( activeSlugIndex > answeredUntilIndex ) {
-			setActiveSlug( steps[ answeredUntilIndex ] );
-		}
-	}, [ answeredUntilIndex, activeSlugIndex, setActiveSlug ] );
+			error: select( CORE_USER ).getErrorForAction(
+				'saveUserInputSettings',
+				[]
+			),
+		};
+	} );
 
 	useEffect( () => {
 		if ( activeSlug === 'preview' ) {
