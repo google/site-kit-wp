@@ -96,7 +96,7 @@ export default function UserInputSettings( {
 			dismissExpires={ getTimeInSeconds( 'hour' ) * 3 }
 			ctaComponent={
 				<Link href={ ctaLink } onClick={ onCTAClick }>
-					{ __( 'Let’s go', 'google-site-kit' ) }
+					{ __( 'Personalize your metrics', 'google-site-kit' ) }
 				</Link>
 			}
 			dismiss={ __( 'Remind me later', 'google-site-kit' ) }
