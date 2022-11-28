@@ -31,6 +31,9 @@ export const USER_INPUT_QUESTIONS_LIST = [
 	USER_INPUT_QUESTIONS_GOALS,
 ];
 
+export const USER_INPUT_CURRENTLY_EDITING_KEY =
+	'googlesitekit-user-input-currently-editing';
+
 /**
  * Gets available answers for user input settings.
  *

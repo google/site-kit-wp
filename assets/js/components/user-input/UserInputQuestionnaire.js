@@ -54,7 +54,7 @@ export default function UserInputQuestionnaire() {
 	const [ shouldScrollToActiveQuestion, setShouldScrollToActiveQuestion ] =
 		useState( false );
 	const [ redirectURL ] = useQueryArg( 'redirect_url' );
-	const [ single, setSingle ] = useQueryArg( 'single', false );
+	const [ single ] = useQueryArg( 'single', false );
 
 	const activeSlugIndex = steps.indexOf( activeSlug );
 	if ( activeSlugIndex === -1 ) {
@@ -120,20 +120,6 @@ export default function UserInputQuestionnaire() {
 		setActiveSlug( steps[ activeSlugIndex + 1 ] );
 	}, [ activeSlugIndex, setActiveSlug, viewContext ] );
 
-	const goTo = useCallback(
-		( num = 1, singleType = false ) => {
-			trackEvent( viewContext, 'question_edit', steps[ num - 1 ] );
-
-			// If we're going to a single question to edit it, set the query string here.
-			// We can't currently set it in the child component because the useQueryArg hook doesn't update in the parent.
-			setSingle( singleType );
-			if ( steps.length >= num && num > 0 ) {
-				setActiveSlug( steps[ num - 1 ] );
-			}
-		},
-		[ setActiveSlug, setSingle, viewContext ]
-	);
-
 	const back = useCallback( () => {
 		trackEvent( viewContext, 'question_return', steps[ activeSlugIndex ] );
 		setActiveSlug( steps[ activeSlugIndex - 1 ] );
@@ -170,11 +156,6 @@ export default function UserInputQuestionnaire() {
 		viewContext,
 	] );
 
-	const goToPreview = useCallback( () => {
-		trackEvent( viewContext, 'question_update', steps[ activeSlugIndex ] );
-		setActiveSlug( steps[ steps.length - 1 ] );
-	}, [ activeSlugIndex, setActiveSlug, viewContext ] );
-
 	useEffect( () => {
 		if ( ! shouldScrollToActiveQuestion ) {
 			setShouldScrollToActiveQuestion( true );
@@ -191,12 +172,7 @@ export default function UserInputQuestionnaire() {
 	let nextCallback = next;
 	let nextLabel;
 
-	if ( single === 'user-input' ) {
-		backCallback = undefined;
-		// When the user is editing a single question in the user-input screen send them back to the preview when they click Update.
-		nextCallback = goToPreview;
-		nextLabel = __( 'Update', 'google-site-kit' );
-	} else if ( single === 'settings' ) {
+	if ( single === 'settings' ) {
 		backCallback = undefined;
 		// When the user is editing a single question from the settings screen, submit changes and send them back to the settings pages when they click Submit.
 		nextCallback = submitChanges;
@@ -324,7 +300,7 @@ export default function UserInputQuestionnaire() {
 			{ activeSlug === 'preview' && (
 				<UserInputPreview
 					submitChanges={ submitChanges }
-					goTo={ goTo }
+					goBack={ backCallback }
 					error={ error }
 				/>
 			) }
