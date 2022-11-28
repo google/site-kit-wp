@@ -106,41 +106,53 @@ export default function TrackingExclusionSwitches() {
 	}
 
 	return (
-		<fieldset className="googlesitekit-analytics-trackingdisabled">
-			<legend className="googlesitekit-setup-module__text">
-				{ __( 'Exclude from Analytics', 'google-site-kit' ) }
-			</legend>
-			<div className="googlesitekit-settings-module__inline-items">
-				<div className="googlesitekit-settings-module__inline-item">
-					<Switch
-						label={
-							trackingExclusionLabels[ TRACKING_LOGGED_IN_USERS ]
-						}
-						checked={ trackingDisabled.includes(
+		<div className="googlesitekit-settings-module__fields-group">
+			<h4 className="googlesitekit-settings-module__fields-group-title">
+				{ __( 'Exclude Analytics', 'google-site-kit' ) }
+			</h4>
+
+			<fieldset className="googlesitekit-analytics-trackingdisabled">
+				<legend className="googlesitekit-setup-module__text">
+					{ __( 'Exclude from Analytics', 'google-site-kit' ) }
+				</legend>
+				<div className="googlesitekit-settings-module__meta-item">
+					<div className="googlesitekit-settings-module__inline-items">
+						<div className="googlesitekit-settings-module__inline-item">
+							<Switch
+								label={
+									trackingExclusionLabels[
+										TRACKING_LOGGED_IN_USERS
+									]
+								}
+								checked={ trackingDisabled.includes(
+									TRACKING_LOGGED_IN_USERS
+								) }
+								onClick={ onChangeTrackLoggedInUsers }
+								hideLabel={ false }
+							/>
+						</div>
+						{ ! trackingDisabled.includes(
 							TRACKING_LOGGED_IN_USERS
+						) && (
+							<div className="googlesitekit-settings-module__inline-item">
+								<Switch
+									label={
+										trackingExclusionLabels[
+											TRACKING_CONTENT_CREATORS
+										]
+									}
+									checked={ trackingDisabled.includes(
+										TRACKING_CONTENT_CREATORS
+									) }
+									onClick={ onChangeTrackContentCreators }
+									hideLabel={ false }
+								/>
+							</div>
 						) }
-						onClick={ onChangeTrackLoggedInUsers }
-						hideLabel={ false }
-					/>
-				</div>
-				{ ! trackingDisabled.includes( TRACKING_LOGGED_IN_USERS ) && (
-					<div className="googlesitekit-settings-module__inline-item">
-						<Switch
-							label={
-								trackingExclusionLabels[
-									TRACKING_CONTENT_CREATORS
-								]
-							}
-							checked={ trackingDisabled.includes(
-								TRACKING_CONTENT_CREATORS
-							) }
-							onClick={ onChangeTrackContentCreators }
-							hideLabel={ false }
-						/>
 					</div>
-				) }
-			</div>
-			<p className="googlesitekit-margin-top-0">{ message }</p>
-		</fieldset>
+					<p>{ message }</p>
+				</div>
+			</fieldset>
+		</div>
 	);
 }

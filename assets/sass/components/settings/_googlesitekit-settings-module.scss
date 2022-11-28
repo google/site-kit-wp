@@ -179,6 +179,10 @@
 			}
 		}
 
+		.googlesitekit-settings-module__fields-group-title {
+			font-size: $fs-body-md;
+		}
+
 		.googlesitekit-settings-module__meta-items {
 			align-items: stretch;
 			display: flex;
@@ -214,6 +218,11 @@
 			&--nomargin {
 				margin: 0;
 			}
+
+			p {
+				font-size: $fs-body-sm;
+				letter-spacing: $ls-xs;
+			}
 		}
 
 		.googlesitekit-setup-module--analytics .googlesitekit-settings-module__meta-item--data-only {
@@ -230,7 +239,7 @@
 		}
 
 		.googlesitekit-settings-module__inline-item {
-			margin: 0 1rem 1rem 0;
+			margin: 0 1rem 0 0;
 		}
 
 		.googlesitekit-settings-module__meta-item-type {
@@ -297,6 +306,10 @@
 			font-size: $fs-body-sm;
 			letter-spacing: $ls-xs;
 			margin-left: 24px;
+		}
+
+		.googlesitekit-setup-module__inputs .googlesitekit-analytics-4__select-property {
+			margin-top: $grid-gap-phone / 2;
 		}
 	}
 }
