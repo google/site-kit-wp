@@ -25,7 +25,7 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { useEffect, useRef } from '@wordpress/element';
+import { Fragment, useEffect, useRef } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -82,47 +82,51 @@ export default function UserInputPreview( props ) {
 			className="googlesitekit-user-input__preview"
 			ref={ previewContainer }
 		>
-			<p className="googlesitekit-user-input__question-number">
-				{ __( 'Review your answers', 'google-site-kit' ) }
-			</p>
-			<UserInputPreviewGroup
-				slug={ USER_INPUT_QUESTIONS_PURPOSE }
-				questionNumber={ 1 }
-				title={ __(
-					'What is the main purpose of this site?',
-					'google-site-kit'
-				) }
-				values={ settings?.purpose?.values || [] }
-				options={ USER_INPUT_ANSWERS_PURPOSE }
-			/>
+			<div className="googlesitekit-user-input__preview-contents">
+				<p className="googlesitekit-user-input__preview-subheader">
+					{ __( 'Review your answers', 'google-site-kit' ) }
+				</p>
+				<UserInputPreviewGroup
+					slug={ USER_INPUT_QUESTIONS_PURPOSE }
+					questionNumber={ 1 }
+					title={ __(
+						'What is the main purpose of this site?',
+						'google-site-kit'
+					) }
+					values={ settings?.purpose?.values || [] }
+					options={ USER_INPUT_ANSWERS_PURPOSE }
+				/>
 
-			<UserInputPreviewGroup
-				slug={ USER_INPUT_QUESTION_POST_FREQUENCY }
-				questionNumber={ 2 }
-				title={ __(
-					'How often do you create new content for this site?',
-					'google-site-kit'
-				) }
-				values={ settings?.postFrequency?.values || [] }
-				options={ USER_INPUT_ANSWERS_POST_FREQUENCY }
-			/>
+				<UserInputPreviewGroup
+					slug={ USER_INPUT_QUESTION_POST_FREQUENCY }
+					questionNumber={ 2 }
+					title={ __(
+						'How often do you create new content for this site?',
+						'google-site-kit'
+					) }
+					values={ settings?.postFrequency?.values || [] }
+					options={ USER_INPUT_ANSWERS_POST_FREQUENCY }
+				/>
 
-			<UserInputPreviewGroup
-				slug={ USER_INPUT_QUESTIONS_GOALS }
-				questionNumber={ 3 }
-				title={ __(
-					'What are your top goals for this site?',
-					'google-site-kit'
-				) }
-				values={ settings?.goals?.values || [] }
-				options={ USER_INPUT_ANSWERS_GOALS }
-			/>
+				<UserInputPreviewGroup
+					slug={ USER_INPUT_QUESTIONS_GOALS }
+					questionNumber={ 3 }
+					title={ __(
+						'What are your top goals for this site?',
+						'google-site-kit'
+					) }
+					values={ settings?.goals?.values || [] }
+					options={ USER_INPUT_ANSWERS_GOALS }
+				/>
 
-			{ error && <ErrorNotice error={ error } /> }
+				{ error && <ErrorNotice error={ error } /> }
+			</div>
 
 			{ ! noFooter && (
-				<div className="googlesitekit-user-input__preview--footer">
-					<UserInputQuestionNotice />
+				<Fragment>
+					<div className="googlesitekit-user-input__preview-notice">
+						<UserInputQuestionNotice />
+					</div>
 					<div className="googlesitekit-user-input__footer googlesitekit-user-input__buttons">
 						<div className="googlesitekit-user-input__footer-nav">
 							<Button
@@ -143,7 +147,7 @@ export default function UserInputPreview( props ) {
 							<CancelUserInputButton />
 						</div>
 					</div>
-				</div>
+				</Fragment>
 			) }
 		</div>
 	);

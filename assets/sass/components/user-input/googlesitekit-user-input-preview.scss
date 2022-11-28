@@ -19,15 +19,7 @@
 .googlesitekit-plugin {
 
 	.googlesitekit-user-input__preview {
-
-		background-color: $c-white;
-		padding: 50px 23px;
-		position: relative;
-
-		@media (min-width: $bp-tablet) {
-			margin-left: -10px;
-			margin-right: -10px;
-		}
+		@extend .googlesitekit-user-input__question;
 
 		.googlesitekit-user-input__question-instructions--notice {
 			background-color: $c-surfaces-surface-2;
@@ -46,6 +38,20 @@
 		}
 	}
 
+	.googlesitekit-user-input__preview-contents {
+		@extend .googlesitekit-user-input__question-contents;
+	}
+
+	.googlesitekit-user-input__preview-subheader {
+		@extend .googlesitekit-user-input__question-number;
+	}
+
+	.googlesitekit-user-input__preview-notice {
+		@extend .googlesitekit-user-input__question-contents;
+		padding-bottom: 0;
+		padding-top: 0;
+	}
+
 	.googlesitekit-user-input__preview-answers {
 		display: flex;
 		flex-wrap: wrap;
@@ -54,7 +60,7 @@
 	.googlesitekit-user-input__preview-answer {
 		align-items: center;
 		background-color: $c-content-primary-container;
-		border-radius: $br-xs;
+		border-radius: $br-md;
 		color: $c-content-on-primary-container;
 		display: flex;
 		font-size: $fs-body-md;
@@ -66,10 +72,10 @@
 		word-break: break-word;
 	}
 
-	.googlesitekit-user-input__preview-group {
-		border-bottom: 1px solid $c-utility-divider;
-		margin-bottom: 12px;
-		padding-bottom: 12px;
+	.googlesitekit-user-input__preview-group + .googlesitekit-user-input__preview-group {
+		border-top: 1px solid $c-utility-divider;
+		margin-top: 12px;
+		padding-top: 12px;
 	}
 
 	.googlesitekit-user-input__preview-group-title {
@@ -79,6 +85,7 @@
 
 		p {
 			color: $c-surfaces-on-surface;
+			font-weight: $fw-medium;
 			margin-top: 0;
 		}
 
@@ -88,23 +95,6 @@
 			letter-spacing: normal;
 			margin-top: -4px;
 			text-transform: none;
-		}
-	}
-
-	.googlesitekit-user-input__preview--footer {
-
-		@media (min-width: $bp-tablet) {
-			align-items: center;
-			display: flex;
-			justify-content: space-between;
-			margin-top: 50px;
-		}
-
-		.googlesitekit-user-input__buttons {
-
-			@media (min-width: $bp-tablet) {
-				margin: 0;
-			}
 		}
 	}
 }
