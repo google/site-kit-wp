@@ -21,6 +21,8 @@
  */
 import invariant from 'invariant';
 import isPlainObject from 'lodash/isPlainObject';
+import isEqual from 'lodash/isEqual';
+import pick from 'lodash/pick';
 
 /**
  * Internal dependencies
@@ -37,7 +39,7 @@ const { receiveError, clearError } = errorStoreActions;
 const CACHE_KEY_NAME = 'userInputSettings';
 
 function fetchStoreReducerCallback( state, inputSettings ) {
-	return { ...state, inputSettings };
+	return { ...state, inputSettings, savedInputSettings: inputSettings };
 }
 
 const fetchGetUserInputSettingsStore = createFetchStore( {
@@ -71,6 +73,7 @@ const SET_USER_INPUT_SETTINGS_SAVING_FLAG =
 const baseInitialState = {
 	inputSettings: undefined,
 	isSavingInputSettings: false,
+	savedInputSettings: undefined,
 };
 
 const baseActions = {
@@ -322,6 +325,52 @@ const baseSelectors = {
 			return settings[ settingID ]?.author;
 		}
 	),
+
+	/**
+	 * Indicates whether the current user input settings have changed from what is saved.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object}     state Data store's state.
+	 * @param {Array|null} keys  Settings keys to check; if not provided, all settings are checked.
+	 * @return {boolean} True if the settings have changed, false otherwise.
+	 */
+	haveUserInputSettingsChanged( state, keys = null ) {
+		const { inputSettings, savedInputSettings } = state;
+
+		if ( keys ) {
+			return ! isEqual(
+				pick( inputSettings, keys ),
+				pick( savedInputSettings, keys )
+			);
+		}
+
+		return ! isEqual( inputSettings, savedInputSettings );
+	},
+
+	/**
+	 * Indicates whether the provided user input setting has changed from what is saved.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state   Data store's state.
+	 * @param {string} setting The setting we want to check for saved changes.
+	 * @return {boolean} True if the settings have changed, false otherwise.
+	 */
+	hasUserInputSettingChanged( state, setting ) {
+		invariant( setting, 'setting is required.' );
+
+		const { inputSettings, savedInputSettings } = state;
+
+		if ( ! inputSettings || ! savedInputSettings ) {
+			return false;
+		}
+
+		return ! isEqual(
+			inputSettings[ setting ],
+			savedInputSettings[ setting ]
+		);
+	},
 };
 
 const store = Data.combineStores(
