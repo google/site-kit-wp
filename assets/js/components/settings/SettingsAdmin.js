@@ -102,7 +102,11 @@ export default function SettingsAdmin() {
 										</Cell>
 									</Row>
 
-									<UserInputPreview goTo={ goTo } noFooter />
+									<UserInputPreview
+										goTo={ goTo }
+										noFooter
+										showIndividualCTAs
+									/>
 								</Grid>
 							</div>
 						</Layout>

@@ -41,7 +41,14 @@ import ErrorNotice from '../ErrorNotice';
 const { useSelect } = Data;
 
 export default function UserInputPreview( props ) {
-	const { noFooter, goTo, submitChanges, error } = props;
+	const {
+		noFooter,
+		goTo,
+		submitChanges,
+		error,
+		showIndividualCTAs = false,
+	} = props;
+
 	const previewContainer = useRef();
 	const settings = useSelect( ( select ) =>
 		select( CORE_USER ).getUserInputSettings()
@@ -84,6 +91,7 @@ export default function UserInputPreview( props ) {
 				edit={ goTo.bind( null, 1, 'user-input' ) }
 				values={ settings?.purpose?.values || [] }
 				options={ USER_INPUT_ANSWERS_PURPOSE }
+				showIndividualCTAs={ showIndividualCTAs }
 			/>
 
 			<UserInputPreviewGroup
@@ -95,6 +103,7 @@ export default function UserInputPreview( props ) {
 				edit={ goTo.bind( null, 2, 'user-input' ) }
 				values={ settings?.postFrequency?.values || [] }
 				options={ USER_INPUT_ANSWERS_POST_FREQUENCY }
+				showIndividualCTAs={ showIndividualCTAs }
 			/>
 
 			<UserInputPreviewGroup
@@ -106,6 +115,7 @@ export default function UserInputPreview( props ) {
 				edit={ goTo.bind( null, 3, 'user-input' ) }
 				values={ settings?.goals?.values || [] }
 				options={ USER_INPUT_ANSWERS_GOALS }
+				showIndividualCTAs={ showIndividualCTAs }
 			/>
 
 			{ error && <ErrorNotice error={ error } /> }
@@ -134,4 +144,5 @@ UserInputPreview.propTypes = {
 	goTo: PropTypes.func.isRequired,
 	redirectURL: PropTypes.string,
 	errors: PropTypes.object,
+	showIndividualCTAs: PropTypes.bool,
 };
