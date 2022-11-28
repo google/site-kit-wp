@@ -70,6 +70,8 @@ export default function UserInputPreviewGroup( {
 	const trim = ( value ) => value.trim();
 	const notEmpty = ( value ) => value.length > 0;
 
+	const validValues = values.map( trim ).filter( notEmpty );
+
 	return (
 		<div className="googlesitekit-user-input__preview-group">
 			<div className="googlesitekit-user-input__preview-group-title">
@@ -81,22 +83,35 @@ export default function UserInputPreviewGroup( {
 
 			{ ! isEditing && (
 				<div className="googlesitekit-user-input__preview-answers">
-					{ values
-						.map( trim )
-						.filter( notEmpty )
-						.map( ( value ) => (
-							<div
-								key={ value }
-								className="googlesitekit-user-input__preview-answer"
-							>
-								{ options[ value ] ||
-									sprintf(
-										/* translators: %s: other option */
-										__( 'Other: %s', 'google-site-kit' ),
-										value
-									) }
-							</div>
-						) ) }
+					{ ! validValues.length && (
+						<p className="googlesitekit-error-text">
+							{ __(
+								'Please select an answer',
+								'google-site-kit'
+							) }
+						</p>
+					) }
+
+					{ validValues.length > 0 &&
+						values
+							.map( trim )
+							.filter( notEmpty )
+							.map( ( value ) => (
+								<div
+									key={ value }
+									className="googlesitekit-user-input__preview-answer"
+								>
+									{ options[ value ] ||
+										sprintf(
+											/* translators: %s: other option */
+											__(
+												'Other: %s',
+												'google-site-kit'
+											),
+											value
+										) }
+								</div>
+							) ) }
 				</div>
 			) }
 
