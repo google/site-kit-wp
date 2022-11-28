@@ -113,8 +113,6 @@ export function isValidGoogleTagID( googleTagID ) {
 /**
  * Checks whether the given googleTagAccountID appears to be valid.
  *
- * @alias module:tagmanager/utils/validation.isValidAccountID
- *
  * @since n.e.x.t
  *
  * @param {*} googleTagAccountID Google Tag ID to check.
@@ -126,8 +124,6 @@ export function isValidGoogleTagAccountID( googleTagAccountID ) {
 
 /**
  * Checks whether the given googleTagContainerID appears to be valid.
- *
- * @alias module:tagmanager/utils/validation.isValidAccountID
  *
  * @since n.e.x.t
  *
