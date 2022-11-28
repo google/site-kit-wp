@@ -286,12 +286,16 @@ final class Search_Console extends Module
 			case 'GET:matched-sites':
 				/* @var Google_Service_SearchConsole_SitesListResponse $response Response object. */
 				$entries = $this->map_sites( (array) $response->getSiteEntry() );
-				$entries = wp_list_sort(
+				usort(
 					$entries,
-					'name',
-					'ASC'
+					function ( $a, $b ) {
+							return strcasecmp(
+								$a['name'],
+								$b['name']
+							);
+					}
 				);
-				$strict  = filter_var( $data['strict'], FILTER_VALIDATE_BOOLEAN );
+				$strict = filter_var( $data['strict'], FILTER_VALIDATE_BOOLEAN );
 
 				$current_url = $this->context->get_reference_site_url();
 				if ( ! $strict ) {

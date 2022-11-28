@@ -385,20 +385,32 @@ final class Tag_Manager extends Module
 		switch ( "{$data->method}:{$data->datapoint}" ) {
 			case 'GET:accounts':
 				/* @var Google_Service_TagManager_ListAccountsResponse $response List accounts response. */
-				return wp_list_sort(
-					$response->getAccount(),
-					'name',
-					'ASC'
+				$accounts = $response->getAccount();
+				usort(
+					$accounts,
+					function ( $a, $b ) {
+							return strcasecmp(
+								$a['name'],
+								$b['name']
+							);
+					}
 				);
+				return $accounts;
 			case 'GET:accounts-containers':
 				/* @var Google_Service_TagManager_ListAccountsResponse $response List accounts response. */
+				$accounts = $response->getAccount();
+				usort(
+					$accounts,
+					function ( $a, $b ) {
+							return strcasecmp(
+								$a['name'],
+								$b['name']
+							);
+					}
+				);
 				$response = array(
 					// TODO: Parse this response to a regular array.
-					'accounts'   => wp_list_sort(
-						$response->getAccount(),
-						'name',
-						'ASC'
-					),
+					'accounts'   => $accounts,
 					'containers' => array(),
 				);
 				if ( 0 === count( $response['accounts'] ) ) {
@@ -433,12 +445,18 @@ final class Tag_Manager extends Module
 						return array_intersect( (array) $usage_context, $container->getUsageContext() );
 					}
 				);
-
-				return wp_list_sort(
-					array_values( $containers ),
-					'name',
-					'ASC'
+				$containers = array_values( $containers );
+				usort(
+					$containers,
+					function ( $a, $b ) {
+							return strcasecmp(
+								$a['name'],
+								$b['name']
+							);
+					}
 				);
+
+				return $containers;
 		}
 
 		return parent::parse_data_response( $data, $response );
