@@ -21,6 +21,7 @@ import { isValidNumericID } from './is-valid-numeric-id';
 describe( 'isValidNumericID', () => {
 	it( 'should return true for numeric values', () => {
 		expect( isValidNumericID( 1 ) ).toBe( true );
+		expect( isValidNumericID( 1 ) ).toBe( true );
 		expect( isValidNumericID( '1' ) ).toBe( true );
 	} );
 
@@ -32,5 +33,9 @@ describe( 'isValidNumericID', () => {
 		expect( isValidNumericID( 0 ) ).toBe( false );
 		expect( isValidNumericID( '0' ) ).toBe( false );
 		expect( isValidNumericID( 'X' ) ).toBe( false );
+		expect( isValidNumericID( '1.1' ) ).toBe( false );
+		expect( isValidNumericID( 1.1 ) ).toBe( false );
+		expect( isValidNumericID( '-1.1' ) ).toBe( false );
+		expect( isValidNumericID( -1.1 ) ).toBe( false );
 	} );
 } );

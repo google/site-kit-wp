@@ -26,7 +26,11 @@
  * @return {boolean} Validity.
  */
 export function isValidNumericID( input ) {
-	const id = parseInt( input, 10 ) || 0;
+	const id = parseFloat( input ) || 0;
+
+	if ( ! Number.isInteger( id ) ) {
+		return false;
+	}
 
 	return id > 0;
 }
