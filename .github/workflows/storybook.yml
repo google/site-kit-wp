@@ -90,15 +90,13 @@ jobs:
       - name: Set branch environment variables
         id: branch-target
         if: github.event_name != 'pull_request'
-        run: |
-          echo "::set-output name=dir::${GITHUB_REF##*/}"
+        run: echo "dir=${GITHUB_REF##*/}" >> $GITHUB_OUTPUT
       - name: Set PR environment variables
         id: pr-target
         if: github.event_name == 'pull_request'
         env:
           PULL_REQUEST_NUMBER: ${{ github.event.number }}
-        run: |
-          echo "::set-output name=dir::pull/${PULL_REQUEST_NUMBER}"
+        run: echo "dir=pull/${PULL_REQUEST_NUMBER}" >> $GITHUB_OUTPUT
       - name: Commit updates
         run: |
           mkdir -p storybook/${TARGET_DIR}

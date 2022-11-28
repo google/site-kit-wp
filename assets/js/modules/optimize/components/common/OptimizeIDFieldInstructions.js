@@ -25,26 +25,24 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import { MODULES_OPTIMIZE } from '../../../optimize/datastore/constants';
 import Link from '../../../../components/Link';
 
 const { useSelect } = Data;
 
 export default function OptimizeIDFieldInstructions() {
-	const supportURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getGoogleSupportURL( {
-			path: '/optimize/answer/6211921',
-		} )
+	const accountURL = useSelect( ( select ) =>
+		select( MODULES_OPTIMIZE ).getServiceURL( { path: '/accounts' } )
 	);
 
 	return (
 		<p>
 			{ __(
-				'Please copy and paste your Optimize ID to complete your setup.',
+				'Please copy and paste your Optimize Container ID to complete your setup.',
 				'google-site-kit'
 			) }{ ' ' }
-			<Link href={ supportURL } external>
-				{ __( 'You can locate this here.', 'google-site-kit' ) }
+			<Link href={ accountURL } external>
+				{ __( 'You can locate this here', 'google-site-kit' ) }
 			</Link>
 		</p>
 	);
