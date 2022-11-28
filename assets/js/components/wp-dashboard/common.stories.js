@@ -57,6 +57,21 @@ const wpDashboardAnalyticsOptionSets = [
 		],
 	},
 
+	// Mock options for mocking "Total Users" chart widget response.
+	{
+		startDate: '2020-12-31',
+		endDate: '2021-01-27',
+		compareStartDate: '2020-12-03',
+		compareEndDate: '2020-12-30',
+		metrics: [
+			{
+				expression: 'ga:users',
+				alias: 'Total Users',
+			},
+		],
+		dimensions: [ 'ga:date' ],
+	},
+
 	// Mock options for mocking "Sessions" report's response.
 	{
 		startDate: '2020-12-31',
