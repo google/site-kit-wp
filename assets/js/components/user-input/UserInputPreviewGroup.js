@@ -42,7 +42,6 @@ const { useSelect, useDispatch } = Data;
 
 export default function UserInputPreviewGroup( {
 	slug,
-	questionNumber,
 	title,
 	values,
 	options,
@@ -68,10 +67,6 @@ export default function UserInputPreviewGroup( {
 	const trim = ( value ) => value.trim();
 	const notEmpty = ( value ) => value.length > 0;
 
-	const sprintfTemplate =
-		/* translators: %s: other option */
-		questionNumber < 5 ? __( 'Other: %s', 'google-site-kit' ) : '%s';
-
 	return (
 		<div className="googlesitekit-user-input__preview-group">
 			<div className="googlesitekit-user-input__preview-group-title">
@@ -92,7 +87,11 @@ export default function UserInputPreviewGroup( {
 								className="googlesitekit-user-input__preview-answer"
 							>
 								{ options[ value ] ||
-									sprintf( sprintfTemplate, value ) }
+									sprintf(
+										/* translators: %s: other option */
+										__( 'Other: %s', 'google-site-kit' ),
+										value
+									) }
 							</div>
 						) ) }
 				</div>
@@ -111,7 +110,6 @@ export default function UserInputPreviewGroup( {
 
 UserInputPreviewGroup.propTypes = {
 	slug: PropTypes.string.isRequired,
-	questionNumber: PropTypes.number.isRequired,
 	title: PropTypes.string.isRequired,
 	values: PropTypes.arrayOf( PropTypes.string ).isRequired,
 	options: PropTypes.shape( {} ),

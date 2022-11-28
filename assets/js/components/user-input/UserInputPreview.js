@@ -88,7 +88,6 @@ export default function UserInputPreview( props ) {
 				</p>
 				<UserInputPreviewGroup
 					slug={ USER_INPUT_QUESTIONS_PURPOSE }
-					questionNumber={ 1 }
 					title={ __(
 						'What is the main purpose of this site?',
 						'google-site-kit'
@@ -99,7 +98,6 @@ export default function UserInputPreview( props ) {
 
 				<UserInputPreviewGroup
 					slug={ USER_INPUT_QUESTION_POST_FREQUENCY }
-					questionNumber={ 2 }
 					title={ __(
 						'How often do you create new content for this site?',
 						'google-site-kit'
@@ -110,7 +108,6 @@ export default function UserInputPreview( props ) {
 
 				<UserInputPreviewGroup
 					slug={ USER_INPUT_QUESTIONS_GOALS }
-					questionNumber={ 3 }
 					title={ __(
 						'What are your top goals for this site?',
 						'google-site-kit'
