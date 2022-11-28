@@ -35,6 +35,7 @@ import {
 	USER_INPUT_QUESTIONS_PURPOSE,
 	USER_INPUT_QUESTION_POST_FREQUENCY,
 	USER_INPUT_QUESTIONS_GOALS,
+	USER_INPUT_MAX_ANSWERS,
 	getUserInputAnswers,
 } from './util/constants';
 import useQueryArg from '../../hooks/useQueryArg';
@@ -230,6 +231,11 @@ export default function UserInputQuestionnaire() {
 					<UserInputSelectOptions
 						isActive={ activeSlug === USER_INPUT_QUESTIONS_PURPOSE }
 						slug={ USER_INPUT_QUESTIONS_PURPOSE }
+						max={
+							USER_INPUT_MAX_ANSWERS[
+								USER_INPUT_QUESTIONS_PURPOSE
+							]
+						}
 						options={ USER_INPUT_ANSWERS_PURPOSE }
 						next={ nextCallback }
 					/>
@@ -262,6 +268,11 @@ export default function UserInputQuestionnaire() {
 							activeSlug === USER_INPUT_QUESTION_POST_FREQUENCY
 						}
 						slug={ USER_INPUT_QUESTION_POST_FREQUENCY }
+						max={
+							USER_INPUT_MAX_ANSWERS[
+								USER_INPUT_QUESTION_POST_FREQUENCY
+							]
+						}
 						options={ USER_INPUT_ANSWERS_POST_FREQUENCY }
 						next={ nextCallback }
 					/>
@@ -290,7 +301,9 @@ export default function UserInputQuestionnaire() {
 					<UserInputSelectOptions
 						isActive={ activeSlug === USER_INPUT_QUESTIONS_GOALS }
 						slug={ USER_INPUT_QUESTIONS_GOALS }
-						max={ 3 }
+						max={
+							USER_INPUT_MAX_ANSWERS[ USER_INPUT_QUESTIONS_GOALS ]
+						}
 						options={ USER_INPUT_ANSWERS_GOALS }
 						next={ nextCallback }
 					/>

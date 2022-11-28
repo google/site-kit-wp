@@ -35,7 +35,10 @@ import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 import { Button } from 'googlesitekit-components';
 import { trackEvent } from '../../util';
 import useViewContext from '../../hooks/useViewContext';
-import { USER_INPUT_CURRENTLY_EDITING_KEY } from './util/constants';
+import {
+	USER_INPUT_CURRENTLY_EDITING_KEY,
+	USER_INPUT_MAX_ANSWERS,
+} from './util/constants';
 import UserInputSelectOptions from './UserInputSelectOptions';
 
 const { useSelect, useDispatch } = Data;
@@ -101,6 +104,7 @@ export default function UserInputPreviewGroup( {
 				<UserInputSelectOptions
 					isActive={ true }
 					slug={ slug }
+					max={ USER_INPUT_MAX_ANSWERS[ slug ] }
 					options={ options }
 				/>
 			) }
