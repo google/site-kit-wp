@@ -78,13 +78,16 @@ describe( 'modules/analytics-4 validations', () => {
 
 	describe( 'isValidGoogleTagID', () => {
 		it( 'should return TRUE when a valid googleTagId is passed', () => {
-			expect( isValidGoogleTagID( 'G-XXXX' ) ).toBe( true );
-			expect( isValidGoogleTagID( 'GT-XXXX' ) ).toBe( true );
-			expect( isValidGoogleTagID( 'AW-XXXX' ) ).toBe( true );
+			expect( isValidGoogleTagID( 'G-ABC123' ) ).toBe( true );
+			expect( isValidGoogleTagID( 'GT-THE567' ) ).toBe( true );
+			expect( isValidGoogleTagID( 'AW-WD40' ) ).toBe( true );
 		} );
 
 		it( 'should return FALSE when a invalid googleTagId is passed', () => {
-			expect( isValidGoogleTagID( 'XXX' ) ).toBe( false );
+			expect( isValidGoogleTagID( 'ABC12' ) ).toBe( false );
+			expect( isValidGoogleTagID( 'AB-C12' ) ).toBe( false );
+			expect( isValidGoogleTagID( 'GT-_35' ) ).toBe( false );
+			expect( isValidGoogleTagID( '12GT-THE567' ) ).toBe( false );
 		} );
 	} );
 
