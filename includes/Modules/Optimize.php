@@ -104,7 +104,7 @@ final class Optimize extends Module
 	}
 
 	/**
-	 * Expands gtag config options with optimize ID.
+	 * Expands gtag config options with Optimize Container ID.
 	 *
 	 * @since 1.0.0
 	 *
@@ -158,7 +158,7 @@ final class Optimize extends Module
 
 		return array(
 			'optimize_id' => array(
-				'label' => __( 'Optimize ID', 'google-site-kit' ),
+				'label' => __( 'Optimize Container ID', 'google-site-kit' ),
 				'value' => $settings['optimizeID'],
 				'debug' => Debug_Data::redact_debug_value( $settings['optimizeID'], 7 ),
 			),

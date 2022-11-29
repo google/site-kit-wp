@@ -21,7 +21,7 @@
     "ext-json": "*",
     "ext-openssl": "*",
     "google/apiclient": "^2.12.2",
-    "google/apiclient-services": "0.243.*",
+    "google/apiclient-services": "0.275.*",
     "google/apiclient-services-subscribewithgoogle": "^0.1.0",
     "guzzlehttp/guzzle": "^5.3.3",
     "true/punycode": "^2.0 <2.1.1"

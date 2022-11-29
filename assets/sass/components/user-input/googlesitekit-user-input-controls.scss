@@ -18,34 +18,12 @@
 
 .googlesitekit-plugin {
 
-	.googlesitekit-user-input__buttons {
-		display: flex;
-		justify-content: flex-end;
-		margin: 42px 0 0;
-
-		button {
-			border-radius: $br-lg;
-			font-size: $fs-body-md;
-			height: auto;
-			letter-spacing: $ls-s;
-			line-height: $lh-body-md;
-			margin-left: 20px;
-			padding: 10px 33px;
-			text-transform: none;
-
-			&.mdc-button--raised {
-				border: none;
-			}
-		}
-	}
-
 	.googlesitekit-user-input__select-options {
 		margin: 0 0 20px;
 	}
 
 	.googlesitekit-user-input__select-option {
 		align-items: center;
-		border-bottom: 1px solid $c-mercury;
 		display: flex;
 		padding: 20px 0;
 
@@ -56,11 +34,17 @@
 		.mdc-text-field {
 			background-color: transparent;
 			height: 36px;
-			margin-left: 1rem;
+			margin: 0 1rem;
+			max-width: 250px;
+			width: calc(100% - 2rem);
 
 			input {
 				border: none;
 				padding: 0;
+
+				&:placeholder-shown {
+					text-overflow: ellipsis;
+				}
 			}
 		}
 
@@ -80,6 +64,19 @@
 		.mdc-checkbox--disabled + label {
 			opacity: 0.25;
 		}
+	}
+
+	.googlesitekit-user-input__select-option-text-field {
+		flex: 1;
+
+		.mdc-text-field--error .mdc-line-ripple--active {
+			background-color: $c-black;
+			opacity: 1;
+		}
+	}
+
+	.googlesitekit-user-input__select-option:not(:last-child) {
+		border-bottom: 1px solid $c-mercury;
 	}
 
 	.googlesitekit-user-input__text-options {
@@ -169,5 +166,21 @@
 
 	.googlesitekit-user-input__text-options > div:last-child {
 		margin-right: 0;
+	}
+
+	.googlesitekit-user-input__buttons {
+
+		button {
+			letter-spacing: $ls-s;
+
+			&.mdc-button {
+				border: none;
+				padding: 10px 16px;
+			}
+
+			&.googlesitekit-cta-link {
+				color: $c-surfaces-on-background-variant;
+			}
+		}
 	}
 }

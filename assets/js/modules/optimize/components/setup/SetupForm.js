@@ -84,7 +84,7 @@ export default function SetupForm( { finishSetup } ) {
 			{ ! isValidOptimizeID( optimizeID ) && optimizeID && (
 				<ErrorText
 					message={ __(
-						'Not a valid Optimize ID.',
+						'Not a valid Optimize Container ID.',
 						'google-site-kit'
 					) }
 				/>

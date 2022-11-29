@@ -1,5 +1,5 @@
 /**
- * ErrorText stories.
+ * Public components entrypoint.
  *
  * Site Kit by Google, Copyright 2022 Google LLC
  *
@@ -19,29 +19,22 @@
 /**
  * Internal dependencies
  */
-import ErrorText from './ErrorText';
-import Link from './Link';
+import Components from './googlesitekit/components-gm3';
 
-const Template = ( args ) => <ErrorText { ...args } />;
+if ( typeof global.googlesitekit === 'undefined' ) {
+	global.googlesitekit = {};
+}
 
-export const Default = Template.bind( {} );
-Default.args = {
-	message: 'This is error text.',
-};
+global.googlesitekit.components = Components;
 
-export const ReconnectURL = Template.bind( {} );
-ReconnectURL.args = {
-	message: 'This is error text.',
-	reconnectURL: 'https://some.true.url',
-};
-
-export const WithChildren = Template.bind( {} );
-WithChildren.args = {
-	message: 'This is error text.',
-	children: <Link>Link</Link>,
-};
-
-export default {
-	title: 'Components/ErrorText',
-	component: ErrorText,
-};
+export const {
+	Button,
+	Checkbox,
+	Chip,
+	Dialog,
+	Menu,
+	ProgressBar,
+	Radio,
+	Switch,
+	Tooltip,
+} = Components;
