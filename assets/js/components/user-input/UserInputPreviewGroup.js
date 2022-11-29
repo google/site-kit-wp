@@ -41,7 +41,7 @@ import {
 	USER_INPUT_MAX_ANSWERS,
 } from './util/constants';
 import UserInputSelectOptions from './UserInputSelectOptions';
-import { getValidValues } from './util/validation';
+import { getErrorMessageForAnswer, getValidValues } from './util/validation';
 
 const { useSelect, useDispatch } = Data;
 
@@ -94,9 +94,9 @@ export default function UserInputPreviewGroup( {
 				<div className="googlesitekit-user-input__preview-answers">
 					{ ! validValues.length && (
 						<p className="googlesitekit-error-text">
-							{ __(
-								'Please select an answer',
-								'google-site-kit'
+							{ getErrorMessageForAnswer(
+								values,
+								USER_INPUT_MAX_ANSWERS[ slug ]
 							) }
 						</p>
 					) }

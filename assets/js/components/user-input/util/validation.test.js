@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import { getValidValues } from './validation';
+import { getErrorMessageForAnswer, getValidValues } from './validation';
 
 describe( 'User Input Validation Utilities', () => {
 	describe( 'getValidValues', () => {
@@ -24,6 +24,40 @@ describe( 'User Input Validation Utilities', () => {
 			expect( getValidValues( [ '  ', 'test1', '  test2  ' ] ) ).toEqual(
 				[ 'test1', 'test2' ]
 			);
+		} );
+	} );
+
+	describe( 'getErrorMessageForAnswer', () => {
+		it( 'should return the correct error message for the given answer when max is 1, or null if the answer is valid', () => {
+			// Max defaults to 1.
+			expect( getErrorMessageForAnswer( [] ) ).toBe(
+				'Please select an answer'
+			);
+
+			// Explicitly set max to 1.
+			expect( getErrorMessageForAnswer( [], 1 ) ).toBe(
+				'Please select an answer'
+			);
+		} );
+
+		it( 'should return the correct error message for the given answer when max is greater than 1', () => {
+			expect( getErrorMessageForAnswer( [], 2 ) ).toBe(
+				'Please select at least 1 answer'
+			);
+
+			expect( getErrorMessageForAnswer( [], 100 ) ).toBe(
+				'Please select at least 1 answer'
+			);
+		} );
+
+		it( 'should return the correct error message for the given answer when there is an empty value', () => {
+			expect( getErrorMessageForAnswer( [ '  ', 'test' ] ) ).toBe(
+				'Please select a valid answer'
+			);
+		} );
+
+		it( 'should return null if the answer is valid', () => {
+			expect( getErrorMessageForAnswer( [ 'test' ] ) ).toBeNull();
 		} );
 	} );
 } );

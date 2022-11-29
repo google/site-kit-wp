@@ -39,6 +39,7 @@ import {
 	USER_INPUT_QUESTIONS_PURPOSE,
 	USER_INPUT_QUESTION_POST_FREQUENCY,
 	USER_INPUT_QUESTIONS_LIST,
+	USER_INPUT_MAX_ANSWERS,
 } from './util/constants';
 import UserInputPreviewGroup from './UserInputPreviewGroup';
 import UserInputQuestionNotice from './UserInputQuestionNotice';
@@ -46,6 +47,7 @@ import useQueryArg from '../../hooks/useQueryArg';
 import ErrorNotice from '../ErrorNotice';
 import Link from '../Link';
 import CancelUserInputButton from './CancelUserInputButton';
+import { getErrorMessageForAnswer } from './util/validation';
 const { useSelect } = Data;
 
 export default function UserInputPreview( props ) {
@@ -87,14 +89,11 @@ export default function UserInputPreview( props ) {
 	const updateErrorMessages = () => {
 		const newErrorMessages = USER_INPUT_QUESTIONS_LIST.reduce(
 			( errors, slug ) => {
-				const validValues = settings?.[ slug ]?.values || [];
-				errors[ slug ] =
-					validValues.length > 0
-						? null
-						: __(
-								'Please select at least 1 answer',
-								'google-site-kit'
-						  );
+				const errorMessage = getErrorMessageForAnswer(
+					settings?.[ slug ]?.values || [],
+					USER_INPUT_MAX_ANSWERS[ slug ]
+				);
+				errors[ slug ] = errorMessage;
 				return errors;
 			},
 			{}

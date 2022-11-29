@@ -16,8 +16,17 @@
  * limitations under the License.
  */
 
+/**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+
 function trim( value ) {
 	return value.trim();
+}
+
+function isEmpty( value ) {
+	return value.length === 0;
 }
 
 function notEmpty( value ) {
@@ -34,4 +43,29 @@ function notEmpty( value ) {
  */
 export function getValidValues( values ) {
 	return values.map( trim ).filter( notEmpty );
+}
+
+/**
+ * Returns an error message for the given answer, or null if the answer is valid.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string[]} values Array of values to validate.
+ * @param {number}   [max]  Maximum number of values allowed. Defaults to 1.
+ * @return {string|null} Error message, or null if the answer is valid.
+ */
+export function getErrorMessageForAnswer( values, max = 1 ) {
+	if ( values.length === 0 ) {
+		return max === 1
+			? __( 'Please select an answer', 'google-site-kit' )
+			: __( 'Please select at least 1 answer', 'google-site-kit' );
+	}
+
+	const hasEmptyValue = values.map( trim ).some( isEmpty );
+
+	if ( values.length > 0 && hasEmptyValue ) {
+		return __( 'Please select a valid answer', 'google-site-kit' );
+	}
+
+	return null;
 }
