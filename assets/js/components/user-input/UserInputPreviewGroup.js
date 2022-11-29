@@ -40,6 +40,7 @@ import {
 	USER_INPUT_MAX_ANSWERS,
 } from './util/constants';
 import UserInputSelectOptions from './UserInputSelectOptions';
+import { getValidValues } from './util/validation';
 
 const { useSelect, useDispatch } = Data;
 
@@ -67,10 +68,7 @@ export default function UserInputPreviewGroup( {
 		} );
 	}, [ isEditing, setValues, slug, viewContext ] );
 
-	const trim = ( value ) => value.trim();
-	const notEmpty = ( value ) => value.length > 0;
-
-	const validValues = values.map( trim ).filter( notEmpty );
+	const validValues = getValidValues( values );
 
 	return (
 		<div className="googlesitekit-user-input__preview-group">
@@ -93,25 +91,19 @@ export default function UserInputPreviewGroup( {
 					) }
 
 					{ validValues.length > 0 &&
-						values
-							.map( trim )
-							.filter( notEmpty )
-							.map( ( value ) => (
-								<div
-									key={ value }
-									className="googlesitekit-user-input__preview-answer"
-								>
-									{ options[ value ] ||
-										sprintf(
-											/* translators: %s: other option */
-											__(
-												'Other: %s',
-												'google-site-kit'
-											),
-											value
-										) }
-								</div>
-							) ) }
+						validValues.map( ( value ) => (
+							<div
+								key={ value }
+								className="googlesitekit-user-input__preview-answer"
+							>
+								{ options[ value ] ||
+									sprintf(
+										/* translators: %s: other option */
+										__( 'Other: %s', 'google-site-kit' ),
+										value
+									) }
+							</div>
+						) ) }
 				</div>
 			) }
 
