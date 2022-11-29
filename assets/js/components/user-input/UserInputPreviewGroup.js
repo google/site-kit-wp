@@ -20,6 +20,7 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import classnames from 'classnames';
 
 /**
  * WordPress dependencies
@@ -32,7 +33,7 @@ import { __, sprintf } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
-import { Button } from 'googlesitekit-components';
+import Link from '../Link';
 import { trackEvent } from '../../util';
 import useViewContext from '../../hooks/useViewContext';
 import {
@@ -78,9 +79,15 @@ export default function UserInputPreviewGroup( {
 		<div className="googlesitekit-user-input__preview-group">
 			<div className="googlesitekit-user-input__preview-group-title">
 				<p>{ title }</p>
-				<Button text onClick={ onEditClick }>
+				<Link
+					className={ classnames( {
+						'googlesitekit-user-input__preview-group-editing':
+							isEditing,
+					} ) }
+					onClick={ onEditClick }
+				>
 					{ __( 'Edit', 'google-site-kit' ) }
-				</Button>
+				</Link>
 			</div>
 
 			{ ! isEditing && (

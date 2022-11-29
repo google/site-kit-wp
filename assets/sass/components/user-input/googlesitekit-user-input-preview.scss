@@ -49,7 +49,11 @@
 	.googlesitekit-user-input__preview-subheader {
 		@extend .googlesitekit-user-input__question-number;
 
-		margin-bottom: 37px;
+		margin-bottom: 14px;
+
+		@media (min-width: $bp-desktop) {
+			margin-bottom: 37px;
+		}
 	}
 
 	.googlesitekit-user-input__preview-notice {
@@ -93,23 +97,47 @@
 	}
 
 	.googlesitekit-user-input__preview-group-title {
-		align-items: flex-start;
+		align-items: baseline;
 		display: flex;
+		flex-direction: column-reverse;
 		justify-content: space-between;
+		margin-bottom: 14px;
+
+		@media (min-width: $bp-desktop) {
+			flex-direction: row;
+		}
 
 		p {
 			color: $c-surfaces-on-surface;
 			font-family: $f-secondary;
 			font-weight: $fw-medium;
-			margin-top: 0;
+			margin: 0;
 		}
 
 		button {
-			border-radius: $br-lg;
-			font-weight: $fw-normal;
-			letter-spacing: normal;
-			margin-top: -4px;
-			text-transform: none;
+			color: $c-content-link;
+			font-family: $f-secondary;
+			font-weight: $fw-medium;
+			margin-left: auto;
+
+			&::after {
+				// This is the expand_more icon (arrow/chevron down), in the color #108080 ($c-content-link).
+				background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2212%22%20height%3D%228%22%20viewBox%3D%220%200%2012%208%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpath%20d%3D%22M10.6.6L12%202%206%208%200%202%201.4.6%206%205.2z%22%20fill%3D%22%23108080%22%20fill-rule%3D%22evenodd%22%2F%3E%3C%2Fsvg%3E");
+				background-position: right 4px;
+				background-repeat: no-repeat;
+				background-size: 14px 12px;
+				border-radius: 50%;
+				content: "";
+				display: inline-block;
+				height: 22px;
+				vertical-align: middle;
+				width: 20px;
+			}
+
+			&.googlesitekit-user-input__preview-group-editing::after {
+				background-position: left 6px;
+				transform: rotate(180deg);
+			}
 		}
 	}
 }
