@@ -24,7 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { Fragment, useCallback } from '@wordpress/element';
+import { Fragment } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 
 /**
@@ -50,6 +50,7 @@ export default function UserInputPreviewGroup( {
 	values,
 	options,
 	errorMessage,
+	onCollapse,
 } ) {
 	const viewContext = useViewContext();
 	const currentlyEditingSlug = useSelect( ( select ) =>
@@ -59,15 +60,17 @@ export default function UserInputPreviewGroup( {
 
 	const isEditing = currentlyEditingSlug === slug;
 
-	const onEditClick = useCallback( () => {
+	const onEditClick = () => {
 		if ( ! isEditing ) {
 			trackEvent( viewContext, 'question_edit', slug );
+		} else {
+			onCollapse();
 		}
 
 		setValues( {
 			[ USER_INPUT_CURRENTLY_EDITING_KEY ]: isEditing ? undefined : slug,
 		} );
-	}, [ isEditing, setValues, slug, viewContext ] );
+	};
 
 	const validValues = getValidValues( values );
 
@@ -134,6 +137,7 @@ UserInputPreviewGroup.propTypes = {
 	values: PropTypes.arrayOf( PropTypes.string ).isRequired,
 	options: PropTypes.shape( {} ),
 	errorMessage: PropTypes.string,
+	onCollapse: PropTypes.func,
 };
 
 UserInputPreviewGroup.defaultProps = {

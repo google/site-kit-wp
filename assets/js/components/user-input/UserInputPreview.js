@@ -84,7 +84,7 @@ export default function UserInputPreview( props ) {
 		}
 	}, [ page ] );
 
-	const onSaveClick = () => {
+	const updateErrorMessages = () => {
 		const newErrorMessages = USER_INPUT_QUESTIONS_LIST.reduce(
 			( errors, slug ) => {
 				const validValues = settings?.[ slug ]?.values || [];
@@ -101,6 +101,12 @@ export default function UserInputPreview( props ) {
 		);
 
 		setErrorMessages( newErrorMessages );
+
+		return newErrorMessages;
+	};
+
+	const onSaveClick = () => {
+		const newErrorMessages = updateErrorMessages();
 
 		const hasErrors = Object.values( newErrorMessages ).some( Boolean );
 		if ( ! hasErrors ) {
@@ -128,6 +134,7 @@ export default function UserInputPreview( props ) {
 					errorMessage={
 						errorMessages[ USER_INPUT_QUESTIONS_PURPOSE ]
 					}
+					onCollapse={ updateErrorMessages }
 				/>
 
 				<UserInputPreviewGroup
@@ -141,6 +148,7 @@ export default function UserInputPreview( props ) {
 					errorMessage={
 						errorMessages[ USER_INPUT_QUESTION_POST_FREQUENCY ]
 					}
+					onCollapse={ updateErrorMessages }
 				/>
 
 				<UserInputPreviewGroup
@@ -152,6 +160,7 @@ export default function UserInputPreview( props ) {
 					values={ settings?.goals?.values || [] }
 					options={ USER_INPUT_ANSWERS_GOALS }
 					errorMessage={ errorMessages[ USER_INPUT_QUESTIONS_GOALS ] }
+					onCollapse={ updateErrorMessages }
 				/>
 
 				{ error && <ErrorNotice error={ error } /> }
