@@ -222,7 +222,7 @@ describe( 'modules/optimize settings', () => {
 						.__dangerousCanSubmitChanges()
 				).toThrow( INVARIANT_INVALID_OPTIMIZE_ID );
 
-				// An empty string is accepted (for when no optimize ID can be determined).
+				// An empty string is accepted (for when no optimize container ID can be determined).
 				registry.dispatch( MODULES_OPTIMIZE ).setOptimizeID( '' );
 				expect(
 					registry.select( MODULES_OPTIMIZE ).canSubmitChanges()

@@ -54,8 +54,9 @@ class Web_Tag extends Module_Web_Tag {
 		// because it is required for account verification.
 
 		$adsense_script_src = sprintf(
-			'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=%s',
-			esc_attr( $this->tag_id )
+			'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=%s&host=%s',
+			esc_attr( $this->tag_id ), // Site owner's web property code.
+			'ca-host-pub-2644536267352236' // SiteKit's web property code.
 		);
 
 		$adsense_script_attributes = array(
