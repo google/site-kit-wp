@@ -44,6 +44,7 @@ export default function UserInputSelectOptions( {
 	max,
 	next,
 	isActive,
+	noInstructions,
 } ) {
 	const values = useSelect(
 		( select ) => select( CORE_USER ).getUserInputSetting( slug ) || []
@@ -214,20 +215,22 @@ export default function UserInputSelectOptions( {
 			mdSize={ 8 }
 			smSize={ 4 }
 		>
-			<p className="googlesitekit-user-input__select-instruction">
-				<span>
-					{ sprintf(
-						/* translators: %s: number of answers allowed. */
-						_n(
-							'Select only %d answer',
-							'Select up to %d answers',
-							max,
-							'google-site-kit'
-						),
-						max
-					) }
-				</span>
-			</p>
+			{ ! noInstructions && (
+				<p className="googlesitekit-user-input__select-instruction">
+					<span>
+						{ sprintf(
+							/* translators: %s: number of answers allowed. */
+							_n(
+								'Select only %d answer',
+								'Select up to %d answers',
+								max,
+								'google-site-kit'
+							),
+							max
+						) }
+					</span>
+				</p>
+			) }
 			<div
 				className="googlesitekit-user-input__select-options"
 				ref={ optionsRef }
@@ -312,8 +315,10 @@ UserInputSelectOptions.propTypes = {
 	max: PropTypes.number,
 	next: PropTypes.func,
 	isActive: PropTypes.bool,
+	noInstructions: PropTypes.bool,
 };
 
 UserInputSelectOptions.defaultProps = {
 	max: 1,
+	noInstructions: false,
 };

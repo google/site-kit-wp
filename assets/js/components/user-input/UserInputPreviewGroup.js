@@ -24,7 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { useCallback } from '@wordpress/element';
+import { Fragment, useCallback } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 
 /**
@@ -49,6 +49,7 @@ export default function UserInputPreviewGroup( {
 	title,
 	values,
 	options,
+	errorMessage,
 } ) {
 	const viewContext = useViewContext();
 	const currentlyEditingSlug = useSelect( ( select ) =>
@@ -108,12 +109,20 @@ export default function UserInputPreviewGroup( {
 			) }
 
 			{ isEditing && (
-				<UserInputSelectOptions
-					isActive={ true }
-					slug={ slug }
-					max={ USER_INPUT_MAX_ANSWERS[ slug ] }
-					options={ options }
-				/>
+				<Fragment>
+					<UserInputSelectOptions
+						isActive={ true }
+						slug={ slug }
+						max={ USER_INPUT_MAX_ANSWERS[ slug ] }
+						options={ options }
+						noInstructions
+					/>
+					{ errorMessage && (
+						<p className="googlesitekit-error-text">
+							{ errorMessage }
+						</p>
+					) }
+				</Fragment>
 			) }
 		</div>
 	);
@@ -124,6 +133,7 @@ UserInputPreviewGroup.propTypes = {
 	title: PropTypes.string.isRequired,
 	values: PropTypes.arrayOf( PropTypes.string ).isRequired,
 	options: PropTypes.shape( {} ),
+	errorMessage: PropTypes.string,
 };
 
 UserInputPreviewGroup.defaultProps = {

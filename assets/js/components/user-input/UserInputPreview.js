@@ -25,7 +25,7 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { Fragment, useEffect, useRef } from '@wordpress/element';
+import { Fragment, useEffect, useRef, useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -38,6 +38,7 @@ import {
 	USER_INPUT_QUESTIONS_GOALS,
 	USER_INPUT_QUESTIONS_PURPOSE,
 	USER_INPUT_QUESTION_POST_FREQUENCY,
+	USER_INPUT_QUESTIONS_LIST,
 } from './util/constants';
 import UserInputPreviewGroup from './UserInputPreviewGroup';
 import UserInputQuestionNotice from './UserInputQuestionNotice';
@@ -60,6 +61,12 @@ export default function UserInputPreview( props ) {
 	} = getUserInputAnswers();
 	const [ page ] = useQueryArg( 'page' );
 
+	const [ errorMessages, setErrorMessages ] = useState( {
+		[ USER_INPUT_QUESTIONS_GOALS ]: null,
+		[ USER_INPUT_QUESTIONS_PURPOSE ]: null,
+		[ USER_INPUT_QUESTION_POST_FREQUENCY ]: null,
+	} );
+
 	useEffect( () => {
 		if (
 			! previewContainer?.current ||
@@ -76,6 +83,30 @@ export default function UserInputPreview( props ) {
 			}, 50 );
 		}
 	}, [ page ] );
+
+	const onSaveClick = () => {
+		const newErrorMessages = USER_INPUT_QUESTIONS_LIST.reduce(
+			( errors, slug ) => {
+				const validValues = settings?.[ slug ]?.values || [];
+				errors[ slug ] =
+					validValues.length > 0
+						? null
+						: __(
+								'Please select at least 1 answer',
+								'google-site-kit'
+						  );
+				return errors;
+			},
+			{}
+		);
+
+		setErrorMessages( newErrorMessages );
+
+		const hasErrors = Object.values( newErrorMessages ).some( Boolean );
+		if ( ! hasErrors ) {
+			submitChanges();
+		}
+	};
 
 	return (
 		<div
@@ -94,6 +125,9 @@ export default function UserInputPreview( props ) {
 					) }
 					values={ settings?.purpose?.values || [] }
 					options={ USER_INPUT_ANSWERS_PURPOSE }
+					errorMessage={
+						errorMessages[ USER_INPUT_QUESTIONS_PURPOSE ]
+					}
 				/>
 
 				<UserInputPreviewGroup
@@ -104,6 +138,9 @@ export default function UserInputPreview( props ) {
 					) }
 					values={ settings?.postFrequency?.values || [] }
 					options={ USER_INPUT_ANSWERS_POST_FREQUENCY }
+					errorMessage={
+						errorMessages[ USER_INPUT_QUESTION_POST_FREQUENCY ]
+					}
 				/>
 
 				<UserInputPreviewGroup
@@ -114,6 +151,7 @@ export default function UserInputPreview( props ) {
 					) }
 					values={ settings?.goals?.values || [] }
 					options={ USER_INPUT_ANSWERS_GOALS }
+					errorMessage={ errorMessages[ USER_INPUT_QUESTIONS_GOALS ] }
 				/>
 
 				{ error && <ErrorNotice error={ error } /> }
@@ -128,8 +166,7 @@ export default function UserInputPreview( props ) {
 						<div className="googlesitekit-user-input__footer-nav">
 							<Button
 								className="googlesitekit-user-input__buttons--next"
-								onClick={ submitChanges }
-								// disabled={}
+								onClick={ onSaveClick }
 							>
 								{ __( 'Save', 'google-site-kit' ) }
 							</Button>
