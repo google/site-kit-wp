@@ -179,6 +179,17 @@ class User_Input {
 	}
 
 	/**
+	 * Gets the set of user input questions.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array The user input questions.
+	 */
+	public static function get_questions() {
+		return static::$questions;
+	}
+
+	/**
 	 * Gets user input answers.
 	 *
 	 * @since n.e.x.t
