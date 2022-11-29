@@ -51,7 +51,6 @@ export function getUserInputAnswers() {
 				'google-site-kit'
 			),
 			publish_blog: __( 'Publish a blog', 'google-site-kit' ),
-			generate_leads: __( 'Generate leads', 'google-site-kit' ),
 			publish_news: __( 'Publish news content', 'google-site-kit' ),
 			share_portfolio: __(
 				'Share a business card or portfolio to represent me or my company online',
