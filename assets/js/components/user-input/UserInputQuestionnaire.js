@@ -175,7 +175,7 @@ export default function UserInputQuestionnaire() {
 		return (
 			<Fragment>
 				{ settingsProgress }
-				<div className="googlesitekit-user-input__preview">
+				<div className="googlesitekit-user-input__preview googlesitekit-user-input__preview-loading">
 					<Row>
 						<Cell lgSize={ 12 } mdSize={ 8 } smSize={ 4 }>
 							<ProgressBar />
