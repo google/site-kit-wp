@@ -28,6 +28,11 @@ class User_Specific_Questions extends User_Setting {
 	const OPTION = 'googlesitekit_user_input_settings';
 
 	/**
+	 * The scope for which the questions are handled by this class.
+	 */
+	const SCOPE = 'user';
+
+	/**
 	 * Gets the expected value type.
 	 *
 	 * @since n.e.x.t
@@ -57,8 +62,52 @@ class User_Specific_Questions extends User_Setting {
 	 * @return Closure
 	 */
 	protected function get_sanitize_callback() {
-		return function ( $settings ) {
-			return User_Input::sanitize_settings( $this, $settings, 'user' );
+		$questions = array_filter(
+			User_Input::get_questions(),
+			function ( $question ) {
+				return static::SCOPE === $question['scope'];
+			}
+		);
+
+		return function ( $settings ) use ( $questions ) {
+			if ( ! is_array( $settings ) ) {
+				return $this->get();
+			}
+
+			$results = array();
+
+			foreach ( $settings as $setting_key => $setting_values ) {
+				// Ensure all the data is valid.
+				if (
+					! in_array( $setting_key, array_keys( $questions ), true ) ||
+					! is_array( $setting_values ) ||
+					static::SCOPE !== $setting_values['scope'] ||
+					! is_array( $setting_values['values'] )
+				) {
+					continue;
+				}
+
+				$valid_values          = array();
+				$valid_values['scope'] = $setting_values['scope'];
+
+				$valid_answers = array();
+
+				// Verify that each answer value is a string.
+				foreach ( $setting_values['values'] as $answer ) {
+					if ( is_string( $answer ) ) {
+						$valid_answers[] = $answer;
+					}
+				}
+
+				$valid_values['values'] = $valid_answers;
+
+				if ( ! empty( $valid_values ) ) {
+					$results[ $setting_key ] = $valid_values;
+				}
+			}
+
+			return $results;
+
 		};
 	}
 }
