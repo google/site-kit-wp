@@ -29,22 +29,6 @@ function isEmpty( value ) {
 	return value.length === 0;
 }
 
-function notEmpty( value ) {
-	return value.length > 0;
-}
-
-/**
- * Returns a list of trimmed, non-empty values from the passed string array.
- *
- * @since n.e.x.t
- *
- * @param {string[]} values Array of values to trim and filter.
- * @return {string[]} Array of trimmed, non-empty values.
- */
-export function getValidValues( values ) {
-	return values.map( trim ).filter( notEmpty );
-}
-
 /**
  * Returns an error message for the given answer, or null if the answer is valid.
  *

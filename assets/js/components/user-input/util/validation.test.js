@@ -16,17 +16,9 @@
  * limitations under the License.
  */
 
-import { getErrorMessageForAnswer, getValidValues } from './validation';
+import { getErrorMessageForAnswer } from './validation';
 
 describe( 'User Input Validation Utilities', () => {
-	describe( 'getValidValues', () => {
-		it( 'should return a list of trimmed, non-empty values from the passed string array', () => {
-			expect( getValidValues( [ '  ', 'test1', '  test2  ' ] ) ).toEqual(
-				[ 'test1', 'test2' ]
-			);
-		} );
-	} );
-
 	describe( 'getErrorMessageForAnswer', () => {
 		it( 'should return the correct error message for the given answer when max is 1, or null if the answer is valid', () => {
 			// Max defaults to 1.

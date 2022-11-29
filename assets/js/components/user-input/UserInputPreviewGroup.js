@@ -41,7 +41,7 @@ import {
 	USER_INPUT_MAX_ANSWERS,
 } from './util/constants';
 import UserInputSelectOptions from './UserInputSelectOptions';
-import { getErrorMessageForAnswer, getValidValues } from './util/validation';
+import { getErrorMessageForAnswer } from './util/validation';
 
 const { useSelect, useDispatch } = Data;
 
@@ -73,7 +73,10 @@ export default function UserInputPreviewGroup( {
 		} );
 	};
 
-	const validValues = getValidValues( values );
+	const error = getErrorMessageForAnswer(
+		values,
+		USER_INPUT_MAX_ANSWERS[ slug ]
+	);
 
 	return (
 		<div className="googlesitekit-user-input__preview-group">
@@ -92,17 +95,12 @@ export default function UserInputPreviewGroup( {
 
 			{ ! isEditing && (
 				<div className="googlesitekit-user-input__preview-answers">
-					{ ! validValues.length && (
-						<p className="googlesitekit-error-text">
-							{ getErrorMessageForAnswer(
-								values,
-								USER_INPUT_MAX_ANSWERS[ slug ]
-							) }
-						</p>
+					{ error && (
+						<p className="googlesitekit-error-text">{ error }</p>
 					) }
 
-					{ validValues.length > 0 &&
-						validValues.map( ( value ) => (
+					{ ! error &&
+						values.map( ( value ) => (
 							<div
 								key={ value }
 								className="googlesitekit-user-input__preview-answer"
