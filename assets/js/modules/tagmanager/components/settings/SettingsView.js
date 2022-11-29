@@ -20,7 +20,7 @@
  * WordPress dependencies
  */
 import { createInterpolateElement, Fragment } from '@wordpress/element';
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -61,11 +61,14 @@ export default function SettingsView() {
 	const internalAMPContainerID = useSelect( ( select ) =>
 		select( MODULES_TAGMANAGER ).getInternalAMPContainerID()
 	);
-	const editViewSettingsURL = useSelect( ( select ) =>
+	const editWebContainerURL = useSelect( ( select ) =>
 		select( MODULES_TAGMANAGER ).getServiceURL( {
-			path: escapeURI`/container/accounts/${ accountID }/containers/${
-				isAMP ? internalAMPContainerID : internalContainerID
-			}`,
+			path: escapeURI`/container/accounts/${ accountID }/containers/${ internalContainerID }`,
+		} )
+	);
+	const editAMPContainerURL = useSelect( ( select ) =>
+		select( MODULES_TAGMANAGER ).getServiceURL( {
+			path: escapeURI`/container/accounts/${ accountID }/containers/${ internalAMPContainerID }`,
 		} )
 	);
 
@@ -87,67 +90,121 @@ export default function SettingsView() {
 				</div>
 
 				{ ( ! isAMP || isSecondaryAMP ) && (
-					<div className="googlesitekit-settings-module__meta-item">
-						<h5 className="googlesitekit-settings-module__meta-item-type">
-							{ isSecondaryAMP && (
-								<span>
-									{ __(
-										'Web Container ID',
-										'google-site-kit'
-									) }
-								</span>
-							) }
-							{ ! isSecondaryAMP && (
-								<span>
-									{ __( 'Container ID', 'google-site-kit' ) }
-								</span>
-							) }
-						</h5>
-						<p className="googlesitekit-settings-module__meta-item-data">
-							<DisplaySetting value={ containerID } />
-						</p>
-					</div>
+					<Fragment>
+						<div className="googlesitekit-settings-module__meta-item">
+							<h5 className="googlesitekit-settings-module__meta-item-type">
+								{ isSecondaryAMP && (
+									<span>
+										{ __(
+											'Web Container ID',
+											'google-site-kit'
+										) }
+									</span>
+								) }
+								{ ! isSecondaryAMP && (
+									<span>
+										{ __(
+											'Container ID',
+											'google-site-kit'
+										) }
+									</span>
+								) }
+							</h5>
+							<p className="googlesitekit-settings-module__meta-item-data">
+								<DisplaySetting value={ containerID } />
+							</p>
+						</div>
+						{ editWebContainerURL && (
+							<div className="googlesitekit-settings-module__meta-item googlesitekit-settings-module__meta-item--data-only">
+								<p className="googlesitekit-settings-module__meta-item-data googlesitekit-settings-module__meta-item-data--tiny">
+									<Link href={ editWebContainerURL } external>
+										{ createInterpolateElement(
+											sprintf(
+												/* translators: %s: Appropriate container term. */
+												__(
+													'Edit <VisuallyHidden>%s </VisuallyHidden>in Tag Manager',
+													'google-site-kit'
+												),
+												isSecondaryAMP
+													? __(
+															'web container',
+															'google-site-kit'
+													  )
+													: __(
+															'container',
+															'google-site-kit'
+													  )
+											),
+											{
+												VisuallyHidden: (
+													<VisuallyHidden />
+												),
+											}
+										) }
+									</Link>
+								</p>
+							</div>
+						) }
+					</Fragment>
 				) }
 
 				{ isAMP && (
-					<div className="googlesitekit-settings-module__meta-item">
-						<h5 className="googlesitekit-settings-module__meta-item-type">
-							{ isSecondaryAMP && (
-								<span>
-									{ __(
-										'AMP Container ID',
-										'google-site-kit'
-									) }
-								</span>
-							) }
-							{ ! isSecondaryAMP && (
-								<span>
-									{ __( 'Container ID', 'google-site-kit' ) }
-								</span>
-							) }
-						</h5>
-						<p className="googlesitekit-settings-module__meta-item-data">
-							<DisplaySetting value={ ampContainerID } />
-						</p>
-					</div>
-				) }
-
-				{ editViewSettingsURL && (
-					<div className="googlesitekit-settings-module__meta-item googlesitekit-settings-module__meta-item--data-only">
-						<p className="googlesitekit-settings-module__meta-item-data googlesitekit-settings-module__meta-item-data--tiny">
-							<Link href={ editViewSettingsURL } external>
-								{ createInterpolateElement(
-									__(
-										'Edit <VisuallyHidden>container </VisuallyHidden>in Tag Manager',
-										'google-site-kit'
-									),
-									{
-										VisuallyHidden: <VisuallyHidden />,
-									}
+					<Fragment>
+						<div className="googlesitekit-settings-module__meta-item">
+							<h5 className="googlesitekit-settings-module__meta-item-type">
+								{ isSecondaryAMP && (
+									<span>
+										{ __(
+											'AMP Container ID',
+											'google-site-kit'
+										) }
+									</span>
 								) }
-							</Link>
-						</p>
-					</div>
+								{ ! isSecondaryAMP && (
+									<span>
+										{ __(
+											'Container ID',
+											'google-site-kit'
+										) }
+									</span>
+								) }
+							</h5>
+							<p className="googlesitekit-settings-module__meta-item-data">
+								<DisplaySetting value={ ampContainerID } />
+							</p>
+						</div>
+						{ editAMPContainerURL && (
+							<div className="googlesitekit-settings-module__meta-item googlesitekit-settings-module__meta-item--data-only">
+								<p className="googlesitekit-settings-module__meta-item-data googlesitekit-settings-module__meta-item-data--tiny">
+									<Link href={ editAMPContainerURL } external>
+										{ createInterpolateElement(
+											sprintf(
+												/* translators: %s: Appropriate container term. */
+												__(
+													'Edit <VisuallyHidden>%s </VisuallyHidden>in Tag Manager',
+													'google-site-kit'
+												),
+												isSecondaryAMP
+													? __(
+															'AMP container',
+															'google-site-kit'
+													  )
+													: __(
+															'container',
+															'google-site-kit'
+													  )
+											),
+											{
+												VisuallyHidden: (
+													<VisuallyHidden />
+												),
+											}
+										) }
+									</Link>
+								</p>
+							</div>
+						) }
+					</Fragment>
 				) }
 			</div>
 
