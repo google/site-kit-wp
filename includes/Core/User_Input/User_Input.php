@@ -186,13 +186,11 @@ class User_Input {
 	 * @return array|WP_Error User input answers.
 	 */
 	public function get_answers() {
-		$data = array(
-			'site' => $this->site_specific_questions->get(),
-			'user' => $this->user_specific_questions->get(),
-		);
-
 		$questions = static::$questions;
-		$settings  = array_merge( $data['site'], $data['user'] );
+		$settings  = array_merge(
+			$this->site_specific_questions->get(),
+			$this->user_specific_questions->get()
+		);
 
 		// If there are no settings, return default empty values.
 		if ( empty( $settings ) ) {
