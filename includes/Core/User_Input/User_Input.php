@@ -179,11 +179,11 @@ class User_Input {
 	}
 
 	/**
-	 * Gets user input settings.
+	 * Gets user input answers.
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return array|WP_Error User input settings.
+	 * @return array|WP_Error User input answers.
 	 */
 	public function get_answers() {
 		$data = array(
@@ -265,12 +265,12 @@ class User_Input {
 	}
 
 	/**
-	 * Sets user input settings.
+	 * Sets user input answers.
 	 *
 	 * @since n.e.x.t
 	 *
 	 * @param array $settings User settings.
-	 * @return array|WP_Error User input settings.
+	 * @return array|WP_Error User input answers.
 	 */
 	public function set_answers( $settings ) {
 		$questions     = static::$questions;
