@@ -222,7 +222,7 @@ export default function DashboardPageSpeed() {
 			[ referenceURL, strategy ]
 		)
 	);
-	const recommendations = useSelect(
+	const recommendations = useInViewSelect(
 		( select ) => {
 			if ( reportError ) {
 				return [];
@@ -269,6 +269,14 @@ export default function DashboardPageSpeed() {
 
 	const isLoading =
 		! referenceURL || ( isFetching && ! reportData ) || ! dataSrc;
+
+	const isFieldTabWithData =
+		dataSrc === DATA_SRC_FIELD &&
+		[
+			'LARGEST_CONTENTFUL_PAINT_MS',
+			'CUMULATIVE_LAYOUT_SHIFT_SCORE',
+			'FIRST_INPUT_DELAY_MS',
+		].every( ( key ) => reportData?.loadingExperience?.metrics?.[ key ] );
 
 	return (
 		<div
@@ -392,8 +400,7 @@ export default function DashboardPageSpeed() {
 					) }
 				</section>
 
-				{ ( dataSrc === DATA_SRC_LAB ||
-					dataSrc === DATA_SRC_FIELD ) && (
+				{ ( dataSrc === DATA_SRC_LAB || isFieldTabWithData ) && (
 					<div className="googlesitekit-pagespeed-report__row">
 						<Button
 							className={ classnames( {

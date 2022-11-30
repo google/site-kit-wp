@@ -250,7 +250,7 @@ describe( 'modules/thank-with-google publications', () => {
 				).toBeUndefined();
 			} );
 
-			it( 'returns null if there are no publications', async () => {
+			it( 'returns null if there are no publications', () => {
 				registry
 					.dispatch( MODULES_THANK_WITH_GOOGLE )
 					.receiveGetPublications( [] );

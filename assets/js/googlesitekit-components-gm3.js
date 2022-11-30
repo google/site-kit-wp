@@ -1,5 +1,5 @@
 /**
- * Site Kit Element.
+ * Public components entrypoint.
  *
  * Site Kit by Google, Copyright 2022 Google LLC
  *
@@ -16,7 +16,25 @@
  * limitations under the License.
  */
 
-import * as Element from '@wordpress/element__non-shim';
+/**
+ * Internal dependencies
+ */
+import Components from './googlesitekit/components-gm3';
 
-global.googlesitekit = global.googlesitekit || {};
-global.googlesitekit.element = global.googlesitekit.element || Element;
+if ( typeof global.googlesitekit === 'undefined' ) {
+	global.googlesitekit = {};
+}
+
+global.googlesitekit.components = Components;
+
+export const {
+	Button,
+	Checkbox,
+	Chip,
+	Dialog,
+	Menu,
+	ProgressBar,
+	Radio,
+	Switch,
+	Tooltip,
+} = Components;

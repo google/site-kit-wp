@@ -41,14 +41,14 @@ const setupLoadingRegistry = ( registry ) => {
 };
 
 describe( 'AccountSelect', () => {
-	it( 'should render an option for each AdSense account', async () => {
+	it( 'should render an option for each AdSense account', () => {
 		const { getAllByRole } = render( <AccountSelect />, { setupRegistry } );
 
 		const listItems = getAllByRole( 'menuitem', { hidden: true } );
 		expect( listItems ).toHaveLength( fixtures.accountsMultiple.length );
 	} );
 
-	it( 'should render a loading state when accounts are undefined', async () => {
+	it( 'should render a loading state when accounts are undefined', () => {
 		freezeFetch(
 			/^\/google-site-kit\/v1\/modules\/adsense\/data\/accounts/
 		);
@@ -63,7 +63,7 @@ describe( 'AccountSelect', () => {
 		expect( queryByRole( 'progressbar' ) ).toBeInTheDocument();
 	} );
 
-	it( 'should update accountID in the store when a new item is clicked', async () => {
+	it( 'should update accountID in the store when a new item is clicked', () => {
 		const { getByText, container, registry } = render( <AccountSelect />, {
 			setupRegistry,
 		} );

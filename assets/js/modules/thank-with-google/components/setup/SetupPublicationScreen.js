@@ -42,6 +42,7 @@ export default function SetupPublicationScreen( props ) {
 
 	return (
 		<Grid collapsed>
+			<SetupHeader />
 			<Row>
 				<Cell
 					smSize={ 4 }
@@ -55,8 +56,6 @@ export default function SetupPublicationScreen( props ) {
 					</Suspense>
 				</Cell>
 				<Cell smSize={ 4 } mdSize={ 8 } lgSize={ 6 } lgOrder={ 1 }>
-					<SetupHeader />
-
 					<div className="googlesitekit-setup-module__publication-screen">
 						<h3 className="googlesitekit-heading-3 googlesitekit-setup-module__title">
 							{ title }

@@ -31,7 +31,7 @@ const editorNoticeKey = ( postID ) => {
 	return `modules::idea-hub::dismissed-editor-notice-${ postID }`;
 };
 
-const loadIdeaHubNotices = async () => {
+const loadIdeaHubNotices = () => {
 	const shownNotices = [];
 
 	const hasNotice = ( postID ) => {

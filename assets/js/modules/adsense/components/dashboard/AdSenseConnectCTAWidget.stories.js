@@ -93,10 +93,8 @@ export default {
 					} }
 				>
 					<div id="adminmenu">
-						{
-							// eslint-disable-next-line jsx-a11y/anchor-has-content
-							<a href="http://test.test/?page=googlesitekit-settings" />
-						}
+						{ /* eslint-disable-next-line jsx-a11y/anchor-has-content */ }
+						<a href="http://test.test/?page=googlesitekit-settings" />
 					</div>
 					<div
 						style={ { flex: 1 } }

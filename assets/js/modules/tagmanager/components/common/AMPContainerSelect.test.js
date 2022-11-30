@@ -118,7 +118,7 @@ describe( 'AMPContainerSelect', () => {
 		);
 	} );
 
-	it( 'can select the "Set up a new container" option', async () => {
+	it( 'can select the "Set up a new container" option', () => {
 		const { account, containers } = factories.buildAccountWithContainers( {
 			container: { usageContext: [ CONTEXT_AMP ] },
 		} );

@@ -88,6 +88,13 @@ export default function PropertySelect( {
 	);
 
 	const { selectProperty } = useDispatch( MODULES_ANALYTICS_4 );
+
+	const measurementIDs = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getMatchedMeasurementIDsByPropertyIDs(
+			properties
+		)
+	);
+
 	const viewContext = useViewContext();
 
 	const onPropertyChange = useCallback(
@@ -169,14 +176,14 @@ export default function PropertySelect( {
 						{ _id === PROPERTY_CREATE
 							? displayName
 							: sprintf(
-									/* translators: 1: Property name. 2: Property ID. */
+									/* translators: 1: Property name. 2: Measurement ID. */
 									_x(
 										'%1$s (%2$s)',
 										'Analytics property name and ID',
 										'google-site-kit'
 									),
 									displayName,
-									_id
+									measurementIDs?.[ _id ] || ''
 							  ) }
 					</Option>
 				) ) }

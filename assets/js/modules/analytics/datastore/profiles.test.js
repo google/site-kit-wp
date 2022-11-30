@@ -82,7 +82,7 @@ describe( 'modules/analytics profiles', () => {
 				expect( profiles ).toMatchObject( [ fixtures.createProfile ] );
 			} );
 
-			it( 'sets isDoingCreateProfile ', async () => {
+			it( 'sets isDoingCreateProfile ', () => {
 				const accountID = fixtures.createProfile.accountId; // eslint-disable-line sitekit/acronym-case
 				const propertyID = fixtures.createProfile.webPropertyId; // eslint-disable-line sitekit/acronym-case
 				const profileName = fixtures.createProfile.name;

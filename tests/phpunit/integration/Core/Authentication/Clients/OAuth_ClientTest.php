@@ -14,6 +14,8 @@ use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
 use Google\Site_Kit\Core\Authentication\Owner_ID;
 use Google\Site_Kit\Core\Authentication\Profile;
+use Google\Site_Kit\Core\Dashboard_Sharing\Activity_Metrics\Activity_Metrics;
+use Google\Site_Kit\Core\Dashboard_Sharing\Activity_Metrics\Active_Consumers;
 use Google\Site_Kit\Tests\Exception\RedirectException;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Options;
@@ -24,6 +26,7 @@ use Google\Site_Kit\Tests\MutableInput;
 use Google\Site_Kit\Tests\TestCase;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Message\Request;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Message\Response;
+use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Query;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Stream\Stream;
 
 /**
@@ -36,7 +39,20 @@ class OAuth_ClientTest extends TestCase {
 		$this->fake_site_connection();
 		$user_id = $this->factory()->user->create();
 		wp_set_current_user( $user_id );
-		$client = new OAuth_Client( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+
+		$context          = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$client           = new OAuth_Client( $context );
+		$user_options     = new User_Options( $context );
+		$activity_metrics = new Activity_Metrics( $context, $user_options );
+		$active_consumers = new Active_Consumers( $user_options );
+
+		$activity_metrics->register();
+		$active_consumers->set(
+			array(
+				1 => array( 'editor', 'author' ),
+				2 => array( 'contributor', 'editor' ),
+			)
+		);
 
 		// Make sure we're starting with a clean slate
 		$this->assertFalse( get_user_option( OAuth_Client::OPTION_ERROR_CODE, $user_id ) );
@@ -45,6 +61,15 @@ class OAuth_ClientTest extends TestCase {
 
 		// Make sure we're getting the expected error
 		$this->assertEquals( 'refresh_token_not_exist', get_user_option( OAuth_Client::OPTION_ERROR_CODE, $user_id ) );
+
+		// Verify that the active consumers meta was not deleted.
+		$this->assertEquals(
+			array(
+				1 => array( 'editor', 'author' ),
+				2 => array( 'contributor', 'editor' ),
+			),
+			$active_consumers->get()
+		);
 
 		$this->assertTrue(
 			$client->set_token(
@@ -59,8 +84,15 @@ class OAuth_ClientTest extends TestCase {
 		$fake_http_client = new FakeHttpClient();
 		// Set the request handler to return a response with a new access token.
 		$fake_http_client->set_request_handler(
-			function ( Request $request ) {
+			function ( Request $request ) use ( $activity_metrics ) {
 				if ( 0 !== strpos( $request->getUrl(), 'https://oauth2.googleapis.com/token' ) ) {
+					return new Response( 200 );
+				}
+
+				$body = Query::parse( $request->getBody() );
+
+				// Ensure the token refresh request contains the set of active consumers.
+				if ( $activity_metrics->get_for_refresh_token()['active_consumers'] !== $body['active_consumers'] ) {
 					return new Response( 200 );
 				}
 
@@ -83,6 +115,10 @@ class OAuth_ClientTest extends TestCase {
 		$client->refresh_token();
 
 		$this->assertEmpty( get_user_option( OAuth_Client::OPTION_ERROR_CODE, $user_id ) );
+
+		// Verify that the active consumers meta was deleted.
+		$this->assertEmpty( $active_consumers->get() );
+
 		// Make sure the access token was updated for the user.
 		$this->assertEquals( 'new-test-access-token', $client->get_access_token() );
 	}

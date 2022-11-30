@@ -48,7 +48,7 @@ export default function OptimizeSnippetNotice() {
 
 	if ( ! useUASnippet && analytics4ModuleConnected && ! useGA4Snippet ) {
 		notice = __(
-			'Site Kit is currently configured to neither place the Universal Analytics snippet nor the Google Analytics 4 snippet. If you have manually inserted these snippets, you will have to modify them to include the Optimize ID, or alternatively you will need to enable Site Kit to place them.',
+			'Site Kit is currently configured to neither place the Universal Analytics snippet nor the Google Analytics 4 snippet. If you have manually inserted these snippets, you will have to modify them to include the Optimize Container ID, or alternatively you will need to enable Site Kit to place them.',
 			'google-site-kit'
 		);
 	} else if (
@@ -56,12 +56,12 @@ export default function OptimizeSnippetNotice() {
 		( ! analytics4ModuleConnected || useGA4Snippet )
 	) {
 		notice = __(
-			'Site Kit is currently configured to not place the Universal Analytics snippet. If you have manually inserted this snippet, you will have to modify it to include the Optimize ID, or alternatively you will need to enable Site Kit to place it.',
+			'Site Kit is currently configured to not place the Universal Analytics snippet. If you have manually inserted this snippet, you will have to modify it to include the Optimize Container ID, or alternatively you will need to enable Site Kit to place it.',
 			'google-site-kit'
 		);
 	} else if ( analytics4ModuleConnected && ! useGA4Snippet && useUASnippet ) {
 		notice = __(
-			'Site Kit is currently configured to not place the Google Analytics 4 snippet. If you have manually inserted this snippet, you will have to modify it to include the Optimize ID, or alternatively you will need to enable Site Kit to place it.',
+			'Site Kit is currently configured to not place the Google Analytics 4 snippet. If you have manually inserted this snippet, you will have to modify it to include the Optimize Container ID, or alternatively you will need to enable Site Kit to place it.',
 			'google-site-kit'
 		);
 	}

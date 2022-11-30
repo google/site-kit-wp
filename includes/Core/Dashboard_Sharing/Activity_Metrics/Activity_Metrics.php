@@ -54,7 +54,7 @@ class Activity_Metrics {
 	/**
 	 * Get active consumers for refresh token.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.87.0
 	 *
 	 * @return array Array of active consumers formatted for refresh token.
 	 */

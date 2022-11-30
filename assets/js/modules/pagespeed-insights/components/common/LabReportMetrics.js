@@ -124,7 +124,7 @@ export default function LabReportMetrics( { data, error } ) {
 							'This is a piece of filler content which is hidden in order to provide a consistent height for the widget.',
 							'google-site-kit'
 						) }
-						displayValue={ '0' }
+						displayValue="0"
 						category={ CATEGORY_AVERAGE }
 						experimental
 						isHidden

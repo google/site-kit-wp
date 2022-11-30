@@ -42,7 +42,7 @@ describe( 'useExistingTagEffect', () => {
 		} );
 	} );
 
-	it( 'sets useSnippet value based on existing tag and selected container', async () => {
+	it( 'sets useSnippet value based on existing tag and selected container', () => {
 		const account = factories.accountBuilder();
 		// eslint-disable-next-line sitekit/acronym-case
 		const accountID = account.accountId;
@@ -129,7 +129,7 @@ describe( 'useExistingTagEffect', () => {
 		);
 	} );
 
-	it( 'does not change the useSnippet value when there is already a container ID on page load (container ID is same as existing tag)', async () => {
+	it( 'does not change the useSnippet value when there is already a container ID on page load (container ID is same as existing tag)', () => {
 		const account = factories.accountBuilder();
 		// eslint-disable-next-line sitekit/acronym-case
 		const accountID = account.accountId;
@@ -210,7 +210,7 @@ describe( 'useExistingTagEffect', () => {
 		);
 	} );
 
-	it( 'does not change the useSnippet value when there is already a container ID on page load (container ID is not the same as existing tag)', async () => {
+	it( 'does not change the useSnippet value when there is already a container ID on page load (container ID is not the same as existing tag)', () => {
 		const account = factories.accountBuilder();
 		// eslint-disable-next-line sitekit/acronym-case
 		const accountID = account.accountId;

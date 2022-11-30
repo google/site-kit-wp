@@ -19,7 +19,13 @@
 /**
  * WordPress dependencies
  */
-import { Fragment, useCallback, useEffect, useState } from '@wordpress/element';
+import {
+	createInterpolateElement,
+	Fragment,
+	useCallback,
+	useEffect,
+	useState,
+} from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 import { removeQueryArgs } from '@wordpress/url';
 
@@ -31,6 +37,7 @@ import { getQueryParameter } from '../../util';
 import BannerNotification, { LEARN_MORE_TARGET } from './BannerNotification';
 import SuccessGreenSVG from '../../../svg/graphics/success-green.svg';
 import UserInputSuccessBannerNotification from './UserInputSuccessBannerNotification';
+import Link from '../Link';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import {
@@ -254,18 +261,21 @@ function SetupSuccessBannerNotification() {
 			}
 
 			if ( 'thank-with-google' === slug ) {
-				winData.description = __(
-					'Thank with Google is visible to your visitors. To see metrics,',
-					'google-site-kit'
+				winData.description = (
+					<p>
+						{ createInterpolateElement(
+							__(
+								'Thank with Google is visible to your visitors. To see metrics, <link>open the administrator panel.</link>',
+								'google-site-kit'
+							),
+							{
+								link: <Link href={ publicationURL } external />,
+							}
+						) }
+					</p>
 				);
-				winData.learnMore = {
-					label: __(
-						'open the administrator panel.',
-						'google-site-kit'
-					),
-					url: publicationURL,
-					target: LEARN_MORE_TARGET.EXTERNAL,
-				};
+
+				winData.learnMore.label = '';
 			}
 
 			return (

@@ -224,6 +224,10 @@ final class Assets {
 			'Google+Sans+Display:400,500,700',
 		);
 
+		if ( Feature_Flags::enabled( 'gm3Components' ) ) {
+			$font_families[] = 'Roboto:300,400,500';
+		}
+
 		$filtered_font_families = apply_filters( 'googlesitekit_font_families', $font_families );
 
 		if ( empty( $filtered_font_families ) ) {
@@ -299,7 +303,7 @@ final class Assets {
 	/**
 	 * Forms an array of dependencies based on the necessary context.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.87.0
 	 *
 	 * @param string $context The context for which dependencies should be formed.
 	 * @return array The array of dependencies.
@@ -405,7 +409,7 @@ final class Assets {
 						$preload_paths = apply_filters( 'googlesitekit_apifetch_preload_paths', array() );
 						$preloaded     = array_reduce(
 							array_unique( $preload_paths ),
-							array( BC_Functions::class, 'rest_preload_api_request' ),
+							'rest_preload_api_request',
 							array()
 						);
 
@@ -472,7 +476,11 @@ final class Assets {
 			new Script(
 				'googlesitekit-components',
 				array(
-					'src' => $base_url . 'js/googlesitekit-components-gm2.js',
+					'src' => $base_url . (
+						Feature_Flags::enabled( 'gm3Components' )
+							? 'js/googlesitekit-components-gm3.js'
+							: 'js/googlesitekit-components-gm2.js'
+						),
 				)
 			),
 			new Script(
@@ -483,19 +491,12 @@ final class Assets {
 				)
 			),
 			new Script(
-				'googlesitekit-element',
-				array(
-					'src' => $base_url . 'js/googlesitekit-element.js',
-				)
-			),
-			new Script(
 				'googlesitekit-base',
 				array(
 					'src'          => $base_url . 'js/googlesitekit-base.js',
 					'dependencies' => array(
 						'googlesitekit-base-data',
 						'googlesitekit-i18n',
-						'googlesitekit-element',
 					),
 					'execution'    => 'defer',
 				)

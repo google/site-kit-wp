@@ -24,22 +24,14 @@ import { deactivatePlugin, activatePlugin } from '@wordpress/e2e-test-utils';
 /**
  * Internal dependencies
  */
-import {
-	activatePlugins,
-	createWaitForFetchRequests,
-	deactivatePlugins,
-} from '../utils';
+import { createWaitForFetchRequests } from '../utils';
 
 function activateSiteKit() {
-	// Both versions of the slug are used here to overcome the problem with WP 4.7.x that happens
-	// because it uses non-standard slug in certain circumstances.
-	return activatePlugins( 'google-site-kit', 'site-kit-by-google' );
+	return activatePlugin( 'google-site-kit' );
 }
 
 function deactivateSiteKit() {
-	// Both versions of the slug are used here to overcome the problem with WP 4.7.x that happens
-	// because it uses non-standard slug in certain circumstances.
-	return deactivatePlugins( 'google-site-kit', 'site-kit-by-google' );
+	return deactivatePlugin( 'google-site-kit' );
 }
 
 describe( 'plugin activation notice', () => {

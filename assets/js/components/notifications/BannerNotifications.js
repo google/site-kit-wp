@@ -39,7 +39,6 @@ import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import useViewOnly from '../../hooks/useViewOnly';
 import ZeroDataStateNotifications from './ZeroDataStateNotifications';
 import ThankWithGoogleSupporterWallNotification from './ThankWithGoogleSupporterWallNotification';
-import WPVersionBumpNotification from './WPVersionBumpNotification';
 const { useSelect } = Data;
 
 export default function BannerNotifications() {
@@ -71,7 +70,6 @@ export default function BannerNotifications() {
 						<SetupSuccessBannerNotification />
 					) }
 					{ isAuthenticated && <CoreSiteBannerNotifications /> }
-					<WPVersionBumpNotification />
 					{ dashboardSharingEnabled && <ModuleRecoveryAlert /> }
 					{ ga4ActivationBannerEnabled && <ActivationBanner /> }
 					{ twGModuleConnected && (

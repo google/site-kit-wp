@@ -57,6 +57,8 @@ import { getBannerDismissalExpiryTime } from '../../../utils/banner-dismissal-ex
 import { Cell, Grid, Row } from '../../../../../material-components';
 import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
 import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '../../../../../util/errors';
+import useViewContext from '../../../../../hooks/useViewContext';
+import { trackEvent } from '../../../../../util';
 const { useDispatch, useSelect } = Data;
 
 const VARIANT = {
@@ -68,6 +70,10 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 	const [ errorNotice, setErrorNotice ] = useState( null );
 	const [ variant, setVariant ] = useState( null );
 	const [ isSaving, setIsSaving ] = useState( false );
+	const [ viewNotificationSent, setViewNotificationSent ] = useState( false );
+
+	const viewContext = useViewContext();
+	const eventCategory = `${ viewContext }_ga4-setup-notification`;
 
 	const { submitChanges, selectProperty, matchAndSelectProperty } =
 		useDispatch( MODULES_ANALYTICS_4 );
@@ -202,6 +208,17 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 
 		setIsSaving( true );
 
+		if ( ! autoSubmit ) {
+			if (
+				variant === VARIANT.NO_EXISTING_PROPERTY ||
+				getPropertyID() === PROPERTY_CREATE
+			) {
+				trackEvent( eventCategory, 'create_property' );
+			} else {
+				trackEvent( eventCategory, 'connect_property' );
+			}
+		}
+
 		const { error } = await submitChanges();
 
 		setIsSaving( false );
@@ -215,6 +232,9 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 			onSubmitSuccess();
 		}
 	}, [
+		autoSubmit,
+		eventCategory,
+		variant,
 		hasEditScope,
 		onSubmitSuccess,
 		setPermissionScopeError,
@@ -233,6 +253,16 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 			handleSubmitChanges();
 		}
 	}, [ autoSubmit, handleSubmitChanges, hasEditScope ] );
+
+	useEffect( () => {
+		// Only trigger the view event if the notification is visible and we haven't
+		// already sent this notification.
+		if ( ! viewNotificationSent && ! autoSubmit && !! variant ) {
+			trackEvent( eventCategory, 'view_notification' );
+			// Don't send the view event again.
+			setViewNotificationSent( true );
+		}
+	}, [ eventCategory, autoSubmit, variant, viewNotificationSent ] );
 
 	const { isTooltipVisible } = useTooltipState(
 		ACTIVATION_ACKNOWLEDGEMENT_TOOLTIP_STATE_KEY

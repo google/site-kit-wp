@@ -68,7 +68,7 @@ const setupEmptyRegistry = ( registry ) => {
 };
 
 describe( 'AccountSelect', () => {
-	it( 'should render an option for each analytics account', async () => {
+	it( 'should render an option for each analytics account', () => {
 		const { getAllByRole } = render( <AccountSelect />, { setupRegistry } );
 
 		const listItems = getAllByRole( 'menuitem', { hidden: true } );
@@ -79,7 +79,7 @@ describe( 'AccountSelect', () => {
 		);
 	} );
 
-	it( 'should have a "Set up a new account" item at the end of the list', async () => {
+	it( 'should have a "Set up a new account" item at the end of the list', () => {
 		const { getAllByRole } = render( <AccountSelect />, { setupRegistry } );
 
 		const listItems = getAllByRole( 'menuitem', { hidden: true } );
@@ -105,7 +105,7 @@ describe( 'AccountSelect', () => {
 		expect( queryByRole( 'progressbar' ) ).toBeInTheDocument();
 	} );
 
-	it( 'should render a select box with only setup when no accounts exist', async () => {
+	it( 'should render a select box with only setup when no accounts exist', () => {
 		const { getAllByRole } = render( <AccountSelect />, {
 			setupRegistry: setupEmptyRegistry,
 		} );
@@ -117,7 +117,7 @@ describe( 'AccountSelect', () => {
 		);
 	} );
 
-	it( 'should update accountID in the store when a new item is clicked', async () => {
+	it( 'should update accountID in the store when a new item is clicked', () => {
 		const { getByText, container, registry } = render( <AccountSelect />, {
 			setupRegistry,
 		} );
