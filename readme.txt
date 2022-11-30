@@ -4,7 +4,7 @@ Contributors:      google
 Requires at least: 5.2
 Tested up to:      6.1
 Requires PHP:      5.6
-Stable tag:        1.88.0
+Stable tag:        1.89.0
 License:           Apache License 2.0
 License URI:       https://www.apache.org/licenses/LICENSE-2.0
 Tags:              google, search-console, analytics, adsense, pagespeed-insights, optimize, tag-manager, site-kit
@@ -107,6 +107,19 @@ By default, Site Kit does anonymize IP addresses upon activation of the Google A
 Please create a new topic on our [WordPress.org support forum](https://wordpress.org/support/plugin/google-site-kit/). Be sure to follow the [support forum guidelines](https://wordpress.org/support/guidelines/) when posting.
 
 == Changelog ==
+
+= 1.89.0 =
+
+**Enhanced**
+
+* Update AdSense tag to include Site Kit platform host ID. See [#6132](https://github.com/google/site-kit-wp/issues/6132).
+* Update Google API PHP client services library for new Tag Manager endpoints. See [#6076](https://github.com/google/site-kit-wp/issues/6076).
+* Update link style within error notices. See [#5975](https://github.com/google/site-kit-wp/issues/5975).
+* Implement new design for User Input questions. See [#5890](https://github.com/google/site-kit-wp/issues/5890).
+* Update User Input survey questions for v2. See [#5888](https://github.com/google/site-kit-wp/issues/5888).
+* Prevent users from changing the Google Analytics 4 configuration when they don't have access to the currently configured Universal Analytics property. See [#5886](https://github.com/google/site-kit-wp/issues/5886).
+* Include a link to "Edit in Tag Manager" when viewing the Tag Manager module settings. See [#5174](https://github.com/google/site-kit-wp/issues/5174).
+* Improve instructions in Optimize setup and settings. See [#4064](https://github.com/google/site-kit-wp/issues/4064).
 
 = 1.88.0 =
 
