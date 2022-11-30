@@ -121,9 +121,9 @@ class Data_Request implements \ArrayAccess {
 	 *
 	 * @return bool
 	 */
-	// phpcs:disable Squiz.Commenting.InlineComment.WrongStyle,Squiz.Commenting.FunctionComment.WrongStyle, Squiz.PHP.CommentedOutCode.Found
+	// phpcs:ignore Squiz.Commenting.InlineComment.WrongStyle,Squiz.PHP.CommentedOutCode.Found
 	#[\ReturnTypeWillChange]
-	public function offsetExists( $key ) {
+	public function offsetExists( $key ) { // phpcs:ignore Squiz.Commenting.FunctionComment.WrongStyle
 		return array_key_exists( $key, $this->data );
 	}
 
@@ -134,9 +134,9 @@ class Data_Request implements \ArrayAccess {
 	 *
 	 * @return mixed
 	 */
-	// phpcs:disable Squiz.Commenting.InlineComment.WrongStyle, Squiz.Commenting.FunctionComment.WrongStyle, Squiz.PHP.CommentedOutCode.Found
+	// phpcs:ignore Squiz.Commenting.InlineComment.WrongStyle,Squiz.PHP.CommentedOutCode.Found
 	#[\ReturnTypeWillChange]
-	public function offsetGet( $key ) {
+	public function offsetGet( $key ) { // phpcs:ignore Squiz.Commenting.FunctionComment.WrongStyle
 		if ( $this->offsetExists( $key ) ) {
 			return $this->data[ $key ];
 		}
@@ -150,9 +150,9 @@ class Data_Request implements \ArrayAccess {
 	 * @param string|int $key Key to set the value for.
 	 * @param mixed      $value New value for the given key.
 	 */
-	// phpcs:disable Squiz.Commenting.InlineComment.WrongStyle, Squiz.Commenting.FunctionComment.WrongStyle, Squiz.PHP.CommentedOutCode.Found
+	// phpcs:ignore Squiz.Commenting.InlineComment.WrongStyle,Squiz.PHP.CommentedOutCode.Found
 	#[\ReturnTypeWillChange]
-	public function offsetSet( $key, $value ) {
+	public function offsetSet( $key, $value ) { // phpcs:ignore Squiz.Commenting.FunctionComment.WrongStyle
 		// Data is immutable.
 	}
 
@@ -161,9 +161,9 @@ class Data_Request implements \ArrayAccess {
 	 *
 	 * @param string|int $key Key to unset.
 	 */
-	// phpcs:disable Squiz.Commenting.InlineComment.WrongStyle, Squiz.Commenting.FunctionComment.WrongStyle, Squiz.PHP.CommentedOutCode.Found
+	// phpcs:ignore Squiz.Commenting.InlineComment.WrongStyle,Squiz.PHP.CommentedOutCode.Found
 	#[\ReturnTypeWillChange]
-	public function offsetUnset( $key ) {
+	public function offsetUnset( $key ) { // phpcs:ignore Squiz.Commenting.FunctionComment.WrongStyle
 		// Data is immutable.
 	}
 }
