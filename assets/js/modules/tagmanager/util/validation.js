@@ -19,6 +19,7 @@
 /**
  * Internal dependencies
  */
+import { isValidNumericID } from '../../../util';
 import {
 	ACCOUNT_CREATE,
 	CONTAINER_CREATE,
@@ -26,20 +27,6 @@ import {
 	CONTEXT_AMP,
 } from '../datastore/constants';
 import { getNormalizedContainerName } from './container';
-
-/**
- * Checks the given value to see if it is a positive integer.
- *
- * @since 1.11.0
- *
- * @param {*} input Value to check.
- * @return {boolean} Validity.
- */
-const isValidNumericID = function ( input ) {
-	const id = parseInt( input, 10 ) || 0;
-
-	return id > 0;
-};
 
 /**
  * Checks if the given account ID appears to be a valid Tag Manager account.
