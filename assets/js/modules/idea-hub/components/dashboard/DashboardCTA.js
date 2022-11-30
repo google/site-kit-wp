@@ -57,8 +57,8 @@ export default function DashboardCTA( { Widget, WidgetNull } ) {
 	const [ hasBeenInView, setHasBeenInView ] = useState( false );
 	const viewContext = useViewContext();
 
-	const { connected, active } = useSelect( ( select ) =>
-		select( CORE_MODULES ).getModule( 'idea-hub' )
+	const { connected, active } = useSelect(
+		( select ) => select( CORE_MODULES ).getModule( 'idea-hub' ) || {}
 	);
 
 	const dismissed = useSelect( ( select ) =>

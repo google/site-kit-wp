@@ -39,12 +39,18 @@ const { useSelect } = Data;
 
 export default function UserInputApp() {
 	const userInputEnabled = useFeature( 'userInput' );
-	const { hasFinishedGettingInputSettings } = useSelect( ( select ) => ( {
-		userInputSettings: select( CORE_USER ).getUserInputSettings(), // This will be used in the children components.
-		hasFinishedGettingInputSettings: select(
-			CORE_USER
-		).hasFinishedResolution( 'getUserInputSettings' ),
-	} ) );
+	const hasFinishedGettingInputSettings = useSelect( ( select ) => {
+		// This needs to be called here to check on its resolution,
+		// as it's called/used by child components of this component,
+		// but we need to call it here to know if it's resolving.
+		//
+		// This is sort of a select side-effect, but it's necessary here.
+		select( CORE_USER ).getUserInputSettings();
+
+		return select( CORE_USER ).hasFinishedResolution(
+			'getUserInputSettings'
+		);
+	} );
 
 	if ( ! userInputEnabled ) {
 		return <div>{ __( 'Something went wrong.', 'google-site-kit' ) }</div>;
