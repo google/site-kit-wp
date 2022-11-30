@@ -113,6 +113,8 @@ export const reducer = ( state, { payload, type } ) => {
 				postTypes,
 				wpVersion,
 				updateCoreURL,
+				updatePluginCapacity,
+				autoUpdatesEnabled,
 			} = payload.siteInfo;
 
 			return {
@@ -140,6 +142,8 @@ export const reducer = ( state, { payload, type } ) => {
 					postTypes,
 					wpVersion,
 					updateCoreURL,
+					updatePluginCapacity,
+					autoUpdatesEnabled,
 				},
 			};
 		}
@@ -192,6 +196,8 @@ export const resolvers = {
 			postTypes,
 			wpVersion,
 			updateCoreURL,
+			updatePluginCapacity,
+			autoUpdatesEnabled,
 		} = global._googlesitekitBaseData;
 
 		const {
@@ -224,6 +230,8 @@ export const resolvers = {
 			widgetsAdminURL,
 			wpVersion,
 			updateCoreURL,
+			updatePluginCapacity,
+			autoUpdatesEnabled,
 		} );
 	},
 };
@@ -647,6 +655,26 @@ export const selectors = {
 	 * @return {(Object|undefined)} WordPress update core URL.
 	 */
 	getUpdateCoreURL: getSiteInfoProperty( 'updateCoreURL' ),
+
+	/**
+	 * Determines if the current user can update the Plugin.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(boolean|undefined)} `true` if the current user can update the plugin, otherwise `false`.
+	 */
+	getUpdatePluginCapacity: getSiteInfoProperty( 'updatePluginCapacity' ),
+
+	/**
+	 * Determines if plugin auto updates are enabled.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(boolean|undefined)} `true` if plugin auto updates are enabled, otherwise `false`.
+	 */
+	getAutoUpdatesEnabled: getSiteInfoProperty( 'autoUpdatesEnabled' ),
 
 	/**
 	 * Determines whether the current WordPress site has the minimum required version.
