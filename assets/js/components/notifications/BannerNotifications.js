@@ -39,6 +39,7 @@ import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import useViewOnly from '../../hooks/useViewOnly';
 import ZeroDataStateNotifications from './ZeroDataStateNotifications';
 import ThankWithGoogleSupporterWallNotification from './ThankWithGoogleSupporterWallNotification';
+import EnableAutoUpdateBannerNotification from './EnableAutoUpdateBannerNotification';
 const { useSelect } = Data;
 
 export default function BannerNotifications() {
@@ -75,6 +76,7 @@ export default function BannerNotifications() {
 					{ twGModuleConnected && (
 						<ThankWithGoogleSupporterWallNotification />
 					) }
+					<EnableAutoUpdateBannerNotification />
 				</Fragment>
 			) }
 			<ZeroDataStateNotifications />
