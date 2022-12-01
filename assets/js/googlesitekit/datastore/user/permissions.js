@@ -119,7 +119,7 @@ const baseActions = {
 			yield fetchGetCapabilitiesStore.actions.fetchGetCapabilities();
 
 		if ( error ) {
-			yield dispatch( CORE_USER ).setPermissionScopeError( error );
+			dispatch( CORE_USER ).setPermissionScopeError( error );
 		}
 
 		return { response, error };
