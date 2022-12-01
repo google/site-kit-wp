@@ -519,8 +519,7 @@ final class OAuth_Client extends OAuth_Client_Base {
 		// UTF-8 characters.
 		//
 		// See: https://github.com/google/site-kit-wp/issues/5868.
-		die( $redirect_url );
-		wp_redirect( $redirect_url ); // phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect
+		wp_safe_redirect( $redirect_url ); // phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect
 		exit();
 	}
 
