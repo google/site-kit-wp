@@ -345,6 +345,8 @@ const API = {
 	set,
 	setUsingCache,
 	usingCache,
+	getItem,
+	setItem,
 };
 
 export default API;
