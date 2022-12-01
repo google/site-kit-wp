@@ -66,6 +66,12 @@
 			&--not-connected::before,
 			&--warning::before {
 				background-color: $c-white;
+
+				/**
+				 * This is the warning icon (a solid triangle with a
+				 * transparent exclamation mark in the middle),
+				 * in the color #FECE72 ($c-yellow-y-100).
+				 */
 				background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2222%22%20height%3D%2219%22%20viewBox%3D%220%200%2022%2019%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpath%20d%3D%22M0%2019h22L11%200%200%2019zm12-3h-2v-2h2v2zm0-4h-2V8h2v4z%22%20fill%3D%22%23FECE72%22%20fill-rule%3D%22nonzero%22%2F%3E%3C%2Fsvg%3E");
 				background-position: center 3px;
 				background-size: 19px 17px;
@@ -90,6 +96,7 @@
 			}
 
 			&::after {
+				// This is the expand_more icon (arrow/chevron down), in the color #5B5B61.
 				background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2212%22%20height%3D%228%22%20viewBox%3D%220%200%2012%208%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpath%20d%3D%22M10.6.6L12%202%206%208%200%202%201.4.6%206%205.2z%22%20fill%3D%22%235B5B61%22%20fill-rule%3D%22evenodd%22%2F%3E%3C%2Fsvg%3E");
 				background-position: center center;
 				background-repeat: no-repeat;
