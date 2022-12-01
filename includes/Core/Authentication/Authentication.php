@@ -935,9 +935,10 @@ final class Authentication {
 			'minor'   => (int) $minor,
 		);
 
-		if ( version_compare( $version, '5.5', '>=' ) ) {
+		if ( version_compare( $version, '5.5', '>=' ) && ! $this->context->is_autoupdate_enabled() ) {
 			$data['updatePluginCapacity'] = current_user_can( 'update_plugins' );
 			$data['autoUpdatesEnabled']   = wp_is_auto_update_enabled_for_type( 'plugin' );
+			$data['updatePluginNonce']    = wp_create_nonce( 'updates' );
 		}
 
 		$current_user      = wp_get_current_user();

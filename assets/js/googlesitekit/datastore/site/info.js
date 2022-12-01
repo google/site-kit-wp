@@ -115,6 +115,7 @@ export const reducer = ( state, { payload, type } ) => {
 				updateCoreURL,
 				updatePluginCapacity,
 				autoUpdatesEnabled,
+				updatePluginNonce,
 			} = payload.siteInfo;
 
 			return {
@@ -144,6 +145,7 @@ export const reducer = ( state, { payload, type } ) => {
 					updateCoreURL,
 					updatePluginCapacity,
 					autoUpdatesEnabled,
+					updatePluginNonce,
 				},
 			};
 		}
@@ -198,6 +200,7 @@ export const resolvers = {
 			updateCoreURL,
 			updatePluginCapacity,
 			autoUpdatesEnabled,
+			updatePluginNonce,
 		} = global._googlesitekitBaseData;
 
 		const {
@@ -232,6 +235,7 @@ export const resolvers = {
 			updateCoreURL,
 			updatePluginCapacity,
 			autoUpdatesEnabled,
+			updatePluginNonce,
 		} );
 	},
 };
@@ -675,6 +679,16 @@ export const selectors = {
 	 * @return {(boolean|undefined)} `true` if plugin auto updates are enabled, otherwise `false`.
 	 */
 	getAutoUpdatesEnabled: getSiteInfoProperty( 'autoUpdatesEnabled' ),
+
+	/**
+	 * Get the nonce for the activate plugin auto updates ajax action.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(boolean|undefined)} `true` if plugin auto updates are enabled, otherwise `false`.
+	 */
+	getUpdatePluginNonce: getSiteInfoProperty( 'updatePluginNonce' ),
 
 	/**
 	 * Determines whether the current WordPress site has the minimum required version.

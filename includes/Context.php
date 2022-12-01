@@ -510,4 +510,26 @@ class Context {
 
 		return $wp_locale;
 	}
+
+	/**
+	 * Check whether the site has auto updates enabled for this plugin.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return bool `true` if auto updates are enabled, otherwise `false`.
+	 */
+	public function is_autoupdate_enabled() {
+		if ( $this->is_network_active() ) {
+			$enabled_auto_updates = (array) get_site_option( 'auto_update_plugins', array() );
+		} else {
+			$enabled_auto_updates = (array) get_option( 'auto_update_plugins', array() );
+		}
+
+		if ( ! $enabled_auto_updates ) {
+			return false;
+		}
+
+		// Check if the site kit is in the list of auto-updated plugins.
+		return in_array( GOOGLESITEKIT_PLUGIN_BASENAME, $enabled_auto_updates, true );
+	}
 }
