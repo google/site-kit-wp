@@ -34,6 +34,7 @@ use Google\Site_Kit\Core\Tags\Guards\Tag_Verify_Guard;
 use Google\Site_Kit\Core\Util\BC_Functions;
 use Google\Site_Kit\Core\Util\Debug_Data;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
+use Google\Site_Kit\Core\Util\Sort;
 use Google\Site_Kit\Core\Util\URL;
 use Google\Site_Kit\Modules\Analytics\Settings as Analytics_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Settings;
@@ -480,17 +481,10 @@ final class Analytics_4 extends Module
 			case 'POST:create-webdatastream':
 				return self::filter_webdatastream_with_ids( $response );
 			case 'GET:properties':
-				$properties = array_map( array( self::class, 'filter_property_with_ids' ), $response->getProperties() );
-				usort(
-					$properties,
-					function ( $a, $b ) {
-							return strcasecmp(
-								$a['displayName'],
-								$b['displayName']
-							);
-					}
+				return Sort::case_insensitive_list_sort(
+					array_map( array( self::class, 'filter_property_with_ids' ), $response->getProperties() ),
+					'displayName'
 				);
-				return $properties;
 			case 'GET:property':
 				return self::filter_property_with_ids( $response );
 			case 'GET:webdatastreams':

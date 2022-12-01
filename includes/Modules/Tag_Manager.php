@@ -35,6 +35,7 @@ use Google\Site_Kit\Core\Tags\Guards\Tag_Verify_Guard;
 use Google\Site_Kit\Core\Util\BC_Functions;
 use Google\Site_Kit\Core\Util\Debug_Data;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
+use Google\Site_Kit\Core\Util\Sort;
 use Google\Site_Kit\Core\Util\URL;
 use Google\Site_Kit\Modules\Tag_Manager\AMP_Tag;
 use Google\Site_Kit\Modules\Tag_Manager\Settings;
@@ -385,28 +386,15 @@ final class Tag_Manager extends Module
 		switch ( "{$data->method}:{$data->datapoint}" ) {
 			case 'GET:accounts':
 				/* @var Google_Service_TagManager_ListAccountsResponse $response List accounts response. */
-				$accounts = $response->getAccount();
-				usort(
-					$accounts,
-					function ( $a, $b ) {
-							return strcasecmp(
-								$a['name'],
-								$b['name']
-							);
-					}
+				return Sort::case_insensitive_list_sort(
+					$response->getAccount(),
+					'name'
 				);
-				return $accounts;
 			case 'GET:accounts-containers':
 				/* @var Google_Service_TagManager_ListAccountsResponse $response List accounts response. */
-				$accounts = $response->getAccount();
-				usort(
-					$accounts,
-					function ( $a, $b ) {
-							return strcasecmp(
-								$a['name'],
-								$b['name']
-							);
-					}
+				$accounts = Sort::case_insensitive_list_sort(
+					$response->getAccount(),
+					'name'
 				);
 				$response = array(
 					// TODO: Parse this response to a regular array.
@@ -445,18 +433,11 @@ final class Tag_Manager extends Module
 						return array_intersect( (array) $usage_context, $container->getUsageContext() );
 					}
 				);
-				$containers = array_values( $containers );
-				usort(
-					$containers,
-					function ( $a, $b ) {
-							return strcasecmp(
-								$a['name'],
-								$b['name']
-							);
-					}
-				);
 
-				return $containers;
+				return Sort::case_insensitive_list_sort(
+					array_values( $containers ),
+					'name'
+				);
 		}
 
 		return parent::parse_data_response( $data, $response );
