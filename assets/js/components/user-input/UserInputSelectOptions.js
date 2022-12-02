@@ -77,6 +77,11 @@ export default function UserInputSelectOptions( {
 
 		if ( checkedEl ) {
 			focusOption( checkedEl );
+		} else {
+			const el = optionsRef.current.querySelector(
+				`input[type="${ optionType }"]`
+			);
+			focusOption( el );
 		}
 	}, [ isActive, max ] );
 
