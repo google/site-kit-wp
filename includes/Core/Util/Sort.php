@@ -25,21 +25,13 @@ class Sort {
 	 *
 	 * @param array  $list    The list to sort.
 	 * @param string $orderby The field by which the list should be ordered by.
-	 * @param string $order   The direction of the sort. Either 'ASC' or 'DESC'. Default is 'ASC'.
 	 *
 	 * @return array The sorted list.
 	 */
-	public static function case_insensitive_list_sort( $list, $orderby, $order = 'ASC' ) {
+	public static function case_insensitive_list_sort( $list, $orderby ) {
 		usort(
 			$list,
-			function ( $a, $b ) use ( $orderby, $order ) {
-				if ( 'DESC' === $order ) {
-					return strcasecmp(
-						$b[ $orderby ],
-						$a[ $orderby ]
-					);
-				}
-
+			function ( $a, $b ) use ( $orderby ) {
 				return strcasecmp(
 					$a[ $orderby ],
 					$b[ $orderby ]
