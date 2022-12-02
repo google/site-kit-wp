@@ -116,9 +116,6 @@ const WPDashboardUniqueVisitorsChartWidget = () => {
 			...WPDashboardUniqueVisitorsChartWidget.chartOptions.hAxis,
 			ticks: [ dates[ 0 ], dates[ dates.length - 1 ] ],
 		},
-		vAxis: {
-			...WPDashboardUniqueVisitorsChartWidget.chartOptions.vAxis,
-		},
 		series: {
 			0: {
 				color: WPDashboardUniqueVisitorsChartWidget.statsColor,
