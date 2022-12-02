@@ -111,48 +111,43 @@ export default function TrackingExclusionSwitches() {
 				{ __( 'Exclude Analytics', 'google-site-kit' ) }
 			</h4>
 
-			<fieldset className="googlesitekit-analytics-trackingdisabled">
-				<legend className="googlesitekit-setup-module__text">
-					{ __( 'Exclude from Analytics', 'google-site-kit' ) }
-				</legend>
-				<div className="googlesitekit-settings-module__meta-item">
-					<div className="googlesitekit-settings-module__inline-items">
+			<div className="googlesitekit-settings-module__meta-item">
+				<div className="googlesitekit-settings-module__inline-items">
+					<div className="googlesitekit-settings-module__inline-item">
+						<Switch
+							label={
+								trackingExclusionLabels[
+									TRACKING_LOGGED_IN_USERS
+								]
+							}
+							checked={ trackingDisabled.includes(
+								TRACKING_LOGGED_IN_USERS
+							) }
+							onClick={ onChangeTrackLoggedInUsers }
+							hideLabel={ false }
+						/>
+					</div>
+					{ ! trackingDisabled.includes(
+						TRACKING_LOGGED_IN_USERS
+					) && (
 						<div className="googlesitekit-settings-module__inline-item">
 							<Switch
 								label={
 									trackingExclusionLabels[
-										TRACKING_LOGGED_IN_USERS
+										TRACKING_CONTENT_CREATORS
 									]
 								}
 								checked={ trackingDisabled.includes(
-									TRACKING_LOGGED_IN_USERS
+									TRACKING_CONTENT_CREATORS
 								) }
-								onClick={ onChangeTrackLoggedInUsers }
+								onClick={ onChangeTrackContentCreators }
 								hideLabel={ false }
 							/>
 						</div>
-						{ ! trackingDisabled.includes(
-							TRACKING_LOGGED_IN_USERS
-						) && (
-							<div className="googlesitekit-settings-module__inline-item">
-								<Switch
-									label={
-										trackingExclusionLabels[
-											TRACKING_CONTENT_CREATORS
-										]
-									}
-									checked={ trackingDisabled.includes(
-										TRACKING_CONTENT_CREATORS
-									) }
-									onClick={ onChangeTrackContentCreators }
-									hideLabel={ false }
-								/>
-							</div>
-						) }
-					</div>
-					<p>{ message }</p>
+					) }
 				</div>
-			</fieldset>
+				<p>{ message }</p>
+			</div>
 		</div>
 	);
 }
