@@ -54,13 +54,16 @@
 @import "components/global/googlesitekit-source-link";
 @import "components/global/googlesitekit-table";
 @import "components/global/googlesitekit-table-overflow";
+@import "components/global/googlesitekit-chart";
 
 // WP Dashboard & Metaboxes
 @import "components/wp-dashboard/googlesitekit-search-console-widget";
-@import "components/dashboard/googlesitekit-dashboard-charts";
 @import "components/wp-dashboard/googlesitekit-unique-visitors-chart-widget";
 @import "components/wp-dashboard/googlesitekit-wp-dashboard";
 @import "components/wp-dashboard/googlesitekit-wp-dashboard-stats";
+
+// Charts
+@import "components/dashboard/googlesitekit-dashboard-charts";
 
 // Utilities
 @import "utilities/display";

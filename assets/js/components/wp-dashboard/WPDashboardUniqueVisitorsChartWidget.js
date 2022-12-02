@@ -1,7 +1,7 @@
 /**
- * WPDashboardUniqueVisitorsWidget component.
+ * WPDashboardUniqueVisitorsChartWidget component.
  *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2022 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,14 +37,12 @@ import GoogleChart from '../GoogleChart';
 const { useSelect, useInViewSelect } = Data;
 
 const WPDashboardUniqueVisitorsChartWidget = () => {
-	const analyticsModule = useSelect( ( select ) =>
-		select( CORE_MODULES ).getModule( 'analytics' )
+	const analyticsModuleActive = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleActive( 'analytics' )
 	);
-	const analyticsModuleActive = analyticsModule?.active;
-	const analyticsModuleConnected = analyticsModule?.connected;
-	const analyticsModuleActiveAndConnected =
-		analyticsModuleActive && analyticsModuleConnected;
-
+	const analyticsModuleConnected = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleConnected( 'analytics' )
+	);
 	const isGatheringData = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).isGatheringData()
 	);
@@ -92,17 +90,12 @@ const WPDashboardUniqueVisitorsChartWidget = () => {
 		] )
 	);
 
-	if ( ! analyticsModuleActiveAndConnected ) {
+	if ( ! ( analyticsModuleActive && analyticsModuleConnected ) ) {
 		return null;
 	}
 
 	if ( error ) {
-		return (
-			<div className="googlesitekit-unique-visitors-chart-widget">
-				<h3>Unique Visitors from Search</h3>
-				<WidgetReportError moduleSlug="analytics" error={ error } />
-			</div>
-		);
+		return <WidgetReportError moduleSlug="analytics" error={ error } />;
 	}
 
 	const googleChartData =
@@ -121,7 +114,7 @@ const WPDashboardUniqueVisitorsChartWidget = () => {
 		...WPDashboardUniqueVisitorsChartWidget.chartOptions,
 		hAxis: {
 			...WPDashboardUniqueVisitorsChartWidget.chartOptions.hAxis,
-			ticks: dates,
+			ticks: [ dates[ 0 ], dates[ dates.length - 1 ] ],
 		},
 		vAxis: {
 			...WPDashboardUniqueVisitorsChartWidget.chartOptions.vAxis,
@@ -151,10 +144,7 @@ const WPDashboardUniqueVisitorsChartWidget = () => {
 		);
 
 	if ( isZeroChart ) {
-		options.vAxis.viewWindow.max = 100;
 		options.hAxis.ticks = [ new Date() ];
-	} else {
-		options.vAxis.viewWindow.max = undefined;
 	}
 
 	return (
@@ -186,8 +176,8 @@ WPDashboardUniqueVisitorsChartWidget.chartOptions = {
 	width: '100%',
 	chartArea: {
 		height: '80%',
-		left: 30,
-		right: 0,
+		left: 20,
+		right: 20,
 	},
 	legend: {
 		position: 'top',
@@ -207,21 +197,7 @@ WPDashboardUniqueVisitorsChartWidget.chartOptions = {
 		},
 	},
 	vAxis: {
-		gridlines: {
-			color: '#eee',
-		},
-		minorGridlines: {
-			color: '#eee',
-		},
-		textStyle: {
-			color: '#616161',
-			fontSize: 12,
-		},
-		titleTextStyle: {
-			color: '#616161',
-			fontSize: 12,
-			italic: false,
-		},
+		textPosition: 'none',
 		viewWindow: {
 			min: 0,
 		},
