@@ -40,7 +40,7 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { Button } from 'googlesitekit-components';
+import { Button, ProgressBar } from 'googlesitekit-components';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { EXPERIMENTAL_MODULES } from '../../dashboard-sharing/DashboardSharingSettings/constants';
 import { Grid, Row, Cell } from '../../../material-components';
@@ -96,6 +96,11 @@ export default function Header( { slug } ) {
 		}
 		return select( CORE_MODULES ).hasModuleAccess( 'analytics' );
 	} );
+	const hasResolvedAnalyticsAccess = useSelect( ( select ) =>
+		select( CORE_MODULES ).hasFinishedResolution( 'hasModuleAccess', [
+			'analytics',
+		] )
+	);
 
 	const { setValues } = useDispatch( CORE_FORMS );
 
@@ -276,13 +281,23 @@ export default function Header( { slug } ) {
 							slug === 'analytics' &&
 							! hasAnalyticsAccess &&
 							! isGA4Connected && (
-								<p className="googlesitekit-settings-module__status">
-									{ __(
-										'Google Analytics 4 is not connected',
-										'google-site-kit'
+								<Fragment>
+									{ hasResolvedAnalyticsAccess ? (
+										<p className="googlesitekit-settings-module__status">
+											{ __(
+												'Google Analytics 4 is not connected',
+												'google-site-kit'
+											) }
+											<span className="googlesitekit-settings-module__status-icon googlesitekit-settings-module__status-icon--not-connected" />
+										</p>
+									) : (
+										<ProgressBar
+											className="googlesitekit-settings-module__status-loading"
+											height={ 32 }
+											small
+										/>
 									) }
-									<span className="googlesitekit-settings-module__status-icon googlesitekit-settings-module__status-icon--not-connected" />
-								</p>
+								</Fragment>
 							) }
 
 						{ ! connected && (
