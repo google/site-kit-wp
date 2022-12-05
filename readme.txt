@@ -121,6 +121,10 @@ Please create a new topic on our [WordPress.org support forum](https://wordpress
 * Include a link to "Edit in Tag Manager" when viewing the Tag Manager module settings. See [#5174](https://github.com/google/site-kit-wp/issues/5174).
 * Improve instructions in Optimize setup and settings. See [#4064](https://github.com/google/site-kit-wp/issues/4064).
 
+**Fixed**
+
+* Fix Google Analytics 4 settings toggle behaviour when GA4 is not connected. See [#6271](https://github.com/google/site-kit-wp/issues/6271).
+
 = 1.88.0 =
 
 **Enhanced**
