@@ -114,7 +114,24 @@
 			}
 
 			.googlesitekit-settings-module__status {
-				padding: 8px 0;
+
+				p {
+					margin: 8px 0;
+				}
+			}
+
+			.googlesitekit-settings-module__status--not-connected {
+
+				.mdc-button {
+					margin: -1.5px 0;
+				}
+			}
+
+			.googlesitekit-settings-module__status--loading {
+				align-items: center;
+				display: flex;
+				min-width: 150px;
+				padding: 0.5px 0;
 			}
 		}
 

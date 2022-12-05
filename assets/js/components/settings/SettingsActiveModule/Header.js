@@ -26,13 +26,7 @@ import { useHistory, useParams } from 'react-router-dom';
 /**
  * WordPress dependencies
  */
-import {
-	Fragment,
-	useCallback,
-	useRef,
-	useState,
-	useEffect,
-} from '@wordpress/element';
+import { useCallback, useRef, useState, useEffect } from '@wordpress/element';
 import { ESCAPE, ENTER } from '@wordpress/keycodes';
 import { __, sprintf } from '@wordpress/i18n';
 
@@ -40,7 +34,7 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { Button } from 'googlesitekit-components';
+import { Button, ProgressBar } from 'googlesitekit-components';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { EXPERIMENTAL_MODULES } from '../../dashboard-sharing/DashboardSharingSettings/constants';
 import { Grid, Row, Cell } from '../../../material-components';
@@ -96,6 +90,11 @@ export default function Header( { slug } ) {
 		}
 		return select( CORE_MODULES ).hasModuleAccess( 'analytics' );
 	} );
+	const hasResolvedAnalyticsAccess = useSelect( ( select ) =>
+		select( CORE_MODULES ).hasFinishedResolution( 'hasModuleAccess', [
+			'analytics',
+		] )
+	);
 
 	const { setValues } = useDispatch( CORE_FORMS );
 
@@ -184,6 +183,45 @@ export default function Header( { slug } ) {
 		return null;
 	}
 
+	// Do not show a "Connected" status for the Analytics module if GA4 is not connected.
+	const showAsConnected =
+		connected && ( 'analytics' !== slug || isGA4Connected );
+
+	let moduleStatus = null;
+
+	if ( showAsConnected ) {
+		moduleStatus = <p>{ __( 'Connected', 'google-site-kit' ) }</p>;
+	} else if ( 'analytics' === slug && connected && ! isGA4Connected ) {
+		if ( hasAnalyticsAccess ) {
+			moduleStatus = (
+				<Button onClick={ handleConnectGA4ButtonClick }>
+					{ __( 'Connect Google Analytics 4', 'google-site-kit' ) }
+				</Button>
+			);
+		} else if ( hasResolvedAnalyticsAccess ) {
+			moduleStatus = (
+				<p>
+					{ __(
+						'Google Analytics 4 is not connected',
+						'google-site-kit'
+					) }
+				</p>
+			);
+		} else {
+			moduleStatus = <ProgressBar height={ 32 } small />;
+		}
+	} else {
+		moduleStatus = (
+			<Button href={ adminReauthURL } onClick={ onActionClick }>
+				{ sprintf(
+					/* translators: %s: module name. */
+					__( 'Complete setup for %s', 'google-site-kit' ),
+					name
+				) }
+			</Button>
+		);
+	}
+
 	return (
 		// eslint-disable-next-line jsx-a11y/click-events-have-key-events
 		<div
@@ -246,63 +284,35 @@ export default function Header( { slug } ) {
 						alignMiddle
 						mdAlignRight
 					>
-						{ connected &&
-							( slug !== 'analytics' || isGA4Connected ) && (
-								<p className="googlesitekit-settings-module__status">
-									{ __( 'Connected', 'google-site-kit' ) }
-
-									<span className="googlesitekit-settings-module__status-icon googlesitekit-settings-module__status-icon--connected" />
-								</p>
+						<div
+							className={ classnames(
+								'googlesitekit-settings-module__status',
+								{
+									'googlesitekit-settings-module__status--connected':
+										showAsConnected,
+									'googlesitekit-settings-module__status--not-connected':
+										! showAsConnected,
+									'googlesitekit-settings-module__status--loading':
+										'analytics' === slug &&
+										! isGA4Connected &&
+										! hasAnalyticsAccess &&
+										! hasResolvedAnalyticsAccess,
+								}
 							) }
-
-						{ connected &&
-							slug === 'analytics' &&
-							hasAnalyticsAccess &&
-							! isGA4Connected && (
-								<Fragment>
-									<Button
-										onClick={ handleConnectGA4ButtonClick }
-									>
-										{ __(
-											'Connect Google Analytics 4',
-											'google-site-kit'
-										) }
-									</Button>
-									<span className="googlesitekit-settings-module__status-icon googlesitekit-settings-module__status-icon--not-connected" />
-								</Fragment>
-							) }
-
-						{ connected &&
-							slug === 'analytics' &&
-							! hasAnalyticsAccess &&
-							! isGA4Connected && (
-								<p className="googlesitekit-settings-module__status">
-									{ __(
-										'Google Analytics 4 is not connected',
-										'google-site-kit'
-									) }
-									<span className="googlesitekit-settings-module__status-icon googlesitekit-settings-module__status-icon--not-connected" />
-								</p>
-							) }
-
-						{ ! connected && (
-							<Fragment>
-								<Button
-									href={ adminReauthURL }
-									onClick={ onActionClick }
-								>
-									{ sprintf(
-										/* translators: %s: module name. */
-										__(
-											'Complete setup for %s',
-											'google-site-kit'
-										),
-										name
-									) }
-								</Button>
-								<span className="googlesitekit-settings-module__status-icon googlesitekit-settings-module__status-icon--not-connected" />
-							</Fragment>
-						) }
+						>
+							{ moduleStatus }
+							<span
+								className={ classnames(
+									'googlesitekit-settings-module__status-icon',
+									{
+										'googlesitekit-settings-module__status-icon--connected':
+											showAsConnected,
+										'googlesitekit-settings-module__status-icon--not-connected':
+											! showAsConnected,
+									}
+								) }
+							/>
+						</div>
 					</Cell>
 				</Row>
 			</Grid>

@@ -88,12 +88,7 @@ export default function GA4SettingsControls( {
 		select( CORE_SITE ).getDocumentationLinkURL( 'ga4' )
 	);
 
-	const isGA4Connected = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
-	);
-
-	const hasModuleAccess =
-		isGA4Connected && hasAnalyticsAccess && hasAnalytics4Access;
+	const hasModuleAccess = hasAnalyticsAccess && hasAnalytics4Access;
 
 	const {
 		matchAccountProperty,
@@ -283,7 +278,7 @@ export default function GA4SettingsControls( {
 			) }
 
 			<GA4SettingsNotice
-				isGA4Connected={ isGA4Connected }
+				isGA4Connected={ isModuleConnected }
 				hasAnalyticsAccess={ hasAnalyticsAccess }
 				hasAnalytics4Access={ hasAnalytics4Access }
 			/>
