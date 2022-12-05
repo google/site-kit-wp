@@ -28,7 +28,7 @@ import { useEffect, useCallback, useState } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { getItem, setItem } from 'googlesitekit-api';
+import API from 'googlesitekit-api';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { getTimeInSeconds } from '../../util';
 import useQueryArg from '../../hooks/useQueryArg';
@@ -62,14 +62,14 @@ const EnableAutoUpdateBannerNotification = () => {
 			 * On initial setup, we want to hide the notification for 10 minutes.
 			 */
 			setIsFirstPluginSetup( true );
-			setItem( HIDE_NOTIFICATION_ON_FIRST_SETUP, true, {
+			API.setItem( HIDE_NOTIFICATION_ON_FIRST_SETUP, true, {
 				ttl: getTimeInSeconds() * 10,
 			} );
 		} else {
 			/**
 			 * If we are not on initial setup, we want to check if the notification is hidden.
 			 */
-			getItem( HIDE_NOTIFICATION_ON_FIRST_SETUP ).then(
+			API.getItem( HIDE_NOTIFICATION_ON_FIRST_SETUP ).then(
 				( { cacheHit } ) => {
 					setIsFirstPluginSetup( cacheHit );
 				}
