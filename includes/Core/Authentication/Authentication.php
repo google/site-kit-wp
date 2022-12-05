@@ -926,7 +926,7 @@ final class Authentication {
 
 		$data['wpVersion'] = $this->inline_js_wp_version( $version );
 
-		if ( version_compare( $version, '5.5', '>=' ) && ! $this->context->is_autoupdate_enabled() ) {
+		if ( version_compare( $version, '5.5', '>=' ) && ! $this->context->is_autoupdate_enabled() && function_exists( 'wp_is_auto_update_enabled_for_type' ) ) {
 			$data['updatePluginCapacity'] = current_user_can( 'update_plugins' );
 			$data['autoUpdatesEnabled']   = wp_is_auto_update_enabled_for_type( 'plugin' );
 			$data['updatePluginNonce']    = wp_create_nonce( 'updates' );
