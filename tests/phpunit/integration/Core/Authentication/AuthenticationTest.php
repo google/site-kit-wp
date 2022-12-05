@@ -1110,13 +1110,20 @@ class AuthenticationTest extends TestCase {
 	}
 
 	public function test_googlesitekit_inline_base_data_non_standard_version() {
-		$GLOBALS['wp_version'] = '42';
+		$version = '42';
 
-		$data = apply_filters( 'googlesitekit_inline_base_data', array() );
-		$this->assertArrayHasKey( 'wpVersion', $data );
-		$this->assertEquals( '42', $data['wpVersion']['version'] );
-		$this->assertEquals( '42', $data['wpVersion']['major'] );
-		$this->assertEquals( '0', $data['wpVersion']['minor'] );
+		$class  = new \ReflectionClass( Authentication::class );
+		$method = $class->getMethod( 'inline_js_wp_version' );
+		$method->setAccessible( true );
+
+		$js_inline_wp_version = $method->invokeArgs(
+			new Authentication( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ),
+			array( $version )
+		);
+
+		$this->assertEquals( '42', $js_inline_wp_version['version'] );
+		$this->assertEquals( '42', $js_inline_wp_version['major'] );
+		$this->assertEquals( '0', $js_inline_wp_version['minor'] );
 	}
 
 	protected function get_user_option_keys() {

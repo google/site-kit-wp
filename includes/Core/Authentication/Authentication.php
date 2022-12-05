@@ -924,16 +924,7 @@ final class Authentication {
 
 		$version = get_bloginfo( 'version' );
 
-		// The trailing '.0' is added to the $version to ensure there are always at least 2 segments in the version.
-		// This is necessary in case the minor version is stripped from the version string by a plugin.
-		// See https://github.com/google/site-kit-wp/issues/4963 for more details.
-		list( $major, $minor ) = explode( '.', $version . '.0' );
-
-		$data['wpVersion'] = array(
-			'version' => $version,
-			'major'   => (int) $major,
-			'minor'   => (int) $minor,
-		);
+		$data['wpVersion'] = $this->inline_js_wp_version( $version );
 
 		if ( version_compare( $version, '5.5', '>=' ) && ! $this->context->is_autoupdate_enabled() ) {
 			$data['updatePluginCapacity'] = current_user_can( 'update_plugins' );
@@ -945,6 +936,27 @@ final class Authentication {
 		$data['userRoles'] = $current_user->roles;
 
 		return $data;
+	}
+
+	/**
+	 * Gets the WP version to pass to JS.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $version The WP version.
+	 * @return array The WP version to pass to JS.
+	 */
+	private function inline_js_wp_version( $version ) {
+		// The trailing '.0' is added to the $version to ensure there are always at least 2 segments in the version.
+		// This is necessary in case the minor version is stripped from the version string by a plugin.
+		// See https://github.com/google/site-kit-wp/issues/4963 for more details.
+		list( $major, $minor ) = explode( '.', $version . '.0' );
+
+		return array(
+			'version' => $version,
+			'major'   => (int) $major,
+			'minor'   => (int) $minor,
+		);
 	}
 
 	/**
