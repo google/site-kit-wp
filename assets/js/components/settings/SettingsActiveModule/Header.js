@@ -26,13 +26,7 @@ import { useHistory, useParams } from 'react-router-dom';
 /**
  * WordPress dependencies
  */
-import {
-	Fragment,
-	useCallback,
-	useRef,
-	useState,
-	useEffect,
-} from '@wordpress/element';
+import { useCallback, useRef, useState, useEffect } from '@wordpress/element';
 import { ESCAPE, ENTER } from '@wordpress/keycodes';
 import { __, sprintf } from '@wordpress/i18n';
 
@@ -189,65 +183,42 @@ export default function Header( { slug } ) {
 		return null;
 	}
 
-	const connectedStatusMarkup = (
-		<p className="googlesitekit-settings-module__status">
-			{ __( 'Connected', 'google-site-kit' ) }
+	// Do not show a "Connected" status for the Analytics module if GA4 is not connected.
+	const showAsConnected =
+		connected && ( 'analytics' !== slug || isGA4Connected );
 
-			<span className="googlesitekit-settings-module__status-icon googlesitekit-settings-module__status-icon--connected" />
-		</p>
-	);
+	let moduleStatus = null;
 
-	let moduleStatusMarkup;
-
-	if ( connected ) {
-		if ( 'analytics' === slug ) {
-			if ( isGA4Connected ) {
-				moduleStatusMarkup = connectedStatusMarkup;
-			} else if ( hasAnalyticsAccess ) {
-				moduleStatusMarkup = (
-					<Fragment>
-						<Button onClick={ handleConnectGA4ButtonClick }>
-							{ __(
-								'Connect Google Analytics 4',
-								'google-site-kit'
-							) }
-						</Button>
-						<span className="googlesitekit-settings-module__status-icon googlesitekit-settings-module__status-icon--not-connected" />
-					</Fragment>
-				);
-			} else if ( hasResolvedAnalyticsAccess ) {
-				moduleStatusMarkup = (
-					<p className="googlesitekit-settings-module__status">
-						{ __(
-							'Google Analytics 4 is not connected',
-							'google-site-kit'
-						) }
-						<span className="googlesitekit-settings-module__status-icon googlesitekit-settings-module__status-icon--not-connected" />
-					</p>
-				);
-			} else {
-				moduleStatusMarkup = (
-					<div className="googlesitekit-settings-module__status-loading">
-						<ProgressBar height={ 32 } small />
-						<span className="googlesitekit-settings-module__status-icon googlesitekit-settings-module__status-icon--not-connected" />
-					</div>
-				);
-			}
+	if ( showAsConnected ) {
+		moduleStatus = <p>{ __( 'Connected', 'google-site-kit' ) }</p>;
+	} else if ( 'analytics' === slug && connected && ! isGA4Connected ) {
+		if ( hasAnalyticsAccess ) {
+			moduleStatus = (
+				<Button onClick={ handleConnectGA4ButtonClick }>
+					{ __( 'Connect Google Analytics 4', 'google-site-kit' ) }
+				</Button>
+			);
+		} else if ( hasResolvedAnalyticsAccess ) {
+			moduleStatus = (
+				<p>
+					{ __(
+						'Google Analytics 4 is not connected',
+						'google-site-kit'
+					) }
+				</p>
+			);
 		} else {
-			moduleStatusMarkup = connectedStatusMarkup;
+			moduleStatus = <ProgressBar height={ 32 } small />;
 		}
 	} else {
-		moduleStatusMarkup = (
-			<Fragment>
-				<Button href={ adminReauthURL } onClick={ onActionClick }>
-					{ sprintf(
-						/* translators: %s: module name. */
-						__( 'Complete setup for %s', 'google-site-kit' ),
-						name
-					) }
-				</Button>
-				<span className="googlesitekit-settings-module__status-icon googlesitekit-settings-module__status-icon--not-connected" />
-			</Fragment>
+		moduleStatus = (
+			<Button href={ adminReauthURL } onClick={ onActionClick }>
+				{ sprintf(
+					/* translators: %s: module name. */
+					__( 'Complete setup for %s', 'google-site-kit' ),
+					name
+				) }
+			</Button>
 		);
 	}
 
@@ -313,7 +284,32 @@ export default function Header( { slug } ) {
 						alignMiddle
 						mdAlignRight
 					>
-						{ moduleStatusMarkup }
+						<div
+							className={ classnames(
+								'googlesitekit-settings-module__status',
+								`googlesitekit-settings-module__status--${
+									showAsConnected
+										? 'connected'
+										: 'not-connected'
+								}`,
+								{
+									'googlesitekit-settings-module__status--loading':
+										'analytics' === slug &&
+										! isGA4Connected &&
+										! hasAnalyticsAccess &&
+										! hasResolvedAnalyticsAccess,
+								}
+							) }
+						>
+							{ moduleStatus }
+							<span
+								className={ `googlesitekit-settings-module__status-icon googlesitekit-settings-module__status-icon--${
+									showAsConnected
+										? 'connected'
+										: 'not-connected'
+								}` }
+							/>
+						</div>
 					</Cell>
 				</Row>
 			</Grid>

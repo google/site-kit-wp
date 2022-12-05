@@ -114,10 +114,17 @@
 			}
 
 			.googlesitekit-settings-module__status {
+
+				p {
+					margin: 0;
+				}
+			}
+
+			.googlesitekit-settings-module__status--connected {
 				padding: 8px 0;
 			}
 
-			.googlesitekit-settings-module__status-loading {
+			.googlesitekit-settings-module__status--loading {
 				align-items: center;
 				display: flex;
 				min-width: 150px;
