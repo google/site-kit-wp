@@ -27,7 +27,6 @@ use Google\Site_Kit\Modules\Optimize;
 use Google\Site_Kit\Modules\PageSpeed_Insights;
 use Google\Site_Kit\Modules\Search_Console;
 use Google\Site_Kit\Modules\Site_Verification;
-use Google\Site_Kit\Modules\Thank_With_Google;
 use Google\Site_Kit\Modules\Tag_Manager;
 use Google\Site_Kit\Tests\TestCase;
 use Google\Site_Kit\Tests\FakeHttpClient;
@@ -139,52 +138,6 @@ class ModulesTest extends TestCase {
 			),
 			array_map( 'get_class', $modules->get_active_modules() )
 		);
-	}
-
-	public function test_should_enable_twg__feature_flag_not_enabled() {
-		$this->assertEquals( false, Modules::should_enable_twg() );
-	}
-
-	public function test_should_enable_twg_development() {
-		$this->enable_feature( 'twgModule' );
-		Build_Mode::set_mode( Build_Mode::MODE_DEVELOPMENT );
-		$this->assertEquals( true, Modules::should_enable_twg() );
-		// Reset build mode.
-		Build_Mode::set_mode( Build_Mode::MODE_PRODUCTION );
-	}
-
-	public function test_should_enable_twg_non_ssl() {
-		$this->enable_feature( 'twgModule' );
-		$this->assertEquals( false, Modules::should_enable_twg() );
-	}
-
-	public function test_should_enable_twg_ssl_home_url() {
-		$this->enable_feature( 'twgModule' );
-
-		$home_url_hook = function() {
-			return 'http://non-https.site';
-		};
-
-		add_filter( 'home_url', $home_url_hook );
-		$this->assertEquals( false, Modules::should_enable_twg() );
-		remove_filter( 'home_url', $home_url_hook );
-
-		$home_url_hook = function() {
-			return 'https://with-https.site';
-		};
-
-		add_filter( 'home_url', $home_url_hook );
-		$this->assertEquals( true, Modules::should_enable_twg() );
-		remove_filter( 'home_url', $home_url_hook );
-	}
-
-	public function test_should_enable_twg_ssl() {
-		$this->enable_feature( 'twgModule' );
-		$_SERVER['HTTPS'] = 'on';
-		$this->assertEquals( true, Modules::should_enable_twg() );
-		// Reset HTTPS.
-		unset( $_SERVER['HTTPS'] );
-		$this->assertEquals( false, Modules::should_enable_twg() );
 	}
 
 	public function test_register() {
@@ -538,9 +491,6 @@ class ModulesTest extends TestCase {
 	 * @param array<string> $expected        The array of expected module slugs.
 	 */
 	public function test_feature_flag_enabled_modules( $feature_flag, $feature_enabled, $module_slug, array $expected ) {
-		// This is needed for Thank with Google.
-		$_SERVER['HTTPS'] = 'on';
-
 		add_filter(
 			'googlesitekit_is_feature_enabled',
 			function ( $is_enabled, $feature ) use ( $feature_flag, $feature_enabled ) {
@@ -602,26 +552,6 @@ class ModulesTest extends TestCase {
 			// Module enabled or disabled
 			false,
 			Idea_Hub::MODULE_SLUG,
-			// Expected
-			$default_modules,
-		);
-
-		yield 'should include the `thank-with-google` module when enabled' => array(
-			// Module feature flag.
-			'twgModule',
-			// Module enabled or disabled
-			true,
-			Thank_With_Google::MODULE_SLUG,
-			// Expected
-			array_merge( $default_modules, array( Thank_With_Google::MODULE_SLUG ) ),
-		);
-
-		yield 'should not include the `thank-with-google` module when enabled' => array(
-			// Module feature flag.
-			'twgModule',
-			// Module enabled or disabled
-			false,
-			Thank_With_Google::MODULE_SLUG,
 			// Expected
 			$default_modules,
 		);
