@@ -64,6 +64,7 @@ use WP_Error;
 use Exception;
 use Google\Site_Kit\Core\Modules\Module_With_Service_Entity;
 use Google\Site_Kit\Core\Util\BC_Functions;
+use Google\Site_Kit\Core\Util\Sort;
 use Google\Site_Kit\Core\Util\URL;
 
 /**
@@ -776,7 +777,10 @@ final class Analytics extends Module
 		switch ( "{$data->method}:{$data->datapoint}" ) {
 			case 'GET:accounts-properties-profiles':
 				/* @var Google_Service_Analytics_Accounts $response listManagementAccounts response. */
-				$accounts            = (array) $response->getItems();
+				$accounts            = Sort::case_insensitive_list_sort(
+					(array) $response->getItems(),
+					'name'
+				);
 				$account_ids         = array_map(
 					function ( Google_Service_Analytics_Account $account ) {
 						return $account->getId();
@@ -828,12 +832,17 @@ final class Analytics extends Module
 				break;
 			case 'GET:profiles':
 				// TODO: Parse this response to a regular array.
-				$response = $response->getItems();
-
+				$response = Sort::case_insensitive_list_sort(
+					$response->getItems(),
+					'name'
+				);
 				return $response;
 			case 'GET:properties-profiles':
 				/* @var Google_Service_Analytics_Webproperties $response listManagementWebproperties response. */
-				$properties     = (array) $response->getItems();
+				$properties     = Sort::case_insensitive_list_sort(
+					(array) $response->getItems(),
+					'name'
+				);
 				$found_property = null;
 				$response       = array(
 					'properties' => $properties,
