@@ -28,7 +28,7 @@ class Sort {
 	 *
 	 * @return array The sorted list.
 	 */
-	public static function case_insensitive_list_sort( $list, $orderby ) {
+	public static function case_insensitive_list_sort( array $list, $orderby ) {
 		usort(
 			$list,
 			function ( $a, $b ) use ( $orderby ) {
