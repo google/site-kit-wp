@@ -118,7 +118,9 @@
 			}
 
 			.googlesitekit-settings-module__status-loading {
-				width: 150px;
+				align-items: center;
+				display: flex;
+				min-width: 150px;
 			}
 		}
 
