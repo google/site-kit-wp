@@ -166,14 +166,7 @@ export default function Footer( props ) {
 			'edit_module_settings',
 			slug
 		);
-
-		setValues( FORM_SETUP, {
-			// Pre-enable GA4 controls.
-			enableGA4: true,
-			// Enable tooltip highlighting GA4 property select.
-			enableGA4PropertyTooltip: true,
-		} );
-	}, [ setValues, slug, viewContext ] );
+	}, [ slug, viewContext ] );
 
 	if ( ! module ) {
 		return null;
