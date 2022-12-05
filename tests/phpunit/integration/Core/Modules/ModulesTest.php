@@ -519,9 +519,6 @@ class ModulesTest extends TestCase {
 		foreach ( $expected as $slug ) {
 			$this->assertArrayHasKey( $slug, $modules->get_available_modules() );
 		}
-
-		// Reset HTTPs.
-		unset( $_SERVER['HTTPS'] );
 	}
 
 	public function provider_feature_flag_modules() {
