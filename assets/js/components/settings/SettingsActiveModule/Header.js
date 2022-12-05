@@ -287,12 +287,11 @@ export default function Header( { slug } ) {
 						<div
 							className={ classnames(
 								'googlesitekit-settings-module__status',
-								`googlesitekit-settings-module__status--${
-									showAsConnected
-										? 'connected'
-										: 'not-connected'
-								}`,
 								{
+									'googlesitekit-settings-module__status--connected':
+										showAsConnected,
+									'googlesitekit-settings-module__status--not-connected':
+										! showAsConnected,
 									'googlesitekit-settings-module__status--loading':
 										'analytics' === slug &&
 										! isGA4Connected &&
@@ -303,11 +302,15 @@ export default function Header( { slug } ) {
 						>
 							{ moduleStatus }
 							<span
-								className={ `googlesitekit-settings-module__status-icon googlesitekit-settings-module__status-icon--${
-									showAsConnected
-										? 'connected'
-										: 'not-connected'
-								}` }
+								className={ classnames(
+									'googlesitekit-settings-module__status-icon',
+									{
+										'googlesitekit-settings-module__status-icon--connected':
+											showAsConnected,
+										'googlesitekit-settings-module__status-icon--not-connected':
+											! showAsConnected,
+									}
+								) }
 							/>
 						</div>
 					</Cell>
