@@ -213,14 +213,13 @@ class User_Input {
 	 * @return array|WP_Error User input answers.
 	 */
 	public function set_answers( $settings ) {
-		$questions     = static::$questions;
 		$site_settings = array();
 		$user_settings = array();
 
 		foreach ( $settings as $setting_key => $answers ) {
 			$setting_data           = array();
 			$setting_data['values'] = $answers;
-			$setting_data['scope']  = $questions[ $setting_key ]['scope'];
+			$setting_data['scope']  = static::$questions[ $setting_key ]['scope'];
 
 			if ( 'site' === $setting_data['scope'] ) {
 				$setting_data['answeredBy']    = get_current_user_id();
