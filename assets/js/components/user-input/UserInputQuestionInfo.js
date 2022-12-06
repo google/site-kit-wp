@@ -95,7 +95,7 @@ export default function UserInputQuestionInfo( {
 					</p>
 				) }
 
-				{ author && author.photo && author.name && (
+				{ author && author.photo && author.login && (
 					<Fragment>
 						<p>
 							{ __(
@@ -105,8 +105,8 @@ export default function UserInputQuestionInfo( {
 						</p>
 
 						<div className="googlesitekit-user-input__question-info--author">
-							<img alt={ author.name } src={ author.photo } />
-							{ author.name }
+							<img alt={ author.login } src={ author.photo } />
+							{ author.login }
 						</div>
 					</Fragment>
 				) }
@@ -122,6 +122,6 @@ UserInputQuestionInfo.propTypes = {
 	questionNumber: PropTypes.number,
 	author: PropTypes.shape( {
 		photo: PropTypes.string,
-		name: PropTypes.string,
+		login: PropTypes.string,
 	} ),
 };

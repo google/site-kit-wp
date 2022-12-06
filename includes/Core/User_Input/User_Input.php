@@ -16,6 +16,7 @@ use Google\Site_Kit\Core\Authentication\User_Input_State;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use WP_Error;
+use WP_User;
 
 /**
  * Class for handling User Input settings.
@@ -162,7 +163,7 @@ class User_Input {
 
 			$setting['author'] = array(
 				'photo' => get_avatar_url( $answered_by ),
-				'name'  => get_the_author_meta( 'user_email', $answered_by ),
+				'login' => ( new WP_User( $answered_by ) )->user_login,
 			);
 		}
 
