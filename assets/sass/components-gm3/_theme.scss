@@ -1,5 +1,7 @@
 /**
- * GM3 Component styles.
+ * GM3 Component theme styling.
+ *
+ * Custom properties to override the default @material/web theme.
  *
  * Site Kit by Google, Copyright 2022 Google LLC
  *
@@ -16,5 +18,9 @@
  * limitations under the License.
  */
 
-@import "theme";
-@import "components";
+.googlesitekit-plugin {
+	--md-sys-color-primary: #{$c-content-primary};
+	--md-sys-color-on-surface: #{$c-surfaces-on-surface};
+	--md-sys-color-on-tertiary-container: #{$c-content-on-tertiary-container};
+	--md-sys-color-tertiary-container: #{$c-content-tertiary-container};
+}
