@@ -17,6 +17,11 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { useState } from '@wordpress/element';
+
+/**
  * External dependencies
  */
 import { storiesOf } from '@storybook/react';
@@ -25,6 +30,22 @@ import { storiesOf } from '@storybook/react';
  * Internal dependencies
  */
 import { Checkbox } from 'googlesitekit-components';
+
+const InteractiveCheckbox = ( props ) => {
+	const [ checked, setChecked ] = useState( false );
+	return (
+		<Checkbox
+			{ ...props }
+			onChange={ ( e ) => {
+				global.console.log( e.target.value );
+				setChecked( e.target.checked );
+			} }
+			checked={ checked }
+		>
+			Interactive Checkbox
+		</Checkbox>
+	);
+};
 
 storiesOf( 'Global', module ).add(
 	'Checkboxes',
@@ -69,6 +90,29 @@ storiesOf( 'Global', module ).add(
 				>
 					Disabled Checkbox
 				</Checkbox>
+			</div>
+
+			<div>
+				<Checkbox
+					disabled
+					id="googlesitekit-checkbox-4"
+					name="googlesitekit__checkbox"
+					loading={ true }
+					onChange={ ( e ) => {
+						global.console.log( e.target.value );
+					} }
+					value="value-4"
+				>
+					Loading Checkbox
+				</Checkbox>
+			</div>
+
+			<div>
+				<InteractiveCheckbox
+					id="googlesitekit-checkbox-5"
+					name="googlesitekit__checkbox"
+					value="value-5"
+				/>
 			</div>
 		</div>
 	),
