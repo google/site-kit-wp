@@ -195,14 +195,13 @@ class User_Input {
 			}
 		}
 
-		$empty_settings = array_filter(
-			$settings,
-			function( $setting ) {
-				return empty( $setting['values'] );
+		foreach ( $settings as $setting ) {
+			if ( empty( $setting['values'] ) ) {
+				return true;
 			}
-		);
+		}
 
-		return 0 < count( $empty_settings );
+		return false;
 	}
 
 	/**
