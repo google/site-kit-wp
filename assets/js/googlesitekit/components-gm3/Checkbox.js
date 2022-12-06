@@ -29,7 +29,13 @@ import { useEffect, useRef } from '@wordpress/element';
 import Spinner from '../../components/Spinner';
 
 // TODO: Remove logging.
-const log = global.console.log;
+// Avoid console.log in tests.
+const log = process?.stdout
+	? ( ...args ) =>
+			process.stdout.write(
+				args.map( JSON.stringify ).join( ' ' ) + '\n'
+			)
+	: global.console.log;
 
 export default function Checkbox( {
 	onChange,
