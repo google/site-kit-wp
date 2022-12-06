@@ -33,9 +33,15 @@ import SettingsNotice from '../../../../components/SettingsNotice';
 const { useSelect, useDispatch } = Data;
 
 export default function SetupForm( { finishSetup } ) {
-	const { description } = useSelect( ( select ) =>
-		select( CORE_MODULES ).getModule( 'idea-hub' )
-	);
+	const description = useSelect( ( select ) => {
+		const ideaHubModule = select( CORE_MODULES ).getModule( 'idea-hub' );
+
+		if ( ideaHubModule === undefined ) {
+			return undefined;
+		}
+
+		return ideaHubModule.description;
+	} );
 	const tosAccepted = useSelect( ( select ) =>
 		select( MODULES_IDEA_HUB ).getTosAccepted()
 	);
