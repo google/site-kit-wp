@@ -44,10 +44,11 @@ import ErrorText from '../components/ErrorText';
 import CTA from './notifications/CTA';
 import Link from './Link';
 import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
-
+import useViewOnly from '../hooks/useViewOnly';
 const { useSelect, useDispatch } = Data;
 
 export default function ReportError( { moduleSlug, error } ) {
+	const isViewOnly = useViewOnly();
 	const module = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModule( moduleSlug )
 	);
@@ -87,6 +88,21 @@ export default function ReportError( { moduleSlug, error } ) {
 	let title;
 
 	const getMessage = ( err ) => {
+		if ( isViewOnly ) {
+			title = sprintf(
+				/* translators: %s: module name */
+				__( 'Access lost to %s', 'google-site-kit' ),
+				module?.name
+			);
+			return sprintf(
+				/* translators: %s: module name */
+				__(
+					'The administrator sharing this module with you has lost access to the %s service, so you won’t be able to see stats from it on the Site Kit dashboard. You can contact them or another administrator to restore access.',
+					'google-site-kit'
+				),
+				module?.name
+			);
+		}
 		if ( isInsufficientPermissionsError( err ) ) {
 			title = sprintf(
 				/* translators: %s: module name */
@@ -166,30 +182,35 @@ export default function ReportError( { moduleSlug, error } ) {
 
 	return (
 		<CTA title={ title } description={ description } error>
-			<div className="googlesitekit-error-cta-wrapper">
-				{ showRequestAccessURL && (
-					<Button href={ requestAccessURL } target="_blank">
-						{ __( 'Request access', 'google-site-kit' ) }
-					</Button>
-				) }
-				{ showRetry ? (
-					<Fragment>
-						<Button onClick={ handleRetry }>
-							{ __( 'Retry', 'google-site-kit' ) }
+			{ ! isViewOnly && (
+				<div className="googlesitekit-error-cta-wrapper">
+					{ showRequestAccessURL && (
+						<Button href={ requestAccessURL } target="_blank">
+							{ __( 'Request access', 'google-site-kit' ) }
 						</Button>
-						<span className="googlesitekit-error-retry-text">
-							{ __( 'Retry didn’t work?', 'google-site-kit' ) }{ ' ' }
-						</span>
+					) }
+					{ showRetry ? (
+						<Fragment>
+							<Button onClick={ handleRetry }>
+								{ __( 'Retry', 'google-site-kit' ) }
+							</Button>
+							<span className="googlesitekit-error-retry-text">
+								{ __(
+									'Retry didn’t work?',
+									'google-site-kit'
+								) }{ ' ' }
+							</span>
+							<Link href={ errorTroubleshootingLinkURL } external>
+								{ __( 'Get help', 'google-site-kit' ) }
+							</Link>
+						</Fragment>
+					) : (
 						<Link href={ errorTroubleshootingLinkURL } external>
 							{ __( 'Get help', 'google-site-kit' ) }
 						</Link>
-					</Fragment>
-				) : (
-					<Link href={ errorTroubleshootingLinkURL } external>
-						{ __( 'Get help', 'google-site-kit' ) }
-					</Link>
-				) }
-			</div>
+					) }
+				</div>
+			) }
 		</CTA>
 	);
 }
