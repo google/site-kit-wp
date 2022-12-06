@@ -25,6 +25,7 @@ import accounts from './accounts';
 import api from './api';
 import baseModuleStore from './base';
 import properties from './properties';
+import report from './report';
 import tags from './tags';
 import webdatastreams from './webdatastreams';
 import { createSnapshotStore } from '../../../googlesitekit/data/create-snapshot-store';
@@ -33,6 +34,7 @@ const store = Data.combineStores(
 	accounts,
 	api,
 	baseModuleStore,
+	report,
 	createSnapshotStore( MODULES_ANALYTICS_4 ),
 	properties,
 	tags,
