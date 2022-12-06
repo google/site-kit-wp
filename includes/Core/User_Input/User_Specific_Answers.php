@@ -94,7 +94,7 @@ class User_Specific_Answers extends User_Setting {
 
 				// Verify that each answer value is a string.
 				foreach ( $setting_values['values'] as $answer ) {
-					if ( is_string( $answer ) ) {
+					if ( is_scalar( $answer ) ) {
 						$valid_answers[] = $answer;
 					}
 				}
