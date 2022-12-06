@@ -44,6 +44,14 @@ class User_Input {
 	protected $site_specific_answers;
 
 	/**
+	 * User_Options instance.
+	 *
+	 * @since n.e.x.t
+	 * @var User_Options
+	 */
+	protected $user_options;
+
+	/**
 	 * User_Specific_Answers instance.
 	 *
 	 * @since n.e.x.t
@@ -95,7 +103,8 @@ class User_Input {
 	) {
 		$this->authentication        = $authentication ?: new Authentication( $context );
 		$this->site_specific_answers = new Site_Specific_Answers( $options ?: new Options( $context ) );
-		$this->user_specific_answers = new User_Specific_Answers( $user_options ?: new User_Options( $context ) );
+		$this->user_options          = $user_options ?: new User_Options( $context );
+		$this->user_specific_answers = new User_Specific_Answers( $this->user_options );
 		$this->rest_controller       = new REST_User_Input_Controller( $this );
 	}
 
@@ -147,8 +156,6 @@ class User_Input {
 			return $questions;
 		}
 
-		$user_id = get_current_user_id();
-
 		foreach ( $settings as &$setting ) {
 			if ( ! isset( $setting['answeredBy'] ) ) {
 				continue;
@@ -157,7 +164,7 @@ class User_Input {
 			$answered_by = intval( $setting['answeredBy'] );
 			unset( $setting['answeredBy'] );
 
-			if ( ! $answered_by || $answered_by === $user_id ) {
+			if ( ! $answered_by || $answered_by === $this->user_options->get_user_id() ) {
 				continue;
 			}
 
@@ -222,7 +229,7 @@ class User_Input {
 			$setting_data['scope']  = static::$questions[ $setting_key ]['scope'];
 
 			if ( 'site' === $setting_data['scope'] ) {
-				$setting_data['answeredBy']    = get_current_user_id();
+				$setting_data['answeredBy']    = $this->user_options->get_user_id();
 				$site_settings[ $setting_key ] = $setting_data;
 			} elseif ( 'user' === $setting_data['scope'] ) {
 				$user_settings[ $setting_key ] = $setting_data;
