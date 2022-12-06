@@ -16,6 +16,130 @@
  * limitations under the License.
  */
 
-export default function Checkbox() {
-	return null;
+/**
+ * External dependencies
+ */
+import '@material/web/checkbox/checkbox';
+import PropTypes from 'prop-types';
+
+/**
+ * WordPress dependencies
+ */
+import { useEffect, useRef } from '@wordpress/element';
+import Spinner from '../../components/Spinner';
+
+// TODO: Remove logging.
+const log = global.console.log;
+
+export default function Checkbox( {
+	onChange,
+	id,
+	name,
+	value,
+	checked,
+	disabled,
+	children,
+	tabIndex,
+	onKeyDown,
+	loading,
+} ) {
+	log( 'Checkbox render. checked:', checked );
+	const ref = useRef( null );
+
+	useEffect( () => {
+		const { current } = ref;
+
+		const click = ( event ) => {
+			log( 'click', event );
+
+			// Prevent default and manually dispatch a change event, in order to retain checkbox state and use as a controlled input.
+			event.preventDefault();
+
+			if ( disabled ) {
+				return;
+			}
+
+			// current.checked = current.checked ? undefined : true;
+			current.checked = ! current.checked;
+
+			current.dispatchEvent(
+				new Event( 'change', {
+					bubbles: true,
+					composed: true,
+				} )
+			);
+		};
+
+		const change = ( event ) => {
+			log( 'change', event );
+
+			onChange?.( event );
+		};
+
+		const keydown = ( event ) => {
+			log( 'keydown', event );
+
+			onKeyDown?.( event );
+		};
+
+		current?.addEventListener( 'click', click );
+		current?.addEventListener( 'change', change );
+		current?.addEventListener( 'keydown', keydown );
+
+		return () => {
+			current?.removeEventListener( 'click', click );
+			current?.removeEventListener( 'change', change );
+			current?.removeEventListener( 'keydown', keydown );
+		};
+	}, [ checked, disabled, onChange, onKeyDown ] );
+
+	return (
+		<div className="googlesitekit-component-gm3__checkbox">
+			{ loading && (
+				<div className="googlesitekit-component-gm3__checkbox--loading">
+					<Spinner isSaving style={ { margin: '0' } } />
+				</div>
+			) }
+			{ ! loading && (
+				<md-checkbox
+					id={ id }
+					// Use the `checked` value in the key on the web component to force a rerender.
+					// This is a workaround for the fact the web component doesn't update visually when the checked property is changed programmatically. Seemingly this glitch only occurs once the rendered md-checkbox has been clicked.
+					// This workaround has a side effect of unfocusing the checkbox when changed via keyboard input which needs to be addressed.
+					key={ `checkbox-${ checked }` }
+					ref={ ref }
+					role="checkbox"
+					// Lit boolean attributes treat anything non-null|undefined as true. Coerce to null if false.
+					// See https://lit.dev/docs/v1/components/properties/#attributes
+					checked={ checked || null }
+					disabled={ disabled || null }
+					name={ name }
+					value={ value }
+					tabIndex={ tabIndex }
+				></md-checkbox>
+			) }
+			<label htmlFor={ id }>{ children }</label>
+		</div>
+	);
 }
+
+Checkbox.propTypes = {
+	onChange: PropTypes.func.isRequired,
+	onKeyDown: PropTypes.func,
+	id: PropTypes.string.isRequired,
+	name: PropTypes.string.isRequired,
+	value: PropTypes.string.isRequired,
+	checked: PropTypes.bool,
+	disabled: PropTypes.bool,
+	children: PropTypes.node.isRequired,
+	tabIndex: PropTypes.oneOfType( [ PropTypes.number, PropTypes.string ] ),
+	loading: PropTypes.bool,
+};
+
+Checkbox.defaultProps = {
+	checked: false,
+	disabled: false,
+	tabIndex: undefined,
+	onKeyDown: null,
+	loading: false,
+};
