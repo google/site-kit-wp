@@ -13,16 +13,12 @@ namespace Google\Site_Kit\Core\User_Input;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Authentication\User_Input_State;
-use Google\Site_Kit\Core\Permissions\Permissions;
-use Google\Site_Kit\Core\REST_API\REST_Route;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use WP_Error;
-use WP_REST_Request;
-use WP_REST_Server;
 
 /**
- * Class managing requests to user input settings endpoint.
+ * Class for handling User Input settings.
  *
  * @since n.e.x.t
  * @access private
@@ -53,6 +49,14 @@ class User_Input {
 	 * @var User_Specific_Answers
 	 */
 	protected $user_specific_answers;
+
+	/**
+	 * REST_User_Input_Controller instance.
+	 *
+	 * @since n.e.x.t
+	 * @var REST_User_Input_Controller
+	 */
+	protected $rest_controller;
 
 	/**
 	 * User Input questions.
@@ -91,6 +95,7 @@ class User_Input {
 		$this->authentication        = $authentication ?: new Authentication( $context );
 		$this->site_specific_answers = new Site_Specific_Answers( $options ?: new Options( $context ) );
 		$this->user_specific_answers = new User_Specific_Answers( $user_options ?: new User_Options( $context ) );
+		$this->rest_controller       = new REST_User_Input_Controller( $this );
 	}
 
 	/**
@@ -101,81 +106,7 @@ class User_Input {
 	public function register() {
 		$this->site_specific_answers->register();
 		$this->user_specific_answers->register();
-
-		add_filter(
-			'googlesitekit_rest_routes',
-			function( $routes ) {
-				return array_merge( $routes, $this->get_rest_routes() );
-			}
-		);
-	}
-
-	/**
-	 * Gets related REST routes.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @return array List of REST_Route objects.
-	 */
-	private function get_rest_routes() {
-		$can_authenticate = function() {
-			return current_user_can( Permissions::AUTHENTICATE );
-		};
-
-		return array(
-			new REST_Route(
-				'core/user/data/user-input-settings',
-				array(
-					array(
-						'methods'             => WP_REST_Server::READABLE,
-						'callback'            => function() {
-							return rest_ensure_response( $this->get_answers() );
-						},
-						'permission_callback' => $can_authenticate,
-					),
-					array(
-						'methods'             => WP_REST_Server::CREATABLE,
-						'callback'            => function( WP_REST_Request $request ) {
-							$data = $request->get_param( 'data' );
-
-							if ( ! isset( $data['settings'] ) || ! is_array( $data['settings'] ) ) {
-								return new WP_Error(
-									'rest_missing_callback_param',
-									__( 'Missing settings data.', 'google-site-kit' ),
-									array( 'status' => 400 )
-								);
-							}
-
-							return rest_ensure_response(
-								$this->set_answers(
-									$data['settings']
-								)
-							);
-						},
-						'permission_callback' => $can_authenticate,
-						'args'                => array(
-							'data' => array(
-								'type'       => 'object',
-								'required'   => true,
-								'properties' => array(
-									'settings' => array(
-										'type'      => 'object',
-										'required'  => true,
-										'questions' => array_fill_keys(
-											array_keys( static::$questions ),
-											array(
-												'type'  => 'array',
-												'items' => array( 'type' => 'string' ),
-											)
-										),
-									),
-								),
-							),
-						),
-					),
-				)
-			),
-		);
+		$this->rest_controller->register();
 	}
 
 	/**
