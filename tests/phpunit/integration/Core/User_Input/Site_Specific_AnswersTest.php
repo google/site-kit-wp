@@ -1,6 +1,6 @@
 <?php
 /**
- * Site_Specific_QuestionsTest
+ * Site_Specific_AnswersTest
  *
  * @package   Google\Site_Kit\Tests\Core\User_Input
  * @copyright 2022 Google LLC
@@ -12,10 +12,10 @@ namespace Google\Site_Kit\Tests\Core\User_Input;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Storage\Options;
-use Google\Site_Kit\Core\User_Input\Site_Specific_Questions;
+use Google\Site_Kit\Core\User_Input\Site_Specific_Answers;
 use Google\Site_Kit\Tests\Modules\SettingsTestCase;
 
-class Site_Specific_QuestionsTest extends SettingsTestCase {
+class Site_Specific_AnswersTest extends SettingsTestCase {
 
 	/**
 	 * Options object.
@@ -33,31 +33,31 @@ class Site_Specific_QuestionsTest extends SettingsTestCase {
 	}
 
 	public function test_get_sanitize_callback() {
-		$site_specific_questions = new Site_Specific_Questions( $this->options );
-		$site_specific_questions->register();
+		$site_specific_answers = new Site_Specific_Answers( $this->options );
+		$site_specific_answers->register();
 
-		$this->assertEmpty( $site_specific_questions->get() );
+		$this->assertEmpty( $site_specific_answers->get() );
 
 		// Setting the value to a non-array will result in an empty array.
-		$site_specific_questions->set( false );
-		$this->assertEquals( array(), $site_specific_questions->get() );
+		$site_specific_answers->set( false );
+		$this->assertEquals( array(), $site_specific_answers->get() );
 
-		$site_specific_questions->set( 123 );
-		$this->assertEquals( array(), $site_specific_questions->get() );
+		$site_specific_answers->set( 123 );
+		$this->assertEquals( array(), $site_specific_answers->get() );
 
 		// Setting the value to an array but with non-scoped keys will
 		// result in an empty array.
-		$site_specific_questions->set( array( 'goals' => array() ) );
-		$this->assertEquals( array(), $site_specific_questions->get() );
+		$site_specific_answers->set( array( 'goals' => array() ) );
+		$this->assertEquals( array(), $site_specific_answers->get() );
 
 		// Setting the value to an array with scoped keys but a non-array
 		// value will result in an empty array.
-		$site_specific_questions->set( array( 'purpose' => 'a' ) );
-		$this->assertEquals( array(), $site_specific_questions->get() );
+		$site_specific_answers->set( array( 'purpose' => 'a' ) );
+		$this->assertEquals( array(), $site_specific_answers->get() );
 
 		// Setting the value to an associative array with scoped keys and array
 		// with valid values as the value works as expected.
-		$site_specific_questions->set(
+		$site_specific_answers->set(
 			array(
 				'purpose' => array(
 					'scope'      => 'site',
@@ -74,7 +74,7 @@ class Site_Specific_QuestionsTest extends SettingsTestCase {
 					'answeredBy' => 1,
 				),
 			),
-			$site_specific_questions->get()
+			$site_specific_answers->get()
 		);
 	}
 
@@ -82,6 +82,6 @@ class Site_Specific_QuestionsTest extends SettingsTestCase {
 	 * @inheritDoc
 	 */
 	protected function get_option_name() {
-		return Site_Specific_Questions::OPTION;
+		return Site_Specific_Answers::OPTION;
 	}
 }

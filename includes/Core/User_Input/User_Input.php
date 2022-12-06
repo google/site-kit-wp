@@ -39,20 +39,20 @@ class User_Input {
 	private $authentication;
 
 	/**
-	 * Site_Specific_Questions instance.
+	 * Site_Specific_Answers instance.
 	 *
 	 * @since n.e.x.t
-	 * @var Site_Specific_Questions
+	 * @var Site_Specific_Answers
 	 */
-	protected $site_specific_questions;
+	protected $site_specific_answers;
 
 	/**
-	 * User_Specific_Questions instance.
+	 * User_Specific_Answers instance.
 	 *
 	 * @since n.e.x.t
-	 * @var User_Specific_Questions
+	 * @var User_Specific_Answers
 	 */
-	protected $user_specific_questions;
+	protected $user_specific_answers;
 
 	/**
 	 * User Input questions.
@@ -88,9 +88,9 @@ class User_Input {
 		Options $options = null,
 		User_Options $user_options = null
 	) {
-		$this->authentication          = $authentication ?: new Authentication( $context );
-		$this->site_specific_questions = new Site_Specific_Questions( $options ?: new Options( $context ) );
-		$this->user_specific_questions = new User_Specific_Questions( $user_options ?: new User_Options( $context ) );
+		$this->authentication        = $authentication ?: new Authentication( $context );
+		$this->site_specific_answers = new Site_Specific_Answers( $options ?: new Options( $context ) );
+		$this->user_specific_answers = new User_Specific_Answers( $user_options ?: new User_Options( $context ) );
 	}
 
 	/**
@@ -99,8 +99,8 @@ class User_Input {
 	 * @since n.e.x.t
 	 */
 	public function register() {
-		$this->site_specific_questions->register();
-		$this->user_specific_questions->register();
+		$this->site_specific_answers->register();
+		$this->user_specific_answers->register();
 
 		add_filter(
 			'googlesitekit_rest_routes',
@@ -199,8 +199,8 @@ class User_Input {
 	public function get_answers() {
 		$questions = static::$questions;
 		$settings  = array_merge(
-			$this->site_specific_questions->get(),
-			$this->user_specific_questions->get()
+			$this->site_specific_answers->get(),
+			$this->user_specific_answers->get()
 		);
 
 		// If there are no settings, return default empty values.
@@ -299,8 +299,8 @@ class User_Input {
 			}
 		}
 
-		$this->site_specific_questions->set( $site_settings );
-		$this->user_specific_questions->set( $user_settings );
+		$this->site_specific_answers->set( $site_settings );
+		$this->user_specific_answers->set( $user_settings );
 
 		$updated_settings = $this->get_answers();
 		$is_empty         = $this->are_settings_empty( $updated_settings );

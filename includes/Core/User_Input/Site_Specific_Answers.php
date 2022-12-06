@@ -1,6 +1,6 @@
 <?php
 /**
- * Class Google\Site_Kit\Core\User_Input\User_Specific_Questions
+ * Class Google\Site_Kit\Core\User_Input\Site_Specific_Answers
  *
  * @package   Google\Site_Kit\Core\User_Input
  * @copyright 2022 Google LLC
@@ -10,27 +10,26 @@
 
 namespace Google\Site_Kit\Core\User_Input;
 
-use Closure;
-use Google\Site_Kit\Core\Storage\User_Setting;
+use Google\Site_Kit\Core\Storage\Setting;
 
 /**
- * Class for handling the user specific settings in User Input.
+ * Class for handling the site specific answers in User Input.
  *
  * @since n.e.x.t
  * @access private
  * @ignore
  */
-class User_Specific_Questions extends User_Setting {
+class Site_Specific_Answers extends Setting {
 
 	/**
-	 * The user option name for this setting.
+	 * The option_name for this setting.
 	 */
 	const OPTION = 'googlesitekit_user_input_settings';
 
 	/**
-	 * The scope for which the questions are handled by this class.
+	 * The scope for which the answers are handled by this class.
 	 */
-	const SCOPE = 'user';
+	const SCOPE = 'site';
 
 	/**
 	 * Gets the expected value type.
@@ -59,7 +58,7 @@ class User_Specific_Questions extends User_Setting {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return Closure
+	 * @return callable Callback method that filters or type casts invalid setting values.
 	 */
 	protected function get_sanitize_callback() {
 		$questions = array_filter(
@@ -82,13 +81,15 @@ class User_Specific_Questions extends User_Setting {
 					! in_array( $setting_key, array_keys( $questions ), true ) ||
 					! is_array( $setting_values ) ||
 					static::SCOPE !== $setting_values['scope'] ||
-					! is_array( $setting_values['values'] )
+					! is_array( $setting_values['values'] ) ||
+					! is_int( $setting_values['answeredBy'] )
 				) {
 					continue;
 				}
 
-				$valid_values          = array();
-				$valid_values['scope'] = $setting_values['scope'];
+				$valid_values               = array();
+				$valid_values['scope']      = $setting_values['scope'];
+				$valid_values['answeredBy'] = $setting_values['answeredBy'];
 
 				$valid_answers = array();
 

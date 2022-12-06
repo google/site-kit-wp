@@ -12,8 +12,8 @@ namespace Google\Site_Kit\Tests\Core\User_Input;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\User_Input\User_Input;
-use Google\Site_Kit\Core\User_Input\Site_Specific_Questions;
-use Google\Site_Kit\Core\User_Input\User_Specific_Questions;
+use Google\Site_Kit\Core\User_Input\Site_Specific_Answers;
+use Google\Site_Kit\Core\User_Input\User_Specific_Answers;
 use Google\Site_Kit\Tests\TestCase;
 
 class User_InputTest extends TestCase {
@@ -119,7 +119,7 @@ class User_InputTest extends TestCase {
 		// If settings are partially set, it returns empty default values for unanswered questions.
 		update_user_option(
 			$this->user_id,
-			User_Specific_Questions::OPTION,
+			User_Specific_Answers::OPTION,
 			array(
 				'postFrequency' => array(
 					'values' => array( 'daily' ),
@@ -152,7 +152,7 @@ class User_InputTest extends TestCase {
 
 		// Returns all set settings as expected.
 		update_option(
-			Site_Specific_Questions::OPTION,
+			Site_Specific_Answers::OPTION,
 			array(
 				'purpose' => array(
 					'values'     => array( 'purpose1' ),
@@ -164,7 +164,7 @@ class User_InputTest extends TestCase {
 
 		update_user_option(
 			$this->user_id,
-			User_Specific_Questions::OPTION,
+			User_Specific_Answers::OPTION,
 			array(
 				'postFrequency' => array(
 					'values' => array( 'daily' ),
