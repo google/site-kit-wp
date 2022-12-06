@@ -46,34 +46,28 @@ export default function Checkbox( {
 	log( 'Checkbox render. checked:', checked );
 	const ref = useRef( null );
 
+	const controlledState = useRef( {} );
+	controlledState.current.checked = checked;
+
 	useEffect( () => {
 		const { current } = ref;
-
-		const click = ( event ) => {
-			log( 'click', event );
-
-			// Prevent default and manually dispatch a change event, in order to retain checkbox state and use as a controlled input.
-			event.preventDefault();
-
-			if ( disabled ) {
-				return;
-			}
-
-			// current.checked = current.checked ? undefined : true;
-			current.checked = ! current.checked;
-
-			current.dispatchEvent(
-				new Event( 'change', {
-					bubbles: true,
-					composed: true,
-				} )
-			);
-		};
 
 		const change = ( event ) => {
 			log( 'change', event );
 
 			onChange?.( event );
+
+			log(
+				'restoring checked. current, controlled:',
+				current.checked,
+				controlledState.current.checked
+			);
+
+			current.checked = controlledState.current.checked;
+			// The checked property doesn't get reflected to the inner input element checked state,
+			// so we need to set it manually.
+			current.shadowRoot.querySelector( 'input' ).checked =
+				controlledState.current.checked;
 		};
 
 		const keydown = ( event ) => {
@@ -82,12 +76,10 @@ export default function Checkbox( {
 			onKeyDown?.( event );
 		};
 
-		current?.addEventListener( 'click', click );
 		current?.addEventListener( 'change', change );
 		current?.addEventListener( 'keydown', keydown );
 
 		return () => {
-			current?.removeEventListener( 'click', click );
 			current?.removeEventListener( 'change', change );
 			current?.removeEventListener( 'keydown', keydown );
 		};
@@ -103,10 +95,6 @@ export default function Checkbox( {
 			{ ! loading && (
 				<md-checkbox
 					id={ id }
-					// Use the `checked` value in the key on the web component to force a rerender.
-					// This is a workaround for the fact the web component doesn't update visually when the checked property is changed programmatically. Seemingly this glitch only occurs once the rendered md-checkbox has been clicked.
-					// This workaround has a side effect of unfocusing the checkbox when changed via keyboard input which needs to be addressed.
-					key={ `checkbox-${ checked }` }
 					ref={ ref }
 					role="checkbox"
 					// Lit boolean attributes treat anything non-null|undefined as true. Coerce to null if false.
