@@ -60,18 +60,19 @@ export function getUserInputAnswers() {
 				'google-site-kit'
 			),
 			publish_blog: __( 'Publish a blog', 'google-site-kit' ),
-			generate_leads: __( 'Generate leads', 'google-site-kit' ),
 			publish_news: __( 'Publish news content', 'google-site-kit' ),
 			share_portfolio: __(
 				'Share a business card or portfolio to represent me or my company online',
 				'google-site-kit'
 			),
+			other: __( 'Other', 'google-site-kit' ),
 		},
 		USER_INPUT_ANSWERS_POST_FREQUENCY: {
 			never: __( 'Never', 'google-site-kit' ),
 			daily: __( 'Daily', 'google-site-kit' ),
 			weekly: __( 'Weekly', 'google-site-kit' ),
 			monthly: __( 'Monthly', 'google-site-kit' ),
+			other: __( 'Other', 'google-site-kit' ),
 		},
 		USER_INPUT_ANSWERS_GOALS: {
 			retaining_visitors: __(
@@ -107,6 +108,7 @@ export function getUserInputAnswers() {
 				'Encouragement to post more frequently',
 				'google-site-kit'
 			),
+			other: __( 'Other', 'google-site-kit' ),
 		},
 	};
 }

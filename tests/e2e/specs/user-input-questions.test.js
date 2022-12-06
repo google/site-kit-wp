@@ -34,6 +34,7 @@ import {
 	pageWait,
 	step,
 	setSearchConsoleProperty,
+	setupAnalytics,
 } from '../utils';
 
 describe( 'User Input Settings', () => {
@@ -121,6 +122,7 @@ describe( 'User Input Settings', () => {
 			'e2e-tests-user-input-settings-api-mock'
 		);
 		await setSearchConsoleProperty();
+		await page.setRequestInterception( true );
 	} );
 
 	afterEach( async () => {
@@ -146,18 +148,26 @@ describe( 'User Input Settings', () => {
 
 	it( 'should offer to enter input settings for existing users', async () => {
 		await setupSiteKit();
+		await page.setRequestInterception( false );
+		await setupAnalytics();
+		await page.setRequestInterception( true );
+		await setSearchConsoleProperty();
 
 		await step(
 			'visit admin dashboard',
 			visitAdminPage( 'admin.php', 'page=googlesitekit-dashboard' )
 		);
 
+		await page.waitForSelector( '.googlesitekit-user-input__notification' );
+
 		await step( 'click on CTA button and wait for navigation', async () => {
 			await page.waitForSelector(
 				'.googlesitekit-user-input__notification'
 			);
 			await Promise.all( [
-				expect( page ).toClick( '.googlesitekit-notification__cta' ),
+				expect( page ).toClick(
+					'.googlesitekit-user-input__notification .googlesitekit-cta-link'
+				),
 				page.waitForNavigation(),
 			] );
 		} );
@@ -167,6 +177,10 @@ describe( 'User Input Settings', () => {
 
 	it( 'should let existing users enter input settings from the settings page', async () => {
 		await setupSiteKit();
+		await page.setRequestInterception( false );
+		await setupAnalytics();
+		await page.setRequestInterception( true );
+		await setSearchConsoleProperty();
 
 		await step( 'visit admin settings', async () => {
 			await visitAdminPage( 'admin.php', 'page=googlesitekit-settings' );
@@ -182,7 +196,9 @@ describe( 'User Input Settings', () => {
 				'.googlesitekit-user-input__notification'
 			);
 			await Promise.all( [
-				expect( page ).toClick( '.googlesitekit-notification__cta' ),
+				expect( page ).toClick(
+					'.googlesitekit-user-input__notification .googlesitekit-cta-link'
+				),
 				page.waitForNavigation(),
 			] );
 		} );

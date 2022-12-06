@@ -26,7 +26,7 @@ import classnames from 'classnames';
  * WordPress dependencies
  */
 import { Fragment } from '@wordpress/element';
-import { __, sprintf } from '@wordpress/i18n';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -105,12 +105,7 @@ export default function UserInputPreviewGroup( {
 								key={ value }
 								className="googlesitekit-user-input__preview-answer"
 							>
-								{ options[ value ] ||
-									sprintf(
-										/* translators: %s: other option */
-										__( 'Other: %s', 'google-site-kit' ),
-										value
-									) }
+								{ options[ value ] }
 							</div>
 						) ) }
 				</div>

@@ -122,7 +122,7 @@ class Script extends Asset {
 	/**
 	 * Checks if the provided manifest entry matches the given filename.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.89.0
 	 *
 	 * @param array  $entry Array of filename, hash.
 	 * @param string $src_filename   Filename to check.
