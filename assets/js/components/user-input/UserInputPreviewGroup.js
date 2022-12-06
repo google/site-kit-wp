@@ -24,7 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { __, sprintf } from '@wordpress/i18n';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -40,10 +40,6 @@ export default function UserInputPreviewGroup( {
 } ) {
 	const trim = ( value ) => value.trim();
 	const notEmpty = ( value ) => value.length > 0;
-
-	const sprintfTemplate =
-		/* translators: %s: other option */
-		questionNumber < 5 ? __( 'Other: %s', 'google-site-kit' ) : '%s';
 
 	return (
 		<div className="googlesitekit-user-input__preview-group">
@@ -65,8 +61,7 @@ export default function UserInputPreviewGroup( {
 							key={ value }
 							className="googlesitekit-user-input__preview-answer"
 						>
-							{ options[ value ] ||
-								sprintf( sprintfTemplate, value ) }
+							{ options[ value ] }
 						</div>
 					) ) }
 			</div>
