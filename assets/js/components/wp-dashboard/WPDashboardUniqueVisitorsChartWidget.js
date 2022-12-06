@@ -198,6 +198,9 @@ WPDashboardUniqueVisitorsChartWidget.chartOptions = {
 		viewWindow: {
 			min: 0,
 		},
+		gridlines: {
+			color: '#eee',
+		},
 	},
 	focusTarget: 'category',
 	crosshair: {
