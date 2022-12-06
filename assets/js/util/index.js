@@ -37,6 +37,7 @@ export * from './convert-time';
 export * from './date-range';
 export * from './chart';
 export * from './urls';
+export * from './is-valid-numeric-id';
 export * from './isnumeric';
 
 /**
