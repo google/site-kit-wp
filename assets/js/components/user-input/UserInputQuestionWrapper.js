@@ -38,7 +38,7 @@ import UserInputQuestionInfo from './UserInputQuestionInfo';
 import ErrorNotice from '../ErrorNotice';
 import CancelUserInputButton from './CancelUserInputButton';
 import Link from '../Link';
-import { getErrorMessageForAnswer } from './util/validation';
+import { hasErrorForAnswer } from './util/validation';
 const { useSelect } = Data;
 
 export default function UserInputQuestionWrapper( props ) {
@@ -101,9 +101,7 @@ export default function UserInputQuestionWrapper( props ) {
 							<Button
 								className="googlesitekit-user-input__buttons--next"
 								onClick={ next }
-								disabled={
-									!! getErrorMessageForAnswer( values )
-								}
+								disabled={ hasErrorForAnswer( values ) }
 							>
 								{ nextLabel || __( 'Next', 'google-site-kit' ) }
 							</Button>

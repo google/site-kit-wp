@@ -21,12 +21,16 @@
  */
 import { __ } from '@wordpress/i18n';
 
-function trim( value ) {
-	return value.trim();
-}
-
-function isEmpty( value ) {
-	return value.length === 0;
+/**
+ * Returns a boolean indicating whether the given answer has an error.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string[]} values Array of values to validate.
+ * @return {boolean} True if the answer has an error, false otherwise.
+ */
+export function hasErrorForAnswer( values ) {
+	return values.length === 0;
 }
 
 /**
@@ -43,12 +47,6 @@ export function getErrorMessageForAnswer( values, max = 1 ) {
 		return max === 1
 			? __( 'Please select an answer', 'google-site-kit' )
 			: __( 'Please select at least 1 answer', 'google-site-kit' );
-	}
-
-	const hasEmptyValue = values.map( trim ).some( isEmpty );
-
-	if ( values.length > 0 && hasEmptyValue ) {
-		return __( 'Please select a valid answer', 'google-site-kit' );
 	}
 
 	return null;

@@ -16,9 +16,19 @@
  * limitations under the License.
  */
 
-import { getErrorMessageForAnswer } from './validation';
+import { hasErrorForAnswer, getErrorMessageForAnswer } from './validation';
 
 describe( 'User Input Validation Utilities', () => {
+	describe( 'hasErrorForAnswer', () => {
+		it( 'should return true if there is no answer', () => {
+			expect( hasErrorForAnswer( [] ) ).toBe( true );
+		} );
+
+		it( 'should return false if there is an answer', () => {
+			expect( hasErrorForAnswer( [ 'test' ] ) ).toBe( false );
+		} );
+	} );
+
 	describe( 'getErrorMessageForAnswer', () => {
 		it( 'should return the correct error message for the given answer when max is 1, or null if the answer is valid', () => {
 			// Max defaults to 1.
@@ -39,12 +49,6 @@ describe( 'User Input Validation Utilities', () => {
 
 			expect( getErrorMessageForAnswer( [], 100 ) ).toBe(
 				'Please select at least 1 answer'
-			);
-		} );
-
-		it( 'should return the correct error message for the given answer when there is an empty value', () => {
-			expect( getErrorMessageForAnswer( [ '  ', 'test' ] ) ).toBe(
-				'Please select a valid answer'
 			);
 		} );
 
