@@ -89,7 +89,7 @@ export default function Checkbox( {
 		<div className="googlesitekit-component-gm3__checkbox">
 			{ loading && (
 				<div className="googlesitekit-component-gm3__checkbox--loading">
-					<Spinner isSaving style={ { margin: '0' } } />
+					<Spinner isSaving />
 				</div>
 			) }
 			{ ! loading && (
