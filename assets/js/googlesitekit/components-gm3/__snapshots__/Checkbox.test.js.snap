@@ -162,3 +162,67 @@ exports[`Checkbox should render the checkbox 1`] = `
   </div>
 </div>
 `;
+
+exports[`Checkbox should render the checkbox with checked state 1`] = `
+<div>
+  <div
+    class="googlesitekit-component-gm3__checkbox"
+  >
+    <md-checkbox
+      checked="true"
+      id="checkbox-id"
+      name="checkbox-name"
+      role="checkbox"
+      value="checkbox-value"
+    />
+    <label
+      for="checkbox-id"
+    >
+      Checkbox Label
+    </label>
+  </div>
+</div>
+`;
+
+exports[`Checkbox should render the checkbox with disabled state 1`] = `
+<div>
+  <div
+    class="googlesitekit-component-gm3__checkbox"
+  >
+    <md-checkbox
+      disabled="true"
+      id="checkbox-id"
+      name="checkbox-name"
+      role="checkbox"
+      value="checkbox-value"
+    />
+    <label
+      for="checkbox-id"
+    >
+      Checkbox Label
+    </label>
+  </div>
+</div>
+`;
+
+exports[`Checkbox should render the checkbox with loading state 1`] = `
+<div>
+  <div
+    class="googlesitekit-component-gm3__checkbox"
+  >
+    <div
+      class="googlesitekit-component-gm3__checkbox--loading"
+    >
+      <span
+        class="spinner"
+        style="display: inline-block; float: none; margin-top: 0px; visibility: visible;"
+      />
+    </div>
+    <label
+      for="checkbox-id"
+    >
+      Checkbox Label
+    </label>
+  </div>
+</div>
+`;

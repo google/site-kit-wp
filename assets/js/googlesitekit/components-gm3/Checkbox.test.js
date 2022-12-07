@@ -42,6 +42,80 @@ describe( 'Checkbox', () => {
 		expect( container ).toMatchSnapshot();
 	} );
 
+	it( 'should render the checkbox with checked state', () => {
+		const { container } = render(
+			<Checkbox
+				id="checkbox-id"
+				name="checkbox-name"
+				value="checkbox-value"
+				onChange={ () => {} }
+				checked
+			>
+				Checkbox Label
+			</Checkbox>
+		);
+		expect( container ).toMatchSnapshot();
+	} );
+
+	it( 'should render the checkbox with disabled state', () => {
+		const { container } = render(
+			<Checkbox
+				id="checkbox-id"
+				name="checkbox-name"
+				value="checkbox-value"
+				onChange={ () => {} }
+				disabled
+			>
+				Checkbox Label
+			</Checkbox>
+		);
+		expect( container ).toMatchSnapshot();
+	} );
+
+	it( 'should render the checkbox with loading state', () => {
+		const { container } = render(
+			<Checkbox
+				id="checkbox-id"
+				name="checkbox-name"
+				value="checkbox-value"
+				onChange={ () => {} }
+				loading
+			>
+				Checkbox Label
+			</Checkbox>
+		);
+		expect( container ).toMatchSnapshot();
+	} );
+
+	it( 'should attach the onKeyDown handler when present', () => {
+		const onKeyDown = jest.fn();
+
+		const { getByRole } = render(
+			<Checkbox
+				id="checkbox-id"
+				name="checkbox-name"
+				value="checkbox-value"
+				onChange={ () => {} }
+				onKeyDown={ onKeyDown }
+			>
+				Checkbox Label
+			</Checkbox>
+		);
+
+		fireEvent.keyDown( getByRole( 'checkbox' ), {
+			key: 'Enter',
+			keyCode: 13,
+		} );
+
+		expect( onKeyDown ).toHaveBeenCalledTimes( 1 );
+		expect( onKeyDown ).toHaveBeenCalledWith(
+			expect.objectContaining( {
+				key: 'Enter',
+				keyCode: 13,
+			} )
+		);
+	} );
+
 	describe( 'controlled input behaviour', () => {
 		function createOnChangeSpy() {
 			// We need to explicitly track the `checked` state at the time the `onChange` handler was called.
