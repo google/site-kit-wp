@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6aac3c3f2eec0513d41f159ef9d825fb",
+    "content-hash": "7be3952f4ca0190bd95e2e42692ce2ce",
     "packages": [
         {
             "name": "firebase/php-jwt",
@@ -136,16 +136,16 @@
         },
         {
             "name": "google/apiclient-services",
-            "version": "v0.243.0",
+            "version": "v0.275.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/googleapis/google-api-php-client-services.git",
-                "reference": "d42d368b73a26e1d2a5250ac91cf89bb19e0730b"
+                "reference": "fe34eef7717556c2e64dfc37de3fde930a23a68f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/googleapis/google-api-php-client-services/zipball/d42d368b73a26e1d2a5250ac91cf89bb19e0730b",
-                "reference": "d42d368b73a26e1d2a5250ac91cf89bb19e0730b",
+                "url": "https://api.github.com/repos/googleapis/google-api-php-client-services/zipball/fe34eef7717556c2e64dfc37de3fde930a23a68f",
+                "reference": "fe34eef7717556c2e64dfc37de3fde930a23a68f",
                 "shasum": ""
             },
             "require": {
@@ -174,9 +174,9 @@
             ],
             "support": {
                 "issues": "https://github.com/googleapis/google-api-php-client-services/issues",
-                "source": "https://github.com/googleapis/google-api-php-client-services/tree/v0.243.0"
+                "source": "https://github.com/googleapis/google-api-php-client-services/tree/v0.275.0"
             },
-            "time": "2022-04-10T01:14:37+00:00"
+            "time": "2022-11-18T01:28:37+00:00"
         },
         {
             "name": "google/apiclient-services-subscribewithgoogle",

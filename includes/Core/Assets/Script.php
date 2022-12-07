@@ -69,7 +69,23 @@ class Script extends Asset {
 		$version = $this->args['version'];
 
 		if ( $src ) {
-			list( $filename, $hash ) = Manifest::get( $this->handle );
+			$entry = Manifest::get( $this->handle );
+
+			if ( is_array( $entry[0] ) ) {
+				// If the first entry item is an array, we can assume `$entry` is an array of entries in the format filename => hash.
+				// In this scenario we want to match the nested entry against the filename provided in `$src`.
+				$src_filename = basename( $src );
+
+				foreach ( $entry as $entry_pair ) {
+					if ( $this->is_matching_manifest_entry( $entry_pair, $src_filename ) ) {
+						list( $filename, $hash ) = $entry_pair;
+						break;
+					}
+				}
+			} else {
+				// Otherwise, `$entry` will be a single entry in the format filename => hash.
+				list( $filename, $hash ) = $entry;
+			}
 
 			if ( $filename ) {
 				$src     = $context->url( 'dist/assets/js/' . $filename );
@@ -101,6 +117,34 @@ class Script extends Asset {
 	 */
 	public function enqueue() {
 		wp_enqueue_script( $this->handle );
+	}
+
+	/**
+	 * Checks if the provided manifest entry matches the given filename.
+	 *
+	 * @since 1.89.0
+	 *
+	 * @param array  $entry Array of filename, hash.
+	 * @param string $src_filename   Filename to check.
+	 * @return bool
+	 */
+	private function is_matching_manifest_entry( array $entry, $src_filename ) {
+		list ( $filename, $hash ) = $entry;
+
+		if ( ! isset( $hash ) ) {
+			// If the hash is not set, it means the hash is embedded in the entry filename.
+			// Remove the hash then compare to the src filename.
+			$entry_filename_without_hash = preg_replace( '/-[a-f0-9]+\.js$/', '.js', $filename );
+			if ( $src_filename === $entry_filename_without_hash ) {
+				return true;
+			}
+		}
+
+		if ( $filename === $src_filename ) {
+			return true;
+		}
+
+		return false;
 	}
 
 	/**

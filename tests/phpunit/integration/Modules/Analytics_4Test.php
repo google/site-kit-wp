@@ -143,12 +143,15 @@ class Analytics_4Test extends TestCase {
 
 		$this->assertEqualSetsWithIndex(
 			array(
-				'accountID'       => $account_id,
-				'propertyID'      => $property_id,
-				'webDataStreamID' => $webdatastream_id,
-				'measurementID'   => $measurement_id,
-				'ownerID'         => 0,
-				'useSnippet'      => true,
+				'accountID'            => $account_id,
+				'propertyID'           => $property_id,
+				'webDataStreamID'      => $webdatastream_id,
+				'measurementID'        => $measurement_id,
+				'ownerID'              => 0,
+				'useSnippet'           => true,
+				'googleTagID'          => '',
+				'googleTagAccountID'   => '',
+				'googleTagContainerID' => '',
 			),
 			$options->get( Settings::OPTION )
 		);

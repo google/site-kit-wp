@@ -122,7 +122,7 @@ storiesOf( 'Optimize Module/Settings', module )
 		}
 	)
 	.add(
-		'Edit, open with no optimize ID',
+		'Edit, open with no Optimize Container ID',
 		( args, { registry } ) => {
 			registry
 				.dispatch( MODULES_OPTIMIZE )
