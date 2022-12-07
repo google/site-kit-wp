@@ -42,9 +42,6 @@ export default function Checkbox( {
 } ) {
 	const ref = useRef( null );
 
-	const controlledState = useRef( {} );
-	controlledState.current.checked = checked;
-
 	useEffect( () => {
 		const { current } = ref;
 
@@ -52,48 +49,40 @@ export default function Checkbox( {
 			return;
 		}
 
-		const change = ( event ) => {
-			onChange?.( event );
-
-			current.checked = controlledState.current.checked;
+		function updateCheckedState() {
+			current.checked = checked;
 
 			// The checked property doesn't get reflected to the inner input element checked state,
 			// so we need to set it manually.
-			current.shadowRoot.querySelector( 'input' ).checked =
-				controlledState.current.checked;
-		};
+			const innerInput = current.shadowRoot.querySelector( 'input' );
+			if ( innerInput ) {
+				innerInput.checked = checked;
+			}
+		}
 
-		current.addEventListener( 'change', change );
+		function handleChange( event ) {
+			onChange?.( event );
+
+			// Restore current checked state for controlled component behaviour.
+			updateCheckedState();
+		}
+
+		current.addEventListener( 'change', handleChange );
 
 		if ( onKeyDown ) {
 			current.addEventListener( 'keydown', onKeyDown );
 		}
 
+		updateCheckedState();
+
 		return () => {
-			current.removeEventListener( 'change', change );
+			current.removeEventListener( 'change', handleChange );
 
 			if ( onKeyDown ) {
 				current.removeEventListener( 'keydown', onKeyDown );
 			}
 		};
-	}, [ onChange, onKeyDown ] );
-
-	useEffect( () => {
-		const { current } = ref;
-
-		if ( ! current ) {
-			return;
-		}
-
-		current.checked = checked;
-
-		// The checked property doesn't get reflected to the inner input element checked state,
-		// so we need to set it manually.
-		const innerInput = current.shadowRoot.querySelector( 'input' );
-		if ( innerInput ) {
-			innerInput.checked = checked;
-		}
-	}, [ checked ] );
+	}, [ checked, onChange, onKeyDown ] );
 
 	return (
 		<div className="googlesitekit-component-gm3__checkbox">
