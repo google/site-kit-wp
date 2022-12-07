@@ -18,64 +18,76 @@ use Google\Site_Kit\Tests\Modules\SettingsTestCase;
 class Site_Specific_AnswersTest extends SettingsTestCase {
 
 	/**
-	 * Options object.
+	 * Site_Specific_Answers instance.
 	 *
-	 * @var Options
+	 * @var Site_Specific_Answers
 	 */
-	private $options;
+	private $site_specific_answers;
 
 	public function set_up() {
 		parent::set_up();
 
-		$user_id       = $this->factory()->user->create();
-		$context       = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-		$this->options = new Options( $context, $user_id );
+		$user_id                     = $this->factory()->user->create();
+		$context                     = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$options                     = new Options( $context, $user_id );
+		$this->site_specific_answers = new Site_Specific_Answers( $options );
+		$this->site_specific_answers->register();
 	}
 
-	public function test_get_sanitize_callback() {
-		$site_specific_answers = new Site_Specific_Answers( $this->options );
-		$site_specific_answers->register();
-
-		$this->assertEmpty( $site_specific_answers->get() );
-
-		// Setting the value to a non-array will result in an empty array.
-		$site_specific_answers->set( false );
-		$this->assertEquals( array(), $site_specific_answers->get() );
-
-		$site_specific_answers->set( 123 );
-		$this->assertEquals( array(), $site_specific_answers->get() );
-
-		// Setting the value to an array but with non-scoped keys will
-		// result in an empty array.
-		$site_specific_answers->set( array( 'goals' => array() ) );
-		$this->assertEquals( array(), $site_specific_answers->get() );
-
-		// Setting the value to an array with scoped keys but a non-array
-		// value will result in an empty array.
-		$site_specific_answers->set( array( 'purpose' => 'a' ) );
-		$this->assertEquals( array(), $site_specific_answers->get() );
-
-		// Setting the value to an associative array with scoped keys and array
-		// with valid values as the value works as expected.
-		$site_specific_answers->set(
-			array(
-				'purpose' => array(
-					'scope'      => 'site',
-					'values'     => array( 'purpose1' ),
-					'answeredBy' => 1,
+	public function data_answers() {
+		return array(
+			'empty by default'                            => array(
+				null,
+				array(),
+			),
+			'non-array - bool'                            => array(
+				false,
+				array(),
+			),
+			'non-array - int'                             => array(
+				123,
+				array(),
+			),
+			'array with non-scoped keys'                  => array(
+				array( 'goals' => array() ),
+				array(),
+			),
+			'array with scoped keys but non-array values' => array(
+				array( 'purpose' => 'a' ),
+				array(),
+			),
+			'array with scoped keys and valid values'     => array(
+				array(
+					'purpose' => array(
+						'scope'      => 'site',
+						'values'     => array( 'purpose1' ),
+						'answeredBy' => 1,
+					),
 				),
-			)
-		);
-		$this->assertEquals(
-			array(
-				'purpose' => array(
-					'scope'      => 'site',
-					'values'     => array( 'purpose1' ),
-					'answeredBy' => 1,
+				array(
+					'purpose' => array(
+						'scope'      => 'site',
+						'values'     => array( 'purpose1' ),
+						'answeredBy' => 1,
+					),
 				),
 			),
-			$site_specific_answers->get()
 		);
+	}
+
+	/**
+	 * @dataProvider data_answers
+	 *
+	 * @param mixed $input    Values to pass to the `set()` method.
+	 * @param array $expected The expected sanitized array.
+	 */
+	public function test_get_sanitize_callback( $input, $expected ) {
+		if ( null === $input ) {
+			$this->assertEmpty( $this->site_specific_answers->get() );
+		} else {
+			$this->site_specific_answers->set( $input );
+			$this->assertEquals( $expected, $this->site_specific_answers->get() );
+		}
 	}
 
 	/**

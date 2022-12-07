@@ -18,62 +18,78 @@ use Google\Site_Kit\Tests\TestCase;
 class User_Specific_AnswersTest extends TestCase {
 
 	/**
-	 * @var User_Options
+	 * User_Specific_Answers instance.
+	 *
+	 * @var User_Specific_Answers
 	 */
-	protected $user_options;
+	private $user_specific_answers;
 
 	public function set_up() {
 		parent::set_up();
-		$user_id            = $this->factory()->user->create();
-		$context            = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-		$this->user_options = new User_Options( $context, $user_id );
-		$meta_key           = $this->user_options->get_meta_key( User_Specific_Answers::OPTION );
+		$user_id      = $this->factory()->user->create();
+		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$user_options = new User_Options( $context, $user_id );
+		$meta_key     = $user_options->get_meta_key( User_Specific_Answers::OPTION );
+
 		unregister_meta_key( 'user', $meta_key );
 		// Needed to unregister the instance registered during plugin bootstrap.
 		remove_all_filters( "sanitize_user_meta_{$meta_key}" );
+
+		$this->user_specific_answers = new User_Specific_Answers( $user_options );
+		$this->user_specific_answers->register();
 	}
 
-	public function test_get_sanitize_callback() {
-		$user_specific_answers = new User_Specific_Answers( $this->user_options );
-		$user_specific_answers->register();
-
-		$this->assertEmpty( $user_specific_answers->get() );
-
-		// Setting the value to a non-array will result in an empty array.
-		$user_specific_answers->set( false );
-		$this->assertEquals( array(), $user_specific_answers->get() );
-
-		$user_specific_answers->set( 123 );
-		$this->assertEquals( array(), $user_specific_answers->get() );
-
-		// Setting the value to an array but with non-scoped keys will
-		// result in an empty array.
-		$user_specific_answers->set( array( 'purpose' => array() ) );
-		$this->assertEquals( array(), $user_specific_answers->get() );
-
-		// Setting the value to an array with scoped keys but a non-array
-		// value will result in an empty array.
-		$user_specific_answers->set( array( 'goals' => 'a' ) );
-		$this->assertEquals( array(), $user_specific_answers->get() );
-
-		// Setting the value to an associative array with scoped keys and array
-		// with valid values as the value works as expected.
-		$user_specific_answers->set(
-			array(
-				'goals' => array(
-					'scope'  => 'user',
-					'values' => array( 'goal1', 'goal2' ),
+	public function data_answers() {
+		return array(
+			'empty by default'                            => array(
+				null,
+				array(),
+			),
+			'non-array - bool'                            => array(
+				false,
+				array(),
+			),
+			'non-array - int'                             => array(
+				123,
+				array(),
+			),
+			'array with non-scoped keys'                  => array(
+				array( 'purpose' => array() ),
+				array(),
+			),
+			'array with scoped keys but non-array values' => array(
+				array( 'goals' => 'a' ),
+				array(),
+			),
+			'array with scoped keys and valid values'     => array(
+				array(
+					'goals' => array(
+						'scope'  => 'user',
+						'values' => array( 'goal1', 'goal2' ),
+					),
 				),
-			)
-		);
-		$this->assertEquals(
-			array(
-				'goals' => array(
-					'scope'  => 'user',
-					'values' => array( 'goal1', 'goal2' ),
+				array(
+					'goals' => array(
+						'scope'  => 'user',
+						'values' => array( 'goal1', 'goal2' ),
+					),
 				),
 			),
-			$user_specific_answers->get()
 		);
+	}
+
+	/**
+	 * @dataProvider data_answers
+	 *
+	 * @param mixed $input    Values to pass to the `set()` method.
+	 * @param array $expected The expected sanitized array.
+	 */
+	public function test_get_sanitize_callback( $input, $expected ) {
+		if ( null === $input ) {
+			$this->assertEmpty( $this->user_specific_answers->get() );
+		} else {
+			$this->user_specific_answers->set( $input );
+			$this->assertEquals( $expected, $this->user_specific_answers->get() );
+		}
 	}
 }
