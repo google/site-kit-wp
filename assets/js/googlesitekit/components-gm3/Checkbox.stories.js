@@ -111,6 +111,10 @@ export const Checkboxes = () => (
 		</div>
 	</div>
 );
+Checkboxes.scenario = {
+	label: 'Global/Material 3/Checkboxes',
+	delay: 250,
+};
 
 export default {
 	title: 'Components/Material 3/Checkbox',
