@@ -1240,6 +1240,40 @@ const baseSelectors = {
 	},
 
 	/**
+	 * Checks if current user has ownership or access to the given module.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @param {string} slug  Module slug.
+	 * @return {(boolean|undefined)} `boolean` if the user has ownership or access. If the state is still being resolved, returns `undefined`.
+	 */
+	hasModuleOwnershipOrAccess: createRegistrySelector(
+		( select ) => ( state, moduleSlug ) => {
+			const moduleStoreName =
+				select( CORE_MODULES ).getModuleStoreName( moduleSlug );
+
+			if ( moduleStoreName === undefined ) {
+				return undefined;
+			}
+
+			const moduleOwnerID = select( moduleStoreName )?.getOwnerID();
+
+			const loggedInUserID = select( CORE_USER ).getID();
+
+			if ( moduleOwnerID === undefined || loggedInUserID === undefined ) {
+				return undefined;
+			}
+
+			if ( moduleOwnerID === loggedInUserID ) {
+				return true;
+			}
+
+			return select( CORE_MODULES ).hasModuleAccess( moduleSlug );
+		}
+	),
+
+	/**
 	 * Gets the list of recoverable modules for dashboard sharing.
 	 *
 	 * Returns an Object/map of objects, keyed by slug as same as `getModules`.
