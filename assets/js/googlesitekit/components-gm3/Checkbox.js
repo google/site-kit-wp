@@ -70,6 +70,7 @@ export default function Checkbox( {
 			);
 
 			current.checked = controlledState.current.checked;
+
 			// The checked property doesn't get reflected to the inner input element checked state,
 			// so we need to set it manually.
 			current.shadowRoot.querySelector( 'input' ).checked =
@@ -90,6 +91,23 @@ export default function Checkbox( {
 			current?.removeEventListener( 'keydown', keydown );
 		};
 	}, [ checked, disabled, onChange, onKeyDown ] );
+
+	useEffect( () => {
+		const { current } = ref;
+
+		if ( ! current ) {
+			return;
+		}
+
+		current.checked = checked;
+
+		// The checked property doesn't get reflected to the inner input element checked state,
+		// so we need to set it manually.
+		const innerInput = current.shadowRoot.querySelector( 'input' );
+		if ( innerInput ) {
+			innerInput.checked = checked;
+		}
+	}, [ checked ] );
 
 	return (
 		<div className="googlesitekit-component-gm3__checkbox">
