@@ -73,3 +73,6 @@ if ( global.document ) {
 		},
 	} );
 }
+
+// Added to provide support for testing `@material/web` components.
+global.PointerEvent = function () {};
