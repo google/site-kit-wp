@@ -76,7 +76,7 @@ export default function Checkbox( {
 				current.removeEventListener( 'keydown', onKeyDown );
 			}
 		};
-	}, [ checked, disabled, onChange, onKeyDown ] );
+	}, [ onChange, onKeyDown ] );
 
 	useEffect( () => {
 		const { current } = ref;
