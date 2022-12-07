@@ -39,46 +39,6 @@ class User_InputTest extends TestCase {
 	*/
 	private $user_id;
 
-	/**
-	 * Settings with empty default values.
-	 *
-	 * @var array|ArrayAccess
-	 */
-	private static $empty_settings = array(
-		'purpose'       => array(
-			'scope'  => 'site',
-			'values' => array(),
-		),
-		'postFrequency' => array(
-			'scope'  => 'user',
-			'values' => array(),
-		),
-		'goals'         => array(
-			'scope'  => 'user',
-			'values' => array(),
-		),
-	);
-
-	/**
-	 * Settings with dummy values.
-	 *
-	 * @var array|ArrayAccess
-	 */
-	private static $dummy_settings = array(
-		'purpose'       => array(
-			'scope'  => 'site',
-			'values' => array( 'purpose1' ),
-		),
-		'postFrequency' => array(
-			'scope'  => 'user',
-			'values' => array( 'daily' ),
-		),
-		'goals'         => array(
-			'scope'  => 'user',
-			'values' => array( 'goal1', 'goal2' ),
-		),
-	);
-
 	public function set_up() {
 		parent::set_up();
 		$this->context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
@@ -112,7 +72,20 @@ class User_InputTest extends TestCase {
 	public function test_get_answers() {
 		// If settings are not set, it returns empty default values.
 		$this->assertEquals(
-			static::$empty_settings,
+			array(
+				'purpose'       => array(
+					'scope'  => 'site',
+					'values' => array(),
+				),
+				'postFrequency' => array(
+					'scope'  => 'user',
+					'values' => array(),
+				),
+				'goals'         => array(
+					'scope'  => 'user',
+					'values' => array(),
+				),
+			),
 			$this->user_input->get_answers()
 		);
 
@@ -131,7 +104,6 @@ class User_InputTest extends TestCase {
 				),
 			)
 		);
-
 		$this->assertEquals(
 			array(
 				'purpose'       => array(
@@ -150,7 +122,7 @@ class User_InputTest extends TestCase {
 			$this->user_input->get_answers()
 		);
 
-		// Returns all set settings as expected.
+		// If all settings are set, it returns all set settings as expected.
 		update_option(
 			Site_Specific_Answers::OPTION,
 			array(
@@ -161,7 +133,6 @@ class User_InputTest extends TestCase {
 				),
 			)
 		);
-
 		update_user_option(
 			$this->user_id,
 			User_Specific_Answers::OPTION,
@@ -176,9 +147,21 @@ class User_InputTest extends TestCase {
 				),
 			)
 		);
-
 		$this->assertEquals(
-			static::$dummy_settings,
+			array(
+				'purpose'       => array(
+					'scope'  => 'site',
+					'values' => array( 'purpose1' ),
+				),
+				'postFrequency' => array(
+					'scope'  => 'user',
+					'values' => array( 'daily' ),
+				),
+				'goals'         => array(
+					'scope'  => 'user',
+					'values' => array( 'goal1', 'goal2' ),
+				),
+			),
 			$this->user_input->get_answers()
 		);
 	}
@@ -193,7 +176,20 @@ class User_InputTest extends TestCase {
 		);
 
 		$this->assertEquals(
-			static::$dummy_settings,
+			array(
+				'purpose'       => array(
+					'scope'  => 'site',
+					'values' => array( 'purpose1' ),
+				),
+				'postFrequency' => array(
+					'scope'  => 'user',
+					'values' => array( 'daily' ),
+				),
+				'goals'         => array(
+					'scope'  => 'user',
+					'values' => array( 'goal1', 'goal2' ),
+				),
+			),
 			$response
 		);
 	}
