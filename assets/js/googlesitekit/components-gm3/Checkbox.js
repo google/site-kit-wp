@@ -28,15 +28,6 @@ import PropTypes from 'prop-types';
 import { useEffect, useRef } from '@wordpress/element';
 import Spinner from '../../components/Spinner';
 
-// TODO: Remove logging.
-// Avoid console.log in tests.
-const log = process?.stdout
-	? ( ...args ) =>
-			process.stdout.write(
-				args.map( JSON.stringify ).join( ' ' ) + '\n'
-			)
-	: global.console.log;
-
 export default function Checkbox( {
 	onChange,
 	id,
@@ -49,7 +40,6 @@ export default function Checkbox( {
 	onKeyDown,
 	loading,
 } ) {
-	log( 'Checkbox render. checked:', checked );
 	const ref = useRef( null );
 
 	const controlledState = useRef( {} );
@@ -59,15 +49,7 @@ export default function Checkbox( {
 		const { current } = ref;
 
 		const change = ( event ) => {
-			log( 'change', event );
-
 			onChange?.( event );
-
-			log(
-				'restoring checked. current, controlled:',
-				current.checked,
-				controlledState.current.checked
-			);
 
 			current.checked = controlledState.current.checked;
 
@@ -78,8 +60,6 @@ export default function Checkbox( {
 		};
 
 		const keydown = ( event ) => {
-			log( 'keydown', event );
-
 			onKeyDown?.( event );
 		};
 
