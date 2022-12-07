@@ -48,6 +48,10 @@ export default function Checkbox( {
 	useEffect( () => {
 		const { current } = ref;
 
+		if ( ! current ) {
+			return;
+		}
+
 		const change = ( event ) => {
 			onChange?.( event );
 
@@ -59,16 +63,18 @@ export default function Checkbox( {
 				controlledState.current.checked;
 		};
 
-		const keydown = ( event ) => {
-			onKeyDown?.( event );
-		};
+		current.addEventListener( 'change', change );
 
-		current?.addEventListener( 'change', change );
-		current?.addEventListener( 'keydown', keydown );
+		if ( onKeyDown ) {
+			current.addEventListener( 'keydown', onKeyDown );
+		}
 
 		return () => {
-			current?.removeEventListener( 'change', change );
-			current?.removeEventListener( 'keydown', keydown );
+			current.removeEventListener( 'change', change );
+
+			if ( onKeyDown ) {
+				current.removeEventListener( 'keydown', onKeyDown );
+			}
 		};
 	}, [ checked, disabled, onChange, onKeyDown ] );
 
