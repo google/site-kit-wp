@@ -20,7 +20,7 @@
 	// --md-checkbox-container-shape determines the checkbox radius.
 	--md-checkbox-container-shape: 4px;
 
-	// --md-checkbox-_touch-target-size determines the checkbox size.
+	// --md-checkbox-_touch-target-size determines the overall checkbox size including visual margins.
 	--md-checkbox-_touch-target-size: 42px; /* stylelint-disable-line custom-property-pattern */
 
 	.googlesitekit-component-gm3__checkbox {
