@@ -487,7 +487,9 @@ const baseActions = {
 					select( CORE_MODULES ).getModuleStoreName( slug );
 
 				// Reload the module's settings from the server.
-				yield dispatch( storeName ).fetchGetSettings();
+				yield Data.commonActions.await(
+					dispatch( storeName ).fetchGetSettings()
+				);
 			}
 
 			if ( successfulRecoveries.length ) {
@@ -496,13 +498,15 @@ const baseActions = {
 
 				// Having reloaded the modules from the server, ensure the list of recoverable modules is also refreshed,
 				// as the recoverable modules list is derived from the main list of modules.
-				yield dispatch( CORE_MODULES ).invalidateResolution(
+				dispatch( CORE_MODULES ).invalidateResolution(
 					'getRecoverableModules',
 					[]
 				);
 
 				// Refresh user capabilities from the server.
-				yield dispatch( CORE_USER ).refreshCapabilities();
+				yield Data.commonActions.await(
+					dispatch( CORE_USER ).refreshCapabilities()
+				);
 			}
 
 			return { response };

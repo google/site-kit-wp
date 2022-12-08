@@ -32,7 +32,7 @@ services:
     command: tail -n 0 -F /var/www/html/wp-content/debug.log
 
   cli:
-    image: wordpress:cli
+    image: wordpress:cli-php7.4
     user: xfs
     volumes:
       - wordpress_data:/var/www/html
