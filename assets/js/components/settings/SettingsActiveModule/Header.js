@@ -85,6 +85,10 @@ export default function Header( { slug } ) {
 
 		const moduleOwnerID = select( MODULES_ANALYTICS ).getOwnerID();
 
+		if ( moduleOwnerID === undefined || loggedInUserID === undefined ) {
+			return undefined;
+		}
+
 		if ( moduleOwnerID === loggedInUserID ) {
 			return true;
 		}
