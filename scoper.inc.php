@@ -14,9 +14,10 @@ use Symfony\Component\Finder\Finder;
 $google_services = implode(
 	'|',
 	array(
-		'Analytics',
-		'AnalyticsReporting',
 		'Adsense',
+		'Analytics',
+		'AnalyticsData',
+		'AnalyticsReporting',
 		'GoogleAnalyticsAdmin',
 		'Ideahub',
 		'PagespeedInsights',
