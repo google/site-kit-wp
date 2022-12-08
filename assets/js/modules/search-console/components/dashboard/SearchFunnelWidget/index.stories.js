@@ -218,7 +218,8 @@ ReadyWithActivateAnalyticsCTA.args = {
 				slug: 'analytics',
 			},
 		] );
-
+		provideSiteInfo( registry );
+		provideUserCapabilities( registry );
 		provideSearchConsoleMockReport( registry, searchConsoleArgs );
 	},
 };
