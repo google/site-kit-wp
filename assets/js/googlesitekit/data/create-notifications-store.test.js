@@ -160,10 +160,10 @@ describe( 'createNotificationsStore store', () => {
 				select.getNotifications();
 				dispatch.addNotification( clientNotification );
 
-				await subscribeUntil( registry, () => {
-					const storeState = store.getState();
-					return storeState.serverNotifications !== undefined;
-				} );
+				await subscribeUntil(
+					registry,
+					() => store.getState().serverNotifications !== undefined
+				);
 
 				dispatch.removeNotification( serverNotifications[ 0 ].id );
 
@@ -171,11 +171,9 @@ describe( 'createNotificationsStore store', () => {
 				expect( global.console.warn ).toHaveBeenCalledWith(
 					`Cannot remove server-side notification with ID "${ serverNotifications[ 0 ].id }"; this may be changed in a future release.`
 				);
-				expect(
-					registry
-						.select( storeDefinition.STORE_NAME )
-						.getNotifications()
-				).toEqual( expect.arrayContaining( serverNotifications ) );
+				expect( select.getNotifications() ).toEqual(
+					expect.arrayContaining( serverNotifications )
+				);
 			} );
 		} );
 
