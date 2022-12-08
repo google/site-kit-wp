@@ -354,10 +354,10 @@ add_action(
 			'modules/analytics-4/data/webdatastreams-batch',
 			array(
 				'methods'             => 'GET',
-				'callback'            => function ( \WP_REST_Request $request ) use ( $ga4_properties ) {
-					$properties = filter_webdatastream_by_property_ids( $ga4_properties, $request->get_param( 'propertyIDs' ) );
+				'callback'            => function ( \WP_REST_Request $request ) use ( $ga4_webdatastreams ) {
+					$webdatastreams = filter_webdatastream_by_property_ids( $ga4_webdatastreams, $request->get_param( 'propertyIDs' ) );
 
-					return $properties;
+					return $webdatastreams;
 				},
 				'permission_callback' => '__return_true',
 			),
