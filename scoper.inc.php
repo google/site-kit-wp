@@ -24,6 +24,7 @@ $google_services = implode(
 		'SearchConsole',
 		'SiteVerification',
 		'TagManager',
+		'AnalyticsData',
 	)
 );
 
