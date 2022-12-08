@@ -26,17 +26,17 @@ class User_InputTest extends TestCase {
 	private $context;
 
 	/**
-	* Context object.
-	*
-	* @var User_Input
-	*/
+	 * Context object.
+	 *
+	 * @var User_Input
+	 */
 	private $user_input;
 
 	/**
-	* User ID.
-	*
-	* @var int
-	*/
+	 * User ID.
+	 *
+	 * @var int
+	 */
 	private $user_id;
 
 	public function set_up() {
