@@ -38,7 +38,6 @@ import ActivationBanner from '../../modules/analytics-4/components/dashboard/Act
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import useViewOnly from '../../hooks/useViewOnly';
 import ZeroDataStateNotifications from './ZeroDataStateNotifications';
-import ThankWithGoogleSupporterWallNotification from './ThankWithGoogleSupporterWallNotification';
 const { useSelect } = Data;
 
 export default function BannerNotifications() {
@@ -55,9 +54,6 @@ export default function BannerNotifications() {
 	const adSenseModuleActive = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleActive( 'adsense' )
 	);
-	const twGModuleConnected = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleConnected( 'thank-with-google' )
-	);
 
 	const [ notification ] = useQueryArg( 'notification' );
 
@@ -72,9 +68,6 @@ export default function BannerNotifications() {
 					{ isAuthenticated && <CoreSiteBannerNotifications /> }
 					{ dashboardSharingEnabled && <ModuleRecoveryAlert /> }
 					{ ga4ActivationBannerEnabled && <ActivationBanner /> }
-					{ twGModuleConnected && (
-						<ThankWithGoogleSupporterWallNotification />
-					) }
 				</Fragment>
 			) }
 			<ZeroDataStateNotifications />
