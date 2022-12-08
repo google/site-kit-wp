@@ -1,5 +1,5 @@
 /**
- * DashboardSharingSettings constants.
+ * Unique visitors chart widget styles.
  *
  * Site Kit by Google, Copyright 2022 Google LLC
  *
@@ -16,11 +16,8 @@
  * limitations under the License.
  */
 
-export const EDITING_USER_ROLE_SELECT_SLUG_KEY =
-	'editing-user-role-select-slug-key';
-
-export const EXPERIMENTAL_MODULES = [ 'idea-hub' ];
-
-export const SETTINGS_DIALOG = 'dashboardSharingDialogOpen';
-
-export const RESET_SETTINGS_DIALOG = 'resetSharingDialogOpen';
+#google_dashboard_widget .googlesitekit-unique-visitors-chart-widget { // stylelint-disable-line selector-id-pattern
+	display: grid;
+	padding-top: 20px;
+	width: 100%;
+}
