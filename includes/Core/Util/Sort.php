@@ -32,10 +32,21 @@ class Sort {
 		usort(
 			$list,
 			function ( $a, $b ) use ( $orderby ) {
-				return strcasecmp(
-					$a[ $orderby ],
-					$b[ $orderby ]
-				);
+				if ( is_array( $a ) && is_array( $b ) ) {
+					return strcasecmp(
+						$a[ $orderby ],
+						$b[ $orderby ]
+					);
+				}
+
+				if ( is_object( $a ) && is_object( $b ) ) {
+					return strcasecmp(
+						$a->$orderby,
+						$b->$orderby
+					);
+				}
+
+				return 0;
 			}
 		);
 
