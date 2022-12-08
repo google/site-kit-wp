@@ -27,6 +27,10 @@ const INTERNAL_PROPERTY_ID_X = '200';
 const INTERNAL_PROPERTY_ID_Y = '201';
 const INTERNAL_PROPERTY_ID_Z = '202';
 
+const GA4_PROPERTY_ID_X = '300';
+const GA4_PROPERTY_ID_Y = '301';
+const GA4_PROPERTY_ID_Z = '302';
+
 const PROFILE_ID_X = '300';
 const PROFILE_ID_Y = '301';
 const PROFILE_ID_Z = '302';
@@ -65,6 +69,17 @@ function filter_by_account_id( $items, $account_id ) {
 			$items,
 			function ( $item ) use ( $account_id ) {
 				return $item['accountId'] === $account_id;
+			}
+		)
+	);
+}
+
+function filter_ga4_by_account_id( $items, $account_id ) {
+	return array_values(
+		array_filter(
+			$items,
+			function ( $item ) use ( $account_id ) {
+				return $item['_accountID'] === $account_id;
 			}
 		)
 	);
@@ -140,7 +155,29 @@ add_action(
 				),
 			),
 		);
-		$profiles   = array(
+
+		$ga4_properties = array(
+			array(
+
+				'displayName' => 'example.com',
+				'_id'         => GA4_PROPERTY_ID_X,
+				'_accountID'  => ACCOUNT_ID_A,
+			),
+			array(
+
+				'displayName' => 'example.net',
+				'_id'         => GA4_PROPERTY_ID_Y,
+				'_accountID'  => ACCOUNT_ID_B,
+			),
+			array(
+
+				'displayName' => 'example.org',
+				'_id'         => GA4_PROPERTY_ID_Z,
+				'_accountID'  => ACCOUNT_ID_B,
+			),
+		);
+
+		$profiles = array(
 			array(
 				'accountId'             => ACCOUNT_ID_A,
 				'id'                    => PROFILE_ID_X,
@@ -247,6 +284,22 @@ add_action(
 			true
 		);
 
+		// Called when switching properties for Analytics 4
+		register_rest_route(
+			REST_Routes::REST_ROOT,
+			'modules/analytics-4/data/properties',
+			array(
+				'methods'             => 'GET',
+				'callback'            => function ( \WP_REST_Request $request ) use ( $ga4_properties ) {
+					$properties = filter_ga4_by_account_id( $ga4_properties, $request->get_param( 'accountID' ) );
+
+					return $properties;
+				},
+				'permission_callback' => '__return_true',
+			),
+			true
+		);
+
 		register_rest_route(
 			REST_Routes::REST_ROOT,
 			'e2e/reference-url',
@@ -267,4 +320,3 @@ add_action(
 	},
 	0
 );
-
