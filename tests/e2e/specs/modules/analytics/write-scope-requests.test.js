@@ -230,12 +230,20 @@ describe( 'Analytics write scope requests', () => {
 			text: /set up a new property/i,
 		} );
 
+		// Select "Set up a new property" option (GA4)
+		await expect( page ).toClick(
+			'.googlesitekit-analytics-4__select-property'
+		);
+		await expect( page ).toClick( '.mdc-menu-surface--open li', {
+			text: /set up a new property/i,
+		} );
+
 		// Click on confirm changes button and wait for permissions modal dialog.
 		await expect( page ).toClick( '.mdc-button--raised', {
 			text: /configure analytics/i,
 		} );
 		await page.waitForSelector( '.mdc-dialog--open .mdc-button', {
-			timeout: 3000,
+			timeout: 3000000,
 		} );
 		await expect( page ).toClick( '.mdc-dialog--open .mdc-button', {
 			text: /proceed/i,
