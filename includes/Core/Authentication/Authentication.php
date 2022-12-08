@@ -87,7 +87,7 @@ final class Authentication {
 	/**
 	 * User_Input
 	 *
-	 * @since 1.20.0
+	 * @since n.e.x.t
 	 *
 	 * @var User_Input
 	 */
