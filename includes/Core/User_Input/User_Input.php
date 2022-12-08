@@ -11,8 +11,6 @@
 namespace Google\Site_Kit\Core\User_Input;
 
 use Google\Site_Kit\Context;
-use Google\Site_Kit\Core\Authentication\Authentication;
-use Google\Site_Kit\Core\Authentication\User_Input_State;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use WP_Error;
@@ -26,14 +24,6 @@ use WP_User;
  * @ignore
  */
 class User_Input {
-
-	/**
-	 * Authentication instance.
-	 *
-	 * @since n.e.x.t
-	 * @var Authentication
-	 */
-	private $authentication;
 
 	/**
 	 * Site_Specific_Answers instance.
@@ -90,18 +80,15 @@ class User_Input {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param Context        $context         Plugin context.
-	 * @param Authentication $authentication  Optional. Authentication instance. Default a new instance.
-	 * @param Options        $options         Optional. Options instance. Default a new instance.
-	 * @param User_Options   $user_options    Optional. User_Options instance. Default a new instance.
+	 * @param Context      $context         Plugin context.
+	 * @param Options      $options         Optional. Options instance. Default a new instance.
+	 * @param User_Options $user_options    Optional. User_Options instance. Default a new instance.
 	 */
 	public function __construct(
 		Context $context,
-		Authentication $authentication = null,
 		Options $options = null,
 		User_Options $user_options = null
 	) {
-		$this->authentication        = $authentication ?: new Authentication( $context );
 		$this->site_specific_answers = new Site_Specific_Answers( $options ?: new Options( $context ) );
 		$this->user_options          = $user_options ?: new User_Options( $context );
 		$this->user_specific_answers = new User_Specific_Answers( $this->user_options );
