@@ -108,7 +108,7 @@ function filter_webdatastream_by_property_ids( $items, $property_ids ) {
 	return array_filter(
 		$items,
 		function ( $item ) use ( $property_ids ) {
-			return in_array( $item, $property_ids, true );
+			return in_array( (string) $item, $property_ids, true );
 		},
 		ARRAY_FILTER_USE_KEY
 	);
