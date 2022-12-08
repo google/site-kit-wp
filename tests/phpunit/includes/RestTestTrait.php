@@ -1,6 +1,6 @@
 <?php
 /**
- * RestTestTriat
+ * RestTestTrait
  *
  * @package   Google\Site_Kit\Tests
  * @copyright 2022 Google LLC
@@ -10,7 +10,7 @@
 
 namespace Google\Site_Kit\Tests;
 
-trait RestTestTriat {
+trait RestTestTrait {
 
 	protected function register_rest_routes() {
 		$routes = apply_filters( 'googlesitekit_rest_routes', array() );

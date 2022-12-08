@@ -14,13 +14,13 @@ use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Core\User_Input\REST_User_Input_Controller;
 use Google\Site_Kit\Core\User_Input\User_Input;
-use Google\Site_Kit\Tests\RestTestTriat;
+use Google\Site_Kit\Tests\RestTestTrait;
 use Google\Site_Kit\Tests\TestCase;
 use WP_REST_Request;
 
 class REST_User_Input_ControllerTest extends TestCase {
 
-	use RestTestTriat;
+	use RestTestTrait;
 
 	/**
 	 * User_Input instance.
