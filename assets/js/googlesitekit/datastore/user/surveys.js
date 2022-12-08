@@ -222,9 +222,8 @@ const baseActions = {
 						setTimeout( resolve, 30000 );
 					} );
 
-					yield dispatch( CORE_USER ).setSurveyTimeout(
-						triggerID,
-						ttl
+					yield Data.commonActions.await(
+						dispatch( CORE_USER ).setSurveyTimeout( triggerID, ttl )
 					);
 				}
 			}
