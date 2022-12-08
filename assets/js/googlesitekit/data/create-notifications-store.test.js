@@ -15,17 +15,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-/**
- * WordPress dependencies
- */
-import { createRegistry } from '@wordpress/data';
-
 /**
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
+import Data from 'googlesitekit-data';
 import {
+	createTestRegistry,
 	muteFetch,
 	subscribeUntil,
 	unsubscribeFromAll,
@@ -46,12 +42,16 @@ describe( 'createNotificationsStore store', () => {
 	} );
 
 	beforeEach( () => {
-		registry = createRegistry();
+		registry = createTestRegistry();
 
 		storeDefinition = createNotificationsStore( ...STORE_ARGS );
-		registry.registerStore( storeDefinition.STORE_NAME, storeDefinition );
+
+		store = registry.registerStore(
+			storeDefinition.STORE_NAME,
+			Data.combineStores( Data.commonStore, storeDefinition )
+		);
+
 		dispatch = registry.dispatch( storeDefinition.STORE_NAME );
-		store = registry.stores[ storeDefinition.STORE_NAME ].store;
 		select = registry.select( storeDefinition.STORE_NAME );
 	} );
 
@@ -160,10 +160,10 @@ describe( 'createNotificationsStore store', () => {
 				select.getNotifications();
 				dispatch.addNotification( clientNotification );
 
-				await subscribeUntil(
-					registry,
-					() => store.getState().serverNotifications !== undefined
-				);
+				await subscribeUntil( registry, () => {
+					const storeState = store.getState();
+					return storeState.serverNotifications !== undefined;
+				} );
 
 				dispatch.removeNotification( serverNotifications[ 0 ].id );
 
@@ -171,9 +171,11 @@ describe( 'createNotificationsStore store', () => {
 				expect( global.console.warn ).toHaveBeenCalledWith(
 					`Cannot remove server-side notification with ID "${ serverNotifications[ 0 ].id }"; this may be changed in a future release.`
 				);
-				expect( select.getNotifications() ).toEqual(
-					expect.arrayContaining( serverNotifications )
-				);
+				expect(
+					registry
+						.select( storeDefinition.STORE_NAME )
+						.getNotifications()
+				).toEqual( expect.arrayContaining( serverNotifications ) );
 			} );
 		} );
 
