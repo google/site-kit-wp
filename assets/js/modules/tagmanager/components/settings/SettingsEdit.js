@@ -54,6 +54,11 @@ export default function SettingsEdit() {
 	);
 	const hasModuleAccess = useSelect( ( select ) => {
 		const moduleOwnerID = select( MODULES_TAGMANAGER ).getOwnerID();
+
+		if ( moduleOwnerID === undefined || loggedInUserID === undefined ) {
+			return undefined;
+		}
+
 		if ( moduleOwnerID === loggedInUserID ) {
 			return true;
 		}
