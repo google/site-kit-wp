@@ -1,34 +1,18 @@
 [
 	{
-		"columnHeader": {
-			"dimensions": null,
-			"metricHeader": {
-				"metricHeaderEntries": [
-					{
-						"name": "ga:sessionDuration",
-						"type": "TIME"
-					}
-				]
-			}
-		},
-		"data": {
-			"dataLastRefreshed": null,
-			"isDataGolden": true,
-			"rows": [
-				{
-					"dimensions": [ "20210910" ],
-					"metrics": [
-						{
-							"values": [ "39" ]
-						}
-					]
-				}
-			],
-			"totals": [
-				{
-					"values": [ "2208" ]
-				}
-			]
-		}
+		"property": "1000",
+		"dimensions": [],
+		"metrics": [],
+		"dateRanges": [],
+		"dimensionFilter": {},
+		"metricFilter": {},
+		"offset": 0,
+		"limit": 1000,
+		"metricAggregations": [],
+		"orderBys": [],
+		"currencyCode": "USD",
+		"cohortSpec": {},
+		"keepEmptyRows": true,
+		"returnPropertyQuota": true
 	}
 ]
