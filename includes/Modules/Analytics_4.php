@@ -508,7 +508,7 @@ final class Analytics_4 extends Module
 	protected function setup_info() {
 		return array(
 			'slug'        => self::MODULE_SLUG,
-			'name'        => _x( 'Analytics 4 (Beta)', 'Service name', 'google-site-kit' ),
+			'name'        => _x( 'Analytics 4', 'Service name', 'google-site-kit' ),
 			'description' => __( 'Get a deeper understanding of your customers. Google Analytics gives you the free tools you need to analyze data for your business in one place.', 'google-site-kit' ),
 			'order'       => 3,
 			'homepage'    => __( 'https://analytics.google.com/analytics/web', 'google-site-kit' ),
