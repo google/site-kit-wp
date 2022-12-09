@@ -135,7 +135,7 @@ WithBothTags.decorators = [
 ];
 WithBothTags.scenario = {
 	label: 'Modules/Analytics/Setup/SetupFormUA/WithBothTags',
-	delay: 250,
+	delay: 3000,
 };
 
 export default {
