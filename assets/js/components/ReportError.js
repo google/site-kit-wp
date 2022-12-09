@@ -69,7 +69,7 @@ export default function ReportError( { moduleSlug, error } ) {
 			err.selectorData.name === 'getReport'
 	);
 
-	const showRetry = !! retryableErrors.length;
+	const showRetry = !! retryableErrors.length && ! isViewOnly;
 
 	const errorTroubleshootingLinkURL = useSelect( ( select ) => {
 		const err = {
@@ -182,35 +182,30 @@ export default function ReportError( { moduleSlug, error } ) {
 
 	return (
 		<CTA title={ title } description={ description } error>
-			{ ! isViewOnly && (
-				<div className="googlesitekit-error-cta-wrapper">
-					{ showRequestAccessURL && (
-						<Button href={ requestAccessURL } target="_blank">
-							{ __( 'Request access', 'google-site-kit' ) }
+			<div className="googlesitekit-error-cta-wrapper">
+				{ showRequestAccessURL && (
+					<Button href={ requestAccessURL } target="_blank">
+						{ __( 'Request access', 'google-site-kit' ) }
+					</Button>
+				) }
+				{ showRetry ? (
+					<Fragment>
+						<Button onClick={ handleRetry }>
+							{ __( 'Retry', 'google-site-kit' ) }
 						</Button>
-					) }
-					{ showRetry ? (
-						<Fragment>
-							<Button onClick={ handleRetry }>
-								{ __( 'Retry', 'google-site-kit' ) }
-							</Button>
-							<span className="googlesitekit-error-retry-text">
-								{ __(
-									'Retry didn’t work?',
-									'google-site-kit'
-								) }{ ' ' }
-							</span>
-							<Link href={ errorTroubleshootingLinkURL } external>
-								{ __( 'Get help', 'google-site-kit' ) }
-							</Link>
-						</Fragment>
-					) : (
+						<span className="googlesitekit-error-retry-text">
+							{ __( 'Retry didn’t work?', 'google-site-kit' ) }{ ' ' }
+						</span>
 						<Link href={ errorTroubleshootingLinkURL } external>
 							{ __( 'Get help', 'google-site-kit' ) }
 						</Link>
-					) }
-				</div>
-			) }
+					</Fragment>
+				) : (
+					<Link href={ errorTroubleshootingLinkURL } external>
+						{ __( 'Get help', 'google-site-kit' ) }
+					</Link>
+				) }
+			</div>
 		</CTA>
 	);
 }
