@@ -32,6 +32,7 @@ import EnableAutoUpdateBannerNotification from './EnableAutoUpdateBannerNotifica
 import API from 'googlesitekit-api';
 
 import mockUseQueryArg from '../../hooks/useQueryArg';
+import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 jest.mock( '../../hooks/useQueryArg' );
 
 // setup mockImplementation for `useQueryArg`
@@ -48,25 +49,28 @@ describe( 'EnableAutoUpdateBannerNotification', () => {
 	const registry = createTestRegistry();
 
 	describe( 'existing site kit setup', () => {
-		beforeEach( async () => {
+		beforeEach( () => {
 			jest.resetAllMocks();
 			stubMockUseQueryArg();
 
 			jest.spyOn( API, 'getItem' ).mockImplementation( () => {
-				return Promise.resolve( { cacheHit: false } );
+				return Promise.resolve( { cacheHit: false, value: undefined } );
 			} );
 
 			jest.spyOn( API, 'setItem' ).mockImplementation( () => {
-				return Promise.resolve( { cacheHit: false } );
-			} );
-
-			await registry.dispatch( CORE_SITE ).receiveSiteInfo( {
-				updatePluginCapacity: true,
-				autoUpdatesEnabled: true,
+				return Promise.resolve( true );
 			} );
 		} );
 
 		it( 'should display the notification', async () => {
+			await registry.dispatch( CORE_SITE ).receiveSiteInfo( {
+				autoUpdatesEnabled: true,
+			} );
+
+			await registry.dispatch( CORE_USER ).receiveCapabilities( {
+				googlesitekit_update_plugins: true,
+			} );
+
 			render( <EnableAutoUpdateBannerNotification />, {
 				registry,
 			} );
@@ -78,8 +82,11 @@ describe( 'EnableAutoUpdateBannerNotification', () => {
 
 		it( 'should not show the notification when user can not update plugins', async () => {
 			await registry.dispatch( CORE_SITE ).receiveSiteInfo( {
-				updatePluginCapacity: false,
 				autoUpdatesEnabled: true,
+			} );
+
+			await registry.dispatch( CORE_USER ).receiveCapabilities( {
+				googlesitekit_update_plugins: false,
 			} );
 
 			const { container } = render(
@@ -96,8 +103,11 @@ describe( 'EnableAutoUpdateBannerNotification', () => {
 
 		it( 'should not show the notification when plugin auto updates are disabled', async () => {
 			await registry.dispatch( CORE_SITE ).receiveSiteInfo( {
-				updatePluginCapacity: true,
 				autoUpdatesEnabled: false,
+			} );
+
+			await registry.dispatch( CORE_USER ).receiveCapabilities( {
+				googlesitekit_update_plugins: true,
 			} );
 
 			const { container } = render(
@@ -113,6 +123,14 @@ describe( 'EnableAutoUpdateBannerNotification', () => {
 		} );
 
 		it( 'should not show the notification when hide banner cache key is set', async () => {
+			await registry.dispatch( CORE_SITE ).receiveSiteInfo( {
+				autoUpdatesEnabled: true,
+			} );
+
+			await registry.dispatch( CORE_USER ).receiveCapabilities( {
+				googlesitekit_update_plugins: true,
+			} );
+
 			jest.spyOn( API, 'getItem' ).mockImplementation( () => {
 				return Promise.resolve( { cacheHit: true } );
 			} );
@@ -130,6 +148,14 @@ describe( 'EnableAutoUpdateBannerNotification', () => {
 		} );
 
 		it( 'should send enable-auto-updates post request to admin-ajax on cta click.', async () => {
+			await registry.dispatch( CORE_SITE ).receiveSiteInfo( {
+				autoUpdatesEnabled: true,
+			} );
+
+			await registry.dispatch( CORE_USER ).receiveCapabilities( {
+				googlesitekit_update_plugins: true,
+			} );
+
 			global.ajaxurl = 'admin-ajax.php';
 
 			fetchMock.postOnce( /^\/admin-ajax.php/, {
@@ -176,6 +202,14 @@ describe( 'EnableAutoUpdateBannerNotification', () => {
 		} );
 
 		it( 'should not show the notification for new sitekit setup', async () => {
+			await registry.dispatch( CORE_SITE ).receiveSiteInfo( {
+				autoUpdatesEnabled: true,
+			} );
+
+			await registry.dispatch( CORE_USER ).receiveCapabilities( {
+				googlesitekit_update_plugins: true,
+			} );
+
 			let container;
 
 			act( () => {
