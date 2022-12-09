@@ -32,7 +32,10 @@ import API from 'googlesitekit-api';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { getTimeInSeconds } from '../../util';
 import useQueryArg from '../../hooks/useQueryArg';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import {
+	CORE_USER,
+	PERMISSION_UPDATE_PLUGINS,
+} from '../../googlesitekit/datastore/user/constants';
 
 const { useSelect } = Data;
 
@@ -42,7 +45,7 @@ const HIDE_NOTIFICATION_ON_FIRST_SETUP =
 
 const EnableAutoUpdateBannerNotification = () => {
 	const hasUpdatePluginCapacity = useSelect( ( select ) =>
-		select( CORE_USER ).hasCapability( 'googlesitekit_update_plugins' )
+		select( CORE_USER ).hasCapability( PERMISSION_UPDATE_PLUGINS )
 	);
 	const autoUpdatesEnabled = useSelect( ( select ) =>
 		select( CORE_SITE ).getAutoUpdatesEnabled()
