@@ -33,6 +33,17 @@ const { useSelect, useDispatch } = Data;
 export const TRACKING_LOGGED_IN_USERS = 'loggedinUsers';
 export const TRACKING_CONTENT_CREATORS = 'contentCreators';
 
+export const trackingExclusionLabels = {
+	[ TRACKING_LOGGED_IN_USERS ]: __(
+		'All logged-in users',
+		'google-site-kit'
+	),
+	[ TRACKING_CONTENT_CREATORS ]: __(
+		'Users that can write posts',
+		'google-site-kit'
+	),
+};
+
 export default function TrackingExclusionSwitches() {
 	const trackingDisabled = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getTrackingDisabled()
@@ -104,10 +115,11 @@ export default function TrackingExclusionSwitches() {
 				<div className="googlesitekit-settings-module__inline-items">
 					<div className="googlesitekit-settings-module__inline-item">
 						<Switch
-							label={ __(
-								'All logged-in users',
-								'google-site-kit'
-							) }
+							label={
+								trackingExclusionLabels[
+									TRACKING_LOGGED_IN_USERS
+								]
+							}
 							checked={ trackingDisabled.includes(
 								TRACKING_LOGGED_IN_USERS
 							) }
@@ -115,16 +127,16 @@ export default function TrackingExclusionSwitches() {
 							hideLabel={ false }
 						/>
 					</div>
-
 					{ ! trackingDisabled.includes(
 						TRACKING_LOGGED_IN_USERS
 					) && (
 						<div className="googlesitekit-settings-module__inline-item">
 							<Switch
-								label={ __(
-									'Users that can write posts',
-									'google-site-kit'
-								) }
+								label={
+									trackingExclusionLabels[
+										TRACKING_CONTENT_CREATORS
+									]
+								}
 								checked={ trackingDisabled.includes(
 									TRACKING_CONTENT_CREATORS
 								) }
@@ -134,7 +146,6 @@ export default function TrackingExclusionSwitches() {
 						</div>
 					) }
 				</div>
-
 				<p>{ message }</p>
 			</div>
 		</div>
