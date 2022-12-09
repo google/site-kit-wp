@@ -35,7 +35,7 @@ DefaultTooltip.args = {
 };
 DefaultTooltip.scenario = {
 	label: 'Global/JoyrideTooltip/DefaultTooltip',
-	delay: 250,
+	delay: 3000,
 };
 
 export default {
