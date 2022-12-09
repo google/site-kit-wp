@@ -64,7 +64,7 @@ describe( 'EnableAutoUpdateBannerNotification', () => {
 		} );
 	} );
 
-	it( 'should display the notification', async () => {
+	it( 'should display the notification if Site Kit was not recently set up and user can update plugins', async () => {
 		await registry.dispatch( CORE_SITE ).receiveSiteInfo( {
 			autoUpdatesEnabled: true,
 		} );
