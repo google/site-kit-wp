@@ -212,6 +212,16 @@
 		}
 	}
 
+	.googlesitekit-pagespeed-report__row--error {
+		align-items: flex-start;
+		flex-direction: column;
+		padding: 12px $grid-gap-phone 8px $grid-gap-phone;
+
+		@media (min-width: $bp-tablet) {
+			padding: 18px $grid-gap-desktop 12px $grid-gap-desktop;
+		}
+	}
+
 	.googlesitekit-pagespeed--recommendations {
 		box-shadow: inset 0 1px 0 rgba(0, 0, 0, 0.1);
 		display: flex;
