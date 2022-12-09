@@ -53,7 +53,10 @@ describe( 'EnableAutoUpdateBannerNotification', () => {
 		stubMockUseQueryArg();
 
 		jest.spyOn( API, 'getItem' ).mockImplementation( () => {
-			return Promise.resolve( { cacheHit: false, value: undefined } );
+			return Promise.resolve( {
+				cacheHit: false,
+				value: undefined,
+			} );
 		} );
 
 		jest.spyOn( API, 'setItem' ).mockImplementation( () => {
@@ -125,7 +128,11 @@ describe( 'EnableAutoUpdateBannerNotification', () => {
 		} );
 
 		jest.spyOn( API, 'getItem' ).mockImplementation( () => {
-			return Promise.resolve( { cacheHit: true } );
+			return Promise.resolve( {
+				cacheHit: true,
+				value: true,
+				isError: false,
+			} );
 		} );
 
 		const { container } = render( <EnableAutoUpdateBannerNotification />, {
