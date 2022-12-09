@@ -133,7 +133,7 @@ const baseSelectors = {
 	/**
 	 * Gets an Analytics report for the given options.
 	 *
-	 * @since 1.13.0
+	 * @since n.e.x.t
 	 *
 	 * @param {Object}         state                       Data store's state.
 	 * @param {Object}         options                     Options for generating the report.

@@ -26,7 +26,7 @@ import memize from 'memize';
 /**
  * Normalizes report options.
  *
- * @since 1.17.0
+ * @since n.e.x.t
  *
  * @param {Object} options Report options object.
  * @return {Object} Normalized options object.
