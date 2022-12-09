@@ -657,7 +657,7 @@ export const selectors = {
 	getUpdateCoreURL: getSiteInfoProperty( 'updateCoreURL' ),
 
 	/**
-	 * Determines if plugin auto updates are enabled.
+	 * Determines if the current user can update the Site Kit plugin.
 	 *
 	 * @since n.e.x.t
 	 *

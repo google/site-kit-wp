@@ -512,7 +512,7 @@ class Context {
 	}
 
 	/**
-	 * Check whether the site has auto updates enabled for this plugin.
+	 * Check whether the site has auto updates enabled for Site Kit.
 	 *
 	 * @since n.e.x.t
 	 *
@@ -529,7 +529,7 @@ class Context {
 			return false;
 		}
 
-		// Check if the site kit is in the list of auto-updated plugins.
+		// Check if the Site Kit is in the list of auto-updated plugins.
 		return in_array( GOOGLESITEKIT_PLUGIN_BASENAME, $enabled_auto_updates, true );
 	}
 }
