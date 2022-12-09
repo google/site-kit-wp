@@ -50,7 +50,8 @@ describe( 'modules/analytics-4 report', () => {
 	describe( 'selectors', () => {
 		describe( 'getReport', () => {
 			const options = {
-				dateRange: 'last-90-days',
+				startDate: '2021-01-01',
+				endDate: '2021-01-31',
 				metrics: {
 					expression: 'testExpression',
 					alias: 'testAlias',
