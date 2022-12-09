@@ -70,13 +70,13 @@ export default function BannerNotifications() {
 						'user_input_success' === notification ) && (
 						<SetupSuccessBannerNotification />
 					) }
+					<EnableAutoUpdateBannerNotification />
 					{ isAuthenticated && <CoreSiteBannerNotifications /> }
 					{ dashboardSharingEnabled && <ModuleRecoveryAlert /> }
 					{ ga4ActivationBannerEnabled && <ActivationBanner /> }
 					{ twGModuleConnected && (
 						<ThankWithGoogleSupporterWallNotification />
 					) }
-					<EnableAutoUpdateBannerNotification />
 				</Fragment>
 			) }
 			<ZeroDataStateNotifications />
