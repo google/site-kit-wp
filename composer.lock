@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "437dc32df6a83c8ca7c40f5f2fad9238",
+    "content-hash": "afff6f759402a005661ee674c2d1d443",
     "packages": [
         {
             "name": "firebase/php-jwt",
@@ -2282,35 +2282,29 @@
         },
         {
             "name": "roots/wordpress",
-            "version": "5.9.3",
+            "version": "6.1.1",
             "source": {
                 "type": "git",
-                "url": "https://github.com/WordPress/WordPress.git",
-                "reference": "5.9.3"
+                "url": "https://github.com/roots/wordpress.git",
+                "reference": "41ff6e23ccbc3a1691406d69fe8c211a225514e2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/WordPress/WordPress/zipball/refs/tags/5.9.3"
+                "url": "https://api.github.com/repos/roots/wordpress/zipball/41ff6e23ccbc3a1691406d69fe8c211a225514e2",
+                "reference": "41ff6e23ccbc3a1691406d69fe8c211a225514e2",
+                "shasum": ""
             },
             "require": {
-                "php": ">=5.3.2",
-                "roots/wordpress-core-installer": ">=1.0.0"
+                "roots/wordpress-core-installer": "^1.0.0",
+                "roots/wordpress-no-content": "self.version"
             },
-            "provide": {
-                "wordpress/core-implementation": "5.9.3"
-            },
-            "type": "wordpress-core",
+            "type": "metapackage",
             "notification-url": "https://packagist.org/downloads/",
             "license": [
+                "MIT",
                 "GPL-2.0-or-later"
             ],
-            "authors": [
-                {
-                    "name": "WordPress Community",
-                    "homepage": "https://wordpress.org/about/"
-                }
-            ],
-            "description": "WordPress is web software you can use to create a beautiful website or blog.",
+            "description": "WordPress is open source software you can use to create a beautiful website, blog, or app.",
             "homepage": "https://wordpress.org/",
             "keywords": [
                 "blog",
@@ -2318,13 +2312,8 @@
                 "wordpress"
             ],
             "support": {
-                "docs": "https://developer.wordpress.org/",
-                "forum": "https://wordpress.org/support/",
-                "irc": "irc://irc.freenode.net/wordpress",
-                "issues": "https://core.trac.wordpress.org/",
-                "rss": "https://wordpress.org/news/feed/",
-                "source": "https://core.trac.wordpress.org/browser",
-                "wiki": "https://codex.wordpress.org/"
+                "issues": "https://github.com/roots/wordpress/issues",
+                "source": "https://github.com/roots/wordpress/tree/6.1.1"
             },
             "funding": [
                 {
@@ -2336,7 +2325,7 @@
                     "type": "patreon"
                 }
             ],
-            "time": "2022-04-06T02:26:36+00:00"
+            "time": "2022-06-01T16:54:37+00:00"
         },
         {
             "name": "roots/wordpress-core-installer",
@@ -2408,6 +2397,76 @@
                 }
             ],
             "time": "2020-08-20T00:27:30+00:00"
+        },
+        {
+            "name": "roots/wordpress-no-content",
+            "version": "6.1.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/WordPress/WordPress.git",
+                "reference": "6.1.1"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://downloads.wordpress.org/release/wordpress-6.1.1-no-content.zip",
+                "shasum": "ad2d202747c5356e7b6246fbc339b46aebfa0665"
+            },
+            "require": {
+                "php": ">= 5.6.20"
+            },
+            "provide": {
+                "wordpress/core-implementation": "6.1.1"
+            },
+            "suggest": {
+                "ext-curl": "Performs remote request operations.",
+                "ext-dom": "Used to validate Text Widget content and to automatically configuring IIS7+.",
+                "ext-exif": "Works with metadata stored in images.",
+                "ext-fileinfo": "Used to detect mimetype of file uploads.",
+                "ext-hash": "Used for hashing, including passwords and update packages.",
+                "ext-imagick": "Provides better image quality for media uploads.",
+                "ext-json": "Used for communications with other servers.",
+                "ext-libsodium": "Validates Signatures and provides securely random bytes.",
+                "ext-mbstring": "Used to properly handle UTF8 text.",
+                "ext-mysqli": "Connects to MySQL for database interactions.",
+                "ext-openssl": "Permits SSL-based connections to other hosts.",
+                "ext-pcre": "Increases performance of pattern matching in code searches.",
+                "ext-xml": "Used for XML parsing, such as from a third-party site.",
+                "ext-zip": "Used for decompressing Plugins, Themes, and WordPress update packages."
+            },
+            "type": "wordpress-core",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-2.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "WordPress Community",
+                    "homepage": "https://wordpress.org/about/"
+                }
+            ],
+            "description": "WordPress is open source software you can use to create a beautiful website, blog, or app.",
+            "homepage": "https://wordpress.org/",
+            "keywords": [
+                "blog",
+                "cms",
+                "wordpress"
+            ],
+            "support": {
+                "docs": "https://developer.wordpress.org/",
+                "forum": "https://wordpress.org/support/",
+                "irc": "irc://irc.freenode.net/wordpress",
+                "issues": "https://core.trac.wordpress.org/",
+                "rss": "https://wordpress.org/news/feed/",
+                "source": "https://core.trac.wordpress.org/browser",
+                "wiki": "https://codex.wordpress.org/"
+            },
+            "funding": [
+                {
+                    "url": "https://wordpressfoundation.org/donate/",
+                    "type": "other"
+                }
+            ],
+            "time": "2022-11-15T19:14:34+00:00"
         },
         {
             "name": "sebastian/code-unit-reverse-lookup",
@@ -3318,16 +3377,16 @@
         },
         {
             "name": "wp-phpunit/wp-phpunit",
-            "version": "6.0.2",
+            "version": "6.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/wp-phpunit/wp-phpunit.git",
-                "reference": "88c786f68c6abe1061f9e40f5e8b299e41a50287"
+                "reference": "49521597fa525f762a50a4a6d22ed180839519fd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/wp-phpunit/wp-phpunit/zipball/88c786f68c6abe1061f9e40f5e8b299e41a50287",
-                "reference": "88c786f68c6abe1061f9e40f5e8b299e41a50287",
+                "url": "https://api.github.com/repos/wp-phpunit/wp-phpunit/zipball/49521597fa525f762a50a4a6d22ed180839519fd",
+                "reference": "49521597fa525f762a50a4a6d22ed180839519fd",
                 "shasum": ""
             },
             "type": "library",
@@ -3362,7 +3421,7 @@
                 "issues": "https://github.com/wp-phpunit/issues",
                 "source": "https://github.com/wp-phpunit/wp-phpunit"
             },
-            "time": "2022-08-30T21:14:52+00:00"
+            "time": "2022-11-02T12:52:44+00:00"
         },
         {
             "name": "yoast/phpunit-polyfills",
@@ -3440,7 +3499,7 @@
     },
     "platform-dev": [],
     "platform-overrides": {
-        "php": "5.6"
+        "php": "5.6.20"
     },
-    "plugin-api-version": "2.1.0"
+    "plugin-api-version": "2.3.0"
 }
