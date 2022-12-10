@@ -26,7 +26,6 @@ use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Modules\AdSense;
 use Google\Site_Kit\Modules\Analytics;
 use Google\Site_Kit\Modules\Analytics_4;
-use Google\Site_Kit\Modules\Idea_Hub;
 use Google\Site_Kit\Modules\Optimize;
 use Google\Site_Kit\Modules\PageSpeed_Insights;
 use Google\Site_Kit\Modules\Search_Console;
@@ -177,16 +176,6 @@ final class Modules {
 		$this->assets           = $assets ?: new Assets( $this->context );
 
 		$this->core_modules[ Analytics_4::MODULE_SLUG ] = Analytics_4::class;
-
-		// Preferably no features should be checked here, or any time prior to
-		// Modules::register() being called to add the 'googlesitekit_features_request_data'
-		// filter callback. For any feature flags checked in this method, a workaround needs
-		// to be added to Authentication::filter_features_via_proxy() so that the remote
-		// features request is not triggered too early.
-
-		if ( Feature_Flags::enabled( 'ideaHubModule' ) ) {
-			$this->core_modules[ Idea_Hub::MODULE_SLUG ] = Idea_Hub::class;
-		}
 	}
 
 	/**

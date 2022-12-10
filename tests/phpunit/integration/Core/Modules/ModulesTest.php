@@ -21,8 +21,6 @@ use Google\Site_Kit\Core\Util\Build_Mode;
 use Google\Site_Kit\Modules\AdSense;
 use Google\Site_Kit\Modules\Analytics;
 use Google\Site_Kit\Modules\Analytics_4;
-use Google\Site_Kit\Modules\Idea_Hub;
-use Google\Site_Kit\Modules\Idea_Hub\Settings as Idea_Hub_Settings;
 use Google\Site_Kit\Modules\Optimize;
 use Google\Site_Kit\Modules\PageSpeed_Insights;
 use Google\Site_Kit\Modules\Search_Console;
@@ -533,25 +531,6 @@ class ModulesTest extends TestCase {
 			Tag_Manager::MODULE_SLUG,
 		);
 
-		yield 'should include the `idea-hub` module when enabled' => array(
-			// Module feature flag.
-			'ideaHubModule',
-			// Module enabled or disabled
-			true,
-			Idea_Hub::MODULE_SLUG,
-			// Expected
-			array_merge( $default_modules, array( Idea_Hub::MODULE_SLUG ) ),
-		);
-
-		yield 'should not include the `idea-hub` module when enabled' => array(
-			// Module feature flag.
-			'ideaHubModule',
-			// Module enabled or disabled
-			false,
-			Idea_Hub::MODULE_SLUG,
-			// Expected
-			$default_modules,
-		);
 	}
 
 	public function test_get_shareable_modules() {
@@ -573,7 +552,6 @@ class ModulesTest extends TestCase {
 	public function test_get_shared_ownership_modules() {
 		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 
-		$this->enable_feature( 'ideaHubModule' );
 		$this->enable_feature( 'dashboardSharing' );
 
 		// Check shared ownership for modules activated by default.
@@ -598,18 +576,10 @@ class ModulesTest extends TestCase {
 			)
 		);
 
-		// Connect the Idea Hub module.
-		$options = new Options( $context );
-		$options->set(
-			Idea_Hub_Settings::OPTION,
-			array( 'tosAccepted' => true )
-		);
-
 		// Verify shared ownership for active and connected modules.
 		$modules = new Modules( $context );
 		$this->assertEqualSetsWithIndex(
 			array(
-				'idea-hub'           => 'Google\\Site_Kit\\Modules\\Idea_Hub',
 				'pagespeed-insights' => 'Google\\Site_Kit\\Modules\\PageSpeed_Insights',
 			),
 			array_map(
