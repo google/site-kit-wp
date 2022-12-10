@@ -572,7 +572,6 @@ class ModulesTest extends TestCase {
 			array(
 				'pagespeed-insights',
 				'analytics',
-				'idea-hub',
 			)
 		);
 
