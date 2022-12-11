@@ -102,7 +102,9 @@ describe( 'createNotificationsStore store', () => {
 				dispatch.removeNotification( 'not_a_real_id' );
 
 				muteFetch(
-					/^\/google-site-kit\/v1\/core\/site\/data\/notifications/,
+					new RegExp(
+						'^/google-site-kit/v1/core/site/data/notifications'
+					),
 					[]
 				);
 				expect( select.getNotifications() ).toEqual( undefined );
@@ -115,7 +117,9 @@ describe( 'createNotificationsStore store', () => {
 				dispatch.removeNotification( 'not_a_real_id' );
 
 				muteFetch(
-					/^\/google-site-kit\/v1\/core\/site\/data\/notifications/,
+					new RegExp(
+						'^/google-site-kit/v1/core/site/data/notifications'
+					),
 					[]
 				);
 				expect( select.getNotifications() ).toEqual( [ notification ] );
@@ -142,7 +146,9 @@ describe( 'createNotificationsStore store', () => {
 
 				expect( state.clientNotifications ).toMatchObject( {} );
 				muteFetch(
-					/^\/google-site-kit\/v1\/core\/site\/data\/notifications/,
+					new RegExp(
+						'^/google-site-kit/v1/core/site/data/notifications'
+					),
 					[]
 				);
 				expect( select.getNotifications() ).toMatchObject( {} );
@@ -151,7 +157,9 @@ describe( 'createNotificationsStore store', () => {
 			it( 'does not remove server notifications and emits a warning if they are sent to removeNotification', async () => {
 				const serverNotifications = [ { id: 'server_notification' } ];
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/core\/site\/data\/notifications/,
+					new RegExp(
+						'^/google-site-kit/v1/core/site/data/notifications'
+					),
 					{ body: serverNotifications, status: 200 }
 				);
 
@@ -180,7 +188,9 @@ describe( 'createNotificationsStore store', () => {
 		describe( 'fetchGetNotifications', () => {
 			it( 'does not require any params', () => {
 				muteFetch(
-					/^\/google-site-kit\/v1\/core\/site\/data\/notifications/,
+					new RegExp(
+						'^/google-site-kit/v1/core/site/data/notifications'
+					),
 					[]
 				);
 				expect( () => {
@@ -214,7 +224,9 @@ describe( 'createNotificationsStore store', () => {
 			it( 'uses a resolver to make a network request', async () => {
 				const response = [ { id: 'test_notification' } ];
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/core\/site\/data\/notifications/,
+					new RegExp(
+						'^/google-site-kit/v1/core/site/data/notifications'
+					),
 					{ body: response, status: 200 }
 				);
 
@@ -239,7 +251,9 @@ describe( 'createNotificationsStore store', () => {
 			it( 'returns client notifications even if server notifications have not loaded', () => {
 				const notification = { id: 'added_notification' };
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/core\/site\/data\/notifications/,
+					new RegExp(
+						'^/google-site-kit/v1/core/site/data/notifications'
+					),
 					{ body: [], status: 200 }
 				);
 				dispatch.addNotification( notification );
@@ -250,7 +264,9 @@ describe( 'createNotificationsStore store', () => {
 				// returned when server notifications haven't loaded yet, but client
 				// notifications have been dispatched.
 				muteFetch(
-					/^\/google-site-kit\/v1\/core\/site\/data\/notifications/,
+					new RegExp(
+						'^/google-site-kit/v1/core/site/data/notifications'
+					),
 					[]
 				);
 				expect( select.getNotifications() ).toEqual( [ notification ] );
@@ -263,7 +279,9 @@ describe( 'createNotificationsStore store', () => {
 					data: { status: 500 },
 				};
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/core\/site\/data\/notifications/,
+					new RegExp(
+						'^/google-site-kit/v1/core/site/data/notifications'
+					),
 					{ body: response, status: 500 }
 				);
 

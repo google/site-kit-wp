@@ -32,8 +32,9 @@ describe( 'core/user user-input-settings', () => {
 	let registry;
 	let store;
 
-	const coreUserInputSettingsEndpointRegExp =
-		/^\/google-site-kit\/v1\/core\/user\/data\/user-input-settings/;
+	const coreUserInputSettingsEndpointRegExp = new RegExp(
+		'^/google-site-kit/v1/core/user/data/user-input-settings'
+	);
 	const coreUserInputSettingsExpectedResponse = {
 		goals: {
 			values: [ 'goal1', 'goal2' ],

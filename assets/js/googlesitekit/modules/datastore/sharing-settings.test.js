@@ -228,7 +228,9 @@ describe( 'core/modules sharing-settings', () => {
 						.receiveGetSettings( { ownerID: 1 } );
 
 					fetchMock.postOnce(
-						/^\/google-site-kit\/v1\/core\/modules\/data\/sharing-settings/,
+						new RegExp(
+							'^/google-site-kit/v1/core/modules/data/sharing-settings'
+						),
 						{
 							body: {
 								settings: sharingSettings,
@@ -243,7 +245,9 @@ describe( 'core/modules sharing-settings', () => {
 
 					// Ensure the API call was made.
 					expect( fetchMock ).toHaveFetched(
-						/^\/google-site-kit\/v1\/core\/modules\/data\/sharing-settings/
+						new RegExp(
+							'^/google-site-kit/v1/core/modules/data/sharing-settings'
+						)
 					);
 
 					// Ensure the `setOwnerID` action is dispatched and set the ownerID in state
@@ -644,7 +648,9 @@ describe( 'core/modules sharing-settings', () => {
 				registry.select( CORE_MODULES ).getSharingSettings();
 
 				freezeFetch(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/sharing-settings/
+					new RegExp(
+						'^/google-site-kit/v1/core/modules/data/sharing-settings'
+					)
 				);
 
 				registry.dispatch( CORE_MODULES ).saveSharingSettings();
@@ -661,7 +667,9 @@ describe( 'core/modules sharing-settings', () => {
 				registry.select( CORE_MODULES ).getSharingSettings();
 
 				fetchMock.postOnce(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/sharing-settings/,
+					new RegExp(
+						'^/google-site-kit/v1/core/modules/data/sharing-settings'
+					),
 					{
 						body: {
 							settings: sharingSettings,

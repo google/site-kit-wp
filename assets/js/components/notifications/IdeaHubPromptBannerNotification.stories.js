@@ -44,7 +44,7 @@ Ready.decorators = [
 		fetchMock.reset();
 
 		fetchMock.get(
-			/^\/google-site-kit\/v1\/core\/user\/data\/dismissed-items/,
+			new RegExp( '^/google-site-kit/v1/core/user/data/dismissed-items' ),
 			{ body: {}, status: 200 }
 		);
 		return <Story />;

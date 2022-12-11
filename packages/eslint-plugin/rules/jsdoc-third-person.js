@@ -51,7 +51,7 @@ module.exports = iterateJsdoc(
 		// Verbs can include dashes or in some cases also parentheses.
 		if (
 			jsdoc.description &&
-			! jsdoc.description.match( new RegExp( '^[w()-]+sW.*', 'g' ) )
+			! jsdoc.description.match( /^[\w\(\)\-]+s\W.*/g ) // eslint-disable-line
 		) {
 			context.report( {
 				data: { name: jsdocNode.name },

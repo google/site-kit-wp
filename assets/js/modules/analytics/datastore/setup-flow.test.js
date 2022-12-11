@@ -146,7 +146,9 @@ describe( 'modules/analytics setup-flow', () => {
 
 			it( 'should return undefined if settings are still loading', () => {
 				fetchMock.get(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/settings/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics/data/settings'
+					),
 					{
 						body: {
 							accountID: 'pub-12345678',
