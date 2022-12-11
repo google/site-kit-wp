@@ -34,6 +34,8 @@ import {
 	ERROR_CODE_INSUFFICIENT_MODULE_DEPENDENCIES,
 } from './constants';
 import FIXTURES, { withActive } from './__fixtures__';
+import { MODULES_SEARCH_CONSOLE } from '../../../modules/search-console/datastore/constants';
+import { CORE_USER } from '../../datastore/user/constants';
 
 describe( 'core/modules modules', () => {
 	const dashboardSharingDataBaseVar = '_googlesitekitDashboardSharingData';
@@ -1673,6 +1675,149 @@ describe( 'core/modules modules', () => {
 				await untilResolved( registry, CORE_MODULES ).hasModuleAccess(
 					'search-console'
 				);
+			} );
+		} );
+
+		describe( 'hasModuleOwnershipOrAccess', () => {
+			it( 'should return undefined if `getModuleStoreName` is not resolved yet', () => {
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
+					{ body: [] }
+				);
+
+				const moduleStoreName = registry
+					.select( CORE_MODULES )
+					.getModuleStoreName( 'search-console' );
+
+				expect( moduleStoreName ).toBeUndefined();
+
+				const moduleAccess = registry
+					.select( CORE_MODULES )
+					.hasModuleOwnershipOrAccess( 'search-console' );
+
+				expect( moduleAccess ).toBeUndefined();
+			} );
+
+			it( 'should return undefined if `moduleOwnerID` is not resolved yet', () => {
+				registry.dispatch( CORE_MODULES ).receiveGetModules( [
+					{
+						slug: 'search-console',
+						storeName: MODULES_SEARCH_CONSOLE,
+					},
+				] );
+
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/modules\/search-console\/data\/settings/,
+					{
+						body: {
+							ownerID: 1,
+						},
+					}
+				);
+
+				const moduleOwnerID = registry
+					.select( MODULES_SEARCH_CONSOLE )
+					.getOwnerID();
+
+				expect( moduleOwnerID ).toBeUndefined();
+
+				const moduleAccess = registry
+					.select( CORE_MODULES )
+					.hasModuleOwnershipOrAccess( 'search-console' );
+
+				expect( moduleAccess ).toBeUndefined();
+			} );
+
+			it( 'should return undefined if `getID` is not resolved yet', () => {
+				registry.dispatch( CORE_MODULES ).receiveGetModules( [
+					{
+						slug: 'search-console',
+						storeName: MODULES_SEARCH_CONSOLE,
+					},
+				] );
+
+				registry
+					.dispatch( MODULES_SEARCH_CONSOLE )
+					.receiveGetSettings( {
+						ownerID: 1,
+					} );
+
+				const loggedInUserID = registry.select( CORE_USER ).getID();
+
+				expect( loggedInUserID ).toBeUndefined();
+
+				const moduleAccess = registry
+					.select( CORE_MODULES )
+					.hasModuleOwnershipOrAccess( 'search-console' );
+
+				expect( moduleAccess ).toBeUndefined();
+			} );
+
+			it( 'should return true if `moduleOwnerID` and `loggedInUserID` are equal', () => {
+				registry.dispatch( CORE_MODULES ).receiveGetModules( [
+					{
+						slug: 'search-console',
+						storeName: MODULES_SEARCH_CONSOLE,
+					},
+				] );
+
+				registry
+					.dispatch( MODULES_SEARCH_CONSOLE )
+					.receiveGetSettings( {
+						ownerID: 1,
+					} );
+
+				registry.dispatch( CORE_USER ).receiveUserInfo( {
+					id: 1,
+				} );
+
+				const moduleAccess = registry
+					.select( CORE_MODULES )
+					.hasModuleOwnershipOrAccess( 'search-console' );
+
+				expect( moduleAccess ).toBe( true );
+			} );
+
+			it( 'should call `hasModuleAccess` if `moduleOwnerID` and `loggedInUserID` are not equal', async () => {
+				fetchMock.postOnce(
+					/^\/google-site-kit\/v1\/core\/modules\/data\/check-access/,
+					{ body: { access: true } }
+				);
+
+				registry.dispatch( CORE_MODULES ).receiveGetModules( [
+					{
+						slug: 'search-console',
+						storeName: MODULES_SEARCH_CONSOLE,
+					},
+				] );
+
+				registry
+					.dispatch( MODULES_SEARCH_CONSOLE )
+					.receiveGetSettings( {
+						ownerID: 1,
+					} );
+
+				registry.dispatch( CORE_USER ).receiveUserInfo( {
+					id: 2,
+				} );
+
+				// `hasModuleAccess` not resolved yet.
+				let moduleAccess = registry
+					.select( CORE_MODULES )
+					.hasModuleOwnershipOrAccess( 'search-console' );
+
+				expect( moduleAccess ).toBe( undefined );
+
+				await untilResolved( registry, CORE_MODULES ).hasModuleAccess(
+					'search-console'
+				);
+
+				// `hasModuleAccess` resolved.
+				moduleAccess = registry
+					.select( CORE_MODULES )
+					.hasModuleOwnershipOrAccess( 'search-console' );
+
+				expect( moduleAccess ).toBe( true );
 			} );
 		} );
 
