@@ -178,7 +178,7 @@ export default function ReportError( { moduleSlug, error } ) {
 	}, [ dispatch, retryableErrors ] );
 
 	const showRequestAccessURL =
-		requestAccessURL && hasInsufficientPermissionsError;
+		requestAccessURL && hasInsufficientPermissionsError && ! isViewOnly;
 
 	return (
 		<CTA title={ title } description={ description } error>
