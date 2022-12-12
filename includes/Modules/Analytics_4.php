@@ -202,6 +202,7 @@ final class Analytics_4 extends Module
 		return array(
 			'GET:account-summaries'     => array( 'service' => 'analyticsadmin' ),
 			'GET:accounts'              => array( 'service' => 'analyticsadmin' ),
+			'GET:container-lookup'      => array( 'service' => 'tagmanager' ),
 			'POST:create-property'      => array(
 				'service'                => 'analyticsadmin',
 				'scopes'                 => array( Analytics::EDIT_SCOPE ),
