@@ -67,6 +67,7 @@ describe( 'EnableAutoUpdateBannerNotification', () => {
 	it( 'should display the notification if Site Kit was not recently set up and user can update plugins', async () => {
 		await registry.dispatch( CORE_SITE ).receiveSiteInfo( {
 			autoUpdatesEnabled: true,
+			siteKitAutoUpdatesEnabled: false,
 		} );
 
 		await registry.dispatch( CORE_USER ).receiveCapabilities( {
@@ -82,9 +83,27 @@ describe( 'EnableAutoUpdateBannerNotification', () => {
 		).toBeInTheDocument();
 	} );
 
+	it( 'should not show the notification when auto updates are already enabled for Site Kit', async () => {
+		await registry.dispatch( CORE_SITE ).receiveSiteInfo( {
+			autoUpdatesEnabled: true,
+			siteKitAutoUpdatesEnabled: true,
+		} );
+
+		await registry.dispatch( CORE_USER ).receiveCapabilities( {
+			googlesitekit_update_plugins: true,
+		} );
+
+		const { container } = render( <EnableAutoUpdateBannerNotification />, {
+			registry,
+		} );
+
+		expect( container ).toBeEmptyDOMElement();
+	} );
+
 	it( 'should not show the notification when user can not update plugins', async () => {
 		await registry.dispatch( CORE_SITE ).receiveSiteInfo( {
 			autoUpdatesEnabled: true,
+			siteKitAutoUpdatesEnabled: false,
 		} );
 
 		await registry.dispatch( CORE_USER ).receiveCapabilities( {
@@ -170,6 +189,42 @@ describe( 'EnableAutoUpdateBannerNotification', () => {
 		fireEvent.click( screen.getByText( 'Enable auto-updates' ) );
 
 		await waitFor( () => expect( fetchMock ).toHaveFetchedTimes( 1 ) );
+
+		delete global.ajaxurl;
+	} );
+
+	it( 'should show error message on error response', async () => {
+		await registry.dispatch( CORE_SITE ).receiveSiteInfo( {
+			autoUpdatesEnabled: true,
+			updatePluginNonce: '751b9198d2',
+		} );
+
+		await registry.dispatch( CORE_USER ).receiveCapabilities( {
+			googlesitekit_update_plugins: true,
+		} );
+
+		global.ajaxurl = 'admin-ajax.php';
+
+		const errorMessage = 'Invalid data. The item does not exist.';
+
+		fetchMock.postOnce( /^\/admin-ajax.php/, {
+			body: { success: false, data: { error: errorMessage } },
+			status: 200,
+		} );
+
+		act( () => {
+			render( <EnableAutoUpdateBannerNotification />, {
+				registry,
+			} );
+		} );
+
+		expect(
+			await screen.findByText( 'Keep Site Kit up-to-date' )
+		).toBeInTheDocument();
+
+		fireEvent.click( screen.getByText( 'Enable auto-updates' ) );
+
+		expect( await screen.findByText( errorMessage ) ).toBeInTheDocument();
 
 		delete global.ajaxurl;
 	} );

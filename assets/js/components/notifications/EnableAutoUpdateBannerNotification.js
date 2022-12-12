@@ -51,6 +51,9 @@ const EnableAutoUpdateBannerNotification = () => {
 	const autoUpdatesEnabled = useSelect( ( select ) =>
 		select( CORE_SITE ).getAutoUpdatesEnabled()
 	);
+	const siteKitAutoUpdatesEnabled = useSelect( ( select ) =>
+		select( CORE_SITE ).getSiteKitAutoUpdatesEnabled()
+	);
 	const isDoingEnableAutoUpdate = useSelect( ( select ) =>
 		select( CORE_SITE ).isDoingEnableAutoUpdate()
 	);
@@ -90,7 +93,11 @@ const EnableAutoUpdateBannerNotification = () => {
 	 * CTA notifications.
 	 */
 	useEffect( () => {
-		if ( ! hasUpdatePluginCapacity || ! autoUpdatesEnabled ) {
+		if (
+			! hasUpdatePluginCapacity ||
+			! autoUpdatesEnabled ||
+			siteKitAutoUpdatesEnabled
+		) {
 			return;
 		}
 		setFirstPluginSetup(
@@ -102,10 +109,16 @@ const EnableAutoUpdateBannerNotification = () => {
 		hasUpdatePluginCapacity,
 		autoUpdatesEnabled,
 		setFirstPluginSetup,
+		siteKitAutoUpdatesEnabled,
 	] );
 
-	// Don't render anything if the user has no permission to update plugin or plugin auto-updates are disabled.
-	if ( ! hasUpdatePluginCapacity || ! autoUpdatesEnabled ) {
+	// Don't render anything if the user has no permission to update plugin
+	// or plugin auto-updates are disabled or auto update are already enabled for Site Kit.
+	if (
+		! hasUpdatePluginCapacity ||
+		! autoUpdatesEnabled ||
+		siteKitAutoUpdatesEnabled
+	) {
 		return null;
 	}
 

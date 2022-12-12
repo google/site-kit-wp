@@ -115,6 +115,7 @@ export const reducer = ( state, { payload, type } ) => {
 				updateCoreURL,
 				autoUpdatesEnabled,
 				updatePluginNonce,
+				siteKitAutoUpdatesEnabled,
 			} = payload.siteInfo;
 
 			return {
@@ -144,6 +145,7 @@ export const reducer = ( state, { payload, type } ) => {
 					updateCoreURL,
 					autoUpdatesEnabled,
 					updatePluginNonce,
+					siteKitAutoUpdatesEnabled,
 				},
 			};
 		}
@@ -198,6 +200,7 @@ export const resolvers = {
 			updateCoreURL,
 			autoUpdatesEnabled,
 			updatePluginNonce,
+			siteKitAutoUpdatesEnabled,
 		} = global._googlesitekitBaseData;
 
 		const {
@@ -232,6 +235,7 @@ export const resolvers = {
 			updateCoreURL,
 			autoUpdatesEnabled,
 			updatePluginNonce,
+			siteKitAutoUpdatesEnabled,
 		} );
 	},
 };
@@ -657,7 +661,7 @@ export const selectors = {
 	getUpdateCoreURL: getSiteInfoProperty( 'updateCoreURL' ),
 
 	/**
-	 * Determines if the current user can update the Site Kit plugin.
+	 * Determines if plugin auto updates are enabled for the WordPress site.
 	 *
 	 * @since n.e.x.t
 	 *
@@ -665,6 +669,18 @@ export const selectors = {
 	 * @return {(boolean|undefined)} `true` if plugin auto updates are enabled, otherwise `false`.
 	 */
 	getAutoUpdatesEnabled: getSiteInfoProperty( 'autoUpdatesEnabled' ),
+
+	/**
+	 * Determines if the auto updates are enabled for the Site Kit plugin.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(boolean|undefined)} `true` if Site Kit auto updates are enabled, otherwise `false`.
+	 */
+	getSiteKitAutoUpdatesEnabled: getSiteInfoProperty(
+		'siteKitAutoUpdatesEnabled'
+	),
 
 	/**
 	 * Get the nonce for the activate plugin auto updates ajax action.
