@@ -200,23 +200,24 @@ final class Analytics_4 extends Module
 	 */
 	protected function get_datapoint_definitions() {
 		return array(
-			'GET:account-summaries'     => array( 'service' => 'analyticsadmin' ),
-			'GET:accounts'              => array( 'service' => 'analyticsadmin' ),
-			'GET:container-lookup'      => array( 'service' => 'tagmanager' ),
-			'POST:create-property'      => array(
+			'GET:account-summaries'      => array( 'service' => 'analyticsadmin' ),
+			'GET:accounts'               => array( 'service' => 'analyticsadmin' ),
+			'GET:container-lookup'       => array( 'service' => 'tagmanager' ),
+			'GET:container-destinations' => array( 'service' => 'tagmanager' ),
+			'POST:create-property'       => array(
 				'service'                => 'analyticsadmin',
 				'scopes'                 => array( Analytics::EDIT_SCOPE ),
 				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create a new Analytics 4 property on your behalf.', 'google-site-kit' ),
 			),
-			'POST:create-webdatastream' => array(
+			'POST:create-webdatastream'  => array(
 				'service'                => 'analyticsadmin',
 				'scopes'                 => array( Analytics::EDIT_SCOPE ),
 				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create a new Analytics 4 Measurement ID for this site on your behalf.', 'google-site-kit' ),
 			),
-			'GET:properties'            => array( 'service' => 'analyticsadmin' ),
-			'GET:property'              => array( 'service' => 'analyticsadmin' ),
-			'GET:webdatastreams'        => array( 'service' => 'analyticsadmin' ),
-			'GET:webdatastreams-batch'  => array( 'service' => 'analyticsadmin' ),
+			'GET:properties'             => array( 'service' => 'analyticsadmin' ),
+			'GET:property'               => array( 'service' => 'analyticsadmin' ),
+			'GET:webdatastreams'         => array( 'service' => 'analyticsadmin' ),
+			'GET:webdatastreams-batch'   => array( 'service' => 'analyticsadmin' ),
 		);
 	}
 
