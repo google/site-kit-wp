@@ -146,7 +146,7 @@ const WPDashboardUniqueVisitorsChartWidget = () => {
 
 	return (
 		<div className="googlesitekit-unique-visitors-chart-widget">
-			<h3>Unique Visitors from Search</h3>
+			<h3>Unique visitors over the last 28 days</h3>
 			<GoogleChart
 				chartType="LineChart"
 				data={ googleChartData }
@@ -165,7 +165,7 @@ WPDashboardUniqueVisitorsChartWidget.chartOptions = {
 		startup: true,
 	},
 	chart: {
-		title: 'Unique Visitors from Search',
+		title: 'Unique visitors over the last 28 days',
 	},
 	statsColor: '#5c9271',
 	curveType: 'function',
