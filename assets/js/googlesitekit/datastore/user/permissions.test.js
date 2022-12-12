@@ -22,6 +22,7 @@
 import {
 	createTestRegistry,
 	subscribeUntil,
+	untilResolved,
 } from '../../../../../tests/js/utils';
 import { CORE_USER, PERMISSION_MANAGE_OPTIONS } from './constants';
 import FIXTURES from '../../modules/datastore/__fixtures__';
@@ -194,7 +195,7 @@ describe( 'core/user authentication', () => {
 		} );
 
 		describe( 'hasCapability', () => {
-			it( 'should return undefined if capabilities cannot be loaded', () => {
+			it( 'should return undefined if capabilities cannot be loaded', async () => {
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/core\/user\/data\/permissions/,
 					{
@@ -208,6 +209,8 @@ describe( 'core/user authentication', () => {
 					.hasCapability( 'unavailable_capability' );
 
 				expect( hasCapability ).toBeUndefined();
+
+				await untilResolved( registry, CORE_USER ).getCapabilities();
 			} );
 
 			it( 'should return FALSE if base capability is unavailable', () => {
@@ -276,7 +279,7 @@ describe( 'core/user authentication', () => {
 		} );
 
 		describe( 'getViewableModules', () => {
-			it( 'should return undefined if modules are not loaded', () => {
+			it( 'should return undefined if modules are not loaded', async () => {
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
 					{ body: FIXTURES, status: 200 }
@@ -287,6 +290,8 @@ describe( 'core/user authentication', () => {
 					.getViewableModules();
 
 				expect( viewableModules ).toBeUndefined();
+
+				await untilResolved( registry, CORE_MODULES ).getModules();
 			} );
 
 			it( 'should return an empty array if viewable permissions are not available', async () => {
@@ -357,7 +362,7 @@ describe( 'core/user authentication', () => {
 		} );
 
 		describe( 'canViewSharedModule', () => {
-			it( 'should return undefined if modules are not loaded', () => {
+			it( 'should return undefined if modules are not loaded', async () => {
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
 					{ body: FIXTURES, status: 200 }
@@ -368,6 +373,8 @@ describe( 'core/user authentication', () => {
 					.canViewSharedModule( 'search-console' );
 
 				expect( canViewSharedModule ).toBeUndefined();
+
+				await untilResolved( registry, CORE_MODULES ).getModules();
 			} );
 
 			it( 'should return FALSE if the module does not exist', () => {
@@ -400,7 +407,7 @@ describe( 'core/user authentication', () => {
 				expect( canViewSharedModule ).toBe( false );
 			} );
 
-			it( 'should return undefined if the capabilities are not loaded', () => {
+			it( 'should return undefined if the capabilities are not loaded', async () => {
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/core\/user\/data\/permissions/,
 					{
@@ -422,6 +429,8 @@ describe( 'core/user authentication', () => {
 					.canViewSharedModule( 'search-console' );
 
 				expect( canViewSharedModule ).toBeUndefined();
+
+				await untilResolved( registry, CORE_USER ).getCapabilities();
 			} );
 
 			it( 'should return FALSE if the module is shared but the user does not have the view permission', () => {

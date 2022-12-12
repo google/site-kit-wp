@@ -59,6 +59,7 @@ describe( 'core/user authentication', () => {
 	let store;
 
 	beforeAll( () => {
+		// jest.useFakeTimers();
 		API.setUsingCache( false );
 	} );
 
@@ -228,7 +229,7 @@ describe( 'core/user authentication', () => {
 				expect( missingScope ).toEqual( false );
 			} );
 
-			it( 'returns undefined if scope info is not available', () => {
+			it( 'returns undefined if scope info is not available', async () => {
 				muteFetch( coreUserDataEndpointRegExp );
 				const hasProvisioningScope = registry
 					.select( CORE_USER )
@@ -236,6 +237,7 @@ describe( 'core/user authentication', () => {
 						'https://www.googleapis.com/auth/ungranted.scope'
 					);
 				expect( hasProvisioningScope ).toEqual( undefined );
+				await untilResolved( registry, CORE_USER ).getAuthentication();
 			} );
 		} );
 
@@ -300,11 +302,12 @@ describe( 'core/user authentication', () => {
 				expect( console ).toHaveErrored();
 			} );
 
-			it( 'returns undefined if authentication info is not available', () => {
+			it( 'returns undefined if authentication info is not available', async () => {
 				muteFetch( coreUserDataEndpointRegExp );
 				expect(
 					registry.select( CORE_USER )[ selector ]()
 				).toBeUndefined();
+				await untilResolved( registry, CORE_USER ).getAuthentication();
 			} );
 		} );
 

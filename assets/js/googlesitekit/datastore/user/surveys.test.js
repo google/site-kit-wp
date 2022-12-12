@@ -31,6 +31,7 @@ describe( 'core/user surveys', () => {
 	let registry;
 
 	beforeEach( () => {
+		// jest.useFakeTimers();
 		registry = createTestRegistry();
 	} );
 
@@ -122,7 +123,7 @@ describe( 'core/user surveys', () => {
 				} ).toThrow( 'options.ttl must be a number' );
 			} );
 
-			it( 'should not throw when called with only a triggerID', () => {
+			it( 'should not throw when called with only a triggerID', async () => {
 				provideUserAuthentication( registry );
 
 				muteFetch( surveyTriggerEndpoint );
@@ -135,6 +136,8 @@ describe( 'core/user surveys', () => {
 						.dispatch( CORE_USER )
 						.triggerSurvey( 'adSenseSurvey' );
 				} ).not.toThrow();
+
+				await untilResolved( registry, CORE_USER ).getSurveyTimeouts();
 			} );
 
 			it( 'should not fetch if user is not authenticated', async () => {
@@ -221,10 +224,20 @@ describe( 'core/user surveys', () => {
 
 				provideUserAuthentication( registry );
 
+				await registry
+					.__experimentalResolveSelect( CORE_USER )
+					.getAuthentication();
+
 				muteFetch( surveyTriggerEndpoint );
 				muteFetch( surveyTimeoutEndpoint );
 
 				registry.dispatch( CORE_USER ).receiveGetSurveyTimeouts( [] );
+
+				await registry
+					.__experimentalResolveSelect( CORE_USER )
+					.getSurveyTimeouts();
+
+				jest.useFakeTimers();
 
 				await registry
 					.dispatch( CORE_USER )
@@ -240,6 +253,8 @@ describe( 'core/user surveys', () => {
 						data: { slug: 'optimizeSurvey', timeout: 500 },
 					},
 				} );
+
+				jest.useRealTimers();
 			} );
 		} );
 
@@ -332,11 +347,13 @@ describe( 'core/user surveys', () => {
 		} );
 
 		describe( 'getSurveyTimeouts', () => {
-			it( 'should return undefined util resolved', () => {
+			it( 'should return undefined util resolved', async () => {
 				muteFetch( surveyTimeoutsEndpoint, [] );
 				expect(
 					registry.select( CORE_USER ).getSurveyTimeouts()
 				).toBeUndefined();
+
+				await untilResolved( registry, CORE_USER ).getSurveyTimeouts();
 			} );
 
 			it( 'should return survey timeouts received from API', async () => {
@@ -389,11 +406,12 @@ describe( 'core/user surveys', () => {
 		} );
 
 		describe( 'isSurveyTimedOut', () => {
-			it( 'should return undefined if getSurveyTimeouts selector is not resolved yet', () => {
+			it( 'should return undefined if getSurveyTimeouts selector is not resolved yet', async () => {
 				fetchMock.getOnce( surveyTimeoutsEndpoint, { body: [] } );
 				expect(
 					registry.select( CORE_USER ).isSurveyTimedOut( 'foo' )
 				).toBeUndefined();
+				await untilResolved( registry, CORE_USER ).getSurveyTimeouts();
 			} );
 
 			it( 'should return TRUE if the survey is timed out', () => {

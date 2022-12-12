@@ -409,12 +409,17 @@ describe( 'core/user feature-tours', () => {
 			/^\/google-site-kit\/v1\/core\/user\/data\/dismissed-tours/;
 
 		describe( 'getDismissedFeatureTourSlugs', () => {
-			it( 'returns the initial state before the resolver runs', () => {
+			it( 'returns the initial state before the resolver runs', async () => {
 				muteFetch( fetchGetDismissedToursRegExp, [] );
 
 				expect(
 					registry.select( CORE_USER ).getDismissedFeatureTourSlugs()
 				).toBe( initialState.dismissedTourSlugs );
+
+				await untilResolved(
+					registry,
+					CORE_USER
+				).getDismissedFeatureTourSlugs();
 			} );
 
 			it( 'receives dismissed tours from the fetch dispatched by the resolver', async () => {
@@ -490,17 +495,22 @@ describe( 'core/user feature-tours', () => {
 				).toBe( true );
 			} );
 
-			it( 'will trigger the resolver for getDismissedFeatureTourSlugs and fetch if necessary', () => {
+			it( 'will trigger the resolver for getDismissedFeatureTourSlugs and fetch if necessary', async () => {
 				muteFetch( fetchGetDismissedToursRegExp );
 
 				registry.select( CORE_USER ).isTourDismissed( 'feature-x' );
+
+				await untilResolved(
+					registry,
+					CORE_USER
+				).getDismissedFeatureTourSlugs();
 
 				expect( fetchMock ).toHaveFetched(
 					fetchGetDismissedToursRegExp
 				);
 			} );
 
-			it( 'returns `undefined` if dismissed tours are not resolved yet', () => {
+			it( 'returns `undefined` if dismissed tours are not resolved yet', async () => {
 				// The request will respond that `feature-x` _is dismissed_
 				// but the selector will return `false` until the response is received.
 				fetchMock.getOnce( fetchGetDismissedToursRegExp, {
@@ -509,6 +519,11 @@ describe( 'core/user feature-tours', () => {
 				expect(
 					registry.select( CORE_USER ).isTourDismissed( 'feature-x' )
 				).toBeUndefined();
+
+				await untilResolved(
+					registry,
+					CORE_USER
+				).getDismissedFeatureTourSlugs();
 			} );
 		} );
 
