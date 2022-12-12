@@ -507,6 +507,18 @@ final class Analytics_4 extends Module
 	}
 
 	/**
+	 * Gets the configured TagManager service instance.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return Google_Service_TagManager instance.
+	 * @throws Exception Thrown if the module did not correctly set up the service.
+	 */
+	private function get_tagmanager_service() {
+		return $this->get_service( 'tagmanager' );
+	}
+
+	/**
 	 * Sets up information about the module.
 	 *
 	 * @since 1.30.0
