@@ -1595,7 +1595,7 @@ final class Modules {
 	 * Inserts default settings for shared ownership modules in passed dashboard sharing settings.
 	 *
 	 * Sharing settings for shared ownership modules such as pagespeed-insights
-	 * and idea-hub should always be manageable by "all admins". This function inserts
+	 * should always be manageable by "all admins". This function inserts
 	 * this 'default' setting for their respective module slugs even when the
 	 * dashboard_sharing settings option is not defined in the database or when settings
 	 * are not set for these modules.
