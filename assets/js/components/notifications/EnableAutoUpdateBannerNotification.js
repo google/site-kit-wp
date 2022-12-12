@@ -15,14 +15,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
 import BannerNotification from './BannerNotification';
 
 /**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { useEffect, useCallback, useState } from '@wordpress/element';
+import { useCallback, useEffect, useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -37,7 +36,7 @@ import {
 	PERMISSION_UPDATE_PLUGINS,
 } from '../../googlesitekit/datastore/user/constants';
 
-const { useSelect } = Data;
+const { useSelect, useDispatch } = Data;
 
 const NOTIFICATION_ID = 'enable-plugin-auto-update-notification';
 const HIDE_NOTIFICATION_ON_FIRST_SETUP =
@@ -50,59 +49,54 @@ const EnableAutoUpdateBannerNotification = () => {
 	const autoUpdatesEnabled = useSelect( ( select ) =>
 		select( CORE_SITE ).getAutoUpdatesEnabled()
 	);
-	const updatePluginNonce = useSelect( ( select ) =>
-		select( CORE_SITE ).getUpdatePluginNonce()
-	);
+
+	const { enableAutoUpdate } = useDispatch( CORE_SITE );
 
 	const [ notification ] = useQueryArg( 'notification' );
 	const [ slug ] = useQueryArg( 'slug' );
 
 	const [ isInitialPluginSetup, setIsFirstPluginSetup ] = useState( true );
 
-	// set isInitialPluginSetup
+	const setFirstPluginSetup = useCallback(
+		async ( isFirstSetup = true ) => {
+			if ( isFirstSetup ) {
+				await API.setItem( HIDE_NOTIFICATION_ON_FIRST_SETUP, true, {
+					ttl: getTimeInSeconds() * 10,
+				} );
+				setIsFirstPluginSetup( isFirstSetup );
+			} else {
+				const { value } = await API.getItem(
+					HIDE_NOTIFICATION_ON_FIRST_SETUP
+				);
+				setIsFirstPluginSetup( !! value );
+			}
+		},
+		[ setIsFirstPluginSetup ]
+	);
+
+	/**
+	 * If the user just set up Site Kit (eg. just returned from the
+	 * initial OAuth sign-in flow) and is seeing the dashboard
+	 * for the first time, we want to hide the notification for 10
+	 * minutes so they aren't immediately bothered by
+	 * CTA notifications.
+	 */
 	useEffect( () => {
-		if ( notification === 'authentication_success' && ! slug ) {
-			/**
-			 * On initial setup, we want to hide the notification for 10 minutes.
-			 */
-			setIsFirstPluginSetup( true );
-			API.setItem( HIDE_NOTIFICATION_ON_FIRST_SETUP, true, {
-				ttl: getTimeInSeconds() * 10,
-			} );
-		} else {
-			/**
-			 * If we are not on initial setup, we want to check if the notification is hidden.
-			 */
-			API.getItem( HIDE_NOTIFICATION_ON_FIRST_SETUP ).then(
-				( { cacheHit } ) => {
-					setIsFirstPluginSetup( cacheHit );
-				}
-			);
+		if ( ! hasUpdatePluginCapacity || ! autoUpdatesEnabled ) {
+			return;
 		}
-	}, [ notification, slug ] );
+		setFirstPluginSetup(
+			notification === 'authentication_success' && ! slug
+		);
+	}, [ notification, slug, hasUpdatePluginCapacity ] );
 
-	// call api with useCallback
-	const enablePluginAutoUpdate = useCallback( async () => {
-		const data = new FormData();
-		data.append( 'action', 'toggle-auto-updates' );
-		data.append( '_ajax_nonce', updatePluginNonce );
-		data.append( 'state', 'enable' );
-		data.append( 'type', 'plugin' );
-		data.append( 'asset', 'google-site-kit/google-site-kit.php' );
-
-		await fetch( global.ajaxurl, {
-			method: 'POST',
-			credentials: 'same-origin',
-			body: data,
-		} );
-	}, [ updatePluginNonce ] );
-
-	// don't show banner when user has no permission to update plugin or plugin auto updates are disabled
+	// Don't render anything if the user has no permission to update plugin or plugin auto-updates are disabled.
 	if ( ! hasUpdatePluginCapacity || ! autoUpdatesEnabled ) {
 		return null;
 	}
 
-	// dont show on initial plugin setup
+	// Don't show this banner if the user just came from the initial Site Kit setup
+	// flow less than 10 minutes ago.
 	if ( isInitialPluginSetup ) {
 		return null;
 	}
@@ -117,10 +111,10 @@ const EnableAutoUpdateBannerNotification = () => {
 			) }
 			ctaLabel={ __( 'Enable auto-updates', 'google-site-kit' ) }
 			dismiss={ __( 'Dismiss', 'google-site-kit' ) }
-			isDismissible={ true }
+			isDismissible
 			dismissExpires={ 0 }
 			ctaLink="#"
-			onCTAClick={ enablePluginAutoUpdate }
+			onCTAClick={ enableAutoUpdate }
 		/>
 	);
 };

@@ -95,8 +95,6 @@ describe( 'EnableAutoUpdateBannerNotification', () => {
 			registry,
 		} );
 
-		await waitFor( () => expect( API.getItem ).toHaveBeenCalledTimes( 1 ) );
-
 		expect( container ).toBeEmptyDOMElement();
 	} );
 
@@ -112,8 +110,6 @@ describe( 'EnableAutoUpdateBannerNotification', () => {
 		const { container } = render( <EnableAutoUpdateBannerNotification />, {
 			registry,
 		} );
-
-		await waitFor( () => expect( API.getItem ).toHaveBeenCalledTimes( 1 ) );
 
 		expect( container ).toBeEmptyDOMElement();
 	} );
@@ -147,6 +143,7 @@ describe( 'EnableAutoUpdateBannerNotification', () => {
 	it( 'should send enable-auto-updates post request to admin-ajax on cta click.', async () => {
 		await registry.dispatch( CORE_SITE ).receiveSiteInfo( {
 			autoUpdatesEnabled: true,
+			updatePluginNonce: '751b9198d2',
 		} );
 
 		await registry.dispatch( CORE_USER ).receiveCapabilities( {
