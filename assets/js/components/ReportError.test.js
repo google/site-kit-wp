@@ -33,6 +33,7 @@ import {
 import { fireEvent, render } from '../../../tests/js/test-utils';
 import ReportError from './ReportError';
 import { MODULES_ANALYTICS } from '../modules/analytics/datastore/constants';
+import { VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY } from '../googlesitekit/constants';
 
 describe( 'ReportError', () => {
 	let registry;
@@ -331,6 +332,27 @@ describe( 'ReportError', () => {
 			/>,
 			{
 				registry,
+			}
+		);
+
+		expect( queryByText( /retry/i ) ).not.toBeInTheDocument();
+	} );
+
+	it( 'should not render the `Retry` if user is in view only mode', () => {
+		const { queryByText } = render(
+			<ReportError
+				moduleSlug={ moduleName }
+				error={ {
+					code: 'test-error-code',
+					message: 'Test error message',
+					data: {},
+				} }
+			/>,
+			{
+				registry,
+			},
+			{
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 			}
 		);
 
