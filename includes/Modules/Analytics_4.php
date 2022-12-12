@@ -536,6 +536,8 @@ final class Analytics_4 extends Module
 				return self::parse_webdatastreams_batch( $response );
 			case 'GET:container-lookup':
 				return (array) $response;
+			case 'GET:container-destinations':
+				return (array) $response->destination;
 		}
 
 		return parent::parse_data_response( $data, $response );
