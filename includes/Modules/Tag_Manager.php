@@ -112,7 +112,7 @@ final class Tag_Manager extends Module
 	 */
 	public function get_scopes() {
 		return array(
-			'https://www.googleapis.com/auth/tagmanager.readonly',
+			Google_Service_TagManager::TAGMANAGER_READONLY,
 		);
 	}
 
