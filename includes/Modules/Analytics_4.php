@@ -512,6 +512,8 @@ final class Analytics_4 extends Module
 				return array_map( array( self::class, 'filter_webdatastream_with_ids' ), $webdatastreams );
 			case 'GET:webdatastreams-batch':
 				return self::parse_webdatastreams_batch( $response );
+			case 'GET:container-lookup':
+				return (array) $response;
 		}
 
 		return parent::parse_data_response( $data, $response );
