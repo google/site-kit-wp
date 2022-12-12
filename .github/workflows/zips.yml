@@ -122,7 +122,6 @@ jobs:
           # GitHub Wikis use this term as their main branch; this cannot be
           # changed so we need to continue using it for now.
           ref: master
-          token: ${{ secrets.GITHUB_PERSONAL_ACCESS_TOKEN }}
       - name: Download artifacts
         uses: actions/download-artifact@v1
         with:
@@ -154,7 +153,6 @@ jobs:
           # GitHub Wikis use this term as their main branch; this cannot be
           # changed so we need to continue using it for now.
           ref: master
-          token: ${{ secrets.GITHUB_PERSONAL_ACCESS_TOKEN }}
       - name: Prune PR files
         run: |
           rm -rf "refs/pull/${{ github.event.pull_request.number }}"

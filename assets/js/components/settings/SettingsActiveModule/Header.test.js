@@ -37,6 +37,7 @@ import {
 	provideModules,
 	fireEvent,
 	waitFor,
+	provideUserInfo,
 } from '../../../../../tests/js/test-utils';
 import { MODULES_ANALYTICS } from '../../../modules/analytics/datastore/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
@@ -64,6 +65,7 @@ describe( 'Header', () => {
 		global.location.hash = '';
 		registry = createTestRegistry();
 
+		provideUserInfo( registry );
 		provideModules( registry, [
 			{
 				slug: 'analytics',
@@ -110,6 +112,7 @@ describe( 'Header', () => {
 	} );
 
 	it( 'should render a button to connect GA4 if Analytics is connected but GA4 is not', () => {
+		registry.dispatch( MODULES_ANALYTICS ).setOwnerID( 1 );
 		const { queryByRole } = render( <Header slug="analytics" />, {
 			registry,
 		} );
@@ -120,9 +123,7 @@ describe( 'Header', () => {
 	} );
 
 	it( 'should not render the button to connect GA4 if Analytics is connected without access to it but GA4 is not', async () => {
-		registry
-			.dispatch( MODULES_ANALYTICS )
-			.receiveGetSettings( { ownerID: 100 } );
+		registry.dispatch( MODULES_ANALYTICS ).setOwnerID( 99 );
 		registry
 			.dispatch( CORE_MODULES )
 			.receiveCheckModuleAccess(

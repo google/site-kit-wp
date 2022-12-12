@@ -32,10 +32,6 @@ import {
 	provideModuleRegistrations,
 	provideUserCapabilities,
 } from '../../../../tests/js/utils';
-import {
-	CTA_PLACEMENT_STATIC_AUTO,
-	MODULES_THANK_WITH_GOOGLE,
-} from '../../modules/thank-with-google/datastore/constants';
 
 function Template( { ...args } ) {
 	return <SetupSuccessBannerNotification { ...args } />;
@@ -114,20 +110,6 @@ UserInputSuccess.parameters = {
 	},
 };
 
-export const ThankWithGoogle = Template.bind( {} );
-ThankWithGoogle.storyName = 'Authentication Success - Thank with Google';
-ThankWithGoogle.parameters = {
-	module: { slug: 'thank-with-google', name: 'Thank with Google' },
-	query: {
-		notification: 'authentication_success',
-		slug: 'thank-with-google',
-	},
-	features: [ 'twgModule' ],
-};
-ThankWithGoogle.scenario = {
-	label: 'Global/SetupSuccessBannerNotification/ThankWithGoogle',
-};
-
 export default {
 	title: 'Components/SetupSuccessBannerNotification',
 	component: SetupSuccessBannerNotification,
@@ -145,13 +127,6 @@ export default {
 			] );
 			provideModuleRegistrations( registry );
 			provideUserCapabilities( registry );
-
-			registry.dispatch( MODULES_THANK_WITH_GOOGLE ).receiveGetSettings( {
-				publicationID: 'example.com',
-				ctaPlacement: CTA_PLACEMENT_STATIC_AUTO,
-				colorTheme: 'purple',
-				ctaPostTypes: [ 'post', 'page' ],
-			} );
 
 			return (
 				<WithTestRegistry
