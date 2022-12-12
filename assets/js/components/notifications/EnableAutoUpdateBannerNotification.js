@@ -27,7 +27,6 @@ import { useCallback, useEffect, useState } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import API from 'googlesitekit-api';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { getTimeInSeconds } from '../../util';
 import useQueryArg from '../../hooks/useQueryArg';
@@ -35,6 +34,7 @@ import {
 	CORE_USER,
 	PERMISSION_UPDATE_PLUGINS,
 } from '../../googlesitekit/datastore/user/constants';
+import { getItem, setItem } from '../../googlesitekit/api/cache';
 import SpinnerButton from '../SpinnerButton';
 import CTA from './CTA';
 
@@ -71,12 +71,12 @@ const EnableAutoUpdateBannerNotification = () => {
 	const setFirstPluginSetup = useCallback(
 		async ( isFirstSetup = true ) => {
 			if ( isFirstSetup ) {
-				await API.setItem( HIDE_NOTIFICATION_ON_FIRST_SETUP, true, {
+				await setItem( HIDE_NOTIFICATION_ON_FIRST_SETUP, true, {
 					ttl: getTimeInSeconds() * 10,
 				} );
 				setIsFirstPluginSetup( isFirstSetup );
 			} else {
-				const { value } = await API.getItem(
+				const { value } = await getItem(
 					HIDE_NOTIFICATION_ON_FIRST_SETUP
 				);
 				setIsFirstPluginSetup( !! value );
@@ -149,7 +149,7 @@ const EnableAutoUpdateBannerNotification = () => {
 			isDismissible
 			dismissExpires={ 0 }
 			dismissOnCTAClick={ false }
-			footer={ error && <CTA title={ error } error></CTA> }
+			secondaryPane={ error && <CTA title={ error } error></CTA> }
 		/>
 	);
 };

@@ -29,10 +29,10 @@ import {
 } from '../../../../tests/js/test-utils';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import EnableAutoUpdateBannerNotification from './EnableAutoUpdateBannerNotification';
-import API from 'googlesitekit-api';
-
 import mockUseQueryArg from '../../hooks/useQueryArg';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import * as apiCache from '../../googlesitekit/api/cache';
+
 jest.mock( '../../hooks/useQueryArg' );
 
 // setup mockImplementation for `useQueryArg`
@@ -52,14 +52,14 @@ describe( 'EnableAutoUpdateBannerNotification', () => {
 		jest.resetAllMocks();
 		stubMockUseQueryArg();
 
-		jest.spyOn( API, 'getItem' ).mockImplementation( () => {
+		jest.spyOn( apiCache, 'getItem' ).mockImplementation( () => {
 			return Promise.resolve( {
 				cacheHit: false,
 				value: undefined,
 			} );
 		} );
 
-		jest.spyOn( API, 'setItem' ).mockImplementation( () => {
+		jest.spyOn( apiCache, 'setItem' ).mockImplementation( () => {
 			return Promise.resolve( true );
 		} );
 	} );
@@ -142,7 +142,7 @@ describe( 'EnableAutoUpdateBannerNotification', () => {
 			googlesitekit_update_plugins: true,
 		} );
 
-		jest.spyOn( API, 'getItem' ).mockImplementation( () => {
+		jest.spyOn( apiCache, 'getItem' ).mockImplementation( () => {
 			return Promise.resolve( {
 				cacheHit: true,
 				value: true,
@@ -154,7 +154,9 @@ describe( 'EnableAutoUpdateBannerNotification', () => {
 			registry,
 		} );
 
-		await waitFor( () => expect( API.getItem ).toHaveBeenCalledTimes( 1 ) );
+		await waitFor( () =>
+			expect( apiCache.getItem ).toHaveBeenCalledTimes( 1 )
+		);
 
 		expect( container ).toBeEmptyDOMElement();
 	} );
@@ -256,7 +258,7 @@ describe( 'EnableAutoUpdateBannerNotification', () => {
 			// Wait until that `setItem` call delaying the
 			// notification is called before checking the output
 			// of the component.
-			expect( API.setItem ).toHaveBeenCalledTimes( 1 )
+			expect( apiCache.setItem ).toHaveBeenCalledTimes( 1 )
 		);
 
 		expect( container ).toBeEmptyDOMElement();
