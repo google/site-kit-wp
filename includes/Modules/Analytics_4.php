@@ -456,12 +456,33 @@ final class Analytics_4 extends Module
 					return new WP_Error(
 						'missing_required_param',
 						/* translators: %s: Missing parameter name */
-						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'propertyIDs' ),
+						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'destinatonID' ),
 						array( 'status' => 400 )
 					);
 				}
 
 				return $this->get_tagmanager_service()->accounts_containers->lookup( array( 'destinationId' => $data['destinatonID'] ) );
+			case 'GET:container-destinations':
+				if ( ! isset( $data['accountID'] ) ) {
+					return new WP_Error(
+						'missing_required_param',
+						/* translators: %s: Missing parameter name */
+						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ),
+						array( 'status' => 400 )
+					);
+				}
+				if ( ! isset( $data['containerID'] ) ) {
+					return new WP_Error(
+						'missing_required_param',
+						/* translators: %s: Missing parameter name */
+						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'containerID' ),
+						array( 'status' => 400 )
+					);
+				}
+
+				return $this->get_tagmanager_service()->accounts_containers_destinations->listAccountsContainersDestinations(
+					"accounts/{$data['accountID']}/containers/{$data['containerID']}"
+				);
 		}
 
 		return parent::create_data_request( $data );
