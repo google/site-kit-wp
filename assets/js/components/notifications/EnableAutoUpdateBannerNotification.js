@@ -149,7 +149,7 @@ const EnableAutoUpdateBannerNotification = () => {
 			isDismissible
 			dismissExpires={ 0 }
 			dismissOnCTAClick={ false }
-			secondaryPane={ error && <CTA title={ error } error></CTA> }
+			footer={ error && <CTA title={ error } error></CTA> }
 		/>
 	);
 };

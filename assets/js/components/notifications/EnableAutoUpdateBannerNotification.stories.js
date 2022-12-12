@@ -22,6 +22,7 @@
  */
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import EnableAutoUpdateBannerNotification from './EnableAutoUpdateBannerNotification';
 
 const Template = ( { setupRegistry } ) => (
@@ -29,6 +30,19 @@ const Template = ( { setupRegistry } ) => (
 );
 
 export const Notification = Template.bind( {} );
+
+export const Error = Template.bind( {} );
+Error.args = {
+	setupRegistry: ( registry ) => {
+		registry
+			.dispatch( CORE_SITE )
+			.receiveError(
+				'Invalid data. The item does not exist.',
+				'enableAutoUpdate',
+				[]
+			);
+	},
+};
 
 export default {
 	title: 'Components/EnableAutoUpdateBannerNotification',
@@ -45,7 +59,16 @@ export default {
 				registry.dispatch( CORE_SITE ).receiveSiteInfo( {
 					updatePluginCapacity: true,
 					autoUpdatesEnabled: true,
+					updatePluginNonce: '751b9198d2',
+					siteKitAutoUpdatesEnabled: false,
 				} );
+				registry.dispatch( CORE_USER ).receiveCapabilities( {
+					googlesitekit_update_plugins: true,
+				} );
+
+				if ( args.setupRegistry ) {
+					args.setupRegistry( registry );
+				}
 			};
 
 			return (
