@@ -35,6 +35,8 @@ import {
 	CORE_USER,
 	PERMISSION_UPDATE_PLUGINS,
 } from '../../googlesitekit/datastore/user/constants';
+import SpinnerButton from '../SpinnerButton';
+import CTA from './CTA';
 
 const { useSelect, useDispatch } = Data;
 
@@ -48,6 +50,12 @@ const EnableAutoUpdateBannerNotification = () => {
 	);
 	const autoUpdatesEnabled = useSelect( ( select ) =>
 		select( CORE_SITE ).getAutoUpdatesEnabled()
+	);
+	const isDoingEnableAutoUpdate = useSelect( ( select ) =>
+		select( CORE_SITE ).isDoingEnableAutoUpdate()
+	);
+	const error = useSelect( ( select ) =>
+		select( CORE_SITE ).getErrorForAction( 'enableAutoUpdate', [] )
 	);
 
 	const { enableAutoUpdate } = useDispatch( CORE_SITE );
@@ -88,7 +96,13 @@ const EnableAutoUpdateBannerNotification = () => {
 		setFirstPluginSetup(
 			notification === 'authentication_success' && ! slug
 		);
-	}, [ notification, slug, hasUpdatePluginCapacity ] );
+	}, [
+		notification,
+		slug,
+		hasUpdatePluginCapacity,
+		autoUpdatesEnabled,
+		setFirstPluginSetup,
+	] );
 
 	// Don't render anything if the user has no permission to update plugin or plugin auto-updates are disabled.
 	if ( ! hasUpdatePluginCapacity || ! autoUpdatesEnabled ) {
@@ -109,12 +123,20 @@ const EnableAutoUpdateBannerNotification = () => {
 				'Turn on auto-updates so you always have the latest version of Site Kit. We constantly introduce new features to help you get the insights you need to be successful on the web.',
 				'google-site-kit'
 			) }
-			ctaLabel={ __( 'Enable auto-updates', 'google-site-kit' ) }
+			ctaComponent={
+				<SpinnerButton
+					onClick={ enableAutoUpdate }
+					isSaving={ isDoingEnableAutoUpdate }
+				>
+					{ isDoingEnableAutoUpdate }
+					{ __( 'Enable auto-updates', 'google-site-kit' ) }
+				</SpinnerButton>
+			}
 			dismiss={ __( 'Dismiss', 'google-site-kit' ) }
 			isDismissible
 			dismissExpires={ 0 }
-			ctaLink="#"
-			onCTAClick={ enableAutoUpdate }
+			dismissOnCTAClick={ false }
+			footer={ error && <CTA title={ error } error></CTA> }
 		/>
 	);
 };

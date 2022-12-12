@@ -27,12 +27,14 @@ import invariant from 'invariant';
 import Data from 'googlesitekit-data';
 import { CORE_SITE } from './constants';
 import { createFetchStore } from '../../data/create-fetch-store';
+import { actions as errorStoreActions } from '../../data/create-error-store';
 
+const { receiveError, clearError } = errorStoreActions;
 const { createRegistrySelector } = Data;
 
 const fetchEnableAutoUpdateStore = createFetchStore( {
 	baseName: 'enableAutoUpdate',
-	controlCallback: ( { nonce } ) => {
+	controlCallback: async ( { nonce } ) => {
 		const data = new FormData();
 		data.append( 'action', 'toggle-auto-updates' );
 		data.append( '_ajax_nonce', nonce );
@@ -40,11 +42,13 @@ const fetchEnableAutoUpdateStore = createFetchStore( {
 		data.append( 'type', 'plugin' );
 		data.append( 'asset', 'google-site-kit/google-site-kit.php' );
 
-		return fetch( global.ajaxurl, {
+		const response = await fetch( global.ajaxurl, {
 			method: 'POST',
 			credentials: 'same-origin',
 			body: data,
-		} ).then( ( response ) => response.json() );
+		} );
+
+		return response.json();
 	},
 	argsToParams: ( { nonce } ) => {
 		return {
@@ -69,13 +73,20 @@ const baseActions = {
 	 * @since n.e.x.t
 	 */
 	*enableAutoUpdate() {
+		yield clearError( 'enableAutoUpdate', [] );
+
 		const registry = yield Data.commonActions.getRegistry();
 
 		const nonce = registry.select( CORE_SITE ).getUpdatePluginNonce();
 
-		yield fetchEnableAutoUpdateStore.actions.fetchEnableAutoUpdate( {
-			nonce,
-		} );
+		const { response } =
+			yield fetchEnableAutoUpdateStore.actions.fetchEnableAutoUpdate( {
+				nonce,
+			} );
+
+		if ( response.data?.error ) {
+			yield receiveError( response.data.error, 'enableAutoUpdate', [] );
+		}
 	},
 };
 
