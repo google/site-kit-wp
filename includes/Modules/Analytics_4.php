@@ -450,6 +450,17 @@ final class Analytics_4 extends Module
 				return function() use ( $batch_request ) {
 					return $batch_request->execute();
 				};
+			case 'GET:container-lookup':
+				if ( ! isset( $data['destinatonID'] ) ) {
+					return new WP_Error(
+						'missing_required_param',
+						/* translators: %s: Missing parameter name */
+						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'propertyIDs' ),
+						array( 'status' => 400 )
+					);
+				}
+
+				return $this->get_tagmanager_service()->accounts_containers->lookup( array( 'destinationId' => $data['destinatonID'] ) );
 		}
 
 		return parent::create_data_request( $data );
