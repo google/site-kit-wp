@@ -118,11 +118,13 @@ const WPDashboardUniqueVisitorsChartWidget = () => {
 		},
 		series: {
 			0: {
-				color: WPDashboardUniqueVisitorsChartWidget.statsColor,
+				color: WPDashboardUniqueVisitorsChartWidget.chartOptions
+					.statsColor,
 				targetAxisIndex: 0,
 			},
 			1: {
-				color: WPDashboardUniqueVisitorsChartWidget.statsColor,
+				color: WPDashboardUniqueVisitorsChartWidget.chartOptions
+					.statsColor,
 				targetAxisIndex: 0,
 				lineDashStyle: [ 3, 3 ],
 				lineWidth: 1,
@@ -167,7 +169,7 @@ WPDashboardUniqueVisitorsChartWidget.chartOptions = {
 	chart: {
 		title: 'Unique visitors over the last 28 days',
 	},
-	statsColor: '#5c9271',
+	statsColor: '#6380b8',
 	curveType: 'function',
 	height: 270,
 	width: '100%',
