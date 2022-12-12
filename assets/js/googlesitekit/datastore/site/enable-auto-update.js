@@ -94,6 +94,12 @@ const baseActions = {
 		if ( response.data?.error ) {
 			yield receiveError( response.data.error, 'enableAutoUpdate', [] );
 		}
+
+		if ( response.success ) {
+			yield registry
+				.dispatch( CORE_SITE )
+				.setSiteKitAutoUpdatesEnabled( true );
+		}
 	},
 };
 

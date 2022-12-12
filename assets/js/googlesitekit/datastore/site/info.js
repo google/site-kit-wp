@@ -46,6 +46,7 @@ function getSiteInfoProperty( propName ) {
 // Actions
 const RECEIVE_SITE_INFO = 'RECEIVE_SITE_INFO';
 const RECEIVE_PERMALINK_PARAM = 'RECEIVE_PERMALINK_PARAM';
+const SET_SITE_KIT_AUTO_UPDATES_ENABLED = 'SET_SITE_KIT_AUTO_UPDATES_ENABLED';
 
 export const initialState = {
 	siteInfo: undefined,
@@ -83,6 +84,28 @@ export const actions = {
 			type: RECEIVE_PERMALINK_PARAM,
 		};
 	},
+
+	/**
+	 * Sets `siteKitAutoUpdatesEnabled` value.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {boolean} siteKitAutoUpdatesEnabled Whether Site Kit auto-updates are enabled.
+	 * @return {Object} Redux-style action.
+	 */
+	setSiteKitAutoUpdatesEnabled( siteKitAutoUpdatesEnabled ) {
+		// eslint-disable-next-line no-console
+		console.debug(
+			'setSiteKitAutoUpdatesEnabled',
+			siteKitAutoUpdatesEnabled
+		);
+		invariant( siteKitAutoUpdatesEnabled, 'permaLink is required.' );
+
+		return {
+			payload: { siteKitAutoUpdatesEnabled },
+			type: SET_SITE_KIT_AUTO_UPDATES_ENABLED,
+		};
+	},
 };
 
 export const controls = {};
@@ -116,6 +139,7 @@ export const reducer = ( state, { payload, type } ) => {
 				autoUpdatesEnabled,
 				updatePluginNonce,
 				siteKitAutoUpdatesEnabled,
+				pluginBasename,
 			} = payload.siteInfo;
 
 			return {
@@ -146,6 +170,7 @@ export const reducer = ( state, { payload, type } ) => {
 					autoUpdatesEnabled,
 					updatePluginNonce,
 					siteKitAutoUpdatesEnabled,
+					pluginBasename,
 				},
 			};
 		}
@@ -155,6 +180,16 @@ export const reducer = ( state, { payload, type } ) => {
 			return {
 				...state,
 				permaLink,
+			};
+
+		case SET_SITE_KIT_AUTO_UPDATES_ENABLED:
+			const { siteKitAutoUpdatesEnabled } = payload;
+			return {
+				...state,
+				siteInfo: {
+					...state.siteInfo,
+					siteKitAutoUpdatesEnabled,
+				},
 			};
 
 		default: {
@@ -201,6 +236,7 @@ export const resolvers = {
 			autoUpdatesEnabled,
 			updatePluginNonce,
 			siteKitAutoUpdatesEnabled,
+			pluginBasename,
 		} = global._googlesitekitBaseData;
 
 		const {
@@ -236,6 +272,7 @@ export const resolvers = {
 			autoUpdatesEnabled,
 			updatePluginNonce,
 			siteKitAutoUpdatesEnabled,
+			pluginBasename,
 		} );
 	},
 };
@@ -681,6 +718,16 @@ export const selectors = {
 	getSiteKitAutoUpdatesEnabled: getSiteInfoProperty(
 		'siteKitAutoUpdatesEnabled'
 	),
+
+	/**
+	 * Get the plugin basename.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(string)} The basename of plugin, e.g. 'google-site-kit/google-site-kit.php.
+	 */
+	getPluginBasename: getSiteInfoProperty( 'pluginBasename' ),
 
 	/**
 	 * Get the nonce for the activate plugin auto updates ajax action.
