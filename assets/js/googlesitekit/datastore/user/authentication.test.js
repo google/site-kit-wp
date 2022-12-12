@@ -59,7 +59,6 @@ describe( 'core/user authentication', () => {
 	let store;
 
 	beforeAll( () => {
-		// jest.useFakeTimers();
 		API.setUsingCache( false );
 	} );
 

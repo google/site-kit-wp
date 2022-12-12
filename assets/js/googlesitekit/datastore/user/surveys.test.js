@@ -31,7 +31,6 @@ describe( 'core/user surveys', () => {
 	let registry;
 
 	beforeEach( () => {
-		// jest.useFakeTimers();
 		registry = createTestRegistry();
 	} );
 

@@ -23,6 +23,7 @@ import {
 	createTestRegistry,
 	subscribeUntil,
 	unsubscribeFromAll,
+	untilResolved,
 } from '../../../../../tests/js/utils';
 import { initialState } from './index';
 import { CORE_USER } from './constants';
@@ -146,11 +147,13 @@ describe( 'core/user userInfo', () => {
 				expect( global[ userDataGlobal ] ).not.toEqual( undefined );
 			} );
 
-			it( 'will return initial state (undefined) when no data is available', () => {
+			it( 'will return initial state (undefined) when no data is available', async () => {
 				expect( global[ userDataGlobal ] ).toEqual( undefined );
 				const connectURL = registry.select( CORE_USER ).getConnectURL();
 
 				expect( connectURL ).toEqual( initialState.connectURL );
+
+				await untilResolved( registry, CORE_USER ).getConnectURL();
 				expect( console ).toHaveErrored();
 			} );
 
@@ -241,43 +244,51 @@ describe( 'core/user userInfo', () => {
 				// Data must not be wiped after retrieving, as it could be used by other dependants.
 				expect( global[ userDataGlobal ] ).not.toEqual( undefined );
 			} );
-			it( 'will return initial state (undefined) when no data is available', () => {
+			it( 'will return initial state (undefined) when no data is available', async () => {
 				expect( global[ userDataGlobal ] ).toEqual( undefined );
 
 				const userInfo = registry.select( CORE_USER ).getUser();
 
 				expect( userInfo ).toEqual( initialState.user );
+
+				await untilResolved( registry, CORE_USER ).getUser();
 				expect( console ).toHaveErrored();
 			} );
 		} );
 
 		describe( 'getInitialSiteKitVersion', () => {
-			it( 'uses a resolver to synchronously load data from a global variable', () => {
+			it( 'uses a resolver to load data from a global variable', async () => {
 				global[ userDataGlobal ] = {
 					...userData,
 					initialVersion: '1.2.3',
 				};
 
 				expect(
-					registry.stores[ CORE_USER ].store.getState().initialVersion
-				).toBeUndefined();
-				expect(
-					registry
-						.select( CORE_USER )
-						.hasStartedResolution( 'getInitialSiteKitVersion' )
-				).toBe( false );
+					registry.select( CORE_USER ).getInitialSiteKitVersion()
+				).toBe( undefined );
+
+				await untilResolved(
+					registry,
+					CORE_USER
+				).getInitialSiteKitVersion();
+
 				expect(
 					registry.select( CORE_USER ).getInitialSiteKitVersion()
 				).toBe( '1.2.3' );
 			} );
 
-			it( 'will return initial state (undefined) when no data is available', () => {
+			it( 'will return initial state (undefined) when no data is available', async () => {
 				expect( global[ userDataGlobal ] ).toBeUndefined();
 				const initialVersion = registry
 					.select( CORE_USER )
 					.getInitialSiteKitVersion();
 
 				expect( initialVersion ).toEqual( initialState.initialVersion );
+
+				await untilResolved(
+					registry,
+					CORE_USER
+				).getInitialSiteKitVersion();
 				expect( console ).toHaveErrored(
 					'Could not load core/user info.'
 				);
@@ -302,13 +313,15 @@ describe( 'core/user userInfo', () => {
 				// Data must not be wiped after retrieving, as it could be used by other dependants.
 				expect( global[ userDataGlobal ] ).not.toEqual( undefined );
 			} );
-			it( 'will return initial state (undefined) when no data is available', () => {
+			it( 'will return initial state (undefined) when no data is available', async () => {
 				expect( global[ userDataGlobal ] ).toEqual( undefined );
 
 				const isVerified = registry.select( CORE_USER ).isVerified();
 
 				const { verified } = initialState;
 				expect( isVerified ).toEqual( verified );
+
+				await untilResolved( registry, CORE_USER ).isVerified();
 				expect( console ).toHaveErrored();
 			} );
 		} );
@@ -335,12 +348,14 @@ describe( 'core/user userInfo', () => {
 
 				expect( userInfo ).toEqual( userData.user );
 			} );
-			it( 'will return initial state (undefined) when no data is available', () => {
+			it( 'will return initial state (undefined) when no data is available', async () => {
 				expect( global[ userDataGlobal ] ).toEqual( undefined );
 
 				const result = registry.select( CORE_USER )[ selector ]();
 
 				expect( result ).toEqual( undefined );
+
+				await untilResolved( registry, CORE_USER ).getUser();
 				expect( console ).toHaveErrored();
 			} );
 			it( 'will return the correct value when data is available', async () => {

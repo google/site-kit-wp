@@ -1118,7 +1118,7 @@ describe( 'core/modules modules', () => {
 				expect( console ).toHaveErrored();
 			} );
 
-			it( 'returns undefined if modules is not yet available', () => {
+			it( 'returns undefined if modules is not yet available', async () => {
 				// This triggers a network request, so ignore the error.
 				muteFetch(
 					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
@@ -1130,6 +1130,8 @@ describe( 'core/modules modules', () => {
 					.getModule( 'analytics' );
 
 				expect( module ).toBeUndefined();
+
+				await untilResolved( registry, CORE_MODULES ).getModules();
 			} );
 
 			it( 'returns null if the module does not exist', async () => {
@@ -1221,7 +1223,7 @@ describe( 'core/modules modules', () => {
 			[ 'getModuleDependencyNames', 'dependencies' ],
 			[ 'getModuleDependantNames', 'dependants' ],
 		] )( '%s', ( selector, collectionName ) => {
-			it( 'returns undefined when no modules are loaded', () => {
+			it( 'returns undefined when no modules are loaded', async () => {
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
 					{ body: FIXTURES, status: 200 }
@@ -1233,6 +1235,8 @@ describe( 'core/modules modules', () => {
 
 				// The modules will be undefined whilst loading.
 				expect( namesLoaded ).toBeUndefined();
+
+				await untilResolved( registry, CORE_MODULES ).getModules();
 			} );
 
 			it( `returns ${ collectionName } module names when modules are loaded`, async () => {
@@ -1330,7 +1334,7 @@ describe( 'core/modules modules', () => {
 				expect( isAvailableLoaded ).toEqual( false );
 			} );
 
-			it( 'returns undefined if modules is not yet available', () => {
+			it( 'returns undefined if modules is not yet available', async () => {
 				muteFetch(
 					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
 					[]
@@ -1341,6 +1345,8 @@ describe( 'core/modules modules', () => {
 					.isModuleAvailable( 'analytics' );
 
 				expect( isAvailable ).toBeUndefined();
+
+				await untilResolved( registry, CORE_MODULES ).getModules();
 			} );
 		} );
 
@@ -1410,7 +1416,7 @@ describe( 'core/modules modules', () => {
 				expect( isActiveLoaded ).toEqual( null );
 			} );
 
-			it( 'returns undefined if modules is not yet available', () => {
+			it( 'returns undefined if modules is not yet available', async () => {
 				muteFetch(
 					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
 					[]
@@ -1421,6 +1427,8 @@ describe( 'core/modules modules', () => {
 					.isModuleActive( 'analytics' );
 
 				expect( isActive ).toBeUndefined();
+
+				await untilResolved( registry, CORE_MODULES ).getModules();
 			} );
 		} );
 
@@ -1481,7 +1489,7 @@ describe( 'core/modules modules', () => {
 				}
 			);
 
-			it( 'returns undefined if modules is not yet available', () => {
+			it( 'returns undefined if modules is not yet available', async () => {
 				muteFetch(
 					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
 					[]
@@ -1492,11 +1500,13 @@ describe( 'core/modules modules', () => {
 					.isModuleConnected( 'analytics' );
 
 				expect( isConnected ).toBeUndefined();
+
+				await untilResolved( registry, CORE_MODULES ).getModules();
 			} );
 		} );
 
 		describe( 'getModuleFeatures', () => {
-			it( 'returns undefined when no modules are loaded', () => {
+			it( 'returns undefined when no modules are loaded', async () => {
 				muteFetch(
 					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
 					[]
@@ -1507,6 +1517,8 @@ describe( 'core/modules modules', () => {
 
 				// The modules will be undefined whilst loading.
 				expect( featuresLoaded ).toBeUndefined();
+
+				await untilResolved( registry, CORE_MODULES ).getModules();
 			} );
 
 			it( 'returns features when modules are loaded', () => {
@@ -1588,7 +1600,7 @@ describe( 'core/modules modules', () => {
 				expect( console ).toHaveErrored();
 			} );
 
-			it( 'should return undefined if module access is not resolved yet', () => {
+			it( 'should return undefined if module access is not resolved yet', async () => {
 				fetchMock.postOnce(
 					/^\/google-site-kit\/v1\/core\/modules\/data\/check-access/,
 					{ body: { access: true } }
@@ -1599,6 +1611,10 @@ describe( 'core/modules modules', () => {
 					.hasModuleAccess( 'search-console' );
 
 				expect( moduleAccess ).toBeUndefined();
+
+				await untilResolved( registry, CORE_MODULES ).hasModuleAccess(
+					'search-console'
+				);
 			} );
 		} );
 
@@ -1683,7 +1699,7 @@ describe( 'core/modules modules', () => {
 		} );
 
 		describe( 'getSharedOwnershipModules', () => {
-			it( 'should return undefined if `sharedOwnershipModules` cannot be loaded', () => {
+			it( 'should return undefined if `sharedOwnershipModules` cannot be loaded', async () => {
 				global[ dashboardSharingDataBaseVar ] = undefined;
 
 				provideModules( registry, FIXTURES );
@@ -1692,11 +1708,13 @@ describe( 'core/modules modules', () => {
 					.select( CORE_MODULES )
 					.getSharedOwnershipModules();
 
+				await untilResolved( registry, CORE_MODULES ).getModules();
+
 				expect( console ).toHaveErrored();
 				expect( sharedOwnershipModules ).toBeUndefined();
 			} );
 
-			it( 'should return undefined if `modules` list cannot be loaded', () => {
+			it( 'should return undefined if `modules` list cannot be loaded', async () => {
 				global[ dashboardSharingDataBaseVar ] =
 					sharedOwnershipModulesList;
 
@@ -1710,30 +1728,32 @@ describe( 'core/modules modules', () => {
 				const modules = registry.select( CORE_MODULES ).getModules();
 
 				expect( modules ).toBeUndefined();
+
+				await untilResolved( registry, CORE_MODULES ).getModules();
 			} );
 
-			it( 'should return an empty object if there is no `sharedOwnershipModules`', () => {
+			it( 'should return an empty object if there is no `sharedOwnershipModules`', async () => {
 				global[ dashboardSharingDataBaseVar ] = {
 					sharedOwnershipModules: [],
 				};
 
 				provideModules( registry, FIXTURES );
 
-				const sharedOwnershipModules = registry
-					.select( CORE_MODULES )
+				const sharedOwnershipModules = await registry
+					.__experimentalResolveSelect( CORE_MODULES )
 					.getSharedOwnershipModules();
 
 				expect( sharedOwnershipModules ).toMatchObject( {} );
 			} );
 
-			it( 'should return the modules object for each shared ownership module', () => {
+			it( 'should return the modules object for each shared ownership module', async () => {
 				global[ dashboardSharingDataBaseVar ] =
 					sharedOwnershipModulesList;
 
 				provideModules( registry, FIXTURES );
 
-				const sharedOwnershipModules = registry
-					.select( CORE_MODULES )
+				const sharedOwnershipModules = await registry
+					.__experimentalResolveSelect( CORE_MODULES )
 					.getSharedOwnershipModules();
 
 				expect( sharedOwnershipModules ).toMatchObject(
