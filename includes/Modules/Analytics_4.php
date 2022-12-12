@@ -33,6 +33,7 @@ use Google\Site_Kit\Core\Tags\Guards\Tag_Environment_Type_Guard;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Verify_Guard;
 use Google\Site_Kit\Core\Util\BC_Functions;
 use Google\Site_Kit\Core\Util\Debug_Data;
+use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Core\Util\Sort;
 use Google\Site_Kit\Core\Util\URL;
@@ -46,6 +47,8 @@ use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnaly
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaDataStreamWebStreamData;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaListDataStreamsResponse;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaProperty as Google_Service_GoogleAnalyticsAdmin_GoogleAnalyticsAdminV1betaProperty;
+use Google\Site_Kit_Dependencies\Google\Service\TagManager as Google_Service_TagManager;
+use Google\Site_Kit_Dependencies\Google\Service\TagManager\Container as Google_Service_TagManager_Container;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 use stdClass;
 use WP_Error;
@@ -92,9 +95,13 @@ final class Analytics_4 extends Module
 	 * @return array List of Google OAuth scopes.
 	 */
 	public function get_scopes() {
-		return array(
+		$scopes = array(
 			Analytics::READONLY_SCOPE,
 		);
+		if ( Feature_Flags::enabled( 'gteSupport' ) ) {
+			$scopes[] = Google_Service_TagManager::TAGMANAGER_READONLY;
+		}
+		return $scopes;
 	}
 
 	/**
