@@ -933,6 +933,8 @@ final class Authentication {
 			$data['updatePluginNonce']         = wp_create_nonce( 'updates' );
 		}
 
+		$data['pluginBasename'] = GOOGLESITEKIT_PLUGIN_BASENAME;
+
 		$current_user      = wp_get_current_user();
 		$data['userRoles'] = $current_user->roles;
 

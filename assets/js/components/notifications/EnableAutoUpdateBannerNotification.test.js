@@ -165,6 +165,7 @@ describe( 'EnableAutoUpdateBannerNotification', () => {
 		await registry.dispatch( CORE_SITE ).receiveSiteInfo( {
 			autoUpdatesEnabled: true,
 			updatePluginNonce: '751b9198d2',
+			pluginBasename: 'google-site-kit/google-site-kit.php',
 		} );
 
 		await registry.dispatch( CORE_USER ).receiveCapabilities( {
@@ -199,6 +200,7 @@ describe( 'EnableAutoUpdateBannerNotification', () => {
 		await registry.dispatch( CORE_SITE ).receiveSiteInfo( {
 			autoUpdatesEnabled: true,
 			updatePluginNonce: '751b9198d2',
+			pluginBasename: 'google-site-kit/google-site-kit.php',
 		} );
 
 		await registry.dispatch( CORE_USER ).receiveCapabilities( {

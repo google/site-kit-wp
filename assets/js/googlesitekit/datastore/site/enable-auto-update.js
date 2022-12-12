@@ -34,13 +34,13 @@ const { createRegistrySelector } = Data;
 
 const fetchEnableAutoUpdateStore = createFetchStore( {
 	baseName: 'enableAutoUpdate',
-	controlCallback: async ( { nonce } ) => {
+	controlCallback: async ( { nonce, pluginBasename } ) => {
 		const data = new FormData();
 		data.append( 'action', 'toggle-auto-updates' );
 		data.append( '_ajax_nonce', nonce );
 		data.append( 'state', 'enable' );
 		data.append( 'type', 'plugin' );
-		data.append( 'asset', 'google-site-kit/google-site-kit.php' );
+		data.append( 'asset', pluginBasename );
 
 		const response = await fetch( global.ajaxurl, {
 			method: 'POST',
@@ -50,13 +50,18 @@ const fetchEnableAutoUpdateStore = createFetchStore( {
 
 		return response.json();
 	},
-	argsToParams: ( { nonce } ) => {
+	argsToParams: ( { nonce, pluginBasename } ) => {
 		return {
 			nonce,
+			pluginBasename,
 		};
 	},
-	validateParams: ( { nonce } ) => {
+	validateParams: ( { nonce, pluginBasename } ) => {
 		invariant( typeof nonce === 'string', 'nonce is required.' );
+		invariant(
+			typeof pluginBasename === 'string',
+			'pluginBasename is required.'
+		);
 	},
 } );
 
@@ -78,10 +83,12 @@ const baseActions = {
 		const registry = yield Data.commonActions.getRegistry();
 
 		const nonce = registry.select( CORE_SITE ).getUpdatePluginNonce();
+		const pluginBasename = registry.select( CORE_SITE ).getPluginBasename();
 
 		const { response } =
 			yield fetchEnableAutoUpdateStore.actions.fetchEnableAutoUpdate( {
 				nonce,
+				pluginBasename,
 			} );
 
 		if ( response.data?.error ) {
@@ -96,7 +103,7 @@ const baseSelectors = {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return {boolean} `true` if enableAutoUpdateting is in-flight; `false` if not.
+	 * @return {boolean} `true` if enableAutoUpdate is in-flight; `false` if not.
 	 */
 	isDoingEnableAutoUpdate: createRegistrySelector( ( select ) => () => {
 		return select( CORE_SITE ).isFetchingEnableAutoUpdate();
