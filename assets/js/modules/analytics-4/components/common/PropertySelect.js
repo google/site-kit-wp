@@ -75,6 +75,8 @@ export default function PropertySelect( {
 		select( MODULES_ANALYTICS_4 ).getPropertyID()
 	);
 
+	const propertyIDs = properties.map( ( { _id } ) => _id );
+
 	const isLoading = useSelect(
 		( select ) =>
 			! select( MODULES_ANALYTICS ).hasFinishedResolution(
@@ -84,7 +86,12 @@ export default function PropertySelect( {
 				'getProperties',
 				[ accountID ]
 			) ||
-			select( MODULES_ANALYTICS ).hasFinishedSelectingAccount() === false
+			select( MODULES_ANALYTICS ).hasFinishedSelectingAccount() ===
+				false ||
+			! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
+				'getWebDataStreamsBatch',
+				[ propertyIDs ]
+			)
 	);
 
 	const { selectProperty } = useDispatch( MODULES_ANALYTICS_4 );
