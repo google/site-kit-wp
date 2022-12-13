@@ -203,7 +203,7 @@ export const baseControls = {
 					registry.select( CORE_USER ).getUserInputSettings() || {};
 
 				settings[ settingID ] = {
-					...( ( settings || {} )[ settingID ] || {} ),
+					...( settings?.[ settingID ] || {} ),
 					values,
 				};
 
