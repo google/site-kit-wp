@@ -75,7 +75,26 @@ export default function PropertySelect( {
 		select( MODULES_ANALYTICS_4 ).getPropertyID()
 	);
 
-	const propertyIDs = properties.map( ( { _id } ) => _id );
+	const measurementIDs = useSelect( ( select ) => {
+		if ( ! properties?.length ) {
+			return null;
+		}
+
+		return select(
+			MODULES_ANALYTICS_4
+		).getMatchedMeasurementIDsByPropertyIDs( properties );
+	} );
+
+	const areMeasurementIDsResolving = useSelect( ( select ) => {
+		if ( ! properties?.length ) {
+			return false;
+		}
+
+		return ! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
+			'getWebDataStreamsBatch',
+			[ ( properties || [] ).map( ( { _id } ) => _id ) ]
+		);
+	} );
 
 	const isLoading = useSelect(
 		( select ) =>
@@ -88,19 +107,10 @@ export default function PropertySelect( {
 			) ||
 			select( MODULES_ANALYTICS ).hasFinishedSelectingAccount() ===
 				false ||
-			! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
-				'getWebDataStreamsBatch',
-				[ propertyIDs ]
-			)
+			areMeasurementIDsResolving
 	);
 
 	const { selectProperty } = useDispatch( MODULES_ANALYTICS_4 );
-
-	const measurementIDs = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getMatchedMeasurementIDsByPropertyIDs(
-			properties
-		)
-	);
 
 	const viewContext = useViewContext();
 
