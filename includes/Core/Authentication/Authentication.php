@@ -32,6 +32,7 @@ use WP_REST_Response;
 use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Util\BC_Functions;
 use Google\Site_Kit\Core\Util\URL;
+use Google\Site_Kit\Core\Util\Auto_Updates;
 use Google\Site_Kit\Modules\Idea_Hub;
 use Google\Site_Kit\Modules\Thank_With_Google;
 
@@ -929,7 +930,7 @@ final class Authentication {
 		if ( version_compare( $version, '5.5', '>=' ) && function_exists( 'wp_is_auto_update_enabled_for_type' ) ) {
 			$data['updatePluginCapacity']      = current_user_can( 'update_plugins' );
 			$data['autoUpdatesEnabled']        = wp_is_auto_update_enabled_for_type( 'plugin' );
-			$data['siteKitAutoUpdatesEnabled'] = $this->context->is_autoupdate_enabled();
+			$data['siteKitAutoUpdatesEnabled'] = Auto_Updates::is_sitekit_autoupdates_enabled();
 			$data['updatePluginNonce']         = wp_create_nonce( 'updates' );
 		}
 
