@@ -304,6 +304,11 @@ describe( 'modules/analytics accounts', () => {
 						.select( MODULES_ANALYTICS )
 						.hasFinishedResolution( 'getAccounts' )
 				).toStrictEqual( false );
+
+				await untilResolved(
+					registry,
+					MODULES_ANALYTICS_4
+				).getSettings();
 			} );
 		} );
 
@@ -603,6 +608,11 @@ describe( 'modules/analytics accounts', () => {
 				expect( profiles ).toEqual(
 					fixtures.accountsPropertiesProfiles.profiles
 				);
+
+				await untilResolved(
+					registry,
+					MODULES_ANALYTICS
+				).getAccounts();
 			} );
 
 			it( 'does not fetch from UA properties endpoint if accounts are already present', async () => {
@@ -630,6 +640,11 @@ describe( 'modules/analytics accounts', () => {
 				);
 
 				expect( fetchMock ).not.toHaveFetched( propertiesEndpoint );
+
+				await untilResolved(
+					registry,
+					MODULES_ANALYTICS_4
+				).getSettings();
 			} );
 
 			it( 'does not fetch from UA properties endpoint if accounts exist but are empty (this is a valid state)', async () => {
@@ -647,6 +662,11 @@ describe( 'modules/analytics accounts', () => {
 
 				expect( accounts ).toEqual( [] );
 				expect( fetchMock ).not.toHaveFetched( propertiesEndpoint );
+
+				await untilResolved(
+					registry,
+					MODULES_ANALYTICS_4
+				).getSettings();
 			} );
 
 			it( 'dispatches an error if the request fails', async () => {
@@ -669,6 +689,11 @@ describe( 'modules/analytics accounts', () => {
 					registry,
 					MODULES_ANALYTICS
 				).getAccounts();
+
+				await untilResolved(
+					registry,
+					MODULES_ANALYTICS_4
+				).getSettings();
 
 				expect( fetchMock ).toHaveFetchedTimes( 5 );
 

@@ -22,6 +22,7 @@
 import {
 	render,
 	createTestRegistry,
+	act,
 } from '../../../../../../tests/js/test-utils';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import { MODULES_ANALYTICS } from '../../datastore/constants';
@@ -38,6 +39,7 @@ describe( 'SettingsEdit', () => {
 	let registry;
 
 	beforeEach( () => {
+		jest.useFakeTimers();
 		registry = createTestRegistry();
 		provideSiteInfo( registry );
 		provideModules( registry, [
@@ -86,10 +88,13 @@ describe( 'SettingsEdit', () => {
 			.dispatch( MODULES_ANALYTICS )
 			.receiveGetProfiles( profiles, { accountID, propertyID } );
 
-		const { waitForRegistry, container } = render( <SettingsEdit />, {
+		const { container } = render( <SettingsEdit />, {
 			registry,
 		} );
-		await waitForRegistry();
+
+		jest.runAllTimers();
+
+		await act( () => new Promise( ( resolve ) => resolve() ) );
 
 		// Verify GTM is not available.
 		expect(
