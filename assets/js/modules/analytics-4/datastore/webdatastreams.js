@@ -383,9 +383,18 @@ const baseSelectors = {
 					return acc;
 				}
 
+				const matchingDataStream = select(
+					MODULES_ANALYTICS_4
+				).getMatchingWebDataStream( dataStream[ currentPropertyID ] );
+
+				if ( ! matchingDataStream ) {
+					return acc;
+				}
+
 				const measurementID =
-					dataStream[ currentPropertyID ][ 0 ].webStreamData
-						.measurementId; // eslint-disable-line sitekit/acronym-case
+					// eslint-disable-next-line sitekit/acronym-case
+					matchingDataStream.webStreamData.measurementId;
+
 				return {
 					...acc,
 					[ currentPropertyID ]: measurementID,

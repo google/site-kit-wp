@@ -548,6 +548,10 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 			} );
 
 			it( 'should return an empty object if the properties are not matched', () => {
+				provideSiteInfo( registry, {
+					referenceSiteURL: 'http://example.com',
+				} );
+
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveGetWebDataStreamsBatch(
@@ -572,6 +576,10 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 			} );
 
 			it( 'should return an object with matched property id as the key and measurement id as the value', () => {
+				provideSiteInfo( registry, {
+					referenceSiteURL: 'http://example.com',
+				} );
+
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveGetWebDataStreamsBatch(
@@ -590,11 +598,14 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 					);
 				expect( matchedProperties ).toEqual( {
 					1000: '1A2BCD345E',
-					1001: '155BC2366E',
 				} );
 			} );
 
 			it( 'should skip matching if the property id is not found in the property object', () => {
+				provideSiteInfo( registry, {
+					referenceSiteURL: 'http://example.net',
+				} );
+
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveGetWebDataStreamsBatch(
@@ -618,7 +629,6 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 						},
 					] );
 				expect( matchedProperties ).toEqual( {
-					1000: '1A2BCD345E',
 					1001: '155BC2366E',
 				} );
 			} );
