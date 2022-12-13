@@ -182,7 +182,7 @@ const baseActions = {
 		const registry = yield Data.commonActions.getRegistry();
 		return registry
 			.select( MODULES_ANALYTICS_4 )
-			.getMatchingWebDataStream( propertyID );
+			.getMatchingWebDataStreamByPropertyID( propertyID );
 	},
 
 	/**
@@ -279,21 +279,21 @@ const baseSelectors = {
 	},
 
 	/**
-	 * Gets matched web data stream for selected property.
+	 * Gets matched web data stream from a list of web data streams.
 	 *
 	 * @since 1.31.0
+	 * @since n.e.x.t Updated to match a data stream from a list of provided web data streams.
 	 *
-	 * @param {Object} state      Data store's state.
-	 * @param {string} propertyID The GA4 property ID to find matched web data stream.
-	 * @return {(Object|null|undefined)} A web data stream object if found, otherwise null; `undefined` if web data streams are not loaded.
+	 * @param {Object} state       Data store's state.
+	 * @param {Array}  datastreams A list of web data streams.
+	 * @return {(Object|null)} A web data stream object if found, otherwise null.
 	 */
 	getMatchingWebDataStream: createRegistrySelector(
-		( select ) => ( state, propertyID ) => {
-			const datastreams =
-				select( MODULES_ANALYTICS_4 ).getWebDataStreams( propertyID );
-			if ( datastreams === undefined ) {
-				return undefined;
-			}
+		( select ) => ( _state, datastreams ) => {
+			invariant(
+				Array.isArray( datastreams ),
+				'datastreams must be an array.'
+			);
 
 			for ( const datastream of datastreams ) {
 				if (
@@ -307,6 +307,33 @@ const baseSelectors = {
 			}
 
 			return null;
+		}
+	),
+
+	/**
+	 * Gets matched web data stream for selected property.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state      Data store's state.
+	 * @param {string} propertyID The GA4 property ID to find matched web data stream.
+	 * @return {(Object|null|undefined)} A web data stream object if found, otherwise null; `undefined` if web data streams are not loaded.
+	 */
+	getMatchingWebDataStreamByPropertyID: createRegistrySelector(
+		( select ) => ( _state, propertyID ) => {
+			const datastreams =
+				select( MODULES_ANALYTICS_4 ).getWebDataStreams( propertyID );
+
+			if ( datastreams === undefined ) {
+				return undefined;
+			}
+
+			const matchingDataStream =
+				select( MODULES_ANALYTICS_4 ).getMatchingWebDataStream(
+					datastreams
+				);
+
+			return matchingDataStream || null;
 		}
 	),
 

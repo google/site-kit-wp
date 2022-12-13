@@ -274,6 +274,51 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 
 		describe( 'getMatchingWebDataStream', () => {
 			const webDataStreams = [ webDataStreamDotCom, webDataStreamDotOrg ];
+
+			it( 'should return NULL when no datastreams are matched', () => {
+				provideSiteInfo( registry, {
+					referenceSiteURL: 'http://example.net',
+				} );
+
+				const datastream = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getMatchingWebDataStream( webDataStreams );
+
+				expect( datastream ).toBeNull();
+			} );
+
+			it( 'should return the correct datastream when reference site URL matches exactly', () => {
+				provideSiteInfo( registry, {
+					referenceSiteURL: 'http://example.com',
+				} );
+
+				const datastream = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getMatchingWebDataStream( webDataStreams );
+
+				expect( datastream ).toEqual( webDataStreamDotCom );
+			} );
+
+			it.each( [
+				[ 'protocol differences', 'https://example.org' ],
+				[ '"www." prefix', 'http://www.example.org' ],
+				[ 'trailing slash', 'https://www.example.org/' ],
+			] )(
+				'should return the correct datastream ignoring %s',
+				( _, referenceSiteURL ) => {
+					provideSiteInfo( registry, { referenceSiteURL } );
+
+					const datastream = registry
+						.select( MODULES_ANALYTICS_4 )
+						.getMatchingWebDataStream( webDataStreams );
+
+					expect( datastream ).toEqual( webDataStreamDotOrg );
+				}
+			);
+		} );
+
+		describe( 'getMatchingWebDataStreamByPropertyID', () => {
+			const webDataStreams = [ webDataStreamDotCom, webDataStreamDotOrg ];
 			const propertyID = '12345';
 
 			it( 'should return undefined if web data streams arent loaded yet', () => {
@@ -281,7 +326,7 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 
 				const datastream = registry
 					.select( MODULES_ANALYTICS_4 )
-					.getMatchingWebDataStream( propertyID );
+					.getMatchingWebDataStreamByPropertyID( propertyID );
 				expect( datastream ).toBeUndefined();
 			} );
 
@@ -295,7 +340,7 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 
 				const datastream = registry
 					.select( MODULES_ANALYTICS_4 )
-					.getMatchingWebDataStream( propertyID );
+					.getMatchingWebDataStreamByPropertyID( propertyID );
 				expect( datastream ).toBeNull();
 			} );
 
@@ -309,7 +354,7 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 
 				const datastream = registry
 					.select( MODULES_ANALYTICS_4 )
-					.getMatchingWebDataStream( propertyID );
+					.getMatchingWebDataStreamByPropertyID( propertyID );
 				expect( datastream ).toEqual( webDataStreamDotCom );
 			} );
 
@@ -329,7 +374,7 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 
 					const datastream = registry
 						.select( MODULES_ANALYTICS_4 )
-						.getMatchingWebDataStream( propertyID );
+						.getMatchingWebDataStreamByPropertyID( propertyID );
 					expect( datastream ).toEqual( webDataStreamDotOrg );
 				}
 			);
