@@ -243,7 +243,7 @@ describe( 'Analytics write scope requests', () => {
 			text: /configure analytics/i,
 		} );
 		await page.waitForSelector( '.mdc-dialog--open .mdc-button', {
-			timeout: 3000000,
+			timeout: 3000,
 		} );
 		await expect( page ).toClick( '.mdc-dialog--open .mdc-button', {
 			text: /proceed/i,
