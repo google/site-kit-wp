@@ -40,13 +40,16 @@ describe( 'useCompleteModuleActivationCallback', () => {
 	mockLocation();
 	let registry;
 
-	beforeEach( () => {
+	beforeEach( async () => {
 		registry = createTestRegistry();
 
 		provideSiteInfo( registry );
 		provideModules( registry );
 		provideModuleRegistrations( registry );
 		provideUserCapabilities( registry );
+
+		// Wait one tick for async actions to complete.
+		await new Promise( ( resolve ) => setTimeout( resolve, 0 ) );
 	} );
 
 	it( 'should navigate to the module reauthentication URL', async () => {

@@ -25,6 +25,7 @@ import {
 	createTestRegistry,
 	subscribeUntil,
 	unsubscribeFromAll,
+	untilResolved,
 } from '../../../../../tests/js/utils';
 import { getAdSenseMockResponse } from '../util/data-mock';
 
@@ -131,6 +132,10 @@ describe( 'modules/adsense report', () => {
 					.select( MODULES_ADSENSE )
 					.getReport( options );
 				expect( report ).toEqual( undefined );
+
+				await untilResolved( registry, MODULES_ADSENSE ).getReport(
+					options
+				);
 				expect( console ).toHaveErrored();
 			} );
 		} );

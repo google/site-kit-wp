@@ -140,6 +140,8 @@ describe( 'AccountSelect', () => {
 	} );
 
 	it( 'should pre-select the property and profile IDs when changed', () => {
+		jest.useFakeTimers();
+
 		fetchMock.getOnce(
 			/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
 			{ body: [] }
@@ -174,6 +176,10 @@ describe( 'AccountSelect', () => {
 				( acct ) => acct.id === properties[ 0 ].accountId
 			);
 			fireEvent.click( getByText( account.name ) );
+		} );
+
+		act( () => {
+			jest.runAllTimers();
 		} );
 
 		const newPropertyID = registry

@@ -71,6 +71,7 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 	} );
 
 	beforeEach( () => {
+		jest.useRealTimers();
 		registry = createTestRegistry();
 		// Receive empty settings to prevent unexpected fetch by resolver.
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
@@ -117,6 +118,8 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 			} );
 
 			it( 'should dispatch an error if the request fails', async () => {
+				jest.useFakeTimers();
+
 				const propertyID = '12345';
 				const response = {
 					code: 'internal_server_error',
@@ -277,6 +280,8 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 			const propertyID = '12345';
 
 			it( 'should return undefined if web data streams arent loaded yet', () => {
+				jest.useFakeTimers();
+
 				freezeFetch( webDataStreamsEndpoint );
 
 				const datastream = registry
