@@ -173,7 +173,7 @@ export default function PropertySelect( {
 				} )
 				.map( ( { _id, displayName }, index ) => (
 					<Option key={ index } value={ _id }>
-						{ _id === PROPERTY_CREATE
+						{ _id === PROPERTY_CREATE || ! measurementIDs?.[ _id ]
 							? displayName
 							: sprintf(
 									/* translators: 1: Property name. 2: Measurement ID. */
