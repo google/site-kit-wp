@@ -338,27 +338,6 @@ describe( 'ReportError', () => {
 		expect( queryByText( /retry/i ) ).not.toBeInTheDocument();
 	} );
 
-	it( 'should not render the `Retry` if user is in view only mode', () => {
-		const { queryByText } = render(
-			<ReportError
-				moduleSlug={ moduleName }
-				error={ {
-					code: 'test-error-code',
-					message: 'Test error message',
-					data: {},
-				} }
-			/>,
-			{
-				registry,
-			},
-			{
-				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
-			}
-		);
-
-		expect( queryByText( /retry/i ) ).not.toBeInTheDocument();
-	} );
-
 	it( 'should render the `Retry` button if the error selector name is `getReport`', () => {
 		const { getByRole } = render(
 			<ReportError
@@ -389,6 +368,37 @@ describe( 'ReportError', () => {
 		);
 
 		expect( getByRole( 'button', { name: /retry/i } ) ).toBeInTheDocument();
+	} );
+
+	it( 'should not render the `Retry` button for a view-only user', () => {
+		const { queryByText } = render(
+			<ReportError
+				moduleSlug={ moduleName }
+				error={ {
+					code: 'test-error-code',
+					message: 'Test error message',
+					data: {},
+					selectorData: {
+						args: [
+							{
+								dimensions: [ 'ga:date' ],
+								metrics: [ { expression: 'ga:users' } ],
+								startDate: '2020-08-11',
+								endDate: '2020-09-07',
+							},
+						],
+						name: 'getReport',
+						storeName: MODULES_ANALYTICS,
+					},
+				} }
+			/>,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+			}
+		);
+
+		expect( queryByText( /retry/i ) ).not.toBeInTheDocument();
 	} );
 
 	it( 'should dispatch the `invalidateResolution` action for each retry-able error', () => {
