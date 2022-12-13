@@ -52,6 +52,11 @@ export default function SettingsEdit() {
 
 	const hasModuleAccess = useSelect( ( select ) => {
 		const moduleOwnerID = select( MODULES_SEARCH_CONSOLE ).getOwnerID();
+
+		if ( moduleOwnerID === undefined || loggedInUserID === undefined ) {
+			return undefined;
+		}
+
 		if ( moduleOwnerID === loggedInUserID ) {
 			return true;
 		}

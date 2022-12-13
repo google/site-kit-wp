@@ -15,13 +15,13 @@ use Google\Site_Kit\Core\Dismissals\Dismissed_Items;
 use Google\Site_Kit\Core\Dismissals\REST_Dismissals_Controller;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Core\Storage\User_Options;
-use Google\Site_Kit\Tests\RestTestTriat;
+use Google\Site_Kit\Tests\RestTestTrait;
 use Google\Site_Kit\Tests\TestCase;
 use WP_REST_Request;
 
 class REST_Dismissals_ControllerTest extends TestCase {
 
-	use RestTestTriat;
+	use RestTestTrait;
 
 	/**
 	 * Dismissed items instance.
