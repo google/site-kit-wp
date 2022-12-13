@@ -94,11 +94,6 @@ export const actions = {
 	 * @return {Object} Redux-style action.
 	 */
 	setSiteKitAutoUpdatesEnabled( siteKitAutoUpdatesEnabled ) {
-		// eslint-disable-next-line no-console
-		console.debug(
-			'setSiteKitAutoUpdatesEnabled',
-			siteKitAutoUpdatesEnabled
-		);
 		invariant( siteKitAutoUpdatesEnabled, 'permaLink is required.' );
 
 		return {
@@ -137,7 +132,6 @@ export const reducer = ( state, { payload, type } ) => {
 				wpVersion,
 				updateCoreURL,
 				autoUpdatesEnabled,
-				updatePluginNonce,
 				siteKitAutoUpdatesEnabled,
 				pluginBasename,
 			} = payload.siteInfo;
@@ -168,7 +162,6 @@ export const reducer = ( state, { payload, type } ) => {
 					wpVersion,
 					updateCoreURL,
 					autoUpdatesEnabled,
-					updatePluginNonce,
 					siteKitAutoUpdatesEnabled,
 					pluginBasename,
 				},
@@ -234,7 +227,6 @@ export const resolvers = {
 			wpVersion,
 			updateCoreURL,
 			autoUpdatesEnabled,
-			updatePluginNonce,
 			siteKitAutoUpdatesEnabled,
 			pluginBasename,
 		} = global._googlesitekitBaseData;
@@ -270,7 +262,6 @@ export const resolvers = {
 			wpVersion,
 			updateCoreURL,
 			autoUpdatesEnabled,
-			updatePluginNonce,
 			siteKitAutoUpdatesEnabled,
 			pluginBasename,
 		} );
@@ -728,16 +719,6 @@ export const selectors = {
 	 * @return {(string)} The basename of plugin, e.g. 'google-site-kit/google-site-kit.php.
 	 */
 	getPluginBasename: getSiteInfoProperty( 'pluginBasename' ),
-
-	/**
-	 * Get the nonce for the activate plugin auto updates ajax action.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param {Object} state Data store's state.
-	 * @return {(boolean|undefined)} `true` if plugin auto updates are enabled, otherwise `false`.
-	 */
-	getUpdatePluginNonce: getSiteInfoProperty( 'updatePluginNonce' ),
 
 	/**
 	 * Determines whether the current WordPress site has the minimum required version.

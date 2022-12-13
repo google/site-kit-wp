@@ -1,8 +1,7 @@
-/* eslint-disable no-unused-vars */
 /**
- * CoreSiteBannerNotifications Component Stories.
+ * EnableAutoUpdateBannerNotification Component Stories.
  *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2022 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,9 +24,7 @@ import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import EnableAutoUpdateBannerNotification from './EnableAutoUpdateBannerNotification';
 
-const Template = ( { setupRegistry } ) => (
-	<EnableAutoUpdateBannerNotification />
-);
+const Template = () => <EnableAutoUpdateBannerNotification />;
 
 export const Notification = Template.bind( {} );
 
@@ -59,12 +56,14 @@ export default {
 				registry.dispatch( CORE_SITE ).receiveSiteInfo( {
 					updatePluginCapacity: true,
 					autoUpdatesEnabled: true,
-					updatePluginNonce: '751b9198d2',
 					siteKitAutoUpdatesEnabled: false,
 				} );
 				registry.dispatch( CORE_USER ).receiveCapabilities( {
 					googlesitekit_update_plugins: true,
 				} );
+				registry
+					.dispatch( CORE_USER )
+					.receiveNonces( { updates: '751b9198d2' } );
 
 				if ( args.setupRegistry ) {
 					args.setupRegistry( registry );

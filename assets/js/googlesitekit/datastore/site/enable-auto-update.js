@@ -28,6 +28,7 @@ import Data from 'googlesitekit-data';
 import { CORE_SITE } from './constants';
 import { createFetchStore } from '../../data/create-fetch-store';
 import { actions as errorStoreActions } from '../../data/create-error-store';
+import { CORE_USER } from '../user/constants';
 
 const { receiveError, clearError } = errorStoreActions;
 const { createRegistrySelector } = Data;
@@ -82,7 +83,7 @@ const baseActions = {
 
 		const registry = yield Data.commonActions.getRegistry();
 
-		const nonce = registry.select( CORE_SITE ).getUpdatePluginNonce();
+		const nonce = registry.select( CORE_USER ).getNonce( 'updates' );
 		const pluginBasename = registry.select( CORE_SITE ).getPluginBasename();
 
 		const { response } =

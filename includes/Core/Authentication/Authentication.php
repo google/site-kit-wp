@@ -931,7 +931,6 @@ final class Authentication {
 			$data['updatePluginCapacity']      = current_user_can( 'update_plugins' );
 			$data['autoUpdatesEnabled']        = wp_is_auto_update_enabled_for_type( 'plugin' );
 			$data['siteKitAutoUpdatesEnabled'] = Auto_Updates::is_sitekit_autoupdates_enabled();
-			$data['updatePluginNonce']         = wp_create_nonce( 'updates' );
 		}
 
 		$data['pluginBasename'] = GOOGLESITEKIT_PLUGIN_BASENAME;

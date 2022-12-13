@@ -62,6 +62,11 @@ describe( 'EnableAutoUpdateBannerNotification', () => {
 		jest.spyOn( apiCache, 'setItem' ).mockImplementation( () => {
 			return Promise.resolve( true );
 		} );
+
+		fetchMock.get( /^\/google-site-kit\/v1\/core\/user\/data\/nonces/, {
+			body: { updates: '751b9198d2' },
+			status: 200,
+		} );
 	} );
 
 	it( 'should display the notification if Site Kit was not recently set up and user can update plugins', async () => {
@@ -164,8 +169,11 @@ describe( 'EnableAutoUpdateBannerNotification', () => {
 	it( 'should send enable-auto-updates post request to admin-ajax on cta click.', async () => {
 		await registry.dispatch( CORE_SITE ).receiveSiteInfo( {
 			autoUpdatesEnabled: true,
-			updatePluginNonce: '751b9198d2',
 			pluginBasename: 'google-site-kit/google-site-kit.php',
+		} );
+
+		await registry.dispatch( CORE_USER ).receiveNonces( {
+			updates: '751b9198d2',
 		} );
 
 		await registry.dispatch( CORE_USER ).receiveCapabilities( {
@@ -199,8 +207,11 @@ describe( 'EnableAutoUpdateBannerNotification', () => {
 	it( 'should show error message on error response', async () => {
 		await registry.dispatch( CORE_SITE ).receiveSiteInfo( {
 			autoUpdatesEnabled: true,
-			updatePluginNonce: '751b9198d2',
 			pluginBasename: 'google-site-kit/google-site-kit.php',
+		} );
+
+		await registry.dispatch( CORE_USER ).receiveNonces( {
+			updates: '751b9198d2',
 		} );
 
 		await registry.dispatch( CORE_USER ).receiveCapabilities( {
