@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { useCallback } from '@wordpress/element';
+import { useCallback, createInterpolateElement } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -72,25 +72,34 @@ export default function AnonymizeIPSwitch() {
 						hideLabel={ false }
 					/>
 					<p>
-						{ anonymizeIP
-							? __(
-									'IP addresses will be anonymized.',
-									'google-site-kit'
-							  )
-							: __(
-									'IP addresses will not be anonymized.',
-									'google-site-kit'
-							  ) }{ ' ' }
-						<Link
-							href={ supportURL }
-							external
-							aria-label={ __(
-								'Learn more about IP anonymization.',
-								'google-site-kit'
-							) }
-						>
-							{ __( 'Learn more', 'google-site-kit' ) }
-						</Link>
+						{ createInterpolateElement(
+							anonymizeIP
+								? __(
+										'IP addresses will be anonymized. <LearnMoreLink />',
+										'google-site-kit'
+								  )
+								: __(
+										'IP addresses will not be anonymized. <LearnMoreLink />',
+										'google-site-kit'
+								  ),
+							{
+								LearnMoreLink: (
+									<Link
+										href={ supportURL }
+										external
+										aria-label={ __(
+											'Learn more about IP anonymization.',
+											'google-site-kit'
+										) }
+									>
+										{ __(
+											'Learn more',
+											'google-site-kit'
+										) }
+									</Link>
+								),
+							}
+						) }
 					</p>
 				</div>
 			</div>
