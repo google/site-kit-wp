@@ -142,17 +142,6 @@
 			@extend .mdc-layout-grid__cell--span-8-tablet;
 		}
 
-		// Button
-		.mdc-button {
-
-			@extend .mdc-button;
-		}
-
-		.mdc-button--raised {
-
-			@extend .mdc-button--raised;
-		}
-
 		// Data Blocks
 		.googlesitekit-data-block {
 
@@ -189,38 +178,9 @@
 			@extend .googlesitekit-data-block__value;
 		}
 
-		// CTA Link
-		.googlesitekit-cta-link {
-
-			@extend .googlesitekit-cta-link;
-			height: auto;
-		}
-
 		.googlesitekit-adminbar__link {
 
 			@extend .googlesitekit-adminbar__link;
-		}
-
-		// CTA's
-		.googlesitekit-cta {
-
-			@extend .googlesitekit-cta;
-			box-sizing: border-box;
-		}
-
-		.googlesitekit-cta--error {
-
-			@extend .googlesitekit-cta--error;
-		}
-
-		.googlesitekit-cta__title {
-
-			@extend .googlesitekit-cta__title;
-		}
-
-		.googlesitekit-cta__description {
-
-			@extend .googlesitekit-cta__description;
 		}
 	}
 
@@ -246,11 +206,52 @@
 	// Higher-specificity overrides.
 	.googlesitekit-plugin .googlesitekit-adminbar {
 
+		.mdc-button {
+
+			@extend .mdc-button;
+		}
+
+		.mdc-button--raised {
+
+			@extend .mdc-button--raised;
+		}
+
+		// CTAs
+		.googlesitekit-cta {
+
+			@extend .googlesitekit-cta;
+			box-sizing: border-box;
+		}
+
+		.googlesitekit-cta--error {
+
+			@extend .googlesitekit-cta--error;
+		}
+
+		.googlesitekit-cta__title {
+
+			@extend .googlesitekit-cta__title;
+		}
+
+		.googlesitekit-cta__description {
+
+			@extend .googlesitekit-cta__description;
+		}
+
 		.googlesitekit-cta-link {
+
+			@extend .googlesitekit-cta-link;
 
 			background-color: transparent;
 			font-size: $fs-body-lg;
+			height: auto;
 			letter-spacing: $ls-m;
+			width: max-content;
+		}
+
+		.googlesitekit-error-cta-wrapper .mdc-button {
+
+			margin-bottom: 24px;
 		}
 
 		// New Analytics CTA Link
