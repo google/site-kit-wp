@@ -16,13 +16,13 @@ use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\User_Surveys\REST_User_Surveys_Controller;
 use Google\Site_Kit\Core\User_Surveys\Survey_Timeouts;
-use Google\Site_Kit\Tests\RestTestTriat;
+use Google\Site_Kit\Tests\RestTestTrait;
 use Google\Site_Kit\Tests\TestCase;
 use WP_REST_Request;
 
 class REST_User_Surveys_ControllerTest extends TestCase {
 
-	use RestTestTriat;
+	use RestTestTrait;
 
 	/**
 	 * REST_User_Surveys_Controller object.
