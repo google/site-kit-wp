@@ -365,27 +365,29 @@ const baseSelectors = {
 				return null;
 			}
 
-			return properties.reduce( ( acc, property ) => {
-				const currentPropertyID = property?._id;
-				if ( ! currentPropertyID ) {
-					return acc;
-				}
+			const propertyIDs = ( properties || [] )
+				.map( ( { _id } ) => _id )
+				.filter( Boolean );
 
-				const dataStream =
-					select( MODULES_ANALYTICS_4 ).getWebDataStreamsBatch(
-						currentPropertyID
-					);
+			const dataStreamsByProperty =
+				select( MODULES_ANALYTICS_4 ).getWebDataStreamsBatch(
+					propertyIDs
+				);
 
-				if (
-					! Object.keys( dataStream ).length ||
-					! Object.values( dataStream[ currentPropertyID ] ).length
-				) {
+			if ( dataStreamsByProperty === undefined ) {
+				return undefined;
+			}
+
+			return propertyIDs.reduce( ( acc, currentPropertyID ) => {
+				if ( ! dataStreamsByProperty[ currentPropertyID ]?.length ) {
 					return acc;
 				}
 
 				const matchingDataStream = select(
 					MODULES_ANALYTICS_4
-				).getMatchingWebDataStream( dataStream[ currentPropertyID ] );
+				).getMatchingWebDataStream(
+					dataStreamsByProperty[ currentPropertyID ]
+				);
 
 				if ( ! matchingDataStream ) {
 					return acc;
