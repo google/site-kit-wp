@@ -282,7 +282,7 @@ const baseSelectors = {
 	 * Gets matched web data stream from a list of web data streams.
 	 *
 	 * @since 1.31.0
-	 * @since n.e.x.t Updated to match a data stream from a list of provided web data streams.
+	 * @since 1.90.0 Updated to match a data stream from a list of provided web data streams.
 	 *
 	 * @param {Object} state       Data store's state.
 	 * @param {Array}  datastreams A list of web data streams.
@@ -313,7 +313,7 @@ const baseSelectors = {
 	/**
 	 * Gets matched web data stream for selected property.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.90.0
 	 *
 	 * @param {Object} state      Data store's state.
 	 * @param {string} propertyID The GA4 property ID to find matched web data stream.
@@ -354,7 +354,7 @@ const baseSelectors = {
 	 * Gets the matched measurement IDs for the given property IDs.
 	 *
 	 * @since 1.88.0
-	 * @since n.e.x.t Use propertyIDs instead of property objects for matching.
+	 * @since 1.90.0 Use propertyIDs instead of property objects for matching.
 	 *
 	 * @param {Object}         state       Data store's state.
 	 * @param {Array.<string>} propertyIDs GA4 property IDs array of strings.
