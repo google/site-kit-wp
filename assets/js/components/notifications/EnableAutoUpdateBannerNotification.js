@@ -54,17 +54,9 @@ const EnableAutoUpdateBannerNotification = () => {
 	const siteKitAutoUpdatesEnabled = useSelect( ( select ) =>
 		select( CORE_SITE ).getSiteKitAutoUpdatesEnabled()
 	);
-	const nonce = useSelect( ( select ) =>
-		select( CORE_USER ).getNonce( 'updates' )
-	);
-	const pluginBasename = useSelect( ( select ) =>
-		select( CORE_SITE ).getPluginBasename()
-	);
+
 	const isDoingEnableAutoUpdate = useSelect( ( select ) =>
-		select( CORE_SITE ).isDoingEnableAutoUpdate( {
-			nonce,
-			pluginBasename,
-		} )
+		select( CORE_SITE ).isDoingEnableAutoUpdate()
 	);
 	const error = useSelect( ( select ) =>
 		select( CORE_SITE ).getErrorForAction( 'enableAutoUpdate', [] )
@@ -150,7 +142,6 @@ const EnableAutoUpdateBannerNotification = () => {
 					onClick={ enableAutoUpdate }
 					isSaving={ isDoingEnableAutoUpdate }
 				>
-					{ isDoingEnableAutoUpdate }
 					{ __( 'Enable auto-updates', 'google-site-kit' ) }
 				</SpinnerButton>
 			}

@@ -119,15 +119,14 @@ const baseSelectors = {
 	 * @param {string} pluginBasename The plugin base name.
 	 * @return {boolean} `true` if enableAutoUpdate is in-flight; `false` if not.
 	 */
-	isDoingEnableAutoUpdate: createRegistrySelector(
-		( select ) =>
-			( state, { nonce, pluginBasename } ) => {
-				return select( CORE_SITE ).isFetchingEnableAutoUpdate( {
-					nonce,
-					pluginBasename,
-				} );
-			}
-	),
+	isDoingEnableAutoUpdate: createRegistrySelector( ( select ) => () => {
+		const nonce = select( CORE_USER ).getNonce( 'updates' );
+		const pluginBasename = select( CORE_SITE ).getPluginBasename();
+		return select( CORE_SITE ).isFetchingEnableAutoUpdate( {
+			nonce,
+			pluginBasename,
+		} );
+	} ),
 };
 
 const store = Data.combineStores( fetchEnableAutoUpdateStore, {
