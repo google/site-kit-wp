@@ -533,19 +533,7 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 		} );
 
 		describe( 'getMatchedMeasurementIDsByPropertyIDs', () => {
-			it( 'should return null if the properties are empty', () => {
-				expect(
-					registry
-						.select( MODULES_ANALYTICS_4 )
-						.getMatchedMeasurementIDsByPropertyIDs( [] )
-				).toBeNull();
-
-				expect(
-					registry
-						.select( MODULES_ANALYTICS_4 )
-						.getMatchedMeasurementIDsByPropertyIDs( null )
-				).toBeNull();
-			} );
+			const propertyIDs = fixtures.properties.map( ( { _id } ) => _id );
 
 			it( 'should return an empty object if the properties are not matched', () => {
 				provideSiteInfo( registry, {
@@ -556,22 +544,13 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveGetWebDataStreamsBatch(
 						fixtures.webDataStreamsBatch,
-						{
-							propertyIDs: fixtures.properties.map(
-								( { _id } ) => _id
-							),
-						}
+						{ propertyIDs: [ '1100' ] }
 					);
 
 				const matchedProperties = registry
 					.select( MODULES_ANALYTICS_4 )
-					.getMatchedMeasurementIDsByPropertyIDs( [
-						{
-							_id: '1100',
-							_accountID: '100',
-							name: 'properties/1100',
-						},
-					] );
+					.getMatchedMeasurementIDsByPropertyIDs( [ '1100' ] );
+
 				expect( matchedProperties ).toEqual( {} );
 			} );
 
@@ -584,52 +563,15 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveGetWebDataStreamsBatch(
 						fixtures.webDataStreamsBatch,
-						{
-							propertyIDs: fixtures.properties.map(
-								( { _id } ) => _id
-							),
-						}
+						{ propertyIDs }
 					);
 
 				const matchedProperties = registry
 					.select( MODULES_ANALYTICS_4 )
-					.getMatchedMeasurementIDsByPropertyIDs(
-						fixtures.properties
-					);
+					.getMatchedMeasurementIDsByPropertyIDs( propertyIDs );
+
 				expect( matchedProperties ).toEqual( {
 					1000: '1A2BCD345E',
-				} );
-			} );
-
-			it( 'should skip matching if the property id is not found in the property object', () => {
-				provideSiteInfo( registry, {
-					referenceSiteURL: 'http://example.net',
-				} );
-
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveGetWebDataStreamsBatch(
-						fixtures.webDataStreamsBatch,
-						{
-							propertyIDs: fixtures.properties.map(
-								( { _id } ) => _id
-							),
-						}
-					);
-
-				const matchedProperties = registry
-					.select( MODULES_ANALYTICS_4 )
-					.getMatchedMeasurementIDsByPropertyIDs( [
-						...fixtures.properties,
-						// Add an object that does not have the _id property.
-						// Hence, it should be skipped from the matching.
-						{
-							_accountID: '100',
-							name: 'properties/1100',
-						},
-					] );
-				expect( matchedProperties ).toEqual( {
-					1001: '155BC2366E',
 				} );
 			} );
 		} );

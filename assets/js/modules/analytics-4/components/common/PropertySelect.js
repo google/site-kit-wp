@@ -75,6 +75,8 @@ export default function PropertySelect( {
 		select( MODULES_ANALYTICS_4 ).getPropertyID()
 	);
 
+	const propertyIDs = ( properties || [] ).map( ( { _id } ) => _id );
+
 	const measurementIDs = useSelect( ( select ) => {
 		if ( ! properties?.length ) {
 			return null;
@@ -82,17 +84,21 @@ export default function PropertySelect( {
 
 		return select(
 			MODULES_ANALYTICS_4
-		).getMatchedMeasurementIDsByPropertyIDs( properties );
+		).getMatchedMeasurementIDsByPropertyIDs( propertyIDs );
 	} );
 
 	const areMeasurementIDsResolving = useSelect( ( select ) => {
-		if ( ! properties?.length ) {
+		if ( properties === undefined ) {
+			return true;
+		}
+
+		if ( ! properties || properties?.length === 0 ) {
 			return false;
 		}
 
 		return ! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
 			'getWebDataStreamsBatch',
-			[ ( properties || [] ).map( ( { _id } ) => _id ) ]
+			[ propertyIDs ]
 		);
 	} );
 

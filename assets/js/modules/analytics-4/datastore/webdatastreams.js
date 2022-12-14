@@ -351,43 +351,46 @@ const baseSelectors = {
 	},
 
 	/**
-	 * Gets the matched measurement IDs for the given properties.
+	 * Gets the matched measurement IDs for the given property IDs.
 	 *
 	 * @since 1.88.0
+	 * @since n.e.x.t Use propertyIDs instead of property objects for matching.
 	 *
-	 * @param {Object}         state      Data store's state.
-	 * @param {Array.<Object>} properties GA4 properties array of objects.
-	 * @return {(Object|null)} Object with matched property ID as the key and measurement ID as the value, or an empty object if no matches are found. Null if no properties are provided.
+	 * @param {Object}         state       Data store's state.
+	 * @param {Array.<string>} propertyIDs GA4 property IDs array of strings.
+	 * @return {(Object|undefined)} Object with matched property ID as the key and measurement ID as the value, or an empty object if no matches are found; `undefined` if web data streams are not loaded.
 	 */
 	getMatchedMeasurementIDsByPropertyIDs: createRegistrySelector(
-		( select ) => ( state, properties ) => {
-			if ( ! properties?.length ) {
-				return null;
-			}
+		( select ) => ( _state, propertyIDs ) => {
+			invariant(
+				Array.isArray( propertyIDs ) && propertyIDs?.length,
+				'propertyIDs must be an array containing GA4 propertyIDs.'
+			);
 
-			const propertyIDs = ( properties || [] )
-				.map( ( { _id } ) => _id )
-				.filter( Boolean );
+			propertyIDs.forEach( ( propertyID ) => {
+				invariant(
+					isValidPropertyID( propertyID ),
+					'A valid GA4 propertyID is required.'
+				);
+			} );
 
-			const dataStreamsByProperty =
+			const datastreams =
 				select( MODULES_ANALYTICS_4 ).getWebDataStreamsBatch(
 					propertyIDs
 				);
 
-			if ( dataStreamsByProperty === undefined ) {
+			if ( datastreams === undefined ) {
 				return undefined;
 			}
 
 			return propertyIDs.reduce( ( acc, currentPropertyID ) => {
-				if ( ! dataStreamsByProperty[ currentPropertyID ]?.length ) {
+				if ( ! datastreams[ currentPropertyID ]?.length ) {
 					return acc;
 				}
 
 				const matchingDataStream = select(
 					MODULES_ANALYTICS_4
-				).getMatchingWebDataStream(
-					dataStreamsByProperty[ currentPropertyID ]
-				);
+				).getMatchingWebDataStream( datastreams[ currentPropertyID ] );
 
 				if ( ! matchingDataStream ) {
 					return acc;

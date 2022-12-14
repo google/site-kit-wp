@@ -167,11 +167,17 @@ export default function GA4SettingsControls( {
 		propertyID,
 	] );
 
-	const measurementIDs = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getMatchedMeasurementIDsByPropertyIDs(
-			properties
-		)
-	);
+	const measurementIDs = useSelect( ( select ) => {
+		if ( ! properties?.length ) {
+			return null;
+		}
+
+		return select(
+			MODULES_ANALYTICS_4
+		).getMatchedMeasurementIDsByPropertyIDs(
+			( properties || [] ).map( ( { _id } ) => _id )
+		);
+	} );
 
 	if ( isAdminAPIWorking === undefined ) {
 		return <ProgressBar height={ isDisabled ? 180 : 212 } small />;
