@@ -86,6 +86,10 @@ const baseActions = {
 		const nonce = registry.select( CORE_USER ).getNonce( 'updates' );
 		const pluginBasename = registry.select( CORE_SITE ).getPluginBasename();
 
+		if ( ! nonce || ! pluginBasename ) {
+			return;
+		}
+
 		const { response } =
 			yield fetchEnableAutoUpdateStore.actions.fetchEnableAutoUpdate( {
 				nonce,
@@ -110,11 +114,20 @@ const baseSelectors = {
 	 *
 	 * @since n.e.x.t
 	 *
+	 * @param {Object} state          Data store's state.
+	 * @param {string} nonce          The nonce string.
+	 * @param {string} pluginBasename The plugin base name.
 	 * @return {boolean} `true` if enableAutoUpdate is in-flight; `false` if not.
 	 */
-	isDoingEnableAutoUpdate: createRegistrySelector( ( select ) => () => {
-		return select( CORE_SITE ).isFetchingEnableAutoUpdate();
-	} ),
+	isDoingEnableAutoUpdate: createRegistrySelector(
+		( select ) =>
+			( state, { nonce, pluginBasename } ) => {
+				return select( CORE_SITE ).isFetchingEnableAutoUpdate( {
+					nonce,
+					pluginBasename,
+				} );
+			}
+	),
 };
 
 const store = Data.combineStores( fetchEnableAutoUpdateStore, {
