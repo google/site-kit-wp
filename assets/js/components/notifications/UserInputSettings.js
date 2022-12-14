@@ -83,7 +83,7 @@ export default function UserInputSettings( {
 		<BannerNotification
 			id={ `user-input-settings-notification-${ instanceID }` }
 			className="googlesitekit-user-input__notification"
-			title={ __( 'Key Metrics', 'google-site-kit' ) }
+			title={ __( 'Key metrics', 'google-site-kit' ) }
 			description={ __(
 				'Answer 3 quick questions to help us show the most relevant data for your site',
 				'google-site-kit'
