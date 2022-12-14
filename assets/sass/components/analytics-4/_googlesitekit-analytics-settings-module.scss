@@ -1,5 +1,5 @@
 /**
- * GA4 styles.
+ * Analytics Settings styles.
  *
  * Site Kit by Google, Copyright 2022 Google LLC
  *
@@ -16,6 +16,12 @@
  * limitations under the License.
  */
 
-@import "googlesitekit-analytics-4-reminder-banner";
-@import "googlesitekit-analytics-4-setup-banner";
-@import "googlesitekit-analytics-settings-module";
+.googlesitekit-plugin {
+
+	.googlesitekit-settings-module--analytics {
+
+		.googlesitekit-setup-module__inputs .googlesitekit-analytics-4__select-property {
+			margin-top: $grid-gap-phone / 2;
+		}
+	}
+}
