@@ -33,19 +33,6 @@ const Template = () => <EnableAutoUpdateBannerNotification />;
 
 export const Notification = Template.bind( {} );
 
-export const Error = Template.bind( {} );
-Error.args = {
-	setupRegistry: ( registry ) => {
-		registry
-			.dispatch( CORE_SITE )
-			.receiveError(
-				'Invalid data. The item does not exist.',
-				'enableAutoUpdate',
-				[]
-			);
-	},
-};
-
 export default {
 	title: 'Components/EnableAutoUpdateBannerNotification',
 	decorators: [

@@ -36,7 +36,6 @@ import {
 } from '../../googlesitekit/datastore/user/constants';
 import { getItem, setItem } from '../../googlesitekit/api/cache';
 import SpinnerButton from '../SpinnerButton';
-import CTA from './CTA';
 
 const { useSelect, useDispatch } = Data;
 
@@ -57,9 +56,6 @@ const EnableAutoUpdateBannerNotification = () => {
 
 	const isDoingEnableAutoUpdate = useSelect( ( select ) =>
 		select( CORE_SITE ).isDoingEnableAutoUpdate()
-	);
-	const error = useSelect( ( select ) =>
-		select( CORE_SITE ).getErrorForAction( 'enableAutoUpdate', [] )
 	);
 
 	const { enableAutoUpdate } = useDispatch( CORE_SITE );
@@ -149,7 +145,6 @@ const EnableAutoUpdateBannerNotification = () => {
 			isDismissible
 			dismissExpires={ 0 }
 			dismissOnCTAClick={ false }
-			footer={ error && <CTA title={ error } error></CTA> }
 		/>
 	);
 };
