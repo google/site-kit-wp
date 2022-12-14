@@ -219,6 +219,7 @@ export default function UserInputQuestionnaire() {
 						}
 						options={ USER_INPUT_ANSWERS_PURPOSE }
 						next={ nextCallback }
+						showInstructions
 					/>
 				</UserInputQuestionWrapper>
 			) }
@@ -256,6 +257,7 @@ export default function UserInputQuestionnaire() {
 						}
 						options={ USER_INPUT_ANSWERS_POST_FREQUENCY }
 						next={ nextCallback }
+						showInstructions
 					/>
 				</UserInputQuestionWrapper>
 			) }
@@ -287,6 +289,7 @@ export default function UserInputQuestionnaire() {
 						}
 						options={ USER_INPUT_ANSWERS_GOALS }
 						next={ nextCallback }
+						showInstructions
 					/>
 				</UserInputQuestionWrapper>
 			) }
