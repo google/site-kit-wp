@@ -204,46 +204,6 @@ describe( 'EnableAutoUpdateBannerNotification', () => {
 		delete global.ajaxurl;
 	} );
 
-	it( 'should show error message on error response', async () => {
-		await registry.dispatch( CORE_SITE ).receiveSiteInfo( {
-			autoUpdatesEnabled: true,
-			pluginBasename: 'google-site-kit/google-site-kit.php',
-		} );
-
-		await registry.dispatch( CORE_USER ).receiveNonces( {
-			updates: '751b9198d2',
-		} );
-
-		await registry.dispatch( CORE_USER ).receiveCapabilities( {
-			googlesitekit_update_plugins: true,
-		} );
-
-		global.ajaxurl = 'admin-ajax.php';
-
-		const errorMessage = 'Invalid data. The item does not exist.';
-
-		fetchMock.postOnce( /^\/admin-ajax.php/, {
-			body: { success: false, data: { error: errorMessage } },
-			status: 200,
-		} );
-
-		act( () => {
-			render( <EnableAutoUpdateBannerNotification />, {
-				registry,
-			} );
-		} );
-
-		expect(
-			await screen.findByText( 'Keep Site Kit up-to-date' )
-		).toBeInTheDocument();
-
-		fireEvent.click( screen.getByText( 'Enable auto-updates' ) );
-
-		expect( await screen.findByText( errorMessage ) ).toBeInTheDocument();
-
-		delete global.ajaxurl;
-	} );
-
 	it( 'should not show the notification directly after Site Kit initial setup', async () => {
 		stubMockUseQueryArg( true );
 
