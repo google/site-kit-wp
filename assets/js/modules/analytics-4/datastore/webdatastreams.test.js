@@ -292,11 +292,21 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 					referenceSiteURL: 'http://example.com',
 				} );
 
-				const datastream = registry
-					.select( MODULES_ANALYTICS_4 )
-					.getMatchingWebDataStream( webDataStreams );
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getMatchingWebDataStream( webDataStreams )
+				).toEqual( webDataStreamDotCom );
 
-				expect( datastream ).toEqual( webDataStreamDotCom );
+				provideSiteInfo( registry, {
+					referenceSiteURL: 'http://example.org',
+				} );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getMatchingWebDataStream( webDataStreams )
+				).toEqual( webDataStreamDotOrg );
 			} );
 
 			it.each( [
@@ -345,17 +355,29 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 			} );
 
 			it( 'should return the correct datastream when reference site URL matches exactly', () => {
-				provideSiteInfo( registry, {
-					referenceSiteURL: 'http://example.com',
-				} );
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveGetWebDataStreams( webDataStreams, { propertyID } );
 
-				const datastream = registry
-					.select( MODULES_ANALYTICS_4 )
-					.getMatchingWebDataStreamByPropertyID( propertyID );
-				expect( datastream ).toEqual( webDataStreamDotCom );
+				provideSiteInfo( registry, {
+					referenceSiteURL: 'http://example.com',
+				} );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getMatchingWebDataStreamByPropertyID( propertyID )
+				).toEqual( webDataStreamDotCom );
+
+				provideSiteInfo( registry, {
+					referenceSiteURL: 'http://example.org',
+				} );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getMatchingWebDataStreamByPropertyID( propertyID )
+				).toEqual( webDataStreamDotOrg );
 			} );
 
 			it.each( [
