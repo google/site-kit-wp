@@ -47,23 +47,29 @@ const mockEndpoints = ( args ) => {
 	fetchMock.reset();
 
 	fetchMock.get(
-		/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/new-ideas/,
+		new RegExp( '^/google-site-kit/v1/modules/idea-hub/data/new-ideas' ),
 		{ body: args?.newIdeas || newIdeas }
 	);
 	fetchMock.get(
-		/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/saved-ideas/,
+		new RegExp( '^/google-site-kit/v1/modules/idea-hub/data/saved-ideas' ),
 		{ body: args?.savedIdeas || savedIdeas }
 	);
 	fetchMock.get(
-		/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/draft-post-ideas/,
+		new RegExp(
+			'^/google-site-kit/v1/modules/idea-hub/data/draft-post-ideas'
+		),
 		{ body: args?.draftPostIdeas || draftPostIdeas }
 	);
 	fetchMock.post(
-		/google-site-kit\/v1\/modules\/idea-hub\/data\/create-idea-draft-post/,
+		new RegExp(
+			'google-site-kit/v1/modules/idea-hub/data/create-idea-draft-post'
+		),
 		{ body: {} }
 	);
 	fetchMock.post(
-		/google-site-kit\/v1\/modules\/idea-hub\/data\/update-idea-state/,
+		new RegExp(
+			'google-site-kit/v1/modules/idea-hub/data/update-idea-state'
+		),
 		( url, opts ) => {
 			const { data } = JSON.parse( opts.body );
 
@@ -72,9 +78,12 @@ const mockEndpoints = ( args ) => {
 			};
 		}
 	);
-	fetchMock.post( /^\/google-site-kit\/v1\/core\/user\/data\/dismiss-tour/, {
-		body: JSON.stringify( [ 'ideaHubModule' ] ),
-	} );
+	fetchMock.post(
+		new RegExp( '^/google-site-kit/v1/core/user/data/dismiss-tour' ),
+		{
+			body: JSON.stringify( [ 'ideaHubModule' ] ),
+		}
+	);
 };
 
 const WidgetWithComponentProps =

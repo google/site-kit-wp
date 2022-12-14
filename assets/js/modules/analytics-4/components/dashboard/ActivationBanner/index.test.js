@@ -34,14 +34,16 @@ describe( 'ActivationBanner', () => {
 		registry = createTestRegistry();
 
 		fetchMock.getOnce(
-			/^\/google-site-kit\/v1\/core\/user\/data\/authentication/,
+			new RegExp( '^/google-site-kit/v1/core/user/data/authentication' ),
 			{
 				authenticated: true,
 			}
 		);
 
 		fetchMock.getOnce(
-			/^\/google-site-kit\/v1\/modules\/analytics\/data\/settings/,
+			new RegExp(
+				'^/google-site-kit/v1/modules/analytics/data/settings'
+			),
 			{ body: {}, status: 200 }
 		);
 	} );

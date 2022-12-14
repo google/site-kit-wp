@@ -63,7 +63,9 @@ describe( 'modules/idea-hub idea-state', () => {
 		describe( 'updateIdeaState', () => {
 			it( "updates a given idea's state", async () => {
 				fetchMock.postOnce(
-					/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/update-idea-state/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/idea-hub/data/update-idea-state'
+					),
 					{ body: ideaStateFixture }
 				);
 				const { response } = await registry
@@ -81,7 +83,9 @@ describe( 'modules/idea-hub idea-state', () => {
 				};
 
 				fetchMock.postOnce(
-					/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/update-idea-state/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/idea-hub/data/update-idea-state'
+					),
 					{ body: errorResponse, status: 500 }
 				);
 
@@ -102,7 +106,9 @@ describe( 'modules/idea-hub idea-state', () => {
 				};
 
 				fetchMock.postOnce(
-					/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/update-idea-state/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/idea-hub/data/update-idea-state'
+					),
 					{ body: updatedIdeaState, status: 200 }
 				);
 
@@ -122,7 +128,9 @@ describe( 'modules/idea-hub idea-state', () => {
 				};
 
 				fetchMock.postOnce(
-					/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/update-idea-state/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/idea-hub/data/update-idea-state'
+					),
 					{ body: updatedIdeaState, status: 200 }
 				);
 
@@ -142,7 +150,9 @@ describe( 'modules/idea-hub idea-state', () => {
 				};
 
 				fetchMock.postOnce(
-					/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/update-idea-state/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/idea-hub/data/update-idea-state'
+					),
 					{ body: updatedIdeaState }
 				);
 

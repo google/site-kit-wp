@@ -161,11 +161,15 @@ describe( 'modules/tagmanager settings', () => {
 					};
 
 					fetchMock.postOnce(
-						/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/create-container/,
+						new RegExp(
+							'^/google-site-kit/v1/modules/tagmanager/data/create-container'
+						),
 						{ body: createdContainer, status: 200 }
 					);
 					fetchMock.postOnce(
-						/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/settings/,
+						new RegExp(
+							'^/google-site-kit/v1/modules/tagmanager/data/settings'
+						),
 						( url, opts ) => {
 							const { data } = JSON.parse( opts.body );
 							// Return the same settings passed to the API.
@@ -178,7 +182,9 @@ describe( 'modules/tagmanager settings', () => {
 						.submitChanges();
 
 					expect( fetchMock ).toHaveFetched(
-						/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/create-container/,
+						new RegExp(
+							'^/google-site-kit/v1/modules/tagmanager/data/create-container'
+						),
 						{
 							body: {
 								data: {
@@ -215,7 +221,9 @@ describe( 'modules/tagmanager settings', () => {
 					} );
 
 					fetchMock.postOnce(
-						/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/create-container/,
+						new RegExp(
+							'^/google-site-kit/v1/modules/tagmanager/data/create-container'
+						),
 						{ body: WPError, status: 500 }
 					);
 
@@ -224,7 +232,9 @@ describe( 'modules/tagmanager settings', () => {
 						.submitChanges();
 
 					expect( fetchMock ).toHaveFetched(
-						/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/create-container/,
+						new RegExp(
+							'^/google-site-kit/v1/modules/tagmanager/data/create-container'
+						),
 						{
 							body: {
 								data: {
@@ -253,7 +263,9 @@ describe( 'modules/tagmanager settings', () => {
 						.setSettings( validSettings );
 
 					fetchMock.postOnce(
-						/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/settings/,
+						new RegExp(
+							'^/google-site-kit/v1/modules/tagmanager/data/settings'
+						),
 						{ body: validSettings, status: 200 }
 					);
 
@@ -262,7 +274,9 @@ describe( 'modules/tagmanager settings', () => {
 						.submitChanges();
 
 					expect( fetchMock ).toHaveFetched(
-						/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/settings/,
+						new RegExp(
+							'^/google-site-kit/v1/modules/tagmanager/data/settings'
+						),
 						{
 							body: { data: validSettings },
 						}
@@ -281,7 +295,9 @@ describe( 'modules/tagmanager settings', () => {
 						.setSettings( validSettings );
 
 					fetchMock.postOnce(
-						/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/settings/,
+						new RegExp(
+							'^/google-site-kit/v1/modules/tagmanager/data/settings'
+						),
 						{ body: WPError, status: 500 }
 					);
 
@@ -290,7 +306,9 @@ describe( 'modules/tagmanager settings', () => {
 						.submitChanges();
 
 					expect( fetchMock ).toHaveFetched(
-						/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/settings/,
+						new RegExp(
+							'^/google-site-kit/v1/modules/tagmanager/data/settings'
+						),
 						{
 							body: { data: validSettings },
 						}
@@ -305,7 +323,9 @@ describe( 'modules/tagmanager settings', () => {
 						.setSettings( validSettings );
 
 					muteFetch(
-						/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/settings/
+						new RegExp(
+							'^/google-site-kit/v1/modules/tagmanager/data/settings'
+						)
 					);
 					const cacheKey = createCacheKey(
 						'modules',
@@ -348,12 +368,16 @@ describe( 'modules/tagmanager settings', () => {
 					} );
 
 					fetchMock.postOnce(
-						/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/create-container/,
+						new RegExp(
+							'^/google-site-kit/v1/modules/tagmanager/data/create-container'
+						),
 						{ body: createdAMPContainer, status: 200 }
 					);
 
 					fetchMock.postOnce(
-						/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/settings/,
+						new RegExp(
+							'^/google-site-kit/v1/modules/tagmanager/data/settings'
+						),
 						( url, opts ) => {
 							const { data } = JSON.parse( opts.body );
 							// Return the same settings passed to the API.
@@ -366,7 +390,9 @@ describe( 'modules/tagmanager settings', () => {
 						.submitChanges();
 
 					expect( fetchMock ).toHaveFetched(
-						/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/create-container/,
+						new RegExp(
+							'^/google-site-kit/v1/modules/tagmanager/data/create-container'
+						),
 						{
 							body: {
 								data: {
@@ -416,7 +442,9 @@ describe( 'modules/tagmanager settings', () => {
 
 					fetchMock.postOnce(
 						{
-							url: /^\/google-site-kit\/v1\/modules\/tagmanager\/data\/create-container/,
+							url: new RegExp(
+								'^/google-site-kit/v1/modules/tagmanager/data/create-container'
+							),
 							body: { data: { usageContext: CONTEXT_WEB } },
 						},
 						{ body: createdWebContainer, status: 200 },
@@ -424,14 +452,18 @@ describe( 'modules/tagmanager settings', () => {
 					);
 					fetchMock.postOnce(
 						{
-							url: /^\/google-site-kit\/v1\/modules\/tagmanager\/data\/create-container/,
+							url: new RegExp(
+								'^/google-site-kit/v1/modules/tagmanager/data/create-container'
+							),
 							body: { data: { usageContext: CONTEXT_AMP } },
 						},
 						{ body: createdAMPContainer, status: 200 },
 						{ matchPartialBody: true }
 					);
 					fetchMock.postOnce(
-						/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/settings/,
+						new RegExp(
+							'^/google-site-kit/v1/modules/tagmanager/data/settings'
+						),
 						( url, opts ) => {
 							const { data } = JSON.parse( opts.body );
 							// Return the same settings passed to the API.

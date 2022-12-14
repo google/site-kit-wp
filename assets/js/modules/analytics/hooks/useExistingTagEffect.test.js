@@ -47,11 +47,15 @@ describe( 'useExistingTagEffect', () => {
 
 	it( 'should not select an existing tag if it is available and should not disable the "use snippet" setting if the existing tag does not match the propertyID', () => {
 		fetchMock.getOnce(
-			/^\/google-site-kit\/v1\/modules\/analytics\/data\/properties-profiles/,
+			new RegExp(
+				'^/google-site-kit/v1/modules/analytics/data/properties-profiles'
+			),
 			{ body: { properties: [] }, status: 200 }
 		);
 		fetchMock.getOnce(
-			/^\/google-site-kit\/v1\/modules\/analytics\/data\/profiles/,
+			new RegExp(
+				'^/google-site-kit/v1/modules/analytics/data/profiles'
+			),
 			{ body: [], status: 200 }
 		);
 
@@ -99,11 +103,15 @@ describe( 'useExistingTagEffect', () => {
 
 	it( 'should disable the "use snippet" setting if the existing tag matches the propertyID', async () => {
 		fetchMock.getOnce(
-			/^\/google-site-kit\/v1\/modules\/analytics\/data\/properties-profiles/,
+			new RegExp(
+				'^/google-site-kit/v1/modules/analytics/data/properties-profiles'
+			),
 			{ body: { properties: [] }, status: 200 }
 		);
 		fetchMock.getOnce(
-			/^\/google-site-kit\/v1\/modules\/analytics\/data\/profiles/,
+			new RegExp(
+				'^/google-site-kit/v1/modules/analytics/data/profiles'
+			),
 			{ body: [], status: 200 }
 		);
 
@@ -179,11 +187,15 @@ describe( 'useExistingTagEffect', () => {
 
 	it( 'should enable the "use snippet" setting if the existing tag no longer matches the propertyID', async () => {
 		fetchMock.getOnce(
-			/^\/google-site-kit\/v1\/modules\/analytics\/data\/properties-profiles/,
+			new RegExp(
+				'^/google-site-kit/v1/modules/analytics/data/properties-profiles'
+			),
 			{ body: { properties: [] }, status: 200 }
 		);
 		fetchMock.getOnce(
-			/^\/google-site-kit\/v1\/modules\/analytics\/data\/profiles/,
+			new RegExp(
+				'^/google-site-kit/v1/modules/analytics/data/profiles'
+			),
 			{ body: [], status: 200 }
 		);
 
@@ -279,11 +291,15 @@ describe( 'useExistingTagEffect', () => {
 
 	it( 'does not change the useSnippet value when there is already a property ID on page load (property ID is same as existing tag)', async () => {
 		fetchMock.getOnce(
-			/^\/google-site-kit\/v1\/modules\/analytics\/data\/properties-profiles/,
+			new RegExp(
+				'^/google-site-kit/v1/modules/analytics/data/properties-profiles'
+			),
 			{ body: { properties: [] }, status: 200 }
 		);
 		fetchMock.getOnce(
-			/^\/google-site-kit\/v1\/modules\/analytics\/data\/profiles/,
+			new RegExp(
+				'^/google-site-kit/v1/modules/analytics/data/profiles'
+			),
 			{ body: [], status: 200 }
 		);
 
@@ -364,11 +380,15 @@ describe( 'useExistingTagEffect', () => {
 
 	it( 'does not change the useSnippet value when there is already a property ID on page load (property ID is not the same as existing tag)', async () => {
 		fetchMock.getOnce(
-			/^\/google-site-kit\/v1\/modules\/analytics\/data\/properties-profiles/,
+			new RegExp(
+				'^/google-site-kit/v1/modules/analytics/data/properties-profiles'
+			),
 			{ body: { properties: [] }, status: 200 }
 		);
 		fetchMock.getOnce(
-			/^\/google-site-kit\/v1\/modules\/analytics\/data\/profiles/,
+			new RegExp(
+				'^/google-site-kit/v1/modules/analytics/data/profiles'
+			),
 			{ body: [], status: 200 }
 		);
 

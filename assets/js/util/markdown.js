@@ -26,7 +26,7 @@
  */
 function markdownLinks( text ) {
 	return text.replace(
-		/\[([^\]]+)\]\((https?:\/\/[^\/]+\.\w+\/?.*?)\)/gi,
+		new RegExp( '\\[([^\\]]+)\\]\\((https?://[^/]+\\.\\w+/?.*?)\\)', 'gi' ),
 		'<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>'
 	);
 }
