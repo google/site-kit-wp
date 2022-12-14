@@ -50,9 +50,7 @@ describe( 'PlaceAntiFlickerSwitch', () => {
 				registry,
 			} );
 
-			const selectedText = container.querySelector(
-				'p.googlesitekit-margin-top-0'
-			);
+			const selectedText = container.querySelector( 'p' );
 			expect( selectedText ).toHaveTextContent( expected );
 		}
 	);

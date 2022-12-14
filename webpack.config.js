@@ -313,8 +313,6 @@ function* webpackConfig( env, argv ) {
 				'assets/js/googlesitekit-modules-pagespeed-insights.js',
 			'googlesitekit-modules-search-console':
 				'./assets/js/googlesitekit-modules-search-console.js',
-			'googlesitekit-modules-thank-with-google':
-				'./assets/js/googlesitekit-modules-thank-with-google.js',
 			'googlesitekit-modules-tagmanager':
 				'./assets/js/googlesitekit-modules-tagmanager.js',
 			'googlesitekit-user-input':

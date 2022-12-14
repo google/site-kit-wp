@@ -59,6 +59,10 @@ export default function SettingsEdit() {
 	const hasAnalyticsAccess = useSelect( ( select ) => {
 		const moduleOwnerID = select( MODULES_ANALYTICS ).getOwnerID();
 
+		if ( moduleOwnerID === undefined || loggedInUserID === undefined ) {
+			return undefined;
+		}
+
 		if ( moduleOwnerID === loggedInUserID ) {
 			return true;
 		}
@@ -82,6 +86,10 @@ export default function SettingsEdit() {
 
 	const hasAnalytics4Access = useSelect( ( select ) => {
 		const moduleOwnerID = select( MODULES_ANALYTICS_4 ).getOwnerID();
+
+		if ( moduleOwnerID === undefined || loggedInUserID === undefined ) {
+			return undefined;
+		}
 
 		if ( moduleOwnerID === loggedInUserID ) {
 			return true;
