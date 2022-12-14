@@ -54,8 +54,17 @@ const EnableAutoUpdateBannerNotification = () => {
 	const siteKitAutoUpdatesEnabled = useSelect( ( select ) =>
 		select( CORE_SITE ).getSiteKitAutoUpdatesEnabled()
 	);
+	const nonce = useSelect( ( select ) =>
+		select( CORE_USER ).getNonce( 'updates' )
+	);
+	const pluginBasename = useSelect( ( select ) =>
+		select( CORE_SITE ).getPluginBasename()
+	);
 	const isDoingEnableAutoUpdate = useSelect( ( select ) =>
-		select( CORE_SITE ).isDoingEnableAutoUpdate()
+		select( CORE_SITE ).isDoingEnableAutoUpdate( {
+			nonce,
+			pluginBasename,
+		} )
 	);
 	const error = useSelect( ( select ) =>
 		select( CORE_SITE ).getErrorForAction( 'enableAutoUpdate', [] )
