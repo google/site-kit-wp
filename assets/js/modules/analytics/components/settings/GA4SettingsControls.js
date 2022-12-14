@@ -265,9 +265,9 @@ export default function GA4SettingsControls( {
 												'google-site-kit'
 											),
 											matchedProperty.displayName,
-											measurementIDs?.[
+											measurementIDs[
 												matchedProperty._id
-											] || ''
+											]
 									  )
 									: matchedProperty.displayName ) }
 						</Option>
