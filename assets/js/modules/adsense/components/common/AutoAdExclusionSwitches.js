@@ -141,7 +141,7 @@ export default function AutoAdExclusionSwitches() {
 					</div>
 				) }
 			</div>
-			<p className="googlesitekit-margin-top-0">{ message }</p>
+			<p>{ message }</p>
 		</fieldset>
 	);
 }

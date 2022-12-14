@@ -189,6 +189,9 @@ export default function GA4SettingsControls( {
 
 	return (
 		<div className="googlesitekit-settings-module__fields-group">
+			<h4 className="googlesitekit-settings-module__fields-group-title">
+				{ __( 'Google Analytics 4', 'google-site-kit' ) }
+			</h4>
 			<div className="googlesitekit-setup-module__inputs">
 				{ ! isDisabled && (
 					<Fragment>

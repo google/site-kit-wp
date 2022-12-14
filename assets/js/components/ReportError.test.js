@@ -33,6 +33,7 @@ import {
 import { fireEvent, render } from '../../../tests/js/test-utils';
 import ReportError from './ReportError';
 import { MODULES_ANALYTICS } from '../modules/analytics/datastore/constants';
+import { VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY } from '../googlesitekit/constants';
 
 describe( 'ReportError', () => {
 	let registry;
@@ -367,6 +368,37 @@ describe( 'ReportError', () => {
 		);
 
 		expect( getByRole( 'button', { name: /retry/i } ) ).toBeInTheDocument();
+	} );
+
+	it( 'should not render the `Retry` button for a view-only user', () => {
+		const { queryByText } = render(
+			<ReportError
+				moduleSlug={ moduleName }
+				error={ {
+					code: 'test-error-code',
+					message: 'Test error message',
+					data: {},
+					selectorData: {
+						args: [
+							{
+								dimensions: [ 'ga:date' ],
+								metrics: [ { expression: 'ga:users' } ],
+								startDate: '2020-08-11',
+								endDate: '2020-09-07',
+							},
+						],
+						name: 'getReport',
+						storeName: MODULES_ANALYTICS,
+					},
+				} }
+			/>,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+			}
+		);
+
+		expect( queryByText( /retry/i ) ).not.toBeInTheDocument();
 	} );
 
 	it( 'should dispatch the `invalidateResolution` action for each retry-able error', () => {

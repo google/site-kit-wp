@@ -116,18 +116,6 @@ const WPDashboardUniqueVisitorsChartWidget = () => {
 			...WPDashboardUniqueVisitorsChartWidget.chartOptions.hAxis,
 			ticks: [ dates[ 0 ], dates[ dates.length - 1 ] ],
 		},
-		series: {
-			0: {
-				color: WPDashboardUniqueVisitorsChartWidget.statsColor,
-				targetAxisIndex: 0,
-			},
-			1: {
-				color: WPDashboardUniqueVisitorsChartWidget.statsColor,
-				targetAxisIndex: 0,
-				lineDashStyle: [ 3, 3 ],
-				lineWidth: 1,
-			},
-		},
 	};
 
 	const currentValueIndex = 2;
@@ -146,7 +134,7 @@ const WPDashboardUniqueVisitorsChartWidget = () => {
 
 	return (
 		<div className="googlesitekit-unique-visitors-chart-widget">
-			<h3>Unique Visitors from Search</h3>
+			<h3>Unique visitors over the last 28 days</h3>
 			<GoogleChart
 				chartType="LineChart"
 				data={ googleChartData }
@@ -165,9 +153,8 @@ WPDashboardUniqueVisitorsChartWidget.chartOptions = {
 		startup: true,
 	},
 	chart: {
-		title: 'Unique Visitors from Search',
+		title: 'Unique visitors over the last 28 days',
 	},
-	statsColor: '#5c9271',
 	curveType: 'function',
 	height: 270,
 	width: '100%',
@@ -200,6 +187,18 @@ WPDashboardUniqueVisitorsChartWidget.chartOptions = {
 		},
 		gridlines: {
 			color: '#eee',
+		},
+	},
+	series: {
+		0: {
+			color: '#6380b8',
+			targetAxisIndex: 0,
+		},
+		1: {
+			color: '#6380b8',
+			targetAxisIndex: 0,
+			lineDashStyle: [ 3, 3 ],
+			lineWidth: 1,
 		},
 	},
 	focusTarget: 'category',
