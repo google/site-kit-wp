@@ -58,10 +58,12 @@ describe( 'SettingsEdit', () => {
 			},
 		] );
 
-		fetchMock.get( /analytics\/data\/settings/, { body: {} } );
-		fetchMock.get( /analytics-4\/data\/settings/, { body: {} } );
+		fetchMock.get( new RegExp( 'analytics/data/settings' ), { body: {} } );
+		fetchMock.get( new RegExp( 'analytics-4/data/settings' ), {
+			body: {},
+		} );
 
-		fetchMock.get( /\example.com/, {
+		fetchMock.get( new RegExp( 'example.com' ), {
 			body: [],
 			status: 200,
 		} );
@@ -97,7 +99,9 @@ describe( 'SettingsEdit', () => {
 		).toBe( false );
 
 		// Verify no requests were made to GTM module.
-		expect( fetchMock ).not.toHaveFetched( /tagmanager\/data/ );
+		expect( fetchMock ).not.toHaveFetched(
+			new RegExp( 'tagmanager/data' )
+		);
 
 		// Verify that the Account select dropdown is rendered in the settings screen.
 		expect(
@@ -108,27 +112,33 @@ describe( 'SettingsEdit', () => {
 	} );
 
 	it( 'does not set the account ID or property ID of an existing tag when present', async () => {
-		fetchMock.get( /tagmanager\/data\/settings/, { body: {} } );
+		fetchMock.get( new RegExp( 'tagmanager/data/settings' ), { body: {} } );
 		fetchMock.getOnce(
-			/^\/google-site-kit\/v1\/modules\/analytics-4\/data\/properties/,
+			new RegExp(
+				'^/google-site-kit/v1/modules/analytics-4/data/properties'
+			),
 			{ body: [] }
 		);
 		fetchMock.get(
-			/^\/google-site-kit\/v1\/modules\/analytics-4\/data\/account-summaries/,
+			new RegExp(
+				'^/google-site-kit/v1/modules/analytics-4/data/account-summaries'
+			),
 			{
 				body: ga4Fixtures.accountSummaries,
 				status: 200,
 			}
 		);
 		fetchMock.get(
-			/^\/google-site-kit\/v1\/modules\/analytics-4\/data\/webdatastreams-batch/,
+			new RegExp(
+				'^/google-site-kit/v1/modules/analytics-4/data/webdatastreams-batch'
+			),
 			{
 				body: ga4Fixtures.webDataStreamsBatch,
 				status: 200,
 			}
 		);
 
-		fetchMock.get( /\example.com/, {
+		fetchMock.get( new RegExp( 'example.com' ), {
 			body: [],
 			status: 200,
 		} );

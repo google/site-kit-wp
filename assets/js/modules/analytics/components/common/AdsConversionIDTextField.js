@@ -75,7 +75,10 @@ export default function AdsConversionIDTextField() {
 	}
 
 	return (
-		<div>
+		<div className="googlesitekit-settings-module__fields-group">
+			<h4 className="googlesitekit-settings-module__fields-group-title">
+				{ __( 'Google Ads', 'google-site-kit' ) }
+			</h4>
 			<TextField
 				label={ __( 'Ads Conversion ID', 'google-site-kit' ) }
 				className={ classnames( {

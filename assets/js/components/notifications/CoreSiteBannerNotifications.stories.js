@@ -61,7 +61,7 @@ const notification1 = {
 const mockEndpoint = ( body = [] ) => {
 	fetchMock.reset();
 	fetchMock.getOnce(
-		/^\/google-site-kit\/v1\/core\/site\/data\/notifications/,
+		new RegExp( '^/google-site-kit/v1/core/site/data/notifications' ),
 		{
 			body,
 			status: 200,
