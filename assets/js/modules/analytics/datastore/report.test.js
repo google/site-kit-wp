@@ -353,7 +353,7 @@ describe( 'modules/analytics report', () => {
 		} );
 
 		describe( 'isGatheringData', () => {
-			it( 'should return undefined if getReport is not resolved yet', () => {
+			it( 'should return undefined if getReport is not resolved yet', async () => {
 				freezeFetch(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/report/
 				);
@@ -362,6 +362,9 @@ describe( 'modules/analytics report', () => {
 					registry.select( MODULES_ANALYTICS );
 
 				expect( isGatheringData() ).toBeUndefined();
+
+				// TODO: Add "await nextTick()" helper.
+				await new Promise( ( response ) => setTimeout( response, 0 ) );
 			} );
 
 			it( 'should return TRUE if the returned report is null', async () => {
@@ -429,7 +432,7 @@ describe( 'modules/analytics report', () => {
 		} );
 
 		describe( 'hasZeroData', () => {
-			it( 'should return undefined if getReport or isGatheringData is not resolved yet', () => {
+			it( 'should return undefined if getReport or isGatheringData is not resolved yet', async () => {
 				freezeFetch(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/report/
 				);
@@ -437,6 +440,8 @@ describe( 'modules/analytics report', () => {
 				const { hasZeroData } = registry.select( MODULES_ANALYTICS );
 
 				expect( hasZeroData() ).toBeUndefined();
+
+				await new Promise( ( response ) => setTimeout( response, 0 ) );
 			} );
 
 			it( 'should return TRUE if isGatheringData is true', async () => {

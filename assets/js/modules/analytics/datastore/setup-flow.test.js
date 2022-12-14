@@ -34,6 +34,7 @@ import {
 	createTestRegistry,
 	unsubscribeFromAll,
 	provideModules,
+	untilResolved,
 } from '../../../../../tests/js/utils';
 
 const accountID = 'pub-12345678';
@@ -144,7 +145,7 @@ describe( 'modules/analytics setup-flow', () => {
 				).not.toBeUndefined();
 			} );
 
-			it( 'should return undefined if settings are still loading', () => {
+			it( 'should return undefined if settings are still loading', async () => {
 				fetchMock.get(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/settings/,
 					{
@@ -169,6 +170,11 @@ describe( 'modules/analytics setup-flow', () => {
 				expect(
 					registry.select( MODULES_ANALYTICS ).getSetupFlowMode()
 				).toBeUndefined();
+
+				await untilResolved(
+					registry,
+					MODULES_ANALYTICS
+				).getSettings();
 			} );
 
 			it( 'should return "ua" if there is no account selected', () => {

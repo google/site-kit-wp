@@ -26,6 +26,7 @@ import {
 import {
 	render,
 	createTestRegistry,
+	act,
 } from '../../../../../../tests/js/test-utils';
 import {
 	AMP_MODE_PRIMARY,
@@ -98,13 +99,15 @@ describe( 'SettingsEdit', () => {
 			} );
 
 			it( 'should display a default container name when nothing is entered yet', async () => {
-				const { container, waitForRegistry } = render(
-					<SettingsEdit />,
-					{
-						registry,
-					}
+				const { container } = render( <SettingsEdit />, {
+					registry,
+				} );
+				await act(
+					async () =>
+						await new Promise( ( resolve ) =>
+							setTimeout( resolve, 0 )
+						)
 				);
-				await waitForRegistry();
 				expect(
 					container.querySelector( '#containerName' )
 				).toHaveValue( siteName );
@@ -121,13 +124,15 @@ describe( 'SettingsEdit', () => {
 						{ slug: 'tagmanager' }
 					);
 
-				const { container, waitForRegistry } = render(
-					<SettingsEdit />,
-					{
-						registry,
-					}
+				const { container } = render( <SettingsEdit />, {
+					registry,
+				} );
+				await act(
+					async () =>
+						await new Promise( ( resolve ) =>
+							setTimeout( resolve, 0 )
+						)
 				);
-				await waitForRegistry();
 				expect(
 					container.querySelector( '#containerName' )
 				).toHaveValue( siteName );
@@ -152,13 +157,15 @@ describe( 'SettingsEdit', () => {
 
 			it( 'should use a domain name as a default value when siteName is empty', async () => {
 				provideSiteInfo( registry, { siteName: '' } );
-				const { container, waitForRegistry } = render(
-					<SettingsEdit />,
-					{
-						registry,
-					}
+				const { container } = render( <SettingsEdit />, {
+					registry,
+				} );
+				await act(
+					async () =>
+						await new Promise( ( resolve ) =>
+							setTimeout( resolve, 0 )
+						)
 				);
-				await waitForRegistry();
 				expect(
 					container.querySelector( '#containerName' )
 				).toHaveValue( 'example.com' );
@@ -169,13 +176,15 @@ describe( 'SettingsEdit', () => {
 					containerName: allContainers[ 0 ].name,
 				} );
 
-				const { container, waitForRegistry } = render(
-					<SettingsEdit />,
-					{
-						registry,
-					}
+				const { container } = render( <SettingsEdit />, {
+					registry,
+				} );
+				await act(
+					async () =>
+						await new Promise( ( resolve ) =>
+							setTimeout( resolve, 0 )
+						)
 				);
-				await waitForRegistry();
 				expect(
 					container.querySelector( '#containerName' )
 				).toHaveValue( allContainers[ 0 ].name );
@@ -203,13 +212,15 @@ describe( 'SettingsEdit', () => {
 			} );
 
 			it( 'should display a default container name when nothing is entered yet', async () => {
-				const { container, waitForRegistry } = render(
-					<SettingsEdit />,
-					{
-						registry,
-					}
+				const { container } = render( <SettingsEdit />, {
+					registry,
+				} );
+				await act(
+					async () =>
+						await new Promise( ( resolve ) =>
+							setTimeout( resolve, 0 )
+						)
 				);
-				await waitForRegistry();
 				expect(
 					container.querySelector( '#ampContainerName' )
 				).toHaveValue( `${ siteName } AMP` );
@@ -226,14 +237,15 @@ describe( 'SettingsEdit', () => {
 						{ slug: 'tagmanager' }
 					);
 
-				const { container, waitForRegistry } = render(
-					<SettingsEdit />,
-					{
-						registry,
-					}
+				const { container } = render( <SettingsEdit />, {
+					registry,
+				} );
+				await act(
+					async () =>
+						await new Promise( ( resolve ) =>
+							setTimeout( resolve, 0 )
+						)
 				);
-				await waitForRegistry();
-
 				expect(
 					container.querySelector( '#ampContainerName' )
 				).toHaveValue( `${ siteName } AMP` );
@@ -258,13 +270,15 @@ describe( 'SettingsEdit', () => {
 
 			it( 'should use a domain name as a default value when siteName is empty', async () => {
 				provideSiteInfo( registry, { siteName: '' } );
-				const { container, waitForRegistry } = render(
-					<SettingsEdit />,
-					{
-						registry,
-					}
+				const { container } = render( <SettingsEdit />, {
+					registry,
+				} );
+				await act(
+					async () =>
+						await new Promise( ( resolve ) =>
+							setTimeout( resolve, 0 )
+						)
 				);
-				await waitForRegistry();
 				expect(
 					container.querySelector( '#ampContainerName' )
 				).toHaveValue( 'example.com AMP' );
@@ -275,13 +289,15 @@ describe( 'SettingsEdit', () => {
 					ampContainerName: allContainers[ 0 ].name,
 				} );
 
-				const { container, waitForRegistry } = render(
-					<SettingsEdit />,
-					{
-						registry,
-					}
+				const { container } = render( <SettingsEdit />, {
+					registry,
+				} );
+				await act(
+					async () =>
+						await new Promise( ( resolve ) =>
+							setTimeout( resolve, 0 )
+						)
 				);
-				await waitForRegistry();
 				expect(
 					container.querySelector( '#ampContainerName' )
 				).toHaveValue( allContainers[ 0 ].name );
@@ -316,14 +332,15 @@ describe( 'SettingsEdit', () => {
 			} );
 
 			it( 'should display default container names when nothing is entered yet', async () => {
-				const { container, waitForRegistry } = render(
-					<SettingsEdit />,
-					{
-						registry,
-					}
+				const { container } = render( <SettingsEdit />, {
+					registry,
+				} );
+				await act(
+					async () =>
+						await new Promise( ( resolve ) =>
+							setTimeout( resolve, 0 )
+						)
 				);
-				await waitForRegistry();
-
 				expect(
 					container.querySelector( '#containerName' )
 				).toHaveValue( siteName );
@@ -343,13 +360,15 @@ describe( 'SettingsEdit', () => {
 						{ slug: 'tagmanager' }
 					);
 
-				const { container, waitForRegistry } = render(
-					<SettingsEdit />,
-					{
-						registry,
-					}
+				const { container } = render( <SettingsEdit />, {
+					registry,
+				} );
+				await act(
+					async () =>
+						await new Promise( ( resolve ) =>
+							setTimeout( resolve, 0 )
+						)
 				);
-				await waitForRegistry();
 				expect(
 					container.querySelector( '#containerName' )
 				).toHaveValue( siteName );
@@ -377,13 +396,15 @@ describe( 'SettingsEdit', () => {
 
 			it( 'should use domain name as default values when siteName is empty', async () => {
 				provideSiteInfo( registry, { siteName: '' } );
-				const { container, waitForRegistry } = render(
-					<SettingsEdit />,
-					{
-						registry,
-					}
+				const { container } = render( <SettingsEdit />, {
+					registry,
+				} );
+				await act(
+					async () =>
+						await new Promise( ( resolve ) =>
+							setTimeout( resolve, 0 )
+						)
 				);
-				await waitForRegistry();
 				expect(
 					container.querySelector( '#containerName' )
 				).toHaveValue( 'example.com' );
@@ -398,13 +419,15 @@ describe( 'SettingsEdit', () => {
 					ampContainerName: allContainers[ 1 ].name,
 				} );
 
-				const { container, waitForRegistry } = render(
-					<SettingsEdit />,
-					{
-						registry,
-					}
+				const { container } = render( <SettingsEdit />, {
+					registry,
+				} );
+				await act(
+					async () =>
+						await new Promise( ( resolve ) =>
+							setTimeout( resolve, 0 )
+						)
 				);
-				await waitForRegistry();
 				expect(
 					container.querySelector( '#containerName' )
 				).toHaveValue( allContainers[ 0 ].name );

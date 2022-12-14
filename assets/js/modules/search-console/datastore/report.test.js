@@ -26,6 +26,7 @@ import {
 	freezeFetch,
 	subscribeUntil,
 	unsubscribeFromAll,
+	untilResolved,
 } from '../../../../../tests/js/utils';
 import * as fixtures from './__fixtures__';
 
@@ -155,12 +156,17 @@ describe( 'modules/search-console report', () => {
 					.select( MODULES_SEARCH_CONSOLE )
 					.getReport( options );
 				expect( report ).toEqual( undefined );
+
+				await untilResolved(
+					registry,
+					MODULES_SEARCH_CONSOLE
+				).getReport( options );
 				expect( console ).toHaveErrored();
 			} );
 		} );
 
 		describe( 'isGatheringData', () => {
-			it( 'should return undefined if getReport is not resolved yet', () => {
+			it( 'should return undefined if getReport is not resolved yet', async () => {
 				freezeFetch( searchAnalyticsRegexp );
 
 				const { isGatheringData } = registry.select(
@@ -168,6 +174,8 @@ describe( 'modules/search-console report', () => {
 				);
 
 				expect( isGatheringData() ).toBeUndefined();
+
+				await new Promise( ( resolve ) => setTimeout( resolve, 0 ) );
 			} );
 
 			it( 'should return TRUE if the returned report is an empty array', async () => {
@@ -227,7 +235,7 @@ describe( 'modules/search-console report', () => {
 		} );
 
 		describe( 'hasZeroData', () => {
-			it( 'should return undefined if getReport or isGatheringData is not resolved yet', () => {
+			it( 'should return undefined if getReport or isGatheringData is not resolved yet', async () => {
 				freezeFetch( searchAnalyticsRegexp );
 
 				const { hasZeroData } = registry.select(
@@ -235,6 +243,8 @@ describe( 'modules/search-console report', () => {
 				);
 
 				expect( hasZeroData() ).toBeUndefined();
+
+				await new Promise( ( resolve ) => setTimeout( resolve, 0 ) );
 			} );
 
 			it( 'should return TRUE if report data in isGatheringData OR isZeroReport is an empty array', async () => {

@@ -19,7 +19,11 @@
 /**
  * Internal dependencies
  */
-import { render } from '../../../../../../../tests/js/test-utils';
+import {
+	render,
+	untilResolved,
+} from '../../../../../../../tests/js/test-utils';
+import { MODULES_SEARCH_CONSOLE } from '../../../datastore/constants';
 import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
@@ -73,18 +77,20 @@ describe( 'Footer', () => {
 		expect( container.firstChild ).toBeNull();
 	} );
 
-	it( 'should make a search console settings request normally when the view context is NOT "view only"', () => {
+	it( 'should make a search console settings request normally when the view context is NOT "view only"', async () => {
 		fetchMock.getOnce(
 			/^\/google-site-kit\/v1\/modules\/search-console\/data\/settings/,
 			{ body: {}, status: 200 }
 		);
 
-		const { container } = render(
+		const { registry, container } = render(
 			<Footer metrics={ metrics } selectedStats={ 0 } />,
 			{
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			}
 		);
+
+		await untilResolved( registry, MODULES_SEARCH_CONSOLE ).getSettings();
 
 		expect( fetchMock ).toHaveFetched(
 			/^\/google-site-kit\/v1\/modules\/search-console\/data\/settings/
@@ -93,7 +99,7 @@ describe( 'Footer', () => {
 		expect( container.firstChild ).not.toBeNull();
 	} );
 
-	it( 'should make a analytics settings request normally when the view context is NOT "view only"', () => {
+	it( 'should make a analytics settings request normally when the view context is NOT "view only"', async () => {
 		fetchMock.getOnce(
 			/^\/google-site-kit\/v1\/modules\/analytics\/data\/settings/,
 			{ body: {}, status: 200 }
@@ -105,6 +111,8 @@ describe( 'Footer', () => {
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			}
 		);
+
+		await new Promise( ( resolve ) => setTimeout( resolve, 0 ) );
 
 		expect( fetchMock ).toHaveFetched(
 			/^\/google-site-kit\/v1\/modules\/analytics\/data\/settings/

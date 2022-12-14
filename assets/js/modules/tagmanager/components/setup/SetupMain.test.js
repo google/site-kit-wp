@@ -26,6 +26,7 @@ import {
 import {
 	render,
 	createTestRegistry,
+	act,
 } from '../../../../../../tests/js/test-utils';
 import {
 	AMP_MODE_PRIMARY,
@@ -99,10 +100,15 @@ describe( 'SetupMain', () => {
 			} );
 
 			it( 'should display a default container name when nothing is entered yet', async () => {
-				const { container, waitForRegistry } = render( <SetupMain />, {
+				const { container } = render( <SetupMain />, {
 					registry,
 				} );
-				await waitForRegistry();
+				await act(
+					async () =>
+						await new Promise( ( resolve ) =>
+							setTimeout( resolve, 0 )
+						)
+				);
 				expect(
 					container.querySelector( '#containerName' )
 				).toHaveValue( siteName );
@@ -110,10 +116,15 @@ describe( 'SetupMain', () => {
 
 			it( 'should use a domain name as a default value when siteName is empty', async () => {
 				provideSiteInfo( registry, { siteName: '' } );
-				const { container, waitForRegistry } = render( <SetupMain />, {
+				const { container } = render( <SetupMain />, {
 					registry,
 				} );
-				await waitForRegistry();
+				await act(
+					async () =>
+						await new Promise( ( resolve ) =>
+							setTimeout( resolve, 0 )
+						)
+				);
 				expect(
 					container.querySelector( '#containerName' )
 				).toHaveValue( 'example.com' );
@@ -123,10 +134,15 @@ describe( 'SetupMain', () => {
 				registry.dispatch( CORE_FORMS ).setValues( FORM_SETUP, {
 					containerName: allContainers[ 0 ].name,
 				} );
-				const { container, waitForRegistry } = render( <SetupMain />, {
+				const { container } = render( <SetupMain />, {
 					registry,
 				} );
-				await waitForRegistry();
+				await act(
+					async () =>
+						await new Promise( ( resolve ) =>
+							setTimeout( resolve, 0 )
+						)
+				);
 				expect(
 					container.querySelector( '#containerName' )
 				).toHaveValue( allContainers[ 0 ].name );
@@ -154,10 +170,15 @@ describe( 'SetupMain', () => {
 			} );
 
 			it( 'should display a default container name when nothing is entered yet', async () => {
-				const { container, waitForRegistry } = render( <SetupMain />, {
+				const { container } = render( <SetupMain />, {
 					registry,
 				} );
-				await waitForRegistry();
+				await act(
+					async () =>
+						await new Promise( ( resolve ) =>
+							setTimeout( resolve, 0 )
+						)
+				);
 				expect(
 					container.querySelector( '#ampContainerName' )
 				).toHaveValue( `${ siteName } AMP` );
@@ -165,10 +186,15 @@ describe( 'SetupMain', () => {
 
 			it( 'should use a domain name as a default value when siteName is empty', async () => {
 				provideSiteInfo( registry, { siteName: '' } );
-				const { container, waitForRegistry } = render( <SetupMain />, {
+				const { container } = render( <SetupMain />, {
 					registry,
 				} );
-				await waitForRegistry();
+				await act(
+					async () =>
+						await new Promise( ( resolve ) =>
+							setTimeout( resolve, 0 )
+						)
+				);
 				expect(
 					container.querySelector( '#ampContainerName' )
 				).toHaveValue( 'example.com AMP' );
@@ -178,10 +204,15 @@ describe( 'SetupMain', () => {
 				registry.dispatch( CORE_FORMS ).setValues( FORM_SETUP, {
 					ampContainerName: allContainers[ 0 ].name,
 				} );
-				const { container, waitForRegistry } = render( <SetupMain />, {
+				const { container } = render( <SetupMain />, {
 					registry,
 				} );
-				await waitForRegistry();
+				await act(
+					async () =>
+						await new Promise( ( resolve ) =>
+							setTimeout( resolve, 0 )
+						)
+				);
 				expect(
 					container.querySelector( '#ampContainerName' )
 				).toHaveValue( allContainers[ 0 ].name );
@@ -216,10 +247,15 @@ describe( 'SetupMain', () => {
 			} );
 
 			it( 'should display default container names when nothing is entered yet', async () => {
-				const { container, waitForRegistry } = render( <SetupMain />, {
+				const { container } = render( <SetupMain />, {
 					registry,
 				} );
-				await waitForRegistry();
+				await act(
+					async () =>
+						await new Promise( ( resolve ) =>
+							setTimeout( resolve, 0 )
+						)
+				);
 				expect(
 					container.querySelector( '#containerName' )
 				).toHaveValue( siteName );
@@ -230,10 +266,15 @@ describe( 'SetupMain', () => {
 
 			it( 'should use domain name as default values when siteName is empty', async () => {
 				provideSiteInfo( registry, { siteName: '' } );
-				const { container, waitForRegistry } = render( <SetupMain />, {
+				const { container } = render( <SetupMain />, {
 					registry,
 				} );
-				await waitForRegistry();
+				await act(
+					async () =>
+						await new Promise( ( resolve ) =>
+							setTimeout( resolve, 0 )
+						)
+				);
 				expect(
 					container.querySelector( '#containerName' )
 				).toHaveValue( 'example.com' );
@@ -247,10 +288,15 @@ describe( 'SetupMain', () => {
 					containerName: allContainers[ 0 ].name,
 					ampContainerName: allContainers[ 1 ].name,
 				} );
-				const { container, waitForRegistry } = render( <SetupMain />, {
+				const { container } = render( <SetupMain />, {
 					registry,
 				} );
-				await waitForRegistry();
+				await act(
+					async () =>
+						await new Promise( ( resolve ) =>
+							setTimeout( resolve, 0 )
+						)
+				);
 				expect(
 					container.querySelector( '#containerName' )
 				).toHaveValue( allContainers[ 0 ].name );

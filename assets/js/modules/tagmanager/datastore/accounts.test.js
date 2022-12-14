@@ -80,7 +80,7 @@ describe( 'modules/tagmanager accounts', () => {
 
 	describe( 'actions', () => {
 		describe( 'resetAccounts', () => {
-			it( 'sets accounts and related values back to their initial values', () => {
+			it( 'sets accounts and related values back to their initial values', async () => {
 				registry.dispatch( MODULES_TAGMANAGER ).setSettings( {
 					accountID: '12345',
 					ampContainerID: 'GTM-XYZ123',
@@ -123,6 +123,11 @@ describe( 'modules/tagmanager accounts', () => {
 				expect(
 					registry.select( MODULES_TAGMANAGER ).getUseSnippet()
 				).toStrictEqual( true );
+
+				await untilResolved(
+					registry,
+					MODULES_TAGMANAGER
+				).getAccounts();
 			} );
 
 			it( 'invalidates the resolver for getAccounts', async () => {
@@ -245,6 +250,8 @@ describe( 'modules/tagmanager accounts', () => {
 				const promise = registry
 					.dispatch( MODULES_TAGMANAGER )
 					.selectAccount( accountID );
+
+				await new Promise( ( resolve ) => setTimeout( resolve, 0 ) );
 
 				expect( fetchMock ).toHaveFetched(
 					/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/containers/
@@ -750,6 +757,8 @@ describe( 'modules/tagmanager accounts', () => {
 
 		describe( 'isDoingGetAccounts', () => {
 			it( 'returns true while the request is in progress', async () => {
+				jest.useFakeTimers();
+
 				muteFetch(
 					/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/accounts/,
 					[]
@@ -759,6 +768,8 @@ describe( 'modules/tagmanager accounts', () => {
 				).toBe( false );
 
 				registry.select( MODULES_TAGMANAGER ).getAccounts();
+
+				jest.runAllTimers();
 
 				expect(
 					registry.select( MODULES_TAGMANAGER ).isDoingGetAccounts()

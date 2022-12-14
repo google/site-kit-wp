@@ -28,6 +28,7 @@ import {
 	subscribeUntil,
 	unsubscribeFromAll,
 	provideSiteInfo,
+	untilResolved,
 } from '../../../../../tests/js/utils';
 import * as fixtures from './__fixtures__';
 import { MODULES_ANALYTICS_4 } from '../../analytics-4/datastore/constants';
@@ -137,6 +138,11 @@ describe( 'modules/analytics properties', () => {
 					.getProperties( accountID );
 				// No properties should have been added yet, as the property creation failed.
 				expect( properties ).toEqual( undefined );
+
+				await untilResolved(
+					registry,
+					MODULES_ANALYTICS
+				).getProperties( accountID );
 				expect( console ).toHaveErrored();
 			} );
 		} );
@@ -426,19 +432,17 @@ describe( 'modules/analytics properties', () => {
 					.select( MODULES_ANALYTICS )
 					.getProperties( accountID );
 
+				expect( initialProperties ).toEqual( undefined );
+
+				await untilResolved(
+					registry,
+					MODULES_ANALYTICS
+				).getProperties( accountID );
+
 				// Ensure the proper parameters were passed.
 				expect( fetchMock ).toHaveFetched( propertiesProfilesEndpoint, {
 					query: { accountID },
 				} );
-
-				expect( initialProperties ).toEqual( undefined );
-				await subscribeUntil(
-					registry,
-					() =>
-						registry
-							.select( MODULES_ANALYTICS )
-							.getProperties( accountID ) !== undefined
-				);
 
 				const properties = registry
 					.select( MODULES_ANALYTICS )
@@ -525,12 +529,18 @@ describe( 'modules/analytics properties', () => {
 					.select( MODULES_ANALYTICS )
 					.getProperties( fakeAccountID );
 				expect( properties ).toEqual( undefined );
+
+				await untilResolved(
+					registry,
+					MODULES_ANALYTICS
+				).getProperties( fakeAccountID );
 				expect( console ).toHaveErrored();
 			} );
 		} );
 
 		describe( 'getPropertiesIncludingGA4', () => {
-			it( 'returns undefined if UA properties are loading', () => {
+			it( 'returns undefined if UA properties are loading', async () => {
+				// jest.useFakeTimers();
 				const accountID = fixtures.profiles[ 0 ].accountId; // eslint-disable-line sitekit/acronym-case
 
 				freezeFetch( propertiesProfilesEndpoint );
@@ -556,9 +566,17 @@ describe( 'modules/analytics properties', () => {
 						.select( MODULES_ANALYTICS )
 						.getPropertiesIncludingGA4( accountID )
 				).toBeUndefined();
+
+				await subscribeUntil(
+					registry,
+					() =>
+						registry
+							.select( MODULES_ANALYTICS )
+							.isDoingGetProperties() === false
+				);
 			} );
 
-			it( 'returns undefined if GA4 properties are loading', () => {
+			it( 'returns undefined if GA4 properties are loading', async () => {
 				const testAccountID = fixtures.profiles[ 0 ].accountId; // eslint-disable-line sitekit/acronym-case
 				const accountID = testAccountID;
 
@@ -587,9 +605,14 @@ describe( 'modules/analytics properties', () => {
 						.select( MODULES_ANALYTICS )
 						.getPropertiesIncludingGA4( testAccountID )
 				).toBeUndefined();
+
+				// Wait for next tick to allow resolvers to run.
+				await new Promise( ( resolve ) => {
+					setTimeout( resolve, 0 );
+				} );
 			} );
 
-			it( 'returns undefined if both UA and GA4 properties are loading', () => {
+			it( 'returns undefined if both UA and GA4 properties are loading', async () => {
 				freezeFetch( propertiesProfilesEndpoint );
 				freezeFetch( ga4PropertiesEndpoint );
 
@@ -599,6 +622,14 @@ describe( 'modules/analytics properties', () => {
 						.select( MODULES_ANALYTICS )
 						.getPropertiesIncludingGA4( testAccountID )
 				).toBeUndefined();
+
+				await subscribeUntil(
+					registry,
+					() =>
+						registry
+							.select( MODULES_ANALYTICS )
+							.isDoingGetProperties() === false
+				);
 			} );
 
 			it( 'returns a sorted list of ua and ga4 properties ', () => {
