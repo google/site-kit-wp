@@ -16,14 +16,14 @@ use Google\Site_Kit\Core\Feature_Tours\REST_Feature_Tours_Controller;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Core\Storage\User_Options;
-use Google\Site_Kit\Tests\RestTestTriat;
+use Google\Site_Kit\Tests\RestTestTrait;
 use Google\Site_Kit\Tests\TestCase;
 use WP_REST_Request;
 use WP_REST_Response;
 
 class REST_Feature_Tours_ControllerTest extends TestCase {
 
-	use RestTestTriat;
+	use RestTestTrait;
 
 	/**
 	 * Dismissed tours instance.

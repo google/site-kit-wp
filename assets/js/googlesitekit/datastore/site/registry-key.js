@@ -76,7 +76,7 @@ const resolvers = {
 
 		if ( ! registryKey ) {
 			registryKey = uuidv4();
-			yield registry.dispatch( CORE_SITE ).setRegistryKey( registryKey );
+			registry.dispatch( CORE_SITE ).setRegistryKey( registryKey );
 		}
 	},
 };

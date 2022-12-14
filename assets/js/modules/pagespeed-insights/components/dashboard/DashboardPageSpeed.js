@@ -36,7 +36,6 @@ import { __ } from '@wordpress/i18n';
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { Button, ProgressBar } from 'googlesitekit-components';
-import { Cell, Grid, Row } from '../../../../material-components';
 import DeviceSizeTabBar from '../../../../components/DeviceSizeTabBar';
 import Link from '../../../../components/Link';
 import LabReportMetrics from '../common/LabReportMetrics';
@@ -58,6 +57,7 @@ import {
 } from '../../datastore/constants';
 import Spinner from '../../../../components/Spinner';
 import useViewContext from '../../../../hooks/useViewContext';
+import DashboardPageSpeedLoading from './DashboardPageSpeedLoading';
 const { useSelect, useDispatch, useInViewSelect } = Data;
 
 const TAB_INDEX_LAB = 0;
@@ -278,32 +278,22 @@ export default function DashboardPageSpeed() {
 			'FIRST_INPUT_DELAY_MS',
 		].every( ( key ) => reportData?.loadingExperience?.metrics?.[ key ] );
 
+	if ( isLoading ) {
+		return (
+			<div
+				id="googlesitekit-pagespeed-header"
+				className="googlesitekit-pagespeed-widget__content-wrapper googlesitekit-pagespeed-widget__content-wrapper--loading"
+			>
+				<DashboardPageSpeedLoading />
+			</div>
+		);
+	}
+
 	return (
 		<div
 			id="googlesitekit-pagespeed-header" // Used by jump link.
-			className={ classnames(
-				'googlesitekit-pagespeed-widget__content-wrapper',
-				{
-					'googlesitekit-pagespeed-widget__content-wrapper--loading':
-						isLoading,
-				}
-			) }
+			className="googlesitekit-pagespeed-widget__content-wrapper"
 		>
-			{ isLoading && (
-				<Grid className="googlesitekit-pagespeed-widget__progress-bar">
-					<Row>
-						<Cell size={ 12 }>
-							<ProgressBar />
-							<p className="googlesitekit-text-align-center">
-								{ __(
-									'PageSpeed Insights is preparing data…',
-									'google-site-kit'
-								) }
-							</p>
-						</Cell>
-					</Row>
-				</Grid>
-			) }
 			<div className="googlesitekit-pagespeed-widget__content">
 				<header
 					className="googlesitekit-pagespeed-widget__header"

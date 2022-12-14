@@ -18,46 +18,64 @@ use Google\Site_Kit\Tests\TestCase;
  */
 class SortTest extends TestCase {
 
-	public function test_case_insensitive_list_sort() {
-		// Sorts an array correctly, ordered by the field 'firstname'.
-		$this->assertEquals(
-			Sort::case_insensitive_list_sort(
-				array(
-					array(
-						'firstname' => 'John',
-						'lastname'  => 'Doe',
-					),
-					array(
-						'firstname' => 'Harry',
-						'lastname'  => 'Smith',
-					),
-					array(
-						'firstname' => 'foo',
-						'lastname'  => 'bar',
-					),
-				),
-				'firstname'
+	public function data_lists() {
+		$unsorted_array_of_arrays = array(
+			array(
+				'firstname' => 'John',
+				'lastname'  => 'Doe',
 			),
 			array(
-				array(
-					'firstname' => 'foo',
-					'lastname'  => 'bar',
-				),
-				array(
-					'firstname' => 'Harry',
-					'lastname'  => 'Smith',
-				),
-				array(
-					'firstname' => 'John',
-					'lastname'  => 'Doe',
-				),
-			)
+				'firstname' => 'Harry',
+				'lastname'  => 'Smith',
+			),
+			array(
+				'firstname' => 'foo',
+				'lastname'  => 'bar',
+			),
 		);
 
-		// Sorts an array correctly, ordered by the field 'lastname'.
-		$this->assertEquals(
-			Sort::case_insensitive_list_sort(
+		$unsorted_array_of_objects = array(
+			(object) array(
+				'firstname' => 'John',
+				'lastname'  => 'Doe',
+			),
+			(object) array(
+				'firstname' => 'Harry',
+				'lastname'  => 'Smith',
+			),
+			(object) array(
+				'firstname' => 'foo',
+				'lastname'  => 'bar',
+			),
+		);
+
+		return array(
+			'sort array of arrays by firstname'  => array(
+				$unsorted_array_of_arrays,
+				'firstname',
 				array(
+					array(
+						'firstname' => 'foo',
+						'lastname'  => 'bar',
+					),
+					array(
+						'firstname' => 'Harry',
+						'lastname'  => 'Smith',
+					),
+					array(
+						'firstname' => 'John',
+						'lastname'  => 'Doe',
+					),
+				),
+			),
+			'sort array of arrays by lastname'   => array(
+				$unsorted_array_of_arrays,
+				'lastname',
+				array(
+					array(
+						'firstname' => 'foo',
+						'lastname'  => 'bar',
+					),
 					array(
 						'firstname' => 'John',
 						'lastname'  => 'Doe',
@@ -66,27 +84,61 @@ class SortTest extends TestCase {
 						'firstname' => 'Harry',
 						'lastname'  => 'Smith',
 					),
-					array(
+				),
+			),
+			'sort array of objects by firstname' => array(
+				$unsorted_array_of_objects,
+				'firstname',
+				array(
+					(object) array(
 						'firstname' => 'foo',
 						'lastname'  => 'bar',
 					),
+					(object) array(
+						'firstname' => 'Harry',
+						'lastname'  => 'Smith',
+					),
+					(object) array(
+						'firstname' => 'John',
+						'lastname'  => 'Doe',
+					),
 				),
-				'lastname'
 			),
-			array(
+			'sort array of objects by lastname'  => array(
+				$unsorted_array_of_objects,
+				'lastname',
 				array(
-					'firstname' => 'foo',
-					'lastname'  => 'bar',
+					(object) array(
+						'firstname' => 'foo',
+						'lastname'  => 'bar',
+					),
+					(object) array(
+						'firstname' => 'John',
+						'lastname'  => 'Doe',
+					),
+					(object) array(
+						'firstname' => 'Harry',
+						'lastname'  => 'Smith',
+					),
 				),
-				array(
-					'firstname' => 'John',
-					'lastname'  => 'Doe',
-				),
-				array(
-					'firstname' => 'Harry',
-					'lastname'  => 'Smith',
-				),
-			)
+			),
+		);
+	}
+
+	/**
+	 * @dataProvider data_lists
+	 *
+	 * @param array  $unsorted_array        The array/list to sort.
+	 * @param string $orderby               The field to sort the list by.
+	 * @param array  $expected_sorted_array The sorted array.
+	 */
+	public function test_case_insensitive_list_sort( $unsorted_array, $orderby, $expected_sorted_array ) {
+		$this->assertEquals(
+			Sort::case_insensitive_list_sort(
+				$unsorted_array,
+				$orderby
+			),
+			$expected_sorted_array
 		);
 	}
 }

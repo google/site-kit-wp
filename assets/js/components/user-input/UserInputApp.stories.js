@@ -48,7 +48,7 @@ MultipleAdmins.decorators = [
 						values: [ 'publish_blog', 'share_portfolio' ],
 						author: {
 							photo: 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y',
-							name: 'admin@example.com',
+							login: 'admin',
 						},
 					},
 					helpNeeded: {
