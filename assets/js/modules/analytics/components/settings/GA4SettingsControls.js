@@ -250,27 +250,23 @@ export default function GA4SettingsControls( {
 						outlined
 					>
 						<Option value={ matchedProperty?._id || '' }>
+							{ ! matchedProperty?._id && '' }
+
 							{ matchedProperty?._id &&
-							matchedProperty?.displayName ? (
-								<Fragment>
-									{ measurementIDs?.[ matchedProperty._id ]
-										? sprintf(
-												/* translators: 1: Property name. 2: Property ID. */
-												_x(
-													'%1$s (%2$s)',
-													'Analytics property name and ID',
-													'google-site-kit'
-												),
-												matchedProperty.displayName,
-												measurementIDs?.[
-													matchedProperty._id
-												] || ''
-										  )
-										: matchedProperty.displayName }
-								</Fragment>
-							) : (
-								''
-							) }
+								( measurementIDs?.[ matchedProperty._id ]
+									? sprintf(
+											/* translators: 1: Property name. 2: Property ID. */
+											_x(
+												'%1$s (%2$s)',
+												'Analytics property name and ID',
+												'google-site-kit'
+											),
+											matchedProperty.displayName,
+											measurementIDs?.[
+												matchedProperty._id
+											] || ''
+									  )
+									: matchedProperty.displayName ) }
 						</Option>
 					</Select>
 				) }
