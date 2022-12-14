@@ -37,7 +37,7 @@ import { CORE_LOCATION } from '../../../googlesitekit/datastore/location/constan
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
-import { clearWebStorage, trackEvent } from '../../../util';
+import { clearWebStorage, listFormat, trackEvent } from '../../../util';
 import useViewContext from '../../../hooks/useViewContext';
 const { useSelect, useDispatch } = Data;
 
@@ -153,7 +153,7 @@ export default function ConfirmDisconnect( { slug } ) {
 				'google-site-kit'
 			),
 			name,
-			dependentModules
+			listFormat( dependentModules )
 		);
 	}
 
