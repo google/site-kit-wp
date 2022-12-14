@@ -19,7 +19,7 @@ use WP_User;
 /**
  * Class for handling User Input settings.
  *
- * @since n.e.x.t
+ * @since 1.90.0
  * @access private
  * @ignore
  */
@@ -28,7 +28,7 @@ class User_Input {
 	/**
 	 * Site_Specific_Answers instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.90.0
 	 * @var Site_Specific_Answers
 	 */
 	protected $site_specific_answers;
@@ -36,7 +36,7 @@ class User_Input {
 	/**
 	 * User_Options instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.90.0
 	 * @var User_Options
 	 */
 	protected $user_options;
@@ -44,7 +44,7 @@ class User_Input {
 	/**
 	 * User_Specific_Answers instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.90.0
 	 * @var User_Specific_Answers
 	 */
 	protected $user_specific_answers;
@@ -52,7 +52,7 @@ class User_Input {
 	/**
 	 * REST_User_Input_Controller instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.90.0
 	 * @var REST_User_Input_Controller
 	 */
 	protected $rest_controller;
@@ -60,7 +60,7 @@ class User_Input {
 	/**
 	 * User Input questions.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.90.0
 	 * @var array|ArrayAccess
 	 */
 	private static $questions = array(
@@ -78,7 +78,7 @@ class User_Input {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.90.0
 	 *
 	 * @param Context      $context         Plugin context.
 	 * @param Options      $options         Optional. Options instance. Default a new instance.
@@ -98,7 +98,7 @@ class User_Input {
 	/**
 	 * Registers functionality.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.90.0
 	 */
 	public function register() {
 		$this->site_specific_answers->register();
@@ -109,7 +109,7 @@ class User_Input {
 	/**
 	 * Gets the set of user input questions.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.90.0
 	 *
 	 * @return array The user input questions.
 	 */
@@ -120,7 +120,7 @@ class User_Input {
 	/**
 	 * Gets user input answers.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.90.0
 	 *
 	 * @return array|WP_Error User input answers.
 	 */
@@ -175,7 +175,7 @@ class User_Input {
 	/**
 	 * Determines whether the current user input settings have empty values or not.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.90.0
 	 *
 	 * @param array $settings The settings to check.
 	 * @return boolean|null TRUE if at least one of the settings has empty values, otherwise FALSE.
@@ -201,7 +201,7 @@ class User_Input {
 	/**
 	 * Sets user input answers.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.90.0
 	 *
 	 * @param array $settings User settings.
 	 * @return array|WP_Error User input answers.
@@ -232,7 +232,7 @@ class User_Input {
 		/**
 		 * Fires when the User Input answers are set.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.90.0
 		 *
 		 * @param bool $is_empty If at least one of the answers has empty values.
 		 */

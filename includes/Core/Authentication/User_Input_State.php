@@ -44,7 +44,7 @@ final class User_Input_State extends User_Setting {
 	/**
 	 * Registers the setting in WordPress.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.90.0
 	 */
 	public function register() {
 		parent::register();
