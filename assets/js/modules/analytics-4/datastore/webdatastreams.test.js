@@ -562,16 +562,18 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 					referenceSiteURL: 'http://example.com',
 				} );
 
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveGetWebDataStreamsBatch(
-						fixtures.webDataStreamsBatch,
-						{ propertyIDs: [ '1100' ] }
-					);
+				fetchMock.get( webDataStreamsBatchEndpoint, {
+					body: [],
+					status: 200,
+				} );
 
 				const matchedProperties = registry
 					.select( MODULES_ANALYTICS_4 )
 					.getMatchedMeasurementIDsByPropertyIDs( [ '1100' ] );
+
+				expect( fetchMock ).toHaveFetched(
+					webDataStreamsBatchEndpoint
+				);
 
 				expect( matchedProperties ).toEqual( {} );
 			} );
