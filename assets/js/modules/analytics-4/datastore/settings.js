@@ -121,10 +121,6 @@ export function rollbackChanges( { select, dispatch } ) {
 }
 
 export function validateCanSubmitChanges( select ) {
-	if ( select( MODULES_ANALYTICS_4 ).isAdminAPIWorking() === false ) {
-		return;
-	}
-
 	const {
 		haveSettingsChanged: haveGA4SettingsChanged,
 		isDoingSubmitChanges,
