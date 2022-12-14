@@ -530,7 +530,6 @@ class ModulesTest extends TestCase {
 			Optimize::MODULE_SLUG,
 			Tag_Manager::MODULE_SLUG,
 		);
-
 	}
 
 	public function test_get_shareable_modules() {
@@ -555,27 +554,6 @@ class ModulesTest extends TestCase {
 		$this->enable_feature( 'dashboardSharing' );
 
 		// Check shared ownership for modules activated by default.
-		$modules = new Modules( $context );
-		$this->assertEqualSetsWithIndex(
-			array(
-				'pagespeed-insights' => 'Google\\Site_Kit\\Modules\\PageSpeed_Insights',
-			),
-			array_map(
-				'get_class',
-				$modules->get_shared_ownership_modules()
-			)
-		);
-
-		// Activate modules.
-		update_option(
-			'googlesitekit-active-modules',
-			array(
-				'pagespeed-insights',
-				'analytics',
-			)
-		);
-
-		// Verify shared ownership for active and connected modules.
 		$modules = new Modules( $context );
 		$this->assertEqualSetsWithIndex(
 			array(
