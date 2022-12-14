@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import fetchMock from 'fetch-mock';
+
+/**
  * Internal dependencies
  */
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
@@ -52,11 +57,14 @@ export default {
 			</div>
 		),
 		( Story, { args } ) => {
+			global.ajaxurl = '/admin-ajax.php';
+
 			const setupRegistry = ( registry ) => {
 				registry.dispatch( CORE_SITE ).receiveSiteInfo( {
 					updatePluginCapacity: true,
 					autoUpdatesEnabled: true,
 					siteKitAutoUpdatesEnabled: false,
+					pluginBasename: 'google-site-kit/google-site-kit.php',
 				} );
 				registry.dispatch( CORE_USER ).receiveCapabilities( {
 					googlesitekit_update_plugins: true,
@@ -69,6 +77,24 @@ export default {
 					args.setupRegistry( registry );
 				}
 			};
+
+			/**
+			 * Mock the admin-ajax.php endpoint.
+			 *
+			 * Implement a 2 second delay to simulate a slow network connection and
+			 * to ensure that the loading state is displayed.
+			 */
+			fetchMock.post(
+				/^\/admin-ajax.php/,
+				new Promise( ( resolve ) => {
+					setTimeout( () => {
+						resolve( {
+							body: { success: true },
+							status: 200,
+						} );
+					}, 2000 );
+				} )
+			);
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>
