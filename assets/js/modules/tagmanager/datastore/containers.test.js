@@ -177,6 +177,11 @@ describe( 'modules/tagmanager containers', () => {
 					.getContainers( accountID );
 				// No properties should have been added yet, as the container creation failed.
 				expect( containers ).toEqual( undefined );
+
+				await untilResolved(
+					registry,
+					MODULES_TAGMANAGER
+				).getContainers( accountID );
 				expect( console ).toHaveErrored();
 			} );
 		} );
@@ -315,7 +320,7 @@ describe( 'modules/tagmanager containers', () => {
 
 	describe( 'selectors', () => {
 		describe( 'getContainerByID', () => {
-			it( 'returns undefined for a container ID that does not belong to a container in state', () => {
+			it( 'returns undefined for a container ID that does not belong to a container in state', async () => {
 				muteFetch(
 					'path:/google-site-kit/v1/modules/tagmanager/data/containers',
 					[]
@@ -325,6 +330,11 @@ describe( 'modules/tagmanager containers', () => {
 						.select( MODULES_TAGMANAGER )
 						.getContainerByID( '12345', 'GTM-GXXXXGL3' )
 				).toBe( undefined );
+
+				await untilResolved(
+					registry,
+					MODULES_TAGMANAGER
+				).getContainers( '12345' );
 			} );
 
 			it( 'returns the full container object for a container in state with a matching publicId', () => {
@@ -362,6 +372,13 @@ describe( 'modules/tagmanager containers', () => {
 					.select( MODULES_TAGMANAGER )
 					.getContainers( accountID );
 
+				expect( initialContainers ).toEqual( undefined );
+
+				await untilResolved(
+					registry,
+					MODULES_TAGMANAGER
+				).getContainers( accountID );
+
 				// Ensure the proper parameters were sent.
 				expect( fetchMock ).toHaveFetched(
 					/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/containers/,
@@ -369,13 +386,6 @@ describe( 'modules/tagmanager containers', () => {
 						query: { accountID },
 					}
 				);
-
-				expect( initialContainers ).toEqual( undefined );
-
-				await untilResolved(
-					registry,
-					MODULES_TAGMANAGER
-				).getContainers( accountID );
 
 				const resolvedContainers = registry
 					.select( MODULES_TAGMANAGER )
@@ -470,6 +480,13 @@ describe( 'modules/tagmanager containers', () => {
 					.select( MODULES_TAGMANAGER )
 					.getWebContainers( accountID );
 
+				expect( initialContainers ).toEqual( undefined );
+
+				await untilResolved(
+					registry,
+					MODULES_TAGMANAGER
+				).getContainers( accountID );
+
 				// Ensure the proper parameters were sent.
 				expect( fetchMock ).toHaveFetched(
 					/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/containers/,
@@ -477,13 +494,6 @@ describe( 'modules/tagmanager containers', () => {
 						query: { accountID },
 					}
 				);
-
-				expect( initialContainers ).toEqual( undefined );
-
-				await untilResolved(
-					registry,
-					MODULES_TAGMANAGER
-				).getContainers( accountID );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect(
@@ -541,6 +551,13 @@ describe( 'modules/tagmanager containers', () => {
 					.select( MODULES_TAGMANAGER )
 					.getAMPContainers( accountID );
 
+				expect( initialContainers ).toEqual( undefined );
+
+				await untilResolved(
+					registry,
+					MODULES_TAGMANAGER
+				).getContainers( accountID );
+
 				// Ensure the proper parameters were sent.
 				expect( fetchMock ).toHaveFetched(
 					/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/containers/,
@@ -548,13 +565,6 @@ describe( 'modules/tagmanager containers', () => {
 						query: { accountID },
 					}
 				);
-
-				expect( initialContainers ).toEqual( undefined );
-
-				await untilResolved(
-					registry,
-					MODULES_TAGMANAGER
-				).getContainers( accountID );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect(

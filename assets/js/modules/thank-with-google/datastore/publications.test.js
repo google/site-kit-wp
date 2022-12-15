@@ -83,7 +83,7 @@ describe( 'modules/thank-with-google publications', () => {
 
 	describe( 'actions', () => {
 		describe( 'resetAccounts', () => {
-			it( 'sets publications back to their initial values', () => {
+			it( 'sets publications back to their initial values', async () => {
 				registry
 					.dispatch( MODULES_THANK_WITH_GOOGLE )
 					.receiveGetPublications(
@@ -116,6 +116,11 @@ describe( 'modules/thank-with-google publications', () => {
 						.select( MODULES_THANK_WITH_GOOGLE )
 						.getPublications()
 				).toBeUndefined();
+
+				await untilResolved(
+					registry,
+					MODULES_THANK_WITH_GOOGLE
+				).getPublications();
 			} );
 
 			it( 'invalidates the resolver for getPublications', async () => {
@@ -207,7 +212,7 @@ describe( 'modules/thank-with-google publications', () => {
 				expect( console ).toHaveErrored();
 			} );
 
-			it( 'returns undefined if publications is not yet available', () => {
+			it( 'returns undefined if publications is not yet available', async () => {
 				freezeFetch(
 					/^\/google-site-kit\/v1\/modules\/thank-with-google\/data\/publications/
 				);
@@ -217,6 +222,8 @@ describe( 'modules/thank-with-google publications', () => {
 						.select( MODULES_THANK_WITH_GOOGLE )
 						.getPublications()
 				).toBeUndefined();
+
+				await new Promise( ( resolve ) => setTimeout( resolve, 0 ) );
 			} );
 
 			it( 'does not make a network request if data is already in state', () => {
@@ -238,7 +245,7 @@ describe( 'modules/thank-with-google publications', () => {
 		} );
 
 		describe( 'getCurrentPublication', () => {
-			it( 'returns undefined if publications is not yet available', () => {
+			it( 'returns undefined if publications is not yet available', async () => {
 				freezeFetch(
 					/^\/google-site-kit\/v1\/modules\/thank-with-google\/data\/publications/
 				);
@@ -248,6 +255,8 @@ describe( 'modules/thank-with-google publications', () => {
 						.select( MODULES_THANK_WITH_GOOGLE )
 						.getCurrentPublication()
 				).toBeUndefined();
+
+				await new Promise( ( resolve ) => setTimeout( resolve, 0 ) );
 			} );
 
 			it( 'returns null if there are no publications', () => {

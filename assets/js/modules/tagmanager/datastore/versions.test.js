@@ -173,7 +173,7 @@ describe( 'modules/tagmanager versions', () => {
 					expect( propertyIDs ).toEqual( [ null ] );
 				} );
 
-				it( 'returns undefined if the live container data is not loaded yet', () => {
+				it( 'returns undefined if the live container data is not loaded yet', async () => {
 					registry
 						.dispatch( MODULES_TAGMANAGER )
 						.setAccountID( '12345' );
@@ -192,6 +192,11 @@ describe( 'modules/tagmanager versions', () => {
 						.getAnalyticsPropertyIDs();
 
 					expect( propertyIDs ).toStrictEqual( undefined );
+
+					await untilResolved(
+						registry,
+						MODULES_TAGMANAGER
+					).getLiveContainerVersion( '12345', '9876' );
 				} );
 			} );
 
@@ -268,7 +273,7 @@ describe( 'modules/tagmanager versions', () => {
 					expect( propertyIDs ).toEqual( [ null ] );
 				} );
 
-				it( 'returns undefined if the live container data is not loaded yet', () => {
+				it( 'returns undefined if the live container data is not loaded yet', async () => {
 					registry
 						.dispatch( MODULES_TAGMANAGER )
 						.setAccountID( '12345' );
@@ -287,6 +292,11 @@ describe( 'modules/tagmanager versions', () => {
 						.getAnalyticsPropertyIDs();
 
 					expect( propertyIDs ).toStrictEqual( undefined );
+
+					await untilResolved(
+						registry,
+						MODULES_TAGMANAGER
+					).getLiveContainerVersion( '12345', '9876' );
 				} );
 			} );
 
@@ -335,7 +345,7 @@ describe( 'modules/tagmanager versions', () => {
 					expect( propertyIDs ).toEqual( [ null ] );
 				} );
 
-				it( 'returns undefined if the live container data is not loaded yet for either container', () => {
+				it( 'returns undefined if the live container data is not loaded yet for either container', async () => {
 					const liveContainerVersionWeb =
 						factories.buildLiveContainerVersionWeb();
 					const { accountID, containerID, internalContainerID } =
@@ -376,6 +386,11 @@ describe( 'modules/tagmanager versions', () => {
 						.getAnalyticsPropertyIDs();
 
 					expect( propertyIDs ).toStrictEqual( undefined );
+
+					await untilResolved(
+						registry,
+						MODULES_TAGMANAGER
+					).getLiveContainerVersion( '100', '223' );
 				} );
 			} );
 		} );
@@ -481,7 +496,7 @@ describe( 'modules/tagmanager versions', () => {
 				expect( tagObject ).toStrictEqual( null );
 			} );
 
-			it( 'returns undefined if the live container version is not loaded yet', () => {
+			it( 'returns undefined if the live container version is not loaded yet', async () => {
 				const accountID = '12345';
 				const internalContainerID = '98765';
 
@@ -496,6 +511,11 @@ describe( 'modules/tagmanager versions', () => {
 					);
 
 				expect( tagObject ).toStrictEqual( undefined );
+
+				await untilResolved(
+					registry,
+					MODULES_TAGMANAGER
+				).getLiveContainerVersion( '12345', '98765' );
 			} );
 		} );
 
@@ -590,7 +610,7 @@ describe( 'modules/tagmanager versions', () => {
 				expect( propertyID ).toStrictEqual( null );
 			} );
 
-			it( 'returns undefined if the live container version is not loaded yet', () => {
+			it( 'returns undefined if the live container version is not loaded yet', async () => {
 				const liveContainerVersion =
 					factories.buildLiveContainerVersionWeb();
 				const { accountID, internalContainerID } =
@@ -607,6 +627,11 @@ describe( 'modules/tagmanager versions', () => {
 					);
 
 				expect( propertyID ).toStrictEqual( undefined );
+
+				await untilResolved(
+					registry,
+					MODULES_TAGMANAGER
+				).getLiveContainerVersion( '100', '235' );
 			} );
 		} );
 
@@ -684,7 +709,7 @@ describe( 'modules/tagmanager versions', () => {
 				expect( variableObject ).toStrictEqual( null );
 			} );
 
-			it( 'returns undefined if the live container version is not loaded yet', () => {
+			it( 'returns undefined if the live container version is not loaded yet', async () => {
 				const { accountID, internalContainerID } = parseIDs(
 					factories.buildLiveContainerVersionWeb()
 				);
@@ -702,6 +727,11 @@ describe( 'modules/tagmanager versions', () => {
 					);
 
 				expect( variableObject ).toStrictEqual( undefined );
+
+				await untilResolved(
+					registry,
+					MODULES_TAGMANAGER
+				).getLiveContainerVersion( '100', '239' );
 			} );
 		} );
 
@@ -1021,7 +1051,7 @@ describe( 'modules/tagmanager versions', () => {
 				).toBe( false );
 			} );
 
-			it( 'returns undefined if either container’s live container version is not loaded yet', () => {
+			it( 'returns undefined if either container’s live container version is not loaded yet', async () => {
 				const accountID = '12345';
 				registry
 					.dispatch( MODULES_TAGMANAGER )
@@ -1068,11 +1098,18 @@ describe( 'modules/tagmanager versions', () => {
 						.select( MODULES_TAGMANAGER )
 						.hasMultipleAnalyticsPropertyIDs()
 				).toStrictEqual( undefined );
+
+				await untilResolved(
+					registry,
+					MODULES_TAGMANAGER
+				).getLiveContainerVersion( '12345', '291' );
 			} );
 		} );
 
 		describe( 'isDoingGetLiveContainerVersion', () => {
 			it( 'returns true while the live container version fetch is in progress', async () => {
+				jest.useFakeTimers();
+
 				const accountID = '100';
 				const internalContainerID = '200';
 
@@ -1091,6 +1128,8 @@ describe( 'modules/tagmanager versions', () => {
 				registry
 					.select( MODULES_TAGMANAGER )
 					.getLiveContainerVersion( accountID, internalContainerID );
+
+				jest.runAllTimers();
 
 				expect(
 					registry
