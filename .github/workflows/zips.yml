@@ -106,7 +106,7 @@ jobs:
           npm run release-zip
           mv *.zip ${{ github.ref }}/google-site-kit.zip
       - name: Upload artifacts
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v3
         with:
           name: zip-files
           path: ${{ github.ref }}
@@ -123,7 +123,7 @@ jobs:
           # changed so we need to continue using it for now.
           ref: master
       - name: Download artifacts
-        uses: actions/download-artifact@v1
+        uses: actions/download-artifact@v3
         with:
           name: zip-files
           path: ${{ github.ref }}

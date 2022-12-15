@@ -69,7 +69,7 @@ jobs:
         run: |
           npm run build:storybook
       - name: Upload artifacts
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v3
         with:
           name: storybook-files
           path: dist
@@ -83,7 +83,7 @@ jobs:
         with:
           ref: gh-pages
       - name: Download artifacts
-        uses: actions/download-artifact@v1
+        uses: actions/download-artifact@v3
         with:
           name: storybook-files
           path: dist
@@ -148,7 +148,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Download artifacts
-        uses: actions/download-artifact@v1
+        uses: actions/download-artifact@v3
         with:
           name: storybook-files
           path: dist
