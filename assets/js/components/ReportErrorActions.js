@@ -38,11 +38,13 @@ import {
 	isErrorRetryable,
 	isInsufficientPermissionsError,
 } from '../util/errors';
+import useViewOnly from '../hooks/useViewOnly';
 import Link from './Link';
 
 const { useSelect, useDispatch } = Data;
 
 export default function ReportErrorActions( { moduleSlug, error } ) {
+	const isViewOnly = useViewOnly();
 	const storeName = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModuleStoreName( moduleSlug )
 	);
@@ -60,7 +62,7 @@ export default function ReportErrorActions( { moduleSlug, error } ) {
 			err.selectorData.name === 'getReport'
 	);
 
-	const showRetry = !! retryableErrors.length;
+	const showRetry = !! retryableErrors.length && ! isViewOnly;
 
 	const errorTroubleshootingLinkURL = useSelect( ( select ) => {
 		const err = {
@@ -91,7 +93,7 @@ export default function ReportErrorActions( { moduleSlug, error } ) {
 	}, [ dispatch, retryableErrors ] );
 
 	const showRequestAccessURL =
-		requestAccessURL && hasInsufficientPermissionsError;
+		requestAccessURL && hasInsufficientPermissionsError && ! isViewOnly;
 
 	return (
 		<div className="googlesitekit-report-error-actions">

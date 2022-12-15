@@ -19,7 +19,7 @@ use WP_REST_Server;
 /**
  * Class for handling User Input settings rest routes.
  *
- * @since n.e.x.t
+ * @since 1.90.0
  * @access private
  * @ignore
  */
@@ -28,7 +28,7 @@ class REST_User_Input_Controller {
 	/**
 	 * User_Input instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.90.0
 	 * @var User_Input
 	 */
 	protected $user_input;
@@ -36,7 +36,7 @@ class REST_User_Input_Controller {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.90.0
 	 *
 	 * @param User_Input $user_input User_Input instance.
 	 */
@@ -47,7 +47,7 @@ class REST_User_Input_Controller {
 	/**
 	 * Registers functionality.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.90.0
 	 */
 	public function register() {
 		add_filter(
@@ -61,7 +61,7 @@ class REST_User_Input_Controller {
 	/**
 	 * Gets related REST routes.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.90.0
 	 *
 	 * @return array List of REST_Route objects.
 	 */

@@ -1,7 +1,7 @@
 /**
- * Idea Hub dashboard components.
+ * Analytics Settings styles.
  *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2022 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,5 +16,12 @@
  * limitations under the License.
  */
 
-export { default as DashboardIdeasWidget } from './DashboardIdeasWidget';
-export { default as DashboardCTA } from './DashboardCTA';
+.googlesitekit-plugin {
+
+	.googlesitekit-settings-module--analytics {
+
+		.googlesitekit-setup-module__inputs .googlesitekit-analytics-4__select-property {
+			margin-top: $grid-gap-phone / 2;
+		}
+	}
+}

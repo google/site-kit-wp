@@ -27,12 +27,21 @@ import {
 	provideModuleRegistrations,
 } from '../../../tests/js/utils';
 import WithRegistrySetup from '../../../tests/js/WithRegistrySetup';
+import { Provider as ViewContextProvider } from './Root/ViewContextContext';
 import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../util/errors';
 import { MODULES_ANALYTICS } from '../modules/analytics/datastore/constants';
+import {
+	VIEW_CONTEXT_MAIN_DASHBOARD,
+	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+} from '../googlesitekit/constants';
 
-const Template = ( { setupRegistry = () => {}, ...args } ) => (
+const Template = ( { setupRegistry = () => {}, viewContext, ...args } ) => (
 	<WithRegistrySetup func={ setupRegistry }>
-		<ReportError moduleSlug="test-module" { ...args } />
+		<ViewContextProvider
+			value={ viewContext || VIEW_CONTEXT_MAIN_DASHBOARD }
+		>
+			<ReportError moduleSlug="test-module" { ...args } />
+		</ViewContextProvider>
 	</WithRegistrySetup>
 );
 
@@ -263,6 +272,15 @@ ReportErrorWithCustomInvalidJSONMessage.args = {
 		code: 'invalid_json',
 		message: 'Test error message',
 	},
+};
+
+export const ReportErrorViewOnlyMode = Template.bind( {} );
+ReportErrorViewOnlyMode.storyName = 'ReportError with ViewOnly Mode';
+ReportErrorViewOnlyMode.args = {
+	error: {
+		code: 'test-error-code',
+	},
+	viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 };
 
 export default {
