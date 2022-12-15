@@ -24,7 +24,11 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { Fragment, useCallback } from '@wordpress/element';
+import {
+	createInterpolateElement,
+	Fragment,
+	useCallback,
+} from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -108,11 +112,23 @@ export default function ReportErrorActions( { moduleSlug, error } ) {
 						{ __( 'Retry', 'google-site-kit' ) }
 					</Button>
 					<span className="googlesitekit-error-retry-text">
-						{ __( 'Retry didn’t work?', 'google-site-kit' ) }{ ' ' }
+						{ createInterpolateElement(
+							__(
+								'Retry didn’t work? <HelpLink />',
+								'google-site-kit'
+							),
+							{
+								HelpLink: (
+									<Link
+										href={ errorTroubleshootingLinkURL }
+										external
+									>
+										{ __( 'Get help', 'google-site-kit' ) }
+									</Link>
+								),
+							}
+						) }
 					</span>
-					<Link href={ errorTroubleshootingLinkURL } external>
-						{ __( 'Get help', 'google-site-kit' ) }
-					</Link>
 				</Fragment>
 			) : (
 				<Link href={ errorTroubleshootingLinkURL } external>
