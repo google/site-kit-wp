@@ -83,7 +83,7 @@ export default function SettingsAdmin() {
 				<Cell size={ 12 }>
 					{ isUserInputCompleted && (
 						<Layout
-							title={ __( 'Your site goals', 'google-site-kit' ) }
+							title={ __( 'Key metrics', 'google-site-kit' ) }
 							header
 							rounded
 						>
