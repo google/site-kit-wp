@@ -41,7 +41,6 @@ describe( 'core/user authentication', () => {
 			'googlesitekit_read_shared_module_data::["search-console"]': false,
 			'googlesitekit_read_shared_module_data::["analytics"]': false,
 			'googlesitekit_read_shared_module_data::["pagespeed-insights"]': false,
-			'googlesitekit_read_shared_module_data::["idea-hub"]': false,
 		},
 	};
 
@@ -58,7 +57,6 @@ describe( 'core/user authentication', () => {
 			'googlesitekit_read_shared_module_data::["search-console"]': true,
 			'googlesitekit_read_shared_module_data::["analytics"]': true,
 			'googlesitekit_read_shared_module_data::["pagespeed-insights"]': true,
-			'googlesitekit_read_shared_module_data::["idea-hub"]': false,
 		},
 	};
 
@@ -109,7 +107,6 @@ describe( 'core/user authentication', () => {
 					'googlesitekit_read_shared_module_data::["search-console"]': false,
 					'googlesitekit_read_shared_module_data::["analytics"]': false,
 					'googlesitekit_read_shared_module_data::["pagespeed-insights"]': false,
-					'googlesitekit_read_shared_module_data::["idea-hub"]': false,
 				};
 
 				fetchMock.getOnce(
