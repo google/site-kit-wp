@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Checkbox controlled input behaviour should allow updating of the checked state 1`] = `
+exports[`Checkbox controlled input behaviour for input should allow updating of the checked state 1`] = `
 <div>
   <div
     class="googlesitekit-component-gm3__checkbox"
@@ -20,48 +20,7 @@ exports[`Checkbox controlled input behaviour should allow updating of the checke
 </div>
 `;
 
-exports[`Checkbox controlled input behaviour should allow updating of the checked state 2`] = `
-<div>
-  <div
-    class="googlesitekit-component-gm3__checkbox"
-  >
-    <md-checkbox
-      checked=""
-      id="checkbox-id"
-      name="checkbox-name"
-      role="checkbox"
-      value="checkbox-value"
-    />
-    <label
-      for="checkbox-id"
-    >
-      Checkbox Label
-    </label>
-  </div>
-</div>
-`;
-
-exports[`Checkbox controlled input behaviour should allow updating of the checked state 3`] = `
-<div>
-  <div
-    class="googlesitekit-component-gm3__checkbox"
-  >
-    <md-checkbox
-      id="checkbox-id"
-      name="checkbox-name"
-      role="checkbox"
-      value="checkbox-value"
-    />
-    <label
-      for="checkbox-id"
-    >
-      Checkbox Label
-    </label>
-  </div>
-</div>
-`;
-
-exports[`Checkbox controlled input behaviour should correctly invoke onChange and retain its checked state when clicked 1`] = `
+exports[`Checkbox controlled input behaviour for input should allow updating of the checked state 2`] = `
 <div>
   <div
     class="googlesitekit-component-gm3__checkbox"
@@ -82,7 +41,27 @@ exports[`Checkbox controlled input behaviour should correctly invoke onChange an
 </div>
 `;
 
-exports[`Checkbox controlled input behaviour should correctly invoke onChange and retain its checked state when clicked 2`] = `
+exports[`Checkbox controlled input behaviour for input should allow updating of the checked state 3`] = `
+<div>
+  <div
+    class="googlesitekit-component-gm3__checkbox"
+  >
+    <md-checkbox
+      id="checkbox-id"
+      name="checkbox-name"
+      role="checkbox"
+      value="checkbox-value"
+    />
+    <label
+      for="checkbox-id"
+    >
+      Checkbox Label
+    </label>
+  </div>
+</div>
+`;
+
+exports[`Checkbox controlled input behaviour for input should correctly invoke onChange and retain its checked state when clicked 1`] = `
 <div>
   <div
     class="googlesitekit-component-gm3__checkbox"
@@ -103,7 +82,28 @@ exports[`Checkbox controlled input behaviour should correctly invoke onChange an
 </div>
 `;
 
-exports[`Checkbox controlled input behaviour should correctly invoke onChange and retain its unchecked state when clicked 1`] = `
+exports[`Checkbox controlled input behaviour for input should correctly invoke onChange and retain its checked state when clicked 2`] = `
+<div>
+  <div
+    class="googlesitekit-component-gm3__checkbox"
+  >
+    <md-checkbox
+      checked=""
+      id="checkbox-id"
+      name="checkbox-name"
+      role="checkbox"
+      value="checkbox-value"
+    />
+    <label
+      for="checkbox-id"
+    >
+      Checkbox Label
+    </label>
+  </div>
+</div>
+`;
+
+exports[`Checkbox controlled input behaviour for input should correctly invoke onChange and retain its unchecked state when clicked 1`] = `
 <div>
   <div
     class="googlesitekit-component-gm3__checkbox"
@@ -123,7 +123,150 @@ exports[`Checkbox controlled input behaviour should correctly invoke onChange an
 </div>
 `;
 
-exports[`Checkbox controlled input behaviour should correctly invoke onChange and retain its unchecked state when clicked 2`] = `
+exports[`Checkbox controlled input behaviour for input should correctly invoke onChange and retain its unchecked state when clicked 2`] = `
+<div>
+  <div
+    class="googlesitekit-component-gm3__checkbox"
+  >
+    <md-checkbox
+      id="checkbox-id"
+      name="checkbox-name"
+      role="checkbox"
+      value="checkbox-value"
+    />
+    <label
+      for="checkbox-id"
+    >
+      Checkbox Label
+    </label>
+  </div>
+</div>
+`;
+
+exports[`Checkbox controlled input behaviour for label should allow updating of the checked state 1`] = `
+<div>
+  <div
+    class="googlesitekit-component-gm3__checkbox"
+  >
+    <md-checkbox
+      id="checkbox-id"
+      name="checkbox-name"
+      role="checkbox"
+      value="checkbox-value"
+    />
+    <label
+      for="checkbox-id"
+    >
+      Checkbox Label
+    </label>
+  </div>
+</div>
+`;
+
+exports[`Checkbox controlled input behaviour for label should allow updating of the checked state 2`] = `
+<div>
+  <div
+    class="googlesitekit-component-gm3__checkbox"
+  >
+    <md-checkbox
+      checked=""
+      id="checkbox-id"
+      name="checkbox-name"
+      role="checkbox"
+      value="checkbox-value"
+    />
+    <label
+      for="checkbox-id"
+    >
+      Checkbox Label
+    </label>
+  </div>
+</div>
+`;
+
+exports[`Checkbox controlled input behaviour for label should allow updating of the checked state 3`] = `
+<div>
+  <div
+    class="googlesitekit-component-gm3__checkbox"
+  >
+    <md-checkbox
+      id="checkbox-id"
+      name="checkbox-name"
+      role="checkbox"
+      value="checkbox-value"
+    />
+    <label
+      for="checkbox-id"
+    >
+      Checkbox Label
+    </label>
+  </div>
+</div>
+`;
+
+exports[`Checkbox controlled input behaviour for label should correctly invoke onChange and retain its checked state when clicked 1`] = `
+<div>
+  <div
+    class="googlesitekit-component-gm3__checkbox"
+  >
+    <md-checkbox
+      checked=""
+      id="checkbox-id"
+      name="checkbox-name"
+      role="checkbox"
+      value="checkbox-value"
+    />
+    <label
+      for="checkbox-id"
+    >
+      Checkbox Label
+    </label>
+  </div>
+</div>
+`;
+
+exports[`Checkbox controlled input behaviour for label should correctly invoke onChange and retain its checked state when clicked 2`] = `
+<div>
+  <div
+    class="googlesitekit-component-gm3__checkbox"
+  >
+    <md-checkbox
+      checked=""
+      id="checkbox-id"
+      name="checkbox-name"
+      role="checkbox"
+      value="checkbox-value"
+    />
+    <label
+      for="checkbox-id"
+    >
+      Checkbox Label
+    </label>
+  </div>
+</div>
+`;
+
+exports[`Checkbox controlled input behaviour for label should correctly invoke onChange and retain its unchecked state when clicked 1`] = `
+<div>
+  <div
+    class="googlesitekit-component-gm3__checkbox"
+  >
+    <md-checkbox
+      id="checkbox-id"
+      name="checkbox-name"
+      role="checkbox"
+      value="checkbox-value"
+    />
+    <label
+      for="checkbox-id"
+    >
+      Checkbox Label
+    </label>
+  </div>
+</div>
+`;
+
+exports[`Checkbox controlled input behaviour for label should correctly invoke onChange and retain its unchecked state when clicked 2`] = `
 <div>
   <div
     class="googlesitekit-component-gm3__checkbox"
