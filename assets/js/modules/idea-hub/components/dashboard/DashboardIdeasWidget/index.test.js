@@ -56,17 +56,23 @@ describe( 'Idea Hub', () => {
 		] );
 
 		fetchMock.get(
-			/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/draft-post-ideas/,
+			new RegExp(
+				'^/google-site-kit/v1/modules/idea-hub/data/draft-post-ideas'
+			),
 			{ body: fixtures.draftPostIdeas }
 		);
 
 		fetchMock.get(
-			/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/saved-ideas/,
+			new RegExp(
+				'^/google-site-kit/v1/modules/idea-hub/data/saved-ideas'
+			),
 			{ body: fixtures.savedIdeas }
 		);
 
 		fetchMock.get(
-			/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/new-ideas/,
+			new RegExp(
+				'^/google-site-kit/v1/modules/idea-hub/data/new-ideas'
+			),
 			{ body: fixtures.newIdeas }
 		);
 	} );

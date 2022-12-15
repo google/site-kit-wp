@@ -32,7 +32,7 @@ import { Fragment, useState, useCallback, useEffect } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { Button, ProgressBar } from 'googlesitekit-components';
+import { Button } from 'googlesitekit-components';
 import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 import {
 	MODULES_ANALYTICS_4,
@@ -65,9 +65,6 @@ export default function GA4SettingsControls( {
 	const properties = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getProperties( accountID )
 	);
-	const isAdminAPIWorking = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).isAdminAPIWorking()
-	);
 	const enableGA4 = useSelect( ( select ) =>
 		select( CORE_FORMS ).getValue( FORM_SETUP, 'enableGA4' )
 	);
@@ -88,12 +85,7 @@ export default function GA4SettingsControls( {
 		select( CORE_SITE ).getDocumentationLinkURL( 'ga4' )
 	);
 
-	const isGA4Connected = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
-	);
-
-	const hasModuleAccess =
-		isGA4Connected && hasAnalyticsAccess && hasAnalytics4Access;
+	const hasModuleAccess = hasAnalyticsAccess && hasAnalytics4Access;
 
 	const {
 		matchAccountProperty,
@@ -116,17 +108,10 @@ export default function GA4SettingsControls( {
 			}
 		};
 
-		if ( isAdminAPIWorking ) {
-			setMatchedProperty( undefined );
-			setMatchedWebDataStream( undefined );
-			matchGA4Information();
-		}
-	}, [
-		accountID,
-		matchAccountProperty,
-		matchWebDataStream,
-		isAdminAPIWorking,
-	] );
+		setMatchedProperty( undefined );
+		setMatchedWebDataStream( undefined );
+		matchGA4Information();
+	}, [ accountID, matchAccountProperty, matchWebDataStream ] );
 
 	const onActivate = useCallback( () => {
 		const hasProperties = properties?.length > 0;
@@ -172,22 +157,23 @@ export default function GA4SettingsControls( {
 		propertyID,
 	] );
 
-	const measurementIDs = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getMatchedMeasurementIDsByPropertyIDs(
-			properties
-		)
-	);
+	const measurementIDs = useSelect( ( select ) => {
+		if ( ! properties?.length ) {
+			return null;
+		}
 
-	if ( isAdminAPIWorking === undefined ) {
-		return <ProgressBar height={ isDisabled ? 180 : 212 } small />;
-	}
-
-	if ( ! isAdminAPIWorking ) {
-		return null;
-	}
+		return select(
+			MODULES_ANALYTICS_4
+		).getMatchedMeasurementIDsByPropertyIDs(
+			( properties || [] ).map( ( { _id } ) => _id )
+		);
+	} );
 
 	return (
 		<div className="googlesitekit-settings-module__fields-group">
+			<h4 className="googlesitekit-settings-module__fields-group-title">
+				{ __( 'Google Analytics 4', 'google-site-kit' ) }
+			</h4>
 			<div className="googlesitekit-setup-module__inputs">
 				{ ! isDisabled && (
 					<Fragment>
@@ -249,21 +235,23 @@ export default function GA4SettingsControls( {
 						outlined
 					>
 						<Option value={ matchedProperty?._id || '' }>
-							{ ! matchedProperty?._id ||
-							! matchedProperty?.displayName
-								? ''
-								: sprintf(
-										/* translators: 1: Property name. 2: Property ID. */
-										_x(
-											'%1$s (%2$s)',
-											'Analytics property name and ID',
-											'google-site-kit'
-										),
-										matchedProperty.displayName,
-										measurementIDs?.[
-											matchedProperty._id
-										] || ''
-								  ) }
+							{ ! matchedProperty?._id && '' }
+
+							{ matchedProperty?._id &&
+								( measurementIDs?.[ matchedProperty._id ]
+									? sprintf(
+											/* translators: 1: Property name. 2: Property ID. */
+											_x(
+												'%1$s (%2$s)',
+												'Analytics property name and ID',
+												'google-site-kit'
+											),
+											matchedProperty.displayName,
+											measurementIDs[
+												matchedProperty._id
+											]
+									  )
+									: matchedProperty.displayName ) }
 						</Option>
 					</Select>
 				) }
@@ -283,7 +271,7 @@ export default function GA4SettingsControls( {
 			) }
 
 			<GA4SettingsNotice
-				isGA4Connected={ isGA4Connected }
+				isGA4Connected={ isModuleConnected }
 				hasAnalyticsAccess={ hasAnalyticsAccess }
 				hasAnalytics4Access={ hasAnalytics4Access }
 			/>

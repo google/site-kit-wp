@@ -93,7 +93,7 @@ export function step( name, cb, { screenshotArgs = {} } = {} ) {
 /**
  * Empties the screenshots directory.
  *
- * @since n.e.x.t
+ * @since 1.89.0
  */
 export async function clearScreenshots() {
 	const { resolve, join } = path;

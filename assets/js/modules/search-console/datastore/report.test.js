@@ -30,8 +30,9 @@ import {
 import * as fixtures from './__fixtures__';
 
 describe( 'modules/search-console report', () => {
-	const searchAnalyticsRegexp =
-		/^\/google-site-kit\/v1\/modules\/search-console\/data\/searchanalytics/;
+	const searchAnalyticsRegexp = new RegExp(
+		'^/google-site-kit/v1/modules/search-console/data/searchanalytics'
+	);
 	const errorResponse = {
 		status: 403,
 		body: {

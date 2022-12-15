@@ -35,6 +35,7 @@ import {
 	USER_INPUT_QUESTIONS_PURPOSE,
 	USER_INPUT_QUESTION_POST_FREQUENCY,
 	USER_INPUT_QUESTIONS_GOALS,
+	USER_INPUT_MAX_ANSWERS,
 	getUserInputAnswers,
 } from './util/constants';
 import useQueryArg from '../../hooks/useQueryArg';
@@ -54,7 +55,7 @@ export default function UserInputQuestionnaire() {
 	const [ shouldScrollToActiveQuestion, setShouldScrollToActiveQuestion ] =
 		useState( false );
 	const [ redirectURL ] = useQueryArg( 'redirect_url' );
-	const [ single, setSingle ] = useQueryArg( 'single', false );
+	const [ single ] = useQueryArg( 'single', false );
 
 	const activeSlugIndex = steps.indexOf( activeSlug );
 	if ( activeSlugIndex === -1 ) {
@@ -70,36 +71,16 @@ export default function UserInputQuestionnaire() {
 	const dashboardURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' )
 	);
-	const { isSavingSettings, error, answeredUntilIndex } = useSelect(
-		( select ) => {
-			const userInputSettings =
-				select( CORE_USER ).getUserInputSettings();
+	const isSavingSettings = useSelect( ( select ) => {
+		const userInputSettings = select( CORE_USER ).getUserInputSettings();
 
-			return {
-				isSavingSettings:
-					select( CORE_USER ).isSavingUserInputSettings(
-						userInputSettings
-					),
-				error: select( CORE_USER ).getErrorForAction(
-					'saveUserInputSettings',
-					[]
-				),
-				answeredUntilIndex: USER_INPUT_QUESTIONS_LIST.findIndex(
-					( question ) =>
-						userInputSettings?.[ question ]?.values?.length === 0
-				),
-			};
-		}
+		return select( CORE_USER ).isSavingUserInputSettings(
+			userInputSettings
+		);
+	} );
+	const error = useSelect( ( select ) =>
+		select( CORE_USER ).getErrorForAction( 'saveUserInputSettings', [] )
 	);
-
-	useEffect( () => {
-		if ( answeredUntilIndex === -1 ) {
-			return;
-		}
-		if ( activeSlugIndex > answeredUntilIndex ) {
-			setActiveSlug( steps[ answeredUntilIndex ] );
-		}
-	}, [ answeredUntilIndex, activeSlugIndex, setActiveSlug ] );
 
 	useEffect( () => {
 		if ( activeSlug === 'preview' ) {
@@ -119,20 +100,6 @@ export default function UserInputQuestionnaire() {
 		trackEvent( viewContext, 'question_advance', steps[ activeSlugIndex ] );
 		setActiveSlug( steps[ activeSlugIndex + 1 ] );
 	}, [ activeSlugIndex, setActiveSlug, viewContext ] );
-
-	const goTo = useCallback(
-		( num = 1, singleType = false ) => {
-			trackEvent( viewContext, 'question_edit', steps[ num - 1 ] );
-
-			// If we're going to a single question to edit it, set the query string here.
-			// We can't currently set it in the child component because the useQueryArg hook doesn't update in the parent.
-			setSingle( singleType );
-			if ( steps.length >= num && num > 0 ) {
-				setActiveSlug( steps[ num - 1 ] );
-			}
-		},
-		[ setActiveSlug, setSingle, viewContext ]
-	);
 
 	const back = useCallback( () => {
 		trackEvent( viewContext, 'question_return', steps[ activeSlugIndex ] );
@@ -170,11 +137,6 @@ export default function UserInputQuestionnaire() {
 		viewContext,
 	] );
 
-	const goToPreview = useCallback( () => {
-		trackEvent( viewContext, 'question_update', steps[ activeSlugIndex ] );
-		setActiveSlug( steps[ steps.length - 1 ] );
-	}, [ activeSlugIndex, setActiveSlug, viewContext ] );
-
 	useEffect( () => {
 		if ( ! shouldScrollToActiveQuestion ) {
 			setShouldScrollToActiveQuestion( true );
@@ -191,12 +153,7 @@ export default function UserInputQuestionnaire() {
 	let nextCallback = next;
 	let nextLabel;
 
-	if ( single === 'user-input' ) {
-		backCallback = undefined;
-		// When the user is editing a single question in the user-input screen send them back to the preview when they click Update.
-		nextCallback = goToPreview;
-		nextLabel = __( 'Update', 'google-site-kit' );
-	} else if ( single === 'settings' ) {
+	if ( single === 'settings' ) {
 		backCallback = undefined;
 		// When the user is editing a single question from the settings screen, submit changes and send them back to the settings pages when they click Submit.
 		nextCallback = submitChanges;
@@ -208,7 +165,8 @@ export default function UserInputQuestionnaire() {
 			height={ 0 }
 			indeterminate={ false }
 			progress={
-				( activeSlugIndex + 1 ) / USER_INPUT_QUESTIONS_LIST.length
+				( activeSlugIndex + 1 ) /
+				( USER_INPUT_QUESTIONS_LIST.length + 1 ) // +1 here to account for the UserInputPreview screen.
 			}
 			className="googlesitekit-user-input__question--progress"
 		/>
@@ -218,7 +176,7 @@ export default function UserInputQuestionnaire() {
 		return (
 			<Fragment>
 				{ settingsProgress }
-				<div className="googlesitekit-user-input__preview">
+				<div className="googlesitekit-user-input__preview googlesitekit-user-input__preview-loading">
 					<Row>
 						<Cell lgSize={ 12 } mdSize={ 8 } smSize={ 4 }>
 							<ProgressBar />
@@ -254,8 +212,14 @@ export default function UserInputQuestionnaire() {
 					<UserInputSelectOptions
 						isActive={ activeSlug === USER_INPUT_QUESTIONS_PURPOSE }
 						slug={ USER_INPUT_QUESTIONS_PURPOSE }
+						max={
+							USER_INPUT_MAX_ANSWERS[
+								USER_INPUT_QUESTIONS_PURPOSE
+							]
+						}
 						options={ USER_INPUT_ANSWERS_PURPOSE }
 						next={ nextCallback }
+						showInstructions
 					/>
 				</UserInputQuestionWrapper>
 			) }
@@ -286,8 +250,14 @@ export default function UserInputQuestionnaire() {
 							activeSlug === USER_INPUT_QUESTION_POST_FREQUENCY
 						}
 						slug={ USER_INPUT_QUESTION_POST_FREQUENCY }
+						max={
+							USER_INPUT_MAX_ANSWERS[
+								USER_INPUT_QUESTION_POST_FREQUENCY
+							]
+						}
 						options={ USER_INPUT_ANSWERS_POST_FREQUENCY }
 						next={ nextCallback }
+						showInstructions
 					/>
 				</UserInputQuestionWrapper>
 			) }
@@ -314,9 +284,12 @@ export default function UserInputQuestionnaire() {
 					<UserInputSelectOptions
 						isActive={ activeSlug === USER_INPUT_QUESTIONS_GOALS }
 						slug={ USER_INPUT_QUESTIONS_GOALS }
-						max={ 3 }
+						max={
+							USER_INPUT_MAX_ANSWERS[ USER_INPUT_QUESTIONS_GOALS ]
+						}
 						options={ USER_INPUT_ANSWERS_GOALS }
 						next={ nextCallback }
+						showInstructions
 					/>
 				</UserInputQuestionWrapper>
 			) }
@@ -324,7 +297,7 @@ export default function UserInputQuestionnaire() {
 			{ activeSlug === 'preview' && (
 				<UserInputPreview
 					submitChanges={ submitChanges }
-					goTo={ goTo }
+					goBack={ backCallback }
 					error={ error }
 				/>
 			) }

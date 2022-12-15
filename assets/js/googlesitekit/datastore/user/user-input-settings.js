@@ -205,7 +205,10 @@ export const baseControls = {
 				const settings =
 					registry.select( CORE_USER ).getUserInputSettings() || {};
 
-				settings[ settingID ] = { values };
+				settings[ settingID ] = {
+					...( settings?.[ settingID ] || {} ),
+					values,
+				};
 
 				return setItem( CACHE_KEY_NAME, settings );
 			}

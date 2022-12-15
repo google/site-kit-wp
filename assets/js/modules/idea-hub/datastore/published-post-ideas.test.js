@@ -58,7 +58,9 @@ describe( 'modules/idea-hub published-post-ideas', () => {
 
 			it( 'uses a resolver to make a network request', async () => {
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/published-post-ideas/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/idea-hub/data/published-post-ideas'
+					),
 					{ body: fixtures.publishedPostIdeas, status: 200 }
 				);
 
@@ -88,7 +90,9 @@ describe( 'modules/idea-hub published-post-ideas', () => {
 					length: 2,
 				};
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/published-post-ideas/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/idea-hub/data/published-post-ideas'
+					),
 					{ body: fixtures.publishedPostIdeas, status: 200 }
 				);
 
@@ -112,7 +116,9 @@ describe( 'modules/idea-hub published-post-ideas', () => {
 
 			it( 'treats all options as optional', async () => {
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/published-post-ideas/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/idea-hub/data/published-post-ideas'
+					),
 					{ body: fixtures.publishedPostIdeas, status: 200 }
 				);
 
@@ -137,7 +143,9 @@ describe( 'modules/idea-hub published-post-ideas', () => {
 					offset: 2,
 				};
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/published-post-ideas/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/idea-hub/data/published-post-ideas'
+					),
 					{ body: fixtures.publishedPostIdeas, status: 200 }
 				);
 
@@ -164,7 +172,9 @@ describe( 'modules/idea-hub published-post-ideas', () => {
 					length: 3,
 				};
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/published-post-ideas/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/idea-hub/data/published-post-ideas'
+					),
 					{ body: fixtures.publishedPostIdeas, status: 200 }
 				);
 
@@ -192,7 +202,9 @@ describe( 'modules/idea-hub published-post-ideas', () => {
 					length: 1,
 				};
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/published-post-ideas/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/idea-hub/data/published-post-ideas'
+					),
 					{ body: fixtures.publishedPostIdeas, status: 200 }
 				);
 
@@ -245,7 +257,9 @@ describe( 'modules/idea-hub published-post-ideas', () => {
 				};
 
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/published-post-ideas/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/idea-hub/data/published-post-ideas'
+					),
 					{ body: response, status: 500 }
 				);
 

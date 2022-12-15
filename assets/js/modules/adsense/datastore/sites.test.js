@@ -54,7 +54,9 @@ describe( 'modules/adsense sites', () => {
 		describe( 'getSites', () => {
 			it( 'uses a resolver to make a network request', async () => {
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/adsense\/data\/sites/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/adsense/data/sites'
+					),
 					{ body: fixtures.sites }
 				);
 
@@ -111,7 +113,9 @@ describe( 'modules/adsense sites', () => {
 					data: { status: 500 },
 				};
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/adsense\/data\/sites/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/adsense/data/sites'
+					),
 					{ body: response, status: 500 }
 				);
 

@@ -58,7 +58,9 @@ describe( 'modules/idea-hub draft-ideas', () => {
 		describe( 'createIdeaDraftPost', () => {
 			it( 'creates and returns an idea post as a response', async () => {
 				fetchMock.postOnce(
-					/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/create-idea-draft-post/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/idea-hub/data/create-idea-draft-post'
+					),
 					{ body: fixtures.draftIdeas.response, status: 200 }
 				);
 
@@ -111,7 +113,9 @@ describe( 'modules/idea-hub draft-ideas', () => {
 					data: { status: 500 },
 				};
 				fetchMock.postOnce(
-					/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/create-idea-draft-post/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/idea-hub/data/create-idea-draft-post'
+					),
 					{ body: errorResponse, status: 500 }
 				);
 

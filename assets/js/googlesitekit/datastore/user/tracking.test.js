@@ -31,8 +31,9 @@ import { CORE_USER } from './constants';
 describe( 'core/user tracking settings', () => {
 	let registry;
 
-	const coreUserTrackingSettingsEndpointRegExp =
-		/^\/google-site-kit\/v1\/core\/user\/data\/tracking/;
+	const coreUserTrackingSettingsEndpointRegExp = new RegExp(
+		'^/google-site-kit/v1/core/user/data/tracking'
+	);
 
 	beforeAll( () => {
 		API.setUsingCache( false );

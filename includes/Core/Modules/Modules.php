@@ -32,7 +32,6 @@ use Google\Site_Kit\Modules\PageSpeed_Insights;
 use Google\Site_Kit\Modules\Search_Console;
 use Google\Site_Kit\Modules\Site_Verification;
 use Google\Site_Kit\Modules\Tag_Manager;
-use Google\Site_Kit\Modules\Thank_With_Google;
 use WP_REST_Server;
 use WP_REST_Request;
 use WP_REST_Response;
@@ -188,35 +187,6 @@ final class Modules {
 		if ( Feature_Flags::enabled( 'ideaHubModule' ) ) {
 			$this->core_modules[ Idea_Hub::MODULE_SLUG ] = Idea_Hub::class;
 		}
-
-		if ( self::should_enable_twg() ) {
-			$this->core_modules[ Thank_With_Google::MODULE_SLUG ] = Thank_With_Google::class;
-		}
-	}
-
-	/**
-	 * Determines if Thank with Google module should be enabled.
-	 *
-	 * @since 1.83.0
-	 *
-	 * @return bool True if the module should be enabled, false otherwise.
-	 */
-	public static function should_enable_twg() {
-		if ( ! Feature_Flags::enabled( 'twgModule' ) ) {
-			return false;
-		}
-
-		if ( Build_Mode::get_mode() === Build_Mode::MODE_DEVELOPMENT ) {
-			return true;
-		}
-
-		if ( 'https' === URL::parse( home_url(), PHP_URL_SCHEME ) ) {
-			return true;
-		}
-
-		// Because we aren't in development mode and haven't detected SSL being enabled, TwG should
-		// not be enabled.
-		return false;
 	}
 
 	/**

@@ -31,25 +31,8 @@
 			padding: 3px 0;
 		}
 
-		.mdc-text-field {
-			background-color: transparent;
-			height: 36px;
-			margin: 0 1rem;
-			max-width: 250px;
-			width: calc(100% - 2rem);
-
-			input {
-				border: none;
-				padding: 0;
-
-				&:placeholder-shown {
-					text-overflow: ellipsis;
-				}
-			}
-		}
-
 		label {
-			color: $c-user-input-options;
+			color: $c-surfaces-on-background;
 			font-size: $fs-body-md;
 			letter-spacing: $ls-s;
 			line-height: $lh-body-md;
@@ -57,21 +40,6 @@
 			@media (min-width: $bp-tablet) {
 				padding: 10px 0;
 			}
-		}
-
-		.mdc-text-field--disabled,
-		.mdc-checkbox--disabled,
-		.mdc-checkbox--disabled + label {
-			opacity: 0.25;
-		}
-	}
-
-	.googlesitekit-user-input__select-option-text-field {
-		flex: 1;
-
-		.mdc-text-field--error .mdc-line-ripple--active {
-			background-color: $c-black;
-			opacity: 1;
 		}
 	}
 

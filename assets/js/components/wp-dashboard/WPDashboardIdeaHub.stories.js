@@ -32,7 +32,7 @@ import { savedIdeas } from '../../modules/idea-hub/datastore/__fixtures__';
 const mockEndpoints = () => {
 	fetchMock.reset();
 	fetchMock.get(
-		/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/saved-ideas/,
+		new RegExp( '^/google-site-kit/v1/modules/idea-hub/data/saved-ideas' ),
 		{ body: savedIdeas }
 	);
 };

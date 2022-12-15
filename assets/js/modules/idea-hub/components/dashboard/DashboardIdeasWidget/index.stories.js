@@ -52,23 +52,29 @@ const mockEndpoints = ( args ) => {
 	fetchMock.reset();
 
 	fetchMock.get(
-		/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/new-ideas/,
+		new RegExp( '^/google-site-kit/v1/modules/idea-hub/data/new-ideas' ),
 		{ body: args?.newIdeas || newIdeas, status: 200 }
 	);
 	fetchMock.get(
-		/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/saved-ideas/,
+		new RegExp( '^/google-site-kit/v1/modules/idea-hub/data/saved-ideas' ),
 		{ body: args?.savedIdeas || savedIdeas, status: 200 }
 	);
 	fetchMock.get(
-		/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/draft-post-ideas/,
+		new RegExp(
+			'^/google-site-kit/v1/modules/idea-hub/data/draft-post-ideas'
+		),
 		{ body: args?.draftPostIdeas || draftPostIdeas, status: 200 }
 	);
 	fetchMock.post(
-		/google-site-kit\/v1\/modules\/idea-hub\/data\/create-idea-draft-post/,
+		new RegExp(
+			'google-site-kit/v1/modules/idea-hub/data/create-idea-draft-post'
+		),
 		{ body: {}, status: 200 }
 	);
 	fetchMock.post(
-		/google-site-kit\/v1\/modules\/idea-hub\/data\/update-idea-state/,
+		new RegExp(
+			'google-site-kit/v1/modules/idea-hub/data/update-idea-state'
+		),
 		( url, opts ) => {
 			const { data } = JSON.parse( opts.body );
 

@@ -75,7 +75,9 @@ describe( 'AccountCreate', () => {
 			.dispatch( MODULES_TAGMANAGER )
 			.finishResolution( 'getAccounts', [] );
 		fetchMock.getOnce(
-			/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/accounts/,
+			new RegExp(
+				'^/google-site-kit/v1/modules/tagmanager/data/accounts'
+			),
 			{ body: [ accountA, accountB ], status: 200 }
 		);
 		const { getByRole } = render( <AccountCreate />, { registry } );
@@ -85,7 +87,9 @@ describe( 'AccountCreate', () => {
 		} );
 
 		muteFetch(
-			/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/containers/,
+			new RegExp(
+				'^/google-site-kit/v1/modules/tagmanager/data/containers'
+			),
 			[]
 		);
 		fireEvent.click( refetchMyAccountButton );
@@ -94,7 +98,9 @@ describe( 'AccountCreate', () => {
 			() => registry.select( MODULES_TAGMANAGER ).getAccounts().length > 1
 		);
 		expect( fetchMock ).toHaveFetched(
-			/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/accounts/
+			new RegExp(
+				'^/google-site-kit/v1/modules/tagmanager/data/accounts'
+			)
 		);
 	} );
 

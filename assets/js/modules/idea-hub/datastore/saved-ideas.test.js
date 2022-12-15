@@ -36,8 +36,9 @@ describe( 'modules/idea-hub saved-ideas', () => {
 		lastIdeaPostUpdatedAt: '123',
 	};
 
-	const getSavedIdeasEndpoint =
-		/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/saved-ideas/;
+	const getSavedIdeasEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/idea-hub/data/saved-ideas'
+	);
 
 	beforeAll( () => {
 		API.setUsingCache( false );

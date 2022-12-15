@@ -137,7 +137,7 @@ function DashboardEntityApp() {
 
 	if ( currentEntityURL === null ) {
 		return (
-			<div className="googlesitekit-widget-context googlesitekit-module-page googlesitekit-dashboard-single-url">
+			<div className="googlesitekit-widget-context googlesitekit-module-page googlesitekit-entity-dashboard">
 				<ScrollEffect />
 				<Grid>
 					<Row>
@@ -155,11 +155,11 @@ function DashboardEntityApp() {
 										'Detailed Page Stats',
 										'google-site-kit'
 									) }
-									className="googlesitekit-heading-2 googlesitekit-dashboard-single-url__heading"
+									className="googlesitekit-heading-2 googlesitekit-entity-dashboard__heading"
 									fullWidth
 								/>
 
-								<Layout className="googlesitekit-dashboard-single-url__entity-header">
+								<Layout className="googlesitekit-entity-dashboard__entity-header">
 									<Grid>
 										<Row>
 											<Cell size={ 12 }>
