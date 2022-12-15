@@ -71,12 +71,20 @@ describe( 'SettingsEdit', () => {
 		} );
 
 		provideSiteInfo( registry, { siteName } );
+		provideUserInfo( registry );
 
 		registry
 			.dispatch( CORE_MODULES )
-			.receiveGetModules( withActive( 'tagmanager' ) );
+			.receiveGetModules(
+				withActive( 'tagmanager' ).map( ( module ) =>
+					module.slug !== 'tagmanager'
+						? module
+						: { ...module, storeName: MODULES_TAGMANAGER }
+				)
+			);
 
 		registry.dispatch( MODULES_TAGMANAGER ).setSettings( {} );
+		registry.dispatch( MODULES_TAGMANAGER ).setOwnerID( 1 );
 		registry.dispatch( MODULES_TAGMANAGER ).receiveGetExistingTag( null );
 		registry.dispatch( MODULES_TAGMANAGER ).setAccountID( accountID );
 		registry
@@ -111,7 +119,6 @@ describe( 'SettingsEdit', () => {
 			} );
 
 			it( 'should display a warning if the current user does not have access to the module', async () => {
-				provideUserInfo( registry );
 				// Ensure the module is owned by another user.
 				registry.dispatch( MODULES_TAGMANAGER ).setOwnerID( 99 );
 				registry
@@ -216,7 +223,6 @@ describe( 'SettingsEdit', () => {
 			} );
 
 			it( 'should display a warning if the current user does not have access to the module', async () => {
-				provideUserInfo( registry );
 				// Ensure the module is owned by another user.
 				registry.dispatch( MODULES_TAGMANAGER ).setOwnerID( 99 );
 				registry
@@ -331,7 +337,6 @@ describe( 'SettingsEdit', () => {
 			} );
 
 			it( 'should display a warning if the current user does not have access to the module', async () => {
-				provideUserInfo( registry );
 				// Ensure the module is owned by another user.
 				registry.dispatch( MODULES_TAGMANAGER ).setOwnerID( 99 );
 				registry
