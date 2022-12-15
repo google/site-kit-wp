@@ -21,7 +21,6 @@
  */
 import Data from 'googlesitekit-data';
 import { ProgressBar } from 'googlesitekit-components';
-import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import { MODULES_TAGMANAGER, ACCOUNT_CREATE } from '../../datastore/constants';
 import useExistingTagEffect from '../../hooks/useExistingTagEffect';
@@ -46,39 +45,11 @@ export default function SettingsEdit() {
 	const hasResolvedAccounts = useSelect( ( select ) =>
 		select( MODULES_TAGMANAGER ).hasFinishedResolution( 'getAccounts' )
 	);
-	const loggedInUserID = useSelect( ( select ) =>
-		select( CORE_USER ).getID()
+
+	const hasTagManagerAccess = useSelect( ( select ) =>
+		select( CORE_MODULES ).hasModuleOwnershipOrAccess( 'tagmanager' )
 	);
-	const hasResolvedUser = useSelect( ( select ) =>
-		select( CORE_USER ).hasFinishedResolution( 'getUser' )
-	);
-	const hasModuleAccess = useSelect( ( select ) => {
-		const moduleOwnerID = select( MODULES_TAGMANAGER ).getOwnerID();
 
-		if ( moduleOwnerID === undefined || loggedInUserID === undefined ) {
-			return undefined;
-		}
-
-		if ( moduleOwnerID === loggedInUserID ) {
-			return true;
-		}
-		return select( CORE_MODULES ).hasModuleAccess( 'tagmanager' );
-	} );
-	const isLoadingModuleAccess = useSelect( ( select ) => {
-		const hasResolvedModuleOwner =
-			select( MODULES_TAGMANAGER ).hasFinishedResolution( 'getSettings' );
-
-		const isResolvingModuleAccess = select( CORE_MODULES ).isResolving(
-			'hasModuleAccess',
-			[ 'tagmanager' ]
-		);
-
-		return (
-			! hasResolvedModuleOwner ||
-			! hasResolvedUser ||
-			isResolvingModuleAccess
-		);
-	} );
 	const isCreateAccount = ACCOUNT_CREATE === accountID;
 
 	// Set useSnippet to `false` if there is an existing tag and it is the same as the selected container ID.
@@ -92,14 +63,16 @@ export default function SettingsEdit() {
 	if (
 		isDoingSubmitChanges ||
 		! hasResolvedAccounts ||
-		isLoadingModuleAccess ||
+		hasTagManagerAccess === undefined ||
 		hasExistingTag === undefined
 	) {
 		viewComponent = <ProgressBar />;
 	} else if ( isCreateAccount || ! accounts?.length ) {
 		viewComponent = <AccountCreate />;
 	} else {
-		viewComponent = <SettingsForm hasModuleAccess={ hasModuleAccess } />;
+		viewComponent = (
+			<SettingsForm hasModuleAccess={ hasTagManagerAccess } />
+		);
 	}
 
 	return (
