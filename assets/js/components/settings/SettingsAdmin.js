@@ -99,8 +99,11 @@ export default function SettingsAdmin() {
 											</p>
 										</Cell>
 									</Row>
-
-									<UserInputPreview goTo={ goTo } noFooter />
+									<UserInputPreview
+										goTo={ goTo }
+										noHeader
+										noFooter
+									/>
 								</Grid>
 							</div>
 						</Layout>
