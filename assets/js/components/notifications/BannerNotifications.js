@@ -31,19 +31,16 @@ import useQueryArg from '../../hooks/useQueryArg';
 import SetupSuccessBannerNotification from './SetupSuccessBannerNotification';
 import CoreSiteBannerNotifications from './CoreSiteBannerNotifications';
 import ModuleRecoveryAlert from '../dashboard-sharing/ModuleRecoveryAlert';
-import IdeaHubPromptBannerNotification from './IdeaHubPromptBannerNotification';
 import UserInputPromptBannerNotification from './UserInputPromptBannerNotification';
 import AdSenseAlerts from './AdSenseAlerts';
 import ActivationBanner from '../../modules/analytics-4/components/dashboard/ActivationBanner';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import useViewOnly from '../../hooks/useViewOnly';
 import ZeroDataStateNotifications from './ZeroDataStateNotifications';
-import ThankWithGoogleSupporterWallNotification from './ThankWithGoogleSupporterWallNotification';
 const { useSelect } = Data;
 
 export default function BannerNotifications() {
 	const dashboardSharingEnabled = useFeature( 'dashboardSharing' );
-	const ideaHubModuleEnabled = useFeature( 'ideaHubModule' );
 	const userInputEnabled = useFeature( 'userInput' );
 	const ga4ActivationBannerEnabled = useFeature( 'ga4ActivationBanner' );
 
@@ -54,9 +51,6 @@ export default function BannerNotifications() {
 	);
 	const adSenseModuleActive = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleActive( 'adsense' )
-	);
-	const twGModuleConnected = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleConnected( 'thank-with-google' )
 	);
 
 	const [ notification ] = useQueryArg( 'notification' );
@@ -72,9 +66,6 @@ export default function BannerNotifications() {
 					{ isAuthenticated && <CoreSiteBannerNotifications /> }
 					{ dashboardSharingEnabled && <ModuleRecoveryAlert /> }
 					{ ga4ActivationBannerEnabled && <ActivationBanner /> }
-					{ twGModuleConnected && (
-						<ThankWithGoogleSupporterWallNotification />
-					) }
 				</Fragment>
 			) }
 			<ZeroDataStateNotifications />
@@ -82,9 +73,6 @@ export default function BannerNotifications() {
 				<Fragment>
 					{ userInputEnabled && (
 						<UserInputPromptBannerNotification />
-					) }
-					{ ideaHubModuleEnabled && (
-						<IdeaHubPromptBannerNotification />
 					) }
 					{ adSenseModuleActive && <AdSenseAlerts /> }
 				</Fragment>

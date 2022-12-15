@@ -28,8 +28,9 @@ import { CORE_USER } from './constants';
 
 describe( 'core/user disconnect', () => {
 	let registry;
-	const coreUserDataDisconnectEndpointRegExp =
-		/^\/google-site-kit\/v1\/core\/user\/data\/disconnect/;
+	const coreUserDataDisconnectEndpointRegExp = new RegExp(
+		'^/google-site-kit/v1/core/user/data/disconnect'
+	);
 
 	beforeEach( () => {
 		// Create a mock to avoid triggering a network request error.

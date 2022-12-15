@@ -210,7 +210,9 @@ describe( 'createFetchStore store', () => {
 			it( 'makes a network request based on controlCallback', async () => {
 				const expectedResponse = 'response-value';
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/core\/test\/data\/some-data/,
+					new RegExp(
+						'^/google-site-kit/v1/core/test/data/some-data'
+					),
 					{ body: JSON.stringify( expectedResponse ), status: 200 }
 				);
 
@@ -247,7 +249,9 @@ describe( 'createFetchStore store', () => {
 						data: { status: 500 },
 					};
 					fetchMock.getOnce(
-						/^\/google-site-kit\/v1\/core\/test\/data\/some-data/,
+						new RegExp(
+							'^/google-site-kit/v1/core/test/data/some-data'
+						),
 						{ body: errorResponse, status: 500 }
 					);
 
@@ -277,7 +281,9 @@ describe( 'createFetchStore store', () => {
 						data: { status: 500 },
 					};
 					fetchMock.getOnce(
-						/^\/google-site-kit\/v1\/core\/test\/data\/some-data/,
+						new RegExp(
+							'^/google-site-kit/v1/core/test/data/some-data'
+						),
 						{ body: errorResponse, status: 500 }
 					);
 
@@ -295,7 +301,9 @@ describe( 'createFetchStore store', () => {
 					expect( select.getError() ).toEqual( errorResponse );
 
 					fetchMock.getOnce(
-						/^\/google-site-kit\/v1\/core\/test\/data\/some-data/,
+						new RegExp(
+							'^/google-site-kit/v1/core/test/data/some-data'
+						),
 						{
 							body: {},
 							status: 200,
@@ -315,7 +323,9 @@ describe( 'createFetchStore store', () => {
 
 			it( 'sets flag for request being in progress', async () => {
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/core\/test\/data\/some-data/,
+					new RegExp(
+						'^/google-site-kit/v1/core/test/data/some-data'
+					),
 					{ body: { someValue: 42 }, status: 200 }
 				);
 

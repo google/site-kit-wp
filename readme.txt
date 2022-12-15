@@ -4,7 +4,7 @@ Contributors:      google
 Requires at least: 5.2
 Tested up to:      6.1
 Requires PHP:      5.6
-Stable tag:        1.89.0
+Stable tag:        1.90.0
 License:           Apache License 2.0
 License URI:       https://www.apache.org/licenses/LICENSE-2.0
 Tags:              google, search-console, analytics, adsense, pagespeed-insights, optimize, tag-manager, site-kit
@@ -107,6 +107,30 @@ By default, Site Kit does anonymize IP addresses upon activation of the Google A
 Please create a new topic on our [WordPress.org support forum](https://wordpress.org/support/plugin/google-site-kit/). Be sure to follow the [support forum guidelines](https://wordpress.org/support/guidelines/) when posting.
 
 == Changelog ==
+
+= 1.90.0 =
+
+**Enhanced**
+
+* Remove text field from the "Other" option in all User Input questions. See [#6181](https://github.com/google/site-kit-wp/issues/6181).
+* Add Google Analytics 4 Data API client library to bundled client services. See [#6171](https://github.com/google/site-kit-wp/issues/6171).
+* Remove "Alpha"/"Beta" from Analytics 4 module name. See [#6148](https://github.com/google/site-kit-wp/issues/6148).
+* Improve async handling of some data store actions. See [#6117](https://github.com/google/site-kit-wp/issues/6117).
+* Add `googleTagID`, `googleTagAccountID` and `googleTagContainerID` to `modules/analytics-4` datastore. See [#6077](https://github.com/google/site-kit-wp/issues/6077).
+* Update User Input answers to be stored in WP. See [#5898](https://github.com/google/site-kit-wp/issues/5898).
+* Update key metrics personalization CTA text and show the CTA only when Analytics is connected. See [#5895](https://github.com/google/site-kit-wp/issues/5895).
+* Add a skeleton loader for the PageSpeed Insights widget to provide a preview of the widget shape while it's loading. See [#5776](https://github.com/google/site-kit-wp/issues/5776).
+* Update Google Analytics 4 to use the v1 beta API. See [#5574](https://github.com/google/site-kit-wp/issues/5574).
+* Improve Analytics settings screen with new headers and better help text. See [#5151](https://github.com/google/site-kit-wp/issues/5151).
+* Alphabetically sort dropdown menus where appropriate. Props uogecko. See [#4853](https://github.com/google/site-kit-wp/issues/4853).
+* Add new "Unique Visitors from Search" chart to the WordPress Dashboard. Props gmmedia. See [#631](https://github.com/google/site-kit-wp/issues/631).
+
+**Fixed**
+
+* Fix presentation of measurement ID within options of the Analytics 4 property select. See [#6293](https://github.com/google/site-kit-wp/issues/6293).
+* Fix styling of some elements in the Site Kit admin bar metrics. See [#6283](https://github.com/google/site-kit-wp/issues/6283).
+* Fix presentation of errors from Google APIs shown to view-only users. See [#6201](https://github.com/google/site-kit-wp/issues/6201).
+* Update certain selector usage to avoid crashing the dashboard in the event of an error. See [#4767](https://github.com/google/site-kit-wp/issues/4767).
 
 = 1.89.0 =
 

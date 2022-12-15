@@ -198,7 +198,7 @@ const baseActions = {
 
 			const webdatastream = registry
 				.select( MODULES_ANALYTICS_4 )
-				.getMatchingWebDataStream( propertyID );
+				.getMatchingWebDataStreamByPropertyID( propertyID );
 
 			if ( webdatastream ) {
 				registry

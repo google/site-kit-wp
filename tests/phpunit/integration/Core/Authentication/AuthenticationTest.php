@@ -28,7 +28,7 @@ use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
-use Google\Site_Kit\Core\Util\User_Input_Settings;
+use Google\Site_Kit\Core\User_Input\User_Input;
 use Google\Site_Kit\Modules\PageSpeed_Insights\Settings as PageSpeed_Insights_Settings;
 use Google\Site_Kit\Modules\Search_Console\Settings as Search_Console_Settings;
 use Google\Site_Kit\Tests\Exception\RedirectException;
@@ -465,14 +465,14 @@ class AuthenticationTest extends TestCase {
 		$auth->register();
 
 		$user_input_state = $this->force_get_property( $auth, 'user_input_state' );
-		// Mocking User_Input_Settings here to avoid adding a ton of complexity
+		// Mocking User_Input here to avoid adding a ton of complexity
 		// from intercepting a request to the proxy, returning, settings etc.
-		$mock_user_input_settings = $this->getMockBuilder( User_Input_Settings::class )
+		$mock_user_input = $this->getMockBuilder( User_Input::class )
 			->disableOriginalConstructor()
 			->disableProxyingToOriginalMethods()
-			->setMethods( array( 'set_settings' ) )
+			->setMethods( array( 'set_answers' ) )
 			->getMock();
-		$this->force_set_property( $auth, 'user_input_settings', $mock_user_input_settings );
+		$this->force_set_property( $auth, 'user_input', $mock_user_input );
 
 		$this->assertEmpty( $user_input_state->get() );
 		do_action( 'googlesitekit_authorize_user', array(), array(), array() );
@@ -488,14 +488,14 @@ class AuthenticationTest extends TestCase {
 		$auth->register();
 
 		$user_input_state = $this->force_get_property( $auth, 'user_input_state' );
-		// Mocking User_Input_Settings here to avoid adding a ton of complexity
+		// Mocking User_Input here to avoid adding a ton of complexity
 		// from intercepting a request to the proxy, returning, settings etc.
-		$mock_user_input_settings = $this->getMockBuilder( User_Input_Settings::class )
+		$mock_user_input = $this->getMockBuilder( User_Input::class )
 			->disableOriginalConstructor()
 			->disableProxyingToOriginalMethods()
-			->setMethods( array( 'set_settings' ) )
+			->setMethods( array( 'set_answers' ) )
 			->getMock();
-		$this->force_set_property( $auth, 'user_input_settings', $mock_user_input_settings );
+		$this->force_set_property( $auth, 'user_input', $mock_user_input );
 
 		$this->assertEmpty( $user_input_state->get() );
 
@@ -527,14 +527,14 @@ class AuthenticationTest extends TestCase {
 		$auth->register();
 
 		$user_input_state = $this->force_get_property( $auth, 'user_input_state' );
-		// Mocking User_Input_Settings here to avoid adding a ton of complexity
+		// Mocking User_Input here to avoid adding a ton of complexity
 		// from intercepting a request to the proxy, returning, settings etc.
-		$mock_user_input_settings = $this->getMockBuilder( User_Input_Settings::class )
-			->setMethods( array( 'set_settings' ) )
+		$mock_user_input = $this->getMockBuilder( User_Input::class )
+			->setMethods( array( 'set_answers' ) )
 			->disableProxyingToOriginalMethods()
 			->disableOriginalConstructor()
 			->getMock();
-		$this->force_set_property( $auth, 'user_input_settings', $mock_user_input_settings );
+		$this->force_set_property( $auth, 'user_input', $mock_user_input );
 
 		$this->assertEmpty( $user_input_state->get() );
 		do_action( 'googlesitekit_authorize_user', array(), array(), array() );
@@ -978,16 +978,6 @@ class AuthenticationTest extends TestCase {
 		$this->assertTrue( apply_filters( 'googlesitekit_is_feature_enabled', true, 'test.featureTwo' ) );
 
 		$this->fake_proxy_site_connection();
-
-		// Test experimental features are checked solely within the database via options.
-		$this->assertFalse( apply_filters( 'googlesitekit_is_feature_enabled', false, 'ideaHubModule' ) );
-		$this->assertFalse( apply_filters( 'googlesitekit_is_feature_enabled', false, 'twgModule' ) );
-		// Update the active modules and test if they are checked.
-		update_option( 'googlesitekit_active_modules', array( 'idea-hub' ) );
-		$this->assertTrue( apply_filters( 'googlesitekit_is_feature_enabled', false, 'ideaHubModule' ) );
-		$this->assertFalse( apply_filters( 'googlesitekit_is_feature_enabled', false, 'twgModule' ) );
-		update_option( 'googlesitekit_active_modules', array( 'idea-hub', 'thank-with-google' ) );
-		$this->assertTrue( apply_filters( 'googlesitekit_is_feature_enabled', false, 'twgModule' ) );
 
 		// Till this point, no requests should have been made to the Google Proxy server.
 		$this->assertEmpty( $proxy_server_requests );

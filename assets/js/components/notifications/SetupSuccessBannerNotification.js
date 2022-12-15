@@ -19,13 +19,7 @@
 /**
  * WordPress dependencies
  */
-import {
-	createInterpolateElement,
-	Fragment,
-	useCallback,
-	useEffect,
-	useState,
-} from '@wordpress/element';
+import { Fragment, useCallback, useEffect, useState } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 import { removeQueryArgs } from '@wordpress/url';
 
@@ -37,24 +31,20 @@ import { getQueryParameter } from '../../util';
 import BannerNotification, { LEARN_MORE_TARGET } from './BannerNotification';
 import SuccessGreenSVG from '../../../svg/graphics/success-green.svg';
 import UserInputSuccessBannerNotification from './UserInputSuccessBannerNotification';
-import Link from '../Link';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import {
 	CORE_USER,
 	PERMISSION_MANAGE_OPTIONS,
 } from '../../googlesitekit/datastore/user/constants';
-import { MODULES_THANK_WITH_GOOGLE } from '../../modules/thank-with-google/datastore/constants';
 import { trackEvent } from '../../util/tracking';
 import useViewContext from '../../hooks/useViewContext';
-import { useFeature } from '../../hooks/useFeature';
 const { useSelect } = Data;
 
 function SetupSuccessBannerNotification() {
 	const slug = getQueryParameter( 'slug' );
 	const notification = getQueryParameter( 'notification' );
 	const viewContext = useViewContext();
-	const twgEnabled = useFeature( 'twgModule' );
 
 	const modules = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModules()
@@ -85,17 +75,6 @@ function SetupSuccessBannerNotification() {
 	} );
 	const settingsAdminURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-settings' )
-	);
-	const publicationID = useSelect(
-		( select ) =>
-			twgEnabled && select( MODULES_THANK_WITH_GOOGLE ).getPublicationID()
-	);
-	const publicationURL = useSelect(
-		( select ) =>
-			publicationID &&
-			select( MODULES_THANK_WITH_GOOGLE ).getServicePublicationURL(
-				publicationID
-			)
 	);
 
 	const [ viewNotificationSent, setViewNotificationSent ] = useState( false );
@@ -234,12 +213,6 @@ function SetupSuccessBannerNotification() {
 					'Jump to the bottom of the dashboard to see how fast your home page is',
 					'google-site-kit'
 				);
-			} else if ( 'idea-hub' === slug ) {
-				anchor.link = '#googlesitekit-idea-hub-widget';
-				anchor.label = __(
-					'Jump directly to Idea Hub to see topic suggestions for your site',
-					'google-site-kit'
-				);
 			}
 
 			if (
@@ -258,24 +231,6 @@ function SetupSuccessBannerNotification() {
 					url: `${ settingsAdminURL }#/connect-more-services`,
 					target: LEARN_MORE_TARGET.INTERNAL,
 				};
-			}
-
-			if ( 'thank-with-google' === slug ) {
-				winData.description = (
-					<p>
-						{ createInterpolateElement(
-							__(
-								'Thank with Google is visible to your visitors. To see metrics, <link>open the administrator panel.</link>',
-								'google-site-kit'
-							),
-							{
-								link: <Link href={ publicationURL } external />,
-							}
-						) }
-					</p>
-				);
-
-				winData.learnMore.label = '';
 			}
 
 			return (

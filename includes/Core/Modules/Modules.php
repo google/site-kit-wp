@@ -26,13 +26,11 @@ use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Modules\AdSense;
 use Google\Site_Kit\Modules\Analytics;
 use Google\Site_Kit\Modules\Analytics_4;
-use Google\Site_Kit\Modules\Idea_Hub;
 use Google\Site_Kit\Modules\Optimize;
 use Google\Site_Kit\Modules\PageSpeed_Insights;
 use Google\Site_Kit\Modules\Search_Console;
 use Google\Site_Kit\Modules\Site_Verification;
 use Google\Site_Kit\Modules\Tag_Manager;
-use Google\Site_Kit\Modules\Thank_With_Google;
 use WP_REST_Server;
 use WP_REST_Request;
 use WP_REST_Response;
@@ -178,45 +176,6 @@ final class Modules {
 		$this->assets           = $assets ?: new Assets( $this->context );
 
 		$this->core_modules[ Analytics_4::MODULE_SLUG ] = Analytics_4::class;
-
-		// Preferably no features should be checked here, or any time prior to
-		// Modules::register() being called to add the 'googlesitekit_features_request_data'
-		// filter callback. For any feature flags checked in this method, a workaround needs
-		// to be added to Authentication::filter_features_via_proxy() so that the remote
-		// features request is not triggered too early.
-
-		if ( Feature_Flags::enabled( 'ideaHubModule' ) ) {
-			$this->core_modules[ Idea_Hub::MODULE_SLUG ] = Idea_Hub::class;
-		}
-
-		if ( self::should_enable_twg() ) {
-			$this->core_modules[ Thank_With_Google::MODULE_SLUG ] = Thank_With_Google::class;
-		}
-	}
-
-	/**
-	 * Determines if Thank with Google module should be enabled.
-	 *
-	 * @since 1.83.0
-	 *
-	 * @return bool True if the module should be enabled, false otherwise.
-	 */
-	public static function should_enable_twg() {
-		if ( ! Feature_Flags::enabled( 'twgModule' ) ) {
-			return false;
-		}
-
-		if ( Build_Mode::get_mode() === Build_Mode::MODE_DEVELOPMENT ) {
-			return true;
-		}
-
-		if ( 'https' === URL::parse( home_url(), PHP_URL_SCHEME ) ) {
-			return true;
-		}
-
-		// Because we aren't in development mode and haven't detected SSL being enabled, TwG should
-		// not be enabled.
-		return false;
 	}
 
 	/**
@@ -1636,7 +1595,7 @@ final class Modules {
 	 * Inserts default settings for shared ownership modules in passed dashboard sharing settings.
 	 *
 	 * Sharing settings for shared ownership modules such as pagespeed-insights
-	 * and idea-hub should always be manageable by "all admins". This function inserts
+	 * should always be manageable by "all admins". This function inserts
 	 * this 'default' setting for their respective module slugs even when the
 	 * dashboard_sharing settings option is not defined in the database or when settings
 	 * are not set for these modules.

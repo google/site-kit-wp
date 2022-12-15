@@ -19,8 +19,8 @@
 /**
  * Checks the given value to see if it is a positive integer.
  *
- * @since n.e.x.t Moved outside Tag Manager to a generic utility function.
  * @since 1.11.0 Function introduced.
+ * @since 1.90.0 Moved outside Tag Manager to a generic utility function.
  *
  * @param {*} input Value to check.
  * @return {boolean} Validity.
