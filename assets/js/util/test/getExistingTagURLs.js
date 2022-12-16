@@ -42,7 +42,7 @@ describe( 'modules/tagmanager existing-tag', () => {
 			const homeURL = 'http://example.com/';
 			const expectedURLs = [ homeURL ];
 
-			fetchMock.getOnce( /^\/wp\/v2\/posts/, {
+			fetchMock.getOnce( new RegExp( '^/wp/v2/posts' ), {
 				body: [
 					{ link: 'http://example.com/amp/' },
 					{ link: 'http://example.com/ignore-me' },
@@ -60,7 +60,7 @@ describe( 'modules/tagmanager existing-tag', () => {
 			const homeURL = 'http://example.com/';
 			const expectedURLs = [ homeURL, 'http://example.com/amp/?amp=1' ];
 
-			fetchMock.getOnce( /^\/wp\/v2\/posts/, {
+			fetchMock.getOnce( new RegExp( '^/wp/v2/posts' ), {
 				body: [
 					{ link: 'http://example.com/amp/' },
 					{ link: 'http://example.com/ignore-me' },
@@ -81,7 +81,9 @@ describe( 'modules/tagmanager existing-tag', () => {
 			const homeURL = 'http://example.com/';
 			const expectedURLs = [ homeURL ];
 
-			fetchMock.getOnce( /^\/wp\/v2\/posts/, { throws: 'error' } );
+			fetchMock.getOnce( new RegExp( '^/wp/v2/posts' ), {
+				throws: 'error',
+			} );
 
 			// No expect( console ).toHaveErrored() needed as the error is caught internally.
 			const existingTagURLs = await getExistingTagURLs( { homeURL } );

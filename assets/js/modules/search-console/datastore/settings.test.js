@@ -51,8 +51,9 @@ describe( 'modules/search-console settings', () => {
 	} );
 
 	describe( 'submitChanges', () => {
-		const settingsEndpoint =
-			/^\/google-site-kit\/v1\/modules\/search-console\/data\/settings/;
+		const settingsEndpoint = new RegExp(
+			'^/google-site-kit/v1/modules/search-console/data/settings'
+		);
 
 		beforeEach( () => {
 			registry.dispatch( MODULES_SEARCH_CONSOLE ).receiveGetSettings( {

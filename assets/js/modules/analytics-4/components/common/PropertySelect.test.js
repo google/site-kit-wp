@@ -30,16 +30,10 @@ import * as fixtures from '../../datastore/__fixtures__';
 import * as analyticsFixtures from '../../../analytics/datastore/__fixtures__';
 import { fireEvent, act, render } from '../../../../../../tests/js/test-utils';
 
-const {
-	createProperty,
-	createWebDataStream,
-	properties,
-	webDataStreams,
-	webDataStreamsBatch,
-} = fixtures;
+const { createProperty, properties, webDataStreamsBatch } = fixtures;
 const { accounts } = analyticsFixtures.accountsPropertiesProfiles;
 const accountID = createProperty._accountID;
-const propertyID = createWebDataStream._propertyID;
+const propertyIDs = properties.map( ( { _id } ) => _id );
 
 const setupRegistry = ( { dispatch } ) => {
 	dispatch( CORE_SITE ).receiveSiteInfo( {
@@ -59,18 +53,13 @@ const setupRegistry = ( { dispatch } ) => {
 		accountID,
 	] );
 
-	dispatch( MODULES_ANALYTICS_4 ).receiveGetWebDataStreams( webDataStreams, {
-		propertyID,
-	} );
-	dispatch( MODULES_ANALYTICS_4 ).finishResolution(
-		'receiveGetWebDataStreams',
-		{ propertyID }
-	);
 	dispatch( MODULES_ANALYTICS_4 ).receiveGetWebDataStreamsBatch(
 		webDataStreamsBatch,
-		{
-			propertyIDs: properties.map( ( { _id } ) => _id ),
-		}
+		{ propertyIDs }
+	);
+	dispatch( MODULES_ANALYTICS_4 ).finishResolution(
+		'getWebDataStreamsBatch',
+		[ propertyIDs ]
 	);
 };
 
@@ -86,6 +75,15 @@ const setupEmptyRegistry = ( { dispatch } ) => {
 	dispatch( MODULES_ANALYTICS_4 ).finishResolution( 'getProperties', [
 		accountID,
 	] );
+
+	dispatch( MODULES_ANALYTICS_4 ).receiveGetWebDataStreamsBatch(
+		{},
+		{ propertyIDs: [] }
+	);
+	dispatch( MODULES_ANALYTICS_4 ).finishResolution(
+		'getWebDataStreamsBatch',
+		[ [] ]
+	);
 };
 
 describe( 'PropertySelect', () => {

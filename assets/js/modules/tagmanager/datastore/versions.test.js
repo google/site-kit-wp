@@ -185,7 +185,9 @@ describe( 'modules/tagmanager versions', () => {
 						.setInternalContainerID( '9876' );
 
 					muteFetch(
-						/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/live-container-version/
+						new RegExp(
+							'^/google-site-kit/v1/modules/tagmanager/data/live-container-version'
+						)
 					);
 					const propertyIDs = registry
 						.select( MODULES_TAGMANAGER )
@@ -280,7 +282,9 @@ describe( 'modules/tagmanager versions', () => {
 						.setInternalAMPContainerID( '9876' );
 
 					muteFetch(
-						/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/live-container-version/
+						new RegExp(
+							'^/google-site-kit/v1/modules/tagmanager/data/live-container-version'
+						)
 					);
 					const propertyIDs = registry
 						.select( MODULES_TAGMANAGER )
@@ -369,7 +373,9 @@ describe( 'modules/tagmanager versions', () => {
 					// Received the live container data for the web container but not the AMP container.
 
 					muteFetch(
-						/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/live-container-version/
+						new RegExp(
+							'^/google-site-kit/v1/modules/tagmanager/data/live-container-version'
+						)
 					);
 					const propertyIDs = registry
 						.select( MODULES_TAGMANAGER )
@@ -486,7 +492,9 @@ describe( 'modules/tagmanager versions', () => {
 				const internalContainerID = '98765';
 
 				muteFetch(
-					/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/live-container-version/
+					new RegExp(
+						'^/google-site-kit/v1/modules/tagmanager/data/live-container-version'
+					)
 				);
 				const tagObject = registry
 					.select( MODULES_TAGMANAGER )
@@ -597,7 +605,9 @@ describe( 'modules/tagmanager versions', () => {
 					parseIDs( liveContainerVersion );
 
 				muteFetch(
-					/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/live-container-version/
+					new RegExp(
+						'^/google-site-kit/v1/modules/tagmanager/data/live-container-version'
+					)
 				);
 				const propertyID = registry
 					.select( MODULES_TAGMANAGER )
@@ -691,7 +701,9 @@ describe( 'modules/tagmanager versions', () => {
 				const variableName = 'Test Variable';
 
 				muteFetch(
-					/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/live-container-version/
+					new RegExp(
+						'^/google-site-kit/v1/modules/tagmanager/data/live-container-version'
+					)
 				);
 				const variableObject = registry
 					.select( MODULES_TAGMANAGER )
@@ -713,7 +725,9 @@ describe( 'modules/tagmanager versions', () => {
 					parseIDs( liveContainerVersion );
 
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/live-container-version/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/tagmanager/data/live-container-version'
+					),
 					{ body: liveContainerVersion, status: 200 }
 				);
 
@@ -778,7 +792,9 @@ describe( 'modules/tagmanager versions', () => {
 					data: { status: 500 },
 				};
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/live-container-version/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/tagmanager/data/live-container-version'
+					),
 					{ body: errorResponse, status: 500 }
 				);
 
@@ -831,7 +847,9 @@ describe( 'modules/tagmanager versions', () => {
 				};
 
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/live-container-version/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/tagmanager/data/live-container-version'
+					),
 					{ body: notFoundResponse, status: 404 }
 				);
 
@@ -1061,7 +1079,9 @@ describe( 'modules/tagmanager versions', () => {
 				);
 
 				muteFetch(
-					/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/live-container-version/
+					new RegExp(
+						'^/google-site-kit/v1/modules/tagmanager/data/live-container-version'
+					)
 				);
 				expect(
 					registry
@@ -1077,7 +1097,9 @@ describe( 'modules/tagmanager versions', () => {
 				const internalContainerID = '200';
 
 				muteFetch(
-					/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/live-container-version/
+					new RegExp(
+						'^/google-site-kit/v1/modules/tagmanager/data/live-container-version'
+					)
 				);
 				expect(
 					registry

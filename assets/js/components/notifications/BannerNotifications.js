@@ -31,7 +31,6 @@ import useQueryArg from '../../hooks/useQueryArg';
 import SetupSuccessBannerNotification from './SetupSuccessBannerNotification';
 import CoreSiteBannerNotifications from './CoreSiteBannerNotifications';
 import ModuleRecoveryAlert from '../dashboard-sharing/ModuleRecoveryAlert';
-import IdeaHubPromptBannerNotification from './IdeaHubPromptBannerNotification';
 import UserInputPromptBannerNotification from './UserInputPromptBannerNotification';
 import AdSenseAlerts from './AdSenseAlerts';
 import ActivationBanner from '../../modules/analytics-4/components/dashboard/ActivationBanner';
@@ -44,7 +43,6 @@ const { useSelect } = Data;
 
 export default function BannerNotifications() {
 	const dashboardSharingEnabled = useFeature( 'dashboardSharing' );
-	const ideaHubModuleEnabled = useFeature( 'ideaHubModule' );
 	const userInputEnabled = useFeature( 'userInput' );
 	const ga4ActivationBannerEnabled = useFeature( 'ga4ActivationBanner' );
 
@@ -78,9 +76,6 @@ export default function BannerNotifications() {
 				<Fragment>
 					{ userInputEnabled && (
 						<UserInputPromptBannerNotification />
-					) }
-					{ ideaHubModuleEnabled && (
-						<IdeaHubPromptBannerNotification />
 					) }
 					{ adSenseModuleActive && <AdSenseAlerts /> }
 				</Fragment>

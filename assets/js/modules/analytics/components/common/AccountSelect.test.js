@@ -90,7 +90,9 @@ describe( 'AccountSelect', () => {
 
 	it( 'should render a loading state when accounts are undefined', async () => {
 		freezeFetch(
-			/^\/google-site-kit\/v1\/modules\/analytics\/data\/accounts-properties-profiles/
+			new RegExp(
+				'^/google-site-kit/v1/modules/analytics/data/accounts-properties-profiles'
+			)
 		);
 		const { queryAllByRole, queryByRole } = render( <AccountSelect />, {
 			setupRegistry: setupLoadingRegistry,
@@ -141,11 +143,13 @@ describe( 'AccountSelect', () => {
 
 	it( 'should pre-select the property and profile IDs when changed', () => {
 		fetchMock.getOnce(
-			/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
+			new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
 			{ body: [] }
 		);
 		fetchMock.getOnce(
-			/^\/google-site-kit\/v1\/modules\/analytics-4\/data\/properties/,
+			new RegExp(
+				'^/google-site-kit/v1/modules/analytics-4/data/properties'
+			),
 			{ body: [] }
 		);
 

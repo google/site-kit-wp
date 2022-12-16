@@ -82,7 +82,7 @@ describe( 'User Input Settings', () => {
 			Promise.all( [
 				expect( page ).toClick(
 					'.googlesitekit-user-input__preview button',
-					{ text: /submit/i }
+					{ text: /save/i }
 				),
 				page.waitForNavigation(),
 			] )

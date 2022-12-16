@@ -979,15 +979,6 @@ class AuthenticationTest extends TestCase {
 
 		$this->fake_proxy_site_connection();
 
-		// Test experimental features are checked solely within the database via options.
-		$this->assertFalse( apply_filters( 'googlesitekit_is_feature_enabled', false, 'ideaHubModule' ) );
-
-		// Update the active modules and test if they are checked.
-		update_option( 'googlesitekit_active_modules', array( 'idea-hub' ) );
-		$this->assertTrue( apply_filters( 'googlesitekit_is_feature_enabled', false, 'ideaHubModule' ) );
-
-		update_option( 'googlesitekit_active_modules', array( 'idea-hub' ) );
-
 		// Till this point, no requests should have been made to the Google Proxy server.
 		$this->assertEmpty( $proxy_server_requests );
 		$this->assertOptionNotExists( 'googlesitekitpersistent_remote_features' );

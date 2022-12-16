@@ -98,7 +98,7 @@ export function isValidMeasurementID( measurementID ) {
 /**
  * Checks whether the given googleTagId appears to be valid.
  *
- * @since n.e.x.t
+ * @since 1.90.0
  *
  * @param {*} googleTagID Google Tag ID to check.
  * @return {boolean} TRUE if the googleTagID is valid, otherwise FALSE.
@@ -113,7 +113,7 @@ export function isValidGoogleTagID( googleTagID ) {
 /**
  * Checks whether the given googleTagAccountID appears to be valid.
  *
- * @since n.e.x.t
+ * @since 1.90.0
  *
  * @param {*} googleTagAccountID Google Tag ID to check.
  * @return {boolean} TRUE if the googleTagAccountID is valid, otherwise FALSE.
@@ -125,7 +125,7 @@ export function isValidGoogleTagAccountID( googleTagAccountID ) {
 /**
  * Checks whether the given googleTagContainerID appears to be valid.
  *
- * @since n.e.x.t
+ * @since 1.90.0
  *
  * @param {*} googleTagContainerID Google Tag ID to check.
  * @return {boolean} TRUE if the googleTagContainerID is valid, otherwise FALSE.

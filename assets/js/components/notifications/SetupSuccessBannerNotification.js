@@ -213,12 +213,6 @@ function SetupSuccessBannerNotification() {
 					'Jump to the bottom of the dashboard to see how fast your home page is',
 					'google-site-kit'
 				);
-			} else if ( 'idea-hub' === slug ) {
-				anchor.link = '#googlesitekit-idea-hub-widget';
-				anchor.label = __(
-					'Jump directly to Idea Hub to see topic suggestions for your site',
-					'google-site-kit'
-				);
 			}
 
 			if (
