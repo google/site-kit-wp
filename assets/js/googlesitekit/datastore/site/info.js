@@ -86,7 +86,9 @@ export const actions = {
 	},
 
 	/**
-	 * Sets `siteKitAutoUpdatesEnabled` value.
+	 * Sets `siteKitAutoUpdatesEnabled` value; if set to `true` this will
+	 * enable auto-updates for Site Kit. Set to `false` to disable this
+	 * behaviour.
 	 *
 	 * @since n.e.x.t
 	 *
@@ -94,7 +96,10 @@ export const actions = {
 	 * @return {Object} Redux-style action.
 	 */
 	setSiteKitAutoUpdatesEnabled( siteKitAutoUpdatesEnabled ) {
-		invariant( siteKitAutoUpdatesEnabled, 'permaLink is required.' );
+		invariant(
+			siteKitAutoUpdatesEnabled,
+			'siteKitAutoUpdatesEnabled is required.'
+		);
 
 		return {
 			payload: { siteKitAutoUpdatesEnabled },

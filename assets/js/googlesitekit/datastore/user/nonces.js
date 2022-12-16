@@ -123,12 +123,12 @@ const baseResolvers = {
 
 const baseSelectors = {
 	/**
-	 * Gets capabilities of the current user.
+	 * Gets all nonces from the store.
 	 *
-	 * @since 1.13.0
+	 * @since n.e.x.t
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {(Object|undefined)} Capabilities object. Returns undefined if it is not loaded yet.
+	 * @return {(Object|undefined)} Nonces object. Returns undefined if it is not loaded yet.
 	 */
 	getNonces( state ) {
 		const { nonces } = state;
@@ -136,23 +136,22 @@ const baseSelectors = {
 	},
 
 	/**
-	 * Checks if the current user has the specified capability or not.
+	 * Gets a single nonce from the store.
 	 *
-	 * @since 1.13.0
+	 * @since n.e.x.t
 	 *
 	 * @param {Object} state Data store's state.
-	 * @param {string} nonce Nonce action to check.
-	 * @param {Array}  args  List of rest of the arguments. Specifically one or many module slugs.
-	 * @return {(boolean|undefined)} TRUE if the current user has this capability, otherwise FALSE. If capabilities ain't loaded yet, returns undefined.
+	 * @param {string} nonce Action name of the nonce to get.
+	 * @return {(string|undefined)} Nonce string. Returns undefined if nonces are not loaded yet.
 	 */
 	getNonce: createRegistrySelector( ( select ) => ( state, nonce ) => {
 		const nonces = select( CORE_USER ).getNonces();
 
-		if ( nonces ) {
-			return nonces[ nonce ];
+		if ( ! nonces ) {
+			return undefined;
 		}
 
-		return undefined;
+		return nonces[ nonce ];
 	} ),
 };
 

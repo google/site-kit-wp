@@ -1,7 +1,7 @@
 /**
- * `core/site` data store: enable-autp-update.
+ * `core/site` data store: handle "Auto-updating" of Site Kit plugin in WordPress.
  *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2022 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,10 +58,10 @@ const fetchEnableAutoUpdateStore = createFetchStore( {
 		};
 	},
 	validateParams: ( { nonce, pluginBasename } ) => {
-		invariant( typeof nonce === 'string', 'nonce is required.' );
+		invariant( typeof nonce === 'string', 'nonce must be a string.' );
 		invariant(
 			typeof pluginBasename === 'string',
-			'pluginBasename is required.'
+			'pluginBasename must be a string.'
 		);
 	},
 } );
@@ -71,10 +71,6 @@ const baseInitialState = {};
 const baseActions = {
 	/**
 	 * Enables auto updates for Site Kit.
-	 *
-	 * WARNING: This causes the website's connection with Google Site Kit to be
-	 * removed and will require re-authentication. Use this action with caution,
-	 * and always request user confirmation before dispatching.
 	 *
 	 * @since n.e.x.t
 	 */
@@ -122,6 +118,11 @@ const baseSelectors = {
 	isDoingEnableAutoUpdate: createRegistrySelector( ( select ) => () => {
 		const nonce = select( CORE_USER ).getNonce( 'updates' );
 		const pluginBasename = select( CORE_SITE ).getPluginBasename();
+
+		if ( nonce === undefined || pluginBasename === undefined ) {
+			return false;
+		}
+
 		return select( CORE_SITE ).isFetchingEnableAutoUpdate( {
 			nonce,
 			pluginBasename,

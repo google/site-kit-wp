@@ -72,7 +72,7 @@ export default {
 			 * to ensure that the loading state is displayed.
 			 */
 			fetchMock.post(
-				/^\/admin-ajax.php/,
+				/^\/admin-ajax\.php/,
 				new Promise( ( resolve ) => {
 					setTimeout( () => {
 						resolve( {

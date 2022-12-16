@@ -66,7 +66,7 @@ const EnableAutoUpdateBannerNotification = () => {
 	const [ isInitialPluginSetup, setIsFirstPluginSetup ] = useState( true );
 
 	const setFirstPluginSetup = useCallback(
-		async ( isFirstSetup = true ) => {
+		async ( isFirstSetup ) => {
 			if ( isFirstSetup ) {
 				await setItem( HIDE_NOTIFICATION_ON_FIRST_SETUP, true, {
 					ttl: getTimeInSeconds() * 10,
@@ -109,8 +109,8 @@ const EnableAutoUpdateBannerNotification = () => {
 		siteKitAutoUpdatesEnabled,
 	] );
 
-	// Don't render anything if the user has no permission to update plugin
-	// or plugin auto-updates are disabled or auto update are already enabled for Site Kit.
+	// Don't render anything if the user has no permission to update plugin,
+	// plugin auto-updates are disabled or auto update are already enabled for Site Kit.
 	if (
 		! hasUpdatePluginCapacity ||
 		! autoUpdatesEnabled ||

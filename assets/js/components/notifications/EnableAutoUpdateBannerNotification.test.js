@@ -29,15 +29,17 @@ import {
 } from '../../../../tests/js/test-utils';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import EnableAutoUpdateBannerNotification from './EnableAutoUpdateBannerNotification';
-import mockUseQueryArg from '../../hooks/useQueryArg';
+import useQueryArg from '../../hooks/useQueryArg';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import * as apiCache from '../../googlesitekit/api/cache';
 
 jest.mock( '../../hooks/useQueryArg' );
 
-// setup mockImplementation for `useQueryArg`
+// Set up mockImplementation for `useQueryArg` used in this component,
+// so we can set the query params used to check whether this is a new Site Kit
+// setup.
 function stubMockUseQueryArg( isNewPluginInstall = false ) {
-	mockUseQueryArg.mockImplementation( ( queryArg ) => {
+	useQueryArg.mockImplementation( ( queryArg ) => {
 		if ( isNewPluginInstall && queryArg === 'notification' ) {
 			return [ 'authentication_success' ];
 		}
@@ -49,7 +51,6 @@ describe( 'EnableAutoUpdateBannerNotification', () => {
 	const registry = createTestRegistry();
 
 	beforeEach( () => {
-		jest.resetAllMocks();
 		stubMockUseQueryArg();
 
 		jest.spyOn( apiCache, 'getItem' ).mockImplementation( () => {
@@ -67,6 +68,12 @@ describe( 'EnableAutoUpdateBannerNotification', () => {
 			body: { updates: '751b9198d2' },
 			status: 200,
 		} );
+	} );
+
+	afterEach( () => {
+		useQueryArg.mockClear();
+		apiCache.setItem.mockClear();
+		apiCache.getItem.mockClear();
 	} );
 
 	it( 'should display the notification if Site Kit was not recently set up and user can update plugins', async () => {
@@ -166,7 +173,7 @@ describe( 'EnableAutoUpdateBannerNotification', () => {
 		expect( container ).toBeEmptyDOMElement();
 	} );
 
-	it( 'should send enable-auto-updates post request to admin-ajax on cta click.', async () => {
+	it( 'should send enable-auto-updates post request to admin-ajax on CTA click.', async () => {
 		await registry.dispatch( CORE_SITE ).receiveSiteInfo( {
 			autoUpdatesEnabled: true,
 			pluginBasename: 'google-site-kit/google-site-kit.php',

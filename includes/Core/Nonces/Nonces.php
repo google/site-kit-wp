@@ -3,7 +3,7 @@
  * Class Google\Site_Kit\Core\Nonces\Nonces
  *
  * @package   Google\Site_Kit\Core\Nonces
- * @copyright 2021 Google LLC
+ * @copyright 2022 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
@@ -20,7 +20,7 @@ use WP_REST_Response;
 use WP_REST_Server;
 
 /**
- * Class managing plugin permissions.
+ * Class managing nonces used by Site Kit.
  *
  * @since n.e.x.t
  * @access private
@@ -28,7 +28,7 @@ use WP_REST_Server;
  */
 final class Nonces {
 	/*
-	 * Nonce actions
+	 * Nonce actions.
 	 *
 	 * @since n.e.x.t
 	 */
@@ -41,6 +41,7 @@ final class Nonces {
 	 * @var Context
 	 */
 	private $context;
+
 	/**
 	 * Array of nonce actions.
 	 *
@@ -63,7 +64,6 @@ final class Nonces {
 
 		$this->nonce_actions = array(
 			self::NONCE_UPDATES,
-			'testnonce',
 		);
 	}
 
