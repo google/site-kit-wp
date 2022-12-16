@@ -47,7 +47,6 @@ describe( 'core/site connection', () => {
 	} );
 
 	beforeEach( () => {
-		jest.useRealTimers();
 		registry = createTestRegistry();
 		store = registry.stores[ CORE_SITE ].store;
 		select = registry.select( CORE_SITE );
@@ -218,12 +217,13 @@ describe( 'core/site connection', () => {
 				expect( console ).toHaveErrored();
 			} );
 
-			it( 'returns undefined if connection info is not available', () => {
-				jest.useFakeTimers();
+			it( 'returns undefined if connection info is not available', async () => {
 				muteFetch(
 					/^\/google-site-kit\/v1\/core\/site\/data\/connection/
 				);
 				expect( select[ selector ]() ).toBeUndefined();
+
+				await untilResolved( registry, CORE_SITE ).getConnection();
 			} );
 		} );
 	} );

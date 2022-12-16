@@ -29,6 +29,7 @@ import {
 	render,
 	createTestRegistry,
 	provideModules,
+	act,
 } from '../../../../tests/js/test-utils';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
@@ -41,7 +42,6 @@ describe( 'SettingsModules', () => {
 	let savedLocationHash;
 
 	beforeAll( () => {
-		jest.useFakeTimers();
 		savedLocationHash = global.location.hash;
 	} );
 
@@ -69,12 +69,14 @@ describe( 'SettingsModules', () => {
 		provideModules( registry );
 		history.push( '/connect' );
 
-		const { waitForRegistry } = render( <SettingsModules />, {
+		render( <SettingsModules />, {
 			history,
 			registry,
 		} );
 
-		await waitForRegistry();
+		await act(
+			() => new Promise( ( resolve ) => setTimeout( resolve, 0 ) )
+		);
 
 		expect( global.location.hash ).toEqual( '#/connect-more-services' );
 	} );

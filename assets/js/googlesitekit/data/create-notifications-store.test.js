@@ -29,6 +29,7 @@ import {
 	muteFetch,
 	subscribeUntil,
 	unsubscribeFromAll,
+	untilResolved,
 } from '../../../../tests/js/utils';
 import { createNotificationsStore } from './create-notifications-store';
 
@@ -46,8 +47,6 @@ describe( 'createNotificationsStore store', () => {
 	} );
 
 	beforeEach( () => {
-		jest.useFakeTimers();
-
 		registry = createRegistry();
 
 		storeDefinition = createNotificationsStore( ...STORE_ARGS );
@@ -100,7 +99,7 @@ describe( 'createNotificationsStore store', () => {
 				} ).toThrow( 'id is required.' );
 			} );
 
-			it( 'does not fail when there are no notifications', () => {
+			it( 'does not fail when there are no notifications', async () => {
 				dispatch.removeNotification( 'not_a_real_id' );
 
 				muteFetch(
@@ -108,9 +107,14 @@ describe( 'createNotificationsStore store', () => {
 					[]
 				);
 				expect( select.getNotifications() ).toEqual( undefined );
+
+				await untilResolved(
+					registry,
+					storeDefinition.STORE_NAME
+				).getNotifications();
 			} );
 
-			it( 'does not fail when no matching notification is found', () => {
+			it( 'does not fail when no matching notification is found', async () => {
 				const notification = { id: 'client_notification' };
 				dispatch.addNotification( notification );
 
@@ -121,6 +125,11 @@ describe( 'createNotificationsStore store', () => {
 					[]
 				);
 				expect( select.getNotifications() ).toEqual( [ notification ] );
+
+				await untilResolved(
+					registry,
+					storeDefinition.STORE_NAME
+				).getNotifications();
 			} );
 
 			it( 'removes the notification from client notifications', () => {
@@ -134,7 +143,7 @@ describe( 'createNotificationsStore store', () => {
 				expect( state.clientNotifications ).toMatchObject( {} );
 			} );
 
-			it( 'removes the notification from client notifications even when no server notifications exist', () => {
+			it( 'removes the notification from client notifications even when no server notifications exist', async () => {
 				const notification = { id: 'notification_to_remove' };
 				dispatch.addNotification( notification );
 
@@ -148,11 +157,14 @@ describe( 'createNotificationsStore store', () => {
 					[]
 				);
 				expect( select.getNotifications() ).toMatchObject( {} );
+
+				await untilResolved(
+					registry,
+					storeDefinition.STORE_NAME
+				).getNotifications();
 			} );
 
 			it( 'does not remove server notifications and emits a warning if they are sent to removeNotification', async () => {
-				jest.useRealTimers();
-
 				const serverNotifications = [ { id: 'server_notification' } ];
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/core\/site\/data\/notifications/,
@@ -216,8 +228,6 @@ describe( 'createNotificationsStore store', () => {
 	describe( 'selectors', () => {
 		describe( 'getNotifications', () => {
 			it( 'uses a resolver to make a network request', async () => {
-				jest.useRealTimers();
-
 				const response = [ { id: 'test_notification' } ];
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/core\/site\/data\/notifications/,
@@ -242,7 +252,7 @@ describe( 'createNotificationsStore store', () => {
 				expect( notificationsSelect ).toEqual( notifications );
 			} );
 
-			it( 'returns client notifications even if server notifications have not loaded', () => {
+			it( 'returns client notifications even if server notifications have not loaded', async () => {
 				const notification = { id: 'added_notification' };
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/core\/site\/data\/notifications/,
@@ -260,11 +270,14 @@ describe( 'createNotificationsStore store', () => {
 					[]
 				);
 				expect( select.getNotifications() ).toEqual( [ notification ] );
+
+				await untilResolved(
+					registry,
+					storeDefinition.STORE_NAME
+				).getNotifications();
 			} );
 
 			it( 'dispatches an error if the request fails', async () => {
-				jest.useRealTimers();
-
 				const response = {
 					code: 'internal_server_error',
 					message: 'Internal server error',

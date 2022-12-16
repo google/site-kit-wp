@@ -136,12 +136,16 @@ describe( 'core/site urls', () => {
 		} );
 
 		describe( 'getShowAdminBar', () => {
-			it( 'should return undefined when admin bar settings are being resolved still', () => {
-				jest.useFakeTimers();
+			it( 'should return undefined when admin bar settings are being resolved still', async () => {
 				muteFetch( adminBarSettingsEndpoint );
 				expect(
 					registry.select( CORE_SITE ).getShowAdminBar()
 				).toBeUndefined();
+
+				await untilResolved(
+					registry,
+					CORE_SITE
+				).getAdminBarSettings();
 			} );
 
 			it.each( [

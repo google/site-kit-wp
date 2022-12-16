@@ -35,7 +35,7 @@ describe( 'Dashboard Navigation', () => {
 	let previousSiteKitUserData;
 
 	beforeEach( () => {
-		jest.useFakeTimers();
+		// jest.useFakeTimers();
 		previousSiteKitUserData = global._googlesitekitUserData;
 	} );
 

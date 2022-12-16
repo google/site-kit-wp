@@ -26,6 +26,7 @@ import { Fragment } from '@wordpress/element';
  */
 import CompatibilityChecks from './index';
 import {
+	act,
 	render,
 	waitForElementToBeRemoved,
 } from '../../../../../tests/js/test-utils';
@@ -53,7 +54,6 @@ describe( 'CompatibilityChecks', () => {
 	const homeURL = 'http://example.com';
 
 	beforeEach( () => {
-		jest.useFakeTimers();
 		registry = createTestRegistry();
 		// Mock global.location.hostname with value that won't throw error in first check.
 		Object.defineProperty( global.window, 'location', {
@@ -83,9 +83,14 @@ describe( 'CompatibilityChecks', () => {
 		);
 
 		expect( container ).toHaveTextContent( 'Checking Compatibility…' );
-		await waitForElementToBeRemoved(
-			document.querySelector( '.mdc-linear-progress' )
+
+		await act(
+			() => new Promise( ( resolve ) => setTimeout( resolve, 0 ) )
 		);
+
+		expect(
+			document.querySelector( '.mdc-linear-progress' )
+		).not.toBeInTheDocument();
 	} );
 
 	it( 'should display "Your site may not be ready for Site Kit" if a check throws an error', async () => {

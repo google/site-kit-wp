@@ -67,7 +67,6 @@ describe( 'CurrentSurvey', () => {
 	let registry;
 
 	beforeEach( () => {
-		jest.useFakeTimers();
 		registry = createTestRegistry();
 	} );
 
@@ -75,7 +74,7 @@ describe( 'CurrentSurvey', () => {
 		delete global[ dashboardSharingDataBaseVar ];
 	} );
 
-	it( 'should not render anything if there are no shareableRoles', () => {
+	it( 'should not render anything if there are no shareableRoles', async () => {
 		const { container } = render(
 			<UserRoleSelect moduleSlug="search-console" />,
 			{
@@ -83,13 +82,15 @@ describe( 'CurrentSurvey', () => {
 			}
 		);
 
-		jest.runAllTimers();
+		await act(
+			() => new Promise( ( resolve ) => setTimeout( resolve, 0 ) )
+		);
 
 		expect( console ).toHaveErrored();
 		expect( container.firstChild ).toBeNull();
 	} );
 
-	it( 'should render the share icon button if there are shareableRoles', () => {
+	it( 'should render the share icon button if there are shareableRoles', async () => {
 		registry
 			.dispatch( CORE_MODULES )
 			.receiveShareableRoles( shareableRoles );
@@ -102,16 +103,16 @@ describe( 'CurrentSurvey', () => {
 			}
 		);
 
-		act( () => {
-			jest.runAllTimers();
-		} );
+		await act(
+			() => new Promise( ( resolve ) => setTimeout( resolve, 0 ) )
+		);
 
 		expect(
 			container.querySelector( '.googlesitekit-user-role-select__button' )
 		).toBeInTheDocument();
 	} );
 
-	it( 'should render the "Add roles" button if there are no shared roles yet for the module', () => {
+	it( 'should render the "Add roles" button if there are no shared roles yet for the module', async () => {
 		registry
 			.dispatch( CORE_MODULES )
 			.receiveShareableRoles( shareableRoles );
@@ -130,9 +131,9 @@ describe( 'CurrentSurvey', () => {
 			}
 		);
 
-		act( () => {
-			jest.runAllTimers();
-		} );
+		await act(
+			() => new Promise( ( resolve ) => setTimeout( resolve, 0 ) )
+		);
 
 		const addRolesElement = container.querySelector(
 			'.googlesitekit-user-role-select__add-roles'
@@ -142,7 +143,7 @@ describe( 'CurrentSurvey', () => {
 		expect( addRolesElement.textContent ).toEqual( 'Add roles' );
 	} );
 
-	it( 'should display the selected roles as comma separated roles', () => {
+	it( 'should display the selected roles as comma separated roles', async () => {
 		registry
 			.dispatch( CORE_MODULES )
 			.receiveShareableRoles( shareableRoles );
@@ -155,9 +156,9 @@ describe( 'CurrentSurvey', () => {
 			}
 		);
 
-		act( () => {
-			jest.runAllTimers();
-		} );
+		await act(
+			() => new Promise( ( resolve ) => setTimeout( resolve, 0 ) )
+		);
 
 		const currentRolesElement = container.querySelector(
 			'.googlesitekit-user-role-select__current-roles'
@@ -169,7 +170,7 @@ describe( 'CurrentSurvey', () => {
 		);
 	} );
 
-	it( 'should toggle the chips when the share button is clicked', () => {
+	it( 'should toggle the chips when the share button is clicked', async () => {
 		registry
 			.dispatch( CORE_MODULES )
 			.receiveShareableRoles( shareableRoles );
@@ -182,9 +183,9 @@ describe( 'CurrentSurvey', () => {
 			}
 		);
 
-		act( () => {
-			jest.runAllTimers();
-		} );
+		await act(
+			() => new Promise( ( resolve ) => setTimeout( resolve, 0 ) )
+		);
 
 		fireEvent.click(
 			container.querySelector( '.googlesitekit-user-role-select__button' )
@@ -207,7 +208,7 @@ describe( 'CurrentSurvey', () => {
 		).not.toBeInTheDocument();
 	} );
 
-	it( 'should display the "All" chip as selected if all the roles are selected', () => {
+	it( 'should display the "All" chip as selected if all the roles are selected', async () => {
 		registry
 			.dispatch( CORE_MODULES )
 			.receiveShareableRoles( shareableRoles );
@@ -231,9 +232,9 @@ describe( 'CurrentSurvey', () => {
 			}
 		);
 
-		act( () => {
-			jest.runAllTimers();
-		} );
+		await act(
+			() => new Promise( ( resolve ) => setTimeout( resolve, 0 ) )
+		);
 
 		fireEvent.click(
 			container.querySelector( '.googlesitekit-user-role-select__button' )
@@ -246,7 +247,7 @@ describe( 'CurrentSurvey', () => {
 		).toHaveClass( 'mdc-chip--selected' );
 	} );
 
-	it( 'should select/deselect all the chips if the "All" chip is clicked', () => {
+	it( 'should select/deselect all the chips if the "All" chip is clicked', async () => {
 		registry
 			.dispatch( CORE_MODULES )
 			.receiveShareableRoles( shareableRoles );
@@ -265,9 +266,9 @@ describe( 'CurrentSurvey', () => {
 			}
 		);
 
-		act( () => {
-			jest.runAllTimers();
-		} );
+		await act(
+			() => new Promise( ( resolve ) => setTimeout( resolve, 0 ) )
+		);
 
 		fireEvent.click(
 			container.querySelector( '.googlesitekit-user-role-select__button' )
@@ -293,7 +294,7 @@ describe( 'CurrentSurvey', () => {
 		).toHaveLength( 0 );
 	} );
 
-	it( 'should deselect the "All" chip if a role is deselected', () => {
+	it( 'should deselect the "All" chip if a role is deselected', async () => {
 		registry
 			.dispatch( CORE_MODULES )
 			.receiveShareableRoles( shareableRoles );
@@ -317,9 +318,9 @@ describe( 'CurrentSurvey', () => {
 			}
 		);
 
-		act( () => {
-			jest.runAllTimers();
-		} );
+		await act(
+			() => new Promise( ( resolve ) => setTimeout( resolve, 0 ) )
+		);
 
 		fireEvent.click(
 			container.querySelector( '.googlesitekit-user-role-select__button' )
@@ -336,7 +337,7 @@ describe( 'CurrentSurvey', () => {
 		expect( allChipElement ).not.toHaveClass( 'mdc-chip--selected' );
 	} );
 
-	it( 'should select/deselect a chip upon clicking', () => {
+	it( 'should select/deselect a chip upon clicking', async () => {
 		registry
 			.dispatch( CORE_MODULES )
 			.receiveShareableRoles( shareableRoles );
@@ -360,9 +361,9 @@ describe( 'CurrentSurvey', () => {
 			}
 		);
 
-		act( () => {
-			jest.runAllTimers();
-		} );
+		await act(
+			() => new Promise( ( resolve ) => setTimeout( resolve, 0 ) )
+		);
 
 		fireEvent.click(
 			container.querySelector( '.googlesitekit-user-role-select__button' )
@@ -376,7 +377,7 @@ describe( 'CurrentSurvey', () => {
 		expect( contributorElement ).not.toHaveClass( 'mdc-chip--selected' );
 	} );
 
-	it( 'should select/deselect a chip upon pressing the ENTER key', () => {
+	it( 'should select/deselect a chip upon pressing the ENTER key', async () => {
 		registry
 			.dispatch( CORE_MODULES )
 			.receiveShareableRoles( shareableRoles );
@@ -400,9 +401,9 @@ describe( 'CurrentSurvey', () => {
 			}
 		);
 
-		act( () => {
-			jest.runAllTimers();
-		} );
+		await act(
+			() => new Promise( ( resolve ) => setTimeout( resolve, 0 ) )
+		);
 
 		fireEvent.click(
 			container.querySelector( '.googlesitekit-user-role-select__button' )

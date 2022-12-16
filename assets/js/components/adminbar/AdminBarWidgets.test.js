@@ -21,6 +21,7 @@ import {
 	createTestRegistry,
 	provideModules,
 	provideUserCapabilities,
+	act,
 } from '../../../../tests/js/test-utils';
 import coreModulesFixture from '../../googlesitekit/modules/datastore/__fixtures__';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
@@ -30,8 +31,6 @@ describe( 'AdminBarWidgets', () => {
 	let registry;
 
 	beforeEach( () => {
-		jest.useFakeTimers();
-
 		registry = createTestRegistry();
 
 		provideModules( registry );
@@ -53,16 +52,13 @@ describe( 'AdminBarWidgets', () => {
 	} );
 
 	it( 'should render the Admin Bar Widgets, including the Activate Analytics CTA', async () => {
-		const { container, getByText, waitForRegistry } = render(
-			<AdminBarWidgets />,
-			{
-				registry,
-			}
+		const { container, getByText } = render( <AdminBarWidgets />, {
+			registry,
+		} );
+
+		await act(
+			() => new Promise( ( resolve ) => setTimeout( resolve, 0 ) )
 		);
-
-		jest.runAllTimers();
-
-		await waitForRegistry();
 
 		expect( container ).toMatchSnapshot();
 
@@ -78,16 +74,13 @@ describe( 'AdminBarWidgets', () => {
 				)
 			);
 
-		const { container, queryByText, waitForRegistry } = render(
-			<AdminBarWidgets />,
-			{
-				registry,
-			}
+		const { container, queryByText } = render( <AdminBarWidgets />, {
+			registry,
+		} );
+
+		await act(
+			() => new Promise( ( resolve ) => setTimeout( resolve, 0 ) )
 		);
-
-		jest.runAllTimers();
-
-		await waitForRegistry();
 
 		expect( container ).toMatchSnapshot();
 
