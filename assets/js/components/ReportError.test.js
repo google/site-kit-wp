@@ -260,7 +260,7 @@ describe( 'ReportError', () => {
 		);
 	} );
 
-	it( 'should not render the `Request access` button even if it exists for a non-authenticated user', () => {
+	it( 'should not render the `Request access` button for an insufficient permission error when the user is not authenticated', () => {
 		const userData = {
 			id: 1,
 			email: 'admin@example.com',
@@ -306,7 +306,7 @@ describe( 'ReportError', () => {
 			}
 		);
 
-		// Verify the `Request access` button is rendered.
+		// Verify the `Request access` button is not rendered.
 		expect( queryByText( /request access/i ) ).not.toBeInTheDocument();
 	} );
 
