@@ -551,7 +551,6 @@ describe( 'modules/analytics properties', () => {
 
 		describe( 'getPropertiesIncludingGA4', () => {
 			it( 'returns undefined if UA properties are loading', async () => {
-				// jest.useFakeTimers();
 				const accountID = fixtures.profiles[ 0 ].accountId; // eslint-disable-line sitekit/acronym-case
 
 				freezeFetch( propertiesProfilesEndpoint );

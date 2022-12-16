@@ -49,7 +49,7 @@ describe( 'useCompleteModuleActivationCallback', () => {
 		provideModuleRegistrations( registry );
 		provideUserCapabilities( registry );
 
-		// Wait one tick for async actions to complete.
+		// Wait for async actions to complete.
 		await resolvingPromise();
 	} );
 
