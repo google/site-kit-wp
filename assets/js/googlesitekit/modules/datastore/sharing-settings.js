@@ -176,11 +176,9 @@ const baseActions = {
 			payload: {},
 		};
 
-		const sharingSettings = yield Data.commonActions.await(
-			registry
-				.__experimentalResolveSelect( CORE_MODULES )
-				.getSharingSettings()
-		);
+		const sharingSettings = registry
+			.select( CORE_MODULES )
+			.getSharingSettings();
 
 		const { response, error } =
 			yield fetchSaveSharingSettingsStore.actions.fetchSaveSharingSettings(

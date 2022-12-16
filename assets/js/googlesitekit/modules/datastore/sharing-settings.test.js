@@ -238,6 +238,10 @@ describe( 'core/modules sharing-settings', () => {
 					);
 
 					await registry
+						.__experimentalResolveSelect( CORE_MODULES )
+						.getSharingSettings();
+
+					await registry
 						.dispatch( CORE_MODULES )
 						.saveSharingSettings();
 
