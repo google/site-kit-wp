@@ -79,12 +79,15 @@ const baseActions = {
 
 		const registry = yield Data.commonActions.getRegistry();
 
+		yield Data.commonActions.await(
+			registry.__experimentalResolveSelect( CORE_USER ).getNonces()
+		);
+		yield Data.commonActions.await(
+			registry.__experimentalResolveSelect( CORE_SITE ).getSiteInfo()
+		);
+
 		const nonce = registry.select( CORE_USER ).getNonce( 'updates' );
 		const pluginBasename = registry.select( CORE_SITE ).getPluginBasename();
-
-		if ( ! nonce || ! pluginBasename ) {
-			return;
-		}
 
 		const { response } =
 			yield fetchEnableAutoUpdateStore.actions.fetchEnableAutoUpdate( {
