@@ -26,7 +26,6 @@ import { Fragment } from '@wordpress/element';
  */
 import CompatibilityChecks from './index';
 import {
-	act,
 	render,
 	waitForElementToBeRemoved,
 } from '../../../../../tests/js/test-utils';
@@ -78,15 +77,13 @@ describe( 'CompatibilityChecks', () => {
 		// Mock request to AMP project.
 		muteFetch( AMP_PROJECT_TEST_URL );
 
-		const { container } = render(
+		const { container, waitForResolvingPromise } = render(
 			<CompatibilityChecks>{ compatibilityChildren }</CompatibilityChecks>
 		);
 
 		expect( container ).toHaveTextContent( 'Checking Compatibility…' );
 
-		await act(
-			() => new Promise( ( resolve ) => setTimeout( resolve, 0 ) )
-		);
+		await waitForResolvingPromise();
 
 		expect(
 			document.querySelector( '.mdc-linear-progress' )

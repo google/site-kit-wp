@@ -24,7 +24,6 @@ import {
 	provideUserInfo,
 	provideUserAuthentication,
 	provideSiteInfo,
-	act,
 } from '../../../../../../../tests/js/test-utils';
 import {
 	getViewportWidth,
@@ -93,14 +92,12 @@ describe( 'Overview', () => {
 	} );
 
 	it( 'should render the Search Funnel Overview, including the Activate Analytics CTA', async () => {
-		const { container, getByText } = render(
+		const { container, getByText, waitForResolvingPromise } = render(
 			<Overview { ...overviewProps } />,
 			{ registry }
 		);
 
-		await act( async () => {
-			await new Promise( ( resolve ) => setTimeout( resolve, 0 ) );
-		} );
+		await waitForResolvingPromise();
 
 		expect( container ).toMatchSnapshot();
 
@@ -116,14 +113,12 @@ describe( 'Overview', () => {
 				)
 			);
 
-		const { container, queryByText } = render(
+		const { container, queryByText, waitForResolvingPromise } = render(
 			<Overview { ...overviewProps } />,
 			{ registry }
 		);
 
-		await act( async () => {
-			await new Promise( ( resolve ) => setTimeout( resolve, 0 ) );
-		} );
+		await waitForResolvingPromise();
 
 		expect( container ).toMatchSnapshot();
 

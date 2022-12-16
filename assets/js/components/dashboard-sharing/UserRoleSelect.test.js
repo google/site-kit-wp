@@ -26,7 +26,6 @@ import { ENTER } from '@wordpress/keycodes';
  */
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import {
-	act,
 	render,
 	fireEvent,
 	createTestRegistry,
@@ -75,16 +74,14 @@ describe( 'CurrentSurvey', () => {
 	} );
 
 	it( 'should not render anything if there are no shareableRoles', async () => {
-		const { container } = render(
+		const { container, waitForResolvingPromise } = render(
 			<UserRoleSelect moduleSlug="search-console" />,
 			{
 				registry,
 			}
 		);
 
-		await act(
-			() => new Promise( ( resolve ) => setTimeout( resolve, 0 ) )
-		);
+		await waitForResolvingPromise();
 
 		expect( console ).toHaveErrored();
 		expect( container.firstChild ).toBeNull();
@@ -96,16 +93,14 @@ describe( 'CurrentSurvey', () => {
 			.receiveShareableRoles( shareableRoles );
 		global[ dashboardSharingDataBaseVar ] = dashboardSharingData;
 
-		const { container } = render(
+		const { container, waitForResolvingPromise } = render(
 			<UserRoleSelect moduleSlug="search-console" />,
 			{
 				registry,
 			}
 		);
 
-		await act(
-			() => new Promise( ( resolve ) => setTimeout( resolve, 0 ) )
-		);
+		await waitForResolvingPromise();
 
 		expect(
 			container.querySelector( '.googlesitekit-user-role-select__button' )
@@ -124,16 +119,14 @@ describe( 'CurrentSurvey', () => {
 			},
 		};
 
-		const { container } = render(
+		const { container, waitForResolvingPromise } = render(
 			<UserRoleSelect moduleSlug="search-console" />,
 			{
 				registry,
 			}
 		);
 
-		await act(
-			() => new Promise( ( resolve ) => setTimeout( resolve, 0 ) )
-		);
+		await waitForResolvingPromise();
 
 		const addRolesElement = container.querySelector(
 			'.googlesitekit-user-role-select__add-roles'
@@ -149,16 +142,14 @@ describe( 'CurrentSurvey', () => {
 			.receiveShareableRoles( shareableRoles );
 		global[ dashboardSharingDataBaseVar ] = dashboardSharingData;
 
-		const { container } = render(
+		const { container, waitForResolvingPromise } = render(
 			<UserRoleSelect moduleSlug="search-console" />,
 			{
 				registry,
 			}
 		);
 
-		await act(
-			() => new Promise( ( resolve ) => setTimeout( resolve, 0 ) )
-		);
+		await waitForResolvingPromise();
 
 		const currentRolesElement = container.querySelector(
 			'.googlesitekit-user-role-select__current-roles'
@@ -176,16 +167,14 @@ describe( 'CurrentSurvey', () => {
 			.receiveShareableRoles( shareableRoles );
 		global[ dashboardSharingDataBaseVar ] = dashboardSharingData;
 
-		const { container } = render(
+		const { container, waitForResolvingPromise } = render(
 			<UserRoleSelect moduleSlug="search-console" />,
 			{
 				registry,
 			}
 		);
 
-		await act(
-			() => new Promise( ( resolve ) => setTimeout( resolve, 0 ) )
-		);
+		await waitForResolvingPromise();
 
 		fireEvent.click(
 			container.querySelector( '.googlesitekit-user-role-select__button' )
@@ -225,16 +214,14 @@ describe( 'CurrentSurvey', () => {
 			},
 		};
 
-		const { container } = render(
+		const { container, waitForResolvingPromise } = render(
 			<UserRoleSelect moduleSlug="search-console" />,
 			{
 				registry,
 			}
 		);
 
-		await act(
-			() => new Promise( ( resolve ) => setTimeout( resolve, 0 ) )
-		);
+		await waitForResolvingPromise();
 
 		fireEvent.click(
 			container.querySelector( '.googlesitekit-user-role-select__button' )
@@ -259,16 +246,14 @@ describe( 'CurrentSurvey', () => {
 			},
 		};
 
-		const { container } = render(
+		const { container, waitForResolvingPromise } = render(
 			<UserRoleSelect moduleSlug="search-console" />,
 			{
 				registry,
 			}
 		);
 
-		await act(
-			() => new Promise( ( resolve ) => setTimeout( resolve, 0 ) )
-		);
+		await waitForResolvingPromise();
 
 		fireEvent.click(
 			container.querySelector( '.googlesitekit-user-role-select__button' )
@@ -311,16 +296,14 @@ describe( 'CurrentSurvey', () => {
 			},
 		};
 
-		const { container } = render(
+		const { container, waitForResolvingPromise } = render(
 			<UserRoleSelect moduleSlug="search-console" />,
 			{
 				registry,
 			}
 		);
 
-		await act(
-			() => new Promise( ( resolve ) => setTimeout( resolve, 0 ) )
-		);
+		await waitForResolvingPromise();
 
 		fireEvent.click(
 			container.querySelector( '.googlesitekit-user-role-select__button' )
@@ -354,16 +337,14 @@ describe( 'CurrentSurvey', () => {
 			},
 		};
 
-		const { container } = render(
+		const { container, waitForResolvingPromise } = render(
 			<UserRoleSelect moduleSlug="search-console" />,
 			{
 				registry,
 			}
 		);
 
-		await act(
-			() => new Promise( ( resolve ) => setTimeout( resolve, 0 ) )
-		);
+		await waitForResolvingPromise();
 
 		fireEvent.click(
 			container.querySelector( '.googlesitekit-user-role-select__button' )
@@ -394,16 +375,14 @@ describe( 'CurrentSurvey', () => {
 			},
 		};
 
-		const { container } = render(
+		const { container, waitForResolvingPromise } = render(
 			<UserRoleSelect moduleSlug="search-console" />,
 			{
 				registry,
 			}
 		);
 
-		await act(
-			() => new Promise( ( resolve ) => setTimeout( resolve, 0 ) )
-		);
+		await waitForResolvingPromise();
 
 		fireEvent.click(
 			container.querySelector( '.googlesitekit-user-role-select__button' )

@@ -542,3 +542,14 @@ export const unexpectedSuccess = () => {
 		)
 	);
 };
+
+/**
+ * Returns a promise that resolves after the specified delay, defaulting to 1ms.
+ *
+ * @since n.e.x.t
+ *
+ * @param {number} [delay] The delay in milliseconds. Defaults to 1.
+ * @return {Promise} A promise that resolves after the specified delay.
+ */
+export const resolvingPromise = ( delay = 1 ) =>
+	new Promise( ( resolve ) => setTimeout( resolve, delay ) );

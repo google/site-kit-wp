@@ -24,6 +24,7 @@ import { MODULES_SEARCH_CONSOLE } from './constants';
 import {
 	createTestRegistry,
 	freezeFetch,
+	resolvingPromise,
 	subscribeUntil,
 	unsubscribeFromAll,
 	untilResolved,
@@ -175,7 +176,8 @@ describe( 'modules/search-console report', () => {
 
 				expect( isGatheringData() ).toBeUndefined();
 
-				await new Promise( ( resolve ) => setTimeout( resolve, 0 ) );
+				// Wait for resolvers to run.
+				await resolvingPromise();
 			} );
 
 			it( 'should return TRUE if the returned report is an empty array', async () => {
@@ -244,7 +246,8 @@ describe( 'modules/search-console report', () => {
 
 				expect( hasZeroData() ).toBeUndefined();
 
-				await new Promise( ( resolve ) => setTimeout( resolve, 0 ) );
+				// Wait for resolvers to run.
+				await resolvingPromise();
 			} );
 
 			it( 'should return TRUE if report data in isGatheringData OR isZeroReport is an empty array', async () => {

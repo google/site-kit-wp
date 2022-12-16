@@ -22,6 +22,7 @@
 import {
 	createTestRegistry,
 	freezeFetch,
+	resolvingPromise,
 	provideSiteInfo,
 	provideUserInfo,
 	subscribeUntil,
@@ -223,7 +224,8 @@ describe( 'modules/thank-with-google publications', () => {
 						.getPublications()
 				).toBeUndefined();
 
-				await new Promise( ( resolve ) => setTimeout( resolve, 0 ) );
+				// Wait for resolvers to run.
+				await resolvingPromise();
 			} );
 
 			it( 'does not make a network request if data is already in state', () => {
@@ -256,7 +258,8 @@ describe( 'modules/thank-with-google publications', () => {
 						.getCurrentPublication()
 				).toBeUndefined();
 
-				await new Promise( ( resolve ) => setTimeout( resolve, 0 ) );
+				// Wait for resolvers to run.
+				await resolvingPromise();
 			} );
 
 			it( 'returns null if there are no publications', () => {

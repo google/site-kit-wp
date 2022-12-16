@@ -20,6 +20,7 @@
  * Internal dependencies
  */
 import {
+	resolvingPromise,
 	render,
 	untilResolved,
 } from '../../../../../../../tests/js/test-utils';
@@ -112,7 +113,8 @@ describe( 'Footer', () => {
 			}
 		);
 
-		await new Promise( ( resolve ) => setTimeout( resolve, 0 ) );
+		// Wait for resolvers to run.
+		await resolvingPromise();
 
 		expect( fetchMock ).toHaveFetched(
 			/^\/google-site-kit\/v1\/modules\/analytics\/data\/settings/

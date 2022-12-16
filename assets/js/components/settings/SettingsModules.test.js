@@ -29,7 +29,6 @@ import {
 	render,
 	createTestRegistry,
 	provideModules,
-	act,
 } from '../../../../tests/js/test-utils';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
@@ -69,14 +68,12 @@ describe( 'SettingsModules', () => {
 		provideModules( registry );
 		history.push( '/connect' );
 
-		render( <SettingsModules />, {
+		const { waitForResolvingPromise } = render( <SettingsModules />, {
 			history,
 			registry,
 		} );
 
-		await act(
-			() => new Promise( ( resolve ) => setTimeout( resolve, 0 ) )
-		);
+		await waitForResolvingPromise();
 
 		expect( global.location.hash ).toEqual( '#/connect-more-services' );
 	} );

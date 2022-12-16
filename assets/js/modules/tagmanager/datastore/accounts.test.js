@@ -37,6 +37,7 @@ import {
 	muteFetch,
 	untilResolved,
 	unsubscribeFromAll,
+	resolvingPromise,
 } from '../../../../../tests/js/utils';
 import * as factories from './__factories__';
 import * as fixtures from './__fixtures__';
@@ -251,7 +252,8 @@ describe( 'modules/tagmanager accounts', () => {
 					.dispatch( MODULES_TAGMANAGER )
 					.selectAccount( accountID );
 
-				await new Promise( ( resolve ) => setTimeout( resolve, 0 ) );
+				// Wait for resolvers to run.
+				await resolvingPromise();
 
 				expect( fetchMock ).toHaveFetched(
 					/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/containers/

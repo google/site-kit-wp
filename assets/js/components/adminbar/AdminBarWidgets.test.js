@@ -21,7 +21,6 @@ import {
 	createTestRegistry,
 	provideModules,
 	provideUserCapabilities,
-	act,
 } from '../../../../tests/js/test-utils';
 import coreModulesFixture from '../../googlesitekit/modules/datastore/__fixtures__';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
@@ -52,13 +51,14 @@ describe( 'AdminBarWidgets', () => {
 	} );
 
 	it( 'should render the Admin Bar Widgets, including the Activate Analytics CTA', async () => {
-		const { container, getByText } = render( <AdminBarWidgets />, {
-			registry,
-		} );
-
-		await act(
-			() => new Promise( ( resolve ) => setTimeout( resolve, 0 ) )
+		const { container, getByText, waitForResolvingPromise } = render(
+			<AdminBarWidgets />,
+			{
+				registry,
+			}
 		);
+
+		await waitForResolvingPromise();
 
 		expect( container ).toMatchSnapshot();
 
@@ -74,13 +74,14 @@ describe( 'AdminBarWidgets', () => {
 				)
 			);
 
-		const { container, queryByText } = render( <AdminBarWidgets />, {
-			registry,
-		} );
-
-		await act(
-			() => new Promise( ( resolve ) => setTimeout( resolve, 0 ) )
+		const { container, queryByText, waitForResolvingPromise } = render(
+			<AdminBarWidgets />,
+			{
+				registry,
+			}
 		);
+
+		await waitForResolvingPromise();
 
 		expect( container ).toMatchSnapshot();
 

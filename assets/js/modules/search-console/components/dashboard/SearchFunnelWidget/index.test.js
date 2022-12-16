@@ -24,7 +24,6 @@ import {
 	provideUserInfo,
 	provideUserAuthentication,
 	provideSiteInfo,
-	act,
 } from '../../../../../../../tests/js/test-utils';
 import coreModulesFixture from '../../../../../googlesitekit/modules/datastore/__fixtures__';
 import { CORE_MODULES } from '../../../../../googlesitekit/modules/datastore/constants';
@@ -69,14 +68,12 @@ describe( 'SearchFunnelWidget', () => {
 	} );
 
 	it( 'should render the Search Funnel Widget, including the Activate Analytics CTA', async () => {
-		const { container, getByText } = render(
+		const { container, getByText, waitForResolvingPromise } = render(
 			<SearchFunnelWidget { ...widgetComponentProps } />,
 			{ registry }
 		);
 
-		await act( async () => {
-			await new Promise( ( resolve ) => setTimeout( resolve, 0 ) );
-		} );
+		await waitForResolvingPromise();
 
 		expect( container ).toMatchSnapshot();
 
@@ -92,14 +89,12 @@ describe( 'SearchFunnelWidget', () => {
 				)
 			);
 
-		const { container, queryByText } = render(
+		const { container, queryByText, waitForResolvingPromise } = render(
 			<SearchFunnelWidget { ...widgetComponentProps } />,
 			{ registry }
 		);
 
-		await act( async () => {
-			await new Promise( ( resolve ) => setTimeout( resolve, 0 ) );
-		} );
+		await waitForResolvingPromise();
 
 		expect( container ).toMatchSnapshot();
 
