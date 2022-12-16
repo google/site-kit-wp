@@ -29,6 +29,7 @@ import {
 	createTestRegistry,
 	freezeFetch,
 	provideSiteInfo,
+	resolvingPromise,
 	unsubscribeFromAll,
 	untilResolved,
 } from '../../../../../tests/js/utils';
@@ -565,7 +566,7 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 		describe( 'getMatchedMeasurementIDsByPropertyIDs', () => {
 			const propertyIDs = fixtures.properties.map( ( { _id } ) => _id );
 
-			it( 'should return an empty object if the properties are not matched', () => {
+			it( 'should return an empty object if the properties are not matched', async () => {
 				provideSiteInfo( registry, {
 					referenceSiteURL: 'http://example.com',
 				} );
@@ -578,6 +579,9 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 				const matchedProperties = registry
 					.select( MODULES_ANALYTICS_4 )
 					.getMatchedMeasurementIDsByPropertyIDs( [ '1100' ] );
+
+				// Wait for resolvers to run.
+				await resolvingPromise();
 
 				expect( fetchMock ).toHaveFetched(
 					webDataStreamsBatchEndpoint
