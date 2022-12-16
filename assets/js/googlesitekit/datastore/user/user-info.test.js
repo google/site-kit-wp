@@ -265,7 +265,7 @@ describe( 'core/user userInfo', () => {
 
 				expect(
 					registry.select( CORE_USER ).getInitialSiteKitVersion()
-				).toBe( undefined );
+				).toBeUndefined();
 
 				await untilResolved(
 					registry,
