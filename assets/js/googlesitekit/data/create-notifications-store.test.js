@@ -15,13 +15,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+/**
+ * WordPress dependencies
+ */
+import { createRegistry } from '@wordpress/data';
+
 /**
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import {
-	createTestRegistry,
 	muteFetch,
 	subscribeUntil,
 	unsubscribeFromAll,
@@ -42,7 +47,7 @@ describe( 'createNotificationsStore store', () => {
 	} );
 
 	beforeEach( () => {
-		registry = createTestRegistry();
+		registry = createRegistry();
 
 		storeDefinition = createNotificationsStore( ...STORE_ARGS );
 
