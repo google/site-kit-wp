@@ -69,7 +69,7 @@ export default function ReportError( { moduleSlug, error } ) {
 			err.selectorData.name === 'getReport'
 	);
 
-	const showRetry = !! retryableErrors.length && ! isViewOnly;
+	const showRetry = !! retryableErrors.length;
 
 	const errorTroubleshootingLinkURL = useSelect( ( select ) => {
 		const err = {
