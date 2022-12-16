@@ -41,7 +41,7 @@ describe( 'Footer', () => {
 		} );
 
 		expect( fetchMock ).not.toHaveFetched(
-			/^\/google-site-kit\/v1\/modules\/analytics\/data\/settings/
+			new RegExp( '^/google-site-kit/v1/modules/analytics/data/settings' )
 		);
 		expect( container ).not.toHaveTextContent( 'Analytics' );
 		expect( container.firstChild ).toBeNull();
@@ -49,7 +49,9 @@ describe( 'Footer', () => {
 
 	it( 'should make a analytics settings request normally when the view context is NOT "view only"', () => {
 		fetchMock.getOnce(
-			/^\/google-site-kit\/v1\/modules\/analytics\/data\/settings/,
+			new RegExp(
+				'^/google-site-kit/v1/modules/analytics/data/settings'
+			),
 			{ body: {}, status: 200 }
 		);
 
@@ -62,7 +64,7 @@ describe( 'Footer', () => {
 		} );
 
 		expect( fetchMock ).toHaveFetched(
-			/^\/google-site-kit\/v1\/modules\/analytics\/data\/settings/
+			new RegExp( '^/google-site-kit/v1/modules/analytics/data/settings' )
 		);
 		expect( container ).toHaveTextContent( 'Analytics' );
 		expect( container.firstChild ).not.toBeNull();

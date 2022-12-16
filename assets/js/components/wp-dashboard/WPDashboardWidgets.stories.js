@@ -25,6 +25,8 @@ import {
 	provideModules,
 	provideModuleRegistrations,
 	provideUserAuthentication,
+	provideUserCapabilities,
+	provideSiteInfo,
 } from '../../../../tests/js/utils';
 import {
 	setupSearchConsoleAnalyticsMockReports,
@@ -57,6 +59,8 @@ ReadyWithActivateModuleCTA.args = {
 				slug: 'analytics',
 			},
 		] );
+		provideSiteInfo( registry );
+		provideUserCapabilities( registry );
 		setupSearchConsoleMockReports( registry );
 	},
 };
@@ -72,6 +76,8 @@ ReadyWithActivateAnalyticsCTA.args = {
 				slug: 'analytics',
 			},
 		] );
+		provideSiteInfo( registry );
+		provideUserCapabilities( registry );
 		setupSearchConsoleMockReports( registry );
 	},
 };
@@ -93,6 +99,8 @@ ReadyWithCompleteAnalyticsActivationCTA.args = {
 				slug: 'analytics',
 			},
 		] );
+		provideSiteInfo( registry );
+		provideUserCapabilities( registry );
 		provideModuleRegistrations( registry );
 		provideUserAuthentication( registry );
 		setupSearchConsoleMockReports( registry );

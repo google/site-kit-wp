@@ -57,7 +57,9 @@ describe( 'Footer', () => {
 		);
 
 		expect( fetchMock ).not.toHaveFetched(
-			/^\/google-site-kit\/v1\/modules\/search-console\/data\/settings/
+			new RegExp(
+				'^/google-site-kit/v1/modules/search-console/data/settings'
+			)
 		);
 		expect( container ).not.toHaveTextContent( 'Search Console' );
 		expect( container.firstChild ).toBeNull();
@@ -72,7 +74,7 @@ describe( 'Footer', () => {
 		);
 
 		expect( fetchMock ).not.toHaveFetched(
-			/^\/google-site-kit\/v1\/modules\/analytics\/data\/settings/
+			new RegExp( '^/google-site-kit/v1/modules/analytics/data/settings' )
 		);
 		expect( container ).not.toHaveTextContent( 'Analytics' );
 		expect( container.firstChild ).toBeNull();
@@ -80,7 +82,9 @@ describe( 'Footer', () => {
 
 	it( 'should make a search console settings request normally when the view context is NOT "view only"', async () => {
 		fetchMock.getOnce(
-			/^\/google-site-kit\/v1\/modules\/search-console\/data\/settings/,
+			new RegExp(
+				'^/google-site-kit/v1/modules/search-console/data/settings'
+			),
 			{ body: {}, status: 200 }
 		);
 
@@ -94,7 +98,9 @@ describe( 'Footer', () => {
 		await untilResolved( registry, MODULES_SEARCH_CONSOLE ).getSettings();
 
 		expect( fetchMock ).toHaveFetched(
-			/^\/google-site-kit\/v1\/modules\/search-console\/data\/settings/
+			new RegExp(
+				'^/google-site-kit/v1/modules/search-console/data/settings'
+			)
 		);
 		expect( container ).toHaveTextContent( 'Search Console' );
 		expect( container.firstChild ).not.toBeNull();
@@ -102,7 +108,9 @@ describe( 'Footer', () => {
 
 	it( 'should make a analytics settings request normally when the view context is NOT "view only"', async () => {
 		fetchMock.getOnce(
-			/^\/google-site-kit\/v1\/modules\/analytics\/data\/settings/,
+			new RegExp(
+				'^/google-site-kit/v1/modules/analytics/data/settings'
+			),
 			{ body: {}, status: 200 }
 		);
 
@@ -117,7 +125,7 @@ describe( 'Footer', () => {
 		await resolvingPromise();
 
 		expect( fetchMock ).toHaveFetched(
-			/^\/google-site-kit\/v1\/modules\/analytics\/data\/settings/
+			new RegExp( '^/google-site-kit/v1/modules/analytics/data/settings' )
 		);
 		expect( container ).toHaveTextContent( 'Analytics' );
 		expect( container.firstChild ).not.toBeNull();

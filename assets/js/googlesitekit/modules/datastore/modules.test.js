@@ -116,7 +116,7 @@ describe( 'core/modules modules', () => {
 				// In our fixtures, optimize is off by default.
 				const slug = 'optimize';
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
+					new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
 					{ body: FIXTURES }
 				);
 
@@ -132,11 +132,15 @@ describe( 'core/modules modules', () => {
 
 				// Activate the module.
 				fetchMock.postOnce(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/activation/,
+					new RegExp(
+						'^/google-site-kit/v1/core/modules/data/activation'
+					),
 					{ body: { success: true } }
 				);
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/core\/user\/data\/authentication/,
+					new RegExp(
+						'^/google-site-kit/v1/core/user/data/authentication'
+					),
 					{ body: {} }
 				);
 
@@ -144,7 +148,9 @@ describe( 'core/modules modules', () => {
 
 				// Ensure the proper body parameters were sent.
 				expect( fetchMock ).toHaveFetched(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/activation/,
+					new RegExp(
+						'^/google-site-kit/v1/core/modules/data/activation'
+					),
 					{
 						body: {
 							data: {
@@ -183,7 +189,9 @@ describe( 'core/modules modules', () => {
 				};
 
 				fetchMock.postOnce(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/activation/,
+					new RegExp(
+						'^/google-site-kit/v1/core/modules/data/activation'
+					),
 					{ body: response, status: 500 }
 				);
 
@@ -191,7 +199,9 @@ describe( 'core/modules modules', () => {
 
 				// Ensure the proper body parameters were sent.
 				expect( fetchMock ).toHaveFetched(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/activation/,
+					new RegExp(
+						'^/google-site-kit/v1/core/modules/data/activation'
+					),
 					{
 						body: {
 							data: {
@@ -228,19 +238,23 @@ describe( 'core/modules modules', () => {
 				};
 
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
+					new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
 					{
 						body: [ ...FIXTURES, ...recoverableModuleFixtures ],
 						status: 200,
 					}
 				);
 				fetchMock.post(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/recover-modules/,
+					new RegExp(
+						'^/google-site-kit/v1/core/modules/data/recover-modules'
+					),
 					{ body: recoverModulesResponse }
 				);
 
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/settings/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics/data/settings'
+					),
 					{
 						body: getModulesBySlugList( [ slugs ], FIXTURES ),
 						status: 200,
@@ -248,7 +262,9 @@ describe( 'core/modules modules', () => {
 				);
 
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/settings/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/tagmanager/data/settings'
+					),
 					{
 						body: getModulesBySlugList( [ slugs ], FIXTURES ),
 						status: 200,
@@ -256,7 +272,9 @@ describe( 'core/modules modules', () => {
 				);
 
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/core\/user\/data\/permissions/,
+					new RegExp(
+						'^/google-site-kit/v1/core/user/data/permissions'
+					),
 					{
 						body: {},
 						status: 200,
@@ -272,7 +290,7 @@ describe( 'core/modules modules', () => {
 				await untilResolved( registry, CORE_MODULES ).getModules();
 
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
+					new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
 					{
 						body: [
 							...FIXTURES,
@@ -321,7 +339,9 @@ describe( 'core/modules modules', () => {
 
 				// Ensure the proper body parameters were sent.
 				expect( fetchMock ).toHaveFetched(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/recover-modules/,
+					new RegExp(
+						'^/google-site-kit/v1/core/modules/data/recover-modules'
+					),
 					{
 						body: {
 							data: {
@@ -333,7 +353,9 @@ describe( 'core/modules modules', () => {
 
 				// Ensure fetchGetSettings have been called.
 				expect( fetchMock ).toHaveFetched(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/settings/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics/data/settings'
+					),
 					{
 						body: {
 							data: {
@@ -344,7 +366,9 @@ describe( 'core/modules modules', () => {
 				);
 
 				expect( fetchMock ).toHaveFetched(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/settings/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics/data/settings'
+					),
 					{
 						body: {
 							data: {
@@ -356,12 +380,14 @@ describe( 'core/modules modules', () => {
 
 				// Ensure fetchGetModules have been called.
 				expect( fetchMock ).toHaveFetched(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/list/
+					new RegExp( '^/google-site-kit/v1/core/modules/data/list' )
 				);
 
 				// Ensure `refreshCapabilities` has been called.
 				expect( fetchMock ).toHaveFetched(
-					/^\/google-site-kit\/v1\/core\/user\/data\/permissions/
+					new RegExp(
+						'^/google-site-kit/v1/core/user/data/permissions'
+					)
 				);
 
 				const initialRecoverableModules = registry
@@ -402,7 +428,7 @@ describe( 'core/modules modules', () => {
 				};
 
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
+					new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
 					{
 						body: [ ...FIXTURES, ...recoverableModuleFixtures ],
 						status: 200,
@@ -410,12 +436,16 @@ describe( 'core/modules modules', () => {
 				);
 
 				fetchMock.postOnce(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/recover-modules/,
+					new RegExp(
+						'^/google-site-kit/v1/core/modules/data/recover-modules'
+					),
 					{ body: recoverModulesResponse, status: 200 }
 				);
 
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/settings/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics/data/settings'
+					),
 					{
 						body: getModulesBySlugList( [ slugs ], FIXTURES ),
 						status: 200,
@@ -423,7 +453,9 @@ describe( 'core/modules modules', () => {
 				);
 
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/core\/user\/data\/permissions/,
+					new RegExp(
+						'^/google-site-kit/v1/core/user/data/permissions'
+					),
 					{
 						body: {},
 						status: 200,
@@ -439,7 +471,7 @@ describe( 'core/modules modules', () => {
 				await untilResolved( registry, CORE_MODULES ).getModules();
 
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
+					new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
 					{
 						body: [
 							...FIXTURES,
@@ -491,7 +523,9 @@ describe( 'core/modules modules', () => {
 
 				// Ensure the proper body parameters were sent.
 				expect( fetchMock ).toHaveFetched(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/recover-modules/,
+					new RegExp(
+						'^/google-site-kit/v1/core/modules/data/recover-modules'
+					),
 					{
 						body: {
 							data: {
@@ -503,7 +537,9 @@ describe( 'core/modules modules', () => {
 
 				// Ensure fetchGetSettings has been called for Analytics.
 				expect( fetchMock ).toHaveFetched(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/settings/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics/data/settings'
+					),
 					{
 						body: {
 							data: {
@@ -515,7 +551,9 @@ describe( 'core/modules modules', () => {
 
 				// Ensure fetchGetSettings haven't been called for Tag Manager.
 				expect( fetchMock ).not.toHaveFetched(
-					/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/settings/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/tagmanager/data/settings'
+					),
 					{
 						body: {
 							data: {
@@ -527,7 +565,7 @@ describe( 'core/modules modules', () => {
 
 				// Ensure fetchGetModules have been called.
 				expect( fetchMock ).toHaveFetched(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/list/
+					new RegExp( '^/google-site-kit/v1/core/modules/data/list' )
 				);
 
 				const initialRecoverableModules = registry
@@ -566,12 +604,16 @@ describe( 'core/modules modules', () => {
 				expect( isActiveBefore ).toEqual( true );
 
 				fetchMock.postOnce(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/activation/,
+					new RegExp(
+						'^/google-site-kit/v1/core/modules/data/activation'
+					),
 					{ body: { success: true }, status: 200 }
 				);
 
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/core\/user\/data\/authentication/,
+					new RegExp(
+						'^/google-site-kit/v1/core/user/data/authentication'
+					),
 					{ body: {}, status: 200 }
 				);
 
@@ -581,7 +623,9 @@ describe( 'core/modules modules', () => {
 
 				// Ensure the proper body parameters were sent.
 				expect( fetchMock ).toHaveFetched(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/activation/,
+					new RegExp(
+						'^/google-site-kit/v1/core/modules/data/activation'
+					),
 					{
 						body: {
 							data: {
@@ -620,7 +664,9 @@ describe( 'core/modules modules', () => {
 				};
 
 				fetchMock.postOnce(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/activation/,
+					new RegExp(
+						'^/google-site-kit/v1/core/modules/data/activation'
+					),
 					{ body: response, status: 500 }
 				);
 
@@ -630,7 +676,9 @@ describe( 'core/modules modules', () => {
 
 				// Ensure the proper body parameters were sent.
 				expect( fetchMock ).toHaveFetched(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/activation/,
+					new RegExp(
+						'^/google-site-kit/v1/core/modules/data/activation'
+					),
 					{
 						body: {
 							data: {
@@ -733,7 +781,9 @@ describe( 'core/modules modules', () => {
 			it( 'does not require any params', () => {
 				expect( () => {
 					muteFetch(
-						/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
+						new RegExp(
+							'^/google-site-kit/v1/core/modules/data/list'
+						),
 						[]
 					);
 					registry.dispatch( CORE_MODULES ).fetchGetModules();
@@ -899,7 +949,7 @@ describe( 'core/modules modules', () => {
 			];
 
 			fetchMock.getOnce(
-				/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
+				new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
 				{ body: moduleFixtures, status: 200 }
 			);
 			const slug1 = 'slug1';
@@ -920,7 +970,7 @@ describe( 'core/modules modules', () => {
 		describe( 'getModules', () => {
 			it( 'uses a resolver to make a network request', async () => {
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
+					new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
 					{ body: FIXTURES, status: 200 }
 				);
 
@@ -956,7 +1006,7 @@ describe( 'core/modules modules', () => {
 					data: { status: 500 },
 				};
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
+					new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
 					{ body: response, status: 500 }
 				);
 
@@ -1068,7 +1118,7 @@ describe( 'core/modules modules', () => {
 		describe( 'getModule', () => {
 			it( 'uses a resolver get all modules when one is requested', async () => {
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
+					new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
 					{ body: FIXTURES, status: 200 }
 				);
 				const slug = 'analytics';
@@ -1101,7 +1151,7 @@ describe( 'core/modules modules', () => {
 				const slug = 'analytics';
 
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
+					new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
 					{ body: response, status: 500 }
 				);
 
@@ -1121,7 +1171,7 @@ describe( 'core/modules modules', () => {
 			it( 'returns undefined if modules is not yet available', async () => {
 				// This triggers a network request, so ignore the error.
 				muteFetch(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
+					new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
 					[]
 				);
 
@@ -1136,7 +1186,7 @@ describe( 'core/modules modules', () => {
 
 			it( 'returns null if the module does not exist', async () => {
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
+					new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
 					{ body: FIXTURES, status: 200 }
 				);
 
@@ -1225,7 +1275,7 @@ describe( 'core/modules modules', () => {
 		] )( '%s', ( selector, collectionName ) => {
 			it( 'returns undefined when no modules are loaded', async () => {
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
+					new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
 					{ body: FIXTURES, status: 200 }
 				);
 				const slug = 'optimize';
@@ -1241,7 +1291,7 @@ describe( 'core/modules modules', () => {
 
 			it( `returns ${ collectionName } module names when modules are loaded`, async () => {
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
+					new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
 					{ body: FIXTURES, status: 200 }
 				);
 				const slug = 'optimize';
@@ -1264,7 +1314,7 @@ describe( 'core/modules modules', () => {
 
 			it( `returns an empty array when requesting ${ collectionName } for a non-existent module`, async () => {
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
+					new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
 					{ body: FIXTURES, status: 200 }
 				);
 				const slug = 'non-existent-slug';
@@ -1285,7 +1335,7 @@ describe( 'core/modules modules', () => {
 		describe( 'isModuleAvailable', () => {
 			beforeEach( () => {
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
+					new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
 					{
 						body: FIXTURES.filter(
 							( { slug } ) => slug !== 'analytics'
@@ -1336,7 +1386,7 @@ describe( 'core/modules modules', () => {
 
 			it( 'returns undefined if modules is not yet available', async () => {
 				muteFetch(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
+					new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
 					[]
 				);
 
@@ -1353,7 +1403,7 @@ describe( 'core/modules modules', () => {
 		describe( 'isModuleActive', () => {
 			beforeEach( () => {
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
+					new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
 					{ body: FIXTURES, status: 200 }
 				);
 			} );
@@ -1418,7 +1468,7 @@ describe( 'core/modules modules', () => {
 
 			it( 'returns undefined if modules is not yet available', async () => {
 				muteFetch(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
+					new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
 					[]
 				);
 
@@ -1460,7 +1510,9 @@ describe( 'core/modules modules', () => {
 				'should return %s',
 				async ( _, slug, expected, extraData = {} ) => {
 					fetchMock.getOnce(
-						/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
+						new RegExp(
+							'^/google-site-kit/v1/core/modules/data/list'
+						),
 						{
 							status: 200,
 							body: withActive( slug ).map( ( module ) =>
@@ -1491,7 +1543,7 @@ describe( 'core/modules modules', () => {
 
 			it( 'returns undefined if modules is not yet available', async () => {
 				muteFetch(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
+					new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
 					[]
 				);
 
@@ -1508,7 +1560,7 @@ describe( 'core/modules modules', () => {
 		describe( 'getModuleFeatures', () => {
 			it( 'returns undefined when no modules are loaded', async () => {
 				muteFetch(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
+					new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
 					[]
 				);
 				const featuresLoaded = registry
@@ -1547,7 +1599,9 @@ describe( 'core/modules modules', () => {
 		describe( 'hasModuleAccess', () => {
 			it( 'should use a resolver to make a network request', async () => {
 				fetchMock.postOnce(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/check-access/,
+					new RegExp(
+						'^/google-site-kit/v1/core/modules/data/check-access'
+					),
 					{ body: { access: true } }
 				);
 
@@ -1579,7 +1633,9 @@ describe( 'core/modules modules', () => {
 				};
 
 				fetchMock.postOnce(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/check-access/,
+					new RegExp(
+						'^/google-site-kit/v1/core/modules/data/check-access'
+					),
 					{ body: response, status: 500 }
 				);
 
@@ -1602,7 +1658,9 @@ describe( 'core/modules modules', () => {
 
 			it( 'should return undefined if module access is not resolved yet', async () => {
 				fetchMock.postOnce(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/check-access/,
+					new RegExp(
+						'^/google-site-kit/v1/core/modules/data/check-access'
+					),
 					{ body: { access: true } }
 				);
 
@@ -1621,7 +1679,7 @@ describe( 'core/modules modules', () => {
 		describe( 'getRecoverableModules', () => {
 			it( 'should return undefined if the call to retrieve modules fails', async () => {
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
+					new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
 					{ body: {}, status: 400 }
 				);
 
@@ -1645,7 +1703,7 @@ describe( 'core/modules modules', () => {
 
 			it( 'should return an empty object if there are no recoverable modules', async () => {
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
+					new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
 					{ body: FIXTURES, status: 200 }
 				);
 
@@ -1668,7 +1726,7 @@ describe( 'core/modules modules', () => {
 
 			it( 'should return the modules object for each recoverable module', async () => {
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
+					new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
 					{
 						body: [ ...FIXTURES, ...recoverableModuleFixtures ],
 						status: 200,
@@ -1719,7 +1777,7 @@ describe( 'core/modules modules', () => {
 					sharedOwnershipModulesList;
 
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
+					new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
 					{ body: FIXTURES, status: 200 }
 				);
 

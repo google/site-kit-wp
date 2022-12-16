@@ -118,9 +118,6 @@ export default function SetupModule( { slug, name, description } ) {
 							label={ __( 'Experimental', 'google-site-kit' ) }
 						/>
 					) }
-					{ 'thank-with-google' === slug && (
-						<Badge label={ __( 'US Only', 'google-site-kit' ) } />
-					) }
 				</div>
 			</div>
 			<p className="googlesitekit-settings-connect-module__text">

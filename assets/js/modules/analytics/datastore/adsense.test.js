@@ -85,7 +85,9 @@ describe( 'modules/analytics adsense', () => {
 		describe( 'getAdsenseLinked', () => {
 			it( 'resolves the initial value from the adsenseLinked setting', async () => {
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/settings/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics/data/settings'
+					),
 					{ body: { adsenseLinked: true }, status: 200 }
 				);
 
@@ -106,7 +108,9 @@ describe( 'modules/analytics adsense', () => {
 					resolveResponse = () => resolve( { adsenseLinked: true } );
 				} );
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/settings/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics/data/settings'
+					),
 					responsePromise
 				);
 				// Select getAdsenseLinked once, using resolve select.

@@ -74,7 +74,9 @@ describe( 'Overview', () => {
 		} );
 
 		fetchMock.getOnce(
-			/^\/google-site-kit\/v1\/modules\/search-console\/data\/searchanalytics/,
+			new RegExp(
+				'^/google-site-kit/v1/modules/search-console/data/searchanalytics'
+			),
 			{
 				body: searchConsoleData,
 			}

@@ -42,14 +42,18 @@ describe( 'core/user surveys', () => {
 		},
 	};
 
-	const surveyTriggerEndpoint =
-		/^\/google-site-kit\/v1\/core\/user\/data\/survey-trigger/;
-	const surveyEventEndpoint =
-		/^\/google-site-kit\/v1\/core\/user\/data\/survey-event/;
-	const surveyTimeoutEndpoint =
-		/^\/google-site-kit\/v1\/core\/user\/data\/survey-timeout/;
-	const surveyTimeoutsEndpoint =
-		/^\/google-site-kit\/v1\/core\/user\/data\/survey-timeouts/;
+	const surveyTriggerEndpoint = new RegExp(
+		'^/google-site-kit/v1/core/user/data/survey-trigger'
+	);
+	const surveyEventEndpoint = new RegExp(
+		'^/google-site-kit/v1/core/user/data/survey-event'
+	);
+	const surveyTimeoutEndpoint = new RegExp(
+		'^/google-site-kit/v1/core/user/data/survey-timeout'
+	);
+	const surveyTimeoutsEndpoint = new RegExp(
+		'^/google-site-kit/v1/core/user/data/survey-timeouts'
+	);
 
 	describe( 'actions', () => {
 		describe( 'setSurveyTimeout', () => {
@@ -160,7 +164,9 @@ describe( 'core/user surveys', () => {
 				registry.dispatch( CORE_USER ).receiveGetSurveyTimeouts( [] );
 
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/core\/user\/data\/authentication/,
+					new RegExp(
+						'^/google-site-kit/v1/core/user/data/authentication'
+					),
 					{
 						authenticated: true,
 					}

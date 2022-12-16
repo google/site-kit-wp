@@ -42,7 +42,6 @@ describe( 'core/user authentication', () => {
 			'googlesitekit_read_shared_module_data::["search-console"]': false,
 			'googlesitekit_read_shared_module_data::["analytics"]': false,
 			'googlesitekit_read_shared_module_data::["pagespeed-insights"]': false,
-			'googlesitekit_read_shared_module_data::["idea-hub"]': false,
 		},
 	};
 
@@ -59,7 +58,6 @@ describe( 'core/user authentication', () => {
 			'googlesitekit_read_shared_module_data::["search-console"]': true,
 			'googlesitekit_read_shared_module_data::["analytics"]': true,
 			'googlesitekit_read_shared_module_data::["pagespeed-insights"]': true,
-			'googlesitekit_read_shared_module_data::["idea-hub"]': false,
 		},
 	};
 
@@ -110,11 +108,12 @@ describe( 'core/user authentication', () => {
 					'googlesitekit_read_shared_module_data::["search-console"]': false,
 					'googlesitekit_read_shared_module_data::["analytics"]': false,
 					'googlesitekit_read_shared_module_data::["pagespeed-insights"]': false,
-					'googlesitekit_read_shared_module_data::["idea-hub"]': false,
 				};
 
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/core\/user\/data\/permissions/,
+					new RegExp(
+						'^/google-site-kit/v1/core/user/data/permissions'
+					),
 					{
 						body: updatedCapabilities,
 						status: 200,
@@ -145,7 +144,9 @@ describe( 'core/user authentication', () => {
 				};
 
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/core\/user\/data\/permissions/,
+					new RegExp(
+						'^/google-site-kit/v1/core/user/data/permissions'
+					),
 					{
 						body: error,
 						status: 401,
@@ -197,7 +198,9 @@ describe( 'core/user authentication', () => {
 		describe( 'hasCapability', () => {
 			it( 'should return undefined if capabilities cannot be loaded', async () => {
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/core\/user\/data\/permissions/,
+					new RegExp(
+						'^/google-site-kit/v1/core/user/data/permissions'
+					),
 					{
 						body: capabilities.permissions,
 						status: 200,
@@ -281,7 +284,7 @@ describe( 'core/user authentication', () => {
 		describe( 'getViewableModules', () => {
 			it( 'should return undefined if modules are not loaded', async () => {
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
+					new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
 					{ body: FIXTURES, status: 200 }
 				);
 
@@ -300,7 +303,7 @@ describe( 'core/user authentication', () => {
 					.receiveGetCapabilities( capabilities.permissions );
 
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
+					new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
 					{ body: FIXTURES, status: 200 }
 				);
 
@@ -332,7 +335,7 @@ describe( 'core/user authentication', () => {
 					);
 
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
+					new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
 					{ body: FIXTURES, status: 200 }
 				);
 
@@ -364,7 +367,7 @@ describe( 'core/user authentication', () => {
 		describe( 'canViewSharedModule', () => {
 			it( 'should return undefined if modules are not loaded', async () => {
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
+					new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
 					{ body: FIXTURES, status: 200 }
 				);
 
@@ -409,7 +412,9 @@ describe( 'core/user authentication', () => {
 
 			it( 'should return undefined if the capabilities are not loaded', async () => {
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/core\/user\/data\/permissions/,
+					new RegExp(
+						'^/google-site-kit/v1/core/user/data/permissions'
+					),
 					{
 						body: capabilities.permissions,
 						status: 200,

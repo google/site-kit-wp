@@ -74,7 +74,9 @@ describe( 'modules/tagmanager containers', () => {
 				const containerName = 'sitekit';
 
 				fetchMock.postOnce(
-					/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/create-container/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/tagmanager/data/create-container'
+					),
 					{ body: fixtures.createContainer, status: 200 }
 				);
 
@@ -85,7 +87,9 @@ describe( 'modules/tagmanager containers', () => {
 					} );
 				// Ensure the proper parameters were passed.
 				expect( fetchMock ).toHaveFetched(
-					/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/create-container/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/tagmanager/data/create-container'
+					),
 					{
 						method: 'POST',
 						body: {
@@ -112,7 +116,9 @@ describe( 'modules/tagmanager containers', () => {
 				const usageContext = fixtures.createContainer.usageContext[ 0 ];
 
 				muteFetch(
-					/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/create-container/
+					new RegExp(
+						'^/google-site-kit/v1/modules/tagmanager/data/create-container'
+					)
 				);
 				const promise = registry
 					.dispatch( MODULES_TAGMANAGER )
@@ -146,7 +152,9 @@ describe( 'modules/tagmanager containers', () => {
 				};
 
 				fetchMock.postOnce(
-					/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/create-container/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/tagmanager/data/create-container'
+					),
 					{ body: errorResponse, status: 500 }
 				);
 
@@ -169,7 +177,9 @@ describe( 'modules/tagmanager containers', () => {
 
 				// Ignore the request fired by the `getContainers` selector.
 				muteFetch(
-					/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/containers/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/tagmanager/data/containers'
+					),
 					[]
 				);
 				const containers = registry
@@ -364,7 +374,9 @@ describe( 'modules/tagmanager containers', () => {
 				const accountID = account.accountId;
 
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/containers/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/tagmanager/data/containers'
+					),
 					{ body: containers, status: 200 }
 				);
 
@@ -381,7 +393,9 @@ describe( 'modules/tagmanager containers', () => {
 
 				// Ensure the proper parameters were sent.
 				expect( fetchMock ).toHaveFetched(
-					/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/containers/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/tagmanager/data/containers'
+					),
 					{
 						query: { accountID },
 					}
@@ -427,7 +441,9 @@ describe( 'modules/tagmanager containers', () => {
 					data: { status: 500 },
 				};
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/containers/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/tagmanager/data/containers'
+					),
 					{ body: errorResponse, status: 500 }
 				);
 
@@ -472,7 +488,9 @@ describe( 'modules/tagmanager containers', () => {
 				const accountID = account.accountId;
 
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/containers/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/tagmanager/data/containers'
+					),
 					{ body: containers, status: 200 }
 				);
 
@@ -489,7 +507,9 @@ describe( 'modules/tagmanager containers', () => {
 
 				// Ensure the proper parameters were sent.
 				expect( fetchMock ).toHaveFetched(
-					/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/containers/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/tagmanager/data/containers'
+					),
 					{
 						query: { accountID },
 					}
@@ -543,7 +563,9 @@ describe( 'modules/tagmanager containers', () => {
 				const accountID = account.accountId;
 
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/containers/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/tagmanager/data/containers'
+					),
 					{ body: containers, status: 200 }
 				);
 
@@ -560,7 +582,9 @@ describe( 'modules/tagmanager containers', () => {
 
 				// Ensure the proper parameters were sent.
 				expect( fetchMock ).toHaveFetched(
-					/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/containers/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/tagmanager/data/containers'
+					),
 					{
 						query: { accountID },
 					}

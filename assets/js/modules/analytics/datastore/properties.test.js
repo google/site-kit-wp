@@ -37,10 +37,12 @@ import { MODULES_ANALYTICS_4 } from '../../analytics-4/datastore/constants';
 describe( 'modules/analytics properties', () => {
 	let registry;
 
-	const propertiesProfilesEndpoint =
-		/^\/google-site-kit\/v1\/modules\/analytics\/data\/properties-profiles/;
-	const ga4PropertiesEndpoint =
-		/^\/google-site-kit\/v1\/modules\/analytics-4\/data\/properties/;
+	const propertiesProfilesEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/analytics/data/properties-profiles'
+	);
+	const ga4PropertiesEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/analytics-4/data/properties'
+	);
 
 	beforeAll( () => {
 		API.setUsingCache( false );
@@ -65,7 +67,9 @@ describe( 'modules/analytics properties', () => {
 			it( 'creates a property and adds it to the store', async () => {
 				const accountID = fixtures.createProperty.accountId; // eslint-disable-line sitekit/acronym-case
 				fetchMock.post(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-property/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics/data/create-property'
+					),
 					{ body: fixtures.createProperty, status: 200 }
 				);
 
@@ -74,7 +78,9 @@ describe( 'modules/analytics properties', () => {
 					.createProperty( accountID );
 				// Ensure the proper parameters were passed.
 				expect( fetchMock ).toHaveFetched(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-property/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics/data/create-property'
+					),
 					{
 						body: { data: { accountID } },
 					}
@@ -91,7 +97,9 @@ describe( 'modules/analytics properties', () => {
 			it( 'sets isDoingCreateProperty', () => {
 				const accountID = fixtures.createProperty.accountId; // eslint-disable-line sitekit/acronym-case
 				fetchMock.post(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-property/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics/data/create-property'
+					),
 					{ body: fixtures.createProperty, status: 200 }
 				);
 
@@ -113,7 +121,9 @@ describe( 'modules/analytics properties', () => {
 					data: { status: 500 },
 				};
 				fetchMock.post(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-property/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics/data/create-property'
+					),
 					{ body: response, status: 500 }
 				);
 

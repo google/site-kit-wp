@@ -77,10 +77,6 @@ describe( 'core/modules sharing-settings', () => {
 			sharedRoles: [],
 			management: 'all_admins',
 		},
-		'idea-hub': {
-			sharedRoles: [],
-			management: 'all_admins',
-		},
 	};
 	const sharedOwnershipModules = [
 		'analytics',
@@ -228,7 +224,9 @@ describe( 'core/modules sharing-settings', () => {
 						.receiveGetSettings( { ownerID: 1 } );
 
 					fetchMock.postOnce(
-						/^\/google-site-kit\/v1\/core\/modules\/data\/sharing-settings/,
+						new RegExp(
+							'^/google-site-kit/v1/core/modules/data/sharing-settings'
+						),
 						{
 							body: {
 								settings: sharingSettings,
@@ -247,7 +245,9 @@ describe( 'core/modules sharing-settings', () => {
 
 					// Ensure the API call was made.
 					expect( fetchMock ).toHaveFetched(
-						/^\/google-site-kit\/v1\/core\/modules\/data\/sharing-settings/
+						new RegExp(
+							'^/google-site-kit/v1/core/modules/data/sharing-settings'
+						)
 					);
 
 					// Ensure the `setOwnerID` action is dispatched and set the ownerID in state
@@ -457,7 +457,7 @@ describe( 'core/modules sharing-settings', () => {
 
 				const sharingManagement = registry
 					.select( CORE_MODULES )
-					.getSharingManagement( 'idea-hub' );
+					.getSharingManagement( 'optimize' );
 				expect( sharingManagement ).toBeNull();
 			} );
 
@@ -507,7 +507,7 @@ describe( 'core/modules sharing-settings', () => {
 
 				const sharedRoles = registry
 					.select( CORE_MODULES )
-					.getSharedRoles( 'idea-hub' );
+					.getSharedRoles( 'optimize' );
 				expect( sharedRoles ).toBeNull();
 			} );
 
@@ -683,7 +683,9 @@ describe( 'core/modules sharing-settings', () => {
 					.getSharingSettings();
 
 				freezeFetch(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/sharing-settings/
+					new RegExp(
+						'^/google-site-kit/v1/core/modules/data/sharing-settings'
+					)
 				);
 
 				registry.dispatch( CORE_MODULES ).saveSharingSettings();
@@ -702,7 +704,9 @@ describe( 'core/modules sharing-settings', () => {
 					.getSharingSettings();
 
 				fetchMock.postOnce(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/sharing-settings/,
+					new RegExp(
+						'^/google-site-kit/v1/core/modules/data/sharing-settings'
+					),
 					{
 						body: {
 							settings: sharingSettings,

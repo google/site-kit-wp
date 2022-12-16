@@ -40,7 +40,9 @@ MultipleAdmins.decorators = [
 	withQuery,
 	( Story ) => {
 		fetchMock.getOnce(
-			/^\/google-site-kit\/v1\/core\/user\/data\/user-input-settings/,
+			new RegExp(
+				'^/google-site-kit/v1/core/user/data/user-input-settings'
+			),
 			{
 				body: {
 					goals: {
@@ -48,7 +50,7 @@ MultipleAdmins.decorators = [
 						values: [ 'publish_blog', 'share_portfolio' ],
 						author: {
 							photo: 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y',
-							name: 'admin@example.com',
+							login: 'admin',
 						},
 					},
 					helpNeeded: {

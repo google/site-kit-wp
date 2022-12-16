@@ -65,7 +65,9 @@ describe( 'modules/analytics report', () => {
 
 			it( 'uses a resolver to make a network request', async () => {
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/report/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics/data/report'
+					),
 					{
 						body: fixtures.report,
 						status: 200,
@@ -116,7 +118,9 @@ describe( 'modules/analytics report', () => {
 				};
 
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/report/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics/data/report'
+					),
 					{
 						body: response,
 						status: 500,
@@ -148,7 +152,9 @@ describe( 'modules/analytics report', () => {
 						'Restricted metric(s): ga:adsenseRevenue can only be queried under certain conditions.',
 				};
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/report/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics/data/report'
+					),
 					{
 						body: restrictedMetricsError,
 						status: 400,
@@ -187,7 +193,9 @@ describe( 'modules/analytics report', () => {
 						'Restricted metric(s): ga:nonadsenseMetric can only be queried under certain conditions.',
 				};
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/report/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics/data/report'
+					),
 					{
 						body: restrictedMetricsError,
 						status: 400,
@@ -227,7 +235,9 @@ describe( 'modules/analytics report', () => {
 					},
 				];
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/report/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics/data/report'
+					),
 					{
 						body: restrictedMetricsSuccess,
 						status: 200,
@@ -267,7 +277,9 @@ describe( 'modules/analytics report', () => {
 						'Restricted metric(s): ga:nonadsenseMetric can only be queried under certain conditions.',
 				};
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/report/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics/data/report'
+					),
 					{
 						body: restrictedMetricsError,
 						status: 400,
@@ -356,7 +368,9 @@ describe( 'modules/analytics report', () => {
 		describe( 'isGatheringData', () => {
 			it( 'should return undefined if getReport is not resolved yet', async () => {
 				freezeFetch(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/report/
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics/data/report'
+					)
 				);
 
 				const { isGatheringData } =
@@ -370,7 +384,9 @@ describe( 'modules/analytics report', () => {
 
 			it( 'should return TRUE if the returned report is null', async () => {
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/report/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics/data/report'
+					),
 					{
 						body: [ { data: { rows: null } } ],
 					}
@@ -391,7 +407,9 @@ describe( 'modules/analytics report', () => {
 
 			it( 'should return TRUE if the returned report is an empty array', async () => {
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/report/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics/data/report'
+					),
 					{
 						body: zeroRowsReport,
 					}
@@ -412,7 +430,9 @@ describe( 'modules/analytics report', () => {
 
 			it( 'should return FALSE if the returned report has rows', async () => {
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/report/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics/data/report'
+					),
 					{
 						body: fixtures.report,
 					}
@@ -435,7 +455,9 @@ describe( 'modules/analytics report', () => {
 		describe( 'hasZeroData', () => {
 			it( 'should return undefined if getReport or isGatheringData is not resolved yet', async () => {
 				freezeFetch(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/report/
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics/data/report'
+					)
 				);
 
 				const { hasZeroData } = registry.select( MODULES_ANALYTICS );
@@ -448,7 +470,9 @@ describe( 'modules/analytics report', () => {
 
 			it( 'should return TRUE if isGatheringData is true', async () => {
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/report/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics/data/report'
+					),
 					// When `rows` is `null` it means we're still gathering data for
 					// this report.
 					{ body: [ { data: { rows: null } } ] }
@@ -470,7 +494,9 @@ describe( 'modules/analytics report', () => {
 
 			it( 'should return TRUE if isZeroReport is true', async () => {
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/report/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics/data/report'
+					),
 					{ body: zeroRowsReport }
 				);
 
@@ -488,7 +514,9 @@ describe( 'modules/analytics report', () => {
 
 			it( 'should return FALSE if isGatheringData returns FALSE', async () => {
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/report/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics/data/report'
+					),
 					{
 						body: fixtures.report,
 					}
@@ -512,7 +540,9 @@ describe( 'modules/analytics report', () => {
 			it( 'should return FALSE if isZeroReport returns FALSE', async () => {
 				expect( isZeroReport( fixtures.report ) ).toBe( false );
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/report/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics/data/report'
+					),
 					{
 						body: fixtures.report,
 					}

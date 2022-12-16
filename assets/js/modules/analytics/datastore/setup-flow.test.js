@@ -24,7 +24,6 @@ import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import { MODULES_ANALYTICS_4 } from '../../analytics-4/datastore/constants';
 import {
 	MODULES_ANALYTICS,
-	SETUP_FLOW_MODE_LEGACY,
 	SETUP_FLOW_MODE_UA,
 	SETUP_FLOW_MODE_GA4,
 	SETUP_FLOW_MODE_GA4_TRANSITIONAL,
@@ -120,34 +119,11 @@ describe( 'modules/analytics setup-flow', () => {
 
 	describe( 'selectors', () => {
 		describe( 'getSetupFlowMode', () => {
-			it( 'should return "legacy" if isAdminAPIWorking() returns false', () => {
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveError( new Error( 'foo' ), 'getProperties', [
-						'foo',
-						'bar',
-					] );
-
-				expect(
-					registry.select( MODULES_ANALYTICS_4 ).isAdminAPIWorking()
-				).toBe( false );
-				expect(
-					registry.select( MODULES_ANALYTICS ).getSetupFlowMode()
-				).toBe( SETUP_FLOW_MODE_LEGACY );
-			} );
-
-			it( 'should not return undefined if isAdminAPIWorking() returns undefined ', () => {
-				expect(
-					registry.select( MODULES_ANALYTICS_4 ).isAdminAPIWorking()
-				).toBeUndefined();
-				expect(
-					registry.select( MODULES_ANALYTICS ).getSetupFlowMode()
-				).not.toBeUndefined();
-			} );
-
 			it( 'should return undefined if settings are still loading', async () => {
 				fetchMock.get(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/settings/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics/data/settings'
+					),
 					{
 						body: {
 							accountID: 'pub-12345678',
@@ -161,9 +137,6 @@ describe( 'modules/analytics setup-flow', () => {
 				registry = createTestRegistry();
 				populateAnalytics4Datastore( registry );
 
-				expect(
-					registry.select( MODULES_ANALYTICS_4 ).isAdminAPIWorking()
-				).toBe( true );
 				expect(
 					registry.select( MODULES_ANALYTICS ).getSettings()
 				).toBeUndefined();
@@ -186,9 +159,6 @@ describe( 'modules/analytics setup-flow', () => {
 
 				populateAnalytics4Datastore( registry );
 
-				expect(
-					registry.select( MODULES_ANALYTICS_4 ).isAdminAPIWorking()
-				).toBe( true );
 				expect(
 					registry.select( MODULES_ANALYTICS ).getSetupFlowMode()
 				).toBe( SETUP_FLOW_MODE_UA );
@@ -214,9 +184,6 @@ describe( 'modules/analytics setup-flow', () => {
 					.setAccountID( accountID );
 				populateAnalyticsDatastore( registry );
 
-				// For isAdminAPIWorking() to return true:
-				// "The state['properties'] object has at least one account with a non-empty array of properties;"
-				// See: https://github.com/google/site-kit-wp/issues/3169
 				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties(
 					[
 						{
@@ -262,9 +229,6 @@ describe( 'modules/analytics setup-flow', () => {
 					);
 
 				expect(
-					registry.select( MODULES_ANALYTICS_4 ).isAdminAPIWorking()
-				).toBe( true );
-				expect(
 					registry.select( MODULES_ANALYTICS ).getSetupFlowMode()
 				).toBe( SETUP_FLOW_MODE_UA );
 			} );
@@ -276,9 +240,6 @@ describe( 'modules/analytics setup-flow', () => {
 
 				populateAnalytics4Datastore( registry );
 
-				expect(
-					registry.select( MODULES_ANALYTICS_4 ).isAdminAPIWorking()
-				).toBe( true );
 				expect(
 					registry.select( MODULES_ANALYTICS ).getSetupFlowMode()
 				).toBeUndefined();
@@ -295,9 +256,6 @@ describe( 'modules/analytics setup-flow', () => {
 					.receiveGetProperties( [], { accountID } );
 
 				expect(
-					registry.select( MODULES_ANALYTICS_4 ).isAdminAPIWorking()
-				).toBe( true );
-				expect(
 					registry.select( MODULES_ANALYTICS ).getSetupFlowMode()
 				).toBe( SETUP_FLOW_MODE_GA4 );
 			} );
@@ -309,9 +267,6 @@ describe( 'modules/analytics setup-flow', () => {
 				populateAnalytics4Datastore( registry );
 				populateAnalyticsDatastore( registry );
 
-				expect(
-					registry.select( MODULES_ANALYTICS_4 ).isAdminAPIWorking()
-				).toBe( true );
 				expect(
 					registry.select( MODULES_ANALYTICS ).getSetupFlowMode()
 				).toBe( SETUP_FLOW_MODE_GA4_TRANSITIONAL );

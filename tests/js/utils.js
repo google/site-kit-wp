@@ -26,12 +26,10 @@ import * as coreWidgets from '../../assets/js/googlesitekit/widgets';
 import * as modulesAdSense from '../../assets/js/modules/adsense';
 import * as modulesAnalytics from '../../assets/js/modules/analytics';
 import * as modulesAnalytics4 from '../../assets/js/modules/analytics-4';
-import * as modulesIdeaHub from '../../assets/js/modules/idea-hub';
 import * as modulesOptimize from '../../assets/js/modules/optimize';
 import * as modulesPageSpeedInsights from '../../assets/js/modules/pagespeed-insights';
 import * as modulesSearchConsole from '../../assets/js/modules/search-console';
 import * as modulesTagManager from '../../assets/js/modules/tagmanager';
-import * as modulesThankWithGoogle from '../../assets/js/modules/thank-with-google';
 import { CORE_SITE } from '../../assets/js/googlesitekit/datastore/site/constants';
 import {
 	PERMISSION_AUTHENTICATE,
@@ -60,12 +58,10 @@ const allCoreModules = [
 	modulesAdSense,
 	modulesAnalytics,
 	modulesAnalytics4,
-	modulesIdeaHub,
 	modulesOptimize,
 	modulesPageSpeedInsights,
 	modulesSearchConsole,
 	modulesTagManager,
-	modulesThankWithGoogle,
 ];
 
 /**
