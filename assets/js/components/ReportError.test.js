@@ -237,6 +237,79 @@ describe( 'ReportError', () => {
 		);
 	} );
 
+	it( 'renders alternate error for non-authenticated users when ERROR_REASON_INSUFFICIENT_PERMISSIONS is provided as reason', () => {
+		const { container } = render(
+			<ReportError
+				moduleSlug={ moduleName }
+				error={ {
+					code: 'test-error-code',
+					message: 'Test error message',
+					data: {
+						reason: ERROR_REASON_INSUFFICIENT_PERMISSIONS,
+					},
+				} }
+			/>,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+			}
+		);
+
+		expect( container.querySelector( 'h3' ).textContent ).toEqual(
+			'Access lost to Test Module'
+		);
+	} );
+
+	it( 'should not render the `Request access` button for an insufficient permission error when the user is not authenticated', () => {
+		const userData = {
+			id: 1,
+			email: 'admin@example.com',
+			name: 'admin',
+			picture: 'https://path/to/image',
+		};
+		provideModules( registry, [
+			{
+				active: true,
+				connected: true,
+				slug: 'analytics',
+			},
+		] );
+		provideModuleRegistrations( registry );
+		provideUserInfo( registry, userData );
+
+		const [ accountID, internalWebPropertyID, profileID ] = [
+			'12345',
+			'34567',
+			'56789',
+		];
+
+		registry.dispatch( MODULES_ANALYTICS ).setAccountID( accountID );
+		registry
+			.dispatch( MODULES_ANALYTICS )
+			.setInternalWebPropertyID( internalWebPropertyID );
+		registry.dispatch( MODULES_ANALYTICS ).setProfileID( profileID );
+
+		const { queryByText } = render(
+			<ReportError
+				moduleSlug="analytics"
+				error={ {
+					code: 'test-error-code',
+					message: 'Test error message',
+					data: {
+						reason: ERROR_REASON_INSUFFICIENT_PERMISSIONS,
+					},
+				} }
+			/>,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+			}
+		);
+
+		// Verify the `Request access` button is not rendered.
+		expect( queryByText( /request access/i ) ).not.toBeInTheDocument();
+	} );
+
 	it( "should not render the `Retry` button if the error's `selectorData.name` is not `getReport`", () => {
 		const { queryByText } = render(
 			<ReportError
@@ -368,37 +441,6 @@ describe( 'ReportError', () => {
 		);
 
 		expect( getByRole( 'button', { name: /retry/i } ) ).toBeInTheDocument();
-	} );
-
-	it( 'should not render the `Retry` button for a view-only user', () => {
-		const { queryByText } = render(
-			<ReportError
-				moduleSlug={ moduleName }
-				error={ {
-					code: 'test-error-code',
-					message: 'Test error message',
-					data: {},
-					selectorData: {
-						args: [
-							{
-								dimensions: [ 'ga:date' ],
-								metrics: [ { expression: 'ga:users' } ],
-								startDate: '2020-08-11',
-								endDate: '2020-09-07',
-							},
-						],
-						name: 'getReport',
-						storeName: MODULES_ANALYTICS,
-					},
-				} }
-			/>,
-			{
-				registry,
-				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
-			}
-		);
-
-		expect( queryByText( /retry/i ) ).not.toBeInTheDocument();
 	} );
 
 	it( 'should dispatch the `invalidateResolution` action for each retry-able error', () => {
