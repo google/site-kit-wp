@@ -30,7 +30,7 @@ const Template = ( { setupRegistry } ) => (
 	</WithRegistrySetup>
 );
 
-const delay = 350; // Needed for fonts to render properly.
+const delay = 1000; // Needed for fonts to render properly.
 
 const notification1 = {
 	id: 'test-notification',

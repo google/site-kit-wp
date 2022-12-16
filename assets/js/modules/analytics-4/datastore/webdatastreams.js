@@ -182,7 +182,7 @@ const baseActions = {
 		const registry = yield Data.commonActions.getRegistry();
 		return registry
 			.select( MODULES_ANALYTICS_4 )
-			.getMatchingWebDataStream( propertyID );
+			.getMatchingWebDataStreamByPropertyID( propertyID );
 	},
 
 	/**
@@ -279,21 +279,21 @@ const baseSelectors = {
 	},
 
 	/**
-	 * Gets matched web data stream for selected property.
+	 * Gets matched web data stream from a list of web data streams.
 	 *
 	 * @since 1.31.0
+	 * @since 1.90.0 Updated to match a data stream from a list of provided web data streams.
 	 *
-	 * @param {Object} state      Data store's state.
-	 * @param {string} propertyID The GA4 property ID to find matched web data stream.
-	 * @return {(Object|null|undefined)} A web data stream object if found, otherwise null; `undefined` if web data streams are not loaded.
+	 * @param {Object} state       Data store's state.
+	 * @param {Array}  datastreams A list of web data streams.
+	 * @return {(Object|null)} A web data stream object if found, otherwise null.
 	 */
 	getMatchingWebDataStream: createRegistrySelector(
-		( select ) => ( state, propertyID ) => {
-			const datastreams =
-				select( MODULES_ANALYTICS_4 ).getWebDataStreams( propertyID );
-			if ( datastreams === undefined ) {
-				return undefined;
-			}
+		( select ) => ( _state, datastreams ) => {
+			invariant(
+				Array.isArray( datastreams ),
+				'datastreams must be an array.'
+			);
 
 			for ( const datastream of datastreams ) {
 				if (
@@ -311,6 +311,33 @@ const baseSelectors = {
 	),
 
 	/**
+	 * Gets matched web data stream for selected property.
+	 *
+	 * @since 1.90.0
+	 *
+	 * @param {Object} state      Data store's state.
+	 * @param {string} propertyID The GA4 property ID to find matched web data stream.
+	 * @return {(Object|null|undefined)} A web data stream object if found, otherwise null; `undefined` if web data streams are not loaded.
+	 */
+	getMatchingWebDataStreamByPropertyID: createRegistrySelector(
+		( select ) => ( _state, propertyID ) => {
+			const datastreams =
+				select( MODULES_ANALYTICS_4 ).getWebDataStreams( propertyID );
+
+			if ( datastreams === undefined ) {
+				return undefined;
+			}
+
+			const matchingDataStream =
+				select( MODULES_ANALYTICS_4 ).getMatchingWebDataStream(
+					datastreams
+				);
+
+			return matchingDataStream || null;
+		}
+	),
+
+	/**
 	 * Gets web data streams in batch for selected properties.
 	 *
 	 * @since 1.32.0
@@ -324,41 +351,55 @@ const baseSelectors = {
 	},
 
 	/**
-	 * Gets the matched measurement IDs for the given properties.
+	 * Gets the matched measurement IDs for the given property IDs.
 	 *
 	 * @since 1.88.0
+	 * @since 1.90.0 Use propertyIDs instead of property objects for matching.
 	 *
-	 * @param {Object}         state      Data store's state.
-	 * @param {Array.<Object>} properties GA4 properties array of objects.
-	 * @return {(Object|null)} Object with matched property ID as the key and measurement ID as the value, or an empty object if no matches are found. Null if no properties are provided.
+	 * @param {Object}         state       Data store's state.
+	 * @param {Array.<string>} propertyIDs GA4 property IDs array of strings.
+	 * @return {(Object|undefined)} Object with matched property ID as the key and measurement ID as the value, or an empty object if no matches are found; `undefined` if web data streams are not loaded.
 	 */
 	getMatchedMeasurementIDsByPropertyIDs: createRegistrySelector(
-		( select ) => ( state, properties ) => {
-			if ( ! properties?.length ) {
-				return null;
+		( select ) => ( _state, propertyIDs ) => {
+			invariant(
+				Array.isArray( propertyIDs ) && propertyIDs?.length,
+				'propertyIDs must be an array containing GA4 propertyIDs.'
+			);
+
+			propertyIDs.forEach( ( propertyID ) => {
+				invariant(
+					isValidPropertyID( propertyID ),
+					'A valid GA4 propertyID is required.'
+				);
+			} );
+
+			const datastreams =
+				select( MODULES_ANALYTICS_4 ).getWebDataStreamsBatch(
+					propertyIDs
+				);
+
+			if ( datastreams === undefined ) {
+				return undefined;
 			}
 
-			return properties.reduce( ( acc, property ) => {
-				const currentPropertyID = property?._id;
-				if ( ! currentPropertyID ) {
+			return propertyIDs.reduce( ( acc, currentPropertyID ) => {
+				if ( ! datastreams[ currentPropertyID ]?.length ) {
 					return acc;
 				}
 
-				const dataStream =
-					select( MODULES_ANALYTICS_4 ).getWebDataStreamsBatch(
-						currentPropertyID
-					);
+				const matchingDataStream = select(
+					MODULES_ANALYTICS_4
+				).getMatchingWebDataStream( datastreams[ currentPropertyID ] );
 
-				if (
-					! Object.keys( dataStream ).length ||
-					! Object.values( dataStream[ currentPropertyID ] ).length
-				) {
+				if ( ! matchingDataStream ) {
 					return acc;
 				}
 
 				const measurementID =
-					dataStream[ currentPropertyID ][ 0 ].webStreamData
-						.measurementId; // eslint-disable-line sitekit/acronym-case
+					// eslint-disable-next-line sitekit/acronym-case
+					matchingDataStream.webStreamData.measurementId;
+
 				return {
 					...acc,
 					[ currentPropertyID ]: measurementID,

@@ -85,6 +85,10 @@ export default function Header( { slug } ) {
 
 		const moduleOwnerID = select( MODULES_ANALYTICS ).getOwnerID();
 
+		if ( moduleOwnerID === undefined || loggedInUserID === undefined ) {
+			return undefined;
+		}
+
 		if ( moduleOwnerID === loggedInUserID ) {
 			return true;
 		}
@@ -264,13 +268,6 @@ export default function Header( { slug } ) {
 										'Experimental',
 										'google-site-kit'
 									) }
-									hasLeftSpacing={ true }
-								/>
-							) }
-
-							{ 'thank-with-google' === slug && (
-								<Badge
-									label={ __( 'US Only', 'google-site-kit' ) }
 									hasLeftSpacing={ true }
 								/>
 							) }

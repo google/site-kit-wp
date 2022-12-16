@@ -68,7 +68,7 @@ describe( 'WebStoriesAdUnitSelect', () => {
 
 	it( 'should render a loading state when ad units are undefined', () => {
 		freezeFetch(
-			/^\/google-site-kit\/v1\/modules\/adsense\/data\/adunits/
+			new RegExp( '^/google-site-kit/v1/modules/adsense/data/adunits' )
 		);
 
 		const { queryAllByRole, queryByRole } = render(

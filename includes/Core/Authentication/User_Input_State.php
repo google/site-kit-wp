@@ -42,6 +42,24 @@ final class User_Input_State extends User_Setting {
 	const VALUE_MISSING = 'missing';
 
 	/**
+	 * Registers the setting in WordPress.
+	 *
+	 * @since 1.90.0
+	 */
+	public function register() {
+		parent::register();
+
+		add_action(
+			'googlesitekit_user_input_set',
+			function ( $is_empty ) {
+				if ( ! is_null( $is_empty ) ) {
+					$this->set( $is_empty ? self::VALUE_MISSING : self::VALUE_COMPLETED );
+				}
+			}
+		);
+	}
+
+	/**
 	 * Gets the callback for sanitizing the setting's value before saving.
 	 *
 	 * @since 1.23.0

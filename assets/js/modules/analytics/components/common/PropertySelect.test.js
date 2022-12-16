@@ -212,7 +212,9 @@ describe( 'PropertySelect', () => {
 			.getPropertyID();
 
 		muteFetch(
-			/^\/google-site-kit\/v1\/modules\/analytics\/data\/profiles/,
+			new RegExp(
+				'^/google-site-kit/v1/modules/analytics/data/profiles'
+			),
 			[]
 		);
 		// Click the label to expose the elements in the menu.
@@ -245,7 +247,9 @@ describe( 'PropertySelect', () => {
 		const targetProperty = properties[ 1 ];
 
 		muteFetch(
-			/^\/google-site-kit\/v1\/modules\/analytics\/data\/profiles/,
+			new RegExp(
+				'^/google-site-kit/v1/modules/analytics/data/profiles'
+			),
 			[]
 		);
 

@@ -50,7 +50,7 @@ describe( 'AccountSelect', () => {
 
 	it( 'should render a loading state when accounts are undefined', () => {
 		freezeFetch(
-			/^\/google-site-kit\/v1\/modules\/adsense\/data\/accounts/
+			new RegExp( '^/google-site-kit/v1/modules/adsense/data/accounts' )
 		);
 
 		const { queryAllByRole, queryByRole } = render( <AccountSelect />, {

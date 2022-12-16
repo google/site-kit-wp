@@ -61,11 +61,11 @@ describe( 'SettingsEdit', () => {
 
 		registry = createTestRegistry();
 
-		fetchMock.getOnce( /tagmanager\/data\/accounts/, {
+		fetchMock.getOnce( new RegExp( 'tagmanager/data/accounts' ), {
 			body: [ account ],
 			status: 200,
 		} );
-		fetchMock.getOnce( /analytics\/data\/settings/, {
+		fetchMock.getOnce( new RegExp( 'analytics/data/settings' ), {
 			body: {},
 			status: 200,
 		} );
@@ -112,6 +112,8 @@ describe( 'SettingsEdit', () => {
 
 			it( 'should display a warning if the current user does not have access to the module', async () => {
 				provideUserInfo( registry );
+				// Ensure the module is owned by another user.
+				registry.dispatch( MODULES_TAGMANAGER ).setOwnerID( 99 );
 				registry
 					.dispatch( CORE_MODULES )
 					.receiveCheckModuleAccess(
@@ -215,6 +217,8 @@ describe( 'SettingsEdit', () => {
 
 			it( 'should display a warning if the current user does not have access to the module', async () => {
 				provideUserInfo( registry );
+				// Ensure the module is owned by another user.
+				registry.dispatch( MODULES_TAGMANAGER ).setOwnerID( 99 );
 				registry
 					.dispatch( CORE_MODULES )
 					.receiveCheckModuleAccess(
@@ -330,6 +334,8 @@ describe( 'SettingsEdit', () => {
 
 			it( 'should display a warning if the current user does not have access to the module', async () => {
 				provideUserInfo( registry );
+				// Ensure the module is owned by another user.
+				registry.dispatch( MODULES_TAGMANAGER ).setOwnerID( 99 );
 				registry
 					.dispatch( CORE_MODULES )
 					.receiveCheckModuleAccess(
