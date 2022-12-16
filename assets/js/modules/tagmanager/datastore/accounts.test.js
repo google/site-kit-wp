@@ -59,6 +59,7 @@ describe( 'modules/tagmanager accounts', () => {
 	} );
 
 	beforeEach( () => {
+		jest.useRealTimers();
 		registry = createTestRegistry();
 		// Preload default settings to prevent the resolver from making unexpected requests
 		// as this is covered in settings store tests.
