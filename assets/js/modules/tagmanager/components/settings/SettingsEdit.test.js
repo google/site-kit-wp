@@ -104,7 +104,8 @@ describe( 'SettingsEdit', () => {
 						registry,
 					}
 				);
-				await waitForResolvingPromise();
+				// Add a delay to ensure all promises resolve.
+				await waitForResolvingPromise( 5 );
 				expect(
 					container.querySelector( '#containerName' )
 				).toHaveValue( siteName );
@@ -127,7 +128,8 @@ describe( 'SettingsEdit', () => {
 						registry,
 					}
 				);
-				await waitForResolvingPromise();
+				// Add a delay to ensure all promises resolve.
+				await waitForResolvingPromise( 5 );
 				expect(
 					container.querySelector( '#containerName' )
 				).toHaveValue( siteName );
@@ -158,7 +160,8 @@ describe( 'SettingsEdit', () => {
 						registry,
 					}
 				);
-				await waitForResolvingPromise();
+				// Add a delay to ensure all promises resolve.
+				await waitForResolvingPromise( 5 );
 				expect(
 					container.querySelector( '#containerName' )
 				).toHaveValue( 'example.com' );
@@ -175,7 +178,8 @@ describe( 'SettingsEdit', () => {
 						registry,
 					}
 				);
-				await waitForResolvingPromise();
+				// Add a delay to ensure all promises resolve.
+				await waitForResolvingPromise( 5 );
 				expect(
 					container.querySelector( '#containerName' )
 				).toHaveValue( allContainers[ 0 ].name );
@@ -209,7 +213,8 @@ describe( 'SettingsEdit', () => {
 						registry,
 					}
 				);
-				await waitForResolvingPromise();
+				// Add a delay to ensure all promises resolve.
+				await waitForResolvingPromise( 5 );
 				expect(
 					container.querySelector( '#ampContainerName' )
 				).toHaveValue( `${ siteName } AMP` );
@@ -232,7 +237,8 @@ describe( 'SettingsEdit', () => {
 						registry,
 					}
 				);
-				await waitForResolvingPromise();
+				// Add a delay to ensure all promises resolve.
+				await waitForResolvingPromise( 5 );
 				expect(
 					container.querySelector( '#ampContainerName' )
 				).toHaveValue( `${ siteName } AMP` );
@@ -263,7 +269,8 @@ describe( 'SettingsEdit', () => {
 						registry,
 					}
 				);
-				await waitForResolvingPromise();
+				// Add a delay to ensure all promises resolve.
+				await waitForResolvingPromise( 5 );
 				expect(
 					container.querySelector( '#ampContainerName' )
 				).toHaveValue( 'example.com AMP' );
@@ -280,7 +287,8 @@ describe( 'SettingsEdit', () => {
 						registry,
 					}
 				);
-				await waitForResolvingPromise();
+				// Add a delay to ensure all promises resolve.
+				await waitForResolvingPromise( 5 );
 				expect(
 					container.querySelector( '#ampContainerName' )
 				).toHaveValue( allContainers[ 0 ].name );
@@ -321,7 +329,8 @@ describe( 'SettingsEdit', () => {
 						registry,
 					}
 				);
-				await waitForResolvingPromise();
+				// Add a delay to ensure all promises resolve.
+				await waitForResolvingPromise( 5 );
 				expect(
 					container.querySelector( '#containerName' )
 				).toHaveValue( siteName );
@@ -347,7 +356,8 @@ describe( 'SettingsEdit', () => {
 						registry,
 					}
 				);
-				await waitForResolvingPromise();
+				// Add a delay to ensure all promises resolve.
+				await waitForResolvingPromise( 5 );
 				expect(
 					container.querySelector( '#containerName' )
 				).toHaveValue( siteName );
@@ -381,7 +391,8 @@ describe( 'SettingsEdit', () => {
 						registry,
 					}
 				);
-				await waitForResolvingPromise();
+				// Add a delay to ensure all promises resolve.
+				await waitForResolvingPromise( 5 );
 				expect(
 					container.querySelector( '#containerName' )
 				).toHaveValue( 'example.com' );
@@ -402,7 +413,8 @@ describe( 'SettingsEdit', () => {
 						registry,
 					}
 				);
-				await waitForResolvingPromise();
+				// Add a delay to ensure all promises resolve.
+				await waitForResolvingPromise( 5 );
 				expect(
 					container.querySelector( '#containerName' )
 				).toHaveValue( allContainers[ 0 ].name );
