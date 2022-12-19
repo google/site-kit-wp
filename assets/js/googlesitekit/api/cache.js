@@ -22,6 +22,13 @@
 import { HOUR_IN_SECONDS } from '../../util';
 
 /**
+ * Cache prefix scoped to user session and blog_id.
+ *
+ * @since n.e.x.t
+ */
+const STORAGE_PREFIX = global._googlesitekitBaseData.storagePrefix;
+
+/**
  * Prefix used for all Site Kit keys.
  *
  * Anything not using this key should not be touched by this library.
@@ -29,7 +36,7 @@ import { HOUR_IN_SECONDS } from '../../util';
  * @since 1.5.0
  * @private
  */
-export const STORAGE_KEY_PREFIX = `googlesitekit_${ global.GOOGLESITEKIT_VERSION }_`;
+export const STORAGE_KEY_PREFIX = `googlesitekit_${ global.GOOGLESITEKIT_VERSION }_${ STORAGE_PREFIX }_`;
 
 const defaultOrder = [ 'sessionStorage', 'localStorage' ];
 let storageBackend;
