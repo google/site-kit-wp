@@ -158,6 +158,20 @@ const baseSelectors = {
 	getGoogleTagContainer( state, measurementID ) {
 		return state.containers[ measurementID ];
 	},
+
+	/**
+	 * Gets the Google Tag container destinations for the given account and container IDs.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state          Data store's state.
+	 * @param {string} gtmAccountID   Google Tag Manager account ID.
+	 * @param {string} gtmContainerID Google Tag Manager container ID.
+	 * @return {Object|undefined} Google Tag container destinations object, or undefined if not loaded.
+	 */
+	getGoogleTagContainerDestinations( state, gtmAccountID, gtmContainerID ) {
+		return state.containerDestinations[ gtmAccountID ]?.[ gtmContainerID ];
+	},
 };
 
 const store = Data.combineStores(
