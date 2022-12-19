@@ -290,15 +290,6 @@ ReportErrorWithCustomInvalidJSONMessage.args = {
 	},
 };
 
-export const ReportErrorViewOnlyMode = Template.bind( {} );
-ReportErrorViewOnlyMode.storyName = 'ReportError with ViewOnly Mode';
-ReportErrorViewOnlyMode.args = {
-	error: {
-		code: 'test-error-code',
-	},
-	viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
-};
-
 export default {
 	title: 'Components/ReportError',
 	component: ReportError,
