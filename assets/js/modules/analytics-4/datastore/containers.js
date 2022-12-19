@@ -42,8 +42,14 @@ const fetchGetGoogleTagContainerStore = createFetchStore( {
 			}
 		);
 	},
-	reducerCallback( state, container ) {
-		return { ...state, container };
+	reducerCallback( state, container, { measurementID } ) {
+		return {
+			...state,
+			containers: {
+				...state.containers,
+				[ measurementID ]: container,
+			},
+		};
 	},
 	argsToParams( measurementID ) {
 		return { measurementID };
@@ -54,7 +60,7 @@ const fetchGetGoogleTagContainerStore = createFetchStore( {
 } );
 
 const baseInitialState = {
-	container: undefined,
+	containers: {},
 };
 
 const baseActions = {};
@@ -84,7 +90,20 @@ const baseResolvers = {
 	},
 };
 
-const baseSelectors = {};
+const baseSelectors = {
+	/**
+	 * Gets the Google Tag container for the given measurement ID.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state         Data store's state.
+	 * @param {string} measurementID Measurement ID.
+	 * @return {Object|undefined} Google Tag container object, or undefined if not loaded.
+	 */
+	getGoogleTagContainer( state, measurementID ) {
+		return state.containers[ measurementID ];
+	},
+};
 
 const store = Data.combineStores( fetchGetGoogleTagContainerStore, {
 	initialState: baseInitialState,
