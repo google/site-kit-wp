@@ -129,6 +129,20 @@ const baseResolvers = {
 			);
 		}
 	},
+
+	*getGoogleTagContainerDestinations( gtmAccountID, gtmContainerID ) {
+		const registry = yield Data.commonActions.getRegistry();
+		const containerDestinations = registry
+			.select( MODULES_ANALYTICS_4 )
+			.getGoogleTagContainerDestinations( gtmAccountID, gtmContainerID );
+
+		if ( containerDestinations === undefined ) {
+			yield fetchGetGoogleTagContainerDestinationsStore.actions.fetchGetGoogleTagContainerDestinations(
+				gtmAccountID,
+				gtmContainerID
+			);
+		}
+	},
 };
 
 const baseSelectors = {
