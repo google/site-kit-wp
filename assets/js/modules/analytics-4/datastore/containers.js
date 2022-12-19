@@ -59,8 +59,49 @@ const fetchGetGoogleTagContainerStore = createFetchStore( {
 	},
 } );
 
+const fetchGetGoogleTagContainerDestinationsStore = createFetchStore( {
+	baseName: 'getGoogleTagContainerDestinations',
+	controlCallback( { gtmAccountID, gtmContainerID } ) {
+		return API.get(
+			'modules',
+			'analytics-4',
+			'container-lookup',
+			{ gtmAccountID, gtmContainerID },
+			{
+				useCache: false,
+			}
+		);
+	},
+	reducerCallback(
+		state,
+		containerDestinations,
+		{ gtmAccountID, gtmContainerID }
+	) {
+		return {
+			...state,
+			containerDestinations: {
+				...state.containerDestinations,
+				[ gtmAccountID ]: {
+					...containerDestinations[ gtmAccountID ],
+				},
+				[ gtmContainerID ]: {
+					...containerDestinations[ gtmContainerID ],
+				},
+			},
+		};
+	},
+	argsToParams( gtmAccountID, gtmContainerID ) {
+		return { gtmAccountID, gtmContainerID };
+	},
+	validateParams( { gtmAccountID, gtmContainerID } = {} ) {
+		invariant( gtmAccountID, 'gtmAccountID is required.' );
+		invariant( gtmContainerID, 'gtmContainerID is required.' );
+	},
+} );
+
 const baseInitialState = {
 	containers: {},
+	containerDestinations: {},
 };
 
 const baseActions = {};
@@ -105,14 +146,18 @@ const baseSelectors = {
 	},
 };
 
-const store = Data.combineStores( fetchGetGoogleTagContainerStore, {
-	initialState: baseInitialState,
-	actions: baseActions,
-	controls: baseControls,
-	reducer: baseReducer,
-	resolvers: baseResolvers,
-	selectors: baseSelectors,
-} );
+const store = Data.combineStores(
+	fetchGetGoogleTagContainerStore,
+	fetchGetGoogleTagContainerDestinationsStore,
+	{
+		initialState: baseInitialState,
+		actions: baseActions,
+		controls: baseControls,
+		reducer: baseReducer,
+		resolvers: baseResolvers,
+		selectors: baseSelectors,
+	}
+);
 
 export const initialState = store.initialState;
 export const actions = store.actions;
