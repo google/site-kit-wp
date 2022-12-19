@@ -529,7 +529,7 @@ describe( 'ReportError', () => {
 		expect( invalidateResolutionSpy ).toHaveBeenCalledTimes( 4 );
 	} );
 
-	it( 'shold render `Get help` ulink without prefix text on non-retryable error', () => {
+	it( 'should render `Get help` link without prefix text on non-retryable error', () => {
 		const { getByRole, queryByText } = render(
 			<ReportError
 				moduleSlug="analytics"
