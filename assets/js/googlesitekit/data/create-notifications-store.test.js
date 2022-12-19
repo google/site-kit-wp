@@ -25,6 +25,7 @@ import { createRegistry } from '@wordpress/data';
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
+import Data from 'googlesitekit-data';
 import {
 	muteFetch,
 	subscribeUntil,
@@ -49,9 +50,13 @@ describe( 'createNotificationsStore store', () => {
 		registry = createRegistry();
 
 		storeDefinition = createNotificationsStore( ...STORE_ARGS );
-		registry.registerStore( storeDefinition.STORE_NAME, storeDefinition );
+
+		store = registry.registerStore(
+			storeDefinition.STORE_NAME,
+			Data.combineStores( Data.commonStore, storeDefinition )
+		);
+
 		dispatch = registry.dispatch( storeDefinition.STORE_NAME );
-		store = registry.stores[ storeDefinition.STORE_NAME ].store;
 		select = registry.select( storeDefinition.STORE_NAME );
 	} );
 

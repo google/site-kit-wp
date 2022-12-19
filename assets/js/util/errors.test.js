@@ -26,8 +26,11 @@ import {
 	ERROR_CODE_MISSING_REQUIRED_SCOPE,
 	ERROR_REASON_INSUFFICIENT_PERMISSIONS,
 	ERROR_REASON_FORBIDDEN,
+	ERROR_INTERNAL_SERVER_ERROR,
+	ERROR_INVALID_JSON,
 	isAuthError,
 	isErrorRetryable,
+	getReportErrorMessage,
 } from './errors';
 
 describe( 'Error Utilities', () => {
@@ -228,6 +231,33 @@ describe( 'Error Utilities', () => {
 					{ name: 'some-selector', storeName: 'some-store' }
 				)
 			).toBe( true );
+		} );
+	} );
+
+	describe( 'getReportErrorMessage', () => {
+		describe.each( [
+			[
+				'return the same error message when error code is not internal_server_error or invalid_json',
+				{ code: 'some-error', message: 'Not found' },
+				'Not found',
+			],
+			[
+				'return the appropriate error message when error code is internal_server_error',
+				{
+					code: ERROR_INTERNAL_SERVER_ERROR,
+					message: 'Internal server error',
+				},
+				'There was a critical error on this website while fetching data.',
+			],
+			[
+				'return the appropriate error message when error code is invalid_json',
+				{ code: ERROR_INVALID_JSON, message: 'Invalid JSON' },
+				'The server provided an invalid response.',
+			],
+		] )( '%s', ( label, error, message ) => {
+			it( `should ${ label }`, () => {
+				expect( getReportErrorMessage( error ) ).toEqual( message );
+			} );
 		} );
 	} );
 } );

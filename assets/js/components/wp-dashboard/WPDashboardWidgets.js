@@ -35,7 +35,6 @@ import WPDashboardClicks from './WPDashboardClicks';
 import WPDashboardUniqueVisitors from './WPDashboardUniqueVisitors';
 import WPDashboardSessionDuration from './WPDashboardSessionDuration';
 import WPDashboardPopularPages from './WPDashboardPopularPages';
-import WPDashboardIdeaHub from './WPDashboardIdeaHub';
 import WPDashboardActivateAnalyticsCTA from './WPDashboardActivateAnalyticsCTA';
 import WPDashboardUniqueVisitorsChartWidget from './WPDashboardUniqueVisitorsChartWidget';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
@@ -90,8 +89,6 @@ const WPDashboardWidgets = () => {
 				}
 			) }
 		>
-			<WPDashboardIdeaHub />
-
 			{ analyticsModuleActiveAndConnected && (
 				<Fragment>
 					<WPDashboardUniqueVisitorsWidget />

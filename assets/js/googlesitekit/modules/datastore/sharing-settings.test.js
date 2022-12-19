@@ -77,10 +77,6 @@ describe( 'core/modules sharing-settings', () => {
 			sharedRoles: [],
 			management: 'all_admins',
 		},
-		'idea-hub': {
-			sharedRoles: [],
-			management: 'all_admins',
-		},
 	};
 	const sharedOwnershipModules = [
 		'analytics',
@@ -449,7 +445,7 @@ describe( 'core/modules sharing-settings', () => {
 
 				const sharingManagement = registry
 					.select( CORE_MODULES )
-					.getSharingManagement( 'idea-hub' );
+					.getSharingManagement( 'optimize' );
 				expect( sharingManagement ).toBeNull();
 			} );
 
@@ -487,7 +483,7 @@ describe( 'core/modules sharing-settings', () => {
 
 				const sharedRoles = registry
 					.select( CORE_MODULES )
-					.getSharedRoles( 'idea-hub' );
+					.getSharedRoles( 'optimize' );
 				expect( sharedRoles ).toBeNull();
 			} );
 

@@ -157,11 +157,17 @@ export default function GA4SettingsControls( {
 		propertyID,
 	] );
 
-	const measurementIDs = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getMatchedMeasurementIDsByPropertyIDs(
-			properties
-		)
-	);
+	const measurementIDs = useSelect( ( select ) => {
+		if ( ! properties?.length ) {
+			return null;
+		}
+
+		return select(
+			MODULES_ANALYTICS_4
+		).getMatchedMeasurementIDsByPropertyIDs(
+			( properties || [] ).map( ( { _id } ) => _id )
+		);
+	} );
 
 	return (
 		<div className="googlesitekit-settings-module__fields-group">
@@ -229,21 +235,23 @@ export default function GA4SettingsControls( {
 						outlined
 					>
 						<Option value={ matchedProperty?._id || '' }>
-							{ ! matchedProperty?._id ||
-							! matchedProperty?.displayName
-								? ''
-								: sprintf(
-										/* translators: 1: Property name. 2: Property ID. */
-										_x(
-											'%1$s (%2$s)',
-											'Analytics property name and ID',
-											'google-site-kit'
-										),
-										matchedProperty.displayName,
-										measurementIDs?.[
-											matchedProperty._id
-										] || ''
-								  ) }
+							{ ! matchedProperty?._id && '' }
+
+							{ matchedProperty?._id &&
+								( measurementIDs?.[ matchedProperty._id ]
+									? sprintf(
+											/* translators: 1: Property name. 2: Property ID. */
+											_x(
+												'%1$s (%2$s)',
+												'Analytics property name and ID',
+												'google-site-kit'
+											),
+											matchedProperty.displayName,
+											measurementIDs[
+												matchedProperty._id
+											]
+									  )
+									: matchedProperty.displayName ) }
 						</Option>
 					</Select>
 				) }
