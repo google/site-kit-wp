@@ -115,6 +115,21 @@ ReportErrorWithInsufficientPermissionsWithRequestAccess.args = {
 	},
 };
 
+export const ReportErrorWithInsufficientPermissionsForViewOnlyUser =
+	Template.bind( {} );
+ReportErrorWithInsufficientPermissionsForViewOnlyUser.storyName =
+	'ReportError with insufficient permissions for view-only user';
+ReportErrorWithInsufficientPermissionsForViewOnlyUser.args = {
+	error: {
+		code: 'test-error-code',
+		message: 'Test error message',
+		data: {
+			reason: ERROR_REASON_INSUFFICIENT_PERMISSIONS,
+		},
+	},
+	viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+};
+
 export const ReportErrorWithRetryButton = Template.bind( {} );
 ReportErrorWithRetryButton.storyName = 'ReportError with Retry Button';
 ReportErrorWithRetryButton.args = {
@@ -137,6 +152,7 @@ ReportErrorWithRetryButton.args = {
 			storeName: MODULES_ANALYTICS,
 		},
 	},
+	viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 };
 
 export const MultipleReportErrorsWithRetryButton = Template.bind( {} );

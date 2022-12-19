@@ -56,22 +56,24 @@ export default function ReportError( { moduleSlug, error } ) {
 	let title;
 
 	const getMessage = ( err ) => {
-		if ( isViewOnly ) {
-			title = sprintf(
-				/* translators: %s: module name */
-				__( 'Access lost to %s', 'google-site-kit' ),
-				module?.name
-			);
-			return sprintf(
-				/* translators: %s: module name */
-				__(
-					'The administrator sharing this module with you has lost access to the %s service, so you won’t be able to see stats from it on the Site Kit dashboard. You can contact them or another administrator to restore access.',
-					'google-site-kit'
-				),
-				module?.name
-			);
-		}
 		if ( isInsufficientPermissionsError( err ) ) {
+			if ( isViewOnly ) {
+				title = sprintf(
+					/* translators: %s: module name */
+					__( 'Access lost to %s', 'google-site-kit' ),
+					module?.name
+				);
+
+				return sprintf(
+					/* translators: %s: module name */
+					__(
+						'The administrator sharing this module with you has lost access to the %s service, so you won’t be able to see stats from it on the Site Kit dashboard. You can contact them or another administrator to restore access.',
+						'google-site-kit'
+					),
+					module?.name
+				);
+			}
+
 			title = sprintf(
 				/* translators: %s: module name */
 				__( 'Insufficient permissions in %s', 'google-site-kit' ),
