@@ -171,7 +171,7 @@
 		"@storybook/addon-storyshots": "^6.3.6",
 		"@storybook/addon-storyshots-puppeteer": "^6.3.6",
 		"@storybook/addon-viewport": "^6.3.0",
-		"@storybook/react": "^6.3.0",
+		"@storybook/react": "^6.5.14",
 		"@svgr/webpack": "^5.4.0",
 		"@testing-library/jest-dom": "^5.11.0",
 		"@testing-library/react": "^10.4.5",
