@@ -26,7 +26,7 @@ import invariant from 'invariant';
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
-// import { MODULES_ANALYTICS_4 } from './constants';
+import { MODULES_ANALYTICS_4 } from './constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 
 const fetchGetGoogleTagContainerStore = createFetchStore( {
@@ -69,7 +69,20 @@ const baseReducer = ( state, { type } ) => {
 	}
 };
 
-const baseResolvers = {};
+const baseResolvers = {
+	*getGoogleTagContainer( measurementID ) {
+		const registry = yield Data.commonActions.getRegistry();
+		const container = registry
+			.select( MODULES_ANALYTICS_4 )
+			.getGoogleTagContainer( measurementID );
+
+		if ( container === undefined ) {
+			yield fetchGetGoogleTagContainerStore.actions.fetchGetGoogleTagContainer(
+				measurementID
+			);
+		}
+	},
+};
 
 const baseSelectors = {};
 
