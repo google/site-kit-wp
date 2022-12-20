@@ -44,24 +44,24 @@ export function setupTimeoutTracker() {
 			clearTimeout: global.clearTimeout,
 		};
 
-		const timeouts = new Set();
+		const timeoutIds = new Set();
 
-		global.setTimeout = ( handler, timeout ) => {
+		global.setTimeout = ( handler, delay ) => {
 			const id = originalTimeoutAPI.setTimeout( () => {
 				handler();
-				timeouts.delete( id );
-			}, timeout );
+				timeoutIds.delete( id );
+			}, delay );
 
-			timeouts.add( id );
+			timeoutIds.add( id );
 			return id;
 		};
 
 		global.clearTimeout = ( id ) => {
 			originalTimeoutAPI.clearTimeout( id );
-			timeouts.delete( id );
+			timeoutIds.delete( id );
 		};
 
-		global.hasTimeouts = () => timeouts.size > 0;
+		global.hasTimeouts = () => timeoutIds.size > 0;
 
 		global.waitForTimeouts = async () => {
 			while ( global.hasTimeouts() ) {
