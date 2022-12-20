@@ -287,6 +287,7 @@ class REST_Modules_ControllerTest extends TestCase {
 	}
 
 	public function test_check_access_rest_endpoint__shareable_module_does_not_have_service_entity() {
+		// Enabling this feature flag is required for a module to be declared shareable.
 		$this->enable_feature( 'dashboardSharing' );
 
 		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/modules/data/check-access' );
@@ -503,6 +504,7 @@ class REST_Modules_ControllerTest extends TestCase {
 	}
 
 	public function test_recover_modules_rest_endpoint__requires_recoverable_module() {
+		// Enabling this feature flag is required for a module to be declared shareable.
 		$this->enable_feature( 'dashboardSharing' );
 
 		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/modules/data/recover-modules' );
@@ -520,6 +522,7 @@ class REST_Modules_ControllerTest extends TestCase {
 	}
 
 	public function test_recover_modules_rest_endpoint__requires_accessible_module() {
+		// Enabling this feature flag is required for a module to be declared shareable.
 		$this->enable_feature( 'dashboardSharing' );
 
 		// Make search-console a recoverable module
@@ -552,6 +555,7 @@ class REST_Modules_ControllerTest extends TestCase {
 	}
 
 	public function test_recover_modules_rest_endpoint__success() {
+		// Enabling this feature flag is required for a module to be declared shareable.
 		$this->enable_feature( 'dashboardSharing' );
 
 		// Make search-console a recoverable module
