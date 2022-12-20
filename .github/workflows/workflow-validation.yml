@@ -10,8 +10,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  visual-regression:
-    name: Run Workflow Validation
+  lint-actions:
+    name: Lint Actions
     runs-on: ubuntu-latest
     timeout-minutes: 1
     steps:
