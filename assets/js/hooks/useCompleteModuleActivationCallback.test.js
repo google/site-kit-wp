@@ -64,6 +64,8 @@ describe( 'useCompleteModuleActivationCallback', () => {
 				() => useCompleteModuleActivationCallback( 'analytics' ),
 				{ registry }
 			) );
+
+			return global.waitForTimeouts();
 		} );
 
 		await result.current();
