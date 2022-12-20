@@ -4,10 +4,6 @@ on:
   pull_request:
     paths:
       - '.github/**.yml'
-    types:
-      - opened
-      - reopened
-      - synchronize
 
 concurrency:
   group: workflow-validation-${{ github.ref }}
