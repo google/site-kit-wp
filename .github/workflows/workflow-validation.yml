@@ -1,4 +1,4 @@
-name: Workflow Validation Testing
+name: Workflow Validation
 
 on:
   pull_request:
