@@ -125,6 +125,14 @@ final class Modules {
 	private $assets;
 
 	/**
+	 * REST_Modules_Controller instance.
+	 *
+	 * @since n.e.x.t
+	 * @var REST_Modules_Controller
+	 */
+	private $rest_controller;
+
+	/**
 	 * Core module class names.
 	 *
 	 * @since 1.21.0
@@ -167,7 +175,7 @@ final class Modules {
 
 		$this->core_modules[ Analytics_4::MODULE_SLUG ] = Analytics_4::class;
 
-		$this->rest_modules_controller = new REST_Modules_Controller( $this );
+		$this->rest_controller = new REST_Modules_Controller( $this );
 	}
 
 	/**
@@ -207,7 +215,7 @@ final class Modules {
 			}
 		);
 
-		$this->rest_modules_controller->register();
+		$this->rest_controller->register();
 		$this->sharing_settings->register();
 
 		if ( Feature_Flags::enabled( 'dashboardSharing' ) ) {
