@@ -36,8 +36,10 @@
  * @return {void}
  */
 export function setupTimeoutTracker() {
+	let originalTimeoutAPI;
+
 	global.useTrackedTimeouts = () => {
-		const originalTimeoutAPI = {
+		originalTimeoutAPI = originalTimeoutAPI || {
 			setTimeout: global.setTimeout,
 			clearTimeout: global.clearTimeout,
 		};
