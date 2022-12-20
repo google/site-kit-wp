@@ -61,15 +61,38 @@ export function setupTimeoutTracker() {
 
 		global.hasTimeouts = () => timeouts.size > 0;
 
-		global.waitForTimeouts = () => {
-			return new Promise( ( resolve ) => {
-				const interval = setInterval( () => {
-					if ( ! global.hasTimeouts() ) {
-						clearInterval( interval );
-						resolve();
-					}
-				}, 10 );
-			} );
+		global.waitForTimeouts = async () => {
+			while ( global.hasTimeouts() ) {
+				await new Promise( ( resolve ) => {
+					originalTimeoutAPI.setTimeout( resolve, 1 );
+				} );
+			}
 		};
 	};
+}
+
+/**
+ * Sets up a wrapper around the global `it` test case function that ensures
+ * all tracked timeouts have completed at the end of each test.
+ *
+ * @since n.e.x.t
+ *
+ * @return {void}
+ * */
+export function setupTimeoutWaitingGlobalIt() {
+	const originalIt = global.it;
+
+	global.it = ( ...args ) => {
+		const testFn = args[ 1 ];
+
+		if ( typeof testFn === 'function' ) {
+			args[ 1 ] = async ( ...testFnArgs ) => {
+				await testFn( ...testFnArgs );
+				await global.waitForTimeouts();
+			};
+		}
+		return originalIt( ...args );
+	};
+
+	Object.assign( global.it, originalIt );
 }
