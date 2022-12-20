@@ -184,15 +184,15 @@ describe( 'createNotificationsStore store', () => {
 					{ body: serverNotifications, status: 200 }
 				);
 
-				const clientNotification = { id: 'client_notification' };
-
 				select.getNotifications();
-				dispatch.addNotification( clientNotification );
 
 				await subscribeUntil(
 					registry,
 					() => store.getState().serverNotifications !== undefined
 				);
+
+				const clientNotification = { id: 'client_notification' };
+				dispatch.addNotification( clientNotification );
 
 				dispatch.removeNotification( serverNotifications[ 0 ].id );
 
@@ -202,6 +202,9 @@ describe( 'createNotificationsStore store', () => {
 				);
 				expect( select.getNotifications() ).toEqual(
 					expect.arrayContaining( serverNotifications )
+				);
+				expect( select.getNotifications() ).toEqual(
+					expect.arrayContaining( [ clientNotification ] )
 				);
 			} );
 		} );
