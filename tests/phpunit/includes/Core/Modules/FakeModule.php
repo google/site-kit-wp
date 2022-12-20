@@ -136,11 +136,8 @@ class FakeModule extends Module
 		$datapoint = $data->datapoint;
 
 		switch ( "$method:$datapoint" ) {
+			// Intentional fallthrough.
 			case 'GET:test-request':
-				return function () use ( $method, $datapoint, $data ) {
-					$data = $data->data;
-					return json_encode( compact( 'method', 'datapoint', 'data' ) );
-				};
 			case 'POST:test-request':
 				return function () use ( $method, $datapoint, $data ) {
 					$data = $data->data;
@@ -167,8 +164,8 @@ class FakeModule extends Module
 		$datapoint = $data->datapoint;
 
 		switch ( "$method:$datapoint" ) {
+			// Intentional fallthrough.
 			case 'GET:test-request':
-				return json_decode( $response, $data['asArray'] );
 			case 'POST:test-request':
 				return json_decode( $response, $data['asArray'] );
 		}
