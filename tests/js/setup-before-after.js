@@ -26,13 +26,9 @@ import fetchMockJest from 'fetch-mock-jest';
  * Internal dependencies
  */
 import { enabledFeatures } from '../../assets/js/features';
-import {
-	setupTimeoutTracker,
-	setupTimeoutWaitingGlobalIt,
-} from './track-timeouts';
+import { setupTimeoutTracker } from './track-timeouts';
 
 setupTimeoutTracker();
-setupTimeoutWaitingGlobalIt();
 
 // Set fetchMock global so we don't have to import fetchMock in every test.
 // This global is instantiated in tests/js/setup-globals.js.

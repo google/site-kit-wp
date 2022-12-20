@@ -70,29 +70,3 @@ export function setupTimeoutTracker() {
 		};
 	};
 }
-
-/**
- * Sets up a wrapper around the global `it` test case function that ensures
- * all tracked timeouts have completed at the end of each test.
- *
- * @since n.e.x.t
- *
- * @return {void}
- * */
-export function setupTimeoutWaitingGlobalIt() {
-	const originalIt = global.it;
-
-	global.it = ( ...args ) => {
-		const testFn = args[ 1 ];
-
-		if ( typeof testFn === 'function' ) {
-			args[ 1 ] = async ( ...testFnArgs ) => {
-				await testFn( ...testFnArgs );
-				await global.waitForTimeouts();
-			};
-		}
-		return originalIt( ...args );
-	};
-
-	Object.assign( global.it, originalIt );
-}
