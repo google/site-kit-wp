@@ -89,20 +89,20 @@ const baseActions = {
 		const nonce = registry.select( CORE_USER ).getNonce( 'updates' );
 		const pluginBasename = registry.select( CORE_SITE ).getPluginBasename();
 
-		const { response } =
+		const { response, error } =
 			yield fetchEnableAutoUpdateStore.actions.fetchEnableAutoUpdate( {
 				nonce,
 				pluginBasename,
 			} );
 
-		if ( response.data?.error ) {
-			yield receiveError( response.data.error, 'enableAutoUpdate', [] );
-		}
-
-		if ( response.success ) {
+		if ( response?.success ) {
 			yield registry
 				.dispatch( CORE_SITE )
 				.setSiteKitAutoUpdatesEnabled( true );
+		}
+
+		if ( error ) {
+			yield receiveError( error, 'enableAutoUpdate', [] );
 		}
 	},
 };

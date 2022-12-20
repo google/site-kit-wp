@@ -21,7 +21,7 @@ import BannerNotification from './BannerNotification';
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { useCallback, useEffect, useState } from '@wordpress/element';
+import { Fragment, useCallback, useEffect, useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -36,6 +36,7 @@ import {
 } from '../../googlesitekit/datastore/user/constants';
 import { getItem, setItem } from '../../googlesitekit/api/cache';
 import SpinnerButton from '../SpinnerButton';
+import ErrorNotice from '../ErrorNotice';
 
 const { useSelect, useDispatch } = Data;
 
@@ -56,6 +57,10 @@ const EnableAutoUpdateBannerNotification = () => {
 
 	const isDoingEnableAutoUpdate = useSelect( ( select ) =>
 		select( CORE_SITE ).isDoingEnableAutoUpdate()
+	);
+
+	const enableAutoUpdateError = useSelect( ( select ) =>
+		select( CORE_SITE ).getErrorForAction( 'enableAutoUpdate', [] )
 	);
 
 	const { enableAutoUpdate } = useDispatch( CORE_SITE );
@@ -134,12 +139,22 @@ const EnableAutoUpdateBannerNotification = () => {
 				'google-site-kit'
 			) }
 			ctaComponent={
-				<SpinnerButton
-					onClick={ enableAutoUpdate }
-					isSaving={ isDoingEnableAutoUpdate }
-				>
-					{ __( 'Enable auto-updates', 'google-site-kit' ) }
-				</SpinnerButton>
+				<Fragment>
+					{ enableAutoUpdateError && (
+						<div>
+							<ErrorNotice
+								error={ enableAutoUpdateError }
+								storeName={ CORE_SITE }
+							/>
+						</div>
+					) }
+					<SpinnerButton
+						onClick={ enableAutoUpdate }
+						isSaving={ isDoingEnableAutoUpdate }
+					>
+						{ __( 'Enable auto-updates', 'google-site-kit' ) }
+					</SpinnerButton>
+				</Fragment>
 			}
 			dismiss={ __( 'Dismiss', 'google-site-kit' ) }
 			isDismissible
