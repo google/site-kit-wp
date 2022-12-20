@@ -20,6 +20,7 @@
  * Internal dependencies
  */
 import {
+	act,
 	render,
 	createTestRegistry,
 	fireEvent,
@@ -132,12 +133,18 @@ describe( 'TourTooltips', () => {
 		);
 	} );
 
-	it( 'should switch to next step when next button is clicked', () => {
+	it( 'should switch to next step when next button is clicked', async () => {
 		const { getByRole } = renderTourTooltipsWithMockUI( registry );
 
 		fireEvent.click( getByRole( 'button', { name: /next/i } ) );
 
 		getByRole( 'heading', { name: /title for step 2/i } );
+
+		await act( global.waitForTimeouts );
+
+		// There is a minor bug in the `TourTooltip` component the results in a "React state update on an unmounted component"
+		// warning. This will be addressed in a followup issue, see https://github.com/google/site-kit-wp/issues/6345
+		expect( console ).toHaveErrored();
 	} );
 
 	it( 'should not render next step button if on last step', () => {

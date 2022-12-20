@@ -191,7 +191,7 @@ describe( 'CurrentSurvey', () => {
 			container.querySelector( '.googlesitekit-user-role-select__button' )
 		);
 
-		await act( async () => await global.waitForTimeouts() );
+		await act( global.waitForTimeouts );
 
 		expect(
 			container.querySelector(
