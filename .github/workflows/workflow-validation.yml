@@ -2,17 +2,12 @@ name: Workflow Validation Testing
 
 on:
   pull_request:
-    branches:
-      - main
-      - develop
-      - 'feature/**'
     paths:
       - '.github/**.yml'
     types:
       - opened
       - reopened
       - synchronize
-      - ready_for_review
 
 concurrency:
   group: workflow-validation-${{ github.ref }}
@@ -22,8 +17,7 @@ jobs:
   visual-regression:
     name: Run Workflow Validation
     runs-on: ubuntu-latest
-    timeout-minutes: 20
-    if: github.event.pull_request.draft == false
+    timeout-minutes: 1
     steps:
       - uses: actions/checkout@v3
       - uses: reviewdog/action-actionlint@v1
