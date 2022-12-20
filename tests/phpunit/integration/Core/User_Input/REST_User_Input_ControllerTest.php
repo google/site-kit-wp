@@ -57,10 +57,12 @@ class REST_User_Input_ControllerTest extends TestCase {
 
 	public function test_register() {
 		remove_all_filters( 'googlesitekit_rest_routes' );
+		remove_all_filters( 'googlesitekit_apifetch_preload_paths' );
 
 		$this->controller->register();
 
 		$this->assertTrue( has_filter( 'googlesitekit_rest_routes' ) );
+		$this->assertTrue( has_filter( 'googlesitekit_apifetch_preload_paths' ) );
 	}
 
 	public function test_get_answers() {
