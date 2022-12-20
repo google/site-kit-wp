@@ -22,17 +22,49 @@ use WP_REST_Request;
 
 class REST_Modules_ControllerTest extends TestCase {
 
+	/**
+	 * Plugin context.
+	 *
+	 * @since n.e.x.t
+	 * @var Context
+	 */
+	protected $context;
+
+	/**
+	 * Options instance.
+	 *
+	 * @since n.e.x.t
+	 * @var Options
+	 */
+	protected $options;
+
+	/**
+	 * Modules instance.
+	 *
+	 * @since n.e.x.t
+	 * @var Modules
+	 */
+	protected $modules;
+
+	/**
+	 * REST_Modules_Controller instance.
+	 *
+	 * @since n.e.x.t
+	 * @var REST_Modules_Controller
+	 */
+	protected $controller;
+
 	public function set_up() {
 		parent::set_up();
 
-		$this->user         = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
-		$this->context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-		$this->options      = new Options( $this->context );
-		$this->user_options = new User_Options( $this->context, $this->user->ID );
-		$this->modules      = new Modules( $this->context, $this->options, $this->user_options );
-		$this->controller   = new REST_Modules_Controller( $this->modules );
+		$this->context    = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$this->options    = new Options( $this->context );
+		$user             = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
+		$user_options     = new User_Options( $this->context, $user->ID );
+		$this->modules    = new Modules( $this->context, $this->options, $user_options );
+		$this->controller = new REST_Modules_Controller( $this->modules );
 
-		wp_set_current_user( $this->user->ID );
+		wp_set_current_user( $user->ID );
 
 		// This ensures the REST server is initialized fresh for each test using it.
 		unset( $GLOBALS['wp_rest_server'] );
