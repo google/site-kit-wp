@@ -105,7 +105,6 @@ describe( 'SetupMain', () => {
 						registry,
 					}
 				);
-				// Add a delay to ensure all promises resolve.
 				await waitForRegistryAndTimeouts();
 				expect(
 					container.querySelector( '#containerName' )
@@ -120,7 +119,6 @@ describe( 'SetupMain', () => {
 						registry,
 					}
 				);
-				// Add a delay to ensure all promises resolve.
 				await waitForRegistryAndTimeouts();
 				expect(
 					container.querySelector( '#containerName' )
@@ -137,7 +135,6 @@ describe( 'SetupMain', () => {
 						registry,
 					}
 				);
-				// Add a delay to ensure all promises resolve.
 				await waitForRegistryAndTimeouts();
 				expect(
 					container.querySelector( '#containerName' )
@@ -172,7 +169,6 @@ describe( 'SetupMain', () => {
 						registry,
 					}
 				);
-				// Add a delay to ensure all promises resolve.
 				await waitForRegistryAndTimeouts();
 				expect(
 					container.querySelector( '#ampContainerName' )
@@ -187,7 +183,6 @@ describe( 'SetupMain', () => {
 						registry,
 					}
 				);
-				// Add a delay to ensure all promises resolve.
 				await waitForRegistryAndTimeouts();
 				expect(
 					container.querySelector( '#ampContainerName' )
@@ -204,7 +199,6 @@ describe( 'SetupMain', () => {
 						registry,
 					}
 				);
-				// Add a delay to ensure all promises resolve.
 				await waitForRegistryAndTimeouts();
 				expect(
 					container.querySelector( '#ampContainerName' )
@@ -246,7 +240,6 @@ describe( 'SetupMain', () => {
 						registry,
 					}
 				);
-				// Add a delay to ensure all promises resolve.
 				await waitForRegistryAndTimeouts();
 				expect(
 					container.querySelector( '#containerName' )
@@ -264,7 +257,6 @@ describe( 'SetupMain', () => {
 						registry,
 					}
 				);
-				// Add a delay to ensure all promises resolve.
 				await waitForRegistryAndTimeouts();
 				expect(
 					container.querySelector( '#containerName' )
@@ -285,7 +277,6 @@ describe( 'SetupMain', () => {
 						registry,
 					}
 				);
-				// Add a delay to ensure all promises resolve.
 				await waitForRegistryAndTimeouts();
 				expect(
 					container.querySelector( '#containerName' )

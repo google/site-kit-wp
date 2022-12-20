@@ -104,7 +104,6 @@ describe( 'SettingsEdit', () => {
 						registry,
 					}
 				);
-				// Add a delay to ensure all promises resolve.
 				await waitForRegistryAndTimeouts();
 				expect(
 					container.querySelector( '#containerName' )
@@ -128,7 +127,6 @@ describe( 'SettingsEdit', () => {
 						registry,
 					}
 				);
-				// Add a delay to ensure all promises resolve.
 				await waitForRegistryAndTimeouts();
 				expect(
 					container.querySelector( '#containerName' )
@@ -160,7 +158,6 @@ describe( 'SettingsEdit', () => {
 						registry,
 					}
 				);
-				// Add a delay to ensure all promises resolve.
 				await waitForRegistryAndTimeouts();
 				expect(
 					container.querySelector( '#containerName' )
@@ -178,7 +175,6 @@ describe( 'SettingsEdit', () => {
 						registry,
 					}
 				);
-				// Add a delay to ensure all promises resolve.
 				await waitForRegistryAndTimeouts();
 				expect(
 					container.querySelector( '#containerName' )
@@ -213,7 +209,6 @@ describe( 'SettingsEdit', () => {
 						registry,
 					}
 				);
-				// Add a delay to ensure all promises resolve.
 				await waitForRegistryAndTimeouts();
 				expect(
 					container.querySelector( '#ampContainerName' )
@@ -237,7 +232,6 @@ describe( 'SettingsEdit', () => {
 						registry,
 					}
 				);
-				// Add a delay to ensure all promises resolve.
 				await waitForRegistryAndTimeouts();
 				expect(
 					container.querySelector( '#ampContainerName' )
@@ -269,7 +263,6 @@ describe( 'SettingsEdit', () => {
 						registry,
 					}
 				);
-				// Add a delay to ensure all promises resolve.
 				await waitForRegistryAndTimeouts();
 				expect(
 					container.querySelector( '#ampContainerName' )
@@ -287,7 +280,6 @@ describe( 'SettingsEdit', () => {
 						registry,
 					}
 				);
-				// Add a delay to ensure all promises resolve.
 				await waitForRegistryAndTimeouts();
 				expect(
 					container.querySelector( '#ampContainerName' )
@@ -329,7 +321,6 @@ describe( 'SettingsEdit', () => {
 						registry,
 					}
 				);
-				// Add a delay to ensure all promises resolve.
 				await waitForRegistryAndTimeouts();
 				expect(
 					container.querySelector( '#containerName' )
@@ -356,7 +347,6 @@ describe( 'SettingsEdit', () => {
 						registry,
 					}
 				);
-				// Add a delay to ensure all promises resolve.
 				await waitForRegistryAndTimeouts();
 				expect(
 					container.querySelector( '#containerName' )
@@ -391,7 +381,6 @@ describe( 'SettingsEdit', () => {
 						registry,
 					}
 				);
-				// Add a delay to ensure all promises resolve.
 				await waitForRegistryAndTimeouts();
 				expect(
 					container.querySelector( '#containerName' )
@@ -413,7 +402,6 @@ describe( 'SettingsEdit', () => {
 						registry,
 					}
 				);
-				// Add a delay to ensure all promises resolve.
 				await waitForRegistryAndTimeouts();
 				expect(
 					container.querySelector( '#containerName' )
