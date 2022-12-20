@@ -28,7 +28,7 @@
  *
  * `hasTimeouts` returns true if there are any timeouts currently active.
  *
- * `waitForTimeouts` returns a promise that resolves when all timeouts have
+ * `waitForTimeouts` returns a Promise that resolves when all timeouts have
  * completed.
  *
  * @since n.e.x.t

@@ -142,7 +142,7 @@ describe( 'TourTooltips', () => {
 
 		await act( global.waitForTimeouts );
 
-		// There is a minor bug in the `TourTooltip` component the results in a "React state update on an unmounted component"
+		// There is a minor bug in the `TourTooltips` component that results in a "React state update on an unmounted component"
 		// warning. This will be addressed in a followup issue, see https://github.com/google/site-kit-wp/issues/6345
 		expect( console ).toHaveErrored();
 	} );
