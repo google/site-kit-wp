@@ -23,7 +23,7 @@ import { renderHook, actHook as act } from '../../../tests/js/test-utils';
 import { useDebouncedState } from './useDebouncedState';
 
 describe( 'useDebouncedState', () => {
-	beforeAll( () => {
+	beforeEach( () => {
 		jest.useFakeTimers();
 	} );
 

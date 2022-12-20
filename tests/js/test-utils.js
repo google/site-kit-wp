@@ -19,11 +19,7 @@ import { useEffect, useState } from '@wordpress/element';
 import FeaturesProvider from '../../assets/js/components/FeaturesProvider';
 import InViewProvider from '../../assets/js/components/InViewProvider';
 import { Provider as ViewContextProvider } from '../../assets/js/components/Root/ViewContextContext';
-import {
-	createTestRegistry,
-	createWaitForRegistry,
-	resolvingPromise,
-} from './utils';
+import { createTestRegistry, createWaitForRegistry } from './utils';
 
 /**
  * Renders the given UI into a container to make assertions.
@@ -119,8 +115,11 @@ const customRender = ( ui, options = {} ) => {
 		registry,
 		history,
 		waitForRegistry: () => act( waitForRegistry ),
-		waitForResolvingPromise: ( delay ) =>
-			act( () => resolvingPromise( delay ) ),
+		waitForRegistryAndTimeouts: () =>
+			act( async () => {
+				await waitForRegistry();
+				return global.waitForTimeouts();
+			} ),
 		setInView,
 	};
 };

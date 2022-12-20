@@ -27,7 +27,6 @@ import {
 	provideUserCapabilities,
 	renderHook,
 	actHook as act,
-	resolvingPromise,
 } from '../../../tests/js/test-utils';
 import { mockLocation } from '../../../tests/js/mock-browser-utils';
 import {
@@ -50,7 +49,7 @@ describe( 'useCompleteModuleActivationCallback', () => {
 		provideUserCapabilities( registry );
 
 		// Wait for async actions to complete.
-		await resolvingPromise();
+		await global.waitForTimeouts();
 	} );
 
 	it( 'should navigate to the module reauthentication URL', async () => {
@@ -100,6 +99,8 @@ describe( 'useCompleteModuleActivationCallback', () => {
 				() => useCompleteModuleActivationCallback( 'analytics' ),
 				{ registry }
 			) );
+
+			return global.waitForTimeouts();
 		} );
 
 		expect( result.current ).toBeNull();

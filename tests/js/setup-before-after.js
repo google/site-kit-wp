@@ -26,17 +26,22 @@ import fetchMockJest from 'fetch-mock-jest';
  * Internal dependencies
  */
 import { enabledFeatures } from '../../assets/js/features';
+import { setupTimeoutTracker } from './track-timeouts';
+
+setupTimeoutTracker();
 
 // Set fetchMock global so we don't have to import fetchMock in every test.
 // This global is instantiated in tests/js/setup-globals.js.
 // It is re-set here since fetch-mock-jest must be imported during Jest's `setupFilesAfterEnv` or later.
 global.fetchMock = fetchMockJest;
 
-beforeAll( () => {
-	jest.useRealTimers();
-} );
-
 beforeEach( () => {
+	// Use real, tracked timeouts in order to be able to wait for them. This was introduced to support the asynchronous resolver cache
+	// introduced in @wordpress/data 4.23.0 which adds a setTimeout to each resolver, and these often need to be waited for in tests.
+	// Using real timers, rather than fake timers here ensures that we don't need to manually advance timers for every single resolver call.
+	jest.useRealTimers();
+	global.useTrackedTimeouts();
+
 	localStorage.clear();
 	sessionStorage.clear();
 
@@ -63,11 +68,9 @@ afterEach( async () => {
 	const nextTick = () => new Promise( ( resolve ) => setTimeout( resolve ) );
 	if ( jest.isMockFunction( setTimeout ) ) {
 		jest.useRealTimers();
-		await nextTick();
-		jest.useFakeTimers();
-	} else {
-		await nextTick();
 	}
+
+	await nextTick();
 } );
 
 afterEach( () => fetchMock.mockReset() );

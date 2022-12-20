@@ -24,7 +24,7 @@ import { muteFetch } from '../../../tests/js/utils';
 import { useChecks } from './useChecks';
 
 describe( 'useChecks', () => {
-	beforeAll( () => {
+	beforeEach( () => {
 		jest.useFakeTimers();
 	} );
 

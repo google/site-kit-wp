@@ -29,7 +29,6 @@ import {
 	createTestRegistry,
 	freezeFetch,
 	provideSiteInfo,
-	resolvingPromise,
 	unsubscribeFromAll,
 	untilResolved,
 } from '../../../../../tests/js/utils';
@@ -75,7 +74,6 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 	} );
 
 	beforeEach( () => {
-		jest.useRealTimers();
 		registry = createTestRegistry();
 		// Receive empty settings to prevent unexpected fetch by resolver.
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
@@ -581,7 +579,7 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 					.getMatchedMeasurementIDsByPropertyIDs( [ '1100' ] );
 
 				// Wait for resolvers to run.
-				await resolvingPromise();
+				await global.waitForTimeouts();
 
 				expect( fetchMock ).toHaveFetched(
 					webDataStreamsBatchEndpoint

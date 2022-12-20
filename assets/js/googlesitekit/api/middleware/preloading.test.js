@@ -36,7 +36,7 @@ const preloadedData = {
 };
 
 describe( 'Preloading Middleware', () => {
-	beforeAll( () => {
+	beforeEach( () => {
 		jest.useFakeTimers();
 	} );
 

@@ -43,9 +43,6 @@ function stubIsAdBlockerDetected( detected ) {
 describe( 'modules/adsense adblocker', () => {
 	let registry;
 
-	beforeAll( () => jest.useRealTimers() );
-	afterAll( () => jest.useFakeTimers() );
-
 	beforeEach( () => {
 		registry = createTestRegistry();
 	} );

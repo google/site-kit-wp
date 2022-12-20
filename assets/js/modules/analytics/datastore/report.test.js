@@ -27,7 +27,6 @@ import {
 	unsubscribeFromAll,
 	freezeFetch,
 	subscribeUntil,
-	resolvingPromise,
 } from '../../../../../tests/js/utils';
 import * as fixtures from './__fixtures__';
 import { isZeroReport } from '../util';
@@ -379,7 +378,7 @@ describe( 'modules/analytics report', () => {
 				expect( isGatheringData() ).toBeUndefined();
 
 				// Wait for resolvers to run.
-				await resolvingPromise();
+				await global.waitForTimeouts();
 			} );
 
 			it( 'should return TRUE if the returned report is null', async () => {
@@ -465,7 +464,7 @@ describe( 'modules/analytics report', () => {
 				expect( hasZeroData() ).toBeUndefined();
 
 				// Wait for resolvers to run.
-				await resolvingPromise();
+				await global.waitForTimeouts();
 			} );
 
 			it( 'should return TRUE if isGatheringData is true', async () => {

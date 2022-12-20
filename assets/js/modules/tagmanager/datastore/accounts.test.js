@@ -37,7 +37,6 @@ import {
 	muteFetch,
 	untilResolved,
 	unsubscribeFromAll,
-	resolvingPromise,
 } from '../../../../../tests/js/utils';
 import * as factories from './__factories__';
 import * as fixtures from './__fixtures__';
@@ -59,7 +58,6 @@ describe( 'modules/tagmanager accounts', () => {
 	} );
 
 	beforeEach( () => {
-		jest.useRealTimers();
 		registry = createTestRegistry();
 		// Preload default settings to prevent the resolver from making unexpected requests
 		// as this is covered in settings store tests.
@@ -260,7 +258,7 @@ describe( 'modules/tagmanager accounts', () => {
 					.selectAccount( accountID );
 
 				// Wait for resolvers to run.
-				await resolvingPromise();
+				await global.waitForTimeouts();
 
 				expect( fetchMock ).toHaveFetched(
 					new RegExp(

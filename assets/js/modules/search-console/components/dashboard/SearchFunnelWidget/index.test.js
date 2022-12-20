@@ -70,12 +70,12 @@ describe( 'SearchFunnelWidget', () => {
 	} );
 
 	it( 'should render the Search Funnel Widget, including the Activate Analytics CTA', async () => {
-		const { container, getByText, waitForResolvingPromise } = render(
+		const { container, getByText, waitForRegistryAndTimeouts } = render(
 			<SearchFunnelWidget { ...widgetComponentProps } />,
 			{ registry }
 		);
 
-		await waitForResolvingPromise();
+		await waitForRegistryAndTimeouts();
 
 		expect( container ).toMatchSnapshot();
 
@@ -91,12 +91,12 @@ describe( 'SearchFunnelWidget', () => {
 				)
 			);
 
-		const { container, queryByText, waitForResolvingPromise } = render(
+		const { container, queryByText, waitForRegistryAndTimeouts } = render(
 			<SearchFunnelWidget { ...widgetComponentProps } />,
 			{ registry }
 		);
 
-		await waitForResolvingPromise();
+		await waitForRegistryAndTimeouts();
 
 		expect( container ).toMatchSnapshot();
 

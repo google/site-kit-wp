@@ -27,7 +27,7 @@ import {
 import Footer from './Footer';
 
 describe( 'Footer', () => {
-	beforeAll( () => {
+	beforeEach( () => {
 		jest.useFakeTimers();
 	} );
 

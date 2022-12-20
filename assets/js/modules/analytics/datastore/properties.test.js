@@ -29,7 +29,6 @@ import {
 	unsubscribeFromAll,
 	provideSiteInfo,
 	untilResolved,
-	resolvingPromise,
 } from '../../../../../tests/js/utils';
 import * as fixtures from './__fixtures__';
 import { MODULES_ANALYTICS_4 } from '../../analytics-4/datastore/constants';
@@ -617,7 +616,7 @@ describe( 'modules/analytics properties', () => {
 				).toBeUndefined();
 
 				// Wait for resolvers to run.
-				await resolvingPromise();
+				await global.waitForTimeouts();
 			} );
 
 			it( 'returns undefined if both UA and GA4 properties are loading', async () => {

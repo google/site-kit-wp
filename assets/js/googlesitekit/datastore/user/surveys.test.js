@@ -258,8 +258,6 @@ describe( 'core/user surveys', () => {
 						data: { slug: 'optimizeSurvey', timeout: 500 },
 					},
 				} );
-
-				jest.useRealTimers();
 			} );
 		} );
 

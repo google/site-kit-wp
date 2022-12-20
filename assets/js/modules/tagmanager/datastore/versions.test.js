@@ -48,7 +48,6 @@ describe( 'modules/tagmanager versions', () => {
 	} );
 
 	beforeEach( () => {
-		jest.useRealTimers();
 		registry = createTestRegistry();
 		( { buildAndReceiveWebAndAMP } = createBuildAndReceivers( registry ) );
 	} );
