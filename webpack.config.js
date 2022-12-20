@@ -230,7 +230,6 @@ const createMinimizerRules = ( mode ) => [
 
 const resolve = {
 	alias: {
-		react: path.resolve( './node_modules/react' ),
 		'@wordpress/api-fetch__non-shim': require.resolve(
 			'@wordpress/api-fetch'
 		),

@@ -36,8 +36,6 @@ module.exports = {
 	],
 	// Matches aliases in webpack.config.js.
 	moduleNameMapper: {
-		'^react$': '<rootDir>/node_modules/react',
-		'^react-dom$': '<rootDir>/node_modules/react-dom',
 		// New (JSR) modules.
 		// In the future when the "components" entry point uses GM3 and
 		// the filename is `'googlesitekit-components'`, we can revert to
