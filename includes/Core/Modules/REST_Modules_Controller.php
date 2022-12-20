@@ -29,7 +29,7 @@ use Exception;
  */
 class REST_Modules_Controller {
 
-	const REST_ENDPOINT_CHECK_ACCESS = 'core/modules/data/check-access';
+	const REST_ROUTE_CHECK_ACCESS = 'core/modules/data/check-access';
 
 	/**
 	 * Modules instance.
@@ -327,7 +327,7 @@ class REST_Modules_Controller {
 				)
 			),
 			new REST_Route(
-				self::REST_ENDPOINT_CHECK_ACCESS,
+				self::REST_ROUTE_CHECK_ACCESS,
 				array(
 					array(
 						'methods'             => WP_REST_Server::EDITABLE,
@@ -617,7 +617,7 @@ class REST_Modules_Controller {
 									continue;
 								}
 
-								$check_access_endpoint = '/' . REST_Routes::REST_ROOT . '/' . self::REST_ENDPOINT_CHECK_ACCESS;
+								$check_access_endpoint = '/' . REST_Routes::REST_ROOT . '/' . self::REST_ROUTE_CHECK_ACCESS;
 								$check_access_request = new WP_REST_Request( 'POST', $check_access_endpoint );
 								$check_access_request->set_body_params(
 									array(
