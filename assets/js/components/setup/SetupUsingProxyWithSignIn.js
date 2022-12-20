@@ -36,11 +36,11 @@ import { getQueryArg, addQueryArgs } from '@wordpress/url';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { Button } from 'googlesitekit-components';
 import WelcomeSVG from '../../../svg/graphics/welcome.svg';
 import WelcomeAnalyticsSVG from '../../../svg/graphics/welcome-analytics.svg';
 import { trackEvent, untrailingslashit } from '../../util';
 import Header from '../Header';
-import Button from '../Button';
 import ResetButton from '../ResetButton';
 import Layout from '../layout/Layout';
 import BannerNotification from '../notifications/BannerNotification';
@@ -84,48 +84,46 @@ export default function SetupUsingProxyWithSignIn() {
 			ANALYTICS_NOTICE_CHECKBOX
 		)
 	);
-	const {
-		isSecondAdmin,
-		isResettable,
-		siteURL,
-		proxySetupURL,
-		disconnectedReason,
-		isConnected,
-		connectedProxyURL,
-		homeURL,
-		hasMultipleAdmins,
-		secondAdminLearnMoreLink,
-	} = useSelect( ( select ) => {
-		const site = select( CORE_SITE );
-		const user = select( CORE_USER );
 
-		return {
-			isSecondAdmin: site.hasConnectedAdmins(),
-			isResettable: site.isResettable(),
-			siteURL: site.getReferenceSiteURL(),
-			proxySetupURL: site.getProxySetupURL(),
-			disconnectedReason: user.getDisconnectedReason(),
-			connectedProxyURL: untrailingslashit( user.getConnectedProxyURL() ),
-			homeURL: untrailingslashit( site.getHomeURL() ),
-			isConnected: site.isConnected(),
-			hasMultipleAdmins: site.hasMultipleAdmins(),
-			secondAdminLearnMoreLink:
-				site.getDocumentationLinkURL( 'already-configured' ),
-		};
-	} );
-
+	const isSecondAdmin = useSelect( ( select ) =>
+		select( CORE_SITE ).hasConnectedAdmins()
+	);
+	const isResettable = useSelect( ( select ) =>
+		select( CORE_SITE ).isResettable()
+	);
+	const siteURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getReferenceSiteURL()
+	);
+	const proxySetupURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getProxySetupURL()
+	);
+	const homeURL = useSelect( ( select ) =>
+		untrailingslashit( select( CORE_SITE ).getHomeURL() )
+	);
+	const isConnected = useSelect( ( select ) =>
+		select( CORE_SITE ).isConnected()
+	);
+	const hasMultipleAdmins = useSelect( ( select ) =>
+		select( CORE_SITE ).hasMultipleAdmins()
+	);
+	const secondAdminLearnMoreLink = useSelect( ( select ) =>
+		select( CORE_SITE ).getDocumentationLinkURL( 'already-configured' )
+	);
+	const disconnectedReason = useSelect( ( select ) =>
+		select( CORE_USER ).getDisconnectedReason()
+	);
+	const connectedProxyURL = useSelect( ( select ) =>
+		untrailingslashit( select( CORE_USER ).getConnectedProxyURL() )
+	);
 	const dashboardURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' )
 	);
-
 	const changedURLHelpLink = useSelect( ( select ) =>
 		select( CORE_SITE ).getDocumentationLinkURL( 'url-has-changed' )
 	);
-
 	const hasViewableModules = useSelect(
 		( select ) => !! select( CORE_USER ).getViewableModules()?.length
 	);
-
 	// These will be `null` if no errors exist.
 	const setupErrorMessage = useSelect( ( select ) =>
 		select( CORE_SITE ).getSetupErrorMessage()

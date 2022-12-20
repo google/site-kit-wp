@@ -65,7 +65,7 @@ const setupRegistry = ( {
 };
 
 describe( 'WidgetRenderer', () => {
-	it( 'should output children directly', async () => {
+	it( 'should output children directly', () => {
 		const { container } = render( <WidgetRenderer slug="TestWidget" />, {
 			setupRegistry: setupRegistry(),
 		} );
@@ -87,7 +87,7 @@ describe( 'WidgetRenderer', () => {
 		expect( container.firstChild ).toMatchSnapshot();
 	} );
 
-	it( 'should output null when no slug is found', async () => {
+	it( 'should output null when no slug is found', () => {
 		const { container } = render( <WidgetRenderer slug="NotFound" />, {
 			setupRegistry: setupRegistry(),
 		} );

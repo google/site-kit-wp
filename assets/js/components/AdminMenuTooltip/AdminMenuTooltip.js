@@ -5,7 +5,6 @@ import PropTypes from 'prop-types';
 import Data from 'googlesitekit-data';
 import JoyrideTooltip from '../JoyrideTooltip';
 import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
-
 import { useTooltipState } from './useTooltipState';
 
 const { useDispatch } = Data;
@@ -44,7 +43,13 @@ export function AdminMenuTooltip( { onDismiss, tooltipStateKey, ...props } ) {
 		tooltipStateKey,
 	] );
 
-	return <JoyrideTooltip onDismiss={ handleDismissTooltip } { ...props } />;
+	return (
+		<JoyrideTooltip
+			slug="ga4-activation-banner-admin-menu-tooltip"
+			onDismiss={ handleDismissTooltip }
+			{ ...props }
+		/>
+	);
 }
 
 AdminMenuTooltip.propTypes = {

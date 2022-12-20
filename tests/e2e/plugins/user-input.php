@@ -66,9 +66,9 @@ function e2e_user_input_settings_proxy_handler( $pre, $args, $url ) {
 
 	$user_id  = get_current_user_id();
 	$defaults = array(
-		'role'          => array(
+		'purpose'       => array(
 			'values'     => array(),
-			'scope'      => 'user',
+			'scope'      => 'site',
 			'answeredBy' => 0,
 		),
 		'postFrequency' => array(
@@ -77,16 +77,6 @@ function e2e_user_input_settings_proxy_handler( $pre, $args, $url ) {
 			'answeredBy' => 0,
 		),
 		'goals'         => array(
-			'values'     => array(),
-			'scope'      => 'site',
-			'answeredBy' => 0,
-		),
-		'helpNeeded'    => array(
-			'values'     => array(),
-			'scope'      => 'site',
-			'answeredBy' => 0,
-		),
-		'searchTerms'   => array(
 			'values'     => array(),
 			'scope'      => 'site',
 			'answeredBy' => 0,

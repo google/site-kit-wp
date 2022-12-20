@@ -26,6 +26,7 @@ import { Fragment } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { ProgressBar } from 'googlesitekit-components';
 import { MODULES_ADSENSE } from '../../datastore/constants';
 import { parseAccountID } from '../../util/parsing';
 import {
@@ -33,7 +34,6 @@ import {
 	UseSnippetSwitch,
 	AutoAdExclusionSwitches,
 } from '../common';
-import ProgressBar from '../../../../components/ProgressBar';
 import WebStoriesAdUnitSelect from '../common/WebStoriesAdUnitSelect';
 import Link from '../../../../components/Link';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
@@ -46,14 +46,11 @@ export default function SettingsForm() {
 	const clientID = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getClientID()
 	);
-	const { existingTag, hasResolvedGetExistingTag } = useSelect(
-		( select ) => ( {
-			existingTag: select( MODULES_ADSENSE ).getExistingTag(),
-			hasResolvedGetExistingTag:
-				select( MODULES_ADSENSE ).hasFinishedResolution(
-					'getExistingTag'
-				),
-		} )
+	const existingTag = useSelect( ( select ) =>
+		select( MODULES_ADSENSE ).getExistingTag()
+	);
+	const hasResolvedGetExistingTag = useSelect( ( select ) =>
+		select( MODULES_ADSENSE ).hasFinishedResolution( 'getExistingTag' )
 	);
 
 	if ( ! hasResolvedGetExistingTag ) {

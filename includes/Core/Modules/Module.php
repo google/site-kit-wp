@@ -360,6 +360,10 @@ abstract class Module {
 
 				// Set request as using shared credentials if oAuth clients do not match.
 				$this->is_using_shared_credentials = true;
+
+				$current_user = wp_get_current_user();
+				// Adds the current user to the active consumers list.
+				$oauth_client->add_active_consumer( $current_user );
 			}
 
 			$request = $this->create_data_request( $data );

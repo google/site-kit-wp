@@ -108,20 +108,29 @@ const setupRegistryNoFieldDataDesktop = ( { dispatch } ) => {
 describe( 'DashboardPageSpeed', () => {
 	afterEach( fetchMock.mockClear );
 
-	it( 'renders a progress bar while reports are requested', async () => {
+	it( 'renders preview blocks while reports are requested', async () => {
 		freezeFetch(
-			/^\/google-site-kit\/v1\/modules\/pagespeed-insights\/data\/pagespeed/
+			new RegExp(
+				'^/google-site-kit/v1/modules/pagespeed-insights/data/pagespeed'
+			)
 		);
 		// Needs second freezeFetch call, as one is for desktop and the other for mobile.
 		freezeFetch(
-			/^\/google-site-kit\/v1\/modules\/pagespeed-insights\/data\/pagespeed/
+			new RegExp(
+				'^/google-site-kit/v1/modules/pagespeed-insights/data/pagespeed'
+			)
 		);
-		const { queryByRole } = render( <DashboardPageSpeed />, {
+		const { container } = render( <DashboardPageSpeed />, {
 			setupRegistry: setupRegistryNoReports,
 		} );
+		const widgetElement = container.querySelector(
+			'#googlesitekit-pagespeed-header'
+		);
 
 		await waitFor( () => {
-			expect( queryByRole( 'progressbar' ) ).toBeInTheDocument();
+			expect( widgetElement ).toHaveClass(
+				'googlesitekit-pagespeed-widget__content-wrapper--loading'
+			);
 		} );
 	} );
 
@@ -195,11 +204,15 @@ describe( 'DashboardPageSpeed', () => {
 
 	it( 'displays refreshing states when the `Run test again` button is clicked', async () => {
 		freezeFetch(
-			/^\/google-site-kit\/v1\/modules\/pagespeed-insights\/data\/pagespeed/
+			new RegExp(
+				'^/google-site-kit/v1/modules/pagespeed-insights/data/pagespeed'
+			)
 		);
 		// Needs second freezeFetch call, as one is for desktop and the other for mobile.
 		freezeFetch(
-			/^\/google-site-kit\/v1\/modules\/pagespeed-insights\/data\/pagespeed/
+			new RegExp(
+				'^/google-site-kit/v1/modules/pagespeed-insights/data/pagespeed'
+			)
 		);
 		const { container, getByRole, queryByRole } = render(
 			<DashboardPageSpeed />,

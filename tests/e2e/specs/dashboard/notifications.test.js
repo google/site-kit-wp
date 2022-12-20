@@ -59,46 +59,12 @@ describe( 'core site notifications', () => {
 				data: testSiteNotification,
 			} );
 
-			// Go to the main dashboard and wait for notifications to be requested.
-			await Promise.all( [ goToSiteKitDashboard() ] );
+			await goToSiteKitDashboard();
 
-			// Ensure the gathering data notification is displayed.
+			// Ensure the notification is displayed.
 			await page.waitForSelector(
-				'.googlesitekit-publisher-win--is-open'
+				`#${ testSiteNotification.id }.googlesitekit-publisher-win--is-open`
 			);
-			await expect( page ).toMatchElement(
-				'.googlesitekit-publisher-win__title',
-				{
-					text: /Search console is gathering data/i,
-				}
-			);
-			await expect( page ).toMatchElement(
-				'.googlesitekit-publisher-win__desc',
-				{
-					text: /It can take up to 48 hours before stats show up for your site. While you’re waiting, connect more services to get more stats./i,
-				}
-			);
-
-			// Dismiss the notification.
-			await Promise.all( [
-				expect( page ).toClick(
-					'.googlesitekit-publisher-win .mdc-button span',
-					{
-						text: /ok, got it!/i,
-					}
-				),
-			] );
-
-			// Ensure that the notification is no longer displayed.
-			await page.waitForSelector(
-				'.googlesitekit-publisher-win--is-closed'
-			);
-
-			// Ensure that the test notification is displayed.
-			await page.waitForSelector(
-				'.googlesitekit-publisher-win--is-open'
-			);
-
 			await expect( page ).toMatchElement(
 				'.googlesitekit-publisher-win__title',
 				{
@@ -113,53 +79,15 @@ describe( 'core site notifications', () => {
 			);
 
 			// Dismiss the notification.
-			await Promise.all( [
-				expect( page ).toClick(
-					'.googlesitekit-publisher-win .mdc-button span',
-					{
-						text: /test dismiss site notification/i,
-					}
-				),
-			] );
-
-			// Make sure the dismissed notification is no longer shown.
-			let hasTestNotification = await page.$$eval(
-				'.googlesitekit-publisher-win:not(.googlesitekit-publisher-win--is-closed) .googlesitekit-publisher-win__title',
-				( els ) => {
-					return (
-						els
-							.map( ( el ) => el.textContent )
-							.find(
-								( text ) =>
-									text.match(
-										/Search console is gathering data/i
-									) ||
-									text.match( /test notification title/i )
-							) || false
-					);
+			await expect( page ).toClick(
+				'.googlesitekit-publisher-win .mdc-button span',
+				{
+					text: /test dismiss site notification/i,
 				}
 			);
-			expect( hasTestNotification ).toStrictEqual( false );
-
-			// Refresh the page, and make sure that notifications are refetched and does not include the dismissed notification.
-			await Promise.all( [ page.reload() ] );
-
-			// Ensure the notification is not rendered at all, open or closed.
-			hasTestNotification = await page.$$eval(
-				'.googlesitekit-publisher-win__title',
-				( els ) => {
-					return (
-						els
-							.map( ( el ) => el.textContent )
-							.find( ( text ) =>
-								text.match( /test notification title/i )
-							) || false
-					);
-				}
-			);
-			expect( hasTestNotification ).toStrictEqual( false );
 		} );
 	} );
+
 	describe( 'when not using proxy', () => {
 		beforeAll( async () => {
 			await activatePlugin( 'e2e-tests-gcp-auth-plugin' );

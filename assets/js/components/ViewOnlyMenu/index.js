@@ -32,12 +32,11 @@ import { ESCAPE, TAB } from '@wordpress/keycodes';
 /**
  * Internal dependencies
  */
+import { Button, Menu } from 'googlesitekit-components';
 import useViewContext from '../../hooks/useViewContext';
 import { useKeyCodesInside } from '../../hooks/useKeyCodesInside';
 import { trackEvent } from '../../util';
 import ViewIcon from '../../../svg/icons/view.svg';
-import Button from '../Button';
-import Menu from '../Menu';
 import Description from './Description';
 import SharedServices from './SharedServices';
 import Tracking from './Tracking';

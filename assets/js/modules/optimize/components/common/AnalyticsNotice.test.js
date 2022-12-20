@@ -70,7 +70,7 @@ describe( 'AnalyticsNotice', () => {
 		}
 	);
 
-	it( 'should not render with no one excluded from Analytics tracking', async () => {
+	it( 'should not render with no one excluded from Analytics tracking', () => {
 		registry.dispatch( MODULES_ANALYTICS ).setTrackingDisabled( [] );
 
 		const { container } = render( <AnalyticsNotice />, {

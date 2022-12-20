@@ -24,7 +24,7 @@ import { storiesOf } from '@storybook/react';
 /**
  * Internal dependencies
  */
-import Checkbox from '../assets/js/components/Checkbox';
+import { Checkbox } from 'googlesitekit-components';
 
 storiesOf( 'Global', module ).add(
 	'Checkboxes',

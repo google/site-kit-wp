@@ -54,7 +54,9 @@ describe( 'modules/pagespeed-insights report', () => {
 				const url = 'http://example.com/';
 
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/pagespeed-insights\/data\/pagespeed/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/pagespeed-insights/data/pagespeed'
+					),
 					{ body: fixtures.pagespeedDesktop, status: 200 }
 				);
 
@@ -71,7 +73,9 @@ describe( 'modules/pagespeed-insights report', () => {
 		describe( 'getReport', () => {
 			it( 'uses a resolver to make a network request', async () => {
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/pagespeed-insights\/data\/pagespeed/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/pagespeed-insights/data/pagespeed'
+					),
 					{ body: fixtures.pagespeedDesktop, status: 200 }
 				);
 				const strategy = 'mobile';
@@ -83,7 +87,9 @@ describe( 'modules/pagespeed-insights report', () => {
 
 				// Ensure the proper parameters were passed.
 				expect( fetchMock ).toHaveFetched(
-					/^\/google-site-kit\/v1\/modules\/pagespeed-insights\/data\/pagespeed/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/pagespeed-insights/data/pagespeed'
+					),
 					{
 						query: {
 							url,
@@ -114,7 +120,9 @@ describe( 'modules/pagespeed-insights report', () => {
 					data: { status: 500 },
 				};
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/pagespeed-insights\/data\/pagespeed/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/pagespeed-insights/data/pagespeed'
+					),
 					{ body: response, status: 500 }
 				);
 

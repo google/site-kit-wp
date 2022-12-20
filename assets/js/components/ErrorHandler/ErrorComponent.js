@@ -6,7 +6,7 @@ import { useState } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import Button from '../Button';
+import { Button } from 'googlesitekit-components';
 
 export const ThrowError = ( event ) => {
 	if ( event ) {

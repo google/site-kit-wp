@@ -17,15 +17,21 @@
  */
 
 /**
+ * External dependencies
+ */
+import { useMount } from 'react-use';
+
+/**
  * WordPress dependencies
  */
 import { __, sprintf } from '@wordpress/i18n';
-import { Fragment } from '@wordpress/element';
+import { useCallback } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { ProgressBar } from 'googlesitekit-components';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import { ACTIVATION_ACKNOWLEDGEMENT_TOOLTIP_STATE_KEY } from '../../../constants';
@@ -36,21 +42,41 @@ import { AdminMenuTooltip } from '../../../../../components/AdminMenuTooltip/Adm
 import { getBannerDismissalExpiryTime } from '../../../utils/banner-dismissal-expiry';
 import Link from '../../../../../components/Link';
 import { stringToDate } from '../../../../../util';
+import { trackEvent } from '../../../../../util/tracking';
 import InfoIcon from '../../../../../../svg/icons/info.svg';
 import ErrorIcon from '../../../../../../svg/icons/error.svg';
-import ProgressBar from '../../../../../components/ProgressBar';
 import ReminderBannerNoAccess from './ReminderBannerNoAccess';
 import { CORE_MODULES } from '../../../../../googlesitekit/modules/datastore/constants';
 import { Cell, Grid, Row } from '../../../../../material-components';
+import { MODULES_ANALYTICS } from '../../../../analytics/datastore/constants';
+import useViewContext from '../../../../../hooks/useViewContext';
 
 const { useSelect } = Data;
 
-export default function ReminderBanner( { onSubmitSuccess, children } ) {
-	const {
-		hasModuleAccess: hasAnalyticsAccess,
-		isLoadingModuleAccess: isLoadingAnalyticsAccess,
-	} = useSelect( ( select ) =>
-		select( CORE_MODULES ).userHasModuleAccess( 'analytics' )
+export default function ReminderBanner( {
+	isDismissed,
+	onSubmitSuccess,
+	children,
+} ) {
+	const hasAnalyticsAccess = useSelect( ( select ) => {
+		if ( isDismissed ) {
+			return undefined;
+		}
+		const userID = select( CORE_USER ).getID();
+		const analyticsOwnerID = select( MODULES_ANALYTICS ).getOwnerID();
+
+		if ( userID === undefined || analyticsOwnerID === undefined ) {
+			return undefined;
+		}
+
+		if ( analyticsOwnerID === userID ) {
+			return true;
+		}
+
+		return select( CORE_MODULES ).hasModuleAccess( 'analytics' );
+	} );
+	const isLoadingAnalyticsAccess = useSelect( ( select ) =>
+		select( CORE_MODULES ).isResolving( 'hasModuleAccess', [ 'analytics' ] )
 	);
 
 	const referenceDateString = useSelect( ( select ) =>
@@ -69,28 +95,50 @@ export default function ReminderBanner( { onSubmitSuccess, children } ) {
 		ACTIVATION_ACKNOWLEDGEMENT_TOOLTIP_STATE_KEY
 	);
 
+	const viewContext = useViewContext();
+	const eventCategory = `${ viewContext }_ga4-reminder-notification`;
+
+	useMount( () => {
+		if (
+			! isTooltipVisible &&
+			! ( isLoadingAnalyticsAccess || isDismissed )
+		) {
+			trackEvent( eventCategory, 'view_notification' );
+		}
+	} );
+
+	const handleCTAClick = useCallback( async () => {
+		await trackEvent( eventCategory, 'confirm_notification' );
+		return onSubmitSuccess();
+	}, [ eventCategory, onSubmitSuccess ] );
+
+	const handleDismiss = useCallback( async () => {
+		await trackEvent( eventCategory, 'dismiss_notification' );
+		showTooltip();
+	}, [ eventCategory, showTooltip ] );
+
+	const handleLearnMore = useCallback( () => {
+		trackEvent( eventCategory, 'click_learn_more_link' );
+	}, [ eventCategory ] );
+
 	if ( isTooltipVisible ) {
 		return (
-			<Fragment>
-				<AdminMenuTooltip
-					title={ __(
-						'You can connect Google Analytics 4 later here',
-						'google-site-kit'
-					) }
-					content={ __(
-						'You can configure the Google Analytics 4 property inside the Site Kit Settings later.',
-						'google-site-kit'
-					) }
-					dismissLabel={ __( 'Got it', 'google-site-kit' ) }
-					tooltipStateKey={
-						ACTIVATION_ACKNOWLEDGEMENT_TOOLTIP_STATE_KEY
-					}
-				/>
-			</Fragment>
+			<AdminMenuTooltip
+				title={ __(
+					'You can connect Google Analytics 4 later here',
+					'google-site-kit'
+				) }
+				content={ __(
+					'You can configure the Google Analytics 4 property inside the Site Kit Settings later.',
+					'google-site-kit'
+				) }
+				dismissLabel={ __( 'Got it', 'google-site-kit' ) }
+				tooltipStateKey={ ACTIVATION_ACKNOWLEDGEMENT_TOOLTIP_STATE_KEY }
+			/>
 		);
 	}
 
-	if ( isLoadingAnalyticsAccess ) {
+	if ( isLoadingAnalyticsAccess && ! isDismissed ) {
 		// Wrap in the googlesitekit-publisher-win class to ensure the ProgressBar is treated in the
 		// same way as a BannerNotification, with only one instance visible on the screen at a time.
 		return (
@@ -181,13 +229,17 @@ export default function ReminderBanner( { onSubmitSuccess, children } ) {
 					) }
 				</li>
 			</ul>
-			<Link href={ documentationURL } external>
+			<Link
+				onClick={ handleLearnMore }
+				href={ documentationURL }
+				external
+			>
 				{ __( 'Learn more about GA4', 'google-site-kit' ) }
 			</Link>
 		</section>
 	);
 
-	if ( ! hasAnalyticsAccess ) {
+	if ( hasAnalyticsAccess === false ) {
 		return (
 			<ReminderBannerNoAccess
 				title={ title }
@@ -196,7 +248,7 @@ export default function ReminderBanner( { onSubmitSuccess, children } ) {
 				dismissExpires={ getBannerDismissalExpiryTime(
 					referenceDateString
 				) }
-				onDismiss={ showTooltip }
+				onDismiss={ handleDismiss }
 			/>
 		);
 	}
@@ -210,13 +262,13 @@ export default function ReminderBanner( { onSubmitSuccess, children } ) {
 			descriptionIcon={ descriptionIcon }
 			ctaLabel={ __( 'Set up now', 'google-site-kit' ) }
 			ctaLink={ onSubmitSuccess ? '#' : null }
-			onCTAClick={ onSubmitSuccess }
+			onCTAClick={ handleCTAClick }
 			dismiss={ __( 'Remind me later', 'google-site-kit' ) }
 			dismissExpires={ getBannerDismissalExpiryTime(
 				referenceDateString
 			) }
 			secondaryPane={ secondaryPane }
-			onDismiss={ showTooltip }
+			onDismiss={ handleDismiss }
 		>
 			{ children }
 		</BannerNotification>

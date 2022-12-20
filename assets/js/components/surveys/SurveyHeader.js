@@ -30,7 +30,7 @@ import { Icon, closeSmall } from '@wordpress/icons';
 /**
  * Internal dependencies
  */
-import Button from '../../components/Button';
+import { Button } from 'googlesitekit-components';
 import Logo from '../../../svg/graphics/logo-g.svg';
 
 const SurveyHeader = ( { title, dismissSurvey } ) => (

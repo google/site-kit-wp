@@ -30,9 +30,9 @@ import {
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { Button } from 'googlesitekit-components';
 import OptIn from '../OptIn';
 import Header from '../Header';
-import Button from '../Button';
 import Layout from '../layout/Layout';
 import Link from '../Link';
 import HelpMenu from '../help/HelpMenu';

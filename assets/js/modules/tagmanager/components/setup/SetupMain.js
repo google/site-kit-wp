@@ -30,9 +30,9 @@ import { _x } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { ProgressBar } from 'googlesitekit-components';
 import TagManagerIcon from '../../../../../svg/graphics/tagmanager.svg';
 import SetupForm from './SetupForm';
-import ProgressBar from '../../../../components/ProgressBar';
 import {
 	MODULES_TAGMANAGER,
 	ACCOUNT_CREATE,

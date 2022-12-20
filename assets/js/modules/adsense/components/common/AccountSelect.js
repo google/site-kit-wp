@@ -26,9 +26,9 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { ProgressBar } from 'googlesitekit-components';
 import { Select, Option } from '../../../../material-components';
 import { trackEvent } from '../../../../util';
-import ProgressBar from '../../../../components/ProgressBar';
 import { MODULES_ADSENSE } from '../../datastore/constants';
 import useViewContext from '../../../../hooks/useViewContext';
 const { useSelect, useDispatch } = Data;
@@ -40,11 +40,12 @@ export default function AccountSelect() {
 	const accountID = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getAccountID()
 	);
-	const { accounts, hasResolvedAccounts } = useSelect( ( select ) => ( {
-		accounts: select( MODULES_ADSENSE ).getAccounts(),
-		hasResolvedAccounts:
-			select( MODULES_ADSENSE ).hasFinishedResolution( 'getAccounts' ),
-	} ) );
+	const accounts = useSelect( ( select ) =>
+		select( MODULES_ADSENSE ).getAccounts()
+	);
+	const hasResolvedAccounts = useSelect( ( select ) =>
+		select( MODULES_ADSENSE ).hasFinishedResolution( 'getAccounts' )
+	);
 
 	const { setAccountID } = useDispatch( MODULES_ADSENSE );
 	const onChange = useCallback(

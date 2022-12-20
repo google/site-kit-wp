@@ -33,11 +33,10 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { Button, Menu } from 'googlesitekit-components';
 import HelpIcon from '../../../svg/icons/help.svg';
 import { useKeyCodesInside } from '../../hooks/useKeyCodesInside';
 import { trackEvent } from '../../util';
-import Button from '../Button';
-import Menu from '../Menu';
 import HelpMenuLink from './HelpMenuLink';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import useViewContext from '../../hooks/useViewContext';

@@ -60,7 +60,9 @@ InitialNoticeWithoutAccess.decorators = [
 			registry.dispatch( CORE_USER ).setReferenceDate( '2023-05-31' );
 			provideUserInfo( registry, { id: 2 } );
 			fetchMock.postOnce(
-				/^\/google-site-kit\/v1\/core\/modules\/data\/check-access/,
+				new RegExp(
+					'^/google-site-kit/v1/core/modules/data/check-access'
+				),
 				{ body: { access: false } }
 			);
 		};

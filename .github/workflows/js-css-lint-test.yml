@@ -52,20 +52,11 @@ jobs:
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v2
-      - name: Read .nvmrc
-        run: echo "##[set-output name=NVMRC;]$(cat .nvmrc)"
-        id: nvm
       - name: Setup Node.js (.nvmrc)
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v3
         with:
-          node-version: '${{ steps.nvm.outputs.NVMRC }}'
-      - name: Cache Node - npm
-        uses: actions/cache@v1
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-cache-
+          node-version-file: '.nvmrc'
+          cache: 'npm'
       - name: npm install
         run: npm ci
         env:

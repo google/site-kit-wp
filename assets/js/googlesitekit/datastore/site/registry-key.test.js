@@ -47,7 +47,7 @@ describe( 'core/site registryKey', () => {
 	} );
 
 	describe( 'selectors', () => {
-		it( 'generates a registryKey if undefined', async () => {
+		it( 'generates a registryKey if undefined', () => {
 			expect(
 				registry.select( CORE_SITE ).getRegistryKey()
 			).not.toBeUndefined();

@@ -31,8 +31,8 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { ProgressBar } from 'googlesitekit-components';
 import { MODULES_TAGMANAGER, ACCOUNT_CREATE } from '../../datastore/constants';
-import ProgressBar from '../../../../components/ProgressBar';
 import { Select, Option } from '../../../../material-components';
 import { trackEvent } from '../../../../util/tracking';
 import useViewContext from '../../../../hooks/useViewContext';
@@ -41,12 +41,12 @@ const { useSelect, useDispatch } = Data;
 export default function AccountSelect( { hasModuleAccess } ) {
 	const viewContext = useViewContext();
 
-	const { accounts, hasResolvedAccounts } = useSelect( ( select ) => ( {
-		accounts: select( MODULES_TAGMANAGER ).getAccounts(),
-		hasResolvedAccounts:
-			select( MODULES_TAGMANAGER ).hasFinishedResolution( 'getAccounts' ),
-	} ) );
-
+	const accounts = useSelect( ( select ) =>
+		select( MODULES_TAGMANAGER ).getAccounts()
+	);
+	const hasResolvedAccounts = useSelect( ( select ) =>
+		select( MODULES_TAGMANAGER ).hasFinishedResolution( 'getAccounts' )
+	);
 	const accountID = useSelect( ( select ) =>
 		select( MODULES_TAGMANAGER ).getAccountID()
 	);

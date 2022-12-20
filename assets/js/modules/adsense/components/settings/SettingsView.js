@@ -56,6 +56,7 @@ import {
 import { ErrorNotices } from '../common';
 const { useSelect } = Data;
 
+// eslint-disable-next-line complexity
 export default function SettingsView() {
 	const adsenseSetupV2Enabled = useFeature( 'adsenseSetupV2' );
 

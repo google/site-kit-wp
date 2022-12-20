@@ -59,6 +59,7 @@ const RECEIVE_CHECK_REQUIREMENTS_ERROR = 'RECEIVE_CHECK_REQUIREMENTS_ERROR';
 const RECEIVE_CHECK_REQUIREMENTS_SUCCESS = 'RECEIVE_CHECK_REQUIREMENTS_SUCCESS';
 const RECEIVE_RECOVERABLE_MODULES = 'RECEIVE_RECOVERABLE_MODULES';
 const RECEIVE_SHARED_OWNERSHIP_MODULES = 'RECEIVE_SHARED_OWNERSHIP_MODULES';
+const CLEAR_RECOVERED_MODULES = 'CLEAR_RECOVERED_MODULES';
 
 const moduleDefaults = {
 	slug: '',
@@ -191,16 +192,22 @@ const fetchCheckModuleAccessStore = createFetchStore( {
 	},
 } );
 
-const fetchRecoverModuleStore = createFetchStore( {
-	baseName: 'recoverModule',
-	controlCallback: ( { slug } ) => {
-		return API.set( 'core', 'modules', 'recover-module', { slug } );
+const fetchRecoverModulesStore = createFetchStore( {
+	baseName: 'recoverModules',
+	controlCallback: ( { slugs } ) => {
+		return API.set( 'core', 'modules', 'recover-modules', { slugs } );
 	},
-	argsToParams: ( slug ) => {
-		return { slug };
+	reducerCallback: ( state, recoveredModules ) => {
+		return {
+			...state,
+			recoveredModules,
+		};
 	},
-	validateParams: ( { slug } ) => {
-		invariant( slug, 'slug is required.' );
+	argsToParams: ( slugs ) => {
+		return { slugs };
+	},
+	validateParams: ( { slugs } ) => {
+		invariant( slugs, 'slugs is required.' );
 	},
 } );
 
@@ -215,6 +222,7 @@ const baseInitialState = {
 	moduleAccess: {},
 	recoverableModules: undefined,
 	sharedOwnershipModules: undefined,
+	recoveredModules: undefined,
 };
 
 const baseActions = {
@@ -379,11 +387,12 @@ const baseActions = {
 
 			const registry = yield Data.commonActions.getRegistry();
 
-			// As we can specify a custom checkRequirements function here, we're invalidating the resolvers for activation checks.
-			yield registry
+			// As we can specify a custom checkRequirements function here, we're
+			// invalidating the resolvers for activation checks.
+			registry
 				.dispatch( CORE_MODULES )
 				.invalidateResolution( 'canActivateModule', [ slug ] );
-			yield registry
+			registry
 				.dispatch( CORE_MODULES )
 				.invalidateResolution( 'getCheckRequirementsError', [ slug ] );
 		}
@@ -464,65 +473,44 @@ const baseActions = {
 		},
 		function* ( slugs ) {
 			const { dispatch, select } = yield Data.commonActions.getRegistry();
+			const { response } =
+				yield fetchRecoverModulesStore.actions.fetchRecoverModules(
+					slugs
+				);
+			const { success } = response;
 
-			const recoveredModules = [];
+			const successfulRecoveries = Object.keys( success ).filter(
+				( slug ) => !! success[ slug ]
+			);
 
-			const errors = [];
+			for ( const slug of successfulRecoveries ) {
+				const storeName =
+					select( CORE_MODULES ).getModuleStoreName( slug );
 
-			for ( const slug of slugs ) {
-				const { response, error } =
-					yield fetchRecoverModuleStore.actions.fetchRecoverModule(
-						slug
-					);
-
-				if ( response?.ownerID ) {
-					const storeName =
-						select( CORE_MODULES ).getModuleStoreName( slug );
-					// Reload the module's settings from the server.
-					yield dispatch( storeName ).fetchGetSettings();
-
-					recoveredModules.push( slug );
-				} else {
-					errors.push( [ slug, error ] );
-				}
+				// Reload the module's settings from the server.
+				yield Data.commonActions.await(
+					dispatch( storeName ).fetchGetSettings()
+				);
 			}
 
-			if ( recoveredModules.length ) {
+			if ( successfulRecoveries.length ) {
 				// Reload all modules from the server.
 				yield fetchGetModulesStore.actions.fetchGetModules();
 
 				// Having reloaded the modules from the server, ensure the list of recoverable modules is also refreshed,
 				// as the recoverable modules list is derived from the main list of modules.
-				yield dispatch( CORE_MODULES ).invalidateResolution(
+				dispatch( CORE_MODULES ).invalidateResolution(
 					'getRecoverableModules',
 					[]
 				);
 
 				// Refresh user capabilities from the server.
-				yield dispatch( CORE_USER ).refreshCapabilities();
+				yield Data.commonActions.await(
+					dispatch( CORE_USER ).refreshCapabilities()
+				);
 			}
 
-			const response = {
-				success: {
-					...Object.fromEntries(
-						recoveredModules.map( ( slug ) => [ slug, true ] )
-					),
-					...Object.fromEntries(
-						errors.map( ( [ slug ] ) => [ slug, false ] )
-					),
-				},
-			};
-
-			if ( errors.length ) {
-				return {
-					response,
-					error: Object.fromEntries( errors ),
-				};
-			}
-
-			return {
-				response,
-			};
+			return { response };
 		}
 	),
 
@@ -548,6 +536,20 @@ const baseActions = {
 		return {
 			payload: { sharedOwnershipModules },
 			type: RECEIVE_SHARED_OWNERSHIP_MODULES,
+		};
+	},
+
+	/**
+	 * Clears the recoveredModules in the state.
+	 *
+	 * @since 1.87.0
+	 *
+	 * @return {Object} Action for RECEIVE_SHARED_OWNERSHIP_MODULES.
+	 */
+	clearRecoveredModules() {
+		return {
+			payload: {},
+			type: CLEAR_RECOVERED_MODULES,
 		};
 	},
 };
@@ -640,6 +642,13 @@ const baseReducer = ( state, { type, payload } ) => {
 			return {
 				...state,
 				sharedOwnershipModules,
+			};
+		}
+
+		case CLEAR_RECOVERED_MODULES: {
+			return {
+				...state,
+				recoveredModules: undefined,
 			};
 		}
 
@@ -1231,43 +1240,6 @@ const baseSelectors = {
 	},
 
 	/**
-	 * Returns if the current logged in user has access to a given module.
-	 *
-	 * @since 1.86.0
-	 *
-	 * @param {string} slug The module slug.
-	 * @return {Object} The result of the module access check and if the check is still loading.
-	 */
-	userHasModuleAccess: createRegistrySelector(
-		( select ) => ( state, slug ) => {
-			const storeName = select( CORE_MODULES ).getModuleStoreName( slug );
-
-			const loggedInUserID = select( CORE_USER ).getID();
-			const moduleOwnerID = select( storeName )?.getOwnerID();
-
-			const hasModuleAccess =
-				moduleOwnerID === loggedInUserID ||
-				select( CORE_MODULES ).hasModuleAccess( slug );
-
-			const hasResolvedUser =
-				select( CORE_USER ).hasFinishedResolution( 'getUser' );
-			const hasResolvedModuleOwner =
-				select( storeName )?.hasFinishedResolution( 'getSettings' );
-			const isResolvingModuleAccess = select( CORE_MODULES ).isResolving(
-				'hasModuleAccess',
-				[ slug ]
-			);
-
-			const isLoadingModuleAccess =
-				! hasResolvedModuleOwner ||
-				! hasResolvedUser ||
-				isResolvingModuleAccess;
-
-			return { hasModuleAccess, isLoadingModuleAccess };
-		}
-	),
-
-	/**
 	 * Gets the list of recoverable modules for dashboard sharing.
 	 *
 	 * Returns an Object/map of objects, keyed by slug as same as `getModules`.
@@ -1327,13 +1299,17 @@ const baseSelectors = {
 			);
 		}
 	),
+
+	getRecoveredModules( state ) {
+		return state.recoveredModules;
+	},
 };
 
 const store = Data.combineStores(
 	fetchGetModulesStore,
 	fetchSetModuleActivationStore,
 	fetchCheckModuleAccessStore,
-	fetchRecoverModuleStore,
+	fetchRecoverModulesStore,
 	{
 		initialState: baseInitialState,
 		actions: baseActions,

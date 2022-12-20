@@ -25,8 +25,8 @@ import classnames from 'classnames';
 /**
  * Internal dependencies
  */
+import { Button } from 'googlesitekit-components';
 import Link from '../Link';
-import Button from '../Button';
 
 const CTA = ( {
 	title,

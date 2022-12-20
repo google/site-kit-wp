@@ -19,16 +19,16 @@
 /**
  * WordPress dependencies
  */
-import { useCallback } from '@wordpress/element';
+import { useCallback, createInterpolateElement } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { Switch } from 'googlesitekit-components';
 import { MODULES_ANALYTICS } from '../../datastore/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import Switch from '../../../../components/Switch';
 import Link from '../../../../components/Link';
 
 const { useSelect, useDispatch } = Data;
@@ -56,34 +56,53 @@ export default function AnonymizeIPSwitch() {
 	}
 
 	return (
-		<div className="googlesitekit-analytics-anonymizeip">
-			<Switch
-				label={ __( 'Anonymize IP addresses', 'google-site-kit' ) }
-				onClick={ onChange }
-				checked={ anonymizeIP }
-				hideLabel={ false }
-			/>
-			<p>
-				{ anonymizeIP
-					? __(
-							'IP addresses will be anonymized.',
+		<div className="googlesitekit-settings-module__fields-group">
+			<h4 className="googlesitekit-settings-module__fields-group-title">
+				{ __( 'IP addresses', 'google-site-kit' ) }
+			</h4>
+			<div className="googlesitekit-settings-module__meta-item">
+				<div className="googlesitekit-analytics-anonymizeip">
+					<Switch
+						label={ __(
+							'Anonymize IP addresses',
 							'google-site-kit'
-					  )
-					: __(
-							'IP addresses will not be anonymized.',
-							'google-site-kit'
-					  ) }{ ' ' }
-				<Link
-					href={ supportURL }
-					external
-					aria-label={ __(
-						'Learn more about IP anonymization.',
-						'google-site-kit'
-					) }
-				>
-					{ __( 'Learn more', 'google-site-kit' ) }
-				</Link>
-			</p>
+						) }
+						onClick={ onChange }
+						checked={ anonymizeIP }
+						hideLabel={ false }
+					/>
+					<p>
+						{ createInterpolateElement(
+							anonymizeIP
+								? __(
+										'IP addresses will be anonymized. <LearnMoreLink />',
+										'google-site-kit'
+								  )
+								: __(
+										'IP addresses will not be anonymized. <LearnMoreLink />',
+										'google-site-kit'
+								  ),
+							{
+								LearnMoreLink: (
+									<Link
+										href={ supportURL }
+										external
+										aria-label={ __(
+											'Learn more about IP anonymization.',
+											'google-site-kit'
+										) }
+									>
+										{ __(
+											'Learn more',
+											'google-site-kit'
+										) }
+									</Link>
+								),
+							}
+						) }
+					</p>
+				</div>
+			</div>
 		</div>
 	);
 }

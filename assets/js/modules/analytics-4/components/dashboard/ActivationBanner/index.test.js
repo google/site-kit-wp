@@ -20,7 +20,6 @@
  * Internal dependencies
  */
 import {
-	act,
 	createTestRegistry,
 	render,
 	provideModules,
@@ -35,14 +34,16 @@ describe( 'ActivationBanner', () => {
 		registry = createTestRegistry();
 
 		fetchMock.getOnce(
-			/^\/google-site-kit\/v1\/core\/user\/data\/authentication/,
+			new RegExp( '^/google-site-kit/v1/core/user/data/authentication' ),
 			{
 				authenticated: true,
 			}
 		);
 
 		fetchMock.getOnce(
-			/^\/google-site-kit\/v1\/modules\/analytics\/data\/settings/,
+			new RegExp(
+				'^/google-site-kit/v1/modules/analytics/data/settings'
+			),
 			{ body: {}, status: 200 }
 		);
 	} );
@@ -51,7 +52,7 @@ describe( 'ActivationBanner', () => {
 		unsubscribeFromAll( registry );
 	} );
 
-	it( 'does not render when UA is not connected', () => {
+	it( 'does not render when UA is not connected', async () => {
 		provideModules( registry, [
 			{
 				slug: 'analytics',
@@ -60,13 +61,14 @@ describe( 'ActivationBanner', () => {
 			},
 		] );
 
-		const { container } = render( <ActivationBanner />, {
+		const { container, waitForRegistry } = render( <ActivationBanner />, {
 			registry,
 		} );
+		await waitForRegistry();
 		expect( container.childElementCount ).toBe( 0 );
 	} );
 
-	it( 'does not render when UA and GA4 are both connected', () => {
+	it( 'does not render when UA and GA4 are both connected', async () => {
 		provideModules( registry, [
 			{
 				slug: 'analytics',
@@ -80,27 +82,26 @@ describe( 'ActivationBanner', () => {
 			},
 		] );
 
-		const { container } = render( <ActivationBanner />, {
+		const { container, waitForRegistry } = render( <ActivationBanner />, {
 			registry,
 		} );
+		await waitForRegistry();
 		expect( container.childElementCount ).toBe( 0 );
 	} );
 
 	it( 'does render when UA is connected but GA4 is not connected', async () => {
-		act( () => {
-			provideModules( registry, [
-				{
-					slug: 'analytics',
-					active: true,
-					connected: true,
-				},
-				{
-					slug: 'analytics-4',
-					active: true,
-					connected: false,
-				},
-			] );
-		} );
+		provideModules( registry, [
+			{
+				slug: 'analytics',
+				active: true,
+				connected: true,
+			},
+			{
+				slug: 'analytics-4',
+				active: true,
+				connected: false,
+			},
+		] );
 
 		const { container, waitForRegistry } = render( <ActivationBanner />, {
 			registry,

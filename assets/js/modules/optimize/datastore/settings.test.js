@@ -69,14 +69,18 @@ describe( 'modules/optimize settings', () => {
 					.setSettings( validSettings );
 
 				fetchMock.postOnce(
-					/^\/google-site-kit\/v1\/modules\/optimize\/data\/settings/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/optimize/data/settings'
+					),
 					{ body: validSettings, status: 200 }
 				);
 
 				await registry.dispatch( MODULES_OPTIMIZE ).submitChanges();
 
 				expect( fetchMock ).toHaveFetched(
-					/^\/google-site-kit\/v1\/modules\/optimize\/data\/settings/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/optimize/data/settings'
+					),
 					{
 						body: {
 							data: validSettings,
@@ -94,7 +98,9 @@ describe( 'modules/optimize settings', () => {
 					.setSettings( validSettings );
 
 				fetchMock.postOnce(
-					/^\/google-site-kit\/v1\/modules\/optimize\/data\/settings/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/optimize/data/settings'
+					),
 					{ body: wpError, status: 500 }
 				);
 				await registry.dispatch( MODULES_OPTIMIZE ).submitChanges();
@@ -116,7 +122,9 @@ describe( 'modules/optimize settings', () => {
 					.setSettings( validSettings );
 
 				fetchMock.postOnce(
-					/^\/google-site-kit\/v1\/modules\/optimize\/data\/settings/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/optimize/data/settings'
+					),
 					{ body: validSettings, status: 200 }
 				);
 
@@ -222,7 +230,7 @@ describe( 'modules/optimize settings', () => {
 						.__dangerousCanSubmitChanges()
 				).toThrow( INVARIANT_INVALID_OPTIMIZE_ID );
 
-				// An empty string is accepted (for when no optimize ID can be determined).
+				// An empty string is accepted (for when no optimize container ID can be determined).
 				registry.dispatch( MODULES_OPTIMIZE ).setOptimizeID( '' );
 				expect(
 					registry.select( MODULES_OPTIMIZE ).canSubmitChanges()

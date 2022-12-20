@@ -53,10 +53,12 @@ import { MODULES_TAGMANAGER } from '../../tagmanager/datastore/constants';
 describe( 'modules/analytics settings', () => {
 	let registry;
 
-	const gaSettingsEndpoint =
-		/^\/google-site-kit\/v1\/modules\/analytics\/data\/settings/;
-	const ga4SettingsEndpoint =
-		/^\/google-site-kit\/v1\/modules\/analytics-4\/data\/settings/;
+	const gaSettingsEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/analytics/data/settings'
+	);
+	const ga4SettingsEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/analytics-4/data/settings'
+	);
 
 	const validSettings = {
 		accountID: '12345',
@@ -134,7 +136,9 @@ describe( 'modules/analytics settings', () => {
 				};
 
 				fetchMock.postOnce(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-property/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics/data/create-property'
+					),
 					{ body: createdProperty, status: 200 }
 				);
 				fetchMock.postOnce( gaSettingsEndpoint, ( url, opts ) => {
@@ -147,7 +151,9 @@ describe( 'modules/analytics settings', () => {
 					.dispatch( MODULES_ANALYTICS )
 					.submitChanges();
 				expect( fetchMock ).toHaveFetched(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-property/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics/data/create-property'
+					),
 					{ body: { data: { accountID: '12345' } } }
 				);
 
@@ -171,14 +177,18 @@ describe( 'modules/analytics settings', () => {
 				} );
 
 				fetchMock.postOnce(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-property/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics/data/create-property'
+					),
 					{ body: error, status: 500 }
 				);
 
 				await registry.dispatch( MODULES_ANALYTICS ).submitChanges();
 
 				expect( fetchMock ).toHaveFetched(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-property/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics/data/create-property'
+					),
 					{ body: { data: { accountID: '12345' } } }
 				);
 
@@ -209,7 +219,9 @@ describe( 'modules/analytics settings', () => {
 					id: '987654321',
 				};
 				fetchMock.postOnce(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-profile/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics/data/create-profile'
+					),
 					{ body: createdProfile, status: 200 }
 				);
 				fetchMock.postOnce( gaSettingsEndpoint, ( url, opts ) => {
@@ -221,7 +233,9 @@ describe( 'modules/analytics settings', () => {
 				await registry.dispatch( MODULES_ANALYTICS ).submitChanges();
 
 				expect( fetchMock ).toHaveFetched(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-profile/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics/data/create-profile'
+					),
 					{
 						body: {
 							data: {
@@ -253,7 +267,9 @@ describe( 'modules/analytics settings', () => {
 				} );
 
 				fetchMock.postOnce(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-profile/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics/data/create-profile'
+					),
 					{ body: error, status: 500 }
 				);
 
@@ -262,7 +278,9 @@ describe( 'modules/analytics settings', () => {
 					.submitChanges();
 
 				expect( fetchMock ).toHaveFetched(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-profile/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics/data/create-profile'
+					),
 					{
 						body: {
 							data: {
@@ -306,11 +324,15 @@ describe( 'modules/analytics settings', () => {
 				};
 
 				fetchMock.postOnce(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-property/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics/data/create-property'
+					),
 					{ body: createdProperty, status: 200 }
 				);
 				fetchMock.postOnce(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-profile/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics/data/create-profile'
+					),
 					{ body: createdProfile, status: 200 }
 				);
 				fetchMock.postOnce( gaSettingsEndpoint, ( url, opts ) => {

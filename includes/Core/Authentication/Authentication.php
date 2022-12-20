@@ -23,7 +23,7 @@ use Google\Site_Kit\Core\Admin\Notice;
 use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Core\Authentication\Google_Proxy;
-use Google\Site_Kit\Core\Util\User_Input_Settings;
+use Google\Site_Kit\Core\User_Input\User_Input;
 use Google\Site_Kit\Plugin;
 use WP_Error;
 use WP_REST_Server;
@@ -32,8 +32,6 @@ use WP_REST_Response;
 use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Util\BC_Functions;
 use Google\Site_Kit\Core\Util\URL;
-use Google\Site_Kit\Modules\Idea_Hub;
-use Google\Site_Kit\Modules\Thank_With_Google;
 
 /**
  * Authentication Class.
@@ -85,13 +83,13 @@ final class Authentication {
 	private $user_input_state = null;
 
 	/**
-	 * User_Input_Settings
+	 * User_Input
 	 *
-	 * @since 1.20.0
+	 * @since 1.90.0
 	 *
-	 * @var User_Input_Settings
+	 * @var User_Input
 	 */
-	private $user_input_settings = null;
+	private $user_input = null;
 
 	/**
 	 * Transients object.
@@ -253,7 +251,7 @@ final class Authentication {
 		$this->transients           = $transients ?: new Transients( $this->context );
 		$this->modules              = new Modules( $this->context, $this->options, $this->user_options, $this );
 		$this->user_input_state     = new User_Input_State( $this->user_options );
-		$this->user_input_settings  = new User_Input_Settings( $context, $this, $transients );
+		$this->user_input           = new User_Input( $context, $this->options, $this->user_options );
 		$this->google_proxy         = new Google_Proxy( $this->context );
 		$this->credentials          = new Credentials( new Encrypted_Options( $this->options ) );
 		$this->verification         = new Verification( $this->user_options );
@@ -285,6 +283,7 @@ final class Authentication {
 		$this->disconnected_reason->register();
 		$this->user_input_state->register();
 		$this->initial_version->register();
+		$this->user_input->register();
 
 		add_filter( 'allowed_redirect_hosts', $this->get_method_proxy( 'allowed_redirect_hosts' ) );
 		add_filter( 'googlesitekit_admin_data', $this->get_method_proxy( 'inline_js_admin_data' ) );
@@ -305,7 +304,7 @@ final class Authentication {
 			'admin_init',
 			function() {
 				if (
-					'googlesitekit-dashboard' === $this->context->input()->filter( INPUT_GET, 'page', FILTER_SANITIZE_STRING )
+					'googlesitekit-dashboard' === htmlspecialchars( $this->context->input()->filter( INPUT_GET, 'page' ) ?: '' )
 					&& User_Input_State::VALUE_REQUIRED === $this->user_input_state->get()
 				) {
 					wp_safe_redirect( $this->context->admin_url( 'user-input' ) );
@@ -1253,7 +1252,7 @@ final class Authentication {
 
 		// Refresh user input settings from the proxy.
 		// This will ensure the user input state is updated as well.
-		$this->user_input_settings->set_settings( null );
+		$this->user_input->set_answers( null );
 
 		if ( User_Input_State::VALUE_COMPLETED !== $this->user_input_state->get() ) {
 			$this->user_input_state->set( User_Input_State::VALUE_REQUIRED );
@@ -1386,7 +1385,7 @@ final class Authentication {
 			&& $this->credentials()->has()
 			&& $this->credentials->using_proxy()
 		) {
-			$is_empty = $this->user_input_settings->are_settings_empty();
+			$is_empty = $this->user_input->are_settings_empty();
 			if ( ! is_null( $is_empty ) ) {
 				$this->user_input_state->set( $is_empty ? User_Input_State::VALUE_MISSING : User_Input_State::VALUE_COMPLETED );
 			}
@@ -1407,27 +1406,6 @@ final class Authentication {
 		$features               = $this->options->get( $remote_features_option );
 
 		if ( false === $features ) {
-			// The experimental features (ideaHubModule and twgModule) are checked within Modules::construct() which
-			// runs before Modules::register() where the `googlesitekit_features_request_data` filter is registered.
-			// Without this filter, some necessary context data is not sent when a request to Google_Proxy::get_features() is
-			// made. So we avoid making this request and solely check the active modules in the database to see if these
-			// features are enabled.
-			if ( in_array( $feature_name, array( 'ideaHubModule', 'twgModule' ), true ) ) {
-				$active_modules = $this->options->get( Modules::OPTION_ACTIVE_MODULES );
-
-				if ( ! is_array( $active_modules ) ) {
-					return false;
-				}
-
-				if ( 'ideaHubModule' === $feature_name ) {
-					return in_array( Idea_Hub::MODULE_SLUG, $active_modules, true );
-				}
-
-				if ( 'twgModule' === $feature_name ) {
-					return in_array( Thank_With_Google::MODULE_SLUG, $active_modules, true );
-				}
-			}
-
 			// Don't attempt to fetch features if the site is not connected yet.
 			if ( ! $this->credentials->has() ) {
 				return $feature_enabled;

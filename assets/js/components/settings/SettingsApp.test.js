@@ -34,9 +34,11 @@ import {
 } from '../../../../tests/js/test-utils';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import { MODULES_ANALYTICS } from '../../modules/analytics/datastore/constants';
 
-const coreUserTrackingSettingsEndpointRegExp =
-	/^\/google-site-kit\/v1\/core\/user\/data\/tracking/;
+const coreUserTrackingSettingsEndpointRegExp = new RegExp(
+	'^/google-site-kit/v1/core/user/data/tracking'
+);
 const coreUserTrackingResponse = { status: 200, body: { enabled: false } };
 
 describe( 'SettingsApp', () => {
@@ -91,9 +93,10 @@ describe( 'SettingsApp', () => {
 				connected: true,
 			},
 		] );
+		registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
 	} );
 
-	it( 'should switch to "/connected-services" route when corresponding tab is clicked.', async () => {
+	it( 'should switch to "/connected-services" route when corresponding tab is clicked.', () => {
 		fetchMock.getOnce(
 			coreUserTrackingSettingsEndpointRegExp,
 			coreUserTrackingResponse
@@ -112,7 +115,7 @@ describe( 'SettingsApp', () => {
 		expect( global.location.hash ).toEqual( '#/connected-services' );
 	} );
 
-	it( 'should switch to "/connect-more-services" route when corresponding tab is clicked.', async () => {
+	it( 'should switch to "/connect-more-services" route when corresponding tab is clicked.', () => {
 		const { getAllByRole } = render( <SettingsApp />, {
 			history,
 			registry,

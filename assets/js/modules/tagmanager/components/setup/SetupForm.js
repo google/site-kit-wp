@@ -31,6 +31,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { Button } from 'googlesitekit-components';
 import {
 	MODULES_TAGMANAGER,
 	FORM_SETUP,
@@ -49,7 +50,6 @@ import {
 	WebContainerSelect,
 	TagCheckProgress,
 } from '../common';
-import Button from '../../../../components/Button';
 import Link from '../../../../components/Link';
 import SetupErrorNotice from './SetupErrorNotice';
 import SetupUseSnippetSwitch from './SetupUseSnippetSwitch';

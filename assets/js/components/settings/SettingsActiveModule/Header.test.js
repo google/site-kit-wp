@@ -17,6 +17,17 @@
  */
 
 /**
+ * External dependencies
+ */
+import { createHashHistory } from 'history';
+import { Switch, Route } from 'react-router-dom';
+
+/**
+ * WordPress dependencies
+ */
+import { DOWN, ENTER, ESCAPE, UP } from '@wordpress/keycodes';
+
+/**
  * Internal dependencies
  */
 import Header from '.';
@@ -24,14 +35,37 @@ import {
 	render,
 	createTestRegistry,
 	provideModules,
+	fireEvent,
+	waitFor,
+	provideUserInfo,
 } from '../../../../../tests/js/test-utils';
+import { MODULES_ANALYTICS } from '../../../modules/analytics/datastore/constants';
+import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 
 describe( 'Header', () => {
+	const history = createHashHistory();
 	let registry;
 
+	const HeaderAwareRouter = () => {
+		return (
+			<Switch>
+				<Route
+					path={ [
+						'/connected-services/:moduleSlug',
+						'/connected-services',
+					] }
+				>
+					<Header slug="pagespeed-insights" />,
+				</Route>
+			</Switch>
+		);
+	};
+
 	beforeEach( () => {
+		global.location.hash = '';
 		registry = createTestRegistry();
 
+		provideUserInfo( registry );
 		provideModules( registry, [
 			{
 				slug: 'analytics',
@@ -56,6 +90,7 @@ describe( 'Header', () => {
 				connected: false,
 			},
 		] );
+		registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
 	} );
 
 	it( 'should render "Connected" for a connected module', () => {
@@ -77,6 +112,7 @@ describe( 'Header', () => {
 	} );
 
 	it( 'should render a button to connect GA4 if Analytics is connected but GA4 is not', () => {
+		registry.dispatch( MODULES_ANALYTICS ).setOwnerID( 1 );
 		const { queryByRole } = render( <Header slug="analytics" />, {
 			registry,
 		} );
@@ -84,5 +120,140 @@ describe( 'Header', () => {
 		const button = queryByRole( 'button' );
 		expect( button ).toBeInTheDocument();
 		expect( button ).toHaveTextContent( 'Connect Google Analytics 4' );
+	} );
+
+	it( 'should not render the button to connect GA4 if Analytics is connected without access to it but GA4 is not', async () => {
+		registry.dispatch( MODULES_ANALYTICS ).setOwnerID( 99 );
+		registry
+			.dispatch( CORE_MODULES )
+			.receiveCheckModuleAccess(
+				{ access: false },
+				{ slug: 'analytics' }
+			);
+		const { container } = render( <Header slug="analytics" />, {
+			registry,
+		} );
+
+		await waitFor( () => {
+			expect(
+				container.querySelector(
+					'.googlesitekit-settings-module__status'
+				)
+			).toHaveTextContent( 'Google Analytics 4 is not connected' );
+		} );
+	} );
+
+	it( 'should render a GA4 not connected status if Analytics is connected without access to it but GA4 is not', async () => {
+		registry
+			.dispatch( MODULES_ANALYTICS )
+			.receiveGetSettings( { ownerID: 100 } );
+		registry
+			.dispatch( CORE_MODULES )
+			.receiveCheckModuleAccess(
+				{ access: false },
+				{ slug: 'analytics' }
+			);
+		const { queryByRole } = render( <Header slug="analytics" />, {
+			registry,
+		} );
+
+		await waitFor( () => {
+			expect(
+				queryByRole( 'button', { name: /connect google analytics 4/i } )
+			).not.toBeInTheDocument();
+		} );
+	} );
+
+	it( 'should open the tab when ENTER key is pressed', () => {
+		history.push( '/connected-services' );
+
+		const { container } = render( <HeaderAwareRouter />, {
+			registry,
+			history,
+		} );
+
+		const headerElement = container.querySelector(
+			'.googlesitekit-settings-module__header'
+		);
+
+		fireEvent.keyDown( headerElement, { keyCode: ENTER } );
+		expect(
+			headerElement.classList.contains(
+				'googlesitekit-settings-module__header--open'
+			)
+		).toBe( true );
+	} );
+
+	it( 'should close the tab if opened when ENTER key is pressed', () => {
+		history.push( '/connected-services/pagespeed-insights' );
+
+		const { container } = render( <HeaderAwareRouter />, {
+			registry,
+			history,
+		} );
+
+		const headerElement = container.querySelector(
+			'.googlesitekit-settings-module__header'
+		);
+
+		fireEvent.keyDown( headerElement, { keyCode: ENTER } );
+		expect(
+			headerElement.classList.contains(
+				'googlesitekit-settings-module__header--open'
+			)
+		).toBe( false );
+	} );
+
+	it( 'should close the tab if opened when ESCAPE key is pressed', () => {
+		history.push( '/connected-services/pagespeed-insights' );
+
+		const { container } = render( <HeaderAwareRouter />, {
+			registry,
+			history,
+		} );
+
+		const headerElement = container.querySelector(
+			'.googlesitekit-settings-module__header'
+		);
+
+		fireEvent.keyDown( headerElement, { keyCode: ESCAPE } );
+		expect(
+			headerElement.classList.contains(
+				'googlesitekit-settings-module__header--open'
+			)
+		).toBe( false );
+	} );
+
+	it( 'should not toggle the tab if any other key is pressed', () => {
+		// Ensure the tab is closed.
+		history.push( '/connected-services' );
+
+		const { container } = render( <HeaderAwareRouter />, {
+			registry,
+			history,
+		} );
+
+		const headerElement = container.querySelector(
+			'.googlesitekit-settings-module__header'
+		);
+
+		fireEvent.keyDown( headerElement, { keyCode: DOWN } );
+		// Ensure the tab is still closed after pressing the DOWN key.
+		expect(
+			headerElement.classList.contains(
+				'googlesitekit-settings-module__header--open'
+			)
+		).toBe( false );
+
+		// Ensure the tab is open.
+		history.push( '/connected-services/pagespeed-insights' );
+
+		fireEvent.keyDown( headerElement, { keyCode: UP } );
+		// Ensure the tab is still open after pressing the UP key.
+		expect(
+			headerElement.classList.contains(
+				'googlesitekit-settings-module__header--open'
+			)
+		).toBe( true );
 	} );
 } );

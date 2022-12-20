@@ -33,6 +33,7 @@ import {
 import { fireEvent, render } from '../../../tests/js/test-utils';
 import ReportError from './ReportError';
 import { MODULES_ANALYTICS } from '../modules/analytics/datastore/constants';
+import { VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY } from '../googlesitekit/constants';
 
 describe( 'ReportError', () => {
 	let registry;
@@ -209,6 +210,104 @@ describe( 'ReportError', () => {
 		);
 		// Verify the `Request access` button is rendered.
 		expect( queryByText( /request access/i ) ).toBeInTheDocument();
+	} );
+
+	it( 'renders the help link with the moduleSlug_insufficient_permissions string when ERROR_REASON_INSUFFICIENT_PERMISSIONS is provided as reason', () => {
+		const { container } = render(
+			<ReportError
+				moduleSlug={ moduleName }
+				error={ {
+					code: 'test-error-code',
+					message: 'Test error message',
+					data: {
+						reason: ERROR_REASON_INSUFFICIENT_PERMISSIONS,
+					},
+				} }
+			/>,
+			{
+				registry,
+			}
+		);
+
+		expect( container.querySelector( 'a' ) ).toHaveAttribute(
+			'href',
+			expect.stringContaining(
+				`error_id=${ moduleName }_insufficient_permissions`
+			)
+		);
+	} );
+
+	it( 'renders alternate error for non-authenticated users when ERROR_REASON_INSUFFICIENT_PERMISSIONS is provided as reason', () => {
+		const { container } = render(
+			<ReportError
+				moduleSlug={ moduleName }
+				error={ {
+					code: 'test-error-code',
+					message: 'Test error message',
+					data: {
+						reason: ERROR_REASON_INSUFFICIENT_PERMISSIONS,
+					},
+				} }
+			/>,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+			}
+		);
+
+		expect( container.querySelector( 'h3' ).textContent ).toEqual(
+			'Access lost to Test Module'
+		);
+	} );
+
+	it( 'should not render the `Request access` button for an insufficient permission error when the user is not authenticated', () => {
+		const userData = {
+			id: 1,
+			email: 'admin@example.com',
+			name: 'admin',
+			picture: 'https://path/to/image',
+		};
+		provideModules( registry, [
+			{
+				active: true,
+				connected: true,
+				slug: 'analytics',
+			},
+		] );
+		provideModuleRegistrations( registry );
+		provideUserInfo( registry, userData );
+
+		const [ accountID, internalWebPropertyID, profileID ] = [
+			'12345',
+			'34567',
+			'56789',
+		];
+
+		registry.dispatch( MODULES_ANALYTICS ).setAccountID( accountID );
+		registry
+			.dispatch( MODULES_ANALYTICS )
+			.setInternalWebPropertyID( internalWebPropertyID );
+		registry.dispatch( MODULES_ANALYTICS ).setProfileID( profileID );
+
+		const { queryByText } = render(
+			<ReportError
+				moduleSlug="analytics"
+				error={ {
+					code: 'test-error-code',
+					message: 'Test error message',
+					data: {
+						reason: ERROR_REASON_INSUFFICIENT_PERMISSIONS,
+					},
+				} }
+			/>,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+			}
+		);
+
+		// Verify the `Request access` button is not rendered.
+		expect( queryByText( /request access/i ) ).not.toBeInTheDocument();
 	} );
 
 	it( "should not render the `Retry` button if the error's `selectorData.name` is not `getReport`", () => {
@@ -430,7 +529,7 @@ describe( 'ReportError', () => {
 		expect( invalidateResolutionSpy ).toHaveBeenCalledTimes( 4 );
 	} );
 
-	it( 'shold render `Get help` ulink without prefix text on non-retryable error', () => {
+	it( 'should render `Get help` link without prefix text on non-retryable error', () => {
 		const { getByRole, queryByText } = render(
 			<ReportError
 				moduleSlug="analytics"

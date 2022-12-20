@@ -22,13 +22,11 @@ use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Modules\AdSense;
 use Google\Site_Kit\Modules\Analytics;
 use Google\Site_Kit\Modules\Analytics_4;
-use Google\Site_Kit\Modules\Idea_Hub;
 use Google\Site_Kit\Modules\Optimize;
 use Google\Site_Kit\Modules\PageSpeed_Insights;
 use Google\Site_Kit\Modules\Search_Console;
 use Google\Site_Kit\Modules\Site_Verification;
 use Google\Site_Kit\Modules\Tag_Manager;
-use Google\Site_Kit\Modules\Thank_With_Google;
 use Google\Site_Kit\Core\Util\Build_Mode;
 use Google\Site_Kit\Core\Util\URL;
 use Exception;
@@ -127,14 +125,6 @@ final class Modules {
 	private $assets;
 
 	/**
-	 * REST_Dashboard_Sharing_Controller instance.
-	 *
-	 * @since 1.75.0
-	 * @var REST_Dashboard_Sharing_Controller
-	 */
-	private $rest_dashboard_sharing_controller;
-
-	/**
 	 * Core module class names.
 	 *
 	 * @since 1.21.0
@@ -178,43 +168,6 @@ final class Modules {
 		$this->core_modules[ Analytics_4::MODULE_SLUG ] = Analytics_4::class;
 
 		$this->rest_modules_controller = new REST_Modules_Controller( $this );
-
-		if ( Feature_Flags::enabled( 'ideaHubModule' ) ) {
-			$this->core_modules[ Idea_Hub::MODULE_SLUG ] = Idea_Hub::class;
-		}
-
-		if ( self::should_enable_twg() ) {
-			$this->core_modules[ Thank_With_Google::MODULE_SLUG ] = Thank_With_Google::class;
-		}
-
-		if ( Feature_Flags::enabled( 'dashboardSharing' ) ) {
-			$this->rest_dashboard_sharing_controller = new REST_Dashboard_Sharing_Controller( $this );
-		}
-	}
-
-	/**
-	 * Determines if Thank with Google module should be enabled.
-	 *
-	 * @since 1.83.0
-	 *
-	 * @return bool True if the module should be enabled, false otherwise.
-	 */
-	public static function should_enable_twg() {
-		if ( ! Feature_Flags::enabled( 'twgModule' ) ) {
-			return false;
-		}
-
-		if ( Build_Mode::get_mode() === Build_Mode::MODE_DEVELOPMENT ) {
-			return true;
-		}
-
-		if ( 'https' === URL::parse( home_url(), PHP_URL_SCHEME ) ) {
-			return true;
-		}
-
-		// Because we aren't in development mode and haven't detected SSL being enabled, TwG should
-		// not be enabled.
-		return false;
 	}
 
 	/**
@@ -258,7 +211,7 @@ final class Modules {
 		$this->sharing_settings->register();
 
 		if ( Feature_Flags::enabled( 'dashboardSharing' ) ) {
-			$this->rest_dashboard_sharing_controller->register();
+			( new REST_Dashboard_Sharing_Controller( $this ) )->register();
 		}
 
 		add_filter(
@@ -974,7 +927,7 @@ final class Modules {
 	 * Inserts default settings for shared ownership modules in passed dashboard sharing settings.
 	 *
 	 * Sharing settings for shared ownership modules such as pagespeed-insights
-	 * and idea-hub should always be manageable by "all admins". This function inserts
+	 * should always be manageable by "all admins". This function inserts
 	 * this 'default' setting for their respective module slugs even when the
 	 * dashboard_sharing settings option is not defined in the database or when settings
 	 * are not set for these modules.
@@ -1024,5 +977,4 @@ final class Modules {
 	public function delete_dashboard_sharing_settings() {
 		return $this->options->delete( Module_Sharing_Settings::OPTION );
 	}
-
 }

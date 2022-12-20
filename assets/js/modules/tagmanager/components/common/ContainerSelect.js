@@ -31,12 +31,12 @@ import { _x, __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { ProgressBar } from 'googlesitekit-components';
 import { Select, Option } from '../../../../material-components';
 import {
 	MODULES_TAGMANAGER,
 	CONTAINER_CREATE,
 } from '../../datastore/constants';
-import ProgressBar from '../../../../components/ProgressBar';
 import { isValidAccountID } from '../../util';
 const { useSelect } = Data;
 

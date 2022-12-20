@@ -32,8 +32,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import Button from './Button';
-import ProgressBar from './ProgressBar';
+import { Button, ProgressBar } from 'googlesitekit-components';
 import VisuallyHidden from './VisuallyHidden';
 import MagnifyingGlass from '../../svg/icons/magnifying-glass.svg';
 import CloseDark from '../../svg/icons/close-dark.svg';

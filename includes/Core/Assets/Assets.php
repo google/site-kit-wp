@@ -224,6 +224,10 @@ final class Assets {
 			'Google+Sans+Display:400,500,700',
 		);
 
+		if ( Feature_Flags::enabled( 'gm3Components' ) ) {
+			$font_families[] = 'Roboto:300,400,500';
+		}
+
 		$filtered_font_families = apply_filters( 'googlesitekit_font_families', $font_families );
 
 		if ( empty( $filtered_font_families ) ) {
@@ -297,21 +301,14 @@ final class Assets {
 	}
 
 	/**
-	 * Gets all plugin assets.
+	 * Forms an array of dependencies based on the necessary context.
 	 *
-	 * The method will lazy-load assets in an internal property so that the processing only happens once.
+	 * @since 1.87.0
 	 *
-	 * @since 1.0.0
-	 *
-	 * @return Asset[] Associative array of asset $handle => $instance pairs.
+	 * @param string $context The context for which dependencies should be formed.
+	 * @return array The array of dependencies.
 	 */
-	private function get_assets() {
-		if ( $this->assets ) {
-			return $this->assets;
-		}
-
-		$base_url = $this->context->url( 'dist/assets/' );
-
+	private function get_asset_dependencies( $context = '' ) {
 		$dependencies = array(
 			'googlesitekit-tracking-data',
 			'googlesitekit-runtime',
@@ -328,9 +325,34 @@ final class Assets {
 			'googlesitekit-widgets',
 		);
 
-		$dependencies_for_dashboard_sharing = Feature_Flags::enabled( 'dashboardSharing' )
-			? array_merge( $dependencies, array( 'googlesitekit-dashboard-sharing-data' ) )
-			: $dependencies;
+		if ( 'dashboard' === $context || 'dashboard-sharing' === $context ) {
+			array_push( $dependencies, 'googlesitekit-components' );
+		}
+
+		if ( 'dashboard-sharing' === $context && Feature_Flags::enabled( 'dashboardSharing' ) ) {
+			array_push( $dependencies, 'googlesitekit-dashboard-sharing-data' );
+		}
+
+		return $dependencies;
+	}
+
+	/**
+	 * Gets all plugin assets.
+	 *
+	 * The method will lazy-load assets in an internal property so that the processing only happens once.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return Asset[] Associative array of asset $handle => $instance pairs.
+	 */
+	private function get_assets() {
+		if ( $this->assets ) {
+			return $this->assets;
+		}
+
+		$base_url = $this->context->url( 'dist/assets/' );
+
+		$dependencies = $this->get_asset_dependencies();
 
 		// Register plugin scripts.
 		$assets = array(
@@ -387,7 +409,7 @@ final class Assets {
 						$preload_paths = apply_filters( 'googlesitekit_apifetch_preload_paths', array() );
 						$preloaded     = array_reduce(
 							array_unique( $preload_paths ),
-							array( BC_Functions::class, 'rest_preload_api_request' ),
+							'rest_preload_api_request',
 							array()
 						);
 
@@ -452,10 +474,20 @@ final class Assets {
 			),
 			// Admin assets.
 			new Script(
+				'googlesitekit-components',
+				array(
+					'src' => $base_url . (
+						Feature_Flags::enabled( 'gm3Components' )
+							? 'js/googlesitekit-components-gm3.js'
+							: 'js/googlesitekit-components-gm2.js'
+						),
+				)
+			),
+			new Script(
 				'googlesitekit-activation',
 				array(
 					'src'          => $base_url . 'js/googlesitekit-activation.js',
-					'dependencies' => $dependencies,
+					'dependencies' => $this->get_asset_dependencies( 'dashboard' ),
 				)
 			),
 			new Script(
@@ -562,6 +594,7 @@ final class Assets {
 					'dependencies' => array(
 						'googlesitekit-data',
 						'googlesitekit-i18n',
+						'googlesitekit-components',
 					),
 				)
 			),
@@ -569,7 +602,7 @@ final class Assets {
 				'googlesitekit-user-input',
 				array(
 					'src'          => $base_url . 'js/googlesitekit-user-input.js',
-					'dependencies' => $dependencies,
+					'dependencies' => $this->get_asset_dependencies( 'dashboard' ),
 				)
 			),
 			// End JSR Assets.
@@ -577,28 +610,28 @@ final class Assets {
 				'googlesitekit-splash',
 				array(
 					'src'          => $base_url . 'js/googlesitekit-splash.js',
-					'dependencies' => $dependencies,
+					'dependencies' => $this->get_asset_dependencies( 'dashboard' ),
 				)
 			),
 			new Script(
 				'googlesitekit-entity-dashboard',
 				array(
 					'src'          => $base_url . 'js/googlesitekit-entity-dashboard.js',
-					'dependencies' => $dependencies_for_dashboard_sharing,
+					'dependencies' => $this->get_asset_dependencies( 'dashboard-sharing' ),
 				)
 			),
 			new Script(
 				'googlesitekit-main-dashboard',
 				array(
 					'src'          => $base_url . 'js/googlesitekit-main-dashboard.js',
-					'dependencies' => $dependencies_for_dashboard_sharing,
+					'dependencies' => $this->get_asset_dependencies( 'dashboard-sharing' ),
 				)
 			),
 			new Script(
 				'googlesitekit-settings',
 				array(
 					'src'          => $base_url . 'js/googlesitekit-settings.js',
-					'dependencies' => $dependencies,
+					'dependencies' => $this->get_asset_dependencies( 'dashboard' ),
 				)
 			),
 			new Stylesheet(
@@ -878,17 +911,13 @@ final class Assets {
 	 * @return array The inline data to be output.
 	 */
 	private function get_inline_data() {
-		$current_user = wp_get_current_user();
-		$site_url     = $this->context->get_reference_site_url();
-		$input        = $this->context->input();
-		$page         = $input->filter( INPUT_GET, 'page', FILTER_SANITIZE_STRING );
+		$site_url = $this->context->get_reference_site_url();
+		$input    = $this->context->input();
 
 		$admin_data = array(
 			'siteURL'      => esc_url_raw( $site_url ),
 			'resetSession' => $input->filter( INPUT_GET, 'googlesitekit_reset_session', FILTER_VALIDATE_BOOLEAN ),
 		);
-
-		$current_entity = $this->context->get_reference_entity();
 
 		return array(
 

@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import { useMount } from 'react-use';
+
+/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
@@ -28,6 +33,8 @@ import Data from 'googlesitekit-data';
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import BannerNotification from '../../../../../components/notifications/BannerNotification';
 import SuccessGreenSVG from '../../../../../../svg/graphics/success-green.svg';
+import useViewContext from '../../../../../hooks/useViewContext';
+import { trackEvent } from '../../../../../util/tracking';
 
 const { useSelect } = Data;
 
@@ -35,6 +42,14 @@ export default function SuccessBanner() {
 	const ga4DocumentationLinkURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getDocumentationLinkURL( 'ga4' )
 	);
+
+	const viewContext = useViewContext();
+	const eventCategory = `${ viewContext }_ga4-success-notification`;
+
+	useMount( () => {
+		trackEvent( eventCategory, 'view_notification' );
+	} );
+
 	return (
 		<BannerNotification
 			id="ga4-activation-banner"

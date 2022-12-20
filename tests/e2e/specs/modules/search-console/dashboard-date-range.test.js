@@ -32,8 +32,8 @@ import {
 	switchDateRange,
 	useRequestInterception,
 } from '../../../utils';
-import * as dashboardRequests from './fixtures/dashboard';
-import * as dashboardDetailsRequests from './fixtures/dashboard-details';
+import * as mainDashboardRequests from './fixtures/main-dashboard';
+import * as entityDashboardRequests from './fixtures/entity-dashboard';
 
 // As part of https://github.com/google/site-kit-wp/issues/2586,
 // this can be refactored to use the new getSearchConsoleMockResponse utility.
@@ -82,7 +82,8 @@ describe( 'date range filtering on dashboard views', () => {
 	} );
 
 	it( 'loads new data when the date range is changed on the Site Kit dashboard', async () => {
-		const { last28Days, last14Days, last7DaysNoData } = dashboardRequests;
+		const { last28Days, last14Days, last7DaysNoData } =
+			mainDashboardRequests;
 
 		mockResponse = last28Days;
 		await visitAdminPage( 'admin.php', 'page=googlesitekit-dashboard' );
@@ -126,7 +127,7 @@ describe( 'date range filtering on dashboard views', () => {
 	} );
 
 	it( 'loads new data when the date range is changed on an entity dashboard view for a single post', async () => {
-		const { last28Days, last14Days } = dashboardDetailsRequests;
+		const { last28Days, last14Days } = entityDashboardRequests;
 
 		await visitAdminPage( 'admin.php', 'page=googlesitekit-dashboard' );
 		const postSearcher = await page.$( '.googlesitekit-entity-search' );

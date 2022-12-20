@@ -42,14 +42,18 @@ describe( 'core/user surveys', () => {
 		},
 	};
 
-	const surveyTriggerEndpoint =
-		/^\/google-site-kit\/v1\/core\/user\/data\/survey-trigger/;
-	const surveyEventEndpoint =
-		/^\/google-site-kit\/v1\/core\/user\/data\/survey-event/;
-	const surveyTimeoutEndpoint =
-		/^\/google-site-kit\/v1\/core\/user\/data\/survey-timeout/;
-	const surveyTimeoutsEndpoint =
-		/^\/google-site-kit\/v1\/core\/user\/data\/survey-timeouts/;
+	const surveyTriggerEndpoint = new RegExp(
+		'^/google-site-kit/v1/core/user/data/survey-trigger'
+	);
+	const surveyEventEndpoint = new RegExp(
+		'^/google-site-kit/v1/core/user/data/survey-event'
+	);
+	const surveyTimeoutEndpoint = new RegExp(
+		'^/google-site-kit/v1/core/user/data/survey-timeout'
+	);
+	const surveyTimeoutsEndpoint = new RegExp(
+		'^/google-site-kit/v1/core/user/data/survey-timeouts'
+	);
 
 	describe( 'actions', () => {
 		describe( 'setSurveyTimeout', () => {
@@ -122,7 +126,7 @@ describe( 'core/user surveys', () => {
 				} ).toThrow( 'options.ttl must be a number' );
 			} );
 
-			it( 'should not throw when called with only a triggerID', async () => {
+			it( 'should not throw when called with only a triggerID', () => {
 				provideUserAuthentication( registry );
 
 				muteFetch( surveyTriggerEndpoint );
@@ -158,7 +162,9 @@ describe( 'core/user surveys', () => {
 				registry.dispatch( CORE_USER ).receiveGetSurveyTimeouts( [] );
 
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/core\/user\/data\/authentication/,
+					new RegExp(
+						'^/google-site-kit/v1/core/user/data/authentication'
+					),
 					{
 						authenticated: true,
 					}
@@ -296,7 +302,7 @@ describe( 'core/user surveys', () => {
 
 	describe( 'selectors', () => {
 		describe( 'getCurrentSurvey', () => {
-			it( 'returns null when no current survey is set', async () => {
+			it( 'returns null when no current survey is set', () => {
 				expect(
 					registry.select( CORE_USER ).getCurrentSurvey()
 				).toBeNull();
@@ -314,7 +320,7 @@ describe( 'core/user surveys', () => {
 		} );
 
 		describe( 'getCurrentSurveySession', () => {
-			it( 'returns null when no current survey session is set', async () => {
+			it( 'returns null when no current survey session is set', () => {
 				expect(
 					registry.select( CORE_USER ).getCurrentSurveySession()
 				).toBeNull();

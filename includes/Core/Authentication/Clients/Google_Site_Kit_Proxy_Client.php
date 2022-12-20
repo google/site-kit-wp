@@ -11,8 +11,8 @@
 namespace Google\Site_Kit\Core\Authentication\Clients;
 
 use Google\Site_Kit\Core\Authentication\Google_Proxy;
+use Google\Site_Kit\Core\Authentication\Clients\OAuth2;
 use Google\Site_Kit\Core\Authentication\Exception\Google_Proxy_Code_Exception;
-use Google\Site_Kit_Dependencies\Google\Auth\OAuth2;
 use Google\Site_Kit_Dependencies\Google\Auth\HttpHandler\HttpHandlerFactory;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Request;

@@ -390,6 +390,7 @@ class Tag_ManagerTest extends TestCase {
 				'googlesitekit-modules',
 				'googlesitekit-vendor',
 				'googlesitekit-modules-analytics',
+				'googlesitekit-components',
 			),
 			$dependency->deps
 		);
@@ -428,6 +429,7 @@ class Tag_ManagerTest extends TestCase {
 				'googlesitekit-datastore-site',
 				'googlesitekit-modules',
 				'googlesitekit-vendor',
+				'googlesitekit-components',
 			),
 			$dependency->deps
 		);

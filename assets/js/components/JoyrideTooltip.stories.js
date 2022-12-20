@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import Button from './Button';
+import { Button } from 'googlesitekit-components';
 import JoyrideTooltip from './JoyrideTooltip';
 
 const Template = ( args ) => <JoyrideTooltip { ...args } />;
@@ -35,7 +35,7 @@ DefaultTooltip.args = {
 };
 DefaultTooltip.scenario = {
 	label: 'Global/JoyrideTooltip/DefaultTooltip',
-	delay: 250,
+	delay: 1000,
 };
 
 export default {

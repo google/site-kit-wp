@@ -20,6 +20,7 @@
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { ProgressBar } from 'googlesitekit-components';
 import { MODULES_ANALYTICS, ACCOUNT_CREATE } from '../../datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
@@ -28,7 +29,6 @@ import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import useExistingTagEffect from '../../hooks/useExistingTagEffect';
 import useExistingGA4TagEffect from '../../../analytics-4/hooks/useExistingTagEffect';
 import SettingsForm from './SettingsForm';
-import ProgressBar from '../../../../components/ProgressBar';
 import { AccountCreate, AccountCreateLegacy } from '../common';
 const { useSelect } = Data;
 
@@ -59,6 +59,10 @@ export default function SettingsEdit() {
 	const hasAnalyticsAccess = useSelect( ( select ) => {
 		const moduleOwnerID = select( MODULES_ANALYTICS ).getOwnerID();
 
+		if ( moduleOwnerID === undefined || loggedInUserID === undefined ) {
+			return undefined;
+		}
+
 		if ( moduleOwnerID === loggedInUserID ) {
 			return true;
 		}
@@ -82,6 +86,10 @@ export default function SettingsEdit() {
 
 	const hasAnalytics4Access = useSelect( ( select ) => {
 		const moduleOwnerID = select( MODULES_ANALYTICS_4 ).getOwnerID();
+
+		if ( moduleOwnerID === undefined || loggedInUserID === undefined ) {
+			return undefined;
+		}
 
 		if ( moduleOwnerID === loggedInUserID ) {
 			return true;

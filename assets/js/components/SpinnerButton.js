@@ -23,8 +23,8 @@ import classnames from 'classnames';
 /**
  * Internal dependencies
  */
+import { Button } from 'googlesitekit-components';
 import { CircularProgress } from '../material-components';
-import Button from './Button';
 
 export default function SpinnerButton( props ) {
 	const {

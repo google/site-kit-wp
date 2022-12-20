@@ -18,12 +18,15 @@ use Google\Site_Kit\Core\Authentication\Google_Proxy;
 use Google\Site_Kit\Core\Authentication\Owner_ID;
 use Google\Site_Kit\Core\Authentication\Profile;
 use Google\Site_Kit\Core\Authentication\Token;
+use Google\Site_Kit\Core\Dashboard_Sharing\Activity_Metrics\Activity_Metrics;
+use Google\Site_Kit\Core\Dashboard_Sharing\Activity_Metrics\Active_Consumers;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Util\Scopes;
 use Google\Site_Kit\Core\Util\URL;
 use Google\Site_Kit_Dependencies\Google\Service\PeopleService as Google_Service_PeopleService;
+use WP_User;
 
 /**
  * Class for connecting to Google APIs via OAuth.
@@ -46,6 +49,22 @@ final class OAuth_Client extends OAuth_Client_Base {
 	 * @var Owner_ID
 	 */
 	private $owner_id;
+
+	/**
+	 * Activity_Metrics instance.
+	 *
+	 * @since 1.87.0
+	 * @var Activity_Metrics
+	 */
+	private $activity_metrics;
+
+	/**
+	 * Active_Consumers instance.
+	 *
+	 * @since 1.87.0
+	 * @var Active_Consumers
+	 */
+	private $active_consumers;
 
 	/**
 	 * Constructor.
@@ -79,7 +98,9 @@ final class OAuth_Client extends OAuth_Client_Base {
 			$token
 		);
 
-		$this->owner_id = new Owner_ID( $this->options );
+		$this->owner_id         = new Owner_ID( $this->options );
+		$this->activity_metrics = new Activity_Metrics( $this->context, $this->user_options );
+		$this->active_consumers = new Active_Consumers( $this->user_options );
 	}
 
 	/**
@@ -99,8 +120,10 @@ final class OAuth_Client extends OAuth_Client_Base {
 			return;
 		}
 
+		$active_consumers = $this->activity_metrics->get_for_refresh_token();
+
 		try {
-			$token_response = $this->get_client()->fetchAccessTokenWithRefreshToken( $token['refresh_token'] );
+			$token_response = $this->get_client()->fetchAccessTokenWithRefreshToken( $token['refresh_token'], $active_consumers );
 		} catch ( \Exception $e ) {
 			$this->handle_fetch_token_exception( $e );
 			return;
@@ -111,6 +134,7 @@ final class OAuth_Client extends OAuth_Client_Base {
 			return;
 		}
 
+		$this->active_consumers->delete();
 		$this->set_token( $token_response );
 	}
 
@@ -375,8 +399,8 @@ final class OAuth_Client extends OAuth_Client_Base {
 	 * @since 1.49.0 Uses the new `Google_Proxy::setup_url_v2` method when the `serviceSetupV2` feature flag is enabled.
 	 */
 	public function authorize_user() {
-		$code       = $this->context->input()->filter( INPUT_GET, 'code', FILTER_SANITIZE_STRING );
-		$error_code = $this->context->input()->filter( INPUT_GET, 'error', FILTER_SANITIZE_STRING );
+		$code       = htmlspecialchars( $this->context->input()->filter( INPUT_GET, 'code' ) );
+		$error_code = htmlspecialchars( $this->context->input()->filter( INPUT_GET, 'error' ) );
 		// If the OAuth redirects with an error code, handle it.
 		if ( ! empty( $error_code ) ) {
 			$this->user_options->set( self::OPTION_ERROR_CODE, $error_code );
@@ -426,7 +450,7 @@ final class OAuth_Client extends OAuth_Client_Base {
 		if ( isset( $token_response['scope'] ) ) {
 			$scopes = explode( ' ', sanitize_text_field( $token_response['scope'] ) );
 		} elseif ( $this->context->input()->filter( INPUT_GET, 'scope' ) ) {
-			$scope  = $this->context->input()->filter( INPUT_GET, 'scope', FILTER_SANITIZE_STRING );
+			$scope  = htmlspecialchars( $this->context->input()->filter( INPUT_GET, 'scope' ) );
 			$scopes = explode( ' ', $scope );
 		} else {
 			$scopes = $this->get_required_scopes();
@@ -622,5 +646,16 @@ final class OAuth_Client extends OAuth_Client_Base {
 		return current_user_can( Permissions::VIEW_DASHBOARD )
 			? $this->context->admin_url( 'dashboard' )
 			: $this->context->admin_url( 'splash' );
+	}
+
+	/**
+	 * Adds a user to the active consumers list.
+	 *
+	 * @since 1.87.0
+	 *
+	 * @param WP_User $user User object.
+	 */
+	public function add_active_consumer( WP_User $user ) {
+		$this->active_consumers->add( $user->ID, $user->roles );
 	}
 }

@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import ProgressBar from '../../../../components/ProgressBar';
+import { ProgressBar } from 'googlesitekit-components';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import { MODULES_TAGMANAGER, ACCOUNT_CREATE } from '../../datastore/constants';
@@ -54,6 +54,11 @@ export default function SettingsEdit() {
 	);
 	const hasModuleAccess = useSelect( ( select ) => {
 		const moduleOwnerID = select( MODULES_TAGMANAGER ).getOwnerID();
+
+		if ( moduleOwnerID === undefined || loggedInUserID === undefined ) {
+			return undefined;
+		}
+
 		if ( moduleOwnerID === loggedInUserID ) {
 			return true;
 		}

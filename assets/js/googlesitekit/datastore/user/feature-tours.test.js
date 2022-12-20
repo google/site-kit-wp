@@ -76,8 +76,9 @@ describe( 'core/user feature-tours', () => {
 
 	describe( 'actions', () => {
 		describe( 'dismissTour', () => {
-			const fetchDismissTourRegExp =
-				/^\/google-site-kit\/v1\/core\/user\/data\/dismiss-tour/;
+			const fetchDismissTourRegExp = new RegExp(
+				'^/google-site-kit/v1/core/user/data/dismiss-tour'
+			);
 
 			it( 'requires a slug parameter', () => {
 				expect( () =>
@@ -405,8 +406,9 @@ describe( 'core/user feature-tours', () => {
 	} );
 
 	describe( 'selectors', () => {
-		const fetchGetDismissedToursRegExp =
-			/^\/google-site-kit\/v1\/core\/user\/data\/dismissed-tours/;
+		const fetchGetDismissedToursRegExp = new RegExp(
+			'^/google-site-kit/v1/core/user/data/dismissed-tours'
+		);
 
 		describe( 'getDismissedFeatureTourSlugs', () => {
 			it( 'returns the initial state before the resolver runs', () => {
@@ -598,7 +600,7 @@ describe( 'core/user feature-tours', () => {
 				).toEqual( false );
 			} );
 
-			it( 'returns false for an expired lastDismissedAt value in the cache', async () => {
+			it( 'returns false for an expired lastDismissedAt value in the cache', () => {
 				registry.dispatch( CORE_USER ).receiveLastDismissedAt( null );
 
 				expect(

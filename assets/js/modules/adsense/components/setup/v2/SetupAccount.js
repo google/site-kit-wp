@@ -30,6 +30,7 @@ import { useEffect } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { ProgressBar } from 'googlesitekit-components';
 import {
 	MODULES_ADSENSE,
 	API_STATE_NEEDS_ATTENTION,
@@ -44,7 +45,6 @@ import {
 	ACCOUNT_STATUS_CLIENT_REQUIRES_REVIEW,
 	SITE_STATUS_NONE,
 } from '../../../util/status';
-import ProgressBar from '../../../../../components/ProgressBar';
 import SetupAccountSite from './SetupAccountSite';
 import SetupAccountNoClient from './SetupAccountNoClient';
 import SetupAccountCreateSite from './SetupAccountCreateSite';

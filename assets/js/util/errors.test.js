@@ -26,7 +26,11 @@ import {
 	ERROR_CODE_MISSING_REQUIRED_SCOPE,
 	ERROR_REASON_INSUFFICIENT_PERMISSIONS,
 	ERROR_REASON_FORBIDDEN,
+	ERROR_INTERNAL_SERVER_ERROR,
+	ERROR_INVALID_JSON,
 	isAuthError,
+	isErrorRetryable,
+	getReportErrorMessage,
 } from './errors';
 
 describe( 'Error Utilities', () => {
@@ -164,6 +168,96 @@ describe( 'Error Utilities', () => {
 			expect( fn( true ) ).toBe( false );
 			expect( fn( 'error' ) ).toBe( false );
 			expect( fn( 123 ) ).toBe( false );
+		} );
+	} );
+
+	describe( 'isErrorRetryable', () => {
+		it( 'should return FALSE when there is no selectorData', () => {
+			expect( isErrorRetryable( { code: 'some-error' } ) ).toBe( false );
+		} );
+
+		it( 'should return FALSE when there is no storeName in the selectorData', () => {
+			expect(
+				isErrorRetryable(
+					{ code: 'some-error' },
+					{ name: 'some-selector' }
+				)
+			).toBe( false );
+		} );
+
+		it( 'should return FALSE when passed an insufficient permissions error', () => {
+			expect(
+				isErrorRetryable(
+					{
+						data: {
+							reason: ERROR_REASON_INSUFFICIENT_PERMISSIONS,
+						},
+					},
+					{ name: 'some-selector', storeName: 'some-store' }
+				)
+			).toBe( false );
+		} );
+
+		it( 'should return FALSE when passed a permission scope error', () => {
+			expect(
+				isErrorRetryable(
+					{
+						code: ERROR_CODE_MISSING_REQUIRED_SCOPE,
+					},
+					{ name: 'some-selector', storeName: 'some-store' }
+				)
+			).toBe( false );
+		} );
+
+		it( 'should return FALSE when passed an auth error', () => {
+			expect(
+				isErrorRetryable(
+					{
+						data: {
+							reconnectURL: 'example.com',
+						},
+					},
+					{ name: 'some-selector', storeName: 'some-store' }
+				)
+			).toBe( false );
+		} );
+
+		it( 'should return TRUE when passed a retryable error', () => {
+			expect(
+				isErrorRetryable(
+					{
+						code: 'some-error',
+					},
+					{ name: 'some-selector', storeName: 'some-store' }
+				)
+			).toBe( true );
+		} );
+	} );
+
+	describe( 'getReportErrorMessage', () => {
+		describe.each( [
+			[
+				'return the same error message when error code is not internal_server_error or invalid_json',
+				{ code: 'some-error', message: 'Not found' },
+				'Not found',
+			],
+			[
+				'return the appropriate error message when error code is internal_server_error',
+				{
+					code: ERROR_INTERNAL_SERVER_ERROR,
+					message: 'Internal server error',
+				},
+				'There was a critical error on this website while fetching data.',
+			],
+			[
+				'return the appropriate error message when error code is invalid_json',
+				{ code: ERROR_INVALID_JSON, message: 'Invalid JSON' },
+				'The server provided an invalid response.',
+			],
+		] )( '%s', ( label, error, message ) => {
+			it( `should ${ label }`, () => {
+				expect( getReportErrorMessage( error ) ).toEqual( message );
+			} );
 		} );
 	} );
 } );

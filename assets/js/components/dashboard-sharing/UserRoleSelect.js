@@ -39,9 +39,8 @@ import {
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import Button from '../Button';
+import { Button, Chip } from 'googlesitekit-components';
 import Link from '../Link';
-import Chip from '../Chip';
 import ShareIcon from '../../../svg/icons/share.svg';
 import CheckIcon from '../../../svg/icons/check.svg';
 import useViewContext from '../../hooks/useViewContext';

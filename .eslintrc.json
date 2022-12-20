@@ -32,6 +32,14 @@
     "jsdoc/require-returns": "error",
     "jsdoc/no-undefined-types": "error",
     "jsdoc/valid-types": "error",
+    "require-await": "error",
+    "react/jsx-curly-brace-presence": "error",
+    "no-invalid-regexp": "error",
+    "no-useless-escape": "error",
+    "complexity": [
+      "error",
+      20
+    ],
     "no-restricted-globals": [
       "error",
       {
@@ -81,6 +89,7 @@
       "googlesitekit-modules",
       "googlesitekit-api",
       "googlesitekit-widgets",
+      "googlesitekit-components",
       "@wordpress/i18n__non-shim",
       "@wordpress/api-fetch__non-shim"
     ],

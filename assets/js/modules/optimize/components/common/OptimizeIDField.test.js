@@ -33,7 +33,7 @@ describe( 'OptimizeIDField', () => {
 		registry.dispatch( MODULES_OPTIMIZE ).setSettings( {} );
 	} );
 
-	it( 'should render with a valid optimize id passed', () => {
+	it( 'should render with a valid optimize container id passed', () => {
 		registry.dispatch( MODULES_OPTIMIZE ).setOptimizeID( 'OPT-1234567' );
 
 		const { container } = render( <OptimizeIDField />, { registry } );
@@ -46,7 +46,7 @@ describe( 'OptimizeIDField', () => {
 		);
 	} );
 
-	it( 'should display an error message with an invalid optimize id passed', () => {
+	it( 'should display an error message with an invalid optimize container id passed', () => {
 		registry.dispatch( MODULES_OPTIMIZE ).setOptimizeID( 'OPT' );
 
 		const { container } = render( <OptimizeIDField />, { registry } );
@@ -59,7 +59,7 @@ describe( 'OptimizeIDField', () => {
 		);
 	} );
 
-	it( 'should not display an error message with no optimize id passed', () => {
+	it( 'should not display an error message with no optimize container id passed', () => {
 		registry.dispatch( MODULES_OPTIMIZE ).setOptimizeID( '' );
 
 		const { container } = render( <OptimizeIDField />, { registry } );

@@ -43,7 +43,7 @@ describe( 'Footer', () => {
 		},
 	];
 
-	it( 'should not make a search console settings requests when the view context is "view only"', async () => {
+	it( 'should not make a search console settings requests when the view context is "view only"', () => {
 		const { container } = render(
 			<Footer metrics={ metrics } selectedStats={ 0 } />,
 			{
@@ -52,13 +52,15 @@ describe( 'Footer', () => {
 		);
 
 		expect( fetchMock ).not.toHaveFetched(
-			/^\/google-site-kit\/v1\/modules\/search-console\/data\/settings/
+			new RegExp(
+				'^/google-site-kit/v1/modules/search-console/data/settings'
+			)
 		);
 		expect( container ).not.toHaveTextContent( 'Search Console' );
 		expect( container.firstChild ).toBeNull();
 	} );
 
-	it( 'should not make a analytics settings requests when the view context is "view only"', async () => {
+	it( 'should not make a analytics settings requests when the view context is "view only"', () => {
 		const { container } = render(
 			<Footer metrics={ metrics } selectedStats={ 1 } />,
 			{
@@ -67,15 +69,17 @@ describe( 'Footer', () => {
 		);
 
 		expect( fetchMock ).not.toHaveFetched(
-			/^\/google-site-kit\/v1\/modules\/analytics\/data\/settings/
+			new RegExp( '^/google-site-kit/v1/modules/analytics/data/settings' )
 		);
 		expect( container ).not.toHaveTextContent( 'Analytics' );
 		expect( container.firstChild ).toBeNull();
 	} );
 
-	it( 'should make a search console settings request normally when the view context is NOT "view only"', async () => {
+	it( 'should make a search console settings request normally when the view context is NOT "view only"', () => {
 		fetchMock.getOnce(
-			/^\/google-site-kit\/v1\/modules\/search-console\/data\/settings/,
+			new RegExp(
+				'^/google-site-kit/v1/modules/search-console/data/settings'
+			),
 			{ body: {}, status: 200 }
 		);
 
@@ -87,15 +91,19 @@ describe( 'Footer', () => {
 		);
 
 		expect( fetchMock ).toHaveFetched(
-			/^\/google-site-kit\/v1\/modules\/search-console\/data\/settings/
+			new RegExp(
+				'^/google-site-kit/v1/modules/search-console/data/settings'
+			)
 		);
 		expect( container ).toHaveTextContent( 'Search Console' );
 		expect( container.firstChild ).not.toBeNull();
 	} );
 
-	it( 'should make a analytics settings request normally when the view context is NOT "view only"', async () => {
+	it( 'should make a analytics settings request normally when the view context is NOT "view only"', () => {
 		fetchMock.getOnce(
-			/^\/google-site-kit\/v1\/modules\/analytics\/data\/settings/,
+			new RegExp(
+				'^/google-site-kit/v1/modules/analytics/data/settings'
+			),
 			{ body: {}, status: 200 }
 		);
 
@@ -107,7 +115,7 @@ describe( 'Footer', () => {
 		);
 
 		expect( fetchMock ).toHaveFetched(
-			/^\/google-site-kit\/v1\/modules\/analytics\/data\/settings/
+			new RegExp( '^/google-site-kit/v1/modules/analytics/data/settings' )
 		);
 		expect( container ).toHaveTextContent( 'Analytics' );
 		expect( container.firstChild ).not.toBeNull();

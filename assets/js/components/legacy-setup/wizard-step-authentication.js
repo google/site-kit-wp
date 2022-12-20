@@ -30,8 +30,8 @@ import { Component } from '@wordpress/element';
 /**
  * Internal dependencies
  */
+import { Button } from 'googlesitekit-components';
 import { Cell, Grid, Row } from '../../material-components';
-import Button from '../Button';
 import Link from '../Link';
 import OptIn from '../OptIn';
 

@@ -33,6 +33,9 @@ import { __, _x, sprintf } from '@wordpress/i18n';
 import ReportMetric from './ReportMetric';
 import MetricsLearnMoreLink from './MetricsLearnMoreLink';
 import ErrorText from '../../../../components/ErrorText';
+import ReportErrorActions from '../../../../components/ReportErrorActions';
+import { getReportErrorMessage } from '../../../../util/errors';
+import { CATEGORY_AVERAGE } from '../../util/constants';
 
 export default function FieldReportMetrics( { data, error } ) {
 	const {
@@ -43,10 +46,17 @@ export default function FieldReportMetrics( { data, error } ) {
 	} = data?.loadingExperience?.metrics || {};
 
 	if ( error ) {
+		const errorMessage = getReportErrorMessage( error );
+
 		return (
 			<div className="googlesitekit-pagespeed-insights-web-vitals-metrics">
-				<div className="googlesitekit-pagespeed-report__row googlesitekit-pagespeed-report__row--first">
-					<ErrorText message={ error.message } />
+				<div className="googlesitekit-pagespeed-report__row googlesitekit-pagespeed-report__row--error">
+					<ErrorText message={ errorMessage } />
+
+					<ReportErrorActions
+						moduleSlug="pagespeed-insights"
+						error={ error }
+					/>
 				</div>
 			</div>
 		);
@@ -153,27 +163,28 @@ export default function FieldReportMetrics( { data, error } ) {
 						category={ firstInputDelay.category }
 						isLast={ ! interactionToNextPaint }
 					/>
-					{ !! interactionToNextPaint && (
-						<ReportMetric
-							title={ _x(
-								'Interaction to Next Paint',
-								'core web vitals name',
-								'google-site-kit'
-							) }
-							description={ __(
-								'How quickly your page responds when people interact with it',
-								'google-site-kit'
-							) }
-							displayValue={ sprintf(
-								/* translators: %s: number of milliseconds */
-								_x( '%s ms', 'duration', 'google-site-kit' ),
-								interactionToNextPaint.percentile
-							) }
-							category={ interactionToNextPaint.category }
-							experimental
-							isLast
-						/>
-					) }
+					<ReportMetric
+						title={ _x(
+							'Interaction to Next Paint',
+							'core web vitals name',
+							'google-site-kit'
+						) }
+						description={ __(
+							'How quickly your page responds when people interact with it',
+							'google-site-kit'
+						) }
+						displayValue={ sprintf(
+							/* translators: %s: number of milliseconds */
+							_x( '%s ms', 'duration', 'google-site-kit' ),
+							interactionToNextPaint?.percentile
+						) }
+						category={
+							interactionToNextPaint?.category || CATEGORY_AVERAGE
+						}
+						experimental
+						isLast={ !! interactionToNextPaint }
+						isHidden={ ! interactionToNextPaint }
+					/>
 				</tbody>
 			</table>
 		</div>

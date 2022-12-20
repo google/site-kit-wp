@@ -57,20 +57,11 @@ jobs:
     if: false == ( ( github.event_name == 'pull_request' && ( github.event.action == 'closed' || github.event.pull_request.draft == true || contains( github.head_ref, 'dependabot/' ) ) ) || github.event.pull_request.head.repo.fork )
     steps:
       - uses: actions/checkout@v2
-      - name: Read .nvmrc
-        run: echo "##[set-output name=NVMRC;]$(cat .nvmrc)"
-        id: nvm
       - name: Setup Node.js (.nvmrc)
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v3
         with:
-          node-version: '${{ steps.nvm.outputs.NVMRC }}'
-      - name: Cache Node - npm
-        uses: actions/cache@v2
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-cache-
+          node-version-file: '.nvmrc'
+          cache: 'npm'
       - name: npm install
         run: |
           npm ci
@@ -99,15 +90,13 @@ jobs:
       - name: Set branch environment variables
         id: branch-target
         if: github.event_name != 'pull_request'
-        run: |
-          echo "::set-output name=dir::${GITHUB_REF##*/}"
+        run: echo "dir=${GITHUB_REF##*/}" >> $GITHUB_OUTPUT
       - name: Set PR environment variables
         id: pr-target
         if: github.event_name == 'pull_request'
         env:
           PULL_REQUEST_NUMBER: ${{ github.event.number }}
-        run: |
-          echo "::set-output name=dir::pull/${PULL_REQUEST_NUMBER}"
+        run: echo "dir=pull/${PULL_REQUEST_NUMBER}" >> $GITHUB_OUTPUT
       - name: Commit updates
         run: |
           mkdir -p storybook/${TARGET_DIR}
@@ -163,20 +152,11 @@ jobs:
         with:
           name: storybook-files
           path: dist
-      - name: Read .nvmrc
-        run: echo "##[set-output name=NVMRC;]$(cat .nvmrc)"
-        id: nvm
       - name: Setup Node.js (.nvmrc)
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v3
         with:
-          node-version: '${{ steps.nvm.outputs.NVMRC }}'
-      - name: Cache Node - npm
-        uses: actions/cache@v2
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-cache-
+          node-version-file: '.nvmrc'
+          cache: 'npm'
       - name: npm install
         run: |
           npm ci

@@ -51,7 +51,9 @@ describe( 'modules/analytics goals', () => {
 		describe( 'getGoals', () => {
 			it( 'uses a resolver to make a network request', async () => {
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/goals/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics/data/goals'
+					),
 					{ body: fixtures.goals, status: 200 }
 				);
 
@@ -101,7 +103,9 @@ describe( 'modules/analytics goals', () => {
 				};
 
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/goals/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics/data/goals'
+					),
 					{ body: response, status: 500 }
 				);
 

@@ -24,7 +24,7 @@ import { storiesOf } from '@storybook/react';
 /**
  * Internal dependencies
  */
-import Menu from '../assets/js/components/Menu';
+import { Menu } from 'googlesitekit-components';
 
 storiesOf( 'Global', module ).add(
 	'Menu',

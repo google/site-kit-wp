@@ -95,6 +95,7 @@
 @import "components/global/googlesitekit-dropdown-menu";
 @import "components/global/googlesitekit-entity-header";
 @import "components/global/googlesitekit-entity-search";
+@import "components/global/googlesitekit-error-handler";
 @import "components/global/googlesitekit-error-text";
 @import "components/global/googlesitekit-gathering-data-notice";
 @import "components/global/googlesitekit-header";
@@ -132,7 +133,7 @@
 @import "components/dashboard/googlesitekit-signin-box";
 @import "components/dashboard/googlesitekit-dashboard-charts";
 @import "components/dashboard/googlesitekit-dashboard-module-header";
-@import "components/dashboard/googlesitekit-dashboard-single-url";
+@import "components/dashboard/googlesitekit-entity-dashboard";
 @import "components/dashboard/googlesitekit-DashboardPageSpeed";
 @import "components/dashboard/googlesitekit-ReportMetric";
 
@@ -164,6 +165,7 @@
 @import "components/user-input/googlesitekit-user-input-questions";
 @import "components/user-input/googlesitekit-user-input-preview";
 @import "components/user-input/googlesitekit-user-input-controls";
+@import "components/user-input/googlesitekit-user-input-notification";
 
 // Tour Tooltip
 @import "components/tour-tooltip/googlesitekit-tour-tooltip";
@@ -172,8 +174,6 @@
 @import "components/feature-tours/googlesitekit-dashboard-sharing";
 
 // Modules
-@import "components/idea-hub";
-@import "components/thank-with-google";
 @import "components/analytics-4";
 
 // User Feedback

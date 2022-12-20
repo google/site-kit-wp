@@ -1,8 +1,0 @@
-{
-  "name": "google/site-kit-wp-phpunit-polyfill",
-  "description": "A library for polyfilling changes to core's WP_UnitTestCase below WP 5.2",
-  "version": "v0.1",
-  "autoload": {
-    "files": ["autoloader.php"]
-  }
-}

@@ -32,8 +32,8 @@ import { __, _x, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { ProgressBar } from 'googlesitekit-components';
 import { Select, Option } from '../../../../material-components';
-import ProgressBar from '../../../../components/ProgressBar';
 import {
 	MODULES_ANALYTICS_4,
 	PROPERTY_CREATE,
@@ -75,6 +75,33 @@ export default function PropertySelect( {
 		select( MODULES_ANALYTICS_4 ).getPropertyID()
 	);
 
+	const propertyIDs = ( properties || [] ).map( ( { _id } ) => _id );
+
+	const measurementIDs = useSelect( ( select ) => {
+		if ( ! properties?.length ) {
+			return null;
+		}
+
+		return select(
+			MODULES_ANALYTICS_4
+		).getMatchedMeasurementIDsByPropertyIDs( propertyIDs );
+	} );
+
+	const areMeasurementIDsResolving = useSelect( ( select ) => {
+		if ( properties === undefined ) {
+			return true;
+		}
+
+		if ( ! properties || properties?.length === 0 ) {
+			return false;
+		}
+
+		return ! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
+			'getWebDataStreamsBatch',
+			[ propertyIDs ]
+		);
+	} );
+
 	const isLoading = useSelect(
 		( select ) =>
 			! select( MODULES_ANALYTICS ).hasFinishedResolution(
@@ -84,10 +111,13 @@ export default function PropertySelect( {
 				'getProperties',
 				[ accountID ]
 			) ||
-			select( MODULES_ANALYTICS ).hasFinishedSelectingAccount() === false
+			select( MODULES_ANALYTICS ).hasFinishedSelectingAccount() ===
+				false ||
+			areMeasurementIDsResolving
 	);
 
 	const { selectProperty } = useDispatch( MODULES_ANALYTICS_4 );
+
 	const viewContext = useViewContext();
 
 	const onPropertyChange = useCallback(
@@ -166,17 +196,17 @@ export default function PropertySelect( {
 				} )
 				.map( ( { _id, displayName }, index ) => (
 					<Option key={ index } value={ _id }>
-						{ _id === PROPERTY_CREATE
+						{ _id === PROPERTY_CREATE || ! measurementIDs?.[ _id ]
 							? displayName
 							: sprintf(
-									/* translators: 1: Property name. 2: Property ID. */
+									/* translators: 1: Property name. 2: Measurement ID. */
 									_x(
 										'%1$s (%2$s)',
 										'Analytics property name and ID',
 										'google-site-kit'
 									),
 									displayName,
-									_id
+									measurementIDs?.[ _id ] || ''
 							  ) }
 					</Option>
 				) ) }
