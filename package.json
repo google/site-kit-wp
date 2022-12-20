@@ -149,7 +149,7 @@
 		"punycode": "^2.1.1",
 		"query-string": "^7.0.1",
 		"react-google-charts": "^3.0.15",
-		"react-joyride": "^2.3.0",
+		"react-joyride": "^2.3.2",
 		"react-router-dom": "^5.2.0",
 		"react-use": "^15.3.4",
 		"react-use-observer": "^2.2.4",
