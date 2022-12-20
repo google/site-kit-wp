@@ -38,7 +38,7 @@ global.fetchMock = fetchMockJest;
 beforeEach( () => {
 	// Use real, tracked timeouts in order to be able to wait for them. This was introduced to support the asynchronous resolver cache
 	// introduced in @wordpress/data 4.23.0 which adds a setTimeout to each resolver, and these often need to be waited for in tests.
-	// Using real timers, rather than fake timers here ensures that we don't need to manually advance timers for every single resolver call.
+	// Using real timers, rather than fake timers here ensures that we don't need to manually advance timers for every resolver call.
 	jest.useRealTimers();
 	global.useTrackedTimeouts();
 
