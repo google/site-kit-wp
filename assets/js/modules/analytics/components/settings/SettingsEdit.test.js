@@ -32,6 +32,7 @@ import * as fixtures from '../../datastore/__fixtures__';
 import {
 	provideModules,
 	provideSiteInfo,
+	waitForDefaultTimeouts,
 } from '../../../../../../tests/js/utils';
 import * as ga4Fixtures from '../../../analytics-4/datastore/__fixtures__';
 
@@ -39,7 +40,6 @@ describe( 'SettingsEdit', () => {
 	let registry;
 
 	beforeEach( () => {
-		jest.useFakeTimers();
 		registry = createTestRegistry();
 		provideSiteInfo( registry );
 		provideModules( registry, [
@@ -90,13 +90,11 @@ describe( 'SettingsEdit', () => {
 			.dispatch( MODULES_ANALYTICS )
 			.receiveGetProfiles( profiles, { accountID, propertyID } );
 
-		const { container } = render( <SettingsEdit />, {
+		const { container, waitForRegistry } = render( <SettingsEdit />, {
 			registry,
 		} );
 
-		jest.runAllTimers();
-
-		await act( () => new Promise( ( resolve ) => resolve() ) );
+		await waitForRegistry();
 
 		// Verify GTM is not available.
 		expect(
@@ -179,7 +177,11 @@ describe( 'SettingsEdit', () => {
 		const { waitForRegistry } = render( <SettingsEdit />, {
 			registry,
 		} );
+
 		await waitForRegistry();
+
+		// Wait for additional resolvers to run.
+		await act( waitForDefaultTimeouts );
 
 		expect(
 			registry.select( MODULES_ANALYTICS ).getAccountID()
