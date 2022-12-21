@@ -56,7 +56,7 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version-file: '.nvmrc'
-          cache: 'npm'
+          cache: 'njm'
       - name: npm install
         run: npm ci
         env:
