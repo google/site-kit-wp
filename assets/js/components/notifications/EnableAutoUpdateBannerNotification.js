@@ -69,6 +69,28 @@ const EnableAutoUpdateBannerNotification = () => {
 	const [ slug ] = useQueryArg( 'slug' );
 
 	const [ isInitialPluginSetup, setIsFirstPluginSetup ] = useState( true );
+	const [ enabledViaCTA, setEnabledViaCTA ] = useState( undefined );
+
+	// Set the `enabledViaCTA` state to the value of `siteKitAutoUpdatesEnabled`,
+	// once `siteKitAutoUpdatesEnabled` is loaded.
+	useEffect( () => {
+		if (
+			enabledViaCTA === undefined &&
+			siteKitAutoUpdatesEnabled !== undefined
+		) {
+			setEnabledViaCTA( siteKitAutoUpdatesEnabled );
+		}
+	}, [ enabledViaCTA, siteKitAutoUpdatesEnabled ] );
+
+	const ctaActivate = useCallback( async () => {
+		await enableAutoUpdate();
+	}, [ enableAutoUpdate ] );
+
+	useEffect( () => {
+		if ( enabledViaCTA === false && siteKitAutoUpdatesEnabled === true ) {
+			setEnabledViaCTA( true );
+		}
+	}, [ enabledViaCTA, siteKitAutoUpdatesEnabled ] );
 
 	const setFirstPluginSetup = useCallback(
 		async ( isFirstSetup ) => {
@@ -115,17 +137,18 @@ const EnableAutoUpdateBannerNotification = () => {
 	] );
 
 	// Don't render anything if the user has no permission to update plugin,
-	// plugin auto-updates are disabled or auto update are already enabled for Site Kit.
+	// plugin auto-updates are disabled or auto update are already enabled for
+	// Site Kit.
 	if (
 		! hasUpdatePluginCapacity ||
 		! autoUpdatesEnabled ||
-		siteKitAutoUpdatesEnabled
+		( siteKitAutoUpdatesEnabled && ! enabledViaCTA )
 	) {
 		return null;
 	}
 
-	// Don't show this banner if the user just came from the initial Site Kit setup
-	// flow less than 10 minutes ago.
+	// Don't show this banner if the user just came from the initial Site Kit
+	// setup flow less than 10 minutes ago.
 	if ( isInitialPluginSetup ) {
 		return null;
 	}
@@ -133,33 +156,49 @@ const EnableAutoUpdateBannerNotification = () => {
 	return (
 		<BannerNotification
 			id={ NOTIFICATION_ID }
-			title={ __( 'Keep Site Kit up-to-date', 'google-site-kit' ) }
-			description={ __(
-				'Turn on auto-updates so you always have the latest version of Site Kit. We constantly introduce new features to help you get the insights you need to be successful on the web.',
-				'google-site-kit'
-			) }
+			title={
+				enabledViaCTA
+					? __(
+							'Thanks for enabling auto-updates',
+							'google-site-kit'
+					  )
+					: __( 'Keep Site Kit up-to-date', 'google-site-kit' )
+			}
+			description={
+				enabledViaCTA
+					? __(
+							'Auto-updates have been enabled. Your version of Site Kit will automatically be updated when new versions are available.',
+							'google-site-kit'
+					  )
+					: __(
+							'Turn on auto-updates so you always have the latest version of Site Kit. We constantly introduce new features to help you get the insights you need to be successful on the web.',
+							'google-site-kit'
+					  )
+			}
 			ctaComponent={
-				<Fragment>
-					{ enableAutoUpdateError && (
-						<div>
-							<ErrorNotice
-								error={ enableAutoUpdateError }
-								storeName={ CORE_SITE }
-							/>
-						</div>
-					) }
-					<SpinnerButton
-						onClick={ enableAutoUpdate }
-						isSaving={ isDoingEnableAutoUpdate }
-					>
-						{ __( 'Enable auto-updates', 'google-site-kit' ) }
-					</SpinnerButton>
-				</Fragment>
+				enabledViaCTA ? undefined : (
+					<Fragment>
+						{ enableAutoUpdateError && (
+							<div>
+								<ErrorNotice
+									error={ enableAutoUpdateError }
+									storeName={ CORE_SITE }
+								/>
+							</div>
+						) }
+						<SpinnerButton
+							onClick={ ctaActivate }
+							isSaving={ isDoingEnableAutoUpdate }
+						>
+							{ __( 'Enable auto-updates', 'google-site-kit' ) }
+						</SpinnerButton>
+					</Fragment>
+				)
 			}
 			dismiss={ __( 'Dismiss', 'google-site-kit' ) }
 			isDismissible
 			dismissExpires={ 0 }
-			dismissOnCTAClick={ false }
+			dismissOnCTAClick={ enabledViaCTA }
 		/>
 	);
 };
