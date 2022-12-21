@@ -493,9 +493,8 @@ export const unsubscribeFromAll = () => {
  * all pending resolvers we need to specify a higher timeout than 1ms. The value 5ms, rather than say 2ms is used in order to provide a degree of headroom,
  * as "Node.js makes no guarantees about the exact timing of when callbacks will fire, nor of their ordering".
  *
- * Obviously, this function will result in _any_ pending 1ms timeouts being waited for (and some 5ms timeouts, although not being the default, these
- * are much less likely), or timeouts that just happen to be due within the next 5ms, but it's primarily introduced to wait for resolvers, with the delay
- * calibrated accordingly.
+ * Obviously, this function will result in _any_ pending 1ms timeouts being waited for (and within-5ms timeouts, although not being the default, these
+ * are less likely to be in progress), but it's primarily introduced to wait for resolvers, with the delay calibrated accordingly.
  *
  * References:
  * - @wordpress/data: https://github.com/WordPress/gutenberg/blob/07baf5a12007d31bbd4ee22113b07952f7eacc26/packages/data/src/namespace-store/index.js#L294-L310.
