@@ -127,9 +127,7 @@ final class Nonces {
 						'callback'            => function() {
 							return new WP_REST_Response( $this->get_nonces() );
 						},
-						'permission_callback' => function () {
-							return current_user_can( 'edit_posts' );
-						},
+						'permission_callback' => '__return_true',
 					),
 				)
 			),
