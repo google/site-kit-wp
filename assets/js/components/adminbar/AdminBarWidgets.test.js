@@ -53,14 +53,14 @@ describe( 'AdminBarWidgets', () => {
 	} );
 
 	it( 'should render the Admin Bar Widgets, including the Activate Analytics CTA', async () => {
-		const { container, getByText, waitForRegistryAndTimeouts } = render(
+		const { container, getByText, waitForRegistry } = render(
 			<AdminBarWidgets />,
 			{
 				registry,
 			}
 		);
 
-		await waitForRegistryAndTimeouts();
+		await waitForRegistry();
 
 		expect( container ).toMatchSnapshot();
 
@@ -76,14 +76,14 @@ describe( 'AdminBarWidgets', () => {
 				)
 			);
 
-		const { container, queryByText, waitForRegistryAndTimeouts } = render(
+		const { container, queryByText, waitForRegistry } = render(
 			<AdminBarWidgets />,
 			{
 				registry,
 			}
 		);
 
-		await waitForRegistryAndTimeouts();
+		await waitForRegistry();
 
 		expect( container ).toMatchSnapshot();
 

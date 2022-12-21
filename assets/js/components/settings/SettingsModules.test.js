@@ -68,12 +68,12 @@ describe( 'SettingsModules', () => {
 		provideModules( registry );
 		history.push( '/connect' );
 
-		const { waitForRegistryAndTimeouts } = render( <SettingsModules />, {
+		const { waitForRegistry } = render( <SettingsModules />, {
 			history,
 			registry,
 		} );
 
-		await waitForRegistryAndTimeouts();
+		await waitForRegistry();
 
 		expect( global.location.hash ).toEqual( '#/connect-more-services' );
 	} );

@@ -94,12 +94,12 @@ describe( 'Overview', () => {
 	} );
 
 	it( 'should render the Search Funnel Overview, including the Activate Analytics CTA', async () => {
-		const { container, getByText, waitForRegistryAndTimeouts } = render(
+		const { container, getByText, waitForRegistry } = render(
 			<Overview { ...overviewProps } />,
 			{ registry }
 		);
 
-		await waitForRegistryAndTimeouts();
+		await waitForRegistry();
 
 		expect( container ).toMatchSnapshot();
 
@@ -115,12 +115,12 @@ describe( 'Overview', () => {
 				)
 			);
 
-		const { container, queryByText, waitForRegistryAndTimeouts } = render(
+		const { container, queryByText, waitForRegistry } = render(
 			<Overview { ...overviewProps } />,
 			{ registry }
 		);
 
-		await waitForRegistryAndTimeouts();
+		await waitForRegistry();
 
 		expect( container ).toMatchSnapshot();
 

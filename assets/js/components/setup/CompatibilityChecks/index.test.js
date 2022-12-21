@@ -83,13 +83,13 @@ describe( 'CompatibilityChecks', () => {
 		// Mock request to AMP project.
 		muteFetch( AMP_PROJECT_TEST_URL );
 
-		const { container, waitForRegistryAndTimeouts } = render(
+		const { container, waitForRegistry } = render(
 			<CompatibilityChecks>{ compatibilityChildren }</CompatibilityChecks>
 		);
 
 		expect( container ).toHaveTextContent( 'Checking Compatibility…' );
 
-		await waitForRegistryAndTimeouts();
+		await waitForRegistry();
 
 		expect(
 			document.querySelector( '.mdc-linear-progress' )
