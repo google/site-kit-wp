@@ -51,7 +51,7 @@ const baseActions = {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param {Object} nonces User capabilities.
+	 * @param {Object} nonces Dictionary of keys and their nonces.
 	 * @return {Object} Redux-style action.
 	 */
 	receiveNonces( nonces ) {
