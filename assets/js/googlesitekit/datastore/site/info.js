@@ -721,7 +721,7 @@ export const selectors = {
 	 * @since n.e.x.t
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {(string)} The basename of plugin, e.g. 'google-site-kit/google-site-kit.php.
+	 * @return {string} The basename of plugin, e.g. `'google-site-kit/google-site-kit.php'`.
 	 */
 	getPluginBasename: getSiteInfoProperty( 'pluginBasename' ),
 
