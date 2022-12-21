@@ -19,23 +19,20 @@
 /**
  * WordPress dependencies
  */
-import {
-	activatePlugin,
-	deactivatePlugin,
-	visitAdminPage,
-} from '@wordpress/e2e-test-utils';
+import { visitAdminPage } from '@wordpress/e2e-test-utils';
 
 /**
  * Internal dependencies
  */
 import {
+	resetSiteKit,
 	safeLoginUser,
-	setSearchConsoleProperty,
-	setSiteVerification,
+	setupSiteKit,
 	testSiteNotification,
 	useRequestInterception,
 	wpApiFetch,
 } from '../utils';
+import { deleteAuthCookie } from '../utils/delete-auth-cookie';
 
 const goToSiteKitDashboard = async () => {
 	await visitAdminPage( 'admin.php', 'page=googlesitekit-dashboard' );
@@ -57,13 +54,11 @@ describe( 'API cache', () => {
 			}
 		} );
 
-		await activatePlugin( 'e2e-tests-proxy-auth-plugin' );
-		await setSiteVerification();
-		await setSearchConsoleProperty();
+		await setupSiteKit();
 	} );
 
 	afterAll( async () => {
-		await deactivatePlugin( 'e2e-tests-proxy-auth-plugin' );
+		await resetSiteKit();
 	} );
 
 	it( 'isolates client storage between users', async () => {
@@ -102,8 +97,8 @@ describe( 'API cache', () => {
 			data: secondTestNotification,
 		} );
 
-		// delete all cookies
-		await page._client.send( 'Network.clearBrowserCookies' );
+		// delete auth cookie to sign out the current user
+		await deleteAuthCookie();
 
 		await safeLoginUser( 'admin', 'password' );
 
