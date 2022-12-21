@@ -66,7 +66,7 @@ describe( 'API cache', () => {
 		await deactivatePlugin( 'e2e-tests-proxy-auth-plugin' );
 	} );
 
-	it( 'isolate client storage between users', async () => {
+	it( 'isolates client storage between users', async () => {
 		const firstTestNotification = { ...testSiteNotification };
 		const secondTestNotification = {
 			...testSiteNotification,
