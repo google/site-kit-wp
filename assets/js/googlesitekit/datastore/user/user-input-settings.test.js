@@ -24,8 +24,8 @@ import {
 	createTestRegistry,
 	subscribeUntil,
 	unsubscribeFromAll,
+	untilResolved,
 } from '../../../../../tests/js/utils';
-import { waitFor } from '../../../../../tests/js/test-utils';
 import { CORE_USER } from './constants';
 
 describe( 'core/user user-input-settings', () => {
@@ -188,7 +188,10 @@ describe( 'core/user user-input-settings', () => {
 				const { getUserInputSettings } = registry.select( CORE_USER );
 
 				expect( getUserInputSettings() ).toBeUndefined();
-				await waitFor( () => getUserInputSettings() !== undefined );
+				await untilResolved(
+					registry,
+					CORE_USER
+				).getUserInputSettings();
 
 				const settings = getUserInputSettings();
 				expect( settings ).toEqual(
