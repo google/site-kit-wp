@@ -59,25 +59,8 @@ class NoncesTest extends TestCase {
 		$response = rest_get_server()->dispatch( $request );
 		$data     = $response->get_data();
 
-		$this->assertNotEquals( 200, $response->get_status() );
-		$this->assertArrayHasKey( 'code', $data );
-		$this->assertEquals( 'rest_forbidden', $data['code'] );
-	}
-
-	public function test_nonces_route__non_admin() {
-		$nonces = new Nonces( $this->context );
-		$nonces->register();
-
-		$user_id = $this->factory()->user->create( array( 'role' => 'editor' ) );
-		wp_set_current_user( $user_id );
-
-		$request  = new WP_REST_Request( WP_REST_Server::READABLE, '/' . REST_Routes::REST_ROOT . '/core/user/data/nonces' );
-		$response = rest_get_server()->dispatch( $request );
-		$data     = $response->get_data();
-
-		$this->assertNotEquals( 200, $response->get_status() );
-		$this->assertArrayHasKey( 'code', $data );
-		$this->assertEquals( 'rest_forbidden', $data['code'] );
+		$this->assertEquals( 200, $response->get_status() );
+		$this->assertEqualSetsWithIndex( $data, $nonces->get_nonces() );
 	}
 
 	public function test_nonces_route__success() {
