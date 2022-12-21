@@ -1104,8 +1104,8 @@ class AuthenticationTest extends TestCase {
 		$this->assertEquals( $version, $data['wpVersion']['version'] );
 
 		if ( version_compare( $version, '5.5', '>=' ) ) {
-			$this->assertEquals( 1, wp_verify_nonce( $data['updatePluginNonce'], 'updates' ) );
 			$this->assertTrue( $data['autoUpdatesEnabled'] );
+			$this->assertFalse( $data['siteKitAutoUpdatesEnabled'] );
 
 			if ( is_multisite() ) {
 				$this->assertFalse( $data['updatePluginCapacity'] );
