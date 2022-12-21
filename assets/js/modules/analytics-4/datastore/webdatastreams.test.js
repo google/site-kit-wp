@@ -31,6 +31,7 @@ import {
 	provideSiteInfo,
 	unsubscribeFromAll,
 	untilResolved,
+	waitForDefaultTimeouts,
 } from '../../../../../tests/js/utils';
 import { MODULES_ANALYTICS_4 } from './constants';
 import * as fixtures from './__fixtures__';
@@ -120,6 +121,8 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 			} );
 
 			it( 'should dispatch an error if the request fails', async () => {
+				jest.useFakeTimers();
+
 				const propertyID = '12345';
 				const response = {
 					code: 'internal_server_error',
@@ -335,6 +338,8 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 			const propertyID = '12345';
 
 			it( 'should return undefined if web data streams arent loaded yet', () => {
+				jest.useFakeTimers();
+
 				freezeFetch( webDataStreamsEndpoint );
 
 				const datastream = registry
@@ -560,7 +565,7 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 		describe( 'getMatchedMeasurementIDsByPropertyIDs', () => {
 			const propertyIDs = fixtures.properties.map( ( { _id } ) => _id );
 
-			it( 'should return an empty object if the properties are not matched', () => {
+			it( 'should return an empty object if the properties are not matched', async () => {
 				provideSiteInfo( registry, {
 					referenceSiteURL: 'http://example.com',
 				} );
@@ -573,6 +578,9 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 				const matchedProperties = registry
 					.select( MODULES_ANALYTICS_4 )
 					.getMatchedMeasurementIDsByPropertyIDs( [ '1100' ] );
+
+				// Wait for resolvers to run.
+				await waitForDefaultTimeouts();
 
 				expect( fetchMock ).toHaveFetched(
 					webDataStreamsBatchEndpoint

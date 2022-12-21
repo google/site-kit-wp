@@ -150,6 +150,11 @@ describe( 'modules/analytics profiles', () => {
 
 				// No profiles should have been added yet, as the profile creation failed.
 				expect( profiles ).toEqual( undefined );
+
+				await untilResolved( registry, MODULES_ANALYTICS ).getProfiles(
+					accountID,
+					propertyID
+				);
 				expect( console ).toHaveErrored();
 			} );
 		} );
@@ -228,6 +233,13 @@ describe( 'modules/analytics profiles', () => {
 					.select( MODULES_ANALYTICS )
 					.getProfiles( testAccountID, testPropertyID );
 
+				expect( initialProfiles ).toEqual( undefined );
+
+				await untilResolved( registry, MODULES_ANALYTICS ).getProfiles(
+					testAccountID,
+					testPropertyID
+				);
+
 				// Ensure the proper parameters were sent.
 				expect( fetchMock ).toHaveFetched(
 					new RegExp(
@@ -239,12 +251,6 @@ describe( 'modules/analytics profiles', () => {
 							propertyID: testPropertyID,
 						},
 					}
-				);
-
-				expect( initialProfiles ).toEqual( undefined );
-				await untilResolved( registry, MODULES_ANALYTICS ).getProfiles(
-					testAccountID,
-					testPropertyID
 				);
 
 				const profiles = registry
