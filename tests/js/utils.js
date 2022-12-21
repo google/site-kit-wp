@@ -486,15 +486,15 @@ export const unsubscribeFromAll = () => {
 };
 
 /**
- * Waits for 2ms to ensure all pending timeouts set with the default 1ms will have executed.
+ * Waits for 5ms to ensure all pending timeouts set with the default 1ms will have executed.
  *
  * Introduced as a result of updating to @wordpress/data 4.23.0, which introduces a resolver cache and a related call to setTimeout for each resolver.
- * The delay is 2ms because the resolver setTimeout is using the default which is 1ms in Node, so in order to ensure our setTimeout will execute after
- * all pending resolvers we need to specify a higher timeout than 1ms, as "Node.js makes no guarantees about the exact timing of when callbacks will fire,
- * nor of their ordering".
+ * The delay is 5ms because the resolver setTimeout is using the default which is 1ms in Node, so in order to ensure our setTimeout will execute after
+ * all pending resolvers we need to specify a higher timeout than 1ms. The value 5ms, rather than say 2ms is used in order to provide a degree of headroom,
+ * as "Node.js makes no guarantees about the exact timing of when callbacks will fire, nor of their ordering".
  *
- * Obviously, this function will result in _any_ pending 1ms timeouts being waited for (and some 2ms timeouts, although not being the default, these
- * are much less likely), or timeouts that just happen to be due within the next 2ms, but it's primarily introduced to wait for resolvers, with the delay
+ * Obviously, this function will result in _any_ pending 1ms timeouts being waited for (and some 5ms timeouts, although not being the default, these
+ * are much less likely), or timeouts that just happen to be due within the next 5ms, but it's primarily introduced to wait for resolvers, with the delay
  * calibrated accordingly.
  *
  * References:
@@ -507,7 +507,7 @@ export const unsubscribeFromAll = () => {
  */
 export const waitForDefaultTimeouts = () => {
 	return new Promise( ( resolve ) => {
-		setTimeout( resolve, 2 );
+		setTimeout( resolve, 5 );
 	} );
 };
 
