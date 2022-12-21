@@ -486,6 +486,31 @@ export const unsubscribeFromAll = () => {
 };
 
 /**
+ * Waits for 2ms to ensure all pending timeouts set with the default 1ms will have executed.
+ * 
+ * Introduced as a result of updating to @wordpress/data 4.23.0, which introduces a resolver cache and a related call to setTimeout for each resolver.
+ * The delay is 2ms because the resolver setTimeout is using the default which is 1ms in Node, so in order to ensure our setTimeout will execute after
+ * all pending resolvers we need to specify a higher timeout than 1ms, as "Node.js makes no guarantees about the exact timing of when callbacks will fire,
+ * nor of their ordering".
+ * 
+ * Obviously, this function will result in _any_ pending 1ms timeouts being waited for (and some 2ms timeouts, although not being the default, these
+are much less likely), but it's primarily introduced to wait for resolvers, with the delay calibrated accordingly.
+ *
+ * References:
+ * - @wordpress/data: https://github.com/WordPress/gutenberg/blob/07baf5a12007d31bbd4ee22113b07952f7eacc26/packages/data/src/namespace-store/index.js#L294-L310..
+ * - Node setTimeout: https://nodejs.org/docs/latest-v14.x/api/timers.html#timers_settimeout_callback_delay_args.
+ * 
+ * @since n.e.x.t
+ * 
+ * @return {Promise} Promise that resolves after a 2ms timeout.
+ */
+export const waitForDefaultTimeouts = () => {
+	return new Promise( ( resolve ) => {
+		setTimeout( resolve, 2 );
+	} );
+};
+
+/**
  * Creates a function that allows extra time for registry updates to have completed.
  *
  * @since 1.39.0
@@ -499,11 +524,13 @@ export const createWaitForRegistry = ( registry ) => {
 		updates.push( new Promise( ( resolve ) => resolve() ) );
 	const unsubscribe = subscribeWithUnsubscribe( registry, listener );
 
-	// Return a function that waits until the next tick for updates.
+	// Return a function that:
+	// - Waits until the next tick for updates.
+	// - Waits for all pending resolvers to resolve.
 	// We unsubscribe afterwards to allow for potential additions while
 	// Promise.all is resolving.
 	return async () => {
-		await Promise.all( updates );
+		await Promise.all( [ ...updates, waitForDefaultTimeouts() ] );
 		unsubscribe();
 	};
 };

@@ -37,6 +37,7 @@ import {
 	muteFetch,
 	untilResolved,
 	unsubscribeFromAll,
+	waitForDefaultTimeouts,
 } from '../../../../../tests/js/utils';
 import * as factories from './__factories__';
 import * as fixtures from './__fixtures__';
@@ -258,7 +259,7 @@ describe( 'modules/tagmanager accounts', () => {
 					.selectAccount( accountID );
 
 				// Wait for resolvers to run.
-				await global.waitForTimeouts();
+				await waitForDefaultTimeouts();
 
 				expect( fetchMock ).toHaveFetched(
 					new RegExp(

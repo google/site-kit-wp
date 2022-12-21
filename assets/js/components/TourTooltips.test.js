@@ -24,6 +24,7 @@ import {
 	render,
 	createTestRegistry,
 	fireEvent,
+	waitForDefaultTimeouts,
 } from '../../../tests/js/test-utils';
 import TourTooltips, { GA_ACTIONS } from './TourTooltips';
 import { CORE_UI } from '../googlesitekit/datastore/ui/constants';
@@ -140,7 +141,7 @@ describe( 'TourTooltips', () => {
 
 		getByRole( 'heading', { name: /title for step 2/i } );
 
-		await act( global.waitForTimeouts );
+		await act( waitForDefaultTimeouts );
 
 		// There is a minor bug in the `TourTooltips` component that results in a "React state update on an unmounted component"
 		// warning. This will be addressed in a followup issue, see https://github.com/google/site-kit-wp/issues/6345

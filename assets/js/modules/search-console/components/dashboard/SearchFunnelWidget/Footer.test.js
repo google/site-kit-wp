@@ -22,6 +22,7 @@
 import {
 	render,
 	untilResolved,
+	waitForDefaultTimeouts,
 } from '../../../../../../../tests/js/test-utils';
 import { MODULES_SEARCH_CONSOLE } from '../../../datastore/constants';
 import {
@@ -121,7 +122,7 @@ describe( 'Footer', () => {
 		);
 
 		// Wait for resolvers to run.
-		await global.waitForTimeouts();
+		await waitForDefaultTimeouts();
 
 		expect( fetchMock ).toHaveFetched(
 			new RegExp( '^/google-site-kit/v1/modules/analytics/data/settings' )

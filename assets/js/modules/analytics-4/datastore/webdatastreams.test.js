@@ -31,6 +31,7 @@ import {
 	provideSiteInfo,
 	unsubscribeFromAll,
 	untilResolved,
+	waitForDefaultTimeouts,
 } from '../../../../../tests/js/utils';
 import { MODULES_ANALYTICS_4 } from './constants';
 import * as fixtures from './__fixtures__';
@@ -579,7 +580,7 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 					.getMatchedMeasurementIDsByPropertyIDs( [ '1100' ] );
 
 				// Wait for resolvers to run.
-				await global.waitForTimeouts();
+				await waitForDefaultTimeouts();
 
 				expect( fetchMock ).toHaveFetched(
 					webDataStreamsBatchEndpoint

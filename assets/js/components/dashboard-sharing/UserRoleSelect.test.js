@@ -30,6 +30,7 @@ import {
 	fireEvent,
 	createTestRegistry,
 	act,
+	waitForDefaultTimeouts,
 } from '../../../../tests/js/test-utils';
 import UserRoleSelect from './UserRoleSelect';
 
@@ -191,7 +192,7 @@ describe( 'CurrentSurvey', () => {
 			container.querySelector( '.googlesitekit-user-role-select__button' )
 		);
 
-		await act( global.waitForTimeouts );
+		await act( waitForDefaultTimeouts );
 
 		expect(
 			container.querySelector(
