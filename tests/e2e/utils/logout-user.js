@@ -2,6 +2,10 @@
  * WordPress dependencies
  */
 import { createURL, isCurrentURL } from '@wordpress/e2e-test-utils';
+
+/**
+ * Internal dependencies
+ */
 import { deleteAuthCookie } from './delete-auth-cookie';
 
 /**
