@@ -1247,8 +1247,8 @@ const baseSelectors = {
 	 * @param {Object} state Data store's state.
 	 * @param {string} slug  Module slug.
 	 * @return {(boolean|undefined)} `true` if the user has ownership or access.
-	 *                                                      `false` if the user doesn't have ownership or access.
-	 *                                                      `undefined` If the state is still being resolved,
+	 *                               `false` if the user doesn't have ownership or access.
+	 *                               `undefined` If the state is still being resolved,
 	 */
 	hasModuleOwnershipOrAccess: createRegistrySelector(
 		( select ) => ( state, moduleSlug ) => {
@@ -1262,7 +1262,7 @@ const baseSelectors = {
 			// A store with this name doesn't exist, so the user can't have access to it.
 			// This is either caused by a module not being loaded or an incorrect module
 			// name being used.
-			if ( select( moduleStoreName ) === undefined ) {
+			if ( select( moduleStoreName ) === null ) {
 				return false;
 			}
 

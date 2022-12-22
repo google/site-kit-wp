@@ -1681,8 +1681,8 @@ describe( 'core/modules modules', () => {
 		describe( 'hasModuleOwnershipOrAccess', () => {
 			it( 'should return undefined if `getModuleStoreName` is not resolved yet', () => {
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
-					{ body: [] }
+					new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
+					{ body: FIXTURES, status: 200 }
 				);
 
 				const moduleStoreName = registry
@@ -1707,7 +1707,9 @@ describe( 'core/modules modules', () => {
 				] );
 
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/search-console\/data\/settings/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/search-console/data/settings'
+					),
 					{
 						body: {
 							ownerID: 1,
