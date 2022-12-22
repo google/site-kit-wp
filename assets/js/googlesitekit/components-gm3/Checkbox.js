@@ -117,7 +117,8 @@ export default function Checkbox( {
 					ref={ ref }
 					role="checkbox"
 					aria-label={ getLabelFromChildren( children ) }
-					// Lit boolean attributes treat anything non-null|undefined as true. Coerce to null if false.
+					// `Lit` boolean attributes treat anything non-null/undefined as true.
+					// Coerce to null if false.
 					// See https://lit.dev/docs/v1/components/properties/#attributes
 					checked={ checked || null }
 					disabled={ disabled || null }
