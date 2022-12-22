@@ -452,16 +452,16 @@ final class Analytics_4 extends Module
 					return $batch_request->execute();
 				};
 			case 'GET:container-lookup':
-				if ( ! isset( $data['destinatonID'] ) ) {
+				if ( ! isset( $data['destinationID'] ) ) {
 					return new WP_Error(
 						'missing_required_param',
 						/* translators: %s: Missing parameter name */
-						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'destinatonID' ),
+						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'destinationID' ),
 						array( 'status' => 400 )
 					);
 				}
 
-				return $this->get_tagmanager_service()->accounts_containers->lookup( array( 'destinationId' => $data['destinatonID'] ) );
+				return $this->get_tagmanager_service()->accounts_containers->lookup( array( 'destinationId' => $data['destinationID'] ) );
 			case 'GET:container-destinations':
 				if ( ! isset( $data['accountID'] ) ) {
 					return new WP_Error(
@@ -537,7 +537,7 @@ final class Analytics_4 extends Module
 			case 'GET:container-lookup':
 				return (array) $response;
 			case 'GET:container-destinations':
-				return (array) $response->destination;
+				return (array) $response->getDestination();
 		}
 
 		return parent::parse_data_response( $data, $response );
