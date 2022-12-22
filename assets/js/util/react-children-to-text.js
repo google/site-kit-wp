@@ -17,22 +17,22 @@
  */
 
 /**
- * External dependencies
+ * WordPress dependencies
  */
-import React from 'react';
+import { Children, ReactNode } from '@wordpress/element';
 
 /**
  * Gets text from React children including all descendants. Returns a flat array of strings.
  *
  * @since n.e.x.t
  *
- * @param {React.ReactNode} children Children to extract text from.
+ * @param {ReactNode} children Children to extract text from.
  * @return {Array.<string>} Array of text strings.
  */
 function getTextFromChildren( children ) {
 	const text = [];
 
-	React.Children.map( children, ( child ) => {
+	Children.map( children, ( child ) => {
 		if ( ! child ) {
 			return;
 		}
@@ -54,7 +54,7 @@ function getTextFromChildren( children ) {
  *
  * @since n.e.x.t
  *
- * @param {React.ReactNode} children Children to extract text from.
+ * @param {ReactNode} children Children to extract text from.
  * @return {string} Single string of text.
  */
 export function getLabelFromChildren( children ) {
