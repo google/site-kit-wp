@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { Children, ReactNode } from '@wordpress/element';
+import { Children, ReactNode, isValidElement } from '@wordpress/element';
 
 /**
  * Gets text from React children including all descendants. Returns a flat array of strings.
@@ -37,12 +37,10 @@ function getTextFromChildren( children ) {
 			return;
 		}
 
-		const childType = typeof child;
-
-		if ( 'string' === childType || 'number' === childType ) {
-			text.push( child.toString() );
-		} else {
+		if ( isValidElement( child ) ) {
 			text.push( ...getTextFromChildren( child.props.children ) );
+		} else {
+			text.push( child.toString() );
 		}
 	} );
 
