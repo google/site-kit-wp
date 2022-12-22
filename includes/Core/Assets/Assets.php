@@ -734,6 +734,7 @@ final class Assets {
 			'enabledFeatures'  => Feature_Flags::get_enabled_features(),
 			'webStoriesActive' => defined( 'WEBSTORIES_VERSION' ),
 			'postTypes'        => $this->get_post_types(),
+			'storagePrefix'    => $this->get_storage_prefix(),
 		);
 
 		/**
@@ -1033,5 +1034,24 @@ final class Assets {
 		if ( ! empty( $data ) && is_string( $data ) ) {
 			wp_scripts()->add_data( $handle, 'data', '/*googlesitekit*/ ' . $data );
 		}
+	}
+
+	/**
+	 * Gets the prefix for the client side cache key.
+	 *
+	 * Cache key is scoped to user session and blog_id to isolate the
+	 * cache between users and sites (in multisite).
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string
+	 */
+	private function get_storage_prefix() {
+		$current_user  = wp_get_current_user();
+		$auth_cookie   = wp_parse_auth_cookie();
+		$blog_id       = get_current_blog_id();
+		$session_token = isset( $auth_cookie['token'] ) ? $auth_cookie['token'] : '';
+
+		return wp_hash( $current_user->user_login . '|' . $session_token . '|' . $blog_id );
 	}
 }
