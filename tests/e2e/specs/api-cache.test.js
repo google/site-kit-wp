@@ -70,7 +70,7 @@ describe( 'API cache', () => {
 			dismissLabel: 'test dismiss site notification 2',
 		};
 
-		// create dummy first notification
+		// create first notification
 		await wpApiFetch( {
 			path: 'google-site-kit/v1/e2e/core/site/notifications',
 			method: 'post',
@@ -90,7 +90,7 @@ describe( 'API cache', () => {
 			}
 		);
 
-		// create dummy second notification
+		// create second notification
 		await wpApiFetch( {
 			path: 'google-site-kit/v1/e2e/core/site/notifications',
 			method: 'post',
