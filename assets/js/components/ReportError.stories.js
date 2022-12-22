@@ -115,6 +115,21 @@ ReportErrorWithInsufficientPermissionsWithRequestAccess.args = {
 	},
 };
 
+export const ReportErrorWithInsufficientPermissionsForViewOnlyUser =
+	Template.bind( {} );
+ReportErrorWithInsufficientPermissionsForViewOnlyUser.storyName =
+	'ReportError with insufficient permissions for view-only user';
+ReportErrorWithInsufficientPermissionsForViewOnlyUser.args = {
+	error: {
+		code: 'test-error-code',
+		message: 'Test error message',
+		data: {
+			reason: ERROR_REASON_INSUFFICIENT_PERMISSIONS,
+		},
+	},
+	viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+};
+
 export const ReportErrorWithRetryButton = Template.bind( {} );
 ReportErrorWithRetryButton.storyName = 'ReportError with Retry Button';
 ReportErrorWithRetryButton.args = {
@@ -137,6 +152,7 @@ ReportErrorWithRetryButton.args = {
 			storeName: MODULES_ANALYTICS,
 		},
 	},
+	viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 };
 
 export const MultipleReportErrorsWithRetryButton = Template.bind( {} );
@@ -252,13 +268,26 @@ MultipleUniqueReportErrorsWithRetryButtonWith.args = {
 	],
 };
 
-export const ReportErrorViewOnlyMode = Template.bind( {} );
-ReportErrorViewOnlyMode.storyName = 'ReportError with ViewOnly Mode';
-ReportErrorViewOnlyMode.args = {
+export const ReportErrorWithCustomInternalServerErrorMessage = Template.bind(
+	{}
+);
+ReportErrorWithCustomInternalServerErrorMessage.storyName =
+	'ReportError with custom Internal Server Error message';
+ReportErrorWithCustomInternalServerErrorMessage.args = {
 	error: {
-		code: 'test-error-code',
+		code: 'internal_server_error',
+		message: 'Test error message',
 	},
-	viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+};
+
+export const ReportErrorWithCustomInvalidJSONMessage = Template.bind( {} );
+ReportErrorWithCustomInvalidJSONMessage.storyName =
+	'ReportError with custom Invalid JSON message';
+ReportErrorWithCustomInvalidJSONMessage.args = {
+	error: {
+		code: 'invalid_json',
+		message: 'Test error message',
+	},
 };
 
 export default {

@@ -367,7 +367,7 @@ final class Screens {
 					'render_callback'  => function( Context $context ) {
 						$is_view_only = ! $this->authentication->is_authenticated();
 
-						$setup_slug = $context->input()->filter( INPUT_GET, 'slug', FILTER_SANITIZE_STRING );
+						$setup_slug = htmlspecialchars( $context->input()->filter( INPUT_GET, 'slug' ) ?: '' );
 						$reauth = $context->input()->filter( INPUT_GET, 'reAuth', FILTER_VALIDATE_BOOLEAN );
 						if ( $context->input()->filter( INPUT_GET, 'permaLink' ) ) {
 							?>

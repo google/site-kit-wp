@@ -37,6 +37,12 @@ mockAnimationsApi();
 global.fetchMock = fetchMockJest;
 
 beforeEach( () => {
+	// Use real timers in order to be able to wait for them. This was introduced to support the changes introduced in @wordpress/data 4.23.0
+	// which adds a resolver cache and a related call to setTimeout to each resolver, and these timeouts often need to be waited for in tests.
+	// See https://github.com/WordPress/gutenberg/blob/07baf5a12007d31bbd4ee22113b07952f7eacc26/packages/data/src/namespace-store/index.js#L294-L310.
+	// Using real timers, rather than fake timers here ensures that we don't need to manually advance timers for every resolver call.
+	jest.useRealTimers();
+
 	localStorage.clear();
 	sessionStorage.clear();
 
@@ -59,15 +65,13 @@ beforeEach( () => {
 afterEach( async () => {
 	// In order to catch (most) unhandled promise rejections
 	// we need to wait at least one more event cycle.
-	// To do this, we need to use real timers temporarily if not already configured.
-	const nextTick = () => new Promise( ( resolve ) => setTimeout( resolve ) );
+	// To do this, we need to switch back to real timers if we're currently using fake timers.
 	if ( jest.isMockFunction( setTimeout ) ) {
 		jest.useRealTimers();
-		await nextTick();
-		jest.useFakeTimers();
-	} else {
-		await nextTick();
 	}
+
+	const nextTick = () => new Promise( ( resolve ) => setTimeout( resolve ) );
+	await nextTick();
 } );
 
 afterEach( () => fetchMock.mockReset() );

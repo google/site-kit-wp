@@ -83,14 +83,17 @@ describe( 'CompatibilityChecks', () => {
 		// Mock request to AMP project.
 		muteFetch( AMP_PROJECT_TEST_URL );
 
-		const { container } = render(
+		const { container, waitForRegistry } = render(
 			<CompatibilityChecks>{ compatibilityChildren }</CompatibilityChecks>
 		);
 
 		expect( container ).toHaveTextContent( 'Checking Compatibility…' );
-		await waitForElementToBeRemoved(
+
+		await waitForRegistry();
+
+		expect(
 			document.querySelector( '.mdc-linear-progress' )
-		);
+		).not.toBeInTheDocument();
 	} );
 
 	it( 'should display "Your site may not be ready for Site Kit" if a check throws an error', async () => {
