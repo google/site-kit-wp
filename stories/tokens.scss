@@ -1,6 +1,33 @@
+/**
+ * Color tokens stories stylesheet.
+ *
+ * Site Kit by Google, Copyright 2022 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 @import '../assets/sass/config/variables';
 
 $large: lg;
+
+
+.googlesitekit-color-token-row {
+	display: flex;
+}
+
+.googlesitekit-color-token-column {
+	flex: 1;
+}
 
 .googlesitekit-color-token {
 	background-color: var(--token-color);
@@ -8,11 +35,12 @@ $large: lg;
 	padding: 12px;
 	display: flex;
 	flex-direction: column;
+	flex: 1;
 
 	p {
 		margin: 0;
 	}
-
+	
 	&--reference {
 		align-self: flex-end;
 	}
@@ -98,7 +126,6 @@ $large: lg;
 	 */
 	&--utility-on-error {
 		--token-color: #{$c-utility-on-error};
-		--token-text-color: #fff;
 	}
 	&--utility-error {
 		--token-color: #{$c-utility-error};
@@ -110,7 +137,7 @@ $large: lg;
 	}
 	&--utility-error-container {
 		--token-color: #{$c-utility-error-container};
-		--token-text-color: #fff;
+		--token-text-color:  #{$c-utility-on-error-container};
 	}
 
 	/**
@@ -118,7 +145,6 @@ $large: lg;
 	 */
 	&--utility-on-success {
 		--token-color: #{$c-utility-on-success};
-		--token-text-color: #fff;
 	}
 	&--utility-success {
 		--token-color: #{$c-utility-success};
@@ -130,7 +156,7 @@ $large: lg;
 	}
 	&--utility-success-container {
 		--token-color: #{$c-utility-success-container};
-		--token-text-color: #fff;
+		--token-text-color: #{$c-utility-on-success-container};;
 	}
 
 	/**
@@ -138,7 +164,6 @@ $large: lg;
 	 */
 	&--utility-on-warning {
 		--token-color: #{$c-utility-on-warning};
-		--token-text-color: #fff;
 	}
 	&--utility-warning {
 		--token-color: #{$c-utility-warning};
@@ -150,14 +175,56 @@ $large: lg;
 	}
 	&--utility-warning-container {
 		--token-color: #{$c-utility-warning-container};
-		--token-text-color: #fff;
+		--token-text-color: #{$c-utility-on-warning-container};
 	}
 
 	/**
 	 * Interactive tokens
 	 */
+	&--interactive-primary-hover {
+		--token-color: #{$c-interactive-primary-hover};
+	}
+	&--interactive-primary-focus {
+		--token-color: #{$c-interactive-primary-focus};
+	}
+	&--interactive-primary-press {
+		--token-color: #{$c-interactive-primary-press};
+	}
+	&--interactive-secondary-hover {
+		--token-color: #{$c-interactive-secondary-hover};
+	}
+	&--interactive-secondary-focus {
+		--token-color: #{$c-interactive-secondary-focus};
+	}
+	&--interactive-secondary-press {
+		--token-color: #{$c-interactive-secondary-press};
+	}
+	&--interactive-tertiary-hover {
+		--token-color: #{$c-interactive-tertiary-hover};
+	}
+	&--interactive-tertiary-focus {
+		--token-color: #{$c-interactive-tertiary-focus};
+	}
+	&--interactive-tertiary-press {
+		--token-color: #{$c-interactive-tertiary-press};
+	}
+	&--interactive-on-disabled {
+		--token-color: #{$c-interactive-on-disabled};
+	}
+	&--interactive-disabled {
+		--token-color: #{$c-interactive-disabled};
+	}
+	&--interactive-inverse-on-disabled {
+		--token-color: #{$c-interactive-inverse-on-disabled};
+	}
+	&--interactive-inverse-disabled {
+		--token-color: #{$c-interactive-inverse-disabled};
+	}
 	&--interactive-focus {
 		--token-color: #{$c-interactive-focus};
 		--token-text-color: #fff;
+	}
+	&--interactive-inverse-focus {
+		--token-color: #{$c-interactive-inverse-focus};
 	}
 }

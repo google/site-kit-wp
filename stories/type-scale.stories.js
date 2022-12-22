@@ -114,14 +114,8 @@ const Template = () => (
 );
 
 export const DefaultTypeScale = Template.bind( {} );
+DefaultTypeScale.scenario = {};
 
 export default {
 	title: 'Global/TypeScale',
-	// decorators: [
-	// 	( Story ) =>
-	// 		return (
-	// 				<Story />
-	// 		);
-	// 	},
-	// ],
 };
