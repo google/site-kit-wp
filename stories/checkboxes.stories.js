@@ -36,9 +36,9 @@ const InteractiveCheckbox = ( props ) => {
 	return (
 		<Checkbox
 			{ ...props }
-			onChange={ ( e ) => {
-				global.console.log( e.target.value );
-				setChecked( e.target.checked );
+			onChange={ ( event ) => {
+				global.console.log( event.target.value );
+				setChecked( event.target.checked );
 			} }
 			checked={ checked }
 		>
@@ -55,8 +55,8 @@ storiesOf( 'Global', module ).add(
 				<Checkbox
 					id="googlesitekit-checkbox-1"
 					name="googlesitekit__checkbox"
-					onChange={ ( e ) => {
-						global.console.log( e.target.value );
+					onChange={ ( event ) => {
+						global.console.log( event.target.value );
 					} }
 					value="value-1"
 				>
@@ -69,8 +69,8 @@ storiesOf( 'Global', module ).add(
 					checked
 					name="googlesitekit__checkbox"
 					id="googlesitekit-checkbox-2"
-					onChange={ ( e ) => {
-						global.console.log( e.target.value );
+					onChange={ ( event ) => {
+						global.console.log( event.target.value );
 					} }
 					value="value-2"
 				>
@@ -83,8 +83,8 @@ storiesOf( 'Global', module ).add(
 					disabled
 					id="googlesitekit-checkbox-3"
 					name="googlesitekit__checkbox"
-					onChange={ ( e ) => {
-						global.console.log( e.target.value );
+					onChange={ ( event ) => {
+						global.console.log( event.target.value );
 					} }
 					value="value-3"
 				>
@@ -97,8 +97,8 @@ storiesOf( 'Global', module ).add(
 					id="googlesitekit-checkbox-4"
 					name="googlesitekit__checkbox"
 					loading={ true }
-					onChange={ ( e ) => {
-						global.console.log( e.target.value );
+					onChange={ ( event ) => {
+						global.console.log( event.target.value );
 					} }
 					value="value-4"
 				>
@@ -111,8 +111,8 @@ storiesOf( 'Global', module ).add(
 					id="googlesitekit-checkbox-5"
 					name="googlesitekit__checkbox"
 					value="value-5"
-					onChange={ ( e ) => {
-						global.console.log( e.target.value );
+					onChange={ ( event ) => {
+						global.console.log( event.target.value );
 					} }
 				>
 					<div>

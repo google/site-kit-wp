@@ -27,11 +27,11 @@ import { useState } from '@wordpress/element';
 import Checkbox from './Checkbox';
 
 const defaultProps = {
-	onChange: ( e ) => {
-		global.console.log( 'onChange', e.target.value );
+	onChange: ( event ) => {
+		global.console.log( 'onChange', event.target.value );
 	},
-	onKeyDown: ( e ) => {
-		global.console.log( 'onKeyDown', e.target.value );
+	onKeyDown: ( event ) => {
+		global.console.log( 'onKeyDown', event.target.value );
 	},
 };
 
@@ -42,9 +42,9 @@ const InteractiveCheckbox = ( { children, ...props } ) => {
 			checked={ checked }
 			{ ...defaultProps }
 			{ ...props }
-			onChange={ ( e ) => {
-				global.console.log( 'onChange', e.target.value );
-				setChecked( e.target.checked );
+			onChange={ ( event ) => {
+				global.console.log( 'onChange', event.target.value );
+				setChecked( event.target.checked );
 			} }
 		>
 			{ children }
