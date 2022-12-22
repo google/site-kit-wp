@@ -33,6 +33,8 @@ import { __, _x, sprintf } from '@wordpress/i18n';
 import ReportMetric from './ReportMetric';
 import MetricsLearnMoreLink from './MetricsLearnMoreLink';
 import ErrorText from '../../../../components/ErrorText';
+import ReportErrorActions from '../../../../components/ReportErrorActions';
+import { getReportErrorMessage } from '../../../../util/errors';
 import { CATEGORY_AVERAGE } from '../../util/constants';
 
 export default function FieldReportMetrics( { data, error } ) {
@@ -44,10 +46,17 @@ export default function FieldReportMetrics( { data, error } ) {
 	} = data?.loadingExperience?.metrics || {};
 
 	if ( error ) {
+		const errorMessage = getReportErrorMessage( error );
+
 		return (
 			<div className="googlesitekit-pagespeed-insights-web-vitals-metrics">
-				<div className="googlesitekit-pagespeed-report__row googlesitekit-pagespeed-report__row--first">
-					<ErrorText message={ error.message } />
+				<div className="googlesitekit-pagespeed-report__row googlesitekit-pagespeed-report__row--error">
+					<ErrorText message={ errorMessage } />
+
+					<ReportErrorActions
+						moduleSlug="pagespeed-insights"
+						error={ error }
+					/>
 				</div>
 			</div>
 		);

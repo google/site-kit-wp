@@ -23,12 +23,8 @@ import { renderHook, actHook as act } from '../../../tests/js/test-utils';
 import { useRefocus } from './useRefocus';
 
 describe( 'useRefocus', () => {
-	beforeAll( () => {
+	beforeEach( () => {
 		jest.useFakeTimers();
-	} );
-
-	afterAll( () => {
-		jest.useRealTimers();
 	} );
 
 	it( 'should invoke the reset handler when the window is blurred and then refocused after the specified delay', () => {

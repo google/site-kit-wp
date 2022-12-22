@@ -13,7 +13,7 @@ namespace Google\Site_Kit\Core\Util;
 /**
  * Utility class for sorting lists.
  *
- * @since n.e.x.t
+ * @since 1.90.0
  * @access private
  * @ignore
  */
@@ -21,7 +21,7 @@ class Sort {
 	/**
 	 * Sorts the provided list in a case-insensitive manner.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.90.0
 	 *
 	 * @param array  $list    The list to sort.
 	 * @param string $orderby The field by which the list should be ordered by.

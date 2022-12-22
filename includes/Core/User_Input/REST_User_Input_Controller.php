@@ -12,6 +12,7 @@ namespace Google\Site_Kit\Core\User_Input;
 
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\REST_Route;
+use Google\Site_Kit\Core\REST_API\REST_Routes;
 use WP_Error;
 use WP_REST_Request;
 use WP_REST_Server;
@@ -19,7 +20,7 @@ use WP_REST_Server;
 /**
  * Class for handling User Input settings rest routes.
  *
- * @since n.e.x.t
+ * @since 1.90.0
  * @access private
  * @ignore
  */
@@ -28,7 +29,7 @@ class REST_User_Input_Controller {
 	/**
 	 * User_Input instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.90.0
 	 * @var User_Input
 	 */
 	protected $user_input;
@@ -36,7 +37,7 @@ class REST_User_Input_Controller {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.90.0
 	 *
 	 * @param User_Input $user_input User_Input instance.
 	 */
@@ -47,7 +48,7 @@ class REST_User_Input_Controller {
 	/**
 	 * Registers functionality.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.90.0
 	 */
 	public function register() {
 		add_filter(
@@ -56,12 +57,24 @@ class REST_User_Input_Controller {
 				return array_merge( $routes, $this->get_rest_routes() );
 			}
 		);
+
+		add_filter(
+			'googlesitekit_apifetch_preload_paths',
+			function ( $paths ) {
+				return array_merge(
+					$paths,
+					array(
+						'/' . REST_Routes::REST_ROOT . '/core/user/data/user-input-settings',
+					)
+				);
+			}
+		);
 	}
 
 	/**
 	 * Gets related REST routes.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.90.0
 	 *
 	 * @return array List of REST_Route objects.
 	 */

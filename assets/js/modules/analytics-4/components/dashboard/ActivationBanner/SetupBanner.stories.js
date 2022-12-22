@@ -75,7 +75,9 @@ NoPropertyNoTagNoEditScope.decorators = [
 				'https://www.googleapis.com/auth/granted.scope';
 
 			fetchMock.getOnce(
-				/^\/google-site-kit\/v1\/core\/user\/data\/authentication/,
+				new RegExp(
+					'^/google-site-kit/v1/core/user/data/authentication'
+				),
 				{
 					body: {
 						authenticated: true,
@@ -187,7 +189,9 @@ WithPropertyAndTagNoEditScope.decorators = [
 				'https://www.googleapis.com/auth/granted.scope';
 
 			fetchMock.getOnce(
-				/^\/google-site-kit\/v1\/core\/user\/data\/authentication/,
+				new RegExp(
+					'^/google-site-kit/v1/core/user/data/authentication'
+				),
 				{
 					body: {
 						authenticated: true,

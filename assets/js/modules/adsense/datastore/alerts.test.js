@@ -25,6 +25,7 @@ import {
 	createTestRegistry,
 	subscribeUntil,
 	unsubscribeFromAll,
+	untilResolved,
 } from '../../../../../tests/js/utils';
 
 import * as fixtures from './__fixtures__';
@@ -54,7 +55,9 @@ describe( 'modules/adsense alerts', () => {
 		describe( 'getAlerts', () => {
 			it( 'uses a resolver to make a network request', async () => {
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/adsense\/data\/alerts/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/adsense/data/alerts'
+					),
 					{ body: fixtures.alerts, status: 200 }
 				);
 
@@ -111,7 +114,9 @@ describe( 'modules/adsense alerts', () => {
 					data: { status: 500 },
 				};
 				fetchMock.get(
-					/^\/google-site-kit\/v1\/modules\/adsense\/data\/alerts/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/adsense/data/alerts'
+					),
 					{ body: response, status: 500 }
 				);
 
@@ -131,6 +136,10 @@ describe( 'modules/adsense alerts', () => {
 					.select( MODULES_ADSENSE )
 					.getAlerts( fakeAccountID );
 				expect( alerts ).toEqual( undefined );
+
+				await untilResolved( registry, MODULES_ADSENSE ).getAlerts(
+					fakeAccountID
+				);
 				expect( console ).toHaveErrored();
 			} );
 		} );

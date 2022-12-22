@@ -26,12 +26,15 @@ import {
 	freezeFetch,
 	subscribeUntil,
 	unsubscribeFromAll,
+	untilResolved,
+	waitForDefaultTimeouts,
 } from '../../../../../tests/js/utils';
 import * as fixtures from './__fixtures__';
 
 describe( 'modules/search-console report', () => {
-	const searchAnalyticsRegexp =
-		/^\/google-site-kit\/v1\/modules\/search-console\/data\/searchanalytics/;
+	const searchAnalyticsRegexp = new RegExp(
+		'^/google-site-kit/v1/modules/search-console/data/searchanalytics'
+	);
 	const errorResponse = {
 		status: 403,
 		body: {
@@ -155,12 +158,17 @@ describe( 'modules/search-console report', () => {
 					.select( MODULES_SEARCH_CONSOLE )
 					.getReport( options );
 				expect( report ).toEqual( undefined );
+
+				await untilResolved(
+					registry,
+					MODULES_SEARCH_CONSOLE
+				).getReport( options );
 				expect( console ).toHaveErrored();
 			} );
 		} );
 
 		describe( 'isGatheringData', () => {
-			it( 'should return undefined if getReport is not resolved yet', () => {
+			it( 'should return undefined if getReport is not resolved yet', async () => {
 				freezeFetch( searchAnalyticsRegexp );
 
 				const { isGatheringData } = registry.select(
@@ -168,6 +176,9 @@ describe( 'modules/search-console report', () => {
 				);
 
 				expect( isGatheringData() ).toBeUndefined();
+
+				// Wait for resolvers to run.
+				await waitForDefaultTimeouts();
 			} );
 
 			it( 'should return TRUE if the returned report is an empty array', async () => {
@@ -227,7 +238,7 @@ describe( 'modules/search-console report', () => {
 		} );
 
 		describe( 'hasZeroData', () => {
-			it( 'should return undefined if getReport or isGatheringData is not resolved yet', () => {
+			it( 'should return undefined if getReport or isGatheringData is not resolved yet', async () => {
 				freezeFetch( searchAnalyticsRegexp );
 
 				const { hasZeroData } = registry.select(
@@ -235,6 +246,9 @@ describe( 'modules/search-console report', () => {
 				);
 
 				expect( hasZeroData() ).toBeUndefined();
+
+				// Wait for resolvers to run.
+				await waitForDefaultTimeouts();
 			} );
 
 			it( 'should return TRUE if report data in isGatheringData OR isZeroReport is an empty array', async () => {

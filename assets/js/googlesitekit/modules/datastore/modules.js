@@ -387,11 +387,12 @@ const baseActions = {
 
 			const registry = yield Data.commonActions.getRegistry();
 
-			// As we can specify a custom checkRequirements function here, we're invalidating the resolvers for activation checks.
-			yield registry
+			// As we can specify a custom checkRequirements function here, we're
+			// invalidating the resolvers for activation checks.
+			registry
 				.dispatch( CORE_MODULES )
 				.invalidateResolution( 'canActivateModule', [ slug ] );
-			yield registry
+			registry
 				.dispatch( CORE_MODULES )
 				.invalidateResolution( 'getCheckRequirementsError', [ slug ] );
 		}

@@ -43,12 +43,15 @@ describe( 'modules/analytics-4 settings', () => {
 		data: { status: 500 },
 	};
 
-	const settingsEndpoint =
-		/^\/google-site-kit\/v1\/modules\/analytics-4\/data\/settings/;
-	const createPropertyEndpoint =
-		/^\/google-site-kit\/v1\/modules\/analytics-4\/data\/create-property/;
-	const createWebDataStreamsEndpoint =
-		/^\/google-site-kit\/v1\/modules\/analytics-4\/data\/create-webdatastream/;
+	const settingsEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/analytics-4/data/settings'
+	);
+	const createPropertyEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/analytics-4/data/create-property'
+	);
+	const createWebDataStreamsEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/analytics-4/data/create-webdatastream'
+	);
 
 	beforeAll( () => {
 		API.setUsingCache( false );

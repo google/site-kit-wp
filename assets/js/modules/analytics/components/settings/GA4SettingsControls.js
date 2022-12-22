@@ -32,7 +32,7 @@ import { Fragment, useState, useCallback, useEffect } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { Button, ProgressBar } from 'googlesitekit-components';
+import { Button } from 'googlesitekit-components';
 import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 import {
 	MODULES_ANALYTICS_4,
@@ -64,9 +64,6 @@ export default function GA4SettingsControls( {
 	// This select is needed to check whether the AdminAPI works or not.
 	const properties = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getProperties( accountID )
-	);
-	const isAdminAPIWorking = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).isAdminAPIWorking()
 	);
 	const enableGA4 = useSelect( ( select ) =>
 		select( CORE_FORMS ).getValue( FORM_SETUP, 'enableGA4' )
@@ -111,17 +108,10 @@ export default function GA4SettingsControls( {
 			}
 		};
 
-		if ( isAdminAPIWorking ) {
-			setMatchedProperty( undefined );
-			setMatchedWebDataStream( undefined );
-			matchGA4Information();
-		}
-	}, [
-		accountID,
-		matchAccountProperty,
-		matchWebDataStream,
-		isAdminAPIWorking,
-	] );
+		setMatchedProperty( undefined );
+		setMatchedWebDataStream( undefined );
+		matchGA4Information();
+	}, [ accountID, matchAccountProperty, matchWebDataStream ] );
 
 	const onActivate = useCallback( () => {
 		const hasProperties = properties?.length > 0;
@@ -167,22 +157,23 @@ export default function GA4SettingsControls( {
 		propertyID,
 	] );
 
-	const measurementIDs = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getMatchedMeasurementIDsByPropertyIDs(
-			properties
-		)
-	);
+	const measurementIDs = useSelect( ( select ) => {
+		if ( ! properties?.length ) {
+			return null;
+		}
 
-	if ( isAdminAPIWorking === undefined ) {
-		return <ProgressBar height={ isDisabled ? 180 : 212 } small />;
-	}
-
-	if ( ! isAdminAPIWorking ) {
-		return null;
-	}
+		return select(
+			MODULES_ANALYTICS_4
+		).getMatchedMeasurementIDsByPropertyIDs(
+			( properties || [] ).map( ( { _id } ) => _id )
+		);
+	} );
 
 	return (
 		<div className="googlesitekit-settings-module__fields-group">
+			<h4 className="googlesitekit-settings-module__fields-group-title">
+				{ __( 'Google Analytics 4', 'google-site-kit' ) }
+			</h4>
 			<div className="googlesitekit-setup-module__inputs">
 				{ ! isDisabled && (
 					<Fragment>
@@ -244,21 +235,23 @@ export default function GA4SettingsControls( {
 						outlined
 					>
 						<Option value={ matchedProperty?._id || '' }>
-							{ ! matchedProperty?._id ||
-							! matchedProperty?.displayName
-								? ''
-								: sprintf(
-										/* translators: 1: Property name. 2: Property ID. */
-										_x(
-											'%1$s (%2$s)',
-											'Analytics property name and ID',
-											'google-site-kit'
-										),
-										matchedProperty.displayName,
-										measurementIDs?.[
-											matchedProperty._id
-										] || ''
-								  ) }
+							{ ! matchedProperty?._id && '' }
+
+							{ matchedProperty?._id &&
+								( measurementIDs?.[ matchedProperty._id ]
+									? sprintf(
+											/* translators: 1: Property name. 2: Property ID. */
+											_x(
+												'%1$s (%2$s)',
+												'Analytics property name and ID',
+												'google-site-kit'
+											),
+											matchedProperty.displayName,
+											measurementIDs[
+												matchedProperty._id
+											]
+									  )
+									: matchedProperty.displayName ) }
 						</Option>
 					</Select>
 				) }

@@ -73,3 +73,6 @@ if ( global.document ) {
 		},
 	} );
 }
+
+// Provide a stub for scrollTo, as it's not implemented by JSDOM. See https://github.com/jsdom/jsdom/pull/2626.
+global.scrollTo = () => {};

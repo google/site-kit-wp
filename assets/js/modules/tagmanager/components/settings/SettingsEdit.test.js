@@ -61,11 +61,11 @@ describe( 'SettingsEdit', () => {
 
 		registry = createTestRegistry();
 
-		fetchMock.getOnce( /tagmanager\/data\/accounts/, {
+		fetchMock.getOnce( new RegExp( 'tagmanager/data/accounts' ), {
 			body: [ account ],
 			status: 200,
 		} );
-		fetchMock.getOnce( /analytics\/data\/settings/, {
+		fetchMock.getOnce( new RegExp( 'analytics/data/settings' ), {
 			body: {},
 			status: 200,
 		} );
@@ -233,7 +233,6 @@ describe( 'SettingsEdit', () => {
 					}
 				);
 				await waitForRegistry();
-
 				expect(
 					container.querySelector( '#ampContainerName' )
 				).toHaveValue( `${ siteName } AMP` );
@@ -323,7 +322,6 @@ describe( 'SettingsEdit', () => {
 					}
 				);
 				await waitForRegistry();
-
 				expect(
 					container.querySelector( '#containerName' )
 				).toHaveValue( siteName );

@@ -1,5 +1,5 @@
 /**
-* Idea Hub Notification styles
+* User Input Notification styles
 *
 * Site Kit by Google, Copyright 2022 Google LLC
 *
@@ -18,17 +18,10 @@
 
 .googlesitekit-plugin {
 
-	#idea-hub-module-notification {
+	.googlesitekit-user-input__notification {
 
-		.googlesitekit-publisher-win__image-larger {
-			overflow: hidden;
-
-			svg {
-
-				@media (min-width: $width-desktop + 1 + px) {
-					margin-bottom: -9px; // @TODO: remove when we have SVG without box shadow.
-				}
-			}
+		.googlesitekit-heading-2 {
+			font-size: $fs-title-lg;
 		}
 	}
 }

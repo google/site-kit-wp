@@ -25,6 +25,7 @@ import {
 	createTestRegistry,
 	subscribeUntil,
 	unsubscribeFromAll,
+	untilResolved,
 } from '../../../../../tests/js/utils';
 import * as fixtures from './__fixtures__';
 
@@ -54,7 +55,9 @@ describe( 'modules/pagespeed-insights report', () => {
 				const url = 'http://example.com/';
 
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/pagespeed-insights\/data\/pagespeed/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/pagespeed-insights/data/pagespeed'
+					),
 					{ body: fixtures.pagespeedDesktop, status: 200 }
 				);
 
@@ -71,7 +74,9 @@ describe( 'modules/pagespeed-insights report', () => {
 		describe( 'getReport', () => {
 			it( 'uses a resolver to make a network request', async () => {
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/pagespeed-insights\/data\/pagespeed/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/pagespeed-insights/data/pagespeed'
+					),
 					{ body: fixtures.pagespeedDesktop, status: 200 }
 				);
 				const strategy = 'mobile';
@@ -81,22 +86,24 @@ describe( 'modules/pagespeed-insights report', () => {
 					.select( MODULES_PAGESPEED_INSIGHTS )
 					.getReport( url, strategy );
 
+				await untilResolved(
+					registry,
+					MODULES_PAGESPEED_INSIGHTS
+				).getReport( url, strategy );
+
+				expect( initialReport ).toEqual( undefined );
+
 				// Ensure the proper parameters were passed.
 				expect( fetchMock ).toHaveFetched(
-					/^\/google-site-kit\/v1\/modules\/pagespeed-insights\/data\/pagespeed/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/pagespeed-insights/data/pagespeed'
+					),
 					{
 						query: {
 							url,
 							strategy,
 						},
 					}
-				);
-
-				expect( initialReport ).toEqual( undefined );
-				await subscribeUntil( registry, () =>
-					registry
-						.select( MODULES_PAGESPEED_INSIGHTS )
-						.hasFinishedResolution( 'getReport', [ url, strategy ] )
 				);
 
 				const report = registry
@@ -114,7 +121,9 @@ describe( 'modules/pagespeed-insights report', () => {
 					data: { status: 500 },
 				};
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/pagespeed-insights\/data\/pagespeed/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/pagespeed-insights/data/pagespeed'
+					),
 					{ body: response, status: 500 }
 				);
 

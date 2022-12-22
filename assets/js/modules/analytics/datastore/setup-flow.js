@@ -22,7 +22,6 @@
 import Data from 'googlesitekit-data';
 import {
 	MODULES_ANALYTICS,
-	SETUP_FLOW_MODE_LEGACY,
 	SETUP_FLOW_MODE_UA,
 	SETUP_FLOW_MODE_GA4,
 	SETUP_FLOW_MODE_GA4_TRANSITIONAL,
@@ -44,14 +43,6 @@ const baseSelectors = {
 	 * @return {string} Setup flow mode.
 	 */
 	getSetupFlowMode: createRegistrySelector( ( select ) => () => {
-		// Check to see if the Admin API is working—if it's `false` we should also use
-		// the legacy analytics because the API isn't working properly.
-		const isAdminAPIWorking =
-			select( MODULES_ANALYTICS_4 ).isAdminAPIWorking();
-		if ( isAdminAPIWorking === false ) {
-			return SETUP_FLOW_MODE_LEGACY;
-		}
-
 		// Ensure the Analytics settings have loaded. If we check
 		// `select( MODULES_ANALYTICS ).getAccountID();` directly, it
 		// could return `undefined` because the settings are loading OR

@@ -110,11 +110,15 @@ describe( 'DashboardPageSpeed', () => {
 
 	it( 'renders preview blocks while reports are requested', async () => {
 		freezeFetch(
-			/^\/google-site-kit\/v1\/modules\/pagespeed-insights\/data\/pagespeed/
+			new RegExp(
+				'^/google-site-kit/v1/modules/pagespeed-insights/data/pagespeed'
+			)
 		);
 		// Needs second freezeFetch call, as one is for desktop and the other for mobile.
 		freezeFetch(
-			/^\/google-site-kit\/v1\/modules\/pagespeed-insights\/data\/pagespeed/
+			new RegExp(
+				'^/google-site-kit/v1/modules/pagespeed-insights/data/pagespeed'
+			)
 		);
 		const { container } = render( <DashboardPageSpeed />, {
 			setupRegistry: setupRegistryNoReports,
@@ -200,11 +204,15 @@ describe( 'DashboardPageSpeed', () => {
 
 	it( 'displays refreshing states when the `Run test again` button is clicked', async () => {
 		freezeFetch(
-			/^\/google-site-kit\/v1\/modules\/pagespeed-insights\/data\/pagespeed/
+			new RegExp(
+				'^/google-site-kit/v1/modules/pagespeed-insights/data/pagespeed'
+			)
 		);
 		// Needs second freezeFetch call, as one is for desktop and the other for mobile.
 		freezeFetch(
-			/^\/google-site-kit\/v1\/modules\/pagespeed-insights\/data\/pagespeed/
+			new RegExp(
+				'^/google-site-kit/v1/modules/pagespeed-insights/data/pagespeed'
+			)
 		);
 		const { container, getByRole, queryByRole } = render(
 			<DashboardPageSpeed />,

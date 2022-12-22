@@ -759,6 +759,10 @@ final class Analytics_4 extends Module
 		$mapped = array();
 
 		foreach ( $batch_response as $response ) {
+			if ( $response instanceof Exception ) {
+				continue;
+			}
+
 			$webdatastreams = self::filter_web_datastreams( $response->getDataStreams() );
 
 			foreach ( $webdatastreams as $webdatastream ) {

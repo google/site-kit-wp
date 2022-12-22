@@ -14,15 +14,12 @@ use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Modules\Module_Sharing_Settings;
 use Google\Site_Kit\Core\Modules\Modules;
-use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Util\Build_Mode;
 use Google\Site_Kit\Modules\AdSense;
 use Google\Site_Kit\Modules\Analytics;
 use Google\Site_Kit\Modules\Analytics_4;
-use Google\Site_Kit\Modules\Idea_Hub;
-use Google\Site_Kit\Modules\Idea_Hub\Settings as Idea_Hub_Settings;
 use Google\Site_Kit\Modules\Optimize;
 use Google\Site_Kit\Modules\PageSpeed_Insights;
 use Google\Site_Kit\Modules\Search_Console;
@@ -30,7 +27,6 @@ use Google\Site_Kit\Modules\Site_Verification;
 use Google\Site_Kit\Modules\Tag_Manager;
 use Google\Site_Kit\Tests\TestCase;
 use Google\Site_Kit\Tests\FakeHttpClient;
-use WP_REST_Request;
 
 /**
  * @group Modules
@@ -144,7 +140,6 @@ class ModulesTest extends TestCase {
 		$modules     = new Modules( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$fake_module = new FakeModule( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$fake_module->set_force_active( true );
-		remove_all_filters( 'googlesitekit_apifetch_preload_paths' );
 
 		$this->force_set_property( $modules, 'modules', array( 'fake-module' => $fake_module ) );
 
@@ -152,13 +147,7 @@ class ModulesTest extends TestCase {
 		$modules->register();
 		$this->assertTrue( $fake_module->is_registered() );
 
-		$this->assertTrue( has_filter( 'googlesitekit_apifetch_preload_paths' ) );
 		$this->assertTrue( has_filter( 'googlesitekit_features_request_data' ) );
-		$this->assertContains(
-			'/' . REST_Routes::REST_ROOT . '/core/modules/data/list',
-			apply_filters( 'googlesitekit_apifetch_preload_paths', array() )
-		);
-
 		$this->assertTrue( has_filter( 'googlesitekit_module_exists' ) );
 		$this->assertTrue( apply_filters( 'googlesitekit_module_exists', null, 'fake-module' ) );
 		$this->assertFalse( apply_filters( 'googlesitekit_module_exists', null, 'non-existent-module' ) );
@@ -532,26 +521,6 @@ class ModulesTest extends TestCase {
 			Optimize::MODULE_SLUG,
 			Tag_Manager::MODULE_SLUG,
 		);
-
-		yield 'should include the `idea-hub` module when enabled' => array(
-			// Module feature flag.
-			'ideaHubModule',
-			// Module enabled or disabled
-			true,
-			Idea_Hub::MODULE_SLUG,
-			// Expected
-			array_merge( $default_modules, array( Idea_Hub::MODULE_SLUG ) ),
-		);
-
-		yield 'should not include the `idea-hub` module when enabled' => array(
-			// Module feature flag.
-			'ideaHubModule',
-			// Module enabled or disabled
-			false,
-			Idea_Hub::MODULE_SLUG,
-			// Expected
-			$default_modules,
-		);
 	}
 
 	public function test_get_shareable_modules() {
@@ -573,43 +542,12 @@ class ModulesTest extends TestCase {
 	public function test_get_shared_ownership_modules() {
 		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 
-		$this->enable_feature( 'ideaHubModule' );
 		$this->enable_feature( 'dashboardSharing' );
 
 		// Check shared ownership for modules activated by default.
 		$modules = new Modules( $context );
 		$this->assertEqualSetsWithIndex(
 			array(
-				'pagespeed-insights' => 'Google\\Site_Kit\\Modules\\PageSpeed_Insights',
-			),
-			array_map(
-				'get_class',
-				$modules->get_shared_ownership_modules()
-			)
-		);
-
-		// Activate modules.
-		update_option(
-			'googlesitekit-active-modules',
-			array(
-				'pagespeed-insights',
-				'analytics',
-				'idea-hub',
-			)
-		);
-
-		// Connect the Idea Hub module.
-		$options = new Options( $context );
-		$options->set(
-			Idea_Hub_Settings::OPTION,
-			array( 'tosAccepted' => true )
-		);
-
-		// Verify shared ownership for active and connected modules.
-		$modules = new Modules( $context );
-		$this->assertEqualSetsWithIndex(
-			array(
-				'idea-hub'           => 'Google\\Site_Kit\\Modules\\Idea_Hub',
 				'pagespeed-insights' => 'Google\\Site_Kit\\Modules\\PageSpeed_Insights',
 			),
 			array_map(
@@ -679,341 +617,6 @@ class ModulesTest extends TestCase {
 
 		// Checks the default return false.
 		$this->assertFalse( $modules->is_module_recoverable( 'analytics' ) );
-	}
-
-	private function setup_modules_to_test_rest_endpoint() {
-		$user         = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
-		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-		$options      = new Options( $context );
-		$user_options = new User_Options( $context, $user->ID );
-		$modules      = new Modules( $context, $options, $user_options );
-		wp_set_current_user( $user->ID );
-
-		// This ensures the REST server is initialized fresh for each test using it.
-		unset( $GLOBALS['wp_rest_server'] );
-		remove_all_filters( 'googlesitekit_rest_routes' );
-
-		$modules->register();
-		return $modules;
-	}
-
-	public function test_check_access_rest_endpoint__no_get_method() {
-		$this->setup_modules_to_test_rest_endpoint();
-
-		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/modules/data/check-access' );
-		$response = rest_get_server()->dispatch( $request );
-
-		$this->assertEquals( 'rest_no_route', $response->get_data()['code'] );
-	}
-
-	public function test_check_access_rest_endpoint__requires_module_slug() {
-		$this->setup_modules_to_test_rest_endpoint();
-
-		$request  = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/modules/data/check-access' );
-		$response = rest_get_server()->dispatch( $request );
-
-		$this->assertEquals( 'invalid_module_slug', $response->get_data()['code'] );
-		$this->assertEquals( 404, $response->get_status() );
-	}
-
-	public function test_check_access_rest_endpoint__requires_module_connected() {
-		$this->setup_modules_to_test_rest_endpoint();
-
-		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/modules/data/check-access' );
-		$request->set_body_params(
-			array(
-				'data' => array(
-					'slug' => 'analytics',
-				),
-			)
-		);
-		$response = rest_get_server()->dispatch( $request );
-
-		$this->assertEquals( 'module_not_connected', $response->get_data()['code'] );
-		$this->assertEquals( 400, $response->get_status() );
-	}
-
-	public function test_check_access_rest_endpoint__shareable_module_does_not_have_service_entity() {
-		$this->enable_feature( 'dashboardSharing' );
-		$this->setup_modules_to_test_rest_endpoint();
-
-		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/modules/data/check-access' );
-		$request->set_body_params(
-			array(
-				'data' => array(
-					'slug' => 'pagespeed-insights',
-				),
-			)
-		);
-		$response = rest_get_server()->dispatch( $request );
-
-		$this->assertEquals( true, $response->get_data()['access'] );
-		$this->assertEquals( 200, $response->get_status() );
-	}
-
-	public function test_check_access_rest_endpoint__unshareable_module_does_not_have_service_entity() {
-		$modules = $this->setup_modules_to_test_rest_endpoint();
-
-		$optimize = $modules->get_module( 'optimize' );
-		$optimize->get_settings()->merge( array( 'optimizeID' => 'GTM-XXXXX' ) );
-
-		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/modules/data/check-access' );
-		$request->set_body_params(
-			array(
-				'data' => array(
-					'slug' => 'optimize',
-				),
-			)
-		);
-		$response = rest_get_server()->dispatch( $request );
-
-		$this->assertEquals( 'invalid_module', $response->get_data()['code'] );
-		$this->assertEquals( 400, $response->get_status() );
-	}
-
-	public function test_check_access_rest_endpoint__success() {
-		$modules = $this->setup_modules_to_test_rest_endpoint();
-
-		$analytics = $modules->get_module( 'analytics' );
-		$analytics->get_client()->setHttpClient( new FakeHttpClient() );
-		$analytics->get_settings()->merge(
-			array(
-				'accountID'             => '12345678',
-				'profileID'             => '12345678',
-				'propertyID'            => '987654321',
-				'internalWebPropertyID' => '1234567890',
-			)
-		);
-
-		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/modules/data/check-access' );
-		$request->set_body_params(
-			array(
-				'data' => array(
-					'slug' => 'analytics',
-				),
-			)
-		);
-		$response = rest_get_server()->dispatch( $request );
-
-		$this->assertArrayIntersection(
-			array(
-				'access' => true,
-			),
-			$response->get_data()
-		);
-		$this->assertEquals( 200, $response->get_status() );
-	}
-
-	public function test_data_rest_endpoint__requires_active_module() {
-		$modules     = $this->setup_modules_to_test_rest_endpoint();
-		$fake_module = new FakeModule( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		$this->force_set_property( $modules, 'modules', array( 'fake-module' => $fake_module ) );
-
-		delete_option( Modules::OPTION_ACTIVE_MODULES );
-		$this->assertFalse( $modules->is_module_active( 'fake-module' ) );
-
-		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/modules/fake-module/data/test-request' );
-		$response = rest_get_server()->dispatch( $request );
-
-		$this->assertEquals( 403, $response->get_status() );
-		$this->assertEquals( 'module_not_active', $response->get_data()['code'] );
-		$this->assertEquals( 'Module must be active to request data.', $response->get_data()['message'] );
-
-		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/modules/fake-module/data/test-request' );
-		$request->set_body_params(
-			array(
-				'data' => array(
-					'foo' => 'bar',
-				),
-			)
-		);
-		$response = rest_get_server()->dispatch( $request );
-
-		$this->assertEquals( 403, $response->get_status() );
-		$this->assertEquals( 'module_not_active', $response->get_data()['code'] );
-		$this->assertEquals( 'Module must be active to request data.', $response->get_data()['message'] );
-	}
-
-	public function test_data_rest_endpoint__success() {
-		$modules     = $this->setup_modules_to_test_rest_endpoint();
-		$fake_module = new FakeModule( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		$this->force_set_property( $modules, 'modules', array( 'fake-module' => $fake_module ) );
-
-		update_option( Modules::OPTION_ACTIVE_MODULES, array( 'fake-module' ) );
-		$this->assertTrue( $modules->is_module_active( 'fake-module' ) );
-
-		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/modules/fake-module/data/test-request' );
-		$response = rest_get_server()->dispatch( $request );
-
-		$this->assertEquals( 200, $response->get_status() );
-		$data = $response->get_data();
-		$this->assertIsObject( $data );
-		$this->assertEquals( 'GET', $data->method );
-		$this->assertEquals( 'test-request', $data->datapoint );
-
-		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/modules/fake-module/data/test-request' );
-		$request->set_body_params(
-			array(
-				'data' => array(
-					'foo' => 'bar',
-				),
-			)
-		);
-		$response = rest_get_server()->dispatch( $request );
-
-		$this->assertEquals( 200, $response->get_status() );
-		$data = $response->get_data();
-		$this->assertIsObject( $data );
-		$this->assertEquals( 'POST', $data->method );
-		$this->assertEquals( 'test-request', $data->datapoint );
-	}
-
-	public function test_recover_module_rest_endpoint__no_get_method() {
-		$this->setup_modules_to_test_rest_endpoint();
-
-		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/modules/data/recover-modules' );
-		$response = rest_get_server()->dispatch( $request );
-
-		$this->assertEquals( 'rest_no_route', $response->get_data()['code'] );
-	}
-
-	public function test_recover_module_rest_endpoint__requires_module_slugs() {
-		$this->setup_modules_to_test_rest_endpoint();
-
-		$request  = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/modules/data/recover-modules' );
-		$response = rest_get_server()->dispatch( $request );
-
-		$this->assertEquals( 'invalid_param', $response->get_data()['code'] );
-		$this->assertEquals( 400, $response->get_status() );
-	}
-
-	public function test_recover_module_rest_endpoint__invalid_module_slug() {
-		$this->setup_modules_to_test_rest_endpoint();
-
-		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/modules/data/recover-modules' );
-		$request->set_body_params(
-			array(
-				'data' => array(
-					'slugs' => array( 'non-existent-module' ),
-				),
-			)
-		);
-		$response = rest_get_server()->dispatch( $request );
-
-		$this->assertEquals( 'invalid_module_slug', $response->get_data()['error']['non-existent-module']['code'] );
-		$this->assertEquals( 200, $response->get_status() );
-	}
-
-	public function test_recover_module_rest_endpoint__requires_shareable_module() {
-		$this->setup_modules_to_test_rest_endpoint();
-
-		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/modules/data/recover-modules' );
-		$request->set_body_params(
-			array(
-				'data' => array(
-					'slugs' => array( 'search-console' ),
-				),
-			)
-		);
-		$response = rest_get_server()->dispatch( $request );
-
-		$this->assertEquals( 'module_not_shareable', $response->get_data()['error']['search-console']['code'] );
-		$this->assertEquals( 200, $response->get_status() );
-	}
-
-	public function test_recover_module_rest_endpoint__requires_recoverable_module() {
-		$this->enable_feature( 'dashboardSharing' );
-		$this->setup_modules_to_test_rest_endpoint();
-
-		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/modules/data/recover-modules' );
-		$request->set_body_params(
-			array(
-				'data' => array(
-					'slugs' => array( 'search-console' ),
-				),
-			)
-		);
-		$response = rest_get_server()->dispatch( $request );
-
-		$this->assertEquals( 'module_not_recoverable', $response->get_data()['error']['search-console']['code'] );
-		$this->assertEquals( 200, $response->get_status() );
-	}
-
-	public function test_recover_module_rest_endpoint__requires_accessible_module() {
-		$this->enable_feature( 'dashboardSharing' );
-		$modules = $this->setup_modules_to_test_rest_endpoint();
-
-		// Make search-console a recoverable module
-		$search_console = $modules->get_module( 'search-console' );
-		$search_console->get_settings()->merge(
-			array(
-				'propertyID' => '123456789',
-			)
-		);
-		$test_sharing_settings = array(
-			'search-console' => array(
-				'sharedRoles' => array( 'editor', 'subscriber' ),
-				'management'  => 'owner',
-			),
-		);
-		add_option( 'googlesitekit_dashboard_sharing', $test_sharing_settings );
-
-		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/modules/data/recover-modules' );
-		$request->set_body_params(
-			array(
-				'data' => array(
-					'slugs' => array( 'search-console' ),
-				),
-			)
-		);
-		$response = rest_get_server()->dispatch( $request );
-
-		$this->assertEquals( 'module_not_accessible', $response->get_data()['error']['search-console']['code'] );
-		$this->assertEquals( 200, $response->get_status() );
-	}
-
-	public function test_recover_module_rest_endpoint__success() {
-		$this->enable_feature( 'dashboardSharing' );
-		$modules = $this->setup_modules_to_test_rest_endpoint();
-
-		// Make search-console a recoverable module
-		$search_console = $modules->get_module( 'search-console' );
-		$search_console->get_settings()->merge(
-			array(
-				'propertyID' => '123456789',
-			)
-		);
-		$test_sharing_settings = array(
-			'search-console' => array(
-				'sharedRoles' => array( 'editor', 'subscriber' ),
-				'management'  => 'owner',
-			),
-		);
-		add_option( 'googlesitekit_dashboard_sharing', $test_sharing_settings );
-
-		// Make search-console service requests accessible
-		$search_console->get_client()->setHttpClient( new FakeHttpClient() );
-
-		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/modules/data/recover-modules' );
-		$request->set_body_params(
-			array(
-				'data' => array(
-					'slugs' => array( 'search-console' ),
-				),
-			)
-		);
-		$response = rest_get_server()->dispatch( $request );
-
-		$this->assertEquals(
-			array(
-				'success' => array(
-					'search-console' => true,
-				),
-				'error'   => (object) array(),
-			),
-			$response->get_data()
-		);
-		$this->assertEquals( 200, $response->get_status() );
 	}
 
 	private function setup_all_admin_module_ownership_change() {

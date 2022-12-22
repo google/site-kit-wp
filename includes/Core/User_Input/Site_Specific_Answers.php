@@ -15,7 +15,7 @@ use Google\Site_Kit\Core\Storage\Setting;
 /**
  * Class for handling the site specific answers in User Input.
  *
- * @since n.e.x.t
+ * @since 1.90.0
  * @access private
  * @ignore
  */
@@ -34,7 +34,7 @@ class Site_Specific_Answers extends Setting {
 	/**
 	 * Gets the expected value type.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.90.0
 	 *
 	 * @return string The type name.
 	 */
@@ -45,7 +45,7 @@ class Site_Specific_Answers extends Setting {
 	/**
 	 * Gets the default value.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.90.0
 	 *
 	 * @return array The default value.
 	 */
@@ -56,7 +56,7 @@ class Site_Specific_Answers extends Setting {
 	/**
 	 * Gets the callback for sanitizing the setting's value before saving.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.90.0
 	 *
 	 * @return callable Callback method that filters or type casts invalid setting values.
 	 */
