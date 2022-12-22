@@ -1247,8 +1247,8 @@ const baseSelectors = {
 	 * @param {Object} state Data store's state.
 	 * @param {string} slug  Module slug.
 	 * @return {(boolean|undefined)} `true` if the user has ownership or access.
-	 * 								 `false` if the user doesn't have ownership or access.
-	 * 								 `undefined` If the state is still being resolved,
+	 *                                                      `false` if the user doesn't have ownership or access.
+	 *                                                      `undefined` If the state is still being resolved,
 	 */
 	hasModuleOwnershipOrAccess: createRegistrySelector(
 		( select ) => ( state, moduleSlug ) => {
