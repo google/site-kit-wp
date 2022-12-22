@@ -94,7 +94,6 @@ storiesOf( 'Global', module ).add(
 
 			<div>
 				<Checkbox
-					disabled
 					id="googlesitekit-checkbox-4"
 					name="googlesitekit__checkbox"
 					loading={ true }
@@ -108,10 +107,28 @@ storiesOf( 'Global', module ).add(
 			</div>
 
 			<div>
-				<InteractiveCheckbox
+				<Checkbox
 					id="googlesitekit-checkbox-5"
 					name="googlesitekit__checkbox"
 					value="value-5"
+					onChange={ ( e ) => {
+						global.console.log( e.target.value );
+					} }
+				>
+					<div>
+						<span>
+							Complex <span> Label</span>
+						</span>
+						<span>&nbsp;Checkbox</span>
+					</div>
+				</Checkbox>
+			</div>
+
+			<div>
+				<InteractiveCheckbox
+					id="googlesitekit-checkbox-6"
+					name="googlesitekit__checkbox"
+					value="value-6"
 				/>
 			</div>
 		</div>

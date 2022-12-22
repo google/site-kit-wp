@@ -28,6 +28,11 @@ import PropTypes from 'prop-types';
 import { useEffect, useRef } from '@wordpress/element';
 import Spinner from '../../components/Spinner';
 
+/**
+ * Internal dependencies
+ */
+import { getLabelFromChildren } from '../../util/react-children-to-text';
+
 export default function Checkbox( {
 	onChange,
 	id,
@@ -111,6 +116,7 @@ export default function Checkbox( {
 					id={ id }
 					ref={ ref }
 					role="checkbox"
+					aria-label={ getLabelFromChildren( children ) }
 					// Lit boolean attributes treat anything non-null|undefined as true. Coerce to null if false.
 					// See https://lit.dev/docs/v1/components/properties/#attributes
 					checked={ checked || null }

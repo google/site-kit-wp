@@ -35,7 +35,7 @@ const defaultProps = {
 	},
 };
 
-const InteractiveCheckbox = ( props ) => {
+const InteractiveCheckbox = ( { children, ...props } ) => {
 	const [ checked, setChecked ] = useState( false );
 	return (
 		<Checkbox
@@ -47,7 +47,7 @@ const InteractiveCheckbox = ( props ) => {
 				setChecked( e.target.checked );
 			} }
 		>
-			Interactive Checkbox
+			{ children }
 		</Checkbox>
 	);
 };
@@ -91,7 +91,6 @@ export const Checkboxes = () => (
 
 		<div>
 			<Checkbox
-				disabled
 				id="googlesitekit-checkbox-4"
 				name="googlesitekit__checkbox"
 				value="value-4"
@@ -103,11 +102,29 @@ export const Checkboxes = () => (
 		</div>
 
 		<div>
-			<InteractiveCheckbox
+			<Checkbox
 				id="googlesitekit-checkbox-5"
 				name="googlesitekit__checkbox"
 				value="value-5"
-			/>
+				{ ...defaultProps }
+			>
+				<div>
+					<span>
+						Complex <span> Label</span>
+					</span>
+					<span>&nbsp;Checkbox</span>
+				</div>
+			</Checkbox>
+		</div>
+
+		<div>
+			<InteractiveCheckbox
+				id="googlesitekit-checkbox-6"
+				name="googlesitekit__checkbox"
+				value="value-6"
+			>
+				Interactive Checkbox
+			</InteractiveCheckbox>
 		</div>
 	</div>
 );

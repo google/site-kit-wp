@@ -87,6 +87,34 @@ describe( 'Checkbox', () => {
 		expect( container ).toMatchSnapshot();
 	} );
 
+	it( 'should render the checkbox with a complex label', () => {
+		const { container } = render(
+			<Checkbox
+				id="checkbox-id"
+				name="checkbox-name"
+				value="checkbox-value"
+				onChange={ () => {} }
+			>
+				<div>
+					Complex Label
+					<span>
+						<a href="https://example.com"> With</a>
+						<span>{ 5 }</span>
+					</span>
+					<span>
+						Sub<span>&nbsp;Children </span>
+					</span>
+				</div>
+			</Checkbox>
+		);
+		expect( container ).toMatchSnapshot();
+		expect(
+			container
+				.querySelector( 'md-checkbox' )
+				.getAttribute( 'data-aria-label' )
+		).toBe( 'Complex Label With 5 Sub Children' );
+	} );
+
 	it( 'should attach the onKeyDown handler when present', () => {
 		const onKeyDown = jest.fn();
 

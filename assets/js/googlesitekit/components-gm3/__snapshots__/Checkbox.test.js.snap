@@ -6,6 +6,7 @@ exports[`Checkbox controlled input behaviour for input should allow updating of 
     class="googlesitekit-component-gm3__checkbox"
   >
     <md-checkbox
+      data-aria-label="Checkbox Label"
       id="checkbox-id"
       name="checkbox-name"
       role="checkbox"
@@ -27,6 +28,7 @@ exports[`Checkbox controlled input behaviour for input should allow updating of 
   >
     <md-checkbox
       checked=""
+      data-aria-label="Checkbox Label"
       id="checkbox-id"
       name="checkbox-name"
       role="checkbox"
@@ -47,6 +49,7 @@ exports[`Checkbox controlled input behaviour for input should allow updating of 
     class="googlesitekit-component-gm3__checkbox"
   >
     <md-checkbox
+      data-aria-label="Checkbox Label"
       id="checkbox-id"
       name="checkbox-name"
       role="checkbox"
@@ -68,6 +71,7 @@ exports[`Checkbox controlled input behaviour for input should correctly invoke o
   >
     <md-checkbox
       checked=""
+      data-aria-label="Checkbox Label"
       id="checkbox-id"
       name="checkbox-name"
       role="checkbox"
@@ -89,6 +93,7 @@ exports[`Checkbox controlled input behaviour for input should correctly invoke o
   >
     <md-checkbox
       checked=""
+      data-aria-label="Checkbox Label"
       id="checkbox-id"
       name="checkbox-name"
       role="checkbox"
@@ -109,6 +114,7 @@ exports[`Checkbox controlled input behaviour for input should correctly invoke o
     class="googlesitekit-component-gm3__checkbox"
   >
     <md-checkbox
+      data-aria-label="Checkbox Label"
       id="checkbox-id"
       name="checkbox-name"
       role="checkbox"
@@ -129,6 +135,7 @@ exports[`Checkbox controlled input behaviour for input should correctly invoke o
     class="googlesitekit-component-gm3__checkbox"
   >
     <md-checkbox
+      data-aria-label="Checkbox Label"
       id="checkbox-id"
       name="checkbox-name"
       role="checkbox"
@@ -149,6 +156,7 @@ exports[`Checkbox controlled input behaviour for label should allow updating of 
     class="googlesitekit-component-gm3__checkbox"
   >
     <md-checkbox
+      data-aria-label="Checkbox Label"
       id="checkbox-id"
       name="checkbox-name"
       role="checkbox"
@@ -170,6 +178,7 @@ exports[`Checkbox controlled input behaviour for label should allow updating of 
   >
     <md-checkbox
       checked=""
+      data-aria-label="Checkbox Label"
       id="checkbox-id"
       name="checkbox-name"
       role="checkbox"
@@ -190,6 +199,7 @@ exports[`Checkbox controlled input behaviour for label should allow updating of 
     class="googlesitekit-component-gm3__checkbox"
   >
     <md-checkbox
+      data-aria-label="Checkbox Label"
       id="checkbox-id"
       name="checkbox-name"
       role="checkbox"
@@ -211,6 +221,7 @@ exports[`Checkbox controlled input behaviour for label should correctly invoke o
   >
     <md-checkbox
       checked=""
+      data-aria-label="Checkbox Label"
       id="checkbox-id"
       name="checkbox-name"
       role="checkbox"
@@ -232,6 +243,7 @@ exports[`Checkbox controlled input behaviour for label should correctly invoke o
   >
     <md-checkbox
       checked=""
+      data-aria-label="Checkbox Label"
       id="checkbox-id"
       name="checkbox-name"
       role="checkbox"
@@ -252,6 +264,7 @@ exports[`Checkbox controlled input behaviour for label should correctly invoke o
     class="googlesitekit-component-gm3__checkbox"
   >
     <md-checkbox
+      data-aria-label="Checkbox Label"
       id="checkbox-id"
       name="checkbox-name"
       role="checkbox"
@@ -272,6 +285,7 @@ exports[`Checkbox controlled input behaviour for label should correctly invoke o
     class="googlesitekit-component-gm3__checkbox"
   >
     <md-checkbox
+      data-aria-label="Checkbox Label"
       id="checkbox-id"
       name="checkbox-name"
       role="checkbox"
@@ -292,6 +306,7 @@ exports[`Checkbox should render the checkbox 1`] = `
     class="googlesitekit-component-gm3__checkbox"
   >
     <md-checkbox
+      data-aria-label="Checkbox Label"
       id="checkbox-id"
       name="checkbox-name"
       role="checkbox"
@@ -306,6 +321,45 @@ exports[`Checkbox should render the checkbox 1`] = `
 </div>
 `;
 
+exports[`Checkbox should render the checkbox with a complex label 1`] = `
+<div>
+  <div
+    class="googlesitekit-component-gm3__checkbox"
+  >
+    <md-checkbox
+      data-aria-label="Complex Label With 5 Sub Children"
+      id="checkbox-id"
+      name="checkbox-name"
+      role="checkbox"
+      value="checkbox-value"
+    />
+    <label
+      for="checkbox-id"
+    >
+      <div>
+        Complex Label
+        <span>
+          <a
+            href="https://example.com"
+          >
+             With
+          </a>
+          <span>
+            5
+          </span>
+        </span>
+        <span>
+          Sub
+          <span>
+             Children 
+          </span>
+        </span>
+      </div>
+    </label>
+  </div>
+</div>
+`;
+
 exports[`Checkbox should render the checkbox with checked state 1`] = `
 <div>
   <div
@@ -313,6 +367,7 @@ exports[`Checkbox should render the checkbox with checked state 1`] = `
   >
     <md-checkbox
       checked="true"
+      data-aria-label="Checkbox Label"
       id="checkbox-id"
       name="checkbox-name"
       role="checkbox"
@@ -333,6 +388,7 @@ exports[`Checkbox should render the checkbox with disabled state 1`] = `
     class="googlesitekit-component-gm3__checkbox"
   >
     <md-checkbox
+      data-aria-label="Checkbox Label"
       disabled="true"
       id="checkbox-id"
       name="checkbox-name"
