@@ -99,7 +99,7 @@ final class Analytics_4 extends Module
 			Analytics::READONLY_SCOPE,
 		);
 		if ( Feature_Flags::enabled( 'gteSupport' ) ) {
-			$scopes[] = Google_Service_TagManager::TAGMANAGER_READONLY;
+			$scopes[] = 'https://www.googleapis.com/auth/tagmanager.readonly';
 		}
 		return $scopes;
 	}
