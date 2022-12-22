@@ -61,7 +61,7 @@ describe( 'API cache', () => {
 		await resetSiteKit();
 	} );
 
-	it( 'isolates client storage between users', async () => {
+	it( 'isolates client storage between sessions', async () => {
 		const firstTestNotification = { ...testSiteNotification };
 		const secondTestNotification = {
 			...testSiteNotification,
