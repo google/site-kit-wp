@@ -129,7 +129,7 @@ export default function Checkbox( {
 			) }
 			{
 				// These ESLint rules are disabled because we are intentionally adding a click handler to the
-				// label to make up for a bug in the GM3 component, where the label does not respond to
+				// label to make up for a bug in the `@material/web` component, where the label does not respond to
 				// click events for the checkbox. Usually, labels associated with inputs don't respond to
 				// keyboard events, but due to our hack this is required.
 				/* eslint-disable jsx-a11y/click-events-have-key-events */
