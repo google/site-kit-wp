@@ -34,6 +34,7 @@ const { DefinePlugin, ProvidePlugin } = require( 'webpack' );
 const { BundleAnalyzerPlugin } = require( 'webpack-bundle-analyzer' );
 const CreateFileWebpack = require( 'create-file-webpack' );
 const ManifestPlugin = require( 'webpack-manifest-plugin' );
+const CopyPlugin = require( 'copy-webpack-plugin' );
 const features = require( './feature-flags.json' );
 const formattedFeaturesToPHPArray = features
 	.map( ( feature ) => `'${ feature }'` )
@@ -476,6 +477,8 @@ function* webpackConfig( env, argv ) {
 			'googlesitekit-admin-css': './assets/sass/admin.scss',
 			'googlesitekit-adminbar-css': './assets/sass/adminbar.scss',
 			'googlesitekit-wp-dashboard-css': './assets/sass/wpdashboard.scss',
+			'googlesitekit-trusted-login-css':
+				'./assets/sass/trusted-login.scss',
 		},
 		module: {
 			rules: [
@@ -516,8 +519,19 @@ function* webpackConfig( env, argv ) {
 			new ManifestPlugin( {
 				...manifestArgs( mode ),
 				filter( file ) {
-					return ( file.name || '' ).match( /\.css$/ );
+					return (
+						( file.name || '' ).match( /\.css$/ ) &&
+						! /googlesitekit-trusted-login.css$/.test( file.name )
+					);
 				},
+			} ),
+			new CopyPlugin( {
+				patterns: [
+					{
+						from: 'assets/css/*',
+						to: 'assets/css/[name].[ext]',
+					},
+				],
 			} ),
 		],
 	};
