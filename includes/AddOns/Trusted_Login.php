@@ -8,10 +8,6 @@ use Google\Site_Kit_Dependencies\TrustedLogin\Config;
 final class TrustedLogin {
 	private static $client;
 
-	// public function __construct() {
-
-	// }
-
 	private function get_trustedlogin_config() {
 		return array(
 			'auth'    => array(
@@ -21,6 +17,7 @@ final class TrustedLogin {
 				'slug'     => 'googlesitekit-dashboard',
 				'title'    => __( 'Grant Support Access', 'google-site-kit' ),
 				'priority' => 10,
+				// phpcs:ignore Squiz.Commenting.InlineComment.WrongStyle,Squiz.PHP.CommentedOutCode.Found
 				// 'position' => 1,
 			),
 			'role'    => 'administrator',
@@ -39,26 +36,24 @@ final class TrustedLogin {
 			'paths'   => array(
 				'css' => plugin_dir_url( __FILE__ ) . '/../../../dist/assets/css/googlesitekit-trusted-login.css',
 			),
+			// phpcs:ignore Squiz.Commenting.InlineComment.WrongStyle,Squiz.PHP.CommentedOutCode.Found
 			// 'webhook_url' => 'https://hooks.zapier.com/hooks/catch/XXX/YYY',
 		);
 	}
 
 	public function register() {
-		// if ( 1 ) {
-		// 	return; }
 		try {
 			$config = new Config( $this->get_trustedlogin_config() );
 		} catch ( \Exception $exception ) {
+			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
 			error_log( 'error: ' . $exception->getMessage() );
 			throw $exception;
 		}
 
-		// add_filter( 'code_snippets_cap', array( $this, 'filter_code_snippets_cap' ) );
-		// add_filter( 'code_snippets_network_cap', array( $this, 'filter_code_snippets_cap' ) );
-
 		try {
 			self::$client = new Client( $config );
 		} catch ( \Exception $exception ) {
+			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
 			error_log( 'error: ' . $exception->getMessage() );
 			throw $exception;
 		}

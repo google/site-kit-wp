@@ -29,9 +29,9 @@ $google_services = implode(
 
 return array(
 	'prefix'                     => 'Google\\Site_Kit_Dependencies',
-	/*
-	 'exclude-classes'            => array( 'ParagonIE_Sodium_Compat' ), */
-	/* 'exclude-constants'          => array( '/^SODIUM_/' ), */
+	/* phpcs:ignore Squiz.Commenting.InlineComment.WrongStyle,Squiz.PHP.CommentedOutCode.Found
+	'exclude-classes'            => array( 'ParagonIE_Sodium_Compat' ),
+	'exclude-constants'          => array( '/^SODIUM_/' ), */
 	'finders'                    => array(
 
 		// General dependencies, except Google API services.
