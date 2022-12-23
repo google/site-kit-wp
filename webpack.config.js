@@ -477,6 +477,8 @@ function* webpackConfig( env, argv ) {
 			'googlesitekit-admin-css': './assets/sass/admin.scss',
 			'googlesitekit-adminbar-css': './assets/sass/adminbar.scss',
 			'googlesitekit-wp-dashboard-css': './assets/sass/wpdashboard.scss',
+			// This and the other changes to `webpack.config.js` are not required for Trusted Login integration, rather it serves as
+			// a simple example of how we could modify its styling if we wanted to.
 			'googlesitekit-trusted-login-css':
 				'./assets/sass/trusted-login.scss',
 		},
