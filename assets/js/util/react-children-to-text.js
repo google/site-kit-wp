@@ -40,6 +40,7 @@ function getTextFromChildren( children ) {
 		if ( isValidElement( child ) ) {
 			text.push( ...getTextFromChildren( child.props.children ) );
 		} else {
+			// If child is not an element, it's a string or a number.
 			text.push( child.toString() );
 		}
 	} );
