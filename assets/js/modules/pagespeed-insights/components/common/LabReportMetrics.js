@@ -33,6 +33,8 @@ import ReportMetric from './ReportMetric';
 import MetricsLearnMoreLink from './MetricsLearnMoreLink';
 import { getScoreCategory } from '../../util';
 import { CATEGORY_AVERAGE } from '../../util/constants';
+import { getReportErrorMessage } from '../../../../util/errors';
+import ReportErrorActions from '../../../../components/ReportErrorActions';
 import ErrorText from '../../../../components/ErrorText';
 
 export default function LabReportMetrics( { data, error } ) {
@@ -44,10 +46,17 @@ export default function LabReportMetrics( { data, error } ) {
 		data?.lighthouseResult?.audits?.[ 'total-blocking-time' ];
 
 	if ( error ) {
+		const errorMessage = getReportErrorMessage( error );
+
 		return (
 			<div className="googlesitekit-pagespeed-insights-web-vitals-metrics">
-				<div className="googlesitekit-pagespeed-report__row googlesitekit-pagespeed-report__row--first">
-					<ErrorText message={ error.message } />
+				<div className="googlesitekit-pagespeed-report__row googlesitekit-pagespeed-report__row--error">
+					<ErrorText message={ errorMessage } />
+
+					<ReportErrorActions
+						moduleSlug="pagespeed-insights"
+						error={ error }
+					/>
 				</div>
 			</div>
 		);
@@ -124,7 +133,7 @@ export default function LabReportMetrics( { data, error } ) {
 							'This is a piece of filler content which is hidden in order to provide a consistent height for the widget.',
 							'google-site-kit'
 						) }
-						displayValue={ '0' }
+						displayValue="0"
 						category={ CATEGORY_AVERAGE }
 						experimental
 						isHidden

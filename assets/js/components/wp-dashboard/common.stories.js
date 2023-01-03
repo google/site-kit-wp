@@ -57,6 +57,21 @@ const wpDashboardAnalyticsOptionSets = [
 		],
 	},
 
+	// Mock options for mocking "Total Users" chart widget response.
+	{
+		startDate: '2020-12-31',
+		endDate: '2021-01-27',
+		compareStartDate: '2020-12-03',
+		compareEndDate: '2020-12-30',
+		metrics: [
+			{
+				expression: 'ga:users',
+				alias: 'Total Users',
+			},
+		],
+		dimensions: [ 'ga:date' ],
+	},
+
 	// Mock options for mocking "Sessions" report's response.
 	{
 		startDate: '2020-12-31',
@@ -153,10 +168,16 @@ export const setupSearchConsoleAnalyticsMockReports = ( registry ) => {
 
 export const widgetDecorators = [
 	( Story ) => (
-		<div id="google_dashboard_widget" style={ { maxWidth: '600px' } }>
-			<div className="googlesitekit-widget">
-				<div className="googlesitekit-widget__body">
-					<Story />
+		<div id="dashboard-widgets">
+			<div id="google_dashboard_widget" style={ { maxWidth: '600px' } }>
+				<div className="inside">
+					<div className="googlesitekit-wp-dashboard">
+						<div className="googlesitekit-widget">
+							<div className="googlesitekit-widget__body">
+								<Story />
+							</div>
+						</div>
+					</div>
 				</div>
 			</div>
 		</div>

@@ -35,7 +35,10 @@ import BannerNotification from './BannerNotification';
 import { getTimeInSeconds } from '../../util';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import UserInputPromptSVG from '../../../svg/graphics/user-input-prompt.svg';
+import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
+import { MODULES_SEARCH_CONSOLE } from '../../modules/search-console/datastore/constants';
+import { MODULES_ANALYTICS } from '../../modules/analytics/datastore/constants';
+import Link from '../Link';
 const { useSelect } = Data;
 
 export default function UserInputSettings( {
@@ -51,8 +54,28 @@ export default function UserInputSettings( {
 	const userInputState = useSelect( ( select ) =>
 		select( CORE_USER ).getUserInputState()
 	);
+	const analyticsModuleConnected = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleConnected( 'analytics' )
+	);
+	const searchConsoleModuleConnected = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleConnected( 'search-console' )
+	);
+	const searchConsoleIsGatheringData = useSelect( ( select ) =>
+		select( MODULES_SEARCH_CONSOLE ).isGatheringData()
+	);
+	const analyticsIsGatheringData = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).isGatheringData()
+	);
 
 	if ( userInputState === 'completed' ) {
+		return null;
+	}
+
+	if ( ! analyticsModuleConnected || ! searchConsoleModuleConnected ) {
+		return null;
+	}
+
+	if ( analyticsIsGatheringData || searchConsoleIsGatheringData ) {
 		return null;
 	}
 
@@ -60,21 +83,19 @@ export default function UserInputSettings( {
 		<BannerNotification
 			id={ `user-input-settings-notification-${ instanceID }` }
 			className="googlesitekit-user-input__notification"
-			title={ __(
-				'Customize Site Kit to match your goals',
-				'google-site-kit'
-			) }
+			title={ __( 'Key metrics', 'google-site-kit' ) }
 			description={ __(
-				'Answer 5 questions and Site Kit will customize your dashboard with specific metrics and opportunities that match your site’s goals',
+				'Answer 3 quick questions to help us show the most relevant data for your site',
 				'google-site-kit'
 			) }
 			format="large"
 			dismissExpires={ getTimeInSeconds( 'hour' ) * 3 }
-			ctaLink={ ctaLink }
-			ctaLabel={ __( 'Let’s go', 'google-site-kit' ) }
-			onCTAClick={ onCTAClick }
+			ctaComponent={
+				<Link href={ ctaLink } onClick={ onCTAClick }>
+					{ __( 'Personalize your metrics', 'google-site-kit' ) }
+				</Link>
+			}
 			dismiss={ __( 'Remind me later', 'google-site-kit' ) }
-			WinImageSVG={ UserInputPromptSVG }
 			isDismissible={ isDismissible }
 			onDismiss={ onDismiss }
 			rounded={ rounded }

@@ -41,12 +41,12 @@ const { useSelect, useDispatch } = Data;
 export default function AccountSelect( { hasModuleAccess } ) {
 	const viewContext = useViewContext();
 
-	const { accounts, hasResolvedAccounts } = useSelect( ( select ) => ( {
-		accounts: select( MODULES_TAGMANAGER ).getAccounts(),
-		hasResolvedAccounts:
-			select( MODULES_TAGMANAGER ).hasFinishedResolution( 'getAccounts' ),
-	} ) );
-
+	const accounts = useSelect( ( select ) =>
+		select( MODULES_TAGMANAGER ).getAccounts()
+	);
+	const hasResolvedAccounts = useSelect( ( select ) =>
+		select( MODULES_TAGMANAGER ).hasFinishedResolution( 'getAccounts' )
+	);
 	const accountID = useSelect( ( select ) =>
 		select( MODULES_TAGMANAGER ).getAccountID()
 	);

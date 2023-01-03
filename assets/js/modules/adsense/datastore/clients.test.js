@@ -25,6 +25,7 @@ import {
 	createTestRegistry,
 	subscribeUntil,
 	unsubscribeFromAll,
+	untilResolved,
 } from '../../../../../tests/js/utils';
 import * as fixtures from './__fixtures__';
 
@@ -53,7 +54,9 @@ describe( 'modules/adsense clients', () => {
 		describe( 'getClients', () => {
 			it( 'uses a resolver to make a network request', async () => {
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/adsense\/data\/clients/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/adsense/data/clients'
+					),
 					{ body: fixtures.clients, status: 200 }
 				);
 
@@ -110,7 +113,9 @@ describe( 'modules/adsense clients', () => {
 					data: { status: 500 },
 				};
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/adsense\/data\/clients/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/adsense/data/clients'
+					),
 					{ body: response, status: 500 }
 				);
 
@@ -130,6 +135,10 @@ describe( 'modules/adsense clients', () => {
 					.select( MODULES_ADSENSE )
 					.getClients( fakeAccountID );
 				expect( clients ).toEqual( undefined );
+
+				await untilResolved( registry, MODULES_ADSENSE ).getClients(
+					fakeAccountID
+				);
 				expect( console ).toHaveErrored();
 			} );
 		} );
@@ -137,7 +146,9 @@ describe( 'modules/adsense clients', () => {
 		describe( 'getAFClient', () => {
 			it( 'returns undefined if clients are not yet resolved', async () => {
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/adsense\/data\/clients/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/adsense/data/clients'
+					),
 					{ body: fixtures.clients, status: 200 }
 				);
 

@@ -76,9 +76,8 @@ jobs:
           tools: composer:2.1
       - name: Get Composer Cache Directory
         id: composer-cache
-        run: |
-          echo "::set-output name=dir::$(composer config cache-files-dir)"
-      - uses: actions/cache@v2
+        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+      - uses: actions/cache@v3
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
           key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
@@ -123,7 +122,6 @@ jobs:
           # GitHub Wikis use this term as their main branch; this cannot be
           # changed so we need to continue using it for now.
           ref: master
-          token: ${{ secrets.GITHUB_PERSONAL_ACCESS_TOKEN }}
       - name: Download artifacts
         uses: actions/download-artifact@v1
         with:
@@ -155,7 +153,6 @@ jobs:
           # GitHub Wikis use this term as their main branch; this cannot be
           # changed so we need to continue using it for now.
           ref: master
-          token: ${{ secrets.GITHUB_PERSONAL_ACCESS_TOKEN }}
       - name: Prune PR files
         run: |
           rm -rf "refs/pull/${{ github.event.pull_request.number }}"

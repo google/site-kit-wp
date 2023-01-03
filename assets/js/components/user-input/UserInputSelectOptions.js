@@ -24,9 +24,9 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { useCallback, useEffect, useState, useRef } from '@wordpress/element';
+import { useCallback, useEffect, useRef } from '@wordpress/element';
 import { ENTER } from '@wordpress/keycodes';
-import { __ } from '@wordpress/i18n';
+import { sprintf, _n } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -34,7 +34,7 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import { Checkbox, Radio } from 'googlesitekit-components';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import { Cell, Input, TextField } from '../../material-components';
+import { Cell } from '../../material-components';
 const { useSelect, useDispatch } = Data;
 
 export default function UserInputSelectOptions( {
@@ -43,17 +43,13 @@ export default function UserInputSelectOptions( {
 	max,
 	next,
 	isActive,
+	showInstructions,
 } ) {
 	const values = useSelect(
 		( select ) => select( CORE_USER ).getUserInputSetting( slug ) || []
 	);
-	const [ other, setOther ] = useState(
-		values.filter( ( value ) => ! options[ value ] )[ 0 ] || ''
-	);
 	const { setUserInputSetting } = useDispatch( CORE_USER );
-	const inputRef = useRef();
 	const optionsRef = useRef();
-	const [ disabled, setDisabled ] = useState( false );
 
 	useEffect( () => {
 		if ( ! optionsRef?.current || ! isActive ) {
@@ -83,45 +79,14 @@ export default function UserInputSelectOptions( {
 		}
 	}, [ isActive, max ] );
 
-	useEffect( () => {
-		if ( max > 1 && max === values.length && other.trim().length === 0 ) {
-			setDisabled( true );
-		}
-	}, [ setDisabled, max, values, other ] );
-
 	const onClick = useCallback(
 		( event ) => {
 			const { target } = event;
-			const { value, checked, name, type, id } = target;
+			const { value, checked } = target;
 
 			const newValues = new Set( [ value, ...values ] );
 			if ( ! checked ) {
 				newValues.delete( value );
-			}
-
-			if ( name === `${ slug }-other` && checked === true ) {
-				if ( inputRef.current ) {
-					inputRef.current.inputElement.focus();
-				}
-				setDisabled( false );
-			}
-
-			if ( type === 'radio' && id === `${ slug }-other` ) {
-				if ( inputRef.current ) {
-					inputRef.current.inputElement.focus();
-				}
-				setDisabled( false );
-			}
-
-			if (
-				type !== 'radio' &&
-				newValues.size === max &&
-				! newValues.has( '' ) &&
-				! newValues.has( other )
-			) {
-				setDisabled( true );
-			} else {
-				setDisabled( false );
 			}
 
 			setUserInputSetting(
@@ -129,37 +94,23 @@ export default function UserInputSelectOptions( {
 				Array.from( newValues ).slice( 0, max )
 			);
 		},
-		[ max, other, setUserInputSetting, slug, values ]
+		[ max, setUserInputSetting, slug, values ]
 	);
 
 	const onKeyDown = useCallback(
 		( event ) => {
 			if (
 				event.keyCode === ENTER &&
-				( other.trim().length > 0 ||
-					( values.length > 0 &&
-						values.length <= max &&
-						! values.includes( '' ) ) ) &&
+				values.length > 0 &&
+				values.length <= max &&
+				! values.includes( '' ) &&
 				next &&
 				typeof next === 'function'
 			) {
 				next();
 			}
 		},
-		[ values, other, next, max ]
-	);
-
-	const onOtherChange = useCallback(
-		( { target } ) => {
-			const newValues = [
-				target.value,
-				...values.filter( ( value ) => !! options[ value ] ),
-			];
-
-			setOther( target.value );
-			setUserInputSetting( slug, newValues.slice( 0, max ) );
-		},
-		[ max, setUserInputSetting, slug, values, options ]
+		[ values, next, max ]
 	);
 
 	const onClickProps = {
@@ -199,91 +150,35 @@ export default function UserInputSelectOptions( {
 	} );
 
 	return (
-		<Cell lgStart={ 6 } lgSize={ 6 } mdSize={ 8 } smSize={ 4 }>
+		<Cell
+			className="googlesitekit-user-input__select-options-wrapper"
+			lgStart={ 6 }
+			lgSize={ 6 }
+			mdSize={ 8 }
+			smSize={ 4 }
+		>
+			{ showInstructions && (
+				<p className="googlesitekit-user-input__select-instruction">
+					<span>
+						{ sprintf(
+							/* translators: %s: number of answers allowed. */
+							_n(
+								'Select only %d answer',
+								'Select up to %d answers',
+								max,
+								'google-site-kit'
+							),
+							max
+						) }
+					</span>
+				</p>
+			) }
 			<div
 				className="googlesitekit-user-input__select-options"
 				ref={ optionsRef }
 			>
 				{ items }
-
-				<div className="googlesitekit-user-input__select-option">
-					<ListComponent
-						id={ `${ slug }-other` }
-						name={ max === 1 ? slug : `${ slug }-other` }
-						value={ other }
-						checked={ values.includes( other.trim() ) }
-						disabled={
-							max > 1 &&
-							values.length >= max &&
-							! values.includes( other.trim() )
-						}
-						tabIndex={ ! isActive ? '-1' : undefined }
-						onKeyDown={ onKeyDown }
-						{ ...onClickProps }
-					>
-						{ __( 'Other:', 'google-site-kit' ) }
-					</ListComponent>
-
-					<TextField
-						label={ __(
-							'Type your own answer',
-							'google-site-kit'
-						) }
-						noLabel
-					>
-						<Input
-							id={ `${ slug }-select-options` }
-							value={ other }
-							onChange={ onOtherChange }
-							ref={ inputRef }
-							disabled={ disabled }
-							tabIndex={
-								! values.includes( other.trim() ) || ! isActive
-									? '-1'
-									: undefined
-							}
-							onKeyDown={ onKeyDown }
-							maxLength={ 100 }
-						/>
-					</TextField>
-					<label
-						htmlFor={ `${ slug }-select-options` }
-						className="screen-reader-text"
-					>
-						{ __(
-							'Enter your own answer here',
-							'google-site-kit'
-						) }
-					</label>
-				</div>
 			</div>
-
-			<p className="googlesitekit-user-input__note">
-				{ max === 1 && (
-					<span>
-						{ __(
-							'Choose up to one (1) answer',
-							'google-site-kit'
-						) }
-					</span>
-				) }
-				{ max === 2 && (
-					<span>
-						{ __(
-							'Choose up to two (2) answers',
-							'google-site-kit'
-						) }
-					</span>
-				) }
-				{ max === 3 && (
-					<span>
-						{ __(
-							'Choose up to three (3) answers',
-							'google-site-kit'
-						) }
-					</span>
-				) }
-			</p>
 		</Cell>
 	);
 }
@@ -294,8 +189,10 @@ UserInputSelectOptions.propTypes = {
 	max: PropTypes.number,
 	next: PropTypes.func,
 	isActive: PropTypes.bool,
+	showInstructions: PropTypes.bool,
 };
 
 UserInputSelectOptions.defaultProps = {
 	max: 1,
+	showInstructions: false,
 };

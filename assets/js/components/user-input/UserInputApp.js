@@ -34,16 +34,23 @@ import Header from '../Header';
 import HelpMenu from '../help/HelpMenu';
 import PageHeader from '../PageHeader';
 import UserInputQuestionnaire from './UserInputQuestionnaire';
+import Layout from '../layout/Layout';
 const { useSelect } = Data;
 
 export default function UserInputApp() {
 	const userInputEnabled = useFeature( 'userInput' );
-	const { hasFinishedGettingInputSettings } = useSelect( ( select ) => ( {
-		userInputSettings: select( CORE_USER ).getUserInputSettings(), // This will be used in the children components.
-		hasFinishedGettingInputSettings: select(
-			CORE_USER
-		).hasFinishedResolution( 'getUserInputSettings' ),
-	} ) );
+	const hasFinishedGettingInputSettings = useSelect( ( select ) => {
+		// This needs to be called here to check on its resolution,
+		// as it's called/used by child components of this component,
+		// but we need to call it here to know if it's resolving.
+		//
+		// This is sort of a select side-effect, but it's necessary here.
+		select( CORE_USER ).getUserInputSettings();
+
+		return select( CORE_USER ).hasFinishedResolution(
+			'getUserInputSettings'
+		);
+	} );
 
 	if ( ! userInputEnabled ) {
 		return <div>{ __( 'Something went wrong.', 'google-site-kit' ) }</div>;
@@ -66,50 +73,52 @@ export default function UserInputApp() {
 						</Grid>
 					) }
 					{ hasFinishedGettingInputSettings && (
-						<Fragment>
-							<Grid className="googlesitekit-user-input__header">
-								<Row>
-									<Cell
-										lgSize={ 6 }
-										mdSize={ 8 }
-										smSize={ 4 }
-									>
-										<PageHeader
-											className="googlesitekit-heading-2 googlesitekit-user-input__heading"
-											title={ __(
-												'Customize Site Kit to match your goals',
-												'google-site-kit'
-											) }
-											fullWidth
-										/>
-									</Cell>
-									<Cell
-										lgSize={ 6 }
-										mdSize={ 8 }
-										smSize={ 4 }
-									>
-										<span className="googlesitekit-user-input__subtitle">
-											{ __(
-												'Get metrics and suggestions that are specific to your site by telling Site Kit more about your site',
-												'google-site-kit'
-											) }
-										</span>
-									</Cell>
-								</Row>
-							</Grid>
+						<Grid>
+							<Layout rounded>
+								<Grid className="googlesitekit-user-input__header">
+									<Row>
+										<Cell
+											lgSize={ 6 }
+											mdSize={ 8 }
+											smSize={ 4 }
+										>
+											<PageHeader
+												className="googlesitekit-heading-3 googlesitekit-user-input__heading"
+												title={ __(
+													'Customize Site Kit to match your goals',
+													'google-site-kit'
+												) }
+												fullWidth
+											/>
+										</Cell>
+										<Cell
+											lgSize={ 6 }
+											mdSize={ 8 }
+											smSize={ 4 }
+										>
+											<span className="googlesitekit-user-input__subtitle">
+												{ __(
+													'Get metrics and suggestions that are specific to your site by telling Site Kit more about your site',
+													'google-site-kit'
+												) }
+											</span>
+										</Cell>
+									</Row>
+								</Grid>
 
-							<Grid className="googlesitekit-user-input__content">
-								<Row>
-									<Cell
-										lgSize={ 12 }
-										mdSize={ 8 }
-										smSize={ 4 }
-									>
-										<UserInputQuestionnaire />
-									</Cell>
-								</Row>
-							</Grid>
-						</Fragment>
+								<Grid className="googlesitekit-user-input__content">
+									<Row>
+										<Cell
+											lgSize={ 12 }
+											mdSize={ 8 }
+											smSize={ 4 }
+										>
+											<UserInputQuestionnaire />
+										</Cell>
+									</Row>
+								</Grid>
+							</Layout>
+						</Grid>
 					) }
 				</div>
 			</div>

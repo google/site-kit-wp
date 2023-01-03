@@ -7,7 +7,6 @@
   "require-dev": {
     "automattic/vipwpcs": "^2",
     "dealerdirect/phpcodesniffer-composer-installer": "^0.7.0",
-    "google/site-kit-wp-phpunit-polyfill": "^0.1.0",
     "phpcompatibility/phpcompatibility-wp": "^2.1",
     "phpunit/phpunit": "^5 || ^6 || ^7 || ^8 || ^9",
     "roave/security-advisories": "dev-latest",
@@ -22,8 +21,7 @@
     "ext-json": "*",
     "ext-openssl": "*",
     "google/apiclient": "^2.12.2",
-    "google/apiclient-services": "0.243.*",
-    "google/apiclient-services-subscribewithgoogle": "^0.1.0",
+    "google/apiclient-services": "0.277.*",
     "guzzlehttp/guzzle": "^5.3.3",
     "true/punycode": "^2.0 <2.1.1"
   },
@@ -42,7 +40,7 @@
   },
   "config": {
     "platform": {
-      "php": "5.6"
+      "php": "5.6.20"
     },
     "sort-packages": true,
     "allow-plugins": {
@@ -53,19 +51,7 @@
   "extra": {
     "wordpress-install-dir": "vendor/roots/wordpress"
   },
-  "repositories": [
-    {
-      "type": "path",
-      "url": "packages/wp-phpunit-polyfill"
-    },
-    {
-      "type": "path",
-      "url": "packages/apiclient-services-subscribewithgoogle",
-      "options": {
-        "symlink": false
-      }
-    }
-  ],
+  "repositories": [],
   "scripts": {
     "post-install-cmd": [
       "@prefix-dependencies"

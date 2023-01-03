@@ -27,12 +27,21 @@ import {
 	provideModuleRegistrations,
 } from '../../../tests/js/utils';
 import WithRegistrySetup from '../../../tests/js/WithRegistrySetup';
+import { Provider as ViewContextProvider } from './Root/ViewContextContext';
 import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../util/errors';
 import { MODULES_ANALYTICS } from '../modules/analytics/datastore/constants';
+import {
+	VIEW_CONTEXT_MAIN_DASHBOARD,
+	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+} from '../googlesitekit/constants';
 
-const Template = ( { setupRegistry = () => {}, ...args } ) => (
+const Template = ( { setupRegistry = () => {}, viewContext, ...args } ) => (
 	<WithRegistrySetup func={ setupRegistry }>
-		<ReportError moduleSlug="test-module" { ...args } />
+		<ViewContextProvider
+			value={ viewContext || VIEW_CONTEXT_MAIN_DASHBOARD }
+		>
+			<ReportError moduleSlug="test-module" { ...args } />
+		</ViewContextProvider>
 	</WithRegistrySetup>
 );
 
@@ -106,6 +115,21 @@ ReportErrorWithInsufficientPermissionsWithRequestAccess.args = {
 	},
 };
 
+export const ReportErrorWithInsufficientPermissionsForViewOnlyUser =
+	Template.bind( {} );
+ReportErrorWithInsufficientPermissionsForViewOnlyUser.storyName =
+	'ReportError with insufficient permissions for view-only user';
+ReportErrorWithInsufficientPermissionsForViewOnlyUser.args = {
+	error: {
+		code: 'test-error-code',
+		message: 'Test error message',
+		data: {
+			reason: ERROR_REASON_INSUFFICIENT_PERMISSIONS,
+		},
+	},
+	viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+};
+
 export const ReportErrorWithRetryButton = Template.bind( {} );
 ReportErrorWithRetryButton.storyName = 'ReportError with Retry Button';
 ReportErrorWithRetryButton.args = {
@@ -128,6 +152,7 @@ ReportErrorWithRetryButton.args = {
 			storeName: MODULES_ANALYTICS,
 		},
 	},
+	viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 };
 
 export const MultipleReportErrorsWithRetryButton = Template.bind( {} );
@@ -241,6 +266,28 @@ MultipleUniqueReportErrorsWithRetryButtonWith.args = {
 			},
 		},
 	],
+};
+
+export const ReportErrorWithCustomInternalServerErrorMessage = Template.bind(
+	{}
+);
+ReportErrorWithCustomInternalServerErrorMessage.storyName =
+	'ReportError with custom Internal Server Error message';
+ReportErrorWithCustomInternalServerErrorMessage.args = {
+	error: {
+		code: 'internal_server_error',
+		message: 'Test error message',
+	},
+};
+
+export const ReportErrorWithCustomInvalidJSONMessage = Template.bind( {} );
+ReportErrorWithCustomInvalidJSONMessage.storyName =
+	'ReportError with custom Invalid JSON message';
+ReportErrorWithCustomInvalidJSONMessage.args = {
+	error: {
+		code: 'invalid_json',
+		message: 'Test error message',
+	},
 };
 
 export default {

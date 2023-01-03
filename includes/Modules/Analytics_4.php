@@ -33,7 +33,9 @@ use Google\Site_Kit\Core\Tags\Guards\Tag_Environment_Type_Guard;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Verify_Guard;
 use Google\Site_Kit\Core\Util\BC_Functions;
 use Google\Site_Kit\Core\Util\Debug_Data;
+use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
+use Google\Site_Kit\Core\Util\Sort;
 use Google\Site_Kit\Core\Util\URL;
 use Google\Site_Kit\Modules\Analytics\Settings as Analytics_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Settings;
@@ -41,10 +43,12 @@ use Google\Site_Kit\Modules\Analytics_4\Tag_Guard;
 use Google\Site_Kit\Modules\Analytics_4\Web_Tag;
 use Google\Site_Kit_Dependencies\Google\Model as Google_Model;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin as Google_Service_GoogleAnalyticsAdmin;
-use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1alphaDataStream;
-use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1alphaDataStreamWebStreamData;
-use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1alphaListDataStreamsResponse;
-use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1alphaProperty as Google_Service_GoogleAnalyticsAdmin_GoogleAnalyticsAdminV1alphaProperty;
+use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaDataStream;
+use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaDataStreamWebStreamData;
+use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaListDataStreamsResponse;
+use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaProperty as Google_Service_GoogleAnalyticsAdmin_GoogleAnalyticsAdminV1betaProperty;
+use Google\Site_Kit_Dependencies\Google\Service\TagManager as Google_Service_TagManager;
+use Google\Site_Kit_Dependencies\Google\Service\TagManager\Container as Google_Service_TagManager_Container;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 use stdClass;
 use WP_Error;
@@ -91,9 +95,13 @@ final class Analytics_4 extends Module
 	 * @return array List of Google OAuth scopes.
 	 */
 	public function get_scopes() {
-		return array(
+		$scopes = array(
 			Analytics::READONLY_SCOPE,
 		);
+		if ( Feature_Flags::enabled( 'gteSupport' ) ) {
+			$scopes[] = 'https://www.googleapis.com/auth/tagmanager.readonly';
+		}
+		return $scopes;
 	}
 
 	/**
@@ -192,22 +200,24 @@ final class Analytics_4 extends Module
 	 */
 	protected function get_datapoint_definitions() {
 		return array(
-			'GET:account-summaries'     => array( 'service' => 'analyticsadmin' ),
-			'GET:accounts'              => array( 'service' => 'analyticsadmin' ),
-			'POST:create-property'      => array(
+			'GET:account-summaries'      => array( 'service' => 'analyticsadmin' ),
+			'GET:accounts'               => array( 'service' => 'analyticsadmin' ),
+			'GET:container-lookup'       => array( 'service' => 'tagmanager' ),
+			'GET:container-destinations' => array( 'service' => 'tagmanager' ),
+			'POST:create-property'       => array(
 				'service'                => 'analyticsadmin',
 				'scopes'                 => array( Analytics::EDIT_SCOPE ),
 				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create a new Analytics 4 property on your behalf.', 'google-site-kit' ),
 			),
-			'POST:create-webdatastream' => array(
+			'POST:create-webdatastream'  => array(
 				'service'                => 'analyticsadmin',
 				'scopes'                 => array( Analytics::EDIT_SCOPE ),
 				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create a new Analytics 4 Measurement ID for this site on your behalf.', 'google-site-kit' ),
 			),
-			'GET:properties'            => array( 'service' => 'analyticsadmin' ),
-			'GET:property'              => array( 'service' => 'analyticsadmin' ),
-			'GET:webdatastreams'        => array( 'service' => 'analyticsadmin' ),
-			'GET:webdatastreams-batch'  => array( 'service' => 'analyticsadmin' ),
+			'GET:properties'             => array( 'service' => 'analyticsadmin' ),
+			'GET:property'               => array( 'service' => 'analyticsadmin' ),
+			'GET:webdatastreams'         => array( 'service' => 'analyticsadmin' ),
+			'GET:webdatastreams-batch'   => array( 'service' => 'analyticsadmin' ),
 		);
 	}
 
@@ -217,7 +227,7 @@ final class Analytics_4 extends Module
 	 * @since 1.35.0
 	 *
 	 * @param string $account_id Account ID.
-	 * @return Google_Service_GoogleAnalyticsAdmin_GoogleAnalyticsAdminV1alphaProperty A new property.
+	 * @return Google_Service_GoogleAnalyticsAdmin_GoogleAnalyticsAdminV1betaProperty A new property.
 	 */
 	private function create_property( $account_id ) {
 		$timezone = get_option( 'timezone_string' );
@@ -225,7 +235,7 @@ final class Analytics_4 extends Module
 			$timezone = 'UTC';
 		}
 
-		$property = new Google_Service_GoogleAnalyticsAdmin_GoogleAnalyticsAdminV1alphaProperty();
+		$property = new Google_Service_GoogleAnalyticsAdmin_GoogleAnalyticsAdminV1betaProperty();
 		$property->setParent( self::normalize_account_id( $account_id ) );
 		$property->setDisplayName( URL::parse( $this->context->get_reference_site_url(), PHP_URL_HOST ) );
 		$property->setTimeZone( $timezone );
@@ -239,14 +249,14 @@ final class Analytics_4 extends Module
 	 * @since 1.35.0
 	 *
 	 * @param string $property_id Property ID.
-	 * @return GoogleAnalyticsAdminV1alphaDataStream A new web data stream.
+	 * @return GoogleAnalyticsAdminV1betaDataStream A new web data stream.
 	 */
 	private function create_webdatastream( $property_id ) {
 		$site_url = $this->context->get_reference_site_url();
-		$data     = new GoogleAnalyticsAdminV1alphaDataStreamWebStreamData();
+		$data     = new GoogleAnalyticsAdminV1betaDataStreamWebStreamData();
 		$data->setDefaultUri( $site_url );
 
-		$datastream = new GoogleAnalyticsAdminV1alphaDataStream();
+		$datastream = new GoogleAnalyticsAdminV1betaDataStream();
 		$datastream->setDisplayName( URL::parse( $site_url, PHP_URL_HOST ) );
 		$datastream->setType( 'WEB_DATA_STREAM' );
 		$datastream->setWebStreamData( $data );
@@ -441,6 +451,38 @@ final class Analytics_4 extends Module
 				return function() use ( $batch_request ) {
 					return $batch_request->execute();
 				};
+			case 'GET:container-lookup':
+				if ( ! isset( $data['destinationID'] ) ) {
+					return new WP_Error(
+						'missing_required_param',
+						/* translators: %s: Missing parameter name */
+						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'destinationID' ),
+						array( 'status' => 400 )
+					);
+				}
+
+				return $this->get_tagmanager_service()->accounts_containers->lookup( array( 'destinationId' => $data['destinationID'] ) );
+			case 'GET:container-destinations':
+				if ( ! isset( $data['accountID'] ) ) {
+					return new WP_Error(
+						'missing_required_param',
+						/* translators: %s: Missing parameter name */
+						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ),
+						array( 'status' => 400 )
+					);
+				}
+				if ( ! isset( $data['internalContainerID'] ) ) {
+					return new WP_Error(
+						'missing_required_param',
+						/* translators: %s: Missing parameter name */
+						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'internalContainerID' ),
+						array( 'status' => 400 )
+					);
+				}
+
+				return $this->get_tagmanager_service()->accounts_containers_destinations->listAccountsContainersDestinations(
+					"accounts/{$data['accountID']}/containers/{$data['internalContainerID']}"
+				);
 		}
 
 		return parent::create_data_request( $data );
@@ -480,18 +522,35 @@ final class Analytics_4 extends Module
 			case 'POST:create-webdatastream':
 				return self::filter_webdatastream_with_ids( $response );
 			case 'GET:properties':
-				return array_map( array( self::class, 'filter_property_with_ids' ), $response->getProperties() );
+				return Sort::case_insensitive_list_sort(
+					array_map( array( self::class, 'filter_property_with_ids' ), $response->getProperties() ),
+					'displayName'
+				);
 			case 'GET:property':
 				return self::filter_property_with_ids( $response );
 			case 'GET:webdatastreams':
-				/* @var GoogleAnalyticsAdminV1alphaListDataStreamsResponse $response phpcs:ignore Squiz.PHP.CommentedOutCode.Found */
+				/* @var GoogleAnalyticsAdminV1betaListDataStreamsResponse $response phpcs:ignore Squiz.PHP.CommentedOutCode.Found */
 				$webdatastreams = self::filter_web_datastreams( $response->getDataStreams() );
 				return array_map( array( self::class, 'filter_webdatastream_with_ids' ), $webdatastreams );
 			case 'GET:webdatastreams-batch':
 				return self::parse_webdatastreams_batch( $response );
+			case 'GET:container-destinations':
+				return (array) $response->getDestination();
 		}
 
 		return parent::parse_data_response( $data, $response );
+	}
+
+	/**
+	 * Gets the configured TagManager service instance.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return Google_Service_TagManager instance.
+	 * @throws Exception Thrown if the module did not correctly set up the service.
+	 */
+	private function get_tagmanager_service() {
+		return $this->get_service( 'tagmanager' );
 	}
 
 	/**
@@ -504,7 +563,7 @@ final class Analytics_4 extends Module
 	protected function setup_info() {
 		return array(
 			'slug'        => self::MODULE_SLUG,
-			'name'        => _x( 'Analytics 4 (Alpha)', 'Service name', 'google-site-kit' ),
+			'name'        => _x( 'Analytics 4', 'Service name', 'google-site-kit' ),
 			'description' => __( 'Get a deeper understanding of your customers. Google Analytics gives you the free tools you need to analyze data for your business in one place.', 'google-site-kit' ),
 			'order'       => 3,
 			'homepage'    => __( 'https://analytics.google.com/analytics/web', 'google-site-kit' ),
@@ -528,6 +587,7 @@ final class Analytics_4 extends Module
 	protected function setup_services( Google_Site_Kit_Client $client ) {
 		return array(
 			'analyticsadmin' => new Google_Service_GoogleAnalyticsAdmin( $client ),
+			'tagmanager'     => new Google_Service_TagManager( $client ),
 		);
 	}
 
@@ -673,13 +733,13 @@ final class Analytics_4 extends Module
 	 *
 	 * @since 1.49.1
 	 *
-	 * @param GoogleAnalyticsAdminV1alphaDataStream[] $datastreams Data streams to filter.
-	 * @return GoogleAnalyticsAdminV1alphaDataStream[] Web data streams.
+	 * @param GoogleAnalyticsAdminV1betaDataStream[] $datastreams Data streams to filter.
+	 * @return GoogleAnalyticsAdminV1betaDataStream[] Web data streams.
 	 */
 	public static function filter_web_datastreams( array $datastreams ) {
 		return array_filter(
 			$datastreams,
-			function ( GoogleAnalyticsAdminV1alphaDataStream $datastream ) {
+			function ( GoogleAnalyticsAdminV1betaDataStream $datastream ) {
 				return $datastream->getType() === 'WEB_DATA_STREAM';
 			}
 		);
@@ -690,13 +750,17 @@ final class Analytics_4 extends Module
 	 *
 	 * @since 1.39.0
 	 *
-	 * @param GoogleAnalyticsAdminV1alphaListDataStreamsResponse[] $batch_response Array of GoogleAnalyticsAdminV1alphaListWebDataStreamsResponse objects.
+	 * @param GoogleAnalyticsAdminV1betaListDataStreamsResponse[] $batch_response Array of GoogleAnalyticsAdminV1betaListWebDataStreamsResponse objects.
 	 * @return stdClass[] Array of models containing _id and _propertyID attributes, keyed by the propertyID.
 	 */
 	public static function parse_webdatastreams_batch( $batch_response ) {
 		$mapped = array();
 
 		foreach ( $batch_response as $response ) {
+			if ( $response instanceof Exception ) {
+				continue;
+			}
+
 			$webdatastreams = self::filter_web_datastreams( $response->getDataStreams() );
 
 			foreach ( $webdatastreams as $webdatastream ) {

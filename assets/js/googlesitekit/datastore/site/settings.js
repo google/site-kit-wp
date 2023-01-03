@@ -32,7 +32,7 @@ const { commonActions, combineStores, createRegistrySelector } = Data;
 
 const fetchGetAdminBarSettingsStore = createFetchStore( {
 	baseName: 'getAdminBarSettings',
-	controlCallback: async () =>
+	controlCallback: () =>
 		API.get( 'core', 'site', 'admin-bar-settings', undefined, {
 			useCache: false,
 		} ),

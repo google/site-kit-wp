@@ -49,8 +49,12 @@ describe( 'SetupUsingProxyWithSignIn', () => {
 		provideUserCapabilities( registry );
 		registry.dispatch( CORE_USER ).receiveConnectURL( 'test-url' );
 
-		muteFetch( /^\/google-site-kit\/v1\/core\/site\/data\/connection/ );
-		muteFetch( /^\/google-site-kit\/v1\/core\/user\/data\/tracking/ );
+		muteFetch(
+			new RegExp( '^/google-site-kit/v1/core/site/data/connection' )
+		);
+		muteFetch(
+			new RegExp( '^/google-site-kit/v1/core/user/data/tracking' )
+		);
 	} );
 
 	it( 'should render the setup page, including the Activate Analytics notice', () => {

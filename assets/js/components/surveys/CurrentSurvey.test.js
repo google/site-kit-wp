@@ -47,8 +47,9 @@ const STRING_200_CHARACTERS = STRING_100_CHARACTERS + STRING_100_CHARACTERS;
 const STRING_210_CHARACTERS = `${ STRING_200_CHARACTERS } rhoncus n`;
 
 describe( 'CurrentSurvey', () => {
-	const surveyEventRegexp =
-		/^\/google-site-kit\/v1\/core\/user\/data\/survey-event/;
+	const surveyEventRegexp = new RegExp(
+		'^/google-site-kit/v1/core/user/data/survey-event'
+	);
 
 	let registry;
 
@@ -59,7 +60,7 @@ describe( 'CurrentSurvey', () => {
 		registry.dispatch( CORE_USER ).receiveGetTracking( { enabled: true } );
 	} );
 
-	it( 'should render a survey when one exists in the datastore', async () => {
+	it( 'should render a survey when one exists in the datastore', () => {
 		provideCurrentSurvey( registry, singleQuestionSurvey );
 
 		const { container } = render( <CurrentSurvey />, { registry } );
@@ -68,7 +69,7 @@ describe( 'CurrentSurvey', () => {
 		expect( container ).toMatchSnapshot();
 	} );
 
-	it( "should render a rating question when the `question_type` is 'rating'", async () => {
+	it( "should render a rating question when the `question_type` is 'rating'", () => {
 		provideCurrentSurvey( registry, singleQuestionSurvey );
 
 		const { container } = render( <CurrentSurvey />, { registry } );
@@ -82,7 +83,7 @@ describe( 'CurrentSurvey', () => {
 			provideCurrentSurvey( registry, singleQuestionOpenText );
 		} );
 
-		it( 'should display the question prompt and subtitle', async () => {
+		it( 'should display the question prompt and subtitle', () => {
 			const { getByText } = render( <CurrentSurvey />, {
 				registry,
 			} );
@@ -98,7 +99,7 @@ describe( 'CurrentSurvey', () => {
 			).toBeInTheDocument();
 		} );
 
-		it( 'should limit text input to 200 characters', async () => {
+		it( 'should limit text input to 200 characters', () => {
 			const { getByLabelText } = render( <CurrentSurvey />, {
 				registry,
 			} );
@@ -112,7 +113,7 @@ describe( 'CurrentSurvey', () => {
 			);
 		} );
 
-		it( 'should disable submit button when no text is entered', async () => {
+		it( 'should disable submit button when no text is entered', () => {
 			const { getByLabelText, getByRole } = render( <CurrentSurvey />, {
 				registry,
 			} );
@@ -361,7 +362,7 @@ describe( 'CurrentSurvey', () => {
 			provideCurrentSurvey( registry, singleQuestionMultiSelect );
 		} );
 
-		it( 'should render the appropriate question', async () => {
+		it( 'should render the appropriate question', () => {
 			const { getByText } = render( <CurrentSurvey />, {
 				registry,
 			} );
@@ -371,7 +372,7 @@ describe( 'CurrentSurvey', () => {
 			).toBeInTheDocument();
 		} );
 
-		it( 'should disable the submit button when the number of options selected is less than `minChoices`', async () => {
+		it( 'should disable the submit button when the number of options selected is less than `minChoices`', () => {
 			const { getByText, getByRole } = render( <CurrentSurvey />, {
 				registry,
 			} );
@@ -406,7 +407,7 @@ describe( 'CurrentSurvey', () => {
 			);
 		} );
 
-		it( 'should disable other options once the number of options selected equals `maxChoices`', async () => {
+		it( 'should disable other options once the number of options selected equals `maxChoices`', () => {
 			const { getByLabelText, getByRole } = render( <CurrentSurvey />, {
 				registry,
 			} );
@@ -448,7 +449,7 @@ describe( 'CurrentSurvey', () => {
 			expect( getByLabelText( 'Sweetcorn' ) ).not.toBeDisabled();
 		} );
 
-		it( 'should disable "other" text input unless the "other" option is selected', async () => {
+		it( 'should disable "other" text input unless the "other" option is selected', () => {
 			const { getByText, getByLabelText, getByRole } = render(
 				<CurrentSurvey />,
 				{
@@ -484,7 +485,7 @@ describe( 'CurrentSurvey', () => {
 			).toHaveAttribute( 'disabled' );
 		} );
 
-		it( 'should disable the submit button when "other" is selected but the user has not entered any text in the text input', async () => {
+		it( 'should disable the submit button when "other" is selected but the user has not entered any text in the text input', () => {
 			const { getByText, getByLabelText, getByRole } = render(
 				<CurrentSurvey />,
 				{
@@ -512,7 +513,7 @@ describe( 'CurrentSurvey', () => {
 			).not.toBeDisabled();
 		} );
 
-		it( 'should limit text input to 100 characters', async () => {
+		it( 'should limit text input to 100 characters', () => {
 			const { getByText, getByLabelText } = render( <CurrentSurvey />, {
 				registry,
 			} );
@@ -595,14 +596,14 @@ describe( 'CurrentSurvey', () => {
 		} );
 	} );
 
-	it( 'should render nothing when the `question_type` is unknown', async () => {
+	it( 'should render nothing when the `question_type` is unknown', () => {
 		provideCurrentSurvey( registry, invalidQuestionTypeSurvey );
 
 		const { container } = render( <CurrentSurvey />, { registry } );
 		expect( container ).toBeEmptyDOMElement();
 	} );
 
-	it( "should send a 'survey_shown' event on mount", async () => {
+	it( "should send a 'survey_shown' event on mount", () => {
 		provideCurrentSurvey( registry, singleQuestionSurvey );
 
 		const { rerender } = render( <CurrentSurvey />, { registry } );
@@ -1027,7 +1028,7 @@ describe( 'CurrentSurvey', () => {
 			} );
 		} );
 
-		it( 'should render the appropriate question', async () => {
+		it( 'should render the appropriate question', () => {
 			expect(
 				surveyComponent.getByText( firstQuestion.question_text )
 			).toBeInTheDocument();

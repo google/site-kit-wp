@@ -32,7 +32,7 @@ services:
     command: tail -n 0 -F /var/www/html/wp-content/debug.log
 
   cli:
-    image: wordpress:cli
+    image: wordpress:cli-php7.4
     user: xfs
     volumes:
       - wordpress_data:/var/www/html
@@ -44,7 +44,7 @@ services:
     command: tail -f /dev/null
 
   mysql:
-    image: mysql:5.7
+    image: mariadb:10.3
     ports:
       - 9306:3306
     environment:

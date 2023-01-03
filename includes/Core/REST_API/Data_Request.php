@@ -121,7 +121,9 @@ class Data_Request implements \ArrayAccess {
 	 *
 	 * @return bool
 	 */
-	public function offsetExists( $key ) {
+	// phpcs:ignore Squiz.Commenting.InlineComment.WrongStyle,Squiz.PHP.CommentedOutCode.Found
+	#[\ReturnTypeWillChange]
+	public function offsetExists( $key ) { // phpcs:ignore Squiz.Commenting.FunctionComment
 		return array_key_exists( $key, $this->data );
 	}
 
@@ -132,7 +134,9 @@ class Data_Request implements \ArrayAccess {
 	 *
 	 * @return mixed
 	 */
-	public function offsetGet( $key ) {
+	// phpcs:ignore Squiz.Commenting.InlineComment.WrongStyle,Squiz.PHP.CommentedOutCode.Found
+	#[\ReturnTypeWillChange]
+	public function offsetGet( $key ) { // phpcs:ignore Squiz.Commenting.FunctionComment
 		if ( $this->offsetExists( $key ) ) {
 			return $this->data[ $key ];
 		}
@@ -146,7 +150,9 @@ class Data_Request implements \ArrayAccess {
 	 * @param string|int $key Key to set the value for.
 	 * @param mixed      $value New value for the given key.
 	 */
-	public function offsetSet( $key, $value ) {
+	// phpcs:ignore Squiz.Commenting.InlineComment.WrongStyle,Squiz.PHP.CommentedOutCode.Found
+	#[\ReturnTypeWillChange]
+	public function offsetSet( $key, $value ) { // phpcs:ignore Squiz.Commenting.FunctionComment
 		// Data is immutable.
 	}
 
@@ -155,7 +161,9 @@ class Data_Request implements \ArrayAccess {
 	 *
 	 * @param string|int $key Key to unset.
 	 */
-	public function offsetUnset( $key ) {
+	// phpcs:ignore Squiz.Commenting.InlineComment.WrongStyle,Squiz.PHP.CommentedOutCode.Found
+	#[\ReturnTypeWillChange]
+	public function offsetUnset( $key ) { // phpcs:ignore Squiz.Commenting.FunctionComment
 		// Data is immutable.
 	}
 }

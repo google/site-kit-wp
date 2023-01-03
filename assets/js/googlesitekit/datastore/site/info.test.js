@@ -202,6 +202,8 @@ describe( 'core/site site info', () => {
 
 				const adminURL = registry.select( CORE_SITE ).getAdminURL();
 
+				await untilResolved( registry, CORE_SITE ).getSiteInfo();
+
 				expect( adminURL ).toEqual( undefined );
 			} );
 		} );
@@ -235,6 +237,8 @@ describe( 'core/site site info', () => {
 				expect( global[ entityInfoVar ] ).toEqual( undefined );
 
 				const info = registry.select( CORE_SITE ).getSiteInfo();
+
+				await untilResolved( registry, CORE_SITE ).getSiteInfo();
 
 				expect( info ).toBe( initialState.siteInfo );
 				expect( console ).toHaveErrored();
@@ -292,6 +296,8 @@ describe( 'core/site site info', () => {
 
 				const result = registry.select( CORE_SITE )[ selector ]();
 
+				await untilResolved( registry, CORE_SITE ).getSiteInfo();
+
 				expect( result ).toEqual( undefined );
 				expect( console ).toHaveErrored();
 			} );
@@ -331,6 +337,8 @@ describe( 'core/site site info', () => {
 				expect( global[ entityInfoVar ] ).toEqual( undefined );
 
 				const result = registry.select( CORE_SITE ).isAMP();
+
+				await untilResolved( registry, CORE_SITE ).getSiteInfo();
 
 				expect( result ).toEqual( undefined );
 				expect( console ).toHaveErrored();

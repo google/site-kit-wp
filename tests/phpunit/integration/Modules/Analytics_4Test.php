@@ -25,8 +25,8 @@ use Google\Site_Kit\Tests\Core\Modules\Module_With_Service_Entity_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Settings_ContractTests;
 use Google\Site_Kit\Tests\FakeHttpClient;
 use Google\Site_Kit\Tests\TestCase;
-use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1alphaDataStream;
-use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1alphaDataStreamWebStreamData;
+use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaDataStream;
+use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaDataStreamWebStreamData;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Message\Request;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Message\Response;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Stream\Stream;
@@ -101,7 +101,7 @@ class Analytics_4Test extends TestCase {
 				}
 
 				switch ( $url['path'] ) {
-					case '/v1alpha/properties':
+					case '/v1beta/properties':
 						return new Response(
 							200,
 							array(),
@@ -113,10 +113,10 @@ class Analytics_4Test extends TestCase {
 								)
 							)
 						);
-					case "/v1alpha/properties/{$property_id}/dataStreams":
-						$data = new GoogleAnalyticsAdminV1alphaDataStreamWebStreamData();
+					case "/v1beta/properties/{$property_id}/dataStreams":
+						$data = new GoogleAnalyticsAdminV1betaDataStreamWebStreamData();
 						$data->setMeasurementId( $measurement_id );
-						$datastream = new GoogleAnalyticsAdminV1alphaDataStream();
+						$datastream = new GoogleAnalyticsAdminV1betaDataStream();
 						$datastream->setName( "properties/{$property_id}/dataStreams/{$webdatastream_id}" );
 						$datastream->setType( 'WEB_DATA_STREAM' );
 						$datastream->setWebStreamData( $data );
@@ -143,12 +143,15 @@ class Analytics_4Test extends TestCase {
 
 		$this->assertEqualSetsWithIndex(
 			array(
-				'accountID'       => $account_id,
-				'propertyID'      => $property_id,
-				'webDataStreamID' => $webdatastream_id,
-				'measurementID'   => $measurement_id,
-				'ownerID'         => 0,
-				'useSnippet'      => true,
+				'accountID'            => $account_id,
+				'propertyID'           => $property_id,
+				'webDataStreamID'      => $webdatastream_id,
+				'measurementID'        => $measurement_id,
+				'ownerID'              => 0,
+				'useSnippet'           => true,
+				'googleTagID'          => '',
+				'googleTagAccountID'   => '',
+				'googleTagContainerID' => '',
 			),
 			$options->get( Settings::OPTION )
 		);
@@ -197,6 +200,8 @@ class Analytics_4Test extends TestCase {
 			array(
 				'account-summaries',
 				'accounts',
+				'container-lookup',
+				'container-destinations',
 				'create-property',
 				'create-webdatastream',
 				'properties',

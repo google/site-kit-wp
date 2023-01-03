@@ -101,7 +101,7 @@ describe( 'createFetchStore store', () => {
 		it( 'includes the expected actions', () => {
 			const fetchStoreDefinition = createFetchStore( {
 				baseName: 'SaveSomeData',
-				controlCallback: async () => true,
+				controlCallback: () => true,
 			} );
 
 			expect( Object.keys( fetchStoreDefinition.actions ) ).toEqual( [
@@ -128,7 +128,7 @@ describe( 'createFetchStore store', () => {
 			it( 'yields the expected actions for an arguments error', () => {
 				const fetchStoreDefinition = createFetchStore( {
 					baseName: 'SaveSomeData',
-					controlCallback: async () => true,
+					controlCallback: () => true,
 					argsToParams: ( requiredParam ) => {
 						return {
 							requiredParam,
@@ -150,7 +150,7 @@ describe( 'createFetchStore store', () => {
 			it( 'yields the expected actions for a success request', () => {
 				const fetchStoreDefinition = createFetchStore( {
 					baseName: 'SaveSomeData',
-					controlCallback: async () => true,
+					controlCallback: () => true,
 				} );
 
 				const action = fetchStoreDefinition.actions.fetchSaveSomeData();
@@ -177,7 +177,7 @@ describe( 'createFetchStore store', () => {
 			it( 'yields the expected actions for an error request', () => {
 				const fetchStoreDefinition = createFetchStore( {
 					baseName: 'SaveSomeData',
-					controlCallback: async () => true,
+					controlCallback: () => true,
 				} );
 
 				const action = fetchStoreDefinition.actions.fetchSaveSomeData();
@@ -210,7 +210,9 @@ describe( 'createFetchStore store', () => {
 			it( 'makes a network request based on controlCallback', async () => {
 				const expectedResponse = 'response-value';
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/core\/test\/data\/some-data/,
+					new RegExp(
+						'^/google-site-kit/v1/core/test/data/some-data'
+					),
 					{ body: JSON.stringify( expectedResponse ), status: 200 }
 				);
 
@@ -247,7 +249,9 @@ describe( 'createFetchStore store', () => {
 						data: { status: 500 },
 					};
 					fetchMock.getOnce(
-						/^\/google-site-kit\/v1\/core\/test\/data\/some-data/,
+						new RegExp(
+							'^/google-site-kit/v1/core/test/data/some-data'
+						),
 						{ body: errorResponse, status: 500 }
 					);
 
@@ -277,7 +281,9 @@ describe( 'createFetchStore store', () => {
 						data: { status: 500 },
 					};
 					fetchMock.getOnce(
-						/^\/google-site-kit\/v1\/core\/test\/data\/some-data/,
+						new RegExp(
+							'^/google-site-kit/v1/core/test/data/some-data'
+						),
 						{ body: errorResponse, status: 500 }
 					);
 
@@ -295,7 +301,9 @@ describe( 'createFetchStore store', () => {
 					expect( select.getError() ).toEqual( errorResponse );
 
 					fetchMock.getOnce(
-						/^\/google-site-kit\/v1\/core\/test\/data\/some-data/,
+						new RegExp(
+							'^/google-site-kit/v1/core/test/data/some-data'
+						),
 						{
 							body: {},
 							status: 200,
@@ -315,7 +323,9 @@ describe( 'createFetchStore store', () => {
 
 			it( 'sets flag for request being in progress', async () => {
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/core\/test\/data\/some-data/,
+					new RegExp(
+						'^/google-site-kit/v1/core/test/data/some-data'
+					),
 					{ body: { someValue: 42 }, status: 200 }
 				);
 
@@ -358,7 +368,7 @@ describe( 'createFetchStore store', () => {
 				} );
 				const fetchStoreDefinition = createFetchStore( {
 					baseName: 'SaveSomeData',
-					controlCallback: async () => true,
+					controlCallback: () => true,
 					argsToParams: ( requiredParam ) => {
 						return {
 							requiredParam,
@@ -403,7 +413,7 @@ describe( 'createFetchStore store', () => {
 				const validateParams = jest.fn();
 				const fetchStoreDefinition = createFetchStore( {
 					baseName: 'SaveSomeData',
-					controlCallback: async () => true,
+					controlCallback: () => true,
 					reducerCallback: ( state ) => state,
 					argsToParams: () => ( {} ),
 					validateParams,
@@ -425,7 +435,7 @@ describe( 'createFetchStore store', () => {
 		it( 'includes the expected selectors', () => {
 			const fetchStoreDefinition = createFetchStore( {
 				baseName: 'SaveSomeData',
-				controlCallback: async () => true,
+				controlCallback: () => true,
 			} );
 
 			expect( Object.keys( fetchStoreDefinition.selectors ) ).toEqual( [

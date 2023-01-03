@@ -20,8 +20,6 @@
  * Internal dependencies
  */
 import helpVisibility from './help-visibility';
-import ideaHubModule from './idea-hub-module';
-import ideaHubPostsTable from './idea-hub-posts-table';
 import unifiedDashboard from './unified-dashboard';
 import dashboardSharing from './dashboard-sharing';
 import allTrafficWidget from './all-traffic-widget';
@@ -30,8 +28,6 @@ import allTrafficWidget from './all-traffic-widget';
 export default [
 	allTrafficWidget,
 	helpVisibility,
-	ideaHubModule,
-	ideaHubPostsTable,
 	unifiedDashboard,
 	dashboardSharing,
 ];

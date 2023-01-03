@@ -387,11 +387,12 @@ const baseActions = {
 
 			const registry = yield Data.commonActions.getRegistry();
 
-			// As we can specify a custom checkRequirements function here, we're invalidating the resolvers for activation checks.
-			yield registry
+			// As we can specify a custom checkRequirements function here, we're
+			// invalidating the resolvers for activation checks.
+			registry
 				.dispatch( CORE_MODULES )
 				.invalidateResolution( 'canActivateModule', [ slug ] );
-			yield registry
+			registry
 				.dispatch( CORE_MODULES )
 				.invalidateResolution( 'getCheckRequirementsError', [ slug ] );
 		}
@@ -487,7 +488,9 @@ const baseActions = {
 					select( CORE_MODULES ).getModuleStoreName( slug );
 
 				// Reload the module's settings from the server.
-				yield dispatch( storeName ).fetchGetSettings();
+				yield Data.commonActions.await(
+					dispatch( storeName ).fetchGetSettings()
+				);
 			}
 
 			if ( successfulRecoveries.length ) {
@@ -496,13 +499,15 @@ const baseActions = {
 
 				// Having reloaded the modules from the server, ensure the list of recoverable modules is also refreshed,
 				// as the recoverable modules list is derived from the main list of modules.
-				yield dispatch( CORE_MODULES ).invalidateResolution(
+				dispatch( CORE_MODULES ).invalidateResolution(
 					'getRecoverableModules',
 					[]
 				);
 
 				// Refresh user capabilities from the server.
-				yield dispatch( CORE_USER ).refreshCapabilities();
+				yield Data.commonActions.await(
+					dispatch( CORE_USER ).refreshCapabilities()
+				);
 			}
 
 			return { response };

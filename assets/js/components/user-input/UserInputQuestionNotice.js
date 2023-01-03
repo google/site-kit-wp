@@ -17,15 +17,25 @@
  */
 
 /**
+ * External dependencies
+ */
+import classnames from 'classnames';
+
+/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
 
-export default function UserInputQuestionNotice() {
+export default function UserInputQuestionNotice( { className } ) {
 	return (
-		<p className="googlesitekit-user-input__question-instructions--notice">
+		<p
+			className={ classnames(
+				className,
+				'googlesitekit-user-input__question-notice'
+			) }
+		>
 			{ __(
-				'You can always edit your answers after your submission in Settings.',
+				'You can always edit your answers later from Settings',
 				'google-site-kit'
 			) }
 		</p>
