@@ -1679,8 +1679,8 @@ describe( 'core/modules modules', () => {
 		} );
 
 		describe( 'hasModuleOwnershipOrAccess', () => {
-			it( 'should return undefined if `getModuleStoreName` is not resolved yet', () => {
-				fetchMock.getOnce(
+			it( 'should return undefined if `getModuleStoreName` is not resolved yet', async () => {
+				fetchMock.get(
 					new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
 					{ body: FIXTURES, status: 200 }
 				);
@@ -1696,9 +1696,11 @@ describe( 'core/modules modules', () => {
 					.hasModuleOwnershipOrAccess( 'search-console' );
 
 				expect( moduleAccess ).toBeUndefined();
+
+				await untilResolved( registry, CORE_MODULES ).getModules();
 			} );
 
-			it( 'should return undefined if `moduleOwnerID` is not resolved yet', () => {
+			it( 'should return undefined if `moduleOwnerID` is not resolved yet', async () => {
 				registry.dispatch( CORE_MODULES ).receiveGetModules( [
 					{
 						slug: 'search-console',
@@ -1728,6 +1730,11 @@ describe( 'core/modules modules', () => {
 					.hasModuleOwnershipOrAccess( 'search-console' );
 
 				expect( moduleAccess ).toBeUndefined();
+
+				await untilResolved(
+					registry,
+					MODULES_SEARCH_CONSOLE
+				).getSettings();
 			} );
 
 			it( 'should return undefined if `getID` is not resolved yet', () => {
