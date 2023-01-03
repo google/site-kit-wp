@@ -8,7 +8,8 @@
 <script>
 	window.addEventListener( 'load', async () => {
 		// Wait for all web fonts to be loaded.
-		await document.fonts.ready;
+		const fonts = Array.from( document.fonts );
+		await Promise.all( fonts.map( ( font ) => font.load() ) );
 		// Signal Backstop that the environment is ready to go.
 		document.body.classList.add( 'backstopjs-ready' );
 	} );
