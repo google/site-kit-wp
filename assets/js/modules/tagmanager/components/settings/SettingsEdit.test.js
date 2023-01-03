@@ -233,7 +233,6 @@ describe( 'SettingsEdit', () => {
 					}
 				);
 				await waitForRegistry();
-
 				expect(
 					container.querySelector( '#ampContainerName' )
 				).toHaveValue( `${ siteName } AMP` );
@@ -323,7 +322,6 @@ describe( 'SettingsEdit', () => {
 					}
 				);
 				await waitForRegistry();
-
 				expect(
 					container.querySelector( '#containerName' )
 				).toHaveValue( siteName );

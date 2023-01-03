@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { render } from '../../../../../../../tests/js/test-utils';
+import { act, render } from '../../../../../../../tests/js/test-utils';
 import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
@@ -27,9 +27,17 @@ import {
 import Footer from './Footer';
 
 describe( 'Footer', () => {
+	beforeEach( () => {
+		jest.useFakeTimers();
+	} );
+
 	it( 'should not make a analytics settings requests when the view context is "view only"', () => {
 		const { container } = render( <Footer />, {
 			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+		} );
+
+		act( () => {
+			jest.runAllTimers();
 		} );
 
 		expect( fetchMock ).not.toHaveFetched(
@@ -49,6 +57,10 @@ describe( 'Footer', () => {
 
 		const { container } = render( <Footer />, {
 			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+		} );
+
+		act( () => {
+			jest.runAllTimers();
 		} );
 
 		expect( fetchMock ).toHaveFetched(

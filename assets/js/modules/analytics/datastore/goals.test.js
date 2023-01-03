@@ -62,15 +62,10 @@ describe( 'modules/analytics goals', () => {
 					.getGoals();
 
 				expect( initialGoals ).toBeUndefined();
-				await subscribeUntil(
-					registry,
-					() =>
-						registry
-							.select( MODULES_ANALYTICS )
-							.isFetchingGetGoals() === false
-				);
 
-				const goals = registry.select( MODULES_ANALYTICS ).getGoals();
+				const goals = await registry
+					.__experimentalResolveSelect( MODULES_ANALYTICS )
+					.getGoals();
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( goals ).toEqual( fixtures.goals );
@@ -109,14 +104,9 @@ describe( 'modules/analytics goals', () => {
 					{ body: response, status: 500 }
 				);
 
-				registry.select( MODULES_ANALYTICS ).getGoals();
-				await subscribeUntil(
-					registry,
-					() =>
-						registry
-							.select( MODULES_ANALYTICS )
-							.isFetchingGetGoals() === false
-				);
+				await registry
+					.__experimentalResolveSelect( MODULES_ANALYTICS )
+					.getGoals();
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 

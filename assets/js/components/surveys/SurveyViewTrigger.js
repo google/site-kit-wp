@@ -17,10 +17,14 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { useEffect } from '@wordpress/element';
+
+/**
  * External dependencies
  */
 import PropTypes from 'prop-types';
-import { useMount } from 'react-use';
 
 /**
  * Internal dependencies
@@ -37,11 +41,11 @@ export default function SurveyViewTrigger( { triggerID, ttl = 0 } ) {
 
 	const { triggerSurvey } = useDispatch( CORE_USER );
 
-	useMount( () => {
+	useEffect( () => {
 		if ( usingProxy ) {
 			triggerSurvey( triggerID, { ttl } );
 		}
-	} );
+	}, [ usingProxy, triggerID, ttl, triggerSurvey ] );
 
 	return null;
 }

@@ -24,8 +24,8 @@ import {
 	createTestRegistry,
 	subscribeUntil,
 	unsubscribeFromAll,
+	untilResolved,
 } from '../../../../../tests/js/utils';
-import { waitFor } from '../../../../../tests/js/test-utils';
 import { CORE_USER } from './constants';
 
 describe( 'core/user tracking settings', () => {
@@ -123,16 +123,10 @@ describe( 'core/user tracking settings', () => {
 					body: { enabled },
 				} );
 
-				const { isTrackingEnabled, hasFinishedResolution } =
-					registry.select( CORE_USER );
+				const { isTrackingEnabled } = registry.select( CORE_USER );
 
 				expect( isTrackingEnabled() ).toBeUndefined();
-				await waitFor(
-					() => hasFinishedResolution( 'isTrackingEnabled' ) !== true
-				);
-
-				expect( isTrackingEnabled() ).toBe( enabled );
-				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				await untilResolved( registry, CORE_USER ).isTrackingEnabled();
 
 				expect( isTrackingEnabled() ).toBe( enabled );
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
