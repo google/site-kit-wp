@@ -36,7 +36,7 @@ const fetchGetGoogleTagContainerStore = createFetchStore( {
 			'modules',
 			'analytics-4',
 			'container-lookup',
-			{ measurementID },
+			{ destinationID: measurementID },
 			{
 				useCache: false,
 			}
@@ -65,8 +65,8 @@ const fetchGetGoogleTagContainerDestinationsStore = createFetchStore( {
 		return API.get(
 			'modules',
 			'analytics-4',
-			'container-lookup',
-			{ gtmAccountID, gtmContainerID },
+			'container-destinations',
+			{ accountID: gtmAccountID, internalContainerID: gtmContainerID },
 			{
 				useCache: false,
 			}
@@ -82,10 +82,13 @@ const fetchGetGoogleTagContainerDestinationsStore = createFetchStore( {
 			containerDestinations: {
 				...state.containerDestinations,
 				[ gtmAccountID ]: {
-					...containerDestinations[ gtmAccountID ],
-				},
-				[ gtmContainerID ]: {
-					...containerDestinations[ gtmContainerID ],
+					...state.containerDestinations[ gtmAccountID ],
+					[ gtmContainerID ]: [
+						...( state.containerDestinations[ gtmAccountID ]?.[
+							gtmContainerID
+						] || [] ),
+						...( containerDestinations || [] ),
+					],
 				},
 			},
 		};
