@@ -28,6 +28,7 @@ import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { MODULES_ANALYTICS_4 } from './constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
+import { createReducer } from '../../../googlesitekit/data/create-reducer';
 
 const fetchGetGoogleTagContainerStore = createFetchStore( {
 	baseName: 'getGoogleTagContainer',
@@ -42,15 +43,9 @@ const fetchGetGoogleTagContainerStore = createFetchStore( {
 			}
 		);
 	},
-	reducerCallback( state, container, { measurementID } ) {
-		return {
-			...state,
-			containers: {
-				...state.containers,
-				[ measurementID ]: container,
-			},
-		};
-	},
+	reducerCallback: createReducer( ( state, container, { measurementID } ) => {
+		state.containers[ measurementID ] = container;
+	} ),
 	argsToParams( measurementID ) {
 		return { measurementID };
 	},
@@ -72,27 +67,20 @@ const fetchGetGoogleTagContainerDestinationsStore = createFetchStore( {
 			}
 		);
 	},
-	reducerCallback(
-		state,
-		containerDestinations,
-		{ gtmAccountID, gtmContainerID }
-	) {
-		return {
-			...state,
-			containerDestinations: {
-				...state.containerDestinations,
-				[ gtmAccountID ]: {
-					...state.containerDestinations[ gtmAccountID ],
-					[ gtmContainerID ]: [
-						...( state.containerDestinations[ gtmAccountID ]?.[
-							gtmContainerID
-						] || [] ),
-						...( containerDestinations || [] ),
-					],
-				},
-			},
-		};
-	},
+	reducerCallback: createReducer(
+		( state, containerDestinations, { gtmAccountID, gtmContainerID } ) => {
+			state.containerDestinations[ gtmAccountID ] =
+				state.containerDestinations[ gtmAccountID ] || {};
+
+			state.containerDestinations[ gtmAccountID ][ gtmContainerID ] =
+				state.containerDestinations[ gtmAccountID ][ gtmContainerID ] ||
+				[];
+
+			state.containerDestinations[ gtmAccountID ][ gtmContainerID ].push(
+				...containerDestinations
+			);
+		}
+	),
 	argsToParams( gtmAccountID, gtmContainerID ) {
 		return { gtmAccountID, gtmContainerID };
 	},
