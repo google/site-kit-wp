@@ -1,0 +1,33 @@
+{
+  "G-2C8N8YQ1L7": {
+    "path": "accounts/6065482709/containers/98367161",
+    "accountId": "6065482709",
+    "containerId": "98367161",
+    "name": "ht.ms.labs.srvrx.pw",
+    "publicId": "G-2C8N8YQ1L7",
+    "usageContext": [
+      "web"
+    ],
+    "fingerprint": "1670406300151",
+    "tagManagerUrl": "https://tagmanager.google.com/#/container/accounts/6065482709/containers/98367161/workspaces?apiLink=container",
+    "features": {
+      "supportUserPermissions": false,
+      "supportEnvironments": false,
+      "supportWorkspaces": false,
+      "supportGtagConfigs": true,
+      "supportBuiltInVariables": true,
+      "supportClients": false,
+      "supportFolders": false,
+      "supportTags": false,
+      "supportTemplates": false,
+      "supportTriggers": false,
+      "supportVariables": false,
+      "supportVersions": false,
+      "supportZones": false
+    },
+    "tagIds": [
+      "G-2C8N8YQ1L7",
+      "GT-NBQN9V2"
+    ]
+  }
+}
