@@ -1,0 +1,16 @@
+{
+  "6065482709": {
+    "98367161": [
+      {
+        "path": "accounts/6065482709/containers/98367161/destinations/1",
+        "accountId": "6065482709",
+        "containerId": "98367161",
+        "destinationLinkId": "1",
+        "destinationId": "G-2C8N8YQ1L7",
+        "name": "ht.ms.labs.srvrx.pw",
+        "fingerprint": "1670406300154",
+        "tagManagerUrl": "https://tagmanager.google.com/#/admin/accounts/6065482709/containers/98367161/tagdetails?apiLink=destination"
+      }
+    ]
+  }
+}
