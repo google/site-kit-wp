@@ -346,7 +346,7 @@ final class Authentication {
 				$user['connectURL']          = esc_url_raw( $this->get_connect_url() );
 				$user['hasMultipleAdmins']   = $this->has_multiple_admins->get();
 				$user['initialVersion']      = $this->initial_version->get();
-				$user['isUserInputComplete'] = $this->user_input_settings->is_complete();
+				$user['isUserInputComplete'] = ! $this->user_input->are_settings_empty();
 				$user['verified']            = $this->verification->has();
 
 				return $user;
@@ -386,7 +386,7 @@ final class Authentication {
 			$set_initial_version = function() {
 				$this->initial_version->set( GOOGLESITEKIT_VERSION );
 			};
-			add_action( 'googlesitekit_authorize_user', $set_initial_version );
+			add_action( '', $set_initial_version );
 			add_action( 'googlesitekit_reauthorize_user', $set_initial_version );
 		}
 

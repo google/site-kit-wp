@@ -51,8 +51,8 @@ export default function UserInputSettings( {
 	const ctaLink = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-user-input' )
 	);
-	const userInputState = useSelect( ( select ) =>
-		select( CORE_USER ).getUserInputState()
+	const isUserInputComplete = useSelect( ( select ) =>
+		select( CORE_USER ).getIsUserInputComplete()
 	);
 	const analyticsModuleConnected = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleConnected( 'analytics' )
@@ -67,7 +67,7 @@ export default function UserInputSettings( {
 		select( MODULES_ANALYTICS ).isGatheringData()
 	);
 
-	if ( userInputState === 'completed' ) {
+	if ( isUserInputComplete ) {
 		return null;
 	}
 
