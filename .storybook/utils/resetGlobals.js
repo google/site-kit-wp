@@ -66,7 +66,7 @@ export const resetGlobals = () => {
 			'http://example.com/wp-admin/index.php?action=googlesitekit_connect&nonce=abc123',
 		initialVersion: '',
 		verified: true,
-		userInputState: 'completed',
+		isUserInputComplete: true,
 	};
 	global._googlesitekitTrackingData = {
 		referenceSiteURL: 'http://example.com/',

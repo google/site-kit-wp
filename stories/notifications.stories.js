@@ -175,7 +175,7 @@ storiesOf( 'Global/Notifications', module )
 			const setupRegistry = ( registry ) => {
 				registry
 					.dispatch( CORE_USER )
-					.receiveUserInputState( 'missing' );
+					.receiveIsUserInputComplete( false );
 				provideSiteInfo( registry );
 			};
 
