@@ -150,7 +150,7 @@ const baseResolvers = {
 
 const baseSelectors = {
 	/**
-	 * Gets the Google Tag container for the given measurement ID.
+	 * Gets the Google Tag container for the given measurementID.
 	 *
 	 * @since n.e.x.t
 	 *
@@ -163,14 +163,14 @@ const baseSelectors = {
 	},
 
 	/**
-	 * Gets the Google Tag container destinations for the given account and container IDs.
+	 * Gets the Google Tag container destinations for the given accountID and containeID.
 	 *
 	 * @since n.e.x.t
 	 *
 	 * @param {Object} state          Data store's state.
 	 * @param {string} gtmAccountID   Google Tag Manager account ID.
 	 * @param {string} gtmContainerID Google Tag Manager container ID.
-	 * @return {Object|undefined} Google Tag container destinations object, or undefined if not loaded.
+	 * @return {(Array.<Object>|undefined)} Google Tag container destinations list, or undefined if not loaded.
 	 */
 	getGoogleTagContainerDestinations( state, gtmAccountID, gtmContainerID ) {
 		return state.containerDestinations[ gtmAccountID ]?.[ gtmContainerID ];
