@@ -47,49 +47,52 @@ describe( 'modules/analytics-4 containers', () => {
 
 	describe( 'selectors', () => {
 		describe( 'getGoogleTagContainer', () => {
+			const measurementID = 'G-2C8N8YQ1L7';
+			const containerMock = fixtures.container[ measurementID ];
+
 			it( 'should use a resolver to make a network request', async () => {
 				fetchMock.get( containerLookupEndpoint, {
-					body: fixtures.container,
+					body: containerMock,
 					status: 200,
 				} );
 
 				const initialContainer = registry
 					.select( MODULES_ANALYTICS_4 )
-					.getGoogleTagContainer( 'G-2C8N8YQ1L7' );
+					.getGoogleTagContainer( measurementID );
 				expect( initialContainer ).toBeUndefined();
 
 				await untilResolved(
 					registry,
 					MODULES_ANALYTICS_4
-				).getGoogleTagContainer( 'G-2C8N8YQ1L7' );
+				).getGoogleTagContainer( measurementID );
 				expect( fetchMock ).toHaveFetched( containerLookupEndpoint );
 
 				const container = registry
 					.select( MODULES_ANALYTICS_4 )
-					.getGoogleTagContainer( 'G-2C8N8YQ1L7' );
+					.getGoogleTagContainer( measurementID );
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
-				expect( container ).toEqual( fixtures.container );
+				expect( container ).toEqual( containerMock );
 			} );
 
-			it( 'should not make a network request if containers for this measurementID are already present', async () => {
+			it( 'should not make a network request if a container for this measurementID is already present', async () => {
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveGetGoogleTagContainer( fixtures.container, {
-						measurementID: 'G-2C8N8YQ1L7',
+					.receiveGetGoogleTagContainer( containerMock, {
+						measurementID,
 					} );
 
 				const container = registry
 					.select( MODULES_ANALYTICS_4 )
-					.getGoogleTagContainer( 'G-2C8N8YQ1L7' );
+					.getGoogleTagContainer( measurementID );
 				await untilResolved(
 					registry,
 					MODULES_ANALYTICS_4
-				).getGoogleTagContainer( 'G-2C8N8YQ1L7' );
+				).getGoogleTagContainer( measurementID );
 
 				expect( fetchMock ).not.toHaveFetched(
 					containerLookupEndpoint
 				);
-				expect( container ).toEqual( fixtures.container );
+				expect( container ).toEqual( containerMock );
 			} );
 
 			it( 'should dispatch an error if the request fails', async () => {
@@ -106,16 +109,16 @@ describe( 'modules/analytics-4 containers', () => {
 
 				registry
 					.select( MODULES_ANALYTICS_4 )
-					.getGoogleTagContainer( 'G-2C8N8YQ1L7' );
+					.getGoogleTagContainer( measurementID );
 				await untilResolved(
 					registry,
 					MODULES_ANALYTICS_4
-				).getGoogleTagContainer( 'G-2C8N8YQ1L7' );
+				).getGoogleTagContainer( measurementID );
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 
 				const container = registry
 					.select( MODULES_ANALYTICS_4 )
-					.getGoogleTagContainer( 'G-2C8N8YQ1L7' );
+					.getGoogleTagContainer( measurementID );
 				expect( container ).toBeUndefined();
 				expect( console ).toHaveErrored();
 			} );
@@ -166,7 +169,7 @@ describe( 'modules/analytics-4 containers', () => {
 				);
 			} );
 
-			it( 'should not make a network request if containers for this measurementID are already present', async () => {
+			it( 'should not make a network request if container destinations for the given accountID and containerID are already present', async () => {
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveGetGoogleTagContainerDestinations(
