@@ -49,14 +49,16 @@ describe( 'getAnalytics4MockResponse', () => {
 			endDate: '2021-01-27',
 			metrics: [
 				{
-					expression: 'totalUsers',
-					alias: 'Total Users',
+					expression: 'sessions',
+				},
+				{
+					expression: 'newUsers',
 				},
 			],
 			dimensions: [ 'date' ],
 		} );
 
-		expect( report[ 0 ].data.rows ).toHaveLength( 28 );
+		expect( report[ 0 ].rows ).toHaveLength( 28 );
 	} );
 
 	it( 'generates a valid report', () => {
@@ -74,6 +76,6 @@ describe( 'getAnalytics4MockResponse', () => {
 			dimensions: [ 'date' ],
 		} );
 
-		expect( report[ 0 ].data.rows ).toHaveLength( 56 );
+		expect( report[ 0 ].rows ).toHaveLength( 56 );
 	} );
 } );

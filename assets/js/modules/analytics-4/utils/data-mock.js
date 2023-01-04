@@ -38,17 +38,24 @@ const ANALYTICS_4_METRIC_TYPES = {
 	totalUsers: 'INTEGER',
 	newUsers: 'INTEGER',
 	sessions: 'INTEGER',
+	conversions: 'INTEGER',
 	screenPageViews: 'INTEGER',
-	bounceRate: 'PERCENT',
+	engagedSessions: 'INTEGER',
 	averageSessionDuration: 'TIME',
 };
 
 const ANALYTICS_4_DIMENSION_OPTIONS = {
 	sessionDefaultChannelGrouping: [
-		'Organic Search',
-		'Referral',
 		'Direct',
-		'(other)',
+		'Organic Search',
+		'Paid Social',
+		'Organic Social',
+		'Email',
+		'Affiliates',
+		'Referral',
+		'Paid Search',
+		'Video',
+		'Display',
 	],
 	country: [
 		'United States',
@@ -60,7 +67,7 @@ const ANALYTICS_4_DIMENSION_OPTIONS = {
 		'Italy',
 		'Mexico',
 	],
-	deviceCategory: [ 'desktop', 'tablet', 'mobile' ],
+	deviceCategory: [ 'Desktop', 'Tablet', 'Mobile' ],
 	pageTitle: ( i ) => ( i <= 12 ? `Test Post ${ i }` : false ),
 	pagePathPlusQueryString: ( i ) =>
 		i <= 12 ? `/test-post-${ i }/` : false,
@@ -108,33 +115,37 @@ function generateMetricValues( validMetrics, count ) {
 		validMetrics.forEach( ( validMetric ) => {
 			switch ( getMetricType( validMetric ) ) {
 				case 'INTEGER':
-					values.push(
-						faker.datatype.number( { min: 0, max: 100 } ).toString()
-					);
+					values.push( {
+						value: faker.datatype
+							.number( { min: 0, max: 100 } )
+							.toString(),
+					} );
 					break;
 				case 'PERCENT':
-					values.push(
-						faker.datatype.float( { min: 0, max: 100 } ).toString()
-					);
+					values.push( {
+						value: faker.datatype
+							.float( { min: 0, max: 100 } )
+							.toString(),
+					} );
 					break;
 				case 'TIME':
-					values.push(
-						faker.datatype
+					values.push( {
+						value: faker.datatype
 							.number( { min: 0, max: 3600 } )
-							.toString()
-					); // 1 hour max.
+							.toString(),
+					} ); // 1 hour max.
 					break;
 				case 'CURRENCY':
-					values.push(
-						faker.datatype
+					values.push( {
+						value: faker.datatype
 							.float( { min: 0, max: 10000 } )
-							.toString()
-					); // $10k max.
+							.toString(),
+					} ); // $10k max.
 					break;
 			}
 		} );
 
-		metrics.push( { values } );
+		metrics.push( ...values );
 	}
 
 	return metrics;
@@ -217,15 +228,16 @@ export function getAnalytics4MockResponse( args ) {
 	}
 
 	const data = {
-		dataLastRefreshed: null,
-		isDataGolden: null,
 		rowCount: 0,
-		samplesReadCounts: null,
-		samplingSpaceSizes: null,
 		rows: [],
 		totals: [],
 		minimums: [],
 		maximums: [],
+		metadata: {
+			currencyCode: 'USD',
+			timeZone: 'America/Los_Angeles',
+		},
+		kind: 'analyticsData#runReport',
 	};
 
 	const { compareStartDate, compareEndDate } = args;
@@ -302,8 +314,13 @@ export function getAnalytics4MockResponse( args ) {
 	const ops = [
 		// Convert a dimension value to a row object and generate metric values.
 		map( ( dimensionValue ) => ( {
-			dimensions: castArray( dimensionValue ),
-			metrics: generateMetricValues( validMetrics, metricValuesCount ),
+			dimensionValues: castArray( dimensionValue ).map( ( value ) => ( {
+				value,
+			} ) ),
+			metricValues: generateMetricValues(
+				validMetrics,
+				metricValuesCount
+			),
 		} ) ),
 		// Make sure we take the appropriate number of rows.
 		take( args.limit > 0 ? +args.limit : 90 ),
@@ -324,11 +341,42 @@ export function getAnalytics4MockResponse( args ) {
 
 			// We pretend that the first row contains minimums and the last one maximums because we don't
 			// really need mathematically correct values and can simplify the process of finding this information.
-			data.minimums = [ ...( rows[ 0 ]?.metrics || [] ) ];
-			data.maximums = [ ...( rows[ rows.length - 1 ]?.metrics || [] ) ];
+			data.minimums = [
+				{
+					dimensionValues: [
+						{
+							value: 'RESERVED_MIN',
+						},
+					],
+					metricValues: [ ...( rows[ 0 ]?.metricValues || [] ) ],
+				},
+			];
+			data.maximums = [
+				{
+					dimensionValues: [
+						{
+							value: 'RESERVED_MAX',
+						},
+					],
+					metricValues: [
+						...( rows[ rows.length - 1 ]?.metricValues || [] ),
+					],
+				},
+			];
 
 			// Same here, we pretend that the last row contains totals because we don't need it to be mathematically valid.
-			data.totals = [ ...( rows[ rows.length - 1 ]?.metrics || [] ) ];
+			data.totals = [
+				{
+					dimensionValues: [
+						{
+							value: 'RESERVED_TOTAL',
+						},
+					],
+					metricValues: [
+						...( rows[ rows.length - 1 ]?.metricValues || [] ),
+					],
+				},
+			];
 		} );
 
 	// Set the original seed value for the faker.
@@ -336,20 +384,15 @@ export function getAnalytics4MockResponse( args ) {
 
 	return [
 		{
-			nextPageToken: null,
-			columnHeader: {
-				dimensions: args.dimensions || null,
-				metricHeader: {
-					metricHeaderEntries: validMetrics.map( ( metric ) => ( {
-						name:
-							metric?.alias ||
-							metric?.expression ||
-							metric.toString(),
-						type: getMetricType( metric ),
-					} ) ),
-				},
-			},
-			data,
+			dimensionHeaders:
+				args?.dimensions?.map( ( dimension ) => ( {
+					name: dimension,
+				} ) ) || null,
+			metricHeaders: validMetrics.map( ( metric ) => ( {
+				name: metric?.alias || metric?.expression || metric.toString(),
+				type: getMetricType( metric ),
+			} ) ),
+			...data,
 		},
 	];
 }
