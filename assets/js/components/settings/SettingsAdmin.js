@@ -48,7 +48,7 @@ export default function SettingsAdmin() {
 	const userInputEnabled = useFeature( 'userInput' );
 	const isUserInputComplete = useSelect(
 		( select ) =>
-			userInputEnabled && select( CORE_USER ).getIsUserInputComplete()
+			userInputEnabled && select( CORE_USER ).isUserInputComplete()
 	);
 	const userInputURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-user-input' )

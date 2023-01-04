@@ -257,10 +257,10 @@ export const resolvers = {
 		yield actions.receiveUserIsVerified( verified );
 	},
 
-	*getIsUserInputComplete() {
+	*isUserInputComplete() {
 		const { select } = yield Data.commonActions.getRegistry();
 
-		if ( select( CORE_USER ).getIsUserInputComplete() ) {
+		if ( select( CORE_USER ).isUserInputComplete() ) {
 			return;
 		}
 
@@ -477,7 +477,7 @@ export const selectors = {
 	 * @param {Object} state Data store's state.
 	 * @return {string} The user input state.
 	 */
-	getIsUserInputComplete( state ) {
+	isUserInputComplete( state ) {
 		const { isUserInputComplete } = state;
 		return isUserInputComplete;
 	},

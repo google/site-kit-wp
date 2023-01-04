@@ -52,7 +52,7 @@ export default function UserInputSettings( {
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-user-input' )
 	);
 	const isUserInputComplete = useSelect( ( select ) =>
-		select( CORE_USER ).getIsUserInputComplete()
+		select( CORE_USER ).isUserInputComplete()
 	);
 	const analyticsModuleConnected = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleConnected( 'analytics' )

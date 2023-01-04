@@ -114,7 +114,7 @@ const baseActions = {
 		const registry = yield Data.commonActions.getRegistry();
 
 		const trimmedValues = values.map( ( value ) => value.trim() );
-		if ( ! registry.select( CORE_USER ).getIsUserInputComplete() ) {
+		if ( ! registry.select( CORE_USER ).isUserInputComplete() ) {
 			// Save this setting in the cache.
 			yield {
 				type: SET_CACHED_USER_INPUT_SETTING,
@@ -246,7 +246,7 @@ const baseResolvers = {
 			yield fetchGetUserInputSettingsStore.actions.fetchGetUserInputSettings();
 		}
 
-		if ( ! select( CORE_USER ).getIsUserInputComplete() ) {
+		if ( ! select( CORE_USER ).isUserInputComplete() ) {
 			yield baseActions.setUserInputSettingsFromCache();
 		}
 	},

@@ -36,7 +36,7 @@ const UserInputPromptBannerNotification = () => {
 	const viewContext = useViewContext();
 
 	const isUserInputComplete = useSelect( ( select ) =>
-		select( CORE_USER ).getIsUserInputComplete()
+		select( CORE_USER ).isUserInputComplete()
 	);
 
 	const category = `${ viewContext }_user-input-prompt-notification`;
