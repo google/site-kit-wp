@@ -47,7 +47,7 @@ describe( 'modules/analytics-4 containers', () => {
 
 	describe( 'selectors', () => {
 		describe( 'getGoogleTagContainer', () => {
-			const measurementID = 'G-2C8N8YQ1L7';
+			const measurementID = 'G-2B7M8YQ1K6';
 			const containerMock = fixtures.container[ measurementID ];
 
 			it( 'should use a resolver to make a network request', async () => {
@@ -125,8 +125,8 @@ describe( 'modules/analytics-4 containers', () => {
 		} );
 
 		describe( 'getGoogleTagContainerDestinations', () => {
-			const gtmAccountID = '6065482709';
-			const gtmContainerID = '98367161';
+			const gtmAccountID = '6065484567';
+			const gtmContainerID = '98369876';
 			const containerDestinationsMock =
 				fixtures.containerDestinations[ gtmAccountID ][
 					gtmContainerID
