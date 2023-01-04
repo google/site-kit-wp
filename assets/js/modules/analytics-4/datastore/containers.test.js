@@ -19,7 +19,6 @@
 /**
  * Internal dependencies
  */
-// import API from 'googlesitekit-api';
 import {
 	createTestRegistry,
 	unsubscribeFromAll,
@@ -34,20 +33,13 @@ describe( 'modules/analytics-4 containers', () => {
 	const containerLookupEndpoint = new RegExp(
 		'^/google-site-kit/v1/modules/analytics-4/data/container-lookup'
 	);
-
-	// beforeAll( () => {
-	// 	API.setUsingCache( false );
-	// } );
+	const containerDestinationsEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/analytics-4/data/container-destinations'
+	);
 
 	beforeEach( () => {
 		registry = createTestRegistry();
-		// Receive empty settings to prevent unexpected fetch by resolver.
-		// registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
 	} );
-
-	// afterAll( () => {
-	// 	API.setUsingCache( true );
-	// } );
 
 	afterEach( () => {
 		unsubscribeFromAll( registry );
@@ -125,6 +117,122 @@ describe( 'modules/analytics-4 containers', () => {
 					.select( MODULES_ANALYTICS_4 )
 					.getGoogleTagContainer( 'G-2C8N8YQ1L7' );
 				expect( container ).toBeUndefined();
+				expect( console ).toHaveErrored();
+			} );
+		} );
+
+		describe( 'getGoogleTagContainerDestinations', () => {
+			const gtmAccountID = '6065482709';
+			const gtmContainerID = '98367161';
+			const containerDestinationsMock =
+				fixtures.containerDestinations[ gtmAccountID ][
+					gtmContainerID
+				];
+
+			it( 'should use a resolver to make a network request', async () => {
+				fetchMock.get( containerDestinationsEndpoint, {
+					body: containerDestinationsMock,
+					status: 200,
+				} );
+
+				const initialContainerDestinations = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getGoogleTagContainerDestinations(
+						gtmAccountID,
+						gtmContainerID
+					);
+				expect( initialContainerDestinations ).toBeUndefined();
+
+				await untilResolved(
+					registry,
+					MODULES_ANALYTICS_4
+				).getGoogleTagContainerDestinations(
+					gtmAccountID,
+					gtmContainerID
+				);
+				expect( fetchMock ).toHaveFetched(
+					containerDestinationsEndpoint
+				);
+
+				const containerDestinations = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getGoogleTagContainerDestinations(
+						gtmAccountID,
+						gtmContainerID
+					);
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect( containerDestinations ).toEqual(
+					containerDestinationsMock
+				);
+			} );
+
+			it( 'should not make a network request if containers for this measurementID are already present', async () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetGoogleTagContainerDestinations(
+						containerDestinationsMock,
+						{
+							gtmAccountID,
+							gtmContainerID,
+						}
+					);
+
+				const containerDestinations = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getGoogleTagContainerDestinations(
+						gtmAccountID,
+						gtmContainerID
+					);
+				await untilResolved(
+					registry,
+					MODULES_ANALYTICS_4
+				).getGoogleTagContainerDestinations(
+					gtmAccountID,
+					gtmContainerID
+				);
+
+				expect( fetchMock ).not.toHaveFetched(
+					containerDestinationsEndpoint
+				);
+				expect( containerDestinations ).toEqual(
+					containerDestinationsMock
+				);
+			} );
+
+			it( 'should dispatch an error if the request fails', async () => {
+				const response = {
+					code: 'internal_server_error',
+					message: 'Internal server error',
+					data: { status: 500 },
+				};
+
+				fetchMock.getOnce( containerDestinationsEndpoint, {
+					body: response,
+					status: 500,
+				} );
+
+				registry
+					.select( MODULES_ANALYTICS_4 )
+					.getGoogleTagContainerDestinations(
+						gtmAccountID,
+						gtmContainerID
+					);
+				await untilResolved(
+					registry,
+					MODULES_ANALYTICS_4
+				).getGoogleTagContainerDestinations(
+					gtmAccountID,
+					gtmContainerID
+				);
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+
+				const containerDestinations = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getGoogleTagContainerDestinations(
+						gtmAccountID,
+						gtmContainerID
+					);
+				expect( containerDestinations ).toBeUndefined();
 				expect( console ).toHaveErrored();
 			} );
 		} );
