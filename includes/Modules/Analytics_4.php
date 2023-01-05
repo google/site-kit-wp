@@ -863,7 +863,7 @@ final class Analytics_4 extends Module
 	}
 
 	/**
-	 * Creates an executes a new Analytics 4 report request.
+	 * Creates and executes a new Analytics 4 report request.
 	 *
 	 * @since n.e.x.t
 	 *
