@@ -121,6 +121,7 @@ class User_OptionsTest extends TestCase {
 	}
 
 	public function test_user_input_state_value() {
+		$this->enable_feature( 'userInput' );
 		$user_id = $this->factory()->user->create();
 		wp_set_current_user( $user_id );
 

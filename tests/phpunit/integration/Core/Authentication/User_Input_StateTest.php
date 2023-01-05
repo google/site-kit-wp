@@ -48,6 +48,7 @@ class User_Input_StateTest extends TestCase {
 	 * @param string $expected_from_get Expected result from related get() methods
 	 */
 	public function test_allowed_set_values( $value, $expected_from_set, $expected_from_get ) {
+		$this->enable_feature( 'userInput' );
 		$this->assertSame( $this->user_input_state->set( $value ), $expected_from_set );
 		$this->assertEquals( $expected_from_get, $this->user_input_state->get() );
 		$this->assertEquals( $expected_from_get, $this->user_options->get( User_Input_State::OPTION ) );
