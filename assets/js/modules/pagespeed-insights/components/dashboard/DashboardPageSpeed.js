@@ -311,6 +311,7 @@ export default function DashboardPageSpeed() {
 							<Tab
 								focusOnActivate={ false }
 								aria-labelledby={ `googlesitekit-pagespeed-widget__data-src-tab-${ DATA_SRC_LAB }` }
+								disabled={ isFetching }
 							>
 								<span
 									id={ `googlesitekit-pagespeed-widget__data-src-tab-${ DATA_SRC_LAB }` }
@@ -322,6 +323,7 @@ export default function DashboardPageSpeed() {
 							<Tab
 								focusOnActivate={ false }
 								aria-labelledby={ `googlesitekit-pagespeed-widget__data-src-tab-${ DATA_SRC_FIELD }` }
+								disabled={ isFetching }
 							>
 								<span
 									id={ `googlesitekit-pagespeed-widget__data-src-tab-${ DATA_SRC_FIELD }` }
@@ -333,6 +335,7 @@ export default function DashboardPageSpeed() {
 							<Tab
 								focusOnActivate={ false }
 								aria-labelledby={ `googlesitekit-pagespeed-widget__data-src-tab-${ DATA_SRC_RECOMMENDATIONS }` }
+								disabled={ isFetching }
 							>
 								<span
 									id={ `googlesitekit-pagespeed-widget__data-src-tab-${ DATA_SRC_RECOMMENDATIONS }` }
@@ -349,6 +352,7 @@ export default function DashboardPageSpeed() {
 					<div className="googlesitekit-pagespeed-widget__device-size-tab-bar-wrapper">
 						<DeviceSizeTabBar
 							activeTab={ strategy }
+							disabled={ isFetching }
 							handleDeviceSizeUpdate={ updateActiveDeviceSize }
 						/>
 					</div>
@@ -397,6 +401,7 @@ export default function DashboardPageSpeed() {
 								'googlesitekit-pagespeed__recommendations-cta--hidden':
 									! recommendations?.length,
 							} ) }
+							disabled={ isFetching }
 							onClick={ () =>
 								updateActiveTab( TAB_INDEX_RECOMMENDATIONS )
 							}

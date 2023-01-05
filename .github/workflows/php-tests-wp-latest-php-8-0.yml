@@ -58,7 +58,7 @@ jobs:
       MYSQL_DATABASE: wordpress_test
       WP_VERSION: latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: shivammathur/setup-php@v2
         with:
           extensions: mysqli, runkit7, uopz

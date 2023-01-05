@@ -41,6 +41,7 @@ import {
 } from '../../../../../tests/js/test-utils';
 import { MODULES_ANALYTICS } from '../../../modules/analytics/datastore/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
+import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 
 describe( 'Header', () => {
 	const history = createHashHistory();
@@ -71,6 +72,7 @@ describe( 'Header', () => {
 				slug: 'analytics',
 				active: true,
 				connected: true,
+				storeName: MODULES_ANALYTICS,
 			},
 			{
 				slug: 'pagespeed-insights',
@@ -90,7 +92,7 @@ describe( 'Header', () => {
 				connected: false,
 			},
 		] );
-		registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
+		registry.dispatch( CORE_USER ).receiveGetAuthentication( {} );
 	} );
 
 	it( 'should render "Connected" for a connected module', () => {
