@@ -103,11 +103,9 @@ final class Plugin {
 				// If this host is an IDN in Unicode format, we need to add the
 				// urlencoded versions of the domain to the `$hosts` array,
 				// because this is what will be used for redirects.
-				$idn_hosts = array(
-					rawurlencode( $wpp['host'] ),
-				);
+				$hosts[] = rawurlencode( $wpp['host'] );
 
-				return array_merge( $hosts, $idn_hosts );
+				return $hosts;
 			},
 			1
 		);
