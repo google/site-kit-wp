@@ -925,7 +925,7 @@ final class Analytics_4 extends Module
 					$this->validate_report_dimensions( $dimensions );
 				} catch ( Invalid_Report_Dimensions_Exception $exception ) {
 					return new WP_Error(
-						'invalid_analytics_report_dimensions',
+						'invalid_analytics_4_report_dimensions',
 						$exception->getMessage()
 					);
 				}
@@ -1036,7 +1036,7 @@ final class Analytics_4 extends Module
 					$this->validate_report_metrics( $metrics );
 				} catch ( Invalid_Report_Metrics_Exception $exception ) {
 					return new WP_Error(
-						'invalid_analytics_report_metrics',
+						'invalid_analytics_4_report_metrics',
 						$exception->getMessage()
 					);
 				}
