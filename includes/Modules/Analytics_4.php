@@ -868,7 +868,7 @@ final class Analytics_4 extends Module
 	 * @since n.e.x.t
 	 *
 	 * @param Data_Request $data Data request object.
-	 * @return RequestInterface|callable|WP_Error Request object or callable on success, or WP_Error on failure.
+	 * @return RequestInterface|WP_Error Request object on success, or WP_Error on failure.
 	 */
 	protected function create_report_request( Data_Request $data ) {
 		$request_args = array();
