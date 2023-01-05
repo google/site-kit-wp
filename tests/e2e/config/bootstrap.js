@@ -202,7 +202,7 @@ function observeConsoleLogging() {
 		//
 		// We ignore them as they are not indicative of a problem with the
 		// test and usually make E2E tests fail erroneously.
-		if ( text.startsWith( 'You are probably offline.' ) ) {
+		if ( text.includes( 'You are probably offline.' ) ) {
 			return;
 		}
 

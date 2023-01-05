@@ -47,6 +47,7 @@ const initialState = {
 	initialVersion: undefined,
 	user: undefined,
 	verified: undefined,
+	isUserInputComplete: undefined,
 };
 
 export const actions = {
@@ -139,7 +140,10 @@ export const actions = {
 	 * @return {Object} Redux-style action.
 	 */
 	receiveIsUserInputComplete( isUserInputComplete ) {
-		invariant( isUserInputComplete, 'isUserInputComplete is required.' );
+		invariant(
+			isUserInputComplete !== undefined,
+			'isUserInputComplete is required.'
+		);
 		return {
 			payload: { isUserInputComplete },
 			type: RECEIVE_IS_USER_INPUT_COMPLETE,
@@ -473,6 +477,7 @@ export const selectors = {
 	 * Gets the user input state.
 	 *
 	 * @since 1.20.0
+	 * @since n.e.x.t Simplified state to a simple boolean.
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {string} The user input state.
