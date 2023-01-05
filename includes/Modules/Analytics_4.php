@@ -1018,9 +1018,11 @@ final class Analytics_4 extends Module
 
 						if ( is_string( $metric_def ) ) {
 							$metric->setName( $metric_def );
-						} elseif ( is_array( $metric_def ) && ! empty( $metric_def['expression'] ) ) {
-							$metric->setExpression( $metric_def['expression'] );
-							$metric->setName( ! empty( $metric_def['name'] ) ? $metric_def['name'] : $metric_def['expression'] );
+						} elseif ( is_array( $metric_def ) && ! empty( $metric_def['name'] ) ) {
+							$metric->setName( $metric_def['name'] );
+							if ( ! empty( $metric_def['expression'] ) ) {
+								$metric->setExpression( $metric_def['expression'] );
+							}
 						} else {
 							return null;
 						}
