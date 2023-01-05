@@ -643,7 +643,7 @@ final class Analytics_4 extends Module
 
 		$settings = $this->get_settings()->get();
 
-		if ( Feature_Flags::enabled( 'gteSupport' ) && isset( $settings['googleTagID'] ) ) {
+		if ( Feature_Flags::enabled( 'gteSupport' ) && ! empty( $settings['googleTagID'] ) ) {
 			$tag = new Web_Tag( $settings['googleTagID'], self::MODULE_SLUG );
 		} else {
 			$tag = new Web_Tag( $settings['measurementID'], self::MODULE_SLUG );
