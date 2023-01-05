@@ -1787,6 +1787,86 @@ describe( 'core/modules modules', () => {
 				expect( moduleAccess ).toBe( true );
 			} );
 
+			it( 'should return false if access check is false when `moduleOwnerID` and `loggedInUserID` are not equal', async () => {
+				fetchMock.postOnce(
+					/^\/google-site-kit\/v1\/core\/modules\/data\/check-access/,
+					{ body: { access: false } }
+				);
+
+				registry.dispatch( CORE_MODULES ).receiveGetModules( [
+					{
+						slug: 'search-console',
+						storeName: MODULES_SEARCH_CONSOLE,
+					},
+				] );
+
+				registry
+					.dispatch( MODULES_SEARCH_CONSOLE )
+					.receiveGetSettings( {
+						ownerID: 1,
+					} );
+
+				registry.dispatch( CORE_USER ).receiveUserInfo( {
+					id: 2,
+				} );
+
+				let moduleAccess = registry
+					.select( CORE_MODULES )
+					.hasModuleOwnershipOrAccess( 'search-console' );
+
+				expect( moduleAccess ).toBe( undefined );
+
+				await untilResolved( registry, CORE_MODULES ).hasModuleAccess(
+					'search-console'
+				);
+
+				moduleAccess = registry
+					.select( CORE_MODULES )
+					.hasModuleOwnershipOrAccess( 'search-console' );
+
+				expect( moduleAccess ).toBe( false );
+			} );
+
+			it( 'should return false if the module store name cannot be found', async () => {
+				fetchMock.postOnce(
+					/^\/google-site-kit\/v1\/core\/modules\/data\/check-access/,
+					{ body: { access: true } }
+				);
+
+				registry.dispatch( CORE_MODULES ).receiveGetModules( [
+					{
+						slug: 'search-console',
+						storeName: MODULES_SEARCH_CONSOLE,
+					},
+				] );
+
+				registry
+					.dispatch( MODULES_SEARCH_CONSOLE )
+					.receiveGetSettings( {
+						ownerID: 1,
+					} );
+
+				registry.dispatch( CORE_USER ).receiveUserInfo( {
+					id: 2,
+				} );
+
+				let moduleAccess = registry
+					.select( CORE_MODULES )
+					.hasModuleOwnershipOrAccess( 'search-console' );
+
+				expect( moduleAccess ).toBe( undefined );
+
+				await untilResolved( registry, CORE_MODULES ).hasModuleAccess(
+					'search-console'
+				);
+
+				moduleAccess = registry
+					.select( CORE_MODULES )
+					.hasModuleOwnershipOrAccess( 'not-a-module' );
+
+				expect( moduleAccess ).toBe( false );
+			} );
+
 			it( 'should call `hasModuleAccess` if `moduleOwnerID` and `loggedInUserID` are not equal', async () => {
 				fetchMock.postOnce(
 					/^\/google-site-kit\/v1\/core\/modules\/data\/check-access/,
