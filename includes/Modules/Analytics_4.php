@@ -1227,6 +1227,7 @@ final class Analytics_4 extends Module
 		$valid_metrics = apply_filters(
 			'googlesitekit_shareable_analytics_4_metrics',
 			array(
+				// FIXME: Remove these before PR.
 				'sessions',
 				'totalUsers',
 				'screenPageViews',
@@ -1287,6 +1288,7 @@ final class Analytics_4 extends Module
 		$valid_dimensions = apply_filters(
 			'googlesitekit_shareable_analytics_4_dimensions',
 			array(
+				// FIXME: Remove these before PR.
 				'date',
 				'pagePathPlusQueryString',
 				'pageTitle',
