@@ -206,6 +206,7 @@ class Analytics_4Test extends TestCase {
 				'create-webdatastream',
 				'properties',
 				'property',
+				'report',
 				'webdatastreams',
 				'webdatastreams-batch',
 			),
