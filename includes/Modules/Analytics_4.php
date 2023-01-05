@@ -1051,6 +1051,15 @@ final class Analytics_4 extends Module
 			$request->setOrderBys( $orderby );
 		}
 
+		// Ensure the total, minimum and maximum metric aggregations are included in order to match what is returned by the UA reports. We may wish to make this optional in future.
+		$request->setMetricAggregations(
+			array(
+				'TOTAL',
+				'MINIMUM',
+				'MAXIMUM',
+			)
+		);
+
 		// Batch reports requests.
 		$body = new Google_Service_AnalyticsData_BatchRunReportsRequest();
 		$body->setRequests( array( $request ) );
