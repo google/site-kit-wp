@@ -1240,7 +1240,9 @@ final class Analytics_4 extends Module
 		$invalid_metrics = array_diff(
 			array_map(
 				function ( $metric ) {
-					return $metric->getExpression();
+					// If there is an expression, it means the name is there as an alias, otherwise the name should be a valid metric name.
+					// Therefore, the expression takes precedence to the name for the purpose of allow-list validation.
+					return $metric->getExpression() || $metric->getName();
 				},
 				$metrics
 			),
