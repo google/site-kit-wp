@@ -87,6 +87,31 @@ final class Plugin {
 			return;
 		}
 
+		// In the case of IDNs, ensure the ASCII and non-ASCII domains
+		// are treated as allowable origins.
+		add_filter(
+			'allowed_redirect_hosts',
+			function( $hosts ) {
+				$wpp = wp_parse_url( home_url() );
+
+				// If this host isn't an IDN (or is already an ASCII-formatted
+				// IDN), we can return the existing `$hosts` array unmodified.
+				if ( idn_to_ascii( $wpp['host'], 0, INTL_IDNA_VARIANT_UTS46 ) === $wpp['host'] ) {
+					return $hosts;
+				}
+
+				// If this host is an IDN in Unicode format, we need to add the
+				// urlencoded versions of the domain to the `$hosts` array,
+				// because this is what will be used for redirects.
+				$idn_hosts = array(
+					rawurlencode( $wpp['host'] ),
+				);
+
+				return array_merge( $hosts, $idn_hosts );
+			},
+			1
+		);
+
 		// REST route to set up a temporary tag to verify meta tag output works reliably.
 		add_filter(
 			'googlesitekit_rest_routes',
