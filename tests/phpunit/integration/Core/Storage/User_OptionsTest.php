@@ -120,18 +120,6 @@ class User_OptionsTest extends TestCase {
 		$this->assertFalse( metadata_exists( 'user', $user_id, 'test-key' ) );
 	}
 
-	public function test_user_input_state_value() {
-		$this->enable_feature( 'userInput' );
-		$user_id = $this->factory()->user->create();
-		wp_set_current_user( $user_id );
-
-		update_user_option( $user_id, 'googlesitekit_user_input_state', 'completed' );
-		$this->assertEquals( 'completed', get_user_option( 'googlesitekit_user_input_state', $user_id ) );
-
-		update_user_option( $user_id, 'googlesitekit_user_input_state', 'invalid' );
-		$this->assertEquals( false, get_user_option( 'googlesitekit_user_input_state', $user_id ) );
-	}
-
 	protected function create_user_aware_instance() {
 		$user_id      = $this->factory()->user->create();
 		$user_options = new User_Options(
