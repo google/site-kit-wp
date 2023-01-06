@@ -71,7 +71,7 @@ class User_InputTest extends TestCase {
 
 	public function test_get_answers() {
 		$this->enable_feature( 'userInput' );
-		$this->user_input_state->register();
+		$this->user_input->register();
 		// If settings are not set, it returns empty default values.
 		$this->assertEquals(
 			array(
@@ -170,7 +170,7 @@ class User_InputTest extends TestCase {
 
 	public function test_set_answers() {
 		$this->enable_feature( 'userInput' );
-		$this->user_input_state->register();
+		$this->user_input->register();
 		$response = $this->user_input->set_answers(
 			array(
 				'purpose'       => array( 'purpose1' ),
