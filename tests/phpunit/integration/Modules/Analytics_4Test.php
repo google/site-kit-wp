@@ -600,7 +600,7 @@ class Analytics_4Test extends TestCase {
 	 * @since n.e.x.t
 	 *
 	 * @param string $property_id The property ID.
-	 * @param array $request_handler_calls The request handler calls.
+	 * @param array $request_handler_calls Output variable for tracking the request handler calls. Passed by reference.
 	 * @param boolean [enable_validation] Whether to enable validation of the metrics and dimensions. Default false.
 	 * @return Analytics_4 The Analytics 4 instance.
 	 */
