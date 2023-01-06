@@ -11,6 +11,7 @@
 namespace Google\Site_Kit\Core\Modules;
 
 use Google\Site_Kit\Core\Storage\Setting;
+use Google\Site_Kit\Core\Util\Sanitize;
 
 /**
  * Class for module sharing settings.
@@ -62,7 +63,7 @@ class Module_Sharing_Settings extends Setting {
 				$sanitized_option[ $module_slug ] = array();
 
 				if ( isset( $sharing_settings['sharedRoles'] ) ) {
-					$filtered_shared_roles = $this->filter_shared_roles( $this->sanitize_string_list( $sharing_settings['sharedRoles'] ) );
+					$filtered_shared_roles = $this->filter_shared_roles( Sanitize::sanitize_string_list( $sharing_settings['sharedRoles'] ) );
 
 					$sanitized_option[ $module_slug ]['sharedRoles'] = $filtered_shared_roles;
 				}
@@ -74,33 +75,6 @@ class Module_Sharing_Settings extends Setting {
 
 			return $sanitized_option;
 		};
-	}
-
-	/**
-	 * Filters empty or non-string elements from a given array.
-	 *
-	 * @since 1.50.0
-	 *
-	 * @param array $elements Array to check.
-	 * @return array Empty array or a filtered array containing only non-empty strings.
-	 */
-	private function sanitize_string_list( $elements = array() ) {
-		if ( ! is_array( $elements ) ) {
-			$elements = array( $elements );
-		}
-
-		if ( empty( $elements ) ) {
-			return array();
-		}
-
-		$filtered_elements = array_filter(
-			$elements,
-			function( $element ) {
-				return is_string( $element ) && ! empty( $element );
-			}
-		);
-		// Avoid index gaps for filtered values.
-		return array_values( $filtered_elements );
 	}
 
 	/**
