@@ -134,6 +134,7 @@ export const actions = {
 	 * Stores the user input state in the datastore.
 	 *
 	 * @since 1.20.0
+	 * @since n.e.x.t Updated the state object to be a simple boolean.
 	 * @private
 	 *
 	 * @param {Object} isUserInputComplete User input state.
@@ -477,7 +478,7 @@ export const selectors = {
 	 * Gets the user input state.
 	 *
 	 * @since 1.20.0
-	 * @since n.e.x.t Simplified state to a simple boolean.
+	 * @since n.e.x.t Simplified user input state object to a simple boolean.
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {string} The user input state.

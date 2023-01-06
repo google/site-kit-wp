@@ -386,7 +386,7 @@ final class Authentication {
 			$set_initial_version = function() {
 				$this->initial_version->set( GOOGLESITEKIT_VERSION );
 			};
-			add_action( '', $set_initial_version );
+			add_action( 'googlesitekit_authorize_user', $set_initial_version );
 			add_action( 'googlesitekit_reauthorize_user', $set_initial_version );
 		}
 
