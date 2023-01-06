@@ -12,13 +12,18 @@ namespace Google\Site_Kit\Tests\Modules;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Authentication;
+use Google\Site_Kit\Core\Dismissals\Dismissed_Items;
 use Google\Site_Kit\Core\Modules\Module;
+use Google\Site_Kit\Core\Modules\Module_Sharing_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Owner;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Modules\Module_With_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Service_Entity;
+use Google\Site_Kit\Core\Modules\Modules;
+use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
+use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Modules\Analytics_4;
 use Google\Site_Kit\Modules\Analytics_4\Settings;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Owner_ContractTests;
@@ -461,6 +466,104 @@ class Analytics_4Test extends TestCase {
 		);
 	}
 
+	public function test_report__no_property_id() {
+		$request_handler_calls = array();
+
+		$data = $this->get_report( array(), $request_handler_calls );
+
+		$this->assertWPErrorWithMessage( 'Request parameter is empty: propertyID.', $data );
+	}
+
+	public function test_report__no_metrics() {
+		$request_handler_calls = array();
+
+		$data = $this->get_report(
+			array(
+				'propertyID' => '123456789',
+			),
+			$request_handler_calls
+		);
+
+		$this->assertWPErrorWithMessage( 'Request parameter is empty: metrics.', $data );
+	}
+
+	public function test_report__metric_validation() {
+		// Enable some metrics.
+		add_filter(
+			'googlesitekit_shareable_analytics_4_metrics',
+			function() {
+				return array(
+					'sessions',
+					'totalUsers',
+				);
+			}
+		);
+
+		$property_id = '123456789';
+
+		$request_handler_calls = array();
+
+		$analytics = $this->setup_report( $property_id, $request_handler_calls, true );
+
+		$data = $analytics->get_data(
+			'report',
+			array(
+				'propertyID' => $property_id,
+				'metrics'    => array(
+					array( 'name' => 'sessions' ),
+					array( 'name' => 'totalUsers' ),
+					array( 'name' => 'invalidMetric' ),
+					array( 'name' => 'anotherInvalidMetric' ),
+				),
+			),
+			$request_handler_calls
+		);
+
+		$this->assertWPErrorWithMessage( 'Unsupported metrics requested: invalidMetric, anotherInvalidMetric', $data );
+	}
+
+	public function test_report__dimension_validation() {
+		// Enable some metrics and dimensions.
+		add_filter(
+			'googlesitekit_shareable_analytics_4_metrics',
+			function() {
+				return array(
+					'sessions',
+				);
+			}
+		);
+
+		add_filter(
+			'googlesitekit_shareable_analytics_4_dimensions',
+			function() {
+				return array(
+					'date',
+					'pageTitle',
+				);
+			}
+		);
+
+		$property_id = '123456789';
+
+		$request_handler_calls = array();
+
+		$analytics = $this->setup_report( $property_id, $request_handler_calls, true );
+
+		$data = $analytics->get_data(
+			'report',
+			array(
+				'propertyID' => $property_id,
+				'metrics'    => array(
+					array( 'name' => 'sessions' ),
+				),
+				'dimensions' => array( 'date', 'pageTitle', 'invalidDimension', 'anotherInvalidDimension' ),
+			),
+			$request_handler_calls
+		);
+
+		$this->assertWPErrorWithMessage( 'Unsupported dimensions requested: invalidDimension, anotherInvalidDimension', $data );
+	}
+
 	/**
 	 * Returns a date string for the given number of days ago.
 	 *
@@ -476,28 +579,53 @@ class Analytics_4Test extends TestCase {
 	/**
 	 * Retrieves a mock Analytics 4 report.
 	 *
-	 * This is a helper method to avoid duplicating the same code in multiple tests.
-	 * It also allows us to mock the HTTP client to verify the request parameters.
-	 *
 	 * @since n.e.x.t
 	 *
 	 * @param array $report_params The report parameters.
 	 * @return RunReportResponse[] The report response.
 	 */
 	protected function get_report( array $report_params, array &$request_handler_calls ) {
-		$user_id        = $this->factory()->user->create();
+		$property_id = isset( $report_params['propertyID'] ) ? $report_params['propertyID'] : null;
+
+		$analytics = $this->setup_report( $property_id, $request_handler_calls );
+
+		return $analytics->get_data( 'report', $report_params );
+	}
+
+	/**
+	 * Sets up a mock Analytics 4 instance in preparation for retrieving a report.
+	 *
+	 * This is a helper method to avoid duplicating the same code in multiple tests.
+	 * It also allows us to mock the HTTP client to verify the request parameters.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $property_id The property ID.
+	 * @param array $request_handler_calls The request handler calls.
+	 * @param boolean [enable_validation] Whether to enable validation of the metrics and dimensions. Default false.
+	 * @return Analytics_4 The Analytics 4 instance.
+	 */
+	protected function setup_report( $property_id, array &$request_handler_calls, $enable_validation = false ) {
+		$user_id        = $this->factory()->user->create( array( 'role' => 'administrator' ) );
 		$context        = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$options        = new Options( $context );
 		$user_options   = new User_Options( $context, $user_id );
 		$authentication = new Authentication( $context, $options, $user_options );
 		$analytics      = new Analytics_4( $context, $options, $user_options, $authentication );
+
 		$authentication->get_oauth_client()->get_client()->setHttpClient(
 			new FakeHttpClient() // Returns 200 by default.
+		);
+		wp_set_current_user( $user_id );
+
+		// Grant scopes so request doesn't fail.
+		$authentication->get_oauth_client()->set_granted_scopes(
+			$analytics->get_scopes()
 		);
 
 		$http_client = new FakeHttpClient();
 		$http_client->set_request_handler(
-			function ( Request $request ) use ( $report_params, &$request_handler_calls ) {
+			function ( Request $request ) use ( $property_id, &$request_handler_calls ) {
 				$url    = parse_url( $request->getUrl() );
 				$params = json_decode( (string) $request->getBody(), true );
 
@@ -511,7 +639,7 @@ class Analytics_4Test extends TestCase {
 				}
 
 				switch ( $url['path'] ) {
-					case '/v1beta/properties/' . $report_params['propertyID'] . ':batchRunReports':
+					case "/v1beta/properties/$property_id:batchRunReports":
 						// Return a mock report.
 						return new Response(
 							200,
@@ -547,33 +675,51 @@ class Analytics_4Test extends TestCase {
 		$analytics->get_client()->setHttpClient( $http_client );
 		$analytics->register();
 
-		// Grant scopes so request doesn't fail.
-		$authentication->get_oauth_client()->set_granted_scopes(
-			$analytics->get_scopes()
-		);
+		if ( $enable_validation ) {
+			// Metrics and dimensions are only validated when using shared credentials; this block of code sets up the shared credentials scenario.
 
-		// Enable some metrics and dimensions.
-		add_filter(
-			'googlesitekit_shareable_analytics_4_metrics',
-			function() {
-				return array(
-					'sessions',
-					'totalUsers',
-				);
-			}
-		);
+			$this->enable_feature( 'dashboardSharing' );
 
-		add_filter(
-			'googlesitekit_shareable_analytics_4_dimensions',
-			function() {
-				return array(
-					'sessionDefaultChannelGrouping',
-					'pageTitle',
-				);
-			}
-		);
+			// Re-register Permissions after enabling the dashboardSharing feature to include dashboard sharing capabilities.
+			// TODO: Remove this when `dashboardSharing` feature flag is removed.
+			$modules     = new Modules( $context, null, $user_options, $authentication );
+			$permissions = new Permissions( $context, $authentication, $modules, $user_options, new Dismissed_Items( $user_options ) );
+			$permissions->register();
 
-		return $analytics->get_data( 'report', $report_params );
+			// Ensure the user is authenticated.
+			$authentication->get_oauth_client()->set_token(
+				array(
+					'access_token' => 'valid-auth-token',
+				)
+			);
+
+			// Ensure the Analytics 4 module is connected and the owner ID is set.
+			update_option(
+				'googlesitekit_analytics-4_settings',
+				array(
+					'propertyID'      => '123',
+					'webDataStreamID' => '456',
+					'measurementID'   => 'G-789',
+					'ownerID'         => get_current_user_id(),
+				)
+			);
+
+			// Setup a user with shared access to the Analytics 4 module.
+			$admin = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
+			wp_set_current_user( $admin->ID );
+
+			add_option(
+				Module_Sharing_Settings::OPTION,
+				array(
+					'analytics-4' => array(
+						'sharedRoles' => array( 'administrator' ),
+						'management'  => 'all_admins',
+					),
+				)
+			);
+		}
+
+		return $analytics;
 	}
 
 	/**
