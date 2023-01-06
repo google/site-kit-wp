@@ -38,6 +38,7 @@ import {
 	fireEvent,
 	waitFor,
 	provideUserInfo,
+	provideModuleRegistrations,
 } from '../../../../../tests/js/test-utils';
 import { MODULES_ANALYTICS } from '../../../modules/analytics/datastore/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
@@ -72,7 +73,6 @@ describe( 'Header', () => {
 				slug: 'analytics',
 				active: true,
 				connected: true,
-				storeName: MODULES_ANALYTICS,
 			},
 			{
 				slug: 'pagespeed-insights',
@@ -92,6 +92,7 @@ describe( 'Header', () => {
 				connected: false,
 			},
 		] );
+		provideModuleRegistrations( registry );
 		registry.dispatch( CORE_USER ).receiveGetAuthentication( {} );
 	} );
 
