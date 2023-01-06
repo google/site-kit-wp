@@ -1123,7 +1123,7 @@ final class Analytics_4 extends Module
 	 *
 	 * @param string $property_id Analytics 4 property ID.
 	 * @param array  $args {
-	 *      Optional. Additional arguments.
+	 *     Optional. Additional arguments.
 	 *
 	 *     @type array                                           $dimensions        List of request dimensions. Default empty array.
 	 *     @type Google_Service_AnalyticsData_FilterExpression[] $dimension_filters List of dimension filter instances for the specified request dimensions. Default empty array.
