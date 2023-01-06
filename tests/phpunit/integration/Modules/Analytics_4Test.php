@@ -615,7 +615,6 @@ class Analytics_4Test extends TestCase {
 		$authentication->get_oauth_client()->get_client()->setHttpClient(
 			new FakeHttpClient() // Returns 200 by default.
 		);
-		wp_set_current_user( $user_id );
 
 		// Grant scopes so request doesn't fail.
 		$authentication->get_oauth_client()->set_granted_scopes(
@@ -699,7 +698,7 @@ class Analytics_4Test extends TestCase {
 					'propertyID'      => '123',
 					'webDataStreamID' => '456',
 					'measurementID'   => 'G-789',
-					'ownerID'         => get_current_user_id(),
+					'ownerID'         => $user_id,
 				)
 			);
 
