@@ -48,6 +48,9 @@ export default function UserInputSelectOptions( {
 	const values = useSelect(
 		( select ) => select( CORE_USER ).getUserInputSetting( slug ) || []
 	);
+	const isSavingSettings = useSelect( ( select ) =>
+		select( CORE_USER ).isSavingUserInputSettings( values )
+	);
 	const { setUserInputSetting } = useDispatch( CORE_USER );
 	const optionsRef = useRef();
 
@@ -125,6 +128,7 @@ export default function UserInputSelectOptions( {
 			value: optionSlug,
 			checked: values.includes( optionSlug ),
 			tabIndex: ! isActive ? '-1' : undefined,
+			disabled: isSavingSettings,
 			onKeyDown,
 			...onClickProps,
 		};

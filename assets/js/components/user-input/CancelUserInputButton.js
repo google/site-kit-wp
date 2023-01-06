@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
@@ -30,7 +35,7 @@ import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants'
 import Link from '../Link';
 const { useSelect, useDispatch } = Data;
 
-export default function CancelUserInputButton() {
+export default function CancelUserInputButton( { disabled = false } ) {
 	const dashboardURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' )
 	);
@@ -41,8 +46,13 @@ export default function CancelUserInputButton() {
 		<Link
 			className="googlesitekit-user-input__buttons--cancel"
 			onClick={ () => navigateTo( dashboardURL ) }
+			disabled={ disabled }
 		>
 			{ __( 'Cancel', 'google-site-kit' ) }
 		</Link>
 	);
 }
+
+CancelUserInputButton.propTypes = {
+	disabled: PropTypes.bool,
+};

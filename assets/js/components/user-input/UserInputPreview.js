@@ -46,6 +46,7 @@ import UserInputQuestionNotice from './UserInputQuestionNotice';
 import useQueryArg from '../../hooks/useQueryArg';
 import ErrorNotice from '../ErrorNotice';
 import Link from '../Link';
+import Spinner from '../Spinner';
 import CancelUserInputButton from './CancelUserInputButton';
 import { getErrorMessageForAnswer } from './util/validation';
 const { useSelect } = Data;
@@ -56,6 +57,10 @@ export default function UserInputPreview( props ) {
 	const settings = useSelect( ( select ) =>
 		select( CORE_USER ).getUserInputSettings()
 	);
+	const isSavingSettings = useSelect( ( select ) =>
+		select( CORE_USER ).isSavingUserInputSettings( settings )
+	);
+
 	const {
 		USER_INPUT_ANSWERS_PURPOSE,
 		USER_INPUT_ANSWERS_POST_FREQUENCY,
@@ -175,18 +180,25 @@ export default function UserInputPreview( props ) {
 							<Button
 								className="googlesitekit-user-input__buttons--next"
 								onClick={ onSaveClick }
+								disabled={ isSavingSettings }
 							>
 								{ __( 'Save', 'google-site-kit' ) }
+								{ isSavingSettings && (
+									<Spinner isSaving={ isSavingSettings } />
+								) }
 							</Button>
 							<Link
 								className="googlesitekit-user-input__buttons--back"
 								onClick={ goBack }
+								disabled={ isSavingSettings }
 							>
 								{ __( 'Back', 'google-site-kit' ) }
 							</Link>
 						</div>
 						<div className="googlesitekit-user-input__footer-cancel">
-							<CancelUserInputButton />
+							<CancelUserInputButton
+								disabled={ isSavingSettings }
+							/>
 						</div>
 					</div>
 				</Fragment>

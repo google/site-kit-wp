@@ -71,13 +71,7 @@ export default function UserInputQuestionnaire() {
 	const dashboardURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' )
 	);
-	const isSavingSettings = useSelect( ( select ) => {
-		const userInputSettings = select( CORE_USER ).getUserInputSettings();
 
-		return select( CORE_USER ).isSavingUserInputSettings(
-			userInputSettings
-		);
-	} );
 	const error = useSelect( ( select ) =>
 		select( CORE_USER ).getErrorForAction( 'saveUserInputSettings', [] )
 	);
@@ -172,7 +166,7 @@ export default function UserInputQuestionnaire() {
 		/>
 	);
 
-	if ( isSavingSettings || isNavigating ) {
+	if ( isNavigating ) {
 		return (
 			<Fragment>
 				{ settingsProgress }
