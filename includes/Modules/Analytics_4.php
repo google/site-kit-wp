@@ -1231,13 +1231,7 @@ final class Analytics_4 extends Module
 		$valid_metrics = apply_filters(
 			'googlesitekit_shareable_analytics_4_metrics',
 			array(
-				// FIXME: Remove these before PR.
-				'sessions',
-				'totalUsers',
-				'screenPageViews',
-				'engagedSessions',
-				'averageSessionDuration',
-				'conversions',
+				// TODO: Add metrics to this allow-list as they are used in the plugin.
 			)
 		);
 
@@ -1294,14 +1288,7 @@ final class Analytics_4 extends Module
 		$valid_dimensions = apply_filters(
 			'googlesitekit_shareable_analytics_4_dimensions',
 			array(
-				// FIXME: Remove these before PR.
-				'date',
-				'pagePathPlusQueryString',
-				'pageTitle',
-				'sessionDefaultChannelGrouping',
-				'country',
-				'deviceCategory',
-				'hostName',
+				// TODO: Add dimensions to this allow-list as they are used in the plugin.
 			)
 		);
 
