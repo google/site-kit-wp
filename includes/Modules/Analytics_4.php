@@ -1240,7 +1240,7 @@ final class Analytics_4 extends Module
 				function ( $metric ) {
 					// If there is an expression, it means the name is there as an alias, otherwise the name should be a valid metric name.
 					// Therefore, the expression takes precedence to the name for the purpose of allow-list validation.
-					return $metric->getExpression() || $metric->getName();
+					return ! empty( $metric->getExpression() ) ? $metric->getExpression() : $metric->getName();
 				},
 				$metrics
 			),
