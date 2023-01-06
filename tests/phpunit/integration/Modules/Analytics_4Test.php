@@ -382,7 +382,6 @@ class Analytics_4Test extends TestCase {
 	public function test_get_report__date_range() {
 		$request_handler_calls = array();
 
-		// Verify with a single date range.
 		$this->get_report(
 			array(
 				'dateRange'  => 'last-14-days',
