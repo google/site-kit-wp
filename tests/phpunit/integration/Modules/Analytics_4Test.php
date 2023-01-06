@@ -218,6 +218,273 @@ class Analytics_4Test extends TestCase {
 	}
 
 	public function test_get_report() {
+		$request_handler_calls = array();
+
+		// Fetch a report that exercises all input parameters, barring the alternative date range formats which are tested separately.
+		$data = $this->get_report(
+			array(
+				'startDate'        => '2022-11-02',
+				'endDate'          => '2022-11-04',
+				'compareStartDate' => '2022-11-01',
+				'compareEndDate'   => '2022-11-02',
+				'propertyID'       => '123456789',
+				'url'              => 'https://example.org/some-page-here/',
+				'limit'            => 321,
+				'metrics'          => array(
+					array( 'name' => 'sessions' ),
+					array( 'name' => 'totalUsers' ),
+				),
+				'dimensions'       => array( 'date', 'pageTitle' ),
+				'dimensionFilters' => array(
+					'sessionDefaultChannelGrouping' => 'Organic Search',
+					'pageTitle'                     => array( 'Title Foo', 'Title Bar' ),
+				),
+			),
+			$request_handler_calls
+		);
+
+		$this->assertNotWPError( $data );
+
+		// Verify the reports are returned by checking a metric value.
+		$this->assertEquals( 'some-value', $data[0]['rows'][0][0]['value'] );
+
+		// Verify the request URL and params were correctly generated.
+		$this->assertCount( 1, $request_handler_calls );
+
+		$request_url = $request_handler_calls[0]['url'];
+
+		$this->assertEquals( 'analyticsdata.googleapis.com', $request_url['host'] );
+		$this->assertEquals( '/v1beta/properties/123456789:batchRunReports', $request_url['path'] );
+
+		$request_params = $request_handler_calls[0]['params']['requests'][0];
+
+		// Verify the request params that are set by default.
+		$this->assertEquals(
+			1,
+			$request_params['keepEmptyRows']
+		);
+
+		$this->assertEquals(
+			array(
+				'TOTAL',
+				'MINIMUM',
+				'MAXIMUM',
+			),
+			$request_params['metricAggregations']
+		);
+
+		// Verify the request params that are derived from the input parameters.
+		$this->assertEquals(
+			array(
+				array(
+					'startDate' => '2022-11-02',
+					'endDate'   => '2022-11-04',
+				),
+				array(
+					'startDate' => '2022-11-01',
+					'endDate'   => '2022-11-02',
+				),
+			),
+			$request_params['dateRanges']
+		);
+
+		$this->assertEquals(
+			'properties/123456789',
+			$request_params['property']
+		);
+
+		$this->assertEquals(
+			321,
+			$request_params['limit']
+		);
+
+		$this->assertEquals(
+			array(
+				array(
+					'name' => 'sessions',
+				),
+				array(
+					'name' => 'totalUsers',
+				),
+			),
+			$request_params['metrics']
+		);
+
+		$this->assertEquals(
+			array(
+				array(
+					'name' => 'date',
+				),
+				array(
+					'name' => 'pageTitle',
+				),
+			),
+			$request_params['dimensions']
+		);
+
+		$this->assertEquals(
+			array(
+				'andGroup' => array(
+					'expressions' => array(
+						// Verify the default page filter is correct.
+						array(
+							'filter' => array(
+								'fieldName'    => 'hostName',
+								'inListFilter' => array(
+									'values' => array(
+										'example.org',
+										'www.example.org',
+									),
+								),
+							),
+						),
+						// Verify the single-value dimension filter is correct.
+						array(
+							'filter' => array(
+								'fieldName'    => 'sessionDefaultChannelGrouping',
+								'stringFilter' => array(
+									'matchType' => 'EXACT',
+									'value'     => 'Organic Search',
+								),
+							),
+						),
+						// Verify the multi-value dimension filter is correct.
+						array(
+							'filter' => array(
+								'fieldName'    => 'pageTitle',
+								'inListFilter' => array(
+									'values' => array( 'Title Foo', 'Title Bar' ),
+								),
+							),
+						),
+						// Verify the URL filter is correct.
+						array(
+							'filter' => array(
+								'fieldName'    => 'pagePathPlusQueryString',
+								'stringFilter' => array(
+									'matchType' => 'EXACT',
+									'value'     => 'https://example.org/some-page-here/',
+								),
+							),
+						),
+					),
+				),
+			),
+			$request_params['dimensionFilter']
+		);
+	}
+
+	public function test_get_report__date_range() {
+		$request_handler_calls = array();
+
+		// Verify with a single date range.
+		$this->get_report(
+			array(
+				'dateRange'  => 'last-14-days',
+				'propertyID' => '123456789',
+				'metrics'    => array(
+					array( 'name' => 'sessions' ),
+				),
+			),
+			$request_handler_calls
+		);
+
+		$request_params = $request_handler_calls[0]['params']['requests'][0];
+
+		$this->assertEquals(
+			array(
+				array(
+					'startDate' => $this->days_ago_date_string( 14 ),
+					'endDate'   => $this->days_ago_date_string( 1 ),
+				),
+			),
+			$request_params['dateRanges']
+		);
+	}
+
+	public function test_get_report__compare_date_ranges() {
+		$request_handler_calls = array();
+
+		$this->get_report(
+			array(
+				'dateRange'         => 'last-14-days',
+				'compareDateRanges' => true,
+				'propertyID'        => '123456789',
+				'metrics'           => array(
+					array( 'name' => 'sessions' ),
+				),
+			),
+			$request_handler_calls
+		);
+
+		$request_params = $request_handler_calls[0]['params']['requests'][0];
+
+		$this->assertEquals(
+			array(
+				array(
+					'startDate' => $this->days_ago_date_string( 28 ),
+					'endDate'   => $this->days_ago_date_string( 1 ),
+				),
+			),
+			$request_params['dateRanges']
+		);
+	}
+	public function test_get_report__multi_date_range() {
+		$request_handler_calls = array();
+
+		$this->get_report(
+			array(
+				'dateRange'      => 'last-14-days',
+				'multiDateRange' => true,
+				'propertyID'     => '123456789',
+				'metrics'        => array(
+					array( 'name' => 'sessions' ),
+				),
+			),
+			$request_handler_calls
+		);
+
+		$request_params = $request_handler_calls[0]['params']['requests'][0];
+
+		$this->assertEquals(
+			array(
+				array(
+					'startDate' => $this->days_ago_date_string( 14 ),
+					'endDate'   => $this->days_ago_date_string( 1 ),
+				),
+				array(
+					'startDate' => $this->days_ago_date_string( 28 ),
+					'endDate'   => $this->days_ago_date_string( 15 ),
+				),
+			),
+			$request_params['dateRanges']
+		);
+	}
+
+	/**
+	 * Returns a date string for the given number of days ago.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param int $days_ago The number of days ago.
+	 * @return string The date string, formatted as YYYY-MM-DD.
+	 */
+	protected function days_ago_date_string( $days_ago ) {
+		return gmdate( 'Y-m-d', strtotime( $days_ago . ' days ago' ) );
+	}
+
+	/**
+	 * Retrieves a mock Analytics 4 report.
+	 *
+	 * This is a helper method to avoid duplicating the same code in multiple tests.
+	 * It also allows us to mock the HTTP client to verify the request parameters.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $report_params The report parameters.
+	 * @return RunReportResponse[] The report response.
+	 */
+	protected function get_report( array $report_params, array &$request_handler_calls ) {
 		$user_id        = $this->factory()->user->create();
 		$context        = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$options        = new Options( $context );
@@ -228,16 +495,13 @@ class Analytics_4Test extends TestCase {
 			new FakeHttpClient() // Returns 200 by default.
 		);
 
-		$invocations = array();
-
 		$http_client = new FakeHttpClient();
 		$http_client->set_request_handler(
-			function ( Request $request ) use ( &$invocations ) {
+			function ( Request $request ) use ( $report_params, &$request_handler_calls ) {
 				$url    = parse_url( $request->getUrl() );
-				$body   = Query::parse( $request->getBody() );
-				$params = json_decode( array_keys( $body )[0], true );
+				$params = json_decode( (string) $request->getBody(), true );
 
-				$invocations[] = array(
+				$request_handler_calls[] = array(
 					'url'    => $url,
 					'params' => $params,
 				);
@@ -247,7 +511,8 @@ class Analytics_4Test extends TestCase {
 				}
 
 				switch ( $url['path'] ) {
-					case '/v1beta/properties/123456789:batchRunReports':
+					case '/v1beta/properties/' . $report_params['propertyID'] . ':batchRunReports':
+						// Return a mock report.
 						return new Response(
 							200,
 							array(),
@@ -287,116 +552,28 @@ class Analytics_4Test extends TestCase {
 			$analytics->get_scopes()
 		);
 
-		$data = $analytics->get_data(
-			'report',
-			array(
-				'startDate'        => '2022-11-02',
-				'endDate'          => '2022-11-04',
-				'compareStartDate' => '2022-11-01',
-				'compareEndDate'   => '2022-11-02',
-				'propertyID'       => '123456789',
-				'metrics'          => array(
-					array( 'name' => 'totalUsers' ),
-				),
-				'dimensions'       => array( 'date' ),
-				'dimensionFilters' => array(
-					'sessionDefaultChannelGrouping' => 'Organic Search',
-				),
-			)
+		// Enable some metrics and dimensions.
+		add_filter(
+			'googlesitekit_shareable_analytics_4_metrics',
+			function() {
+				return array(
+					'sessions',
+					'totalUsers',
+				);
+			}
 		);
 
-		$this->assertNotWPError( $data );
-
-		// TODO: Refactor the below tests to use a @dataProvider.
-
-		// Verify the reports are returned by checking a metric value.
-		$this->assertEquals( 'some-value', $data[0]['rows'][0][0]['value'] );
-
-		// Verify the request URL and body.
-		$this->assertCount( 1, $invocations );
-
-		$request_url = $invocations[0]['url'];
-
-		$this->assertEquals( 'analyticsdata.googleapis.com', $request_url['host'] );
-		$this->assertEquals( '/v1beta/properties/123456789:batchRunReports', $request_url['path'] );
-
-		$request_params = $invocations[0]['params']['requests'][0];
-
-		$this->assertEquals(
-			array(
-				array(
-					'startDate' => '2022-11-02',
-					'endDate'   => '2022-11-04',
-				),
-				array(
-					'startDate' => '2022-11-01',
-					'endDate'   => '2022-11-02',
-				),
-			),
-			$request_params['dateRanges']
+		add_filter(
+			'googlesitekit_shareable_analytics_4_dimensions',
+			function() {
+				return array(
+					'sessionDefaultChannelGrouping',
+					'pageTitle',
+				);
+			}
 		);
 
-		$this->assertEquals(
-			array(
-				'andGroup' => array(
-					'expressions' => array(
-						array(
-							'filter' => array(
-								'fieldName'    => 'hostName',
-								'inListFilter' => array(
-									'values' => array(
-										'example.org',
-										'www.example.org',
-									),
-								),
-							),
-						),
-						array(
-							'filter' => array(
-								'fieldName'    => 'sessionDefaultChannelGrouping',
-								'stringFilter' => array(
-									'matchType' => 'EXACT',
-									'value'     => 'Organic Search',
-								),
-							),
-						),
-					),
-				),
-			),
-			$request_params['dimensionFilter']
-		);
-
-		$this->assertEquals(
-			array(
-				array(
-					'name' => 'date',
-				),
-			),
-			$request_params['dimensions']
-		);
-
-		$this->assertEquals(
-			array(
-				'TOTAL',
-				'MINIMUM',
-				'MAXIMUM',
-			),
-			$request_params['metricAggregations']
-		);
-
-		$this->assertEquals(
-			array(
-				array(
-					'name' => 'totalUsers',
-				),
-			),
-			$request_params['metrics']
-		);
-
-		$this->assertEquals(
-			'properties/123456789',
-			$request_params['property']
-		);
+		return $analytics->get_data( 'report', $report_params );
 	}
 
 	/**
