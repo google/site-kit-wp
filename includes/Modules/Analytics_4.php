@@ -1064,7 +1064,7 @@ final class Analytics_4 extends Module
 			)
 		);
 
-		// Batch reports requests.
+		// Batch report requests.
 		$body = new Google_Service_AnalyticsData_BatchRunReportsRequest();
 		$body->setRequests( array( $request ) );
 
@@ -1326,6 +1326,4 @@ final class Analytics_4 extends Module
 			throw new Invalid_Report_Dimensions_Exception( $message );
 		}
 	}
-
-
 }
