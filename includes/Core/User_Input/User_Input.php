@@ -13,6 +13,7 @@ namespace Google\Site_Kit\Core\User_Input;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
+use Google\Site_Kit\Core\Util\Feature_Flags;
 use WP_Error;
 use WP_User;
 
@@ -126,10 +127,13 @@ class User_Input {
 	 */
 	public function get_answers() {
 		$questions = static::$questions;
-		$settings  = array_merge(
-			$this->site_specific_answers->get(),
-			$this->user_specific_answers->get()
-		);
+		$settings  = $this->site_specific_answers->get();
+		if ( Feature_Flags::enabled( 'userInput' ) ) {
+			$settings = array_merge(
+				$settings,
+				$this->user_specific_answers->get()
+			);
+		}
 
 		// If there are no settings, return default empty values.
 		if ( empty( $settings ) ) {
