@@ -581,6 +581,7 @@ class Analytics_4Test extends TestCase {
 	 * @since n.e.x.t
 	 *
 	 * @param array $report_params The report parameters.
+	 * @param array $request_handler_calls Output variable for tracking the request handler calls. Passed by reference.
 	 * @return RunReportResponse[] The report response.
 	 */
 	protected function get_report( array $report_params, array &$request_handler_calls ) {
