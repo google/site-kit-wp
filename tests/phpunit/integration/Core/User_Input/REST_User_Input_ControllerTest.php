@@ -66,6 +66,8 @@ class REST_User_Input_ControllerTest extends TestCase {
 	}
 
 	public function test_get_answers() {
+		$this->enable_feature( 'userInput' );
+		$this->user_input_state->register();
 		remove_all_filters( 'googlesitekit_rest_routes' );
 		$this->controller->register();
 		$this->register_rest_routes();
@@ -101,6 +103,8 @@ class REST_User_Input_ControllerTest extends TestCase {
 	}
 
 	public function test_set_answers() {
+		$this->enable_feature( 'userInput' );
+		$this->user_input_state->register();
 		remove_all_filters( 'googlesitekit_rest_routes' );
 		$this->controller->register();
 		$this->register_rest_routes();
