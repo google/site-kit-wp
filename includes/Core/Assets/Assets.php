@@ -113,13 +113,6 @@ final class Assets {
 		$this->add_amp_dev_mode_attributes( $this->get_assets() );
 
 		add_action(
-			'admin_enqueue_scripts',
-			function() {
-				$this->enqueue_minimal_admin_script();
-			}
-		);
-
-		add_action(
 			'admin_print_scripts-edit.php',
 			function() {
 				global $post_type;
@@ -292,15 +285,6 @@ final class Assets {
 	}
 
 	/**
-	 * Enqueues the minimal admin script for the entire admin.
-	 *
-	 * @since 1.0.0
-	 */
-	private function enqueue_minimal_admin_script() {
-		$this->enqueue_asset( 'googlesitekit-base' );
-	}
-
-	/**
 	 * Forms an array of dependencies based on the necessary context.
 	 *
 	 * @since 1.87.0
@@ -315,7 +299,6 @@ final class Assets {
 			'googlesitekit-i18n',
 			'googlesitekit-vendor',
 			'googlesitekit-commons',
-			'googlesitekit-base',
 			'googlesitekit-data',
 			'googlesitekit-datastore-forms',
 			'googlesitekit-datastore-location',
@@ -488,17 +471,6 @@ final class Assets {
 				array(
 					'src'          => $base_url . 'js/googlesitekit-activation.js',
 					'dependencies' => $this->get_asset_dependencies( 'dashboard' ),
-				)
-			),
-			new Script(
-				'googlesitekit-base',
-				array(
-					'src'          => $base_url . 'js/googlesitekit-base.js',
-					'dependencies' => array(
-						'googlesitekit-base-data',
-						'googlesitekit-i18n',
-					),
-					'execution'    => 'defer',
 				)
 			),
 			// Begin JSR Assets.
