@@ -127,13 +127,10 @@ class User_Input {
 	 */
 	public function get_answers() {
 		$questions = static::$questions;
-		$settings  = $this->site_specific_answers->get();
-		if ( Feature_Flags::enabled( 'userInput' ) ) {
-			$settings = array_merge(
-				$settings,
-				$this->user_specific_answers->get()
-			);
-		}
+		$settings  = array_merge(
+			$this->site_specific_answers->get(),
+			$this->user_specific_answers->get()
+		);
 
 		// If there are no settings, return default empty values.
 		if ( empty( $settings ) ) {
