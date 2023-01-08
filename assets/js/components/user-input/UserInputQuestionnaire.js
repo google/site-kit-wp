@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { useCallback, Fragment, useEffect, useState } from '@wordpress/element';
+import { useCallback, useEffect, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -42,7 +42,6 @@ import useQueryArg from '../../hooks/useQueryArg';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
-import { Cell, Row } from '../../material-components';
 import { trackEvent } from '../../util';
 import useViewContext from '../../hooks/useViewContext';
 const { useSelect, useDispatch } = Data;
@@ -65,9 +64,6 @@ export default function UserInputQuestionnaire() {
 	const { saveUserInputSettings } = useDispatch( CORE_USER );
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 
-	const isNavigating = useSelect( ( select ) =>
-		select( CORE_LOCATION ).isNavigating()
-	);
 	const dashboardURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' )
 	);
@@ -165,21 +161,6 @@ export default function UserInputQuestionnaire() {
 			className="googlesitekit-user-input__question--progress"
 		/>
 	);
-
-	if ( isNavigating ) {
-		return (
-			<Fragment>
-				{ settingsProgress }
-				<div className="googlesitekit-user-input__preview googlesitekit-user-input__preview-loading">
-					<Row>
-						<Cell lgSize={ 12 } mdSize={ 8 } smSize={ 4 }>
-							<ProgressBar />
-						</Cell>
-					</Row>
-				</div>
-			</Fragment>
-		);
-	}
 
 	return (
 		<div>

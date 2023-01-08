@@ -33,6 +33,7 @@ import { Fragment, useEffect, useRef, useState } from '@wordpress/element';
 import Data from 'googlesitekit-data';
 import { Button } from 'googlesitekit-components';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
 import {
 	getUserInputAnswers,
 	USER_INPUT_QUESTIONS_GOALS,
@@ -60,6 +61,10 @@ export default function UserInputPreview( props ) {
 	const isSavingSettings = useSelect( ( select ) =>
 		select( CORE_USER ).isSavingUserInputSettings( settings )
 	);
+	const isNavigating = useSelect( ( select ) =>
+		select( CORE_LOCATION ).isNavigating()
+	);
+	const isScreenLoading = isSavingSettings || isNavigating;
 
 	const {
 		USER_INPUT_ANSWERS_PURPOSE,
@@ -180,24 +185,24 @@ export default function UserInputPreview( props ) {
 							<Button
 								className="googlesitekit-user-input__buttons--next"
 								onClick={ onSaveClick }
-								disabled={ isSavingSettings }
+								disabled={ isScreenLoading }
 							>
 								{ __( 'Save', 'google-site-kit' ) }
-								{ isSavingSettings && (
-									<Spinner isSaving={ isSavingSettings } />
+								{ isScreenLoading && (
+									<Spinner isSaving={ isScreenLoading } />
 								) }
 							</Button>
 							<Link
 								className="googlesitekit-user-input__buttons--back"
 								onClick={ goBack }
-								disabled={ isSavingSettings }
+								disabled={ isScreenLoading }
 							>
 								{ __( 'Back', 'google-site-kit' ) }
 							</Link>
 						</div>
 						<div className="googlesitekit-user-input__footer-cancel">
 							<CancelUserInputButton
-								disabled={ isSavingSettings }
+								disabled={ isScreenLoading }
 							/>
 						</div>
 					</div>
