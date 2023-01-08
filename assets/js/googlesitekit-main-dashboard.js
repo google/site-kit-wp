@@ -25,7 +25,7 @@ import { render } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { clearWebStorage } from './util';
+import { clearCache } from './googlesitekit/api/cache';
 import Root from './components/Root';
 import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -37,7 +37,7 @@ import DashboardEntryPoint from './components/DashboardEntryPoint';
 // Initialize the app once the DOM is ready.
 domReady( () => {
 	if ( global._googlesitekitLegacyData.admin.resetSession ) {
-		clearWebStorage();
+		clearCache();
 	}
 
 	const renderTarget = document.getElementById(

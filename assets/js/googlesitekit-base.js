@@ -21,7 +21,7 @@
 /**
  * Internal dependencies
  */
-import { clearWebStorage } from './util/standalone';
+import { clearCache } from './googlesitekit/api/cache';
 
 let wpLogout = document.querySelector( '#wp-admin-bar-logout a' );
 
@@ -32,6 +32,6 @@ if ( ! wpLogout ) {
 
 if ( wpLogout ) {
 	wpLogout.addEventListener( 'click', () => {
-		clearWebStorage();
+		clearCache();
 	} );
 }

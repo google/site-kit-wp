@@ -25,7 +25,7 @@ import { render } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { clearWebStorage } from './util';
+import { clearCache } from './googlesitekit/api/cache';
 import Root from './components/Root';
 import DashboardSplashApp from './components/dashboard-splash/DashboardSplashApp';
 import { VIEW_CONTEXT_SPLASH } from './googlesitekit/constants';
@@ -33,7 +33,7 @@ import { VIEW_CONTEXT_SPLASH } from './googlesitekit/constants';
 // Initialize the app once the DOM is ready.
 domReady( () => {
 	if ( global._googlesitekitLegacyData.admin.resetSession ) {
-		clearWebStorage();
+		clearCache();
 	}
 
 	const renderTarget = document.getElementById( 'js-googlesitekit-splash' );
