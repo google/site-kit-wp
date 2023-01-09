@@ -29,12 +29,10 @@ import {
 	setupAnalytics,
 	setupSiteKit,
 	resetSiteKit,
-	enableFeature,
 } from '../../../utils';
 
 describe( 'AMP homepage validates with Analytics enabled', () => {
 	beforeEach( async () => {
-		await enableFeature( 'userInput' );
 		await setupSiteKit();
 		await activateAMPWithMode( 'primary' );
 		await setupAnalytics();
