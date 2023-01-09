@@ -86,37 +86,18 @@ const baseResolvers = {
 		const registry = yield Data.commonActions.getRegistry();
 
 		const existingNonces = yield registry.select( CORE_USER ).getNonces();
-		// if existingNonces is not empty array
+
 		if ( existingNonces ) {
-			// console.log( 'has nonces', existingNonces );
 			return existingNonces;
 		}
 
-		// Temporary hack to preserve previous behavior when resolved from global.
-		// This is necessary for now to avoid a delay if the preloaded data
-		// has already expired.
-		const preloadedNonces =
-			global._googlesitekitAPIFetchData?.preloadedData?.[
-				'/google-site-kit/v1/core/user/data/nonces'
-			]?.body;
+		const { error, response } =
+			fetchGetNoncesStore.actions.fetchGetNonces();
 
-		if ( preloadedNonces ) {
+		if ( ! error ) {
 			yield fetchGetNoncesStore.actions.receiveGetNonces( {
-				...preloadedNonces, // dereference.
+				...response,
 			} );
-		}
-
-		if ( ! preloadedNonces ) {
-			// console.log( 'no nonces', existingNonces );
-			const { response } = fetchGetNoncesStore.actions.fetchGetNonces();
-
-			if ( response ) {
-				yield fetchGetNoncesStore.actions.receiveGetNonces( {
-					...response, // dereference.
-				} );
-			} else {
-				return null;
-			}
 		}
 	},
 };
@@ -142,7 +123,7 @@ const baseSelectors = {
 	 *
 	 * @param {Object} state Data store's state.
 	 * @param {string} nonce Action name of the nonce to get.
-	 * @return {(string|undefined)} Nonce string. Returns undefined if nonces are not loaded yet.
+	 * @return {(string|undefined)} Nonce string. Returns undefined if this nonce is not loaded yet.
 	 */
 	getNonce: createRegistrySelector( ( select ) => ( state, nonce ) => {
 		const nonces = select( CORE_USER ).getNonces();
