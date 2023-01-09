@@ -23,6 +23,7 @@ import { Cell, Grid, Row } from '../assets/js/material-components';
 import { Fragment } from '@wordpress/element';
 
 import './tokens.scss';
+
 function TokenRow( { children } ) {
 	return <div className="googlesitekit-color-token-row">{ children }</div>;
 }
@@ -196,22 +197,22 @@ const InteractiveTokens = () => (
 		<TokenRow>
 			<TokenColumn>
 				<Token
-					name="interactive-on-disabled"
+					name="interactive-on-disable-container"
 					label="On Disabled"
 					reference="#030E07, 0.32"
 				/>
 				<Token
-					name="interactive-disabled"
+					name="interactive-disable-container"
 					label="Disabled"
 					reference="#030E07, 0.32"
 				/>
 				<Token
-					name="interactive-inverse-on-disabled"
+					name="interactive-inverse-on-disable-container"
 					label="Inverse On Disabled"
 					reference="#FFFFFF, 0.40"
 				/>
 				<Token
-					name="interactive-inverse-disabled"
+					name="interactive-inverse-disable-container"
 					label="Inverse Disabled"
 					reference="#FFFFFF, 0.12"
 				/>
@@ -332,4 +333,13 @@ DefaultToken.scenario = {};
 
 export default {
 	title: 'Global/Tokens',
+	decorators: [
+		( Story ) => {
+			return (
+				<div className="googlesitekit-color-token-wrapper">
+					<Story />
+				</div>
+			);
+		},
+	],
 };

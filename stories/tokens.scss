@@ -18,6 +18,11 @@
 
 @import '../assets/sass/config/variables';
 
+
+.googlesitekit-color-token-wrapper {
+	background: white;
+}
+
 .googlesitekit-color-token-row {
 	display: flex;
 }
@@ -205,17 +210,17 @@
 	&--interactive-tertiary-press {
 		--token-color: #{$c-interactive-tertiary-press};
 	}
-	&--interactive-on-disabled {
-		--token-color: #{$c-interactive-on-disabled-container};
+	&--interactive-on-disable-container {
+		--token-color: #{$c-interactive-on-disable-container};
 	}
-	&--interactive-disabled {
-		--token-color: #{$c-interactive-disabled-container};
+	&--interactive-disable-container {
+		--token-color: #{$c-interactive-disable-container};
 	}
-	&--interactive-inverse-on-disabled {
-		--token-color: #{$c-interactive-inverse-on-disabled-container};
+	&--interactive-inverse-on-disable-container {
+		--token-color: #{$c-interactive-inverse-on-disable-container};
 	}
-	&--interactive-inverse-disabled {
-		--token-color: #{$c-interactive-inverse-disabled-container};
+	&--interactive-inverse-disable-container {
+		--token-color: #{$c-interactive-inverse-disable-container};
 	}
 	&--interactive-focus {
 		--token-color: #{$c-interactive-focus};
