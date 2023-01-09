@@ -223,7 +223,8 @@ class Analytics_4Test extends TestCase {
 	public function test_get_report() {
 		$request_handler_calls = array();
 
-		// Fetch a report that exercises all input parameters, barring the alternative date range formats which are tested separately.
+		// Fetch a report that exercises all input parameters, barring the alternative date range,
+		// metric and dimension formats which are tested separately.
 		$data = $this->get_report(
 			array(
 				'startDate'        => '2022-11-02',
@@ -234,13 +235,34 @@ class Analytics_4Test extends TestCase {
 				'url'              => 'https://example.org/some-page-here/',
 				'limit'            => 321,
 				'metrics'          => array(
-					array( 'name' => 'sessions' ),
-					array( 'name' => 'totalUsers' ),
+					// Provide metrics in both string and array formats.
+					'sessions',
+					array(
+						'name'       => 'total',
+						'expression' => 'totalUsers',
+					),
 				),
-				'dimensions'       => array( 'date', 'pageTitle' ),
+				'dimensions'       => array(
+					// Provide dimensions in both string and array formats.
+					'sessionDefaultChannelGrouping',
+					array(
+						'name' => 'pageTitle',
+					),
+				),
 				'dimensionFilters' => array(
+					// Provide dimension filters with single and multiple values.
 					'sessionDefaultChannelGrouping' => 'Organic Search',
 					'pageTitle'                     => array( 'Title Foo', 'Title Bar' ),
+				),
+				'orderby'          => array(
+					array(
+						'fieldName' => 'sessions',
+						'sortOrder' => 'DESCENDING',
+					),
+					array(
+						'fieldName' => 'total',
+						'sortOrder' => 'ASCENDING',
+					),
 				),
 			),
 			$request_handler_calls
@@ -307,7 +329,8 @@ class Analytics_4Test extends TestCase {
 					'name' => 'sessions',
 				),
 				array(
-					'name' => 'totalUsers',
+					'name'       => 'total',
+					'expression' => 'totalUsers',
 				),
 			),
 			$request_params['metrics']
@@ -316,7 +339,7 @@ class Analytics_4Test extends TestCase {
 		$this->assertEquals(
 			array(
 				array(
-					'name' => 'date',
+					'name' => 'sessionDefaultChannelGrouping',
 				),
 				array(
 					'name' => 'pageTitle',
@@ -374,6 +397,24 @@ class Analytics_4Test extends TestCase {
 				),
 			),
 			$request_params['dimensionFilter']
+		);
+
+		$this->assertEquals(
+			array(
+				array(
+					'metric' => array(
+						'metricName' => 'sessions',
+					),
+					'desc'   => '1',
+				),
+				array(
+					'metric' => array(
+						'metricName' => 'total',
+					),
+					'desc'   => '',
+				),
+			),
+			$request_params['orderBys']
 		);
 	}
 
@@ -460,6 +501,112 @@ class Analytics_4Test extends TestCase {
 				),
 			),
 			$request_params['dateRanges']
+		);
+	}
+
+	public function test_get_report__metrics_as_string() {
+		$request_handler_calls = array();
+
+		$this->get_report(
+			array(
+				'propertyID' => '123456789',
+				'metrics'    => 'sessions,totalUsers',
+			),
+			$request_handler_calls
+		);
+
+		$request_params = $request_handler_calls[0]['params']['requests'][0];
+
+		$this->assertEquals(
+			array(
+				array(
+					'name' => 'sessions',
+				),
+				array(
+					'name' => 'totalUsers',
+				),
+			),
+			$request_params['metrics']
+		);
+	}
+
+	public function test_get_report__metrics_as_single_object() {
+		$request_handler_calls = array();
+
+		$this->get_report(
+			array(
+				'propertyID' => '123456789',
+				'metrics'    => array(
+					'name'       => 'total',
+					'expression' => 'totalUsers',
+				),
+			),
+			$request_handler_calls
+		);
+
+		$request_params = $request_handler_calls[0]['params']['requests'][0];
+
+		$this->assertEquals(
+			array(
+				array(
+					'name'       => 'total',
+					'expression' => 'totalUsers',
+				),
+			),
+			$request_params['metrics']
+		);
+	}
+
+	public function test_get_report__dimensions_as_string() {
+		$request_handler_calls = array();
+
+		$this->get_report(
+			array(
+				'propertyID' => '123456789',
+				'metrics'    => 'sessions',
+				'dimensions' => 'sessionDefaultChannelGrouping,pageTitle',
+			),
+			$request_handler_calls
+		);
+
+		$request_params = $request_handler_calls[0]['params']['requests'][0];
+
+		$this->assertEquals(
+			array(
+				array(
+					'name' => 'sessionDefaultChannelGrouping',
+				),
+				array(
+					'name' => 'pageTitle',
+				),
+			),
+			$request_params['dimensions']
+		);
+	}
+
+	public function test_get_report__dimensions_as_single_object() {
+		$request_handler_calls = array();
+
+		$this->get_report(
+			array(
+				'propertyID' => '123456789',
+				'metrics'    => 'sessions',
+				'dimensions' => array(
+					'name' => 'pageTitle',
+				),
+			),
+			$request_handler_calls
+		);
+
+		$request_params = $request_handler_calls[0]['params']['requests'][0];
+
+		$this->assertEquals(
+			array(
+				array(
+					'name' => 'pageTitle',
+				),
+			),
+			$request_params['dimensions']
 		);
 	}
 
