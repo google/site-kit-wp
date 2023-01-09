@@ -42,7 +42,7 @@ const fetchGetNoncesStore = createFetchStore( {
 } );
 
 const baseInitialState = {
-	nonces: null,
+	nonces: undefined,
 };
 
 const baseActions = {
