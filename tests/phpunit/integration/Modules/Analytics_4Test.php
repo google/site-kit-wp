@@ -227,13 +227,8 @@ class Analytics_4Test extends TestCase {
 		// metric and dimension formats which are tested separately.
 		$data = $this->get_report(
 			array(
-				'startDate'        => '2022-11-02',
-				'endDate'          => '2022-11-04',
-				'compareStartDate' => '2022-11-01',
-				'compareEndDate'   => '2022-11-02',
+				// Note, propertyID and metrics are required parameters.
 				'propertyID'       => '123456789',
-				'url'              => 'https://example.org/some-page-here/',
-				'limit'            => 321,
 				'metrics'          => array(
 					// Provide metrics in both string and array formats.
 					'sessions',
@@ -242,6 +237,13 @@ class Analytics_4Test extends TestCase {
 						'expression' => 'totalUsers',
 					),
 				),
+				// All other parameters are optional.
+				'url'              => 'https://example.org/some-page-here/',
+				'limit'            => 321,
+				'startDate'        => '2022-11-02',
+				'endDate'          => '2022-11-04',
+				'compareStartDate' => '2022-11-01',
+				'compareEndDate'   => '2022-11-02',
 				'dimensions'       => array(
 					// Provide dimensions in both string and array formats.
 					'sessionDefaultChannelGrouping',
@@ -300,6 +302,24 @@ class Analytics_4Test extends TestCase {
 
 		// Verify the request params that are derived from the input parameters.
 		$this->assertEquals(
+			'properties/123456789',
+			$request_params['property']
+		);
+
+		$this->assertEquals(
+			array(
+				array(
+					'name' => 'sessions',
+				),
+				array(
+					'name'       => 'total',
+					'expression' => 'totalUsers',
+				),
+			),
+			$request_params['metrics']
+		);
+
+		$this->assertEquals(
 			array(
 				array(
 					'startDate' => '2022-11-02',
@@ -314,26 +334,8 @@ class Analytics_4Test extends TestCase {
 		);
 
 		$this->assertEquals(
-			'properties/123456789',
-			$request_params['property']
-		);
-
-		$this->assertEquals(
 			321,
 			$request_params['limit']
-		);
-
-		$this->assertEquals(
-			array(
-				array(
-					'name' => 'sessions',
-				),
-				array(
-					'name'       => 'total',
-					'expression' => 'totalUsers',
-				),
-			),
-			$request_params['metrics']
 		);
 
 		$this->assertEquals(
@@ -423,11 +425,12 @@ class Analytics_4Test extends TestCase {
 
 		$this->get_report(
 			array(
-				'dateRange'  => 'last-14-days',
+				// Note, propertyID and metrics are required parameters.
 				'propertyID' => '123456789',
 				'metrics'    => array(
 					array( 'name' => 'sessions' ),
 				),
+				'dateRange'  => 'last-14-days',
 			),
 			$request_handler_calls
 		);
@@ -450,12 +453,13 @@ class Analytics_4Test extends TestCase {
 
 		$this->get_report(
 			array(
-				'dateRange'         => 'last-14-days',
-				'compareDateRanges' => true,
+				// Note, propertyID and metrics are required parameters.
 				'propertyID'        => '123456789',
 				'metrics'           => array(
 					array( 'name' => 'sessions' ),
 				),
+				'dateRange'         => 'last-14-days',
+				'compareDateRanges' => true,
 			),
 			$request_handler_calls
 		);
@@ -477,12 +481,13 @@ class Analytics_4Test extends TestCase {
 
 		$this->get_report(
 			array(
-				'dateRange'      => 'last-14-days',
-				'multiDateRange' => true,
+				// Note, propertyID and metrics are required parameters.
 				'propertyID'     => '123456789',
 				'metrics'        => array(
 					array( 'name' => 'sessions' ),
 				),
+				'dateRange'      => 'last-14-days',
+				'multiDateRange' => true,
 			),
 			$request_handler_calls
 		);
@@ -509,6 +514,7 @@ class Analytics_4Test extends TestCase {
 
 		$this->get_report(
 			array(
+				// Note, propertyID and metrics are required parameters.
 				'propertyID' => '123456789',
 				'metrics'    => 'sessions,totalUsers',
 			),
@@ -535,6 +541,7 @@ class Analytics_4Test extends TestCase {
 
 		$this->get_report(
 			array(
+				// Note, propertyID and metrics are required parameters.
 				'propertyID' => '123456789',
 				'metrics'    => array(
 					'name'       => 'total',
@@ -562,6 +569,7 @@ class Analytics_4Test extends TestCase {
 
 		$this->get_report(
 			array(
+				// Note, propertyID and metrics are required parameters.
 				'propertyID' => '123456789',
 				'metrics'    => 'sessions',
 				'dimensions' => 'sessionDefaultChannelGrouping,pageTitle',
@@ -589,6 +597,7 @@ class Analytics_4Test extends TestCase {
 
 		$this->get_report(
 			array(
+				// Note, propertyID and metrics are required parameters.
 				'propertyID' => '123456789',
 				'metrics'    => 'sessions',
 				'dimensions' => array(
@@ -623,6 +632,7 @@ class Analytics_4Test extends TestCase {
 
 		$data = $this->get_report(
 			array(
+				// Note, propertyID is a required parameter.
 				'propertyID' => '123456789',
 			),
 			$request_handler_calls
@@ -652,6 +662,7 @@ class Analytics_4Test extends TestCase {
 		$data = $analytics->get_data(
 			'report',
 			array(
+				// Note, propertyID and metrics are required parameters.
 				'propertyID' => $property_id,
 				'metrics'    => array(
 					array( 'name' => 'sessions' ),
@@ -696,6 +707,7 @@ class Analytics_4Test extends TestCase {
 		$data = $analytics->get_data(
 			'report',
 			array(
+				// Note, propertyID and metrics are required parameters.
 				'propertyID' => $property_id,
 				'metrics'    => array(
 					array( 'name' => 'sessions' ),
