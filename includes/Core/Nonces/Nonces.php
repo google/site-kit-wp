@@ -118,6 +118,10 @@ final class Nonces {
 	 * @return array List of REST_Route objects.
 	 */
 	private function get_rest_routes() {
+		$can_access_nonces = function() {
+			return is_user_logged_in();
+		};
+
 		return array(
 			new REST_Route(
 				'core/user/data/nonces',
@@ -127,7 +131,7 @@ final class Nonces {
 						'callback'            => function() {
 							return new WP_REST_Response( $this->get_nonces() );
 						},
-						'permission_callback' => '__return_true',
+						'permission_callback' => $can_access_nonces,
 					),
 				)
 			),

@@ -59,8 +59,7 @@ class NoncesTest extends TestCase {
 		$response = rest_get_server()->dispatch( $request );
 		$data     = $response->get_data();
 
-		$this->assertEquals( 200, $response->get_status() );
-		$this->assertEqualSetsWithIndex( $data, $nonces->get_nonces() );
+		$this->assertEquals( 401, $response->get_status() );
 	}
 
 	public function test_nonces_route__success() {
