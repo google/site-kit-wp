@@ -130,7 +130,7 @@ class User_Input {
 		$settings      = $this->site_specific_answers->get();
 		$user_settings = $this->user_specific_answers->get();
 		if ( is_array( $user_settings ) ) {
-			$settings = array_merges(
+			$settings = array_merge(
 				$settings,
 				$user_settings
 			);
