@@ -16,41 +16,7 @@
  * limitations under the License.
  */
 
-// Colors
-$c-surfaces-on-background: #161b18;
-$c-surfaces-on-background-variant: #6c726e;
-$c-surfaces-background: #f3f5f7;
-$c-surfaces-on-surface: #131418;
-$c-surfaces-on-surface-variant: #6c726e;
-$c-surfaces-surface: #fff;
-$c-surfaces-surface-1: #ebeef0;
-$c-surfaces-surface-2: #cbd0d3;
-$c-surfaces-surface-3: #ebeef0;
-$c-surfaces-inverse-on-surface: #ebeef0;
-$c-surfaces-inverse-surface: #161b18;
-$c-content-on-primary: #fff;
-$c-content-primary: #3c7251;
-$c-content-on-primary-container: #265c3b;
-$c-content-primary-container: #b8e5ca;
-$c-content-on-secondary: #fff;
-$c-content-secondary: #108080;
-$c-content-on-secondary-container: #066;
-$c-content-secondary-container: #c1ffff;
-$c-utility-on-error: #fff;
-$c-utility-error: #ac4220;
-$c-utility-on-error-container: #7a1e00;
-$c-utility-error-container: #ffded3;
-$c-utility-on-success: #fff;
-$c-utility-success: #46732b;
-$c-utility-on-success-container: #1f4c04;
-$c-utility-success-container: #bae79f;
-$c-utility-on-warning: #fff;
-$c-utility-warning: #895a00;
-$c-utility-on-warning-container: #4e3300;
-$c-utility-warning-container: #ffe4b1;
-$c-utility-divider: #ebeef0;
-$c-utility-divider-1: #cbd0d3;
-$c-utility-outline: #b8bdb9;
+// Color scheme
 $c-site-kit-sk-0: #fff;
 $c-site-kit-sk-10: #f1fff7;
 $c-site-kit-sk-50: #d0fbe1;
@@ -168,6 +134,41 @@ $c-violet-v-700: #340e71;
 $c-violet-v-800: #340e71;
 $c-violet-v-900: #24005f;
 $c-violet-v-1000: #000;
+
+// Color tokens
+$c-surfaces-on-background: $c-neutral-n-900;
+$c-surfaces-on-background-variant: $c-neutral-n-500;
+$c-surfaces-background: $c-neutral-n-50;
+$c-surfaces-on-surface: $c-neutral-n-900;
+$c-surfaces-on-surface-variant: $c-neutral-n-500;
+$c-surfaces-surface: $c-neutral-n-0;
+$c-surfaces-surface-1: $c-neutral-n-50;
+$c-surfaces-surface-2: $c-neutral-n-100;
+$c-surfaces-inverse-on-surface: $c-neutral-n-50;
+$c-surfaces-inverse-surface: $c-neutral-n-900;
+$c-content-on-primary: $c-site-kit-sk-0;
+$c-content-primary: $c-site-kit-sk-600;
+$c-content-on-primary-container: $c-site-kit-sk-600;
+$c-content-primary-container: $c-site-kit-sk-100;
+$c-content-on-secondary: $c-teal-t-0;
+$c-content-secondary: #108080;
+$c-content-on-secondary-container: #066;
+$c-content-secondary-container: #c1ffff;
+$c-utility-on-error: #fff;
+$c-utility-error: #ac4220;
+$c-utility-on-error-container: #7a1e00;
+$c-utility-error-container: #ffded3;
+$c-utility-on-success: #fff;
+$c-utility-success: #46732b;
+$c-utility-on-success-container: #1f4c04;
+$c-utility-success-container: #bae79f;
+$c-utility-on-warning: #fff;
+$c-utility-warning: #895a00;
+$c-utility-on-warning-container: #4e3300;
+$c-utility-warning-container: #ffe4b1;
+$c-utility-divider: #ebeef0;
+$c-utility-divider-1: #cbd0d3;
+$c-utility-outline: #b8bdb9;
 $c-interactive-focus: #000;
 $c-interactive-inverse-focus: #fff;
 $c-interactive-on-disable-container: rgba(3, 14, 7, 0.32);
