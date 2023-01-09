@@ -49,15 +49,17 @@
 		position: relative;
 	}
 
-	.googlesitekit-user-input__question-number {
+	p.googlesitekit-user-input__question-number {
 		color: $c-interactive-on-disable-container;
 		font-family: $f-secondary;
-		font-size: $fs-display-sm;
-		line-height: $lh-display-sm;
+		font-size: $fs-title-sm;
+		line-height: $lh-title-sm;
 		margin: 0 0 13px;
 
 		@media (min-width: $bp-desktop) {
 			color: $c-surfaces-on-surface;
+			font-size: $fs-body-sm;
+			line-height: $lh-body-sm;
 		}
 	}
 
