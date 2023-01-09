@@ -129,7 +129,12 @@ class User_Input {
 		$questions     = static::$questions;
 		$settings      = $this->site_specific_answers->get();
 		$user_settings = $this->user_specific_answers->get();
-		if ( is_array( $user_settings ) ) {
+
+		// $settings & $user_settings can be array or false.
+		if ( ! is_array( $settings ) && is_array( $user_settings ) ) {
+			$settings = $user_settings;
+		}
+		if ( is_array( $settings ) && is_array( $user_settings ) ) {
 			$settings = array_merge(
 				$settings,
 				$user_settings
