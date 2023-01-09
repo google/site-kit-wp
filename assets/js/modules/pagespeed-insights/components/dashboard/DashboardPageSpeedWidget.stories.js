@@ -97,6 +97,58 @@ Loading.args = {
 	},
 };
 
+export const TestRunningDisabled = Template.bind( {} );
+TestRunningDisabled.storyName = 'Test Running Disabled';
+TestRunningDisabled.args = {
+	setupRegistry: ( { dispatch } ) => {
+		freezeFetch(
+			new RegExp(
+				'^/google-site-kit/v1/modules/pagespeed-insights/data/pagespeed'
+			)
+		);
+		// Needs second freezeFetch call, as one is for desktop and the other for mobile.
+		freezeFetch(
+			new RegExp(
+				'^/google-site-kit/v1/modules/pagespeed-insights/data/pagespeed'
+			)
+		);
+
+		dispatch( MODULES_PAGESPEED_INSIGHTS ).receiveGetReport(
+			fixtures.pagespeedMobileNoFieldData,
+			{
+				url,
+				strategy: STRATEGY_MOBILE,
+			}
+		);
+		dispatch( MODULES_PAGESPEED_INSIGHTS ).finishResolution( 'getReport', [
+			url,
+			STRATEGY_MOBILE,
+		] );
+
+		dispatch( MODULES_PAGESPEED_INSIGHTS ).receiveGetReport(
+			fixtures.pagespeedDesktopNoFieldData,
+			{
+				url,
+				strategy: STRATEGY_DESKTOP,
+			}
+		);
+		dispatch( MODULES_PAGESPEED_INSIGHTS ).finishResolution( 'getReport', [
+			url,
+			STRATEGY_DESKTOP,
+		] );
+
+		// Invalidate the cached resolver to get the disabled state.
+		dispatch( MODULES_PAGESPEED_INSIGHTS ).invalidateResolution(
+			'getReport',
+			[ url, STRATEGY_DESKTOP ]
+		);
+		dispatch( MODULES_PAGESPEED_INSIGHTS ).invalidateResolution(
+			'getReport',
+			[ url, STRATEGY_MOBILE ]
+		);
+	},
+};
+
 export const NoRecommendations = Template.bind( {} );
 NoRecommendations.storyName = 'No Recommendations';
 NoRecommendations.args = {

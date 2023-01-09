@@ -30,6 +30,7 @@ import {
 	muteFetch,
 	subscribeUntil,
 	unsubscribeFromAll,
+	untilResolved,
 } from '../../../../tests/js/utils';
 import { createNotificationsStore } from './create-notifications-store';
 
@@ -103,7 +104,7 @@ describe( 'createNotificationsStore store', () => {
 				} ).toThrow( 'id is required.' );
 			} );
 
-			it( 'does not fail when there are no notifications', () => {
+			it( 'does not fail when there are no notifications', async () => {
 				dispatch.removeNotification( 'not_a_real_id' );
 
 				muteFetch(
@@ -113,9 +114,14 @@ describe( 'createNotificationsStore store', () => {
 					[]
 				);
 				expect( select.getNotifications() ).toEqual( undefined );
+
+				await untilResolved(
+					registry,
+					storeDefinition.STORE_NAME
+				).getNotifications();
 			} );
 
-			it( 'does not fail when no matching notification is found', () => {
+			it( 'does not fail when no matching notification is found', async () => {
 				const notification = { id: 'client_notification' };
 				dispatch.addNotification( notification );
 
@@ -128,6 +134,11 @@ describe( 'createNotificationsStore store', () => {
 					[]
 				);
 				expect( select.getNotifications() ).toEqual( [ notification ] );
+
+				await untilResolved(
+					registry,
+					storeDefinition.STORE_NAME
+				).getNotifications();
 			} );
 
 			it( 'removes the notification from client notifications', () => {
@@ -141,7 +152,7 @@ describe( 'createNotificationsStore store', () => {
 				expect( state.clientNotifications ).toMatchObject( {} );
 			} );
 
-			it( 'removes the notification from client notifications even when no server notifications exist', () => {
+			it( 'removes the notification from client notifications even when no server notifications exist', async () => {
 				const notification = { id: 'notification_to_remove' };
 				dispatch.addNotification( notification );
 
@@ -157,6 +168,11 @@ describe( 'createNotificationsStore store', () => {
 					[]
 				);
 				expect( select.getNotifications() ).toMatchObject( {} );
+
+				await untilResolved(
+					registry,
+					storeDefinition.STORE_NAME
+				).getNotifications();
 			} );
 
 			it( 'does not remove server notifications and emits a warning if they are sent to removeNotification', async () => {
@@ -168,15 +184,15 @@ describe( 'createNotificationsStore store', () => {
 					{ body: serverNotifications, status: 200 }
 				);
 
-				const clientNotification = { id: 'client_notification' };
-
 				select.getNotifications();
-				dispatch.addNotification( clientNotification );
 
 				await subscribeUntil(
 					registry,
 					() => store.getState().serverNotifications !== undefined
 				);
+
+				const clientNotification = { id: 'client_notification' };
+				dispatch.addNotification( clientNotification );
 
 				dispatch.removeNotification( serverNotifications[ 0 ].id );
 
@@ -186,6 +202,9 @@ describe( 'createNotificationsStore store', () => {
 				);
 				expect( select.getNotifications() ).toEqual(
 					expect.arrayContaining( serverNotifications )
+				);
+				expect( select.getNotifications() ).toEqual(
+					expect.arrayContaining( [ clientNotification ] )
 				);
 			} );
 		} );
@@ -253,7 +272,7 @@ describe( 'createNotificationsStore store', () => {
 				expect( notificationsSelect ).toEqual( notifications );
 			} );
 
-			it( 'returns client notifications even if server notifications have not loaded', () => {
+			it( 'returns client notifications even if server notifications have not loaded', async () => {
 				const notification = { id: 'added_notification' };
 				fetchMock.getOnce(
 					new RegExp(
@@ -275,6 +294,11 @@ describe( 'createNotificationsStore store', () => {
 					[]
 				);
 				expect( select.getNotifications() ).toEqual( [ notification ] );
+
+				await untilResolved(
+					registry,
+					storeDefinition.STORE_NAME
+				).getNotifications();
 			} );
 
 			it( 'dispatches an error if the request fails', async () => {

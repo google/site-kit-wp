@@ -255,6 +255,7 @@ const Overview = ( {
 						stat: 4,
 						title: __( 'Bounce Rate', 'google-site-kit' ),
 						datapoint: analyticsBounceDatapoint,
+						datapointUnit: '%',
 						change: analyticsBounceChange,
 					},
 			  ]
@@ -295,6 +296,11 @@ const Overview = ( {
 									}` }
 									title={ dataBlock.title }
 									datapoint={ dataBlock.datapoint }
+									datapointUnit={
+										dataBlock.datapointUnit
+											? dataBlock.datapointUnit
+											: undefined
+									}
 									change={ dataBlock.change }
 									changeDataUnit="%"
 									context="button"

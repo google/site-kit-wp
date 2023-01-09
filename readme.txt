@@ -4,7 +4,7 @@ Contributors:      google
 Requires at least: 5.2
 Tested up to:      6.1
 Requires PHP:      5.6
-Stable tag:        1.90.0
+Stable tag:        1.90.1
 License:           Apache License 2.0
 License URI:       https://www.apache.org/licenses/LICENSE-2.0
 Tags:              google, search-console, analytics, adsense, pagespeed-insights, optimize, tag-manager, site-kit
@@ -107,6 +107,12 @@ By default, Site Kit does anonymize IP addresses upon activation of the Google A
 Please create a new topic on our [WordPress.org support forum](https://wordpress.org/support/plugin/google-site-kit/). Be sure to follow the [support forum guidelines](https://wordpress.org/support/guidelines/) when posting.
 
 == Changelog ==
+
+= 1.90.1 =
+
+**Fixed**
+
+* Fix a compatibility issue by temporarily removing the "Unique visitors over the last 28 days" chart from the "Site Kit Summary" WordPress dashboard widget. See [#6350](https://github.com/google/site-kit-wp/issues/6350).
 
 = 1.90.0 =
 

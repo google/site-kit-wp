@@ -281,4 +281,120 @@ describe( 'DashboardPageSpeed', () => {
 
 		expect( queryByText( /Field data unavailable/i ) ).toBeInTheDocument();
 	} );
+
+	it( 'should disable the `How to improve` button when the test is running', async () => {
+		freezeFetch(
+			new RegExp(
+				'^/google-site-kit/v1/modules/pagespeed-insights/data/pagespeed'
+			)
+		);
+		// Needs second freezeFetch call, as one is for desktop and the other for mobile.
+		freezeFetch(
+			new RegExp(
+				'^/google-site-kit/v1/modules/pagespeed-insights/data/pagespeed'
+			)
+		);
+		const { getByRole } = render( <DashboardPageSpeed />, {
+			setupRegistry: setupRegistryNoFieldDataDesktop,
+		} );
+
+		const runTestAgainBtn = getByRole( 'button', {
+			name: /Run test again/i,
+		} );
+		const howToImproveBtn = getByRole( 'button', {
+			name: /How to improve/i,
+		} );
+
+		await act( async () => {
+			fireEvent.click( runTestAgainBtn );
+
+			await waitFor( () => {
+				// Verifies the `How to improve` button is disabled when the test is running.
+				expect( howToImproveBtn ).toBeDisabled();
+			} );
+		} );
+	} );
+
+	it( 'should disable the data source tabs when the test is running', async () => {
+		freezeFetch(
+			new RegExp(
+				'^/google-site-kit/v1/modules/pagespeed-insights/data/pagespeed'
+			)
+		);
+		// Needs second freezeFetch call, as one is for desktop and the other for mobile.
+		freezeFetch(
+			new RegExp(
+				'^/google-site-kit/v1/modules/pagespeed-insights/data/pagespeed'
+			)
+		);
+		const { getByRole } = render( <DashboardPageSpeed />, {
+			setupRegistry: setupRegistryNoFieldDataDesktop,
+		} );
+
+		const runTestAgainBtn = getByRole( 'button', {
+			name: /Run test again/i,
+		} );
+		// Data source tabs.
+		const inTheLabTab = getByRole( 'tab', {
+			name: /In the Lab/i,
+		} );
+		const inTheFieldTab = getByRole( 'tab', {
+			name: /In the Field/i,
+		} );
+		const howToImproveTab = getByRole( 'tab', {
+			name: /How to improve/i,
+		} );
+
+		await act( async () => {
+			fireEvent.click( runTestAgainBtn );
+
+			await waitFor( () => {
+				// Verifies the `In the Lab` tab is disabled.
+				expect( inTheLabTab ).toBeDisabled();
+				// Verifies the `In the Field` tab is disabled.
+				expect( inTheFieldTab ).toBeDisabled();
+				// Verifies the `How to improve` tab is disabled.
+				expect( howToImproveTab ).toBeDisabled();
+			} );
+		} );
+	} );
+
+	it( 'should disable the device size tabs when the test is running', async () => {
+		freezeFetch(
+			new RegExp(
+				'^/google-site-kit/v1/modules/pagespeed-insights/data/pagespeed'
+			)
+		);
+		// Needs second freezeFetch call, as one is for desktop and the other for mobile.
+		freezeFetch(
+			new RegExp(
+				'^/google-site-kit/v1/modules/pagespeed-insights/data/pagespeed'
+			)
+		);
+		const { getByRole } = render( <DashboardPageSpeed />, {
+			setupRegistry: setupRegistryNoFieldDataDesktop,
+		} );
+
+		const runTestAgainBtn = getByRole( 'button', {
+			name: /Run test again/i,
+		} );
+		// Device size tabs.
+		const mobileTab = getByRole( 'tab', {
+			name: /Mobile/i,
+		} );
+		const desktopTab = getByRole( 'tab', {
+			name: /Desktop/i,
+		} );
+
+		await act( async () => {
+			fireEvent.click( runTestAgainBtn );
+
+			await waitFor( () => {
+				// Verifies the device `Mobile` tab is disabled.
+				expect( mobileTab ).toBeDisabled();
+				// Verifies the device `Desktop` tab is disabled.
+				expect( desktopTab ).toBeDisabled();
+			} );
+		} );
+	} );
 } );

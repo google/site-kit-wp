@@ -29,6 +29,7 @@ import {
 	muteFetch,
 	subscribeUntil,
 	unsubscribeFromAll,
+	untilResolved,
 } from '../../../../tests/js/utils';
 import { createSettingsStore } from './create-settings-store';
 
@@ -372,6 +373,11 @@ describe( 'createSettingsStore store', () => {
 				);
 
 				const settings = select.getSettings();
+
+				await untilResolved(
+					registry,
+					storeDefinition.STORE_NAME
+				).getSettings();
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( settings ).toEqual( undefined );

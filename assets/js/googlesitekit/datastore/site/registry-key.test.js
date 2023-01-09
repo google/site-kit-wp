@@ -22,6 +22,7 @@
 import {
 	createTestRegistry,
 	unsubscribeFromAll,
+	untilResolved,
 } from '../../../../../tests/js/utils';
 import { CORE_SITE } from './constants';
 
@@ -47,7 +48,11 @@ describe( 'core/site registryKey', () => {
 	} );
 
 	describe( 'selectors', () => {
-		it( 'generates a registryKey if undefined', () => {
+		it( 'generates a registryKey if undefined', async () => {
+			registry.select( CORE_SITE ).getRegistryKey();
+
+			await untilResolved( registry, CORE_SITE ).getRegistryKey();
+
 			expect(
 				registry.select( CORE_SITE ).getRegistryKey()
 			).not.toBeUndefined();

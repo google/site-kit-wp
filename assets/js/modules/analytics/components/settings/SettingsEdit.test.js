@@ -22,6 +22,7 @@
 import {
 	render,
 	createTestRegistry,
+	act,
 } from '../../../../../../tests/js/test-utils';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import { MODULES_ANALYTICS } from '../../datastore/constants';
@@ -31,6 +32,8 @@ import * as fixtures from '../../datastore/__fixtures__';
 import {
 	provideModules,
 	provideSiteInfo,
+	waitForDefaultTimeouts,
+	provideUserInfo,
 } from '../../../../../../tests/js/utils';
 import * as ga4Fixtures from '../../../analytics-4/datastore/__fixtures__';
 
@@ -38,8 +41,15 @@ describe( 'SettingsEdit', () => {
 	let registry;
 
 	beforeEach( () => {
+		fetchMock.get( new RegExp( 'analytics/data/settings' ), {
+			body: {
+				ownerID: 1,
+			},
+		} );
+
 		registry = createTestRegistry();
 		provideSiteInfo( registry );
+		provideUserInfo( registry );
 		provideModules( registry, [
 			{
 				slug: 'analytics',
@@ -55,10 +65,15 @@ describe( 'SettingsEdit', () => {
 				slug: 'analytics',
 				active: true,
 				connected: true,
+				storeName: MODULES_ANALYTICS,
 			},
 		] );
 
-		fetchMock.get( new RegExp( 'analytics/data/settings' ), { body: {} } );
+		fetchMock.get( new RegExp( 'analytics/data/settings' ), {
+			body: {
+				ownerID: 1,
+			},
+		} );
 		fetchMock.get( new RegExp( 'analytics-4/data/settings' ), {
 			body: {},
 		} );
@@ -88,9 +103,10 @@ describe( 'SettingsEdit', () => {
 			.dispatch( MODULES_ANALYTICS )
 			.receiveGetProfiles( profiles, { accountID, propertyID } );
 
-		const { waitForRegistry, container } = render( <SettingsEdit />, {
+		const { container, waitForRegistry } = render( <SettingsEdit />, {
 			registry,
 		} );
+
 		await waitForRegistry();
 
 		// Verify GTM is not available.
@@ -174,7 +190,11 @@ describe( 'SettingsEdit', () => {
 		const { waitForRegistry } = render( <SettingsEdit />, {
 			registry,
 		} );
+
 		await waitForRegistry();
+
+		// Wait for additional resolvers to run.
+		await act( waitForDefaultTimeouts );
 
 		expect(
 			registry.select( MODULES_ANALYTICS ).getAccountID()

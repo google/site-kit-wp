@@ -206,16 +206,16 @@
 		--token-color: #{$c-interactive-tertiary-press};
 	}
 	&--interactive-on-disabled {
-		--token-color: #{$c-interactive-on-disabled};
+		--token-color: #{$c-interactive-on-disabled-container};
 	}
 	&--interactive-disabled {
-		--token-color: #{$c-interactive-disabled};
+		--token-color: #{$c-interactive-disabled-container};
 	}
 	&--interactive-inverse-on-disabled {
-		--token-color: #{$c-interactive-inverse-on-disabled};
+		--token-color: #{$c-interactive-inverse-on-disabled-container};
 	}
 	&--interactive-inverse-disabled {
-		--token-color: #{$c-interactive-inverse-disabled};
+		--token-color: #{$c-interactive-inverse-disabled-container};
 	}
 	&--interactive-focus {
 		--token-color: #{$c-interactive-focus};

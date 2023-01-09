@@ -24,6 +24,10 @@ import { muteFetch } from '../../../tests/js/utils';
 import { useChecks } from './useChecks';
 
 describe( 'useChecks', () => {
+	beforeEach( () => {
+		jest.useFakeTimers();
+	} );
+
 	it( 'should return { complete:true, error: undefined } successful check runs.', async () => {
 		const checks = [ () => Promise.resolve() ];
 		let result;
