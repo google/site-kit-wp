@@ -27,9 +27,10 @@ import { HOUR_IN_SECONDS } from '../../util';
  * Anything not using this key should not be touched by this library.
  *
  * @since 1.5.0
+ * @since n.e.x.t Updated to include a user, session, and blog-specific hash.
  * @private
  */
-export const STORAGE_KEY_PREFIX = `googlesitekit_${ global.GOOGLESITEKIT_VERSION }_`;
+export const STORAGE_KEY_PREFIX = `googlesitekit_${ global.GOOGLESITEKIT_VERSION }_${ global._googlesitekitBaseData.storagePrefix }_`;
 
 const defaultOrder = [ 'sessionStorage', 'localStorage' ];
 let storageBackend;

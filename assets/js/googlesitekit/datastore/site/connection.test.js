@@ -164,6 +164,8 @@ describe( 'core/site connection', () => {
 
 				const connection = select.getConnection();
 
+				await untilResolved( registry, CORE_SITE ).getConnection();
+
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( connection ).toEqual( undefined );
 				expect( console ).toHaveErrored();
@@ -225,13 +227,15 @@ describe( 'core/site connection', () => {
 				expect( console ).toHaveErrored();
 			} );
 
-			it( 'returns undefined if connection info is not available', () => {
+			it( 'returns undefined if connection info is not available', async () => {
 				muteFetch(
 					new RegExp(
 						'^/google-site-kit/v1/core/site/data/connection'
 					)
 				);
 				expect( select[ selector ]() ).toBeUndefined();
+
+				await untilResolved( registry, CORE_SITE ).getConnection();
 			} );
 		} );
 	} );

@@ -43,9 +43,6 @@ function stubIsAdBlockerDetected( detected ) {
 describe( 'modules/adsense adblocker', () => {
 	let registry;
 
-	beforeAll( () => jest.useRealTimers() );
-	afterAll( () => jest.useFakeTimers() );
-
 	beforeEach( () => {
 		registry = createTestRegistry();
 	} );
@@ -161,13 +158,18 @@ describe( 'modules/adsense adblocker', () => {
 			} );
 		} );
 		describe( 'getAdBlockerWarningMessage', () => {
-			it( 'returns undefined if ad blocker state is unresolved.', () => {
+			it( 'returns undefined if ad blocker state is unresolved.', async () => {
 				muteFetch( 'path:/favicon.ico' );
 				expect(
 					registry
 						.select( MODULES_ADSENSE )
 						.getAdBlockerWarningMessage()
 				).toBe( undefined );
+
+				await untilResolved(
+					registry,
+					MODULES_ADSENSE
+				).isAdBlockerActive();
 			} );
 
 			it( 'returns null if ad blocker is not active', () => {

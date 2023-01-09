@@ -27,6 +27,7 @@ import {
 	unsubscribeFromAll,
 	freezeFetch,
 	subscribeUntil,
+	waitForDefaultTimeouts,
 } from '../../../../../tests/js/utils';
 import * as fixtures from './__fixtures__';
 import { isZeroReport } from '../util';
@@ -365,7 +366,7 @@ describe( 'modules/analytics report', () => {
 		} );
 
 		describe( 'isGatheringData', () => {
-			it( 'should return undefined if getReport is not resolved yet', () => {
+			it( 'should return undefined if getReport is not resolved yet', async () => {
 				freezeFetch(
 					new RegExp(
 						'^/google-site-kit/v1/modules/analytics/data/report'
@@ -376,6 +377,9 @@ describe( 'modules/analytics report', () => {
 					registry.select( MODULES_ANALYTICS );
 
 				expect( isGatheringData() ).toBeUndefined();
+
+				// Wait for resolvers to run.
+				await waitForDefaultTimeouts();
 			} );
 
 			it( 'should return TRUE if the returned report is null', async () => {
@@ -449,7 +453,7 @@ describe( 'modules/analytics report', () => {
 		} );
 
 		describe( 'hasZeroData', () => {
-			it( 'should return undefined if getReport or isGatheringData is not resolved yet', () => {
+			it( 'should return undefined if getReport or isGatheringData is not resolved yet', async () => {
 				freezeFetch(
 					new RegExp(
 						'^/google-site-kit/v1/modules/analytics/data/report'
@@ -459,6 +463,9 @@ describe( 'modules/analytics report', () => {
 				const { hasZeroData } = registry.select( MODULES_ANALYTICS );
 
 				expect( hasZeroData() ).toBeUndefined();
+
+				// Wait for resolvers to run.
+				await waitForDefaultTimeouts();
 			} );
 
 			it( 'should return TRUE if isGatheringData is true', async () => {
