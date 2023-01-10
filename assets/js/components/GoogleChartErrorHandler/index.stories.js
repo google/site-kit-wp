@@ -19,22 +19,22 @@
 /**
  * Internal dependencies
  */
-import ThrowErrorComponent from '../../../../tests/js/ThrowErrorComponent';
-import ErrorHandler from './';
+import ErrorComponent from '../../../../tests/js/ThrowErrorComponent';
+import GoogleChartErrorHandler from './';
 
 const Template = () => (
-	<ErrorHandler>
-		<ThrowErrorComponent throwErrorOnMount />
-	</ErrorHandler>
+	<GoogleChartErrorHandler>
+		<ErrorComponent throwErrorOnMount />
+	</GoogleChartErrorHandler>
 );
 
 export const Default = Template.bind( {} );
 Default.storyName = 'Default';
 Default.scenario = {
-	label: 'Global/ErrorHandler',
+	label: 'Global/GoogleChartErrorHandler',
 };
 
 export default {
-	title: 'Components/ErrorHandler',
-	component: ErrorHandler,
+	title: 'Components/GoogleChartErrorHandler',
+	component: GoogleChartErrorHandler,
 };
