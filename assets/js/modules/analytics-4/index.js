@@ -16,4 +16,15 @@
  * limitations under the License.
  */
 
+/**
+ * Internal dependencies
+ */
+import { MODULES_ANALYTICS_4 } from './datastore/constants';
+
 export { registerStore } from './datastore';
+
+export const registerModule = ( modules ) => {
+	modules.registerModule( 'analytics-4', {
+		storeName: MODULES_ANALYTICS_4,
+	} );
+};

@@ -25,6 +25,7 @@ import {
 	createTestRegistry,
 	subscribeUntil,
 	unsubscribeFromAll,
+	untilResolved,
 } from '../../../../../tests/js/utils';
 import { getAdSenseMockResponse } from '../util/data-mock';
 
@@ -62,7 +63,9 @@ describe( 'modules/adsense report', () => {
 				const report = getAdSenseMockResponse( options );
 
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/adsense\/data\/report/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/adsense/data/report'
+					),
 					{ body: report }
 				);
 
@@ -112,7 +115,9 @@ describe( 'modules/adsense report', () => {
 					data: { status: 500 },
 				};
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/adsense\/data\/report/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/adsense/data/report'
+					),
 					{ body: response, status: 500 }
 				);
 
@@ -131,6 +136,10 @@ describe( 'modules/adsense report', () => {
 					.select( MODULES_ADSENSE )
 					.getReport( options );
 				expect( report ).toEqual( undefined );
+
+				await untilResolved( registry, MODULES_ADSENSE ).getReport(
+					options
+				);
 				expect( console ).toHaveErrored();
 			} );
 		} );

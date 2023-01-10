@@ -27,6 +27,7 @@ import {
 	provideUserCapabilities,
 	renderHook,
 	actHook as act,
+	waitForDefaultTimeouts,
 } from '../../../tests/js/test-utils';
 import { mockLocation } from '../../../tests/js/mock-browser-utils';
 import {
@@ -40,13 +41,16 @@ describe( 'useCompleteModuleActivationCallback', () => {
 	mockLocation();
 	let registry;
 
-	beforeEach( () => {
+	beforeEach( async () => {
 		registry = createTestRegistry();
 
 		provideSiteInfo( registry );
 		provideModules( registry );
 		provideModuleRegistrations( registry );
 		provideUserCapabilities( registry );
+
+		// Wait for async actions to complete.
+		await waitForDefaultTimeouts();
 	} );
 
 	it( 'should navigate to the module reauthentication URL', async () => {
@@ -61,6 +65,8 @@ describe( 'useCompleteModuleActivationCallback', () => {
 				() => useCompleteModuleActivationCallback( 'analytics' ),
 				{ registry }
 			) );
+
+			return waitForDefaultTimeouts();
 		} );
 
 		await result.current();
@@ -96,6 +102,8 @@ describe( 'useCompleteModuleActivationCallback', () => {
 				() => useCompleteModuleActivationCallback( 'analytics' ),
 				{ registry }
 			) );
+
+			return waitForDefaultTimeouts();
 		} );
 
 		expect( result.current ).toBeNull();

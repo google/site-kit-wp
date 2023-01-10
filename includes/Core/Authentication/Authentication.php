@@ -32,7 +32,6 @@ use WP_REST_Response;
 use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Util\BC_Functions;
 use Google\Site_Kit\Core\Util\URL;
-use Google\Site_Kit\Modules\Idea_Hub;
 
 /**
  * Authentication Class.
@@ -305,7 +304,7 @@ final class Authentication {
 			'admin_init',
 			function() {
 				if (
-					'googlesitekit-dashboard' === $this->context->input()->filter( INPUT_GET, 'page', FILTER_SANITIZE_STRING )
+					'googlesitekit-dashboard' === htmlspecialchars( $this->context->input()->filter( INPUT_GET, 'page' ) ?: '' )
 					&& User_Input_State::VALUE_REQUIRED === $this->user_input_state->get()
 				) {
 					wp_safe_redirect( $this->context->admin_url( 'user-input' ) );
@@ -1407,23 +1406,6 @@ final class Authentication {
 		$features               = $this->options->get( $remote_features_option );
 
 		if ( false === $features ) {
-			// The experimental features (ideaHubModule) are checked within Modules::construct() which
-			// runs before Modules::register() where the `googlesitekit_features_request_data` filter is registered.
-			// Without this filter, some necessary context data is not sent when a request to Google_Proxy::get_features() is
-			// made. So we avoid making this request and solely check the active modules in the database to see if these
-			// features are enabled.
-			if ( in_array( $feature_name, array( 'ideaHubModule' ), true ) ) {
-				$active_modules = $this->options->get( Modules::OPTION_ACTIVE_MODULES );
-
-				if ( ! is_array( $active_modules ) ) {
-					return false;
-				}
-
-				if ( 'ideaHubModule' === $feature_name ) {
-					return in_array( Idea_Hub::MODULE_SLUG, $active_modules, true );
-				}
-			}
-
 			// Don't attempt to fetch features if the site is not connected yet.
 			if ( ! $this->credentials->has() ) {
 				return $feature_enabled;

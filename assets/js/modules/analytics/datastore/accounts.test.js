@@ -49,8 +49,9 @@ describe( 'modules/analytics accounts', () => {
 	let registry;
 	let store;
 
-	const propertiesEndpoint =
-		/^\/google-site-kit\/v1\/modules\/analytics\/data\/accounts-properties-profiles/;
+	const propertiesEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/analytics/data/accounts-properties-profiles'
+	);
 
 	beforeAll( () => {
 		API.setUsingCache( false );
@@ -80,7 +81,9 @@ describe( 'modules/analytics accounts', () => {
 
 			it( 'creates an account ticket and sets the account ticket ID', async () => {
 				fetchMock.post(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-account-ticket/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics/data/create-account-ticket'
+					),
 					{
 						body: fixtures.createAccount,
 						status: 200,
@@ -100,7 +103,9 @@ describe( 'modules/analytics accounts', () => {
 
 				// Ensure the proper body parameters were sent.
 				expect( fetchMock ).toHaveFetched(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-account-ticket/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics/data/create-account-ticket'
+					),
 					{
 						body: {
 							data: {
@@ -120,7 +125,9 @@ describe( 'modules/analytics accounts', () => {
 
 			it( 'sets isDoingCreateAccount ', () => {
 				fetchMock.post(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-account-ticket/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics/data/create-account-ticket'
+					),
 					{ body: fixtures.createAccount, status: 200 }
 				);
 
@@ -137,7 +144,9 @@ describe( 'modules/analytics accounts', () => {
 					data: { status: 500 },
 				};
 				fetchMock.post(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-account-ticket/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics/data/create-account-ticket'
+					),
 					{ body: response, status: 500 }
 				);
 
@@ -200,19 +209,25 @@ describe( 'modules/analytics accounts', () => {
 
 				// getAccounts() will trigger a request again.
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/accounts-properties-profiles/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics/data/accounts-properties-profiles'
+					),
 					{ body: fixtures.accountsPropertiesProfiles, status: 200 }
 				);
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/analytics-4\/data\/properties/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics-4/data/properties'
+					),
 					{ body: [] }
 				);
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/analytics-4\/data\/settings/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics-4/data/settings'
+					),
 					{ body: [] }
 				);
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
+					new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
 					{ body: [] }
 				);
 
@@ -254,30 +269,40 @@ describe( 'modules/analytics accounts', () => {
 
 			it( 'invalidates the resolver for getAccounts', async () => {
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/accounts-properties-profiles/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics/data/accounts-properties-profiles'
+					),
 					{ body: fixtures.accountsPropertiesProfiles, status: 200 }
 				);
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/analytics-4\/data\/properties/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics-4/data/properties'
+					),
 					{ body: [] }
 				);
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/analytics-4\/data\/settings/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics-4/data/settings'
+					),
 					{ body: [] }
 				);
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
+					new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
 					{ body: [] }
 				);
 				fetchMock.get(
-					/^\/google-site-kit\/v1\/modules\/analytics-4\/data\/account-summaries/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics-4/data/account-summaries'
+					),
 					{
 						body: ga4Fixtures.accountSummaries,
 						status: 200,
 					}
 				);
 				fetchMock.get(
-					/^\/google-site-kit\/v1\/modules\/analytics-4\/data\/webdatastreams-batch/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics-4/data/webdatastreams-batch'
+					),
 					{
 						body: ga4Fixtures.webDataStreamsBatch,
 						status: 200,
@@ -304,6 +329,11 @@ describe( 'modules/analytics accounts', () => {
 						.select( MODULES_ANALYTICS )
 						.hasFinishedResolution( 'getAccounts' )
 				).toStrictEqual( false );
+
+				await untilResolved(
+					registry,
+					MODULES_ANALYTICS_4
+				).getSettings();
 			} );
 		} );
 
@@ -345,15 +375,19 @@ describe( 'modules/analytics accounts', () => {
 
 			it( 'should correctly select property and profile IDs', async () => {
 				fetchMock.get(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/properties-profiles/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics/data/properties-profiles'
+					),
 					{ body: fixtures.propertiesProfiles, status: 200 }
 				);
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
+					new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
 					{ body: [] }
 				);
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/analytics-4\/data\/properties/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics-4/data/properties'
+					),
 					{ body: [] }
 				);
 
@@ -390,15 +424,19 @@ describe( 'modules/analytics accounts', () => {
 
 			it( 'should correctly select PROPERTY_CREATE and PROFILE_CREATE when account has no properties', async () => {
 				fetchMock.get(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/properties-profiles/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics/data/properties-profiles'
+					),
 					{ body: { properties: [], profiles: [] }, status: 200 }
 				);
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
+					new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
 					{ body: [] }
 				);
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/analytics-4\/data\/properties/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics-4/data/properties'
+					),
 					{ body: [] }
 				);
 
@@ -432,15 +470,21 @@ describe( 'modules/analytics accounts', () => {
 				beforeEach( () => {
 					[
 						[
-							/^\/google-site-kit\/v1\/modules\/analytics\/data\/properties-profiles/,
+							new RegExp(
+								'^/google-site-kit/v1/modules/analytics/data/properties-profiles'
+							),
 							fixtures.propertiesProfiles,
 						],
 						[
-							/^\/google-site-kit\/v1\/modules\/analytics-4\/data\/properties/,
+							new RegExp(
+								'^/google-site-kit/v1/modules/analytics-4/data/properties'
+							),
 							ga4Fixtures.properties,
 						],
 						[
-							/^\/google-site-kit\/v1\/modules\/analytics-4\/data\/webdatastreams-batch/,
+							new RegExp(
+								'^/google-site-kit/v1/modules/analytics-4/data/webdatastreams-batch'
+							),
 							ga4Fixtures.webDataStreamsBatch,
 						],
 					].forEach( ( [ endpoint, body ] ) => {
@@ -524,26 +568,34 @@ describe( 'modules/analytics accounts', () => {
 		describe( 'getAccounts', () => {
 			beforeEach( () => {
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
+					new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
 					{ body: [] }
 				);
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/analytics-4\/data\/settings/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics-4/data/settings'
+					),
 					{ body: [] }
 				);
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/analytics-4\/data\/properties/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics-4/data/properties'
+					),
 					{ body: [] }
 				);
 				fetchMock.get(
-					/^\/google-site-kit\/v1\/modules\/analytics-4\/data\/account-summaries/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics-4/data/account-summaries'
+					),
 					{
 						body: ga4Fixtures.accountSummaries,
 						status: 200,
 					}
 				);
 				fetchMock.get(
-					/^\/google-site-kit\/v1\/modules\/analytics-4\/data\/webdatastreams-batch/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics-4/data/webdatastreams-batch'
+					),
 					{
 						body: ga4Fixtures.webDataStreamsBatch,
 						status: 200,
@@ -556,7 +608,9 @@ describe( 'modules/analytics accounts', () => {
 					.dispatch( MODULES_ANALYTICS )
 					.receiveGetExistingTag( null );
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/accounts-properties-profiles/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics/data/accounts-properties-profiles'
+					),
 					{ body: fixtures.accountsPropertiesProfiles, status: 200 }
 				);
 
@@ -603,6 +657,11 @@ describe( 'modules/analytics accounts', () => {
 				expect( profiles ).toEqual(
 					fixtures.accountsPropertiesProfiles.profiles
 				);
+
+				await untilResolved(
+					registry,
+					MODULES_ANALYTICS
+				).getAccounts();
 			} );
 
 			it( 'does not fetch from UA properties endpoint if accounts are already present', async () => {
@@ -630,6 +689,11 @@ describe( 'modules/analytics accounts', () => {
 				);
 
 				expect( fetchMock ).not.toHaveFetched( propertiesEndpoint );
+
+				await untilResolved(
+					registry,
+					MODULES_ANALYTICS_4
+				).getSettings();
 			} );
 
 			it( 'does not fetch from UA properties endpoint if accounts exist but are empty (this is a valid state)', async () => {
@@ -647,6 +711,11 @@ describe( 'modules/analytics accounts', () => {
 
 				expect( accounts ).toEqual( [] );
 				expect( fetchMock ).not.toHaveFetched( propertiesEndpoint );
+
+				await untilResolved(
+					registry,
+					MODULES_ANALYTICS_4
+				).getSettings();
 			} );
 
 			it( 'dispatches an error if the request fails', async () => {
@@ -656,7 +725,9 @@ describe( 'modules/analytics accounts', () => {
 					data: { status: 500 },
 				};
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/accounts-properties-profiles/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics/data/accounts-properties-profiles'
+					),
 					{ body: response, status: 500 }
 				);
 
@@ -669,6 +740,11 @@ describe( 'modules/analytics accounts', () => {
 					registry,
 					MODULES_ANALYTICS
 				).getAccounts();
+
+				await untilResolved(
+					registry,
+					MODULES_ANALYTICS_4
+				).getSettings();
 
 				expect( fetchMock ).toHaveFetchedTimes( 5 );
 
@@ -691,7 +767,9 @@ describe( 'modules/analytics accounts', () => {
 					}
 				);
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/accounts-properties-profiles/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics/data/accounts-properties-profiles'
+					),
 					{ body: fixtures.accountsPropertiesProfiles, status: 200 }
 				);
 				registry
@@ -707,7 +785,9 @@ describe( 'modules/analytics accounts', () => {
 
 				// Ensure the proper parameters were sent.
 				expect( fetchMock ).toHaveFetched(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/accounts-properties-profiles/
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics/data/accounts-properties-profiles'
+					)
 				);
 				expect( fetchMock ).toHaveFetchedTimes( 4 );
 			} );
@@ -733,7 +813,9 @@ describe( 'modules/analytics accounts', () => {
 					.receiveGetExistingTag( null );
 
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/accounts-properties-profiles/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics/data/accounts-properties-profiles'
+					),
 					{ body: response, status: 200 }
 				);
 
@@ -783,19 +865,27 @@ describe( 'modules/analytics accounts', () => {
 			beforeEach( () => {
 				[
 					[
-						/^\/google-site-kit\/v1\/modules\/analytics\/data\/accounts-properties-profiles/,
+						new RegExp(
+							'^/google-site-kit/v1/modules/analytics/data/accounts-properties-profiles'
+						),
 						fixtures.accountsPropertiesProfiles,
 					],
 					[
-						/^\/google-site-kit\/v1\/modules\/analytics\/data\/properties-profiles/,
+						new RegExp(
+							'^/google-site-kit/v1/modules/analytics/data/properties-profiles'
+						),
 						fixtures.propertiesProfiles,
 					],
 					[
-						/^\/google-site-kit\/v1\/modules\/analytics-4\/data\/properties/,
+						new RegExp(
+							'^/google-site-kit/v1/modules/analytics-4/data/properties'
+						),
 						ga4Fixtures.properties,
 					],
 					[
-						/^\/google-site-kit\/v1\/modules\/analytics-4\/data\/webdatastreams-batch/,
+						new RegExp(
+							'^/google-site-kit/v1/modules/analytics-4/data/webdatastreams-batch'
+						),
 						ga4Fixtures.webDataStreamsBatch,
 					],
 				].forEach( ( [ endpoint, body ] ) => {

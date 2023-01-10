@@ -24,16 +24,17 @@ import {
 	createTestRegistry,
 	subscribeUntil,
 	unsubscribeFromAll,
+	untilResolved,
 } from '../../../../../tests/js/utils';
-import { waitFor } from '../../../../../tests/js/test-utils';
 import { CORE_USER } from './constants';
 
 describe( 'core/user user-input-settings', () => {
 	let registry;
 	let store;
 
-	const coreUserInputSettingsEndpointRegExp =
-		/^\/google-site-kit\/v1\/core\/user\/data\/user-input-settings/;
+	const coreUserInputSettingsEndpointRegExp = new RegExp(
+		'^/google-site-kit/v1/core/user/data/user-input-settings'
+	);
 	const coreUserInputSettingsExpectedResponse = {
 		goals: {
 			values: [ 'goal1', 'goal2' ],
@@ -187,7 +188,10 @@ describe( 'core/user user-input-settings', () => {
 				const { getUserInputSettings } = registry.select( CORE_USER );
 
 				expect( getUserInputSettings() ).toBeUndefined();
-				await waitFor( () => getUserInputSettings() !== undefined );
+				await untilResolved(
+					registry,
+					CORE_USER
+				).getUserInputSettings();
 
 				const settings = getUserInputSettings();
 				expect( settings ).toEqual(

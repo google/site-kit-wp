@@ -268,6 +268,28 @@ MultipleUniqueReportErrorsWithRetryButtonWith.args = {
 	],
 };
 
+export const ReportErrorWithCustomInternalServerErrorMessage = Template.bind(
+	{}
+);
+ReportErrorWithCustomInternalServerErrorMessage.storyName =
+	'ReportError with custom Internal Server Error message';
+ReportErrorWithCustomInternalServerErrorMessage.args = {
+	error: {
+		code: 'internal_server_error',
+		message: 'Test error message',
+	},
+};
+
+export const ReportErrorWithCustomInvalidJSONMessage = Template.bind( {} );
+ReportErrorWithCustomInvalidJSONMessage.storyName =
+	'ReportError with custom Invalid JSON message';
+ReportErrorWithCustomInvalidJSONMessage.args = {
+	error: {
+		code: 'invalid_json',
+		message: 'Test error message',
+	},
+};
+
 export default {
 	title: 'Components/ReportError',
 	component: ReportError,

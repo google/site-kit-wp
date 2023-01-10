@@ -20,14 +20,16 @@
 
 	.googlesitekit-settings-user-input {
 
-		.googlesitekit-user-input__preview {
-			margin-left: 0;
-			margin-right: 0;
-			padding: 0;
+		.googlesitekit-settings-user-input__heading {
+			border-bottom: 1px solid $c-utility-divider;
+			color: $c-surfaces-on-background;
+			font-size: $fs-body-sm;
+			line-height: $lh-body-sm;
+			padding-bottom: 12px;
 		}
 
-		p {
-			margin-top: 0;
+		.googlesitekit-user-input__preview-contents {
+			padding: 0;
 		}
 	}
 }

@@ -31,6 +31,15 @@ export const USER_INPUT_QUESTIONS_LIST = [
 	USER_INPUT_QUESTIONS_GOALS,
 ];
 
+export const USER_INPUT_MAX_ANSWERS = {
+	[ USER_INPUT_QUESTIONS_PURPOSE ]: 1,
+	[ USER_INPUT_QUESTION_POST_FREQUENCY ]: 1,
+	[ USER_INPUT_QUESTIONS_GOALS ]: 3,
+};
+
+export const USER_INPUT_CURRENTLY_EDITING_KEY =
+	'googlesitekit-user-input-currently-editing';
+
 /**
  * Gets available answers for user input settings.
  *

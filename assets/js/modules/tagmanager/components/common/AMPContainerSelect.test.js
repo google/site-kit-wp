@@ -205,10 +205,14 @@ describe( 'AMPContainerSelect', () => {
 
 	it( 'should render a loading state while accounts have not been loaded', () => {
 		freezeFetch(
-			/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/accounts/
+			new RegExp(
+				'^/google-site-kit/v1/modules/tagmanager/data/accounts'
+			)
 		);
 		freezeFetch(
-			/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/containers/
+			new RegExp(
+				'^/google-site-kit/v1/modules/tagmanager/data/containers'
+			)
 		);
 		const account = factories.accountBuilder();
 		const accountID = account.accountId; // eslint-disable-line sitekit/acronym-case
@@ -224,7 +228,9 @@ describe( 'AMPContainerSelect', () => {
 
 	it( 'should render a loading state while containers are loading', () => {
 		freezeFetch(
-			/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/containers/
+			new RegExp(
+				'^/google-site-kit/v1/modules/tagmanager/data/containers'
+			)
 		);
 		const account = factories.accountBuilder();
 		const accountID = account.accountId; // eslint-disable-line sitekit/acronym-case

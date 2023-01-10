@@ -25,7 +25,7 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { useEffect, useRef } from '@wordpress/element';
+import { Fragment, useEffect, useRef, useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -33,15 +33,25 @@ import { useEffect, useRef } from '@wordpress/element';
 import Data from 'googlesitekit-data';
 import { Button } from 'googlesitekit-components';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import { getUserInputAnswers } from './util/constants';
+import {
+	getUserInputAnswers,
+	USER_INPUT_QUESTIONS_GOALS,
+	USER_INPUT_QUESTIONS_PURPOSE,
+	USER_INPUT_QUESTION_POST_FREQUENCY,
+	USER_INPUT_QUESTIONS_LIST,
+	USER_INPUT_MAX_ANSWERS,
+} from './util/constants';
 import UserInputPreviewGroup from './UserInputPreviewGroup';
 import UserInputQuestionNotice from './UserInputQuestionNotice';
 import useQueryArg from '../../hooks/useQueryArg';
 import ErrorNotice from '../ErrorNotice';
+import Link from '../Link';
+import CancelUserInputButton from './CancelUserInputButton';
+import { getErrorMessageForAnswer } from './util/validation';
 const { useSelect } = Data;
 
 export default function UserInputPreview( props ) {
-	const { noFooter, goTo, submitChanges, error } = props;
+	const { noFooter, goBack, submitChanges, error, noHeader } = props;
 	const previewContainer = useRef();
 	const settings = useSelect( ( select ) =>
 		select( CORE_USER ).getUserInputSettings()
@@ -52,6 +62,12 @@ export default function UserInputPreview( props ) {
 		USER_INPUT_ANSWERS_GOALS,
 	} = getUserInputAnswers();
 	const [ page ] = useQueryArg( 'page' );
+
+	const [ errorMessages, setErrorMessages ] = useState( {
+		[ USER_INPUT_QUESTIONS_GOALS ]: null,
+		[ USER_INPUT_QUESTIONS_PURPOSE ]: null,
+		[ USER_INPUT_QUESTION_POST_FREQUENCY ]: null,
+	} );
 
 	useEffect( () => {
 		if (
@@ -70,59 +86,112 @@ export default function UserInputPreview( props ) {
 		}
 	}, [ page ] );
 
+	const updateErrorMessages = () => {
+		const newErrorMessages = USER_INPUT_QUESTIONS_LIST.reduce(
+			( errors, slug ) => {
+				const errorMessage = getErrorMessageForAnswer(
+					settings?.[ slug ]?.values || [],
+					USER_INPUT_MAX_ANSWERS[ slug ]
+				);
+				errors[ slug ] = errorMessage;
+				return errors;
+			},
+			{}
+		);
+
+		setErrorMessages( newErrorMessages );
+
+		return newErrorMessages;
+	};
+
+	const onSaveClick = () => {
+		const newErrorMessages = updateErrorMessages();
+
+		const hasErrors = Object.values( newErrorMessages ).some( Boolean );
+		if ( ! hasErrors ) {
+			submitChanges();
+		}
+	};
+
 	return (
 		<div
 			className="googlesitekit-user-input__preview"
 			ref={ previewContainer }
 		>
-			<UserInputPreviewGroup
-				questionNumber={ 1 }
-				title={ __(
-					'What is the main purpose of this site?',
-					'google-site-kit'
+			<div className="googlesitekit-user-input__preview-contents">
+				{ ! noHeader && (
+					<p className="googlesitekit-user-input__preview-subheader">
+						{ __( 'Review your answers', 'google-site-kit' ) }
+					</p>
 				) }
-				edit={ goTo.bind( null, 1, 'user-input' ) }
-				values={ settings?.purpose?.values || [] }
-				options={ USER_INPUT_ANSWERS_PURPOSE }
-			/>
+				<UserInputPreviewGroup
+					slug={ USER_INPUT_QUESTIONS_PURPOSE }
+					title={ __(
+						'What is the main purpose of this site?',
+						'google-site-kit'
+					) }
+					values={ settings?.purpose?.values || [] }
+					options={ USER_INPUT_ANSWERS_PURPOSE }
+					errorMessage={
+						errorMessages[ USER_INPUT_QUESTIONS_PURPOSE ]
+					}
+					onCollapse={ updateErrorMessages }
+				/>
 
-			<UserInputPreviewGroup
-				questionNumber={ 2 }
-				title={ __(
-					'How often do you create new content for this site?',
-					'google-site-kit'
-				) }
-				edit={ goTo.bind( null, 2, 'user-input' ) }
-				values={ settings?.postFrequency?.values || [] }
-				options={ USER_INPUT_ANSWERS_POST_FREQUENCY }
-			/>
+				<UserInputPreviewGroup
+					slug={ USER_INPUT_QUESTION_POST_FREQUENCY }
+					title={ __(
+						'How often do you create new content for this site?',
+						'google-site-kit'
+					) }
+					values={ settings?.postFrequency?.values || [] }
+					options={ USER_INPUT_ANSWERS_POST_FREQUENCY }
+					errorMessage={
+						errorMessages[ USER_INPUT_QUESTION_POST_FREQUENCY ]
+					}
+					onCollapse={ updateErrorMessages }
+				/>
 
-			<UserInputPreviewGroup
-				questionNumber={ 3 }
-				title={ __(
-					'What are your top goals for this site?',
-					'google-site-kit'
-				) }
-				edit={ goTo.bind( null, 3, 'user-input' ) }
-				values={ settings?.goals?.values || [] }
-				options={ USER_INPUT_ANSWERS_GOALS }
-			/>
+				<UserInputPreviewGroup
+					slug={ USER_INPUT_QUESTIONS_GOALS }
+					title={ __(
+						'What are your top goals for this site?',
+						'google-site-kit'
+					) }
+					values={ settings?.goals?.values || [] }
+					options={ USER_INPUT_ANSWERS_GOALS }
+					errorMessage={ errorMessages[ USER_INPUT_QUESTIONS_GOALS ] }
+					onCollapse={ updateErrorMessages }
+				/>
 
-			{ error && <ErrorNotice error={ error } /> }
+				{ error && <ErrorNotice error={ error } /> }
+			</div>
 
 			{ ! noFooter && (
-				<div className="googlesitekit-user-input__preview--footer">
-					<UserInputQuestionNotice />
-
-					<div className="googlesitekit-user-input__buttons">
-						<Button
-							className="googlesitekit-user-input__buttons--next"
-							onClick={ submitChanges }
-						>
-							{ __( 'Submit', 'google-site-kit' ) }
-						</Button>
+				<Fragment>
+					<div className="googlesitekit-user-input__preview-notice">
+						<UserInputQuestionNotice />
 					</div>
-				</div>
+					<div className="googlesitekit-user-input__footer googlesitekit-user-input__buttons">
+						<div className="googlesitekit-user-input__footer-nav">
+							<Button
+								className="googlesitekit-user-input__buttons--next"
+								onClick={ onSaveClick }
+							>
+								{ __( 'Save', 'google-site-kit' ) }
+							</Button>
+							<Link
+								className="googlesitekit-user-input__buttons--back"
+								onClick={ goBack }
+							>
+								{ __( 'Back', 'google-site-kit' ) }
+							</Link>
+						</div>
+						<div className="googlesitekit-user-input__footer-cancel">
+							<CancelUserInputButton />
+						</div>
+					</div>
+				</Fragment>
 			) }
 		</div>
 	);
@@ -131,7 +200,8 @@ export default function UserInputPreview( props ) {
 UserInputPreview.propTypes = {
 	submitChanges: PropTypes.func,
 	noFooter: PropTypes.bool,
-	goTo: PropTypes.func.isRequired,
+	goBack: PropTypes.func,
 	redirectURL: PropTypes.string,
 	errors: PropTypes.object,
+	noHeader: PropTypes.bool,
 };

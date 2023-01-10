@@ -32,7 +32,7 @@ import { Fragment, useState, useCallback, useEffect } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { Button, ProgressBar } from 'googlesitekit-components';
+import { Button } from 'googlesitekit-components';
 import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 import {
 	MODULES_ANALYTICS_4,
@@ -64,9 +64,6 @@ export default function GA4SettingsControls( {
 	// This select is needed to check whether the AdminAPI works or not.
 	const properties = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getProperties( accountID )
-	);
-	const isAdminAPIWorking = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).isAdminAPIWorking()
 	);
 	const enableGA4 = useSelect( ( select ) =>
 		select( CORE_FORMS ).getValue( FORM_SETUP, 'enableGA4' )
@@ -111,17 +108,10 @@ export default function GA4SettingsControls( {
 			}
 		};
 
-		if ( isAdminAPIWorking ) {
-			setMatchedProperty( undefined );
-			setMatchedWebDataStream( undefined );
-			matchGA4Information();
-		}
-	}, [
-		accountID,
-		matchAccountProperty,
-		matchWebDataStream,
-		isAdminAPIWorking,
-	] );
+		setMatchedProperty( undefined );
+		setMatchedWebDataStream( undefined );
+		matchGA4Information();
+	}, [ accountID, matchAccountProperty, matchWebDataStream ] );
 
 	const onActivate = useCallback( () => {
 		const hasProperties = properties?.length > 0;
@@ -178,14 +168,6 @@ export default function GA4SettingsControls( {
 			( properties || [] ).map( ( { _id } ) => _id )
 		);
 	} );
-
-	if ( isAdminAPIWorking === undefined ) {
-		return <ProgressBar height={ isDisabled ? 180 : 212 } small />;
-	}
-
-	if ( ! isAdminAPIWorking ) {
-		return null;
-	}
 
 	return (
 		<div className="googlesitekit-settings-module__fields-group">

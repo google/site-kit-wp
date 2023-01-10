@@ -20,6 +20,8 @@
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { registerStore } from './modules/analytics-4';
+import Modules from 'googlesitekit-modules';
+import { registerStore, registerModule } from './modules/analytics-4';
 
 registerStore( Data );
+registerModule( Modules );

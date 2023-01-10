@@ -173,7 +173,7 @@ describe( 'modules/tagmanager versions', () => {
 					expect( propertyIDs ).toEqual( [ null ] );
 				} );
 
-				it( 'returns undefined if the live container data is not loaded yet', () => {
+				it( 'returns undefined if the live container data is not loaded yet', async () => {
 					registry
 						.dispatch( MODULES_TAGMANAGER )
 						.setAccountID( '12345' );
@@ -185,13 +185,20 @@ describe( 'modules/tagmanager versions', () => {
 						.setInternalContainerID( '9876' );
 
 					muteFetch(
-						/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/live-container-version/
+						new RegExp(
+							'^/google-site-kit/v1/modules/tagmanager/data/live-container-version'
+						)
 					);
 					const propertyIDs = registry
 						.select( MODULES_TAGMANAGER )
 						.getAnalyticsPropertyIDs();
 
 					expect( propertyIDs ).toStrictEqual( undefined );
+
+					await untilResolved(
+						registry,
+						MODULES_TAGMANAGER
+					).getLiveContainerVersion( '12345', '9876' );
 				} );
 			} );
 
@@ -268,7 +275,7 @@ describe( 'modules/tagmanager versions', () => {
 					expect( propertyIDs ).toEqual( [ null ] );
 				} );
 
-				it( 'returns undefined if the live container data is not loaded yet', () => {
+				it( 'returns undefined if the live container data is not loaded yet', async () => {
 					registry
 						.dispatch( MODULES_TAGMANAGER )
 						.setAccountID( '12345' );
@@ -280,13 +287,20 @@ describe( 'modules/tagmanager versions', () => {
 						.setInternalAMPContainerID( '9876' );
 
 					muteFetch(
-						/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/live-container-version/
+						new RegExp(
+							'^/google-site-kit/v1/modules/tagmanager/data/live-container-version'
+						)
 					);
 					const propertyIDs = registry
 						.select( MODULES_TAGMANAGER )
 						.getAnalyticsPropertyIDs();
 
 					expect( propertyIDs ).toStrictEqual( undefined );
+
+					await untilResolved(
+						registry,
+						MODULES_TAGMANAGER
+					).getLiveContainerVersion( '12345', '9876' );
 				} );
 			} );
 
@@ -335,7 +349,7 @@ describe( 'modules/tagmanager versions', () => {
 					expect( propertyIDs ).toEqual( [ null ] );
 				} );
 
-				it( 'returns undefined if the live container data is not loaded yet for either container', () => {
+				it( 'returns undefined if the live container data is not loaded yet for either container', async () => {
 					const liveContainerVersionWeb =
 						factories.buildLiveContainerVersionWeb();
 					const { accountID, containerID, internalContainerID } =
@@ -369,13 +383,20 @@ describe( 'modules/tagmanager versions', () => {
 					// Received the live container data for the web container but not the AMP container.
 
 					muteFetch(
-						/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/live-container-version/
+						new RegExp(
+							'^/google-site-kit/v1/modules/tagmanager/data/live-container-version'
+						)
 					);
 					const propertyIDs = registry
 						.select( MODULES_TAGMANAGER )
 						.getAnalyticsPropertyIDs();
 
 					expect( propertyIDs ).toStrictEqual( undefined );
+
+					await untilResolved(
+						registry,
+						MODULES_TAGMANAGER
+					).getLiveContainerVersion( '100', '223' );
 				} );
 			} );
 		} );
@@ -481,12 +502,14 @@ describe( 'modules/tagmanager versions', () => {
 				expect( tagObject ).toStrictEqual( null );
 			} );
 
-			it( 'returns undefined if the live container version is not loaded yet', () => {
+			it( 'returns undefined if the live container version is not loaded yet', async () => {
 				const accountID = '12345';
 				const internalContainerID = '98765';
 
 				muteFetch(
-					/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/live-container-version/
+					new RegExp(
+						'^/google-site-kit/v1/modules/tagmanager/data/live-container-version'
+					)
 				);
 				const tagObject = registry
 					.select( MODULES_TAGMANAGER )
@@ -496,6 +519,11 @@ describe( 'modules/tagmanager versions', () => {
 					);
 
 				expect( tagObject ).toStrictEqual( undefined );
+
+				await untilResolved(
+					registry,
+					MODULES_TAGMANAGER
+				).getLiveContainerVersion( '12345', '98765' );
 			} );
 		} );
 
@@ -590,14 +618,16 @@ describe( 'modules/tagmanager versions', () => {
 				expect( propertyID ).toStrictEqual( null );
 			} );
 
-			it( 'returns undefined if the live container version is not loaded yet', () => {
+			it( 'returns undefined if the live container version is not loaded yet', async () => {
 				const liveContainerVersion =
 					factories.buildLiveContainerVersionWeb();
 				const { accountID, internalContainerID } =
 					parseIDs( liveContainerVersion );
 
 				muteFetch(
-					/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/live-container-version/
+					new RegExp(
+						'^/google-site-kit/v1/modules/tagmanager/data/live-container-version'
+					)
 				);
 				const propertyID = registry
 					.select( MODULES_TAGMANAGER )
@@ -607,6 +637,11 @@ describe( 'modules/tagmanager versions', () => {
 					);
 
 				expect( propertyID ).toStrictEqual( undefined );
+
+				await untilResolved(
+					registry,
+					MODULES_TAGMANAGER
+				).getLiveContainerVersion( '100', '235' );
 			} );
 		} );
 
@@ -684,14 +719,16 @@ describe( 'modules/tagmanager versions', () => {
 				expect( variableObject ).toStrictEqual( null );
 			} );
 
-			it( 'returns undefined if the live container version is not loaded yet', () => {
+			it( 'returns undefined if the live container version is not loaded yet', async () => {
 				const { accountID, internalContainerID } = parseIDs(
 					factories.buildLiveContainerVersionWeb()
 				);
 				const variableName = 'Test Variable';
 
 				muteFetch(
-					/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/live-container-version/
+					new RegExp(
+						'^/google-site-kit/v1/modules/tagmanager/data/live-container-version'
+					)
 				);
 				const variableObject = registry
 					.select( MODULES_TAGMANAGER )
@@ -702,6 +739,11 @@ describe( 'modules/tagmanager versions', () => {
 					);
 
 				expect( variableObject ).toStrictEqual( undefined );
+
+				await untilResolved(
+					registry,
+					MODULES_TAGMANAGER
+				).getLiveContainerVersion( '100', '239' );
 			} );
 		} );
 
@@ -713,7 +755,9 @@ describe( 'modules/tagmanager versions', () => {
 					parseIDs( liveContainerVersion );
 
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/live-container-version/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/tagmanager/data/live-container-version'
+					),
 					{ body: liveContainerVersion, status: 200 }
 				);
 
@@ -778,7 +822,9 @@ describe( 'modules/tagmanager versions', () => {
 					data: { status: 500 },
 				};
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/live-container-version/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/tagmanager/data/live-container-version'
+					),
 					{ body: errorResponse, status: 500 }
 				);
 
@@ -831,7 +877,9 @@ describe( 'modules/tagmanager versions', () => {
 				};
 
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/live-container-version/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/tagmanager/data/live-container-version'
+					),
 					{ body: notFoundResponse, status: 404 }
 				);
 
@@ -1021,7 +1069,7 @@ describe( 'modules/tagmanager versions', () => {
 				).toBe( false );
 			} );
 
-			it( 'returns undefined if either container’s live container version is not loaded yet', () => {
+			it( 'returns undefined if either container’s live container version is not loaded yet', async () => {
 				const accountID = '12345';
 				registry
 					.dispatch( MODULES_TAGMANAGER )
@@ -1061,23 +1109,34 @@ describe( 'modules/tagmanager versions', () => {
 				);
 
 				muteFetch(
-					/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/live-container-version/
+					new RegExp(
+						'^/google-site-kit/v1/modules/tagmanager/data/live-container-version'
+					)
 				);
 				expect(
 					registry
 						.select( MODULES_TAGMANAGER )
 						.hasMultipleAnalyticsPropertyIDs()
 				).toStrictEqual( undefined );
+
+				await untilResolved(
+					registry,
+					MODULES_TAGMANAGER
+				).getLiveContainerVersion( '12345', '291' );
 			} );
 		} );
 
 		describe( 'isDoingGetLiveContainerVersion', () => {
 			it( 'returns true while the live container version fetch is in progress', async () => {
+				jest.useFakeTimers();
+
 				const accountID = '100';
 				const internalContainerID = '200';
 
 				muteFetch(
-					/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/live-container-version/
+					new RegExp(
+						'^/google-site-kit/v1/modules/tagmanager/data/live-container-version'
+					)
 				);
 				expect(
 					registry
@@ -1091,6 +1150,8 @@ describe( 'modules/tagmanager versions', () => {
 				registry
 					.select( MODULES_TAGMANAGER )
 					.getLiveContainerVersion( accountID, internalContainerID );
+
+				jest.runAllTimers();
 
 				expect(
 					registry

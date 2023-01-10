@@ -38,9 +38,11 @@ import {
 	fireEvent,
 	waitFor,
 	provideUserInfo,
+	provideModuleRegistrations,
 } from '../../../../../tests/js/test-utils';
 import { MODULES_ANALYTICS } from '../../../modules/analytics/datastore/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
+import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 
 describe( 'Header', () => {
 	const history = createHashHistory();
@@ -90,7 +92,8 @@ describe( 'Header', () => {
 				connected: false,
 			},
 		] );
-		registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
+		provideModuleRegistrations( registry );
+		registry.dispatch( CORE_USER ).receiveGetAuthentication( {} );
 	} );
 
 	it( 'should render "Connected" for a connected module', () => {

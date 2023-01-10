@@ -40,7 +40,9 @@ MultipleAdmins.decorators = [
 	withQuery,
 	( Story ) => {
 		fetchMock.getOnce(
-			/^\/google-site-kit\/v1\/core\/user\/data\/user-input-settings/,
+			new RegExp(
+				'^/google-site-kit/v1/core/user/data/user-input-settings'
+			),
 			{
 				body: {
 					goals: {
