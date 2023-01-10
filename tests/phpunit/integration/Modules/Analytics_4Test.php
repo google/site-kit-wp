@@ -61,11 +61,20 @@ class Analytics_4Test extends TestCase {
 	 */
 	private $analytics;
 
+	/**
+	 * Fake HTTP request handler calls.
+	 *
+	 * @var array
+	 */
+	private $request_handler_calls;
+
 	public function set_up() {
 		parent::set_up();
 
 		$this->context   = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$this->analytics = new Analytics_4( $this->context );
+
+		$this->request_handler_calls = array();
 	}
 
 	public function test_register() {
@@ -221,8 +230,6 @@ class Analytics_4Test extends TestCase {
 	}
 
 	public function test_get_report() {
-		$request_handler_calls = array();
-
 		// Fetch a report that exercises all input parameters, barring the alternative date range,
 		// metric and dimension formats which are tested separately.
 		$data = $this->get_report(
@@ -265,8 +272,7 @@ class Analytics_4Test extends TestCase {
 						'sortOrder' => 'ASCENDING',
 					),
 				),
-			),
-			$request_handler_calls
+			)
 		);
 
 		$this->assertNotWPError( $data );
@@ -275,14 +281,14 @@ class Analytics_4Test extends TestCase {
 		$this->assertEquals( 'some-value', $data['modelData'][0]['rows'][0]['metricValues'][0]['value'] );
 
 		// Verify the request URL and params were correctly generated.
-		$this->assertCount( 1, $request_handler_calls );
+		$this->assertCount( 1, $this->request_handler_calls );
 
-		$request_url = $request_handler_calls[0]['url'];
+		$request_url = $this->request_handler_calls[0]['url'];
 
 		$this->assertEquals( 'analyticsdata.googleapis.com', $request_url['host'] );
 		$this->assertEquals( '/v1beta/properties/123456789:runReport', $request_url['path'] );
 
-		$request_params = $request_handler_calls[0]['params'];
+		$request_params = $this->request_handler_calls[0]['params'];
 
 		// Verify the request params that are set by default.
 		$this->assertEquals(
@@ -420,8 +426,6 @@ class Analytics_4Test extends TestCase {
 	}
 
 	public function test_get_report__date_range() {
-		$request_handler_calls = array();
-
 		$this->get_report(
 			array(
 				// Note, metrics is a required parameter.
@@ -429,11 +433,10 @@ class Analytics_4Test extends TestCase {
 					array( 'name' => 'sessions' ),
 				),
 				'dateRange' => 'last-14-days',
-			),
-			$request_handler_calls
+			)
 		);
 
-		$request_params = $request_handler_calls[0]['params'];
+		$request_params = $this->request_handler_calls[0]['params'];
 
 		$this->assertEquals(
 			array(
@@ -447,8 +450,6 @@ class Analytics_4Test extends TestCase {
 	}
 
 	public function test_get_report__compare_date_ranges() {
-		$request_handler_calls = array();
-
 		$this->get_report(
 			array(
 				// Note, metrics is a required parameter.
@@ -457,11 +458,10 @@ class Analytics_4Test extends TestCase {
 				),
 				'dateRange'         => 'last-14-days',
 				'compareDateRanges' => true,
-			),
-			$request_handler_calls
+			)
 		);
 
-		$request_params = $request_handler_calls[0]['params'];
+		$request_params = $this->request_handler_calls[0]['params'];
 
 		$this->assertEquals(
 			array(
@@ -474,8 +474,6 @@ class Analytics_4Test extends TestCase {
 		);
 	}
 	public function test_get_report__multi_date_range() {
-		$request_handler_calls = array();
-
 		$this->get_report(
 			array(
 				// Note, metrics is a required parameter.
@@ -484,11 +482,10 @@ class Analytics_4Test extends TestCase {
 				),
 				'dateRange'      => 'last-14-days',
 				'multiDateRange' => true,
-			),
-			$request_handler_calls
+			)
 		);
 
-		$request_params = $request_handler_calls[0]['params'];
+		$request_params = $this->request_handler_calls[0]['params'];
 
 		$this->assertEquals(
 			array(
@@ -506,17 +503,14 @@ class Analytics_4Test extends TestCase {
 	}
 
 	public function test_get_report__metrics_as_string() {
-		$request_handler_calls = array();
-
 		$this->get_report(
 			array(
 				// Note, metrics is a required parameter.
 				'metrics' => 'sessions,totalUsers',
-			),
-			$request_handler_calls
+			)
 		);
 
-		$request_params = $request_handler_calls[0]['params'];
+		$request_params = $this->request_handler_calls[0]['params'];
 
 		$this->assertEquals(
 			array(
@@ -532,8 +526,6 @@ class Analytics_4Test extends TestCase {
 	}
 
 	public function test_get_report__metrics_as_single_object() {
-		$request_handler_calls = array();
-
 		$this->get_report(
 			array(
 				// Note, metrics is a required parameter.
@@ -541,11 +533,10 @@ class Analytics_4Test extends TestCase {
 					'name'       => 'total',
 					'expression' => 'totalUsers',
 				),
-			),
-			$request_handler_calls
+			)
 		);
 
-		$request_params = $request_handler_calls[0]['params'];
+		$request_params = $this->request_handler_calls[0]['params'];
 
 		$this->assertEquals(
 			array(
@@ -559,18 +550,15 @@ class Analytics_4Test extends TestCase {
 	}
 
 	public function test_get_report__dimensions_as_string() {
-		$request_handler_calls = array();
-
 		$this->get_report(
 			array(
 				// Note, metrics is a required parameter.
 				'metrics'    => 'sessions',
 				'dimensions' => 'sessionDefaultChannelGrouping,pageTitle',
-			),
-			$request_handler_calls
+			)
 		);
 
-		$request_params = $request_handler_calls[0]['params'];
+		$request_params = $this->request_handler_calls[0]['params'];
 
 		$this->assertEquals(
 			array(
@@ -586,8 +574,6 @@ class Analytics_4Test extends TestCase {
 	}
 
 	public function test_get_report__dimensions_as_single_object() {
-		$request_handler_calls = array();
-
 		$this->get_report(
 			array(
 				// Note, metrics is a required parameter.
@@ -595,11 +581,10 @@ class Analytics_4Test extends TestCase {
 				'dimensions' => array(
 					'name' => 'pageTitle',
 				),
-			),
-			$request_handler_calls
+			)
 		);
 
-		$request_params = $request_handler_calls[0]['params'];
+		$request_params = $this->request_handler_calls[0]['params'];
 
 		$this->assertEquals(
 			array(
@@ -612,12 +597,7 @@ class Analytics_4Test extends TestCase {
 	}
 
 	public function test_report__no_metrics() {
-		$request_handler_calls = array();
-
-		$data = $this->get_report(
-			array(),
-			$request_handler_calls
-		);
+		$data = $this->get_report( array() );
 
 		$this->assertWPErrorWithMessage( 'Request parameter is empty: metrics.', $data );
 	}
@@ -634,9 +614,7 @@ class Analytics_4Test extends TestCase {
 			}
 		);
 
-		$request_handler_calls = array();
-
-		$analytics = $this->setup_report( $request_handler_calls, true );
+		$analytics = $this->setup_report( true );
 
 		$data = $analytics->get_data(
 			'report',
@@ -648,8 +626,7 @@ class Analytics_4Test extends TestCase {
 					array( 'name' => 'invalidMetric' ),
 					array( 'name' => 'anotherInvalidMetric' ),
 				),
-			),
-			$request_handler_calls
+			)
 		);
 
 		$this->assertWPErrorWithMessage( 'Unsupported metrics requested: invalidMetric, anotherInvalidMetric', $data );
@@ -676,9 +653,7 @@ class Analytics_4Test extends TestCase {
 			}
 		);
 
-		$request_handler_calls = array();
-
-		$analytics = $this->setup_report( $request_handler_calls, true );
+		$analytics = $this->setup_report( true );
 
 		$data = $analytics->get_data(
 			'report',
@@ -688,8 +663,7 @@ class Analytics_4Test extends TestCase {
 					array( 'name' => 'sessions' ),
 				),
 				'dimensions' => array( 'date', 'pageTitle', 'invalidDimension', 'anotherInvalidDimension' ),
-			),
-			$request_handler_calls
+			)
 		);
 
 		$this->assertWPErrorWithMessage( 'Unsupported dimensions requested: invalidDimension, anotherInvalidDimension', $data );
@@ -713,11 +687,10 @@ class Analytics_4Test extends TestCase {
 	 * @since n.e.x.t
 	 *
 	 * @param array $report_params The report parameters.
-	 * @param array $request_handler_calls Output variable for tracking the request handler calls. Passed by reference.
 	 * @return RunReportResponse[] The report response.
 	 */
-	protected function get_report( array $report_params, array &$request_handler_calls ) {
-		$analytics = $this->setup_report( $request_handler_calls );
+	protected function get_report( array $report_params ) {
+		$analytics = $this->setup_report();
 
 		return $analytics->get_data( 'report', $report_params );
 	}
@@ -730,11 +703,10 @@ class Analytics_4Test extends TestCase {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param array $request_handler_calls Output variable for tracking the request handler calls. Passed by reference.
 	 * @param boolean [enable_validation] Whether to enable validation of the metrics and dimensions. Default false.
 	 * @return Analytics_4 The Analytics 4 instance.
 	 */
-	protected function setup_report( array &$request_handler_calls, $enable_validation = false ) {
+	protected function setup_report( $enable_validation = false ) {
 		$user_id        = $this->factory()->user->create( array( 'role' => 'administrator' ) );
 		$context        = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$options        = new Options( $context );
@@ -757,11 +729,11 @@ class Analytics_4Test extends TestCase {
 
 		$http_client = new FakeHttpClient();
 		$http_client->set_request_handler(
-			function ( Request $request ) use ( $property_id, &$request_handler_calls ) {
+			function ( Request $request ) use ( $property_id ) {
 				$url    = parse_url( $request->getUrl() );
 				$params = json_decode( (string) $request->getBody(), true );
 
-				$request_handler_calls[] = array(
+				$this->request_handler_calls[] = array(
 					'url'    => $url,
 					'params' => $params,
 				);
