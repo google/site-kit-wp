@@ -100,8 +100,6 @@ class Analytics_4Test extends TestCase {
 		$modules     = new Modules( $this->context, null, $user_options, $this->authentication );
 		$permissions = new Permissions( $this->context, $this->authentication, $modules, $user_options, new Dismissed_Items( $user_options ) );
 		$permissions->register();
-
-		$this->request_handler_calls = array();
 	}
 
 	public function test_register() {
@@ -257,6 +255,18 @@ class Analytics_4Test extends TestCase {
 	}
 
 	public function test_get_report() {
+		$property_id = '123456789';
+
+		$this->analytics->get_settings()->merge(
+			array(
+				'propertyID' => $property_id,
+			)
+		);
+
+		$http_client = $this->create_fake_http_client( $property_id );
+		$this->analytics->get_client()->setHttpClient( $http_client );
+		$this->analytics->register();
+
 		// Fetch a report that exercises all input parameters, barring the alternative date range,
 		// metric and dimension formats which are tested separately.
 		$data = $this->get_report(
@@ -453,6 +463,18 @@ class Analytics_4Test extends TestCase {
 	}
 
 	public function test_get_report__date_range() {
+		$property_id = '123456789';
+
+		$this->analytics->get_settings()->merge(
+			array(
+				'propertyID' => $property_id,
+			)
+		);
+
+		$http_client = $this->create_fake_http_client( $property_id );
+		$this->analytics->get_client()->setHttpClient( $http_client );
+		$this->analytics->register();
+
 		$this->get_report(
 			array(
 				// Note, metrics is a required parameter.
@@ -477,6 +499,18 @@ class Analytics_4Test extends TestCase {
 	}
 
 	public function test_get_report__compare_date_ranges() {
+		$property_id = '123456789';
+
+		$this->analytics->get_settings()->merge(
+			array(
+				'propertyID' => $property_id,
+			)
+		);
+
+		$http_client = $this->create_fake_http_client( $property_id );
+		$this->analytics->get_client()->setHttpClient( $http_client );
+		$this->analytics->register();
+
 		$this->get_report(
 			array(
 				// Note, metrics is a required parameter.
@@ -501,6 +535,18 @@ class Analytics_4Test extends TestCase {
 		);
 	}
 	public function test_get_report__multi_date_range() {
+		$property_id = '123456789';
+
+		$this->analytics->get_settings()->merge(
+			array(
+				'propertyID' => $property_id,
+			)
+		);
+
+		$http_client = $this->create_fake_http_client( $property_id );
+		$this->analytics->get_client()->setHttpClient( $http_client );
+		$this->analytics->register();
+
 		$this->get_report(
 			array(
 				// Note, metrics is a required parameter.
@@ -530,6 +576,18 @@ class Analytics_4Test extends TestCase {
 	}
 
 	public function test_get_report__metrics_as_string() {
+		$property_id = '123456789';
+
+		$this->analytics->get_settings()->merge(
+			array(
+				'propertyID' => $property_id,
+			)
+		);
+
+		$http_client = $this->create_fake_http_client( $property_id );
+		$this->analytics->get_client()->setHttpClient( $http_client );
+		$this->analytics->register();
+
 		$this->get_report(
 			array(
 				// Note, metrics is a required parameter.
@@ -553,6 +611,18 @@ class Analytics_4Test extends TestCase {
 	}
 
 	public function test_get_report__metrics_as_single_object() {
+		$property_id = '123456789';
+
+		$this->analytics->get_settings()->merge(
+			array(
+				'propertyID' => $property_id,
+			)
+		);
+
+		$http_client = $this->create_fake_http_client( $property_id );
+		$this->analytics->get_client()->setHttpClient( $http_client );
+		$this->analytics->register();
+
 		$this->get_report(
 			array(
 				// Note, metrics is a required parameter.
@@ -577,6 +647,18 @@ class Analytics_4Test extends TestCase {
 	}
 
 	public function test_get_report__dimensions_as_string() {
+		$property_id = '123456789';
+
+		$this->analytics->get_settings()->merge(
+			array(
+				'propertyID' => $property_id,
+			)
+		);
+
+		$http_client = $this->create_fake_http_client( $property_id );
+		$this->analytics->get_client()->setHttpClient( $http_client );
+		$this->analytics->register();
+
 		$this->get_report(
 			array(
 				// Note, metrics is a required parameter.
@@ -601,6 +683,18 @@ class Analytics_4Test extends TestCase {
 	}
 
 	public function test_get_report__dimensions_as_single_object() {
+		$property_id = '123456789';
+
+		$this->analytics->get_settings()->merge(
+			array(
+				'propertyID' => $property_id,
+			)
+		);
+
+		$http_client = $this->create_fake_http_client( $property_id );
+		$this->analytics->get_client()->setHttpClient( $http_client );
+		$this->analytics->register();
+
 		$this->get_report(
 			array(
 				// Note, metrics is a required parameter.
@@ -624,12 +718,36 @@ class Analytics_4Test extends TestCase {
 	}
 
 	public function test_report__no_metrics() {
+		$property_id = '123456789';
+
+		$this->analytics->get_settings()->merge(
+			array(
+				'propertyID' => $property_id,
+			)
+		);
+
+		$http_client = $this->create_fake_http_client( $property_id );
+		$this->analytics->get_client()->setHttpClient( $http_client );
+		$this->analytics->register();
+
 		$data = $this->get_report( array() );
 
 		$this->assertWPErrorWithMessage( 'Request parameter is empty: metrics.', $data );
 	}
 
 	public function test_report__metric_validation() {
+		$property_id = '123456789';
+
+		$this->analytics->get_settings()->merge(
+			array(
+				'propertyID' => $property_id,
+			)
+		);
+
+		$http_client = $this->create_fake_http_client( $property_id );
+		$this->analytics->get_client()->setHttpClient( $http_client );
+		$this->analytics->register();
+
 		// Enable some metrics.
 		add_filter(
 			'googlesitekit_shareable_analytics_4_metrics',
@@ -660,6 +778,18 @@ class Analytics_4Test extends TestCase {
 	}
 
 	public function test_report__dimension_validation() {
+		$property_id = '123456789';
+
+		$this->analytics->get_settings()->merge(
+			array(
+				'propertyID' => $property_id,
+			)
+		);
+
+		$http_client = $this->create_fake_http_client( $property_id );
+		$this->analytics->get_client()->setHttpClient( $http_client );
+		$this->analytics->register();
+
 		// Enable some metrics and dimensions.
 		add_filter(
 			'googlesitekit_shareable_analytics_4_metrics',
@@ -723,24 +853,13 @@ class Analytics_4Test extends TestCase {
 	}
 
 	/**
-	 * Sets up a mock Analytics 4 instance in preparation for retrieving a report.
+	 * Creates a fake HTTP client with call tracking.
 	 *
-	 * This is a helper method to avoid duplicating the same code in multiple tests.
-	 * It also allows us to mock the HTTP client to verify the request parameters.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param boolean [enable_validation] Whether to enable validation of the metrics and dimensions. Default false.
-	 * @return Analytics_4 The Analytics 4 instance.
+	 * @param string $property_id The GA4 property ID to use.
+	 * @return FakeHttpClient The fake HTTP client.
 	 */
-	protected function setup_report( $enable_validation = false ) {
-		$property_id = '123456789';
-
-		$this->analytics->get_settings()->merge(
-			array(
-				'propertyID' => $property_id,
-			)
-		);
+	protected function create_fake_http_client( $property_id ) {
+		$this->request_handler_calls = array();
 
 		// Grant scopes so request doesn't fail.
 		$this->authentication->get_oauth_client()->set_granted_scopes(
@@ -794,9 +913,21 @@ class Analytics_4Test extends TestCase {
 			}
 		);
 
-		$this->analytics->get_client()->setHttpClient( $http_client );
-		$this->analytics->register();
+		return $http_client;
+	}
 
+	/**
+	 * Sets up a mock Analytics 4 instance in preparation for retrieving a report.
+	 *
+	 * This is a helper method to avoid duplicating the same code in multiple tests.
+	 * It also allows us to mock the HTTP client to verify the request parameters.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param boolean [enable_validation] Whether to enable validation of the metrics and dimensions. Default false.
+	 * @return Analytics_4 The Analytics 4 instance.
+	 */
+	protected function setup_report( $enable_validation = false ) {
 		if ( $enable_validation ) {
 			// Metrics and dimensions are only validated when using shared credentials; this block of code sets up the shared credentials scenario.
 
