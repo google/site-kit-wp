@@ -742,10 +742,6 @@ class Analytics_4Test extends TestCase {
 		$authentication = new Authentication( $context, $options, $user_options );
 		$analytics      = new Analytics_4( $context, $options, $user_options, $authentication );
 
-		$authentication->get_oauth_client()->get_client()->setHttpClient(
-			new FakeHttpClient() // Returns 200 by default.
-		);
-
 		$property_id = '123456789';
 
 		$analytics->get_settings()->merge(
