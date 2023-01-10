@@ -85,21 +85,12 @@ class Analytics_4Test extends TestCase {
 	public function set_up() {
 		parent::set_up();
 
-		$this->enable_feature( 'dashboardSharing' );
-
 		$this->context        = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$options              = new Options( $this->context );
 		$this->user           = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
 		$user_options         = new User_Options( $this->context, $this->user->ID );
 		$this->authentication = new Authentication( $this->context, $options, $user_options );
 		$this->analytics      = new Analytics_4( $this->context, $options, $user_options, $this->authentication );
-
-		// Re-register Permissions after enabling the dashboardSharing feature to include dashboard sharing capabilities.
-		// TODO: Remove this when `dashboardSharing` feature flag is removed.
-
-		$modules     = new Modules( $this->context, null, $user_options, $this->authentication );
-		$permissions = new Permissions( $this->context, $this->authentication, $modules, $user_options, new Dismissed_Items( $user_options ) );
-		$permissions->register();
 	}
 
 	public function test_register() {
@@ -744,6 +735,21 @@ class Analytics_4Test extends TestCase {
 	}
 
 	public function test_report__metric_validation() {
+		$this->enable_feature( 'dashboardSharing' );
+
+		$this->context        = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$options              = new Options( $this->context );
+		$this->user           = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
+		$user_options         = new User_Options( $this->context, $this->user->ID );
+		$this->authentication = new Authentication( $this->context, $options, $user_options );
+		$this->analytics      = new Analytics_4( $this->context, $options, $user_options, $this->authentication );
+
+		// Re-register Permissions after enabling the dashboardSharing feature to include dashboard sharing capabilities.
+		// TODO: Remove this when `dashboardSharing` feature flag is removed.
+		$modules     = new Modules( $this->context, null, $user_options, $this->authentication );
+		$permissions = new Permissions( $this->context, $this->authentication, $modules, $user_options, new Dismissed_Items( $user_options ) );
+		$permissions->register();
+
 		$property_id = '123456789';
 
 		$this->analytics->get_settings()->merge(
@@ -786,6 +792,21 @@ class Analytics_4Test extends TestCase {
 	}
 
 	public function test_report__dimension_validation() {
+		$this->enable_feature( 'dashboardSharing' );
+
+		$this->context        = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$options              = new Options( $this->context );
+		$this->user           = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
+		$user_options         = new User_Options( $this->context, $this->user->ID );
+		$this->authentication = new Authentication( $this->context, $options, $user_options );
+		$this->analytics      = new Analytics_4( $this->context, $options, $user_options, $this->authentication );
+
+		// Re-register Permissions after enabling the dashboardSharing feature to include dashboard sharing capabilities.
+		// TODO: Remove this when `dashboardSharing` feature flag is removed.
+		$modules     = new Modules( $this->context, null, $user_options, $this->authentication );
+		$permissions = new Permissions( $this->context, $this->authentication, $modules, $user_options, new Dismissed_Items( $user_options ) );
+		$permissions->register();
+
 		$property_id = '123456789';
 
 		$this->analytics->get_settings()->merge(
