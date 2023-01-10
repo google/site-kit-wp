@@ -767,9 +767,9 @@ class Analytics_4Test extends TestCase {
 			}
 		);
 
-		$analytics = $this->setup_report( true );
+		$this->enable_shared_credentials();
 
-		$data = $analytics->get_data(
+		$data = $this->analytics->get_data(
 			'report',
 			array(
 				// Note, metrics is a required parameter.
@@ -818,9 +818,9 @@ class Analytics_4Test extends TestCase {
 			}
 		);
 
-		$analytics = $this->setup_report( true );
+		$this->enable_shared_credentials();
 
-		$data = $analytics->get_data(
+		$data = $this->analytics->get_data(
 			'report',
 			array(
 				// Note, metrics is a required parameter.
@@ -911,54 +911,40 @@ class Analytics_4Test extends TestCase {
 	}
 
 	/**
-	 * Sets up a mock Analytics 4 instance in preparation for retrieving a report.
-	 *
-	 * This is a helper method to avoid duplicating the same code in multiple tests.
-	 * It also allows us to mock the HTTP client to verify the request parameters.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param boolean [enable_validation] Whether to enable validation of the metrics and dimensions. Default false.
-	 * @return Analytics_4 The Analytics 4 instance.
+	 * Metrics and dimensions are only validated when using shared credentials. This helper method sets up the shared credentials scenario.
 	 */
-	protected function setup_report( $enable_validation = false ) {
-		if ( $enable_validation ) {
-			// Metrics and dimensions are only validated when using shared credentials; this block of code sets up the shared credentials scenario.
+	protected function enable_shared_credentials() {
+		// Ensure the user is authenticated.
+		$this->authentication->get_oauth_client()->set_token(
+			array(
+				'access_token' => 'valid-auth-token',
+			)
+		);
 
-			// Ensure the user is authenticated.
-			$this->authentication->get_oauth_client()->set_token(
-				array(
-					'access_token' => 'valid-auth-token',
-				)
-			);
+		// Ensure the Analytics 4 module is connected and the owner ID is set.
+		update_option(
+			'googlesitekit_analytics-4_settings',
+			array(
+				'propertyID'      => '123',
+				'webDataStreamID' => '456',
+				'measurementID'   => 'G-789',
+				'ownerID'         => $this->user->ID,
+			)
+		);
 
-			// Ensure the Analytics 4 module is connected and the owner ID is set.
-			update_option(
-				'googlesitekit_analytics-4_settings',
-				array(
-					'propertyID'      => '123',
-					'webDataStreamID' => '456',
-					'measurementID'   => 'G-789',
-					'ownerID'         => $this->user->ID,
-				)
-			);
+		// Setup a user with shared access to the Analytics 4 module.
+		$admin = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $admin->ID );
 
-			// Setup a user with shared access to the Analytics 4 module.
-			$admin = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
-			wp_set_current_user( $admin->ID );
-
-			add_option(
-				Module_Sharing_Settings::OPTION,
-				array(
-					'analytics-4' => array(
-						'sharedRoles' => array( 'administrator' ),
-						'management'  => 'all_admins',
-					),
-				)
-			);
-		}
-
-		return $this->analytics;
+		add_option(
+			Module_Sharing_Settings::OPTION,
+			array(
+				'analytics-4' => array(
+					'sharedRoles' => array( 'administrator' ),
+					'management'  => 'all_admins',
+				),
+			)
+		);
 	}
 
 	/**
