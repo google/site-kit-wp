@@ -619,8 +619,8 @@ final class Analytics_4 extends Module
 	protected function setup_services( Google_Site_Kit_Client $client ) {
 		return array(
 			'analyticsadmin' => new Google_Service_GoogleAnalyticsAdmin( $client ),
-			'tagmanager'     => new Google_Service_TagManager( $client ),
 			'analyticsdata'  => new Google_Service_AnalyticsData( $client ),
+			'tagmanager'     => new Google_Service_TagManager( $client ),
 		);
 	}
 
