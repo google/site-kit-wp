@@ -272,7 +272,7 @@ class Analytics_4Test extends TestCase {
 		$this->assertNotWPError( $data );
 
 		// Verify the reports are returned by checking a metric value.
-		$this->assertEquals( 'some-value', $data[0]['rows'][0][0]['value'] );
+		$this->assertEquals( 'some-value', $data['modelData'][0]['rows'][0]['metricValues'][0]['value'] );
 
 		// Verify the request URL and params were correctly generated.
 		$this->assertCount( 1, $request_handler_calls );
@@ -280,9 +280,9 @@ class Analytics_4Test extends TestCase {
 		$request_url = $request_handler_calls[0]['url'];
 
 		$this->assertEquals( 'analyticsdata.googleapis.com', $request_url['host'] );
-		$this->assertEquals( '/v1beta/properties/123456789:batchRunReports', $request_url['path'] );
+		$this->assertEquals( '/v1beta/properties/123456789:runReport', $request_url['path'] );
 
-		$request_params = $request_handler_calls[0]['params']['requests'][0];
+		$request_params = $request_handler_calls[0]['params'];
 
 		// Verify the request params that are set by default.
 		$this->assertEquals(
@@ -433,7 +433,7 @@ class Analytics_4Test extends TestCase {
 			$request_handler_calls
 		);
 
-		$request_params = $request_handler_calls[0]['params']['requests'][0];
+		$request_params = $request_handler_calls[0]['params'];
 
 		$this->assertEquals(
 			array(
@@ -461,7 +461,7 @@ class Analytics_4Test extends TestCase {
 			$request_handler_calls
 		);
 
-		$request_params = $request_handler_calls[0]['params']['requests'][0];
+		$request_params = $request_handler_calls[0]['params'];
 
 		$this->assertEquals(
 			array(
@@ -488,7 +488,7 @@ class Analytics_4Test extends TestCase {
 			$request_handler_calls
 		);
 
-		$request_params = $request_handler_calls[0]['params']['requests'][0];
+		$request_params = $request_handler_calls[0]['params'];
 
 		$this->assertEquals(
 			array(
@@ -516,7 +516,7 @@ class Analytics_4Test extends TestCase {
 			$request_handler_calls
 		);
 
-		$request_params = $request_handler_calls[0]['params']['requests'][0];
+		$request_params = $request_handler_calls[0]['params'];
 
 		$this->assertEquals(
 			array(
@@ -545,7 +545,7 @@ class Analytics_4Test extends TestCase {
 			$request_handler_calls
 		);
 
-		$request_params = $request_handler_calls[0]['params']['requests'][0];
+		$request_params = $request_handler_calls[0]['params'];
 
 		$this->assertEquals(
 			array(
@@ -570,7 +570,7 @@ class Analytics_4Test extends TestCase {
 			$request_handler_calls
 		);
 
-		$request_params = $request_handler_calls[0]['params']['requests'][0];
+		$request_params = $request_handler_calls[0]['params'];
 
 		$this->assertEquals(
 			array(
@@ -599,7 +599,7 @@ class Analytics_4Test extends TestCase {
 			$request_handler_calls
 		);
 
-		$request_params = $request_handler_calls[0]['params']['requests'][0];
+		$request_params = $request_handler_calls[0]['params'];
 
 		$this->assertEquals(
 			array(
@@ -775,7 +775,7 @@ class Analytics_4Test extends TestCase {
 				}
 
 				switch ( $url['path'] ) {
-					case "/v1beta/properties/$property_id:batchRunReports":
+					case "/v1beta/properties/$property_id:runReport":
 						// Return a mock report.
 						return new Response(
 							200,
@@ -783,15 +783,13 @@ class Analytics_4Test extends TestCase {
 							Stream::factory(
 								json_encode(
 									array(
-										'kind'    => 'analyticsData#batchRunReports',
-										'reports' => array(
-											array(
-												'rows' => array(
-													array(
-														'metricValues' => array(
-															array(
-																'value' => 'some-value',
-															),
+										'kind' => 'analyticsData#runReport',
+										array(
+											'rows' => array(
+												array(
+													'metricValues' => array(
+														array(
+															'value' => 'some-value',
 														),
 													),
 												),

@@ -548,8 +548,6 @@ final class Analytics_4 extends Module
 				);
 			case 'GET:property':
 				return self::filter_property_with_ids( $response );
-			case 'GET:report':
-				return $response->getReports();
 			case 'GET:webdatastreams':
 				/* @var GoogleAnalyticsAdminV1betaListDataStreamsResponse $response phpcs:ignore Squiz.PHP.CommentedOutCode.Found */
 				$webdatastreams = self::filter_web_datastreams( $response->getDataStreams() );
@@ -1059,11 +1057,7 @@ final class Analytics_4 extends Module
 			)
 		);
 
-		// Batch report requests.
-		$body = new Google_Service_AnalyticsData_BatchRunReportsRequest();
-		$body->setRequests( array( $request ) );
-
-		return $this->get_analyticsdata_service()->properties->batchRunReports( $property_id, $body );
+		return $this->get_analyticsdata_service()->properties->runReport( $property_id, $request );
 	}
 
 	/**
