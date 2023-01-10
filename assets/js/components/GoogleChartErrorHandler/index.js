@@ -99,15 +99,10 @@ class GoogleChartErrorHandler extends Component {
 								onClick={ this.onErrorClick }
 								trailingIcon={ icon }
 							>
-								{ copied
-									? __(
-											'Error copied to clipboard',
-											'google-site-kit'
-									  )
-									: __(
-											'Copy error contents',
-											'google-site-kit'
-									  ) }
+								{ __(
+									'Copy error contents',
+									'google-site-kit'
+								) }
 							</Button>
 							<Link
 								href="https://wordpress.org/support/plugin/google-site-kit/"
