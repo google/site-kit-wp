@@ -227,8 +227,7 @@ class Analytics_4Test extends TestCase {
 		// metric and dimension formats which are tested separately.
 		$data = $this->get_report(
 			array(
-				// Note, propertyID and metrics are required parameters.
-				'propertyID'       => '123456789',
+				// Note, metrics is a required parameter.
 				'metrics'          => array(
 					// Provide metrics in both string and array formats.
 					'sessions',
@@ -287,6 +286,11 @@ class Analytics_4Test extends TestCase {
 
 		// Verify the request params that are set by default.
 		$this->assertEquals(
+			'properties/123456789',
+			$request_params['property']
+		);
+
+		$this->assertEquals(
 			1,
 			$request_params['keepEmptyRows']
 		);
@@ -301,11 +305,6 @@ class Analytics_4Test extends TestCase {
 		);
 
 		// Verify the request params that are derived from the input parameters.
-		$this->assertEquals(
-			'properties/123456789',
-			$request_params['property']
-		);
-
 		$this->assertEquals(
 			array(
 				array(
@@ -425,12 +424,11 @@ class Analytics_4Test extends TestCase {
 
 		$this->get_report(
 			array(
-				// Note, propertyID and metrics are required parameters.
-				'propertyID' => '123456789',
-				'metrics'    => array(
+				// Note, metrics is a required parameter.
+				'metrics'   => array(
 					array( 'name' => 'sessions' ),
 				),
-				'dateRange'  => 'last-14-days',
+				'dateRange' => 'last-14-days',
 			),
 			$request_handler_calls
 		);
@@ -453,8 +451,7 @@ class Analytics_4Test extends TestCase {
 
 		$this->get_report(
 			array(
-				// Note, propertyID and metrics are required parameters.
-				'propertyID'        => '123456789',
+				// Note, metrics is a required parameter.
 				'metrics'           => array(
 					array( 'name' => 'sessions' ),
 				),
@@ -481,8 +478,7 @@ class Analytics_4Test extends TestCase {
 
 		$this->get_report(
 			array(
-				// Note, propertyID and metrics are required parameters.
-				'propertyID'     => '123456789',
+				// Note, metrics is a required parameter.
 				'metrics'        => array(
 					array( 'name' => 'sessions' ),
 				),
@@ -514,9 +510,8 @@ class Analytics_4Test extends TestCase {
 
 		$this->get_report(
 			array(
-				// Note, propertyID and metrics are required parameters.
-				'propertyID' => '123456789',
-				'metrics'    => 'sessions,totalUsers',
+				// Note, metrics is a required parameter.
+				'metrics' => 'sessions,totalUsers',
 			),
 			$request_handler_calls
 		);
@@ -541,9 +536,8 @@ class Analytics_4Test extends TestCase {
 
 		$this->get_report(
 			array(
-				// Note, propertyID and metrics are required parameters.
-				'propertyID' => '123456789',
-				'metrics'    => array(
+				// Note, metrics is a required parameter.
+				'metrics' => array(
 					'name'       => 'total',
 					'expression' => 'totalUsers',
 				),
@@ -569,8 +563,7 @@ class Analytics_4Test extends TestCase {
 
 		$this->get_report(
 			array(
-				// Note, propertyID and metrics are required parameters.
-				'propertyID' => '123456789',
+				// Note, metrics is a required parameter.
 				'metrics'    => 'sessions',
 				'dimensions' => 'sessionDefaultChannelGrouping,pageTitle',
 			),
@@ -597,8 +590,7 @@ class Analytics_4Test extends TestCase {
 
 		$this->get_report(
 			array(
-				// Note, propertyID and metrics are required parameters.
-				'propertyID' => '123456789',
+				// Note, metrics is a required parameter.
 				'metrics'    => 'sessions',
 				'dimensions' => array(
 					'name' => 'pageTitle',
@@ -619,22 +611,11 @@ class Analytics_4Test extends TestCase {
 		);
 	}
 
-	public function test_report__no_property_id() {
-		$request_handler_calls = array();
-
-		$data = $this->get_report( array(), $request_handler_calls );
-
-		$this->assertWPErrorWithMessage( 'Request parameter is empty: propertyID.', $data );
-	}
-
 	public function test_report__no_metrics() {
 		$request_handler_calls = array();
 
 		$data = $this->get_report(
-			array(
-				// Note, propertyID is a required parameter.
-				'propertyID' => '123456789',
-			),
+			array(),
 			$request_handler_calls
 		);
 
@@ -653,18 +634,15 @@ class Analytics_4Test extends TestCase {
 			}
 		);
 
-		$property_id = '123456789';
-
 		$request_handler_calls = array();
 
-		$analytics = $this->setup_report( $property_id, $request_handler_calls, true );
+		$analytics = $this->setup_report( $request_handler_calls, true );
 
 		$data = $analytics->get_data(
 			'report',
 			array(
-				// Note, propertyID and metrics are required parameters.
-				'propertyID' => $property_id,
-				'metrics'    => array(
+				// Note, metrics is a required parameter.
+				'metrics' => array(
 					array( 'name' => 'sessions' ),
 					array( 'name' => 'totalUsers' ),
 					array( 'name' => 'invalidMetric' ),
@@ -698,17 +676,14 @@ class Analytics_4Test extends TestCase {
 			}
 		);
 
-		$property_id = '123456789';
-
 		$request_handler_calls = array();
 
-		$analytics = $this->setup_report( $property_id, $request_handler_calls, true );
+		$analytics = $this->setup_report( $request_handler_calls, true );
 
 		$data = $analytics->get_data(
 			'report',
 			array(
-				// Note, propertyID and metrics are required parameters.
-				'propertyID' => $property_id,
+				// Note, metrics is a required parameter.
 				'metrics'    => array(
 					array( 'name' => 'sessions' ),
 				),
@@ -742,9 +717,7 @@ class Analytics_4Test extends TestCase {
 	 * @return RunReportResponse[] The report response.
 	 */
 	protected function get_report( array $report_params, array &$request_handler_calls ) {
-		$property_id = isset( $report_params['propertyID'] ) ? $report_params['propertyID'] : null;
-
-		$analytics = $this->setup_report( $property_id, $request_handler_calls );
+		$analytics = $this->setup_report( $request_handler_calls );
 
 		return $analytics->get_data( 'report', $report_params );
 	}
@@ -757,12 +730,11 @@ class Analytics_4Test extends TestCase {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param string $property_id The property ID.
 	 * @param array $request_handler_calls Output variable for tracking the request handler calls. Passed by reference.
 	 * @param boolean [enable_validation] Whether to enable validation of the metrics and dimensions. Default false.
 	 * @return Analytics_4 The Analytics 4 instance.
 	 */
-	protected function setup_report( $property_id, array &$request_handler_calls, $enable_validation = false ) {
+	protected function setup_report( array &$request_handler_calls, $enable_validation = false ) {
 		$user_id        = $this->factory()->user->create( array( 'role' => 'administrator' ) );
 		$context        = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$options        = new Options( $context );
@@ -772,6 +744,14 @@ class Analytics_4Test extends TestCase {
 
 		$authentication->get_oauth_client()->get_client()->setHttpClient(
 			new FakeHttpClient() // Returns 200 by default.
+		);
+
+		$property_id = '123456789';
+
+		$analytics->get_settings()->merge(
+			array(
+				'propertyID' => $property_id,
+			)
 		);
 
 		// Grant scopes so request doesn't fail.

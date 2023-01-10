@@ -872,17 +872,13 @@ final class Analytics_4 extends Module
 	protected function create_report_request( Data_Request $data ) {
 		$request_args = array();
 
-		if ( empty( $data['propertyID'] ) ) {
-			/* translators: %s: Missing parameter name */
-			return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'propertyID' ), array( 'status' => 400 ) );
-		}
-
 		if ( empty( $data['metrics'] ) ) {
 			/* translators: %s: Missing parameter name */
 			return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'metrics' ), array( 'status' => 400 ) );
 		}
 
-		$property_id = self::normalize_property_id( $data['propertyID'] );
+		$option      = $this->get_settings()->get();
+		$property_id = self::normalize_property_id( $option['propertyID'] );
 
 		if ( ! empty( $data['url'] ) ) {
 			$request_args['page'] = $data['url'];
