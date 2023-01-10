@@ -55,6 +55,20 @@ class Analytics_4Test extends TestCase {
 	private $context;
 
 	/**
+	 * User object.
+	 *
+	 * @var WP_User
+	 */
+	private $user;
+
+	/**
+	 * Authentication object.
+	 *
+	 * @var Authentication
+	 */
+	private $authentication;
+
+	/**
 	 * Analytics 4 object.
 	 *
 	 * @var Analytics_4
@@ -71,8 +85,21 @@ class Analytics_4Test extends TestCase {
 	public function set_up() {
 		parent::set_up();
 
-		$this->context   = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-		$this->analytics = new Analytics_4( $this->context );
+		$this->enable_feature( 'dashboardSharing' );
+
+		$this->context        = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$options              = new Options( $this->context );
+		$this->user           = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
+		$user_options         = new User_Options( $this->context, $this->user->ID );
+		$this->authentication = new Authentication( $this->context, $options, $user_options );
+		$this->analytics      = new Analytics_4( $this->context, $options, $user_options, $this->authentication );
+
+		// Re-register Permissions after enabling the dashboardSharing feature to include dashboard sharing capabilities.
+		// TODO: Remove this when `dashboardSharing` feature flag is removed.
+
+		$modules     = new Modules( $this->context, null, $user_options, $this->authentication );
+		$permissions = new Permissions( $this->context, $this->authentication, $modules, $user_options, new Dismissed_Items( $user_options ) );
+		$permissions->register();
 
 		$this->request_handler_calls = array();
 	}
@@ -707,24 +734,17 @@ class Analytics_4Test extends TestCase {
 	 * @return Analytics_4 The Analytics 4 instance.
 	 */
 	protected function setup_report( $enable_validation = false ) {
-		$user_id        = $this->factory()->user->create( array( 'role' => 'administrator' ) );
-		$context        = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-		$options        = new Options( $context );
-		$user_options   = new User_Options( $context, $user_id );
-		$authentication = new Authentication( $context, $options, $user_options );
-		$analytics      = new Analytics_4( $context, $options, $user_options, $authentication );
-
 		$property_id = '123456789';
 
-		$analytics->get_settings()->merge(
+		$this->analytics->get_settings()->merge(
 			array(
 				'propertyID' => $property_id,
 			)
 		);
 
 		// Grant scopes so request doesn't fail.
-		$authentication->get_oauth_client()->set_granted_scopes(
-			$analytics->get_scopes()
+		$this->authentication->get_oauth_client()->set_granted_scopes(
+			$this->analytics->get_scopes()
 		);
 
 		$http_client = new FakeHttpClient();
@@ -774,22 +794,14 @@ class Analytics_4Test extends TestCase {
 			}
 		);
 
-		$analytics->get_client()->setHttpClient( $http_client );
-		$analytics->register();
+		$this->analytics->get_client()->setHttpClient( $http_client );
+		$this->analytics->register();
 
 		if ( $enable_validation ) {
 			// Metrics and dimensions are only validated when using shared credentials; this block of code sets up the shared credentials scenario.
 
-			$this->enable_feature( 'dashboardSharing' );
-
-			// Re-register Permissions after enabling the dashboardSharing feature to include dashboard sharing capabilities.
-			// TODO: Remove this when `dashboardSharing` feature flag is removed.
-			$modules     = new Modules( $context, null, $user_options, $authentication );
-			$permissions = new Permissions( $context, $authentication, $modules, $user_options, new Dismissed_Items( $user_options ) );
-			$permissions->register();
-
 			// Ensure the user is authenticated.
-			$authentication->get_oauth_client()->set_token(
+			$this->authentication->get_oauth_client()->set_token(
 				array(
 					'access_token' => 'valid-auth-token',
 				)
@@ -802,7 +814,7 @@ class Analytics_4Test extends TestCase {
 					'propertyID'      => '123',
 					'webDataStreamID' => '456',
 					'measurementID'   => 'G-789',
-					'ownerID'         => $user_id,
+					'ownerID'         => $this->user->ID,
 				)
 			);
 
@@ -821,7 +833,7 @@ class Analytics_4Test extends TestCase {
 			);
 		}
 
-		return $analytics;
+		return $this->analytics;
 	}
 
 	/**
