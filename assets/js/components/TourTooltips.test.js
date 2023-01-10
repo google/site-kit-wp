@@ -20,11 +20,9 @@
  * Internal dependencies
  */
 import {
-	act,
 	render,
 	createTestRegistry,
 	fireEvent,
-	waitForDefaultTimeouts,
 } from '../../../tests/js/test-utils';
 import TourTooltips, { GA_ACTIONS } from './TourTooltips';
 import { CORE_UI } from '../googlesitekit/datastore/ui/constants';
@@ -43,16 +41,19 @@ const MOCK_STEPS = [
 		target: '.step-1',
 		title: 'Title for step 1',
 		content: <em>This is the first step</em>,
+		placement: 'center',
 	},
 	{
 		target: '.step-2',
 		title: 'Title for step 2',
 		content: 'This is the second step',
+		placement: 'center',
 	},
 	{
 		target: '.step-3',
 		title: 'Title for step 3',
 		content: 'This is the third step',
+		placement: 'center',
 	},
 ];
 const TEST_VIEW_CONTEXT = 'testViewContext';
@@ -134,18 +135,12 @@ describe( 'TourTooltips', () => {
 		);
 	} );
 
-	it( 'should switch to next step when next button is clicked', async () => {
+	it( 'should switch to next step when next button is clicked', () => {
 		const { getByRole } = renderTourTooltipsWithMockUI( registry );
 
 		fireEvent.click( getByRole( 'button', { name: /next/i } ) );
 
 		getByRole( 'heading', { name: /title for step 2/i } );
-
-		await act( waitForDefaultTimeouts );
-
-		// There is a minor bug in the `TourTooltips` component that results in a "React state update on an unmounted component"
-		// warning. This will be addressed in a followup issue, see https://github.com/google/site-kit-wp/issues/6345
-		expect( console ).toHaveErrored();
 	} );
 
 	it( 'should not render next step button if on last step', () => {

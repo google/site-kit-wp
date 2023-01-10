@@ -22,10 +22,8 @@
 import Data from 'googlesitekit-data';
 import { ProgressBar } from 'googlesitekit-components';
 import { MODULES_ANALYTICS, ACCOUNT_CREATE } from '../../datastore/constants';
-import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
-import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import useExistingTagEffect from '../../hooks/useExistingTagEffect';
 import useExistingGA4TagEffect from '../../../analytics-4/hooks/useExistingTagEffect';
 import SettingsForm from './SettingsForm';
@@ -49,74 +47,17 @@ export default function SettingsEdit() {
 		select( CORE_SITE ).isUsingProxy()
 	);
 
-	const loggedInUserID = useSelect( ( select ) =>
-		select( CORE_USER ).getID()
+	const hasAnalyticsAccess = useSelect( ( select ) =>
+		select( CORE_MODULES ).hasModuleOwnershipOrAccess( 'analytics' )
 	);
-	const hasResolvedUser = useSelect( ( select ) =>
-		select( CORE_USER ).hasFinishedResolution( 'getUser' )
-	);
-
-	const hasAnalyticsAccess = useSelect( ( select ) => {
-		const moduleOwnerID = select( MODULES_ANALYTICS ).getOwnerID();
-
-		if ( moduleOwnerID === undefined || loggedInUserID === undefined ) {
-			return undefined;
-		}
-
-		if ( moduleOwnerID === loggedInUserID ) {
-			return true;
-		}
-		return select( CORE_MODULES ).hasModuleAccess( 'analytics' );
-	} );
-	const isLoadingAnalyticsAccess = useSelect( ( select ) => {
-		const hasResolvedModuleOwner =
-			select( MODULES_ANALYTICS ).hasFinishedResolution( 'getSettings' );
-
-		const isResolvingModuleAccess = select( CORE_MODULES ).isResolving(
-			'hasModuleAccess',
-			[ 'analytics' ]
-		);
-
-		return (
-			! hasResolvedModuleOwner ||
-			! hasResolvedUser ||
-			isResolvingModuleAccess
-		);
-	} );
 
 	const hasAnalytics4Access = useSelect( ( select ) => {
-		const moduleOwnerID = select( MODULES_ANALYTICS_4 ).getOwnerID();
-
-		if ( moduleOwnerID === undefined || loggedInUserID === undefined ) {
-			return undefined;
-		}
-
-		if ( moduleOwnerID === loggedInUserID ) {
-			return true;
-		}
-
 		// Prevent the access check from erroring if GA4 isn't connected yet.
 		if ( ! select( CORE_MODULES ).isModuleConnected( 'analytics-4' ) ) {
 			return true;
 		}
-
-		return select( CORE_MODULES ).hasModuleAccess( 'analytics-4' );
-	} );
-	const isLoadingAnalytics4Access = useSelect( ( select ) => {
-		const hasResolvedModuleOwner =
-			select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
-				'getSettings'
-			);
-
-		const isResolvingModuleAccess = select( CORE_MODULES ).isResolving(
-			'hasModuleAccess',
-			[ 'analytics-4' ]
-		);
-
-		return (
-			! hasResolvedModuleOwner ||
-			! hasResolvedUser ||
-			isResolvingModuleAccess
+		return select( CORE_MODULES ).hasModuleOwnershipOrAccess(
+			'analytics-4'
 		);
 	} );
 
@@ -131,8 +72,8 @@ export default function SettingsEdit() {
 	if (
 		isDoingSubmitChanges ||
 		! hasResolvedAccounts ||
-		isLoadingAnalyticsAccess ||
-		isLoadingAnalytics4Access
+		hasAnalyticsAccess === undefined ||
+		hasAnalytics4Access === undefined
 	) {
 		viewComponent = <ProgressBar />;
 	} else if ( ! accounts.length || isCreateAccount ) {

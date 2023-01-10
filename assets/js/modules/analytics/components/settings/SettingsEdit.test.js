@@ -33,6 +33,8 @@ import {
 	provideModules,
 	provideSiteInfo,
 	waitForDefaultTimeouts,
+	provideUserInfo,
+	provideModuleRegistrations,
 } from '../../../../../../tests/js/utils';
 import * as ga4Fixtures from '../../../analytics-4/datastore/__fixtures__';
 
@@ -40,8 +42,15 @@ describe( 'SettingsEdit', () => {
 	let registry;
 
 	beforeEach( () => {
+		fetchMock.get( new RegExp( 'analytics/data/settings' ), {
+			body: {
+				ownerID: 1,
+			},
+		} );
+
 		registry = createTestRegistry();
 		provideSiteInfo( registry );
+		provideUserInfo( registry );
 		provideModules( registry, [
 			{
 				slug: 'analytics',
@@ -60,7 +69,11 @@ describe( 'SettingsEdit', () => {
 			},
 		] );
 
-		fetchMock.get( new RegExp( 'analytics/data/settings' ), { body: {} } );
+		fetchMock.get( new RegExp( 'analytics/data/settings' ), {
+			body: {
+				ownerID: 1,
+			},
+		} );
 		fetchMock.get( new RegExp( 'analytics-4/data/settings' ), {
 			body: {},
 		} );
@@ -115,6 +128,7 @@ describe( 'SettingsEdit', () => {
 	} );
 
 	it( 'does not set the account ID or property ID of an existing tag when present', async () => {
+		provideModuleRegistrations( registry );
 		fetchMock.get( new RegExp( 'tagmanager/data/settings' ), { body: {} } );
 		fetchMock.getOnce(
 			new RegExp(
