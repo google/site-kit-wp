@@ -762,16 +762,7 @@ class Analytics_4Test extends TestCase {
 		$this->analytics->get_client()->setHttpClient( $http_client );
 		$this->analytics->register();
 
-		// Enable some metrics.
-		add_filter(
-			'googlesitekit_shareable_analytics_4_metrics',
-			function() {
-				return array(
-					'sessions',
-					'totalUsers',
-				);
-			}
-		);
+		$this->set_shareable_metrics( 'sessions', 'totalUsers' );
 
 		$this->enable_shared_credentials();
 
@@ -819,25 +810,8 @@ class Analytics_4Test extends TestCase {
 		$this->analytics->get_client()->setHttpClient( $http_client );
 		$this->analytics->register();
 
-		// Enable some metrics and dimensions.
-		add_filter(
-			'googlesitekit_shareable_analytics_4_metrics',
-			function() {
-				return array(
-					'sessions',
-				);
-			}
-		);
-
-		add_filter(
-			'googlesitekit_shareable_analytics_4_dimensions',
-			function() {
-				return array(
-					'date',
-					'pageTitle',
-				);
-			}
-		);
+		$this->set_shareable_metrics( 'sessions' );
+		$this->set_shareable_dimensions( 'date', 'pageTitle' );
 
 		$this->enable_shared_credentials();
 
@@ -865,6 +839,34 @@ class Analytics_4Test extends TestCase {
 	 */
 	protected function days_ago_date_string( $days_ago ) {
 		return gmdate( 'Y-m-d', strtotime( $days_ago . ' days ago' ) );
+	}
+
+	/**
+	 * Sets the shareable metrics for the Analytics_4 module.
+	 *
+	 * @param string[] $metrics The metrics to set.
+	 */
+	protected function set_shareable_metrics( ...$metrics ) {
+		add_filter(
+			'googlesitekit_shareable_analytics_4_metrics',
+			function() use ( $metrics ) {
+				return $metrics;
+			}
+		);
+	}
+
+	/**
+	 * Sets the shareable dimensions for the Analytics_4 module.
+	 *
+	 * @param string[] $dimensions The dimensions to set.
+	 */
+	protected function set_shareable_dimensions( ...$dimensions ) {
+		add_filter(
+			'googlesitekit_shareable_analytics_4_dimensions',
+			function() use ( $dimensions ) {
+				return $dimensions;
+			}
+		);
 	}
 
 	/**
