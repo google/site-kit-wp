@@ -24,7 +24,7 @@ import MediaErrorHandler from './';
 
 const Template = ( args ) => (
 	<MediaErrorHandler { ...args }>
-		<ErrorComponent />
+		<ErrorComponent throwErrorOnMount />
 	</MediaErrorHandler>
 );
 
