@@ -914,8 +914,6 @@ class Analytics_4Test extends TestCase {
 	/**
 	 * Returns a date string for the given number of days ago.
 	 *
-	 * @since n.e.x.t
-	 *
 	 * @param int $days_ago The number of days ago.
 	 * @return string The date string, formatted as YYYY-MM-DD.
 	 */
