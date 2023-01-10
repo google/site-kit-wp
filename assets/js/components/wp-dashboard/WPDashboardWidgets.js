@@ -39,6 +39,7 @@ import WPDashboardActivateAnalyticsCTA from './WPDashboardActivateAnalyticsCTA';
 // import WPDashboardUniqueVisitorsChartWidget from './WPDashboardUniqueVisitorsChartWidget';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { withWidgetComponentProps } from '../../googlesitekit/widgets/util/get-widget-component-props';
+import GoogleChart from '../GoogleChart';
 const { useSelect } = Data;
 
 // Widget slugs.
@@ -89,6 +90,7 @@ const WPDashboardWidgets = () => {
 				}
 			) }
 		>
+			<GoogleChart />
 			{ analyticsModuleActiveAndConnected && (
 				<Fragment>
 					<WPDashboardUniqueVisitorsWidget />
