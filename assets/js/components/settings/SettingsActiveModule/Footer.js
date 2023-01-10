@@ -141,7 +141,7 @@ export default function Footer( props ) {
 				if ( slug === 'analytics' ) {
 					dismissGA4PropertyTooltip();
 				}
-				clearCache();
+				await clearCache();
 			}
 		},
 		[

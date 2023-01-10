@@ -98,7 +98,7 @@ export default function ConfirmDisconnect( { slug } ) {
 		const { error } = await deactivateModule( slug );
 
 		if ( ! error ) {
-			clearCache();
+			await clearCache();
 
 			await trackEvent(
 				`${ viewContext }_module-list`,

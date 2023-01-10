@@ -87,7 +87,7 @@ class SetupUsingGCP extends Component {
 
 	async resetAndRestart() {
 		await API.set( 'core', 'site', 'reset' );
-		clearCache();
+		await clearCache();
 
 		this.setState( {
 			isSiteKitConnected: false,

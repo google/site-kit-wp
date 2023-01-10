@@ -139,8 +139,7 @@ export default function UserMenu() {
 		// Close the modal.
 		toggleDialog( false );
 
-		// Clear caches.
-		clearCache();
+		await clearCache();
 
 		await trackEvent(
 			`${ viewContext }_headerbar_usermenu`,

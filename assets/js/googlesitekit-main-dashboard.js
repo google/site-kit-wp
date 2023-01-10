@@ -35,9 +35,9 @@ import {
 import DashboardEntryPoint from './components/DashboardEntryPoint';
 
 // Initialize the app once the DOM is ready.
-domReady( () => {
+domReady( async () => {
 	if ( global._googlesitekitLegacyData.admin.resetSession ) {
-		clearCache();
+		await clearCache();
 	}
 
 	const renderTarget = document.getElementById(

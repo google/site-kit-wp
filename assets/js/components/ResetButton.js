@@ -103,7 +103,7 @@ function ResetButton( { children } ) {
 
 	const handleUnlinkConfirm = useCallback( async () => {
 		await reset();
-		clearCache();
+		await clearCache();
 		await trackEvent( viewContext, 'reset_plugin' );
 		navigateTo( postResetURL );
 	}, [ navigateTo, postResetURL, reset, viewContext ] );
