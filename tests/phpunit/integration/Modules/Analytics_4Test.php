@@ -245,7 +245,16 @@ class Analytics_4Test extends TestCase {
 		);
 	}
 
-	public function test_get_report() {
+	/**
+	 * @dataProvider data_access_token
+	 *
+	 * When an access token is provided, the user will be authenticated for the test.
+	 *
+	 * @param string $access_token Access token, or empty string if none.
+	 */
+	public function test_get_report( $access_token ) {
+		$this->setup_user_authentication( $access_token );
+
 		$property_id = '123456789';
 
 		$this->analytics->get_settings()->merge(
@@ -454,7 +463,16 @@ class Analytics_4Test extends TestCase {
 		);
 	}
 
-	public function test_get_report__date_range() {
+	/**
+	 * @dataProvider data_access_token
+	 *
+	 * When an access token is provided, the user will be authenticated for the test.
+	 *
+	 * @param string $access_token Access token, or empty string if none.
+	 */
+	public function test_get_report__date_range( $access_token ) {
+		$this->setup_user_authentication( $access_token );
+
 		$property_id = '123456789';
 
 		$this->analytics->get_settings()->merge(
@@ -491,7 +509,16 @@ class Analytics_4Test extends TestCase {
 		);
 	}
 
-	public function test_get_report__compare_date_ranges() {
+	/**
+	 * @dataProvider data_access_token
+	 *
+	 * When an access token is provided, the user will be authenticated for the test.
+	 *
+	 * @param string $access_token Access token, or empty string if none.
+	 */
+	public function test_get_report__compare_date_ranges( $access_token ) {
+		$this->setup_user_authentication( $access_token );
+
 		$property_id = '123456789';
 
 		$this->analytics->get_settings()->merge(
@@ -528,7 +555,17 @@ class Analytics_4Test extends TestCase {
 			$request_params['dateRanges']
 		);
 	}
-	public function test_get_report__multi_date_range() {
+
+	/**
+	 * @dataProvider data_access_token
+	 *
+	 * When an access token is provided, the user will be authenticated for the test.
+	 *
+	 * @param string $access_token Access token, or empty string if none.
+	 */
+	public function test_get_report__multi_date_range( $access_token ) {
+		$this->setup_user_authentication( $access_token );
+
 		$property_id = '123456789';
 
 		$this->analytics->get_settings()->merge(
@@ -570,7 +607,16 @@ class Analytics_4Test extends TestCase {
 		);
 	}
 
-	public function test_get_report__metrics_as_string() {
+	/**
+	 * @dataProvider data_access_token
+	 *
+	 * When an access token is provided, the user will be authenticated for the test.
+	 *
+	 * @param string $access_token Access token, or empty string if none.
+	 */
+	public function test_get_report__metrics_as_string( $access_token ) {
+		$this->setup_user_authentication( $access_token );
+
 		$property_id = '123456789';
 
 		$this->analytics->get_settings()->merge(
@@ -606,7 +652,16 @@ class Analytics_4Test extends TestCase {
 		);
 	}
 
-	public function test_get_report__metrics_as_single_object() {
+	/**
+	 * @dataProvider data_access_token
+	 *
+	 * When an access token is provided, the user will be authenticated for the test.
+	 *
+	 * @param string $access_token Access token, or empty string if none.
+	 */
+	public function test_get_report__metrics_as_single_object( $access_token ) {
+		$this->setup_user_authentication( $access_token );
+
 		$property_id = '123456789';
 
 		$this->analytics->get_settings()->merge(
@@ -643,7 +698,16 @@ class Analytics_4Test extends TestCase {
 		);
 	}
 
-	public function test_get_report__dimensions_as_string() {
+	/**
+	 * @dataProvider data_access_token
+	 *
+	 * When an access token is provided, the user will be authenticated for the test.
+	 *
+	 * @param string $access_token Access token, or empty string if none.
+	 */
+	public function test_get_report__dimensions_as_string( $access_token ) {
+		$this->setup_user_authentication( $access_token );
+
 		$property_id = '123456789';
 
 		$this->analytics->get_settings()->merge(
@@ -680,7 +744,16 @@ class Analytics_4Test extends TestCase {
 		);
 	}
 
-	public function test_get_report__dimensions_as_single_object() {
+	/**
+	 * @dataProvider data_access_token
+	 *
+	 * When an access token is provided, the user will be authenticated for the test.
+	 *
+	 * @param string $access_token Access token, or empty string if none.
+	 */
+	public function test_get_report__dimensions_as_single_object( $access_token ) {
+		$this->setup_user_authentication( $access_token );
+
 		$property_id = '123456789';
 
 		$this->analytics->get_settings()->merge(
@@ -716,7 +789,16 @@ class Analytics_4Test extends TestCase {
 		);
 	}
 
-	public function test_report__no_metrics() {
+	/**
+	 * @dataProvider data_access_token
+	 *
+	 * When an access token is provided, the user will be authenticated for the test.
+	 *
+	 * @param string $access_token Access token, or empty string if none.
+	 */
+	public function test_report__no_metrics( $access_token ) {
+		$this->setup_user_authentication( $access_token );
+
 		$property_id = '123456789';
 
 		$this->analytics->get_settings()->merge(
@@ -966,6 +1048,35 @@ class Analytics_4Test extends TestCase {
 					'sharedRoles' => array( 'administrator' ),
 					'management'  => 'all_admins',
 				),
+			)
+		);
+	}
+
+	/**
+	 * Provides data for testing access states.
+	 *
+	 * @return array
+	 */
+	public function data_access_token() {
+		return array(
+			'unauthenticated user' => array( '' ),
+			'authenticated user'   => array( 'valid-token' ),
+		);
+	}
+
+	/**
+	 * Sets up user authentication if an access token is provided.
+	 *
+	 * @param string $access_token The access token to use.
+	 */
+	protected function setup_user_authentication( $access_token ) {
+		if ( empty( $access_token ) ) {
+			return;
+		}
+
+		$this->authentication->get_oauth_client()->set_token(
+			array(
+				'access_token' => $access_token,
 			)
 		);
 	}
