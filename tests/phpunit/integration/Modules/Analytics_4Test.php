@@ -269,7 +269,8 @@ class Analytics_4Test extends TestCase {
 
 		// Fetch a report that exercises all input parameters, barring the alternative date range,
 		// metric and dimension formats which are tested separately.
-		$data = $this->get_report(
+		$data = $this->analytics->get_data(
+			'report',
 			array(
 				// Note, metrics is a required parameter.
 				'metrics'          => array(
@@ -475,7 +476,8 @@ class Analytics_4Test extends TestCase {
 		$this->analytics->get_client()->setHttpClient( $http_client );
 		$this->analytics->register();
 
-		$this->get_report(
+		$this->analytics->get_data(
+			'report',
 			array(
 				// Note, metrics is a required parameter.
 				'metrics'   => array(
@@ -511,7 +513,8 @@ class Analytics_4Test extends TestCase {
 		$this->analytics->get_client()->setHttpClient( $http_client );
 		$this->analytics->register();
 
-		$this->get_report(
+		$this->analytics->get_data(
+			'report',
 			array(
 				// Note, metrics is a required parameter.
 				'metrics'           => array(
@@ -547,7 +550,8 @@ class Analytics_4Test extends TestCase {
 		$this->analytics->get_client()->setHttpClient( $http_client );
 		$this->analytics->register();
 
-		$this->get_report(
+		$this->analytics->get_data(
+			'report',
 			array(
 				// Note, metrics is a required parameter.
 				'metrics'        => array(
@@ -588,7 +592,8 @@ class Analytics_4Test extends TestCase {
 		$this->analytics->get_client()->setHttpClient( $http_client );
 		$this->analytics->register();
 
-		$this->get_report(
+		$this->analytics->get_data(
+			'report',
 			array(
 				// Note, metrics is a required parameter.
 				'metrics' => 'sessions,totalUsers',
@@ -623,7 +628,8 @@ class Analytics_4Test extends TestCase {
 		$this->analytics->get_client()->setHttpClient( $http_client );
 		$this->analytics->register();
 
-		$this->get_report(
+		$this->analytics->get_data(
+			'report',
 			array(
 				// Note, metrics is a required parameter.
 				'metrics' => array(
@@ -659,7 +665,8 @@ class Analytics_4Test extends TestCase {
 		$this->analytics->get_client()->setHttpClient( $http_client );
 		$this->analytics->register();
 
-		$this->get_report(
+		$this->analytics->get_data(
+			'report',
 			array(
 				// Note, metrics is a required parameter.
 				'metrics'    => 'sessions',
@@ -695,7 +702,8 @@ class Analytics_4Test extends TestCase {
 		$this->analytics->get_client()->setHttpClient( $http_client );
 		$this->analytics->register();
 
-		$this->get_report(
+		$this->analytics->get_data(
+			'report',
 			array(
 				// Note, metrics is a required parameter.
 				'metrics'    => 'sessions',
@@ -730,7 +738,7 @@ class Analytics_4Test extends TestCase {
 		$this->analytics->get_client()->setHttpClient( $http_client );
 		$this->analytics->register();
 
-		$data = $this->get_report( array() );
+		$data = $this->analytics->get_data( 'report', array() );
 
 		$this->assertWPErrorWithMessage( 'Request parameter is empty: metrics.', $data );
 	}
@@ -836,20 +844,6 @@ class Analytics_4Test extends TestCase {
 	 */
 	protected function days_ago_date_string( $days_ago ) {
 		return gmdate( 'Y-m-d', strtotime( $days_ago . ' days ago' ) );
-	}
-
-	/**
-	 * Retrieves a mock Analytics 4 report.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param array $report_params The report parameters.
-	 * @return RunReportResponse[] The report response.
-	 */
-	protected function get_report( array $report_params ) {
-		$analytics = $this->setup_report();
-
-		return $analytics->get_data( 'report', $report_params );
 	}
 
 	/**
