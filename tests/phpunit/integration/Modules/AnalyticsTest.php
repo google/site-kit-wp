@@ -533,7 +533,7 @@ class AnalyticsTest extends TestCase {
 				$assert_contains_opt_out,
 				true,
 			),
-			// Analytics is enabled but not configured
+			// Analytics is enabled but not configured.
 			array(
 				array_merge( $base_settings, array( 'propertyID' => '' ) ),
 				false,
