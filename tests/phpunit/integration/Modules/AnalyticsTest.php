@@ -457,10 +457,14 @@ class AnalyticsTest extends TestCase {
 		// Confidence check.
 		$this->assertNotEmpty( $head_html );
 		// Whether or not tracking is disabled does not affect output of snippet.
-		if ( $settings['useSnippet'] ) {
+		if ( $settings['propertyID'] && $settings['useSnippet'] ) {
 			$this->assertStringContainsString( "id={$settings['propertyID']}", $head_html );
 		} else {
 			$this->assertStringNotContainsString( "id={$settings['propertyID']}", $head_html );
+		}
+
+		if ( ! $settings['propertyID'] ) {
+			$this->assertStringNotContainsString( 'ga-disable', $head_html );
 		}
 
 		$assert_opt_out_presence( $head_html );
@@ -528,6 +532,13 @@ class AnalyticsTest extends TestCase {
 				true,
 				$assert_contains_opt_out,
 				true,
+			),
+			// Analytics is enabled but not configured
+			array(
+				array_merge( $base_settings, array( 'propertyID' => '' ) ),
+				false,
+				$assert_not_contains_opt_out,
+				false,
 			),
 		);
 	}
