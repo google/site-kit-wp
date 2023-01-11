@@ -132,7 +132,6 @@ export default function UserInputSelectOptions( {
 			value: optionSlug,
 			checked: values.includes( optionSlug ),
 			tabIndex: ! isActive ? '-1' : undefined,
-			disabled: isSavingSettings || isNavigating,
 			onKeyDown,
 			...onClickProps,
 		};
@@ -143,6 +142,10 @@ export default function UserInputSelectOptions( {
 			props.name = `${ slug }-${ optionSlug }`;
 		} else {
 			props.name = slug;
+		}
+
+		if ( isSavingSettings || isNavigating ) {
+			props.disabled = true;
 		}
 
 		return (
