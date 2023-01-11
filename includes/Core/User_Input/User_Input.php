@@ -13,7 +13,6 @@ namespace Google\Site_Kit\Core\User_Input;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
-use Google\Site_Kit\Core\Util\Feature_Flags;
 use WP_Error;
 use WP_User;
 
@@ -126,20 +125,14 @@ class User_Input {
 	 * @return array|WP_Error User input answers.
 	 */
 	public function get_answers() {
-		$questions     = static::$questions;
-		$settings      = $this->site_specific_answers->get();
-		$user_settings = $this->user_specific_answers->get();
+		$questions    = static::$questions;
+		$site_answers = $this->site_specific_answers->get();
+		$user_answers = $this->user_specific_answers->get();
 
-		// $settings & $user_settings can be array or false.
-		if ( ! is_array( $settings ) && is_array( $user_settings ) ) {
-			$settings = $user_settings;
-		}
-		if ( is_array( $settings ) && is_array( $user_settings ) ) {
-			$settings = array_merge(
-				$settings,
-				$user_settings
-			);
-		}
+		$settings = array_merge(
+			is_array( $site_answers ) ? $site_answers : array(),
+			is_array( $user_answers ) ? $user_answers : array()
+		);
 
 		// If there are no settings, return default empty values.
 		if ( empty( $settings ) ) {
