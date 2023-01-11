@@ -119,7 +119,9 @@ const legacyScenarios = legacyStorybookScenarios.map( ( story ) => {
 	return {
 		label: `${ story.kind }/${ story.name }`,
 		url: `${ rootURL }${ story.id }`,
-		readySelector: story.parameters.options.readySelector,
+		readySelector: `body.backstopjs-ready ${
+			story.parameters.options.readySelector ?? ''
+		}`,
 		hoverSelector: story.parameters.options.hoverSelector,
 		clickSelector: story.parameters.options.clickSelector,
 		clickSelectors: story.parameters.options.clickSelectors,
