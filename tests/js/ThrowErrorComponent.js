@@ -18,8 +18,8 @@ export const ThrowError = ( event ) => {
 	);
 };
 
-const ErrorComponent = () => {
-	const [ shouldThrow, setShouldThrow ] = useState( false );
+const ThrowErrorComponent = ( { throwErrorOnMount = false } ) => {
+	const [ shouldThrow, setShouldThrow ] = useState( throwErrorOnMount );
 
 	if ( shouldThrow ) {
 		ThrowError();
@@ -37,4 +37,4 @@ const ErrorComponent = () => {
 	);
 };
 
-export default ErrorComponent;
+export default ThrowErrorComponent;
