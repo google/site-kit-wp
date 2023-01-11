@@ -544,7 +544,7 @@ final class Analytics_4 extends Module
 	/**
 	 * Gets the configured TagManager service instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.92.0
 	 *
 	 * @return Google_Service_TagManager instance.
 	 * @throws Exception Thrown if the module did not correctly set up the service.

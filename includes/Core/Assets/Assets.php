@@ -1042,7 +1042,7 @@ final class Assets {
 	 * Cache key is scoped to user session and blog_id to isolate the
 	 * cache between users and sites (in multisite).
 	 *
-	 * @since n.e.x.t
+	 * @since 1.92.0
 	 *
 	 * @return string
 	 */
