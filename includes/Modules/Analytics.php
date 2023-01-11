@@ -1150,14 +1150,15 @@ final class Analytics extends Module
 	 * @link https://developers.google.com/analytics/devguides/collection/analyticsjs/user-opt-out
 	 */
 	private function print_tracking_opt_out() {
-		if ( ! $this->is_tracking_disabled() ) {
-			return;
-		}
 		$settings    = $this->get_settings()->get();
 		$account_id  = $settings['accountID'];
 		$property_id = $settings['propertyID'];
 
 		if ( empty( $property_id ) ) {
+			return;
+		}
+
+		if ( ! $this->is_tracking_disabled() ) {
 			return;
 		}
 
