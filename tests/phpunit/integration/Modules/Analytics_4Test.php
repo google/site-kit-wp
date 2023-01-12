@@ -799,11 +799,9 @@ class Analytics_4Test extends TestCase {
 	public function test_report__no_property_id( $access_token ) {
 		$this->setup_user_authentication( $access_token );
 
-		$property_id = '123456789';
-
-		$http_client = $this->create_fake_http_client( $property_id );
-		$this->analytics->get_client()->setHttpClient( $http_client );
-		$this->analytics->register();
+		$this->authentication->get_oauth_client()->set_granted_scopes(
+			$this->analytics->get_scopes()
+		);
 
 		$data = $this->analytics->get_data( 'report', array() );
 
@@ -828,9 +826,9 @@ class Analytics_4Test extends TestCase {
 			)
 		);
 
-		$http_client = $this->create_fake_http_client( $property_id );
-		$this->analytics->get_client()->setHttpClient( $http_client );
-		$this->analytics->register();
+		$this->authentication->get_oauth_client()->set_granted_scopes(
+			$this->analytics->get_scopes()
+		);
 
 		$data = $this->analytics->get_data( 'report', array() );
 
@@ -861,9 +859,9 @@ class Analytics_4Test extends TestCase {
 			)
 		);
 
-		$http_client = $this->create_fake_http_client( $property_id );
-		$this->analytics->get_client()->setHttpClient( $http_client );
-		$this->analytics->register();
+		$this->authentication->get_oauth_client()->set_granted_scopes(
+			$this->analytics->get_scopes()
+		);
 
 		$this->set_shareable_metrics( 'sessions', 'totalUsers' );
 
@@ -909,9 +907,9 @@ class Analytics_4Test extends TestCase {
 			)
 		);
 
-		$http_client = $this->create_fake_http_client( $property_id );
-		$this->analytics->get_client()->setHttpClient( $http_client );
-		$this->analytics->register();
+		$this->authentication->get_oauth_client()->set_granted_scopes(
+			$this->analytics->get_scopes()
+		);
 
 		$this->set_shareable_metrics( 'sessions' );
 		$this->set_shareable_dimensions( 'date', 'pageTitle' );
