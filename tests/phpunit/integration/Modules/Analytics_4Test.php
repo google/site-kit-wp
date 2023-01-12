@@ -953,12 +953,7 @@ class Analytics_4Test extends TestCase {
 	 * Metrics and dimensions are only validated when using shared credentials. This helper method sets up the shared credentials scenario.
 	 */
 	protected function enable_shared_credentials() {
-		// Ensure the user is authenticated.
-		$this->authentication->get_oauth_client()->set_token(
-			array(
-				'access_token' => 'valid-auth-token',
-			)
-		);
+		$this->setup_user_authentication( 'valid-auth-token' );
 
 		// Ensure the Analytics 4 module is connected and the owner ID is set.
 		update_option(
@@ -994,7 +989,7 @@ class Analytics_4Test extends TestCase {
 	public function data_access_token() {
 		return array(
 			'unauthenticated user' => array( '' ),
-			'authenticated user'   => array( 'valid-token' ),
+			'authenticated user'   => array( 'valid-auth-token' ),
 		);
 	}
 
