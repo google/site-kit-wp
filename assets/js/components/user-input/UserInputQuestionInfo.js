@@ -34,6 +34,7 @@ import Data from 'googlesitekit-data';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { Cell } from '../../material-components';
 import UserInputQuestionNotice from './UserInputQuestionNotice';
+import UserInputAuthor from './UserInputAuthor';
 const { useSelect } = Data;
 
 export default function UserInputQuestionInfo( {
@@ -81,6 +82,7 @@ export default function UserInputQuestionInfo( {
 				smOrder={ 3 }
 			>
 				<UserInputQuestionNotice className="googlesitekit-desktop-display-none " />
+
 				{ scope === 'site' && hasMultipleUser && (
 					<p>
 						{ author
@@ -95,21 +97,7 @@ export default function UserInputQuestionInfo( {
 					</p>
 				) }
 
-				{ author && author.photo && author.login && (
-					<Fragment>
-						<p>
-							{ __(
-								'This question has been answered by:',
-								'google-site-kit'
-							) }
-						</p>
-
-						<div className="googlesitekit-user-input__question-info--author">
-							<img alt={ author.login } src={ author.photo } />
-							{ author.login }
-						</div>
-					</Fragment>
-				) }
+				<UserInputAuthor author={ author } />
 			</Cell>
 		</Fragment>
 	);
