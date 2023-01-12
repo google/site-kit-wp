@@ -928,7 +928,7 @@ final class Authentication {
 
 		if ( version_compare( $version, '5.5', '>=' ) && function_exists( 'wp_is_auto_update_enabled_for_type' ) ) {
 			$data['updatePluginCapacity']      = current_user_can( 'update_plugins' );
-			$data['autoUpdatesEnabled']        = wp_is_auto_update_enabled_for_type( 'plugin' );
+			$data['autoUpdatesEnabled']        = Auto_Updates::is_plugin_autoupdates_enabled();
 			$data['siteKitAutoUpdatesEnabled'] = Auto_Updates::is_sitekit_autoupdates_enabled();
 		}
 

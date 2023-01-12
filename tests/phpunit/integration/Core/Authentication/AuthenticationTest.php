@@ -1115,11 +1115,47 @@ class AuthenticationTest extends TestCase {
 		}
 	}
 
+	public function test_googlesitekit_inline_base_data_plugin_autoupdate_force_disabled() {
+		$version = get_bloginfo( 'version' );
+
+		$admin_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $admin_id );
+
+		add_filter( 'plugins_auto_update_enabled', '__return_true' );
+		add_filter( 'auto_update_plugin', '__return_false' );
+
+		$data = apply_filters( 'googlesitekit_inline_base_data', array() );
+
+		if ( version_compare( $version, '5.6', '>=' ) ) {
+			$this->assertFalse( $data['autoUpdatesEnabled'] );
+		} else {
+			$this->assertTrue( $data['autoUpdatesEnabled'] );
+		}
+	}
+
+	public function test_googlesitekit_inline_base_data_plugin_autoupdate_force_enabled() {
+		$version = get_bloginfo( 'version' );
+
+		$admin_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $admin_id );
+
+		add_filter( 'plugins_auto_update_enabled', '__return_true' );
+		add_filter( 'auto_update_plugin', '__return_true' );
+
+		$data = apply_filters( 'googlesitekit_inline_base_data', array() );
+
+		if ( version_compare( $version, '5.6', '>=' ) ) {
+			$this->assertTrue( $data['siteKitAutoUpdatesEnabled'] );
+		} else {
+			$this->assertFalse( $data['autoUpdatesEnabled'] );
+		}
+	}
+
 	public function test_googlesitekit_inline_base_data_plugin_autoupdate_disabled() {
 		$version = get_bloginfo( 'version' );
 
-		$admin_id = $this->factory()->user->create( array( 'role' => 'editor' ) );
-		wp_set_current_user( $admin_id );
+		$editor_id = $this->factory()->user->create( array( 'role' => 'editor' ) );
+		wp_set_current_user( $editor_id );
 
 		add_filter( 'plugins_auto_update_enabled', '__return_false' );
 
