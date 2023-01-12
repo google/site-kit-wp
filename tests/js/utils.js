@@ -500,7 +500,7 @@ export const unsubscribeFromAll = () => {
  * - @wordpress/data: https://github.com/WordPress/gutenberg/blob/07baf5a12007d31bbd4ee22113b07952f7eacc26/packages/data/src/namespace-store/index.js#L294-L310.
  * - Node setTimeout: https://nodejs.org/docs/latest-v14.x/api/timers.html#timers_settimeout_callback_delay_args.
  *
- * @since n.e.x.t
+ * @since 1.92.0
  *
  * @return {Promise} Promise that resolves after a 2ms timeout.
  */

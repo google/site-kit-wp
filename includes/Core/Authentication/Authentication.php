@@ -281,9 +281,11 @@ final class Authentication {
 		$this->owner_id->register();
 		$this->connected_proxy_url->register();
 		$this->disconnected_reason->register();
-		$this->user_input_state->register();
 		$this->initial_version->register();
-		$this->user_input->register();
+		if ( Feature_Flags::enabled( 'userInput' ) ) {
+			$this->user_input->register();
+			$this->user_input_state->register();
+		}
 
 		add_filter( 'allowed_redirect_hosts', $this->get_method_proxy( 'allowed_redirect_hosts' ) );
 		add_filter( 'googlesitekit_admin_data', $this->get_method_proxy( 'inline_js_admin_data' ) );
