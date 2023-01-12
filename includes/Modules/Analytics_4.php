@@ -976,15 +976,8 @@ final class Analytics_4 extends Module
 				$date_ranges[] = array( $compare_start_date, $compare_end_date );
 			}
 		} else {
-			$date_range    = $data['dateRange'] ?: 'last-28-days';
-			$date_ranges[] = $this->parse_date_range( $date_range, $data['compareDateRanges'] ? 2 : 1 );
-
-			// When using multiple date ranges, it changes the structure of the response:
-			// Aggregate properties (minimum, maximum, totals) will have an entry per date range.
-			// The rows property will have additional row entries for each date range.
-			if ( ! empty( $data['multiDateRange'] ) ) {
-				$date_ranges[] = $this->parse_date_range( $date_range, 1, 1, true );
-			}
+			// Default the date range to the last 28 days.
+			$date_ranges[] = $this->parse_date_range( 'last-28-days', 1 );
 		}
 
 		$date_ranges = array_map(
