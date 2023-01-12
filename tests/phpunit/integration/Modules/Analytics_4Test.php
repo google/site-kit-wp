@@ -470,6 +470,51 @@ class Analytics_4Test extends TestCase {
 	 *
 	 * @param string $access_token Access token, or empty string if none.
 	 */
+	public function test_get_report__default_date_range( $access_token ) {
+		$this->setup_user_authentication( $access_token );
+
+		$property_id = '123456789';
+
+		$this->analytics->get_settings()->merge(
+			array(
+				'propertyID' => $property_id,
+			)
+		);
+
+		$http_client = $this->create_fake_http_client( $property_id );
+		$this->analytics->get_client()->setHttpClient( $http_client );
+		$this->analytics->register();
+
+		$this->analytics->get_data(
+			'report',
+			array(
+				// Note, metrics is a required parameter.
+				'metrics' => array(
+					array( 'name' => 'sessions' ),
+				),
+			)
+		);
+
+		$request_params = $this->request_handler_calls[0]['params'];
+
+		$this->assertEquals(
+			array(
+				array(
+					'startDate' => $this->days_ago_date_string( 28 ),
+					'endDate'   => $this->days_ago_date_string( 1 ),
+				),
+			),
+			$request_params['dateRanges']
+		);
+	}
+
+	/**
+	 * @dataProvider data_access_token
+	 *
+	 * When an access token is provided, the user will be authenticated for the test.
+	 *
+	 * @param string $access_token Access token, or empty string if none.
+	 */
 	public function test_get_report__date_range( $access_token ) {
 		$this->setup_user_authentication( $access_token );
 
