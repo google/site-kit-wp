@@ -35,7 +35,7 @@ import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants'
 import Link from '../Link';
 const { useSelect, useDispatch } = Data;
 
-export default function CancelUserInputButton( { disabled = false } ) {
+export default function CancelUserInputButton( { disabled } ) {
 	const dashboardURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' )
 	);
