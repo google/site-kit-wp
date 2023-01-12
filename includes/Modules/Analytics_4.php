@@ -1149,16 +1149,7 @@ final class Analytics_4 extends Module
 
 		$dimension_filter_expressions = array();
 
-		$hostnames = array_values(
-			array_unique(
-				array_map(
-					function ( $site_url ) {
-						return URL::parse( $site_url, PHP_URL_HOST );
-					},
-					$this->permute_site_url( $this->context->get_reference_site_url() )
-				)
-			)
-		);
+		$hostnames = $this->permute_site_hosts( URL::parse( $this->context->get_reference_site_url(), PHP_URL_HOST ) );
 
 		$dimension_in_list_filter = new Google_Service_AnalyticsData_InListFilter();
 		$dimension_in_list_filter->setValues( $hostnames );
