@@ -94,9 +94,10 @@ final class Plugin {
 			function( $hosts ) {
 				$wpp = wp_parse_url( home_url() );
 
-				// If this host isn't an IDN (or is already an ASCII-formatted
-				// IDN), we can return the existing `$hosts` array unmodified.
-				if ( idn_to_ascii( $wpp['host'], 0, INTL_IDNA_VARIANT_UTS46 ) === $wpp['host'] ) {
+				// If this host is already an ASCII-only string, it's either
+				// not an IDN or it's an ASCII-formatted IDN. Either way: we
+				// can return the existing `$hosts` array unmodified.
+				if ( mb_check_encoding( $wpp['host'], 'ASCII' ) ) {
 					return $hosts;
 				}
 
@@ -106,8 +107,7 @@ final class Plugin {
 				$hosts[] = rawurlencode( $wpp['host'] );
 
 				return $hosts;
-			},
-			1
+			}
 		);
 
 		// REST route to set up a temporary tag to verify meta tag output works reliably.
