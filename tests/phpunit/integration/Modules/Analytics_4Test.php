@@ -12,6 +12,7 @@ namespace Google\Site_Kit\Tests\Modules;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Authentication;
+use Google\Site_Kit\Core\Authentication\Token;
 use Google\Site_Kit\Core\Dismissals\Dismissed_Items;
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_Sharing_Settings;
@@ -62,6 +63,13 @@ class Analytics_4Test extends TestCase {
 	private $user;
 
 	/**
+	 * User Options object.
+	 *
+	 * @var User_Options
+	 */
+	private $user_options;
+
+	/**
 	 * Authentication object.
 	 *
 	 * @var Authentication
@@ -88,9 +96,10 @@ class Analytics_4Test extends TestCase {
 		$this->context        = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$options              = new Options( $this->context );
 		$this->user           = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
-		$user_options         = new User_Options( $this->context, $this->user->ID );
-		$this->authentication = new Authentication( $this->context, $options, $user_options );
-		$this->analytics      = new Analytics_4( $this->context, $options, $user_options, $this->authentication );
+		$this->user_options   = new User_Options( $this->context, $this->user->ID );
+		$this->authentication = new Authentication( $this->context, $options, $this->user_options );
+		$this->analytics      = new Analytics_4( $this->context, $options, $this->user_options, $this->authentication );
+		wp_set_current_user( $this->user->ID );
 	}
 
 	public function test_register() {
@@ -758,14 +767,14 @@ class Analytics_4Test extends TestCase {
 		$this->context        = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$options              = new Options( $this->context );
 		$this->user           = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
-		$user_options         = new User_Options( $this->context, $this->user->ID );
-		$this->authentication = new Authentication( $this->context, $options, $user_options );
-		$this->analytics      = new Analytics_4( $this->context, $options, $user_options, $this->authentication );
+		$this->user_options   = new User_Options( $this->context, $this->user->ID );
+		$this->authentication = new Authentication( $this->context, $options, $this->user_options );
+		$this->analytics      = new Analytics_4( $this->context, $options, $this->user_options, $this->authentication );
 
 		// Re-register Permissions after enabling the dashboardSharing feature to include dashboard sharing capabilities.
 		// TODO: Remove this when `dashboardSharing` feature flag is removed.
-		$modules     = new Modules( $this->context, null, $user_options, $this->authentication );
-		$permissions = new Permissions( $this->context, $this->authentication, $modules, $user_options, new Dismissed_Items( $user_options ) );
+		$modules     = new Modules( $this->context, null, $this->user_options, $this->authentication );
+		$permissions = new Permissions( $this->context, $this->authentication, $modules, $this->user_options, new Dismissed_Items( $this->user_options ) );
 		$permissions->register();
 
 		$property_id = '123456789';
@@ -806,14 +815,14 @@ class Analytics_4Test extends TestCase {
 		$this->context        = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$options              = new Options( $this->context );
 		$this->user           = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
-		$user_options         = new User_Options( $this->context, $this->user->ID );
-		$this->authentication = new Authentication( $this->context, $options, $user_options );
-		$this->analytics      = new Analytics_4( $this->context, $options, $user_options, $this->authentication );
+		$this->user_options   = new User_Options( $this->context, $this->user->ID );
+		$this->authentication = new Authentication( $this->context, $options, $this->user_options );
+		$this->analytics      = new Analytics_4( $this->context, $options, $this->user_options, $this->authentication );
 
 		// Re-register Permissions after enabling the dashboardSharing feature to include dashboard sharing capabilities.
 		// TODO: Remove this when `dashboardSharing` feature flag is removed.
-		$modules     = new Modules( $this->context, null, $user_options, $this->authentication );
-		$permissions = new Permissions( $this->context, $this->authentication, $modules, $user_options, new Dismissed_Items( $user_options ) );
+		$modules     = new Modules( $this->context, null, $this->user_options, $this->authentication );
+		$permissions = new Permissions( $this->context, $this->authentication, $modules, $this->user_options, new Dismissed_Items( $this->user_options ) );
 		$permissions->register();
 
 		$property_id = '123456789';
@@ -953,7 +962,17 @@ class Analytics_4Test extends TestCase {
 	 * Metrics and dimensions are only validated when using shared credentials. This helper method sets up the shared credentials scenario.
 	 */
 	protected function enable_shared_credentials() {
-		$this->setup_user_authentication( 'valid-auth-token' );
+		// Create a user to set as the Analytics 4 module owner.
+		$admin = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
+
+		$this->setup_user_authentication( 'valid-auth-token', $admin->ID );
+
+		// Ensure the new user has the necessary scopes to make the request.
+		$restore_user = $this->user_options->switch_user( $admin->ID );
+		$this->authentication->get_oauth_client()->set_granted_scopes(
+			$this->analytics->get_scopes()
+		);
+		$restore_user();
 
 		// Ensure the Analytics 4 module is connected and the owner ID is set.
 		update_option(
@@ -962,14 +981,11 @@ class Analytics_4Test extends TestCase {
 				'propertyID'      => '123',
 				'webDataStreamID' => '456',
 				'measurementID'   => 'G-789',
-				'ownerID'         => $this->user->ID,
+				'ownerID'         => $admin->ID,
 			)
 		);
 
-		// Setup a user with shared access to the Analytics 4 module.
-		$admin = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
-		wp_set_current_user( $admin->ID );
-
+		// Ensure sharing is enabled for the Analytics 4 module.
 		add_option(
 			Module_Sharing_Settings::OPTION,
 			array(
@@ -997,17 +1013,24 @@ class Analytics_4Test extends TestCase {
 	 * Sets up user authentication if an access token is provided.
 	 *
 	 * @param string $access_token The access token to use.
+	 * @param int    [$user_id] The user ID to set up authentication for. Will default to the current user.
 	 */
-	protected function setup_user_authentication( $access_token ) {
+	protected function setup_user_authentication( $access_token, $user_id = null ) {
 		if ( empty( $access_token ) ) {
 			return;
 		}
 
+		if ( empty( $user_id ) ) {
+			$user_id = $this->user->ID;
+		}
+
+		$restore_user = $this->user_options->switch_user( $user_id );
 		$this->authentication->get_oauth_client()->set_token(
 			array(
 				'access_token' => $access_token,
 			)
 		);
+		$restore_user();
 	}
 
 	/**
