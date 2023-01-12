@@ -1128,7 +1128,7 @@ class AuthenticationTest extends TestCase {
 
 		if ( version_compare( $version, '5.6', '>=' ) ) {
 			$this->assertFalse( $data['autoUpdatesEnabled'] );
-		} else {
+		} elseif ( version_compare( $version, '5.5', '>=' ) ) {
 			$this->assertTrue( $data['autoUpdatesEnabled'] );
 		}
 	}
@@ -1146,7 +1146,7 @@ class AuthenticationTest extends TestCase {
 
 		if ( version_compare( $version, '5.6', '>=' ) ) {
 			$this->assertTrue( $data['siteKitAutoUpdatesEnabled'] );
-		} else {
+		} elseif ( version_compare( $version, '5.5', '>=' ) ) {
 			$this->assertFalse( $data['autoUpdatesEnabled'] );
 		}
 	}
