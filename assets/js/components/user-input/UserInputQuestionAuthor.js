@@ -1,5 +1,5 @@
 /**
- * User Input Author Component.
+ * User Input Question Author Component.
  *
  * Site Kit by Google, Copyright 2022 Google LLC
  *
@@ -17,11 +17,27 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
 
-export default function UserInputAuthor( { author } ) {
+/**
+ * Internal dependencies
+ */
+import Data from 'googlesitekit-data';
+import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+const { useSelect } = Data;
+
+export default function UserInputQuestionAuthor( { slug } ) {
+	const author = useSelect( ( select ) =>
+		select( CORE_USER ).getUserInputSettingAuthor( slug )
+	);
+
 	if ( ! author || ! author.photo || ! author.login ) {
 		return null;
 	}
@@ -42,3 +58,7 @@ export default function UserInputAuthor( { author } ) {
 		</div>
 	);
 }
+
+UserInputQuestionAuthor.propTypes = {
+	slug: PropTypes.string.isRequired,
+};

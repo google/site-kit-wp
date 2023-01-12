@@ -32,20 +32,26 @@ import { __, sprintf } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { Cell } from '../../material-components';
 import UserInputQuestionNotice from './UserInputQuestionNotice';
-import UserInputAuthor from './UserInputAuthor';
+import UserInputQuestionAuthor from './UserInputQuestionAuthor';
 const { useSelect } = Data;
 
 export default function UserInputQuestionInfo( {
+	slug,
 	title,
 	description,
-	scope,
 	questionNumber,
-	author,
 } ) {
 	const hasMultipleUser = useSelect( ( select ) =>
 		select( CORE_SITE ).hasMultipleAdmins()
+	);
+	const scope = useSelect( ( select ) =>
+		select( CORE_USER ).getUserInputSettingScope( slug )
+	);
+	const author = useSelect( ( select ) =>
+		select( CORE_USER ).getUserInputSettingAuthor( slug )
 	);
 
 	return (
@@ -97,19 +103,15 @@ export default function UserInputQuestionInfo( {
 					</p>
 				) }
 
-				<UserInputAuthor author={ author } />
+				<UserInputQuestionAuthor slug={ slug } />
 			</Cell>
 		</Fragment>
 	);
 }
 
 UserInputQuestionInfo.propTypes = {
+	slug: PropTypes.string.isRequired,
 	title: PropTypes.string.isRequired,
 	description: PropTypes.string,
-	scope: PropTypes.string,
 	questionNumber: PropTypes.number,
-	author: PropTypes.shape( {
-		photo: PropTypes.string,
-		login: PropTypes.string,
-	} ),
 };
