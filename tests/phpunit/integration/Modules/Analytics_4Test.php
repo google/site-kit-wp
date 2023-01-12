@@ -12,7 +12,6 @@ namespace Google\Site_Kit\Tests\Modules;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Authentication;
-use Google\Site_Kit\Core\Authentication\Token;
 use Google\Site_Kit\Core\Dismissals\Dismissed_Items;
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_Sharing_Settings;
@@ -32,6 +31,7 @@ use Google\Site_Kit\Tests\Core\Modules\Module_With_Service_Entity_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Settings_ContractTests;
 use Google\Site_Kit\Tests\FakeHttpClient;
 use Google\Site_Kit\Tests\TestCase;
+use Google\Site_Kit\Tests\UserAuthenticationTrait;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaDataStream;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaDataStreamWebStreamData;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Message\Request;
@@ -47,6 +47,7 @@ class Analytics_4Test extends TestCase {
 	use Module_With_Settings_ContractTests;
 	use Module_With_Owner_ContractTests;
 	use Module_With_Service_Entity_ContractTests;
+	use UserAuthenticationTrait;
 
 	/**
 	 * Context object.
@@ -1024,13 +1025,7 @@ class Analytics_4Test extends TestCase {
 			$user_id = $this->user->ID;
 		}
 
-		$restore_user = $this->user_options->switch_user( $user_id );
-		$this->authentication->get_oauth_client()->set_token(
-			array(
-				'access_token' => $access_token,
-			)
-		);
-		$restore_user();
+		$this->set_user_access_token( $user_id, $access_token );
 	}
 
 	/**
