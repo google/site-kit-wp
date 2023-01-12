@@ -94,6 +94,20 @@
 		word-break: break-word;
 	}
 
+	.googlesitekit-user-input__preview-group {
+
+		.googlesitekit-user-input__select-option {
+
+			.mdc-radio {
+				margin-left: -10px;
+			}
+
+			&:not(:last-child) {
+				border-bottom: none;
+			}
+		}
+	}
+
 	.googlesitekit-user-input__preview-group + .googlesitekit-user-input__preview-group {
 		border-top: 1px solid $c-utility-divider;
 		margin-top: 12px;
@@ -143,13 +157,5 @@
 				transform: rotate(180deg);
 			}
 		}
-	}
-
-	.googlesitekit-user-input__preview-group .googlesitekit-user-input__select-option .mdc-radio {
-		margin-left: -10px;
-	}
-
-	.googlesitekit-user-input__preview-group .googlesitekit-user-input__select-option:not(:last-child) {
-		border-bottom: none;
 	}
 }
