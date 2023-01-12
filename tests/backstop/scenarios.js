@@ -119,9 +119,7 @@ const legacyScenarios = legacyStorybookScenarios.map( ( story ) => {
 	return {
 		label: `${ story.kind }/${ story.name }`,
 		url: `${ rootURL }${ story.id }`,
-		readySelector: `body.backstopjs-ready ${
-			story.parameters.options.readySelector ?? ''
-		}`,
+		readySelector: story.parameters.options.readySelector,
 		hoverSelector: story.parameters.options.hoverSelector,
 		clickSelector: story.parameters.options.clickSelector,
 		clickSelectors: story.parameters.options.clickSelectors,
@@ -132,4 +130,16 @@ const legacyScenarios = legacyStorybookScenarios.map( ( story ) => {
 	};
 } );
 
-module.exports = [ ...legacyScenarios, ...csfScenarios ];
+const scenarios = [ ...legacyScenarios, ...csfScenarios ];
+module.exports = scenarios.map( ( scenario ) => {
+	const backstopReadySelector = 'body.backstopjs-ready';
+
+	const readySelector = scenario.readySelector
+		? `${ backstopReadySelector } ${ scenario.readySelector }`
+		: backstopReadySelector;
+
+	return {
+		...scenario,
+		readySelector,
+	};
+} );
