@@ -796,6 +796,21 @@ class Analytics_4Test extends TestCase {
 	 *
 	 * @param string $access_token Access token, or empty string if none.
 	 */
+	public function test_report__insufficient_permissions( $access_token ) {
+		$this->setup_user_authentication( $access_token );
+
+		$data = $this->analytics->get_data( 'report', array() );
+
+		$this->assertWPErrorWithMessage( 'Site Kit can’t access the relevant data from Analytics 4 because you haven’t granted all permissions requested during setup.', $data );
+	}
+
+	/**
+	 * @dataProvider data_access_token
+	 *
+	 * When an access token is provided, the user will be authenticated for the test.
+	 *
+	 * @param string $access_token Access token, or empty string if none.
+	 */
 	public function test_report__no_property_id( $access_token ) {
 		$this->setup_user_authentication( $access_token );
 
