@@ -231,8 +231,8 @@ const baseControls = {
 				}
 
 				// Only tours with a version after a user's initial Site Kit version should qualify.
-				const initialVersion = registry
-					.select( CORE_USER )
+				const initialVersion = await registry
+					.__experimentalResolveSelect( CORE_USER )
 					.getInitialSiteKitVersion();
 				if ( ! initialVersion ) {
 					return false;

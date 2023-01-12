@@ -26,6 +26,7 @@ import {
 	createTestRegistry,
 	subscribeUntil,
 	unsubscribeFromAll,
+	untilResolved,
 } from '../../../../../tests/js/utils';
 import * as fixtures from './__fixtures__';
 
@@ -135,6 +136,10 @@ describe( 'modules/adsense sites', () => {
 					.select( MODULES_ADSENSE )
 					.getSites( fakeAccountID );
 				expect( sites ).toEqual( undefined );
+
+				await untilResolved( registry, MODULES_ADSENSE ).getSites(
+					fakeAccountID
+				);
 				expect( console ).toHaveErrored();
 			} );
 		} );

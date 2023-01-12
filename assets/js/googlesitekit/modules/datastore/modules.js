@@ -387,11 +387,12 @@ const baseActions = {
 
 			const registry = yield Data.commonActions.getRegistry();
 
-			// As we can specify a custom checkRequirements function here, we're invalidating the resolvers for activation checks.
-			yield registry
+			// As we can specify a custom checkRequirements function here, we're
+			// invalidating the resolvers for activation checks.
+			registry
 				.dispatch( CORE_MODULES )
 				.invalidateResolution( 'canActivateModule', [ slug ] );
-			yield registry
+			registry
 				.dispatch( CORE_MODULES )
 				.invalidateResolution( 'getCheckRequirementsError', [ slug ] );
 		}
@@ -1237,6 +1238,49 @@ const baseSelectors = {
 	hasModuleAccess( state, slug ) {
 		return state.moduleAccess[ slug ];
 	},
+
+	/**
+	 * Checks if current user has ownership or access to the given module.
+	 *
+	 * @since 1.92.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @param {string} slug  Module slug.
+	 * @return {(boolean|undefined)} `true` if the user has ownership or access.
+	 *                               `false` if the user doesn't have ownership or access.
+	 *                               `undefined` If the state is still being resolved,
+	 */
+	hasModuleOwnershipOrAccess: createRegistrySelector(
+		( select ) => ( state, moduleSlug ) => {
+			const moduleStoreName =
+				select( CORE_MODULES ).getModuleStoreName( moduleSlug );
+
+			if ( moduleStoreName === undefined ) {
+				return undefined;
+			}
+
+			// A store with this name doesn't exist, so the user can't have access to it.
+			// This is either caused by a module not being loaded or an incorrect module
+			// name being used.
+			if ( select( moduleStoreName ) === null ) {
+				return false;
+			}
+
+			const moduleOwnerID = select( moduleStoreName ).getOwnerID();
+
+			const loggedInUserID = select( CORE_USER ).getID();
+
+			if ( moduleOwnerID === undefined || loggedInUserID === undefined ) {
+				return undefined;
+			}
+
+			if ( moduleOwnerID === loggedInUserID ) {
+				return true;
+			}
+
+			return select( CORE_MODULES ).hasModuleAccess( moduleSlug );
+		}
+	),
 
 	/**
 	 * Gets the list of recoverable modules for dashboard sharing.

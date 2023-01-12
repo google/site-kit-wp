@@ -93,11 +93,12 @@ describe( 'core/user dismissed-items', () => {
 
 	describe( 'selectors', () => {
 		describe( 'getDismissedItems', () => {
-			it( 'should return undefined util resolved', () => {
+			it( 'should return undefined util resolved', async () => {
 				muteFetch( fetchGetDismissedItems, [] );
 				expect(
 					registry.select( CORE_USER ).getDismissedItems()
 				).toBeUndefined();
+				await untilResolved( registry, CORE_USER ).getDismissedItems();
 			} );
 
 			it( 'should return dismissed items received from API', async () => {
@@ -150,11 +151,12 @@ describe( 'core/user dismissed-items', () => {
 		} );
 
 		describe( 'isItemDismissed', () => {
-			it( 'should return undefined if getDismissedItems selector is not resolved yet', () => {
+			it( 'should return undefined if getDismissedItems selector is not resolved yet', async () => {
 				fetchMock.getOnce( fetchGetDismissedItems, { body: [] } );
 				expect(
 					registry.select( CORE_USER ).isItemDismissed( 'foo' )
 				).toBeUndefined();
+				await untilResolved( registry, CORE_USER ).getDismissedItems();
 			} );
 
 			it( 'should return TRUE if the item is dismissed', () => {

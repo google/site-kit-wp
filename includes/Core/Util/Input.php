@@ -45,6 +45,7 @@ class Input {
 	 * Gets a specific external variable by name and optionally filters it.
 	 *
 	 * @since 1.1.2
+	 * @since 1.92.0 Changed default value of $options parameter to 0.
 	 *
 	 * @link https://php.net/manual/en/function.filter-input.php
 	 *
@@ -60,7 +61,7 @@ class Input {
 	 *                                      If the flag FILTER_NULL_ON_FAILURE is used, it returns FALSE if the variable is not set
 	 *                                      and NULL if the filter fails.
 	 */
-	public function filter( $type, $variable_name, $filter = FILTER_DEFAULT, $options = null ) {
+	public function filter( $type, $variable_name, $filter = FILTER_DEFAULT, $options = 0 ) {
 		$value = filter_input( $type, $variable_name, $filter, $options );
 
 		// Fallback for environments where filter_input may not work with specific types.

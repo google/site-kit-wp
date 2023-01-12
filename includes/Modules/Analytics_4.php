@@ -33,6 +33,7 @@ use Google\Site_Kit\Core\Tags\Guards\Tag_Environment_Type_Guard;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Verify_Guard;
 use Google\Site_Kit\Core\Util\BC_Functions;
 use Google\Site_Kit\Core\Util\Debug_Data;
+use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Core\Util\Sort;
 use Google\Site_Kit\Core\Util\URL;
@@ -46,6 +47,8 @@ use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnaly
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaDataStreamWebStreamData;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaListDataStreamsResponse;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaProperty as Google_Service_GoogleAnalyticsAdmin_GoogleAnalyticsAdminV1betaProperty;
+use Google\Site_Kit_Dependencies\Google\Service\TagManager as Google_Service_TagManager;
+use Google\Site_Kit_Dependencies\Google\Service\TagManager\Container as Google_Service_TagManager_Container;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 use stdClass;
 use WP_Error;
@@ -92,9 +95,13 @@ final class Analytics_4 extends Module
 	 * @return array List of Google OAuth scopes.
 	 */
 	public function get_scopes() {
-		return array(
+		$scopes = array(
 			Analytics::READONLY_SCOPE,
 		);
+		if ( Feature_Flags::enabled( 'gteSupport' ) ) {
+			$scopes[] = 'https://www.googleapis.com/auth/tagmanager.readonly';
+		}
+		return $scopes;
 	}
 
 	/**
@@ -193,22 +200,24 @@ final class Analytics_4 extends Module
 	 */
 	protected function get_datapoint_definitions() {
 		return array(
-			'GET:account-summaries'     => array( 'service' => 'analyticsadmin' ),
-			'GET:accounts'              => array( 'service' => 'analyticsadmin' ),
-			'POST:create-property'      => array(
+			'GET:account-summaries'      => array( 'service' => 'analyticsadmin' ),
+			'GET:accounts'               => array( 'service' => 'analyticsadmin' ),
+			'GET:container-lookup'       => array( 'service' => 'tagmanager' ),
+			'GET:container-destinations' => array( 'service' => 'tagmanager' ),
+			'POST:create-property'       => array(
 				'service'                => 'analyticsadmin',
 				'scopes'                 => array( Analytics::EDIT_SCOPE ),
 				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create a new Analytics 4 property on your behalf.', 'google-site-kit' ),
 			),
-			'POST:create-webdatastream' => array(
+			'POST:create-webdatastream'  => array(
 				'service'                => 'analyticsadmin',
 				'scopes'                 => array( Analytics::EDIT_SCOPE ),
 				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create a new Analytics 4 Measurement ID for this site on your behalf.', 'google-site-kit' ),
 			),
-			'GET:properties'            => array( 'service' => 'analyticsadmin' ),
-			'GET:property'              => array( 'service' => 'analyticsadmin' ),
-			'GET:webdatastreams'        => array( 'service' => 'analyticsadmin' ),
-			'GET:webdatastreams-batch'  => array( 'service' => 'analyticsadmin' ),
+			'GET:properties'             => array( 'service' => 'analyticsadmin' ),
+			'GET:property'               => array( 'service' => 'analyticsadmin' ),
+			'GET:webdatastreams'         => array( 'service' => 'analyticsadmin' ),
+			'GET:webdatastreams-batch'   => array( 'service' => 'analyticsadmin' ),
 		);
 	}
 
@@ -442,6 +451,38 @@ final class Analytics_4 extends Module
 				return function() use ( $batch_request ) {
 					return $batch_request->execute();
 				};
+			case 'GET:container-lookup':
+				if ( ! isset( $data['destinationID'] ) ) {
+					return new WP_Error(
+						'missing_required_param',
+						/* translators: %s: Missing parameter name */
+						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'destinationID' ),
+						array( 'status' => 400 )
+					);
+				}
+
+				return $this->get_tagmanager_service()->accounts_containers->lookup( array( 'destinationId' => $data['destinationID'] ) );
+			case 'GET:container-destinations':
+				if ( ! isset( $data['accountID'] ) ) {
+					return new WP_Error(
+						'missing_required_param',
+						/* translators: %s: Missing parameter name */
+						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ),
+						array( 'status' => 400 )
+					);
+				}
+				if ( ! isset( $data['internalContainerID'] ) ) {
+					return new WP_Error(
+						'missing_required_param',
+						/* translators: %s: Missing parameter name */
+						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'internalContainerID' ),
+						array( 'status' => 400 )
+					);
+				}
+
+				return $this->get_tagmanager_service()->accounts_containers_destinations->listAccountsContainersDestinations(
+					"accounts/{$data['accountID']}/containers/{$data['internalContainerID']}"
+				);
 		}
 
 		return parent::create_data_request( $data );
@@ -493,9 +534,23 @@ final class Analytics_4 extends Module
 				return array_map( array( self::class, 'filter_webdatastream_with_ids' ), $webdatastreams );
 			case 'GET:webdatastreams-batch':
 				return self::parse_webdatastreams_batch( $response );
+			case 'GET:container-destinations':
+				return (array) $response->getDestination();
 		}
 
 		return parent::parse_data_response( $data, $response );
+	}
+
+	/**
+	 * Gets the configured TagManager service instance.
+	 *
+	 * @since 1.92.0
+	 *
+	 * @return Google_Service_TagManager instance.
+	 * @throws Exception Thrown if the module did not correctly set up the service.
+	 */
+	private function get_tagmanager_service() {
+		return $this->get_service( 'tagmanager' );
 	}
 
 	/**
@@ -532,6 +587,7 @@ final class Analytics_4 extends Module
 	protected function setup_services( Google_Site_Kit_Client $client ) {
 		return array(
 			'analyticsadmin' => new Google_Service_GoogleAnalyticsAdmin( $client ),
+			'tagmanager'     => new Google_Service_TagManager( $client ),
 		);
 	}
 
@@ -586,7 +642,12 @@ final class Analytics_4 extends Module
 		}
 
 		$settings = $this->get_settings()->get();
-		$tag      = new Web_Tag( $settings['measurementID'], self::MODULE_SLUG );
+
+		if ( Feature_Flags::enabled( 'gteSupport' ) && ! empty( $settings['googleTagID'] ) ) {
+			$tag = new Web_Tag( $settings['googleTagID'], self::MODULE_SLUG );
+		} else {
+			$tag = new Web_Tag( $settings['measurementID'], self::MODULE_SLUG );
+		}
 
 		if ( $tag->is_tag_blocked() ) {
 			return;

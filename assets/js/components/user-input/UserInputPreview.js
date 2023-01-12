@@ -56,6 +56,7 @@ export default function UserInputPreview( props ) {
 		goBack,
 		submitChanges,
 		error,
+		noHeader,
 		showIndividualCTAs = false,
 	} = props;
 	const previewContainer = useRef();
@@ -125,9 +126,11 @@ export default function UserInputPreview( props ) {
 			ref={ previewContainer }
 		>
 			<div className="googlesitekit-user-input__preview-contents">
-				<p className="googlesitekit-user-input__preview-subheader">
-					{ __( 'Review your answers', 'google-site-kit' ) }
-				</p>
+				{ ! noHeader && (
+					<p className="googlesitekit-user-input__preview-subheader">
+						{ __( 'Review your answers', 'google-site-kit' ) }
+					</p>
+				) }
 				<UserInputPreviewGroup
 					slug={ USER_INPUT_QUESTIONS_PURPOSE }
 					title={ __(
@@ -210,5 +213,6 @@ UserInputPreview.propTypes = {
 	goBack: PropTypes.func,
 	redirectURL: PropTypes.string,
 	errors: PropTypes.object,
+	noHeader: PropTypes.bool,
 	showIndividualCTAs: PropTypes.bool,
 };

@@ -41,16 +41,19 @@ const MOCK_STEPS = [
 		target: '.step-1',
 		title: 'Title for step 1',
 		content: <em>This is the first step</em>,
+		placement: 'center',
 	},
 	{
 		target: '.step-2',
 		title: 'Title for step 2',
 		content: 'This is the second step',
+		placement: 'center',
 	},
 	{
 		target: '.step-3',
 		title: 'Title for step 3',
 		content: 'This is the third step',
+		placement: 'center',
 	},
 ];
 const TEST_VIEW_CONTEXT = 'testViewContext';

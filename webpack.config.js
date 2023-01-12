@@ -305,8 +305,6 @@ function* webpackConfig( env, argv ) {
 				'./assets/js/googlesitekit-modules-analytics.js',
 			'googlesitekit-modules-analytics-4':
 				'./assets/js/googlesitekit-modules-analytics-4.js',
-			'googlesitekit-modules-idea-hub':
-				'./assets/js/googlesitekit-modules-idea-hub.js',
 			'googlesitekit-modules-optimize':
 				'./assets/js/googlesitekit-modules-optimize.js',
 			'googlesitekit-modules-pagespeed-insights':
@@ -317,8 +315,6 @@ function* webpackConfig( env, argv ) {
 				'./assets/js/googlesitekit-modules-tagmanager.js',
 			'googlesitekit-user-input':
 				'./assets/js/googlesitekit-user-input.js',
-			'googlesitekit-idea-hub-post-list':
-				'./assets/js/googlesitekit-idea-hub-post-list.js',
 			'googlesitekit-polyfills': './assets/js/googlesitekit-polyfills.js',
 			'googlesitekit-components-gm2':
 				'./assets/js/googlesitekit-components-gm2.js',
@@ -336,7 +332,6 @@ function* webpackConfig( env, argv ) {
 			'googlesitekit-splash': './assets/js/googlesitekit-splash.js',
 			'googlesitekit-wp-dashboard':
 				'./assets/js/googlesitekit-wp-dashboard.js',
-			'googlesitekit-base': './assets/js/googlesitekit-base.js',
 		},
 		externals,
 		output: {
@@ -525,59 +520,6 @@ function* webpackConfig( env, argv ) {
 				},
 			} ),
 		],
-	};
-
-	// Build the Gutenberg entry points.
-	yield {
-		entry: {
-			'googlesitekit-idea-hub-notice':
-				'./assets/js/googlesitekit-idea-hub-notice.js',
-		},
-		externals: gutenbergExternals,
-		output: {
-			filename: isProduction ? '[name]-[contenthash].js' : '[name].js',
-			path: path.join( __dirname, 'dist/assets/js' ),
-			chunkFilename: isProduction ? '[name]-[chunkhash].js' : '[name].js',
-			publicPath: '',
-			// If multiple webpack runtimes (from different compilations) are used on the
-			// same webpage, there is a risk of conflicts of on-demand chunks in the global
-			// namespace.
-			// See: https://webpack.js.org/configuration/output/#outputjsonpfunction.
-			jsonpFunction: '__googlesitekit_block_editor_webpackJsonp',
-		},
-		performance: {
-			maxEntrypointSize: 175000,
-		},
-		module: {
-			rules: createRules( mode ),
-		},
-		plugins: [
-			new WebpackBar( {
-				name: 'Gutenberg Entry Points',
-				color: '#ffc0cb',
-			} ),
-			new CircularDependencyPlugin( {
-				exclude: /node_modules/,
-				failOnError: true,
-				allowAsyncCycles: false,
-				cwd: process.cwd(),
-			} ),
-			new ManifestPlugin( {
-				...manifestArgs( mode ),
-				filter( file ) {
-					return ( file.name || '' ).match( /\.js$/ );
-				},
-			} ),
-			new ESLintPlugin( {
-				emitError: true,
-				emitWarning: true,
-				failOnError: true,
-			} ),
-		],
-		optimization: {
-			minimizer: createMinimizerRules( mode ),
-		},
-		resolve,
 	};
 }
 

@@ -31,7 +31,7 @@ jobs:
     timeout-minutes: 20
     if: github.event.pull_request.draft == false
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Setup Node.js (.nvmrc)
         uses: actions/setup-node@v3

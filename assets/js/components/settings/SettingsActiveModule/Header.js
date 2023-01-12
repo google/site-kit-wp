@@ -44,11 +44,7 @@ import Badge from '../../Badge';
 import { trackEvent } from '../../../util';
 import useViewContext from '../../../hooks/useViewContext';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
-import {
-	FORM_SETUP,
-	MODULES_ANALYTICS,
-} from '../../../modules/analytics/datastore/constants';
-import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
+import { FORM_SETUP } from '../../../modules/analytics/datastore/constants';
 const { useSelect, useDispatch } = Data;
 
 export default function Header( { slug } ) {
@@ -75,30 +71,13 @@ export default function Header( { slug } ) {
 		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
 	);
 
-	const loggedInUserID = useSelect( ( select ) =>
-		select( CORE_USER ).getID()
-	);
 	const hasAnalyticsAccess = useSelect( ( select ) => {
 		if ( ! ( slug === 'analytics' && module?.connected ) ) {
 			return false;
 		}
 
-		const moduleOwnerID = select( MODULES_ANALYTICS ).getOwnerID();
-
-		if ( moduleOwnerID === undefined || loggedInUserID === undefined ) {
-			return undefined;
-		}
-
-		if ( moduleOwnerID === loggedInUserID ) {
-			return true;
-		}
-		return select( CORE_MODULES ).hasModuleAccess( 'analytics' );
+		return select( CORE_MODULES ).hasModuleOwnershipOrAccess( 'analytics' );
 	} );
-	const hasResolvedAnalyticsAccess = useSelect( ( select ) =>
-		select( CORE_MODULES ).hasFinishedResolution( 'hasModuleAccess', [
-			'analytics',
-		] )
-	);
 
 	const { setValues } = useDispatch( CORE_FORMS );
 
@@ -202,7 +181,7 @@ export default function Header( { slug } ) {
 					{ __( 'Connect Google Analytics 4', 'google-site-kit' ) }
 				</Button>
 			);
-		} else if ( hasResolvedAnalyticsAccess ) {
+		} else if ( hasAnalyticsAccess !== undefined ) {
 			moduleStatus = (
 				<p>
 					{ __(
@@ -292,8 +271,7 @@ export default function Header( { slug } ) {
 									'googlesitekit-settings-module__status--loading':
 										'analytics' === slug &&
 										! isGA4Connected &&
-										! hasAnalyticsAccess &&
-										! hasResolvedAnalyticsAccess,
+										! hasAnalyticsAccess,
 								}
 							) }
 						>

@@ -26,16 +26,13 @@ import { getByText } from '@testing-library/dom';
  */
 import MediaErrorHandler from './';
 import { render } from '../../../../tests/js/test-utils';
-
-const ErrorComponent = () => {
-	throw new Error();
-};
+import ThrowErrorComponent from '../../../../tests/js/ThrowErrorComponent';
 
 describe( 'Media Error Handler', () => {
 	it( 'should render error message when there is an error', () => {
 		const { container } = render(
 			<MediaErrorHandler>
-				<ErrorComponent />
+				<ThrowErrorComponent throwErrorOnMount />
 			</MediaErrorHandler>
 		);
 
@@ -49,7 +46,7 @@ describe( 'Media Error Handler', () => {
 	it( 'should render defined error message when there is an error', () => {
 		const { container } = render(
 			<MediaErrorHandler errorMessage="Failed to load graphic.">
-				<ErrorComponent />
+				<ThrowErrorComponent throwErrorOnMount />
 			</MediaErrorHandler>
 		);
 

@@ -89,19 +89,6 @@ PageSpeedInsights.scenario = {
 	label: 'Global/SetupSuccessBannerNotification/PageSpeedInsights',
 };
 
-export const IdeaHub = Template.bind( {} );
-IdeaHub.storyName = 'Authentication Success - Idea Hub';
-IdeaHub.parameters = {
-	module: { slug: 'idea-hub', name: 'Idea Hub' },
-	query: {
-		notification: 'authentication_success',
-		slug: 'idea-hub',
-	},
-};
-IdeaHub.scenario = {
-	label: 'Global/SetupSuccessBannerNotification/IdeaHub',
-};
-
 export const UserInputSuccess = Template.bind( {} );
 UserInputSuccess.storyName = 'User Input Success';
 UserInputSuccess.parameters = {

@@ -200,6 +200,8 @@ class Analytics_4Test extends TestCase {
 			array(
 				'account-summaries',
 				'accounts',
+				'container-lookup',
+				'container-destinations',
 				'create-property',
 				'create-webdatastream',
 				'properties',

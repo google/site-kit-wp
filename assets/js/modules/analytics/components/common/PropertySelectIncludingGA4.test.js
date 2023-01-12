@@ -29,7 +29,10 @@ import {
 import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 import * as fixtures from '../../datastore/__fixtures__';
 import * as analytics4Fixtures from '../../../analytics-4/datastore/__fixtures__';
-import { provideSiteInfo } from '../../../../../../tests/js/utils';
+import {
+	provideSiteInfo,
+	untilResolved,
+} from '../../../../../../tests/js/utils';
 import { fireEvent, act, render } from '../../../../../../tests/js/test-utils';
 
 const {
@@ -332,6 +335,20 @@ describe( 'PropertySelectIncludingGA4IncludingGA4', () => {
 			fireEvent.click( container.querySelector( '.mdc-floating-label' ) );
 			fireEvent.click( getByText( `UA Property (${ propertyIDua })` ) );
 			await findByText( `UA Property (${ propertyIDua })` );
+
+			await untilResolved( registry, MODULES_ANALYTICS_4 ).getProperties(
+				accountID
+			);
+
+			await untilResolved(
+				registry,
+				MODULES_ANALYTICS_4
+			).getWebDataStreamsBatch( [ propertyIDga4 ] );
+
+			await untilResolved(
+				registry,
+				MODULES_ANALYTICS_4
+			).getWebDataStreams( propertyIDga4 );
 		} );
 
 		expect( registry.select( MODULES_ANALYTICS_4 ).getPropertyID() ).toBe(

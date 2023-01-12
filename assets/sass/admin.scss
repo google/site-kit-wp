@@ -65,6 +65,9 @@
 @import "vendor/mdc-tab";
 @import "vendor/mdc-text-field";
 
+// GM3 Components
+@import "components-gm3";
+
 /*
  * Top-level Cascade Items
  */
@@ -98,6 +101,7 @@
 @import "components/global/googlesitekit-error-handler";
 @import "components/global/googlesitekit-error-text";
 @import "components/global/googlesitekit-gathering-data-notice";
+@import "components/global/googlesitekit-googlechart-error-handler";
 @import "components/global/googlesitekit-header";
 @import "components/global/googlesitekit-help-menu-link";
 @import "components/global/googlesitekit-layout";
@@ -165,6 +169,7 @@
 @import "components/user-input/googlesitekit-user-input-questions";
 @import "components/user-input/googlesitekit-user-input-preview";
 @import "components/user-input/googlesitekit-user-input-controls";
+@import "components/user-input/googlesitekit-user-input-notification";
 
 // Tour Tooltip
 @import "components/tour-tooltip/googlesitekit-tour-tooltip";
@@ -173,7 +178,6 @@
 @import "components/feature-tours/googlesitekit-dashboard-sharing";
 
 // Modules
-@import "components/idea-hub";
 @import "components/analytics-4";
 
 // User Feedback

@@ -49,6 +49,7 @@
 @import "components/global/googlesitekit-data-block";
 @import "components/global/googlesitekit-error-text";
 @import "components/global/googlesitekit-gathering-data-notice";
+@import "components/global/googlesitekit-googlechart-error-handler";
 @import "components/global/googlesitekit-logo";
 @import "components/global/googlesitekit-preview-block";
 @import "components/global/googlesitekit-preview-table";
@@ -69,6 +70,3 @@
 // Utilities
 @import "utilities/display";
 @import "utilities/overflow-wrap";
-
-// Idea Hub
-@import "components/idea-hub/googlesitekit-idea-hub-wpdashboard-widget";
