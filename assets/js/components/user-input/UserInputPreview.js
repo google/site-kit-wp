@@ -31,7 +31,7 @@ import { Fragment, useEffect, useRef, useState } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { Button } from 'googlesitekit-components';
+import { Button, ProgressBar } from 'googlesitekit-components';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import {
 	getUserInputAnswers,
@@ -85,6 +85,10 @@ export default function UserInputPreview( props ) {
 			}, 50 );
 		}
 	}, [ page ] );
+
+	if ( undefined === settings ) {
+		return <ProgressBar />;
+	}
 
 	const updateErrorMessages = () => {
 		const newErrorMessages = USER_INPUT_QUESTIONS_LIST.reduce(
