@@ -94,6 +94,13 @@
 		word-break: break-word;
 	}
 
+	.googlesitekit-user-input__preview-group {
+
+		.googlesitekit-user-input__author {
+			margin: 24px 0 28px;
+		}
+	}
+
 	.googlesitekit-user-input__preview-group + .googlesitekit-user-input__preview-group {
 		border-top: 1px solid $c-utility-divider;
 		margin-top: 12px;
@@ -142,6 +149,16 @@
 				background-position: left 6px;
 				transform: rotate(180deg);
 			}
+		}
+	}
+
+	.googlesitekit-user-input__preview-actions {
+		align-items: center;
+		column-gap: 20px;
+		display: flex;
+
+		.googlesitekit-cta-link {
+			color: $c-surfaces-on-background-variant;
 		}
 	}
 }

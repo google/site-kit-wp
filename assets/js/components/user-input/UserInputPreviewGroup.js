@@ -33,6 +33,7 @@ import { __ } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
+import { Button } from 'googlesitekit-components';
 import Link from '../Link';
 import { trackEvent } from '../../util';
 import useViewContext from '../../hooks/useViewContext';
@@ -42,6 +43,7 @@ import {
 } from './util/constants';
 import UserInputSelectOptions from './UserInputSelectOptions';
 import { getErrorMessageForAnswer } from './util/validation';
+import UserInputQuestionAuthor from './UserInputQuestionAuthor';
 
 const { useSelect, useDispatch } = Data;
 
@@ -52,6 +54,7 @@ export default function UserInputPreviewGroup( {
 	options,
 	errorMessage,
 	onCollapse,
+	showIndividualCTAs = false,
 } ) {
 	const viewContext = useViewContext();
 	const currentlyEditingSlug = useSelect( ( select ) =>
@@ -123,6 +126,23 @@ export default function UserInputPreviewGroup( {
 						<p className="googlesitekit-error-text">
 							{ errorMessage }
 						</p>
+					) }
+					{ showIndividualCTAs && (
+						<Fragment>
+							<UserInputQuestionAuthor slug={ slug } />
+
+							<div className="googlesitekit-user-input__preview-actions">
+								<Button disabled={ false } onClick={ () => {} }>
+									{ __(
+										'Confirm Changes',
+										'google-site-kit'
+									) }
+								</Button>
+								<Link onClick={ () => {} }>
+									{ __( 'Cancel', 'google-site-kit' ) }
+								</Link>
+							</div>
+						</Fragment>
 					) }
 				</Fragment>
 			) }
