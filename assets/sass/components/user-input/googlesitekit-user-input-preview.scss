@@ -148,4 +148,8 @@
 	.googlesitekit-user-input__preview-group .googlesitekit-user-input__select-option .mdc-radio {
 		margin-left: -10px;
 	}
+
+	.googlesitekit-user-input__preview-group .googlesitekit-user-input__select-option:not(:last-child) {
+		border-bottom: none;
+	}
 }
