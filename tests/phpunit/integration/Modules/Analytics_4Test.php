@@ -990,8 +990,8 @@ class Analytics_4Test extends TestCase {
 			Module_Sharing_Settings::OPTION,
 			array(
 				'analytics-4' => array(
-					'sharedRoles' => array( 'administrator' ),
-					'management'  => 'all_admins',
+					'sharedRoles' => $this->user->roles,
+					'management'  => 'owner',
 				),
 			)
 		);
