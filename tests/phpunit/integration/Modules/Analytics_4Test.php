@@ -796,6 +796,27 @@ class Analytics_4Test extends TestCase {
 	 *
 	 * @param string $access_token Access token, or empty string if none.
 	 */
+	public function test_report__no_property_id( $access_token ) {
+		$this->setup_user_authentication( $access_token );
+
+		$property_id = '123456789';
+
+		$http_client = $this->create_fake_http_client( $property_id );
+		$this->analytics->get_client()->setHttpClient( $http_client );
+		$this->analytics->register();
+
+		$data = $this->analytics->get_data( 'report', array() );
+
+		$this->assertWPErrorWithMessage( 'No connected Google Analytics 4 property ID.', $data );
+	}
+
+	/**
+	 * @dataProvider data_access_token
+	 *
+	 * When an access token is provided, the user will be authenticated for the test.
+	 *
+	 * @param string $access_token Access token, or empty string if none.
+	 */
 	public function test_report__no_metrics( $access_token ) {
 		$this->setup_user_authentication( $access_token );
 

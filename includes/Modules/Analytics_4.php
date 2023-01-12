@@ -869,13 +869,16 @@ final class Analytics_4 extends Module
 	protected function create_report_request( Data_Request $data ) {
 		$request_args = array();
 
+		$option = $this->get_settings()->get();
+
+		if ( empty( $option['propertyID'] ) ) {
+			return new WP_Error( 'missing_required_setting', __( 'No connected Google Analytics 4 property ID.', 'google-site-kit' ), array( 'status' => 400 ) );
+		}
+
 		if ( empty( $data['metrics'] ) ) {
 			/* translators: %s: Missing parameter name */
 			return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'metrics' ), array( 'status' => 400 ) );
 		}
-
-		$option      = $this->get_settings()->get();
-		$property_id = self::normalize_property_id( $option['propertyID'] );
 
 		if ( ! empty( $data['url'] ) ) {
 			$request_args['page'] = $data['url'];
@@ -952,7 +955,7 @@ final class Analytics_4 extends Module
 			}
 		}
 
-		$request = $this->create_analytics_site_data_request( $property_id, $request_args );
+		$request = $this->create_analytics_site_data_request( $option['propertyID'], $request_args );
 
 		if ( is_wp_error( $request ) ) {
 			return $request;
@@ -1056,7 +1059,7 @@ final class Analytics_4 extends Module
 			)
 		);
 
-		return $this->get_analyticsdata_service()->properties->runReport( $property_id, $request );
+		return $this->get_analyticsdata_service()->properties->runReport( self::normalize_property_id( $option['propertyID'] ), $request );
 	}
 
 	/**
@@ -1136,7 +1139,7 @@ final class Analytics_4 extends Module
 		);
 
 		$request = new Google_Service_AnalyticsData_RunReportRequest();
-		$request->setProperty( $property_id );
+		$request->setProperty( self::normalize_property_id( $property_id ) );
 
 		$request->setKeepEmptyRows( true );
 
