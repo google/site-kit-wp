@@ -173,7 +173,7 @@ const InteractiveTokens = () => (
 				<Token
 					name="interactive-secondary-press"
 					label="Secondary Press"
-					reference="161B18, 36%"
+					reference="161B18, 24%"
 				/>
 			</TokenColumn>
 			<TokenColumn>
