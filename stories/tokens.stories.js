@@ -204,7 +204,7 @@ const InteractiveTokens = () => (
 				<Token
 					name="interactive-disable-container"
 					label="Disabled"
-					reference="#030E07, 0.32"
+					reference="#082A41, 0.08"
 				/>
 				<Token
 					name="interactive-inverse-on-disable-container"
