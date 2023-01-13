@@ -78,7 +78,7 @@ describe( 'SettingsEdit', () => {
 			body: {},
 		} );
 
-		fetchMock.get( new RegExp( 'example.com' ), {
+		fetchMock.get( new RegExp( 'example\\.com' ), {
 			body: [],
 			status: 200,
 		} );
@@ -155,7 +155,7 @@ describe( 'SettingsEdit', () => {
 			}
 		);
 
-		fetchMock.get( new RegExp( 'example.com' ), {
+		fetchMock.get( new RegExp( 'example\\.com' ), {
 			body: [],
 			status: 200,
 		} );
