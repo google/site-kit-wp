@@ -44,6 +44,7 @@ import {
 import UserInputSelectOptions from './UserInputSelectOptions';
 import { getErrorMessageForAnswer } from './util/validation';
 import UserInputQuestionAuthor from './UserInputQuestionAuthor';
+import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 
 const { useSelect, useDispatch } = Data;
 
@@ -59,6 +60,9 @@ export default function UserInputPreviewGroup( {
 	const viewContext = useViewContext();
 	const currentlyEditingSlug = useSelect( ( select ) =>
 		select( CORE_UI ).getValue( USER_INPUT_CURRENTLY_EDITING_KEY )
+	);
+	const hasSettingChanged = useSelect( ( select ) =>
+		select( CORE_USER ).haveUserInputSettingsChanged( slug )
 	);
 	const { setValues } = useDispatch( CORE_UI );
 
@@ -132,7 +136,10 @@ export default function UserInputPreviewGroup( {
 							<UserInputQuestionAuthor slug={ slug } />
 
 							<div className="googlesitekit-user-input__preview-actions">
-								<Button disabled={ false } onClick={ () => {} }>
+								<Button
+									disabled={ ! hasSettingChanged }
+									onClick={ () => {} }
+								>
 									{ __(
 										'Confirm Changes',
 										'google-site-kit'
