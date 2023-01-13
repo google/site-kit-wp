@@ -34,6 +34,7 @@ import { sprintf, _n } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import { Checkbox, Radio } from 'googlesitekit-components';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
 import { Cell } from '../../material-components';
 const { useSelect, useDispatch } = Data;
 
@@ -47,6 +48,12 @@ export default function UserInputSelectOptions( {
 } ) {
 	const values = useSelect(
 		( select ) => select( CORE_USER ).getUserInputSetting( slug ) || []
+	);
+	const isSavingSettings = useSelect( ( select ) =>
+		select( CORE_USER ).isSavingUserInputSettings( values )
+	);
+	const isNavigating = useSelect( ( select ) =>
+		select( CORE_LOCATION ).isNavigating()
 	);
 	const { setUserInputSetting } = useDispatch( CORE_USER );
 	const optionsRef = useRef();
@@ -135,6 +142,10 @@ export default function UserInputSelectOptions( {
 			props.name = `${ slug }-${ optionSlug }`;
 		} else {
 			props.name = slug;
+		}
+
+		if ( isSavingSettings || isNavigating ) {
+			props.disabled = true;
 		}
 
 		return (
