@@ -820,7 +820,6 @@ class Analytics_4Test extends TestCase {
 
 		$this->assertWPErrorWithMessage( 'Unsupported metrics requested: invalidMetric, anotherInvalidMetric', $data );
 		$this->assertEquals( 'invalid_analytics_4_report_metrics', $data->get_error_code() );
-		$this->assertEquals( array( 'status' => 400 ), $data->get_error_data( 'invalid_analytics_4_report_metrics' ) );
 	}
 
 	public function test_report__dimension_validation() {
@@ -865,7 +864,6 @@ class Analytics_4Test extends TestCase {
 
 		$this->assertWPErrorWithMessage( 'Unsupported dimensions requested: invalidDimension, anotherInvalidDimension', $data );
 		$this->assertEquals( 'invalid_analytics_4_report_dimensions', $data->get_error_code() );
-		$this->assertEquals( array( 'status' => 400 ), $data->get_error_data( 'invalid_analytics_4_report_dimensions' ) );
 	}
 
 	/**
