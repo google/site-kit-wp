@@ -116,4 +116,13 @@ DefaultTypeScale.scenario = {};
 
 export default {
 	title: 'Global/TypeScale',
+	decorators: [
+		( Story ) => {
+			return (
+				<div className="googlesitekit-story--type-scale">
+					<Story />
+				</div>
+			);
+		},
+	],
 };

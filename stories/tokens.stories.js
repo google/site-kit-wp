@@ -336,7 +336,7 @@ export default {
 	decorators: [
 		( Story ) => {
 			return (
-				<div className="googlesitekit-color-token-wrapper">
+				<div className="googlesitekit-story--tokens">
 					<Story />
 				</div>
 			);
