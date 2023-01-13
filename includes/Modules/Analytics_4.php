@@ -876,10 +876,6 @@ final class Analytics_4 extends Module
 
 		$option = $this->get_settings()->get();
 
-		if ( empty( $option['propertyID'] ) ) {
-			return new WP_Error( 'missing_required_setting', __( 'No connected Google Analytics 4 property ID.', 'google-site-kit' ), array( 'status' => 400 ) );
-		}
-
 		if ( empty( $data['metrics'] ) ) {
 			/* translators: %s: Missing parameter name */
 			return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'metrics' ), array( 'status' => 400 ) );
@@ -1058,6 +1054,11 @@ final class Analytics_4 extends Module
 				'MAXIMUM',
 			)
 		);
+
+		if ( empty( $option['propertyID'] ) ) {
+			// Only return a 500 Internal Server error once we've checked for all 400 Bad Request errors above.
+			return new WP_Error( 'missing_required_setting', __( 'No connected Google Analytics 4 property ID.', 'google-site-kit' ), array( 'status' => 500 ) );
+		}
 
 		return $this->get_analyticsdata_service()->properties->runReport( self::normalize_property_id( $option['propertyID'] ), $request );
 	}

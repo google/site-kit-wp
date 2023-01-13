@@ -724,27 +724,6 @@ class Analytics_4Test extends TestCase {
 	 *
 	 * @param string $access_token Access token, or empty string if none.
 	 */
-	public function test_report__no_property_id( $access_token ) {
-		$this->setup_user_authentication( $access_token );
-
-		$this->authentication->get_oauth_client()->set_granted_scopes(
-			$this->analytics->get_scopes()
-		);
-
-		$data = $this->analytics->get_data( 'report', array() );
-
-		$this->assertWPErrorWithMessage( 'No connected Google Analytics 4 property ID.', $data );
-		$this->assertEquals( 'missing_required_setting', $data->get_error_code() );
-		$this->assertEquals( array( 'status' => 400 ), $data->get_error_data( 'missing_required_setting' ) );
-	}
-
-	/**
-	 * @dataProvider data_access_token
-	 *
-	 * When an access token is provided, the user will be authenticated for the test.
-	 *
-	 * @param string $access_token Access token, or empty string if none.
-	 */
 	public function test_report__no_metrics( $access_token ) {
 		$this->setup_user_authentication( $access_token );
 
@@ -864,6 +843,35 @@ class Analytics_4Test extends TestCase {
 		$this->assertWPErrorWithMessage( 'Unsupported dimensions requested: invalidDimension, anotherInvalidDimension', $data );
 		$this->assertEquals( 'invalid_analytics_4_report_dimensions', $data->get_error_code() );
 		$this->assertEquals( array( 'status' => 400 ), $data->get_error_data( 'invalid_analytics_4_report_dimensions' ) );
+	}
+
+	/**
+	 * @dataProvider data_access_token
+	 *
+	 * When an access token is provided, the user will be authenticated for the test.
+	 *
+	 * @param string $access_token Access token, or empty string if none.
+	 */
+	public function test_report__no_property_id( $access_token ) {
+		$this->setup_user_authentication( $access_token );
+
+		$this->authentication->get_oauth_client()->set_granted_scopes(
+			$this->analytics->get_scopes()
+		);
+
+		$data = $this->analytics->get_data(
+			'report',
+			array(
+				// Note, metrics is a required parameter.
+				'metrics' => array(
+					array( 'name' => 'sessions' ),
+				),
+			)
+		);
+
+		$this->assertWPErrorWithMessage( 'No connected Google Analytics 4 property ID.', $data );
+		$this->assertEquals( 'missing_required_setting', $data->get_error_code() );
+		$this->assertEquals( array( 'status' => 500 ), $data->get_error_data( 'missing_required_setting' ) );
 	}
 
 	/**
