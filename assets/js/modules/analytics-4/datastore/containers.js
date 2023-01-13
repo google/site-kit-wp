@@ -140,7 +140,7 @@ const baseSelectors = {
 	/**
 	 * Gets the Google Tag container for the given measurementID.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.92.0
 	 *
 	 * @param {Object} state         Data store's state.
 	 * @param {string} measurementID Measurement ID.
@@ -153,7 +153,7 @@ const baseSelectors = {
 	/**
 	 * Gets the Google Tag container destinations for the given accountID and containeID.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.92.0
 	 *
 	 * @param {Object} state          Data store's state.
 	 * @param {string} gtmAccountID   Google Tag Manager account ID.

@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import isEmpty from 'lodash/isEmpty';
+
+/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
@@ -98,6 +103,11 @@ const WPDashboardUniqueVisitorsChartWidget = () => {
 		return <WidgetReportError moduleSlug="analytics" error={ error } />;
 	}
 
+	if ( ! isEmpty( data?.[ 0 ] ) ) {
+		data[ 0 ].data.rows = Array.isArray( data[ 0 ].data?.rows )
+			? data[ 0 ].data?.rows
+			: [];
+	}
 	const googleChartData =
 		extractAnalyticsDashboardData(
 			data || [],

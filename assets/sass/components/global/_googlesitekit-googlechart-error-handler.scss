@@ -1,7 +1,7 @@
 /**
- * ErrorHandler Component Stories.
+ * Google Charts error handler styles.
  *
- * Site Kit by Google, Copyright 2022 Google LLC
+ * Site Kit by Google, Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,25 +16,12 @@
  * limitations under the License.
  */
 
-/**
- * Internal dependencies
- */
-import ThrowErrorComponent from '../../../../tests/js/ThrowErrorComponent';
-import ErrorHandler from './';
+.googlesitekit-plugin {
 
-const Template = () => (
-	<ErrorHandler>
-		<ThrowErrorComponent throwErrorOnMount />
-	</ErrorHandler>
-);
+	.googlesitekit-googlechart-error-handler {
 
-export const Default = Template.bind( {} );
-Default.storyName = 'Default';
-Default.scenario = {
-	label: 'Global/ErrorHandler',
-};
-
-export default {
-	title: 'Components/ErrorHandler',
-	component: ErrorHandler,
-};
+		.googlesitekit-cta-link {
+			margin-left: 12px;
+		}
+	}
+}

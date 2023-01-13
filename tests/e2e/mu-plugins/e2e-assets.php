@@ -18,7 +18,7 @@ add_filter(
 			'googlesitekit-e2e-api-fetch',
 			array(
 				'src'          => plugins_url( 'dist/assets/js/e2e-api-fetch.js', GOOGLESITEKIT_PLUGIN_MAIN_FILE ),
-				'dependencies' => array( 'googlesitekit-apifetch-data' ),
+				'dependencies' => array( 'googlesitekit-apifetch-data', 'googlesitekit-i18n' ),
 				'version'      => md5_file( plugin_dir_path( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) . 'dist/assets/js/e2e-api-fetch.js' ),
 			)
 		);
