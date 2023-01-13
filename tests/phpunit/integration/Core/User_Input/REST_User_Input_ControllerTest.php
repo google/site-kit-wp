@@ -56,6 +56,8 @@ class REST_User_Input_ControllerTest extends TestCase {
 	}
 
 	public function test_register() {
+		$this->enable_feature( 'userInput' );
+
 		remove_all_filters( 'googlesitekit_rest_routes' );
 		remove_all_filters( 'googlesitekit_apifetch_preload_paths' );
 
