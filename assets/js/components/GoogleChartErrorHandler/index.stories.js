@@ -1,9 +1,7 @@
 /**
- * Admin utilities.
+ * ErrorHandler Component Stories.
  *
- * This JavaScript loads on every admin page. Reserved for later.
- *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2022 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,17 +19,22 @@
 /**
  * Internal dependencies
  */
-import { clearWebStorage } from './util/standalone';
+import ErrorComponent from '../../../../tests/js/ThrowErrorComponent';
+import GoogleChartErrorHandler from './';
 
-let wpLogout = document.querySelector( '#wp-admin-bar-logout a' );
+const Template = () => (
+	<GoogleChartErrorHandler>
+		<ErrorComponent throwErrorOnMount />
+	</GoogleChartErrorHandler>
+);
 
-// Support for WordPress.com signout button.
-if ( ! wpLogout ) {
-	wpLogout = document.querySelector( '.sidebar__me-signout button' );
-}
+export const Default = Template.bind( {} );
+Default.storyName = 'Default';
+Default.scenario = {
+	label: 'Global/GoogleChartErrorHandler',
+};
 
-if ( wpLogout ) {
-	wpLogout.addEventListener( 'click', () => {
-		clearWebStorage();
-	} );
-}
+export default {
+	title: 'Components/GoogleChartErrorHandler',
+	component: GoogleChartErrorHandler,
+};

@@ -563,7 +563,7 @@ final class Analytics_4 extends Module
 	/**
 	 * Gets the configured TagManager service instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.92.0
 	 *
 	 * @return Google_Service_TagManager instance.
 	 * @throws Exception Thrown if the module did not correctly set up the service.
@@ -674,7 +674,12 @@ final class Analytics_4 extends Module
 		}
 
 		$settings = $this->get_settings()->get();
-		$tag      = new Web_Tag( $settings['measurementID'], self::MODULE_SLUG );
+
+		if ( Feature_Flags::enabled( 'gteSupport' ) && ! empty( $settings['googleTagID'] ) ) {
+			$tag = new Web_Tag( $settings['googleTagID'], self::MODULE_SLUG );
+		} else {
+			$tag = new Web_Tag( $settings['measurementID'], self::MODULE_SLUG );
+		}
 
 		if ( $tag->is_tag_blocked() ) {
 			return;

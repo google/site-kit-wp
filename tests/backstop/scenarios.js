@@ -130,4 +130,16 @@ const legacyScenarios = legacyStorybookScenarios.map( ( story ) => {
 	};
 } );
 
-module.exports = [ ...legacyScenarios, ...csfScenarios ];
+const scenarios = [ ...legacyScenarios, ...csfScenarios ];
+module.exports = scenarios.map( ( scenario ) => {
+	const backstopReadySelector = 'body.backstopjs-ready';
+
+	const readySelector = scenario.readySelector
+		? `${ backstopReadySelector } ${ scenario.readySelector }`
+		: backstopReadySelector;
+
+	return {
+		...scenario,
+		readySelector,
+	};
+} );

@@ -28,7 +28,6 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import { ProgressBar } from 'googlesitekit-components';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import { useFeature } from '../../hooks/useFeature';
 import { Grid, Row, Cell } from '../../material-components';
 import Header from '../Header';
 import HelpMenu from '../help/HelpMenu';
@@ -38,7 +37,6 @@ import Layout from '../layout/Layout';
 const { useSelect } = Data;
 
 export default function UserInputApp() {
-	const userInputEnabled = useFeature( 'userInput' );
 	const hasFinishedGettingInputSettings = useSelect( ( select ) => {
 		// This needs to be called here to check on its resolution,
 		// as it's called/used by child components of this component,
@@ -51,10 +49,6 @@ export default function UserInputApp() {
 			'getUserInputSettings'
 		);
 	} );
-
-	if ( ! userInputEnabled ) {
-		return <div>{ __( 'Something went wrong.', 'google-site-kit' ) }</div>;
-	}
 
 	return (
 		<Fragment>
