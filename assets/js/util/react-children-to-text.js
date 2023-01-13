@@ -24,7 +24,7 @@ import { Children, ReactNode, isValidElement } from '@wordpress/element';
 /**
  * Gets text from React children including all descendants. Returns a flat array of strings.
  *
- * @since n.e.x.t
+ * @since 1.92.0
  *
  * @param {ReactNode} children Children to extract text from.
  * @return {Array.<string>} Array of text strings.
@@ -51,7 +51,7 @@ function getTextFromChildren( children ) {
 /**
  * Gets text from React children including all descendants. Returns a single string.
  *
- * @since n.e.x.t
+ * @since 1.92.0
  *
  * @param {ReactNode} children Children to extract text from.
  * @return {string} Single string of text.

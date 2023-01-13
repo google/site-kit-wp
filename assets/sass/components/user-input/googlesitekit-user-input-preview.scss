@@ -50,7 +50,7 @@
 		}
 	}
 
-	.googlesitekit-user-input__preview-subheader {
+	p.googlesitekit-user-input__preview-subheader {
 		@extend .googlesitekit-user-input__question-number;
 
 		margin-bottom: 14px;
@@ -94,6 +94,20 @@
 		word-break: break-word;
 	}
 
+	.googlesitekit-user-input__preview-group {
+
+		.googlesitekit-user-input__select-option {
+
+			.mdc-radio {
+				margin-left: -10px;
+			}
+
+			&:not(:last-child) {
+				border-bottom: none;
+			}
+		}
+	}
+
 	.googlesitekit-user-input__preview-group + .googlesitekit-user-input__preview-group {
 		border-top: 1px solid $c-utility-divider;
 		margin-top: 12px;
@@ -112,8 +126,8 @@
 		}
 
 		p {
-			color: $c-surfaces-on-surface;
-			font-family: $f-secondary;
+			color: $c-grey-g-900;
+			font-family: $f-primary;
 			font-weight: $fw-medium;
 			margin: 0;
 		}

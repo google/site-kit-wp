@@ -31,6 +31,7 @@ import { Fragment, useEffect, useRef, useState } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { ProgressBar } from 'googlesitekit-components';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
 import {
@@ -52,7 +53,7 @@ import { getErrorMessageForAnswer } from './util/validation';
 const { useSelect } = Data;
 
 export default function UserInputPreview( props ) {
-	const { noFooter, goBack, submitChanges, error } = props;
+	const { noFooter, goBack, submitChanges, error, noHeader } = props;
 	const previewContainer = useRef();
 	const settings = useSelect( ( select ) =>
 		select( CORE_USER ).getUserInputSettings()
@@ -95,6 +96,10 @@ export default function UserInputPreview( props ) {
 		}
 	}, [ page ] );
 
+	if ( undefined === settings ) {
+		return <ProgressBar />;
+	}
+
 	const updateErrorMessages = () => {
 		const newErrorMessages = USER_INPUT_QUESTIONS_LIST.reduce(
 			( errors, slug ) => {
@@ -128,9 +133,11 @@ export default function UserInputPreview( props ) {
 			ref={ previewContainer }
 		>
 			<div className="googlesitekit-user-input__preview-contents">
-				<p className="googlesitekit-user-input__preview-subheader">
-					{ __( 'Review your answers', 'google-site-kit' ) }
-				</p>
+				{ ! noHeader && (
+					<p className="googlesitekit-user-input__preview-subheader">
+						{ __( 'Review your answers', 'google-site-kit' ) }
+					</p>
+				) }
 				<UserInputPreviewGroup
 					slug={ USER_INPUT_QUESTIONS_PURPOSE }
 					title={ __(
@@ -215,4 +222,5 @@ UserInputPreview.propTypes = {
 	goBack: PropTypes.func,
 	redirectURL: PropTypes.string,
 	errors: PropTypes.object,
+	noHeader: PropTypes.bool,
 };

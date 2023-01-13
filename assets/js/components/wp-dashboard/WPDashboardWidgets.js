@@ -36,7 +36,7 @@ import WPDashboardUniqueVisitors from './WPDashboardUniqueVisitors';
 import WPDashboardSessionDuration from './WPDashboardSessionDuration';
 import WPDashboardPopularPages from './WPDashboardPopularPages';
 import WPDashboardActivateAnalyticsCTA from './WPDashboardActivateAnalyticsCTA';
-// import WPDashboardUniqueVisitorsChartWidget from './WPDashboardUniqueVisitorsChartWidget';
+import WPDashboardUniqueVisitorsChartWidget from './WPDashboardUniqueVisitorsChartWidget';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { withWidgetComponentProps } from '../../googlesitekit/widgets/util/get-widget-component-props';
 const { useSelect } = Data;
@@ -107,7 +107,7 @@ const WPDashboardWidgets = () => {
 
 			{ analyticsModuleActiveAndConnected && (
 				<Fragment>
-					{ /* <WPDashboardUniqueVisitorsChartWidget /> */ }
+					<WPDashboardUniqueVisitorsChartWidget />
 					<WPDashboardPopularPagesWidget />
 				</Fragment>
 			) }

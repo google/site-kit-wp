@@ -1,5 +1,5 @@
 /**
- * MediaErrorHandler component tests.
+ * Google Charts error handler component tests.
  *
  * Site Kit by Google, Copyright 2022 Google LLC
  *
@@ -24,42 +24,30 @@ import { getByText } from '@testing-library/dom';
 /**
  * Internal dependencies
  */
-import MediaErrorHandler from './';
+import GoogleChartErrorHandler from './';
 import { render } from '../../../../tests/js/test-utils';
 import ThrowErrorComponent from '../../../../tests/js/ThrowErrorComponent';
 
-describe( 'Media Error Handler', () => {
+describe( 'Google charts Error Handler', () => {
 	it( 'should render error message when there is an error', () => {
 		const { container } = render(
-			<MediaErrorHandler>
+			<GoogleChartErrorHandler>
 				<ThrowErrorComponent throwErrorOnMount />
-			</MediaErrorHandler>
+			</GoogleChartErrorHandler>
 		);
 
 		expect( console ).toHaveErrored();
 
 		expect(
-			getByText( container, /Error: Failed to load media/ )
-		).toBeInTheDocument();
-	} );
-
-	it( 'should render defined error message when there is an error', () => {
-		const { container } = render(
-			<MediaErrorHandler errorMessage="Failed to load graphic.">
-				<ThrowErrorComponent throwErrorOnMount />
-			</MediaErrorHandler>
-		);
-
-		expect( console ).toHaveErrored();
-
-		expect(
-			getByText( container, /Error: Failed to load graphic/ )
+			getByText( container, /Error in Google Chart/ )
 		).toBeInTheDocument();
 	} );
 
 	it( 'should render children if there is no error', () => {
 		const { container } = render(
-			<MediaErrorHandler>No errors encountered</MediaErrorHandler>
+			<GoogleChartErrorHandler>
+				No errors encountered
+			</GoogleChartErrorHandler>
 		);
 
 		expect( console ).not.toHaveErrored();
