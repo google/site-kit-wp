@@ -48,7 +48,6 @@ import ErrorIcon from '../../../../../../svg/icons/error.svg';
 import ReminderBannerNoAccess from './ReminderBannerNoAccess';
 import { CORE_MODULES } from '../../../../../googlesitekit/modules/datastore/constants';
 import { Cell, Grid, Row } from '../../../../../material-components';
-import { MODULES_ANALYTICS } from '../../../../analytics/datastore/constants';
 import useViewContext from '../../../../../hooks/useViewContext';
 
 const { useSelect } = Data;
@@ -62,19 +61,10 @@ export default function ReminderBanner( {
 		if ( isDismissed ) {
 			return undefined;
 		}
-		const userID = select( CORE_USER ).getID();
-		const analyticsOwnerID = select( MODULES_ANALYTICS ).getOwnerID();
 
-		if ( userID === undefined || analyticsOwnerID === undefined ) {
-			return undefined;
-		}
-
-		if ( analyticsOwnerID === userID ) {
-			return true;
-		}
-
-		return select( CORE_MODULES ).hasModuleAccess( 'analytics' );
+		return select( CORE_MODULES ).hasModuleOwnershipOrAccess( 'analytics' );
 	} );
+
 	const isLoadingAnalyticsAccess = useSelect( ( select ) =>
 		select( CORE_MODULES ).isResolving( 'hasModuleAccess', [ 'analytics' ] )
 	);

@@ -1768,7 +1768,9 @@ describe( 'core/modules modules', () => {
 				provideUserInfo( registry, { id: 1 } );
 				registry.dispatch( MODULES_SEARCH_CONSOLE ).setOwnerID( 2 );
 				fetchMock.postOnce(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/check-access/,
+					new RegExp(
+						'^/google-site-kit/v1/core/modules/data/check-access'
+					),
 					{ body: { access: false } }
 				);
 
@@ -1807,7 +1809,9 @@ describe( 'core/modules modules', () => {
 				provideUserInfo( registry, { id: 1 } );
 				registry.dispatch( MODULES_SEARCH_CONSOLE ).setOwnerID( 2 );
 				fetchMock.postOnce(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/check-access/,
+					new RegExp(
+						'^/google-site-kit/v1/core/modules/data/check-access'
+					),
 					{ body: { access: true } }
 				);
 
