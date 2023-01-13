@@ -273,6 +273,11 @@ class Analytics_4Test extends TestCase {
 			)
 		);
 
+		// Grant scopes so request doesn't fail.
+		$this->authentication->get_oauth_client()->set_granted_scopes(
+			$this->analytics->get_scopes()
+		);
+
 		$http_client = $this->create_fake_http_client( $property_id );
 		$this->analytics->get_client()->setHttpClient( $http_client );
 		$this->analytics->register();
@@ -491,6 +496,11 @@ class Analytics_4Test extends TestCase {
 			)
 		);
 
+		// Grant scopes so request doesn't fail.
+		$this->authentication->get_oauth_client()->set_granted_scopes(
+			$this->analytics->get_scopes()
+		);
+
 		$http_client = $this->create_fake_http_client( $property_id );
 		$this->analytics->get_client()->setHttpClient( $http_client );
 		$this->analytics->register();
@@ -537,6 +547,11 @@ class Analytics_4Test extends TestCase {
 			)
 		);
 
+		// Grant scopes so request doesn't fail.
+		$this->authentication->get_oauth_client()->set_granted_scopes(
+			$this->analytics->get_scopes()
+		);
+
 		$http_client = $this->create_fake_http_client( $property_id );
 		$this->analytics->get_client()->setHttpClient( $http_client );
 		$this->analytics->register();
@@ -580,6 +595,11 @@ class Analytics_4Test extends TestCase {
 			array(
 				'propertyID' => $property_id,
 			)
+		);
+
+		// Grant scopes so request doesn't fail.
+		$this->authentication->get_oauth_client()->set_granted_scopes(
+			$this->analytics->get_scopes()
 		);
 
 		$http_client = $this->create_fake_http_client( $property_id );
@@ -628,6 +648,11 @@ class Analytics_4Test extends TestCase {
 			)
 		);
 
+		// Grant scopes so request doesn't fail.
+		$this->authentication->get_oauth_client()->set_granted_scopes(
+			$this->analytics->get_scopes()
+		);
+
 		$http_client = $this->create_fake_http_client( $property_id );
 		$this->analytics->get_client()->setHttpClient( $http_client );
 		$this->analytics->register();
@@ -672,6 +697,11 @@ class Analytics_4Test extends TestCase {
 			array(
 				'propertyID' => $property_id,
 			)
+		);
+
+		// Grant scopes so request doesn't fail.
+		$this->authentication->get_oauth_client()->set_granted_scopes(
+			$this->analytics->get_scopes()
 		);
 
 		$http_client = $this->create_fake_http_client( $property_id );
@@ -770,10 +800,6 @@ class Analytics_4Test extends TestCase {
 			)
 		);
 
-		$this->authentication->get_oauth_client()->set_granted_scopes(
-			$this->analytics->get_scopes()
-		);
-
 		$this->set_shareable_metrics( 'sessions', 'totalUsers' );
 
 		$this->enable_shared_credentials();
@@ -818,10 +844,6 @@ class Analytics_4Test extends TestCase {
 			array(
 				'propertyID' => $property_id,
 			)
-		);
-
-		$this->authentication->get_oauth_client()->set_granted_scopes(
-			$this->analytics->get_scopes()
 		);
 
 		$this->set_shareable_metrics( 'sessions' );
@@ -920,11 +942,6 @@ class Analytics_4Test extends TestCase {
 	 */
 	protected function create_fake_http_client( $property_id ) {
 		$this->request_handler_calls = array();
-
-		// Grant scopes so request doesn't fail.
-		$this->authentication->get_oauth_client()->set_granted_scopes(
-			$this->analytics->get_scopes()
-		);
 
 		$http_client = new FakeHttpClient();
 		$http_client->set_request_handler(
