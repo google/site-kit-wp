@@ -77,7 +77,7 @@ const SurfacesTokens = () => (
 			<Token
 				name="surfaces-inverse-on-surface"
 				label="Inverse On Surface"
-				reference="N-900"
+				reference="N-50"
 			/>
 			<Token
 				name="surfaces-inverse-surface"
