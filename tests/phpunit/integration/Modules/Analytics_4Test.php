@@ -714,6 +714,7 @@ class Analytics_4Test extends TestCase {
 		$data = $this->analytics->get_data( 'report', array() );
 
 		$this->assertWPErrorWithMessage( 'Site Kit can’t access the relevant data from Analytics 4 because you haven’t granted all permissions requested during setup.', $data );
+		$this->assertEquals( 'missing_required_scopes', $data->get_error_code() );
 	}
 
 	/**
@@ -733,6 +734,8 @@ class Analytics_4Test extends TestCase {
 		$data = $this->analytics->get_data( 'report', array() );
 
 		$this->assertWPErrorWithMessage( 'No connected Google Analytics 4 property ID.', $data );
+		$this->assertEquals( 'missing_required_setting', $data->get_error_code() );
+		$this->assertEquals( array( 'status' => 400 ), $data->get_error_data( 'missing_required_setting' ) );
 	}
 
 	/**
@@ -760,6 +763,8 @@ class Analytics_4Test extends TestCase {
 		$data = $this->analytics->get_data( 'report', array() );
 
 		$this->assertWPErrorWithMessage( 'Request parameter is empty: metrics.', $data );
+		$this->assertEquals( 'missing_required_param', $data->get_error_code() );
+		$this->assertEquals( array( 'status' => 400 ), $data->get_error_data( 'missing_required_param' ) );
 	}
 
 	public function test_report__metric_validation() {
@@ -808,6 +813,8 @@ class Analytics_4Test extends TestCase {
 		);
 
 		$this->assertWPErrorWithMessage( 'Unsupported metrics requested: invalidMetric, anotherInvalidMetric', $data );
+		$this->assertEquals( 'invalid_analytics_4_report_metrics', $data->get_error_code() );
+		$this->assertEquals( array( 'status' => 400 ), $data->get_error_data( 'invalid_analytics_4_report_metrics' ) );
 	}
 
 	public function test_report__dimension_validation() {
@@ -855,6 +862,8 @@ class Analytics_4Test extends TestCase {
 		);
 
 		$this->assertWPErrorWithMessage( 'Unsupported dimensions requested: invalidDimension, anotherInvalidDimension', $data );
+		$this->assertEquals( 'invalid_analytics_4_report_dimensions', $data->get_error_code() );
+		$this->assertEquals( array( 'status' => 400 ), $data->get_error_data( 'invalid_analytics_4_report_dimensions' ) );
 	}
 
 	/**
