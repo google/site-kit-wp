@@ -60,16 +60,18 @@ const SurfacesTokens = () => (
 			/>
 		</TokenRow>
 		<Token name="surfaces-background" label="Background" reference="N-10" />
-		<Token
-			name="surfaces-on-surface"
-			label="On Surface"
-			reference="N-900"
-		/>
-		<Token
-			name="surfaces-on-surface-variant"
-			label="On Surface Variant"
-			reference="N-500"
-		/>
+		<TokenRow>
+			<Token
+				name="surfaces-on-surface"
+				label="On Surface"
+				reference="N-900"
+			/>
+			<Token
+				name="surfaces-on-surface-variant"
+				label="On Surface Variant"
+				reference="N-500"
+			/>
+		</TokenRow>
 		<Token name="surfaces-surface" label="Surface (0)" reference="N-0" />
 		<Token name="surfaces-surface-1" label="Surface 1" reference="N-50" />
 		<Token name="surfaces-surface-2" label="Surface 2" reference="N-100" />
