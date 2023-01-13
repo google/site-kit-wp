@@ -22,8 +22,6 @@
 import { Cell, Grid, Row } from '../assets/js/material-components';
 import { Fragment } from '@wordpress/element';
 
-import './tokens.scss';
-
 function TokenRow( { children } ) {
 	return <div className="googlesitekit-color-token-row">{ children }</div>;
 }

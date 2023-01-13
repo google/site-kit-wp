@@ -23,8 +23,6 @@ import { Cell, Grid, Row } from '../assets/js/material-components';
 import Widget from '../assets/js/googlesitekit/widgets/components/Widget';
 import { Fragment } from '@wordpress/element';
 
-import './type-scale.scss';
-
 function TypeScaleWidget( { name, label, sizes } ) {
 	return (
 		<Cell size={ 6 }>
