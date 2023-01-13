@@ -274,7 +274,6 @@ final class Authentication {
 		$this->initial_version->register();
 		if ( Feature_Flags::enabled( 'userInput' ) ) {
 			$this->user_input->register();
-			$this->user_input_state->register();
 		}
 
 		add_filter( 'allowed_redirect_hosts', $this->get_method_proxy( 'allowed_redirect_hosts' ) );
