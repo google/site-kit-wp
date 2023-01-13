@@ -37,6 +37,7 @@ use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnaly
 use Google\Site_Kit_Dependencies\GuzzleHttp\Message\Request;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Message\Response;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Stream\Stream;
+use WP_User;
 
 /**
  * @group Modules
