@@ -25,7 +25,7 @@ import classnames from 'classnames';
 /**
  * WordPress dependencies
  */
-import { Fragment } from '@wordpress/element';
+import { Fragment, useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -33,18 +33,19 @@ import { __ } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
-import { Button } from 'googlesitekit-components';
-import Link from '../Link';
+import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { trackEvent } from '../../util';
+import { getErrorMessageForAnswer } from './util/validation';
 import useViewContext from '../../hooks/useViewContext';
 import {
 	USER_INPUT_CURRENTLY_EDITING_KEY,
 	USER_INPUT_MAX_ANSWERS,
 } from './util/constants';
+import ErrorNotice from '../ErrorNotice';
+import Link from '../Link';
+import SpinnerButton from '../SpinnerButton';
 import UserInputSelectOptions from './UserInputSelectOptions';
-import { getErrorMessageForAnswer } from './util/validation';
 import UserInputQuestionAuthor from './UserInputQuestionAuthor';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 
 const { useSelect, useDispatch } = Data;
 
@@ -62,13 +63,24 @@ export default function UserInputPreviewGroup( {
 		select( CORE_UI ).getValue( USER_INPUT_CURRENTLY_EDITING_KEY )
 	);
 	const hasSettingChanged = useSelect( ( select ) =>
-		select( CORE_USER ).haveUserInputSettingsChanged( slug )
+		select( CORE_USER ).hasUserInputSettingChanged( slug )
+	);
+	const isSavingSettings = useSelect( ( select ) => {
+		const userInputSettings = select( CORE_USER ).getUserInputSettings();
+
+		return select( CORE_USER ).isSavingUserInputSettings(
+			userInputSettings
+		);
+	} );
+	const saveSettingsError = useSelect( ( select ) =>
+		select( CORE_USER ).getErrorForAction( 'saveUserInputSettings', [] )
 	);
 	const { setValues } = useDispatch( CORE_UI );
+	const { saveUserInputSettings } = useDispatch( CORE_USER );
 
 	const isEditing = currentlyEditingSlug === slug;
 
-	const onEditClick = () => {
+	const toggleEditMode = useCallback( () => {
 		if ( ! isEditing ) {
 			trackEvent( viewContext, 'question_edit', slug );
 		} else {
@@ -78,12 +90,20 @@ export default function UserInputPreviewGroup( {
 		setValues( {
 			[ USER_INPUT_CURRENTLY_EDITING_KEY ]: isEditing ? undefined : slug,
 		} );
-	};
+	}, [ isEditing, onCollapse, setValues, slug, viewContext ] );
 
 	const error = getErrorMessageForAnswer(
 		values,
 		USER_INPUT_MAX_ANSWERS[ slug ]
 	);
+
+	const submitChanges = useCallback( async () => {
+		const response = await saveUserInputSettings();
+
+		if ( ! response.error ) {
+			toggleEditMode();
+		}
+	}, [ saveUserInputSettings, toggleEditMode ] );
 
 	return (
 		<div className="googlesitekit-user-input__preview-group">
@@ -94,7 +114,8 @@ export default function UserInputPreviewGroup( {
 						'googlesitekit-user-input__preview-group-editing':
 							isEditing,
 					} ) }
-					onClick={ onEditClick }
+					onClick={ toggleEditMode }
+					disabled={ isSavingSettings }
 				>
 					{ __( 'Edit', 'google-site-kit' ) }
 				</Link>
@@ -135,17 +156,22 @@ export default function UserInputPreviewGroup( {
 						<Fragment>
 							<UserInputQuestionAuthor slug={ slug } />
 
+							{ saveSettingsError && (
+								<ErrorNotice error={ saveSettingsError } />
+							) }
+
 							<div className="googlesitekit-user-input__preview-actions">
-								<Button
+								<SpinnerButton
 									disabled={ ! hasSettingChanged }
-									onClick={ () => {} }
+									onClick={ submitChanges }
+									isSaving={ isSavingSettings }
 								>
 									{ __(
 										'Confirm Changes',
 										'google-site-kit'
 									) }
-								</Button>
-								<Link onClick={ () => {} }>
+								</SpinnerButton>
+								<Link onClick={ toggleEditMode }>
 									{ __( 'Cancel', 'google-site-kit' ) }
 								</Link>
 							</div>
