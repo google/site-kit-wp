@@ -877,12 +877,20 @@ final class Analytics_4 extends Module
 		$option = $this->get_settings()->get();
 
 		if ( empty( $data['metrics'] ) ) {
-			/* translators: %s: Missing parameter name */
-			return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'metrics' ), array( 'status' => 400 ) );
+			return new WP_Error(
+				'missing_required_param',
+				/* translators: %s: Missing parameter name */
+				sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'metrics' ),
+				array( 'status' => 400 )
+			);
 		}
 
 		if ( empty( $option['propertyID'] ) ) {
-			return new WP_Error( 'missing_required_setting', __( 'No connected Google Analytics 4 property ID.', 'google-site-kit' ), array( 'status' => 500 ) );
+			return new WP_Error(
+				'missing_required_setting',
+				__( 'No connected Google Analytics 4 property ID.', 'google-site-kit' ),
+				array( 'status' => 500 )
+			);
 		}
 
 		if ( ! empty( $data['url'] ) ) {
