@@ -77,7 +77,7 @@ const SurfacesTokens = () => (
 			<Token
 				name="surfaces-inverse-on-surface"
 				label="Inverse On Surface"
-				reference="N-900"
+				reference="N-50"
 			/>
 			<Token
 				name="surfaces-inverse-surface"
@@ -151,7 +151,7 @@ const InteractiveTokens = () => (
 				<Token
 					name="interactive-primary-focus"
 					label="Primary Focus"
-					reference="00220D, 24%"
+					reference="00220D, 48%"
 				/>
 				<Token
 					name="interactive-primary-press"
