@@ -37,7 +37,8 @@ import { CORE_LOCATION } from '../../../googlesitekit/datastore/location/constan
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
-import { clearWebStorage, trackEvent } from '../../../util';
+import { trackEvent } from '../../../util';
+import { clearCache } from '../../../googlesitekit/api/cache';
 import useViewContext from '../../../hooks/useViewContext';
 const { useSelect, useDispatch } = Data;
 
@@ -97,7 +98,7 @@ export default function ConfirmDisconnect( { slug } ) {
 		const { error } = await deactivateModule( slug );
 
 		if ( ! error ) {
-			clearWebStorage();
+			await clearCache();
 
 			await trackEvent(
 				`${ viewContext }_module-list`,
