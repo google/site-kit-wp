@@ -151,7 +151,7 @@ const InteractiveTokens = () => (
 				<Token
 					name="interactive-primary-focus"
 					label="Primary Focus"
-					reference="00220D, 24%"
+					reference="00220D, 48%"
 				/>
 				<Token
 					name="interactive-primary-press"
