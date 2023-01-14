@@ -175,6 +175,27 @@ describe( 'core/user user-input-settings', () => {
 				expect( console ).toHaveErrored();
 			} );
 		} );
+
+		describe( 'resetUserInputSettings', () => {
+			it( 'should correctly reset user input settings', () => {
+				const settingID = 'goals';
+				const values = [ 'goal3', 'goal4', 'goal5', 'goal6' ];
+
+				registry
+					.dispatch( CORE_USER )
+					.setUserInputSetting( settingID, values );
+
+				registry.dispatch( CORE_USER ).resetUserInputSettings();
+
+				const settings = registry
+					.select( CORE_USER )
+					.getUserInputSettings();
+
+				expect( settings ).toEqual(
+					coreUserInputSettingsExpectedResponse
+				);
+			} );
+		} );
 	} );
 
 	describe( 'selectors', () => {
@@ -312,6 +333,135 @@ describe( 'core/user user-input-settings', () => {
 					);
 				}
 			);
+		} );
+
+		describe( 'haveUserInputSettingsChanged', () => {
+			beforeEach( () => {
+				registry
+					.dispatch( CORE_USER )
+					.receiveGetUserInputSettings(
+						coreUserInputSettingsExpectedResponse
+					);
+			} );
+
+			it( 'informs whether client-side settings differ from server-side ones', () => {
+				// Initially false.
+				expect(
+					registry.select( CORE_USER ).haveUserInputSettingsChanged()
+				).toEqual( false );
+
+				const settingID = 'goals';
+				const values = [ 'goal3', 'goal4', 'goal5', 'goal6' ];
+
+				registry
+					.dispatch( CORE_USER )
+					.setUserInputSetting( settingID, values );
+
+				// True after modifying user input settings.
+				expect(
+					registry.select( CORE_USER ).haveUserInputSettingsChanged()
+				).toEqual( true );
+
+				registry.dispatch( CORE_USER ).resetUserInputSettings();
+
+				// False after updating settings back to original.
+				expect(
+					registry.select( CORE_USER ).haveUserInputSettingsChanged()
+				).toEqual( false );
+			} );
+
+			it( 'compares all keys when keys argument is not supplied', () => {
+				// Initially false.
+				expect(
+					registry.select( CORE_USER ).haveUserInputSettingsChanged()
+				).toEqual( false );
+
+				const settingID = 'goals';
+				const values = [ 'goal3', 'goal4', 'goal5', 'goal6' ];
+
+				registry
+					.dispatch( CORE_USER )
+					.setUserInputSetting( settingID, values );
+
+				// True after modifying user input settings.
+				expect(
+					registry.select( CORE_USER ).haveUserInputSettingsChanged()
+				).toEqual( true );
+			} );
+
+			it( 'compares select keys when keys argument is supplied', () => {
+				// Initially false.
+				expect(
+					registry.select( CORE_USER ).haveUserInputSettingsChanged()
+				).toEqual( false );
+
+				const settingID = 'goals';
+				const values = [ 'goal3', 'goal4', 'goal5', 'goal6' ];
+
+				registry
+					.dispatch( CORE_USER )
+					.setUserInputSetting( settingID, values );
+
+				// Update the settings so they differ. Only `goals` should trigger
+				// a truthy return value.
+				expect(
+					registry
+						.select( CORE_USER )
+						.haveUserInputSettingsChanged( [ 'goals' ] )
+				).toEqual( true );
+				expect(
+					registry
+						.select( CORE_USER )
+						.haveUserInputSettingsChanged( [ 'purpose' ] )
+				).toEqual( false );
+
+				// Checking all values should be possible.
+				expect(
+					registry
+						.select( CORE_USER )
+						.haveUserInputSettingsChanged( [ 'goals', 'purpose' ] )
+				).toEqual( true );
+
+				// Checking no values should be possible, and should not be treated as
+				// an `undefined` keys array.
+				expect(
+					registry
+						.select( CORE_USER )
+						.haveUserInputSettingsChanged( [] )
+				).toEqual( false );
+			} );
+		} );
+
+		describe( 'hasUserInputSettingChanged', () => {
+			it( 'informs whether client-side specific setting differ from server-side ones', () => {
+				registry
+					.dispatch( CORE_USER )
+					.receiveGetUserInputSettings(
+						coreUserInputSettingsExpectedResponse
+					);
+
+				const settingID = 'goals';
+				const values = [ 'goal3', 'goal4', 'goal5', 'goal6' ];
+
+				registry
+					.dispatch( CORE_USER )
+					.setUserInputSetting( settingID, values );
+
+				// True after updating user input settings.
+				expect(
+					registry
+						.select( CORE_USER )
+						.hasUserInputSettingChanged( 'goals' )
+				).toEqual( true );
+
+				// False after updating settings back to original.
+				registry.dispatch( CORE_USER ).resetUserInputSettings();
+				expect(
+					registry
+						.select( CORE_USER )
+						.hasUserInputSettingChanged( 'goals' )
+				).toEqual( false );
+			} );
 		} );
 	} );
 } );
