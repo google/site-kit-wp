@@ -117,19 +117,28 @@ export default function UserInputPreviewGroup( {
 			<div className="googlesitekit-user-input__preview-group-title">
 				<p>{ title }</p>
 				<Link
-					className={ classnames( {
-						'googlesitekit-user-input__preview-group-editing':
-							isEditing,
-					} ) }
 					onClick={ async () => {
-						// Do not preserve changes if preview group is collapsed with individual CTAs.
-						if ( showIndividualCTAs && isEditing ) {
-							await resetUserInputSettings();
+						if ( showIndividualCTAs ) {
+							if (
+								isSavingSettings ||
+								( !! currentlyEditingSlug && ! isEditing )
+							) {
+								return;
+							}
+
+							// Do not preserve changes if preview group is collapsed with individual CTAs.
+							if ( isEditing ) {
+								await resetUserInputSettings();
+							}
 						}
 
 						toggleEditMode();
 					} }
-					disabled={ isSavingSettings }
+					disabled={
+						showIndividualCTAs &&
+						( isSavingSettings ||
+							( !! currentlyEditingSlug && ! isEditing ) )
+					}
 				>
 					{ __( 'Edit', 'google-site-kit' ) }
 				</Link>
@@ -177,7 +186,11 @@ export default function UserInputPreviewGroup( {
 							<div className="googlesitekit-user-input__preview-actions">
 								<SpinnerButton
 									disabled={ ! hasSettingChanged }
-									onClick={ submitChanges }
+									onClick={
+										hasSettingChanged
+											? submitChanges
+											: undefined
+									}
 									isSaving={ isSavingSettings }
 								>
 									{ __(
@@ -188,6 +201,10 @@ export default function UserInputPreviewGroup( {
 								<Link
 									disabled={ isSavingSettings }
 									onClick={ async () => {
+										if ( isSavingSettings ) {
+											return;
+										}
+
 										await resetUserInputSettings();
 										toggleEditMode();
 									} }
