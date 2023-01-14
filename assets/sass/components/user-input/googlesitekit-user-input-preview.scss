@@ -192,7 +192,7 @@
 				pointer-events: none;
 
 				&::after {
-					background-color: #cbd0d3;
+					background-color: $c-surfaces-surface-2;
 					content: "";
 					height: calc(100% + 13px);
 					opacity: 0.75;
