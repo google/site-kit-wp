@@ -20,6 +20,7 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import classnames from 'classnames';
 
 /**
  * WordPress dependencies
@@ -34,6 +35,7 @@ import Data from 'googlesitekit-data';
 import { ProgressBar } from 'googlesitekit-components';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
+import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 import {
 	getUserInputAnswers,
 	USER_INPUT_QUESTIONS_GOALS,
@@ -41,6 +43,7 @@ import {
 	USER_INPUT_QUESTION_POST_FREQUENCY,
 	USER_INPUT_QUESTIONS_LIST,
 	USER_INPUT_MAX_ANSWERS,
+	USER_INPUT_CURRENTLY_EDITING_KEY,
 } from './util/constants';
 import SpinnerButton from '../SpinnerButton';
 import UserInputPreviewGroup from './UserInputPreviewGroup';
@@ -70,6 +73,10 @@ export default function UserInputPreview( props ) {
 	);
 	const isNavigating = useSelect( ( select ) =>
 		select( CORE_LOCATION ).isNavigating()
+	);
+	const isEditing = useSelect(
+		( select ) =>
+			!! select( CORE_UI ).getValue( USER_INPUT_CURRENTLY_EDITING_KEY )
 	);
 	const isScreenLoading = isSavingSettings || isNavigating;
 
@@ -136,7 +143,9 @@ export default function UserInputPreview( props ) {
 
 	return (
 		<div
-			className="googlesitekit-user-input__preview"
+			className={ classnames( 'googlesitekit-user-input__preview', {
+				'googlesitekit-user-input__preview--editing': isEditing,
+			} ) }
 			ref={ previewContainer }
 		>
 			<div className="googlesitekit-user-input__preview-contents">

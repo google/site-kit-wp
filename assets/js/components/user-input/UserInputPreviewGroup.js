@@ -107,7 +107,13 @@ export default function UserInputPreviewGroup( {
 	}, [ saveUserInputSettings, toggleEditMode ] );
 
 	return (
-		<div className="googlesitekit-user-input__preview-group">
+		<div
+			className={ classnames( 'googlesitekit-user-input__preview-group', {
+				'googlesitekit-user-input__preview-group--editing': isEditing,
+				'googlesitekit-user-input__preview-group--individual-cta':
+					showIndividualCTAs,
+			} ) }
+		>
 			<div className="googlesitekit-user-input__preview-group-title">
 				<p>{ title }</p>
 				<Link
