@@ -69,6 +69,7 @@ const SET_CACHED_USER_INPUT_SETTING = 'SET_CACHED_USER_INPUT_SETTING';
 const SET_USER_INPUT_SETTING = 'SET_USER_INPUT_SETTING';
 const SET_USER_INPUT_SETTINGS_SAVING_FLAG =
 	'SET_USER_INPUT_SETTINGS_SAVING_FLAG';
+const RESET_USER_INPUT_SETTINGS = 'RESET_USER_INPUT_SETTINGS';
 
 const baseInitialState = {
 	inputSettings: undefined,
@@ -190,6 +191,20 @@ const baseActions = {
 
 		return { response, error };
 	},
+
+	/**
+	 * Resets modified user input settings to currently saved values.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {Object} Redux-style action.
+	 */
+	*resetUserInputSettings() {
+		return {
+			type: RESET_USER_INPUT_SETTINGS,
+			payload: {},
+		};
+	},
 };
 
 export const baseControls = {
@@ -235,6 +250,12 @@ export const baseReducer = ( state, { type, payload } ) => {
 			return {
 				...state,
 				isSavingInputSettings: payload.isSaving,
+			};
+		}
+		case RESET_USER_INPUT_SETTINGS: {
+			return {
+				...state,
+				inputSettings: state.savedInputSettings,
 			};
 		}
 		default: {
