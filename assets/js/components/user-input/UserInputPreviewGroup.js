@@ -76,7 +76,8 @@ export default function UserInputPreviewGroup( {
 		select( CORE_USER ).getErrorForAction( 'saveUserInputSettings', [] )
 	);
 	const { setValues } = useDispatch( CORE_UI );
-	const { saveUserInputSettings } = useDispatch( CORE_USER );
+	const { saveUserInputSettings, resetUserInputSettings } =
+		useDispatch( CORE_USER );
 
 	const isEditing = currentlyEditingSlug === slug;
 
@@ -114,7 +115,14 @@ export default function UserInputPreviewGroup( {
 						'googlesitekit-user-input__preview-group-editing':
 							isEditing,
 					} ) }
-					onClick={ toggleEditMode }
+					onClick={ async () => {
+						// Do not preserve changes if preview group is collapsed with individual CTAs.
+						if ( showIndividualCTAs && isEditing ) {
+							await resetUserInputSettings();
+						}
+
+						toggleEditMode();
+					} }
 					disabled={ isSavingSettings }
 				>
 					{ __( 'Edit', 'google-site-kit' ) }
@@ -171,7 +179,13 @@ export default function UserInputPreviewGroup( {
 										'google-site-kit'
 									) }
 								</SpinnerButton>
-								<Link onClick={ toggleEditMode }>
+								<Link
+									disabled={ isSavingSettings }
+									onClick={ async () => {
+										await resetUserInputSettings();
+										toggleEditMode();
+									} }
+								>
 									{ __( 'Cancel', 'google-site-kit' ) }
 								</Link>
 							</div>
