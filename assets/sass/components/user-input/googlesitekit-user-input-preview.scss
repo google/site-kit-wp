@@ -162,6 +162,7 @@
 	.googlesitekit-user-input__preview-group--editing {
 
 		.googlesitekit-user-input__preview-group-title {
+
 			button::after {
 				background-position: left 6px;
 				transform: rotate(180deg);
@@ -222,14 +223,13 @@
 
 				&:last-child::after {
 					border-radius: 0 0 24px 24px;
-					height: calc(100% + 24px);
 
 					@each $size in map-keys($mdc-layout-grid-columns) {
 
 						@include mdc-layout-grid-media-query_($size) {
 							$padding: map-get($mdc-layout-grid-default-margin, $size);
 
-							height: calc(100% + $padding);
+							height: calc(100% + #{$padding});
 							height: calc(100% + var(--mdc-layout-grid-margin-#{$size}, #{$padding}));
 						}
 					}

@@ -227,6 +227,7 @@ UserInputPreviewGroup.propTypes = {
 	options: PropTypes.shape( {} ),
 	errorMessage: PropTypes.string,
 	onCollapse: PropTypes.func,
+	showIndividualCTAs: PropTypes.bool,
 };
 
 UserInputPreviewGroup.defaultProps = {
