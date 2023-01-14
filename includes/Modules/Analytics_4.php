@@ -37,18 +37,31 @@ use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Core\Util\Sort;
 use Google\Site_Kit\Core\Util\URL;
+use Google\Site_Kit\Core\Validation\Exception\Invalid_Report_Dimensions_Exception;
+use Google\Site_Kit\Core\Validation\Exception\Invalid_Report_Metrics_Exception;
 use Google\Site_Kit\Modules\Analytics\Settings as Analytics_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Settings;
 use Google\Site_Kit\Modules\Analytics_4\Tag_Guard;
 use Google\Site_Kit\Modules\Analytics_4\Web_Tag;
 use Google\Site_Kit_Dependencies\Google\Model as Google_Model;
+use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData as Google_Service_AnalyticsData;
+use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\DateRange as Google_Service_AnalyticsData_DateRange;
+use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\Dimension as Google_Service_AnalyticsData_Dimension;
+use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\Filter as Google_Service_AnalyticsData_Filter;
+use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\FilterExpression as Google_Service_AnalyticsData_FilterExpression;
+use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\FilterExpressionList as Google_Service_AnalyticsData_FilterExpressionList;
+use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\InListFilter as Google_Service_AnalyticsData_InListFilter;
+use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\MetricOrderBy as Google_Service_AnalyticsData_MetricOrderBy;
+use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\OrderBy as Google_Service_AnalyticsData_OrderBy;
+use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\RunReportRequest as Google_Service_AnalyticsData_RunReportRequest;
+use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\StringFilter as Google_Service_AnalyticsData_StringFilter;
+use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\Metric as Google_Service_AnalyticsData_Metric;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin as Google_Service_GoogleAnalyticsAdmin;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaDataStream;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaDataStreamWebStreamData;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaListDataStreamsResponse;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaProperty as Google_Service_GoogleAnalyticsAdmin_GoogleAnalyticsAdminV1betaProperty;
 use Google\Site_Kit_Dependencies\Google\Service\TagManager as Google_Service_TagManager;
-use Google\Site_Kit_Dependencies\Google\Service\TagManager\Container as Google_Service_TagManager_Container;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 use stdClass;
 use WP_Error;
@@ -216,6 +229,10 @@ final class Analytics_4 extends Module
 			),
 			'GET:properties'             => array( 'service' => 'analyticsadmin' ),
 			'GET:property'               => array( 'service' => 'analyticsadmin' ),
+			'GET:report'                 => array(
+				'service'   => 'analyticsdata',
+				'shareable' => Feature_Flags::enabled( 'dashboardSharing' ),
+			),
 			'GET:webdatastreams'         => array( 'service' => 'analyticsadmin' ),
 			'GET:webdatastreams-batch'   => array( 'service' => 'analyticsadmin' ),
 		);
@@ -397,6 +414,8 @@ final class Analytics_4 extends Module
 				}
 
 				return $this->get_service( 'analyticsadmin' )->properties->get( self::normalize_property_id( $data['propertyID'] ) );
+			case 'GET:report':
+				return $this->create_report_request( $data );
 			case 'GET:webdatastreams':
 				if ( ! isset( $data['propertyID'] ) ) {
 					return new WP_Error(
@@ -572,6 +591,18 @@ final class Analytics_4 extends Module
 		);
 	}
 
+
+	/**
+	 * Gets the configured Analytics Data service object instance.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return Google_Service_AnalyticsData The Analytics Data API service.
+	 */
+	protected function get_analyticsdata_service() {
+		return $this->get_service( 'analyticsdata' );
+	}
+
 	/**
 	 * Sets up the Google services the module should use.
 	 *
@@ -587,6 +618,7 @@ final class Analytics_4 extends Module
 	protected function setup_services( Google_Site_Kit_Client $client ) {
 		return array(
 			'analyticsadmin' => new Google_Service_GoogleAnalyticsAdmin( $client ),
+			'analyticsdata'  => new Google_Service_AnalyticsData( $client ),
 			'tagmanager'     => new Google_Service_TagManager( $client ),
 		);
 	}
@@ -831,4 +863,455 @@ final class Analytics_4 extends Module
 		return true;
 	}
 
+	/**
+	 * Creates and executes a new Analytics 4 report request.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param Data_Request $data Data request object.
+	 * @return RequestInterface|WP_Error Request object on success, or WP_Error on failure.
+	 */
+	protected function create_report_request( Data_Request $data ) {
+		$request_args = array();
+
+		$option = $this->get_settings()->get();
+
+		if ( empty( $data['metrics'] ) ) {
+			return new WP_Error(
+				'missing_required_param',
+				/* translators: %s: Missing parameter name */
+				sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'metrics' ),
+				array( 'status' => 400 )
+			);
+		}
+
+		if ( empty( $option['propertyID'] ) ) {
+			return new WP_Error(
+				'missing_required_setting',
+				__( 'No connected Google Analytics 4 property ID.', 'google-site-kit' ),
+				array( 'status' => 500 )
+			);
+		}
+
+		if ( ! empty( $data['url'] ) ) {
+			$request_args['page'] = $data['url'];
+		}
+
+		if ( ! empty( $data['limit'] ) ) {
+			$request_args['row_limit'] = $data['limit'];
+		}
+
+		$dimensions = $data['dimensions'];
+		if ( ! empty( $dimensions ) && ( is_string( $dimensions ) || is_array( $dimensions ) ) ) {
+			if ( is_string( $dimensions ) ) {
+				$dimensions = explode( ',', $dimensions );
+			} elseif ( is_array( $dimensions ) && ! wp_is_numeric_array( $dimensions ) ) { // If single object is passed.
+				$dimensions = array( $dimensions );
+			}
+
+			$dimensions = array_filter(
+				array_map(
+					function ( $dimension_def ) {
+						$dimension = new Google_Service_AnalyticsData_Dimension();
+
+						if ( is_string( $dimension_def ) ) {
+							$dimension->setName( $dimension_def );
+						} elseif ( is_array( $dimension_def ) && ! empty( $dimension_def['name'] ) ) {
+							$dimension->setName( $dimension_def['name'] );
+						} else {
+							return null;
+						}
+
+						return $dimension;
+					},
+					array_filter( $dimensions )
+				)
+			);
+
+			if ( ! empty( $dimensions ) ) {
+				try {
+					$this->validate_report_dimensions( $dimensions );
+				} catch ( Invalid_Report_Dimensions_Exception $exception ) {
+					return new WP_Error(
+						'invalid_analytics_4_report_dimensions',
+						$exception->getMessage()
+					);
+				}
+
+				$request_args['dimensions'] = $dimensions;
+			}
+		}
+
+		$dimension_filters            = $data['dimensionFilters'];
+		$dimension_filter_expressions = array();
+		if ( ! empty( $dimension_filters ) && is_array( $dimension_filters ) ) {
+			foreach ( $dimension_filters as $dimension_name => $dimension_value ) {
+				$dimension_filter = new Google_Service_AnalyticsData_Filter();
+				$dimension_filter->setFieldName( $dimension_name );
+				if ( is_array( $dimension_value ) ) {
+					$dimension_in_list_filter = new Google_Service_AnalyticsData_InListFilter();
+					$dimension_in_list_filter->setValues( $dimension_value );
+					$dimension_filter->setInListFilter( $dimension_in_list_filter );
+				} else {
+					$dimension_string_filter = new Google_Service_AnalyticsData_StringFilter();
+					$dimension_string_filter->setMatchType( 'EXACT' );
+					$dimension_string_filter->setValue( $dimension_value );
+					$dimension_filter->setStringFilter( $dimension_string_filter );
+				}
+				$dimension_filter_expression = new Google_Service_AnalyticsData_FilterExpression();
+				$dimension_filter_expression->setFilter( $dimension_filter );
+				$dimension_filter_expressions[] = $dimension_filter_expression;
+			}
+
+			if ( ! empty( $dimension_filter_expressions ) ) {
+				$request_args['dimension_filters'] = $dimension_filter_expressions;
+			}
+		}
+
+		$request = $this->create_analytics_site_data_request( $option['propertyID'], $request_args );
+
+		if ( is_wp_error( $request ) ) {
+			return $request;
+		}
+
+		$date_ranges = array();
+		$start_date  = $data['startDate'];
+		$end_date    = $data['endDate'];
+		if ( strtotime( $start_date ) && strtotime( $end_date ) ) {
+			$compare_start_date = $data['compareStartDate'];
+			$compare_end_date   = $data['compareEndDate'];
+			$date_ranges[]      = array( $start_date, $end_date );
+
+			// When using multiple date ranges, it changes the structure of the response:
+			// Aggregate properties (minimum, maximum, totals) will have an entry per date range.
+			// The rows property will have additional row entries for each date range.
+			if ( strtotime( $compare_start_date ) && strtotime( $compare_end_date ) ) {
+				$date_ranges[] = array( $compare_start_date, $compare_end_date );
+			}
+		} else {
+			// Default the date range to the last 28 days.
+			$date_ranges[] = $this->parse_date_range( 'last-28-days', 1 );
+		}
+
+		$date_ranges = array_map(
+			function ( $date_range ) {
+				list ( $start_date, $end_date ) = $date_range;
+				$date_range                     = new Google_Service_AnalyticsData_DateRange();
+				$date_range->setStartDate( $start_date );
+				$date_range->setEndDate( $end_date );
+
+				return $date_range;
+			},
+			$date_ranges
+		);
+		$request->setDateRanges( $date_ranges );
+
+		$metrics = $data['metrics'];
+		if ( is_string( $metrics ) || is_array( $metrics ) ) {
+			if ( is_string( $metrics ) ) {
+				$metrics = explode( ',', $data['metrics'] );
+			} elseif ( is_array( $metrics ) && ! wp_is_numeric_array( $metrics ) ) { // If single object is passed.
+				$metrics = array( $metrics );
+			}
+
+			$metrics = array_filter(
+				array_map(
+					function ( $metric_def ) {
+						$metric = new Google_Service_AnalyticsData_Metric();
+
+						if ( is_string( $metric_def ) ) {
+							$metric->setName( $metric_def );
+						} elseif ( is_array( $metric_def ) && ! empty( $metric_def['name'] ) ) {
+							$metric->setName( $metric_def['name'] );
+							if ( ! empty( $metric_def['expression'] ) ) {
+								$metric->setExpression( $metric_def['expression'] );
+							}
+						} else {
+							return null;
+						}
+
+						return $metric;
+					},
+					array_filter( $metrics )
+				)
+			);
+
+			if ( ! empty( $metrics ) ) {
+				try {
+					$this->validate_report_metrics( $metrics );
+				} catch ( Invalid_Report_Metrics_Exception $exception ) {
+					return new WP_Error(
+						'invalid_analytics_4_report_metrics',
+						$exception->getMessage()
+					);
+				}
+
+				$request->setMetrics( $metrics );
+			}
+		}
+
+		// Order by.
+		$orderby = $this->parse_reporting_orderby( $data['orderby'] );
+		if ( ! empty( $orderby ) ) {
+			$request->setOrderBys( $orderby );
+		}
+
+		// Ensure the total, minimum and maximum metric aggregations are included in order to match what is returned by the UA reports. We may wish to make this optional in future.
+		$request->setMetricAggregations(
+			array(
+				'TOTAL',
+				'MINIMUM',
+				'MAXIMUM',
+			)
+		);
+
+		return $this->get_analyticsdata_service()->properties->runReport( self::normalize_property_id( $option['propertyID'] ), $request );
+	}
+
+	/**
+	 * Parses the orderby value of the data request into an array of AnalyticsData OrderBy object instances.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array|null $orderby Data request orderby value.
+	 * @return Google_Service_AnalyticsData_OrderBy[] An array of AnalyticsData OrderBy objects.
+	 */
+	protected function parse_reporting_orderby( $orderby ) {
+		if ( empty( $orderby ) || ! is_array( $orderby ) ) {
+			return array();
+		}
+
+		$results = array_map(
+			function ( $order_def ) {
+				$order_def = array_merge(
+					array(
+						'fieldName' => '',
+						'sortOrder' => '',
+					),
+					(array) $order_def
+				);
+
+				if ( empty( $order_def['fieldName'] ) || empty( $order_def['sortOrder'] ) ) {
+					return null;
+				}
+
+				$metric_order_by = new Google_Service_AnalyticsData_MetricOrderBy();
+				$metric_order_by->setMetricName( $order_def['fieldName'] );
+				$order_by = new Google_Service_AnalyticsData_OrderBy();
+				$order_by->setMetric( $metric_order_by );
+				$order_by->setDesc( 'DESCENDING' === $order_def['sortOrder'] );
+
+				return $order_by;
+			},
+			// When just object is passed we need to convert it to an array of objects.
+			wp_is_numeric_array( $orderby ) ? $orderby : array( $orderby )
+		);
+
+		$results = array_filter( $results );
+		$results = array_values( $results );
+
+		return $results;
+	}
+
+	/**
+	 * Creates a new Analytics 4 site request for the current site and given arguments.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $property_id Analytics 4 property ID.
+	 * @param array  $args {
+	 *     Optional. Additional arguments.
+	 *
+	 *     @type array                                           $dimensions        List of request dimensions. Default empty array.
+	 *     @type Google_Service_AnalyticsData_FilterExpression[] $dimension_filters List of dimension filter instances for the specified request dimensions. Default empty array.
+	 *     @type string                                          $start_date        Start date in 'Y-m-d' format. Default empty string.
+	 *     @type string                                          $end_date          End date in 'Y-m-d' format. Default empty string.
+	 *     @type string                                          $page              Specific page URL to filter by. Default empty string.
+	 *     @type int                                             $row_limit         Limit of rows to return. Default empty string.
+	 * }
+	 * @return Google_Service_AnalyticsData_RunReportRequest|WP_Error Analytics 4 site request instance.
+	 */
+	protected function create_analytics_site_data_request( $property_id, array $args = array() ) {
+		$args = wp_parse_args(
+			$args,
+			array(
+				'dimensions'        => array(),
+				'dimension_filters' => array(),
+				'start_date'        => '',
+				'end_date'          => '',
+				'page'              => '',
+				'row_limit'         => '',
+			)
+		);
+
+		$request = new Google_Service_AnalyticsData_RunReportRequest();
+		$request->setProperty( self::normalize_property_id( $property_id ) );
+
+		$request->setKeepEmptyRows( true );
+
+		if ( ! empty( $args['dimensions'] ) ) {
+			$request->setDimensions( (array) $args['dimensions'] );
+		}
+
+		if ( ! empty( $args['start_date'] ) && ! empty( $args['end_date'] ) ) {
+			$date_range = new Google_Service_AnalyticsData_DateRange();
+			$date_range->setStartDate( $args['start_date'] );
+			$date_range->setEndDate( $args['end_date'] );
+			$request->setDateRanges( array( $date_range ) );
+		}
+
+		$dimension_filter_expressions = array();
+
+		$hostnames = $this->permute_site_hosts( URL::parse( $this->context->get_reference_site_url(), PHP_URL_HOST ) );
+
+		$dimension_in_list_filter = new Google_Service_AnalyticsData_InListFilter();
+		$dimension_in_list_filter->setValues( $hostnames );
+		$dimension_filter = new Google_Service_AnalyticsData_Filter();
+		$dimension_filter->setFieldName( 'hostName' );
+		$dimension_filter->setInListFilter( $dimension_in_list_filter );
+		$dimension_filter_expression = new Google_Service_AnalyticsData_FilterExpression();
+		$dimension_filter_expression->setFilter( $dimension_filter );
+		$dimension_filter_expressions[] = $dimension_filter_expression;
+
+		if ( ! empty( $args['dimension_filters'] ) ) {
+			$dimension_filter_expressions = array_merge( $dimension_filter_expressions, $args['dimension_filters'] );
+		}
+
+		if ( ! empty( $args['page'] ) ) {
+			$args['page']            = str_replace( trim( $this->context->get_reference_site_url(), '/' ), '', esc_url_raw( $args['page'] ) );
+			$dimension_string_filter = new Google_Service_AnalyticsData_StringFilter();
+			$dimension_string_filter->setMatchType( 'EXACT' );
+			$dimension_string_filter->setValue( rawurldecode( $args['page'] ) );
+			$dimension_filter = new Google_Service_AnalyticsData_Filter();
+			$dimension_filter->setFieldName( 'pagePathPlusQueryString' );
+			$dimension_filter->setStringFilter( $dimension_string_filter );
+			$dimension_filter_expression = new Google_Service_AnalyticsData_FilterExpression();
+			$dimension_filter_expression->setFilter( $dimension_filter );
+			$dimension_filter_expressions[] = $dimension_filter_expression;
+		}
+
+		$dimension_filter_expression_list = new Google_Service_AnalyticsData_FilterExpressionList();
+		$dimension_filter_expression_list->setExpressions( $dimension_filter_expressions );
+		$dimension_filter_expression = new Google_Service_AnalyticsData_FilterExpression();
+		$dimension_filter_expression->setAndGroup( $dimension_filter_expression_list );
+		$request->setDimensionFilter( $dimension_filter_expression );
+
+		if ( ! empty( $args['row_limit'] ) ) {
+			$request->setLimit( $args['row_limit'] );
+		}
+
+		return $request;
+	}
+
+	/**
+	 * Validates the report metrics.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param Google_Service_AnalyticsData_Metric[] $metrics The metrics to validate.
+	 * @throws Invalid_Report_Metrics_Exception Thrown if the metrics are invalid.
+	 */
+	protected function validate_report_metrics( $metrics ) {
+		if ( false === $this->is_using_shared_credentials ) {
+			return;
+		}
+
+		$valid_metrics = apply_filters(
+			'googlesitekit_shareable_analytics_4_metrics',
+			array(
+				// TODO: Add metrics to this allow-list as they are used in the plugin.
+			)
+		);
+
+		$invalid_metrics = array_diff(
+			array_map(
+				function ( $metric ) {
+					// If there is an expression, it means the name is there as an alias, otherwise the name should be a valid metric name.
+					// Therefore, the expression takes precedence to the name for the purpose of allow-list validation.
+					return ! empty( $metric->getExpression() ) ? $metric->getExpression() : $metric->getName();
+				},
+				$metrics
+			),
+			$valid_metrics
+		);
+
+		if ( count( $invalid_metrics ) > 0 ) {
+			$message = count( $invalid_metrics ) > 1 ? sprintf(
+				/* translators: %s: is replaced with a comma separated list of the invalid metrics. */
+				__(
+					'Unsupported metrics requested: %s',
+					'google-site-kit'
+				),
+				join(
+					/* translators: used between list items, there is a space after the comma. */
+					__( ', ', 'google-site-kit' ),
+					$invalid_metrics
+				)
+			) : sprintf(
+				/* translators: %s: is replaced with the invalid metric. */
+				__(
+					'Unsupported metric requested: %s',
+					'google-site-kit'
+				),
+				$invalid_metrics
+			);
+
+			throw new Invalid_Report_Metrics_Exception( $message );
+		}
+	}
+
+	/**
+	 * Validates the report dimensions.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param Google_Service_AnalyticsData_Dimension[] $dimensions The dimensions to validate.
+	 * @throws Invalid_Report_Dimensions_Exception Thrown if the dimensions are invalid.
+	 */
+	protected function validate_report_dimensions( $dimensions ) {
+		if ( false === $this->is_using_shared_credentials ) {
+			return;
+		}
+
+		$valid_dimensions = apply_filters(
+			'googlesitekit_shareable_analytics_4_dimensions',
+			array(
+				// TODO: Add dimensions to this allow-list as they are used in the plugin.
+			)
+		);
+
+		$invalid_dimensions = array_diff(
+			array_map(
+				function ( $dimension ) {
+					return $dimension->getName();
+				},
+				$dimensions
+			),
+			$valid_dimensions
+		);
+
+		if ( count( $invalid_dimensions ) > 0 ) {
+			$message = count( $invalid_dimensions ) > 1 ? sprintf(
+				/* translators: %s: is replaced with a comma separated list of the invalid dimensions. */
+				__(
+					'Unsupported dimensions requested: %s',
+					'google-site-kit'
+				),
+				join(
+					/* translators: used between list items, there is a space after the comma. */
+					__( ', ', 'google-site-kit' ),
+					$invalid_dimensions
+				)
+			) : sprintf(
+				/* translators: %s: is replaced with the invalid dimension. */
+				__(
+					'Unsupported dimension requested: %s',
+					'google-site-kit'
+				),
+				$invalid_dimensions
+			);
+
+			throw new Invalid_Report_Dimensions_Exception( $message );
+		}
+	}
 }

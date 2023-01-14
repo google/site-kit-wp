@@ -99,6 +99,18 @@
 		.googlesitekit-user-input__author {
 			margin: 24px 0 28px;
 		}
+
+		.googlesitekit-user-input__select-option {
+
+			.mdc-radio,
+			.mdc-checkbox {
+				margin-left: -10px;
+			}
+
+			&:not(:last-child) {
+				border-bottom: none;
+			}
+		}
 	}
 
 	.googlesitekit-user-input__preview-group + .googlesitekit-user-input__preview-group {
@@ -119,8 +131,8 @@
 		}
 
 		p {
-			color: $c-surfaces-on-surface;
-			font-family: $f-secondary;
+			color: $c-grey-g-900;
+			font-family: $f-primary;
 			font-weight: $fw-medium;
 			margin: 0;
 		}
