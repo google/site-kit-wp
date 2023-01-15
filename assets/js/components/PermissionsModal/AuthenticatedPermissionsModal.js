@@ -38,6 +38,9 @@ const AuthenticatedPermissionsModal = () => {
 	const permissionsError = useSelect( ( select ) =>
 		select( CORE_USER ).getPermissionScopeError()
 	);
+	const unsatisfiedScopes = useSelect( ( select ) =>
+		select( CORE_USER ).getUnsatisfiedScopes()
+	);
 	const connectURL = useSelect( ( select ) =>
 		select( CORE_USER ).getConnectURL( {
 			additionalScopes: permissionsError?.data?.scopes,
@@ -90,6 +93,15 @@ const AuthenticatedPermissionsModal = () => {
 	}
 
 	if ( permissionsError?.data?.skipModal ) {
+		return null;
+	}
+
+	if (
+		unsatisfiedScopes &&
+		permissionsError?.data?.scopes.every( ( i ) =>
+			unsatisfiedScopes.includes( i )
+		)
+	) {
 		return null;
 	}
 
