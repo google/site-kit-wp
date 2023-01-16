@@ -125,11 +125,13 @@ class SettingsTest extends SettingsTestCase {
 
 		delete_option( $options_key );
 
-		$options                       = $settings->get();
-		$options['googleTagAccountID'] = 'XXX';
-		$settings->set( $options );
-		$options = get_option( $options_key );
-		$testcase->assertEquals( '', $options['googleTagAccountID'] );
+		foreach ( array( 'XXXX', 0 ) as $tag_id ) {
+			$options                       = $settings->get();
+			$options['googleTagAccountID'] = $tag_id;
+			$settings->set( $options );
+			$options = get_option( $options_key );
+			$testcase->assertEquals( '', $options['googleTagAccountID'] );
+		}
 
 		$options                       = $settings->get();
 		$options['googleTagAccountID'] = GOOGLE_TAG_ACCAUNT_ID;
@@ -147,11 +149,13 @@ class SettingsTest extends SettingsTestCase {
 
 		delete_option( $options_key );
 
-		$options                         = $settings->get();
-		$options['googleTagContainerID'] = 'XXX';
-		$settings->set( $options );
-		$options = get_option( $options_key );
-		$testcase->assertEquals( '', $options['googleTagContainerID'] );
+		foreach ( array( 'XXXX' ) as $tag_id ) {
+			$options                         = $settings->get();
+			$options['googleTagContainerID'] = $tag_id;
+			$settings->set( $options );
+			$options = get_option( $options_key );
+			$testcase->assertEquals( '', $options['googleTagContainerID'] );
+		}
 
 		$options                         = $settings->get();
 		$options['googleTagContainerID'] = GOOGLE_TAG_CONTAINER_ID;

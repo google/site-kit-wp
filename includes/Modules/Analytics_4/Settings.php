@@ -100,12 +100,12 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 					}
 				}
 				if ( isset( $option['googleTagAccountID'] ) ) {
-					if ( ! is_numeric( $option['googleTagAccountID'] ) && ! $option['googleTagAccountID'] > 0 ) {
+					if ( ! is_numeric( $option['googleTagAccountID'] ) || ! $option['googleTagAccountID'] > 0 ) {
 						$option['googleTagAccountID'] = '';
 					}
 				}
 				if ( isset( $option['googleTagContainerID'] ) ) {
-					if ( ! is_numeric( $option['googleTagContainerID'] ) && ! $option['googleTagContainerID'] > 0 ) {
+					if ( ! is_numeric( $option['googleTagContainerID'] ) || ! $option['googleTagContainerID'] > 0 ) {
 						$option['googleTagContainerID'] = '';
 					}
 				}
