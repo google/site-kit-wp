@@ -384,7 +384,7 @@ const baseSelectors = {
 	hasUserInputSettingChanged( state, setting ) {
 		invariant( setting, 'setting is required.' );
 
-		return baseSelectors.haveUserInputSettingsChanged( state, setting );
+		return baseSelectors.haveUserInputSettingsChanged( state, [ setting ] );
 	},
 };
 
