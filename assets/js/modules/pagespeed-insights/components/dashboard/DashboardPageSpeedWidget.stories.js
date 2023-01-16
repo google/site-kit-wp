@@ -82,7 +82,9 @@ Loading.storyName = 'Loading';
 Loading.args = {
 	setupRegistry: ( { dispatch } ) => {
 		freezeFetch(
-			/^\/google-site-kit\/v1\/modules\/pagespeed-insights\/data\/pagespeed/
+			new RegExp(
+				'^/google-site-kit/v1/modules/pagespeed-insights/data/pagespeed'
+			)
 		);
 
 		// Component will be loading as long as both reports are not present.

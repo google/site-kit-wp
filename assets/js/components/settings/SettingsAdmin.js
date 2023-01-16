@@ -83,7 +83,7 @@ export default function SettingsAdmin() {
 				<Cell size={ 12 }>
 					{ isUserInputCompleted && (
 						<Layout
-							title={ __( 'Your site goals', 'google-site-kit' ) }
+							title={ __( 'Key metrics', 'google-site-kit' ) }
 							header
 							rounded
 						>
@@ -91,18 +91,19 @@ export default function SettingsAdmin() {
 								<Grid>
 									<Row>
 										<Cell size={ 12 }>
-											<p>
-												<strong>
-													{ __(
-														'Based on your responses, Site Kit will show you metrics and suggestions that are specific to your site to help you achieve your goals',
-														'google-site-kit'
-													) }
-												</strong>
+											<p className="googlesitekit-settings-user-input__heading">
+												{ __(
+													'Edit your answers for more personalized metrics:',
+													'google-site-kit'
+												) }
 											</p>
 										</Cell>
 									</Row>
-
-									<UserInputPreview goTo={ goTo } noFooter />
+									<UserInputPreview
+										goTo={ goTo }
+										noHeader
+										noFooter
+									/>
 								</Grid>
 							</div>
 						</Layout>

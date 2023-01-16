@@ -957,16 +957,7 @@ final class Analytics extends Module
 
 		$dimension_filter_clauses = array();
 
-		$hostnames = array_values(
-			array_unique(
-				array_map(
-					function ( $site_url ) {
-						return URL::parse( $site_url, PHP_URL_HOST );
-					},
-					$this->permute_site_url( $this->context->get_reference_site_url() )
-				)
-			)
-		);
+		$hostnames = $this->permute_site_hosts( URL::parse( $this->context->get_reference_site_url(), PHP_URL_HOST ) );
 
 		$dimension_filter = new Google_Service_AnalyticsReporting_DimensionFilter();
 		$dimension_filter->setDimensionName( 'ga:hostname' );
@@ -1150,12 +1141,17 @@ final class Analytics extends Module
 	 * @link https://developers.google.com/analytics/devguides/collection/analyticsjs/user-opt-out
 	 */
 	private function print_tracking_opt_out() {
-		if ( ! $this->is_tracking_disabled() ) {
-			return;
-		}
 		$settings    = $this->get_settings()->get();
 		$account_id  = $settings['accountID'];
 		$property_id = $settings['propertyID'];
+
+		if ( empty( $property_id ) ) {
+			return;
+		}
+
+		if ( ! $this->is_tracking_disabled() ) {
+			return;
+		}
 
 		if ( $this->context->is_amp() ) : ?>
 			<!-- <?php esc_html_e( 'Google Analytics AMP opt-out snippet added by Site Kit', 'google-site-kit' ); ?> -->

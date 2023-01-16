@@ -45,7 +45,7 @@ class Input {
 	 * Gets a specific external variable by name and optionally filters it.
 	 *
 	 * @since 1.1.2
-	 * @since n.e.x.t Changed default value of $options parameter to 0.
+	 * @since 1.92.0 Changed default value of $options parameter to 0.
 	 *
 	 * @link https://php.net/manual/en/function.filter-input.php
 	 *
