@@ -56,7 +56,9 @@ function mapScopesToModuleNames( scopes, modules ) {
 			// Map into an array of matches.
 			.map( ( scope ) =>
 				scope.match(
-					new RegExp( '^https://www.googleapis.com/auth/([a-z]+)' )
+					new RegExp(
+						'^https://www\\.googleapis\\.com/auth/([a-z]+)'
+					)
 				)
 			)
 			// Map each match into a module slug, if any.
@@ -100,7 +102,7 @@ export default function UnsatisfiedScopesAlert() {
 		unsatisfiedScopes.some(
 			( scope ) =>
 				! scope.match(
-					new RegExp( '^https://www.googleapis.com/auth/' )
+					new RegExp( '^https://www\\.googleapis\\.com/auth/' )
 				)
 		)
 	) {

@@ -16,7 +16,15 @@
  * limitations under the License.
  */
 
-.googlesitekit-plugin .googlesitekit-cta {
+// This rule consistently errors regardless of order of selectors because of
+// child selectors using `&`. Disabling this rule as it isn't helpful here and
+// we need overrides to deal with WordPress' very broad
+// `#dashboard-widgets .inside h3` selector.
+/* stylelint-disable no-descending-specificity */
+
+.googlesitekit-plugin .googlesitekit-cta,
+// Override to deal with WordPress dashboard default styles.
+#dashboard-widgets .inside .googlesitekit-plugin .googlesitekit-cta {
 	background-color: $c-surfaces-surface-1;
 	border-radius: $br-sm;
 	font-size: $fs-body-md;

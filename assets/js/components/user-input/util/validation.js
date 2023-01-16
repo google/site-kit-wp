@@ -24,7 +24,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Returns a boolean indicating whether the given answer has an error.
  *
- * @since n.e.x.t
+ * @since 1.92.0
  *
  * @param {string[]} values Array of values to validate.
  * @return {boolean} True if the answer has an error, false otherwise.
@@ -36,7 +36,7 @@ export function hasErrorForAnswer( values ) {
 /**
  * Returns an error message for the given answer, or null if the answer is valid.
  *
- * @since n.e.x.t
+ * @since 1.92.0
  *
  * @param {string[]} values Array of values to validate.
  * @param {number}   [max]  Maximum number of values allowed. Defaults to 1.

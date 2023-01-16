@@ -20,6 +20,8 @@
  * Internal dependencies
  */
 import {
+	provideModuleRegistrations,
+	provideModules,
 	provideSiteInfo,
 	provideUserInfo,
 } from '../../../../../../tests/js/utils';
@@ -32,7 +34,6 @@ import {
 	AMP_MODE_SECONDARY,
 } from '../../../../googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
-import { withActive } from '../../../../googlesitekit/modules/datastore/__fixtures__';
 import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 import {
 	MODULES_TAGMANAGER,
@@ -73,15 +74,8 @@ describe( 'SettingsEdit', () => {
 		provideSiteInfo( registry, { siteName } );
 		provideUserInfo( registry );
 
-		registry
-			.dispatch( CORE_MODULES )
-			.receiveGetModules(
-				withActive( 'tagmanager' ).map( ( module ) =>
-					module.slug !== 'tagmanager'
-						? module
-						: { ...module, storeName: MODULES_TAGMANAGER }
-				)
-			);
+		provideModules( registry, [ { slug: 'tagmanager', active: true } ] );
+		provideModuleRegistrations( registry );
 
 		registry.dispatch( MODULES_TAGMANAGER ).setSettings( {} );
 		registry.dispatch( MODULES_TAGMANAGER ).setOwnerID( 1 );

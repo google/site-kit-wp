@@ -1242,7 +1242,7 @@ const baseSelectors = {
 	/**
 	 * Checks if current user has ownership or access to the given module.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.92.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @param {string} slug  Module slug.

@@ -17,21 +17,6 @@
  */
 
 /**
- * Clears session storage and local storage.
- *
- * Both of these should be cleared to make sure no Site Kit data is left in the
- * browser's cache regardless of which storage implementation is used.
- */
-export const clearWebStorage = () => {
-	if ( global.localStorage ) {
-		global.localStorage.clear();
-	}
-	if ( global.sessionStorage ) {
-		global.sessionStorage.clear();
-	}
-};
-
-/**
  * Gets a query parameter from the current URL. (Fallback.)
  *
  * Used when URL.searchParams is unavailable.

@@ -114,7 +114,7 @@ export function isErrorRetryable( error, selectorData ) {
 /**
  * Sets the error message for specific error codes.
  *
- * @since n.e.x.t
+ * @since 1.92.0
  *
  * @param {Object} error The error object to check.
  * @return {Object} The updated error object.

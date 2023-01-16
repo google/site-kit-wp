@@ -34,6 +34,7 @@ import {
 	provideSiteInfo,
 	waitForDefaultTimeouts,
 	provideUserInfo,
+	provideModuleRegistrations,
 } from '../../../../../../tests/js/utils';
 import * as ga4Fixtures from '../../../analytics-4/datastore/__fixtures__';
 
@@ -65,7 +66,6 @@ describe( 'SettingsEdit', () => {
 				slug: 'analytics',
 				active: true,
 				connected: true,
-				storeName: MODULES_ANALYTICS,
 			},
 		] );
 
@@ -78,7 +78,7 @@ describe( 'SettingsEdit', () => {
 			body: {},
 		} );
 
-		fetchMock.get( new RegExp( 'example.com' ), {
+		fetchMock.get( new RegExp( 'example\\.com' ), {
 			body: [],
 			status: 200,
 		} );
@@ -128,6 +128,7 @@ describe( 'SettingsEdit', () => {
 	} );
 
 	it( 'does not set the account ID or property ID of an existing tag when present', async () => {
+		provideModuleRegistrations( registry );
 		fetchMock.get( new RegExp( 'tagmanager/data/settings' ), { body: {} } );
 		fetchMock.getOnce(
 			new RegExp(
@@ -154,7 +155,7 @@ describe( 'SettingsEdit', () => {
 			}
 		);
 
-		fetchMock.get( new RegExp( 'example.com' ), {
+		fetchMock.get( new RegExp( 'example\\.com' ), {
 			body: [],
 			status: 200,
 		} );

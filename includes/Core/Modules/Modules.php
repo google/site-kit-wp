@@ -127,7 +127,7 @@ final class Modules {
 	/**
 	 * REST_Modules_Controller instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.92.0
 	 * @var REST_Modules_Controller
 	 */
 	private $rest_controller;
