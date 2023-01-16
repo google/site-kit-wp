@@ -50,6 +50,27 @@ class Key_Metrics_Settings extends User_Setting {
 	}
 
 	/**
+	 * Merges an array of settings to update. Only existing keys will be updated.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $partial Partial settings array to save.
+	 * @return bool True on success, false on failure.
+	 */
+	public function merge( array $partial ) {
+		$settings = $this->get();
+		$partial  = array_filter(
+			$partial,
+			function ( $value ) {
+				return null !== $value;
+			}
+		);
+		$updated  = array_intersect_key( $partial, $settings );
+
+		return $this->set( array_merge( $settings, $updated ) );
+	}
+
+	/**
 	 * Gets the callback for sanitizing the setting's value before saving.
 	 *
 	 * @since n.e.x.t
