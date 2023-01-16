@@ -18,7 +18,9 @@ use Google\Site_Kit\Tests\Core\Storage\Setting_With_Owned_Keys_ContractTests;
 use Google\Site_Kit\Tests\Modules\SettingsTestCase;
 
 
-const GOOGLE_TAG_IDS = array( 'G-XXXX', 'GT-XXXX', 'AW-XXXX' );
+const GOOGLE_TAG_IDS          = array( 'G-XXXX', 'GT-XXXX', 'AW-XXXX' );
+const GOOGLE_TAG_ACCAUNT_ID   = 12121;
+const GOOGLE_TAG_CONTAINER_ID = 12121;
 
 /**
  * @group Modules
@@ -112,6 +114,50 @@ class SettingsTest extends SettingsTestCase {
 			$options = get_option( $options_key );
 			$testcase->assertEquals( $tag_id, $options['googleTagID'] );
 		}
+	}
+
+	public function test_validate_google_tag_account_id() {
+		$testcase = $this->get_testcase();
+		$settings = $this->get_setting_with_owned_keys();
+		$settings->register();
+
+		$options_key = $testcase->get_option_name();
+
+		delete_option( $options_key );
+
+		$options                       = $settings->get();
+		$options['googleTagAccountID'] = 'XXX';
+		$settings->set( $options );
+		$options = get_option( $options_key );
+		$testcase->assertEquals( '', $options['googleTagAccountID'] );
+
+		$options                       = $settings->get();
+		$options['googleTagAccountID'] = GOOGLE_TAG_ACCAUNT_ID;
+		$settings->set( $options );
+		$options = get_option( $options_key );
+		$testcase->assertEquals( GOOGLE_TAG_ACCAUNT_ID, $options['googleTagAccountID'] );
+	}
+
+	public function test_validate_google_tag_container_id() {
+		$testcase = $this->get_testcase();
+		$settings = $this->get_setting_with_owned_keys();
+		$settings->register();
+
+		$options_key = $testcase->get_option_name();
+
+		delete_option( $options_key );
+
+		$options                         = $settings->get();
+		$options['googleTagContainerID'] = 'XXX';
+		$settings->set( $options );
+		$options = get_option( $options_key );
+		$testcase->assertEquals( '', $options['googleTagContainerID'] );
+
+		$options                         = $settings->get();
+		$options['googleTagContainerID'] = GOOGLE_TAG_CONTAINER_ID;
+		$settings->set( $options );
+		$options = get_option( $options_key );
+		$testcase->assertEquals( GOOGLE_TAG_CONTAINER_ID, $options['googleTagContainerID'] );
 	}
 
 	protected function get_testcase() {
