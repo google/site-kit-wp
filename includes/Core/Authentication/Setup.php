@@ -128,7 +128,7 @@ class Setup {
 	 */
 	public function handle_action_setup_start() {
 		$nonce        = htmlspecialchars( $this->context->input()->filter( INPUT_GET, 'nonce' ) );
-		$redirect_url = $this->context->input()->filter( INPUT_GET, 'redirect', FILTER_SANITIZE_URL );
+		$redirect_url = $this->context->input()->filter( INPUT_GET, 'redirect', FILTER_DEFAULT );
 
 		$this->verify_nonce( $nonce, Google_Proxy::ACTION_SETUP_START );
 

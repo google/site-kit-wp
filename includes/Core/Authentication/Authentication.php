@@ -788,7 +788,7 @@ final class Authentication {
 			wp_die( esc_html__( 'You don\'t have permissions to authenticate with Site Kit.', 'google-site-kit' ), 403 );
 		}
 
-		$redirect_url = $input->filter( INPUT_GET, 'redirect', FILTER_VALIDATE_URL );
+		$redirect_url = $input->filter( INPUT_GET, 'redirect', FILTER_DEFAULT );
 		if ( $redirect_url ) {
 			$redirect_url = esc_url_raw( wp_unslash( $redirect_url ) );
 		}
