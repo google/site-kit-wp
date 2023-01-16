@@ -18,6 +18,31 @@ namespace Google\Site_Kit\Core\Util;
  * @ignore
  */
 class Auto_Updates {
+
+	/**
+	 * Auto updated forced enabled.
+	 *
+	 * @since n.e.x.t
+	 * @var true
+	 */
+	const AUTO_UPDATE_FORCED_ENABLED = true;
+
+	/**
+	 * Auto updated forced disabled.
+	 *
+	 * @since n.e.x.t
+	 * @var false
+	 */
+	const AUTO_UPDATE_FORCED_DISABLED = false;
+
+	/**
+	 * Auto updated not forced.
+	 *
+	 * @since n.e.x.t
+	 * @var false
+	 */
+	const AUTO_UPDATE_NOT_FORCED = null;
+
 	/**
 	 * Checks whether plugin auto-updates are enabled for the site.
 	 *
@@ -26,7 +51,7 @@ class Auto_Updates {
 	 * @return bool `false` if auto-updates are disabled, `true` otherwise.
 	 */
 	public static function is_plugin_autoupdates_enabled() {
-		if ( false === self::is_sitekit_autoupdates_forced() ) {
+		if ( self::AUTO_UPDATE_FORCED_DISABLED === self::sitekit_forced_autoupdates_status() ) {
 			return false;
 		}
 
@@ -45,8 +70,12 @@ class Auto_Updates {
 	 * @return bool `true` if auto updates are enabled, otherwise `false`.
 	 */
 	public static function is_sitekit_autoupdates_enabled() {
-		if ( true === self::is_sitekit_autoupdates_forced() ) {
+		if ( self::AUTO_UPDATE_FORCED_ENABLED === self::sitekit_forced_autoupdates_status() ) {
 			return true;
+		}
+
+		if ( self::AUTO_UPDATE_FORCED_DISABLED === self::sitekit_forced_autoupdates_status() ) {
+			return false;
 		}
 
 		$enabled_auto_updates = (array) get_site_option( 'auto_update_plugins', array() );
@@ -64,15 +93,25 @@ class Auto_Updates {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return bool | null `true` if auto-updates are forced enabled, `false` if forced disabled, `null` if not forced.
+	 * @return AUTO_UPDATE_FORCED_ENABLED | AUTO_UPDATE_FORCED_DISABLED | AUTO_UPDATE_NOT_FORCED
 	 */
-	public static function is_sitekit_autoupdates_forced() {
+	public static function sitekit_forced_autoupdates_status() {
 		if ( ! function_exists( 'wp_is_auto_update_forced_for_item' ) ) {
-			return null;
+			return self::AUTO_UPDATE_NOT_FORCED;
 		}
 
 		$sitekit_plugin_data = get_plugin_data( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 
-		return wp_is_auto_update_forced_for_item( 'plugin', null, $sitekit_plugin_data );
+		$is_auto_update_forced_for_sitekit = wp_is_auto_update_forced_for_item( 'plugin', null, $sitekit_plugin_data );
+
+		if ( true === $is_auto_update_forced_for_sitekit ) {
+			return self::AUTO_UPDATE_FORCED_ENABLED;
+		}
+
+		if ( false === $is_auto_update_forced_for_sitekit ) {
+			return self::AUTO_UPDATE_FORCED_DISABLED;
+		}
+
+		return self::AUTO_UPDATE_NOT_FORCED;
 	}
 }
