@@ -244,6 +244,7 @@ class Analytics_4Test extends TestCase {
 				'accounts',
 				'container-lookup',
 				'container-destinations',
+				'conversion-events',
 				'create-property',
 				'create-webdatastream',
 				'properties',
