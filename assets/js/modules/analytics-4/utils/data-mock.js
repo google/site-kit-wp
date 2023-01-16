@@ -106,42 +106,45 @@ function getMetricType( metric ) {
  * @return {Array.<Object>} Array of metric values.
  */
 function generateMetricValues( validMetrics ) {
-	const values = [];
-
 	validMetrics.forEach( ( validMetric ) => {
 		switch ( getMetricType( validMetric ) ) {
 			case 'INTEGER':
-				values.push( {
-					value: faker.datatype
-						.number( { min: 0, max: 100 } )
-						.toString(),
-				} );
-				break;
+				return [
+					{
+						value: faker.datatype
+							.number( { min: 0, max: 100 } )
+							.toString(),
+					},
+				];
+
 			case 'PERCENT':
-				values.push( {
-					value: faker.datatype
-						.float( { min: 0, max: 100 } )
-						.toString(),
-				} );
-				break;
+				return [
+					{
+						value: faker.datatype
+							.float( { min: 0, max: 100 } )
+							.toString(),
+					},
+				];
 			case 'TIME':
-				values.push( {
-					value: faker.datatype
-						.number( { min: 0, max: 3600 } )
-						.toString(),
-				} ); // 1 hour max.
-				break;
+				return [
+					{
+						value: faker.datatype
+							.number( { min: 0, max: 3600 } )
+							.toString(),
+					},
+				]; // 1 hour max.
 			case 'CURRENCY':
-				values.push( {
-					value: faker.datatype
-						.float( { min: 0, max: 10000 } )
-						.toString(),
-				} ); // $10k max.
-				break;
+				return [
+					{
+						value: faker.datatype
+							.float( { min: 0, max: 10000 } )
+							.toString(),
+					},
+				]; // $10k max.
 		}
 	} );
 
-	return values;
+	return [];
 }
 
 /**
