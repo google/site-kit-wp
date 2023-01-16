@@ -352,13 +352,13 @@ describe( 'core/user user-input-settings', () => {
 
 				expect(
 					registry.select( CORE_USER ).haveUserInputSettingsChanged()
-				).toEqual( false );
+				).toBe( false );
 			} );
 
 			it( 'should return false if settings are unchanged', () => {
 				expect(
 					registry.select( CORE_USER ).haveUserInputSettingsChanged()
-				).toEqual( false );
+				).toBe( false );
 			} );
 
 			it( 'compares all keys when keys argument is not supplied', () => {
@@ -373,7 +373,7 @@ describe( 'core/user user-input-settings', () => {
 
 				expect(
 					registry.select( CORE_USER ).haveUserInputSettingsChanged()
-				).toEqual( true );
+				).toBe( true );
 			} );
 
 			describe( 'compares select keys when keys argument is supplied', () => {
@@ -393,7 +393,7 @@ describe( 'core/user user-input-settings', () => {
 						registry
 							.select( CORE_USER )
 							.haveUserInputSettingsChanged( [ 'goals' ] )
-					).toEqual( true );
+					).toBe( true );
 				} );
 
 				it( 'should return false if an unchanged key is supplied', () => {
@@ -401,7 +401,7 @@ describe( 'core/user user-input-settings', () => {
 						registry
 							.select( CORE_USER )
 							.haveUserInputSettingsChanged( [ 'purpose' ] )
-					).toEqual( false );
+					).toBe( false );
 				} );
 
 				it( 'should return true if the keys argument array contains a changed key', () => {
@@ -412,7 +412,7 @@ describe( 'core/user user-input-settings', () => {
 								'goals',
 								'purpose',
 							] )
-					).toEqual( true );
+					).toBe( true );
 				} );
 
 				it( 'should return false if an empty keys argument is supplied', () => {
@@ -420,7 +420,7 @@ describe( 'core/user user-input-settings', () => {
 						registry
 							.select( CORE_USER )
 							.haveUserInputSettingsChanged( [] )
-					).toEqual( false );
+					).toBe( false );
 				} );
 			} );
 		} );
@@ -444,7 +444,7 @@ describe( 'core/user user-input-settings', () => {
 					registry
 						.select( CORE_USER )
 						.hasUserInputSettingChanged( 'goals' )
-				).toEqual( false );
+				).toBe( false );
 			} );
 
 			it( 'should return false if settings are unchanged', () => {
@@ -452,7 +452,7 @@ describe( 'core/user user-input-settings', () => {
 					registry
 						.select( CORE_USER )
 						.hasUserInputSettingChanged( 'goals' )
-				).toEqual( false );
+				).toBe( false );
 			} );
 
 			it( 'should return true if a changed key is supplied', () => {
@@ -469,7 +469,7 @@ describe( 'core/user user-input-settings', () => {
 					registry
 						.select( CORE_USER )
 						.hasUserInputSettingChanged( 'goals' )
-				).toEqual( true );
+				).toBe( true );
 			} );
 
 			it( 'should return false if an unchanged key is supplied', () => {
@@ -486,7 +486,7 @@ describe( 'core/user user-input-settings', () => {
 					registry
 						.select( CORE_USER )
 						.hasUserInputSettingChanged( 'purpose' )
-				).toEqual( false );
+				).toBe( false );
 			} );
 		} );
 	} );
