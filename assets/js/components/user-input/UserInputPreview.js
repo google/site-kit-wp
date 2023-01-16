@@ -31,7 +31,7 @@ import { Fragment, useEffect, useRef, useState } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { ProgressBar } from 'googlesitekit-components';
+import { Button, ProgressBar } from 'googlesitekit-components';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
 import {
@@ -42,12 +42,12 @@ import {
 	USER_INPUT_QUESTIONS_LIST,
 	USER_INPUT_MAX_ANSWERS,
 } from './util/constants';
-import SpinnerButton from '../SpinnerButton';
 import UserInputPreviewGroup from './UserInputPreviewGroup';
 import UserInputQuestionNotice from './UserInputQuestionNotice';
 import useQueryArg from '../../hooks/useQueryArg';
 import ErrorNotice from '../ErrorNotice';
 import Link from '../Link';
+import Spinner from '../Spinner';
 import CancelUserInputButton from './CancelUserInputButton';
 import { getErrorMessageForAnswer } from './util/validation';
 const { useSelect } = Data;
@@ -188,14 +188,17 @@ export default function UserInputPreview( props ) {
 					</div>
 					<div className="googlesitekit-user-input__footer googlesitekit-user-input__buttons">
 						<div className="googlesitekit-user-input__footer-nav">
-							<SpinnerButton
+							<Button
 								className="googlesitekit-user-input__buttons--next"
 								onClick={ onSaveClick }
 								disabled={ isScreenLoading }
 								isSaving={ isScreenLoading }
 							>
 								{ __( 'Save', 'google-site-kit' ) }
-							</SpinnerButton>
+								{ isScreenLoading && (
+									<Spinner isSaving={ isScreenLoading } />
+								) }
+							</Button>
 							<Link
 								className="googlesitekit-user-input__buttons--back"
 								onClick={ goBack }
