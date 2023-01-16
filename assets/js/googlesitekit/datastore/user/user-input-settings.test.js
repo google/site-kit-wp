@@ -73,7 +73,7 @@ describe( 'core/user user-input-settings', () => {
 	beforeEach( () => {
 		registry = createTestRegistry();
 		store = registry.stores[ CORE_USER ].store;
-		registry.dispatch( CORE_USER ).receiveIsUserInputComplete( true );
+		registry.dispatch( CORE_USER ).receiveIsUserInputCompleted( true );
 	} );
 
 	afterAll( () => {

@@ -345,11 +345,11 @@ final class Authentication {
 					$user['user']['full_name'] = isset( $profile_data['full_name'] ) ? $profile_data['full_name'] : null;
 				}
 
-				$user['connectURL']          = esc_url_raw( $this->get_connect_url() );
-				$user['hasMultipleAdmins']   = $this->has_multiple_admins->get();
-				$user['initialVersion']      = $this->initial_version->get();
-				$user['isUserInputComplete'] = ! $this->user_input->are_settings_empty();
-				$user['verified']            = $this->verification->has();
+				$user['connectURL']           = esc_url_raw( $this->get_connect_url() );
+				$user['hasMultipleAdmins']    = $this->has_multiple_admins->get();
+				$user['initialVersion']       = $this->initial_version->get();
+				$user['isUserInputCompleted'] = ! $this->user_input->are_settings_empty();
+				$user['verified']             = $this->verification->has();
 
 				return $user;
 			}

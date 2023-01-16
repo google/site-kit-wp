@@ -43,7 +43,7 @@ describe( 'core/user userInfo', () => {
 			'http://example.com/wp-admin/index.php?action=googlesitekit_connect&nonce=abc123',
 		initialVersion: '1.0.0',
 		verified: true,
-		isUserInputComplete: true,
+		isUserInputCompleted: true,
 	};
 
 	let registry;
@@ -108,21 +108,23 @@ describe( 'core/user userInfo', () => {
 				);
 			} );
 		} );
-		describe( 'receiveIsUserInputComplete', () => {
-			it( 'requires isUserInputComplete param', () => {
+		describe( 'receiveIsUserInputCompleted', () => {
+			it( 'requires isUserInputCompleted param', () => {
 				expect( () => {
-					registry.dispatch( CORE_USER ).receiveIsUserInputComplete();
-				} ).toThrow( 'isUserInputComplete is required.' );
+					registry
+						.dispatch( CORE_USER )
+						.receiveIsUserInputCompleted();
+				} ).toThrow( 'isUserInputCompleted is required.' );
 			} );
 
 			it( 'receives and sets userInputData', async () => {
-				const { isUserInputComplete } = userData;
+				const { isUserInputCompleted } = userData;
 				await registry
 					.dispatch( CORE_USER )
-					.receiveIsUserInputComplete( isUserInputComplete );
+					.receiveIsUserInputCompleted( isUserInputCompleted );
 				expect(
-					registry.select( CORE_USER ).isUserInputComplete()
-				).toEqual( isUserInputComplete );
+					registry.select( CORE_USER ).isUserInputCompleted()
+				).toEqual( isUserInputCompleted );
 			} );
 		} );
 	} );
@@ -374,23 +376,23 @@ describe( 'core/user userInfo', () => {
 				expect( result ).toEqual( expectedValue );
 			} );
 		} );
-		describe( 'isUserInputComplete', () => {
+		describe( 'isUserInputCompleted', () => {
 			it( 'uses a resolver to check if user input is completed from a global variable', async () => {
 				// Set up the global
 				global[ userDataGlobal ] = userData;
 
-				registry.select( CORE_USER ).isUserInputComplete(); // invariant error
+				registry.select( CORE_USER ).isUserInputCompleted(); // invariant error
 				await subscribeUntil( registry, () =>
 					registry
 						.select( CORE_USER )
-						.hasFinishedResolution( 'isUserInputComplete' )
+						.hasFinishedResolution( 'isUserInputCompleted' )
 				);
 
-				const isUserInputComplete = registry
+				const isUserInputCompleted = registry
 					.select( CORE_USER )
-					.isUserInputComplete();
-				expect( isUserInputComplete ).toBe(
-					userData.isUserInputComplete
+					.isUserInputCompleted();
+				expect( isUserInputCompleted ).toBe(
+					userData.isUserInputCompleted
 				);
 
 				// Data must not be wiped after retrieving, as it could be used by other dependents.

@@ -125,7 +125,7 @@ class AuthenticationTest extends TestCase {
 			array(
 				'connectURL',
 				'initialVersion',
-				'isUserInputComplete',
+				'isUserInputCompleted',
 				'verified',
 				'hasMultipleAdmins',
 			),
@@ -142,7 +142,7 @@ class AuthenticationTest extends TestCase {
 			array(
 				'connectURL',
 				'initialVersion',
-				'isUserInputComplete',
+				'isUserInputCompleted',
 				'verified',
 				'user',
 				'hasMultipleAdmins',

@@ -46,9 +46,9 @@ const { useSelect, useDispatch } = Data;
 export default function SettingsAdmin() {
 	const viewContext = useViewContext();
 	const userInputEnabled = useFeature( 'userInput' );
-	const isUserInputComplete = useSelect(
+	const isUserInputCompleted = useSelect(
 		( select ) =>
-			userInputEnabled && select( CORE_USER ).isUserInputComplete()
+			userInputEnabled && select( CORE_USER ).isUserInputCompleted()
 	);
 	const userInputURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-user-input' )
@@ -71,16 +71,16 @@ export default function SettingsAdmin() {
 	};
 
 	useEffect( () => {
-		if ( isUserInputComplete ) {
+		if ( isUserInputCompleted ) {
 			trackEvent( viewContext, 'summary_view' );
 		}
-	}, [ isUserInputComplete, viewContext ] );
+	}, [ isUserInputCompleted, viewContext ] );
 
 	return (
 		<Row>
 			{ userInputEnabled && (
 				<Cell size={ 12 }>
-					{ isUserInputComplete && (
+					{ isUserInputCompleted && (
 						<Layout
 							title={ __( 'Key metrics', 'google-site-kit' ) }
 							header
@@ -107,7 +107,7 @@ export default function SettingsAdmin() {
 							</div>
 						</Layout>
 					) }
-					{ ! isUserInputComplete && (
+					{ ! isUserInputCompleted && (
 						<UserInputSettings isDismissible={ false } rounded />
 					) }
 				</Cell>

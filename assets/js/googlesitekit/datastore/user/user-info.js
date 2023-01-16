@@ -47,7 +47,7 @@ const initialState = {
 	initialVersion: undefined,
 	user: undefined,
 	verified: undefined,
-	isUserInputComplete: undefined,
+	isUserInputCompleted: undefined,
 };
 
 export const actions = {
@@ -137,16 +137,16 @@ export const actions = {
 	 * @since n.e.x.t Updated the state object to be a simple boolean.
 	 * @private
 	 *
-	 * @param {Object} isUserInputComplete User input state.
+	 * @param {Object} isUserInputCompleted User input state.
 	 * @return {Object} Redux-style action.
 	 */
-	receiveIsUserInputComplete( isUserInputComplete ) {
+	receiveIsUserInputCompleted( isUserInputCompleted ) {
 		invariant(
-			isUserInputComplete !== undefined,
-			'isUserInputComplete is required.'
+			isUserInputCompleted !== undefined,
+			'isUserInputCompleted is required.'
 		);
 		return {
-			payload: { isUserInputComplete },
+			payload: { isUserInputCompleted },
 			type: RECEIVE_IS_USER_INPUT_COMPLETE,
 		};
 	},
@@ -185,10 +185,10 @@ export const reducer = ( state, { type, payload } ) => {
 			};
 		}
 		case RECEIVE_IS_USER_INPUT_COMPLETE: {
-			const { isUserInputComplete } = payload;
+			const { isUserInputCompleted } = payload;
 			return {
 				...state,
-				isUserInputComplete,
+				isUserInputCompleted,
 			};
 		}
 		default: {
@@ -262,10 +262,10 @@ export const resolvers = {
 		yield actions.receiveUserIsVerified( verified );
 	},
 
-	*isUserInputComplete() {
+	*isUserInputCompleted() {
 		const { select } = yield Data.commonActions.getRegistry();
 
-		if ( select( CORE_USER ).isUserInputComplete() ) {
+		if ( select( CORE_USER ).isUserInputCompleted() ) {
 			return;
 		}
 
@@ -273,8 +273,8 @@ export const resolvers = {
 			global.console.error( 'Could not load core/user info.' );
 			return;
 		}
-		const { isUserInputComplete } = global._googlesitekitUserData;
-		yield actions.receiveIsUserInputComplete( isUserInputComplete );
+		const { isUserInputCompleted } = global._googlesitekitUserData;
+		yield actions.receiveIsUserInputCompleted( isUserInputCompleted );
 	},
 };
 
@@ -483,9 +483,9 @@ export const selectors = {
 	 * @param {Object} state Data store's state.
 	 * @return {string} The user input state.
 	 */
-	isUserInputComplete( state ) {
-		const { isUserInputComplete } = state;
-		return isUserInputComplete;
+	isUserInputCompleted( state ) {
+		const { isUserInputCompleted } = state;
+		return isUserInputCompleted;
 	},
 };
 
