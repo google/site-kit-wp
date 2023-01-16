@@ -345,121 +345,147 @@ describe( 'core/user user-input-settings', () => {
 			} );
 
 			it( 'informs whether client-side settings differ from server-side ones', () => {
-				// Initially false.
+				// False after setting to the same values as original, i.e. unchanged settings.
+				registry
+					.dispatch( CORE_USER )
+					.setUserInputSetting( 'goals', [ 'goal1', 'goal2' ] );
+
 				expect(
 					registry.select( CORE_USER ).haveUserInputSettingsChanged()
 				).toEqual( false );
+			} );
 
-				const settingID = 'goals';
-				const values = [ 'goal3', 'goal4', 'goal5', 'goal6' ];
-
-				registry
-					.dispatch( CORE_USER )
-					.setUserInputSetting( settingID, values );
-
-				// True after modifying user input settings.
-				expect(
-					registry.select( CORE_USER ).haveUserInputSettingsChanged()
-				).toEqual( true );
-
-				registry.dispatch( CORE_USER ).resetUserInputSettings();
-
-				// False after updating settings back to original.
+			it( 'should return false if settings are unchanged', () => {
 				expect(
 					registry.select( CORE_USER ).haveUserInputSettingsChanged()
 				).toEqual( false );
 			} );
 
 			it( 'compares all keys when keys argument is not supplied', () => {
-				// Initially false.
-				expect(
-					registry.select( CORE_USER ).haveUserInputSettingsChanged()
-				).toEqual( false );
-
-				const settingID = 'goals';
-				const values = [ 'goal3', 'goal4', 'goal5', 'goal6' ];
-
 				registry
 					.dispatch( CORE_USER )
-					.setUserInputSetting( settingID, values );
+					.setUserInputSetting( 'goals', [
+						'goal3',
+						'goal4',
+						'goal5',
+						'goal6',
+					] );
 
-				// True after modifying user input settings.
 				expect(
 					registry.select( CORE_USER ).haveUserInputSettingsChanged()
 				).toEqual( true );
 			} );
 
-			it( 'compares select keys when keys argument is supplied', () => {
-				// Initially false.
-				expect(
-					registry.select( CORE_USER ).haveUserInputSettingsChanged()
-				).toEqual( false );
-
-				const settingID = 'goals';
-				const values = [ 'goal3', 'goal4', 'goal5', 'goal6' ];
-
-				registry
-					.dispatch( CORE_USER )
-					.setUserInputSetting( settingID, values );
-
-				// Update the settings so they differ. Only `goals` should trigger
-				// a truthy return value.
-				expect(
+			describe( 'compares select keys when keys argument is supplied', () => {
+				beforeEach( () => {
 					registry
-						.select( CORE_USER )
-						.haveUserInputSettingsChanged( [ 'goals' ] )
-				).toEqual( true );
-				expect(
-					registry
-						.select( CORE_USER )
-						.haveUserInputSettingsChanged( [ 'purpose' ] )
-				).toEqual( false );
+						.dispatch( CORE_USER )
+						.setUserInputSetting( 'goals', [
+							'goal3',
+							'goal4',
+							'goal5',
+							'goal6',
+						] );
+				} );
 
-				// Checking all values should be possible.
-				expect(
-					registry
-						.select( CORE_USER )
-						.haveUserInputSettingsChanged( [ 'goals', 'purpose' ] )
-				).toEqual( true );
+				it( 'should return true if the changed key is supplied', () => {
+					expect(
+						registry
+							.select( CORE_USER )
+							.haveUserInputSettingsChanged( [ 'goals' ] )
+					).toEqual( true );
+				} );
 
-				// Checking no values should be possible, and should not be treated as
-				// an `undefined` keys array.
-				expect(
-					registry
-						.select( CORE_USER )
-						.haveUserInputSettingsChanged( [] )
-				).toEqual( false );
+				it( 'should return false if an unchanged key is supplied', () => {
+					expect(
+						registry
+							.select( CORE_USER )
+							.haveUserInputSettingsChanged( [ 'purpose' ] )
+					).toEqual( false );
+				} );
+
+				it( 'should return true if the keys argument array contains a changed key', () => {
+					expect(
+						registry
+							.select( CORE_USER )
+							.haveUserInputSettingsChanged( [
+								'goals',
+								'purpose',
+							] )
+					).toEqual( true );
+				} );
+
+				it( 'should return false if an empty keys argument is supplied', () => {
+					expect(
+						registry
+							.select( CORE_USER )
+							.haveUserInputSettingsChanged( [] )
+					).toEqual( false );
+				} );
 			} );
 		} );
 
 		describe( 'hasUserInputSettingChanged', () => {
-			it( 'informs whether client-side specific setting differ from server-side ones', () => {
+			beforeEach( () => {
 				registry
 					.dispatch( CORE_USER )
 					.receiveGetUserInputSettings(
 						coreUserInputSettingsExpectedResponse
 					);
+			} );
 
-				const settingID = 'goals';
-				const values = [ 'goal3', 'goal4', 'goal5', 'goal6' ];
-
+			it( 'informs whether client-side specific setting differ from server-side ones', () => {
+				// False after setting to the same values as original, i.e. unchanged settings.
 				registry
 					.dispatch( CORE_USER )
-					.setUserInputSetting( settingID, values );
+					.setUserInputSetting( 'goals', [ 'goal1', 'goal2' ] );
 
-				// True after updating user input settings.
+				expect(
+					registry
+						.select( CORE_USER )
+						.hasUserInputSettingChanged( 'goals' )
+				).toEqual( false );
+			} );
+
+			it( 'should return false if settings are unchanged', () => {
+				expect(
+					registry
+						.select( CORE_USER )
+						.hasUserInputSettingChanged( 'goals' )
+				).toEqual( false );
+			} );
+
+			it( 'should return true if a changed key is supplied', () => {
+				registry
+					.dispatch( CORE_USER )
+					.setUserInputSetting( 'goals', [
+						'goal3',
+						'goal4',
+						'goal5',
+						'goal6',
+					] );
+
 				expect(
 					registry
 						.select( CORE_USER )
 						.hasUserInputSettingChanged( 'goals' )
 				).toEqual( true );
+			} );
 
-				// False after updating settings back to original.
-				registry.dispatch( CORE_USER ).resetUserInputSettings();
+			it( 'should return false if an unchanged key is supplied', () => {
+				registry
+					.dispatch( CORE_USER )
+					.setUserInputSetting( 'goals', [
+						'goal3',
+						'goal4',
+						'goal5',
+						'goal6',
+					] );
+
 				expect(
 					registry
 						.select( CORE_USER )
-						.hasUserInputSettingChanged( 'goals' )
+						.hasUserInputSettingChanged( 'purpose' )
 				).toEqual( false );
 			} );
 		} );
