@@ -178,12 +178,14 @@ describe( 'core/user user-input-settings', () => {
 
 		describe( 'resetUserInputSettings', () => {
 			it( 'should correctly reset user input settings', () => {
-				const settingID = 'goals';
-				const values = [ 'goal3', 'goal4', 'goal5', 'goal6' ];
-
 				registry
 					.dispatch( CORE_USER )
-					.setUserInputSetting( settingID, values );
+					.setUserInputSetting( 'goals', [
+						'goal3',
+						'goal4',
+						'goal5',
+						'goal6',
+					] );
 
 				registry.dispatch( CORE_USER ).resetUserInputSettings();
 
