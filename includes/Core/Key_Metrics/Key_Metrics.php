@@ -31,6 +31,14 @@ class Key_Metrics {
 	protected $key_metrics_settings;
 
 	/**
+	 * REST_Key_Metrics_Controller instance.
+	 *
+	 * @since n.e.x.t
+	 * @var REST_Key_Metrics_Controller
+	 */
+	protected $rest_controller;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since n.e.x.t
@@ -40,6 +48,7 @@ class Key_Metrics {
 	 */
 	public function __construct( Context $context, User_Options $user_options = null ) {
 		$this->key_metrics_settings = new Key_Metrics_Settings( $user_options ?: new User_Options( $context ) );
+		$this->rest_controller      = new REST_Key_Metrics_Controller( $this->key_metrics_settings );
 	}
 
 	/**
@@ -49,6 +58,7 @@ class Key_Metrics {
 	 */
 	public function register() {
 		$this->key_metrics_settings->register();
+		$this->rest_controller->register();
 	}
 
 }
