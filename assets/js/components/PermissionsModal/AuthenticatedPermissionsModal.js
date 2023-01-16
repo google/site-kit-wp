@@ -98,8 +98,8 @@ const AuthenticatedPermissionsModal = () => {
 
 	if (
 		unsatisfiedScopes &&
-		permissionsError?.data?.scopes.every( ( i ) =>
-			unsatisfiedScopes.includes( i )
+		permissionsError?.data?.scopes.every( ( scope ) =>
+			unsatisfiedScopes.includes( scope )
 		)
 	) {
 		return null;
