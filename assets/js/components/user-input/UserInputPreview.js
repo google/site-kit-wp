@@ -31,8 +31,9 @@ import { Fragment, useEffect, useRef, useState } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { Button, ProgressBar } from 'googlesitekit-components';
+import { ProgressBar } from 'googlesitekit-components';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
 import {
 	getUserInputAnswers,
 	USER_INPUT_QUESTIONS_GOALS,
@@ -41,6 +42,7 @@ import {
 	USER_INPUT_QUESTIONS_LIST,
 	USER_INPUT_MAX_ANSWERS,
 } from './util/constants';
+import SpinnerButton from '../SpinnerButton';
 import UserInputPreviewGroup from './UserInputPreviewGroup';
 import UserInputQuestionNotice from './UserInputQuestionNotice';
 import useQueryArg from '../../hooks/useQueryArg';
@@ -56,6 +58,14 @@ export default function UserInputPreview( props ) {
 	const settings = useSelect( ( select ) =>
 		select( CORE_USER ).getUserInputSettings()
 	);
+	const isSavingSettings = useSelect( ( select ) =>
+		select( CORE_USER ).isSavingUserInputSettings( settings )
+	);
+	const isNavigating = useSelect( ( select ) =>
+		select( CORE_LOCATION ).isNavigating()
+	);
+	const isScreenLoading = isSavingSettings || isNavigating;
+
 	const {
 		USER_INPUT_ANSWERS_PURPOSE,
 		USER_INPUT_ANSWERS_POST_FREQUENCY,
@@ -178,21 +188,26 @@ export default function UserInputPreview( props ) {
 					</div>
 					<div className="googlesitekit-user-input__footer googlesitekit-user-input__buttons">
 						<div className="googlesitekit-user-input__footer-nav">
-							<Button
+							<SpinnerButton
 								className="googlesitekit-user-input__buttons--next"
 								onClick={ onSaveClick }
+								disabled={ isScreenLoading }
+								isSaving={ isScreenLoading }
 							>
 								{ __( 'Save', 'google-site-kit' ) }
-							</Button>
+							</SpinnerButton>
 							<Link
 								className="googlesitekit-user-input__buttons--back"
 								onClick={ goBack }
+								disabled={ isScreenLoading }
 							>
 								{ __( 'Back', 'google-site-kit' ) }
 							</Link>
 						</div>
 						<div className="googlesitekit-user-input__footer-cancel">
-							<CancelUserInputButton />
+							<CancelUserInputButton
+								disabled={ isScreenLoading }
+							/>
 						</div>
 					</div>
 				</Fragment>

@@ -39,7 +39,8 @@ import { ESCAPE, TAB } from '@wordpress/keycodes';
  */
 import Data from 'googlesitekit-data';
 import { Button, Dialog, Menu } from 'googlesitekit-components';
-import { clearWebStorage, trackEvent } from '../util';
+import { trackEvent } from '../util';
+import { clearCache } from '../googlesitekit/api/cache';
 import Portal from './Portal';
 import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../googlesitekit/datastore/user/constants';
@@ -138,8 +139,7 @@ export default function UserMenu() {
 		// Close the modal.
 		toggleDialog( false );
 
-		// Clear caches.
-		clearWebStorage();
+		await clearCache();
 
 		await trackEvent(
 			`${ viewContext }_headerbar_usermenu`,
