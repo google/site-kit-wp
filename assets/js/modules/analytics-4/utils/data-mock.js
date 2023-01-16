@@ -103,52 +103,45 @@ function getMetricType( metric ) {
  * @since n.e.x.t
  *
  * @param {Array.<Object>} validMetrics Metric list.
- * @param {number}         count        Maximum number of values to generate.
  * @return {Array.<Object>} Array of metric values.
  */
-function generateMetricValues( validMetrics, count ) {
-	const metrics = [];
+function generateMetricValues( validMetrics ) {
+	const values = [];
 
-	for ( let i = 0; i < count; i++ ) {
-		const values = [];
+	validMetrics.forEach( ( validMetric ) => {
+		switch ( getMetricType( validMetric ) ) {
+			case 'INTEGER':
+				values.push( {
+					value: faker.datatype
+						.number( { min: 0, max: 100 } )
+						.toString(),
+				} );
+				break;
+			case 'PERCENT':
+				values.push( {
+					value: faker.datatype
+						.float( { min: 0, max: 100 } )
+						.toString(),
+				} );
+				break;
+			case 'TIME':
+				values.push( {
+					value: faker.datatype
+						.number( { min: 0, max: 3600 } )
+						.toString(),
+				} ); // 1 hour max.
+				break;
+			case 'CURRENCY':
+				values.push( {
+					value: faker.datatype
+						.float( { min: 0, max: 10000 } )
+						.toString(),
+				} ); // $10k max.
+				break;
+		}
+	} );
 
-		validMetrics.forEach( ( validMetric ) => {
-			switch ( getMetricType( validMetric ) ) {
-				case 'INTEGER':
-					values.push( {
-						value: faker.datatype
-							.number( { min: 0, max: 100 } )
-							.toString(),
-					} );
-					break;
-				case 'PERCENT':
-					values.push( {
-						value: faker.datatype
-							.float( { min: 0, max: 100 } )
-							.toString(),
-					} );
-					break;
-				case 'TIME':
-					values.push( {
-						value: faker.datatype
-							.number( { min: 0, max: 3600 } )
-							.toString(),
-					} ); // 1 hour max.
-					break;
-				case 'CURRENCY':
-					values.push( {
-						value: faker.datatype
-							.float( { min: 0, max: 10000 } )
-							.toString(),
-					} ); // $10k max.
-					break;
-			}
-		} );
-
-		metrics.push( ...values );
-	}
-
-	return metrics;
+	return values;
 }
 
 /**
@@ -190,6 +183,31 @@ function sortRows( rows, metrics, orderby ) {
 	}
 
 	return sorted;
+}
+
+/**
+ * Generates date range.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} startDate The start date.
+ * @param {string} endDate   The end date.
+ * @return {Array.<string>} An array with dates.
+ */
+function generateDateRange( startDate, endDate ) {
+	const dates = [];
+
+	const currentDate = stringToDate( startDate );
+	const end = stringToDate( endDate );
+
+	while ( currentDate.getTime() <= end.getTime() ) {
+		dates.push(
+			currentDate.toISOString().split( 'T' )[ 0 ].replace( /\D/g, '' )
+		);
+		currentDate.setDate( currentDate.getDate() + 1 );
+	}
+
+	return dates;
 }
 
 /**
@@ -241,7 +259,7 @@ export function getAnalytics4MockResponse( args ) {
 	};
 
 	const { compareStartDate, compareEndDate } = args;
-	const metricValuesCount = compareStartDate && compareEndDate ? 2 : 1;
+	const hasCompareDates = compareStartDate && compareEndDate;
 
 	const validMetrics = ( args.metrics || [] ).filter(
 		( metric ) => !! getMetricType( metric )
@@ -256,27 +274,46 @@ export function getAnalytics4MockResponse( args ) {
 	const dimensions = castArray( args.dimensions );
 	dimensions.forEach( ( dimension ) => {
 		if ( dimension === 'date' ) {
+			const dateRange = generateDateRange( args.startDate, args.endDate );
+			const compareDateRange = hasCompareDates
+				? generateDateRange(
+						args.compareStartDate,
+						args.compareEndDate
+				  )
+				: [];
+
 			// Generates a stream (an array) of dates when the dimension is date.
 			streams.push(
 				new Observable( ( observer ) => {
-					const currentDate = stringToDate(
-						args.compareStartDate || args.startDate
-					);
-					const end = stringToDate( args.endDate );
+					dateRange.forEach( ( date ) => {
+						observer.next( date );
+					} );
 
-					while ( currentDate.getTime() <= end.getTime() ) {
-						observer.next(
-							currentDate
-								.toISOString()
-								.split( 'T' )[ 0 ]
-								.replace( /\D/g, '' )
-						);
-						currentDate.setDate( currentDate.getDate() + 1 );
+					if ( hasCompareDates ) {
+						compareDateRange.forEach( ( date ) => {
+							observer.next( date );
+						} );
 					}
 
 					observer.complete();
 				} )
 			);
+
+			if ( hasCompareDates ) {
+				streams.push(
+					new Observable( ( observer ) => {
+						dateRange.forEach( () => {
+							observer.next( 'date_range_0' );
+						} );
+
+						compareDateRange.forEach( () => {
+							observer.next( 'date_range_1' );
+						} );
+
+						observer.complete();
+					} )
+				);
+			}
 		} else if (
 			dimension &&
 			typeof ANALYTICS_4_DIMENSION_OPTIONS[ dimension ] === 'function'
@@ -317,10 +354,7 @@ export function getAnalytics4MockResponse( args ) {
 			dimensionValues: castArray( dimensionValue ).map( ( value ) => ( {
 				value,
 			} ) ),
-			metricValues: generateMetricValues(
-				validMetrics,
-				metricValuesCount
-			),
+			metricValues: generateMetricValues( validMetrics ),
 		} ) ),
 		// Make sure we take the appropriate number of rows.
 		take( args.limit > 0 ? +args.limit : 90 ),
