@@ -259,7 +259,7 @@ export function getAnalytics4MockResponse( args ) {
 	};
 
 	const { compareStartDate, compareEndDate } = args;
-	const hasCompareDates = compareStartDate && compareEndDate;
+	const hasDateRange = compareStartDate && compareEndDate;
 
 	const validMetrics = ( args.metrics || [] ).filter(
 		( metric ) => !! getMetricType( metric )
@@ -272,10 +272,15 @@ export function getAnalytics4MockResponse( args ) {
 	// have 0 or N dimensions (N > 1) which means that in the each row of the report data we will have an array
 	// of dimension values.
 	const dimensions = castArray( args.dimensions );
+
+	if ( hasDateRange ) {
+		dimensions.push( 'dateRange' );
+	}
+
 	dimensions.forEach( ( dimension ) => {
-		if ( dimension === 'date' ) {
+		if ( dimension === 'date' || dimension === 'dateRange' ) {
 			const dateRange = generateDateRange( args.startDate, args.endDate );
-			const compareDateRange = hasCompareDates
+			const compareDateRange = hasDateRange
 				? generateDateRange(
 						args.compareStartDate,
 						args.compareEndDate
@@ -283,23 +288,25 @@ export function getAnalytics4MockResponse( args ) {
 				: [];
 
 			// Generates a stream (an array) of dates when the dimension is date.
-			streams.push(
-				new Observable( ( observer ) => {
-					dateRange.forEach( ( date ) => {
-						observer.next( date );
-					} );
-
-					if ( hasCompareDates ) {
-						compareDateRange.forEach( ( date ) => {
+			if ( dimension === 'date' ) {
+				streams.push(
+					new Observable( ( observer ) => {
+						dateRange.forEach( ( date ) => {
 							observer.next( date );
 						} );
-					}
 
-					observer.complete();
-				} )
-			);
+						if ( hasDateRange ) {
+							compareDateRange.forEach( ( date ) => {
+								observer.next( date );
+							} );
+						}
 
-			if ( hasCompareDates ) {
+						observer.complete();
+					} )
+				);
+			}
+
+			if ( dimension === 'dateRange' ) {
 				streams.push(
 					new Observable( ( observer ) => {
 						dateRange.forEach( () => {
@@ -377,21 +384,29 @@ export function getAnalytics4MockResponse( args ) {
 			// really need mathematically correct values and can simplify the process of finding this information.
 			data.minimums = [
 				{
-					dimensionValues: [
-						{
+					dimensionValues: dimensions.map( ( dimension ) => {
+						if ( dimension === 'dateRange' ) {
+							return { value: 'date_range_0' };
+						}
+
+						return {
 							value: 'RESERVED_MIN',
-						},
-					],
+						};
+					} ),
 					metricValues: [ ...( rows[ 0 ]?.metricValues || [] ) ],
 				},
 			];
 			data.maximums = [
 				{
-					dimensionValues: [
-						{
+					dimensionValues: dimensions.map( ( dimension ) => {
+						if ( dimension === 'dateRange' ) {
+							return { value: 'date_range_0' };
+						}
+
+						return {
 							value: 'RESERVED_MAX',
-						},
-					],
+						};
+					} ),
 					metricValues: [
 						...( rows[ rows.length - 1 ]?.metricValues || [] ),
 					],
@@ -401,11 +416,15 @@ export function getAnalytics4MockResponse( args ) {
 			// Same here, we pretend that the last row contains totals because we don't need it to be mathematically valid.
 			data.totals = [
 				{
-					dimensionValues: [
-						{
+					dimensionValues: dimensions.map( ( dimension ) => {
+						if ( dimension === 'dateRange' ) {
+							return { value: 'date_range_0' };
+						}
+
+						return {
 							value: 'RESERVED_TOTAL',
-						},
-					],
+						};
+					} ),
 					metricValues: [
 						...( rows[ rows.length - 1 ]?.metricValues || [] ),
 					],
