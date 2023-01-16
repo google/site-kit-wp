@@ -376,8 +376,30 @@ describe( 'core/user user-input-settings', () => {
 				).toBe( true );
 			} );
 
-			describe( 'compares select keys when keys argument is supplied', () => {
-				beforeEach( () => {
+			it.each( [
+				[
+					'should return true if the changed key is supplied',
+					[ 'goals' ],
+					true,
+				],
+				[
+					'should return false if an unchanged key is supplied',
+					[ 'purpose' ],
+					false,
+				],
+				[
+					'should return true if the keys argument array contains a changed key',
+					[ 'goals', 'purpose' ],
+					true,
+				],
+				[
+					'should return false if an empty keys argument is supplied',
+					[],
+					false,
+				],
+			] )(
+				'compares select keys when keys argument is supplied - %s',
+				( _, keys, expected ) => {
 					registry
 						.dispatch( CORE_USER )
 						.setUserInputSetting( 'goals', [
@@ -386,43 +408,14 @@ describe( 'core/user user-input-settings', () => {
 							'goal5',
 							'goal6',
 						] );
-				} );
 
-				it( 'should return true if the changed key is supplied', () => {
 					expect(
 						registry
 							.select( CORE_USER )
-							.haveUserInputSettingsChanged( [ 'goals' ] )
-					).toBe( true );
-				} );
-
-				it( 'should return false if an unchanged key is supplied', () => {
-					expect(
-						registry
-							.select( CORE_USER )
-							.haveUserInputSettingsChanged( [ 'purpose' ] )
-					).toBe( false );
-				} );
-
-				it( 'should return true if the keys argument array contains a changed key', () => {
-					expect(
-						registry
-							.select( CORE_USER )
-							.haveUserInputSettingsChanged( [
-								'goals',
-								'purpose',
-							] )
-					).toBe( true );
-				} );
-
-				it( 'should return false if an empty keys argument is supplied', () => {
-					expect(
-						registry
-							.select( CORE_USER )
-							.haveUserInputSettingsChanged( [] )
-					).toBe( false );
-				} );
-			} );
+							.haveUserInputSettingsChanged( keys )
+					).toBe( expected );
+				}
+			);
 		} );
 
 		describe( 'hasUserInputSettingChanged', () => {
