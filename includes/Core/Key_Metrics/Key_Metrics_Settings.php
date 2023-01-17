@@ -14,7 +14,7 @@ use Google\Site_Kit\Core\Storage\User_Setting;
 use Google\Site_Kit\Core\Util\Sanitize;
 
 /**
- * Class for representing a user's dismissed items.
+ * Class to store user key metrics settings.
  *
  * @since n.e.x.t
  * @access private
@@ -89,14 +89,8 @@ class Key_Metrics_Settings extends User_Setting {
 				$sanitized_settings['widgetSlugs'] = Sanitize::sanitize_string_list( $settings['widgetSlugs'] );
 			}
 
-			if ( ! isset( $settings['isWidgetHidden'] ) ) {
-				return $sanitized_settings;
-			}
-
-			if ( false !== $settings['isWidgetHidden'] ) {
-				$sanitized_settings['isWidgetHidden'] = true;
-			} else {
-				$sanitized_settings['isWidgetHidden'] = false;
+			if ( isset( $settings['isWidgetHidden'] ) ) {
+				$sanitized_settings['isWidgetHidden'] = false !== $settings['isWidgetHidden'];
 			}
 
 			return $sanitized_settings;

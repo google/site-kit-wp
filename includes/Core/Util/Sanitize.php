@@ -18,11 +18,11 @@ namespace Google\Site_Kit\Core\Util;
  * @ignore
  */
 class Sanitize {
+
 	/**
 	 * Filters empty or non-string elements from a given array.
 	 *
-	 * @since 1.50.0
-	 * @since n.e.x.t Moved the method its own utility class.
+	 * @since n.e.x.t
 	 *
 	 * @param array $elements Array to check.
 	 * @return array Empty array or a filtered array containing only non-empty strings.
@@ -45,4 +45,5 @@ class Sanitize {
 		// Avoid index gaps for filtered values.
 		return array_values( $filtered_elements );
 	}
+
 }

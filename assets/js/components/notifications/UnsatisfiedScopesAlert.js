@@ -102,7 +102,7 @@ export default function UnsatisfiedScopesAlert() {
 		unsatisfiedScopes.some(
 			( scope ) =>
 				! scope.match(
-					new RegExp( '^https://www.googleapis\\.com/auth/' )
+					new RegExp( '^https://www\\.googleapis\\.com/auth/' )
 				)
 		)
 	) {
