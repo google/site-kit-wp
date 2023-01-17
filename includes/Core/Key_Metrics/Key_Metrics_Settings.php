@@ -68,14 +68,8 @@ class Key_Metrics_Settings extends User_Setting {
 				$sanitized_settings['widgetSlugs'] = Sanitize::sanitize_string_list( $settings['widgetSlugs'] );
 			}
 
-			if ( ! isset( $settings['isWidgetHidden'] ) ) {
-				return $sanitized_settings;
-			}
-
-			if ( false !== $settings['isWidgetHidden'] ) {
-				$sanitized_settings['isWidgetHidden'] = true;
-			} else {
-				$sanitized_settings['isWidgetHidden'] = false;
+			if ( isset( $settings['isWidgetHidden'] ) ) {
+				$sanitized_settings['isWidgetHidden'] = false !== $settings['isWidgetHidden'];
 			}
 
 			return $sanitized_settings;
