@@ -28,7 +28,7 @@ class REST_Modules_ControllerTest extends TestCase {
 	/**
 	 * Plugin context.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.92.0
 	 * @var Context
 	 */
 	protected $context;
@@ -36,7 +36,7 @@ class REST_Modules_ControllerTest extends TestCase {
 	/**
 	 * Options instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.92.0
 	 * @var Options
 	 */
 	protected $options;
@@ -44,7 +44,7 @@ class REST_Modules_ControllerTest extends TestCase {
 	/**
 	 * User_Options instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.92.0
 	 * @var User_Options
 	 */
 	protected $user_options;
@@ -52,7 +52,7 @@ class REST_Modules_ControllerTest extends TestCase {
 	/**
 	 * Modules instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.92.0
 	 * @var Modules
 	 */
 	protected $modules;
@@ -60,7 +60,7 @@ class REST_Modules_ControllerTest extends TestCase {
 	/**
 	 * REST_Modules_Controller instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.92.0
 	 * @var REST_Modules_Controller
 	 */
 	protected $controller;

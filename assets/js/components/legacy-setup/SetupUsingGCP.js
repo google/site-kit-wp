@@ -43,7 +43,8 @@ import {
 import { Cell, Grid, Row } from '../../material-components';
 import Header from '../Header';
 import Layout from '../layout/Layout';
-import { trackEvent, clearWebStorage } from '../../util';
+import { trackEvent } from '../../util';
+import { clearCache } from '../../googlesitekit/api/cache';
 import STEPS from './wizard-steps';
 import WizardProgressStep from './wizard-progress-step';
 import HelpMenu from '../help/HelpMenu';
@@ -86,7 +87,7 @@ class SetupUsingGCP extends Component {
 
 	async resetAndRestart() {
 		await API.set( 'core', 'site', 'reset' );
-		clearWebStorage();
+		await clearCache();
 
 		this.setState( {
 			isSiteKitConnected: false,

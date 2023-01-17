@@ -49,15 +49,17 @@
 		position: relative;
 	}
 
-	.googlesitekit-user-input__question-number {
+	p.googlesitekit-user-input__question-number {
 		color: $c-interactive-on-disable-container;
-		font-family: $f-secondary;
-		font-size: $fs-display-sm;
-		line-height: $lh-display-sm;
+		font-family: $f-primary;
+		font-size: $fs-title-sm;
+		line-height: $lh-title-sm;
 		margin: 0 0 13px;
 
 		@media (min-width: $bp-desktop) {
 			color: $c-surfaces-on-surface;
+			font-size: $fs-body-sm;
+			line-height: $lh-body-sm;
 		}
 	}
 
@@ -102,22 +104,6 @@
 			letter-spacing: $ls-s;
 			line-height: $lh-body-sm;
 			margin: 0 0 3px;
-		}
-	}
-
-	.googlesitekit-user-input__question-info--author {
-		align-items: center;
-		color: $c-scarpa-flow;
-		display: flex;
-		font-size: $fs-body-sm;
-		letter-spacing: $ls-xs;
-		margin-top: 4px;
-
-		img {
-			border-radius: 50%;
-			height: 24px;
-			margin-right: 8px;
-			width: 24px;
 		}
 	}
 

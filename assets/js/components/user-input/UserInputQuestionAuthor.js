@@ -1,7 +1,7 @@
 /**
- * Cancel User Input Button Component.
+ * User Input Question Author Component.
  *
- * Site Kit by Google, Copyright 2022 Google LLC
+ * Site Kit by Google, Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,29 +30,35 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
-import Link from '../Link';
-const { useSelect, useDispatch } = Data;
+import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+const { useSelect } = Data;
 
-export default function CancelUserInputButton( { disabled } ) {
-	const dashboardURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' )
+export default function UserInputQuestionAuthor( { slug } ) {
+	const author = useSelect( ( select ) =>
+		select( CORE_USER ).getUserInputSettingAuthor( slug )
 	);
 
-	const { navigateTo } = useDispatch( CORE_LOCATION );
+	if ( ! author || ! author.photo || ! author.login ) {
+		return null;
+	}
 
 	return (
-		<Link
-			className="googlesitekit-user-input__buttons--cancel"
-			onClick={ () => navigateTo( dashboardURL ) }
-			disabled={ disabled }
-		>
-			{ __( 'Cancel', 'google-site-kit' ) }
-		</Link>
+		<div className="googlesitekit-user-input__author">
+			<p>
+				{ __(
+					'This question has been answered by:',
+					'google-site-kit'
+				) }
+			</p>
+
+			<div className="googlesitekit-user-input__author-info">
+				<img alt={ author.login } src={ author.photo } />
+				{ author.login }
+			</div>
+		</div>
 	);
 }
 
-CancelUserInputButton.propTypes = {
-	disabled: PropTypes.bool,
+UserInputQuestionAuthor.propTypes = {
+	slug: PropTypes.string.isRequired,
 };

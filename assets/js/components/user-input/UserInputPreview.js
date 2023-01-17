@@ -20,6 +20,7 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import classnames from 'classnames';
 
 /**
  * WordPress dependencies
@@ -31,8 +32,10 @@ import { Fragment, useEffect, useRef, useState } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { Button } from 'googlesitekit-components';
+import { ProgressBar } from 'googlesitekit-components';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
+import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 import {
 	getUserInputAnswers,
 	USER_INPUT_QUESTIONS_GOALS,
@@ -40,7 +43,9 @@ import {
 	USER_INPUT_QUESTION_POST_FREQUENCY,
 	USER_INPUT_QUESTIONS_LIST,
 	USER_INPUT_MAX_ANSWERS,
+	USER_INPUT_CURRENTLY_EDITING_KEY,
 } from './util/constants';
+import SpinnerButton from '../SpinnerButton';
 import UserInputPreviewGroup from './UserInputPreviewGroup';
 import UserInputQuestionNotice from './UserInputQuestionNotice';
 import useQueryArg from '../../hooks/useQueryArg';
@@ -51,11 +56,30 @@ import { getErrorMessageForAnswer } from './util/validation';
 const { useSelect } = Data;
 
 export default function UserInputPreview( props ) {
-	const { noFooter, goBack, submitChanges, error, noHeader } = props;
+	const {
+		noFooter,
+		goBack,
+		submitChanges,
+		error,
+		noHeader,
+		showIndividualCTAs = false,
+	} = props;
 	const previewContainer = useRef();
 	const settings = useSelect( ( select ) =>
 		select( CORE_USER ).getUserInputSettings()
 	);
+	const isSavingSettings = useSelect( ( select ) =>
+		select( CORE_USER ).isSavingUserInputSettings( settings )
+	);
+	const isNavigating = useSelect( ( select ) =>
+		select( CORE_LOCATION ).isNavigating()
+	);
+	const isEditing = useSelect(
+		( select ) =>
+			!! select( CORE_UI ).getValue( USER_INPUT_CURRENTLY_EDITING_KEY )
+	);
+	const isScreenLoading = isSavingSettings || isNavigating;
+
 	const {
 		USER_INPUT_ANSWERS_PURPOSE,
 		USER_INPUT_ANSWERS_POST_FREQUENCY,
@@ -86,6 +110,10 @@ export default function UserInputPreview( props ) {
 		}
 	}, [ page ] );
 
+	if ( undefined === settings ) {
+		return <ProgressBar />;
+	}
+
 	const updateErrorMessages = () => {
 		const newErrorMessages = USER_INPUT_QUESTIONS_LIST.reduce(
 			( errors, slug ) => {
@@ -115,7 +143,9 @@ export default function UserInputPreview( props ) {
 
 	return (
 		<div
-			className="googlesitekit-user-input__preview"
+			className={ classnames( 'googlesitekit-user-input__preview', {
+				'googlesitekit-user-input__preview--editing': isEditing,
+			} ) }
 			ref={ previewContainer }
 		>
 			<div className="googlesitekit-user-input__preview-contents">
@@ -136,6 +166,7 @@ export default function UserInputPreview( props ) {
 						errorMessages[ USER_INPUT_QUESTIONS_PURPOSE ]
 					}
 					onCollapse={ updateErrorMessages }
+					showIndividualCTAs={ showIndividualCTAs }
 				/>
 
 				<UserInputPreviewGroup
@@ -150,6 +181,7 @@ export default function UserInputPreview( props ) {
 						errorMessages[ USER_INPUT_QUESTION_POST_FREQUENCY ]
 					}
 					onCollapse={ updateErrorMessages }
+					showIndividualCTAs={ showIndividualCTAs }
 				/>
 
 				<UserInputPreviewGroup
@@ -162,6 +194,7 @@ export default function UserInputPreview( props ) {
 					options={ USER_INPUT_ANSWERS_GOALS }
 					errorMessage={ errorMessages[ USER_INPUT_QUESTIONS_GOALS ] }
 					onCollapse={ updateErrorMessages }
+					showIndividualCTAs={ showIndividualCTAs }
 				/>
 
 				{ error && <ErrorNotice error={ error } /> }
@@ -174,21 +207,26 @@ export default function UserInputPreview( props ) {
 					</div>
 					<div className="googlesitekit-user-input__footer googlesitekit-user-input__buttons">
 						<div className="googlesitekit-user-input__footer-nav">
-							<Button
+							<SpinnerButton
 								className="googlesitekit-user-input__buttons--next"
 								onClick={ onSaveClick }
+								disabled={ isScreenLoading }
+								isSaving={ isScreenLoading }
 							>
 								{ __( 'Save', 'google-site-kit' ) }
-							</Button>
+							</SpinnerButton>
 							<Link
 								className="googlesitekit-user-input__buttons--back"
 								onClick={ goBack }
+								disabled={ isScreenLoading }
 							>
 								{ __( 'Back', 'google-site-kit' ) }
 							</Link>
 						</div>
 						<div className="googlesitekit-user-input__footer-cancel">
-							<CancelUserInputButton />
+							<CancelUserInputButton
+								disabled={ isScreenLoading }
+							/>
 						</div>
 					</div>
 				</Fragment>
@@ -204,4 +242,5 @@ UserInputPreview.propTypes = {
 	redirectURL: PropTypes.string,
 	errors: PropTypes.object,
 	noHeader: PropTypes.bool,
+	showIndividualCTAs: PropTypes.bool,
 };
