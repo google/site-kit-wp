@@ -235,6 +235,7 @@ final class Analytics_4 extends Module
 			),
 			'GET:webdatastreams'         => array( 'service' => 'analyticsadmin' ),
 			'GET:webdatastreams-batch'   => array( 'service' => 'analyticsadmin' ),
+			'GET:conversion-events'      => array( 'service' => 'analyticsadmin' ),
 		);
 	}
 
@@ -502,6 +503,22 @@ final class Analytics_4 extends Module
 				return $this->get_tagmanager_service()->accounts_containers_destinations->listAccountsContainersDestinations(
 					"accounts/{$data['accountID']}/containers/{$data['internalContainerID']}"
 				);
+			case 'GET:conversion-events':
+				if ( ! isset( $data['propertyID'] ) ) {
+					return new WP_Error(
+						'missing_required_param',
+						/* translators: %s: Missing parameter name */
+						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'propertyID' ),
+						array( 'status' => 400 )
+					);
+				}
+
+				$analyticsadmin = $this->get_service( 'analyticsadmin' );
+				$property_id    = self::normalize_property_id( $data['propertyID'] );
+
+				return $analyticsadmin
+					->properties_conversionEvents // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+					->listPropertiesConversionEvents( $property_id );
 		}
 
 		return parent::create_data_request( $data );
@@ -555,6 +572,8 @@ final class Analytics_4 extends Module
 				return self::parse_webdatastreams_batch( $response );
 			case 'GET:container-destinations':
 				return (array) $response->getDestination();
+			case 'GET:conversion-events':
+				return (array) $response->getConversionEvents();
 		}
 
 		return parent::parse_data_response( $data, $response );
@@ -1183,7 +1202,7 @@ final class Analytics_4 extends Module
 			$dimension_string_filter->setMatchType( 'EXACT' );
 			$dimension_string_filter->setValue( rawurldecode( $args['page'] ) );
 			$dimension_filter = new Google_Service_AnalyticsData_Filter();
-			$dimension_filter->setFieldName( 'pagePathPlusQueryString' );
+			$dimension_filter->setFieldName( 'pagePath' );
 			$dimension_filter->setStringFilter( $dimension_string_filter );
 			$dimension_filter_expression = new Google_Service_AnalyticsData_FilterExpression();
 			$dimension_filter_expression->setFilter( $dimension_filter );
