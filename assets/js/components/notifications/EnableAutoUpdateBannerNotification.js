@@ -66,7 +66,6 @@ const EnableAutoUpdateBannerNotification = () => {
 	const { enableAutoUpdate } = useDispatch( CORE_SITE );
 
 	const [ notification ] = useQueryArg( 'notification' );
-	const [ slug ] = useQueryArg( 'slug' );
 
 	const [ isInitialPluginSetup, setIsFirstPluginSetup ] = useState( true );
 	const [ enabledViaCTA, setEnabledViaCTA ] = useState( undefined );
@@ -124,12 +123,9 @@ const EnableAutoUpdateBannerNotification = () => {
 		) {
 			return;
 		}
-		setFirstPluginSetup(
-			notification === 'authentication_success' && ! slug
-		);
+		setFirstPluginSetup( notification === 'authentication_success' );
 	}, [
 		notification,
-		slug,
 		hasUpdatePluginCapacity,
 		hasChangePluginAutoUpdatesCapacity,
 		setFirstPluginSetup,
