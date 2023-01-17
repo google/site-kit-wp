@@ -701,7 +701,8 @@ final class Analytics extends Module
 				}
 				$profile = new Google_Service_Analytics_Profile();
 				$profile->setName( $profile_name );
-				return $profile = $this->get_service( 'analytics' )->management_profiles->insert( $data['accountID'], $data['propertyID'], $profile );
+				$profile = $this->get_service( 'analytics' )->management_profiles->insert( $data['accountID'], $data['propertyID'], $profile );
+				return $profile;
 			case 'POST:create-property':
 				if ( ! isset( $data['accountID'] ) ) {
 					return new WP_Error(
