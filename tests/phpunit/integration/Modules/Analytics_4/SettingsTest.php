@@ -17,11 +17,6 @@ use Google\Site_Kit\Modules\Analytics_4\Settings;
 use Google\Site_Kit\Tests\Core\Storage\Setting_With_Owned_Keys_ContractTests;
 use Google\Site_Kit\Tests\Modules\SettingsTestCase;
 
-
-const GOOGLE_TAG_IDS          = array( 'G-XXXX', 'GT-XXXX', 'AW-XXXX' );
-const GOOGLE_TAG_ACCAUNT_ID   = 12121;
-const GOOGLE_TAG_CONTAINER_ID = 12121;
-
 /**
  * @group Modules
  * @group Analytics
@@ -30,7 +25,15 @@ class SettingsTest extends SettingsTestCase {
 
 	use Setting_With_Owned_Keys_ContractTests;
 
+	const GOOGLE_TAG_IDS = array( 'G-XXXX', 'GT-XXXX', 'AW-XXXX' );
+	const VALID_TEST_IDS = array(
+		'googleTagID'          => 'G-XXXX',
+		'googleTagAccountID'   => 12121,
+		'googleTagContainerID' => 12121,
+	);
+
 	public function test_get_default() {
+
 		$settings = new Settings( new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ) );
 		$settings->register();
 
@@ -73,17 +76,17 @@ class SettingsTest extends SettingsTestCase {
 		);
 
 		$options_key = $testcase->get_option_name();
-		$fields      = $settings->get_owned_keys();
-		foreach ( $fields as $field ) {
+		$keys        = $settings->get_owned_keys();
+		foreach ( $keys as $key ) {
 			delete_option( $options_key );
 
 			$options = $settings->get();
 			$testcase->assertEmpty( $options['ownerID'] );
 
-			if ( 'googleTagID' === $field ) {
-				$options[ $field ] = 'G-XXXXXX';
+			if ( isset( self::VALID_TEST_IDS[ $key ] ) ) {
+				$options[ $key ] = self::VALID_TEST_IDS[ $key ];
 			} else {
-				$options[ $field ] = 'test-value';
+				$options[ $key ] = 'test-value';
 			}
 			$settings->set( $options );
 
@@ -92,22 +95,15 @@ class SettingsTest extends SettingsTestCase {
 		}
 	}
 
-	public function test_validate_google_tag_id() {
+	public function test_valid_google_tag_id() {
 		$testcase = $this->get_testcase();
 		$settings = $this->get_setting_with_owned_keys();
 		$settings->register();
 
 		$options_key = $testcase->get_option_name();
-
 		delete_option( $options_key );
 
-		$options                = $settings->get();
-		$options['googleTagID'] = 'XXX';
-		$settings->set( $options );
-		$options = get_option( $options_key );
-		$testcase->assertEquals( '', $options['googleTagID'] );
-
-		foreach ( GOOGLE_TAG_IDS as $tag_id ) {
+		foreach ( self::GOOGLE_TAG_IDS as $tag_id ) {
 			$options                = $settings->get();
 			$options['googleTagID'] = $tag_id;
 			$settings->set( $options );
@@ -116,52 +112,93 @@ class SettingsTest extends SettingsTestCase {
 		}
 	}
 
-	public function test_validate_google_tag_account_id() {
+	public function test_invalid_google_tag_id() {
 		$testcase = $this->get_testcase();
 		$settings = $this->get_setting_with_owned_keys();
 		$settings->register();
 
 		$options_key = $testcase->get_option_name();
-
 		delete_option( $options_key );
 
-		foreach ( array( 'XXXX', 0 ) as $tag_id ) {
-			$options                       = $settings->get();
-			$options['googleTagAccountID'] = $tag_id;
-			$settings->set( $options );
-			$options = get_option( $options_key );
-			$testcase->assertEquals( '', $options['googleTagAccountID'] );
-		}
-
-		$options                       = $settings->get();
-		$options['googleTagAccountID'] = GOOGLE_TAG_ACCAUNT_ID;
+		$options                = $settings->get();
+		$options['googleTagID'] = 'XXX';
 		$settings->set( $options );
 		$options = get_option( $options_key );
-		$testcase->assertEquals( GOOGLE_TAG_ACCAUNT_ID, $options['googleTagAccountID'] );
+		$testcase->assertEquals( '', $options['googleTagID'] );
 	}
 
-	public function test_validate_google_tag_container_id() {
+	public function data_invalid_account_ids() {
+		return array(
+			'with invalid string' => array( 'xxxx' ),
+			'with invalid number' => array( 0, -1212 ),
+		);
+	}
+
+	/**
+	 * @dataProvider data_invalid_account_ids
+	 */
+	public function test_invalid_tag_account_ids( $invalid_id ) {
 		$testcase = $this->get_testcase();
 		$settings = $this->get_setting_with_owned_keys();
 		$settings->register();
 
 		$options_key = $testcase->get_option_name();
-
 		delete_option( $options_key );
 
-		foreach ( array( 'XXXX' ) as $tag_id ) {
-			$options                         = $settings->get();
-			$options['googleTagContainerID'] = $tag_id;
-			$settings->set( $options );
-			$options = get_option( $options_key );
-			$testcase->assertEquals( '', $options['googleTagContainerID'] );
-		}
-
-		$options                         = $settings->get();
-		$options['googleTagContainerID'] = GOOGLE_TAG_CONTAINER_ID;
+		$options                       = $settings->get();
+		$options['googleTagAccountID'] = $invalid_id;
 		$settings->set( $options );
 		$options = get_option( $options_key );
-		$testcase->assertEquals( GOOGLE_TAG_CONTAINER_ID, $options['googleTagContainerID'] );
+		$testcase->assertEquals( '', $options['googleTagAccountID'] );
+
+	}
+
+	public function test_valid_tag_account_ids() {
+		$testcase = $this->get_testcase();
+		$settings = $this->get_setting_with_owned_keys();
+		$settings->register();
+
+		$options_key = $testcase->get_option_name();
+		delete_option( $options_key );
+
+		$options                       = $settings->get();
+		$options['googleTagAccountID'] = self::VALID_TEST_IDS['googleTagAccountID'];
+		$settings->set( $options );
+		$options = get_option( $options_key );
+		$testcase->assertEquals( self::VALID_TEST_IDS['googleTagAccountID'], $options['googleTagAccountID'] );
+	}
+
+	/**
+	 * @dataProvider data_invalid_account_ids
+	 */
+	public function test_invalid_google_tag_container_id( $invalid_id ) {
+		$testcase = $this->get_testcase();
+		$settings = $this->get_setting_with_owned_keys();
+		$settings->register();
+
+		$options_key = $testcase->get_option_name();
+		delete_option( $options_key );
+
+		$options                       = $settings->get();
+		$options['googleTagAccountID'] = $invalid_id;
+		$settings->set( $options );
+		$options = get_option( $options_key );
+		$testcase->assertEquals( '', $options['googleTagAccountID'] );
+	}
+
+	public function test_valid_google_tag_container_id() {
+		$testcase = $this->get_testcase();
+		$settings = $this->get_setting_with_owned_keys();
+		$settings->register();
+
+		$options_key = $testcase->get_option_name();
+		delete_option( $options_key );
+
+		$options                         = $settings->get();
+		$options['googleTagContainerID'] = self::VALID_TEST_IDS['googleTagContainerID'];
+		$settings->set( $options );
+		$options = get_option( $options_key );
+		$testcase->assertEquals( self::VALID_TEST_IDS['googleTagContainerID'], $options['googleTagContainerID'] );
 	}
 
 	protected function get_testcase() {
