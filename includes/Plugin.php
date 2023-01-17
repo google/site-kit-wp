@@ -191,6 +191,9 @@ final class Plugin {
 				$permissions = new Core\Permissions\Permissions( $this->context, $authentication, $modules, $user_options, $dismissed_items );
 				$permissions->register();
 
+				$nonces = new Core\Nonces\Nonces( $this->context );
+				$nonces->register();
+
 				// Assets must be registered after Modules instance is registered.
 				$assets->register();
 

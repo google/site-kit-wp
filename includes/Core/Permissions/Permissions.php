@@ -42,6 +42,7 @@ final class Permissions {
 	const VIEW_WP_DASHBOARD_WIDGET = 'googlesitekit_view_wp_dashboard_widget';
 	const VIEW_ADMIN_BAR_MENU      = 'googlesitekit_view_admin_bar_menu';
 	const MANAGE_OPTIONS           = 'googlesitekit_manage_options';
+	const UPDATE_PLUGINS           = 'googlesitekit_update_plugins';
 
 
 	/*
@@ -172,6 +173,7 @@ final class Permissions {
 			// Allow administrators and up to manage options and set up the plugin.
 			self::MANAGE_OPTIONS           => 'manage_options',
 			self::SETUP                    => 'manage_options',
+			self::UPDATE_PLUGINS           => 'update_plugins',
 		);
 
 		$this->meta_to_core = array(
@@ -738,6 +740,7 @@ final class Permissions {
 			self::VIEW_POSTS_INSIGHTS,
 			self::VIEW_DASHBOARD,
 			self::MANAGE_OPTIONS,
+			self::UPDATE_PLUGINS,
 			self::VIEW_SPLASH,
 			self::VIEW_AUTHENTICATED_DASHBOARD,
 			self::VIEW_WP_DASHBOARD_WIDGET,
