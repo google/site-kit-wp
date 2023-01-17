@@ -142,12 +142,12 @@ class Key_Metrics_SettingsTest extends TestCase {
 		// Make sure invalid keys are set
 		$this->key_metrics_settings->set( $original_settings );
 		$this->key_metrics_settings->merge( array( 'test_key' => 'test_value' ) );
-		$this->assertEqualsCanonicalizing( $original_settings, $this->key_metrics_settings->get() );
+		$this->assertEqualSetsWithIndex( $original_settings, $this->key_metrics_settings->get() );
 
 		// Make sure that we can update settings partially
 		$this->key_metrics_settings->set( $original_settings );
 		$this->key_metrics_settings->merge( array( 'isWidgetHidden' => true ) );
-		$this->assertEqualsCanonicalizing(
+		$this->assertEqualSetsWithIndex(
 			array(
 				'widgetSlugs'    => $original_settings['widgetSlugs'],
 				'isWidgetHidden' => true,
@@ -158,17 +158,17 @@ class Key_Metrics_SettingsTest extends TestCase {
 		// Make sure that we can update all settings at once
 		$this->key_metrics_settings->set( $original_settings );
 		$this->key_metrics_settings->merge( $changed_settings );
-		$this->assertEqualsCanonicalizing( $changed_settings, $this->key_metrics_settings->get() );
+		$this->assertEqualSetsWithIndex( $changed_settings, $this->key_metrics_settings->get() );
 
 		// Make sure that we can't set wrong format for the isWidgetHidden property
 		$this->key_metrics_settings->set( $original_settings );
 		$this->key_metrics_settings->merge( array( 'isWidgetHidden' => 'yes' ) );
-		$this->assertEqualsCanonicalizing( $original_settings, $this->key_metrics_settings->get() );
+		$this->assertEqualSetsWithIndex( $original_settings, $this->key_metrics_settings->get() );
 
 		// Make sure that we can't set wrong format for the widgetSlugs property
 		$this->key_metrics_settings->set( $original_settings );
 		$this->key_metrics_settings->merge( array( 'widgetSlugs' => 'widgetA,widgetB,widgetC' ) );
-		$this->assertEqualsCanonicalizing( $original_settings, $this->key_metrics_settings->get() );
+		$this->assertEqualSetsWithIndex( $original_settings, $this->key_metrics_settings->get() );
 	}
 
 }

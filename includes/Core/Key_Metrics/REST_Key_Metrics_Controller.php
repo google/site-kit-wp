@@ -80,7 +80,7 @@ class REST_Key_Metrics_Controller {
 	 * @return REST_Route[] List of REST_Route objects.
 	 */
 	protected function get_rest_routes() {
-		$can_dismiss_item = function() {
+		$has_capabilities = function() {
 			return current_user_can( Permissions::VIEW_SPLASH ) || current_user_can( Permissions::VIEW_DASHBOARD );
 		};
 
@@ -92,7 +92,7 @@ class REST_Key_Metrics_Controller {
 					'callback'            => function () {
 						return new WP_REST_Response( $this->settings->get() );
 					},
-					'permission_callback' => $can_dismiss_item,
+					'permission_callback' => $has_capabilities,
 				)
 			),
 			new REST_Route(
@@ -108,12 +108,12 @@ class REST_Key_Metrics_Controller {
 								array( 'status' => 400 )
 							);
 						}
-						
+
 						$this->settings->merge( $data['settings'] );
 
 						return new WP_REST_Response( $this->settings->get() );
 					},
-					'permission_callback' => $can_dismiss_item,
+					'permission_callback' => $has_capabilities,
 					'args'                => array(
 						'data' => array(
 							'type'       => 'object',

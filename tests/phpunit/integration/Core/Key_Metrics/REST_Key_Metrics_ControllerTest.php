@@ -82,7 +82,40 @@ class REST_Key_Metrics_ControllerTest extends TestCase {
 		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/user/data/key-metrics' );
 		$response = rest_get_server()->dispatch( $request );
 
-		$this->assertEqualsCanonicalizing( $original_settings, $response->get_data() );
+		$this->assertEqualSetsWithIndex( $original_settings, $response->get_data() );
+	}
+
+	public function test_set_settings() {
+		remove_all_filters( 'googlesitekit_rest_routes' );
+		$this->controller->register();
+		$this->register_rest_routes();
+
+		$original_settings = array(
+			'widgetSlugs'    => array( 'widgetA' ),
+			'isWidgetHidden' => false,
+		);
+
+		$changed_settings = array(
+			'widgetSlugs'    => array( 'widgetB' ),
+			'isWidgetHidden' => true,
+		);
+
+		$this->settings->register();
+		$this->settings->set( $original_settings );
+
+		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/user/data/key-metrics' );
+		$request->set_body_params(
+			array(
+				'data' => array(
+					'settings' => $changed_settings,
+				),
+			)
+		);
+
+		$this->assertEqualSetsWithIndex(
+			$changed_settings,
+			rest_get_server()->dispatch( $request )->get_data()
+		);
 	}
 
 }
