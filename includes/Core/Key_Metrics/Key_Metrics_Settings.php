@@ -14,7 +14,7 @@ use Google\Site_Kit\Core\Storage\User_Setting;
 use Google\Site_Kit\Core\Util\Sanitize;
 
 /**
- * Class for representing a user's dismissed items.
+ * Class to store user key metrics settings.
  *
  * @since n.e.x.t
  * @access private
