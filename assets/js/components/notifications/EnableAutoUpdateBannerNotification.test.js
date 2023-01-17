@@ -78,7 +78,7 @@ describe( 'EnableAutoUpdateBannerNotification', () => {
 
 	it( 'should display the notification if Site Kit was not recently set up and user can update plugins', async () => {
 		await registry.dispatch( CORE_SITE ).receiveSiteInfo( {
-			autoUpdatesEnabled: true,
+			changePluginAutoUpdatesCapacity: true,
 			siteKitAutoUpdatesEnabled: false,
 		} );
 
@@ -97,7 +97,7 @@ describe( 'EnableAutoUpdateBannerNotification', () => {
 
 	it( 'should not show the notification when auto updates are already enabled for Site Kit', async () => {
 		await registry.dispatch( CORE_SITE ).receiveSiteInfo( {
-			autoUpdatesEnabled: true,
+			changePluginAutoUpdatesCapacity: true,
 			siteKitAutoUpdatesEnabled: true,
 		} );
 
@@ -114,7 +114,7 @@ describe( 'EnableAutoUpdateBannerNotification', () => {
 
 	it( 'should not show the notification when user can not update plugins', async () => {
 		await registry.dispatch( CORE_SITE ).receiveSiteInfo( {
-			autoUpdatesEnabled: true,
+			changePluginAutoUpdatesCapacity: true,
 			siteKitAutoUpdatesEnabled: false,
 		} );
 
@@ -129,9 +129,9 @@ describe( 'EnableAutoUpdateBannerNotification', () => {
 		expect( container ).toBeEmptyDOMElement();
 	} );
 
-	it( 'should not show the notification when plugin auto updates are disabled', async () => {
+	it( 'should not show the notification if plugin auto updates can not be enabled', async () => {
 		await registry.dispatch( CORE_SITE ).receiveSiteInfo( {
-			autoUpdatesEnabled: false,
+			changePluginAutoUpdatesCapacity: false,
 		} );
 
 		await registry.dispatch( CORE_USER ).receiveCapabilities( {
@@ -147,7 +147,7 @@ describe( 'EnableAutoUpdateBannerNotification', () => {
 
 	it( 'should not show the notification when hide banner cache key is set', async () => {
 		await registry.dispatch( CORE_SITE ).receiveSiteInfo( {
-			autoUpdatesEnabled: true,
+			changePluginAutoUpdatesCapacity: true,
 		} );
 
 		await registry.dispatch( CORE_USER ).receiveCapabilities( {
@@ -175,7 +175,7 @@ describe( 'EnableAutoUpdateBannerNotification', () => {
 
 	it( 'should send enable-auto-updates post request to admin-ajax on CTA click.', async () => {
 		await registry.dispatch( CORE_SITE ).receiveSiteInfo( {
-			autoUpdatesEnabled: true,
+			changePluginAutoUpdatesCapacity: true,
 			pluginBasename: 'google-site-kit/google-site-kit.php',
 		} );
 
@@ -215,7 +215,7 @@ describe( 'EnableAutoUpdateBannerNotification', () => {
 		stubMockUseQueryArg( true );
 
 		await registry.dispatch( CORE_SITE ).receiveSiteInfo( {
-			autoUpdatesEnabled: true,
+			changePluginAutoUpdatesCapacity: true,
 		} );
 
 		await registry.dispatch( CORE_USER ).receiveCapabilities( {

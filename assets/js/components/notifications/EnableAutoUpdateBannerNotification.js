@@ -48,8 +48,8 @@ const EnableAutoUpdateBannerNotification = () => {
 	const hasUpdatePluginCapacity = useSelect( ( select ) =>
 		select( CORE_USER ).hasCapability( PERMISSION_UPDATE_PLUGINS )
 	);
-	const autoUpdatesEnabled = useSelect( ( select ) =>
-		select( CORE_SITE ).getAutoUpdatesEnabled()
+	const hasChangePluginAutoUpdatesCapacity = useSelect( ( select ) =>
+		select( CORE_SITE ).hasChangePluginAutoUpdatesCapacity()
 	);
 	const siteKitAutoUpdatesEnabled = useSelect( ( select ) =>
 		select( CORE_SITE ).getSiteKitAutoUpdatesEnabled()
@@ -119,7 +119,7 @@ const EnableAutoUpdateBannerNotification = () => {
 	useEffect( () => {
 		if (
 			! hasUpdatePluginCapacity ||
-			! autoUpdatesEnabled ||
+			! hasChangePluginAutoUpdatesCapacity ||
 			siteKitAutoUpdatesEnabled
 		) {
 			return;
@@ -131,17 +131,17 @@ const EnableAutoUpdateBannerNotification = () => {
 		notification,
 		slug,
 		hasUpdatePluginCapacity,
-		autoUpdatesEnabled,
+		hasChangePluginAutoUpdatesCapacity,
 		setFirstPluginSetup,
 		siteKitAutoUpdatesEnabled,
 	] );
 
 	// Don't render anything if the user has no permission to update plugin,
-	// plugin auto-updates are disabled or auto update are already enabled for
+	// auto-updates can not be enabled for Site Kit or auto update are already enabled for
 	// Site Kit.
 	if (
 		! hasUpdatePluginCapacity ||
-		! autoUpdatesEnabled ||
+		! hasChangePluginAutoUpdatesCapacity ||
 		( siteKitAutoUpdatesEnabled && ! enabledViaCTA )
 	) {
 		return null;

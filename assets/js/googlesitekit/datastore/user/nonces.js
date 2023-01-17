@@ -92,7 +92,7 @@ const baseResolvers = {
 		}
 
 		const { error, response } =
-			fetchGetNoncesStore.actions.fetchGetNonces();
+			yield fetchGetNoncesStore.actions.fetchGetNonces();
 
 		if ( ! error ) {
 			yield fetchGetNoncesStore.actions.receiveGetNonces( {

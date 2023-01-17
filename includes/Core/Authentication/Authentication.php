@@ -929,9 +929,8 @@ final class Authentication {
 		$data['wpVersion'] = $this->inline_js_wp_version( $version );
 
 		if ( version_compare( $version, '5.5', '>=' ) && function_exists( 'wp_is_auto_update_enabled_for_type' ) ) {
-			$data['updatePluginCapacity']      = current_user_can( 'update_plugins' );
-			$data['autoUpdatesEnabled']        = Auto_Updates::is_plugin_autoupdates_enabled();
-			$data['siteKitAutoUpdatesEnabled'] = Auto_Updates::is_sitekit_autoupdates_enabled();
+			$data['changePluginAutoUpdatesCapacity'] = Auto_Updates::is_plugin_autoupdates_enabled() && Auto_Updates::AUTO_UPDATE_NOT_FORCED === Auto_Updates::sitekit_forced_autoupdates_status();
+			$data['siteKitAutoUpdatesEnabled']       = Auto_Updates::is_sitekit_autoupdates_enabled();
 		}
 
 		$data['pluginBasename'] = GOOGLESITEKIT_PLUGIN_BASENAME;

@@ -136,7 +136,7 @@ export const reducer = ( state, { payload, type } ) => {
 				postTypes,
 				wpVersion,
 				updateCoreURL,
-				autoUpdatesEnabled,
+				changePluginAutoUpdatesCapacity,
 				siteKitAutoUpdatesEnabled,
 				pluginBasename,
 			} = payload.siteInfo;
@@ -166,7 +166,7 @@ export const reducer = ( state, { payload, type } ) => {
 					postTypes,
 					wpVersion,
 					updateCoreURL,
-					autoUpdatesEnabled,
+					changePluginAutoUpdatesCapacity,
 					siteKitAutoUpdatesEnabled,
 					pluginBasename,
 				},
@@ -231,7 +231,7 @@ export const resolvers = {
 			postTypes,
 			wpVersion,
 			updateCoreURL,
-			autoUpdatesEnabled,
+			changePluginAutoUpdatesCapacity,
 			siteKitAutoUpdatesEnabled,
 			pluginBasename,
 		} = global._googlesitekitBaseData;
@@ -266,7 +266,7 @@ export const resolvers = {
 			widgetsAdminURL,
 			wpVersion,
 			updateCoreURL,
-			autoUpdatesEnabled,
+			changePluginAutoUpdatesCapacity,
 			siteKitAutoUpdatesEnabled,
 			pluginBasename,
 		} );
@@ -694,14 +694,19 @@ export const selectors = {
 	getUpdateCoreURL: getSiteInfoProperty( 'updateCoreURL' ),
 
 	/**
-	 * Determines if plugin auto updates are enabled for the WordPress site.
+	 * Determines if Site Kit auto update settings can be changed.
+	 *
+	 * Auto update settings can not be changed if plugin updates are disabled site-wide
+	 * or if Site Kit auto updates are enforced by a PHP filter.
 	 *
 	 * @since n.e.x.t
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(boolean|undefined)} `true` if plugin auto updates are enabled, otherwise `false`.
 	 */
-	getAutoUpdatesEnabled: getSiteInfoProperty( 'autoUpdatesEnabled' ),
+	hasChangePluginAutoUpdatesCapacity: getSiteInfoProperty(
+		'changePluginAutoUpdatesCapacity'
+	),
 
 	/**
 	 * Determines if the auto updates are enabled for the Site Kit plugin.
