@@ -32,8 +32,10 @@ use Google\Site_Kit\Tests\Core\Modules\Module_With_Settings_ContractTests;
 use Google\Site_Kit\Tests\FakeHttpClient;
 use Google\Site_Kit\Tests\TestCase;
 use Google\Site_Kit\Tests\UserAuthenticationTrait;
+use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaConversionEvent;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaDataStream;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaDataStreamWebStreamData;
+use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaListConversionEventsResponse;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Message\Request;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Message\Response;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Stream\Stream;
@@ -934,7 +936,7 @@ class Analytics_4Test extends TestCase {
 		$this->assertNotWPError( $data );
 
 		// Verify the conversion events are returned by checking an event name.
-		$this->assertEquals( 'some-event', $data['modelData'][0]['eventName'] );
+		$this->assertEquals( 'some-event', $data[0]['eventName'] );
 
 		// Verify the request URL and params were correctly generated.
 		$this->assertCount( 1, $this->request_handler_calls );
@@ -1040,19 +1042,18 @@ class Analytics_4Test extends TestCase {
 						);
 
 					case "/v1beta/properties/$property_id/conversionEvents":
-						// Return a mock conversion event.
+						$conversion_event = new GoogleAnalyticsAdminV1betaConversionEvent();
+						$conversion_event->setName( "properties/$property_id/conversionEvents/some-name" );
+						$conversion_event->setEventName( 'some-event' );
+
+						$conversion_events = new GoogleAnalyticsAdminV1betaListConversionEventsResponse();
+						$conversion_events->setConversionEvents( array( $conversion_event ) );
+
 						return new Response(
 							200,
 							array(),
 							Stream::factory(
-								json_encode(
-									array(
-										array(
-											'eventName' => 'some-event',
-											'name'      => "properties/$property_id/conversionEvents/some-name",
-										),
-									)
-								)
+								json_encode( $conversion_events )
 							)
 						);
 
