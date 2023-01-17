@@ -25,8 +25,8 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import DisplaySetting from '../../../../../components/DisplaySetting';
-import { MODULES_ANALYTICS } from '../../../datastore/constants';
+import DisplaySetting from '../../../../components/DisplaySetting';
+import { MODULES_ANALYTICS } from '../../datastore/constants';
 const { useSelect } = Data;
 
 export default function AddConversionIDSettingsView() {

@@ -22,12 +22,12 @@
 import { MODULES_ANALYTICS } from '../../datastore/constants';
 import { ExistingGTMPropertyNotice } from '../common';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
-import UASnippetSettingsView from './SettingsView/UASnippetSettingsView';
-import GA4SettingsView from './SettingsView/GA4SettingsView';
-import UASettingsView from './SettingsView/UASettingsView';
-import IPAnonymizationSettingsView from './SettingsView/IPAnonymizationSettingsView';
-import ExcludeFromAnalyticsSettingsView from './SettingsView/ExcludeFromAnalyticsSettingsView';
-import AddConversionIDSettingsView from './SettingsView/AddConversionIDSettingsView';
+import UASnippetSettingsView from './UASnippetSettingsView';
+import GA4SettingsView from './GA4SettingsView';
+import UASettingsView from './UASettingsView';
+import IPAnonymizationSettingsView from './IPAnonymizationSettingsView';
+import ExcludeFromAnalyticsSettingsView from './ExcludeFromAnalyticsSettingsView';
+import AddConversionIDSettingsView from './AddConversionIDSettingsView';
 
 export default function SettingsView() {
 	return (

@@ -26,11 +26,11 @@ import { createInterpolateElement } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import DisplaySetting from '../../../../../components/DisplaySetting';
-import { MODULES_ANALYTICS } from '../../../datastore/constants';
-import Link from '../../../../../components/Link';
-import VisuallyHidden from '../../../../../components/VisuallyHidden';
-import { escapeURI } from '../../../../../util/escape-uri';
+import DisplaySetting from '../../../../components/DisplaySetting';
+import { MODULES_ANALYTICS } from '../../datastore/constants';
+import Link from '../../../../components/Link';
+import VisuallyHidden from '../../../../components/VisuallyHidden';
+import { escapeURI } from '../../../../util/escape-uri';
 const { useSelect } = Data;
 
 export default function UASettingsView() {

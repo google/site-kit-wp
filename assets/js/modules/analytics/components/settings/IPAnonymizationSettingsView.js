@@ -1,5 +1,5 @@
 /**
- * UA Settings View component.
+ * IP Anonymization Settings View component.
  *
  * Site Kit by Google, Copyright 2023 Google LLC
  *
@@ -19,43 +19,57 @@
 /**
  * WordPress dependencies
  */
-import { __, _x } from '@wordpress/i18n';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { MODULES_ANALYTICS } from '../../../datastore/constants';
-import { trackingExclusionLabels } from '../../common/TrackingExclusionSwitches';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import { MODULES_ANALYTICS } from '../../datastore/constants';
 const { useSelect } = Data;
 
-export default function ExcludeFromAnalyticsSettingsView() {
-	const trackingDisabled =
-		useSelect( ( select ) =>
-			select( MODULES_ANALYTICS ).getTrackingDisabled()
-		) || [];
+export default function IPAnonymizationSettingsView() {
+	const useSnippet = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getUseSnippet()
+	);
+	const anonymizeIP = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getAnonymizeIP()
+	);
+
+	const ampMode = useSelect( ( select ) => select( CORE_SITE ).getAMPMode() );
+
+	if ( ! useSnippet ) {
+		return null;
+	}
+
+	if ( ampMode === 'primary' ) {
+		return null;
+	}
 
 	return (
 		<div className="googlesitekit-settings-module__meta-items">
 			<div className="googlesitekit-settings-module__meta-item">
 				<h5 className="googlesitekit-settings-module__meta-item-type">
-					{ __( 'Excluded from Analytics', 'google-site-kit' ) }
+					{ __( 'IP Address Anonymization', 'google-site-kit' ) }
 				</h5>
 				<p className="googlesitekit-settings-module__meta-item-data">
-					{ !! trackingDisabled.length &&
-						trackingDisabled
-							.map(
-								( exclusion ) =>
-									trackingExclusionLabels[ exclusion ]
-							)
-							.join(
-								_x( ', ', 'list separator', 'google-site-kit' )
+					{ anonymizeIP && (
+						<span>
+							{ __(
+								'IP addresses are being anonymized',
+								'google-site-kit'
 							) }
-					{ ! trackingDisabled.length &&
-						__(
-							'Analytics is currently enabled for all visitors',
-							'google-site-kit'
-						) }
+						</span>
+					) }
+					{ ! anonymizeIP && (
+						<span>
+							{ __(
+								'IP addresses are not being anonymized',
+								'google-site-kit'
+							) }
+						</span>
+					) }
 				</p>
 			</div>
 		</div>
