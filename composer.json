@@ -11,7 +11,7 @@
     "phpunit/phpunit": "^5 || ^6 || ^7 || ^8 || ^9",
     "roave/security-advisories": "dev-latest",
     "roots/wordpress": ">=5.2",
-    "squizlabs/php_codesniffer": "3.7.1",
+    "squizlabs/php_codesniffer": "^3.7",
     "wp-coding-standards/wpcs": "^2",
     "wp-phpunit/wp-phpunit": ">=5.2",
     "yoast/phpunit-polyfills": "^1.0"
