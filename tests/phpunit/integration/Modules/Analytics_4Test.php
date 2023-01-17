@@ -447,7 +447,7 @@ class Analytics_4Test extends TestCase {
 						// Verify the URL filter is correct.
 						array(
 							'filter' => array(
-								'fieldName'    => 'pagePathPlusQueryString',
+								'fieldName'    => 'pagePath',
 								'stringFilter' => array(
 									'matchType' => 'EXACT',
 									'value'     => 'https://example.org/some-page-here/',

@@ -1183,7 +1183,7 @@ final class Analytics_4 extends Module
 			$dimension_string_filter->setMatchType( 'EXACT' );
 			$dimension_string_filter->setValue( rawurldecode( $args['page'] ) );
 			$dimension_filter = new Google_Service_AnalyticsData_Filter();
-			$dimension_filter->setFieldName( 'pagePathPlusQueryString' );
+			$dimension_filter->setFieldName( 'pagePath' );
 			$dimension_filter->setStringFilter( $dimension_string_filter );
 			$dimension_filter_expression = new Google_Service_AnalyticsData_FilterExpression();
 			$dimension_filter_expression->setFilter( $dimension_filter );
