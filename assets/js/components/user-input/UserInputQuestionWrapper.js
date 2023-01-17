@@ -59,12 +59,6 @@ export default function UserInputQuestionWrapper( props ) {
 	const values = useSelect(
 		( select ) => select( CORE_USER ).getUserInputSetting( slug ) || []
 	);
-	const scope = useSelect( ( select ) =>
-		select( CORE_USER ).getUserInputSettingScope( slug )
-	);
-	const author = useSelect( ( select ) =>
-		select( CORE_USER ).getUserInputSettingAuthor( slug )
-	);
 
 	return (
 		<div
@@ -79,11 +73,10 @@ export default function UserInputQuestionWrapper( props ) {
 						<Row>
 							{ title && (
 								<UserInputQuestionInfo
+									slug={ slug }
 									title={ title }
 									description={ description }
-									scope={ scope }
 									questionNumber={ questionNumber }
-									author={ author }
 								/>
 							) }
 
