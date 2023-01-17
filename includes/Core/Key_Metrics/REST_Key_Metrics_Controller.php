@@ -100,17 +100,30 @@ class REST_Key_Metrics_Controller {
 				array(
 					'methods'             => WP_REST_Server::CREATABLE,
 					'callback'            => function ( WP_REST_Request $request ) {
-						$data = $request['data'];
+						$data = $request->get_param( 'data' );
+						if ( ! isset( $data['settings'] ) || ! is_array( $data['settings'] ) ) {
+							return new WP_Error(
+								'rest_missing_callback_param',
+								__( 'Missing settings data.', 'google-site-kit' ),
+								array( 'status' => 400 )
+							);
+						}
 						
-						$this->settings->merge( $data );
+						$this->settings->merge( $data['settings'] );
 
 						return new WP_REST_Response( $this->settings->get() );
 					},
 					'permission_callback' => $can_dismiss_item,
 					'args'                => array(
 						'data' => array(
-							'type'     => 'object',
-							'required' => true,
+							'type'       => 'object',
+							'required'   => true,
+							'properties' => array(
+								'settings' => array(
+									'type'     => 'object',
+									'required' => true,
+								),
+							),
 						),
 					),
 				)
