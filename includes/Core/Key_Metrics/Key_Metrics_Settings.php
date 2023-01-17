@@ -59,7 +59,7 @@ class Key_Metrics_Settings extends User_Setting {
 	 */
 	public function merge( array $partial ) {
 		$settings = $this->get();
-		
+
 		if ( isset( $partial['isWidgetHidden'] ) && is_bool( $partial['isWidgetHidden'] ) ) {
 			$settings['isWidgetHidden'] = $partial['isWidgetHidden'];
 		}

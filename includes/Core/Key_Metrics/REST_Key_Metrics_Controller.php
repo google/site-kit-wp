@@ -39,7 +39,7 @@ class REST_Key_Metrics_Controller {
 	 * Constructor.
 	 *
 	 * @since n.e.x.t
-	 * 
+	 *
 	 * @param Key_Metrics_Settings $settings Key Metrics settings.
 	 */
 	public function __construct( Key_Metrics_Settings $settings ) {
