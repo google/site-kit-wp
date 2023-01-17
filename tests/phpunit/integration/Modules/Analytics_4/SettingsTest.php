@@ -137,7 +137,7 @@ class SettingsTest extends SettingsTestCase {
 	/**
 	 * @dataProvider data_invalid_account_ids
 	 */
-	public function test_invalid_tag_account_ids( $invalid_id ) {
+	public function test_invalid_tag_account_id( $invalid_id ) {
 		$testcase = $this->get_testcase();
 		$settings = $this->get_setting_with_owned_keys();
 		$settings->register();
@@ -150,10 +150,9 @@ class SettingsTest extends SettingsTestCase {
 		$settings->set( $options );
 		$options = get_option( $options_key );
 		$testcase->assertEquals( '', $options['googleTagAccountID'] );
-
 	}
 
-	public function test_valid_tag_account_ids() {
+	public function test_valid_tag_account_id() {
 		$testcase = $this->get_testcase();
 		$settings = $this->get_setting_with_owned_keys();
 		$settings->register();
