@@ -24,19 +24,19 @@ class Auto_UpdatesTest extends TestCase {
 		}
 
 		// Is null by default.
-		$this->assertNull( Auto_Updates::sitekit_forced_autoupdates_status() );
+		$this->assertSame( Auto_Updates::AUTO_UPDATE_NOT_FORCED, Auto_Updates::sitekit_forced_autoupdates_status() );
 
 		// force enable plugin autoupdates should return true
 		add_filter( 'auto_update_plugin', '__return_true' );
 
-		$this->assertTrue( Auto_Updates::sitekit_forced_autoupdates_status() );
+		$this->assertSame( Auto_Updates::AUTO_UPDATE_FORCED_ENABLED, Auto_Updates::sitekit_forced_autoupdates_status() );
 		$this->assertTrue( Auto_Updates::is_sitekit_autoupdates_enabled() );
 
 		// force disable plugin autoupdates should return false
 		remove_filter( 'auto_update_plugin', '__return_true' );
 		add_filter( 'auto_update_plugin', '__return_false' );
 
-		$this->assertFalse( Auto_Updates::sitekit_forced_autoupdates_status() );
+		$this->assertSame( Auto_Updates::AUTO_UPDATE_FORCED_DISABLED, Auto_Updates::sitekit_forced_autoupdates_status() );
 		$this->assertFalse( Auto_Updates::is_plugin_autoupdates_enabled() );
 		$this->assertFalse( Auto_Updates::is_sitekit_autoupdates_enabled() );
 
