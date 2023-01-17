@@ -133,8 +133,8 @@ const EnableAutoUpdateBannerNotification = () => {
 	] );
 
 	// Don't render anything if the user has no permission to update plugin,
-	// auto-updates can not be enabled for Site Kit or auto update are already enabled for
-	// Site Kit.
+	// auto-updates can not be enabled for Site Kit, or auto update are already
+	// enabled for Site Kit.
 	if (
 		! hasUpdatePluginCapacity ||
 		! hasChangePluginAutoUpdatesCapacity ||

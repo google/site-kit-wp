@@ -23,16 +23,17 @@ class Auto_UpdatesTest extends TestCase {
 			return;
 		}
 
-		// Is null by default.
+		// By default, auto updates are not forced to either be enabled
+		// or disabled.
 		$this->assertSame( Auto_Updates::AUTO_UPDATE_NOT_FORCED, Auto_Updates::sitekit_forced_autoupdates_status() );
 
-		// force enable plugin autoupdates should return true
+		// Force auto-updates to be enabled by a filter.
 		add_filter( 'auto_update_plugin', '__return_true' );
 
 		$this->assertSame( Auto_Updates::AUTO_UPDATE_FORCED_ENABLED, Auto_Updates::sitekit_forced_autoupdates_status() );
 		$this->assertTrue( Auto_Updates::is_sitekit_autoupdates_enabled() );
 
-		// force disable plugin autoupdates should return false
+		// Force auto-updates to be disabled by a filter.
 		remove_filter( 'auto_update_plugin', '__return_true' );
 		add_filter( 'auto_update_plugin', '__return_false' );
 
@@ -40,7 +41,6 @@ class Auto_UpdatesTest extends TestCase {
 		$this->assertFalse( Auto_Updates::is_plugin_autoupdates_enabled() );
 		$this->assertFalse( Auto_Updates::is_sitekit_autoupdates_enabled() );
 
-		// cleanup
 		remove_filter( 'auto_update_plugin', '__return_false' );
 	}
 
