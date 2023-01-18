@@ -109,7 +109,7 @@ const ContentTokens = () => (
 				label="Primary Container"
 				reference="SK-100"
 			/>
-			<Token name="content-primary" label="Primary" reference="SK-600" />
+			<Token name="content-primary" label="Primary" reference="SK-500" />
 		</TokenRow>
 		<TokenRow>
 			<Token
