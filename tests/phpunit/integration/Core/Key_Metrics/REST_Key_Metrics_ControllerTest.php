@@ -117,10 +117,7 @@ class REST_Key_Metrics_ControllerTest extends TestCase {
 
 		$response = $server->dispatch( $request );
 		$this->assertEquals( 400, $response->get_status() );
-		$this->assertEquals(
-			'rest_missing_callback_param',
-			$response->get_data()['code']
-		);
+		$this->assertEquals( 'rest_invalid_param', $response->get_data()['code'] );
 
 		// Correct settings type.
 		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/user/data/key-metrics' );

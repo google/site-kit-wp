@@ -100,16 +100,11 @@ class REST_Key_Metrics_Controller {
 				array(
 					'methods'             => WP_REST_Server::CREATABLE,
 					'callback'            => function ( WP_REST_Request $request ) {
-						$data = $request->get_param( 'data' );
-						if ( ! isset( $data['settings'] ) || ! is_array( $data['settings'] ) ) {
-							return new WP_Error(
-								'rest_missing_callback_param',
-								__( 'Missing settings data.', 'google-site-kit' ),
-								array( 'status' => 400 )
-							);
-						}
-
-						$this->settings->merge( $data['settings'] );
+						// Data is already validated because we defined the detailed schema.
+						// If the incoming data param doesn't match the schema, then WordPress
+						// will automatically return the rest_invalid_param error and we will
+						// never get to here.
+						$this->settings->merge( $request->get_param( 'data' ) );
 
 						return new WP_REST_Response( $this->settings->get() );
 					},
