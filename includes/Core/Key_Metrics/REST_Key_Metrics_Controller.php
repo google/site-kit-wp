@@ -120,8 +120,21 @@ class REST_Key_Metrics_Controller {
 							'required'   => true,
 							'properties' => array(
 								'settings' => array(
-									'type'     => 'object',
-									'required' => true,
+									'type'       => 'object',
+									'required'   => true,
+									'properties' => array(
+										'isWidgetHidden' => array(
+											'type'     => 'boolean',
+											'required' => false,
+										),
+										'widgetSlugs'    => array(
+											'type'     => 'array',
+											'required' => false,
+											'items'    => array(
+												'type' => 'string',
+											),
+										),
+									),
 								),
 							),
 						),

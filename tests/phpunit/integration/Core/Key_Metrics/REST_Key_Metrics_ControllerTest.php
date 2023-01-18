@@ -86,6 +86,8 @@ class REST_Key_Metrics_ControllerTest extends TestCase {
 	}
 
 	public function test_set_settings() {
+		$server = rest_get_server();
+
 		remove_all_filters( 'googlesitekit_rest_routes' );
 		$this->controller->register();
 		$this->register_rest_routes();
@@ -103,6 +105,24 @@ class REST_Key_Metrics_ControllerTest extends TestCase {
 		$this->settings->register();
 		$this->settings->set( $original_settings );
 
+		// Wrong settings type.
+		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/user/data/key-metrics' );
+		$request->set_body_params(
+			array(
+				'data' => array(
+					'settings' => '{}',
+				),
+			)
+		);
+
+		$response = $server->dispatch( $request );
+		$this->assertEquals( 400, $response->get_status() );
+		$this->assertEquals(
+			'rest_missing_callback_param',
+			$response->get_data()['code']
+		);
+
+		// Correct settings type.
 		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/user/data/key-metrics' );
 		$request->set_body_params(
 			array(
@@ -114,7 +134,7 @@ class REST_Key_Metrics_ControllerTest extends TestCase {
 
 		$this->assertEqualSetsWithIndex(
 			$changed_settings,
-			rest_get_server()->dispatch( $request )->get_data()
+			$server->dispatch( $request )->get_data()
 		);
 	}
 
