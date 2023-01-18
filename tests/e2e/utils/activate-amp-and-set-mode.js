@@ -66,7 +66,14 @@ export const activateAMPWithMode = async (
 		] );
 	} else {
 		// eslint-disable-next-line react-hooks/rules-of-hooks
-		useRequestInterception( () => {} );
+		useRequestInterception( ( request ) => {
+			if ( request.url().match( '&amp_validate' ) ) {
+				request.respond( {
+					status: 200,
+					body: JSON.stringify( {} ),
+				} );
+			}
+		} );
 	}
 	await activatePlugin( 'amp' );
 	await setAMPMode( mode );
