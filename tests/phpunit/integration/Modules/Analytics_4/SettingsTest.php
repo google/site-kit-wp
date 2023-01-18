@@ -83,7 +83,7 @@ class SettingsTest extends SettingsTestCase {
 			$options = $settings->get();
 			$testcase->assertEmpty( $options['ownerID'] );
 
-			if ( isset( self::VALID_TEST_IDS[ $key ] ) ) {
+			if ( array_key_exists( $key, self::VALID_TEST_IDS ) ) {
 				$options[ $key ] = self::VALID_TEST_IDS[ $key ];
 			} else {
 				$options[ $key ] = 'test-value';
