@@ -25,6 +25,7 @@ import errors from './errors';
 import html from './html';
 import info from './info';
 import reset from './reset';
+import enableAutoUpdate from './enable-auto-update';
 import settings from './settings';
 import urls from './urls';
 import developerPlugin from './developer-plugin';
@@ -41,6 +42,7 @@ const store = Data.combineStores(
 	info,
 	developerPlugin,
 	reset,
+	enableAutoUpdate,
 	settings,
 	urls,
 	notifications,

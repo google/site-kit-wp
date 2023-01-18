@@ -191,6 +191,9 @@ final class Plugin {
 				$permissions = new Core\Permissions\Permissions( $this->context, $authentication, $modules, $user_options, $dismissed_items );
 				$permissions->register();
 
+				$nonces = new Core\Nonces\Nonces( $this->context );
+				$nonces->register();
+
 				// Assets must be registered after Modules instance is registered.
 				$assets->register();
 
@@ -222,6 +225,7 @@ final class Plugin {
 				( new Core\Util\Migration_1_3_0( $this->context, $options, $user_options ) )->register();
 				( new Core\Util\Migration_1_8_1( $this->context, $options, $user_options, $authentication ) )->register();
 				( new Core\Dashboard_Sharing\Dashboard_Sharing( $this->context, $user_options ) )->register();
+				( new Core\Key_Metrics\Key_Metrics( $this->context, $user_options ) )->register();
 
 				// If a login is happening (runs after 'init'), update current user in dependency chain.
 				add_action(

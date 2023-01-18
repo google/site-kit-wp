@@ -25,7 +25,7 @@ import classnames from 'classnames';
 /**
  * WordPress dependencies
  */
-import { Fragment } from '@wordpress/element';
+import { Fragment, useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -33,15 +33,19 @@ import { __ } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
-import Link from '../Link';
+import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { trackEvent } from '../../util';
+import { getErrorMessageForAnswer } from './util/validation';
 import useViewContext from '../../hooks/useViewContext';
 import {
 	USER_INPUT_CURRENTLY_EDITING_KEY,
 	USER_INPUT_MAX_ANSWERS,
 } from './util/constants';
+import ErrorNotice from '../ErrorNotice';
+import Link from '../Link';
+import SpinnerButton from '../SpinnerButton';
 import UserInputSelectOptions from './UserInputSelectOptions';
-import { getErrorMessageForAnswer } from './util/validation';
+import UserInputQuestionAuthor from './UserInputQuestionAuthor';
 
 const { useSelect, useDispatch } = Data;
 
@@ -52,16 +56,32 @@ export default function UserInputPreviewGroup( {
 	options,
 	errorMessage,
 	onCollapse,
+	showIndividualCTAs = false,
 } ) {
 	const viewContext = useViewContext();
 	const currentlyEditingSlug = useSelect( ( select ) =>
 		select( CORE_UI ).getValue( USER_INPUT_CURRENTLY_EDITING_KEY )
 	);
+	const hasSettingChanged = useSelect( ( select ) =>
+		select( CORE_USER ).hasUserInputSettingChanged( slug )
+	);
+	const isSavingSettings = useSelect( ( select ) => {
+		const userInputSettings = select( CORE_USER ).getUserInputSettings();
+
+		return select( CORE_USER ).isSavingUserInputSettings(
+			userInputSettings
+		);
+	} );
+	const saveSettingsError = useSelect( ( select ) =>
+		select( CORE_USER ).getErrorForAction( 'saveUserInputSettings', [] )
+	);
 	const { setValues } = useDispatch( CORE_UI );
+	const { saveUserInputSettings, resetUserInputSettings } =
+		useDispatch( CORE_USER );
 
 	const isEditing = currentlyEditingSlug === slug;
 
-	const onEditClick = () => {
+	const toggleEditMode = useCallback( () => {
 		if ( ! isEditing ) {
 			trackEvent( viewContext, 'question_edit', slug );
 		} else {
@@ -71,23 +91,54 @@ export default function UserInputPreviewGroup( {
 		setValues( {
 			[ USER_INPUT_CURRENTLY_EDITING_KEY ]: isEditing ? undefined : slug,
 		} );
-	};
+	}, [ isEditing, onCollapse, setValues, slug, viewContext ] );
 
 	const error = getErrorMessageForAnswer(
 		values,
 		USER_INPUT_MAX_ANSWERS[ slug ]
 	);
 
+	const submitChanges = useCallback( async () => {
+		const response = await saveUserInputSettings();
+
+		if ( ! response.error ) {
+			toggleEditMode();
+		}
+	}, [ saveUserInputSettings, toggleEditMode ] );
+
 	return (
-		<div className="googlesitekit-user-input__preview-group">
+		<div
+			className={ classnames( 'googlesitekit-user-input__preview-group', {
+				'googlesitekit-user-input__preview-group--editing': isEditing,
+				'googlesitekit-user-input__preview-group--individual-cta':
+					showIndividualCTAs,
+			} ) }
+		>
 			<div className="googlesitekit-user-input__preview-group-title">
 				<p>{ title }</p>
 				<Link
-					className={ classnames( {
-						'googlesitekit-user-input__preview-group-editing':
-							isEditing,
-					} ) }
-					onClick={ onEditClick }
+					onClick={ async () => {
+						if ( showIndividualCTAs ) {
+							if (
+								isSavingSettings ||
+								( !! currentlyEditingSlug && ! isEditing )
+							) {
+								return;
+							}
+
+							// Do not preserve changes if preview group is collapsed with individual CTAs.
+							if ( isEditing ) {
+								await resetUserInputSettings();
+							}
+						}
+
+						toggleEditMode();
+					} }
+					disabled={
+						showIndividualCTAs &&
+						( isSavingSettings ||
+							( !! currentlyEditingSlug && ! isEditing ) )
+					}
 				>
 					{ __( 'Edit', 'google-site-kit' ) }
 				</Link>
@@ -124,6 +175,45 @@ export default function UserInputPreviewGroup( {
 							{ errorMessage }
 						</p>
 					) }
+					{ showIndividualCTAs && (
+						<Fragment>
+							<UserInputQuestionAuthor slug={ slug } />
+
+							{ saveSettingsError && (
+								<ErrorNotice error={ saveSettingsError } />
+							) }
+
+							<div className="googlesitekit-user-input__preview-actions">
+								<SpinnerButton
+									disabled={ ! hasSettingChanged }
+									onClick={
+										hasSettingChanged
+											? submitChanges
+											: undefined
+									}
+									isSaving={ isSavingSettings }
+								>
+									{ __(
+										'Confirm Changes',
+										'google-site-kit'
+									) }
+								</SpinnerButton>
+								<Link
+									disabled={ isSavingSettings }
+									onClick={ async () => {
+										if ( isSavingSettings ) {
+											return;
+										}
+
+										await resetUserInputSettings();
+										toggleEditMode();
+									} }
+								>
+									{ __( 'Cancel', 'google-site-kit' ) }
+								</Link>
+							</div>
+						</Fragment>
+					) }
 				</Fragment>
 			) }
 		</div>
@@ -137,6 +227,7 @@ UserInputPreviewGroup.propTypes = {
 	options: PropTypes.shape( {} ),
 	errorMessage: PropTypes.string,
 	onCollapse: PropTypes.func,
+	showIndividualCTAs: PropTypes.bool,
 };
 
 UserInputPreviewGroup.defaultProps = {
