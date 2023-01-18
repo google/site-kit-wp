@@ -113,7 +113,7 @@ class SettingsTest extends SettingsTestCase {
 	/**
 	 * @dataProvider data_tag_ids
 	 */
-	public function test_valid_google_tag_id( $tag, $id, $expected ) {
+	public function test_google_tag_ids( $tag, $id, $expected ) {
 		$testcase = $this->get_testcase();
 		$settings = $this->get_setting_with_owned_keys();
 		$settings->register();
