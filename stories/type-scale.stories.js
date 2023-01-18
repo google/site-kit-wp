@@ -83,8 +83,8 @@ const Template = () => (
 					name="label"
 					label="Label"
 					sizes={ {
-						lg: 'Large 16/20',
-						md: 'Medium 14/16',
+						lg: 'Large 16/24',
+						md: 'Medium 14/20',
 						sm: 'Small 12/16',
 					} }
 				/>

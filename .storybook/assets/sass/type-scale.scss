@@ -76,6 +76,16 @@
 			--type-scale-lh-sm: #{$lh-title-sm};
 		}
 
+		&-label {
+			--type-scale-f: #{$f-primary};
+			--type-scale-fs-lg: #{$fs-label-lg};
+			--type-scale-lh-lg: #{$lh-label-lg};
+			--type-scale-fs-md: #{$fs-label-md};
+			--type-scale-lh-md: #{$lh-label-md};
+			--type-scale-fs-sm: #{$fs-label-sm};
+			--type-scale-lh-sm: #{$lh-label-sm};
+		}
+
 		&-body {
 			--type-scale-f: #{$f-primary};
 			--type-scale-fs-lg: #{$fs-body-lg};
