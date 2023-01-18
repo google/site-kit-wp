@@ -1,9 +1,9 @@
 <?php
 /**
- * Google_URL_Matcher_TraitTest
+ * Auto Updates tests.
  *
  * @package   Google\Site_Kit\Tests\Core\Util
- * @copyright 2021 Google LLC
+ * @copyright 2023 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
