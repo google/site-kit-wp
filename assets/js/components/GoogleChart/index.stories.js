@@ -19,8 +19,8 @@
 /**
  * Internal dependencies
  */
-import GoogleChart from './GoogleChart';
-import { WithTestRegistry } from '../../../tests/js/utils';
+import GoogleChart from './';
+import { WithTestRegistry } from '../../../../tests/js/utils';
 
 const Template = ( args ) => <GoogleChart { ...args } />;
 

@@ -18,7 +18,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 
 /* Ensures `google` global is undefined before loading `react-google-charts` library */
-import '../util/initialize-google-global';
+import '../../util/initialize-google-global';
 
 /**
  * External dependencies
@@ -26,9 +26,6 @@ import '../util/initialize-google-global';
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
 import { Chart } from 'react-google-charts';
-import set from 'lodash/set';
-import cloneDeep from 'lodash/cloneDeep';
-import merge from 'lodash/merge';
 
 /**
  * WordPress dependencies
@@ -43,15 +40,20 @@ import {
 /**
  * Internal dependencies
  */
-import PreviewBlock from './PreviewBlock';
-import { CORE_USER } from '../googlesitekit/datastore/user/constants';
-import GatheringDataNotice, { NOTICE_STYLE } from './GatheringDataNotice';
-import { stringToDate } from '../util/date-range/string-to-date';
+import PreviewBlock from '../PreviewBlock';
+import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import GatheringDataNotice, { NOTICE_STYLE } from '../GatheringDataNotice';
+
 import Data from 'googlesitekit-data';
-import GoogleChartErrorHandler from './GoogleChartErrorHandler';
+import {
+	getGoogleChartData,
+	getLoadingDimentions,
+	getCombinedChartEvents,
+	getChartOptions,
+} from './utils';
+import GoogleChartErrorHandler from '../GoogleChartErrorHandler';
 const { useSelect } = Data;
 
-// eslint-disable-next-line complexity
 export default function GoogleChart( props ) {
 	const {
 		chartEvents,
@@ -81,50 +83,22 @@ export default function GoogleChart( props ) {
 
 	const [ isChartLoaded, setIsChartLoaded ] = useState( false );
 
-	// Ensure we don't filter out columns that aren't data, but are things like
-	// tooltips or other content.
-	let nonDataColumns = [];
-	if ( data?.length ) {
-		nonDataColumns = data[ 0 ].reduce( ( acc, row, rowIndex ) => {
-			return row?.role ? [ ...acc, rowIndex ] : acc;
-		}, [] );
-	}
+	const modifiedData = getGoogleChartData( data, selectedStats );
 
-	// If only certain columns should be displayed for the data set we have
-	// then filter out that data.
-	let modifiedData = data;
-	if ( selectedStats?.length > 0 ) {
-		modifiedData = data.map( ( row ) => {
-			return row.filter( ( _columnValue, columnIndex ) => {
-				return (
-					columnIndex === 0 ||
-					selectedStats.includes( columnIndex - 1 ) ||
-					nonDataColumns.includes( columnIndex - 1 )
-				);
-			} );
-		} );
-	}
-
-	let loadingHeightToUse = loadingHeight || height;
-	let loadingWidthToUse = loadingWidth || width;
-	// If a loading height is set but a width is not (or a loading width is set
-	// but not a height), change the "unset" value to 100% to avoid visual bugs.
-	// See: https://github.com/google/site-kit-wp/pull/2916#discussion_r623866269
-	if ( loadingHeightToUse && ! loadingWidthToUse ) {
-		loadingWidthToUse = '100%';
-	}
-	if ( loadingWidthToUse && ! loadingHeightToUse ) {
-		loadingHeightToUse = '100%';
-	}
 	const loadingShape = chartType === 'PieChart' ? 'circular' : 'square';
+	const loadingDimentions = getLoadingDimentions(
+		loadingHeight,
+		height,
+		loadingWidth,
+		width
+	);
 
 	const loader = (
 		<div className="googlesitekit-chart-loading">
 			<PreviewBlock
 				className="googlesitekit-chart-loading__wrapper"
-				height={ loadingHeightToUse }
 				shape={ loadingShape }
-				width={ loadingWidthToUse }
+				{ ...loadingDimentions }
 			/>
 		</div>
 	);
@@ -192,68 +166,19 @@ export default function GoogleChart( props ) {
 		);
 	}
 
-	const combinedChartEvents = [ ...( chartEvents || [] ) ];
+	const combinedChartEvents = getCombinedChartEvents(
+		chartEvents,
+		onReady,
+		onSelect
+	);
 
-	if ( onReady ) {
-		combinedChartEvents.push( {
-			eventName: 'ready',
-			callback: onReady,
-		} );
-	}
-
-	if ( onSelect ) {
-		combinedChartEvents.push( {
-			eventName: 'select',
-			callback: onSelect,
-		} );
-	}
-
-	const chartOptions = cloneDeep( options );
-	if ( gatheringData && chartType === 'LineChart' ) {
-		if ( ! options?.vAxis?.viewWindow?.min ) {
-			set( chartOptions, 'vAxis.viewWindow.min', 0 );
-		}
-		if ( ! options?.vAxis?.viewWindow?.max ) {
-			set( chartOptions, 'vAxis.viewWindow.max', 100 );
-		}
-		if ( ! options?.hAxis?.viewWindow?.min ) {
-			set(
-				chartOptions,
-				'hAxis.viewWindow.min',
-				stringToDate( startDate )
-			);
-			delete chartOptions.hAxis.ticks;
-		}
-		if ( ! options?.hAxis?.viewWindow?.max ) {
-			set(
-				chartOptions,
-				'hAxis.viewWindow.max',
-				stringToDate( endDate )
-			);
-			delete chartOptions.hAxis.ticks;
-		}
-	}
-
-	merge( chartOptions, {
-		hAxis: {
-			textStyle: {
-				fontSize: 10,
-				color: '#5f6561',
-			},
-		},
-		vAxis: {
-			textStyle: {
-				color: '#5f6561',
-				fontSize: 10,
-			},
-		},
-		legend: {
-			textStyle: {
-				color: '#131418',
-				fontSize: 12,
-			},
-		},
-	} );
+	const chartOptions = getChartOptions(
+		options,
+		gatheringData,
+		chartType,
+		startDate,
+		endDate
+	);
 
 	return (
 		<GoogleChartErrorHandler>
