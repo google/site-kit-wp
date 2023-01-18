@@ -91,6 +91,54 @@ describe( 'core/site site info', () => {
 				} );
 			} );
 		} );
+
+		describe( 'setSiteKitAutoUpdatesEnabled', () => {
+			it( 'requires a boolean argument', () => {
+				expect( () => {
+					registry
+						.dispatch( CORE_SITE )
+						.setSiteKitAutoUpdatesEnabled();
+				} ).toThrow( 'siteKitAutoUpdatesEnabled must be a boolean.' );
+
+				expect( () => {
+					registry
+						.dispatch( CORE_SITE )
+						.setSiteKitAutoUpdatesEnabled( undefined );
+				} ).toThrow( 'siteKitAutoUpdatesEnabled must be a boolean.' );
+
+				expect( () => {
+					registry
+						.dispatch( CORE_SITE )
+						.setSiteKitAutoUpdatesEnabled( 0 );
+				} ).toThrow( 'siteKitAutoUpdatesEnabled must be a boolean.' );
+
+				expect( () => {
+					registry
+						.dispatch( CORE_SITE )
+						.setSiteKitAutoUpdatesEnabled( true );
+
+					registry
+						.dispatch( CORE_SITE )
+						.setSiteKitAutoUpdatesEnabled( false );
+				} ).not.toThrow(
+					'siteKitAutoUpdatesEnabled must be a boolean.'
+				);
+			} );
+
+			it( 'receives and sets site info ', async () => {
+				await registry
+					.dispatch( CORE_SITE )
+					.receiveSiteInfo( { ...baseInfo, ...entityInfo } );
+
+				expect(
+					registry.select( CORE_SITE ).getSiteInfo()
+				).toMatchObject( {
+					...baseInfo,
+					...entityInfo,
+					currentEntityID: 4,
+				} );
+			} );
+		} );
 	} );
 
 	describe( 'selectors', () => {
