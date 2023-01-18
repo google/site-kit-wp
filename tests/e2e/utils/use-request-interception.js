@@ -37,7 +37,7 @@ export function useRequestInterception( callback ) {
  * @since n.e.x.t
  *
  * @param {Array.<{isMatch: Function, getResponse: Function}>} requestCases An array of request cases to add to the shared request interception.
- * @return {Object} Functions that can be called to remove the added handler function from the page and add new request cases.
+ * @return {Object} Methods that can be called to remove the added handler function from the page and add new request cases.
  */
 export function useSharedRequestInterception( requestCases ) {
 	const cases = [ ...requestCases ];
@@ -61,7 +61,7 @@ export function useSharedRequestInterception( requestCases ) {
 	page.on( 'request', requestHandler );
 
 	return {
-		cleanup: () => page.off( 'request', requestHandler ),
+		cleanUp: () => page.off( 'request', requestHandler ),
 		addRequestCases: ( newCases ) => {
 			cases.push( ...newCases );
 		},
