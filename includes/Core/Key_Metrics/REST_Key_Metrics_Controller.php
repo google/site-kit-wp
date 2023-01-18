@@ -100,11 +100,12 @@ class REST_Key_Metrics_Controller {
 				array(
 					'methods'             => WP_REST_Server::CREATABLE,
 					'callback'            => function ( WP_REST_Request $request ) {
-						// Data is already validated because we defined the detailed schema.
+						// Data is already validated because we've defined the detailed schema.
 						// If the incoming data param doesn't match the schema, then WordPress
 						// will automatically return the rest_invalid_param error and we will
 						// never get to here.
-						$this->settings->merge( $request->get_param( 'data' ) );
+						$data = $request->get_param( 'data' );
+						$this->settings->merge( $data['settings'] );
 
 						return new WP_REST_Response( $this->settings->get() );
 					},
