@@ -52,7 +52,7 @@ export function useSharedRequestInterception( requestCases ) {
 		} );
 
 		if ( requestCase ) {
-			request.respond( requestCase.getResponse() );
+			request.respond( requestCase.getResponse( request ) );
 		} else {
 			request.continue();
 		}
