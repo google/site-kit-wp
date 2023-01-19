@@ -91,6 +91,43 @@ describe( 'core/site site info', () => {
 				} );
 			} );
 		} );
+
+		describe( 'setSiteKitAutoUpdatesEnabled', () => {
+			it( 'requires the setSiteKitAutoUpdatesEnabled param', () => {
+				expect( () => {
+					registry
+						.dispatch( CORE_SITE )
+						.setSiteKitAutoUpdatesEnabled();
+				} ).toThrow( 'siteKitAutoUpdatesEnabled must be boolean.' );
+			} );
+
+			it( 'requires the setSiteKitAutoUpdatesEnabled param to be boolean', () => {
+				expect( () => {
+					registry
+						.dispatch( CORE_SITE )
+						.setSiteKitAutoUpdatesEnabled( 1 );
+				} ).toThrow( 'siteKitAutoUpdatesEnabled must be boolean.' );
+			} );
+
+			it( 'receives and sets siteKitAutoUpdatesEnabled to true', async () => {
+				await registry
+					.dispatch( CORE_SITE )
+					.setSiteKitAutoUpdatesEnabled( true );
+
+				expect(
+					registry.select( CORE_SITE ).getSiteKitAutoUpdatesEnabled()
+				).toBe( true );
+			} );
+			it( 'receives and sets siteKitAutoUpdatesEnabled to false', async () => {
+				await registry
+					.dispatch( CORE_SITE )
+					.setSiteKitAutoUpdatesEnabled( false );
+
+				expect(
+					registry.select( CORE_SITE ).getSiteKitAutoUpdatesEnabled()
+				).toBe( false );
+			} );
+		} );
 	} );
 
 	describe( 'selectors', () => {
