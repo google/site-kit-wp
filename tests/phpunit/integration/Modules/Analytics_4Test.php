@@ -246,6 +246,7 @@ class Analytics_4Test extends TestCase {
 				'accounts',
 				'container-lookup',
 				'container-destinations',
+				'google-tag-settings',
 				'conversion-events',
 				'create-property',
 				'create-webdatastream',
