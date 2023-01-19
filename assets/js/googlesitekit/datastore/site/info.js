@@ -97,8 +97,8 @@ export const actions = {
 	 */
 	setSiteKitAutoUpdatesEnabled( siteKitAutoUpdatesEnabled ) {
 		invariant(
-			siteKitAutoUpdatesEnabled,
-			'siteKitAutoUpdatesEnabled is required.'
+			typeof siteKitAutoUpdatesEnabled === 'boolean',
+			'siteKitAutoUpdatesEnabled must be a boolean.'
 		);
 
 		return {
