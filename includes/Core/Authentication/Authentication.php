@@ -32,6 +32,7 @@ use WP_REST_Response;
 use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Util\BC_Functions;
 use Google\Site_Kit\Core\Util\URL;
+use Google\Site_Kit\Core\Util\Auto_Updates;
 
 /**
  * Authentication Class.
@@ -281,9 +282,11 @@ final class Authentication {
 		$this->owner_id->register();
 		$this->connected_proxy_url->register();
 		$this->disconnected_reason->register();
-		$this->user_input_state->register();
 		$this->initial_version->register();
-		$this->user_input->register();
+		if ( Feature_Flags::enabled( 'userInput' ) ) {
+			$this->user_input->register();
+			$this->user_input_state->register();
+		}
 
 		add_filter( 'allowed_redirect_hosts', $this->get_method_proxy( 'allowed_redirect_hosts' ) );
 		add_filter( 'googlesitekit_admin_data', $this->get_method_proxy( 'inline_js_admin_data' ) );
@@ -786,7 +789,7 @@ final class Authentication {
 			wp_die( esc_html__( 'You don\'t have permissions to authenticate with Site Kit.', 'google-site-kit' ), 403 );
 		}
 
-		$redirect_url = $input->filter( INPUT_GET, 'redirect', FILTER_VALIDATE_URL );
+		$redirect_url = $input->filter( INPUT_GET, 'redirect', FILTER_DEFAULT );
 		if ( $redirect_url ) {
 			$redirect_url = esc_url_raw( wp_unslash( $redirect_url ) );
 		}
@@ -923,21 +926,40 @@ final class Authentication {
 
 		$version = get_bloginfo( 'version' );
 
-		// The trailing '.0' is added to the $version to ensure there are always at least 2 segments in the version.
-		// This is necessary in case the minor version is stripped from the version string by a plugin.
-		// See https://github.com/google/site-kit-wp/issues/4963 for more details.
-		list( $major, $minor ) = explode( '.', $version . '.0' );
+		$data['wpVersion'] = $this->inline_js_wp_version( $version );
 
-		$data['wpVersion'] = array(
-			'version' => $version,
-			'major'   => (int) $major,
-			'minor'   => (int) $minor,
-		);
+		if ( version_compare( $version, '5.5', '>=' ) && function_exists( 'wp_is_auto_update_enabled_for_type' ) ) {
+			$data['changePluginAutoUpdatesCapacity'] = Auto_Updates::is_plugin_autoupdates_enabled() && Auto_Updates::AUTO_UPDATE_NOT_FORCED === Auto_Updates::sitekit_forced_autoupdates_status();
+			$data['siteKitAutoUpdatesEnabled']       = Auto_Updates::is_sitekit_autoupdates_enabled();
+		}
+
+		$data['pluginBasename'] = GOOGLESITEKIT_PLUGIN_BASENAME;
 
 		$current_user      = wp_get_current_user();
 		$data['userRoles'] = $current_user->roles;
 
 		return $data;
+	}
+
+	/**
+	 * Gets the WP version to pass to JS.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $version The WP version.
+	 * @return array The WP version to pass to JS.
+	 */
+	private function inline_js_wp_version( $version ) {
+		// The trailing '.0' is added to the $version to ensure there are always at least 2 segments in the version.
+		// This is necessary in case the minor version is stripped from the version string by a plugin.
+		// See https://github.com/google/site-kit-wp/issues/4963 for more details.
+		list( $major, $minor ) = explode( '.', $version . '.0' );
+
+		return array(
+			'version' => $version,
+			'major'   => (int) $major,
+			'minor'   => (int) $minor,
+		);
 	}
 
 	/**

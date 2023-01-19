@@ -19,17 +19,12 @@
 /**
  * Internal dependencies
  */
+import ThrowErrorComponent from '../../../../tests/js/ThrowErrorComponent';
 import ErrorHandler from './';
-
-const ErrorComponent = () => {
-	throw new Error(
-		'Something bad happened. 💣 (On purpose; ErrorComponent was used to simulate an error.)'
-	);
-};
 
 const Template = () => (
 	<ErrorHandler>
-		<ErrorComponent />
+		<ThrowErrorComponent throwErrorOnMount />
 	</ErrorHandler>
 );
 

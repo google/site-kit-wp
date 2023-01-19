@@ -23,7 +23,7 @@ use Exception;
 /**
  * Class for handling modules rest routes.
  *
- * @since n.e.x.t
+ * @since 1.92.0
  * @access private
  * @ignore
  */
@@ -34,7 +34,7 @@ class REST_Modules_Controller {
 	/**
 	 * Modules instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.92.0
 	 * @var Modules
 	 */
 	protected $modules;
@@ -42,7 +42,7 @@ class REST_Modules_Controller {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.92.0
 	 *
 	 * @param Modules $modules Modules instance.
 	 */
@@ -53,7 +53,7 @@ class REST_Modules_Controller {
 	/**
 	 * Registers functionality through WordPress hooks.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.92.0
 	 */
 	public function register() {
 		add_filter(
@@ -88,7 +88,7 @@ class REST_Modules_Controller {
 	/**
 	 * Gets the REST schema for a module.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.92.0
 	 *
 	 * @return array Module REST schema.
 	 */
@@ -179,7 +179,7 @@ class REST_Modules_Controller {
 	/**
 	 * Gets related REST routes.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.92.0
 	 *
 	 * @return array List of REST_Route objects.
 	 */
@@ -682,7 +682,7 @@ class REST_Modules_Controller {
 	/**
 	 * Prepares module data for a REST response according to the schema.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.92.0
 	 *
 	 * @param Module $module Module instance.
 	 * @return array Module REST response data.
@@ -721,7 +721,7 @@ class REST_Modules_Controller {
 	/**
 	 * Prepares error data to pass with WP_REST_Response.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.92.0
 	 *
 	 * @param WP_Error $error Error (WP_Error) to prepare.
 	 *
@@ -738,7 +738,7 @@ class REST_Modules_Controller {
 	/**
 	 * Updates response with error encounted during module recovery.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.92.0
 	 *
 	 * @param string   $slug The module slug.
 	 * @param array    $response The existing response.

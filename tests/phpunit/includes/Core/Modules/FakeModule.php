@@ -241,7 +241,7 @@ class FakeModule extends Module
 	/**
 	 * Sets up the module's settings instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.92.0
 	 *
 	 * @return Module_Settings
 	 */
