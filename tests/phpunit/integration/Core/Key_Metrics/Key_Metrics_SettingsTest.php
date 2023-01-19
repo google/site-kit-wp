@@ -162,12 +162,12 @@ class Key_Metrics_SettingsTest extends TestCase {
 
 		// Make sure that we can't set wrong format for the isWidgetHidden property
 		$this->key_metrics_settings->set( $original_settings );
-		$this->key_metrics_settings->merge( array( 'isWidgetHidden' => 'yes' ) );
+		$this->key_metrics_settings->merge( array( 'isWidgetHidden' => null ) );
 		$this->assertEqualSetsWithIndex( $original_settings, $this->key_metrics_settings->get() );
 
 		// Make sure that we can't set wrong format for the widgetSlugs property
 		$this->key_metrics_settings->set( $original_settings );
-		$this->key_metrics_settings->merge( array( 'widgetSlugs' => 'widgetA,widgetB,widgetC' ) );
+		$this->key_metrics_settings->merge( array( 'widgetSlugs' => null ) );
 		$this->assertEqualSetsWithIndex( $original_settings, $this->key_metrics_settings->get() );
 	}
 

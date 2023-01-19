@@ -59,16 +59,15 @@ class Key_Metrics_Settings extends User_Setting {
 	 */
 	public function merge( array $partial ) {
 		$settings = $this->get();
+		$partial  = array_filter(
+			$partial,
+			function ( $value ) {
+				return null !== $value;
+			}
+		);
+		$updated  = array_intersect_key( $partial, $settings );
 
-		if ( isset( $partial['isWidgetHidden'] ) && is_bool( $partial['isWidgetHidden'] ) ) {
-			$settings['isWidgetHidden'] = $partial['isWidgetHidden'];
-		}
-
-		if ( ! empty( $partial['widgetSlugs'] ) && is_array( $partial['widgetSlugs'] ) ) {
-			$settings['widgetSlugs'] = $partial['widgetSlugs'];
-		}
-
-		return $this->set( $settings );
+		return $this->set( array_merge( $settings, $updated ) );
 	}
 
 	/**
