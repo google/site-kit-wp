@@ -1345,45 +1345,48 @@ final class Analytics_4 extends Module
 	protected function get_google_tag_settings_for_measurement_id( $measurement_id ) {
 		$container = $this->get_tagmanager_service()->accounts_containers->lookup( array( 'destinationId' => $measurement_id ) );
 
-		$tag_ids = $container->getTagIds();
-
-		$google_tag_id = '';
-
-		// if there is only one tag, use it.
-		if ( count( $tag_ids ) === 1 ) {
-			$google_tag_id = $tag_ids[0];
-		} else {
-			// if there are multiple tags, use the first one that starts with `GT-`.
-			foreach ( $tag_ids as $tag_id ) {
-				if ( substr( $tag_id, 0, 3 ) === 'GT-' ) { // strlen( 'GT-' ) === 3.
-					$google_tag_id = $tag_id;
-					break;
-				}
-			}
-			// Otherwise, use the `$measurement_id` as `$google_tag_id` if it is in the array.
-			if ( empty( $google_tag_id ) ) {
-				if ( in_array( $measurement_id, $tag_ids, true ) ) {
-					$google_tag_id = $measurement_id;
-				} else {
-					// Otherwise, Use the first one that starts with `G-`.
-					foreach ( $tag_ids as $tag_id ) {
-						if ( substr( $tag_id, 0, 2 ) === 'G-' ) { // strlen( 'G-' ) === 2.
-							$google_tag_id = $tag_id;
-							break;
-						}
-					}
-					if ( empty( $google_tag_id ) ) {
-						// If none of the above, use the first one.
-						$google_tag_id = $tag_ids[0];
-					}
-				}
-			}
-		}
-
 		return array(
 			'googleTagAccountID'   => $container->getAccountId(),
 			'googleTagContainerID' => $container->getContainerId(),
-			'googleTagID'          => $google_tag_id,
+			'googleTagID'          => $this->determine_google_tag_id_from_tag_ids( $container->getTagIds(), $measurement_id ),
 		);
+	}
+
+	/**
+	 * Determines Google Tag ID from the given Tag IDs.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array  $tag_ids Tag IDs.
+	 * @param string $measurement_id Measurement ID.
+	 * @return string Google Tag ID.
+	 */
+	private function determine_google_tag_id_from_tag_ids( $tag_ids, $measurement_id ) {
+		// if there is only one tag id in the array, return it.
+		if ( count( $tag_ids ) === 1 ) {
+			return $tag_ids[0];
+		}
+
+		// if there are multiple tags, return the first one that starts with `GT-`.
+		foreach ( $tag_ids as $tag_id ) {
+			if ( substr( $tag_id, 0, 3 ) === 'GT-' ) { // strlen( 'GT-' ) === 3.
+				return $tag_id;
+			}
+		}
+
+		// Otherwise, return the `$measurement_id` if it is in the array.
+		if ( in_array( $measurement_id, $tag_ids, true ) ) {
+			return $measurement_id;
+		}
+
+		// Otherwise, return the first one that starts with `G-`.
+		foreach ( $tag_ids as $tag_id ) {
+			if ( substr( $tag_id, 0, 2 ) === 'G-' ) { // strlen( 'G-' ) === 2.
+				return $tag_id;
+			}
+		}
+
+		// If none of the above, return the first one.
+		return $tag_ids[0];
 	}
 }
