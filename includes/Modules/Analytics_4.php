@@ -347,6 +347,12 @@ final class Analytics_4 extends Module
 					'measurementID'   => $web_datastream->webStreamData->measurementId, // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 				)
 			);
+
+			if ( Feature_Flags::enabled( 'gteSupport' ) ) {
+				$google_tag_settings = $this->get_google_tag_settings_for_measurement_id( $web_datastream->webStreamData->measurementId ); // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+
+				$this->get_settings()->merge( $google_tag_settings );
+			}
 		} catch ( Exception $e ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
 			// Suppress this exception because it might be caused by unstable GA4 API.
 		}
