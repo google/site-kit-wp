@@ -1,6 +1,6 @@
 <?php
 /**
- * Auto Updates tests.
+ * Auto_UpdatesTest.
  *
  * @package   Google\Site_Kit\Tests\Core\Util
  * @copyright 2023 Google LLC
@@ -46,10 +46,10 @@ class Auto_UpdatesTest extends TestCase {
 	}
 
 	/**
-	 * Forced auto updates are available for WP >= 5.6 only, so we test
-	 * for a function only available in WordPress 5.6 or greater.
+	 * Auto updates are available for WP >= 5.5 only, so we test
+	 * for a function only available in WordPress 5.5 or greater.
 	 *
-	 * @requires function wp_is_auto_update_forced_for_item
+	 * @requires function wp_is_auto_update_enabled_for_type
 	 */
 	public function test_sitekit_autoupdates_disabled() {
 		$this->assertFalse( Auto_Updates::is_sitekit_autoupdates_enabled() );
@@ -60,10 +60,10 @@ class Auto_UpdatesTest extends TestCase {
 	}
 
 	/**
-	 * Forced auto updates are available for WP >= 5.6 only, so we test
-	 * for a function only available in WordPress 5.6 or greater.
+	 * Auto updates are available for WP >= 5.5 only, so we test
+	 * for a function only available in WordPress 5.5 or greater.
 	 *
-	 * @requires function wp_is_auto_update_forced_for_item
+	 * @requires function wp_is_auto_update_enabled_for_type
 	 */
 	public function test_sitekit_autoupdates_enabled() {
 		update_site_option( 'auto_update_plugins', array( 'other-plugin.php', GOOGLESITEKIT_PLUGIN_BASENAME ) );
