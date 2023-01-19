@@ -210,7 +210,9 @@ const baseActions = {
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
 				.setWebDataStreamID( WEBDATASTREAM_CREATE );
-			registry.dispatch( MODULES_ANALYTICS_4 ).setMeasurementID( '' );
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.updateSettingsForMeasurementID( '' );
 
 			if ( PROPERTY_CREATE === propertyID ) {
 				return;
@@ -226,10 +228,12 @@ const baseActions = {
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.setWebDataStreamID( webdatastream._id );
-				registry.dispatch( MODULES_ANALYTICS_4 ).setMeasurementID(
-					// eslint-disable-next-line sitekit/acronym-case
-					webdatastream.webStreamData.measurementId
-				);
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.updateSettingsForMeasurementID(
+						// eslint-disable-next-line sitekit/acronym-case
+						webdatastream.webStreamData.measurementId
+					);
 			}
 		}
 	),
@@ -451,7 +455,7 @@ const baseActions = {
 			.setMeasurementID( measurementID );
 
 		if ( ! isFeatureEnabled( 'gteSupport' ) ) {
-			if ( ! measurementID ) {
+			if ( measurementID === '' ) {
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.setGoogleTagAccountID( '' );
