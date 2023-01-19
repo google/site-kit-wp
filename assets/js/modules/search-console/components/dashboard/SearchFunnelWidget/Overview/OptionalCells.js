@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * WordPress dependencies
  */
 import { Fragment } from '@wordpress/element';
@@ -42,12 +47,12 @@ const { useSelect } = Data;
 export default function OptionalCells( {
 	canViewSharedAnalytics,
 	error,
+	halfCellProps,
+	quarterCellProps,
 	showAnalytics,
 	showGoalsCTA,
 	showRecoverableAnalytics,
 	WidgetReportError,
-	halfCellProps,
-	quarterCellProps,
 } ) {
 	const breakpoint = useBreakpoint();
 
@@ -121,3 +126,14 @@ export default function OptionalCells( {
 		</Fragment>
 	);
 }
+
+OptionalCells.propTypes = {
+	canViewSharedAnalytics: PropTypes.bool.isRequired,
+	error: PropTypes.object,
+	halfCellProps: PropTypes.object.isRequired,
+	quarterCellProps: PropTypes.object.isRequired,
+	showAnalytics: PropTypes.bool.isRequired,
+	showGoalsCTA: PropTypes.bool.isRequired,
+	showRecoverableAnalytics: PropTypes.bool.isRequired,
+	WidgetReportError: PropTypes.elementType.isRequired,
+};
