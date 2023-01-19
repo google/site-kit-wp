@@ -217,6 +217,7 @@ final class Analytics_4 extends Module
 			'GET:accounts'               => array( 'service' => 'analyticsadmin' ),
 			'GET:container-lookup'       => array( 'service' => 'tagmanager' ),
 			'GET:container-destinations' => array( 'service' => 'tagmanager' ),
+			'GET:google-tag-settings'    => array( 'service' => 'tagmanager' ),
 			'POST:create-property'       => array(
 				'service'                => 'analyticsadmin',
 				'scopes'                 => array( Analytics::EDIT_SCOPE ),
@@ -503,6 +504,16 @@ final class Analytics_4 extends Module
 				return $this->get_tagmanager_service()->accounts_containers_destinations->listAccountsContainersDestinations(
 					"accounts/{$data['accountID']}/containers/{$data['internalContainerID']}"
 				);
+			case 'GET:google-tag-settings':
+				if ( ! isset( $data['measurementID'] ) ) {
+					return new WP_Error(
+						'missing_required_param',
+						/* translators: %s: Missing parameter name */
+						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'measurementID' ),
+						array( 'status' => 400 )
+					);
+				}
+				return $this->get_google_tag_settings_for_measurement_id( $data['measurementID'] );
 			case 'GET:conversion-events':
 				if ( ! isset( $data['propertyID'] ) ) {
 					return new WP_Error(
