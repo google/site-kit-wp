@@ -49,10 +49,10 @@ describe( 'getAnalytics4MockResponse', () => {
 			endDate: '2021-01-27',
 			metrics: [
 				{
-					expression: 'sessions',
+					name: 'sessions',
 				},
 				{
-					expression: 'newUsers',
+					name: 'newUsers',
 				},
 			],
 			dimensions: [ 'date' ],
@@ -69,8 +69,10 @@ describe( 'getAnalytics4MockResponse', () => {
 			compareEndDate: '2020-12-30',
 			metrics: [
 				{
-					expression: 'totalUsers',
-					alias: 'Total Users',
+					name: 'totalUsers',
+				},
+				{
+					name: 'averageSessionDuration',
 				},
 			],
 			dimensions: [ 'date' ],
