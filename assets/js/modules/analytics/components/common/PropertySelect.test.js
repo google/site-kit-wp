@@ -23,6 +23,7 @@ import PropertySelect from './PropertySelect';
 import { MODULES_ANALYTICS, ACCOUNT_CREATE } from '../../datastore/constants';
 import { MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
 import * as fixtures from '../../datastore/__fixtures__';
+import * as ga4Fixtures from '../../../analytics-4/datastore/__fixtures__';
 import {
 	fireEvent,
 	muteFetch,
@@ -203,6 +204,15 @@ describe( 'PropertySelect', () => {
 	} );
 
 	it( 'should update propertyID in the store when a new item is selected', () => {
+		fetchMock.getOnce(
+			new RegExp(
+				'^/google-site-kit/v1/modules/analytics-4/data/google-tag-settings'
+			),
+			{
+				body: ga4Fixtures.googleTagSettings,
+				status: 200,
+			}
+		);
 		const { getAllByRole, container, registry } = render(
 			<PropertySelect />,
 			{ setupRegistry }
@@ -217,6 +227,7 @@ describe( 'PropertySelect', () => {
 			),
 			[]
 		);
+
 		// Click the label to expose the elements in the menu.
 		fireEvent.click( container.querySelector( '.mdc-floating-label' ) );
 		// Click this element to select it and fire the onChange event.

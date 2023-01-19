@@ -171,6 +171,16 @@ describe( 'PropertySelect', () => {
 	} );
 
 	it( 'should update propertyID in the store when a new item is selected', () => {
+		fetchMock.getOnce(
+			new RegExp(
+				'^/google-site-kit/v1/modules/analytics-4/data/google-tag-settings'
+			),
+			{
+				body: fixtures.googleTagSettings,
+				status: 200,
+			}
+		);
+
 		const { getAllByRole, container, registry } = render(
 			<PropertySelect />,
 			{ setupRegistry }

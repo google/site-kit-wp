@@ -52,6 +52,9 @@ describe( 'modules/analytics accounts', () => {
 	const propertiesEndpoint = new RegExp(
 		'^/google-site-kit/v1/modules/analytics/data/accounts-properties-profiles'
 	);
+	const googleTagSettingsEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/analytics-4/data/google-tag-settings'
+	);
 
 	beforeAll( () => {
 		API.setUsingCache( false );
@@ -508,6 +511,11 @@ describe( 'modules/analytics accounts', () => {
 				} );
 
 				it( 'should select the correct GA4 property', async () => {
+					fetchMock.getOnce( googleTagSettingsEndpoint, {
+						body: ga4Fixtures.googleTagSettings,
+						status: 200,
+					} );
+
 					await registry
 						.dispatch( MODULES_ANALYTICS )
 						.selectAccount( accountID );
@@ -551,6 +559,10 @@ describe( 'modules/analytics accounts', () => {
 				} );
 
 				it( 'should set primary property type to GA4 when there is no matching UA property', async () => {
+					fetchMock.getOnce( googleTagSettingsEndpoint, {
+						body: ga4Fixtures.googleTagSettings,
+						status: 200,
+					} );
 					await registry
 						.dispatch( MODULES_ANALYTICS )
 						.selectAccount( accountID );
@@ -916,6 +928,11 @@ describe( 'modules/analytics accounts', () => {
 
 			// instead is "property create"
 			it( 'should select correct GA4 property', async () => {
+				fetchMock.getOnce( googleTagSettingsEndpoint, {
+					body: ga4Fixtures.googleTagSettings,
+					status: 200,
+				} );
+
 				await registry
 					.__experimentalResolveSelect( MODULES_ANALYTICS )
 					.getAccounts();

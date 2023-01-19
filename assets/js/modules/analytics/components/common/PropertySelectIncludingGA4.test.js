@@ -248,6 +248,16 @@ describe( 'PropertySelectIncludingGA4IncludingGA4', () => {
 	} );
 
 	it( 'should set the primary property type to GA4 when the GA4 property is selected', async () => {
+		fetchMock.getOnce(
+			new RegExp(
+				'^/google-site-kit/v1/modules/analytics-4/data/google-tag-settings'
+			),
+			{
+				body: analytics4Fixtures.googleTagSettings,
+				status: 200,
+			}
+		);
+
 		const { getByText, container, registry, findByText } = render(
 			<PropertySelectIncludingGA4 />,
 			{
@@ -271,6 +281,16 @@ describe( 'PropertySelectIncludingGA4IncludingGA4', () => {
 	} );
 
 	it( 'should set the primary property type to UA when the UA property is selected', async () => {
+		fetchMock.get(
+			new RegExp(
+				'^/google-site-kit/v1/modules/analytics-4/data/google-tag-settings'
+			),
+			{
+				body: analytics4Fixtures.googleTagSettings,
+				status: 200,
+			}
+		);
+
 		const { getByText, container, registry, findByText } = render(
 			<PropertySelectIncludingGA4 />,
 			{
@@ -286,6 +306,11 @@ describe( 'PropertySelectIncludingGA4IncludingGA4', () => {
 			fireEvent.click( container.querySelector( '.mdc-floating-label' ) );
 			fireEvent.click( getByText( `UA Property (${ propertyIDua })` ) );
 			await findByText( `UA Property (${ propertyIDua })` );
+
+			await untilResolved(
+				registry,
+				MODULES_ANALYTICS_4
+			).getWebDataStreams( propertyIDga4 );
 		} );
 
 		expect(
@@ -294,6 +319,16 @@ describe( 'PropertySelectIncludingGA4IncludingGA4', () => {
 	} );
 
 	it( 'should correctly set UA settings when the GA4 property is selected', async () => {
+		fetchMock.getOnce(
+			new RegExp(
+				'^/google-site-kit/v1/modules/analytics-4/data/google-tag-settings'
+			),
+			{
+				body: analytics4Fixtures.googleTagSettings,
+				status: 200,
+			}
+		);
+
 		const { getByText, container, registry, findByText } = render(
 			<PropertySelectIncludingGA4 />,
 			{
@@ -320,6 +355,15 @@ describe( 'PropertySelectIncludingGA4IncludingGA4', () => {
 	} );
 
 	it( 'should correctly set GA4 settings when the UA property is selected', async () => {
+		fetchMock.getOnce(
+			new RegExp(
+				'^/google-site-kit/v1/modules/analytics-4/data/google-tag-settings'
+			),
+			{
+				body: analytics4Fixtures.googleTagSettings,
+				status: 200,
+			}
+		);
 		const { getByText, container, registry, findByText } = render(
 			<PropertySelectIncludingGA4 />,
 			{
