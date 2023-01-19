@@ -39,6 +39,7 @@ import { isValidPropertySelection } from '../utils/validation';
 import { actions as webDataStreamActions } from './webdatastreams';
 import { isValidAccountID } from '../../analytics/util';
 import { createValidatedAction } from '../../../googlesitekit/data/utils';
+import { isFeatureEnabled } from '../../../features';
 const { commonActions, createRegistryControl } = Data;
 
 const fetchGetPropertyStore = createFetchStore( {
@@ -132,6 +133,27 @@ const fetchCreatePropertyStore = createFetchStore( {
 	},
 	validateParams( { accountID } = {} ) {
 		invariant( accountID, 'accountID is required.' );
+	},
+} );
+
+const fetchGetGoogleTagSettingsStore = createFetchStore( {
+	baseName: 'getGoogleTagSettings',
+	controlCallback( { measurementID } ) {
+		return API.get( 'modules', 'analytics-4', 'google-tag-settings', {
+			measurementID,
+		} );
+	},
+	reducerCallback( state, googleTagSettings ) {
+		return {
+			...state,
+			googleTagSettings,
+		};
+	},
+	argsToParams( measurementID ) {
+		return { measurementID };
+	},
+	validateParams( { measurementID } = {} ) {
+		invariant( measurementID, 'measurementID is required.' );
 	},
 } );
 
@@ -414,6 +436,56 @@ const baseActions = {
 			type: WAIT_FOR_PROPERTIES,
 		};
 	},
+	/**
+	 * Updates settings for a given measurement ID.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {string} measurementID Measurement ID.
+	 */
+	*updateSettingsForMeasurementID( measurementID ) {
+		const registry = yield commonActions.getRegistry();
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setMeasurementID( measurementID );
+
+		if ( ! isFeatureEnabled( 'gteSupport' ) ) {
+			if ( ! measurementID ) {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setGoogleTagAccountID( '' );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setGoogleTagContainerID( '' );
+				registry.dispatch( MODULES_ANALYTICS_4 ).setGoogleTagID( '' );
+				return;
+			}
+
+			const { response, error } =
+				yield fetchGetGoogleTagSettingsStore.actions.fetchGetGoogleTagSettings(
+					measurementID
+				);
+
+			if ( error ) {
+				return;
+			}
+
+			const { googleTagAccountID, googleTagContainerID, googleTagID } =
+				response;
+
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setGoogleTagAccountID( googleTagAccountID );
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setGoogleTagContainerID( googleTagContainerID );
+			registry
+
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setGoogleTagID( googleTagID );
+		}
+	},
 };
 
 const baseControls = {
@@ -496,6 +568,7 @@ const store = Data.combineStores(
 	fetchCreatePropertyStore,
 	fetchGetPropertiesStore,
 	fetchGetPropertyStore,
+	fetchGetGoogleTagSettingsStore,
 	{
 		initialState: baseInitialState,
 		actions: baseActions,
