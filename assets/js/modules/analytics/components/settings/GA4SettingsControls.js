@@ -201,7 +201,7 @@ export default function GA4SettingsControls( {
 									) }
 									styles={ {
 										options: {
-											zIndex: 10,
+											zIndex: 9999,
 										},
 									} }
 									target=".googlesitekit-analytics-4__select-property"
