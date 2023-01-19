@@ -93,6 +93,24 @@ describe( 'core/site site info', () => {
 		} );
 
 		describe( 'setSiteKitAutoUpdatesEnabled', () => {
+			it( 'sets the siteKitAutoUpdatesEnabled property', () => {
+				registry
+					.dispatch( CORE_SITE )
+					.setSiteKitAutoUpdatesEnabled( true );
+
+				expect(
+					registry.select( CORE_SITE ).getSiteKitAutoUpdatesEnabled()
+				).toBe( true );
+
+				registry
+					.dispatch( CORE_SITE )
+					.setSiteKitAutoUpdatesEnabled( false );
+
+				expect(
+					registry.select( CORE_SITE ).getSiteKitAutoUpdatesEnabled()
+				).toBe( false );
+			} );
+
 			it( 'requires a boolean argument', () => {
 				expect( () => {
 					registry
@@ -123,20 +141,6 @@ describe( 'core/site site info', () => {
 				} ).not.toThrow(
 					'siteKitAutoUpdatesEnabled must be a boolean.'
 				);
-			} );
-
-			it( 'receives and sets site info ', async () => {
-				await registry
-					.dispatch( CORE_SITE )
-					.receiveSiteInfo( { ...baseInfo, ...entityInfo } );
-
-				expect(
-					registry.select( CORE_SITE ).getSiteInfo()
-				).toMatchObject( {
-					...baseInfo,
-					...entityInfo,
-					currentEntityID: 4,
-				} );
 			} );
 		} );
 	} );
