@@ -1,9 +1,9 @@
 <?php
 /**
- * Google_URL_Matcher_TraitTest
+ * Auto_UpdatesTest
  *
  * @package   Google\Site_Kit\Tests\Core\Util
- * @copyright 2021 Google LLC
+ * @copyright 2023 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
@@ -15,14 +15,13 @@ use Google\Site_Kit\Tests\TestCase;
 
 /**
  * @group Util
+ * @requires function wp_is_auto_update_enabled_for_type
  */
 class Auto_UpdatesTest extends TestCase {
+	/**
+	 * @requires function wp_is_auto_update_forced_for_item
+	 */
 	public function test_sitekit_autoupdate_forced() {
-		// Forced auto updates are available for WP >= 5.6 only.
-		if ( version_compare( get_bloginfo( 'version' ), '5.6', '<' ) ) {
-			return;
-		}
-
 		// By default, auto updates are not forced to either be enabled
 		// or disabled.
 		$this->assertSame( Auto_Updates::AUTO_UPDATE_NOT_FORCED, Auto_Updates::sitekit_forced_autoupdates_status() );
@@ -45,11 +44,6 @@ class Auto_UpdatesTest extends TestCase {
 	}
 
 	public function test_sitekit_autoupdates_disabled() {
-		// Forced auto updates are available for WP >= 5.6 only.
-		if ( ! self::auto_updates_available() ) {
-			return;
-		}
-
 		$this->assertFalse( Auto_Updates::is_sitekit_autoupdates_enabled() );
 
 		update_site_option( 'auto_update_plugins', array( 'other-plugin.php' ) );
@@ -58,21 +52,9 @@ class Auto_UpdatesTest extends TestCase {
 	}
 
 	public function test_sitekit_autoupdates_enabled() {
-		// Forced auto updates are available for WP >= 5.6 only.
-		if ( ! self::auto_updates_available() ) {
-			return;
-		}
-
 		update_site_option( 'auto_update_plugins', array( 'other-plugin.php', GOOGLESITEKIT_PLUGIN_BASENAME ) );
 
 		$this->assertTrue( Auto_Updates::is_sitekit_autoupdates_enabled() );
-	}
-
-	/**
-	 * Verify if auto-updates are available for the current WordPress version.
-	 */
-	private function auto_updates_available() {
-		return version_compare( get_bloginfo( 'version' ), '5.5', '>=' );
 	}
 }
 
