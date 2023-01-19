@@ -1333,4 +1333,57 @@ final class Analytics_4 extends Module
 			throw new Invalid_Report_Dimensions_Exception( $message );
 		}
 	}
+
+	/**
+	 * Gets the Google Tag Settings for the given measurement ID.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $measurement_id Measurement ID.
+	 * @return array Google Tag Settings.
+	 */
+	protected function get_google_tag_settings_for_measurement_id( $measurement_id ) {
+		$container = $this->get_tagmanager_service()->accounts_containers->lookup( array( 'destinationId' => $measurement_id ) );
+
+		$tag_ids = $container->getTagIds();
+
+		$google_tag_id = '';
+
+		// if there is only one tag, use it.
+		if ( count( $tag_ids ) === 1 ) {
+			$google_tag_id = $tag_ids[0];
+		} else {
+			// if there are multiple tags, use the first one that starts with `GT-`.
+			foreach ( $tag_ids as $tag_id ) {
+				if ( substr( $tag_id, 0, 3 ) === 'GT-' ) { // strlen( 'GT-' ) === 3.
+					$google_tag_id = $tag_id;
+					break;
+				}
+			}
+			// Otherwise, use the `$measurement_id` as `$google_tag_id` if it is in the array.
+			if ( empty( $google_tag_id ) ) {
+				if ( in_array( $measurement_id, $tag_ids, true ) ) {
+					$google_tag_id = $measurement_id;
+				} else {
+					// Otherwise, Use the first one that starts with `G-`.
+					foreach ( $tag_ids as $tag_id ) {
+						if ( substr( $tag_id, 0, 2 ) === 'G-' ) { // strlen( 'G-' ) === 2.
+							$google_tag_id = $tag_id;
+							break;
+						}
+					}
+					if ( empty( $google_tag_id ) ) {
+						// If none of the above, use the first one.
+						$google_tag_id = $tag_ids[0];
+					}
+				}
+			}
+		}
+
+		return array(
+			'googleTagAccountID'   => $container->getAccountId(),
+			'googleTagContainerID' => $container->getContainerId(),
+			'googleTagID'          => $google_tag_id,
+		);
+	}
 }
