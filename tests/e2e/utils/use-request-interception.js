@@ -27,6 +27,7 @@ export function useRequestInterception( callback ) {
 	};
 }
 
+// TODO: Remove this function and it's usages as part of #6433.
 /**
  * Adds shared request handler for intercepting requests.
  *
