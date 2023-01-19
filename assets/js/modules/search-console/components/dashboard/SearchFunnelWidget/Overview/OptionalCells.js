@@ -134,6 +134,6 @@ OptionalCells.propTypes = {
 	quarterCellProps: PropTypes.object.isRequired,
 	showAnalytics: PropTypes.bool.isRequired,
 	showGoalsCTA: PropTypes.bool.isRequired,
-	showRecoverableAnalytics: PropTypes.bool.isRequired,
+	showRecoverableAnalytics: PropTypes.bool,
 	WidgetReportError: PropTypes.elementType.isRequired,
 };
