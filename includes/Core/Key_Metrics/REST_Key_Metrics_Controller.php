@@ -126,6 +126,7 @@ class REST_Key_Metrics_Controller {
 										'widgetSlugs'    => array(
 											'type'     => 'array',
 											'required' => false,
+											'maxItems' => 4,
 											'items'    => array(
 												'type' => 'string',
 											),
