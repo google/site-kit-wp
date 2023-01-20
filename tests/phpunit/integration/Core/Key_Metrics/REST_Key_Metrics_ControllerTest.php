@@ -134,6 +134,7 @@ class REST_Key_Metrics_ControllerTest extends TestCase {
 		);
 
 		$response = rest_get_server()->dispatch( $request );
+		$this->assertEquals( 400, $response->get_status() );
 		$this->assertEquals( 'rest_invalid_param', $response->get_data()['code'] );
 	}
 

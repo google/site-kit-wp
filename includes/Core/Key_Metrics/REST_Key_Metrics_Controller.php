@@ -104,7 +104,19 @@ class REST_Key_Metrics_Controller {
 						// If the incoming data param doesn't match the schema, then WordPress
 						// will automatically return the rest_invalid_param error and we will
 						// never get to here.
-						$data = $request->get_param( 'data' );
+						$data     = $request->get_param( 'data' );
+						$settings = $data['settings'];
+
+						// Additional check is needed to ensure that we have no more than 4 widget
+						// slugs provided.
+						if ( count( $settings['widgetSlugs'] ) > 4 ) {
+							return new WP_Error(
+								'rest_invalid_param',
+								__( 'No more than 4 key metrics can be selected.', 'google-site-kit' ),
+								array( 'status' => 400 )
+							);
+						}
+
 						$this->settings->merge( $data['settings'] );
 
 						return new WP_REST_Response( $this->settings->get() );
