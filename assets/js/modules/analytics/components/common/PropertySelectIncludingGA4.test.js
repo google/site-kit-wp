@@ -281,7 +281,7 @@ describe( 'PropertySelectIncludingGA4IncludingGA4', () => {
 	} );
 
 	it( 'should set the primary property type to UA when the UA property is selected', async () => {
-		fetchMock.get(
+		fetchMock.getOnce(
 			new RegExp(
 				'^/google-site-kit/v1/modules/analytics-4/data/google-tag-settings'
 			),
@@ -364,6 +364,7 @@ describe( 'PropertySelectIncludingGA4IncludingGA4', () => {
 				status: 200,
 			}
 		);
+
 		const { getByText, container, registry, findByText } = render(
 			<PropertySelectIncludingGA4 />,
 			{
