@@ -35,6 +35,7 @@ import { Icon, check, stack } from '@wordpress/icons';
 import { Button } from 'googlesitekit-components';
 import Link from '../Link';
 import CTA from '../notifications/CTA';
+import { trackEvent } from '../../util';
 
 class GoogleChartErrorHandler extends Component {
 	constructor( props ) {
@@ -53,6 +54,13 @@ class GoogleChartErrorHandler extends Component {
 		global.console.error( 'Google Charts error:', error, info );
 
 		this.setState( { error, info } );
+
+		trackEvent(
+			'react_error',
+			`handle_${ this.context || 'unknown' }_error`,
+			// label has a max-length of 500 bytes.
+			`${ error?.message }\n${ info?.componentStack }`.slice( 0, 500 )
+		);
 	}
 
 	onErrorClick() {
