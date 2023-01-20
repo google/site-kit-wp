@@ -108,7 +108,9 @@ class REST_Key_Metrics_Controller {
 						$settings = $data['settings'];
 
 						// Additional check is needed to ensure that we have no more than 4 widget
-						// slugs provided.
+						// slugs provided. This is required until we drop support for WP versions below 5.5.0, after
+						// which we can solely rely on `maxItems` in the schema validation (see below).
+						// See https://github.com/WordPress/WordPress/blob/965fcddcf68cf4fd122ae24b992e242dfea1d773/wp-includes/rest-api.php#L1922-L1925.
 						if ( count( $settings['widgetSlugs'] ) > 4 ) {
 							return new WP_Error(
 								'rest_invalid_param',
