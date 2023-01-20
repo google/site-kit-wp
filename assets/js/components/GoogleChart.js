@@ -26,6 +26,7 @@ import '../util/initialize-google-global';
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
 import { Chart } from 'react-google-charts';
+import { useMount } from 'react-use';
 import set from 'lodash/set';
 import cloneDeep from 'lodash/cloneDeep';
 import merge from 'lodash/merge';
@@ -49,7 +50,8 @@ import GatheringDataNotice, { NOTICE_STYLE } from './GatheringDataNotice';
 import { stringToDate } from '../util/date-range/string-to-date';
 import Data from 'googlesitekit-data';
 import GoogleChartErrorHandler from './GoogleChartErrorHandler';
-const { useSelect } = Data;
+import { CORE_UI } from '../googlesitekit/datastore/ui/constants';
+const { useDispatch, useSelect } = Data;
 
 // eslint-disable-next-line complexity
 export default function GoogleChart( props ) {
@@ -78,8 +80,13 @@ export default function GoogleChart( props ) {
 	const { startDate, endDate } = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeDates()
 	);
+	const googleChartsCollisionError = useSelect( ( select ) =>
+		select( CORE_UI ).getValue( 'googleChartsCollisionError' )
+	);
 
 	const [ isChartLoaded, setIsChartLoaded ] = useState( false );
+
+	const { setValue } = useDispatch( CORE_UI );
 
 	// Ensure we don't filter out columns that aren't data, but are things like
 	// tooltips or other content.
@@ -132,6 +139,30 @@ export default function GoogleChart( props ) {
 	const chartWrapperRef = useRef();
 	const googleRef = useRef();
 
+	// Don't load Google Charts if another script on the page has already loaded
+	// Google Charts.
+	//
+	// If another plugin loads Google Charts somewhere on the page, our charts
+	// will likely encounter an error due to a version mismatch.
+	//
+	// This is because Google Charts is a singleton, and if another plugin loads
+	// it first, our charts will use the same instance of Google Charts.
+	//
+	// See:
+	// * https://github.com/google/site-kit-wp/issues/6350
+	// * https://github.com/google/site-kit-wp/issues/6355
+	useMount( () => {
+		if ( googleChartsCollisionError !== undefined ) {
+			return;
+		}
+
+		if ( global?.google?.charts && global?.Chart?.version !== undefined ) {
+			setValue( 'googleChartsCollisionError', true );
+		} else {
+			setValue( 'googleChartsCollisionError', false );
+		}
+	} );
+
 	useEffect( () => {
 		// Remove all event listeners after the component has unmounted.
 		return () => {
@@ -177,6 +208,10 @@ export default function GoogleChart( props ) {
 			);
 		}
 	}, [ onMouseOver, onMouseOut ] );
+
+	if ( googleChartsCollisionError ) {
+		return null;
+	}
 
 	if ( ! loaded ) {
 		return (
