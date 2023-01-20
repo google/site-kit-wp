@@ -59,7 +59,7 @@ class Key_Metrics_Settings extends User_Setting {
 	 */
 	public function merge( array $partial ) {
 		$settings = $this->get();
-		$partial = array_filter(
+		$partial  = array_filter(
 			$partial,
 			function ( $value ) {
 				return null !== $value;
