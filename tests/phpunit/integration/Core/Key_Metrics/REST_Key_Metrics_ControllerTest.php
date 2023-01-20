@@ -116,7 +116,10 @@ class REST_Key_Metrics_ControllerTest extends TestCase {
 		$this->assertEqualSetsWithIndex( $changed_settings, $response->get_data() );
 	}
 
-	public function test_set_settings__wrong_data() {
+	/**
+	 * @dataProvider provider_wrong_data
+	 */
+	public function test_set_settings__wrong_data( $settings ) {
 		remove_all_filters( 'googlesitekit_rest_routes' );
 		$this->controller->register();
 		$this->register_rest_routes();
@@ -125,7 +128,7 @@ class REST_Key_Metrics_ControllerTest extends TestCase {
 		$request->set_body_params(
 			array(
 				'data' => array(
-					'settings' => '{}',
+					'settings' => $settings,
 				),
 			)
 		);
@@ -133,6 +136,20 @@ class REST_Key_Metrics_ControllerTest extends TestCase {
 		$response = rest_get_server()->dispatch( $request );
 		$this->assertEquals( 400, $response->get_status() );
 		$this->assertEquals( 'rest_invalid_param', $response->get_data()['code'] );
+	}
+
+	public function provider_wrong_data() {
+		return array(
+			'wrong data type'              => array(
+				'{}',
+			),
+			'wrong number of widget slugs' => array(
+				array(
+					'widgetSlugs'    => array( 'widget0', 'widget1', 'widget2', 'widget3', 'widget4' ),
+					'isWidgetHidden' => true,
+				),
+			),
+		);
 	}
 
 }
