@@ -139,8 +139,11 @@ class Key_Metrics_SettingsTest extends TestCase {
 			'isWidgetHidden' => true,
 		);
 
-		// Make sure invalid keys are set
-		$this->key_metrics_settings->set( $original_settings );
+		// Make sure settings can be updated even without having them set initially
+		$this->key_metrics_settings->merge( $original_settings );
+		$this->assertEqualSetsWithIndex( $original_settings, $this->key_metrics_settings->get() );
+
+		// Make sure invalid keys aren't set
 		$this->key_metrics_settings->merge( array( 'test_key' => 'test_value' ) );
 		$this->assertEqualSetsWithIndex( $original_settings, $this->key_metrics_settings->get() );
 
