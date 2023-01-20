@@ -27,14 +27,14 @@ function TypeScaleWidget( { name, label, sizes } ) {
 	return (
 		<Cell size={ 6 }>
 			<Widget
-				className={ `googlesitekit-type-scale googlesitekit-type-scale-${ name }` }
+				className={ `googlesitekit-type-scale googlesitekit-type-scale--${ name }` }
 			>
 				<h2>{ label }</h2>
 				{ Object.keys( sizes ).map( ( key, index ) => {
 					return (
 						<p
 							key={ index }
-							className={ `googlesitekit-type-scale-${ name } ${ key }` }
+							className={ `googlesitekit-type-scale--${ name } ${ key }` }
 						>
 							{ sizes[ key ] }
 						</p>
