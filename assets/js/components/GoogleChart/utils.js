@@ -29,15 +29,18 @@ import merge from 'lodash/merge';
 import { stringToDate } from '../../util/date-range/string-to-date';
 
 /**
- * Returns the modified data for Google chart.
+ * Returns the Google chart data, filtered by selected stats if present.
  *
  * @since n.e.x.t
  *
- * @param {Array|null}      data          Chart data.
- * @param {Array|undefined} selectedStats If only certain columns should be displayed for the data set.
- * @return {Object} The modified data to use in a chart.
+ * @param {Array|undefined} data          Chart data.
+ * @param {Array|undefined} selectedStats The columns that should be displayed for the data set.
+ * @return {Object} The chart data, filtered by selected stats if present.
  */
-export const getGoogleChartData = ( data, selectedStats ) => {
+export const getFilteredChartData = ( data, selectedStats ) => {
+	if ( ! selectedStats?.length ) {
+		return data;
+	}
 	// Ensure we don't filter out columns that aren't data, but are things like
 	// tooltips or other content.
 	let nonDataColumns = [];
@@ -47,9 +50,9 @@ export const getGoogleChartData = ( data, selectedStats ) => {
 		}, [] );
 	}
 
-	let modifiedData = data;
+	let filteredData = data;
 	if ( selectedStats?.length > 0 ) {
-		modifiedData = data.map( ( row ) => {
+		filteredData = data.map( ( row ) => {
 			return row.filter( ( _columnValue, columnIndex ) => {
 				return (
 					columnIndex === 0 ||
@@ -60,7 +63,7 @@ export const getGoogleChartData = ( data, selectedStats ) => {
 		} );
 	}
 
-	return modifiedData;
+	return filteredData;
 };
 
 /**
@@ -74,27 +77,27 @@ export const getGoogleChartData = ( data, selectedStats ) => {
  * @param {string|undefined} width         Chart width.
  * @return {Object} The optimal height and width to use in a preview element.
  */
-export const getLoadingDimentions = (
+export const getLoadingDimensions = (
 	loadingHeight,
 	height,
 	loadingWidth,
 	width
 ) => {
-	const dimentions = {
+	const dimensions = {
 		height: loadingHeight || height,
 		width: loadingWidth || width,
 	};
 	// If a loading height is set but a width is not (or a loading width is set
 	// but not a height), change the "unset" value to 100% to avoid visual bugs.
 	// See: https://github.com/google/site-kit-wp/pull/2916#discussion_r623866269
-	if ( dimentions.height && ! dimentions.width ) {
-		dimentions.width = '100%';
+	if ( dimensions.width && ! dimensions.height ) {
+		dimensions.width = '100%';
 	}
-	if ( dimentions.height && ! dimentions.width ) {
-		dimentions.height = '100%';
+	if ( dimensions.height && ! dimensions.width ) {
+		dimensions.height = '100%';
 	}
 
-	return dimentions;
+	return dimensions;
 };
 
 /**
@@ -102,9 +105,9 @@ export const getLoadingDimentions = (
  *
  * @since n.e.x.t
  *
- * @param {Array.<Object>|null} chartEvents Event names and its callbacks.
- * @param {Function|undefined}  onReady     Chart event.
- * @param {Function|undefined}  onSelect    Chart event.
+ * @param {Array.<Object>|undefined} chartEvents Event names and its callbacks.
+ * @param {Function|undefined}       onReady     Chart event.
+ * @param {Function|undefined}       onSelect    Chart event.
  * @return {Object} The object containig all events.
  */
 export const getCombinedChartEvents = ( chartEvents, onReady, onSelect ) => {

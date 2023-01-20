@@ -46,8 +46,8 @@ import GatheringDataNotice, { NOTICE_STYLE } from '../GatheringDataNotice';
 
 import Data from 'googlesitekit-data';
 import {
-	getGoogleChartData,
-	getLoadingDimentions,
+	getFilteredChartData,
+	getLoadingDimensions,
 	getCombinedChartEvents,
 	getChartOptions,
 } from './utils';
@@ -83,10 +83,10 @@ export default function GoogleChart( props ) {
 
 	const [ isChartLoaded, setIsChartLoaded ] = useState( false );
 
-	const modifiedData = getGoogleChartData( data, selectedStats );
+	const filteredData = getFilteredChartData( data, selectedStats );
 
 	const loadingShape = chartType === 'PieChart' ? 'circular' : 'square';
-	const loadingDimentions = getLoadingDimentions(
+	const loadingDimensions = getLoadingDimensions(
 		loadingHeight,
 		height,
 		loadingWidth,
@@ -98,7 +98,7 @@ export default function GoogleChart( props ) {
 			<PreviewBlock
 				className="googlesitekit-chart-loading__wrapper"
 				shape={ loadingShape }
-				{ ...loadingDimentions }
+				{ ...loadingDimensions }
 			/>
 		</div>
 	);
@@ -195,7 +195,7 @@ export default function GoogleChart( props ) {
 					chartEvents={ combinedChartEvents }
 					chartType={ chartType }
 					chartVersion="49"
-					data={ modifiedData }
+					data={ filteredData }
 					loader={ loader }
 					height={ height }
 					getChartWrapper={ ( chartWrapper, google ) => {
