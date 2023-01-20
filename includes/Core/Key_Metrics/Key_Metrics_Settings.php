@@ -50,7 +50,7 @@ class Key_Metrics_Settings extends User_Setting {
 	}
 
 	/**
-	 * Merges an array of settings to update. Only existing keys will be updated.
+	 * Merges an array of settings to update.
 	 *
 	 * @since n.e.x.t
 	 *
@@ -59,15 +59,6 @@ class Key_Metrics_Settings extends User_Setting {
 	 */
 	public function merge( array $partial ) {
 		$settings = $this->get();
-		if ( empty( $settings ) ) {
-			// Set defaults just to make sure that only allowed settings
-			// are merged from the $partial array.
-			$settings = array(
-				'widgetSlugs'    => '',
-				'isWidgetHidden' => '',
-			);
-		}
-
 		$partial = array_filter(
 			$partial,
 			function ( $value ) {
@@ -75,7 +66,12 @@ class Key_Metrics_Settings extends User_Setting {
 			}
 		);
 
-		$updated = array_intersect_key( $partial, $settings );
+		$allowed_settings = array(
+			'widgetSlugs'    => true,
+			'isWidgetHidden' => true,
+		);
+
+		$updated = array_intersect_key( $partial, $allowed_settings );
 
 		return $this->set( array_merge( $settings, $updated ) );
 	}
