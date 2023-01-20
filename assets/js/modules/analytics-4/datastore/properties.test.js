@@ -46,9 +46,6 @@ describe( 'modules/analytics-4 properties', () => {
 	const propertyEndpoint = new RegExp(
 		'^/google-site-kit/v1/modules/analytics-4/data/property'
 	);
-	const googleTagSettingsEndpoint = new RegExp(
-		'^/google-site-kit/v1/modules/analytics-4/data/google-tag-settings'
-	);
 
 	beforeAll( () => {
 		API.setUsingCache( false );
@@ -208,11 +205,6 @@ describe( 'modules/analytics-4 properties', () => {
 					measurementID: 'abcd',
 				};
 
-				fetchMock.getOnce( googleTagSettingsEndpoint, {
-					body: fixtures.googleTagSettings,
-					status: 200,
-				} );
-
 				provideSiteInfo( registry, {
 					referenceSiteURL: 'https://www.example.org',
 				} );
@@ -260,11 +252,6 @@ describe( 'modules/analytics-4 properties', () => {
 					),
 					responsePromise
 				);
-
-				fetchMock.getOnce( googleTagSettingsEndpoint, {
-					body: fixtures.googleTagSettings,
-					status: 200,
-				} );
 
 				provideSiteInfo( registry, {
 					referenceSiteURL: 'https://www.example.org',
@@ -439,11 +426,6 @@ describe( 'modules/analytics-4 properties', () => {
 			} );
 
 			it( 'should select the correct property ID if we can find a matching property', async () => {
-				fetchMock.getOnce( googleTagSettingsEndpoint, {
-					body: fixtures.googleTagSettings,
-					status: 200,
-				} );
-
 				await registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.matchAndSelectProperty( accountID );
@@ -523,6 +505,19 @@ describe( 'modules/analytics-4 properties', () => {
 					.dispatch( MODULES_ANALYTICS_4 )
 					.matchPropertyByMeasurementID( propertyIDs, measurementID );
 				expect( matchedProperty ).toBeNull();
+			} );
+		} );
+		describe( 'updateSettingsForMeasurementID', () => {
+			it( 'should update the settings with the measurement ID.', () => {
+				const measurementID = '1A2BCD346E';
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.updateSettingsForMeasurementID( measurementID );
+				expect(
+					registry.select( MODULES_ANALYTICS_4 ).getSettings()
+				).toMatchObject( {
+					measurementID,
+				} );
 			} );
 		} );
 	} );

@@ -53,9 +53,6 @@ describe( 'modules/analytics-4 settings', () => {
 	const createWebDataStreamsEndpoint = new RegExp(
 		'^/google-site-kit/v1/modules/analytics-4/data/create-webdatastream'
 	);
-	const googleTagSettingsEndpoint = new RegExp(
-		'^/google-site-kit/v1/modules/analytics-4/data/google-tag-settings'
-	);
 
 	beforeAll( () => {
 		API.setUsingCache( false );
@@ -101,11 +98,6 @@ describe( 'modules/analytics-4 settings', () => {
 					const { data } = JSON.parse( opts.body );
 					// Return the same settings passed to the API.
 					return { body: data, status: 200 };
-				} );
-
-				fetchMock.getOnce( googleTagSettingsEndpoint, {
-					body: fixtures.googleTagSettings,
-					status: 200,
 				} );
 
 				const result = await registry
@@ -184,11 +176,6 @@ describe( 'modules/analytics-4 settings', () => {
 					const { data } = JSON.parse( opts.body );
 					// Return the same settings passed to the API.
 					return { body: data, status: 200 };
-				} );
-
-				fetchMock.getOnce( googleTagSettingsEndpoint, {
-					body: fixtures.googleTagSettings,
-					status: 200,
 				} );
 
 				const result = await registry

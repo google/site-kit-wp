@@ -455,40 +455,39 @@ const baseActions = {
 			.setMeasurementID( measurementID );
 
 		if ( ! isFeatureEnabled( 'gteSupport' ) ) {
-			if ( measurementID === '' ) {
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.setGoogleTagAccountID( '' );
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.setGoogleTagContainerID( '' );
-				registry.dispatch( MODULES_ANALYTICS_4 ).setGoogleTagID( '' );
-				return;
-			}
-
-			const { response, error } =
-				yield fetchGetGoogleTagSettingsStore.actions.fetchGetGoogleTagSettings(
-					measurementID
-				);
-
-			if ( error ) {
-				return;
-			}
-
-			const { googleTagAccountID, googleTagContainerID, googleTagID } =
-				response;
-
-			registry
-				.dispatch( MODULES_ANALYTICS_4 )
-				.setGoogleTagAccountID( googleTagAccountID );
-			registry
-				.dispatch( MODULES_ANALYTICS_4 )
-				.setGoogleTagContainerID( googleTagContainerID );
-			registry
-
-				.dispatch( MODULES_ANALYTICS_4 )
-				.setGoogleTagID( googleTagID );
+			return;
 		}
+
+		if ( measurementID === '' ) {
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setGoogleTagAccountID( '' );
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setGoogleTagContainerID( '' );
+			registry.dispatch( MODULES_ANALYTICS_4 ).setGoogleTagID( '' );
+			return;
+		}
+
+		const { response, error } =
+			yield fetchGetGoogleTagSettingsStore.actions.fetchGetGoogleTagSettings(
+				measurementID
+			);
+
+		if ( error ) {
+			return;
+		}
+
+		const { googleTagAccountID, googleTagContainerID, googleTagID } =
+			response;
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setGoogleTagAccountID( googleTagAccountID );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setGoogleTagContainerID( googleTagContainerID );
+		registry.dispatch( MODULES_ANALYTICS_4 ).setGoogleTagID( googleTagID );
 	},
 };
 
