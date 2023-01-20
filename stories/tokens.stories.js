@@ -132,7 +132,7 @@ const ContentTokens = () => (
 			<Token
 				name="content-secondary"
 				label="Secondary"
-				reference="SK-600"
+				reference="T-500"
 			/>
 		</TokenRow>
 	</Fragment>
@@ -185,7 +185,7 @@ const InteractiveTokens = () => (
 				<Token
 					name="interactive-tertiary-focus"
 					label="Tertiary Focus"
-					reference="161B18, 24%"
+					reference="161B18, 26%"
 				/>
 				<Token
 					name="interactive-tertiary-press"
