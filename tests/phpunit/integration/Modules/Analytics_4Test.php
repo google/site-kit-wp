@@ -36,6 +36,7 @@ use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnaly
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaDataStream;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaDataStreamWebStreamData;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaListConversionEventsResponse;
+use Google\Site_Kit_Dependencies\Google\Service\TagManager\Container;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Message\Request;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Message\Response;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Stream\Stream;
@@ -43,6 +44,7 @@ use WP_User;
 
 /**
  * @group Modules
+ * @group Analytics_4
  */
 class Analytics_4Test extends TestCase {
 
@@ -196,6 +198,108 @@ class Analytics_4Test extends TestCase {
 				'googleTagID'          => '',
 				'googleTagAccountID'   => '',
 				'googleTagContainerID' => '',
+			),
+			$options->get( Settings::OPTION )
+		);
+	}
+
+	public function test_handle_provisioning_callback__gteSupport() {
+		$this->enable_feature( 'gteSupport' );
+		$account_id       = '12345678';
+		$property_id      = '1001';
+		$webdatastream_id = '2001';
+		$measurement_id   = '1A2BCD345E';
+		$account_id       = '123';
+		$container_id     = '456';
+		$tag_ids          = array( 'GT-123', 'G-456' );
+
+		$options = new Options( $this->context );
+		$options->set(
+			Settings::OPTION,
+			array(
+				'accountID'       => $account_id,
+				'propertyID'      => '',
+				'webDataStreamID' => '',
+				'measurementID'   => '',
+			)
+		);
+
+		$http_client = new FakeHttpClient();
+		$http_client->set_request_handler(
+			function( Request $request ) use ( $property_id, $webdatastream_id, $measurement_id, $account_id, $container_id, $tag_ids ) {
+				$url = parse_url( $request->getUrl() );
+
+				if ( ! in_array( $url['host'], array( 'analyticsadmin.googleapis.com', 'tagmanager.googleapis.com' ), true ) ) {
+					return new Response( 200 );
+				}
+
+				switch ( $url['path'] ) {
+					case '/v1beta/properties':
+						return new Response(
+							200,
+							array(),
+							Stream::factory(
+								json_encode(
+									array(
+										'name' => "properties/{$property_id}",
+									)
+								)
+							)
+						);
+					case "/v1beta/properties/{$property_id}/dataStreams":
+						$data = new GoogleAnalyticsAdminV1betaDataStreamWebStreamData();
+						$data->setMeasurementId( $measurement_id );
+						$datastream = new GoogleAnalyticsAdminV1betaDataStream();
+						$datastream->setName( "properties/{$property_id}/dataStreams/{$webdatastream_id}" );
+						$datastream->setType( 'WEB_DATA_STREAM' );
+						$datastream->setWebStreamData( $data );
+
+						return new Response(
+							200,
+							array(),
+							Stream::factory(
+								json_encode( $datastream->toSimpleObject() )
+							)
+						);
+					case '/tagmanager/v2/accounts/containers:lookup':
+						$data = new Container();
+						$data->setAccountId( $account_id );
+						$data->setContainerId( $container_id );
+						$data->setTagIds( $tag_ids );
+						return new Response(
+							200,
+							array(),
+							Stream::factory(
+								json_encode(
+									$data->toSimpleObject()
+								)
+							)
+						);
+
+					default:
+						return new Response( 200 );
+				}
+			}
+		);
+
+		remove_all_actions( 'googlesitekit_analytics_handle_provisioning_callback' );
+
+		$this->analytics->get_client()->setHttpClient( $http_client );
+		$this->analytics->register();
+
+		do_action( 'googlesitekit_analytics_handle_provisioning_callback', $account_id );
+
+		$this->assertEqualSetsWithIndex(
+			array(
+				'accountID'            => $account_id,
+				'propertyID'           => $property_id,
+				'webDataStreamID'      => $webdatastream_id,
+				'measurementID'        => $measurement_id,
+				'ownerID'              => 0,
+				'useSnippet'           => true,
+				'googleTagID'          => 'GT-123',
+				'googleTagAccountID'   => $account_id,
+				'googleTagContainerID' => $container_id,
 			),
 			$options->get( Settings::OPTION )
 		);
@@ -1171,5 +1275,7 @@ class Analytics_4Test extends TestCase {
 			)
 		);
 	}
+
+
 
 }
