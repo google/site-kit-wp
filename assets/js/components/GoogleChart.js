@@ -45,12 +45,17 @@ import {
  * Internal dependencies
  */
 import PreviewBlock from './PreviewBlock';
+import {
+	VIEW_CONTEXT_ADMIN_BAR,
+	VIEW_CONTEXT_WP_DASHBOARD,
+} from '../googlesitekit/constants';
 import { CORE_USER } from '../googlesitekit/datastore/user/constants';
 import GatheringDataNotice, { NOTICE_STYLE } from './GatheringDataNotice';
 import { stringToDate } from '../util/date-range/string-to-date';
 import Data from 'googlesitekit-data';
 import GoogleChartErrorHandler from './GoogleChartErrorHandler';
 import { CORE_UI } from '../googlesitekit/datastore/ui/constants';
+import useViewContext from '../hooks/useViewContext';
 const { useDispatch, useSelect } = Data;
 
 // eslint-disable-next-line complexity
@@ -80,6 +85,14 @@ export default function GoogleChart( props ) {
 	const { startDate, endDate } = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeDates()
 	);
+
+	const viewContext = useViewContext();
+
+	const isOnPageSharedWithOtherPlugins = [
+		VIEW_CONTEXT_ADMIN_BAR,
+		VIEW_CONTEXT_WP_DASHBOARD,
+	].includes( viewContext );
+
 	const googleChartsCollisionError = useSelect( ( select ) =>
 		select( CORE_UI ).getValue( 'googleChartsCollisionError' )
 	);
@@ -156,7 +169,11 @@ export default function GoogleChart( props ) {
 			return;
 		}
 
-		if ( global?.google?.charts && global?.Chart?.version !== undefined ) {
+		if (
+			isOnPageSharedWithOtherPlugins &&
+			global?.google?.charts &&
+			global?.Chart?.version !== undefined
+		) {
 			setValue( 'googleChartsCollisionError', true );
 		} else {
 			setValue( 'googleChartsCollisionError', false );
