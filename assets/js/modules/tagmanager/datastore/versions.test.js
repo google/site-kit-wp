@@ -31,6 +31,7 @@ import {
 	muteFetch,
 	untilResolved,
 	unsubscribeFromAll,
+	freezeFetch,
 } from '../../../../../tests/js/utils';
 import {
 	createBuildAndReceivers,
@@ -38,6 +39,7 @@ import {
 } from './__factories__/utils';
 import * as factories from './__factories__';
 import * as fixtures from './__fixtures__';
+import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 
 describe( 'modules/tagmanager versions', () => {
 	let registry;
@@ -1175,6 +1177,186 @@ describe( 'modules/tagmanager versions', () => {
 							internalContainerID
 						)
 				).toBe( false );
+			} );
+		} );
+
+		describe( 'hasFinishedLoadingContainers', () => {
+			it( 'should return TRUE when the GTM module is not connected', () => {
+				// Set tagmanager module to not connected.
+				registry.dispatch( CORE_MODULES ).receiveGetModules( [
+					{
+						slug: 'analytics',
+						name: 'Analytics',
+						active: true,
+					},
+					{
+						slug: 'tagmanager',
+						name: 'Tag Manager',
+						active: false,
+						connected: false,
+					},
+				] );
+
+				const hasFinishedLoading = registry
+					.select( MODULES_TAGMANAGER )
+					.hasFinishedLoadingContainers();
+
+				expect( hasFinishedLoading ).toBe( true );
+			} );
+
+			it( 'should return TRUE when the GTM module is connected and the web containers are loaded', async () => {
+				registry.dispatch( CORE_MODULES ).receiveGetModules( [
+					{
+						slug: 'analytics',
+						name: 'Analytics',
+						active: true,
+					},
+					{
+						slug: 'tagmanager',
+						name: 'Tag Manager',
+						active: true,
+						connected: true,
+					},
+				] );
+
+				const webContainerVersion =
+					fixtures.liveContainerVersions.web.gaWithVariable;
+				const gtmAccountID = webContainerVersion.accountId; // eslint-disable-line sitekit/acronym-case
+				const gtmContainerID = webContainerVersion.containerId; // eslint-disable-line sitekit/acronym-case
+
+				parseIDs(
+					webContainerVersion,
+					( { internalContainerID, containerID } ) => {
+						registry.dispatch( MODULES_TAGMANAGER ).setSettings( {
+							accountID: gtmAccountID,
+							containerID,
+							internalContainerID,
+							useSnippet: true,
+						} );
+						registry
+							.dispatch( MODULES_TAGMANAGER )
+							.receiveGetLiveContainerVersion(
+								webContainerVersion,
+								{
+									accountID: gtmAccountID,
+									internalContainerID,
+								}
+							);
+						registry
+							.select( MODULES_TAGMANAGER )
+							.getLiveContainerVersion(
+								gtmAccountID,
+								internalContainerID
+							);
+					}
+				);
+
+				await untilResolved(
+					registry,
+					MODULES_TAGMANAGER
+				).getLiveContainerVersion( gtmAccountID, gtmContainerID );
+				const hasFinishedLoading = registry
+					.select( MODULES_TAGMANAGER )
+					.hasFinishedLoadingContainers();
+
+				expect( hasFinishedLoading ).toBe( true );
+			} );
+
+			it( 'should return TRUE when the GTM module is available and the AMP containers are loaded', async () => {
+				registry.dispatch( CORE_MODULES ).receiveGetModules( [
+					{
+						slug: 'analytics',
+						name: 'Analytics',
+						active: true,
+					},
+					{
+						slug: 'tagmanager',
+						name: 'Tag Manager',
+						active: true,
+						connected: true,
+					},
+				] );
+
+				const ampContainerVersion =
+					fixtures.liveContainerVersions.amp.ga;
+				const gtmAccountID = ampContainerVersion.accountId; // eslint-disable-line sitekit/acronym-case
+				const gtmAMPContainerID = ampContainerVersion.containerId; // eslint-disable-line sitekit/acronym-case
+
+				parseIDs(
+					ampContainerVersion,
+					( { internalAMPContainerID, containerID } ) => {
+						registry.dispatch( MODULES_TAGMANAGER ).setSettings( {
+							accountID: gtmAccountID,
+							containerID,
+							internalContainerID: internalAMPContainerID,
+							useSnippet: true,
+						} );
+						registry
+							.dispatch( MODULES_TAGMANAGER )
+							.setInternalAMPContainerID(
+								internalAMPContainerID
+							);
+						registry
+							.dispatch( MODULES_TAGMANAGER )
+							.receiveGetLiveContainerVersion(
+								ampContainerVersion,
+								{
+									accountID: gtmAccountID,
+									internalContainerID: internalAMPContainerID,
+								}
+							);
+						registry
+							.select( MODULES_TAGMANAGER )
+							.getLiveContainerVersion(
+								gtmAccountID,
+								internalAMPContainerID
+							);
+					}
+				);
+
+				await untilResolved(
+					registry,
+					MODULES_TAGMANAGER
+				).getLiveContainerVersion( gtmAccountID, gtmAMPContainerID );
+				const hasFinishedLoading = registry
+					.select( MODULES_TAGMANAGER )
+					.hasFinishedLoadingContainers();
+
+				expect( hasFinishedLoading ).toBe( true );
+			} );
+
+			it( 'should return FALSE when the selector is not resolved yet', () => {
+				registry.dispatch( CORE_MODULES ).receiveGetModules( [
+					{
+						slug: 'analytics',
+						name: 'Analytics',
+						active: true,
+					},
+					{
+						slug: 'tagmanager',
+						name: 'Tag Manager',
+						active: true,
+						connected: true,
+					},
+				] );
+				registry.dispatch( MODULES_TAGMANAGER ).setSettings( {
+					accountID: 100,
+					containerID: 200,
+					internalContainerID: 200,
+					useSnippet: true,
+				} );
+
+				freezeFetch(
+					new RegExp(
+						'^/google-site-kit/v1/modules/tagmanager/data/live-container-version'
+					)
+				);
+
+				const hasFinishedLoading = registry
+					.select( MODULES_TAGMANAGER )
+					.hasFinishedLoadingContainers();
+
+				expect( hasFinishedLoading ).toBe( false );
 			} );
 		} );
 	} );
