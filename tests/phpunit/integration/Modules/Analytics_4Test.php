@@ -365,6 +365,103 @@ class Analytics_4Test extends TestCase {
 	}
 
 	/**
+	 * @dataProvider data_google_tag_ids
+	 *
+	 * When an access token is provided, the user will be authenticated for the test.
+	 *
+	 * @param array $tag_ids_data Tag IDs and expected result.
+	 */
+	public function test_google_tag_settings_datapoint( $tag_ids_data ) {
+		$this->enable_feature( 'gteSupport' );
+
+		$this->authentication->get_oauth_client()->set_granted_scopes(
+			$this->analytics->get_scopes()
+		);
+
+		$http_client = new FakeHttpClient();
+		$http_client->set_request_handler(
+			function ( Request $request ) use ( $tag_ids_data ) {
+				$url = parse_url( $request->getUrl() );
+
+				if ( 'tagmanager.googleapis.com' !== $url['host'] ) {
+					return new Response( 200 );
+				}
+				switch ( $url['path'] ) {
+					case '/tagmanager/v2/accounts/containers:lookup':
+						$data = new Container();
+						$data->setAccountId( '123' );
+						$data->setContainerId( '456' );
+						$data->setTagIds( $tag_ids_data[0] );
+						return new Response(
+							200,
+							array(),
+							Stream::factory(
+								json_encode(
+									$data->toSimpleObject()
+								)
+							)
+						);
+
+					default:
+						return new Response( 200 );
+				}
+			}
+		);
+
+		$this->analytics->get_client()->setHttpClient( $http_client );
+		$this->analytics->register();
+
+		$data = $this->analytics->get_data(
+			'google-tag-settings',
+			array(
+				'measurementID' => 'A1B2C3D4E5',
+			)
+		);
+
+		$this->assertNotWPError( $data );
+
+		$this->assertEquals(
+			$tag_ids_data[1],
+			$data['googleTagID']
+		);
+	}
+
+	public function data_google_tag_ids() {
+		return array(
+			'one tag ID'                                 => array(
+				array(
+					array( 'GT-123' ),
+					'GT-123',
+				),
+			),
+			'multiple tag IDs - first GT'                => array(
+				array(
+					array( 'G-123', 'GT-123', 'A1B2C3D4E5' ),
+					'GT-123',
+				),
+			),
+			'multiple tag IDs - measurement ID'          => array(
+				array(
+					array( 'G-123', 'A1B2C3D4E5' ),
+					'A1B2C3D4E5',
+				),
+			),
+			'multiple tag IDs - no GT or measurement ID' => array(
+				array(
+					array( 'G-123', 'WA-012' ),
+					'G-123',
+				),
+			),
+			'multiple tag IDs - no GT, G or measurement ID - first' => array(
+				array(
+					array( 'WA-012', 'WA-123' ),
+					'WA-012',
+				),
+			),
+		);
+	}
+
+	/**
 	 * @dataProvider data_access_token
 	 *
 	 * When an access token is provided, the user will be authenticated for the test.
