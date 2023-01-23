@@ -212,7 +212,7 @@ final class Analytics_4 extends Module
 	 * @return array Map of datapoints to their definitions.
 	 */
 	protected function get_datapoint_definitions() {
-		return array(
+		$datapoints = array(
 			'GET:account-summaries'      => array( 'service' => 'analyticsadmin' ),
 			'GET:accounts'               => array( 'service' => 'analyticsadmin' ),
 			'GET:container-lookup'       => array( 'service' => 'tagmanager' ),
@@ -229,14 +229,19 @@ final class Analytics_4 extends Module
 			),
 			'GET:properties'             => array( 'service' => 'analyticsadmin' ),
 			'GET:property'               => array( 'service' => 'analyticsadmin' ),
-			'GET:report'                 => array(
-				'service'   => 'analyticsdata',
-				'shareable' => Feature_Flags::enabled( 'dashboardSharing' ),
-			),
 			'GET:webdatastreams'         => array( 'service' => 'analyticsadmin' ),
 			'GET:webdatastreams-batch'   => array( 'service' => 'analyticsadmin' ),
 			'GET:conversion-events'      => array( 'service' => 'analyticsadmin' ),
 		);
+
+		if ( Feature_Flags::enabled( 'ga4Reporting' ) ) {
+			$datapoints['GET:report'] = array(
+				'service'   => 'analyticsdata',
+				'shareable' => Feature_Flags::enabled( 'dashboardSharing' ),
+			);
+		}
+
+		return $datapoints;
 	}
 
 	/**
