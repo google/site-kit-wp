@@ -50,20 +50,15 @@ export const getFilteredChartData = ( data, selectedStats ) => {
 		}, [] );
 	}
 
-	let filteredData = data;
-	if ( selectedStats?.length > 0 ) {
-		filteredData = data.map( ( row ) => {
-			return row.filter( ( _columnValue, columnIndex ) => {
-				return (
-					columnIndex === 0 ||
-					selectedStats.includes( columnIndex - 1 ) ||
-					nonDataColumns.includes( columnIndex - 1 )
-				);
-			} );
+	return data.map( ( row ) => {
+		return row.filter( ( _columnValue, columnIndex ) => {
+			return (
+				columnIndex === 0 ||
+				selectedStats.includes( columnIndex - 1 ) ||
+				nonDataColumns.includes( columnIndex - 1 )
+			);
 		} );
-	}
-
-	return filteredData;
+	} );
 };
 
 /**
@@ -91,10 +86,10 @@ export const getLoadingDimensions = (
 	// but not a height), change the "unset" value to 100% to avoid visual bugs.
 	// See: https://github.com/google/site-kit-wp/pull/2916#discussion_r623866269
 	if ( dimensions.width && ! dimensions.height ) {
-		dimensions.width = '100%';
+		dimensions.height = '100%';
 	}
 	if ( dimensions.height && ! dimensions.width ) {
-		dimensions.height = '100%';
+		dimensions.width = '100%';
 	}
 
 	return dimensions;
