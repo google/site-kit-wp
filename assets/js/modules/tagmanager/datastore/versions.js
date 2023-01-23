@@ -34,6 +34,7 @@ import {
 } from '../util/validation';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { isValidPropertyID } from '../../analytics/util';
+import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 const { createRegistrySelector } = Data;
 
 const fetchGetLiveContainerVersionStore = createFetchStore( {
@@ -398,6 +399,38 @@ const baseSelectors = {
 			);
 		}
 	),
+
+	/**
+	 * Determines whether the live container version has finished loading.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {boolean} TRUE if the GTM module is not available or the live container version has finished loading, otherwise FALSE.
+	 */
+	hasFinishedLoadingContainers: createRegistrySelector( ( select ) => () => {
+		const tagmanagerModuleConnected =
+			select( CORE_MODULES ).isModuleConnected( 'tagmanager' );
+		if ( ! tagmanagerModuleConnected ) {
+			return true;
+		}
+
+		const accountID = select( MODULES_TAGMANAGER ).getAccountID();
+		const internalContainerID =
+			select( MODULES_TAGMANAGER ).getInternalContainerID();
+		const internalAMPContainerID =
+			select( MODULES_TAGMANAGER ).getInternalAMPContainerID();
+
+		return (
+			select( MODULES_TAGMANAGER ).hasFinishedResolution(
+				'getLiveContainerVersion',
+				[ accountID, internalContainerID ]
+			) ||
+			select( MODULES_TAGMANAGER ).hasFinishedResolution(
+				'getLiveContainerVersion',
+				[ accountID, internalAMPContainerID ]
+			)
+		);
+	} ),
 };
 
 const store = Data.combineStores( fetchGetLiveContainerVersionStore, {
