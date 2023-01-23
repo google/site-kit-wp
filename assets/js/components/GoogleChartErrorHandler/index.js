@@ -56,7 +56,7 @@ class GoogleChartErrorHandler extends Component {
 		this.setState( { error, info } );
 
 		trackEvent(
-			'react_error',
+			'google_chart_error',
 			`handle_${ this.context || 'unknown' }_error`,
 			// label has a max-length of 500 bytes.
 			`${ error?.message }\n${ info?.componentStack }`.slice( 0, 500 )
