@@ -313,6 +313,18 @@ class Analytics_4Test extends TestCase {
 		);
 	}
 
+	public function test_get_scopes__gteSupport() {
+		$this->enable_feature( 'gteSupport' );
+
+		$this->assertEqualSets(
+			array(
+				'https://www.googleapis.com/auth/analytics.readonly',
+				'https://www.googleapis.com/auth/tagmanager.readonly',
+			),
+			$this->analytics->get_scopes()
+		);
+	}
+
 	public function test_is_connected() {
 		$options   = new Options( $this->context );
 		$analytics = new Analytics_4( $this->context, $options );
