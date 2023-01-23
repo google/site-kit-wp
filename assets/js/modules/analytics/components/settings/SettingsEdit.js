@@ -74,7 +74,7 @@ export default function SettingsEdit() {
 			select( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID()
 	);
 	const gtmContainersResolved = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).hasFinishedLoadingGTMContainers()
+		select( MODULES_TAGMANAGER ).hasFinishedLoadingContainers()
 	);
 
 	useExistingTagEffect();

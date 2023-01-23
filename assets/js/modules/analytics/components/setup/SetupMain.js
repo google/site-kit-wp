@@ -79,7 +79,7 @@ export default function SetupMain( { finishSetup } ) {
 			select( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID()
 	);
 	const gtmContainersResolved = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).hasFinishedLoadingGTMContainers()
+		select( MODULES_TAGMANAGER ).hasFinishedLoadingContainers()
 	);
 
 	// Set the accountID and containerID if there is an existing tag.
