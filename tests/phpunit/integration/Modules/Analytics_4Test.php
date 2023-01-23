@@ -204,13 +204,13 @@ class Analytics_4Test extends TestCase {
 
 	public function test_handle_provisioning_callback__gteSupport() {
 		$this->enable_feature( 'gteSupport' );
-		$account_id       = '12345678';
-		$property_id      = '1001';
-		$webdatastream_id = '2001';
-		$measurement_id   = '1A2BCD345E';
-		$account_id       = '123';
-		$container_id     = '456';
-		$tag_ids          = array( 'GT-123', 'G-456' );
+		$account_id              = '12345678';
+		$property_id             = '1001';
+		$webdatastream_id        = '2001';
+		$measurement_id          = '1A2BCD345E';
+		$google_tag_account_id   = '123';
+		$google_tag_container_id = '456';
+		$tag_ids                 = array( 'GT-123', 'G-456' );
 
 		$options = new Options( $this->context );
 		$options->set(
@@ -225,7 +225,7 @@ class Analytics_4Test extends TestCase {
 
 		$http_client = new FakeHttpClient();
 		$http_client->set_request_handler(
-			function( Request $request ) use ( $property_id, $webdatastream_id, $measurement_id, $account_id, $container_id, $tag_ids ) {
+			function( Request $request ) use ( $property_id, $webdatastream_id, $measurement_id, $google_tag_account_id, $google_tag_container_id, $tag_ids ) {
 				$url = parse_url( $request->getUrl() );
 
 				if ( ! in_array( $url['host'], array( 'analyticsadmin.googleapis.com', 'tagmanager.googleapis.com' ), true ) ) {
@@ -262,8 +262,8 @@ class Analytics_4Test extends TestCase {
 						);
 					case '/tagmanager/v2/accounts/containers:lookup':
 						$data = new Container();
-						$data->setAccountId( $account_id );
-						$data->setContainerId( $container_id );
+						$data->setAccountId( $google_tag_account_id );
+						$data->setContainerId( $google_tag_container_id );
 						$data->setTagIds( $tag_ids );
 						return new Response(
 							200,
@@ -297,8 +297,8 @@ class Analytics_4Test extends TestCase {
 				'ownerID'              => 0,
 				'useSnippet'           => true,
 				'googleTagID'          => 'GT-123',
-				'googleTagAccountID'   => $account_id,
-				'googleTagContainerID' => $container_id,
+				'googleTagAccountID'   => $google_tag_account_id,
+				'googleTagContainerID' => $google_tag_container_id,
 			),
 			$options->get( Settings::OPTION )
 		);
@@ -453,8 +453,8 @@ class Analytics_4Test extends TestCase {
 			),
 			'multiple tag IDs - no GT, G or measurement ID - first' => array(
 				array(
-					array( 'WA-012', 'WA-123' ),
-					'WA-012',
+					array( 'AW-012', 'AW-123' ),
+					'AW-012',
 				),
 			),
 		);
