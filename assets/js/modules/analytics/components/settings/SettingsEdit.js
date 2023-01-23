@@ -28,6 +28,7 @@ import useExistingTagEffect from '../../hooks/useExistingTagEffect';
 import useExistingGA4TagEffect from '../../../analytics-4/hooks/useExistingTagEffect';
 import SettingsForm from './SettingsForm';
 import { AccountCreate, AccountCreateLegacy } from '../common';
+import { MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
 const { useSelect } = Data;
 
 export default function SettingsEdit() {
@@ -60,6 +61,21 @@ export default function SettingsEdit() {
 			'analytics-4'
 		);
 	} );
+	const isTagManagerAvailable = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleAvailable( 'tagmanager' )
+	);
+	// Preloading the `live-container-version` call is necessary to display
+	// the loading state until the data is fetched from the server.
+	// This call is being made in the child component ExistingGTMPropertyNotice
+	// to ensure that the loading state is displayed before the data is available.
+	useSelect(
+		( select ) =>
+			isTagManagerAvailable &&
+			select( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID()
+	);
+	const gtmContainersResolved = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).hasFinishedLoadingGTMContainers()
+	);
 
 	useExistingTagEffect();
 	useExistingGA4TagEffect();
@@ -72,6 +88,7 @@ export default function SettingsEdit() {
 	if (
 		isDoingSubmitChanges ||
 		! hasResolvedAccounts ||
+		! gtmContainersResolved ||
 		hasAnalyticsAccess === undefined ||
 		hasAnalytics4Access === undefined
 	) {
