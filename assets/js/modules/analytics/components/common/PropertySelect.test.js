@@ -217,7 +217,6 @@ describe( 'PropertySelect', () => {
 			),
 			[]
 		);
-
 		// Click the label to expose the elements in the menu.
 		fireEvent.click( container.querySelector( '.mdc-floating-label' ) );
 		// Click this element to select it and fire the onChange event.

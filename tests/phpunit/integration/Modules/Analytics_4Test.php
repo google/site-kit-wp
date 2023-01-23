@@ -44,7 +44,6 @@ use WP_User;
 
 /**
  * @group Modules
- * @group Analytics_4
  */
 class Analytics_4Test extends TestCase {
 
@@ -1372,7 +1371,5 @@ class Analytics_4Test extends TestCase {
 			)
 		);
 	}
-
-
 
 }

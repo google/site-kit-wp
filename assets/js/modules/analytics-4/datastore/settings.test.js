@@ -33,7 +33,6 @@ import {
 	INVARIANT_INVALID_WEBDATASTREAM_ID,
 } from './settings';
 import * as fixtures from './__fixtures__';
-import fetchMock from 'fetch-mock';
 
 describe( 'modules/analytics-4 settings', () => {
 	let registry;
