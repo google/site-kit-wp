@@ -440,6 +440,7 @@ const baseActions = {
 			type: WAIT_FOR_PROPERTIES,
 		};
 	},
+
 	/**
 	 * Updates settings for a given measurement ID.
 	 *
