@@ -28,6 +28,8 @@ import '../assets/sass/wpdashboard.scss';
 import '../assets/sass/adminbar.scss';
 import '../assets/sass/admin.scss';
 import './assets/sass/wp-admin.scss';
+import './assets/sass/stories/tokens.scss';
+import './assets/sass/stories/type-scale.scss';
 // Ensure all globals are set up before any other imports are run.
 import './polyfill-globals';
 import API from 'googlesitekit-api';
