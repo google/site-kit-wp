@@ -91,6 +91,58 @@ describe( 'core/site site info', () => {
 				} );
 			} );
 		} );
+
+		describe( 'setSiteKitAutoUpdatesEnabled', () => {
+			it( 'sets the siteKitAutoUpdatesEnabled property', () => {
+				registry
+					.dispatch( CORE_SITE )
+					.setSiteKitAutoUpdatesEnabled( true );
+
+				expect(
+					registry.select( CORE_SITE ).getSiteKitAutoUpdatesEnabled()
+				).toBe( true );
+
+				registry
+					.dispatch( CORE_SITE )
+					.setSiteKitAutoUpdatesEnabled( false );
+
+				expect(
+					registry.select( CORE_SITE ).getSiteKitAutoUpdatesEnabled()
+				).toBe( false );
+			} );
+
+			it( 'requires a boolean argument', () => {
+				expect( () => {
+					registry
+						.dispatch( CORE_SITE )
+						.setSiteKitAutoUpdatesEnabled();
+				} ).toThrow( 'siteKitAutoUpdatesEnabled must be a boolean.' );
+
+				expect( () => {
+					registry
+						.dispatch( CORE_SITE )
+						.setSiteKitAutoUpdatesEnabled( undefined );
+				} ).toThrow( 'siteKitAutoUpdatesEnabled must be a boolean.' );
+
+				expect( () => {
+					registry
+						.dispatch( CORE_SITE )
+						.setSiteKitAutoUpdatesEnabled( 0 );
+				} ).toThrow( 'siteKitAutoUpdatesEnabled must be a boolean.' );
+
+				expect( () => {
+					registry
+						.dispatch( CORE_SITE )
+						.setSiteKitAutoUpdatesEnabled( true );
+
+					registry
+						.dispatch( CORE_SITE )
+						.setSiteKitAutoUpdatesEnabled( false );
+				} ).not.toThrow(
+					'siteKitAutoUpdatesEnabled must be a boolean.'
+				);
+			} );
+		} );
 	} );
 
 	describe( 'selectors', () => {

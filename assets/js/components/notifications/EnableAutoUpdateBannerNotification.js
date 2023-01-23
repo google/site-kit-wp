@@ -15,7 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import BannerNotification from './BannerNotification';
 
 /**
  * WordPress dependencies
@@ -37,6 +36,7 @@ import {
 import { getItem, setItem } from '../../googlesitekit/api/cache';
 import SpinnerButton from '../SpinnerButton';
 import ErrorNotice from '../ErrorNotice';
+import BannerNotification from './BannerNotification';
 
 const { useSelect, useDispatch } = Data;
 
