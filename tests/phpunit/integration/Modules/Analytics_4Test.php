@@ -286,6 +286,21 @@ class Analytics_4Test extends TestCase {
 		$this->analytics->get_client()->setHttpClient( $http_client );
 		$this->analytics->register();
 
+		$this->assertEqualSetsWithIndex(
+			array(
+				'accountID'            => $account_id,
+				'propertyID'           => '',
+				'webDataStreamID'      => '',
+				'measurementID'        => '',
+				'ownerID'              => 0,
+				'useSnippet'           => true,
+				'googleTagID'          => '',
+				'googleTagAccountID'   => '',
+				'googleTagContainerID' => '',
+			),
+			$options->get( Settings::OPTION )
+		);
+
 		do_action( 'googlesitekit_analytics_handle_provisioning_callback', $account_id );
 
 		$this->assertEqualSetsWithIndex(
