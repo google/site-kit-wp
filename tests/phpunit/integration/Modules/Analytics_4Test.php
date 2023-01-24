@@ -378,8 +378,6 @@ class Analytics_4Test extends TestCase {
 	/**
 	 * @dataProvider data_google_tag_ids
 	 *
-	 * When an access token is provided, the user will be authenticated for the test.
-	 *
 	 * @param array $tag_ids_data Tag IDs and expected result.
 	 */
 	public function test_google_tag_settings_datapoint( $tag_ids_data ) {
@@ -445,13 +443,13 @@ class Analytics_4Test extends TestCase {
 					'GT-123',
 				),
 			),
-			'multiple tag IDs - first GT'                => array(
+			'multiple tag IDs - returns first GT tag ID' => array(
 				array(
 					array( 'G-123', 'GT-123', 'A1B2C3D4E5' ),
 					'GT-123',
 				),
 			),
-			'multiple tag IDs - measurement ID'          => array(
+			'multiple tag IDs, including the current measurement ID - returns the measurement ID' => array(
 				array(
 					array( 'G-123', 'A1B2C3D4E5' ),
 					'A1B2C3D4E5',
@@ -459,11 +457,11 @@ class Analytics_4Test extends TestCase {
 			),
 			'multiple tag IDs - no GT or measurement ID' => array(
 				array(
-					array( 'G-123', 'WA-012' ),
+					array( 'AW-012', 'G-123' ),
 					'G-123',
 				),
 			),
-			'multiple tag IDs - no GT, G or measurement ID - first' => array(
+			'multiple tag IDs - no GT, G or measurement ID - returns first tag ID' => array(
 				array(
 					array( 'AW-012', 'AW-123' ),
 					'AW-012',
