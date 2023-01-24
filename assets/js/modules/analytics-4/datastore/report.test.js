@@ -64,6 +64,9 @@ describe( 'modules/analytics-4 report', () => {
 				metrics: [
 					'sessions',
 					{
+						name: 'PageViews',
+					},
+					{
 						name: 'total',
 						expression: 'totalUsers',
 					},
