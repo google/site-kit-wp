@@ -27,6 +27,10 @@ import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { CORE_USER } from './constants';
 import { createFetchStore } from '../../data/create-fetch-store';
+import { actions as errorStoreActions } from '../../data/create-error-store';
+const { receiveError, clearError } = errorStoreActions;
+
+const SET_KEY_METRICS_SETTING = 'SET_KEY_METRICS_SETTING';
 
 const baseInitialState = {
 	keyMetrics: undefined,
@@ -45,6 +49,25 @@ const fetchSaveKeyMetricsStore = createFetchStore( {
 
 const baseActions = {
 	/**
+	 * Sets key metrics setting.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {string}         settingID Setting key.
+	 * @param {Array.<string>} value     Setting value.
+	 * @return {Object} Redux-style action.
+	 */
+	setKeyMetricSetting( settingID, value ) {
+		return {
+			type: SET_KEY_METRICS_SETTING,
+			payload: {
+				settingID,
+				value,
+			},
+		};
+	},
+
+	/**
 	 * Saves key metrics settings.
 	 *
 	 * @since n.e.x.t
@@ -52,13 +75,19 @@ const baseActions = {
 	 * @return {Object} Object with `response` and `error`.
 	 */
 	*saveKeyMetrics() {
+		yield clearError( 'saveKeyMetrics', [] );
+
 		const registry = yield Data.commonActions.getRegistry();
 		const keyMetrics = registry.select( CORE_USER ).getKeyMetrics();
-
 		const { response, error } =
 			yield fetchSaveKeyMetricsStore.actions.fetchSaveKeyMetrics(
 				keyMetrics
 			);
+
+		if ( error ) {
+			// Store error manually since saveKeyMetrics signature differs from fetchSaveKeyMetricsStore.
+			yield receiveError( error, 'saveKeyMetrics', [] );
+		}
 
 		return { response, error };
 	},
@@ -66,10 +95,20 @@ const baseActions = {
 
 const baseControls = {};
 
-const baseReducer = ( state, { type } ) => {
+const baseReducer = ( state, { type, payload } ) => {
 	switch ( type ) {
-		default:
+		case SET_KEY_METRICS_SETTING: {
+			return {
+				...state,
+				keyMetrics: {
+					...state.keyMetrics,
+					[ payload.settingID ]: payload.value,
+				},
+			};
+		}
+		default: {
 			return state;
+		}
 	}
 };
 

@@ -33,6 +33,7 @@ import surveys from './surveys';
 import tracking from './tracking';
 import userInfo from './user-info';
 import userInputSettings from './user-input-settings';
+import keyMetrics from './key-metrics';
 import { CORE_USER } from './constants';
 
 const store = Data.combineStores(
@@ -49,7 +50,8 @@ const store = Data.combineStores(
 	surveys,
 	tracking,
 	userInfo,
-	userInputSettings
+	userInputSettings,
+	keyMetrics
 );
 
 export const {
