@@ -106,6 +106,8 @@ jobs:
         with:
           php-version: '7.x'
           tools: composer:2.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Get Composer Cache Directory
         id: composer-cache
