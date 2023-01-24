@@ -127,4 +127,51 @@ class Key_Metrics_SettingsTest extends TestCase {
 		$this->key_metrics_settings->set( $input );
 		$this->assertEquals( $expected, $this->key_metrics_settings->get() );
 	}
+
+	public function test_merge() {
+		$original_settings = array(
+			'widgetSlugs'    => array( 'widgetA' ),
+			'isWidgetHidden' => false,
+		);
+
+		$changed_settings = array(
+			'widgetSlugs'    => array( 'widgetB' ),
+			'isWidgetHidden' => true,
+		);
+
+		// Make sure settings can be updated even without having them set initially
+		$this->key_metrics_settings->merge( $original_settings );
+		$this->assertEqualSetsWithIndex( $original_settings, $this->key_metrics_settings->get() );
+
+		// Make sure invalid keys aren't set
+		$this->key_metrics_settings->merge( array( 'test_key' => 'test_value' ) );
+		$this->assertEqualSetsWithIndex( $original_settings, $this->key_metrics_settings->get() );
+
+		// Make sure that we can update settings partially
+		$this->key_metrics_settings->set( $original_settings );
+		$this->key_metrics_settings->merge( array( 'isWidgetHidden' => true ) );
+		$this->assertEqualSetsWithIndex(
+			array(
+				'widgetSlugs'    => $original_settings['widgetSlugs'],
+				'isWidgetHidden' => true,
+			),
+			$this->key_metrics_settings->get()
+		);
+
+		// Make sure that we can update all settings at once
+		$this->key_metrics_settings->set( $original_settings );
+		$this->key_metrics_settings->merge( $changed_settings );
+		$this->assertEqualSetsWithIndex( $changed_settings, $this->key_metrics_settings->get() );
+
+		// Make sure that we can't set wrong format for the isWidgetHidden property
+		$this->key_metrics_settings->set( $original_settings );
+		$this->key_metrics_settings->merge( array( 'isWidgetHidden' => null ) );
+		$this->assertEqualSetsWithIndex( $original_settings, $this->key_metrics_settings->get() );
+
+		// Make sure that we can't set wrong format for the widgetSlugs property
+		$this->key_metrics_settings->set( $original_settings );
+		$this->key_metrics_settings->merge( array( 'widgetSlugs' => null ) );
+		$this->assertEqualSetsWithIndex( $original_settings, $this->key_metrics_settings->get() );
+	}
+
 }

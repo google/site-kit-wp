@@ -26,6 +26,7 @@ import { activatePlugin, visitAdminPage } from '@wordpress/e2e-test-utils';
  */
 import { createWaitForFetchRequests } from './create-wait-for-fetch-requests';
 import { pageWait } from './page-wait';
+import { useRequestInterception } from './use-request-interception';
 
 /**
  * The allow list of AMP modes.
@@ -43,9 +44,37 @@ export const allowedAMPModes = {
  *
  * @since 1.10.0
  *
- * @param {string} mode The mode to set AMP to. Possible value of standard, transitional or reader.
+ * @param {string}   mode                                      The mode to set AMP to. Possible value of standard, transitional or reader.
+ * @param {Object}   sharedRequestInterception                 Object of methods that can be called to remove the added handler function from the page and add new request cases.
+ * @param {Function} sharedRequestInterception.cleanUp         Removes the request handler function from the page.
+ * @param {Function} sharedRequestInterception.addRequestCases Adds new request cases to the request handler function.
+ * @return {Promise<void>} Promise that resolves when AMP is activated and set to the correct mode.
  */
-export const activateAMPWithMode = async ( mode ) => {
+export const activateAMPWithMode = async (
+	mode,
+	sharedRequestInterception
+) => {
+	if ( sharedRequestInterception ) {
+		sharedRequestInterception.addRequestCases( [
+			{
+				isMatch: ( request ) => request.url().match( '&amp_validate' ),
+				getResponse: () => ( {
+					status: 200,
+					body: JSON.stringify( {} ),
+				} ),
+			},
+		] );
+	} else {
+		// eslint-disable-next-line react-hooks/rules-of-hooks
+		useRequestInterception( ( request ) => {
+			if ( request.url().match( '&amp_validate' ) ) {
+				request.respond( {
+					status: 200,
+					body: JSON.stringify( {} ),
+				} );
+			}
+		} );
+	}
 	await activatePlugin( 'amp' );
 	await setAMPMode( mode );
 };

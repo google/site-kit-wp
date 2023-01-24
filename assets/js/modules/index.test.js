@@ -37,7 +37,9 @@ function directories( relativePath ) {
 function getComponentNames( componentPath ) {
 	return fs
 		.readdirSync( componentPath )
-		.filter( ( name ) => ! /^index|\.(stories|test)\.js$/.test( name ) )
+		.filter(
+			( name ) => ! /^index|utils|\.(stories|test)\.js$/.test( name )
+		)
 		.map( ( name ) => name.replace( /\..*/, '' ) );
 }
 
