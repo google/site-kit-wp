@@ -459,7 +459,7 @@ const baseActions = {
 			return;
 		}
 
-		if ( measurementID === '' ) {
+		if ( ! measurementID ) {
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
 				.setGoogleTagAccountID( '' );

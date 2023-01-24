@@ -523,7 +523,8 @@ describe( 'modules/analytics-4 properties', () => {
 					measurementID,
 				} );
 			} );
-			it( 'dispatch request to get and populate Google Tag Settings', async () => {
+
+			it( 'dispatches a request to get and populate Google Tag settings', async () => {
 				enabledFeatures.add( 'gteSupport' );
 
 				fetchMock.getOnce( googleTagSettingsEndpoint, {
@@ -559,6 +560,7 @@ describe( 'modules/analytics-4 properties', () => {
 					registry.select( MODULES_ANALYTICS_4 ).getGoogleTagID()
 				).toEqual( fixtures.googleTagSettings.googleTagID );
 			} );
+
 			it( 'empties the Google Tag Settings if measurement ID an empty string', () => {
 				enabledFeatures.add( 'gteSupport' );
 
@@ -587,7 +589,6 @@ describe( 'modules/analytics-4 properties', () => {
 				).toEqual( 'GT-123456' );
 
 				registry
-
 					.dispatch( MODULES_ANALYTICS_4 )
 					.updateSettingsForMeasurementID( '' );
 
