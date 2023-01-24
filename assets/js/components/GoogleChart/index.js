@@ -26,6 +26,7 @@ import '../../util/initialize-google-global';
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
 import { Chart } from 'react-google-charts';
+import { useMount } from 'react-use';
 
 /**
  * WordPress dependencies
@@ -43,16 +44,18 @@ import {
 import PreviewBlock from '../PreviewBlock';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import GatheringDataNotice, { NOTICE_STYLE } from '../GatheringDataNotice';
-
 import Data from 'googlesitekit-data';
+import GoogleChartErrorHandler from '../GoogleChartErrorHandler';
+import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
+import useViewContext from '../../hooks/useViewContext';
+import { isSiteKitScreen } from '../../util/is-site-kit-screen';
 import {
 	getFilteredChartData,
 	getLoadingDimensions,
 	getCombinedChartEvents,
 	getChartOptions,
 } from './utils';
-import GoogleChartErrorHandler from '../GoogleChartErrorHandler';
-const { useSelect } = Data;
+const { useDispatch, useSelect } = Data;
 
 export default function GoogleChart( props ) {
 	const {
@@ -81,7 +84,15 @@ export default function GoogleChart( props ) {
 		select( CORE_USER ).getDateRangeDates()
 	);
 
+	const viewContext = useViewContext();
+
+	const googleChartsCollisionError = useSelect( ( select ) =>
+		select( CORE_UI ).getValue( 'googleChartsCollisionError' )
+	);
+
 	const [ isChartLoaded, setIsChartLoaded ] = useState( false );
+
+	const { setValue } = useDispatch( CORE_UI );
 
 	const filteredData = getFilteredChartData( data, selectedStats );
 
@@ -105,6 +116,34 @@ export default function GoogleChart( props ) {
 
 	const chartWrapperRef = useRef();
 	const googleRef = useRef();
+
+	// Don't load Google Charts if another script on the page has already loaded
+	// Google Charts.
+	//
+	// If another plugin loads Google Charts somewhere on the page, our charts
+	// will likely encounter an error due to a version mismatch.
+	//
+	// This is because Google Charts is a singleton, and if another plugin loads
+	// it first, our charts will use the same instance of Google Charts.
+	//
+	// See:
+	// * https://github.com/google/site-kit-wp/issues/6350
+	// * https://github.com/google/site-kit-wp/issues/6355
+	useMount( () => {
+		if ( googleChartsCollisionError !== undefined ) {
+			return;
+		}
+
+		if (
+			! isSiteKitScreen( viewContext ) &&
+			global?.google?.charts &&
+			global?.Chart?.version !== undefined
+		) {
+			setValue( 'googleChartsCollisionError', true );
+		} else {
+			setValue( 'googleChartsCollisionError', false );
+		}
+	} );
 
 	useEffect( () => {
 		// Remove all event listeners after the component has unmounted.
@@ -151,6 +190,10 @@ export default function GoogleChart( props ) {
 			);
 		}
 	}, [ onMouseOver, onMouseOut ] );
+
+	if ( googleChartsCollisionError ) {
+		return null;
+	}
 
 	if ( ! loaded ) {
 		return (
