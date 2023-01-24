@@ -931,12 +931,12 @@ final class Analytics_4 extends Module
 	 * @return string Google Tag ID.
 	 */
 	private function determine_google_tag_id_from_tag_ids( $tag_ids, $measurement_id ) {
-		// if there is only one tag id in the array, return it.
+		// If there is only one tag id in the array, return it.
 		if ( count( $tag_ids ) === 1 ) {
 			return $tag_ids[0];
 		}
 
-		// if there are multiple tags, return the first one that starts with `GT-`.
+		// If there are multiple tags, return the first one that starts with `GT-`.
 		foreach ( $tag_ids as $tag_id ) {
 			if ( substr( $tag_id, 0, 3 ) === 'GT-' ) { // strlen( 'GT-' ) === 3.
 				return $tag_id;
