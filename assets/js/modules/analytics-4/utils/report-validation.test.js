@@ -77,8 +77,7 @@ describe( 'Analytics 4 Reporting API validation', () => {
 	describe( 'isValidDimensionFilters', () => {
 		it( 'should return TRUE if a valid object is passed with a valid dimension', () => {
 			expect( isValidDimensionFilters( { test: 'foo' } ) ).toBe( true );
-			expect( isValidDimensionFilters( { foo: 3 } ) ).toBe( true );
-			expect( isValidDimensionFilters( { foo: [ 3, 'foo' ] } ) ).toBe(
+			expect( isValidDimensionFilters( { foo: [ 'foo', 'bar' ] } ) ).toBe(
 				true
 			);
 		} );
@@ -89,6 +88,10 @@ describe( 'Analytics 4 Reporting API validation', () => {
 		it( 'should return FALSE if an invalid dimensionFilters object is passed', () => {
 			expect( isValidDimensionFilters( { foo: false } ) ).toBe( false );
 			expect( isValidDimensionFilters( { foo: 'bar', baz: null } ) ).toBe(
+				false
+			);
+			expect( isValidDimensionFilters( { foo: 3 } ) ).toBe( false );
+			expect( isValidDimensionFilters( { foo: [ 3, 'foo' ] } ) ).toBe(
 				false
 			);
 		} );
