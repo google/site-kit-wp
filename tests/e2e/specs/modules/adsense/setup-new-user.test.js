@@ -37,7 +37,7 @@ import {
 	setClientConfig,
 	setSearchConsoleProperty,
 	setSiteVerification,
-	useRequestInterception,
+	useSharedRequestInterception,
 } from '../../../utils';
 
 async function proceedToAdsenseSetup() {
@@ -67,12 +67,10 @@ async function proceedToAdsenseSetup() {
 }
 
 // Return empty array as a default, to avoid real requests.
-const defaultHandler = ( request ) => {
-	request.respond( {
-		status: 200,
-		body: JSON.stringify( [] ),
-	} );
-};
+const defaultHandler = () => ( {
+	status: 200,
+	body: JSON.stringify( [] ),
+} );
 
 const datapointHandlers = {
 	accounts: defaultHandler,
@@ -100,27 +98,42 @@ const ADSENSE_CLIENT = {
 };
 
 describe( 'setting up the AdSense module', () => {
+	let sharedRequestInterception;
+
 	beforeAll( async () => {
 		await page.setRequestInterception( true );
-		useRequestInterception( ( request ) => {
-			if ( request.url().match( 'modules/adsense/data/accounts' ) ) {
-				datapointHandlers.accounts( request );
-			} else if (
-				request.url().match( 'modules/adsense/data/clients' )
-			) {
-				datapointHandlers.clients( request );
-			} else if ( request.url().match( 'modules/adsense/data/alerts' ) ) {
-				datapointHandlers.alerts( request );
-			} else if (
-				request.url().match( 'modules/adsense/data/urlchannels' )
-			) {
-				datapointHandlers.urlchannels( request );
-			} else if (
-				request
-					.url()
-					.startsWith( 'https://accounts.google.com/o/oauth2/auth' )
-			) {
-				request.respond( {
+		sharedRequestInterception = useSharedRequestInterception( [
+			{
+				isMatch: ( request ) =>
+					request.url().match( 'modules/adsense/data/accounts' ),
+				getResponse: ( request ) =>
+					datapointHandlers.accounts( request ),
+			},
+			{
+				isMatch: ( request ) =>
+					request.url().match( 'modules/adsense/data/clients' ),
+				getResponse: ( request ) =>
+					datapointHandlers.clients( request ),
+			},
+			{
+				isMatch: ( request ) =>
+					request.url().match( 'modules/adsense/data/alerts' ),
+				getResponse: ( request ) => datapointHandlers.alerts( request ),
+			},
+			{
+				isMatch: ( request ) =>
+					request.url().match( 'modules/adsense/data/urlchannels' ),
+				getResponse: ( request ) =>
+					datapointHandlers.urlchannels( request ),
+			},
+			{
+				isMatch: ( request ) =>
+					request
+						.url()
+						.startsWith(
+							'https://accounts.google.com/o/oauth2/auth'
+						),
+				getResponse: () => ( {
 					status: 302,
 					headers: {
 						location: createURL(
@@ -133,11 +146,9 @@ describe( 'setting up the AdSense module', () => {
 							].join( '&' )
 						),
 					},
-				} );
-			} else {
-				request.continue();
-			}
-		} );
+				} ),
+			},
+		] );
 	} );
 
 	beforeEach( async () => {
@@ -159,33 +170,30 @@ describe( 'setting up the AdSense module', () => {
 	} );
 
 	it( 'displays “Your account is getting ready” when account is graylisted', async () => {
-		datapointHandlers.accounts = ( request ) => {
-			request.respond( {
-				status: 200,
-				body: JSON.stringify( [ ADSENSE_ACCOUNT ] ),
-			} );
-		};
-		datapointHandlers.alerts = ( request ) => {
-			request.respond( {
-				status: 200,
-				body: JSON.stringify( [
-					{
-						name: `accounts/${ ADSENSE_ACCOUNT._id }/alerts/e38f3957-be27-31cc-8d33-ba4b1f6e84c2`,
-						severity: 'SEVERE',
-						message:
-							"Your ad units are not displaying ads because you haven't provided your account payments information yet.",
-						type: 'billingless-account',
-					},
-					{
-						name: `accounts/${ ADSENSE_ACCOUNT._id }/alerts/ef158442-c283-3866-a3af-5f9cf7e190f3`,
-						severity: 'SEVERE',
-						message:
-							'Your AdSense application is still under review. You will only see blank ads until your account has been fully approved or disapproved.',
-						type: 'graylisted-publisher',
-					},
-				] ),
-			} );
-		};
+		datapointHandlers.accounts = () => ( {
+			status: 200,
+			body: JSON.stringify( [ ADSENSE_ACCOUNT ] ),
+		} );
+
+		datapointHandlers.alerts = () => ( {
+			status: 200,
+			body: JSON.stringify( [
+				{
+					name: `accounts/${ ADSENSE_ACCOUNT._id }/alerts/e38f3957-be27-31cc-8d33-ba4b1f6e84c2`,
+					severity: 'SEVERE',
+					message:
+						"Your ad units are not displaying ads because you haven't provided your account payments information yet.",
+					type: 'billingless-account',
+				},
+				{
+					name: `accounts/${ ADSENSE_ACCOUNT._id }/alerts/ef158442-c283-3866-a3af-5f9cf7e190f3`,
+					severity: 'SEVERE',
+					message:
+						'Your AdSense application is still under review. You will only see blank ads until your account has been fully approved or disapproved.',
+					type: 'graylisted-publisher',
+				},
+			] ),
+		} );
 
 		await expect( '/' ).not.toHaveAdSenseTag();
 
@@ -205,31 +213,27 @@ describe( 'setting up the AdSense module', () => {
 	} );
 
 	it( 'displays “Your account is getting ready” when the Adsense account is pending review', async () => {
-		datapointHandlers.accounts = ( request ) => {
-			request.respond( {
-				status: 200,
-				body: JSON.stringify( [ ADSENSE_ACCOUNT ] ),
-			} );
-		};
-		datapointHandlers.alerts = ( request ) => {
-			request.respond( {
-				status: 403,
-				body: JSON.stringify( {
-					code: 403,
-					message: 'Users account is pending review.',
-					data: {
-						status: 403,
-						reason: 'accountPendingReview',
-					},
-				} ),
-			} );
-		};
-		datapointHandlers.clients = ( request ) => {
-			request.respond( {
-				status: 200,
-				body: JSON.stringify( [ ADSENSE_CLIENT ] ),
-			} );
-		};
+		datapointHandlers.accounts = () => ( {
+			status: 200,
+			body: JSON.stringify( [ ADSENSE_ACCOUNT ] ),
+		} );
+
+		datapointHandlers.alerts = () => ( {
+			status: 403,
+			body: JSON.stringify( {
+				code: 403,
+				message: 'Users account is pending review.',
+				data: {
+					status: 403,
+					reason: 'accountPendingReview',
+				},
+			} ),
+		} );
+
+		datapointHandlers.clients = () => ( {
+			status: 200,
+			body: JSON.stringify( [ ADSENSE_CLIENT ] ),
+		} );
 
 		await expect( '/' ).not.toHaveAdSenseTag();
 
@@ -250,19 +254,17 @@ describe( 'setting up the AdSense module', () => {
 	} );
 
 	it( 'displays “Your site isn’t ready to show ads yet” when the users account is disapproved', async () => {
-		datapointHandlers.accounts = ( request ) => {
-			request.respond( {
-				status: 403,
-				body: JSON.stringify( {
-					code: 403,
-					message: 'Users account has been disapproved.',
-					data: {
-						status: 403,
-						reason: 'disapprovedAccount',
-					},
-				} ),
-			} );
-		};
+		datapointHandlers.accounts = () => ( {
+			status: 403,
+			body: JSON.stringify( {
+				code: 403,
+				message: 'Users account has been disapproved.',
+				data: {
+					status: 403,
+					reason: 'disapprovedAccount',
+				},
+			} ),
+		} );
 
 		await expect( '/' ).not.toHaveAdSenseTag();
 
@@ -283,19 +285,17 @@ describe( 'setting up the AdSense module', () => {
 	} );
 
 	it( 'displays “Create your AdSense account” when the user does not have an AdSense account', async () => {
-		datapointHandlers.accounts = ( request ) => {
-			request.respond( {
-				status: 403,
-				body: JSON.stringify( {
-					code: 403,
-					message: 'User does not have an AdSense account.',
-					data: {
-						status: 403,
-						reason: 'noAdSenseAccount',
-					},
-				} ),
-			} );
-		};
+		datapointHandlers.accounts = () => ( {
+			status: 403,
+			body: JSON.stringify( {
+				code: 403,
+				message: 'User does not have an AdSense account.',
+				data: {
+					status: 403,
+					reason: 'noAdSenseAccount',
+				},
+			} ),
+		} );
 
 		await expect( '/' ).not.toHaveAdSenseTag();
 
@@ -320,45 +320,37 @@ describe( 'setting up the AdSense module', () => {
 
 	describe( 'AMP is setup', () => {
 		beforeEach( async () => {
-			await activateAMPWithMode( 'primary' );
+			await activateAMPWithMode( 'primary', sharedRequestInterception );
 		} );
 		afterEach( async () => {
 			await deactivatePlugin( 'amp' );
 		} );
 		it( 'has valid AMP for logged-in users', async () => {
-			datapointHandlers.accounts = ( request ) => {
-				request.respond( {
-					status: 200,
-					body: JSON.stringify( [ ADSENSE_ACCOUNT ] ),
-				} );
-			};
+			datapointHandlers.accounts = () => ( {
+				status: 200,
+				body: JSON.stringify( [ ADSENSE_ACCOUNT ] ),
+			} );
 
-			datapointHandlers.clients = ( request ) => {
-				request.respond( {
-					status: 200,
-					body: JSON.stringify( [ ADSENSE_CLIENT ] ),
-				} );
-			};
+			datapointHandlers.clients = () => ( {
+				status: 200,
+				body: JSON.stringify( [ ADSENSE_CLIENT ] ),
+			} );
 
 			await proceedToAdsenseSetup();
 			await expect( '/' ).toHaveValidAMPForUser();
 		} );
 
 		it( 'has valid AMP for non-logged in users', async () => {
-			await activateAMPWithMode( 'primary' );
-			datapointHandlers.accounts = ( request ) => {
-				request.respond( {
-					status: 200,
-					body: JSON.stringify( [ ADSENSE_ACCOUNT ] ),
-				} );
-			};
+			await activateAMPWithMode( 'primary', sharedRequestInterception );
+			datapointHandlers.accounts = () => ( {
+				status: 200,
+				body: JSON.stringify( [ ADSENSE_ACCOUNT ] ),
+			} );
 
-			datapointHandlers.clients = ( request ) => {
-				request.respond( {
-					status: 200,
-					body: JSON.stringify( [ ADSENSE_CLIENT ] ),
-				} );
-			};
+			datapointHandlers.clients = () => ( {
+				status: 200,
+				body: JSON.stringify( [ ADSENSE_CLIENT ] ),
+			} );
 
 			await proceedToAdsenseSetup();
 			await expect( '/' ).toHaveValidAMPForVisitor();

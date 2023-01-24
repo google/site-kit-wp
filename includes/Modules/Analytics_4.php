@@ -212,7 +212,7 @@ final class Analytics_4 extends Module
 	 * @return array Map of datapoints to their definitions.
 	 */
 	protected function get_datapoint_definitions() {
-		return array(
+		$datapoints = array(
 			'GET:account-summaries'      => array( 'service' => 'analyticsadmin' ),
 			'GET:accounts'               => array( 'service' => 'analyticsadmin' ),
 			'GET:container-lookup'       => array( 'service' => 'tagmanager' ),
@@ -229,13 +229,19 @@ final class Analytics_4 extends Module
 			),
 			'GET:properties'             => array( 'service' => 'analyticsadmin' ),
 			'GET:property'               => array( 'service' => 'analyticsadmin' ),
-			'GET:report'                 => array(
-				'service'   => 'analyticsdata',
-				'shareable' => Feature_Flags::enabled( 'dashboardSharing' ),
-			),
 			'GET:webdatastreams'         => array( 'service' => 'analyticsadmin' ),
 			'GET:webdatastreams-batch'   => array( 'service' => 'analyticsadmin' ),
+			'GET:conversion-events'      => array( 'service' => 'analyticsadmin' ),
 		);
+
+		if ( Feature_Flags::enabled( 'ga4Reporting' ) ) {
+			$datapoints['GET:report'] = array(
+				'service'   => 'analyticsdata',
+				'shareable' => Feature_Flags::enabled( 'dashboardSharing' ),
+			);
+		}
+
+		return $datapoints;
 	}
 
 	/**
@@ -502,6 +508,22 @@ final class Analytics_4 extends Module
 				return $this->get_tagmanager_service()->accounts_containers_destinations->listAccountsContainersDestinations(
 					"accounts/{$data['accountID']}/containers/{$data['internalContainerID']}"
 				);
+			case 'GET:conversion-events':
+				if ( ! isset( $data['propertyID'] ) ) {
+					return new WP_Error(
+						'missing_required_param',
+						/* translators: %s: Missing parameter name */
+						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'propertyID' ),
+						array( 'status' => 400 )
+					);
+				}
+
+				$analyticsadmin = $this->get_service( 'analyticsadmin' );
+				$property_id    = self::normalize_property_id( $data['propertyID'] );
+
+				return $analyticsadmin
+					->properties_conversionEvents // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+					->listPropertiesConversionEvents( $property_id );
 		}
 
 		return parent::create_data_request( $data );
@@ -555,6 +577,8 @@ final class Analytics_4 extends Module
 				return self::parse_webdatastreams_batch( $response );
 			case 'GET:container-destinations':
 				return (array) $response->getDestination();
+			case 'GET:conversion-events':
+				return (array) $response->getConversionEvents();
 		}
 
 		return parent::parse_data_response( $data, $response );
@@ -1183,7 +1207,7 @@ final class Analytics_4 extends Module
 			$dimension_string_filter->setMatchType( 'EXACT' );
 			$dimension_string_filter->setValue( rawurldecode( $args['page'] ) );
 			$dimension_filter = new Google_Service_AnalyticsData_Filter();
-			$dimension_filter->setFieldName( 'pagePathPlusQueryString' );
+			$dimension_filter->setFieldName( 'pagePath' );
 			$dimension_filter->setStringFilter( $dimension_string_filter );
 			$dimension_filter_expression = new Google_Service_AnalyticsData_FilterExpression();
 			$dimension_filter_expression->setFilter( $dimension_filter );

@@ -36,7 +36,7 @@ import {
 	setSiteVerification,
 	setupAnalytics,
 	step,
-	useRequestInterception,
+	useSharedRequestInterception,
 } from '../../../utils';
 
 async function proceedToOptimizeSetup() {
@@ -86,54 +86,72 @@ describe( 'Optimize Activation', () => {
 		} );
 	}
 
+	let sharedRequestInterception;
+
 	beforeAll( async () => {
 		await page.setRequestInterception( true );
-		useRequestInterception( ( request ) => {
-			if (
-				request
-					.url()
-					.match(
-						'/wp-json/google-site-kit/v1/modules/analytics/data/report?'
-					)
-			) {
-				request.respond( {
+		sharedRequestInterception = useSharedRequestInterception( [
+			{
+				isMatch: ( request ) =>
+					request
+						.url()
+						.match(
+							'/wp-json/google-site-kit/v1/modules/analytics/data/report?'
+						),
+				getResponse: () => ( {
 					status: 200,
 					body: JSON.stringify( [ { placeholder_response: true } ] ),
-				} );
-			} else if (
-				request
-					.url()
-					.match(
-						'google-site-kit/v1/modules/search-console/data/searchanalytics'
-					)
-			) {
-				request.respond( { status: 200, body: JSON.stringify( [] ) } );
-			} else if (
-				request
-					.url()
-					.match(
-						'google-site-kit/v1/modules/pagespeed-insights/data/pagespeed'
-					)
-			) {
-				request.respond( { status: 200, body: JSON.stringify( {} ) } );
-			} else if (
-				request
-					.url()
-					.match( 'google-site-kit/v1/modules/analytics/data/goals' )
-			) {
-				request.respond( { status: 200, body: JSON.stringify( {} ) } );
-			} else if (
-				request
-					.url()
-					.match(
-						'google-site-kit/v1/core/modules/data/check-access'
-					)
-			) {
-				request.respond( { status: 200, body: JSON.stringify( {} ) } );
-			} else {
-				request.continue();
-			}
-		} );
+				} ),
+			},
+			{
+				isMatch: ( request ) =>
+					request
+						.url()
+						.match(
+							'google-site-kit/v1/modules/search-console/data/searchanalytics'
+						),
+				getResponse: () => ( {
+					status: 200,
+					body: JSON.stringify( [] ),
+				} ),
+			},
+			{
+				isMatch: ( request ) =>
+					request
+						.url()
+						.match(
+							'google-site-kit/v1/modules/pagespeed-insights/data/pagespeed'
+						),
+				getResponse: () => ( {
+					status: 200,
+					body: JSON.stringify( {} ),
+				} ),
+			},
+			{
+				isMatch: ( request ) =>
+					request
+						.url()
+						.match(
+							'google-site-kit/v1/modules/analytics/data/goals'
+						),
+				getResponse: () => ( {
+					status: 200,
+					body: JSON.stringify( {} ),
+				} ),
+			},
+			{
+				isMatch: ( request ) =>
+					request
+						.url()
+						.match(
+							'google-site-kit/v1/core/modules/data/check-access'
+						),
+				getResponse: () => ( {
+					status: 200,
+					body: JSON.stringify( {} ),
+				} ),
+			},
+		] );
 	} );
 
 	beforeEach( async () => {
@@ -226,7 +244,7 @@ describe( 'Optimize Activation', () => {
 
 	describe( 'Settings with AMP enabled', () => {
 		beforeEach( async () => {
-			await activateAMPWithMode( 'primary' );
+			await activateAMPWithMode( 'primary', sharedRequestInterception );
 			await setupAnalytics( { useSnippet: true } );
 			await proceedToOptimizeSetup();
 		} );
@@ -248,7 +266,7 @@ describe( 'Optimize Activation', () => {
 
 	describe( 'Homepage AMP', () => {
 		beforeEach( async () => {
-			await activateAMPWithMode( 'primary' );
+			await activateAMPWithMode( 'primary', sharedRequestInterception );
 			await setupAnalytics();
 		} );
 

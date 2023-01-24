@@ -1,7 +1,7 @@
 /**
  * Overview component for SearchFunnelWidget.
  *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,28 +30,19 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { ProgressBar } from 'googlesitekit-components';
-import { Grid, Row, Cell } from '../../../../../material-components';
-import { extractSearchConsoleDashboardData } from '../../../util';
-import { calculateChange } from '../../../../../util';
-import { CORE_MODULES } from '../../../../../googlesitekit/modules/datastore/constants';
-import { MODULES_ANALYTICS } from '../../../../analytics/datastore/constants';
-import { CORE_LOCATION } from '../../../../../googlesitekit/datastore/location/constants';
-import { MODULES_SEARCH_CONSOLE } from '../../../datastore/constants';
+import { Grid, Row, Cell } from '../../../../../../material-components';
+import { extractSearchConsoleDashboardData } from '../../../../util';
+import { calculateChange } from '../../../../../../util';
+import { CORE_MODULES } from '../../../../../../googlesitekit/modules/datastore/constants';
+import { MODULES_SEARCH_CONSOLE } from '../../../../datastore/constants';
 import useDashboardType, {
 	DASHBOARD_TYPE_MAIN,
 	DASHBOARD_TYPE_ENTITY,
-} from '../../../../../hooks/useDashboardType';
-import ActivateAnalyticsCTA from './ActivateAnalyticsCTA';
-import CreateGoalCTA from './CreateGoalCTA';
-import DataBlock from '../../../../../components/DataBlock';
-import RecoverableModules from '../../../../../components/RecoverableModules';
-import {
-	BREAKPOINT_SMALL,
-	useBreakpoint,
-} from '../../../../../hooks/useBreakpoint';
-import useViewOnly from '../../../../../hooks/useViewOnly';
-import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
+} from '../../../../../../hooks/useDashboardType';
+import DataBlock from '../../../../../../components/DataBlock';
+import useViewOnly from '../../../../../../hooks/useViewOnly';
+import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
+import OptionalCells from './OptionalCells';
 const { useSelect, useInViewSelect } = Data;
 
 function getDatapointAndChange( [ report ], selectedStat, divider = 1 ) {
@@ -65,7 +56,6 @@ function getDatapointAndChange( [ report ], selectedStat, divider = 1 ) {
 	};
 }
 
-// eslint-disable-next-line complexity
 const Overview = ( {
 	analyticsData,
 	analyticsGoalsData,
@@ -79,7 +69,6 @@ const Overview = ( {
 	showRecoverableAnalytics,
 } ) => {
 	const dashboardType = useDashboardType();
-	const breakpoint = useBreakpoint();
 
 	const viewOnly = useViewOnly();
 
@@ -105,16 +94,7 @@ const Overview = ( {
 	const analyticsModuleActive = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleActive( 'analytics' )
 	);
-	const analyticsModuleActiveAndConnected =
-		analyticsModuleActive && analyticsModuleConnected;
 
-	const isNavigatingToReauthURL = useSelect( ( select ) => {
-		if ( ! analyticsModuleAvailable ) {
-			return false;
-		}
-		const adminReauthURL = select( MODULES_ANALYTICS ).getAdminReauthURL();
-		return select( CORE_LOCATION ).isNavigatingTo( adminReauthURL );
-	} );
 	const isSearchConsoleGatheringData = useInViewSelect( ( select ) =>
 		select( MODULES_SEARCH_CONSOLE ).isGatheringData()
 	);
@@ -317,52 +297,16 @@ const Overview = ( {
 					</Row>
 				</Cell>
 
-				{ isNavigatingToReauthURL && (
-					<Cell
-						{ ...halfCellProps }
-						className="googlesitekit-data-block__loading"
-					>
-						<ProgressBar />
-					</Cell>
-				) }
-
-				{ canViewSharedAnalytics &&
-					( ! analyticsModuleConnected || ! analyticsModuleActive ) &&
-					! isNavigatingToReauthURL && (
-						<Cell { ...halfCellProps }>
-							{ BREAKPOINT_SMALL !== breakpoint && (
-								<ActivateAnalyticsCTA />
-							) }
-						</Cell>
-					) }
-
-				{ ! showRecoverableAnalytics &&
-					canViewSharedAnalytics &&
-					analyticsModuleActiveAndConnected &&
-					error && (
-						<Cell { ...halfCellProps }>
-							<WidgetReportError
-								moduleSlug="analytics"
-								error={ error }
-							/>
-						</Cell>
-					) }
-
-				{ showAnalytics && (
-					<Cell { ...quarterCellProps } smSize={ 4 }>
-						{ showGoalsCTA && <CreateGoalCTA /> }
-					</Cell>
-				) }
-
-				{ canViewSharedAnalytics &&
-					analyticsModuleActiveAndConnected &&
-					showRecoverableAnalytics && (
-						<Cell { ...halfCellProps }>
-							<RecoverableModules
-								moduleSlugs={ [ 'analytics' ] }
-							/>
-						</Cell>
-					) }
+				<OptionalCells
+					canViewSharedAnalytics={ canViewSharedAnalytics }
+					error={ error }
+					halfCellProps={ halfCellProps }
+					quarterCellProps={ quarterCellProps }
+					showAnalytics={ showAnalytics }
+					showGoalsCTA={ showGoalsCTA }
+					showRecoverableAnalytics={ showRecoverableAnalytics }
+					WidgetReportError={ WidgetReportError }
+				/>
 			</Row>
 		</Grid>
 	);

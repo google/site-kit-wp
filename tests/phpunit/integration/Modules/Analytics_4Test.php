@@ -32,8 +32,10 @@ use Google\Site_Kit\Tests\Core\Modules\Module_With_Settings_ContractTests;
 use Google\Site_Kit\Tests\FakeHttpClient;
 use Google\Site_Kit\Tests\TestCase;
 use Google\Site_Kit\Tests\UserAuthenticationTrait;
+use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaConversionEvent;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaDataStream;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaDataStreamWebStreamData;
+use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaListConversionEventsResponse;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Message\Request;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Message\Response;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Stream\Stream;
@@ -94,6 +96,8 @@ class Analytics_4Test extends TestCase {
 
 	public function set_up() {
 		parent::set_up();
+
+		$this->enable_feature( 'ga4Reporting' );
 
 		$this->context        = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$options              = new Options( $this->context );
@@ -244,6 +248,7 @@ class Analytics_4Test extends TestCase {
 				'accounts',
 				'container-lookup',
 				'container-destinations',
+				'conversion-events',
 				'create-property',
 				'create-webdatastream',
 				'properties',
@@ -447,7 +452,7 @@ class Analytics_4Test extends TestCase {
 						// Verify the URL filter is correct.
 						array(
 							'filter' => array(
-								'fieldName'    => 'pagePathPlusQueryString',
+								'fieldName'    => 'pagePath',
 								'stringFilter' => array(
 									'matchType' => 'EXACT',
 									'value'     => 'https://example.org/some-page-here/',
@@ -896,6 +901,55 @@ class Analytics_4Test extends TestCase {
 	}
 
 	/**
+	 * @dataProvider data_access_token
+	 *
+	 * When an access token is provided, the user will be authenticated for the test.
+	 *
+	 * @param string $access_token Access token, or empty string if none.
+	 */
+	public function test_get_conversion_events( $access_token ) {
+		$this->setup_user_authentication( $access_token );
+
+		$property_id = '123456789';
+
+		$this->analytics->get_settings()->merge(
+			array(
+				'propertyID' => $property_id,
+			)
+		);
+
+		// Grant scopes so request doesn't fail.
+		$this->authentication->get_oauth_client()->set_granted_scopes(
+			$this->analytics->get_scopes()
+		);
+
+		$http_client = $this->create_fake_http_client( $property_id );
+		$this->analytics->get_client()->setHttpClient( $http_client );
+		$this->analytics->register();
+
+		// Fetch conversion events.
+		$data = $this->analytics->get_data(
+			'conversion-events',
+			array(
+				'propertyID' => $property_id,
+			)
+		);
+
+		$this->assertNotWPError( $data );
+
+		// Verify the conversion events are returned by checking an event name.
+		$this->assertEquals( 'some-event', $data[0]['eventName'] );
+
+		// Verify the request URL and params were correctly generated.
+		$this->assertCount( 1, $this->request_handler_calls );
+
+		$request_url = $this->request_handler_calls[0]['url'];
+
+		$this->assertEquals( 'analyticsadmin.googleapis.com', $request_url['host'] );
+		$this->assertEquals( "/v1beta/properties/$property_id/conversionEvents", $request_url['path'] );
+	}
+
+	/**
 	 * Returns a date string for the given number of days ago.
 	 *
 	 * @param int $days_ago The number of days ago.
@@ -953,7 +1007,13 @@ class Analytics_4Test extends TestCase {
 					'params' => $params,
 				);
 
-				if ( 'analyticsdata.googleapis.com' !== $url['host'] ) {
+				if (
+					! in_array(
+						$url['host'],
+						array( 'analyticsdata.googleapis.com', 'analyticsadmin.googleapis.com' ),
+						true
+					)
+				) {
 					return new Response( 200 );
 				}
 
@@ -980,6 +1040,22 @@ class Analytics_4Test extends TestCase {
 										),
 									)
 								)
+							)
+						);
+
+					case "/v1beta/properties/$property_id/conversionEvents":
+						$conversion_event = new GoogleAnalyticsAdminV1betaConversionEvent();
+						$conversion_event->setName( "properties/$property_id/conversionEvents/some-name" );
+						$conversion_event->setEventName( 'some-event' );
+
+						$conversion_events = new GoogleAnalyticsAdminV1betaListConversionEventsResponse();
+						$conversion_events->setConversionEvents( array( $conversion_event ) );
+
+						return new Response(
+							200,
+							array(),
+							Stream::factory(
+								json_encode( $conversion_events )
 							)
 						);
 
