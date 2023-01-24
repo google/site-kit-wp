@@ -82,7 +82,7 @@ const fetchGetReportStore = createFetchStore( {
 		);
 		invariant(
 			isValidMetrics( metrics ),
-			'Metrics for an Analytics 4 report must be either a string, an array of strings, an object, an array of objects or a mix of strings and objects. If an object is used, it must have "expression" and "alias" properties.'
+			'Metrics for an Analytics 4 report must be either a string, an array of strings, an object, an array of objects or a mix of strings and objects. If an object is used, it must have "expression" property and optionally a "name" property.'
 		);
 
 		if ( dimensions ) {
