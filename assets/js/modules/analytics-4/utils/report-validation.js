@@ -24,8 +24,8 @@ import { isValidStringsOrObjects } from '../../../util/report-validation';
 /**
  * Verifies that provided metrics match allowed values. Metrics can be a string,
  * an array of string, an array of objects or mix of strings and objects. Objects
- * must have an "expression" property in order to be considered as valid, and they
- * can optionally include an "alias" property.
+ * must have an "name" property in order to be considered as valid, and they
+ * can optionally include an "expression" property.
  *
  * @since n.e.x.t
  *
@@ -34,15 +34,14 @@ import { isValidStringsOrObjects } from '../../../util/report-validation';
  */
 export function isValidMetrics( metrics ) {
 	return isValidStringsOrObjects( metrics, ( metric ) => {
-		const validExpression =
-			metric.hasOwnProperty( 'expression' ) &&
-			typeof metric.expression === 'string';
-
-		// 'name' is optional; if provided, it must be a string.
 		const validName =
-			! metric.hasOwnProperty( 'name' ) ||
-			typeof metric.name === 'string';
-		return validExpression && validName;
+			metric.hasOwnProperty( 'name' ) && typeof metric.name === 'string';
+
+		// 'expression' is optional; if provided, it must be a string.
+		const validExpression =
+			! metric.hasOwnProperty( 'expression' ) ||
+			typeof metric.expression === 'string';
+		return validName && validExpression;
 	} );
 }
 

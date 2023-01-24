@@ -33,7 +33,6 @@ import memize from 'memize';
  */
 export const normalizeReportOptions = memize(
 	( { metrics, dimensions, ...options } = {} ) => {
-		// TODO: build this out to normalize all options used.
 		return {
 			metrics: normalizeMetrics( metrics ),
 			dimensions: normalizeDimensions( dimensions ),

@@ -110,7 +110,7 @@ describe( 'Analytics 4 Reporting API validation', () => {
 			// 'name' is optional.
 			expect(
 				isValidMetrics( {
-					expression: 'test',
+					name: 'test',
 				} )
 			).toBe( true );
 		} );
@@ -128,7 +128,7 @@ describe( 'Analytics 4 Reporting API validation', () => {
 						expression: 'test4',
 						name: 'Test4',
 					},
-					{ expression: 'test5' },
+					{ name: 'test5' },
 				] )
 			).toBe( true );
 		} );
