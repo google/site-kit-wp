@@ -38,11 +38,11 @@ export function isValidMetrics( metrics ) {
 			metric.hasOwnProperty( 'expression' ) &&
 			typeof metric.expression === 'string';
 
-		// 'alias' is optional; if provided, it must be a string.
-		const validAlias =
-			! metric.hasOwnProperty( 'alias' ) ||
-			typeof metric.alias === 'string';
-		return validExpression && validAlias;
+		// 'name' is optional; if provided, it must be a string.
+		const validName =
+			! metric.hasOwnProperty( 'name' ) ||
+			typeof metric.name === 'string';
+		return validExpression && validName;
 	} );
 }
 

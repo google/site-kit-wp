@@ -103,11 +103,11 @@ describe( 'Analytics 4 Reporting API validation', () => {
 			expect(
 				isValidMetrics( {
 					expression: 'test',
-					alias: 'Test',
+					name: 'Test',
 				} )
 			).toBe( true );
 
-			// 'alias' is optional.
+			// 'name' is optional.
 			expect(
 				isValidMetrics( {
 					expression: 'test',
@@ -120,13 +120,13 @@ describe( 'Analytics 4 Reporting API validation', () => {
 				isValidMetrics( [
 					{
 						expression: 'test',
-						alias: 'Test',
+						name: 'Test',
 					},
 					'test2',
 					'test3',
 					{
 						expression: 'test4',
-						alias: 'Test4',
+						name: 'Test4',
 					},
 					{ expression: 'test5' },
 				] )
@@ -142,13 +142,13 @@ describe( 'Analytics 4 Reporting API validation', () => {
 				isValidMetrics( [
 					{
 						expression: 'test',
-						alias: 'Test',
+						name: 'Test',
 					},
 					'test2',
 					5,
 					{
 						expression: 'test4',
-						alias: 'Test4',
+						name: 'Test4',
 					},
 				] )
 			).toBe( false );
