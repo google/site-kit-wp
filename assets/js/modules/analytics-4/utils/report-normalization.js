@@ -43,14 +43,17 @@ export const normalizeReportOptions = memize(
 );
 
 const normalizeMetrics = ( metrics ) => {
-	return castArray( metrics ).filter(
-		( metric ) => isPlainObject( metric ) || typeof metric === 'string'
-	);
+	return castArray( metrics )
+		.map( ( metric ) =>
+			typeof metric === 'string' ? { name: metric } : metric
+		)
+		.filter( ( metric ) => isPlainObject( metric ) );
 };
 
 const normalizeDimensions = ( dimensions ) => {
-	return castArray( dimensions ).filter(
-		( dimension ) =>
-			isPlainObject( dimension ) || typeof dimension === 'string'
-	);
+	return castArray( dimensions )
+		.map( ( dimension ) =>
+			typeof dimension === 'string' ? { name: dimension } : dimension
+		)
+		.filter( ( dimension ) => isPlainObject( dimension ) );
 };

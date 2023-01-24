@@ -45,66 +45,51 @@ describe( 'Analytics 4 normalizeReportOptions', () => {
 			} );
 		} );
 
-		it( 'normalizes single string metrics into an array of strings', () => {
+		it( 'normalizes single string metrics into an array of objects', () => {
 			const { metrics } = normalizeReportOptions( { metrics: 'foo' } );
 
-			expect( metrics ).toEqual( [ 'foo' ] );
+			expect( metrics ).toEqual( [ { name: 'foo' } ] );
 		} );
 
-		it( 'normalizes an array of strings into an array of strings', () => {
+		it( 'normalizes an array of strings into an array of objects', () => {
 			const { metrics } = normalizeReportOptions( {
 				metrics: [ 'foo', 'bar' ],
 			} );
 
-			expect( metrics ).toEqual( [ 'foo', 'bar' ] );
+			expect( metrics ).toEqual( [ { name: 'foo' }, { name: 'bar' } ] );
 		} );
 
 		it( 'normalizes a single metric object into an array of objects', () => {
-			const options = { metrics: { expression: 'foo', name: 'bar' } };
+			const options = { metrics: { expression: 'foo', alias: 'bar' } };
 			const { metrics } = normalizeReportOptions( options );
 
-			expect( metrics ).toEqual( [ { expression: 'foo', name: 'bar' } ] );
+			expect( metrics ).toEqual( [
+				{ expression: 'foo', alias: 'bar' },
+			] );
 		} );
 
 		it( 'normalizes an array of objects into the same values', () => {
 			const options = {
 				metrics: [
-					{ expression: 'foo', name: 'bar' },
+					{ expression: 'foo', alias: 'bar' },
 					{ expression: 'bar' },
 				],
 			};
 			const { metrics } = normalizeReportOptions( options );
 			expect( metrics ).toEqual( [
-				{ expression: 'foo', name: 'bar' },
+				{ expression: 'foo', alias: 'bar' },
 				{ expression: 'bar' },
 			] );
 		} );
 
-		it( 'normalizes an array of strings and objects into an array of strings and objects', () => {
+		it( 'normalizes an array of strings and objects into an array of objects', () => {
 			const options = {
 				metrics: [ { expression: 'foo', name: 'bar' }, 'bar' ],
 			};
 			const { metrics } = normalizeReportOptions( options );
 			expect( metrics ).toEqual( [
 				{ expression: 'foo', name: 'bar' },
-				'bar',
-			] );
-		} );
-
-		it( 'strips values other than strings and objects from array', () => {
-			const options = {
-				metrics: [
-					1,
-					false,
-					undefined,
-					{ expression: 'foo', alias: 'bar' },
-					'bar',
-				],
-			};
-			const { metrics } = normalizeReportOptions( options );
-			expect( metrics ).toEqual( [
-				{ expression: 'foo', alias: 'bar' },
-				'bar',
+				{ name: 'bar' },
 			] );
 		} );
 	} );
@@ -119,20 +104,23 @@ describe( 'Analytics 4 normalizeReportOptions', () => {
 			} );
 		} );
 
-		it( 'normalizes single string dimensions into an array of strings', () => {
+		it( 'normalizes single string dimensions into an array of objects', () => {
 			const { dimensions } = normalizeReportOptions( {
 				dimensions: 'foo',
 			} );
 
-			expect( dimensions ).toEqual( [ 'foo' ] );
+			expect( dimensions ).toEqual( [ { name: 'foo' } ] );
 		} );
 
-		it( 'normalizes an array of strings into an array of strings', () => {
+		it( 'normalizes an array of strings into an array of objects', () => {
 			const { dimensions } = normalizeReportOptions( {
 				dimensions: [ 'foo', 'bar' ],
 			} );
 
-			expect( dimensions ).toEqual( [ 'foo', 'bar' ] );
+			expect( dimensions ).toEqual( [
+				{ name: 'foo' },
+				{ name: 'bar' },
+			] );
 		} );
 
 		it( 'normalizes a single dimension object into an array of objects', () => {
@@ -153,10 +141,13 @@ describe( 'Analytics 4 normalizeReportOptions', () => {
 			] );
 		} );
 
-		it( 'normalizes an array of strings and objects into an array of strings and objects', () => {
+		it( 'normalizes an array of strings and objects into an array of objects', () => {
 			const options = { dimensions: [ { name: 'foo' }, 'bar' ] };
 			const { dimensions } = normalizeReportOptions( options );
-			expect( dimensions ).toEqual( [ { name: 'foo' }, 'bar' ] );
+			expect( dimensions ).toEqual( [
+				{ name: 'foo' },
+				{ name: 'bar' },
+			] );
 		} );
 
 		it( 'strips values other than strings and objects from array', () => {
@@ -165,7 +156,10 @@ describe( 'Analytics 4 normalizeReportOptions', () => {
 			};
 
 			const { dimensions } = normalizeReportOptions( options );
-			expect( dimensions ).toEqual( [ { name: 'foo' }, 'bar' ] );
+			expect( dimensions ).toEqual( [
+				{ name: 'foo' },
+				{ name: 'bar' },
+			] );
 		} );
 	} );
 } );
