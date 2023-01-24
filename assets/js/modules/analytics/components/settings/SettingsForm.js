@@ -25,6 +25,7 @@ import { Fragment } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { ProgressBar } from 'googlesitekit-components';
 import {
 	AdsConversionIDTextField,
 	AnonymizeIPSwitch,
@@ -67,6 +68,14 @@ export default function SettingsForm( {
 	const showTrackingExclusion =
 		useAnalyticsSnippet ||
 		( useTagManagerSnippet && analyticsSinglePropertyID );
+
+	const gtmContainersResolved = useSelect( ( select ) =>
+		select( MODULES_TAGMANAGER ).hasFinishedLoadingContainers()
+	);
+
+	if ( ! gtmContainersResolved ) {
+		return <ProgressBar />;
+	}
 
 	return (
 		<Fragment>

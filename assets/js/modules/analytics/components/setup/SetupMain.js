@@ -39,8 +39,6 @@ import { CORE_LOCATION } from '../../../../googlesitekit/datastore/location/cons
 import useExistingTagEffectUA from '../../hooks/useExistingTagEffect';
 import useExistingTagEffectGA4 from '../../../analytics-4/hooks/useExistingTagEffect';
 import { AccountCreate, AccountCreateLegacy } from '../common';
-import { MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
-import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 const { useSelect } = Data;
 
 export default function SetupMain( { finishSetup } ) {
@@ -66,22 +64,6 @@ export default function SetupMain( { finishSetup } ) {
 		select( MODULES_ANALYTICS ).getSetupFlowMode()
 	);
 
-	const isTagManagerAvailable = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleAvailable( 'tagmanager' )
-	);
-	// Preloading the `live-container-version` call is necessary to display
-	// the loading state until the data is fetched from the server.
-	// This call is being made in the child component ExistingGTMPropertyNotice
-	// to ensure that the loading state is displayed before the data is available.
-	useSelect(
-		( select ) =>
-			isTagManagerAvailable &&
-			select( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID()
-	);
-	const gtmContainersResolved = useSelect( ( select ) =>
-		select( MODULES_TAGMANAGER ).hasFinishedLoadingContainers()
-	);
-
 	// Set the accountID and containerID if there is an existing tag.
 	useExistingTagEffectUA();
 	useExistingTagEffectGA4();
@@ -95,7 +77,6 @@ export default function SetupMain( { finishSetup } ) {
 		isDoingSubmitChanges ||
 		! hasResolvedAccounts ||
 		isNavigating ||
-		! gtmContainersResolved ||
 		setupFlowMode === undefined
 	) {
 		viewComponent = <ProgressBar />;

@@ -31,7 +31,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { Button } from 'googlesitekit-components';
+import { Button, ProgressBar } from 'googlesitekit-components';
 import {
 	SETUP_FLOW_MODE_UA,
 	SETUP_FLOW_MODE_GA4,
@@ -46,6 +46,8 @@ import { isPermissionScopeError } from '../../../../util/errors';
 import SetupFormUA from './SetupFormUA';
 import SetupFormGA4 from './SetupFormGA4';
 import SetupFormGA4Transitional from './SetupFormGA4Transitional';
+import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
+import { MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
 const { useSelect, useDispatch } = Data;
 
 export default function SetupForm( { finishSetup } ) {
@@ -79,6 +81,22 @@ export default function SetupForm( { finishSetup } ) {
 		[ finishSetup, setValues, submitChanges ]
 	);
 
+	const isTagManagerAvailable = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleAvailable( 'tagmanager' )
+	);
+	// Preloading the `live-container-version` call is necessary to display
+	// the loading state until the data is fetched from the server.
+	// This call is being made in the child component ExistingGTMPropertyNotice
+	// to ensure that the loading state is displayed before the data is available.
+	useSelect(
+		( select ) =>
+			isTagManagerAvailable &&
+			select( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID()
+	);
+	const gtmContainersResolved = useSelect( ( select ) =>
+		select( MODULES_TAGMANAGER ).hasFinishedLoadingContainers()
+	);
+
 	// If the user lands back on this component with autoSubmit and the edit scope,
 	// resubmit the form.
 	useEffect( () => {
@@ -86,6 +104,10 @@ export default function SetupForm( { finishSetup } ) {
 			submitForm( { preventDefault: () => {} } );
 		}
 	}, [ hasEditScope, autoSubmit, submitForm ] );
+
+	if ( ! gtmContainersResolved ) {
+		return <ProgressBar />;
+	}
 
 	return (
 		<form
