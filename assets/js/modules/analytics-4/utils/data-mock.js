@@ -254,9 +254,6 @@ export function getAnalytics4MockResponse( args ) {
 	const data = {
 		rowCount: 0,
 		rows: [],
-		totals: [],
-		minimums: [],
-		maximums: [],
 		metadata: {
 			currencyCode: 'USD',
 			timeZone: 'America/Los_Angeles',
@@ -283,7 +280,9 @@ export function getAnalytics4MockResponse( args ) {
 		dimensions.push( 'dateRange' );
 	}
 
-	dimensions.forEach( ( dimension ) => {
+	dimensions.forEach( ( singleDimension ) => {
+		const dimension = singleDimension?.name || singleDimension.toString();
+
 		if ( dimension === 'date' || dimension === 'dateRange' ) {
 			const dateRange = generateDateRange( args.startDate, args.endDate );
 			const compareDateRange = hasDateRange
@@ -299,10 +298,16 @@ export function getAnalytics4MockResponse( args ) {
 					new Observable( ( observer ) => {
 						dateRange.forEach( ( date ) => {
 							observer.next( date );
+
+							if ( hasDateRange ) {
+								// Duplicate date if we are have a date range.
+								observer.next( date );
+							}
 						} );
 
 						if ( hasDateRange ) {
 							compareDateRange.forEach( ( date ) => {
+								observer.next( date );
 								observer.next( date );
 							} );
 						}
@@ -317,9 +322,11 @@ export function getAnalytics4MockResponse( args ) {
 					new Observable( ( observer ) => {
 						dateRange.forEach( () => {
 							observer.next( 'date_range_0' );
+							observer.next( 'date_range_1' );
 						} );
 
 						compareDateRange.forEach( () => {
+							observer.next( 'date_range_0' );
 							observer.next( 'date_range_1' );
 						} );
 
@@ -379,6 +386,8 @@ export function getAnalytics4MockResponse( args ) {
 		),
 	];
 
+	const metricAggregations = castArray( args.metricAggregations );
+
 	// Process the stream of dimension values and add generated rows to the report data object.
 	zip( ...streams )
 		.pipe( ...ops )
@@ -386,122 +395,134 @@ export function getAnalytics4MockResponse( args ) {
 			data.rows = rows;
 			data.rowCount = rows.length;
 
-			// We pretend that the first row contains minimums and the last one maximums because we don't
-			// really need mathematically correct values and can simplify the process of finding this information.
-			data.minimums = [
-				{
-					dimensionValues: dimensions.map( ( dimension ) => {
-						if ( dimension === 'dateRange' ) {
-							return { value: 'date_range_0' };
-						}
+			if ( metricAggregations.includes( 'MINIMUM' ) ) {
+				// We pretend that the first row contains minimums and the last one maximums because we don't
+				// really need mathematically correct values and can simplify the process of finding this information.
+				data.minimums = [
+					{
+						dimensionValues: dimensions.map( ( dimension ) => {
+							if ( dimension === 'dateRange' ) {
+								return { value: 'date_range_0' };
+							}
 
-						return {
-							value: 'RESERVED_MIN',
-						};
-					} ),
-					metricValues: [ ...( rows[ 0 ]?.metricValues || [] ) ],
-				},
-			].concat(
-				hasDateRange
-					? [
-							{
-								dimensionValues: dimensions.map(
-									( dimension ) => {
-										if ( dimension === 'dateRange' ) {
-											return { value: 'date_range_1' };
+							return {
+								value: 'RESERVED_MIN',
+							};
+						} ),
+						metricValues: [ ...( rows[ 0 ]?.metricValues || [] ) ],
+					},
+				].concat(
+					hasDateRange
+						? [
+								{
+									dimensionValues: dimensions.map(
+										( dimension ) => {
+											if ( dimension === 'dateRange' ) {
+												return {
+													value: 'date_range_1',
+												};
+											}
+
+											return {
+												value: 'RESERVED_MIN',
+											};
 										}
+									),
+									metricValues: [
+										...( rows[ 0 ]?.metricValues || [] ),
+									],
+								},
+						  ]
+						: []
+				);
+			}
 
-										return {
-											value: 'RESERVED_MIN',
-										};
-									}
-								),
-								metricValues: [
-									...( rows[ 0 ]?.metricValues || [] ),
-								],
-							},
-					  ]
-					: []
-			);
+			if ( metricAggregations.includes( 'MAXIMUM' ) ) {
+				data.maximums = [
+					{
+						dimensionValues: dimensions.map( ( dimension ) => {
+							if ( dimension === 'dateRange' ) {
+								return { value: 'date_range_0' };
+							}
 
-			data.maximums = [
-				{
-					dimensionValues: dimensions.map( ( dimension ) => {
-						if ( dimension === 'dateRange' ) {
-							return { value: 'date_range_0' };
-						}
+							return {
+								value: 'RESERVED_MAX',
+							};
+						} ),
+						metricValues: [
+							...( rows[ rows.length - 1 ]?.metricValues || [] ),
+						],
+					},
+				].concat(
+					hasDateRange
+						? [
+								{
+									dimensionValues: dimensions.map(
+										( dimension ) => {
+											if ( dimension === 'dateRange' ) {
+												return {
+													value: 'date_range_1',
+												};
+											}
 
-						return {
-							value: 'RESERVED_MAX',
-						};
-					} ),
-					metricValues: [
-						...( rows[ rows.length - 1 ]?.metricValues || [] ),
-					],
-				},
-			].concat(
-				hasDateRange
-					? [
-							{
-								dimensionValues: dimensions.map(
-									( dimension ) => {
-										if ( dimension === 'dateRange' ) {
-											return { value: 'date_range_1' };
+											return {
+												value: 'RESERVED_MAX',
+											};
 										}
+									),
+									metricValues: [
+										...( rows[ rows.length - 1 ]
+											?.metricValues || [] ),
+									],
+								},
+						  ]
+						: []
+				);
+			}
 
-										return {
-											value: 'RESERVED_MAX',
-										};
-									}
-								),
-								metricValues: [
-									...( rows[ rows.length - 1 ]
-										?.metricValues || [] ),
-								],
-							},
-					  ]
-					: []
-			);
+			if ( metricAggregations.includes( 'TOTAL' ) ) {
+				// Same here, we pretend that the last row contains totals because we don't need it to be mathematically valid.
+				data.totals = [
+					{
+						dimensionValues: dimensions.map( ( dimension ) => {
+							if ( dimension === 'dateRange' ) {
+								return { value: 'date_range_0' };
+							}
 
-			// Same here, we pretend that the last row contains totals because we don't need it to be mathematically valid.
-			data.totals = [
-				{
-					dimensionValues: dimensions.map( ( dimension ) => {
-						if ( dimension === 'dateRange' ) {
-							return { value: 'date_range_0' };
-						}
+							return {
+								value: 'RESERVED_TOTAL',
+							};
+						} ),
+						metricValues: [
+							...( rows[ rows.length - 1 ]?.metricValues || [] ),
+						],
+					},
+				].concat(
+					hasDateRange
+						? [
+								{
+									dimensionValues: dimensions.map(
+										( dimension ) => {
+											if ( dimension === 'dateRange' ) {
+												return {
+													value: 'date_range_1',
+												};
+											}
 
-						return {
-							value: 'RESERVED_TOTAL',
-						};
-					} ),
-					metricValues: [
-						...( rows[ rows.length - 1 ]?.metricValues || [] ),
-					],
-				},
-			].concat(
-				hasDateRange
-					? [
-							{
-								dimensionValues: dimensions.map(
-									( dimension ) => {
-										if ( dimension === 'dateRange' ) {
-											return { value: 'date_range_1' };
+											return {
+												value: 'RESERVED_TOTAL',
+											};
 										}
-
-										return {
-											value: 'RESERVED_TOTAL',
-										};
-									}
-								),
-								metricValues: [
-									...( rows[ rows.length - 1 ]
-										?.metricValues || [] ),
-								],
-							},
-					  ]
-					: []
-			);
+									),
+									metricValues: [
+										...( rows[ rows.length - 1 ]
+											?.metricValues || [] ),
+									],
+								},
+						  ]
+						: []
+				);
+			}
 		} );
 
 	// Set the original seed value for the faker.

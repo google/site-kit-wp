@@ -58,15 +58,15 @@ describe( 'getAnalytics4MockResponse', () => {
 			dimensions: [ 'date' ],
 		} );
 
-		expect( report[ 0 ].rows ).toHaveLength( 28 );
+		const firstRow = report[ 0 ].rows[ 0 ];
+		expect( firstRow ).toHaveProperty( 'dimensionValues' );
+		expect( firstRow ).toHaveProperty( 'metricValues' );
 	} );
 
-	it( 'generates a valid report', () => {
+	it( 'generates the correct number of rows when there is no date range', () => {
 		const report = getAnalytics4MockResponse( {
-			startDate: '2020-12-31',
-			endDate: '2021-01-27',
-			compareStartDate: '2020-12-03',
-			compareEndDate: '2020-12-30',
+			startDate: '2020-12-01',
+			endDate: '2020-12-05',
 			metrics: [
 				{
 					name: 'totalUsers',
@@ -78,6 +78,71 @@ describe( 'getAnalytics4MockResponse', () => {
 			dimensions: [ 'date' ],
 		} );
 
-		expect( report[ 0 ].rows ).toHaveLength( 56 );
+		expect( report[ 0 ].rows ).toHaveLength( 5 );
+	} );
+
+	it( 'generates the correct number of rows when there is a date range', () => {
+		const report = getAnalytics4MockResponse( {
+			startDate: '2020-12-01',
+			endDate: '2020-12-05',
+			compareStartDate: '2020-11-26',
+			compareEndDate: '2020-11-30',
+			metrics: [
+				{
+					name: 'totalUsers',
+				},
+				{
+					name: 'averageSessionDuration',
+				},
+			],
+			dimensions: [ 'date' ],
+		} );
+
+		expect( report[ 0 ].rows ).toHaveLength( 20 );
+	} );
+
+	it( 'checks the number of metric values generated', () => {
+		const report = getAnalytics4MockResponse( {
+			startDate: '2020-12-01',
+			endDate: '2020-12-15',
+			compareStartDate: '2020-11-26',
+			compareEndDate: '2020-11-30',
+			metrics: [
+				{
+					name: 'totalUsers',
+				},
+				{
+					name: 'averageSessionDuration',
+				},
+				'sessions',
+			],
+			dimensions: [ 'date' ],
+		} );
+
+		expect( report[ 0 ].rows[ 0 ].metricValues ).toHaveLength( 3 );
+	} );
+
+	it( 'checks the number of dimension values generated', () => {
+		const report = getAnalytics4MockResponse( {
+			startDate: '2020-12-01',
+			endDate: '2020-12-15',
+			metrics: [ 'sessions' ],
+			dimensions: [ 'date', { name: 'country' } ],
+		} );
+
+		expect( report[ 0 ].rows[ 0 ].dimensionValues ).toHaveLength( 2 );
+	} );
+
+	it( 'checks if aggregations are rendered', () => {
+		const report = getAnalytics4MockResponse( {
+			startDate: '2020-12-01',
+			endDate: '2020-12-15',
+			metrics: [ 'sessions' ],
+			dimensions: [ 'date' ],
+			metricAggregations: [ 'TOTAL', 'MINIMUM' ],
+		} );
+
+		expect( report[ 0 ] ).toHaveProperty( 'totals' );
+		expect( report[ 0 ] ).toHaveProperty( 'minimums' );
 	} );
 } );
