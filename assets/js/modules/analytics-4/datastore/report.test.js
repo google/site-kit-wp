@@ -50,12 +50,24 @@ describe( 'modules/analytics-4 report', () => {
 	describe( 'selectors', () => {
 		describe( 'getReport', () => {
 			const options = {
-				startDate: '2021-01-01',
-				endDate: '2021-01-31',
-				metrics: {
-					expression: 'testExpression',
-					alias: 'testAlias',
-				},
+				startDate: '2022-11-02',
+				endDate: '2022-11-04',
+				compareStartDate: '2022-11-01',
+				compareEndDate: '2022-11-02',
+				dimensions: [
+					// Provide dimensions in both string and array formats.
+					'sessionDefaultChannelGrouping',
+					{
+						name: 'pageTitle',
+					},
+				],
+				metrics: [
+					'sessions',
+					{
+						name: 'total',
+						expression: 'totalUsers',
+					},
+				],
 			};
 
 			it( 'uses a resolver to make a network request', async () => {
