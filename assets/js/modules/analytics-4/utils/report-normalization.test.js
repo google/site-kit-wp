@@ -164,8 +164,8 @@ describe( 'Analytics 4 normalizeReportOptions', () => {
 				dimensions: [ 1, false, undefined, { name: 'foo' }, 'bar' ],
 			};
 
-			const { metrics } = normalizeReportOptions( options );
-			expect( metrics ).toEqual( [ { name: 'foo' }, 'bar' ] );
+			const { dimensions } = normalizeReportOptions( options );
+			expect( dimensions ).toEqual( [ { name: 'foo' }, 'bar' ] );
 		} );
 	} );
 } );
