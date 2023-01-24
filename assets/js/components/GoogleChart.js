@@ -48,6 +48,7 @@ import { CORE_USER } from '../googlesitekit/datastore/user/constants';
 import GatheringDataNotice, { NOTICE_STYLE } from './GatheringDataNotice';
 import { stringToDate } from '../util/date-range/string-to-date';
 import Data from 'googlesitekit-data';
+import GoogleChartErrorHandler from './GoogleChartErrorHandler';
 const { useSelect } = Data;
 
 // eslint-disable-next-line complexity
@@ -255,63 +256,66 @@ export default function GoogleChart( props ) {
 	} );
 
 	return (
-		<div
-			className={ classnames(
-				'googlesitekit-chart',
-				`googlesitekit-chart--${ chartType }`,
-				className
-			) }
-			tabIndex={ -1 }
-		>
-			<Chart
-				className="googlesitekit-chart__inner"
-				chartEvents={ combinedChartEvents }
-				chartType={ chartType }
-				chartVersion="49"
-				data={ modifiedData }
-				loader={ loader }
-				height={ height }
-				getChartWrapper={ ( chartWrapper, google ) => {
-					// An issue with `react-google-charts` v4 causes the chart to
-					// render the overlay before the chart in some cases when using
-					// their own `onLoad` callback. This is a workaround to prevent
-					// that issue but still provide notice that the chart is loaded.
-					// See: https://github.com/google/site-kit-wp/issues/4945
-					if ( ! isChartLoaded ) {
-						setIsChartLoaded( true );
-					}
+		<GoogleChartErrorHandler>
+			<div
+				className={ classnames(
+					'googlesitekit-chart',
+					`googlesitekit-chart--${ chartType }`,
+					className
+				) }
+				tabIndex={ -1 }
+			>
+				<Chart
+					className="googlesitekit-chart__inner"
+					chartEvents={ combinedChartEvents }
+					chartType={ chartType }
+					chartVersion="49"
+					data={ modifiedData }
+					loader={ loader }
+					height={ height }
+					getChartWrapper={ ( chartWrapper, google ) => {
+						// An issue with `react-google-charts` v4 causes the chart to
+						// render the overlay before the chart in some cases when using
+						// their own `onLoad` callback. This is a workaround to prevent
+						// that issue but still provide notice that the chart is loaded.
+						// See: https://github.com/google/site-kit-wp/issues/4945
+						if ( ! isChartLoaded ) {
+							setIsChartLoaded( true );
+						}
 
-					// Remove all the event listeners on the old chart before we draw
-					// a new one. Only run this if the old chart and the new chart aren't
-					// the same reference though, otherwise we'll remove existing `onReady`
-					// events and other event listeners, which will cause bugs.
-					if ( chartWrapper !== chartWrapperRef.current ) {
-						// eslint-disable-next-line no-unused-expressions
-						googleRef.current?.visualization.events.removeAllListeners(
-							chartWrapperRef.current?.getChart()
-						);
-						// eslint-disable-next-line no-unused-expressions
-						googleRef.current?.visualization.events.removeAllListeners(
-							chartWrapperRef.current
-						);
-					}
+						// Remove all the event listeners on the old chart before we draw
+						// a new one. Only run this if the old chart and the new chart
+						// aren't the same reference though, otherwise we'll remove
+						// existing `onReady` events and other event listeners, which will
+						// cause bugs.
+						if ( chartWrapper !== chartWrapperRef.current ) {
+							// eslint-disable-next-line no-unused-expressions
+							googleRef.current?.visualization.events.removeAllListeners(
+								chartWrapperRef.current?.getChart()
+							);
+							// eslint-disable-next-line no-unused-expressions
+							googleRef.current?.visualization.events.removeAllListeners(
+								chartWrapperRef.current
+							);
+						}
 
-					chartWrapperRef.current = chartWrapper;
-					googleRef.current = google;
+						chartWrapperRef.current = chartWrapper;
+						googleRef.current = google;
 
-					if ( getChartWrapper ) {
-						getChartWrapper( chartWrapper, google );
-					}
-				} }
-				width={ width }
-				options={ chartOptions }
-				{ ...otherProps }
-			/>
-			{ gatheringData && isChartLoaded && (
-				<GatheringDataNotice style={ NOTICE_STYLE.OVERLAY } />
-			) }
-			{ children }
-		</div>
+						if ( getChartWrapper ) {
+							getChartWrapper( chartWrapper, google );
+						}
+					} }
+					width={ width }
+					options={ chartOptions }
+					{ ...otherProps }
+				/>
+				{ gatheringData && isChartLoaded && (
+					<GatheringDataNotice style={ NOTICE_STYLE.OVERLAY } />
+				) }
+				{ children }
+			</div>
+		</GoogleChartErrorHandler>
 	);
 }
 

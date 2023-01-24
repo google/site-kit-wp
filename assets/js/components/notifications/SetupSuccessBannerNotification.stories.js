@@ -32,10 +32,6 @@ import {
 	provideModuleRegistrations,
 	provideUserCapabilities,
 } from '../../../../tests/js/utils';
-import {
-	CTA_PLACEMENT_STATIC_AUTO,
-	MODULES_THANK_WITH_GOOGLE,
-} from '../../modules/thank-with-google/datastore/constants';
 
 function Template( { ...args } ) {
 	return <SetupSuccessBannerNotification { ...args } />;
@@ -93,39 +89,12 @@ PageSpeedInsights.scenario = {
 	label: 'Global/SetupSuccessBannerNotification/PageSpeedInsights',
 };
 
-export const IdeaHub = Template.bind( {} );
-IdeaHub.storyName = 'Authentication Success - Idea Hub';
-IdeaHub.parameters = {
-	module: { slug: 'idea-hub', name: 'Idea Hub' },
-	query: {
-		notification: 'authentication_success',
-		slug: 'idea-hub',
-	},
-};
-IdeaHub.scenario = {
-	label: 'Global/SetupSuccessBannerNotification/IdeaHub',
-};
-
 export const UserInputSuccess = Template.bind( {} );
 UserInputSuccess.storyName = 'User Input Success';
 UserInputSuccess.parameters = {
 	query: {
 		notification: 'user_input_success',
 	},
-};
-
-export const ThankWithGoogle = Template.bind( {} );
-ThankWithGoogle.storyName = 'Authentication Success - Thank with Google';
-ThankWithGoogle.parameters = {
-	module: { slug: 'thank-with-google', name: 'Thank with Google' },
-	query: {
-		notification: 'authentication_success',
-		slug: 'thank-with-google',
-	},
-	features: [ 'twgModule' ],
-};
-ThankWithGoogle.scenario = {
-	label: 'Global/SetupSuccessBannerNotification/ThankWithGoogle',
 };
 
 export default {
@@ -145,13 +114,6 @@ export default {
 			] );
 			provideModuleRegistrations( registry );
 			provideUserCapabilities( registry );
-
-			registry.dispatch( MODULES_THANK_WITH_GOOGLE ).receiveGetSettings( {
-				publicationID: 'example.com',
-				ctaPlacement: CTA_PLACEMENT_STATIC_AUTO,
-				colorTheme: 'purple',
-				ctaPostTypes: [ 'post', 'page' ],
-			} );
 
 			return (
 				<WithTestRegistry

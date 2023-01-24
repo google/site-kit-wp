@@ -19,15 +19,12 @@
 /**
  * Internal dependencies
  */
+import ErrorComponent from '../../../../tests/js/ThrowErrorComponent';
 import MediaErrorHandler from './';
-
-const ErrorComponent = () => {
-	throw new Error();
-};
 
 const Template = ( args ) => (
 	<MediaErrorHandler { ...args }>
-		<ErrorComponent />
+		<ErrorComponent throwErrorOnMount />
 	</MediaErrorHandler>
 );
 

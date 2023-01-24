@@ -55,7 +55,11 @@ function mapScopesToModuleNames( scopes, modules ) {
 		scopes
 			// Map into an array of matches.
 			.map( ( scope ) =>
-				scope.match( /^https:\/\/www.googleapis.com\/auth\/([a-z]+)/ )
+				scope.match(
+					new RegExp(
+						'^https://www\\.googleapis\\.com/auth/([a-z]+)'
+					)
+				)
 			)
 			// Map each match into a module slug, if any.
 			.map( ( [ , id ] ) => scopeIDToSlug[ id ] || id )
@@ -97,7 +101,9 @@ export default function UnsatisfiedScopesAlert() {
 	if (
 		unsatisfiedScopes.some(
 			( scope ) =>
-				! scope.match( /^https:\/\/www.googleapis.com\/auth\// )
+				! scope.match(
+					new RegExp( '^https://www\\.googleapis\\.com/auth/' )
+				)
 		)
 	) {
 		messageID = MESSAGE_GENERIC;

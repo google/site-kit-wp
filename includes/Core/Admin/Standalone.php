@@ -92,7 +92,7 @@ final class Standalone {
 	public function is_standalone() {
 		global $pagenow;
 
-		$page       = $this->context->input()->filter( INPUT_GET, 'page', FILTER_SANITIZE_STRING );
+		$page       = htmlspecialchars( $this->context->input()->filter( INPUT_GET, 'page' ) ?: '' );
 		$standalone = $this->context->input()->filter( INPUT_GET, 'googlesitekit-standalone', FILTER_VALIDATE_BOOLEAN );
 
 		return ( 'admin.php' === $pagenow && false !== strpos( $page, 'googlesitekit' ) && $standalone );

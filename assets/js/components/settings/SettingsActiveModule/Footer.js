@@ -42,7 +42,8 @@ import PencilIcon from '../../../../svg/icons/pencil.svg';
 import TrashIcon from '../../../../svg/icons/trash.svg';
 import Spinner from '../../Spinner';
 import Link from '../../Link';
-import { clearWebStorage, trackEvent } from '../../../util';
+import { trackEvent } from '../../../util';
+import { clearCache } from '../../../googlesitekit/api/cache';
 import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import useViewContext from '../../../hooks/useViewContext';
@@ -140,7 +141,7 @@ export default function Footer( props ) {
 				if ( slug === 'analytics' ) {
 					dismissGA4PropertyTooltip();
 				}
-				clearWebStorage();
+				await clearCache();
 			}
 		},
 		[

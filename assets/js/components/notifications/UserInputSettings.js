@@ -38,7 +38,6 @@ import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { MODULES_SEARCH_CONSOLE } from '../../modules/search-console/datastore/constants';
 import { MODULES_ANALYTICS } from '../../modules/analytics/datastore/constants';
-import UserInputPromptSVG from '../../../svg/graphics/user-input-prompt.svg';
 import Link from '../Link';
 const { useSelect } = Data;
 
@@ -84,12 +83,9 @@ export default function UserInputSettings( {
 		<BannerNotification
 			id={ `user-input-settings-notification-${ instanceID }` }
 			className="googlesitekit-user-input__notification"
-			title={ __(
-				'Customize Site Kit to match your goals',
-				'google-site-kit'
-			) }
+			title={ __( 'Key metrics', 'google-site-kit' ) }
 			description={ __(
-				'Answer 5 questions and Site Kit will customize your dashboard with specific metrics and opportunities that match your site’s goals',
+				'Answer 3 quick questions to help us show the most relevant data for your site',
 				'google-site-kit'
 			) }
 			format="large"
@@ -100,7 +96,6 @@ export default function UserInputSettings( {
 				</Link>
 			}
 			dismiss={ __( 'Remind me later', 'google-site-kit' ) }
-			WinImageSVG={ UserInputPromptSVG }
 			isDismissible={ isDismissible }
 			onDismiss={ onDismiss }
 			rounded={ rounded }

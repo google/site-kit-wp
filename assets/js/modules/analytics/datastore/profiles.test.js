@@ -58,7 +58,9 @@ describe( 'modules/analytics profiles', () => {
 				const profileName = fixtures.createProfile.name;
 
 				fetchMock.postOnce(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-profile/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics/data/create-profile'
+					),
 					{ body: fixtures.createProfile, status: 200 }
 				);
 
@@ -68,7 +70,9 @@ describe( 'modules/analytics profiles', () => {
 
 				// Ensure the proper body parameters were sent.
 				expect( fetchMock ).toHaveFetched(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-profile/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics/data/create-profile'
+					),
 					{
 						body: {
 							data: { accountID, propertyID, profileName },
@@ -88,7 +92,9 @@ describe( 'modules/analytics profiles', () => {
 				const profileName = fixtures.createProfile.name;
 
 				fetchMock.post(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-profile/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics/data/create-profile'
+					),
 					{ body: fixtures.createProfile, status: 200 }
 				);
 
@@ -115,7 +121,9 @@ describe( 'modules/analytics profiles', () => {
 				};
 
 				fetchMock.post(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-profile/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics/data/create-profile'
+					),
 					{ body: response, status: 500 }
 				);
 
@@ -131,7 +139,9 @@ describe( 'modules/analytics profiles', () => {
 
 				// Ignore the request fired by the `getProfiles` selector.
 				muteFetch(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/profiles/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics/data/profiles'
+					),
 					[]
 				);
 				const profiles = registry
@@ -140,6 +150,11 @@ describe( 'modules/analytics profiles', () => {
 
 				// No profiles should have been added yet, as the profile creation failed.
 				expect( profiles ).toEqual( undefined );
+
+				await untilResolved( registry, MODULES_ANALYTICS ).getProfiles(
+					accountID,
+					propertyID
+				);
 				expect( console ).toHaveErrored();
 			} );
 		} );
@@ -205,7 +220,9 @@ describe( 'modules/analytics profiles', () => {
 		describe( 'getProfiles', () => {
 			it( 'uses a resolver to make a network request', async () => {
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/profiles/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics/data/profiles'
+					),
 					{ body: fixtures.profiles, status: 200 }
 				);
 
@@ -216,21 +233,24 @@ describe( 'modules/analytics profiles', () => {
 					.select( MODULES_ANALYTICS )
 					.getProfiles( testAccountID, testPropertyID );
 
+				expect( initialProfiles ).toEqual( undefined );
+
+				await untilResolved( registry, MODULES_ANALYTICS ).getProfiles(
+					testAccountID,
+					testPropertyID
+				);
+
 				// Ensure the proper parameters were sent.
 				expect( fetchMock ).toHaveFetched(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/profiles/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics/data/profiles'
+					),
 					{
 						query: {
 							accountID: testAccountID,
 							propertyID: testPropertyID,
 						},
 					}
-				);
-
-				expect( initialProfiles ).toEqual( undefined );
-				await untilResolved( registry, MODULES_ANALYTICS ).getProfiles(
-					testAccountID,
-					testPropertyID
 				);
 
 				const profiles = registry
@@ -278,7 +298,9 @@ describe( 'modules/analytics profiles', () => {
 					data: { status: 500 },
 				};
 				fetchMock.get(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/profiles/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics/data/profiles'
+					),
 					{ body: response, status: 500 }
 				);
 

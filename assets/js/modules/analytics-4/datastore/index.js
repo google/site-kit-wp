@@ -22,8 +22,8 @@
 import Data from 'googlesitekit-data';
 import { MODULES_ANALYTICS_4 } from './constants';
 import accounts from './accounts';
-import api from './api';
 import baseModuleStore from './base';
+import containers from './containers';
 import properties from './properties';
 import report from './report';
 import tags from './tags';
@@ -32,9 +32,9 @@ import { createSnapshotStore } from '../../../googlesitekit/data/create-snapshot
 
 const store = Data.combineStores(
 	accounts,
-	api,
 	baseModuleStore,
 	report,
+	containers,
 	createSnapshotStore( MODULES_ANALYTICS_4 ),
 	properties,
 	tags,

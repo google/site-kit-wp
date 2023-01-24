@@ -31,6 +31,15 @@ export const USER_INPUT_QUESTIONS_LIST = [
 	USER_INPUT_QUESTIONS_GOALS,
 ];
 
+export const USER_INPUT_MAX_ANSWERS = {
+	[ USER_INPUT_QUESTIONS_PURPOSE ]: 1,
+	[ USER_INPUT_QUESTION_POST_FREQUENCY ]: 1,
+	[ USER_INPUT_QUESTIONS_GOALS ]: 3,
+};
+
+export const USER_INPUT_CURRENTLY_EDITING_KEY =
+	'googlesitekit-user-input-currently-editing';
+
 /**
  * Gets available answers for user input settings.
  *
@@ -56,12 +65,14 @@ export function getUserInputAnswers() {
 				'Share a business card or portfolio to represent me or my company online',
 				'google-site-kit'
 			),
+			other: __( 'Other', 'google-site-kit' ),
 		},
 		USER_INPUT_ANSWERS_POST_FREQUENCY: {
 			never: __( 'Never', 'google-site-kit' ),
 			daily: __( 'Daily', 'google-site-kit' ),
 			weekly: __( 'Weekly', 'google-site-kit' ),
 			monthly: __( 'Monthly', 'google-site-kit' ),
+			other: __( 'Other', 'google-site-kit' ),
 		},
 		USER_INPUT_ANSWERS_GOALS: {
 			retaining_visitors: __(
@@ -97,6 +108,7 @@ export function getUserInputAnswers() {
 				'Encouragement to post more frequently',
 				'google-site-kit'
 			),
+			other: __( 'Other', 'google-site-kit' ),
 		},
 	};
 }

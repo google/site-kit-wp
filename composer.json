@@ -11,7 +11,7 @@
     "phpunit/phpunit": "^5 || ^6 || ^7 || ^8 || ^9",
     "roave/security-advisories": "dev-latest",
     "roots/wordpress": ">=5.2",
-    "squizlabs/php_codesniffer": "^3.3",
+    "squizlabs/php_codesniffer": "^3.7",
     "wp-coding-standards/wpcs": "^2",
     "wp-phpunit/wp-phpunit": ">=5.2",
     "yoast/phpunit-polyfills": "^1.0"
@@ -21,8 +21,7 @@
     "ext-json": "*",
     "ext-openssl": "*",
     "google/apiclient": "^2.12.2",
-    "google/apiclient-services": "0.275.*",
-    "google/apiclient-services-subscribewithgoogle": "^0.1.0",
+    "google/apiclient-services": "0.277.*",
     "guzzlehttp/guzzle": "^5.3.3",
     "true/punycode": "^2.0 <2.1.1"
   },
@@ -41,7 +40,7 @@
   },
   "config": {
     "platform": {
-      "php": "5.6"
+      "php": "5.6.20"
     },
     "sort-packages": true,
     "allow-plugins": {
@@ -52,15 +51,7 @@
   "extra": {
     "wordpress-install-dir": "vendor/roots/wordpress"
   },
-  "repositories": [
-    {
-      "type": "path",
-      "url": "packages/apiclient-services-subscribewithgoogle",
-      "options": {
-        "symlink": false
-      }
-    }
-  ],
+  "repositories": [],
   "scripts": {
     "post-install-cmd": [
       "@prefix-dependencies"

@@ -66,19 +66,6 @@
 				margin: 0;
 				padding: 0 10px;
 			}
-
-			&[disabled] {
-				cursor: default;
-			}
-
-			&[disabled] .mdc-tab__ripple {
-				display: none;
-			}
-
-			&[disabled] .mdc-tab__text-label {
-				color: $c-jumbo;
-				opacity: 0.6;
-			}
 		}
 
 		.mdc-tab--active[disabled] .mdc-tab-indicator__content--underline {

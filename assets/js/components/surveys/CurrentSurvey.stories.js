@@ -47,9 +47,12 @@ export const SurveySingleQuestionStory = Template.bind( {} );
 SurveySingleQuestionStory.storyName = 'Single question';
 SurveySingleQuestionStory.args = {
 	setupRegistry: ( registry ) => {
-		fetchMock.post( /google-site-kit\/v1\/core\/user\/data\/survey-event/, {
-			body: {},
-		} );
+		fetchMock.post(
+			new RegExp( 'google-site-kit/v1/core/user/data/survey-event' ),
+			{
+				body: {},
+			}
+		);
 
 		provideCurrentSurvey( registry, singleQuestionSurvey );
 	},
@@ -63,9 +66,12 @@ export const SurveyMultipleQuestionsStory = Template.bind( {} );
 SurveyMultipleQuestionsStory.storyName = 'Multiple questions';
 SurveyMultipleQuestionsStory.args = {
 	setupRegistry: ( registry ) => {
-		fetchMock.post( /google-site-kit\/v1\/core\/user\/data\/survey-event/, {
-			body: {},
-		} );
+		fetchMock.post(
+			new RegExp( 'google-site-kit/v1/core/user/data/survey-event' ),
+			{
+				body: {},
+			}
+		);
 
 		provideCurrentSurvey( registry, multiQuestionSurvey );
 	},
@@ -75,9 +81,12 @@ export const SurveyMultipleQuestionsConditionalStory = Template.bind( {} );
 SurveyMultipleQuestionsConditionalStory.storyName = 'Conditional';
 SurveyMultipleQuestionsConditionalStory.args = {
 	setupRegistry: ( registry ) => {
-		fetchMock.post( /google-site-kit\/v1\/core\/user\/data\/survey-event/, {
-			body: {},
-		} );
+		fetchMock.post(
+			new RegExp( 'google-site-kit/v1/core/user/data/survey-event' ),
+			{
+				body: {},
+			}
+		);
 
 		provideCurrentSurvey( registry, multiQuestionConditionalSurvey );
 	},
@@ -87,9 +96,12 @@ export const SurveyNotAnsweredNoFollowUpStory = Template.bind( {} );
 SurveyNotAnsweredNoFollowUpStory.storyName = 'New survey (no follow-up CTA)';
 SurveyNotAnsweredNoFollowUpStory.args = {
 	setupRegistry: ( registry ) => {
-		fetchMock.post( /google-site-kit\/v1\/core\/user\/data\/survey-event/, {
-			body: {},
-		} );
+		fetchMock.post(
+			new RegExp( 'google-site-kit/v1/core/user/data/survey-event' ),
+			{
+				body: {},
+			}
+		);
 
 		provideCurrentSurvey( registry, singleQuestionSurveyWithNoFollowUp );
 	},
@@ -106,9 +118,12 @@ SurveyAnsweredPositiveStory.args = {
 			},
 		};
 
-		fetchMock.post( /google-site-kit\/v1\/core\/user\/data\/survey-event/, {
-			body: {},
-		} );
+		fetchMock.post(
+			new RegExp( 'google-site-kit/v1/core/user/data/survey-event' ),
+			{
+				body: {},
+			}
+		);
 
 		provideCurrentSurvey( registry, singleQuestionSurvey );
 
@@ -124,9 +139,12 @@ export const SurveyWithTermsStory = Template.bind( {} );
 SurveyWithTermsStory.storyName = 'With Terms';
 SurveyWithTermsStory.args = {
 	setupRegistry: ( registry ) => {
-		fetchMock.post( /google-site-kit\/v1\/core\/user\/data\/survey-event/, {
-			body: {},
-		} );
+		fetchMock.post(
+			new RegExp( 'google-site-kit/v1/core/user/data/survey-event' ),
+			{
+				body: {},
+			}
+		);
 
 		provideCurrentSurvey( registry, singleQuestionSurvey, {
 			trackingEnabled: false,

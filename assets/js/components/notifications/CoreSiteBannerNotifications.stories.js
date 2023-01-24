@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import fetchMock from 'fetch-mock';
-
-/**
  * Internal dependencies
  */
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
@@ -35,8 +30,6 @@ const Template = ( { setupRegistry } ) => (
 	</WithRegistrySetup>
 );
 
-const delay = 350; // Needed for fonts to render properly.
-
 const notification1 = {
 	id: 'test-notification',
 	title: 'Google Analytics 5 Beta',
@@ -48,25 +41,6 @@ const notification1 = {
 	learnMoreLabel: 'Learn more',
 	dismissible: true,
 	dismissLabel: 'Dismiss this message',
-};
-
-/**
- * Mocks the response for the notifications endpoint.
- *
- * @since 1.88.0
- *
- * @param {Array} body Notifications response body.
- *
- */
-const mockEndpoint = ( body = [] ) => {
-	fetchMock.reset();
-	fetchMock.getOnce(
-		/^\/google-site-kit\/v1\/core\/site\/data\/notifications/,
-		{
-			body,
-			status: 200,
-		}
-	);
 };
 
 /**
@@ -85,29 +59,18 @@ export const NotificationCTA = Template.bind( {} );
 NotificationCTA.storyName = 'Has Notifications - Displayed';
 NotificationCTA.args = {
 	setupRegistry: ( registry ) => {
-		mockEndpoint( [ notification1 ] );
 		registry
 			.dispatch( CORE_SITE )
 			.receiveGetNotifications( [ notification1 ], {} );
 	},
-};
-NotificationCTA.scenario = {
-	label: 'Global/CoreSiteBannerNotifications1',
-	readySelector: '.googlesitekit-publisher-win',
-	delay,
 };
 
 export const NoNotifications = Template.bind( {} );
 NoNotifications.storyName = 'Has No Notifications - Not Displayed';
 NoNotifications.args = {
 	setupRegistry: ( registry ) => {
-		mockEndpoint( [] );
 		registry.dispatch( CORE_SITE ).receiveGetNotifications( [], {} );
 	},
-};
-NoNotifications.scenario = {
-	label: 'Global/CoreSiteBannerNotifications2',
-	delay,
 };
 
 export const NotificationCTAWithSurvey = Template.bind( {} );
@@ -115,7 +78,6 @@ NotificationCTAWithSurvey.storyName =
 	'Has Notifications, and Survey - Not Displayed';
 NotificationCTAWithSurvey.args = {
 	setupRegistry: ( registry ) => {
-		mockEndpoint( [ notification1 ] );
 		registry
 			.dispatch( CORE_SITE )
 			.receiveGetNotifications( [ notification1 ], {} );
@@ -127,17 +89,12 @@ NotificationCTAWithSurvey.args = {
 			);
 	},
 };
-NotificationCTAWithSurvey.scenario = {
-	label: 'Global/CoreSiteBannerNotifications3',
-	delay,
-};
 
 export const NotificationCTAWithSurveyShortDelay = Template.bind( {} );
 NotificationCTAWithSurveyShortDelay.storyName =
 	'Has Notifications, with Survey in three seconds - Not Displayed';
 NotificationCTAWithSurveyShortDelay.args = {
 	setupRegistry: ( registry ) => {
-		mockEndpoint( [ notification1 ] );
 		registry
 			.dispatch( CORE_SITE )
 			.receiveGetNotifications( [ notification1 ], {} );
@@ -152,17 +109,12 @@ NotificationCTAWithSurveyShortDelay.args = {
 		}, 3 * 1000 );
 	},
 };
-NotificationCTAWithSurveyShortDelay.scenario = {
-	label: 'Global/CoreSiteBannerNotifications4',
-	delay,
-};
 
 export const NotificationCTAWithSurveyLongerDelay = Template.bind( {} );
 NotificationCTAWithSurveyLongerDelay.storyName =
 	'Has Notifications, with Survey in six seconds - Displayed';
 NotificationCTAWithSurveyLongerDelay.args = {
 	setupRegistry: ( registry ) => {
-		mockEndpoint( [ notification1 ] );
 		registry
 			.dispatch( CORE_SITE )
 			.receiveGetNotifications( [ notification1 ], {} );
@@ -176,11 +128,6 @@ NotificationCTAWithSurveyLongerDelay.args = {
 				);
 		}, 6 * 1000 );
 	},
-};
-NotificationCTAWithSurveyLongerDelay.scenario = {
-	label: 'Global/CoreSiteBannerNotifications5',
-	readySelector: '.googlesitekit-publisher-win',
-	delay,
 };
 
 export default {

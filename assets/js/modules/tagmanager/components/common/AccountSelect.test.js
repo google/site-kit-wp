@@ -84,7 +84,9 @@ describe( 'AccountSelect', () => {
 
 	it( 'should render a loading state when accounts are undefined', () => {
 		freezeFetch(
-			/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/accounts/
+			new RegExp(
+				'^/google-site-kit/v1/modules/tagmanager/data/accounts'
+			)
 		);
 
 		const { queryAllByRole, queryByRole } = render( <AccountSelect />, {

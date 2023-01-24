@@ -37,6 +37,7 @@ import DeviceSizeDesktopIcon from '../../svg/icons/device-size-desktop-icon.svg'
 
 const DeviceSizeTabBar = ( {
 	activeTab,
+	disabled = false,
 	handleDeviceSizeUpdate,
 	deviceSizes = [
 		{
@@ -78,6 +79,7 @@ const DeviceSizeTabBar = ( {
 					<Tab
 						key={ `google-sitekit-device-size-tab-key-${ i }` }
 						aria-label={ label }
+						disabled={ disabled }
 						focusOnActivate={ false }
 					>
 						{ icon }
@@ -90,6 +92,7 @@ const DeviceSizeTabBar = ( {
 
 DeviceSizeTabBar.propTypes = {
 	activeTab: PropTypes.string,
+	disabled: PropTypes.bool,
 	deviceSizes: PropTypes.arrayOf(
 		PropTypes.shape( {
 			label: PropTypes.string,

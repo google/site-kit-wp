@@ -17,6 +17,8 @@
  */
 
 export { default as accountSummaries } from './account-summaries.json';
+export { default as container } from './container.json';
+export { default as containerDestinations } from './container-destinations.json';
 export { default as createProperty } from './create-property.json';
 export { default as createWebDataStream } from './create-webdatastream.json';
 export { default as defaultSettings } from './default-settings.json';

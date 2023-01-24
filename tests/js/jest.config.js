@@ -34,6 +34,7 @@ module.exports = {
 		'<rootDir>/node_modules',
 		'<rootDir>/build',
 	],
+	transformIgnorePatterns: [ '<rootDir>/node_modules/(?!@material/web)/.*' ],
 	// Matches aliases in webpack.config.js.
 	moduleNameMapper: {
 		// New (JSR) modules.

@@ -45,6 +45,10 @@
 			margin-left: $grid-gap-phone;
 			width: 99px;
 		}
+
+		@media (max-width: $bp-xsmallOnly) {
+			display: none;
+		}
 	}
 
 	&--mini {

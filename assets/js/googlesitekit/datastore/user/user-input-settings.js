@@ -21,6 +21,8 @@
  */
 import invariant from 'invariant';
 import isPlainObject from 'lodash/isPlainObject';
+import isEqual from 'lodash/isEqual';
+import pick from 'lodash/pick';
 
 /**
  * Internal dependencies
@@ -37,7 +39,7 @@ const { receiveError, clearError } = errorStoreActions;
 const CACHE_KEY_NAME = 'userInputSettings';
 
 function fetchStoreReducerCallback( state, inputSettings ) {
-	return { ...state, inputSettings };
+	return { ...state, inputSettings, savedInputSettings: inputSettings };
 }
 
 const fetchGetUserInputSettingsStore = createFetchStore( {
@@ -67,10 +69,12 @@ const SET_CACHED_USER_INPUT_SETTING = 'SET_CACHED_USER_INPUT_SETTING';
 const SET_USER_INPUT_SETTING = 'SET_USER_INPUT_SETTING';
 const SET_USER_INPUT_SETTINGS_SAVING_FLAG =
 	'SET_USER_INPUT_SETTINGS_SAVING_FLAG';
+const RESET_USER_INPUT_SETTINGS = 'RESET_USER_INPUT_SETTINGS';
 
 const baseInitialState = {
 	inputSettings: undefined,
 	isSavingInputSettings: false,
+	savedInputSettings: undefined,
 };
 
 const baseActions = {
@@ -187,6 +191,20 @@ const baseActions = {
 
 		return { response, error };
 	},
+
+	/**
+	 * Resets modified user input settings to currently saved values.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {Object} Redux-style action.
+	 */
+	*resetUserInputSettings() {
+		return {
+			type: RESET_USER_INPUT_SETTINGS,
+			payload: {},
+		};
+	},
 };
 
 export const baseControls = {
@@ -202,7 +220,10 @@ export const baseControls = {
 				const settings =
 					registry.select( CORE_USER ).getUserInputSettings() || {};
 
-				settings[ settingID ] = { values };
+				settings[ settingID ] = {
+					...( settings?.[ settingID ] || {} ),
+					values,
+				};
 
 				return setItem( CACHE_KEY_NAME, settings );
 			}
@@ -229,6 +250,12 @@ export const baseReducer = ( state, { type, payload } ) => {
 			return {
 				...state,
 				isSavingInputSettings: payload.isSaving,
+			};
+		}
+		case RESET_USER_INPUT_SETTINGS: {
+			return {
+				...state,
+				inputSettings: state.savedInputSettings,
 			};
 		}
 		default: {
@@ -322,6 +349,43 @@ const baseSelectors = {
 			return settings[ settingID ]?.author;
 		}
 	),
+
+	/**
+	 * Indicates whether the current user input settings have changed from what is saved.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object}     state Data store's state.
+	 * @param {Array|null} keys  Settings keys to check; if not provided, all settings are checked.
+	 * @return {boolean} True if the settings have changed, false otherwise.
+	 */
+	haveUserInputSettingsChanged( state, keys = null ) {
+		const { inputSettings, savedInputSettings } = state;
+
+		if ( keys ) {
+			return ! isEqual(
+				pick( inputSettings, keys ),
+				pick( savedInputSettings, keys )
+			);
+		}
+
+		return ! isEqual( inputSettings, savedInputSettings );
+	},
+
+	/**
+	 * Indicates whether the provided user input setting has changed from what is saved.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state   Data store's state.
+	 * @param {string} setting The setting we want to check for saved changes.
+	 * @return {boolean} True if the settings have changed, false otherwise.
+	 */
+	hasUserInputSettingChanged( state, setting ) {
+		invariant( setting, 'setting is required.' );
+
+		return baseSelectors.haveUserInputSettingsChanged( state, [ setting ] );
+	},
 };
 
 const store = Data.combineStores(
