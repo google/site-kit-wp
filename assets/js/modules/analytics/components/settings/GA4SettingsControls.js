@@ -199,6 +199,11 @@ export default function GA4SettingsControls( {
 										'Set up your Google Analytics 4 property here',
 										'google-site-kit'
 									) }
+									styles={ {
+										options: {
+											zIndex: 9999,
+										},
+									} }
 									target=".googlesitekit-analytics-4__select-property"
 									onDismiss={ () =>
 										setValues( FORM_SETUP, {

@@ -125,10 +125,13 @@ class User_Input {
 	 * @return array|WP_Error User input answers.
 	 */
 	public function get_answers() {
-		$questions = static::$questions;
-		$settings  = array_merge(
-			$this->site_specific_answers->get(),
-			$this->user_specific_answers->get()
+		$questions    = static::$questions;
+		$site_answers = $this->site_specific_answers->get();
+		$user_answers = $this->user_specific_answers->get();
+
+		$settings = array_merge(
+			is_array( $site_answers ) ? $site_answers : array(),
+			is_array( $user_answers ) ? $user_answers : array()
 		);
 
 		// If there are no settings, return default empty values.

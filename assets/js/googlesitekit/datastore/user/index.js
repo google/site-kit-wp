@@ -28,6 +28,7 @@ import dismissedItems from './dismissed-items';
 import featureTours from './feature-tours';
 import notifications from './notifications';
 import permissions from './permissions';
+import nonces from './nonces';
 import surveys from './surveys';
 import tracking from './tracking';
 import userInfo from './user-info';
@@ -44,6 +45,7 @@ const store = Data.combineStores(
 	featureTours,
 	notifications,
 	permissions,
+	nonces,
 	surveys,
 	tracking,
 	userInfo,
