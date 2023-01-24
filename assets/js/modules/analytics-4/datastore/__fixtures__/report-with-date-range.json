@@ -1,0 +1,1961 @@
+{
+	"dimensionHeaders": [
+		{
+			"name": "date"
+		},
+		{
+			"name": "country"
+		},
+		{
+			"name": "dateRange"
+		}
+	],
+	"metricHeaders": [
+		{
+			"name": "totalUsers",
+			"type": "TYPE_INTEGER"
+		},
+		{
+			"name": "averageSessionDuration",
+			"type": "TYPE_SECONDS"
+		},
+		{
+			"name": "sessions",
+			"type": "TYPE_INTEGER"
+		}
+	],
+	"rows": [
+		{
+			"dimensionValues": [
+				{
+					"value": "20221107"
+				},
+				{
+					"value": "United Kingdom"
+				},
+				{
+					"value": "date_range_1"
+				}
+			],
+			"metricValues": [
+				{
+					"value": "2"
+				},
+				{
+					"value": "8.357438"
+				},
+				{
+					"value": "2"
+				}
+			]
+		},
+		{
+			"dimensionValues": [
+				{
+					"value": "20221115"
+				},
+				{
+					"value": "United States"
+				},
+				{
+					"value": "date_range_1"
+				}
+			],
+			"metricValues": [
+				{
+					"value": "2"
+				},
+				{
+					"value": "0"
+				},
+				{
+					"value": "2"
+				}
+			]
+		},
+		{
+			"dimensionValues": [
+				{
+					"value": "20221119"
+				},
+				{
+					"value": "United States"
+				},
+				{
+					"value": "date_range_1"
+				}
+			],
+			"metricValues": [
+				{
+					"value": "2"
+				},
+				{
+					"value": "4.0995686666666664"
+				},
+				{
+					"value": "3"
+				}
+			]
+		},
+		{
+			"dimensionValues": [
+				{
+					"value": "20221123"
+				},
+				{
+					"value": "United Kingdom"
+				},
+				{
+					"value": "date_range_1"
+				}
+			],
+			"metricValues": [
+				{
+					"value": "2"
+				},
+				{
+					"value": "137.305728"
+				},
+				{
+					"value": "2"
+				}
+			]
+		},
+		{
+			"dimensionValues": [
+				{
+					"value": "20221212"
+				},
+				{
+					"value": "United Kingdom"
+				},
+				{
+					"value": "date_range_0"
+				}
+			],
+			"metricValues": [
+				{
+					"value": "2"
+				},
+				{
+					"value": "104.1740555"
+				},
+				{
+					"value": "2"
+				}
+			]
+		},
+		{
+			"dimensionValues": [
+				{
+					"value": "20221228"
+				},
+				{
+					"value": "United Kingdom"
+				},
+				{
+					"value": "date_range_0"
+				}
+			],
+			"metricValues": [
+				{
+					"value": "2"
+				},
+				{
+					"value": "268.038337"
+				},
+				{
+					"value": "2"
+				}
+			]
+		},
+		{
+			"dimensionValues": [
+				{
+					"value": "20221102"
+				},
+				{
+					"value": "France"
+				},
+				{
+					"value": "date_range_1"
+				}
+			],
+			"metricValues": [
+				{
+					"value": "1"
+				},
+				{
+					"value": "8.885532"
+				},
+				{
+					"value": "1"
+				}
+			]
+		},
+		{
+			"dimensionValues": [
+				{
+					"value": "20221104"
+				},
+				{
+					"value": "Bahrain"
+				},
+				{
+					"value": "date_range_1"
+				}
+			],
+			"metricValues": [
+				{
+					"value": "1"
+				},
+				{
+					"value": "24.785512"
+				},
+				{
+					"value": "1"
+				}
+			]
+		},
+		{
+			"dimensionValues": [
+				{
+					"value": "20221104"
+				},
+				{
+					"value": "United States"
+				},
+				{
+					"value": "date_range_1"
+				}
+			],
+			"metricValues": [
+				{
+					"value": "1"
+				},
+				{
+					"value": "207.14781"
+				},
+				{
+					"value": "1"
+				}
+			]
+		},
+		{
+			"dimensionValues": [
+				{
+					"value": "20221107"
+				},
+				{
+					"value": "United States"
+				},
+				{
+					"value": "date_range_1"
+				}
+			],
+			"metricValues": [
+				{
+					"value": "1"
+				},
+				{
+					"value": "0"
+				},
+				{
+					"value": "1"
+				}
+			]
+		},
+		{
+			"dimensionValues": [
+				{
+					"value": "20221115"
+				},
+				{
+					"value": "Cambodia"
+				},
+				{
+					"value": "date_range_1"
+				}
+			],
+			"metricValues": [
+				{
+					"value": "1"
+				},
+				{
+					"value": "111.964954"
+				},
+				{
+					"value": "1"
+				}
+			]
+		},
+		{
+			"dimensionValues": [
+				{
+					"value": "20221115"
+				},
+				{
+					"value": "Japan"
+				},
+				{
+					"value": "date_range_1"
+				}
+			],
+			"metricValues": [
+				{
+					"value": "1"
+				},
+				{
+					"value": "0"
+				},
+				{
+					"value": "1"
+				}
+			]
+		},
+		{
+			"dimensionValues": [
+				{
+					"value": "20221118"
+				},
+				{
+					"value": "Canada"
+				},
+				{
+					"value": "date_range_1"
+				}
+			],
+			"metricValues": [
+				{
+					"value": "1"
+				},
+				{
+					"value": "0"
+				},
+				{
+					"value": "1"
+				}
+			]
+		},
+		{
+			"dimensionValues": [
+				{
+					"value": "20221118"
+				},
+				{
+					"value": "Vietnam"
+				},
+				{
+					"value": "date_range_1"
+				}
+			],
+			"metricValues": [
+				{
+					"value": "1"
+				},
+				{
+					"value": "0"
+				},
+				{
+					"value": "1"
+				}
+			]
+		},
+		{
+			"dimensionValues": [
+				{
+					"value": "20221119"
+				},
+				{
+					"value": "United Kingdom"
+				},
+				{
+					"value": "date_range_1"
+				}
+			],
+			"metricValues": [
+				{
+					"value": "1"
+				},
+				{
+					"value": "23.859212"
+				},
+				{
+					"value": "1"
+				}
+			]
+		},
+		{
+			"dimensionValues": [
+				{
+					"value": "20221119"
+				},
+				{
+					"value": "Vietnam"
+				},
+				{
+					"value": "date_range_1"
+				}
+			],
+			"metricValues": [
+				{
+					"value": "1"
+				},
+				{
+					"value": "0"
+				},
+				{
+					"value": "1"
+				}
+			]
+		},
+		{
+			"dimensionValues": [
+				{
+					"value": "20221120"
+				},
+				{
+					"value": "United States"
+				},
+				{
+					"value": "date_range_1"
+				}
+			],
+			"metricValues": [
+				{
+					"value": "1"
+				},
+				{
+					"value": "51.817368"
+				},
+				{
+					"value": "1"
+				}
+			]
+		},
+		{
+			"dimensionValues": [
+				{
+					"value": "20221120"
+				},
+				{
+					"value": "Vietnam"
+				},
+				{
+					"value": "date_range_1"
+				}
+			],
+			"metricValues": [
+				{
+					"value": "1"
+				},
+				{
+					"value": "0"
+				},
+				{
+					"value": "2"
+				}
+			]
+		},
+		{
+			"dimensionValues": [
+				{
+					"value": "20221204"
+				},
+				{
+					"value": "United States"
+				},
+				{
+					"value": "date_range_0"
+				}
+			],
+			"metricValues": [
+				{
+					"value": "1"
+				},
+				{
+					"value": "0"
+				},
+				{
+					"value": "1"
+				}
+			]
+		},
+		{
+			"dimensionValues": [
+				{
+					"value": "20221206"
+				},
+				{
+					"value": "United Kingdom"
+				},
+				{
+					"value": "date_range_0"
+				}
+			],
+			"metricValues": [
+				{
+					"value": "1"
+				},
+				{
+					"value": "14.168559"
+				},
+				{
+					"value": "1"
+				}
+			]
+		},
+		{
+			"dimensionValues": [
+				{
+					"value": "20221206"
+				},
+				{
+					"value": "United States"
+				},
+				{
+					"value": "date_range_0"
+				}
+			],
+			"metricValues": [
+				{
+					"value": "1"
+				},
+				{
+					"value": "4.523775"
+				},
+				{
+					"value": "1"
+				}
+			]
+		},
+		{
+			"dimensionValues": [
+				{
+					"value": "20221207"
+				},
+				{
+					"value": "Hong Kong"
+				},
+				{
+					"value": "date_range_0"
+				}
+			],
+			"metricValues": [
+				{
+					"value": "1"
+				},
+				{
+					"value": "14.510225"
+				},
+				{
+					"value": "1"
+				}
+			]
+		},
+		{
+			"dimensionValues": [
+				{
+					"value": "20221215"
+				},
+				{
+					"value": "Vietnam"
+				},
+				{
+					"value": "date_range_0"
+				}
+			],
+			"metricValues": [
+				{
+					"value": "1"
+				},
+				{
+					"value": "2.0082073333333335"
+				},
+				{
+					"value": "3"
+				}
+			]
+		},
+		{
+			"dimensionValues": [
+				{
+					"value": "20221216"
+				},
+				{
+					"value": "United Kingdom"
+				},
+				{
+					"value": "date_range_0"
+				}
+			],
+			"metricValues": [
+				{
+					"value": "1"
+				},
+				{
+					"value": "5.466105"
+				},
+				{
+					"value": "2"
+				}
+			]
+		},
+		{
+			"dimensionValues": [
+				{
+					"value": "20221217"
+				},
+				{
+					"value": "United Kingdom"
+				},
+				{
+					"value": "date_range_0"
+				}
+			],
+			"metricValues": [
+				{
+					"value": "1"
+				},
+				{
+					"value": "14.095264"
+				},
+				{
+					"value": "1"
+				}
+			]
+		},
+		{
+			"dimensionValues": [
+				{
+					"value": "20221218"
+				},
+				{
+					"value": "United States"
+				},
+				{
+					"value": "date_range_0"
+				}
+			],
+			"metricValues": [
+				{
+					"value": "1"
+				},
+				{
+					"value": "808.0123605"
+				},
+				{
+					"value": "2"
+				}
+			]
+		},
+		{
+			"dimensionValues": [
+				{
+					"value": "20221219"
+				},
+				{
+					"value": "United States"
+				},
+				{
+					"value": "date_range_0"
+				}
+			],
+			"metricValues": [
+				{
+					"value": "1"
+				},
+				{
+					"value": "0"
+				},
+				{
+					"value": "3"
+				}
+			]
+		},
+		{
+			"dimensionValues": [
+				{
+					"value": "20221221"
+				},
+				{
+					"value": "China"
+				},
+				{
+					"value": "date_range_0"
+				}
+			],
+			"metricValues": [
+				{
+					"value": "1"
+				},
+				{
+					"value": "0"
+				},
+				{
+					"value": "1"
+				}
+			]
+		},
+		{
+			"dimensionValues": [
+				{
+					"value": "20221221"
+				},
+				{
+					"value": "India"
+				},
+				{
+					"value": "date_range_0"
+				}
+			],
+			"metricValues": [
+				{
+					"value": "1"
+				},
+				{
+					"value": "915.897537"
+				},
+				{
+					"value": "1"
+				}
+			]
+		},
+		{
+			"dimensionValues": [
+				{
+					"value": "20221222"
+				},
+				{
+					"value": "Sweden"
+				},
+				{
+					"value": "date_range_0"
+				}
+			],
+			"metricValues": [
+				{
+					"value": "1"
+				},
+				{
+					"value": "0"
+				},
+				{
+					"value": "1"
+				}
+			]
+		},
+		{
+			"dimensionValues": [
+				{
+					"value": "20221222"
+				},
+				{
+					"value": "United States"
+				},
+				{
+					"value": "date_range_0"
+				}
+			],
+			"metricValues": [
+				{
+					"value": "1"
+				},
+				{
+					"value": "1070.855679"
+				},
+				{
+					"value": "1"
+				}
+			]
+		},
+		{
+			"dimensionValues": [
+				{
+					"value": "20221223"
+				},
+				{
+					"value": "United States"
+				},
+				{
+					"value": "date_range_0"
+				}
+			],
+			"metricValues": [
+				{
+					"value": "1"
+				},
+				{
+					"value": "0"
+				},
+				{
+					"value": "1"
+				}
+			]
+		},
+		{
+			"dimensionValues": [
+				{
+					"value": "20221226"
+				},
+				{
+					"value": "Philippines"
+				},
+				{
+					"value": "date_range_0"
+				}
+			],
+			"metricValues": [
+				{
+					"value": "1"
+				},
+				{
+					"value": "0"
+				},
+				{
+					"value": "1"
+				}
+			]
+		},
+		{
+			"dimensionValues": [
+				{
+					"value": "20221226"
+				},
+				{
+					"value": "United Kingdom"
+				},
+				{
+					"value": "date_range_0"
+				}
+			],
+			"metricValues": [
+				{
+					"value": "1"
+				},
+				{
+					"value": "5.5869185"
+				},
+				{
+					"value": "2"
+				}
+			]
+		},
+		{
+			"dimensionValues": [
+				{
+					"value": "20221226"
+				},
+				{
+					"value": "United States"
+				},
+				{
+					"value": "date_range_0"
+				}
+			],
+			"metricValues": [
+				{
+					"value": "1"
+				},
+				{
+					"value": "0"
+				},
+				{
+					"value": "1"
+				}
+			]
+		},
+		{
+			"dimensionValues": [
+				{
+					"value": "20221227"
+				},
+				{
+					"value": "India"
+				},
+				{
+					"value": "date_range_0"
+				}
+			],
+			"metricValues": [
+				{
+					"value": "1"
+				},
+				{
+					"value": "0"
+				},
+				{
+					"value": "2"
+				}
+			]
+		},
+		{
+			"dimensionValues": [
+				{
+					"value": "20221228"
+				},
+				{
+					"value": "Germany"
+				},
+				{
+					"value": "date_range_0"
+				}
+			],
+			"metricValues": [
+				{
+					"value": "1"
+				},
+				{
+					"value": "44.134139"
+				},
+				{
+					"value": "1"
+				}
+			]
+		},
+		{
+			"dimensionValues": [
+				{
+					"value": "20221102"
+				},
+				{
+					"value": "France"
+				},
+				{
+					"value": "date_range_0"
+				}
+			],
+			"metricValues": [
+				{
+					"value": "0"
+				},
+				{
+					"value": "0"
+				},
+				{
+					"value": "0"
+				}
+			]
+		},
+		{
+			"dimensionValues": [
+				{
+					"value": "20221104"
+				},
+				{
+					"value": "Bahrain"
+				},
+				{
+					"value": "date_range_0"
+				}
+			],
+			"metricValues": [
+				{
+					"value": "0"
+				},
+				{
+					"value": "0"
+				},
+				{
+					"value": "0"
+				}
+			]
+		},
+		{
+			"dimensionValues": [
+				{
+					"value": "20221104"
+				},
+				{
+					"value": "United States"
+				},
+				{
+					"value": "date_range_0"
+				}
+			],
+			"metricValues": [
+				{
+					"value": "0"
+				},
+				{
+					"value": "0"
+				},
+				{
+					"value": "0"
+				}
+			]
+		},
+		{
+			"dimensionValues": [
+				{
+					"value": "20221107"
+				},
+				{
+					"value": "United Kingdom"
+				},
+				{
+					"value": "date_range_0"
+				}
+			],
+			"metricValues": [
+				{
+					"value": "0"
+				},
+				{
+					"value": "0"
+				},
+				{
+					"value": "0"
+				}
+			]
+		},
+		{
+			"dimensionValues": [
+				{
+					"value": "20221107"
+				},
+				{
+					"value": "United States"
+				},
+				{
+					"value": "date_range_0"
+				}
+			],
+			"metricValues": [
+				{
+					"value": "0"
+				},
+				{
+					"value": "0"
+				},
+				{
+					"value": "0"
+				}
+			]
+		},
+		{
+			"dimensionValues": [
+				{
+					"value": "20221115"
+				},
+				{
+					"value": "Cambodia"
+				},
+				{
+					"value": "date_range_0"
+				}
+			],
+			"metricValues": [
+				{
+					"value": "0"
+				},
+				{
+					"value": "0"
+				},
+				{
+					"value": "0"
+				}
+			]
+		},
+		{
+			"dimensionValues": [
+				{
+					"value": "20221115"
+				},
+				{
+					"value": "Japan"
+				},
+				{
+					"value": "date_range_0"
+				}
+			],
+			"metricValues": [
+				{
+					"value": "0"
+				},
+				{
+					"value": "0"
+				},
+				{
+					"value": "0"
+				}
+			]
+		},
+		{
+			"dimensionValues": [
+				{
+					"value": "20221115"
+				},
+				{
+					"value": "United States"
+				},
+				{
+					"value": "date_range_0"
+				}
+			],
+			"metricValues": [
+				{
+					"value": "0"
+				},
+				{
+					"value": "0"
+				},
+				{
+					"value": "0"
+				}
+			]
+		},
+		{
+			"dimensionValues": [
+				{
+					"value": "20221118"
+				},
+				{
+					"value": "Canada"
+				},
+				{
+					"value": "date_range_0"
+				}
+			],
+			"metricValues": [
+				{
+					"value": "0"
+				},
+				{
+					"value": "0"
+				},
+				{
+					"value": "0"
+				}
+			]
+		},
+		{
+			"dimensionValues": [
+				{
+					"value": "20221118"
+				},
+				{
+					"value": "Vietnam"
+				},
+				{
+					"value": "date_range_0"
+				}
+			],
+			"metricValues": [
+				{
+					"value": "0"
+				},
+				{
+					"value": "0"
+				},
+				{
+					"value": "0"
+				}
+			]
+		},
+		{
+			"dimensionValues": [
+				{
+					"value": "20221119"
+				},
+				{
+					"value": "United Kingdom"
+				},
+				{
+					"value": "date_range_0"
+				}
+			],
+			"metricValues": [
+				{
+					"value": "0"
+				},
+				{
+					"value": "0"
+				},
+				{
+					"value": "0"
+				}
+			]
+		},
+		{
+			"dimensionValues": [
+				{
+					"value": "20221119"
+				},
+				{
+					"value": "United States"
+				},
+				{
+					"value": "date_range_0"
+				}
+			],
+			"metricValues": [
+				{
+					"value": "0"
+				},
+				{
+					"value": "0"
+				},
+				{
+					"value": "0"
+				}
+			]
+		},
+		{
+			"dimensionValues": [
+				{
+					"value": "20221119"
+				},
+				{
+					"value": "Vietnam"
+				},
+				{
+					"value": "date_range_0"
+				}
+			],
+			"metricValues": [
+				{
+					"value": "0"
+				},
+				{
+					"value": "0"
+				},
+				{
+					"value": "0"
+				}
+			]
+		},
+		{
+			"dimensionValues": [
+				{
+					"value": "20221120"
+				},
+				{
+					"value": "United States"
+				},
+				{
+					"value": "date_range_0"
+				}
+			],
+			"metricValues": [
+				{
+					"value": "0"
+				},
+				{
+					"value": "0"
+				},
+				{
+					"value": "0"
+				}
+			]
+		},
+		{
+			"dimensionValues": [
+				{
+					"value": "20221120"
+				},
+				{
+					"value": "Vietnam"
+				},
+				{
+					"value": "date_range_0"
+				}
+			],
+			"metricValues": [
+				{
+					"value": "0"
+				},
+				{
+					"value": "0"
+				},
+				{
+					"value": "0"
+				}
+			]
+		},
+		{
+			"dimensionValues": [
+				{
+					"value": "20221123"
+				},
+				{
+					"value": "United Kingdom"
+				},
+				{
+					"value": "date_range_0"
+				}
+			],
+			"metricValues": [
+				{
+					"value": "0"
+				},
+				{
+					"value": "0"
+				},
+				{
+					"value": "0"
+				}
+			]
+		},
+		{
+			"dimensionValues": [
+				{
+					"value": "20221204"
+				},
+				{
+					"value": "United States"
+				},
+				{
+					"value": "date_range_1"
+				}
+			],
+			"metricValues": [
+				{
+					"value": "0"
+				},
+				{
+					"value": "0"
+				},
+				{
+					"value": "0"
+				}
+			]
+		},
+		{
+			"dimensionValues": [
+				{
+					"value": "20221206"
+				},
+				{
+					"value": "United Kingdom"
+				},
+				{
+					"value": "date_range_1"
+				}
+			],
+			"metricValues": [
+				{
+					"value": "0"
+				},
+				{
+					"value": "0"
+				},
+				{
+					"value": "0"
+				}
+			]
+		},
+		{
+			"dimensionValues": [
+				{
+					"value": "20221206"
+				},
+				{
+					"value": "United States"
+				},
+				{
+					"value": "date_range_1"
+				}
+			],
+			"metricValues": [
+				{
+					"value": "0"
+				},
+				{
+					"value": "0"
+				},
+				{
+					"value": "0"
+				}
+			]
+		},
+		{
+			"dimensionValues": [
+				{
+					"value": "20221207"
+				},
+				{
+					"value": "Hong Kong"
+				},
+				{
+					"value": "date_range_1"
+				}
+			],
+			"metricValues": [
+				{
+					"value": "0"
+				},
+				{
+					"value": "0"
+				},
+				{
+					"value": "0"
+				}
+			]
+		},
+		{
+			"dimensionValues": [
+				{
+					"value": "20221212"
+				},
+				{
+					"value": "United Kingdom"
+				},
+				{
+					"value": "date_range_1"
+				}
+			],
+			"metricValues": [
+				{
+					"value": "0"
+				},
+				{
+					"value": "0"
+				},
+				{
+					"value": "0"
+				}
+			]
+		},
+		{
+			"dimensionValues": [
+				{
+					"value": "20221215"
+				},
+				{
+					"value": "Vietnam"
+				},
+				{
+					"value": "date_range_1"
+				}
+			],
+			"metricValues": [
+				{
+					"value": "0"
+				},
+				{
+					"value": "0"
+				},
+				{
+					"value": "0"
+				}
+			]
+		},
+		{
+			"dimensionValues": [
+				{
+					"value": "20221216"
+				},
+				{
+					"value": "United Kingdom"
+				},
+				{
+					"value": "date_range_1"
+				}
+			],
+			"metricValues": [
+				{
+					"value": "0"
+				},
+				{
+					"value": "0"
+				},
+				{
+					"value": "0"
+				}
+			]
+		},
+		{
+			"dimensionValues": [
+				{
+					"value": "20221217"
+				},
+				{
+					"value": "United Kingdom"
+				},
+				{
+					"value": "date_range_1"
+				}
+			],
+			"metricValues": [
+				{
+					"value": "0"
+				},
+				{
+					"value": "0"
+				},
+				{
+					"value": "0"
+				}
+			]
+		},
+		{
+			"dimensionValues": [
+				{
+					"value": "20221218"
+				},
+				{
+					"value": "United States"
+				},
+				{
+					"value": "date_range_1"
+				}
+			],
+			"metricValues": [
+				{
+					"value": "0"
+				},
+				{
+					"value": "0"
+				},
+				{
+					"value": "0"
+				}
+			]
+		},
+		{
+			"dimensionValues": [
+				{
+					"value": "20221219"
+				},
+				{
+					"value": "United States"
+				},
+				{
+					"value": "date_range_1"
+				}
+			],
+			"metricValues": [
+				{
+					"value": "0"
+				},
+				{
+					"value": "0"
+				},
+				{
+					"value": "0"
+				}
+			]
+		},
+		{
+			"dimensionValues": [
+				{
+					"value": "20221221"
+				},
+				{
+					"value": "China"
+				},
+				{
+					"value": "date_range_1"
+				}
+			],
+			"metricValues": [
+				{
+					"value": "0"
+				},
+				{
+					"value": "0"
+				},
+				{
+					"value": "0"
+				}
+			]
+		},
+		{
+			"dimensionValues": [
+				{
+					"value": "20221221"
+				},
+				{
+					"value": "India"
+				},
+				{
+					"value": "date_range_1"
+				}
+			],
+			"metricValues": [
+				{
+					"value": "0"
+				},
+				{
+					"value": "0"
+				},
+				{
+					"value": "0"
+				}
+			]
+		},
+		{
+			"dimensionValues": [
+				{
+					"value": "20221222"
+				},
+				{
+					"value": "Sweden"
+				},
+				{
+					"value": "date_range_1"
+				}
+			],
+			"metricValues": [
+				{
+					"value": "0"
+				},
+				{
+					"value": "0"
+				},
+				{
+					"value": "0"
+				}
+			]
+		},
+		{
+			"dimensionValues": [
+				{
+					"value": "20221222"
+				},
+				{
+					"value": "United States"
+				},
+				{
+					"value": "date_range_1"
+				}
+			],
+			"metricValues": [
+				{
+					"value": "0"
+				},
+				{
+					"value": "0"
+				},
+				{
+					"value": "0"
+				}
+			]
+		},
+		{
+			"dimensionValues": [
+				{
+					"value": "20221223"
+				},
+				{
+					"value": "United States"
+				},
+				{
+					"value": "date_range_1"
+				}
+			],
+			"metricValues": [
+				{
+					"value": "0"
+				},
+				{
+					"value": "0"
+				},
+				{
+					"value": "0"
+				}
+			]
+		},
+		{
+			"dimensionValues": [
+				{
+					"value": "20221226"
+				},
+				{
+					"value": "Philippines"
+				},
+				{
+					"value": "date_range_1"
+				}
+			],
+			"metricValues": [
+				{
+					"value": "0"
+				},
+				{
+					"value": "0"
+				},
+				{
+					"value": "0"
+				}
+			]
+		},
+		{
+			"dimensionValues": [
+				{
+					"value": "20221226"
+				},
+				{
+					"value": "United Kingdom"
+				},
+				{
+					"value": "date_range_1"
+				}
+			],
+			"metricValues": [
+				{
+					"value": "0"
+				},
+				{
+					"value": "0"
+				},
+				{
+					"value": "0"
+				}
+			]
+		},
+		{
+			"dimensionValues": [
+				{
+					"value": "20221226"
+				},
+				{
+					"value": "United States"
+				},
+				{
+					"value": "date_range_1"
+				}
+			],
+			"metricValues": [
+				{
+					"value": "0"
+				},
+				{
+					"value": "0"
+				},
+				{
+					"value": "0"
+				}
+			]
+		},
+		{
+			"dimensionValues": [
+				{
+					"value": "20221227"
+				},
+				{
+					"value": "India"
+				},
+				{
+					"value": "date_range_1"
+				}
+			],
+			"metricValues": [
+				{
+					"value": "0"
+				},
+				{
+					"value": "0"
+				},
+				{
+					"value": "0"
+				}
+			]
+		},
+		{
+			"dimensionValues": [
+				{
+					"value": "20221228"
+				},
+				{
+					"value": "Germany"
+				},
+				{
+					"value": "date_range_1"
+				}
+			],
+			"metricValues": [
+				{
+					"value": "0"
+				},
+				{
+					"value": "0"
+				},
+				{
+					"value": "0"
+				}
+			]
+		},
+		{
+			"dimensionValues": [
+				{
+					"value": "20221228"
+				},
+				{
+					"value": "United Kingdom"
+				},
+				{
+					"value": "date_range_1"
+				}
+			],
+			"metricValues": [
+				{
+					"value": "0"
+				},
+				{
+					"value": "0"
+				},
+				{
+					"value": "0"
+				}
+			]
+		}
+	],
+	"totals": [
+		{
+			"dimensionValues": [
+				{
+					"value": "RESERVED_TOTAL"
+				},
+				{
+					"value": "RESERVED_TOTAL"
+				},
+				{
+					"value": "date_range_0"
+				}
+			],
+			"metricValues": [
+				{
+					"value": "16"
+				},
+				{
+					"value": "144.08920493548391"
+				},
+				{
+					"value": "31"
+				}
+			]
+		},
+		{
+			"dimensionValues": [
+				{
+					"value": "RESERVED_TOTAL"
+				},
+				{
+					"value": "RESERVED_TOTAL"
+				},
+				{
+					"value": "date_range_1"
+				}
+			],
+			"metricValues": [
+				{
+					"value": "16"
+				},
+				{
+					"value": "33.276610272727275"
+				},
+				{
+					"value": "22"
+				}
+			]
+		}
+	],
+	"maximums": [
+		{
+			"dimensionValues": [
+				{
+					"value": "RESERVED_MAX"
+				},
+				{
+					"value": "RESERVED_MAX"
+				},
+				{
+					"value": "date_range_0"
+				}
+			],
+			"metricValues": [
+				{
+					"value": "2"
+				},
+				{
+					"value": "1070.855679"
+				},
+				{
+					"value": "3"
+				}
+			]
+		},
+		{
+			"dimensionValues": [
+				{
+					"value": "RESERVED_MAX"
+				},
+				{
+					"value": "RESERVED_MAX"
+				},
+				{
+					"value": "date_range_1"
+				}
+			],
+			"metricValues": [
+				{
+					"value": "2"
+				},
+				{
+					"value": "207.14781"
+				},
+				{
+					"value": "3"
+				}
+			]
+		}
+	],
+	"minimums": [
+		{
+			"dimensionValues": [
+				{
+					"value": "RESERVED_MIN"
+				},
+				{
+					"value": "RESERVED_MIN"
+				},
+				{
+					"value": "date_range_0"
+				}
+			],
+			"metricValues": [
+				{
+					"value": "1"
+				},
+				{
+					"value": "0"
+				},
+				{
+					"value": "1"
+				}
+			]
+		},
+		{
+			"dimensionValues": [
+				{
+					"value": "RESERVED_MIN"
+				},
+				{
+					"value": "RESERVED_MIN"
+				},
+				{
+					"value": "date_range_1"
+				}
+			],
+			"metricValues": [
+				{
+					"value": "1"
+				},
+				{
+					"value": "0"
+				},
+				{
+					"value": "1"
+				}
+			]
+		}
+	],
+	"rowCount": 37,
+	"metadata": {
+		"currencyCode": "USD",
+		"timeZone": "Etc/UTC"
+	},
+	"kind": "analyticsData#runReport"
+}

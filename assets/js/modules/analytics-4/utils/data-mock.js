@@ -35,13 +35,13 @@ import { isValidDateString } from '../../../util';
 import { stringToDate } from '../../../util/date-range/string-to-date';
 
 const ANALYTICS_4_METRIC_TYPES = {
-	totalUsers: 'INTEGER',
-	newUsers: 'INTEGER',
-	sessions: 'INTEGER',
-	conversions: 'INTEGER',
-	screenPageViews: 'INTEGER',
-	engagedSessions: 'INTEGER',
-	averageSessionDuration: 'SECONDS',
+	totalUsers: 'TYPE_INTEGER',
+	newUsers: 'TYPE_INTEGER',
+	sessions: 'TYPE_INTEGER',
+	conversions: 'TYPE_INTEGER',
+	screenPageViews: 'TYPE_INTEGER',
+	engagedSessions: 'TYPE_INTEGER',
+	averageSessionDuration: 'TYPE_SECONDS',
 };
 
 const ANALYTICS_4_DIMENSION_OPTIONS = {
@@ -109,40 +109,19 @@ function generateMetricValues( validMetrics ) {
 
 	validMetrics.forEach( ( validMetric ) => {
 		switch ( getMetricType( validMetric ) ) {
-			case 'INTEGER':
+			case 'TYPE_INTEGER':
 				values.push( {
 					value: faker.datatype
 						.number( { min: 0, max: 100 } )
 						.toString(),
 				} );
 				break;
-			case 'PERCENT':
-				values.push( {
-					value: faker.datatype
-						.float( { min: 0, max: 100 } )
-						.toString(),
-				} );
-				break;
-			case 'SECONDS':
+			case 'TYPE_SECONDS':
 				values.push( {
 					value: faker.datatype
 						.number( { min: 0, max: 60 } )
 						.toString(),
 				} );
-				break;
-			case 'TIME':
-				values.push( {
-					value: faker.datatype
-						.number( { min: 0, max: 3600 } )
-						.toString(),
-				} ); // 1 hour max.
-				break;
-			case 'CURRENCY':
-				values.push( {
-					value: faker.datatype
-						.float( { min: 0, max: 10000 } )
-						.toString(),
-				} ); // $10k max.
 				break;
 		}
 	} );
@@ -254,6 +233,9 @@ export function getAnalytics4MockResponse( args ) {
 	const data = {
 		rowCount: 0,
 		rows: [],
+		totals: [],
+		minimums: [],
+		maximums: [],
 		metadata: {
 			currencyCode: 'USD',
 			timeZone: 'America/Los_Angeles',
@@ -386,8 +368,6 @@ export function getAnalytics4MockResponse( args ) {
 		),
 	];
 
-	const metricAggregations = castArray( args.metricAggregations );
-
 	// Process the stream of dimension values and add generated rows to the report data object.
 	zip( ...streams )
 		.pipe( ...ops )
@@ -395,134 +375,128 @@ export function getAnalytics4MockResponse( args ) {
 			data.rows = rows;
 			data.rowCount = rows.length;
 
-			if ( metricAggregations.includes( 'MINIMUM' ) ) {
-				// We pretend that the first row contains minimums and the last one maximums because we don't
-				// really need mathematically correct values and can simplify the process of finding this information.
-				data.minimums = [
-					{
-						dimensionValues: dimensions.map( ( dimension ) => {
-							if ( dimension === 'dateRange' ) {
-								return { value: 'date_range_0' };
-							}
+			// We pretend that the first row contains minimums and the last one maximums because we don't
+			// really need mathematically correct values and can simplify the process of finding this information.
+			data.minimums = [
+				{
+					dimensionValues: dimensions.map( ( dimension ) => {
+						if ( dimension === 'dateRange' ) {
+							return { value: 'date_range_0' };
+						}
 
-							return {
-								value: 'RESERVED_MIN',
-							};
-						} ),
-						metricValues: [ ...( rows[ 0 ]?.metricValues || [] ) ],
-					},
-				].concat(
-					hasDateRange
-						? [
-								{
-									dimensionValues: dimensions.map(
-										( dimension ) => {
-											if ( dimension === 'dateRange' ) {
-												return {
-													value: 'date_range_1',
-												};
-											}
-
+						return {
+							value: 'RESERVED_MIN',
+						};
+					} ),
+					metricValues: [ ...( rows[ 0 ]?.metricValues || [] ) ],
+				},
+			].concat(
+				hasDateRange
+					? [
+							{
+								dimensionValues: dimensions.map(
+									( dimension ) => {
+										if ( dimension === 'dateRange' ) {
 											return {
-												value: 'RESERVED_MIN',
+												value: 'date_range_1',
 											};
 										}
-									),
-									metricValues: [
-										...( rows[ 0 ]?.metricValues || [] ),
-									],
-								},
-						  ]
-						: []
-				);
-			}
 
-			if ( metricAggregations.includes( 'MAXIMUM' ) ) {
-				data.maximums = [
-					{
-						dimensionValues: dimensions.map( ( dimension ) => {
-							if ( dimension === 'dateRange' ) {
-								return { value: 'date_range_0' };
-							}
+										return {
+											value: 'RESERVED_MIN',
+										};
+									}
+								),
+								metricValues: [
+									...( rows[ 0 ]?.metricValues || [] ),
+								],
+							},
+					  ]
+					: []
+			);
 
-							return {
-								value: 'RESERVED_MAX',
-							};
-						} ),
-						metricValues: [
-							...( rows[ rows.length - 1 ]?.metricValues || [] ),
-						],
-					},
-				].concat(
-					hasDateRange
-						? [
-								{
-									dimensionValues: dimensions.map(
-										( dimension ) => {
-											if ( dimension === 'dateRange' ) {
-												return {
-													value: 'date_range_1',
-												};
-											}
+			data.maximums = [
+				{
+					dimensionValues: dimensions.map( ( dimension ) => {
+						if ( dimension === 'dateRange' ) {
+							return { value: 'date_range_0' };
+						}
 
+						return {
+							value: 'RESERVED_MAX',
+						};
+					} ),
+					metricValues: [
+						...( rows[ rows.length - 1 ]?.metricValues || [] ),
+					],
+				},
+			].concat(
+				hasDateRange
+					? [
+							{
+								dimensionValues: dimensions.map(
+									( dimension ) => {
+										if ( dimension === 'dateRange' ) {
 											return {
-												value: 'RESERVED_MAX',
+												value: 'date_range_1',
 											};
 										}
-									),
-									metricValues: [
-										...( rows[ rows.length - 1 ]
-											?.metricValues || [] ),
-									],
-								},
-						  ]
-						: []
-				);
-			}
 
-			if ( metricAggregations.includes( 'TOTAL' ) ) {
-				// Same here, we pretend that the last row contains totals because we don't need it to be mathematically valid.
-				data.totals = [
-					{
-						dimensionValues: dimensions.map( ( dimension ) => {
-							if ( dimension === 'dateRange' ) {
-								return { value: 'date_range_0' };
-							}
+										return {
+											value: 'RESERVED_MAX',
+										};
+									}
+								),
+								metricValues: [
+									...( rows[ rows.length - 1 ]
+										?.metricValues || [] ),
+								],
+							},
+					  ]
+					: []
+			);
 
-							return {
-								value: 'RESERVED_TOTAL',
-							};
-						} ),
-						metricValues: [
-							...( rows[ rows.length - 1 ]?.metricValues || [] ),
-						],
-					},
-				].concat(
-					hasDateRange
-						? [
-								{
-									dimensionValues: dimensions.map(
-										( dimension ) => {
-											if ( dimension === 'dateRange' ) {
-												return {
-													value: 'date_range_1',
-												};
-											}
+			// Same here, we pretend that the last row contains totals because we don't need it to be mathematically valid.
+			data.totals = [
+				{
+					dimensionValues: dimensions.map( ( dimension ) => {
+						if ( dimension === 'dateRange' ) {
+							return { value: 'date_range_0' };
+						}
 
+						return {
+							value: 'RESERVED_TOTAL',
+						};
+					} ),
+					metricValues: [
+						...( rows[ rows.length - 1 ]?.metricValues || [] ),
+					],
+				},
+			].concat(
+				hasDateRange
+					? [
+							{
+								dimensionValues: dimensions.map(
+									( dimension ) => {
+										if ( dimension === 'dateRange' ) {
 											return {
-												value: 'RESERVED_TOTAL',
+												value: 'date_range_1',
 											};
 										}
-									),
-									metricValues: [
-										...( rows[ rows.length - 1 ]
-											?.metricValues || [] ),
-									],
-								},
-						  ]
-						: []
-				);
-			}
+
+										return {
+											value: 'RESERVED_TOTAL',
+										};
+									}
+								),
+								metricValues: [
+									...( rows[ rows.length - 1 ]
+										?.metricValues || [] ),
+								],
+							},
+					  ]
+					: []
+			);
 		} );
 
 	// Set the original seed value for the faker.
@@ -536,7 +510,7 @@ export function getAnalytics4MockResponse( args ) {
 				} ) ) || null,
 			metricHeaders: validMetrics.map( ( metric ) => ( {
 				name: metric?.name || metric.toString(),
-				type: `TYPE_${ getMetricType( metric ) }`,
+				type: getMetricType( metric ),
 			} ) ),
 			...data,
 		},

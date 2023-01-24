@@ -20,6 +20,8 @@
  * Internal dependencies
  */
 import { getAnalytics4MockResponse } from './data-mock';
+import reportResponse from '../datastore/__fixtures__/report.json';
+import reportWithDateRangeResponse from '../datastore/__fixtures__/report-with-date-range.json';
 
 describe( 'getAnalytics4MockResponse', () => {
 	it( 'throws if called without report options', () => {
@@ -139,10 +141,55 @@ describe( 'getAnalytics4MockResponse', () => {
 			endDate: '2020-12-15',
 			metrics: [ 'sessions' ],
 			dimensions: [ 'date' ],
-			metricAggregations: [ 'TOTAL', 'MINIMUM' ],
 		} );
 
 		expect( report[ 0 ] ).toHaveProperty( 'totals' );
 		expect( report[ 0 ] ).toHaveProperty( 'minimums' );
+	} );
+
+	it( 'checks if the report structure matches what we get from the response', () => {
+		const report = getAnalytics4MockResponse( {
+			startDate: '2022-11-01',
+			endDate: '2022-12-31',
+			metrics: [ 'totalUsers', 'averageSessionDuration', 'sessions' ],
+			dimensions: [ 'date', 'country' ],
+		} );
+
+		expect( report[ 0 ].dimensionHeaders ).toMatchObject(
+			reportResponse.dimensionHeaders
+		);
+		expect( report[ 0 ].metricHeaders ).toMatchObject(
+			reportResponse.metricHeaders
+		);
+		expect( report[ 0 ].rows[ 0 ].dimensionValues ).toHaveLength(
+			reportResponse.rows[ 0 ].dimensionValues.length
+		);
+		expect( report[ 0 ].rows[ 0 ].metricValues ).toHaveLength(
+			reportResponse.rows[ 0 ].metricValues.length
+		);
+	} );
+
+	it( 'checks if the report structure matches what we get from the response when there is a date range', () => {
+		const report = getAnalytics4MockResponse( {
+			startDate: '2020-12-01',
+			endDate: '2020-12-15',
+			compareStartDate: '2020-11-26',
+			compareEndDate: '2020-11-30',
+			metrics: [ 'totalUsers', 'averageSessionDuration', 'sessions' ],
+			dimensions: [ 'date', 'country' ],
+		} );
+
+		expect( report[ 0 ].dimensionHeaders ).toMatchObject(
+			reportWithDateRangeResponse.dimensionHeaders
+		);
+		expect( report[ 0 ].metricHeaders ).toMatchObject(
+			reportWithDateRangeResponse.metricHeaders
+		);
+		expect( report[ 0 ].rows[ 0 ].dimensionValues ).toHaveLength(
+			reportWithDateRangeResponse.rows[ 0 ].dimensionValues.length
+		);
+		expect( report[ 0 ].rows[ 0 ].metricValues ).toHaveLength(
+			reportWithDateRangeResponse.rows[ 0 ].metricValues.length
+		);
 	} );
 } );
