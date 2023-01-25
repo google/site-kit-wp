@@ -33,6 +33,7 @@ import {
 	WEBDATASTREAM_CREATE,
 } from './constants';
 import * as fixtures from './__fixtures__';
+import { enabledFeatures } from '../../../features';
 
 describe( 'modules/analytics-4 properties', () => {
 	let registry;
@@ -45,6 +46,9 @@ describe( 'modules/analytics-4 properties', () => {
 	);
 	const propertyEndpoint = new RegExp(
 		'^/google-site-kit/v1/modules/analytics-4/data/property'
+	);
+	const googleTagSettingsEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/analytics-4/data/google-tag-settings'
 	);
 
 	beforeAll( () => {
@@ -505,6 +509,102 @@ describe( 'modules/analytics-4 properties', () => {
 					.dispatch( MODULES_ANALYTICS_4 )
 					.matchPropertyByMeasurementID( propertyIDs, measurementID );
 				expect( matchedProperty ).toBeNull();
+			} );
+		} );
+		describe( 'updateSettingsForMeasurementID', () => {
+			it( 'should update the settings with the measurement ID.', () => {
+				const measurementID = 'G-1A2BCD346E';
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.updateSettingsForMeasurementID( measurementID );
+				expect(
+					registry.select( MODULES_ANALYTICS_4 ).getSettings()
+				).toMatchObject( {
+					measurementID,
+				} );
+			} );
+
+			it( 'dispatches a request to get and populate Google Tag settings', async () => {
+				enabledFeatures.add( 'gteSupport' );
+
+				fetchMock.getOnce( googleTagSettingsEndpoint, {
+					body: fixtures.googleTagSettings,
+					status: 200,
+				} );
+
+				const measurementID = 'G-1A2BCD346E';
+
+				await registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.updateSettingsForMeasurementID( measurementID );
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect( fetchMock ).toHaveFetched( googleTagSettingsEndpoint, {
+					query: {
+						measurementID,
+					},
+					body: fixtures.googleTagSettings,
+				} );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getGoogleTagAccountID()
+				).toEqual( fixtures.googleTagSettings.googleTagAccountID );
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getGoogleTagContainerID()
+				).toEqual( fixtures.googleTagSettings.googleTagContainerID );
+				expect(
+					registry.select( MODULES_ANALYTICS_4 ).getGoogleTagID()
+				).toEqual( fixtures.googleTagSettings.googleTagID );
+			} );
+
+			it( 'empties the Google Tag Settings if measurement ID an empty string', () => {
+				enabledFeatures.add( 'gteSupport' );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setGoogleTagAccountID( '123456' );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setGoogleTagContainerID( '321654' );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setGoogleTagID( 'GT-123456' );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getGoogleTagAccountID()
+				).toEqual( '123456' );
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getGoogleTagContainerID()
+				).toEqual( '321654' );
+				expect(
+					registry.select( MODULES_ANALYTICS_4 ).getGoogleTagID()
+				).toEqual( 'GT-123456' );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.updateSettingsForMeasurementID( '' );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getGoogleTagAccountID()
+				).toEqual( '' );
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getGoogleTagContainerID()
+				).toEqual( '' );
+				expect(
+					registry.select( MODULES_ANALYTICS_4 ).getGoogleTagID()
+				).toEqual( '' );
 			} );
 		} );
 	} );
