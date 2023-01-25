@@ -66,7 +66,7 @@ const fetchGetReportStore = createFetchStore( {
 	validateParams: ( { options } = {} ) => {
 		invariant(
 			isPlainObject( options ),
-			'Options for Analytics 4 report must be an object.'
+			'options for Analytics 4 report must be an object.'
 		);
 		invariant(
 			isValidDateRange( options ),
@@ -82,27 +82,27 @@ const fetchGetReportStore = createFetchStore( {
 		);
 		invariant(
 			isValidMetrics( metrics ),
-			'Metrics for an Analytics 4 report must be either a string, an array of strings, an object, an array of objects or a mix of strings and objects. If an object is used, it must have "name" property and optionally a "expression" property.'
+			'metrics for an Analytics 4 report must be either a string, an array of strings, an object, an array of objects, or a mix of strings and objects. Objects must have a "name" property.'
 		);
 
 		if ( dimensions ) {
 			invariant(
 				isValidDimensions( dimensions ),
-				'Dimensions for an Analytics 4 report must be either a string, an array of strings, an object, an array of objects or a mix of strings and objects. If an object is used, it must have "name" property.'
+				'dimensions for an Analytics 4 report must be either a string, an array of strings, an object, an array of objects, or a mix of strings and objects. Objects must have a "name" property.'
 			);
 		}
 
 		if ( dimensionFilters ) {
 			invariant(
 				isValidDimensionFilters( dimensionFilters ),
-				'Dimension filters must be a map of dimension names as keys and dimension values as values.'
+				'dimensionFilters for an Analytics 4 report must be a map of dimension names as keys and dimension values as values.'
 			);
 		}
 
 		if ( orderby ) {
 			invariant(
 				isValidOrders( orderby ),
-				'Orders for an Analytics report must be either an object or an array of objects where each object should have "fieldName" and "sortOrder" properties.'
+				'orderby for an Analytics 4 report must be either an object or an array of objects where each object should have "fieldName" and "sortOrder" properties.'
 			);
 		}
 	},
