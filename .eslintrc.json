@@ -145,6 +145,14 @@
           "off"
         ]
       }
+    },
+    {
+      "files": [
+        "tests/e2e/**/*.js"
+      ],
+      "rules": {
+          "react-hooks/rules-of-hooks": "off"
+      }
     }
   ],
   "plugins": [
