@@ -65,7 +65,7 @@ export const activateAMPWithMode = async (
 			},
 		] );
 	} else {
-		// eslint-disable-next-line react-hooks/rules-of-hooks
+		// If no sharedRequestInterception is passed, we need to create a new request interception.
 		useRequestInterception( ( request ) => {
 			if ( request.url().match( '&amp_validate' ) ) {
 				request.respond( {
