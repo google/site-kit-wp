@@ -169,7 +169,7 @@ describe( 'getAnalytics4MockResponse', () => {
 		);
 	} );
 
-	it( 'checks if the report structure matches what we get from the response when there is a date range', () => {
+	it( 'checks if the report structure matches what we get from the response when there is more than one date range', () => {
 		const report = getAnalytics4MockResponse( {
 			startDate: '2020-12-01',
 			endDate: '2020-12-15',
@@ -191,5 +191,40 @@ describe( 'getAnalytics4MockResponse', () => {
 		expect( report[ 0 ].rows[ 0 ].metricValues ).toHaveLength(
 			reportWithDateRangeResponse.rows[ 0 ].metricValues.length
 		);
+	} );
+
+	it( 'checks if the number of rows having date_range_0 matches date_range_1', () => {
+		const report = getAnalytics4MockResponse( {
+			startDate: '2020-12-01',
+			endDate: '2020-12-15',
+			compareStartDate: '2020-11-26',
+			compareEndDate: '2020-11-30',
+			metrics: [
+				{
+					name: 'totalUsers',
+				},
+				{
+					name: 'averageSessionDuration',
+				},
+				'sessions',
+			],
+			dimensions: [ 'date' ],
+		} );
+
+		const dateRangeZero = report[ 0 ].rows.filter(
+			( { dimensionValues } ) =>
+				dimensionValues.find(
+					( dimensionValue ) =>
+						dimensionValue.value === 'date_range_0'
+				)
+		);
+
+		const dateRangeOne = report[ 0 ].rows.filter( ( { dimensionValues } ) =>
+			dimensionValues.find(
+				( dimensionValue ) => dimensionValue.value === 'date_range_1'
+			)
+		);
+
+		expect( dateRangeZero ).toHaveLength( dateRangeOne.length );
 	} );
 } );
