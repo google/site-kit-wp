@@ -33,10 +33,10 @@ import { createSnapshotStore } from '../../../googlesitekit/data/create-snapshot
 const store = Data.combineStores(
 	accounts,
 	baseModuleStore,
-	report,
 	containers,
 	createSnapshotStore( MODULES_ANALYTICS_4 ),
 	properties,
+	report,
 	tags,
 	webdatastreams
 );
