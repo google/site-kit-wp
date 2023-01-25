@@ -119,7 +119,8 @@
       "rules": {
         "no-restricted-globals": [
           "off"
-        ]
+        ],
+        "react-hooks/rules-of-hooks": "off"
       }
     },
     {
@@ -144,14 +145,6 @@
         "filenames/match-exported": [
           "off"
         ]
-      }
-    },
-    {
-      "files": [
-        "tests/e2e/**/*.js"
-      ],
-      "rules": {
-          "react-hooks/rules-of-hooks": "off"
       }
     }
   ],
