@@ -21,7 +21,7 @@ use WP_REST_Server;
 /**
  * Class for handling rest routes for Key Metrics settings.
  *
- * @since n.e.x.t
+ * @since 1.93.0
  * @access private
  * @ignore
  */
@@ -30,7 +30,7 @@ class REST_Key_Metrics_Controller {
 	/**
 	 * Key_Metrics_Settings instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.93.0
 	 * @var Key_Metrics_Settings
 	 */
 	protected $settings;
@@ -38,7 +38,7 @@ class REST_Key_Metrics_Controller {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.93.0
 	 *
 	 * @param Key_Metrics_Settings $settings Key Metrics settings.
 	 */
@@ -49,7 +49,7 @@ class REST_Key_Metrics_Controller {
 	/**
 	 * Registers functionality through WordPress hooks.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.93.0
 	 */
 	public function register() {
 		add_filter(
@@ -75,7 +75,7 @@ class REST_Key_Metrics_Controller {
 	/**
 	 * Gets REST route instances.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.93.0
 	 *
 	 * @return REST_Route[] List of REST_Route objects.
 	 */

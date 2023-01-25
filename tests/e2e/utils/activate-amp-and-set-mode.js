@@ -43,7 +43,7 @@ export const allowedAMPModes = {
  * Activates AMP and set it to the correct mode.
  *
  * @since 1.10.0
- * @since n.e.x.t Added request interception for AMP validation requests.
+ * @since 1.93.0 Added request interception for AMP validation requests.
  *
  * @param {string}   mode                                      The mode to set AMP to. Possible value of standard, transitional or reader.
  * @param {Object}   sharedRequestInterception                 Object of methods that can be called to remove the added handler function from the page and add new request cases.

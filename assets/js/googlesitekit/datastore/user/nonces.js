@@ -49,7 +49,7 @@ const baseActions = {
 	/**
 	 * Sets nonces.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.93.0
 	 *
 	 * @param {Object} nonces Dictionary of keys and their nonces.
 	 * @return {Object} Redux-style action.
@@ -106,7 +106,7 @@ const baseSelectors = {
 	/**
 	 * Gets all nonces from the store.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.93.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(Object|undefined)} Nonces object. Returns undefined if it is not loaded yet.
@@ -119,7 +119,7 @@ const baseSelectors = {
 	/**
 	 * Gets a single nonce from the store.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.93.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @param {string} nonce Action name of the nonce to get.

@@ -4,7 +4,7 @@ Contributors:      google
 Requires at least: 5.2
 Tested up to:      6.1
 Requires PHP:      5.6
-Stable tag:        1.92.0
+Stable tag:        1.93.0
 License:           Apache License 2.0
 License URI:       https://www.apache.org/licenses/LICENSE-2.0
 Tags:              google, search-console, analytics, adsense, pagespeed-insights, optimize, tag-manager, site-kit
@@ -107,6 +107,29 @@ By default, Site Kit does anonymize IP addresses upon activation of the Google A
 Please create a new topic on our [WordPress.org support forum](https://wordpress.org/support/plugin/google-site-kit/). Be sure to follow the [support forum guidelines](https://wordpress.org/support/guidelines/) when posting.
 
 == Changelog ==
+
+= 1.93.0 =
+
+**Enhanced**
+
+* Conditionally render Google charts on non-Site Kit screens to avoid conflicts. See [#6439](https://github.com/google/site-kit-wp/issues/6439).
+* Add a new endpoint for the Analytics 4 module to list conversion events. See [#6348](https://github.com/google/site-kit-wp/issues/6348).
+* Update type scale and color tokens to match GM2+ design. See [#6328](https://github.com/google/site-kit-wp/issues/6328).
+* Update the in-progress state when submitting User Input answers. See [#6323](https://github.com/google/site-kit-wp/issues/6323).
+* Create REST endpoints to store and fetch user-selected Key Metrics settings. See [#6256](https://github.com/google/site-kit-wp/issues/6256).
+* Remove admin-wide base JS. See [#6250](https://github.com/google/site-kit-wp/issues/6250).
+* Enhance web storage clearing to only remove Site Kit items. See [#6237](https://github.com/google/site-kit-wp/issues/6237).
+* Add `GET:report` datapoint for Google Analytics 4. See [#6172](https://github.com/google/site-kit-wp/issues/6172).
+* Reduce code complexity in `GoogleChart` component. See [#6029](https://github.com/google/site-kit-wp/issues/6029).
+* Prevent the "Set up Google Analytics 4..." Tooltip from overlapping the header on page scroll. See [#5938](https://github.com/google/site-kit-wp/issues/5938).
+* Implement new inline edit answer interface for User Input settings. See [#5897](https://github.com/google/site-kit-wp/issues/5897).
+* Add notification to prompt users to enable auto-updates. See [#5853](https://github.com/google/site-kit-wp/issues/5853).
+* Simplify experience when additional scopes are required to view the dashboard. See [#5497](https://github.com/google/site-kit-wp/issues/5497).
+
+**Fixed**
+
+* Skip outputting measurement ID specific Google Analytics disabling script when no measurement ID is configured. See [#6364](https://github.com/google/site-kit-wp/issues/6364).
+* Fix incorrect redirects for sites with internationalized domain names. See [#5868](https://github.com/google/site-kit-wp/issues/5868).
 
 = 1.92.0 =
 
