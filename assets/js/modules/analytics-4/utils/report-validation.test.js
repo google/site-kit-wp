@@ -1,5 +1,5 @@
 /**
- * Tests for Analyticsc 4 reporting API validation utilities.
+ * Tests for Analytics 4 reporting API validation utilities.
  *
  * Site Kit by Google, Copyright 2023 Google LLC
  *
