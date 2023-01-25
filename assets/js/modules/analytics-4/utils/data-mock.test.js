@@ -78,10 +78,10 @@ describe( 'getAnalytics4MockResponse', () => {
 		expect( dateRangeZero ).toHaveLength( dateRangeOne.length );
 	} );
 
-	it( 'checks against a valid report', () => {
+	it( 'generates a valid report', () => {
 		const report = getAnalytics4MockResponse( {
-			startDate: '2020-12-31',
-			endDate: '2021-01-27',
+			startDate: '2020-12-29',
+			endDate: '2021-01-02',
 			metrics: [
 				{
 					name: 'sessions',
@@ -93,15 +93,18 @@ describe( 'getAnalytics4MockResponse', () => {
 			dimensions: [ 'date' ],
 		} );
 
-		expect( report[ 0 ] ).toEqual( mockedReportResponse );
+		expect( report ).toEqual( mockedReportResponse );
+
+		// Verify the correct number of rows for the date range.
+		expect( report.rows ).toHaveLength( 5 );
 	} );
 
-	it( 'checks against a valid report with multiple date ranges', () => {
+	it( 'generates a valid report with multiple date ranges', () => {
 		const report = getAnalytics4MockResponse( {
 			startDate: '2020-12-01',
-			endDate: '2020-12-05',
-			compareStartDate: '2020-11-26',
-			compareEndDate: '2020-11-30',
+			endDate: '2020-12-03',
+			compareStartDate: '2020-12-04',
+			compareEndDate: '2020-12-05',
 			metrics: [
 				{
 					name: 'totalUsers',
@@ -113,6 +116,9 @@ describe( 'getAnalytics4MockResponse', () => {
 			dimensions: [ 'date' ],
 		} );
 
-		expect( report[ 0 ] ).toEqual( mockedReportMultipleDateRangesResponse );
+		expect( report ).toEqual( mockedReportMultipleDateRangesResponse );
+
+		// Verify the correct number of rows for the date ranges.
+		expect( report.rows ).toHaveLength( 10 );
 	} );
 } );
