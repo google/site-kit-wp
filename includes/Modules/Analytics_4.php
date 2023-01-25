@@ -212,11 +212,12 @@ final class Analytics_4 extends Module
 	 * @return array Map of datapoints to their definitions.
 	 */
 	protected function get_datapoint_definitions() {
-		return array(
+		$datapoints = array(
 			'GET:account-summaries'      => array( 'service' => 'analyticsadmin' ),
 			'GET:accounts'               => array( 'service' => 'analyticsadmin' ),
 			'GET:container-lookup'       => array( 'service' => 'tagmanager' ),
 			'GET:container-destinations' => array( 'service' => 'tagmanager' ),
+			'GET:google-tag-settings'    => array( 'service' => 'tagmanager' ),
 			'POST:create-property'       => array(
 				'service'                => 'analyticsadmin',
 				'scopes'                 => array( Analytics::EDIT_SCOPE ),
@@ -229,13 +230,19 @@ final class Analytics_4 extends Module
 			),
 			'GET:properties'             => array( 'service' => 'analyticsadmin' ),
 			'GET:property'               => array( 'service' => 'analyticsadmin' ),
-			'GET:report'                 => array(
-				'service'   => 'analyticsdata',
-				'shareable' => Feature_Flags::enabled( 'dashboardSharing' ),
-			),
 			'GET:webdatastreams'         => array( 'service' => 'analyticsadmin' ),
 			'GET:webdatastreams-batch'   => array( 'service' => 'analyticsadmin' ),
+			'GET:conversion-events'      => array( 'service' => 'analyticsadmin' ),
 		);
+
+		if ( Feature_Flags::enabled( 'ga4Reporting' ) ) {
+			$datapoints['GET:report'] = array(
+				'service'   => 'analyticsdata',
+				'shareable' => Feature_Flags::enabled( 'dashboardSharing' ),
+			);
+		}
+
+		return $datapoints;
 	}
 
 	/**
@@ -339,12 +346,20 @@ final class Analytics_4 extends Module
 				return;
 			}
 
+			$measurement_id = $web_datastream->webStreamData->measurementId; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+
 			$this->get_settings()->merge(
 				array(
 					'webDataStreamID' => $web_datastream->_id,
-					'measurementID'   => $web_datastream->webStreamData->measurementId, // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+					'measurementID'   => $measurement_id,
 				)
 			);
+
+			if ( Feature_Flags::enabled( 'gteSupport' ) ) {
+				$container           = $this->get_tagmanager_service()->accounts_containers->lookup( array( 'destinationId' => $measurement_id ) );
+				$google_tag_settings = $this->get_google_tag_settings_for_measurement_id( $container, $measurement_id );
+				$this->get_settings()->merge( $google_tag_settings );
+			}
 		} catch ( Exception $e ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
 			// Suppress this exception because it might be caused by unstable GA4 API.
 		}
@@ -502,6 +517,33 @@ final class Analytics_4 extends Module
 				return $this->get_tagmanager_service()->accounts_containers_destinations->listAccountsContainersDestinations(
 					"accounts/{$data['accountID']}/containers/{$data['internalContainerID']}"
 				);
+			case 'GET:google-tag-settings':
+				if ( ! isset( $data['measurementID'] ) ) {
+					return new WP_Error(
+						'missing_required_param',
+						/* translators: %s: Missing parameter name */
+						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'measurementID' ),
+						array( 'status' => 400 )
+					);
+				}
+
+				return $this->get_tagmanager_service()->accounts_containers->lookup( array( 'destinationId' => $data['measurementID'] ) );
+			case 'GET:conversion-events':
+				if ( ! isset( $data['propertyID'] ) ) {
+					return new WP_Error(
+						'missing_required_param',
+						/* translators: %s: Missing parameter name */
+						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'propertyID' ),
+						array( 'status' => 400 )
+					);
+				}
+
+				$analyticsadmin = $this->get_service( 'analyticsadmin' );
+				$property_id    = self::normalize_property_id( $data['propertyID'] );
+
+				return $analyticsadmin
+					->properties_conversionEvents // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+					->listPropertiesConversionEvents( $property_id );
 		}
 
 		return parent::create_data_request( $data );
@@ -555,6 +597,10 @@ final class Analytics_4 extends Module
 				return self::parse_webdatastreams_batch( $response );
 			case 'GET:container-destinations':
 				return (array) $response->getDestination();
+			case 'GET:google-tag-settings':
+				return $this->get_google_tag_settings_for_measurement_id( $response, $data['measurementID'] );
+			case 'GET:conversion-events':
+				return (array) $response->getConversionEvents();
 		}
 
 		return parent::parse_data_response( $data, $response );
@@ -861,6 +907,61 @@ final class Analytics_4 extends Module
 		}
 
 		return true;
+	}
+
+	/**
+	 * Gets the Google Tag Settings for the given measurement ID.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param Google_Service_TagManager_Container $container Tag Manager container.
+	 * @param string                              $measurement_id Measurement ID.
+	 * @return array Google Tag Settings.
+	 */
+	protected function get_google_tag_settings_for_measurement_id( $container, $measurement_id ) {
+		return array(
+			'googleTagAccountID'   => $container->getAccountId(),
+			'googleTagContainerID' => $container->getContainerId(),
+			'googleTagID'          => $this->determine_google_tag_id_from_tag_ids( $container->getTagIds(), $measurement_id ),
+		);
+	}
+
+	/**
+	 * Determines Google Tag ID from the given Tag IDs.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array  $tag_ids Tag IDs.
+	 * @param string $measurement_id Measurement ID.
+	 * @return string Google Tag ID.
+	 */
+	private function determine_google_tag_id_from_tag_ids( $tag_ids, $measurement_id ) {
+		// If there is only one tag id in the array, return it.
+		if ( count( $tag_ids ) === 1 ) {
+			return $tag_ids[0];
+		}
+
+		// If there are multiple tags, return the first one that starts with `GT-`.
+		foreach ( $tag_ids as $tag_id ) {
+			if ( substr( $tag_id, 0, 3 ) === 'GT-' ) { // strlen( 'GT-' ) === 3.
+				return $tag_id;
+			}
+		}
+
+		// Otherwise, return the `$measurement_id` if it is in the array.
+		if ( in_array( $measurement_id, $tag_ids, true ) ) {
+			return $measurement_id;
+		}
+
+		// Otherwise, return the first one that starts with `G-`.
+		foreach ( $tag_ids as $tag_id ) {
+			if ( substr( $tag_id, 0, 2 ) === 'G-' ) { // strlen( 'G-' ) === 2.
+				return $tag_id;
+			}
+		}
+
+		// If none of the above, return the first one.
+		return $tag_ids[0];
 	}
 
 	/**
@@ -1183,7 +1284,7 @@ final class Analytics_4 extends Module
 			$dimension_string_filter->setMatchType( 'EXACT' );
 			$dimension_string_filter->setValue( rawurldecode( $args['page'] ) );
 			$dimension_filter = new Google_Service_AnalyticsData_Filter();
-			$dimension_filter->setFieldName( 'pagePathPlusQueryString' );
+			$dimension_filter->setFieldName( 'pagePath' );
 			$dimension_filter->setStringFilter( $dimension_string_filter );
 			$dimension_filter_expression = new Google_Service_AnalyticsData_FilterExpression();
 			$dimension_filter_expression->setFilter( $dimension_filter );

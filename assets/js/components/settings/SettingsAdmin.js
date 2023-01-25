@@ -102,6 +102,7 @@ export default function SettingsAdmin() {
 										goTo={ goTo }
 										noHeader
 										noFooter
+										showIndividualCTAs
 									/>
 								</Grid>
 							</div>

@@ -26,3 +26,4 @@ export { default as properties } from './properties.json';
 export { default as webDataStreams } from './webdatastreams.json';
 export { default as webDataStreamsBatch } from './webdatastreams-batch.json';
 export { default as webDataStreamsBatchSetup } from './webdatastreams-batch-setup.json';
+export { default as googleTagSettings } from './google-tag-settings.json';

@@ -37,6 +37,8 @@ import ActivationBanner from '../../modules/analytics-4/components/dashboard/Act
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import useViewOnly from '../../hooks/useViewOnly';
 import ZeroDataStateNotifications from './ZeroDataStateNotifications';
+import EnableAutoUpdateBannerNotification from './EnableAutoUpdateBannerNotification';
+
 const { useSelect } = Data;
 
 export default function BannerNotifications() {
@@ -63,6 +65,7 @@ export default function BannerNotifications() {
 						'user_input_success' === notification ) && (
 						<SetupSuccessBannerNotification />
 					) }
+					<EnableAutoUpdateBannerNotification />
 					{ isAuthenticated && <CoreSiteBannerNotifications /> }
 					{ dashboardSharingEnabled && <ModuleRecoveryAlert /> }
 					{ ga4ActivationBannerEnabled && <ActivationBanner /> }

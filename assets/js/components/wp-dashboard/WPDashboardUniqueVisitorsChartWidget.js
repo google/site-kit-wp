@@ -39,6 +39,7 @@ import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { extractAnalyticsDashboardData } from '../../modules/analytics/util';
 import WidgetReportError from '../../googlesitekit/widgets/components/WidgetReportError';
 import GoogleChart from '../GoogleChart';
+import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 const { useSelect, useInViewSelect } = Data;
 
 const WPDashboardUniqueVisitorsChartWidget = () => {
@@ -50,6 +51,9 @@ const WPDashboardUniqueVisitorsChartWidget = () => {
 	);
 	const isGatheringData = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).isGatheringData()
+	);
+	const googleChartsCollisionError = useSelect( ( select ) =>
+		select( CORE_UI ).getValue( 'googleChartsCollisionError' )
 	);
 
 	const { startDate, endDate, compareStartDate, compareEndDate } = useSelect(
@@ -94,6 +98,11 @@ const WPDashboardUniqueVisitorsChartWidget = () => {
 			reportArgs,
 		] )
 	);
+
+	// If we can't load Google Charts, don't display this component at all.
+	if ( googleChartsCollisionError ) {
+		return null;
+	}
 
 	if ( ! ( analyticsModuleActive && analyticsModuleConnected ) ) {
 		return null;

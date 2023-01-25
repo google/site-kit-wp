@@ -92,7 +92,7 @@ export default function GA4SettingsControls( {
 		matchWebDataStream,
 		setPropertyID,
 		setWebDataStreamID,
-		setMeasurementID,
+		updateSettingsForMeasurementID,
 	} = useDispatch( MODULES_ANALYTICS_4 );
 
 	useUpdateEffect( () => {
@@ -124,7 +124,7 @@ export default function GA4SettingsControls( {
 
 		setPropertyID( newPropertyID );
 		setWebDataStreamID( newWebDataStreamID );
-		setMeasurementID(
+		updateSettingsForMeasurementID(
 			// eslint-disable-next-line sitekit/acronym-case
 			matchedWebDataStream?.webStreamData.measurementId || ''
 		);
@@ -134,7 +134,7 @@ export default function GA4SettingsControls( {
 		matchedWebDataStream,
 		setPropertyID,
 		setWebDataStreamID,
-		setMeasurementID,
+		updateSettingsForMeasurementID,
 	] );
 
 	const isDisabled = ! propertyID && ! enableGA4;
@@ -199,6 +199,11 @@ export default function GA4SettingsControls( {
 										'Set up your Google Analytics 4 property here',
 										'google-site-kit'
 									) }
+									styles={ {
+										options: {
+											zIndex: 9999,
+										},
+									} }
 									target=".googlesitekit-analytics-4__select-property"
 									onDismiss={ () =>
 										setValues( FORM_SETUP, {

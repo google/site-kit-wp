@@ -96,6 +96,10 @@
 
 	.googlesitekit-user-input__preview-group {
 
+		.googlesitekit-user-input__author {
+			margin: 24px 0 28px;
+		}
+
 		.googlesitekit-user-input__select-option {
 
 			.mdc-radio,
@@ -134,13 +138,13 @@
 		}
 
 		button {
-			color: $c-content-link;
+			color: $c-content-secondary;
 			font-family: $f-secondary;
 			font-weight: $fw-medium;
 			margin-left: auto;
 
 			&::after {
-				// This is the expand_more icon (arrow/chevron down), in the color #108080 ($c-content-link).
+				// This is the expand_more icon (arrow/chevron down), in the color #108080 ($c-content-secondary).
 				background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2212%22%20height%3D%228%22%20viewBox%3D%220%200%2012%208%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpath%20d%3D%22M10.6.6L12%202%206%208%200%202%201.4.6%206%205.2z%22%20fill%3D%22%23108080%22%20fill-rule%3D%22evenodd%22%2F%3E%3C%2Fsvg%3E");
 				background-position: right 4px;
 				background-repeat: no-repeat;
@@ -152,10 +156,84 @@
 				vertical-align: middle;
 				width: 20px;
 			}
+		}
+	}
 
-			&.googlesitekit-user-input__preview-group-editing::after {
+	.googlesitekit-user-input__preview-group--editing {
+
+		.googlesitekit-user-input__preview-group-title {
+
+			button::after {
 				background-position: left 6px;
 				transform: rotate(180deg);
+			}
+		}
+	}
+
+	.googlesitekit-user-input__preview-actions {
+		align-items: center;
+		column-gap: 20px;
+		display: flex;
+
+		.googlesitekit-cta-link {
+			color: $c-surfaces-on-background-variant;
+		}
+	}
+
+	.googlesitekit-user-input__preview-group--individual-cta {
+		position: relative;
+	}
+
+	.googlesitekit-user-input__preview--editing {
+
+		.googlesitekit-user-input__preview-group--individual-cta {
+
+			&:not(.googlesitekit-user-input__preview-group--editing) {
+				pointer-events: none;
+
+				&::after {
+					background-color: $c-surfaces-surface-2;
+					content: "";
+					height: calc(100% + 13px);
+					opacity: 0.75;
+					position: absolute;
+					top: 0;
+					z-index: 1;
+
+					@each $size in map-keys($mdc-layout-grid-columns) {
+
+						@include mdc-layout-grid-media-query_($size) {
+							$padding: map-get($mdc-layout-grid-default-margin, $size);
+
+							margin-left: -$padding;
+
+							// Use negative value of CSS variable.
+							margin-left: calc(var(--mdc-layout-grid-margin-#{$size}, #{$padding}) * -1);
+
+							width: calc(100% + #{$padding} * 2);
+							width: calc(100% + var(--mdc-layout-grid-margin-#{$size}, #{$padding}) * 2);
+						}
+					}
+				}
+
+				&:first-child::after {
+					height: calc(100% + 26px);
+					top: -13px;
+				}
+
+				&:last-child::after {
+					border-radius: 0 0 24px 24px;
+
+					@each $size in map-keys($mdc-layout-grid-columns) {
+
+						@include mdc-layout-grid-media-query_($size) {
+							$padding: map-get($mdc-layout-grid-default-margin, $size);
+
+							height: calc(100% + #{$padding});
+							height: calc(100% + var(--mdc-layout-grid-margin-#{$size}, #{$padding}));
+						}
+					}
+				}
 			}
 		}
 	}
