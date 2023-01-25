@@ -1,0 +1,142 @@
+{
+	"dimensionHeaders": [ { "name": "date" } ],
+	"metricHeaders": [
+		{ "name": "sessions", "type": "TYPE_INTEGER" },
+		{ "name": "newUsers", "type": "TYPE_INTEGER" }
+	],
+	"rowCount": 28,
+	"rows": [
+		{
+			"dimensionValues": [ { "value": "20201230" } ],
+			"metricValues": [ { "value": "55" }, { "value": "14" } ]
+		},
+		{
+			"dimensionValues": [ { "value": "20201231" } ],
+			"metricValues": [ { "value": "3" }, { "value": "13" } ]
+		},
+		{
+			"dimensionValues": [ { "value": "20210101" } ],
+			"metricValues": [ { "value": "17" }, { "value": "39" } ]
+		},
+		{
+			"dimensionValues": [ { "value": "20210102" } ],
+			"metricValues": [ { "value": "10" }, { "value": "73" } ]
+		},
+		{
+			"dimensionValues": [ { "value": "20210103" } ],
+			"metricValues": [ { "value": "89" }, { "value": "62" } ]
+		},
+		{
+			"dimensionValues": [ { "value": "20210104" } ],
+			"metricValues": [ { "value": "98" }, { "value": "7" } ]
+		},
+		{
+			"dimensionValues": [ { "value": "20210105" } ],
+			"metricValues": [ { "value": "27" }, { "value": "91" } ]
+		},
+		{
+			"dimensionValues": [ { "value": "20210106" } ],
+			"metricValues": [ { "value": "86" }, { "value": "53" } ]
+		},
+		{
+			"dimensionValues": [ { "value": "20210107" } ],
+			"metricValues": [ { "value": "38" }, { "value": "71" } ]
+		},
+		{
+			"dimensionValues": [ { "value": "20210108" } ],
+			"metricValues": [ { "value": "21" }, { "value": "74" } ]
+		},
+		{
+			"dimensionValues": [ { "value": "20210109" } ],
+			"metricValues": [ { "value": "66" }, { "value": "80" } ]
+		},
+		{
+			"dimensionValues": [ { "value": "20210110" } ],
+			"metricValues": [ { "value": "16" }, { "value": "22" } ]
+		},
+		{
+			"dimensionValues": [ { "value": "20210111" } ],
+			"metricValues": [ { "value": "45" }, { "value": "34" } ]
+		},
+		{
+			"dimensionValues": [ { "value": "20210112" } ],
+			"metricValues": [ { "value": "23" }, { "value": "91" } ]
+		},
+		{
+			"dimensionValues": [ { "value": "20210113" } ],
+			"metricValues": [ { "value": "38" }, { "value": "66" } ]
+		},
+		{
+			"dimensionValues": [ { "value": "20210114" } ],
+			"metricValues": [ { "value": "19" }, { "value": "75" } ]
+		},
+		{
+			"dimensionValues": [ { "value": "20210115" } ],
+			"metricValues": [ { "value": "74" }, { "value": "47" } ]
+		},
+		{
+			"dimensionValues": [ { "value": "20210116" } ],
+			"metricValues": [ { "value": "53" }, { "value": "12" } ]
+		},
+		{
+			"dimensionValues": [ { "value": "20210117" } ],
+			"metricValues": [ { "value": "83" }, { "value": "14" } ]
+		},
+		{
+			"dimensionValues": [ { "value": "20210118" } ],
+			"metricValues": [ { "value": "72" }, { "value": "57" } ]
+		},
+		{
+			"dimensionValues": [ { "value": "20210119" } ],
+			"metricValues": [ { "value": "79" }, { "value": "56" } ]
+		},
+		{
+			"dimensionValues": [ { "value": "20210120" } ],
+			"metricValues": [ { "value": "93" }, { "value": "59" } ]
+		},
+		{
+			"dimensionValues": [ { "value": "20210121" } ],
+			"metricValues": [ { "value": "95" }, { "value": "90" } ]
+		},
+		{
+			"dimensionValues": [ { "value": "20210122" } ],
+			"metricValues": [ { "value": "53" }, { "value": "58" } ]
+		},
+		{
+			"dimensionValues": [ { "value": "20210123" } ],
+			"metricValues": [ { "value": "56" }, { "value": "69" } ]
+		},
+		{
+			"dimensionValues": [ { "value": "20210124" } ],
+			"metricValues": [ { "value": "49" }, { "value": "82" } ]
+		},
+		{
+			"dimensionValues": [ { "value": "20210125" } ],
+			"metricValues": [ { "value": "80" }, { "value": "6" } ]
+		},
+		{
+			"dimensionValues": [ { "value": "20210126" } ],
+			"metricValues": [ { "value": "64" }, { "value": "54" } ]
+		}
+	],
+	"totals": [
+		{
+			"dimensionValues": [ { "value": "RESERVED_TOTAL" } ],
+			"metricValues": [ { "value": "64" }, { "value": "54" } ]
+		}
+	],
+	"minimums": [
+		{
+			"dimensionValues": [ { "value": "RESERVED_MIN" } ],
+			"metricValues": [ { "value": "55" }, { "value": "14" } ]
+		}
+	],
+	"maximums": [
+		{
+			"dimensionValues": [ { "value": "RESERVED_MAX" } ],
+			"metricValues": [ { "value": "64" }, { "value": "54" } ]
+		}
+	],
+	"metadata": { "currencyCode": "USD", "timeZone": "America/Los_Angeles" },
+	"kind": "analyticsData#runReport"
+}

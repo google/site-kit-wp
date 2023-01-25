@@ -20,8 +20,10 @@
  * Internal dependencies
  */
 import { getAnalytics4MockResponse } from './data-mock';
+import mockedReportResponse from './__fixtures__/mocked-report.json';
+import mockedReportMultipleDateRangesResponse from './__fixtures__/mocked-report-multiple-date-ranges.json';
 import reportResponse from '../datastore/__fixtures__/report.json';
-import reportWithDateRangeResponse from '../datastore/__fixtures__/report-with-date-range.json';
+import reportMultipleDateRangesResponse from '../datastore/__fixtures__/report-mutiple-date-ranges.json';
 
 describe( 'getAnalytics4MockResponse', () => {
 	it( 'throws if called without report options', () => {
@@ -180,16 +182,16 @@ describe( 'getAnalytics4MockResponse', () => {
 		} );
 
 		expect( report[ 0 ].dimensionHeaders ).toMatchObject(
-			reportWithDateRangeResponse.dimensionHeaders
+			reportMultipleDateRangesResponse.dimensionHeaders
 		);
 		expect( report[ 0 ].metricHeaders ).toMatchObject(
-			reportWithDateRangeResponse.metricHeaders
+			reportMultipleDateRangesResponse.metricHeaders
 		);
 		expect( report[ 0 ].rows[ 0 ].dimensionValues ).toHaveLength(
-			reportWithDateRangeResponse.rows[ 0 ].dimensionValues.length
+			reportMultipleDateRangesResponse.rows[ 0 ].dimensionValues.length
 		);
 		expect( report[ 0 ].rows[ 0 ].metricValues ).toHaveLength(
-			reportWithDateRangeResponse.rows[ 0 ].metricValues.length
+			reportMultipleDateRangesResponse.rows[ 0 ].metricValues.length
 		);
 	} );
 
@@ -226,5 +228,43 @@ describe( 'getAnalytics4MockResponse', () => {
 		);
 
 		expect( dateRangeZero ).toHaveLength( dateRangeOne.length );
+	} );
+
+	it( 'checks against a valid report', () => {
+		const report = getAnalytics4MockResponse( {
+			startDate: '2020-12-31',
+			endDate: '2021-01-27',
+			metrics: [
+				{
+					name: 'sessions',
+				},
+				{
+					name: 'newUsers',
+				},
+			],
+			dimensions: [ 'date' ],
+		} );
+
+		expect( report[ 0 ] ).toEqual( mockedReportResponse );
+	} );
+
+	it( 'checks against a valid report with multiple date ranges', () => {
+		const report = getAnalytics4MockResponse( {
+			startDate: '2020-12-01',
+			endDate: '2020-12-05',
+			compareStartDate: '2020-11-26',
+			compareEndDate: '2020-11-30',
+			metrics: [
+				{
+					name: 'totalUsers',
+				},
+				{
+					name: 'averageSessionDuration',
+				},
+			],
+			dimensions: [ 'date' ],
+		} );
+
+		expect( report[ 0 ] ).toEqual( mockedReportMultipleDateRangesResponse );
 	} );
 } );
