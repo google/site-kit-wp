@@ -180,7 +180,7 @@ const InteractiveTokens = () => (
 				<Token
 					name="interactive-tertiary-hover"
 					label="Tertiary Hover"
-					reference="161B18, 36%"
+					reference="161B18, 8%"
 				/>
 				<Token
 					name="interactive-tertiary-focus"
