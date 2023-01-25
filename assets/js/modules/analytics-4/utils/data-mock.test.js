@@ -45,39 +45,6 @@ describe( 'getAnalytics4MockResponse', () => {
 		).toThrow( 'a valid endDate is required' );
 	} );
 
-	it( 'checks if the number of rows having date_range_0 matches date_range_1', () => {
-		const report = getAnalytics4MockResponse( {
-			startDate: '2020-12-01',
-			endDate: '2020-12-15',
-			compareStartDate: '2020-11-26',
-			compareEndDate: '2020-11-30',
-			metrics: [
-				{
-					name: 'totalUsers',
-				},
-				{
-					name: 'averageSessionDuration',
-				},
-				'sessions',
-			],
-			dimensions: [ 'date' ],
-		} );
-
-		const dateRangeZero = report.rows.filter( ( { dimensionValues } ) =>
-			dimensionValues.find(
-				( dimensionValue ) => dimensionValue.value === 'date_range_0'
-			)
-		);
-
-		const dateRangeOne = report.rows.filter( ( { dimensionValues } ) =>
-			dimensionValues.find(
-				( dimensionValue ) => dimensionValue.value === 'date_range_1'
-			)
-		);
-
-		expect( dateRangeZero ).toHaveLength( dateRangeOne.length );
-	} );
-
 	it( 'generates a valid report', () => {
 		const report = getAnalytics4MockResponse( {
 			startDate: '2020-12-29',
@@ -120,5 +87,38 @@ describe( 'getAnalytics4MockResponse', () => {
 
 		// Verify the correct number of rows for the date ranges.
 		expect( report.rows ).toHaveLength( 10 );
+	} );
+
+	it( 'generates the same number of rows for each date range in a multi-date range report', () => {
+		const report = getAnalytics4MockResponse( {
+			startDate: '2020-12-01',
+			endDate: '2020-12-15',
+			compareStartDate: '2020-11-26',
+			compareEndDate: '2020-11-30',
+			metrics: [
+				{
+					name: 'totalUsers',
+				},
+				{
+					name: 'averageSessionDuration',
+				},
+				'sessions',
+			],
+			dimensions: [ 'date' ],
+		} );
+
+		const dateRangeZero = report.rows.filter( ( { dimensionValues } ) =>
+			dimensionValues.find(
+				( dimensionValue ) => dimensionValue.value === 'date_range_0'
+			)
+		);
+
+		const dateRangeOne = report.rows.filter( ( { dimensionValues } ) =>
+			dimensionValues.find(
+				( dimensionValue ) => dimensionValue.value === 'date_range_1'
+			)
+		);
+
+		expect( dateRangeZero ).toHaveLength( dateRangeOne.length );
 	} );
 } );
