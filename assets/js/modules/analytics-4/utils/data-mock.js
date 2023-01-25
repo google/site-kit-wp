@@ -502,19 +502,17 @@ export function getAnalytics4MockResponse( args ) {
 	// Set the original seed value for the faker.
 	faker.seed( originalSeedValue );
 
-	return [
-		{
-			dimensionHeaders:
-				args?.dimensions?.map( ( dimension ) => ( {
-					name: dimension,
-				} ) ) || null,
-			metricHeaders: validMetrics.map( ( metric ) => ( {
-				name: metric?.name || metric.toString(),
-				type: getMetricType( metric ),
-			} ) ),
-			...data,
-		},
-	];
+	return {
+		dimensionHeaders:
+			args?.dimensions?.map( ( dimension ) => ( {
+				name: dimension,
+			} ) ) || null,
+		metricHeaders: validMetrics.map( ( metric ) => ( {
+			name: metric?.name || metric.toString(),
+			type: getMetricType( metric ),
+		} ) ),
+		...data,
+	};
 }
 
 /**
