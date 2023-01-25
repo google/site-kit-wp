@@ -195,7 +195,7 @@ const baseActions = {
 	/**
 	 * Resets modified user input settings to currently saved values.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.93.0
 	 *
 	 * @return {Object} Redux-style action.
 	 */
@@ -353,7 +353,7 @@ const baseSelectors = {
 	/**
 	 * Indicates whether the current user input settings have changed from what is saved.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.93.0
 	 *
 	 * @param {Object}     state Data store's state.
 	 * @param {Array|null} keys  Settings keys to check; if not provided, all settings are checked.
@@ -375,7 +375,7 @@ const baseSelectors = {
 	/**
 	 * Indicates whether the provided user input setting has changed from what is saved.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.93.0
 	 *
 	 * @param {Object} state   Data store's state.
 	 * @param {string} setting The setting we want to check for saved changes.

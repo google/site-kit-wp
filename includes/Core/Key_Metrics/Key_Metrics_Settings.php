@@ -16,7 +16,7 @@ use Google\Site_Kit\Core\Util\Sanitize;
 /**
  * Class to store user key metrics settings.
  *
- * @since n.e.x.t
+ * @since 1.93.0
  * @access private
  * @ignore
  */
@@ -30,7 +30,7 @@ class Key_Metrics_Settings extends User_Setting {
 	/**
 	 * Gets the expected value type.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.93.0
 	 *
 	 * @return string The type name.
 	 */
@@ -41,7 +41,7 @@ class Key_Metrics_Settings extends User_Setting {
 	/**
 	 * Gets the default value.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.93.0
 	 *
 	 * @return array The default value.
 	 */
@@ -52,7 +52,7 @@ class Key_Metrics_Settings extends User_Setting {
 	/**
 	 * Merges an array of settings to update.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.93.0
 	 *
 	 * @param array $partial Partial settings array to save.
 	 * @return bool True on success, false on failure.
@@ -79,7 +79,7 @@ class Key_Metrics_Settings extends User_Setting {
 	/**
 	 * Gets the callback for sanitizing the setting's value before saving.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.93.0
 	 *
 	 * @return callable Sanitize callback.
 	 */
