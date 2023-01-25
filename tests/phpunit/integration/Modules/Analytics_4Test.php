@@ -36,6 +36,7 @@ use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnaly
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaDataStream;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaDataStreamWebStreamData;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaListConversionEventsResponse;
+use Google\Site_Kit_Dependencies\Google\Service\TagManager\Container;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Message\Request;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Message\Response;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Stream\Stream;
@@ -203,10 +204,139 @@ class Analytics_4Test extends TestCase {
 		);
 	}
 
+	public function test_handle_provisioning_callback__gteSupport() {
+		$this->enable_feature( 'gteSupport' );
+		$account_id              = '12345678';
+		$property_id             = '1001';
+		$webdatastream_id        = '2001';
+		$measurement_id          = '1A2BCD345E';
+		$google_tag_account_id   = '123';
+		$google_tag_container_id = '456';
+		$tag_ids                 = array( 'GT-123', 'G-456' );
+
+		$options = new Options( $this->context );
+		$options->set(
+			Settings::OPTION,
+			array(
+				'accountID'       => $account_id,
+				'propertyID'      => '',
+				'webDataStreamID' => '',
+				'measurementID'   => '',
+			)
+		);
+
+		$http_client = new FakeHttpClient();
+		$http_client->set_request_handler(
+			function( Request $request ) use ( $property_id, $webdatastream_id, $measurement_id, $google_tag_account_id, $google_tag_container_id, $tag_ids ) {
+				$url = parse_url( $request->getUrl() );
+
+				if ( ! in_array( $url['host'], array( 'analyticsadmin.googleapis.com', 'tagmanager.googleapis.com' ), true ) ) {
+					return new Response( 200 );
+				}
+
+				switch ( $url['path'] ) {
+					case '/v1beta/properties':
+						return new Response(
+							200,
+							array(),
+							Stream::factory(
+								json_encode(
+									array(
+										'name' => "properties/{$property_id}",
+									)
+								)
+							)
+						);
+					case "/v1beta/properties/{$property_id}/dataStreams":
+						$data = new GoogleAnalyticsAdminV1betaDataStreamWebStreamData();
+						$data->setMeasurementId( $measurement_id );
+						$datastream = new GoogleAnalyticsAdminV1betaDataStream();
+						$datastream->setName( "properties/{$property_id}/dataStreams/{$webdatastream_id}" );
+						$datastream->setType( 'WEB_DATA_STREAM' );
+						$datastream->setWebStreamData( $data );
+
+						return new Response(
+							200,
+							array(),
+							Stream::factory(
+								json_encode( $datastream->toSimpleObject() )
+							)
+						);
+					case '/tagmanager/v2/accounts/containers:lookup':
+						$data = new Container();
+						$data->setAccountId( $google_tag_account_id );
+						$data->setContainerId( $google_tag_container_id );
+						$data->setTagIds( $tag_ids );
+						return new Response(
+							200,
+							array(),
+							Stream::factory(
+								json_encode(
+									$data->toSimpleObject()
+								)
+							)
+						);
+
+					default:
+						return new Response( 200 );
+				}
+			}
+		);
+
+		remove_all_actions( 'googlesitekit_analytics_handle_provisioning_callback' );
+
+		$this->analytics->get_client()->setHttpClient( $http_client );
+		$this->analytics->register();
+
+		$this->assertEqualSetsWithIndex(
+			array(
+				'accountID'            => $account_id,
+				'propertyID'           => '',
+				'webDataStreamID'      => '',
+				'measurementID'        => '',
+				'ownerID'              => 0,
+				'useSnippet'           => true,
+				'googleTagID'          => '',
+				'googleTagAccountID'   => '',
+				'googleTagContainerID' => '',
+			),
+			$options->get( Settings::OPTION )
+		);
+
+		do_action( 'googlesitekit_analytics_handle_provisioning_callback', $account_id );
+
+		$this->assertEqualSetsWithIndex(
+			array(
+				'accountID'            => $account_id,
+				'propertyID'           => $property_id,
+				'webDataStreamID'      => $webdatastream_id,
+				'measurementID'        => $measurement_id,
+				'ownerID'              => 0,
+				'useSnippet'           => true,
+				'googleTagID'          => 'GT-123',
+				'googleTagAccountID'   => $google_tag_account_id,
+				'googleTagContainerID' => $google_tag_container_id,
+			),
+			$options->get( Settings::OPTION )
+		);
+	}
+
 	public function test_get_scopes() {
 		$this->assertEqualSets(
 			array(
 				'https://www.googleapis.com/auth/analytics.readonly',
+			),
+			$this->analytics->get_scopes()
+		);
+	}
+
+	public function test_get_scopes__gteSupport() {
+		$this->enable_feature( 'gteSupport' );
+
+		$this->assertEqualSets(
+			array(
+				'https://www.googleapis.com/auth/analytics.readonly',
+				'https://www.googleapis.com/auth/tagmanager.readonly',
 			),
 			$this->analytics->get_scopes()
 		);
@@ -248,6 +378,7 @@ class Analytics_4Test extends TestCase {
 				'accounts',
 				'container-lookup',
 				'container-destinations',
+				'google-tag-settings',
 				'conversion-events',
 				'create-property',
 				'create-webdatastream',
@@ -258,6 +389,101 @@ class Analytics_4Test extends TestCase {
 				'webdatastreams-batch',
 			),
 			$this->analytics->get_datapoints()
+		);
+	}
+
+	/**
+	 * @dataProvider data_google_tag_ids
+	 *
+	 * @param array $tag_ids_data Tag IDs and expected result.
+	 */
+	public function test_google_tag_settings_datapoint( $tag_ids_data ) {
+		$this->enable_feature( 'gteSupport' );
+
+		$this->authentication->get_oauth_client()->set_granted_scopes(
+			$this->analytics->get_scopes()
+		);
+
+		$http_client = new FakeHttpClient();
+		$http_client->set_request_handler(
+			function ( Request $request ) use ( $tag_ids_data ) {
+				$url = parse_url( $request->getUrl() );
+
+				if ( 'tagmanager.googleapis.com' !== $url['host'] ) {
+					return new Response( 200 );
+				}
+				switch ( $url['path'] ) {
+					case '/tagmanager/v2/accounts/containers:lookup':
+						$data = new Container();
+						$data->setAccountId( '123' );
+						$data->setContainerId( '456' );
+						$data->setTagIds( $tag_ids_data[0] );
+						return new Response(
+							200,
+							array(),
+							Stream::factory(
+								json_encode(
+									$data->toSimpleObject()
+								)
+							)
+						);
+
+					default:
+						return new Response( 200 );
+				}
+			}
+		);
+
+		$this->analytics->get_client()->setHttpClient( $http_client );
+		$this->analytics->register();
+
+		$data = $this->analytics->get_data(
+			'google-tag-settings',
+			array(
+				'measurementID' => 'A1B2C3D4E5',
+			)
+		);
+
+		$this->assertNotWPError( $data );
+
+		$this->assertEquals(
+			$tag_ids_data[1],
+			$data['googleTagID']
+		);
+	}
+
+	public function data_google_tag_ids() {
+		return array(
+			'one tag ID'                                 => array(
+				array(
+					array( 'GT-123' ),
+					'GT-123',
+				),
+			),
+			'multiple tag IDs - returns first GT tag ID' => array(
+				array(
+					array( 'G-123', 'GT-123', 'A1B2C3D4E5' ),
+					'GT-123',
+				),
+			),
+			'multiple tag IDs, including the current measurement ID - returns the measurement ID' => array(
+				array(
+					array( 'G-123', 'A1B2C3D4E5' ),
+					'A1B2C3D4E5',
+				),
+			),
+			'multiple tag IDs - no GT or measurement ID' => array(
+				array(
+					array( 'AW-012', 'G-123' ),
+					'G-123',
+				),
+			),
+			'multiple tag IDs - no GT, G or measurement ID - returns first tag ID' => array(
+				array(
+					array( 'AW-012', 'AW-123' ),
+					'AW-012',
+				),
+			),
 		);
 	}
 
