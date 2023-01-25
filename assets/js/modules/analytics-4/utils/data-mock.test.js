@@ -63,15 +63,13 @@ describe( 'getAnalytics4MockResponse', () => {
 			dimensions: [ 'date' ],
 		} );
 
-		const dateRangeZero = report[ 0 ].rows.filter(
-			( { dimensionValues } ) =>
-				dimensionValues.find(
-					( dimensionValue ) =>
-						dimensionValue.value === 'date_range_0'
-				)
+		const dateRangeZero = report.rows.filter( ( { dimensionValues } ) =>
+			dimensionValues.find(
+				( dimensionValue ) => dimensionValue.value === 'date_range_0'
+			)
 		);
 
-		const dateRangeOne = report[ 0 ].rows.filter( ( { dimensionValues } ) =>
+		const dateRangeOne = report.rows.filter( ( { dimensionValues } ) =>
 			dimensionValues.find(
 				( dimensionValue ) => dimensionValue.value === 'date_range_1'
 			)
