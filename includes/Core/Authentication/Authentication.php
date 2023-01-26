@@ -906,7 +906,7 @@ final class Authentication {
 	/**
 	 * Gets the WP version to pass to JS.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.93.0
 	 *
 	 * @param string $version The WP version.
 	 * @return array The WP version to pass to JS.

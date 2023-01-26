@@ -72,7 +72,7 @@ const baseActions = {
 	/**
 	 * Enables auto updates for Site Kit.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.93.0
 	 */
 	*enableAutoUpdate() {
 		yield clearError( 'enableAutoUpdate', [] );
@@ -111,7 +111,7 @@ const baseSelectors = {
 	/**
 	 * Checks if enableAutoUpdate action is in-process.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.93.0
 	 *
 	 * @param {Object} state          Data store's state.
 	 * @param {string} nonce          The nonce string.

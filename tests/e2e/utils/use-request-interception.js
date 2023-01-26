@@ -35,7 +35,7 @@ export function useRequestInterception( callback ) {
  * Returns a function that, when called, stops further request
  * handling/interception.
  *
- * @since n.e.x.t
+ * @since 1.93.0
  *
  * @param {Array.<{isMatch: Function, getResponse: Function}>} requestCases An array of request cases to add to the shared request interception.
  * @return {Object} Methods that can be called to remove the added handler function from the page and add new request cases.

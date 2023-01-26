@@ -13,7 +13,7 @@ namespace Google\Site_Kit\Core\Util;
 /**
  * Utility class for auto-updates settings.
  *
- * @since n.e.x.t
+ * @since 1.93.0
  * @access private
  * @ignore
  */
@@ -22,7 +22,7 @@ class Auto_Updates {
 	/**
 	 * Auto updated forced enabled.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.93.0
 	 * @var true
 	 */
 	const AUTO_UPDATE_FORCED_ENABLED = true;
@@ -30,7 +30,7 @@ class Auto_Updates {
 	/**
 	 * Auto updated forced disabled.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.93.0
 	 * @var false
 	 */
 	const AUTO_UPDATE_FORCED_DISABLED = false;
@@ -38,7 +38,7 @@ class Auto_Updates {
 	/**
 	 * Auto updated not forced.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.93.0
 	 * @var false
 	 */
 	const AUTO_UPDATE_NOT_FORCED = null;
@@ -46,7 +46,7 @@ class Auto_Updates {
 	/**
 	 * Checks whether plugin auto-updates are enabled for the site.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.93.0
 	 *
 	 * @return bool `false` if auto-updates are disabled, `true` otherwise.
 	 */
@@ -65,7 +65,7 @@ class Auto_Updates {
 	/**
 	 * Check whether the site has auto updates enabled for Site Kit.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.93.0
 	 *
 	 * @return bool `true` if auto updates are enabled, otherwise `false`.
 	 */
@@ -91,7 +91,7 @@ class Auto_Updates {
 	/**
 	 * Checks whether auto-updates are forced for Site Kit.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.93.0
 	 *
 	 * @return AUTO_UPDATE_FORCED_ENABLED | AUTO_UPDATE_FORCED_DISABLED | AUTO_UPDATE_NOT_FORCED
 	 */
