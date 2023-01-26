@@ -59,11 +59,7 @@ export default function GA4SettingsView() {
 		} )
 	);
 
-	if ( ! ga4PropertyID ) {
-		return null;
-	}
-
-	if ( ga4PropertyID === PROPERTY_CREATE ) {
+	if ( ! ga4PropertyID || ga4PropertyID === PROPERTY_CREATE ) {
 		return null;
 	}
 
