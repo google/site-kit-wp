@@ -47,9 +47,11 @@ describe( 'core/user userInfo', () => {
 	};
 
 	let registry;
+	let store;
 
 	beforeEach( () => {
 		registry = createTestRegistry();
+		store = registry.stores[ CORE_USER ].store;
 	} );
 
 	afterEach( () => {
@@ -109,12 +111,12 @@ describe( 'core/user userInfo', () => {
 			} );
 		} );
 		describe( 'receiveIsUserInputCompleted', () => {
-			it( 'requires isUserInputCompleted param', () => {
+			it( 'requires the isUserInputCompleted param', () => {
 				expect( () => {
 					registry
 						.dispatch( CORE_USER )
 						.receiveIsUserInputCompleted();
-				} ).toThrow( 'isUserInputCompleted is required.' );
+				} ).toThrow( 'The isUserInputCompleted param is required.' );
 			} );
 
 			it( 'receives and sets userInputData', async () => {
@@ -122,9 +124,7 @@ describe( 'core/user userInfo', () => {
 				await registry
 					.dispatch( CORE_USER )
 					.receiveIsUserInputCompleted( isUserInputCompleted );
-				expect(
-					registry.select( CORE_USER ).isUserInputCompleted()
-				).toEqual( isUserInputCompleted );
+				expect( store.getState().isUserInputCompleted ).toBe( true );
 			} );
 		} );
 	} );

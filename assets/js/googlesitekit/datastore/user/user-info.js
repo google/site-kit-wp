@@ -38,7 +38,7 @@ const { createRegistrySelector } = Data;
 const RECEIVE_CONNECT_URL = 'RECEIVE_CONNECT_URL';
 const RECEIVE_USER_INFO = 'RECEIVE_USER_INFO';
 const RECEIVE_USER_IS_VERIFIED = 'RECEIVE_USER_IS_VERIFIED';
-const RECEIVE_IS_USER_INPUT_COMPLETE = 'RECEIVE_IS_USER_INPUT_COMPLETE';
+const RECEIVE_IS_USER_INPUT_COMPLETED = 'RECEIVE_IS_USER_INPUT_COMPLETED';
 const RECEIVE_USER_INITIAL_SITE_KIT_VERSION =
 	'RECEIVE_USER_INITIAL_SITE_KIT_VERSION';
 
@@ -133,8 +133,7 @@ export const actions = {
 	/**
 	 * Stores the user input state in the datastore.
 	 *
-	 * @since 1.20.0
-	 * @since n.e.x.t Updated the state object to be a simple boolean.
+	 * @since n.e.x.t
 	 * @private
 	 *
 	 * @param {Object} isUserInputCompleted User input state.
@@ -143,11 +142,11 @@ export const actions = {
 	receiveIsUserInputCompleted( isUserInputCompleted ) {
 		invariant(
 			isUserInputCompleted !== undefined,
-			'isUserInputCompleted is required.'
+			'The isUserInputCompleted param is required.'
 		);
 		return {
 			payload: { isUserInputCompleted },
-			type: RECEIVE_IS_USER_INPUT_COMPLETE,
+			type: RECEIVE_IS_USER_INPUT_COMPLETED,
 		};
 	},
 };
@@ -184,7 +183,7 @@ export const reducer = ( state, { type, payload } ) => {
 				verified,
 			};
 		}
-		case RECEIVE_IS_USER_INPUT_COMPLETE: {
+		case RECEIVE_IS_USER_INPUT_COMPLETED: {
 			const { isUserInputCompleted } = payload;
 			return {
 				...state,
@@ -477,8 +476,7 @@ export const selectors = {
 	/**
 	 * Gets the user input state.
 	 *
-	 * @since 1.20.0
-	 * @since n.e.x.t Simplified user input state object to a simple boolean.
+	 * @since n.e.x.t
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {string} The user input state.
