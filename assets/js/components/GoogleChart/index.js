@@ -134,6 +134,16 @@ export default function GoogleChart( props ) {
 			return;
 		}
 
+		// If we're on a Site Kit screen, we want "priority" over the
+		// `google.charts` global so we don't render a bunch of charts errors,
+		// see: https://github.com/google/site-kit-wp/issues/6439#issuecomment-1404491940
+		//
+		// The only way to do this is to remove the `google.charts` global
+		// and allow the `react-google-charts` library to re-initialize it.
+		if ( isSiteKitScreen( viewContext ) && global?.google?.charts ) {
+			global.google.charts = undefined;
+		}
+
 		if ( ! isSiteKitScreen( viewContext ) && global?.google?.charts ) {
 			setValue( 'googleChartsCollisionError', true );
 		} else {
