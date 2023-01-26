@@ -94,7 +94,7 @@ export default function SetupForm( { finishSetup } ) {
 			select( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID()
 	);
 	const gtmContainersResolved = useSelect( ( select ) =>
-		select( MODULES_TAGMANAGER ).hasFinishedLoadingContainers()
+		select( MODULES_ANALYTICS ).hasFinishedLoadingGTMContainers()
 	);
 
 	// If the user lands back on this component with autoSubmit and the edit scope,

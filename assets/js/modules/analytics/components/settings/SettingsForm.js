@@ -70,7 +70,7 @@ export default function SettingsForm( {
 		( useTagManagerSnippet && analyticsSinglePropertyID );
 
 	const gtmContainersResolved = useSelect( ( select ) =>
-		select( MODULES_TAGMANAGER ).hasFinishedLoadingContainers()
+		select( MODULES_ANALYTICS ).hasFinishedLoadingGTMContainers()
 	);
 
 	if ( ! gtmContainersResolved ) {
