@@ -63,6 +63,8 @@ jobs:
         with:
           tools: composer:2.1
           php-version: '7.4' # Necessary for `composer install`
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Get Composer Cache Directory
         id: composer-cache
         run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
@@ -78,6 +80,8 @@ jobs:
         with:
           extensions: mysqli, runkit, uopz
           php-version: '5.6'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Set up PHP test data
         run: tests/phpunit/bin/install-wp-tests.sh ${MYSQL_DATABASE} ${MYSQL_USER} ${MYSQL_PASSWORD} ${DB_HOST}:${DB_PORT} ${WP_VERSION}
       - name: Run Unit Tests

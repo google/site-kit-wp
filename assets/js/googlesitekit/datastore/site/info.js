@@ -90,7 +90,7 @@ export const actions = {
 	 * enable auto-updates for Site Kit. Set to `false` to disable this
 	 * behaviour.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.93.0
 	 *
 	 * @param {boolean} siteKitAutoUpdatesEnabled Whether Site Kit auto-updates are enabled.
 	 * @return {Object} Redux-style action.
@@ -699,7 +699,7 @@ export const selectors = {
 	 * Auto update settings can not be changed if plugin updates are disabled site-wide
 	 * or if Site Kit auto updates are enforced by a PHP filter.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.93.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(boolean|undefined)} `true` if plugin auto updates are enabled, otherwise `false`.
@@ -711,7 +711,7 @@ export const selectors = {
 	/**
 	 * Determines if the auto updates are enabled for the Site Kit plugin.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.93.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(boolean|undefined)} `true` if Site Kit auto updates are enabled, otherwise `false`.
@@ -723,7 +723,7 @@ export const selectors = {
 	/**
 	 * Get the plugin basename.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.93.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {string} The basename of plugin, e.g. `'google-site-kit/google-site-kit.php'`.

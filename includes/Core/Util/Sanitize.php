@@ -13,7 +13,7 @@ namespace Google\Site_Kit\Core\Util;
 /**
  * Utility class for sanitizing data.
  *
- * @since n.e.x.t
+ * @since 1.93.0
  * @access private
  * @ignore
  */
@@ -22,7 +22,7 @@ class Sanitize {
 	/**
 	 * Filters empty or non-string elements from a given array.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.93.0
 	 *
 	 * @param array $elements Array to check.
 	 * @return array Empty array or a filtered array containing only non-empty strings.

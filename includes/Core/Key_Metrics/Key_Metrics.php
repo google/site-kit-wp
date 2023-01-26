@@ -16,7 +16,7 @@ use Google\Site_Kit\Core\Storage\User_Options;
 /**
  * Class for handling Key_Metrics.
  *
- * @since n.e.x.t
+ * @since 1.93.0
  * @access private
  * @ignore
  */
@@ -25,7 +25,7 @@ class Key_Metrics {
 	/**
 	 * Key_Metrics_Settings instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.93.0
 	 * @var Key_Metrics_Settings
 	 */
 	protected $key_metrics_settings;
@@ -33,7 +33,7 @@ class Key_Metrics {
 	/**
 	 * REST_Key_Metrics_Controller instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.93.0
 	 * @var REST_Key_Metrics_Controller
 	 */
 	protected $rest_controller;
@@ -41,7 +41,7 @@ class Key_Metrics {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.93.0
 	 *
 	 * @param Context      $context Plugin context.
 	 * @param User_Options $user_options Optional. User option API. Default is a new instance.
@@ -54,7 +54,7 @@ class Key_Metrics {
 	/**
 	 * Registers functionality through WordPress hooks.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.93.0
 	 */
 	public function register() {
 		$this->key_metrics_settings->register();
