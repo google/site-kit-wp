@@ -1,5 +1,5 @@
 /**
- * IP Anonymization Settings View component.
+ * Optional Settings View component.
  *
  * Site Kit by Google, Copyright 2023 Google LLC
  *
