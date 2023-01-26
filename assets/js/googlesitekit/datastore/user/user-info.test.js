@@ -119,7 +119,7 @@ describe( 'core/user userInfo', () => {
 				} ).toThrow( 'The isUserInputCompleted param is required.' );
 			} );
 
-			it( 'receives and sets userInputData', async () => {
+			it( 'receives and sets isUserInputCompleted', async () => {
 				const { isUserInputCompleted } = userData;
 				await registry
 					.dispatch( CORE_USER )
