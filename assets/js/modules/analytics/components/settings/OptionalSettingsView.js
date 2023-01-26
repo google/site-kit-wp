@@ -47,8 +47,8 @@ export default function OptionalSettingsView() {
 	);
 	const trackingDisabled =
 		useSelect( ( select ) =>
-			select( MODULES_ANALYTICS ).getTrackingDisabled()
-		) || [];
+			select( MODULES_ANALYTICS ).getTrackingDisabled() || []
+		);
 
 	const ampMode = useSelect( ( select ) => select( CORE_SITE ).getAMPMode() );
 
