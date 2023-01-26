@@ -45,10 +45,9 @@ export default function OptionalSettingsView() {
 	const anonymizeIP = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getAnonymizeIP()
 	);
-	const trackingDisabled =
-		useSelect( ( select ) =>
-			select( MODULES_ANALYTICS ).getTrackingDisabled() || []
-		);
+	const trackingDisabled = useSelect(
+		( select ) => select( MODULES_ANALYTICS ).getTrackingDisabled() || []
+	);
 
 	const ampMode = useSelect( ( select ) => select( CORE_SITE ).getAMPMode() );
 
