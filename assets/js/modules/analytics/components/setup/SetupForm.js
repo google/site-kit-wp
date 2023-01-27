@@ -86,10 +86,6 @@ export default function SetupForm( { finishSetup } ) {
 	const isTagManagerAvailable = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleAvailable( 'tagmanager' )
 	);
-	// Preloading the `live-container-version` call is necessary to display
-	// the loading state until the data is fetched from the server.
-	// This call is being made in the child component ExistingGTMPropertyNotice
-	// to ensure that the loading state is displayed before the data is available.
 	const gtmAnalyticsPropertyID = useSelect(
 		( select ) =>
 			isTagManagerAvailable &&
