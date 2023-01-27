@@ -74,5 +74,8 @@ export default function ExistingGTMPropertyNotice( {
 }
 
 ExistingGTMPropertyNotice.propTypes = {
-	gtmAnalyticsPropertyID: PropTypes.string,
+	gtmAnalyticsPropertyID: PropTypes.oneOfType( [
+		PropTypes.string,
+		PropTypes.bool,
+	] ),
 };
