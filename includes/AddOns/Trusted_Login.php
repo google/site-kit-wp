@@ -33,9 +33,6 @@ final class TrustedLogin {
 				'support_url'  => 'https://sitekit.withgoogle.com/documentation/',
 				'display_name' => 'Site Kit Support',
 			),
-			'paths'   => array(
-				'css' => plugin_dir_url( __FILE__ ) . '/../../../dist/assets/css/googlesitekit-trusted-login.css',
-			),
 			// phpcs:ignore Squiz.Commenting.InlineComment.WrongStyle,Squiz.PHP.CommentedOutCode.Found
 			// 'webhook_url' => 'https://hooks.zapier.com/hooks/catch/XXX/YYY',
 		);
