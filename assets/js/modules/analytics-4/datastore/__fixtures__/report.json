@@ -1,0 +1,18 @@
+[
+	{
+		"property": "1000",
+		"dimensions": [],
+		"metrics": [],
+		"dateRanges": [],
+		"dimensionFilter": {},
+		"metricFilter": {},
+		"offset": 0,
+		"limit": 1000,
+		"metricAggregations": [],
+		"orderBys": [],
+		"currencyCode": "USD",
+		"cohortSpec": {},
+		"keepEmptyRows": true,
+		"returnPropertyQuota": true
+	}
+]

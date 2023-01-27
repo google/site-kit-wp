@@ -641,7 +641,7 @@ final class Analytics_4 extends Module
 	/**
 	 * Gets the configured Analytics Data service object instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.93.0
 	 *
 	 * @return Google_Service_AnalyticsData The Analytics Data API service.
 	 */
@@ -967,7 +967,7 @@ final class Analytics_4 extends Module
 	/**
 	 * Creates and executes a new Analytics 4 report request.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.93.0
 	 *
 	 * @param Data_Request $data Data request object.
 	 * @return RequestInterface|WP_Error Request object on success, or WP_Error on failure.
@@ -1172,7 +1172,7 @@ final class Analytics_4 extends Module
 	/**
 	 * Parses the orderby value of the data request into an array of AnalyticsData OrderBy object instances.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.93.0
 	 *
 	 * @param array|null $orderby Data request orderby value.
 	 * @return Google_Service_AnalyticsData_OrderBy[] An array of AnalyticsData OrderBy objects.
@@ -1217,7 +1217,7 @@ final class Analytics_4 extends Module
 	/**
 	 * Creates a new Analytics 4 site request for the current site and given arguments.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.93.0
 	 *
 	 * @param string $property_id Analytics 4 property ID.
 	 * @param array  $args {
@@ -1307,7 +1307,7 @@ final class Analytics_4 extends Module
 	/**
 	 * Validates the report metrics.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.93.0
 	 *
 	 * @param Google_Service_AnalyticsData_Metric[] $metrics The metrics to validate.
 	 * @throws Invalid_Report_Metrics_Exception Thrown if the metrics are invalid.
@@ -1364,7 +1364,7 @@ final class Analytics_4 extends Module
 	/**
 	 * Validates the report dimensions.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.93.0
 	 *
 	 * @param Google_Service_AnalyticsData_Dimension[] $dimensions The dimensions to validate.
 	 * @throws Invalid_Report_Dimensions_Exception Thrown if the dimensions are invalid.

@@ -134,11 +134,7 @@ export default function GoogleChart( props ) {
 			return;
 		}
 
-		if (
-			! isSiteKitScreen( viewContext ) &&
-			global?.google?.charts &&
-			global?.Chart?.version !== undefined
-		) {
+		if ( ! isSiteKitScreen( viewContext ) && global?.google?.charts ) {
 			setValue( 'googleChartsCollisionError', true );
 		} else {
 			setValue( 'googleChartsCollisionError', false );

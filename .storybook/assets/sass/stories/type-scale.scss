@@ -68,7 +68,7 @@
 	}
 
 	.googlesitekit-type-scale--title {
-		--type-scale-f: #{$f-secondary};
+		--type-scale-f: #{$f-primary};
 		--type-scale-fs-lg: #{$fs-title-lg};
 		--type-scale-lh-lg: #{$lh-title-lg};
 		--type-scale-fs-md: #{$fs-title-md};
@@ -105,5 +105,10 @@
 		--type-scale-lh-md: #{$lh-link-md};
 		--type-scale-fs-sm: #{$fs-link-sm};
 		--type-scale-lh-sm: #{$lh-link-sm};
+
+		p {
+			color: $c-content-secondary;
+			text-decoration: underline;
+		}
 	}
 }

@@ -31,7 +31,7 @@ import { stringToDate } from '../../util/date-range/string-to-date';
 /**
  * Returns the Google chart data, filtered by selected stats if present.
  *
- * @since n.e.x.t
+ * @since 1.93.0
  *
  * @param {Array|undefined} data          Chart data.
  * @param {Array|undefined} selectedStats The columns that should be displayed for the data set.
@@ -64,7 +64,7 @@ export const getFilteredChartData = ( data, selectedStats ) => {
 /**
  * Returns the optimal height and width for a preview element.
  *
- * @since n.e.x.t
+ * @since 1.93.0
  *
  * @param {string|undefined} loadingHeight Preview height.
  * @param {string|undefined} height        Chart height.
@@ -98,7 +98,7 @@ export const getLoadingDimensions = (
 /**
  * Returns a combined chart events object.
  *
- * @since n.e.x.t
+ * @since 1.93.0
  *
  * @param {Array.<Object>|undefined} chartEvents Event names and its callbacks.
  * @param {Function|undefined}       onReady     Chart event.
@@ -128,7 +128,7 @@ export const getCombinedChartEvents = ( chartEvents, onReady, onSelect ) => {
 /**
  * Returns a chart configuration object.
  *
- * @since n.e.x.t
+ * @since 1.93.0
  *
  * @param {Object}  options       Configuration data.
  * @param {boolean} gatheringData If chart is in gathering info state.

@@ -22,7 +22,7 @@ use WP_REST_Server;
 /**
  * Class managing nonces used by Site Kit.
  *
- * @since n.e.x.t
+ * @since 1.93.0
  * @access private
  * @ignore
  */
@@ -30,14 +30,14 @@ final class Nonces {
 	/*
 	 * Nonce actions.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.93.0
 	 */
 	const NONCE_UPDATES = 'updates';
 
 	/**
 	 * Plugin context.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.93.0
 	 * @var Context
 	 */
 	private $context;
@@ -45,7 +45,7 @@ final class Nonces {
 	/**
 	 * Array of nonce actions.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.93.0
 	 * @var array
 	 */
 	private $nonce_actions;
@@ -55,7 +55,7 @@ final class Nonces {
 	 *
 	 * Sets up the capability mappings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.93.0
 	 *
 	 * @param Context $context Plugin context.
 	 */
@@ -70,7 +70,7 @@ final class Nonces {
 	/**
 	 * Registers functionality through WordPress hooks.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.93.0
 	 */
 	public function register() {
 		add_filter(
@@ -96,7 +96,7 @@ final class Nonces {
 	/**
 	 * Generate nonces for the current user.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.93.0
 	 *
 	 * @return array List of nonces.
 	 */
@@ -113,7 +113,7 @@ final class Nonces {
 	/**
 	 * Gets related REST routes.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.93.0
 	 *
 	 * @return array List of REST_Route objects.
 	 */

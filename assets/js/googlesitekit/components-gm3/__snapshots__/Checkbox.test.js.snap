@@ -3,7 +3,7 @@
 exports[`Checkbox controlled input behaviour for input should allow updating of the checked state 1`] = `
 <div>
   <div
-    class="googlesitekit-component-gm3__checkbox"
+    class="googlesitekit-component-gm3_checkbox"
   >
     <md-checkbox
       data-aria-label="Checkbox Label"
@@ -24,7 +24,7 @@ exports[`Checkbox controlled input behaviour for input should allow updating of 
 exports[`Checkbox controlled input behaviour for input should allow updating of the checked state 2`] = `
 <div>
   <div
-    class="googlesitekit-component-gm3__checkbox"
+    class="googlesitekit-component-gm3_checkbox"
   >
     <md-checkbox
       checked=""
@@ -46,7 +46,7 @@ exports[`Checkbox controlled input behaviour for input should allow updating of 
 exports[`Checkbox controlled input behaviour for input should allow updating of the checked state 3`] = `
 <div>
   <div
-    class="googlesitekit-component-gm3__checkbox"
+    class="googlesitekit-component-gm3_checkbox"
   >
     <md-checkbox
       data-aria-label="Checkbox Label"
@@ -67,7 +67,7 @@ exports[`Checkbox controlled input behaviour for input should allow updating of 
 exports[`Checkbox controlled input behaviour for input should correctly invoke onChange and retain its checked state when clicked 1`] = `
 <div>
   <div
-    class="googlesitekit-component-gm3__checkbox"
+    class="googlesitekit-component-gm3_checkbox"
   >
     <md-checkbox
       checked=""
@@ -89,7 +89,7 @@ exports[`Checkbox controlled input behaviour for input should correctly invoke o
 exports[`Checkbox controlled input behaviour for input should correctly invoke onChange and retain its checked state when clicked 2`] = `
 <div>
   <div
-    class="googlesitekit-component-gm3__checkbox"
+    class="googlesitekit-component-gm3_checkbox"
   >
     <md-checkbox
       checked=""
@@ -111,7 +111,7 @@ exports[`Checkbox controlled input behaviour for input should correctly invoke o
 exports[`Checkbox controlled input behaviour for input should correctly invoke onChange and retain its unchecked state when clicked 1`] = `
 <div>
   <div
-    class="googlesitekit-component-gm3__checkbox"
+    class="googlesitekit-component-gm3_checkbox"
   >
     <md-checkbox
       data-aria-label="Checkbox Label"
@@ -132,7 +132,7 @@ exports[`Checkbox controlled input behaviour for input should correctly invoke o
 exports[`Checkbox controlled input behaviour for input should correctly invoke onChange and retain its unchecked state when clicked 2`] = `
 <div>
   <div
-    class="googlesitekit-component-gm3__checkbox"
+    class="googlesitekit-component-gm3_checkbox"
   >
     <md-checkbox
       data-aria-label="Checkbox Label"
@@ -153,7 +153,7 @@ exports[`Checkbox controlled input behaviour for input should correctly invoke o
 exports[`Checkbox controlled input behaviour for label should allow updating of the checked state 1`] = `
 <div>
   <div
-    class="googlesitekit-component-gm3__checkbox"
+    class="googlesitekit-component-gm3_checkbox"
   >
     <md-checkbox
       data-aria-label="Checkbox Label"
@@ -174,7 +174,7 @@ exports[`Checkbox controlled input behaviour for label should allow updating of 
 exports[`Checkbox controlled input behaviour for label should allow updating of the checked state 2`] = `
 <div>
   <div
-    class="googlesitekit-component-gm3__checkbox"
+    class="googlesitekit-component-gm3_checkbox"
   >
     <md-checkbox
       checked=""
@@ -196,7 +196,7 @@ exports[`Checkbox controlled input behaviour for label should allow updating of 
 exports[`Checkbox controlled input behaviour for label should allow updating of the checked state 3`] = `
 <div>
   <div
-    class="googlesitekit-component-gm3__checkbox"
+    class="googlesitekit-component-gm3_checkbox"
   >
     <md-checkbox
       data-aria-label="Checkbox Label"
@@ -217,7 +217,7 @@ exports[`Checkbox controlled input behaviour for label should allow updating of 
 exports[`Checkbox controlled input behaviour for label should correctly invoke onChange and retain its checked state when clicked 1`] = `
 <div>
   <div
-    class="googlesitekit-component-gm3__checkbox"
+    class="googlesitekit-component-gm3_checkbox"
   >
     <md-checkbox
       checked=""
@@ -239,7 +239,7 @@ exports[`Checkbox controlled input behaviour for label should correctly invoke o
 exports[`Checkbox controlled input behaviour for label should correctly invoke onChange and retain its checked state when clicked 2`] = `
 <div>
   <div
-    class="googlesitekit-component-gm3__checkbox"
+    class="googlesitekit-component-gm3_checkbox"
   >
     <md-checkbox
       checked=""
@@ -261,7 +261,7 @@ exports[`Checkbox controlled input behaviour for label should correctly invoke o
 exports[`Checkbox controlled input behaviour for label should correctly invoke onChange and retain its unchecked state when clicked 1`] = `
 <div>
   <div
-    class="googlesitekit-component-gm3__checkbox"
+    class="googlesitekit-component-gm3_checkbox"
   >
     <md-checkbox
       data-aria-label="Checkbox Label"
@@ -282,7 +282,7 @@ exports[`Checkbox controlled input behaviour for label should correctly invoke o
 exports[`Checkbox controlled input behaviour for label should correctly invoke onChange and retain its unchecked state when clicked 2`] = `
 <div>
   <div
-    class="googlesitekit-component-gm3__checkbox"
+    class="googlesitekit-component-gm3_checkbox"
   >
     <md-checkbox
       data-aria-label="Checkbox Label"
@@ -303,7 +303,7 @@ exports[`Checkbox controlled input behaviour for label should correctly invoke o
 exports[`Checkbox should render the checkbox 1`] = `
 <div>
   <div
-    class="googlesitekit-component-gm3__checkbox"
+    class="googlesitekit-component-gm3_checkbox"
   >
     <md-checkbox
       data-aria-label="Checkbox Label"
@@ -324,7 +324,7 @@ exports[`Checkbox should render the checkbox 1`] = `
 exports[`Checkbox should render the checkbox with a complex label 1`] = `
 <div>
   <div
-    class="googlesitekit-component-gm3__checkbox"
+    class="googlesitekit-component-gm3_checkbox"
   >
     <md-checkbox
       data-aria-label="Complex Label With 5 Sub Children"
@@ -363,7 +363,7 @@ exports[`Checkbox should render the checkbox with a complex label 1`] = `
 exports[`Checkbox should render the checkbox with checked state 1`] = `
 <div>
   <div
-    class="googlesitekit-component-gm3__checkbox"
+    class="googlesitekit-component-gm3_checkbox"
   >
     <md-checkbox
       checked="true"
@@ -385,7 +385,7 @@ exports[`Checkbox should render the checkbox with checked state 1`] = `
 exports[`Checkbox should render the checkbox with disabled state 1`] = `
 <div>
   <div
-    class="googlesitekit-component-gm3__checkbox"
+    class="googlesitekit-component-gm3_checkbox"
   >
     <md-checkbox
       data-aria-label="Checkbox Label"
@@ -407,10 +407,10 @@ exports[`Checkbox should render the checkbox with disabled state 1`] = `
 exports[`Checkbox should render the checkbox with loading state 1`] = `
 <div>
   <div
-    class="googlesitekit-component-gm3__checkbox"
+    class="googlesitekit-component-gm3_checkbox"
   >
     <div
-      class="googlesitekit-component-gm3__checkbox--loading"
+      class="googlesitekit-component-gm3_checkbox--loading"
     >
       <span
         class="spinner"

@@ -51,7 +51,7 @@ import {
 /**
  * Returns translatable account status label.
  *
- * @since n.e.x.t
+ * @since 1.93.0
  *
  * @param {string} accountStatus The active account status.
  * @return {string} The account status label.
@@ -98,7 +98,7 @@ export const getAccountStatusLabel = ( accountStatus ) => {
 /**
  * Returns translatable site status label.
  *
- * @since n.e.x.t
+ * @since 1.93.0
  *
  * @param {string} siteStatus The site status.
  * @return {string} The site status label.
@@ -138,7 +138,7 @@ export const getSiteStatusLabel = ( siteStatus ) => {
 /**
  * Returns translatable site status link label.
  *
- * @since n.e.x.t
+ * @since 1.93.0
  *
  * @param {boolean} adsenseSetupV2Enabled The adsense setup V2 enabled flag.
  * @return {Element|string} The element if adsenseSetupV2Enabled, otherwise string.
@@ -160,7 +160,7 @@ export const getSiteStatusLinkLabel = ( adsenseSetupV2Enabled ) => {
 /**
  * Returns translatable site snippet label.
  *
- * @since n.e.x.t
+ * @since 1.93.0
  *
  * @param {boolean} useSnippet  The adsense site snippet flag.
  * @param {string}  existingTag The adsense existing tag.
@@ -189,7 +189,7 @@ export const getSnippetLabel = ( useSnippet, existingTag, clientID ) => {
 /**
  * Returns translatable auto ads disabled message.
  *
- * @since n.e.x.t
+ * @since 1.93.0
  *
  * @param {Array} autoAdsDisabled The array of user types strings.
  * @return {string} The auto ads disabled message.

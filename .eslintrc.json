@@ -119,7 +119,8 @@
       "rules": {
         "no-restricted-globals": [
           "off"
-        ]
+        ],
+        "react-hooks/rules-of-hooks": "off"
       }
     },
     {
