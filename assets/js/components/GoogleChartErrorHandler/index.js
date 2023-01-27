@@ -35,6 +35,7 @@ import { Icon, check, stack } from '@wordpress/icons';
 import { Button } from 'googlesitekit-components';
 import Link from '../Link';
 import CTA from '../notifications/CTA';
+import ViewContextContext from '../Root/ViewContextContext';
 import { trackEvent } from '../../util';
 
 class GoogleChartErrorHandler extends Component {
@@ -130,6 +131,8 @@ class GoogleChartErrorHandler extends Component {
 		);
 	}
 }
+
+GoogleChartErrorHandler.contextType = ViewContextContext;
 
 GoogleChartErrorHandler.propTypes = {
 	/** @ignore */
