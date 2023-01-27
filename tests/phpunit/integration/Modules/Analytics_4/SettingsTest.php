@@ -96,17 +96,17 @@ class SettingsTest extends SettingsTestCase {
 
 	public function data_tag_ids() {
 		return array(
-			'googleTagID is valid G-XXXX string'           => array( 'googleTagID', 'G-XXXX', 'G-XXXX' ),
-			'googleTagID is valid GT-XXXX string'          => array( 'googleTagID', 'GT-XXXX', 'GT-XXXX' ),
-			'googleTagID is valid AW-XXXX string'          => array( 'googleTagID', 'AW-XXXX', 'AW-XXXX' ),
-			'googleTagAccountID is valid AW-XXXX string'   => array( 'googleTagAccountID', 12121, 12121 ),
-			'googleTagContainerID is valid AW-XXXX string' => array( 'googleTagContainerID', 12121, 12121 ),
-			'googleTagID is invalid string'                => array( 'googleTagID', 'xxxx', '' ),
-			'googleTagID is invalid number'                => array( 'googleTagID', 12121, '' ),
-			'googleTagAccountID is invalid string'         => array( 'googleTagAccountID', 'xxxx', '' ),
-			'googleTagAccountID is invalid number'         => array( 'googleTagAccountID', 0, '' ),
-			'googleTagContainerID is invalid string'       => array( 'googleTagContainerID', 'xxxx', '' ),
-			'googleTagContainerID is invalid number'       => array( 'googleTagContainerID', 0, '' ),
+			'googleTagID is valid G-XXXX string'     => array( 'googleTagID', 'G-XXXX', 'G-XXXX' ),
+			'googleTagID is valid GT-XXXX string'    => array( 'googleTagID', 'GT-XXXX', 'GT-XXXX' ),
+			'googleTagID is valid AW-XXXX string'    => array( 'googleTagID', 'AW-XXXX', 'AW-XXXX' ),
+			'googleTagAccountID is valid number'     => array( 'googleTagAccountID', 12121, 12121 ),
+			'googleTagContainerID is valid number'   => array( 'googleTagContainerID', 12121, 12121 ),
+			'googleTagID is invalid string'          => array( 'googleTagID', 'xxxx', '' ),
+			'googleTagID is invalid number'          => array( 'googleTagID', 12121, '' ),
+			'googleTagAccountID is invalid string'   => array( 'googleTagAccountID', 'xxxx', '' ),
+			'googleTagAccountID is invalid number'   => array( 'googleTagAccountID', 0, '' ),
+			'googleTagContainerID is invalid string' => array( 'googleTagContainerID', 'xxxx', '' ),
+			'googleTagContainerID is invalid number' => array( 'googleTagContainerID', 0, '' ),
 		);
 	}
 
