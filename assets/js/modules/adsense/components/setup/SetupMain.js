@@ -25,47 +25,30 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { useEffect, useState } from '@wordpress/element';
-import { __, _x, sprintf } from '@wordpress/i18n';
+import { _x } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { ProgressBar } from 'googlesitekit-components';
 import AdSenseIcon from '../../../../../svg/graphics/adsense.svg';
-import ErrorText from '../../../../components/ErrorText';
 import { MODULES_ADSENSE } from '../../datastore/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { CORE_LOCATION } from '../../../../googlesitekit/datastore/location/constants';
 import {
-	ACCOUNT_STATUS_NONE,
-	ACCOUNT_STATUS_MULTIPLE,
-	ACCOUNT_STATUS_DISAPPROVED,
-	ACCOUNT_STATUS_GRAYLISTED,
-	ACCOUNT_STATUS_PENDING,
-	ACCOUNT_STATUS_NO_CLIENT,
 	ACCOUNT_STATUS_APPROVED,
-	SITE_STATUS_NONE,
 	SITE_STATUS_ADDED,
 	determineAccountID,
 	determineClientID,
 	determineAccountStatus,
 	determineSiteStatus,
 } from '../../util/status';
+import { getSetupMainViewComponent } from './utils';
 import { trackEvent } from '../../../../util';
-import SetupAccountCreate from './SetupAccountCreate';
-import SetupAccountSelect from './SetupAccountSelect';
-import SetupAccountDisapproved from './SetupAccountDisapproved';
-import SetupAccountPending from './SetupAccountPending';
-import SetupAccountNoClient from './SetupAccountNoClient';
-import SetupAccountApproved from './SetupAccountApproved';
-import SetupSiteAdd from './SetupSiteAdd';
-import SetupSiteAdded from './SetupSiteAdded';
-import { AdBlockerWarning, ErrorNotices } from '../common';
+import { AdBlockerWarning } from '../common';
 import useViewContext from '../../../../hooks/useViewContext';
 const { useSelect, useDispatch } = Data;
 
-// eslint-disable-next-line complexity
 export default function SetupMain( { finishSetup } ) {
 	const viewContext = useViewContext();
 	const eventCategory = `${ viewContext }_adsense`;
@@ -386,95 +369,18 @@ export default function SetupMain( { finishSetup } ) {
 		}
 	}, [ eventCategory, siteStatus ] );
 
-	let viewComponent;
-	if (
-		( undefined === accountStatus && ! hasErrors ) ||
-		undefined === existingTag ||
-		( isDoingSubmitChanges && ! isSubmittingInBackground ) ||
-		isNavigating
-	) {
-		// Show loading indicator if account status not determined yet or if
-		// a submission is in progress that is not happening in background.
-		viewComponent = <ProgressBar />;
-	} else if (
-		accountStatus !== ACCOUNT_STATUS_APPROVED ||
-		! accountSetupComplete
-	) {
-		// Show relevant account status component.
-		switch ( accountStatus ) {
-			case ACCOUNT_STATUS_NONE:
-				viewComponent = <SetupAccountCreate />;
-				break;
-			case ACCOUNT_STATUS_MULTIPLE:
-				viewComponent = <SetupAccountSelect />;
-				break;
-			case ACCOUNT_STATUS_DISAPPROVED:
-				viewComponent = <SetupAccountDisapproved />;
-				break;
-			case ACCOUNT_STATUS_GRAYLISTED:
-			case ACCOUNT_STATUS_PENDING:
-				viewComponent = <SetupAccountPending />;
-				break;
-			case ACCOUNT_STATUS_NO_CLIENT:
-				viewComponent = <SetupAccountNoClient />;
-				break;
-			case ACCOUNT_STATUS_APPROVED:
-				viewComponent = <SetupAccountApproved />;
-				break;
-			default:
-				if ( hasErrors ) {
-					viewComponent = <ErrorNotices />;
-				} else {
-					viewComponent = (
-						<ErrorText
-							message={ sprintf(
-								/* translators: %s: invalid account status identifier */
-								__(
-									'Invalid account status: %s',
-									'google-site-kit'
-								),
-								accountStatus
-							) }
-						/>
-					);
-				}
-		}
-	} else if ( undefined === siteStatus ) {
-		// Show loading indicator if site status not determined yet.
-		viewComponent = <ProgressBar />;
-	} else if ( siteStatus !== SITE_STATUS_ADDED || ! siteSetupComplete ) {
-		// Show relevant site status component.
-		switch ( siteStatus ) {
-			case SITE_STATUS_NONE:
-				viewComponent = <SetupSiteAdd />;
-				break;
-			case SITE_STATUS_ADDED:
-				viewComponent = <SetupSiteAdded finishSetup={ finishSetup } />;
-				break;
-			default:
-				if ( hasErrors ) {
-					viewComponent = <ErrorNotices />;
-				} else {
-					viewComponent = (
-						<ErrorText
-							message={ sprintf(
-								/* translators: %s: invalid site status identifier */
-								__(
-									'Invalid site status: %s',
-									'google-site-kit'
-								),
-								siteStatus
-							) }
-						/>
-					);
-				}
-		}
-	} else {
-		// This should never be reached because the setup is not accessible
-		// under these circumstances due to related PHP+/JS logic. But at
-		// least in theory it should show the last step, just in case.
-		viewComponent = <SetupSiteAdded finishSetup={ finishSetup } />;
-	}
+	const viewComponent = getSetupMainViewComponent(
+		accountStatus,
+		hasErrors,
+		existingTag,
+		isDoingSubmitChanges,
+		isSubmittingInBackground,
+		isNavigating,
+		accountSetupComplete,
+		siteStatus,
+		siteSetupComplete,
+		finishSetup
+	);
 
 	return (
 		<div className="googlesitekit-setup-module googlesitekit-setup-module--adsense">

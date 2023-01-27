@@ -23,7 +23,7 @@
 	// --md-checkbox-_touch-target-size determines the overall checkbox size including visual margins.
 	--md-checkbox-_touch-target-size: 40px; /* stylelint-disable-line custom-property-pattern */
 
-	.googlesitekit-component-gm3__checkbox {
+	.googlesitekit-component-gm3_checkbox {
 		align-items: center;
 		display: flex;
 
@@ -32,7 +32,7 @@
 		}
 	}
 
-	.googlesitekit-component-gm3__checkbox--loading {
+	.googlesitekit-component-gm3_checkbox--loading {
 		align-items: center;
 		display: flex;
 		height: var(--md-checkbox-_touch-target-size); /* stylelint-disable-line custom-property-pattern */

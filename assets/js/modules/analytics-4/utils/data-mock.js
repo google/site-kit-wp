@@ -186,9 +186,13 @@ function generateDateRange( startDate, endDate ) {
 	const end = stringToDate( endDate );
 
 	while ( currentDate.getTime() <= end.getTime() ) {
-		dates.push(
-			currentDate.toISOString().split( 'T' )[ 0 ].replace( /\D/g, '' )
-		);
+		// Ensure the generated dates are the same regardless of local timezone.
+		const year = currentDate.getFullYear();
+		const month = String( currentDate.getMonth() + 1 ).padStart( 2, '0' );
+		const day = String( currentDate.getDate() ).padStart( 2, '0' );
+
+		dates.push( `${ year }${ month }${ day }` );
+
 		currentDate.setDate( currentDate.getDate() + 1 );
 	}
 

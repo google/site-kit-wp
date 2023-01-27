@@ -38,7 +38,7 @@ const { createRegistrySelector } = Data;
 const RECEIVE_CONNECT_URL = 'RECEIVE_CONNECT_URL';
 const RECEIVE_USER_INFO = 'RECEIVE_USER_INFO';
 const RECEIVE_USER_IS_VERIFIED = 'RECEIVE_USER_IS_VERIFIED';
-const RECEIVE_USER_INPUT_STATE = 'RECEIVE_USER_INPUT_STATE';
+const RECEIVE_IS_USER_INPUT_COMPLETED = 'RECEIVE_IS_USER_INPUT_COMPLETED';
 const RECEIVE_USER_INITIAL_SITE_KIT_VERSION =
 	'RECEIVE_USER_INITIAL_SITE_KIT_VERSION';
 
@@ -47,6 +47,7 @@ const initialState = {
 	initialVersion: undefined,
 	user: undefined,
 	verified: undefined,
+	isUserInputCompleted: undefined,
 };
 
 export const actions = {
@@ -132,17 +133,20 @@ export const actions = {
 	/**
 	 * Stores the user input state in the datastore.
 	 *
-	 * @since 1.20.0
+	 * @since n.e.x.t
 	 * @private
 	 *
-	 * @param {Object} userInputState User input state.
+	 * @param {Object} isUserInputCompleted User input state.
 	 * @return {Object} Redux-style action.
 	 */
-	receiveUserInputState( userInputState ) {
-		invariant( userInputState, 'userInputState is required.' );
+	receiveIsUserInputCompleted( isUserInputCompleted ) {
+		invariant(
+			isUserInputCompleted !== undefined,
+			'The isUserInputCompleted param is required.'
+		);
 		return {
-			payload: { userInputState },
-			type: RECEIVE_USER_INPUT_STATE,
+			payload: { isUserInputCompleted },
+			type: RECEIVE_IS_USER_INPUT_COMPLETED,
 		};
 	},
 };
@@ -179,11 +183,11 @@ export const reducer = ( state, { type, payload } ) => {
 				verified,
 			};
 		}
-		case RECEIVE_USER_INPUT_STATE: {
-			const { userInputState } = payload;
+		case RECEIVE_IS_USER_INPUT_COMPLETED: {
+			const { isUserInputCompleted } = payload;
 			return {
 				...state,
-				userInputState,
+				isUserInputCompleted,
 			};
 		}
 		default: {
@@ -257,10 +261,10 @@ export const resolvers = {
 		yield actions.receiveUserIsVerified( verified );
 	},
 
-	*getUserInputState() {
+	*isUserInputCompleted() {
 		const { select } = yield Data.commonActions.getRegistry();
 
-		if ( select( CORE_USER ).getUserInputState() ) {
+		if ( select( CORE_USER ).isUserInputCompleted() ) {
 			return;
 		}
 
@@ -268,8 +272,8 @@ export const resolvers = {
 			global.console.error( 'Could not load core/user info.' );
 			return;
 		}
-		const { userInputState } = global._googlesitekitUserData;
-		yield actions.receiveUserInputState( userInputState );
+		const { isUserInputCompleted } = global._googlesitekitUserData;
+		yield actions.receiveIsUserInputCompleted( isUserInputCompleted );
 	},
 };
 
@@ -472,14 +476,14 @@ export const selectors = {
 	/**
 	 * Gets the user input state.
 	 *
-	 * @since 1.20.0
+	 * @since n.e.x.t
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {string} The user input state.
 	 */
-	getUserInputState( state ) {
-		const { userInputState } = state;
-		return userInputState;
+	isUserInputCompleted( state ) {
+		const { isUserInputCompleted } = state;
+		return isUserInputCompleted;
 	},
 };
 
