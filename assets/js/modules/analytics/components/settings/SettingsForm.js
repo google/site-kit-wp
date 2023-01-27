@@ -83,7 +83,9 @@ export default function SettingsForm( {
 				moduleSlug="analytics"
 				storeName={ MODULES_ANALYTICS }
 			/>
-			<ExistingGTMPropertyNotice />
+			<ExistingGTMPropertyNotice
+				gtmAnalyticsPropertyID={ analyticsSinglePropertyID }
+			/>
 
 			<SettingsControls hasModuleAccess={ hasAnalyticsAccess } />
 

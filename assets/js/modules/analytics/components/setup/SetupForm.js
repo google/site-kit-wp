@@ -46,6 +46,8 @@ import { isPermissionScopeError } from '../../../../util/errors';
 import SetupFormUA from './SetupFormUA';
 import SetupFormGA4 from './SetupFormGA4';
 import SetupFormGA4Transitional from './SetupFormGA4Transitional';
+import StoreErrorNotices from '../../../../components/StoreErrorNotices';
+import { ExistingGTMPropertyNotice } from '../common';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import { MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
 const { useSelect, useDispatch } = Data;
@@ -88,7 +90,7 @@ export default function SetupForm( { finishSetup } ) {
 	// the loading state until the data is fetched from the server.
 	// This call is being made in the child component ExistingGTMPropertyNotice
 	// to ensure that the loading state is displayed before the data is available.
-	useSelect(
+	const gtmAnalyticsPropertyID = useSelect(
 		( select ) =>
 			isTagManagerAvailable &&
 			select( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID()
@@ -114,6 +116,13 @@ export default function SetupForm( { finishSetup } ) {
 			className="googlesitekit-analytics-setup__form"
 			onSubmit={ submitForm }
 		>
+			<StoreErrorNotices
+				moduleSlug="analytics"
+				storeName={ MODULES_ANALYTICS }
+			/>
+			<ExistingGTMPropertyNotice
+				gtmAnalyticsPropertyID={ gtmAnalyticsPropertyID }
+			/>
 			{ setupFlowMode === SETUP_FLOW_MODE_UA && <SetupFormUA /> }
 			{ setupFlowMode === SETUP_FLOW_MODE_GA4 && <SetupFormGA4 /> }
 			{ setupFlowMode === SETUP_FLOW_MODE_GA4_TRANSITIONAL && (
