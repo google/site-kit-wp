@@ -29,6 +29,7 @@ import difference from 'lodash/difference';
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { createValidatedAction } from '../../../googlesitekit/data/utils';
+import { MODULES_ANALYTICS } from '../../analytics/datastore/constants';
 import { MODULES_ANALYTICS_4, MAX_WEBDATASTREAMS_PER_BATCH } from './constants';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
@@ -405,6 +406,22 @@ const baseSelectors = {
 					[ currentPropertyID ]: measurementID,
 				};
 			}, {} );
+		}
+	),
+
+	/**
+	 * Gets Analytics configs based on provided measurement IDS.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object}         state          Data store's state.
+	 * @param {Array.<string>} measurementIDs GA4 measurement IDs array of strings.
+	 */
+	getAnalyticsConfigByMeasurementIDs: createRegistrySelector(
+		( select ) => ( state, measurementIDs ) => {
+			const accountID = select( MODULES_ANALYTICS ).getAccountID();
+			const summaries =
+				select( MODULES_ANALYTICS_4 ).getAccountSummaries();
 		}
 	),
 };
