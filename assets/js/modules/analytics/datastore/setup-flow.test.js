@@ -341,8 +341,8 @@ describe( 'modules/analytics setup-flow', () => {
 		} );
 
 		describe( 'hasFinishedLoadingGTMContainers', () => {
-			it( 'should return TRUE when the GTM module is not connected', () => {
-				// Set tagmanager module to not connected.
+			it( 'should return TRUE when the Google Tag Manager module is not connected', () => {
+				// Set the Tag Manager module to not be connected.
 				registry.dispatch( CORE_MODULES ).receiveGetModules( [
 					{
 						slug: 'analytics',
@@ -364,7 +364,7 @@ describe( 'modules/analytics setup-flow', () => {
 				expect( hasFinishedLoading ).toBe( true );
 			} );
 
-			it( 'should return TRUE when the GTM module is connected and the web containers are loaded', async () => {
+			it( 'should return TRUE when the Google Tag Manager module is connected and the web containers are loaded', async () => {
 				registry.dispatch( CORE_MODULES ).receiveGetModules( [
 					{
 						slug: 'analytics',
@@ -422,7 +422,7 @@ describe( 'modules/analytics setup-flow', () => {
 				expect( hasFinishedLoading ).toBe( true );
 			} );
 
-			it( 'should return TRUE when the GTM module is available and the AMP containers are loaded', async () => {
+			it( 'should return TRUE when the Google Tag Manager module is available and the AMP containers are loaded', async () => {
 				registry.dispatch( CORE_MODULES ).receiveGetModules( [
 					{
 						slug: 'analytics',
