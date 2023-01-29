@@ -42,7 +42,7 @@ const allTrafficWidget = {
 	gaEventCategory: ( viewContext ) => `${ viewContext }_all-traffic-widget`,
 	checkRequirements: async ( registry ) => {
 		const connected = await registry
-			.__experimentalResolveSelect( CORE_MODULES )
+			.resolveSelect( CORE_MODULES )
 			.isModuleConnected( 'analytics' );
 
 		if ( ! connected ) {

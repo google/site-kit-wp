@@ -48,9 +48,7 @@ export const controls = {
 	// TODO: Refactor this once we have dedicated actions for this.
 	[ __ADSENSE_LINKED_GET_RESOLVED_SETTINGS ]: createRegistryControl(
 		( registry ) => () => {
-			return registry
-				.__experimentalResolveSelect( MODULES_ANALYTICS )
-				.getSettings();
+			return registry.resolveSelect( MODULES_ANALYTICS ).getSettings();
 		}
 	),
 };

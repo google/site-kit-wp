@@ -175,7 +175,7 @@ const baseActions = {
 		},
 		function* ( triggerID, options = {} ) {
 			const { ttl = 0 } = options;
-			const { select, dispatch, __experimentalResolveSelect } =
+			const { select, dispatch, resolveSelect } =
 				yield Data.commonActions.getRegistry();
 
 			// Bail if there is already a current survey.
@@ -185,7 +185,7 @@ const baseActions = {
 
 			// Wait for user authentication state to be available before selecting.
 			yield Data.commonActions.await(
-				__experimentalResolveSelect( CORE_USER ).getAuthentication()
+				resolveSelect( CORE_USER ).getAuthentication()
 			);
 
 			if ( ! select( CORE_USER ).isAuthenticated() ) {
@@ -194,7 +194,7 @@ const baseActions = {
 
 			// Await for surveys to be resolved before checking timeouts.
 			yield Data.commonActions.await(
-				__experimentalResolveSelect( CORE_USER ).getSurveyTimeouts()
+				resolveSelect( CORE_USER ).getSurveyTimeouts()
 			);
 
 			const isTimedOut =

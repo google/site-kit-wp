@@ -659,11 +659,10 @@ const baseReducer = ( state, { type, payload } ) => {
 };
 
 function* waitForModules() {
-	const { __experimentalResolveSelect } =
-		yield Data.commonActions.getRegistry();
+	const { resolveSelect } = yield Data.commonActions.getRegistry();
 
 	yield Data.commonActions.await(
-		__experimentalResolveSelect( CORE_MODULES ).getModules()
+		resolveSelect( CORE_MODULES ).getModules()
 	);
 }
 
@@ -680,9 +679,9 @@ const baseResolvers = {
 
 	*canActivateModule( slug ) {
 		const registry = yield Data.commonActions.getRegistry();
-		const { select, __experimentalResolveSelect } = registry;
+		const { select, resolveSelect } = registry;
 		const module = yield Data.commonActions.await(
-			__experimentalResolveSelect( CORE_MODULES ).getModule( slug )
+			resolveSelect( CORE_MODULES ).getModule( slug )
 		);
 		// At this point, all modules are loaded so we can safely select getModule below.
 
@@ -748,7 +747,7 @@ const baseResolvers = {
 	*getRecoverableModules() {
 		const registry = yield Data.commonActions.getRegistry();
 		const modules = yield Data.commonActions.await(
-			registry.__experimentalResolveSelect( CORE_MODULES ).getModules()
+			registry.resolveSelect( CORE_MODULES ).getModules()
 		);
 
 		const recoverableModules = Object.entries( modules || {} ).reduce(

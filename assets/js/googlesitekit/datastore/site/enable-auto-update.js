@@ -80,10 +80,10 @@ const baseActions = {
 		const registry = yield Data.commonActions.getRegistry();
 
 		yield Data.commonActions.await(
-			registry.__experimentalResolveSelect( CORE_USER ).getNonces()
+			registry.resolveSelect( CORE_USER ).getNonces()
 		);
 		yield Data.commonActions.await(
-			registry.__experimentalResolveSelect( CORE_SITE ).getSiteInfo()
+			registry.resolveSelect( CORE_SITE ).getSiteInfo()
 		);
 
 		const nonce = registry.select( CORE_USER ).getNonce( 'updates' );

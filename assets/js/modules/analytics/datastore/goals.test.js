@@ -64,7 +64,7 @@ describe( 'modules/analytics goals', () => {
 				expect( initialGoals ).toBeUndefined();
 
 				const goals = await registry
-					.__experimentalResolveSelect( MODULES_ANALYTICS )
+					.resolveSelect( MODULES_ANALYTICS )
 					.getGoals();
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
@@ -104,9 +104,7 @@ describe( 'modules/analytics goals', () => {
 					{ body: response, status: 500 }
 				);
 
-				await registry
-					.__experimentalResolveSelect( MODULES_ANALYTICS )
-					.getGoals();
+				await registry.resolveSelect( MODULES_ANALYTICS ).getGoals();
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 

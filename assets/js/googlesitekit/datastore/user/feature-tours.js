@@ -194,10 +194,10 @@ const baseActions = {
 	},
 
 	*triggerTourForView( viewContext ) {
-		const { select, __experimentalResolveSelect } = yield getRegistry();
+		const { select, resolveSelect } = yield getRegistry();
 
 		yield Data.commonActions.await(
-			__experimentalResolveSelect( CORE_USER ).getLastDismissedAt()
+			resolveSelect( CORE_USER ).getLastDismissedAt()
 		);
 
 		if ( select( CORE_USER ).areFeatureToursOnCooldown() ) {
@@ -232,7 +232,7 @@ const baseControls = {
 
 				// Only tours with a version after a user's initial Site Kit version should qualify.
 				const initialVersion = await registry
-					.__experimentalResolveSelect( CORE_USER )
+					.resolveSelect( CORE_USER )
 					.getInitialSiteKitVersion();
 				if ( ! initialVersion ) {
 					return false;
@@ -249,7 +249,7 @@ const baseControls = {
 				// Check if the tour has already been dismissed.
 				// Here we need to first await the underlying selector with the asynchronous resolver.
 				await registry
-					.__experimentalResolveSelect( CORE_USER )
+					.resolveSelect( CORE_USER )
 					.getDismissedFeatureTourSlugs();
 				if (
 					registry.select( CORE_USER ).isTourDismissed( tour.slug )
@@ -272,7 +272,7 @@ const baseControls = {
 				// Check if the tour has already been dismissed.
 				// Here we need to first await the underlying selector with the asynchronous resolver.
 				await registry
-					.__experimentalResolveSelect( CORE_USER )
+					.resolveSelect( CORE_USER )
 					.getDismissedFeatureTourSlugs();
 				if (
 					registry.select( CORE_USER ).isTourDismissed( tour.slug )
