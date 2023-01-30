@@ -27,6 +27,20 @@ import { __ } from '@wordpress/i18n';
 import * as WIDGET_CONTEXTS from './default-contexts';
 import * as WIDGET_AREAS from './default-areas';
 import { WIDGET_AREA_STYLES } from './datastore/constants';
+import {
+	AdsenseTopEarningContentWidget,
+	AnalyticsLoyalVisitorsWidget,
+	AnalyticsNewVisitorsWidget,
+	AnalyticsTopTrafficSourceWidget,
+	AnalyticsEngagedTrafficSourceWidget,
+	AnalyticsPopularContentWidget,
+	AnalyticsPopularProductsWidget,
+	AnalyticsTopCitiesWidget,
+	AnalyticsTopCountriesWidget,
+	AnalyticsConversionWidget,
+	SearchConsolePopularKeywordsWidget,
+	TopConvertingTrafficSourceWidget,
+} from '../../components/KeyMetrics/widget-tiles';
 
 const { ...ADDITIONAL_WIDGET_CONTEXTS } = WIDGET_CONTEXTS;
 
@@ -58,6 +72,7 @@ export function registerDefaults( widgetsAPI ) {
 		AREA_MAIN_DASHBOARD_CONTENT_PRIMARY,
 		AREA_MAIN_DASHBOARD_SPEED_PRIMARY,
 		AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY,
+		AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY,
 		// Entity dashboard
 		AREA_ENTITY_DASHBOARD_TRAFFIC_PRIMARY,
 		AREA_ENTITY_DASHBOARD_CONTENT_PRIMARY,
@@ -201,5 +216,152 @@ export function registerDefaults( widgetsAPI ) {
 			priority: 1,
 		},
 		CONTEXT_ENTITY_DASHBOARD_MONETIZATION
+	);
+
+	/*
+	 * Key metrics widgets.
+	 */
+	widgetsAPI.registerWidget(
+		'kmAdsenseTopEarningContent',
+		{
+			Component: AdsenseTopEarningContentWidget,
+			width: widgetsAPI.WIDGET_WIDTHS.QUARTER,
+			priority: 1,
+			wrapWidget: false,
+			modules: [ 'analytics-4', 'adsense' ],
+		},
+		[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
+	);
+
+	widgetsAPI.registerWidget(
+		'kmAnalyticsLoyalVisitors',
+		{
+			Component: AnalyticsLoyalVisitorsWidget,
+			width: widgetsAPI.WIDGET_WIDTHS.QUARTER,
+			priority: 1,
+			wrapWidget: false,
+			modules: [ 'analytics-4' ],
+		},
+		[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
+	);
+
+	widgetsAPI.registerWidget(
+		'kmAnalyticsNewVisitors',
+		{
+			Component: AnalyticsNewVisitorsWidget,
+			width: widgetsAPI.WIDGET_WIDTHS.QUARTER,
+			priority: 1,
+			wrapWidget: false,
+			modules: [ 'analytics-4' ],
+		},
+		[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
+	);
+
+	widgetsAPI.registerWidget(
+		'kmAnalyticsTopTrafficSource',
+		{
+			Component: AnalyticsTopTrafficSourceWidget,
+			width: widgetsAPI.WIDGET_WIDTHS.QUARTER,
+			priority: 1,
+			wrapWidget: false,
+			modules: [ 'analytics-4' ],
+		},
+		[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
+	);
+
+	widgetsAPI.registerWidget(
+		'kmAnalyticsEngagedTrafficSource',
+		{
+			Component: AnalyticsEngagedTrafficSourceWidget,
+			width: widgetsAPI.WIDGET_WIDTHS.QUARTER,
+			priority: 1,
+			wrapWidget: false,
+			modules: [ 'analytics-4' ],
+		},
+		[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
+	);
+
+	widgetsAPI.registerWidget(
+		'kmAnalyticsPopularContent',
+		{
+			Component: AnalyticsPopularContentWidget,
+			width: widgetsAPI.WIDGET_WIDTHS.QUARTER,
+			priority: 1,
+			wrapWidget: false,
+			modules: [ 'analytics-4' ],
+		},
+		[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
+	);
+
+	widgetsAPI.registerWidget(
+		'kmAnalyticsPopularProducts',
+		{
+			Component: AnalyticsPopularProductsWidget,
+			width: widgetsAPI.WIDGET_WIDTHS.QUARTER,
+			priority: 1,
+			wrapWidget: false,
+			modules: [ 'analytics-4' ],
+		},
+		[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
+	);
+
+	widgetsAPI.registerWidget(
+		'kmAnalyticsTopCities',
+		{
+			Component: AnalyticsTopCitiesWidget,
+			width: widgetsAPI.WIDGET_WIDTHS.QUARTER,
+			priority: 1,
+			wrapWidget: false,
+			modules: [ 'analytics-4' ],
+		},
+		[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
+	);
+
+	widgetsAPI.registerWidget(
+		'kmAnalyticsTopCountries',
+		{
+			Component: AnalyticsTopCountriesWidget,
+			width: widgetsAPI.WIDGET_WIDTHS.QUARTER,
+			priority: 1,
+			wrapWidget: false,
+			modules: [ 'analytics-4' ],
+		},
+		[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
+	);
+
+	widgetsAPI.registerWidget(
+		'kmAnalyticsConversion',
+		{
+			Component: AnalyticsConversionWidget,
+			width: widgetsAPI.WIDGET_WIDTHS.QUARTER,
+			priority: 1,
+			wrapWidget: false,
+			modules: [ 'analytics-4' ],
+		},
+		[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
+	);
+
+	widgetsAPI.registerWidget(
+		'kmTopConvertingTrafficSource',
+		{
+			Component: TopConvertingTrafficSourceWidget,
+			width: widgetsAPI.WIDGET_WIDTHS.QUARTER,
+			priority: 1,
+			wrapWidget: false,
+			modules: [ 'analytics-4' ],
+		},
+		[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
+	);
+
+	widgetsAPI.registerWidget(
+		'kmSearchConsolePopularKeywords',
+		{
+			Component: SearchConsolePopularKeywordsWidget,
+			width: widgetsAPI.WIDGET_WIDTHS.QUARTER,
+			priority: 1,
+			wrapWidget: false,
+			modules: [ 'search-console' ],
+		},
+		[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
 	);
 }
