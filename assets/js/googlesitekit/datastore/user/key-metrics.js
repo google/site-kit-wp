@@ -43,7 +43,7 @@ const fetchSaveKeyMetricsStore = createFetchStore( {
 	reducerCallback: ( state, keyMetrics ) => ( { ...state, keyMetrics } ),
 	argsToParams: ( settings ) => settings,
 	validateParams: ( settings ) => {
-		invariant( isPlainObject( settings ), 'valid settings are required.' );
+		invariant( isPlainObject( settings ), 'Settings should be an object.' );
 	},
 } );
 
