@@ -42,6 +42,7 @@ import { Button, Dialog, Menu } from 'googlesitekit-components';
 import { trackEvent } from '../../util';
 import { clearCache } from '../../googlesitekit/api/cache';
 import Portal from '../Portal';
+import Details from './Details';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
@@ -204,6 +205,7 @@ export default function UserMenu() {
 					className="googlesitekit-user-menu googlesitekit-width-auto"
 					menuOpen={ menuOpen }
 					menuItems={ [
+						<Details key={ userEmail } />,
 						__( 'Disconnect', 'google-site-kit' ),
 					].concat(
 						proxyPermissionsURL
