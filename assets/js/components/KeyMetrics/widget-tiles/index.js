@@ -25,6 +25,6 @@ export { default as AnalyticsPopularContentWidget } from './AnalyticsPopularCont
 export { default as AnalyticsPopularProductsWidget } from './AnalyticsPopularProductsWidget';
 export { default as AnalyticsTopCitiesWidget } from './AnalyticsTopCitiesWidget';
 export { default as AnalyticsTopCountriesWidget } from './AnalyticsTopCountriesWidget';
-export { default as AnalyticsTrafficSourceWidget } from './AnalyticsTrafficSourceWidget';
+export { default as AnalyticsTopTrafficSourceWidget } from './AnalyticsTopTrafficSourceWidget';
 export { default as SearchConsolePopularKeywordsWidget } from './SearchConsolePopularKeywordsWidget';
 export { default as TopConvertingTrafficSourceWidget } from './TopConvertingTrafficSourceWidget';
