@@ -104,10 +104,9 @@ export default function TourTooltips( {
 		select( CORE_UI ).getValue( stepKey )
 	);
 	const run = useSelect( ( select ) => {
-		return (
-			select( CORE_UI ).getValue( runKey ) &&
-			select( CORE_USER ).isTourDismissed( tourID ) === false
-		);
+		const isRunning = select( CORE_UI ).getValue( runKey );
+		const isTourDismissed = select( CORE_USER ).isTourDismissed( tourID );
+		return isRunning && isTourDismissed === false;
 	} );
 
 	const changeStep = ( index, action ) =>
