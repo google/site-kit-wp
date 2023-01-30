@@ -35,8 +35,8 @@ const { useSelect } = Data;
 const UserInputPromptBannerNotification = () => {
 	const viewContext = useViewContext();
 
-	const userInputState = useSelect( ( select ) =>
-		select( CORE_USER ).getUserInputState()
+	const isUserInputCompleted = useSelect( ( select ) =>
+		select( CORE_USER ).isUserInputCompleted()
 	);
 
 	const category = `${ viewContext }_user-input-prompt-notification`;
@@ -45,16 +45,12 @@ const UserInputPromptBannerNotification = () => {
 		useState( false );
 
 	useEffect( () => {
-		if (
-			! viewNotificationEventFired &&
-			userInputState !== undefined &&
-			userInputState !== 'completed'
-		) {
+		if ( ! viewNotificationEventFired && ! isUserInputCompleted ) {
 			trackEvent( category, 'view_notification' ).finally( () =>
 				setViewNotificationEventFired( true )
 			);
 		}
-	}, [ category, userInputState, viewNotificationEventFired ] );
+	}, [ category, isUserInputCompleted, viewNotificationEventFired ] );
 
 	const handleOnCTAClick = () => {
 		trackEvent( category, 'confirm_notification' );

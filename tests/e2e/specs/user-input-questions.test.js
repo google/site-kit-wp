@@ -100,13 +100,7 @@ describe( 'User Input Settings', () => {
 		useRequestInterception( ( request ) => {
 			const url = request.url();
 
-			if (
-				url.match(
-					'/google-site-kit/v1/core/user/data/user-input-settings'
-				)
-			) {
-				request.continue();
-			} else if ( url.match( '/google-site-kit/v1/modules' ) ) {
+			if ( url.match( '/google-site-kit/v1/modules' ) ) {
 				request.respond( { status: 200 } );
 			} else {
 				request.continue();
@@ -118,8 +112,7 @@ describe( 'User Input Settings', () => {
 		await enableFeature( 'userInput' );
 		await activatePlugins(
 			'e2e-tests-proxy-setup',
-			'e2e-tests-oauth-callback-plugin',
-			'e2e-tests-user-input-settings-api-mock'
+			'e2e-tests-oauth-callback-plugin'
 		);
 		await setSearchConsoleProperty();
 		await page.setRequestInterception( true );
@@ -128,22 +121,6 @@ describe( 'User Input Settings', () => {
 	afterEach( async () => {
 		await deactivateUtilityPlugins();
 		await resetSiteKit();
-	} );
-
-	it( 'should require new users to enter input settings after signing in', async () => {
-		await step(
-			'visit splash screen',
-			visitAdminPage( 'admin.php', 'page=googlesitekit-splash' )
-		);
-		await step(
-			'click on start setup button and wait for navigation',
-			Promise.all( [
-				expect( page ).toClick( '.googlesitekit-start-setup' ),
-				page.waitForNavigation(),
-			] )
-		);
-
-		await fillInInputSettings();
 	} );
 
 	it( 'should offer to enter input settings for existing users', async () => {
