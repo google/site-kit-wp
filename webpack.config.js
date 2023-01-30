@@ -320,6 +320,8 @@ function* webpackConfig( env, argv ) {
 				'./assets/js/googlesitekit-components-gm2.js',
 			'googlesitekit-components-gm3':
 				'./assets/js/googlesitekit-components-gm3.js',
+			'googlesitekit-key-metrics':
+				'./assets/js/googlesitekit-key-metrics.js',
 			// Old Modules
 			'googlesitekit-activation':
 				'./assets/js/googlesitekit-activation.js',
