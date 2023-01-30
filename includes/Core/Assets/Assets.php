@@ -306,7 +306,6 @@ final class Assets {
 			'googlesitekit-datastore-user',
 			'googlesitekit-datastore-ui',
 			'googlesitekit-widgets',
-			'googlesitekit-key-metrics',
 		);
 
 		if ( 'dashboard' === $context || 'dashboard-sharing' === $context ) {
@@ -567,17 +566,6 @@ final class Assets {
 					'dependencies' => array(
 						'googlesitekit-data',
 						'googlesitekit-i18n',
-						'googlesitekit-components',
-					),
-				)
-			),
-			new Script(
-				'googlesitekit-key-metrics',
-				array(
-					'src'          => $base_url . 'js/googlesitekit-key-metrics.js',
-					'dependencies' => array(
-						'googlesitekit-api',
-						'googlesitekit-data',
 						'googlesitekit-components',
 					),
 				)
