@@ -203,5 +203,58 @@
 				}
 			}
 		}
+
+		.googlesitekit-user-menu {
+			background-color: $c-surfaces-background;
+			max-width: 335px;
+			width: calc(100vw - 32px);
+
+			li {
+				padding: 0 8px;
+
+				&:first-child {
+					height: auto;
+				}
+			}
+		}
+
+		.googlesitekit-user-menu__details {
+			align-items: center;
+			background-color: $c-white;
+			border-radius: 16px;
+			column-gap: 14px;
+			display: flex;
+			padding: 16px;
+			width: 100%;
+		}
+
+		.googlesitekit-user-menu__details-avatar {
+			border: 1px solid rgba($c-grey-g-900, 0.13);
+			border-radius: 50%;
+			height: 64px;
+			width: 64px;
+		}
+
+		.googlesitekit-user-menu__details-info {
+			overflow: hidden;
+
+			p {
+				margin: 0;
+				overflow: hidden;
+				text-overflow: ellipsis;
+			}
+		}
+
+		.googlesitekit-user-menu__details-info__name {
+			color: $c-surfaces-on-surface;
+			font-weight: $fw-medium;
+			line-height: $lh-body-md;
+		}
+
+		.googlesitekit-user-menu__details-info__email {
+			color: $c-surfaces-on-surface-variant;
+			font-size: $fs-body-sm;
+			line-height: $lh-body-sm;
+		}
 	}
 }
