@@ -28,6 +28,7 @@
     "value-keyword-case": [ "lower", {
         "ignoreKeywords": ["/([A-Z])/"]
       }
-    ]
+    ],
+    "selector-nested-pattern": "^(?!&__|&--|&-|&_).*"
   }
 }
