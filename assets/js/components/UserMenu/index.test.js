@@ -32,9 +32,9 @@ import {
 	provideSiteInfo,
 	act,
 	waitFor,
-} from '../../../tests/js/test-utils';
-import UserMenu from './UserMenu';
-import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
+} from '../../../../tests/js/test-utils';
+import UserMenu from '.';
+import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 
 describe( 'UserMenu', () => {
 	let registry;

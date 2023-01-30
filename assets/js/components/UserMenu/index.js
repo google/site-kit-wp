@@ -39,14 +39,14 @@ import { ESCAPE, TAB } from '@wordpress/keycodes';
  */
 import Data from 'googlesitekit-data';
 import { Button, Dialog, Menu } from 'googlesitekit-components';
-import { trackEvent } from '../util';
-import { clearCache } from '../googlesitekit/api/cache';
-import Portal from './Portal';
-import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
-import { CORE_USER } from '../googlesitekit/datastore/user/constants';
-import { CORE_LOCATION } from '../googlesitekit/datastore/location/constants';
-import { useKeyCodesInside } from '../hooks/useKeyCodesInside';
-import useViewContext from '../hooks/useViewContext';
+import { trackEvent } from '../../util';
+import { clearCache } from '../../googlesitekit/api/cache';
+import Portal from '../Portal';
+import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
+import { useKeyCodesInside } from '../../hooks/useKeyCodesInside';
+import useViewContext from '../../hooks/useViewContext';
 const { useSelect, useDispatch } = Data;
 
 export default function UserMenu() {
@@ -201,7 +201,7 @@ export default function UserMenu() {
 				/>
 
 				<Menu
-					className="googlesitekit-width-auto"
+					className="googlesitekit-user-menu googlesitekit-width-auto"
 					menuOpen={ menuOpen }
 					menuItems={ [
 						__( 'Disconnect', 'google-site-kit' ),

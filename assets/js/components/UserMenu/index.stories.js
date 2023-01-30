@@ -23,8 +23,8 @@ import {
 	provideSiteInfo,
 	provideUserInfo,
 	WithTestRegistry,
-} from '../../../tests/js/utils';
-import UserMenu from './UserMenu';
+} from '../../../../tests/js/utils';
+import UserMenu from '.';
 
 const Template = ( args ) => <UserMenu { ...args } />;
 
