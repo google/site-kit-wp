@@ -135,11 +135,11 @@ class REST_Key_Metrics_Controller {
 									'properties' => array(
 										'isWidgetHidden' => array(
 											'type'     => 'boolean',
-											'required' => false,
+											'required' => true,
 										),
 										'widgetSlugs'    => array(
 											'type'     => 'array',
-											'required' => false,
+											'required' => true,
 											'maxItems' => 4,
 											'items'    => array(
 												'type' => 'string',

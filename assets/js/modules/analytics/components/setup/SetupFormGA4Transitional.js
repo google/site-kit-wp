@@ -34,7 +34,6 @@ import {
 	PROPERTY_TYPE_GA4,
 	ACCOUNT_CREATE,
 } from '../../datastore/constants';
-import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import GA4PropertySelect from '../../../analytics-4/components/common/PropertySelect';
 import {
 	AccountSelect,
@@ -43,7 +42,6 @@ import {
 	PropertySelectIncludingGA4,
 	ProfileNameTextField,
 	GA4PropertyNotice,
-	ExistingGTMPropertyNotice,
 } from '../common';
 import SetupUseSnippetSwitchUA from './SetupUseSnippetSwitch';
 import { SetupUseSnippetSwitch as SetupUseSnippetSwitchGA4 } from '../../../analytics-4/components/setup';
@@ -93,12 +91,6 @@ export default function SetupFormGA4Transitional() {
 
 	return (
 		<Fragment>
-			<StoreErrorNotices
-				moduleSlug="analytics"
-				storeName={ MODULES_ANALYTICS }
-			/>
-			<ExistingGTMPropertyNotice />
-
 			{ !! accounts.length && (
 				<p className="googlesitekit-margin-bottom-0">
 					{ __(
