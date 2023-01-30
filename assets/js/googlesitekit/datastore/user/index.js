@@ -22,18 +22,19 @@
 import Data from 'googlesitekit-data';
 import { createErrorStore } from '../../data/create-error-store';
 import authentication from './authentication';
+import { CORE_USER } from './constants';
 import dateRange from './date-range';
 import disconnect from './disconnect';
 import dismissedItems from './dismissed-items';
 import featureTours from './feature-tours';
+import keyMetrics from './key-metrics';
 import notifications from './notifications';
-import permissions from './permissions';
 import nonces from './nonces';
+import permissions from './permissions';
 import surveys from './surveys';
 import tracking from './tracking';
 import userInfo from './user-info';
 import userInputSettings from './user-input-settings';
-import { CORE_USER } from './constants';
 
 const store = Data.combineStores(
 	Data.commonStore,
@@ -43,6 +44,7 @@ const store = Data.combineStores(
 	disconnect,
 	dismissedItems,
 	featureTours,
+	keyMetrics,
 	notifications,
 	permissions,
 	nonces,
