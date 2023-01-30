@@ -17,12 +17,11 @@
  */
 
 .googlesitekit-widget-context {
-
 	@include googlesitekit-inner-padding;
 	padding-bottom: 10px;
 	padding-top: 10px;
+}
 
-	&--last {
-		min-height: 80vh;
-	}
+.googlesitekit-widget-context--last {
+	min-height: 80vh;
 }
