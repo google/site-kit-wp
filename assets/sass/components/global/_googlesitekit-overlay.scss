@@ -31,11 +31,6 @@
 	width: 100%;
 	z-index: 10;
 
-	&--compress .googlesitekit-overlay__wrapper {
-		align-items: center;
-		display: flex;
-	}
-
 	.googlesitekit-overlay__icon {
 		align-items: center;
 		background: $c-background-subtle;
@@ -51,7 +46,20 @@
 		}
 	}
 
-	&--compress .googlesitekit-overlay__icon {
+	.googlesitekit-overlay__title {
+		margin-bottom: 0;
+		padding: 0 $grid-gap-phone;
+		text-align: center;
+	}
+}
+
+.googlesitekit-overlay--compress {
+	.googlesitekit-overlay__wrapper {
+		align-items: center;
+		display: flex;
+	}
+
+	.googlesitekit-overlay__icon {
 		height: 40px;
 		width: 40px;
 
@@ -62,12 +70,6 @@
 	}
 
 	.googlesitekit-overlay__title {
-		margin-bottom: 0;
-		padding: 0 $grid-gap-phone;
-		text-align: center;
-	}
-
-	&--compress .googlesitekit-overlay__title {
 		font-size: $fs-title-md;
 		font-weight: $fw-bold;
 		line-height: $lh-title-md;

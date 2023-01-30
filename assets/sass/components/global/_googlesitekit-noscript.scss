@@ -22,10 +22,10 @@
 
 	background-color: $c-base;
 	margin: 5px 20px 5px 0;
+}
 
-	&__title {
-		margin: 0;
-	}
+.googlesitekit-noscript__title {
+	margin: 0;
 }
 
 .no-js:not([amp-version]) {
