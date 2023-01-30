@@ -610,5 +610,7 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 				} );
 			} );
 		} );
+
+		describe( 'getAnalyticsConfigByMeasurementIDs', () => {} );
 	} );
 } );
