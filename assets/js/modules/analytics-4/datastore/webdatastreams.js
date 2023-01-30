@@ -410,18 +410,105 @@ const baseSelectors = {
 	),
 
 	/**
-	 * Gets Analytics configs based on provided measurement IDS.
+	 * Gets an Analytics config that matches one of provided measurement IDs.
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param {Object}         state          Data store's state.
-	 * @param {Array.<string>} measurementIDs GA4 measurement IDs array of strings.
+	 * @param {Object}         state        Data store's state.
+	 * @param {Array.<string>} measurements GA4 measurement IDs array of strings.
+	 * @return {(Object|null|undefined)} An Analytics config that matches provided one of measurement IDs on success, NULL if no matching config is found, undefined if data hasn't been resolved yet.
 	 */
 	getAnalyticsConfigByMeasurementIDs: createRegistrySelector(
-		( select ) => ( state, measurementIDs ) => {
-			const accountID = select( MODULES_ANALYTICS ).getAccountID();
+		( select ) => ( state, measurements ) => {
+			const measurementIDs = Array.isArray()
+				? measurements
+				: [ measurements ];
+
 			const summaries =
 				select( MODULES_ANALYTICS_4 ).getAccountSummaries();
+			if ( ! Array.isArray( summaries ) ) {
+				return undefined;
+			}
+
+			// Sort summaries to have the current account at the very beginning,
+			// so we can check it first because its more likely that the current
+			// account will contain a measurement ID that we are looking for.
+			const currentAccountID = select( MODULES_ANALYTICS ).getAccountID();
+			summaries.sort( ( { _id: accountID } ) =>
+				accountID === currentAccountID ? -1 : 0
+			);
+
+			const info = {};
+			const propertyIDs = [];
+
+			summaries.forEach( ( { _id: accountID, propertySummaries } ) => {
+				propertySummaries.forEach( ( { _id: propertyID } ) => {
+					propertyIDs.push( propertyID );
+					info[ propertyID ] = {
+						accountID,
+						propertyID,
+					};
+				} );
+			} );
+
+			if ( propertyIDs.length === 0 ) {
+				return null;
+			}
+
+			const datastreams =
+				select( MODULES_ANALYTICS_4 ).getWebDataStreamsBatch(
+					propertyIDs
+				);
+
+			if ( datastreams === undefined ) {
+				return undefined;
+			}
+
+			let firstlyFoundConfig;
+
+			for ( const propertyID in datastreams ) {
+				if ( ! datastreams[ propertyID ]?.length ) {
+					continue;
+				}
+
+				for ( const datastream of datastreams[ propertyID ] ) {
+					const { _id: webDataStreamID, webDataStream } = datastream;
+					const {
+						defaultUri: defaultURI,
+						measurementId: measurementID, // eslint-disable-line sitekit/acronym-case
+					} = webDataStream;
+
+					if ( ! measurementIDs.includes( measurementID ) ) {
+						continue;
+					}
+
+					const config = {
+						...info[ propertyID ],
+						webDataStreamID,
+						measurementID,
+					};
+
+					// Remember the firstly found config to return it at the end
+					// if we don't manage to find the most suitable config.
+					if ( ! firstlyFoundConfig ) {
+						firstlyFoundConfig = config;
+					}
+
+					// If only one measurement ID is provided, then we don't need
+					// to check whether its default URI matches the current
+					// reference URL. Otherwise, if we have many measurement IDs
+					// then we need to find the one that matches the current
+					// reference URL.
+					if (
+						measurementIDs.length === 1 ||
+						select( CORE_SITE ).isSiteURLMatch( defaultURI )
+					) {
+						return config;
+					}
+				}
+			}
+
+			return firstlyFoundConfig || null;
 		}
 	),
 };
