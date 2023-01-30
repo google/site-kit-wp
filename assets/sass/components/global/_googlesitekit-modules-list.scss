@@ -103,12 +103,12 @@
 				vertical-align: middle;
 				width: 16px;
 			}
+		}
 
-			&--connected::before {
-				background-color: $c-success;
-				background-image: $icon-checked;
-				background-size: 8px 6px;
-			}
+		.googlesitekit-settings-module__status-icon--connected::before {
+			background-color: $c-success;
+			background-image: $icon-checked;
+			background-size: 8px 6px;
 		}
 	}
 }
