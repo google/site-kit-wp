@@ -86,21 +86,33 @@ describe( 'core/user feature-tours', () => {
 				).toThrow( /a tour slug is required/i );
 			} );
 
-			it( 'adds the slug to dismissedTourSlugs immediately', () => {
+			it( 'adds the slug to dismissedTourSlugs at the end', () => {
 				muteFetch( fetchDismissTourRegExp, [] );
 
 				expect( store.getState().dismissedTourSlugs ).toBe(
 					initialState.dismissedTourSlugs
 				);
+
+				// Not dimissed before dispatching the action.
 				expect(
 					store.getState().dismissedTourSlugs || []
 				).not.toContain( 'test-tour' );
 
-				registry.dispatch( CORE_USER ).dismissTour( 'test-tour' );
+				const promise = registry
+					.dispatch( CORE_USER )
+					.dismissTour( 'test-tour' );
 
-				expect( store.getState().dismissedTourSlugs ).toContain(
-					'test-tour'
-				);
+				// Still not dismissed before the action ends dispatching.
+				expect(
+					store.getState().dismissedTourSlugs || []
+				).not.toContain( 'test-tour' );
+
+				// eslint-disable-next-line jest/valid-expect-in-promise
+				promise.then( () => {
+					expect( store.getState().dismissedTourSlugs ).toContain(
+						'test-tour'
+					);
+				} );
 			} );
 
 			it( 'dispatches a fetch request to persist the dismissal', async () => {
