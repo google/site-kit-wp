@@ -18,28 +18,31 @@
 
 .googlesitekit-plugin {
 
-	.googlesitekit-user-selector {
+	.googlesitekit-header {
 
-		.mdc-button__label {
+		.googlesitekit-user-selector {
 
-			@media (max-width: $bp-wpAdminBarTablet) {
+			.mdc-button__label {
 
-				@include screen-reader-only;
+				@media (max-width: $bp-wpAdminBarTablet) {
+
+					@include screen-reader-only;
+				}
 			}
-		}
 
-		.mdc-button__icon {
+			.mdc-button__icon {
 
-			@media (max-width: $bp-wpAdminBarTablet) {
-				margin-right: 0;
+				@media (max-width: $bp-wpAdminBarTablet) {
+					margin-right: 0;
+				}
 			}
-		}
 
-		// align the dropdown with it's button
-		margin-right: -4px;
+			// align the dropdown with it's button
+			margin-right: -4px;
 
-		button {
-			padding: 4px;
+			button {
+				padding: 4px;
+			}
 		}
 	}
 
