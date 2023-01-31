@@ -209,13 +209,35 @@
 			max-width: 335px;
 			width: calc(100vw - 32px);
 
+			.mdc-list {
+				padding-bottom: 0;
+			}
+
 			li {
 				padding: 0 8px;
-
-				&:first-child {
-					height: auto;
-				}
 			}
+
+			.mdc-list-item {
+				margin: 12px 0;
+				padding: 0 48px;
+			}
+		}
+
+		.googlesitekit-user-menu__item {
+			align-items: center;
+			column-gap: 30px;
+			display: flex;
+			width: 100%;
+		}
+
+		.googlesitekit-user-menu__item-icon {
+			display: flex;
+		}
+
+		.googlesitekit-user-menu__item-label {
+			overflow: hidden;
+			text-overflow: ellipsis;
+			white-space: nowrap;
 		}
 
 		.googlesitekit-user-menu__details {
@@ -242,6 +264,7 @@
 				margin: 0;
 				overflow: hidden;
 				text-overflow: ellipsis;
+				white-space: nowrap;
 			}
 		}
 
