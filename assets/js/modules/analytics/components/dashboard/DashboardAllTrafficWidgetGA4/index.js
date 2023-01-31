@@ -45,8 +45,8 @@ import whenActive from '../../../../../util/when-active';
 import SourceLink from '../../../../../components/SourceLink';
 import TotalUserCount from '../DashboardAllTrafficWidget/TotalUserCount';
 import UserCountGraph from '../DashboardAllTrafficWidget/UserCountGraph';
-import DimensionTabs from '../DashboardAllTrafficWidget/DimensionTabs';
-import UserDimensionsPieChart from '../DashboardAllTrafficWidget/UserDimensionsPieChart';
+import DimensionTabs from './DimensionTabs';
+import UserDimensionsPieChart from './UserDimensionsPieChart';
 import useViewOnly from '../../../../../hooks/useViewOnly';
 const { useSelect, useInViewSelect, useDispatch } = Data;
 
