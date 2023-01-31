@@ -109,17 +109,20 @@ const baseActions = {
 				return { response, error: undefined };
 			}
 
+			// Save the timestamp to allow the cooldown
+			yield actions.setLastDismissedAt( Date.now() );
+
+			// Dispatch a request to persist and receive updated dismissed tours.
+			const results =
+				yield fetchDismissTourStore.actions.fetchDismissTour( slug );
+
 			// Dismiss the given tour immediately.
 			yield {
 				type: DISMISS_TOUR,
 				payload: { slug },
 			};
 
-			// Save the timestamp to allow the cooldown
-			yield actions.setLastDismissedAt( Date.now() );
-
-			// Dispatch a request to persist and receive updated dismissed tours.
-			return yield fetchDismissTourStore.actions.fetchDismissTour( slug );
+			return results;
 		}
 	),
 
