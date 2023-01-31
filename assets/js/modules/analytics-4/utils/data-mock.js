@@ -153,12 +153,12 @@ function sortRows( rows, metrics, orderby ) {
 		}
 
 		sorted = sorted.sort( ( a, b ) => {
-			let valA = parseFloat( a.metrics[ index ]?.values?.[ 0 ] );
+			let valA = parseFloat( a.metricValues[ index ]?.value );
 			if ( Number.isNaN( valA ) ) {
 				valA = 0;
 			}
 
-			let valB = parseFloat( b.metrics[ index ]?.values?.[ 0 ] );
+			let valB = parseFloat( b.metricValues[ index ]?.value );
 			if ( Number.isNaN( valB ) ) {
 				valB = 0;
 			}
@@ -267,7 +267,7 @@ export function getAnalytics4MockResponse( args ) {
 	}
 
 	dimensions.forEach( ( singleDimension ) => {
-		const dimension = singleDimension?.name || singleDimension.toString();
+		const dimension = singleDimension?.name || singleDimension?.toString();
 
 		if ( dimension === 'date' || dimension === 'dateRange' ) {
 			const dateRange = generateDateRange( args.startDate, args.endDate );
