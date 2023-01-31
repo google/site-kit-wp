@@ -74,6 +74,7 @@
 	}
 
 	.googlesitekit-user-menu__item-label {
+		color: $c-surfaces-on-surface;
 		overflow: hidden;
 		text-overflow: ellipsis;
 		white-space: nowrap;
@@ -81,7 +82,7 @@
 
 	.googlesitekit-user-menu__details {
 		align-items: center;
-		background-color: $c-white;
+		background-color: $c-surfaces-surface;
 		border-radius: 16px;
 		column-gap: 14px;
 		display: flex;
