@@ -67,7 +67,7 @@ export default function UserInputSettings( {
 		select( MODULES_ANALYTICS ).isGatheringData()
 	);
 
-	if ( isUserInputCompleted || isUserInputCompleted === undefined ) {
+	if ( isUserInputCompleted === undefined || isUserInputCompleted ) {
 		return null;
 	}
 
