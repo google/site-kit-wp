@@ -138,7 +138,7 @@ exports[`SetupUsingProxyWithSignIn should not render the Activate Analytics noti
               </i>
             </button>
             <div
-              class="mdc-menu mdc-menu-surface googlesitekit-user-menu googlesitekit-width-auto"
+              class="mdc-menu mdc-menu-surface googlesitekit-user-menu"
             >
               <ul
                 aria-hidden="true"
@@ -446,7 +446,7 @@ exports[`SetupUsingProxyWithSignIn should render the setup page, including the A
               </i>
             </button>
             <div
-              class="mdc-menu mdc-menu-surface googlesitekit-user-menu googlesitekit-width-auto"
+              class="mdc-menu mdc-menu-surface googlesitekit-user-menu"
             >
               <ul
                 aria-hidden="true"
