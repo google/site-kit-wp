@@ -37,11 +37,11 @@ import { ESCAPE } from '@wordpress/keycodes';
 import Data from 'googlesitekit-data';
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
+import { MODULES_ANALYTICS_4 } from '../../../../../modules/analytics-4/datastore/constants';
 import {
 	UI_DIMENSION_COLOR,
 	UI_DIMENSION_VALUE,
 	UI_ACTIVE_ROW_INDEX,
-	MODULES_ANALYTICS,
 } from '../../../datastore/constants';
 import {
 	numberFormat,
@@ -86,7 +86,7 @@ export default function UserDimensionsPieChart( props ) {
 	);
 
 	const hasZeroData = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).hasZeroData()
+		select( MODULES_ANALYTICS_4 ).hasZeroData()
 	);
 
 	const { setValues } = useDispatch( CORE_UI );
@@ -256,19 +256,19 @@ export default function UserDimensionsPieChart( props ) {
 			const othersLabel = __( 'Others', 'google-site-kit' ).toLowerCase();
 			if ( rowLabel === othersLabel ) {
 				switch ( dimensionName ) {
-					case 'ga:country':
+					case 'country':
 						tooltip += `<p>${ __(
 							'See the full list of locations in Analytics',
 							'google-site-kit'
 						) }</p>`;
 						break;
-					case 'ga:deviceCategory':
+					case 'deviceCategory':
 						tooltip += `<p>${ __(
 							'See the full list of devices in Analytics',
 							'google-site-kit'
 						) }</p>`;
 						break;
-					case 'ga:channelGrouping':
+					case 'sessionDefaultChannelGrouping':
 					default:
 						tooltip += `<p>${ __(
 							'See the full list of channels in Analytics',
@@ -485,17 +485,20 @@ export default function UserDimensionsPieChart( props ) {
 	const options = cloneDeep( UserDimensionsPieChart.chartOptions );
 
 	let labels = {
-		'ga:channelGrouping': __(
+		sessionDefaultChannelGrouping: __(
 			'<span>By</span> channels',
 			'google-site-kit'
 		),
-		'ga:country': __( '<span>By</span> locations', 'google-site-kit' ),
-		'ga:deviceCategory': __( '<span>By</span> devices', 'google-site-kit' ),
+		country: __( '<span>By</span> locations', 'google-site-kit' ),
+		deviceCategory: __( '<span>By</span> devices', 'google-site-kit' ),
 	};
 
 	if ( gatheringData ) {
 		labels = {
-			'ga:channelGrouping': __( 'gathering data…', 'google-site-kit' ),
+			sessionDefaultChannelGrouping: __(
+				'gathering data…',
+				'google-site-kit'
+			),
 		};
 		options.pieSliceText = 'none';
 		options.tooltip.trigger = 'none';
@@ -704,7 +707,7 @@ export default function UserDimensionsPieChart( props ) {
 }
 
 UserDimensionsPieChart.defaultProps = {
-	dimensionName: 'ga:channelGrouping',
+	dimensionName: 'sessionDefaultChannelGrouping',
 };
 
 UserDimensionsPieChart.chartOptions = {

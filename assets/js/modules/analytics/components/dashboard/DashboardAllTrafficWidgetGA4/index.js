@@ -31,9 +31,10 @@ import {
 	UI_DIMENSION_NAME,
 	UI_DIMENSION_VALUE,
 	DATE_RANGE_OFFSET,
-	MODULES_ANALYTICS,
 	UI_ALL_TRAFFIC_LOADED,
+	MODULES_ANALYTICS,
 } from '../../../datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../../../../../modules/analytics-4/datastore/constants';
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
@@ -66,7 +67,7 @@ function DashboardAllTrafficWidgetGA4( props ) {
 	const isGatheringData = useInViewSelect(
 		( select ) =>
 			canViewSharedAnalytics &&
-			select( MODULES_ANALYTICS ).isGatheringData()
+			select( MODULES_ANALYTICS_4 ).isGatheringData()
 	);
 
 	const [ firstLoad, setFirstLoad ] = useState( true );
@@ -78,7 +79,7 @@ function DashboardAllTrafficWidgetGA4( props ) {
 	const dimensionName = useSelect(
 		( select ) =>
 			select( CORE_UI ).getValue( UI_DIMENSION_NAME ) ||
-			'ga:channelGrouping'
+			'sessionDefaultChannelGrouping'
 	);
 	const dimensionValue = useSelect( ( select ) =>
 		select( CORE_UI ).getValue( UI_DIMENSION_VALUE )
@@ -98,7 +99,7 @@ function DashboardAllTrafficWidgetGA4( props ) {
 	const baseArgs = {
 		startDate,
 		endDate,
-		metrics: [ { expression: 'ga:users' } ],
+		metrics: [ { name: 'totalUsers' } ],
 	};
 
 	const pieArgs = {
@@ -107,7 +108,7 @@ function DashboardAllTrafficWidgetGA4( props ) {
 		compareEndDate,
 		dimensions: [ dimensionName ],
 		orderby: {
-			fieldName: 'ga:users',
+			fieldName: 'totalUsers',
 			sortOrder: 'DESCENDING',
 		},
 		limit: 6,
@@ -115,7 +116,7 @@ function DashboardAllTrafficWidgetGA4( props ) {
 
 	const graphArgs = {
 		...baseArgs,
-		dimensions: [ 'ga:date' ],
+		dimensions: [ 'date' ],
 	};
 
 	const totalsArgs = {
@@ -138,69 +139,69 @@ function DashboardAllTrafficWidgetGA4( props ) {
 	const pieChartLoaded = useSelect(
 		( select ) =>
 			canViewSharedAnalytics &&
-			select( MODULES_ANALYTICS ).hasFinishedResolution( 'getReport', [
+			select( MODULES_ANALYTICS_4 ).hasFinishedResolution( 'getReport', [
 				pieArgs,
 			] )
 	);
 	const pieChartError = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [
+		select( MODULES_ANALYTICS_4 ).getErrorForSelector( 'getReport', [
 			pieArgs,
 		] )
 	);
 	const pieChartReport = useInViewSelect( ( select ) => {
 		return (
 			canViewSharedAnalytics &&
-			select( MODULES_ANALYTICS ).getReport( pieArgs )
+			select( MODULES_ANALYTICS_4 ).getReport( pieArgs )
 		);
 	} );
 
 	const userCountGraphLoaded = useSelect(
 		( select ) =>
 			canViewSharedAnalytics &&
-			select( MODULES_ANALYTICS ).hasFinishedResolution( 'getReport', [
+			select( MODULES_ANALYTICS_4 ).hasFinishedResolution( 'getReport', [
 				graphArgs,
 			] )
 	);
 	const userCountGraphError = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [
+		select( MODULES_ANALYTICS_4 ).getErrorForSelector( 'getReport', [
 			graphArgs,
 		] )
 	);
 	const userCountGraphReport = useInViewSelect( ( select ) => {
 		return (
 			canViewSharedAnalytics &&
-			select( MODULES_ANALYTICS ).getReport( graphArgs )
+			select( MODULES_ANALYTICS_4 ).getReport( graphArgs )
 		);
 	} );
 
 	const totalUsersLoaded = useSelect(
 		( select ) =>
 			canViewSharedAnalytics &&
-			select( MODULES_ANALYTICS ).hasFinishedResolution( 'getReport', [
+			select( MODULES_ANALYTICS_4 ).hasFinishedResolution( 'getReport', [
 				totalsArgs,
 			] )
 	);
 	const totalUsersError = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [
+		select( MODULES_ANALYTICS_4 ).getErrorForSelector( 'getReport', [
 			totalsArgs,
 		] )
 	);
 	const totalUsersReport = useInViewSelect( ( select ) => {
 		return (
 			canViewSharedAnalytics &&
-			select( MODULES_ANALYTICS ).getReport( totalsArgs )
+			select( MODULES_ANALYTICS_4 ).getReport( totalsArgs )
 		);
 	} );
 
 	let reportType;
 	switch ( dimensionName ) {
-		case 'ga:country':
+		case 'country':
 			reportType = 'visitors-geo';
 			break;
-		case 'ga:deviceCategory':
+		case 'deviceCategory':
 			reportType = 'visitors-mobile-overview';
 			break;
-		case 'ga:channelGrouping':
+		case 'sessionDefaultChannelGrouping':
 		default:
 			reportType = 'trafficsources-overview';
 			break;

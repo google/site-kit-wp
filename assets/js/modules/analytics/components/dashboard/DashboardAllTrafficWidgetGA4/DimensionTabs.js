@@ -49,15 +49,15 @@ const { useDispatch } = Data;
 const tabs = [
 	{
 		tabText: __( 'Channels', 'google-site-kit' ),
-		dimensionName: 'ga:channelGrouping',
+		dimensionName: 'sessionDefaultChannelGrouping',
 	},
 	{
 		tabText: __( 'Locations', 'google-site-kit' ),
-		dimensionName: 'ga:country',
+		dimensionName: 'country',
 	},
 	{
 		tabText: __( 'Devices', 'google-site-kit' ),
-		dimensionName: 'ga:deviceCategory',
+		dimensionName: 'deviceCategory',
 	},
 ];
 

@@ -29,7 +29,7 @@ import {
 	getAnalyticsMockResponse,
 	provideAnalyticsMockReport,
 } from '../../../util/data-mock';
-// import { provideAnalytics4MockReport } from '../../../../analytics-4/utils/data-mock';
+import { provideAnalytics4MockReport } from '../../../../analytics-4/utils/data-mock';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { getWidgetComponentProps } from '../../../../../googlesitekit/widgets/util';
 import { MODULES_ANALYTICS } from '../../../datastore/constants';
@@ -66,7 +66,7 @@ const baseAllTrafficOptions = {
 	compareEndDate: '2020-12-08',
 	metrics: [
 		{
-			expression: 'ga:users',
+			name: 'totalUsers',
 		},
 	],
 };
@@ -74,27 +74,27 @@ const baseAllTrafficOptions = {
 const allTrafficReportOptions = [
 	{
 		...baseAllTrafficOptions,
-		dimensions: [ 'ga:channelGrouping' ],
+		dimensions: [ 'sessionDefaultChannelGrouping' ],
 		orderby: {
-			fieldName: 'ga:users',
+			fieldName: 'totalUsers',
 			sortOrder: 'DESCENDING',
 		},
 		limit: 6,
 	},
 	{
 		...baseAllTrafficOptions,
-		dimensions: [ 'ga:country' ],
+		dimensions: [ 'country' ],
 		orderby: {
-			fieldName: 'ga:users',
+			fieldName: 'totalUsers',
 			sortOrder: 'DESCENDING',
 		},
 		limit: 6,
 	},
 	{
 		...baseAllTrafficOptions,
-		dimensions: [ 'ga:deviceCategory' ],
+		dimensions: [ 'deviceCategory' ],
 		orderby: {
-			fieldName: 'ga:users',
+			fieldName: 'totalUsers',
 			sortOrder: 'DESCENDING',
 		},
 		limit: 6,
@@ -103,10 +103,10 @@ const allTrafficReportOptions = [
 	{
 		startDate: '2020-12-09',
 		endDate: '2021-01-05',
-		dimensions: [ 'ga:date' ],
+		dimensions: [ 'date' ],
 		metrics: [
 			{
-				expression: 'ga:users',
+				name: 'totalUsers',
 			},
 		],
 	},
@@ -117,7 +117,7 @@ MainDashboardLoaded.storyName = 'Loaded';
 MainDashboardLoaded.args = {
 	setupRegistry: ( registry ) => {
 		allTrafficReportOptions.forEach( ( options ) => {
-			provideAnalyticsMockReport( registry, options );
+			provideAnalytics4MockReport( registry, options );
 		} );
 	},
 };
