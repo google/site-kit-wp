@@ -30,10 +30,12 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { Button } from 'googlesitekit-components';
 import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
+import { MODULES_ANALYTICS } from '../../js/modules/analytics/datastore/constants';
+import { CORE_LOCATION } from '../../js/googlesitekit/datastore/location/constants';
 import useActivateModuleCallback from '../hooks/useActivateModuleCallback';
 import useCompleteModuleActivationCallback from '../hooks/useCompleteModuleActivationCallback';
+import SpinnerButton from './SpinnerButton';
 const { useSelect } = Data;
 
 export default function ActivateAnalyticsCTA( { children } ) {
@@ -43,6 +45,18 @@ export default function ActivateAnalyticsCTA( { children } ) {
 	const analyticsModuleActive = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleActive( 'analytics' )
 	);
+
+	const analyticsModuleAvailable = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleAvailable( 'analytics' )
+	);
+
+	const isNavigatingToReauthURL = useSelect( ( select ) => {
+		if ( ! analyticsModuleAvailable ) {
+			return false;
+		}
+		const adminReauthURL = select( MODULES_ANALYTICS ).getAdminReauthURL();
+		return select( CORE_LOCATION ).isNavigatingTo( adminReauthURL );
+	} );
 
 	const onClickCallback = analyticsModuleActive
 		? completeModuleActivationCallback
@@ -64,11 +78,14 @@ export default function ActivateAnalyticsCTA( { children } ) {
 						'google-site-kit'
 					) }
 				</p>
-				<Button onClick={ onClickCallback }>
+				<SpinnerButton
+					onClick={ onClickCallback }
+					isSaving={ isNavigatingToReauthURL }
+				>
 					{ analyticsModuleActive
 						? __( 'Complete setup', 'google-site-kit' )
 						: __( 'Set up Google Analytics', 'google-site-kit' ) }
-				</Button>
+				</SpinnerButton>
 			</div>
 		</div>
 	);
