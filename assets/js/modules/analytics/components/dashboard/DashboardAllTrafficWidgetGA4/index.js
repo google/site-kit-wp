@@ -35,11 +35,11 @@ import {
 	MODULES_ANALYTICS,
 } from '../../../datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../../../../modules/analytics-4/datastore/constants';
+import { isZeroReport } from '../../../../../modules/analytics-4/util';
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
 import { Grid, Row, Cell } from '../../../../../material-components/layout';
-import { isZeroReport } from '../../../util';
 import { generateDateRangeArgs } from '../../../util/report-date-range-args';
 import { getURLPath } from '../../../../../util';
 import whenActive from '../../../../../util/when-active';

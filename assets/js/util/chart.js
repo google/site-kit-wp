@@ -75,6 +75,34 @@ export const isSingleSlice = ( report ) => {
 };
 
 /**
+ * Checks if there is a single row of data or one row of the provided GA4 report is contributing 100% of the total for a given dimension.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} report The report data object.
+ * @return {(boolean|undefined)} Returns undefined if report is undefined, true/false for the above conditions.
+ */
+export const isSingleSliceGA4 = ( report ) => {
+	if ( report === undefined ) {
+		return undefined;
+	}
+
+	const currentDateRangeRows = ( report?.rows || [] ).filter(
+		( { dimensionValues } ) => dimensionValues[ 1 ].value === 'date_range_0'
+	);
+
+	if (
+		currentDateRangeRows?.length === 1 ||
+		currentDateRangeRows?.[ 0 ]?.metricValues?.[ 0 ]?.value ===
+			report?.totals?.[ 0 ]?.metricValues?.[ 0 ]?.value
+	) {
+		return true;
+	}
+
+	return false;
+};
+
+/**
  * Calculates difference between two chart values.
  *
  * @since 1.48.0

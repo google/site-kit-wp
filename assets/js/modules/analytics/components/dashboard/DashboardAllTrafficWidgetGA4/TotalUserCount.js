@@ -87,11 +87,11 @@ export default function TotalUserCount( props ) {
 		return <ReportError moduleSlug="analytics" error={ error } />;
 	}
 
-	const { totals } = report?.[ 0 ]?.data || {};
+	const { totals } = report || {};
 	const [ current, previous ] = totals || [];
 	const change = calculateChange(
-		previous?.values?.[ 0 ],
-		current?.values?.[ 0 ]
+		previous?.metricValues?.[ 0 ]?.value,
+		current?.metricValues?.[ 0 ]?.value
 	);
 
 	let currentDateRangeLabel = null;
@@ -181,7 +181,7 @@ export default function TotalUserCount( props ) {
 
 TotalUserCount.propTypes = {
 	loaded: PropTypes.bool,
-	report: PropTypes.arrayOf( PropTypes.object ),
+	report: PropTypes.object,
 	dimensionValue: PropTypes.string,
 	gatheringData: PropTypes.bool,
 };

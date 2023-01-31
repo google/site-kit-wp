@@ -31,7 +31,7 @@ export * from './is-zero-report';
  *
  * @since n.e.x.t
  *
- * @param {Array}    reports                   The array with reports data.
+ * @param {Array}    report                    The report data.
  * @param {Object}   [options]                 Optional. Data extraction options.
  * @param {number}   [options.keyColumnIndex]  Optional. The number of a column to extract metrics data from.
  * @param {number}   [options.maxSlices]       Optional. Limit the number of slices to display.
@@ -42,7 +42,7 @@ export * from './is-zero-report';
  * @param {Function} [options.tooltipCallback] Optional. A callback function for tooltip column values.
  * @return {Array} Extracted data.
  */
-export function extractAnalyticsDataForPieChart( reports, options = {} ) {
+export function extractAnalyticsDataForPieChart( report, options = {} ) {
 	const {
 		keyColumnIndex = 0,
 		maxSlices,
@@ -50,8 +50,7 @@ export function extractAnalyticsDataForPieChart( reports, options = {} ) {
 		tooltipCallback,
 	} = options;
 
-	const { data = {} } = reports?.[ 0 ] || {};
-	const { rows = [], totals = [] } = data;
+	const { rows = [], totals = [] } = report || {};
 
 	const withTooltips = typeof tooltipCallback === 'function';
 	const columns = [ 'Source', 'Percent' ];
@@ -65,33 +64,47 @@ export function extractAnalyticsDataForPieChart( reports, options = {} ) {
 		} );
 	}
 
-	const totalUsers = totals?.[ 0 ]?.values?.[ keyColumnIndex ] || 0;
+	const totalUsers =
+		totals?.[ 0 ]?.metricValues?.[ keyColumnIndex ]?.value || 0;
 	const dataMap = [ columns ];
 
+	const currentDateRangeRows = rows.filter(
+		( { dimensionValues } ) => dimensionValues[ 1 ].value === 'date_range_0'
+	);
+
 	let hasOthers = withOthers;
-	let rowsNumber = rows.length;
+	let rowsNumber = currentDateRangeRows.length;
 	let others = 1;
 	if ( maxSlices > 0 ) {
-		hasOthers = withOthers && rows.length > maxSlices;
+		hasOthers = withOthers && currentDateRangeRows.length > maxSlices;
 		rowsNumber = Math.min(
-			rows.length,
+			currentDateRangeRows.length,
 			hasOthers ? maxSlices - 1 : maxSlices
 		);
 	} else {
 		hasOthers = false;
-		rowsNumber = rows.length;
+		rowsNumber = currentDateRangeRows.length;
 	}
 
 	for ( let i = 0; i < rowsNumber; i++ ) {
-		const row = rows[ i ];
-		const users = row.metrics[ 0 ].values[ keyColumnIndex ];
+		const row = currentDateRangeRows[ i ];
+		const users = row.metricValues[ keyColumnIndex ].value;
 		const percent = totalUsers > 0 ? users / totalUsers : 0;
 
 		others -= percent;
 
-		const rowData = [ row.dimensions[ 0 ], percent ];
+		const rowData = [ row.dimensionValues[ 0 ].value, percent ];
 		if ( withTooltips ) {
-			rowData.push( tooltipCallback( row, rowData ) );
+			const previousDateRangeRow = rows.find(
+				( { dimensionValues } ) =>
+					dimensionValues[ 1 ].value === 'date_range_1' &&
+					dimensionValues[ 0 ].value ===
+						row.dimensionValues[ 0 ].value
+			);
+
+			rowData.push(
+				tooltipCallback( row, previousDateRangeRow, rowData )
+			);
 		}
 
 		dataMap.push( rowData );

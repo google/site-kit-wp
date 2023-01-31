@@ -42,7 +42,7 @@ import {
 	isValidDimensions,
 	isValidMetrics,
 } from '../utils';
-import { isZeroReport } from '../util/is-zero-report';
+import { isZeroReport } from '../util';
 const { createRegistrySelector } = Data;
 
 const fetchGetReportStore = createFetchStore( {
@@ -199,10 +199,7 @@ const baseSelectors = {
 			return false;
 		}
 
-		if (
-			! Array.isArray( report?.data?.rows ) ||
-			report?.data?.rows?.length === 0
-		) {
+		if ( ! Array.isArray( report?.rows ) || report?.rows?.length === 0 ) {
 			return true;
 		}
 

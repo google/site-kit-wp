@@ -31,14 +31,14 @@ export function isZeroReport( report ) {
 	}
 
 	if (
-		! report?.data?.rows?.length ||
-		! report?.data?.totals?.[ 0 ]?.metricValues?.length
+		! report?.rows?.length ||
+		! report?.totals?.[ 0 ]?.metricValues?.length
 	) {
 		return true;
 	}
 
 	// false means there _is_ value report data
-	return ! report.data.totals.some( ( totals ) =>
+	return ! report.totals.some( ( totals ) =>
 		totals.metricValues.some( ( { value } ) => value > 0 )
 	);
 }

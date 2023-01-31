@@ -38,6 +38,7 @@ import Data from 'googlesitekit-data';
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
 import { MODULES_ANALYTICS_4 } from '../../../../../modules/analytics-4/datastore/constants';
+import { extractAnalyticsDataForPieChart } from '../../../../../modules/analytics-4/util';
 import {
 	UI_DIMENSION_COLOR,
 	UI_DIMENSION_VALUE,
@@ -48,9 +49,8 @@ import {
 	sanitizeHTML,
 	trackEvent,
 	getChartDifferenceArrow,
-	isSingleSlice,
+	isSingleSliceGA4,
 } from '../../../../../util';
-import { extractAnalyticsDataForPieChart } from '../../../util';
 import GoogleChart from '../../../../../components/GoogleChart';
 import Link from '../../../../../components/Link';
 import PreviewBlock from '../../../../../components/PreviewBlock';
@@ -175,13 +175,18 @@ export default function UserDimensionsPieChart( props ) {
 	] );
 
 	const absOthers = {
-		current: report?.[ 0 ]?.data?.totals?.[ 0 ]?.values?.[ 0 ],
-		previous: report?.[ 0 ]?.data?.totals?.[ 1 ]?.values?.[ 0 ],
+		current: report?.totals?.[ 0 ]?.metricValues?.[ 0 ]?.value,
+		previous: report?.totals?.[ 1 ]?.metricValues?.[ 0 ]?.value,
 	};
 
-	( report?.[ 0 ]?.data?.rows || [] ).forEach( ( { metrics } ) => {
-		absOthers.current -= metrics[ 0 ].values[ 0 ];
-		absOthers.previous -= metrics[ 1 ].values[ 0 ];
+	( report?.rows || [] ).forEach( ( { dimensionValues, metricValues } ) => {
+		const dateRangeDimension = dimensionValues[ 1 ].value;
+
+		if ( dateRangeDimension === 'date_range_0' ) {
+			absOthers.current -= metricValues[ 0 ].value;
+		} else if ( dateRangeDimension === 'date_range_1' ) {
+			absOthers.previous -= metricValues[ 0 ].value;
+		}
 	} );
 
 	const getTooltipHelp = ( url, label, rowLabel ) =>
@@ -201,11 +206,11 @@ export default function UserDimensionsPieChart( props ) {
 		keyColumnIndex: 0,
 		maxSlices: 5,
 		withOthers: true,
-		tooltipCallback: ( row, rowData ) => {
+		tooltipCallback: ( row, previousDateRangeRow, rowData ) => {
 			let difference =
-				row?.metrics?.[ 1 ]?.values?.[ 0 ] > 0
-					? ( row.metrics[ 0 ].values[ 0 ] * 100 ) /
-							row.metrics[ 1 ].values[ 0 ] -
+				previousDateRangeRow?.metricValues?.[ 0 ].value > 0
+					? ( row?.metricValues?.[ 0 ].value * 100 ) /
+							previousDateRangeRow?.metricValues?.[ 0 ].value -
 					  100
 					: 100;
 
@@ -215,7 +220,7 @@ export default function UserDimensionsPieChart( props ) {
 			}
 			const svgArrow = getChartDifferenceArrow( difference );
 			const absValue = row
-				? row.metrics[ 0 ].values[ 0 ]
+				? row.metricValues[ 0 ].value
 				: absOthers.current;
 			const statInfo = sprintf(
 				/* translators: 1: numeric value of users, 2: up or down arrow , 3: different change in percentage, %%: percent symbol */
@@ -514,7 +519,7 @@ export default function UserDimensionsPieChart( props ) {
 		? sanitizeHTML( labels[ dimensionName ] || '', sanitizeArgs )
 		: { __html: '' };
 
-	const isSingleSliceReport = isSingleSlice( report );
+	const isSingleSliceReport = isSingleSliceGA4( report );
 	if ( isSingleSliceReport ) {
 		// When there is only one row, the chart will add a label which we need to hide - see issue #2660
 		options.pieSliceText = 'none';
@@ -747,6 +752,6 @@ UserDimensionsPieChart.propTypes = {
 	dimensionName: PropTypes.string.isRequired,
 	dimensionValue: PropTypes.string,
 	gatheringData: PropTypes.bool,
-	report: PropTypes.arrayOf( PropTypes.object ),
+	report: PropTypes.object,
 	loaded: PropTypes.bool,
 };
