@@ -28,7 +28,6 @@ import useMergedRef from '@react-hook/merged-ref';
  */
 import {
 	forwardRef,
-	isValidElement,
 	useCallback,
 	useEffect,
 	useRef,
@@ -123,13 +122,9 @@ const Menu = forwardRef(
 								className="mdc-list-item"
 								role="menuitem"
 							>
-								{ isValidElement( item ) && item }
-
-								{ ! isValidElement( item ) && (
-									<span className="mdc-list-item__text">
-										{ item }
-									</span>
-								) }
+								<span className="mdc-list-item__text">
+									{ item }
+								</span>
 							</li>
 						) ) }
 					{ children }
