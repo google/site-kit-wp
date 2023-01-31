@@ -209,7 +209,7 @@ export default function UserMenu() {
 				/>
 
 				<Menu
-					className="googlesitekit-user-menu googlesitekit-width-auto"
+					className="googlesitekit-user-menu"
 					menuOpen={ menuOpen }
 					onSelected={ handleMenuItemSelect }
 					id="user-menu"
