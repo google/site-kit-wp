@@ -27,19 +27,19 @@
 			.googlesitekit-ga4-reminder-banner__description-icon {
 				margin-right: 10px;
 				vertical-align: middle;
+			}
 
-				&--info {
+			.googlesitekit-ga4-reminder-banner__description-icon--info {
 
-					path {
-						fill: $c-content-primary;
-					}
+				path {
+					fill: $c-content-primary;
 				}
+			}
 
-				&--error {
+			.googlesitekit-ga4-reminder-banner__description-icon--error {
 
-					path {
-						fill: $c-thunderbird;
-					}
+				path {
+					fill: $c-thunderbird;
 				}
 			}
 		}

@@ -30,10 +30,6 @@
 		flex-wrap: wrap;
 		margin: 0;
 
-		&--multiline {
-			display: block;
-		}
-
 		> div {
 			margin: $grid-gap-phone $grid-gap-phone $grid-gap-phone 0;
 
@@ -41,8 +37,12 @@
 				margin: $grid-gap-desktop $grid-gap-desktop $grid-gap-desktop 0;
 			}
 		}
+	}
 
-		&--multiline > div {
+	.googlesitekit-wizard-component__inputs--multiline {
+		display: block;
+
+		> div {
 			margin: 0;
 			width: 100%;
 		}

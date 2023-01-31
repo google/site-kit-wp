@@ -187,13 +187,13 @@
 					letter-spacing: $ls-xs;
 				}
 			}
+		}
 
-			&--disabled {
-				opacity: 0.25;
+		.googlesitekit-survey__multi-select__choice--disabled {
+			opacity: 0.25;
 
-				:hover {
-					cursor: default;
-				}
+			:hover {
+				cursor: default;
 			}
 		}
 	}
