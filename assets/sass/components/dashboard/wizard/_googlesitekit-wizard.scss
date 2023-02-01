@@ -10,10 +10,10 @@
 
 	.googlesitekit-wizard__asterisk {
 		color: $c-required;
+	}
 
-		&--space {
-			margin-left: 3px;
-		}
+	.googlesitekit-wizard__asterisk--space {
+		margin-left: 3px;
 	}
 
 	.googlesitekit-wizard__error-text {

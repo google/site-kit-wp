@@ -19,15 +19,6 @@
 .googlesitekit-opt-in {
 	position: relative;
 
-	&--border {
-		border-top: 1px solid $c-border-medium;
-		padding-top: $grid-gap-phone;
-
-		@media (min-width: $bp-desktop) {
-			padding-top: $grid-gap-desktop;
-		}
-	}
-
 	.mdc-form-field {
 		position: relative;
 
@@ -38,18 +29,27 @@
 		}
 	}
 
-	&--align-top .mdc-form-field {
-		align-items: flex-start;
-	}
-
-	&--align-top .mdc-checkbox {
-		margin-top: -7px;
-	}
-
 	span {
 
 		@media (min-width: $bp-desktop) {
 			display: block;
 		}
 	}
+}
+
+.googlesitekit-opt-in--border {
+	border-top: 1px solid $c-border-medium;
+	padding-top: $grid-gap-phone;
+
+	@media (min-width: $bp-desktop) {
+		padding-top: $grid-gap-desktop;
+	}
+}
+
+.googlesitekit-opt-in--align-top .mdc-form-field {
+	align-items: flex-start;
+}
+
+.googlesitekit-opt-in--align-top .mdc-checkbox {
+	margin-top: -7px;
 }

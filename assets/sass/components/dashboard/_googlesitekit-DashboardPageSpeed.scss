@@ -144,10 +144,10 @@
 			font-weight: $fw-medium;
 			line-height: $lh-body-md;
 		}
+	}
 
-		&--with-action {
-			justify-content: space-between;
-		}
+	.googlesitekit-pagespeed-report__footer--with-action {
+		justify-content: space-between;
 	}
 
 	.googlesitekit-pagespeed-report__row,
@@ -172,30 +172,30 @@
 		.googlesitekit-error-text p {
 			color: $c-error;
 		}
+	}
 
-		&--first {
-			padding: 12px $grid-gap-phone 8px $grid-gap-phone;
+	.googlesitekit-pagespeed-report__row--first {
+		padding: 12px $grid-gap-phone 8px $grid-gap-phone;
 
-			@media (min-width: $bp-tablet) {
-				padding: 18px $grid-gap-desktop 12px $grid-gap-desktop;
-			}
+		@media (min-width: $bp-tablet) {
+			padding: 18px $grid-gap-desktop 12px $grid-gap-desktop;
 		}
+	}
 
-		&--single-item {
-			flex-direction: row-reverse;
+	.googlesitekit-pagespeed-report__row--single-item {
+		flex-direction: row-reverse;
+	}
+
+	.googlesitekit-pagespeed-report__row--last {
+		padding: 8px $grid-gap-phone 12px $grid-gap-phone;
+
+		@media (min-width: $bp-tablet) {
+			padding: 12px $grid-gap-desktop 18px $grid-gap-desktop;
 		}
+	}
 
-		&--last {
-			padding: 8px $grid-gap-phone 12px $grid-gap-phone;
-
-			@media (min-width: $bp-tablet) {
-				padding: 12px $grid-gap-desktop 18px $grid-gap-desktop;
-			}
-		}
-
-		&--hidden {
-			visibility: hidden;
-		}
+	.googlesitekit-pagespeed-report__row--hidden {
+		visibility: hidden;
 	}
 
 	.googlesitekit-pagespeed-report__row--error {
