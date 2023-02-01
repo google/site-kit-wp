@@ -61,7 +61,7 @@
 		"active": false,
 		"connected": false,
 		"dependencies": [],
-		"dependants": [ "optimize" ],
+		"dependants": [ "optimize", "analytics-4" ],
 		"owner": null,
 		"forceActive": false,
 		"shareable": true,
@@ -126,5 +126,26 @@
 		"shareable": true,
 		"recoverable": false,
 		"features": [ "Create tags without updating code" ]
+	},
+	{
+		"slug": "analytics-4",
+		"name": "Analytics 4",
+		"description": "Get a deeper understanding of your customers. Google Analytics gives you the free tools you need to analyze data for your business in one place.",
+		"homepage": "https://analytics.google.com/analytics/web",
+		"internal": true,
+		"order": 7,
+		"active": false,
+		"connected": false,
+		"dependencies": [ "analytics" ],
+		"dependants": [],
+		"owner": null,
+		"forceActive": false,
+		"shareable": true,
+		"recoverable": false,
+		"features": [
+			"Audience overview",
+			"Top pages",
+			"Top acquisition channels"
+		]
 	}
 ]
