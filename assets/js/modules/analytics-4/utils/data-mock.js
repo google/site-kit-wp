@@ -25,6 +25,7 @@ import invariant from 'invariant';
 import castArray from 'lodash/castArray';
 import { zip, from, Observable } from 'rxjs';
 import { map, reduce, take } from 'rxjs/operators';
+import cloneDeep from 'lodash/cloneDeep';
 import isPlainObject from 'lodash/isPlainObject';
 
 /**
@@ -204,22 +205,24 @@ function generateDateRange( startDate, endDate ) {
  *
  * @since n.e.x.t
  *
- * @param {Object} args Report options.
+ * @param {Object} options Report options.
  * @return {Array.<Object>} An array with generated report.
  */
-export function getAnalytics4MockResponse( args ) {
+export function getAnalytics4MockResponse( options ) {
 	invariant(
-		isPlainObject( args ),
+		isPlainObject( options ),
 		'report options are required to generate a mock response.'
 	);
 	invariant(
-		isValidDateString( args.startDate ),
+		isValidDateString( options.startDate ),
 		'a valid startDate is required.'
 	);
 	invariant(
-		isValidDateString( args.endDate ),
+		isValidDateString( options.endDate ),
 		'a valid endDate is required.'
 	);
+
+	const args = cloneDeep( options );
 
 	const originalSeedValue = faker.seedValue;
 	const argsHash = parseInt(
