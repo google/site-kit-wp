@@ -22,10 +22,6 @@
 		border-bottom: 1px solid $c-border-light;
 		position: relative;
 
-		&--error {
-			border: 3px solid $c-error;
-		}
-
 		.googlesitekit-settings-module__status {
 			align-items: center;
 			color: $c-surfaces-on-surface;
@@ -56,43 +52,43 @@
 				vertical-align: middle;
 				width: 19px;
 			}
+		}
 
-			&--connected::before {
-				background-color: $c-success;
-				background-image: $icon-checked;
-				background-size: 10px 8px;
-			}
+		.googlesitekit-settings-module__status-icon--connected::before {
+			background-color: $c-success;
+			background-image: $icon-checked;
+			background-size: 10px 8px;
+		}
 
-			&--not-connected::before,
-			&--warning::before {
-				background-color: $c-white;
+		.googlesitekit-settings-module__status-icon--not-connected::before,
+		.googlesitekit-settings-module__status-icon--warning::before {
+			background-color: $c-white;
 
-				/**
-				 * This is the warning icon (a solid triangle with a
-				 * transparent exclamation mark in the middle),
-				 * in the color #FECE72 ($c-yellow-y-100).
-				 */
-				background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2222%22%20height%3D%2219%22%20viewBox%3D%220%200%2022%2019%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpath%20d%3D%22M0%2019h22L11%200%200%2019zm12-3h-2v-2h2v2zm0-4h-2V8h2v4z%22%20fill%3D%22%23FECE72%22%20fill-rule%3D%22nonzero%22%2F%3E%3C%2Fsvg%3E");
-				background-position: center 3px;
-				background-size: 19px 17px;
-				height: 26px;
-				width: 26px;
-			}
+			/**
+						 * This is the warning icon (a solid triangle with a
+						 * transparent exclamation mark in the middle),
+						 * in the color #FECE72 ($c-yellow-y-100).
+						 */
+			background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2222%22%20height%3D%2219%22%20viewBox%3D%220%200%2022%2019%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpath%20d%3D%22M0%2019h22L11%200%200%2019zm12-3h-2v-2h2v2zm0-4h-2V8h2v4z%22%20fill%3D%22%23FECE72%22%20fill-rule%3D%22nonzero%22%2F%3E%3C%2Fsvg%3E");
+			background-position: center 3px;
+			background-size: 19px 17px;
+			height: 26px;
+			width: 26px;
 		}
 
 		.googlesitekit-settings-module__content {
 			border-top: 1px solid $c-utility-divider;
 			display: none;
 
-			&--open {
-				display: block;
-			}
-
 			.mdc-layout-grid__cell {
 				font-size: $fs-body-md;
 				letter-spacing: $ls-s;
 				line-height: $lh-body-md;
 			}
+		}
+
+		.googlesitekit-settings-module__content--open {
+			display: block;
 		}
 
 		.googlesitekit-settings-module__heading {
@@ -173,19 +169,19 @@
 				margin: 0 ($grid-gap-desktop * 2) $grid-gap-desktop 0;
 			}
 
-			&--data-only {
-				align-items: flex-end;
-				display: flex;
-			}
-
-			&--nomargin {
-				margin: 0;
-			}
-
 			p {
 				font-size: $fs-body-sm;
 				letter-spacing: $ls-xs;
 			}
+		}
+
+		.googlesitekit-settings-module__meta-item--data-only {
+			align-items: flex-end;
+			display: flex;
+		}
+
+		.googlesitekit-settings-module__meta-item--nomargin {
+			margin: 0;
 		}
 
 		.googlesitekit-setup-module--analytics .googlesitekit-settings-module__meta-item--data-only {
@@ -220,17 +216,17 @@
 			letter-spacing: $ls-s;
 			line-height: $lh-body-md;
 			margin: 0;
+		}
 
-			&--wrap {
-				word-break: break-all;
-			}
+		.googlesitekit-settings-module__meta-item-data--wrap {
+			word-break: break-all;
+		}
 
-			&--tiny {
-				font-size: $fs-body-sm;
-				font-weight: $fw-normal;
-				letter-spacing: $ls-xs;
-				line-height: $lh-body-sm;
-			}
+		.googlesitekit-settings-module__meta-item-data--tiny {
+			font-size: $fs-body-sm;
+			font-weight: $fw-normal;
+			letter-spacing: $ls-xs;
+			line-height: $lh-body-sm;
 		}
 
 		.googlesitekit-settings-module__meta-item-info {
@@ -301,10 +297,6 @@
 				width: 20px;
 			}
 
-			&--open::after {
-				transform: translateY(-50%) rotate(180deg);
-			}
-
 			.mdc-button {
 				background-color: $c-surfaces-surface-2;
 				color: $c-surfaces-on-surface;
@@ -332,5 +324,13 @@
 				padding: 0.5px 0;
 			}
 		}
+
+		.googlesitekit-settings-module__header--open::after {
+			transform: translateY(-50%) rotate(180deg);
+		}
+	}
+
+	.googlesitekit-settings-module--error {
+		border: 3px solid $c-error;
 	}
 }
