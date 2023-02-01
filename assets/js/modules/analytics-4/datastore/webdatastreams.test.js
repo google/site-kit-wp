@@ -34,6 +34,7 @@ import {
 	waitForDefaultTimeouts,
 } from '../../../../../tests/js/utils';
 import { MODULES_ANALYTICS_4 } from './constants';
+import { MODULES_ANALYTICS } from '../../analytics/datastore/constants';
 import * as fixtures from './__fixtures__';
 
 describe( 'modules/analytics-4 webdatastreams', () => {
@@ -611,6 +612,54 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 			} );
 		} );
 
-		describe( 'getAnalyticsConfigByMeasurementIDs', () => {} );
+		describe( 'getAnalyticsConfigByMeasurementIDs', () => {
+			beforeEach( () => {
+				registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {
+					accountID: 'UA-abcd',
+				} );
+			} );
+
+			const accountSummariesEndpoint = new RegExp( 'account-summaries' );
+
+			it( 'should return undefined when account summaries are being loaded', () => {
+				fetchMock.get( accountSummariesEndpoint, { body: [] } );
+
+				const config = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getAnalyticsConfigByMeasurementIDs( 'G-012345' );
+
+				expect( config ).toBeUndefined();
+			} );
+
+			it( 'should return NULL when no summaries are returned from the endpoint', async () => {
+				const measurementIDs = [ 'G-012345' ];
+
+				fetchMock.get( accountSummariesEndpoint, { body: [] } );
+
+				registry.select( MODULES_ANALYTICS_4 ).getAccountSummaries();
+				await untilResolved(
+					registry,
+					MODULES_ANALYTICS_4
+				).getAccountSummaries();
+
+				const config = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getAnalyticsConfigByMeasurementIDs( measurementIDs );
+
+				expect( config ).toBeNull();
+			} );
+
+			it( 'should return undefined when web data streams are being loaded', () => {
+				// freezeFetch( webDataStreamsEndpoint );
+			} );
+
+			it( 'should return the first config when found configs dont match the current site URL', () => {} );
+
+			it( 'should return the correct config when there is a found config that matches the current site URL', () => {} );
+
+			it( 'should return NULL when there are no matching configs', () => {} );
+
+			it( 'should return the correct config even if it doesnt match the site URL when only one measurement ID is requested', () => {} );
+		} );
 	} );
 } );
