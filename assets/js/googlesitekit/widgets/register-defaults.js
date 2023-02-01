@@ -28,7 +28,6 @@ import * as WIDGET_CONTEXTS from './default-contexts';
 import * as WIDGET_AREAS from './default-areas';
 import { WIDGET_AREA_STYLES } from './datastore/constants';
 import {
-	AdsenseTopEarningContentWidget,
 	AnalyticsLoyalVisitorsWidget,
 	AnalyticsNewVisitorsWidget,
 	AnalyticsTopTrafficSourceWidget,
@@ -37,7 +36,6 @@ import {
 	AnalyticsPopularProductsWidget,
 	AnalyticsTopCitiesWidget,
 	AnalyticsTopCountriesWidget,
-	AnalyticsConversionWidget,
 	SearchConsolePopularKeywordsWidget,
 	TopConvertingTrafficSourceWidget,
 } from '../../components/KeyMetrics/widget-tiles';
@@ -222,18 +220,6 @@ export function registerDefaults( widgetsAPI ) {
 	 * Key metrics widgets.
 	 */
 	widgetsAPI.registerWidget(
-		'kmAdsenseTopEarningContent',
-		{
-			Component: AdsenseTopEarningContentWidget,
-			width: widgetsAPI.WIDGET_WIDTHS.QUARTER,
-			priority: 1,
-			wrapWidget: false,
-			modules: [ 'analytics-4', 'adsense' ],
-		},
-		[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
-	);
-
-	widgetsAPI.registerWidget(
 		'kmAnalyticsLoyalVisitors',
 		{
 			Component: AnalyticsLoyalVisitorsWidget,
@@ -321,18 +307,6 @@ export function registerDefaults( widgetsAPI ) {
 		'kmAnalyticsTopCountries',
 		{
 			Component: AnalyticsTopCountriesWidget,
-			width: widgetsAPI.WIDGET_WIDTHS.QUARTER,
-			priority: 1,
-			wrapWidget: false,
-			modules: [ 'analytics-4' ],
-		},
-		[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
-	);
-
-	widgetsAPI.registerWidget(
-		'kmAnalyticsConversion',
-		{
-			Component: AnalyticsConversionWidget,
 			width: widgetsAPI.WIDGET_WIDTHS.QUARTER,
 			priority: 1,
 			wrapWidget: false,
