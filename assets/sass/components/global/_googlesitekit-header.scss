@@ -160,31 +160,6 @@
 			}
 		}
 
-		.googlesitekit-user-selector {
-
-			.mdc-button__label {
-
-				@media (max-width: $bp-wpAdminBarTablet) {
-
-					@include screen-reader-only;
-				}
-			}
-
-			.mdc-button__icon {
-
-				@media (max-width: $bp-wpAdminBarTablet) {
-					margin-right: 0;
-				}
-			}
-
-			// align the dropdown with it's button
-			margin-right: -4px;
-
-			button {
-				padding: 4px;
-			}
-		}
-
 		.googlesitekit-header__children {
 			align-items: center;
 			display: flex;
