@@ -86,7 +86,7 @@ describe( 'core/user feature-tours', () => {
 				).toThrow( /a tour slug is required/i );
 			} );
 
-			it( 'adds the slug to dismissedTourSlugs at the end', () => {
+			it( 'adds the slug to dismissedTourSlugs at the end', async () => {
 				muteFetch( fetchDismissTourRegExp, [] );
 
 				expect( store.getState().dismissedTourSlugs ).toBe(
@@ -107,12 +107,11 @@ describe( 'core/user feature-tours', () => {
 					store.getState().dismissedTourSlugs || []
 				).not.toContain( 'test-tour' );
 
-				// eslint-disable-next-line jest/valid-expect-in-promise
-				promise.then( () => {
-					expect( store.getState().dismissedTourSlugs ).toContain(
-						'test-tour'
-					);
-				} );
+				await promise;
+
+				expect( store.getState().dismissedTourSlugs ).toContain(
+					'test-tour'
+				);
 			} );
 
 			it( 'dispatches a fetch request to persist the dismissal', async () => {
