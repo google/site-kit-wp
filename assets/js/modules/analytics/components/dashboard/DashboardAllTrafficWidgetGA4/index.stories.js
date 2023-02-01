@@ -35,14 +35,18 @@ import { MODULES_ANALYTICS_4 } from '../../../../analytics-4/datastore/constants
 import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../../../../.storybook/utils/zeroReports';
 import DashboardAllTrafficWidgetGA4 from './index';
 
-// FIXME: Extract/reuse? See stories/module-analytics-components.stories.js.
-// Used to modify an Analytics response to only include a single row,
-// e.g. if no more than one value of the dimension is available.
-function limitResponseToSingleRow( analyticsResponse ) {
+function limitResponseToSingleDate( analyticsResponse ) {
+	const findFirstDateRangeRow = ( dateRange ) =>
+		analyticsResponse.rows.find(
+			( { dimensionValues } ) => dimensionValues[ 1 ].value === dateRange
+		);
+
 	return {
 		...analyticsResponse,
-		// TODO: Should we include `date_range_1` row if present?
-		rows: [ analyticsResponse.rows[ 0 ] ],
+		rows: [
+			findFirstDateRangeRow( 'date_range_0' ),
+			findFirstDateRangeRow( 'date_range_1' ),
+		],
 	};
 }
 
@@ -205,7 +209,7 @@ MainDashboardOneRowOfData.args = {
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
 				.receiveGetReport(
-					limitResponseToSingleRow(
+					limitResponseToSingleDate(
 						getAnalytics4MockResponse( options )
 					),
 					{ options }
@@ -222,7 +226,7 @@ MainDashboardOneRowOfData.scenario = {
 };
 
 export default {
-	title: 'Modules/Analytics/Widgets/DashboardAllTrafficWidgetGA4',
+	title: 'Modules/Analytics/Widgets/All Traffic Widget GA4/Dashboard',
 	component: DashboardAllTrafficWidgetGA4,
 	decorators: [
 		( Story, { args } ) => {
