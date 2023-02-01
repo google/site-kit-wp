@@ -79,6 +79,7 @@ const allTrafficReportOptions = [
 			sortOrder: 'DESCENDING',
 		},
 		limit: 6,
+		url: 'https://www.elasticpress.io/features/',
 	},
 	{
 		...baseAllTrafficOptions,
@@ -88,6 +89,7 @@ const allTrafficReportOptions = [
 			sortOrder: 'DESCENDING',
 		},
 		limit: 6,
+		url: 'https://www.elasticpress.io/features/',
 	},
 	{
 		...baseAllTrafficOptions,
@@ -97,6 +99,7 @@ const allTrafficReportOptions = [
 			sortOrder: 'DESCENDING',
 		},
 		limit: 6,
+		url: 'https://www.elasticpress.io/features/',
 	},
 	baseAllTrafficOptions,
 	{
@@ -108,25 +111,26 @@ const allTrafficReportOptions = [
 				name: 'totalUsers',
 			},
 		],
+		url: 'https://www.elasticpress.io/features/',
 	},
 ];
 
-export const MainDashboardLoaded = Template.bind( {} );
-MainDashboardLoaded.storyName = 'Loaded';
-MainDashboardLoaded.args = {
+export const EntityDashboardLoaded = Template.bind( {} );
+EntityDashboardLoaded.storyName = 'Loaded';
+EntityDashboardLoaded.args = {
 	setupRegistry: ( registry ) => {
 		allTrafficReportOptions.forEach( ( options ) => {
 			provideAnalytics4MockReport( registry, options );
 		} );
 	},
 };
-MainDashboardLoaded.scenario = {
-	label: 'Modules/Analytics/Widgets/DashboardAllTrafficWidgetGA4/MainDashboard/Loaded',
+EntityDashboardLoaded.scenario = {
+	label: 'Modules/Analytics/Widgets/DashboardAllTrafficWidgetGA4/EntityDashboard/Loaded',
 };
 
-export const MainDashboardLoading = Template.bind( {} );
-MainDashboardLoading.storyName = 'Loading';
-MainDashboardLoading.args = {
+export const EntityDashboardLoading = Template.bind( {} );
+EntityDashboardLoading.storyName = 'Loading';
+EntityDashboardLoading.args = {
 	setupRegistry: ( registry ) => {
 		allTrafficReportOptions.forEach( ( options ) => {
 			provideAnalytics4MockReport( registry, options );
@@ -136,13 +140,13 @@ MainDashboardLoading.args = {
 		} );
 	},
 };
-MainDashboardLoading.scenario = {
-	label: 'Modules/Analytics/Widgets/DashboardAllTrafficWidgetGA4/MainDashboard/Loading',
+EntityDashboardLoading.scenario = {
+	label: 'Modules/Analytics/Widgets/DashboardAllTrafficWidgetGA4/EntityDashboard/Loading',
 };
 
-export const MainDashboardDataUnavailable = Template.bind( {} );
-MainDashboardDataUnavailable.storyName = 'Data Unavailable';
-MainDashboardDataUnavailable.args = {
+export const EntityDashboardDataUnavailable = Template.bind( {} );
+EntityDashboardDataUnavailable.storyName = 'Data Unavailable';
+EntityDashboardDataUnavailable.args = {
 	setupRegistry: ( registry ) => {
 		allTrafficReportOptions.forEach( ( options ) => {
 			registry
@@ -151,13 +155,13 @@ MainDashboardDataUnavailable.args = {
 		} );
 	},
 };
-MainDashboardDataUnavailable.scenario = {
-	label: 'Modules/Analytics/Widgets/DashboardAllTrafficWidgetGA4/MainDashboard/DataUnavailable',
+EntityDashboardDataUnavailable.scenario = {
+	label: 'Modules/Analytics/Widgets/DashboardAllTrafficWidgetGA4/EntityDashboard/DataUnavailable',
 };
 
-export const MainDashboardZeroData = Template.bind( {} );
-MainDashboardZeroData.storyName = 'Zero Data';
-MainDashboardZeroData.args = {
+export const EntityDashboardZeroData = Template.bind( {} );
+EntityDashboardZeroData.storyName = 'Zero Data';
+EntityDashboardZeroData.args = {
 	setupRegistry: ( registry ) => {
 		allTrafficReportOptions.forEach( ( options ) => {
 			registry
@@ -173,13 +177,13 @@ MainDashboardZeroData.args = {
 		} );
 	},
 };
-MainDashboardZeroData.scenario = {
-	label: 'Modules/Analytics/Widgets/DashboardAllTrafficWidgetGA4/MainDashboard/ZeroData',
+EntityDashboardZeroData.scenario = {
+	label: 'Modules/Analytics/Widgets/DashboardAllTrafficWidgetGA4/EntityDashboard/ZeroData',
 };
 
-export const MainDashboardError = Template.bind( {} );
-MainDashboardError.storyName = 'Error';
-MainDashboardError.args = {
+export const EntityDashboardError = Template.bind( {} );
+EntityDashboardError.storyName = 'Error';
+EntityDashboardError.args = {
 	setupRegistry: ( registry ) => {
 		const error = {
 			code: 'missing_required_param',
@@ -197,13 +201,13 @@ MainDashboardError.args = {
 		} );
 	},
 };
-MainDashboardError.scenario = {
-	label: 'Modules/Analytics/Widgets/DashboardAllTrafficWidgetGA4/MainDashboard/Error',
+EntityDashboardError.scenario = {
+	label: 'Modules/Analytics/Widgets/DashboardAllTrafficWidgetGA4/EntityDashboard/Error',
 };
 
-export const MainDashboardOneRowOfData = Template.bind( {} );
-MainDashboardOneRowOfData.storyName = 'One row of data';
-MainDashboardOneRowOfData.args = {
+export const EntityDashboardOneRowOfData = Template.bind( {} );
+EntityDashboardOneRowOfData.storyName = 'One row of data';
+EntityDashboardOneRowOfData.args = {
 	setupRegistry: ( registry ) => {
 		allTrafficReportOptions.slice( 0, 3 ).forEach( ( options ) => {
 			registry
@@ -221,12 +225,12 @@ MainDashboardOneRowOfData.args = {
 		} );
 	},
 };
-MainDashboardOneRowOfData.scenario = {
-	label: 'Modules/Analytics/Widgets/DashboardAllTrafficWidgetGA4/MainDashboard/OneRowOfData',
+EntityDashboardOneRowOfData.scenario = {
+	label: 'Modules/Analytics/Widgets/DashboardAllTrafficWidgetGA4/EntityDashboard/OneRowOfData',
 };
 
 export default {
-	title: 'Modules/Analytics/Widgets/All Traffic Widget GA4/Dashboard',
+	title: 'Modules/Analytics/Widgets/All Traffic Widget GA4/Entity Dashboard',
 	component: DashboardAllTrafficWidgetGA4,
 	decorators: [
 		( Story, { args } ) => {
@@ -242,6 +246,10 @@ export default {
 
 			// Set some site information.
 			provideSiteInfo( registry );
+
+			provideSiteInfo( registry, {
+				currentEntityURL: 'https://www.elasticpress.io/features/',
+			} );
 
 			registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-06' );
 
