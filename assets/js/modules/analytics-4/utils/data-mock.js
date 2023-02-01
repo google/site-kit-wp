@@ -351,8 +351,9 @@ export function getAnalytics4MockResponse( options ) {
 			// Uses predefined array of dimension values to create a stream (an array) from.
 			streams.push( from( ANALYTICS_4_DIMENSION_OPTIONS[ dimension ] ) );
 		} else {
-			// In case when a dimension is not provided or is not recognized, we use NULL to create a stream (an array) with just one value.
-			streams.push( from( [ null ] ) );
+			// In case when a dimension is not provided or is not recognized, we use NULL to create a stream (an array).
+			// If a date range is provided, we want to generate two rows, one for each range. Otherwise we just generate a single row.
+			streams.push( from( hasDateRange ? [ null, null ] : [ null ] ) );
 		}
 	} );
 
@@ -415,12 +416,14 @@ export function getAnalytics4MockResponse( options ) {
 									}
 								),
 								metricValues: [
-									...( rows[ 0 ]?.metricValues || [] ),
+									...( rows[ 1 ]?.metricValues || [] ),
 								],
 							},
 					  ]
 					: []
 			);
+
+			const firstItemIndex = rows.length - ( hasDateRange ? 2 : 1 );
 
 			data.maximums = [
 				{
@@ -434,7 +437,7 @@ export function getAnalytics4MockResponse( options ) {
 						};
 					} ),
 					metricValues: [
-						...( rows[ rows.length - 1 ]?.metricValues || [] ),
+						...( rows[ firstItemIndex ]?.metricValues || [] ),
 					],
 				},
 			].concat(
@@ -476,7 +479,7 @@ export function getAnalytics4MockResponse( options ) {
 						};
 					} ),
 					metricValues: [
-						...( rows[ rows.length - 1 ]?.metricValues || [] ),
+						...( rows[ firstItemIndex ]?.metricValues || [] ),
 					],
 				},
 			].concat(
