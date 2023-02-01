@@ -117,6 +117,11 @@ function DashboardAllTrafficWidgetGA4( props ) {
 	const graphArgs = {
 		...baseArgs,
 		dimensions: [ 'date' ],
+		// FIXME: Add this (needs report args update in stories)
+		// orderby: {
+		// 	fieldName: 'date',
+		// 	sortOrder: 'ASCENDING',
+		// },
 	};
 
 	const totalsArgs = {

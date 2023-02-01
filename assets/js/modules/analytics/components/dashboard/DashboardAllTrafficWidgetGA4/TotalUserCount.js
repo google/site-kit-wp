@@ -138,9 +138,9 @@ export default function TotalUserCount( props ) {
 
 			{ ! gatheringData && (
 				<Fragment>
-					{ !! current?.values?.[ 0 ] && (
+					{ !! current?.metricValues?.[ 0 ]?.value && (
 						<div className="googlesitekit-data-block__datapoint">
-							{ numFmt( current?.values?.[ 0 ] ) }
+							{ numFmt( current?.metricValues?.[ 0 ]?.value ) }
 						</div>
 					) }
 					<div className="googlesitekit-data-block__change">

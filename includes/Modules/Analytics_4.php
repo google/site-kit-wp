@@ -47,6 +47,7 @@ use Google\Site_Kit_Dependencies\Google\Model as Google_Model;
 use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData as Google_Service_AnalyticsData;
 use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\DateRange as Google_Service_AnalyticsData_DateRange;
 use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\Dimension as Google_Service_AnalyticsData_Dimension;
+use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\DimensionOrderBy as Google_Service_AnalyticsData_DimensionOrderBy;
 use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\Filter as Google_Service_AnalyticsData_Filter;
 use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\FilterExpression as Google_Service_AnalyticsData_FilterExpression;
 use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\FilterExpressionList as Google_Service_AnalyticsData_FilterExpressionList;
@@ -1196,10 +1197,21 @@ final class Analytics_4 extends Module
 					return null;
 				}
 
-				$metric_order_by = new Google_Service_AnalyticsData_MetricOrderBy();
-				$metric_order_by->setMetricName( $order_def['fieldName'] );
 				$order_by = new Google_Service_AnalyticsData_OrderBy();
-				$order_by->setMetric( $metric_order_by );
+
+				// TODO: Need to provide metric and dimension order params instead of hardwiring for 'date'.
+				// See https://github.com/google/site-kit-wp/issues/6513.
+				if ( 'date' === $order_def['fieldName'] ) {
+					$metric_order_by = new Google_Service_AnalyticsData_DimensionOrderBy();
+					$metric_order_by->setDimensionName( $order_def['fieldName'] );
+					$order_by->setDimension( $metric_order_by );
+				} else {
+					$metric_order_by = new Google_Service_AnalyticsData_MetricOrderBy();
+					$metric_order_by->setMetricName( $order_def['fieldName'] );
+					$order_by = new Google_Service_AnalyticsData_OrderBy();
+					$order_by->setMetric( $metric_order_by );
+				}
+
 				$order_by->setDesc( 'DESCENDING' === $order_def['sortOrder'] );
 
 				return $order_by;

@@ -34,7 +34,9 @@ import AnalyticsIcon from '../../../svg/graphics/analytics.svg';
 import { MODULES_ANALYTICS } from './datastore/constants';
 import { SetupMain } from './components/setup';
 import { SettingsEdit, SettingsView } from './components/settings';
-import DashboardAllTrafficWidget from './components/dashboard/DashboardAllTrafficWidget';
+// FIXME: Revert this:
+// import DashboardAllTrafficWidget from './components/dashboard/DashboardAllTrafficWidget';
+import DashboardAllTrafficWidgetGA4 from './components/dashboard/DashboardAllTrafficWidgetGA4';
 import DashboardOverallPageMetricsWidget from './components/dashboard/DashboardOverallPageMetricsWidget';
 import { ModulePopularPagesWidget } from './components/module';
 
@@ -59,7 +61,7 @@ export const registerWidgets = ( widgets ) => {
 	widgets.registerWidget(
 		'analyticsAllTraffic',
 		{
-			Component: DashboardAllTrafficWidget,
+			Component: DashboardAllTrafficWidgetGA4,
 			width: widgets.WIDGET_WIDTHS.FULL,
 			priority: 1,
 			wrapWidget: false,

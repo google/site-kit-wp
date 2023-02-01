@@ -247,7 +247,7 @@ const baseSelectors = {
 			return undefined;
 		}
 
-		if ( ! Array.isArray( report ) ) {
+		if ( ! isPlainObject( report ) ) {
 			return false;
 		}
 

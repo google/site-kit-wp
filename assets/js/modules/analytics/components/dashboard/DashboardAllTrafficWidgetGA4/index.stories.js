@@ -26,29 +26,24 @@ import {
 	WithTestRegistry,
 } from '../../../../../../../tests/js/utils';
 import {
-	getAnalyticsMockResponse,
-	provideAnalyticsMockReport,
-} from '../../../util/data-mock';
-import { provideAnalytics4MockReport } from '../../../../analytics-4/utils/data-mock';
+	getAnalytics4MockResponse,
+	provideAnalytics4MockReport,
+} from '../../../../analytics-4/utils/data-mock';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { getWidgetComponentProps } from '../../../../../googlesitekit/widgets/util';
-import { MODULES_ANALYTICS } from '../../../datastore/constants';
-import { replaceValuesInAnalyticsReportWithZeroData } from '../../../../../../../.storybook/utils/zeroReports';
+import { MODULES_ANALYTICS_4 } from '../../../../analytics-4/datastore/constants';
+import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../../../../.storybook/utils/zeroReports';
 import DashboardAllTrafficWidgetGA4 from './index';
 
 // FIXME: Extract/reuse? See stories/module-analytics-components.stories.js.
 // Used to modify an Analytics response to only include a single row,
 // e.g. if no more than one value of the dimension is available.
 function limitResponseToSingleRow( analyticsResponse ) {
-	return [
-		{
-			...analyticsResponse[ 0 ],
-			data: {
-				...analyticsResponse[ 0 ].data,
-				rows: [ analyticsResponse[ 0 ].data.rows[ 0 ] ],
-			},
-		},
-	];
+	return {
+		...analyticsResponse,
+		// TODO: Should we include `date_range_1` row if present?
+		rows: [ analyticsResponse.rows[ 0 ] ],
+	};
 }
 
 const widgetComponentProps = getWidgetComponentProps(
@@ -130,9 +125,9 @@ MainDashboardLoading.storyName = 'Loading';
 MainDashboardLoading.args = {
 	setupRegistry: ( registry ) => {
 		allTrafficReportOptions.forEach( ( options ) => {
-			provideAnalyticsMockReport( registry, options );
+			provideAnalytics4MockReport( registry, options );
 			registry
-				.dispatch( MODULES_ANALYTICS )
+				.dispatch( MODULES_ANALYTICS_4 )
 				.startResolution( 'getReport', [ options ] );
 		} );
 	},
@@ -147,8 +142,8 @@ MainDashboardDataUnavailable.args = {
 	setupRegistry: ( registry ) => {
 		allTrafficReportOptions.forEach( ( options ) => {
 			registry
-				.dispatch( MODULES_ANALYTICS )
-				.receiveGetReport( [], { options } );
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveGetReport( {}, { options } );
 		} );
 	},
 };
@@ -162,10 +157,10 @@ MainDashboardZeroData.args = {
 	setupRegistry: ( registry ) => {
 		allTrafficReportOptions.forEach( ( options ) => {
 			registry
-				.dispatch( MODULES_ANALYTICS )
+				.dispatch( MODULES_ANALYTICS_4 )
 				.receiveGetReport(
-					replaceValuesInAnalyticsReportWithZeroData(
-						getAnalyticsMockResponse( options )
+					replaceValuesInAnalytics4ReportWithZeroData(
+						getAnalytics4MockResponse( options )
 					),
 					{
 						options,
@@ -190,10 +185,10 @@ MainDashboardError.args = {
 
 		allTrafficReportOptions.forEach( ( options ) => {
 			registry
-				.dispatch( MODULES_ANALYTICS )
+				.dispatch( MODULES_ANALYTICS_4 )
 				.receiveError( error, 'getReport', [ options ] );
 			registry
-				.dispatch( MODULES_ANALYTICS )
+				.dispatch( MODULES_ANALYTICS_4 )
 				.finishResolution( 'getReport', [ options ] );
 		} );
 	},
@@ -208,17 +203,17 @@ MainDashboardOneRowOfData.args = {
 	setupRegistry: ( registry ) => {
 		allTrafficReportOptions.slice( 0, 3 ).forEach( ( options ) => {
 			registry
-				.dispatch( MODULES_ANALYTICS )
+				.dispatch( MODULES_ANALYTICS_4 )
 				.receiveGetReport(
 					limitResponseToSingleRow(
-						getAnalyticsMockResponse( options )
+						getAnalytics4MockResponse( options )
 					),
 					{ options }
 				);
 		} );
 
 		allTrafficReportOptions.slice( 3, 5 ).forEach( ( options ) => {
-			provideAnalyticsMockReport( registry, options );
+			provideAnalytics4MockReport( registry, options );
 		} );
 	},
 };

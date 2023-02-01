@@ -113,7 +113,7 @@ export function extractAnalyticsDataForPieChart( report, options = {} ) {
 	if ( hasOthers && others > 0 ) {
 		const rowData = [ __( 'Others', 'google-site-kit' ), others ];
 		if ( withTooltips ) {
-			rowData.push( tooltipCallback( null, rowData ) );
+			rowData.push( tooltipCallback( null, null, rowData ) );
 		}
 
 		dataMap.push( rowData );
