@@ -6,6 +6,7 @@
 		transition-duration: 0ms !important;
 	}
 
+	/* We only want to override animation-duration if _not_ pausing the animations via the .googlesitekit-vrt-animation-paused class. */
 	#root:not( :has( .googlesitekit-vrt-animation-paused ) ) *,
 	#root:not( :has( .googlesitekit-vrt-animation-paused ) ) *::before,
 	#root:not( :has( .googlesitekit-vrt-animation-paused ) ) *::after {
