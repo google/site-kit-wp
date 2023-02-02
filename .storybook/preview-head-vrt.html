@@ -6,9 +6,9 @@
 		transition-duration: 0ms !important;
 	}
 
-	#root *:not( .googlesitekit-vrt-animation-paused ),
-	#root *::before:not( .googlesitekit-vrt-animation-paused ),
-	#root *::after:not( .googlesitekit-vrt-animation-paused ) {
+	#root:not( :has( .googlesitekit-vrt-animation-paused ) ) *,
+	#root:not( :has( .googlesitekit-vrt-animation-paused ) ) *::before,
+	#root:not( :has( .googlesitekit-vrt-animation-paused ) ) *::after {
 		animation-duration: 0ms !important;
 	}
 
