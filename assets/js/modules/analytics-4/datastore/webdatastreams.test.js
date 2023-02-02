@@ -613,47 +613,142 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 		} );
 
 		describe( 'getAnalyticsConfigByMeasurementIDs', () => {
+			const accountSummaries = [
+				{
+					_id: '123456',
+					propertySummaries: [
+						{ _id: '1122334455' },
+						{ _id: '1122334456' },
+						{ _id: '1122334457' },
+					],
+				},
+				{
+					_id: '123457',
+					propertySummaries: [
+						{ _id: '1122334465' },
+						{ _id: '1122334466' },
+					],
+				},
+				{
+					_id: '123458',
+					propertySummaries: [ { _id: '1122334475' } ],
+				},
+			];
+			const propertyIDs = accountSummaries
+				.map( ( { propertySummaries } ) =>
+					propertySummaries.map( ( { _id } ) => _id )
+				)
+				.reduce( ( acc, propIDs ) => [ ...acc, ...propIDs ], [] );
+
 			beforeEach( () => {
+				provideSiteInfo( registry );
 				registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {
 					accountID: 'UA-abcd',
 				} );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetSettings( {} );
 			} );
 
-			const accountSummariesEndpoint = new RegExp( 'account-summaries' );
-
-			it( 'should return undefined when account summaries are being loaded', () => {
-				fetchMock.get( accountSummariesEndpoint, { body: [] } );
+			it( 'should return NULL when no summaries are returned from the endpoint', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetAccountSummaries( [] );
 
 				const config = registry
 					.select( MODULES_ANALYTICS_4 )
 					.getAnalyticsConfigByMeasurementIDs( 'G-012345' );
 
-				expect( config ).toBeUndefined();
-			} );
-
-			it( 'should return NULL when no summaries are returned from the endpoint', async () => {
-				const measurementIDs = [ 'G-012345' ];
-
-				fetchMock.get( accountSummariesEndpoint, { body: [] } );
-
-				registry.select( MODULES_ANALYTICS_4 ).getAccountSummaries();
-				await untilResolved(
-					registry,
-					MODULES_ANALYTICS_4
-				).getAccountSummaries();
-
-				const config = registry
-					.select( MODULES_ANALYTICS_4 )
-					.getAnalyticsConfigByMeasurementIDs( measurementIDs );
-
 				expect( config ).toBeNull();
 			} );
 
-			it( 'should return undefined when web data streams are being loaded', () => {
-				// freezeFetch( webDataStreamsEndpoint );
-			} );
+			it( 'should return the first config when found configs dont match the current site URL', () => {
+				const measurementID1 = 'G-12345';
+				const measurementID2 = 'G-12346';
+				const datastreams = {
+					1122334455: [
+						{
+							_id: '110',
+							webDataStream: {
+								defaultUri: 'http://example-1.test',
+								measurementId: 'G-1101', // eslint-disable-line sitekit/acronym-case
+							},
+						},
+						{
+							_id: '111',
+							webDataStream: {
+								defaultUri: 'http://example-2.test',
+								measurementId: 'G-1102', // eslint-disable-line sitekit/acronym-case
+							},
+						},
+					],
+					1122334465: [
+						{
+							_id: '112',
+							webDataStream: {
+								defaultUri: 'http://example-3.test',
+								measurementId: measurementID2, // eslint-disable-line sitekit/acronym-case
+							},
+						},
+						{
+							_id: '113',
+							webDataStream: {
+								defaultUri: 'http://example-4.test',
+								measurementId: 'G-1103', // eslint-disable-line sitekit/acronym-case
+							},
+						},
+					],
+					1122334475: [
+						{
+							_id: '114',
+							webDataStream: {
+								defaultUri: 'http://example-5.test',
+								measurementId: 'G-1104', // eslint-disable-line sitekit/acronym-case
+							},
+						},
+						{
+							_id: '115',
+							webDataStream: {
+								defaultUri: 'http://example-6.test',
+								measurementId: measurementID1, // eslint-disable-line sitekit/acronym-case
+							},
+						},
+						{
+							_id: '116',
+							webDataStream: {
+								defaultUri: 'http://example-7.test',
+								measurementId: 'G-1105', // eslint-disable-line sitekit/acronym-case
+							},
+						},
+					],
+					1122334456: [],
+					1122334457: [],
+					1122334466: [],
+				};
 
-			it( 'should return the first config when found configs dont match the current site URL', () => {} );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetAccountSummaries( accountSummaries );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetWebDataStreamsBatch( datastreams, {
+						propertyIDs,
+					} );
+
+				const config = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getAnalyticsConfigByMeasurementIDs( [
+						measurementID1,
+						measurementID2,
+					] );
+
+				expect( config ).toEqual( {
+					accountID: '123457',
+					measurementID: 'G-12346',
+					propertyID: '1122334465',
+					webDataStreamID: '112',
+				} );
+			} );
 
 			it( 'should return the correct config when there is a found config that matches the current site URL', () => {} );
 

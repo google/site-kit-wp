@@ -460,6 +460,7 @@ const baseSelectors = {
 					propertyIDs
 				);
 
+			// Return undefined if web data streams haven't been resolved yet.
 			if ( datastreams === undefined ) {
 				return undefined;
 			}
