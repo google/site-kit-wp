@@ -1,5 +1,5 @@
 /**
- * AnalyticsTopTrafficSourceWidget component tests.
+ * PopularContentWidget component tests.
  *
  * Site Kit by Google, Copyright 2023 Google LLC
  *
@@ -17,14 +17,14 @@
  */
 
 import { render } from '../../../../../../tests/js/test-utils';
-import AnalyticsTopTrafficSourceWidget from './AnalyticsTopTrafficSourceWidget';
+import PopularContentWidget from './PopularContentWidget';
 
-describe( 'AnalyticsTopTrafficSourceWidget', () => {
+describe( 'PopularContentWidget', () => {
 	it( 'should render the widget', () => {
-		const { getByText } = render( <AnalyticsTopTrafficSourceWidget /> );
+		const { getByText } = render( <PopularContentWidget /> );
 
 		expect(
-			getByText( 'TODO: UI for AnalyticsTopTrafficSourceWidget' )
+			getByText( 'TODO: UI for PopularContentWidget' )
 		).toBeInTheDocument();
 	} );
 } );

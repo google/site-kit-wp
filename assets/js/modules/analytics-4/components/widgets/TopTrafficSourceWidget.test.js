@@ -1,5 +1,5 @@
 /**
- * AnalyticsPopularProductsWidget component.
+ * TopTrafficSourceWidget component tests.
  *
  * Site Kit by Google, Copyright 2023 Google LLC
  *
@@ -16,6 +16,15 @@
  * limitations under the License.
  */
 
-export default function AnalyticsPopularProductsWidget() {
-	return <div>TODO: UI for AnalyticsPopularProductsWidget</div>;
-}
+import { render } from '../../../../../../tests/js/test-utils';
+import TopTrafficSourceWidget from './TopTrafficSourceWidget';
+
+describe( 'TopTrafficSourceWidget', () => {
+	it( 'should render the widget', () => {
+		const { getByText } = render( <TopTrafficSourceWidget /> );
+
+		expect(
+			getByText( 'TODO: UI for TopTrafficSourceWidget' )
+		).toBeInTheDocument();
+	} );
+} );

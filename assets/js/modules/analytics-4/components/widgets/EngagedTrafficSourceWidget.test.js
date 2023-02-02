@@ -1,5 +1,5 @@
 /**
- * AnalyticsLoyalVisitorsWidget tests.
+ * EngagedTrafficSourceWidget tests.
  *
  * Site Kit by Google, Copyright 2023 Google LLC
  *
@@ -17,14 +17,14 @@
  */
 
 import { render } from '../../../../../../tests/js/test-utils';
-import AnalyticsLoyalVisitorsWidget from './AnalyticsLoyalVisitorsWidget';
+import EngagedTrafficSourceWidget from './EngagedTrafficSourceWidget';
 
-describe( 'AnalyticsLoyalVisitorsWidget', () => {
+describe( 'EngagedTrafficSourceWidget', () => {
 	it( 'should render the widget', () => {
-		const { getByText } = render( <AnalyticsLoyalVisitorsWidget /> );
+		const { getByText } = render( <EngagedTrafficSourceWidget /> );
 
 		expect(
-			getByText( 'TODO: UI for AnalyticsLoyalVisitorsWidget' )
+			getByText( 'TODO: UI for EngagedTrafficSourceWidget' )
 		).toBeInTheDocument();
 	} );
 } );

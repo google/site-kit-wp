@@ -1,5 +1,5 @@
 /**
- * AnalyticsPopularContentWidget component tests.
+ * EngagedTrafficSourceWidget component.
  *
  * Site Kit by Google, Copyright 2023 Google LLC
  *
@@ -16,15 +16,6 @@
  * limitations under the License.
  */
 
-import { render } from '../../../../../../tests/js/test-utils';
-import AnalyticsPopularContentWidget from './AnalyticsPopularContentWidget';
-
-describe( 'AnalyticsPopularContentWidget', () => {
-	it( 'should render the widget', () => {
-		const { getByText } = render( <AnalyticsPopularContentWidget /> );
-
-		expect(
-			getByText( 'TODO: UI for AnalyticsPopularContentWidget' )
-		).toBeInTheDocument();
-	} );
-} );
+export default function EngagedTrafficSourceWidget() {
+	return <div>TODO: UI for EngagedTrafficSourceWidget</div>;
+}

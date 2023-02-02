@@ -16,12 +16,12 @@
  * limitations under the License.
  */
 
-export { default as AnalyticsEngagedTrafficSourceWidget } from './AnalyticsEngagedTrafficSourceWidget';
-export { default as AnalyticsLoyalVisitorsWidget } from './AnalyticsLoyalVisitorsWidget';
-export { default as AnalyticsNewVisitorsWidget } from './AnalyticsNewVisitorsWidget';
-export { default as AnalyticsPopularContentWidget } from './AnalyticsPopularContentWidget';
-export { default as AnalyticsPopularProductsWidget } from './AnalyticsPopularProductsWidget';
-export { default as AnalyticsTopCitiesWidget } from './AnalyticsTopCitiesWidget';
-export { default as AnalyticsTopCountriesWidget } from './AnalyticsTopCountriesWidget';
-export { default as AnalyticsTopTrafficSourceWidget } from './AnalyticsTopTrafficSourceWidget';
+export { default as EngagedTrafficSourceWidget } from './EngagedTrafficSourceWidget';
+export { default as LoyalVisitorsWidget } from './LoyalVisitorsWidget';
+export { default as NewVisitorsWidget } from './NewVisitorsWidget';
+export { default as PopularContentWidget } from './PopularContentWidget';
+export { default as PopularProductsWidget } from './PopularProductsWidget';
+export { default as TopCitiesWidget } from './TopCitiesWidget';
+export { default as TopCountriesWidget } from './TopCountriesWidget';
+export { default as TopTrafficSourceWidget } from './TopTrafficSourceWidget';
 export { default as TopConvertingTrafficSourceWidget } from './TopConvertingTrafficSourceWidget';

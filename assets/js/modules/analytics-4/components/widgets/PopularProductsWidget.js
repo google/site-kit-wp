@@ -1,5 +1,5 @@
 /**
- * AnalyticsNewVisitorsWidget component.
+ * PopularProductsWidget component.
  *
  * Site Kit by Google, Copyright 2023 Google LLC
  *
@@ -16,6 +16,6 @@
  * limitations under the License.
  */
 
-export default function AnalyticsNewVisitorsWidget() {
-	return <div>TODO: UI for AnalyticsNewVisitorsWidget</div>;
+export default function PopularProductsWidget() {
+	return <div>TODO: UI for PopularProductsWidget</div>;
 }

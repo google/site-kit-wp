@@ -1,5 +1,5 @@
 /**
- * AnalyticsPopularContentWidget component.
+ * PopularProductsWidget component tests.
  *
  * Site Kit by Google, Copyright 2023 Google LLC
  *
@@ -16,6 +16,15 @@
  * limitations under the License.
  */
 
-export default function AnalyticsPopularContentWidget() {
-	return <div>TODO: UI for AnalyticsPopularContentWidget</div>;
-}
+import { render } from '../../../../../../tests/js/test-utils';
+import PopularProductsWidget from './PopularProductsWidget';
+
+describe( 'PopularProductsWidget', () => {
+	it( 'should render the widget', () => {
+		const { getByText } = render( <PopularProductsWidget /> );
+
+		expect(
+			getByText( 'TODO: UI for PopularProductsWidget' )
+		).toBeInTheDocument();
+	} );
+} );

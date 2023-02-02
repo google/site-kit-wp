@@ -1,5 +1,5 @@
 /**
- * AnalyticsNewVisitorsWidget tests.
+ * LoyalVisitorsWidget tests.
  *
  * Site Kit by Google, Copyright 2023 Google LLC
  *
@@ -17,14 +17,14 @@
  */
 
 import { render } from '../../../../../../tests/js/test-utils';
-import AnalyticsNewVisitorsWidget from './AnalyticsNewVisitorsWidget';
+import LoyalVisitorsWidget from './LoyalVisitorsWidget';
 
-describe( 'AnalyticsNewVisitorsWidget', () => {
+describe( 'LoyalVisitorsWidget', () => {
 	it( 'should render the widget', () => {
-		const { getByText } = render( <AnalyticsNewVisitorsWidget /> );
+		const { getByText } = render( <LoyalVisitorsWidget /> );
 
 		expect(
-			getByText( 'TODO: UI for AnalyticsNewVisitorsWidget' )
+			getByText( 'TODO: UI for LoyalVisitorsWidget' )
 		).toBeInTheDocument();
 	} );
 } );

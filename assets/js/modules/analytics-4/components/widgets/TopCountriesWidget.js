@@ -1,5 +1,5 @@
 /**
- * AnalyticsLoyalVisitorsWidget component.
+ * TopCountriesWidget component.
  *
  * Site Kit by Google, Copyright 2023 Google LLC
  *
@@ -16,6 +16,6 @@
  * limitations under the License.
  */
 
-export default function AnalyticsLoyalVisitorsWidget() {
-	return <div>TODO: UI for AnalyticsLoyalVisitorsWidget</div>;
+export default function TopCountriesWidget() {
+	return <div>TODO: UI for TopCountriesWidget</div>;
 }

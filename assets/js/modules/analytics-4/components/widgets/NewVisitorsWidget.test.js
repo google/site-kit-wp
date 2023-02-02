@@ -1,5 +1,5 @@
 /**
- * AnalyticsPopularProductsWidget component tests.
+ * NewVisitorsWidget tests.
  *
  * Site Kit by Google, Copyright 2023 Google LLC
  *
@@ -17,14 +17,14 @@
  */
 
 import { render } from '../../../../../../tests/js/test-utils';
-import AnalyticsPopularProductsWidget from './AnalyticsPopularProductsWidget';
+import NewVisitorsWidget from './NewVisitorsWidget';
 
-describe( 'AnalyticsPopularProductsWidget', () => {
+describe( 'NewVisitorsWidget', () => {
 	it( 'should render the widget', () => {
-		const { getByText } = render( <AnalyticsPopularProductsWidget /> );
+		const { getByText } = render( <NewVisitorsWidget /> );
 
 		expect(
-			getByText( 'TODO: UI for AnalyticsPopularProductsWidget' )
+			getByText( 'TODO: UI for NewVisitorsWidget' )
 		).toBeInTheDocument();
 	} );
 } );
