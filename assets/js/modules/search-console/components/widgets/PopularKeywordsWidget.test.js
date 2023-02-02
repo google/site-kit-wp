@@ -1,5 +1,5 @@
 /**
- * SearchConsolePopularKeywordsWidget component tests.
+ * PopularKeywordsWidget component tests.
  *
  * Site Kit by Google, Copyright 2023 Google LLC
  *
@@ -17,14 +17,14 @@
  */
 
 import { render } from '../../../../../../tests/js/test-utils';
-import SearchConsolePopularKeywordsWidget from './SearchConsolePopularKeywordsWidget';
+import PopularKeywordsWidget from './PopularKeywordsWidget';
 
-describe( 'SearchConsolePopularKeywordsWidget', () => {
+describe( 'PopularKeywordsWidget', () => {
 	it( 'should render the widget', () => {
-		const { getByText } = render( <SearchConsolePopularKeywordsWidget /> );
+		const { getByText } = render( <PopularKeywordsWidget /> );
 
 		expect(
-			getByText( 'TODO: UI for SearchConsolePopularKeywordsWidget' )
+			getByText( 'TODO: UI for PopularKeywordsWidget' )
 		).toBeInTheDocument();
 	} );
 } );

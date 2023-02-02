@@ -16,4 +16,4 @@
  * limitations under the License.
  */
 
-export { default as SearchConsolePopularKeywordsWidget } from './SearchConsolePopularKeywordsWidget';
+export { default as PopularKeywordsWidget } from './PopularKeywordsWidget';

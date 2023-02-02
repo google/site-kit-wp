@@ -1,5 +1,5 @@
 /**
- * SearchConsolePopularKeywordsWidget component.
+ * PopularKeywordsWidget component.
  *
  * Site Kit by Google, Copyright 2023 Google LLC
  *
@@ -16,6 +16,6 @@
  * limitations under the License.
  */
 
-export default function SearchConsolePopularKeywordsWidget() {
-	return <div>TODO: UI for SearchConsolePopularKeywordsWidget</div>;
+export default function PopularKeywordsWidget() {
+	return <div>TODO: UI for PopularKeywordsWidget</div>;
 }

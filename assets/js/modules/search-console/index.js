@@ -31,7 +31,7 @@ import {
 } from '../../googlesitekit/widgets/default-areas';
 import SearchConsoleIcon from '../../../svg/graphics/search-console.svg';
 import { MODULES_SEARCH_CONSOLE } from './datastore/constants';
-import { SearchConsolePopularKeywordsWidget } from './components/widgets';
+import PopularKeywordsWidget from './components/widgets/PopularKeywordsWidget';
 
 export { registerStore } from './datastore';
 
@@ -81,7 +81,7 @@ export const registerWidgets = ( widgets ) => {
 	widgets.registerWidget(
 		'kmSearchConsolePopularKeywords',
 		{
-			Component: SearchConsolePopularKeywordsWidget,
+			Component: PopularKeywordsWidget,
 			width: widgets.WIDGET_WIDTHS.QUARTER,
 			priority: 1,
 			wrapWidget: false,
