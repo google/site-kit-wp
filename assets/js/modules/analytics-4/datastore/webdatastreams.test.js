@@ -634,11 +634,73 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 					propertySummaries: [ { _id: '1122334475' } ],
 				},
 			];
+
 			const propertyIDs = accountSummaries
 				.map( ( { propertySummaries } ) =>
 					propertySummaries.map( ( { _id } ) => _id )
 				)
 				.reduce( ( acc, propIDs ) => [ ...acc, ...propIDs ], [] );
+
+			const datastreams = {
+				1122334455: [
+					{
+						_id: '110',
+						webDataStream: {
+							defaultUri: 'http://example-1.test',
+							measurementId: 'G-1101', // eslint-disable-line sitekit/acronym-case
+						},
+					},
+					{
+						_id: '111',
+						webDataStream: {
+							defaultUri: 'http://example-2.test',
+							measurementId: 'G-1102', // eslint-disable-line sitekit/acronym-case
+						},
+					},
+				],
+				1122334465: [
+					{
+						_id: '112',
+						webDataStream: {
+							defaultUri: 'http://example-3.test',
+							measurementId: 'G-1103', // eslint-disable-line sitekit/acronym-case
+						},
+					},
+					{
+						_id: '113',
+						webDataStream: {
+							defaultUri: 'http://example-4.test',
+							measurementId: 'G-1104', // eslint-disable-line sitekit/acronym-case
+						},
+					},
+				],
+				1122334475: [
+					{
+						_id: '114',
+						webDataStream: {
+							defaultUri: 'http://example-5.test',
+							measurementId: 'G-1105', // eslint-disable-line sitekit/acronym-case
+						},
+					},
+					{
+						_id: '115',
+						webDataStream: {
+							defaultUri: 'http://example.com',
+							measurementId: 'G-1106', // eslint-disable-line sitekit/acronym-case
+						},
+					},
+					{
+						_id: '116',
+						webDataStream: {
+							defaultUri: 'http://example-7.test',
+							measurementId: 'G-1107', // eslint-disable-line sitekit/acronym-case
+						},
+					},
+				],
+				1122334456: [],
+				1122334457: [],
+				1122334466: [],
+			};
 
 			beforeEach( () => {
 				provideSiteInfo( registry );
@@ -663,69 +725,6 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 			} );
 
 			it( 'should return the first config when found configs dont match the current site URL', () => {
-				const measurementID1 = 'G-12345';
-				const measurementID2 = 'G-12346';
-				const datastreams = {
-					1122334455: [
-						{
-							_id: '110',
-							webDataStream: {
-								defaultUri: 'http://example-1.test',
-								measurementId: 'G-1101', // eslint-disable-line sitekit/acronym-case
-							},
-						},
-						{
-							_id: '111',
-							webDataStream: {
-								defaultUri: 'http://example-2.test',
-								measurementId: 'G-1102', // eslint-disable-line sitekit/acronym-case
-							},
-						},
-					],
-					1122334465: [
-						{
-							_id: '112',
-							webDataStream: {
-								defaultUri: 'http://example-3.test',
-								measurementId: measurementID2, // eslint-disable-line sitekit/acronym-case
-							},
-						},
-						{
-							_id: '113',
-							webDataStream: {
-								defaultUri: 'http://example-4.test',
-								measurementId: 'G-1103', // eslint-disable-line sitekit/acronym-case
-							},
-						},
-					],
-					1122334475: [
-						{
-							_id: '114',
-							webDataStream: {
-								defaultUri: 'http://example-5.test',
-								measurementId: 'G-1104', // eslint-disable-line sitekit/acronym-case
-							},
-						},
-						{
-							_id: '115',
-							webDataStream: {
-								defaultUri: 'http://example-6.test',
-								measurementId: measurementID1, // eslint-disable-line sitekit/acronym-case
-							},
-						},
-						{
-							_id: '116',
-							webDataStream: {
-								defaultUri: 'http://example-7.test',
-								measurementId: 'G-1105', // eslint-disable-line sitekit/acronym-case
-							},
-						},
-					],
-					1122334456: [],
-					1122334457: [],
-					1122334466: [],
-				};
-
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveGetAccountSummaries( accountSummaries );
@@ -738,23 +737,84 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 				const config = registry
 					.select( MODULES_ANALYTICS_4 )
 					.getAnalyticsConfigByMeasurementIDs( [
-						measurementID1,
-						measurementID2,
+						'G-1107',
+						'G-1103',
 					] );
 
 				expect( config ).toEqual( {
 					accountID: '123457',
-					measurementID: 'G-12346',
+					measurementID: 'G-1103',
 					propertyID: '1122334465',
 					webDataStreamID: '112',
 				} );
 			} );
 
-			it( 'should return the correct config when there is a found config that matches the current site URL', () => {} );
+			it( 'should return the correct config when there is a config that matches the current site URL', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetAccountSummaries( accountSummaries );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetWebDataStreamsBatch( datastreams, {
+						propertyIDs,
+					} );
 
-			it( 'should return NULL when there are no matching configs', () => {} );
+				const config = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getAnalyticsConfigByMeasurementIDs( [
+						'G-1101',
+						'G-1106',
+					] );
 
-			it( 'should return the correct config even if it doesnt match the site URL when only one measurement ID is requested', () => {} );
+				expect( config ).toEqual( {
+					accountID: '123458',
+					measurementID: 'G-1106',
+					propertyID: '1122334475',
+					webDataStreamID: '115',
+				} );
+			} );
+
+			it( 'should return NULL when there are no matching configs', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetAccountSummaries( accountSummaries );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetWebDataStreamsBatch( datastreams, {
+						propertyIDs,
+					} );
+
+				const config = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getAnalyticsConfigByMeasurementIDs( [
+						'G-12345',
+						'G-12346',
+					] );
+
+				expect( config ).toBeNull();
+			} );
+
+			it( 'should return the correct config even if it doesnt match the site URL when only one measurement ID is requested', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetAccountSummaries( accountSummaries );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetWebDataStreamsBatch( datastreams, {
+						propertyIDs,
+					} );
+
+				const config = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getAnalyticsConfigByMeasurementIDs( 'G-1103' );
+
+				expect( config ).toEqual( {
+					accountID: '123457',
+					measurementID: 'G-1103',
+					propertyID: '1122334465',
+					webDataStreamID: '112',
+				} );
+			} );
 		} );
 	} );
 } );
