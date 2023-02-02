@@ -1,5 +1,5 @@
 /**
- * SearchConsolePopularKeywordsWidget component.
+ * LoyalVisitorsWidget tests.
  *
  * Site Kit by Google, Copyright 2023 Google LLC
  *
@@ -16,6 +16,15 @@
  * limitations under the License.
  */
 
-export default function SearchConsolePopularKeywordsWidget() {
-	return <div>TODO: UI for SearchConsolePopularKeywordsWidget</div>;
-}
+import { render } from '../../../../../../tests/js/test-utils';
+import LoyalVisitorsWidget from './LoyalVisitorsWidget';
+
+describe( 'LoyalVisitorsWidget', () => {
+	it( 'should render the widget', () => {
+		const { getByText } = render( <LoyalVisitorsWidget /> );
+
+		expect(
+			getByText( 'TODO: UI for LoyalVisitorsWidget' )
+		).toBeInTheDocument();
+	} );
+} );

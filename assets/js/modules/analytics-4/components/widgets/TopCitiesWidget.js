@@ -1,5 +1,5 @@
 /**
- * AnalyticsTopTrafficSourceWidget component.
+ * TopCitiesWidget component.
  *
  * Site Kit by Google, Copyright 2023 Google LLC
  *
@@ -16,6 +16,6 @@
  * limitations under the License.
  */
 
-export default function AnalyticsTopTrafficSourceWidget() {
-	return <div>TODO: UI for AnalyticsTopTrafficSourceWidget</div>;
+export default function TopCitiesWidget() {
+	return <div>TODO: UI for TopCitiesWidget</div>;
 }

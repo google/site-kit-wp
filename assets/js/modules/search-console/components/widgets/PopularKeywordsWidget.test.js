@@ -1,5 +1,5 @@
 /**
- * AnalyticsPopularProductsWidget component tests.
+ * PopularKeywordsWidget component tests.
  *
  * Site Kit by Google, Copyright 2023 Google LLC
  *
@@ -16,15 +16,15 @@
  * limitations under the License.
  */
 
-import { render } from '../../../../../tests/js/test-utils';
-import AnalyticsPopularProductsWidget from './AnalyticsPopularProductsWidget';
+import { render } from '../../../../../../tests/js/test-utils';
+import PopularKeywordsWidget from './PopularKeywordsWidget';
 
-describe( 'AnalyticsPopularProductsWidget', () => {
+describe( 'PopularKeywordsWidget', () => {
 	it( 'should render the widget', () => {
-		const { getByText } = render( <AnalyticsPopularProductsWidget /> );
+		const { getByText } = render( <PopularKeywordsWidget /> );
 
 		expect(
-			getByText( 'TODO: UI for AnalyticsPopularProductsWidget' )
+			getByText( 'TODO: UI for PopularKeywordsWidget' )
 		).toBeInTheDocument();
 	} );
 } );

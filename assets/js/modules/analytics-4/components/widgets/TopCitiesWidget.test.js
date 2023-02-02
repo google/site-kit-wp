@@ -1,5 +1,5 @@
 /**
- * AnalyticsTopCountriesWidget component.
+ * TopCitiesWidget component tests.
  *
  * Site Kit by Google, Copyright 2023 Google LLC
  *
@@ -16,6 +16,15 @@
  * limitations under the License.
  */
 
-export default function AnalyticsTopCountriesWidget() {
-	return <div>TODO: UI for AnalyticsTopCountriesWidget</div>;
-}
+import { render } from '../../../../../../tests/js/test-utils';
+import TopCitiesWidget from './TopCitiesWidget';
+
+describe( 'TopCitiesWidget', () => {
+	it( 'should render the widget', () => {
+		const { getByText } = render( <TopCitiesWidget /> );
+
+		expect(
+			getByText( 'TODO: UI for TopCitiesWidget' )
+		).toBeInTheDocument();
+	} );
+} );

@@ -1,5 +1,5 @@
 /**
- * AnalyticsPopularProductsWidget component.
+ * Search Console Key Metrics widget components.
  *
  * Site Kit by Google, Copyright 2023 Google LLC
  *
@@ -16,6 +16,4 @@
  * limitations under the License.
  */
 
-export default function AnalyticsPopularProductsWidget() {
-	return <div>TODO: UI for AnalyticsPopularProductsWidget</div>;
-}
+export { default as PopularKeywordsWidget } from './PopularKeywordsWidget';
