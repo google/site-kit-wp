@@ -1,5 +1,5 @@
 /**
- * AnalyticsEngagedTrafficSourceWidget component.
+ * TopCountriesWidget component tests.
  *
  * Site Kit by Google, Copyright 2023 Google LLC
  *
@@ -16,6 +16,15 @@
  * limitations under the License.
  */
 
-export default function AnalyticsEngagedTrafficSourceWidget() {
-	return <div>TODO: UI for AnalyticsEngagedTrafficSourceWidget</div>;
-}
+import { render } from '../../../../../../tests/js/test-utils';
+import TopCountriesWidget from './TopCountriesWidget';
+
+describe( 'TopCountriesWidget', () => {
+	it( 'should render the widget', () => {
+		const { getByText } = render( <TopCountriesWidget /> );
+
+		expect(
+			getByText( 'TODO: UI for TopCountriesWidget' )
+		).toBeInTheDocument();
+	} );
+} );

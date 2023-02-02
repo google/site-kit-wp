@@ -1,5 +1,5 @@
 /**
- * AnalyticsTopCitiesWidget component.
+ * PopularKeywordsWidget component.
  *
  * Site Kit by Google, Copyright 2023 Google LLC
  *
@@ -16,6 +16,6 @@
  * limitations under the License.
  */
 
-export default function AnalyticsTopCitiesWidget() {
-	return <div>TODO: UI for AnalyticsTopCitiesWidget</div>;
+export default function PopularKeywordsWidget() {
+	return <div>TODO: UI for PopularKeywordsWidget</div>;
 }

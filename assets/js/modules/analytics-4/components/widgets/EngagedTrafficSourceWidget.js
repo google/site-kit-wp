@@ -1,5 +1,5 @@
 /**
- * AnalyticsLoyalVisitorsWidget tests.
+ * EngagedTrafficSourceWidget component.
  *
  * Site Kit by Google, Copyright 2023 Google LLC
  *
@@ -16,15 +16,6 @@
  * limitations under the License.
  */
 
-import { render } from '../../../../../tests/js/test-utils';
-import AnalyticsLoyalVisitorsWidget from './AnalyticsLoyalVisitorsWidget';
-
-describe( 'AnalyticsLoyalVisitorsWidget', () => {
-	it( 'should render the widget', () => {
-		const { getByText } = render( <AnalyticsLoyalVisitorsWidget /> );
-
-		expect(
-			getByText( 'TODO: UI for AnalyticsLoyalVisitorsWidget' )
-		).toBeInTheDocument();
-	} );
-} );
+export default function EngagedTrafficSourceWidget() {
+	return <div>TODO: UI for EngagedTrafficSourceWidget</div>;
+}

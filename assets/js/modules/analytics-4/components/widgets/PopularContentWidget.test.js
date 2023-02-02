@@ -1,5 +1,5 @@
 /**
- * Key Metrics entry point.
+ * PopularContentWidget component tests.
  *
  * Site Kit by Google, Copyright 2023 Google LLC
  *
@@ -16,4 +16,15 @@
  * limitations under the License.
  */
 
-export * from './widget-tiles';
+import { render } from '../../../../../../tests/js/test-utils';
+import PopularContentWidget from './PopularContentWidget';
+
+describe( 'PopularContentWidget', () => {
+	it( 'should render the widget', () => {
+		const { getByText } = render( <PopularContentWidget /> );
+
+		expect(
+			getByText( 'TODO: UI for PopularContentWidget' )
+		).toBeInTheDocument();
+	} );
+} );
