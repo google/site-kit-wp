@@ -35,27 +35,32 @@ import { Icon, check, stack } from '@wordpress/icons';
 import { Button } from 'googlesitekit-components';
 
 function ReportErrorButton( { message, componentStack } ) {
-	const [ copied, setIsCopied ] = useState( false );
-
-	const icon = (
-		<Icon className="mdc-button__icon" icon={ copied ? check : stack } />
-	);
+	const [ copied, setCopied ] = useState( false );
 
 	const onErrorClick = () => {
 		// Copy message with wrapping backticks for code block formatting on wp.org.
 		copyToClipboard( `\`${ message }\n${ componentStack }\`` );
 
-		setIsCopied( true );
+		setCopied( true );
 	};
 
 	return (
 		<Button
-			aria-label={ __(
-				'Error message copied to clipboard. Click to copy the error message again.',
-				'google-site-kit'
-			) }
+			aria-label={
+				copied
+					? __(
+							'Error message copied to clipboard. Click to copy the error message again.',
+							'google-site-kit'
+					  )
+					: undefined
+			}
 			onClick={ onErrorClick }
-			trailingIcon={ icon }
+			trailingIcon={
+				<Icon
+					className="mdc-button__icon"
+					icon={ copied ? check : stack }
+				/>
+			}
 		>
 			{ copied
 				? __( 'Copied to clipboard', 'google-site-kit' )
