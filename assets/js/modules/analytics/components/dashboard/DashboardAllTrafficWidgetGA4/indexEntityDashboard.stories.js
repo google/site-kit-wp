@@ -101,7 +101,10 @@ const allTrafficReportOptions = [
 		limit: 6,
 		url: 'https://www.elasticpress.io/features/',
 	},
-	baseAllTrafficOptions,
+	{
+		...baseAllTrafficOptions,
+		url: 'https://www.elasticpress.io/features/',
+	},
 	{
 		startDate: '2020-12-09',
 		endDate: '2021-01-05',
