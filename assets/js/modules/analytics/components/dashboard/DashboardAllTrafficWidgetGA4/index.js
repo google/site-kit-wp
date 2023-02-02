@@ -111,17 +111,14 @@ function DashboardAllTrafficWidgetGA4( props ) {
 			fieldName: 'totalUsers',
 			sortOrder: 'DESCENDING',
 		},
+		// TODO: order by dimensionName once https://github.com/google/site-kit-wp/issues/6513 is implemented.
 		limit: 6,
 	};
 
 	const graphArgs = {
 		...baseArgs,
 		dimensions: [ 'date' ],
-		// FIXME: Add this (needs report args update in stories)
-		// orderby: {
-		// 	fieldName: 'date',
-		// 	sortOrder: 'ASCENDING',
-		// },
+		// TODO: order by date once https://github.com/google/site-kit-wp/issues/6513 is implemented.
 	};
 
 	const totalsArgs = {
