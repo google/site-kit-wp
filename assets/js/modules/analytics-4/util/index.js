@@ -22,9 +22,6 @@
 import { __ } from '@wordpress/i18n';
 
 export * from './is-zero-report';
-// export * from './validation';
-// export * from './time-column-format';
-// export * from './property';
 
 /**
  * Extracts data required for a pie chart from the Analytics 4 report information.

@@ -159,7 +159,6 @@ const baseSelectors = {
 		return reports[ stringifyObject( options ) ];
 	},
 
-	// TODO: Add tests.
 	/**
 	 * Determines whether the Analytics 4 module is still gathering data.
 	 *
@@ -206,7 +205,6 @@ const baseSelectors = {
 		return false;
 	} ),
 
-	// TODO: Add tests.
 	/**
 	 * Determines whether Analytics 4 has zero data or not.
 	 *
