@@ -31,6 +31,10 @@ import copyToClipboard from 'clipboard-copy';
 jest.mock( 'clipboard-copy', () => jest.fn() );
 
 describe( 'ReportErrorButton', () => {
+	afterEach( () => {
+		copyToClipboard.mockReset();
+	} );
+
 	it( 'should change copy error and change text ', async () => {
 		const { container } = render(
 			<ReportErrorButton
