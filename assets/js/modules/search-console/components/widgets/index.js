@@ -1,5 +1,5 @@
 /**
- * AnalyticsNewVisitorsWidget tests.
+ * Search Console Key Metrics widget components.
  *
  * Site Kit by Google, Copyright 2023 Google LLC
  *
@@ -16,15 +16,4 @@
  * limitations under the License.
  */
 
-import { render } from '../../../../../tests/js/test-utils';
-import AnalyticsNewVisitorsWidget from './AnalyticsNewVisitorsWidget';
-
-describe( 'AnalyticsNewVisitorsWidget', () => {
-	it( 'should render the widget', () => {
-		const { getByText } = render( <AnalyticsNewVisitorsWidget /> );
-
-		expect(
-			getByText( 'TODO: UI for AnalyticsNewVisitorsWidget' )
-		).toBeInTheDocument();
-	} );
-} );
+export { default as SearchConsolePopularKeywordsWidget } from './SearchConsolePopularKeywordsWidget';

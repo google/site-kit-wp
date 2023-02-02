@@ -1,5 +1,5 @@
 /**
- * TopConvertingTrafficSourceWidget component tests.
+ * AnalyticsPopularProductsWidget component tests.
  *
  * Site Kit by Google, Copyright 2023 Google LLC
  *
@@ -16,15 +16,15 @@
  * limitations under the License.
  */
 
-import { render } from '../../../../../tests/js/test-utils';
-import TopConvertingTrafficSourceWidget from './TopConvertingTrafficSourceWidget';
+import { render } from '../../../../../../tests/js/test-utils';
+import AnalyticsPopularProductsWidget from './AnalyticsPopularProductsWidget';
 
-describe( 'TopConvertingTrafficSourceWidget', () => {
+describe( 'AnalyticsPopularProductsWidget', () => {
 	it( 'should render the widget', () => {
-		const { getByText } = render( <TopConvertingTrafficSourceWidget /> );
+		const { getByText } = render( <AnalyticsPopularProductsWidget /> );
 
 		expect(
-			getByText( 'TODO: UI for TopConvertingTrafficSourceWidget' )
+			getByText( 'TODO: UI for AnalyticsPopularProductsWidget' )
 		).toBeInTheDocument();
 	} );
 } );

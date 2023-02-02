@@ -1,5 +1,5 @@
 /**
- * AnalyticsTopCountriesWidget component tests.
+ * TopConvertingTrafficSourceWidget component tests.
  *
  * Site Kit by Google, Copyright 2023 Google LLC
  *
@@ -16,15 +16,15 @@
  * limitations under the License.
  */
 
-import { render } from '../../../../../tests/js/test-utils';
-import AnalyticsTopCountriesWidget from './AnalyticsTopCountriesWidget';
+import { render } from '../../../../../../tests/js/test-utils';
+import TopConvertingTrafficSourceWidget from './TopConvertingTrafficSourceWidget';
 
-describe( 'AnalyticsTopCountriesWidget', () => {
+describe( 'TopConvertingTrafficSourceWidget', () => {
 	it( 'should render the widget', () => {
-		const { getByText } = render( <AnalyticsTopCountriesWidget /> );
+		const { getByText } = render( <TopConvertingTrafficSourceWidget /> );
 
 		expect(
-			getByText( 'TODO: UI for AnalyticsTopCountriesWidget' )
+			getByText( 'TODO: UI for TopConvertingTrafficSourceWidget' )
 		).toBeInTheDocument();
 	} );
 } );

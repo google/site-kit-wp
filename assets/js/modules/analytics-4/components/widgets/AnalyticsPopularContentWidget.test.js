@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import { render } from '../../../../../tests/js/test-utils';
+import { render } from '../../../../../../tests/js/test-utils';
 import AnalyticsPopularContentWidget from './AnalyticsPopularContentWidget';
 
 describe( 'AnalyticsPopularContentWidget', () => {

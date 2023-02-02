@@ -1,5 +1,5 @@
 /**
- * AnalyticsLoyalVisitorsWidget tests.
+ * AnalyticsTopCountriesWidget component tests.
  *
  * Site Kit by Google, Copyright 2023 Google LLC
  *
@@ -16,15 +16,15 @@
  * limitations under the License.
  */
 
-import { render } from '../../../../../tests/js/test-utils';
-import AnalyticsLoyalVisitorsWidget from './AnalyticsLoyalVisitorsWidget';
+import { render } from '../../../../../../tests/js/test-utils';
+import AnalyticsTopCountriesWidget from './AnalyticsTopCountriesWidget';
 
-describe( 'AnalyticsLoyalVisitorsWidget', () => {
+describe( 'AnalyticsTopCountriesWidget', () => {
 	it( 'should render the widget', () => {
-		const { getByText } = render( <AnalyticsLoyalVisitorsWidget /> );
+		const { getByText } = render( <AnalyticsTopCountriesWidget /> );
 
 		expect(
-			getByText( 'TODO: UI for AnalyticsLoyalVisitorsWidget' )
+			getByText( 'TODO: UI for AnalyticsTopCountriesWidget' )
 		).toBeInTheDocument();
 	} );
 } );

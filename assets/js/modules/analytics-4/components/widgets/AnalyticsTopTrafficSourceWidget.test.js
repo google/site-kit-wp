@@ -1,5 +1,5 @@
 /**
- * SearchConsolePopularKeywordsWidget component tests.
+ * AnalyticsTopTrafficSourceWidget component tests.
  *
  * Site Kit by Google, Copyright 2023 Google LLC
  *
@@ -16,15 +16,15 @@
  * limitations under the License.
  */
 
-import { render } from '../../../../../tests/js/test-utils';
-import SearchConsolePopularKeywordsWidget from './SearchConsolePopularKeywordsWidget';
+import { render } from '../../../../../../tests/js/test-utils';
+import AnalyticsTopTrafficSourceWidget from './AnalyticsTopTrafficSourceWidget';
 
-describe( 'SearchConsolePopularKeywordsWidget', () => {
+describe( 'AnalyticsTopTrafficSourceWidget', () => {
 	it( 'should render the widget', () => {
-		const { getByText } = render( <SearchConsolePopularKeywordsWidget /> );
+		const { getByText } = render( <AnalyticsTopTrafficSourceWidget /> );
 
 		expect(
-			getByText( 'TODO: UI for SearchConsolePopularKeywordsWidget' )
+			getByText( 'TODO: UI for AnalyticsTopTrafficSourceWidget' )
 		).toBeInTheDocument();
 	} );
 } );

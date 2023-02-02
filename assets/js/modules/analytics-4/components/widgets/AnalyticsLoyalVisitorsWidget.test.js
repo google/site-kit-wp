@@ -1,5 +1,5 @@
 /**
- * AnalyticsTopCitiesWidget component tests.
+ * AnalyticsLoyalVisitorsWidget tests.
  *
  * Site Kit by Google, Copyright 2023 Google LLC
  *
@@ -16,15 +16,15 @@
  * limitations under the License.
  */
 
-import { render } from '../../../../../tests/js/test-utils';
-import AnalyticsTopCitiesWidget from './AnalyticsTopCitiesWidget';
+import { render } from '../../../../../../tests/js/test-utils';
+import AnalyticsLoyalVisitorsWidget from './AnalyticsLoyalVisitorsWidget';
 
-describe( 'AnalyticsTopCitiesWidget', () => {
+describe( 'AnalyticsLoyalVisitorsWidget', () => {
 	it( 'should render the widget', () => {
-		const { getByText } = render( <AnalyticsTopCitiesWidget /> );
+		const { getByText } = render( <AnalyticsLoyalVisitorsWidget /> );
 
 		expect(
-			getByText( 'TODO: UI for AnalyticsTopCitiesWidget' )
+			getByText( 'TODO: UI for AnalyticsLoyalVisitorsWidget' )
 		).toBeInTheDocument();
 	} );
 } );

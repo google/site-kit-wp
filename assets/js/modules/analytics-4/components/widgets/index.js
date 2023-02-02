@@ -1,5 +1,5 @@
 /**
- * Key Metrics widget tiles components.
+ * GA4 Key Metrics widget components.
  *
  * Site Kit by Google, Copyright 2023 Google LLC
  *
@@ -24,5 +24,4 @@ export { default as AnalyticsPopularProductsWidget } from './AnalyticsPopularPro
 export { default as AnalyticsTopCitiesWidget } from './AnalyticsTopCitiesWidget';
 export { default as AnalyticsTopCountriesWidget } from './AnalyticsTopCountriesWidget';
 export { default as AnalyticsTopTrafficSourceWidget } from './AnalyticsTopTrafficSourceWidget';
-export { default as SearchConsolePopularKeywordsWidget } from './SearchConsolePopularKeywordsWidget';
 export { default as TopConvertingTrafficSourceWidget } from './TopConvertingTrafficSourceWidget';
