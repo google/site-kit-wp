@@ -25,6 +25,7 @@ import invariant from 'invariant';
 import castArray from 'lodash/castArray';
 import { zip, from, Observable } from 'rxjs';
 import { map, reduce, take } from 'rxjs/operators';
+import cloneDeep from 'lodash/cloneDeep';
 import isPlainObject from 'lodash/isPlainObject';
 
 /**
@@ -153,12 +154,12 @@ function sortRows( rows, metrics, orderby ) {
 		}
 
 		sorted = sorted.sort( ( a, b ) => {
-			let valA = parseFloat( a.metrics[ index ]?.values?.[ 0 ] );
+			let valA = parseFloat( a.metricValues[ index ]?.value );
 			if ( Number.isNaN( valA ) ) {
 				valA = 0;
 			}
 
-			let valB = parseFloat( b.metrics[ index ]?.values?.[ 0 ] );
+			let valB = parseFloat( b.metricValues[ index ]?.value );
 			if ( Number.isNaN( valB ) ) {
 				valB = 0;
 			}
@@ -200,26 +201,66 @@ function generateDateRange( startDate, endDate ) {
 }
 
 /**
+ * Returns the earliest of two dates.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} dateA The first date.
+ * @param {string} dateB The second date.
+ * @return {string} The earliest date.
+ */
+function getEarliestDate( dateA, dateB ) {
+	if ( ! dateB ) {
+		return dateA;
+	}
+
+	return stringToDate( dateA ).getTime() < stringToDate( dateB ).getTime()
+		? dateA
+		: dateB;
+}
+
+/**
+ * Returns the latest of two dates.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} dateA The first date.
+ * @param {string} dateB The second date.
+ * @return {string} The latest date.
+ */
+function getLatestDate( dateA, dateB ) {
+	if ( ! dateB ) {
+		return dateA;
+	}
+
+	return stringToDate( dateA ).getTime() > stringToDate( dateB ).getTime()
+		? dateA
+		: dateB;
+}
+
+/**
  * Generates mock data for Analytics 4 reports.
  *
  * @since n.e.x.t
  *
- * @param {Object} args Report options.
+ * @param {Object} options Report options.
  * @return {Array.<Object>} An array with generated report.
  */
-export function getAnalytics4MockResponse( args ) {
+export function getAnalytics4MockResponse( options ) {
 	invariant(
-		isPlainObject( args ),
+		isPlainObject( options ),
 		'report options are required to generate a mock response.'
 	);
 	invariant(
-		isValidDateString( args.startDate ),
+		isValidDateString( options.startDate ),
 		'a valid startDate is required.'
 	);
 	invariant(
-		isValidDateString( args.endDate ),
+		isValidDateString( options.endDate ),
 		'a valid endDate is required.'
 	);
+
+	const args = cloneDeep( options );
 
 	const originalSeedValue = faker.seedValue;
 	const argsHash = parseInt(
@@ -267,16 +308,17 @@ export function getAnalytics4MockResponse( args ) {
 	}
 
 	dimensions.forEach( ( singleDimension ) => {
-		const dimension = singleDimension?.name || singleDimension.toString();
+		const dimension = singleDimension?.name || singleDimension?.toString();
 
 		if ( dimension === 'date' || dimension === 'dateRange' ) {
-			const dateRange = generateDateRange( args.startDate, args.endDate );
-			const compareDateRange = hasDateRange
-				? generateDateRange(
-						args.compareStartDate,
-						args.compareEndDate
-				  )
-				: [];
+			// When a comparison date range is specified, the report will contain a merged date range of the current and compare periods.
+			const startDate = getEarliestDate(
+				args.startDate,
+				args.compareStartDate
+			);
+			const endDate = getLatestDate( args.endDate, args.compareEndDate );
+
+			const dateRange = generateDateRange( startDate, endDate );
 
 			// Generates a stream (an array) of dates when the dimension is date.
 			if ( dimension === 'date' ) {
@@ -286,17 +328,10 @@ export function getAnalytics4MockResponse( args ) {
 							observer.next( date );
 
 							if ( hasDateRange ) {
-								// Duplicate date if we are have a date range.
+								// Duplicate date if we have a date range.
 								observer.next( date );
 							}
 						} );
-
-						if ( hasDateRange ) {
-							compareDateRange.forEach( ( date ) => {
-								observer.next( date );
-								observer.next( date );
-							} );
-						}
 
 						observer.complete();
 					} )
@@ -307,11 +342,6 @@ export function getAnalytics4MockResponse( args ) {
 				streams.push(
 					new Observable( ( observer ) => {
 						dateRange.forEach( () => {
-							observer.next( 'date_range_0' );
-							observer.next( 'date_range_1' );
-						} );
-
-						compareDateRange.forEach( () => {
 							observer.next( 'date_range_0' );
 							observer.next( 'date_range_1' );
 						} );
@@ -333,6 +363,11 @@ export function getAnalytics4MockResponse( args ) {
 							ANALYTICS_4_DIMENSION_OPTIONS[ dimension ]( i );
 						if ( val ) {
 							observer.next( val );
+
+							if ( hasDateRange ) {
+								// Duplicate value if we have a date range.
+								observer.next( val );
+							}
 						} else {
 							break;
 						}
@@ -345,13 +380,33 @@ export function getAnalytics4MockResponse( args ) {
 			dimension &&
 			Array.isArray( ANALYTICS_4_DIMENSION_OPTIONS[ dimension ] )
 		) {
-			// Uses predefined array of dimension values to create a stream (an array) from.
-			streams.push( from( ANALYTICS_4_DIMENSION_OPTIONS[ dimension ] ) );
+			// Generates a stream (an array) of dimension values using the array of values for the current dimension.
+			streams.push(
+				new Observable( ( observer ) => {
+					ANALYTICS_4_DIMENSION_OPTIONS[ dimension ].forEach(
+						( val ) => {
+							observer.next( val );
+
+							if ( hasDateRange ) {
+								// Duplicate value if we have a date range.
+								observer.next( val );
+							}
+						}
+					);
+
+					observer.complete();
+				} )
+			);
 		} else {
-			// In case when a dimension is not provided or is not recognized, we use NULL to create a stream (an array) with just one value.
-			streams.push( from( [ null ] ) );
+			// In case when a dimension is not provided or is not recognized, we use NULL to create a stream (an array).
+			// If a date range is provided, we want to generate two rows, one for each range. Otherwise we just generate a single row.
+			streams.push( from( hasDateRange ? [ null, null ] : [ null ] ) );
 		}
 	} );
+
+	const limit = args.limit > 0 ? +args.limit : 90;
+	// If we have a date range, we need to double the limit to account for the fact that we duplicate each row for each date range.
+	const rowLimit = hasDateRange ? limit * 2 : limit;
 
 	// This is the list of operations that we apply to the combined stream (array) of dimension values.
 	const ops = [
@@ -363,7 +418,7 @@ export function getAnalytics4MockResponse( args ) {
 			metricValues: generateMetricValues( validMetrics ),
 		} ) ),
 		// Make sure we take the appropriate number of rows.
-		take( args.limit > 0 ? +args.limit : 90 ),
+		take( rowLimit ),
 		// Accumulate all rows into a single array.
 		reduce( ( rows, row ) => [ ...rows, row ], [] ),
 		// Sort rows if args.orderby is provided.
@@ -412,12 +467,14 @@ export function getAnalytics4MockResponse( args ) {
 									}
 								),
 								metricValues: [
-									...( rows[ 0 ]?.metricValues || [] ),
+									...( rows[ 1 ]?.metricValues || [] ),
 								],
 							},
 					  ]
 					: []
 			);
+
+			const firstItemIndex = rows.length - ( hasDateRange ? 2 : 1 );
 
 			data.maximums = [
 				{
@@ -431,7 +488,7 @@ export function getAnalytics4MockResponse( args ) {
 						};
 					} ),
 					metricValues: [
-						...( rows[ rows.length - 1 ]?.metricValues || [] ),
+						...( rows[ firstItemIndex ]?.metricValues || [] ),
 					],
 				},
 			].concat(
@@ -473,7 +530,7 @@ export function getAnalytics4MockResponse( args ) {
 						};
 					} ),
 					metricValues: [
-						...( rows[ rows.length - 1 ]?.metricValues || [] ),
+						...( rows[ firstItemIndex ]?.metricValues || [] ),
 					],
 				},
 			].concat(

@@ -22,6 +22,7 @@
 import { getAnalytics4MockResponse } from './data-mock';
 import mockedReportResponse from './__fixtures__/mocked-report.json';
 import mockedReportMultipleDateRangesResponse from './__fixtures__/mocked-report-multiple-date-ranges.json';
+import mockedReportFixedValueDimensionResponse from './__fixtures__/mocked-report-fixed-value-dimension.json';
 
 describe( 'getAnalytics4MockResponse', () => {
 	it( 'throws if called without report options', () => {
@@ -84,6 +85,29 @@ describe( 'getAnalytics4MockResponse', () => {
 		} );
 
 		expect( report ).toEqual( mockedReportMultipleDateRangesResponse );
+
+		// Verify the correct number of rows for the date ranges.
+		expect( report.rows ).toHaveLength( 10 );
+	} );
+
+	it( 'generates a valid report using a dimension with a fixed set of values', () => {
+		const report = getAnalytics4MockResponse( {
+			startDate: '2020-12-01',
+			endDate: '2020-12-03',
+			compareStartDate: '2020-12-04',
+			compareEndDate: '2020-12-05',
+			metrics: [
+				{
+					name: 'totalUsers',
+				},
+				{
+					name: 'averageSessionDuration',
+				},
+			],
+			dimensions: [ 'sessionDefaultChannelGrouping' ],
+		} );
+
+		expect( report ).toEqual( mockedReportFixedValueDimensionResponse );
 
 		// Verify the correct number of rows for the date ranges.
 		expect( report.rows ).toHaveLength( 10 );
