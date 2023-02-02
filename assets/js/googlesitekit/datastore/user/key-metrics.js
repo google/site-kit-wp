@@ -29,12 +29,28 @@ import { CORE_USER } from './constants';
 import { createFetchStore } from '../../data/create-fetch-store';
 import { actions as errorStoreActions } from '../../data/create-error-store';
 const { receiveError, clearError } = errorStoreActions;
+const { createRegistrySelector } = Data;
 
 const SET_KEY_METRICS_SETTING = 'SET_KEY_METRICS_SETTING';
 
 const baseInitialState = {
 	keyMetrics: undefined,
 };
+
+const fetchGetUserPickedMetricsStore = createFetchStore( {
+	baseName: 'getUserPickedMetrics',
+	controlCallback: () =>
+		API.get( 'core', 'user', 'key-metrics', undefined, {
+			// Never cache key metrics requests, we want them to be
+			// up-to-date with what's in settings, and they don't
+			// make requests to Google APIs so it's not a slow request.
+			useCache: false,
+		} ),
+	reducerCallback: ( state, keyMetrics ) => ( {
+		...state,
+		keyMetrics,
+	} ),
+} );
 
 const fetchSaveKeyMetricsStore = createFetchStore( {
 	baseName: 'saveKeyMetrics',
@@ -112,9 +128,44 @@ const baseReducer = ( state, { type, payload } ) => {
 	}
 };
 
-const baseResolvers = {};
+const baseResolvers = {
+	*getUserPickedMetrics() {
+		const registry = yield Data.commonActions.getRegistry();
+		const userPickedKeyMetrics = registry
+			.select( CORE_USER )
+			.getUserPickedMetrics();
+
+		if ( userPickedKeyMetrics ) {
+			return userPickedKeyMetrics;
+		}
+
+		yield fetchGetUserPickedMetricsStore.actions.fetchGetUserPickedMetrics();
+	},
+};
 
 const baseSelectors = {
+	/**
+	 * Gets key metrics for this user, either from the user-selected
+	 * key metrics selected by this user (if available) or—if the user has not
+	 * manually selected their own key metrics—from the automatically-selected
+	 * (eg. "answer-based") metrics based on their answers to our User Input
+	 * questions.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(Object|undefined)} Key metrics settings.
+	 */
+	getKeyMetrics: createRegistrySelector( ( select ) => () => {
+		const userPickedMetrics = select( CORE_USER ).getUserPickedMetrics();
+
+		if ( userPickedMetrics?.widgetSlugs?.length ) {
+			return userPickedMetrics.widgetSlugs;
+		}
+
+		return select( CORE_USER ).getAnswerBasedMetrics();
+	} ),
+
 	/**
 	 * Gets key metrics selected by the user.
 	 *
@@ -123,19 +174,23 @@ const baseSelectors = {
 	 * @param {Object} state Data store's state.
 	 * @return {(Object|undefined)} Key metrics settings.
 	 */
-	getKeyMetrics( state ) {
+	getUserPickedMetrics( state ) {
 		return state.keyMetrics;
 	},
 };
 
-const store = Data.combineStores( fetchSaveKeyMetricsStore, {
-	initialState: baseInitialState,
-	actions: baseActions,
-	controls: baseControls,
-	reducer: baseReducer,
-	resolvers: baseResolvers,
-	selectors: baseSelectors,
-} );
+const store = Data.combineStores(
+	fetchGetUserPickedMetricsStore,
+	fetchSaveKeyMetricsStore,
+	{
+		initialState: baseInitialState,
+		actions: baseActions,
+		controls: baseControls,
+		reducer: baseReducer,
+		resolvers: baseResolvers,
+		selectors: baseSelectors,
+	}
+);
 
 export const initialState = store.initialState;
 export const actions = store.actions;

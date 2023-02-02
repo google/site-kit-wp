@@ -21,6 +21,7 @@ import API from 'googlesitekit-api';
 import {
 	createTestRegistry,
 	unsubscribeFromAll,
+	untilResolved,
 } from '../../../../../tests/js/utils';
 import { CORE_USER } from './constants';
 
@@ -69,6 +70,7 @@ describe( 'core/user user-input-settings', () => {
 				);
 			} );
 		} );
+
 		describe( 'saveKeyMetrics', () => {
 			beforeEach( async () => {
 				await registry
@@ -126,6 +128,58 @@ describe( 'core/user user-input-settings', () => {
 				).toMatchObject( response );
 
 				expect( console ).toHaveErrored();
+			} );
+		} );
+	} );
+
+	describe( 'selectors', () => {
+		describe( 'getKeyMetrics', () => {
+			it( 'should fetch user key metrics from the API if none exist', async () => {
+				fetchMock.getOnce( coreKeyMetricsEndpointRegExp, {
+					body: coreKeyMetricsExpectedResponse,
+					status: 200,
+				} );
+
+				registry.select( CORE_USER ).getKeyMetrics();
+
+				await untilResolved( registry, CORE_USER ).getKeyMetrics();
+
+				expect( fetchMock ).toHaveFetched(
+					coreKeyMetricsEndpointRegExp,
+					{
+						body: {
+							settings: coreKeyMetricsExpectedResponse,
+						},
+					}
+				);
+
+				expect(
+					registry.select( CORE_USER ).getKeyMetrics()
+				).toMatchObject( coreKeyMetricsExpectedResponse );
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+			} );
+
+			it( 'should use answer-based key metrics if the user has not selected any widgets', async () => {
+				fetchMock.getOnce( coreKeyMetricsEndpointRegExp, {
+					body: {
+						widgetSlugs: [],
+						isWidgetHidden: false,
+					},
+					status: 200,
+				} );
+
+				registry.select( CORE_USER ).getKeyMetrics();
+
+				await untilResolved( registry, CORE_USER ).getKeyMetrics();
+
+				expect(
+					registry.select( CORE_USER ).getKeyMetrics()
+				).toMatchObject( 'ANSWER-BASED METRICS' );
+
+				// One fetch will be for the user-based metrics, and one for the
+				// answer-based metrics.
+				expect( fetchMock ).toHaveFetchedTimes( 2 );
 			} );
 		} );
 	} );
