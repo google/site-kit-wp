@@ -28,9 +28,11 @@ import { render } from '../../../../tests/js/test-utils';
 import ReportErrorButton from './';
 import copyToClipboard from 'clipboard-copy';
 
-jest.mock( 'clipboard-copy', () => jest.fn() );
-
 describe( 'ReportErrorButton', () => {
+	beforeEach( () => {
+		jest.mock( 'clipboard-copy', () => jest.fn() );
+	} );
+	
 	afterEach( () => {
 		copyToClipboard.mockReset();
 	} );
