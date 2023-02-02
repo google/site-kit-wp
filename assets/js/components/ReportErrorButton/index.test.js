@@ -32,7 +32,7 @@ describe( 'ReportErrorButton', () => {
 	beforeEach( () => {
 		jest.mock( 'clipboard-copy', () => jest.fn() );
 	} );
-	
+
 	afterEach( () => {
 		copyToClipboard.mockReset();
 	} );
