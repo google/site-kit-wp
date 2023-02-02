@@ -20,14 +20,14 @@
  * Internal dependencies
  */
 import {
-	AnalyticsLoyalVisitorsWidget,
-	AnalyticsNewVisitorsWidget,
-	AnalyticsTopTrafficSourceWidget,
-	AnalyticsEngagedTrafficSourceWidget,
-	AnalyticsPopularContentWidget,
-	AnalyticsPopularProductsWidget,
-	AnalyticsTopCitiesWidget,
-	AnalyticsTopCountriesWidget,
+	EngagedTrafficSourceWidget,
+	LoyalVisitorsWidget,
+	NewVisitorsWidget,
+	PopularContentWidget,
+	PopularProductsWidget,
+	TopCitiesWidget,
+	TopCountriesWidget,
+	TopTrafficSourceWidget,
 	TopConvertingTrafficSourceWidget,
 } from './components/widgets';
 import { MODULES_ANALYTICS_4 } from './datastore/constants';
@@ -48,7 +48,7 @@ export const registerWidgets = ( widgets ) => {
 	widgets.registerWidget(
 		'kmAnalyticsLoyalVisitors',
 		{
-			Component: AnalyticsLoyalVisitorsWidget,
+			Component: LoyalVisitorsWidget,
 			width: widgets.WIDGET_WIDTHS.QUARTER,
 			priority: 1,
 			wrapWidget: false,
@@ -60,7 +60,7 @@ export const registerWidgets = ( widgets ) => {
 	widgets.registerWidget(
 		'kmAnalyticsNewVisitors',
 		{
-			Component: AnalyticsNewVisitorsWidget,
+			Component: NewVisitorsWidget,
 			width: widgets.WIDGET_WIDTHS.QUARTER,
 			priority: 1,
 			wrapWidget: false,
@@ -72,7 +72,7 @@ export const registerWidgets = ( widgets ) => {
 	widgets.registerWidget(
 		'kmAnalyticsTopTrafficSource',
 		{
-			Component: AnalyticsTopTrafficSourceWidget,
+			Component: TopTrafficSourceWidget,
 			width: widgets.WIDGET_WIDTHS.QUARTER,
 			priority: 1,
 			wrapWidget: false,
@@ -84,7 +84,7 @@ export const registerWidgets = ( widgets ) => {
 	widgets.registerWidget(
 		'kmAnalyticsEngagedTrafficSource',
 		{
-			Component: AnalyticsEngagedTrafficSourceWidget,
+			Component: EngagedTrafficSourceWidget,
 			width: widgets.WIDGET_WIDTHS.QUARTER,
 			priority: 1,
 			wrapWidget: false,
@@ -96,7 +96,7 @@ export const registerWidgets = ( widgets ) => {
 	widgets.registerWidget(
 		'kmAnalyticsPopularContent',
 		{
-			Component: AnalyticsPopularContentWidget,
+			Component: PopularContentWidget,
 			width: widgets.WIDGET_WIDTHS.QUARTER,
 			priority: 1,
 			wrapWidget: false,
@@ -108,7 +108,7 @@ export const registerWidgets = ( widgets ) => {
 	widgets.registerWidget(
 		'kmAnalyticsPopularProducts',
 		{
-			Component: AnalyticsPopularProductsWidget,
+			Component: PopularProductsWidget,
 			width: widgets.WIDGET_WIDTHS.QUARTER,
 			priority: 1,
 			wrapWidget: false,
@@ -120,7 +120,7 @@ export const registerWidgets = ( widgets ) => {
 	widgets.registerWidget(
 		'kmAnalyticsTopCities',
 		{
-			Component: AnalyticsTopCitiesWidget,
+			Component: TopCitiesWidget,
 			width: widgets.WIDGET_WIDTHS.QUARTER,
 			priority: 1,
 			wrapWidget: false,
@@ -132,7 +132,7 @@ export const registerWidgets = ( widgets ) => {
 	widgets.registerWidget(
 		'kmAnalyticsTopCountries',
 		{
-			Component: AnalyticsTopCountriesWidget,
+			Component: TopCountriesWidget,
 			width: widgets.WIDGET_WIDTHS.QUARTER,
 			priority: 1,
 			wrapWidget: false,
