@@ -44,7 +44,7 @@ import { stringToDate } from '../../../../../util/date-range/string-to-date';
 const { useSelect } = Data;
 
 const X_SMALL_ONLY_MEDIA_QUERY = '(max-width: 450px)';
-const MOBILE_TO_DESKOP_MEDIA_QUERY =
+const MOBILE_TO_DESKTOP_MEDIA_QUERY =
 	'(min-width: 451px) and (max-width: 1280px';
 const X_LARGE_AND_ABOVE_MEDIA_QUERY = '(min-width: 1281px)';
 
@@ -68,7 +68,7 @@ export default function UserCountGraph( props ) {
 		global.matchMedia( X_SMALL_ONLY_MEDIA_QUERY )
 	);
 	const [ mobileToDesktop, setMobileToDesktop ] = useState(
-		global.matchMedia( MOBILE_TO_DESKOP_MEDIA_QUERY )
+		global.matchMedia( MOBILE_TO_DESKTOP_MEDIA_QUERY )
 	);
 	const [ xLargeAndAbove, setXLargeAndAbove ] = useState(
 		global.matchMedia( X_LARGE_AND_ABOVE_MEDIA_QUERY )
@@ -79,7 +79,7 @@ export default function UserCountGraph( props ) {
 		const updateBreakpoints = () => {
 			setXSmallOnly( global.matchMedia( X_SMALL_ONLY_MEDIA_QUERY ) );
 			setMobileToDesktop(
-				global.matchMedia( MOBILE_TO_DESKOP_MEDIA_QUERY )
+				global.matchMedia( MOBILE_TO_DESKTOP_MEDIA_QUERY )
 			);
 			setXLargeAndAbove(
 				global.matchMedia( X_LARGE_AND_ABOVE_MEDIA_QUERY )
