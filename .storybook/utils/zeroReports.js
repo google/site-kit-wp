@@ -50,7 +50,7 @@ export function replaceValuesInAnalyticsReportWithZeroData( report ) {
  * @since n.e.x.t
  *
  * @param {Object} report Analytics 4 report object.
- * @return {Object} Zeroed Analytics 4 report objcet.
+ * @return {Object} Zeroed Analytics 4 report object.
  */
 export function replaceValuesInAnalytics4ReportWithZeroData( report ) {
 	const zeroMetricValues = ( item ) => ( {
