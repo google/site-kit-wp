@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 
-// TODO: Add tests.
 /**
  * Checks whether the report data is empty or not.
  *

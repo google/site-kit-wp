@@ -77,6 +77,8 @@ export const isSingleSlice = ( report ) => {
 /**
  * Checks if there is a single row of data or one row of the provided GA4 report is contributing 100% of the total for a given dimension.
  *
+ * Note that chart reports will be in the multi-date range format.
+ *
  * @since n.e.x.t
  *
  * @param {Object} report The report data object.
