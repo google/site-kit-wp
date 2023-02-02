@@ -29,6 +29,7 @@ import {
 	deactivateUtilityPlugins,
 	setupSiteKit,
 	useSharedRequestInterception,
+	safeLoginUser,
 } from '../../utils';
 import * as adminBarMockResponses from '../modules/analytics/fixtures/admin-bar';
 
@@ -89,6 +90,7 @@ describe( 'AMP Admin Bar compatibility', () => {
 	} );
 
 	it( 'it has a functional Site Kit admin bar in AMP', async () => {
+		await safeLoginUser( 'admin', 'password' );
 		const { analytics, searchConsole } = adminBarMockResponses;
 		// Data is requested when the Admin Bar app loads on first hover
 		mockBatchResponse = Object.assign( {}, analytics, searchConsole );
