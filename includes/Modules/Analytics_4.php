@@ -1187,7 +1187,7 @@ final class Analytics_4 extends Module
 		$results = array_map(
 			function ( $order_def ) {
 				$order_by = new Google_Service_AnalyticsData_OrderBy();
-				$order_by->setDesc( isset( $order_def['desc'] ) ? $order_def['desc'] : false );
+				$order_by->setDesc( ! empty( $order_def['desc'] ) );
 
 				if ( isset( $order_def['metric'] ) && isset( $order_def['metric']['metricName'] ) ) {
 					$metric_order_by = new Google_Service_AnalyticsData_MetricOrderBy();
