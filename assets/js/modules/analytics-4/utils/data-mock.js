@@ -201,6 +201,44 @@ function generateDateRange( startDate, endDate ) {
 }
 
 /**
+ * Returns the earliest of two dates.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} dateA The first date.
+ * @param {string} dateB The second date.
+ * @return {string} The earliest date.
+ */
+function getEarliestDate( dateA, dateB ) {
+	if ( ! dateB ) {
+		return dateA;
+	}
+
+	return stringToDate( dateA ).getTime() < stringToDate( dateB ).getTime()
+		? dateA
+		: dateB;
+}
+
+/**
+ * Returns the latest of two dates.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} dateA The first date.
+ * @param {string} dateB The second date.
+ * @return {string} The latest date.
+ */
+function getLatestDate( dateA, dateB ) {
+	if ( ! dateB ) {
+		return dateA;
+	}
+
+	return stringToDate( dateA ).getTime() > stringToDate( dateB ).getTime()
+		? dateA
+		: dateB;
+}
+
+/**
  * Generates mock data for Analytics 4 reports.
  *
  * @since n.e.x.t
@@ -273,13 +311,14 @@ export function getAnalytics4MockResponse( options ) {
 		const dimension = singleDimension?.name || singleDimension?.toString();
 
 		if ( dimension === 'date' || dimension === 'dateRange' ) {
-			const dateRange = generateDateRange( args.startDate, args.endDate );
-			const compareDateRange = hasDateRange
-				? generateDateRange(
-						args.compareStartDate,
-						args.compareEndDate
-				  )
-				: [];
+			// When a comparison date range is specified, the report will contain a merged date range of the current and compare periods.
+			const startDate = getEarliestDate(
+				args.startDate,
+				args.compareStartDate
+			);
+			const endDate = getLatestDate( args.endDate, args.compareEndDate );
+
+			const dateRange = generateDateRange( startDate, endDate );
 
 			// Generates a stream (an array) of dates when the dimension is date.
 			if ( dimension === 'date' ) {
@@ -289,17 +328,10 @@ export function getAnalytics4MockResponse( options ) {
 							observer.next( date );
 
 							if ( hasDateRange ) {
-								// Duplicate date if we are have a date range.
+								// Duplicate date if we have a date range.
 								observer.next( date );
 							}
 						} );
-
-						if ( hasDateRange ) {
-							compareDateRange.forEach( ( date ) => {
-								observer.next( date );
-								observer.next( date );
-							} );
-						}
 
 						observer.complete();
 					} )
@@ -310,11 +342,6 @@ export function getAnalytics4MockResponse( options ) {
 				streams.push(
 					new Observable( ( observer ) => {
 						dateRange.forEach( () => {
-							observer.next( 'date_range_0' );
-							observer.next( 'date_range_1' );
-						} );
-
-						compareDateRange.forEach( () => {
 							observer.next( 'date_range_0' );
 							observer.next( 'date_range_1' );
 						} );
@@ -336,6 +363,11 @@ export function getAnalytics4MockResponse( options ) {
 							ANALYTICS_4_DIMENSION_OPTIONS[ dimension ]( i );
 						if ( val ) {
 							observer.next( val );
+
+							if ( hasDateRange ) {
+								// Duplicate value if we have a date range.
+								observer.next( val );
+							}
 						} else {
 							break;
 						}
@@ -348,14 +380,33 @@ export function getAnalytics4MockResponse( options ) {
 			dimension &&
 			Array.isArray( ANALYTICS_4_DIMENSION_OPTIONS[ dimension ] )
 		) {
-			// Uses predefined array of dimension values to create a stream (an array) from.
-			streams.push( from( ANALYTICS_4_DIMENSION_OPTIONS[ dimension ] ) );
+			// Generates a stream (an array) of dimension values using the array of values for the current dimension.
+			streams.push(
+				new Observable( ( observer ) => {
+					ANALYTICS_4_DIMENSION_OPTIONS[ dimension ].forEach(
+						( val ) => {
+							observer.next( val );
+
+							if ( hasDateRange ) {
+								// Duplicate value if we have a date range.
+								observer.next( val );
+							}
+						}
+					);
+
+					observer.complete();
+				} )
+			);
 		} else {
 			// In case when a dimension is not provided or is not recognized, we use NULL to create a stream (an array).
 			// If a date range is provided, we want to generate two rows, one for each range. Otherwise we just generate a single row.
 			streams.push( from( hasDateRange ? [ null, null ] : [ null ] ) );
 		}
 	} );
+
+	const limit = args.limit > 0 ? +args.limit : 90;
+	// If we have a date range, we need to double the limit to account for the fact that we duplicate each row for each date range.
+	const rowLimit = hasDateRange ? limit * 2 : limit;
 
 	// This is the list of operations that we apply to the combined stream (array) of dimension values.
 	const ops = [
@@ -367,7 +418,7 @@ export function getAnalytics4MockResponse( options ) {
 			metricValues: generateMetricValues( validMetrics ),
 		} ) ),
 		// Make sure we take the appropriate number of rows.
-		take( args.limit > 0 ? +args.limit : 90 ),
+		take( rowLimit ),
 		// Accumulate all rows into a single array.
 		reduce( ( rows, row ) => [ ...rows, row ], [] ),
 		// Sort rows if args.orderby is provided.
