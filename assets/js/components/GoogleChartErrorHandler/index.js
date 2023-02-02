@@ -91,8 +91,8 @@ class GoogleChartErrorHandler extends Component {
 							</p>
 							<div className="googlesitekit-googlechart-error-handler__error-actions">
 								<ReportErrorButton
-									message={ error?.message }
-									componentStack={ info?.componentStack }
+									message={ error.message }
+									componentStack={ info.componentStack }
 								/>
 								<Link
 									href="https://wordpress.org/support/plugin/google-site-kit/"
