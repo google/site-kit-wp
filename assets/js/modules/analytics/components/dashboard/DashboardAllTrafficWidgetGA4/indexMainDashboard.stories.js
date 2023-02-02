@@ -136,6 +136,16 @@ MainDashboardLoading.args = {
 		} );
 	},
 };
+MainDashboardLoading.decorators = [
+	( Story ) => {
+		// Ensure the animation is paused for VRT tests to correctly capture the loading state.
+		return (
+			<div className="googlesitekit-vrt-animation-paused">
+				<Story />
+			</div>
+		);
+	},
+];
 MainDashboardLoading.scenario = {
 	label: 'Modules/Analytics/Widgets/DashboardAllTrafficWidgetGA4/MainDashboard/Loading',
 };

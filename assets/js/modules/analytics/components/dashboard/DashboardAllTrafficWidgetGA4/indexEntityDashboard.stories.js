@@ -143,6 +143,16 @@ EntityDashboardLoading.args = {
 		} );
 	},
 };
+EntityDashboardLoading.decorators = [
+	( Story ) => {
+		// Ensure the animation is paused for VRT tests to correctly capture the loading state.
+		return (
+			<div className="googlesitekit-vrt-animation-paused">
+				<Story />
+			</div>
+		);
+	},
+];
 EntityDashboardLoading.scenario = {
 	label: 'Modules/Analytics/Widgets/DashboardAllTrafficWidgetGA4/EntityDashboard/Loading',
 };

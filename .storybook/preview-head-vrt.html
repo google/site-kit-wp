@@ -3,8 +3,13 @@
 	#root *,
 	#root *::before,
 	#root *::after {
-		animation-duration: 0ms !important;
 		transition-duration: 0ms !important;
+	}
+
+	#root *:not( .googlesitekit-vrt-animation-paused ),
+	#root *::before:not( .googlesitekit-vrt-animation-paused ),
+	#root *::after:not( .googlesitekit-vrt-animation-paused ) {
+		animation-duration: 0ms !important;
 	}
 
 	/**
@@ -17,5 +22,16 @@
 	#root .googlesitekit-vrt-animation-none *::after {
 		animation: none !important;
 		transition: none !important;
+	}
+
+	/**
+	 * An alternative scenario is that the VRT scenario does not render correctly unless the animation is active but paused.
+	 * In this case, we can apply the following .googlesitekit-vrt-animation-paused class to a story wrapper element to pause animations for a given story.
+	 * Please note, this only applies to animations and not transitions which don't have an equivalent paused state.
+	 */
+	#root .googlesitekit-vrt-animation-paused *,
+	#root .googlesitekit-vrt-animation-paused *::before,
+	#root .googlesitekit-vrt-animation-paused *::after {
+		animation-play-state: paused !important;
 	}
 </style>
