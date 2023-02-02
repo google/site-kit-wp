@@ -226,7 +226,7 @@ MainDashboardOneRowOfData.scenario = {
 };
 
 export default {
-	title: 'Modules/Analytics/Widgets/All Traffic Widget GA4/Dashboard',
+	title: 'Modules/Analytics/Widgets/All Traffic Widget GA4/Main Dashboard',
 	component: DashboardAllTrafficWidgetGA4,
 	decorators: [
 		( Story, { args } ) => {
