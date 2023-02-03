@@ -1218,6 +1218,17 @@ final class Authentication {
 					if ( ! empty( $this->user_options->get( OAuth_Client::OPTION_ERROR_CODE ) ) ) {
 						return false;
 					}
+
+					$unsatisfied_scopes = $this->get_oauth_client()->get_unsatisfied_scopes();
+
+					if (
+						Feature_Flags::enabled( 'gteSupport' )
+						&& count( $unsatisfied_scopes ) === 1
+						&& in_array( 'https://www.googleapis.com/auth/tagmanager.readonly', $unsatisfied_scopes, true )
+						) {
+						return false;
+					}
+
 					return $this->get_oauth_client()->needs_reauthentication();
 				},
 			)

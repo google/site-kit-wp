@@ -90,4 +90,21 @@ describe( 'ErrorNotifications', () => {
 			} )
 		);
 	} );
+
+	it( 'renders GTE message for unsatisfied tagmanager readonly scope', () => {
+		provideUserAuthentication( registry, {
+			unsatisfiedScopes: [
+				'https://www.googleapis.com/auth/tagmanager.readonly',
+			],
+		} );
+
+		const { container } = render( <ErrorNotifications />, {
+			registry,
+			features: [ 'gteSupport' ],
+		} );
+
+		expect( container ).toHaveTextContent(
+			'Site Kit needs additional permissions to detect updates to tags on your site'
+		);
+	} );
 } );
