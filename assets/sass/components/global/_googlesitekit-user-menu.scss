@@ -48,7 +48,7 @@
 
 	.googlesitekit-user-menu {
 		background-color: $c-surfaces-background;
-		border-radius: 28px;
+		border-radius: $br-md;
 		max-width: 335px;
 		width: calc(100vw - 32px);
 
@@ -87,7 +87,7 @@
 	.googlesitekit-user-menu__details {
 		align-items: center;
 		background-color: $c-surfaces-surface;
-		border-radius: 24px;
+		border-radius: $br-md;
 		column-gap: 14px;
 		display: flex;
 		padding: 16px;
