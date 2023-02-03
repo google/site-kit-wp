@@ -413,14 +413,17 @@ export function getAnalytics4MockResponse( options ) {
 	];
 
 	// Process the streams of dimension values and add generated rows to the report data object.
+	// First we merge all streams into one which will emit each set of dimension values as an array.
 	merge( ...streams.map( ( stream ) => stream.pipe( toArray() ) ) )
 		.pipe(
+			// Then we convert the stream to an array...
 			toArray(),
-			mergeMap( ( dimensionArrays ) =>
-				cartesianProduct( dimensionArrays )
-			)
+			// So that we can pass it to the cartesianProduct function to generate all possible combinations of dimension values.
+			// Using mergeMap here ensures the resulting set of values will be emitted as a new stream.
+			mergeMap( cartesianProduct ),
+			// Then we apply the remaining operations to generate a row for each combination of dimension values.
+			...ops
 		)
-		.pipe( ...ops )
 		.subscribe( ( rows ) => {
 			data.rows = rows;
 			data.rowCount = rows.length;
