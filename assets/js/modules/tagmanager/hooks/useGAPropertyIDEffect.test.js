@@ -25,7 +25,10 @@ import fetchMock from 'fetch-mock';
  * Internal dependencies
  */
 import { renderHook, actHook as act } from '../../../../../tests/js/test-utils';
-import { createTestRegistry } from '../../../../../tests/js/utils';
+import {
+	createTestRegistry,
+	waitForDefaultTimeouts,
+} from '../../../../../tests/js/utils';
 import { MODULES_TAGMANAGER } from '../datastore/constants';
 import { createBuildAndReceivers } from '../datastore/__factories__/utils';
 import useGAPropertyIDEffect from './useGAPropertyIDEffect';
@@ -47,22 +50,17 @@ describe( 'useGAPropertyIDEffect', () => {
 				}
 			);
 
-			let renderHookResponse;
-
 			await act(
 				() =>
 					new Promise( ( resolve ) => {
-						renderHookResponse = renderHook(
-							() => useGAPropertyIDEffect(),
-							{
-								registry,
-							}
-						);
+						renderHook( () => useGAPropertyIDEffect(), {
+							registry,
+						} );
 						resolve();
 					} )
 			);
 
-			await renderHookResponse.waitForNextUpdate();
+			await act( waitForDefaultTimeouts );
 
 			expect( fetchMock ).toHaveFetched(
 				new RegExp(
