@@ -55,6 +55,9 @@ export default function ActivateAnalyticsCTA( { children } ) {
 			return false;
 		}
 		const adminReauthURL = select( MODULES_ANALYTICS ).getAdminReauthURL();
+		if ( ! adminReauthURL ) {
+			return false;
+		}
 		return select( CORE_LOCATION ).isNavigatingTo( adminReauthURL );
 	} );
 
