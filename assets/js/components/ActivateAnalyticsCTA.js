@@ -80,7 +80,7 @@ export default function ActivateAnalyticsCTA( { children } ) {
 
 	/*
 	 * Using debounce here because the spinner has to render across two separate calls.
-	 * Rather than risk it flickering on and off in between the reset call completing and
+	 * Rather than risk it flickering on and off in between the activation call completing and
 	 * the navigate call starting, we will just set a debounce to keep the spinner for 3 seconds.
 	 */
 	const debouncedSetInProgress = useDebounce( setInProgress, 3000 );
