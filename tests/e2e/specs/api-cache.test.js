@@ -62,7 +62,6 @@ describe( 'API cache', () => {
 	} );
 
 	it( 'isolates client storage between sessions', async () => {
-		await safeLoginUser( 'admin', 'password' );
 		const firstTestNotification = { ...testSiteNotification };
 		const secondTestNotification = {
 			...testSiteNotification,

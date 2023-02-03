@@ -11,7 +11,6 @@ import {
 	setSiteVerification,
 	setSearchConsoleProperty,
 	useRequestInterception,
-	safeLoginUser,
 } from '../../../utils';
 import * as adminBarMockResponses from './fixtures/admin-bar';
 
@@ -75,7 +74,6 @@ describe( 'Site Kit admin bar component display', () => {
 	} );
 
 	it( 'loads when viewing the front end of a post with data in Search Console', async () => {
-		await safeLoginUser( 'admin', 'password' );
 		const { searchConsole } = adminBarMockResponses;
 		// Data is requested when the Admin Bar app loads on first hover
 		mockBatchResponse = Object.assign( {}, searchConsole );
@@ -119,7 +117,6 @@ describe( 'Site Kit admin bar component display', () => {
 	} );
 
 	it( 'loads when editing a post with data in Search Console', async () => {
-		await safeLoginUser( 'admin', 'password' );
 		const { searchConsole } = adminBarMockResponses;
 		// Data is requested when the Admin Bar app loads on first hover
 		mockBatchResponse = Object.assign( {}, searchConsole );
@@ -181,7 +178,6 @@ describe( 'Site Kit admin bar component display', () => {
 	} );
 
 	it( 'links "More details" to the entity dashboard view for the current post', async () => {
-		await safeLoginUser( 'admin', 'password' );
 		const { searchConsole } = adminBarMockResponses;
 		// Data is requested when the Admin Bar app loads on first hover
 		mockBatchResponse = Object.assign( {}, searchConsole );
