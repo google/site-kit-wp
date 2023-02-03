@@ -92,7 +92,7 @@ export default function SettingsAdmin() {
 										goTo={ goTo }
 										noHeader
 										noFooter
-										settingsdView
+										settingsView
 										showIndividualCTAs
 									/>
 								</Grid>

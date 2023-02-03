@@ -53,6 +53,7 @@ import ErrorNotice from '../ErrorNotice';
 import Link from '../Link';
 import CancelUserInputButton from './CancelUserInputButton';
 import { getErrorMessageForAnswer } from './util/validation';
+import { Row, Cell } from '../../material-components';
 const { useSelect } = Data;
 
 export default function UserInputPreview( props ) {
@@ -62,7 +63,7 @@ export default function UserInputPreview( props ) {
 		submitChanges,
 		error,
 		noHeader,
-		settingsdView = false,
+		settingsView = false,
 		showIndividualCTAs = false,
 	} = props;
 	const previewContainer = useRef();
@@ -155,13 +156,17 @@ export default function UserInputPreview( props ) {
 						{ __( 'Review your answers', 'google-site-kit' ) }
 					</p>
 				) }
-				{ settingsdView && (
-					<p className="googlesitekit-settings-user-input__heading">
-						{ __(
-							'Edit your answers for more personalized metrics:',
-							'google-site-kit'
-						) }
-					</p>
+				{ settingsView && (
+					<Row>
+						<Cell>
+							<p className="googlesitekit-settings-user-input__heading">
+								{ __(
+									'Edit your answers for more personalized metrics:',
+									'google-site-kit'
+								) }
+							</p>
+						</Cell>
+					</Row>
 				) }
 				<UserInputPreviewGroup
 					slug={ USER_INPUT_QUESTIONS_PURPOSE }
@@ -251,6 +256,6 @@ UserInputPreview.propTypes = {
 	redirectURL: PropTypes.string,
 	errors: PropTypes.object,
 	noHeader: PropTypes.bool,
-	settingsdView: PropTypes.bool,
+	settingsView: PropTypes.bool,
 	showIndividualCTAs: PropTypes.bool,
 };
