@@ -27,16 +27,15 @@ import PropTypes from 'prop-types';
  */
 import { Component, Fragment } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
-import { Icon, check, stack } from '@wordpress/icons';
 
 /**
  * Internal dependencies
  */
-import { Button } from 'googlesitekit-components';
 import Link from '../Link';
 import CTA from '../notifications/CTA';
 import ViewContextContext from '../Root/ViewContextContext';
 import { trackEvent } from '../../util';
+import ReportErrorButton from '../ReportErrorButton';
 
 class GoogleChartErrorHandler extends Component {
 	constructor( props ) {
@@ -45,7 +44,6 @@ class GoogleChartErrorHandler extends Component {
 		this.state = {
 			error: null,
 			info: null,
-			copied: false,
 		};
 
 		this.onErrorClick = this.onErrorClick.bind( this );
@@ -69,25 +67,16 @@ class GoogleChartErrorHandler extends Component {
 
 		// Copy message with wrapping backticks for code block formatting on wp.org.
 		copyToClipboard( `\`${ error?.message }\n${ info?.componentStack }\`` );
-
-		this.setState( { copied: true } );
 	}
 
 	render() {
 		const { children } = this.props;
-		const { error, copied } = this.state;
+		const { error, info } = this.state;
 
 		// If there is no caught error, render the children components normally.
 		if ( ! error ) {
 			return children;
 		}
-
-		const icon = (
-			<Icon
-				className="mdc-button__icon"
-				icon={ copied ? check : stack }
-			/>
-		);
 
 		return (
 			<div className="googlesitekit-googlechart-error-handler">
@@ -100,26 +89,22 @@ class GoogleChartErrorHandler extends Component {
 									'google-site-kit'
 								) }
 							</p>
-							<Button
-								aria-label={ __(
-									'Error message copied to clipboard. Click to copy the error message again.',
-									'google-site-kit'
-								) }
-								onClick={ this.onErrorClick }
-								trailingIcon={ icon }
-							>
-								{ __(
-									'Copy error contents',
-									'google-site-kit'
-								) }
-							</Button>
-							<Link
-								href="https://wordpress.org/support/plugin/google-site-kit/"
-								arrow
-								external
-							>
-								{ __( 'Report this error', 'google-site-kit' ) }
-							</Link>
+							<div className="googlesitekit-googlechart-error-handler__error-actions">
+								<ReportErrorButton
+									message={ error.message }
+									componentStack={ info.componentStack }
+								/>
+								<Link
+									href="https://wordpress.org/support/plugin/google-site-kit/"
+									arrow
+									external
+								>
+									{ __(
+										'Report this error',
+										'google-site-kit'
+									) }
+								</Link>
+							</div>
 						</Fragment>
 					}
 					error

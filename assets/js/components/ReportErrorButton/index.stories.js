@@ -1,7 +1,7 @@
 /**
- * UserMenu stories.
+ * ReportErrorButton Component Stories.
  *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,32 +19,17 @@
 /**
  * Internal dependencies
  */
-import {
-	provideSiteInfo,
-	provideUserInfo,
-	WithTestRegistry,
-} from '../../../tests/js/utils';
-import UserMenu from './UserMenu';
+import ReportErrorButton from './';
 
-const Template = ( args ) => <UserMenu { ...args } />;
+const Template = () => <ReportErrorButton />;
 
-export const DefaultUserMenu = Template.bind( {} );
+export const Default = Template.bind( {} );
+Default.storyName = 'Default';
+Default.scenario = {
+	label: 'Global/ReportErrorButton',
+};
 
 export default {
-	title: 'Components/UserMenu',
-	component: UserMenu,
-	decorators: [
-		( Story ) => {
-			const setupRegistry = ( registry ) => {
-				provideSiteInfo( registry );
-				provideUserInfo( registry );
-			};
-
-			return (
-				<WithTestRegistry callback={ setupRegistry }>
-					<Story />
-				</WithTestRegistry>
-			);
-		},
-	],
+	title: 'Components/ReportErrorButton',
+	component: ReportErrorButton,
 };

@@ -17,11 +17,10 @@
  */
 
 .googlesitekit-plugin {
-
-	.googlesitekit-googlechart-error-handler {
-
-		.googlesitekit-cta-link {
-			margin-left: 12px;
-		}
+	.googlesitekit-googlechart-error-handler__error-actions {
+		align-items: flex-start;
+		display: flex;
+		flex-direction: column;
+		gap: #{$grid-gap-phone};
 	}
 }

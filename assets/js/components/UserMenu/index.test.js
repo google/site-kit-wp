@@ -32,9 +32,9 @@ import {
 	provideSiteInfo,
 	act,
 	waitFor,
-} from '../../../tests/js/test-utils';
-import UserMenu from './UserMenu';
-import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
+} from '../../../../tests/js/test-utils';
+import UserMenu from '.';
+import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 
 describe( 'UserMenu', () => {
 	let registry;
@@ -86,7 +86,7 @@ describe( 'UserMenu', () => {
 
 			expect(
 				container.querySelector( '#user-menu' ).children.length
-			).toEqual( 1 );
+			).toEqual( 2 );
 		} );
 
 		it( 'should open the menu when clicked', () => {
@@ -106,7 +106,7 @@ describe( 'UserMenu', () => {
 
 		describe( 'clicking the disconnect menu item', () => {
 			beforeEach( () => {
-				fireEvent.click( menu.children[ 0 ] );
+				fireEvent.click( menu.children[ 2 ] );
 			} );
 
 			it( 'should open the modal dialog', () => {
@@ -166,14 +166,14 @@ describe( 'UserMenu', () => {
 		} );
 
 		it( 'should select a menu option on pressing space', () => {
-			fireEvent.keyDown( menu.children[ 0 ], { keyCode: SPACE } );
+			fireEvent.keyDown( menu.children[ 2 ], { keyCode: SPACE } );
 			expect(
 				document.querySelector( '.mdc-dialog--open' )
 			).toBeInTheDocument();
 		} );
 
 		it( 'should select a menu option on pressing enter', () => {
-			fireEvent.keyDown( menu.children[ 0 ], { keyCode: ENTER } );
+			fireEvent.keyDown( menu.children[ 2 ], { keyCode: ENTER } );
 			expect(
 				document.querySelector( '.mdc-dialog--open' )
 			).toBeInTheDocument();
