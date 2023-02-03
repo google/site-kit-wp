@@ -1,5 +1,5 @@
 /**
- * Google Charts error handler styles.
+ * ReportErrorButton Component Stories.
  *
  * Site Kit by Google, Copyright 2023 Google LLC
  *
@@ -16,11 +16,20 @@
  * limitations under the License.
  */
 
-.googlesitekit-plugin {
-	.googlesitekit-googlechart-error-handler__error-actions {
-		align-items: flex-start;
-		display: flex;
-		flex-direction: column;
-		gap: #{$grid-gap-phone};
-	}
-}
+/**
+ * Internal dependencies
+ */
+import ReportErrorButton from './';
+
+const Template = () => <ReportErrorButton />;
+
+export const Default = Template.bind( {} );
+Default.storyName = 'Default';
+Default.scenario = {
+	label: 'Global/ReportErrorButton',
+};
+
+export default {
+	title: 'Components/ReportErrorButton',
+	component: ReportErrorButton,
+};
