@@ -122,21 +122,22 @@ const DataBlock = ( {
 			aria-label={ handleStatSelection && title }
 			aria-pressed={ handleStatSelection && selected }
 		>
-			<h3
-				className="
+			<div className="googlesitekit-data-block__title-datapoint-wrapper">
+				<h3
+					className="
 						googlesitekit-subheading-1
 						googlesitekit-data-block__title
 					"
-			>
-				{ title }
-			</h3>
+				>
+					{ title }
+				</h3>
 
-			{ ! gatheringData && (
-				<div className="googlesitekit-data-block__datapoint">
-					{ datapointFormatted }
-				</div>
-			) }
-
+				{ ! gatheringData && (
+					<div className="googlesitekit-data-block__datapoint">
+						{ datapointFormatted }
+					</div>
+				) }
+			</div>
 			{ ! gatheringData && (
 				<Fragment>
 					{ sparklineComponent && (
@@ -144,42 +145,43 @@ const DataBlock = ( {
 							{ sparklineComponent }
 						</div>
 					) }
-
-					<div
-						className={ classnames(
-							'googlesitekit-data-block__change',
-							{
-								'googlesitekit-data-block__change--no-change':
-									! change,
-							}
-						) }
-					>
-						<Fragment>
-							{ !! change && (
-								<span className="googlesitekit-data-block__arrow">
-									<ChangeArrow
-										direction={
-											0 < parseFloat( change )
-												? 'up'
-												: 'down'
-										}
-										invertColor={ invertChangeColor }
-									/>
-								</span>
+					<div className="googlesitekit-data-block__change-source-wrapper">
+						<div
+							className={ classnames(
+								'googlesitekit-data-block__change',
+								{
+									'googlesitekit-data-block__change--no-change':
+										! change,
+								}
 							) }
-							<span className="googlesitekit-data-block__value">
-								{ changeFormatted }
-							</span>
-						</Fragment>
+						>
+							<Fragment>
+								{ !! change && (
+									<span className="googlesitekit-data-block__arrow">
+										<ChangeArrow
+											direction={
+												0 < parseFloat( change )
+													? 'up'
+													: 'down'
+											}
+											invertColor={ invertChangeColor }
+										/>
+									</span>
+								) }
+								<span className="googlesitekit-data-block__value">
+									{ changeFormatted }
+								</span>
+							</Fragment>
+						</div>
+						{ source && (
+							<SourceLink
+								className="googlesitekit-data-block__source"
+								name={ source.name }
+								href={ source.link }
+								external={ source?.external }
+							/>
+						) }
 					</div>
-					{ source && (
-						<SourceLink
-							className="googlesitekit-data-block__source"
-							name={ source.name }
-							href={ source.link }
-							external={ source?.external }
-						/>
-					) }
 				</Fragment>
 			) }
 
