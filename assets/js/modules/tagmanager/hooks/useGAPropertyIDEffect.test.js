@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import fetchMock from 'fetch-mock';
+
+/**
  * Internal dependencies
  */
 import { renderHook, actHook as act } from '../../../../../tests/js/test-utils';
@@ -27,36 +32,88 @@ import useGAPropertyIDEffect from './useGAPropertyIDEffect';
 
 describe( 'useGAPropertyIDEffect', () => {
 	let registry;
-	beforeEach( () => {
-		registry = createTestRegistry();
-		// Set settings to prevent fetch in resolver.
-		registry.dispatch( MODULES_TAGMANAGER ).receiveGetSettings( {} );
-		// Set set no existing tag.
-		registry.dispatch( MODULES_TAGMANAGER ).receiveGetExistingTag( null );
-	} );
 
-	it( 'sets the gaPropertyID with the current detected singular property ID in selected containers', async () => {
-		const { buildAndReceiveWebAndAMP } =
-			createBuildAndReceivers( registry );
-
-		const TEST_GA_PROPERTY_ID = 'UA-123456789-1';
-
-		buildAndReceiveWebAndAMP( {
-			webPropertyID: TEST_GA_PROPERTY_ID,
+	describe( 'with empty tagmanager settings store', () => {
+		beforeEach( () => {
+			registry = createTestRegistry();
 		} );
 
-		await act(
-			() =>
-				new Promise( ( resolve ) => {
-					renderHook( () => useGAPropertyIDEffect(), { registry } );
-					resolve();
-				} )
-		);
+		it( 'fetches settings from api before updating gaPropertyID', async () => {
+			fetchMock.getOnce(
+				/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/settings/,
+				{
+					body: {},
+					status: 200,
+				}
+			);
 
-		const propertyID = registry
-			.select( MODULES_TAGMANAGER )
-			.getGAPropertyID();
+			let renderHookResponse;
 
-		expect( propertyID ).toBe( TEST_GA_PROPERTY_ID );
+			await act(
+				() =>
+					new Promise( ( resolve ) => {
+						renderHookResponse = renderHook(
+							() => useGAPropertyIDEffect(),
+							{
+								registry,
+							}
+						);
+						resolve();
+					} )
+			);
+
+			await renderHookResponse.waitForNextUpdate();
+
+			expect( fetchMock ).toHaveFetched(
+				new RegExp(
+					'^/google-site-kit/v1/modules/tagmanager/data/settings'
+				)
+			);
+
+			const propertyID = registry
+				.select( MODULES_TAGMANAGER )
+				.getGAPropertyID();
+
+			expect( propertyID ).toBe( '' );
+		} );
+	} );
+
+	describe( 'with tagmanager store setup', () => {
+		beforeEach( () => {
+			registry = createTestRegistry();
+			// Set settings to prevent fetch in resolver.
+			registry.dispatch( MODULES_TAGMANAGER ).receiveGetSettings( {} );
+			// Set set no existing tag.
+			registry
+				.dispatch( MODULES_TAGMANAGER )
+				.receiveGetExistingTag( null );
+		} );
+
+		it( 'sets the gaPropertyID with the current detected singular property ID in selected containers', async () => {
+			const { buildAndReceiveWebAndAMP } =
+				createBuildAndReceivers( registry );
+
+			const TEST_GA_PROPERTY_ID = 'UA-123456789-1';
+
+			buildAndReceiveWebAndAMP( {
+				webPropertyID: TEST_GA_PROPERTY_ID,
+			} );
+
+			await act(
+				() =>
+					new Promise( ( resolve ) => {
+						renderHook( () => useGAPropertyIDEffect(), {
+							registry,
+						} );
+						resolve();
+					} )
+			);
+
+			const propertyID = registry
+				.select( MODULES_TAGMANAGER )
+				.getGAPropertyID();
+
+			expect( propertyID ).toBe( TEST_GA_PROPERTY_ID );
+		} );
 	} );
 } );
