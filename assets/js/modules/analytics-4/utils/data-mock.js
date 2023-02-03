@@ -395,18 +395,8 @@ export function getAnalytics4MockResponse( options ) {
 			dimension &&
 			Array.isArray( ANALYTICS_4_DIMENSION_OPTIONS[ dimension ] )
 		) {
-			// Generates a stream (an array) of dimension values using the array of values for the current dimension.
-			streams.push(
-				new Observable( ( observer ) => {
-					ANALYTICS_4_DIMENSION_OPTIONS[ dimension ].forEach(
-						( val ) => {
-							observer.next( val );
-						}
-					);
-
-					observer.complete();
-				} )
-			);
+			// Uses predefined array of dimension values to create a stream (an array) from.
+			streams.push( from( ANALYTICS_4_DIMENSION_OPTIONS[ dimension ] ) );
 		} else {
 			// In case when a dimension is not provided or is not recognized, we use NULL to create a stream (an array) with just one value.
 			streams.push( from( [ null ] ) );
