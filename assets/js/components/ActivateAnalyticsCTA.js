@@ -24,6 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
+import { useEffect, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -36,6 +37,7 @@ import { CORE_LOCATION } from '../../js/googlesitekit/datastore/location/constan
 import useActivateModuleCallback from '../hooks/useActivateModuleCallback';
 import useCompleteModuleActivationCallback from '../hooks/useCompleteModuleActivationCallback';
 import SpinnerButton from './SpinnerButton';
+import { useDebounce } from '../hooks/useDebounce';
 const { useSelect } = Data;
 
 export default function ActivateAnalyticsCTA( { children } ) {
@@ -49,23 +51,53 @@ export default function ActivateAnalyticsCTA( { children } ) {
 	const analyticsModuleAvailable = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleAvailable( 'analytics' )
 	);
+	const [ inProgress, setInProgress ] = useState( false );
 
 	const isNavigatingToReauthURL = useSelect( ( select ) => {
 		if ( ! analyticsModuleAvailable ) {
 			return false;
 		}
+
 		const adminReauthURL = select( MODULES_ANALYTICS ).getAdminReauthURL();
+
 		if ( ! adminReauthURL ) {
 			return false;
 		}
+
 		return select( CORE_LOCATION ).isNavigatingTo( adminReauthURL );
 	} );
+
+	const isActivating = useSelect( ( select ) => {
+		if ( ! analyticsModuleAvailable ) {
+			return false;
+		}
+
+		return select( CORE_MODULES ).isFetchingSetModuleActivation(
+			'analytics',
+			true
+		);
+	} );
+
+	/*
+	 * Using debounce here because the spinner has to render across two separate calls.
+	 * Rather than risk it flickering on and off in between the reset call completing and
+	 * the navigate call starting, we will just set a debounce to keep the spinner for 3 seconds.
+	 */
+	const debouncedSetInProgress = useDebounce( setInProgress, 3000 );
+
+	useEffect( () => {
+		if ( isActivating || isNavigatingToReauthURL ) {
+			setInProgress( true );
+		} else {
+			debouncedSetInProgress( false );
+		}
+	}, [ isActivating, isNavigatingToReauthURL, debouncedSetInProgress ] );
 
 	const onClickCallback = analyticsModuleActive
 		? completeModuleActivationCallback
 		: activateModuleCallback;
 
-	if ( ! onClickCallback ) {
+	if ( ! analyticsModuleAvailable || ! onClickCallback ) {
 		return null;
 	}
 
@@ -83,7 +115,7 @@ export default function ActivateAnalyticsCTA( { children } ) {
 				</p>
 				<SpinnerButton
 					onClick={ onClickCallback }
-					isSaving={ isNavigatingToReauthURL }
+					isSaving={ inProgress }
 				>
 					{ analyticsModuleActive
 						? __( 'Complete setup', 'google-site-kit' )
