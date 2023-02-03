@@ -350,25 +350,11 @@ export function getAnalytics4MockResponse( options ) {
 
 			// Generates a stream (an array) of dates when the dimension is date.
 			if ( dimension === 'date' ) {
-				streams.push(
-					new Observable( ( observer ) => {
-						dateRange.forEach( ( date ) => {
-							observer.next( date );
-						} );
-
-						observer.complete();
-					} )
-				);
+				streams.push( from( dateRange ) );
 			}
 
 			if ( dimension === 'dateRange' ) {
-				streams.push(
-					new Observable( ( observer ) => {
-						observer.next( 'date_range_0' );
-						observer.next( 'date_range_1' );
-						observer.complete();
-					} )
-				);
+				streams.push( from( [ 'date_range_0', 'date_range_1' ] ) );
 			}
 		} else if (
 			dimension &&
@@ -430,16 +416,9 @@ export function getAnalytics4MockResponse( options ) {
 	merge( ...streams.map( ( stream ) => stream.pipe( toArray() ) ) )
 		.pipe(
 			toArray(),
-			mergeMap( ( dimensionArrays ) => {
-				return new Observable( ( observer ) => {
-					cartesianProduct( dimensionArrays ).forEach(
-						( dimensionCombination ) => {
-							observer.next( dimensionCombination );
-						}
-					);
-					observer.complete();
-				} );
-			} )
+			mergeMap( ( dimensionArrays ) =>
+				cartesianProduct( dimensionArrays )
+			)
 		)
 		.pipe( ...ops )
 		.subscribe( ( rows ) => {
