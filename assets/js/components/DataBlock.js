@@ -25,7 +25,7 @@ import classnames from 'classnames';
 /**
  * WordPress dependencies
  */
-import { Component, Fragment, cloneElement } from '@wordpress/element';
+import { Fragment, cloneElement } from '@wordpress/element';
 import { sprintf } from '@wordpress/i18n';
 
 /**
@@ -36,193 +36,162 @@ import SourceLink from './SourceLink';
 import GatheringDataNotice, { NOTICE_STYLE } from './GatheringDataNotice';
 import { numFmt } from '../util';
 
-class DataBlock extends Component {
-	constructor( props ) {
-		super( props );
-
-		this.handleClick = this.handleClick.bind( this );
-		this.handleKeyPress = this.handleKeyPress.bind( this );
-	}
-
-	handleClick() {
-		const { stat, handleStatSelection } = this.props;
-		handleStatSelection( stat );
-	}
-
-	handleKeyPress( e ) {
-		e.preventDefault();
-		const { stat, handleStatSelection } = this.props;
-		if ( 'Enter' === e.key || ' ' === e.key ) {
+const DataBlock = ( {
+	stat,
+	className = '',
+	title = '',
+	datapoint,
+	datapointUnit = undefined,
+	change,
+	changeDataUnit = '',
+	context = 'default',
+	period = '',
+	selected = false,
+	source,
+	sparkline,
+	handleStatSelection,
+	invertChangeColor = false,
+	gatheringData = false,
+	gatheringDataNoticeStyle = NOTICE_STYLE.DEFAULT,
+} ) => {
+	const handleClick = () => {
+		if ( ! gatheringData && handleStatSelection ) {
 			handleStatSelection( stat );
 		}
+	};
+
+	const handleKeyDown = ( e ) => {
+		e.preventDefault();
+		if ( 'Enter' === e.key || ' ' === e.key ) {
+			handleClick();
+		}
+	};
+
+	// The `sparkline` prop is passed as a component, but if `invertChangeColor`
+	// is set, we should pass that to `<Sparkline>`. In that case, we clone
+	// the element and add the prop.
+	let sparklineComponent = sparkline;
+	if ( sparklineComponent && invertChangeColor ) {
+		sparklineComponent = cloneElement( sparkline, {
+			invertChangeColor,
+		} );
 	}
 
-	// eslint-disable-next-line complexity
-	render() {
-		const {
-			className,
-			title,
-			datapoint,
-			datapointUnit,
-			change,
-			changeDataUnit,
-			context,
-			period,
-			selected,
-			handleStatSelection,
-			source,
-			sparkline,
-			invertChangeColor,
-			gatheringData,
-			gatheringDataNoticeStyle,
-		} = this.props;
+	let changeFormatted = change;
 
-		const role = 'button' === context ? 'button' : '';
-
-		// The `sparkline` prop is passed as a component, but if `invertChangeColor`
-		// is set, we should pass that to `<Sparkline>`. In that case, we clone
-		// the element and add the prop.
-		let sparklineComponent = sparkline;
-		if ( sparklineComponent && invertChangeColor ) {
-			sparklineComponent = cloneElement( sparkline, {
-				invertChangeColor,
+	// If changeDataUnit is given, try using it as currency first, otherwise add it as suffix.
+	if ( changeDataUnit ) {
+		if ( changeDataUnit === '%' ) {
+			// Format percentage change with only 1 digit instead of the usual 2.
+			changeFormatted = numFmt( change, {
+				style: 'percent',
+				signDisplay: 'never',
+				maximumFractionDigits: 1,
 			} );
+		} else {
+			changeFormatted = numFmt( change, changeDataUnit );
 		}
+	}
 
-		let changeFormatted = change;
+	// If period is given (requires %s placeholder), add it.
+	if ( period ) {
+		changeFormatted = sprintf( period, changeFormatted );
+	}
 
-		// If changeDataUnit is given, try using it as currency first, otherwise add it as suffix.
-		if ( changeDataUnit ) {
-			if ( changeDataUnit === '%' ) {
-				// Format percentage change with only 1 digit instead of the usual 2.
-				changeFormatted = numFmt( change, {
-					style: 'percent',
-					signDisplay: 'never',
-					maximumFractionDigits: 1,
-				} );
-			} else {
-				changeFormatted = numFmt( change, changeDataUnit );
-			}
-		}
+	const datapointFormatted = datapoint && numFmt( datapoint, datapointUnit );
+	const isButtonContext = 'button' === context;
+	const role = isButtonContext ? 'button' : '';
 
-		// If period is given (requires %s placeholder), add it.
-		if ( period ) {
-			changeFormatted = sprintf( period, changeFormatted );
-		}
-
-		const datapointFormatted =
-			datapoint === undefined
-				? datapoint
-				: numFmt( datapoint, datapointUnit || undefined );
-
-		return (
-			<div
-				className={ classnames(
-					'googlesitekit-data-block',
-					className,
-					`googlesitekit-data-block--${ context }`,
-					{
-						'googlesitekit-data-block--selected': selected,
-						'googlesitekit-data-block--is-gathering-data':
-							gatheringData,
-					}
-				) }
-				tabIndex={
-					'button' === context && ! gatheringData ? '0' : '-1'
+	return (
+		<div
+			className={ classnames(
+				'googlesitekit-data-block',
+				className,
+				`googlesitekit-data-block--${ context }`,
+				{
+					'googlesitekit-data-block--selected': selected,
+					'googlesitekit-data-block--is-gathering-data':
+						gatheringData,
 				}
-				role={ handleStatSelection && role }
-				onClick={
-					gatheringData
-						? undefined
-						: handleStatSelection && this.handleClick
-				}
-				onKeyPress={
-					gatheringData
-						? undefined
-						: handleStatSelection && this.handleKeyPress
-				}
-				aria-disabled={ gatheringData || undefined }
-				aria-label={ handleStatSelection && title }
-				aria-pressed={ handleStatSelection && selected }
-			>
-				<div className="googlesitekit-data-block__title-datapoint-wrapper">
-					<h3
-						className="
+			) }
+			tabIndex={ isButtonContext && ! gatheringData ? '0' : '-1' }
+			role={ handleStatSelection && role }
+			onClick={ handleClick }
+			onKeyDown={ handleKeyDown }
+			aria-disabled={ gatheringData }
+			aria-label={ handleStatSelection && title }
+			aria-pressed={ handleStatSelection && selected }
+		>
+			<h3
+				className="
 						googlesitekit-subheading-1
 						googlesitekit-data-block__title
 					"
-					>
-						{ title }
-					</h3>
+			>
+				{ title }
+			</h3>
 
-					{ ! gatheringData && (
-						<div className="googlesitekit-data-block__datapoint">
-							{ datapointFormatted }
+			{ ! gatheringData && (
+				<div className="googlesitekit-data-block__datapoint">
+					{ datapointFormatted }
+				</div>
+			) }
+
+			{ ! gatheringData && (
+				<Fragment>
+					{ sparklineComponent && (
+						<div className="googlesitekit-data-block__sparkline">
+							{ sparklineComponent }
 						</div>
 					) }
-				</div>
 
-				{ ! gatheringData && (
-					<Fragment>
-						{ sparklineComponent && (
-							<div className="googlesitekit-data-block__sparkline">
-								{ sparklineComponent }
-							</div>
+					<div
+						className={ classnames(
+							'googlesitekit-data-block__change',
+							{
+								'googlesitekit-data-block__change--no-change':
+									! change,
+							}
 						) }
-
-						<div className="googlesitekit-data-block__change-source-wrapper">
-							<div
-								className={ classnames(
-									'googlesitekit-data-block__change',
-									{
-										'googlesitekit-data-block__change--no-change':
-											! change,
-									}
-								) }
-							>
-								<Fragment>
-									{ !! change && (
-										<span className="googlesitekit-data-block__arrow">
-											<ChangeArrow
-												direction={
-													0 < parseFloat( change )
-														? 'up'
-														: 'down'
-												}
-												invertColor={
-													invertChangeColor
-												}
-											/>
-										</span>
-									) }
-									<span className="googlesitekit-data-block__value">
-										{ changeFormatted }
-									</span>
-								</Fragment>
-							</div>
-							{ source && (
-								<SourceLink
-									className="googlesitekit-data-block__source"
-									name={ source.name }
-									href={ source.link }
-									external={ source?.external }
-								/>
+					>
+						<Fragment>
+							{ !! change && (
+								<span className="googlesitekit-data-block__arrow">
+									<ChangeArrow
+										direction={
+											0 < parseFloat( change )
+												? 'up'
+												: 'down'
+										}
+										invertColor={ invertChangeColor }
+									/>
+								</span>
 							) }
-						</div>
-					</Fragment>
-				) }
+							<span className="googlesitekit-data-block__value">
+								{ changeFormatted }
+							</span>
+						</Fragment>
+					</div>
+					{ source && (
+						<SourceLink
+							className="googlesitekit-data-block__source"
+							name={ source.name }
+							href={ source.link }
+							external={ source?.external }
+						/>
+					) }
+				</Fragment>
+			) }
 
-				{ gatheringData && (
-					<GatheringDataNotice style={ gatheringDataNoticeStyle } />
-				) }
-			</div>
-		);
-	}
-}
+			{ gatheringData && (
+				<GatheringDataNotice style={ gatheringDataNoticeStyle } />
+			) }
+		</div>
+	);
+};
 
 DataBlock.propTypes = {
 	stat: PropTypes.number,
-	onClick: PropTypes.func,
 	className: PropTypes.string,
 	title: PropTypes.string,
 	datapoint: PropTypes.oneOfType( [ PropTypes.string, PropTypes.number ] ),
@@ -236,24 +205,6 @@ DataBlock.propTypes = {
 	invertChangeColor: PropTypes.bool,
 	gatheringData: PropTypes.bool,
 	gatheringDataNoticeStyle: PropTypes.oneOf( Object.values( NOTICE_STYLE ) ),
-};
-
-DataBlock.defaultProps = {
-	stat: null,
-	onClick: null,
-	className: '',
-	title: '',
-	datapoint: null,
-	datapointUnit: '',
-	change: null,
-	changeDataUnit: '',
-	context: 'default',
-	period: '',
-	selected: false,
-	handleStatSelection: null,
-	invertChangeColor: false,
-	gatheringData: false,
-	gatheringDataNoticeStyle: NOTICE_STYLE.DEFAULT,
 };
 
 export default DataBlock;
