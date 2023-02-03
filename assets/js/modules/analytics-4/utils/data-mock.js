@@ -23,8 +23,8 @@ import md5 from 'md5';
 import faker from 'faker';
 import invariant from 'invariant';
 import castArray from 'lodash/castArray';
-import { zip, from, Observable } from 'rxjs';
-import { map, reduce, take } from 'rxjs/operators';
+import { Observable, merge, from } from 'rxjs';
+import { map, reduce, take, toArray, mergeMap } from 'rxjs/operators';
 import cloneDeep from 'lodash/cloneDeep';
 import isPlainObject from 'lodash/isPlainObject';
 
@@ -128,6 +128,33 @@ function generateMetricValues( validMetrics ) {
 	} );
 
 	return values;
+}
+
+/**
+ * Generates the cartesian product of a set of arrays, i.e. all possible combinations of their values.
+ *
+ * Cribbed from https://stackoverflow.com/a/36234242/12296658, thanks to the original author(s).
+ *
+ * @since n.e.x.t
+ *
+ * @param {Array.<Array>} arrays An array of arrays.
+ * @return {Array.<Array>} The cartesian product of the input arrays.
+ */
+function cartesianProduct( arrays ) {
+	return arrays.reduce(
+		function ( arrayA, arrayB ) {
+			return arrayA
+				.map( function ( valueA ) {
+					return arrayB.map( function ( valueB ) {
+						return valueA.concat( [ valueB ] );
+					} );
+				} )
+				.reduce( function ( innerA, innerB ) {
+					return innerA.concat( innerB );
+				}, [] );
+		},
+		[ [] ]
+	);
 }
 
 /**
@@ -327,11 +354,6 @@ export function getAnalytics4MockResponse( options ) {
 					new Observable( ( observer ) => {
 						dateRange.forEach( ( date ) => {
 							observer.next( date );
-
-							if ( hasDateRange ) {
-								// Duplicate date if we have a date range.
-								observer.next( date );
-							}
 						} );
 
 						observer.complete();
@@ -342,11 +364,8 @@ export function getAnalytics4MockResponse( options ) {
 			if ( dimension === 'dateRange' ) {
 				streams.push(
 					new Observable( ( observer ) => {
-						dateRange.forEach( () => {
-							observer.next( 'date_range_0' );
-							observer.next( 'date_range_1' );
-						} );
-
+						observer.next( 'date_range_0' );
+						observer.next( 'date_range_1' );
 						observer.complete();
 					} )
 				);
@@ -364,11 +383,6 @@ export function getAnalytics4MockResponse( options ) {
 							ANALYTICS_4_DIMENSION_OPTIONS[ dimension ]( i );
 						if ( val ) {
 							observer.next( val );
-
-							if ( hasDateRange ) {
-								// Duplicate value if we have a date range.
-								observer.next( val );
-							}
 						} else {
 							break;
 						}
@@ -387,11 +401,6 @@ export function getAnalytics4MockResponse( options ) {
 					ANALYTICS_4_DIMENSION_OPTIONS[ dimension ].forEach(
 						( val ) => {
 							observer.next( val );
-
-							if ( hasDateRange ) {
-								// Duplicate value if we have a date range.
-								observer.next( val );
-							}
 						}
 					);
 
@@ -399,9 +408,8 @@ export function getAnalytics4MockResponse( options ) {
 				} )
 			);
 		} else {
-			// In case when a dimension is not provided or is not recognized, we use NULL to create a stream (an array).
-			// If a date range is provided, we want to generate two rows, one for each range. Otherwise we just generate a single row.
-			streams.push( from( hasDateRange ? [ null, null ] : [ null ] ) );
+			// In case when a dimension is not provided or is not recognized, we use NULL to create a stream (an array) with just one value.
+			streams.push( from( [ null ] ) );
 		}
 	} );
 
@@ -428,8 +436,21 @@ export function getAnalytics4MockResponse( options ) {
 		),
 	];
 
-	// Process the stream of dimension values and add generated rows to the report data object.
-	zip( ...streams )
+	// Process the streams of dimension values and add generated rows to the report data object.
+	merge( ...streams.map( ( stream ) => stream.pipe( toArray() ) ) )
+		.pipe(
+			toArray(),
+			mergeMap( ( dimensionArrays ) => {
+				return new Observable( ( observer ) => {
+					cartesianProduct( dimensionArrays ).forEach(
+						( dimensionCombination ) => {
+							observer.next( dimensionCombination );
+						}
+					);
+					observer.complete();
+				} );
+			} )
+		)
 		.pipe( ...ops )
 		.subscribe( ( rows ) => {
 			data.rows = rows;
