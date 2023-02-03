@@ -260,6 +260,7 @@ export function getAnalytics4MockResponse( options ) {
 		'a valid endDate is required.'
 	);
 
+	// Ensure we don't mutate the passed options to avoid unexpected side effects for the caller.
 	const args = cloneDeep( options );
 
 	const originalSeedValue = faker.seedValue;
@@ -474,6 +475,8 @@ export function getAnalytics4MockResponse( options ) {
 					: []
 			);
 
+			// For maximums and totals, if we have a date range the second to last row will be date_range_0 and the last row will be date_range_1.
+			// When there is no date range we only need to use the last row.
 			const firstItemIndex = rows.length - ( hasDateRange ? 2 : 1 );
 
 			data.maximums = [
