@@ -416,7 +416,7 @@ export function getAnalytics4MockResponse( options ) {
 	// First we merge all streams into one which will emit each set of dimension values as an array.
 	merge( ...streams.map( ( stream ) => stream.pipe( toArray() ) ) )
 		.pipe(
-			// Then we convert the stream to an array...
+			// Then we convert the resulting stream to an array...
 			toArray(),
 			// So that we can pass it to the cartesianProduct function to generate all possible combinations of dimension values.
 			// Using mergeMap here ensures the resulting set of values will be emitted as a new stream.
