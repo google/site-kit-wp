@@ -62,6 +62,7 @@ export default function UserInputPreview( props ) {
 		submitChanges,
 		error,
 		noHeader,
+		settingsdView = false,
 		showIndividualCTAs = false,
 	} = props;
 	const previewContainer = useRef();
@@ -154,6 +155,14 @@ export default function UserInputPreview( props ) {
 						{ __( 'Review your answers', 'google-site-kit' ) }
 					</p>
 				) }
+				{ settingsdView && (
+					<p className="googlesitekit-settings-user-input__heading">
+						{ __(
+							'Edit your answers for more personalized metrics:',
+							'google-site-kit'
+						) }
+					</p>
+				) }
 				<UserInputPreviewGroup
 					slug={ USER_INPUT_QUESTIONS_PURPOSE }
 					title={ __(
@@ -242,5 +251,6 @@ UserInputPreview.propTypes = {
 	redirectURL: PropTypes.string,
 	errors: PropTypes.object,
 	noHeader: PropTypes.bool,
+	settingsdView: PropTypes.bool,
 	showIndividualCTAs: PropTypes.bool,
 };
