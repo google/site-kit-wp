@@ -53,7 +53,6 @@ const store = Data.combineStores(
 	userInfo,
 	userInputSettings
 );
-global.console.log( { store: true } );
 
 export const {
 	initialState,
