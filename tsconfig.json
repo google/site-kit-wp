@@ -1,0 +1,17 @@
+{
+	"compilerOptions": {
+		"target": "esnext",
+		"module": "commonjs",
+		"lib": [ "esnext", "dom" ],
+		"allowJs": true,
+		"jsx": "react",
+		"noEmit": true,
+		"isolatedModules": true,
+		"strict": false,
+		"moduleResolution": "node",
+		"baseUrl": ".",
+		"allowSyntheticDefaultImports": true,
+		"esModuleInterop": true
+	},
+	"include": [ "assets/js/**/*" ]
+}
