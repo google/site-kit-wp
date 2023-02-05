@@ -11,7 +11,8 @@
 		"moduleResolution": "node",
 		"baseUrl": ".",
 		"allowSyntheticDefaultImports": true,
-		"esModuleInterop": true
+		"esModuleInterop": true,
+		"skipLibCheck": true
 	},
 	"include": [ "assets/js/**/*" ]
 }
