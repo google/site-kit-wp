@@ -35,7 +35,6 @@ import surveys from './surveys';
 import tracking from './tracking';
 import userInfo from './user-info';
 import userInputSettings from './user-input-settings';
-import { isFeatureEnabled } from '../../../features';
 
 const store = Data.combineStores(
 	Data.commonStore,
@@ -45,7 +44,7 @@ const store = Data.combineStores(
 	disconnect,
 	dismissedItems,
 	featureTours,
-	isFeatureEnabled( 'userInput' ) ? keyMetrics : {},
+	keyMetrics,
 	notifications,
 	permissions,
 	nonces,
@@ -54,6 +53,7 @@ const store = Data.combineStores(
 	userInfo,
 	userInputSettings
 );
+global.console.log( { store: true } );
 
 export const {
 	initialState,
