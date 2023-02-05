@@ -45,7 +45,8 @@
 		"lint:css-fix": "stylelint ./assets/sass ./.storybook/assets/sass --fix",
 		"env:start": "./bin/local-env/start.sh",
 		"env:stop": "./bin/local-env/stop.sh",
-		"env:reset-site": "./bin/local-env/install-wordpress.sh --reset-site"
+		"env:reset-site": "./bin/local-env/install-wordpress.sh --reset-site",
+		"typecheck": "tsc"
 	},
 	"browserslist": [
 		"extends @wordpress/browserslist-config"
