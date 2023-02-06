@@ -145,7 +145,7 @@ export const createSnapshotStore = ( storeName ) => {
 			case SET_STATE_FROM_SNAPSHOT: {
 				const { snapshot } = payload;
 				// Exclude any top-level errors from the restored state.
-				// eslint-disable-next-line no-unused-vars
+				// eslint-disable-next-line @typescript-eslint/no-unused-vars
 				const { error, ...newState } = snapshot;
 
 				return newState;

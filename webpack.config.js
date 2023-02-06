@@ -291,7 +291,7 @@ function* webpackConfig( env, argv ) {
 		entry: {
 			// New Modules (Post-JSR).
 			'googlesitekit-api': './assets/js/googlesitekit-api.js',
-			'googlesitekit-data': './assets/js/googlesitekit-data.js',
+			'googlesitekit-data': './assets/js/googlesitekit-data.ts',
 			'googlesitekit-datastore-site':
 				'./assets/js/googlesitekit-datastore-site.js',
 			'googlesitekit-datastore-user':

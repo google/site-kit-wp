@@ -53,7 +53,7 @@ export default function PropertySelect( {
 } ) {
 	// Analytics accounts need to be loaded in order to load the properties,
 	// otherwise this component will stay in a loading state forever.
-	// eslint-disable-next-line no-unused-vars
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	const accounts = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getAccounts()
 	);

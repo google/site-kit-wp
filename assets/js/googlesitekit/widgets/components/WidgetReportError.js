@@ -26,7 +26,7 @@ import PropTypes from 'prop-types';
  */
 import ReportError from '../../../components/ReportError';
 
-// eslint-disable-next-line no-unused-vars
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export default function WidgetReportError( { widgetSlug, ...props } ) {
 	return <ReportError { ...props } />;
 }

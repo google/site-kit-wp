@@ -29,6 +29,7 @@ import {
 	withSelect,
 	withDispatch,
 	RegistryProvider,
+	DataRegistry,
 } from '@wordpress/data';
 
 /**
@@ -43,7 +44,12 @@ import {
 } from './utils';
 import { createReducer } from './create-reducer';
 
-const Data = createRegistry( {}, global.wp?.data );
+interface GoogleSiteKitData extends DataRegistry {
+	useInViewSelect?: typeof useInViewSelect;
+	[ key: string ]: any;
+}
+
+const Data: GoogleSiteKitData = createRegistry( {}, global.wp?.data );
 
 // Attach some of our utility functions to the registry so third-party
 // developers can use them.
