@@ -48,7 +48,6 @@ import useDashboardType from '../hooks/useDashboardType';
 import SettingsSvg from '../../svg/icons/cog.svg';
 import Button from '../googlesitekit/components-gm2/Button';
 import Link from './Link';
-import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
 const { useSelect } = Data;
 
 const Header = ( { children, subHeader, showNavigation } ) => {
@@ -57,9 +56,6 @@ const Header = ( { children, subHeader, showNavigation } ) => {
 	const isViewOnly = useViewOnly();
 	const history = useHistory();
 
-	const dashboardURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' )
-	);
 	const isAuthenticated = useSelect( ( select ) =>
 		select( CORE_USER ).isAuthenticated()
 	);
@@ -91,7 +87,7 @@ const Header = ( { children, subHeader, showNavigation } ) => {
 									'google-site-kit'
 								) }
 								className="googlesitekit-header__logo-link"
-								href={ dashboardURL }
+								to="/dashboard"
 							>
 								<Logo />
 							</Link>

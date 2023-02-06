@@ -26,12 +26,11 @@ import { __ } from '@wordpress/i18n';
  */
 import GoogleLogoIcon from '../../svg/graphics/logo-g.svg';
 import SiteKitLogoIcon from '../../svg/graphics/logo-sitekit.svg';
-import Link from './Link';
 import VisuallyHidden from './VisuallyHidden';
 
 const Logo = () => {
 	return (
-		<Link className="googlesitekit-logo" aria-hidden="true" to="/dashboard">
+		<span className="googlesitekit-logo" aria-hidden="true">
 			<GoogleLogoIcon
 				className="googlesitekit-logo__logo-g"
 				height="34"
@@ -45,7 +44,7 @@ const Logo = () => {
 			<VisuallyHidden>
 				{ __( 'Site Kit by Google Logo', 'google-site-kit' ) }
 			</VisuallyHidden>
-		</Link>
+		</span>
 	);
 };
 
