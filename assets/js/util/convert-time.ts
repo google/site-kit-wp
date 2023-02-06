@@ -30,8 +30,10 @@
  * @param {number} seconds The number of seconds.
  * @return {Array} Array containing the hours, minutes, seconds and milliseconds.
  */
-export const convertSecondsToArray = ( seconds ) => {
-	seconds = parseFloat( seconds );
+export const convertSecondsToArray = ( seconds: string | number ): number[] => {
+	if ( typeof seconds === 'string' ) {
+		seconds = parseFloat( seconds );
+	}
 
 	if ( isNaN( seconds ) || 0 === seconds ) {
 		return [ 0, 0, 0, 0 ];
