@@ -1,8 +1,12 @@
 {
 	"compilerOptions": {
-		"target": "esnext",
-		"module": "commonjs",
-		"lib": [ "esnext", "dom" ],
+    "target": "es5",
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
+		"module": "esnext",
 		"allowJs": true,
 		"jsx": "react",
 		"noEmit": true,
