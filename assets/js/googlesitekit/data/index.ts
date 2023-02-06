@@ -45,6 +45,7 @@ import {
 import { createReducer } from './create-reducer';
 
 interface GoogleSiteKitData extends DataRegistry {
+	useInViewSelect?: typeof useInViewSelect;
 	[ key: string ]: any;
 }
 

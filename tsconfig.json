@@ -1,11 +1,7 @@
 {
 	"compilerOptions": {
-    "target": "es5",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
+		"target": "es5",
+		"lib": [ "dom", "dom.iterable", "esnext" ],
 		"module": "esnext",
 		"allowJs": true,
 		"jsx": "react",
@@ -14,11 +10,14 @@
 		"strict": false,
 		"moduleResolution": "node",
 		"baseUrl": ".",
+		"paths": {
+			"googlesitekit-data": [ "./assets/js/googlesitekit-data.ts" ]
+		},
 		"allowSyntheticDefaultImports": true,
 		"esModuleInterop": true,
-		"skipLibCheck": true,
-    // "sourceMap": true,
-    // "checkJs": true
+		"skipLibCheck": true
+		// "sourceMap": true,
+		// "checkJs": true
 	},
 	"include": [ "assets/js/**/*" ]
 }
