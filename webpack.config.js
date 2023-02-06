@@ -176,7 +176,7 @@ const createRules = ( mode ) => [
 	noAMDParserRule,
 	svgRule,
 	{
-		test: /\.js$/,
+		test: /\.js$|.ts$|.tsx$/,
 		exclude: /node_modules/,
 		use: [
 			{
@@ -186,7 +186,11 @@ const createRules = ( mode ) => [
 					babelrc: false,
 					configFile: false,
 					cacheDirectory: true,
-					presets: [ '@wordpress/default', '@babel/preset-react' ],
+					presets: [
+						'@babel/preset-typescript',
+						'@wordpress/default',
+						'@babel/preset-react',
+					],
 				},
 			},
 		],
@@ -202,7 +206,11 @@ const createRules = ( mode ) => [
 					babelrc: false,
 					configFile: false,
 					cacheDirectory: true,
-					presets: [ '@wordpress/default', '@babel/preset-react' ],
+					presets: [
+						'@babel/preset-typescript',
+						'@wordpress/default',
+						'@babel/preset-react',
+					],
 				},
 			},
 		],
@@ -237,6 +245,7 @@ const resolve = {
 		'@wordpress/i18n__non-shim': require.resolve( '@wordpress/i18n' ),
 	},
 	modules: [ projectPath( '.' ), 'node_modules' ],
+	extensions: [ '.ts', '.tsx', '.js' ],
 };
 
 // Get the app version from the google-site-kit.php file - optional chaining operator not supported here

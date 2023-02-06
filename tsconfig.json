@@ -16,7 +16,9 @@
 		"baseUrl": ".",
 		"allowSyntheticDefaultImports": true,
 		"esModuleInterop": true,
-		"skipLibCheck": true
+		"skipLibCheck": true,
+    // "sourceMap": true,
+    // "checkJs": true
 	},
 	"include": [ "assets/js/**/*" ]
 }
