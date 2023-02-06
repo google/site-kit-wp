@@ -32,10 +32,10 @@ import get from 'lodash/get';
  * @return {Array} Extracted column of dataset prepared for Google charts.
  */
 export default function extractForSparkline(
-	rowData,
-	column,
+	rowData: any[],
+	column: number | string,
 	indexColumn = 0
-) {
+): any[] {
 	return rowData.map( ( row, i ) => {
 		return [
 			get( row, indexColumn ), // row[0] always contains the x axis value (typically date).
