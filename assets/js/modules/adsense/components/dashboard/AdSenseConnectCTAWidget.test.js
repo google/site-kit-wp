@@ -80,7 +80,7 @@ describe( 'AdSenseConnectCTA', () => {
 			);
 		} );
 
-		it( 'should open the tooltip', async () => {
+		it( 'should open the tooltip', () => {
 			expect(
 				document.querySelector( '.googlesitekit-tour-tooltip' )
 			).toBeInTheDocument();
@@ -88,6 +88,7 @@ describe( 'AdSenseConnectCTA', () => {
 		} );
 
 		it( 'should close the tooltip on clicking the close button', async () => {
+			// eslint-disable-next-line require-await
 			await act( async () => {
 				fireEvent.click(
 					document.querySelector( '.googlesitekit-tooltip-close' )
@@ -100,6 +101,7 @@ describe( 'AdSenseConnectCTA', () => {
 		} );
 
 		it( 'should close the modal on clicking the dismiss button', async () => {
+			// eslint-disable-next-line require-await
 			await act( async () => {
 				fireEvent.click(
 					document.querySelector(

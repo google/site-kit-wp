@@ -64,6 +64,7 @@ use WP_Error;
 use Exception;
 use Google\Site_Kit\Core\Modules\Module_With_Service_Entity;
 use Google\Site_Kit\Core\Util\BC_Functions;
+use Google\Site_Kit\Core\Util\Sort;
 use Google\Site_Kit\Core\Util\URL;
 
 /**
@@ -265,7 +266,7 @@ final class Analytics extends Module
 		}
 
 		// The handler should check the received Account Ticket id parameter against the id stored in the provisioning step.
-		$account_ticket_id        = $input->filter( INPUT_GET, 'accountTicketId', FILTER_SANITIZE_STRING );
+		$account_ticket_id        = htmlspecialchars( $input->filter( INPUT_GET, 'accountTicketId' ) );
 		$stored_account_ticket_id = get_transient( self::PROVISION_ACCOUNT_TICKET_ID . '::' . get_current_user_id() );
 		delete_transient( self::PROVISION_ACCOUNT_TICKET_ID . '::' . get_current_user_id() );
 
@@ -277,17 +278,17 @@ final class Analytics extends Module
 		}
 
 		// Check for a returned error.
-		$error = $input->filter( INPUT_GET, 'error', FILTER_SANITIZE_STRING );
+		$error = $input->filter( INPUT_GET, 'error' );
 		if ( ! empty( $error ) ) {
 			wp_safe_redirect(
-				$this->context->admin_url( 'module-analytics', array( 'error_code' => $error ) )
+				$this->context->admin_url( 'module-analytics', array( 'error_code' => htmlspecialchars( $error ) ) )
 			);
 			exit;
 		}
 
-		$account_id      = $input->filter( INPUT_GET, 'accountId', FILTER_SANITIZE_STRING );
-		$web_property_id = $input->filter( INPUT_GET, 'webPropertyId', FILTER_SANITIZE_STRING );
-		$profile_id      = $input->filter( INPUT_GET, 'profileId', FILTER_SANITIZE_STRING );
+		$account_id      = htmlspecialchars( $input->filter( INPUT_GET, 'accountId' ) );
+		$web_property_id = htmlspecialchars( $input->filter( INPUT_GET, 'webPropertyId' ) );
+		$profile_id      = htmlspecialchars( $input->filter( INPUT_GET, 'profileId' ) );
 
 		if ( empty( $account_id ) || empty( $web_property_id ) || empty( $profile_id ) ) {
 			wp_safe_redirect(
@@ -700,7 +701,8 @@ final class Analytics extends Module
 				}
 				$profile = new Google_Service_Analytics_Profile();
 				$profile->setName( $profile_name );
-				return $profile = $this->get_service( 'analytics' )->management_profiles->insert( $data['accountID'], $data['propertyID'], $profile );
+				$profile = $this->get_service( 'analytics' )->management_profiles->insert( $data['accountID'], $data['propertyID'], $profile );
+				return $profile;
 			case 'POST:create-property':
 				if ( ! isset( $data['accountID'] ) ) {
 					return new WP_Error(
@@ -776,7 +778,10 @@ final class Analytics extends Module
 		switch ( "{$data->method}:{$data->datapoint}" ) {
 			case 'GET:accounts-properties-profiles':
 				/* @var Google_Service_Analytics_Accounts $response listManagementAccounts response. */
-				$accounts            = (array) $response->getItems();
+				$accounts            = Sort::case_insensitive_list_sort(
+					(array) $response->getItems(),
+					'name'
+				);
 				$account_ids         = array_map(
 					function ( Google_Service_Analytics_Account $account ) {
 						return $account->getId();
@@ -828,12 +833,17 @@ final class Analytics extends Module
 				break;
 			case 'GET:profiles':
 				// TODO: Parse this response to a regular array.
-				$response = $response->getItems();
-
+				$response = Sort::case_insensitive_list_sort(
+					$response->getItems(),
+					'name'
+				);
 				return $response;
 			case 'GET:properties-profiles':
 				/* @var Google_Service_Analytics_Webproperties $response listManagementWebproperties response. */
-				$properties     = (array) $response->getItems();
+				$properties     = Sort::case_insensitive_list_sort(
+					(array) $response->getItems(),
+					'name'
+				);
 				$found_property = null;
 				$response       = array(
 					'properties' => $properties,
@@ -948,16 +958,7 @@ final class Analytics extends Module
 
 		$dimension_filter_clauses = array();
 
-		$hostnames = array_values(
-			array_unique(
-				array_map(
-					function ( $site_url ) {
-						return URL::parse( $site_url, PHP_URL_HOST );
-					},
-					$this->permute_site_url( $this->context->get_reference_site_url() )
-				)
-			)
-		);
+		$hostnames = $this->permute_site_hosts( URL::parse( $this->context->get_reference_site_url(), PHP_URL_HOST ) );
 
 		$dimension_filter = new Google_Service_AnalyticsReporting_DimensionFilter();
 		$dimension_filter->setDimensionName( 'ga:hostname' );
@@ -1141,12 +1142,17 @@ final class Analytics extends Module
 	 * @link https://developers.google.com/analytics/devguides/collection/analyticsjs/user-opt-out
 	 */
 	private function print_tracking_opt_out() {
-		if ( ! $this->is_tracking_disabled() ) {
-			return;
-		}
 		$settings    = $this->get_settings()->get();
 		$account_id  = $settings['accountID'];
 		$property_id = $settings['propertyID'];
+
+		if ( empty( $property_id ) ) {
+			return;
+		}
+
+		if ( ! $this->is_tracking_disabled() ) {
+			return;
+		}
 
 		if ( $this->context->is_amp() ) : ?>
 			<!-- <?php esc_html_e( 'Google Analytics AMP opt-out snippet added by Site Kit', 'google-site-kit' ); ?> -->
@@ -1393,12 +1399,10 @@ final class Analytics extends Module
 		);
 
 		if ( count( $invalid_metrics ) > 0 ) {
-			$message = sprintf(
+			$message = count( $invalid_metrics ) > 1 ? sprintf(
 				/* translators: %s: is replaced with a comma separated list of the invalid metrics. */
-				_n(
-					'Unsupported metric requested: %s',
+				__(
 					'Unsupported metrics requested: %s',
-					count( $invalid_metrics ),
 					'google-site-kit'
 				),
 				join(
@@ -1406,6 +1410,13 @@ final class Analytics extends Module
 					__( ', ', 'google-site-kit' ),
 					$invalid_metrics
 				)
+			) : sprintf(
+				/* translators: %s: is replaced with the invalid metric. */
+				__(
+					'Unsupported metric requested: %s',
+					'google-site-kit'
+				),
+				$invalid_metrics
 			);
 
 			throw new Invalid_Report_Metrics_Exception( $message );
@@ -1449,12 +1460,10 @@ final class Analytics extends Module
 		);
 
 		if ( count( $invalid_dimensions ) > 0 ) {
-			$message = sprintf(
+			$message = count( $invalid_dimensions ) > 1 ? sprintf(
 				/* translators: %s: is replaced with a comma separated list of the invalid dimensions. */
-				_n(
-					'Unsupported dimension requested: %s',
+				__(
 					'Unsupported dimensions requested: %s',
-					count( $invalid_dimensions ),
 					'google-site-kit'
 				),
 				join(
@@ -1462,6 +1471,13 @@ final class Analytics extends Module
 					__( ', ', 'google-site-kit' ),
 					$invalid_dimensions
 				)
+			) : sprintf(
+				/* translators: %s: is replaced with the invalid dimension. */
+				__(
+					'Unsupported dimension requested: %s',
+					'google-site-kit'
+				),
+				$invalid_dimensions
 			);
 
 			throw new Invalid_Report_Dimensions_Exception( $message );

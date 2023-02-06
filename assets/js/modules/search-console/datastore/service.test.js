@@ -57,7 +57,7 @@ describe( 'module/search-console service store', () => {
 
 	describe( 'selectors', () => {
 		describe( 'getServiceURL', () => {
-			it( 'retrieves the correct URL with no arguments', async () => {
+			it( 'retrieves the correct URL with no arguments', () => {
 				const serviceURL = registry
 					.select( MODULES_SEARCH_CONSOLE )
 					.getServiceURL();
@@ -92,7 +92,7 @@ describe( 'module/search-console service store', () => {
 				).toMatch( new RegExp( '/test/path/to/deeplink$' ) );
 			} );
 
-			it( 'merges given query args to the base service URL args', async () => {
+			it( 'merges given query args to the base service URL args', () => {
 				const foo = 'bar';
 				const baz = 'buzz';
 				const serviceURL = registry
@@ -208,7 +208,7 @@ describe( 'module/search-console service store', () => {
 		} );
 
 		describe( 'isDomainProperty', () => {
-			it( 'should identify if property is search console domain property', async () => {
+			it( 'should identify if property is search console domain property', () => {
 				registry
 					.dispatch( MODULES_SEARCH_CONSOLE )
 					.setPropertyID( propertyID );

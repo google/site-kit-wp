@@ -42,14 +42,18 @@ describe( 'core/user surveys', () => {
 		},
 	};
 
-	const surveyTriggerEndpoint =
-		/^\/google-site-kit\/v1\/core\/user\/data\/survey-trigger/;
-	const surveyEventEndpoint =
-		/^\/google-site-kit\/v1\/core\/user\/data\/survey-event/;
-	const surveyTimeoutEndpoint =
-		/^\/google-site-kit\/v1\/core\/user\/data\/survey-timeout/;
-	const surveyTimeoutsEndpoint =
-		/^\/google-site-kit\/v1\/core\/user\/data\/survey-timeouts/;
+	const surveyTriggerEndpoint = new RegExp(
+		'^/google-site-kit/v1/core/user/data/survey-trigger'
+	);
+	const surveyEventEndpoint = new RegExp(
+		'^/google-site-kit/v1/core/user/data/survey-event'
+	);
+	const surveyTimeoutEndpoint = new RegExp(
+		'^/google-site-kit/v1/core/user/data/survey-timeout'
+	);
+	const surveyTimeoutsEndpoint = new RegExp(
+		'^/google-site-kit/v1/core/user/data/survey-timeouts'
+	);
 
 	describe( 'actions', () => {
 		describe( 'setSurveyTimeout', () => {
@@ -135,6 +139,8 @@ describe( 'core/user surveys', () => {
 						.dispatch( CORE_USER )
 						.triggerSurvey( 'adSenseSurvey' );
 				} ).not.toThrow();
+
+				await untilResolved( registry, CORE_USER ).getSurveyTimeouts();
 			} );
 
 			it( 'should not fetch if user is not authenticated', async () => {
@@ -158,7 +164,9 @@ describe( 'core/user surveys', () => {
 				registry.dispatch( CORE_USER ).receiveGetSurveyTimeouts( [] );
 
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/core\/user\/data\/authentication/,
+					new RegExp(
+						'^/google-site-kit/v1/core/user/data/authentication'
+					),
 					{
 						authenticated: true,
 					}
@@ -221,10 +229,20 @@ describe( 'core/user surveys', () => {
 
 				provideUserAuthentication( registry );
 
+				await registry
+					.__experimentalResolveSelect( CORE_USER )
+					.getAuthentication();
+
 				muteFetch( surveyTriggerEndpoint );
 				muteFetch( surveyTimeoutEndpoint );
 
 				registry.dispatch( CORE_USER ).receiveGetSurveyTimeouts( [] );
+
+				await registry
+					.__experimentalResolveSelect( CORE_USER )
+					.getSurveyTimeouts();
+
+				jest.useFakeTimers();
 
 				await registry
 					.dispatch( CORE_USER )
@@ -296,7 +314,7 @@ describe( 'core/user surveys', () => {
 
 	describe( 'selectors', () => {
 		describe( 'getCurrentSurvey', () => {
-			it( 'returns null when no current survey is set', async () => {
+			it( 'returns null when no current survey is set', () => {
 				expect(
 					registry.select( CORE_USER ).getCurrentSurvey()
 				).toBeNull();
@@ -314,7 +332,7 @@ describe( 'core/user surveys', () => {
 		} );
 
 		describe( 'getCurrentSurveySession', () => {
-			it( 'returns null when no current survey session is set', async () => {
+			it( 'returns null when no current survey session is set', () => {
 				expect(
 					registry.select( CORE_USER ).getCurrentSurveySession()
 				).toBeNull();
@@ -332,11 +350,13 @@ describe( 'core/user surveys', () => {
 		} );
 
 		describe( 'getSurveyTimeouts', () => {
-			it( 'should return undefined util resolved', () => {
+			it( 'should return undefined util resolved', async () => {
 				muteFetch( surveyTimeoutsEndpoint, [] );
 				expect(
 					registry.select( CORE_USER ).getSurveyTimeouts()
 				).toBeUndefined();
+
+				await untilResolved( registry, CORE_USER ).getSurveyTimeouts();
 			} );
 
 			it( 'should return survey timeouts received from API', async () => {
@@ -389,11 +409,12 @@ describe( 'core/user surveys', () => {
 		} );
 
 		describe( 'isSurveyTimedOut', () => {
-			it( 'should return undefined if getSurveyTimeouts selector is not resolved yet', () => {
+			it( 'should return undefined if getSurveyTimeouts selector is not resolved yet', async () => {
 				fetchMock.getOnce( surveyTimeoutsEndpoint, { body: [] } );
 				expect(
 					registry.select( CORE_USER ).isSurveyTimedOut( 'foo' )
 				).toBeUndefined();
+				await untilResolved( registry, CORE_USER ).getSurveyTimeouts();
 			} );
 
 			it( 'should return TRUE if the survey is timed out', () => {

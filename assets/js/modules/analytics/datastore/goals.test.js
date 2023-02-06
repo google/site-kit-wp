@@ -51,7 +51,9 @@ describe( 'modules/analytics goals', () => {
 		describe( 'getGoals', () => {
 			it( 'uses a resolver to make a network request', async () => {
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/goals/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics/data/goals'
+					),
 					{ body: fixtures.goals, status: 200 }
 				);
 
@@ -60,15 +62,10 @@ describe( 'modules/analytics goals', () => {
 					.getGoals();
 
 				expect( initialGoals ).toBeUndefined();
-				await subscribeUntil(
-					registry,
-					() =>
-						registry
-							.select( MODULES_ANALYTICS )
-							.isFetchingGetGoals() === false
-				);
 
-				const goals = registry.select( MODULES_ANALYTICS ).getGoals();
+				const goals = await registry
+					.__experimentalResolveSelect( MODULES_ANALYTICS )
+					.getGoals();
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( goals ).toEqual( fixtures.goals );
@@ -101,18 +98,15 @@ describe( 'modules/analytics goals', () => {
 				};
 
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/goals/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics/data/goals'
+					),
 					{ body: response, status: 500 }
 				);
 
-				registry.select( MODULES_ANALYTICS ).getGoals();
-				await subscribeUntil(
-					registry,
-					() =>
-						registry
-							.select( MODULES_ANALYTICS )
-							.isFetchingGetGoals() === false
-				);
+				await registry
+					.__experimentalResolveSelect( MODULES_ANALYTICS )
+					.getGoals();
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 

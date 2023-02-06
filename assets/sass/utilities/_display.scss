@@ -22,31 +22,15 @@
 		display: block;
 	}
 
-	.googlesitekit-display-none {
-		display: none;
-	}
-
-	.googlesitekit-mobile-display-block {
-		@media (max-width: $bp-mobileOnly) {
-			display: block;
-		}
-	}
-
-	.googlesitekit-mobile-display-none {
-		@media (max-width: $bp-mobileOnly) {
+	.googlesitekit-desktop-display-none {
+		@media (min-width: $bp-desktop) {
 			display: none;
 		}
 	}
 
-	.googlesitekit-non-mobile-display-none {
-		@media (min-width: $bp-tablet) {
+	.googlesitekit-non-desktop-display-none {
+		@media (max-width: $bp-desktop) {
 			display: none;
-		}
-	}
-
-	.googlesitekit-non-mobile-display-block {
-		@media (min-width: $bp-tablet) {
-			display: block;
 		}
 	}
 }

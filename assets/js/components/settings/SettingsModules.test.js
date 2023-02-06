@@ -79,8 +79,9 @@ describe( 'SettingsModules', () => {
 	} );
 
 	it( 'should redirect from #admin to #/admin-settings', async () => {
-		const coreUserTrackingSettingsEndpointRegExp =
-			/^\/google-site-kit\/v1\/core\/user\/data\/tracking/;
+		const coreUserTrackingSettingsEndpointRegExp = new RegExp(
+			'^/google-site-kit/v1/core/user/data/tracking'
+		);
 		const coreUserTrackingResponse = {
 			status: 200,
 			body: { enabled: false },
@@ -103,7 +104,7 @@ describe( 'SettingsModules', () => {
 		expect( global.location.hash ).toEqual( '#/admin-settings' );
 	} );
 
-	it( 'should redirect from #settings to #/connected-services', async () => {
+	it( 'should redirect from #settings to #/connected-services', () => {
 		history.push( '/settings' );
 
 		render( <SettingsModules />, { history, registry } );
@@ -111,7 +112,7 @@ describe( 'SettingsModules', () => {
 		expect( global.location.hash ).toEqual( '#/connected-services' );
 	} );
 
-	it( 'should redirect from #settings/:moduleSlug/view to #/connected-services/:moduleSlug', async () => {
+	it( 'should redirect from #settings/:moduleSlug/view to #/connected-services/:moduleSlug', () => {
 		history.push( '/settings/analytics/view' );
 
 		render( <SettingsModules />, { history, registry } );
@@ -121,7 +122,7 @@ describe( 'SettingsModules', () => {
 		);
 	} );
 
-	it( 'should redirect from #settings/:moduleSlug/edit to #/connected-services/:moduleSlug/edit', async () => {
+	it( 'should redirect from #settings/:moduleSlug/edit to #/connected-services/:moduleSlug/edit', () => {
 		history.push( '/settings/adsense/edit' );
 
 		render( <SettingsModules />, { history, registry } );
@@ -131,7 +132,7 @@ describe( 'SettingsModules', () => {
 		);
 	} );
 
-	it( 'should redirect from unknown location (fallback) to #/connected-services', async () => {
+	it( 'should redirect from unknown location (fallback) to #/connected-services', () => {
 		history.push( '/UNKNOWN_LOCATION' );
 
 		render( <SettingsModules />, { history, registry } );

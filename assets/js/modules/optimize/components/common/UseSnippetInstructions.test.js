@@ -45,7 +45,7 @@ describe( 'UseSnippetInstructions', () => {
 		unsubscribeFromAll( registry );
 	} );
 
-	it( 'should not render with analytics active and unresolved useSnippet', async () => {
+	it( 'should not render with analytics active and unresolved useSnippet', () => {
 		registry.dispatch( MODULES_OPTIMIZE ).setOptimizeID( 'OPT-1234567' );
 		registry
 			.dispatch( CORE_MODULES )
@@ -57,7 +57,7 @@ describe( 'UseSnippetInstructions', () => {
 		expect( container ).toBeEmptyDOMElement();
 	} );
 
-	it( 'should render with analytics active and no useSnippet', async () => {
+	it( 'should render with analytics active and no useSnippet', () => {
 		registry.dispatch( MODULES_OPTIMIZE ).setOptimizeID( 'OPT-1234567' );
 		registry
 			.dispatch( CORE_MODULES )
@@ -73,7 +73,7 @@ describe( 'UseSnippetInstructions', () => {
 		);
 	} );
 
-	it( 'should render with analytics message if analytics is inactive', async () => {
+	it( 'should render with analytics message if analytics is inactive', () => {
 		registry.dispatch( MODULES_OPTIMIZE ).setOptimizeID( 'OPT-1234567' );
 
 		const { container } = render( <UseSnippetInstructions />, {
@@ -86,7 +86,7 @@ describe( 'UseSnippetInstructions', () => {
 		);
 	} );
 
-	it( 'should not render with analytics active and a useSnippet', async () => {
+	it( 'should not render with analytics active and a useSnippet', () => {
 		registry.dispatch( MODULES_OPTIMIZE ).setOptimizeID( 'OPT-1234567' );
 		registry
 			.dispatch( CORE_MODULES )
@@ -99,7 +99,7 @@ describe( 'UseSnippetInstructions', () => {
 		expect( container.querySelector( 'p' ) ).toEqual( null );
 	} );
 
-	it( 'should render with analytics active and no analytics useSnippet, also with tagmanager active and a gtm useSnippet', async () => {
+	it( 'should render with analytics active and no analytics useSnippet, also with tagmanager active and a gtm useSnippet', () => {
 		const newFixtures = withActive( 'analytics' ).map( ( fixture ) =>
 			fixture.slug === 'tagmanager' || fixture.slug === 'optimize'
 				? { ...fixture, active: true, connected: true }

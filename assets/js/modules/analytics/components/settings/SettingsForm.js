@@ -25,6 +25,7 @@ import { Fragment } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { ProgressBar } from 'googlesitekit-components';
 import {
 	AdsConversionIDTextField,
 	AnonymizeIPSwitch,
@@ -68,17 +69,30 @@ export default function SettingsForm( {
 		useAnalyticsSnippet ||
 		( useTagManagerSnippet && analyticsSinglePropertyID );
 
+	const gtmContainersResolved = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).hasFinishedLoadingGTMContainers()
+	);
+
+	if ( ! gtmContainersResolved ) {
+		return <ProgressBar />;
+	}
+
 	return (
 		<Fragment>
 			<StoreErrorNotices
 				moduleSlug="analytics"
 				storeName={ MODULES_ANALYTICS }
 			/>
-			<ExistingGTMPropertyNotice />
+			<ExistingGTMPropertyNotice
+				gtmAnalyticsPropertyID={ analyticsSinglePropertyID }
+			/>
 
 			<SettingsControls hasModuleAccess={ hasAnalyticsAccess } />
 
-			<GA4SettingsControls hasModuleAccess={ hasAnalytics4Access } />
+			<GA4SettingsControls
+				hasAnalyticsAccess={ hasAnalyticsAccess }
+				hasAnalytics4Access={ hasAnalytics4Access }
+			/>
 
 			{ isValidAccountID( accountID ) && (
 				<Fragment>

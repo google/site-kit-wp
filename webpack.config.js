@@ -68,12 +68,16 @@ const manifestArgs = ( mode ) => ( {
 					file.path,
 					file.chunk.contentHash.javascript
 				);
-			} else if ( file.chunk.name === 'googlesitekit-components-gm2' ) {
-				// Exception for 'googlesitekit-components' because of having a different handle
-				// than the file name.
-				seedObj[ 'googlesitekit-components' ] = entry(
-					file.path,
-					file.chunk.contentHash.javascript
+			} else if (
+				file.chunk.name?.startsWith( 'googlesitekit-components-' )
+			) {
+				// Exception for 'googlesitekit-components' because it's a dynamic asset
+				// with multiple possible file names.
+				seedObj[ 'googlesitekit-components' ] =
+					seedObj[ 'googlesitekit-components' ] || [];
+
+				seedObj[ 'googlesitekit-components' ].push(
+					entry( file.path, file.chunk.contentHash.javascript )
 				);
 			} else if ( file.isInitial ) {
 				// Normal entries.
@@ -90,17 +94,25 @@ const manifestArgs = ( mode ) => ( {
 			key.replace( /\.(css|js)$/, '' )
 		);
 		const maxLen = Math.max( ...handles.map( ( key ) => key.length ) );
+
+		function arrayToPHP( values ) {
+			return `array( ${ values
+				.map( ( value ) =>
+					Array.isArray( value )
+						? arrayToPHP( value )
+						: JSON.stringify( value )
+				)
+				.join( ', ' ) } )`;
+		}
+
+		function manifestEntryToPHP( [ handle, entry ] ) {
+			const alignment = ''.padEnd( maxLen - handle.length );
+			return `'${ handle }' ${ alignment }=> ${ arrayToPHP( entry ) },`;
+		}
+
 		const content = manifestTemplate.replace(
 			'{{assets}}',
-			Object.entries( manifest )
-				.map( ( [ handle, value ] ) => {
-					const values = value.map( ( v ) => JSON.stringify( v ) );
-					const alignment = ''.padEnd( maxLen - handle.length );
-					return `'${ handle }' ${ alignment }=> array( ${ values.join(
-						', '
-					) } ),`;
-				} )
-				.join( '\n\t' )
+			Object.entries( manifest ).map( manifestEntryToPHP ).join( '\n\t' )
 		);
 
 		return content;
@@ -166,6 +178,22 @@ const createRules = ( mode ) => [
 	{
 		test: /\.js$/,
 		exclude: /node_modules/,
+		use: [
+			{
+				loader: 'babel-loader',
+				options: {
+					sourceMap: mode !== 'production',
+					babelrc: false,
+					configFile: false,
+					cacheDirectory: true,
+					presets: [ '@wordpress/default', '@babel/preset-react' ],
+				},
+			},
+		],
+		...noAMDParserRule,
+	},
+	{
+		test: RegExp( 'node_modules/@material/web/.*.js' ),
 		use: [
 			{
 				loader: 'babel-loader',
@@ -277,25 +305,21 @@ function* webpackConfig( env, argv ) {
 				'./assets/js/googlesitekit-modules-analytics.js',
 			'googlesitekit-modules-analytics-4':
 				'./assets/js/googlesitekit-modules-analytics-4.js',
-			'googlesitekit-modules-idea-hub':
-				'./assets/js/googlesitekit-modules-idea-hub.js',
 			'googlesitekit-modules-optimize':
 				'./assets/js/googlesitekit-modules-optimize.js',
 			'googlesitekit-modules-pagespeed-insights':
 				'assets/js/googlesitekit-modules-pagespeed-insights.js',
 			'googlesitekit-modules-search-console':
 				'./assets/js/googlesitekit-modules-search-console.js',
-			'googlesitekit-modules-thank-with-google':
-				'./assets/js/googlesitekit-modules-thank-with-google.js',
 			'googlesitekit-modules-tagmanager':
 				'./assets/js/googlesitekit-modules-tagmanager.js',
 			'googlesitekit-user-input':
 				'./assets/js/googlesitekit-user-input.js',
-			'googlesitekit-idea-hub-post-list':
-				'./assets/js/googlesitekit-idea-hub-post-list.js',
 			'googlesitekit-polyfills': './assets/js/googlesitekit-polyfills.js',
 			'googlesitekit-components-gm2':
 				'./assets/js/googlesitekit-components-gm2.js',
+			'googlesitekit-components-gm3':
+				'./assets/js/googlesitekit-components-gm3.js',
 			// Old Modules
 			'googlesitekit-activation':
 				'./assets/js/googlesitekit-activation.js',
@@ -307,7 +331,6 @@ function* webpackConfig( env, argv ) {
 			// 'googlesitekit-splash': './assets/js/googlesitekit-splash.js',
 			'googlesitekit-wp-dashboard':
 				'./assets/js/googlesitekit-wp-dashboard.js',
-			'googlesitekit-base': './assets/js/googlesitekit-base.js',
 		},
 		externals,
 		output: {
@@ -388,7 +411,17 @@ function* webpackConfig( env, argv ) {
 							? 'googlesitekit-vendor-[contenthash].js'
 							: 'googlesitekit-vendor.js',
 						enforce: true,
-						test: /[\\/]node_modules[\\/]/,
+						test: ( module ) => {
+							return (
+								/[\\/]node_modules[\\/]/.test(
+									module.resource
+								) &&
+								// This test to exclude @material/web from the vendor bundle can be removed once googlesitekit-components is moved out of the Module Entry Points configuration. See https://github.com/google/site-kit-wp/issues/6112.
+								! /[\\/]@material[\\/]web[\\/]/.test(
+									module.resource
+								)
+							);
+						},
 					},
 				},
 			},
@@ -486,59 +519,6 @@ function* webpackConfig( env, argv ) {
 				},
 			} ),
 		],
-	};
-
-	// Build the Gutenberg entry points.
-	yield {
-		entry: {
-			'googlesitekit-idea-hub-notice':
-				'./assets/js/googlesitekit-idea-hub-notice.js',
-		},
-		externals: gutenbergExternals,
-		output: {
-			filename: isProduction ? '[name]-[contenthash].js' : '[name].js',
-			path: path.join( __dirname, 'dist/assets/js' ),
-			chunkFilename: isProduction ? '[name]-[chunkhash].js' : '[name].js',
-			publicPath: '',
-			// If multiple webpack runtimes (from different compilations) are used on the
-			// same webpage, there is a risk of conflicts of on-demand chunks in the global
-			// namespace.
-			// See: https://webpack.js.org/configuration/output/#outputjsonpfunction.
-			jsonpFunction: '__googlesitekit_block_editor_webpackJsonp',
-		},
-		performance: {
-			maxEntrypointSize: 175000,
-		},
-		module: {
-			rules: createRules( mode ),
-		},
-		plugins: [
-			new WebpackBar( {
-				name: 'Gutenberg Entry Points',
-				color: '#ffc0cb',
-			} ),
-			new CircularDependencyPlugin( {
-				exclude: /node_modules/,
-				failOnError: true,
-				allowAsyncCycles: false,
-				cwd: process.cwd(),
-			} ),
-			new ManifestPlugin( {
-				...manifestArgs( mode ),
-				filter( file ) {
-					return ( file.name || '' ).match( /\.js$/ );
-				},
-			} ),
-			new ESLintPlugin( {
-				emitError: true,
-				emitWarning: true,
-				failOnError: true,
-			} ),
-		],
-		optimization: {
-			minimizer: createMinimizerRules( mode ),
-		},
-		resolve,
 	};
 }
 

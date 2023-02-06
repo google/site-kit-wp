@@ -29,15 +29,6 @@
 			padding: $grid-gap-desktop;
 		}
 
-		&--disabled {
-			color: $c-disabled;
-
-			.googlesitekit-settings-connect-module__logo {
-				filter: saturate(0);
-				opacity: 0.5;
-			}
-		}
-
 		.googlesitekit-settings-connect-module__logo {
 			align-items: flex-end;
 			display: flex;
@@ -58,10 +49,6 @@
 
 		.googlesitekit-settings-connect-module__title {
 			margin: 0;
-		}
-
-		&--disabled .googlesitekit-settings-connect-module__title {
-			color: $c-disabled;
 		}
 
 		.googlesitekit-settings-connect-module__badges {
@@ -88,6 +75,19 @@
 		.googlesitekit-settings-connect-module__cta {
 			font-size: $fs-body-md;
 			letter-spacing: $ls-s;
+		}
+	}
+
+	.googlesitekit-settings-connect-module--disabled {
+		color: $c-disabled;
+
+		.googlesitekit-settings-connect-module__logo {
+			filter: saturate(0);
+			opacity: 0.5;
+		}
+
+		.googlesitekit-settings-connect-module__title {
+			color: $c-disabled;
 		}
 	}
 }

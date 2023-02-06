@@ -178,7 +178,9 @@ SingleRecoverableModuleError.args = {
 		};
 
 		fetchMock.post(
-			/^\/google-site-kit\/v1\/core\/modules\/data\/recover-modules/,
+			new RegExp(
+				'^/google-site-kit/v1/core/modules/data/recover-modules'
+			),
 			{ body: response, status: 200 }
 		);
 
@@ -220,7 +222,9 @@ MultipleRecoverableModuleErrors.args = {
 		};
 
 		fetchMock.post(
-			/^\/google-site-kit\/v1\/core\/modules\/data\/recover-modules/,
+			new RegExp(
+				'^/google-site-kit/v1/core/modules/data/recover-modules'
+			),
 			{ body: response, status: 200 }
 		);
 

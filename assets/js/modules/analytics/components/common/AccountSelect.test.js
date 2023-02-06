@@ -68,7 +68,7 @@ const setupEmptyRegistry = ( registry ) => {
 };
 
 describe( 'AccountSelect', () => {
-	it( 'should render an option for each analytics account', async () => {
+	it( 'should render an option for each analytics account', () => {
 		const { getAllByRole } = render( <AccountSelect />, { setupRegistry } );
 
 		const listItems = getAllByRole( 'menuitem', { hidden: true } );
@@ -79,7 +79,7 @@ describe( 'AccountSelect', () => {
 		);
 	} );
 
-	it( 'should have a "Set up a new account" item at the end of the list', async () => {
+	it( 'should have a "Set up a new account" item at the end of the list', () => {
 		const { getAllByRole } = render( <AccountSelect />, { setupRegistry } );
 
 		const listItems = getAllByRole( 'menuitem', { hidden: true } );
@@ -90,7 +90,9 @@ describe( 'AccountSelect', () => {
 
 	it( 'should render a loading state when accounts are undefined', async () => {
 		freezeFetch(
-			/^\/google-site-kit\/v1\/modules\/analytics\/data\/accounts-properties-profiles/
+			new RegExp(
+				'^/google-site-kit/v1/modules/analytics/data/accounts-properties-profiles'
+			)
 		);
 		const { queryAllByRole, queryByRole } = render( <AccountSelect />, {
 			setupRegistry: setupLoadingRegistry,
@@ -105,7 +107,7 @@ describe( 'AccountSelect', () => {
 		expect( queryByRole( 'progressbar' ) ).toBeInTheDocument();
 	} );
 
-	it( 'should render a select box with only setup when no accounts exist', async () => {
+	it( 'should render a select box with only setup when no accounts exist', () => {
 		const { getAllByRole } = render( <AccountSelect />, {
 			setupRegistry: setupEmptyRegistry,
 		} );
@@ -117,7 +119,7 @@ describe( 'AccountSelect', () => {
 		);
 	} );
 
-	it( 'should update accountID in the store when a new item is clicked', async () => {
+	it( 'should update accountID in the store when a new item is clicked', () => {
 		const { getByText, container, registry } = render( <AccountSelect />, {
 			setupRegistry,
 		} );
@@ -140,12 +142,16 @@ describe( 'AccountSelect', () => {
 	} );
 
 	it( 'should pre-select the property and profile IDs when changed', () => {
+		jest.useFakeTimers();
+
 		fetchMock.getOnce(
-			/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
+			new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
 			{ body: [] }
 		);
 		fetchMock.getOnce(
-			/^\/google-site-kit\/v1\/modules\/analytics-4\/data\/properties/,
+			new RegExp(
+				'^/google-site-kit/v1/modules/analytics-4/data/properties'
+			),
 			{ body: [] }
 		);
 
@@ -174,6 +180,10 @@ describe( 'AccountSelect', () => {
 				( acct ) => acct.id === properties[ 0 ].accountId
 			);
 			fireEvent.click( getByText( account.name ) );
+		} );
+
+		act( () => {
+			jest.runAllTimers();
 		} );
 
 		const newPropertyID = registry

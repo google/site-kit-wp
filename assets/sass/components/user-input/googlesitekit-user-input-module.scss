@@ -19,8 +19,8 @@
 .googlesitekit-plugin {
 
 	.googlesitekit-user-input__header {
-		padding-bottom: 50px;
-		padding-top: 50px;
+		padding-bottom: 30px;
+		padding-top: 30px;
 
 		.mdc-layout-grid__inner {
 			align-items: center;
@@ -29,14 +29,15 @@
 
 	.googlesitekit-user-input__heading {
 		font-family: $f-secondary;
-		font-size: $fs-headline-md;
+		font-size: $fs-headline-sm;
+		font-weight: $fw-normal;
 		line-height: $lh-headline-md;
 	}
 
 	.googlesitekit-user-input__subtitle {
-		color: $c-secondary;
-		font-size: $fs-title-md;
-		line-height: $lh-title-md;
+		color: $c-surfaces-on-surface-variant;
+		font-size: $fs-title-sm;
+		line-height: $lh-title-sm;
 	}
 
 	.googlesitekit-user-input__content {
@@ -63,5 +64,87 @@
 		letter-spacing: $ls-xs;
 		line-height: $lh-body-sm;
 		margin: 0;
+	}
+
+	.googlesitekit-user-input__footer {
+		display: flex;
+		flex-direction: column;
+		justify-content: space-between;
+
+		@media (min-width: $bp-desktop) {
+			align-items: center;
+			border-top: 1px solid $c-mercury;
+			flex-direction: row-reverse;
+			margin: 42px 0 0;
+			padding: 28px 24px;
+		}
+	}
+
+	.googlesitekit-user-input__footer-nav {
+		align-items: center;
+		column-gap: 20px;
+		display: flex;
+		padding: 17px 17px 33px;
+
+		@media (min-width: $bp-desktop) {
+			flex-direction: row-reverse;
+			padding: 0;
+		}
+	}
+
+	.googlesitekit-user-input__footer-cancel {
+		border-top: 1px solid $c-mercury;
+		padding: 17px;
+
+		@media (min-width: $bp-desktop) {
+			border: none;
+			padding: 0;
+		}
+	}
+
+	.googlesitekit-user-input__select-options-wrapper {
+		grid-row: span 2;
+	}
+
+	p.googlesitekit-user-input__select-instruction {
+		border-bottom: 1px solid $c-mercury;
+		color: $c-surfaces-on-surface;
+		font-size: $fs-body-sm;
+		line-height: $lh-body-sm;
+		margin: 0;
+		padding-bottom: 15px;
+
+		@media (min-width: $bp-tablet) {
+			color: $c-surfaces-on-surface-variant;
+			font-size: $fs-title-lg;
+			font-weight: $fw-medium;
+		}
+	}
+
+	.googlesitekit-user-input__author {
+
+		p {
+			color: $c-surfaces-on-surface-variant;
+			font-size: $fs-body-sm;
+			letter-spacing: $ls-s;
+			line-height: $lh-body-sm;
+			margin: 0 0 3px;
+		}
+
+		.googlesitekit-user-input__author-info {
+			align-items: center;
+			color: $c-scarpa-flow;
+			display: flex;
+			font-size: $fs-body-sm;
+			letter-spacing: $ls-xs;
+			margin-top: 4px;
+
+			img {
+				border-radius: 50%;
+				height: 24px;
+				margin-right: 8px;
+				width: 24px;
+			}
+		}
 	}
 }

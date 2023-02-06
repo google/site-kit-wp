@@ -26,6 +26,7 @@ import { activatePlugin, visitAdminPage } from '@wordpress/e2e-test-utils';
  */
 import { createWaitForFetchRequests } from './create-wait-for-fetch-requests';
 import { pageWait } from './page-wait';
+import { useRequestInterception } from './use-request-interception';
 
 /**
  * The allow list of AMP modes.
@@ -42,10 +43,43 @@ export const allowedAMPModes = {
  * Activates AMP and set it to the correct mode.
  *
  * @since 1.10.0
+ * @since 1.93.0 Added request interception for AMP validation requests.
  *
- * @param {string} mode The mode to set AMP to. Possible value of standard, transitional or reader.
+ * @param {string}   mode                                      The mode to set AMP to. Possible value of standard, transitional or reader.
+ * @param {Object}   sharedRequestInterception                 Object of methods that can be called to remove the added handler function from the page and add new request cases.
+ * @param {Function} sharedRequestInterception.cleanUp         Removes the request handler function from the page.
+ * @param {Function} sharedRequestInterception.addRequestCases Adds new request cases to the request handler function.
+ * @return {Promise<void>} Promise that resolves when AMP is activated and set to the correct mode.
  */
-export const activateAMPWithMode = async ( mode ) => {
+export const activateAMPWithMode = async (
+	mode,
+	sharedRequestInterception
+) => {
+	// On newer versions of AMP, setting up AMP invokes a number of validation requests which add a large
+	// amount of time to the process and are ultimately unnecessary.
+	// To avoid this, we configure request interception for these to bypass them as needed.
+	// See https://github.com/google/site-kit-wp/issues/5460#issuecomment-1335180571
+	if ( sharedRequestInterception ) {
+		sharedRequestInterception.addRequestCases( [
+			{
+				isMatch: ( request ) => request.url().match( '&amp_validate' ),
+				getResponse: () => ( {
+					status: 200,
+					body: JSON.stringify( {} ),
+				} ),
+			},
+		] );
+	} else {
+		// If no sharedRequestInterception is passed, we need to create a new request interception.
+		useRequestInterception( ( request ) => {
+			if ( request.url().match( '&amp_validate' ) ) {
+				request.respond( {
+					status: 200,
+					body: JSON.stringify( {} ),
+				} );
+			}
+		} );
+	}
 	await activatePlugin( 'amp' );
 	await setAMPMode( mode );
 };

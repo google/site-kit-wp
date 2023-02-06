@@ -27,10 +27,12 @@ import {
 } from '../../../../../tests/js/utils';
 
 describe( 'core/user dismissed-items', () => {
-	const fetchGetDismissedItems =
-		/^\/google-site-kit\/v1\/core\/user\/data\/dismissed-items/;
-	const fetchDismissItem =
-		/^\/google-site-kit\/v1\/core\/user\/data\/dismiss-item/;
+	const fetchGetDismissedItems = new RegExp(
+		'^/google-site-kit/v1/core/user/data/dismissed-items'
+	);
+	const fetchDismissItem = new RegExp(
+		'^/google-site-kit/v1/core/user/data/dismiss-item'
+	);
 
 	let registry;
 
@@ -91,11 +93,12 @@ describe( 'core/user dismissed-items', () => {
 
 	describe( 'selectors', () => {
 		describe( 'getDismissedItems', () => {
-			it( 'should return undefined util resolved', () => {
+			it( 'should return undefined util resolved', async () => {
 				muteFetch( fetchGetDismissedItems, [] );
 				expect(
 					registry.select( CORE_USER ).getDismissedItems()
 				).toBeUndefined();
+				await untilResolved( registry, CORE_USER ).getDismissedItems();
 			} );
 
 			it( 'should return dismissed items received from API', async () => {
@@ -148,11 +151,12 @@ describe( 'core/user dismissed-items', () => {
 		} );
 
 		describe( 'isItemDismissed', () => {
-			it( 'should return undefined if getDismissedItems selector is not resolved yet', () => {
+			it( 'should return undefined if getDismissedItems selector is not resolved yet', async () => {
 				fetchMock.getOnce( fetchGetDismissedItems, { body: [] } );
 				expect(
 					registry.select( CORE_USER ).isItemDismissed( 'foo' )
 				).toBeUndefined();
+				await untilResolved( registry, CORE_USER ).getDismissedItems();
 			} );
 
 			it( 'should return TRUE if the item is dismissed', () => {
@@ -175,7 +179,7 @@ describe( 'core/user dismissed-items', () => {
 		} );
 
 		describe( 'isDismissingItem', () => {
-			it( 'returns true while item dismissal is in progress', async () => {
+			it( 'returns true while item dismissal is in progress', () => {
 				const slug = 'foo-bar';
 
 				muteFetch( fetchDismissItem );

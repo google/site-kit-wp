@@ -182,7 +182,14 @@ export const createNotificationsStore = (
 
 	const resolvers = {
 		*getNotifications() {
-			yield fetchGetNotificationsStore.actions.fetchGetNotifications();
+			const registry = yield Data.commonActions.getRegistry();
+			const notifications = registry
+				.select( STORE_NAME )
+				.getNotifications();
+
+			if ( ! notifications ) {
+				yield fetchGetNotificationsStore.actions.fetchGetNotifications();
+			}
 		},
 	};
 

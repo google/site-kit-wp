@@ -126,7 +126,7 @@ export default function PropertySelectIncludingGA4() {
 
 				ga4Dispatch.setPropertyID( ga4Property?._id || '' );
 				ga4Dispatch.setWebDataStreamID( webdatastream?._id || '' );
-				ga4Dispatch.setMeasurementID(
+				ga4Dispatch.updateSettingsForMeasurementID(
 					// eslint-disable-next-line sitekit/acronym-case
 					webdatastream?.webStreamData?.measurementId || ''
 				);

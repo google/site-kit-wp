@@ -33,7 +33,6 @@ import { Fragment } from '@wordpress/element';
 import Data from 'googlesitekit-data';
 import {
 	AccountSelect,
-	ExistingGTMPropertyNotice,
 	ProfileSelect,
 	PropertySelect,
 	ProfileNameTextField,
@@ -48,7 +47,6 @@ import {
 	PROPERTY_CREATE,
 } from '../../../analytics-4/datastore/constants';
 import GA4PropertyNotice from '../common/GA4PropertyNotice';
-import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import SetupUseSnippetSwitchUA from './SetupUseSnippetSwitch';
 import { SetupUseSnippetSwitch as SetupUseSnippetSwitchGA4 } from '../../../analytics-4/components/setup';
 
@@ -84,13 +82,6 @@ export default function SetupFormUA() {
 
 	return (
 		<Fragment>
-			<StoreErrorNotices
-				moduleSlug="analytics"
-				storeName={ MODULES_ANALYTICS }
-			/>
-
-			<ExistingGTMPropertyNotice />
-
 			{ !! accounts.length && (
 				<p className="googlesitekit-margin-bottom-0">
 					{ __(

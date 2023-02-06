@@ -91,6 +91,58 @@ describe( 'core/site site info', () => {
 				} );
 			} );
 		} );
+
+		describe( 'setSiteKitAutoUpdatesEnabled', () => {
+			it( 'sets the siteKitAutoUpdatesEnabled property', () => {
+				registry
+					.dispatch( CORE_SITE )
+					.setSiteKitAutoUpdatesEnabled( true );
+
+				expect(
+					registry.select( CORE_SITE ).getSiteKitAutoUpdatesEnabled()
+				).toBe( true );
+
+				registry
+					.dispatch( CORE_SITE )
+					.setSiteKitAutoUpdatesEnabled( false );
+
+				expect(
+					registry.select( CORE_SITE ).getSiteKitAutoUpdatesEnabled()
+				).toBe( false );
+			} );
+
+			it( 'requires a boolean argument', () => {
+				expect( () => {
+					registry
+						.dispatch( CORE_SITE )
+						.setSiteKitAutoUpdatesEnabled();
+				} ).toThrow( 'siteKitAutoUpdatesEnabled must be a boolean.' );
+
+				expect( () => {
+					registry
+						.dispatch( CORE_SITE )
+						.setSiteKitAutoUpdatesEnabled( undefined );
+				} ).toThrow( 'siteKitAutoUpdatesEnabled must be a boolean.' );
+
+				expect( () => {
+					registry
+						.dispatch( CORE_SITE )
+						.setSiteKitAutoUpdatesEnabled( 0 );
+				} ).toThrow( 'siteKitAutoUpdatesEnabled must be a boolean.' );
+
+				expect( () => {
+					registry
+						.dispatch( CORE_SITE )
+						.setSiteKitAutoUpdatesEnabled( true );
+
+					registry
+						.dispatch( CORE_SITE )
+						.setSiteKitAutoUpdatesEnabled( false );
+				} ).not.toThrow(
+					'siteKitAutoUpdatesEnabled must be a boolean.'
+				);
+			} );
+		} );
 	} );
 
 	describe( 'selectors', () => {
@@ -202,6 +254,8 @@ describe( 'core/site site info', () => {
 
 				const adminURL = registry.select( CORE_SITE ).getAdminURL();
 
+				await untilResolved( registry, CORE_SITE ).getSiteInfo();
+
 				expect( adminURL ).toEqual( undefined );
 			} );
 		} );
@@ -235,6 +289,8 @@ describe( 'core/site site info', () => {
 				expect( global[ entityInfoVar ] ).toEqual( undefined );
 
 				const info = registry.select( CORE_SITE ).getSiteInfo();
+
+				await untilResolved( registry, CORE_SITE ).getSiteInfo();
 
 				expect( info ).toBe( initialState.siteInfo );
 				expect( console ).toHaveErrored();
@@ -292,6 +348,8 @@ describe( 'core/site site info', () => {
 
 				const result = registry.select( CORE_SITE )[ selector ]();
 
+				await untilResolved( registry, CORE_SITE ).getSiteInfo();
+
 				expect( result ).toEqual( undefined );
 				expect( console ).toHaveErrored();
 			} );
@@ -331,6 +389,8 @@ describe( 'core/site site info', () => {
 				expect( global[ entityInfoVar ] ).toEqual( undefined );
 
 				const result = registry.select( CORE_SITE ).isAMP();
+
+				await untilResolved( registry, CORE_SITE ).getSiteInfo();
 
 				expect( result ).toEqual( undefined );
 				expect( console ).toHaveErrored();

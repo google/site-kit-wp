@@ -25,69 +25,55 @@ import uniqWith from 'lodash/uniqWith';
 /**
  * WordPress dependencies
  */
-import { Fragment, useCallback } from '@wordpress/element';
+import { Fragment } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { Button } from 'googlesitekit-components';
 import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
 import {
-	isErrorRetryable,
 	isInsufficientPermissionsError,
+	getReportErrorMessage,
 } from '../util/errors';
 import { getInsufficientPermissionsErrorDescription } from '../util/insufficient-permissions-error-description';
 import { purify } from '../util/purify';
 import ErrorText from '../components/ErrorText';
 import CTA from './notifications/CTA';
-import Link from './Link';
-import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
-
-const { useSelect, useDispatch } = Data;
+import ReportErrorActions from './ReportErrorActions';
+import useViewOnly from '../hooks/useViewOnly';
+const { useSelect } = Data;
 
 export default function ReportError( { moduleSlug, error } ) {
+	const isViewOnly = useViewOnly();
 	const module = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModule( moduleSlug )
 	);
-	const storeName = useSelect( ( select ) =>
-		select( CORE_MODULES ).getModuleStoreName( moduleSlug )
-	);
-	const requestAccessURL = useSelect( ( select ) =>
-		typeof select( storeName )?.getServiceEntityAccessURL === 'function'
-			? select( storeName ).getServiceEntityAccessURL()
-			: null
-	);
 
 	const errors = Array.isArray( error ) ? error : [ error ];
-
-	const retryableErrors = errors.filter(
-		( err ) =>
-			isErrorRetryable( err, err.selectorData ) &&
-			err.selectorData.name === 'getReport'
-	);
-
-	const showRetry = !! retryableErrors.length;
-
-	const errorTroubleshootingLinkURL = useSelect( ( select ) => {
-		const err = {
-			...( showRetry ? retryableErrors[ 0 ] : errors[ 0 ] ),
-		};
-
-		if ( isInsufficientPermissionsError( err ) ) {
-			err.code = `${ moduleSlug }_insufficient_permissions`;
-		}
-
-		return select( CORE_SITE ).getErrorTroubleshootingLinkURL( err );
-	} );
-
-	const dispatch = useDispatch();
 
 	let title;
 
 	const getMessage = ( err ) => {
 		if ( isInsufficientPermissionsError( err ) ) {
+			if ( isViewOnly ) {
+				title = sprintf(
+					/* translators: %s: module name */
+					__( 'Access lost to %s', 'google-site-kit' ),
+					module?.name
+				);
+
+				return sprintf(
+					/* translators: %s: module name */
+					__(
+						'The administrator sharing this module with you has lost access to the %s service, so you won’t be able to see stats from it on the Site Kit dashboard. You can contact them or another administrator to restore access.',
+						'google-site-kit'
+					),
+					module?.name
+				);
+			}
+
 			title = sprintf(
 				/* translators: %s: module name */
 				__( 'Insufficient permissions in %s', 'google-site-kit' ),
@@ -100,7 +86,7 @@ export default function ReportError( { moduleSlug, error } ) {
 			);
 		}
 
-		return err.message;
+		return getReportErrorMessage( err );
 	};
 
 	const uniqueErrors = uniqWith(
@@ -151,45 +137,9 @@ export default function ReportError( { moduleSlug, error } ) {
 		</Fragment>
 	);
 
-	const handleRetry = useCallback( () => {
-		retryableErrors.forEach( ( err ) => {
-			const { selectorData } = err;
-			dispatch( selectorData.storeName ).invalidateResolution(
-				selectorData.name,
-				selectorData.args
-			);
-		} );
-	}, [ dispatch, retryableErrors ] );
-
-	const showRequestAccessURL =
-		requestAccessURL && hasInsufficientPermissionsError;
-
 	return (
 		<CTA title={ title } description={ description } error>
-			<div className="googlesitekit-error-cta-wrapper">
-				{ showRequestAccessURL && (
-					<Button href={ requestAccessURL } target="_blank">
-						{ __( 'Request access', 'google-site-kit' ) }
-					</Button>
-				) }
-				{ showRetry ? (
-					<Fragment>
-						<Button onClick={ handleRetry }>
-							{ __( 'Retry', 'google-site-kit' ) }
-						</Button>
-						<span className="googlesitekit-error-retry-text">
-							{ __( 'Retry didn’t work?', 'google-site-kit' ) }{ ' ' }
-						</span>
-						<Link href={ errorTroubleshootingLinkURL } external>
-							{ __( 'Get help', 'google-site-kit' ) }
-						</Link>
-					</Fragment>
-				) : (
-					<Link href={ errorTroubleshootingLinkURL } external>
-						{ __( 'Get help', 'google-site-kit' ) }
-					</Link>
-				) }
-			</div>
+			<ReportErrorActions moduleSlug={ moduleSlug } error={ error } />
 		</CTA>
 	);
 }

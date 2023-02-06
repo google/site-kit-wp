@@ -15,9 +15,9 @@
 		&:hover {
 			opacity: 1;
 		}
+	}
 
-		&--reverse {
-			transform: rotate(180deg);
-		}
+	.googlesitekit-wizard-component-nav__icon--reverse {
+		transform: rotate(180deg);
 	}
 }

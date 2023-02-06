@@ -74,8 +74,8 @@ const pageEvents = [];
 
 // The Jest timeout is increased because these tests are a bit slow
 jest.setTimeout( PUPPETEER_TIMEOUT || 100000 );
-// Set default timeout for individual expect-puppeteer assertions. (Default: 500)
-setDefaultOptions( { timeout: EXPECT_PUPPETEER_TIMEOUT || 500 } );
+// Set default timeout for individual expect-puppeteer assertions. (Default: 1000)
+setDefaultOptions( { timeout: EXPECT_PUPPETEER_TIMEOUT || 1000 } );
 
 // Add custom matchers specific to Site Kit.
 expect.extend( customMatchers );
@@ -202,7 +202,7 @@ function observeConsoleLogging() {
 		//
 		// We ignore them as they are not indicative of a problem with the
 		// test and usually make E2E tests fail erroneously.
-		if ( text.startsWith( 'You are probably offline.' ) ) {
+		if ( text.includes( 'You are probably offline.' ) ) {
 			return;
 		}
 

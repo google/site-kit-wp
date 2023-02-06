@@ -30,13 +30,13 @@
 	text-transform: uppercase;
 	vertical-align: middle;
 	white-space: nowrap;
+}
 
-	&--has-left-spacing {
-		margin-left: 12px;
-	}
+.googlesitekit-badge--has-left-spacing {
+	margin-left: 12px;
+}
 
-	&--primary {
-		background-color: $c-content-primary-container;
-		color: $c-content-on-primary-container;
-	}
+.googlesitekit-badge--primary {
+	background-color: $c-content-primary-container;
+	color: $c-content-on-primary-container;
 }

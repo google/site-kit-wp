@@ -69,7 +69,7 @@ export async function submitChanges( { select, dispatch } ) {
 		dispatch( MODULES_ANALYTICS_4 ).setWebDataStreamID(
 			WEBDATASTREAM_CREATE
 		);
-		dispatch( MODULES_ANALYTICS_4 ).setMeasurementID( '' );
+		dispatch( MODULES_ANALYTICS_4 ).updateSettingsForMeasurementID( '' );
 	}
 
 	const webDataStreamID = select( MODULES_ANALYTICS_4 ).getWebDataStreamID();
@@ -86,7 +86,7 @@ export async function submitChanges( { select, dispatch } ) {
 		}
 
 		dispatch( MODULES_ANALYTICS_4 ).setWebDataStreamID( webdatastream._id );
-		dispatch( MODULES_ANALYTICS_4 ).setMeasurementID(
+		dispatch( MODULES_ANALYTICS_4 ).updateSettingsForMeasurementID(
 			// eslint-disable-next-line sitekit/acronym-case
 			webdatastream.webStreamData.measurementId
 		);
@@ -121,10 +121,6 @@ export function rollbackChanges( { select, dispatch } ) {
 }
 
 export function validateCanSubmitChanges( select ) {
-	if ( select( MODULES_ANALYTICS_4 ).isAdminAPIWorking() === false ) {
-		return;
-	}
-
 	const {
 		haveSettingsChanged: haveGA4SettingsChanged,
 		isDoingSubmitChanges,

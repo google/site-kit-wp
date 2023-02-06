@@ -45,6 +45,7 @@ use Google\Site_Kit_Dependencies\Google\Service\Adsense as Google_Service_Adsens
 use Google\Site_Kit_Dependencies\Google\Service\Adsense\Alert as Google_Service_Adsense_Alert;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 use Exception;
+use Google\Site_Kit\Core\Util\Sort;
 use Google\Site_Kit\Core\Util\URL;
 use WP_Error;
 
@@ -401,7 +402,10 @@ final class AdSense extends Module
 		switch ( "{$data->method}:{$data->datapoint}" ) {
 			case 'GET:accounts':
 				$accounts = array_filter( $response->getAccounts(), array( self::class, 'is_account_not_closed' ) );
-				return array_map( array( self::class, 'filter_account_with_ids' ), $accounts );
+				return Sort::case_insensitive_list_sort(
+					array_map( array( self::class, 'filter_account_with_ids' ), $accounts ),
+					'displayName'
+				);
 			case 'GET:adunits':
 				return array_map( array( self::class, 'filter_adunit_with_ids' ), $response->getAdUnits() );
 			case 'GET:alerts':
@@ -886,12 +890,10 @@ final class AdSense extends Module
 		$invalid_metrics = array_diff( $metrics, $valid_metrics );
 
 		if ( count( $invalid_metrics ) > 0 ) {
-			$message = sprintf(
+			$message = count( $invalid_metrics ) > 1 ? sprintf(
 				/* translators: %s: is replaced with a comma separated list of the invalid metrics. */
-				_n(
-					'Unsupported metric requested: %s',
+				__(
 					'Unsupported metrics requested: %s',
-					count( $invalid_metrics ),
 					'google-site-kit'
 				),
 				join(
@@ -899,6 +901,13 @@ final class AdSense extends Module
 					__( ', ', 'google-site-kit' ),
 					$invalid_metrics
 				)
+			) : sprintf(
+				/* translators: %s: is replaced with the invalid metric. */
+				__(
+					'Unsupported metric requested: %s',
+					'google-site-kit'
+				),
+				$invalid_metrics
 			);
 
 			throw new Invalid_Report_Metrics_Exception( $message );
@@ -928,12 +937,10 @@ final class AdSense extends Module
 		$invalid_dimensions = array_diff( $dimensions, $valid_dimensions );
 
 		if ( count( $invalid_dimensions ) > 0 ) {
-			$message = sprintf(
+			$message = count( $invalid_dimensions ) > 1 ? sprintf(
 				/* translators: %s: is replaced with a comma separated list of the invalid dimensions. */
-				_n(
-					'Unsupported dimension requested: %s',
+				__(
 					'Unsupported dimensions requested: %s',
-					count( $invalid_dimensions ),
 					'google-site-kit'
 				),
 				join(
@@ -941,6 +948,13 @@ final class AdSense extends Module
 					__( ', ', 'google-site-kit' ),
 					$invalid_dimensions
 				)
+			) : sprintf(
+				/* translators: %s: is replaced with the invalid dimension. */
+				__(
+					'Unsupported dimension requested: %s',
+					'google-site-kit'
+				),
+				$invalid_dimensions
 			);
 
 			throw new Invalid_Report_Dimensions_Exception( $message );

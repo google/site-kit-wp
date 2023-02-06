@@ -41,14 +41,15 @@ export default function WebStoriesAdUnitSelect() {
 	const webStoriesAdUnit = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getWebStoriesAdUnit()
 	);
-
-	const { adunits, hasResolvedAdUnits } = useSelect( ( select ) => ( {
-		adunits: select( MODULES_ADSENSE ).getAdUnits( accountID, clientID ),
-		hasResolvedAdUnits: select( MODULES_ADSENSE ).hasFinishedResolution(
-			'getAdUnits',
-			[ accountID, clientID ]
-		),
-	} ) );
+	const adunits = useSelect( ( select ) =>
+		select( MODULES_ADSENSE ).getAdUnits( accountID, clientID )
+	);
+	const hasResolvedAdUnits = useSelect( ( select ) =>
+		select( MODULES_ADSENSE ).hasFinishedResolution( 'getAdUnits', [
+			accountID,
+			clientID,
+		] )
+	);
 
 	const { setWebStoriesAdUnit } = useDispatch( MODULES_ADSENSE );
 	const onChange = useCallback(

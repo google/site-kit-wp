@@ -38,7 +38,7 @@ describe( 'WidgetNull', () => {
 		provideUserCapabilities( registry );
 	} );
 
-	it( 'should return an empty element', async () => {
+	it( 'should return an empty element', () => {
 		const widgetSlug = 'TestWidget';
 
 		// Initial state should be null.

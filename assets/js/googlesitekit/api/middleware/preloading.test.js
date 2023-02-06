@@ -36,6 +36,10 @@ const preloadedData = {
 };
 
 describe( 'Preloading Middleware', () => {
+	beforeEach( () => {
+		jest.useFakeTimers();
+	} );
+
 	it( 'returns a preloaded response when present', async () => {
 		const requestURI = 'test/path/a';
 		const preloadingMiddleware =
@@ -168,12 +172,12 @@ describe( 'Preloading Middleware', () => {
 
 	describe( 'apiFetch integration', () => {
 		let apiFetch;
-		beforeEach( async () => {
+		beforeEach( () => {
 			apiFetch = require( '@wordpress/api-fetch' ).default;
 			apiFetch.use( createPreloadingMiddleware( preloadedData ) );
 		} );
 
-		afterEach( async () => {
+		afterEach( () => {
 			// Invalidate the require cache for `api-fetch` so that it uses a fresh instance.
 			delete require.cache[ require.resolve( '@wordpress/api-fetch' ) ];
 		} );

@@ -86,10 +86,12 @@
 	}
 
 	// Handle links on mobile.
-	&:not(.mobile) .googlesitekit-plugin .googlesitekit-adminbar .googlesitekit-adminbar__link {
-		display: inline-block;
+	&:not(.mobile) .googlesitekit-plugin .googlesitekit-adminbar {
+		.googlesitekit-adminbar__link {
+			display: inline-block;
+		}
 
-		&--mobile {
+		.googlesitekit-adminbar__link--mobile {
 			display: none;
 		}
 	}
@@ -99,16 +101,16 @@
 		@media (min-width: $bp-desktop) {
 			display: inline-block;
 		}
+	}
 
-		&--mobile {
-			display: inline-block;
-			padding-left: $grid-gap-phone;
-			position: relative;
-			top: -$grid-gap-phone;
+	&.mobile .googlesitekit-plugin .googlesitekit-adminbar .googlesitekit-adminbar__link--mobile {
+		display: inline-block;
+		padding-left: $grid-gap-phone;
+		position: relative;
+		top: -$grid-gap-phone;
 
-			@media (min-width: $bp-desktop) {
-				display: none;
-			}
+		@media (min-width: $bp-desktop) {
+			display: none;
 		}
 	}
 
