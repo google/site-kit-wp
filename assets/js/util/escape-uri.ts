@@ -30,7 +30,7 @@
  * @param {...*}     values  The array of expressions used in the template.
  * @return {string} Escaped URI string.
  */
-export function escapeURI( strings, ...values ) {
+export function escapeURI( strings: string[], ...values: any[] ): string {
 	return strings.reduce( ( acc, string, idx ) => {
 		return acc + string + encodeURIComponent( values[ idx ] || '' );
 	}, '' );
