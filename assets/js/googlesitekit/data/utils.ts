@@ -26,7 +26,12 @@ import memize from 'memize';
 /**
  * WordPress dependencies
  */
-import { createRegistryControl, createRegistrySelector } from '@wordpress/data';
+import {
+	createRegistryControl,
+	createRegistrySelector,
+	DataRegistry,
+	StoreConfig,
+} from '@wordpress/data';
 
 const GET_REGISTRY = 'GET_REGISTRY';
 const AWAIT = 'AWAIT';
@@ -46,12 +51,12 @@ const AWAIT = 'AWAIT';
  * @param {...Object} items A list of arguments, each one should be an object to combine into one.
  * @return {Object} The combined object.
  */
-export const collect = ( ...items ) => {
+export const collect = ( ...items: object[] ): object => {
 	const collectedObject = items.reduce( ( acc, item ) => {
 		return { ...acc, ...item };
 	}, {} );
 
-	const functionNames = items.reduce( ( acc, itemSet ) => {
+	const functionNames = items.reduce< string[] >( ( acc, itemSet ) => {
 		return [ ...acc, ...Object.keys( itemSet ) ];
 	}, [] );
 	const duplicates = findDuplicates( functionNames );
@@ -97,7 +102,7 @@ export const collectControls = collect;
  * @param {...(Object|Function)} args A list of reducers, each containing their own controls. If the first argument is not a function, it will be used as the combined reducer's `initialState`.
  * @return {Function} A Redux-style reducer.
  */
-export const collectReducers = ( ...args ) => {
+export const collectReducers = ( ...args: any[] ): any => {
 	const reducers = [ ...args ];
 	let initialState;
 
@@ -152,7 +157,7 @@ export const collectState = collect;
  * @param {...string} args A list of store names, all of which must be equal.
  * @return {string} The single store name.
  */
-export const collectName = ( ...args ) => {
+export const collectName = ( ...args: string[] ): string => {
 	const names = [ ...args ];
 
 	const duplicates = findDuplicates( names );
@@ -183,7 +188,7 @@ const passthroughReducer = ( state ) => state;
  * @param {...Object} stores A list of objects, each a store containing one or more of the following keys: initialState, actions, controls, reducer, resolvers, selectors.
  * @return {Object} The combined store.
  */
-export const combineStores = ( ...stores ) => {
+export const combineStores = ( ...stores: StoreConfig< any >[] ): object => {
 	const combinedInitialState = collectState(
 		...stores.map( ( store ) => store.initialState || {} )
 	);
@@ -293,7 +298,7 @@ export const commonControls = {
  * @param {Array} array Any array.
  * @return {Array} All values in the input array that were duplicated.
  */
-const findDuplicates = ( array ) => {
+const findDuplicates = ( array: Array< any > ): Array< any > => {
 	const duplicates = [];
 	const counts = {};
 
@@ -342,9 +347,10 @@ export const commonStore = {
  * @param {Function} select The registry.select function.
  * @return {Function} The strict version of registry.select.
  */
-export const createStrictSelect = ( select ) => ( storeName ) => {
-	return getStrictSelectors( select( storeName ) );
-};
+export const createStrictSelect =
+	( select: DataRegistry[ 'select' ] ) => ( storeName: string ) => {
+		return getStrictSelectors( select( storeName ) );
+	};
 
 // Based on {@link https://github.com/WordPress/gutenberg/blob/b1c8026087dfb026eff0a023a5f7febe28c876de/packages/data/src/registry.js#L91}
 const getStrictSelectors = memize( ( selectors ) =>
