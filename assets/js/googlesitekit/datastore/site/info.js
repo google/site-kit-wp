@@ -330,7 +330,7 @@ export const selectors = {
 				}
 
 				// Since page should be first query arg, create queryArgs without 'page' to prevent a 'page' in args from overriding it.
-				const { page: extraPage, ...queryArgs } = args; // eslint-disable-line no-unused-vars
+				const { page: extraPage, ...queryArgs } = args; // eslint-disable-line @typescript-eslint/no-unused-vars
 
 				return addQueryArgs( `${ baseURL }${ phpFile }`, {
 					page: pageArg,
