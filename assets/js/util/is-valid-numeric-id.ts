@@ -25,7 +25,7 @@
  * @param {*} input Value to check.
  * @return {boolean} Validity.
  */
-export function isValidNumericID( input ) {
+export function isValidNumericID( input: string ): boolean {
 	const id = parseFloat( input ) || 0;
 
 	if ( ! Number.isInteger( id ) ) {
