@@ -176,7 +176,7 @@ const createRules = ( mode ) => [
 	noAMDParserRule,
 	svgRule,
 	{
-		test: /\.js$|.ts$|.tsx$/,
+		test: /\.(j|t)sx?$/,
 		exclude: /node_modules/,
 		use: [
 			{
@@ -206,11 +206,7 @@ const createRules = ( mode ) => [
 					babelrc: false,
 					configFile: false,
 					cacheDirectory: true,
-					presets: [
-						'@babel/preset-typescript',
-						'@wordpress/default',
-						'@babel/preset-react',
-					],
+					presets: [ '@wordpress/default', '@babel/preset-react' ],
 				},
 			},
 		],
