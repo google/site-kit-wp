@@ -33,6 +33,32 @@ export const ERROR_REASON_FORBIDDEN = 'forbidden';
 export const ERROR_INTERNAL_SERVER_ERROR = 'internal_server_error';
 export const ERROR_INVALID_JSON = 'invalid_json';
 
+type WPError = {
+	code: string | number;
+	message: string;
+	data: any;
+};
+
+type Error = {
+	code: 'missing_required_scopes' | string;
+	message: string;
+	data: {
+		reason: 'insufficientPermissions' | 'forbidden' | string;
+		reconnectURL: string;
+	};
+	selectorData: {
+		args: any[];
+		storeName: string;
+		selectorName: string;
+	};
+};
+
+// type PermissionScopeError = Pick< Error, 'code' >;
+
+// type InsufficientPermissionsError = Pick< Error, 'data' >;
+
+// type AuthError = Pick< Error, 'data' >;
+
 /**
  * Checks if the provided object is an instance of WP_Error class.
  *
@@ -41,7 +67,7 @@ export const ERROR_INVALID_JSON = 'invalid_json';
  * @param {Object} obj The object to check.
  * @return {boolean} TRUE if the object has "code", "data" and "message" properties, otherwise FALSE.
  */
-export function isWPError( obj ) {
+export function isWPError( obj: WPError ): boolean {
 	return (
 		isPlainObject( obj ) &&
 		obj.hasOwnProperty( 'code' ) &&
@@ -61,7 +87,7 @@ export function isWPError( obj ) {
  * @param {Object} error Input to test as a possible permission scope error.
  * @return {boolean} TRUE if permission scope error, otherwise FALSE.
  */
-export function isPermissionScopeError( error ) {
+export function isPermissionScopeError( error: Error ): boolean {
 	return error?.code === ERROR_CODE_MISSING_REQUIRED_SCOPE;
 }
 
@@ -74,7 +100,7 @@ export function isPermissionScopeError( error ) {
  * @param {Object} error The error object to check.
  * @return {boolean} TRUE if it's insufficient permissions error, otherwise FALSE.
  */
-export function isInsufficientPermissionsError( error ) {
+export function isInsufficientPermissionsError( error: Error ): boolean {
 	return [
 		ERROR_REASON_INSUFFICIENT_PERMISSIONS,
 		ERROR_REASON_FORBIDDEN,
@@ -89,7 +115,7 @@ export function isInsufficientPermissionsError( error ) {
  * @param {Object} error The error object to check.
  * @return {boolean} TRUE if it's an auth error, otherwise FALSE.
  */
-export function isAuthError( error ) {
+export function isAuthError( error: Error ): boolean {
 	return !! error?.data?.reconnectURL;
 }
 
@@ -102,7 +128,10 @@ export function isAuthError( error ) {
  * @param {Object} [selectorData] The error's associated selector data object.
  * @return {boolean} TRUE if the error is retryable, otherwise FALSE.
  */
-export function isErrorRetryable( error, selectorData ) {
+export function isErrorRetryable(
+	error: Error,
+	selectorData: Error[ 'selectorData' ]
+): boolean {
 	return (
 		!! selectorData?.storeName &&
 		! isInsufficientPermissionsError( error ) &&
@@ -119,7 +148,7 @@ export function isErrorRetryable( error, selectorData ) {
  * @param {Object} error The error object to check.
  * @return {Object} The updated error object.
  */
-export function getReportErrorMessage( error ) {
+export function getReportErrorMessage( error: Error ): string | undefined {
 	if ( error?.code === ERROR_INTERNAL_SERVER_ERROR ) {
 		return __(
 			'There was a critical error on this website while fetching data.',
