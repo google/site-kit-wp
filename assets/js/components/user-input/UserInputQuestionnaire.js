@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { useCallback, Fragment, useEffect, useState } from '@wordpress/element';
+import { useCallback, useEffect, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -29,22 +29,19 @@ import Data from 'googlesitekit-data';
 import { ProgressBar } from 'googlesitekit-components';
 import UserInputQuestionWrapper from './UserInputQuestionWrapper';
 import UserInputSelectOptions from './UserInputSelectOptions';
-import UserInputKeywords from './UserInputKeywords';
 import UserInputPreview from './UserInputPreview';
 import {
 	USER_INPUT_QUESTIONS_LIST,
-	USER_INPUT_QUESTION_ROLE,
+	USER_INPUT_QUESTIONS_PURPOSE,
 	USER_INPUT_QUESTION_POST_FREQUENCY,
-	USER_INPUT_QUESTION_GOALS,
-	USER_INPUT_QUESTION_HELP_NEEDED,
-	USER_INPUT_QUESTION_SEARCH_TERMS,
-	getUserInputAnwsers,
+	USER_INPUT_QUESTIONS_GOALS,
+	USER_INPUT_MAX_ANSWERS,
+	getUserInputAnswers,
 } from './util/constants';
 import useQueryArg from '../../hooks/useQueryArg';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
-import { Cell, Row } from '../../material-components';
 import { trackEvent } from '../../util';
 import useViewContext from '../../hooks/useViewContext';
 const { useSelect, useDispatch } = Data;
@@ -57,7 +54,7 @@ export default function UserInputQuestionnaire() {
 	const [ shouldScrollToActiveQuestion, setShouldScrollToActiveQuestion ] =
 		useState( false );
 	const [ redirectURL ] = useQueryArg( 'redirect_url' );
-	const [ single, setSingle ] = useQueryArg( 'single', false );
+	const [ single ] = useQueryArg( 'single', false );
 
 	const activeSlugIndex = steps.indexOf( activeSlug );
 	if ( activeSlugIndex === -1 ) {
@@ -67,42 +64,13 @@ export default function UserInputQuestionnaire() {
 	const { saveUserInputSettings } = useDispatch( CORE_USER );
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 
-	const isNavigating = useSelect( ( select ) =>
-		select( CORE_LOCATION ).isNavigating()
-	);
 	const dashboardURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' )
 	);
-	const { isSavingSettings, error, answeredUntilIndex } = useSelect(
-		( select ) => {
-			const userInputSettings =
-				select( CORE_USER ).getUserInputSettings();
 
-			return {
-				isSavingSettings:
-					select( CORE_USER ).isSavingUserInputSettings(
-						userInputSettings
-					),
-				error: select( CORE_USER ).getErrorForAction(
-					'saveUserInputSettings',
-					[]
-				),
-				answeredUntilIndex: USER_INPUT_QUESTIONS_LIST.findIndex(
-					( question ) =>
-						userInputSettings?.[ question ]?.values?.length === 0
-				),
-			};
-		}
+	const error = useSelect( ( select ) =>
+		select( CORE_USER ).getErrorForAction( 'saveUserInputSettings', [] )
 	);
-
-	useEffect( () => {
-		if ( answeredUntilIndex === -1 ) {
-			return;
-		}
-		if ( activeSlugIndex > answeredUntilIndex ) {
-			setActiveSlug( steps[ answeredUntilIndex ] );
-		}
-	}, [ answeredUntilIndex, activeSlugIndex, setActiveSlug ] );
 
 	useEffect( () => {
 		if ( activeSlug === 'preview' ) {
@@ -111,11 +79,10 @@ export default function UserInputQuestionnaire() {
 	}, [ activeSlug, viewContext ] );
 
 	const {
+		USER_INPUT_ANSWERS_PURPOSE,
 		USER_INPUT_ANSWERS_GOALS,
-		USER_INPUT_ANSWERS_HELP_NEEDED,
 		USER_INPUT_ANSWERS_POST_FREQUENCY,
-		USER_INPUT_ANSWERS_ROLE,
-	} = getUserInputAnwsers();
+	} = getUserInputAnswers();
 
 	const isSettings = single === 'settings';
 
@@ -123,20 +90,6 @@ export default function UserInputQuestionnaire() {
 		trackEvent( viewContext, 'question_advance', steps[ activeSlugIndex ] );
 		setActiveSlug( steps[ activeSlugIndex + 1 ] );
 	}, [ activeSlugIndex, setActiveSlug, viewContext ] );
-
-	const goTo = useCallback(
-		( num = 1, singleType = false ) => {
-			trackEvent( viewContext, 'question_edit', steps[ num - 1 ] );
-
-			// If we're going to a single question to edit it, set the query string here.
-			// We can't currently set it in the child component because the useQueryArg hook doesn't update in the parent.
-			setSingle( singleType );
-			if ( steps.length >= num && num > 0 ) {
-				setActiveSlug( steps[ num - 1 ] );
-			}
-		},
-		[ setActiveSlug, setSingle, viewContext ]
-	);
 
 	const back = useCallback( () => {
 		trackEvent( viewContext, 'question_return', steps[ activeSlugIndex ] );
@@ -174,11 +127,6 @@ export default function UserInputQuestionnaire() {
 		viewContext,
 	] );
 
-	const goToPreview = useCallback( () => {
-		trackEvent( viewContext, 'question_update', steps[ activeSlugIndex ] );
-		setActiveSlug( steps[ steps.length - 1 ] );
-	}, [ activeSlugIndex, setActiveSlug, viewContext ] );
-
 	useEffect( () => {
 		if ( ! shouldScrollToActiveQuestion ) {
 			setShouldScrollToActiveQuestion( true );
@@ -195,12 +143,7 @@ export default function UserInputQuestionnaire() {
 	let nextCallback = next;
 	let nextLabel;
 
-	if ( single === 'user-input' ) {
-		backCallback = undefined;
-		// When the user is editing a single question in the user-input screen send them back to the preview when they click Update.
-		nextCallback = goToPreview;
-		nextLabel = __( 'Update', 'google-site-kit' );
-	} else if ( single === 'settings' ) {
+	if ( single === 'settings' ) {
 		backCallback = undefined;
 		// When the user is editing a single question from the settings screen, submit changes and send them back to the settings pages when they click Submit.
 		nextCallback = submitChanges;
@@ -212,42 +155,29 @@ export default function UserInputQuestionnaire() {
 			height={ 0 }
 			indeterminate={ false }
 			progress={
-				( activeSlugIndex + 1 ) / USER_INPUT_QUESTIONS_LIST.length
+				( activeSlugIndex + 1 ) /
+				( USER_INPUT_QUESTIONS_LIST.length + 1 ) // +1 here to account for the UserInputPreview screen.
 			}
 			className="googlesitekit-user-input__question--progress"
 		/>
 	);
 
-	if ( isSavingSettings || isNavigating ) {
-		return (
-			<Fragment>
-				{ settingsProgress }
-				<div className="googlesitekit-user-input__preview">
-					<Row>
-						<Cell lgSize={ 12 } mdSize={ 8 } smSize={ 4 }>
-							<ProgressBar />
-						</Cell>
-					</Row>
-				</div>
-			</Fragment>
-		);
-	}
-
 	return (
 		<div>
 			{ settingsProgress }
 
-			{ activeSlugIndex <= steps.indexOf( USER_INPUT_QUESTION_ROLE ) && (
+			{ activeSlugIndex <=
+				steps.indexOf( USER_INPUT_QUESTIONS_PURPOSE ) && (
 				<UserInputQuestionWrapper
-					slug={ USER_INPUT_QUESTION_ROLE }
-					isActive={ activeSlug === USER_INPUT_QUESTION_ROLE }
+					slug={ USER_INPUT_QUESTIONS_PURPOSE }
+					isActive={ activeSlug === USER_INPUT_QUESTIONS_PURPOSE }
 					questionNumber={ 1 }
 					title={ __(
-						'Which best describes your team/role in relation to this site?',
+						'What is the main purpose of this site?',
 						'google-site-kit'
 					) }
 					description={ __(
-						'This will help Site Kit show tips that help you specifically in your role',
+						'Based on your answer, Site Kit will tailor the metrics you see on your dashboard to help you track how close you’re getting to your specific goals',
 						'google-site-kit'
 					) }
 					next={ nextCallback }
@@ -255,10 +185,16 @@ export default function UserInputQuestionnaire() {
 					error={ error }
 				>
 					<UserInputSelectOptions
-						isActive={ activeSlug === USER_INPUT_QUESTION_ROLE }
-						slug={ USER_INPUT_QUESTION_ROLE }
-						options={ USER_INPUT_ANSWERS_ROLE }
+						isActive={ activeSlug === USER_INPUT_QUESTIONS_PURPOSE }
+						slug={ USER_INPUT_QUESTIONS_PURPOSE }
+						max={
+							USER_INPUT_MAX_ANSWERS[
+								USER_INPUT_QUESTIONS_PURPOSE
+							]
+						}
+						options={ USER_INPUT_ANSWERS_PURPOSE }
 						next={ nextCallback }
+						showInstructions
 					/>
 				</UserInputQuestionWrapper>
 			) }
@@ -272,7 +208,7 @@ export default function UserInputQuestionnaire() {
 					}
 					questionNumber={ 2 }
 					title={ __(
-						'How often do you create new posts for this site?',
+						'How often do you create new content for this site?',
 						'google-site-kit'
 					) }
 					description={ __(
@@ -289,48 +225,26 @@ export default function UserInputQuestionnaire() {
 							activeSlug === USER_INPUT_QUESTION_POST_FREQUENCY
 						}
 						slug={ USER_INPUT_QUESTION_POST_FREQUENCY }
+						max={
+							USER_INPUT_MAX_ANSWERS[
+								USER_INPUT_QUESTION_POST_FREQUENCY
+							]
+						}
 						options={ USER_INPUT_ANSWERS_POST_FREQUENCY }
 						next={ nextCallback }
-					/>
-				</UserInputQuestionWrapper>
-			) }
-
-			{ activeSlugIndex <= steps.indexOf( USER_INPUT_QUESTION_GOALS ) && (
-				<UserInputQuestionWrapper
-					slug={ USER_INPUT_QUESTION_GOALS }
-					isActive={ activeSlug === USER_INPUT_QUESTION_GOALS }
-					questionNumber={ 3 }
-					title={ __(
-						'What are the goals of this site?',
-						'google-site-kit'
-					) }
-					description={ __(
-						'Based on your answer, Site Kit will tailor the metrics you see on your dashboard to help you track how close you’re getting to your specific goals',
-						'google-site-kit'
-					) }
-					next={ nextCallback }
-					nextLabel={ nextLabel }
-					back={ backCallback }
-					error={ error }
-				>
-					<UserInputSelectOptions
-						isActive={ activeSlug === USER_INPUT_QUESTION_GOALS }
-						slug={ USER_INPUT_QUESTION_GOALS }
-						max={ 2 }
-						options={ USER_INPUT_ANSWERS_GOALS }
-						next={ nextCallback }
+						showInstructions
 					/>
 				</UserInputQuestionWrapper>
 			) }
 
 			{ activeSlugIndex <=
-				steps.indexOf( USER_INPUT_QUESTION_HELP_NEEDED ) && (
+				steps.indexOf( USER_INPUT_QUESTIONS_GOALS ) && (
 				<UserInputQuestionWrapper
-					slug={ USER_INPUT_QUESTION_HELP_NEEDED }
-					isActive={ activeSlug === USER_INPUT_QUESTION_HELP_NEEDED }
-					questionNumber={ 4 }
+					slug={ USER_INPUT_QUESTIONS_GOALS }
+					isActive={ activeSlug === USER_INPUT_QUESTIONS_GOALS }
+					questionNumber={ 3 }
 					title={ __(
-						'What do you need help most with for this site?',
+						'What are your top goals for this site?',
 						'google-site-kit'
 					) }
 					description={ __(
@@ -343,48 +257,14 @@ export default function UserInputQuestionnaire() {
 					error={ error }
 				>
 					<UserInputSelectOptions
-						isActive={
-							activeSlug === USER_INPUT_QUESTION_HELP_NEEDED
+						isActive={ activeSlug === USER_INPUT_QUESTIONS_GOALS }
+						slug={ USER_INPUT_QUESTIONS_GOALS }
+						max={
+							USER_INPUT_MAX_ANSWERS[ USER_INPUT_QUESTIONS_GOALS ]
 						}
-						slug={ USER_INPUT_QUESTION_HELP_NEEDED }
-						max={ 3 }
-						options={ USER_INPUT_ANSWERS_HELP_NEEDED }
+						options={ USER_INPUT_ANSWERS_GOALS }
 						next={ nextCallback }
-					/>
-				</UserInputQuestionWrapper>
-			) }
-
-			{ activeSlugIndex <=
-				steps.indexOf( USER_INPUT_QUESTION_SEARCH_TERMS ) && (
-				<UserInputQuestionWrapper
-					slug={ USER_INPUT_QUESTION_SEARCH_TERMS }
-					isActive={ activeSlug === USER_INPUT_QUESTION_SEARCH_TERMS }
-					questionNumber={ 5 }
-					title={ __(
-						'To help us identify opportunities for your site, enter the top three search terms that best describe your site’s content',
-						'google-site-kit'
-					) }
-					description={ __(
-						'Site Kit will keep you informed if people start finding you in Search for these terms',
-						'google-site-kit'
-					) }
-					next={ nextCallback }
-					nextLabel={
-						nextLabel === undefined
-							? __( 'Preview', 'google-site-kit' )
-							: nextLabel
-					}
-					back={ backCallback }
-					error={ error }
-					allowEmptyValues
-				>
-					<UserInputKeywords
-						isActive={
-							activeSlug === USER_INPUT_QUESTION_SEARCH_TERMS
-						}
-						slug={ USER_INPUT_QUESTION_SEARCH_TERMS }
-						max={ 3 }
-						next={ nextCallback }
+						showInstructions
 					/>
 				</UserInputQuestionWrapper>
 			) }
@@ -392,7 +272,7 @@ export default function UserInputQuestionnaire() {
 			{ activeSlug === 'preview' && (
 				<UserInputPreview
 					submitChanges={ submitChanges }
-					goTo={ goTo }
+					goBack={ backCallback }
 					error={ error }
 				/>
 			) }

@@ -18,7 +18,6 @@ use Google\Site_Kit\Tests\TestCase;
 
 /**
  * @group Authentication
- * @group failing
  */
 class OAuth2Test extends TestCase {
 

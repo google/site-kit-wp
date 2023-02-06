@@ -1,15 +1,29 @@
 // Overrides for .mdc-button
-.googlesitekit-plugin .mdc-button {
+.googlesitekit-plugin {
 
-	@include mdc-button-ink-color($c-content-primary);
-	box-shadow: none;
-	text-transform: none;
+	.mdc-button {
 
-	@media (max-width: $bp-desktop) {
-		min-width: auto;
+		@include mdc-button-ink-color($c-content-primary);
+		box-shadow: none;
+		text-transform: none;
+
+		@media (max-width: $bp-desktop) {
+			min-width: auto;
+		}
+
+		.mdc-button__icon--image {
+			border-radius: 50%;
+			display: block;
+			height: 18px;
+			width: 18px;
+		}
+
+		.mdc-button__trailing-icon {
+			margin-left: 8px;
+		}
 	}
 
-	&--raised {
+	.mdc-button--raised {
 
 		@include mdc-button-filled-accessible($c-content-primary);
 		@include mdc-button-shape-radius($br-lg);
@@ -33,14 +47,16 @@
 		}
 	}
 
-	&--danger {
+	.mdc-button--danger {
 
 		@include mdc-button-filled-accessible($c-error);
 	}
 
-	&--dropdown {
+	.mdc-button--dropdown {
 
 		@include mdc-button-ink-color($c-primary);
+
+		// This is the expand_more icon (arrow/chevron down), in the color #757575 ($c-bouler).
 		background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2212%22%20height%3D%228%22%20viewBox%3D%220%200%2012%208%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpath%20d%3D%22M10.6.6L12%202%206%208%200%202%201.4.6%206%205.2z%22%20fill%3D%22%23757575%22%20fill-rule%3D%22evenodd%22%2F%3E%3C%2Fsvg%3E");
 		background-position: calc(100% - 8px) center;
 		background-repeat: no-repeat;
@@ -66,7 +82,7 @@
 		}
 	}
 
-	&--dropdown .mdc-button__label {
+	.mdc-button--dropdown .mdc-button__label {
 
 		@media (max-width: $bp-mobileOnly) {
 
@@ -89,22 +105,8 @@
 		}
 	}
 
-	&--inverse {
+	.mdc-button--inverse {
 
 		@include mdc-button-filled-accessible($c-surfaces-inverse-surface);
-	}
-
-	.mdc-button__icon {
-
-		&--image {
-			border-radius: 50%;
-			display: block;
-			height: 18px;
-			width: 18px;
-		}
-	}
-
-	.mdc-button__trailing-icon {
-		margin-left: 8px;
 	}
 }

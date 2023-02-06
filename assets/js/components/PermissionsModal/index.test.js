@@ -53,6 +53,20 @@ describe( 'PermissionsModal', () => {
 		);
 	} );
 
+	it( 'does not render AuthenticatedPermissionsModal when unsatisfiedScopes includes scopes from permissionsError', () => {
+		provideUserAuthentication( registry, {
+			authenticated: true,
+			unsatisfiedScopes: [
+				'https://www.googleapis.com/auth/analytics.readonly',
+			],
+		} );
+		const { baseElement } = render( <PermissionsModal />, { registry } );
+
+		expect( baseElement ).not.toHaveTextContent(
+			'Additional Permissions Required'
+		);
+	} );
+
 	it( 'renders AuthenticatedPermissionsModal when user is authenticated', () => {
 		provideUserAuthentication( registry );
 		const { baseElement } = render( <PermissionsModal />, { registry } );

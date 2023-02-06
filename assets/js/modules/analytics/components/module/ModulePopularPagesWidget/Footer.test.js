@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { render } from '../../../../../../../tests/js/test-utils';
+import { act, render } from '../../../../../../../tests/js/test-utils';
 import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
@@ -27,21 +27,31 @@ import {
 import Footer from './Footer';
 
 describe( 'Footer', () => {
-	it( 'should not make a analytics settings requests when the view context is "view only"', async () => {
+	beforeEach( () => {
+		jest.useFakeTimers();
+	} );
+
+	it( 'should not make a analytics settings requests when the view context is "view only"', () => {
 		const { container } = render( <Footer />, {
 			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 		} );
 
+		act( () => {
+			jest.runAllTimers();
+		} );
+
 		expect( fetchMock ).not.toHaveFetched(
-			/^\/google-site-kit\/v1\/modules\/analytics\/data\/settings/
+			new RegExp( '^/google-site-kit/v1/modules/analytics/data/settings' )
 		);
 		expect( container ).not.toHaveTextContent( 'Analytics' );
 		expect( container.firstChild ).toBeNull();
 	} );
 
-	it( 'should make a analytics settings request normally when the view context is NOT "view only"', async () => {
+	it( 'should make a analytics settings request normally when the view context is NOT "view only"', () => {
 		fetchMock.getOnce(
-			/^\/google-site-kit\/v1\/modules\/analytics\/data\/settings/,
+			new RegExp(
+				'^/google-site-kit/v1/modules/analytics/data/settings'
+			),
 			{ body: {}, status: 200 }
 		);
 
@@ -49,8 +59,12 @@ describe( 'Footer', () => {
 			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 		} );
 
+		act( () => {
+			jest.runAllTimers();
+		} );
+
 		expect( fetchMock ).toHaveFetched(
-			/^\/google-site-kit\/v1\/modules\/analytics\/data\/settings/
+			new RegExp( '^/google-site-kit/v1/modules/analytics/data/settings' )
 		);
 		expect( container ).toHaveTextContent( 'Analytics' );
 		expect( container.firstChild ).not.toBeNull();

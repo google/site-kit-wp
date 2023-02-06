@@ -2,7 +2,8 @@
 	"adsenseSetupV2",
 	"dashboardSharing",
 	"ga4ActivationBanner",
-	"ideaHubModule",
-	"twgModule",
+	"ga4Reporting",
+	"gm3Components",
+	"gteSupport",
 	"userInput"
 ]

@@ -11,6 +11,8 @@
 namespace Google\Site_Kit\Tests\Core\Modules;
 
 use Google\Site_Kit\Core\Modules\Module;
+use Google\Site_Kit\Core\Modules\Module_With_Settings;
+use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
 use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
 use Google\Site_Kit\Core\Modules\Module_With_Activation;
 use Google\Site_Kit\Core\Modules\Module_With_Deactivation;
@@ -20,7 +22,9 @@ use WP_Error;
 use Exception;
 
 class FakeModule extends Module
-	implements Module_With_Activation, Module_With_Deactivation {
+	implements Module_With_Activation, Module_With_Deactivation, Module_With_Settings {
+
+	use Module_With_Settings_Trait;
 
 	/**
 	 * Whether or not the module has been registered.
@@ -132,11 +136,8 @@ class FakeModule extends Module
 		$datapoint = $data->datapoint;
 
 		switch ( "$method:$datapoint" ) {
+			// Intentional fallthrough.
 			case 'GET:test-request':
-				return function () use ( $method, $datapoint, $data ) {
-					$data = $data->data;
-					return json_encode( compact( 'method', 'datapoint', 'data' ) );
-				};
 			case 'POST:test-request':
 				return function () use ( $method, $datapoint, $data ) {
 					$data = $data->data;
@@ -163,8 +164,8 @@ class FakeModule extends Module
 		$datapoint = $data->datapoint;
 
 		switch ( "$method:$datapoint" ) {
+			// Intentional fallthrough.
 			case 'GET:test-request':
-				return json_decode( $response, $data['asArray'] );
 			case 'POST:test-request':
 				return json_decode( $response, $data['asArray'] );
 		}
@@ -235,5 +236,16 @@ class FakeModule extends Module
 	 */
 	public function parse_date_range( $range, $multiplier = 1, $offset = 1, $previous = false ) { // phpcs:ignore Generic.CodeAnalysis.UselessOverridingMethod
 		return parent::parse_date_range( $range, $multiplier, $offset, $previous );
+	}
+
+	/**
+	 * Sets up the module's settings instance.
+	 *
+	 * @since 1.92.0
+	 *
+	 * @return Module_Settings
+	 */
+	protected function setup_settings() {
+		return new FakeModuleSettings( $this->options );
 	}
 }

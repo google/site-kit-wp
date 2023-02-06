@@ -21,10 +21,17 @@
  */
 import isPlainObject from 'lodash/isPlainObject';
 
+/**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+
 // Error codes and reasons.
 export const ERROR_CODE_MISSING_REQUIRED_SCOPE = 'missing_required_scopes'; // When scopes are missing.
 export const ERROR_REASON_INSUFFICIENT_PERMISSIONS = 'insufficientPermissions';
 export const ERROR_REASON_FORBIDDEN = 'forbidden';
+export const ERROR_INTERNAL_SERVER_ERROR = 'internal_server_error';
+export const ERROR_INVALID_JSON = 'invalid_json';
 
 /**
  * Checks if the provided object is an instance of WP_Error class.
@@ -102,4 +109,28 @@ export function isErrorRetryable( error, selectorData ) {
 		! isPermissionScopeError( error ) &&
 		! isAuthError( error )
 	);
+}
+
+/**
+ * Sets the error message for specific error codes.
+ *
+ * @since 1.92.0
+ *
+ * @param {Object} error The error object to check.
+ * @return {Object} The updated error object.
+ */
+export function getReportErrorMessage( error ) {
+	if ( error?.code === ERROR_INTERNAL_SERVER_ERROR ) {
+		return __(
+			'There was a critical error on this website while fetching data.',
+			'google-site-kit'
+		);
+	} else if ( error?.code === ERROR_INVALID_JSON ) {
+		return __(
+			'The server provided an invalid response.',
+			'google-site-kit'
+		);
+	}
+
+	return error?.message;
 }

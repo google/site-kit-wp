@@ -34,13 +34,16 @@ import { Fragment, useCallback } from '@wordpress/element';
  */
 import Data from 'googlesitekit-data';
 import { Button } from 'googlesitekit-components';
+import { FORM_SETUP } from '../../../modules/analytics/datastore/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
+import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import { Cell, Grid, Row } from '../../../material-components';
 import PencilIcon from '../../../../svg/icons/pencil.svg';
 import TrashIcon from '../../../../svg/icons/trash.svg';
 import Spinner from '../../Spinner';
 import Link from '../../Link';
-import { clearWebStorage, trackEvent } from '../../../util';
+import { trackEvent } from '../../../util';
+import { clearCache } from '../../../googlesitekit/api/cache';
 import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import useViewContext from '../../../hooks/useViewContext';
@@ -74,6 +77,21 @@ export default function Footer( props ) {
 	const isSaving = useSelect( ( select ) =>
 		select( CORE_UI ).getValue( isSavingKey )
 	);
+	const enableGA4PropertyTooltip = useSelect( ( select ) =>
+		select( CORE_FORMS ).getValue( FORM_SETUP, 'enableGA4PropertyTooltip' )
+	);
+
+	const { setValues } = useDispatch( CORE_FORMS );
+
+	const dismissGA4PropertyTooltip = useCallback( () => {
+		if ( slug !== 'analytics' || ! enableGA4PropertyTooltip ) {
+			return null;
+		}
+		setValues( FORM_SETUP, {
+			enableGA4PropertyTooltip: false,
+		} );
+	}, [ slug, enableGA4PropertyTooltip, setValues ] );
+
 	const moduleHomepage = useSelect( ( select ) => {
 		if ( ! module || isEmpty( module.homepage ) ) {
 			return undefined;
@@ -95,7 +113,11 @@ export default function Footer( props ) {
 		);
 		await clearErrors();
 		history.push( `/connected-services/${ slug }` );
-	}, [ clearErrors, history, viewContext, slug ] );
+
+		if ( slug === 'analytics' ) {
+			dismissGA4PropertyTooltip();
+		}
+	}, [ clearErrors, history, viewContext, slug, dismissGA4PropertyTooltip ] );
 
 	const handleConfirm = useCallback(
 		async ( event ) => {
@@ -115,7 +137,11 @@ export default function Footer( props ) {
 				);
 				await clearErrors();
 				history.push( `/connected-services/${ slug }` );
-				clearWebStorage();
+
+				if ( slug === 'analytics' ) {
+					dismissGA4PropertyTooltip();
+				}
+				await clearCache();
 			}
 		},
 		[
@@ -127,6 +153,7 @@ export default function Footer( props ) {
 			clearErrors,
 			history,
 			viewContext,
+			dismissGA4PropertyTooltip,
 		]
 	);
 
@@ -134,15 +161,13 @@ export default function Footer( props ) {
 		setValue( dialogActiveKey, ! dialogActive );
 	}, [ dialogActive, dialogActiveKey, setValue ] );
 
-	const handleEdit = useCallback(
-		() =>
-			trackEvent(
-				`${ viewContext }_module-list`,
-				'edit_module_settings',
-				slug
-			),
-		[ slug, viewContext ]
-	);
+	const handleEdit = useCallback( () => {
+		trackEvent(
+			`${ viewContext }_module-list`,
+			'edit_module_settings',
+			slug
+		);
+	}, [ slug, viewContext ] );
 
 	if ( ! module ) {
 		return null;

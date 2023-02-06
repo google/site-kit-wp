@@ -30,8 +30,9 @@ import {
 describe( 'core/site urls', () => {
 	let registry;
 
-	const adminBarSettingsEndpoint =
-		/^\/google-site-kit\/v1\/core\/site\/data\/admin-bar-settings/;
+	const adminBarSettingsEndpoint = new RegExp(
+		'^/google-site-kit/v1/core/site/data/admin-bar-settings'
+	);
 
 	beforeEach( () => {
 		registry = createTestRegistry();
@@ -136,11 +137,16 @@ describe( 'core/site urls', () => {
 		} );
 
 		describe( 'getShowAdminBar', () => {
-			it( 'should return undefined when admin bar settings are being resolved still', () => {
+			it( 'should return undefined when admin bar settings are being resolved still', async () => {
 				muteFetch( adminBarSettingsEndpoint );
 				expect(
 					registry.select( CORE_SITE ).getShowAdminBar()
 				).toBeUndefined();
+
+				await untilResolved(
+					registry,
+					CORE_SITE
+				).getAdminBarSettings();
 			} );
 
 			it.each( [

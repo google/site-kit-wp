@@ -17,12 +17,12 @@
  */
 
 /**
- * Checks if the given optimize ID appears to be a valid.
+ * Checks if the given Optimize Container ID appears to be a valid.
  *
  * @since 1.10.0
  *
- * @param {string|number} optimizeID Optimize ID to test.
- * @return {boolean} `true` if the given optimize ID is valid, `false` otherwise.
+ * @param {string|number} optimizeID Optimize Container ID to test.
+ * @return {boolean} `true` if the given optimize container ID is valid, `false` otherwise.
  */
 export function isValidOptimizeID( optimizeID ) {
 	return (

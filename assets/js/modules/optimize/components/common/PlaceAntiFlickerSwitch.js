@@ -79,7 +79,7 @@ export default function PlaceAntiFlickerSwitch() {
 					/>
 				</div>
 			</div>
-			<p className="googlesitekit-margin-top-0">
+			<p>
 				{ createInterpolateElement( message, {
 					a: (
 						<Link

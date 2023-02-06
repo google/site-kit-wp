@@ -168,7 +168,6 @@ module.exports = [
 			options: {
 				hierarchyRootSeparator: '|',
 				hierarchySeparator: {},
-				misMatchThreshold: 10,
 			},
 		},
 	},

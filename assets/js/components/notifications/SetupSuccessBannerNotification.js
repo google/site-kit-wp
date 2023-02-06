@@ -37,17 +37,14 @@ import {
 	CORE_USER,
 	PERMISSION_MANAGE_OPTIONS,
 } from '../../googlesitekit/datastore/user/constants';
-import { MODULES_THANK_WITH_GOOGLE } from '../../modules/thank-with-google/datastore/constants';
 import { trackEvent } from '../../util/tracking';
 import useViewContext from '../../hooks/useViewContext';
-import { useFeature } from '../../hooks/useFeature';
 const { useSelect } = Data;
 
 function SetupSuccessBannerNotification() {
 	const slug = getQueryParameter( 'slug' );
 	const notification = getQueryParameter( 'notification' );
 	const viewContext = useViewContext();
-	const twgEnabled = useFeature( 'twgModule' );
 
 	const modules = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModules()
@@ -78,17 +75,6 @@ function SetupSuccessBannerNotification() {
 	} );
 	const settingsAdminURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-settings' )
-	);
-	const publicationID = useSelect(
-		( select ) =>
-			twgEnabled && select( MODULES_THANK_WITH_GOOGLE ).getPublicationID()
-	);
-	const publicationURL = useSelect(
-		( select ) =>
-			publicationID &&
-			select( MODULES_THANK_WITH_GOOGLE ).getServicePublicationURL(
-				publicationID
-			)
 	);
 
 	const [ viewNotificationSent, setViewNotificationSent ] = useState( false );
@@ -227,12 +213,6 @@ function SetupSuccessBannerNotification() {
 					'Jump to the bottom of the dashboard to see how fast your home page is',
 					'google-site-kit'
 				);
-			} else if ( 'idea-hub' === slug ) {
-				anchor.link = '#googlesitekit-idea-hub-widget';
-				anchor.label = __(
-					'Jump directly to Idea Hub to see topic suggestions for your site',
-					'google-site-kit'
-				);
 			}
 
 			if (
@@ -250,21 +230,6 @@ function SetupSuccessBannerNotification() {
 					label: __( 'Go to Settings', 'google-site-kit' ),
 					url: `${ settingsAdminURL }#/connect-more-services`,
 					target: LEARN_MORE_TARGET.INTERNAL,
-				};
-			}
-
-			if ( 'thank-with-google' === slug ) {
-				winData.description = __(
-					'Thank with Google is visible to your visitors. To see metrics,',
-					'google-site-kit'
-				);
-				winData.learnMore = {
-					label: __(
-						'open the administrator panel.',
-						'google-site-kit'
-					),
-					url: publicationURL,
-					target: LEARN_MORE_TARGET.EXTERNAL,
 				};
 			}
 

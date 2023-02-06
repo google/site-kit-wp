@@ -23,6 +23,7 @@ import {
 	createTestRegistry,
 	subscribeUntil,
 	unsubscribeFromAll,
+	untilResolved,
 } from '../../../../../tests/js/utils';
 import { initialState } from './index';
 import { CORE_USER } from './constants';
@@ -42,13 +43,15 @@ describe( 'core/user userInfo', () => {
 			'http://example.com/wp-admin/index.php?action=googlesitekit_connect&nonce=abc123',
 		initialVersion: '1.0.0',
 		verified: true,
-		userInputState: 'completed',
+		isUserInputCompleted: true,
 	};
 
 	let registry;
+	let store;
 
 	beforeEach( () => {
 		registry = createTestRegistry();
+		store = registry.stores[ CORE_USER ].store;
 	} );
 
 	afterEach( () => {
@@ -107,21 +110,21 @@ describe( 'core/user userInfo', () => {
 				);
 			} );
 		} );
-		describe( 'receiveUserInputState', () => {
-			it( 'requires userInputState param', () => {
+		describe( 'receiveIsUserInputCompleted', () => {
+			it( 'requires the isUserInputCompleted param', () => {
 				expect( () => {
-					registry.dispatch( CORE_USER ).receiveUserInputState();
-				} ).toThrow( 'userInputState is required.' );
+					registry
+						.dispatch( CORE_USER )
+						.receiveIsUserInputCompleted();
+				} ).toThrow( 'The isUserInputCompleted param is required.' );
 			} );
 
-			it( 'receives and sets userInputData', async () => {
-				const { userInputState } = userData;
+			it( 'receives and sets isUserInputCompleted', async () => {
+				const { isUserInputCompleted } = userData;
 				await registry
 					.dispatch( CORE_USER )
-					.receiveUserInputState( userInputState );
-				expect(
-					registry.select( CORE_USER ).getUserInputState()
-				).toEqual( userInputState );
+					.receiveIsUserInputCompleted( isUserInputCompleted );
+				expect( store.getState().isUserInputCompleted ).toBe( true );
 			} );
 		} );
 	} );
@@ -151,6 +154,8 @@ describe( 'core/user userInfo', () => {
 				const connectURL = registry.select( CORE_USER ).getConnectURL();
 
 				expect( connectURL ).toEqual( initialState.connectURL );
+
+				await untilResolved( registry, CORE_USER ).getConnectURL();
 				expect( console ).toHaveErrored();
 			} );
 
@@ -247,37 +252,45 @@ describe( 'core/user userInfo', () => {
 				const userInfo = registry.select( CORE_USER ).getUser();
 
 				expect( userInfo ).toEqual( initialState.user );
+
+				await untilResolved( registry, CORE_USER ).getUser();
 				expect( console ).toHaveErrored();
 			} );
 		} );
 
 		describe( 'getInitialSiteKitVersion', () => {
-			it( 'uses a resolver to synchronously load data from a global variable', () => {
+			it( 'uses a resolver to load data from a global variable', async () => {
 				global[ userDataGlobal ] = {
 					...userData,
 					initialVersion: '1.2.3',
 				};
 
 				expect(
-					registry.stores[ CORE_USER ].store.getState().initialVersion
+					registry.select( CORE_USER ).getInitialSiteKitVersion()
 				).toBeUndefined();
-				expect(
-					registry
-						.select( CORE_USER )
-						.hasStartedResolution( 'getInitialSiteKitVersion' )
-				).toBe( false );
+
+				await untilResolved(
+					registry,
+					CORE_USER
+				).getInitialSiteKitVersion();
+
 				expect(
 					registry.select( CORE_USER ).getInitialSiteKitVersion()
 				).toBe( '1.2.3' );
 			} );
 
-			it( 'will return initial state (undefined) when no data is available', () => {
+			it( 'will return initial state (undefined) when no data is available', async () => {
 				expect( global[ userDataGlobal ] ).toBeUndefined();
 				const initialVersion = registry
 					.select( CORE_USER )
 					.getInitialSiteKitVersion();
 
 				expect( initialVersion ).toEqual( initialState.initialVersion );
+
+				await untilResolved(
+					registry,
+					CORE_USER
+				).getInitialSiteKitVersion();
 				expect( console ).toHaveErrored(
 					'Could not load core/user info.'
 				);
@@ -309,6 +322,8 @@ describe( 'core/user userInfo', () => {
 
 				const { verified } = initialState;
 				expect( isVerified ).toEqual( verified );
+
+				await untilResolved( registry, CORE_USER ).isVerified();
 				expect( console ).toHaveErrored();
 			} );
 		} );
@@ -341,6 +356,8 @@ describe( 'core/user userInfo', () => {
 				const result = registry.select( CORE_USER )[ selector ]();
 
 				expect( result ).toEqual( undefined );
+
+				await untilResolved( registry, CORE_USER ).getUser();
 				expect( console ).toHaveErrored();
 			} );
 			it( 'will return the correct value when data is available', async () => {
@@ -359,22 +376,24 @@ describe( 'core/user userInfo', () => {
 				expect( result ).toEqual( expectedValue );
 			} );
 		} );
-		describe( 'getUserInputState', () => {
-			it( 'uses a resolver to load user input state from a global variable', async () => {
+		describe( 'isUserInputCompleted', () => {
+			it( 'uses a resolver to check if user input is completed from a global variable', async () => {
 				// Set up the global
 				global[ userDataGlobal ] = userData;
 
-				registry.select( CORE_USER ).getUserInputState(); // invariant error
+				registry.select( CORE_USER ).isUserInputCompleted(); // invariant error
 				await subscribeUntil( registry, () =>
 					registry
 						.select( CORE_USER )
-						.hasFinishedResolution( 'getUserInputState' )
+						.hasFinishedResolution( 'isUserInputCompleted' )
 				);
 
-				const userInputState = registry
+				const isUserInputCompleted = registry
 					.select( CORE_USER )
-					.getUserInputState();
-				expect( userInputState ).toBe( userData.userInputState );
+					.isUserInputCompleted();
+				expect( isUserInputCompleted ).toBe(
+					userData.isUserInputCompleted
+				);
 
 				// Data must not be wiped after retrieving, as it could be used by other dependents.
 				expect( global[ userDataGlobal ] ).not.toEqual( undefined );

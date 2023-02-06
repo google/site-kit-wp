@@ -87,6 +87,29 @@ final class Plugin {
 			return;
 		}
 
+		// In the case of IDNs, ensure the ASCII and non-ASCII domains
+		// are treated as allowable origins.
+		add_filter(
+			'allowed_redirect_hosts',
+			function( $hosts ) {
+				$wpp = wp_parse_url( home_url() );
+
+				// If this host is already an ASCII-only string, it's either
+				// not an IDN or it's an ASCII-formatted IDN. Either way: we
+				// can return the existing `$hosts` array unmodified.
+				if ( mb_check_encoding( $wpp['host'], 'ASCII' ) ) {
+					return $hosts;
+				}
+
+				// If this host is an IDN in Unicode format, we need to add the
+				// urlencoded versions of the domain to the `$hosts` array,
+				// because this is what will be used for redirects.
+				$hosts[] = rawurlencode( $wpp['host'] );
+
+				return $hosts;
+			}
+		);
+
 		// REST route to set up a temporary tag to verify meta tag output works reliably.
 		add_filter(
 			'googlesitekit_rest_routes',
@@ -168,6 +191,9 @@ final class Plugin {
 				$permissions = new Core\Permissions\Permissions( $this->context, $authentication, $modules, $user_options, $dismissed_items );
 				$permissions->register();
 
+				$nonces = new Core\Nonces\Nonces( $this->context );
+				$nonces->register();
+
 				// Assets must be registered after Modules instance is registered.
 				$assets->register();
 
@@ -183,7 +209,7 @@ final class Plugin {
 				( new Core\Util\Reset_Persistent( $this->context ) )->register();
 				( new Core\Util\Developer_Plugin_Installer( $this->context ) )->register();
 				( new Core\Tracking\Tracking( $this->context, $user_options, $screens ) )->register();
-				( new Core\REST_API\REST_Routes( $this->context, $authentication, $modules ) )->register();
+				( new Core\REST_API\REST_Routes( $this->context ) )->register();
 				( new Core\Util\REST_Entity_Search_Controller( $this->context ) )->register();
 				( new Core\Admin_Bar\Admin_Bar( $this->context, $assets, $modules ) )->register();
 				( new Core\Admin\Available_Tools() )->register();
@@ -199,6 +225,10 @@ final class Plugin {
 				( new Core\Util\Migration_1_3_0( $this->context, $options, $user_options ) )->register();
 				( new Core\Util\Migration_1_8_1( $this->context, $options, $user_options, $authentication ) )->register();
 				( new Core\Dashboard_Sharing\Dashboard_Sharing( $this->context, $user_options ) )->register();
+
+				if ( Feature_Flags::enabled( 'userInput' ) ) {
+					( new Core\Key_Metrics\Key_Metrics( $this->context, $user_options ) )->register();
+				}
 
 				// If a login is happening (runs after 'init'), update current user in dependency chain.
 				add_action(

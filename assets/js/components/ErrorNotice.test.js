@@ -54,7 +54,9 @@ describe( 'ErrorNotice', () => {
 
 	async function renderErrorNotice( { error, storeName } ) {
 		fetchMock.get(
-			/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/accounts/,
+			new RegExp(
+				'^/google-site-kit/v1/modules/tagmanager/data/accounts'
+			),
 			{
 				body: error,
 				status: 403,

@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * WordPress dependencies
  */
 import { sprintf, __ } from '@wordpress/i18n';
@@ -26,23 +31,13 @@ import { sprintf, __ } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import { MODULES_ANALYTICS } from '../../datastore/constants';
-import { MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
-import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 const { useSelect } = Data;
 
-export default function ExistingGTMPropertyNotice() {
+export default function ExistingGTMPropertyNotice( {
+	gtmAnalyticsPropertyID,
+} ) {
 	const propertyID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getPropertyID()
-	);
-
-	const isTagManagerAvailable = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleAvailable( 'tagmanager' )
-	);
-
-	const gtmAnalyticsPropertyID = useSelect(
-		( select ) =>
-			isTagManagerAvailable &&
-			select( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID()
 	);
 
 	if ( ! gtmAnalyticsPropertyID ) {
@@ -77,3 +72,10 @@ export default function ExistingGTMPropertyNotice() {
 		</p>
 	);
 }
+
+ExistingGTMPropertyNotice.propTypes = {
+	gtmAnalyticsPropertyID: PropTypes.oneOfType( [
+		PropTypes.string,
+		PropTypes.bool,
+	] ),
+};

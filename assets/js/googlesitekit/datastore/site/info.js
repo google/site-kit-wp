@@ -46,6 +46,7 @@ function getSiteInfoProperty( propName ) {
 // Actions
 const RECEIVE_SITE_INFO = 'RECEIVE_SITE_INFO';
 const RECEIVE_PERMALINK_PARAM = 'RECEIVE_PERMALINK_PARAM';
+const SET_SITE_KIT_AUTO_UPDATES_ENABLED = 'SET_SITE_KIT_AUTO_UPDATES_ENABLED';
 
 export const initialState = {
 	siteInfo: undefined,
@@ -83,6 +84,28 @@ export const actions = {
 			type: RECEIVE_PERMALINK_PARAM,
 		};
 	},
+
+	/**
+	 * Sets `siteKitAutoUpdatesEnabled` value; if set to `true` this will
+	 * enable auto-updates for Site Kit. Set to `false` to disable this
+	 * behaviour.
+	 *
+	 * @since 1.93.0
+	 *
+	 * @param {boolean} siteKitAutoUpdatesEnabled Whether Site Kit auto-updates are enabled.
+	 * @return {Object} Redux-style action.
+	 */
+	setSiteKitAutoUpdatesEnabled( siteKitAutoUpdatesEnabled ) {
+		invariant(
+			typeof siteKitAutoUpdatesEnabled === 'boolean',
+			'siteKitAutoUpdatesEnabled must be a boolean.'
+		);
+
+		return {
+			payload: { siteKitAutoUpdatesEnabled },
+			type: SET_SITE_KIT_AUTO_UPDATES_ENABLED,
+		};
+	},
 };
 
 export const controls = {};
@@ -113,6 +136,9 @@ export const reducer = ( state, { payload, type } ) => {
 				postTypes,
 				wpVersion,
 				updateCoreURL,
+				changePluginAutoUpdatesCapacity,
+				siteKitAutoUpdatesEnabled,
+				pluginBasename,
 			} = payload.siteInfo;
 
 			return {
@@ -140,6 +166,9 @@ export const reducer = ( state, { payload, type } ) => {
 					postTypes,
 					wpVersion,
 					updateCoreURL,
+					changePluginAutoUpdatesCapacity,
+					siteKitAutoUpdatesEnabled,
+					pluginBasename,
 				},
 			};
 		}
@@ -149,6 +178,16 @@ export const reducer = ( state, { payload, type } ) => {
 			return {
 				...state,
 				permaLink,
+			};
+
+		case SET_SITE_KIT_AUTO_UPDATES_ENABLED:
+			const { siteKitAutoUpdatesEnabled } = payload;
+			return {
+				...state,
+				siteInfo: {
+					...state.siteInfo,
+					siteKitAutoUpdatesEnabled,
+				},
 			};
 
 		default: {
@@ -192,6 +231,9 @@ export const resolvers = {
 			postTypes,
 			wpVersion,
 			updateCoreURL,
+			changePluginAutoUpdatesCapacity,
+			siteKitAutoUpdatesEnabled,
+			pluginBasename,
 		} = global._googlesitekitBaseData;
 
 		const {
@@ -224,6 +266,9 @@ export const resolvers = {
 			widgetsAdminURL,
 			wpVersion,
 			updateCoreURL,
+			changePluginAutoUpdatesCapacity,
+			siteKitAutoUpdatesEnabled,
+			pluginBasename,
 		} );
 	},
 };
@@ -647,6 +692,43 @@ export const selectors = {
 	 * @return {(Object|undefined)} WordPress update core URL.
 	 */
 	getUpdateCoreURL: getSiteInfoProperty( 'updateCoreURL' ),
+
+	/**
+	 * Determines if Site Kit auto update settings can be changed.
+	 *
+	 * Auto update settings can not be changed if plugin updates are disabled site-wide
+	 * or if Site Kit auto updates are enforced by a PHP filter.
+	 *
+	 * @since 1.93.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(boolean|undefined)} `true` if plugin auto updates are enabled, otherwise `false`.
+	 */
+	hasChangePluginAutoUpdatesCapacity: getSiteInfoProperty(
+		'changePluginAutoUpdatesCapacity'
+	),
+
+	/**
+	 * Determines if the auto updates are enabled for the Site Kit plugin.
+	 *
+	 * @since 1.93.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(boolean|undefined)} `true` if Site Kit auto updates are enabled, otherwise `false`.
+	 */
+	getSiteKitAutoUpdatesEnabled: getSiteInfoProperty(
+		'siteKitAutoUpdatesEnabled'
+	),
+
+	/**
+	 * Get the plugin basename.
+	 *
+	 * @since 1.93.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {string} The basename of plugin, e.g. `'google-site-kit/google-site-kit.php'`.
+	 */
+	getPluginBasename: getSiteInfoProperty( 'pluginBasename' ),
 
 	/**
 	 * Determines whether the current WordPress site has the minimum required version.

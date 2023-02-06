@@ -4,7 +4,6 @@ import PropTypes from 'prop-types';
 
 import Data from 'googlesitekit-data';
 import JoyrideTooltip from '../JoyrideTooltip';
-import Portal from '../Portal';
 import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 import { useTooltipState } from './useTooltipState';
 
@@ -44,12 +43,12 @@ export function AdminMenuTooltip( { onDismiss, tooltipStateKey, ...props } ) {
 		tooltipStateKey,
 	] );
 
-	// Render in a Portal to avoid adding an element in the sub-header which has
-	// added styles if not empty. This also avoids a tiny shift when dismissing.
 	return (
-		<Portal slug="ga4-activation-banner-admin-menu-tooltip">
-			<JoyrideTooltip onDismiss={ handleDismissTooltip } { ...props } />
-		</Portal>
+		<JoyrideTooltip
+			slug="ga4-activation-banner-admin-menu-tooltip"
+			onDismiss={ handleDismissTooltip }
+			{ ...props }
+		/>
 	);
 }
 

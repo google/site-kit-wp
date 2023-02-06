@@ -31,9 +31,9 @@ import { createExistingTagStore } from './create-existing-tag-store';
 import { CORE_SITE } from '../datastore/site/constants';
 
 const TEST_STORE = 'test/store';
-const tagMatchers = [ /<test-store-tag value="([^\"]+)" \/>/ ];
+const tagMatchers = [ new RegExp( '<test-store-tag value="([^"]+)" />' ) ];
 const generateHTMLWithTag = ( tag ) =>
-	`<html><body><test-store-tag value="${ tag }" \/></body></html>`;
+	`<html><body><test-store-tag value="${ tag }" /></body></html>`;
 
 describe( 'createExistingTagStore store', () => {
 	let registry;

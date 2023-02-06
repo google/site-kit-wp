@@ -41,7 +41,7 @@ import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 const { useSelect, useDispatch } = Data;
 
 export default function GA4ActivateSwitch( props ) {
-	const { onActivate } = props;
+	const { onActivate, disabled } = props;
 
 	const viewContext = useViewContext();
 	const enableGA4 = useSelect( ( select ) =>
@@ -77,6 +77,7 @@ export default function GA4ActivateSwitch( props ) {
 					</Fragment>
 				}
 				checked={ enableGA4 }
+				disabled={ disabled }
 				onClick={ onChange }
 				hideLabel={ false }
 			/>
@@ -87,4 +88,5 @@ export default function GA4ActivateSwitch( props ) {
 // eslint-disable-next-line sitekit/acronym-case
 GA4ActivateSwitch.propTypes = {
 	onActivate: PropTypes.func,
+	disabled: PropTypes.bool,
 };

@@ -20,6 +20,8 @@
  * Internal dependencies
  */
 import {
+	provideModuleRegistrations,
+	provideModules,
 	provideSiteInfo,
 	provideUserInfo,
 } from '../../../../../../tests/js/utils';
@@ -32,7 +34,6 @@ import {
 	AMP_MODE_SECONDARY,
 } from '../../../../googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
-import { withActive } from '../../../../googlesitekit/modules/datastore/__fixtures__';
 import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 import {
 	MODULES_TAGMANAGER,
@@ -61,22 +62,23 @@ describe( 'SettingsEdit', () => {
 
 		registry = createTestRegistry();
 
-		fetchMock.getOnce( /tagmanager\/data\/accounts/, {
+		fetchMock.getOnce( new RegExp( 'tagmanager/data/accounts' ), {
 			body: [ account ],
 			status: 200,
 		} );
-		fetchMock.getOnce( /analytics\/data\/settings/, {
+		fetchMock.getOnce( new RegExp( 'analytics/data/settings' ), {
 			body: {},
 			status: 200,
 		} );
 
 		provideSiteInfo( registry, { siteName } );
+		provideUserInfo( registry );
 
-		registry
-			.dispatch( CORE_MODULES )
-			.receiveGetModules( withActive( 'tagmanager' ) );
+		provideModules( registry, [ { slug: 'tagmanager', active: true } ] );
+		provideModuleRegistrations( registry );
 
 		registry.dispatch( MODULES_TAGMANAGER ).setSettings( {} );
+		registry.dispatch( MODULES_TAGMANAGER ).setOwnerID( 1 );
 		registry.dispatch( MODULES_TAGMANAGER ).receiveGetExistingTag( null );
 		registry.dispatch( MODULES_TAGMANAGER ).setAccountID( accountID );
 		registry
@@ -111,7 +113,8 @@ describe( 'SettingsEdit', () => {
 			} );
 
 			it( 'should display a warning if the current user does not have access to the module', async () => {
-				provideUserInfo( registry );
+				// Ensure the module is owned by another user.
+				registry.dispatch( MODULES_TAGMANAGER ).setOwnerID( 99 );
 				registry
 					.dispatch( CORE_MODULES )
 					.receiveCheckModuleAccess(
@@ -214,7 +217,8 @@ describe( 'SettingsEdit', () => {
 			} );
 
 			it( 'should display a warning if the current user does not have access to the module', async () => {
-				provideUserInfo( registry );
+				// Ensure the module is owned by another user.
+				registry.dispatch( MODULES_TAGMANAGER ).setOwnerID( 99 );
 				registry
 					.dispatch( CORE_MODULES )
 					.receiveCheckModuleAccess(
@@ -229,7 +233,6 @@ describe( 'SettingsEdit', () => {
 					}
 				);
 				await waitForRegistry();
-
 				expect(
 					container.querySelector( '#ampContainerName' )
 				).toHaveValue( `${ siteName } AMP` );
@@ -319,7 +322,6 @@ describe( 'SettingsEdit', () => {
 					}
 				);
 				await waitForRegistry();
-
 				expect(
 					container.querySelector( '#containerName' )
 				).toHaveValue( siteName );
@@ -329,7 +331,8 @@ describe( 'SettingsEdit', () => {
 			} );
 
 			it( 'should display a warning if the current user does not have access to the module', async () => {
-				provideUserInfo( registry );
+				// Ensure the module is owned by another user.
+				registry.dispatch( MODULES_TAGMANAGER ).setOwnerID( 99 );
 				registry
 					.dispatch( CORE_MODULES )
 					.receiveCheckModuleAccess(

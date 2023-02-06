@@ -36,6 +36,9 @@ import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { Row, Cell } from '../../material-components';
 import UserInputQuestionInfo from './UserInputQuestionInfo';
 import ErrorNotice from '../ErrorNotice';
+import CancelUserInputButton from './CancelUserInputButton';
+import Link from '../Link';
+import { hasErrorForAnswer } from './util/validation';
 const { useSelect } = Data;
 
 export default function UserInputQuestionWrapper( props ) {
@@ -51,34 +54,11 @@ export default function UserInputQuestionWrapper( props ) {
 		back,
 		backLabel,
 		error,
-		allowEmptyValues,
 	} = props;
 
 	const values = useSelect(
 		( select ) => select( CORE_USER ).getUserInputSetting( slug ) || []
 	);
-	const scope = useSelect( ( select ) =>
-		select( CORE_USER ).getUserInputSettingScope( slug )
-	);
-	const author = useSelect( ( select ) =>
-		select( CORE_USER ).getUserInputSettingAuthor( slug )
-	);
-
-	// We have two different behaviors for user input settings screens:
-	//
-	//   1. When a user is on one of the first four screens - we SHOULD disable the Next button
-	//      if a user checks the "Other" checkbox and enters nothing into the text field. In other
-	//      words we should disable the Next button if the values array contains at least one empty value.
-	//
-	//   2. When a user is on the last 5th screen (search terms) - we SHOULD NOT disable the next
-	//      button if at least one search term is entered. In other words we should disable the next
-	//      button only when all values are empty strings.
-	//
-	const hasInvalidValues = allowEmptyValues
-		? // Consider the values array invalid if it contains all values empty.
-		  values.filter( ( value ) => value.trim().length > 0 ).length === 0
-		: // Consider the values array invalid if it contains at least one value that is empty.
-		  values.some( ( value ) => value.trim().length === 0 );
 
 	return (
 		<div
@@ -87,52 +67,52 @@ export default function UserInputQuestionWrapper( props ) {
 				'googlesitekit-user-input__question--next': ! isActive,
 			} ) }
 		>
-			<Row>
-				<Cell lgSize={ 12 } mdSize={ 8 } smSize={ 4 }>
-					<Row>
-						{ title && (
-							<UserInputQuestionInfo
-								title={ title }
-								description={ description }
-								scope={ scope }
-								questionNumber={ questionNumber }
-								author={ author }
-							/>
+			<div className="googlesitekit-user-input__question-contents">
+				<Row>
+					<Cell lgSize={ 12 } mdSize={ 8 } smSize={ 4 }>
+						<Row>
+							{ title && (
+								<UserInputQuestionInfo
+									slug={ slug }
+									title={ title }
+									description={ description }
+									questionNumber={ questionNumber }
+								/>
+							) }
+
+							{ children }
+						</Row>
+
+						{ error && <ErrorNotice error={ error } /> }
+					</Cell>
+				</Row>
+			</div>
+			{ isActive && (
+				<div className="googlesitekit-user-input__footer googlesitekit-user-input__buttons">
+					<div className="googlesitekit-user-input__footer-nav">
+						{ next && (
+							<Button
+								className="googlesitekit-user-input__buttons--next"
+								onClick={ next }
+								disabled={ hasErrorForAnswer( values ) }
+							>
+								{ nextLabel || __( 'Next', 'google-site-kit' ) }
+							</Button>
 						) }
-
-						{ children }
-					</Row>
-
-					{ error && <ErrorNotice error={ error } /> }
-
-					{ isActive && (
-						<div className="googlesitekit-user-input__buttons">
-							{ back && (
-								<Button
-									className="googlesitekit-user-input__buttons--back"
-									onClick={ back }
-									text
-								>
-									{ backLabel ||
-										__( 'Back', 'google-site-kit' ) }
-								</Button>
-							) }
-							{ next && (
-								<Button
-									className="googlesitekit-user-input__buttons--next"
-									onClick={ next }
-									disabled={
-										values.length === 0 || hasInvalidValues
-									}
-								>
-									{ nextLabel ||
-										__( 'Next', 'google-site-kit' ) }
-								</Button>
-							) }
-						</div>
-					) }
-				</Cell>
-			</Row>
+						{ back && (
+							<Link
+								className="googlesitekit-user-input__buttons--back"
+								onClick={ back }
+							>
+								{ backLabel || __( 'Back', 'google-site-kit' ) }
+							</Link>
+						) }
+					</div>
+					<div className="googlesitekit-user-input__footer-cancel">
+						<CancelUserInputButton />
+					</div>
+				</div>
+			) }
 		</div>
 	);
 }
@@ -149,9 +129,4 @@ UserInputQuestionWrapper.propTypes = {
 	back: PropTypes.func,
 	backLabel: PropTypes.string,
 	error: PropTypes.object,
-	allowEmptyValues: PropTypes.bool,
-};
-
-UserInputQuestionWrapper.defaultProps = {
-	allowEmptyValues: false,
 };
