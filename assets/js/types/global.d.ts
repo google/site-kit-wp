@@ -3,5 +3,8 @@ declare namespace NodeJS {
 		googlesitekit?: {
 			[ key: string ]: any;
 		};
+		wp?: {
+			[ key: string ]: any;
+		};
 	}
 }
