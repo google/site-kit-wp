@@ -583,7 +583,6 @@ final class Assets {
 				array(
 					'src'          => $base_url . 'js/googlesitekit-main.js',
 					'dependencies' => array(
-						'googlesitekit-base',
 						'googlesitekit-data',
 						'googlesitekit-widgets',
 						'googlesitekit-datastore-user',
