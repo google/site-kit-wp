@@ -29,7 +29,6 @@ import {
 	withSelect,
 	withDispatch,
 	RegistryProvider,
-	DataRegistry,
 } from '@wordpress/data';
 
 /**
@@ -44,34 +43,31 @@ import {
 } from './utils';
 import { createReducer } from './create-reducer';
 
-interface GoogleSiteKitData extends DataRegistry {
-	useInViewSelect?: typeof useInViewSelect;
-	[ key: string ]: any;
-}
+const Data = {
+	...createRegistry( {}, global.wp?.data ),
 
-const Data: GoogleSiteKitData = createRegistry( {}, global.wp?.data );
+	// Attach some of our utility functions to the registry so third-party
+	// developers can use them.
+	combineStores,
+	commonActions,
+	commonControls,
+	commonStore,
+	createReducer,
 
-// Attach some of our utility functions to the registry so third-party
-// developers can use them.
-Data.combineStores = combineStores;
-Data.commonActions = commonActions;
-Data.commonControls = commonControls;
-Data.commonStore = commonStore;
-Data.createReducer = createReducer;
+	// Attach our custom, useInViewSelect hook to the registry so third-party
+	// developers can use it.
+	useInViewSelect,
 
-// Attach our custom, useInViewSelect hook to the registry so third-party
-// developers can use it.
-Data.useInViewSelect = useInViewSelect;
-
-// Attach some WordPress data functions to the registry so third-party
-// developers can use them without importing '@wordpress/data'.
-Data.createRegistryControl = createRegistryControl;
-Data.createRegistrySelector = createRegistrySelector;
-Data.useSelect = useSelect;
-Data.useDispatch = useDispatch;
-Data.useRegistry = useRegistry;
-Data.withSelect = withSelect;
-Data.withDispatch = withDispatch;
-Data.RegistryProvider = RegistryProvider;
+	// Attach some WordPress data functions to the registry so third-party
+	// developers can use them without importing '@wordpress/data'.
+	createRegistryControl,
+	createRegistrySelector,
+	useSelect,
+	useDispatch,
+	useRegistry,
+	withSelect,
+	withDispatch,
+	RegistryProvider,
+};
 
 export default Data;
