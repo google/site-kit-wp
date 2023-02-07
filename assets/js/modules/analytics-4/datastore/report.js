@@ -32,7 +32,7 @@ import { MODULES_ANALYTICS_4 } from './constants';
 import { stringifyObject } from '../../../util';
 import {
 	isValidDateRange,
-	isValidOrders,
+	isValidOrdersGA4,
 } from '../../../util/report-validation';
 import {
 	normalizeReportOptions,
@@ -101,7 +101,7 @@ const fetchGetReportStore = createFetchStore( {
 
 		if ( orderby ) {
 			invariant(
-				isValidOrders( orderby ),
+				isValidOrdersGA4( orderby ),
 				'orderby for an Analytics 4 report must be an object where each object should have either a "metric" or "dimension" property, and an optional "desc" property.'
 			);
 		}
