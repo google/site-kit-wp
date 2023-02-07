@@ -33,7 +33,6 @@ exports[`SearchFunnelWidget should not render the Activate Analytics CTA when th
                 class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-4-tablet mdc-layout-grid__cell--span-2-phone"
               >
                 <div
-                  aria-disabled="false"
                   aria-label="Total Impressions"
                   aria-pressed="true"
                   class="googlesitekit-data-block googlesitekit-data-block--impressions googlesitekit-data-block--button-1 googlesitekit-data-block--button googlesitekit-data-block--selected"
@@ -73,7 +72,6 @@ exports[`SearchFunnelWidget should not render the Activate Analytics CTA when th
                 class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-4-tablet mdc-layout-grid__cell--span-2-phone"
               >
                 <div
-                  aria-disabled="false"
                   aria-label="Total Clicks"
                   aria-pressed="false"
                   class="googlesitekit-data-block googlesitekit-data-block--clicks googlesitekit-data-block--button-2 googlesitekit-data-block--button"
@@ -198,7 +196,6 @@ exports[`SearchFunnelWidget should render the Search Funnel Widget, including th
                 class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-4-tablet mdc-layout-grid__cell--span-2-phone"
               >
                 <div
-                  aria-disabled="false"
                   aria-label="Total Impressions"
                   aria-pressed="true"
                   class="googlesitekit-data-block googlesitekit-data-block--impressions googlesitekit-data-block--button-1 googlesitekit-data-block--button googlesitekit-data-block--selected"
@@ -238,7 +235,6 @@ exports[`SearchFunnelWidget should render the Search Funnel Widget, including th
                 class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-4-tablet mdc-layout-grid__cell--span-2-phone"
               >
                 <div
-                  aria-disabled="false"
                   aria-label="Total Clicks"
                   aria-pressed="false"
                   class="googlesitekit-data-block googlesitekit-data-block--clicks googlesitekit-data-block--button-2 googlesitekit-data-block--button"
