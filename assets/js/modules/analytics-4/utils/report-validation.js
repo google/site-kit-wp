@@ -123,10 +123,10 @@ export function isValidOrders( orders ) {
 		}
 
 		if ( order.metric ) {
-			if ( order.dimension ) {
-				return false;
-			}
-			return typeof order.metric?.metricName === 'string';
+			return (
+				! order.dimension &&
+				typeof order.metric?.metricName === 'string'
+			);
 		}
 
 		if ( order.dimension ) {
