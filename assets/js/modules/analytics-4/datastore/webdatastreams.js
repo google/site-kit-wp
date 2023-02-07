@@ -414,7 +414,7 @@ const baseSelectors = {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param {Object}         state        Data store's state.
+	 * @param {Object}                state        Data store's state.
 	 * @param {string|Array.<string>} measurements Single GA4 measurement ID, or array of GA4 measurement ID strings.
 	 * @return {(Object|null|undefined)} An Analytics config that matches provided one of measurement IDs on success, NULL if no matching config is found, undefined if data hasn't been resolved yet.
 	 */
