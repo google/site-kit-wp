@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import isPlainObject from 'lodash/isPlainObject';
-
-/**
  * Validates data that can be either string or object of the certain type, or array of them.
  *
  * @since 1.13.0
@@ -102,52 +97,6 @@ export function isValidOrders( orders ) {
 
 	// Arguably this should fail/throw, because none of our allowed types were encountered.
 	return false;
-}
-
-/**
- * Verifies that order definitions are valid for GA4. It should be an array
- * of objects where each object has either a "metric" or a "dimension" property,
- * and an optional "desc" property. The "metric" and "dimension" properties should
- * be objects with "metricName" and "dimensionName" properties respectively.
- *
- * @since n.e.x.t
- *
- * @param {Object[]} orders The order definitions to check.
- * @return {boolean} TRUE if order definitions are valid, otherwise FALSE.
- */
-export function isValidOrdersGA4( orders ) {
-	if ( ! Array.isArray( orders ) ) {
-		return false;
-	}
-
-	return orders.every( ( order ) => {
-		if ( ! isPlainObject( order ) ) {
-			return false;
-		}
-
-		if (
-			order.hasOwnProperty( 'desc' ) &&
-			typeof order.desc !== 'boolean'
-		) {
-			return false;
-		}
-
-		if ( order.metric ) {
-			if ( order.dimension ) {
-				return false;
-			}
-			return typeof order.metric?.metricName === 'string';
-		}
-
-		if ( order.dimension ) {
-			if ( order.metric ) {
-				return false;
-			}
-			return typeof order.dimension?.dimensionName === 'string';
-		}
-
-		return false;
-	} );
 }
 
 /**

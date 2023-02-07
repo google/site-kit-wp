@@ -23,6 +23,7 @@ import {
 	isValidDimensions,
 	isValidDimensionFilters,
 	isValidMetrics,
+	isValidOrders,
 } from './report-validation';
 
 describe( 'Analytics 4 Reporting API validation', () => {
@@ -155,6 +156,137 @@ describe( 'Analytics 4 Reporting API validation', () => {
 					},
 				] )
 			).toBe( false );
+		} );
+	} );
+
+	describe( 'isValidOrders', () => {
+		it( 'should return TRUE if an array of valid order objects is passed', () => {
+			expect(
+				isValidOrders( [
+					{
+						metric: {
+							metricName: 'totalUsers',
+						},
+						desc: false,
+					},
+					{
+						metric: {
+							metricName: 'sessions',
+						},
+						desc: true,
+					},
+					{
+						dimension: {
+							dimensionName: 'date',
+						},
+						desc: true,
+					},
+					{
+						dimension: {
+							dimensionName: 'sessionDefaultChannelGrouping',
+						},
+					},
+				] )
+			).toBeTruthy();
+		} );
+
+		it( 'should return FALSE if an array is not passed', () => {
+			expect( isValidOrders( null ) ).toBeFalsy();
+			expect( isValidOrders( 'test' ) ).toBeFalsy();
+			expect( isValidOrders( { test: 123 } ) ).toBeFalsy();
+		} );
+
+		it( 'should return FALSE if a non-object is passed in the array', () => {
+			expect( isValidOrders( [ null ] ) ).toBeFalsy();
+			expect( isValidOrders( [ 'test' ] ) ).toBeFalsy();
+			expect( isValidOrders( [ { test: 123 } ] ) ).toBeFalsy();
+		} );
+
+		it( 'should return FALSE if metric and dimension are both undefined', () => {
+			expect(
+				isValidOrders( [
+					{
+						desc: false,
+					},
+				] )
+			).toBeFalsy();
+		} );
+
+		it( 'should return FALSE if metric and dimension are both defined', () => {
+			expect(
+				isValidOrders( [
+					{
+						metric: {
+							metricName: 'totalUsers',
+						},
+						dimension: {
+							dimensionName: 'date',
+						},
+						desc: false,
+					},
+				] )
+			).toBeFalsy();
+		} );
+
+		it( 'should return FALSE if metric is defined but metricName is not', () => {
+			expect(
+				isValidOrders( [
+					{
+						metric: {},
+						desc: false,
+					},
+				] )
+			).toBeFalsy();
+		} );
+
+		it( 'should return FALSE if metricName is defined but not a string', () => {
+			expect(
+				isValidOrders( [
+					{
+						metric: {
+							metricName: 123,
+						},
+						desc: false,
+					},
+				] )
+			).toBeFalsy();
+		} );
+
+		it( 'should return FALSE if dimension is defined but dimensionName is not', () => {
+			expect(
+				isValidOrders( [
+					{
+						dimension: {},
+						desc: false,
+					},
+				] )
+			).toBeFalsy();
+		} );
+
+		it( 'should return FALSE if dimensionName is defined but not a string', () => {
+			expect(
+				isValidOrders( [
+					{
+						dimension: {
+							dimensionName: 123,
+						},
+						desc: false,
+					},
+				] )
+			).toBeFalsy();
+		} );
+
+		it( 'should return FALSE if desc is not a boolean', () => {
+			expect(
+				isValidOrders( [
+					{
+						metric: {
+							metricName: 'totalUsers',
+						},
+						desc: 'test',
+					},
+				] )
+			).toBeFalsy();
 		} );
 	} );
 } );

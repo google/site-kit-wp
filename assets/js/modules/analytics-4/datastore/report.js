@@ -30,15 +30,13 @@ import Data from 'googlesitekit-data';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { MODULES_ANALYTICS_4 } from './constants';
 import { stringifyObject } from '../../../util';
-import {
-	isValidDateRange,
-	isValidOrdersGA4,
-} from '../../../util/report-validation';
+import { isValidDateRange } from '../../../util/report-validation';
 import {
 	normalizeReportOptions,
 	isValidDimensionFilters,
 	isValidDimensions,
 	isValidMetrics,
+	isValidOrders,
 } from '../utils';
 
 const fetchGetReportStore = createFetchStore( {
@@ -101,7 +99,7 @@ const fetchGetReportStore = createFetchStore( {
 
 		if ( orderby ) {
 			invariant(
-				isValidOrdersGA4( orderby ),
+				isValidOrders( orderby ),
 				'orderby for an Analytics 4 report must be an object where each object should have either a "metric" or "dimension" property, and an optional "desc" property.'
 			);
 		}
