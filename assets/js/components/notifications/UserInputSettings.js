@@ -43,6 +43,7 @@ const { useSelect } = Data;
 
 export default function UserInputSettings( {
 	onCTAClick,
+	onView,
 	onDismiss,
 	isDismissible,
 	rounded = false,
@@ -97,6 +98,7 @@ export default function UserInputSettings( {
 			}
 			dismiss={ __( 'Remind me later', 'google-site-kit' ) }
 			isDismissible={ isDismissible }
+			onView={ onView }
 			onDismiss={ onDismiss }
 			rounded={ rounded }
 		/>
@@ -106,6 +108,7 @@ export default function UserInputSettings( {
 UserInputSettings.propTypes = {
 	// Used to bypass link functionality within Storybook to avoid breakage.
 	onCTAClick: PropTypes.func,
+	onView: PropTypes.func,
 	onDismiss: PropTypes.func,
 	isDismissible: PropTypes.bool,
 	rounded: PropTypes.bool,
