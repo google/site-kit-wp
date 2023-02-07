@@ -36,11 +36,13 @@ import { partitionReport } from '../../util/partition-report';
 import DataBlock from '../DataBlock';
 import PreviewBlock from '../PreviewBlock';
 import { NOTICE_STYLE } from '../GatheringDataNotice';
+import useCurrentEntity from '../../hooks/useCurrentEntity';
 const { useSelect, useInViewSelect } = Data;
 
 const WPDashboardClicks = ( { WidgetReportError } ) => {
+	const { url } = useCurrentEntity();
 	const isGatheringData = useInViewSelect( ( select ) =>
-		select( MODULES_SEARCH_CONSOLE ).isGatheringData()
+		select( MODULES_SEARCH_CONSOLE ).isGatheringData( url )
 	);
 	const { compareStartDate, endDate } = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeDates( {

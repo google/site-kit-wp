@@ -33,17 +33,14 @@ import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { decodeHTMLEntity, trackEvent } from '../../util';
 import AdminBarWidgets from './AdminBarWidgets';
 import useViewContext from '../../hooks/useViewContext';
+import useCurrentEntity from '../../hooks/useCurrentEntity';
 const { useSelect } = Data;
 
 export default function AdminBarApp() {
 	const viewContext = useViewContext();
-
-	const currentEntityURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getCurrentEntityURL()
-	);
-	const currentEntityTitle = useSelect( ( select ) =>
-		select( CORE_SITE ).getCurrentEntityTitle()
-	);
+	const currentEntity = useCurrentEntity();
+	const currentEntityURL = currentEntity.url;
+	const currentEntityTitle = currentEntity.title;
 	const detailsURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard', {
 			permaLink: currentEntityURL,

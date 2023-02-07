@@ -40,6 +40,7 @@ import { extractAnalyticsDashboardData } from '../../modules/analytics/util';
 import WidgetReportError from '../../googlesitekit/widgets/components/WidgetReportError';
 import GoogleChart from '../GoogleChart';
 import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
+import useCurrentEntity from '../../hooks/useCurrentEntity';
 const { useSelect, useInViewSelect } = Data;
 
 const WPDashboardUniqueVisitorsChartWidget = () => {
@@ -49,8 +50,9 @@ const WPDashboardUniqueVisitorsChartWidget = () => {
 	const analyticsModuleConnected = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleConnected( 'analytics' )
 	);
+	const { url } = useCurrentEntity();
 	const isGatheringData = useInViewSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).isGatheringData()
+		select( MODULES_ANALYTICS ).isGatheringData( url )
 	);
 	const googleChartsCollisionError = useSelect( ( select ) =>
 		select( CORE_UI ).getValue( 'googleChartsCollisionError' )

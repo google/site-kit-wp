@@ -29,20 +29,18 @@ import Data from 'googlesitekit-data';
 import PreviewBlock from '../PreviewBlock';
 import { NOTICE_STYLE } from '../GatheringDataNotice';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import {
 	MODULES_ANALYTICS,
 	DATE_RANGE_OFFSET,
 } from '../../modules/analytics/datastore/constants';
 import { calculateChange } from '../../util';
+import useCurrentEntity from '../../hooks/useCurrentEntity';
 const { useSelect } = Data;
 
 const AdminBarUniqueVisitors = ( { WidgetReportError } ) => {
+	const { url } = useCurrentEntity();
 	const isGatheringData = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).isGatheringData()
-	);
-	const url = useSelect( ( select ) =>
-		select( CORE_SITE ).getCurrentEntityURL()
+		select( MODULES_ANALYTICS ).isGatheringData( url )
 	);
 	const dateRangeDates = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeDates( {

@@ -30,9 +30,7 @@ import { useCallback, useEffect, useRef, useState } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
 import { Button } from 'googlesitekit-components';
-import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
 import BackspaceIcon from '../../svg/icons/keyboard-backspace.svg';
 import Link from './Link';
 import { shortenURL } from '../util/urls';
@@ -42,17 +40,14 @@ import useDashboardType, {
 } from '../hooks/useDashboardType';
 import useViewContext from '../hooks/useViewContext';
 import { useHistory } from 'react-router-dom';
-const { useSelect } = Data;
+import useCurrentEntity from '../hooks/useCurrentEntity';
 
 const EntityHeader = () => {
 	const viewContext = useViewContext();
 	const dashboardType = useDashboardType();
-	const currentEntityTitle = useSelect( ( select ) =>
-		select( CORE_SITE ).getCurrentEntityTitle()
-	);
-	const entityURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getCurrentEntityURL()
-	);
+	const currentEntity = useCurrentEntity();
+	const currentEntityTitle = currentEntity.title;
+	const entityURL = currentEntity.url;
 
 	const headerDetailsRef = useRef();
 	const [ url, setURL ] = useState( entityURL );

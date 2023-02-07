@@ -36,11 +36,13 @@ import { NOTICE_STYLE } from '../GatheringDataNotice';
 import { calculateChange } from '../../util';
 import sumObjectListValue from '../../util/sum-object-list-value';
 import { partitionReport } from '../../util/partition-report';
+import useCurrentEntity from '../../hooks/useCurrentEntity';
 const { useSelect, useInViewSelect } = Data;
 
 const WPDashboardImpressions = ( { WidgetReportError } ) => {
+	const { url } = useCurrentEntity();
 	const isGatheringData = useInViewSelect( ( select ) =>
-		select( MODULES_SEARCH_CONSOLE ).isGatheringData()
+		select( MODULES_SEARCH_CONSOLE ).isGatheringData( url )
 	);
 	const { compareStartDate, endDate } = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeDates( {

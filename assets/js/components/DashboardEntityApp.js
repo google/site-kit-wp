@@ -24,11 +24,7 @@ import classnames from 'classnames';
 /**
  * WordPress dependencies
  */
-import {
-	createInterpolateElement,
-	Fragment,
-	useEffect,
-} from '@wordpress/element';
+import { createInterpolateElement, Fragment } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 
 /**
@@ -65,20 +61,14 @@ import EntityBannerNotifications from './notifications/EntityBannerNotifications
 import DashboardSharingSettingsButton from './dashboard-sharing/DashboardSharingSettingsButton';
 import { useFeature } from '../hooks/useFeature';
 import useViewOnly from '../hooks/useViewOnly';
-import { useParams } from 'react-router-dom';
-import { useDispatch } from '@wordpress/data';
+import useCurrentEntity from '../hooks/useCurrentEntity';
+import useRawEntityPermalink from '../hooks/useRawEntityPermalink';
 const { useSelect } = Data;
 
 function DashboardEntityApp() {
 	const viewOnlyDashboard = useViewOnly();
 	const dashboardSharingEnabled = useFeature( 'dashboardSharing' );
-	const params = useParams();
-	const permalinkParam = decodeURIComponent( params.permaLink );
-
-	const { fetchSetCurrentEntity } = useDispatch( CORE_SITE );
-	useEffect( () => {
-		fetchSetCurrentEntity( permalinkParam );
-	}, [ fetchSetCurrentEntity, permalinkParam ] );
+	const permalink = useRawEntityPermalink();
 
 	const viewableModules = useSelect( ( select ) => {
 		if ( ! viewOnlyDashboard ) {
@@ -88,10 +78,7 @@ function DashboardEntityApp() {
 		return select( CORE_USER ).getViewableModules();
 	} );
 
-	const currentEntityURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getCurrentEntityURL()
-	);
-	const permaLink = permalinkParam;
+	const entity = useCurrentEntity();
 
 	const widgetContextOptions = {
 		modules: viewableModules ? viewableModules : undefined,
@@ -143,7 +130,7 @@ function DashboardEntityApp() {
 		lastWidgetAnchor = ANCHOR_ID_TRAFFIC;
 	}
 
-	if ( currentEntityURL === null ) {
+	if ( entity.error ) {
 		return (
 			<div className="googlesitekit-widget-context googlesitekit-module-page googlesitekit-entity-dashboard">
 				<ScrollEffect />
@@ -187,7 +174,7 @@ function DashboardEntityApp() {
 																'It looks like the URL %s is not part of this site or is not based on standard WordPress content types, therefore there is no data available to display. Visit our <link1>support forums</link1> or <link2><VisuallyHidden>Site Kit</VisuallyHidden> website</link2> for support or further information.',
 																'google-site-kit'
 															),
-															`<strong>${ permaLink }</strong>`
+															`<strong>${ permalink }</strong>`
 														),
 														{
 															strong: <strong />,

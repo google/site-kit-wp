@@ -31,7 +31,6 @@ import {
 	MODULES_ANALYTICS,
 } from '../../datastore/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { Grid, Row, Cell } from '../../../../material-components/layout';
 import PreviewBlock from '../../../../components/PreviewBlock';
 import DataBlock from '../../../../components/DataBlock';
@@ -43,6 +42,7 @@ import { calculateChange, getURLPath } from '../../../../util';
 import parseDimensionStringToDate from '../../util/parseDimensionStringToDate';
 import WidgetHeaderTitle from '../../../../googlesitekit/widgets/components/WidgetHeaderTitle';
 import useViewOnly from '../../../../hooks/useViewOnly';
+import useCurrentEntity from '../../../../hooks/useCurrentEntity';
 const { useSelect, useInViewSelect } = Data;
 
 /**
@@ -67,9 +67,7 @@ function useOverallPageMetricsReport() {
 		} )
 	);
 
-	const url = useSelect( ( select ) =>
-		select( CORE_SITE ).getCurrentEntityURL()
-	);
+	const url = useCurrentEntity().url;
 
 	const args = {
 		...dates,
@@ -238,8 +236,9 @@ function calculateOverallPageMetricsData( report ) {
 }
 
 function DashboardOverallPageMetricsWidget( { Widget, WidgetReportError } ) {
+	const { url } = useCurrentEntity();
 	const isGatheringData = useInViewSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).isGatheringData()
+		select( MODULES_ANALYTICS ).isGatheringData( url )
 	);
 
 	const { report, serviceURL, isLoading, error } =

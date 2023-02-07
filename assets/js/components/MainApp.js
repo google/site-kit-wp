@@ -39,6 +39,7 @@ import DashboardSplashApp from './dashboard-splash/DashboardSplashApp';
 import Root from './Root';
 import SettingsApp from './settings/SettingsApp';
 import DashboardEntityApp from './DashboardEntityApp';
+import PermalinkEntityProvider from './PermalinkEntityProvider';
 
 function MainApp() {
 	return (
@@ -50,11 +51,16 @@ function MainApp() {
 					</Root>
 				</Route>
 
-				<Route path="/dashboard/:permaLink">
-					<Root viewContext={ VIEW_CONTEXT_ENTITY_DASHBOARD }>
-						<DashboardEntityApp />
-					</Root>
-				</Route>
+				<Route
+					path="/dashboard/:permalink"
+					render={ () => (
+						<Root viewContext={ VIEW_CONTEXT_ENTITY_DASHBOARD }>
+							<PermalinkEntityProvider>
+								<DashboardEntityApp />
+							</PermalinkEntityProvider>
+						</Root>
+					) }
+				/>
 
 				<Route path="/dashboard">
 					<Root viewContext={ VIEW_CONTEXT_MAIN_DASHBOARD }>

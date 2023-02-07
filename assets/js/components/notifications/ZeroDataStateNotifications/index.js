@@ -27,6 +27,7 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
+import useCurrentEntity from '../../../hooks/useCurrentEntity';
 import useViewOnly from '../../../hooks/useViewOnly';
 import { MODULES_ANALYTICS } from '../../../modules/analytics/datastore/constants';
 import { MODULES_SEARCH_CONSOLE } from '../../../modules/search-console/datastore/constants';
@@ -82,18 +83,19 @@ export default function ZeroDataStateNotifications() {
 		return Object.keys( recoverableModules ).includes( 'search-console' );
 	} );
 
+	const { url } = useCurrentEntity();
 	const analyticsGatheringData = useInViewSelect( ( select ) =>
 		isAnalyticsConnected &&
 		canViewSharedAnalytics &&
 		false === showRecoverableAnalytics
-			? select( MODULES_ANALYTICS ).isGatheringData()
+			? select( MODULES_ANALYTICS ).isGatheringData( url )
 			: false
 	);
 	const searchConsoleGatheringData = useInViewSelect(
 		( select ) =>
 			canViewSharedSearchConsole &&
 			false === showRecoverableSearchConsole &&
-			select( MODULES_SEARCH_CONSOLE ).isGatheringData()
+			select( MODULES_SEARCH_CONSOLE ).isGatheringData( url )
 	);
 	const analyticsHasZeroData = useInViewSelect( ( select ) =>
 		isAnalyticsConnected &&

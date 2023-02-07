@@ -29,7 +29,6 @@ import {
 	DATE_RANGE_OFFSET,
 	MODULES_SEARCH_CONSOLE,
 } from '../../datastore/constants';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import whenActive from '../../../../util/when-active';
 import PreviewTable from '../../../../components/PreviewTable';
@@ -41,15 +40,16 @@ import Link from '../../../../components/Link';
 import { numFmt } from '../../../../util';
 import { ZeroDataMessage } from '../common';
 import useViewOnly from '../../../../hooks/useViewOnly';
+import useCurrentEntity from '../../../../hooks/useCurrentEntity';
 const { useSelect, useInViewSelect } = Data;
 
 function DashboardPopularKeywordsWidget( props ) {
 	const { Widget, WidgetReportError } = props;
 
 	const viewOnlyDashboard = useViewOnly();
-
+	const { url } = useCurrentEntity();
 	const isGatheringData = useInViewSelect( ( select ) =>
-		select( MODULES_SEARCH_CONSOLE ).isGatheringData()
+		select( MODULES_SEARCH_CONSOLE ).isGatheringData( url )
 	);
 
 	const dateRangeDates = useSelect( ( select ) =>
@@ -64,9 +64,6 @@ function DashboardPopularKeywordsWidget( props ) {
 		limit: 10,
 	};
 
-	const url = useSelect( ( select ) =>
-		select( CORE_SITE ).getCurrentEntityURL()
-	);
 	if ( url ) {
 		reportArgs.url = url;
 	}
@@ -137,6 +134,7 @@ function DashboardPopularKeywordsWidget( props ) {
 			primary: true,
 			field: 'keys.0',
 			Component: ( { fieldValue } ) => {
+				const { url: entityURL } = useCurrentEntity();
 				const searchAnalyticsURL = useSelect( ( select ) => {
 					if ( viewOnlyDashboard ) {
 						return null;
@@ -144,7 +142,7 @@ function DashboardPopularKeywordsWidget( props ) {
 					const dates = select( CORE_USER ).getDateRangeDates( {
 						offsetDays: DATE_RANGE_OFFSET,
 					} );
-					const entityURL = select( CORE_SITE ).getCurrentEntityURL();
+
 					return select( MODULES_SEARCH_CONSOLE ).getServiceReportURL(
 						{
 							...generateDateRangeArgs( dates ),

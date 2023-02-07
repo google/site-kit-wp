@@ -40,7 +40,6 @@ import {
 	MODULES_ANALYTICS,
 	DATE_RANGE_OFFSET as DATE_RANGE_OFFSET_ANALYTICS,
 } from '../../../../analytics/datastore/constants';
-import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { numFmt } from '../../../../../util';
 import PreviewBlock from '../../../../../components/PreviewBlock';
@@ -57,6 +56,7 @@ import {
 	useBreakpoint,
 } from '../../../../../hooks/useBreakpoint';
 import useViewOnly from '../../../../../hooks/useViewOnly';
+import useCurrentEntity from '../../../../../hooks/useCurrentEntity';
 const { useSelect, useInViewSelect } = Data;
 
 // eslint-disable-next-line complexity
@@ -92,9 +92,7 @@ const SearchFunnelWidget = ( { Widget, WidgetReportError } ) => {
 	const dateRangeLength = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeNumberOfDays()
 	);
-	const url = useSelect( ( select ) =>
-		select( CORE_SITE ).getCurrentEntityURL()
-	);
+	const { url } = useCurrentEntity();
 
 	const { endDate, compareStartDate } = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeDates( {
@@ -320,11 +318,11 @@ const SearchFunnelWidget = ( { Widget, WidgetReportError } ) => {
 		isAnalyticsConnected &&
 		canViewSharedAnalytics &&
 		! showRecoverableAnalytics
-			? select( MODULES_ANALYTICS ).isGatheringData()
+			? select( MODULES_ANALYTICS ).isGatheringData( url )
 			: false
 	);
 	const isSearchConsoleGatheringData = useInViewSelect( ( select ) =>
-		select( MODULES_SEARCH_CONSOLE ).isGatheringData()
+		select( MODULES_SEARCH_CONSOLE ).isGatheringData( url )
 	);
 
 	const WidgetFooter = () => (

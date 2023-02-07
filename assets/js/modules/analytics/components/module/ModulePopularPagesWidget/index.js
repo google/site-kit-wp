@@ -47,13 +47,15 @@ import { ZeroDataMessage } from '../../common';
 import Header from './Header';
 import Footer from './Footer';
 import useViewOnly from '../../../../../hooks/useViewOnly';
+import useCurrentEntity from '../../../../../hooks/useCurrentEntity';
 const { useSelect, useInViewSelect } = Data;
 
 function ModulePopularPagesWidget( props ) {
 	const { Widget, WidgetReportError } = props;
 
+	const { url } = useCurrentEntity();
 	const isGatheringData = useInViewSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).isGatheringData()
+		select( MODULES_ANALYTICS ).isGatheringData( url )
 	);
 
 	const dates = useSelect( ( select ) =>
@@ -139,7 +141,7 @@ function ModulePopularPagesWidget( props ) {
 			description: __( 'Page Title', 'google-site-kit' ),
 			primary: true,
 			Component: ( { row } ) => {
-				const [ title, url ] = row.dimensions;
+				const [ title, _url ] = row.dimensions;
 				const serviceURL = useSelect( ( select ) => {
 					if ( viewOnlyDashboard ) {
 						return null;
@@ -149,7 +151,7 @@ function ModulePopularPagesWidget( props ) {
 						'content-drilldown',
 						{
 							'explorer-table.plotKeys': '[]',
-							'_r.drilldown': `analytics.pagePath:${ url }`,
+							'_r.drilldown': `analytics.pagePath:${ _url }`,
 							...generateDateRangeArgs( dates ),
 						}
 					);
@@ -206,8 +208,8 @@ function ModulePopularPagesWidget( props ) {
 		: [];
 	// Combine the titles from the pageTitles with the rows from the metrics report.
 	rows.forEach( ( row ) => {
-		const url = row.dimensions[ 0 ];
-		row.dimensions.unshift( titles[ url ] ); // We always have an entry for titles[url].
+		const _url = row.dimensions[ 0 ];
+		row.dimensions.unshift( titles[ _url ] ); // We always have an entry for titles[url].
 	} );
 
 	return (

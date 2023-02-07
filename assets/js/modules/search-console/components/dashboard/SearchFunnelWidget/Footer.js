@@ -46,10 +46,12 @@ import { generateDateRangeArgs as generateAnalyticsDateRangeArgs } from '../../.
 import SourceLink from '../../../../../components/SourceLink';
 import Data from 'googlesitekit-data';
 import useViewOnly from '../../../../../hooks/useViewOnly';
+import useCurrentEntity from '../../../../../hooks/useCurrentEntity';
 const { useSelect } = Data;
 
 function SourceLinkAnalytics( { id } ) {
 	const viewOnlyDashboard = useViewOnly();
+	const { url } = useCurrentEntity();
 
 	const serviceURL = useSelect(
 		( select ) => {
@@ -58,7 +60,6 @@ function SourceLinkAnalytics( { id } ) {
 			}
 
 			const { getServiceReportURL } = select( MODULES_ANALYTICS );
-			const url = select( CORE_SITE ).getCurrentEntityURL();
 			const rangeDates = select( CORE_USER ).getDateRangeDates( {
 				compare: true,
 				offsetDays: DATE_RANGE_OFFSET_ANALYTICS,
@@ -90,7 +91,7 @@ function SourceLinkAnalytics( { id } ) {
 					} );
 			}
 		},
-		[ id ]
+		[ id, url ]
 	);
 
 	return (
@@ -104,6 +105,7 @@ function SourceLinkAnalytics( { id } ) {
 
 function SourceLinkSearch( { metric } ) {
 	const viewOnlyDashboard = useViewOnly();
+	const { url } = useCurrentEntity();
 
 	const serviceURL = useSelect(
 		( select ) => {
@@ -116,7 +118,6 @@ function SourceLinkSearch( { metric } ) {
 			const referenceSiteURL = untrailingslashit(
 				select( CORE_SITE ).getReferenceSiteURL()
 			);
-			const url = select( CORE_SITE ).getCurrentEntityURL();
 			const dateRangeDates = select( CORE_USER ).getDateRangeDates( {
 				offsetDays: DATE_RANGE_OFFSET,
 			} );
@@ -134,7 +135,7 @@ function SourceLinkSearch( { metric } ) {
 
 			return getServiceReportURL( serviceURLArgs );
 		},
-		[ metric ]
+		[ metric, url ]
 	);
 
 	return (

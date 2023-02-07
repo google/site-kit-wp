@@ -26,7 +26,6 @@ import { __ } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import {
 	MODULES_SEARCH_CONSOLE,
 	DATE_RANGE_OFFSET,
@@ -37,14 +36,13 @@ import DataBlock from '../DataBlock';
 import { NOTICE_STYLE } from '../GatheringDataNotice';
 import sumObjectListValue from '../../util/sum-object-list-value';
 import { partitionReport } from '../../util/partition-report';
+import useCurrentEntity from '../../hooks/useCurrentEntity';
 const { useSelect } = Data;
 
 function AdminBarClicks( { WidgetReportError } ) {
+	const { url } = useCurrentEntity();
 	const isGatheringData = useSelect( ( select ) =>
-		select( MODULES_SEARCH_CONSOLE ).isGatheringData()
-	);
-	const url = useSelect( ( select ) =>
-		select( CORE_SITE ).getCurrentEntityURL()
+		select( MODULES_SEARCH_CONSOLE ).isGatheringData( url )
 	);
 	const { compareStartDate, endDate } = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeDates( {

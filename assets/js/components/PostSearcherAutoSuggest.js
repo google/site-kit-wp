@@ -39,11 +39,9 @@ import { END, ENTER, ESCAPE, HOME } from '@wordpress/keycodes';
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import Data from 'googlesitekit-data';
 import { useDebouncedState } from '../hooks/useDebouncedState';
-import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
+import useCurrentEntity from '../hooks/useCurrentEntity';
 
-const { useSelect } = Data;
 const noop = () => {};
 
 export default function PostSearcherAutoSuggest( {
@@ -83,9 +81,7 @@ export default function PostSearcherAutoSuggest( {
 	const [ results, setResults ] = useState( [] );
 	const noResultsMessage = __( 'No results found', 'google-site-kit' );
 
-	const currentEntityTitle = useSelect( ( select ) =>
-		select( CORE_SITE ).getCurrentEntityTitle()
-	);
+	const currentEntityTitle = useCurrentEntity().title;
 
 	const postTitle = useRef( null );
 

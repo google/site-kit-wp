@@ -43,6 +43,7 @@ import DataBlock from '../../../../../../components/DataBlock';
 import useViewOnly from '../../../../../../hooks/useViewOnly';
 import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
 import OptionalCells from './OptionalCells';
+import useCurrentEntity from '../../../../../../hooks/useCurrentEntity';
 const { useSelect, useInViewSelect } = Data;
 
 function getDatapointAndChange( [ report ], selectedStat, divider = 1 ) {
@@ -94,9 +95,9 @@ const Overview = ( {
 	const analyticsModuleActive = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleActive( 'analytics' )
 	);
-
+	const { url } = useCurrentEntity();
 	const isSearchConsoleGatheringData = useInViewSelect( ( select ) =>
-		select( MODULES_SEARCH_CONSOLE ).isGatheringData()
+		select( MODULES_SEARCH_CONSOLE ).isGatheringData( url )
 	);
 	const isAuthenticated = useSelect( ( select ) =>
 		select( CORE_USER ).isAuthenticated()

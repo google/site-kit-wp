@@ -58,6 +58,7 @@ import {
 import Spinner from '../../../../components/Spinner';
 import useViewContext from '../../../../hooks/useViewContext';
 import DashboardPageSpeedLoading from './DashboardPageSpeedLoading';
+import useCurrentEntity from '../../../../hooks/useCurrentEntity';
 const { useSelect, useDispatch, useInViewSelect } = Data;
 
 const TAB_INDEX_LAB = 0;
@@ -70,8 +71,9 @@ export default function DashboardPageSpeed() {
 	const [ hasBeenInView, setHasBeenInView ] = useState( false );
 
 	const viewContext = useViewContext();
-	const referenceURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getCurrentReferenceURL()
+	const { url } = useCurrentEntity();
+	const referenceURL = useSelect(
+		( select ) => url || select( CORE_SITE ).getReferenceSiteURL()
 	);
 	const strategy =
 		useSelect( ( select ) => select( CORE_UI ).getValue( UI_STRATEGY ) ) ||

@@ -72,7 +72,7 @@ export const createInfoStore = (
 		getAdminScreenURL: createRegistrySelector(
 			( select ) => ( state, queryArgs ) => {
 				return select( CORE_SITE ).getAdminURL(
-					'googlesitekit-dashboard',
+					'google-site-kit',
 					queryArgs
 				);
 			}

@@ -47,15 +47,16 @@ import {
 import { numFmt } from '../../../../util';
 import { getCurrencyFormat } from '../../util/currency';
 import useViewOnly from '../../../../hooks/useViewOnly';
+import useCurrentEntity from '../../../../hooks/useCurrentEntity';
 const { useSelect, useInViewSelect } = Data;
 
 function DashboardTopEarningPagesWidget( props ) {
 	const { Widget, WidgetReportError, WidgetNull } = props;
 
 	const viewOnlyDashboard = useViewOnly();
-
+	const { url } = useCurrentEntity();
 	const isGatheringData = useInViewSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).isGatheringData()
+		select( MODULES_ANALYTICS ).isGatheringData( url )
 	);
 
 	const { startDate, endDate } = useSelect( ( select ) =>
@@ -182,10 +183,10 @@ function DashboardTopEarningPagesWidget( props ) {
 			tooltip: __( 'Top Earning Pages', 'google-site-kit' ),
 			primary: true,
 			Component: ( { row } ) => {
-				const [ title, url ] = row.dimensions;
+				const [ title, _url ] = row.dimensions;
 				return (
 					<Link
-						href={ url }
+						href={ _url }
 						children={ title }
 						external
 						hideExternalIndicator

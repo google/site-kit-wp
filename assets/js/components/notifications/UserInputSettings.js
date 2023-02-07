@@ -39,6 +39,7 @@ import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { MODULES_SEARCH_CONSOLE } from '../../modules/search-console/datastore/constants';
 import { MODULES_ANALYTICS } from '../../modules/analytics/datastore/constants';
 import Link from '../Link';
+import useCurrentEntity from '../../hooks/useCurrentEntity';
 const { useSelect } = Data;
 
 export default function UserInputSettings( {
@@ -60,11 +61,12 @@ export default function UserInputSettings( {
 	const searchConsoleModuleConnected = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleConnected( 'search-console' )
 	);
+	const { url } = useCurrentEntity();
 	const searchConsoleIsGatheringData = useSelect( ( select ) =>
-		select( MODULES_SEARCH_CONSOLE ).isGatheringData()
+		select( MODULES_SEARCH_CONSOLE ).isGatheringData( url )
 	);
 	const analyticsIsGatheringData = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).isGatheringData()
+		select( MODULES_ANALYTICS ).isGatheringData( url )
 	);
 
 	if ( isUserInputCompleted === undefined || isUserInputCompleted ) {

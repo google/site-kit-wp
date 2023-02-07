@@ -41,13 +41,15 @@ import TableOverflowContainer from '../../components/TableOverflowContainer';
 import ReportTable from '../ReportTable';
 import DetailsPermaLinks from '../DetailsPermaLinks';
 import { numFmt } from '../../util';
+import useCurrentEntity from '../../hooks/useCurrentEntity';
 const { useSelect, useInViewSelect } = Data;
 
 export default function WPDashboardPopularPages( props ) {
 	const { WidgetReportError } = props;
 
+	const { url } = useCurrentEntity();
 	const isGatheringData = useInViewSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).isGatheringData()
+		select( MODULES_ANALYTICS ).isGatheringData( url )
 	);
 
 	const dateRangeDates = useSelect( ( select ) =>
@@ -115,8 +117,8 @@ export default function WPDashboardPopularPages( props ) {
 	}
 	// Combine the titles from the pageTitles with the rows from the metrics report.
 	rows.forEach( ( row ) => {
-		const url = row.dimensions[ 0 ];
-		row.dimensions.unshift( titles[ url ] ); // We always have an entry for titles[url].
+		const _url = row.dimensions[ 0 ];
+		row.dimensions.unshift( titles[ _url ] ); // We always have an entry for titles[url].
 	} );
 
 	return (

@@ -34,7 +34,6 @@ import {
 	MODULES_ANALYTICS,
 	UI_ALL_TRAFFIC_LOADED,
 } from '../../../datastore/constants';
-import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
 import { Grid, Row, Cell } from '../../../../../material-components/layout';
@@ -48,6 +47,7 @@ import UserCountGraph from './UserCountGraph';
 import DimensionTabs from './DimensionTabs';
 import UserDimensionsPieChart from './UserDimensionsPieChart';
 import useViewOnly from '../../../../../hooks/useViewOnly';
+import useCurrentEntity from '../../../../../hooks/useCurrentEntity';
 const { useSelect, useInViewSelect, useDispatch } = Data;
 
 function DashboardAllTrafficWidget( props ) {
@@ -63,10 +63,11 @@ function DashboardAllTrafficWidget( props ) {
 		return select( CORE_USER ).canViewSharedModule( 'analytics' );
 	} );
 
+	const { url } = useCurrentEntity();
 	const isGatheringData = useInViewSelect(
 		( select ) =>
 			canViewSharedAnalytics &&
-			select( MODULES_ANALYTICS ).isGatheringData()
+			select( MODULES_ANALYTICS ).isGatheringData( url )
 	);
 
 	const [ firstLoad, setFirstLoad ] = useState( true );
@@ -82,9 +83,6 @@ function DashboardAllTrafficWidget( props ) {
 	);
 	const dimensionValue = useSelect( ( select ) =>
 		select( CORE_UI ).getValue( UI_DIMENSION_VALUE )
-	);
-	const entityURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getCurrentEntityURL()
 	);
 
 	const { startDate, endDate, compareStartDate, compareEndDate } = useSelect(
@@ -124,10 +122,10 @@ function DashboardAllTrafficWidget( props ) {
 		compareEndDate,
 	};
 
-	if ( entityURL ) {
-		pieArgs.url = entityURL;
-		graphArgs.url = entityURL;
-		totalsArgs.url = entityURL;
+	if ( url ) {
+		pieArgs.url = url;
+		graphArgs.url = url;
+		totalsArgs.url = url;
 	}
 
 	if ( dimensionName && dimensionValue ) {
@@ -213,10 +211,10 @@ function DashboardAllTrafficWidget( props ) {
 		compareEndDate,
 	} );
 
-	if ( isURL( entityURL ) ) {
+	if ( isURL( url ) ) {
 		reportArgs[ 'explorer-table.plotKeys' ] = '[]';
 		reportArgs[ '_r.drilldown' ] = `analytics.pagePath:${ getURLPath(
-			entityURL
+			url
 		) }`;
 	}
 

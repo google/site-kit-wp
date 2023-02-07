@@ -33,7 +33,6 @@ import { __ } from '@wordpress/i18n';
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
-import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { DATE_RANGE_OFFSET, MODULES_ANALYTICS } from './constants';
 import { stringifyObject } from '../../../util';
@@ -287,10 +286,11 @@ const baseSelectors = {
 	 *
 	 * @todo Review the name of this selector to a less confusing one.
 	 * @since 1.44.0
+	 * @since n.e.x.t Added `url` param.
 	 *
 	 * @return {boolean|undefined} Returns `true` if gathering data, otherwise `false`. Returns `undefined` while resolving.
 	 */
-	isGatheringData: createRegistrySelector( ( select ) => () => {
+	isGatheringData: createRegistrySelector( ( select ) => ( state, url ) => {
 		const { startDate, endDate } = select( CORE_USER ).getDateRangeDates( {
 			offsetDays: DATE_RANGE_OFFSET,
 		} );
@@ -302,7 +302,6 @@ const baseSelectors = {
 			endDate,
 		};
 
-		const url = select( CORE_SITE ).getCurrentEntityURL();
 		if ( url ) {
 			args.url = url;
 		}
@@ -336,10 +335,11 @@ const baseSelectors = {
 	 * Determines whether Analytics has zero data or not.
 	 *
 	 * @since 1.69.0
+	 * @since n.e.x.t Added `url` param.
 	 *
 	 * @return {boolean|undefined} Returns FALSE if not gathering data and the report is not zero, otherwise TRUE. If the request is still being resolved, returns undefined.
 	 */
-	hasZeroData: createRegistrySelector( ( select ) => () => {
+	hasZeroData: createRegistrySelector( ( select ) => ( state, url ) => {
 		const { startDate, endDate } = select( CORE_USER ).getDateRangeDates( {
 			offsetDays: DATE_RANGE_OFFSET,
 		} );
@@ -351,12 +351,12 @@ const baseSelectors = {
 			endDate,
 		};
 
-		const url = select( CORE_SITE ).getCurrentEntityURL();
 		if ( url ) {
 			args.url = url;
 		}
 
-		const isGatheringData = select( MODULES_ANALYTICS ).isGatheringData();
+		const isGatheringData =
+			select( MODULES_ANALYTICS ).isGatheringData( url );
 		if ( isGatheringData === undefined ) {
 			return undefined;
 		}

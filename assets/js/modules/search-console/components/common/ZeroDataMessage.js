@@ -29,14 +29,10 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-const { useSelect } = Data;
+import useCurrentEntity from '../../../../hooks/useCurrentEntity';
 
 export default function ZeroDataMessage( { skipPrefix } ) {
-	const url = useSelect( ( select ) =>
-		select( CORE_SITE ).getCurrentEntityURL()
-	);
+	const { url } = useCurrentEntity();
 
 	if ( skipPrefix ) {
 		return url

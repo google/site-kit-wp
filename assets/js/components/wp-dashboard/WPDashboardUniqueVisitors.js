@@ -34,11 +34,13 @@ import PreviewBlock from '../PreviewBlock';
 import { calculateChange } from '../../util';
 import DataBlock from '../DataBlock';
 import { NOTICE_STYLE } from '../GatheringDataNotice';
+import useCurrentEntity from '../../hooks/useCurrentEntity';
 const { useSelect, useInViewSelect } = Data;
 
 const WPDashboardUniqueVisitors = ( { WidgetReportError } ) => {
+	const { url } = useCurrentEntity();
 	const isGatheringData = useInViewSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).isGatheringData()
+		select( MODULES_ANALYTICS ).isGatheringData( url )
 	);
 	const dateRangeDates = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeDates( {

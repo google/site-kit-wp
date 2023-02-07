@@ -44,7 +44,7 @@ const WPDashboardApp = () => {
 	} );
 
 	const dashboardURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' )
+		select( CORE_SITE ).getAdminURL()
 	);
 
 	const [ inViewState, setInViewState ] = useState( {

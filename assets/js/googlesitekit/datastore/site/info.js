@@ -25,7 +25,7 @@ import queryString from 'query-string';
 /**
  * WordPress dependencies
  */
-import { addQueryArgs, getQueryArg } from '@wordpress/url';
+import { addQueryArgs, isURL } from '@wordpress/url';
 
 /**
  * Internal dependencies
@@ -35,6 +35,7 @@ import Data from 'googlesitekit-data';
 import { CORE_SITE, AMP_MODE_PRIMARY, AMP_MODE_SECONDARY } from './constants';
 import { normalizeURL, untrailingslashit } from '../../../util';
 import { createFetchStore } from '../../data/create-fetch-store';
+import { defaultCurrentEntity } from '../../../components/CurrentEntityContext';
 
 const { createRegistrySelector } = Data;
 
@@ -50,30 +51,52 @@ const RECEIVE_SITE_INFO = 'RECEIVE_SITE_INFO';
 const RECEIVE_PERMALINK_PARAM = 'RECEIVE_PERMALINK_PARAM';
 const SET_SITE_KIT_AUTO_UPDATES_ENABLED = 'SET_SITE_KIT_AUTO_UPDATES_ENABLED';
 
-const fetchSetCurrentEntityStore = createFetchStore( {
-	baseName: 'setCurrentEntity',
+function getRelativeURL( permalink ) {
+	invariant( isURL( permalink ), 'permalink must be a valid URL' );
+	const url = new URL( permalink );
+
+	return `${ url.pathname }${ url.search }`;
+}
+
+const fetchFindEntityStore = createFetchStore( {
+	baseName: 'findEntity',
 	controlCallback: ( { permalink } ) =>
 		API.set( 'core', 'site', 'find-entity', {
 			permalink,
+		} ).catch( ( error ) => {
+			return {
+				...defaultCurrentEntity,
+				error,
+			};
 		} ),
-	reducerCallback: ( state, response /* , params */ ) => {
+	reducerCallback: ( state, response, { permalink } ) => {
+		const relative = getRelativeURL( permalink );
+		const { id, title, type, url, error = null } = response;
+
 		return {
 			...state,
-			siteInfo: {
-				...state.siteInfo,
-				currentEntityID: parseInt( response.id, 10 ) || 0,
-				currentEntityTitle: response.title,
-				currentEntityType: response.type,
-				currentEntityURL: response.url,
+			entitiesByRelativeURL: {
+				...state.entitiesByRelativeURL,
+				[ relative ]: {
+					id: parseInt( id, 10 ) || 0,
+					title,
+					type,
+					url,
+					error,
+				},
 			},
 		};
 	},
 	argsToParams: ( permalink ) => ( { permalink } ),
+	validateParams: ( { permalink } ) => {
+		invariant( isURL( permalink ), 'permalink must be a valid URL.' );
+	},
 } );
 
 export const initialState = {
 	siteInfo: undefined,
 	permaLink: false,
+	entitiesByRelativeURL: {},
 };
 
 export const actions = {
@@ -220,6 +243,16 @@ export const reducer = ( state, { payload, type } ) => {
 };
 
 export const resolvers = {
+	*getEntityByPermalink( permalink ) {
+		const { select } = yield Data.commonActions.getRegistry();
+
+		if ( select( CORE_SITE ).getEntityByPermalink( permalink ) ) {
+			return;
+		}
+
+		yield fetchFindEntityStore.actions.fetchFindEntity( permalink );
+	},
+
 	*getSiteInfo() {
 		const registry = yield Data.commonActions.getRegistry();
 
@@ -371,6 +404,16 @@ export const selectors = {
 	 * @return {(string|undefined)} AMP Mode.
 	 */
 	getAMPMode: getSiteInfoProperty( 'ampMode' ),
+
+	getEntityByPermalink( state, permalink ) {
+		if ( permalink === undefined ) {
+			return undefined;
+		}
+
+		const relative = getRelativeURL( permalink );
+
+		return state.entitiesByRelativeURL[ relative ];
+	},
 
 	/**
 	 * Gets the current entity's ID.
@@ -628,23 +671,6 @@ export const selectors = {
 	getPostTypes: getSiteInfoProperty( 'postTypes' ),
 
 	/**
-	 * Gets the 'permaLink' query parameter.
-	 *
-	 * @since 1.18.0
-	 *
-	 * @param {Object} state Data store's state.
-	 * @return {(string|boolean)} Value of the 'permaLink' query parameter or `false` if not set.
-	 */
-	getPermaLinkParam: ( state ) => {
-		if ( state.permaLink ) {
-			return state.permaLink;
-		}
-
-		const queryArg = getQueryArg( global.location.href, 'permaLink' );
-		return queryArg ? queryArg : false;
-	},
-
-	/**
 	 * Returns true if this site has the Web Stories plugin enabled.
 	 *
 	 * @since 1.27.0
@@ -792,5 +818,5 @@ export default Data.combineStores(
 		resolvers,
 		selectors,
 	},
-	fetchSetCurrentEntityStore
+	fetchFindEntityStore
 );

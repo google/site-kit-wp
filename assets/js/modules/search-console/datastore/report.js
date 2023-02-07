@@ -28,7 +28,6 @@ import isPlainObject from 'lodash/isPlainObject';
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
-import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { DATE_RANGE_OFFSET, MODULES_SEARCH_CONSOLE } from './constants';
 import { stringifyObject } from '../../../util';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
@@ -131,16 +130,16 @@ const baseSelectors = {
 	 *
 	 * @todo Review the name of this selector to a less confusing one.
 	 * @since 1.44.0
+	 * @since n.e.x.t Added `url` param.
 	 *
 	 * @return {boolean|undefined} Returns TRUE if gathering data, otherwise FALSE. If the request is still being resolved, returns undefined.
 	 */
-	isGatheringData: createRegistrySelector( ( select ) => () => {
+	isGatheringData: createRegistrySelector( ( select ) => ( state, url ) => {
 		const rangeArgs = {
 			compare: true,
 			offsetDays: DATE_RANGE_OFFSET,
 		};
 
-		const url = select( CORE_SITE ).getCurrentEntityURL();
 		const { compareStartDate: startDate, endDate } =
 			select( CORE_USER ).getDateRangeDates( rangeArgs );
 
@@ -180,16 +179,16 @@ const baseSelectors = {
 	 * Determines whether the Search Console has zero data or not.
 	 *
 	 * @since 1.68.0
+	 * @since n.e.x.t Added `url` param.
 	 *
 	 * @return {boolean|undefined} Returns FALSE if not gathering data and the report is not zero, otherwise TRUE. If the request is still being resolved, returns undefined.
 	 */
-	hasZeroData: createRegistrySelector( ( select ) => () => {
+	hasZeroData: createRegistrySelector( ( select ) => ( state, url ) => {
 		const rangeArgs = {
 			compare: true,
 			offsetDays: DATE_RANGE_OFFSET,
 		};
 
-		const url = select( CORE_SITE ).getCurrentEntityURL();
 		const { compareStartDate: startDate, endDate } =
 			select( CORE_USER ).getDateRangeDates( rangeArgs );
 
@@ -205,7 +204,7 @@ const baseSelectors = {
 
 		const isGatheringData = select(
 			MODULES_SEARCH_CONSOLE
-		).isGatheringData();
+		).isGatheringData( url );
 		if ( isGatheringData === undefined ) {
 			return undefined;
 		}
