@@ -130,9 +130,6 @@ export function isValidOrders( orders ) {
 		}
 
 		if ( order.dimension ) {
-			if ( order.metric ) {
-				return false;
-			}
 			return typeof order.dimension?.dimensionName === 'string';
 		}
 
