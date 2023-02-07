@@ -36,12 +36,12 @@ import useGAPropertyIDEffect from './useGAPropertyIDEffect';
 describe( 'useGAPropertyIDEffect', () => {
 	let registry;
 
-	describe( 'with empty tagmanager settings store', () => {
+	describe( 'with empty Tag Manager settings store', () => {
 		beforeEach( () => {
 			registry = createTestRegistry();
 		} );
 
-		it( 'fetches settings from api before updating gaPropertyID', async () => {
+		it( 'fetches settings from API before updating gaPropertyID', async () => {
 			fetchMock.getOnce(
 				/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/settings/,
 				{
