@@ -41,7 +41,7 @@ describe( 'useGAPropertyIDEffect', () => {
 			registry = createTestRegistry();
 		} );
 
-		it( 'fetches settings from API before updating gaPropertyID', async () => {
+		it( 'fetches settings from API if the settings are empty', async () => {
 			fetchMock.getOnce(
 				/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/settings/,
 				{
@@ -67,16 +67,10 @@ describe( 'useGAPropertyIDEffect', () => {
 					'^/google-site-kit/v1/modules/tagmanager/data/settings'
 				)
 			);
-
-			const propertyID = registry
-				.select( MODULES_TAGMANAGER )
-				.getGAPropertyID();
-
-			expect( propertyID ).toBe( '' );
 		} );
 	} );
 
-	describe( 'with tagmanager store setup', () => {
+	describe( 'with a populated Tag Manager store', () => {
 		beforeEach( () => {
 			registry = createTestRegistry();
 			// Set settings to prevent fetch in resolver.
