@@ -20,6 +20,8 @@ use Google\Site_Kit\Core\Modules\Module_With_Deactivation;
 use Google\Site_Kit\Core\Modules\Module_With_Debug_Fields;
 use Google\Site_Kit\Core\Modules\Module_With_Assets;
 use Google\Site_Kit\Core\Modules\Module_With_Assets_Trait;
+use Google\Site_Kit\Core\Modules\Module_With_Data_Available_State;
+use Google\Site_Kit\Core\Modules\Module_With_Data_Available_State_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Settings;
@@ -74,12 +76,13 @@ use WP_Error;
  * @ignore
  */
 final class Analytics_4 extends Module
-	implements Module_With_Scopes, Module_With_Settings, Module_With_Debug_Fields, Module_With_Owner, Module_With_Assets, Module_With_Service_Entity, Module_With_Deactivation {
+	implements Module_With_Scopes, Module_With_Settings, Module_With_Debug_Fields, Module_With_Owner, Module_With_Assets, Module_With_Service_Entity, Module_With_Deactivation, Module_With_Data_Available_State {
 	use Method_Proxy_Trait;
 	use Module_With_Assets_Trait;
 	use Module_With_Owner_Trait;
 	use Module_With_Scopes_Trait;
 	use Module_With_Settings_Trait;
+	use Module_With_Data_Available_State_Trait;
 
 	/**
 	 * Module slug name.
@@ -98,6 +101,18 @@ final class Analytics_4 extends Module
 		// Analytics 4 tag placement logic.
 		add_action( 'template_redirect', $this->get_method_proxy( 'register_tag' ) );
 		add_action( 'googlesitekit_analytics_tracking_opt_out', $this->get_method_proxy( 'analytics_tracking_opt_out' ) );
+
+		// Ensure that the data available state is reset when the measurement ID changes.
+		add_action(
+			'update_option_googlesitekit_analytics-4_settings',
+			function( $old_value, $new_value ) {
+				if ( ! empty( $old_value['measurementID'] ) && $old_value['measurementID'] !== $new_value['measurementID'] ) {
+					$this->reset_data_available();
+				}
+			},
+			10,
+			2
+		);
 	}
 
 	/**
@@ -153,6 +168,7 @@ final class Analytics_4 extends Module
 	 */
 	public function on_deactivation() {
 		$this->get_settings()->delete();
+		$this->reset_data_available();
 	}
 
 	/**
