@@ -23,8 +23,9 @@ import md5 from 'md5';
 import faker from 'faker';
 import invariant from 'invariant';
 import castArray from 'lodash/castArray';
-import { zip, from, Observable } from 'rxjs';
-import { map, reduce, take } from 'rxjs/operators';
+import { Observable, merge, from } from 'rxjs';
+import { map, reduce, take, toArray, mergeMap } from 'rxjs/operators';
+import cloneDeep from 'lodash/cloneDeep';
 import isPlainObject from 'lodash/isPlainObject';
 
 /**
@@ -130,6 +131,33 @@ function generateMetricValues( validMetrics ) {
 }
 
 /**
+ * Generates the cartesian product of a set of arrays, i.e. all possible combinations of their values.
+ *
+ * Cribbed from https://stackoverflow.com/a/36234242/12296658, thanks to the original author(s).
+ *
+ * @since n.e.x.t
+ *
+ * @param {Array.<Array>} arrays An array of arrays.
+ * @return {Array.<Array>} The cartesian product of the input arrays.
+ */
+function cartesianProduct( arrays ) {
+	return arrays.reduce(
+		function ( arrayA, arrayB ) {
+			return arrayA
+				.map( function ( valueA ) {
+					return arrayB.map( function ( valueB ) {
+						return valueA.concat( [ valueB ] );
+					} );
+				} )
+				.reduce( function ( innerA, innerB ) {
+					return innerA.concat( innerB );
+				}, [] );
+		},
+		[ [] ]
+	);
+}
+
+/**
  * Sorts report rows and returns it.
  *
  * @since n.e.x.t
@@ -153,12 +181,12 @@ function sortRows( rows, metrics, orderby ) {
 		}
 
 		sorted = sorted.sort( ( a, b ) => {
-			let valA = parseFloat( a.metrics[ index ]?.values?.[ 0 ] );
+			let valA = parseFloat( a.metricValues[ index ]?.value );
 			if ( Number.isNaN( valA ) ) {
 				valA = 0;
 			}
 
-			let valB = parseFloat( b.metrics[ index ]?.values?.[ 0 ] );
+			let valB = parseFloat( b.metricValues[ index ]?.value );
 			if ( Number.isNaN( valB ) ) {
 				valB = 0;
 			}
@@ -200,26 +228,67 @@ function generateDateRange( startDate, endDate ) {
 }
 
 /**
+ * Returns the earliest of two dates.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} dateA The first date.
+ * @param {string} dateB The second date.
+ * @return {string} The earliest date.
+ */
+function getEarliestDate( dateA, dateB ) {
+	if ( ! dateB ) {
+		return dateA;
+	}
+
+	return stringToDate( dateA ).getTime() < stringToDate( dateB ).getTime()
+		? dateA
+		: dateB;
+}
+
+/**
+ * Returns the latest of two dates.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} dateA The first date.
+ * @param {string} dateB The second date.
+ * @return {string} The latest date.
+ */
+function getLatestDate( dateA, dateB ) {
+	if ( ! dateB ) {
+		return dateA;
+	}
+
+	return stringToDate( dateA ).getTime() > stringToDate( dateB ).getTime()
+		? dateA
+		: dateB;
+}
+
+/**
  * Generates mock data for Analytics 4 reports.
  *
  * @since n.e.x.t
  *
- * @param {Object} args Report options.
+ * @param {Object} options Report options.
  * @return {Array.<Object>} An array with generated report.
  */
-export function getAnalytics4MockResponse( args ) {
+export function getAnalytics4MockResponse( options ) {
 	invariant(
-		isPlainObject( args ),
+		isPlainObject( options ),
 		'report options are required to generate a mock response.'
 	);
 	invariant(
-		isValidDateString( args.startDate ),
+		isValidDateString( options.startDate ),
 		'a valid startDate is required.'
 	);
 	invariant(
-		isValidDateString( args.endDate ),
+		isValidDateString( options.endDate ),
 		'a valid endDate is required.'
 	);
+
+	// Ensure we don't mutate the passed options to avoid unexpected side effects for the caller.
+	const args = cloneDeep( options );
 
 	const originalSeedValue = faker.seedValue;
 	const argsHash = parseInt(
@@ -267,58 +336,25 @@ export function getAnalytics4MockResponse( args ) {
 	}
 
 	dimensions.forEach( ( singleDimension ) => {
-		const dimension = singleDimension?.name || singleDimension.toString();
+		const dimension = singleDimension?.name || singleDimension?.toString();
 
 		if ( dimension === 'date' || dimension === 'dateRange' ) {
-			const dateRange = generateDateRange( args.startDate, args.endDate );
-			const compareDateRange = hasDateRange
-				? generateDateRange(
-						args.compareStartDate,
-						args.compareEndDate
-				  )
-				: [];
+			// When a comparison date range is specified, the report will contain a merged date range of the current and compare periods.
+			const startDate = getEarliestDate(
+				args.startDate,
+				args.compareStartDate
+			);
+			const endDate = getLatestDate( args.endDate, args.compareEndDate );
+
+			const dateRange = generateDateRange( startDate, endDate );
 
 			// Generates a stream (an array) of dates when the dimension is date.
 			if ( dimension === 'date' ) {
-				streams.push(
-					new Observable( ( observer ) => {
-						dateRange.forEach( ( date ) => {
-							observer.next( date );
-
-							if ( hasDateRange ) {
-								// Duplicate date if we are have a date range.
-								observer.next( date );
-							}
-						} );
-
-						if ( hasDateRange ) {
-							compareDateRange.forEach( ( date ) => {
-								observer.next( date );
-								observer.next( date );
-							} );
-						}
-
-						observer.complete();
-					} )
-				);
+				streams.push( from( dateRange ) );
 			}
 
 			if ( dimension === 'dateRange' ) {
-				streams.push(
-					new Observable( ( observer ) => {
-						dateRange.forEach( () => {
-							observer.next( 'date_range_0' );
-							observer.next( 'date_range_1' );
-						} );
-
-						compareDateRange.forEach( () => {
-							observer.next( 'date_range_0' );
-							observer.next( 'date_range_1' );
-						} );
-
-						observer.complete();
-					} )
-				);
+				streams.push( from( [ 'date_range_0', 'date_range_1' ] ) );
 			}
 		} else if (
 			dimension &&
@@ -353,6 +389,10 @@ export function getAnalytics4MockResponse( args ) {
 		}
 	} );
 
+	const limit = args.limit > 0 ? +args.limit : 90;
+	// If we have a date range, we need to double the limit to account for the fact that we duplicate each row for each date range.
+	const rowLimit = hasDateRange ? limit * 2 : limit;
+
 	// This is the list of operations that we apply to the combined stream (array) of dimension values.
 	const ops = [
 		// Convert a dimension value to a row object and generate metric values.
@@ -363,7 +403,7 @@ export function getAnalytics4MockResponse( args ) {
 			metricValues: generateMetricValues( validMetrics ),
 		} ) ),
 		// Make sure we take the appropriate number of rows.
-		take( args.limit > 0 ? +args.limit : 90 ),
+		take( rowLimit ),
 		// Accumulate all rows into a single array.
 		reduce( ( rows, row ) => [ ...rows, row ], [] ),
 		// Sort rows if args.orderby is provided.
@@ -372,9 +412,18 @@ export function getAnalytics4MockResponse( args ) {
 		),
 	];
 
-	// Process the stream of dimension values and add generated rows to the report data object.
-	zip( ...streams )
-		.pipe( ...ops )
+	// Process the streams of dimension values and add generated rows to the report data object.
+	// First we merge all streams into one which will emit each set of dimension values as an array.
+	merge( ...streams.map( ( stream ) => stream.pipe( toArray() ) ) )
+		.pipe(
+			// Then we convert the resulting stream to an array...
+			toArray(),
+			// So that we can pass it to the cartesianProduct function to generate all possible combinations of dimension values.
+			// Using mergeMap here ensures the resulting set of values will be emitted as a new stream.
+			mergeMap( cartesianProduct ),
+			// Then we apply the remaining operations to generate a row for each combination of dimension values.
+			...ops
+		)
 		.subscribe( ( rows ) => {
 			data.rows = rows;
 			data.rowCount = rows.length;
@@ -412,12 +461,16 @@ export function getAnalytics4MockResponse( args ) {
 									}
 								),
 								metricValues: [
-									...( rows[ 0 ]?.metricValues || [] ),
+									...( rows[ 1 ]?.metricValues || [] ),
 								],
 							},
 					  ]
 					: []
 			);
+
+			// For maximums and totals, if we have a date range the second to last row will be date_range_0 and the last row will be date_range_1.
+			// When there is no date range we only need to use the last row.
+			const firstItemIndex = rows.length - ( hasDateRange ? 2 : 1 );
 
 			data.maximums = [
 				{
@@ -431,7 +484,7 @@ export function getAnalytics4MockResponse( args ) {
 						};
 					} ),
 					metricValues: [
-						...( rows[ rows.length - 1 ]?.metricValues || [] ),
+						...( rows[ firstItemIndex ]?.metricValues || [] ),
 					],
 				},
 			].concat(
@@ -473,7 +526,7 @@ export function getAnalytics4MockResponse( args ) {
 						};
 					} ),
 					metricValues: [
-						...( rows[ rows.length - 1 ]?.metricValues || [] ),
+						...( rows[ firstItemIndex ]?.metricValues || [] ),
 					],
 				},
 			].concat(
