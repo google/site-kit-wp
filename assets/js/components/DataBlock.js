@@ -25,23 +25,21 @@ import classnames from 'classnames';
 /**
  * WordPress dependencies
  */
-import { Fragment, cloneElement } from '@wordpress/element';
-import { sprintf } from '@wordpress/i18n';
+import { useCallback, cloneElement } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
-import ChangeArrow from './ChangeArrow';
-import SourceLink from './SourceLink';
 import GatheringDataNotice, { NOTICE_STYLE } from './GatheringDataNotice';
 import { numFmt } from '../util';
+import DataBlockAddons from './DataBlockAddons';
 
 const DataBlock = ( {
 	stat,
 	className = '',
 	title = '',
 	datapoint,
-	datapointUnit = undefined,
+	datapointUnit,
 	change,
 	changeDataUnit = '',
 	context = 'default',
@@ -51,21 +49,24 @@ const DataBlock = ( {
 	sparkline,
 	handleStatSelection,
 	invertChangeColor = false,
-	gatheringData = false,
+	gatheringData,
 	gatheringDataNoticeStyle = NOTICE_STYLE.DEFAULT,
 } ) => {
-	const handleClick = () => {
+	const handleClick = useCallback( () => {
 		if ( ! gatheringData && handleStatSelection ) {
 			handleStatSelection( stat );
 		}
-	};
+	}, [ gatheringData, handleStatSelection, stat ] );
 
-	const handleKeyDown = ( e ) => {
-		e.preventDefault();
-		if ( 'Enter' === e.key || ' ' === e.key ) {
-			handleClick();
-		}
-	};
+	const handleKeyDown = useCallback(
+		( e ) => {
+			e.preventDefault();
+			if ( 'Enter' === e.key || ' ' === e.key ) {
+				handleClick();
+			}
+		},
+		[ handleClick ]
+	);
 
 	// The `sparkline` prop is passed as a component, but if `invertChangeColor`
 	// is set, we should pass that to `<Sparkline>`. In that case, we clone
@@ -77,28 +78,11 @@ const DataBlock = ( {
 		} );
 	}
 
-	let changeFormatted = change;
+	const datapointFormatted =
+		datapoint === undefined
+			? datapoint
+			: numFmt( datapoint, datapointUnit );
 
-	// If changeDataUnit is given, try using it as currency first, otherwise add it as suffix.
-	if ( changeDataUnit ) {
-		if ( changeDataUnit === '%' ) {
-			// Format percentage change with only 1 digit instead of the usual 2.
-			changeFormatted = numFmt( change, {
-				style: 'percent',
-				signDisplay: 'never',
-				maximumFractionDigits: 1,
-			} );
-		} else {
-			changeFormatted = numFmt( change, changeDataUnit );
-		}
-	}
-
-	// If period is given (requires %s placeholder), add it.
-	if ( period ) {
-		changeFormatted = sprintf( period, changeFormatted );
-	}
-
-	const datapointFormatted = datapoint && numFmt( datapoint, datapointUnit );
 	const isButtonContext = 'button' === context;
 	const role = isButtonContext ? 'button' : '';
 
@@ -118,7 +102,7 @@ const DataBlock = ( {
 			role={ handleStatSelection && role }
 			onClick={ handleClick }
 			onKeyDown={ handleKeyDown }
-			aria-disabled={ gatheringData }
+			aria-disabled={ gatheringData || undefined }
 			aria-label={ handleStatSelection && title }
 			aria-pressed={ handleStatSelection && selected }
 		>
@@ -139,50 +123,14 @@ const DataBlock = ( {
 				) }
 			</div>
 			{ ! gatheringData && (
-				<Fragment>
-					{ sparklineComponent && (
-						<div className="googlesitekit-data-block__sparkline">
-							{ sparklineComponent }
-						</div>
-					) }
-					<div className="googlesitekit-data-block__change-source-wrapper">
-						<div
-							className={ classnames(
-								'googlesitekit-data-block__change',
-								{
-									'googlesitekit-data-block__change--no-change':
-										! change,
-								}
-							) }
-						>
-							<Fragment>
-								{ !! change && (
-									<span className="googlesitekit-data-block__arrow">
-										<ChangeArrow
-											direction={
-												0 < parseFloat( change )
-													? 'up'
-													: 'down'
-											}
-											invertColor={ invertChangeColor }
-										/>
-									</span>
-								) }
-								<span className="googlesitekit-data-block__value">
-									{ changeFormatted }
-								</span>
-							</Fragment>
-						</div>
-						{ source && (
-							<SourceLink
-								className="googlesitekit-data-block__source"
-								name={ source.name }
-								href={ source.link }
-								external={ source?.external }
-							/>
-						) }
-					</div>
-				</Fragment>
+				<DataBlockAddons
+					sparklineComponent={ sparklineComponent }
+					change={ change }
+					changeDataUnit={ changeDataUnit }
+					period={ period }
+					invertChangeColor={ invertChangeColor }
+					source={ source }
+				/>
 			) }
 
 			{ gatheringData && (
