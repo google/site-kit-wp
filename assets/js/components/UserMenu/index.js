@@ -224,9 +224,7 @@ export default function UserMenu() {
 							role="menuitem"
 						>
 							<Item
-								icon={
-									<ManageSitesIcon width="24" height="24" />
-								}
+								icon={ <ManageSitesIcon width="22" /> }
 								label={ __(
 									'Manage Sites',
 									'google-site-kit'
@@ -240,7 +238,7 @@ export default function UserMenu() {
 						role="menuitem"
 					>
 						<Item
-							icon={ <DisconnectIcon width="24" height="24" /> }
+							icon={ <DisconnectIcon width="22" /> }
 							label={ __( 'Disconnect', 'google-site-kit' ) }
 						/>
 					</li>
