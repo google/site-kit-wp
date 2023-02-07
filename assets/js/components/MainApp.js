@@ -51,16 +51,13 @@ function MainApp() {
 					</Root>
 				</Route>
 
-				<Route
-					path="/dashboard/:permalink"
-					render={ () => (
-						<Root viewContext={ VIEW_CONTEXT_ENTITY_DASHBOARD }>
-							<PermalinkEntityProvider>
-								<DashboardEntityApp />
-							</PermalinkEntityProvider>
-						</Root>
-					) }
-				/>
+				<Route path="/dashboard/:permalink">
+					<Root viewContext={ VIEW_CONTEXT_ENTITY_DASHBOARD }>
+						<PermalinkEntityProvider>
+							<DashboardEntityApp />
+						</PermalinkEntityProvider>
+					</Root>
+				</Route>
 
 				<Route path="/dashboard">
 					<Root viewContext={ VIEW_CONTEXT_MAIN_DASHBOARD }>
