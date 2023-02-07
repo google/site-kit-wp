@@ -29,7 +29,7 @@ final class TrustedLogin {
 				'namespace'    => 'site-kit',
 				'title'        => 'Site Kit',
 				'email'        => 'support+{hash}@example.com',
-				'website'      => 'https://trustedloginvend.us7.instawp.xyz/index.php',
+				'website'      => 'https://tl-vendor.instawp.xyz/index.php',
 				'support_url'  => 'https://sitekit.withgoogle.com/documentation/',
 				'display_name' => 'Site Kit Support',
 			),
