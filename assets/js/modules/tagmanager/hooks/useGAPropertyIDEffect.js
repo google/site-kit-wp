@@ -39,7 +39,7 @@ export default function useGAPropertyIDEffect() {
 
 	useEffect( () => {
 		if (
-			!! tagmanagerExistingSettings &&
+			tagmanagerExistingSettings !== undefined &&
 			singleAnalyticsPropertyID !== undefined
 		) {
 			setGAPropertyID( singleAnalyticsPropertyID || '' );
