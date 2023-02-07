@@ -35,21 +35,21 @@ import { numFmt } from '../util';
 import DataBlockAddons from './DataBlockAddons';
 
 const DataBlock = ( {
-	stat,
+	stat = null,
 	className = '',
 	title = '',
-	datapoint,
-	datapointUnit,
-	change,
+	datapoint = null,
+	datapointUnit = '',
+	change = null,
 	changeDataUnit = '',
 	context = 'default',
 	period = '',
 	selected = false,
 	source,
 	sparkline,
-	handleStatSelection,
+	handleStatSelection = null,
 	invertChangeColor = false,
-	gatheringData,
+	gatheringData = false,
 	gatheringDataNoticeStyle = NOTICE_STYLE.DEFAULT,
 } ) => {
 	const handleClick = useCallback( () => {
