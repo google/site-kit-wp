@@ -24,6 +24,11 @@ import mockedReportResponse from './__fixtures__/mocked-report.json';
 import mockedReportMultipleDateRangesResponse from './__fixtures__/mocked-report-multiple-date-ranges.json';
 import mockedReportFixedValueDimensionResponse from './__fixtures__/mocked-report-fixed-value-dimension.json';
 import mockedReportMultipleDimensionResponse from './__fixtures__/mocked-report-multiple-dimensions.json';
+import mockedReportOrderByMetricAscendingResponse from './__fixtures__/mocked-report-order-by-metric-ascending.json';
+import mockedReportOrderByMetricDescendingResponse from './__fixtures__/mocked-report-order-by-metric-descending.json';
+import mockedReportOrderByDimensionAscendingResponse from './__fixtures__/mocked-report-order-by-dimension-ascending.json';
+import mockedReportOrderByDimensionDescendingResponse from './__fixtures__/mocked-report-order-by-dimension-descending.json';
+import mockedReportOrderByMetricsAndDimensionsResponse from './__fixtures__/mocked-report-order-by-metrics-and-dimensions.json';
 
 describe( 'getAnalytics4MockResponse', () => {
 	it( 'throws if called without report options', () => {
@@ -168,5 +173,172 @@ describe( 'getAnalytics4MockResponse', () => {
 		);
 
 		expect( dateRangeZero ).toHaveLength( dateRangeOne.length );
+	} );
+
+	it( 'sorts by metric in ascending order', () => {
+		const report = getAnalytics4MockResponse( {
+			startDate: '2020-12-01',
+			endDate: '2020-12-05',
+			metrics: [
+				{
+					name: 'totalUsers',
+				},
+				{
+					name: 'averageSessionDuration',
+				},
+			],
+			dimensions: [
+				{
+					name: 'date',
+				},
+			],
+			orderby: [
+				{
+					metric: {
+						metricName: 'totalUsers',
+					},
+					desc: false,
+				},
+			],
+		} );
+
+		expect( report ).toEqual( mockedReportOrderByMetricAscendingResponse );
+	} );
+
+	it( 'sorts by metric in descending order', () => {
+		const report = getAnalytics4MockResponse( {
+			startDate: '2020-12-01',
+			endDate: '2020-12-05',
+			metrics: [
+				{
+					name: 'totalUsers',
+				},
+				{
+					name: 'averageSessionDuration',
+				},
+			],
+			dimensions: [
+				{
+					name: 'date',
+				},
+			],
+			orderby: [
+				{
+					metric: {
+						metricName: 'averageSessionDuration',
+					},
+					desc: true,
+				},
+			],
+		} );
+
+		expect( report ).toEqual( mockedReportOrderByMetricDescendingResponse );
+	} );
+
+	it( 'sorts by dimension in ascending order', () => {
+		const report = getAnalytics4MockResponse( {
+			startDate: '2020-12-01',
+			endDate: '2020-12-05',
+			metrics: [
+				{
+					name: 'totalUsers',
+				},
+			],
+			dimensions: [
+				{
+					name: 'date',
+				},
+				{
+					name: 'sessionDefaultChannelGrouping',
+				},
+			],
+			orderby: [
+				{
+					dimension: {
+						dimensionName: 'date',
+					},
+					desc: false,
+				},
+			],
+		} );
+
+		expect( report ).toEqual(
+			mockedReportOrderByDimensionAscendingResponse
+		);
+	} );
+
+	it( 'sorts by dimension in descending order', () => {
+		const report = getAnalytics4MockResponse( {
+			startDate: '2020-12-01',
+			endDate: '2020-12-05',
+			metrics: [
+				{
+					name: 'totalUsers',
+				},
+			],
+			dimensions: [
+				{
+					name: 'date',
+				},
+				{
+					name: 'sessionDefaultChannelGrouping',
+				},
+			],
+			orderby: [
+				{
+					dimension: {
+						dimensionName: 'sessionDefaultChannelGrouping',
+					},
+					desc: true,
+				},
+			],
+		} );
+
+		expect( report ).toEqual(
+			mockedReportOrderByDimensionDescendingResponse
+		);
+	} );
+
+	it( 'sorts by a combination of metrics and dimensions, with multiple date ranges', () => {
+		const report = getAnalytics4MockResponse( {
+			startDate: '2020-12-01',
+			endDate: '2020-12-02',
+			compareStartDate: '2020-12-04',
+			compareEndDate: '2020-12-05',
+			metrics: [
+				{
+					name: 'totalUsers',
+				},
+				{
+					name: 'averageSessionDuration',
+				},
+			],
+			dimensions: [
+				{
+					name: 'date',
+				},
+				{
+					name: 'sessionDefaultChannelGrouping',
+				},
+			],
+			orderby: [
+				{
+					dimension: {
+						dimensionName: 'date',
+					},
+					desc: false,
+				},
+				{
+					metric: {
+						metricName: 'totalUsers',
+					},
+					desc: true,
+				},
+			],
+		} );
+
+		expect( report ).toEqual(
+			mockedReportOrderByMetricsAndDimensionsResponse
+		);
 	} );
 } );
