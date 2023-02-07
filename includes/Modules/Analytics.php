@@ -136,7 +136,7 @@ final class Analytics extends Module
 		add_action(
 			'update_option_googlesitekit_analytics_settings',
 			function( $old_value, $new_value ) {
-				if ( ! empty( $old_value['propertyID'] ) && $old_value['propertyID'] !== $new_value['propertyID'] ) {
+				if ( $old_value['propertyID'] !== $new_value['propertyID'] ) {
 					$this->reset_data_available();
 				}
 			},

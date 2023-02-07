@@ -106,7 +106,7 @@ final class Analytics_4 extends Module
 		add_action(
 			'update_option_googlesitekit_analytics-4_settings',
 			function( $old_value, $new_value ) {
-				if ( ! empty( $old_value['measurementID'] ) && $old_value['measurementID'] !== $new_value['measurementID'] ) {
+				if ( $old_value['measurementID'] !== $new_value['measurementID'] ) {
 					$this->reset_data_available();
 				}
 			},
