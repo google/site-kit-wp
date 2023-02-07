@@ -3,7 +3,7 @@
  * Interface Google\Site_Kit\Core\Modules\Module_With_Data_Available_State
  *
  * @package   Google\Site_Kit
- * @copyright 2022 Google LLC
+ * @copyright 2023 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
