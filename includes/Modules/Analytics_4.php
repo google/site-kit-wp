@@ -719,6 +719,7 @@ final class Analytics_4 extends Module
 						'googlesitekit-datastore-site',
 						'googlesitekit-datastore-forms',
 						'googlesitekit-components',
+						'googlesitekit-modules-data',
 					),
 				)
 			),
