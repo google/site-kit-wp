@@ -21,7 +21,8 @@
  */
 import { getAnalytics4MockResponse } from './data-mock';
 import mockedReportResponse from './__fixtures__/mocked-report.json';
-import mockedReportMultipleDateRangesResponse from './__fixtures__/mocked-report-multiple-date-ranges.json';
+import mockedReportMultipleDistinctDateRangesResponse from './__fixtures__/mocked-report-multiple-distinct-date-ranges.json';
+import mockedReportMultipleOverlappingDateRangesResponse from './__fixtures__/mocked-report-multiple-overlapping-date-ranges.json';
 import mockedReportFixedValueDimensionResponse from './__fixtures__/mocked-report-fixed-value-dimension.json';
 import mockedReportMultipleDimensionResponse from './__fixtures__/mocked-report-multiple-dimensions.json';
 import mockedReportOrderByMetricAscendingResponse from './__fixtures__/mocked-report-order-by-metric-ascending.json';
@@ -73,11 +74,36 @@ describe( 'getAnalytics4MockResponse', () => {
 		expect( report.rows ).toHaveLength( 5 );
 	} );
 
-	it( 'generates a valid report with multiple date ranges', () => {
+	it( 'generates a valid report with multiple distinct date ranges', () => {
 		const report = getAnalytics4MockResponse( {
 			startDate: '2020-12-01',
 			endDate: '2020-12-03',
-			compareStartDate: '2020-12-04',
+			compareStartDate: '2020-12-06',
+			compareEndDate: '2020-12-07',
+			metrics: [
+				{
+					name: 'totalUsers',
+				},
+				{
+					name: 'averageSessionDuration',
+				},
+			],
+			dimensions: [ 'date' ],
+		} );
+
+		expect( report ).toEqual(
+			mockedReportMultipleDistinctDateRangesResponse
+		);
+
+		// Verify the correct number of rows for the date ranges.
+		expect( report.rows ).toHaveLength( 10 );
+	} );
+
+	it( 'generates a valid report with multiple overlapping date ranges', () => {
+		const report = getAnalytics4MockResponse( {
+			startDate: '2020-12-01',
+			endDate: '2020-12-03',
+			compareStartDate: '2020-12-02',
 			compareEndDate: '2020-12-05',
 			metrics: [
 				{
@@ -90,7 +116,9 @@ describe( 'getAnalytics4MockResponse', () => {
 			dimensions: [ 'date' ],
 		} );
 
-		expect( report ).toEqual( mockedReportMultipleDateRangesResponse );
+		expect( report ).toEqual(
+			mockedReportMultipleOverlappingDateRangesResponse
+		);
 
 		// Verify the correct number of rows for the date ranges.
 		expect( report.rows ).toHaveLength( 10 );

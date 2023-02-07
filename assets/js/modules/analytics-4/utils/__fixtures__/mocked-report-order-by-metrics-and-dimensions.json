@@ -8,7 +8,7 @@
 		{ "name": "totalUsers", "type": "TYPE_INTEGER" },
 		{ "name": "averageSessionDuration", "type": "TYPE_SECONDS" }
 	],
-	"rowCount": 100,
+	"rowCount": 80,
 	"rows": [
 		{
 			"dimensionValues": [
@@ -332,7 +332,7 @@
 		},
 		{
 			"dimensionValues": [
-				{ "value": "20201203" },
+				{ "value": "20201204" },
 				{ "value": "Paid Search" },
 				{ "value": "date_range_1" }
 			],
@@ -340,7 +340,7 @@
 		},
 		{
 			"dimensionValues": [
-				{ "value": "20201203" },
+				{ "value": "20201204" },
 				{ "value": "Organic Social" },
 				{ "value": "date_range_1" }
 			],
@@ -348,7 +348,7 @@
 		},
 		{
 			"dimensionValues": [
-				{ "value": "20201203" },
+				{ "value": "20201204" },
 				{ "value": "Affiliates" },
 				{ "value": "date_range_1" }
 			],
@@ -356,7 +356,7 @@
 		},
 		{
 			"dimensionValues": [
-				{ "value": "20201203" },
+				{ "value": "20201204" },
 				{ "value": "Paid Social" },
 				{ "value": "date_range_1" }
 			],
@@ -364,7 +364,7 @@
 		},
 		{
 			"dimensionValues": [
-				{ "value": "20201203" },
+				{ "value": "20201204" },
 				{ "value": "Email" },
 				{ "value": "date_range_1" }
 			],
@@ -372,7 +372,7 @@
 		},
 		{
 			"dimensionValues": [
-				{ "value": "20201203" },
+				{ "value": "20201204" },
 				{ "value": "Paid Social" },
 				{ "value": "date_range_0" }
 			],
@@ -380,7 +380,7 @@
 		},
 		{
 			"dimensionValues": [
-				{ "value": "20201203" },
+				{ "value": "20201204" },
 				{ "value": "Affiliates" },
 				{ "value": "date_range_0" }
 			],
@@ -388,7 +388,7 @@
 		},
 		{
 			"dimensionValues": [
-				{ "value": "20201203" },
+				{ "value": "20201204" },
 				{ "value": "Video" },
 				{ "value": "date_range_1" }
 			],
@@ -396,7 +396,7 @@
 		},
 		{
 			"dimensionValues": [
-				{ "value": "20201203" },
+				{ "value": "20201204" },
 				{ "value": "Video" },
 				{ "value": "date_range_0" }
 			],
@@ -404,7 +404,7 @@
 		},
 		{
 			"dimensionValues": [
-				{ "value": "20201203" },
+				{ "value": "20201204" },
 				{ "value": "Direct" },
 				{ "value": "date_range_0" }
 			],
@@ -412,7 +412,7 @@
 		},
 		{
 			"dimensionValues": [
-				{ "value": "20201203" },
+				{ "value": "20201204" },
 				{ "value": "Referral" },
 				{ "value": "date_range_0" }
 			],
@@ -420,7 +420,7 @@
 		},
 		{
 			"dimensionValues": [
-				{ "value": "20201203" },
+				{ "value": "20201204" },
 				{ "value": "Email" },
 				{ "value": "date_range_0" }
 			],
@@ -428,7 +428,7 @@
 		},
 		{
 			"dimensionValues": [
-				{ "value": "20201203" },
+				{ "value": "20201204" },
 				{ "value": "Organic Search" },
 				{ "value": "date_range_1" }
 			],
@@ -436,7 +436,7 @@
 		},
 		{
 			"dimensionValues": [
-				{ "value": "20201203" },
+				{ "value": "20201204" },
 				{ "value": "Referral" },
 				{ "value": "date_range_1" }
 			],
@@ -444,7 +444,7 @@
 		},
 		{
 			"dimensionValues": [
-				{ "value": "20201203" },
+				{ "value": "20201204" },
 				{ "value": "Display" },
 				{ "value": "date_range_0" }
 			],
@@ -452,7 +452,7 @@
 		},
 		{
 			"dimensionValues": [
-				{ "value": "20201203" },
+				{ "value": "20201204" },
 				{ "value": "Display" },
 				{ "value": "date_range_1" }
 			],
@@ -460,7 +460,7 @@
 		},
 		{
 			"dimensionValues": [
-				{ "value": "20201203" },
+				{ "value": "20201204" },
 				{ "value": "Organic Search" },
 				{ "value": "date_range_0" }
 			],
@@ -468,7 +468,7 @@
 		},
 		{
 			"dimensionValues": [
-				{ "value": "20201203" },
+				{ "value": "20201204" },
 				{ "value": "Paid Search" },
 				{ "value": "date_range_0" }
 			],
@@ -476,7 +476,7 @@
 		},
 		{
 			"dimensionValues": [
-				{ "value": "20201203" },
+				{ "value": "20201204" },
 				{ "value": "Direct" },
 				{ "value": "date_range_1" }
 			],
@@ -484,7 +484,7 @@
 		},
 		{
 			"dimensionValues": [
-				{ "value": "20201203" },
+				{ "value": "20201204" },
 				{ "value": "Organic Social" },
 				{ "value": "date_range_0" }
 			],
@@ -492,7 +492,7 @@
 		},
 		{
 			"dimensionValues": [
-				{ "value": "20201204" },
+				{ "value": "20201205" },
 				{ "value": "Email" },
 				{ "value": "date_range_1" }
 			],
@@ -500,7 +500,7 @@
 		},
 		{
 			"dimensionValues": [
-				{ "value": "20201204" },
+				{ "value": "20201205" },
 				{ "value": "Paid Search" },
 				{ "value": "date_range_1" }
 			],
@@ -508,7 +508,7 @@
 		},
 		{
 			"dimensionValues": [
-				{ "value": "20201204" },
+				{ "value": "20201205" },
 				{ "value": "Referral" },
 				{ "value": "date_range_0" }
 			],
@@ -516,7 +516,7 @@
 		},
 		{
 			"dimensionValues": [
-				{ "value": "20201204" },
+				{ "value": "20201205" },
 				{ "value": "Email" },
 				{ "value": "date_range_0" }
 			],
@@ -524,7 +524,7 @@
 		},
 		{
 			"dimensionValues": [
-				{ "value": "20201204" },
+				{ "value": "20201205" },
 				{ "value": "Paid Search" },
 				{ "value": "date_range_0" }
 			],
@@ -532,7 +532,7 @@
 		},
 		{
 			"dimensionValues": [
-				{ "value": "20201204" },
+				{ "value": "20201205" },
 				{ "value": "Organic Search" },
 				{ "value": "date_range_0" }
 			],
@@ -540,7 +540,7 @@
 		},
 		{
 			"dimensionValues": [
-				{ "value": "20201204" },
+				{ "value": "20201205" },
 				{ "value": "Organic Social" },
 				{ "value": "date_range_1" }
 			],
@@ -548,7 +548,7 @@
 		},
 		{
 			"dimensionValues": [
-				{ "value": "20201204" },
+				{ "value": "20201205" },
 				{ "value": "Display" },
 				{ "value": "date_range_0" }
 			],
@@ -556,7 +556,7 @@
 		},
 		{
 			"dimensionValues": [
-				{ "value": "20201204" },
+				{ "value": "20201205" },
 				{ "value": "Direct" },
 				{ "value": "date_range_0" }
 			],
@@ -564,7 +564,7 @@
 		},
 		{
 			"dimensionValues": [
-				{ "value": "20201204" },
+				{ "value": "20201205" },
 				{ "value": "Affiliates" },
 				{ "value": "date_range_0" }
 			],
@@ -572,7 +572,7 @@
 		},
 		{
 			"dimensionValues": [
-				{ "value": "20201204" },
+				{ "value": "20201205" },
 				{ "value": "Video" },
 				{ "value": "date_range_1" }
 			],
@@ -580,7 +580,7 @@
 		},
 		{
 			"dimensionValues": [
-				{ "value": "20201204" },
+				{ "value": "20201205" },
 				{ "value": "Direct" },
 				{ "value": "date_range_1" }
 			],
@@ -588,7 +588,7 @@
 		},
 		{
 			"dimensionValues": [
-				{ "value": "20201204" },
+				{ "value": "20201205" },
 				{ "value": "Paid Social" },
 				{ "value": "date_range_0" }
 			],
@@ -596,7 +596,7 @@
 		},
 		{
 			"dimensionValues": [
-				{ "value": "20201204" },
+				{ "value": "20201205" },
 				{ "value": "Referral" },
 				{ "value": "date_range_1" }
 			],
@@ -604,7 +604,7 @@
 		},
 		{
 			"dimensionValues": [
-				{ "value": "20201204" },
+				{ "value": "20201205" },
 				{ "value": "Affiliates" },
 				{ "value": "date_range_1" }
 			],
@@ -612,7 +612,7 @@
 		},
 		{
 			"dimensionValues": [
-				{ "value": "20201204" },
+				{ "value": "20201205" },
 				{ "value": "Organic Search" },
 				{ "value": "date_range_1" }
 			],
@@ -620,7 +620,7 @@
 		},
 		{
 			"dimensionValues": [
-				{ "value": "20201204" },
+				{ "value": "20201205" },
 				{ "value": "Video" },
 				{ "value": "date_range_0" }
 			],
@@ -628,7 +628,7 @@
 		},
 		{
 			"dimensionValues": [
-				{ "value": "20201204" },
+				{ "value": "20201205" },
 				{ "value": "Organic Social" },
 				{ "value": "date_range_0" }
 			],
@@ -636,7 +636,7 @@
 		},
 		{
 			"dimensionValues": [
-				{ "value": "20201204" },
+				{ "value": "20201205" },
 				{ "value": "Display" },
 				{ "value": "date_range_1" }
 			],
@@ -644,171 +644,11 @@
 		},
 		{
 			"dimensionValues": [
-				{ "value": "20201204" },
+				{ "value": "20201205" },
 				{ "value": "Paid Social" },
 				{ "value": "date_range_1" }
 			],
 			"metricValues": [ { "value": "13" }, { "value": "1" } ]
-		},
-		{
-			"dimensionValues": [
-				{ "value": "20201205" },
-				{ "value": "Paid Social" },
-				{ "value": "date_range_0" }
-			],
-			"metricValues": [ { "value": "93" }, { "value": "0" } ]
-		},
-		{
-			"dimensionValues": [
-				{ "value": "20201205" },
-				{ "value": "Organic Social" },
-				{ "value": "date_range_0" }
-			],
-			"metricValues": [ { "value": "89" }, { "value": "28" } ]
-		},
-		{
-			"dimensionValues": [
-				{ "value": "20201205" },
-				{ "value": "Paid Search" },
-				{ "value": "date_range_0" }
-			],
-			"metricValues": [ { "value": "88" }, { "value": "8" } ]
-		},
-		{
-			"dimensionValues": [
-				{ "value": "20201205" },
-				{ "value": "Display" },
-				{ "value": "date_range_1" }
-			],
-			"metricValues": [ { "value": "88" }, { "value": "40" } ]
-		},
-		{
-			"dimensionValues": [
-				{ "value": "20201205" },
-				{ "value": "Direct" },
-				{ "value": "date_range_0" }
-			],
-			"metricValues": [ { "value": "86" }, { "value": "39" } ]
-		},
-		{
-			"dimensionValues": [
-				{ "value": "20201205" },
-				{ "value": "Referral" },
-				{ "value": "date_range_1" }
-			],
-			"metricValues": [ { "value": "73" }, { "value": "19" } ]
-		},
-		{
-			"dimensionValues": [
-				{ "value": "20201205" },
-				{ "value": "Email" },
-				{ "value": "date_range_1" }
-			],
-			"metricValues": [ { "value": "71" }, { "value": "37" } ]
-		},
-		{
-			"dimensionValues": [
-				{ "value": "20201205" },
-				{ "value": "Email" },
-				{ "value": "date_range_0" }
-			],
-			"metricValues": [ { "value": "70" }, { "value": "42" } ]
-		},
-		{
-			"dimensionValues": [
-				{ "value": "20201205" },
-				{ "value": "Direct" },
-				{ "value": "date_range_1" }
-			],
-			"metricValues": [ { "value": "62" }, { "value": "34" } ]
-		},
-		{
-			"dimensionValues": [
-				{ "value": "20201205" },
-				{ "value": "Organic Social" },
-				{ "value": "date_range_1" }
-			],
-			"metricValues": [ { "value": "56" }, { "value": "30" } ]
-		},
-		{
-			"dimensionValues": [
-				{ "value": "20201205" },
-				{ "value": "Referral" },
-				{ "value": "date_range_0" }
-			],
-			"metricValues": [ { "value": "45" }, { "value": "19" } ]
-		},
-		{
-			"dimensionValues": [
-				{ "value": "20201205" },
-				{ "value": "Video" },
-				{ "value": "date_range_0" }
-			],
-			"metricValues": [ { "value": "44" }, { "value": "0" } ]
-		},
-		{
-			"dimensionValues": [
-				{ "value": "20201205" },
-				{ "value": "Affiliates" },
-				{ "value": "date_range_1" }
-			],
-			"metricValues": [ { "value": "38" }, { "value": "1" } ]
-		},
-		{
-			"dimensionValues": [
-				{ "value": "20201205" },
-				{ "value": "Paid Social" },
-				{ "value": "date_range_1" }
-			],
-			"metricValues": [ { "value": "26" }, { "value": "49" } ]
-		},
-		{
-			"dimensionValues": [
-				{ "value": "20201205" },
-				{ "value": "Affiliates" },
-				{ "value": "date_range_0" }
-			],
-			"metricValues": [ { "value": "23" }, { "value": "9" } ]
-		},
-		{
-			"dimensionValues": [
-				{ "value": "20201205" },
-				{ "value": "Video" },
-				{ "value": "date_range_1" }
-			],
-			"metricValues": [ { "value": "23" }, { "value": "27" } ]
-		},
-		{
-			"dimensionValues": [
-				{ "value": "20201205" },
-				{ "value": "Display" },
-				{ "value": "date_range_0" }
-			],
-			"metricValues": [ { "value": "22" }, { "value": "4" } ]
-		},
-		{
-			"dimensionValues": [
-				{ "value": "20201205" },
-				{ "value": "Organic Search" },
-				{ "value": "date_range_1" }
-			],
-			"metricValues": [ { "value": "9" }, { "value": "20" } ]
-		},
-		{
-			"dimensionValues": [
-				{ "value": "20201205" },
-				{ "value": "Paid Search" },
-				{ "value": "date_range_1" }
-			],
-			"metricValues": [ { "value": "4" }, { "value": "37" } ]
-		},
-		{
-			"dimensionValues": [
-				{ "value": "20201205" },
-				{ "value": "Organic Search" },
-				{ "value": "date_range_0" }
-			],
-			"metricValues": [ { "value": "2" }, { "value": "18" } ]
 		}
 	],
 	"totals": [
@@ -818,7 +658,7 @@
 				{ "value": "RESERVED_TOTAL" },
 				{ "value": "date_range_0" }
 			],
-			"metricValues": [ { "value": "4" }, { "value": "37" } ]
+			"metricValues": [ { "value": "32" }, { "value": "38" } ]
 		},
 		{
 			"dimensionValues": [
@@ -826,7 +666,7 @@
 				{ "value": "RESERVED_TOTAL" },
 				{ "value": "date_range_1" }
 			],
-			"metricValues": [ { "value": "2" }, { "value": "18" } ]
+			"metricValues": [ { "value": "13" }, { "value": "1" } ]
 		}
 	],
 	"minimums": [
@@ -854,7 +694,7 @@
 				{ "value": "RESERVED_MAX" },
 				{ "value": "date_range_0" }
 			],
-			"metricValues": [ { "value": "4" }, { "value": "37" } ]
+			"metricValues": [ { "value": "32" }, { "value": "38" } ]
 		},
 		{
 			"dimensionValues": [
@@ -862,7 +702,7 @@
 				{ "value": "RESERVED_MAX" },
 				{ "value": "date_range_1" }
 			],
-			"metricValues": [ { "value": "2" }, { "value": "18" } ]
+			"metricValues": [ { "value": "13" }, { "value": "1" } ]
 		}
 	],
 	"metadata": { "currencyCode": "USD", "timeZone": "America/Los_Angeles" },

@@ -293,44 +293,6 @@ function generateDateRange( startDate, endDate ) {
 }
 
 /**
- * Returns the earliest of two dates.
- *
- * @since n.e.x.t
- *
- * @param {string} dateA The first date.
- * @param {string} dateB The second date.
- * @return {string} The earliest date.
- */
-function getEarliestDate( dateA, dateB ) {
-	if ( ! dateB ) {
-		return dateA;
-	}
-
-	return stringToDate( dateA ).getTime() < stringToDate( dateB ).getTime()
-		? dateA
-		: dateB;
-}
-
-/**
- * Returns the latest of two dates.
- *
- * @since n.e.x.t
- *
- * @param {string} dateA The first date.
- * @param {string} dateB The second date.
- * @return {string} The latest date.
- */
-function getLatestDate( dateA, dateB ) {
-	if ( ! dateB ) {
-		return dateA;
-	}
-
-	return stringToDate( dateA ).getTime() > stringToDate( dateB ).getTime()
-		? dateA
-		: dateB;
-}
-
-/**
  * Generates mock data for Analytics 4 reports.
  *
  * @since n.e.x.t
@@ -404,18 +366,26 @@ export function getAnalytics4MockResponse( options ) {
 		const dimension = getItemKey( singleDimension );
 
 		if ( dimension === 'date' || dimension === 'dateRange' ) {
-			// When a comparison date range is specified, the report will contain a merged date range of the current and compare periods.
-			const startDate = getEarliestDate(
-				args.startDate,
-				args.compareStartDate
-			);
-			const endDate = getLatestDate( args.endDate, args.compareEndDate );
+			const dateRanges = [
+				generateDateRange( args.startDate, args.endDate ),
+			];
 
-			const dateRange = generateDateRange( startDate, endDate );
+			if ( args.compareStartDate && args.compareEndDate ) {
+				// When a comparison date range is specified, the report will contain a combined date range of all the dates in the current and compare periods.
+				dateRanges.push(
+					generateDateRange(
+						args.compareStartDate,
+						args.compareEndDate
+					)
+				);
+			}
+
+			// Create a set of unique dates from the date ranges.
+			const dateRange = new Set( dateRanges.flat() );
 
 			// Generates a stream (an array) of dates when the dimension is date.
 			if ( dimension === 'date' ) {
-				streams.push( from( dateRange ) );
+				streams.push( from( [ ...dateRange ] ) );
 			}
 
 			if ( dimension === 'dateRange' ) {
