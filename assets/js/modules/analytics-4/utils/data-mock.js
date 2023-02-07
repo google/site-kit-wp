@@ -365,7 +365,7 @@ export function getAnalytics4MockResponse( options ) {
 	dimensions.forEach( ( singleDimension ) => {
 		const dimension = getItemKey( singleDimension );
 
-		if ( dimension === 'date' || dimension === 'dateRange' ) {
+		if ( dimension === 'date' ) {
 			const dateRanges = [
 				generateDateRange( args.startDate, args.endDate ),
 			];
@@ -383,14 +383,10 @@ export function getAnalytics4MockResponse( options ) {
 			// Create a set of unique dates from the date ranges.
 			const dateRange = new Set( dateRanges.flat() );
 
-			// Generates a stream (an array) of dates when the dimension is date.
-			if ( dimension === 'date' ) {
-				streams.push( from( [ ...dateRange ] ) );
-			}
-
-			if ( dimension === 'dateRange' ) {
-				streams.push( from( [ 'date_range_0', 'date_range_1' ] ) );
-			}
+			// Generates a stream (an array) of dates.
+			streams.push( from( [ ...dateRange ] ) );
+		} else if ( dimension === 'dateRange' ) {
+			streams.push( from( [ 'date_range_0', 'date_range_1' ] ) );
 		} else if (
 			dimension &&
 			typeof ANALYTICS_4_DIMENSION_OPTIONS[ dimension ] === 'function'
