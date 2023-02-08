@@ -100,7 +100,7 @@ export default function UnsatisfiedScopesAlert() {
 	}
 
 	let messageID;
-	let moduleNames;
+	let moduleNames = [];
 	// Determine if all scopes are in Google API format, otherwise use generic message.
 	if (
 		gteSupportEnabled &&
@@ -109,6 +109,15 @@ export default function UnsatisfiedScopesAlert() {
 		)
 	) {
 		messageID = MESSAGE_GTE;
+	} else if (
+		unsatisfiedScopes.some(
+			( scope ) =>
+				! scope.match(
+					new RegExp( '^https://www\\.googleapis\\.com/auth/' )
+				)
+		)
+	) {
+		messageID = MESSAGE_GENERIC;
 	} else {
 		// All scopes are in Google API format, map them to module names.
 		moduleNames = mapScopesToModuleNames( unsatisfiedScopes, modules );
