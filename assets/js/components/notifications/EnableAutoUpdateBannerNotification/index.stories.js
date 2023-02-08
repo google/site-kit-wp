@@ -48,8 +48,7 @@ export default {
 
 			const setupRegistry = ( registry ) => {
 				registry.dispatch( CORE_SITE ).receiveSiteInfo( {
-					updatePluginCapacity: true,
-					autoUpdatesEnabled: true,
+					changePluginAutoUpdatesCapacity: true,
 					siteKitAutoUpdatesEnabled: false,
 					pluginBasename: 'google-site-kit/google-site-kit.php',
 				} );
