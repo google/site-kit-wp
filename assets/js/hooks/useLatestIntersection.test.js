@@ -24,14 +24,12 @@ import { intersectionObserver } from '@shopify/jest-dom-mocks';
 /**
  * WordPress dependencies
  */
-import { createRef, render } from '@wordpress/element';
+import { createRef } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
-import { renderHook } from '../../../tests/js/test-utils';
-import TestUtils from 'react-dom/test-utils';
-// import TestRenderer from 'react-test-renderer';
+import { act, render, renderHook } from '../../../tests/js/test-utils';
 import useLatestIntersection from './useLatestIntersection';
 
 describe( 'useLatestIntersection', () => {
@@ -51,7 +49,7 @@ describe( 'useLatestIntersection', () => {
 	} );
 
 	it( 'should setup an IntersectionObserver targeting the ref element and using the options provided', () => {
-		TestUtils.act( () => {
+		act( () => {
 			targetRef = createRef();
 			render( <div ref={ targetRef } />, container );
 		} );
