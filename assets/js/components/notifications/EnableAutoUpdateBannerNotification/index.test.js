@@ -26,12 +26,15 @@ import {
 	waitFor,
 	act,
 	fireEvent,
+	provideUserCapabilities,
+	provideSiteInfo,
 } from '../../../../../tests/js/test-utils';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import EnableAutoUpdateBannerNotification from '.';
 import useQueryArg from '../../../hooks/useQueryArg';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import * as apiCache from '../../../googlesitekit/api/cache';
+import { DISMISSED_ITEM_KEY } from './constants';
 
 jest.mock( '../../../hooks/useQueryArg' );
 
@@ -68,6 +71,8 @@ describe( 'EnableAutoUpdateBannerNotification', () => {
 			body: { updates: '751b9198d2' },
 			status: 200,
 		} );
+
+		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 	} );
 
 	afterEach( () => {
@@ -93,6 +98,31 @@ describe( 'EnableAutoUpdateBannerNotification', () => {
 		expect(
 			await screen.findByText( 'Keep Site Kit up-to-date' )
 		).toBeInTheDocument();
+	} );
+
+	it( 'should not display the notification if it has been dismissed', async () => {
+		provideSiteInfo( registry, {
+			changePluginAutoUpdatesCapacity: true,
+			siteKitAutoUpdatesEnabled: false,
+		} );
+
+		provideUserCapabilities( registry, {
+			googlesitekit_update_plugins: true,
+		} );
+
+		await registry
+			.dispatch( CORE_USER )
+			.receiveGetDismissedItems( [ DISMISSED_ITEM_KEY ] );
+
+		const { container, waitForRegistry } = render(
+			<EnableAutoUpdateBannerNotification />,
+			{
+				registry,
+			}
+		);
+		await waitForRegistry();
+
+		expect( container ).toBeEmptyDOMElement();
 	} );
 
 	it( 'should not show the notification when auto updates are already enabled for Site Kit', async () => {

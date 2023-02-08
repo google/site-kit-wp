@@ -39,6 +39,7 @@ import ErrorNotice from '../../ErrorNotice';
 import BannerNotification from '../BannerNotification';
 import {
 	CACHE_KEY_HIDE_NOTIFICATION_ON_FIRST_SETUP,
+	DISMISSED_ITEM_KEY,
 	NOTIFICATION_ID,
 } from './constants';
 
@@ -47,6 +48,9 @@ const { useSelect, useDispatch } = Data;
 const EnableAutoUpdateBannerNotification = () => {
 	const hasUpdatePluginCapacity = useSelect( ( select ) =>
 		select( CORE_USER ).hasCapability( PERMISSION_UPDATE_PLUGINS )
+	);
+	const isDismissed = useSelect( ( select ) =>
+		select( CORE_USER ).isItemDismissed( DISMISSED_ITEM_KEY )
 	);
 	const hasChangePluginAutoUpdatesCapacity = useSelect( ( select ) =>
 		select( CORE_SITE ).hasChangePluginAutoUpdatesCapacity()
@@ -135,6 +139,10 @@ const EnableAutoUpdateBannerNotification = () => {
 		setFirstPluginSetup,
 		siteKitAutoUpdatesEnabled,
 	] );
+
+	if ( isDismissed ) {
+		return null;
+	}
 
 	// Don't render anything if the user has no permission to update plugin,
 	// auto-updates can not be enabled for Site Kit, or auto update are already
