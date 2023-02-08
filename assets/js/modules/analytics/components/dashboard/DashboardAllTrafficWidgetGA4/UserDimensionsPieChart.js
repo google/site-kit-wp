@@ -38,7 +38,10 @@ import Data from 'googlesitekit-data';
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
 import { MODULES_ANALYTICS_4 } from '../../../../../modules/analytics-4/datastore/constants';
-import { extractAnalyticsDataForPieChart } from '../../../../../modules/analytics-4/utils';
+import {
+	extractAnalyticsDataForPieChart,
+	isSingleSlice,
+} from '../../../../../modules/analytics-4/utils';
 import {
 	UI_DIMENSION_COLOR,
 	UI_DIMENSION_VALUE,
@@ -49,7 +52,6 @@ import {
 	sanitizeHTML,
 	trackEvent,
 	getChartDifferenceArrow,
-	isSingleSliceGA4,
 } from '../../../../../util';
 import GoogleChart from '../../../../../components/GoogleChart';
 import Link from '../../../../../components/Link';
@@ -519,7 +521,7 @@ export default function UserDimensionsPieChart( props ) {
 		? sanitizeHTML( labels[ dimensionName ] || '', sanitizeArgs )
 		: { __html: '' };
 
-	const isSingleSliceReport = isSingleSliceGA4( report );
+	const isSingleSliceReport = isSingleSlice( report );
 	if ( isSingleSliceReport ) {
 		// When there is only one row, the chart will add a label which we need to hide - see issue #2660
 		options.pieSliceText = 'none';
