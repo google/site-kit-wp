@@ -72,6 +72,7 @@ const baseAllTrafficOptions = {
 
 const allTrafficReportOptions = [
 	{
+		// Pie chart, with sessionDefaultChannelGrouping dimension.
 		...baseAllTrafficOptions,
 		dimensions: [ 'sessionDefaultChannelGrouping' ],
 		orderby: [
@@ -85,6 +86,7 @@ const allTrafficReportOptions = [
 		limit: 6,
 	},
 	{
+		// Pie chart, with country dimension.
 		...baseAllTrafficOptions,
 		dimensions: [ 'country' ],
 		orderby: [
@@ -98,6 +100,7 @@ const allTrafficReportOptions = [
 		limit: 6,
 	},
 	{
+		// Pie chart, with deviceCategory dimension.
 		...baseAllTrafficOptions,
 		dimensions: [ 'deviceCategory' ],
 		orderby: [
@@ -110,8 +113,39 @@ const allTrafficReportOptions = [
 		],
 		limit: 6,
 	},
+	// Totals.
 	baseAllTrafficOptions,
 	{
+		// Line chart.
+		startDate: '2020-12-09',
+		endDate: '2021-01-05',
+		dimensions: [ 'date' ],
+		metrics: [
+			{
+				name: 'totalUsers',
+			},
+		],
+	},
+	{
+		// Line chart.
+		startDate: '2020-12-09',
+		endDate: '2021-01-05',
+		dimensions: [ 'date' ],
+		metrics: [
+			{
+				name: 'totalUsers',
+			},
+		],
+		orderby: [
+			{
+				dimension: {
+					dimensionName: 'date',
+				},
+			},
+		],
+	},
+	{
+		// Gathering data check.
 		startDate: '2020-12-09',
 		endDate: '2021-01-05',
 		dimensions: [ 'date' ],

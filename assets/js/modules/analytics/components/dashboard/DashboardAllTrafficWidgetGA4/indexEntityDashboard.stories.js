@@ -72,6 +72,7 @@ const baseAllTrafficOptions = {
 
 const allTrafficReportOptions = [
 	{
+		// Pie chart, with sessionDefaultChannelGrouping dimension.
 		...baseAllTrafficOptions,
 		dimensions: [ 'sessionDefaultChannelGrouping' ],
 		orderby: [
@@ -86,6 +87,7 @@ const allTrafficReportOptions = [
 		url: 'https://www.elasticpress.io/features/',
 	},
 	{
+		// Pie chart, with country dimension.
 		...baseAllTrafficOptions,
 		dimensions: [ 'country' ],
 		orderby: [
@@ -100,6 +102,7 @@ const allTrafficReportOptions = [
 		url: 'https://www.elasticpress.io/features/',
 	},
 	{
+		// Pie chart, with deviceCategory dimension.
 		...baseAllTrafficOptions,
 		dimensions: [ 'deviceCategory' ],
 		orderby: [
@@ -114,10 +117,31 @@ const allTrafficReportOptions = [
 		url: 'https://www.elasticpress.io/features/',
 	},
 	{
+		// Totals.
 		...baseAllTrafficOptions,
 		url: 'https://www.elasticpress.io/features/',
 	},
 	{
+		// Line chart.
+		startDate: '2020-12-09',
+		endDate: '2021-01-05',
+		dimensions: [ 'date' ],
+		metrics: [
+			{
+				name: 'totalUsers',
+			},
+		],
+		orderby: [
+			{
+				dimension: {
+					dimensionName: 'date',
+				},
+			},
+		],
+		url: 'https://www.elasticpress.io/features/',
+	},
+	{
+		// Gathering data check.
 		startDate: '2020-12-09',
 		endDate: '2021-01-05',
 		dimensions: [ 'date' ],

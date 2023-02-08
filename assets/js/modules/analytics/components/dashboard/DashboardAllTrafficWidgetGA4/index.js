@@ -115,14 +115,19 @@ function DashboardAllTrafficWidgetGA4( props ) {
 				desc: true,
 			},
 		],
-		// TODO: order by dimensionName once https://github.com/google/site-kit-wp/issues/6513 is implemented.
 		limit: 6,
 	};
 
 	const graphArgs = {
 		...baseArgs,
 		dimensions: [ 'date' ],
-		// TODO: order by date once https://github.com/google/site-kit-wp/issues/6513 is implemented.
+		orderby: [
+			{
+				dimension: {
+					dimensionName: 'date',
+				},
+			},
+		],
 	};
 
 	const totalsArgs = {
