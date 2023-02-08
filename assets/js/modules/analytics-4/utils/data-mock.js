@@ -23,8 +23,8 @@ import md5 from 'md5';
 import faker from 'faker';
 import invariant from 'invariant';
 import castArray from 'lodash/castArray';
-import { zip, from, Observable } from 'rxjs';
-import { map, reduce, take } from 'rxjs/operators';
+import { Observable, merge, from } from 'rxjs';
+import { map, reduce, take, toArray, mergeMap } from 'rxjs/operators';
 import cloneDeep from 'lodash/cloneDeep';
 import isPlainObject from 'lodash/isPlainObject';
 
@@ -74,15 +74,15 @@ const ANALYTICS_4_DIMENSION_OPTIONS = {
 };
 
 /**
- * Gets metric key.
+ * Gets the key for a metric or dimension.
  *
  * @since n.e.x.t
  *
- * @param {string|Object} metric Metric name or object.
- * @return {string} Metric key.
+ * @param {string|Object} item Metric or dimension name or object.
+ * @return {string} Metric or dimension key.
  */
-function getMetricKey( metric ) {
-	return metric?.name || metric.toString();
+function getItemKey( item ) {
+	return item?.name || item?.toString();
 }
 
 /**
@@ -94,7 +94,7 @@ function getMetricKey( metric ) {
  * @return {string} Type of the metric.
  */
 function getMetricType( metric ) {
-	return ANALYTICS_4_METRIC_TYPES[ getMetricKey( metric ) ];
+	return ANALYTICS_4_METRIC_TYPES[ getItemKey( metric ) ];
 }
 
 /**
@@ -131,44 +131,136 @@ function generateMetricValues( validMetrics ) {
 }
 
 /**
+ * Generates the cartesian product of a set of arrays, i.e. all possible combinations of their values.
+ *
+ * Cribbed from https://stackoverflow.com/a/36234242/12296658, thanks to the original author(s).
+ *
+ * @since n.e.x.t
+ *
+ * @param {Array.<Array>} arrays An array of arrays.
+ * @return {Array.<Array>} The cartesian product of the input arrays.
+ */
+function cartesianProduct( arrays ) {
+	return arrays.reduce(
+		function ( arrayA, arrayB ) {
+			return arrayA
+				.map( function ( valueA ) {
+					return arrayB.map( function ( valueB ) {
+						return valueA.concat( [ valueB ] );
+					} );
+				} )
+				.reduce( function ( innerA, innerB ) {
+					return innerA.concat( innerB );
+				}, [] );
+		},
+		[ [] ]
+	);
+}
+
+/**
+ * Finds a metric value in a row.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object}               row        Report row.
+ * @param {Array<string|Object>} metrics    Array of valid metrics.
+ * @param {string}               metricName Metric name.
+ * @return {number|null} Metric value, or null if not found.
+ */
+function findMetricValue( row, metrics, metricName ) {
+	const index = metrics.findIndex(
+		( metric ) => getItemKey( metric ) === metricName
+	);
+	if ( index === -1 ) {
+		return null;
+	}
+	return parseInt( row.metricValues[ index ].value, 10 );
+}
+
+/**
+ * Finds a dimension value in a row.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object}               row           Report row.
+ * @param {Array<string|Object>} dimensions    Array of valid dimensions.
+ * @param {string}               dimensionName Dimension name.
+ * @return {string|null} Dimension value, or null if not found.
+ */
+function findDimensionValue( row, dimensions, dimensionName ) {
+	const index = dimensions.findIndex(
+		( dimension ) => getItemKey( dimension ) === dimensionName
+	);
+	if ( index === -1 ) {
+		return null;
+	}
+	return row.dimensionValues[ index ].value;
+}
+
+/**
+ * Compares two rows by the given sorting options.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Array.<Object>} rowA       First row to compare.
+ * @param {Array.<Object>} rowB       Second row to compare.
+ * @param {Array.<Object>} metrics    Array of report metrics.
+ * @param {Array.<Object>} dimensions Array of report dimensions.
+ * @param {Array.<Object>} orderby    Sorting options.
+ * @return {Array.<Object>} Sorted rows.
+ */
+function compareRows( rowA, rowB, metrics, dimensions, orderby ) {
+	const order = orderby[ 0 ];
+	let valA, valB;
+
+	if ( order.metric ) {
+		valA = findMetricValue( rowA, metrics, order.metric.metricName );
+		valB = findMetricValue( rowB, metrics, order.metric.metricName );
+	} else if ( order.dimension ) {
+		valA = findDimensionValue(
+			rowA,
+			dimensions,
+			order.dimension.dimensionName
+		);
+		valB = findDimensionValue(
+			rowB,
+			dimensions,
+			order.dimension.dimensionName
+		);
+	}
+
+	if ( valA === valB ) {
+		if ( orderby.length > 1 ) {
+			return compareRows(
+				rowA,
+				rowB,
+				metrics,
+				dimensions,
+				orderby.slice( 1 )
+			);
+		}
+		return 0;
+	}
+
+	const direction = order.desc ? -1 : 1;
+	return ( valA < valB ? -1 : 1 ) * direction;
+}
+
+/**
  * Sorts report rows and returns it.
  *
  * @since n.e.x.t
  *
- * @param {Array.<Object>}        rows    Array of rows to sort.
- * @param {Array.<Object>}        metrics Array of report metrics.
- * @param {Object|Array.<Object>} orderby Sorting options.
+ * @param {Array.<Object>} rows       Array of rows to sort.
+ * @param {Array.<Object>} metrics    Array of report metrics.
+ * @param {Array.<Object>} dimensions Array of report dimensions.
+ * @param {Array.<Object>} orderby    Sorting options.
  * @return {Array.<Object>} Sorted rows.
  */
-function sortRows( rows, metrics, orderby ) {
-	let sorted = rows;
-
-	const orders = castArray( orderby );
-	for ( const order of orders ) {
-		const direction = order?.sortOrder === 'DESCENDING' ? -1 : 1;
-		const index = metrics.findIndex(
-			( metric ) => getMetricKey( metric ) === order?.fieldName
-		);
-		if ( index < 0 ) {
-			continue;
-		}
-
-		sorted = sorted.sort( ( a, b ) => {
-			let valA = parseFloat( a.metricValues[ index ]?.value );
-			if ( Number.isNaN( valA ) ) {
-				valA = 0;
-			}
-
-			let valB = parseFloat( b.metricValues[ index ]?.value );
-			if ( Number.isNaN( valB ) ) {
-				valB = 0;
-			}
-
-			return ( valA - valB ) * direction;
-		} );
-	}
-
-	return sorted;
+function sortRows( rows, metrics, dimensions, orderby ) {
+	return rows.sort( ( rowA, rowB ) =>
+		compareRows( rowA, rowB, metrics, dimensions, orderby )
+	);
 }
 
 /**
@@ -201,44 +293,6 @@ function generateDateRange( startDate, endDate ) {
 }
 
 /**
- * Returns the earliest of two dates.
- *
- * @since n.e.x.t
- *
- * @param {string} dateA The first date.
- * @param {string} dateB The second date.
- * @return {string} The earliest date.
- */
-function getEarliestDate( dateA, dateB ) {
-	if ( ! dateB ) {
-		return dateA;
-	}
-
-	return stringToDate( dateA ).getTime() < stringToDate( dateB ).getTime()
-		? dateA
-		: dateB;
-}
-
-/**
- * Returns the latest of two dates.
- *
- * @since n.e.x.t
- *
- * @param {string} dateA The first date.
- * @param {string} dateB The second date.
- * @return {string} The latest date.
- */
-function getLatestDate( dateA, dateB ) {
-	if ( ! dateB ) {
-		return dateA;
-	}
-
-	return stringToDate( dateA ).getTime() > stringToDate( dateB ).getTime()
-		? dateA
-		: dateB;
-}
-
-/**
  * Generates mock data for Analytics 4 reports.
  *
  * @since n.e.x.t
@@ -260,6 +314,7 @@ export function getAnalytics4MockResponse( options ) {
 		'a valid endDate is required.'
 	);
 
+	// Ensure we don't mutate the passed options to avoid unexpected side effects for the caller.
 	const args = cloneDeep( options );
 
 	const originalSeedValue = faker.seedValue;
@@ -308,48 +363,30 @@ export function getAnalytics4MockResponse( options ) {
 	}
 
 	dimensions.forEach( ( singleDimension ) => {
-		const dimension = singleDimension?.name || singleDimension?.toString();
+		const dimension = getItemKey( singleDimension );
 
-		if ( dimension === 'date' || dimension === 'dateRange' ) {
-			// When a comparison date range is specified, the report will contain a merged date range of the current and compare periods.
-			const startDate = getEarliestDate(
-				args.startDate,
-				args.compareStartDate
-			);
-			const endDate = getLatestDate( args.endDate, args.compareEndDate );
+		if ( dimension === 'date' ) {
+			const dateRanges = [
+				generateDateRange( args.startDate, args.endDate ),
+			];
 
-			const dateRange = generateDateRange( startDate, endDate );
-
-			// Generates a stream (an array) of dates when the dimension is date.
-			if ( dimension === 'date' ) {
-				streams.push(
-					new Observable( ( observer ) => {
-						dateRange.forEach( ( date ) => {
-							observer.next( date );
-
-							if ( hasDateRange ) {
-								// Duplicate date if we have a date range.
-								observer.next( date );
-							}
-						} );
-
-						observer.complete();
-					} )
+			if ( args.compareStartDate && args.compareEndDate ) {
+				// When a comparison date range is specified, the report will contain a combined date range of all the dates in the current and compare periods.
+				dateRanges.push(
+					generateDateRange(
+						args.compareStartDate,
+						args.compareEndDate
+					)
 				);
 			}
 
-			if ( dimension === 'dateRange' ) {
-				streams.push(
-					new Observable( ( observer ) => {
-						dateRange.forEach( () => {
-							observer.next( 'date_range_0' );
-							observer.next( 'date_range_1' );
-						} );
+			// Create a set of unique dates from the date ranges.
+			const dateRange = new Set( dateRanges.flat() );
 
-						observer.complete();
-					} )
-				);
-			}
+			// Generates a stream (an array) of dates.
+			streams.push( from( [ ...dateRange ] ) );
+		} else if ( dimension === 'dateRange' ) {
+			streams.push( from( [ 'date_range_0', 'date_range_1' ] ) );
 		} else if (
 			dimension &&
 			typeof ANALYTICS_4_DIMENSION_OPTIONS[ dimension ] === 'function'
@@ -363,11 +400,6 @@ export function getAnalytics4MockResponse( options ) {
 							ANALYTICS_4_DIMENSION_OPTIONS[ dimension ]( i );
 						if ( val ) {
 							observer.next( val );
-
-							if ( hasDateRange ) {
-								// Duplicate value if we have a date range.
-								observer.next( val );
-							}
 						} else {
 							break;
 						}
@@ -380,27 +412,11 @@ export function getAnalytics4MockResponse( options ) {
 			dimension &&
 			Array.isArray( ANALYTICS_4_DIMENSION_OPTIONS[ dimension ] )
 		) {
-			// Generates a stream (an array) of dimension values using the array of values for the current dimension.
-			streams.push(
-				new Observable( ( observer ) => {
-					ANALYTICS_4_DIMENSION_OPTIONS[ dimension ].forEach(
-						( val ) => {
-							observer.next( val );
-
-							if ( hasDateRange ) {
-								// Duplicate value if we have a date range.
-								observer.next( val );
-							}
-						}
-					);
-
-					observer.complete();
-				} )
-			);
+			// Uses predefined array of dimension values to create a stream (an array) from.
+			streams.push( from( ANALYTICS_4_DIMENSION_OPTIONS[ dimension ] ) );
 		} else {
-			// In case when a dimension is not provided or is not recognized, we use NULL to create a stream (an array).
-			// If a date range is provided, we want to generate two rows, one for each range. Otherwise we just generate a single row.
-			streams.push( from( hasDateRange ? [ null, null ] : [ null ] ) );
+			// In case when a dimension is not provided or is not recognized, we use NULL to create a stream (an array) with just one value.
+			streams.push( from( [ null ] ) );
 		}
 	} );
 
@@ -423,13 +439,24 @@ export function getAnalytics4MockResponse( options ) {
 		reduce( ( rows, row ) => [ ...rows, row ], [] ),
 		// Sort rows if args.orderby is provided.
 		map( ( rows ) =>
-			args.orderby ? sortRows( rows, validMetrics, args.orderby ) : rows
+			args.orderby
+				? sortRows( rows, validMetrics, args.dimensions, args.orderby )
+				: rows
 		),
 	];
 
-	// Process the stream of dimension values and add generated rows to the report data object.
-	zip( ...streams )
-		.pipe( ...ops )
+	// Process the streams of dimension values and add generated rows to the report data object.
+	// First we merge all streams into one which will emit each set of dimension values as an array.
+	merge( ...streams.map( ( stream ) => stream.pipe( toArray() ) ) )
+		.pipe(
+			// Then we convert the resulting stream to an array...
+			toArray(),
+			// So that we can pass it to the cartesianProduct function to generate all possible combinations of dimension values.
+			// Using mergeMap here ensures the resulting set of values will be emitted as a new stream.
+			mergeMap( cartesianProduct ),
+			// Then we apply the remaining operations to generate a row for each combination of dimension values.
+			...ops
+		)
 		.subscribe( ( rows ) => {
 			data.rows = rows;
 			data.rowCount = rows.length;
@@ -474,6 +501,8 @@ export function getAnalytics4MockResponse( options ) {
 					: []
 			);
 
+			// For maximums and totals, if we have a date range the second to last row will be date_range_0 and the last row will be date_range_1.
+			// When there is no date range we only need to use the last row.
 			const firstItemIndex = rows.length - ( hasDateRange ? 2 : 1 );
 
 			data.maximums = [

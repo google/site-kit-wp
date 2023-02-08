@@ -48,27 +48,6 @@
 		display: none;
 	}
 
-	&--win-warning {
-		border-right: 4px solid $c-warning;
-
-		.googlesitekit-publisher-win__icons {
-			color: $c-warning;
-		}
-	}
-
-	&--win-error {
-		border-right: 4px solid $c-error;
-
-		.googlesitekit-publisher-win__icons {
-			color: $c-cinnabar;
-		}
-	}
-
-	&--is-closed {
-		opacity: 0;
-		visibility: hidden;
-	}
-
 	.googlesitekit-publisher-win__image-smaller {
 
 		svg {
@@ -238,4 +217,25 @@
 	&.googlesitekit-publisher-win--rounded {
 		border-radius: $br-md;
 	}
+}
+
+.googlesitekit-publisher-win--win-warning {
+	border-right: 4px solid $c-warning;
+
+	.googlesitekit-publisher-win__icons {
+		color: $c-warning;
+	}
+}
+
+.googlesitekit-publisher-win--win-error {
+	border-right: 4px solid $c-error;
+
+	.googlesitekit-publisher-win__icons {
+		color: $c-cinnabar;
+	}
+}
+
+.googlesitekit-publisher-win--is-closed {
+	opacity: 0;
+	visibility: hidden;
 }

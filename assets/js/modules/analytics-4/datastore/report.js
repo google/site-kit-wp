@@ -32,15 +32,13 @@ import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { DATE_RANGE_OFFSET, MODULES_ANALYTICS_4 } from './constants';
 import { stringifyObject } from '../../../util';
-import {
-	isValidDateRange,
-	isValidOrders,
-} from '../../../util/report-validation';
+import { isValidDateRange } from '../../../util/report-validation';
 import {
 	normalizeReportOptions,
 	isValidDimensionFilters,
 	isValidDimensions,
 	isValidMetrics,
+	isValidOrders,
 } from '../utils';
 import { isZeroReport } from '../util';
 const { createRegistrySelector } = Data;
@@ -106,7 +104,7 @@ const fetchGetReportStore = createFetchStore( {
 		if ( orderby ) {
 			invariant(
 				isValidOrders( orderby ),
-				'orderby for an Analytics 4 report must be either an object or an array of objects where each object should have "fieldName" and "sortOrder" properties.'
+				'orderby for an Analytics 4 report must be an object where each object should have either a "metric" or "dimension" property, and an optional "desc" property.'
 			);
 		}
 	},

@@ -63,11 +63,13 @@ export default function UserInputSettings( {
 	const searchConsoleIsGatheringData = useSelect( ( select ) =>
 		select( MODULES_SEARCH_CONSOLE ).isGatheringData()
 	);
-	const analyticsIsGatheringData = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).isGatheringData()
+	const analyticsIsGatheringData = useSelect(
+		( select ) =>
+			analyticsModuleConnected &&
+			select( MODULES_ANALYTICS ).isGatheringData()
 	);
 
-	if ( isUserInputCompleted ) {
+	if ( isUserInputCompleted === undefined || isUserInputCompleted ) {
 		return null;
 	}
 

@@ -39,14 +39,18 @@ import { ESCAPE, TAB } from '@wordpress/keycodes';
  */
 import Data from 'googlesitekit-data';
 import { Button, Dialog, Menu } from 'googlesitekit-components';
-import { trackEvent } from '../util';
-import { clearCache } from '../googlesitekit/api/cache';
-import Portal from './Portal';
-import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
-import { CORE_USER } from '../googlesitekit/datastore/user/constants';
-import { CORE_LOCATION } from '../googlesitekit/datastore/location/constants';
-import { useKeyCodesInside } from '../hooks/useKeyCodesInside';
-import useViewContext from '../hooks/useViewContext';
+import { trackEvent } from '../../util';
+import { clearCache } from '../../googlesitekit/api/cache';
+import Portal from '../Portal';
+import Details from './Details';
+import Item from './Item';
+import DisconnectIcon from '../../../svg/icons/disconnect.svg';
+import ManageSitesIcon from '../../../svg/icons/manage-sites.svg';
+import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
+import { useKeyCodesInside } from '../../hooks/useKeyCodesInside';
+import useViewContext from '../../hooks/useViewContext';
 const { useSelect, useDispatch } = Data;
 
 export default function UserMenu() {
@@ -107,12 +111,13 @@ export default function UserMenu() {
 	}, [ dialogActive ] );
 
 	const handleMenuItemSelect = useCallback(
-		async ( index ) => {
-			switch ( index ) {
-				case 0:
-					handleDialog();
-					break;
-				case 1:
+		async ( _index, event ) => {
+			const {
+				detail: { item },
+			} = event;
+
+			switch ( item?.id ) {
+				case 'manage-sites':
 					if ( proxyPermissionsURL ) {
 						await trackEvent(
 							`${ viewContext }_headerbar_usermenu`,
@@ -120,6 +125,9 @@ export default function UserMenu() {
 						);
 						navigateTo( proxyPermissionsURL );
 					}
+					break;
+				case 'disconnect':
+					handleDialog();
 					break;
 				default:
 					handleMenu();
@@ -201,18 +209,40 @@ export default function UserMenu() {
 				/>
 
 				<Menu
-					className="googlesitekit-width-auto"
+					className="googlesitekit-user-menu"
 					menuOpen={ menuOpen }
-					menuItems={ [
-						__( 'Disconnect', 'google-site-kit' ),
-					].concat(
-						proxyPermissionsURL
-							? [ __( 'Manage sites…', 'google-site-kit' ) ]
-							: []
-					) }
 					onSelected={ handleMenuItemSelect }
 					id="user-menu"
-				/>
+				>
+					<li>
+						<Details />
+					</li>
+					{ !! proxyPermissionsURL && (
+						<li
+							id="manage-sites"
+							className="mdc-list-item"
+							role="menuitem"
+						>
+							<Item
+								icon={ <ManageSitesIcon width="22" /> }
+								label={ __(
+									'Manage Sites',
+									'google-site-kit'
+								) }
+							/>
+						</li>
+					) }
+					<li
+						id="disconnect"
+						className="mdc-list-item"
+						role="menuitem"
+					>
+						<Item
+							icon={ <DisconnectIcon width="22" /> }
+							label={ __( 'Disconnect', 'google-site-kit' ) }
+						/>
+					</li>
+				</Menu>
 			</div>
 			<Portal>
 				<Dialog

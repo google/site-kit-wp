@@ -1174,50 +1174,36 @@ final class Analytics_4 extends Module
 	 * Parses the orderby value of the data request into an array of AnalyticsData OrderBy object instances.
 	 *
 	 * @since 1.93.0
+	 * @since n.e.x.t Updated to provide support for ordering by dimensions.
 	 *
 	 * @param array|null $orderby Data request orderby value.
 	 * @return Google_Service_AnalyticsData_OrderBy[] An array of AnalyticsData OrderBy objects.
 	 */
 	protected function parse_reporting_orderby( $orderby ) {
-		if ( empty( $orderby ) || ! is_array( $orderby ) ) {
+		if ( empty( $orderby ) || ! is_array( $orderby ) || ! wp_is_numeric_array( $orderby ) ) {
 			return array();
 		}
 
 		$results = array_map(
 			function ( $order_def ) {
-				$order_def = array_merge(
-					array(
-						'fieldName' => '',
-						'sortOrder' => '',
-					),
-					(array) $order_def
-				);
+				$order_by = new Google_Service_AnalyticsData_OrderBy();
+				$order_by->setDesc( ! empty( $order_def['desc'] ) );
 
-				if ( empty( $order_def['fieldName'] ) || empty( $order_def['sortOrder'] ) ) {
+				if ( isset( $order_def['metric'] ) && isset( $order_def['metric']['metricName'] ) ) {
+					$metric_order_by = new Google_Service_AnalyticsData_MetricOrderBy();
+					$metric_order_by->setMetricName( $order_def['metric']['metricName'] );
+					$order_by->setMetric( $metric_order_by );
+				} elseif ( isset( $order_def['dimension'] ) && isset( $order_def['dimension']['dimensionName'] ) ) {
+					$dimension_order_by = new Google_Service_AnalyticsData_DimensionOrderBy();
+					$dimension_order_by->setDimensionName( $order_def['dimension']['dimensionName'] );
+					$order_by->setDimension( $dimension_order_by );
+				} else {
 					return null;
 				}
 
-				$order_by = new Google_Service_AnalyticsData_OrderBy();
-
-				// TODO: Need to provide metric and dimension order params instead of hardwiring for 'date'.
-				// See https://github.com/google/site-kit-wp/issues/6513.
-				if ( 'date' === $order_def['fieldName'] ) {
-					$metric_order_by = new Google_Service_AnalyticsData_DimensionOrderBy();
-					$metric_order_by->setDimensionName( $order_def['fieldName'] );
-					$order_by->setDimension( $metric_order_by );
-				} else {
-					$metric_order_by = new Google_Service_AnalyticsData_MetricOrderBy();
-					$metric_order_by->setMetricName( $order_def['fieldName'] );
-					$order_by = new Google_Service_AnalyticsData_OrderBy();
-					$order_by->setMetric( $metric_order_by );
-				}
-
-				$order_by->setDesc( 'DESCENDING' === $order_def['sortOrder'] );
-
 				return $order_by;
 			},
-			// When just object is passed we need to convert it to an array of objects.
-			wp_is_numeric_array( $orderby ) ? $orderby : array( $orderby )
+			$orderby
 		);
 
 		$results = array_filter( $results );
