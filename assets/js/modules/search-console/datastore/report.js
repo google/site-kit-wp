@@ -130,7 +130,7 @@ const baseSelectors = {
 	},
 
 	/**
-	 * Determines whether data is available for search console.
+	 * Determines whether data is available for Search Console.
 	 *
 	 * @since 1.44.0
 	 * @since n.e.x.t Renamed to `determineDataAvailability` and flipped return value.

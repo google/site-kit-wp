@@ -50,6 +50,7 @@ import {
 } from '../util/report-validation';
 import { actions as adsenseActions } from './adsense';
 import { isZeroReport } from '../util';
+import createGatheringDataStore from '../../../googlesitekit/modules/create-gathering-data-store';
 
 const { createRegistrySelector } = Data;
 
@@ -119,6 +120,8 @@ const fetchGetReportStore = createFetchStore( {
 		}
 	},
 } );
+
+const gatheringDataStore = createGatheringDataStore( 'analytics' );
 
 const baseInitialState = {
 	reports: {},
@@ -283,14 +286,14 @@ const baseSelectors = {
 	),
 
 	/**
-	 * Determines whether the Analytics is still gathering data.
+	 * Determines whether data is available for Analytics.
 	 *
-	 * @todo Review the name of this selector to a less confusing one.
 	 * @since 1.44.0
+	 * @since n.e.x.t Renamed to `determineDataAvailability` and flipped return value.
 	 *
-	 * @return {boolean|undefined} Returns `true` if gathering data, otherwise `false`. Returns `undefined` while resolving.
+	 * @return {boolean|undefined} Returns TRUE if data is available, otherwise FALSE. If the request is still being resolved, returns undefined.
 	 */
-	isGatheringData: createRegistrySelector( ( select ) => () => {
+	determineDataAvailability: createRegistrySelector( ( select ) => () => {
 		const { startDate, endDate } = select( CORE_USER ).getDateRangeDates( {
 			offsetDays: DATE_RANGE_OFFSET,
 		} );
@@ -319,17 +322,17 @@ const baseSelectors = {
 		}
 
 		if ( ! Array.isArray( report ) ) {
-			return false;
+			return true;
 		}
 
 		if (
 			! Array.isArray( report[ 0 ]?.data?.rows ) ||
 			report[ 0 ]?.data?.rows?.length === 0
 		) {
-			return true;
+			return false;
 		}
 
-		return false;
+		return true;
 	} ),
 
 	/**
@@ -385,7 +388,7 @@ const baseSelectors = {
 	} ),
 };
 
-const store = Data.combineStores( fetchGetReportStore, {
+const store = Data.combineStores( fetchGetReportStore, gatheringDataStore, {
 	initialState: baseInitialState,
 	resolvers: baseResolvers,
 	selectors: baseSelectors,
