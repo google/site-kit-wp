@@ -28,6 +28,7 @@ import {
 	fireEvent,
 	provideUserCapabilities,
 	provideSiteInfo,
+	freezeFetch,
 } from '../../../../../tests/js/test-utils';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import EnableAutoUpdateBannerNotification from '.';
@@ -35,6 +36,7 @@ import useQueryArg from '../../../hooks/useQueryArg';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import * as apiCache from '../../../googlesitekit/api/cache';
 import { DISMISSED_ITEM_KEY } from './constants';
+import fetchMock from 'fetch-mock';
 
 jest.mock( '../../../hooks/useQueryArg' );
 
@@ -123,6 +125,34 @@ describe( 'EnableAutoUpdateBannerNotification', () => {
 		await waitForRegistry();
 
 		expect( container ).toBeEmptyDOMElement();
+	} );
+
+	it( 'should set a dismissed item when dismissed', async () => {
+		provideSiteInfo( registry, {
+			changePluginAutoUpdatesCapacity: true,
+			siteKitAutoUpdatesEnabled: false,
+		} );
+
+		provideUserCapabilities( registry, {
+			googlesitekit_update_plugins: true,
+		} );
+
+		render( <EnableAutoUpdateBannerNotification />, {
+			registry,
+		} );
+
+		expect(
+			await screen.findByText( 'Keep Site Kit up-to-date' )
+		).toBeInTheDocument();
+
+		freezeFetch( new RegExp( 'core/user/data/dismiss-item' ) );
+
+		fireEvent.click( screen.getByText( 'Dismiss' ) );
+
+		expect( fetchMock ).toHaveFetchedTimes( 1 );
+		expect( fetchMock ).toHaveFetched(
+			new RegExp( 'core/user/data/dismiss-item' )
+		);
 	} );
 
 	it( 'should not show the notification when auto updates are already enabled for Site Kit', async () => {

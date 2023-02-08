@@ -68,6 +68,7 @@ const EnableAutoUpdateBannerNotification = () => {
 	);
 
 	const { enableAutoUpdate } = useDispatch( CORE_SITE );
+	const { dismissItem } = useDispatch( CORE_USER );
 
 	const [ notification ] = useQueryArg( 'notification' );
 
@@ -206,7 +207,7 @@ const EnableAutoUpdateBannerNotification = () => {
 			dismiss={ __( 'Dismiss', 'google-site-kit' ) }
 			isDismissible
 			dismissExpires={ 0 }
-			dismissOnCTAClick={ enabledViaCTA }
+			onDismiss={ () => dismissItem( DISMISSED_ITEM_KEY ) }
 		/>
 	);
 };
