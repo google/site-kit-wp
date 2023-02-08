@@ -29,7 +29,7 @@ import {
 	waitForDefaultTimeouts,
 	subscribeUntil,
 } from '../../../../../tests/js/utils';
-import { isZeroReport } from '../util';
+import { isZeroReport } from '../utils';
 import * as fixtures from './__fixtures__';
 
 describe( 'modules/analytics-4 report', () => {

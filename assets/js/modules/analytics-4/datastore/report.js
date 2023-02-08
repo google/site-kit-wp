@@ -39,8 +39,8 @@ import {
 	isValidDimensions,
 	isValidMetrics,
 	isValidOrders,
+	isZeroReport,
 } from '../utils';
-import { isZeroReport } from '../util';
 const { createRegistrySelector } = Data;
 
 const fetchGetReportStore = createFetchStore( {

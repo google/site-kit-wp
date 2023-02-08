@@ -38,7 +38,7 @@ import Data from 'googlesitekit-data';
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
 import { MODULES_ANALYTICS_4 } from '../../../../../modules/analytics-4/datastore/constants';
-import { extractAnalyticsDataForPieChart } from '../../../../../modules/analytics-4/util';
+import { extractAnalyticsDataForPieChart } from '../../../../../modules/analytics-4/utils';
 import {
 	UI_DIMENSION_COLOR,
 	UI_DIMENSION_VALUE,
