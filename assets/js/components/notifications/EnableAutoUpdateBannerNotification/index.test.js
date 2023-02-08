@@ -26,14 +26,14 @@ import {
 	waitFor,
 	act,
 	fireEvent,
-} from '../../../../tests/js/test-utils';
-import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import EnableAutoUpdateBannerNotification from './EnableAutoUpdateBannerNotification';
-import useQueryArg from '../../hooks/useQueryArg';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import * as apiCache from '../../googlesitekit/api/cache';
+} from '../../../../../tests/js/test-utils';
+import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
+import EnableAutoUpdateBannerNotification from '.';
+import useQueryArg from '../../../hooks/useQueryArg';
+import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
+import * as apiCache from '../../../googlesitekit/api/cache';
 
-jest.mock( '../../hooks/useQueryArg' );
+jest.mock( '../../../hooks/useQueryArg' );
 
 // Set up mockImplementation for `useQueryArg` used in this component,
 // so we can set the query params used to check whether this is a new Site Kit

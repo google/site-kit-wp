@@ -24,10 +24,10 @@ import fetchMock from 'fetch-mock';
 /**
  * Internal dependencies
  */
-import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
-import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import EnableAutoUpdateBannerNotification from './EnableAutoUpdateBannerNotification';
+import WithRegistrySetup from '../../../../../tests/js/WithRegistrySetup';
+import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
+import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
+import EnableAutoUpdateBannerNotification from '.';
 
 const Template = () => <EnableAutoUpdateBannerNotification />;
 
