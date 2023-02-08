@@ -1,7 +1,7 @@
 /**
- * DataBlockAddons component.
+ * Change component.
  *
- * Site Kit by Google, Copyright 2023 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,24 +25,16 @@ import classnames from 'classnames';
 /**
  * WordPress dependencies
  */
-import { Fragment } from '@wordpress/element';
 import { sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import { numFmt } from '../util';
-import ChangeArrow from './ChangeArrow';
-import SourceLink from './SourceLink';
+import { numFmt } from '../../util';
+import { Fragment } from 'react';
+import ChangeArrow from '../ChangeArrow';
 
-const DataBlockAddons = ( {
-	sparklineComponent,
-	change,
-	changeDataUnit,
-	period,
-	invertChangeColor,
-	source,
-} ) => {
+const Change = ( { change, changeDataUnit, period, invertChangeColor } ) => {
 	let changeFormatted = change;
 
 	// If changeDataUnit is given, try using it as currency first, otherwise add it as suffix.
@@ -65,58 +57,35 @@ const DataBlockAddons = ( {
 	}
 
 	return (
-		<Fragment>
-			{ sparklineComponent && (
-				<div className="googlesitekit-data-block__sparkline">
-					{ sparklineComponent }
-				</div>
-			) }
-			<div className="googlesitekit-data-block__change-source-wrapper">
-				<div
-					className={ classnames(
-						'googlesitekit-data-block__change',
-						{
-							'googlesitekit-data-block__change--no-change':
-								! change,
-						}
-					) }
-				>
-					<Fragment>
-						{ !! change && (
-							<span className="googlesitekit-data-block__arrow">
-								<ChangeArrow
-									direction={
-										0 < parseFloat( change ) ? 'up' : 'down'
-									}
-									invertColor={ invertChangeColor }
-								/>
-							</span>
-						) }
-						<span className="googlesitekit-data-block__value">
-							{ changeFormatted }
-						</span>
-					</Fragment>
-				</div>
-				{ source && (
-					<SourceLink
-						className="googlesitekit-data-block__source"
-						name={ source.name }
-						href={ source.link }
-						external={ source?.external }
-					/>
+		<div
+			className={ classnames( 'googlesitekit-data-block__change', {
+				'googlesitekit-data-block__change--no-change': ! change,
+			} ) }
+		>
+			<Fragment>
+				{ !! change && (
+					<span className="googlesitekit-data-block__arrow">
+						<ChangeArrow
+							direction={
+								0 < parseFloat( change ) ? 'up' : 'down'
+							}
+							invertColor={ invertChangeColor }
+						/>
+					</span>
 				) }
-			</div>
-		</Fragment>
+				<span className="googlesitekit-data-block__value">
+					{ changeFormatted }
+				</span>
+			</Fragment>
+		</div>
 	);
 };
 
-DataBlockAddons.propTypes = {
-	sparklineComponent: PropTypes.element,
+Change.propTypes = {
 	change: PropTypes.oneOfType( [ PropTypes.string, PropTypes.number ] ),
 	changeDataUnit: PropTypes.oneOfType( [ PropTypes.string, PropTypes.bool ] ),
 	period: PropTypes.string,
 	invertChangeColor: PropTypes.bool,
-	source: PropTypes.object,
 };
 
-export default DataBlockAddons;
+export default Change;

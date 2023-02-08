@@ -25,14 +25,17 @@ import classnames from 'classnames';
 /**
  * WordPress dependencies
  */
-import { useCallback, cloneElement } from '@wordpress/element';
+import { useCallback } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
-import GatheringDataNotice, { NOTICE_STYLE } from './GatheringDataNotice';
-import { numFmt } from '../util';
-import DataBlockAddons from './DataBlockAddons';
+import GatheringDataNotice, { NOTICE_STYLE } from '../GatheringDataNotice';
+import { numFmt } from '../../util';
+import { Fragment } from 'react';
+import Sparkline from './Sparkline';
+import Change from './Change';
+import SourceLink from '../SourceLink';
 
 const DataBlock = ( {
 	stat = null,
@@ -67,16 +70,6 @@ const DataBlock = ( {
 		},
 		[ handleClick ]
 	);
-
-	// The `sparkline` prop is passed as a component, but if `invertChangeColor`
-	// is set, we should pass that to `<Sparkline>`. In that case, we clone
-	// the element and add the prop.
-	let sparklineComponent = sparkline;
-	if ( sparklineComponent && invertChangeColor ) {
-		sparklineComponent = cloneElement( sparkline, {
-			invertChangeColor,
-		} );
-	}
 
 	const datapointFormatted =
 		datapoint === undefined
@@ -123,14 +116,31 @@ const DataBlock = ( {
 				) }
 			</div>
 			{ ! gatheringData && (
-				<DataBlockAddons
-					sparklineComponent={ sparklineComponent }
-					change={ change }
-					changeDataUnit={ changeDataUnit }
-					period={ period }
-					invertChangeColor={ invertChangeColor }
-					source={ source }
-				/>
+				<Fragment>
+					{ sparkline && (
+						<Sparkline
+							sparkline={ sparkline }
+							invertChangeColor={ invertChangeColor }
+						/>
+					) }
+
+					<div className="googlesitekit-data-block__change-source-wrapper">
+						<Change
+							change={ change }
+							changeDataUnit={ changeDataUnit }
+							period={ period }
+							invertChangeColor={ invertChangeColor }
+						/>
+						{ source && (
+							<SourceLink
+								className="googlesitekit-data-block__source"
+								name={ source.name }
+								href={ source.link }
+								external={ source?.external }
+							/>
+						) }
+					</div>
+				</Fragment>
 			) }
 
 			{ gatheringData && (
