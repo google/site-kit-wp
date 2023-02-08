@@ -912,7 +912,7 @@ final class Analytics_4 extends Module
 	/**
 	 * Gets the Google Tag Settings for the given measurement ID.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.94.0
 	 *
 	 * @param Google_Service_TagManager_Container $container Tag Manager container.
 	 * @param string                              $measurement_id Measurement ID.
@@ -929,7 +929,7 @@ final class Analytics_4 extends Module
 	/**
 	 * Determines Google Tag ID from the given Tag IDs.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.94.0
 	 *
 	 * @param array  $tag_ids Tag IDs.
 	 * @param string $measurement_id Measurement ID.

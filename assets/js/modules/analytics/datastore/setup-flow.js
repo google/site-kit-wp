@@ -118,7 +118,7 @@ const baseSelectors = {
 	/**
 	 * Determines whether the live container version has finished loading.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.94.0
 	 *
 	 * @return {boolean} TRUE if the GTM module is not available or the live container version has finished loading, otherwise FALSE.
 	 */

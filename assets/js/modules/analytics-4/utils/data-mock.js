@@ -76,7 +76,7 @@ const ANALYTICS_4_DIMENSION_OPTIONS = {
 /**
  * Gets metric key.
  *
- * @since n.e.x.t
+ * @since 1.94.0
  *
  * @param {string|Object} metric Metric name or object.
  * @return {string} Metric key.
@@ -88,7 +88,7 @@ function getMetricKey( metric ) {
 /**
  * Gets metric type.
  *
- * @since n.e.x.t
+ * @since 1.94.0
  *
  * @param {string|Object} metric Metric name or object.
  * @return {string} Type of the metric.
@@ -100,7 +100,7 @@ function getMetricType( metric ) {
 /**
  * Generates and returns metric values.
  *
- * @since n.e.x.t
+ * @since 1.94.0
  *
  * @param {Array.<Object>} validMetrics Metric list.
  * @return {Array.<Object>} Array of metric values.
@@ -135,7 +135,7 @@ function generateMetricValues( validMetrics ) {
  *
  * Cribbed from https://stackoverflow.com/a/36234242/12296658, thanks to the original author(s).
  *
- * @since n.e.x.t
+ * @since 1.94.0
  *
  * @param {Array.<Array>} arrays An array of arrays.
  * @return {Array.<Array>} The cartesian product of the input arrays.
@@ -160,7 +160,7 @@ function cartesianProduct( arrays ) {
 /**
  * Sorts report rows and returns it.
  *
- * @since n.e.x.t
+ * @since 1.94.0
  *
  * @param {Array.<Object>}        rows    Array of rows to sort.
  * @param {Array.<Object>}        metrics Array of report metrics.
@@ -201,7 +201,7 @@ function sortRows( rows, metrics, orderby ) {
 /**
  * Generates date range.
  *
- * @since n.e.x.t
+ * @since 1.94.0
  *
  * @param {string} startDate The start date.
  * @param {string} endDate   The end date.
@@ -230,7 +230,7 @@ function generateDateRange( startDate, endDate ) {
 /**
  * Returns the earliest of two dates.
  *
- * @since n.e.x.t
+ * @since 1.94.0
  *
  * @param {string} dateA The first date.
  * @param {string} dateB The second date.
@@ -249,7 +249,7 @@ function getEarliestDate( dateA, dateB ) {
 /**
  * Returns the latest of two dates.
  *
- * @since n.e.x.t
+ * @since 1.94.0
  *
  * @param {string} dateA The first date.
  * @param {string} dateB The second date.
@@ -268,7 +268,7 @@ function getLatestDate( dateA, dateB ) {
 /**
  * Generates mock data for Analytics 4 reports.
  *
- * @since n.e.x.t
+ * @since 1.94.0
  *
  * @param {Object} options Report options.
  * @return {Array.<Object>} An array with generated report.
@@ -575,7 +575,7 @@ export function getAnalytics4MockResponse( options ) {
 /**
  * Generates mock response for Analytics 4 reports.
  *
- * @since n.e.x.t
+ * @since 1.94.0
  *
  * @param {wp.data.registry} registry Registry with all available stores registered.
  * @param {Object}           options  Report options.
