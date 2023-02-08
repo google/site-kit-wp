@@ -148,12 +148,11 @@ function BannerNotification( {
 	} );
 
 	useEffect( () => {
-		if (
-			typeof onView === 'function' &&
-			! isViewed &&
-			intersectionEntry?.isIntersecting
-		) {
-			onView();
+		if ( ! isViewed && intersectionEntry?.isIntersecting ) {
+			if ( typeof onView === 'function' ) {
+				onView();
+			}
+
 			setIsViewed( true );
 		}
 	}, [ id, onView, isViewed, intersectionEntry ] );
