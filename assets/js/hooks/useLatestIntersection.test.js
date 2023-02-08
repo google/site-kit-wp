@@ -40,8 +40,10 @@ describe( 'useLatestIntersection', () => {
 		intersectionObserver.mock();
 		const IO = IntersectionObserver;
 		jest.spyOn( IO.prototype, 'disconnect' );
-		jest.spyOn( global, 'IntersectionObserver' );
-		IntersectionObserver.prototype = IO.prototype;
+		global.IntersectionObserver = jest.fn(
+			( ...args ) => new IO( ...args )
+		);
+		global.IntersectionObserver.prototype = IO.prototype;
 	} );
 
 	afterEach( () => {
@@ -121,25 +123,25 @@ describe( 'useLatestIntersection', () => {
 	// 	).not.toThrow();
 	// } );
 
-	// it( 'should disconnect an old IntersectionObserver instance when the ref changes', () => {
-	// 	targetRef = createRef();
-	// 	targetRef.current = document.createElement( 'div' );
+	it( 'should disconnect an old IntersectionObserver instance when the ref changes', () => {
+		targetRef = createRef();
+		targetRef.current = document.createElement( 'div' );
 
-	// 	const { rerender } = renderHook( () =>
-	// 		useLatestIntersection( targetRef, {} )
-	// 	);
+		const { rerender } = renderHook( () =>
+			useLatestIntersection( targetRef, {} )
+		);
 
-	// 	targetRef.current = document.createElement( 'div' );
-	// 	rerender();
+		targetRef.current = document.createElement( 'div' );
+		rerender();
 
-	// 	targetRef.current = null;
-	// 	rerender();
+		targetRef.current = null;
+		rerender();
 
-	// 	expect( IntersectionObserver ).toHaveBeenCalledTimes( 2 );
-	// 	expect(
-	// 		IntersectionObserver.prototype.disconnect
-	// 	).toHaveBeenCalledTimes( 2 );
-	// } );
+		expect( IntersectionObserver ).toHaveBeenCalledTimes( 2 );
+		expect(
+			IntersectionObserver.prototype.disconnect
+		).toHaveBeenCalledTimes( 2 );
+	} );
 
 	// it( 'should return the first IntersectionObserverEntry when the IntersectionObserver registers an intersection', () => {
 	// 	TestUtils.act( () => {
