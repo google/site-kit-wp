@@ -37,10 +37,8 @@ export default {
 	title: 'Components/EnableAutoUpdateBannerNotification',
 	decorators: [
 		( Story ) => (
-			<div className="googlesitekit-widget">
-				<div className="googlesitekit-widget__body">
-					<Story />
-				</div>
+			<div className="googlesitekit-subheader">
+				<Story />
 			</div>
 		),
 		( Story, { args } ) => {
