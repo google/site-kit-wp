@@ -100,7 +100,7 @@ export default function UnsatisfiedScopesAlert() {
 	}
 
 	let messageID;
-	let moduleNames = [];
+	let moduleNames;
 	// Determine if all scopes are in Google API format, otherwise use generic message.
 	if (
 		gteSupportEnabled &&
