@@ -207,7 +207,11 @@ const EnableAutoUpdateBannerNotification = () => {
 			dismiss={ __( 'Dismiss', 'google-site-kit' ) }
 			isDismissible
 			dismissExpires={ 0 }
-			onDismiss={ () => dismissItem( DISMISSED_ITEM_KEY ) }
+			onDismiss={ () => {
+				// Don't return the result here to avoid
+				// added delay in the dismissal.
+				dismissItem( DISMISSED_ITEM_KEY );
+			} }
 		/>
 	);
 };
