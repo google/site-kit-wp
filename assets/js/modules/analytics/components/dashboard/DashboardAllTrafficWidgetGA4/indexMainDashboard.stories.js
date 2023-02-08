@@ -272,7 +272,7 @@ MainDashboardOneRowOfData.args = {
 				);
 		} );
 
-		allTrafficReportOptions.slice( 3, 5 ).forEach( ( options ) => {
+		allTrafficReportOptions.slice( 3 ).forEach( ( options ) => {
 			provideAnalytics4MockReport( registry, options );
 		} );
 	},
