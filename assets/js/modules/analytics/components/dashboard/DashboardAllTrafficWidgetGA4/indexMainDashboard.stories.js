@@ -74,28 +74,40 @@ const allTrafficReportOptions = [
 	{
 		...baseAllTrafficOptions,
 		dimensions: [ 'sessionDefaultChannelGrouping' ],
-		orderby: {
-			fieldName: 'totalUsers',
-			sortOrder: 'DESCENDING',
-		},
+		orderby: [
+			{
+				metric: {
+					metricName: 'totalUsers',
+				},
+				desc: true,
+			},
+		],
 		limit: 6,
 	},
 	{
 		...baseAllTrafficOptions,
 		dimensions: [ 'country' ],
-		orderby: {
-			fieldName: 'totalUsers',
-			sortOrder: 'DESCENDING',
-		},
+		orderby: [
+			{
+				metric: {
+					metricName: 'totalUsers',
+				},
+				desc: true,
+			},
+		],
 		limit: 6,
 	},
 	{
 		...baseAllTrafficOptions,
 		dimensions: [ 'deviceCategory' ],
-		orderby: {
-			fieldName: 'totalUsers',
-			sortOrder: 'DESCENDING',
-		},
+		orderby: [
+			{
+				metric: {
+					metricName: 'totalUsers',
+				},
+				desc: true,
+			},
+		],
 		limit: 6,
 	},
 	baseAllTrafficOptions,

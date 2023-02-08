@@ -107,10 +107,14 @@ function DashboardAllTrafficWidgetGA4( props ) {
 		compareStartDate,
 		compareEndDate,
 		dimensions: [ dimensionName ],
-		orderby: {
-			fieldName: 'totalUsers',
-			sortOrder: 'DESCENDING',
-		},
+		orderby: [
+			{
+				metric: {
+					metricName: 'totalUsers',
+				},
+				desc: true,
+			},
+		],
 		// TODO: order by dimensionName once https://github.com/google/site-kit-wp/issues/6513 is implemented.
 		limit: 6,
 	};
