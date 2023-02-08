@@ -19,7 +19,6 @@ use Google\Site_Kit\Core\Authentication\Connected_Proxy_URL;
 use Google\Site_Kit\Core\Authentication\Disconnected_Reason;
 use Google\Site_Kit\Core\Authentication\Google_Proxy;
 use Google\Site_Kit\Core\Authentication\Profile;
-use Google\Site_Kit\Core\Authentication\User_Input_State;
 use Google\Site_Kit\Core\Authentication\Verification;
 use Google\Site_Kit\Core\Authentication\Verification_Meta;
 use Google\Site_Kit\Core\Dismissals\Dismissed_Items;
@@ -29,6 +28,7 @@ use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\User_Input\User_Input;
+use Google\Site_Kit\Core\Util\URL;
 use Google\Site_Kit\Modules\PageSpeed_Insights\Settings as PageSpeed_Insights_Settings;
 use Google\Site_Kit\Modules\Search_Console\Settings as Search_Console_Settings;
 use Google\Site_Kit\Tests\Exception\RedirectException;
@@ -126,7 +126,7 @@ class AuthenticationTest extends TestCase {
 			array(
 				'connectURL',
 				'initialVersion',
-				'userInputState',
+				'isUserInputCompleted',
 				'verified',
 				'hasMultipleAdmins',
 			),
@@ -143,7 +143,7 @@ class AuthenticationTest extends TestCase {
 			array(
 				'connectURL',
 				'initialVersion',
-				'userInputState',
+				'isUserInputCompleted',
 				'verified',
 				'user',
 				'hasMultipleAdmins',
@@ -454,91 +454,6 @@ class AuthenticationTest extends TestCase {
 		);
 		$user_options->set( OAuth_Client::OPTION_ACCESS_TOKEN_EXPIRES_IN, 295 );
 		$restore_user();
-	}
-
-	public function test_require_user_input() {
-		$this->enable_feature( 'userInput' );
-		remove_all_actions( 'googlesitekit_authorize_user' );
-		$admin_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
-		wp_set_current_user( $admin_id );
-		$auth = new Authentication( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		$auth->register();
-
-		$user_input_state = $this->force_get_property( $auth, 'user_input_state' );
-		// Mocking User_Input here to avoid adding a ton of complexity
-		// from intercepting a request to the proxy, returning, settings etc.
-		$mock_user_input = $this->getMockBuilder( User_Input::class )
-			->disableOriginalConstructor()
-			->disableProxyingToOriginalMethods()
-			->setMethods( array( 'set_answers' ) )
-			->getMock();
-		$this->force_set_property( $auth, 'user_input', $mock_user_input );
-
-		$this->assertEmpty( $user_input_state->get() );
-		do_action( 'googlesitekit_authorize_user', array(), array(), array() );
-		$this->assertEquals( User_Input_State::VALUE_REQUIRED, $user_input_state->get() );
-	}
-
-	public function test_user_input_not_triggered() {
-		$this->enable_feature( 'userInput' );
-		remove_all_actions( 'googlesitekit_authorize_user' );
-		$admin_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
-		wp_set_current_user( $admin_id );
-		$auth = new Authentication( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		$auth->register();
-
-		$user_input_state = $this->force_get_property( $auth, 'user_input_state' );
-		// Mocking User_Input here to avoid adding a ton of complexity
-		// from intercepting a request to the proxy, returning, settings etc.
-		$mock_user_input = $this->getMockBuilder( User_Input::class )
-			->disableOriginalConstructor()
-			->disableProxyingToOriginalMethods()
-			->setMethods( array( 'set_answers' ) )
-			->getMock();
-		$this->force_set_property( $auth, 'user_input', $mock_user_input );
-
-		$this->assertEmpty( $user_input_state->get() );
-
-		$mock_scopes = array(
-			'openid',
-			'https://www.googleapis.com/auth/userinfo.profile',
-			'https://www.googleapis.com/auth/userinfo.email',
-			'https://www.googleapis.com/auth/siteverification',
-			'https://www.googleapis.com/auth/webmasters',
-			'https://www.googleapis.com/auth/analytics.readonly',
-		);
-
-		$mock_previous_scopes = array(
-			'openid',
-			'https://www.googleapis.com/auth/userinfo.profile',
-			'https://www.googleapis.com/auth/userinfo.email',
-			'https://www.googleapis.com/auth/siteverification',
-			'https://www.googleapis.com/auth/webmasters',
-		);
-		do_action( 'googlesitekit_authorize_user', array(), $mock_scopes, $mock_previous_scopes );
-		$this->assertEmpty( $user_input_state->get() );
-	}
-
-	public function test_require_user_input__without_feature() {
-		remove_all_actions( 'googlesitekit_authorize_user' );
-		$admin_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
-		wp_set_current_user( $admin_id );
-		$auth = new Authentication( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		$auth->register();
-
-		$user_input_state = $this->force_get_property( $auth, 'user_input_state' );
-		// Mocking User_Input here to avoid adding a ton of complexity
-		// from intercepting a request to the proxy, returning, settings etc.
-		$mock_user_input = $this->getMockBuilder( User_Input::class )
-			->setMethods( array( 'set_answers' ) )
-			->disableProxyingToOriginalMethods()
-			->disableOriginalConstructor()
-			->getMock();
-		$this->force_set_property( $auth, 'user_input', $mock_user_input );
-
-		$this->assertEmpty( $user_input_state->get() );
-		do_action( 'googlesitekit_authorize_user', array(), array(), array() );
-		$this->assertEmpty( $user_input_state->get() );
 	}
 
 	public function test_get_oauth_client() {
@@ -1173,6 +1088,41 @@ class AuthenticationTest extends TestCase {
 		$this->assertEquals( '42', $js_inline_wp_version['version'] );
 		$this->assertEquals( '42', $js_inline_wp_version['major'] );
 		$this->assertEquals( '0', $js_inline_wp_version['minor'] );
+	}
+
+	/**
+	 * @param string $site_url
+	 * @param string? $expected_redirect
+	 * @dataProvider data_site_urls
+	 */
+	public function test_allowed_redirect_hosts( $site_url, $expected_redirect ) {
+		remove_all_filters( 'allowed_redirect_hosts' );
+		$authentication = new Authentication( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$authentication->register();
+
+		if ( null === $expected_redirect ) {
+			$expected_redirect = $site_url;
+		}
+
+		update_option( 'home', $site_url );
+		update_option( 'siteurl', $site_url );
+
+		try {
+			wp_safe_redirect( $site_url ); // phpcs:ignore WordPressVIPMinimum.Security.ExitAfterRedirect.NoExit
+			$this->fail( 'Expected redirection to site URL!' );
+		} catch ( RedirectException $redirect ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
+			// The test will fail if this isn't thrown so we can continue below.
+		}
+
+		$this->assertEquals( $expected_redirect, $redirect->get_location() );
+	}
+
+	public function data_site_urls() {
+		return array(
+			'common ascii'   => array( 'https://example.com', null ),
+			'punycode ascii' => array( 'https://xn--xmpl-loa2a55a.test', null ),
+			'unicode'        => array( 'https://éxämplę.test', 'https://' . rawurlencode( 'éxämplę.test' ) ),
+		);
 	}
 
 	protected function get_user_option_keys() {

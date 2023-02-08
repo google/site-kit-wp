@@ -83,10 +83,6 @@
 			padding-right: 0;
 		}
 
-		&--primary {
-			width: 50%;
-		}
-
 		// Table headers within widgets with headers have smaller font size.
 		.googlesitekit-widget--with-header & {
 			font-size: $fs-title-sm;
@@ -128,6 +124,10 @@
 		}
 	}
 
+	.googlesitekit-table__head-item--primary {
+		width: 50%;
+	}
+
 	.googlesitekit-table__wrapper--2-col .googlesitekit-table__head-item--primary {
 		width: 75%;
 	}
@@ -139,12 +139,11 @@
 
 	.googlesitekit-table__body-row {
 		border-bottom: 1px solid $c-border-light;
+	}
 
-		&--no-data {
-
-			td {
-				white-space: normal;
-			}
+	.googlesitekit-table__body-row--no-data {
+		td {
+			white-space: normal;
 		}
 	}
 
@@ -182,40 +181,6 @@
 		}
 	}
 
-	&--with-list {
-
-		.googlesitekit-table__body-row {
-			transition: background-color $t-default ease-in-out;
-
-			&:last-child {
-				border-bottom: 0;
-			}
-
-			&:hover {
-				background-color: rgba($c-secondary, 0.05);
-			}
-
-			&--no-data {
-
-				&:hover {
-					background-color: transparent;
-				}
-			}
-		}
-
-		.googlesitekit-table__body-item:first-child .googlesitekit-table__body-item-content {
-			margin-left: $grid-gap-desktop;
-			position: relative;
-
-			&::before {
-				content: counter(table) ".";
-				counter-increment: table;
-				left: -$grid-gap-desktop;
-				position: absolute;
-			}
-		}
-	}
-
 	.googlesitekit-table__body-item-content .googlesitekit-cta-link {
 
 		@media (max-width: $bp-tablet) {
@@ -248,6 +213,40 @@
 
 		@media (min-width: $bp-desktop) {
 			margin-top: $grid-gap-desktop;
+		}
+	}
+}
+
+.googlesitekit-table--with-list {
+
+	.googlesitekit-table__body-row {
+		transition: background-color $t-default ease-in-out;
+
+		&:last-child {
+			border-bottom: 0;
+		}
+
+		&:hover {
+			background-color: rgba($c-secondary, 0.05);
+		}
+	}
+
+	.googlesitekit-table__body-row--no-data {
+
+		&:hover {
+			background-color: transparent;
+		}
+	}
+
+	.googlesitekit-table__body-item:first-child .googlesitekit-table__body-item-content {
+		margin-left: $grid-gap-desktop;
+		position: relative;
+
+		&::before {
+			content: counter(table) ".";
+			counter-increment: table;
+			left: -$grid-gap-desktop;
+			position: absolute;
 		}
 	}
 }

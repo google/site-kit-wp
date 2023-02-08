@@ -48,8 +48,7 @@ export default function SettingsAdmin() {
 	const userInputEnabled = useFeature( 'userInput' );
 	const isUserInputCompleted = useSelect(
 		( select ) =>
-			userInputEnabled &&
-			select( CORE_USER ).getUserInputState() === 'completed'
+			userInputEnabled && select( CORE_USER ).isUserInputCompleted()
 	);
 	const userInputURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-user-input' )
@@ -89,27 +88,19 @@ export default function SettingsAdmin() {
 						>
 							<div className="googlesitekit-settings-module googlesitekit-settings-module--active googlesitekit-settings-user-input">
 								<Grid>
-									<Row>
-										<Cell size={ 12 }>
-											<p className="googlesitekit-settings-user-input__heading">
-												{ __(
-													'Edit your answers for more personalized metrics:',
-													'google-site-kit'
-												) }
-											</p>
-										</Cell>
-									</Row>
 									<UserInputPreview
 										goTo={ goTo }
 										noHeader
 										noFooter
+										settingsView
 										showIndividualCTAs
 									/>
 								</Grid>
 							</div>
 						</Layout>
 					) }
-					{ ! isUserInputCompleted && (
+
+					{ isUserInputCompleted === false && (
 						<UserInputSettings isDismissible={ false } rounded />
 					) }
 				</Cell>

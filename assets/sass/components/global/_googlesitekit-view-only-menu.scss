@@ -120,13 +120,13 @@
 			// provided by the OptIn component.
 			margin-left: -11px;
 		}
+	}
 
-		&--user-can-authenticate {
+	.googlesitekit-view-only-menu--user-can-authenticate {
 
-			.googlesitekit-view-only-menu__service--name {
-				flex: 0 0 100px;
-				margin-right: 8px;
-			}
+		.googlesitekit-view-only-menu__service--name {
+			flex: 0 0 100px;
+			margin-right: 8px;
 		}
 	}
 }

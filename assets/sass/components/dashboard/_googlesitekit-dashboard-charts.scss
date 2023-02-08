@@ -52,20 +52,6 @@
 
 			padding: 0 1em;
 
-			&--up {
-
-				em {
-					color: $c-success;
-				}
-			}
-
-			&--down {
-
-				em {
-					color: $c-error;
-				}
-			}
-
 			em {
 				font-style: normal;
 				font-weight: 700;
@@ -84,12 +70,26 @@
 			svg {
 				margin-right: 0.25em;
 			}
+		}
 
-			&-others {
+		.googlesitekit-visualization-tooltip--up {
 
-				em {
-					display: none;
-				}
+			em {
+				color: $c-success;
+			}
+		}
+
+		.googlesitekit-visualization-tooltip--down {
+
+			em {
+				color: $c-error;
+			}
+		}
+
+		.googlesitekit-visualization-tooltip-others {
+
+			em {
+				display: none;
 			}
 		}
 	}

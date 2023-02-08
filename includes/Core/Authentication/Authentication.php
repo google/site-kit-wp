@@ -75,15 +75,6 @@ final class Authentication {
 	private $user_options = null;
 
 	/**
-	 * User_Input_State object.
-	 *
-	 * @since 1.20.0
-	 *
-	 * @var User_Input_State
-	 */
-	private $user_input_state = null;
-
-	/**
 	 * User_Input
 	 *
 	 * @since 1.90.0
@@ -251,7 +242,6 @@ final class Authentication {
 		$this->user_options         = $user_options ?: new User_Options( $this->context );
 		$this->transients           = $transients ?: new Transients( $this->context );
 		$this->modules              = new Modules( $this->context, $this->options, $this->user_options, $this );
-		$this->user_input_state     = new User_Input_State( $this->user_options );
 		$this->user_input           = new User_Input( $context, $this->options, $this->user_options );
 		$this->google_proxy         = new Google_Proxy( $this->context );
 		$this->credentials          = new Credentials( new Encrypted_Options( $this->options ) );
@@ -285,7 +275,6 @@ final class Authentication {
 		$this->initial_version->register();
 		if ( Feature_Flags::enabled( 'userInput' ) ) {
 			$this->user_input->register();
-			$this->user_input_state->register();
 		}
 
 		add_filter( 'allowed_redirect_hosts', $this->get_method_proxy( 'allowed_redirect_hosts' ) );
@@ -302,19 +291,7 @@ final class Authentication {
 
 		add_action( 'admin_init', $this->get_method_proxy( 'handle_oauth' ) );
 		add_action( 'admin_init', $this->get_method_proxy( 'check_connected_proxy_url' ) );
-		add_action( 'admin_init', $this->get_method_proxy( 'verify_user_input_settings' ) );
-		add_action(
-			'admin_init',
-			function() {
-				if (
-					'googlesitekit-dashboard' === htmlspecialchars( $this->context->input()->filter( INPUT_GET, 'page' ) ?: '' )
-					&& User_Input_State::VALUE_REQUIRED === $this->user_input_state->get()
-				) {
-					wp_safe_redirect( $this->context->admin_url( 'user-input' ) );
-					exit;
-				}
-			}
-		);
+
 		add_action( 'admin_action_' . self::ACTION_CONNECT, $this->get_method_proxy( 'handle_connect' ) );
 		add_action( 'admin_action_' . self::ACTION_DISCONNECT, $this->get_method_proxy( 'handle_disconnect' ) );
 
@@ -333,10 +310,6 @@ final class Authentication {
 				}
 
 				$this->set_connected_proxy_url();
-
-				if ( empty( $previous_scopes ) ) {
-					$this->require_user_input();
-				}
 			},
 			10,
 			3
@@ -373,11 +346,11 @@ final class Authentication {
 					$user['user']['full_name'] = isset( $profile_data['full_name'] ) ? $profile_data['full_name'] : null;
 				}
 
-				$user['connectURL']        = esc_url_raw( $this->get_connect_url() );
-				$user['hasMultipleAdmins'] = $this->has_multiple_admins->get();
-				$user['initialVersion']    = $this->initial_version->get();
-				$user['userInputState']    = $this->user_input_state->get();
-				$user['verified']          = $this->verification->has();
+				$user['connectURL']           = esc_url_raw( $this->get_connect_url() );
+				$user['hasMultipleAdmins']    = $this->has_multiple_admins->get();
+				$user['initialVersion']       = $this->initial_version->get();
+				$user['isUserInputCompleted'] = ! $this->user_input->are_settings_empty();
+				$user['verified']             = $this->verification->has();
 
 				return $user;
 			}
@@ -545,17 +518,6 @@ final class Authentication {
 	 */
 	public function get_google_proxy() {
 		return $this->google_proxy;
-	}
-
-	/**
-	 * Gets the User Input State instance.
-	 *
-	 * @since 1.21.0
-	 *
-	 * @return User_Input_State An instance of the User_Input_State class.
-	 */
-	public function get_user_input_state() {
-		return $this->user_input_state;
 	}
 
 	/**
@@ -1040,6 +1002,23 @@ final class Authentication {
 		$hosts[] = 'accounts.google.com';
 		$hosts[] = URL::parse( $this->google_proxy->url(), PHP_URL_HOST );
 
+		// In the case of IDNs, ensure the ASCII and non-ASCII domains
+		// are treated as allowable origins.
+		$admin_hostname = URL::parse( admin_url(), PHP_URL_HOST );
+
+		// See \Requests_IDNAEncoder::is_ascii.
+		$is_ascii = preg_match( '/(?:[^\x00-\x7F])/', $admin_hostname ) !== 1;
+
+		// If this host is already an ASCII-only string, it's either
+		// not an IDN or it's an ASCII-formatted IDN.
+		// We only need to intervene if it is non-ASCII.
+		if ( ! $is_ascii ) {
+			// If this host is an IDN in Unicode format, we need to add the
+			// urlencoded versions of the domain to the `$hosts` array,
+			// because this is what will be used for redirects.
+			$hosts[] = rawurlencode( $admin_hostname );
+		}
+
 		return $hosts;
 	}
 
@@ -1263,25 +1242,6 @@ final class Authentication {
 	}
 
 	/**
-	 * Requires user input if it is not already completed.
-	 *
-	 * @since 1.22.0
-	 */
-	private function require_user_input() {
-		if ( ! Feature_Flags::enabled( 'userInput' ) ) {
-			return;
-		}
-
-		// Refresh user input settings from the proxy.
-		// This will ensure the user input state is updated as well.
-		$this->user_input->set_answers( null );
-
-		if ( User_Input_State::VALUE_COMPLETED !== $this->user_input_state->get() ) {
-			$this->user_input_state->set( User_Input_State::VALUE_REQUIRED );
-		}
-	}
-
-	/**
 	 * Sets the current connected proxy URL.
 	 *
 	 * @since 1.17.0
@@ -1393,25 +1353,6 @@ final class Authentication {
 	 */
 	public function get_proxy_support_link_url() {
 		return $this->google_proxy->url( Google_Proxy::SUPPORT_LINK_URI );
-	}
-
-	/**
-	 * Verifies the user input settings
-	 *
-	 * @since 1.20.0
-	 */
-	private function verify_user_input_settings() {
-		if (
-			empty( $this->user_input_state->get() )
-			&& $this->is_authenticated()
-			&& $this->credentials()->has()
-			&& $this->credentials->using_proxy()
-		) {
-			$is_empty = $this->user_input->are_settings_empty();
-			if ( ! is_null( $is_empty ) ) {
-				$this->user_input_state->set( $is_empty ? User_Input_State::VALUE_MISSING : User_Input_State::VALUE_COMPLETED );
-			}
-		}
 	}
 
 	/**

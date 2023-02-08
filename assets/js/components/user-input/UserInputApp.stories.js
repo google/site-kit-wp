@@ -95,7 +95,7 @@ export default {
 						// Don't mark the user input as completed in this story.
 						registry
 							.dispatch( CORE_USER )
-							.receiveUserInputState( 'missing' );
+							.receiveIsUserInputCompleted( false );
 					} }
 					features={ [ 'userInput' ] }
 				>

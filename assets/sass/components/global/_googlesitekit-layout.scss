@@ -19,29 +19,10 @@
 .googlesitekit-layout {
 	background: $c-base;
 
-	&--fill {
-		display: flex;
-		flex-direction: column;
-		height: 100%;
-	}
-
-	&--fill > * {
-		flex: 1 1 auto;
-		width: 100%;
-	}
-
-	&--relative {
-		position: relative;
-	}
-
 	.googlesitekit-layout__header {
 		border-bottom: 1px solid $c-border-light;
 		font-size: $fs-body-lg;
 		letter-spacing: $ls-m;
-	}
-
-	&--fill .googlesitekit-layout__header {
-		flex: 0 0 auto;
 	}
 
 	.googlesitekit-layout__header-title {
@@ -54,10 +35,6 @@
 		letter-spacing: $ls-xs;
 	}
 
-	&--fill .googlesitekit-layout__footer {
-		flex: 0 0 auto;
-	}
-
 	&.googlesitekit-layout--transparent {
 		background-color: transparent;
 	}
@@ -65,4 +42,27 @@
 	&.googlesitekit-layout--rounded {
 		border-radius: $br-md;
 	}
+}
+
+.googlesitekit-layout--fill {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+
+	> * {
+		flex: 1 1 auto;
+		width: 100%;
+	}
+
+	.googlesitekit-layout__header {
+		flex: 0 0 auto;
+	}
+
+	.googlesitekit-layout__footer {
+		flex: 0 0 auto;
+	}
+}
+
+.googlesitekit-layout--relative {
+	position: relative;
 }

@@ -229,18 +229,6 @@ class User_Input {
 		$this->site_specific_answers->set( $site_settings );
 		$this->user_specific_answers->set( $user_settings );
 
-		$updated_settings = $this->get_answers();
-		$is_empty         = $this->are_settings_empty( $updated_settings );
-
-		/**
-		 * Fires when the User Input answers are set.
-		 *
-		 * @since 1.90.0
-		 *
-		 * @param bool $is_empty If at least one of the answers has empty values.
-		 */
-		do_action( 'googlesitekit_user_input_set', $is_empty );
-
-		return $updated_settings;
+		return $this->get_answers();
 	}
 }

@@ -18,32 +18,6 @@
 
 .googlesitekit-pagespeed-report-metric {
 
-	&--fast {
-		color: $c-pagespeed-fast;
-	}
-
-	&--average {
-		color: $c-pagespeed-average;
-	}
-
-	&--slow {
-		color: $c-pagespeed-slow;
-	}
-
-	&__title {
-		color: $c-surfaces-on-surface;
-		font-family: $f-secondary;
-		font-size: $fs-title-md;
-		font-weight: $fw-bold;
-		letter-spacing: 0.1px;
-		line-height: $lh-title-md;
-	}
-
-	&__badge {
-		margin-left: 6px;
-		vertical-align: bottom;
-	}
-
 	.googlesitekit-pagespeed-report-metric-value-container {
 
 		align-items: flex-end;
@@ -68,4 +42,30 @@
 		line-height: $lh-title-md;
 		white-space: nowrap;
 	}
+}
+
+.googlesitekit-pagespeed-report-metric--fast {
+	color: $c-pagespeed-fast;
+}
+
+.googlesitekit-pagespeed-report-metric--average {
+	color: $c-pagespeed-average;
+}
+
+.googlesitekit-pagespeed-report-metric--slow {
+	color: $c-pagespeed-slow;
+}
+
+.googlesitekit-pagespeed-report-metric__title {
+	color: $c-surfaces-on-surface;
+	font-family: $f-secondary;
+	font-size: $fs-title-md;
+	font-weight: $fw-bold;
+	letter-spacing: 0.1px;
+	line-height: $lh-title-md;
+}
+
+.googlesitekit-pagespeed-report-metric__badge {
+	margin-left: 6px;
+	vertical-align: bottom;
 }
