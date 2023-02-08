@@ -37,10 +37,8 @@ import {
 	isValidStringularItems,
 } from '../../../util/report-validation';
 import { isZeroReport } from '../util';
-import createDataAvailableOnLoadStore from '../../../googlesitekit/modules/create-data-available-on-load-store';
+import createGatheringDataStore from '../../../googlesitekit/modules/create-gathering-data-store';
 const { createRegistrySelector } = Data;
-
-const SET_GATHERING_DATA = 'SET_GATHERING_DATA';
 
 const fetchGetReportStore = createFetchStore( {
 	baseName: 'getReport',
@@ -85,28 +83,10 @@ const fetchGetReportStore = createFetchStore( {
 	},
 } );
 
-const dataAvailableOnLoadStore =
-	createDataAvailableOnLoadStore( 'search-console' );
+const gatheringDataStore = createGatheringDataStore( 'search-console' );
 
 const baseInitialState = {
 	reports: {},
-	gatheringData: undefined,
-};
-
-const baseReducer = ( state, { type, payload } ) => {
-	switch ( type ) {
-		case SET_GATHERING_DATA: {
-			const { gatheringData } = payload;
-			return {
-				...state,
-				gatheringData,
-			};
-		}
-
-		default: {
-			return state;
-		}
-	}
 };
 
 const baseResolvers = {
@@ -123,100 +103,6 @@ const baseResolvers = {
 		}
 
 		yield fetchGetReportStore.actions.fetchGetReport( options );
-	},
-	*isGatheringData() {
-		const registry = yield Data.commonActions.getRegistry();
-
-		// If the gatheringData flag is already set, return early.
-		if (
-			registry.select( MODULES_SEARCH_CONSOLE ).isGatheringData() !==
-			undefined
-		) {
-			return;
-		}
-
-		const dataAvailableOnLoad = registry
-			.select( MODULES_SEARCH_CONSOLE )
-			.isDataAvailableOnLoad();
-
-		// If dataAvailableOnLoad is undefined, return early.
-		if ( dataAvailableOnLoad === undefined ) {
-			return;
-		}
-
-		// If dataAvailableOnLoad is true, set gatheringData to false.
-		if ( dataAvailableOnLoad ) {
-			yield {
-				payload: {
-					gatheringData: false,
-				},
-				type: SET_GATHERING_DATA,
-			};
-			return;
-		}
-
-		const rangeArgs = {
-			compare: true,
-			offsetDays: DATE_RANGE_OFFSET,
-		};
-
-		const url = registry.select( CORE_SITE ).getCurrentEntityURL();
-		const { compareStartDate: startDate, endDate } = registry
-			.select( CORE_USER )
-			.getDateRangeDates( rangeArgs );
-
-		const args = {
-			dimensions: 'date',
-			startDate,
-			endDate,
-		};
-
-		if ( url ) {
-			args.url = url;
-		}
-
-		// Disable reason: select needs to be called here or it will never run.
-		// eslint-disable-next-line @wordpress/no-unused-vars-before-return
-		const report = registry
-			.select( MODULES_SEARCH_CONSOLE )
-			.getReport( args );
-		const hasResolvedReport = registry
-			.select( MODULES_SEARCH_CONSOLE )
-			.hasFinishedResolution( 'getReport', [ args ] );
-
-		if ( ! hasResolvedReport ) {
-			return;
-		}
-
-		if ( ! Array.isArray( report ) ) {
-			yield {
-				payload: {
-					gatheringData: false,
-				},
-				type: SET_GATHERING_DATA,
-			};
-			return;
-		}
-
-		if ( ! report.length ) {
-			yield {
-				payload: {
-					gatheringData: true,
-				},
-				type: SET_GATHERING_DATA,
-			};
-			return;
-		}
-
-		yield registry
-			.dispatch( MODULES_SEARCH_CONSOLE )
-			.setDataAvailableOnLoad();
-		yield {
-			payload: {
-				gatheringData: false,
-			},
-			type: SET_GATHERING_DATA,
-		};
 	},
 };
 
@@ -244,17 +130,50 @@ const baseSelectors = {
 	},
 
 	/**
-	 * Determines whether the Search Console is still gathering data or not.
+	 * Determines whether data is available for search console.
 	 *
-	 * @todo Review the name of this selector to a less confusing one.
 	 * @since 1.44.0
+	 * @since n.e.x.t Renamed to `determineDataAvailability` and flipped return value.
 	 *
-	 * @param {Object} state Data store's state.
-	 * @return {boolean|undefined} Returns TRUE if gathering data, otherwise FALSE. If the request is still being resolved, returns undefined.
+	 * @return {boolean|undefined} Returns TRUE if data is available, otherwise FALSE. If the request is still being resolved, returns undefined.
 	 */
-	isGatheringData( state ) {
-		return state.gatheringData;
-	},
+	determineDataAvailability: createRegistrySelector( ( select ) => () => {
+		const rangeArgs = {
+			compare: true,
+			offsetDays: DATE_RANGE_OFFSET,
+		};
+
+		const url = select( CORE_SITE ).getCurrentEntityURL();
+		const { compareStartDate: startDate, endDate } =
+			select( CORE_USER ).getDateRangeDates( rangeArgs );
+
+		const args = {
+			dimensions: 'date',
+			startDate,
+			endDate,
+		};
+
+		if ( url ) {
+			args.url = url;
+		}
+
+		// Disable reason: select needs to be called here or it will never run.
+		// eslint-disable-next-line @wordpress/no-unused-vars-before-return
+		const report = select( MODULES_SEARCH_CONSOLE ).getReport( args );
+		const hasResolvedReport = select(
+			MODULES_SEARCH_CONSOLE
+		).hasFinishedResolution( 'getReport', [ args ] );
+
+		if ( ! hasResolvedReport ) {
+			return undefined;
+		}
+
+		if ( ! Array.isArray( report ) || report.length ) {
+			return true;
+		}
+
+		return false;
+	} ),
 
 	/**
 	 * Determines whether the Search Console has zero data or not.
@@ -315,16 +234,11 @@ const baseSelectors = {
 	} ),
 };
 
-const store = Data.combineStores(
-	fetchGetReportStore,
-	dataAvailableOnLoadStore,
-	{
-		initialState: baseInitialState,
-		reducer: baseReducer,
-		resolvers: baseResolvers,
-		selectors: baseSelectors,
-	}
-);
+const store = Data.combineStores( fetchGetReportStore, gatheringDataStore, {
+	initialState: baseInitialState,
+	resolvers: baseResolvers,
+	selectors: baseSelectors,
+} );
 
 export const initialState = store.initialState;
 export const actions = store.actions;
