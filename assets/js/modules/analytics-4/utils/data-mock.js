@@ -74,15 +74,15 @@ const ANALYTICS_4_DIMENSION_OPTIONS = {
 };
 
 /**
- * Gets metric key.
+ * Gets the key for a metric or dimension.
  *
  * @since n.e.x.t
  *
- * @param {string|Object} metric Metric name or object.
- * @return {string} Metric key.
+ * @param {string|Object} item Metric or dimension name or object.
+ * @return {string} Metric or dimension key.
  */
-function getMetricKey( metric ) {
-	return metric?.name || metric.toString();
+function getItemKey( item ) {
+	return item?.name || item?.toString();
 }
 
 /**
@@ -94,7 +94,7 @@ function getMetricKey( metric ) {
  * @return {string} Type of the metric.
  */
 function getMetricType( metric ) {
-	return ANALYTICS_4_METRIC_TYPES[ getMetricKey( metric ) ];
+	return ANALYTICS_4_METRIC_TYPES[ getItemKey( metric ) ];
 }
 
 /**
@@ -158,44 +158,109 @@ function cartesianProduct( arrays ) {
 }
 
 /**
+ * Finds a metric value in a row.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object}               row        Report row.
+ * @param {Array<string|Object>} metrics    Array of valid metrics.
+ * @param {string}               metricName Metric name.
+ * @return {number|null} Metric value, or null if not found.
+ */
+function findMetricValue( row, metrics, metricName ) {
+	const index = metrics.findIndex(
+		( metric ) => getItemKey( metric ) === metricName
+	);
+	if ( index === -1 ) {
+		return null;
+	}
+	return parseInt( row.metricValues[ index ].value, 10 );
+}
+
+/**
+ * Finds a dimension value in a row.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object}               row           Report row.
+ * @param {Array<string|Object>} dimensions    Array of valid dimensions.
+ * @param {string}               dimensionName Dimension name.
+ * @return {string|null} Dimension value, or null if not found.
+ */
+function findDimensionValue( row, dimensions, dimensionName ) {
+	const index = dimensions.findIndex(
+		( dimension ) => getItemKey( dimension ) === dimensionName
+	);
+	if ( index === -1 ) {
+		return null;
+	}
+	return row.dimensionValues[ index ].value;
+}
+
+/**
+ * Compares two rows by the given sorting options.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Array.<Object>} rowA       First row to compare.
+ * @param {Array.<Object>} rowB       Second row to compare.
+ * @param {Array.<Object>} metrics    Array of report metrics.
+ * @param {Array.<Object>} dimensions Array of report dimensions.
+ * @param {Array.<Object>} orderby    Sorting options.
+ * @return {Array.<Object>} Sorted rows.
+ */
+function compareRows( rowA, rowB, metrics, dimensions, orderby ) {
+	const order = orderby[ 0 ];
+	let valA, valB;
+
+	if ( order.metric ) {
+		valA = findMetricValue( rowA, metrics, order.metric.metricName );
+		valB = findMetricValue( rowB, metrics, order.metric.metricName );
+	} else if ( order.dimension ) {
+		valA = findDimensionValue(
+			rowA,
+			dimensions,
+			order.dimension.dimensionName
+		);
+		valB = findDimensionValue(
+			rowB,
+			dimensions,
+			order.dimension.dimensionName
+		);
+	}
+
+	if ( valA === valB ) {
+		if ( orderby.length > 1 ) {
+			return compareRows(
+				rowA,
+				rowB,
+				metrics,
+				dimensions,
+				orderby.slice( 1 )
+			);
+		}
+		return 0;
+	}
+
+	const direction = order.desc ? -1 : 1;
+	return ( valA < valB ? -1 : 1 ) * direction;
+}
+
+/**
  * Sorts report rows and returns it.
  *
  * @since n.e.x.t
  *
- * @param {Array.<Object>}        rows    Array of rows to sort.
- * @param {Array.<Object>}        metrics Array of report metrics.
- * @param {Object|Array.<Object>} orderby Sorting options.
+ * @param {Array.<Object>} rows       Array of rows to sort.
+ * @param {Array.<Object>} metrics    Array of report metrics.
+ * @param {Array.<Object>} dimensions Array of report dimensions.
+ * @param {Array.<Object>} orderby    Sorting options.
  * @return {Array.<Object>} Sorted rows.
  */
-function sortRows( rows, metrics, orderby ) {
-	let sorted = rows;
-
-	const orders = castArray( orderby );
-	for ( const order of orders ) {
-		const direction = order?.sortOrder === 'DESCENDING' ? -1 : 1;
-		const index = metrics.findIndex(
-			( metric ) => getMetricKey( metric ) === order?.fieldName
-		);
-		if ( index < 0 ) {
-			continue;
-		}
-
-		sorted = sorted.sort( ( a, b ) => {
-			let valA = parseFloat( a.metricValues[ index ]?.value );
-			if ( Number.isNaN( valA ) ) {
-				valA = 0;
-			}
-
-			let valB = parseFloat( b.metricValues[ index ]?.value );
-			if ( Number.isNaN( valB ) ) {
-				valB = 0;
-			}
-
-			return ( valA - valB ) * direction;
-		} );
-	}
-
-	return sorted;
+function sortRows( rows, metrics, dimensions, orderby ) {
+	return rows.sort( ( rowA, rowB ) =>
+		compareRows( rowA, rowB, metrics, dimensions, orderby )
+	);
 }
 
 /**
@@ -225,44 +290,6 @@ function generateDateRange( startDate, endDate ) {
 	}
 
 	return dates;
-}
-
-/**
- * Returns the earliest of two dates.
- *
- * @since n.e.x.t
- *
- * @param {string} dateA The first date.
- * @param {string} dateB The second date.
- * @return {string} The earliest date.
- */
-function getEarliestDate( dateA, dateB ) {
-	if ( ! dateB ) {
-		return dateA;
-	}
-
-	return stringToDate( dateA ).getTime() < stringToDate( dateB ).getTime()
-		? dateA
-		: dateB;
-}
-
-/**
- * Returns the latest of two dates.
- *
- * @since n.e.x.t
- *
- * @param {string} dateA The first date.
- * @param {string} dateB The second date.
- * @return {string} The latest date.
- */
-function getLatestDate( dateA, dateB ) {
-	if ( ! dateB ) {
-		return dateA;
-	}
-
-	return stringToDate( dateA ).getTime() > stringToDate( dateB ).getTime()
-		? dateA
-		: dateB;
 }
 
 /**
@@ -336,26 +363,30 @@ export function getAnalytics4MockResponse( options ) {
 	}
 
 	dimensions.forEach( ( singleDimension ) => {
-		const dimension = singleDimension?.name || singleDimension?.toString();
+		const dimension = getItemKey( singleDimension );
 
-		if ( dimension === 'date' || dimension === 'dateRange' ) {
-			// When a comparison date range is specified, the report will contain a merged date range of the current and compare periods.
-			const startDate = getEarliestDate(
-				args.startDate,
-				args.compareStartDate
-			);
-			const endDate = getLatestDate( args.endDate, args.compareEndDate );
+		if ( dimension === 'date' ) {
+			const dateRanges = [
+				generateDateRange( args.startDate, args.endDate ),
+			];
 
-			const dateRange = generateDateRange( startDate, endDate );
-
-			// Generates a stream (an array) of dates when the dimension is date.
-			if ( dimension === 'date' ) {
-				streams.push( from( dateRange ) );
+			if ( args.compareStartDate && args.compareEndDate ) {
+				// When a comparison date range is specified, the report will contain a combined date range of all the dates in the current and compare periods.
+				dateRanges.push(
+					generateDateRange(
+						args.compareStartDate,
+						args.compareEndDate
+					)
+				);
 			}
 
-			if ( dimension === 'dateRange' ) {
-				streams.push( from( [ 'date_range_0', 'date_range_1' ] ) );
-			}
+			// Create a set of unique dates from the date ranges.
+			const dateRange = new Set( dateRanges.flat() );
+
+			// Generates a stream (an array) of dates.
+			streams.push( from( [ ...dateRange ] ) );
+		} else if ( dimension === 'dateRange' ) {
+			streams.push( from( [ 'date_range_0', 'date_range_1' ] ) );
 		} else if (
 			dimension &&
 			typeof ANALYTICS_4_DIMENSION_OPTIONS[ dimension ] === 'function'
@@ -408,7 +439,9 @@ export function getAnalytics4MockResponse( options ) {
 		reduce( ( rows, row ) => [ ...rows, row ], [] ),
 		// Sort rows if args.orderby is provided.
 		map( ( rows ) =>
-			args.orderby ? sortRows( rows, validMetrics, args.orderby ) : rows
+			args.orderby
+				? sortRows( rows, validMetrics, args.dimensions, args.orderby )
+				: rows
 		),
 	];
 
