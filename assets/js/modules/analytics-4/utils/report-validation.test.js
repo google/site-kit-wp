@@ -160,9 +160,11 @@ describe( 'Analytics 4 Reporting API validation', () => {
 	} );
 
 	describe( 'isValidOrders', () => {
-		it( 'should return TRUE if an array of valid order objects is passed', () => {
-			expect(
-				isValidOrders( [
+		it.each( [
+			[
+				true,
+				'an array of valid order objects is passed',
+				[
 					{
 						metric: {
 							metricName: 'totalUsers',
@@ -186,35 +188,36 @@ describe( 'Analytics 4 Reporting API validation', () => {
 							dimensionName: 'sessionDefaultChannelGrouping',
 						},
 					},
-				] )
-			).toBeTruthy();
-		} );
+				],
+			],
+			[ false, 'an array is not passed (null)', null ],
+			[ false, 'an array is not passed (string)', 'test' ],
 
-		it( 'should return FALSE if an array is not passed', () => {
-			expect( isValidOrders( null ) ).toBeFalsy();
-			expect( isValidOrders( 'test' ) ).toBeFalsy();
-			expect( isValidOrders( { test: 123 } ) ).toBeFalsy();
-		} );
-
-		it( 'should return FALSE if a non-object is passed in the array', () => {
-			expect( isValidOrders( [ null ] ) ).toBeFalsy();
-			expect( isValidOrders( [ 'test' ] ) ).toBeFalsy();
-			expect( isValidOrders( [ { test: 123 } ] ) ).toBeFalsy();
-		} );
-
-		it( 'should return FALSE if metric and dimension are both undefined', () => {
-			expect(
-				isValidOrders( [
+			[ false, 'an array is not passed (object)', { test: 123 } ],
+			[ false, 'a non-object is passed in the array (null)', [ null ] ],
+			[
+				false,
+				'a non-object is passed in the array (string)',
+				[ 'test' ],
+			],
+			[
+				false,
+				'a non-object is passed in the array (object)',
+				[ { test: 123 } ],
+			],
+			[
+				false,
+				'metric and dimension are both undefined',
+				[
 					{
 						desc: false,
 					},
-				] )
-			).toBeFalsy();
-		} );
-
-		it( 'should return FALSE if metric and dimension are both defined', () => {
-			expect(
-				isValidOrders( [
+				],
+			],
+			[
+				false,
+				'metric and dimension are both defined',
+				[
 					{
 						metric: {
 							metricName: 'totalUsers',
@@ -224,69 +227,69 @@ describe( 'Analytics 4 Reporting API validation', () => {
 						},
 						desc: false,
 					},
-				] )
-			).toBeFalsy();
-		} );
-
-		it( 'should return FALSE if metric is defined but metricName is not', () => {
-			expect(
-				isValidOrders( [
+				],
+			],
+			[
+				false,
+				'metric is defined but metricName is not',
+				[
 					{
 						metric: {},
 						desc: false,
 					},
-				] )
-			).toBeFalsy();
-		} );
-
-		it( 'should return FALSE if metricName is defined but not a string', () => {
-			expect(
-				isValidOrders( [
+				],
+			],
+			[
+				false,
+				'metricName is defined but not a string',
+				[
 					{
 						metric: {
 							metricName: 123,
 						},
 						desc: false,
 					},
-				] )
-			).toBeFalsy();
-		} );
-
-		it( 'should return FALSE if dimension is defined but dimensionName is not', () => {
-			expect(
-				isValidOrders( [
+				],
+			],
+			[
+				false,
+				'dimension is defined but dimensionName is not',
+				[
 					{
 						dimension: {},
 						desc: false,
 					},
-				] )
-			).toBeFalsy();
-		} );
-
-		it( 'should return FALSE if dimensionName is defined but not a string', () => {
-			expect(
-				isValidOrders( [
+				],
+			],
+			[
+				false,
+				'dimensionName is defined but not a string',
+				[
 					{
 						dimension: {
 							dimensionName: 123,
 						},
 						desc: false,
 					},
-				] )
-			).toBeFalsy();
-		} );
-
-		it( 'should return FALSE if desc is not a boolean', () => {
-			expect(
-				isValidOrders( [
+				],
+			],
+			[
+				false,
+				'desc is defined but not a boolean',
+				[
 					{
 						metric: {
 							metricName: 'totalUsers',
 						},
 						desc: 'test',
 					},
-				] )
-			).toBeFalsy();
-		} );
+				],
+			],
+		] )(
+			'should return %s if %s',
+			( expectedResult, testDescription, order ) => {
+				expect( isValidOrders( order ) ).toBe( expectedResult );
+			}
+		);
 	} );
 } );
