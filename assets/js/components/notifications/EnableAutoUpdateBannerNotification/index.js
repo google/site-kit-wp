@@ -37,12 +37,12 @@ import { getItem, setItem } from '../../../googlesitekit/api/cache';
 import SpinnerButton from '../../SpinnerButton';
 import ErrorNotice from '../../ErrorNotice';
 import BannerNotification from '../BannerNotification';
+import {
+	CACHE_KEY_HIDE_NOTIFICATION_ON_FIRST_SETUP,
+	NOTIFICATION_ID,
+} from './constants';
 
 const { useSelect, useDispatch } = Data;
-
-const NOTIFICATION_ID = 'enable-plugin-auto-update-notification';
-const HIDE_NOTIFICATION_ON_FIRST_SETUP =
-	'auto-update-banner-hide-notification-on-first-setup';
 
 const EnableAutoUpdateBannerNotification = () => {
 	const hasUpdatePluginCapacity = useSelect( ( select ) =>
@@ -94,13 +94,17 @@ const EnableAutoUpdateBannerNotification = () => {
 	const setFirstPluginSetup = useCallback(
 		async ( isFirstSetup ) => {
 			if ( isFirstSetup ) {
-				await setItem( HIDE_NOTIFICATION_ON_FIRST_SETUP, true, {
-					ttl: getTimeInSeconds() * 10,
-				} );
+				await setItem(
+					CACHE_KEY_HIDE_NOTIFICATION_ON_FIRST_SETUP,
+					true,
+					{
+						ttl: getTimeInSeconds() * 10,
+					}
+				);
 				setIsFirstPluginSetup( isFirstSetup );
 			} else {
 				const { value } = await getItem(
-					HIDE_NOTIFICATION_ON_FIRST_SETUP
+					CACHE_KEY_HIDE_NOTIFICATION_ON_FIRST_SETUP
 				);
 				setIsFirstPluginSetup( !! value );
 			}
