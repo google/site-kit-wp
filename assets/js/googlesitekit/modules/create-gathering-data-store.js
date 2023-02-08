@@ -34,8 +34,6 @@ const SAVE_DATA_AVAILABLE_STATE = 'SAVE_DATA_AVAILABLE_STATE';
 const SET_GATHERING_DATA = 'SET_GATHERING_DATA';
 const WAIT_FOR_GATHERING_DATA = 'WAIT_FOR_GATHERING_DATA';
 const POPULATE_GATHERING_DATA = 'POPULATE_GATHERING_DATA';
-// TODO: This is for testing, remove it before CR.
-const RESET_DATA_AVAILABLE_ON_LOAD = 'RESET_DATA_AVAILABLE_ON_LOAD';
 
 /**
  * Creates a store object that includes actions and selectors for gathering data state for a module.
@@ -147,20 +145,6 @@ const createGatheringDataStore = ( moduleSlug ) => {
 				type: SET_GATHERING_DATA,
 			};
 		},
-
-		/**
-		 * Resets data available on load.
-		 * TODO: This is for testing, remove it before CR.
-		 *
-		 * @since n.e.x.t
-		 * @private
-		 */
-		*resetDataAvailableOnLoad() {
-			yield {
-				payload: {},
-				type: RESET_DATA_AVAILABLE_ON_LOAD,
-			};
-		},
 	};
 
 	const controls = {
@@ -205,10 +189,6 @@ const createGatheringDataStore = ( moduleSlug ) => {
 				}
 			}
 		),
-
-		// TODO: This is for testing, remove it before CR.
-		[ RESET_DATA_AVAILABLE_ON_LOAD ]: () =>
-			API.set( 'modules', moduleSlug, 'reset-data-available' ),
 	};
 
 	const reducer = ( state = initialState, { type, payload } ) => {
