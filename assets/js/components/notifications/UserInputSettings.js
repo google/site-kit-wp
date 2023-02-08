@@ -77,7 +77,10 @@ export default function UserInputSettings( {
 		return null;
 	}
 
-	if ( analyticsIsGatheringData || searchConsoleIsGatheringData ) {
+	if (
+		analyticsIsGatheringData !== false ||
+		searchConsoleIsGatheringData !== false
+	) {
 		return null;
 	}
 
