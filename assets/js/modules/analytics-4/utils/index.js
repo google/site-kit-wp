@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-export * from './chart-data-extraction';
+export * from './chart';
 export * from './is-zero-report';
 export * from './report-normalization';
 export * from './report-validation';
