@@ -110,33 +110,19 @@ const createGatheringDataStore = ( moduleSlug ) => {
 				.select( storeName )
 				.determineDataAvailability();
 
-			yield registry
-				.dispatch( storeName )
-				.setGatheringData( ! dataAvailable );
+			invariant(
+				'boolean' === typeof dataAvailable,
+				'determineDataAvailability must return a boolean.'
+			);
+
+			yield {
+				payload: { gatheringData: ! dataAvailable },
+				type: SET_GATHERING_DATA,
+			};
 
 			if ( dataAvailable ) {
 				yield fetchSaveDataAvailableStateStore.actions.fetchSaveDataAvailableState();
 			}
-		},
-
-		/**
-		 * Sets gathering data state.
-		 *
-		 * @since n.e.x.t
-		 * @private
-		 *
-		 * @param {boolean} gatheringData Gathering data state.
-		 */
-		*setGatheringData( gatheringData ) {
-			invariant(
-				typeof gatheringData === 'boolean',
-				'gatheringData must be a boolean.'
-			);
-
-			yield {
-				payload: { gatheringData },
-				type: SET_GATHERING_DATA,
-			};
 		},
 	};
 
