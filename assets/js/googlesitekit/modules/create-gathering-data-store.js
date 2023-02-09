@@ -26,14 +26,13 @@ import invariant from 'invariant';
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
+import { createFetchStore } from '../data/create-fetch-store';
 
 const { createRegistryControl } = Data;
 
 const RECEIVE_DATA_AVAILABLE_ON_LOAD = 'RECEIVE_DATA_AVAILABLE_ON_LOAD';
-const SAVE_DATA_AVAILABLE_STATE = 'SAVE_DATA_AVAILABLE_STATE';
 const SET_GATHERING_DATA = 'SET_GATHERING_DATA';
 const WAIT_FOR_GATHERING_DATA = 'WAIT_FOR_GATHERING_DATA';
-const POPULATE_GATHERING_DATA = 'POPULATE_GATHERING_DATA';
 
 /**
  * Creates a store object that includes actions and selectors for gathering data state for a module.
@@ -52,6 +51,12 @@ const createGatheringDataStore = ( moduleSlug ) => {
 		'string' === typeof moduleSlug && moduleSlug,
 		'module slug is required.'
 	);
+
+	const fetchSaveDataAvailableStateStore = createFetchStore( {
+		baseName: 'saveDataAvailableState',
+		controlCallback: () =>
+			API.set( 'modules', moduleSlug, 'data-available' ),
+	} );
 
 	const storeName = `modules/${ moduleSlug }`;
 
@@ -88,42 +93,30 @@ const createGatheringDataStore = ( moduleSlug ) => {
 		},
 
 		/**
-		 * Saves data available state to server.
-		 *
-		 * @since n.e.x.t
-		 * @private
-		 */
-		*saveDataAvailableState() {
-			yield {
-				payload: {},
-				type: SAVE_DATA_AVAILABLE_STATE,
-			};
-		},
-
-		/**
-		 * Waits for `determineDataAvailability` to resolve.
-		 *
-		 * @since n.e.x.t
-		 * @private
-		 */
-		*waitForGatheringData() {
-			yield {
-				payload: {},
-				type: WAIT_FOR_GATHERING_DATA,
-			};
-		},
-
-		/**
 		 * Populates gathering data state.
 		 *
 		 * @since n.e.x.t
 		 * @private
 		 */
 		*populateGatheringData() {
+			const registry = yield Data.commonActions.getRegistry();
+
 			yield {
 				payload: {},
-				type: POPULATE_GATHERING_DATA,
+				type: WAIT_FOR_GATHERING_DATA,
 			};
+
+			const dataAvailable = registry
+				.select( storeName )
+				.determineDataAvailability();
+
+			yield registry
+				.dispatch( storeName )
+				.setGatheringData( ! dataAvailable );
+
+			if ( dataAvailable ) {
+				yield fetchSaveDataAvailableStateStore.actions.fetchSaveDataAvailableState();
+			}
 		},
 
 		/**
@@ -148,9 +141,6 @@ const createGatheringDataStore = ( moduleSlug ) => {
 	};
 
 	const controls = {
-		[ SAVE_DATA_AVAILABLE_STATE ]: () =>
-			API.set( 'modules', moduleSlug, 'data-available' ),
-
 		[ WAIT_FOR_GATHERING_DATA ]: createRegistryControl(
 			( registry ) => () => {
 				const dataAvailabityDetermined = () =>
@@ -168,25 +158,6 @@ const createGatheringDataStore = ( moduleSlug ) => {
 						}
 					} );
 				} );
-			}
-		),
-
-		[ POPULATE_GATHERING_DATA ]: createRegistryControl(
-			( registry ) => async () => {
-				await registry.dispatch( storeName ).waitForGatheringData();
-				const dataAvailable = registry
-					.select( storeName )
-					.determineDataAvailability();
-
-				await registry
-					.dispatch( storeName )
-					.setGatheringData( ! dataAvailable );
-
-				if ( dataAvailable ) {
-					await registry
-						.dispatch( storeName )
-						.saveDataAvailableState();
-				}
 			}
 		),
 	};
@@ -271,14 +242,14 @@ const createGatheringDataStore = ( moduleSlug ) => {
 		},
 	};
 
-	return {
-		initialState,
+	return Data.combineStores( fetchSaveDataAvailableStateStore, {
 		actions,
 		controls,
+		initialState,
 		reducer,
 		resolvers,
 		selectors,
-	};
+	} );
 };
 
 export default createGatheringDataStore;
