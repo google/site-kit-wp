@@ -1,7 +1,7 @@
 /**
  * Change component.
  *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,7 +31,6 @@ import { sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { numFmt } from '../../util';
-import { Fragment } from 'react';
 import ChangeArrow from '../ChangeArrow';
 
 const Change = ( { change, changeDataUnit, period, invertChangeColor } ) => {
@@ -62,21 +61,17 @@ const Change = ( { change, changeDataUnit, period, invertChangeColor } ) => {
 				'googlesitekit-data-block__change--no-change': ! change,
 			} ) }
 		>
-			<Fragment>
-				{ !! change && (
-					<span className="googlesitekit-data-block__arrow">
-						<ChangeArrow
-							direction={
-								0 < parseFloat( change ) ? 'up' : 'down'
-							}
-							invertColor={ invertChangeColor }
-						/>
-					</span>
-				) }
-				<span className="googlesitekit-data-block__value">
-					{ changeFormatted }
+			{ !! change && (
+				<span className="googlesitekit-data-block__arrow">
+					<ChangeArrow
+						direction={ 0 < parseFloat( change ) ? 'up' : 'down' }
+						invertColor={ invertChangeColor }
+					/>
 				</span>
-			</Fragment>
+			) }
+			<span className="googlesitekit-data-block__value">
+				{ changeFormatted }
+			</span>
 		</div>
 	);
 };

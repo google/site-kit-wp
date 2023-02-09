@@ -1,7 +1,7 @@
 /**
  * DataBlock component.
  *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +32,6 @@ import { useCallback } from '@wordpress/element';
  */
 import GatheringDataNotice, { NOTICE_STYLE } from '../GatheringDataNotice';
 import { numFmt } from '../../util';
-import { Fragment } from 'react';
 import Sparkline from './Sparkline';
 import Change from './Change';
 import SourceLink from '../SourceLink';
@@ -115,32 +114,31 @@ const DataBlock = ( {
 					</div>
 				) }
 			</div>
+
+			{ ! gatheringData && sparkline && (
+				<Sparkline
+					sparkline={ sparkline }
+					invertChangeColor={ invertChangeColor }
+				/>
+			) }
+
 			{ ! gatheringData && (
-				<Fragment>
-					{ sparkline && (
-						<Sparkline
-							sparkline={ sparkline }
-							invertChangeColor={ invertChangeColor }
+				<div className="googlesitekit-data-block__change-source-wrapper">
+					<Change
+						change={ change }
+						changeDataUnit={ changeDataUnit }
+						period={ period }
+						invertChangeColor={ invertChangeColor }
+					/>
+					{ source && (
+						<SourceLink
+							className="googlesitekit-data-block__source"
+							name={ source.name }
+							href={ source.link }
+							external={ source?.external }
 						/>
 					) }
-
-					<div className="googlesitekit-data-block__change-source-wrapper">
-						<Change
-							change={ change }
-							changeDataUnit={ changeDataUnit }
-							period={ period }
-							invertChangeColor={ invertChangeColor }
-						/>
-						{ source && (
-							<SourceLink
-								className="googlesitekit-data-block__source"
-								name={ source.name }
-								href={ source.link }
-								external={ source?.external }
-							/>
-						) }
-					</div>
-				</Fragment>
+				</div>
 			) }
 
 			{ gatheringData && (
