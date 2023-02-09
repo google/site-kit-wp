@@ -412,7 +412,7 @@ const baseSelectors = {
 	/**
 	 * Gets an Analytics config that matches one of provided measurement IDs.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.94.0
 	 *
 	 * @param {Object}                state        Data store's state.
 	 * @param {string|Array.<string>} measurements Single GA4 measurement ID, or array of GA4 measurement ID strings.

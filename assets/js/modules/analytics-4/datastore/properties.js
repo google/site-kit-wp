@@ -444,7 +444,7 @@ const baseActions = {
 	/**
 	 * Updates settings for a given measurement ID.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.94.0
 	 *
 	 * @param {string} measurementID Measurement ID.
 	 */

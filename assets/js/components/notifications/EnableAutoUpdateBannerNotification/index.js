@@ -26,27 +26,31 @@ import { Fragment, useCallback, useEffect, useState } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import { getTimeInSeconds } from '../../util';
-import useQueryArg from '../../hooks/useQueryArg';
+import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
+import { getTimeInSeconds } from '../../../util';
+import useQueryArg from '../../../hooks/useQueryArg';
 import {
 	CORE_USER,
 	PERMISSION_UPDATE_PLUGINS,
-} from '../../googlesitekit/datastore/user/constants';
-import { getItem, setItem } from '../../googlesitekit/api/cache';
-import SpinnerButton from '../SpinnerButton';
-import ErrorNotice from '../ErrorNotice';
-import BannerNotification from './BannerNotification';
+} from '../../../googlesitekit/datastore/user/constants';
+import { getItem, setItem } from '../../../googlesitekit/api/cache';
+import SpinnerButton from '../../SpinnerButton';
+import ErrorNotice from '../../ErrorNotice';
+import BannerNotification from '../BannerNotification';
+import {
+	CACHE_KEY_HIDE_NOTIFICATION_ON_FIRST_SETUP,
+	DISMISSED_ITEM_KEY,
+	NOTIFICATION_ID,
+} from './constants';
 
 const { useSelect, useDispatch } = Data;
-
-const NOTIFICATION_ID = 'enable-plugin-auto-update-notification';
-const HIDE_NOTIFICATION_ON_FIRST_SETUP =
-	'auto-update-banner-hide-notification-on-first-setup';
 
 const EnableAutoUpdateBannerNotification = () => {
 	const hasUpdatePluginCapacity = useSelect( ( select ) =>
 		select( CORE_USER ).hasCapability( PERMISSION_UPDATE_PLUGINS )
+	);
+	const isDismissed = useSelect( ( select ) =>
+		select( CORE_USER ).isItemDismissed( DISMISSED_ITEM_KEY )
 	);
 	const hasChangePluginAutoUpdatesCapacity = useSelect( ( select ) =>
 		select( CORE_SITE ).hasChangePluginAutoUpdatesCapacity()
@@ -64,6 +68,7 @@ const EnableAutoUpdateBannerNotification = () => {
 	);
 
 	const { enableAutoUpdate } = useDispatch( CORE_SITE );
+	const { dismissItem } = useDispatch( CORE_USER );
 
 	const [ notification ] = useQueryArg( 'notification' );
 
@@ -94,13 +99,17 @@ const EnableAutoUpdateBannerNotification = () => {
 	const setFirstPluginSetup = useCallback(
 		async ( isFirstSetup ) => {
 			if ( isFirstSetup ) {
-				await setItem( HIDE_NOTIFICATION_ON_FIRST_SETUP, true, {
-					ttl: getTimeInSeconds() * 10,
-				} );
+				await setItem(
+					CACHE_KEY_HIDE_NOTIFICATION_ON_FIRST_SETUP,
+					true,
+					{
+						ttl: getTimeInSeconds() * 10,
+					}
+				);
 				setIsFirstPluginSetup( isFirstSetup );
 			} else {
 				const { value } = await getItem(
-					HIDE_NOTIFICATION_ON_FIRST_SETUP
+					CACHE_KEY_HIDE_NOTIFICATION_ON_FIRST_SETUP
 				);
 				setIsFirstPluginSetup( !! value );
 			}
@@ -131,6 +140,10 @@ const EnableAutoUpdateBannerNotification = () => {
 		setFirstPluginSetup,
 		siteKitAutoUpdatesEnabled,
 	] );
+
+	if ( isDismissed ) {
+		return null;
+	}
 
 	// Don't render anything if the user has no permission to update plugin,
 	// auto-updates can not be enabled for Site Kit, or auto update are already
@@ -194,7 +207,11 @@ const EnableAutoUpdateBannerNotification = () => {
 			dismiss={ __( 'Dismiss', 'google-site-kit' ) }
 			isDismissible
 			dismissExpires={ 0 }
-			dismissOnCTAClick={ enabledViaCTA }
+			onDismiss={ () => {
+				// Don't return the result here to avoid
+				// added delay in the dismissal.
+				dismissItem( DISMISSED_ITEM_KEY );
+			} }
 		/>
 	);
 };
