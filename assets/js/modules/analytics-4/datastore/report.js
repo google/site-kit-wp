@@ -28,7 +28,9 @@ import isPlainObject from 'lodash/isPlainObject';
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
-import { MODULES_ANALYTICS_4 } from './constants';
+import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
+import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
+import { DATE_RANGE_OFFSET, MODULES_ANALYTICS_4 } from './constants';
 import { stringifyObject } from '../../../util';
 import { isValidDateRange } from '../../../util/report-validation';
 import {
@@ -37,7 +39,9 @@ import {
 	isValidDimensions,
 	isValidMetrics,
 	isValidOrders,
+	isZeroReport,
 } from '../utils';
+const { createRegistrySelector } = Data;
 
 const fetchGetReportStore = createFetchStore( {
 	baseName: 'getReport',
@@ -152,6 +156,102 @@ const baseSelectors = {
 
 		return reports[ stringifyObject( options ) ];
 	},
+
+	/**
+	 * Determines whether the Analytics 4 module is still gathering data.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {boolean|undefined} Returns `true` if gathering data, otherwise `false`. Returns `undefined` while resolving.
+	 */
+	isGatheringData: createRegistrySelector( ( select ) => () => {
+		const { startDate, endDate } = select( CORE_USER ).getDateRangeDates( {
+			offsetDays: DATE_RANGE_OFFSET,
+		} );
+
+		const args = {
+			dimensions: [ 'date' ],
+			metrics: [ { name: 'totalUsers' } ],
+			startDate,
+			endDate,
+		};
+
+		const url = select( CORE_SITE ).getCurrentEntityURL();
+		if ( url ) {
+			args.url = url;
+		}
+
+		// Disable reason: select needs to be called here or it will never run.
+		// eslint-disable-next-line @wordpress/no-unused-vars-before-return
+		const report = select( MODULES_ANALYTICS_4 ).getReport( args );
+		const hasResolvedReport = select(
+			MODULES_ANALYTICS_4
+		).hasFinishedResolution( 'getReport', [ args ] );
+
+		if ( ! hasResolvedReport ) {
+			return undefined;
+		}
+
+		if ( ! isPlainObject( report ) ) {
+			return false;
+		}
+
+		if ( ! Array.isArray( report?.rows ) || report?.rows?.length === 0 ) {
+			return true;
+		}
+
+		return false;
+	} ),
+
+	/**
+	 * Determines whether Analytics 4 has zero data or not.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {boolean|undefined} Returns FALSE if not gathering data and the report is not zero, otherwise TRUE. If the request is still being resolved, returns undefined.
+	 */
+	hasZeroData: createRegistrySelector( ( select ) => () => {
+		const isGatheringData = select( MODULES_ANALYTICS_4 ).isGatheringData();
+		if ( isGatheringData === undefined ) {
+			return undefined;
+		}
+		if ( isGatheringData === true ) {
+			return true;
+		}
+
+		const { startDate, endDate } = select( CORE_USER ).getDateRangeDates( {
+			offsetDays: DATE_RANGE_OFFSET,
+		} );
+
+		const args = {
+			dimensions: [ 'date' ],
+			metrics: [ { name: 'totalUsers' } ],
+			startDate,
+			endDate,
+		};
+
+		const url = select( CORE_SITE ).getCurrentEntityURL();
+		if ( url ) {
+			args.url = url;
+		}
+
+		// Disable reason: select needs to be called here or it will never run.
+		// eslint-disable-next-line @wordpress/no-unused-vars-before-return
+		const report = select( MODULES_ANALYTICS_4 ).getReport( args );
+		const hasResolvedReport = select(
+			MODULES_ANALYTICS_4
+		).hasFinishedResolution( 'getReport', [ args ] );
+
+		if ( ! hasResolvedReport ) {
+			return undefined;
+		}
+
+		if ( ! isPlainObject( report ) ) {
+			return false;
+		}
+
+		return isZeroReport( report );
+	} ),
 };
 
 const store = Data.combineStores( fetchGetReportStore, {
