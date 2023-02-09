@@ -29,7 +29,7 @@ import { createRef } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { act, render, renderHook } from '../../../tests/js/test-utils';
+import { act, actHook, render, renderHook } from '../../../tests/js/test-utils';
 import useLatestIntersection from './useLatestIntersection';
 
 describe( 'useLatestIntersection', () => {
@@ -70,58 +70,58 @@ describe( 'useLatestIntersection', () => {
 		);
 	} );
 
-	// it( 'should return null if a ref without a current value is provided', () => {
-	// 	targetRef = createRef();
+	it( 'should return null if a ref without a current value is provided', () => {
+		targetRef = createRef();
 
-	// 	const { result } = renderHook( () =>
-	// 		useLatestIntersection( targetRef, { root: null, threshold: 1 } )
-	// 	);
-	// 	expect( result.current ).toBe( null );
-	// } );
+		const { result } = renderHook( () =>
+			useLatestIntersection( targetRef, { root: null, threshold: 1 } )
+		);
+		expect( result.current ).toBe( null );
+	} );
 
-	// it( 'should reset an intersectionObserverEntry when the ref changes', () => {
-	// 	TestUtils.act( () => {
-	// 		targetRef = createRef();
-	// 		render( <div ref={ targetRef } />, container );
-	// 	} );
+	it( 'should reset an intersectionObserverEntry when the ref changes', () => {
+		act( () => {
+			targetRef = createRef();
+			render( <div ref={ targetRef } />, container );
+		} );
 
-	// 	const { result, rerender } = renderHook( () =>
-	// 		useLatestIntersection( targetRef, {
-	// 			root: container,
-	// 			threshold: 0.8,
-	// 		} )
-	// 	);
+		const { result, rerender } = renderHook( () =>
+			useLatestIntersection( targetRef, {
+				root: container,
+				threshold: 0.8,
+			} )
+		);
 
-	// 	const mockIntersectionObserverEntry = {
-	// 		boundingClientRect: targetRef.current.getBoundingClientRect(),
-	// 		intersectionRatio: 0.81,
-	// 		intersectionRect: container.getBoundingClientRect(),
-	// 		isIntersecting: true,
-	// 		rootBounds: container.getBoundingClientRect(),
-	// 		target: targetRef.current,
-	// 		time: 300,
-	// 	};
-	// 	TestRenderer.act( () => {
-	// 		intersectionObserver.simulate( mockIntersectionObserverEntry );
-	// 	} );
+		const mockIntersectionObserverEntry = {
+			boundingClientRect: targetRef.current.getBoundingClientRect(),
+			intersectionRatio: 0.81,
+			intersectionRect: container.getBoundingClientRect(),
+			isIntersecting: true,
+			rootBounds: container.getBoundingClientRect(),
+			target: targetRef.current,
+			time: 300,
+		};
+		actHook( () => {
+			intersectionObserver.simulate( mockIntersectionObserverEntry );
+		} );
 
-	// 	expect( result.current ).toEqual( mockIntersectionObserverEntry );
+		expect( result.current ).toEqual( mockIntersectionObserverEntry );
 
-	// 	targetRef.current = document.createElement( 'div' );
-	// 	rerender();
+		targetRef.current = document.createElement( 'div' );
+		rerender();
 
-	// 	expect( result.current ).toEqual( null );
-	// } );
+		expect( result.current ).toEqual( null );
+	} );
 
-	// it( 'should return null if IntersectionObserver is not supported', () => {
-	// 	targetRef = createRef();
-	// 	targetRef.current = document.createElement( 'div' );
-	// 	delete global.IntersectionObserver;
+	it( 'should return null if IntersectionObserver is not supported', () => {
+		targetRef = createRef();
+		targetRef.current = document.createElement( 'div' );
+		delete global.IntersectionObserver;
 
-	// 	expect( () =>
-	// 		renderHook( () => useLatestIntersection( targetRef, {} ) )
-	// 	).not.toThrow();
-	// } );
+		expect( () =>
+			renderHook( () => useLatestIntersection( targetRef, {} ) )
+		).not.toThrow();
+	} );
 
 	it( 'should disconnect an old IntersectionObserver instance when the ref changes', () => {
 		targetRef = createRef();
@@ -143,97 +143,116 @@ describe( 'useLatestIntersection', () => {
 		).toHaveBeenCalledTimes( 2 );
 	} );
 
-	// it( 'should return the first IntersectionObserverEntry when the IntersectionObserver registers an intersection', () => {
-	// 	TestUtils.act( () => {
-	// 		targetRef = createRef();
-	// 		render( <div ref={ targetRef } />, container );
-	// 	} );
+	it( 'should return the last IntersectionObserverEntry when the IntersectionObserver registers an intersection', () => {
+		act( () => {
+			targetRef = createRef();
+			render( <div ref={ targetRef } />, container );
+		} );
 
-	// 	const { result } = renderHook( () =>
-	// 		useLatestIntersection( targetRef, {
-	// 			root: container,
-	// 			threshold: 0.8,
-	// 		} )
-	// 	);
+		const { result } = renderHook( () =>
+			useLatestIntersection( targetRef, {
+				root: container,
+				threshold: 0.3,
+			} )
+		);
 
-	// 	const mockIntersectionObserverEntry = {
-	// 		boundingClientRect: targetRef.current.getBoundingClientRect(),
-	// 		intersectionRatio: 0.81,
-	// 		intersectionRect: container.getBoundingClientRect(),
-	// 		isIntersecting: true,
-	// 		rootBounds: container.getBoundingClientRect(),
-	// 		target: targetRef.current,
-	// 		time: 300,
-	// 	};
-	// 	TestRenderer.act( () => {
-	// 		intersectionObserver.simulate( mockIntersectionObserverEntry );
-	// 	} );
+		const mockIntersectionObserverEntry1 = {
+			boundingClientRect: targetRef.current.getBoundingClientRect(),
+			intersectionRatio: 0.31,
+			intersectionRect: container.getBoundingClientRect(),
+			isIntersecting: true,
+			rootBounds: container.getBoundingClientRect(),
+			target: targetRef.current,
+			time: 300,
+		};
 
-	// 	expect( result.current ).toEqual( mockIntersectionObserverEntry );
-	// } );
+		actHook( () => {
+			intersectionObserver.simulate( mockIntersectionObserverEntry1 );
+		} );
 
-	// it( 'should setup a new IntersectionObserver when the ref changes', () => {
-	// 	let newRef;
-	// 	TestUtils.act( () => {
-	// 		targetRef = createRef();
-	// 		newRef = createRef();
-	// 		render(
-	// 			<div ref={ targetRef }>
-	// 				<span ref={ newRef } />
-	// 			</div>,
-	// 			container
-	// 		);
-	// 	} );
+		expect( result.current ).toEqual( mockIntersectionObserverEntry1 );
 
-	// 	const observerOptions = { root: null, threshold: 0.8 };
-	// 	const { rerender } = renderHook(
-	// 		( { ref, options } ) => useLatestIntersection( ref, options ),
-	// 		{
-	// 			initialProps: { ref: targetRef, options: observerOptions },
-	// 		}
-	// 	);
+		const mockIntersectionObserverEntry2 = {
+			boundingClientRect: targetRef.current.getBoundingClientRect(),
+			intersectionRatio: 0.61,
+			intersectionRect: container.getBoundingClientRect(),
+			isIntersecting: true,
+			rootBounds: container.getBoundingClientRect(),
+			target: targetRef.current,
+			time: 400,
+		};
 
-	// 	expect( intersectionObserver.observers[ 0 ].target ).toEqual(
-	// 		targetRef.current
-	// 	);
+		actHook( () => {
+			intersectionObserver.simulate( mockIntersectionObserverEntry2 );
+		} );
 
-	// 	TestRenderer.act( () => {
-	// 		rerender( { ref: newRef, options: observerOptions } );
-	// 	} );
+		expect( result.current ).toEqual( mockIntersectionObserverEntry2 );
+	} );
 
-	// 	expect( intersectionObserver.observers[ 0 ].target ).toEqual(
-	// 		newRef.current
-	// 	);
-	// } );
+	it( 'should setup a new IntersectionObserver when the ref changes', () => {
+		let newRef;
+		act( () => {
+			targetRef = createRef();
+			newRef = createRef();
+			render(
+				<div ref={ targetRef }>
+					<span ref={ newRef } />
+				</div>,
+				container
+			);
+		} );
 
-	// it( 'should setup a new IntersectionObserver when the options change', () => {
-	// 	TestUtils.act( () => {
-	// 		targetRef = createRef();
-	// 		render( <div ref={ targetRef } />, container );
-	// 	} );
+		const observerOptions = { root: null, threshold: 0.8 };
+		const { rerender } = renderHook(
+			( { refToUse, options } ) =>
+				useLatestIntersection( refToUse, options ),
+			{
+				initialProps: { refToUse: targetRef, options: observerOptions },
+			}
+		);
 
-	// 	const initialObserverOptions = { root: null, threshold: 0.8 };
-	// 	const { rerender } = renderHook(
-	// 		( { ref, options } ) => useLatestIntersection( ref, options ),
-	// 		{
-	// 			initialProps: {
-	// 				ref: targetRef,
-	// 				options: initialObserverOptions,
-	// 			},
-	// 		}
-	// 	);
+		expect( intersectionObserver.observers[ 0 ].target ).toEqual(
+			targetRef.current
+		);
 
-	// 	expect( intersectionObserver.observers[ 0 ].options ).toEqual(
-	// 		initialObserverOptions
-	// 	);
+		actHook( () => {
+			rerender( { refToUse: newRef, options: observerOptions } );
+		} );
 
-	// 	const newObserverOptions = { root: container, threshold: 1 };
-	// 	TestRenderer.act( () => {
-	// 		rerender( { ref: targetRef, options: newObserverOptions } );
-	// 	} );
+		expect( intersectionObserver.observers[ 0 ].target ).toEqual(
+			newRef.current
+		);
+	} );
 
-	// 	expect( intersectionObserver.observers[ 0 ].options ).toEqual(
-	// 		newObserverOptions
-	// 	);
-	// } );
+	it( 'should setup a new IntersectionObserver when the options change', () => {
+		act( () => {
+			targetRef = createRef();
+			render( <div ref={ targetRef } />, container );
+		} );
+
+		const initialObserverOptions = { root: null, threshold: 0.8 };
+		const { rerender } = renderHook(
+			( { refToUse, options } ) =>
+				useLatestIntersection( refToUse, options ),
+			{
+				initialProps: {
+					refToUse: targetRef,
+					options: initialObserverOptions,
+				},
+			}
+		);
+
+		expect( intersectionObserver.observers[ 0 ].options ).toEqual(
+			initialObserverOptions
+		);
+
+		const newObserverOptions = { root: container, threshold: 1 };
+		act( () => {
+			rerender( { refToUse: targetRef, options: newObserverOptions } );
+		} );
+
+		expect( intersectionObserver.observers[ 0 ].options ).toEqual(
+			newObserverOptions
+		);
+	} );
 } );
