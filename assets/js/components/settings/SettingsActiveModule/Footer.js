@@ -47,7 +47,11 @@ import { clearCache } from '../../../googlesitekit/api/cache';
 import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import useViewContext from '../../../hooks/useViewContext';
+import { useSelector, useDispatch } from 'react-redux';
+import { getModuleStoreName } from './selectors';
+
 const { useDispatch, useSelect } = Data;
+
 
 export default function Footer( props ) {
 	const { slug } = props;
@@ -100,7 +104,10 @@ export default function Footer( props ) {
 	} );
 
 	const { submitChanges } = useDispatch( CORE_MODULES );
-	const { clearErrors } = useDispatch( `modules/${ slug }` );
+	const moduleStoreName = useSelector(getModuleStoreName(slug));
+        const { clearErrors } = useDispatch(moduleStoreName);
+
+
 	const { setValue } = useDispatch( CORE_UI );
 
 	const hasSettings = !! module?.SettingsEditComponent;
