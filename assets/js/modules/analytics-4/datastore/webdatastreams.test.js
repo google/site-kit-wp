@@ -733,6 +733,11 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 					.receiveGetWebDataStreamsBatch( datastreams, {
 						propertyIDs,
 					} );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.finishResolution( 'getWebDataStreamsBatch', [
+						propertyIDs,
+					] );
 
 				const config = registry
 					.select( MODULES_ANALYTICS_4 )
@@ -758,6 +763,11 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 					.receiveGetWebDataStreamsBatch( datastreams, {
 						propertyIDs,
 					} );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.finishResolution( 'getWebDataStreamsBatch', [
+						propertyIDs,
+					] );
 
 				const config = registry
 					.select( MODULES_ANALYTICS_4 )
@@ -783,6 +793,11 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 					.receiveGetWebDataStreamsBatch( datastreams, {
 						propertyIDs,
 					} );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.finishResolution( 'getWebDataStreamsBatch', [
+						propertyIDs,
+					] );
 
 				const config = registry
 					.select( MODULES_ANALYTICS_4 )
@@ -803,6 +818,11 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 					.receiveGetWebDataStreamsBatch( datastreams, {
 						propertyIDs,
 					} );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.finishResolution( 'getWebDataStreamsBatch', [
+						propertyIDs,
+					] );
 
 				const config = registry
 					.select( MODULES_ANALYTICS_4 )

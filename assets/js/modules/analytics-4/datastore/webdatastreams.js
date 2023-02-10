@@ -455,13 +455,20 @@ const baseSelectors = {
 				return null;
 			}
 
+			// eslint-disable-next-line @wordpress/no-unused-vars-before-return
 			const datastreams =
 				select( MODULES_ANALYTICS_4 ).getWebDataStreamsBatch(
 					propertyIDs
 				);
 
+			const resolvedDataStreams = select(
+				MODULES_ANALYTICS_4
+			).hasFinishedResolution( 'getWebDataStreamsBatch', [
+				propertyIDs,
+			] );
+
 			// Return undefined if web data streams haven't been resolved yet.
-			if ( datastreams === undefined ) {
+			if ( ! resolvedDataStreams ) {
 				return undefined;
 			}
 
