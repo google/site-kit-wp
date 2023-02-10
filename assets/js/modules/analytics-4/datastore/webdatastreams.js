@@ -473,11 +473,11 @@ const baseSelectors = {
 				}
 
 				for ( const datastream of datastreams[ propertyID ] ) {
-					const { _id: webDataStreamID, webDataStream } = datastream;
+					const { _id: webDataStreamID, webStreamData } = datastream;
 					const {
 						defaultUri: defaultURI,
 						measurementId: measurementID, // eslint-disable-line sitekit/acronym-case
-					} = webDataStream;
+					} = webStreamData;
 
 					if ( ! measurementIDs.includes( measurementID ) ) {
 						continue;
