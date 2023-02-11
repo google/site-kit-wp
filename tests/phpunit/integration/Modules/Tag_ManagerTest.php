@@ -24,8 +24,7 @@ use Google\Site_Kit\Tests\Core\Modules\Module_With_Scopes_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Service_Entity_ContractTests;
 use Google\Site_Kit\Tests\FakeHttpClient;
 use Google\Site_Kit\Tests\TestCase;
-use Google\Site_Kit_Dependencies\GuzzleHttp\Message\Response;
-use Google\Site_Kit_Dependencies\GuzzleHttp\Stream\Stream;
+use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Response;
 
 /**
  * @group Modules
@@ -540,15 +539,13 @@ class Tag_ManagerTest extends TestCase {
 				return new Response(
 					200,
 					array(),
-					Stream::factory(
-						json_encode(
-							array(
-								'container' => array(
-									array( 'publicId' => 'GTM-123456' ),
-									array( 'publicId' => 'GTM-123457' ),
-									array( 'publicId' => 'GTM-123458' ),
-								),
-							)
+					json_encode(
+						array(
+							'container' => array(
+								array( 'publicId' => 'GTM-123456' ),
+								array( 'publicId' => 'GTM-123457' ),
+								array( 'publicId' => 'GTM-123458' ),
+							),
 						)
 					)
 				);
