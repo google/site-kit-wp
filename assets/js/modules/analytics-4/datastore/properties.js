@@ -451,9 +451,15 @@ const baseActions = {
 	*updateSettingsForMeasurementID( measurementID ) {
 		const registry = yield commonActions.getRegistry();
 
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.setMeasurementID( measurementID );
+		const existingMeasurementID = registry
+			.select( MODULES_ANALYTICS_4 )
+			.getMeasurementID();
+
+		if ( measurementID !== existingMeasurementID ) {
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setMeasurementID( measurementID );
+		}
 
 		if ( ! isFeatureEnabled( 'gteSupport' ) ) {
 			return;
