@@ -50,7 +50,7 @@ import { ErrorNotices } from '../common';
 /**
  * Returns translatable account status element.
  *
- * @since n.e.x.t
+ * @since 1.94.0
  *
  * @param {string}  accountStatus The active adsense account status.
  * @param {boolean} hasErrors     The adsense setup error flag.
@@ -96,7 +96,7 @@ const getAccountStatusViewComponent = ( accountStatus, hasErrors ) => {
 /**
  * Returns translatable site status element.
  *
- * @since n.e.x.t
+ * @since 1.94.0
  *
  * @param {string}   siteStatus  The adsense site status.
  * @param {boolean}  hasErrors   The adsense setup error flag.
@@ -130,7 +130,7 @@ const getSiteStatusViewComponent = ( siteStatus, hasErrors, finishSetup ) => {
 /**
  * Returns apropriate view component to use in adsense SetupMain.
  *
- * @since n.e.x.t
+ * @since 1.94.0
  *
  * @param {string}   accountStatus            The adsense account status.
  * @param {boolean}  hasErrors                The adsense setup error flag.

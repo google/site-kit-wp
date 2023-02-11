@@ -24,10 +24,10 @@ import fetchMock from 'fetch-mock';
 /**
  * Internal dependencies
  */
-import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
-import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import EnableAutoUpdateBannerNotification from './EnableAutoUpdateBannerNotification';
+import WithRegistrySetup from '../../../../../tests/js/WithRegistrySetup';
+import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
+import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
+import EnableAutoUpdateBannerNotification from '.';
 
 const Template = () => <EnableAutoUpdateBannerNotification />;
 
@@ -37,10 +37,8 @@ export default {
 	title: 'Components/EnableAutoUpdateBannerNotification',
 	decorators: [
 		( Story ) => (
-			<div className="googlesitekit-widget">
-				<div className="googlesitekit-widget__body">
-					<Story />
-				</div>
+			<div className="googlesitekit-subheader">
+				<Story />
 			</div>
 		),
 		( Story, { args } ) => {
@@ -48,8 +46,7 @@ export default {
 
 			const setupRegistry = ( registry ) => {
 				registry.dispatch( CORE_SITE ).receiveSiteInfo( {
-					updatePluginCapacity: true,
-					autoUpdatesEnabled: true,
+					changePluginAutoUpdatesCapacity: true,
 					siteKitAutoUpdatesEnabled: false,
 					pluginBasename: 'google-site-kit/google-site-kit.php',
 				} );

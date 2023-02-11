@@ -1,7 +1,7 @@
 /**
  * Report utilities.
  *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@
 /**
  * Checks whether the report data has only zero values.
  *
- * @since 1.22.0
+ * @since n.e.x.t
  *
  * @param {Object} report Report data object.
  * @return {(boolean|undefined)} Returns TRUE if the report data has only zero values, FALSE if there is at least one non-zero value, or undefined if the report data is not resolved yet.
@@ -30,14 +30,14 @@ export function isZeroReport( report ) {
 	}
 
 	if (
-		! report?.[ 0 ]?.data?.rows?.length ||
-		! report?.[ 0 ]?.data?.totals?.[ 0 ]?.values?.length
+		! report?.rows?.length ||
+		! report?.totals?.[ 0 ]?.metricValues?.length
 	) {
 		return true;
 	}
 
 	// false means there _is_ value report data
-	return ! report[ 0 ].data.totals.some( ( totals ) =>
-		totals.values.some( ( value ) => value > 0 )
+	return ! report.totals.some( ( totals ) =>
+		totals.metricValues.some( ( { value } ) => value > 0 )
 	);
 }

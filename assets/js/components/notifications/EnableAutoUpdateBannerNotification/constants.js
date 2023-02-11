@@ -1,7 +1,7 @@
 /**
- * `modules/analytics-4` data store constants.
+ * Auto update banner notification constants.
  *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,7 @@
  * limitations under the License.
  */
 
-export const MODULES_ANALYTICS_4 = 'modules/analytics-4';
-
-export const PROPERTY_CREATE = 'property_create';
-export const WEBDATASTREAM_CREATE = 'webdatastream_create';
-
-export const MAX_WEBDATASTREAMS_PER_BATCH = 10;
-
-// Date range offset days for Analytics 4 report requests.
-export const DATE_RANGE_OFFSET = 1;
+export const NOTIFICATION_ID = 'enable-plugin-auto-update-notification';
+export const CACHE_KEY_HIDE_NOTIFICATION_ON_FIRST_SETUP =
+	'auto-update-banner-hide-notification-on-first-setup';
+export const DISMISSED_ITEM_KEY = 'auto-update-cta';
