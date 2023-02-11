@@ -11,8 +11,9 @@
 namespace Google\Site_Kit\Tests;
 
 use Google\Site_Kit_Dependencies\GuzzleHttp\Client;
-use Google\Site_Kit_Dependencies\GuzzleHttp\Message\RequestInterface;
-use Google\Site_Kit_Dependencies\GuzzleHttp\Message\Response;
+use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Response;
+use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
+use Google\Site_Kit_Dependencies\Psr\Http\Message\ResponseInterface;
 
 /**
  * Class FakeHttpClient
@@ -35,11 +36,15 @@ class FakeHttpClient extends Client {
 	}
 
 	/**
-	 * @param RequestInterface $request
+	 * Fake sending an HTTP request.
 	 *
-	 * @return \Google\Site_Kit_Dependencies\GuzzleHttp\Message\ResponseInterface
+	 * @param RequestInterface $request
+	 * @param array            $options Request options to apply to the given
+	 *                                  request and to the transfer. See \GuzzleHttp\RequestOptions.
+	 *
+	 * @return ResponseInterface
 	 */
-	public function send( RequestInterface $request ) {
+	public function send( RequestInterface $request, array $options = array() ) {
 		if ( $this->request_handler ) {
 			return call_user_func( $this->request_handler, $request );
 		}
