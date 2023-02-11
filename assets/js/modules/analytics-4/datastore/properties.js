@@ -20,6 +20,7 @@
  * External dependencies
  */
 import invariant from 'invariant';
+import isEmpty from 'lodash/isEmpty';
 
 /**
  * Internal dependencies
@@ -27,6 +28,7 @@ import invariant from 'invariant';
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
+import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import {
 	MODULES_ANALYTICS_4,
 	PROPERTY_CREATE,
@@ -495,6 +497,42 @@ const baseActions = {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setGoogleTagContainerID( googleTagContainerID );
 		registry.dispatch( MODULES_ANALYTICS_4 ).setGoogleTagID( googleTagID );
+	},
+
+	*syncGoogleTagSettings() {
+		const registry = yield commonActions.getRegistry();
+
+		const isGA4Connected = registry
+			.select( CORE_MODULES )
+			.isModuleConnected( 'analytics-4' );
+		const googleTagID = registry
+			.select( MODULES_ANALYTICS_4 )
+			.getGoogleTagID();
+		const measurementID = registry
+			.select( MODULES_ANALYTICS_4 )
+			.getMeasurementID();
+		const googleTagLastSyncedAtMs = registry
+			.select( MODULES_ANALYTICS_4 )
+			.getGoogleTagLastSyncedAtMs();
+
+		if (
+			isFeatureEnabled( 'gteSupport' ) &&
+			isGA4Connected &&
+			isEmpty( googleTagID ) &&
+			! isEmpty( measurementID ) &&
+			( isEmpty( googleTagLastSyncedAtMs ) ||
+				Date.now() - googleTagLastSyncedAtMs >= 3600000 )
+		) {
+			yield baseActions.updateSettingsForMeasurementID( measurementID );
+
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setGoogleTagLastSyncedAtMs( Date.now() );
+
+			registry.dispatch( MODULES_ANALYTICS_4 ).saveSettings();
+		}
+
+		return true;
 	},
 };
 
