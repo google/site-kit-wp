@@ -14,7 +14,7 @@ use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_With_Service_Entity;
 use Google\Site_Kit\Tests\FakeHttpClient;
 use Google\Site_Kit\Tests\TestCase_Context_Trait;
-use Google\Site_Kit_Dependencies\GuzzleHttp\Message\Response;
+use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Response;
 
 trait Module_With_Service_Entity_ContractTests {
 

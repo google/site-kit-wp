@@ -37,9 +37,8 @@ use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnaly
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaDataStreamWebStreamData;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaListConversionEventsResponse;
 use Google\Site_Kit_Dependencies\Google\Service\TagManager\Container;
-use Google\Site_Kit_Dependencies\GuzzleHttp\Message\Request;
-use Google\Site_Kit_Dependencies\GuzzleHttp\Message\Response;
-use Google\Site_Kit_Dependencies\GuzzleHttp\Stream\Stream;
+use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Request;
+use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Response;
 use WP_User;
 
 /**
@@ -141,7 +140,7 @@ class Analytics_4Test extends TestCase {
 		$http_client = new FakeHttpClient();
 		$http_client->set_request_handler(
 			function( Request $request ) use ( $property_id, $webdatastream_id, $measurement_id ) {
-				$url = parse_url( $request->getUrl() );
+				$url = parse_url( $request->getUri() );
 
 				if ( 'analyticsadmin.googleapis.com' !== $url['host'] ) {
 					return new Response( 200 );
@@ -152,11 +151,9 @@ class Analytics_4Test extends TestCase {
 						return new Response(
 							200,
 							array(),
-							Stream::factory(
-								json_encode(
-									array(
-										'name' => "properties/{$property_id}",
-									)
+							json_encode(
+								array(
+									'name' => "properties/{$property_id}",
 								)
 							)
 						);
@@ -171,9 +168,7 @@ class Analytics_4Test extends TestCase {
 						return new Response(
 							200,
 							array(),
-							Stream::factory(
-								json_encode( $datastream->toSimpleObject() )
-							)
+							json_encode( $datastream->toSimpleObject() )
 						);
 					default:
 						return new Response( 200 );
@@ -228,7 +223,7 @@ class Analytics_4Test extends TestCase {
 		$http_client = new FakeHttpClient();
 		$http_client->set_request_handler(
 			function( Request $request ) use ( $property_id, $webdatastream_id, $measurement_id, $google_tag_account_id, $google_tag_container_id, $tag_ids ) {
-				$url = parse_url( $request->getUrl() );
+				$url = parse_url( $request->getUri() );
 
 				if ( ! in_array( $url['host'], array( 'analyticsadmin.googleapis.com', 'tagmanager.googleapis.com' ), true ) ) {
 					return new Response( 200 );
@@ -239,11 +234,9 @@ class Analytics_4Test extends TestCase {
 						return new Response(
 							200,
 							array(),
-							Stream::factory(
-								json_encode(
-									array(
-										'name' => "properties/{$property_id}",
-									)
+							json_encode(
+								array(
+									'name' => "properties/{$property_id}",
 								)
 							)
 						);
@@ -258,9 +251,7 @@ class Analytics_4Test extends TestCase {
 						return new Response(
 							200,
 							array(),
-							Stream::factory(
-								json_encode( $datastream->toSimpleObject() )
-							)
+							json_encode( $datastream->toSimpleObject() )
 						);
 					case '/tagmanager/v2/accounts/containers:lookup':
 						$data = new Container();
@@ -270,10 +261,8 @@ class Analytics_4Test extends TestCase {
 						return new Response(
 							200,
 							array(),
-							Stream::factory(
-								json_encode(
-									$data->toSimpleObject()
-								)
+							json_encode(
+								$data->toSimpleObject()
 							)
 						);
 
@@ -407,7 +396,7 @@ class Analytics_4Test extends TestCase {
 		$http_client = new FakeHttpClient();
 		$http_client->set_request_handler(
 			function ( Request $request ) use ( $tag_ids_data ) {
-				$url = parse_url( $request->getUrl() );
+				$url = parse_url( $request->getUri() );
 
 				if ( 'tagmanager.googleapis.com' !== $url['host'] ) {
 					return new Response( 200 );
@@ -421,10 +410,8 @@ class Analytics_4Test extends TestCase {
 						return new Response(
 							200,
 							array(),
-							Stream::factory(
-								json_encode(
-									$data->toSimpleObject()
-								)
+							json_encode(
+								$data->toSimpleObject()
 							)
 						);
 
@@ -511,7 +498,8 @@ class Analytics_4Test extends TestCase {
 		);
 
 		$http_client = $this->create_fake_http_client( $property_id );
-		$this->analytics->get_client()->setHttpClient( $http_client );
+		$this->authentication->get_oauth_client()->get_client()->setHttpClient( $http_client );
+		$this->analytics->get_owner_oauth_client()->get_client()->setHttpClient( $http_client );
 		$this->analytics->register();
 
 		// Fetch a report that exercises all input parameters, barring the alternative date range,
@@ -1241,7 +1229,7 @@ class Analytics_4Test extends TestCase {
 		$http_client = new FakeHttpClient();
 		$http_client->set_request_handler(
 			function ( Request $request ) use ( $property_id ) {
-				$url    = parse_url( $request->getUrl() );
+				$url    = parse_url( $request->getUri() );
 				$params = json_decode( (string) $request->getBody(), true );
 
 				$this->request_handler_calls[] = array(
@@ -1265,22 +1253,20 @@ class Analytics_4Test extends TestCase {
 						return new Response(
 							200,
 							array(),
-							Stream::factory(
-								json_encode(
+							json_encode(
+								array(
+									'kind' => 'analyticsData#runReport',
 									array(
-										'kind' => 'analyticsData#runReport',
-										array(
-											'rows' => array(
-												array(
-													'metricValues' => array(
-														array(
-															'value' => 'some-value',
-														),
+										'rows' => array(
+											array(
+												'metricValues' => array(
+													array(
+														'value' => 'some-value',
 													),
 												),
 											),
 										),
-									)
+									),
 								)
 							)
 						);
@@ -1296,9 +1282,7 @@ class Analytics_4Test extends TestCase {
 						return new Response(
 							200,
 							array(),
-							Stream::factory(
-								json_encode( $conversion_events )
-							)
+							json_encode( $conversion_events )
 						);
 
 					default:

@@ -36,8 +36,7 @@ use Google\Site_Kit\Tests\Fake_Site_Connection_Trait;
 use Google\Site_Kit\Tests\FakeHttpClient;
 use Google\Site_Kit\Tests\MutableInput;
 use Google\Site_Kit\Tests\TestCase;
-use Google\Site_Kit_Dependencies\GuzzleHttp\Message\Response;
-use Google\Site_Kit_Dependencies\GuzzleHttp\Stream\Stream;
+use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Response;
 use WP_Error;
 use WP_Screen;
 use WPDieException;
@@ -329,13 +328,11 @@ class AuthenticationTest extends TestCase {
 				return new Response(
 					200,
 					array(),
-					Stream::factory(
-						json_encode(
-							array(
-								'access_token' => 'new-test-access-token',
-								'expires_in'   => 3599,
-								'token_type'   => 'Bearer',
-							)
+					json_encode(
+						array(
+							'access_token' => 'new-test-access-token',
+							'expires_in'   => 3599,
+							'token_type'   => 'Bearer',
 						)
 					)
 				);
@@ -419,13 +416,11 @@ class AuthenticationTest extends TestCase {
 				return new Response(
 					200,
 					array(),
-					Stream::factory(
-						json_encode(
-							array(
-								'access_token' => 'new-test-access-token',
-								'expires_in'   => 3599,
-								'token_type'   => 'Bearer',
-							)
+					json_encode(
+						array(
+							'access_token' => 'new-test-access-token',
+							'expires_in'   => 3599,
+							'token_type'   => 'Bearer',
 						)
 					)
 				);
