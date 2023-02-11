@@ -54,6 +54,7 @@ return array(
 			->path( '#^psr/#' )
 			->path( '#^ralouphie/#' )
 			->path( '#^react/#' )
+			->path( '#^symfony/#' )
 			->path( '#^true/#' )
 			->in( 'vendor' ),
 
@@ -93,6 +94,7 @@ return array(
 
 		// This dependency is a global function which should remain global.
 		'vendor/ralouphie/getallheaders/src/getallheaders.php',
+		'vendor/symfony/polyfill-intl-normalizer/bootstrap.php',
 	),
 	'patchers'                   => array(
 		function( $file_path, $prefix, $contents ) {
