@@ -33,12 +33,12 @@ import { act, actHook, render, renderHook } from '../../../tests/js/test-utils';
 import useLatestIntersection from './useLatestIntersection';
 
 describe( 'useLatestIntersection', () => {
-	const container = document.createElement( 'div' );
+	const container = global.document.createElement( 'div' );
 	let targetRef;
 
 	beforeEach( () => {
 		intersectionObserver.mock();
-		const IO = IntersectionObserver;
+		const IO = global.IntersectionObserver;
 		jest.spyOn( IO.prototype, 'disconnect' );
 		global.IntersectionObserver = jest.fn(
 			( ...args ) => new IO( ...args )
@@ -107,7 +107,7 @@ describe( 'useLatestIntersection', () => {
 
 		expect( result.current ).toEqual( mockIntersectionObserverEntry );
 
-		targetRef.current = document.createElement( 'div' );
+		targetRef.current = global.document.createElement( 'div' );
 		rerender();
 
 		expect( result.current ).toEqual( null );
@@ -115,7 +115,7 @@ describe( 'useLatestIntersection', () => {
 
 	it( 'should return null if IntersectionObserver is not supported', () => {
 		targetRef = createRef();
-		targetRef.current = document.createElement( 'div' );
+		targetRef.current = global.document.createElement( 'div' );
 		delete global.IntersectionObserver;
 
 		expect( () =>
@@ -125,13 +125,13 @@ describe( 'useLatestIntersection', () => {
 
 	it( 'should disconnect an old IntersectionObserver instance when the ref changes', () => {
 		targetRef = createRef();
-		targetRef.current = document.createElement( 'div' );
+		targetRef.current = global.document.createElement( 'div' );
 
 		const { rerender } = renderHook( () =>
 			useLatestIntersection( targetRef, {} )
 		);
 
-		targetRef.current = document.createElement( 'div' );
+		targetRef.current = global.document.createElement( 'div' );
 		rerender();
 
 		targetRef.current = null;
