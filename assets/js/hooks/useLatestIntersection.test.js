@@ -166,12 +166,6 @@ describe( 'useLatestIntersection', () => {
 			time: 300,
 		};
 
-		actHook( () => {
-			intersectionObserver.simulate( mockIntersectionObserverEntry1 );
-		} );
-
-		expect( result.current ).toEqual( mockIntersectionObserverEntry1 );
-
 		const mockIntersectionObserverEntry2 = {
 			boundingClientRect: targetRef.current.getBoundingClientRect(),
 			intersectionRatio: 0.61,
@@ -181,11 +175,12 @@ describe( 'useLatestIntersection', () => {
 			target: targetRef.current,
 			time: 400,
 		};
-
 		actHook( () => {
-			intersectionObserver.simulate( mockIntersectionObserverEntry2 );
+			intersectionObserver.simulate( [
+				mockIntersectionObserverEntry1,
+				mockIntersectionObserverEntry2,
+			] );
 		} );
-
 		expect( result.current ).toEqual( mockIntersectionObserverEntry2 );
 	} );
 
