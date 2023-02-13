@@ -38,12 +38,18 @@ const useLatestIntersection = ( ref, options ) => {
 		useState( null );
 
 	useEffect( () => {
-		if ( ref.current && typeof IntersectionObserver === 'function' ) {
+		if (
+			ref.current &&
+			typeof global.IntersectionObserver === 'function'
+		) {
 			const handler = ( entries ) => {
 				setIntersectionObserverEntry( entries[ entries.length - 1 ] );
 			};
 
-			const observer = new IntersectionObserver( handler, options );
+			const observer = new global.IntersectionObserver(
+				handler,
+				options
+			);
 			observer.observe( ref.current );
 
 			return () => {
