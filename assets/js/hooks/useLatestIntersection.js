@@ -29,9 +29,9 @@ import { useEffect, useState } from '@wordpress/element';
  *
  * @since n.e.x.t
  *
- * @param {Object} ref     The ref object of html element.
- * @param {Object} options Options for the intersaction observer.
- * @return {IntersectionObserverEntry | null} The latest intersaction observer entry.
+ * @param {Object} ref     A ref object that points to the HTML element to observe.
+ * @param {Object} options Options for the Intersection Observer.
+ * @return {IntersectionObserverEntry | null} The latest Intersection Observer entry.
  */
 const useLatestIntersection = ( ref, options ) => {
 	const [ intersectionObserverEntry, setIntersectionObserverEntry ] =
