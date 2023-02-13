@@ -83,7 +83,10 @@ const fetchGetReportStore = createFetchStore( {
 	},
 } );
 
-const gatheringDataStore = createGatheringDataStore( 'search-console' );
+const gatheringDataStore = createGatheringDataStore( 'search-console', {
+	dataAvailable:
+		global._googlesitekitModulesData?.[ 'data_available_search-console' ],
+} );
 
 const baseInitialState = {
 	reports: {},

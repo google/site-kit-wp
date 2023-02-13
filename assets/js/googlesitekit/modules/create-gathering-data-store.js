@@ -43,13 +43,20 @@ const WAIT_FOR_GATHERING_DATA = 'WAIT_FOR_GATHERING_DATA';
  * @since n.e.x.t
  * @private
  *
- * @param {string} moduleSlug Module slug.
+ * @param {string}  moduleSlug         Slug of the module that the store is for.
+ * @param {Object}  args               Arguments to configure the store.
+ * @param {boolean} args.dataAvailable Data available on load.
  * @return {Object} The gathering data store object.
  */
-const createGatheringDataStore = ( moduleSlug ) => {
+const createGatheringDataStore = ( moduleSlug, { dataAvailable } = {} ) => {
 	invariant(
 		'string' === typeof moduleSlug && moduleSlug,
 		'module slug is required.'
+	);
+
+	invariant(
+		'boolean' === typeof dataAvailable,
+		'dataAvailable must be a boolean.'
 	);
 
 	const fetchSaveDataAvailableStateStore = createFetchStore( {
@@ -61,10 +68,7 @@ const createGatheringDataStore = ( moduleSlug ) => {
 	const storeName = `modules/${ moduleSlug }`;
 
 	const initialState = {
-		dataAvailableOnLoad:
-			global._googlesitekitModulesData?.[
-				`data_available_${ moduleSlug }`
-			],
+		dataAvailableOnLoad: dataAvailable,
 		gatheringData: undefined,
 	};
 
@@ -106,17 +110,17 @@ const createGatheringDataStore = ( moduleSlug ) => {
 				type: WAIT_FOR_GATHERING_DATA,
 			};
 
-			const dataAvailable = registry
+			const dataAvailability = registry
 				.select( storeName )
 				.determineDataAvailability();
 
 			invariant(
-				'boolean' === typeof dataAvailable,
+				'boolean' === typeof dataAvailability,
 				'determineDataAvailability must return a boolean.'
 			);
 
 			yield {
-				payload: { gatheringData: ! dataAvailable },
+				payload: { gatheringData: ! dataAvailability },
 				type: SET_GATHERING_DATA,
 			};
 

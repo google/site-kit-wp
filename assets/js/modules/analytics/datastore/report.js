@@ -121,7 +121,10 @@ const fetchGetReportStore = createFetchStore( {
 	},
 } );
 
-const gatheringDataStore = createGatheringDataStore( 'analytics' );
+const gatheringDataStore = createGatheringDataStore( 'analytics', {
+	dataAvailable:
+		global._googlesitekitModulesData?.[ 'data_available_analytics' ],
+} );
 
 const baseInitialState = {
 	reports: {},
