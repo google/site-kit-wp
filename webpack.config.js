@@ -322,7 +322,7 @@ function* webpackConfig( env, argv ) {
 				'./assets/js/googlesitekit-user-input.js',
 			'googlesitekit-polyfills': './assets/js/googlesitekit-polyfills.js',
 			'googlesitekit-components-gm2':
-				'./assets/js/googlesitekit-components-gm2.js',
+				'./assets/js/googlesitekit-components-gm2.ts',
 			'googlesitekit-components-gm3':
 				'./assets/js/googlesitekit-components-gm3.js',
 			// Old Modules
