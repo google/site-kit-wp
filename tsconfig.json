@@ -11,7 +11,8 @@
 		"moduleResolution": "node",
 		"baseUrl": ".",
 		"paths": {
-			"googlesitekit-data": [ "./assets/js/googlesitekit-data.ts" ]
+			"googlesitekit-data": [ "./assets/js/googlesitekit-data.ts" ],
+      "googlesitekit-components": ["./assets/js/googlesitekit-components-gm2.ts"]
 		},
 		"allowSyntheticDefaultImports": true,
 		"esModuleInterop": true,
