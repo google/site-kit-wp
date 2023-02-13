@@ -24,6 +24,9 @@ import { useEffect, useState } from '@wordpress/element';
 /**
  * Returns latest intersaction observer entry for a given element.
  *
+ * This hook is based on the `useIntersection` hook from `react-use` package. The difference
+ * is that this hook returns the last intersection observer entry instead of the first one.
+ *
  * @since n.e.x.t
  *
  * @param {Object} ref     The ref object of html element.
