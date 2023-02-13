@@ -499,21 +499,22 @@ const baseActions = {
 		registry.dispatch( MODULES_ANALYTICS_4 ).setGoogleTagID( googleTagID );
 	},
 
+	/**
+	 * Syncs Google Tag settings.
+	 *
+	 * @since n.e.x.t
+	 */
 	*syncGoogleTagSettings() {
 		const registry = yield commonActions.getRegistry();
 
-		const isGA4Connected = registry
-			.select( CORE_MODULES )
-			.isModuleConnected( 'analytics-4' );
-		const googleTagID = registry
-			.select( MODULES_ANALYTICS_4 )
-			.getGoogleTagID();
-		const measurementID = registry
-			.select( MODULES_ANALYTICS_4 )
-			.getMeasurementID();
-		const googleTagLastSyncedAtMs = registry
-			.select( MODULES_ANALYTICS_4 )
-			.getGoogleTagLastSyncedAtMs();
+		const { isModuleConnected } = registry.select( CORE_MODULES );
+		const { getGoogleTagID, getMeasurementID, getGoogleTagLastSyncedAtMs } =
+			registry.select( MODULES_ANALYTICS_4 );
+
+		const isGA4Connected = isModuleConnected( 'analytics-4' );
+		const googleTagID = getGoogleTagID();
+		const measurementID = getMeasurementID();
+		const googleTagLastSyncedAtMs = getGoogleTagLastSyncedAtMs();
 
 		if (
 			isFeatureEnabled( 'gteSupport' ) &&
@@ -531,8 +532,6 @@ const baseActions = {
 
 			registry.dispatch( MODULES_ANALYTICS_4 ).saveSettings();
 		}
-
-		return true;
 	},
 };
 
