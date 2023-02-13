@@ -505,11 +505,22 @@ const baseActions = {
 	 * @since n.e.x.t
 	 */
 	*syncGoogleTagSettings() {
-		const registry = yield commonActions.getRegistry();
+		const { select, dispatch, __experimentalResolveSelect } =
+			yield Data.commonActions.getRegistry();
 
-		const { isModuleConnected } = registry.select( CORE_MODULES );
+		// Wait for modules to be available before selecting.
+		yield Data.commonActions.await(
+			__experimentalResolveSelect( CORE_MODULES ).getModules()
+		);
+
+		// Wait for module settings to be available before selecting.
+		yield Data.commonActions.await(
+			__experimentalResolveSelect( MODULES_ANALYTICS_4 ).getSettings()
+		);
+
+		const { isModuleConnected } = select( CORE_MODULES );
 		const { getGoogleTagID, getMeasurementID, getGoogleTagLastSyncedAtMs } =
-			registry.select( MODULES_ANALYTICS_4 );
+			select( MODULES_ANALYTICS_4 );
 
 		const isGA4Connected = isModuleConnected( 'analytics-4' );
 		const googleTagID = getGoogleTagID();
@@ -526,11 +537,11 @@ const baseActions = {
 		) {
 			yield baseActions.updateSettingsForMeasurementID( measurementID );
 
-			registry
-				.dispatch( MODULES_ANALYTICS_4 )
-				.setGoogleTagLastSyncedAtMs( Date.now() );
+			dispatch( MODULES_ANALYTICS_4 ).setGoogleTagLastSyncedAtMs(
+				Date.now()
+			);
 
-			registry.dispatch( MODULES_ANALYTICS_4 ).saveSettings();
+			dispatch( MODULES_ANALYTICS_4 ).saveSettings();
 		}
 	},
 };
