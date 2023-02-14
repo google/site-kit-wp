@@ -439,10 +439,10 @@ final class Modules {
 	 * @return array Inline modules data.
 	 */
 	private function inline_modules_data( $modules_data ) {
-		$all_active_modules = $this->get_active_modules();
+		$available_modules = $this->get_available_modules();
 
 		$modules_with_data_available_state = array_filter(
-			$all_active_modules,
+			$available_modules,
 			function( Module $module ) {
 				return $module instanceof Module_With_Data_Available_State;
 			}
