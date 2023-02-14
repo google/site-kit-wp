@@ -21,7 +21,7 @@
  */
 import md5 from 'md5';
 import faker from 'faker';
-import castArray from 'lodash/castArray';
+import { castArray } from 'lodash';
 import { zip, from, Observable } from 'rxjs';
 import { map, reduce, take } from 'rxjs/operators';
 

@@ -20,7 +20,7 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
-import uniqWith from 'lodash/uniqWith';
+import { uniqWith } from 'lodash';
 
 /**
  * WordPress dependencies

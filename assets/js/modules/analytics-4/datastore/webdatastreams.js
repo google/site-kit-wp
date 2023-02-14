@@ -20,8 +20,7 @@
  * External dependencies
  */
 import invariant from 'invariant';
-import pick from 'lodash/pick';
-import difference from 'lodash/difference';
+import { pick, difference } from 'lodash';
 
 /**
  * Internal dependencies

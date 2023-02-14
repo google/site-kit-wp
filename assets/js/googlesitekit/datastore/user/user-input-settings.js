@@ -20,9 +20,7 @@
  * External dependencies
  */
 import invariant from 'invariant';
-import isPlainObject from 'lodash/isPlainObject';
-import isEqual from 'lodash/isEqual';
-import pick from 'lodash/pick';
+import { isPlainObject, isEqual, pick } from 'lodash';
 
 /**
  * Internal dependencies
