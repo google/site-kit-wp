@@ -104,39 +104,6 @@ const createGatheringDataStore = (
 				type: RECEIVE_DATA_AVAILABLE_ON_LOAD,
 			};
 		},
-
-		/**
-		 * Populates gathering data state.
-		 *
-		 * @since n.e.x.t
-		 * @private
-		 */
-		*populateGatheringData() {
-			const registry = yield Data.commonActions.getRegistry();
-
-			yield {
-				payload: {},
-				type: WAIT_FOR_GATHERING_DATA,
-			};
-
-			const dataAvailability = registry
-				.select( storeName )
-				.determineDataAvailability();
-
-			invariant(
-				'boolean' === typeof dataAvailability,
-				'determineDataAvailability must return a boolean.'
-			);
-
-			yield {
-				payload: { gatheringData: ! dataAvailability },
-				type: SET_GATHERING_DATA,
-			};
-
-			if ( dataAvailability ) {
-				yield fetchSaveDataAvailableStateStore.actions.fetchSaveDataAvailableState();
-			}
-		},
 	};
 
 	const controls = {
@@ -210,7 +177,28 @@ const createGatheringDataStore = (
 				};
 			}
 
-			yield registry.dispatch( storeName ).populateGatheringData();
+			yield {
+				payload: {},
+				type: WAIT_FOR_GATHERING_DATA,
+			};
+
+			const dataAvailability = registry
+				.select( storeName )
+				.determineDataAvailability();
+
+			invariant(
+				'boolean' === typeof dataAvailability,
+				'determineDataAvailability must return a boolean.'
+			);
+
+			yield {
+				payload: { gatheringData: ! dataAvailability },
+				type: SET_GATHERING_DATA,
+			};
+
+			if ( dataAvailability ) {
+				yield fetchSaveDataAvailableStateStore.actions.fetchSaveDataAvailableState();
+			}
 		},
 	};
 
