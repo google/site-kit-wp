@@ -449,7 +449,7 @@ final class Modules {
 		);
 
 		foreach ( $modules_with_data_available_state as $module ) {
-			$modules_data[ 'data_available_' . $module->slug ] = (bool) $module->is_data_available();
+			$modules_data[ 'data_available_' . $module->slug ] = $module->is_connected() && $module->is_data_available();
 		}
 
 		return $modules_data;
