@@ -247,7 +247,7 @@ class Google_ProxyTest extends TestCase {
 
 		define( 'GOOGLESITEKIT_PROXY_URL', Google_Proxy::DEVELOPMENT_BASE_URL );
 		$url = $this->google_proxy->url();
-		$this->assertEquals( $url, Google_Proxy::STAGING_BASE_URL );
+		$this->assertEquals( $url, Google_Proxy::DEVELOPMENT_BASE_URL );
 		if ( function_exists( 'runkit7_constant_remove' ) ) {
 			runkit7_constant_remove( 'GOOGLESITEKIT_PROXY_URL' );
 		} elseif ( function_exists( 'runkit_constant_remove' ) ) {
