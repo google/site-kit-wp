@@ -225,11 +225,18 @@ export default function Navigation() {
 		setSelectedID( chipID );
 
 		setTimeout( () => {
+			const scrollTo =
+				chipID !== defaultChipID
+					? getContextScrollTop( `#${ chipID }`, breakpoint )
+					: 0;
+
+			if ( global.scrollY === scrollTo ) {
+				setValue( ACTIVE_CONTEXT_ID, undefined );
+				return;
+			}
+
 			global.scrollTo( {
-				top:
-					chipID !== defaultChipID
-						? getContextScrollTop( `#${ chipID }`, breakpoint )
-						: 0,
+				top: scrollTo,
 				behavior: 'smooth',
 			} );
 		}, 50 );

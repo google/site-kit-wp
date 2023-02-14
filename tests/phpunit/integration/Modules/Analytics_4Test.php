@@ -552,12 +552,22 @@ class Analytics_4Test extends TestCase {
 				),
 				'orderby'          => array(
 					array(
-						'fieldName' => 'sessions',
-						'sortOrder' => 'DESCENDING',
+						'metric' => array(
+							'metricName' => 'sessions',
+						),
+						'desc'   => true,
 					),
 					array(
-						'fieldName' => 'total',
-						'sortOrder' => 'ASCENDING',
+						'metric' => array(
+							'metricName' => 'total',
+						),
+						// Omit desc to test default value.
+					),
+					array(
+						'dimension' => array(
+							'dimensionName' => 'pageTitle',
+						),
+						'desc'      => false,
 					),
 				),
 			)
@@ -707,6 +717,12 @@ class Analytics_4Test extends TestCase {
 						'metricName' => 'total',
 					),
 					'desc'   => '',
+				),
+				array(
+					'dimension' => array(
+						'dimensionName' => 'pageTitle',
+					),
+					'desc'      => '',
 				),
 			),
 			$request_params['orderBys']

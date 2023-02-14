@@ -99,7 +99,8 @@ export default function SettingsAdmin() {
 							</div>
 						</Layout>
 					) }
-					{ ! isUserInputCompleted && (
+
+					{ isUserInputCompleted === false && (
 						<UserInputSettings isDismissible={ false } rounded />
 					) }
 				</Cell>
