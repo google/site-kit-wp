@@ -38,7 +38,7 @@ trait Module_With_Data_Available_State_Trait {
 	 * @return bool True if data is available, false otherwise.
 	 */
 	public function is_data_available() {
-		return $this->transients->get( $this->get_data_available_transient_name() );
+		return (bool) $this->transients->get( $this->get_data_available_transient_name() );
 	}
 
 	/**
