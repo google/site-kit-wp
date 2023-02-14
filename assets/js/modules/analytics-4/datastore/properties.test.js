@@ -607,6 +607,21 @@ describe( 'modules/analytics-4 properties', () => {
 				).toEqual( '' );
 			} );
 		} );
+		describe( 'syncGoogleTagSettings', () => {
+			beforeEach( () => {
+				enabledFeatures.add( 'gteSupport' );
+			} );
+
+			it( 'should not execute if a measurement ID is not set', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.syncGoogleTagSettings();
+
+				expect(
+					registry.select( MODULES_ANALYTICS_4 ).getGoogleTagID()
+				).toBeUndefined();
+			} );
+		} );
 	} );
 
 	describe( 'selectors', () => {
