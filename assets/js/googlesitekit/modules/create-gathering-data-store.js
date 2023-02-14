@@ -133,7 +133,7 @@ const createGatheringDataStore = (
 				type: SET_GATHERING_DATA,
 			};
 
-			if ( dataAvailable ) {
+			if ( dataAvailability ) {
 				yield fetchSaveDataAvailableStateStore.actions.fetchSaveDataAvailableState();
 			}
 		},
