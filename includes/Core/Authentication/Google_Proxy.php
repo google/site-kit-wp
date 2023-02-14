@@ -207,12 +207,18 @@ class Google_Proxy {
 	 * @return string Complete proxy URL.
 	 */
 	public function url( $path = '' ) {
-		$url = defined( 'GOOGLESITEKIT_PROXY_URL' ) && self::STAGING_BASE_URL === GOOGLESITEKIT_PROXY_URL
-			? self::STAGING_BASE_URL
-			: self::PRODUCTION_BASE_URL;
+		$url          = self::PRODUCTION_BASE_URL;
+		$allowed_urls = array(
+			self::PRODUCTION_BASE_URL,
+			self::STAGING_BASE_URL,
+			self::DEVELOPMENT_BASE_URL,
+		);
+
+		if ( defined( 'GOOGLESITEKIT_PROXY_URL' ) && in_array( GOOGLESITEKIT_PROXY_URL, $allowed_urls, true ) ) {
+			$url = GOOGLESITEKIT_PROXY_URL;
+		}
 
 		$url = untrailingslashit( $url );
-
 		if ( $path && is_string( $path ) ) {
 			$url .= '/' . ltrim( $path, '/' );
 		}
