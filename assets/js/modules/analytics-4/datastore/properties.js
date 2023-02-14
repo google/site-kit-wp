@@ -513,12 +513,13 @@ const baseActions = {
 			__experimentalResolveSelect( CORE_MODULES ).getModules()
 		);
 
+		const { isModuleConnected } = select( CORE_MODULES );
+
 		// Wait for module settings to be available before selecting.
 		yield Data.commonActions.await(
 			__experimentalResolveSelect( MODULES_ANALYTICS_4 ).getSettings()
 		);
 
-		const { isModuleConnected } = select( CORE_MODULES );
 		const { getGoogleTagID, getMeasurementID, getGoogleTagLastSyncedAtMs } =
 			select( MODULES_ANALYTICS_4 );
 
