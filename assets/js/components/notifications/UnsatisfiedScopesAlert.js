@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { unique } from 'lodash';
+import { uniq } from 'lodash';
 
 /**
  * WordPress dependencies
@@ -114,7 +114,7 @@ export default function UnsatisfiedScopesAlert() {
 		if ( ! moduleNames || moduleNames.some( ( name ) => name === false ) ) {
 			messageID = MESSAGE_GENERIC;
 		} else {
-			moduleNames = unique( moduleNames );
+			moduleNames = uniq( moduleNames );
 			messageID =
 				1 < moduleNames.length ? MESSAGE_MULTIPLE : MESSAGE_SINGULAR;
 		}
