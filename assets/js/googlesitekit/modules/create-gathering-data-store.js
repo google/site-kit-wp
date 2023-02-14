@@ -51,16 +51,11 @@ const WAIT_FOR_GATHERING_DATA = 'WAIT_FOR_GATHERING_DATA';
  */
 const createGatheringDataStore = (
 	moduleSlug,
-	{ dataAvailable, determineDataAvailability } = {}
+	{ dataAvailable = false, determineDataAvailability } = {}
 ) => {
 	invariant(
 		'string' === typeof moduleSlug && moduleSlug,
 		'module slug is required.'
-	);
-
-	invariant(
-		'boolean' === typeof dataAvailable,
-		'dataAvailable must be a boolean.'
 	);
 
 	invariant(
