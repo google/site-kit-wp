@@ -15,6 +15,7 @@ use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Dismissals\Dismissed_Items;
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_Sharing_Settings;
+use Google\Site_Kit\Core\Modules\Module_With_Data_Available_State;
 use Google\Site_Kit\Core\Modules\Module_With_Owner;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Modules\Module_With_Settings;
@@ -25,6 +26,7 @@ use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Modules\Analytics_4;
 use Google\Site_Kit\Modules\Analytics_4\Settings;
+use Google\Site_Kit\Tests\Core\Modules\Module_With_Data_Available_State_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Owner_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Scopes_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Service_Entity_ContractTests;
@@ -52,6 +54,7 @@ class Analytics_4Test extends TestCase {
 	use Module_With_Owner_ContractTests;
 	use Module_With_Service_Entity_ContractTests;
 	use UserAuthenticationTrait;
+	use Module_With_Data_Available_State_ContractTests;
 
 	/**
 	 * Context object.
@@ -1397,6 +1400,13 @@ class Analytics_4Test extends TestCase {
 				'propertyID' => '123456789',
 			)
 		);
+	}
+
+	/**
+	 * @return Module_With_Data_Available_State
+	 */
+	protected function get_module_with_data_available_state() {
+		return new Analytics_4( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 	}
 
 }
