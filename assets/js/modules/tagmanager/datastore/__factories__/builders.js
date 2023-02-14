@@ -19,7 +19,8 @@
 /**
  * External dependencies
  */
-import { build, fake, sequence, oneOf } from '@jackfranklin/test-data-bot';
+import { build, sequence, oneOf, perBuild } from '@jackfranklin/test-data-bot';
+import faker from 'faker';
 
 /**
  * Internal dependencies
@@ -42,7 +43,7 @@ export const accountBuilder = build( 'Tag Manager Account', {
 	fields: {
 		path: 'accounts/{accountId}',
 		accountId: sequence( ( num ) => `${ 100 + num }` ), // eslint-disable-line sitekit/acronym-case
-		name: fake( ( { lorem } ) => lorem.words() ),
+		name: perBuild( () => faker.lorem.words() ),
 	},
 	postBuild: ( account ) => {
 		const { accountId } = account; // eslint-disable-line sitekit/acronym-case
@@ -68,16 +69,18 @@ export const accountBuilder = build( 'Tag Manager Account', {
 export const containerBuilder = build( 'Tag Manager Container', {
 	fields: {
 		path: 'accounts/{accountId}/containers/{containerId}',
-		accountId: fake( ( { random } ) => random.number().toString() ), // eslint-disable-line sitekit/acronym-case
+		accountId: perBuild( () => faker.datatype.number().toString() ), // eslint-disable-line sitekit/acronym-case
 		containerId: sequence( ( num ) => `${ 200 + num }` ), // eslint-disable-line sitekit/acronym-case
-		name: fake( ( { lorem } ) => lorem.words() ),
+		name: perBuild( () => faker.lorem.words() ),
 		// eslint-disable-next-line sitekit/acronym-case
-		publicId: fake( ( { random } ) => {
-			const char = random.alphaNumeric;
+		publicId: perBuild( () => {
+			const char = faker.random.alphaNumeric;
 			return `GTM-FAKE${ char() }${ char() }${ char() }`.toUpperCase();
 		} ),
 		usageContext: [ oneOf( CONTEXT_WEB, CONTEXT_AMP ) ],
-		fingerprint: Date.now().toString(),
+		fingerprint: faker.date
+			.between( '2023-01-01', '2023-02-02' )
+			.toString(),
 		// eslint-disable-next-line sitekit/acronym-case
 		tagManagerUrl:
 			'https://tagmanager.google.com/#/container/accounts/{accountId}/containers/{containerId}/workspaces?apiLink=container',
@@ -146,7 +149,7 @@ export const defaultTagWeb = ( { accountId, containerId } = {} ) => ( {
 	blockingRuleId: null,
 	blockingTriggerId: null,
 	containerId,
-	fingerprint: Date.now().toString(),
+	fingerprint: faker.date.between( '2023-01-01', '2023-02-02' ).toString(),
 	firingRuleId: null,
 	firingTriggerId: [ '2147479553' ],
 	liveOnly: null,
@@ -187,7 +190,7 @@ const defaultTagAMP = ( { accountId, containerId } = {} ) => ( {
 	blockingRuleId: null,
 	blockingTriggerId: null,
 	containerId,
-	fingerprint: Date.now().toString(),
+	fingerprint: faker.date.between( '2023-01-01', '2023-02-02' ).toString(),
 	firingRuleId: null,
 	firingTriggerId: [ '2147479553' ],
 	liveOnly: null,
@@ -227,7 +230,7 @@ export const liveContainerVersionBuilder = build(
 	'Tag Manager Live Container Version',
 	{
 		fields: {
-			accountId: fake( ( { random } ) => random.number().toString() ), // Relationship
+			accountId: perBuild( () => faker.datatype.number().toString() ), // Relationship
 			builtInVariable: [],
 			container: {
 				// overrides
@@ -237,7 +240,9 @@ export const liveContainerVersionBuilder = build(
 			deleted: null,
 			description: null,
 			name: null,
-			fingerprint: Date.now().toString(),
+			fingerprint: faker.date
+				.between( '2023-01-01', '2023-02-02' )
+				.toString(),
 			path: 'accounts/{accountId}/containers/{containerId}/versions/{containerVersionId}',
 			tag: undefined, // required, but depends on container type.
 			tagManagerUrl:
@@ -280,7 +285,9 @@ const analyticsTagWeb = ( propertyID, { accountId, containerId } = {} ) => {
 		blockingRuleId: null,
 		blockingTriggerId: null,
 		containerId,
-		fingerprint: Date.now().toString(),
+		fingerprint: faker.date
+			.between( '2023-01-01', '2023-02-02' )
+			.toString(),
 		firingRuleId: null,
 		firingTriggerId: [ '2147479553' ],
 		liveOnly: null,
@@ -327,7 +334,9 @@ const analyticsTagAMP = ( propertyID, { accountId, containerId } = {} ) => {
 		blockingRuleId: null,
 		blockingTriggerId: null,
 		containerId,
-		fingerprint: Date.now().toString(),
+		fingerprint: faker.date
+			.between( '2023-01-01', '2023-02-02' )
+			.toString(),
 		firingRuleId: null,
 		firingTriggerId: [ '2147479553' ],
 		liveOnly: null,
