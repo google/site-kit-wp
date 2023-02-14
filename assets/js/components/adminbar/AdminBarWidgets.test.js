@@ -24,6 +24,8 @@ import {
 } from '../../../../tests/js/test-utils';
 import coreModulesFixture from '../../googlesitekit/modules/datastore/__fixtures__';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
+import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import AdminBarWidgets from './AdminBarWidgets';
 
 describe( 'AdminBarWidgets', () => {
@@ -34,6 +36,14 @@ describe( 'AdminBarWidgets', () => {
 
 		provideModules( registry );
 		provideUserCapabilities( registry );
+
+		registry
+			.dispatch( CORE_USER )
+			.receiveGetAuthentication( { needsReauthentication: false } );
+
+		registry.dispatch( CORE_SITE ).receiveSiteInfo( {
+			adminURL: 'http://example.com/wp-admin/',
+		} );
 
 		fetchMock.get(
 			new RegExp(

@@ -1002,6 +1002,23 @@ final class Authentication {
 		$hosts[] = 'accounts.google.com';
 		$hosts[] = URL::parse( $this->google_proxy->url(), PHP_URL_HOST );
 
+		// In the case of IDNs, ensure the ASCII and non-ASCII domains
+		// are treated as allowable origins.
+		$admin_hostname = URL::parse( admin_url(), PHP_URL_HOST );
+
+		// See \Requests_IDNAEncoder::is_ascii.
+		$is_ascii = preg_match( '/(?:[^\x00-\x7F])/', $admin_hostname ) !== 1;
+
+		// If this host is already an ASCII-only string, it's either
+		// not an IDN or it's an ASCII-formatted IDN.
+		// We only need to intervene if it is non-ASCII.
+		if ( ! $is_ascii ) {
+			// If this host is an IDN in Unicode format, we need to add the
+			// urlencoded versions of the domain to the `$hosts` array,
+			// because this is what will be used for redirects.
+			$hosts[] = rawurlencode( $admin_hostname );
+		}
+
 		return $hosts;
 	}
 

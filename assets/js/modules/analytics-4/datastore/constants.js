@@ -22,3 +22,6 @@ export const PROPERTY_CREATE = 'property_create';
 export const WEBDATASTREAM_CREATE = 'webdatastream_create';
 
 export const MAX_WEBDATASTREAMS_PER_BATCH = 10;
+
+// Date range offset days for Analytics 4 report requests.
+export const DATE_RANGE_OFFSET = 1;

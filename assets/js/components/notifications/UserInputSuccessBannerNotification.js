@@ -20,7 +20,7 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { useEffect } from '@wordpress/element';
+import { useCallback } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -35,7 +35,7 @@ export default function UserInputSuccessBannerNotification() {
 
 	const category = `${ viewContext }_user-input-success-notification`;
 
-	useEffect( () => {
+	const handleOnView = useCallback( () => {
 		trackEvent( category, 'view_notification' );
 	}, [ category ] );
 
@@ -57,6 +57,7 @@ export default function UserInputSuccessBannerNotification() {
 			SmallImageSVG={ MilestoneBlueSVG }
 			dismiss={ __( 'OK, Got it!', 'google-site-kit' ) }
 			format="small"
+			onView={ handleOnView }
 			onDismiss={ handleOnDismiss }
 		/>
 	);

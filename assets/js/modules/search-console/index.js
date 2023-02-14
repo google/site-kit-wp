@@ -27,9 +27,12 @@ import {
 	AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY,
 	AREA_ENTITY_DASHBOARD_CONTENT_PRIMARY,
 	AREA_ENTITY_DASHBOARD_TRAFFIC_PRIMARY,
+	AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY,
 } from '../../googlesitekit/widgets/default-areas';
 import SearchConsoleIcon from '../../../svg/graphics/search-console.svg';
 import { MODULES_SEARCH_CONSOLE } from './datastore/constants';
+import PopularKeywordsWidget from './components/widgets/PopularKeywordsWidget';
+import { isFeatureEnabled } from '../../features';
 
 export { registerStore } from './datastore';
 
@@ -72,4 +75,21 @@ export const registerWidgets = ( widgets ) => {
 			AREA_ENTITY_DASHBOARD_TRAFFIC_PRIMARY,
 		]
 	);
+
+	if ( isFeatureEnabled( 'userInput' ) ) {
+		/*
+		 * Key metrics widgets.
+		 */
+		widgets.registerWidget(
+			'kmSearchConsolePopularKeywords',
+			{
+				Component: PopularKeywordsWidget,
+				width: widgets.WIDGET_WIDTHS.QUARTER,
+				priority: 1,
+				wrapWidget: false,
+				modules: [ 'search-console' ],
+			},
+			[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
+		);
+	}
 };

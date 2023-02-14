@@ -4,7 +4,7 @@ Contributors:      google
 Requires at least: 5.2
 Tested up to:      6.1
 Requires PHP:      5.6
-Stable tag:        1.93.0
+Stable tag:        1.94.0
 License:           Apache License 2.0
 License URI:       https://www.apache.org/licenses/LICENSE-2.0
 Tags:              google, search-console, analytics, adsense, pagespeed-insights, optimize, tag-manager, site-kit
@@ -107,6 +107,27 @@ By default, Site Kit does anonymize IP addresses upon activation of the Google A
 Please create a new topic on our [WordPress.org support forum](https://wordpress.org/support/plugin/google-site-kit/). Be sure to follow the [support forum guidelines](https://wordpress.org/support/guidelines/) when posting.
 
 == Changelog ==
+
+= 1.94.0 =
+
+**Enhanced**
+
+* Only register the Key Metrics widgets when the userInput feature flag is enabled. See [#6519](https://github.com/google/site-kit-wp/issues/6519).
+* Update text on copy to clipboard buttons with informative feedback when pressed. See [#6391](https://github.com/google/site-kit-wp/issues/6391).
+* Implement `getAnalyticsConfigByMeasurementIDs` selector to look up GA4 account, property, and web data stream based on a set of measurement IDs. See [#6372](https://github.com/google/site-kit-wp/issues/6372).
+* Add `getReport` selector for Google Analytics 4. See [#6173](https://github.com/google/site-kit-wp/issues/6173).
+* Determine Google Tag settings when configuring Analytics. See [#6081](https://github.com/google/site-kit-wp/issues/6081).
+* Simplify User Input completion-related behavior. See [#5900](https://github.com/google/site-kit-wp/issues/5900).
+* Update the user menu to display Google account details. See [#5775](https://github.com/google/site-kit-wp/issues/5775).
+* Improve loading of setup/settings views when an existing tag is present. See [#5426](https://github.com/google/site-kit-wp/issues/5426).
+
+**Fixed**
+
+* Fix the dismissal behavior of the auto-update CTA to be permanent. See [#6545](https://github.com/google/site-kit-wp/issues/6545).
+* Fix potential errors raised when the `mbstring` PHP extension is not loaded. See [#6524](https://github.com/google/site-kit-wp/issues/6524).
+* Fix console error appearing in Admin Settings when User Input feature flag is enabled but Analytics is disconnected. See [#6488](https://github.com/google/site-kit-wp/issues/6488).
+* Fix bug that caused Tag Manager settings screen to be stuck in a "loading" state. See [#6464](https://github.com/google/site-kit-wp/issues/6464).
+* Fix key metrics preview loading issue on the admin settings page. See [#6428](https://github.com/google/site-kit-wp/issues/6428).
 
 = 1.93.0 =
 

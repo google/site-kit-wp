@@ -77,7 +77,6 @@ function SetupSuccessBannerNotification() {
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-settings' )
 	);
 
-	const [ viewNotificationSent, setViewNotificationSent ] = useState( false );
 	const [ completeUserSetupSent, setCompleteUserSetupSent ] =
 		useState( false );
 	const [ completeSiteSetup, setCompleteSiteSetup ] = useState( false );
@@ -89,19 +88,6 @@ function SetupSuccessBannerNotification() {
 			modules !== undefined &&
 			notification === 'authentication_success'
 		) {
-			if (
-				! viewNotificationSent &&
-				canManageOptions &&
-				slug &&
-				modules[ slug ]?.active
-			) {
-				trackEvent(
-					`${ viewContext }_authentication-success-notification`,
-					'view_notification'
-				);
-				setViewNotificationSent( true );
-			}
-
 			// Only trigger these events if this is a site/plugin setup event,
 			// and not setup of an individual module (eg. AdSense, Analytics, etc.)
 			if ( slug === null && ! completeUserSetupSent ) {
@@ -140,8 +126,14 @@ function SetupSuccessBannerNotification() {
 		notification,
 		slug,
 		viewContext,
-		viewNotificationSent,
 	] );
+
+	const onView = useCallback( () => {
+		trackEvent(
+			`${ viewContext }_authentication-success-notification`,
+			'view_notification'
+		);
+	}, [ viewContext ] );
 
 	const onDismiss = useCallback( async () => {
 		await trackEvent(
@@ -248,6 +240,7 @@ function SetupSuccessBannerNotification() {
 						description={ winData.description }
 						handleDismiss={ () => {} }
 						WinImageSVG={ SuccessGreenSVG }
+						onView={ onView }
 						dismiss={ __( 'OK, Got it!', 'google-site-kit' ) }
 						onDismiss={ onDismiss }
 						format="smaller"

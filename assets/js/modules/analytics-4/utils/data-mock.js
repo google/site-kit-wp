@@ -23,8 +23,9 @@ import md5 from 'md5';
 import faker from 'faker';
 import invariant from 'invariant';
 import castArray from 'lodash/castArray';
-import { zip, from, Observable } from 'rxjs';
-import { map, reduce, take } from 'rxjs/operators';
+import { Observable, merge, from } from 'rxjs';
+import { map, reduce, take, toArray, mergeMap } from 'rxjs/operators';
+import cloneDeep from 'lodash/cloneDeep';
 import isPlainObject from 'lodash/isPlainObject';
 
 /**
@@ -73,33 +74,33 @@ const ANALYTICS_4_DIMENSION_OPTIONS = {
 };
 
 /**
- * Gets metric key.
+ * Gets the key for a metric or dimension.
  *
- * @since n.e.x.t
+ * @since 1.94.0
  *
- * @param {string|Object} metric Metric name or object.
- * @return {string} Metric key.
+ * @param {string|Object} item Metric or dimension name or object.
+ * @return {string} Metric or dimension key.
  */
-function getMetricKey( metric ) {
-	return metric?.name || metric.toString();
+function getItemKey( item ) {
+	return item?.name || item?.toString();
 }
 
 /**
  * Gets metric type.
  *
- * @since n.e.x.t
+ * @since 1.94.0
  *
  * @param {string|Object} metric Metric name or object.
  * @return {string} Type of the metric.
  */
 function getMetricType( metric ) {
-	return ANALYTICS_4_METRIC_TYPES[ getMetricKey( metric ) ];
+	return ANALYTICS_4_METRIC_TYPES[ getItemKey( metric ) ];
 }
 
 /**
  * Generates and returns metric values.
  *
- * @since n.e.x.t
+ * @since 1.94.0
  *
  * @param {Array.<Object>} validMetrics Metric list.
  * @return {Array.<Object>} Array of metric values.
@@ -130,50 +131,142 @@ function generateMetricValues( validMetrics ) {
 }
 
 /**
- * Sorts report rows and returns it.
+ * Generates the cartesian product of a set of arrays, i.e. all possible combinations of their values.
+ *
+ * Cribbed from https://stackoverflow.com/a/36234242/12296658, thanks to the original author(s).
+ *
+ * @since 1.94.0
+ *
+ * @param {Array.<Array>} arrays An array of arrays.
+ * @return {Array.<Array>} The cartesian product of the input arrays.
+ */
+function cartesianProduct( arrays ) {
+	return arrays.reduce(
+		function ( arrayA, arrayB ) {
+			return arrayA
+				.map( function ( valueA ) {
+					return arrayB.map( function ( valueB ) {
+						return valueA.concat( [ valueB ] );
+					} );
+				} )
+				.reduce( function ( innerA, innerB ) {
+					return innerA.concat( innerB );
+				}, [] );
+		},
+		[ [] ]
+	);
+}
+
+/**
+ * Finds a metric value in a row.
  *
  * @since n.e.x.t
  *
- * @param {Array.<Object>}        rows    Array of rows to sort.
- * @param {Array.<Object>}        metrics Array of report metrics.
- * @param {Object|Array.<Object>} orderby Sorting options.
+ * @param {Object}               row        Report row.
+ * @param {Array<string|Object>} metrics    Array of valid metrics.
+ * @param {string}               metricName Metric name.
+ * @return {number|null} Metric value, or null if not found.
+ */
+function findMetricValue( row, metrics, metricName ) {
+	const index = metrics.findIndex(
+		( metric ) => getItemKey( metric ) === metricName
+	);
+	if ( index === -1 ) {
+		return null;
+	}
+	return parseInt( row.metricValues[ index ].value, 10 );
+}
+
+/**
+ * Finds a dimension value in a row.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object}               row           Report row.
+ * @param {Array<string|Object>} dimensions    Array of valid dimensions.
+ * @param {string}               dimensionName Dimension name.
+ * @return {string|null} Dimension value, or null if not found.
+ */
+function findDimensionValue( row, dimensions, dimensionName ) {
+	const index = dimensions.findIndex(
+		( dimension ) => getItemKey( dimension ) === dimensionName
+	);
+	if ( index === -1 ) {
+		return null;
+	}
+	return row.dimensionValues[ index ].value;
+}
+
+/**
+ * Compares two rows by the given sorting options.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Array.<Object>} rowA       First row to compare.
+ * @param {Array.<Object>} rowB       Second row to compare.
+ * @param {Array.<Object>} metrics    Array of report metrics.
+ * @param {Array.<Object>} dimensions Array of report dimensions.
+ * @param {Array.<Object>} orderby    Sorting options.
  * @return {Array.<Object>} Sorted rows.
  */
-function sortRows( rows, metrics, orderby ) {
-	let sorted = rows;
+function compareRows( rowA, rowB, metrics, dimensions, orderby ) {
+	const order = orderby[ 0 ];
+	let valA, valB;
 
-	const orders = castArray( orderby );
-	for ( const order of orders ) {
-		const direction = order?.sortOrder === 'DESCENDING' ? -1 : 1;
-		const index = metrics.findIndex(
-			( metric ) => getMetricKey( metric ) === order?.fieldName
+	if ( order.metric ) {
+		valA = findMetricValue( rowA, metrics, order.metric.metricName );
+		valB = findMetricValue( rowB, metrics, order.metric.metricName );
+	} else if ( order.dimension ) {
+		valA = findDimensionValue(
+			rowA,
+			dimensions,
+			order.dimension.dimensionName
 		);
-		if ( index < 0 ) {
-			continue;
-		}
-
-		sorted = sorted.sort( ( a, b ) => {
-			let valA = parseFloat( a.metrics[ index ]?.values?.[ 0 ] );
-			if ( Number.isNaN( valA ) ) {
-				valA = 0;
-			}
-
-			let valB = parseFloat( b.metrics[ index ]?.values?.[ 0 ] );
-			if ( Number.isNaN( valB ) ) {
-				valB = 0;
-			}
-
-			return ( valA - valB ) * direction;
-		} );
+		valB = findDimensionValue(
+			rowB,
+			dimensions,
+			order.dimension.dimensionName
+		);
 	}
 
-	return sorted;
+	if ( valA === valB ) {
+		if ( orderby.length > 1 ) {
+			return compareRows(
+				rowA,
+				rowB,
+				metrics,
+				dimensions,
+				orderby.slice( 1 )
+			);
+		}
+		return 0;
+	}
+
+	const direction = order.desc ? -1 : 1;
+	return ( valA < valB ? -1 : 1 ) * direction;
+}
+
+/**
+ * Sorts report rows and returns it.
+ *
+ * @since 1.94.0
+ *
+ * @param {Array.<Object>} rows       Array of rows to sort.
+ * @param {Array.<Object>} metrics    Array of report metrics.
+ * @param {Array.<Object>} dimensions Array of report dimensions.
+ * @param {Array.<Object>} orderby    Sorting options.
+ * @return {Array.<Object>} Sorted rows.
+ */
+function sortRows( rows, metrics, dimensions, orderby ) {
+	return rows.sort( ( rowA, rowB ) =>
+		compareRows( rowA, rowB, metrics, dimensions, orderby )
+	);
 }
 
 /**
  * Generates date range.
  *
- * @since n.e.x.t
+ * @since 1.94.0
  *
  * @param {string} startDate The start date.
  * @param {string} endDate   The end date.
@@ -202,24 +295,27 @@ function generateDateRange( startDate, endDate ) {
 /**
  * Generates mock data for Analytics 4 reports.
  *
- * @since n.e.x.t
+ * @since 1.94.0
  *
- * @param {Object} args Report options.
+ * @param {Object} options Report options.
  * @return {Array.<Object>} An array with generated report.
  */
-export function getAnalytics4MockResponse( args ) {
+export function getAnalytics4MockResponse( options ) {
 	invariant(
-		isPlainObject( args ),
+		isPlainObject( options ),
 		'report options are required to generate a mock response.'
 	);
 	invariant(
-		isValidDateString( args.startDate ),
+		isValidDateString( options.startDate ),
 		'a valid startDate is required.'
 	);
 	invariant(
-		isValidDateString( args.endDate ),
+		isValidDateString( options.endDate ),
 		'a valid endDate is required.'
 	);
+
+	// Ensure we don't mutate the passed options to avoid unexpected side effects for the caller.
+	const args = cloneDeep( options );
 
 	const originalSeedValue = faker.seedValue;
 	const argsHash = parseInt(
@@ -267,59 +363,30 @@ export function getAnalytics4MockResponse( args ) {
 	}
 
 	dimensions.forEach( ( singleDimension ) => {
-		const dimension = singleDimension?.name || singleDimension.toString();
+		const dimension = getItemKey( singleDimension );
 
-		if ( dimension === 'date' || dimension === 'dateRange' ) {
-			const dateRange = generateDateRange( args.startDate, args.endDate );
-			const compareDateRange = hasDateRange
-				? generateDateRange(
+		if ( dimension === 'date' ) {
+			const dateRanges = [
+				generateDateRange( args.startDate, args.endDate ),
+			];
+
+			if ( args.compareStartDate && args.compareEndDate ) {
+				// When a comparison date range is specified, the report will contain a combined date range of all the dates in the current and compare periods.
+				dateRanges.push(
+					generateDateRange(
 						args.compareStartDate,
 						args.compareEndDate
-				  )
-				: [];
-
-			// Generates a stream (an array) of dates when the dimension is date.
-			if ( dimension === 'date' ) {
-				streams.push(
-					new Observable( ( observer ) => {
-						dateRange.forEach( ( date ) => {
-							observer.next( date );
-
-							if ( hasDateRange ) {
-								// Duplicate date if we are have a date range.
-								observer.next( date );
-							}
-						} );
-
-						if ( hasDateRange ) {
-							compareDateRange.forEach( ( date ) => {
-								observer.next( date );
-								observer.next( date );
-							} );
-						}
-
-						observer.complete();
-					} )
+					)
 				);
 			}
 
-			if ( dimension === 'dateRange' ) {
-				streams.push(
-					new Observable( ( observer ) => {
-						dateRange.forEach( () => {
-							observer.next( 'date_range_0' );
-							observer.next( 'date_range_1' );
-						} );
+			// Create a set of unique dates from the date ranges.
+			const dateRange = new Set( dateRanges.flat() );
 
-						compareDateRange.forEach( () => {
-							observer.next( 'date_range_0' );
-							observer.next( 'date_range_1' );
-						} );
-
-						observer.complete();
-					} )
-				);
-			}
+			// Generates a stream (an array) of dates.
+			streams.push( from( [ ...dateRange ] ) );
+		} else if ( dimension === 'dateRange' ) {
+			streams.push( from( [ 'date_range_0', 'date_range_1' ] ) );
 		} else if (
 			dimension &&
 			typeof ANALYTICS_4_DIMENSION_OPTIONS[ dimension ] === 'function'
@@ -353,6 +420,10 @@ export function getAnalytics4MockResponse( args ) {
 		}
 	} );
 
+	const limit = args.limit > 0 ? +args.limit : 90;
+	// If we have a date range, we need to double the limit to account for the fact that we duplicate each row for each date range.
+	const rowLimit = hasDateRange ? limit * 2 : limit;
+
 	// This is the list of operations that we apply to the combined stream (array) of dimension values.
 	const ops = [
 		// Convert a dimension value to a row object and generate metric values.
@@ -363,18 +434,29 @@ export function getAnalytics4MockResponse( args ) {
 			metricValues: generateMetricValues( validMetrics ),
 		} ) ),
 		// Make sure we take the appropriate number of rows.
-		take( args.limit > 0 ? +args.limit : 90 ),
+		take( rowLimit ),
 		// Accumulate all rows into a single array.
 		reduce( ( rows, row ) => [ ...rows, row ], [] ),
 		// Sort rows if args.orderby is provided.
 		map( ( rows ) =>
-			args.orderby ? sortRows( rows, validMetrics, args.orderby ) : rows
+			args.orderby
+				? sortRows( rows, validMetrics, args.dimensions, args.orderby )
+				: rows
 		),
 	];
 
-	// Process the stream of dimension values and add generated rows to the report data object.
-	zip( ...streams )
-		.pipe( ...ops )
+	// Process the streams of dimension values and add generated rows to the report data object.
+	// First we merge all streams into one which will emit each set of dimension values as an array.
+	merge( ...streams.map( ( stream ) => stream.pipe( toArray() ) ) )
+		.pipe(
+			// Then we convert the resulting stream to an array...
+			toArray(),
+			// So that we can pass it to the cartesianProduct function to generate all possible combinations of dimension values.
+			// Using mergeMap here ensures the resulting set of values will be emitted as a new stream.
+			mergeMap( cartesianProduct ),
+			// Then we apply the remaining operations to generate a row for each combination of dimension values.
+			...ops
+		)
 		.subscribe( ( rows ) => {
 			data.rows = rows;
 			data.rowCount = rows.length;
@@ -412,12 +494,16 @@ export function getAnalytics4MockResponse( args ) {
 									}
 								),
 								metricValues: [
-									...( rows[ 0 ]?.metricValues || [] ),
+									...( rows[ 1 ]?.metricValues || [] ),
 								],
 							},
 					  ]
 					: []
 			);
+
+			// For maximums and totals, if we have a date range the second to last row will be date_range_0 and the last row will be date_range_1.
+			// When there is no date range we only need to use the last row.
+			const firstItemIndex = rows.length - ( hasDateRange ? 2 : 1 );
 
 			data.maximums = [
 				{
@@ -431,7 +517,7 @@ export function getAnalytics4MockResponse( args ) {
 						};
 					} ),
 					metricValues: [
-						...( rows[ rows.length - 1 ]?.metricValues || [] ),
+						...( rows[ firstItemIndex ]?.metricValues || [] ),
 					],
 				},
 			].concat(
@@ -473,7 +559,7 @@ export function getAnalytics4MockResponse( args ) {
 						};
 					} ),
 					metricValues: [
-						...( rows[ rows.length - 1 ]?.metricValues || [] ),
+						...( rows[ firstItemIndex ]?.metricValues || [] ),
 					],
 				},
 			].concat(
@@ -522,7 +608,7 @@ export function getAnalytics4MockResponse( args ) {
 /**
  * Generates mock response for Analytics 4 reports.
  *
- * @since n.e.x.t
+ * @since 1.94.0
  *
  * @param {wp.data.registry} registry Registry with all available stores registered.
  * @param {Object}           options  Report options.

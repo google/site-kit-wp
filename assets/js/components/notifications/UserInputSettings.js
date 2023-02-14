@@ -36,13 +36,12 @@ import { getTimeInSeconds } from '../../util';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
-import { MODULES_SEARCH_CONSOLE } from '../../modules/search-console/datastore/constants';
-import { MODULES_ANALYTICS } from '../../modules/analytics/datastore/constants';
 import Link from '../Link';
 const { useSelect } = Data;
 
 export default function UserInputSettings( {
 	onCTAClick,
+	onView,
 	onDismiss,
 	isDismissible,
 	rounded = false,
@@ -60,12 +59,17 @@ export default function UserInputSettings( {
 	const searchConsoleModuleConnected = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleConnected( 'search-console' )
 	);
-	const searchConsoleIsGatheringData = useSelect( ( select ) =>
-		select( MODULES_SEARCH_CONSOLE ).isGatheringData()
-	);
-	const analyticsIsGatheringData = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).isGatheringData()
-	);
+
+	// TODO: Re-implement the Gathering Data check once Issue #5933 is merged
+	// and this data is available on page load.
+	// const searchConsoleIsGatheringData = useSelect( ( select ) =>
+	// 	select( MODULES_SEARCH_CONSOLE ).isGatheringData()
+	// );
+	// const analyticsIsGatheringData = useSelect(
+	// 	( select ) =>
+	// 		analyticsModuleConnected &&
+	// 		select( MODULES_ANALYTICS ).isGatheringData()
+	// );
 
 	if ( isUserInputCompleted === undefined || isUserInputCompleted ) {
 		return null;
@@ -75,9 +79,12 @@ export default function UserInputSettings( {
 		return null;
 	}
 
-	if ( analyticsIsGatheringData || searchConsoleIsGatheringData ) {
-		return null;
-	}
+	// if (
+	// 	analyticsIsGatheringData !== false ||
+	// 	searchConsoleIsGatheringData !== false
+	// ) {
+	// 	return null;
+	// }
 
 	return (
 		<BannerNotification
@@ -97,6 +104,7 @@ export default function UserInputSettings( {
 			}
 			dismiss={ __( 'Remind me later', 'google-site-kit' ) }
 			isDismissible={ isDismissible }
+			onView={ onView }
 			onDismiss={ onDismiss }
 			rounded={ rounded }
 		/>
@@ -106,6 +114,7 @@ export default function UserInputSettings( {
 UserInputSettings.propTypes = {
 	// Used to bypass link functionality within Storybook to avoid breakage.
 	onCTAClick: PropTypes.func,
+	onView: PropTypes.func,
 	onDismiss: PropTypes.func,
 	isDismissible: PropTypes.bool,
 	rounded: PropTypes.bool,
