@@ -41,6 +41,7 @@ import {
 	isValidOrders,
 	isZeroReport,
 } from '../utils';
+import createGatheringDataStore from '../../../googlesitekit/modules/create-gathering-data-store';
 const { createRegistrySelector } = Data;
 
 const fetchGetReportStore = createFetchStore( {
@@ -110,6 +111,49 @@ const fetchGetReportStore = createFetchStore( {
 	},
 } );
 
+const gatheringDataStore = createGatheringDataStore( 'analytics-4', {
+	dataAvailable:
+		global._googlesitekitModulesData?.[ 'data_available_analytics-4' ],
+	determineDataAvailability: createRegistrySelector( ( select ) => () => {
+		const { startDate, endDate } = select( CORE_USER ).getDateRangeDates( {
+			offsetDays: DATE_RANGE_OFFSET,
+		} );
+
+		const args = {
+			dimensions: [ 'date' ],
+			metrics: [ { name: 'totalUsers' } ],
+			startDate,
+			endDate,
+		};
+
+		const url = select( CORE_SITE ).getCurrentEntityURL();
+		if ( url ) {
+			args.url = url;
+		}
+
+		// Disable reason: select needs to be called here or it will never run.
+		// eslint-disable-next-line @wordpress/no-unused-vars-before-return
+		const report = select( MODULES_ANALYTICS_4 ).getReport( args );
+		const hasResolvedReport = select(
+			MODULES_ANALYTICS_4
+		).hasFinishedResolution( 'getReport', [ args ] );
+
+		if ( ! hasResolvedReport ) {
+			return undefined;
+		}
+
+		if ( ! isPlainObject( report ) ) {
+			return true;
+		}
+
+		if ( ! Array.isArray( report?.rows ) || report?.rows?.length === 0 ) {
+			return false;
+		}
+
+		return true;
+	} ),
+} );
+
 const baseInitialState = {
 	reports: {},
 };
@@ -156,52 +200,6 @@ const baseSelectors = {
 
 		return reports[ stringifyObject( options ) ];
 	},
-
-	/**
-	 * Determines whether the Analytics 4 module is still gathering data.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @return {boolean|undefined} Returns `true` if gathering data, otherwise `false`. Returns `undefined` while resolving.
-	 */
-	isGatheringData: createRegistrySelector( ( select ) => () => {
-		const { startDate, endDate } = select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
-		} );
-
-		const args = {
-			dimensions: [ 'date' ],
-			metrics: [ { name: 'totalUsers' } ],
-			startDate,
-			endDate,
-		};
-
-		const url = select( CORE_SITE ).getCurrentEntityURL();
-		if ( url ) {
-			args.url = url;
-		}
-
-		// Disable reason: select needs to be called here or it will never run.
-		// eslint-disable-next-line @wordpress/no-unused-vars-before-return
-		const report = select( MODULES_ANALYTICS_4 ).getReport( args );
-		const hasResolvedReport = select(
-			MODULES_ANALYTICS_4
-		).hasFinishedResolution( 'getReport', [ args ] );
-
-		if ( ! hasResolvedReport ) {
-			return undefined;
-		}
-
-		if ( ! isPlainObject( report ) ) {
-			return false;
-		}
-
-		if ( ! Array.isArray( report?.rows ) || report?.rows?.length === 0 ) {
-			return true;
-		}
-
-		return false;
-	} ),
 
 	/**
 	 * Determines whether Analytics 4 has zero data or not.
@@ -254,7 +252,7 @@ const baseSelectors = {
 	} ),
 };
 
-const store = Data.combineStores( fetchGetReportStore, {
+const store = Data.combineStores( fetchGetReportStore, gatheringDataStore, {
 	initialState: baseInitialState,
 	resolvers: baseResolvers,
 	selectors: baseSelectors,
