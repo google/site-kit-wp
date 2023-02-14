@@ -29,6 +29,7 @@ class Google_Proxy {
 
 	const PRODUCTION_BASE_URL       = 'https://sitekit.withgoogle.com';
 	const STAGING_BASE_URL          = 'https://site-kit-dev.appspot.com';
+	const DEVELOPMENT_BASE_URL      = 'https://site-kit-local.appspot.com';
 	const OAUTH2_SITE_URI           = '/o/oauth2/site/';
 	const OAUTH2_REVOKE_URI         = '/o/oauth2/revoke/';
 	const OAUTH2_TOKEN_URI          = '/o/oauth2/token/';
