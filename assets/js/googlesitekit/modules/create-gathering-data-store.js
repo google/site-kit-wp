@@ -37,18 +37,22 @@ const WAIT_FOR_GATHERING_DATA = 'WAIT_FOR_GATHERING_DATA';
 /**
  * Creates a store object that includes actions and selectors for gathering data state for a module.
  *
- * Since logic to determine data availability is different for every module,
- * individual modules must implement `determineDataAvailability` selector for this store to work.
- *
  * @since n.e.x.t
  * @private
  *
- * @param {string}  moduleSlug         Slug of the module that the store is for.
- * @param {Object}  args               Arguments to configure the store.
- * @param {boolean} args.dataAvailable Data available on load.
+ * @param {string}   moduleSlug                     Slug of the module that the store is for.
+ * @param {Object}   args                           Arguments to configure the store.
+ * @param {boolean}  args.dataAvailable             Data available on load.
+ * @param {Function} args.determineDataAvailability Selector to determine data availability.
+ *                                                  This is a function that should return a boolean, or undefined while resolving.
+ *                                                  Since logic to determine data availability is different for every module,
+ *                                                  this selector must be provided by the module.
  * @return {Object} The gathering data store object.
  */
-const createGatheringDataStore = ( moduleSlug, { dataAvailable } = {} ) => {
+const createGatheringDataStore = (
+	moduleSlug,
+	{ dataAvailable, determineDataAvailability } = {}
+) => {
 	invariant(
 		'string' === typeof moduleSlug && moduleSlug,
 		'module slug is required.'
@@ -57,6 +61,11 @@ const createGatheringDataStore = ( moduleSlug, { dataAvailable } = {} ) => {
 	invariant(
 		'boolean' === typeof dataAvailable,
 		'dataAvailable must be a boolean.'
+	);
+
+	invariant(
+		'function' === typeof determineDataAvailability,
+		'determineDataAvailability must be a function.'
 	);
 
 	const fetchSaveDataAvailableStateStore = createFetchStore( {
@@ -206,6 +215,14 @@ const createGatheringDataStore = ( moduleSlug, { dataAvailable } = {} ) => {
 	};
 
 	const selectors = {
+		/**
+		 * Determines whether data is available for the module.
+		 *
+		 * @since n.e.x.t
+		 *
+		 * @return {boolean|undefined} Returns TRUE if data is available, otherwise FALSE. If the request is still being resolved, returns undefined.
+		 */
+		determineDataAvailability,
 		/**
 		 * Checks if data is available on load.
 		 *

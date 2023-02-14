@@ -86,6 +86,43 @@ const fetchGetReportStore = createFetchStore( {
 const gatheringDataStore = createGatheringDataStore( 'search-console', {
 	dataAvailable:
 		global._googlesitekitModulesData?.[ 'data_available_search-console' ],
+	determineDataAvailability: createRegistrySelector( ( select ) => () => {
+		const rangeArgs = {
+			compare: true,
+			offsetDays: DATE_RANGE_OFFSET,
+		};
+
+		const url = select( CORE_SITE ).getCurrentEntityURL();
+		const { compareStartDate: startDate, endDate } =
+			select( CORE_USER ).getDateRangeDates( rangeArgs );
+
+		const args = {
+			dimensions: 'date',
+			startDate,
+			endDate,
+		};
+
+		if ( url ) {
+			args.url = url;
+		}
+
+		// Disable reason: select needs to be called here or it will never run.
+		// eslint-disable-next-line @wordpress/no-unused-vars-before-return
+		const report = select( MODULES_SEARCH_CONSOLE ).getReport( args );
+		const hasResolvedReport = select(
+			MODULES_SEARCH_CONSOLE
+		).hasFinishedResolution( 'getReport', [ args ] );
+
+		if ( ! hasResolvedReport ) {
+			return undefined;
+		}
+
+		if ( ! Array.isArray( report ) || report.length ) {
+			return true;
+		}
+
+		return false;
+	} ),
 } );
 
 const baseInitialState = {
@@ -131,52 +168,6 @@ const baseSelectors = {
 
 		return reports[ stringifyObject( options ) ];
 	},
-
-	/**
-	 * Determines whether data is available for Search Console.
-	 *
-	 * @since 1.44.0
-	 * @since n.e.x.t Renamed to `determineDataAvailability` and flipped return value.
-	 *
-	 * @return {boolean|undefined} Returns TRUE if data is available, otherwise FALSE. If the request is still being resolved, returns undefined.
-	 */
-	determineDataAvailability: createRegistrySelector( ( select ) => () => {
-		const rangeArgs = {
-			compare: true,
-			offsetDays: DATE_RANGE_OFFSET,
-		};
-
-		const url = select( CORE_SITE ).getCurrentEntityURL();
-		const { compareStartDate: startDate, endDate } =
-			select( CORE_USER ).getDateRangeDates( rangeArgs );
-
-		const args = {
-			dimensions: 'date',
-			startDate,
-			endDate,
-		};
-
-		if ( url ) {
-			args.url = url;
-		}
-
-		// Disable reason: select needs to be called here or it will never run.
-		// eslint-disable-next-line @wordpress/no-unused-vars-before-return
-		const report = select( MODULES_SEARCH_CONSOLE ).getReport( args );
-		const hasResolvedReport = select(
-			MODULES_SEARCH_CONSOLE
-		).hasFinishedResolution( 'getReport', [ args ] );
-
-		if ( ! hasResolvedReport ) {
-			return undefined;
-		}
-
-		if ( ! Array.isArray( report ) || report.length ) {
-			return true;
-		}
-
-		return false;
-	} ),
 
 	/**
 	 * Determines whether the Search Console has zero data or not.

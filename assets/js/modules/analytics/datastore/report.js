@@ -124,6 +124,47 @@ const fetchGetReportStore = createFetchStore( {
 const gatheringDataStore = createGatheringDataStore( 'analytics', {
 	dataAvailable:
 		global._googlesitekitModulesData?.[ 'data_available_analytics' ],
+	determineDataAvailability: createRegistrySelector( ( select ) => () => {
+		const { startDate, endDate } = select( CORE_USER ).getDateRangeDates( {
+			offsetDays: DATE_RANGE_OFFSET,
+		} );
+
+		const args = {
+			dimensions: [ 'ga:date' ],
+			metrics: [ { expression: 'ga:users' } ],
+			startDate,
+			endDate,
+		};
+
+		const url = select( CORE_SITE ).getCurrentEntityURL();
+		if ( url ) {
+			args.url = url;
+		}
+
+		// Disable reason: select needs to be called here or it will never run.
+		// eslint-disable-next-line @wordpress/no-unused-vars-before-return
+		const report = select( MODULES_ANALYTICS ).getReport( args );
+		const hasResolvedReport = select(
+			MODULES_ANALYTICS
+		).hasFinishedResolution( 'getReport', [ args ] );
+
+		if ( ! hasResolvedReport ) {
+			return undefined;
+		}
+
+		if ( ! Array.isArray( report ) ) {
+			return true;
+		}
+
+		if (
+			! Array.isArray( report[ 0 ]?.data?.rows ) ||
+			report[ 0 ]?.data?.rows?.length === 0
+		) {
+			return false;
+		}
+
+		return true;
+	} ),
 } );
 
 const baseInitialState = {
@@ -287,56 +328,6 @@ const baseSelectors = {
 				return urlTitleMap;
 			}
 	),
-
-	/**
-	 * Determines whether data is available for Analytics.
-	 *
-	 * @since 1.44.0
-	 * @since n.e.x.t Renamed to `determineDataAvailability` and flipped return value.
-	 *
-	 * @return {boolean|undefined} Returns TRUE if data is available, otherwise FALSE. If the request is still being resolved, returns undefined.
-	 */
-	determineDataAvailability: createRegistrySelector( ( select ) => () => {
-		const { startDate, endDate } = select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
-		} );
-
-		const args = {
-			dimensions: [ 'ga:date' ],
-			metrics: [ { expression: 'ga:users' } ],
-			startDate,
-			endDate,
-		};
-
-		const url = select( CORE_SITE ).getCurrentEntityURL();
-		if ( url ) {
-			args.url = url;
-		}
-
-		// Disable reason: select needs to be called here or it will never run.
-		// eslint-disable-next-line @wordpress/no-unused-vars-before-return
-		const report = select( MODULES_ANALYTICS ).getReport( args );
-		const hasResolvedReport = select(
-			MODULES_ANALYTICS
-		).hasFinishedResolution( 'getReport', [ args ] );
-
-		if ( ! hasResolvedReport ) {
-			return undefined;
-		}
-
-		if ( ! Array.isArray( report ) ) {
-			return true;
-		}
-
-		if (
-			! Array.isArray( report[ 0 ]?.data?.rows ) ||
-			report[ 0 ]?.data?.rows?.length === 0
-		) {
-			return false;
-		}
-
-		return true;
-	} ),
 
 	/**
 	 * Determines whether Analytics has zero data or not.
