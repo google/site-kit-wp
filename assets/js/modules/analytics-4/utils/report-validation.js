@@ -32,7 +32,7 @@ import { isValidStringsOrObjects } from '../../../util/report-validation';
  * must have an "name" property in order to be considered as valid, and they
  * can optionally include an "expression" property.
  *
- * @since n.e.x.t
+ * @since 1.94.0
  *
  * @param {string|string[]|Object|Object[]} metrics The metrics to check.
  * @return {boolean} TRUE if metrics are valid, otherwise FALSE.
@@ -55,7 +55,7 @@ export function isValidMetrics( metrics ) {
  * array of strings, an object with "name" field, array of such objects or an array of strings
  * and objects.
  *
- * @since n.e.x.t
+ * @since 1.94.0
  *
  * @param {string|string[]|Object|Object[]} dimensions The dimensions to check.
  * @return {boolean} TRUE if dimensions are valid, otherwise FALSE.
@@ -72,7 +72,7 @@ export function isValidDimensions( dimensions ) {
 /**
  * Verifies provided dimensionFilters to make sure they match allowed values found in dimensions.
  *
- * @since n.e.x.t
+ * @since 1.94.0
  *
  * @param {Object} dimensionFilters The dimension filters to check.
  * @return {boolean} TRUE if dimension filters are valid, otherwise FALSE.

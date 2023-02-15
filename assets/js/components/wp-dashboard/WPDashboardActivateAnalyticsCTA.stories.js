@@ -21,6 +21,7 @@
  */
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import WPDashboardActivateAnalyticsCTA from './WPDashboardActivateAnalyticsCTA';
+import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { widgetDecorators } from './common.stories';
 import {
 	provideModules,
@@ -38,6 +39,7 @@ export const Ready = Template.bind( {} );
 Ready.storyName = 'Ready';
 Ready.args = {
 	setupRegistry: ( registry ) => {
+		provideUserAuthentication( registry );
 		provideModules( registry, [
 			{
 				active: false,
@@ -45,6 +47,9 @@ Ready.args = {
 				slug: 'analytics',
 			},
 		] );
+		registry.dispatch( CORE_SITE ).receiveSiteInfo( {
+			adminURL: 'http://example.com/wp-admin/',
+		} );
 	},
 };
 
@@ -60,6 +65,9 @@ CompleteActivation.args = {
 				slug: 'analytics',
 			},
 		] );
+		registry.dispatch( CORE_SITE ).receiveSiteInfo( {
+			adminURL: 'http://example.com/wp-admin/',
+		} );
 		provideModuleRegistrations( registry );
 	},
 };

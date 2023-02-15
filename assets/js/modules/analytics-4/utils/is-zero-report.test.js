@@ -22,116 +22,100 @@
 import { isZeroReport } from './is-zero-report';
 
 describe( 'isZeroReport', () => {
-	it( 'returns undefined when undefined is passed', () => {
-		expect( isZeroReport( undefined ) ).toBe( undefined );
-	} );
-
 	it.each( [
-		[ 'NULL', null ],
-		[ 'FALSE', false ],
-		[ 'a number', 1 ],
-		[ 'a string', 'test' ],
-		[ 'an empty object', {} ],
-		[ 'an object with empty rows', { rows: [] } ],
-		[ 'an object with empty totals', { totals: [] } ],
-	] )( 'returns true when %s is passed', ( _, report ) => {
-		expect( isZeroReport( report ) ).toBe( true );
-	} );
-
-	it( 'returns true for a report that has no data within a single total with a single value', () => {
-		const reportSingleTotal = {
-			rows: [ {}, {}, {} ],
-			totals: [
-				{
-					metricValues: [ { value: '0' } ],
-				},
-			],
-		};
-
-		expect( isZeroReport( reportSingleTotal ) ).toBe( true );
-	} );
-
-	it( 'returns true for a report that has no data within a single total with multiple values', () => {
-		const report = {
-			rows: [ {}, {}, {} ],
-			totals: [
-				{
-					metricValues: [ { value: '0' }, { value: '0' } ],
-				},
-			],
-		};
-
-		expect( isZeroReport( report ) ).toBe( true );
-	} );
-
-	it( 'returns true for a report that has no data within multiple totals with multiple values', () => {
-		const reportMultipleTotals = {
-			rows: [ {}, {}, {} ],
-			totals: [
-				{
-					metricValues: [ { value: '0' }, { value: '0' } ],
-				},
-				{
-					metricValues: [ { value: '0' }, { value: '0' } ],
-				},
-			],
-		};
-
-		expect( isZeroReport( reportMultipleTotals ) ).toBe( true );
-	} );
-
-	it( 'returns false for a report that has data', () => {
-		const report = {
-			rows: [ {}, {}, {} ],
-			totals: [
-				{
-					metricValues: [ { value: '123' }, { value: '234' } ],
-				},
-			],
-		};
-
-		expect( isZeroReport( report ) ).toBe( false );
-	} );
-
-	it( 'returns false for a report that has data with a zero value', () => {
-		const report = {
-			rows: [ {}, {}, {} ],
-			totals: [
-				{
-					metricValues: [ { value: '0' }, { value: '123' } ],
-				},
-			],
-		};
-
-		expect( isZeroReport( report ) ).toBe( false );
-	} );
-
-	it( 'returns false for a report that has data with multiple totals', () => {
-		const report = {
-			rows: [ {}, {}, {} ],
-			totals: [
-				{
-					metricValues: [ { value: '123' }, { value: '234' } ],
-				},
-				{
-					metricValues: [ { value: '0' }, { value: '345' } ],
-				},
-			],
-		};
-
-		expect( isZeroReport( report ) ).toBe( false );
-	} );
-
-	it( 'returns false for a report that has data with a single value', () => {
-		const report = {
-			rows: [ {}, {}, {} ],
-			totals: [
-				{
-					metricValues: [ { value: '123' } ],
-				},
-			],
-		};
-
-		expect( isZeroReport( report ) ).toBe( false );
+		[ undefined, 'undefined', undefined ],
+		[ true, 'NULL', null ],
+		[ true, 'FALSE', false ],
+		[ true, 'a number', 1 ],
+		[ true, 'a string', 'test' ],
+		[ true, 'an empty object', {} ],
+		[ true, 'a report with rows but no totals', { rows: [ {}, {}, {} ] } ],
+		[
+			true,
+			'a report with totals but no rows',
+			{ totals: [ { metricValues: [ { value: '123' } ] } ] },
+		],
+		[
+			true,
+			'a report with rows but empty totals',
+			{ rows: [ {}, {}, {} ], totals: [] },
+		],
+		[
+			true,
+			'a report with empty totals objects',
+			{ rows: [ {}, {}, {} ], totals: [ {}, {}, {} ] },
+		],
+		[
+			true,
+			'a report that has no data within a single total with a single value',
+			{
+				rows: [ {}, {}, {} ],
+				totals: [ { metricValues: [ { value: '0' } ] } ],
+			},
+		],
+		[
+			true,
+			'a report that has no data within a single total with multiple values',
+			{
+				rows: [ {}, {}, {} ],
+				totals: [
+					{ metricValues: [ { value: '0' }, { value: '0' } ] },
+				],
+			},
+		],
+		[
+			true,
+			'a report that has no data within multiple totals with multiple values',
+			{
+				rows: [ {}, {}, {} ],
+				totals: [
+					{ metricValues: [ { value: '0' }, { value: '0' } ] },
+					{ metricValues: [ { value: '0' }, { value: '0' } ] },
+				],
+			},
+		],
+		[
+			false,
+			'a report that has data',
+			{
+				rows: [ {}, {}, {} ],
+				totals: [
+					{
+						metricValues: [ { value: '123' }, { value: '234' } ],
+					},
+				],
+			},
+		],
+		[
+			false,
+			'a report that has data with a zero value',
+			{
+				rows: [ {}, {}, {} ],
+				totals: [
+					{ metricValues: [ { value: '0' }, { value: '123' } ] },
+				],
+			},
+		],
+		[
+			false,
+			'a report that has data with multiple totals',
+			{
+				rows: [ {}, {}, {} ],
+				totals: [
+					{ metricValues: [ { value: '123' }, { value: '234' } ] },
+					{ metricValues: [ { value: '0' }, { value: '345' } ] },
+				],
+			},
+		],
+		[
+			false,
+			'a report that has data with a single value',
+			{
+				rows: [ {}, {}, {} ],
+				totals: [ { metricValues: [ { value: '123' } ] } ],
+			},
+		],
+	] )( 'returns %s when %s is passed', ( expectedValue, _, report ) => {
+		expect( isZeroReport( report ) ).toBe( expectedValue );
 	} );
 } );
