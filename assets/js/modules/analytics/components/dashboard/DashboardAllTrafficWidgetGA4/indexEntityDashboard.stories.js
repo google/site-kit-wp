@@ -30,8 +30,10 @@ import {
 	provideAnalytics4MockReport,
 } from '../../../../analytics-4/utils/data-mock';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
+import { DAY_IN_SECONDS } from '../../../../../util';
 import { getWidgetComponentProps } from '../../../../../googlesitekit/widgets/util';
 import { MODULES_ANALYTICS_4 } from '../../../../analytics-4/datastore/constants';
+import * as __fixtures__ from '../../../../analytics-4/datastore/__fixtures__';
 import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../../../../.storybook/utils/zeroReports';
 import DashboardAllTrafficWidgetGA4 from '.';
 
@@ -202,6 +204,24 @@ EntityDashboardDataUnavailable.args = {
 				.dispatch( MODULES_ANALYTICS_4 )
 				.receiveGetReport( {}, { options } );
 		} );
+
+		// Set the property creation timestamp to one and a half days ago, so that
+		// the property is considered to be in the gathering data state.
+		const createTime = new Date(
+			Date.now() - DAY_IN_SECONDS * 1.5 * 1000
+		).toISOString();
+
+		const property = {
+			...__fixtures__.properties[ 0 ],
+			createTime,
+		};
+		const propertyID = property._id;
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetProperty( property, { propertyID } );
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).setPropertyID( propertyID );
 	},
 };
 EntityDashboardDataUnavailable.scenario = {
@@ -224,6 +244,24 @@ EntityDashboardZeroData.args = {
 					}
 				);
 		} );
+
+		// Set the property creation timestamp to two days ago, so that
+		// the property is not considered to be in the gathering data state.
+		const createTime = new Date(
+			Date.now() - DAY_IN_SECONDS * 2 * 1000
+		).toISOString();
+
+		const property = {
+			...__fixtures__.properties[ 0 ],
+			createTime,
+		};
+		const propertyID = property._id;
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetProperty( property, { propertyID } );
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).setPropertyID( propertyID );
 	},
 };
 EntityDashboardZeroData.scenario = {
