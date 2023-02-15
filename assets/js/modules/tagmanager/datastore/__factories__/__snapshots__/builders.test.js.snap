@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Analytics Builder fake data test should create the same data from factory builders on each test run 1`] = `
+exports[`Google Tag Manager Builder fake data test should create the same data from factory builders on each test run 1`] = `
 Object {
   "account": Object {
     "accountId": "101",
@@ -11,10 +11,10 @@ Object {
     Object {
       "accountId": "101",
       "containerId": "204",
-      "fingerprint": "Wed Feb 15 2023 19:01:10 GMT+0000 (Western European Standard Time)",
-      "name": "eaque ducimus eveniet",
+      "fingerprint": "91526",
+      "name": "ipsam autem commodi",
       "path": "accounts/101/containers/204",
-      "publicId": "GTM-FAKEBSD",
+      "publicId": "GTM-FAKE1GA",
       "tagManagerUrl": "https://tagmanager.google.com/#/container/accounts/101/containers/204/workspaces?apiLink=container",
       "usageContext": Array [
         "amp",
@@ -23,10 +23,10 @@ Object {
     Object {
       "accountId": "101",
       "containerId": "205",
-      "fingerprint": "Wed Feb 15 2023 19:01:10 GMT+0000 (Western European Standard Time)",
-      "name": "illo qui exercitationem",
+      "fingerprint": "26801",
+      "name": "beatae praesentium minus",
       "path": "accounts/101/containers/205",
-      "publicId": "GTM-FAKEW2G",
+      "publicId": "GTM-FAKE92X",
       "tagManagerUrl": "https://tagmanager.google.com/#/container/accounts/101/containers/205/workspaces?apiLink=container",
       "usageContext": Array [
         "amp",
@@ -35,10 +35,10 @@ Object {
     Object {
       "accountId": "101",
       "containerId": "206",
-      "fingerprint": "Wed Feb 15 2023 19:01:10 GMT+0000 (Western European Standard Time)",
-      "name": "minus ad veritatis",
+      "fingerprint": "83083",
+      "name": "praesentium at perspiciatis",
       "path": "accounts/101/containers/206",
-      "publicId": "GTM-FAKEX9G",
+      "publicId": "GTM-FAKEVOH",
       "tagManagerUrl": "https://tagmanager.google.com/#/container/accounts/101/containers/206/workspaces?apiLink=container",
       "usageContext": Array [
         "amp",
@@ -49,7 +49,7 @@ Object {
     Object {
       "accountId": "101",
       "containerId": "201",
-      "fingerprint": "Wed Feb 15 2023 19:01:10 GMT+0000 (Western European Standard Time)",
+      "fingerprint": "43671",
       "name": "occaecati nam quae",
       "path": "accounts/101/containers/201",
       "publicId": "GTM-FAKEKZ3",
@@ -61,10 +61,10 @@ Object {
     Object {
       "accountId": "101",
       "containerId": "202",
-      "fingerprint": "Wed Feb 15 2023 19:01:10 GMT+0000 (Western European Standard Time)",
-      "name": "iusto reprehenderit non",
+      "fingerprint": "34233",
+      "name": "reprehenderit non dolores",
       "path": "accounts/101/containers/202",
-      "publicId": "GTM-FAKEHDB",
+      "publicId": "GTM-FAKEDB5",
       "tagManagerUrl": "https://tagmanager.google.com/#/container/accounts/101/containers/202/workspaces?apiLink=container",
       "usageContext": Array [
         "web",
@@ -73,10 +73,10 @@ Object {
     Object {
       "accountId": "101",
       "containerId": "203",
-      "fingerprint": "Wed Feb 15 2023 19:01:10 GMT+0000 (Western European Standard Time)",
-      "name": "voluptatem nisi nostrum",
+      "fingerprint": "89562",
+      "name": "nostrum consequatur eligendi",
       "path": "accounts/101/containers/203",
-      "publicId": "GTM-FAKEDOU",
+      "publicId": "GTM-FAKEU1G",
       "tagManagerUrl": "https://tagmanager.google.com/#/container/accounts/101/containers/203/workspaces?apiLink=container",
       "usageContext": Array [
         "web",

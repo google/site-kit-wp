@@ -22,7 +22,7 @@
 import * as factories from '../../datastore/__factories__';
 import { CONTEXT_AMP, CONTEXT_WEB } from '../constants';
 
-describe( 'Analytics Builder fake data test', () => {
+describe( 'Google Tag Manager Builder fake data test', () => {
 	it( 'should create the same data from factory builders on each test run', () => {
 		const account = factories.accountBuilder();
 		const webContainers = factories.buildContainers(
