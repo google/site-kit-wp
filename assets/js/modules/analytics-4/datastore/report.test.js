@@ -242,7 +242,7 @@ describe( 'modules/analytics-4 report', () => {
 		} );
 
 		describe( 'hasZeroData', () => {
-			it( 'should return undefined if getReport or isGatheringData is not resolved yet', async () => {
+			it( 'should return undefined if getReport has not resolved yet', async () => {
 				freezeFetch(
 					new RegExp(
 						'^/google-site-kit/v1/modules/analytics-4/data/report'
@@ -255,30 +255,6 @@ describe( 'modules/analytics-4 report', () => {
 
 				// Wait for resolvers to run.
 				await waitForDefaultTimeouts();
-			} );
-
-			it( 'should return TRUE if isGatheringData is true', async () => {
-				fetchMock.getOnce(
-					new RegExp(
-						'^/google-site-kit/v1/modules/analytics-4/data/report'
-					),
-					// When `rows` is `null` it means we're still gathering data for
-					// this report.
-					{ body: { rows: null } }
-				);
-
-				const { hasZeroData, isGatheringData } =
-					registry.select( MODULES_ANALYTICS_4 );
-
-				expect( hasZeroData() ).toBeUndefined();
-
-				await subscribeUntil(
-					registry,
-					() => isGatheringData() !== undefined,
-					() => hasZeroData() !== undefined
-				);
-
-				expect( hasZeroData() ).toBe( true );
 			} );
 
 			it( 'should return TRUE if isZeroReport is true', async () => {
@@ -299,31 +275,6 @@ describe( 'modules/analytics-4 report', () => {
 				);
 
 				expect( hasZeroData() ).toBe( true );
-			} );
-
-			it( 'should return FALSE if isGatheringData returns FALSE', async () => {
-				fetchMock.getOnce(
-					new RegExp(
-						'^/google-site-kit/v1/modules/analytics-4/data/report'
-					),
-					{
-						body: fixtures.report,
-					}
-				);
-
-				const { hasZeroData, isGatheringData } =
-					registry.select( MODULES_ANALYTICS_4 );
-
-				expect( hasZeroData() ).toBeUndefined();
-
-				await subscribeUntil(
-					registry,
-					() => isGatheringData() !== undefined,
-					() => hasZeroData() !== undefined
-				);
-
-				expect( isGatheringData() ).toBe( false );
-				expect( hasZeroData() ).toBe( false );
 			} );
 
 			it( 'should return FALSE if isZeroReport returns FALSE', async () => {
