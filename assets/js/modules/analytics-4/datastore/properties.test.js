@@ -561,7 +561,7 @@ describe( 'modules/analytics-4 properties', () => {
 				).toEqual( fixtures.googleTagSettings.googleTagID );
 			} );
 
-			it( 'empties the Google Tag Settings if measurement ID an empty string', () => {
+			it( 'empties the Google Tag Settings if measurement ID is an empty string', () => {
 				enabledFeatures.add( 'gteSupport' );
 
 				registry
