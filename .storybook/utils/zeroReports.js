@@ -45,27 +45,22 @@ export function replaceValuesInAnalyticsReportWithZeroData( report ) {
 }
 
 /**
- * Returns a copy of the provided Analytics 4 report with all metric values replaced with zero.
+ * Returns a copy of the provided Analytics 4 report with all values removed,
+ * matching the format of an empty report.
  *
  * @since n.e.x.t
  *
  * @param {Object} report Analytics 4 report object.
- * @return {Object} Zeroed Analytics 4 report object.
+ * @return {Object} Empty Analytics 4 report object.
  */
 export function replaceValuesInAnalytics4ReportWithZeroData( report ) {
-	const zeroMetricValues = ( item ) => ( {
-		...item,
-		metricValues: item.metricValues.map( ( metricValue ) => ( {
-			...metricValue,
-			value: 0,
-		} ) ),
-	} );
+	// eslint-disable-next-line no-unused-vars -- Ignore `rows` since we're omitting it from the returned report object.
+	const { rows, ...reportWithoutRows } = report;
 
 	return {
-		...report,
-		totals: report.totals.map( zeroMetricValues ),
-		maximums: report.maximums.map( zeroMetricValues ),
-		minimums: report.minimums.map( zeroMetricValues ),
-		rows: report.rows.map( zeroMetricValues ),
+		...reportWithoutRows,
+		totals: [ {} ],
+		maximums: [ {} ],
+		minimums: [ {} ],
 	};
 }

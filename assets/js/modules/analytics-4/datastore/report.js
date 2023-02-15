@@ -31,7 +31,7 @@ import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { DATE_RANGE_OFFSET, MODULES_ANALYTICS_4 } from './constants';
-import { stringifyObject } from '../../../util';
+import { DAY_IN_SECONDS, stringifyObject } from '../../../util';
 import { isValidDateRange } from '../../../util/report-validation';
 import {
 	normalizeReportOptions,
@@ -115,42 +115,31 @@ const gatheringDataStore = createGatheringDataStore( 'analytics-4', {
 	dataAvailable:
 		global._googlesitekitModulesData?.[ 'data_available_analytics-4' ],
 	determineDataAvailability: createRegistrySelector( ( select ) => () => {
-		const { startDate, endDate } = select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
-		} );
+		const hasZeroData = select( MODULES_ANALYTICS_4 ).hasZeroData();
 
-		const args = {
-			dimensions: [ 'date' ],
-			metrics: [ { name: 'totalUsers' } ],
-			startDate,
-			endDate,
-		};
-
-		const url = select( CORE_SITE ).getCurrentEntityURL();
-		if ( url ) {
-			args.url = url;
-		}
-
-		// Disable reason: select needs to be called here or it will never run.
-		// eslint-disable-next-line @wordpress/no-unused-vars-before-return
-		const report = select( MODULES_ANALYTICS_4 ).getReport( args );
-		const hasResolvedReport = select(
-			MODULES_ANALYTICS_4
-		).hasFinishedResolution( 'getReport', [ args ] );
-
-		if ( ! hasResolvedReport ) {
+		if ( hasZeroData === undefined ) {
 			return undefined;
 		}
-
-		if ( ! isPlainObject( report ) ) {
-			return true;
-		}
-
-		if ( ! Array.isArray( report?.rows ) || report?.rows?.length === 0 ) {
+		if ( hasZeroData === false ) {
 			return false;
 		}
 
-		return true;
+		const propertyID = select( MODULES_ANALYTICS_4 ).getPropertyID();
+		const property =
+			select( MODULES_ANALYTICS_4 ).getProperty( propertyID );
+
+		if ( property === undefined ) {
+			return undefined;
+		}
+
+		const createTime = new Date( property.createTime ).getTime();
+
+		// If the property was created within the last two days and has no data, assume it's still gathering data.
+		if ( createTime > Date.now() - DAY_IN_SECONDS * 2 * 1000 ) {
+			return true;
+		}
+
+		return false;
 	} ),
 } );
 
@@ -206,17 +195,9 @@ const baseSelectors = {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return {boolean|undefined} Returns FALSE if not gathering data and the report is not zero, otherwise TRUE. If the request is still being resolved, returns undefined.
+	 * @return {boolean|undefined} Returns `true` if the report is zero, otherwise `false`. Returns `undefined` while resolving.
 	 */
 	hasZeroData: createRegistrySelector( ( select ) => () => {
-		const isGatheringData = select( MODULES_ANALYTICS_4 ).isGatheringData();
-		if ( isGatheringData === undefined ) {
-			return undefined;
-		}
-		if ( isGatheringData === true ) {
-			return true;
-		}
-
 		const { startDate, endDate } = select( CORE_USER ).getDateRangeDates( {
 			offsetDays: DATE_RANGE_OFFSET,
 		} );
@@ -242,10 +223,6 @@ const baseSelectors = {
 
 		if ( ! hasResolvedReport ) {
 			return undefined;
-		}
-
-		if ( ! isPlainObject( report ) ) {
-			return false;
 		}
 
 		return isZeroReport( report );
