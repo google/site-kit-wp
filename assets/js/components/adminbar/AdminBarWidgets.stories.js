@@ -31,6 +31,7 @@ import {
 	setupSearchConsoleAnalyticsZeroData,
 	widgetDecorators,
 } from './common.stories';
+import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import AdminBarWidgets from './AdminBarWidgets';
 
@@ -51,6 +52,7 @@ AnalyticsInactive.storyName = 'Inactive: Analytics Setup CTA';
 AnalyticsInactive.args = {
 	setupRegistry: ( registry ) => {
 		// Set up the search console module store but provide no data.
+		provideUserAuthentication( registry );
 		provideModules( registry, [
 			{
 				slug: 'search-console',
@@ -58,6 +60,9 @@ AnalyticsInactive.args = {
 				connected: true,
 			},
 		] );
+		registry.dispatch( CORE_SITE ).receiveSiteInfo( {
+			adminURL: 'http://example.com/wp-admin/',
+		} );
 		setupSearchConsoleMockReports( registry );
 	},
 };

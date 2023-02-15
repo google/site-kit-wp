@@ -28,18 +28,20 @@ import isPlainObject from 'lodash/isPlainObject';
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
-import { MODULES_ANALYTICS_4 } from './constants';
-import { stringifyObject } from '../../../util';
-import {
-	isValidDateRange,
-	isValidOrders,
-} from '../../../util/report-validation';
+import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
+import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
+import { DATE_RANGE_OFFSET, MODULES_ANALYTICS_4 } from './constants';
+import { DAY_IN_SECONDS, stringifyObject } from '../../../util';
+import { isValidDateRange } from '../../../util/report-validation';
 import {
 	normalizeReportOptions,
 	isValidDimensionFilters,
 	isValidDimensions,
 	isValidMetrics,
+	isValidOrders,
+	isZeroReport,
 } from '../utils';
+const { createRegistrySelector } = Data;
 
 const fetchGetReportStore = createFetchStore( {
 	baseName: 'getReport',
@@ -102,7 +104,7 @@ const fetchGetReportStore = createFetchStore( {
 		if ( orderby ) {
 			invariant(
 				isValidOrders( orderby ),
-				'orderby for an Analytics 4 report must be either an object or an array of objects where each object should have "fieldName" and "sortOrder" properties.'
+				'orderby for an Analytics 4 report must be an object where each object should have either a "metric" or "dimension" property, and an optional "desc" property.'
 			);
 		}
 	},
@@ -133,7 +135,7 @@ const baseSelectors = {
 	/**
 	 * Gets an Analytics report for the given options.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.94.0
 	 *
 	 * @param {Object}         state                      Data store's state.
 	 * @param {Object}         options                    Options for generating the report.
@@ -154,6 +156,79 @@ const baseSelectors = {
 
 		return reports[ stringifyObject( options ) ];
 	},
+
+	/**
+	 * Determines whether the Analytics 4 module is still gathering data.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {boolean|undefined} Returns `true` if gathering data, otherwise `false`. Returns `undefined` while resolving.
+	 */
+	isGatheringData: createRegistrySelector( ( select ) => () => {
+		const hasZeroData = select( MODULES_ANALYTICS_4 ).hasZeroData();
+
+		if ( hasZeroData === undefined ) {
+			return undefined;
+		}
+		if ( hasZeroData === false ) {
+			return false;
+		}
+
+		const propertyID = select( MODULES_ANALYTICS_4 ).getPropertyID();
+		const property =
+			select( MODULES_ANALYTICS_4 ).getProperty( propertyID );
+
+		if ( property === undefined ) {
+			return undefined;
+		}
+
+		const createTime = new Date( property.createTime ).getTime();
+
+		// If the property was created within the last two days and has no data, assume it's still gathering data.
+		if ( createTime > Date.now() - DAY_IN_SECONDS * 2 * 1000 ) {
+			return true;
+		}
+
+		return false;
+	} ),
+
+	/**
+	 * Determines whether Analytics 4 has zero data or not.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {boolean|undefined} Returns `true` if the report is zero, otherwise `false`. Returns `undefined` while resolving.
+	 */
+	hasZeroData: createRegistrySelector( ( select ) => () => {
+		const { startDate, endDate } = select( CORE_USER ).getDateRangeDates( {
+			offsetDays: DATE_RANGE_OFFSET,
+		} );
+
+		const args = {
+			dimensions: [ 'date' ],
+			metrics: [ { name: 'totalUsers' } ],
+			startDate,
+			endDate,
+		};
+
+		const url = select( CORE_SITE ).getCurrentEntityURL();
+		if ( url ) {
+			args.url = url;
+		}
+
+		// Disable reason: select needs to be called here or it will never run.
+		// eslint-disable-next-line @wordpress/no-unused-vars-before-return
+		const report = select( MODULES_ANALYTICS_4 ).getReport( args );
+		const hasResolvedReport = select(
+			MODULES_ANALYTICS_4
+		).hasFinishedResolution( 'getReport', [ args ] );
+
+		if ( ! hasResolvedReport ) {
+			return undefined;
+		}
+
+		return isZeroReport( report );
+	} ),
 };
 
 const store = Data.combineStores( fetchGetReportStore, {

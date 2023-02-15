@@ -340,6 +340,14 @@ const baseSelectors = {
 	 * @return {boolean|undefined} Returns FALSE if not gathering data and the report is not zero, otherwise TRUE. If the request is still being resolved, returns undefined.
 	 */
 	hasZeroData: createRegistrySelector( ( select ) => () => {
+		const isGatheringData = select( MODULES_ANALYTICS ).isGatheringData();
+		if ( isGatheringData === undefined ) {
+			return undefined;
+		}
+		if ( isGatheringData === true ) {
+			return true;
+		}
+
 		const { startDate, endDate } = select( CORE_USER ).getDateRangeDates( {
 			offsetDays: DATE_RANGE_OFFSET,
 		} );
@@ -354,11 +362,6 @@ const baseSelectors = {
 		const url = select( CORE_SITE ).getCurrentEntityURL();
 		if ( url ) {
 			args.url = url;
-		}
-
-		const isGatheringData = select( MODULES_ANALYTICS ).isGatheringData();
-		if ( isGatheringData === undefined ) {
-			return undefined;
 		}
 
 		// Disable reason: select needs to be called here or it will never run.
@@ -376,12 +379,7 @@ const baseSelectors = {
 			return false;
 		}
 
-		const hasZeroReport = isZeroReport( report );
-		if ( isGatheringData === false && hasZeroReport === false ) {
-			return false;
-		}
-
-		return true;
+		return isZeroReport( report );
 	} ),
 };
 
