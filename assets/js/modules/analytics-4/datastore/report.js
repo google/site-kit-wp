@@ -121,7 +121,7 @@ const gatheringDataStore = createGatheringDataStore( 'analytics-4', {
 			return undefined;
 		}
 		if ( hasZeroData === false ) {
-			return false;
+			return true;
 		}
 
 		const propertyID = select( MODULES_ANALYTICS_4 ).getPropertyID();
@@ -136,10 +136,10 @@ const gatheringDataStore = createGatheringDataStore( 'analytics-4', {
 
 		// If the property was created within the last two days and has no data, assume it's still gathering data.
 		if ( createTime > Date.now() - DAY_IN_SECONDS * 2 * 1000 ) {
-			return true;
+			return false;
 		}
 
-		return false;
+		return true;
 	} ),
 } );
 
