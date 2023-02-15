@@ -78,7 +78,7 @@ export const containerBuilder = build( 'Tag Manager Container', {
 			return `GTM-FAKE${ char() }${ char() }${ char() }`.toUpperCase();
 		} ),
 		usageContext: [ oneOf( CONTEXT_WEB, CONTEXT_AMP ) ],
-		fingerprint: perBuild( () => faker.datatype.number().toString() ),
+		fingerprint: '1676495375419',
 		// eslint-disable-next-line sitekit/acronym-case
 		tagManagerUrl:
 			'https://tagmanager.google.com/#/container/accounts/{accountId}/containers/{containerId}/workspaces?apiLink=container',
@@ -147,7 +147,7 @@ export const defaultTagWeb = ( { accountId, containerId } = {} ) => ( {
 	blockingRuleId: null,
 	blockingTriggerId: null,
 	containerId,
-	fingerprint: perBuild( () => faker.datatype.number().toString() ),
+	fingerprint: '1676495375419',
 	firingRuleId: null,
 	firingTriggerId: [ '2147479553' ],
 	liveOnly: null,
@@ -188,7 +188,7 @@ const defaultTagAMP = ( { accountId, containerId } = {} ) => ( {
 	blockingRuleId: null,
 	blockingTriggerId: null,
 	containerId,
-	fingerprint: perBuild( () => faker.datatype.number().toString() ),
+	fingerprint: '1676495375419',
 	firingRuleId: null,
 	firingTriggerId: [ '2147479553' ],
 	liveOnly: null,
@@ -238,7 +238,7 @@ export const liveContainerVersionBuilder = build(
 			deleted: null,
 			description: null,
 			name: null,
-			fingerprint: perBuild( () => faker.datatype.number().toString() ),
+			fingerprint: '1676495375419',
 			path: 'accounts/{accountId}/containers/{containerId}/versions/{containerVersionId}',
 			tag: undefined, // required, but depends on container type.
 			tagManagerUrl:
@@ -281,7 +281,7 @@ const analyticsTagWeb = ( propertyID, { accountId, containerId } = {} ) => {
 		blockingRuleId: null,
 		blockingTriggerId: null,
 		containerId,
-		fingerprint: perBuild( () => faker.datatype.number().toString() ),
+		fingerprint: '1676495375419',
 		firingRuleId: null,
 		firingTriggerId: [ '2147479553' ],
 		liveOnly: null,
@@ -328,7 +328,7 @@ const analyticsTagAMP = ( propertyID, { accountId, containerId } = {} ) => {
 		blockingRuleId: null,
 		blockingTriggerId: null,
 		containerId,
-		fingerprint: perBuild( () => faker.datatype.number().toString() ),
+		fingerprint: '1676495375419',
 		firingRuleId: null,
 		firingTriggerId: [ '2147479553' ],
 		liveOnly: null,
