@@ -97,11 +97,20 @@ export default function UserCountGraph( props ) {
 		return <ReportError moduleSlug="analytics" error={ error } />;
 	}
 
-	// If rows is not provided (i.e. this is an empty report), we need to create a zero data row for the start
-	// and end dates to ensure the chart renders the ticks at the correct offsets.
-	const rows = Array.isArray( report?.rows )
-		? report?.rows
-		: [ createZeroDataRow( startDate ), createZeroDataRow( endDate ) ];
+	let rows;
+	if ( Array.isArray( report?.rows ) ) {
+		rows = report.rows;
+	} else if ( gatheringData ) {
+		rows = [];
+	} else {
+		// For the "zero data" case, we need to create a zero data row for the start
+		// and end dates to ensure the chart renders the ticks at the correct offsets.
+		rows = [ createZeroDataRow( startDate ), createZeroDataRow( endDate ) ];
+	}
+
+	// const rows = Array.isArray( report?.rows )
+	// 	? report?.rows
+	// 	: [ createZeroDataRow( startDate ), createZeroDataRow( endDate ) ];
 
 	const chartData = [
 		[
