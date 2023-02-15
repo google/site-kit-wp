@@ -108,10 +108,6 @@ export default function UserCountGraph( props ) {
 		rows = [ createZeroDataRow( startDate ), createZeroDataRow( endDate ) ];
 	}
 
-	// const rows = Array.isArray( report?.rows )
-	// 	? report?.rows
-	// 	: [ createZeroDataRow( startDate ), createZeroDataRow( endDate ) ];
-
 	const chartData = [
 		[
 			{
