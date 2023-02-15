@@ -41,6 +41,7 @@ import GoogleChart from '../../../../../components/GoogleChart';
 import parseDimensionStringToDate from '../../../util/parseDimensionStringToDate';
 import ReportError from '../../../../../components/ReportError';
 import { stringToDate } from '../../../../../util/date-range/string-to-date';
+import { createZeroDataRow } from './utils';
 const { useSelect } = Data;
 
 const X_SMALL_ONLY_MEDIA_QUERY = '(max-width: 450px)';
@@ -96,7 +97,11 @@ export default function UserCountGraph( props ) {
 		return <ReportError moduleSlug="analytics" error={ error } />;
 	}
 
-	const rows = Array.isArray( report?.rows ) ? report?.rows : [];
+	// If rows is not provided (i.e. this is an empty report), we need to create a zero data row for the start
+	// and end dates to ensure the chart renders the ticks at the correct offsets.
+	const rows = Array.isArray( report?.rows )
+		? report?.rows
+		: [ createZeroDataRow( startDate ), createZeroDataRow( endDate ) ];
 
 	const chartData = [
 		[
