@@ -28,6 +28,7 @@ import {
 	freezeFetch,
 	waitForDefaultTimeouts,
 	subscribeUntil,
+	muteFetch,
 } from '../../../../../tests/js/utils';
 import { DAY_IN_SECONDS } from '../../../util';
 import { isZeroReport } from '../utils';
@@ -182,6 +183,12 @@ describe( 'modules/analytics-4 report', () => {
 					}
 				);
 
+				muteFetch(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics-4/data/data-available'
+					)
+				);
+
 				const { isGatheringData } =
 					registry.select( MODULES_ANALYTICS_4 );
 
@@ -257,6 +264,12 @@ describe( 'modules/analytics-4 report', () => {
 				} );
 
 				it( 'should return FALSE if the connnected GA4 property is older than two days', async () => {
+					muteFetch(
+						new RegExp(
+							'^/google-site-kit/v1/modules/analytics-4/data/data-available'
+						)
+					);
+
 					// Create a timestamp that is two days ago.
 					const createTime = new Date(
 						Date.now() - DAY_IN_SECONDS * 2 * 1000
