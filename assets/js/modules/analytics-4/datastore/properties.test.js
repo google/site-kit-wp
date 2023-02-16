@@ -767,14 +767,34 @@ describe( 'modules/analytics-4 properties', () => {
 					status: 200,
 				} );
 
+				const {
+					googleTagAccountID,
+					googleTagContainerID,
+					googleTagID,
+				} = fixtures.googleTagSettings;
+
+				const ga4Settings = {
+					measurementID,
+					googleTagAccountID,
+					googleTagContainerID,
+					googleTagID,
+				};
+
 				fetchMock.postOnce( ga4SettingsEndpoint, {
-					body: {},
+					body: {
+						...ga4Settings,
+						googleTagLastSyncedAtMs: Date.now(),
+					},
 					status: 200,
 				} );
 
 				await registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.syncGoogleTagSettings();
+
+				const googleTagLastSyncedAtMs = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getGoogleTagLastSyncedAtMs();
 
 				expect( fetchMock ).toHaveFetchedTimes( 2 );
 				expect( fetchMock ).toHaveFetched( googleTagSettingsEndpoint, {
@@ -783,20 +803,29 @@ describe( 'modules/analytics-4 properties', () => {
 					},
 					body: fixtures.googleTagSettings,
 				} );
+				expect( fetchMock ).toHaveFetched( ga4SettingsEndpoint, {
+					body: {
+						data: {
+							...ga4Settings,
+							googleTagLastSyncedAtMs,
+						},
+					},
+					method: 'POST',
+				} );
 
 				expect(
 					registry
 						.select( MODULES_ANALYTICS_4 )
 						.getGoogleTagAccountID()
-				).toEqual( fixtures.googleTagSettings.googleTagAccountID );
+				).toEqual( googleTagAccountID );
 				expect(
 					registry
 						.select( MODULES_ANALYTICS_4 )
 						.getGoogleTagContainerID()
-				).toEqual( fixtures.googleTagSettings.googleTagContainerID );
+				).toEqual( googleTagContainerID );
 				expect(
 					registry.select( MODULES_ANALYTICS_4 ).getGoogleTagID()
-				).toEqual( fixtures.googleTagSettings.googleTagID );
+				).toEqual( googleTagID );
 			} );
 		} );
 	} );
