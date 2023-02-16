@@ -102,7 +102,7 @@ describe( 'CurrentSurvey', () => {
 			}
 		);
 
-		await act( () => waitForRegistry() );
+		await waitForRegistry();
 
 		expect(
 			container.querySelector( '.googlesitekit-user-role-select__button' )
