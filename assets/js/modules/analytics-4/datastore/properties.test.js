@@ -721,6 +721,10 @@ describe( 'modules/analytics-4 properties', () => {
 					googleTagLastSyncedAtMs: Date.now() - 1800000, // 30 minutes ago.
 				} );
 
+				const googleTagLastSyncedAtMs = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getGoogleTagLastSyncedAtMs();
+
 				await registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.syncGoogleTagSettings();
@@ -728,6 +732,12 @@ describe( 'modules/analytics-4 properties', () => {
 				expect(
 					registry.select( MODULES_ANALYTICS_4 ).getGoogleTagID()
 				).toEqual( '' );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getGoogleTagLastSyncedAtMs()
+				).toEqual( googleTagLastSyncedAtMs );
 			} );
 
 			it( 'dispatches a request to get and populate Google Tag settings', async () => {
