@@ -658,7 +658,7 @@ describe( 'modules/analytics-4 properties', () => {
 				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
 					measurementID: 'G-1A2BCD346E',
 					googleTagID: 'GT-12345',
-					googleTagLastSyncedAtMs: 1676519625246,
+					googleTagLastSyncedAtMs: 1670123456789,
 				} );
 
 				await registry
@@ -673,7 +673,7 @@ describe( 'modules/analytics-4 properties', () => {
 					registry
 						.select( MODULES_ANALYTICS_4 )
 						.getGoogleTagLastSyncedAtMs()
-				).toEqual( 1676519625246 );
+				).toEqual( 1670123456789 );
 			} );
 
 			it( 'should not execute if measurement ID is not set', async () => {
