@@ -532,7 +532,7 @@ const baseActions = {
 			isFeatureEnabled( 'gteSupport' ) &&
 			isGA4Connected &&
 			isEmpty( googleTagID ) &&
-			! isEmpty( measurementID ) &&
+			measurementID &&
 			( ! googleTagLastSyncedAtMs ||
 				Date.now() - googleTagLastSyncedAtMs >= HOUR_IN_MILLISECONDS )
 		) {
