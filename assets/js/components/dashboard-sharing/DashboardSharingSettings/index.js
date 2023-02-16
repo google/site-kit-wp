@@ -52,7 +52,7 @@ export default function DashboardSharingSettings() {
 		const manageable = [];
 		const rest = [];
 
-		for ( module of shareableModules ) {
+		for ( module of Object.values( shareableModules ) ) {
 			if ( module.owner?.id === userID ) {
 				owned.push( module );
 			} else if (

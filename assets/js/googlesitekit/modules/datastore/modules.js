@@ -1360,9 +1360,14 @@ const baseSelectors = {
 		if ( modules === undefined ) {
 			return undefined;
 		}
-		return Object.values( modules ).filter(
-			( module ) => module.shareable && ! module.internal
-		);
+
+		return Object.keys( modules ).reduce( ( acc, slug ) => {
+			if ( modules[ slug ].shareable && ! modules[ slug ].internal ) {
+				return { [ slug ]: modules[ slug ], ...acc };
+			}
+
+			return acc;
+		}, {} );
 	} ),
 
 	getRecoveredModules( state ) {

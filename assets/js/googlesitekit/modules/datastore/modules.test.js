@@ -2046,9 +2046,17 @@ describe( 'core/modules modules', () => {
 			} );
 
 			it( 'should return an empty object if there are no non-internal shareable modules', async () => {
+				// Create a version of the module fixtures where every module is
+				// marked as an internal module.
+				const fixturesWithAllModulesInternal = FIXTURES.map(
+					( module ) => {
+						return { ...module, internal: true };
+					}
+				);
+
 				fetchMock.getOnce(
 					new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
-					{ body: FIXTURES, status: 200 }
+					{ body: fixturesWithAllModulesInternal, status: 200 }
 				);
 
 				const initialShareableModules = registry
@@ -2062,7 +2070,8 @@ describe( 'core/modules modules', () => {
 					.select( CORE_MODULES )
 					.getShareableModules();
 
-				expect( shareableModules ).toMatchObject( {} );
+				expect( Object.values( shareableModules ) ).toHaveLength( 0 );
+				expect( shareableModules ).toEqual( {} );
 			} );
 
 			it( 'should return the modules object for each non-internal shareable module', () => {
@@ -2076,16 +2085,16 @@ describe( 'core/modules modules', () => {
 					.getShareableModules();
 
 				expect(
-					shareableModules.every(
+					Object.values( shareableModules ).every(
 						( module ) => module.shareable && ! module.internal
 					)
 				).toBeTruthy();
 
 				expect(
-					shareableModules.filter(
+					Object.values( shareableModules ).filter(
 						( module ) => module.shareable && ! module.internal
 					).length
-				).toEqual( shareableModules.length );
+				).toEqual( Object.values( shareableModules ).length );
 			} );
 		} );
 	} );
