@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import cloneDeep from 'lodash/cloneDeep';
+
+/**
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
@@ -758,7 +763,7 @@ describe( 'modules/analytics-4 properties', () => {
 				} );
 
 				fetchMock.getOnce( googleTagSettingsEndpoint, {
-					body: fixtures.googleTagSettings,
+					body: cloneDeep( fixtures.googleTagSettings ),
 					status: 200,
 				} );
 
