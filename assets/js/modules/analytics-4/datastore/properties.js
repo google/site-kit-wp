@@ -159,10 +159,12 @@ const fetchGetGoogleTagSettingsStore = createFetchStore( {
 
 // Actions
 const WAIT_FOR_PROPERTIES = 'WAIT_FOR_PROPERTIES';
+const SET_HAS_MISMATCHED_TAG = 'SET_HAS_MISMATCHED_GOOGLE_TAG_ID';
 
 const baseInitialState = {
 	properties: {},
 	propertiesByID: {},
+	hasMismatchedTag: false,
 };
 
 const baseActions = {
@@ -490,6 +492,25 @@ const baseActions = {
 			.setGoogleTagContainerID( googleTagContainerID );
 		registry.dispatch( MODULES_ANALYTICS_4 ).setGoogleTagID( googleTagID );
 	},
+
+	/**
+	 * Sets if GA4 has mismatched Google Tag ID.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {boolean} hasMismatchedTag If GA4 has mismatched Google Tag.
+	 * @return {Object} Redux-style action.
+	 */
+	*setHasMismatchedGoogleTagID( hasMismatchedTag ) {
+		if ( ! isFeatureEnabled( 'gteSupport' ) ) {
+			return;
+		}
+
+		return {
+			type: SET_HAS_MISMATCHED_TAG,
+			payload: { hasMismatchedTag },
+		};
+	},
 };
 
 const baseControls = {
@@ -505,8 +526,14 @@ const baseControls = {
 	),
 };
 
-function baseReducer( state, { type } ) {
+function baseReducer( state, { type, payload } ) {
 	switch ( type ) {
+		case SET_HAS_MISMATCHED_TAG:
+			return {
+				...state,
+				hasMismatchedTag: payload.hasMismatchedTag,
+			};
+
 		default:
 			return state;
 	}
