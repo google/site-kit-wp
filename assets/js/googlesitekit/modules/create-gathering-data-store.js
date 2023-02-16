@@ -59,6 +59,11 @@ const createGatheringDataStore = (
 	);
 
 	invariant(
+		'boolean' === typeof dataAvailable,
+		'dataAvailable must be a boolean.'
+	);
+
+	invariant(
 		'function' === typeof determineDataAvailability,
 		'determineDataAvailability must be a function.'
 	);
