@@ -691,7 +691,6 @@ describe( 'modules/analytics-4 properties', () => {
 				] );
 
 				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
-					measurementID: '',
 					googleTagID: '',
 					googleTagLastSyncedAtMs: 0,
 				} );
