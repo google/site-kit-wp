@@ -505,6 +505,10 @@ const baseActions = {
 	 * @since n.e.x.t
 	 */
 	*syncGoogleTagSettings() {
+		if ( ! isFeatureEnabled( 'gteSupport' ) ) {
+			return;
+		}
+
 		const { select, dispatch, __experimentalResolveSelect } =
 			yield Data.commonActions.getRegistry();
 
@@ -515,6 +519,10 @@ const baseActions = {
 
 		const { isModuleConnected } = select( CORE_MODULES );
 
+		if ( ! isModuleConnected( 'analytics-4' ) ) {
+			return;
+		}
+
 		// Wait for module settings to be available before selecting.
 		yield Data.commonActions.await(
 			__experimentalResolveSelect( MODULES_ANALYTICS_4 ).getSettings()
@@ -523,14 +531,11 @@ const baseActions = {
 		const { getGoogleTagID, getMeasurementID, getGoogleTagLastSyncedAtMs } =
 			select( MODULES_ANALYTICS_4 );
 
-		const isGA4Connected = isModuleConnected( 'analytics-4' );
 		const googleTagID = getGoogleTagID();
 		const measurementID = getMeasurementID();
 		const googleTagLastSyncedAtMs = getGoogleTagLastSyncedAtMs();
 
 		if (
-			isFeatureEnabled( 'gteSupport' ) &&
-			isGA4Connected &&
 			isEmpty( googleTagID ) &&
 			measurementID &&
 			( ! googleTagLastSyncedAtMs ||
