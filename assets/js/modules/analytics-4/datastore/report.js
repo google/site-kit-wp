@@ -227,6 +227,10 @@ const baseSelectors = {
 			return undefined;
 		}
 
+		if ( ! Array.isArray( report ) ) {
+			return false;
+		}
+
 		return isZeroReport( report );
 	} ),
 };

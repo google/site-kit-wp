@@ -38,7 +38,7 @@ const wpDashboardAnalytics4OptionSets = [
 		endDate: '2021-01-27',
 	},
 
-	// Mock options for mocking "Total Users" report's response.
+	// Mock options for mocking "Total Unique Visitors" report's response.
 	{
 		startDate: '2020-12-31',
 		endDate: '2021-01-27',
@@ -57,6 +57,7 @@ export const setupAnalytics4MockReports = (
 	mockOptions = wpDashboardAnalytics4OptionSets
 ) => {
 	registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-28' );
+
 	mockOptions.forEach( ( options ) => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
@@ -71,6 +72,7 @@ export const setupAnalytics4GatheringData = (
 	mockOptions = wpDashboardAnalytics4OptionSets
 ) => {
 	registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-28' );
+
 	mockOptions.forEach( ( options ) => {
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
 			[
@@ -112,6 +114,8 @@ export function setupAnalytics4Loading(
 	registry,
 	mockOptionSets = wpDashboardAnalytics4OptionSets
 ) {
+	registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-28' );
+
 	mockOptionSets.forEach( ( options ) => {
 		provideAnalytics4MockReport( registry, options );
 		registry
@@ -124,6 +128,8 @@ export function setupAnalytics4Error(
 	registry,
 	mockOptionSets = wpDashboardAnalytics4OptionSets
 ) {
+	registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-28' );
+
 	const error = {
 		code: 'missing_required_param',
 		message: 'Request parameter is empty: metrics.',
