@@ -249,10 +249,10 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 	// If the user lands back on this component with autoSubmit and the edit scope,
 	// resubmit the form.
 	useEffect( () => {
-		if ( autoSubmit && hasEditScope ) {
+		if ( autoSubmit && hasEditScope && ! isSaving ) {
 			handleSubmitChanges();
 		}
-	}, [ autoSubmit, handleSubmitChanges, hasEditScope ] );
+	}, [ autoSubmit, handleSubmitChanges, hasEditScope, isSaving ] );
 
 	useEffect( () => {
 		// Only trigger the view event if the notification is visible and we haven't
