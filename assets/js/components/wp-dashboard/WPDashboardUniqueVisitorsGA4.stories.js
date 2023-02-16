@@ -21,13 +21,13 @@
  */
 import { withWidgetComponentProps } from '../../googlesitekit/widgets/util';
 import {
-	setupAnalyticsGatheringData,
-	setupAnalyticsMockReports,
+	setupAnalytics4GatheringData,
+	setupAnalytics4MockReports,
+	setupAnalytics4ZeroData,
+	setupAnalytics4Loading,
+	setupAnalytics4Error,
 } from './common.stories-GA4';
-import {
-	setupSearchConsoleAnalyticsZeroData,
-	widgetDecorators,
-} from './common.stories';
+import { setupSearchConsoleZeroData, widgetDecorators } from './common.stories';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import WPDashboardUniqueVisitorsGA4 from './WPDashboardUniqueVisitorsGA4';
 
@@ -44,19 +44,34 @@ const Template = ( { setupRegistry = () => {}, ...args } ) => (
 export const Ready = Template.bind( {} );
 Ready.storyName = 'Ready';
 Ready.args = {
-	setupRegistry: setupAnalyticsMockReports,
+	setupRegistry: setupAnalytics4MockReports,
 };
 
 export const GatheringData = Template.bind( {} );
 GatheringData.storyName = 'GatheringData';
 GatheringData.args = {
-	setupRegistry: setupAnalyticsGatheringData,
+	setupRegistry: setupAnalytics4GatheringData,
 };
 
 export const ZeroData = Template.bind( {} );
 ZeroData.storyName = 'Zero Data';
 ZeroData.args = {
-	setupRegistry: setupSearchConsoleAnalyticsZeroData,
+	setupRegistry: ( registry ) => {
+		setupAnalytics4ZeroData( registry );
+		setupSearchConsoleZeroData( registry );
+	},
+};
+
+export const Loading = Template.bind( {} );
+Loading.storyName = 'Loading';
+Loading.args = {
+	setupRegistry: setupAnalytics4Loading,
+};
+
+export const Error = Template.bind( {} );
+Error.storyName = 'Error';
+Error.args = {
+	setupRegistry: setupAnalytics4Error,
 };
 
 export default {

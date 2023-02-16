@@ -21,10 +21,15 @@
  */
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
-import { getAnalytics4MockResponse } from '../../modules/analytics-4/utils/data-mock';
+import {
+	getAnalytics4MockResponse,
+	provideAnalytics4MockReport,
+} from '../../modules/analytics-4/utils/data-mock';
 import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../.storybook/utils/zeroReports';
+import { DAY_IN_SECONDS } from '../../util';
+import * as __fixtures__ from '../../modules/analytics-4/datastore/__fixtures__';
 
-const wpDashboardAnalyticsOptionSets = [
+const wpDashboardAnalytics4OptionSets = [
 	// Mock options for mocking isGatheringData selector's response.
 	{
 		dimensions: [ 'date' ],
@@ -47,9 +52,9 @@ const wpDashboardAnalyticsOptionSets = [
 	},
 ];
 
-export const setupAnalyticsMockReports = (
+export const setupAnalytics4MockReports = (
 	registry,
-	mockOptions = wpDashboardAnalyticsOptionSets
+	mockOptions = wpDashboardAnalytics4OptionSets
 ) => {
 	registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-28' );
 	mockOptions.forEach( ( options ) => {
@@ -61,9 +66,9 @@ export const setupAnalyticsMockReports = (
 	} );
 };
 
-export const setupAnalyticsGatheringData = (
+export const setupAnalytics4GatheringData = (
 	registry,
-	mockOptions = wpDashboardAnalyticsOptionSets
+	mockOptions = wpDashboardAnalytics4OptionSets
 ) => {
 	registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-28' );
 	mockOptions.forEach( ( options ) => {
@@ -80,12 +85,14 @@ export const setupAnalyticsGatheringData = (
 				options,
 			}
 		);
+
+		setupAnalytics4Property( registry, 1.5 );
 	} );
 };
 
-export function setupAnalyticsZeroData(
+export function setupAnalytics4ZeroData(
 	registry,
-	mockOptionSets = wpDashboardAnalyticsOptionSets
+	mockOptionSets = wpDashboardAnalytics4OptionSets
 ) {
 	registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-28' );
 
@@ -97,4 +104,56 @@ export function setupAnalyticsZeroData(
 			options,
 		} );
 	} );
+
+	setupAnalytics4Property( registry );
+}
+
+export function setupAnalytics4Loading(
+	registry,
+	mockOptionSets = wpDashboardAnalytics4OptionSets
+) {
+	mockOptionSets.forEach( ( options ) => {
+		provideAnalytics4MockReport( registry, options );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.startResolution( 'getReport', [ options ] );
+	} );
+}
+
+export function setupAnalytics4Error(
+	registry,
+	mockOptionSets = wpDashboardAnalytics4OptionSets
+) {
+	const error = {
+		code: 'missing_required_param',
+		message: 'Request parameter is empty: metrics.',
+		data: {},
+	};
+
+	mockOptionSets.forEach( ( options ) => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveError( error, 'getReport', [ options ] );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.finishResolution( 'getReport', [ options ] );
+	} );
+}
+
+export function setupAnalytics4Property( registry, createdDayBefore = 2 ) {
+	const createTime = new Date(
+		Date.now() - DAY_IN_SECONDS * createdDayBefore * 1000
+	).toISOString();
+
+	const property = {
+		...__fixtures__.properties[ 0 ],
+		createTime,
+	};
+	const propertyID = property._id;
+
+	registry
+		.dispatch( MODULES_ANALYTICS_4 )
+		.receiveGetProperty( property, { propertyID } );
+
+	registry.dispatch( MODULES_ANALYTICS_4 ).setPropertyID( propertyID );
 }
