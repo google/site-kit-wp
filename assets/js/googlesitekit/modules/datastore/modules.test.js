@@ -45,7 +45,7 @@ describe( 'core/modules modules', () => {
 		sharedOwnershipModules: [ 'analytics', 'search-console', 'tagmanager' ],
 	};
 
-	const moduleFixturesAll = [
+	const allModulesFixture = [
 		{
 			slug: 'analytics',
 			name: 'Analytics',
@@ -284,7 +284,7 @@ describe( 'core/modules modules', () => {
 				fetchMock.getOnce(
 					new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
 					{
-						body: [ ...FIXTURES, ...moduleFixturesAll ],
+						body: [ ...FIXTURES, ...allModulesFixture ],
 						status: 200,
 					}
 				);
@@ -475,7 +475,7 @@ describe( 'core/modules modules', () => {
 				fetchMock.getOnce(
 					new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
 					{
-						body: [ ...FIXTURES, ...moduleFixturesAll ],
+						body: [ ...FIXTURES, ...allModulesFixture ],
 						status: 200,
 					}
 				);
@@ -1931,7 +1931,7 @@ describe( 'core/modules modules', () => {
 				fetchMock.getOnce(
 					new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
 					{
-						body: [ ...FIXTURES, ...moduleFixturesAll ],
+						body: [ ...FIXTURES, ...allModulesFixture ],
 						status: 200,
 					}
 				);
@@ -2048,7 +2048,7 @@ describe( 'core/modules modules', () => {
 				expect( shareableModules ).toBeUndefined();
 			} );
 
-			it( 'should return an empty object if there are no internal shareable modules', async () => {
+			it( 'should return an empty object if there are no non-internal shareable modules', async () => {
 				fetchMock.getOnce(
 					new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
 					{ body: FIXTURES, status: 200 }
@@ -2068,11 +2068,11 @@ describe( 'core/modules modules', () => {
 				expect( shareableModules ).toMatchObject( {} );
 			} );
 
-			it( 'should return the modules object for each internal shareable module', () => {
+			it( 'should return the modules object for each non-internal shareable module', () => {
 				provideModuleRegistrations( registry );
 				registry
 					.dispatch( CORE_MODULES )
-					.receiveGetModules( [ ...FIXTURES, ...moduleFixturesAll ] );
+					.receiveGetModules( [ ...FIXTURES, ...allModulesFixture ] );
 
 				const shareableModules = registry
 					.select( CORE_MODULES )

@@ -1344,14 +1344,14 @@ const baseSelectors = {
 	),
 
 	/**
-	 * Gets the list of internal shareable modules for dashboard sharing.
+	 * Gets the list of non-internal shareable modules for dashboard sharing.
 	 *
 	 * Returns an Object/map of objects, keyed by slug as same as `getModules`.
 	 *
 	 * @since n.e.x.t
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {(Object|undefined)} Internal shareable modules available on the site; `undefined` if not loaded.
+	 * @return {(Object|undefined)} Non-internal shareable modules available on the site; `undefined` if not loaded.
 	 */
 	getShareableModules: createRegistrySelector( ( select ) => () => {
 		const modules = select( CORE_MODULES ).getModules();
