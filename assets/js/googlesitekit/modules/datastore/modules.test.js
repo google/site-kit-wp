@@ -45,7 +45,7 @@ describe( 'core/modules modules', () => {
 		sharedOwnershipModules: [ 'analytics', 'search-console', 'tagmanager' ],
 	};
 
-	const allModulesFixture = [
+	const allModules = [
 		{
 			slug: 'analytics',
 			name: 'Analytics',
@@ -84,7 +84,7 @@ describe( 'core/modules modules', () => {
 		},
 	];
 
-	const moduleFixturesExternal = [
+	const externalModules = [
 		{
 			slug: 'analytics',
 			name: 'Analytics',
@@ -284,7 +284,7 @@ describe( 'core/modules modules', () => {
 				fetchMock.getOnce(
 					new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
 					{
-						body: [ ...FIXTURES, ...allModulesFixture ],
+						body: [ ...FIXTURES, ...allModules ],
 						status: 200,
 					}
 				);
@@ -475,7 +475,7 @@ describe( 'core/modules modules', () => {
 				fetchMock.getOnce(
 					new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
 					{
-						body: [ ...FIXTURES, ...allModulesFixture ],
+						body: [ ...FIXTURES, ...allModules ],
 						status: 200,
 					}
 				);
@@ -1931,7 +1931,7 @@ describe( 'core/modules modules', () => {
 				fetchMock.getOnce(
 					new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
 					{
-						body: [ ...FIXTURES, ...allModulesFixture ],
+						body: [ ...FIXTURES, ...allModules ],
 						status: 200,
 					}
 				);
@@ -1951,10 +1951,7 @@ describe( 'core/modules modules', () => {
 					.getRecoverableModules();
 
 				expect( recoverableModules ).toMatchObject(
-					convertArrayListToKeyedObjectMap(
-						moduleFixturesExternal,
-						'slug'
-					)
+					convertArrayListToKeyedObjectMap( externalModules, 'slug' )
 				);
 			} );
 		} );
@@ -2072,7 +2069,7 @@ describe( 'core/modules modules', () => {
 				provideModuleRegistrations( registry );
 				registry
 					.dispatch( CORE_MODULES )
-					.receiveGetModules( [ ...FIXTURES, ...allModulesFixture ] );
+					.receiveGetModules( [ ...FIXTURES, ...allModules ] );
 
 				const shareableModules = registry
 					.select( CORE_MODULES )
@@ -2083,6 +2080,12 @@ describe( 'core/modules modules', () => {
 						( module ) => module.shareable && ! module.internal
 					)
 				).toBeTruthy();
+
+				expect(
+					shareableModules.filter(
+						( module ) => module.shareable && ! module.internal
+					).length
+				).toEqual( shareableModules.length );
 			} );
 		} );
 	} );
