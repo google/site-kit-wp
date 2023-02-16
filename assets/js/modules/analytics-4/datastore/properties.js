@@ -593,6 +593,18 @@ const baseSelectors = {
 	getProperty( state, propertyID ) {
 		return state.propertiesByID[ propertyID ];
 	},
+
+	/**
+	 * Checks if GA4 has mismatched Google Tag ID.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {boolean} If GA4 has mismatched Google Tag ID.
+	 */
+	hasMismatchedGoogleTagID( state ) {
+		return state.hasMismatchedTag;
+	},
 };
 
 const store = Data.combineStores(
