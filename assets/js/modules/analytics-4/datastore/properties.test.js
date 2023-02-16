@@ -612,8 +612,11 @@ describe( 'modules/analytics-4 properties', () => {
 			} );
 		} );
 		describe( 'syncGoogleTagSettings', () => {
-			it( 'should not execute if GA4 is not connected', async () => {
+			beforeEach( () => {
 				enabledFeatures.add( 'gteSupport' );
+			} );
+
+			it( 'should not execute if GA4 is not connected', async () => {
 				provideModules( registry, [
 					{
 						slug: 'analytics-4',
@@ -644,7 +647,6 @@ describe( 'modules/analytics-4 properties', () => {
 			} );
 
 			it( 'should not execute if Google Tag settings already exist', async () => {
-				enabledFeatures.add( 'gteSupport' );
 				provideModules( registry, [
 					{
 						slug: 'analytics-4',
@@ -675,7 +677,6 @@ describe( 'modules/analytics-4 properties', () => {
 			} );
 
 			it( 'should not execute if measurement ID is not set', async () => {
-				enabledFeatures.add( 'gteSupport' );
 				provideModules( registry, [
 					{
 						slug: 'analytics-4',
@@ -706,7 +707,6 @@ describe( 'modules/analytics-4 properties', () => {
 			} );
 
 			it( 'should not execute if settings were synced less than an hour ago', async () => {
-				enabledFeatures.add( 'gteSupport' );
 				provideModules( registry, [
 					{
 						slug: 'analytics-4',
@@ -731,7 +731,6 @@ describe( 'modules/analytics-4 properties', () => {
 			} );
 
 			it( 'dispatches a request to get and populate Google Tag settings', async () => {
-				enabledFeatures.add( 'gteSupport' );
 				provideModules( registry, [
 					{
 						slug: 'analytics-4',
