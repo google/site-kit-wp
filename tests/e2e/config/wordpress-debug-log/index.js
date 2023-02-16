@@ -120,9 +120,14 @@ function resetDebugLog() {
 	debugLogData = [];
 }
 
-function assertEmptyDebugLog() {
+async function assertEmptyDebugLog() {
 	// Filter out some lines from WP core that we can't do anything about.
 	const ignoreList = logIgnoreList[ process.env.WP_VERSION ] || [];
+
+	// Wait 1 second for any log data to finish propagating.
+	// Without this, node can disconnect from the log stream
+	// before the entries are recorded and result in a false success.
+	await page.waitForTimeout( 1000 );
 
 	const filteredDebugLog = debugLogData.filter( ( line ) => {
 		const lineWithoutTimestamp = line.replace( /^\[[^\]]+\]\s+/, '' );
