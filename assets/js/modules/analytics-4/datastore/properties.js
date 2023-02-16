@@ -35,7 +35,7 @@ import {
 	MAX_WEBDATASTREAMS_PER_BATCH,
 	WEBDATASTREAM_CREATE,
 } from './constants';
-import { HOUR_IN_MILLISECONDS, normalizeURL } from '../../../util';
+import { HOUR_IN_SECONDS, normalizeURL } from '../../../util';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { isValidPropertySelection } from '../utils/validation';
 import { actions as webDataStreamActions } from './webdatastreams';
@@ -539,7 +539,7 @@ const baseActions = {
 			isEmpty( googleTagID ) &&
 			measurementID &&
 			( ! googleTagLastSyncedAtMs ||
-				Date.now() - googleTagLastSyncedAtMs >= HOUR_IN_MILLISECONDS )
+				Date.now() - googleTagLastSyncedAtMs >= HOUR_IN_SECONDS * 1000 )
 		) {
 			yield baseActions.updateSettingsForMeasurementID( measurementID );
 

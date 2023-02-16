@@ -26,4 +26,3 @@ export const INVALID_DATE_RANGE_ERROR =
 export const HOUR_IN_SECONDS = 3600;
 export const DAY_IN_SECONDS = 86400;
 export const WEEK_IN_SECONDS = 604800;
-export const HOUR_IN_MILLISECONDS = HOUR_IN_SECONDS * 1000;
