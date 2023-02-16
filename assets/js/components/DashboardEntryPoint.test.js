@@ -34,6 +34,7 @@ describe( 'DashboardEntryPoint', () => {
 		provideModules( registry );
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
 	};
+
 	it( 'should render the unified dashboard', () => {
 		const { container } = render( <DashboardEntryPoint />, {
 			setupRegistry,
