@@ -30,7 +30,6 @@ import { createFetchStore } from '../data/create-fetch-store';
 
 const { createRegistryControl } = Data;
 
-const RECEIVE_DATA_AVAILABLE_ON_LOAD = 'RECEIVE_DATA_AVAILABLE_ON_LOAD';
 const SET_GATHERING_DATA = 'SET_GATHERING_DATA';
 const WAIT_FOR_GATHERING_DATA = 'WAIT_FOR_GATHERING_DATA';
 
@@ -83,25 +82,26 @@ const createGatheringDataStore = (
 
 	const actions = {
 		/**
-		 * Receives data available on load state.
+		 * Receives gathering data state.
+		 * Only used to simplify tests.
 		 *
 		 * @since n.e.x.t
 		 * @private
 		 *
-		 * @param {boolean} dataAvailableOnLoad Data available on load.
+		 * @param {boolean} gatheringData Gathering data.
 		 * @return {Object} Redux-style action.
 		 */
-		receiveDataAvailableOnLoad( dataAvailableOnLoad ) {
+		receiveIsGatheringData( gatheringData ) {
 			invariant(
-				'boolean' === typeof dataAvailableOnLoad,
-				'dataAvailableOnLoad must be a boolean.'
+				'boolean' === typeof gatheringData,
+				'gatheringData must be a boolean.'
 			);
 
 			return {
 				payload: {
-					dataAvailableOnLoad,
+					gatheringData,
 				},
-				type: RECEIVE_DATA_AVAILABLE_ON_LOAD,
+				type: SET_GATHERING_DATA,
 			};
 		},
 	};
@@ -130,14 +130,6 @@ const createGatheringDataStore = (
 
 	const reducer = ( state = initialState, { type, payload } ) => {
 		switch ( type ) {
-			case RECEIVE_DATA_AVAILABLE_ON_LOAD: {
-				const { dataAvailableOnLoad } = payload;
-				return {
-					...state,
-					dataAvailableOnLoad,
-				};
-			}
-
 			case SET_GATHERING_DATA: {
 				const { gatheringData } = payload;
 				return {
