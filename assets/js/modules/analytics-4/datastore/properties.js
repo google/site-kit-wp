@@ -20,7 +20,6 @@
  * External dependencies
  */
 import invariant from 'invariant';
-import isEmpty from 'lodash/isEmpty';
 
 /**
  * Internal dependencies
@@ -539,7 +538,7 @@ const baseActions = {
 		const googleTagLastSyncedAtMs = getGoogleTagLastSyncedAtMs();
 
 		if (
-			isEmpty( googleTagID ) &&
+			! googleTagID &&
 			measurementID &&
 			( ! googleTagLastSyncedAtMs ||
 				Date.now() - googleTagLastSyncedAtMs >= HOUR_IN_SECONDS * 1000 )
