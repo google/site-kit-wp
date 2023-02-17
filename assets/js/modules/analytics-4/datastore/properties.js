@@ -452,18 +452,9 @@ const baseActions = {
 	*updateSettingsForMeasurementID( measurementID ) {
 		const registry = yield commonActions.getRegistry();
 
-		const existingMeasurementID = registry
-			.select( MODULES_ANALYTICS_4 )
-			.getMeasurementID();
-
-		// This action can also be used in cases where updating the measurement ID in particular
-		// is not necessary, but updating relevant settings is. Hence, we don't want to reset the
-		// measurement ID in those cases.
-		if ( measurementID !== existingMeasurementID ) {
-			registry
-				.dispatch( MODULES_ANALYTICS_4 )
-				.setMeasurementID( measurementID );
-		}
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setMeasurementID( measurementID );
 
 		if ( ! isFeatureEnabled( 'gteSupport' ) ) {
 			return;
