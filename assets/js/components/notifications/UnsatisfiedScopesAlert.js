@@ -101,7 +101,6 @@ export default function UnsatisfiedScopesAlert() {
 
 	let messageID;
 	let moduleNames;
-	// Determine if all scopes are in Google API format, otherwise use generic message.
 	if (
 		gteSupportEnabled &&
 		unsatisfiedScopes.length === 1 &&
@@ -110,6 +109,7 @@ export default function UnsatisfiedScopesAlert() {
 	) {
 		messageID = MESSAGE_GTE;
 	} else if (
+		// Determine if all scopes are in Google API format, otherwise use generic message.
 		unsatisfiedScopes.some(
 			( scope ) =>
 				! scope.match(

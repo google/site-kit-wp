@@ -107,4 +107,38 @@ describe( 'ErrorNotifications', () => {
 			'Site Kit needs additional permissions to detect updates to tags on your site'
 		);
 	} );
+
+	it( 'does not render the GTE message if there are multiple unsatisfied scopes', () => {
+		provideUserAuthentication( registry, {
+			unsatisfiedScopes: [
+				'https://www.googleapis.com/auth/tagmanager.readonly',
+				'https://www.googleapis.com/auth/analytics.readonly',
+			],
+		} );
+
+		const { container } = render( <ErrorNotifications />, {
+			registry,
+			features: [ 'gteSupport' ],
+		} );
+
+		expect( container ).toHaveTextContent(
+			'Site Kit can’t access necessary data'
+		);
+	} );
+
+	it( 'does not render the GTE message if the GTE feature is not enabled', () => {
+		provideUserAuthentication( registry, {
+			unsatisfiedScopes: [
+				'https://www.googleapis.com/auth/tagmanager.readonly',
+			],
+		} );
+
+		const { container } = render( <ErrorNotifications />, {
+			registry,
+		} );
+
+		expect( container ).toHaveTextContent(
+			'Site Kit can’t access necessary data'
+		);
+	} );
 } );
