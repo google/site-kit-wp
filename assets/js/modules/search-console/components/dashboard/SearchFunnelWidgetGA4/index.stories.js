@@ -264,7 +264,7 @@ ReadyWithActivateAnalyticsCTA.args = {
 };
 
 ReadyWithActivateAnalyticsCTA.scenario = {
-	label: 'SearchConsole/SearchFunnelWidget/ReadyWithActivateAnalyticsCTA',
+	label: 'SearchConsole/SearchFunnelWidgetGA4/ReadyWithActivateAnalyticsCTA',
 	delay: 3000,
 };
 
@@ -316,7 +316,7 @@ ReadyWithSetupConversionsCTA.args = {
 };
 
 ReadyWithSetupConversionsCTA.scenario = {
-	label: 'SearchConsole/SearchFunnelWidget/ReadyWithSetupConversionsCTA',
+	label: 'SearchConsole/SearchFunnelWidgetGA4/ReadyWithSetupConversionsCTA',
 	delay: 3000,
 };
 
