@@ -152,6 +152,30 @@ class Module_Sharing_Settings extends Setting {
 	}
 
 	/**
+	 * Gets the sharing settings for a given module, or the defaults.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $slug Module slug.
+	 * @return array {
+	 *   @type array $sharedRoles
+	 *   @type string $management
+	 * }
+	 */
+	public function get_module( $slug ) {
+		$settings = $this->get();
+
+		if ( isset( $settings[ $slug ] ) ) {
+			return $settings[ $slug ];
+		}
+
+		return array(
+			'sharedRoles' => array(),
+			'management'  => 'owner',
+		);
+	}
+
+	/**
 	 * Unsets the settings for a given module.
 	 *
 	 * @since 1.68.0
