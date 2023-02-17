@@ -40,9 +40,10 @@ import useDashboardType, {
 	DASHBOARD_TYPE_MAIN,
 	DASHBOARD_TYPE_ENTITY,
 } from '../../../../../../hooks/useDashboardType';
+import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
+import { MODULES_ANALYTICS_4 } from '../../../../../analytics-4/datastore/constants';
 import DataBlock from '../../../../../../components/DataBlock';
 import useViewOnly from '../../../../../../hooks/useViewOnly';
-import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
 import OptionalCells from './OptionalCells';
 const { useSelect, useInViewSelect } = Data;
 
@@ -96,7 +97,11 @@ const Overview = ( {
 	const ga4ModuleActive = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleActive( 'analytics-4' )
 	);
-
+	const isGA4GatheringData = useInViewSelect( ( select ) =>
+		ga4ModuleConnected
+			? select( MODULES_ANALYTICS_4 ).isGatheringData()
+			: false
+	);
 	const isSearchConsoleGatheringData = useInViewSelect( ( select ) =>
 		select( MODULES_SEARCH_CONSOLE ).isGatheringData()
 	);
@@ -129,7 +134,7 @@ const Overview = ( {
 			100
 		) );
 		ga4ConversionsDatapoint =
-			ga4Data?.totals?.[ 0 ]?.metricValues[ 0 ]?.value;
+			ga4Data?.totals?.[ 0 ]?.metricValues?.[ 0 ]?.value;
 
 		( {
 			datapoint: ga4EngagedSessionsDatapoint,
@@ -137,7 +142,7 @@ const Overview = ( {
 		} = getDatapointAndChange( ga4Data, 1, 100 ) );
 
 		ga4VisitorsDatapoint =
-			ga4VisitorsData?.totals?.[ 0 ]?.metricValues[ 0 ]?.value;
+			ga4VisitorsData?.totals?.[ 0 ]?.metricValues?.[ 0 ]?.value;
 		( { change: ga4VisitorsChange } = getDatapointAndChange(
 			ga4VisitorsData,
 			0,
@@ -195,6 +200,7 @@ const Overview = ( {
 			title: __( 'Total Impressions', 'google-site-kit' ),
 			datapoint: totalImpressions,
 			change: totalImpressionsChange,
+			isGatheringData: isSearchConsoleGatheringData,
 		},
 		{
 			id: 'clicks',
@@ -202,6 +208,7 @@ const Overview = ( {
 			title: __( 'Total Clicks', 'google-site-kit' ),
 			datapoint: totalClicks,
 			change: totalClicksChange,
+			isGatheringData: isSearchConsoleGatheringData,
 		},
 		...( showGA4
 			? [
@@ -214,6 +221,7 @@ const Overview = ( {
 						),
 						datapoint: ga4VisitorsDatapoint,
 						change: ga4VisitorsChange,
+						isGatheringData: isGA4GatheringData,
 					},
 			  ]
 			: [] ),
@@ -227,6 +235,7 @@ const Overview = ( {
 						title: __( 'Conversions', 'google-site-kit' ),
 						datapoint: ga4ConversionsDatapoint,
 						change: ga4ConversionsChange,
+						isGatheringData: isGA4GatheringData,
 					},
 			  ]
 			: [] ),
@@ -239,6 +248,7 @@ const Overview = ( {
 						datapoint: ga4EngagedSessionsDatapoint,
 						datapointUnit: '%',
 						change: ga4EngagedSessionsChange,
+						isGatheringData: isGA4GatheringData,
 					},
 			  ]
 			: [] ),
@@ -290,9 +300,7 @@ const Overview = ( {
 										selectedStats === dataBlock.stat
 									}
 									handleStatSelection={ handleStatsSelection }
-									gatheringData={
-										isSearchConsoleGatheringData
-									}
+									gatheringData={ dataBlock.isGatheringData }
 								/>
 							</Cell>
 						) ) }
