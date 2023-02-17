@@ -298,11 +298,13 @@ class AnalyticsTest extends TestCase {
 		$options   = new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$options->set( Settings::OPTION, 'test-value' );
 		$options->set( 'googlesitekit_analytics_adsense_linked', 'test-linked-value' );
+		$analytics->set_data_available();
 
 		$analytics->on_deactivation();
 
 		$this->assertOptionNotExists( Settings::OPTION );
 		$this->assertOptionNotExists( 'googlesitekit_analytics_adsense_linked' );
+		$this->assertFalse( $analytics->is_data_available() );
 	}
 
 	public function test_get_datapoints() {
