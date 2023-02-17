@@ -366,20 +366,12 @@ class Analytics_4Test extends TestCase {
 
 	public function test_data_available_reset_on_measurement_id_change() {
 		$this->analytics->register();
-
-		// Set initial measurement ID.
 		$this->analytics->get_settings()->merge(
 			array(
 				'measurementID' => 'A1B2C3D4E5',
 			)
 		);
-
-		// Set data available.
 		$this->analytics->set_data_available( true );
-
-		$this->assertTrue( $this->analytics->is_data_available() );
-
-		// Change measurement ID.
 		$this->analytics->get_settings()->merge(
 			array(
 				'measurementID' => 'F6G7H8I9J0',

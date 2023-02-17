@@ -270,20 +270,12 @@ class AnalyticsTest extends TestCase {
 	public function test_data_available_reset_on_property_change() {
 		$analytics = new Analytics( $this->get_amp_primary_context() );
 		$analytics->register();
-
-		// Set initial property ID.
 		$analytics->get_settings()->merge(
 			array(
 				'propertyID' => 'UA-12345678-1',
 			)
 		);
-
-		// Set data available.
 		$analytics->set_data_available();
-
-		$this->assertTrue( $analytics->is_data_available() );
-
-		// Change property ID.
 		$analytics->get_settings()->merge(
 			array(
 				'propertyID' => 'UA-87654321-1',

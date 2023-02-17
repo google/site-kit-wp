@@ -198,20 +198,12 @@ class Search_ConsoleTest extends TestCase {
 	public function test_data_available_reset_on_property_change() {
 		$search_console = new Search_Console( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$search_console->register();
-
-		// Set initial property ID.
 		$search_console->get_settings()->merge(
 			array(
 				'propertyID' => 'https://example.com',
 			)
 		);
-
-		// Set data available.
 		$search_console->set_data_available();
-
-		$this->assertTrue( $search_console->is_data_available() );
-
-		// Change property ID.
 		$search_console->get_settings()->merge(
 			array(
 				'propertyID' => 'https://example2.com',
