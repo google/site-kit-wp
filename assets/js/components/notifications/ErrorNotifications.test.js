@@ -91,7 +91,7 @@ describe( 'ErrorNotifications', () => {
 		);
 	} );
 
-	it( 'renders GTE message for unsatisfied tagmanager readonly scope', () => {
+	it( 'renders the GTE message when the only unsatisfied scope is the tagmanager readonly scope', () => {
 		provideUserAuthentication( registry, {
 			unsatisfiedScopes: [
 				'https://www.googleapis.com/auth/tagmanager.readonly',

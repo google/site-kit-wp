@@ -104,9 +104,9 @@ export default function UnsatisfiedScopesAlert() {
 	// Determine if all scopes are in Google API format, otherwise use generic message.
 	if (
 		gteSupportEnabled &&
-		unsatisfiedScopes.includes(
+		unsatisfiedScopes.length === 1 &&
+		unsatisfiedScopes[ 0 ] ===
 			'https://www.googleapis.com/auth/tagmanager.readonly'
-		)
 	) {
 		messageID = MESSAGE_GTE;
 	} else if (

@@ -1241,8 +1241,8 @@ final class Authentication {
 					if (
 						Feature_Flags::enabled( 'gteSupport' )
 						&& count( $unsatisfied_scopes ) === 1
-						&& in_array( 'https://www.googleapis.com/auth/tagmanager.readonly', $unsatisfied_scopes, true )
-						) {
+						&& 'https://www.googleapis.com/auth/tagmanager.readonly' === $unsatisfied_scopes[0]
+					) {
 						return false;
 					}
 
