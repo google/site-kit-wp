@@ -22,7 +22,7 @@
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import map from 'lodash/map';
-import { useMount, useMountedState } from 'react-use';
+import { useMount, useMountedState, useIntersection } from 'react-use';
 import { useWindowWidth } from '@react-hook/window-size/throttled';
 
 /*
@@ -30,6 +30,8 @@ import { useWindowWidth } from '@react-hook/window-size/throttled';
  */
 import {
 	useCallback,
+	useEffect,
+	useRef,
 	useState,
 	Fragment,
 	isValidElement,
@@ -43,7 +45,10 @@ import Data from 'googlesitekit-data';
 import { Button } from 'googlesitekit-components';
 import GoogleLogoIcon from '../../../../svg/graphics/logo-g.svg';
 import { Cell, Grid, Row } from '../../../material-components';
-import { getContextScrollTop } from '../../../util/scroll';
+import {
+	getContextScrollTop,
+	getHeaderHeightWithoutNav,
+} from '../../../util/scroll';
 import { isHashOnly } from '../../../util/urls';
 import { sanitizeHTML } from '../../../util/sanitize';
 import DataBlock from '../../DataBlock';
@@ -97,6 +102,7 @@ function BannerNotification( {
 	moduleName,
 	noBottomPadding,
 	onCTAClick,
+	onView,
 	onDismiss,
 	onLearnMoreClick,
 	pageIndex,
@@ -130,6 +136,26 @@ function BannerNotification( {
 	const windowWidth = useWindowWidth();
 	const breakpoint = useBreakpoint();
 	const isMounted = useMountedState();
+
+	const [ isViewed, setIsViewed ] = useState( false );
+
+	const bannerNotificationRef = useRef();
+	const intersectionEntry = useIntersection( bannerNotificationRef, {
+		rootMargin: `-${ getHeaderHeightWithoutNav(
+			breakpoint
+		) }px 0px 0px 0px`,
+		threshold: 0,
+	} );
+
+	useEffect( () => {
+		if ( ! isViewed && intersectionEntry?.isIntersecting ) {
+			if ( typeof onView === 'function' ) {
+				onView();
+			}
+
+			setIsViewed( true );
+		}
+	}, [ id, onView, isViewed, intersectionEntry ] );
 
 	// There is a 1px difference between the tablet breakpoint determination in `useBreakpoint` and the `min-width: $bp-tablet` breakpoint the `@mixin googlesitekit-inner-padding` uses,
 	// which in turn is used by the notification. This why we are using `useWindowWidth` here, instead of the breakpoint returned by `useBreakpoint`.
@@ -418,6 +444,7 @@ function BannerNotification( {
 				'googlesitekit-publisher-win--no-bottom-padding':
 					noBottomPadding,
 			} ) }
+			ref={ bannerNotificationRef }
 		>
 			<Grid
 				className={ classnames( {
@@ -593,6 +620,7 @@ BannerNotification.propTypes = {
 	dismissExpires: PropTypes.number,
 	showOnce: PropTypes.bool,
 	onCTAClick: PropTypes.func,
+	onView: PropTypes.func,
 	onDismiss: PropTypes.func,
 	onLearnMoreClick: PropTypes.func,
 	anchorLink: PropTypes.string,
