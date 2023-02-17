@@ -47,6 +47,7 @@ import { MODULES_ANALYTICS } from '../../../../analytics/datastore/constants';
 import { accountsPropertiesProfiles } from '../../../../analytics/datastore/__fixtures__';
 import * as fixtures from '../../../../analytics-4/datastore/__fixtures__';
 import { MODULES_SEARCH_CONSOLE } from '../../../datastore/constants';
+import { DAY_IN_SECONDS } from '../../../../../util';
 import { provideSearchConsoleMockReport } from '../../../util/data-mock';
 import SearchFunnelWidgetGA4 from './index';
 
@@ -180,6 +181,19 @@ Analytics4GatheringData.storyName = 'GA4 Gathering Data';
 Analytics4GatheringData.args = {
 	setupRegistry: ( registry ) => {
 		provideSearchConsoleMockReport( registry, searchConsoleArgs );
+		// Set the property creation timestamp to one and a half days ago, so that
+		// the property is considered to be in the gathering data state.
+		const createTime = new Date(
+			Date.now() - DAY_IN_SECONDS * 1.5 * 1000
+		).toISOString();
+
+		const property = {
+			...fixtures.properties[ 0 ],
+			createTime,
+		};
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetProperty( property, { propertyID } );
 
 		for ( const options of ga4ReportArgs ) {
 			registry
@@ -207,6 +221,20 @@ SearchConsoleZeroState.args = {
 				options: searchConsoleArgs,
 			}
 		);
+
+		// Set the property creation timestamp to one and a half days ago, so that
+		// the property is considered to be in the gathering data state.
+		const createTime = new Date(
+			Date.now() - DAY_IN_SECONDS * 1.5 * 1000
+		).toISOString();
+
+		const property = {
+			...fixtures.properties[ 0 ],
+			createTime,
+		};
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetProperty( property, { propertyID } );
 	},
 };
 
@@ -342,6 +370,20 @@ DataUnavailable.args = {
 		registry
 			.dispatch( MODULES_SEARCH_CONSOLE )
 			.receiveGetReport( [], { options: searchConsoleArgs } );
+
+		// Set the property creation timestamp to one and a half days ago, so that
+		// the property is considered to be in the gathering data state.
+		const createTime = new Date(
+			Date.now() - DAY_IN_SECONDS * 1.5 * 1000
+		).toISOString();
+
+		const property = {
+			...fixtures.properties[ 0 ],
+			createTime,
+		};
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetProperty( property, { propertyID } );
 
 		for ( const options of ga4ReportArgs ) {
 			registry
