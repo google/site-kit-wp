@@ -394,9 +394,11 @@ class Analytics_4Test extends TestCase {
 		$options->set( Settings::OPTION, 'test-value' );
 
 		$analytics = new Analytics_4( $this->context, $options );
+		$analytics->set_data_available();
 		$analytics->on_deactivation();
 
 		$this->assertOptionNotExists( Settings::OPTION );
+		$this->assertFalse( $analytics->is_data_available() );
 	}
 
 	public function test_get_datapoints() {
