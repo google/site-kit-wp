@@ -16,6 +16,9 @@
  * limitations under the License.
  */
 
+/**
+ * WordPress dependencies
+ */
 import { sprintf, __ } from '@wordpress/i18n';
 
 /**
