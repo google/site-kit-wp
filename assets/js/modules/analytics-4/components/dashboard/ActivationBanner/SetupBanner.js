@@ -59,6 +59,7 @@ import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constan
 import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '../../../../../util/errors';
 import useViewContext from '../../../../../hooks/useViewContext';
 import { trackEvent } from '../../../../../util';
+import { SetupBannerFooter } from './SetupBannerFooter';
 import { VARIANT } from './constants';
 const { useDispatch, useSelect } = Data;
 
@@ -90,15 +91,9 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 	const getPropertyID = useSelect(
 		( select ) => select( MODULES_ANALYTICS_4 ).getPropertyID
 	);
-	const ga4PropertyID = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getPropertyID()
-	);
 
 	const getMeasurementID = useSelect(
 		( select ) => select( MODULES_ANALYTICS_4 ).getMeasurementID
-	);
-	const measurementID = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getMeasurementID()
 	);
 
 	const determineVariant = useCallback( async () => {
@@ -308,7 +303,6 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 	let title;
 	let ctaLabel;
 	let children;
-	const footerMessages = [];
 
 	if ( variant === VARIANT.EXISTING_PROPERTY ) {
 		title = __(
@@ -324,6 +318,7 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 						'google-site-kit'
 					) }
 				/>
+
 				{ existingTag && (
 					<UseSnippetSwitch
 						description={
@@ -350,60 +345,12 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 				) }
 			</div>
 		);
-
-		if (
-			hasEditScope === false &&
-			( ga4PropertyID === PROPERTY_CREATE || ! measurementID )
-		) {
-			footerMessages.push(
-				__(
-					'You will need to give Site Kit permission to create an Analytics property on your behalf',
-					'google-site-kit'
-				)
-			);
-		}
-
-		footerMessages.push(
-			__(
-				'You can always add/edit this in the Site Kit Settings',
-				'google-site-kit'
-			)
-		);
 	} else {
 		title = __(
 			'No existing Google Analytics 4 property found, Site Kit will help you create a new one and insert it on your site',
 			'google-site-kit'
 		);
 		ctaLabel = __( 'Create property', 'google-site-kit' );
-
-		if ( existingTag ) {
-			footerMessages.push(
-				sprintf(
-					/* translators: %s: The existing tag ID. */
-					__(
-						'A GA4 tag %s is found on this site but this property is not associated with your Google Analytics account',
-						'google-site-kit'
-					),
-					existingTag
-				)
-			);
-		}
-
-		if ( hasEditScope === false ) {
-			footerMessages.push(
-				__(
-					'You will need to give Site Kit permission to create an Analytics property on your behalf',
-					'google-site-kit'
-				)
-			);
-		}
-
-		footerMessages.push(
-			__(
-				'You can always add/edit this in the Site Kit Settings',
-				'google-site-kit'
-			)
-		);
 	}
 
 	return (
@@ -419,15 +366,7 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 					{ ctaLabel }
 				</SpinnerButton>
 			}
-			footer={
-				!! footerMessages.length && (
-					<ul className="googlesitekit-ga4-setup-banner__footer-text-list">
-						{ footerMessages.map( ( message ) => (
-							<li key={ message }>{ message }</li>
-						) ) }
-					</ul>
-				)
-			}
+			footer={ <SetupBannerFooter variant={ variant } /> }
 			dismiss={ __( 'Cancel', 'google-site-kit' ) }
 			dismissExpires={ getBannerDismissalExpiryTime(
 				referenceDateString
