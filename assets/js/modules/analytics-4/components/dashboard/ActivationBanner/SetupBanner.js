@@ -136,8 +136,10 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 	] );
 
 	useEffect( () => {
-		determineVariant();
-	}, [ determineVariant ] );
+		if ( ! variant ) {
+			determineVariant();
+		}
+	}, [ variant, determineVariant ] );
 
 	const hasEditScope = useSelect( ( select ) =>
 		select( CORE_USER ).hasScope( EDIT_SCOPE )
@@ -158,6 +160,22 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 	const { setPermissionScopeError } = useDispatch( CORE_USER );
 	const { setValues } = useDispatch( CORE_FORMS );
 
+	const commonSubmitChanges = useCallback( async () => {
+		setIsSaving( true );
+
+		const { error } = await submitChanges();
+
+		setIsSaving( false );
+
+		if ( error ) {
+			setErrorNotice( error );
+		} else {
+			// Ask the parent component to show the success banner.
+			// This should be called last because it will unmount this component.
+			onSubmitSuccess();
+		}
+	}, [ submitChanges, onSubmitSuccess ] );
+
 	const handleSubmitChanges = useCallback( async () => {
 		const scopes = [];
 
@@ -166,6 +184,15 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 			( getPropertyID() === PROPERTY_CREATE || ! getMeasurementID() )
 		) {
 			scopes.push( EDIT_SCOPE );
+		}
+
+		if (
+			variant === VARIANT.NO_EXISTING_PROPERTY ||
+			getPropertyID() === PROPERTY_CREATE
+		) {
+			trackEvent( eventCategory, 'create_property' );
+		} else {
+			trackEvent( eventCategory, 'connect_property' );
 		}
 
 		// If scope not granted, trigger scope error right away. These are
@@ -197,40 +224,14 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 			return;
 		}
 
-		setIsSaving( true );
-
-		if ( ! autoSubmit ) {
-			if (
-				variant === VARIANT.NO_EXISTING_PROPERTY ||
-				getPropertyID() === PROPERTY_CREATE
-			) {
-				trackEvent( eventCategory, 'create_property' );
-			} else {
-				trackEvent( eventCategory, 'connect_property' );
-			}
-		}
-
-		const { error } = await submitChanges();
-
-		setIsSaving( false );
-
-		if ( error ) {
-			setErrorNotice( error );
-		} else {
-			setValues( FORM_SETUP, { autoSubmit: false } );
-			// Ask the parent component to show the success banner.
-			// This should be called last because it will unmount this component.
-			onSubmitSuccess();
-		}
+		await commonSubmitChanges();
 	}, [
-		autoSubmit,
 		eventCategory,
 		variant,
 		hasEditScope,
-		onSubmitSuccess,
 		setPermissionScopeError,
 		setValues,
-		submitChanges,
+		commonSubmitChanges,
 		// Here we pass the selectors through to avoid creating a new
 		// callback when the property ID changes on creation.
 		getPropertyID,
@@ -240,10 +241,23 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 	// If the user lands back on this component with autoSubmit and the edit scope,
 	// resubmit the form.
 	useEffect( () => {
-		if ( autoSubmit && hasEditScope && ! isSaving ) {
-			handleSubmitChanges();
+		async function handleAutoSubmit() {
+			// Auto-submit should only auto-invoke once.
+			setValues( FORM_SETUP, { autoSubmit: false } );
+
+			await commonSubmitChanges();
 		}
-	}, [ autoSubmit, handleSubmitChanges, hasEditScope, isSaving ] );
+
+		if ( autoSubmit && hasEditScope ) {
+			handleAutoSubmit();
+		}
+	}, [
+		autoSubmit,
+		hasEditScope,
+		setValues,
+		commonSubmitChanges,
+		onSubmitSuccess,
+	] );
 
 	useEffect( () => {
 		// Only trigger the view event if the notification is visible and we haven't
