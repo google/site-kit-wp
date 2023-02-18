@@ -99,8 +99,12 @@ export default function Footer( props ) {
 		return select( CORE_USER ).getAccountChooserURL( module.homepage );
 	} );
 
+	const storeName = useSelect( ( select ) =>
+		select( CORE_MODULES ).getModuleStoreName( slug )
+	);
+
 	const { submitChanges } = useDispatch( CORE_MODULES );
-	const { clearErrors } = useDispatch( `modules/${ slug }` );
+	const { clearErrors } = useDispatch( storeName );
 	const { setValue } = useDispatch( CORE_UI );
 
 	const hasSettings = !! module?.SettingsEditComponent;
