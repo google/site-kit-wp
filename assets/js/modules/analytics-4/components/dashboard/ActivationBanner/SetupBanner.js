@@ -59,12 +59,8 @@ import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constan
 import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '../../../../../util/errors';
 import useViewContext from '../../../../../hooks/useViewContext';
 import { trackEvent } from '../../../../../util';
+import { VARIANT } from './constants';
 const { useDispatch, useSelect } = Data;
-
-const VARIANT = {
-	EXISTING_PROPERTY: 'EXISTING_PROPERTY',
-	NO_EXISTING_PROPERTY: 'NO_EXISTING_PROPERTY',
-};
 
 export default function SetupBanner( { onSubmitSuccess } ) {
 	const [ errorNotice, setErrorNotice ] = useState( null );
