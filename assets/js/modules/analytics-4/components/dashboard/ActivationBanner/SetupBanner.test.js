@@ -26,8 +26,14 @@ import {
 	unsubscribeFromAll,
 	provideUserAuthentication,
 	provideSiteInfo,
+	createTestRegistry,
+	createWaitForRegistry,
 } from '../../../../../../../tests/js/utils';
-import { MODULES_ANALYTICS } from '../../../../analytics/datastore/constants';
+import {
+	MODULES_ANALYTICS,
+	EDIT_SCOPE,
+	FORM_SETUP,
+} from '../../../../analytics/datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../../datastore/constants';
 import * as fixtures from '../../../../analytics/datastore/__fixtures__';
 import * as analytics4Fixtures from '../../../../analytics-4/datastore/__fixtures__';
@@ -38,154 +44,188 @@ import {
 } from '../../../../../../../tests/js/test-utils';
 
 import SetupBanner from './SetupBanner';
+import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
+import { withConnected } from '../../../../../googlesitekit/modules/datastore/__fixtures__';
 
-const { createProperty, properties: propertiesGA4 } = analytics4Fixtures;
-const {
-	accounts,
-	properties: propertiesUA,
-	profiles,
-} = fixtures.accountsPropertiesProfiles;
+const { createProperty } = analytics4Fixtures;
+const { accounts } = fixtures.accountsPropertiesProfiles;
 const accountID = createProperty._accountID;
-const propertyIDua = propertiesUA[ 0 ].id;
 
-const homeURL = 'http://example.com';
-
-const setupInitRegistry = ( registry ) => {
-	provideSiteInfo( registry, { homeURL } );
-	provideUserInfo( registry );
-	provideUserAuthentication( registry );
-	const { dispatch } = registry;
-	dispatch( MODULES_ANALYTICS ).setAccountID( accountID );
-
-	dispatch( MODULES_ANALYTICS ).receiveGetSettings( { accountID } );
-	dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( { accountID } );
-};
-
-const setupEmptyRegistry = ( registry ) => {
-	provideSiteInfo( registry, { homeURL } );
-	provideModules( registry );
-	provideUserInfo( registry );
-	provideUserAuthentication( registry );
-	const { dispatch } = registry;
-
-	dispatch( MODULES_ANALYTICS ).setAccountID( accountID );
-
-	dispatch( MODULES_ANALYTICS ).receiveGetSettings( { accountID } );
-	dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( { accountID } );
-
-	dispatch( MODULES_ANALYTICS ).receiveGetAccounts( accounts );
-	dispatch( MODULES_ANALYTICS ).finishResolution( 'getAccounts', [
-		accountID,
-	] );
-
-	dispatch( MODULES_ANALYTICS ).receiveGetProperties( [], { accountID } );
-	dispatch( MODULES_ANALYTICS ).finishResolution( 'getProperties', [] );
-
-	dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties( [], { accountID } );
-	dispatch( MODULES_ANALYTICS_4 ).finishResolution( 'getProperties', [] );
-};
-
-const setupFullRegistry = ( registry ) => {
-	provideSiteInfo( registry, { homeURL } );
-	provideModules( registry );
-	provideUserInfo( registry );
-	provideUserAuthentication( registry );
-	provideSiteInfo( registry );
-
-	const { dispatch } = registry;
-
-	dispatch( MODULES_ANALYTICS ).receiveGetSettings( { accountID } );
-	dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
-
-	dispatch( MODULES_ANALYTICS ).receiveGetExistingTag( null );
-	dispatch( MODULES_ANALYTICS_4 ).receiveGetExistingTag( null );
-
-	dispatch( MODULES_ANALYTICS ).receiveGetAccounts( accounts );
-	dispatch( MODULES_ANALYTICS ).finishResolution( 'getAccounts', [] );
-
-	dispatch( MODULES_ANALYTICS ).receiveGetProperties( propertiesUA, {
-		accountID,
-	} );
-	dispatch( MODULES_ANALYTICS ).finishResolution( 'getProperties', [
-		accountID,
-	] );
-
-	dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties( propertiesGA4, {
-		accountID,
-	} );
-	dispatch( MODULES_ANALYTICS_4 ).finishResolution( 'getProperties', [
-		accountID,
-	] );
-
-	dispatch( MODULES_ANALYTICS ).receiveGetProfiles( profiles, {
-		accountID,
-		propertyID: propertyIDua,
-	} );
-	dispatch( MODULES_ANALYTICS ).finishResolution( 'getProfiles', [
-		accountID,
-		propertyIDua,
-	] );
-};
+const createPropertyEndpoint = new RegExp(
+	'^/google-site-kit/v1/modules/analytics-4/data/create-property'
+);
+const createWebDatastreamEndpoint = new RegExp(
+	'^/google-site-kit/v1/modules/analytics-4/data/create-webdatastream'
+);
+const ga4SettingsEndpoint = new RegExp(
+	'^/google-site-kit/v1/modules/analytics-4/data/settings'
+);
+const coreModulesListEndpoint = new RegExp(
+	'^/google-site-kit/v1/core/modules/data/list'
+);
 
 describe( 'SetupBanner', () => {
 	let registry;
 
-	const createPropertyEndpoint = new RegExp(
-		'^/google-site-kit/v1/modules/analytics-4/data/create-property'
-	);
-
 	beforeAll( () => {
 		API.setUsingCache( false );
+	} );
+
+	beforeEach( () => {
+		registry = createTestRegistry();
+		provideSiteInfo( registry );
+		provideUserInfo( registry );
+		provideUserAuthentication( registry );
+		// The activation banner is only shown when GA is connected
+		// and GA4 is not.
+		provideModules( registry, [
+			{ slug: 'analytics', active: true, connected: true },
+		] );
 	} );
 
 	afterEach( () => {
 		unsubscribeFromAll( registry );
 	} );
 
-	it( 'should render a progress bar', () => {
-		const token = 'test-token-value';
-		fetchMock.postOnce( homeURL, { body: { token }, status: 200 } );
+	it( 'should render a progress bar', async () => {
+		// Freeze all fetch requests.
+		fetchMock.any( new Promise( () => {} ) );
 
-		const { getByRole } = render( <SetupBanner />, {
-			setupRegistry: setupInitRegistry,
+		const { getByRole, waitForRegistry } = render( <SetupBanner />, {
+			registry,
 		} );
+		await waitForRegistry();
 
 		expect( getByRole( 'progressbar' ) ).toBeInTheDocument();
 	} );
 
-	it( 'should render a dropdown with availbale props', () => {
-		const { getByRole } = render( <SetupBanner />, {
-			setupRegistry: setupFullRegistry,
+	it( 'should render a create property CTA when no existing properties are available', async () => {
+		const { dispatch } = registry;
+		dispatch( MODULES_ANALYTICS ).receiveGetSettings( { accountID } );
+		dispatch( MODULES_ANALYTICS ).receiveGetAccounts( accounts );
+		dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties( [], {
+			accountID,
 		} );
+		dispatch( MODULES_ANALYTICS ).receiveGetExistingTag( null );
+		dispatch( MODULES_ANALYTICS_4 ).receiveGetExistingTag( null );
 
-		expect( getByRole( 'select' ) ).toBeInTheDocument();
+		const { getByText, waitForRegistry } = render( <SetupBanner />, {
+			registry,
+		} );
+		await waitForRegistry();
+
+		expect( getByText( /create property/i ) ).toBeInTheDocument();
 	} );
 
-	it( 'should create a property and add it to the store', async () => {
+	it( 'should create a single property when the user has the necessary scope granted', async () => {
 		fetchMock.post( createPropertyEndpoint, {
-			body: fixtures.createProperty,
+			body: createProperty,
 			status: 200,
 		} );
+		fetchMock.post( createWebDatastreamEndpoint, {
+			body: analytics4Fixtures.createWebDataStream,
+			status: 200,
+		} );
+		fetchMock.post( ga4SettingsEndpoint, () =>
+			JSON.stringify(
+				registry.select( MODULES_ANALYTICS_4 ).getSettings()
+			)
+		);
+		// submitChanges reloads modules from server when ga4 is connected.
+		fetchMock.getOnce( coreModulesListEndpoint, {
+			body: withConnected( 'analytics', 'analytics-4' ),
+			status: 200,
+		} );
+		const onSubmitSuccess = jest.fn();
 
-		const { getByRole } = render( <SetupBanner />, {
-			setupRegistry: setupEmptyRegistry,
+		const { dispatch } = registry;
+		dispatch( MODULES_ANALYTICS ).receiveGetSettings( { accountID } );
+		dispatch( MODULES_ANALYTICS ).receiveGetAccounts( accounts );
+		dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties( [], {
+			accountID,
+		} );
+		dispatch( MODULES_ANALYTICS ).receiveGetExistingTag( null );
+		dispatch( MODULES_ANALYTICS_4 ).receiveGetExistingTag( null );
+		provideUserAuthentication( registry, {
+			grantedScopes: [ EDIT_SCOPE ],
 		} );
 
+		const { getByText, queryByText, waitForRegistry } = render(
+			<SetupBanner onSubmitSuccess={ onSubmitSuccess } />,
+			{
+				registry,
+			}
+		);
+		await waitForRegistry();
+
+		expect( getByText( /create property/i ) ).toBeInTheDocument();
 		expect(
-			getByRole( 'button', { name: /Create property/i } )
-		).toBeInTheDocument();
+			queryByText( /You will need to give Site Kit permission/i )
+		).not.toBeInTheDocument();
 
 		// Click submit element to create a new prorperty.
-		await act( () => {
-			fireEvent.click(
-				getByRole( 'button', { name: /Create property/i } )
-			);
+		await act( async () => {
+			const wfr = createWaitForRegistry( registry );
+			fireEvent.click( getByText( /create property/i ) );
+			await wfr();
 		} );
 
-		expect( fetchMock ).toHaveFetched( createPropertyEndpoint, {
-			body: { data: { accountID } },
+		expect( fetchMock ).toHaveFetchedTimes( 1, createPropertyEndpoint );
+		expect( fetchMock ).toHaveFetchedTimes(
+			1,
+			createWebDatastreamEndpoint
+		);
+		expect( fetchMock ).toHaveFetchedTimes( 1, ga4SettingsEndpoint );
+		expect( onSubmitSuccess ).toHaveBeenCalledTimes( 1 );
+	} );
+
+	it( 'should create a single property when the form is auto submitted after the scope was granted', async () => {
+		fetchMock.post( createPropertyEndpoint, {
+			body: createProperty,
+			status: 200,
 		} );
-		// Ensure the cache was never used.
-		expect( fetchMock ).toHaveBeenCalledTimes( 1 );
+		fetchMock.post( createWebDatastreamEndpoint, {
+			body: analytics4Fixtures.createWebDataStream,
+			status: 200,
+		} );
+		fetchMock.post( ga4SettingsEndpoint, () =>
+			registry.select( MODULES_ANALYTICS_4 ).getSettings()
+		);
+		// submitChanges reloads modules from server when ga4 is connected.
+		fetchMock.getOnce( coreModulesListEndpoint, {
+			body: withConnected( 'analytics', 'analytics-4' ),
+			status: 200,
+		} );
+		const onSubmitSuccess = jest.fn();
+
+		const { dispatch } = registry;
+		dispatch( MODULES_ANALYTICS ).receiveGetSettings( { accountID } );
+		dispatch( MODULES_ANALYTICS ).receiveGetAccounts( accounts );
+		dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties( [], {
+			accountID,
+		} );
+		dispatch( MODULES_ANALYTICS ).receiveGetExistingTag( null );
+		dispatch( MODULES_ANALYTICS_4 ).receiveGetExistingTag( null );
+		// Simulate an auto-submit scenario after scope is granted.
+		provideUserAuthentication( registry, {
+			grantedScopes: [ EDIT_SCOPE ],
+		} );
+		dispatch( CORE_FORMS ).setValues( FORM_SETUP, { autoSubmit: true } );
+
+		const { waitForRegistry } = render(
+			<SetupBanner onSubmitSuccess={ onSubmitSuccess } />,
+			{
+				registry,
+			}
+		);
+		await waitForRegistry();
+
+		expect( fetchMock ).toHaveFetchedTimes( 1, createPropertyEndpoint );
+		expect( fetchMock ).toHaveFetchedTimes(
+			1,
+			createWebDatastreamEndpoint
+		);
+		expect( fetchMock ).toHaveFetchedTimes( 1, ga4SettingsEndpoint );
+		expect( onSubmitSuccess ).toHaveBeenCalledTimes( 1 );
 	} );
 } );
