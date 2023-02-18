@@ -127,9 +127,7 @@ describe( 'SetupBanner', () => {
 			status: 200,
 		} );
 		fetchMock.post( ga4SettingsEndpoint, () =>
-			JSON.stringify(
-				registry.select( MODULES_ANALYTICS_4 ).getSettings()
-			)
+			registry.select( MODULES_ANALYTICS_4 ).getSettings()
 		);
 		// submitChanges reloads modules from server when ga4 is connected.
 		fetchMock.getOnce( coreModulesListEndpoint, {
