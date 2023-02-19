@@ -31,6 +31,7 @@ import { Fragment } from '@wordpress/element';
  */
 import Data from 'googlesitekit-data';
 import {
+	CONTEXT_MAIN_DASHBOARD_KEY_METRICS,
 	CONTEXT_MAIN_DASHBOARD_TRAFFIC,
 	CONTEXT_MAIN_DASHBOARD_CONTENT,
 	CONTEXT_MAIN_DASHBOARD_SPEED,
@@ -48,6 +49,7 @@ import SurveyViewTrigger from './surveys/SurveyViewTrigger';
 import ScrollEffect from './ScrollEffect';
 import {
 	ANCHOR_ID_CONTENT,
+	ANCHOR_ID_KEY_METRICS,
 	ANCHOR_ID_MONETIZATION,
 	ANCHOR_ID_SPEED,
 	ANCHOR_ID_TRAFFIC,
@@ -73,6 +75,13 @@ function DashboardMainApp() {
 	const widgetContextOptions = {
 		modules: viewableModules ? viewableModules : undefined,
 	};
+
+	const isKeyMetricsActive = useSelect( ( select ) =>
+		select( CORE_WIDGETS ).isWidgetContextActive(
+			CONTEXT_MAIN_DASHBOARD_KEY_METRICS,
+			widgetContextOptions
+		)
+	);
 
 	const isTrafficActive = useSelect( ( select ) =>
 		select( CORE_WIDGETS ).isWidgetContextActive(
@@ -112,6 +121,8 @@ function DashboardMainApp() {
 		lastWidgetAnchor = ANCHOR_ID_CONTENT;
 	} else if ( isTrafficActive ) {
 		lastWidgetAnchor = ANCHOR_ID_TRAFFIC;
+	} else if ( isKeyMetricsActive ) {
+		lastWidgetAnchor = ANCHOR_ID_KEY_METRICS;
 	}
 
 	return (
@@ -126,6 +137,14 @@ function DashboardMainApp() {
 				) }
 				<HelpMenu />
 			</Header>
+			<WidgetContextRenderer
+				id={ ANCHOR_ID_KEY_METRICS }
+				slug={ CONTEXT_MAIN_DASHBOARD_KEY_METRICS }
+				className={ classnames( {
+					'googlesitekit-widget-context--last':
+						lastWidgetAnchor === ANCHOR_ID_KEY_METRICS,
+				} ) }
+			/>
 			<WidgetContextRenderer
 				id={ ANCHOR_ID_TRAFFIC }
 				slug={ CONTEXT_MAIN_DASHBOARD_TRAFFIC }

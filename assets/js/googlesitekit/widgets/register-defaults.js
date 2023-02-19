@@ -27,13 +27,15 @@ import { __ } from '@wordpress/i18n';
 import * as WIDGET_CONTEXTS from './default-contexts';
 import * as WIDGET_AREAS from './default-areas';
 import { WIDGET_AREA_STYLES } from './datastore/constants';
+import KeyMetricsSetupCTAWidget from '../../components/KeyMetrics/KeyMetricsSetupCTAWidget';
 
 const { ...ADDITIONAL_WIDGET_CONTEXTS } = WIDGET_CONTEXTS;
 
 const { ...ADDITIONAL_WIDGET_AREAS } = WIDGET_AREAS;
 
 /**
- * Defines default widget areas for a given context.
+ * Defines default widget areas for a given context
+ * and registers non-module specific widgets.
  *
  * @since 1.12.0
  *
@@ -41,6 +43,8 @@ const { ...ADDITIONAL_WIDGET_AREAS } = WIDGET_AREAS;
  */
 export function registerDefaults( widgetsAPI ) {
 	const {
+		// Main dashboard
+		CONTEXT_MAIN_DASHBOARD_KEY_METRICS,
 		CONTEXT_MAIN_DASHBOARD_TRAFFIC,
 		CONTEXT_MAIN_DASHBOARD_CONTENT,
 		CONTEXT_MAIN_DASHBOARD_SPEED,
@@ -54,6 +58,7 @@ export function registerDefaults( widgetsAPI ) {
 
 	const {
 		// Main dashboard
+		AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY,
 		AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY,
 		AREA_MAIN_DASHBOARD_CONTENT_PRIMARY,
 		AREA_MAIN_DASHBOARD_SPEED_PRIMARY,
@@ -68,6 +73,20 @@ export function registerDefaults( widgetsAPI ) {
 	/*
 	 * Main dashboard areas.
 	 */
+
+	widgetsAPI.registerWidgetArea(
+		AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY,
+		{
+			title: __( 'Key metrics', 'google-site-kit' ),
+			subtitle: __(
+				'Track progress towards your goals with tailored metrics',
+				'google-site-kit'
+			),
+			style: WIDGET_AREA_STYLES.BOXES,
+			priority: 1,
+		},
+		CONTEXT_MAIN_DASHBOARD_KEY_METRICS
+	);
 
 	widgetsAPI.registerWidgetArea(
 		AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY,
@@ -201,5 +220,17 @@ export function registerDefaults( widgetsAPI ) {
 			priority: 1,
 		},
 		CONTEXT_ENTITY_DASHBOARD_MONETIZATION
+	);
+
+	widgetsAPI.registerWidget(
+		'keyMetricsSetupCTA',
+		{
+			Component: KeyMetricsSetupCTAWidget,
+			width: [ widgetsAPI.WIDGET_WIDTHS.FULL ],
+			priority: 1,
+			wrapWidget: false,
+			modules: [ 'search-console' ],
+		},
+		[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
 	);
 }
