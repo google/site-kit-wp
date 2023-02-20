@@ -45,22 +45,14 @@ export default function DashboardSharingSettings() {
 	);
 
 	const sortedShareableModules = useSelect( ( select ) => {
-		const modules = select( CORE_MODULES ).getModules();
-
-		// Return early if modules are not loaded.
-		if ( modules === undefined ) {
-			return undefined;
-		}
 		const userID = select( CORE_USER ).getID();
-		const shareableModules = Object.values( modules ).filter(
-			( module ) => module.shareable
-		);
+		const shareableModules = select( CORE_MODULES ).getShareableModules();
 
 		const owned = [];
 		const manageable = [];
 		const rest = [];
 
-		for ( module of shareableModules ) {
+		for ( module of Object.values( shareableModules ) ) {
 			if ( module.owner?.id === userID ) {
 				owned.push( module );
 			} else if (

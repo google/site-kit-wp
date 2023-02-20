@@ -753,7 +753,7 @@ const baseResolvers = {
 
 		const recoverableModules = Object.entries( modules || {} ).reduce(
 			( moduleList, [ moduleSlug, module ] ) => {
-				if ( module.recoverable ) {
+				if ( module.recoverable && ! module.internal ) {
 					moduleList.push( moduleSlug );
 				}
 				return moduleList;
@@ -1342,6 +1342,33 @@ const baseSelectors = {
 			);
 		}
 	),
+
+	/**
+	 * Gets the list of non-internal shareable modules for dashboard sharing.
+	 *
+	 * Returns an Object/map of objects, keyed by slug as same as `getModules`.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(Object|undefined)} Non-internal shareable modules available on the site; `undefined` if not loaded.
+	 */
+	getShareableModules: createRegistrySelector( ( select ) => () => {
+		const modules = select( CORE_MODULES ).getModules();
+
+		// Return early if modules are not loaded.
+		if ( modules === undefined ) {
+			return undefined;
+		}
+
+		return Object.keys( modules ).reduce( ( acc, slug ) => {
+			if ( modules[ slug ].shareable && ! modules[ slug ].internal ) {
+				return { [ slug ]: modules[ slug ], ...acc };
+			}
+
+			return acc;
+		}, {} );
+	} ),
 
 	getRecoveredModules( state ) {
 		return state.recoveredModules;
