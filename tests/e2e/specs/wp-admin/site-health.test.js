@@ -28,8 +28,6 @@ import { enableFeature, setupSiteKit } from '../../utils';
 
 describe( 'Site Health', () => {
 	it( 'adds debug data to the info tab when Site Kit is active but not setup', async () => {
-		await setupSiteKit();
-
 		await visitAdminPage( 'site-health.php', 'tab=debug' );
 
 		await expect( page ).toMatchElement( '.health-check-accordion button', {
