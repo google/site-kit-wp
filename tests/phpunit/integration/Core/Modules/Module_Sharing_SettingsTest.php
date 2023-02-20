@@ -165,13 +165,13 @@ class Module_Sharing_SettingsTest extends SettingsTestCase {
 				array(
 					$module_slug => array(
 						'sharedRoles' => array( 'editor' ),
-						'management'  => 'owner',
+						'management'  => 'all_admins',
 					),
 				),
 				$module_slug,
 				array(
 					'sharedRoles' => array( 'editor' ),
-					'management'  => 'owner',
+					'management'  => 'all_admins',
 				),
 			),
 		);
