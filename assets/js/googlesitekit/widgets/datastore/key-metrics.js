@@ -26,6 +26,13 @@ import { CORE_USER } from '../../datastore/user/constants';
 const { createRegistrySelector } = Data;
 
 const selectors = {
+	/**
+	 * Gets the Key Metric widget slugs based on the user input settings.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {Array<string>|undefined} An array of Key Metric widget slugs, or undefined if the user input settings are not loaded.
+	 */
 	getAnswerBasedMetrics: createRegistrySelector( ( select ) => () => {
 		const userInputSettings = select( CORE_USER ).getUserInputSettings();
 
