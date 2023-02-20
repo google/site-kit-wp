@@ -226,18 +226,20 @@ describe( 'modules/analytics-4 report', () => {
 						)
 					);
 
-					const { isGatheringData } =
+					const { isGatheringData, hasZeroData } =
 						registry.select( MODULES_ANALYTICS_4 );
 
+					// The first call to isGatheringData returns undefined because the call to hasZeroData returns undefined.
 					expect( isGatheringData() ).toBeUndefined();
+					expect( hasZeroData() ).toBeUndefined();
 
 					// Wait for resolvers to run.
 					await waitForDefaultTimeouts();
 
-					// Verify that isGatheringData still returns undefined.
+					// Verify that isGatheringData still returns undefined due to getSettings not being resolved yet, while hasZeroData now returns true.
 					expect( isGatheringData() ).toBeUndefined();
+					expect( hasZeroData() ).toBe( true );
 
-					// Wait for resolvers to run following the second call to isGatheringData to avoid the test failing due to the second async attempt to fetch settings.
 					await waitForDefaultTimeouts();
 				} );
 
