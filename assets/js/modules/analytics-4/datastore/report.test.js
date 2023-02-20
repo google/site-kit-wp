@@ -133,7 +133,9 @@ describe( 'modules/analytics-4 report', () => {
 				};
 
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/analytics-4\/data\/report/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics-4/data/report'
+					),
 					{
 						body: response,
 						status: 500,
@@ -193,6 +195,37 @@ describe( 'modules/analytics-4 report', () => {
 				);
 
 				expect( isGatheringData() ).toBe( false );
+			} );
+
+			it( 'should return FALSE if the report request fails', async () => {
+				const response = {
+					code: 'internal_server_error',
+					message: 'Internal server error',
+					data: { status: 500 },
+				};
+
+				fetchMock.getOnce(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics-4/data/report'
+					),
+					{
+						body: response,
+						status: 500,
+					}
+				);
+
+				const { isGatheringData } =
+					registry.select( MODULES_ANALYTICS_4 );
+
+				expect( isGatheringData() ).toBeUndefined();
+
+				await subscribeUntil(
+					registry,
+					() => isGatheringData() !== undefined
+				);
+
+				expect( isGatheringData() ).toBe( false );
+				expect( console ).toHaveErrored();
 			} );
 
 			describe.each( [
@@ -333,6 +366,36 @@ describe( 'modules/analytics-4 report', () => {
 
 				// Wait for resolvers to run.
 				await waitForDefaultTimeouts();
+			} );
+
+			it( 'should return FALSE if the report request fails', async () => {
+				const response = {
+					code: 'internal_server_error',
+					message: 'Internal server error',
+					data: { status: 500 },
+				};
+
+				fetchMock.getOnce(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics-4/data/report'
+					),
+					{
+						body: response,
+						status: 500,
+					}
+				);
+
+				const { hasZeroData } = registry.select( MODULES_ANALYTICS_4 );
+
+				expect( hasZeroData() ).toBeUndefined();
+
+				await subscribeUntil(
+					registry,
+					() => hasZeroData() !== undefined
+				);
+
+				expect( hasZeroData() ).toBe( false );
+				expect( console ).toHaveErrored();
 			} );
 
 			it( 'should return TRUE if isZeroReport is true', async () => {
