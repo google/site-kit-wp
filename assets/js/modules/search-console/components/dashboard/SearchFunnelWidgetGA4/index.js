@@ -45,7 +45,7 @@ import Header from '../SearchFunnelWidget/Header';
 import Footer from '../SearchFunnelWidget/Footer';
 import Overview from './Overview';
 import SearchConsoleStats from '../SearchFunnelWidget/SearchConsoleStats';
-import AnalyticsStats from '../SearchFunnelWidget/AnalyticsStats';
+import AnalyticsStats from './AnalyticsStats';
 import ActivateAnalyticsCTA from '../SearchFunnelWidget/ActivateAnalyticsCTA';
 import { CORE_MODULES } from '../../../../../googlesitekit/modules/datastore/constants';
 import { Grid, Row, Cell } from '../../../../../material-components';
