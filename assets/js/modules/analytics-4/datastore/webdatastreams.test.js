@@ -49,6 +49,7 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 	const webDataStreamsBatchEndpoint = new RegExp(
 		'^/google-site-kit/v1/modules/analytics-4/data/webdatastreams-batch'
 	);
+
 	const webDataStreamDotCom = {
 		name: 'properties/1000/dataStreams/2000',
 		webStreamData: {
@@ -69,6 +70,17 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 		createTime: '2014-10-03T15:01:23Z',
 		updateTime: '2014-10-03T15:01:23Z',
 		displayName: 'Another datastream',
+	};
+
+	const webDataStreamDotCom2 = {
+		name: 'properties/1000/dataStreams/2002',
+		webStreamData: {
+			measurementId: '1A2BCD347E', // eslint-disable-line sitekit/acronym-case
+			defaultUri: 'http://example.com', // eslint-disable-line sitekit/acronym-case
+		},
+		createTime: '2014-10-02T15:02:23Z',
+		updateTime: '2014-10-02T15:02:23Z',
+		displayName: 'Test GA4 WebDataStream',
 	};
 
 	beforeAll( () => {
@@ -330,6 +342,65 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 						.getMatchingWebDataStream( webDataStreams );
 
 					expect( datastream ).toEqual( webDataStreamDotOrg );
+				}
+			);
+		} );
+
+		describe( 'getMatchingWebDataStreams', () => {
+			const webDataStreams = [ webDataStreamDotCom, webDataStreamDotOrg ];
+
+			it( 'should return an empty array when no datastreams are matched', () => {
+				provideSiteInfo( registry, {
+					referenceSiteURL: 'http://example.net',
+				} );
+
+				const datastreams = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getMatchingWebDataStreams( webDataStreams );
+
+				expect( datastreams.length ).toBe( 0 );
+			} );
+
+			it( 'should return the correct datastreams when reference site URL matches exactly', () => {
+				provideSiteInfo( registry, {
+					referenceSiteURL: 'http://example.com',
+				} );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getMatchingWebDataStreams( [
+							webDataStreamDotCom,
+							webDataStreamDotOrg,
+							webDataStreamDotCom2,
+						] )
+				).toEqual( [ webDataStreamDotCom, webDataStreamDotCom2 ] );
+
+				provideSiteInfo( registry, {
+					referenceSiteURL: 'http://example.org',
+				} );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getMatchingWebDataStreams( webDataStreams )
+				).toEqual( [ webDataStreamDotOrg ] );
+			} );
+
+			it.each( [
+				[ 'protocol differences', 'https://example.org' ],
+				[ '"www." prefix', 'http://www.example.org' ],
+				[ 'trailing slash', 'https://www.example.org/' ],
+			] )(
+				'should return the correct datastream ignoring %s',
+				( _, referenceSiteURL ) => {
+					provideSiteInfo( registry, { referenceSiteURL } );
+
+					const datastreams = registry
+						.select( MODULES_ANALYTICS_4 )
+						.getMatchingWebDataStreams( webDataStreams );
+
+					expect( datastreams ).toEqual( [ webDataStreamDotOrg ] );
 				}
 			);
 		} );
