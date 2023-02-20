@@ -16,5 +16,6 @@
  * limitations under the License.
  */
 
+export { default as MeasurementSelect } from './MeasurementSelect';
 export { default as PropertySelect } from './PropertySelect';
 export { default as UseSnippetSwitch } from './UseSnippetSwitch';

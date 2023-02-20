@@ -1,7 +1,5 @@
 /**
- * GA4 Property Select component.
- *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,16 +34,16 @@ import { ProgressBar } from 'googlesitekit-components';
 import { Select, Option } from '../../../../material-components';
 import {
 	MODULES_ANALYTICS_4,
-	PROPERTY_CREATE,
+	WEBDATASTREAM_CREATE,
 } from '../../datastore/constants';
 import { MODULES_ANALYTICS } from '../../../analytics/datastore/constants';
 import { isValidAccountID } from '../../../analytics/util';
-import { isValidPropertySelection } from '../../utils/validation';
+import { isValidWebDataStreamSelection } from '../../utils/validation';
 import { trackEvent } from '../../../../util';
 import useViewContext from '../../../../hooks/useViewContext';
 const { useSelect, useDispatch } = Data;
 
-export default function PropertySelect( props ) {
+export default function MeasurementSelect( props ) {
 	const { label, hasModuleAccess, className, onChange = () => {} } = props;
 
 	// Analytics accounts need to be loaded in order to load the properties,
@@ -59,14 +57,14 @@ export default function PropertySelect( props ) {
 		select( MODULES_ANALYTICS ).getAccountID()
 	);
 
-	const properties = useSelect( ( select ) =>
-		hasModuleAccess !== false
-			? select( MODULES_ANALYTICS_4 ).getProperties( accountID ) || []
-			: null
+	const { propertyID, webDataStreamID, measurementID } = useSelect(
+		( select ) => select( MODULES_ANALYTICS_4 ).getSettings()
 	);
 
-	const propertyID = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getPropertyID()
+	const webDataStreams = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getMatchingWebDataStreamsByPropertyID(
+			propertyID
+		)
 	);
 
 	const isLoading = useSelect(
@@ -78,31 +76,47 @@ export default function PropertySelect( props ) {
 				'getProperties',
 				[ accountID ]
 			) ||
+			! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
+				'getWebDataStreams',
+				[ propertyID ]
+			) ||
 			select( MODULES_ANALYTICS ).hasFinishedSelectingAccount() === false
 	);
 
 	const viewContext = useViewContext();
-	const { selectProperty } = useDispatch( MODULES_ANALYTICS_4 );
-	const onPropertyChange = useCallback(
+	const { setWebDataStreamID, updateSettingsForMeasurementID } =
+		useDispatch( MODULES_ANALYTICS_4 );
+	const onWebDataStreamChange = useCallback(
 		( index, { dataset } ) => {
-			const newPropertyID = dataset.value;
-			if ( propertyID === newPropertyID ) {
+			const newID = dataset.value;
+			if ( webDataStreamID === newID ) {
 				return;
 			}
 
-			selectProperty( newPropertyID );
+			setWebDataStreamID( newID );
+			updateSettingsForMeasurementID(
+				webDataStreams.find( ( { _id } ) => _id === newID )
+					?.webStreamData?.measurementId || '' // eslint-disable-line sitekit/acronym-case
+			);
 
 			trackEvent(
 				`${ viewContext }_analytics`,
-				newPropertyID === PROPERTY_CREATE
-					? 'change_property_new'
-					: 'change_property',
+				newID === WEBDATASTREAM_CREATE
+					? 'change_webdatastream_new'
+					: 'change_webdatastream',
 				'ga4'
 			);
 
 			onChange();
 		},
-		[ onChange, propertyID, selectProperty, viewContext ]
+		[
+			onChange,
+			webDataStreams,
+			webDataStreamID,
+			setWebDataStreamID,
+			updateSettingsForMeasurementID,
+			viewContext,
+		]
 	);
 
 	if ( ! isValidAccountID( accountID ) ) {
@@ -114,9 +128,9 @@ export default function PropertySelect( props ) {
 	}
 
 	const isValidSelection =
-		propertyID === undefined || propertyID === ''
+		webDataStreamID === undefined || webDataStreamID === ''
 			? true
-			: isValidPropertySelection( propertyID );
+			: isValidWebDataStreamSelection( webDataStreamID );
 
 	if ( hasModuleAccess === false ) {
 		return (
@@ -125,13 +139,13 @@ export default function PropertySelect( props ) {
 					'googlesitekit-analytics-4__select',
 					className
 				) }
-				label={ label || __( 'Property', 'google-site-kit' ) }
-				value={ propertyID }
+				label={ label || __( 'Measurement', 'google-site-kit' ) }
+				value={ measurementID }
 				enhanced
 				outlined
 				disabled
 			>
-				<Option value={ propertyID }>{ propertyID }</Option>
+				<Option value={ measurementID }>{ measurementID }</Option>
 			</Select>
 		);
 	}
@@ -145,34 +159,35 @@ export default function PropertySelect( props ) {
 					'mdc-select--invalid': ! isValidSelection,
 				}
 			) }
-			label={ label || __( 'Property', 'google-site-kit' ) }
-			value={ propertyID }
-			onEnhancedChange={ onPropertyChange }
+			label={ label || __( 'Measurement', 'google-site-kit' ) }
+			value={ webDataStreamID }
+			onEnhancedChange={ onWebDataStreamChange }
 			disabled={ ! isValidAccountID( accountID ) }
 			enhanced
 			outlined
 		>
-			{ ( properties || [] )
+			{ ( webDataStreams || [] )
 				.concat( {
-					_id: PROPERTY_CREATE,
+					_id: WEBDATASTREAM_CREATE,
 					displayName: __(
-						'Set up a new property',
+						'Set up a new data stream',
 						'google-site-kit'
 					),
 				} )
-				.map( ( { _id, displayName } ) => (
-					<Option key={ _id } value={ _id }>
-						{ _id === PROPERTY_CREATE
+				.map( ( { _id, displayName, webStreamData = {} }, index ) => (
+					<Option key={ index } value={ _id }>
+						{ _id === WEBDATASTREAM_CREATE ||
+						! webStreamData?.measurementId // eslint-disable-line sitekit/acronym-case
 							? displayName
 							: sprintf(
-									/* translators: 1: Property name. 2: Property ID. */
+									/* translators: 1: Data stream name. 2: Measurement ID. */
 									_x(
 										'%1$s (%2$s)',
-										'Analytics property name and ID',
+										'Analytics 4 data stream name and measurement ID',
 										'google-site-kit'
 									),
 									displayName,
-									_id
+									webStreamData.measurementId // eslint-disable-line sitekit/acronym-case
 							  ) }
 					</Option>
 				) ) }
@@ -180,7 +195,7 @@ export default function PropertySelect( props ) {
 	);
 }
 
-PropertySelect.propTypes = {
+MeasurementSelect.propTypes = {
 	label: PropTypes.string,
 	hasModuleAccess: PropTypes.bool,
 	className: PropTypes.string,
