@@ -45,62 +45,29 @@ import { trackEvent } from '../../../../util';
 import useViewContext from '../../../../hooks/useViewContext';
 const { useSelect, useDispatch } = Data;
 
-export default function PropertySelect( {
-	label,
-	hasModuleAccess,
-	className,
-	onChange = () => {},
-} ) {
+export default function PropertySelect( props ) {
+	const { label, hasModuleAccess, className, onChange = () => {} } = props;
+
 	// Analytics accounts need to be loaded in order to load the properties,
 	// otherwise this component will stay in a loading state forever.
 	// eslint-disable-next-line no-unused-vars
-	const accounts = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).getAccounts()
-	);
+	useSelect( ( select ) => select( MODULES_ANALYTICS ).getAccounts() );
 
-	// TODO: Update this select hook to pull accountID from the modules/analytics-4 datastore when GA4 module becomes separated from the Analytics one
+	// TODO: Update this select hook to pull accountID from the modules/analytics-4
+	// datastore when GA4 module becomes separated from the Analytics one.
 	const accountID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getAccountID()
 	);
 
-	const properties = useSelect( ( select ) => {
-		if ( hasModuleAccess === false ) {
-			return null;
-		}
-
-		return select( MODULES_ANALYTICS_4 ).getProperties( accountID ) || [];
-	} );
+	const properties = useSelect( ( select ) =>
+		hasModuleAccess !== false
+			? select( MODULES_ANALYTICS_4 ).getProperties( accountID ) || []
+			: null
+	);
 
 	const propertyID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getPropertyID()
 	);
-
-	const propertyIDs = ( properties || [] ).map( ( { _id } ) => _id );
-
-	const measurementIDs = useSelect( ( select ) => {
-		if ( ! properties?.length ) {
-			return null;
-		}
-
-		return select(
-			MODULES_ANALYTICS_4
-		).getMatchedMeasurementIDsByPropertyIDs( propertyIDs );
-	} );
-
-	const areMeasurementIDsResolving = useSelect( ( select ) => {
-		if ( properties === undefined ) {
-			return true;
-		}
-
-		if ( ! properties || properties?.length === 0 ) {
-			return false;
-		}
-
-		return ! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
-			'getWebDataStreamsBatch',
-			[ propertyIDs ]
-		);
-	} );
 
 	const isLoading = useSelect(
 		( select ) =>
@@ -111,27 +78,26 @@ export default function PropertySelect( {
 				'getProperties',
 				[ accountID ]
 			) ||
-			select( MODULES_ANALYTICS ).hasFinishedSelectingAccount() ===
-				false ||
-			areMeasurementIDsResolving
+			select( MODULES_ANALYTICS ).hasFinishedSelectingAccount() === false
 	);
 
-	const { selectProperty } = useDispatch( MODULES_ANALYTICS_4 );
-
 	const viewContext = useViewContext();
-
+	const { selectProperty } = useDispatch( MODULES_ANALYTICS_4 );
 	const onPropertyChange = useCallback(
-		( index, item ) => {
-			const newPropertyID = item.dataset.value;
-			if ( propertyID !== newPropertyID ) {
-				const action =
-					newPropertyID === PROPERTY_CREATE
-						? 'change_property_new'
-						: 'change_property';
-				selectProperty( newPropertyID );
-				trackEvent( `${ viewContext }_analytics`, action, 'ga4' );
-				onChange();
+		( index, { dataset } ) => {
+			const newPropertyID = dataset.value;
+			if ( propertyID === newPropertyID ) {
+				return;
 			}
+
+			const action =
+				newPropertyID === PROPERTY_CREATE
+					? 'change_property_new'
+					: 'change_property';
+			selectProperty( newPropertyID );
+
+			trackEvent( `${ viewContext }_analytics`, action, 'ga4' );
+			onChange();
 		},
 		[ onChange, propertyID, selectProperty, viewContext ]
 	);
@@ -196,7 +162,7 @@ export default function PropertySelect( {
 				} )
 				.map( ( { _id, displayName }, index ) => (
 					<Option key={ index } value={ _id }>
-						{ _id === PROPERTY_CREATE || ! measurementIDs?.[ _id ]
+						{ _id === PROPERTY_CREATE
 							? displayName
 							: sprintf(
 									/* translators: 1: Property name. 2: Measurement ID. */
@@ -206,7 +172,7 @@ export default function PropertySelect( {
 										'google-site-kit'
 									),
 									displayName,
-									measurementIDs?.[ _id ] || ''
+									_id
 							  ) }
 					</Option>
 				) ) }
