@@ -217,10 +217,28 @@ describe( 'modules/analytics-4 report', () => {
 							body,
 						}
 					);
+				} );
 
-					registry
-						.dispatch( MODULES_ANALYTICS_4 )
-						.receiveGetSettings( {} );
+				it( 'should return undefined if getSettings is not resolved yet', async () => {
+					freezeFetch(
+						new RegExp(
+							'^/google-site-kit/v1/modules/analytics-4/data/settings'
+						)
+					);
+
+					const { isGatheringData } =
+						registry.select( MODULES_ANALYTICS_4 );
+
+					expect( isGatheringData() ).toBeUndefined();
+
+					// Wait for resolvers to run.
+					await waitForDefaultTimeouts();
+
+					// Verify that isGatheringData still returns undefined.
+					expect( isGatheringData() ).toBeUndefined();
+
+					// Wait for resolvers to run following the second call to isGatheringData to avoid the test failing due to the second async attempt to fetch settings.
+					await waitForDefaultTimeouts();
 				} );
 
 				it( 'should return TRUE if the connnected GA4 property is under two days old', async () => {
@@ -234,6 +252,10 @@ describe( 'modules/analytics-4 report', () => {
 						createTime,
 					};
 					const propertyID = property._id;
+
+					registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.receiveGetSettings( {} );
 
 					registry
 						.dispatch( MODULES_ANALYTICS_4 )
@@ -267,6 +289,10 @@ describe( 'modules/analytics-4 report', () => {
 						createTime,
 					};
 					const propertyID = property._id;
+
+					registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.receiveGetSettings( {} );
 
 					registry
 						.dispatch( MODULES_ANALYTICS_4 )

@@ -175,6 +175,11 @@ const baseSelectors = {
 		}
 
 		const propertyID = select( MODULES_ANALYTICS_4 ).getPropertyID();
+
+		if ( propertyID === undefined ) {
+			return undefined;
+		}
+
 		const property =
 			select( MODULES_ANALYTICS_4 ).getProperty( propertyID );
 
