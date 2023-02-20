@@ -27,6 +27,15 @@ import faker from 'faker';
  */
 import { CONTEXT_WEB, CONTEXT_AMP } from '../constants';
 
+function randomFingerprint() {
+	return faker.datatype
+		.number( {
+			min: new Date( 2019, 9, 31 ).getTime(),
+			max: new Date( 2022, 10, 7 ).getTime(),
+		} )
+		.toString();
+}
+
 /**
  * Creates an account object in the format returned by the list endpoint.
  *
@@ -78,7 +87,7 @@ export const containerBuilder = build( 'Tag Manager Container', {
 			return `GTM-FAKE${ char() }${ char() }${ char() }`.toUpperCase();
 		} ),
 		usageContext: [ oneOf( CONTEXT_WEB, CONTEXT_AMP ) ],
-		fingerprint: Date.now().toString(),
+		fingerprint: perBuild( () => randomFingerprint() ),
 		// eslint-disable-next-line sitekit/acronym-case
 		tagManagerUrl:
 			'https://tagmanager.google.com/#/container/accounts/{accountId}/containers/{containerId}/workspaces?apiLink=container',
@@ -147,7 +156,7 @@ export const defaultTagWeb = ( { accountId, containerId } = {} ) => ( {
 	blockingRuleId: null,
 	blockingTriggerId: null,
 	containerId,
-	fingerprint: Date.now().toString(),
+	fingerprint: perBuild( () => randomFingerprint() ),
 	firingRuleId: null,
 	firingTriggerId: [ '2147479553' ],
 	liveOnly: null,
@@ -188,7 +197,7 @@ const defaultTagAMP = ( { accountId, containerId } = {} ) => ( {
 	blockingRuleId: null,
 	blockingTriggerId: null,
 	containerId,
-	fingerprint: Date.now().toString(),
+	fingerprint: perBuild( () => randomFingerprint() ),
 	firingRuleId: null,
 	firingTriggerId: [ '2147479553' ],
 	liveOnly: null,
@@ -238,7 +247,7 @@ export const liveContainerVersionBuilder = build(
 			deleted: null,
 			description: null,
 			name: null,
-			fingerprint: Date.now().toString(),
+			fingerprint: perBuild( () => randomFingerprint() ),
 			path: 'accounts/{accountId}/containers/{containerId}/versions/{containerVersionId}',
 			tag: undefined, // required, but depends on container type.
 			tagManagerUrl:
@@ -281,7 +290,7 @@ const analyticsTagWeb = ( propertyID, { accountId, containerId } = {} ) => {
 		blockingRuleId: null,
 		blockingTriggerId: null,
 		containerId,
-		fingerprint: Date.now().toString(),
+		fingerprint: perBuild( () => randomFingerprint() ),
 		firingRuleId: null,
 		firingTriggerId: [ '2147479553' ],
 		liveOnly: null,
@@ -328,7 +337,7 @@ const analyticsTagAMP = ( propertyID, { accountId, containerId } = {} ) => {
 		blockingRuleId: null,
 		blockingTriggerId: null,
 		containerId,
-		fingerprint: Date.now().toString(),
+		fingerprint: perBuild( () => randomFingerprint() ),
 		firingRuleId: null,
 		firingTriggerId: [ '2147479553' ],
 		liveOnly: null,
