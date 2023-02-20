@@ -24,15 +24,6 @@ import { CONTEXT_AMP, CONTEXT_WEB } from '../constants';
 
 describe( 'Google Tag Manager Builder fake data test', () => {
 	it( 'should create the same data from factory builders on each test run', () => {
-		// Set a hardcoded fingerprint value on each container to
-		// prevent the factory from failing due to `Date.now()` changing
-		// between test runs.
-		const setStaticFingerprintOnFactories = ( containers ) => {
-			return containers.map( ( container ) => {
-				return { ...container, fingerprint: '1676495375419' };
-			} );
-		};
-
 		const account = factories.accountBuilder();
 		const webContainers = factories.buildContainers(
 			3,
@@ -45,8 +36,8 @@ describe( 'Google Tag Manager Builder fake data test', () => {
 
 		expect( {
 			account,
-			webContainers: setStaticFingerprintOnFactories( webContainers ),
-			ampContainers: setStaticFingerprintOnFactories( ampContainers ),
+			webContainers,
+			ampContainers,
 		} ).toMatchSnapshot();
 	} );
 } );
