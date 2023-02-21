@@ -19,9 +19,9 @@
 /**
  * Internal dependencies
  */
+import { createRegistry } from '@wordpress/data';
 import Data from 'googlesitekit-data';
 import {
-	createTestRegistry,
 	unsubscribeFromAll,
 	untilResolved,
 	waitForDefaultTimeouts,
@@ -33,10 +33,6 @@ const STORE_NAME = `modules/${ MODULE_SLUG }`;
 
 describe( 'createGatheringDataStore', () => {
 	let registry;
-
-	beforeEach( () => {
-		registry = createTestRegistry();
-	} );
 
 	afterEach( () => {
 		unsubscribeFromAll( registry );
@@ -75,6 +71,10 @@ describe( 'createGatheringDataStore', () => {
 	} );
 
 	describe( 'selectors', () => {
+		beforeEach( () => {
+			registry = createRegistry();
+		} );
+
 		describe( 'isDataAvailableOnLoad', () => {
 			it( 'should return FALSE if not passed in args', () => {
 				const store = createGatheringDataStore( MODULE_SLUG, {
