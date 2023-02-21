@@ -494,11 +494,11 @@ class REST_Modules_Controller {
 							}
 
 							if ( ! $this->modules->is_module_connected( $slug ) ) {
-								return new WP_Error( 'module_not_connected', __( 'Module is not connected.', 'google-site-kit' ), array( 'status' => 400 ) );
+								return new WP_Error( 'module_not_connected', __( 'Module is not connected.', 'google-site-kit' ), array( 'status' => 500 ) );
 							}
 
 							if ( ! $module instanceof Module_With_Data_Available_State ) {
-								return new WP_Error( 'invalid_module_slug', __( 'Module does not support setting data available state.', 'google-site-kit' ), array( 'status' => 400 ) );
+								return new WP_Error( 'invalid_module_slug', __( 'Module does not support setting data available state.', 'google-site-kit' ), array( 'status' => 500 ) );
 							}
 
 							return new WP_REST_Response( $module->set_data_available() );

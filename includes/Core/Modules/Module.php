@@ -141,22 +141,20 @@ abstract class Module {
 	 * @param User_Options   $user_options   Optional. User Option API instance. Default is a new instance.
 	 * @param Authentication $authentication Optional. Authentication instance. Default is a new instance.
 	 * @param Assets         $assets  Optional. Assets API instance. Default is a new instance.
-	 * @param Transients     $transients Optional. Transients instance. Default is a new instance.
 	 */
 	public function __construct(
 		Context $context,
 		Options $options = null,
 		User_Options $user_options = null,
 		Authentication $authentication = null,
-		Assets $assets = null,
-		Transients $transients = null
+		Assets $assets = null
 	) {
 		$this->context        = $context;
 		$this->options        = $options ?: new Options( $this->context );
 		$this->user_options   = $user_options ?: new User_Options( $this->context );
 		$this->authentication = $authentication ?: new Authentication( $this->context, $this->options, $this->user_options );
 		$this->assets         = $assets ?: new Assets( $this->context );
-		$this->transients     = $transients ?: new Transients( $this->context );
+		$this->transients     = new Transients( $this->context );
 		$this->info           = $this->parse_info( (array) $this->setup_info() );
 	}
 

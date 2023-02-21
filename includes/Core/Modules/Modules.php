@@ -441,15 +441,10 @@ final class Modules {
 	private function inline_modules_data( $modules_data ) {
 		$available_modules = $this->get_available_modules();
 
-		$modules_with_data_available_state = array_filter(
-			$available_modules,
-			function( Module $module ) {
-				return $module instanceof Module_With_Data_Available_State;
+		foreach ( $available_modules as $module ) {
+			if ( $module instanceof Module_With_Data_Available_State ) {
+				$modules_data[ 'data_available_' . $module->slug ] = $this->is_module_active( $module->slug ) && $module->is_data_available();
 			}
-		);
-
-		foreach ( $modules_with_data_available_state as $module ) {
-			$modules_data[ 'data_available_' . $module->slug ] = $module->is_connected() && $module->is_data_available();
 		}
 
 		return $modules_data;

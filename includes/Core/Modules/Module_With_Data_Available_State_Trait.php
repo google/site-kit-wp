@@ -11,7 +11,7 @@
 namespace Google\Site_Kit\Core\Modules;
 
 /**
- * Trait for a module that have data available state.
+ * Trait for a module that has data available state.
  *
  * @since n.e.x.t
  * @access private
@@ -27,7 +27,7 @@ trait Module_With_Data_Available_State_Trait {
 	 * @return string Data available transient name.
 	 */
 	protected function get_data_available_transient_name() {
-		return 'googlesitekit_' . $this->slug . '_data_available';
+		return "googlesitekit_{$this->slug}_data_available";
 	}
 
 	/**
