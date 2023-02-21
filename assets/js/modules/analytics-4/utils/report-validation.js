@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import isPlainObject from 'lodash/isPlainObject';
+
+/**
  * Internal dependencies
  */
 import { isValidStringsOrObjects } from '../../../util/report-validation';
@@ -87,4 +92,47 @@ export function isValidDimensionFilters( dimensionFilters ) {
 						) && validType.includes( typeof param )
 				) )
 	);
+}
+
+/**
+ * Verifies that order definitions are valid for a report. It should be an array
+ * of objects where each object has either a "metric" or a "dimension" property,
+ * and an optional "desc" property. The "metric" and "dimension" properties should
+ * be objects with "metricName" and "dimensionName" properties respectively.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object[]} orders The order definitions to check.
+ * @return {boolean} TRUE if order definitions are valid, otherwise FALSE.
+ */
+export function isValidOrders( orders ) {
+	if ( ! Array.isArray( orders ) ) {
+		return false;
+	}
+
+	return orders.every( ( order ) => {
+		if ( ! isPlainObject( order ) ) {
+			return false;
+		}
+
+		if (
+			order.hasOwnProperty( 'desc' ) &&
+			typeof order.desc !== 'boolean'
+		) {
+			return false;
+		}
+
+		if ( order.metric ) {
+			return (
+				! order.dimension &&
+				typeof order.metric?.metricName === 'string'
+			);
+		}
+
+		if ( order.dimension ) {
+			return typeof order.dimension?.dimensionName === 'string';
+		}
+
+		return false;
+	} );
 }

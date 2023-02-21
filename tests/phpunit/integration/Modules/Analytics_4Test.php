@@ -190,15 +190,16 @@ class Analytics_4Test extends TestCase {
 
 		$this->assertEqualSetsWithIndex(
 			array(
-				'accountID'            => $account_id,
-				'propertyID'           => $property_id,
-				'webDataStreamID'      => $webdatastream_id,
-				'measurementID'        => $measurement_id,
-				'ownerID'              => 0,
-				'useSnippet'           => true,
-				'googleTagID'          => '',
-				'googleTagAccountID'   => '',
-				'googleTagContainerID' => '',
+				'accountID'               => $account_id,
+				'propertyID'              => $property_id,
+				'webDataStreamID'         => $webdatastream_id,
+				'measurementID'           => $measurement_id,
+				'ownerID'                 => 0,
+				'useSnippet'              => true,
+				'googleTagID'             => '',
+				'googleTagAccountID'      => '',
+				'googleTagContainerID'    => '',
+				'googleTagLastSyncedAtMs' => 0,
 			),
 			$options->get( Settings::OPTION )
 		);
@@ -290,15 +291,16 @@ class Analytics_4Test extends TestCase {
 
 		$this->assertEqualSetsWithIndex(
 			array(
-				'accountID'            => $account_id,
-				'propertyID'           => '',
-				'webDataStreamID'      => '',
-				'measurementID'        => '',
-				'ownerID'              => 0,
-				'useSnippet'           => true,
-				'googleTagID'          => '',
-				'googleTagAccountID'   => '',
-				'googleTagContainerID' => '',
+				'accountID'               => $account_id,
+				'propertyID'              => '',
+				'webDataStreamID'         => '',
+				'measurementID'           => '',
+				'ownerID'                 => 0,
+				'useSnippet'              => true,
+				'googleTagID'             => '',
+				'googleTagAccountID'      => '',
+				'googleTagContainerID'    => '',
+				'googleTagLastSyncedAtMs' => 0,
 			),
 			$options->get( Settings::OPTION )
 		);
@@ -307,15 +309,16 @@ class Analytics_4Test extends TestCase {
 
 		$this->assertEqualSetsWithIndex(
 			array(
-				'accountID'            => $account_id,
-				'propertyID'           => $property_id,
-				'webDataStreamID'      => $webdatastream_id,
-				'measurementID'        => $measurement_id,
-				'ownerID'              => 0,
-				'useSnippet'           => true,
-				'googleTagID'          => 'GT-123',
-				'googleTagAccountID'   => $google_tag_account_id,
-				'googleTagContainerID' => $google_tag_container_id,
+				'accountID'               => $account_id,
+				'propertyID'              => $property_id,
+				'webDataStreamID'         => $webdatastream_id,
+				'measurementID'           => $measurement_id,
+				'ownerID'                 => 0,
+				'useSnippet'              => true,
+				'googleTagID'             => 'GT-123',
+				'googleTagAccountID'      => $google_tag_account_id,
+				'googleTagContainerID'    => $google_tag_container_id,
+				'googleTagLastSyncedAtMs' => 0,
 			),
 			$options->get( Settings::OPTION )
 		);
@@ -549,12 +552,22 @@ class Analytics_4Test extends TestCase {
 				),
 				'orderby'          => array(
 					array(
-						'fieldName' => 'sessions',
-						'sortOrder' => 'DESCENDING',
+						'metric' => array(
+							'metricName' => 'sessions',
+						),
+						'desc'   => true,
 					),
 					array(
-						'fieldName' => 'total',
-						'sortOrder' => 'ASCENDING',
+						'metric' => array(
+							'metricName' => 'total',
+						),
+						// Omit desc to test default value.
+					),
+					array(
+						'dimension' => array(
+							'dimensionName' => 'pageTitle',
+						),
+						'desc'      => false,
 					),
 				),
 			)
@@ -704,6 +717,12 @@ class Analytics_4Test extends TestCase {
 						'metricName' => 'total',
 					),
 					'desc'   => '',
+				),
+				array(
+					'dimension' => array(
+						'dimensionName' => 'pageTitle',
+					),
+					'desc'      => '',
 				),
 			),
 			$request_params['orderBys']
