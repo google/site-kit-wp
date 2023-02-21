@@ -1,7 +1,7 @@
 /**
- * OverallPageMetricsWidget component.
+ * OverallPageMetricsWidgetGA4 component.
  *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,6 +32,7 @@ import {
 } from '../../datastore/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 import { Grid, Row, Cell } from '../../../../material-components/layout';
 import PreviewBlock from '../../../../components/PreviewBlock';
 import DataBlock from '../../../../components/DataBlock';
@@ -73,23 +74,23 @@ function useOverallPageMetricsReport() {
 
 	const args = {
 		...dates,
-		dimensions: [ 'ga:date' ],
+		dimensions: [ 'date' ],
 		metrics: [
 			{
-				expression: 'ga:pageviews',
-				alias: 'Pageviews',
+				expression: 'screenPageViews',
+				name: 'Pageviews',
 			},
 			{
-				expression: 'ga:uniquePageviews',
-				alias: 'Unique Pageviews',
+				expression: 'sessions',
+				name: 'Sessions',
 			},
 			{
-				expression: 'ga:bounceRate',
-				alias: 'Bounce Rate',
+				expression: 'engagedSessions',
+				name: 'Engaged Sessions',
 			},
 			{
-				expression: 'ga:avgSessionDuration',
-				alias: 'Session Duration',
+				expression: 'averageSessionDuration',
+				name: 'Session Duration',
 			},
 		],
 		url,
@@ -106,13 +107,16 @@ function useOverallPageMetricsReport() {
 
 	const isLoading = useSelect(
 		( select ) =>
-			! select( MODULES_ANALYTICS ).hasFinishedResolution( 'getReport', [
-				args,
-			] )
+			! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
+				'getReport',
+				[ args ]
+			)
 	);
 
 	const error = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [ args ] )
+		select( MODULES_ANALYTICS_4 ).getErrorForSelector( 'getReport', [
+			args,
+		] )
 	);
 
 	const serviceURL = useSelect( ( select ) => {
@@ -120,6 +124,7 @@ function useOverallPageMetricsReport() {
 			return null;
 		}
 
+		// TODO: Check this.
 		return select( MODULES_ANALYTICS ).getServiceReportURL(
 			'visitors-overview',
 			reportArgs
@@ -127,7 +132,7 @@ function useOverallPageMetricsReport() {
 	} );
 
 	const report = useInViewSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).getReport( args )
+		select( MODULES_ANALYTICS_4 ).getReport( args )
 	);
 
 	return {
@@ -158,7 +163,7 @@ function useOverallPageMetricsReport() {
 function calculateOverallPageMetricsData( report ) {
 	const metricsData = [
 		{
-			metric: 'ga:pageviews',
+			metric: 'screenPageViews',
 			title: __( 'Pageviews', 'google-site-kit' ),
 			sparkLineData: [
 				[
@@ -170,24 +175,24 @@ function calculateOverallPageMetricsData( report ) {
 			change: 0,
 		},
 		{
-			metric: 'ga:uniquePageviews',
-			title: __( 'Unique Pageviews', 'google-site-kit' ),
+			metric: 'sessions',
+			title: __( 'Sessions', 'google-site-kit' ),
 			sparkLineData: [
 				[
 					{ type: 'date', label: 'Day' },
-					{ type: 'number', label: 'Unique Pageviews' },
+					{ type: 'number', label: 'Sessions' },
 				],
 			],
 			total: 0,
 			change: 0,
 		},
 		{
-			metric: 'ga:bounceRate',
-			title: __( 'Bounce Rate', 'google-site-kit' ),
+			metric: 'engagedSessions',
+			title: __( 'Engaged Sessions', 'google-site-kit' ),
 			sparkLineData: [
 				[
 					{ type: 'date', label: 'Day' },
-					{ type: 'number', label: 'Bounce Rate' },
+					{ type: 'number', label: 'Engaged Sessions' },
 				],
 			],
 			datapointUnit: '%',
@@ -196,7 +201,7 @@ function calculateOverallPageMetricsData( report ) {
 			change: 0,
 		},
 		{
-			metric: 'ga:avgSessionDuration',
+			metric: 'averageSessionDuration',
 			title: __( 'Session Duration', 'google-site-kit' ),
 			sparkLineData: [
 				[
@@ -237,9 +242,9 @@ function calculateOverallPageMetricsData( report ) {
 	);
 }
 
-function DashboardOverallPageMetricsWidget( { Widget, WidgetReportError } ) {
+function DashboardOverallPageMetricsWidgetGA4( { Widget, WidgetReportError } ) {
 	const isGatheringData = useInViewSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).isGatheringData()
+		select( MODULES_ANALYTICS_4 ).isGatheringData()
 	);
 
 	const { report, serviceURL, isLoading, error } =
@@ -330,5 +335,5 @@ function DashboardOverallPageMetricsWidget( { Widget, WidgetReportError } ) {
 }
 
 export default whenActive( { moduleName: 'analytics' } )(
-	DashboardOverallPageMetricsWidget
+	DashboardOverallPageMetricsWidgetGA4
 );

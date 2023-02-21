@@ -1,7 +1,7 @@
 /**
- * DashboardOverallPageMetricsWidget Component Stories.
+ * DashboardOverallPageMetricsWidgetGA4 Component Stories.
  *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import { MODULES_ANALYTICS } from '../../datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 import {
 	provideModules,
 	provideSiteInfo,
@@ -28,15 +28,15 @@ import {
 import { replaceValuesInAnalyticsReportWithZeroData } from '../../../../../../.storybook/utils/zeroReports';
 import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
 import {
-	provideAnalyticsMockReport,
-	getAnalyticsMockResponse,
-} from '../../util/data-mock';
+	getAnalytics4MockResponse,
+	provideAnalytics4MockReport,
+} from '../../../analytics-4/utils/data-mock';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
-import DashboardOverallPageMetricsWidget from './DashboardOverallPageMetricsWidget';
+import DashboardOverallPageMetricsWidgetGA4 from './DashboardOverallPageMetricsWidgetGA4';
 
 const gatheringReportOptions = {
-	dimensions: [ 'ga:date' ],
-	metrics: [ { expression: 'ga:users' } ],
+	dimensions: [ 'date' ],
+	metrics: [ { name: 'totalUsers' } ],
 	startDate: '2020-08-11',
 	endDate: '2020-09-07',
 	// url: 'https://www.sitekit.com/',
@@ -48,30 +48,30 @@ const reportOptions = [
 		compareEndDate: '2020-08-10',
 		startDate: '2020-08-11',
 		endDate: '2020-09-07',
-		dimensions: [ 'ga:date' ],
+		dimensions: [ 'date' ],
 		metrics: [
 			{
-				expression: 'ga:pageviews',
-				alias: 'Pageviews',
+				expression: 'screenPageViews',
+				name: 'Pageviews',
 			},
 			{
-				expression: 'ga:uniquePageviews',
-				alias: 'Unique Pageviews',
+				expression: 'sessions',
+				name: 'Sessions',
 			},
 			{
-				expression: 'ga:bounceRate',
-				alias: 'Bounce Rate',
+				expression: 'engagedSessions',
+				name: 'Engaged Sessions',
 			},
 			{
-				expression: 'ga:avgSessionDuration',
-				alias: 'Session Duration',
+				expression: 'averageSessionDuration',
+				name: 'Session Duration',
 			},
 		],
 		url: null,
 	},
 	{
-		dimensions: [ 'ga:date' ],
-		metrics: [ { expression: 'ga:users' } ],
+		dimensions: [ 'date' ],
+		metrics: [ { name: 'totalUsers' } ],
 		startDate: '2020-08-11',
 		endDate: '2020-09-07',
 	},
@@ -85,7 +85,7 @@ const reportOptionsWithEntity = reportOptions.map( ( options ) => {
 } );
 
 const WidgetWithComponentProps = withWidgetComponentProps( 'widget-slug' )(
-	DashboardOverallPageMetricsWidget
+	DashboardOverallPageMetricsWidgetGA4
 );
 
 const Template = ( { setupRegistry, ...args } ) => (
@@ -99,7 +99,7 @@ Ready.storyName = 'Ready';
 Ready.args = {
 	setupRegistry: ( registry ) => {
 		for ( const options of reportOptions ) {
-			provideAnalyticsMockReport( registry, options );
+			provideAnalytics4MockReport( registry, options );
 		}
 	},
 };
@@ -108,7 +108,7 @@ export const Loading = Template.bind( {} );
 Loading.storyName = 'Loading';
 Loading.args = {
 	setupRegistry: ( { dispatch } ) => {
-		dispatch( MODULES_ANALYTICS ).startResolution( 'getReport', [
+		dispatch( MODULES_ANALYTICS_4 ).startResolution( 'getReport', [
 			reportOptions[ 0 ],
 		] );
 	},
@@ -118,12 +118,12 @@ export const DataUnavailable = Template.bind( {} );
 DataUnavailable.storyName = 'Data Unavailable';
 DataUnavailable.args = {
 	setupRegistry: ( { dispatch } ) => {
-		dispatch( MODULES_ANALYTICS ).receiveGetReport( [], {
+		dispatch( MODULES_ANALYTICS_4 ).receiveGetReport( [], {
 			options: gatheringReportOptions,
 		} );
 
 		for ( const options of reportOptions ) {
-			dispatch( MODULES_ANALYTICS ).receiveGetReport( [], { options } );
+			dispatch( MODULES_ANALYTICS_4 ).receiveGetReport( [], { options } );
 		}
 	},
 };
@@ -133,9 +133,9 @@ ZeroData.storyName = 'Zero Data';
 ZeroData.args = {
 	setupRegistry: ( { dispatch } ) => {
 		for ( const options of reportOptions ) {
-			const report = getAnalyticsMockResponse( options );
+			const report = getAnalytics4MockResponse( options );
 
-			dispatch( MODULES_ANALYTICS ).receiveGetReport(
+			dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
 				replaceValuesInAnalyticsReportWithZeroData( report ),
 				{
 					options,
@@ -156,11 +156,11 @@ Error.args = {
 		};
 		const options = reportOptions[ 0 ];
 
-		dispatch( MODULES_ANALYTICS ).receiveError( error, 'getReport', [
+		dispatch( MODULES_ANALYTICS_4 ).receiveError( error, 'getReport', [
 			options,
 		] );
 
-		dispatch( MODULES_ANALYTICS ).finishResolution( 'getReport', [
+		dispatch( MODULES_ANALYTICS_4 ).finishResolution( 'getReport', [
 			options,
 		] );
 	},
@@ -171,13 +171,13 @@ LoadedEntityURL.storyName = 'Ready w/ entity URL set';
 LoadedEntityURL.args = {
 	setupRegistry: ( registry ) => {
 		provideSiteInfo( registry, { currentEntityURL } );
-		provideAnalyticsMockReport( registry, {
+		provideAnalytics4MockReport( registry, {
 			...gatheringReportOptions,
 			url: currentEntityURL,
 		} );
 
 		for ( const options of reportOptionsWithEntity ) {
-			provideAnalyticsMockReport( registry, options );
+			provideAnalytics4MockReport( registry, options );
 		}
 	},
 };
@@ -187,13 +187,13 @@ LoadingEntityURL.storyName = 'Loading w/ entity URL';
 LoadingEntityURL.args = {
 	setupRegistry: ( registry ) => {
 		provideSiteInfo( registry, { currentEntityURL } );
-		provideAnalyticsMockReport( registry, {
+		provideAnalytics4MockReport( registry, {
 			...gatheringReportOptions,
 			url: currentEntityURL,
 		} );
 
 		registry
-			.dispatch( MODULES_ANALYTICS )
+			.dispatch( MODULES_ANALYTICS_4 )
 			.startResolution( 'getReport', [ reportOptionsWithEntity[ 0 ] ] );
 	},
 };
@@ -204,7 +204,7 @@ DataUnavailableEntityURL.args = {
 	setupRegistry: ( registry ) => {
 		provideSiteInfo( registry, { currentEntityURL } );
 
-		registry.dispatch( MODULES_ANALYTICS ).receiveGetReport( [], {
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport( [], {
 			options: {
 				...gatheringReportOptions,
 				url: currentEntityURL,
@@ -212,7 +212,7 @@ DataUnavailableEntityURL.args = {
 		} );
 
 		registry
-			.dispatch( MODULES_ANALYTICS )
+			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveGetReport( [], { options: reportOptionsWithEntity[ 0 ] } );
 	},
 };
@@ -222,16 +222,16 @@ ZeroDataEntityURL.storyName = 'Zero Data w/ entity URL';
 ZeroDataEntityURL.args = {
 	setupRegistry: ( registry ) => {
 		provideSiteInfo( registry, { currentEntityURL } );
-		provideAnalyticsMockReport( registry, {
+		provideAnalytics4MockReport( registry, {
 			...gatheringReportOptions,
 			url: currentEntityURL,
 		} );
 
 		for ( const options of reportOptionsWithEntity ) {
-			const report = getAnalyticsMockResponse( options );
+			const report = getAnalytics4MockResponse( options );
 
 			registry
-				.dispatch( MODULES_ANALYTICS )
+				.dispatch( MODULES_ANALYTICS_4 )
 				.receiveGetReport(
 					replaceValuesInAnalyticsReportWithZeroData( report ),
 					{
@@ -253,23 +253,23 @@ ErrorEntityURL.args = {
 		};
 
 		provideSiteInfo( registry, { currentEntityURL } );
-		provideAnalyticsMockReport( registry, {
+		provideAnalytics4MockReport( registry, {
 			...gatheringReportOptions,
 			url: currentEntityURL,
 		} );
 
 		const options = reportOptionsWithEntity[ 0 ];
 		registry
-			.dispatch( MODULES_ANALYTICS )
+			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveError( error, 'getReport', [ options ] );
 		registry
-			.dispatch( MODULES_ANALYTICS )
+			.dispatch( MODULES_ANALYTICS_4 )
 			.finishResolution( 'getReport', [ options ] );
 	},
 };
 
 export default {
-	title: 'Modules/Analytics/Widgets/DashboardOverallPageMetricsWidget',
+	title: 'Modules/Analytics/Widgets/DashboardOverallPageMetricsWidgetGA4',
 	decorators: [
 		( Story, { args } ) => {
 			const setupRegistry = ( registry ) => {
@@ -283,7 +283,7 @@ export default {
 
 				registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );
 
-				provideAnalyticsMockReport( registry, gatheringReportOptions );
+				provideAnalytics4MockReport( registry, gatheringReportOptions );
 
 				// Call story-specific setup.
 				args.setupRegistry( registry );
