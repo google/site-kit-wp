@@ -24,4 +24,8 @@
 
 .googlesitekit-widget-context--last {
 	min-height: 80vh;
+
+	@media screen and (min-height: 1200px) {
+		min-height: 100vh;
+	}
 }
