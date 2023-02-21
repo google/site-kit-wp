@@ -163,7 +163,8 @@ describe( 'SetupBanner', () => {
 
 		// Click submit element to create a new property.
 		await act( async () => {
-			const waitForRegistryAfterCreation = createWaitForRegistry( registry );
+			const waitForRegistryAfterCreation =
+				createWaitForRegistry( registry );
 			fireEvent.click( getByText( /create property/i ) );
 			await waitForRegistryAfterCreation();
 		} );
