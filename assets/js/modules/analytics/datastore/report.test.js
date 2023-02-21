@@ -467,6 +467,12 @@ describe( 'modules/analytics report', () => {
 					)
 				);
 
+				muteFetch(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics/data/data-available'
+					)
+				);
+
 				const { hasZeroData } = registry.select( MODULES_ANALYTICS );
 
 				expect( hasZeroData() ).toBeUndefined();

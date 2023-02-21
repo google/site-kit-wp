@@ -211,6 +211,12 @@ describe( 'modules/analytics-4 report', () => {
 					data: { status: 500 },
 				};
 
+				muteFetch(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics-4/data/data-available'
+					)
+				);
+
 				fetchMock.getOnce(
 					new RegExp(
 						'^/google-site-kit/v1/modules/analytics-4/data/report'

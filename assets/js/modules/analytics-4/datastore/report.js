@@ -122,7 +122,7 @@ const gatheringDataStore = createGatheringDataStore( 'analytics-4', {
 			return undefined;
 		}
 		if ( hasZeroData === false ) {
-			return false;
+			return true;
 		}
 
 		const propertyID = select( MODULES_ANALYTICS_4 ).getPropertyID();
