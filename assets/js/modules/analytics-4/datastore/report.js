@@ -112,6 +112,7 @@ const fetchGetReportStore = createFetchStore( {
 } );
 
 const gatheringDataStore = createGatheringDataStore( 'analytics-4', {
+	storeName: MODULES_ANALYTICS_4,
 	dataAvailable:
 		global._googlesitekitModulesData?.[ 'data_available_analytics-4' ],
 	determineDataAvailability: createRegistrySelector( ( select ) => () => {

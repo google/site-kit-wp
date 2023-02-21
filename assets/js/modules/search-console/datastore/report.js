@@ -84,6 +84,7 @@ const fetchGetReportStore = createFetchStore( {
 } );
 
 const gatheringDataStore = createGatheringDataStore( 'search-console', {
+	storeName: MODULES_SEARCH_CONSOLE,
 	dataAvailable:
 		global._googlesitekitModulesData?.[ 'data_available_search-console' ],
 	determineDataAvailability: createRegistrySelector( ( select ) => () => {

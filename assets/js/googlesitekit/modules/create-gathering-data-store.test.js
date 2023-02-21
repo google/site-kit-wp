@@ -49,9 +49,16 @@ describe( 'createGatheringDataStore', () => {
 			} ).toThrow( 'module slug is required.' );
 		} );
 
+		it( 'should throw an error if no store name is provided', () => {
+			expect( () => {
+				createGatheringDataStore( MODULE_SLUG );
+			} ).toThrow( 'store name is required.' );
+		} );
+
 		it( 'should throw an error if passed dataAvailable is not a boolean', () => {
 			expect( () => {
 				createGatheringDataStore( MODULE_SLUG, {
+					storeName: STORE_NAME,
 					dataAvailable: 'not a boolean',
 				} );
 			} ).toThrow( 'dataAvailable must be a boolean.' );
@@ -60,6 +67,7 @@ describe( 'createGatheringDataStore', () => {
 		it( 'should throw an error if determineDataAvailability is not a function', () => {
 			expect( () => {
 				createGatheringDataStore( MODULE_SLUG, {
+					storeName: STORE_NAME,
 					determineDataAvailability: 'not a function',
 				} );
 			} ).toThrow( 'determineDataAvailability must be a function.' );
@@ -70,6 +78,7 @@ describe( 'createGatheringDataStore', () => {
 		describe( 'isDataAvailableOnLoad', () => {
 			it( 'should return FALSE if not passed in args', () => {
 				const store = createGatheringDataStore( MODULE_SLUG, {
+					storeName: STORE_NAME,
 					determineDataAvailability: () => {},
 				} );
 				registry.registerStore( STORE_NAME, store );
@@ -80,6 +89,7 @@ describe( 'createGatheringDataStore', () => {
 
 			it( 'should return the value passed in args', () => {
 				const store = createGatheringDataStore( MODULE_SLUG, {
+					storeName: STORE_NAME,
 					determineDataAvailability: () => {},
 					dataAvailable: true,
 				} );
@@ -107,6 +117,7 @@ describe( 'createGatheringDataStore', () => {
 					Data.combineStores(
 						Data.commonStore,
 						createGatheringDataStore( MODULE_SLUG, {
+							storeName: STORE_NAME,
 							determineDataAvailability,
 						} )
 					)
@@ -123,6 +134,7 @@ describe( 'createGatheringDataStore', () => {
 					Data.combineStores(
 						Data.commonStore,
 						createGatheringDataStore( MODULE_SLUG, {
+							storeName: STORE_NAME,
 							determineDataAvailability,
 						} )
 					)
@@ -147,6 +159,7 @@ describe( 'createGatheringDataStore', () => {
 					Data.combineStores(
 						Data.commonStore,
 						createGatheringDataStore( MODULE_SLUG, {
+							storeName: STORE_NAME,
 							determineDataAvailability,
 							dataAvailable: true,
 						} )
@@ -172,6 +185,7 @@ describe( 'createGatheringDataStore', () => {
 					Data.combineStores(
 						Data.commonStore,
 						createGatheringDataStore( MODULE_SLUG, {
+							storeName: STORE_NAME,
 							determineDataAvailability,
 							dataAvailable: false,
 						} )
@@ -195,6 +209,7 @@ describe( 'createGatheringDataStore', () => {
 					Data.combineStores(
 						Data.commonStore,
 						createGatheringDataStore( MODULE_SLUG, {
+							storeName: STORE_NAME,
 							determineDataAvailability,
 							dataAvailable: false,
 						} )
@@ -232,6 +247,7 @@ describe( 'createGatheringDataStore', () => {
 					Data.combineStores(
 						Data.commonStore,
 						createGatheringDataStore( MODULE_SLUG, {
+							storeName: STORE_NAME,
 							determineDataAvailability,
 							dataAvailable: false,
 						} )

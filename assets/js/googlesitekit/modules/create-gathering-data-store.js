@@ -41,6 +41,7 @@ const WAIT_FOR_GATHERING_DATA = 'WAIT_FOR_GATHERING_DATA';
  *
  * @param {string}   moduleSlug                     Slug of the module that the store is for.
  * @param {Object}   args                           Arguments to configure the store.
+ * @param {string}   args.storeName                 Store name to use.
  * @param {boolean}  args.dataAvailable             Data available on load.
  * @param {Function} args.determineDataAvailability Selector to determine data availability.
  *                                                  This is a function that should return a boolean, or undefined while resolving.
@@ -50,11 +51,16 @@ const WAIT_FOR_GATHERING_DATA = 'WAIT_FOR_GATHERING_DATA';
  */
 const createGatheringDataStore = (
 	moduleSlug,
-	{ dataAvailable = false, determineDataAvailability } = {}
+	{ storeName, dataAvailable = false, determineDataAvailability } = {}
 ) => {
 	invariant(
 		'string' === typeof moduleSlug && moduleSlug,
 		'module slug is required.'
+	);
+
+	invariant(
+		'string' === typeof storeName && storeName,
+		'store name is required.'
 	);
 
 	invariant(
@@ -72,8 +78,6 @@ const createGatheringDataStore = (
 		controlCallback: () =>
 			API.set( 'modules', moduleSlug, 'data-available' ),
 	} );
-
-	const storeName = `modules/${ moduleSlug }`;
 
 	const initialState = {
 		dataAvailableOnLoad: dataAvailable,
