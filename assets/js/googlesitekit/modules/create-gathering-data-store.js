@@ -39,19 +39,19 @@ const WAIT_FOR_DATA_AVAILABILITY_STATE = 'WAIT_FOR_DATA_AVAILABILITY_STATE';
  * @since n.e.x.t
  * @private
  *
- * @param {string}   moduleSlug                     Slug of the module that the store is for.
- * @param {Object}   args                           Arguments to configure the store.
- * @param {string}   args.storeName                 Store name to use.
- * @param {boolean}  args.dataAvailable             Data available on load.
- * @param {Function} args.determineDataAvailability Selector to determine data availability.
- *                                                  This is a function that should return a boolean, or undefined while resolving.
- *                                                  Since logic to determine data availability is different for every module,
- *                                                  this selector must be provided by the module.
+ * @param {string}   moduleSlug                  Slug of the module that the store is for.
+ * @param {Object}   args                        Arguments to configure the store.
+ * @param {string}   args.storeName              Store name to use.
+ * @param {boolean}  args.dataAvailable          Data available on load.
+ * @param {Function} args.selectDataAvailability Selector to determine data availability.
+ *                                               This is a function that should return a boolean, or undefined while resolving.
+ *                                               Since logic to determine data availability is different for every module,
+ *                                               this selector must be provided by the module.
  * @return {Object} The gathering data store object.
  */
 export const createGatheringDataStore = (
 	moduleSlug,
-	{ storeName, dataAvailable = false, determineDataAvailability } = {}
+	{ storeName, dataAvailable = false, selectDataAvailability } = {}
 ) => {
 	invariant(
 		'string' === typeof moduleSlug && moduleSlug,
@@ -69,8 +69,8 @@ export const createGatheringDataStore = (
 	);
 
 	invariant(
-		'function' === typeof determineDataAvailability,
-		'determineDataAvailability must be a function.'
+		'function' === typeof selectDataAvailability,
+		'selectDataAvailability must be a function.'
 	);
 
 	const fetchSaveDataAvailableStateStore = createFetchStore( {
@@ -114,7 +114,7 @@ export const createGatheringDataStore = (
 		[ WAIT_FOR_DATA_AVAILABILITY_STATE ]: createRegistryControl(
 			( registry ) => () => {
 				const dataAvailabityDetermined = () =>
-					registry.select( storeName ).determineDataAvailability() !==
+					registry.select( storeName ).selectDataAvailability() !==
 					undefined;
 				if ( dataAvailabityDetermined() ) {
 					return true;
@@ -176,11 +176,11 @@ export const createGatheringDataStore = (
 
 			const dataAvailability = registry
 				.select( storeName )
-				.determineDataAvailability();
+				.selectDataAvailability();
 
 			invariant(
 				'boolean' === typeof dataAvailability,
-				'determineDataAvailability must return a boolean.'
+				'selectDataAvailability must return a boolean.'
 			);
 
 			yield actions.receiveIsGatheringData( ! dataAvailability );
@@ -199,7 +199,7 @@ export const createGatheringDataStore = (
 		 *
 		 * @return {boolean|undefined} Returns TRUE if data is available, otherwise FALSE. If the request is still being resolved, returns undefined.
 		 */
-		determineDataAvailability,
+		selectDataAvailability,
 
 		/**
 		 * Checks if data is available on load.

@@ -60,13 +60,13 @@ describe( 'createGatheringDataStore', () => {
 			} ).toThrow( 'dataAvailable must be a boolean.' );
 		} );
 
-		it( 'should throw an error if determineDataAvailability is not a function', () => {
+		it( 'should throw an error if selectDataAvailability is not a function', () => {
 			expect( () => {
 				createGatheringDataStore( MODULE_SLUG, {
 					storeName: STORE_NAME,
-					determineDataAvailability: 'not a function',
+					selectDataAvailability: 'not a function',
 				} );
-			} ).toThrow( 'determineDataAvailability must be a function.' );
+			} ).toThrow( 'selectDataAvailability must be a function.' );
 		} );
 	} );
 
@@ -79,7 +79,7 @@ describe( 'createGatheringDataStore', () => {
 			it( 'should return FALSE if not passed in args', () => {
 				const store = createGatheringDataStore( MODULE_SLUG, {
 					storeName: STORE_NAME,
-					determineDataAvailability: () => {},
+					selectDataAvailability: () => {},
 				} );
 				registry.registerStore( STORE_NAME, store );
 				expect(
@@ -90,7 +90,7 @@ describe( 'createGatheringDataStore', () => {
 			it( 'should return the value passed in args', () => {
 				const store = createGatheringDataStore( MODULE_SLUG, {
 					storeName: STORE_NAME,
-					determineDataAvailability: () => {},
+					selectDataAvailability: () => {},
 					dataAvailable: true,
 				} );
 				registry.registerStore( STORE_NAME, store );
@@ -101,14 +101,14 @@ describe( 'createGatheringDataStore', () => {
 		} );
 
 		describe( 'isGatheringData', () => {
-			let determineDataAvailability;
+			let selectDataAvailability;
 
 			beforeAll( () => {
-				determineDataAvailability = jest.fn();
+				selectDataAvailability = jest.fn();
 			} );
 
 			beforeEach( () => {
-				determineDataAvailability.mockReset();
+				selectDataAvailability.mockReset();
 			} );
 
 			it( 'should return undefined if it is not resolved yet', () => {
@@ -118,7 +118,7 @@ describe( 'createGatheringDataStore', () => {
 						Data.commonStore,
 						createGatheringDataStore( MODULE_SLUG, {
 							storeName: STORE_NAME,
-							determineDataAvailability,
+							selectDataAvailability,
 						} )
 					)
 				);
@@ -135,7 +135,7 @@ describe( 'createGatheringDataStore', () => {
 						Data.commonStore,
 						createGatheringDataStore( MODULE_SLUG, {
 							storeName: STORE_NAME,
-							determineDataAvailability,
+							selectDataAvailability,
 						} )
 					)
 				);
@@ -150,7 +150,7 @@ describe( 'createGatheringDataStore', () => {
 
 				await waitForDefaultTimeouts();
 
-				expect( determineDataAvailability ).not.toHaveBeenCalled();
+				expect( selectDataAvailability ).not.toHaveBeenCalled();
 			} );
 
 			it( 'should return FALSE and do nothing else when data is available on load', async () => {
@@ -160,7 +160,7 @@ describe( 'createGatheringDataStore', () => {
 						Data.commonStore,
 						createGatheringDataStore( MODULE_SLUG, {
 							storeName: STORE_NAME,
-							determineDataAvailability,
+							selectDataAvailability,
 							dataAvailable: true,
 						} )
 					)
@@ -176,17 +176,17 @@ describe( 'createGatheringDataStore', () => {
 					false
 				);
 
-				expect( determineDataAvailability ).not.toHaveBeenCalled();
+				expect( selectDataAvailability ).not.toHaveBeenCalled();
 			} );
 
-			it( 'should call determineDataAvailability to determine gathering data state when data is not available on load', async () => {
+			it( 'should call selectDataAvailability to determine gathering data state when data is not available on load', async () => {
 				registry.registerStore(
 					STORE_NAME,
 					Data.combineStores(
 						Data.commonStore,
 						createGatheringDataStore( MODULE_SLUG, {
 							storeName: STORE_NAME,
-							determineDataAvailability,
+							selectDataAvailability,
 							dataAvailable: false,
 						} )
 					)
@@ -198,11 +198,11 @@ describe( 'createGatheringDataStore', () => {
 
 				await waitForDefaultTimeouts();
 
-				expect( determineDataAvailability ).toHaveBeenCalled();
+				expect( selectDataAvailability ).toHaveBeenCalled();
 			} );
 
-			it( 'should set gathering data state and dispetch a fetch request to save it when determineDataAvailability returns TRUE', async () => {
-				determineDataAvailability.mockReturnValue( true );
+			it( 'should set gathering data state and dispetch a fetch request to save it when selectDataAvailability returns TRUE', async () => {
+				selectDataAvailability.mockReturnValue( true );
 
 				registry.registerStore(
 					STORE_NAME,
@@ -210,7 +210,7 @@ describe( 'createGatheringDataStore', () => {
 						Data.commonStore,
 						createGatheringDataStore( MODULE_SLUG, {
 							storeName: STORE_NAME,
-							determineDataAvailability,
+							selectDataAvailability,
 							dataAvailable: false,
 						} )
 					)
@@ -239,8 +239,8 @@ describe( 'createGatheringDataStore', () => {
 				);
 			} );
 
-			it( 'should set gathering data state and do nothing else when determineDataAvailability returns FALSE', async () => {
-				determineDataAvailability.mockReturnValue( false );
+			it( 'should set gathering data state and do nothing else when selectDataAvailability returns FALSE', async () => {
+				selectDataAvailability.mockReturnValue( false );
 
 				registry.registerStore(
 					STORE_NAME,
@@ -248,7 +248,7 @@ describe( 'createGatheringDataStore', () => {
 						Data.commonStore,
 						createGatheringDataStore( MODULE_SLUG, {
 							storeName: STORE_NAME,
-							determineDataAvailability,
+							selectDataAvailability,
 							dataAvailable: false,
 						} )
 					)

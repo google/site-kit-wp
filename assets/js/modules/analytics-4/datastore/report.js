@@ -115,7 +115,7 @@ const gatheringDataStore = createGatheringDataStore( 'analytics-4', {
 	storeName: MODULES_ANALYTICS_4,
 	dataAvailable:
 		global._googlesitekitModulesData?.[ 'data_available_analytics-4' ],
-	determineDataAvailability: createRegistrySelector( ( select ) => () => {
+	selectDataAvailability: createRegistrySelector( ( select ) => () => {
 		const hasZeroData = select( MODULES_ANALYTICS_4 ).hasZeroData();
 
 		if ( hasZeroData === undefined ) {

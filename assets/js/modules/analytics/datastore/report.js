@@ -125,7 +125,7 @@ const gatheringDataStore = createGatheringDataStore( 'analytics', {
 	storeName: MODULES_ANALYTICS,
 	dataAvailable:
 		global._googlesitekitModulesData?.[ 'data_available_analytics' ],
-	determineDataAvailability: createRegistrySelector( ( select ) => () => {
+	selectDataAvailability: createRegistrySelector( ( select ) => () => {
 		const { startDate, endDate } = select( CORE_USER ).getDateRangeDates( {
 			offsetDays: DATE_RANGE_OFFSET,
 		} );
