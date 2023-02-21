@@ -169,11 +169,12 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 
 		if ( error ) {
 			setErrorNotice( error );
-		} else {
-			// Ask the parent component to show the success banner.
-			// This should be called last because it will unmount this component.
-			onSubmitSuccess();
+			return;
 		}
+
+		// Ask the parent component to show the success banner.
+		// This should be called last because it will unmount this component.
+		onSubmitSuccess();
 	}, [ submitChanges, onSubmitSuccess ] );
 
 	const handleSubmitChanges = useCallback( async () => {

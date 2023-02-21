@@ -161,11 +161,11 @@ describe( 'SetupBanner', () => {
 			queryByText( /You will need to give Site Kit permission/i )
 		).not.toBeInTheDocument();
 
-		// Click submit element to create a new prorperty.
+		// Click submit element to create a new property.
 		await act( async () => {
-			const wfr = createWaitForRegistry( registry );
+			const waitForRegistryAfterCreation = createWaitForRegistry( registry );
 			fireEvent.click( getByText( /create property/i ) );
-			await wfr();
+			await waitForRegistryAfterCreation();
 		} );
 
 		expect( fetchMock ).toHaveFetchedTimes( 1, createPropertyEndpoint );

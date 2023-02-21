@@ -36,7 +36,7 @@ const { useSelect } = Data;
 
 export function SetupBannerFooter( { variant } ) {
 	const items = useSelect( ( select ) => {
-		const msgs = [];
+		const messages = [];
 		const hasEditScope = select( CORE_USER ).hasScope( EDIT_SCOPE );
 		const ga4PropertyID = select( MODULES_ANALYTICS_4 ).getPropertyID();
 		const measurementID = select( MODULES_ANALYTICS_4 ).getMeasurementID();
@@ -47,7 +47,7 @@ export function SetupBannerFooter( { variant } ) {
 				hasEditScope === false &&
 				( ga4PropertyID === PROPERTY_CREATE || ! measurementID )
 			) {
-				msgs.push(
+				messages.push(
 					__(
 						'You will need to give Site Kit permission to create an Analytics property on your behalf',
 						'google-site-kit'
@@ -55,7 +55,7 @@ export function SetupBannerFooter( { variant } ) {
 				);
 			}
 
-			msgs.push(
+			messages.push(
 				__(
 					'You can always add/edit this in the Site Kit Settings',
 					'google-site-kit'
@@ -63,7 +63,7 @@ export function SetupBannerFooter( { variant } ) {
 			);
 		} else {
 			if ( existingTag ) {
-				msgs.push(
+				messages.push(
 					sprintf(
 						/* translators: %s: The existing tag ID. */
 						__(
@@ -76,7 +76,7 @@ export function SetupBannerFooter( { variant } ) {
 			}
 
 			if ( hasEditScope === false ) {
-				msgs.push(
+				messages.push(
 					__(
 						'You will need to give Site Kit permission to create an Analytics property on your behalf',
 						'google-site-kit'
@@ -84,7 +84,7 @@ export function SetupBannerFooter( { variant } ) {
 				);
 			}
 
-			msgs.push(
+			messages.push(
 				__(
 					'You can always add/edit this in the Site Kit Settings',
 					'google-site-kit'
@@ -92,7 +92,7 @@ export function SetupBannerFooter( { variant } ) {
 			);
 		}
 
-		return msgs;
+		return messages;
 	} );
 
 	return (
