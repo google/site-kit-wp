@@ -495,6 +495,25 @@ const baseActions = {
 	},
 
 	/**
+	 * Sets if GA4 has mismatched Google Tag ID.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {boolean} hasMismatchedTag If GA4 has mismatched Google Tag.
+	 * @return {Object} Redux-style action.
+	 */
+	*setHasMismatchedGoogleTagID( hasMismatchedTag ) {
+		if ( ! isFeatureEnabled( 'gteSupport' ) ) {
+			return;
+		}
+
+		return {
+			type: SET_HAS_MISMATCHED_TAG,
+			payload: { hasMismatchedTag },
+		};
+	},
+
+	/**
 	 * Syncs Google Tag settings.
 	 *
 	 * @since n.e.x.t
@@ -526,43 +545,42 @@ const baseActions = {
 		const { getGoogleTagID, getMeasurementID, getGoogleTagLastSyncedAtMs } =
 			select( MODULES_ANALYTICS_4 );
 
-		const googleTagID = getGoogleTagID();
 		const measurementID = getMeasurementID();
-		const googleTagLastSyncedAtMs = getGoogleTagLastSyncedAtMs();
 
-		if (
-			! googleTagID &&
-			measurementID &&
-			( ! googleTagLastSyncedAtMs ||
-				Date.now() - googleTagLastSyncedAtMs >= HOUR_IN_SECONDS * 1000 )
-		) {
-			yield baseActions.updateSettingsForMeasurementID( measurementID );
-
-			dispatch( MODULES_ANALYTICS_4 ).setGoogleTagLastSyncedAtMs(
-				Date.now()
-			);
-
-			dispatch( MODULES_ANALYTICS_4 ).saveSettings();
-		}
-	},
-
-	/**
-	 * Sets if GA4 has mismatched Google Tag ID.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param {boolean} hasMismatchedTag If GA4 has mismatched Google Tag.
-	 * @return {Object} Redux-style action.
-	 */
-	*setHasMismatchedGoogleTagID( hasMismatchedTag ) {
-		if ( ! isFeatureEnabled( 'gteSupport' ) ) {
+		if ( ! measurementID ) {
 			return;
 		}
 
-		return {
-			type: SET_HAS_MISMATCHED_TAG,
-			payload: { hasMismatchedTag },
-		};
+		const googleTagLastSyncedAtMs = getGoogleTagLastSyncedAtMs();
+
+		if (
+			!! googleTagLastSyncedAtMs &&
+			Date.now() - googleTagLastSyncedAtMs < HOUR_IN_SECONDS * 1000
+		) {
+			return;
+		}
+
+		const googleTagID = getGoogleTagID();
+
+		if ( !! googleTagID ) {
+			const googleTagContainer = yield Data.commonActions.await(
+				__experimentalResolveSelect(
+					MODULES_ANALYTICS_4
+				).getGoogleTagContainer( measurementID )
+			);
+
+			if ( googleTagContainer.tagIds.includes( googleTagID ) ) {
+				yield baseActions.setHasMismatchedGoogleTagID( true );
+			}
+		} else {
+			yield baseActions.updateSettingsForMeasurementID( measurementID );
+
+			dispatch( MODULES_ANALYTICS_4 ).saveSettings();
+		}
+
+		dispatch( MODULES_ANALYTICS_4 ).setGoogleTagLastSyncedAtMs(
+			Date.now()
+		);
 	},
 };
 
