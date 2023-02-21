@@ -41,7 +41,7 @@ import {
 	isValidOrders,
 	isZeroReport,
 } from '../utils';
-import createGatheringDataStore from '../../../googlesitekit/modules/create-gathering-data-store';
+import { createGatheringDataStore } from '../../../googlesitekit/modules/create-gathering-data-store';
 const { createRegistrySelector } = Data;
 
 const fetchGetReportStore = createFetchStore( {

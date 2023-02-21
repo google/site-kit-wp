@@ -37,7 +37,7 @@ import {
 	isValidStringularItems,
 } from '../../../util/report-validation';
 import { isZeroReport } from '../util';
-import createGatheringDataStore from '../../../googlesitekit/modules/create-gathering-data-store';
+import { createGatheringDataStore } from '../../../googlesitekit/modules/create-gathering-data-store';
 const { createRegistrySelector } = Data;
 
 const fetchGetReportStore = createFetchStore( {

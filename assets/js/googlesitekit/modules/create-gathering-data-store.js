@@ -30,8 +30,8 @@ import { createFetchStore } from '../data/create-fetch-store';
 
 const { createRegistryControl } = Data;
 
-const SET_GATHERING_DATA = 'SET_GATHERING_DATA';
-const WAIT_FOR_GATHERING_DATA = 'WAIT_FOR_GATHERING_DATA';
+const RECEIVE_GATHERING_DATA = 'RECEIVE_GATHERING_DATA';
+const WAIT_FOR_DATA_AVAILABILITY_STATE = 'WAIT_FOR_DATA_AVAILABILITY_STATE';
 
 /**
  * Creates a store object that includes actions and selectors for gathering data state for a module.
@@ -49,7 +49,7 @@ const WAIT_FOR_GATHERING_DATA = 'WAIT_FOR_GATHERING_DATA';
  *                                                  this selector must be provided by the module.
  * @return {Object} The gathering data store object.
  */
-const createGatheringDataStore = (
+export const createGatheringDataStore = (
 	moduleSlug,
 	{ storeName, dataAvailable = false, determineDataAvailability } = {}
 ) => {
@@ -105,13 +105,13 @@ const createGatheringDataStore = (
 				payload: {
 					gatheringData,
 				},
-				type: SET_GATHERING_DATA,
+				type: RECEIVE_GATHERING_DATA,
 			};
 		},
 	};
 
 	const controls = {
-		[ WAIT_FOR_GATHERING_DATA ]: createRegistryControl(
+		[ WAIT_FOR_DATA_AVAILABILITY_STATE ]: createRegistryControl(
 			( registry ) => () => {
 				const dataAvailabityDetermined = () =>
 					registry.select( storeName ).determineDataAvailability() !==
@@ -134,7 +134,7 @@ const createGatheringDataStore = (
 
 	const reducer = ( state = initialState, { type, payload } ) => {
 		switch ( type ) {
-			case SET_GATHERING_DATA: {
+			case RECEIVE_GATHERING_DATA: {
 				const { gatheringData } = payload;
 				return {
 					...state,
@@ -165,17 +165,13 @@ const createGatheringDataStore = (
 
 			// If dataAvailableOnLoad is true, set gatheringData to false and do nothing else.
 			if ( dataAvailableOnLoad ) {
-				return {
-					payload: {
-						gatheringData: false,
-					},
-					type: SET_GATHERING_DATA,
-				};
+				yield actions.receiveIsGatheringData( false );
+				return;
 			}
 
 			yield {
 				payload: {},
-				type: WAIT_FOR_GATHERING_DATA,
+				type: WAIT_FOR_DATA_AVAILABILITY_STATE,
 			};
 
 			const dataAvailability = registry
@@ -187,10 +183,7 @@ const createGatheringDataStore = (
 				'determineDataAvailability must return a boolean.'
 			);
 
-			yield {
-				payload: { gatheringData: ! dataAvailability },
-				type: SET_GATHERING_DATA,
-			};
+			yield actions.receiveIsGatheringData( ! dataAvailability );
 
 			if ( dataAvailability ) {
 				yield fetchSaveDataAvailableStateStore.actions.fetchSaveDataAvailableState();
@@ -207,6 +200,7 @@ const createGatheringDataStore = (
 		 * @return {boolean|undefined} Returns TRUE if data is available, otherwise FALSE. If the request is still being resolved, returns undefined.
 		 */
 		determineDataAvailability,
+
 		/**
 		 * Checks if data is available on load.
 		 *
@@ -220,7 +214,7 @@ const createGatheringDataStore = (
 		},
 
 		/**
-		 * Determines whether the Search Console is still gathering data or not.
+		 * Determines whether the module is still gathering data or not.
 		 *
 		 * @todo Review the name of this selector to a less confusing one.
 		 * @since n.e.x.t
@@ -242,5 +236,3 @@ const createGatheringDataStore = (
 		selectors,
 	} );
 };
-
-export default createGatheringDataStore;
