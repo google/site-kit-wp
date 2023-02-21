@@ -133,7 +133,9 @@ describe( 'modules/analytics-4 report', () => {
 				};
 
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/analytics-4\/data\/report/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics-4/data/report'
+					),
 					{
 						body: response,
 						status: 500,
@@ -195,6 +197,37 @@ describe( 'modules/analytics-4 report', () => {
 				expect( isGatheringData() ).toBe( false );
 			} );
 
+			it( 'should return FALSE if the report request fails', async () => {
+				const response = {
+					code: 'internal_server_error',
+					message: 'Internal server error',
+					data: { status: 500 },
+				};
+
+				fetchMock.getOnce(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics-4/data/report'
+					),
+					{
+						body: response,
+						status: 500,
+					}
+				);
+
+				const { isGatheringData } =
+					registry.select( MODULES_ANALYTICS_4 );
+
+				expect( isGatheringData() ).toBeUndefined();
+
+				await subscribeUntil(
+					registry,
+					() => isGatheringData() !== undefined
+				);
+
+				expect( isGatheringData() ).toBe( false );
+				expect( console ).toHaveErrored();
+			} );
+
 			describe.each( [
 				[ 'undefined', undefined ],
 				[ 'null', null ],
@@ -217,10 +250,30 @@ describe( 'modules/analytics-4 report', () => {
 							body,
 						}
 					);
+				} );
 
-					registry
-						.dispatch( MODULES_ANALYTICS_4 )
-						.receiveGetSettings( {} );
+				it( 'should return undefined if getSettings is not resolved yet', async () => {
+					freezeFetch(
+						new RegExp(
+							'^/google-site-kit/v1/modules/analytics-4/data/settings'
+						)
+					);
+
+					const { isGatheringData, hasZeroData } =
+						registry.select( MODULES_ANALYTICS_4 );
+
+					// The first call to isGatheringData returns undefined because the call to hasZeroData returns undefined.
+					expect( isGatheringData() ).toBeUndefined();
+					expect( hasZeroData() ).toBeUndefined();
+
+					// Wait for resolvers to run.
+					await waitForDefaultTimeouts();
+
+					// Verify that isGatheringData still returns undefined due to getSettings not being resolved yet, while hasZeroData now returns true.
+					expect( isGatheringData() ).toBeUndefined();
+					expect( hasZeroData() ).toBe( true );
+
+					await waitForDefaultTimeouts();
 				} );
 
 				it( 'should return TRUE if the connnected GA4 property is under two days old', async () => {
@@ -234,6 +287,10 @@ describe( 'modules/analytics-4 report', () => {
 						createTime,
 					};
 					const propertyID = property._id;
+
+					registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.receiveGetSettings( {} );
 
 					registry
 						.dispatch( MODULES_ANALYTICS_4 )
@@ -267,6 +324,10 @@ describe( 'modules/analytics-4 report', () => {
 						createTime,
 					};
 					const propertyID = property._id;
+
+					registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.receiveGetSettings( {} );
 
 					registry
 						.dispatch( MODULES_ANALYTICS_4 )
@@ -305,6 +366,36 @@ describe( 'modules/analytics-4 report', () => {
 
 				// Wait for resolvers to run.
 				await waitForDefaultTimeouts();
+			} );
+
+			it( 'should return FALSE if the report request fails', async () => {
+				const response = {
+					code: 'internal_server_error',
+					message: 'Internal server error',
+					data: { status: 500 },
+				};
+
+				fetchMock.getOnce(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics-4/data/report'
+					),
+					{
+						body: response,
+						status: 500,
+					}
+				);
+
+				const { hasZeroData } = registry.select( MODULES_ANALYTICS_4 );
+
+				expect( hasZeroData() ).toBeUndefined();
+
+				await subscribeUntil(
+					registry,
+					() => hasZeroData() !== undefined
+				);
+
+				expect( hasZeroData() ).toBe( false );
+				expect( console ).toHaveErrored();
 			} );
 
 			it( 'should return TRUE if isZeroReport is true', async () => {

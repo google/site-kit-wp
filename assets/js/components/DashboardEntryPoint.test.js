@@ -19,9 +19,10 @@
 /**
  * Internal dependencies
  */
-import { render } from '../../../tests/js/test-utils';
+import { provideModules, render } from '../../../tests/js/test-utils';
 import { mockCreateComponent } from '../../../tests/js/mock-component-utils';
 import DashboardEntryPoint from './DashboardEntryPoint';
+import { MODULES_ANALYTICS_4 } from '../modules/analytics-4/datastore/constants';
 
 jest.mock( './setup/ModuleSetup', () => mockCreateComponent( 'ModuleSetup' ) );
 jest.mock( './DashboardMainApp', () =>
@@ -29,14 +30,22 @@ jest.mock( './DashboardMainApp', () =>
 );
 
 describe( 'DashboardEntryPoint', () => {
+	const setupRegistry = ( registry ) => {
+		provideModules( registry );
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
+	};
+
 	it( 'should render the unified dashboard', () => {
-		const { container } = render( <DashboardEntryPoint /> );
+		const { container } = render( <DashboardEntryPoint />, {
+			setupRegistry,
+		} );
 		expect( container ).toMatchSnapshot();
 	} );
 
 	it( 'should render the module setup component when the setupModuleSlug prop is passed', () => {
 		const { container } = render(
-			<DashboardEntryPoint setupModuleSlug="analytics" />
+			<DashboardEntryPoint setupModuleSlug="analytics" />,
+			{ setupRegistry }
 		);
 		expect( container ).toMatchSnapshot();
 	} );
