@@ -96,10 +96,10 @@ const Overview = ( {
 		select( CORE_MODULES ).isModuleActive( 'analytics' )
 	);
 
-	const isAnalyticsGatheringData = useInViewSelect( ( select ) =>
-		analyticsModuleConnected
-			? select( MODULES_ANALYTICS ).isGatheringData()
-			: false
+	const isAnalyticsGatheringData = useInViewSelect(
+		( select ) =>
+			analyticsModuleConnected &&
+			select( MODULES_ANALYTICS ).isGatheringData()
 	);
 	const isSearchConsoleGatheringData = useInViewSelect( ( select ) =>
 		select( MODULES_SEARCH_CONSOLE ).isGatheringData()
