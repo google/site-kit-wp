@@ -45,7 +45,7 @@ import useViewContext from '../../../../hooks/useViewContext';
 const { useSelect, useDispatch } = Data;
 
 export default function MeasurementSelect( props ) {
-	const { label, hasModuleAccess, className, onChange = () => {} } = props;
+	const { label, hasModuleAccess, className } = props;
 
 	// Analytics accounts need to be loaded in order to load the properties,
 	// otherwise this component will stay in a loading state forever.
@@ -110,11 +110,8 @@ export default function MeasurementSelect( props ) {
 					: 'change_webdatastream',
 				'ga4'
 			);
-
-			onChange();
 		},
 		[
-			onChange,
 			webDataStreams,
 			webDataStreamID,
 			setWebDataStreamID,
@@ -138,7 +135,7 @@ export default function MeasurementSelect( props ) {
 		return (
 			<Select
 				className={ classnames(
-					'googlesitekit-analytics-4__select',
+					'googlesitekit-analytics-4__select-measurement',
 					className
 				) }
 				label={ label || __( 'Measurement', 'google-site-kit' ) }
@@ -155,7 +152,7 @@ export default function MeasurementSelect( props ) {
 	return (
 		<Select
 			className={ classnames(
-				'googlesitekit-analytics-4__select',
+				'googlesitekit-analytics-4__select-measurement',
 				className,
 				{
 					'mdc-select--invalid': ! isValidSelection,
@@ -201,5 +198,4 @@ MeasurementSelect.propTypes = {
 	label: PropTypes.string,
 	hasModuleAccess: PropTypes.bool,
 	className: PropTypes.string,
-	onChange: PropTypes.func,
 };

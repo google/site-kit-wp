@@ -122,7 +122,7 @@ export default function PropertySelect( props ) {
 		return (
 			<Select
 				className={ classnames(
-					'googlesitekit-analytics-4__select',
+					'googlesitekit-analytics-4__select-property',
 					className
 				) }
 				label={ label || __( 'Property', 'google-site-kit' ) }
@@ -139,7 +139,7 @@ export default function PropertySelect( props ) {
 	return (
 		<Select
 			className={ classnames(
-				'googlesitekit-analytics-4__select',
+				'googlesitekit-analytics-4__select-property',
 				className,
 				{
 					'mdc-select--invalid': ! isValidSelection,
