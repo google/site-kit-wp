@@ -34,6 +34,7 @@ import { ProgressBar } from 'googlesitekit-components';
 import { Select, Option } from '../../../../material-components';
 import {
 	MODULES_ANALYTICS_4,
+	PROPERTY_CREATE,
 	WEBDATASTREAM_CREATE,
 } from '../../datastore/constants';
 import { MODULES_ANALYTICS } from '../../../analytics/datastore/constants';
@@ -61,10 +62,13 @@ export default function MeasurementSelect( props ) {
 		( select ) => select( MODULES_ANALYTICS_4 ).getSettings()
 	);
 
+	const isRealPropertyID = !! propertyID && propertyID !== PROPERTY_CREATE;
 	const webDataStreams = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getMatchingWebDataStreamsByPropertyID(
-			propertyID
-		)
+		isRealPropertyID
+			? select(
+					MODULES_ANALYTICS_4
+			  ).getMatchingWebDataStreamsByPropertyID( propertyID )
+			: []
 	);
 
 	const isLoading = useSelect(
@@ -119,11 +123,9 @@ export default function MeasurementSelect( props ) {
 		]
 	);
 
-	if ( ! isValidAccountID( accountID ) ) {
+	if ( ! isValidAccountID( accountID ) || ! isRealPropertyID ) {
 		return null;
-	}
-
-	if ( isLoading ) {
+	} else if ( isLoading ) {
 		return <ProgressBar height={ 100 } small />;
 	}
 
