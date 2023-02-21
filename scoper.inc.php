@@ -46,7 +46,6 @@ return array(
 					'vendor-bin',
 				)
 			)
-			->path( '#^firebase/#' )
 			->path( '#^google/apiclient/#' )
 			->path( '#^google/auth/#' )
 			->path( '#^guzzlehttp/#' )
