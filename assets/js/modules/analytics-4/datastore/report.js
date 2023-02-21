@@ -175,6 +175,11 @@ const baseSelectors = {
 		}
 
 		const propertyID = select( MODULES_ANALYTICS_4 ).getPropertyID();
+
+		if ( propertyID === undefined ) {
+			return undefined;
+		}
+
 		const property =
 			select( MODULES_ANALYTICS_4 ).getProperty( propertyID );
 
@@ -225,6 +230,17 @@ const baseSelectors = {
 
 		if ( ! hasResolvedReport ) {
 			return undefined;
+		}
+
+		const hasReportError = select(
+			MODULES_ANALYTICS_4
+		).getErrorForSelector( 'getReport', [ args ] );
+
+		// If there is an error, return false, to be aligned with the behaviour of the UA isGatheringData selector,
+		// but with a more explicit check, i.e. checking for a report error rather than a non-successful response shape.
+		// TODO: In future we should consider changing this selector so it returns a distinct value for errors, or throws an error.
+		if ( hasReportError ) {
+			return false;
 		}
 
 		return isZeroReport( report );
