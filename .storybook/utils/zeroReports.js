@@ -54,8 +54,8 @@ export function replaceValuesInAnalyticsReportWithZeroData( report ) {
  * @return {Object} Empty Analytics 4 report object.
  */
 export function replaceValuesInAnalytics4ReportWithZeroData( report ) {
-	// eslint-disable-next-line no-unused-vars -- Ignore `rows` since we're omitting it from the returned report object.
-	const { rows, ...reportWithoutRows } = report;
+	// eslint-disable-next-line no-unused-vars -- Ignore `rows` and `rowCount` since we're omitting them from the returned report object.
+	const { rows, rowCount, ...reportWithoutRows } = report;
 
 	return {
 		...reportWithoutRows,

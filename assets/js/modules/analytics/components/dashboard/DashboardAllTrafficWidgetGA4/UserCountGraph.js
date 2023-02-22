@@ -1,7 +1,7 @@
 /**
  * UserCountGraph component
  *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,6 +41,7 @@ import GoogleChart from '../../../../../components/GoogleChart';
 import parseDimensionStringToDate from '../../../util/parseDimensionStringToDate';
 import ReportError from '../../../../../components/ReportError';
 import { stringToDate } from '../../../../../util/date-range/string-to-date';
+import { createZeroDataRow } from './utils';
 const { useSelect } = Data;
 
 const X_SMALL_ONLY_MEDIA_QUERY = '(max-width: 450px)';
@@ -96,9 +97,16 @@ export default function UserCountGraph( props ) {
 		return <ReportError moduleSlug="analytics" error={ error } />;
 	}
 
-	const rows = Array.isArray( report?.[ 0 ]?.data?.rows )
-		? report?.[ 0 ]?.data?.rows
-		: [];
+	let rows;
+	if ( Array.isArray( report?.rows ) ) {
+		rows = report.rows;
+	} else if ( gatheringData ) {
+		rows = [];
+	} else {
+		// For the "zero data" case, we need to create a zero data row for the start
+		// and end dates to ensure the chart renders the ticks at the correct offsets.
+		rows = [ createZeroDataRow( startDate ), createZeroDataRow( endDate ) ];
+	}
 
 	const chartData = [
 		[
@@ -111,9 +119,9 @@ export default function UserCountGraph( props ) {
 				label: __( 'Users', 'google-site-kit' ),
 			},
 		],
-		...rows.map( ( { metrics, dimensions } ) => [
-			parseDimensionStringToDate( dimensions[ 0 ] ),
-			metrics[ 0 ].values[ 0 ],
+		...rows.map( ( { metricValues, dimensionValues } ) => [
+			parseDimensionStringToDate( dimensionValues[ 0 ].value ),
+			metricValues[ 0 ].value,
 		] ),
 	];
 
@@ -189,10 +197,10 @@ export default function UserCountGraph( props ) {
 	// Set the `max` height of the chart to `undefined` so that the chart will
 	// show all content, but only if the report is loaded/has data.
 	if (
-		! report?.[ 0 ]?.data?.totals?.[ 0 ]?.values?.[ 0 ] ||
+		! report?.totals?.[ 0 ]?.metricValues?.[ 0 ]?.value ||
 		// The total returned by the API can be a string, so make sure we cast it
 		// to a number.
-		parseInt( report?.[ 0 ]?.data?.totals?.[ 0 ]?.values?.[ 0 ], 10 ) === 0
+		parseInt( report?.totals?.[ 0 ]?.metricValues?.[ 0 ]?.value, 10 ) === 0
 	) {
 		chartOptions.vAxis.viewWindow.max = 100;
 	} else {
@@ -218,7 +226,7 @@ export default function UserCountGraph( props ) {
 UserCountGraph.propTypes = {
 	loaded: PropTypes.bool,
 	error: PropTypes.shape( {} ),
-	report: PropTypes.arrayOf( PropTypes.object ),
+	report: PropTypes.object,
 	gatheringData: PropTypes.bool,
 };
 

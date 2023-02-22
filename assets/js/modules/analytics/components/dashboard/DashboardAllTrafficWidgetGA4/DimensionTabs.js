@@ -1,7 +1,7 @@
 /**
  * DimensionTabs component
  *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,15 +49,15 @@ const { useDispatch } = Data;
 const tabs = [
 	{
 		tabText: __( 'Channels', 'google-site-kit' ),
-		dimensionName: 'ga:channelGrouping',
+		dimensionName: 'sessionDefaultChannelGrouping',
 	},
 	{
 		tabText: __( 'Locations', 'google-site-kit' ),
-		dimensionName: 'ga:country',
+		dimensionName: 'country',
 	},
 	{
 		tabText: __( 'Devices', 'google-site-kit' ),
-		dimensionName: 'ga:deviceCategory',
+		dimensionName: 'deviceCategory',
 	},
 ];
 
