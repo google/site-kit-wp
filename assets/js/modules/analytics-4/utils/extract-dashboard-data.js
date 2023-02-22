@@ -79,7 +79,7 @@ function reduceAnalyticsRowsData( rows, selectedMetricsIndex, selectedStats ) {
  * @param {Array}  dataFormats              The formats to be used for the data.
  * @return {Array} The dataMap ready for charting.
  */
-export function extractAnalyticsDashboardData(
+export function extractAnalytics4DashboardData(
 	report,
 	selectedStats,
 	days,
