@@ -48,7 +48,7 @@ import Header from './Header';
 import Footer from './Footer';
 import Overview from './Overview';
 import SearchConsoleStats from './SearchConsoleStats';
-import AnalyticsStats from './AnalyticsStats';
+import AnalyticsStats from '../../common/AnalyticsStats';
 import ActivateAnalyticsCTA from '../../common/ActivateAnalyticsCTA';
 import { CORE_MODULES } from '../../../../../googlesitekit/modules/datastore/constants';
 import { Grid, Row, Cell } from '../../../../../material-components';
@@ -425,6 +425,7 @@ const SearchFunnelWidget = ( { Widget, WidgetReportError } ) => {
 						SearchFunnelWidget.metrics[ selectedStats ].color
 					}
 					gatheringData={ isAnalyticsGatheringData }
+					moduleSlug="analytics"
 				/>
 			) }
 
@@ -453,6 +454,7 @@ const SearchFunnelWidget = ( { Widget, WidgetReportError } ) => {
 							SearchFunnelWidget.metrics[ selectedStats ].color
 						}
 						gatheringData={ isAnalyticsGatheringData }
+						moduleSlug="analytics"
 					/>
 				) }
 		</Widget>

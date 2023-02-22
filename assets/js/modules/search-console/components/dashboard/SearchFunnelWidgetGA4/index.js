@@ -45,7 +45,7 @@ import Header from '../SearchFunnelWidget/Header';
 import Footer from '../SearchFunnelWidget/Footer';
 import Overview from './Overview';
 import SearchConsoleStats from '../SearchFunnelWidget/SearchConsoleStats';
-import AnalyticsStats from './AnalyticsStats';
+import AnalyticsStats from '../../common/AnalyticsStats';
 import ActivateAnalyticsCTA from '../../common/ActivateAnalyticsCTA';
 import { CORE_MODULES } from '../../../../../googlesitekit/modules/datastore/constants';
 import { Grid, Row, Cell } from '../../../../../material-components';
@@ -437,6 +437,7 @@ const SearchFunnelWidgetGA4 = ( { Widget, WidgetReportError } ) => {
 						SearchFunnelWidgetGA4.metrics[ selectedStats ].color
 					}
 					gatheringData={ isGA4GatheringData }
+					moduleSlug="analytics-4"
 				/>
 			) }
 
@@ -465,6 +466,7 @@ const SearchFunnelWidgetGA4 = ( { Widget, WidgetReportError } ) => {
 							SearchFunnelWidgetGA4.metrics[ selectedStats ].color
 						}
 						gatheringData={ isGA4GatheringData }
+						moduleSlug="analytics-4"
 					/>
 				) }
 		</Widget>
