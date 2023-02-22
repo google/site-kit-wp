@@ -134,10 +134,10 @@ export default function DimensionTabs( {
 					value={ `dimension-name-${ activeTab }` }
 					disabled={ gatheringData || isZeroData }
 				>
-					{ tabs.map( ( tab, index ) => (
+					{ tabs.map( ( tab ) => (
 						<Option
-							key={ index }
-							value={ `dimension-name-${ index }` }
+							key={ tab.dimensionName }
+							value={ `dimension-name-${ tab.dimensionName }` }
 						>
 							{ tab.tabText }
 						</Option>
