@@ -19,7 +19,7 @@
 /**
  * Returns a copy of the provided Analytics report with all metric values replaced with zero.
  *
- * @since n.e.x.t
+ * @since 1.95.0
  *
  * @param {Array<Object>} report Array containing Analytics report object(s).
  * @return {Array<Object>} Array containing zeroed Analytics report object(s).
@@ -48,7 +48,7 @@ export function replaceValuesInAnalyticsReportWithZeroData( report ) {
  * Returns a copy of the provided Analytics 4 report with all values removed,
  * matching the format of an empty report.
  *
- * @since n.e.x.t
+ * @since 1.95.0
  *
  * @param {Object} report Analytics 4 report object.
  * @return {Object} Empty Analytics 4 report object.

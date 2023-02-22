@@ -495,7 +495,7 @@ const baseActions = {
 	/**
 	 * Syncs Google Tag settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.95.0
 	 */
 	*syncGoogleTagSettings() {
 		if ( ! isFeatureEnabled( 'gteSupport' ) ) {
