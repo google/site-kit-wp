@@ -1348,7 +1348,7 @@ const baseSelectors = {
 	 *
 	 * Returns an Object/map of objects, keyed by slug as same as `getModules`.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.95.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(Object|undefined)} Non-internal shareable modules available on the site; `undefined` if not loaded.
