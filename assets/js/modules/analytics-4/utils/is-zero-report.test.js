@@ -29,8 +29,22 @@ describe( 'isZeroReport', () => {
 		[ true, 'a number', 1 ],
 		[ true, 'a string', 'test' ],
 		[ true, 'an empty object', {} ],
-		[ true, 'an object with empty rows', { rows: [] } ],
-		[ true, 'an object with empty totals', { totals: [] } ],
+		[ true, 'a report with rows but no totals', { rows: [ {}, {}, {} ] } ],
+		[
+			true,
+			'a report with totals but no rows',
+			{ totals: [ { metricValues: [ { value: '123' } ] } ] },
+		],
+		[
+			true,
+			'a report with rows but empty totals',
+			{ rows: [ {}, {}, {} ], totals: [] },
+		],
+		[
+			true,
+			'a report with empty totals objects',
+			{ rows: [ {}, {}, {} ], totals: [ {}, {}, {} ] },
+		],
 		[
 			true,
 			'a report that has no data within a single total with a single value',
