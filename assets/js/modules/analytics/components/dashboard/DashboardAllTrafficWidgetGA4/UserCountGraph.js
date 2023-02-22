@@ -248,7 +248,8 @@ UserCountGraph.chartOptions = {
 		position: 'none',
 	},
 	hAxis: {
-		backgroundColor: '#eef4fd', // rgba(26, 115, 232, 0.08) over the white background.
+		// This color is the result of placing `rgba(26, 115, 232, 0.08)` over the white (`#ffffff`) background.
+		backgroundColor: '#eef4fd',
 		format: 'MMM d',
 		gridlines: {
 			color: '#ffffff',
