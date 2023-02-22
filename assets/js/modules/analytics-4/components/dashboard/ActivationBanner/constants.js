@@ -1,7 +1,7 @@
 /**
- * Widget Context styles.
+ * Activation Banner constants.
  *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,16 +16,7 @@
  * limitations under the License.
  */
 
-.googlesitekit-widget-context {
-	@include googlesitekit-inner-padding;
-	padding-bottom: 10px;
-	padding-top: 10px;
-}
-
-.googlesitekit-widget-context--last {
-	min-height: 80vh;
-
-	@media screen and (min-height: 1200px) {
-		min-height: 100vh;
-	}
-}
+export const VARIANT = {
+	EXISTING_PROPERTY: 'EXISTING_PROPERTY',
+	NO_EXISTING_PROPERTY: 'NO_EXISTING_PROPERTY',
+};
