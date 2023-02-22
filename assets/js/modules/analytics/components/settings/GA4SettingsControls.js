@@ -43,7 +43,10 @@ import { FORM_SETUP, MODULES_ANALYTICS } from '../../datastore/constants';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import { Select, Option } from '../../../../material-components';
 import { GA4ActivateSwitch } from '../common';
-import { PropertySelect } from '../../../analytics-4/components/common';
+import {
+	PropertySelect,
+	MeasurementSelect,
+} from '../../../analytics-4/components/common';
 import SettingsUseSnippetSwitch from '../../../analytics-4/components/settings/SettingsUseSnippetSwitch';
 import JoyrideTooltip from '../../../../components/JoyrideTooltip';
 import GA4SettingsNotice from './GA4SettingsNotice';
@@ -174,6 +177,7 @@ export default function GA4SettingsControls( {
 			<h4 className="googlesitekit-settings-module__fields-group-title">
 				{ __( 'Google Analytics 4', 'google-site-kit' ) }
 			</h4>
+
 			<div className="googlesitekit-setup-module__inputs">
 				{ ! isDisabled && (
 					<Fragment>
@@ -189,6 +193,13 @@ export default function GA4SettingsControls( {
 									enableGA4PropertyTooltip: false,
 								} )
 							}
+						/>
+						<MeasurementSelect
+							label={ __(
+								'Google Analytics 4 Measurement',
+								'google-site-kit'
+							) }
+							hasModuleAccess={ hasModuleAccess }
 						/>
 
 						{ ! isModuleConnected &&
