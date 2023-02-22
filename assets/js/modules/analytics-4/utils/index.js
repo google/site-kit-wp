@@ -19,3 +19,4 @@
 export * from './is-zero-report';
 export * from './report-normalization';
 export * from './report-validation';
+export * from './extract-dashboard-data';

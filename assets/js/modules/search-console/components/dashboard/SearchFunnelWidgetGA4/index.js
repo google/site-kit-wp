@@ -1,7 +1,7 @@
 /**
- * SearchFunnelWidget component.
+ * SearchFunnelWidgetGA4 component.
  *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,18 +36,15 @@ import {
 	MODULES_SEARCH_CONSOLE,
 	DATE_RANGE_OFFSET,
 } from '../../../datastore/constants';
-import {
-	MODULES_ANALYTICS,
-	DATE_RANGE_OFFSET as DATE_RANGE_OFFSET_ANALYTICS,
-} from '../../../../analytics/datastore/constants';
+import { DATE_RANGE_OFFSET as DATE_RANGE_OFFSET_ANALYTICS } from '../../../../analytics/datastore/constants';
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { numFmt } from '../../../../../util';
 import PreviewBlock from '../../../../../components/PreviewBlock';
-import Header from './Header';
-import Footer from './Footer';
+import Header from '../SearchFunnelWidget/Header';
+import Footer from '../SearchFunnelWidget/Footer';
 import Overview from './Overview';
-import SearchConsoleStats from './SearchConsoleStats';
+import SearchConsoleStats from '../SearchFunnelWidget/SearchConsoleStats';
 import { ActivateAnalyticsCTA, AnalyticsStats } from '../../common';
 import { CORE_MODULES } from '../../../../../googlesitekit/modules/datastore/constants';
 import { Grid, Row, Cell } from '../../../../../material-components';
@@ -56,10 +53,11 @@ import {
 	useBreakpoint,
 } from '../../../../../hooks/useBreakpoint';
 import useViewOnly from '../../../../../hooks/useViewOnly';
+import { MODULES_ANALYTICS_4 } from '../../../../analytics-4/datastore/constants';
 const { useSelect, useInViewSelect } = Data;
 
 // eslint-disable-next-line complexity
-const SearchFunnelWidget = ( { Widget, WidgetReportError } ) => {
+const SearchFunnelWidgetGA4 = ( { Widget, WidgetReportError } ) => {
 	const [ selectedStats, setSelectedStats ] = useState( 0 );
 
 	const breakpoint = useBreakpoint();
@@ -82,11 +80,11 @@ const SearchFunnelWidget = ( { Widget, WidgetReportError } ) => {
 		return select( CORE_USER ).canViewSharedModule( 'analytics' );
 	} );
 
-	const isAnalyticsConnected = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleConnected( 'analytics' )
+	const isGA4Connected = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
 	);
-	const isAnalyticsActive = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleActive( 'analytics' )
+	const isGA4Active = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleActive( 'analytics-4' )
 	);
 	const dateRangeLength = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeNumberOfDays()
@@ -101,7 +99,7 @@ const SearchFunnelWidget = ( { Widget, WidgetReportError } ) => {
 			offsetDays: DATE_RANGE_OFFSET,
 		} )
 	);
-	const analyticsDates = useSelect( ( select ) =>
+	const ga4Dates = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeDates( {
 			compare: true,
 			offsetDays: DATE_RANGE_OFFSET_ANALYTICS,
@@ -123,28 +121,33 @@ const SearchFunnelWidget = ( { Widget, WidgetReportError } ) => {
 		return Object.keys( recoverableModules ).includes( 'analytics' );
 	} );
 
-	const analyticsGoalsData = useInViewSelect( ( select ) => {
-		return isAnalyticsConnected &&
+	const ga4PropertyID = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getPropertyID()
+	);
+
+	const ga4ConversionsData = useInViewSelect( ( select ) => {
+		return isGA4Connected &&
 			canViewSharedAnalytics &&
 			! showRecoverableAnalytics
-			? select( MODULES_ANALYTICS ).getGoals()
-			: {};
+			? select( MODULES_ANALYTICS_4 ).getConversionEvents( ga4PropertyID )
+			: [];
 	} );
 
-	const analyticsGoalsLoading = useSelect( ( select ) =>
-		isAnalyticsConnected &&
-		canViewSharedAnalytics &&
-		! showRecoverableAnalytics
-			? ! select( MODULES_ANALYTICS ).hasFinishedResolution(
-					'getGoals',
-					[]
+	const ga4ConversionsLoading = useSelect( ( select ) =>
+		isGA4Connected && canViewSharedAnalytics && ! showRecoverableAnalytics
+			? ! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
+					'getConversionEvents',
+					[ ga4PropertyID ]
 			  )
 			: false
 	);
 
-	const analyticsGoalsError = useSelect( ( select ) =>
-		isAnalyticsConnected && ! showRecoverableAnalytics
-			? select( MODULES_ANALYTICS ).getErrorForSelector( 'getGoals', [] )
+	const ga4ConversionsError = useSelect( ( select ) =>
+		isGA4Connected && ! showRecoverableAnalytics
+			? select( MODULES_ANALYTICS_4 ).getErrorForSelector(
+					'getConversionEvents',
+					[ ga4PropertyID ]
+			  )
 			: null
 	);
 
@@ -154,39 +157,52 @@ const SearchFunnelWidget = ( { Widget, WidgetReportError } ) => {
 		dimensions: 'date',
 	};
 
-	const analyticsOverviewArgs = {
-		...analyticsDates,
+	const ga4OverviewArgs = {
+		...ga4Dates,
 		metrics: [
 			{
-				expression: 'ga:goalCompletionsAll',
-				alias: 'Goal Completions',
+				name: 'conversions',
 			},
-			'ga:bounceRate',
+			{
+				name: 'engagedSessions',
+			},
 		],
+		dimensionFilters: {
+			sessionDefaultChannelGrouping: [ 'Organic Search' ],
+		},
 	};
 
-	const analyticsStatsArgs = {
-		...analyticsDates,
-		...analyticsOverviewArgs,
-		dimensions: 'ga:date',
-	};
-	const analyticsVisitorsOverviewAndStatsArgs = {
-		...analyticsDates,
-		metrics: [
+	const ga4StatsArgs = {
+		...ga4Dates,
+		...ga4OverviewArgs,
+		dimensions: [
 			{
-				expression: 'ga:users',
-				alias: 'Total Users',
+				name: 'date',
 			},
 		],
-		dimensions: [ 'ga:date' ],
-		dimensionFilters: { 'ga:channelGrouping': 'Organic Search' },
+	};
+	const ga4VisitorsOverviewAndStatsArgs = {
+		...ga4Dates,
+		metrics: [
+			{
+				name: 'totalUsers',
+			},
+		],
+		dimensions: [
+			{
+				name: 'date',
+			},
+		],
+		dimensionFilters: {
+			sessionDefaultChannelGrouping: [ 'Organic Search' ],
+		},
 	};
 
 	if ( isURL( url ) ) {
 		searchConsoleReportArgs.url = url;
-		analyticsOverviewArgs.url = url;
-		analyticsStatsArgs.url = url;
-		analyticsVisitorsOverviewAndStatsArgs.url = url;
+		ga4OverviewArgs.url = url;
+		ga4StatsArgs.url = url;
+		ga4VisitorsOverviewAndStatsArgs.url = url;
 	}
 
 	const searchConsoleData = useInViewSelect( ( select ) =>
@@ -206,120 +222,116 @@ const SearchFunnelWidget = ( { Widget, WidgetReportError } ) => {
 			)
 	);
 
-	const analyticsOverviewLoading = useSelect( ( select ) => {
+	const ga4OverviewLoading = useSelect( ( select ) => {
 		if (
-			! isAnalyticsConnected ||
+			! isGA4Connected ||
 			! canViewSharedAnalytics ||
 			showRecoverableAnalytics
 		) {
 			return false;
 		}
 
-		return ! select( MODULES_ANALYTICS ).hasFinishedResolution(
+		return ! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
 			'getReport',
-			[ analyticsOverviewArgs ]
+			[ ga4OverviewArgs ]
 		);
 	} );
-	const analyticsOverviewData = useInViewSelect( ( select ) => {
+	const ga4OverviewData = useInViewSelect( ( select ) => {
 		if (
-			! isAnalyticsConnected ||
+			! isGA4Connected ||
 			! canViewSharedAnalytics ||
 			showRecoverableAnalytics
 		) {
 			return null;
 		}
 
-		return select( MODULES_ANALYTICS ).getReport( analyticsOverviewArgs );
+		return select( MODULES_ANALYTICS_4 ).getReport( ga4OverviewArgs );
 	} );
-	const analyticsOverviewError = useSelect( ( select ) => {
-		if ( ! isAnalyticsConnected || showRecoverableAnalytics ) {
+	const ga4OverviewError = useSelect( ( select ) => {
+		if ( ! isGA4Connected || showRecoverableAnalytics ) {
 			return false;
 		}
 
-		return select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [
-			analyticsOverviewArgs,
+		return select( MODULES_ANALYTICS_4 ).getErrorForSelector( 'getReport', [
+			ga4OverviewArgs,
 		] );
 	} );
 
-	const analyticsStatsLoading = useSelect( ( select ) => {
+	const ga4StatsLoading = useSelect( ( select ) => {
 		if (
-			! isAnalyticsConnected ||
+			! isGA4Connected ||
 			! canViewSharedAnalytics ||
 			showRecoverableAnalytics
 		) {
 			return false;
 		}
 
-		return ! select( MODULES_ANALYTICS ).hasFinishedResolution(
+		return ! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
 			'getReport',
-			[ analyticsStatsArgs ]
+			[ ga4StatsArgs ]
 		);
 	} );
-	const analyticsStatsData = useInViewSelect( ( select ) => {
+	const ga4StatsData = useInViewSelect( ( select ) => {
 		if (
-			! isAnalyticsConnected ||
+			! isGA4Connected ||
 			! canViewSharedAnalytics ||
 			showRecoverableAnalytics
 		) {
 			return null;
 		}
 
-		return select( MODULES_ANALYTICS ).getReport( analyticsStatsArgs );
+		return select( MODULES_ANALYTICS_4 ).getReport( ga4StatsArgs );
 	} );
-	const analyticsStatsError = useSelect( ( select ) => {
-		if ( ! isAnalyticsConnected || showRecoverableAnalytics ) {
+	const ga4StatsError = useSelect( ( select ) => {
+		if ( ! isGA4Connected || showRecoverableAnalytics ) {
 			return false;
 		}
 
-		return select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [
-			analyticsStatsArgs,
+		return select( MODULES_ANALYTICS_4 ).getErrorForSelector( 'getReport', [
+			ga4StatsArgs,
 		] );
 	} );
 
-	const analyticsVisitorsOverviewAndStatsLoading = useSelect( ( select ) => {
+	const ga4VisitorsOverviewAndStatsLoading = useSelect( ( select ) => {
 		if (
-			! isAnalyticsConnected ||
+			! isGA4Connected ||
 			! canViewSharedAnalytics ||
 			showRecoverableAnalytics
 		) {
 			return false;
 		}
 
-		return ! select( MODULES_ANALYTICS ).hasFinishedResolution(
+		return ! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
 			'getReport',
-			[ analyticsVisitorsOverviewAndStatsArgs ]
+			[ ga4VisitorsOverviewAndStatsArgs ]
 		);
 	} );
-	const analyticsVisitorsOverviewAndStatsData = useInViewSelect(
-		( select ) => {
-			if (
-				! isAnalyticsConnected ||
-				! canViewSharedAnalytics ||
-				showRecoverableAnalytics
-			) {
-				return null;
-			}
-
-			return select( MODULES_ANALYTICS ).getReport(
-				analyticsVisitorsOverviewAndStatsArgs
-			);
+	const ga4VisitorsOverviewAndStatsData = useInViewSelect( ( select ) => {
+		if (
+			! isGA4Connected ||
+			! canViewSharedAnalytics ||
+			showRecoverableAnalytics
+		) {
+			return null;
 		}
-	);
-	const analyticsVisitorsOverviewAndStatsError = useSelect( ( select ) => {
-		if ( ! isAnalyticsConnected || showRecoverableAnalytics ) {
+
+		return select( MODULES_ANALYTICS_4 ).getReport(
+			ga4VisitorsOverviewAndStatsArgs
+		);
+	} );
+	const ga4VisitorsOverviewAndStatsError = useSelect( ( select ) => {
+		if ( ! isGA4Connected || showRecoverableAnalytics ) {
 			return false;
 		}
 
-		return select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [
-			analyticsVisitorsOverviewAndStatsArgs,
+		return select( MODULES_ANALYTICS_4 ).getErrorForSelector( 'getReport', [
+			ga4VisitorsOverviewAndStatsArgs,
 		] );
 	} );
 
-	const isAnalyticsGatheringData = useInViewSelect( ( select ) =>
-		isAnalyticsConnected &&
-		canViewSharedAnalytics &&
-		! showRecoverableAnalytics
-			? select( MODULES_ANALYTICS ).isGatheringData()
+	const isGA4GatheringData = useInViewSelect( ( select ) =>
+		isGA4Connected && canViewSharedAnalytics && ! showRecoverableAnalytics
+			? select( MODULES_ANALYTICS_4 ).isGatheringData()
 			: false
 	);
 	const isSearchConsoleGatheringData = useInViewSelect( ( select ) =>
@@ -328,7 +340,7 @@ const SearchFunnelWidget = ( { Widget, WidgetReportError } ) => {
 
 	const WidgetFooter = () => (
 		<Footer
-			metrics={ SearchFunnelWidget.metrics }
+			metrics={ SearchFunnelWidgetGA4.metrics }
 			selectedStats={ selectedStats }
 		/>
 	);
@@ -346,11 +358,11 @@ const SearchFunnelWidget = ( { Widget, WidgetReportError } ) => {
 
 	if (
 		searchConsoleLoading ||
-		analyticsOverviewLoading ||
-		analyticsStatsLoading ||
-		analyticsVisitorsOverviewAndStatsLoading ||
-		analyticsGoalsLoading ||
-		isAnalyticsGatheringData === undefined ||
+		ga4OverviewLoading ||
+		ga4StatsLoading ||
+		ga4VisitorsOverviewAndStatsLoading ||
+		ga4ConversionsLoading ||
+		isGA4GatheringData === undefined ||
 		isSearchConsoleGatheringData === undefined
 	) {
 		return (
@@ -364,18 +376,18 @@ const SearchFunnelWidget = ( { Widget, WidgetReportError } ) => {
 	return (
 		<Widget noPadding Header={ Header } Footer={ WidgetFooter }>
 			<Overview
-				analyticsData={ analyticsOverviewData }
-				analyticsGoalsData={ analyticsGoalsData }
-				analyticsVisitorsData={ analyticsVisitorsOverviewAndStatsData }
+				ga4Data={ ga4OverviewData }
+				ga4ConversionsData={ ga4ConversionsData }
+				ga4VisitorsData={ ga4VisitorsOverviewAndStatsData }
 				searchConsoleData={ searchConsoleData }
 				handleStatsSelection={ setSelectedStats }
 				selectedStats={ selectedStats }
 				dateRangeLength={ dateRangeLength }
 				error={
-					analyticsOverviewError ||
-					analyticsStatsError ||
-					analyticsVisitorsOverviewAndStatsError ||
-					analyticsGoalsError
+					ga4OverviewError ||
+					ga4StatsError ||
+					ga4VisitorsOverviewAndStatsError ||
+					ga4ConversionsError
 				}
 				WidgetReportError={ WidgetReportError }
 				showRecoverableAnalytics={ showRecoverableAnalytics }
@@ -386,20 +398,20 @@ const SearchFunnelWidget = ( { Widget, WidgetReportError } ) => {
 					data={ searchConsoleData }
 					dateRangeLength={ dateRangeLength }
 					selectedStats={ selectedStats }
-					metrics={ SearchFunnelWidget.metrics }
+					metrics={ SearchFunnelWidgetGA4.metrics }
 					gatheringData={ isSearchConsoleGatheringData }
 				/>
 			) }
 
 			{ canViewSharedAnalytics &&
-				( ! isAnalyticsActive || ! isAnalyticsConnected ) &&
+				( ! isGA4Active || ! isGA4Connected ) &&
 				BREAKPOINT_SMALL === breakpoint && (
 					<Grid>
 						<Row>
 							<Cell>
 								<ActivateAnalyticsCTA
 									title={ __(
-										'Goals completed',
+										'Conversions completed',
 										'google-site-kit'
 									) }
 								/>
@@ -410,10 +422,10 @@ const SearchFunnelWidget = ( { Widget, WidgetReportError } ) => {
 
 			{ selectedStats === 2 && (
 				<AnalyticsStats
-					data={ analyticsVisitorsOverviewAndStatsData }
+					data={ ga4VisitorsOverviewAndStatsData }
 					dateRangeLength={ dateRangeLength }
 					selectedStats={ 0 }
-					metrics={ SearchFunnelWidget.metrics }
+					metrics={ SearchFunnelWidgetGA4.metrics }
 					dataLabels={ [
 						__( 'Unique Visitors', 'google-site-kit' ),
 					] }
@@ -421,24 +433,24 @@ const SearchFunnelWidget = ( { Widget, WidgetReportError } ) => {
 						( x ) => parseFloat( x ).toLocaleString(),
 					] }
 					statsColor={
-						SearchFunnelWidget.metrics[ selectedStats ].color
+						SearchFunnelWidgetGA4.metrics[ selectedStats ].color
 					}
-					gatheringData={ isAnalyticsGatheringData }
-					moduleSlug="analytics"
+					gatheringData={ isGA4GatheringData }
+					moduleSlug="analytics-4"
 				/>
 			) }
 
 			{ canViewSharedAnalytics &&
 				( selectedStats === 3 || selectedStats === 4 ) && (
 					<AnalyticsStats
-						data={ analyticsStatsData }
+						data={ ga4StatsData }
 						dateRangeLength={ dateRangeLength }
 						// The selected stats order defined in the parent component does not match the order from the API.
 						selectedStats={ selectedStats - 3 }
-						metrics={ SearchFunnelWidget.metrics }
+						metrics={ SearchFunnelWidgetGA4.metrics }
 						dataLabels={ [
-							__( 'Goals', 'google-site-kit' ),
-							__( 'Bounce Rate %', 'google-site-kit' ),
+							__( 'Conversions', 'google-site-kit' ),
+							__( 'Engaged Sessions %', 'google-site-kit' ),
 						] }
 						dataFormats={ [
 							( x ) => parseFloat( x ).toLocaleString(),
@@ -450,17 +462,17 @@ const SearchFunnelWidget = ( { Widget, WidgetReportError } ) => {
 								} ),
 						] }
 						statsColor={
-							SearchFunnelWidget.metrics[ selectedStats ].color
+							SearchFunnelWidgetGA4.metrics[ selectedStats ].color
 						}
-						gatheringData={ isAnalyticsGatheringData }
-						moduleSlug="analytics"
+						gatheringData={ isGA4GatheringData }
+						moduleSlug="analytics-4"
 					/>
 				) }
 		</Widget>
 	);
 };
 
-SearchFunnelWidget.metrics = [
+SearchFunnelWidgetGA4.metrics = [
 	{
 		id: 'impressions',
 		color: '#6380b8',
@@ -479,26 +491,26 @@ SearchFunnelWidget.metrics = [
 		id: 'users',
 		color: '#5c9271',
 		label: __( 'Users', 'google-site-kit' ),
-		service: 'analytics',
+		service: 'analytics-4',
 	},
 	{
-		id: 'goals',
+		id: 'coversions',
 		color: '#6e48ab',
-		label: __( 'Goals', 'google-site-kit' ),
-		service: 'analytics',
+		label: __( 'Coversions', 'google-site-kit' ),
+		service: 'analytics-4',
 	},
 	{
-		id: 'bounce-rate',
+		id: 'engaged-sessions',
 		color: '#6e48ab',
-		label: __( 'Bounce Rate', 'google-site-kit' ),
-		service: 'analytics',
+		label: __( 'Engaged Sessions', 'google-site-kit' ),
+		service: 'analytics-4',
 	},
 ];
 
-SearchFunnelWidget.propTypes = {
+SearchFunnelWidgetGA4.propTypes = {
 	Widget: PropTypes.elementType.isRequired,
 	WidgetReportZero: PropTypes.elementType.isRequired,
 	WidgetReportError: PropTypes.elementType.isRequired,
 };
 
-export default SearchFunnelWidget;
+export default SearchFunnelWidgetGA4;

@@ -1,5 +1,5 @@
 /**
- * OptionalCells component for SearchFunnelWidget.
+ * OptionalCells component for SearchFunnelWidgetGA4.
  *
  * Site Kit by Google, Copyright 2023 Google LLC
  *
@@ -34,7 +34,7 @@ import Data from 'googlesitekit-data';
 import { Cell } from '../../../../../../material-components';
 import { CORE_MODULES } from '../../../../../../googlesitekit/modules/datastore/constants';
 import { ActivateAnalyticsCTA } from '../../../common';
-import CreateGoalCTA from '../CreateGoalCTA';
+import SetupConversionsCTA from '../SetupConversionsCTA';
 import RecoverableModules from '../../../../../../components/RecoverableModules';
 import {
 	BREAKPOINT_SMALL,
@@ -47,31 +47,31 @@ export default function OptionalCells( {
 	error,
 	halfCellProps,
 	quarterCellProps,
-	showAnalytics,
-	showGoalsCTA,
-	showRecoverableAnalytics,
+	showGA4,
+	showConversionsCTA,
+	showRecoverableGA4,
 	WidgetReportError,
 } ) {
 	const breakpoint = useBreakpoint();
 
-	const analyticsModuleConnected = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleConnected( 'analytics' )
+	const ga4ModuleConnected = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
 	);
-	const analyticsModuleActive = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleActive( 'analytics' )
+	const ga4ModuleActive = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleActive( 'analytics-4' )
 	);
 	const analyticsModuleActiveAndConnected =
-		analyticsModuleActive && analyticsModuleConnected;
+		ga4ModuleActive && ga4ModuleConnected;
 
 	return (
 		<Fragment>
 			{ canViewSharedAnalytics &&
-				( ! analyticsModuleConnected || ! analyticsModuleActive ) && (
+				( ! ga4ModuleConnected || ! ga4ModuleActive ) && (
 					<Cell { ...halfCellProps }>
 						{ BREAKPOINT_SMALL !== breakpoint && (
 							<ActivateAnalyticsCTA
 								title={ __(
-									'Goals completed',
+									'Conversions completed',
 									'google-site-kit'
 								) }
 							/>
@@ -79,7 +79,7 @@ export default function OptionalCells( {
 					</Cell>
 				) }
 
-			{ ! showRecoverableAnalytics &&
+			{ ! showRecoverableGA4 &&
 				canViewSharedAnalytics &&
 				analyticsModuleActiveAndConnected &&
 				error && (
@@ -91,15 +91,15 @@ export default function OptionalCells( {
 					</Cell>
 				) }
 
-			{ showAnalytics && (
+			{ showGA4 && (
 				<Cell { ...quarterCellProps } smSize={ 4 }>
-					{ showGoalsCTA && <CreateGoalCTA /> }
+					{ showConversionsCTA && <SetupConversionsCTA /> }
 				</Cell>
 			) }
 
 			{ canViewSharedAnalytics &&
 				analyticsModuleActiveAndConnected &&
-				showRecoverableAnalytics && (
+				showRecoverableGA4 && (
 					<Cell { ...halfCellProps }>
 						<RecoverableModules moduleSlugs={ [ 'analytics' ] } />
 					</Cell>
@@ -113,8 +113,8 @@ OptionalCells.propTypes = {
 	error: PropTypes.object,
 	halfCellProps: PropTypes.object.isRequired,
 	quarterCellProps: PropTypes.object.isRequired,
-	showAnalytics: PropTypes.bool.isRequired,
-	showGoalsCTA: PropTypes.bool.isRequired,
-	showRecoverableAnalytics: PropTypes.bool,
+	showGA4: PropTypes.bool.isRequired,
+	showConversionsCTA: PropTypes.bool.isRequired,
+	showRecoverableGA4: PropTypes.bool,
 	WidgetReportError: PropTypes.elementType.isRequired,
 };
