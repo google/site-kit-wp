@@ -19,7 +19,6 @@
 /**
  * External dependencies
  */
-import { each } from 'lodash';
 import classnames from 'classnames';
 
 /**
@@ -52,7 +51,7 @@ import parseDimensionStringToDate from '../../analytics/util/parseDimensionStrin
  */
 function reduceAnalyticsRowsData( rows, selectedMetricsIndex, selectedStats ) {
 	const dataMap = [];
-	each( rows, ( row ) => {
+	rows.forEach( ( row ) => {
 		if ( row.metricValues ) {
 			const { value } =
 				row.metricValues[ selectedMetricsIndex ] ||
@@ -177,7 +176,7 @@ export function extractAnalyticsDashboardData(
 		day: 'numeric',
 	};
 
-	each( lastMonthData, ( row, i ) => {
+	lastMonthData.forEach( ( row, i ) => {
 		if ( ! row[ 0 ] || ! row[ 1 ] || ! previousMonthData[ i ] ) {
 			return;
 		}
