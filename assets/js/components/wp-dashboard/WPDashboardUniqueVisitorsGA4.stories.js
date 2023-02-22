@@ -1,7 +1,7 @@
 /**
- * WP Dashboard Unique Visitors Component Stories.
+ * WP Dashboard Unique Visitors GA4 Component Stories.
  *
- * Site Kit by Google, Copyright 2022 Google LLC
+ * Site Kit by Google, Copyright 202 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
