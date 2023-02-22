@@ -20,6 +20,7 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
+import { useMemo } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -48,21 +49,24 @@ const AdminBarSessionsGA4 = ( { WidgetReportError } ) => {
 			offsetDays: DATE_RANGE_OFFSET,
 		} )
 	);
-	const reportArgs = {
-		...dateRangeDates,
-		dimensions: [
-			{
-				name: 'date',
-			},
-		],
-		limit: 10,
-		metrics: [
-			{
-				name: 'sessions',
-			},
-		],
-		url,
-	};
+	const reportArgs = useMemo(
+		() => ( {
+			...dateRangeDates,
+			dimensions: [
+				{
+					name: 'date',
+				},
+			],
+			limit: 10,
+			metrics: [
+				{
+					name: 'sessions',
+				},
+			],
+			url,
+		} ),
+		[ dateRangeDates, url ]
+	);
 
 	const analytics4Data = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getReport( reportArgs )
@@ -76,6 +80,14 @@ const AdminBarSessionsGA4 = ( { WidgetReportError } ) => {
 		select( MODULES_ANALYTICS_4 ).getErrorForSelector( 'getReport', [
 			reportArgs,
 		] )
+	);
+
+	const gatheringDataProps = useMemo(
+		() => ( {
+			gatheringData: isGatheringData,
+			gatheringDataNoticeStyle: NOTICE_STYLE.SMALL,
+		} ),
+		[ isGatheringData ]
 	);
 
 	if ( ! hasFinishedResolution || isGatheringData === undefined ) {
@@ -94,11 +106,6 @@ const AdminBarSessionsGA4 = ( { WidgetReportError } ) => {
 		previousMonth?.[ 0 ],
 		lastMonth?.[ 0 ]
 	);
-
-	const gatheringDataProps = {
-		gatheringData: isGatheringData,
-		gatheringDataNoticeStyle: NOTICE_STYLE.SMALL,
-	};
 
 	return (
 		<DataBlock
