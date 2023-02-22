@@ -33,17 +33,9 @@ import { createReducer } from '../../../googlesitekit/data/create-reducer';
 const fetchGetConversionEventsStore = createFetchStore( {
 	baseName: 'getConversionEvents',
 	controlCallback: ( { propertyID } ) => {
-		return API.get(
-			'modules',
-			'analytics-4',
-			'conversion-events',
-			{
-				propertyID,
-			},
-			{
-				useCache: false,
-			}
-		);
+		return API.get( 'modules', 'analytics-4', 'conversion-events', {
+			propertyID,
+		} );
 	},
 	reducerCallback: createReducer(
 		( state, conversionEvents, { propertyID } ) => {
