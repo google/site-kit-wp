@@ -203,7 +203,6 @@ export const setupAnalytics4MockReports = (
 	registry,
 	mockOptions = adminbarAnalytics4OptionSets
 ) => {
-	global.console.log( { mockOptions } );
 	registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-28' );
 	registry.dispatch( MODULES_ANALYTICS_4 ).setPropertyID( '1000' );
 	mockOptions.forEach( ( options ) => {
