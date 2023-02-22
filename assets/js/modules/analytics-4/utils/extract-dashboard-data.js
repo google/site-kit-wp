@@ -52,14 +52,15 @@ import parseDimensionStringToDate from '../../analytics/util/parseDimensionStrin
 function reduceAnalyticsRowsData( rows, selectedMetricsIndex, selectedStats ) {
 	const dataMap = [];
 	rows.forEach( ( row ) => {
-		if ( row.metricValues ) {
-			const { value } =
-				row.metricValues[ selectedMetricsIndex ] ||
-				row.metricValues[ 0 ];
-			const dateString = row.dimensionValues[ 0 ].value;
-			const date = parseDimensionStringToDate( dateString );
-			dataMap.push( [ date, value[ selectedStats ] ] );
+		if ( ! row.metricValues ) {
+			return;
 		}
+
+		const { value } =
+			row.metricValues[ selectedMetricsIndex ] || row.metricValues[ 0 ];
+		const dateString = row.dimensionValues[ 0 ].value;
+		const date = parseDimensionStringToDate( dateString );
+		dataMap.push( [ date, value[ selectedStats ] ] );
 	} );
 	return dataMap;
 }
