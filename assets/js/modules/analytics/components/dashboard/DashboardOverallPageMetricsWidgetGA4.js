@@ -40,22 +40,23 @@ import Sparkline from '../../../../components/Sparkline';
 import SourceLink from '../../../../components/SourceLink';
 import whenActive from '../../../../util/when-active';
 import { generateDateRangeArgs } from '../../util/report-date-range-args';
-import { calculateChange, getURLPath } from '../../../../util';
+import { calculateChange, getURLPath, stringToDate } from '../../../../util';
 import parseDimensionStringToDate from '../../util/parseDimensionStringToDate';
 import WidgetHeaderTitle from '../../../../googlesitekit/widgets/components/WidgetHeaderTitle';
 import useViewOnly from '../../../../hooks/useViewOnly';
 const { useSelect, useInViewSelect } = Data;
 
 /**
- * Fetches Analytics report data and state for the Overall Page Metrics widget.
+ * Fetches Analytics 4 report data and state for the Overall Page Metrics widget.
  *
- * @since 1.45.0
+ * @since n.e.x.t
  *
  * @typedef {Object} OverallPageMetricsReport
- * @property {Array.<Object>|undefined} report     - Analytics report data if exists, otherwise undefined.
- * @property {string}                   serviceURL - Link to relevant Google Analytics page for the report.
- * @property {boolean}                  isLoading  - Loading status for report.
- * @property {(Object|undefined)}       error      - Error object if exists, otherwise undefined.
+ * @property {Object|undefined}   report     - Analytics report data if exists, otherwise undefined.
+ * @property {Object}             dates      - Object containing the report date ranges.
+ * @property {string}             serviceURL - Link to relevant Google Analytics page for the report.
+ * @property {boolean}            isLoading  - Loading status for report.
+ * @property {(Object|undefined)} error      - Error object if exists, otherwise undefined.
  * @return {OverallPageMetricsReport} Analytics report data and state.
  */
 function useOverallPageMetricsReport() {
@@ -77,20 +78,23 @@ function useOverallPageMetricsReport() {
 		dimensions: [ 'date' ],
 		metrics: [
 			{
-				expression: 'screenPageViews',
-				name: 'Pageviews',
+				name: 'screenPageViews',
 			},
 			{
-				expression: 'sessions',
-				name: 'Sessions',
+				name: 'sessions',
 			},
 			{
-				expression: 'engagedSessions',
-				name: 'Engaged Sessions',
+				name: 'engagedSessions',
 			},
 			{
-				expression: 'averageSessionDuration',
-				name: 'Session Duration',
+				name: 'averageSessionDuration',
+			},
+		],
+		orderby: [
+			{
+				dimension: {
+					dimensionName: 'date',
+				},
 			},
 		],
 		url,
@@ -137,6 +141,7 @@ function useOverallPageMetricsReport() {
 
 	return {
 		report,
+		dates,
 		serviceURL,
 		isLoading,
 		error,
@@ -154,13 +159,14 @@ function useOverallPageMetricsReport() {
  * @property {number}         total           - Total count for the metric.
  * @property {number}         change          - Monthly change for the metric.
  *
- * @since 1.45.0
+ * @since n.e.x.t
  *
- * @param {Object} report Analytics report data.
+ * @param {Object} report    Analytics report data.
+ * @param {string} startDate Start date for the report.
  * @return {Array.<OverallPageMetricsData>} Array of data for rendering the data blocks in the Overall Page Metrics widget.
  */
 
-function calculateOverallPageMetricsData( report ) {
+function calculateOverallPageMetricsData( report, startDate ) {
 	const metricsData = [
 		{
 			metric: 'screenPageViews',
@@ -215,26 +221,43 @@ function calculateOverallPageMetricsData( report ) {
 		},
 	];
 
-	const { totals = [], rows = [] } = report?.[ 0 ]?.data || {};
+	const { totals = [], rows = [] } = report || {};
 
-	const lastMonth = totals[ 0 ]?.values || [];
-	const previousMonth = totals[ 1 ]?.values || [];
+	const lastMonth = totals[ 0 ]?.metricValues || [];
+	const previousMonth = totals[ 1 ]?.metricValues || [];
+
+	// We only want half of the date range, as having a comparison date range in the query doubles the range.
+	// In order to achieve this, we filter out entries before the start date (the comparison start date will be earlier).
+	const startDateTime = stringToDate( startDate ).getTime();
+	const currentDateRangeRows = rows.filter( ( { dimensionValues } ) => {
+		if ( dimensionValues[ 1 ].value !== 'date_range_0' ) {
+			return false;
+		}
+
+		const rowDate = parseDimensionStringToDate(
+			dimensionValues[ 0 ].value
+		);
+		return rowDate.getTime() >= startDateTime;
+	} );
 
 	return metricsData.map(
 		( { datapointDivider = 1, ...metricData }, index ) => {
-			// We only want half the date range, having a comparison date range in the query doubles the range.
-			for ( let i = Math.ceil( rows.length / 2 ); i < rows.length; i++ ) {
-				const { values } = rows[ i ].metrics[ 0 ];
-				const dateString = rows[ i ].dimensions[ 0 ];
-				const date = parseDimensionStringToDate( dateString );
+			currentDateRangeRows.forEach(
+				( { dimensionValues, metricValues } ) => {
+					const dateString = dimensionValues[ 0 ].value;
+					const date = parseDimensionStringToDate( dateString );
+					metricData.sparkLineData.push( [
+						date,
+						metricValues[ index ].value,
+					] );
+				}
+			);
 
-				metricData.sparkLineData.push( [ date, values[ index ] ] );
-			}
-
-			metricData.total = ( lastMonth[ index ] || 0 ) / datapointDivider;
+			metricData.total =
+				( lastMonth[ index ]?.value || 0 ) / datapointDivider;
 			metricData.change = calculateChange(
-				previousMonth[ index ] || 0,
-				lastMonth[ index ] || 0
+				previousMonth[ index ]?.value || 0,
+				lastMonth[ index ]?.value || 0
 			);
 
 			return metricData;
@@ -247,7 +270,7 @@ function DashboardOverallPageMetricsWidgetGA4( { Widget, WidgetReportError } ) {
 		select( MODULES_ANALYTICS_4 ).isGatheringData()
 	);
 
-	const { report, serviceURL, isLoading, error } =
+	const { report, dates, serviceURL, isLoading, error } =
 		useOverallPageMetricsReport();
 
 	const currentDayCount = useSelect( ( select ) =>
@@ -294,7 +317,7 @@ function DashboardOverallPageMetricsWidgetGA4( { Widget, WidgetReportError } ) {
 		);
 	}
 
-	const data = calculateOverallPageMetricsData( report );
+	const data = calculateOverallPageMetricsData( report, dates.startDate );
 
 	return (
 		<Widget Header={ Header } Footer={ Footer }>
