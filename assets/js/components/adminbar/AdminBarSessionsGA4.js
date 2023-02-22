@@ -102,10 +102,7 @@ const AdminBarSessionsGA4 = ( { WidgetReportError } ) => {
 	const lastMonth = totals?.[ 0 ]?.metricValues?.[ 0 ]?.value;
 	const previousMonth = totals?.[ 1 ]?.metricValues?.[ 0 ]?.value;
 	const totalSessions = lastMonth;
-	const totalSessionsChange = calculateChange(
-		previousMonth?.[ 0 ],
-		lastMonth?.[ 0 ]
-	);
+	const totalSessionsChange = calculateChange( previousMonth, lastMonth );
 
 	return (
 		<DataBlock
