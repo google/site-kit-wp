@@ -25,13 +25,15 @@ import {
 	provideModules,
 	provideSiteInfo,
 } from '../../../../../../tests/js/utils';
-import { replaceValuesInAnalyticsReportWithZeroData } from '../../../../../../.storybook/utils/zeroReports';
+import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../../../.storybook/utils/zeroReports';
 import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
 import {
 	getAnalytics4MockResponse,
 	provideAnalytics4MockReport,
 } from '../../../analytics-4/utils/data-mock';
+import { properties } from '../../../../modules/analytics-4/datastore/__fixtures__';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
+import { DAY_IN_SECONDS } from '../../../../util';
 import DashboardOverallPageMetricsWidgetGA4 from './DashboardOverallPageMetricsWidgetGA4';
 
 const gatheringReportOptions = {
@@ -51,20 +53,23 @@ const reportOptions = [
 		dimensions: [ 'date' ],
 		metrics: [
 			{
-				expression: 'screenPageViews',
-				name: 'Pageviews',
+				name: 'screenPageViews',
 			},
 			{
-				expression: 'sessions',
-				name: 'Sessions',
+				name: 'sessions',
 			},
 			{
-				expression: 'engagedSessions',
-				name: 'Engaged Sessions',
+				name: 'engagedSessions',
 			},
 			{
-				expression: 'averageSessionDuration',
-				name: 'Session Duration',
+				name: 'averageSessionDuration',
+			},
+		],
+		orderby: [
+			{
+				dimension: {
+					dimensionName: 'date',
+				},
 			},
 		],
 		url: null,
@@ -118,12 +123,39 @@ export const DataUnavailable = Template.bind( {} );
 DataUnavailable.storyName = 'Data Unavailable';
 DataUnavailable.args = {
 	setupRegistry: ( { dispatch } ) => {
-		dispatch( MODULES_ANALYTICS_4 ).receiveGetReport( [], {
-			options: gatheringReportOptions,
+		const propertyID = properties[ 0 ]._id;
+		// Set the property creation timestamp to one and a half days ago, so that
+		// the property is considered to be in the gathering data state.
+		const createTime = new Date(
+			Date.now() - DAY_IN_SECONDS * 1.5 * 1000
+		).toISOString();
+
+		const property = {
+			...properties[ 0 ],
+			createTime,
+		};
+
+		dispatch( MODULES_ANALYTICS_4 ).receiveGetProperty( property, {
+			propertyID,
 		} );
+		dispatch( MODULES_ANALYTICS_4 ).setPropertyID( propertyID );
+
+		dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
+			replaceValuesInAnalytics4ReportWithZeroData(
+				getAnalytics4MockResponse( gatheringReportOptions )
+			),
+			{
+				options: gatheringReportOptions,
+			}
+		);
 
 		for ( const options of reportOptions ) {
-			dispatch( MODULES_ANALYTICS_4 ).receiveGetReport( [], { options } );
+			dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
+				replaceValuesInAnalytics4ReportWithZeroData(
+					getAnalytics4MockResponse( options )
+				),
+				{ options }
+			);
 		}
 	},
 };
@@ -132,11 +164,14 @@ export const ZeroData = Template.bind( {} );
 ZeroData.storyName = 'Zero Data';
 ZeroData.args = {
 	setupRegistry: ( { dispatch } ) => {
+		const propertyID = properties[ 0 ]._id;
+		dispatch( MODULES_ANALYTICS_4 ).setPropertyID( propertyID );
+
 		for ( const options of reportOptions ) {
 			const report = getAnalytics4MockResponse( options );
 
 			dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
-				replaceValuesInAnalyticsReportWithZeroData( report ),
+				replaceValuesInAnalytics4ReportWithZeroData( report ),
 				{
 					options,
 				}
@@ -202,18 +237,49 @@ export const DataUnavailableEntityURL = Template.bind( {} );
 DataUnavailableEntityURL.storyName = 'Data Unavailable w/ entity URL';
 DataUnavailableEntityURL.args = {
 	setupRegistry: ( registry ) => {
+		const propertyID = properties[ 0 ]._id;
+		// Set the property creation timestamp to one and a half days ago, so that
+		// the property is considered to be in the gathering data state.
+		const createTime = new Date(
+			Date.now() - DAY_IN_SECONDS * 1.5 * 1000
+		).toISOString();
+
+		const property = {
+			...properties[ 0 ],
+			createTime,
+		};
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetProperty( property, {
+			propertyID,
+		} );
+		registry.dispatch( MODULES_ANALYTICS_4 ).setPropertyID( propertyID );
+
 		provideSiteInfo( registry, { currentEntityURL } );
 
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport( [], {
-			options: {
-				...gatheringReportOptions,
-				url: currentEntityURL,
-			},
-		} );
+		const options = {
+			...gatheringReportOptions,
+			url: currentEntityURL,
+		};
 
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetReport( [], { options: reportOptionsWithEntity[ 0 ] } );
+			.receiveGetReport(
+				replaceValuesInAnalytics4ReportWithZeroData(
+					getAnalytics4MockResponse( options )
+				),
+				{
+					options,
+				}
+			);
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetReport(
+				replaceValuesInAnalytics4ReportWithZeroData(
+					getAnalytics4MockResponse( reportOptionsWithEntity[ 0 ] )
+				),
+				{ options: reportOptionsWithEntity[ 0 ] }
+			);
 	},
 };
 
@@ -221,6 +287,9 @@ export const ZeroDataEntityURL = Template.bind( {} );
 ZeroDataEntityURL.storyName = 'Zero Data w/ entity URL';
 ZeroDataEntityURL.args = {
 	setupRegistry: ( registry ) => {
+		const propertyID = properties[ 0 ]._id;
+		registry.dispatch( MODULES_ANALYTICS_4 ).setPropertyID( propertyID );
+
 		provideSiteInfo( registry, { currentEntityURL } );
 		provideAnalytics4MockReport( registry, {
 			...gatheringReportOptions,
@@ -233,7 +302,7 @@ ZeroDataEntityURL.args = {
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
 				.receiveGetReport(
-					replaceValuesInAnalyticsReportWithZeroData( report ),
+					replaceValuesInAnalytics4ReportWithZeroData( report ),
 					{
 						options,
 					}
