@@ -85,7 +85,7 @@ class Auto_UpdatesTest extends TestCase {
 		$this->assertCount( 1, $spy->invocations['callback'] );
 		list( $update, $item ) = $spy->invocations['callback'][0];
 		$this->assertNull( $update );
-		$this->assertInternalType( 'object', $item );
+		$this->assertIsObject( $item );
 	}
 }
 
