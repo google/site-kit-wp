@@ -25,6 +25,7 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { Fragment } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -32,7 +33,7 @@ import { Fragment } from '@wordpress/element';
 import Data from 'googlesitekit-data';
 import { Cell } from '../../../../../../material-components';
 import { CORE_MODULES } from '../../../../../../googlesitekit/modules/datastore/constants';
-import ActivateAnalyticsCTA from '../ActivateAnalyticsCTA';
+import ActivateAnalyticsCTA from '../../../common/ActivateAnalyticsCTA';
 import CreateGoalCTA from '../CreateGoalCTA';
 import RecoverableModules from '../../../../../../components/RecoverableModules';
 import {
@@ -68,7 +69,12 @@ export default function OptionalCells( {
 				( ! analyticsModuleConnected || ! analyticsModuleActive ) && (
 					<Cell { ...halfCellProps }>
 						{ BREAKPOINT_SMALL !== breakpoint && (
-							<ActivateAnalyticsCTA />
+							<ActivateAnalyticsCTA
+								title={ __(
+									'Goals completed',
+									'google-site-kit'
+								) }
+							/>
 						) }
 					</Cell>
 				) }

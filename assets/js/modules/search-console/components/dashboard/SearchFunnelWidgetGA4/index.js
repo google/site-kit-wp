@@ -46,7 +46,7 @@ import Footer from '../SearchFunnelWidget/Footer';
 import Overview from './Overview';
 import SearchConsoleStats from '../SearchFunnelWidget/SearchConsoleStats';
 import AnalyticsStats from './AnalyticsStats';
-import ActivateAnalyticsCTA from '../SearchFunnelWidget/ActivateAnalyticsCTA';
+import ActivateAnalyticsCTA from '../../common/ActivateAnalyticsCTA';
 import { CORE_MODULES } from '../../../../../googlesitekit/modules/datastore/constants';
 import { Grid, Row, Cell } from '../../../../../material-components';
 import {
@@ -410,7 +410,12 @@ const SearchFunnelWidgetGA4 = ( { Widget, WidgetReportError } ) => {
 					<Grid>
 						<Row>
 							<Cell>
-								<ActivateAnalyticsCTA />
+								<ActivateAnalyticsCTA
+									title={ __(
+										'Conversions completed',
+										'google-site-kit'
+									) }
+								/>
 							</Cell>
 						</Row>
 					</Grid>
