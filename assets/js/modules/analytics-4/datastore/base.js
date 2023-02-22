@@ -53,6 +53,7 @@ const baseModuleStore = Modules.createModuleStore( 'analytics-4', {
 		'googleTagID',
 		'googleTagAccountID',
 		'googleTagContainerID',
+		'googleTagLastSyncedAtMs',
 	],
 	submitChanges,
 	rollbackChanges,
