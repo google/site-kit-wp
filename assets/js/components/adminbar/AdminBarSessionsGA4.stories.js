@@ -59,7 +59,7 @@ ZeroData.args = {
 };
 
 export const Loading = Template.bind( {} );
-Loading.storyName = 'Loadng Data';
+Loading.storyName = 'Loading Data';
 Loading.args = {
 	setupRegistry: setupAnalytics4Loading,
 };
