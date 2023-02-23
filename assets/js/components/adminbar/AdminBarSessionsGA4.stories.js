@@ -1,5 +1,5 @@
 /**
- * AdminBarSessionsGA4 Component Stories.
+ * Admin Bar Sessions GA4 Component Stories.
  *
  * Site Kit by Google, Copyright 2023 Google LLC
  *
@@ -21,13 +21,13 @@
  */
 import { withWidgetComponentProps } from '../../googlesitekit/widgets/util';
 import {
-	setupSearchConsoleAnalytics4ZeroData,
-	setupSearchConsoleAnalytics4MockReports,
+	setupAnalytics4ZeroData,
 	setupAnalytics4GatheringData,
 	setupAnalytics4Loading,
 	setupAnalytics4Error,
+	setupAnalytics4MockReports,
 	widgetDecorators,
-} from './common.stories';
+} from './common-GA4.stories';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import AdminBarSessionsGA4 from './AdminBarSessionsGA4';
 
@@ -43,7 +43,7 @@ const Template = ( { setupRegistry = () => {}, ...args } ) => (
 export const Ready = Template.bind( {} );
 Ready.storyName = 'Ready';
 Ready.args = {
-	setupRegistry: setupSearchConsoleAnalytics4MockReports,
+	setupRegistry: setupAnalytics4MockReports,
 };
 
 export const GatheringData = Template.bind( {} );
@@ -55,7 +55,7 @@ GatheringData.args = {
 export const ZeroData = Template.bind( {} );
 ZeroData.storyName = 'Zero Data';
 ZeroData.args = {
-	setupRegistry: setupSearchConsoleAnalytics4ZeroData,
+	setupRegistry: setupAnalytics4ZeroData,
 };
 
 export const Loading = Template.bind( {} );
