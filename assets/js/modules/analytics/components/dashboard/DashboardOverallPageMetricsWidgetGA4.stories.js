@@ -109,6 +109,7 @@ Ready.args = {
 };
 Ready.scenario = {
 	label: 'Modules/Analytics/Widgets/DashboardOverallPageMetricsWidgetGA4/Ready',
+	delay: 250,
 };
 
 export const Loading = Template.bind( {} );
@@ -199,6 +200,7 @@ ZeroData.args = {
 };
 ZeroData.scenario = {
 	label: 'Modules/Analytics/Widgets/DashboardOverallPageMetricsWidgetGA4/ZeroData',
+	delay: 250,
 };
 
 export const Error = Template.bind( {} );
@@ -242,6 +244,7 @@ LoadedEntityURL.args = {
 };
 LoadedEntityURL.scenario = {
 	label: 'Modules/Analytics/Widgets/DashboardOverallPageMetricsWidgetGA4/LoadedEntityURL',
+	delay: 250,
 };
 
 export const LoadingEntityURL = Template.bind( {} );
@@ -355,6 +358,7 @@ ZeroDataEntityURL.args = {
 };
 ZeroDataEntityURL.scenario = {
 	label: 'Modules/Analytics/Widgets/DashboardOverallPageMetricsWidgetGA4/ZeroDataEntityURL',
+	delay: 250,
 };
 
 export const ErrorEntityURL = Template.bind( {} );
