@@ -1,5 +1,5 @@
 /**
- * AdminBarSessionsGA4 component.
+ * Admin Bar Sessions GA4 component.
  *
  * Site Kit by Google, Copyright 2023 Google LLC
  *
