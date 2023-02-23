@@ -65,6 +65,7 @@ describe( 'ErrorNotifications', () => {
 		expect( container ).toHaveTextContent(
 			'Site Kit can’t access necessary data'
 		);
+		expect( container ).toMatchSnapshot();
 	} );
 
 	it( 'renders `Get help` link', () => {
@@ -106,6 +107,7 @@ describe( 'ErrorNotifications', () => {
 		expect( container ).toHaveTextContent(
 			'Site Kit needs additional permissions to detect updates to tags on your site'
 		);
+		expect( container ).toMatchSnapshot();
 	} );
 
 	it( 'does not render the GTE message if there are multiple unsatisfied scopes', () => {
@@ -124,6 +126,7 @@ describe( 'ErrorNotifications', () => {
 		expect( container ).toHaveTextContent(
 			'Site Kit can’t access necessary data'
 		);
+		expect( container ).toMatchSnapshot();
 	} );
 
 	it( 'does not render the GTE message if the GTE feature is not enabled', () => {
@@ -140,5 +143,6 @@ describe( 'ErrorNotifications', () => {
 		expect( container ).toHaveTextContent(
 			'Site Kit can’t access necessary data'
 		);
+		expect( container ).toMatchSnapshot();
 	} );
 } );
