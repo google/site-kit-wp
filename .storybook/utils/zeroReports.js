@@ -61,8 +61,8 @@ export function replaceValuesInAnalytics4ReportWithZeroData( report ) {
 
 	return {
 		...reportWithoutRows,
-		totals: reportWithoutRows.totals?.map( toEmptyObject ),
-		maximums: reportWithoutRows.maximums?.map( toEmptyObject ),
-		minimums: reportWithoutRows.minimums?.map( toEmptyObject ),
+		totals: report.totals?.map( toEmptyObject ),
+		maximums: report.maximums?.map( toEmptyObject ),
+		minimums: report.minimums?.map( toEmptyObject ),
 	};
 }
