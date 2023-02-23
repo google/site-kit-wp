@@ -20,7 +20,6 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { useMemo } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -49,24 +48,21 @@ const AdminBarSessionsGA4 = ( { WidgetReportError } ) => {
 			offsetDays: DATE_RANGE_OFFSET,
 		} )
 	);
-	const reportArgs = useMemo(
-		() => ( {
-			...dateRangeDates,
-			dimensions: [
-				{
-					name: 'date',
-				},
-			],
-			limit: 10,
-			metrics: [
-				{
-					name: 'sessions',
-				},
-			],
-			url,
-		} ),
-		[ dateRangeDates, url ]
-	);
+	const reportArgs = {
+		...dateRangeDates,
+		dimensions: [
+			{
+				name: 'date',
+			},
+		],
+		limit: 10,
+		metrics: [
+			{
+				name: 'sessions',
+			},
+		],
+		url,
+	};
 
 	const analytics4Data = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getReport( reportArgs )
@@ -82,13 +78,10 @@ const AdminBarSessionsGA4 = ( { WidgetReportError } ) => {
 		] )
 	);
 
-	const gatheringDataProps = useMemo(
-		() => ( {
-			gatheringData: isGatheringData,
-			gatheringDataNoticeStyle: NOTICE_STYLE.SMALL,
-		} ),
-		[ isGatheringData ]
-	);
+	const gatheringDataProps = {
+		gatheringData: isGatheringData,
+		gatheringDataNoticeStyle: NOTICE_STYLE.SMALL,
+	};
 
 	if ( ! hasFinishedResolution || isGatheringData === undefined ) {
 		return <PreviewBlock width="auto" height="59px" />;
