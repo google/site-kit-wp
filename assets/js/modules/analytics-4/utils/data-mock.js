@@ -22,11 +22,9 @@
 import md5 from 'md5';
 import faker from 'faker';
 import invariant from 'invariant';
-import castArray from 'lodash/castArray';
+import { castArray, cloneDeep, isPlainObject } from 'lodash';
 import { Observable, merge, from } from 'rxjs';
 import { map, reduce, take, toArray, mergeMap } from 'rxjs/operators';
-import cloneDeep from 'lodash/cloneDeep';
-import isPlainObject from 'lodash/isPlainObject';
 
 /**
  * Internal dependencies

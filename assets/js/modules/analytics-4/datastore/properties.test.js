@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import cloneDeep from 'lodash/cloneDeep';
+import { cloneDeep } from 'lodash';
 
 /**
  * Internal dependencies
@@ -30,9 +30,11 @@ import {
 	muteFetch,
 	provideModules,
 	provideSiteInfo,
+	provideUserAuthentication,
 	unsubscribeFromAll,
 	untilResolved,
 } from '../../../../../tests/js/utils';
+import { READ_SCOPE as TAGMANAGER_READ_SCOPE } from '../../tagmanager/datastore/constants';
 import {
 	MODULES_ANALYTICS_4,
 	PROPERTY_CREATE,
@@ -621,7 +623,43 @@ describe( 'modules/analytics-4 properties', () => {
 				enabledFeatures.add( 'gteSupport' );
 			} );
 
+			it( 'should not execute if the Tag Manager readonly scope is not granted', async () => {
+				provideUserAuthentication( registry );
+
+				provideModules( registry, [
+					{
+						slug: 'analytics-4',
+						active: true,
+						connected: true,
+					},
+				] );
+
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+					measurementID: 'G-1A2BCD346E',
+					googleTagID: '',
+					googleTagLastSyncedAtMs: 0,
+				} );
+
+				await registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.syncGoogleTagSettings();
+
+				expect(
+					registry.select( MODULES_ANALYTICS_4 ).getGoogleTagID()
+				).toEqual( '' );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getGoogleTagLastSyncedAtMs()
+				).toEqual( 0 );
+			} );
+
 			it( 'should not execute if GA4 is not connected', async () => {
+				provideUserAuthentication( registry, {
+					grantedScopes: [ TAGMANAGER_READ_SCOPE ],
+				} );
+
 				provideModules( registry, [
 					{
 						slug: 'analytics-4',
@@ -652,6 +690,10 @@ describe( 'modules/analytics-4 properties', () => {
 			} );
 
 			it( 'should not execute if Google Tag settings already exist', async () => {
+				provideUserAuthentication( registry, {
+					grantedScopes: [ TAGMANAGER_READ_SCOPE ],
+				} );
+
 				provideModules( registry, [
 					{
 						slug: 'analytics-4',
@@ -682,6 +724,10 @@ describe( 'modules/analytics-4 properties', () => {
 			} );
 
 			it( 'should not execute if measurement ID is not set', async () => {
+				provideUserAuthentication( registry, {
+					grantedScopes: [ TAGMANAGER_READ_SCOPE ],
+				} );
+
 				provideModules( registry, [
 					{
 						slug: 'analytics-4',
@@ -711,6 +757,10 @@ describe( 'modules/analytics-4 properties', () => {
 			} );
 
 			it( 'should not execute if settings were synced less than an hour ago', async () => {
+				provideUserAuthentication( registry, {
+					grantedScopes: [ TAGMANAGER_READ_SCOPE ],
+				} );
+
 				provideModules( registry, [
 					{
 						slug: 'analytics-4',
@@ -745,6 +795,10 @@ describe( 'modules/analytics-4 properties', () => {
 			} );
 
 			it( 'dispatches a request to get and populate Google Tag settings', async () => {
+				provideUserAuthentication( registry, {
+					grantedScopes: [ TAGMANAGER_READ_SCOPE ],
+				} );
+
 				provideModules( registry, [
 					{
 						slug: 'analytics-4',

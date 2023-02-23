@@ -20,7 +20,7 @@
  * External dependencies
  */
 import invariant from 'invariant';
-import intersection from 'lodash/intersection';
+import { intersection } from 'lodash';
 import { original } from 'immer';
 
 /**

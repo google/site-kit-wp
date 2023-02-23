@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import castArray from 'lodash/castArray';
+import { castArray } from 'lodash';
 
 /**
  * Internal dependencies

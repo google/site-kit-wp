@@ -21,9 +21,8 @@
  */
 import faker from 'faker';
 import invariant from 'invariant';
-import castArray from 'lodash/castArray';
-import isPlainObject from 'lodash/isPlainObject';
 import md5 from 'md5';
+import { castArray, isPlainObject } from 'lodash';
 import { range } from 'rxjs';
 import { map, reduce } from 'rxjs/operators';
 

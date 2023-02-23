@@ -11,6 +11,7 @@
 namespace Google\Site_Kit\Tests\Core\Util;
 
 use Google\Site_Kit\Core\Util\Auto_Updates;
+use Google\Site_Kit\Tests\MethodSpy;
 use Google\Site_Kit\Tests\TestCase;
 
 /**
@@ -69,6 +70,22 @@ class Auto_UpdatesTest extends TestCase {
 		update_site_option( 'auto_update_plugins', array( 'other-plugin.php', GOOGLESITEKIT_PLUGIN_BASENAME ) );
 
 		$this->assertTrue( Auto_Updates::is_sitekit_autoupdates_enabled() );
+	}
+
+	/**
+	 * @requires function wp_is_auto_update_forced_for_item
+	 * @link https://github.com/google/site-kit-wp/issues/6624
+	 */
+	public function test_sitekit_forced_autoupdates_status() {
+		$spy = new MethodSpy();
+		add_filter( 'auto_update_plugin', array( $spy, 'callback' ), 10, 2 );
+
+		Auto_Updates::sitekit_forced_autoupdates_status();
+
+		$this->assertCount( 1, $spy->invocations['callback'] );
+		list( $update, $item ) = $spy->invocations['callback'][0];
+		$this->assertNull( $update );
+		$this->assertIsObject( $item );
 	}
 }
 
