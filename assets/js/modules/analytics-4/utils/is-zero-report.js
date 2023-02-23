@@ -24,7 +24,7 @@ import { isEmpty } from 'lodash';
 /**
  * Checks whether the report data has only zero values.
  *
- * @since n.e.x.t
+ * @since 1.95.0
  *
  * @param {Object} report Report data object.
  * @return {(boolean|undefined)} Returns TRUE if the report data is empty or has only zero values, FALSE if there is at least one non-zero value, or undefined if the report data is not resolved yet.

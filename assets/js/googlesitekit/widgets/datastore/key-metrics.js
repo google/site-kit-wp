@@ -29,7 +29,7 @@ const selectors = {
 	/**
 	 * Gets the Key Metric widget slugs based on the user input settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.95.0
 	 *
 	 * @return {Array<string>|undefined} An array of Key Metric widget slugs, or undefined if the user input settings are not loaded.
 	 */
