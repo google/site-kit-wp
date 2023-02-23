@@ -48,7 +48,7 @@ export default {
 				global._googlesitekitUserData.isUserInputCompleted = false;
 				provideModules( registry, [
 					{
-						slug: 'analytics',
+						slug: 'analytics-4',
 						active: true,
 						connected: true,
 					},
