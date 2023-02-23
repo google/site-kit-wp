@@ -19,10 +19,10 @@
 /**
  * External dependencies
  */
+import classnames from 'classnames';
+import { throttle } from 'lodash';
 import { useMount } from 'react-use';
 import { Chip } from '@material/react-chips';
-import classnames from 'classnames';
-import throttle from 'lodash/throttle';
 
 /**
  * WordPress dependencies

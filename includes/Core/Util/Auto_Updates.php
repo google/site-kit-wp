@@ -93,7 +93,7 @@ class Auto_Updates {
 	 *
 	 * @since 1.93.0
 	 *
-	 * @return AUTO_UPDATE_FORCED_ENABLED | AUTO_UPDATE_FORCED_DISABLED | AUTO_UPDATE_NOT_FORCED
+	 * @return bool|null
 	 */
 	public static function sitekit_forced_autoupdates_status() {
 		if ( ! function_exists( 'wp_is_auto_update_forced_for_item' ) ) {
@@ -102,7 +102,7 @@ class Auto_Updates {
 
 		$sitekit_plugin_data = get_plugin_data( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 
-		$is_auto_update_forced_for_sitekit = wp_is_auto_update_forced_for_item( 'plugin', null, $sitekit_plugin_data );
+		$is_auto_update_forced_for_sitekit = wp_is_auto_update_forced_for_item( 'plugin', null, (object) $sitekit_plugin_data );
 
 		if ( true === $is_auto_update_forced_for_sitekit ) {
 			return self::AUTO_UPDATE_FORCED_ENABLED;

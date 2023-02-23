@@ -154,7 +154,7 @@ class Module_Sharing_Settings extends Setting {
 	/**
 	 * Gets the sharing settings for a given module, or the defaults.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.95.0
 	 *
 	 * @param string $slug Module slug.
 	 * @return array {

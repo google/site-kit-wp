@@ -1,7 +1,7 @@
 /**
  * Search Funnel Widget ActivateAnalyticsCTA component.
  *
- * Site Kit by Google, Copyright 2022 Google LLC
+ * Site Kit by Google, Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
@@ -24,22 +29,23 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import VisitorsGraph from '../../../../../../svg/graphics/cta-graph-visitors.svg';
-import GoalsGraph from '../../../../../../svg/graphics/cta-graph-goals.svg';
-import AnalyticsCTA from '../../../../../components/ActivateAnalyticsCTA';
-import PreviewGraph from '../../../../../components/PreviewGraph';
+import VisitorsGraph from '../../../../../svg/graphics/cta-graph-visitors.svg';
+import GoalsGraph from '../../../../../svg/graphics/cta-graph-goals.svg';
+import AnalyticsCTA from '../../../../components/ActivateAnalyticsCTA';
+import PreviewGraph from '../../../../components/PreviewGraph';
 
-export default function ActivateAnalyticsCTA() {
+export default function ActivateAnalyticsCTA( { title } ) {
 	return (
 		<AnalyticsCTA>
 			<PreviewGraph
 				title={ __( 'Unique visitors from Search', 'google-site-kit' ) }
 				GraphSVG={ VisitorsGraph }
 			/>
-			<PreviewGraph
-				title={ __( 'Goals completed', 'google-site-kit' ) }
-				GraphSVG={ GoalsGraph }
-			/>
+			<PreviewGraph title={ title } GraphSVG={ GoalsGraph } />
 		</AnalyticsCTA>
 	);
 }
+
+ActivateAnalyticsCTA.propTypes = {
+	title: PropTypes.string.isRequired,
+};

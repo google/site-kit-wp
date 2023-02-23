@@ -19,7 +19,7 @@
 /**
  * Returns a copy of the provided Analytics report with all metric values replaced with zero.
  *
- * @since n.e.x.t
+ * @since 1.95.0
  *
  * @param {Array<Object>} report Array containing Analytics report object(s).
  * @return {Array<Object>} Array containing zeroed Analytics report object(s).
@@ -48,14 +48,14 @@ export function replaceValuesInAnalyticsReportWithZeroData( report ) {
  * Returns a copy of the provided Analytics 4 report with all values removed,
  * matching the format of an empty report.
  *
- * @since n.e.x.t
+ * @since 1.95.0
  *
  * @param {Object} report Analytics 4 report object.
  * @return {Object} Empty Analytics 4 report object.
  */
 export function replaceValuesInAnalytics4ReportWithZeroData( report ) {
-	// eslint-disable-next-line no-unused-vars -- Ignore `rows` since we're omitting it from the returned report object.
-	const { rows, ...reportWithoutRows } = report;
+	// eslint-disable-next-line no-unused-vars -- Ignore `rows` and `rowCount` since we're omitting them from the returned report object.
+	const { rows, rowCount, ...reportWithoutRows } = report;
 
 	return {
 		...reportWithoutRows,

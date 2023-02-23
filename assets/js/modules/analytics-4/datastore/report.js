@@ -20,7 +20,7 @@
  * External dependencies
  */
 import invariant from 'invariant';
-import isPlainObject from 'lodash/isPlainObject';
+import { isPlainObject } from 'lodash';
 
 /**
  * Internal dependencies
@@ -160,7 +160,7 @@ const baseSelectors = {
 	/**
 	 * Determines whether the Analytics 4 module is still gathering data.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.95.0
 	 *
 	 * @return {boolean|undefined} Returns `true` if gathering data, otherwise `false`. Returns `undefined` while resolving.
 	 */
@@ -200,7 +200,7 @@ const baseSelectors = {
 	/**
 	 * Determines whether Analytics 4 has zero data or not.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.95.0
 	 *
 	 * @return {boolean|undefined} Returns `true` if the report is zero, otherwise `false`. Returns `undefined` while resolving.
 	 */
