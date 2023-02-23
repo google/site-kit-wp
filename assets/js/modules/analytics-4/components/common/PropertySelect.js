@@ -46,7 +46,7 @@ import useViewContext from '../../../../hooks/useViewContext';
 const { useSelect, useDispatch } = Data;
 
 export default function PropertySelect( props ) {
-	const { label, hasModuleAccess, className, onChange = () => {} } = props;
+	const { hasModuleAccess, className, onChange = () => {} } = props;
 
 	// Analytics accounts need to be loaded in order to load the properties,
 	// otherwise this component will stay in a loading state forever.
@@ -125,7 +125,7 @@ export default function PropertySelect( props ) {
 					'googlesitekit-analytics-4__select-property',
 					className
 				) }
-				label={ label || __( 'Property', 'google-site-kit' ) }
+				label={ __( 'Property', 'google-site-kit' ) }
 				value={ propertyID }
 				enhanced
 				outlined
@@ -145,7 +145,7 @@ export default function PropertySelect( props ) {
 					'mdc-select--invalid': ! isValidSelection,
 				}
 			) }
-			label={ label || __( 'Property', 'google-site-kit' ) }
+			label={ __( 'Property', 'google-site-kit' ) }
 			value={ propertyID }
 			onEnhancedChange={ onPropertyChange }
 			disabled={ ! isValidAccountID( accountID ) }
@@ -181,7 +181,6 @@ export default function PropertySelect( props ) {
 }
 
 PropertySelect.propTypes = {
-	label: PropTypes.string,
 	hasModuleAccess: PropTypes.bool,
 	className: PropTypes.string,
 	onChange: PropTypes.func,

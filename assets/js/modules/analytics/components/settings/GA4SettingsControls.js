@@ -182,10 +182,6 @@ export default function GA4SettingsControls( {
 				{ ! isDisabled && (
 					<Fragment>
 						<PropertySelect
-							label={ __(
-								'Google Analytics 4 Property',
-								'google-site-kit'
-							) }
 							hasModuleAccess={ hasModuleAccess }
 							onChange={ () =>
 								enableGA4PropertyTooltip &&
@@ -195,10 +191,6 @@ export default function GA4SettingsControls( {
 							}
 						/>
 						<MeasurementSelect
-							label={ __(
-								'Google Analytics 4 Measurement',
-								'google-site-kit'
-							) }
 							hasModuleAccess={ hasModuleAccess }
 						/>
 
@@ -241,10 +233,7 @@ export default function GA4SettingsControls( {
 				{ isDisabled && (
 					<Select
 						className="googlesitekit-analytics__select-property"
-						label={ __(
-							'Google Analytics 4 Property',
-							'google-site-kit'
-						) }
+						label={ __( 'Property', 'google-site-kit' ) }
 						value={ matchedProperty?._id || '' }
 						disabled
 						enhanced

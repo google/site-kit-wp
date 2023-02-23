@@ -45,7 +45,7 @@ import useViewContext from '../../../../hooks/useViewContext';
 const { useSelect, useDispatch } = Data;
 
 export default function MeasurementSelect( props ) {
-	const { label, hasModuleAccess, className } = props;
+	const { hasModuleAccess, className } = props;
 
 	// Analytics accounts need to be loaded in order to load the properties,
 	// otherwise this component will stay in a loading state forever.
@@ -138,7 +138,7 @@ export default function MeasurementSelect( props ) {
 					'googlesitekit-analytics-4__select-measurement',
 					className
 				) }
-				label={ label || __( 'Measurement', 'google-site-kit' ) }
+				label={ __( 'Measurement', 'google-site-kit' ) }
 				value={ measurementID }
 				enhanced
 				outlined
@@ -158,7 +158,7 @@ export default function MeasurementSelect( props ) {
 					'mdc-select--invalid': ! isValidSelection,
 				}
 			) }
-			label={ label || __( 'Measurement', 'google-site-kit' ) }
+			label={ __( 'Measurement', 'google-site-kit' ) }
 			value={ webDataStreamID }
 			onEnhancedChange={ onWebDataStreamChange }
 			disabled={ ! isValidAccountID( accountID ) }
@@ -195,7 +195,6 @@ export default function MeasurementSelect( props ) {
 }
 
 MeasurementSelect.propTypes = {
-	label: PropTypes.string,
 	hasModuleAccess: PropTypes.bool,
 	className: PropTypes.string,
 };
