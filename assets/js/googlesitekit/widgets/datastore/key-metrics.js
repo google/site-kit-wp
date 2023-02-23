@@ -64,11 +64,10 @@ const selectors = {
 					'kmAnalyticsTopTrafficSource',
 				];
 			case 'sell_products_or_service':
-				if ( hasProductPostType() ) {
-					return [ 'kmTopPopularProducts' ];
-				}
 				return [
-					'kmAnalyticsPopularContent',
+					hasProductPostType()
+						? 'kmTopPopularProducts'
+						: 'kmAnalyticsPopularContent',
 					'kmAnalyticsEngagedTrafficSource',
 					'kmSearchConsolePopularKeywords',
 					'kmAnalyticsTopTrafficSource',
