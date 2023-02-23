@@ -41,7 +41,6 @@ const gatheringReportOptions = {
 	metrics: [ { name: 'totalUsers' } ],
 	startDate: '2020-08-11',
 	endDate: '2020-09-07',
-	// url: 'https://www.sitekit.com/',
 };
 
 const reportOptions = [
@@ -108,6 +107,9 @@ Ready.args = {
 		}
 	},
 };
+Ready.scenario = {
+	label: 'Modules/Analytics/Widgets/DashboardOverallPageMetricsWidgetGA4/Ready',
+};
 
 export const Loading = Template.bind( {} );
 Loading.storyName = 'Loading';
@@ -117,6 +119,9 @@ Loading.args = {
 			reportOptions[ 0 ],
 		] );
 	},
+};
+Loading.scenario = {
+	label: 'Modules/Analytics/Widgets/DashboardOverallPageMetricsWidgetGA4/Loading',
 };
 
 export const DataUnavailable = Template.bind( {} );
@@ -159,6 +164,9 @@ DataUnavailable.args = {
 		}
 	},
 };
+DataUnavailable.scenario = {
+	label: 'Modules/Analytics/Widgets/DashboardOverallPageMetricsWidgetGA4/DataUnavailable',
+};
 
 export const ZeroData = Template.bind( {} );
 ZeroData.storyName = 'Zero Data';
@@ -178,6 +186,9 @@ ZeroData.args = {
 			);
 		}
 	},
+};
+ZeroData.scenario = {
+	label: 'Modules/Analytics/Widgets/DashboardOverallPageMetricsWidgetGA4/ZeroData',
 };
 
 export const Error = Template.bind( {} );
@@ -200,6 +211,9 @@ Error.args = {
 		] );
 	},
 };
+Error.scenario = {
+	label: 'Modules/Analytics/Widgets/DashboardOverallPageMetricsWidgetGA4/Error',
+};
 
 export const LoadedEntityURL = Template.bind( {} );
 LoadedEntityURL.storyName = 'Ready w/ entity URL set';
@@ -216,6 +230,9 @@ LoadedEntityURL.args = {
 		}
 	},
 };
+LoadedEntityURL.scenario = {
+	label: 'Modules/Analytics/Widgets/DashboardOverallPageMetricsWidgetGA4/LoadedEntityURL',
+};
 
 export const LoadingEntityURL = Template.bind( {} );
 LoadingEntityURL.storyName = 'Loading w/ entity URL';
@@ -231,6 +248,9 @@ LoadingEntityURL.args = {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.startResolution( 'getReport', [ reportOptionsWithEntity[ 0 ] ] );
 	},
+};
+LoadingEntityURL.scenario = {
+	label: 'Modules/Analytics/Widgets/DashboardOverallPageMetricsWidgetGA4/LoadingEntityURL',
 };
 
 export const DataUnavailableEntityURL = Template.bind( {} );
@@ -282,6 +302,9 @@ DataUnavailableEntityURL.args = {
 			);
 	},
 };
+DataUnavailableEntityURL.scenario = {
+	label: 'Modules/Analytics/Widgets/DashboardOverallPageMetricsWidgetGA4/DataUnavailableEntityURL',
+};
 
 export const ZeroDataEntityURL = Template.bind( {} );
 ZeroDataEntityURL.storyName = 'Zero Data w/ entity URL';
@@ -310,6 +333,9 @@ ZeroDataEntityURL.args = {
 		}
 	},
 };
+ZeroDataEntityURL.scenario = {
+	label: 'Modules/Analytics/Widgets/DashboardOverallPageMetricsWidgetGA4/ZeroDataEntityURL',
+};
 
 export const ErrorEntityURL = Template.bind( {} );
 ErrorEntityURL.storyName = 'Error w/ entity URL';
@@ -335,6 +361,9 @@ ErrorEntityURL.args = {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.finishResolution( 'getReport', [ options ] );
 	},
+};
+ErrorEntityURL.scenario = {
+	label: 'Modules/Analytics/Widgets/DashboardOverallPageMetricsWidgetGA4/ErrorEntityURL',
 };
 
 export default {
