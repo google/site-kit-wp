@@ -142,7 +142,7 @@ describe( 'core/widgets key metrics', () => {
 				}
 			);
 
-			it( 'should return the correct metrics for the sell_products_or_service purposes when the site has a product post type', () => {
+			it( 'should contain the correct metrics for the sell_products_or_service purposes when the site has a product post type', () => {
 				provideSiteInfo( registry, {
 					postTypes: [ { slug: 'product', label: 'Product' } ],
 				} );
@@ -153,7 +153,12 @@ describe( 'core/widgets key metrics', () => {
 
 				expect(
 					registry.select( CORE_WIDGETS ).getAnswerBasedMetrics()
-				).toEqual( [ 'kmTopPopularProducts' ] );
+				).toEqual( [
+					'kmTopPopularProducts',
+					'kmAnalyticsEngagedTrafficSource',
+					'kmSearchConsolePopularKeywords',
+					'kmAnalyticsTopTrafficSource',
+				] );
 			} );
 		} );
 	} );
