@@ -1191,7 +1191,7 @@ final class Analytics_4 extends Module
 	 * Parses the orderby value of the data request into an array of AnalyticsData OrderBy object instances.
 	 *
 	 * @since 1.93.0
-	 * @since n.e.x.t Updated to provide support for ordering by dimensions.
+	 * @since 1.95.0 Updated to provide support for ordering by dimensions.
 	 *
 	 * @param array|null $orderby Data request orderby value.
 	 * @return Google_Service_AnalyticsData_OrderBy[] An array of AnalyticsData OrderBy objects.
