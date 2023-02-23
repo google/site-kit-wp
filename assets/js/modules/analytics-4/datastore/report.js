@@ -104,7 +104,7 @@ const fetchGetReportStore = createFetchStore( {
 		if ( orderby ) {
 			invariant(
 				isValidOrders( orderby ),
-				'orderby for an Analytics 4 report must be an object where each object should have either a "metric" or "dimension" property, and an optional "desc" property.'
+				'orderby for an Analytics 4 report must be an array of OrderBy objects where each object should have either a "metric" or "dimension" property, and an optional "desc" property.'
 			);
 		}
 	},
