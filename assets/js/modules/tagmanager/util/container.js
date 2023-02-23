@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import unescape from 'lodash/unescape';
+import { unescape } from 'lodash';
 
 /**
  * Gets normalized container name.

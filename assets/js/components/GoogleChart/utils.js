@@ -19,9 +19,7 @@
 /**
  * External dependencies
  */
-import set from 'lodash/set';
-import cloneDeep from 'lodash/cloneDeep';
-import merge from 'lodash/merge';
+import { set, cloneDeep, merge } from 'lodash';
 
 /**
  * Internal dependencies
