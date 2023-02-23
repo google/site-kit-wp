@@ -1,5 +1,5 @@
 /**
- * OverallPageMetricsWidgetGA4 component.
+ * DashboardOverallPageMetricsWidgetGA4 component.
  *
  * Site Kit by Google, Copyright 2023 Google LLC
  *
@@ -128,7 +128,6 @@ function useOverallPageMetricsReport() {
 			return null;
 		}
 
-		// TODO: Check this.
 		return select( MODULES_ANALYTICS ).getServiceReportURL(
 			'visitors-overview',
 			reportArgs
