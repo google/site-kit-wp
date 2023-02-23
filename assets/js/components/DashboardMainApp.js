@@ -62,6 +62,7 @@ const { useSelect } = Data;
 
 function DashboardMainApp() {
 	const dashboardSharingEnabled = useFeature( 'dashboardSharing' );
+	const userInputEnabled = useFeature( 'userInput' );
 	const viewOnlyDashboard = useViewOnly();
 
 	const viewableModules = useSelect( ( select ) => {
@@ -137,14 +138,16 @@ function DashboardMainApp() {
 				) }
 				<HelpMenu />
 			</Header>
-			<WidgetContextRenderer
-				id={ ANCHOR_ID_KEY_METRICS }
-				slug={ CONTEXT_MAIN_DASHBOARD_KEY_METRICS }
-				className={ classnames( {
-					'googlesitekit-widget-context--last':
-						lastWidgetAnchor === ANCHOR_ID_KEY_METRICS,
-				} ) }
-			/>
+			{ userInputEnabled && (
+				<WidgetContextRenderer
+					id={ ANCHOR_ID_KEY_METRICS }
+					slug={ CONTEXT_MAIN_DASHBOARD_KEY_METRICS }
+					className={ classnames( {
+						'googlesitekit-widget-context--last':
+							lastWidgetAnchor === ANCHOR_ID_KEY_METRICS,
+					} ) }
+				/>
+			) }
 			<WidgetContextRenderer
 				id={ ANCHOR_ID_TRAFFIC }
 				slug={ CONTEXT_MAIN_DASHBOARD_TRAFFIC }

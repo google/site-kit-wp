@@ -40,9 +40,8 @@ function KeyMetricsSetupCTAWidget( { Widget, WidgetNull } ) {
 	const searchConsoleModuleConnected = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleConnected( 'search-console' )
 	);
-	// TODO: Replace this with GA4 connection check
 	const analyticsModuleConnected = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleConnected( 'analytics' )
+		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
 	);
 
 	if (
