@@ -57,10 +57,12 @@ export function replaceValuesInAnalytics4ReportWithZeroData( report ) {
 	// eslint-disable-next-line no-unused-vars -- Ignore `rows` and `rowCount` since we're omitting them from the returned report object.
 	const { rows, rowCount, ...reportWithoutRows } = report;
 
+	const toEmptyObject = () => ( {} );
+
 	return {
 		...reportWithoutRows,
-		totals: [ {} ],
-		maximums: [ {} ],
-		minimums: [ {} ],
+		totals: reportWithoutRows.totals?.map( toEmptyObject ),
+		maximums: reportWithoutRows.maximums?.map( toEmptyObject ),
+		minimums: reportWithoutRows.minimums?.map( toEmptyObject ),
 	};
 }
