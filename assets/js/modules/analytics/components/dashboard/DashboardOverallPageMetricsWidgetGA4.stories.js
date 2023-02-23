@@ -120,6 +120,16 @@ Loading.args = {
 		] );
 	},
 };
+Loading.decorators = [
+	( Story ) => {
+		// Ensure the animation is paused for VRT tests to correctly capture the loading state.
+		return (
+			<div className="googlesitekit-vrt-animation-paused">
+				<Story />
+			</div>
+		);
+	},
+];
 Loading.scenario = {
 	label: 'Modules/Analytics/Widgets/DashboardOverallPageMetricsWidgetGA4/Loading',
 };
@@ -249,6 +259,16 @@ LoadingEntityURL.args = {
 			.startResolution( 'getReport', [ reportOptionsWithEntity[ 0 ] ] );
 	},
 };
+LoadingEntityURL.decorators = [
+	( Story ) => {
+		// Ensure the animation is paused for VRT tests to correctly capture the loading state.
+		return (
+			<div className="googlesitekit-vrt-animation-paused">
+				<Story />
+			</div>
+		);
+	},
+];
 LoadingEntityURL.scenario = {
 	label: 'Modules/Analytics/Widgets/DashboardOverallPageMetricsWidgetGA4/LoadingEntityURL',
 };
