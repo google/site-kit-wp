@@ -503,10 +503,6 @@ const baseActions = {
 	 * @return {Object} Redux-style action.
 	 */
 	*setHasMismatchedGoogleTagID( hasMismatchedTag ) {
-		if ( ! isFeatureEnabled( 'gteSupport' ) ) {
-			return;
-		}
-
 		return {
 			type: SET_HAS_MISMATCHED_TAG,
 			payload: { hasMismatchedTag },
