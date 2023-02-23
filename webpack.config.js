@@ -187,7 +187,6 @@ const createRules = ( mode ) => [
 					configFile: false,
 					cacheDirectory: true,
 					presets: [ '@wordpress/default', '@babel/preset-react' ],
-					plugins: [ 'lodash' ],
 				},
 			},
 		],
