@@ -20,12 +20,18 @@
  * WordPress dependencies
  */
 import { _x, sprintf, _n } from '@wordpress/i18n';
+import { isURL } from '@wordpress/url';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import {
+	DATE_RANGE_OFFSET,
+	MODULES_ANALYTICS,
+} from '../../../datastore/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
+import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import { MODULES_ANALYTICS_4 } from '../../../../analytics-4/datastore/constants';
 import { Grid, Row, Cell } from '../../../../../material-components/layout';
 import PreviewBlock from '../../../../../components/PreviewBlock';
@@ -33,8 +39,10 @@ import DataBlock from '../../../../../components/DataBlock';
 import Sparkline from '../../../../../components/Sparkline';
 import SourceLink from '../../../../../components/SourceLink';
 import whenActive from '../../../../../util/when-active';
+import { generateDateRangeArgs } from '../../../util/report-date-range-args';
+import { getURLPath } from '../../../../../util';
 import WidgetHeaderTitle from '../../../../../googlesitekit/widgets/components/WidgetHeaderTitle';
-import { useOverallPageMetricsReport } from './hooks/useOverallPageMetricsReport';
+import useViewOnly from '../../../../../hooks/useViewOnly';
 import { calculateOverallPageMetricsData } from './utils';
 const { useSelect, useInViewSelect } = Data;
 
@@ -43,8 +51,83 @@ function DashboardOverallPageMetricsWidgetGA4( { Widget, WidgetReportError } ) {
 		select( MODULES_ANALYTICS_4 ).isGatheringData()
 	);
 
-	const { report, dates, serviceURL, isLoading, error } =
-		useOverallPageMetricsReport();
+	const viewOnlyDashboard = useViewOnly();
+
+	const dates = useSelect( ( select ) =>
+		select( CORE_USER ).getDateRangeDates( {
+			offsetDays: DATE_RANGE_OFFSET,
+			compare: true,
+		} )
+	);
+
+	const url = useSelect( ( select ) =>
+		select( CORE_SITE ).getCurrentEntityURL()
+	);
+
+	const args = {
+		...dates,
+		dimensions: [ 'date' ],
+		metrics: [
+			{
+				name: 'screenPageViews',
+			},
+			{
+				name: 'sessions',
+			},
+			{
+				name: 'engagedSessions',
+			},
+			{
+				name: 'averageSessionDuration',
+			},
+		],
+		orderby: [
+			{
+				dimension: {
+					dimensionName: 'date',
+				},
+			},
+		],
+		url,
+	};
+
+	const reportArgs = generateDateRangeArgs( dates );
+
+	if ( isURL( url ) ) {
+		reportArgs[ 'explorer-table.plotKeys' ] = '[]';
+		reportArgs[ '_r.drilldown' ] = `analytics.pagePath:${ getURLPath(
+			url
+		) }`;
+	}
+
+	const isLoading = useSelect(
+		( select ) =>
+			! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
+				'getReport',
+				[ args ]
+			)
+	);
+
+	const error = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getErrorForSelector( 'getReport', [
+			args,
+		] )
+	);
+
+	const serviceURL = useSelect( ( select ) => {
+		if ( viewOnlyDashboard ) {
+			return null;
+		}
+
+		return select( MODULES_ANALYTICS ).getServiceReportURL(
+			'visitors-overview',
+			reportArgs
+		);
+	} );
+
+	const report = useInViewSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getReport( args )
+	);
 
 	const currentDayCount = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeNumberOfDays()
