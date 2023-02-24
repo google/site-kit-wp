@@ -26,14 +26,7 @@ import { MODULES_ANALYTICS } from '../../modules/analytics/datastore/constants';
 import { getAnalyticsMockResponse } from '../../modules/analytics/util/data-mock';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import { provideSearchConsoleMockReport } from '../../modules/search-console/util/data-mock';
-import {
-	replaceValuesInAnalyticsReportWithZeroData,
-	replaceValuesInAnalytics4ReportWithZeroData,
-} from '../../../../.storybook/utils/zeroReports';
-import { getAnalytics4MockResponse } from '../../modules/analytics-4/utils/data-mock';
-import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
-import { DAY_IN_SECONDS } from '../../util';
-import { properties } from '../../modules/analytics-4/datastore/__fixtures__';
+import { replaceValuesInAnalyticsReportWithZeroData } from '../../../../.storybook/utils/zeroReports';
 
 const adminbarSearchConsoleOptions = {
 	startDate: '2020-12-03',
@@ -85,59 +78,6 @@ const adminbarAnalyticsOptionSets = [
 	},
 ];
 
-const adminbarAnalytics4OptionSets = [
-	// Mock options for mocking isGatheringData selector's response.
-	{
-		dimensions: [
-			{
-				name: 'date',
-			},
-		],
-		metrics: [
-			{
-				name: 'totalUsers',
-			},
-		],
-		startDate: '2020-12-31',
-		endDate: '2021-01-27',
-		url: 'https://www.sitekitbygoogle.com/blog/',
-	},
-
-	// Mock options for mocking Total Users report's response.
-	{
-		startDate: '2020-12-31',
-		endDate: '2021-01-27',
-		compareStartDate: '2020-12-03',
-		compareEndDate: '2020-12-30',
-		metrics: [
-			{
-				name: 'totalUsers',
-			},
-		],
-		url: 'https://www.sitekitbygoogle.com/blog/',
-	},
-
-	// Mock options for mocking Sessions report's response.
-	{
-		startDate: '2020-12-31',
-		endDate: '2021-01-27',
-		compareStartDate: '2020-12-03',
-		compareEndDate: '2020-12-30',
-		dimensions: [
-			{
-				name: 'date',
-			},
-		],
-		limit: 10,
-		metrics: [
-			{
-				name: 'sessions',
-			},
-		],
-		url: 'https://www.sitekitbygoogle.com/blog/',
-	},
-];
-
 export const setupBaseRegistry = ( registry, args ) => {
 	// Set some site information.
 	provideSiteInfo( registry, {
@@ -154,11 +94,6 @@ export const setupBaseRegistry = ( registry, args ) => {
 		},
 		{
 			slug: 'analytics',
-			active: true,
-			connected: true,
-		},
-		{
-			slug: 'analytics-4',
 			active: true,
 			connected: true,
 		},
@@ -199,29 +134,9 @@ export const setupAnalyticsMockReports = (
 	} );
 };
 
-export const setupAnalytics4MockReports = (
-	registry,
-	mockOptions = adminbarAnalytics4OptionSets
-) => {
-	registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-28' );
-	registry.dispatch( MODULES_ANALYTICS_4 ).setPropertyID( '1000' );
-	mockOptions.forEach( ( options ) => {
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetReport( getAnalytics4MockResponse( options ), {
-				options,
-			} );
-	} );
-};
-
 export const setupSearchConsoleAnalyticsMockReports = ( registry ) => {
 	setupSearchConsoleMockReports( registry );
 	setupAnalyticsMockReports( registry );
-};
-
-export const setupSearchConsoleAnalytics4MockReports = ( registry ) => {
-	setupSearchConsoleMockReports( registry );
-	setupAnalytics4MockReports( registry );
 };
 
 export const widgetDecorators = [
@@ -274,57 +189,9 @@ export const setupAnalyticsGatheringData = (
 	} );
 };
 
-export const setupAnalytics4GatheringData = (
-	registry,
-	mockOptionSets = adminbarAnalytics4OptionSets
-) => {
-	registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-28' );
-
-	const propertyID = properties[ 0 ]._id;
-	// Set the property creation timestamp to one and a half days ago, so that
-	// the property is considered to be in the gathering data state.
-	const createTime = new Date(
-		Date.now() - DAY_IN_SECONDS * 1.5 * 1000
-	).toISOString();
-
-	const property = {
-		...properties[ 0 ],
-		createTime,
-	};
-	registry
-		.dispatch( MODULES_ANALYTICS_4 )
-		.receiveGetProperty( property, { propertyID } );
-	registry.dispatch( MODULES_ANALYTICS_4 ).setPropertyID( propertyID );
-	mockOptionSets.forEach( ( options ) => {
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
-			{
-				rows: [],
-				totals: [
-					{
-						dimensionValues: [ {} ],
-						metricValues: [ {} ],
-					},
-					{
-						dimensionValues: [ {} ],
-						metricValues: [ {} ],
-					},
-				],
-			},
-			{
-				options,
-			}
-		);
-	} );
-};
-
 export const setupSearchConsoleAnalyticsGatheringData = ( registry ) => {
 	setupSearchConsoleGatheringData( registry );
 	setupAnalyticsGatheringData( registry );
-};
-
-export const setupSearchConsoleAnalytics4GatheringData = ( registry ) => {
-	setupSearchConsoleGatheringData( registry );
-	setupAnalytics4GatheringData( registry );
 };
 
 export const setupSearchConsoleZeroData = ( registry ) => {
@@ -359,64 +226,7 @@ export const setupAnalyticsZeroData = (
 	} );
 };
 
-export const setupAnalytics4ZeroData = (
-	registry,
-	mockOptionSets = adminbarAnalytics4OptionSets
-) => {
-	registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-28' );
-	registry.dispatch( MODULES_ANALYTICS_4 ).setPropertyID( '1000' );
-
-	mockOptionSets.forEach( ( options ) => {
-		const report = getAnalyticsMockResponse( options );
-		const zeroReport =
-			replaceValuesInAnalytics4ReportWithZeroData( report );
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport( zeroReport, {
-			options,
-		} );
-	} );
-};
-
 export const setupSearchConsoleAnalyticsZeroData = ( registry ) => {
 	setupSearchConsoleZeroData( registry );
 	setupAnalyticsZeroData( registry );
-};
-
-export const setupSearchConsoleAnalytics4ZeroData = ( registry ) => {
-	setupSearchConsoleZeroData( registry );
-	setupAnalytics4ZeroData( registry );
-};
-
-export const setupAnalytics4Loading = (
-	registry,
-	mockOptionSets = adminbarAnalytics4OptionSets
-) => {
-	registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-28' );
-
-	mockOptionSets.forEach( ( options ) => {
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.startResolution( 'getReport', [ options ] );
-	} );
-};
-
-export const setupAnalytics4Error = (
-	registry,
-	mockOptionSets = adminbarAnalytics4OptionSets
-) => {
-	registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-28' );
-	registry.dispatch( MODULES_ANALYTICS_4 ).setPropertyID( '1000' );
-
-	const error = {
-		code: 'test_error',
-		message: 'Error message.',
-		data: {},
-	};
-	mockOptionSets.forEach( ( options ) => {
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveError( error, 'getReport', [ options ] );
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.finishResolution( 'getReport', [ options ] );
-	} );
 };
