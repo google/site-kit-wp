@@ -19,7 +19,6 @@
 /**
  * Internal dependencies
  */
-import { provideModules } from '../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 import * as fixtures from '../../modules/analytics-4/datastore/__fixtures__';
@@ -29,11 +28,8 @@ function Template( { ...args } ) {
 	return <GoogleTagIDMismatchNotification { ...args } />;
 }
 
-export const NoMismatchedTag = Template.bind( {} );
-NoMismatchedTag.storyName = 'No Mismatched Tag';
-
-export const MismatchedTag = Template.bind( {} );
-MismatchedTag.storyName = 'Mismatched Tag';
+export const Default = Template.bind( {} );
+Default.storyName = 'Default';
 
 export default {
 	title: 'Components/GoogleTagIDMismatchNotification',
@@ -41,20 +37,16 @@ export default {
 	decorators: [
 		( Story ) => {
 			const setupRegistry = ( registry ) => {
-				provideModules( registry, [
-					{
-						slug: 'analytics-4',
-						active: true,
-						connected: true,
-					},
-				] );
-
 				const gtmAccountID = '6065484567';
 				const gtmContainerID = '98369876';
 				const containerDestinationsMock =
 					fixtures.containerDestinations[ gtmAccountID ][
 						gtmContainerID
 					];
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setHasMismatchedGoogleTagID( true );
 
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
