@@ -109,7 +109,7 @@ describe( 'PropertySelect', () => {
 
 		// Verify that the Property select dropdown is disabled.
 		[
-			'.googlesitekit-analytics__select-property',
+			'.googlesitekit-analytics-4__select-property',
 			'.mdc-select--disabled',
 		].forEach( ( className ) => {
 			expect( container.querySelector( className ) ).toBeInTheDocument();
@@ -123,7 +123,7 @@ describe( 'PropertySelect', () => {
 
 		// A valid accountID is provided, so ensure it is not currently disabled.
 		const selectWrapper = container.querySelector(
-			'.googlesitekit-analytics__select-property'
+			'.googlesitekit-analytics-4__select-property'
 		);
 		const selectedText = container.querySelector(
 			'.mdc-select__selected-text'
@@ -150,7 +150,7 @@ describe( 'PropertySelect', () => {
 		// After we set a valid account ID, the property select should be visible.
 		expect(
 			container.querySelector(
-				'.googlesitekit-analytics__select-property'
+				'.googlesitekit-analytics-4__select-property'
 			)
 		).toBeInTheDocument();
 		expect(
