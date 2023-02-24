@@ -59,7 +59,7 @@ export default function MeasurementSelect( props ) {
 	);
 
 	const { propertyID, webDataStreamID, measurementID } = useSelect(
-		( select ) => select( MODULES_ANALYTICS_4 ).getSettings()
+		( select ) => select( MODULES_ANALYTICS_4 ).getSettings() || {}
 	);
 
 	const isRealPropertyID = !! propertyID && propertyID !== PROPERTY_CREATE;
