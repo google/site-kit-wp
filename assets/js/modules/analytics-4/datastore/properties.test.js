@@ -1015,5 +1015,26 @@ describe( 'modules/analytics-4 properties', () => {
 				expect( console ).toHaveErrored();
 			} );
 		} );
+
+		describe( 'hasMismatchedGoogleTagID', () => {
+			it( 'returns a specific key in state', () => {
+				const hasMismatchedGoogleTagID = registry
+					.select( MODULES_ANALYTICS_4 )
+					.hasMismatchedGoogleTagID();
+
+				// It is false by default.
+				expect( hasMismatchedGoogleTagID ).toBe( false );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setHasMismatchedGoogleTagID( true );
+
+				const updatedHasMismatchedGoogleTagID = registry
+					.select( MODULES_ANALYTICS_4 )
+					.hasMismatchedGoogleTagID();
+
+				expect( updatedHasMismatchedGoogleTagID ).toBe( true );
+			} );
+		} );
 	} );
 } );
