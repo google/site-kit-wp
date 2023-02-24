@@ -1,7 +1,7 @@
 /**
- * DashboardOverallPageMetricsWidgetGA4 component.
+ * OverallPageMetricsWidget component.
  *
- * Site Kit by Google, Copyright 2023 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,34 +29,32 @@ import Data from 'googlesitekit-data';
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS,
-} from '../../datastore/constants';
-import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
-import { Grid, Row, Cell } from '../../../../material-components/layout';
-import PreviewBlock from '../../../../components/PreviewBlock';
-import DataBlock from '../../../../components/DataBlock';
-import Sparkline from '../../../../components/Sparkline';
-import SourceLink from '../../../../components/SourceLink';
-import whenActive from '../../../../util/when-active';
-import { generateDateRangeArgs } from '../../util/report-date-range-args';
-import { calculateChange, getURLPath, stringToDate } from '../../../../util';
-import parseDimensionStringToDate from '../../util/parseDimensionStringToDate';
-import WidgetHeaderTitle from '../../../../googlesitekit/widgets/components/WidgetHeaderTitle';
-import useViewOnly from '../../../../hooks/useViewOnly';
+} from '../../../datastore/constants';
+import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
+import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
+import { Grid, Row, Cell } from '../../../../../material-components/layout';
+import PreviewBlock from '../../../../../components/PreviewBlock';
+import DataBlock from '../../../../../components/DataBlock';
+import Sparkline from '../../../../../components/Sparkline';
+import SourceLink from '../../../../../components/SourceLink';
+import whenActive from '../../../../../util/when-active';
+import { generateDateRangeArgs } from '../../../util/report-date-range-args';
+import { calculateChange, getURLPath } from '../../../../../util';
+import parseDimensionStringToDate from '../../../util/parseDimensionStringToDate';
+import WidgetHeaderTitle from '../../../../../googlesitekit/widgets/components/WidgetHeaderTitle';
+import useViewOnly from '../../../../../hooks/useViewOnly';
 const { useSelect, useInViewSelect } = Data;
 
 /**
- * Fetches Analytics 4 report data and state for the Overall Page Metrics widget.
+ * Fetches Analytics report data and state for the Overall Page Metrics widget.
  *
- * @since n.e.x.t
+ * @since 1.45.0
  *
  * @typedef {Object} OverallPageMetricsReport
- * @property {Object|undefined}   report     - Analytics report data if exists, otherwise undefined.
- * @property {Object}             dates      - Object containing the report date ranges.
- * @property {string}             serviceURL - Link to relevant Google Analytics page for the report.
- * @property {boolean}            isLoading  - Loading status for report.
- * @property {(Object|undefined)} error      - Error object if exists, otherwise undefined.
+ * @property {Array.<Object>|undefined} report     - Analytics report data if exists, otherwise undefined.
+ * @property {string}                   serviceURL - Link to relevant Google Analytics page for the report.
+ * @property {boolean}                  isLoading  - Loading status for report.
+ * @property {(Object|undefined)}       error      - Error object if exists, otherwise undefined.
  * @return {OverallPageMetricsReport} Analytics report data and state.
  */
 function useOverallPageMetricsReport() {
@@ -75,26 +73,23 @@ function useOverallPageMetricsReport() {
 
 	const args = {
 		...dates,
-		dimensions: [ 'date' ],
+		dimensions: [ 'ga:date' ],
 		metrics: [
 			{
-				name: 'screenPageViews',
+				expression: 'ga:pageviews',
+				alias: 'Pageviews',
 			},
 			{
-				name: 'sessions',
+				expression: 'ga:uniquePageviews',
+				alias: 'Unique Pageviews',
 			},
 			{
-				name: 'engagedSessions',
+				expression: 'ga:bounceRate',
+				alias: 'Bounce Rate',
 			},
 			{
-				name: 'averageSessionDuration',
-			},
-		],
-		orderby: [
-			{
-				dimension: {
-					dimensionName: 'date',
-				},
+				expression: 'ga:avgSessionDuration',
+				alias: 'Session Duration',
 			},
 		],
 		url,
@@ -111,16 +106,13 @@ function useOverallPageMetricsReport() {
 
 	const isLoading = useSelect(
 		( select ) =>
-			! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
-				'getReport',
-				[ args ]
-			)
+			! select( MODULES_ANALYTICS ).hasFinishedResolution( 'getReport', [
+				args,
+			] )
 	);
 
 	const error = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getErrorForSelector( 'getReport', [
-			args,
-		] )
+		select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [ args ] )
 	);
 
 	const serviceURL = useSelect( ( select ) => {
@@ -135,12 +127,11 @@ function useOverallPageMetricsReport() {
 	} );
 
 	const report = useInViewSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getReport( args )
+		select( MODULES_ANALYTICS ).getReport( args )
 	);
 
 	return {
 		report,
-		dates,
 		serviceURL,
 		isLoading,
 		error,
@@ -148,7 +139,7 @@ function useOverallPageMetricsReport() {
 }
 
 /**
- * Parse Analytics 4 report into data suitable for rendering the data blocks in the Overall Page Metrics widget.
+ * Parse Analytics report into data suitable for rendering the data blocks in the Overall Page Metrics widget.
  *
  * @typedef {Object} OverallPageMetricsData
  * @property {string}         metric          - Google Analytics metric identifier.
@@ -158,17 +149,16 @@ function useOverallPageMetricsReport() {
  * @property {number}         total           - Total count for the metric.
  * @property {number}         change          - Monthly change for the metric.
  *
- * @since n.e.x.t
+ * @since 1.45.0
  *
- * @param {Object} report    Analytics report data.
- * @param {string} startDate Start date for the report.
+ * @param {Object} report Analytics report data.
  * @return {Array.<OverallPageMetricsData>} Array of data for rendering the data blocks in the Overall Page Metrics widget.
  */
 
-function calculateOverallPageMetricsData( report, startDate ) {
+function calculateOverallPageMetricsData( report ) {
 	const metricsData = [
 		{
-			metric: 'screenPageViews',
+			metric: 'ga:pageviews',
 			title: __( 'Pageviews', 'google-site-kit' ),
 			sparkLineData: [
 				[
@@ -180,24 +170,24 @@ function calculateOverallPageMetricsData( report, startDate ) {
 			change: 0,
 		},
 		{
-			metric: 'sessions',
-			title: __( 'Sessions', 'google-site-kit' ),
+			metric: 'ga:uniquePageviews',
+			title: __( 'Unique Pageviews', 'google-site-kit' ),
 			sparkLineData: [
 				[
 					{ type: 'date', label: 'Day' },
-					{ type: 'number', label: 'Sessions' },
+					{ type: 'number', label: 'Unique Pageviews' },
 				],
 			],
 			total: 0,
 			change: 0,
 		},
 		{
-			metric: 'engagedSessions',
-			title: __( 'Engaged Sessions', 'google-site-kit' ),
+			metric: 'ga:bounceRate',
+			title: __( 'Bounce Rate', 'google-site-kit' ),
 			sparkLineData: [
 				[
 					{ type: 'date', label: 'Day' },
-					{ type: 'number', label: 'Engaged Sessions' },
+					{ type: 'number', label: 'Bounce Rate' },
 				],
 			],
 			datapointUnit: '%',
@@ -206,7 +196,7 @@ function calculateOverallPageMetricsData( report, startDate ) {
 			change: 0,
 		},
 		{
-			metric: 'averageSessionDuration',
+			metric: 'ga:avgSessionDuration',
 			title: __( 'Session Duration', 'google-site-kit' ),
 			sparkLineData: [
 				[
@@ -220,44 +210,26 @@ function calculateOverallPageMetricsData( report, startDate ) {
 		},
 	];
 
-	const { totals = [], rows = [] } = report || {};
+	const { totals = [], rows = [] } = report?.[ 0 ]?.data || {};
 
-	const lastMonth = totals[ 0 ]?.metricValues || [];
-	const previousMonth = totals[ 1 ]?.metricValues || [];
-
-	const startDateTime = stringToDate( startDate ).getTime();
-	const currentDateRangeRows = rows.filter( ( { dimensionValues } ) => {
-		if ( dimensionValues[ 1 ].value !== 'date_range_0' ) {
-			return false;
-		}
-
-		// We only want half of the date range, as having a comparison date range in the query doubles the range.
-		// In order to achieve this, we filter out entries before the start date (the comparison start date will be earlier).
-		const rowDate = parseDimensionStringToDate(
-			dimensionValues[ 0 ].value
-		);
-		return rowDate.getTime() >= startDateTime;
-	} );
+	const lastMonth = totals[ 0 ]?.values || [];
+	const previousMonth = totals[ 1 ]?.values || [];
 
 	return metricsData.map(
 		( { datapointDivider = 1, ...metricData }, index ) => {
-			currentDateRangeRows.forEach(
-				( { dimensionValues, metricValues } ) => {
-					const dateString = dimensionValues[ 0 ].value;
-					const date = parseDimensionStringToDate( dateString );
+			// We only want half the date range, having a comparison date range in the query doubles the range.
+			for ( let i = Math.ceil( rows.length / 2 ); i < rows.length; i++ ) {
+				const { values } = rows[ i ].metrics[ 0 ];
+				const dateString = rows[ i ].dimensions[ 0 ];
+				const date = parseDimensionStringToDate( dateString );
 
-					metricData.sparkLineData.push( [
-						date,
-						metricValues[ index ].value,
-					] );
-				}
-			);
+				metricData.sparkLineData.push( [ date, values[ index ] ] );
+			}
 
-			metricData.total =
-				( lastMonth[ index ]?.value || 0 ) / datapointDivider;
+			metricData.total = ( lastMonth[ index ] || 0 ) / datapointDivider;
 			metricData.change = calculateChange(
-				previousMonth[ index ]?.value || 0,
-				lastMonth[ index ]?.value || 0
+				previousMonth[ index ] || 0,
+				lastMonth[ index ] || 0
 			);
 
 			return metricData;
@@ -265,12 +237,12 @@ function calculateOverallPageMetricsData( report, startDate ) {
 	);
 }
 
-function DashboardOverallPageMetricsWidgetGA4( { Widget, WidgetReportError } ) {
+function DashboardOverallPageMetricsWidget( { Widget, WidgetReportError } ) {
 	const isGatheringData = useInViewSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).isGatheringData()
+		select( MODULES_ANALYTICS ).isGatheringData()
 	);
 
-	const { report, dates, serviceURL, isLoading, error } =
+	const { report, serviceURL, isLoading, error } =
 		useOverallPageMetricsReport();
 
 	const currentDayCount = useSelect( ( select ) =>
@@ -317,7 +289,7 @@ function DashboardOverallPageMetricsWidgetGA4( { Widget, WidgetReportError } ) {
 		);
 	}
 
-	const data = calculateOverallPageMetricsData( report, dates.startDate );
+	const data = calculateOverallPageMetricsData( report );
 
 	return (
 		<Widget Header={ Header } Footer={ Footer }>
@@ -358,5 +330,5 @@ function DashboardOverallPageMetricsWidgetGA4( { Widget, WidgetReportError } ) {
 }
 
 export default whenActive( { moduleName: 'analytics' } )(
-	DashboardOverallPageMetricsWidgetGA4
+	DashboardOverallPageMetricsWidget
 );

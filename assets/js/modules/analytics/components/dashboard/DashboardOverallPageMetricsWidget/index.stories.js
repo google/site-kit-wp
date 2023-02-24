@@ -19,20 +19,20 @@
 /**
  * Internal dependencies
  */
-import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import { MODULES_ANALYTICS } from '../../datastore/constants';
+import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
+import { MODULES_ANALYTICS } from '../../../datastore/constants';
 import {
 	provideModules,
 	provideSiteInfo,
-} from '../../../../../../tests/js/utils';
-import { replaceValuesInAnalyticsReportWithZeroData } from '../../../../../../.storybook/utils/zeroReports';
-import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
+} from '../../../../../../../tests/js/utils';
+import { replaceValuesInAnalyticsReportWithZeroData } from '../../../../../../../.storybook/utils/zeroReports';
+import { withWidgetComponentProps } from '../../../../../googlesitekit/widgets/util';
 import {
 	provideAnalyticsMockReport,
 	getAnalyticsMockResponse,
-} from '../../util/data-mock';
-import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
-import DashboardOverallPageMetricsWidget from './DashboardOverallPageMetricsWidget';
+} from '../../../util/data-mock';
+import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
+import DashboardOverallPageMetricsWidget from '.';
 
 const gatheringReportOptions = {
 	dimensions: [ 'ga:date' ],

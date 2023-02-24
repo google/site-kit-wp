@@ -19,22 +19,22 @@
 /**
  * Internal dependencies
  */
-import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
+import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
+import { MODULES_ANALYTICS_4 } from '../../../../analytics-4/datastore/constants';
 import {
 	provideModules,
 	provideSiteInfo,
-} from '../../../../../../tests/js/utils';
-import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../../../.storybook/utils/zeroReports';
-import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
+} from '../../../../../../../tests/js/utils';
+import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../../../../.storybook/utils/zeroReports';
+import { withWidgetComponentProps } from '../../../../../googlesitekit/widgets/util';
 import {
 	getAnalytics4MockResponse,
 	provideAnalytics4MockReport,
-} from '../../../analytics-4/utils/data-mock';
-import { properties } from '../../../../modules/analytics-4/datastore/__fixtures__';
-import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
-import { DAY_IN_SECONDS } from '../../../../util';
-import DashboardOverallPageMetricsWidgetGA4 from './DashboardOverallPageMetricsWidgetGA4';
+} from '../../../../analytics-4/utils/data-mock';
+import { properties } from '../../../../../modules/analytics-4/datastore/__fixtures__';
+import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
+import { DAY_IN_SECONDS } from '../../../../../util';
+import DashboardOverallPageMetricsWidgetGA4 from '.';
 
 const gatheringReportOptions = {
 	dimensions: [ 'date' ],
