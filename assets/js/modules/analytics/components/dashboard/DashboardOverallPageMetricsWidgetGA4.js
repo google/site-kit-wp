@@ -1,7 +1,7 @@
 /**
- * OverallPageMetricsWidget component.
+ * DashboardOverallPageMetricsWidgetGA4 component.
  *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,25 +29,26 @@ import Data from 'googlesitekit-data';
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS,
-} from '../../../datastore/constants';
-import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
-import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
-import { Grid, Row, Cell } from '../../../../../material-components/layout';
-import PreviewBlock from '../../../../../components/PreviewBlock';
-import DataBlock from '../../../../../components/DataBlock';
-import Sparkline from '../../../../../components/Sparkline';
-import SourceLink from '../../../../../components/SourceLink';
-import whenActive from '../../../../../util/when-active';
-import { generateDateRangeArgs } from '../../../util/report-date-range-args';
-import { getURLPath } from '../../../../../util';
-import WidgetHeaderTitle from '../../../../../googlesitekit/widgets/components/WidgetHeaderTitle';
-import useViewOnly from '../../../../../hooks/useViewOnly';
-import { calculateOverallPageMetricsData } from './utils';
+} from '../../datastore/constants';
+import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
+import { Grid, Row, Cell } from '../../../../material-components/layout';
+import PreviewBlock from '../../../../components/PreviewBlock';
+import DataBlock from '../../../../components/DataBlock';
+import Sparkline from '../../../../components/Sparkline';
+import SourceLink from '../../../../components/SourceLink';
+import whenActive from '../../../../util/when-active';
+import { generateDateRangeArgs } from '../../util/report-date-range-args';
+import { calculateOverallPageMetricsData } from '../../..//analytics-4/utils/overall-page-metrics';
+import { getURLPath } from '../../../../util';
+import WidgetHeaderTitle from '../../../../googlesitekit/widgets/components/WidgetHeaderTitle';
+import useViewOnly from '../../../../hooks/useViewOnly';
 const { useSelect, useInViewSelect } = Data;
 
-function DashboardOverallPageMetricsWidget( { Widget, WidgetReportError } ) {
+function DashboardOverallPageMetricsWidgetGA4( { Widget, WidgetReportError } ) {
 	const isGatheringData = useInViewSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).isGatheringData()
+		select( MODULES_ANALYTICS_4 ).isGatheringData()
 	);
 
 	const viewOnlyDashboard = useViewOnly();
@@ -65,23 +66,26 @@ function DashboardOverallPageMetricsWidget( { Widget, WidgetReportError } ) {
 
 	const args = {
 		...dates,
-		dimensions: [ 'ga:date' ],
+		dimensions: [ 'date' ],
 		metrics: [
 			{
-				expression: 'ga:pageviews',
-				alias: 'Pageviews',
+				name: 'screenPageViews',
 			},
 			{
-				expression: 'ga:uniquePageviews',
-				alias: 'Unique Pageviews',
+				name: 'sessions',
 			},
 			{
-				expression: 'ga:bounceRate',
-				alias: 'Bounce Rate',
+				name: 'engagedSessions',
 			},
 			{
-				expression: 'ga:avgSessionDuration',
-				alias: 'Session Duration',
+				name: 'averageSessionDuration',
+			},
+		],
+		orderby: [
+			{
+				dimension: {
+					dimensionName: 'date',
+				},
 			},
 		],
 		url,
@@ -98,13 +102,16 @@ function DashboardOverallPageMetricsWidget( { Widget, WidgetReportError } ) {
 
 	const isLoading = useSelect(
 		( select ) =>
-			! select( MODULES_ANALYTICS ).hasFinishedResolution( 'getReport', [
-				args,
-			] )
+			! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
+				'getReport',
+				[ args ]
+			)
 	);
 
 	const error = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [ args ] )
+		select( MODULES_ANALYTICS_4 ).getErrorForSelector( 'getReport', [
+			args,
+		] )
 	);
 
 	const serviceURL = useSelect( ( select ) => {
@@ -119,7 +126,7 @@ function DashboardOverallPageMetricsWidget( { Widget, WidgetReportError } ) {
 	} );
 
 	const report = useInViewSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).getReport( args )
+		select( MODULES_ANALYTICS_4 ).getReport( args )
 	);
 
 	const currentDayCount = useSelect( ( select ) =>
@@ -166,7 +173,7 @@ function DashboardOverallPageMetricsWidget( { Widget, WidgetReportError } ) {
 		);
 	}
 
-	const data = calculateOverallPageMetricsData( report );
+	const data = calculateOverallPageMetricsData( report, dates.startDate );
 
 	return (
 		<Widget Header={ Header } Footer={ Footer }>
@@ -207,5 +214,5 @@ function DashboardOverallPageMetricsWidget( { Widget, WidgetReportError } ) {
 }
 
 export default whenActive( { moduleName: 'analytics' } )(
-	DashboardOverallPageMetricsWidget
+	DashboardOverallPageMetricsWidgetGA4
 );

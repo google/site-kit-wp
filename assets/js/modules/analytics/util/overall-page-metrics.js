@@ -1,5 +1,5 @@
 /**
- * DashboardOverallPageMetricsWidgetGA4 hooks.
+ * OverallPageMetricsWidget utils.
  *
  * Site Kit by Google, Copyright 2023 Google LLC
  *
@@ -24,11 +24,11 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { calculateChange, stringToDate } from '../../../../../util';
-import parseDimensionStringToDate from '../../../util/parseDimensionStringToDate';
+import { calculateChange } from '../../../util';
+import parseDimensionStringToDate from '../util/parseDimensionStringToDate';
 
 /**
- * Parse Analytics 4 report into data suitable for rendering the data blocks in the Overall Page Metrics widget.
+ * Parse Analytics report into data suitable for rendering the data blocks in the Overall Page Metrics widget.
  *
  * @typedef {Object} OverallPageMetricsData
  * @property {string}         metric          - Google Analytics metric identifier.
@@ -38,17 +38,16 @@ import parseDimensionStringToDate from '../../../util/parseDimensionStringToDate
  * @property {number}         total           - Total count for the metric.
  * @property {number}         change          - Monthly change for the metric.
  *
- * @since n.e.x.t
+ * @since 1.45.0
  *
- * @param {Object} report    Analytics report data.
- * @param {string} startDate Start date for the report.
+ * @param {Object} report Analytics report data.
  * @return {Array.<OverallPageMetricsData>} Array of data for rendering the data blocks in the Overall Page Metrics widget.
  */
 
-export function calculateOverallPageMetricsData( report, startDate ) {
+export function calculateOverallPageMetricsData( report ) {
 	const metricsData = [
 		{
-			metric: 'screenPageViews',
+			metric: 'ga:pageviews',
 			title: __( 'Pageviews', 'google-site-kit' ),
 			sparkLineData: [
 				[
@@ -60,24 +59,24 @@ export function calculateOverallPageMetricsData( report, startDate ) {
 			change: 0,
 		},
 		{
-			metric: 'sessions',
-			title: __( 'Sessions', 'google-site-kit' ),
+			metric: 'ga:uniquePageviews',
+			title: __( 'Unique Pageviews', 'google-site-kit' ),
 			sparkLineData: [
 				[
 					{ type: 'date', label: 'Day' },
-					{ type: 'number', label: 'Sessions' },
+					{ type: 'number', label: 'Unique Pageviews' },
 				],
 			],
 			total: 0,
 			change: 0,
 		},
 		{
-			metric: 'engagedSessions',
-			title: __( 'Engaged Sessions', 'google-site-kit' ),
+			metric: 'ga:bounceRate',
+			title: __( 'Bounce Rate', 'google-site-kit' ),
 			sparkLineData: [
 				[
 					{ type: 'date', label: 'Day' },
-					{ type: 'number', label: 'Engaged Sessions' },
+					{ type: 'number', label: 'Bounce Rate' },
 				],
 			],
 			datapointUnit: '%',
@@ -86,7 +85,7 @@ export function calculateOverallPageMetricsData( report, startDate ) {
 			change: 0,
 		},
 		{
-			metric: 'averageSessionDuration',
+			metric: 'ga:avgSessionDuration',
 			title: __( 'Session Duration', 'google-site-kit' ),
 			sparkLineData: [
 				[
@@ -100,44 +99,26 @@ export function calculateOverallPageMetricsData( report, startDate ) {
 		},
 	];
 
-	const { totals = [], rows = [] } = report || {};
+	const { totals = [], rows = [] } = report?.[ 0 ]?.data || {};
 
-	const lastMonth = totals[ 0 ]?.metricValues || [];
-	const previousMonth = totals[ 1 ]?.metricValues || [];
-
-	const startDateTime = stringToDate( startDate ).getTime();
-	const currentDateRangeRows = rows.filter( ( { dimensionValues } ) => {
-		if ( dimensionValues[ 1 ].value !== 'date_range_0' ) {
-			return false;
-		}
-
-		// We only want half of the date range, as having a comparison date range in the query doubles the range.
-		// In order to achieve this, we filter out entries before the start date (the comparison start date will be earlier).
-		const rowDate = parseDimensionStringToDate(
-			dimensionValues[ 0 ].value
-		);
-		return rowDate.getTime() >= startDateTime;
-	} );
+	const lastMonth = totals[ 0 ]?.values || [];
+	const previousMonth = totals[ 1 ]?.values || [];
 
 	return metricsData.map(
 		( { datapointDivider = 1, ...metricData }, index ) => {
-			currentDateRangeRows.forEach(
-				( { dimensionValues, metricValues } ) => {
-					const dateString = dimensionValues[ 0 ].value;
-					const date = parseDimensionStringToDate( dateString );
+			// We only want half the date range, having a comparison date range in the query doubles the range.
+			for ( let i = Math.ceil( rows.length / 2 ); i < rows.length; i++ ) {
+				const { values } = rows[ i ].metrics[ 0 ];
+				const dateString = rows[ i ].dimensions[ 0 ];
+				const date = parseDimensionStringToDate( dateString );
 
-					metricData.sparkLineData.push( [
-						date,
-						metricValues[ index ].value,
-					] );
-				}
-			);
+				metricData.sparkLineData.push( [ date, values[ index ] ] );
+			}
 
-			metricData.total =
-				( lastMonth[ index ]?.value || 0 ) / datapointDivider;
+			metricData.total = ( lastMonth[ index ] || 0 ) / datapointDivider;
 			metricData.change = calculateChange(
-				previousMonth[ index ]?.value || 0,
-				lastMonth[ index ]?.value || 0
+				previousMonth[ index ] || 0,
+				lastMonth[ index ] || 0
 			);
 
 			return metricData;
