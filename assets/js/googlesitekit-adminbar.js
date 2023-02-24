@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import once from 'lodash/once';
+import { once } from 'lodash';
 
 /**
  * WordPress dependencies

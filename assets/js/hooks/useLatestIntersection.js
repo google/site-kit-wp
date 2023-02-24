@@ -28,7 +28,7 @@ import { useEffect, useState } from '@wordpress/element';
  * is that this hook returns the last intersection observer entry instead of the first one.
  * See https://github.com/streamich/react-use/blob/325f5bd69904346788ea981ec18bfc7397c611df/src/useIntersection.ts.
  *
- * @since n.e.x.t
+ * @since 1.95.0
  *
  * @param {Object} ref     A ref object that points to the HTML element to observe.
  * @param {Object} options Options for the Intersection Observer.

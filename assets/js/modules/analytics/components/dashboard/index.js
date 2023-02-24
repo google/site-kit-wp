@@ -17,4 +17,5 @@
  */
 
 export { default as DashboardAllTrafficWidget } from './DashboardAllTrafficWidget';
+export { default as DashboardAllTrafficWidgetGA4 } from './DashboardAllTrafficWidgetGA4';
 export { default as DashboardOverallPageMetricsWidget } from './DashboardOverallPageMetricsWidget';

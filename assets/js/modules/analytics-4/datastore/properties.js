@@ -26,8 +26,10 @@ import invariant from 'invariant';
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
+import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
+import { READ_SCOPE as TAGMANAGER_READ_SCOPE } from '../../tagmanager/datastore/constants';
 import {
 	MODULES_ANALYTICS_4,
 	PROPERTY_CREATE,
@@ -512,7 +514,7 @@ const baseActions = {
 	/**
 	 * Syncs Google Tag settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.95.0
 	 */
 	*syncGoogleTagSettings() {
 		if ( ! isFeatureEnabled( 'gteSupport' ) ) {
@@ -521,6 +523,14 @@ const baseActions = {
 
 		const { select, dispatch, __experimentalResolveSelect } =
 			yield Data.commonActions.getRegistry();
+
+		const hasTagManagerReadScope = select( CORE_USER ).hasScope(
+			TAGMANAGER_READ_SCOPE
+		);
+
+		if ( ! hasTagManagerReadScope ) {
+			return;
+		}
 
 		// Wait for modules to be available before selecting.
 		yield Data.commonActions.await(

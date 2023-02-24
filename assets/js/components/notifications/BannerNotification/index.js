@@ -21,7 +21,7 @@
  */
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
-import map from 'lodash/map';
+import { map } from 'lodash';
 import { useMount, useMountedState, useIntersection } from 'react-use';
 import { useWindowWidth } from '@react-hook/window-size/throttled';
 
