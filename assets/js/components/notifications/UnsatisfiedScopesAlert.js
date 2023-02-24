@@ -35,6 +35,7 @@ import { listFormat } from '../../util';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
+import { useFeature } from '../../hooks/useFeature';
 const { useSelect } = Data;
 
 // Map of scope IDs to Site Kit module slugs.
@@ -45,6 +46,7 @@ const scopeIDToSlug = {
 const MESSAGE_MULTIPLE = 'multiple';
 const MESSAGE_SINGULAR = 'single';
 const MESSAGE_GENERIC = 'generic';
+const MESSAGE_GTE = 'gte';
 
 function mapScopesToModuleNames( scopes, modules ) {
 	if ( modules === undefined ) {
@@ -87,6 +89,8 @@ export default function UnsatisfiedScopesAlert() {
 		select( CORE_MODULES ).getModules()
 	);
 
+	const gteSupportEnabled = useFeature( 'gteSupport' );
+
 	if (
 		isNavigating ||
 		! unsatisfiedScopes?.length ||
@@ -97,8 +101,15 @@ export default function UnsatisfiedScopesAlert() {
 
 	let messageID;
 	let moduleNames;
-	// Determine if all scopes are in Google API format, otherwise use generic message.
 	if (
+		gteSupportEnabled &&
+		unsatisfiedScopes.length === 1 &&
+		unsatisfiedScopes[ 0 ] ===
+			'https://www.googleapis.com/auth/tagmanager.readonly'
+	) {
+		messageID = MESSAGE_GTE;
+	} else if (
+		// Determine if all scopes are in Google API format, otherwise use generic message.
 		unsatisfiedScopes.some(
 			( scope ) =>
 				! scope.match(
@@ -121,6 +132,10 @@ export default function UnsatisfiedScopesAlert() {
 	}
 
 	let message;
+	let title = __( 'Site Kit can’t access necessary data', 'google-site-kit' );
+	let ctaLabel = __( 'Redo setup', 'google-site-kit' );
+	let learnMoreLabel;
+	let learnMoreURL;
 
 	switch ( messageID ) {
 		case MESSAGE_MULTIPLE:
@@ -149,21 +164,35 @@ export default function UnsatisfiedScopesAlert() {
 				'google-site-kit'
 			);
 			break;
+		case MESSAGE_GTE:
+			title = __(
+				'Site Kit needs additional permissions to detect updates to tags on your site',
+				'google-site-kit'
+			);
+			message = __(
+				'To continue using Analytics with Site Kit, you need to grant permission to check for any changes in your Google tag’s target Analytics property. Recent updates to the Google tag enable changing which Analytics property it’s connected to without editing the code on the site, so Site Kit must regularly check if the tag on your site matches the Analytics property destination.',
+				'google-site-kit'
+			);
+			learnMoreLabel = __( 'Learn more', 'google-site-kit' );
+			learnMoreURL =
+				'https://support.google.com/tagmanager/answer/11994839';
+
+			ctaLabel = __( 'Grant permission', 'google-site-kit' );
+			break;
 	}
 
 	return (
 		<BannerNotification
 			id="authentication error"
-			title={ __(
-				'Site Kit can’t access necessary data',
-				'google-site-kit'
-			) }
+			title={ title }
 			description={ message }
 			format="small"
 			type="win-error"
 			isDismissible={ false }
 			ctaLink={ connectURL }
-			ctaLabel={ __( 'Redo setup', 'google-site-kit' ) }
+			ctaLabel={ ctaLabel }
+			learnMoreLabel={ learnMoreLabel }
+			learnMoreURL={ learnMoreURL }
 		/>
 	);
 }
