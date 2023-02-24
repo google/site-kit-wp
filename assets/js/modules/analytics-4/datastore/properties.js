@@ -160,10 +160,12 @@ const fetchGetGoogleTagSettingsStore = createFetchStore( {
 
 // Actions
 const WAIT_FOR_PROPERTIES = 'WAIT_FOR_PROPERTIES';
+const MATCHING_ACCOUNT_PROPERTY = 'MATCHING_ACCOUNT_PROPERTY';
 
 const baseInitialState = {
 	properties: {},
 	propertiesByID: {},
+	matchingAccountProperty: false,
 };
 
 const baseActions = {
@@ -310,11 +312,21 @@ const baseActions = {
 	 * @return {Object|null} Matched property object on success, otherwise NULL.
 	 */
 	*matchAndSelectProperty( accountID, fallbackPropertyID = '' ) {
+		yield {
+			payload: { matchingAccountProperty: true },
+			type: MATCHING_ACCOUNT_PROPERTY,
+		};
+
 		const property = yield baseActions.matchAccountProperty( accountID );
 		const propertyID = property?._id || fallbackPropertyID;
 		if ( propertyID ) {
 			yield baseActions.selectProperty( propertyID );
 		}
+
+		yield {
+			payload: { matchingAccountProperty: false },
+			type: MATCHING_ACCOUNT_PROPERTY,
+		};
 
 		return property;
 	},
@@ -558,8 +570,10 @@ const baseControls = {
 	),
 };
 
-function baseReducer( state, { type } ) {
+function baseReducer( state, { type, payload } ) {
 	switch ( type ) {
+		case MATCHING_ACCOUNT_PROPERTY:
+			return { ...state, ...payload };
 		default:
 			return state;
 	}
@@ -618,6 +632,18 @@ const baseSelectors = {
 	 */
 	getProperty( state, propertyID ) {
 		return state.propertiesByID[ propertyID ];
+	},
+
+	/**
+	 * Determines whether we are matching account property or not.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {boolean} TRUE if we matching account property right now, otherwise FALSE.
+	 */
+	isMatchingAccountProperty( state ) {
+		return state.matchingAccountProperty;
 	},
 };
 

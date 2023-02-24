@@ -46,7 +46,12 @@ import useViewContext from '../../../../hooks/useViewContext';
 const { useSelect, useDispatch } = Data;
 
 export default function PropertySelect( props ) {
-	const { hasModuleAccess, className, onChange = () => {} } = props;
+	const {
+		isDisabled,
+		hasModuleAccess,
+		className,
+		onChange = () => {},
+	} = props;
 
 	// Analytics accounts need to be loaded in order to load the properties,
 	// otherwise this component will stay in a loading state forever.
@@ -71,6 +76,7 @@ export default function PropertySelect( props ) {
 
 	const isLoading = useSelect(
 		( select ) =>
+			select( MODULES_ANALYTICS_4 ).isMatchingAccountProperty() ||
 			! select( MODULES_ANALYTICS ).hasFinishedResolution(
 				'getAccounts'
 			) ||
@@ -148,7 +154,7 @@ export default function PropertySelect( props ) {
 			label={ __( 'Property', 'google-site-kit' ) }
 			value={ propertyID }
 			onEnhancedChange={ onPropertyChange }
-			disabled={ ! isValidAccountID( accountID ) }
+			disabled={ isDisabled || ! isValidAccountID( accountID ) }
 			enhanced
 			outlined
 		>
@@ -181,6 +187,7 @@ export default function PropertySelect( props ) {
 }
 
 PropertySelect.propTypes = {
+	isDisabled: PropTypes.bool,
 	hasModuleAccess: PropTypes.bool,
 	className: PropTypes.string,
 	onChange: PropTypes.func,
