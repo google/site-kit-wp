@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import isPlainObject from 'lodash/isPlainObject';
+import { isPlainObject } from 'lodash';
 
 /**
  * Internal dependencies
@@ -100,7 +100,7 @@ export function isValidDimensionFilters( dimensionFilters ) {
  * and an optional "desc" property. The "metric" and "dimension" properties should
  * be objects with "metricName" and "dimensionName" properties respectively.
  *
- * @since n.e.x.t
+ * @since 1.95.0
  *
  * @param {Object[]} orders The order definitions to check.
  * @return {boolean} TRUE if order definitions are valid, otherwise FALSE.

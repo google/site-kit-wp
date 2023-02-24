@@ -20,11 +20,8 @@
  * External dependencies
  */
 import memize from 'memize';
-import defaults from 'lodash/defaults';
-import merge from 'lodash/merge';
-import isPlainObject from 'lodash/isPlainObject';
 import invariant from 'invariant';
-import { sprintf, __ } from '@wordpress/i18n';
+import { defaults, merge, isPlainObject } from 'lodash';
 
 /**
  * WordPress dependencies
@@ -32,6 +29,7 @@ import { sprintf, __ } from '@wordpress/i18n';
 // This is used for JSDoc purposes.
 // eslint-disable-next-line no-unused-vars
 import { WPComponent } from '@wordpress/element';
+import { sprintf, __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -1348,7 +1346,7 @@ const baseSelectors = {
 	 *
 	 * Returns an Object/map of objects, keyed by slug as same as `getModules`.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.95.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(Object|undefined)} Non-internal shareable modules available on the site; `undefined` if not loaded.

@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import pick from 'lodash/pick';
+import { pick } from 'lodash';
 
 /**
  * Internal dependencies
@@ -797,14 +797,14 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 				1122334455: [
 					{
 						_id: '110',
-						webDataStream: {
+						webStreamData: {
 							defaultUri: 'http://example-1.test',
 							measurementId: 'G-1101', // eslint-disable-line sitekit/acronym-case
 						},
 					},
 					{
 						_id: '111',
-						webDataStream: {
+						webStreamData: {
 							defaultUri: 'http://example-2.test',
 							measurementId: 'G-1102', // eslint-disable-line sitekit/acronym-case
 						},
@@ -813,14 +813,14 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 				1122334465: [
 					{
 						_id: '112',
-						webDataStream: {
+						webStreamData: {
 							defaultUri: 'http://example-3.test',
 							measurementId: 'G-1103', // eslint-disable-line sitekit/acronym-case
 						},
 					},
 					{
 						_id: '113',
-						webDataStream: {
+						webStreamData: {
 							defaultUri: 'http://example-4.test',
 							measurementId: 'G-1104', // eslint-disable-line sitekit/acronym-case
 						},
@@ -829,21 +829,21 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 				1122334475: [
 					{
 						_id: '114',
-						webDataStream: {
+						webStreamData: {
 							defaultUri: 'http://example-5.test',
 							measurementId: 'G-1105', // eslint-disable-line sitekit/acronym-case
 						},
 					},
 					{
 						_id: '115',
-						webDataStream: {
+						webStreamData: {
 							defaultUri: 'http://example.com',
 							measurementId: 'G-1106', // eslint-disable-line sitekit/acronym-case
 						},
 					},
 					{
 						_id: '116',
-						webDataStream: {
+						webStreamData: {
 							defaultUri: 'http://example-7.test',
 							measurementId: 'G-1107', // eslint-disable-line sitekit/acronym-case
 						},
@@ -885,6 +885,11 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 					.receiveGetWebDataStreamsBatch( datastreams, {
 						propertyIDs,
 					} );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.finishResolution( 'getWebDataStreamsBatch', [
+						propertyIDs,
+					] );
 
 				const config = registry
 					.select( MODULES_ANALYTICS_4 )
@@ -910,6 +915,11 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 					.receiveGetWebDataStreamsBatch( datastreams, {
 						propertyIDs,
 					} );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.finishResolution( 'getWebDataStreamsBatch', [
+						propertyIDs,
+					] );
 
 				const config = registry
 					.select( MODULES_ANALYTICS_4 )
@@ -935,6 +945,11 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 					.receiveGetWebDataStreamsBatch( datastreams, {
 						propertyIDs,
 					} );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.finishResolution( 'getWebDataStreamsBatch', [
+						propertyIDs,
+					] );
 
 				const config = registry
 					.select( MODULES_ANALYTICS_4 )
@@ -955,6 +970,11 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 					.receiveGetWebDataStreamsBatch( datastreams, {
 						propertyIDs,
 					} );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.finishResolution( 'getWebDataStreamsBatch', [
+						propertyIDs,
+					] );
 
 				const config = registry
 					.select( MODULES_ANALYTICS_4 )

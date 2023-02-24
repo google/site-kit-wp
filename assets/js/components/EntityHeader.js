@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import throttle from 'lodash/throttle';
+import { throttle } from 'lodash';
 
 /**
  * WordPress dependencies

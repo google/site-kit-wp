@@ -22,11 +22,9 @@
 import md5 from 'md5';
 import faker from 'faker';
 import invariant from 'invariant';
-import castArray from 'lodash/castArray';
+import { castArray, cloneDeep, isPlainObject } from 'lodash';
 import { Observable, merge, from } from 'rxjs';
 import { map, reduce, take, toArray, mergeMap } from 'rxjs/operators';
-import cloneDeep from 'lodash/cloneDeep';
-import isPlainObject from 'lodash/isPlainObject';
 
 /**
  * Internal dependencies
@@ -160,7 +158,7 @@ function cartesianProduct( arrays ) {
 /**
  * Finds a metric value in a row.
  *
- * @since n.e.x.t
+ * @since 1.95.0
  *
  * @param {Object}               row        Report row.
  * @param {Array<string|Object>} metrics    Array of valid metrics.
@@ -180,7 +178,7 @@ function findMetricValue( row, metrics, metricName ) {
 /**
  * Finds a dimension value in a row.
  *
- * @since n.e.x.t
+ * @since 1.95.0
  *
  * @param {Object}               row           Report row.
  * @param {Array<string|Object>} dimensions    Array of valid dimensions.
@@ -200,7 +198,7 @@ function findDimensionValue( row, dimensions, dimensionName ) {
 /**
  * Compares two rows by the given sorting options.
  *
- * @since n.e.x.t
+ * @since 1.95.0
  *
  * @param {Array.<Object>} rowA       First row to compare.
  * @param {Array.<Object>} rowB       Second row to compare.

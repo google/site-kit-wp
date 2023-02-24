@@ -68,7 +68,7 @@ export function getHeaderHeight( breakpoint ) {
 /**
  * Gets the height of the sticky header without the navigation bar.
  *
- * @since n.e.x.t
+ * @since 1.95.0
  *
  * @param {string} breakpoint The current breakpoint.
  * @return {number} The height of the sticky header without the navigation bar.
