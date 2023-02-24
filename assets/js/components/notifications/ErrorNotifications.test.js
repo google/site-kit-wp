@@ -65,6 +65,7 @@ describe( 'ErrorNotifications', () => {
 		expect( container ).toHaveTextContent(
 			'Site Kit can’t access necessary data'
 		);
+		expect( container ).toMatchSnapshot();
 	} );
 
 	it( 'renders `Get help` link', () => {
@@ -89,5 +90,59 @@ describe( 'ErrorNotifications', () => {
 				code: registry.select( CORE_SITE ).getSetupErrorCode(),
 			} )
 		);
+	} );
+
+	it( 'renders the GTE message when the only unsatisfied scope is the tagmanager readonly scope', () => {
+		provideUserAuthentication( registry, {
+			unsatisfiedScopes: [
+				'https://www.googleapis.com/auth/tagmanager.readonly',
+			],
+		} );
+
+		const { container } = render( <ErrorNotifications />, {
+			registry,
+			features: [ 'gteSupport' ],
+		} );
+
+		expect( container ).toHaveTextContent(
+			'Site Kit needs additional permissions to detect updates to tags on your site'
+		);
+		expect( container ).toMatchSnapshot();
+	} );
+
+	it( 'does not render the GTE message if there are multiple unsatisfied scopes', () => {
+		provideUserAuthentication( registry, {
+			unsatisfiedScopes: [
+				'https://www.googleapis.com/auth/tagmanager.readonly',
+				'https://www.googleapis.com/auth/analytics.readonly',
+			],
+		} );
+
+		const { container } = render( <ErrorNotifications />, {
+			registry,
+			features: [ 'gteSupport' ],
+		} );
+
+		expect( container ).toHaveTextContent(
+			'Site Kit can’t access necessary data'
+		);
+		expect( container ).toMatchSnapshot();
+	} );
+
+	it( 'does not render the GTE message if the GTE feature is not enabled', () => {
+		provideUserAuthentication( registry, {
+			unsatisfiedScopes: [
+				'https://www.googleapis.com/auth/tagmanager.readonly',
+			],
+		} );
+
+		const { container } = render( <ErrorNotifications />, {
+			registry,
+		} );
+
+		expect( container ).toHaveTextContent(
+			'Site Kit can’t access necessary data'
+		);
+		expect( container ).toMatchSnapshot();
 	} );
 } );
