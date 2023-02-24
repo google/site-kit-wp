@@ -886,11 +886,17 @@ describe( 'modules/analytics-4 properties', () => {
 				] );
 
 				const measurementID = 'G-2B7M8YQ1K6';
+				const googleTagID = 'GT-NBQN9V2';
 				const containerMock = fixtures.container[ measurementID ];
+
+				const { googleTagAccountID, googleTagContainerID } =
+					fixtures.googleTagSettings;
 
 				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
 					measurementID,
-					googleTagID: 'GT-NBQN9V2',
+					googleTagID,
+					googleTagAccountID,
+					googleTagContainerID,
 					googleTagLastSyncedAtMs: 1670123456789,
 				} );
 
@@ -899,16 +905,44 @@ describe( 'modules/analytics-4 properties', () => {
 					status: 200,
 				} );
 
+				const ga4Settings = {
+					measurementID,
+					googleTagAccountID,
+					googleTagContainerID,
+					googleTagID,
+				};
+
+				fetchMock.postOnce( ga4SettingsEndpoint, {
+					body: {
+						...ga4Settings,
+						googleTagLastSyncedAtMs: Date.now(),
+					},
+					status: 200,
+				} );
+
 				await registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.syncGoogleTagSettings();
 
-				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				const googleTagLastSyncedAtMs = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getGoogleTagLastSyncedAtMs();
+
+				expect( fetchMock ).toHaveFetchedTimes( 2 );
 				expect( fetchMock ).toHaveFetched( containerLookupEndpoint, {
 					query: {
 						destinationID: measurementID,
 					},
 					body: containerMock,
+				} );
+				expect( fetchMock ).toHaveFetched( ga4SettingsEndpoint, {
+					body: {
+						data: {
+							...ga4Settings,
+							googleTagLastSyncedAtMs,
+						},
+					},
+					method: 'POST',
 				} );
 
 				expect(
