@@ -50,6 +50,25 @@ const wpDashboardAnalytics4OptionSets = [
 			},
 		],
 	},
+
+	// Mock options for mocking "Sessions" report's response.
+	{
+		startDate: '2020-12-31',
+		endDate: '2021-01-27',
+		compareStartDate: '2020-12-03',
+		compareEndDate: '2020-12-30',
+		dimensions: [
+			{
+				name: 'date',
+			},
+		],
+		limit: 10,
+		metrics: [
+			{
+				name: 'averageSessionDuration',
+			},
+		],
+	},
 ];
 
 export const setupAnalytics4MockReports = (
