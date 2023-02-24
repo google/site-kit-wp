@@ -61,6 +61,9 @@ describe( 'modules/analytics-4 properties', () => {
 	const ga4SettingsEndpoint = new RegExp(
 		'^/google-site-kit/v1/modules/analytics-4/data/settings'
 	);
+	const containerLookupEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/analytics-4/data/container-lookup'
+	);
 
 	beforeAll( () => {
 		API.setUsingCache( false );
@@ -711,40 +714,6 @@ describe( 'modules/analytics-4 properties', () => {
 				).toEqual( 0 );
 			} );
 
-			it( 'should not execute if Google Tag settings already exist', async () => {
-				provideUserAuthentication( registry, {
-					grantedScopes: [ TAGMANAGER_READ_SCOPE ],
-				} );
-
-				provideModules( registry, [
-					{
-						slug: 'analytics-4',
-						active: true,
-						connected: true,
-					},
-				] );
-
-				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
-					measurementID: 'G-1A2BCD346E',
-					googleTagID: 'GT-12345',
-					googleTagLastSyncedAtMs: 1670123456789,
-				} );
-
-				await registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.syncGoogleTagSettings();
-
-				expect(
-					registry.select( MODULES_ANALYTICS_4 ).getGoogleTagID()
-				).toEqual( 'GT-12345' );
-
-				expect(
-					registry
-						.select( MODULES_ANALYTICS_4 )
-						.getGoogleTagLastSyncedAtMs()
-				).toEqual( 1670123456789 );
-			} );
-
 			it( 'should not execute if measurement ID is not set', async () => {
 				provideUserAuthentication( registry, {
 					grantedScopes: [ TAGMANAGER_READ_SCOPE ],
@@ -901,6 +870,52 @@ describe( 'modules/analytics-4 properties', () => {
 				expect(
 					registry.select( MODULES_ANALYTICS_4 ).getGoogleTagID()
 				).toEqual( googleTagID );
+			} );
+
+			it( 'should check for mismatched Google Tag ID if Google Tag settings already exist', async () => {
+				provideUserAuthentication( registry, {
+					grantedScopes: [ TAGMANAGER_READ_SCOPE ],
+				} );
+
+				provideModules( registry, [
+					{
+						slug: 'analytics-4',
+						active: true,
+						connected: true,
+					},
+				] );
+
+				const measurementID = 'G-2B7M8YQ1K6';
+				const containerMock = fixtures.container[ measurementID ];
+
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+					measurementID,
+					googleTagID: 'GT-NBQN9V2',
+					googleTagLastSyncedAtMs: 1670123456789,
+				} );
+
+				fetchMock.getOnce( containerLookupEndpoint, {
+					body: containerMock,
+					status: 200,
+				} );
+
+				await registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.syncGoogleTagSettings();
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect( fetchMock ).toHaveFetched( containerLookupEndpoint, {
+					query: {
+						destinationID: measurementID,
+					},
+					body: containerMock,
+				} );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.hasMismatchedGoogleTagID()
+				).toBe( true );
 			} );
 		} );
 	} );
