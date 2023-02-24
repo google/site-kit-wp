@@ -167,15 +167,12 @@ export const setupAnalytics4GatheringData = (
 		.receiveGetProperty( property, { propertyID } );
 	registry.dispatch( MODULES_ANALYTICS_4 ).setPropertyID( propertyID );
 	mockOptionSets.forEach( ( options ) => {
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
-			{
-				rows: [],
-				totals: [ {}, {} ],
-			},
-			{
-				options,
-			}
-		);
+		const report = getAnalyticsMockResponse( options );
+		const zeroReport =
+			replaceValuesInAnalytics4ReportWithZeroData( report );
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport( zeroReport, {
+			options,
+		} );
 	} );
 };
 
