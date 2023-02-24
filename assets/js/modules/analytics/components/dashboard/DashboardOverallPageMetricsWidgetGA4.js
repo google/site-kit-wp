@@ -148,7 +148,7 @@ function useOverallPageMetricsReport() {
 }
 
 /**
- * Parse Analytics report into data suitable for rendering the data blocks in the Overall Page Metrics widget.
+ * Parse Analytics 4 report into data suitable for rendering the data blocks in the Overall Page Metrics widget.
  *
  * @typedef {Object} OverallPageMetricsData
  * @property {string}         metric          - Google Analytics metric identifier.
@@ -225,14 +225,14 @@ function calculateOverallPageMetricsData( report, startDate ) {
 	const lastMonth = totals[ 0 ]?.metricValues || [];
 	const previousMonth = totals[ 1 ]?.metricValues || [];
 
-	// We only want half of the date range, as having a comparison date range in the query doubles the range.
-	// In order to achieve this, we filter out entries before the start date (the comparison start date will be earlier).
 	const startDateTime = stringToDate( startDate ).getTime();
 	const currentDateRangeRows = rows.filter( ( { dimensionValues } ) => {
 		if ( dimensionValues[ 1 ].value !== 'date_range_0' ) {
 			return false;
 		}
 
+		// We only want half of the date range, as having a comparison date range in the query doubles the range.
+		// In order to achieve this, we filter out entries before the start date (the comparison start date will be earlier).
 		const rowDate = parseDimensionStringToDate(
 			dimensionValues[ 0 ].value
 		);
@@ -245,6 +245,7 @@ function calculateOverallPageMetricsData( report, startDate ) {
 				( { dimensionValues, metricValues } ) => {
 					const dateString = dimensionValues[ 0 ].value;
 					const date = parseDimensionStringToDate( dateString );
+
 					metricData.sparkLineData.push( [
 						date,
 						metricValues[ index ].value,
