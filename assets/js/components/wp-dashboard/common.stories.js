@@ -124,6 +124,11 @@ export const setupBaseRegistry = ( registry, args ) => {
 			active: true,
 			connected: true,
 		},
+		{
+			slug: 'analytics-4',
+			active: true,
+			connected: true,
+		},
 	] );
 
 	// Set some site information.
