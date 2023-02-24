@@ -44,14 +44,19 @@ export default function GoogleTagIDMismatchNotification() {
 		select( MODULES_ANALYTICS_4 ).getGoogleTagContainerID()
 	);
 
-	const googleTagContainerDestinations = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getGoogleTagContainerDestinations(
-			googleTagAccountID,
-			googleTagContainerID
-		)
+	const googleTagContainerDestinations = useSelect(
+		( select ) =>
+			hasMismatchedGoogleTagID &&
+			select( MODULES_ANALYTICS_4 ).getGoogleTagContainerDestinations(
+				googleTagAccountID,
+				googleTagContainerID
+			)
 	);
 
-	if ( ! hasMismatchedGoogleTagID ) {
+	if (
+		! hasMismatchedGoogleTagID ||
+		! Array.isArray( googleTagContainerDestinations )
+	) {
 		return null;
 	}
 
