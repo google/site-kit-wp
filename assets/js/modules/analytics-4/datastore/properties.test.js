@@ -616,6 +616,28 @@ describe( 'modules/analytics-4 properties', () => {
 				).toEqual( '' );
 			} );
 		} );
+
+		describe( 'setHasMismatchedGoogleTagID', () => {
+			it( 'sets the value of hasMismatchedGoogleTagID', async () => {
+				const hasMismatchedGoogleTagID = registry
+					.select( MODULES_ANALYTICS_4 )
+					.hasMismatchedGoogleTagID();
+
+				// It is false by default.
+				expect( hasMismatchedGoogleTagID ).toBe( false );
+
+				await registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setHasMismatchedGoogleTagID( true );
+
+				const updatedHasMismatchedGoogleTagID = registry
+					.select( MODULES_ANALYTICS_4 )
+					.hasMismatchedGoogleTagID();
+
+				expect( updatedHasMismatchedGoogleTagID ).toBe( true );
+			} );
+		} );
+
 		describe( 'syncGoogleTagSettings', () => {
 			beforeEach( () => {
 				enabledFeatures.add( 'gteSupport' );
