@@ -1,5 +1,5 @@
 /**
- * OverallPageMetricsWidget utils.
+ * Overall Page Metrics utility functions.
  *
  * Site Kit by Google, Copyright 2023 Google LLC
  *

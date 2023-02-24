@@ -1,5 +1,5 @@
 /**
- * DashboardOverallPageMetricsWidgetGA4 hooks.
+ * Overall Page Metrics utility functions.
  *
  * Site Kit by Google, Copyright 2023 Google LLC
  *
