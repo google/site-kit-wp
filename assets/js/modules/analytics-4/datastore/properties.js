@@ -584,13 +584,13 @@ const baseActions = {
 			}
 		} else {
 			yield baseActions.updateSettingsForMeasurementID( measurementID );
-
-			dispatch( MODULES_ANALYTICS_4 ).saveSettings();
 		}
 
 		dispatch( MODULES_ANALYTICS_4 ).setGoogleTagLastSyncedAtMs(
 			Date.now()
 		);
+
+		dispatch( MODULES_ANALYTICS_4 ).saveSettings();
 	},
 };
 
