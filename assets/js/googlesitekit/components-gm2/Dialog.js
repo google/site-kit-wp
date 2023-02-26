@@ -35,8 +35,7 @@ import { sprintf, __ } from '@wordpress/i18n';
  */
 import Button from './Button';
 import Link from '../../components/Link';
-import { MDCDialog } from '../../material-components';
-import Spinner from '../../components/Spinner';
+import { CircularProgress, MDCDialog } from '../../material-components';
 
 const Dialog = ( {
 	dialogActive,
@@ -136,9 +135,21 @@ const Dialog = ( {
 							) }
 							<footer className="mdc-dialog__actions">
 								<Button
+									className={ classnames(
+										'googlesitekit-button-icon--spinner',
+										{
+											'googlesitekit-button-icon--spinner__running':
+												inProgress,
+										}
+									) }
 									onClick={ handleConfirm }
 									danger={ danger }
 									disabled={ inProgress }
+									trailingIcon={
+										inProgress ? (
+											<CircularProgress size={ 14 } />
+										) : undefined
+									}
 								>
 									{ confirmButton
 										? confirmButton
@@ -147,7 +158,6 @@ const Dialog = ( {
 												'google-site-kit'
 										  ) }
 								</Button>
-								<Spinner isSaving={ inProgress } />
 								<Link
 									className="googlesitekit-margin-left-auto mdc-dialog__cancel-button"
 									onClick={ handleDialog }
