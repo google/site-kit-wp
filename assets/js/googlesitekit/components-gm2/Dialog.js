@@ -33,9 +33,10 @@ import { sprintf, __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import Button from './Button';
 import Link from '../../components/Link';
 import { MDCDialog } from '../../material-components';
-import SpinnerButton from '../../components/SpinnerButton';
+import Spinner from '../../components/Spinner';
 
 const Dialog = ( {
 	dialogActive,
@@ -134,11 +135,10 @@ const Dialog = ( {
 								</p>
 							) }
 							<footer className="mdc-dialog__actions">
-								<SpinnerButton
+								<Button
 									onClick={ handleConfirm }
 									danger={ danger }
 									disabled={ inProgress }
-									isSaving={ inProgress }
 								>
 									{ confirmButton
 										? confirmButton
@@ -146,7 +146,8 @@ const Dialog = ( {
 												'Disconnect',
 												'google-site-kit'
 										  ) }
-								</SpinnerButton>
+								</Button>
+								<Spinner isSaving={ inProgress } />
 								<Link
 									className="googlesitekit-margin-left-auto mdc-dialog__cancel-button"
 									onClick={ handleDialog }
