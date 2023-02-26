@@ -36,12 +36,7 @@ exports[`BannerNotification should not wrap the description in a paragraph when 
           </div>
           <div
             class="googlesitekit-publisher-win__actions"
-          >
-            <span
-              class="spinner"
-              style="display: none; float: none; margin-top: 0px; visibility: visible;"
-            />
-          </div>
+          />
         </div>
       </div>
     </div>
@@ -85,12 +80,7 @@ exports[`BannerNotification should wrap the description in a paragraph when the 
           </div>
           <div
             class="googlesitekit-publisher-win__actions"
-          >
-            <span
-              class="spinner"
-              style="display: none; float: none; margin-top: 0px; visibility: visible;"
-            />
-          </div>
+          />
         </div>
       </div>
     </div>
