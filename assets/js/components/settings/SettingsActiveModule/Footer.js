@@ -33,20 +33,19 @@ import { Fragment, useCallback } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { Button } from 'googlesitekit-components';
 import { FORM_SETUP } from '../../../modules/analytics/datastore/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import { Cell, Grid, Row } from '../../../material-components';
 import PencilIcon from '../../../../svg/icons/pencil.svg';
 import TrashIcon from '../../../../svg/icons/trash.svg';
-import Spinner from '../../Spinner';
 import Link from '../../Link';
 import { trackEvent } from '../../../util';
 import { clearCache } from '../../../googlesitekit/api/cache';
 import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import useViewContext from '../../../hooks/useViewContext';
+import SpinnerButton from '../../SpinnerButton';
 const { useDispatch, useSelect } = Data;
 
 export default function Footer( props ) {
@@ -178,27 +177,26 @@ export default function Footer( props ) {
 	let secondaryColumn = null;
 
 	if ( isEditing || isSaving ) {
-		const closeButton = (
-			<Button onClick={ handleClose }>
-				{ __( 'Close', 'google-site-kit' ) }
-			</Button>
-		);
-		const submitButton = (
-			<Button
-				disabled={ isSaving || ! canSubmitChanges }
-				onClick={ handleConfirm }
-			>
-				{ isSaving
-					? __( 'Saving…', 'google-site-kit' )
-					: __( 'Confirm Changes', 'google-site-kit' ) }
-			</Button>
-		);
-
 		primaryColumn = (
 			<Fragment>
-				{ hasSettings && moduleConnected ? submitButton : closeButton }
-
-				<Spinner isSaving={ isSaving } />
+				{ hasSettings && moduleConnected ? (
+					<SpinnerButton
+						disabled={ isSaving || ! canSubmitChanges }
+						onClick={ handleConfirm }
+						isSaving={ isSaving }
+					>
+						{ isSaving
+							? __( 'Saving…', 'google-site-kit' )
+							: __( 'Confirm Changes', 'google-site-kit' ) }
+					</SpinnerButton>
+				) : (
+					<SpinnerButton
+						onClick={ handleClose }
+						isSaving={ isSaving }
+					>
+						{ __( 'Close', 'google-site-kit' ) }
+					</SpinnerButton>
+				) }
 
 				{ hasSettings && (
 					<Link

@@ -31,7 +31,6 @@ import { useCallback, useState } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { Button } from 'googlesitekit-components';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import { CORE_UI } from '../../../../googlesitekit/datastore/ui/constants';
 import {
@@ -43,8 +42,8 @@ import useViewContext from '../../../../hooks/useViewContext';
 import { trackEvent } from '../../../../util';
 import Link from '../../../Link';
 import Notice from './Notice';
-import Spinner from '../../../Spinner';
 import ErrorText from '../../../ErrorText';
+import SpinnerButton from '../../../SpinnerButton';
 
 const { useSelect, useDispatch } = Data;
 
@@ -151,26 +150,24 @@ export default function Footer( { closeDialog, openResetDialog } ) {
 					</Link>
 
 					{ settingsDialogOpen && (
-						<Button
+						<SpinnerButton
 							onClick={ onApply }
 							disabled={ isSaving || ! canSubmitSharingChanges }
+							isSaving={ isSaving }
 						>
 							{ __( 'Apply', 'google-site-kit' ) }
-							{ isSaving && <Spinner isSaving={ isSaving } /> }
-						</Button>
+						</SpinnerButton>
 					) }
 
 					{ resetDialogOpen && (
-						<Button
+						<SpinnerButton
 							onClick={ onReset }
 							disabled={ isResetting }
+							isSaving={ isResetting }
 							danger
 						>
 							{ __( 'Reset', 'google-site-kit' ) }
-							{ isResetting && (
-								<Spinner isSaving={ isResetting } />
-							) }
-						</Button>
+						</SpinnerButton>
 					) }
 				</div>
 			</div>

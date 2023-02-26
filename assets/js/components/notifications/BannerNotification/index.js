@@ -57,7 +57,6 @@ import ErrorIcon from '../../../../svg/icons/error.svg';
 import Link from '../../Link';
 import Badge from '../../Badge';
 import ModuleIcon from '../../ModuleIcon';
-import Spinner from '../../Spinner';
 import { getItem, setItem, deleteItem } from '../../../googlesitekit/api/cache';
 import { useBreakpoint } from '../../../hooks/useBreakpoint';
 import {
@@ -68,6 +67,7 @@ import {
 } from './utils';
 import { stringToDate } from '../../../util/date-range/string-to-date';
 import { CORE_LOCATION } from '../../../googlesitekit/datastore/location/constants';
+import SpinnerButton from '../../SpinnerButton';
 const { useSelect, useDispatch } = Data;
 
 export const LEARN_MORE_TARGET = {
@@ -503,7 +503,7 @@ function BannerNotification( {
 								{ ctaComponent }
 
 								{ ctaLink && (
-									<Button
+									<SpinnerButton
 										className="googlesitekit-notification__cta"
 										href={ ctaLink }
 										target={ ctaTarget }
@@ -512,17 +512,14 @@ function BannerNotification( {
 											isAwaitingCTAResponse ||
 											isNavigatingToCTALink
 										}
+										isSaving={
+											isAwaitingCTAResponse ||
+											isNavigatingToCTALink
+										}
 									>
 										{ ctaLabel }
-									</Button>
+									</SpinnerButton>
 								) }
-
-								<Spinner
-									isSaving={
-										isAwaitingCTAResponse ||
-										isNavigatingToCTALink
-									}
-								/>
 
 								{ isDismissible &&
 									dismiss &&
