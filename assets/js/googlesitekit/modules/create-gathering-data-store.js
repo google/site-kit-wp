@@ -178,11 +178,6 @@ export const createGatheringDataStore = (
 				.select( storeName )
 				.selectDataAvailability();
 
-			invariant(
-				'boolean' === typeof dataAvailability,
-				'selectDataAvailability must return a boolean.'
-			);
-
 			yield actions.receiveIsGatheringData( ! dataAvailability );
 
 			if ( dataAvailability ) {
