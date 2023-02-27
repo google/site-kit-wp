@@ -443,7 +443,7 @@ final class Modules {
 
 		foreach ( $available_modules as $module ) {
 			if ( $module instanceof Module_With_Data_Available_State ) {
-				$modules_data[ 'data_available_' . $module->slug ] = $this->is_module_active( $module->slug ) && $module->is_data_available();
+				$modules_data[ 'data_available_' . $module->slug ] = $this->is_module_active( $module->slug ) && $module->is_connected() && $module->is_data_available();
 			}
 		}
 
