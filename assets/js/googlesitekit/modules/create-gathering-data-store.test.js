@@ -201,7 +201,7 @@ describe( 'createGatheringDataStore', () => {
 				expect( selectDataAvailability ).toHaveBeenCalled();
 			} );
 
-			it( 'should set gathering data state and dispetch a fetch request to save it when selectDataAvailability returns TRUE', async () => {
+			it( 'should set gathering data state and dispatch a fetch request to save it when selectDataAvailability returns TRUE', async () => {
 				selectDataAvailability.mockReturnValue( true );
 
 				registry.registerStore(
