@@ -23,8 +23,7 @@ const parser = require( '@babel/parser' );
 const traverse = require( '@babel/traverse' ).default;
 const csf = require( '@componentdriven/csf' );
 const glob = require( 'glob' );
-const flatten = require( 'lodash/flatten' );
-const kebabCase = require( 'lodash/kebabCase' );
+const { flatten, kebabCase } = require( 'lodash' );
 
 /**
  * Node dependencies
