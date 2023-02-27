@@ -122,17 +122,17 @@ class Search_ConsoleTest extends TestCase {
 		update_option(
 			'googlesitekit_search-console_settings',
 			array(
-				'propertyID' => 'https://example1.com',
+				'propertyID' => 'https://example.com',
 				'ownerID'    => $admin,
 			)
 		);
 
-		$test_token_response['search_console_property'] = 'https://example2.com';
+		$test_token_response['search_console_property'] = 'https://example.org';
 		do_action( 'googlesitekit_authorize_user', $test_token_response );
 
 		$this->assertEqualSets(
 			array(
-				'propertyID' => 'https://example2.com',
+				'propertyID' => 'https://example.org',
 				'ownerID'    => $admin,
 			),
 			get_option( 'googlesitekit_search-console_settings' )
@@ -153,17 +153,17 @@ class Search_ConsoleTest extends TestCase {
 		update_option(
 			'googlesitekit_search-console_settings',
 			array(
-				'propertyID' => 'https://example1.com',
+				'propertyID' => 'https://example.com',
 				'ownerID'    => $admin + 10, // Make sure $admin is never the owner.
 			)
 		);
 
-		$test_token_response['search_console_property'] = 'https://example2.com';
+		$test_token_response['search_console_property'] = 'https://example.org';
 		do_action( 'googlesitekit_authorize_user', $test_token_response );
 
 		$this->assertEqualSets(
 			array(
-				'propertyID' => 'https://example1.com',
+				'propertyID' => 'https://example.com',
 				'ownerID'    => $admin + 10,
 			),
 			get_option( 'googlesitekit_search-console_settings' )
@@ -206,7 +206,7 @@ class Search_ConsoleTest extends TestCase {
 		$search_console->set_data_available();
 		$search_console->get_settings()->merge(
 			array(
-				'propertyID' => 'https://example2.com',
+				'propertyID' => 'https://example.org',
 			)
 		);
 
