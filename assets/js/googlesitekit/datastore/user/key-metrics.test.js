@@ -25,7 +25,7 @@ import {
 } from '../../../../../tests/js/utils';
 import { CORE_USER } from './constants';
 
-describe( 'core/user user-input-settings', () => {
+describe( 'core/user key metrics', () => {
 	let registry;
 	let store;
 
@@ -36,6 +36,16 @@ describe( 'core/user user-input-settings', () => {
 	const coreKeyMetricsExpectedResponse = {
 		widgetSlugs: [ 'widget1', 'widget2' ],
 		isWidgetHidden: false,
+	};
+
+	const coreUserInputSettingsEndpointRegExp = new RegExp(
+		'^/google-site-kit/v1/core/user/data/user-input-settings'
+	);
+	const coreUserInputSettingsExpectedResponse = {
+		purpose: {
+			values: [ 'publish_blog' ],
+			scope: 'site',
+		},
 	};
 
 	beforeAll( () => {
@@ -140,9 +150,24 @@ describe( 'core/user user-input-settings', () => {
 					status: 200,
 				} );
 
+				fetchMock.getOnce( coreUserInputSettingsEndpointRegExp, {
+					body: coreUserInputSettingsExpectedResponse,
+					status: 200,
+				} );
+
+				registry.select( CORE_USER ).getUserInputSettings();
+
+				await untilResolved(
+					registry,
+					CORE_USER
+				).getUserInputSettings();
+
 				registry.select( CORE_USER ).getKeyMetrics();
 
-				await untilResolved( registry, CORE_USER ).getKeyMetrics();
+				await untilResolved(
+					registry,
+					CORE_USER
+				).getUserPickedMetrics();
 
 				expect( fetchMock ).toHaveFetched(
 					coreKeyMetricsEndpointRegExp,
@@ -155,9 +180,9 @@ describe( 'core/user user-input-settings', () => {
 
 				expect(
 					registry.select( CORE_USER ).getKeyMetrics()
-				).toMatchObject( coreKeyMetricsExpectedResponse );
+				).toMatchObject( coreKeyMetricsExpectedResponse.widgetSlugs );
 
-				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect( fetchMock ).toHaveFetchedTimes( 2 );
 			} );
 
 			it( 'should use answer-based key metrics if the user has not selected any widgets', async () => {
@@ -169,16 +194,34 @@ describe( 'core/user user-input-settings', () => {
 					status: 200,
 				} );
 
+				fetchMock.getOnce( coreUserInputSettingsEndpointRegExp, {
+					body: coreUserInputSettingsExpectedResponse,
+					status: 200,
+				} );
+
+				registry.select( CORE_USER ).getUserInputSettings();
+
+				await untilResolved(
+					registry,
+					CORE_USER
+				).getUserInputSettings();
+
 				registry.select( CORE_USER ).getKeyMetrics();
 
-				await untilResolved( registry, CORE_USER ).getKeyMetrics();
+				await untilResolved(
+					registry,
+					CORE_USER
+				).getUserPickedMetrics();
 
 				expect(
 					registry.select( CORE_USER ).getKeyMetrics()
-				).toMatchObject( 'ANSWER-BASED METRICS' );
+				).toMatchObject( [
+					'kmAnalyticsLoyalVisitors',
+					'kmAnalyticsNewVisitors',
+					'kmAnalyticsTopTrafficSource',
+					'kmAnalyticsEngagedTrafficSource',
+				] );
 
-				// One fetch will be for the user-based metrics, and one for the
-				// answer-based metrics.
 				expect( fetchMock ).toHaveFetchedTimes( 2 );
 			} );
 		} );

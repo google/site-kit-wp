@@ -28,6 +28,7 @@ import Data from 'googlesitekit-data';
 import { CORE_USER } from './constants';
 import { createFetchStore } from '../../data/create-fetch-store';
 import { actions as errorStoreActions } from '../../data/create-error-store';
+import { CORE_WIDGETS } from '../../widgets/datastore/constants';
 const { receiveError, clearError } = errorStoreActions;
 const { createRegistrySelector } = Data;
 
@@ -94,7 +95,7 @@ const baseActions = {
 		yield clearError( 'saveKeyMetrics', [] );
 
 		const registry = yield Data.commonActions.getRegistry();
-		const keyMetrics = registry.select( CORE_USER ).getKeyMetrics();
+		const keyMetrics = registry.select( CORE_USER ).getUserPickedMetrics();
 		const { response, error } =
 			yield fetchSaveKeyMetricsStore.actions.fetchSaveKeyMetrics(
 				keyMetrics
@@ -163,13 +164,14 @@ const baseSelectors = {
 			return userPickedMetrics.widgetSlugs;
 		}
 
-		return select( CORE_USER ).getAnswerBasedMetrics();
+		return select( CORE_WIDGETS ).getAnswerBasedMetrics();
 	} ),
 
 	/**
 	 * Gets key metrics selected by the user.
 	 *
-	 * @since 1.94.0
+	 * @since 1.94.0 Initially introduced as `getKeyMetrics`.
+	 * @since 1.95.0 Updated selector name now that `getKeyMetrics` contains more advanced logic.
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(Object|undefined)} Key metrics settings.
