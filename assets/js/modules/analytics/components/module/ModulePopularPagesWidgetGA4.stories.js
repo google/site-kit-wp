@@ -24,6 +24,7 @@ import { provideModules } from '../../../../../../tests/js/utils';
 import {
 	getAnalytics4MockResponse,
 	provideAnalytics4MockReport,
+	STRATEGY_ZIP,
 } from '../../../analytics-4/utils/data-mock';
 import { properties } from '../../../../modules/analytics-4/datastore/__fixtures__';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
@@ -101,7 +102,23 @@ export const Loaded = Template.bind( {} );
 Loaded.storyName = 'Loaded';
 Loaded.args = {
 	setupRegistry: ( registry ) => {
-		for ( const options of reportOptions ) {
+		const pageTitlesReportOptions = reportOptions[ 1 ];
+
+		const pageTitlesReport = getAnalytics4MockResponse(
+			pageTitlesReportOptions,
+			// Use the zip combination strategy to ensure a one-to-one mapping of page paths to page titles.
+			// Otherwise, by using the default cartesian product of dimension values, the resulting output will have non-matching
+			// page paths to page titles.
+			{ dimensionCombinationStrategy: STRATEGY_ZIP }
+		);
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetReport( pageTitlesReport, {
+				options: pageTitlesReportOptions,
+			} );
+
+		for ( const options of [ reportOptions[ 0 ], reportOptions[ 2 ] ] ) {
 			provideAnalytics4MockReport( registry, options );
 		}
 	},
