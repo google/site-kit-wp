@@ -168,7 +168,7 @@ const baseSelectors = {
 	 * @since n.e.x.t
 	 *
 	 * @param {Object} state             Data store's state.
-	 * @param {Object} report            A report from getReport selector containing pagePaths.
+	 * @param {Object} report            A report from the getReport selector containing pagePaths.
 	 * @param {Object} options           Options for generating the report.
 	 * @param {string} options.startDate Required, start date to query report data for as YYYY-mm-dd.
 	 * @param {string} options.endDate   Required, end date to query report data for as YYYY-mm-dd.
@@ -181,11 +181,11 @@ const baseSelectors = {
 					return;
 				}
 
-				const pagePaths = []; // Array of pagePaths.
+				const pagePaths = [];
 				const REQUEST_MULTIPLIER = 5;
 
 				/*
-				 * Iterate the report, finding which dimension contains the
+				 * Iterate over the report rows, finding the dimension containing the
 				 * pagePath value which we add to the array of pagePaths.
 				 */
 				const { dimensionHeaders, rows } = report;
