@@ -32,6 +32,7 @@ import { Fragment, useCallback } from '@wordpress/element';
 /**
  * Internal dependencies
  */
+import { Button } from 'googlesitekit-components';
 import Data from 'googlesitekit-data';
 import { FORM_SETUP } from '../../../modules/analytics/datastore/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
@@ -190,12 +191,9 @@ export default function Footer( props ) {
 							: __( 'Confirm Changes', 'google-site-kit' ) }
 					</SpinnerButton>
 				) : (
-					<SpinnerButton
-						onClick={ handleClose }
-						isSaving={ isSaving }
-					>
+					<Button onClick={ handleClose } isSaving={ isSaving }>
 						{ __( 'Close', 'google-site-kit' ) }
-					</SpinnerButton>
+					</Button>
 				) }
 
 				{ hasSettings && (
