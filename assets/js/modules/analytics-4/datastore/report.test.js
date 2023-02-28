@@ -166,42 +166,44 @@ describe( 'modules/analytics-4 report', () => {
 				const pageTitlesArgs = {
 					startDate,
 					endDate,
-					dimensions: [ 'ga:pagePath', 'ga:pageTitle' ],
+					dimensions: [ 'pagePath', 'pageTitle' ],
 					dimensionFilters: {
-						'ga:pagePath': pagePaths,
+						pagePath: pagePaths,
 					},
 					metrics: [
 						{
-							expression: 'ga:pageviews',
-							alias: 'Pageviews',
+							name: 'screenPageViews',
 						},
 					],
 					orderby: [
-						{ fieldName: 'ga:pageviews', sortOrder: 'DESCENDING' },
+						{
+							metric: { metricName: 'screenPageViews' },
+							desc: true,
+						},
 					],
 					limit: 15,
 				};
 
 				registry
-					.dispatch( MODULES_ANALYTICS )
+					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveGetReport( fixtures.pageTitles, {
 						options: pageTitlesArgs,
 					} );
 
 				const report = registry
-					.select( MODULES_ANALYTICS )
+					.select( MODULES_ANALYTICS_4 )
 					.getReport( pageTitlesArgs );
 
-				await untilResolved( registry, MODULES_ANALYTICS ).getReport(
+				await untilResolved( registry, MODULES_ANALYTICS_4 ).getReport(
 					pageTitlesArgs
 				);
 
 				registry
-					.select( MODULES_ANALYTICS )
+					.select( MODULES_ANALYTICS_4 )
 					.getPageTitles( report, { startDate, endDate } );
 
 				const titles = registry
-					.select( MODULES_ANALYTICS )
+					.select( MODULES_ANALYTICS_4 )
 					.getPageTitles( report, { startDate, endDate } );
 
 				expect( titles ).toStrictEqual( {

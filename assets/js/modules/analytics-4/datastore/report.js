@@ -177,7 +177,7 @@ const baseSelectors = {
 	getPageTitles: createRegistrySelector(
 		( select ) =>
 			( state, report, { startDate, endDate } = {} ) => {
-				if ( ! Array.isArray( report ) ) {
+				if ( ! isPlainObject( report ) ) {
 					return;
 				}
 
@@ -186,27 +186,28 @@ const baseSelectors = {
 
 				/*
 				 * Iterate the report, finding which dimension contains the
-				 * ga:pagePath metric which we add to the array of pagePaths.
+				 * pagePath value which we add to the array of pagePaths.
 				 */
-				( report || [] ).forEach( ( { columnHeader, data } ) => {
-					if (
-						Array.isArray( columnHeader?.dimensions ) &&
-						Array.isArray( data?.rows ) &&
-						columnHeader.dimensions.includes( 'ga:pagePath' )
-					) {
-						const pagePathIndex =
-							columnHeader.dimensions.indexOf( 'ga:pagePath' );
-						( data?.rows || [] ).forEach( ( { dimensions } ) => {
-							if (
-								! pagePaths.includes(
-									dimensions[ pagePathIndex ]
-								)
-							) {
-								pagePaths.push( dimensions[ pagePathIndex ] );
-							}
-						} );
-					}
-				} );
+				const { dimensionHeaders, rows } = report;
+				if (
+					Array.isArray( dimensionHeaders ) &&
+					Array.isArray( rows )
+				) {
+					const pagePathIndex = dimensionHeaders.findIndex(
+						( { name } ) => name === 'pagePath'
+					);
+					rows.forEach( ( { dimensionValues } ) => {
+						if (
+							! pagePaths.includes(
+								dimensionValues[ pagePathIndex ].value
+							)
+						) {
+							pagePaths.push(
+								dimensionValues[ pagePathIndex ].value
+							);
+						}
+					} );
+				}
 
 				const urlTitleMap = {};
 				if ( ! pagePaths.length ) {
@@ -216,28 +217,30 @@ const baseSelectors = {
 				const options = {
 					startDate,
 					endDate,
-					dimensions: [ 'ga:pagePath', 'ga:pageTitle' ],
-					dimensionFilters: { 'ga:pagePath': pagePaths.sort() },
-					metrics: [
-						{ expression: 'ga:pageviews', alias: 'Pageviews' },
-					],
+					dimensions: [ 'pagePath', 'pageTitle' ],
+					dimensionFilters: { pagePath: pagePaths.sort() },
+					metrics: [ { name: 'screenPageViews' } ],
 					orderby: [
-						{ fieldName: 'ga:pageviews', sortOrder: 'DESCENDING' },
+						{
+							metric: { metricName: 'screenPageViews' },
+							desc: true,
+						},
 					],
 					limit: REQUEST_MULTIPLIER * pagePaths.length,
 				};
 
 				const pageTitlesReport =
-					select( MODULES_ANALYTICS ).getReport( options );
+					select( MODULES_ANALYTICS_4 ).getReport( options );
 				if ( undefined === pageTitlesReport ) {
 					return;
 				}
 
-				( pageTitlesReport?.[ 0 ]?.data?.rows || [] ).forEach(
-					( { dimensions } ) => {
-						if ( ! urlTitleMap[ dimensions[ 0 ] ] ) {
+				( pageTitlesReport?.rows || [] ).forEach(
+					( { dimensionValues } ) => {
+						if ( ! urlTitleMap[ dimensionValues[ 0 ].value ] ) {
 							// key is the url, value is the page title.
-							urlTitleMap[ dimensions[ 0 ] ] = dimensions[ 1 ];
+							urlTitleMap[ dimensionValues[ 0 ].value ] =
+								dimensionValues[ 1 ].value;
 						}
 					}
 				);
