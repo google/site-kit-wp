@@ -36,6 +36,7 @@ import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS,
 } from '../../datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 import { numFmt } from '../../../../util';
 import whenActive from '../../../../util/when-active';
 import { generateDateRangeArgs } from '../../util/report-date-range-args';
@@ -53,7 +54,7 @@ function ModulePopularPagesWidgetGA4( props ) {
 	const { Widget, WidgetReportError } = props;
 
 	const isGatheringData = useInViewSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).isGatheringData()
+		select( MODULES_ANALYTICS_4 ).isGatheringData()
 	);
 
 	const dates = useSelect( ( select ) =>
@@ -66,53 +67,52 @@ function ModulePopularPagesWidgetGA4( props ) {
 
 	const args = {
 		...dates,
-		dimensions: [ 'ga:pagePath' ],
+		dimensions: [ 'pagePath' ],
 		metrics: [
 			{
-				expression: 'ga:pageviews',
-				alias: 'Pageviews',
+				name: 'screenPageViews',
 			},
 			{
-				expression: 'ga:uniquePageviews',
-				alias: 'Unique Pageviews',
+				name: 'sessions',
 			},
 			{
-				expression: 'ga:bounceRate',
-				alias: 'Bounce rate',
+				name: 'engagedSessions',
 			},
 			{
-				expression: 'ga:avgSessionDuration',
-				alias: 'Session Duration',
+				name: 'averageSessionDuration',
 			},
 		],
 		orderby: [
 			{
-				fieldName: 'ga:pageviews',
-				sortOrder: 'DESCENDING',
+				metric: {
+					metricName: 'screenPageViews',
+				},
+				desc: true,
 			},
 		],
 		limit: 10,
 	};
 
 	const error = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [ args ] )
+		select( MODULES_ANALYTICS_4 ).getErrorForSelector( 'getReport', [
+			args,
+		] )
 	);
 
 	const report = useInViewSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).getReport( args )
+		select( MODULES_ANALYTICS_4 ).getReport( args )
 	);
 
 	const titles = useInViewSelect( ( select ) =>
 		! error
-			? select( MODULES_ANALYTICS ).getPageTitles( report, args )
+			? select( MODULES_ANALYTICS_4 ).getPageTitles( report, args )
 			: undefined
 	);
 
 	const loaded = useSelect( ( select ) => {
-		const reportLoaded = select( MODULES_ANALYTICS ).hasFinishedResolution(
-			'getReport',
-			[ args ]
-		);
+		const reportLoaded = select(
+			MODULES_ANALYTICS_4
+		).hasFinishedResolution( 'getReport', [ args ] );
 
 		return undefined !== error || ( reportLoaded && undefined !== titles );
 	} );
@@ -139,7 +139,8 @@ function ModulePopularPagesWidgetGA4( props ) {
 			description: __( 'Page Title', 'google-site-kit' ),
 			primary: true,
 			Component: ( { row } ) => {
-				const [ title, url ] = row.dimensions;
+				const [ { value: title }, { value: url } ] =
+					row.dimensionValues;
 				const serviceURL = useSelect( ( select ) => {
 					if ( viewOnlyDashboard ) {
 						return null;
@@ -167,47 +168,45 @@ function ModulePopularPagesWidgetGA4( props ) {
 		{
 			title: __( 'Pageviews', 'google-site-kit' ),
 			description: __( 'Pageviews', 'google-site-kit' ),
-			field: 'metrics.0.values.0',
+			field: 'metricValues.0.value',
 			Component: ( { fieldValue } ) => (
 				<span>{ numFmt( fieldValue, { style: 'decimal' } ) }</span>
 			),
 		},
 		{
-			title: __( 'Unique Pageviews', 'google-site-kit' ),
-			description: __( 'Unique Pageviews', 'google-site-kit' ),
+			title: __( 'Sessions', 'google-site-kit' ),
+			description: __( 'Sessions', 'google-site-kit' ),
 			hideOnMobile: true,
-			field: 'metrics.0.values.1',
+			field: 'metricValues.1.value',
 			Component: ( { fieldValue } ) => (
 				<span>{ numFmt( fieldValue, { style: 'decimal' } ) }</span>
 			),
 		},
 		{
-			title: __( 'Bounce Rate', 'google-site-kit' ),
-			description: __( 'Bounce Rate', 'google-site-kit' ),
+			title: __( 'Engaged Sessions', 'google-site-kit' ),
+			description: __( 'Engaged Sessions', 'google-site-kit' ),
 			hideOnMobile: true,
-			field: 'metrics.0.values.2',
+			field: 'metricValues.2.value',
 			Component: ( { fieldValue } ) => (
-				<span>{ numFmt( Number( fieldValue ) / 100, '%' ) }</span>
+				<span>{ numFmt( fieldValue, { style: 'decimal' } ) }</span>
 			),
 		},
 		{
 			title: __( 'Session Duration', 'google-site-kit' ),
 			description: __( 'Session Duration', 'google-site-kit' ),
 			hideOnMobile: true,
-			field: 'metrics.0.values.3',
+			field: 'metricValues.3.value',
 			Component: ( { fieldValue } ) => (
 				<span>{ numFmt( fieldValue, 's' ) }</span>
 			),
 		},
 	];
 
-	const rows = report?.[ 0 ]?.data?.rows?.length
-		? cloneDeep( report[ 0 ].data.rows )
-		: [];
+	const rows = report?.rows?.length ? cloneDeep( report.rows ) : [];
 	// Combine the titles from the pageTitles with the rows from the metrics report.
 	rows.forEach( ( row ) => {
-		const url = row.dimensions[ 0 ];
-		row.dimensions.unshift( titles[ url ] ); // We always have an entry for titles[url].
+		const url = row.dimensionValues[ 0 ].value;
+		row.dimensionValues.unshift( { value: titles[ url ] } ); // We always have an entry for titles[url].
 	} );
 
 	return (
