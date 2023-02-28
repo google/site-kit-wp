@@ -117,11 +117,11 @@ Please create a new topic on our [WordPress.org support forum](https://wordpress
 * Update User Input preview edit links when saving questions to be consistent with other disabled elements. See [#6427](https://github.com/google/site-kit-wp/issues/6427).
 * Show spinner next to Analytics CTA button instead of progress bar in entire widget. See [#6416](https://github.com/google/site-kit-wp/issues/6416).
 * Add the  `getAnswerBasedMetrics` selector to the widgets datastore. See [#6234](https://github.com/google/site-kit-wp/issues/6234).
-* Add new widget for "All traffic" using GA4 as a data source. See [#6216](https://github.com/google/site-kit-wp/issues/6216).
 * Ensure Google Tag data is populated for sites which already have Google Analytics 4 configured. See [#6082](https://github.com/google/site-kit-wp/issues/6082).
 
 **Fixed**
 
+* Update the AdSense homepage URL, fixing the link in the AdSense Settings footer. See [#6647](https://github.com/google/site-kit-wp/issues/6647).
 * Fix potential type error on `auto_update_plugin` filter. See [#6624](https://github.com/google/site-kit-wp/issues/6624).
 * Prevent PHP errors on the Site Health info page when Dashboard Sharing is enabled. See [#6597](https://github.com/google/site-kit-wp/issues/6597).
 * Ensure the Analytics metrics in the Search Funnel widget are disabled when Analytics is gathering data. See [#6587](https://github.com/google/site-kit-wp/issues/6587).
