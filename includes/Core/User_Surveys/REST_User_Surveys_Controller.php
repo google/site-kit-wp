@@ -43,6 +43,14 @@ class REST_User_Surveys_Controller {
 	protected $timeouts;
 
 	/**
+	 * Survey_Queue instance.
+	 *
+	 * @since n.e.x.t
+	 * @var Survey_Queue
+	 */
+	protected $queue;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since 1.35.0
@@ -50,9 +58,10 @@ class REST_User_Surveys_Controller {
 	 * @param Authentication  $authentication Authentication instance.
 	 * @param Survey_Timeouts $timeouts       User timeouts setting.
 	 */
-	public function __construct( Authentication $authentication, Survey_Timeouts $timeouts ) {
+	public function __construct( Authentication $authentication, Survey_Timeouts $timeouts, Survey_Queue $queue ) {
 		$this->authentication = $authentication;
 		$this->timeouts       = $timeouts;
+		$this->queue          = $queue;
 	}
 
 	/**
