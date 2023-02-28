@@ -45,7 +45,7 @@ describe( 'core/modules modules', () => {
 		sharedOwnershipModules: [ 'analytics', 'search-console', 'tagmanager' ],
 	};
 
-	const recoverableModuleFixtures = [
+	const allModules = [
 		{
 			slug: 'analytics',
 			name: 'Analytics',
@@ -53,6 +53,16 @@ describe( 'core/modules modules', () => {
 			connected: true,
 			shareable: true,
 			recoverable: true,
+			internal: false,
+		},
+		{
+			slug: 'analytics-4',
+			name: 'Analytics-4',
+			active: true,
+			connected: true,
+			shareable: true,
+			recoverable: true,
+			internal: true,
 		},
 		{
 			slug: 'search-console',
@@ -61,6 +71,7 @@ describe( 'core/modules modules', () => {
 			connected: true,
 			shareable: true,
 			recoverable: true,
+			internal: false,
 		},
 		{
 			slug: 'tagmanager',
@@ -69,6 +80,37 @@ describe( 'core/modules modules', () => {
 			connected: true,
 			shareable: true,
 			recoverable: true,
+			internal: false,
+		},
+	];
+
+	const externalModules = [
+		{
+			slug: 'analytics',
+			name: 'Analytics',
+			active: true,
+			connected: true,
+			shareable: true,
+			recoverable: true,
+			internal: false,
+		},
+		{
+			slug: 'search-console',
+			name: 'Search Console',
+			active: true,
+			connected: true,
+			shareable: true,
+			recoverable: true,
+			internal: false,
+		},
+		{
+			slug: 'tagmanager',
+			name: 'Tag Manager',
+			active: true,
+			connected: true,
+			shareable: true,
+			recoverable: true,
+			internal: false,
 		},
 	];
 
@@ -242,7 +284,7 @@ describe( 'core/modules modules', () => {
 				fetchMock.getOnce(
 					new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
 					{
-						body: [ ...FIXTURES, ...recoverableModuleFixtures ],
+						body: [ ...FIXTURES, ...allModules ],
 						status: 200,
 					}
 				);
@@ -433,7 +475,7 @@ describe( 'core/modules modules', () => {
 				fetchMock.getOnce(
 					new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
 					{
-						body: [ ...FIXTURES, ...recoverableModuleFixtures ],
+						body: [ ...FIXTURES, ...allModules ],
 						status: 200,
 					}
 				);
@@ -1889,7 +1931,7 @@ describe( 'core/modules modules', () => {
 				fetchMock.getOnce(
 					new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
 					{
-						body: [ ...FIXTURES, ...recoverableModuleFixtures ],
+						body: [ ...FIXTURES, ...allModules ],
 						status: 200,
 					}
 				);
@@ -1909,10 +1951,7 @@ describe( 'core/modules modules', () => {
 					.getRecoverableModules();
 
 				expect( recoverableModules ).toMatchObject(
-					convertArrayListToKeyedObjectMap(
-						recoverableModuleFixtures,
-						'slug'
-					)
+					convertArrayListToKeyedObjectMap( externalModules, 'slug' )
 				);
 			} );
 		} );
@@ -1981,6 +2020,81 @@ describe( 'core/modules modules', () => {
 						fixturesKeyValue
 					)
 				);
+			} );
+		} );
+
+		describe( 'getShareableModules', () => {
+			it( 'should return undefined if the call to retrieve modules fails', async () => {
+				fetchMock.getOnce(
+					new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
+					{ body: {}, status: 400 }
+				);
+
+				const initialShareableModules = registry
+					.select( CORE_MODULES )
+					.getShareableModules();
+				expect( initialShareableModules ).toBeUndefined();
+
+				await untilResolved( registry, CORE_MODULES ).getModules();
+
+				const shareableModules = registry
+					.select( CORE_MODULES )
+					.getShareableModules();
+
+				expect( console ).toHaveErrored();
+				expect( shareableModules ).toBeUndefined();
+			} );
+
+			it( 'should return an empty object if there are no non-internal shareable modules', async () => {
+				// Create a version of the module fixtures where every module is
+				// marked as an internal module.
+				const fixturesWithAllModulesInternal = FIXTURES.map(
+					( module ) => {
+						return { ...module, internal: true };
+					}
+				);
+
+				fetchMock.getOnce(
+					new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
+					{ body: fixturesWithAllModulesInternal, status: 200 }
+				);
+
+				const initialShareableModules = registry
+					.select( CORE_MODULES )
+					.getShareableModules();
+				expect( initialShareableModules ).toBeUndefined();
+
+				await untilResolved( registry, CORE_MODULES ).getModules();
+
+				const shareableModules = registry
+					.select( CORE_MODULES )
+					.getShareableModules();
+
+				expect( Object.values( shareableModules ) ).toHaveLength( 0 );
+				expect( shareableModules ).toEqual( {} );
+			} );
+
+			it( 'should return the modules object for each non-internal shareable module', () => {
+				provideModuleRegistrations( registry );
+				registry
+					.dispatch( CORE_MODULES )
+					.receiveGetModules( [ ...FIXTURES, ...allModules ] );
+
+				const shareableModules = registry
+					.select( CORE_MODULES )
+					.getShareableModules();
+
+				expect(
+					Object.values( shareableModules ).every(
+						( module ) => module.shareable && ! module.internal
+					)
+				).toBeTruthy();
+
+				expect(
+					Object.values( shareableModules ).filter(
+						( module ) => module.shareable && ! module.internal
+					).length
+				).toEqual( Object.values( shareableModules ).length );
 			} );
 		} );
 	} );

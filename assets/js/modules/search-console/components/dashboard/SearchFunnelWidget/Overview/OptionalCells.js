@@ -25,17 +25,15 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { Fragment } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { ProgressBar } from 'googlesitekit-components';
 import { Cell } from '../../../../../../material-components';
 import { CORE_MODULES } from '../../../../../../googlesitekit/modules/datastore/constants';
-import { MODULES_ANALYTICS } from '../../../../../analytics/datastore/constants';
-import { CORE_LOCATION } from '../../../../../../googlesitekit/datastore/location/constants';
-import ActivateAnalyticsCTA from '../ActivateAnalyticsCTA';
+import { ActivateAnalyticsCTA } from '../../../common';
 import CreateGoalCTA from '../CreateGoalCTA';
 import RecoverableModules from '../../../../../../components/RecoverableModules';
 import {
@@ -56,10 +54,6 @@ export default function OptionalCells( {
 } ) {
 	const breakpoint = useBreakpoint();
 
-	const analyticsModuleAvailable = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleAvailable( 'analytics' )
-	);
-
 	const analyticsModuleConnected = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleConnected( 'analytics' )
 	);
@@ -69,31 +63,18 @@ export default function OptionalCells( {
 	const analyticsModuleActiveAndConnected =
 		analyticsModuleActive && analyticsModuleConnected;
 
-	const isNavigatingToReauthURL = useSelect( ( select ) => {
-		if ( ! analyticsModuleAvailable ) {
-			return false;
-		}
-		const adminReauthURL = select( MODULES_ANALYTICS ).getAdminReauthURL();
-		return select( CORE_LOCATION ).isNavigatingTo( adminReauthURL );
-	} );
-
 	return (
 		<Fragment>
-			{ isNavigatingToReauthURL && (
-				<Cell
-					{ ...halfCellProps }
-					className="googlesitekit-data-block__loading"
-				>
-					<ProgressBar />
-				</Cell>
-			) }
-
 			{ canViewSharedAnalytics &&
-				( ! analyticsModuleConnected || ! analyticsModuleActive ) &&
-				! isNavigatingToReauthURL && (
+				( ! analyticsModuleConnected || ! analyticsModuleActive ) && (
 					<Cell { ...halfCellProps }>
 						{ BREAKPOINT_SMALL !== breakpoint && (
-							<ActivateAnalyticsCTA />
+							<ActivateAnalyticsCTA
+								title={ __(
+									'Goals completed',
+									'google-site-kit'
+								) }
+							/>
 						) }
 					</Cell>
 				) }

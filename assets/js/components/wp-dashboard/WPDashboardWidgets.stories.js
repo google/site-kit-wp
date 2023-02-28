@@ -21,6 +21,7 @@
  */
 import WPDashboardWidgets from './WPDashboardWidgets';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
+import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import {
 	provideModules,
 	provideModuleRegistrations,
@@ -61,6 +62,10 @@ ReadyWithActivateModuleCTA.args = {
 		] );
 		provideSiteInfo( registry );
 		provideUserCapabilities( registry );
+		provideUserAuthentication( registry );
+		registry.dispatch( CORE_SITE ).receiveSiteInfo( {
+			adminURL: 'http://example.com/wp-admin/',
+		} );
 		setupSearchConsoleMockReports( registry );
 	},
 };
@@ -78,6 +83,10 @@ ReadyWithActivateAnalyticsCTA.args = {
 		] );
 		provideSiteInfo( registry );
 		provideUserCapabilities( registry );
+		provideUserAuthentication( registry );
+		registry.dispatch( CORE_SITE ).receiveSiteInfo( {
+			adminURL: 'http://example.com/wp-admin/',
+		} );
 		setupSearchConsoleMockReports( registry );
 	},
 };

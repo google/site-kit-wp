@@ -18,7 +18,7 @@
  * External dependencies
  */
 import invariant from 'invariant';
-import isPlainObject from 'lodash/isPlainObject';
+import { isPlainObject } from 'lodash';
 
 /**
  * Internal dependencies
@@ -67,7 +67,7 @@ const baseActions = {
 	/**
 	 * Sets key metrics setting.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.94.0
 	 *
 	 * @param {string}         settingID Setting key.
 	 * @param {Array.<string>} value     Setting value.
@@ -86,7 +86,7 @@ const baseActions = {
 	/**
 	 * Saves key metrics settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.94.0
 	 *
 	 * @return {Object} Object with `response` and `error`.
 	 */
@@ -169,7 +169,7 @@ const baseSelectors = {
 	/**
 	 * Gets key metrics selected by the user.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.94.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(Object|undefined)} Key metrics settings.

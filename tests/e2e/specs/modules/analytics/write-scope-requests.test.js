@@ -33,6 +33,7 @@ import {
 	resetSiteKit,
 	useRequestInterception,
 	setupSiteKit,
+	pageWait,
 } from '../../../utils';
 import * as fixtures4 from '../../../../../assets/js/modules/analytics-4/datastore/__fixtures__';
 import * as fixtures from '../../../../../assets/js/modules/analytics/datastore/__fixtures__';
@@ -238,6 +239,9 @@ describe( 'Analytics write scope requests', () => {
 			text: /set up a new property/i,
 		} );
 
+		// Add a brief delay to allow the submit button to become enabled.
+		await pageWait();
+
 		// Click on confirm changes button and wait for permissions modal dialog.
 		await expect( page ).toClick( '.mdc-button--raised', {
 			text: /configure analytics/i,
@@ -248,6 +252,7 @@ describe( 'Analytics write scope requests', () => {
 		await expect( page ).toClick( '.mdc-dialog--open .mdc-button', {
 			text: /proceed/i,
 		} );
+
 		expect( console ).toHaveErrored(); // Permission scope error.
 		await page.waitForRequest( ( req ) =>
 			req.url().match( 'analytics/data/create-property' )

@@ -26,14 +26,17 @@ import invariant from 'invariant';
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
+import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
+import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
+import { READ_SCOPE as TAGMANAGER_READ_SCOPE } from '../../tagmanager/datastore/constants';
 import {
 	MODULES_ANALYTICS_4,
 	PROPERTY_CREATE,
 	MAX_WEBDATASTREAMS_PER_BATCH,
 	WEBDATASTREAM_CREATE,
 } from './constants';
-import { normalizeURL } from '../../../util';
+import { HOUR_IN_SECONDS, normalizeURL } from '../../../util';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { isValidPropertySelection } from '../utils/validation';
 import { actions as webDataStreamActions } from './webdatastreams';
@@ -444,7 +447,7 @@ const baseActions = {
 	/**
 	 * Updates settings for a given measurement ID.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.94.0
 	 *
 	 * @param {string} measurementID Measurement ID.
 	 */
@@ -489,6 +492,66 @@ const baseActions = {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setGoogleTagContainerID( googleTagContainerID );
 		registry.dispatch( MODULES_ANALYTICS_4 ).setGoogleTagID( googleTagID );
+	},
+
+	/**
+	 * Syncs Google Tag settings.
+	 *
+	 * @since 1.95.0
+	 */
+	*syncGoogleTagSettings() {
+		if ( ! isFeatureEnabled( 'gteSupport' ) ) {
+			return;
+		}
+
+		const { select, dispatch, __experimentalResolveSelect } =
+			yield Data.commonActions.getRegistry();
+
+		const hasTagManagerReadScope = select( CORE_USER ).hasScope(
+			TAGMANAGER_READ_SCOPE
+		);
+
+		if ( ! hasTagManagerReadScope ) {
+			return;
+		}
+
+		// Wait for modules to be available before selecting.
+		yield Data.commonActions.await(
+			__experimentalResolveSelect( CORE_MODULES ).getModules()
+		);
+
+		const { isModuleConnected } = select( CORE_MODULES );
+
+		if ( ! isModuleConnected( 'analytics-4' ) ) {
+			return;
+		}
+
+		// Wait for module settings to be available before selecting.
+		yield Data.commonActions.await(
+			__experimentalResolveSelect( MODULES_ANALYTICS_4 ).getSettings()
+		);
+
+		const { getGoogleTagID, getMeasurementID, getGoogleTagLastSyncedAtMs } =
+			select( MODULES_ANALYTICS_4 );
+
+		const googleTagID = getGoogleTagID();
+		const measurementID = getMeasurementID();
+		const googleTagLastSyncedAtMs = getGoogleTagLastSyncedAtMs();
+
+		if (
+			! googleTagID &&
+			measurementID &&
+			( ! googleTagLastSyncedAtMs ||
+				Date.now() - googleTagLastSyncedAtMs >= HOUR_IN_SECONDS * 1000 )
+		) {
+			yield baseActions.updateSettingsForMeasurementID( measurementID );
+
+			dispatch( MODULES_ANALYTICS_4 ).setGoogleTagLastSyncedAtMs(
+				Date.now()
+			);
+
+			dispatch( MODULES_ANALYTICS_4 ).saveSettings();
+		}
 	},
 };
 

@@ -25,7 +25,12 @@ import {
 	createTestRegistry,
 	untilResolved,
 	unsubscribeFromAll,
+	freezeFetch,
+	waitForDefaultTimeouts,
+	subscribeUntil,
 } from '../../../../../tests/js/utils';
+import { DAY_IN_SECONDS } from '../../../util';
+import { isZeroReport } from '../utils';
 import * as fixtures from './__fixtures__';
 
 describe( 'modules/analytics-4 report', () => {
@@ -48,6 +53,8 @@ describe( 'modules/analytics-4 report', () => {
 	} );
 
 	describe( 'selectors', () => {
+		const zeroDataReport = { totals: [ {} ] };
+
 		describe( 'getReport', () => {
 			const options = {
 				startDate: '2022-11-02',
@@ -126,7 +133,9 @@ describe( 'modules/analytics-4 report', () => {
 				};
 
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/analytics-4\/data\/report/,
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics-4/data/report'
+					),
 					{
 						body: response,
 						status: 500,
@@ -145,6 +154,291 @@ describe( 'modules/analytics-4 report', () => {
 					.getReport( options );
 				expect( report ).toEqual( undefined );
 				expect( console ).toHaveErrored();
+			} );
+		} );
+
+		describe( 'isGatheringData', () => {
+			it( 'should return undefined if getReport is not resolved yet', async () => {
+				freezeFetch(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics-4/data/report'
+					)
+				);
+
+				const { isGatheringData } =
+					registry.select( MODULES_ANALYTICS_4 );
+
+				expect( isGatheringData() ).toBeUndefined();
+
+				// Wait for resolvers to run.
+				await waitForDefaultTimeouts();
+			} );
+
+			it( 'should return FALSE if the returned report has data', async () => {
+				fetchMock.getOnce(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics-4/data/report'
+					),
+					{
+						body: fixtures.report,
+					}
+				);
+
+				const { isGatheringData } =
+					registry.select( MODULES_ANALYTICS_4 );
+
+				expect( isGatheringData() ).toBeUndefined();
+
+				await subscribeUntil(
+					registry,
+					() => isGatheringData() !== undefined
+				);
+
+				expect( isGatheringData() ).toBe( false );
+			} );
+
+			it( 'should return FALSE if the report request fails', async () => {
+				const response = {
+					code: 'internal_server_error',
+					message: 'Internal server error',
+					data: { status: 500 },
+				};
+
+				fetchMock.getOnce(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics-4/data/report'
+					),
+					{
+						body: response,
+						status: 500,
+					}
+				);
+
+				const { isGatheringData } =
+					registry.select( MODULES_ANALYTICS_4 );
+
+				expect( isGatheringData() ).toBeUndefined();
+
+				await subscribeUntil(
+					registry,
+					() => isGatheringData() !== undefined
+				);
+
+				expect( isGatheringData() ).toBe( false );
+				expect( console ).toHaveErrored();
+			} );
+
+			describe.each( [
+				[ 'undefined', undefined ],
+				[ 'null', null ],
+				[ 'empty', {} ],
+				[ 'a zero data report', zeroDataReport ],
+				[
+					'a report with rows but zero data',
+					{
+						...fixtures.report,
+						totals: [ { metricValues: [ { value: '0' } ] } ],
+					},
+				],
+			] )( 'when the returned report is %s', ( _, body ) => {
+				beforeEach( () => {
+					fetchMock.getOnce(
+						new RegExp(
+							'^/google-site-kit/v1/modules/analytics-4/data/report'
+						),
+						{
+							body,
+						}
+					);
+				} );
+
+				it( 'should return undefined if getSettings is not resolved yet', async () => {
+					freezeFetch(
+						new RegExp(
+							'^/google-site-kit/v1/modules/analytics-4/data/settings'
+						)
+					);
+
+					const { isGatheringData, hasZeroData } =
+						registry.select( MODULES_ANALYTICS_4 );
+
+					// The first call to isGatheringData returns undefined because the call to hasZeroData returns undefined.
+					expect( isGatheringData() ).toBeUndefined();
+					expect( hasZeroData() ).toBeUndefined();
+
+					// Wait for resolvers to run.
+					await waitForDefaultTimeouts();
+
+					// Verify that isGatheringData still returns undefined due to getSettings not being resolved yet, while hasZeroData now returns true.
+					expect( isGatheringData() ).toBeUndefined();
+					expect( hasZeroData() ).toBe( true );
+
+					await waitForDefaultTimeouts();
+				} );
+
+				it( 'should return TRUE if the connnected GA4 property is under two days old', async () => {
+					// Create a timestamp that is one and a half days ago.
+					const createTime = new Date(
+						Date.now() - DAY_IN_SECONDS * 1.5 * 1000
+					).toISOString();
+
+					const property = {
+						...fixtures.properties[ 0 ],
+						createTime,
+					};
+					const propertyID = property._id;
+
+					registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.receiveGetSettings( {} );
+
+					registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.receiveGetProperty( property, { propertyID } );
+
+					registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.setPropertyID( propertyID );
+
+					const { isGatheringData } =
+						registry.select( MODULES_ANALYTICS_4 );
+
+					expect( isGatheringData() ).toBeUndefined();
+
+					await subscribeUntil(
+						registry,
+						() => isGatheringData() !== undefined
+					);
+
+					expect( isGatheringData() ).toBe( true );
+				} );
+
+				it( 'should return FALSE if the connnected GA4 property is older than two days', async () => {
+					// Create a timestamp that is two days ago.
+					const createTime = new Date(
+						Date.now() - DAY_IN_SECONDS * 2 * 1000
+					).toISOString();
+
+					const property = {
+						...fixtures.properties[ 0 ],
+						createTime,
+					};
+					const propertyID = property._id;
+
+					registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.receiveGetSettings( {} );
+
+					registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.receiveGetProperty( property, { propertyID } );
+
+					registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.setPropertyID( propertyID );
+
+					const { isGatheringData } =
+						registry.select( MODULES_ANALYTICS_4 );
+
+					expect( isGatheringData() ).toBeUndefined();
+
+					await subscribeUntil(
+						registry,
+						() => isGatheringData() !== undefined
+					);
+
+					expect( isGatheringData() ).toBe( false );
+				} );
+			} );
+		} );
+
+		describe( 'hasZeroData', () => {
+			it( 'should return undefined if getReport has not resolved yet', async () => {
+				freezeFetch(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics-4/data/report'
+					)
+				);
+
+				const { hasZeroData } = registry.select( MODULES_ANALYTICS_4 );
+
+				expect( hasZeroData() ).toBeUndefined();
+
+				// Wait for resolvers to run.
+				await waitForDefaultTimeouts();
+			} );
+
+			it( 'should return FALSE if the report request fails', async () => {
+				const response = {
+					code: 'internal_server_error',
+					message: 'Internal server error',
+					data: { status: 500 },
+				};
+
+				fetchMock.getOnce(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics-4/data/report'
+					),
+					{
+						body: response,
+						status: 500,
+					}
+				);
+
+				const { hasZeroData } = registry.select( MODULES_ANALYTICS_4 );
+
+				expect( hasZeroData() ).toBeUndefined();
+
+				await subscribeUntil(
+					registry,
+					() => hasZeroData() !== undefined
+				);
+
+				expect( hasZeroData() ).toBe( false );
+				expect( console ).toHaveErrored();
+			} );
+
+			it( 'should return TRUE if isZeroReport is true', async () => {
+				fetchMock.getOnce(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics-4/data/report'
+					),
+					{ body: zeroDataReport }
+				);
+
+				const { hasZeroData } = registry.select( MODULES_ANALYTICS_4 );
+
+				expect( hasZeroData() ).toBeUndefined();
+
+				await subscribeUntil(
+					registry,
+					() => hasZeroData() !== undefined
+				);
+
+				expect( hasZeroData() ).toBe( true );
+			} );
+
+			it( 'should return FALSE if isZeroReport returns FALSE', async () => {
+				expect( isZeroReport( fixtures.report ) ).toBe( false );
+				fetchMock.getOnce(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics-4/data/report'
+					),
+					{
+						body: fixtures.report,
+					}
+				);
+
+				const { hasZeroData } = registry.select( MODULES_ANALYTICS_4 );
+
+				expect( hasZeroData() ).toBeUndefined();
+
+				await subscribeUntil(
+					registry,
+					() => hasZeroData() !== undefined
+				);
+
+				expect( hasZeroData() ).toBe( false );
 			} );
 		} );
 	} );

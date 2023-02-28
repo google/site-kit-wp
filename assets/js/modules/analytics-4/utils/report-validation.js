@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import { isPlainObject } from 'lodash';
+
+/**
  * Internal dependencies
  */
 import { isValidStringsOrObjects } from '../../../util/report-validation';
@@ -27,7 +32,7 @@ import { isValidStringsOrObjects } from '../../../util/report-validation';
  * must have an "name" property in order to be considered as valid, and they
  * can optionally include an "expression" property.
  *
- * @since n.e.x.t
+ * @since 1.94.0
  *
  * @param {string|string[]|Object|Object[]} metrics The metrics to check.
  * @return {boolean} TRUE if metrics are valid, otherwise FALSE.
@@ -50,7 +55,7 @@ export function isValidMetrics( metrics ) {
  * array of strings, an object with "name" field, array of such objects or an array of strings
  * and objects.
  *
- * @since n.e.x.t
+ * @since 1.94.0
  *
  * @param {string|string[]|Object|Object[]} dimensions The dimensions to check.
  * @return {boolean} TRUE if dimensions are valid, otherwise FALSE.
@@ -67,7 +72,7 @@ export function isValidDimensions( dimensions ) {
 /**
  * Verifies provided dimensionFilters to make sure they match allowed values found in dimensions.
  *
- * @since n.e.x.t
+ * @since 1.94.0
  *
  * @param {Object} dimensionFilters The dimension filters to check.
  * @return {boolean} TRUE if dimension filters are valid, otherwise FALSE.
@@ -87,4 +92,47 @@ export function isValidDimensionFilters( dimensionFilters ) {
 						) && validType.includes( typeof param )
 				) )
 	);
+}
+
+/**
+ * Verifies that order definitions are valid for a report. It should be an array
+ * of objects where each object has either a "metric" or a "dimension" property,
+ * and an optional "desc" property. The "metric" and "dimension" properties should
+ * be objects with "metricName" and "dimensionName" properties respectively.
+ *
+ * @since 1.95.0
+ *
+ * @param {Object[]} orders The order definitions to check.
+ * @return {boolean} TRUE if order definitions are valid, otherwise FALSE.
+ */
+export function isValidOrders( orders ) {
+	if ( ! Array.isArray( orders ) ) {
+		return false;
+	}
+
+	return orders.every( ( order ) => {
+		if ( ! isPlainObject( order ) ) {
+			return false;
+		}
+
+		if (
+			order.hasOwnProperty( 'desc' ) &&
+			typeof order.desc !== 'boolean'
+		) {
+			return false;
+		}
+
+		if ( order.metric ) {
+			return (
+				! order.dimension &&
+				typeof order.metric?.metricName === 'string'
+			);
+		}
+
+		if ( order.dimension ) {
+			return typeof order.dimension?.dimensionName === 'string';
+		}
+
+		return false;
+	} );
 }

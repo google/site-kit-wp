@@ -23,6 +23,7 @@ import {
 	isValidDimensions,
 	isValidDimensionFilters,
 	isValidMetrics,
+	isValidOrders,
 } from './report-validation';
 
 describe( 'Analytics 4 Reporting API validation', () => {
@@ -156,5 +157,139 @@ describe( 'Analytics 4 Reporting API validation', () => {
 				] )
 			).toBe( false );
 		} );
+	} );
+
+	describe( 'isValidOrders', () => {
+		it.each( [
+			[
+				true,
+				'an array of valid order objects is passed',
+				[
+					{
+						metric: {
+							metricName: 'totalUsers',
+						},
+						desc: false,
+					},
+					{
+						metric: {
+							metricName: 'sessions',
+						},
+						desc: true,
+					},
+					{
+						dimension: {
+							dimensionName: 'date',
+						},
+						desc: true,
+					},
+					{
+						dimension: {
+							dimensionName: 'sessionDefaultChannelGrouping',
+						},
+					},
+				],
+			],
+			[ false, 'an array is not passed (null)', null ],
+			[ false, 'an array is not passed (string)', 'test' ],
+
+			[ false, 'an array is not passed (object)', { test: 123 } ],
+			[ false, 'a non-object is passed in the array (null)', [ null ] ],
+			[
+				false,
+				'a non-object is passed in the array (string)',
+				[ 'test' ],
+			],
+			[
+				false,
+				'a non-object is passed in the array (object)',
+				[ { test: 123 } ],
+			],
+			[
+				false,
+				'metric and dimension are both undefined',
+				[
+					{
+						desc: false,
+					},
+				],
+			],
+			[
+				false,
+				'metric and dimension are both defined',
+				[
+					{
+						metric: {
+							metricName: 'totalUsers',
+						},
+						dimension: {
+							dimensionName: 'date',
+						},
+						desc: false,
+					},
+				],
+			],
+			[
+				false,
+				'metric is defined but metricName is not',
+				[
+					{
+						metric: {},
+						desc: false,
+					},
+				],
+			],
+			[
+				false,
+				'metricName is defined but not a string',
+				[
+					{
+						metric: {
+							metricName: 123,
+						},
+						desc: false,
+					},
+				],
+			],
+			[
+				false,
+				'dimension is defined but dimensionName is not',
+				[
+					{
+						dimension: {},
+						desc: false,
+					},
+				],
+			],
+			[
+				false,
+				'dimensionName is defined but not a string',
+				[
+					{
+						dimension: {
+							dimensionName: 123,
+						},
+						desc: false,
+					},
+				],
+			],
+			[
+				false,
+				'desc is defined but not a boolean',
+				[
+					{
+						metric: {
+							metricName: 'totalUsers',
+						},
+						desc: 'test',
+					},
+				],
+			],
+		] )(
+			'should return %s if %s',
+			( expectedResult, testDescription, order ) => {
+				expect( isValidOrders( order ) ).toBe( expectedResult );
+			}
+		);
 	} );
 } );

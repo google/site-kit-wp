@@ -20,11 +20,8 @@
  * External dependencies
  */
 import memize from 'memize';
-import defaults from 'lodash/defaults';
-import merge from 'lodash/merge';
-import isPlainObject from 'lodash/isPlainObject';
 import invariant from 'invariant';
-import { sprintf, __ } from '@wordpress/i18n';
+import { defaults, merge, isPlainObject } from 'lodash';
 
 /**
  * WordPress dependencies
@@ -32,6 +29,7 @@ import { sprintf, __ } from '@wordpress/i18n';
 // This is used for JSDoc purposes.
 // eslint-disable-next-line no-unused-vars
 import { WPComponent } from '@wordpress/element';
+import { sprintf, __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -753,7 +751,7 @@ const baseResolvers = {
 
 		const recoverableModules = Object.entries( modules || {} ).reduce(
 			( moduleList, [ moduleSlug, module ] ) => {
-				if ( module.recoverable ) {
+				if ( module.recoverable && ! module.internal ) {
 					moduleList.push( moduleSlug );
 				}
 				return moduleList;
@@ -1342,6 +1340,33 @@ const baseSelectors = {
 			);
 		}
 	),
+
+	/**
+	 * Gets the list of non-internal shareable modules for dashboard sharing.
+	 *
+	 * Returns an Object/map of objects, keyed by slug as same as `getModules`.
+	 *
+	 * @since 1.95.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(Object|undefined)} Non-internal shareable modules available on the site; `undefined` if not loaded.
+	 */
+	getShareableModules: createRegistrySelector( ( select ) => () => {
+		const modules = select( CORE_MODULES ).getModules();
+
+		// Return early if modules are not loaded.
+		if ( modules === undefined ) {
+			return undefined;
+		}
+
+		return Object.keys( modules ).reduce( ( acc, slug ) => {
+			if ( modules[ slug ].shareable && ! modules[ slug ].internal ) {
+				return { [ slug ]: modules[ slug ], ...acc };
+			}
+
+			return acc;
+		}, {} );
+	} ),
 
 	getRecoveredModules( state ) {
 		return state.recoveredModules;
