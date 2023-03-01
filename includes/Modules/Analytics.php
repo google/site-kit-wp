@@ -62,6 +62,8 @@ use Google\Site_Kit_Dependencies\Google\Service\Exception as Google_Service_Exce
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 use WP_Error;
 use Exception;
+use Google\Site_Kit\Core\Modules\Module_With_Data_Available_State;
+use Google\Site_Kit\Core\Modules\Module_With_Data_Available_State_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Service_Entity;
 use Google\Site_Kit\Core\Util\BC_Functions;
 use Google\Site_Kit\Core\Util\Sort;
@@ -75,12 +77,13 @@ use Google\Site_Kit\Core\Util\URL;
  * @ignore
  */
 final class Analytics extends Module
-	implements Module_With_Scopes, Module_With_Settings, Module_With_Assets, Module_With_Debug_Fields, Module_With_Owner, Module_With_Service_Entity, Module_With_Deactivation {
+	implements Module_With_Scopes, Module_With_Settings, Module_With_Assets, Module_With_Debug_Fields, Module_With_Owner, Module_With_Service_Entity, Module_With_Deactivation, Module_With_Data_Available_State {
 	use Method_Proxy_Trait;
 	use Module_With_Assets_Trait;
 	use Module_With_Owner_Trait;
 	use Module_With_Scopes_Trait;
 	use Module_With_Settings_Trait;
+	use Module_With_Data_Available_State_Trait;
 
 	const PROVISION_ACCOUNT_TICKET_ID = 'googlesitekit_analytics_provision_account_ticket_id';
 
@@ -128,6 +131,19 @@ final class Analytics extends Module
 		);
 
 		( new Advanced_Tracking( $this->context ) )->register();
+
+		// Ensure that the data available state is reset when the property changes.
+		add_action(
+			'update_option_googlesitekit_analytics_settings',
+			function( $old_value, $new_value ) {
+				if ( $old_value['propertyID'] !== $new_value['propertyID'] ) {
+					$this->reset_data_available();
+				}
+			},
+			10,
+			2
+		);
+
 	}
 
 	/**
@@ -209,6 +225,7 @@ final class Analytics extends Module
 	public function on_deactivation() {
 		$this->get_settings()->delete();
 		$this->options->delete( 'googlesitekit_analytics_adsense_linked' );
+		$this->reset_data_available();
 	}
 
 	/**
@@ -1206,6 +1223,7 @@ final class Analytics extends Module
 						'googlesitekit-datastore-user',
 						'googlesitekit-datastore-forms',
 						'googlesitekit-components',
+						'googlesitekit-modules-data',
 					),
 				)
 			),

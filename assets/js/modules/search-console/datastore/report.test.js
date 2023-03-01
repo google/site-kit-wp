@@ -24,6 +24,7 @@ import { MODULES_SEARCH_CONSOLE } from './constants';
 import {
 	createTestRegistry,
 	freezeFetch,
+	muteFetch,
 	subscribeUntil,
 	unsubscribeFromAll,
 	untilResolved,
@@ -201,6 +202,12 @@ describe( 'modules/search-console report', () => {
 			it( 'should return FALSE if the report API returns error', async () => {
 				fetchMock.getOnce( searchAnalyticsRegexp, errorResponse );
 
+				muteFetch(
+					new RegExp(
+						'^/google-site-kit/v1/modules/search-console/data/data-available'
+					)
+				);
+
 				const { isGatheringData } = registry.select(
 					MODULES_SEARCH_CONSOLE
 				);
@@ -221,6 +228,12 @@ describe( 'modules/search-console report', () => {
 				fetchMock.getOnce( searchAnalyticsRegexp, {
 					body: fixtures.report,
 				} );
+
+				muteFetch(
+					new RegExp(
+						'^/google-site-kit/v1/modules/search-console/data/data-available'
+					)
+				);
 
 				const { isGatheringData } = registry.select(
 					MODULES_SEARCH_CONSOLE
@@ -271,6 +284,12 @@ describe( 'modules/search-console report', () => {
 			it( 'should return FALSE if report API returns error', async () => {
 				fetchMock.getOnce( searchAnalyticsRegexp, errorResponse );
 
+				muteFetch(
+					new RegExp(
+						'^/google-site-kit/v1/modules/search-console/data/data-available'
+					)
+				);
+
 				const { hasZeroData } = registry.select(
 					MODULES_SEARCH_CONSOLE
 				);
@@ -291,6 +310,12 @@ describe( 'modules/search-console report', () => {
 				fetchMock.getOnce( searchAnalyticsRegexp, {
 					body: fixtures.report,
 				} );
+
+				muteFetch(
+					new RegExp(
+						'^/google-site-kit/v1/modules/search-console/data/data-available'
+					)
+				);
 
 				const { hasZeroData } = registry.select(
 					MODULES_SEARCH_CONSOLE

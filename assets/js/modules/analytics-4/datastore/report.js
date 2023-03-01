@@ -46,6 +46,7 @@ import {
 	isValidOrders,
 	isZeroReport,
 } from '../utils';
+import { createGatheringDataStore } from '../../../googlesitekit/modules/create-gathering-data-store';
 const { createRegistrySelector } = Data;
 
 const fetchGetReportStore = createFetchStore( {
@@ -113,6 +114,44 @@ const fetchGetReportStore = createFetchStore( {
 			);
 		}
 	},
+} );
+
+const gatheringDataStore = createGatheringDataStore( 'analytics-4', {
+	storeName: MODULES_ANALYTICS_4,
+	dataAvailable:
+		global._googlesitekitModulesData?.[ 'data_available_analytics-4' ],
+	selectDataAvailability: createRegistrySelector( ( select ) => () => {
+		const hasZeroData = select( MODULES_ANALYTICS_4 ).hasZeroData();
+
+		if ( hasZeroData === undefined ) {
+			return undefined;
+		}
+		if ( hasZeroData === false ) {
+			return true;
+		}
+
+		const propertyID = select( MODULES_ANALYTICS_4 ).getPropertyID();
+
+		if ( propertyID === undefined ) {
+			return undefined;
+		}
+
+		const property =
+			select( MODULES_ANALYTICS_4 ).getProperty( propertyID );
+
+		if ( property === undefined ) {
+			return undefined;
+		}
+
+		const createTime = new Date( property.createTime ).getTime();
+
+		// If the property was created within the last two days and has no data, assume it's still gathering data.
+		if ( createTime > Date.now() - DAY_IN_SECONDS * 2 * 1000 ) {
+			return false;
+		}
+
+		return true;
+	} ),
 } );
 
 const baseInitialState = {
@@ -260,46 +299,6 @@ const baseSelectors = {
 	),
 
 	/**
-	 * Determines whether the Analytics 4 module is still gathering data.
-	 *
-	 * @since 1.95.0
-	 *
-	 * @return {boolean|undefined} Returns `true` if gathering data, otherwise `false`. Returns `undefined` while resolving.
-	 */
-	isGatheringData: createRegistrySelector( ( select ) => () => {
-		const hasZeroData = select( MODULES_ANALYTICS_4 ).hasZeroData();
-
-		if ( hasZeroData === undefined ) {
-			return undefined;
-		}
-		if ( hasZeroData === false ) {
-			return false;
-		}
-
-		const propertyID = select( MODULES_ANALYTICS_4 ).getPropertyID();
-
-		if ( propertyID === undefined ) {
-			return undefined;
-		}
-
-		const property =
-			select( MODULES_ANALYTICS_4 ).getProperty( propertyID );
-
-		if ( property === undefined ) {
-			return undefined;
-		}
-
-		const createTime = new Date( property.createTime ).getTime();
-
-		// If the property was created within the last two days and has no data, assume it's still gathering data.
-		if ( createTime > Date.now() - DAY_IN_SECONDS * 2 * 1000 ) {
-			return true;
-		}
-
-		return false;
-	} ),
-
-	/**
 	 * Determines whether Analytics 4 has zero data or not.
 	 *
 	 * @since 1.95.0
@@ -349,7 +348,7 @@ const baseSelectors = {
 	} ),
 };
 
-const store = Data.combineStores( fetchGetReportStore, {
+const store = Data.combineStores( fetchGetReportStore, gatheringDataStore, {
 	initialState: baseInitialState,
 	resolvers: baseResolvers,
 	selectors: baseSelectors,
