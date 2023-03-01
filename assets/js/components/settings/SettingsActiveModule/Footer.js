@@ -190,7 +190,7 @@ export default function Footer( props ) {
 							: __( 'Confirm Changes', 'google-site-kit' ) }
 					</SpinnerButton>
 				) : (
-					<Button onClick={ handleClose } isSaving={ isSaving }>
+					<Button onClick={ handleClose }>
 						{ __( 'Close', 'google-site-kit' ) }
 					</Button>
 				) }
