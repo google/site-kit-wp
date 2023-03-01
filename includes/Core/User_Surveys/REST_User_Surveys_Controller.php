@@ -152,11 +152,17 @@ class REST_User_Surveys_Controller {
 						$response = $proxy->send_survey_event( $creds, $access_token, $data['session'], $data['event'] );
 
 						if ( ! is_wp_error( $response ) ) {
-							if ( isset( $data['event']['completion_shown'] ) || isset( $data['event']['completion_shown'] ) ) {
+							$is_survey_closed    = isset( $data['event']['survey_closed'] );
+							$is_completion_shown = isset( $data['event']['completion_shown'] );
+							if ( $is_completion_shown || $is_survey_closed ) {
 								$survey = $this->queue->find_by_session( $data['session'] );
 								if ( ! empty( $survey ) ) {
 									$this->dequeue( $survey );
 								}
+							}
+
+							if ( isset( $data['event']['survey_shown'] ) ) {
+								$this->timeouts->add( '__global', 12 * HOUR_IN_SECONDS );
 							}
 						}
 
