@@ -16,9 +16,9 @@ use Google\Site_Kit\Core\Modules\REST_Modules_Controller;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
+use Google\Site_Kit\Tests\FakeHttpClient;
 use Google\Site_Kit\Tests\RestTestTrait;
 use Google\Site_Kit\Tests\TestCase;
-use Google\Site_Kit\Tests\FakeHttpClient;
 use WP_REST_Request;
 
 class REST_Modules_ControllerTest extends TestCase {
