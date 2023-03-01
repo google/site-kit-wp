@@ -240,6 +240,20 @@ class REST_User_Surveys_Controller {
 					},
 				)
 			),
+			'survey'          => new REST_Route(
+				'core/user/data/survey',
+				array(
+					'methods'             => WP_REST_Server::READABLE,
+					'permission_callback' => $can_authenticate,
+					'callback'            => function ( WP_REST_Request $request ) {
+						return new WP_REST_Response(
+							array(
+								'survey' => $this->queue->front(),
+							)
+						);
+					},
+				),
+			),
 		);
 	}
 
