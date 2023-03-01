@@ -16,6 +16,7 @@ use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\User_Surveys\REST_User_Surveys_Controller;
 use Google\Site_Kit\Core\User_Surveys\Survey_Timeouts;
+use Google\Site_Kit\Core\User_Surveys\Survey_Queue;
 use Google\Site_Kit\Tests\RestTestTrait;
 use Google\Site_Kit\Tests\TestCase;
 use WP_REST_Request;
@@ -38,6 +39,13 @@ class REST_User_Surveys_ControllerTest extends TestCase {
 	 */
 	private $timeouts;
 
+	/**
+	 * Survey_Queue instance.
+	 *
+	 * @var Survey_Queue
+	 */
+	private $queue;
+
 	public function set_up() {
 		parent::set_up();
 
@@ -53,7 +61,8 @@ class REST_User_Surveys_ControllerTest extends TestCase {
 			->set_token( array( 'access_token' => 'valid-auth-token' ) );
 
 		$this->timeouts   = new Survey_Timeouts( $user_options );
-		$this->controller = new REST_User_Surveys_Controller( $authentication, $this->timeouts );
+		$this->queue      = new Survey_Queue( $user_options );
+		$this->controller = new REST_User_Surveys_Controller( $authentication, $this->timeouts, $this->queue );
 	}
 
 	public function tear_down() {
@@ -75,7 +84,7 @@ class REST_User_Surveys_ControllerTest extends TestCase {
 		$this->controller->register();
 
 		$routes = apply_filters( 'googlesitekit_rest_routes', array() );
-		$this->assertEquals( 4, count( $routes ) );
+		$this->assertEquals( 5, count( $routes ) );
 
 		$args = $routes['survey-event']->get_args();
 		$this->assertEquals( 'core/user/data/survey-event', $routes['survey-event']->get_uri() );
@@ -100,6 +109,12 @@ class REST_User_Surveys_ControllerTest extends TestCase {
 
 		$args = $routes['survey-timeouts']->get_args();
 		$this->assertEquals( 'core/user/data/survey-timeouts', $routes['survey-timeouts']->get_uri() );
+		$this->assertEquals( \WP_REST_Server::READABLE, $args[0]['methods'] );
+		$this->assertTrue( is_callable( $args[0]['callback'] ) );
+		$this->assertTrue( is_callable( $args[0]['permission_callback'] ) );
+
+		$args = $routes['survey']->get_args();
+		$this->assertEquals( 'core/user/data/survey', $routes['survey']->get_uri() );
 		$this->assertEquals( \WP_REST_Server::READABLE, $args[0]['methods'] );
 		$this->assertTrue( is_callable( $args[0]['callback'] ) );
 		$this->assertTrue( is_callable( $args[0]['permission_callback'] ) );
@@ -146,6 +161,30 @@ class REST_User_Surveys_ControllerTest extends TestCase {
 			array( 'foo', 'bar' ),
 			rest_get_server()->dispatch( $request )->get_data()
 		);
+	}
+
+	public function test_survey() {
+		remove_all_filters( 'googlesitekit_rest_routes' );
+		$this->controller->register();
+		$this->register_rest_routes();
+
+		$survey = array(
+			'survey_id' => 'test_survey',
+			'session'   => array(
+				'session_id'    => 'test_session_id',
+				'session_token' => 'test_session_token',
+			),
+			'payload'   => array(
+				'questions' => array(),
+			),
+		);
+
+		$this->queue->enqueue( $survey );
+
+		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/user/data/survey' );
+		$response = rest_get_server()->dispatch( $request )->get_data();
+
+		$this->assertEqualSets( array( 'survey' => $survey ), $response );
 	}
 
 }

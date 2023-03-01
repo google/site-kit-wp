@@ -47,7 +47,7 @@ class Survey_Timeouts extends Array_Setting {
 	 */
 	public function get_survey_timeouts() {
 		$surveys = $this->get();
-		$surveys = $this->filter_survey_timeouts( $surveys );
+		$surveys = $this->sanitize_array_item( $surveys );
 
 		return array_keys( $surveys );
 	}
