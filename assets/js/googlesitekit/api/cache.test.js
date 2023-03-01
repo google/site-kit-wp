@@ -30,6 +30,7 @@ import {
 	setItem,
 	setSelectedStorageBackend,
 	setStorageOrder,
+	STORAGE_KEY_PREFIX_ROOT,
 } from './cache';
 
 describe( 'googlesitekit.api.cache', () => {
@@ -297,13 +298,20 @@ describe( 'googlesitekit.api.cache', () => {
 					await setItem( 'key1', 'data' );
 					await setItem( 'key2', 'data' );
 
+					// Simulate an item stored by a previous version of Site Kit.
+					const oldStorageKeyPrefix = `${ STORAGE_KEY_PREFIX_ROOT }1.0.0_xyz123_`;
+					storageMechanism.setItem(
+						`${ oldStorageKeyPrefix }key3`,
+						'data'
+					);
+
 					const keys = await getKeys();
-					// The returned keys should not include the Site Kit prefix.
-					expect( keys ).not.toEqual( [
+					// The returned keys should include the Site Kit prefix.
+					expect( keys ).toEqual( [
 						`${ STORAGE_KEY_PREFIX }key1`,
 						`${ STORAGE_KEY_PREFIX }key2`,
+						`${ oldStorageKeyPrefix }key3`,
 					] );
-					expect( keys ).toEqual( [ 'key1', 'key2' ] );
 				} );
 
 				it( 'should not return non-Site Kit keys', async () => {
@@ -311,17 +319,25 @@ describe( 'googlesitekit.api.cache', () => {
 					storageMechanism.setItem( 'whatever', 'cool' );
 					await setItem( 'key1', 'data' );
 					await setItem( 'key2', 'data' );
+
+					// Simulate an item stored by a previous version of Site Kit.
+					const oldStorageKeyPrefix = `${ STORAGE_KEY_PREFIX_ROOT }1.0.0_xyz123_`;
+					storageMechanism.setItem(
+						`${ oldStorageKeyPrefix }key3`,
+						'data'
+					);
+
 					expect(
 						Object.keys( storageMechanism.__STORE__ ).length
-					).toBe( 3 );
+					).toBe( 4 );
 
 					const keys = await getKeys();
-					// The returned keys should not include the Site Kit prefix.
-					expect( keys ).not.toEqual( [
+					// The returned keys should include the Site Kit prefix.
+					expect( keys ).toEqual( [
 						`${ STORAGE_KEY_PREFIX }key1`,
 						`${ STORAGE_KEY_PREFIX }key2`,
+						`${ oldStorageKeyPrefix }key3`,
 					] );
-					expect( keys ).toEqual( [ 'key1', 'key2' ] );
 				} );
 			} );
 
