@@ -21,7 +21,7 @@
  */
 import PropTypes from 'prop-types';
 import { useHistory, useParams } from 'react-router-dom';
-import isEmpty from 'lodash/isEmpty';
+import { isEmpty } from 'lodash';
 
 /**
  * WordPress dependencies

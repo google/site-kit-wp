@@ -4,7 +4,7 @@ Contributors:      google
 Requires at least: 5.2
 Tested up to:      6.1
 Requires PHP:      5.6
-Stable tag:        1.94.0
+Stable tag:        1.95.0
 License:           Apache License 2.0
 License URI:       https://www.apache.org/licenses/LICENSE-2.0
 Tags:              google, search-console, analytics, adsense, pagespeed-insights, optimize, tag-manager, site-kit
@@ -107,6 +107,27 @@ By default, Site Kit does anonymize IP addresses upon activation of the Google A
 Please create a new topic on our [WordPress.org support forum](https://wordpress.org/support/plugin/google-site-kit/). Be sure to follow the [support forum guidelines](https://wordpress.org/support/guidelines/) when posting.
 
 == Changelog ==
+
+= 1.95.0 =
+
+**Enhanced**
+
+* Update the GA4 report endpoint to accept the new ordering properties. See [#6513](https://github.com/google/site-kit-wp/issues/6513).
+* Prevent "Analytics 4" from appearing separate from "Analytics" in Dashboard Sharing settings when `ga4Reporting` is enabled. See [#6446](https://github.com/google/site-kit-wp/issues/6446).
+* Update User Input preview edit links when saving questions to be consistent with other disabled elements. See [#6427](https://github.com/google/site-kit-wp/issues/6427).
+* Show spinner next to Analytics CTA button instead of progress bar in entire widget. See [#6416](https://github.com/google/site-kit-wp/issues/6416).
+* Add the  `getAnswerBasedMetrics` selector to the widgets datastore. See [#6234](https://github.com/google/site-kit-wp/issues/6234).
+* Ensure Google Tag data is populated for sites which already have Google Analytics 4 configured. See [#6082](https://github.com/google/site-kit-wp/issues/6082).
+
+**Fixed**
+
+* Update the AdSense homepage URL, fixing the link in the AdSense Settings footer. See [#6647](https://github.com/google/site-kit-wp/issues/6647).
+* Fix potential type error on `auto_update_plugin` filter. See [#6624](https://github.com/google/site-kit-wp/issues/6624).
+* Prevent PHP errors on the Site Health info page when Dashboard Sharing is enabled. See [#6597](https://github.com/google/site-kit-wp/issues/6597).
+* Ensure the Analytics metrics in the Search Funnel widget are disabled when Analytics is gathering data. See [#6587](https://github.com/google/site-kit-wp/issues/6587).
+* Fix bug that caused two GA4 properties to be created from the GA4 activation banner on the Site Kit dashboard. See [#6529](https://github.com/google/site-kit-wp/issues/6529).
+* Ensure all widgets that are visible in the viewport load on page load. See [#6475](https://github.com/google/site-kit-wp/issues/6475).
+* Fix bug that caused banner notification analytics events to be sent for dismissed/hidden notifications. See [#6109](https://github.com/google/site-kit-wp/issues/6109).
 
 = 1.94.0 =
 

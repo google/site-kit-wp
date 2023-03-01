@@ -28,6 +28,7 @@ import {
 	freezeFetch,
 	subscribeUntil,
 	waitForDefaultTimeouts,
+	muteFetch,
 } from '../../../../../tests/js/utils';
 import * as fixtures from './__fixtures__';
 import { isZeroReport } from '../util';
@@ -438,6 +439,12 @@ describe( 'modules/analytics report', () => {
 					}
 				);
 
+				muteFetch(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics/data/data-available'
+					)
+				);
+
 				const { isGatheringData } =
 					registry.select( MODULES_ANALYTICS );
 
@@ -457,6 +464,12 @@ describe( 'modules/analytics report', () => {
 				freezeFetch(
 					new RegExp(
 						'^/google-site-kit/v1/modules/analytics/data/report'
+					)
+				);
+
+				muteFetch(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics/data/data-available'
 					)
 				);
 
@@ -522,6 +535,12 @@ describe( 'modules/analytics report', () => {
 					}
 				);
 
+				muteFetch(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics/data/data-available'
+					)
+				);
+
 				const { hasZeroData, isGatheringData } =
 					registry.select( MODULES_ANALYTICS );
 
@@ -546,6 +565,12 @@ describe( 'modules/analytics report', () => {
 					{
 						body: fixtures.report,
 					}
+				);
+
+				muteFetch(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics/data/data-available'
+					)
 				);
 
 				const { hasZeroData } = registry.select( MODULES_ANALYTICS );

@@ -17,10 +17,15 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+
+/**
  * External dependencies
  */
 import invariant from 'invariant';
-import isPlainObject from 'lodash/isPlainObject';
+import { isPlainObject } from 'lodash';
 
 /**
  * Internal dependencies
@@ -41,6 +46,7 @@ import {
 	isValidOrders,
 	isZeroReport,
 } from '../utils';
+import { createGatheringDataStore } from '../../../googlesitekit/modules/create-gathering-data-store';
 const { createRegistrySelector } = Data;
 
 const fetchGetReportStore = createFetchStore( {
@@ -104,10 +110,48 @@ const fetchGetReportStore = createFetchStore( {
 		if ( orderby ) {
 			invariant(
 				isValidOrders( orderby ),
-				'orderby for an Analytics 4 report must be an object where each object should have either a "metric" or "dimension" property, and an optional "desc" property.'
+				'orderby for an Analytics 4 report must be an array of OrderBy objects where each object should have either a "metric" or "dimension" property, and an optional "desc" property.'
 			);
 		}
 	},
+} );
+
+const gatheringDataStore = createGatheringDataStore( 'analytics-4', {
+	storeName: MODULES_ANALYTICS_4,
+	dataAvailable:
+		global._googlesitekitModulesData?.[ 'data_available_analytics-4' ],
+	selectDataAvailability: createRegistrySelector( ( select ) => () => {
+		const hasZeroData = select( MODULES_ANALYTICS_4 ).hasZeroData();
+
+		if ( hasZeroData === undefined ) {
+			return undefined;
+		}
+		if ( hasZeroData === false ) {
+			return true;
+		}
+
+		const propertyID = select( MODULES_ANALYTICS_4 ).getPropertyID();
+
+		if ( propertyID === undefined ) {
+			return undefined;
+		}
+
+		const property =
+			select( MODULES_ANALYTICS_4 ).getProperty( propertyID );
+
+		if ( property === undefined ) {
+			return undefined;
+		}
+
+		const createTime = new Date( property.createTime ).getTime();
+
+		// If the property was created within the last two days and has no data, assume it's still gathering data.
+		if ( createTime > Date.now() - DAY_IN_SECONDS * 2 * 1000 ) {
+			return false;
+		}
+
+		return true;
+	} ),
 } );
 
 const baseInitialState = {
@@ -158,49 +202,106 @@ const baseSelectors = {
 	},
 
 	/**
-	 * Determines whether the Analytics 4 module is still gathering data.
+	 * Gets a Page title to URL map for the given options.
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return {boolean|undefined} Returns `true` if gathering data, otherwise `false`. Returns `undefined` while resolving.
+	 * @param {Object} state             Data store's state.
+	 * @param {Object} report            A report from the getReport selector containing pagePaths.
+	 * @param {Object} options           Options for generating the report.
+	 * @param {string} options.startDate Required, start date to query report data for as YYYY-mm-dd.
+	 * @param {string} options.endDate   Required, end date to query report data for as YYYY-mm-dd.
+	 * @return {(Object|undefined)} A map with url as the key and page title as the value. `undefined` if not loaded.
 	 */
-	isGatheringData: createRegistrySelector( ( select ) => () => {
-		const hasZeroData = select( MODULES_ANALYTICS_4 ).hasZeroData();
+	getPageTitles: createRegistrySelector(
+		( select ) =>
+			( state, report, { startDate, endDate } = {} ) => {
+				if ( ! isPlainObject( report ) ) {
+					return;
+				}
 
-		if ( hasZeroData === undefined ) {
-			return undefined;
-		}
-		if ( hasZeroData === false ) {
-			return false;
-		}
+				const pagePaths = [];
+				const REQUEST_MULTIPLIER = 5;
 
-		const propertyID = select( MODULES_ANALYTICS_4 ).getPropertyID();
+				/*
+				 * Iterate over the report rows, finding the dimension containing the
+				 * pagePath value which we add to the array of pagePaths.
+				 */
+				const { dimensionHeaders, rows } = report;
+				if (
+					Array.isArray( dimensionHeaders ) &&
+					Array.isArray( rows )
+				) {
+					const pagePathIndex = dimensionHeaders.findIndex(
+						( { name } ) => name === 'pagePath'
+					);
+					rows.forEach( ( { dimensionValues } ) => {
+						if (
+							! pagePaths.includes(
+								dimensionValues[ pagePathIndex ].value
+							)
+						) {
+							pagePaths.push(
+								dimensionValues[ pagePathIndex ].value
+							);
+						}
+					} );
+				}
 
-		if ( propertyID === undefined ) {
-			return undefined;
-		}
+				const urlTitleMap = {};
+				if ( ! pagePaths.length ) {
+					return urlTitleMap;
+				}
 
-		const property =
-			select( MODULES_ANALYTICS_4 ).getProperty( propertyID );
+				const options = {
+					startDate,
+					endDate,
+					dimensions: [ 'pagePath', 'pageTitle' ],
+					dimensionFilters: { pagePath: pagePaths.sort() },
+					metrics: [ { name: 'screenPageViews' } ],
+					orderby: [
+						{
+							metric: { metricName: 'screenPageViews' },
+							desc: true,
+						},
+					],
+					limit: REQUEST_MULTIPLIER * pagePaths.length,
+				};
 
-		if ( property === undefined ) {
-			return undefined;
-		}
+				const pageTitlesReport =
+					select( MODULES_ANALYTICS_4 ).getReport( options );
+				if ( undefined === pageTitlesReport ) {
+					return;
+				}
 
-		const createTime = new Date( property.createTime ).getTime();
+				( pageTitlesReport?.rows || [] ).forEach(
+					( { dimensionValues } ) => {
+						if ( ! urlTitleMap[ dimensionValues[ 0 ].value ] ) {
+							// key is the url, value is the page title.
+							urlTitleMap[ dimensionValues[ 0 ].value ] =
+								dimensionValues[ 1 ].value;
+						}
+					}
+				);
 
-		// If the property was created within the last two days and has no data, assume it's still gathering data.
-		if ( createTime > Date.now() - DAY_IN_SECONDS * 2 * 1000 ) {
-			return true;
-		}
+				pagePaths.forEach( ( pagePath ) => {
+					if ( ! urlTitleMap[ pagePath ] ) {
+						// If we don't have a title for the pagePath, we use '(unknown)'.
+						urlTitleMap[ pagePath ] = __(
+							'(unknown)',
+							'google-site-kit'
+						);
+					}
+				} );
 
-		return false;
-	} ),
+				return urlTitleMap;
+			}
+	),
 
 	/**
 	 * Determines whether Analytics 4 has zero data or not.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.95.0
 	 *
 	 * @return {boolean|undefined} Returns `true` if the report is zero, otherwise `false`. Returns `undefined` while resolving.
 	 */
@@ -247,7 +348,7 @@ const baseSelectors = {
 	} ),
 };
 
-const store = Data.combineStores( fetchGetReportStore, {
+const store = Data.combineStores( fetchGetReportStore, gatheringDataStore, {
 	initialState: baseInitialState,
 	resolvers: baseResolvers,
 	selectors: baseSelectors,

@@ -20,7 +20,7 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
-import intersection from 'lodash/intersection';
+import { intersection } from 'lodash';
 
 /**
  * WordPress dependencies

@@ -42,6 +42,8 @@ use Google\Site_Kit_Dependencies\Psr\Http\Message\ResponseInterface;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 use WP_Error;
 use Exception;
+use Google\Site_Kit\Core\Modules\Module_With_Data_Available_State;
+use Google\Site_Kit\Core\Modules\Module_With_Data_Available_State_Trait;
 use Google\Site_Kit\Core\Util\Sort;
 
 /**
@@ -52,8 +54,8 @@ use Google\Site_Kit\Core\Util\Sort;
  * @ignore
  */
 final class Search_Console extends Module
-	implements Module_With_Scopes, Module_With_Settings, Module_With_Assets, Module_With_Debug_Fields, Module_With_Owner, Module_With_Service_Entity {
-	use Module_With_Scopes_Trait, Module_With_Settings_Trait, Google_URL_Matcher_Trait, Module_With_Assets_Trait, Module_With_Owner_Trait;
+	implements Module_With_Scopes, Module_With_Settings, Module_With_Assets, Module_With_Debug_Fields, Module_With_Owner, Module_With_Service_Entity, Module_With_Data_Available_State {
+	use Module_With_Scopes_Trait, Module_With_Settings_Trait, Google_URL_Matcher_Trait, Module_With_Assets_Trait, Module_With_Owner_Trait, Module_With_Data_Available_State_Trait;
 
 	/**
 	 * Module slug name.
@@ -97,6 +99,18 @@ final class Search_Console extends Module
 					array( 'propertyID' => $property_id )
 				);
 			}
+		);
+
+		// Ensure that the data available state is reset when the property changes.
+		add_action(
+			'update_option_googlesitekit_search-console_settings',
+			function( $old_value, $new_value ) {
+				if ( $old_value['propertyID'] !== $new_value['propertyID'] ) {
+					$this->reset_data_available();
+				}
+			},
+			10,
+			2
 		);
 
 		// Ensure that a Search Console property must be set at all times.
@@ -557,6 +571,7 @@ final class Search_Console extends Module
 						'googlesitekit-data',
 						'googlesitekit-modules',
 						'googlesitekit-components',
+						'googlesitekit-modules-data',
 					),
 				)
 			),

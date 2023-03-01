@@ -153,7 +153,12 @@ describe( 'core/widgets key metrics', () => {
 
 				expect(
 					registry.select( CORE_WIDGETS ).getAnswerBasedMetrics()
-				).toEqual( [ 'kmTopPopularProducts' ] );
+				).toEqual( [
+					'kmTopPopularProducts',
+					'kmAnalyticsEngagedTrafficSource',
+					'kmSearchConsolePopularKeywords',
+					'kmAnalyticsTopTrafficSource',
+				] );
 			} );
 		} );
 	} );

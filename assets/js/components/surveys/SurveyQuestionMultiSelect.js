@@ -21,7 +21,7 @@
  */
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
-import keyBy from 'lodash/keyBy';
+import { keyBy } from 'lodash';
 
 /**
  * WordPress dependencies

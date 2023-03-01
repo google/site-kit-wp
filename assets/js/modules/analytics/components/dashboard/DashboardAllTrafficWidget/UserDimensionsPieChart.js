@@ -21,8 +21,7 @@
  */
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
-import isNull from 'lodash/isNull';
-import cloneDeep from 'lodash/cloneDeep';
+import { isNull, cloneDeep } from 'lodash';
 
 /**
  * WordPress dependencies
