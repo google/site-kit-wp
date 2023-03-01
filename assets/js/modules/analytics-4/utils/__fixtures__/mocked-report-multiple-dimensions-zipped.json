@@ -1,0 +1,120 @@
+{
+	"dimensionHeaders": [ { "name": "pagePath" }, { "name": "pageTitle" } ],
+	"metricHeaders": [ { "name": "totalUsers", "type": "TYPE_INTEGER" } ],
+	"rowCount": 12,
+	"rows": [
+		{
+			"dimensionValues": [
+				{ "value": "/test-post-1/" },
+				{ "value": "Test Post 1" }
+			],
+			"metricValues": [ { "value": "55" } ]
+		},
+		{
+			"dimensionValues": [
+				{ "value": "/test-post-2/" },
+				{ "value": "Test Post 2" }
+			],
+			"metricValues": [ { "value": "14" } ]
+		},
+		{
+			"dimensionValues": [
+				{ "value": "/test-post-3/" },
+				{ "value": "Test Post 3" }
+			],
+			"metricValues": [ { "value": "3" } ]
+		},
+		{
+			"dimensionValues": [
+				{ "value": "/test-post-4/" },
+				{ "value": "Test Post 4" }
+			],
+			"metricValues": [ { "value": "13" } ]
+		},
+		{
+			"dimensionValues": [
+				{ "value": "/test-post-5/" },
+				{ "value": "Test Post 5" }
+			],
+			"metricValues": [ { "value": "17" } ]
+		},
+		{
+			"dimensionValues": [
+				{ "value": "/test-post-6/" },
+				{ "value": "Test Post 6" }
+			],
+			"metricValues": [ { "value": "39" } ]
+		},
+		{
+			"dimensionValues": [
+				{ "value": "/test-post-7/" },
+				{ "value": "Test Post 7" }
+			],
+			"metricValues": [ { "value": "10" } ]
+		},
+		{
+			"dimensionValues": [
+				{ "value": "/test-post-8/" },
+				{ "value": "Test Post 8" }
+			],
+			"metricValues": [ { "value": "73" } ]
+		},
+		{
+			"dimensionValues": [
+				{ "value": "/test-post-9/" },
+				{ "value": "Test Post 9" }
+			],
+			"metricValues": [ { "value": "89" } ]
+		},
+		{
+			"dimensionValues": [
+				{ "value": "/test-post-10/" },
+				{ "value": "Test Post 10" }
+			],
+			"metricValues": [ { "value": "62" } ]
+		},
+		{
+			"dimensionValues": [
+				{ "value": "/test-post-11/" },
+				{ "value": "Test Post 11" }
+			],
+			"metricValues": [ { "value": "98" } ]
+		},
+		{
+			"dimensionValues": [
+				{ "value": "/test-post-12/" },
+				{ "value": "Test Post 12" }
+			],
+			"metricValues": [ { "value": "7" } ]
+		}
+	],
+	"totals": [
+		{
+			"dimensionValues": [
+				{ "value": "RESERVED_TOTAL" },
+				{ "value": "RESERVED_TOTAL" }
+			],
+			"metricValues": [ { "value": "7" } ]
+		}
+	],
+	"minimums": [
+		{
+			"dimensionValues": [
+				{ "value": "RESERVED_MIN" },
+				{ "value": "RESERVED_MIN" }
+			],
+			"metricValues": [ { "value": "55" } ]
+		}
+	],
+	"maximums": [
+		{
+			"dimensionValues": [
+				{ "value": "RESERVED_MAX" },
+				{ "value": "RESERVED_MAX" }
+			],
+			"metricValues": [ { "value": "7" } ]
+		}
+	],
+	"metadata": { "currencyCode": "USD", "timeZone": "America/Los_Angeles" },
+	"kind": "analyticsData#runReport"
+}

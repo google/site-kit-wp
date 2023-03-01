@@ -157,6 +157,63 @@ describe( 'modules/analytics-4 report', () => {
 			} );
 		} );
 
+		describe( 'getPageTitles', () => {
+			it( 'generates a map using a getReport call.', async () => {
+				const startDate = '2021-01-01';
+				const endDate = '2021-01-31';
+				const pagePaths = [ '/', '/one/', '/two/' ];
+
+				const pageTitlesArgs = {
+					startDate,
+					endDate,
+					dimensions: [ 'pagePath', 'pageTitle' ],
+					dimensionFilters: {
+						pagePath: pagePaths,
+					},
+					metrics: [
+						{
+							name: 'screenPageViews',
+						},
+					],
+					orderby: [
+						{
+							metric: { metricName: 'screenPageViews' },
+							desc: true,
+						},
+					],
+					limit: 15,
+				};
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetReport( fixtures.pageTitles, {
+						options: pageTitlesArgs,
+					} );
+
+				const report = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getReport( pageTitlesArgs );
+
+				await untilResolved( registry, MODULES_ANALYTICS_4 ).getReport(
+					pageTitlesArgs
+				);
+
+				registry
+					.select( MODULES_ANALYTICS_4 )
+					.getPageTitles( report, { startDate, endDate } );
+
+				const titles = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getPageTitles( report, { startDate, endDate } );
+
+				expect( titles ).toStrictEqual( {
+					'/': 'HOME',
+					'/one/': 'ONE',
+					'/two/': 'TWO',
+				} );
+			} );
+		} );
+
 		describe( 'isGatheringData', () => {
 			it( 'should return undefined if getReport is not resolved yet', async () => {
 				freezeFetch(
