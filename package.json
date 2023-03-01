@@ -206,6 +206,7 @@
 		"eslint-plugin-import": "^2.25.3",
 		"eslint-plugin-jest": "^22.21.0",
 		"eslint-plugin-jsdoc": "^30.5.1",
+		"eslint-plugin-lodash": "^7.4.0",
 		"eslint-plugin-react-hooks": "^4.2.0",
 		"eslint-plugin-sitekit": "file:packages/eslint-plugin",
 		"eslint-scope": "^5.1.0",
