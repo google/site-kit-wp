@@ -566,6 +566,35 @@ class REST_Modules_ControllerTest extends TestCase {
 		$this->assertEquals( 404, $response->get_status() );
 	}
 
+	public function test_data_available_rest_endpoint__valid_method__non_implementing_module() {
+		remove_all_filters( 'googlesitekit_rest_routes' );
+		$this->controller->register();
+		$this->register_rest_routes();
+
+		$this->setup_fake_module();
+
+		$request  = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/modules/fake-module/data/data-available' );
+		$response = rest_get_server()->dispatch( $request );
+
+		$this->assertEquals( 'invalid_module_slug', $response->get_data()['code'] );
+	}
+
+	public function test_data_available_rest_endpoint__valid_method__implementing_module() {
+		remove_all_filters( 'googlesitekit_rest_routes' );
+		$this->controller->register();
+		$this->register_rest_routes();
+
+		$fake_module_with_data_available = new FakeModule_WithDataAvailable( $this->context );
+		$this->set_available_modules( array( $fake_module_with_data_available ) );
+		$this->assertEmpty( $fake_module_with_data_available->is_data_available() );
+
+		$request  = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/modules/fake-module/data/data-available' );
+		$response = rest_get_server()->dispatch( $request );
+
+		$this->assertEquals( 200, $response->get_status() );
+		$this->assertTrue( $fake_module_with_data_available->is_data_available() );
+	}
+
 	public function test_datapoint_rest_endpoint__get_method() {
 		remove_all_filters( 'googlesitekit_rest_routes' );
 		$this->controller->register();
