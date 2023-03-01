@@ -117,9 +117,12 @@ class REST_User_Surveys_Controller {
 						$data         = $request->get_param( 'data' );
 
 						$response = $proxy->send_survey_trigger( $creds, $access_token, $data['triggerID'] );
-						$response = rest_ensure_response( $response );
 
-						return $response;
+						if ( ! is_wp_error( $response ) && ! empty( $response['survey_id'] ) ) {
+							$this->queue->enqueue( $response );
+						}
+
+						return rest_ensure_response( $response );
 					},
 					'permission_callback' => $can_authenticate,
 					'args'                => array(
@@ -147,9 +150,17 @@ class REST_User_Surveys_Controller {
 						$data         = $request->get_param( 'data' );
 
 						$response = $proxy->send_survey_event( $creds, $access_token, $data['session'], $data['event'] );
-						$response = rest_ensure_response( $response );
 
-						return $response;
+						if ( ! is_wp_error( $response ) ) {
+							if ( isset( $data['event']['completion_shown'] ) || isset( $data['event']['completion_shown'] ) ) {
+								$survey = $this->queue->find_by_session( $data['session'] );
+								if ( ! empty( $survey ) ) {
+									$this->dequeue( $survey );
+								}
+							}
+						}
+
+						return rest_ensure_response( $response );
 					},
 					'permission_callback' => $can_authenticate,
 					'args'                => array(
