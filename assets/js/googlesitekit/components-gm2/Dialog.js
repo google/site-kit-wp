@@ -135,13 +135,6 @@ const Dialog = ( {
 							) }
 							<footer className="mdc-dialog__actions">
 								<SpinnerButton
-									className={ classnames(
-										'googlesitekit-button-icon--spinner',
-										{
-											'googlesitekit-button-icon--spinner__running':
-												inProgress,
-										}
-									) }
 									onClick={ handleConfirm }
 									danger={ danger }
 									disabled={ inProgress }
