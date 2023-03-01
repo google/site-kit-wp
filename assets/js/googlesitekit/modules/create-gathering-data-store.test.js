@@ -70,6 +70,47 @@ describe( 'createGatheringDataStore', () => {
 		} );
 	} );
 
+	describe( 'actions', () => {
+		let store;
+
+		beforeEach( () => {
+			registry = createRegistry();
+			store = registry.registerStore(
+				STORE_NAME,
+				Data.combineStores(
+					createGatheringDataStore( MODULE_SLUG, {
+						storeName: STORE_NAME,
+						selectDataAvailability: () => {},
+					} )
+				)
+			);
+		} );
+
+		describe( 'receiveIsGatheringData', () => {
+			it( 'requires a boolean for the gathering state to receive', () => {
+				expect( () =>
+					registry.dispatch( STORE_NAME ).receiveIsGatheringData()
+				).toThrow( 'must be a boolean' );
+			} );
+
+			it( 'receives a `true` gathering state', () => {
+				expect( store.getState().gatheringData ).toBeUndefined();
+
+				registry.dispatch( STORE_NAME ).receiveIsGatheringData( true );
+
+				expect( store.getState().gatheringData ).toBe( true );
+			} );
+
+			it( 'receives a `false` gathering state', () => {
+				expect( store.getState().gatheringData ).toBeUndefined();
+
+				registry.dispatch( STORE_NAME ).receiveIsGatheringData( false );
+
+				expect( store.getState().gatheringData ).toBe( false );
+			} );
+		} );
+	} );
+
 	describe( 'selectors', () => {
 		beforeEach( () => {
 			registry = createRegistry();
