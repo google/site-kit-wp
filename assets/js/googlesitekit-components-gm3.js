@@ -35,6 +35,7 @@ export const {
 	Menu,
 	ProgressBar,
 	Radio,
+	SpinnerButton,
 	Switch,
 	Tooltip,
 } = Components;
