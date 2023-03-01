@@ -87,7 +87,6 @@ export const createGatheringDataStore = (
 	const actions = {
 		/**
 		 * Receives gathering data state.
-		 * Only used to simplify tests.
 		 *
 		 * @since n.e.x.t
 		 * @private
