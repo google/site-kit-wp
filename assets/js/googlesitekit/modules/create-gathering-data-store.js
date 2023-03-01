@@ -115,6 +115,7 @@ export const createGatheringDataStore = (
 				const dataAvailabityDetermined = () =>
 					registry.select( storeName ).selectDataAvailability() !==
 					undefined;
+
 				if ( dataAvailabityDetermined() ) {
 					return true;
 				}
