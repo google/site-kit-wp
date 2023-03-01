@@ -86,6 +86,16 @@ class REST_Modules_ControllerTest extends TestCase {
 		unset( $GLOBALS['wp_rest_server'] );
 	}
 
+	private function set_available_modules( $modules ) {
+		$map = array();
+
+		foreach ( $modules as $module ) {
+			$map[ $module->slug ] = $module;
+		}
+
+		$this->force_set_property( $this->modules, 'modules', $map );
+	}
+
 	private function setup_fake_module( $force_active = true ) {
 		$fake_module = new FakeModule( $this->context );
 		$fake_module->set_force_active( $force_active );
@@ -93,7 +103,7 @@ class REST_Modules_ControllerTest extends TestCase {
 		$fake_module_settings = new FakeModuleSettings( $this->options );
 		$fake_module_settings->register();
 
-		$this->force_set_property( $this->modules, 'modules', array( 'fake-module' => $fake_module ) );
+		$this->set_available_modules( array( $fake_module ) );
 	}
 
 	public function test_register() {
