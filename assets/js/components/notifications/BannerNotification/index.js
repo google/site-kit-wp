@@ -41,8 +41,8 @@ import { isURL } from '@wordpress/url';
 /*
  * Internal dependencies
  */
+import { Button, SpinnerButton } from 'googlesitekit-components';
 import Data from 'googlesitekit-data';
-import { Button } from 'googlesitekit-components';
 import GoogleLogoIcon from '../../../../svg/graphics/logo-g.svg';
 import { Cell, Grid, Row } from '../../../material-components';
 import {
@@ -67,7 +67,6 @@ import {
 } from './utils';
 import { stringToDate } from '../../../util/date-range/string-to-date';
 import { CORE_LOCATION } from '../../../googlesitekit/datastore/location/constants';
-import SpinnerButton from '../../SpinnerButton';
 const { useSelect, useDispatch } = Data;
 
 export const LEARN_MORE_TARGET = {

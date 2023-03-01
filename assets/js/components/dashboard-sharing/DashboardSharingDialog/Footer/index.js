@@ -30,6 +30,7 @@ import { useCallback, useState } from '@wordpress/element';
 /**
  * Internal dependencies
  */
+import { SpinnerButton } from 'googlesitekit-components';
 import Data from 'googlesitekit-data';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import { CORE_UI } from '../../../../googlesitekit/datastore/ui/constants';
@@ -43,7 +44,6 @@ import { trackEvent } from '../../../../util';
 import Link from '../../../Link';
 import Notice from './Notice';
 import ErrorText from '../../../ErrorText';
-import SpinnerButton from '../../../SpinnerButton';
 
 const { useSelect, useDispatch } = Data;
 
