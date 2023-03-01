@@ -57,6 +57,7 @@ class REST_User_Surveys_Controller {
 	 *
 	 * @param Authentication  $authentication Authentication instance.
 	 * @param Survey_Timeouts $timeouts       User timeouts setting.
+	 * @param Survey_Queue    $queue          Surveys queue.
 	 */
 	public function __construct( Authentication $authentication, Survey_Timeouts $timeouts, Survey_Queue $queue ) {
 		$this->authentication = $authentication;
@@ -252,7 +253,7 @@ class REST_User_Surveys_Controller {
 							)
 						);
 					},
-				),
+				)
 			),
 		);
 	}

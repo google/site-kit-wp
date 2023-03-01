@@ -94,6 +94,7 @@ class Survey_Queue extends Array_Setting {
 	 *
 	 * @since n.e.x.t
 	 *
+	 * @param array $session The current session object.
 	 * @return array|null A survey object if it has been found for the session, otherwise NULL.
 	 */
 	public function find_by_session( $session ) {
