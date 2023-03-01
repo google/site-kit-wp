@@ -253,7 +253,7 @@ describe( 'googlesitekit.api.cache', () => {
 			} );
 
 			describe( 'deleteItem', () => {
-				it( 'should delete data', async () => {
+				it( 'should delete Site Kit data for the current version without needing to specify the storage key prefix', async () => {
 					const didSave = await setItem( 'array', [ 1, 2, 3 ] );
 					expect( didSave ).toEqual( true );
 
@@ -261,6 +261,42 @@ describe( 'googlesitekit.api.cache', () => {
 					expect( didDelete ).toEqual( true );
 					expect( storageMechanism.removeItem ).toHaveBeenCalledWith(
 						`${ STORAGE_KEY_PREFIX }array`
+					);
+					expect(
+						Object.keys( storageMechanism.__STORE__ ).length
+					).toBe( 0 );
+				} );
+
+				it( 'should delete Site Kit data for the current version when the full key is specified', async () => {
+					const didSave = await setItem( 'array', [ 1, 2, 3 ] );
+					expect( didSave ).toEqual( true );
+
+					const didDelete = await deleteItem(
+						`${ STORAGE_KEY_PREFIX }array`
+					);
+					expect( didDelete ).toEqual( true );
+					expect( storageMechanism.removeItem ).toHaveBeenCalledWith(
+						`${ STORAGE_KEY_PREFIX }array`
+					);
+					expect(
+						Object.keys( storageMechanism.__STORE__ ).length
+					).toBe( 0 );
+				} );
+
+				it( 'should delete Site Kit data for an old version when the full key is specified', async () => {
+					// Simulate an item stored by a previous version of Site Kit.
+					const oldStorageKeyPrefix = `${ STORAGE_KEY_PREFIX_ROOT }1.0.0_xyz123_`;
+					storageMechanism.setItem(
+						`${ oldStorageKeyPrefix }array`,
+						[ 1, 2, 3 ]
+					);
+
+					const didDelete = await deleteItem(
+						`${ oldStorageKeyPrefix }array`
+					);
+					expect( didDelete ).toEqual( true );
+					expect( storageMechanism.removeItem ).toHaveBeenCalledWith(
+						`${ oldStorageKeyPrefix }array`
 					);
 					expect(
 						Object.keys( storageMechanism.__STORE__ ).length
