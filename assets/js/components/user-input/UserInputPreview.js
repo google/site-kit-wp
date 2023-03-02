@@ -31,8 +31,8 @@ import { Fragment, useEffect, useRef, useState } from '@wordpress/element';
 /**
  * Internal dependencies
  */
+import { ProgressBar, SpinnerButton } from 'googlesitekit-components';
 import Data from 'googlesitekit-data';
-import { ProgressBar } from 'googlesitekit-components';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
 import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
@@ -45,7 +45,6 @@ import {
 	USER_INPUT_MAX_ANSWERS,
 	USER_INPUT_CURRENTLY_EDITING_KEY,
 } from './util/constants';
-import SpinnerButton from '../SpinnerButton';
 import UserInputPreviewGroup from './UserInputPreviewGroup';
 import UserInputQuestionNotice from './UserInputQuestionNotice';
 import useQueryArg from '../../hooks/useQueryArg';

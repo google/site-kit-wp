@@ -41,8 +41,8 @@ import { isURL } from '@wordpress/url';
 /*
  * Internal dependencies
  */
+import { Button, SpinnerButton } from 'googlesitekit-components';
 import Data from 'googlesitekit-data';
-import { Button } from 'googlesitekit-components';
 import GoogleLogoIcon from '../../../../svg/graphics/logo-g.svg';
 import { Cell, Grid, Row } from '../../../material-components';
 import {
@@ -57,7 +57,6 @@ import ErrorIcon from '../../../../svg/icons/error.svg';
 import Link from '../../Link';
 import Badge from '../../Badge';
 import ModuleIcon from '../../ModuleIcon';
-import Spinner from '../../Spinner';
 import { getItem, setItem, deleteItem } from '../../../googlesitekit/api/cache';
 import { useBreakpoint } from '../../../hooks/useBreakpoint';
 import {
@@ -503,7 +502,7 @@ function BannerNotification( {
 								{ ctaComponent }
 
 								{ ctaLink && (
-									<Button
+									<SpinnerButton
 										className="googlesitekit-notification__cta"
 										href={ ctaLink }
 										target={ ctaTarget }
@@ -512,17 +511,14 @@ function BannerNotification( {
 											isAwaitingCTAResponse ||
 											isNavigatingToCTALink
 										}
+										isSaving={
+											isAwaitingCTAResponse ||
+											isNavigatingToCTALink
+										}
 									>
 										{ ctaLabel }
-									</Button>
+									</SpinnerButton>
 								) }
-
-								<Spinner
-									isSaving={
-										isAwaitingCTAResponse ||
-										isNavigatingToCTALink
-									}
-								/>
 
 								{ isDismissible &&
 									dismiss &&

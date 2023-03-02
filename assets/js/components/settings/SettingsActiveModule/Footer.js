@@ -32,15 +32,14 @@ import { Fragment, useCallback } from '@wordpress/element';
 /**
  * Internal dependencies
  */
+import { Button, SpinnerButton } from 'googlesitekit-components';
 import Data from 'googlesitekit-data';
-import { Button } from 'googlesitekit-components';
 import { FORM_SETUP } from '../../../modules/analytics/datastore/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import { Cell, Grid, Row } from '../../../material-components';
 import PencilIcon from '../../../../svg/icons/pencil.svg';
 import TrashIcon from '../../../../svg/icons/trash.svg';
-import Spinner from '../../Spinner';
 import Link from '../../Link';
 import { trackEvent } from '../../../util';
 import { clearCache } from '../../../googlesitekit/api/cache';
@@ -178,27 +177,23 @@ export default function Footer( props ) {
 	let secondaryColumn = null;
 
 	if ( isEditing || isSaving ) {
-		const closeButton = (
-			<Button onClick={ handleClose }>
-				{ __( 'Close', 'google-site-kit' ) }
-			</Button>
-		);
-		const submitButton = (
-			<Button
-				disabled={ isSaving || ! canSubmitChanges }
-				onClick={ handleConfirm }
-			>
-				{ isSaving
-					? __( 'Saving…', 'google-site-kit' )
-					: __( 'Confirm Changes', 'google-site-kit' ) }
-			</Button>
-		);
-
 		primaryColumn = (
 			<Fragment>
-				{ hasSettings && moduleConnected ? submitButton : closeButton }
-
-				<Spinner isSaving={ isSaving } />
+				{ hasSettings && moduleConnected ? (
+					<SpinnerButton
+						disabled={ isSaving || ! canSubmitChanges }
+						onClick={ handleConfirm }
+						isSaving={ isSaving }
+					>
+						{ isSaving
+							? __( 'Saving…', 'google-site-kit' )
+							: __( 'Confirm Changes', 'google-site-kit' ) }
+					</SpinnerButton>
+				) : (
+					<Button onClick={ handleClose }>
+						{ __( 'Close', 'google-site-kit' ) }
+					</Button>
+				) }
 
 				{ hasSettings && (
 					<Link

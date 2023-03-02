@@ -31,6 +31,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import { SpinnerButton } from 'googlesitekit-components';
 import Data from 'googlesitekit-data';
 import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
@@ -44,7 +45,6 @@ import {
 } from './util/constants';
 import ErrorNotice from '../ErrorNotice';
 import Link from '../Link';
-import SpinnerButton from '../SpinnerButton';
 import UserInputSelectOptions from './UserInputSelectOptions';
 import UserInputQuestionAuthor from './UserInputQuestionAuthor';
 import ChevronDownIcon from '../../../svg/icons/chevron-down.svg';
