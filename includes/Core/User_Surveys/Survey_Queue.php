@@ -36,7 +36,7 @@ class Survey_Queue extends Array_Setting {
 
 		// Do no add the survey if it is already in the queue.
 		foreach ( $surveys as $item ) {
-			if ( $item['survey_id'] === $usrvey['survey_id'] ) {
+			if ( $item['survey_id'] === $survey['survey_id'] ) {
 				return false;
 			}
 		}
@@ -62,7 +62,7 @@ class Survey_Queue extends Array_Setting {
 		$old_surveys = $this->get();
 		$new_surveys = array();
 		foreach ( $old_surveys as $item ) {
-			if ( $old_surveys['survey_id'] === $survey_id ) {
+			if ( $item['survey_id'] === $survey_id ) {
 				$survey = $item;
 			} else {
 				$new_surveys[] = $item;
@@ -71,7 +71,7 @@ class Survey_Queue extends Array_Setting {
 
 		// Update existing surveys list if we have found the survey we need to dequeue.
 		if ( ! is_null( $survey ) ) {
-			$this->set( $old_surveys );
+			$this->set( $new_surveys );
 		}
 
 		return $survey;
