@@ -25,10 +25,11 @@ import PropTypes from 'prop-types';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { Grid, Row, Cell } from '../../../../../material-components';
-import { CORE_MODULES } from '../../../../../googlesitekit/modules/datastore/constants';
-import { extractAnalyticsDashboardData } from '../../../../analytics/util';
-import GoogleChart from '../../../../../components/GoogleChart';
+import { Grid, Row, Cell } from '../../../../material-components';
+import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
+import { extractAnalyticsDashboardData } from '../../../analytics/util';
+import { extractAnalytics4DashboardData } from '../../../analytics-4/utils';
+import GoogleChart from '../../../../components/GoogleChart';
 const { useSelect } = Data;
 
 export default function AnalyticsStats( props ) {
@@ -40,21 +41,27 @@ export default function AnalyticsStats( props ) {
 		dataFormats,
 		statsColor,
 		gatheringData,
+		moduleSlug,
 	} = props;
 
 	const analyticsModuleConnected = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleConnected( 'analytics' )
+		select( CORE_MODULES ).isModuleConnected( moduleSlug )
 	);
 	const analyticsModuleActive = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleActive( 'analytics' )
+		select( CORE_MODULES ).isModuleActive( moduleSlug )
 	);
 
 	if ( ! analyticsModuleActive || ! analyticsModuleConnected ) {
 		return null;
 	}
 
+	const extractAnalyticsData =
+		moduleSlug === 'analytics-4'
+			? extractAnalytics4DashboardData
+			: extractAnalyticsDashboardData;
+
 	const googleChartData =
-		extractAnalyticsDashboardData(
+		extractAnalyticsData(
 			data,
 			selectedStats,
 			dateRangeLength,
@@ -124,13 +131,17 @@ export default function AnalyticsStats( props ) {
 }
 
 AnalyticsStats.propTypes = {
-	data: PropTypes.arrayOf( PropTypes.object ).isRequired,
+	data: PropTypes.oneOfType( [
+		PropTypes.arrayOf( PropTypes.object ),
+		PropTypes.object,
+	] ).isRequired,
 	dateRangeLength: PropTypes.number.isRequired,
 	selectedStats: PropTypes.number.isRequired,
 	dataLabels: PropTypes.arrayOf( PropTypes.string ).isRequired,
 	dataFormats: PropTypes.arrayOf( PropTypes.func ).isRequired,
 	statsColor: PropTypes.string.isRequired,
 	gatheringData: PropTypes.bool,
+	moduleSlug: PropTypes.string.isRequired,
 };
 
 AnalyticsStats.chartOptions = {
