@@ -100,7 +100,7 @@ const AdminBarSessionsGA4 = ( { WidgetReportError } ) => {
 	return (
 		<DataBlock
 			className="overview-total-sessions"
-			title={ __( 'Sessions', 'google-site-kit' ) }
+			title={ __( 'Total Sessions', 'google-site-kit' ) }
 			datapoint={ totalSessions }
 			change={ totalSessionsChange }
 			changeDataUnit="%"
