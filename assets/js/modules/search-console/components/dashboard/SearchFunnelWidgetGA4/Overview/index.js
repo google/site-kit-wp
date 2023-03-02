@@ -139,7 +139,7 @@ const Overview = ( {
 		( {
 			datapoint: ga4EngagedSessionsDatapoint,
 			change: ga4EngagedSessionsChange,
-		} = getDatapointAndChange( ga4Data, 1, 100 ) );
+		} = getDatapointAndChange( ga4Data, 1 ) );
 
 		ga4VisitorsDatapoint =
 			ga4VisitorsData?.totals?.[ 0 ]?.metricValues?.[ 0 ]?.value;
@@ -246,7 +246,6 @@ const Overview = ( {
 						stat: 4,
 						title: __( 'Engaged Sessions', 'google-site-kit' ),
 						datapoint: ga4EngagedSessionsDatapoint,
-						datapointUnit: '%',
 						change: ga4EngagedSessionsChange,
 						isGatheringData: isGA4GatheringData,
 					},
