@@ -66,6 +66,47 @@ export function getHeaderHeight( breakpoint ) {
 }
 
 /**
+ * Returns the height of the sticky WordPress admin bar, if present.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} breakpoint The current breakpoint.
+ * @return {number} The height of the sticky WordPress admin bar, if present.
+ */
+function getWordPressAdminBarHeight( breakpoint ) {
+	// WordPress admin bar is only sticky for breakpoints larger than BREAKPOINT_SMALL. If it's also not sticky then we can return a height of 0.
+	const wpAdminBar = document.querySelector( '#wpadminbar' );
+
+	if ( wpAdminBar && breakpoint !== BREAKPOINT_SMALL ) {
+		return wpAdminBar.offsetHeight;
+	}
+
+	return 0;
+}
+
+/**
+ * Returns the height of the sticky Site Kit header including the sticky WordPress admin bar when it's present.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} breakpoint The current breakpoint.
+ * @return {number} The height of the sticky Site Kit header including the sticky WordPress admin bar when it's present.
+ */
+function getGoogleSiteKitHeaderHeight( breakpoint ) {
+	// This function calculates the height of the sticky Site Kit header including the sticky WordPress admin bar when it's present.
+	const header = document.querySelector( '.googlesitekit-header' );
+	if ( header ) {
+		// If the breakpoint is BREAKPOINT_SMALL, the WordPress admin bar is not sticky and we can return the height of the Site Kit header.
+		// Otherwise, we use the value of the bottom of the Site Kit header's bounding box as this will take into account the sticky WordPress admin bar.
+		return breakpoint === BREAKPOINT_SMALL
+			? header.offsetHeight
+			: header.getBoundingClientRect().bottom;
+	}
+
+	return 0;
+}
+
+/**
  * Gets the height of the sticky header without the navigation bar.
  *
  * @since 1.95.0
@@ -81,24 +122,26 @@ export function getHeaderHeightWithoutNav( breakpoint ) {
 		'.react-joyride__overlay'
 	);
 
-	if ( ! isSiteKitHeaderSticky ) {
-		// If the Site Kit header is not sticky, we only need to calculate the height of the sticky WordPress admin bar.
-		// Furthermore, the WordPress admin bar is only sticky for breakpoints larger than BREAKPOINT_SMALL. If it's also not sticky then we can return a height of 0.
-		const wpAdminBar = document.querySelector( '#wpadminbar' );
+	if ( isSiteKitHeaderSticky ) {
+		headerHeight = getGoogleSiteKitHeaderHeight( breakpoint );
 
-		if ( wpAdminBar && breakpoint !== BREAKPOINT_SMALL ) {
-			return wpAdminBar.offsetHeight;
+		if ( headerHeight < 0 ) {
+			// If headerHeight is negative, it's an indicator that the Site Kit header is not sticky for some other reason (possibly some modification on the user's site),
+			// in which case we take the value of the sticky WordPress admin bar.
+			headerHeight = getWordPressAdminBarHeight( breakpoint );
 		}
-
-		return 0;
+	} else {
+		// If the Site Kit header is not sticky, we only need to calculate the height of the sticky WordPress admin bar.
+		headerHeight = getWordPressAdminBarHeight( breakpoint );
 	}
 
-	const header = document.querySelector( '.googlesitekit-header' );
-	if ( header ) {
-		headerHeight =
-			breakpoint !== BREAKPOINT_SMALL
-				? header.getBoundingClientRect().bottom
-				: header.offsetHeight;
+	// Provide a safety net in case something unexpected has happened.
+	if (
+		typeof headerHeight !== 'number' ||
+		Number.isNaN( headerHeight ) ||
+		headerHeight < 0
+	) {
+		return 0;
 	}
 
 	return headerHeight;
