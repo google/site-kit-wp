@@ -21,6 +21,16 @@
  */
 import invariant from 'invariant';
 
+/**
+ * Splits report data into segments for current and comparison ranges.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Array}  report               Report rows.
+ * @param {Object} args                 Additional arguments.
+ * @param {number} args.dateRangeLength Date range length of report segments.
+ * @return {Object} Object with keys for `compareRange` and `currentRange`.
+ */
 export function partitionAnalytics4Report( report, { dateRangeLength } ) {
 	invariant(
 		Array.isArray( report ),
