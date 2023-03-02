@@ -1,5 +1,6 @@
-// TODO: Headers, JSDoc and tests...
-
+/**
+ * External dependencies
+ */
 import invariant from 'invariant';
 
 export function partitionAnalytics4Report( report, { dateRangeLength } ) {
@@ -12,23 +13,28 @@ export function partitionAnalytics4Report( report, { dateRangeLength } ) {
 		'dateRangeLength must be a positive integer.'
 	);
 
-	const getRowsForDateRange = ( dateRange ) =>
-		report.filter(
-			( { dimensionValues } ) => dimensionValues[ 1 ].value === dateRange
+	const getRowsForDateRange = ( dateRange ) => {
+		// Filter the report to get only rows that match the given date range.
+		return report.filter(
+			( { dimensionValues: [ , dateValue ] } ) =>
+				dateValue.value === dateRange
 		);
+	};
 
 	// Use a negative date range length for reverse slicing.
-	const _dateRangeLength = -1 * dateRangeLength;
+	const reverseDateRangeLength = -1 * dateRangeLength;
 
-	return {
-		// The current range should always be sliced from the end.
-		currentRange:
-			getRowsForDateRange( 'date_range_0' ).slice( _dateRangeLength ),
-		// The compare range continues from where the current left off (slicing towards the start),
-		// and may be shorter (where older data is not available yet) which is fine.
-		compareRange: getRowsForDateRange( 'date_range_1' ).slice(
-			_dateRangeLength * 2,
-			_dateRangeLength
-		),
-	};
+	// Get the rows for the current date range and the compare date range.
+	// The current range should always be sliced from the end.
+	const currentRange = getRowsForDateRange( 'date_range_0' ).slice(
+		reverseDateRangeLength
+	);
+	// The compare range continues from where the current left off (slicing towards the start),
+	// and may be shorter (where older data is not available yet) which is fine.
+	const compareRange = getRowsForDateRange( 'date_range_1' ).slice(
+		reverseDateRangeLength * 2,
+		reverseDateRangeLength
+	);
+
+	return { currentRange, compareRange };
 }
