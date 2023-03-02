@@ -579,7 +579,7 @@ const baseActions = {
 				return;
 			}
 
-			if ( googleTagContainer.tagIds.includes( googleTagID ) ) {
+			if ( ! googleTagContainer.tagIds.includes( googleTagID ) ) {
 				yield baseActions.setHasMismatchedGoogleTagID( true );
 			}
 		} else {

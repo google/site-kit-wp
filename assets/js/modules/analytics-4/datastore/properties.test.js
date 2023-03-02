@@ -886,7 +886,7 @@ describe( 'modules/analytics-4 properties', () => {
 				] );
 
 				const measurementID = 'G-2B7M8YQ1K6';
-				const googleTagID = 'GT-NBQN9V2';
+				const googleTagID = 'GT-NBQN9V3';
 				const containerMock = fixtures.container[ measurementID ];
 
 				const { googleTagAccountID, googleTagContainerID } =
