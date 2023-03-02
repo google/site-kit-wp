@@ -36,7 +36,7 @@ import {
 	getChartDifferenceArrow,
 	calculateDifferenceBetweenChartValues,
 } from '../../../util';
-import { partitionReport } from '../../../util/partition-report';
+import { partitionAnalytics4Report } from './partition-report';
 import parseDimensionStringToDate from '../../analytics/util/parseDimensionStringToDate';
 
 /**
@@ -124,15 +124,31 @@ export function extractAnalytics4DashboardData(
 				day;
 
 			if ( i > rowLength ) {
-				const emptyWeek = {
-					dimensionValues: [
-						{
-							value: dateString,
-						},
-					],
-					metricValues: [ { value: 0 }, { value: 0 } ],
-				};
-				rows.unshift( emptyWeek );
+				const emptyDay = [
+					{
+						dimensionValues: [
+							{
+								value: dateString,
+							},
+							{
+								value: 'date_range_0',
+							},
+						],
+						metricValues: [ { value: 0 }, { value: 0 } ],
+					},
+					{
+						dimensionValues: [
+							{
+								value: dateString,
+							},
+							{
+								value: 'date_range_1',
+							},
+						],
+						metricValues: [ { value: 0 }, { value: 0 } ],
+					},
+				];
+				rows.unshift( ...emptyDay );
 			}
 			date.setDate( date.getDate() - 1 );
 		}
@@ -156,7 +172,7 @@ export function extractAnalytics4DashboardData(
 		],
 	];
 
-	const { compareRange, currentRange } = partitionReport( rows, {
+	const { compareRange, currentRange } = partitionAnalytics4Report( rows, {
 		dateRangeLength: days,
 	} );
 	const lastMonthData = reduceAnalyticsRowsData(

@@ -96,6 +96,13 @@ const ga4ReportArgs = [
 		dimensionFilters: {
 			sessionDefaultChannelGrouping: [ 'Organic Search' ],
 		},
+		orderby: [
+			{
+				dimension: {
+					dimensionName: 'date',
+				},
+			},
+		],
 	},
 	{
 		startDate: '2021-09-15',
@@ -115,7 +122,15 @@ const ga4ReportArgs = [
 		dimensionFilters: {
 			sessionDefaultChannelGrouping: [ 'Organic Search' ],
 		},
+		orderby: [
+			{
+				dimension: {
+					dimensionName: 'date',
+				},
+			},
+		],
 	},
+	/* This is a duplicate of the one above and should be removed.
 	{
 		startDate: '2021-09-15',
 		endDate: '2021-10-12',
@@ -135,6 +150,7 @@ const ga4ReportArgs = [
 			sessionDefaultChannelGrouping: [ 'Organic Search' ],
 		},
 	},
+	*/
 	{
 		dimensions: [
 			{
