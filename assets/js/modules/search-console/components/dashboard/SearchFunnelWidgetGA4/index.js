@@ -464,7 +464,7 @@ const SearchFunnelWidgetGA4 = ( { Widget, WidgetReportError } ) => {
 						metrics={ SearchFunnelWidgetGA4.metrics }
 						dataLabels={ [
 							__( 'Conversions', 'google-site-kit' ),
-							__( 'Engaged Sessions %', 'google-site-kit' ),
+							__( 'Engaged Sessions', 'google-site-kit' ),
 						] }
 						dataFormats={ [
 							( x ) => parseFloat( x ).toLocaleString(),
