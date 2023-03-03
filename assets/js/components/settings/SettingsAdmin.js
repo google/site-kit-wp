@@ -41,6 +41,7 @@ import { useFeature } from '../../hooks/useFeature';
 import { trackEvent } from '../../util';
 import SettingsPlugin from './SettingsPlugin';
 import useViewContext from '../../hooks/useViewContext';
+import SettingsKeyMetrics from './SettingsKeyMetrics';
 const { useSelect, useDispatch } = Data;
 
 export default function SettingsAdmin() {
@@ -88,6 +89,7 @@ export default function SettingsAdmin() {
 						>
 							<div className="googlesitekit-settings-module googlesitekit-settings-module--active googlesitekit-settings-user-input">
 								<Grid>
+									<SettingsKeyMetrics />
 									<UserInputPreview
 										goTo={ goTo }
 										noHeader
