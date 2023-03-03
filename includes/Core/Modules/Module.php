@@ -849,6 +849,25 @@ abstract class Module {
 	}
 
 	/**
+	 * Determines whether the current request is for shared data.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param Data_Request $data Data request object.
+	 * @return bool TRUE if the request is for shared data, otherwise FALSE.
+	 */
+	protected function is_shared_data_request( Data_Request $data ) {
+		$datapoint    = $this->get_datapoint_definition( "{$data->method}:{$data->datapoint}" );
+		$oauth_client = $this->get_oauth_client_for_datapoint( $datapoint );
+
+		if ( $this->authentication->get_oauth_client() !== $oauth_client ) {
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
 	 * Determines whether the current module is forced to be active or not.
 	 *
 	 * @since 1.49.0
