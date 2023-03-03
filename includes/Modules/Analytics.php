@@ -565,7 +565,7 @@ final class Analytics extends Module
 
 					if ( ! empty( $dimensions ) ) {
 						try {
-							$this->validate_report_dimensions( $dimensions );
+							$this->validate_shared_report_dimensions( $dimensions );
 						} catch ( Invalid_Report_Dimensions_Exception $exception ) {
 							return new WP_Error(
 								'invalid_analytics_report_dimensions',
@@ -672,7 +672,7 @@ final class Analytics extends Module
 
 					if ( ! empty( $metrics ) ) {
 						try {
-							$this->validate_report_metrics( $metrics );
+							$this->validate_shared_report_metrics( $metrics );
 						} catch ( Invalid_Report_Metrics_Exception $exception ) {
 							return new WP_Error(
 								'invalid_analytics_report_metrics',
@@ -1385,7 +1385,7 @@ final class Analytics extends Module
 	 * @param Google_Service_AnalyticsReporting_Metric[] $metrics The metrics to validate.
 	 * @throws Invalid_Report_Metrics_Exception Thrown if the metrics are invalid.
 	 */
-	protected function validate_report_metrics( $metrics ) {
+	protected function validate_shared_report_metrics( $metrics ) {
 		if ( false === $this->is_using_shared_credentials ) {
 			return;
 		}
@@ -1449,7 +1449,7 @@ final class Analytics extends Module
 	 * @param Google_Service_AnalyticsReporting_Dimension[] $dimensions The dimensions to validate.
 	 * @throws Invalid_Report_Dimensions_Exception Thrown if the dimensions are invalid.
 	 */
-	protected function validate_report_dimensions( $dimensions ) {
+	protected function validate_shared_report_dimensions( $dimensions ) {
 		if ( false === $this->is_using_shared_credentials ) {
 			return;
 		}
