@@ -983,6 +983,22 @@ final class Analytics_4 extends Module
 	}
 
 	/**
+	 * Get the Google Analytics 4 tag ID.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string Google Analytics 4 tag ID.
+	 */
+	public function get_tag_id() {
+		$settings = $this->get_settings()->get();
+
+		if ( Feature_Flags::enabled( 'gteSupport' ) && ! empty( $settings['googleTagID'] ) ) {
+			return $settings['googleTagID'];
+		}
+		return $settings['measurementID'];
+	}
+
+	/**
 	 * Creates and executes a new Analytics 4 report request.
 	 *
 	 * @since 1.93.0
