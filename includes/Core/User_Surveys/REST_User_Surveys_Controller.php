@@ -117,7 +117,6 @@ class REST_User_Surveys_Controller {
 						$data         = $request->get_param( 'data' );
 
 						$response = $proxy->send_survey_trigger( $creds, $access_token, $data['triggerID'] );
-
 						if ( ! is_wp_error( $response ) && ! empty( $response['survey_id'] ) ) {
 							$this->queue->enqueue( $response );
 						}
@@ -157,7 +156,7 @@ class REST_User_Surveys_Controller {
 							if ( $is_completion_shown || $is_survey_closed ) {
 								$survey = $this->queue->find_by_session( $data['session'] );
 								if ( ! empty( $survey ) ) {
-									$this->dequeue( $survey );
+									$this->queue->dequeue( $survey['survey_id'] );
 								}
 							}
 

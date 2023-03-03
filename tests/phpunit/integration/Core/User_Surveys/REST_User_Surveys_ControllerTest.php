@@ -17,13 +17,14 @@ use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\User_Surveys\REST_User_Surveys_Controller;
 use Google\Site_Kit\Core\User_Surveys\Survey_Timeouts;
 use Google\Site_Kit\Core\User_Surveys\Survey_Queue;
+use Google\Site_Kit\Tests\Fake_Site_Connection_Trait;
 use Google\Site_Kit\Tests\RestTestTrait;
 use Google\Site_Kit\Tests\TestCase;
 use WP_REST_Request;
 
 class REST_User_Surveys_ControllerTest extends TestCase {
 
-	use RestTestTrait;
+	use RestTestTrait, Fake_Site_Connection_Trait;
 
 	/**
 	 * REST_User_Surveys_Controller object.
@@ -46,6 +47,11 @@ class REST_User_Surveys_ControllerTest extends TestCase {
 	 */
 	private $queue;
 
+	/**
+	 * @var User_Options
+	 */
+	private $user_options;
+
 	public function set_up() {
 		parent::set_up();
 
@@ -54,15 +60,14 @@ class REST_User_Surveys_ControllerTest extends TestCase {
 
 		$context        = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$authentication = new Authentication( $context );
-		$user_options   = new User_Options( $context, $user->ID );
-
 		$authentication
 			->get_oauth_client()
 			->set_token( array( 'access_token' => 'valid-auth-token' ) );
 
-		$this->timeouts   = new Survey_Timeouts( $user_options );
-		$this->queue      = new Survey_Queue( $user_options );
-		$this->controller = new REST_User_Surveys_Controller( $authentication, $this->timeouts, $this->queue );
+		$this->user_options = new User_Options( $context, $user->ID );
+		$this->timeouts     = new Survey_Timeouts( $this->user_options );
+		$this->queue        = new Survey_Queue( $this->user_options );
+		$this->controller   = new REST_User_Surveys_Controller( $authentication, $this->timeouts, $this->queue );
 	}
 
 	public function tear_down() {
@@ -118,6 +123,139 @@ class REST_User_Surveys_ControllerTest extends TestCase {
 		$this->assertEquals( \WP_REST_Server::READABLE, $args[0]['methods'] );
 		$this->assertTrue( is_callable( $args[0]['callback'] ) );
 		$this->assertTrue( is_callable( $args[0]['permission_callback'] ) );
+	}
+
+	protected function send_request( $endpoint, $data, $response ) {
+		remove_all_filters( 'googlesitekit_rest_routes' );
+		$this->controller->register();
+		$this->register_rest_routes();
+
+		$this->fake_proxy_site_connection();
+		$this->subscribe_to_wp_http_requests(
+			function() {},
+			array(
+				'response' => array( 'code' => 200 ),
+				'headers'  => array(),
+				'body'     => wp_json_encode( $response ),
+			)
+		);
+
+		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/user/data/' . $endpoint );
+		$request->set_body_params(
+			array(
+				'data' => $data,
+			)
+		);
+
+		return rest_get_server()->dispatch( $request );
+	}
+
+	public function test_survey_trigger() {
+		$survey = array(
+			'survey_id' => 'test_survey',
+			'session'   => array(
+				'session_id'    => 'test_session_id',
+				'session_token' => 'test_session_token',
+			),
+			'payload'   => array(
+				'questions' => array(),
+			),
+		);
+
+		$response = $this->send_request(
+			'survey-trigger',
+			array( 'triggerID' => 'test_trigger' ),
+			$survey
+		);
+
+		$this->assertEqualSets( $survey, $response->get_data() );
+		$this->assertEqualSets( $survey, $this->queue->front() );
+	}
+
+	public function test_survey_event_survey_shown() {
+		$this->send_request(
+			'survey-event',
+			array(
+				'session' => array(
+					'session_id'    => 'test_session_id',
+					'session_token' => 'test_session_token',
+				),
+				'event'   => array(
+					'survey_shown' => array(),
+				),
+			),
+			array()
+		);
+
+		$this->assertEquals(
+			array( '__global' ),
+			$this->timeouts->get_survey_timeouts()
+		);
+	}
+
+	public function data_event_types() {
+		return array(
+			'survey closed'    => array( 'survey_closed' ),
+			'completion shown' => array( 'completion_shown' ),
+		);
+	}
+
+	/**
+	 * @dataProvider data_event_types
+	 */
+	public function test_survey_event_completion( $event ) {
+		$survey1 = array(
+			'survey_id' => 'test_survey_1',
+			'payload'   => array(),
+			'session'   => array(
+				'session_id'    => 'test_session_id_1',
+				'session_token' => 'test_session_token_1',
+			),
+		);
+		$survey2 = array(
+			'survey_id' => 'test_survey_2',
+			'payload'   => array(),
+			'session'   => array(
+				'session_id'    => 'test_session_id_2',
+				'session_token' => 'test_session_token_2',
+			),
+		);
+		$survey3 = array(
+			'survey_id' => 'test_survey_3',
+			'payload'   => array(),
+			'session'   => array(
+				'session_id'    => 'test_session_id_3',
+				'session_token' => 'test_session_token_3',
+			),
+		);
+
+		$this->user_options->set(
+			Survey_Queue::OPTION,
+			array(
+				$survey1,
+				$survey2,
+				$survey3,
+			)
+		);
+
+		$resp = $this->send_request(
+			'survey-event',
+			array(
+				'session' => array(
+					'session_id'    => 'test_session_id_2',
+					'session_token' => 'test_session_token_2',
+				),
+				'event'   => array(
+					$event => array(),
+				),
+			),
+			array()
+		);
+
+		$this->assertEquals(
+			array( $survey1, $survey3 ),
+			$this->user_options->get( Survey_Queue::OPTION )
+		);
 	}
 
 	public function test_survey_timeouts_route() {
