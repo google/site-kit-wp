@@ -38,6 +38,7 @@ import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import useViewOnly from '../../hooks/useViewOnly';
 import ZeroDataStateNotifications from './ZeroDataStateNotifications';
 import EnableAutoUpdateBannerNotification from './EnableAutoUpdateBannerNotification';
+import GoogleTagIDMismatchNotification from './GoogleTagIDMismatchNotification';
 
 const { useSelect } = Data;
 
@@ -45,6 +46,7 @@ export default function BannerNotifications() {
 	const dashboardSharingEnabled = useFeature( 'dashboardSharing' );
 	const userInputEnabled = useFeature( 'userInput' );
 	const ga4ActivationBannerEnabled = useFeature( 'ga4ActivationBanner' );
+	const gteSupportEnabled = useFeature( 'gteSupport' );
 
 	const viewOnly = useViewOnly();
 
@@ -78,6 +80,7 @@ export default function BannerNotifications() {
 						<UserInputPromptBannerNotification />
 					) }
 					{ adSenseModuleActive && <AdSenseAlerts /> }
+					{ gteSupportEnabled && <GoogleTagIDMismatchNotification /> }
 				</Fragment>
 			) }
 		</Fragment>

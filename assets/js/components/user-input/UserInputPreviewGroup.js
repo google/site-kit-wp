@@ -31,9 +31,11 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import { SpinnerButton } from 'googlesitekit-components';
 import Data from 'googlesitekit-data';
 import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
 import { trackEvent } from '../../util';
 import { getErrorMessageForAnswer } from './util/validation';
 import useViewContext from '../../hooks/useViewContext';
@@ -43,9 +45,9 @@ import {
 } from './util/constants';
 import ErrorNotice from '../ErrorNotice';
 import Link from '../Link';
-import SpinnerButton from '../SpinnerButton';
 import UserInputSelectOptions from './UserInputSelectOptions';
 import UserInputQuestionAuthor from './UserInputQuestionAuthor';
+import ChevronDownIcon from '../../../svg/icons/chevron-down.svg';
 
 const { useSelect, useDispatch } = Data;
 
@@ -59,6 +61,9 @@ export default function UserInputPreviewGroup( {
 	showIndividualCTAs = false,
 } ) {
 	const viewContext = useViewContext();
+	const isNavigating = useSelect( ( select ) =>
+		select( CORE_LOCATION ).isNavigating()
+	);
 	const currentlyEditingSlug = useSelect( ( select ) =>
 		select( CORE_UI ).getValue( USER_INPUT_CURRENTLY_EDITING_KEY )
 	);
@@ -80,6 +85,7 @@ export default function UserInputPreviewGroup( {
 		useDispatch( CORE_USER );
 
 	const isEditing = currentlyEditingSlug === slug;
+	const isScreenLoading = isSavingSettings || isNavigating;
 
 	const toggleEditMode = useCallback( () => {
 		if ( ! isEditing ) {
@@ -106,6 +112,40 @@ export default function UserInputPreviewGroup( {
 		}
 	}, [ saveUserInputSettings, toggleEditMode ] );
 
+	const handleOnEditClick = useCallback( async () => {
+		if ( showIndividualCTAs ) {
+			if (
+				isScreenLoading ||
+				( !! currentlyEditingSlug && ! isEditing )
+			) {
+				return;
+			}
+
+			// Do not preserve changes if preview group is collapsed with individual CTAs.
+			if ( isEditing ) {
+				await resetUserInputSettings();
+			}
+		}
+
+		toggleEditMode();
+	}, [
+		showIndividualCTAs,
+		isScreenLoading,
+		currentlyEditingSlug,
+		isEditing,
+		resetUserInputSettings,
+		toggleEditMode,
+	] );
+
+	const handleOnCancelClick = useCallback( async () => {
+		if ( isScreenLoading ) {
+			return;
+		}
+
+		await resetUserInputSettings();
+		toggleEditMode();
+	}, [ isScreenLoading, resetUserInputSettings, toggleEditMode ] );
+
 	return (
 		<div
 			className={ classnames( 'googlesitekit-user-input__preview-group', {
@@ -117,30 +157,15 @@ export default function UserInputPreviewGroup( {
 			<div className="googlesitekit-user-input__preview-group-title">
 				<p>{ title }</p>
 				<Link
-					onClick={ async () => {
-						if ( showIndividualCTAs ) {
-							if (
-								isSavingSettings ||
-								( !! currentlyEditingSlug && ! isEditing )
-							) {
-								return;
-							}
-
-							// Do not preserve changes if preview group is collapsed with individual CTAs.
-							if ( isEditing ) {
-								await resetUserInputSettings();
-							}
-						}
-
-						toggleEditMode();
-					} }
+					onClick={ handleOnEditClick }
 					disabled={
-						showIndividualCTAs &&
-						( isSavingSettings ||
-							( !! currentlyEditingSlug && ! isEditing ) )
+						isScreenLoading ||
+						( !! currentlyEditingSlug && ! isEditing )
 					}
 				>
 					{ __( 'Edit', 'google-site-kit' ) }
+
+					<ChevronDownIcon width={ 20 } height={ 20 } />
 				</Link>
 			</div>
 
@@ -191,7 +216,7 @@ export default function UserInputPreviewGroup( {
 											? submitChanges
 											: undefined
 									}
-									isSaving={ isSavingSettings }
+									isSaving={ isScreenLoading }
 								>
 									{ __(
 										'Confirm Changes',
@@ -199,15 +224,8 @@ export default function UserInputPreviewGroup( {
 									) }
 								</SpinnerButton>
 								<Link
-									disabled={ isSavingSettings }
-									onClick={ async () => {
-										if ( isSavingSettings ) {
-											return;
-										}
-
-										await resetUserInputSettings();
-										toggleEditMode();
-									} }
+									disabled={ isScreenLoading }
+									onClick={ handleOnCancelClick }
 								>
 									{ __( 'Cancel', 'google-site-kit' ) }
 								</Link>

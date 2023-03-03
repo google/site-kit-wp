@@ -19,8 +19,7 @@
 /**
  * External dependencies
  */
-import each from 'lodash/each';
-import round from 'lodash/round';
+import { each, round } from 'lodash';
 
 /**
  * Internal dependencies

@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { provideModules } from '../../../../tests/js/utils';
+import { provideModules, provideSiteInfo } from '../../../../tests/js/utils';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { MODULES_SEARCH_CONSOLE } from '../../modules/search-console/datastore/constants';
 import { MODULES_ANALYTICS } from '../../modules/analytics/datastore/constants';
@@ -124,7 +124,15 @@ export const setupBaseRegistry = ( registry, args ) => {
 			active: true,
 			connected: true,
 		},
+		{
+			slug: 'analytics-4',
+			active: true,
+			connected: true,
+		},
 	] );
+
+	// Set some site information.
+	provideSiteInfo( registry );
 
 	// Call story-specific setup.
 	if ( typeof args?.setupRegistry === 'function' ) {

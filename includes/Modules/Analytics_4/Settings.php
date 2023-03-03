@@ -67,17 +67,18 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 	 */
 	protected function get_default() {
 		return array(
-			'ownerID'              => 0,
+			'ownerID'                 => 0,
 			// TODO: These can be uncommented when Analytics and Analytics 4 modules are officially separated.
 			/* 'accountID'       		=> '', */ // phpcs:ignore Squiz.PHP.CommentedOutCode.Found
 			/* 'adsConversionID' 		=> '', */ // phpcs:ignore Squiz.PHP.CommentedOutCode.Found
-			'propertyID'           => '',
-			'webDataStreamID'      => '',
-			'measurementID'        => '',
-			'useSnippet'           => true,
-			'googleTagID'          => '',
-			'googleTagAccountID'   => '',
-			'googleTagContainerID' => '',
+			'propertyID'              => '',
+			'webDataStreamID'         => '',
+			'measurementID'           => '',
+			'useSnippet'              => true,
+			'googleTagID'             => '',
+			'googleTagAccountID'      => '',
+			'googleTagContainerID'    => '',
+			'googleTagLastSyncedAtMs' => 0,
 		);
 	}
 

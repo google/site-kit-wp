@@ -17,26 +17,33 @@
  */
 
 /**
+ * External dependencies
+ */
+import { isEmpty } from 'lodash';
+
+/**
  * Checks whether the report data has only zero values.
  *
- * @since n.e.x.t
+ * @since 1.95.0
  *
  * @param {Object} report Report data object.
- * @return {(boolean|undefined)} Returns TRUE if the report data has only zero values, FALSE if there is at least one non-zero value, or undefined if the report data is not resolved yet.
+ * @return {(boolean|undefined)} Returns TRUE if the report data is empty or has only zero values, FALSE if there is at least one non-zero value, or undefined if the report data is not resolved yet.
  */
 export function isZeroReport( report ) {
 	if ( report === undefined ) {
 		return undefined;
 	}
 
+	// If there is no rows array, no totals array, or totals is an array of empty objects, this is an empty report.
 	if (
-		! report?.rows?.length ||
-		! report?.totals?.[ 0 ]?.metricValues?.length
+		! report?.rows ||
+		! report?.totals ||
+		report?.totals?.every( isEmpty )
 	) {
 		return true;
 	}
 
-	// false means there _is_ value report data
+	// false means there _is_ some report data
 	return ! report.totals.some( ( totals ) =>
 		totals.metricValues.some( ( { value } ) => value > 0 )
 	);

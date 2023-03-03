@@ -15,6 +15,7 @@ use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Dismissals\Dismissed_Items;
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_Sharing_Settings;
+use Google\Site_Kit\Core\Modules\Module_With_Data_Available_State;
 use Google\Site_Kit\Core\Modules\Module_With_Owner;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Modules\Module_With_Settings;
@@ -25,6 +26,7 @@ use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Modules\Analytics_4;
 use Google\Site_Kit\Modules\Analytics_4\Settings;
+use Google\Site_Kit\Tests\Core\Modules\Module_With_Data_Available_State_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Owner_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Scopes_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Service_Entity_ContractTests;
@@ -51,6 +53,7 @@ class Analytics_4Test extends TestCase {
 	use Module_With_Owner_ContractTests;
 	use Module_With_Service_Entity_ContractTests;
 	use UserAuthenticationTrait;
+	use Module_With_Data_Available_State_ContractTests;
 
 	/**
 	 * Context object.
@@ -185,15 +188,16 @@ class Analytics_4Test extends TestCase {
 
 		$this->assertEqualSetsWithIndex(
 			array(
-				'accountID'            => $account_id,
-				'propertyID'           => $property_id,
-				'webDataStreamID'      => $webdatastream_id,
-				'measurementID'        => $measurement_id,
-				'ownerID'              => 0,
-				'useSnippet'           => true,
-				'googleTagID'          => '',
-				'googleTagAccountID'   => '',
-				'googleTagContainerID' => '',
+				'accountID'               => $account_id,
+				'propertyID'              => $property_id,
+				'webDataStreamID'         => $webdatastream_id,
+				'measurementID'           => $measurement_id,
+				'ownerID'                 => 0,
+				'useSnippet'              => true,
+				'googleTagID'             => '',
+				'googleTagAccountID'      => '',
+				'googleTagContainerID'    => '',
+				'googleTagLastSyncedAtMs' => 0,
 			),
 			$options->get( Settings::OPTION )
 		);
@@ -279,15 +283,16 @@ class Analytics_4Test extends TestCase {
 
 		$this->assertEqualSetsWithIndex(
 			array(
-				'accountID'            => $account_id,
-				'propertyID'           => '',
-				'webDataStreamID'      => '',
-				'measurementID'        => '',
-				'ownerID'              => 0,
-				'useSnippet'           => true,
-				'googleTagID'          => '',
-				'googleTagAccountID'   => '',
-				'googleTagContainerID' => '',
+				'accountID'               => $account_id,
+				'propertyID'              => '',
+				'webDataStreamID'         => '',
+				'measurementID'           => '',
+				'ownerID'                 => 0,
+				'useSnippet'              => true,
+				'googleTagID'             => '',
+				'googleTagAccountID'      => '',
+				'googleTagContainerID'    => '',
+				'googleTagLastSyncedAtMs' => 0,
 			),
 			$options->get( Settings::OPTION )
 		);
@@ -296,15 +301,16 @@ class Analytics_4Test extends TestCase {
 
 		$this->assertEqualSetsWithIndex(
 			array(
-				'accountID'            => $account_id,
-				'propertyID'           => $property_id,
-				'webDataStreamID'      => $webdatastream_id,
-				'measurementID'        => $measurement_id,
-				'ownerID'              => 0,
-				'useSnippet'           => true,
-				'googleTagID'          => 'GT-123',
-				'googleTagAccountID'   => $google_tag_account_id,
-				'googleTagContainerID' => $google_tag_container_id,
+				'accountID'               => $account_id,
+				'propertyID'              => $property_id,
+				'webDataStreamID'         => $webdatastream_id,
+				'measurementID'           => $measurement_id,
+				'ownerID'                 => 0,
+				'useSnippet'              => true,
+				'googleTagID'             => 'GT-123',
+				'googleTagAccountID'      => $google_tag_account_id,
+				'googleTagContainerID'    => $google_tag_container_id,
+				'googleTagLastSyncedAtMs' => 0,
 			),
 			$options->get( Settings::OPTION )
 		);
@@ -350,14 +356,33 @@ class Analytics_4Test extends TestCase {
 		$this->assertTrue( $analytics->is_connected() );
 	}
 
+	public function test_data_available_reset_on_measurement_id_change() {
+		$this->analytics->register();
+		$this->analytics->get_settings()->merge(
+			array(
+				'measurementID' => 'A1B2C3D4E5',
+			)
+		);
+		$this->analytics->set_data_available( true );
+		$this->analytics->get_settings()->merge(
+			array(
+				'measurementID' => 'F6G7H8I9J0',
+			)
+		);
+
+		$this->assertFalse( $this->analytics->is_data_available() );
+	}
+
 	public function test_on_deactivation() {
 		$options = new Options( $this->context );
 		$options->set( Settings::OPTION, 'test-value' );
 
 		$analytics = new Analytics_4( $this->context, $options );
+		$analytics->set_data_available();
 		$analytics->on_deactivation();
 
 		$this->assertOptionNotExists( Settings::OPTION );
+		$this->assertFalse( $analytics->is_data_available() );
 	}
 
 	public function test_get_datapoints() {
@@ -1397,6 +1422,13 @@ class Analytics_4Test extends TestCase {
 				'propertyID' => '123456789',
 			)
 		);
+	}
+
+	/**
+	 * @return Module_With_Data_Available_State
+	 */
+	protected function get_module_with_data_available_state() {
+		return new Analytics_4( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 	}
 
 }

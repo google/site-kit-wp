@@ -19,12 +19,13 @@
 /**
  * Internal dependencies
  */
-import { getAnalytics4MockResponse } from './data-mock';
+import { getAnalytics4MockResponse, STRATEGY_ZIP } from './data-mock';
 import mockedReportResponse from './__fixtures__/mocked-report.json';
 import mockedReportMultipleDistinctDateRangesResponse from './__fixtures__/mocked-report-multiple-distinct-date-ranges.json';
 import mockedReportMultipleOverlappingDateRangesResponse from './__fixtures__/mocked-report-multiple-overlapping-date-ranges.json';
 import mockedReportFixedValueDimensionResponse from './__fixtures__/mocked-report-fixed-value-dimension.json';
-import mockedReportMultipleDimensionResponse from './__fixtures__/mocked-report-multiple-dimensions.json';
+import mockedReportMultipleDimensionsCartesianResponse from './__fixtures__/mocked-report-multiple-dimensions-cartesian.json';
+import mockedReportMultipleDimensionsZippedResponse from './__fixtures__/mocked-report-multiple-dimensions-zipped.json';
 import mockedReportOrderByMetricAscendingResponse from './__fixtures__/mocked-report-order-by-metric-ascending.json';
 import mockedReportOrderByMetricDescendingResponse from './__fixtures__/mocked-report-order-by-metric-descending.json';
 import mockedReportOrderByDimensionAscendingResponse from './__fixtures__/mocked-report-order-by-dimension-ascending.json';
@@ -147,7 +148,8 @@ describe( 'getAnalytics4MockResponse', () => {
 		expect( report.rows ).toHaveLength( 20 );
 	} );
 
-	it( 'generates a valid report using a multiple dimensions', () => {
+	it( 'generates a valid report using the cartesian product of multiple dimensions', () => {
+		// Note that the cartesian strategy is the default for mock reports.
 		const report = getAnalytics4MockResponse( {
 			startDate: '2020-12-01',
 			endDate: '2020-12-03',
@@ -164,10 +166,30 @@ describe( 'getAnalytics4MockResponse', () => {
 			dimensions: [ 'deviceCategory', 'sessionDefaultChannelGrouping' ],
 		} );
 
-		expect( report ).toEqual( mockedReportMultipleDimensionResponse );
+		expect( report ).toEqual(
+			mockedReportMultipleDimensionsCartesianResponse
+		);
 
 		// Verify the correct number of rows for the date ranges.
 		expect( report.rows ).toHaveLength( 60 );
+	} );
+
+	it( 'generates a valid report using zipped multiple dimensions', () => {
+		const report = getAnalytics4MockResponse(
+			{
+				startDate: '2020-12-01',
+				endDate: '2020-12-05',
+				dimensions: [ 'pagePath', 'pageTitle' ],
+				metrics: [ { name: 'totalUsers' } ],
+			},
+			{
+				dimensionCombinationStrategy: STRATEGY_ZIP,
+			}
+		);
+
+		expect( report ).toEqual(
+			mockedReportMultipleDimensionsZippedResponse
+		);
 	} );
 
 	it( 'generates the same number of rows for each date range in a multi-date range report', () => {

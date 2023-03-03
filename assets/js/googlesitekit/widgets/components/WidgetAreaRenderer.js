@@ -21,7 +21,6 @@
  */
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
-import { useIntersection } from 'react-use';
 
 /**
  * WordPress dependencies
@@ -49,6 +48,7 @@ import WidgetRenderer from './WidgetRenderer';
 import WidgetCellWrapper from './WidgetCellWrapper';
 import useViewOnly from '../../../hooks/useViewOnly';
 import { CORE_USER } from '../../datastore/user/constants';
+import useLatestIntersection from '../../../hooks/useLatestIntersection';
 const { useSelect } = Data;
 
 /**
@@ -87,7 +87,7 @@ export default function WidgetAreaRenderer( { slug, contextID } ) {
 	const breakpoint = useBreakpoint();
 
 	const widgetAreaRef = useRef();
-	const intersectionEntry = useIntersection( widgetAreaRef, {
+	const intersectionEntry = useLatestIntersection( widgetAreaRef, {
 		rootMargin: getRootMargin( breakpoint ),
 		threshold: 0, // Trigger "in-view" as soon as one pixel is visible.
 	} );
