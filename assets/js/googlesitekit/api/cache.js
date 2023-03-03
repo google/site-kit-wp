@@ -38,7 +38,7 @@ export const STORAGE_KEY_PREFIX_ROOT = 'googlesitekit_';
  *
  * @since 1.5.0
  * @since 1.92.0 Updated to include a user, session, and blog-specific hash.
- * @since n.e.x.t Updated to make use of the new STORAGE_KEY_ABSOLUTE_PREFIX constant.
+ * @since n.e.x.t Updated to make use of the new STORAGE_KEY_PREFIX_ROOT constant.
  * @private
  */
 export const STORAGE_KEY_PREFIX = `${ STORAGE_KEY_PREFIX_ROOT }${ global.GOOGLESITEKIT_VERSION }_${ global._googlesitekitBaseData.storagePrefix }_`;
