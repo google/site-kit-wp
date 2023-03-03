@@ -319,13 +319,11 @@ final class Analytics_4 extends Module
 	 * @since 1.41.0
 	 */
 	private function analytics_tracking_opt_out() {
-		$settings       = $this->get_settings()->get();
-		$measurement_id = $settings['measurementID'];
-		if ( ! $measurement_id ) {
+		$tag_id = $this->get_tag_id();
+		if ( empty( $tag_id ) ) {
 			return;
 		}
-		BC_Functions::wp_print_inline_script_tag( sprintf( 'window["ga-disable-%s"] = true;', esc_attr( $measurement_id ) ) );
-
+		BC_Functions::wp_print_inline_script_tag( sprintf( 'window["ga-disable-%s"] = true;', esc_attr( $tag_id ) ) );
 	}
 
 	/**
