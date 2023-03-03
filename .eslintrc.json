@@ -32,6 +32,10 @@
     "jsdoc/require-returns": "error",
     "jsdoc/no-undefined-types": "error",
     "jsdoc/valid-types": "error",
+    "lodash/import-scope" : [
+      "error",
+      "member"
+    ],
     "require-await": "error",
     "react/jsx-curly-brace-presence": "error",
     "no-invalid-regexp": "error",
@@ -152,6 +156,7 @@
     "filenames",
     "sitekit",
     "jsdoc",
-    "react-hooks"
+    "react-hooks",
+    "lodash"
   ]
 }

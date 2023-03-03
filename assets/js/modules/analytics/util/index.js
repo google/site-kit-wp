@@ -212,11 +212,11 @@ export function extractAnalyticsDashboardData(
 				day;
 
 			if ( i > rowLength ) {
-				const emptyWeek = {
+				const emptyDay = {
 					dimensions: [ dateString ],
 					metrics: [ { values: [ 0, 0, 0, 0, 0 ] } ],
 				};
-				rows.unshift( emptyWeek );
+				rows.unshift( emptyDay );
 			}
 			date.setDate( date.getDate() - 1 );
 		}

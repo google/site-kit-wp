@@ -180,6 +180,13 @@ const SearchFunnelWidgetGA4 = ( { Widget, WidgetReportError } ) => {
 				name: 'date',
 			},
 		],
+		orderby: [
+			{
+				dimension: {
+					dimensionName: 'date',
+				},
+			},
+		],
 	};
 	const ga4VisitorsOverviewAndStatsArgs = {
 		...ga4Dates,
@@ -196,6 +203,13 @@ const SearchFunnelWidgetGA4 = ( { Widget, WidgetReportError } ) => {
 		dimensionFilters: {
 			sessionDefaultChannelGrouping: [ 'Organic Search' ],
 		},
+		orderby: [
+			{
+				dimension: {
+					dimensionName: 'date',
+				},
+			},
+		],
 	};
 
 	if ( isURL( url ) ) {

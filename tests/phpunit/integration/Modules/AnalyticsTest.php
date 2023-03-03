@@ -11,6 +11,7 @@
 namespace Google\Site_Kit\Tests\Modules;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Modules\Module_With_Data_Available_State;
 use Google\Site_Kit\Core\Modules\Module_With_Owner;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Modules\Module_With_Settings;
@@ -19,6 +20,7 @@ use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Modules\Analytics;
 use Google\Site_Kit\Modules\Analytics\Settings;
+use Google\Site_Kit\Tests\Core\Modules\Module_With_Data_Available_State_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Owner_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Scopes_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Service_Entity_ContractTests;
@@ -41,6 +43,7 @@ class AnalyticsTest extends TestCase {
 	use Module_With_Settings_ContractTests;
 	use Module_With_Owner_ContractTests;
 	use Module_With_Service_Entity_ContractTests;
+	use Module_With_Data_Available_State_ContractTests;
 
 	public function test_register() {
 		$analytics = new Analytics( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
@@ -264,16 +267,36 @@ class AnalyticsTest extends TestCase {
 		);
 	}
 
+	public function test_data_available_reset_on_property_change() {
+		$analytics = new Analytics( $this->get_amp_primary_context() );
+		$analytics->register();
+		$analytics->get_settings()->merge(
+			array(
+				'propertyID' => 'UA-12345678-1',
+			)
+		);
+		$analytics->set_data_available();
+		$analytics->get_settings()->merge(
+			array(
+				'propertyID' => 'UA-87654321-1',
+			)
+		);
+
+		$this->assertFalse( $analytics->is_data_available() );
+	}
+
 	public function test_on_deactivation() {
 		$analytics = new Analytics( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$options   = new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$options->set( Settings::OPTION, 'test-value' );
 		$options->set( 'googlesitekit_analytics_adsense_linked', 'test-linked-value' );
+		$analytics->set_data_available();
 
 		$analytics->on_deactivation();
 
 		$this->assertOptionNotExists( Settings::OPTION );
 		$this->assertOptionNotExists( 'googlesitekit_analytics_adsense_linked' );
+		$this->assertFalse( $analytics->is_data_available() );
 	}
 
 	public function test_get_datapoints() {
@@ -760,6 +783,13 @@ class AnalyticsTest extends TestCase {
 		$this->assertEquals( $configuration['ua_property_id'], $settings['propertyID'] );
 		$this->assertEquals( $configuration['ua_internal_web_property_id'], $settings['internalWebPropertyID'] );
 		$this->assertEquals( $configuration['ua_profile_id'], $settings['profileID'] );
+	}
+
+	/**
+	 * @return Module_With_Data_Available_State
+	 */
+	protected function get_module_with_data_available_state() {
+		return new Analytics( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 	}
 
 }

@@ -26,15 +26,14 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import { ProgressBar, SpinnerButton } from 'googlesitekit-components';
 import Data from 'googlesitekit-data';
-import { ProgressBar } from 'googlesitekit-components';
 import BannerNotification from '../../../../../components/notifications/BannerNotification';
 import {
 	PropertySelect,
 	UseSnippetSwitch,
 } from '../../../../analytics-4/components/common';
 import ErrorNotice from '../../../../../components/ErrorNotice';
-import SpinnerButton from '../../../../../components/SpinnerButton';
 import {
 	MODULES_ANALYTICS_4,
 	PROPERTY_CREATE,

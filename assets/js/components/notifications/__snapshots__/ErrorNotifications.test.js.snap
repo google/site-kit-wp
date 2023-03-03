@@ -38,7 +38,7 @@ exports[`ErrorNotifications does not render the GTE message if the GTE feature i
             class="googlesitekit-publisher-win__actions"
           >
             <a
-              class="mdc-button googlesitekit-notification__cta mdc-button--raised"
+              class="mdc-button googlesitekit-notification__cta googlesitekit-button-icon--spinner mdc-button--raised"
               href="test-url?redirect=http%3A%2F%2Flocalhost%2F"
               role="button"
               target="_self"
@@ -49,10 +49,6 @@ exports[`ErrorNotifications does not render the GTE message if the GTE feature i
                 Redo setup
               </span>
             </a>
-            <span
-              class="spinner"
-              style="display: none; float: none; margin-top: 0px; visibility: visible;"
-            />
           </div>
         </div>
         <div
@@ -108,7 +104,7 @@ exports[`ErrorNotifications does not render the GTE message if there are multipl
             class="googlesitekit-publisher-win__actions"
           >
             <a
-              class="mdc-button googlesitekit-notification__cta mdc-button--raised"
+              class="mdc-button googlesitekit-notification__cta googlesitekit-button-icon--spinner mdc-button--raised"
               href="test-url?redirect=http%3A%2F%2Flocalhost%2F"
               role="button"
               target="_self"
@@ -119,10 +115,6 @@ exports[`ErrorNotifications does not render the GTE message if there are multipl
                 Redo setup
               </span>
             </a>
-            <span
-              class="spinner"
-              style="display: none; float: none; margin-top: 0px; visibility: visible;"
-            />
           </div>
         </div>
         <div
@@ -178,7 +170,7 @@ exports[`ErrorNotifications renders UnsatisfiedScopesAlert when user is authenti
             class="googlesitekit-publisher-win__actions"
           >
             <a
-              class="mdc-button googlesitekit-notification__cta mdc-button--raised"
+              class="mdc-button googlesitekit-notification__cta googlesitekit-button-icon--spinner mdc-button--raised"
               href="test-url?redirect=http%3A%2F%2Flocalhost%2F"
               role="button"
               target="_self"
@@ -189,10 +181,6 @@ exports[`ErrorNotifications renders UnsatisfiedScopesAlert when user is authenti
                 Redo setup
               </span>
             </a>
-            <span
-              class="spinner"
-              style="display: none; float: none; margin-top: 0px; visibility: visible;"
-            />
           </div>
         </div>
         <div
@@ -257,7 +245,7 @@ exports[`ErrorNotifications renders the GTE message when the only unsatisfied sc
             class="googlesitekit-publisher-win__actions"
           >
             <a
-              class="mdc-button googlesitekit-notification__cta mdc-button--raised"
+              class="mdc-button googlesitekit-notification__cta googlesitekit-button-icon--spinner mdc-button--raised"
               href="test-url?redirect=http%3A%2F%2Flocalhost%2F"
               role="button"
               target="_self"
@@ -268,10 +256,6 @@ exports[`ErrorNotifications renders the GTE message when the only unsatisfied sc
                 Grant permission
               </span>
             </a>
-            <span
-              class="spinner"
-              style="display: none; float: none; margin-top: 0px; visibility: visible;"
-            />
           </div>
         </div>
         <div

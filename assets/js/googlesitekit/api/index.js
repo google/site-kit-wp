@@ -30,7 +30,13 @@ import { addQueryArgs } from '@wordpress/url';
 /**
  * Internal dependencies
  */
-import { deleteItem, getItem, getKeys, setItem } from './cache';
+import {
+	deleteItem,
+	getItem,
+	getKeys,
+	setItem,
+	STORAGE_KEY_PREFIX_ROOT,
+} from './cache';
 import { stringifyObject, HOUR_IN_SECONDS } from '../../util';
 import { isAuthError, isPermissionScopeError } from '../../util/errors';
 import { trackAPIError } from '../../util/api';
@@ -333,7 +339,11 @@ export const invalidateCache = async ( type, identifier, datapoint ) => {
 	const allKeys = await getKeys();
 
 	allKeys.forEach( ( key ) => {
-		if ( key.indexOf( groupPrefix ) === 0 ) {
+		if (
+			new RegExp(
+				`^${ STORAGE_KEY_PREFIX_ROOT }([^_]+_){2}${ groupPrefix }`
+			).test( key )
+		) {
 			deleteItem( key );
 		}
 	} );

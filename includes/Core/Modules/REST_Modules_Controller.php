@@ -481,6 +481,42 @@ class REST_Modules_Controller {
 				)
 			),
 			new REST_Route(
+				'modules/(?P<slug>[a-z0-9\-]+)/data/data-available',
+				array(
+					array(
+						'methods'             => WP_REST_Server::CREATABLE,
+						'callback'            => function( WP_REST_Request $request ) {
+							$slug = $request['slug'];
+							try {
+								$module = $this->modules->get_module( $slug );
+							} catch ( Exception $e ) {
+								return new WP_Error( 'invalid_module_slug', __( 'Invalid module slug.', 'google-site-kit' ), array( 'status' => 404 ) );
+							}
+
+							if ( ! $this->modules->is_module_connected( $slug ) ) {
+								return new WP_Error( 'module_not_connected', __( 'Module is not connected.', 'google-site-kit' ), array( 'status' => 500 ) );
+							}
+
+							if ( ! $module instanceof Module_With_Data_Available_State ) {
+								return new WP_Error( 'invalid_module_slug', __( 'Module does not support setting data available state.', 'google-site-kit' ), array( 'status' => 500 ) );
+							}
+
+							return new WP_REST_Response( $module->set_data_available() );
+						},
+						'permission_callback' => $can_list_data,
+					),
+				),
+				array(
+					'args' => array(
+						'slug' => array(
+							'type'              => 'string',
+							'description'       => __( 'Identifier for the module.', 'google-site-kit' ),
+							'sanitize_callback' => 'sanitize_key',
+						),
+					),
+				)
+			),
+			new REST_Route(
 				'modules/(?P<slug>[a-z0-9\-]+)/data/(?P<datapoint>[a-z\-]+)',
 				array(
 					array(
