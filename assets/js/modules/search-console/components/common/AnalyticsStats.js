@@ -32,6 +32,38 @@ import { extractAnalytics4DashboardData } from '../../../analytics-4/utils';
 import GoogleChart from '../../../../components/GoogleChart';
 const { useSelect } = Data;
 
+function extractChartData(
+	moduleSlug,
+	data,
+	selectedStats,
+	dateRangeLength,
+	dataLabels,
+	dataFormats
+) {
+	if ( moduleSlug === 'analytics-4' ) {
+		return (
+			extractAnalytics4DashboardData(
+				data,
+				selectedStats,
+				dateRangeLength,
+				dataLabels,
+				dataFormats
+			) || []
+		);
+	}
+	return (
+		extractAnalyticsDashboardData(
+			data,
+			selectedStats,
+			dateRangeLength,
+			0,
+			1,
+			dataLabels,
+			dataFormats
+		) || []
+	);
+}
+
 export default function AnalyticsStats( props ) {
 	const {
 		data,
@@ -55,21 +87,14 @@ export default function AnalyticsStats( props ) {
 		return null;
 	}
 
-	const extractAnalyticsData =
-		moduleSlug === 'analytics-4'
-			? extractAnalytics4DashboardData
-			: extractAnalyticsDashboardData;
-
-	const googleChartData =
-		extractAnalyticsData(
-			data,
-			selectedStats,
-			dateRangeLength,
-			0,
-			1,
-			dataLabels,
-			dataFormats
-		) || [];
+	const googleChartData = extractChartData(
+		moduleSlug,
+		data,
+		selectedStats,
+		dateRangeLength,
+		dataLabels,
+		dataFormats
+	);
 
 	const dates = googleChartData.slice( 1 ).map( ( [ date ] ) => date );
 	const options = {
