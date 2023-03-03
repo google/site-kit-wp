@@ -10,7 +10,7 @@
 
 namespace Google\Site_Kit\Core\User_Surveys;
 
-use Google\Site_Kit\Core\Storage\User_Setting;
+use Google\Site_Kit\Core\Storage\User_Setting\Array_Setting;
 
 /**
  * Class for representing user survey timeouts.
@@ -19,7 +19,7 @@ use Google\Site_Kit\Core\Storage\User_Setting;
  * @access private
  * @ignore
  */
-class Survey_Timeouts extends User_Setting {
+class Survey_Timeouts extends Array_Setting {
 
 	const OPTION = 'googlesitekit_survey_timeouts';
 
@@ -39,51 +39,6 @@ class Survey_Timeouts extends User_Setting {
 	}
 
 	/**
-	 * Gets the value of the setting.
-	 *
-	 * @since 1.73.0
-	 *
-	 * @return array Value set for the option, or default if not set.
-	 */
-	public function get() {
-		$value = parent::get();
-		return is_array( $value ) ? $value : $this->get_default();
-	}
-
-	/**
-	 * Gets the expected value type.
-	 *
-	 * @since 1.73.0
-	 *
-	 * @return string The type name.
-	 */
-	protected function get_type() {
-		return 'array';
-	}
-
-	/**
-	 * Gets the default value.
-	 *
-	 * @since 1.73.0
-	 *
-	 * @return array The default value.
-	 */
-	protected function get_default() {
-		return array();
-	}
-
-	/**
-	 * Gets the callback for sanitizing the setting's value before saving.
-	 *
-	 * @since 1.73.0
-	 *
-	 * @return callable Sanitize callback.
-	 */
-	protected function get_sanitize_callback() {
-		return array( $this, 'filter_survey_timeouts' );
-	}
-
-	/**
 	 * Gets survey timeouts.
 	 *
 	 * @since 1.73.0
@@ -92,7 +47,7 @@ class Survey_Timeouts extends User_Setting {
 	 */
 	public function get_survey_timeouts() {
 		$surveys = $this->get();
-		$surveys = $this->filter_survey_timeouts( $surveys );
+		$surveys = $this->sanitize_array_item( $surveys );
 
 		return array_keys( $surveys );
 	}
@@ -105,7 +60,7 @@ class Survey_Timeouts extends User_Setting {
 	 * @param array $items Survey timeouts list.
 	 * @return array Filtered survey timeouts.
 	 */
-	private function filter_survey_timeouts( $items ) {
+	protected function sanitize_array_item( $items ) {
 		$surveys = array();
 
 		if ( is_array( $items ) ) {
