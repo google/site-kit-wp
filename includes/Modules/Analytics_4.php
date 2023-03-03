@@ -737,13 +737,7 @@ final class Analytics_4 extends Module
 			return;
 		}
 
-		$settings = $this->get_settings()->get();
-
-		if ( Feature_Flags::enabled( 'gteSupport' ) && ! empty( $settings['googleTagID'] ) ) {
-			$tag = new Web_Tag( $settings['googleTagID'], self::MODULE_SLUG );
-		} else {
-			$tag = new Web_Tag( $settings['measurementID'], self::MODULE_SLUG );
-		}
+		$tag = new Web_Tag( $this->get_tag_id(), self::MODULE_SLUG );
 
 		if ( $tag->is_tag_blocked() ) {
 			return;
