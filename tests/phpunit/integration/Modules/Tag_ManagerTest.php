@@ -23,7 +23,7 @@ use Google\Site_Kit\Modules\Tag_Manager\Settings;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Owner_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Scopes_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Service_Entity_ContractTests;
-use Google\Site_Kit\Tests\FakeHttpClient;
+use Google\Site_Kit\Tests\FakeHttp;
 use Google\Site_Kit\Tests\TestCase;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Response;
 
@@ -533,9 +533,8 @@ class Tag_ManagerTest extends TestCase {
 	}
 
 	protected function set_up_check_service_entity_access_tag_manager( Module $module ) {
-		$fake_http_client = new FakeHttpClient();
-
-		$fake_http_client->set_request_handler(
+		FakeHttp::fake_google_http_handler(
+			$module->get_client(),
 			function () {
 				return new Response(
 					200,
@@ -552,8 +551,6 @@ class Tag_ManagerTest extends TestCase {
 				);
 			}
 		);
-
-		$module->get_client()->setHttpClient( $fake_http_client );
 	}
 
 	// Module_With_Service_Entity_ContractTests does not cover all the cases for
