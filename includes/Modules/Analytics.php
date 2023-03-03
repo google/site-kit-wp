@@ -1382,18 +1382,15 @@ final class Analytics extends Module
 	}
 
 	/**
-	 * Validates the report metrics.
+	 * Validates the report metrics for a shared request.
 	 *
 	 * @since 1.82.0
+	 * @since n.e.x.t Renamed the method, and moved the check for being a shared request to the caller.
 	 *
 	 * @param Google_Service_AnalyticsReporting_Metric[] $metrics The metrics to validate.
 	 * @throws Invalid_Report_Metrics_Exception Thrown if the metrics are invalid.
 	 */
 	protected function validate_shared_report_metrics( $metrics ) {
-		if ( false === $this->is_using_shared_credentials ) {
-			return;
-		}
-
 		$valid_metrics = apply_filters(
 			'googlesitekit_shareable_analytics_metrics',
 			array(
@@ -1446,18 +1443,15 @@ final class Analytics extends Module
 	}
 
 	/**
-	 * Validates the report dimensions.
+	 * Validates the report dimensions for a shared request.
 	 *
 	 * @since 1.82.0
+	 * @since n.e.x.t Renamed the method, and moved the check for being a shared request to the caller.
 	 *
 	 * @param Google_Service_AnalyticsReporting_Dimension[] $dimensions The dimensions to validate.
 	 * @throws Invalid_Report_Dimensions_Exception Thrown if the dimensions are invalid.
 	 */
 	protected function validate_shared_report_dimensions( $dimensions ) {
-		if ( false === $this->is_using_shared_credentials ) {
-			return;
-		}
-
 		$valid_dimensions = apply_filters(
 			'googlesitekit_shareable_analytics_dimensions',
 			array(
