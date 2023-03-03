@@ -564,13 +564,15 @@ final class Analytics extends Module
 					);
 
 					if ( ! empty( $dimensions ) ) {
-						try {
-							$this->validate_shared_report_dimensions( $dimensions );
-						} catch ( Invalid_Report_Dimensions_Exception $exception ) {
-							return new WP_Error(
-								'invalid_analytics_report_dimensions',
-								$exception->getMessage()
-							);
+						if ( $this->is_shared_data_request( $data ) ) {
+							try {
+								$this->validate_shared_report_dimensions( $dimensions );
+							} catch ( Invalid_Report_Dimensions_Exception $exception ) {
+								return new WP_Error(
+									'invalid_analytics_report_dimensions',
+									$exception->getMessage()
+								);
+							}
 						}
 
 						$request_args['dimensions'] = $dimensions;
@@ -671,13 +673,15 @@ final class Analytics extends Module
 					);
 
 					if ( ! empty( $metrics ) ) {
-						try {
-							$this->validate_shared_report_metrics( $metrics );
-						} catch ( Invalid_Report_Metrics_Exception $exception ) {
-							return new WP_Error(
-								'invalid_analytics_report_metrics',
-								$exception->getMessage()
-							);
+						if ( $this->is_shared_data_request( $data ) ) {
+							try {
+								$this->validate_shared_report_metrics( $metrics );
+							} catch ( Invalid_Report_Metrics_Exception $exception ) {
+								return new WP_Error(
+									'invalid_analytics_report_metrics',
+									$exception->getMessage()
+								);
+							}
 						}
 
 						$request->setMetrics( $metrics );

@@ -280,13 +280,15 @@ final class AdSense extends Module
 
 				$metrics = $this->parse_string_list( $data['metrics'] );
 				if ( ! empty( $metrics ) ) {
-					try {
-						$this->validate_shared_report_metrics( $metrics );
-					} catch ( Invalid_Report_Metrics_Exception $exception ) {
-						return new WP_Error(
-							'invalid_adsense_report_metrics',
-							$exception->getMessage()
-						);
+					if ( $this->is_shared_data_request( $data ) ) {
+						try {
+							$this->validate_shared_report_metrics( $metrics );
+						} catch ( Invalid_Report_Metrics_Exception $exception ) {
+							return new WP_Error(
+								'invalid_adsense_report_metrics',
+								$exception->getMessage()
+							);
+						}
 					}
 
 					$args['metrics'] = $metrics;
@@ -294,13 +296,15 @@ final class AdSense extends Module
 
 				$dimensions = $this->parse_string_list( $data['dimensions'] );
 				if ( ! empty( $dimensions ) ) {
-					try {
-						$this->validate_shared_report_dimensions( $dimensions );
-					} catch ( Invalid_Report_Dimensions_Exception $exception ) {
-						return new WP_Error(
-							'invalid_adsense_report_dimensions',
-							$exception->getMessage()
-						);
+					if ( $this->is_shared_data_request( $data ) ) {
+						try {
+							$this->validate_shared_report_dimensions( $dimensions );
+						} catch ( Invalid_Report_Dimensions_Exception $exception ) {
+							return new WP_Error(
+								'invalid_adsense_report_dimensions',
+								$exception->getMessage()
+							);
+						}
 					}
 
 					$args['dimensions'] = $dimensions;
