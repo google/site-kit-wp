@@ -989,7 +989,7 @@ final class Analytics_4 extends Module
 	 *
 	 * @return string Google Analytics 4 tag ID.
 	 */
-	public function get_tag_id() {
+	private function get_tag_id() {
 		$settings = $this->get_settings()->get();
 
 		if ( Feature_Flags::enabled( 'gteSupport' ) && ! empty( $settings['googleTagID'] ) ) {
