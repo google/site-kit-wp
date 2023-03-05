@@ -975,7 +975,7 @@ final class Analytics_4 extends Module
 	}
 
 	/**
-	 * Get the Google Analytics 4 tag ID.
+	 * Gets the Google Analytics 4 tag ID.
 	 *
 	 * @since n.e.x.t
 	 *

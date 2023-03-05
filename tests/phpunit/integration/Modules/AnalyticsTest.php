@@ -491,11 +491,13 @@ class AnalyticsTest extends TestCase {
 		}
 
 		if ( $is_tracking_active ) {
+			// When tracking is active, the opt out snippet should not be present.
 			$this->assertStringNotContainsString( 'window["ga-disable-UA-21234567-8"] = true', $head_html );
 
 			// When tracking is active, the `googlesitekit_analytics_tracking_opt_out` action should not be called.
 			$this->assertEquals( 0, did_action( 'googlesitekit_analytics_tracking_opt_out' ) );
 		} else {
+			// When tracking is disabled, the opt out snippet should be present.
 			$this->assertStringContainsString( 'window["ga-disable-UA-21234567-8"] = true', $head_html );
 
 			// When tracking is disabled, the `googlesitekit_analytics_tracking_opt_out` action should be called.
