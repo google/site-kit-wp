@@ -188,7 +188,7 @@ function ModulePopularPagesWidgetGA4( props ) {
 			hideOnMobile: true,
 			field: 'metricValues.2.value',
 			Component: ( { fieldValue } ) => (
-				<span>{ numFmt( Number( fieldValue ) / 100, '%' ) }</span>
+				<span>{ numFmt( fieldValue, '%' ) }</span>
 			),
 		},
 		{
