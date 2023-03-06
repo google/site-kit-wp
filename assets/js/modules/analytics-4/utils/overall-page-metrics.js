@@ -81,7 +81,6 @@ export function calculateOverallPageMetricsData( report, startDate ) {
 				],
 			],
 			datapointUnit: '%',
-			datapointDivider: 100,
 			total: 0,
 			change: 0,
 		},
