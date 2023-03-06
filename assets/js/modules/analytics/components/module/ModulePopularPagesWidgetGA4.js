@@ -76,7 +76,7 @@ function ModulePopularPagesWidgetGA4( props ) {
 				name: 'sessions',
 			},
 			{
-				name: 'engagedSessions',
+				name: 'engagementRate',
 			},
 			{
 				name: 'averageSessionDuration',
@@ -188,7 +188,7 @@ function ModulePopularPagesWidgetGA4( props ) {
 			hideOnMobile: true,
 			field: 'metricValues.2.value',
 			Component: ( { fieldValue } ) => (
-				<span>{ numFmt( fieldValue, { style: 'decimal' } ) }</span>
+				<span>{ numFmt( Number( fieldValue ) / 100, '%' ) }</span>
 			),
 		},
 		{

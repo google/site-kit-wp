@@ -43,6 +43,7 @@ const ANALYTICS_4_METRIC_TYPES = {
 	conversions: 'TYPE_INTEGER',
 	screenPageViews: 'TYPE_INTEGER',
 	engagedSessions: 'TYPE_INTEGER',
+	engagementRate: 'TYPE_INTEGER',
 	averageSessionDuration: 'TYPE_SECONDS',
 };
 
