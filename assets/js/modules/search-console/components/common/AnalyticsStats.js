@@ -32,6 +32,19 @@ import { extractAnalytics4DashboardData } from '../../../analytics-4/utils';
 import GoogleChart from '../../../../components/GoogleChart';
 const { useSelect } = Data;
 
+/**
+ * Extracts chart data from analytics row data.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} moduleSlug      The module slug.
+ * @param {Object} data            The data returned from the Analytics API call.
+ * @param {Array}  selectedStats   The currently selected stat we need to return data for.
+ * @param {number} dateRangeLength The number of days to extract data for. Pads empty data days.
+ * @param {Array}  dataLabels      The labels to be displayed.
+ * @param {Array}  dataFormats     The formats to be used for the data.
+ * @return {Array} The dataMap ready for charting.
+ */
 function extractChartData(
 	moduleSlug,
 	data,
