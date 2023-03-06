@@ -171,7 +171,7 @@ const baseSelectors = {
 	 * Gets key metrics selected by the user.
 	 *
 	 * @since 1.94.0 Initially introduced as `getKeyMetrics`.
-	 * @since 1.95.0 Updated selector name now that `getKeyMetrics` contains more advanced logic.
+	 * @since n.e.x.t Updated selector name now that `getKeyMetrics` contains more advanced logic.
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(Object|undefined)} Key metrics settings.
