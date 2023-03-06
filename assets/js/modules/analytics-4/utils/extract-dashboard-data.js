@@ -40,27 +40,25 @@ import { partitionAnalytics4Report } from './partition-report';
 import parseDimensionStringToDate from '../../analytics/util/parseDimensionStringToDate';
 
 /**
- * Reduces and processes an array of analytics row data.
+ * Reduces and processes an array of analytics-4 row data.
  *
  * @since n.e.x.t
  *
- * @param {Array}  rows                 An array of rows to reduce.
- * @param {number} selectedMetricsIndex The index of metrics array in the metrics set.
- * @param {number} selectedStats        The currently selected stat we need to return data for.
+ * @param {Array}  rows          An array of rows to reduce.
+ * @param {number} selectedStats The currently selected stat we need to return data for.
  * @return {Array} Array of selected stats from analytics row data.
  */
-function reduceAnalyticsRowsData( rows, selectedMetricsIndex, selectedStats ) {
+function reduceAnalytics4RowsData( rows, selectedStats ) {
 	const dataMap = [];
 	rows.forEach( ( row ) => {
 		if ( ! row.metricValues ) {
 			return;
 		}
 
-		const { value } =
-			row.metricValues[ selectedMetricsIndex ] || row.metricValues[ 0 ];
+		const { value } = row.metricValues[ selectedStats ];
 		const dateString = row.dimensionValues[ 0 ].value;
 		const date = parseDimensionStringToDate( dateString );
-		dataMap.push( [ date, value[ selectedStats ] ] );
+		dataMap.push( [ date, value ] );
 	} );
 	return dataMap;
 }
@@ -70,25 +68,21 @@ function reduceAnalyticsRowsData( rows, selectedMetricsIndex, selectedStats ) {
  *
  * @since n.e.x.t
  *
- * @param {Object} report                   The data returned from the Analytics API call.
- * @param {Array}  selectedStats            The currently selected stat we need to return data for.
- * @param {number} days                     The number of days to extract data for. Pads empty data days.
- * @param {number} currentMonthMetricIndex  The index of the current month metrics in the metrics set.
- * @param {number} previousMonthMetricIndex The index of the last month metrics in the metrics set.
- * @param {Array}  dataLabels               The labels to be displayed.
- * @param {Array}  dataFormats              The formats to be used for the data.
+ * @param {Object} report        The data returned from the Analytics API call.
+ * @param {Array}  selectedStats The currently selected stat we need to return data for.
+ * @param {number} days          The number of days to extract data for. Pads empty data days.
+ * @param {Array}  dataLabels    The labels to be displayed.
+ * @param {Array}  dataFormats   The formats to be used for the data.
  * @return {Array} The dataMap ready for charting.
  */
 export function extractAnalytics4DashboardData(
 	report,
 	selectedStats,
 	days,
-	currentMonthMetricIndex = 0,
-	previousMonthMetricIndex = 0,
 	dataLabels = [
 		__( 'Users', 'google-site-kit' ),
 		__( 'Sessions', 'google-site-kit' ),
-		__( 'Engaged Sessions %', 'google-site-kit' ),
+		__( 'Engaged Sessions', 'google-site-kit' ),
 		__( 'Session Duration', 'google-site-kit' ),
 	],
 	dataFormats = [
@@ -152,7 +146,28 @@ export function extractAnalytics4DashboardData(
 			}
 			date.setDate( date.getDate() - 1 );
 		}
-		rows.push( [ 0, 0 ] );
+		rows.push(
+			{
+				dimensionValues: [
+					{
+						value: '0',
+					},
+					{
+						value: 'date_range_0',
+					},
+				],
+			},
+			{
+				dimensionValues: [
+					{
+						value: '0',
+					},
+					{
+						value: 'date_range_1',
+					},
+				],
+			}
+		);
 	}
 
 	const isSessionDuration =
@@ -175,14 +190,12 @@ export function extractAnalytics4DashboardData(
 	const { compareRange, currentRange } = partitionAnalytics4Report( rows, {
 		dateRangeLength: days,
 	} );
-	const lastMonthData = reduceAnalyticsRowsData(
+	const lastMonthData = reduceAnalytics4RowsData(
 		currentRange,
-		currentMonthMetricIndex,
 		selectedStats
 	);
-	const previousMonthData = reduceAnalyticsRowsData(
+	const previousMonthData = reduceAnalytics4RowsData(
 		compareRange,
-		previousMonthMetricIndex,
 		selectedStats
 	);
 
