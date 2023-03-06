@@ -72,7 +72,7 @@ export function calculateOverallPageMetricsData( report, startDate ) {
 			change: 0,
 		},
 		{
-			metric: 'engagedSessions',
+			metric: 'engagementRate',
 			title: __( 'Engaged Sessions', 'google-site-kit' ),
 			sparkLineData: [
 				[

@@ -58,7 +58,7 @@ const reportOptions = [
 				name: 'sessions',
 			},
 			{
-				name: 'engagedSessions',
+				name: 'engagementRate',
 			},
 			{
 				name: 'averageSessionDuration',
