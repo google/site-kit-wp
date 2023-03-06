@@ -43,7 +43,7 @@ const ANALYTICS_4_METRIC_TYPES = {
 	conversions: 'TYPE_INTEGER',
 	screenPageViews: 'TYPE_INTEGER',
 	engagedSessions: 'TYPE_INTEGER',
-	engagementRate: 'TYPE_INTEGER',
+	engagementRate: 'TYPE_FLOAT',
 	averageSessionDuration: 'TYPE_SECONDS',
 };
 
@@ -116,6 +116,13 @@ function generateMetricValues( validMetrics ) {
 				values.push( {
 					value: faker.datatype
 						.number( { min: 0, max: 100 } )
+						.toString(),
+				} );
+				break;
+			case 'TYPE_FLOAT':
+				values.push( {
+					value: faker.datatype
+						.float( { min: 0, max: 1 } )
 						.toString(),
 				} );
 				break;
