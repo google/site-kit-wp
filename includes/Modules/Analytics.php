@@ -1435,7 +1435,7 @@ final class Analytics extends Module
 					'Unsupported metric requested: %s',
 					'google-site-kit'
 				),
-				$invalid_metrics
+				$invalid_metrics[0]
 			);
 
 			throw new Invalid_Report_Metrics_Exception( $message );
@@ -1493,7 +1493,7 @@ final class Analytics extends Module
 					'Unsupported dimension requested: %s',
 					'google-site-kit'
 				),
-				$invalid_dimensions
+				$invalid_dimensions[0]
 			);
 
 			throw new Invalid_Report_Dimensions_Exception( $message );
