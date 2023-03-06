@@ -158,7 +158,8 @@ class ModuleTest extends TestCase {
 		$permissions = new Permissions( $context, $authentication, $modules, $user_options, new Dismissed_Items( $user_options ) );
 		$permissions->register();
 
-		$module = new FakeModule( $context, $options, $user_options, $authentication );
+		$module           = new FakeModule( $context, $options, $user_options, $authentication );
+		$module->owner_id = $user_id;
 
 		// Ensure sharing is enabled for the module.
 		add_option(
@@ -170,8 +171,6 @@ class ModuleTest extends TestCase {
 				),
 			)
 		);
-
-		$module->owner_id = $user_id;
 
 		// Verify that the user owns the module, and that it is shareable.
 		$this->assertEquals( $user_id, $module->get_owner_id() );

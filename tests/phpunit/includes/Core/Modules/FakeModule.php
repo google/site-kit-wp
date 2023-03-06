@@ -159,7 +159,6 @@ class FakeModule extends Module
 			case 'GET:test-request':
 			case 'POST:test-request':
 				return function () use ( $method, $datapoint, $data ) {
-
 					$data = $data->data;
 					return json_encode( compact( 'method', 'datapoint', 'data' ) );
 				};
