@@ -93,7 +93,6 @@ return array(
 
 		// This dependency is a global function which should remain global.
 		'vendor/ralouphie/getallheaders/src/getallheaders.php',
-		'vendor/symfony/polyfill-intl-normalizer/bootstrap.php',
 	),
 	'patchers'                   => array(
 		function( $file_path, $prefix, $contents ) {
@@ -110,6 +109,9 @@ return array(
 			if ( false !== strpos( $file_path, 'vendor/google/apiclient/' ) ) {
 				$contents = str_replace( "'Google_", "'" . $prefix . '\Google_', $contents );
 				$contents = str_replace( '"Google_', '"' . $prefix . '\Google_', $contents );
+			}
+			if ( preg_match( '#vendor/symfony/polyfill-.*/bootstrap.php$#', $file_path ) ) {
+				$contents = str_replace( "namespace $prefix;", "/* namespace $prefix intentionally removed */", $contents );
 			}
 			return $contents;
 		},
