@@ -160,6 +160,10 @@ const baseSelectors = {
 	getKeyMetrics: createRegistrySelector( ( select ) => () => {
 		const userPickedMetrics = select( CORE_USER ).getUserPickedMetrics();
 
+		if ( userPickedMetrics === undefined ) {
+			return undefined;
+		}
+
 		if ( userPickedMetrics?.widgetSlugs?.length ) {
 			return userPickedMetrics.widgetSlugs;
 		}
