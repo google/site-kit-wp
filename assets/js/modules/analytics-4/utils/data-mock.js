@@ -122,7 +122,12 @@ function generateMetricValues( validMetrics ) {
 			case 'TYPE_FLOAT':
 				values.push( {
 					value: faker.datatype
-						.float( { min: 0, max: 1 } )
+						.float( {
+							min: 0,
+							max: 1,
+							// The GA4 API returns 17 decimal places, so specify that here, although it seems like Faker is only returning up to 16.
+							precision: 0.00000000000000001,
+						} )
 						.toString(),
 				} );
 				break;
