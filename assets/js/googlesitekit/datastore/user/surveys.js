@@ -40,18 +40,6 @@ const fetchTriggerSurveyStore = createFetchStore( {
 	argsToParams: ( triggerID ) => {
 		return { triggerID };
 	},
-	// eslint-disable-next-line camelcase
-	reducerCallback: ( state, { survey_payload, session } ) => {
-		// We don't replace survey if we already have one.
-		if ( baseSelectors.getCurrentSurvey( state ) ) {
-			return state;
-		}
-		return {
-			...state,
-			currentSurvey: survey_payload,
-			currentSurveySession: session,
-		};
-	},
 	validateParams: ( { triggerID } = {} ) => {
 		invariant(
 			'string' === typeof triggerID && triggerID.length,
@@ -112,6 +100,25 @@ const fetchSetSurveyTimeoutStore = createFetchStore( {
 	validateParams( { slug, timeout } = {} ) {
 		invariant( slug, 'slug is required.' );
 		invariant( Number.isInteger( timeout ), 'timeout must be an integer.' );
+	},
+} );
+
+const fetchGetSurveyStore = createFetchStore( {
+	baseName: 'getSurvey',
+	controlCallback() {
+		return API.get( 'core', 'user', 'survey', {} );
+	},
+	// eslint-disable-next-line camelcase
+	reducerCallback: ( state, { survey_payload, session } ) => {
+		// We don't replace survey if we already have one.
+		if ( baseSelectors.getCurrentSurvey( state ) ) {
+			return state;
+		}
+		return {
+			...state,
+			currentSurvey: survey_payload,
+			currentSurveySession: session,
+		};
 	},
 } );
 
@@ -177,11 +184,6 @@ const baseActions = {
 			const { ttl = 0 } = options;
 			const { select, dispatch, __experimentalResolveSelect } =
 				yield Data.commonActions.getRegistry();
-
-			// Bail if there is already a current survey.
-			if ( select( CORE_USER ).getCurrentSurvey() ) {
-				return {};
-			}
 
 			// Wait for user authentication state to be available before selecting.
 			yield Data.commonActions.await(
@@ -272,6 +274,14 @@ const baseActions = {
 };
 
 const baseResolvers = {
+	*getCurrentSurvey() {
+		const { select } = yield Data.commonActions.getRegistry();
+		const currentSurvey = select( CORE_USER ).getCurrentSurvey();
+		if ( currentSurvey === undefined ) {
+			yield fetchGetSurveyStore.actions.fetchGetSurvey();
+		}
+	},
+
 	*getSurveyTimeouts() {
 		const { select } = yield Data.commonActions.getRegistry();
 		const surveyTimeouts = select( CORE_USER ).getSurveyTimeouts();
@@ -384,6 +394,7 @@ const store = Data.combineStores(
 	fetchSendSurveyEventStore,
 	fetchGetSurveyTimeoutsStore,
 	fetchSetSurveyTimeoutStore,
+	fetchGetSurveyStore,
 	{
 		initialState: baseInitialState,
 		actions: baseActions,
