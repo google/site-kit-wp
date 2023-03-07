@@ -121,7 +121,7 @@ class REST_User_Surveys_Controller {
 							$this->queue->enqueue( $response );
 						}
 
-						return rest_ensure_response( $response );
+						return new WP_REST_Response( array( 'success' => true ) );
 					},
 					'permission_callback' => $can_authenticate,
 					'args'                => array(
@@ -165,7 +165,7 @@ class REST_User_Surveys_Controller {
 							}
 						}
 
-						return rest_ensure_response( $response );
+						return new WP_REST_Response( $response );
 					},
 					'permission_callback' => $can_authenticate,
 					'args'                => array(

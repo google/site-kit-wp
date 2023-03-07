@@ -168,7 +168,7 @@ class REST_User_Surveys_ControllerTest extends TestCase {
 			$survey
 		);
 
-		$this->assertEqualSets( $survey, $response->get_data() );
+		$this->assertEqualSets( array( 'success' => true ), $response->get_data() );
 		$this->assertEqualSets( $survey, $this->queue->front() );
 	}
 
