@@ -65,7 +65,11 @@ const dashboardSharing = {
 		}
 
 		// Close the dialog if the tour is ended or we end up back on the first step.
-		if ( ACTIONS.STOP === action || ( index === 0 && dialogOpen ) ) {
+		if (
+			ACTIONS.STOP === action ||
+			ACTIONS.CLOSE === action ||
+			( index === 0 && dialogOpen )
+		) {
 			dispatch( CORE_UI ).setValue( SETTINGS_DIALOG, false );
 		}
 

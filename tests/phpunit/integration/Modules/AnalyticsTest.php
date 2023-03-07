@@ -11,6 +11,7 @@
 namespace Google\Site_Kit\Tests\Modules;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Modules\Module_With_Data_Available_State;
 use Google\Site_Kit\Core\Modules\Module_With_Owner;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Modules\Module_With_Settings;
@@ -19,6 +20,7 @@ use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Modules\Analytics;
 use Google\Site_Kit\Modules\Analytics\Settings;
+use Google\Site_Kit\Tests\Core\Modules\Module_With_Data_Available_State_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Owner_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Scopes_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Service_Entity_ContractTests;
@@ -41,6 +43,7 @@ class AnalyticsTest extends TestCase {
 	use Module_With_Settings_ContractTests;
 	use Module_With_Owner_ContractTests;
 	use Module_With_Service_Entity_ContractTests;
+	use Module_With_Data_Available_State_ContractTests;
 
 	public function test_register() {
 		$analytics = new Analytics( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
@@ -264,16 +267,36 @@ class AnalyticsTest extends TestCase {
 		);
 	}
 
+	public function test_data_available_reset_on_property_change() {
+		$analytics = new Analytics( $this->get_amp_primary_context() );
+		$analytics->register();
+		$analytics->get_settings()->merge(
+			array(
+				'propertyID' => 'UA-12345678-1',
+			)
+		);
+		$analytics->set_data_available();
+		$analytics->get_settings()->merge(
+			array(
+				'propertyID' => 'UA-87654321-1',
+			)
+		);
+
+		$this->assertFalse( $analytics->is_data_available() );
+	}
+
 	public function test_on_deactivation() {
 		$analytics = new Analytics( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$options   = new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$options->set( Settings::OPTION, 'test-value' );
 		$options->set( 'googlesitekit_analytics_adsense_linked', 'test-linked-value' );
+		$analytics->set_data_available();
 
 		$analytics->on_deactivation();
 
 		$this->assertOptionNotExists( Settings::OPTION );
 		$this->assertOptionNotExists( 'googlesitekit_analytics_adsense_linked' );
+		$this->assertFalse( $analytics->is_data_available() );
 	}
 
 	public function test_get_datapoints() {
@@ -432,7 +455,7 @@ class AnalyticsTest extends TestCase {
 	 * @param \Closure $assert_opt_out_presence
 	 * @param bool $is_content_creator
 	 */
-	public function test_tracking_disabled( $settings, $logged_in, $assert_opt_out_presence, $is_content_creator = false ) {
+	public function test_tracking_disabled( $settings, $logged_in, $is_tracking_active, $is_content_creator = false ) {
 		wp_scripts()->registered = array();
 		wp_scripts()->queue      = array();
 		wp_scripts()->done       = array();
@@ -467,7 +490,19 @@ class AnalyticsTest extends TestCase {
 			$this->assertStringNotContainsString( 'ga-disable', $head_html );
 		}
 
-		$assert_opt_out_presence( $head_html );
+		if ( $is_tracking_active ) {
+			// When tracking is active, the opt out snippet should not be present.
+			$this->assertStringNotContainsString( 'window["ga-disable-UA-21234567-8"] = true', $head_html );
+
+			// When tracking is active, the `googlesitekit_analytics_tracking_opt_out` action should not be called.
+			$this->assertEquals( 0, did_action( 'googlesitekit_analytics_tracking_opt_out' ) );
+		} else {
+			// When tracking is disabled, the opt out snippet should be present.
+			$this->assertStringContainsString( 'window["ga-disable-UA-21234567-8"] = true', $head_html );
+
+			// When tracking is disabled, the `googlesitekit_analytics_tracking_opt_out` action should be called.
+			$this->assertEquals( 1, did_action( 'googlesitekit_analytics_tracking_opt_out' ) );
+		}
 	}
 
 	public function tracking_disabled_provider() {
@@ -480,64 +515,57 @@ class AnalyticsTest extends TestCase {
 			'trackingDisabled'      => array( 'loggedinUsers' ),
 		);
 
-		$assert_contains_opt_out     = function ( $html ) {
-			$this->assertStringContainsString( 'window["ga-disable-UA-21234567-8"] = true', $html );
-		};
-		$assert_not_contains_opt_out = function ( $html ) {
-			$this->assertStringNotContainsString( 'window["ga-disable-UA-21234567-8"] = true', $html );
-		};
-
 		return array(
 			// Tracking is active by default for non-logged-in users.
 			array(
 				$base_settings,
 				false,
-				$assert_not_contains_opt_out,
+				true,
 			),
 			// Tracking is not active for non-logged-in users if snippet is disabled,
 			// but opt-out is not added because tracking is not disabled.
 			array(
 				array_merge( $base_settings, array( 'useSnippet' => false ) ),
 				false,
-				$assert_not_contains_opt_out,
+				true,
 			),
 			// Tracking is not active for logged-in users by default (opt-out expected).
 			array(
 				$base_settings,
 				true,
-				$assert_contains_opt_out,
+				false,
 			),
 			// Tracking is active for logged-in users if enabled via settings.
 			array(
 				array_merge( $base_settings, array( 'trackingDisabled' => array() ) ),
 				true,
-				$assert_not_contains_opt_out,
+				true,
 			),
 			// Tracking is not active for content creators if disabled via settings.
 			array(
 				array_merge( $base_settings, array( 'trackingDisabled' => array( 'contentCreators' ) ) ),
 				true,
-				$assert_contains_opt_out,
+				false,
 				true,
 			),
 			// Tracking is still active for guests if disabled for logged in users.
 			array(
 				array_merge( $base_settings, array( 'trackingDisabled' => array( 'loggedinUsers' ) ) ),
 				false,
-				$assert_not_contains_opt_out,
+				true,
 			),
 			// Tracking is not active for content creators if disabled for logged-in users (logged-in users setting overrides content creators setting)
 			array(
 				array_merge( $base_settings, array( 'trackingDisabled' => array( 'loggedinUsers' ) ) ),
 				true,
-				$assert_contains_opt_out,
+				false,
 				true,
 			),
 			// Analytics is enabled but not configured.
 			array(
 				array_merge( $base_settings, array( 'propertyID' => '' ) ),
 				false,
-				$assert_not_contains_opt_out,
+				true,
 				false,
 			),
 		);
@@ -760,6 +788,13 @@ class AnalyticsTest extends TestCase {
 		$this->assertEquals( $configuration['ua_property_id'], $settings['propertyID'] );
 		$this->assertEquals( $configuration['ua_internal_web_property_id'], $settings['internalWebPropertyID'] );
 		$this->assertEquals( $configuration['ua_profile_id'], $settings['profileID'] );
+	}
+
+	/**
+	 * @return Module_With_Data_Available_State
+	 */
+	protected function get_module_with_data_available_state() {
+		return new Analytics( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 	}
 
 }

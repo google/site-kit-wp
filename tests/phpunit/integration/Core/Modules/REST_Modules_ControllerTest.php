@@ -16,9 +16,9 @@ use Google\Site_Kit\Core\Modules\REST_Modules_Controller;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
+use Google\Site_Kit\Tests\FakeHttpClient;
 use Google\Site_Kit\Tests\RestTestTrait;
 use Google\Site_Kit\Tests\TestCase;
-use Google\Site_Kit\Tests\FakeHttpClient;
 use WP_REST_Request;
 
 class REST_Modules_ControllerTest extends TestCase {
@@ -86,6 +86,16 @@ class REST_Modules_ControllerTest extends TestCase {
 		unset( $GLOBALS['wp_rest_server'] );
 	}
 
+	private function set_available_modules( $modules ) {
+		$map = array();
+
+		foreach ( $modules as $module ) {
+			$map[ $module->slug ] = $module;
+		}
+
+		$this->force_set_property( $this->modules, 'modules', $map );
+	}
+
 	private function setup_fake_module( $force_active = true ) {
 		$fake_module = new FakeModule( $this->context );
 		$fake_module->set_force_active( $force_active );
@@ -93,7 +103,7 @@ class REST_Modules_ControllerTest extends TestCase {
 		$fake_module_settings = new FakeModuleSettings( $this->options );
 		$fake_module_settings->register();
 
-		$this->force_set_property( $this->modules, 'modules', array( 'fake-module' => $fake_module ) );
+		$this->set_available_modules( array( $fake_module ) );
 	}
 
 	public function test_register() {
@@ -554,6 +564,35 @@ class REST_Modules_ControllerTest extends TestCase {
 		$response = rest_get_server()->dispatch( $request );
 
 		$this->assertEquals( 404, $response->get_status() );
+	}
+
+	public function test_data_available_rest_endpoint__valid_method__non_implementing_module() {
+		remove_all_filters( 'googlesitekit_rest_routes' );
+		$this->controller->register();
+		$this->register_rest_routes();
+
+		$this->setup_fake_module();
+
+		$request  = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/modules/fake-module/data/data-available' );
+		$response = rest_get_server()->dispatch( $request );
+
+		$this->assertEquals( 'invalid_module_slug', $response->get_data()['code'] );
+	}
+
+	public function test_data_available_rest_endpoint__valid_method__implementing_module() {
+		remove_all_filters( 'googlesitekit_rest_routes' );
+		$this->controller->register();
+		$this->register_rest_routes();
+
+		$fake_module_with_data_available = new FakeModule_WithDataAvailable( $this->context );
+		$this->set_available_modules( array( $fake_module_with_data_available ) );
+		$this->assertEmpty( $fake_module_with_data_available->is_data_available() );
+
+		$request  = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/modules/fake-module/data/data-available' );
+		$response = rest_get_server()->dispatch( $request );
+
+		$this->assertEquals( 200, $response->get_status() );
+		$this->assertTrue( $fake_module_with_data_available->is_data_available() );
 	}
 
 	public function test_datapoint_rest_endpoint__get_method() {

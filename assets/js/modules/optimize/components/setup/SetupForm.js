@@ -74,6 +74,7 @@ export default function SetupForm( { finishSetup } ) {
 			<StoreErrorNotices
 				moduleSlug="optimize"
 				storeName={ MODULES_OPTIMIZE }
+				shouldDisplayRetry={ false }
 			/>
 			<OptimizeIDFieldInstructions />
 

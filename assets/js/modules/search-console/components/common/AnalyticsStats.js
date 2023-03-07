@@ -25,11 +25,57 @@ import PropTypes from 'prop-types';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { Grid, Row, Cell } from '../../../../../material-components';
-import { CORE_MODULES } from '../../../../../googlesitekit/modules/datastore/constants';
-import { extractAnalyticsDashboardData } from '../../../../analytics/util';
-import GoogleChart from '../../../../../components/GoogleChart';
+import { Grid, Row, Cell } from '../../../../material-components';
+import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
+import { extractAnalyticsDashboardData } from '../../../analytics/util';
+import { extractAnalytics4DashboardData } from '../../../analytics-4/utils';
+import GoogleChart from '../../../../components/GoogleChart';
 const { useSelect } = Data;
+
+/**
+ * Extracts chart data from analytics row data.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} moduleSlug      The module slug.
+ * @param {Object} data            The data returned from the Analytics API call.
+ * @param {Array}  selectedStats   The currently selected stat we need to return data for.
+ * @param {number} dateRangeLength The number of days to extract data for. Pads empty data days.
+ * @param {Array}  dataLabels      The labels to be displayed.
+ * @param {Array}  dataFormats     The formats to be used for the data.
+ * @return {Array} The dataMap ready for charting.
+ */
+function extractChartData(
+	moduleSlug,
+	data,
+	selectedStats,
+	dateRangeLength,
+	dataLabels,
+	dataFormats
+) {
+	if ( moduleSlug === 'analytics-4' ) {
+		return (
+			extractAnalytics4DashboardData(
+				data,
+				selectedStats,
+				dateRangeLength,
+				dataLabels,
+				dataFormats
+			) || []
+		);
+	}
+	return (
+		extractAnalyticsDashboardData(
+			data,
+			selectedStats,
+			dateRangeLength,
+			0,
+			1,
+			dataLabels,
+			dataFormats
+		) || []
+	);
+}
 
 export default function AnalyticsStats( props ) {
 	const {
@@ -40,29 +86,28 @@ export default function AnalyticsStats( props ) {
 		dataFormats,
 		statsColor,
 		gatheringData,
+		moduleSlug,
 	} = props;
 
 	const analyticsModuleConnected = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleConnected( 'analytics' )
+		select( CORE_MODULES ).isModuleConnected( moduleSlug )
 	);
 	const analyticsModuleActive = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleActive( 'analytics' )
+		select( CORE_MODULES ).isModuleActive( moduleSlug )
 	);
 
 	if ( ! analyticsModuleActive || ! analyticsModuleConnected ) {
 		return null;
 	}
 
-	const googleChartData =
-		extractAnalyticsDashboardData(
-			data,
-			selectedStats,
-			dateRangeLength,
-			0,
-			1,
-			dataLabels,
-			dataFormats
-		) || [];
+	const googleChartData = extractChartData(
+		moduleSlug,
+		data,
+		selectedStats,
+		dateRangeLength,
+		dataLabels,
+		dataFormats
+	);
 
 	const dates = googleChartData.slice( 1 ).map( ( [ date ] ) => date );
 	const options = {
@@ -124,13 +169,17 @@ export default function AnalyticsStats( props ) {
 }
 
 AnalyticsStats.propTypes = {
-	data: PropTypes.arrayOf( PropTypes.object ).isRequired,
+	data: PropTypes.oneOfType( [
+		PropTypes.arrayOf( PropTypes.object ),
+		PropTypes.object,
+	] ).isRequired,
 	dateRangeLength: PropTypes.number.isRequired,
 	selectedStats: PropTypes.number.isRequired,
 	dataLabels: PropTypes.arrayOf( PropTypes.string ).isRequired,
 	dataFormats: PropTypes.arrayOf( PropTypes.func ).isRequired,
 	statsColor: PropTypes.string.isRequired,
 	gatheringData: PropTypes.bool,
+	moduleSlug: PropTypes.string.isRequired,
 };
 
 AnalyticsStats.chartOptions = {

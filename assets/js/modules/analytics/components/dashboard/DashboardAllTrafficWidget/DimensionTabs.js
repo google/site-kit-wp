@@ -71,7 +71,7 @@ export default function DimensionTabs( {
 	const { setValues } = useDispatch( CORE_UI );
 
 	const activeTab = tabs.findIndex(
-		( v ) => v.dimensionName === dimensionName
+		( tab ) => tab.dimensionName === dimensionName
 	);
 
 	const handleTabUpdate = useCallback(
@@ -136,7 +136,7 @@ export default function DimensionTabs( {
 				>
 					{ tabs.map( ( tab, index ) => (
 						<Option
-							key={ index }
+							key={ tab.dimensionName }
 							value={ `dimension-name-${ index }` }
 						>
 							{ tab.tabText }
