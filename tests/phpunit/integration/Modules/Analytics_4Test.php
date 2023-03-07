@@ -520,15 +520,11 @@ class Analytics_4Test extends TestCase {
 			$this->analytics->get_scopes()
 		);
 
-		$fake_http_handler = $this->create_fake_http_handler( $property_id );
 		FakeHttp::fake_google_http_handler(
-			$this->authentication->get_oauth_client()->get_client(),
-			$fake_http_handler
+			$this->analytics->get_client(),
+			$this->create_fake_http_handler( $property_id )
 		);
-		FakeHttp::fake_google_http_handler(
-			$this->analytics->get_owner_oauth_client()->get_client(),
-			$fake_http_handler
-		);
+
 		$this->analytics->register();
 
 		// Fetch a report that exercises all input parameters, barring the alternative date range,
