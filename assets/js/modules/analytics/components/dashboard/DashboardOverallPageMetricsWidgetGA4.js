@@ -75,7 +75,7 @@ function DashboardOverallPageMetricsWidgetGA4( { Widget, WidgetReportError } ) {
 				name: 'sessions',
 			},
 			{
-				name: 'engagedSessions',
+				name: 'engagementRate',
 			},
 			{
 				name: 'averageSessionDuration',

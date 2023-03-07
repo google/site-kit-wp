@@ -63,7 +63,7 @@ describe( 'getAnalytics4MockResponse', () => {
 					name: 'sessions',
 				},
 				{
-					name: 'newUsers',
+					name: 'engagementRate',
 				},
 			],
 			dimensions: [ 'date' ],

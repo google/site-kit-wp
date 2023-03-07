@@ -1395,6 +1395,54 @@ class Analytics_4Test extends TestCase {
 		$this->set_user_access_token( $user_id, $access_token );
 	}
 
+	public function test_tracking_opt_out_snippet() {
+		$analytics_4 = new Analytics_4( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$analytics_4->register();
+
+		$snippet_html = $this->capture_action( 'googlesitekit_analytics_tracking_opt_out' );
+		// Ensure the snippet is not output when the measurement ID is empty.
+		$this->assertEmpty( $snippet_html );
+
+		$settings = array(
+			'measurementID' => 'G-12345678',
+		);
+		$analytics_4->get_settings()->merge( $settings );
+
+		$snippet_html = $this->capture_action( 'googlesitekit_analytics_tracking_opt_out' );
+		// Ensure the snippet contains the configured measurement ID.
+		$this->assertStringContainsString( 'window["ga-disable-' . $settings['measurementID'] . '"] = true', $snippet_html );
+	}
+
+	public function test_tracking_opt_out_snippet__gteSupport() {
+		$this->enable_feature( 'gteSupport' );
+
+		$analytics_4 = new Analytics_4( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$analytics_4->register();
+
+		$snippet_html = $this->capture_action( 'googlesitekit_analytics_tracking_opt_out' );
+		// Ensure the snippet is not output when both measurement ID and google tag ID are empty.
+		$this->assertEmpty( $snippet_html );
+
+		$settings = array(
+			'measurementID' => 'G-12345678',
+		);
+		$analytics_4->get_settings()->merge( $settings );
+
+		$snippet_html = $this->capture_action( 'googlesitekit_analytics_tracking_opt_out' );
+		// Ensure the snippet contains the configured measurement ID when it is set and the google tag ID is empty.
+		$this->assertStringContainsString( 'window["ga-disable-' . $settings['measurementID'] . '"] = true', $snippet_html );
+
+		$settings = array(
+			'googleTagID' => 'GT-12345678',
+		);
+
+		$analytics_4->get_settings()->merge( $settings );
+
+		$snippet_html = $this->capture_action( 'googlesitekit_analytics_tracking_opt_out' );
+		// Ensure the snippet contains the configured google tag ID when it is set.
+		$this->assertStringContainsString( 'window["ga-disable-' . $settings['googleTagID'] . '"] = true', $snippet_html );
+	}
+
 	/**
 	 * @return Module_With_Scopes
 	 */
