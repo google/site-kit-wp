@@ -22,6 +22,7 @@
 import { SettingsEdit, SettingsView } from './components/settings';
 import DashboardPopularKeywordsWidget from './components/dashboard/DashboardPopularKeywordsWidget';
 import SearchFunnelWidget from './components/dashboard/SearchFunnelWidget';
+import SearchFunnelWidgetGA4 from './components/dashboard/SearchFunnelWidgetGA4';
 import {
 	AREA_MAIN_DASHBOARD_CONTENT_PRIMARY,
 	AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY,
@@ -35,6 +36,8 @@ import PopularKeywordsWidget from './components/widgets/PopularKeywordsWidget';
 import { isFeatureEnabled } from '../../features';
 
 export { registerStore } from './datastore';
+
+const ga4ReportingEnabled = isFeatureEnabled( 'ga4Reporting' );
 
 export const registerModule = ( modules ) => {
 	modules.registerModule( 'search-console', {
@@ -64,7 +67,9 @@ export const registerWidgets = ( widgets ) => {
 	widgets.registerWidget(
 		'searchFunnel',
 		{
-			Component: SearchFunnelWidget,
+			Component: ga4ReportingEnabled
+				? SearchFunnelWidgetGA4
+				: SearchFunnelWidget,
 			width: [ widgets.WIDGET_WIDTHS.FULL ],
 			priority: 3,
 			wrapWidget: false,
