@@ -261,18 +261,12 @@ describe( 'modules/analytics-4 report', () => {
 				expect( isGatheringData() ).toBe( false );
 			} );
 
-			it( 'should return FALSE if the report request fails', async () => {
+			it( 'should return `undefined` if the report request fails', async () => {
 				const response = {
 					code: 'internal_server_error',
 					message: 'Internal server error',
 					data: { status: 500 },
 				};
-
-				muteFetch(
-					new RegExp(
-						'^/google-site-kit/v1/modules/analytics-4/data/data-available'
-					)
-				);
 
 				fetchMock.getOnce(
 					new RegExp(
@@ -289,13 +283,16 @@ describe( 'modules/analytics-4 report', () => {
 
 				expect( isGatheringData() ).toBeUndefined();
 
-				await subscribeUntil(
-					registry,
-					() => isGatheringData() !== undefined
-				);
+				// Wait for resolvers to run.
+				await waitForDefaultTimeouts();
 
-				expect( isGatheringData() ).toBe( false );
+				expect( isGatheringData() ).toBeUndefined();
 				expect( console ).toHaveErrored();
+				expect( fetchMock ).not.toHaveFetched(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics-4/data/data-available'
+					)
+				);
 			} );
 
 			describe.each( [
@@ -444,7 +441,7 @@ describe( 'modules/analytics-4 report', () => {
 				await waitForDefaultTimeouts();
 			} );
 
-			it( 'should return FALSE if the report request fails', async () => {
+			it( 'should return `undefined` if the report request fails', async () => {
 				const response = {
 					code: 'internal_server_error',
 					message: 'Internal server error',
@@ -465,12 +462,10 @@ describe( 'modules/analytics-4 report', () => {
 
 				expect( hasZeroData() ).toBeUndefined();
 
-				await subscribeUntil(
-					registry,
-					() => hasZeroData() !== undefined
-				);
+				// Wait for resolvers to run.
+				await waitForDefaultTimeouts();
 
-				expect( hasZeroData() ).toBe( false );
+				expect( hasZeroData() ).toBeUndefined();
 				expect( console ).toHaveErrored();
 			} );
 
