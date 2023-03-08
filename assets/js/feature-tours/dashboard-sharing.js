@@ -69,7 +69,7 @@ const dashboardSharing = {
 			ACTIONS.STOP === action ||
 			ACTIONS.CLOSE === action ||
 			( index === 0 && dialogOpen ) ||
-			status === 'finished'
+			( action === 'next' && status === 'finished' )
 		) {
 			dispatch( CORE_UI ).setValue( SETTINGS_DIALOG, false );
 		}
