@@ -28,11 +28,14 @@ import Data from 'googlesitekit-data';
 import AdminBarImpressions from './AdminBarImpressions';
 import AdminBarClicks from './AdminBarClicks';
 import AdminBarUniqueVisitors from './AdminBarUniqueVisitors';
+import AdminBarUniqueVisitorsGA4 from './AdminBarUniqueVisitorsGA4';
 import AdminBarSessions from './AdminBarSessions';
+import AdminBarSessionsGA4 from './AdminBarSessionsGA4';
 import AdminBarActivateAnalyticsCTA from './AdminBarActivateAnalyticsCTA';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { Row, Cell } from '../../material-components';
 import { withWidgetComponentProps } from '../../googlesitekit/widgets/util/get-widget-component-props';
+import { useFeature } from '../../hooks/useFeature';
 const { useSelect } = Data;
 
 // Widget slugs.
@@ -53,6 +56,8 @@ const AdminBarSessionsWidget =
 	withWidgetComponentProps( WIDGET_SESSIONS )( AdminBarSessions );
 
 export default function AdminBarWidgets() {
+	const ga4ReportingEnabled = useFeature( 'ga4Reporting' );
+
 	const analyticsModuleAvailable = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleAvailable( 'analytics' )
 	);
@@ -76,10 +81,18 @@ export default function AdminBarWidgets() {
 				{ analyticsModuleConnected && analyticsModuleActive && (
 					<Fragment>
 						<Cell lgSize={ 3 } mdSize={ 2 }>
-							<AdminBarUniqueVisitorsWidget />
+							{ ga4ReportingEnabled ? (
+								<AdminBarUniqueVisitorsGA4 />
+							) : (
+								<AdminBarUniqueVisitorsWidget />
+							) }
 						</Cell>
 						<Cell lgSize={ 3 } mdSize={ 2 }>
-							<AdminBarSessionsWidget />
+							{ ga4ReportingEnabled ? (
+								<AdminBarSessionsGA4 />
+							) : (
+								<AdminBarSessionsWidget />
+							) }
 						</Cell>
 					</Fragment>
 				) }
