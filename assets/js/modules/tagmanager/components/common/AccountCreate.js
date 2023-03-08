@@ -71,6 +71,7 @@ export default function AccountCreate() {
 			<StoreErrorNotices
 				moduleSlug="tagmanager"
 				storeName={ MODULES_TAGMANAGER }
+				shouldDisplayRetry={ false }
 			/>
 
 			<p>

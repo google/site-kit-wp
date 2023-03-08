@@ -44,6 +44,7 @@ export default function ErrorNotices() {
 			shouldDisplayError={
 				adsenseSetupV2Enabled ? undefined : shouldDisplayError
 			}
+			shouldDisplayRetry={ false }
 		/>
 	);
 }

@@ -387,7 +387,12 @@ export default function SetupBanner( { onSubmitSuccess } ) {
 			) }
 			onDismiss={ showTooltip }
 		>
-			{ errorNotice && <ErrorNotice error={ errorNotice } /> }
+			{ errorNotice && (
+				<ErrorNotice
+					error={ errorNotice }
+					shouldDisplayRetry={ false }
+				/>
+			) }
 			{ children }
 		</BannerNotification>
 	);

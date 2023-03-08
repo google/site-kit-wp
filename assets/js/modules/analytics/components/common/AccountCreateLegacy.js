@@ -81,6 +81,7 @@ export default function AccountCreateLegacy() {
 			<StoreErrorNotices
 				moduleSlug="analytics"
 				storeName={ MODULES_ANALYTICS }
+				shouldDisplayRetry={ false }
 			/>
 
 			{ ! isCreateAccount && accounts && accounts.length === 0 && (

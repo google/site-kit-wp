@@ -199,6 +199,7 @@ export default function AccountCreate() {
 			<StoreErrorNotices
 				moduleSlug="analytics"
 				storeName={ MODULES_ANALYTICS }
+				shouldDisplayRetry={ false }
 			/>
 
 			<h3 className="googlesitekit-heading-4">
