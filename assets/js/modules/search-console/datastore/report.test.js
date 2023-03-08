@@ -273,12 +273,16 @@ describe( 'modules/search-console report', () => {
 			it( 'should return `undefined` if getReport or isGatheringData is not resolved yet', async () => {
 				freezeFetch( searchAnalyticsRegexp );
 
-				const { hasZeroData } = registry.select(
+				const { hasZeroData, isResolving } = registry.select(
 					MODULES_SEARCH_CONSOLE
 				);
 
 				expect( hasZeroData() ).toBeUndefined();
 
+				await subscribeUntil(
+					registry,
+					() => isResolving( 'isGatheringData', [] ) === true
+				);
 				// Wait for resolvers to run.
 				await waitForDefaultTimeouts();
 
@@ -305,14 +309,14 @@ describe( 'modules/search-console report', () => {
 			it( 'should return `undefined` if report API returns error', async () => {
 				fetchMock.getOnce( searchAnalyticsRegexp, errorResponse );
 
-				const { hasZeroData } = registry.select(
+				const { hasZeroData, hasErrors } = registry.select(
 					MODULES_SEARCH_CONSOLE
 				);
 
 				expect( hasZeroData() ).toBeUndefined();
 
 				// Wait for resolvers to run.
-				await waitForDefaultTimeouts();
+				await subscribeUntil( registry, () => hasErrors() );
 
 				expect( console ).toHaveErroredWith( ...consoleError );
 
