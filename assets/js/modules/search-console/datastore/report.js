@@ -118,6 +118,14 @@ const gatheringDataStore = createGatheringDataStore( 'search-console', {
 			return undefined;
 		}
 
+		const hasReportError = select(
+			MODULES_SEARCH_CONSOLE
+		).getErrorForSelector( 'getReport', [ args ] );
+		// If there is an error, return `undefined` since we don't know if there is data or not.
+		if ( hasReportError ) {
+			return undefined;
+		}
+
 		if ( ! Array.isArray( report ) || report.length ) {
 			return true;
 		}

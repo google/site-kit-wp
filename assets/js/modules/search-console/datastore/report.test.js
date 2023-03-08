@@ -36,6 +36,9 @@ describe( 'modules/search-console report', () => {
 	const searchAnalyticsRegexp = new RegExp(
 		'^/google-site-kit/v1/modules/search-console/data/searchanalytics'
 	);
+	const dataAvailableRegexp = new RegExp(
+		'^/google-site-kit/v1/modules/search-console/data/data-available'
+	);
 	const errorResponse = {
 		status: 403,
 		body: {
@@ -169,7 +172,7 @@ describe( 'modules/search-console report', () => {
 		} );
 
 		describe( 'isGatheringData', () => {
-			it( 'should return undefined if getReport is not resolved yet', async () => {
+			it( 'should return `undefined` if getReport is not resolved yet', async () => {
 				freezeFetch( searchAnalyticsRegexp );
 
 				const { isGatheringData } = registry.select(
@@ -180,6 +183,33 @@ describe( 'modules/search-console report', () => {
 
 				// Wait for resolvers to run.
 				await waitForDefaultTimeouts();
+
+				expect( fetchMock ).toHaveFetched( searchAnalyticsRegexp );
+			} );
+
+			it( 'should return `undefined` if report API returns error', async () => {
+				const response = {
+					code: 'internal_server_error',
+					message: 'Internal server error',
+					data: { status: 500 },
+				};
+
+				fetchMock.getOnce( searchAnalyticsRegexp, {
+					body: response,
+					status: 500,
+				} );
+
+				const { isGatheringData } = registry.select(
+					MODULES_SEARCH_CONSOLE
+				);
+
+				expect( isGatheringData() ).toBeUndefined();
+
+				// Wait for resolvers to run.
+				await waitForDefaultTimeouts();
+
+				expect( isGatheringData() ).toBeUndefined();
+				expect( console ).toHaveErrored();
 			} );
 
 			it( 'should return TRUE if the returned report is an empty array', async () => {
@@ -199,14 +229,8 @@ describe( 'modules/search-console report', () => {
 				expect( isGatheringData() ).toBe( true );
 			} );
 
-			it( 'should return FALSE if the report API returns error', async () => {
+			it( 'should return `undefined` if the report API returns error', async () => {
 				fetchMock.getOnce( searchAnalyticsRegexp, errorResponse );
-
-				muteFetch(
-					new RegExp(
-						'^/google-site-kit/v1/modules/search-console/data/data-available'
-					)
-				);
 
 				const { isGatheringData } = registry.select(
 					MODULES_SEARCH_CONSOLE
@@ -214,14 +238,13 @@ describe( 'modules/search-console report', () => {
 
 				expect( isGatheringData() ).toBeUndefined();
 
-				await subscribeUntil(
-					registry,
-					() => isGatheringData() !== undefined
-				);
+				// Wait for resolvers to run.
+				await waitForDefaultTimeouts();
 
 				expect( console ).toHaveErroredWith( ...consoleError );
 
-				expect( isGatheringData() ).toBe( false );
+				expect( isGatheringData() ).toBeUndefined();
+				expect( fetchMock ).not.toHaveFetched( dataAvailableRegexp );
 			} );
 
 			it( 'should return FALSE if the returned report has rows', async () => {
@@ -229,11 +252,7 @@ describe( 'modules/search-console report', () => {
 					body: fixtures.report,
 				} );
 
-				muteFetch(
-					new RegExp(
-						'^/google-site-kit/v1/modules/search-console/data/data-available'
-					)
-				);
+				muteFetch( dataAvailableRegexp );
 
 				const { isGatheringData } = registry.select(
 					MODULES_SEARCH_CONSOLE
@@ -251,7 +270,7 @@ describe( 'modules/search-console report', () => {
 		} );
 
 		describe( 'hasZeroData', () => {
-			it( 'should return undefined if getReport or isGatheringData is not resolved yet', async () => {
+			it( 'should return `undefined` if getReport or isGatheringData is not resolved yet', async () => {
 				freezeFetch( searchAnalyticsRegexp );
 
 				const { hasZeroData } = registry.select(
@@ -262,6 +281,8 @@ describe( 'modules/search-console report', () => {
 
 				// Wait for resolvers to run.
 				await waitForDefaultTimeouts();
+
+				expect( fetchMock ).toHaveFetched( searchAnalyticsRegexp );
 			} );
 
 			it( 'should return TRUE if report data in isGatheringData OR isZeroReport is an empty array', async () => {
@@ -281,14 +302,8 @@ describe( 'modules/search-console report', () => {
 				expect( hasZeroData() ).toBe( true );
 			} );
 
-			it( 'should return FALSE if report API returns error', async () => {
+			it( 'should return `undefined` if report API returns error', async () => {
 				fetchMock.getOnce( searchAnalyticsRegexp, errorResponse );
-
-				muteFetch(
-					new RegExp(
-						'^/google-site-kit/v1/modules/search-console/data/data-available'
-					)
-				);
 
 				const { hasZeroData } = registry.select(
 					MODULES_SEARCH_CONSOLE
@@ -296,14 +311,13 @@ describe( 'modules/search-console report', () => {
 
 				expect( hasZeroData() ).toBeUndefined();
 
-				await subscribeUntil(
-					registry,
-					() => hasZeroData() !== undefined
-				);
+				// Wait for resolvers to run.
+				await waitForDefaultTimeouts();
 
 				expect( console ).toHaveErroredWith( ...consoleError );
 
-				expect( hasZeroData() ).toBe( false );
+				expect( hasZeroData() ).toBeUndefined();
+				expect( fetchMock ).not.toHaveFetched( dataAvailableRegexp );
 			} );
 
 			it( 'should return false if isGatheringData and isZeroReport return false', async () => {
@@ -311,11 +325,7 @@ describe( 'modules/search-console report', () => {
 					body: fixtures.report,
 				} );
 
-				muteFetch(
-					new RegExp(
-						'^/google-site-kit/v1/modules/search-console/data/data-available'
-					)
-				);
+				muteFetch( dataAvailableRegexp );
 
 				const { hasZeroData } = registry.select(
 					MODULES_SEARCH_CONSOLE
