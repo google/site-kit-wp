@@ -55,7 +55,7 @@ const dashboardSharing = {
 	],
 	checkRequirements: () => isFeatureEnabled( 'dashboardSharing' ),
 	callback: ( data, { select, dispatch } ) => {
-		const { action, index, size, type } = data;
+		const { action, index, size, type, status } = data;
 
 		const dialogOpen = select( CORE_UI ).getValue( SETTINGS_DIALOG );
 
@@ -69,7 +69,7 @@ const dashboardSharing = {
 			ACTIONS.STOP === action ||
 			ACTIONS.CLOSE === action ||
 			( index === 0 && dialogOpen ) ||
-			index + 1 > size
+			status === 'finished'
 		) {
 			dispatch( CORE_UI ).setValue( SETTINGS_DIALOG, false );
 		}
