@@ -31,6 +31,7 @@ import {
 	setupSearchConsoleAnalyticsZeroData,
 	widgetDecorators,
 } from './common.stories';
+import { setupAnalytics4MockReports } from './common-GA4.stories';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import AdminBarWidgets from './AdminBarWidgets';
@@ -84,6 +85,29 @@ AnalyticsInactiveNewCompleteActivation.args = {
 		provideUserAuthentication( registry );
 		setupSearchConsoleMockReports( registry );
 	},
+};
+
+export const AnalyticsModuleActiveAndga4ReportingEnabled = Template.bind( {} );
+AnalyticsModuleActiveAndga4ReportingEnabled.storyName =
+	'Active: With GA4 Reporting Enabled';
+AnalyticsModuleActiveAndga4ReportingEnabled.args = {
+	setupRegistry: ( registry ) => {
+		// Set up the analytics module store but provide no data.
+		provideModules( registry, [
+			{
+				slug: 'analytics',
+				active: true,
+				connected: true,
+			},
+		] );
+		provideModuleRegistrations( registry );
+		provideUserAuthentication( registry );
+		setupSearchConsoleMockReports( registry );
+		setupAnalytics4MockReports( registry );
+	},
+};
+AnalyticsModuleActiveAndga4ReportingEnabled.parameters = {
+	features: [ 'ga4Reporting' ],
 };
 
 export const GatheringData = Template.bind( {} );
