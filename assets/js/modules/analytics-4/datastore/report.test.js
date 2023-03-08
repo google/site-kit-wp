@@ -216,7 +216,7 @@ describe( 'modules/analytics-4 report', () => {
 		} );
 
 		describe( 'isGatheringData', () => {
-			it( 'should return undefined if getReport is not resolved yet', async () => {
+			it( 'should return `undefined` if getReport is not resolved yet', async () => {
 				freezeFetch(
 					new RegExp(
 						'^/google-site-kit/v1/modules/analytics-4/data/report'
@@ -230,6 +230,12 @@ describe( 'modules/analytics-4 report', () => {
 
 				// Wait for resolvers to run.
 				await waitForDefaultTimeouts();
+
+				expect( fetchMock ).toHaveFetched(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics-4/data/report'
+					)
+				);
 			} );
 
 			it( 'should return FALSE if the returned report has data', async () => {
