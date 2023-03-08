@@ -383,7 +383,7 @@ describe( 'modules/analytics report', () => {
 				await waitForDefaultTimeouts();
 			} );
 
-			it( 'should return TRUE if the returned report is null', async () => {
+			it( 'should return TRUE if the returned report rows are null', async () => {
 				fetchMock.getOnce(
 					new RegExp(
 						'^/google-site-kit/v1/modules/analytics/data/report'
