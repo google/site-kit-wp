@@ -68,7 +68,8 @@ const dashboardSharing = {
 		if (
 			ACTIONS.STOP === action ||
 			ACTIONS.CLOSE === action ||
-			( index === 0 && dialogOpen )
+			( index === 0 && dialogOpen ) ||
+			index + 1 > size
 		) {
 			dispatch( CORE_UI ).setValue( SETTINGS_DIALOG, false );
 		}
