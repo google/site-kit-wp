@@ -302,6 +302,7 @@ const baseSelectors = {
 	 * Determines whether Analytics 4 has zero data or not.
 	 *
 	 * @since 1.95.0
+	 * @since 1.96.0 Returns `undefined` if the underlying report errors.
 	 *
 	 * @return {boolean|undefined} Returns `true` if the report is zero, otherwise `false`.
 	 *                             Returns `undefined` while resolving or in the event of an error.
