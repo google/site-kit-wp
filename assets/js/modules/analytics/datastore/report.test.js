@@ -460,7 +460,7 @@ describe( 'modules/analytics report', () => {
 		} );
 
 		describe( 'hasZeroData', () => {
-			it( 'should return undefined if getReport or isGatheringData is not resolved yet', async () => {
+			it( 'should return `undefined` if getReport or isGatheringData is not resolved yet', async () => {
 				freezeFetch(
 					new RegExp(
 						'^/google-site-kit/v1/modules/analytics/data/report'
@@ -479,6 +479,34 @@ describe( 'modules/analytics report', () => {
 
 				// Wait for resolvers to run.
 				await waitForDefaultTimeouts();
+			} );
+
+			it( 'should return `undefined` if the report request fails', async () => {
+				const response = {
+					code: 'internal_server_error',
+					message: 'Internal server error',
+					data: { status: 500 },
+				};
+
+				fetchMock.getOnce(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics/data/report'
+					),
+					{
+						body: response,
+						status: 500,
+					}
+				);
+
+				const { hasZeroData } = registry.select( MODULES_ANALYTICS );
+
+				expect( hasZeroData() ).toBeUndefined();
+
+				// Wait for resolvers to run.
+				await waitForDefaultTimeouts();
+
+				expect( hasZeroData() ).toBeUndefined();
+				expect( console ).toHaveErrored();
 			} );
 
 			it( 'should return TRUE if isGatheringData is true', async () => {

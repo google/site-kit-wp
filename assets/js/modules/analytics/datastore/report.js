@@ -153,8 +153,14 @@ const gatheringDataStore = createGatheringDataStore( 'analytics', {
 			return undefined;
 		}
 
-		if ( ! Array.isArray( report ) ) {
-			return true;
+		const hasReportError = select( MODULES_ANALYTICS ).getErrorForSelector(
+			'getReport',
+			[ args ]
+		);
+
+		// If there is an error, return `undefined` since we don't know if there is data or not.
+		if ( hasReportError ) {
+			return undefined;
 		}
 
 		if (
