@@ -151,7 +151,7 @@ const baseSelectors = {
 	},
 
 	/**
-	 * Gets the Google Tag container destinations for the given accountID and containeID.
+	 * Gets the Google Tag container destinations for the given accountID and containerID.
 	 *
 	 * @since 1.92.0
 	 *
