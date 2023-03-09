@@ -42,7 +42,7 @@ import parseDimensionStringToDate from '../../analytics/util/parseDimensionStrin
 /**
  * Reduces and processes an array of analytics-4 row data.
  *
- * @since n.e.x.t
+ * @since 1.96.0
  *
  * @param {Array}  rows          An array of rows to reduce.
  * @param {number} selectedStats The currently selected stat we need to return data for.
@@ -66,7 +66,7 @@ function reduceAnalytics4RowsData( rows, selectedStats ) {
 /**
  * Extracts the data required from an analytics 'site-analytics' request.
  *
- * @since n.e.x.t
+ * @since 1.96.0
  *
  * @param {Object} report        The data returned from the Analytics API call.
  * @param {Array}  selectedStats The currently selected stat we need to return data for.
