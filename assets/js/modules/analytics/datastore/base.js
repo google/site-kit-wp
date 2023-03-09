@@ -47,6 +47,7 @@ const baseModuleStore = Modules.createModuleStore( 'analytics', {
 		'propertyID',
 		'trackingDisabled',
 		'useSnippet',
+		'dashboardView',
 	],
 	submitChanges,
 	rollbackChanges,

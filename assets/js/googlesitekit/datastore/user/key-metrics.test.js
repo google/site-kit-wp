@@ -21,10 +21,11 @@ import API from 'googlesitekit-api';
 import {
 	createTestRegistry,
 	unsubscribeFromAll,
+	untilResolved,
 } from '../../../../../tests/js/utils';
 import { CORE_USER } from './constants';
 
-describe( 'core/user user-input-settings', () => {
+describe( 'core/user key metrics', () => {
 	let registry;
 	let store;
 
@@ -35,6 +36,16 @@ describe( 'core/user user-input-settings', () => {
 	const coreKeyMetricsExpectedResponse = {
 		widgetSlugs: [ 'widget1', 'widget2' ],
 		isWidgetHidden: false,
+	};
+
+	const coreUserInputSettingsEndpointRegExp = new RegExp(
+		'^/google-site-kit/v1/core/user/data/user-input-settings'
+	);
+	const coreUserInputSettingsExpectedResponse = {
+		purpose: {
+			values: [ 'publish_blog' ],
+			scope: 'site',
+		},
 	};
 
 	beforeAll( () => {
@@ -69,6 +80,7 @@ describe( 'core/user user-input-settings', () => {
 				);
 			} );
 		} );
+
 		describe( 'saveKeyMetrics', () => {
 			beforeEach( async () => {
 				await registry
@@ -126,6 +138,91 @@ describe( 'core/user user-input-settings', () => {
 				).toMatchObject( response );
 
 				expect( console ).toHaveErrored();
+			} );
+		} );
+	} );
+
+	describe( 'selectors', () => {
+		describe( 'getKeyMetrics', () => {
+			it( 'should fetch user key metrics from the API if none exist', async () => {
+				fetchMock.getOnce( coreKeyMetricsEndpointRegExp, {
+					body: coreKeyMetricsExpectedResponse,
+					status: 200,
+				} );
+
+				fetchMock.getOnce( coreUserInputSettingsEndpointRegExp, {
+					body: coreUserInputSettingsExpectedResponse,
+					status: 200,
+				} );
+
+				registry.select( CORE_USER ).getUserInputSettings();
+
+				await untilResolved(
+					registry,
+					CORE_USER
+				).getUserInputSettings();
+
+				registry.select( CORE_USER ).getKeyMetrics();
+
+				await untilResolved(
+					registry,
+					CORE_USER
+				).getUserPickedMetrics();
+
+				expect( fetchMock ).toHaveFetched(
+					coreKeyMetricsEndpointRegExp,
+					{
+						body: {
+							settings: coreKeyMetricsExpectedResponse,
+						},
+					}
+				);
+
+				expect(
+					registry.select( CORE_USER ).getKeyMetrics()
+				).toMatchObject( coreKeyMetricsExpectedResponse.widgetSlugs );
+
+				expect( fetchMock ).toHaveFetchedTimes( 2 );
+			} );
+
+			it( 'should use answer-based key metrics if the user has not selected any widgets', async () => {
+				fetchMock.getOnce( coreKeyMetricsEndpointRegExp, {
+					body: {
+						widgetSlugs: [],
+						isWidgetHidden: false,
+					},
+					status: 200,
+				} );
+
+				fetchMock.getOnce( coreUserInputSettingsEndpointRegExp, {
+					body: coreUserInputSettingsExpectedResponse,
+					status: 200,
+				} );
+
+				registry.select( CORE_USER ).getUserInputSettings();
+
+				await untilResolved(
+					registry,
+					CORE_USER
+				).getUserInputSettings();
+
+				registry.select( CORE_USER ).getKeyMetrics();
+
+				await untilResolved(
+					registry,
+					CORE_USER
+				).getUserPickedMetrics();
+
+				expect(
+					registry.select( CORE_USER ).getKeyMetrics()
+				).toMatchObject( [
+					'kmAnalyticsLoyalVisitors',
+					'kmAnalyticsNewVisitors',
+					'kmAnalyticsTopTrafficSource',
+					'kmAnalyticsEngagedTrafficSource',
+				] );
+
+				expect( fetchMock ).toHaveFetchedTimes( 2 );
 			} );
 		} );
 	} );

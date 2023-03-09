@@ -319,13 +319,11 @@ final class Analytics_4 extends Module
 	 * @since 1.41.0
 	 */
 	private function analytics_tracking_opt_out() {
-		$settings       = $this->get_settings()->get();
-		$measurement_id = $settings['measurementID'];
-		if ( ! $measurement_id ) {
+		$tag_id = $this->get_tag_id();
+		if ( empty( $tag_id ) ) {
 			return;
 		}
-		BC_Functions::wp_print_inline_script_tag( sprintf( 'window["ga-disable-%s"] = true;', esc_attr( $measurement_id ) ) );
-
+		BC_Functions::wp_print_inline_script_tag( sprintf( 'window["ga-disable-%s"] = true;', esc_attr( $tag_id ) ) );
 	}
 
 	/**
@@ -737,13 +735,7 @@ final class Analytics_4 extends Module
 			return;
 		}
 
-		$settings = $this->get_settings()->get();
-
-		if ( Feature_Flags::enabled( 'gteSupport' ) && ! empty( $settings['googleTagID'] ) ) {
-			$tag = new Web_Tag( $settings['googleTagID'], self::MODULE_SLUG );
-		} else {
-			$tag = new Web_Tag( $settings['measurementID'], self::MODULE_SLUG );
-		}
+		$tag = new Web_Tag( $this->get_tag_id(), self::MODULE_SLUG );
 
 		if ( $tag->is_tag_blocked() ) {
 			return;
@@ -980,6 +972,22 @@ final class Analytics_4 extends Module
 
 		// If none of the above, return the first one.
 		return $tag_ids[0];
+	}
+
+	/**
+	 * Gets the Google Analytics 4 tag ID.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string Google Analytics 4 tag ID.
+	 */
+	private function get_tag_id() {
+		$settings = $this->get_settings()->get();
+
+		if ( Feature_Flags::enabled( 'gteSupport' ) && ! empty( $settings['googleTagID'] ) ) {
+			return $settings['googleTagID'];
+		}
+		return $settings['measurementID'];
 	}
 
 	/**

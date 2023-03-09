@@ -72,7 +72,7 @@ export function calculateOverallPageMetricsData( report, startDate ) {
 			change: 0,
 		},
 		{
-			metric: 'engagedSessions',
+			metric: 'engagementRate',
 			title: __( 'Engaged Sessions', 'google-site-kit' ),
 			sparkLineData: [
 				[
@@ -81,7 +81,6 @@ export function calculateOverallPageMetricsData( report, startDate ) {
 				],
 			],
 			datapointUnit: '%',
-			datapointDivider: 100,
 			total: 0,
 			change: 0,
 		},

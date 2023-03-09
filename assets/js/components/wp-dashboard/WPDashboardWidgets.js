@@ -33,9 +33,12 @@ import Data from 'googlesitekit-data';
 import WPDashboardImpressions from './WPDashboardImpressions';
 import WPDashboardClicks from './WPDashboardClicks';
 import WPDashboardUniqueVisitors from './WPDashboardUniqueVisitors';
+import WPDashboardUniqueVisitorsGA4 from './WPDashboardUniqueVisitorsGA4';
 import WPDashboardSessionDuration from './WPDashboardSessionDuration';
+import WPDashboardSessionDurationGA4 from './WPDashboardSessionDurationGA4';
 import WPDashboardPopularPages from './WPDashboardPopularPages';
 import WPDashboardActivateAnalyticsCTA from './WPDashboardActivateAnalyticsCTA';
+import { useFeature } from '../../hooks/useFeature';
 import WPDashboardUniqueVisitorsChartWidget from './WPDashboardUniqueVisitorsChartWidget';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { withWidgetComponentProps } from '../../googlesitekit/widgets/util/get-widget-component-props';
@@ -66,7 +69,17 @@ const WPDashboardPopularPagesWidget = withWidgetComponentProps(
 	WIDGET_POPULAR_PAGES
 )( WPDashboardPopularPages );
 
+// Analytics 4 Widgets.
+const WPDashboardUniqueVisitorsGA4Widget = withWidgetComponentProps(
+	WIDGET_VISITORS
+)( WPDashboardUniqueVisitorsGA4 );
+const WPDashboardSessionDurationGA4Widget = withWidgetComponentProps(
+	WIDGET_SESSION_DURATION
+)( WPDashboardSessionDurationGA4 );
+
 const WPDashboardWidgets = () => {
+	const ga4ReportingEnabled = useFeature( 'ga4Reporting' );
+
 	const analyticsModule = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModule( 'analytics' )
 	);
@@ -89,10 +102,17 @@ const WPDashboardWidgets = () => {
 				}
 			) }
 		>
-			{ analyticsModuleActiveAndConnected && (
+			{ analyticsModuleActiveAndConnected && ! ga4ReportingEnabled && (
 				<Fragment>
 					<WPDashboardUniqueVisitorsWidget />
 					<WPDashboardSessionDurationWidget />
+				</Fragment>
+			) }
+
+			{ analyticsModuleActiveAndConnected && ga4ReportingEnabled && (
+				<Fragment>
+					<WPDashboardUniqueVisitorsGA4Widget />
+					<WPDashboardSessionDurationGA4Widget />
 				</Fragment>
 			) }
 

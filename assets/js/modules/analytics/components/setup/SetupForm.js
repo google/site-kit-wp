@@ -115,6 +115,7 @@ export default function SetupForm( { finishSetup } ) {
 			<StoreErrorNotices
 				moduleSlug="analytics"
 				storeName={ MODULES_ANALYTICS }
+				shouldDisplayRetry={ false }
 			/>
 			<ExistingGTMPropertyNotice
 				gtmAnalyticsPropertyID={ gtmAnalyticsPropertyID }

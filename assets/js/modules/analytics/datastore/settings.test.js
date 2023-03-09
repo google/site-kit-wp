@@ -70,6 +70,7 @@ describe( 'modules/analytics settings', () => {
 		trackingDisabled: [],
 		anonymizeIP: true,
 		canUseSnippet: true,
+		dashbaordView: 'universal-analytics',
 	};
 	const tagWithPermission = {
 		accountID: '12345',
