@@ -930,7 +930,7 @@ final class Assets {
 	/**
 	 * Gets inline modules data.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.96.0
 	 *
 	 * @return array The inline modules data to be output.
 	 */
@@ -939,7 +939,7 @@ final class Assets {
 		/**
 		 * Filters the inline modules data to pass to JS.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.96.0
 		 *
 		 * @param array $data Modules data.
 		 */

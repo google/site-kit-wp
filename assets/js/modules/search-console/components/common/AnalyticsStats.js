@@ -35,7 +35,7 @@ const { useSelect } = Data;
 /**
  * Extracts chart data from analytics row data.
  *
- * @since n.e.x.t
+ * @since 1.96.0
  *
  * @param {string} moduleSlug      The module slug.
  * @param {Object} data            The data returned from the Analytics API call.
