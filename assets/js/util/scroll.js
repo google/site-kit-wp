@@ -51,7 +51,7 @@ export function getContextScrollTop( context, breakpoint ) {
  * @return {number} The height of the sticky header.
  */
 export function getStickyHeaderHeight( breakpoint ) {
-	let headerHeight = getHeaderHeightWithoutNav( breakpoint );
+	let headerHeight = getStickyHeaderHeightWithoutNav( breakpoint );
 
 	const navigation = document.querySelectorAll(
 		'.googlesitekit-navigation, .googlesitekit-entity-header'
@@ -118,7 +118,7 @@ function getGoogleSiteKitHeaderHeight( breakpoint ) {
  * @param {string} breakpoint The current breakpoint.
  * @return {number} The height of the sticky header without the navigation bar.
  */
-export function getHeaderHeightWithoutNav( breakpoint ) {
+export function getStickyHeaderHeightWithoutNav( breakpoint ) {
 	let headerHeight = 0;
 
 	const header = document.querySelector( '.googlesitekit-header' );

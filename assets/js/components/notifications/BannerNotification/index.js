@@ -47,7 +47,7 @@ import GoogleLogoIcon from '../../../../svg/graphics/logo-g.svg';
 import { Cell, Grid, Row } from '../../../material-components';
 import {
 	getContextScrollTop,
-	getHeaderHeightWithoutNav,
+	getStickyHeaderHeightWithoutNav,
 } from '../../../util/scroll';
 import { isHashOnly } from '../../../util/urls';
 import { sanitizeHTML } from '../../../util/sanitize';
@@ -141,7 +141,7 @@ function BannerNotification( {
 
 	const bannerNotificationRef = useRef();
 	const intersectionEntry = useIntersection( bannerNotificationRef, {
-		rootMargin: `-${ getHeaderHeightWithoutNav(
+		rootMargin: `-${ getStickyHeaderHeightWithoutNav(
 			breakpoint
 		) }px 0px 0px 0px`,
 		threshold: 0,
