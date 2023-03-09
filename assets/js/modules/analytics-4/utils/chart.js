@@ -24,7 +24,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Extracts data required for a pie chart from the Analytics 4 report information.
  *
- * @since n.e.x.t
+ * @since 1.96.0
  *
  * @param {Array}    report                    The report data.
  * @param {Object}   [options]                 Optional. Data extraction options.
@@ -122,7 +122,7 @@ export function extractAnalyticsDataForPieChart( report, options = {} ) {
  *
  * Note that chart reports will be in the multi-date range format.
  *
- * @since n.e.x.t
+ * @since 1.96.0
  *
  * @param {Object} report The report data object.
  * @return {(boolean|undefined)} Returns undefined if report is undefined, true/false for the above conditions.

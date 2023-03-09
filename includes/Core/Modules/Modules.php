@@ -433,7 +433,7 @@ final class Modules {
 	/**
 	 * Populates modules data to pass to JS.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.96.0
 	 *
 	 * @param array $modules_data Inline modules data.
 	 * @return array Inline modules data.
