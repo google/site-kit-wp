@@ -310,7 +310,7 @@ function generateDateRange( startDate, endDate ) {
  * Generates mock data for Analytics 4 reports.
  *
  * @since 1.94.0
- * @since n.e.x.t Added support for using zip to generate dimension combinations.
+ * @since 1.96.0 Added support for using zip to generate dimension combinations.
  *
  * @param {Object} options        Report options.
  * @param {Object} [extraOptions] Extra options for report generation.
