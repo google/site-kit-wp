@@ -111,7 +111,7 @@ function getGoogleSiteKitHeaderHeight( breakpoint ) {
 }
 
 /**
- * Gets the height of the sticky header without the navigation bar.
+ * Gets the height of the sticky header without the Site Kit navigation bar.
  *
  * @since 1.95.0
  *
