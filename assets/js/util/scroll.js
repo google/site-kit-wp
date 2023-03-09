@@ -117,10 +117,10 @@ function getGoogleSiteKitHeaderHeight( breakpoint ) {
 export function getHeaderHeightWithoutNav( breakpoint ) {
 	let headerHeight = 0;
 
-	// When the Joyride overlay is present, Site Kit's header is not sticky.
-	const isSiteKitHeaderSticky = ! document.querySelector(
-		'.react-joyride__overlay'
-	);
+	const header = document.querySelector( '.googlesitekit-header' );
+
+	const isSiteKitHeaderSticky =
+		!! header && global.getComputedStyle( header ).position === 'sticky';
 
 	if ( isSiteKitHeaderSticky ) {
 		headerHeight = getGoogleSiteKitHeaderHeight( breakpoint );
