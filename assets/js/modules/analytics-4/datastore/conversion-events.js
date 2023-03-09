@@ -81,7 +81,7 @@ const baseSelectors = {
 	/**
 	 * Gets GA4 conversion events.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.96.0
 	 *
 	 * @param {Object} state      Data store's state.
 	 * @param {string} propertyID GA4 property ID.

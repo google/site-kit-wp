@@ -152,7 +152,7 @@ const baseSelectors = {
 	 * (eg. "answer-based") metrics based on their answers to our User Input
 	 * questions.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.96.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(Object|undefined)} Key metrics settings.
@@ -175,7 +175,7 @@ const baseSelectors = {
 	 * Gets key metrics selected by the user.
 	 *
 	 * @since 1.94.0 Initially introduced as `getKeyMetrics`.
-	 * @since n.e.x.t Updated selector name now that `getKeyMetrics` contains more advanced logic.
+	 * @since 1.96.0 Updated selector name now that `getKeyMetrics` contains more advanced logic.
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(Object|undefined)} Key metrics settings.
