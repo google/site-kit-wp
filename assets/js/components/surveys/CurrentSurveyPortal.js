@@ -26,15 +26,20 @@ import CurrentSurvey from './CurrentSurvey';
 import Portal from '../Portal';
 const { useSelect } = Data;
 
-const CurrentSurveyPortal = () => {
+export default function CurrentSurveyPortal() {
 	const usingProxy = useSelect( ( select ) =>
 		select( CORE_SITE ).isUsingProxy()
 	);
+
 	const currentSurvey = useSelect( ( select ) =>
 		select( CORE_USER ).getCurrentSurvey()
 	);
 
-	if ( ! usingProxy || ! currentSurvey ) {
+	const isGlobalTimeoutOut = useSelect( ( select ) =>
+		select( CORE_USER ).isSurveyTimedOut( '__global' )
+	);
+
+	if ( isGlobalTimeoutOut || ! usingProxy || ! currentSurvey ) {
 		return null;
 	}
 
@@ -43,6 +48,4 @@ const CurrentSurveyPortal = () => {
 			<CurrentSurvey />
 		</Portal>
 	);
-};
-
-export default CurrentSurveyPortal;
+}
