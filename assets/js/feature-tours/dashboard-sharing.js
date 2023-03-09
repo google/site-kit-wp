@@ -20,7 +20,7 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { EVENTS, ACTIONS } from 'react-joyride';
+import { EVENTS, ACTIONS, STATUS } from 'react-joyride';
 
 /*
  * Internal dependencies
@@ -69,7 +69,7 @@ const dashboardSharing = {
 			ACTIONS.STOP === action ||
 			ACTIONS.CLOSE === action ||
 			( index === 0 && dialogOpen ) ||
-			( action === 'next' && status === 'finished' )
+			( action === ACTIONS.NEXT && status === STATUS.FINISHED )
 		) {
 			dispatch( CORE_UI ).setValue( SETTINGS_DIALOG, false );
 		}
