@@ -48,7 +48,6 @@ if ( isFeatureEnabled( 'gteSupport' ) ) {
 		// As it's not possible to directly look up a Google Tag container by one of its tag IDs, we look up the container by destination ID (the measurement ID).
 		// We then check if the tag ID is included in the container's tag IDs. If so, we have confirmed the existing tag is a Google Tag pointing to the given measurement ID.
 		// Otherwise, we ignore the existing tag (set it to null).
-
 		if ( existingTag !== null ) {
 			const container = yield Data.commonActions.await(
 				registry
