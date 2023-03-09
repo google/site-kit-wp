@@ -67,7 +67,6 @@ export default function SetupErrorNotice() {
 		<StoreErrorNotices
 			moduleSlug="tagmanager"
 			storeName={ MODULES_TAGMANAGER }
-			shouldDisplayRetry={ false }
 		/>
 	);
 }
