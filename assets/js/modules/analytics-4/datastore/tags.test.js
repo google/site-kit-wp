@@ -21,7 +21,11 @@
  */
 import { MODULES_ANALYTICS_4 } from './constants';
 import * as fixtures from './__fixtures__';
-// Require the modules that will need to be reloaded in order to test the `gteSupport` feature.
+// These modules will need to be reloaded, because their behaviour changes
+// based on the `gteSupport` feature flag.
+//
+// TODO: Remove this once the `gteSupport` feature flag is removed and use
+// regular `import` statements.
 let API = require( 'googlesitekit-api' ).default;
 let {
 	createTestRegistry,
