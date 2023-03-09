@@ -37,7 +37,7 @@ export function getContextScrollTop( context, breakpoint ) {
 	}
 
 	const contextTop = contextElement.getBoundingClientRect().top;
-	const headerHeight = getHeaderHeight( breakpoint );
+	const headerHeight = getStickyHeaderHeight( breakpoint );
 
 	return contextTop + global.scrollY - headerHeight;
 }
@@ -50,7 +50,7 @@ export function getContextScrollTop( context, breakpoint ) {
  * @param {string} breakpoint The current breakpoint.
  * @return {number} The height of the sticky header.
  */
-export function getHeaderHeight( breakpoint ) {
+export function getStickyHeaderHeight( breakpoint ) {
 	let headerHeight = getHeaderHeightWithoutNav( breakpoint );
 
 	const navigation = document.querySelectorAll(
