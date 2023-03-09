@@ -81,15 +81,15 @@ export default function SettingsAdmin() {
 		<Row>
 			{ userInputEnabled && (
 				<Cell size={ 12 }>
-					{ isUserInputCompleted && (
-						<Layout
-							title={ __( 'Key metrics', 'google-site-kit' ) }
-							header
-							rounded
-						>
-							<div className="googlesitekit-settings-module googlesitekit-settings-module--active googlesitekit-settings-user-input">
-								<Grid>
-									<SettingsKeyMetrics />
+					<Layout
+						title={ __( 'Key metrics', 'google-site-kit' ) }
+						header
+						rounded
+					>
+						<div className="googlesitekit-settings-module googlesitekit-settings-module--active googlesitekit-settings-user-input">
+							<Grid>
+								<SettingsKeyMetrics />
+								{ isUserInputCompleted && (
 									<UserInputPreview
 										goTo={ goTo }
 										noHeader
@@ -97,10 +97,10 @@ export default function SettingsAdmin() {
 										settingsView
 										showIndividualCTAs
 									/>
-								</Grid>
-							</div>
-						</Layout>
-					) }
+								) }
+							</Grid>
+						</div>
+					</Layout>
 
 					{ isUserInputCompleted === false && (
 						<UserInputSettings isDismissible={ false } rounded />

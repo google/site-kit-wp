@@ -32,19 +32,10 @@ import { __ } from '@wordpress/i18n';
 import { Switch } from 'googlesitekit-components';
 import Data from 'googlesitekit-data';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import { useFeature } from '../../hooks/useFeature';
-import useViewOnly from '../../hooks/useViewOnly';
 
 const { useSelect, useDispatch } = Data;
 
 export default function SettingsKeyMetrics() {
-	const dashboardSharingEnabled = useFeature( 'dashboardSharing' );
-	const viewOnly = useViewOnly();
-
-	const isAuthenticated = useSelect( ( select ) =>
-		select( CORE_USER ).isAuthenticated()
-	);
-
 	const keyMetrics = useSelect( ( select ) =>
 		select( CORE_USER ).getKeyMetrics()
 	);
@@ -58,10 +49,6 @@ export default function SettingsKeyMetrics() {
 		);
 		await saveKeyMetrics();
 	}, [ keyMetrics, saveKeyMetrics, setKeyMetricSetting ] );
-
-	if ( ! ( isAuthenticated || ( dashboardSharingEnabled && viewOnly ) ) ) {
-		return null;
-	}
 
 	return (
 		<Switch
