@@ -136,7 +136,7 @@ export function getStickyHeaderHeightWithoutNav( breakpoint ) {
 	// Provide a safety net in case something unexpected has happened.
 	if (
 		typeof headerHeight !== 'number' ||
-		Number.isNaN( headerHeight ) ||
+		! Number.isFinite( headerHeight ) ||
 		headerHeight < 0
 	) {
 		return 0;
