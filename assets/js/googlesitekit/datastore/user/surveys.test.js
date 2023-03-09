@@ -292,9 +292,8 @@ describe( 'core/user surveys', () => {
 				muteFetch( surveyEventEndpoint );
 
 				// Survey events are only sent if there is a current survey.
-				registry.dispatch( CORE_USER ).receiveTriggerSurvey( survey, {
-					triggerID: 'optimizeSurvey',
-				} );
+				registry.dispatch( CORE_USER ).receiveGetSurvey( { survey } );
+
 				// Send a survey event.
 				await registry
 					.dispatch( CORE_USER )
@@ -321,9 +320,7 @@ describe( 'core/user surveys', () => {
 			} );
 
 			it( 'returns the current survey when it is set', () => {
-				registry.dispatch( CORE_USER ).receiveTriggerSurvey( survey, {
-					triggerID: 'optimizeSurvey',
-				} );
+				registry.dispatch( CORE_USER ).receiveGetSurvey( { survey } );
 
 				expect(
 					registry.select( CORE_USER ).getCurrentSurvey()
@@ -339,9 +336,7 @@ describe( 'core/user surveys', () => {
 			} );
 
 			it( 'returns the current survey session when set', () => {
-				registry.dispatch( CORE_USER ).receiveTriggerSurvey( survey, {
-					triggerID: 'optimizeSurvey',
-				} );
+				registry.dispatch( CORE_USER ).receiveGetSurvey( { survey } );
 
 				expect(
 					registry.select( CORE_USER ).getCurrentSurveySession()
