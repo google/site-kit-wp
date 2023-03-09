@@ -204,11 +204,7 @@ export default function ActivationBanner() {
 				return [ ...acc, error ];
 			}, [] )
 			.map( ( error ) => (
-				<ErrorNotice
-					key={ error.code }
-					error={ error }
-					shouldDisplayRetry={ false }
-				/>
+				<ErrorNotice key={ error.code } error={ error } />
 			) );
 
 	switch ( step ) {
