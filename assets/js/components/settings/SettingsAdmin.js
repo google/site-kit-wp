@@ -36,12 +36,12 @@ import OptIn from '../OptIn';
 import ResetButton from '../ResetButton';
 import UserInputPreview from '../user-input/UserInputPreview';
 import { USER_INPUT_QUESTIONS_LIST } from '../user-input/util/constants';
-import UserInputSettings from '../notifications/UserInputSettings';
 import { useFeature } from '../../hooks/useFeature';
 import { trackEvent } from '../../util';
 import SettingsPlugin from './SettingsPlugin';
 import useViewContext from '../../hooks/useViewContext';
 import SettingsKeyMetrics from './SettingsKeyMetrics';
+import Link from '../Link';
 const { useSelect, useDispatch } = Data;
 
 export default function SettingsAdmin() {
@@ -89,6 +89,8 @@ export default function SettingsAdmin() {
 						<div className="googlesitekit-settings-module googlesitekit-settings-module--active googlesitekit-settings-user-input">
 							<Grid>
 								<SettingsKeyMetrics />
+							</Grid>
+							<Grid>
 								{ isUserInputCompleted && (
 									<UserInputPreview
 										goTo={ goTo }
@@ -98,13 +100,29 @@ export default function SettingsAdmin() {
 										showIndividualCTAs
 									/>
 								) }
+								{ isUserInputCompleted === false && (
+									<div>
+										<Cell>
+											<p>
+												<span>
+													{ __(
+														'Answer 3 quick questions to help us show the most relevant data for your site',
+														'google-site-kit'
+													) }
+												</span>
+											</p>
+											<Link href={ userInputURL }>
+												{ __(
+													'Personalize your metrics',
+													'google-site-kit'
+												) }
+											</Link>
+										</Cell>
+									</div>
+								) }
 							</Grid>
 						</div>
 					</Layout>
-
-					{ isUserInputCompleted === false && (
-						<UserInputSettings isDismissible={ false } rounded />
-					) }
 				</Cell>
 			) }
 
