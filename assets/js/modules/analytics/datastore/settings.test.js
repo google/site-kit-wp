@@ -32,9 +32,11 @@ import { MODULES_ANALYTICS_4 } from '../../analytics-4/datastore/constants';
 import * as fixtures from './__fixtures__';
 import {
 	createTestRegistry,
+	freezeFetch,
 	provideModules,
 	subscribeUntil,
 	unsubscribeFromAll,
+	waitForDefaultTimeouts,
 } from '../../../../../tests/js/utils';
 import { getItem, setItem } from '../../../googlesitekit/api/cache';
 import { createCacheKey } from '../../../googlesitekit/api';
@@ -49,6 +51,7 @@ import {
 } from './settings';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { MODULES_TAGMANAGER } from '../../tagmanager/datastore/constants';
+import { enabledFeatures } from '../../../features';
 
 describe( 'modules/analytics settings', () => {
 	let registry;
@@ -951,6 +954,91 @@ describe( 'modules/analytics settings', () => {
 				expect(
 					registry.select( MODULES_ANALYTICS ).getCanUseSnippet()
 				).toBe( false );
+			} );
+		} );
+
+		describe( 'isGA4DashboardView', () => {
+			it( 'should return false when the `ga4Reporting` feature flag is not enabled', () => {
+				// Delete the `ga4Reporting` feature flag if it exists.
+				enabledFeatures.delete( 'ga4Reporting' );
+
+				expect(
+					registry.select( MODULES_ANALYTICS ).isGA4DashboardView()
+				).toBe( false );
+			} );
+
+			it( 'should return false when the analytics-4 module is not active', () => {
+				enabledFeatures.add( 'ga4Reporting' );
+				provideModules( registry, [
+					{
+						slug: 'analytics-4',
+						active: false,
+						connected: false,
+					},
+				] );
+
+				expect(
+					registry.select( MODULES_ANALYTICS ).isGA4DashboardView()
+				).toBe( false );
+			} );
+
+			it( 'should return undefined when the analytics-4 settings are not loaded', async () => {
+				freezeFetch(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics/data/settings'
+					)
+				);
+				enabledFeatures.add( 'ga4Reporting' );
+				provideModules( registry, [
+					{
+						slug: 'analytics-4',
+						active: true,
+						connected: true,
+					},
+				] );
+
+				expect(
+					registry.select( MODULES_ANALYTICS ).isGA4DashboardView()
+				).toBeUndefined();
+
+				// Wait for resolvers to run.
+				await waitForDefaultTimeouts();
+			} );
+
+			it( 'should return false when the dashboard view is not `google-analytics-4`', () => {
+				enabledFeatures.add( 'ga4Reporting' );
+				provideModules( registry, [
+					{
+						slug: 'analytics-4',
+						active: true,
+						connected: true,
+					},
+				] );
+				registry.dispatch( MODULES_ANALYTICS ).setSettings( {
+					dashboardView: 'universal-analytics',
+				} );
+
+				expect(
+					registry.select( MODULES_ANALYTICS ).isGA4DashboardView()
+				).toBe( false );
+			} );
+
+			it( 'should return true when the dashboard view is `google-analytics-4`', () => {
+				enabledFeatures.add( 'ga4Reporting' );
+				provideModules( registry, [
+					{
+						slug: 'analytics-4',
+						active: true,
+						connected: true,
+					},
+				] );
+				registry.dispatch( MODULES_ANALYTICS ).setSettings( {
+					dashboardView: 'google-analytics-4',
+				} );
+
+				expect(
+					registry.select( MODULES_ANALYTICS ).isGA4DashboardView()
+				).toBe( true );
 			} );
 		} );
 	} );
