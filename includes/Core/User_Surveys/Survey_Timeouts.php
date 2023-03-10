@@ -24,7 +24,8 @@ class Survey_Timeouts extends User_Setting {
 
 	use Array_Setting;
 
-	const OPTION = 'googlesitekit_survey_timeouts';
+	const OPTION     = 'googlesitekit_survey_timeouts';
+	const GLOBAL_KEY = '__global';
 
 	/**
 	 * Adds a timeout for the provided survey.
@@ -61,7 +62,7 @@ class Survey_Timeouts extends User_Setting {
 	 * @since n.e.x.t
 	 */
 	public function set_global_timeout() {
-		$this->add( '__global', 12 * HOUR_IN_SECONDS );
+		$this->add( self::GLOBAL_KEY, 12 * HOUR_IN_SECONDS );
 	}
 
 	/**

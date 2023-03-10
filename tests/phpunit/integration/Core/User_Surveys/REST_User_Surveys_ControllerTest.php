@@ -125,20 +125,10 @@ class REST_User_Surveys_ControllerTest extends TestCase {
 		$this->assertTrue( is_callable( $args[0]['permission_callback'] ) );
 	}
 
-	protected function send_request( $endpoint, $data, $response ) {
+	protected function send_request( $endpoint, $data ) {
 		remove_all_filters( 'googlesitekit_rest_routes' );
 		$this->controller->register();
 		$this->register_rest_routes();
-
-		$this->fake_proxy_site_connection();
-		$this->subscribe_to_wp_http_requests(
-			function() {},
-			array(
-				'response' => array( 'code' => 200 ),
-				'headers'  => array(),
-				'body'     => wp_json_encode( $response ),
-			)
-		);
 
 		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/user/data/' . $endpoint );
 		$request->set_body_params(
@@ -162,17 +152,33 @@ class REST_User_Surveys_ControllerTest extends TestCase {
 			),
 		);
 
-		$response = $this->send_request(
-			'survey-trigger',
-			array( 'triggerID' => 'test_trigger' ),
-			$survey
+		$this->subscribe_to_wp_http_requests(
+			function() {},
+			array(
+				'response' => array( 'code' => 200 ),
+				'headers'  => array(),
+				'body'     => wp_json_encode( $survey ),
+			)
 		);
+
+		$this->fake_proxy_site_connection();
+		$response = $this->send_request( 'survey-trigger', array( 'triggerID' => 'test_trigger' ) );
 
 		$this->assertEqualSets( $survey, $response->get_data() );
 		$this->assertEqualSets( $survey, $this->queue->front() );
 	}
 
 	public function test_survey_event_survey_shown() {
+		$this->subscribe_to_wp_http_requests(
+			function() {},
+			array(
+				'response' => array( 'code' => 200 ),
+				'headers'  => array(),
+				'body'     => '{}',
+			)
+		);
+
+		$this->fake_proxy_site_connection();
 		$this->send_request(
 			'survey-event',
 			array(
@@ -183,17 +189,16 @@ class REST_User_Surveys_ControllerTest extends TestCase {
 				'event'   => array(
 					'survey_shown' => array(),
 				),
-			),
-			array()
+			)
 		);
 
 		$this->assertEquals(
-			array( '__global' ),
+			array( Survey_Timeouts::GLOBAL_KEY ),
 			$this->timeouts->get_survey_timeouts()
 		);
 	}
 
-	public function data_event_types() {
+	public function data_event_completion_types() {
 		return array(
 			'survey closed'    => array( 'survey_closed' ),
 			'completion shown' => array( 'completion_shown' ),
@@ -201,7 +206,7 @@ class REST_User_Surveys_ControllerTest extends TestCase {
 	}
 
 	/**
-	 * @dataProvider data_event_types
+	 * @dataProvider data_event_completion_types
 	 */
 	public function test_survey_event_completion( $event ) {
 		$survey1 = array(
@@ -238,6 +243,16 @@ class REST_User_Surveys_ControllerTest extends TestCase {
 			)
 		);
 
+		$this->subscribe_to_wp_http_requests(
+			function() {},
+			array(
+				'response' => array( 'code' => 200 ),
+				'headers'  => array(),
+				'body'     => '{}',
+			)
+		);
+
+		$this->fake_proxy_site_connection();
 		$resp = $this->send_request(
 			'survey-event',
 			array(
@@ -248,8 +263,7 @@ class REST_User_Surveys_ControllerTest extends TestCase {
 				'event'   => array(
 					$event => array(),
 				),
-			),
-			array()
+			)
 		);
 
 		$this->assertEquals(
@@ -317,7 +331,19 @@ class REST_User_Surveys_ControllerTest extends TestCase {
 			),
 		);
 
+		$another_survey = array(
+			'survey_id' => 'another_test_survey',
+			'session'   => array(
+				'session_id'    => 'another_test_session_id',
+				'session_token' => 'another_test_session_token',
+			),
+			'payload'   => array(
+				'questions' => array(),
+			),
+		);
+
 		$this->queue->enqueue( $survey );
+		$this->queue->enqueue( $another_survey );
 
 		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/user/data/survey' );
 		$response = rest_get_server()->dispatch( $request )->get_data();
