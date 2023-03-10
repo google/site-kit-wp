@@ -24,6 +24,7 @@ import invariant from 'invariant';
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
 import API from 'googlesitekit-api';
 import { createStrictSelect } from '../../../googlesitekit/data/utils';
 import {
@@ -46,6 +47,9 @@ import {
 	WEBDATASTREAM_CREATE,
 } from './constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
+import { isFeatureEnabled } from '../../../features';
+
+const { createRegistrySelector } = Data;
 
 // Invariant error messages.
 export const INVARIANT_INVALID_PROPERTY_SELECTION =
@@ -150,3 +154,31 @@ export function validateCanSubmitChanges( select ) {
 		);
 	}
 }
+
+/**
+ * Gets the value of dashboardView from the Analytics settings.
+ *
+ * @since n.e.x.t
+ *
+ * @return {boolean|undefined} True if the dashboard view is GA4, false if it is UA, or undefined if not loaded.
+ */
+export const isGA4DashboardView = createRegistrySelector( ( select ) => () => {
+	const isGA4Enabled = isFeatureEnabled( 'ga4Reporting' );
+	if ( ! isGA4Enabled ) {
+		return false;
+	}
+
+	const ga4ModuleActive =
+		select( CORE_MODULES ).isModuleActive( 'analytics-4' );
+
+	if ( ! ga4ModuleActive ) {
+		return false;
+	}
+
+	const ga4Settings = select( MODULES_ANALYTICS ).getSettings();
+	if ( ! ga4Settings ) {
+		return undefined;
+	}
+
+	return ga4Settings.dashboardView === 'google-analytics-4';
+} );
