@@ -112,7 +112,7 @@ Please create a new topic on our [WordPress.org support forum](https://wordpress
 
 **Enhanced**
 
-* Update the Analytics 4 module to use Google Tag for tracking if it is available. See [#6666](https://github.com/google/site-kit-wp/issues/6666).
+* Update the Analytics 4 module to use its Google Tag for tracking opt-out if it is used in the snippet. See [#6666](https://github.com/google/site-kit-wp/issues/6666).
 * Update all spinner buttons to be consistent across the codebase. See [#6571](https://github.com/google/site-kit-wp/issues/6571).
 * Add the new setting to the Analytics module to determine the dashboard type. See [#6540](https://github.com/google/site-kit-wp/issues/6540).
 * Update the cache clearing functionality to remove cache for old versions as well. See [#6487](https://github.com/google/site-kit-wp/issues/6487).
@@ -127,10 +127,9 @@ Please create a new topic on our [WordPress.org support forum](https://wordpress
 * Create Google Analytics 4 version of the `AdminBarSessions` widget. See [#6215](https://github.com/google/site-kit-wp/issues/6215).
 * Add the Analytics 4 version of the unique visitors tile in the admin bar. See [#6214](https://github.com/google/site-kit-wp/issues/6214).
 * Create a Google Analytics 4 alternative for the session duration widget on the WordPress dashboard page. See [#6213](https://github.com/google/site-kit-wp/issues/6213).
-* Add GA4-based "Unique Visitors Widget" to codebase. See [#6212](https://github.com/google/site-kit-wp/issues/6212).
+* Create the Analytics 4 version of the "Unique Visitors" widget. See [#6212](https://github.com/google/site-kit-wp/issues/6212).
 * Scaffold Key Metrics CTA widget area on Site Kit Dashboard. See [#6209](https://github.com/google/site-kit-wp/issues/6209).
-* Update error notices not to display the retry button if the error doesn't support retries. See [#6162](https://github.com/google/site-kit-wp/issues/6162).
-* Add a periodical check to ensure that Google Tag is mapped correctly. See [#6083](https://github.com/google/site-kit-wp/issues/6083).
+* Add a periodic check to ensure that the Analytics 4 Google Tag is mapped correctly. See [#6083](https://github.com/google/site-kit-wp/issues/6083).
 * Expose gathering data state on page load. See [#5933](https://github.com/google/site-kit-wp/issues/5933).
 
 **Changed**

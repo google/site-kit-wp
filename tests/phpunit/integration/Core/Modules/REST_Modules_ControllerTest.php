@@ -16,7 +16,7 @@ use Google\Site_Kit\Core\Modules\REST_Modules_Controller;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
-use Google\Site_Kit\Tests\FakeHttpClient;
+use Google\Site_Kit\Tests\FakeHttp;
 use Google\Site_Kit\Tests\RestTestTrait;
 use Google\Site_Kit\Tests\TestCase;
 use WP_REST_Request;
@@ -461,7 +461,9 @@ class REST_Modules_ControllerTest extends TestCase {
 		$this->register_rest_routes();
 
 		$analytics = $this->modules->get_module( 'analytics' );
-		$analytics->get_client()->setHttpClient( new FakeHttpClient() );
+
+		FakeHttp::fake_google_http_handler( $analytics->get_client() );
+
 		$analytics->get_settings()->merge(
 			array(
 				'accountID'             => '12345678',
@@ -810,7 +812,7 @@ class REST_Modules_ControllerTest extends TestCase {
 		add_option( 'googlesitekit_dashboard_sharing', $test_sharing_settings );
 
 		// Make search-console service requests accessible
-		$search_console->get_client()->setHttpClient( new FakeHttpClient() );
+		FakeHttp::fake_google_http_handler( $search_console->get_client() );
 
 		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/modules/data/recover-modules' );
 		$request->set_body_params(
