@@ -24,7 +24,7 @@ import invariant from 'invariant';
 /**
  * Splits report data into segments for current and comparison ranges.
  *
- * @since n.e.x.t
+ * @since 1.96.0
  *
  * @param {Array}  report               Report rows.
  * @param {Object} args                 Additional arguments.
