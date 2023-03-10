@@ -31,7 +31,13 @@ class Survey_Queue extends User_Setting {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param array $survey The survey object to add to the queue.
+	 * @param array $survey {
+	 *     The survey object to add to the queue.
+	 *
+	 *     @type string $survey_id      Survey ID.
+	 *     @type array  $survey_payload Survey payload that describe survey questions and available completions.
+	 *     @type array  $session        Session object that contains session ID and session token.
+	 * }
 	 * @return bool TRUE if the survey has been added to the queue, otherwise FALSE.
 	 */
 	public function enqueue( $survey ) {
@@ -97,14 +103,23 @@ class Survey_Queue extends User_Setting {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param array $session The current session object.
+	 * @param array $session {
+	 *     The current session object.
+	 *
+	 *     @type string $session_id    Session ID.
+	 *     @type string $session_token Session token.
+	 * }
 	 * @return array|null A survey object if it has been found for the session, otherwise NULL.
 	 */
 	public function find_by_session( $session ) {
 		$surveys = $this->get();
 
 		foreach ( $surveys as $survey ) {
-			if ( $survey['session']['session_id'] === $session['session_id'] ) {
+			if (
+				! empty( $survey['session']['session_id'] ) &&
+				! empty( $session['session_id'] ) &&
+				$survey['session']['session_id'] === $session['session_id']
+			) {
 				return $survey;
 			}
 		}
