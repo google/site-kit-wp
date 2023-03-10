@@ -25,6 +25,7 @@ import {
 	submitChanges,
 	validateCanSubmitChanges,
 	rollbackChanges,
+	isGA4DashboardView,
 } from './settings';
 
 const baseModuleStore = Modules.createModuleStore( 'analytics-4', {
@@ -59,5 +60,7 @@ const baseModuleStore = Modules.createModuleStore( 'analytics-4', {
 	rollbackChanges,
 	validateCanSubmitChanges,
 } );
+
+baseModuleStore.selectors.isGA4DashboardView = isGA4DashboardView;
 
 export default baseModuleStore;
