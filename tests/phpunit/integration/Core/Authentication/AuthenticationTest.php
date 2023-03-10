@@ -27,17 +27,14 @@ use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
-use Google\Site_Kit\Core\User_Input\User_Input;
-use Google\Site_Kit\Core\Util\URL;
 use Google\Site_Kit\Modules\PageSpeed_Insights\Settings as PageSpeed_Insights_Settings;
 use Google\Site_Kit\Modules\Search_Console\Settings as Search_Console_Settings;
 use Google\Site_Kit\Tests\Exception\RedirectException;
 use Google\Site_Kit\Tests\Fake_Site_Connection_Trait;
-use Google\Site_Kit\Tests\FakeHttpClient;
+use Google\Site_Kit\Tests\FakeHttp;
 use Google\Site_Kit\Tests\MutableInput;
 use Google\Site_Kit\Tests\TestCase;
-use Google\Site_Kit_Dependencies\GuzzleHttp\Message\Response;
-use Google\Site_Kit_Dependencies\GuzzleHttp\Stream\Stream;
+use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Response;
 use WP_Error;
 use WP_Screen;
 use WPDieException;
@@ -293,8 +290,9 @@ class AuthenticationTest extends TestCase {
 				)
 			)
 		);
-		// The FakeHttpClient returns 200 by default.
-		$oauth_client->get_client()->setHttpClient( new FakeHttpClient() );
+		// The FakeHttp handler returns 200 by default.
+		FakeHttp::fake_google_http_handler( $oauth_client->get_client() );
+
 		// Make sure we start with no errors.
 		$this->assertFalse( get_user_option( OAuth_Client::OPTION_ERROR_CODE, $user_id ) );
 
@@ -322,26 +320,25 @@ class AuthenticationTest extends TestCase {
 		do_action( 'current_screen', WP_Screen::get( 'toplevel_page_googlesitekit-dashboard' ) );
 
 		delete_user_option( $user_id, OAuth_Client::OPTION_ERROR_CODE );
-		$fake_http_client = new FakeHttpClient();
+
 		// Set the request handler to return a response with a new access token.
-		$fake_http_client->set_request_handler(
+		FakeHttp::fake_google_http_handler(
+			$oauth_client->get_client(),
 			function () {
 				return new Response(
 					200,
 					array(),
-					Stream::factory(
-						json_encode(
-							array(
-								'access_token' => 'new-test-access-token',
-								'expires_in'   => 3599,
-								'token_type'   => 'Bearer',
-							)
+					json_encode(
+						array(
+							'access_token' => 'new-test-access-token',
+							'expires_in'   => 3599,
+							'token_type'   => 'Bearer',
 						)
 					)
 				);
 			}
 		);
-		$oauth_client->get_client()->setHttpClient( $fake_http_client );
+
 		$oauth_client->refresh_token();
 
 		$this->assertEmpty( get_user_option( OAuth_Client::OPTION_ERROR_CODE, $user_id ) );
@@ -390,8 +387,8 @@ class AuthenticationTest extends TestCase {
 				)
 			)
 		);
-		// The FakeHttpClient returns 200 by default.
-		$oauth_client->get_client()->setHttpClient( new FakeHttpClient() );
+		// The FakeHttp handler returns 200 by default.
+		FakeHttp::fake_google_http_handler( $oauth_client->get_client() );
 
 		// Create owners for shareable modules and generate their oauth tokens.
 		$pagespeed_insights_owner_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
@@ -412,26 +409,25 @@ class AuthenticationTest extends TestCase {
 		$this->assertFalse( get_user_option( OAuth_Client::OPTION_ERROR_CODE, $editor_id ) );
 
 		delete_user_option( $pagespeed_insights_owner_id, OAuth_Client::OPTION_ERROR_CODE );
-		$fake_http_client = new FakeHttpClient();
+
 		// Set the request handler to return a response with a new access token.
-		$fake_http_client->set_request_handler(
+		FakeHttp::fake_google_http_handler(
+			$oauth_client->get_client(),
 			function () {
 				return new Response(
 					200,
 					array(),
-					Stream::factory(
-						json_encode(
-							array(
-								'access_token' => 'new-test-access-token',
-								'expires_in'   => 3599,
-								'token_type'   => 'Bearer',
-							)
+					json_encode(
+						array(
+							'access_token' => 'new-test-access-token',
+							'expires_in'   => 3599,
+							'token_type'   => 'Bearer',
 						)
 					)
 				);
 			}
 		);
-		$oauth_client->get_client()->setHttpClient( $fake_http_client );
+
 		$oauth_client->refresh_token();
 
 		$this->assertEmpty( get_user_option( OAuth_Client::OPTION_ERROR_CODE, $pagespeed_insights_owner_id ) );
