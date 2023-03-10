@@ -1,6 +1,6 @@
 <?php
 /**
- * Trait Google\Site_Kit\Core\Storage\Setting\Array_Setting
+ * Trait Google\Site_Kit\Core\Storage\Setting\List_Setting
  *
  * @package   Google\Site_Kit\Core\Storage\Setting
  * @copyright 2023 Google LLC
@@ -17,7 +17,7 @@ namespace Google\Site_Kit\Core\Storage\Setting;
  * @access private
  * @ignore
  */
-trait Array_Setting {
+trait List_Setting {
 
 	/**
 	 * Gets the expected value type.
@@ -61,7 +61,7 @@ trait Array_Setting {
 	 * @return callable Sanitize callback.
 	 */
 	protected function get_sanitize_callback() {
-		return array( $this, 'sanitize_array_item' );
+		return array( $this, 'sanitize_list_items' );
 	}
 
 	/**
@@ -72,6 +72,6 @@ trait Array_Setting {
 	 * @param array $items The original array items.
 	 * @return array Filtered items.
 	 */
-	abstract protected function sanitize_array_item( $items );
+	abstract protected function sanitize_list_items( $items );
 
 }

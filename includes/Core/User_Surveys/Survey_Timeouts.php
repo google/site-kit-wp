@@ -11,7 +11,7 @@
 namespace Google\Site_Kit\Core\User_Surveys;
 
 use Google\Site_Kit\Core\Storage\User_Setting;
-use Google\Site_Kit\Core\Storage\Setting\Array_Setting;
+use Google\Site_Kit\Core\Storage\Setting\List_Setting;
 
 /**
  * Class for representing user survey timeouts.
@@ -22,7 +22,7 @@ use Google\Site_Kit\Core\Storage\Setting\Array_Setting;
  */
 class Survey_Timeouts extends User_Setting {
 
-	use Array_Setting;
+	use List_Setting;
 
 	const OPTION     = 'googlesitekit_survey_timeouts';
 	const GLOBAL_KEY = '__global';
@@ -51,7 +51,7 @@ class Survey_Timeouts extends User_Setting {
 	 */
 	public function get_survey_timeouts() {
 		$surveys = $this->get();
-		$surveys = $this->sanitize_array_item( $surveys );
+		$surveys = $this->sanitize_list_items( $surveys );
 
 		return array_keys( $surveys );
 	}
@@ -66,14 +66,14 @@ class Survey_Timeouts extends User_Setting {
 	}
 
 	/**
-	 * Filters survey timeouts.
+	 * Sanitizes survey timeouts.
 	 *
 	 * @since 1.73.0
 	 *
 	 * @param array $items Survey timeouts list.
 	 * @return array Filtered survey timeouts.
 	 */
-	protected function sanitize_array_item( $items ) {
+	protected function sanitize_list_items( $items ) {
 		$surveys = array();
 
 		if ( is_array( $items ) ) {
