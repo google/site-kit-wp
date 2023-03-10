@@ -123,7 +123,7 @@ export default function GoogleTagIDMismatchNotification() {
 		setPropertyID( newAnalyticsConfig?.propertyID );
 		setWebDataStreamID( newAnalyticsConfig?.webDataStreamID );
 		setMeasurementID( newAnalyticsConfig?.measurementID );
-		submitChanges(); // add error handling
+		submitChanges();
 		setHasMismatchedGoogleTagID( false );
 	}, [
 		setPropertyID,
