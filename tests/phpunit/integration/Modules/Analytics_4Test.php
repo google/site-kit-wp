@@ -10,6 +10,7 @@
 
 namespace Google\Site_Kit\Tests\Modules;
 
+use Closure;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Dismissals\Dismissed_Items;
@@ -31,7 +32,7 @@ use Google\Site_Kit\Tests\Core\Modules\Module_With_Owner_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Scopes_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Service_Entity_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Settings_ContractTests;
-use Google\Site_Kit\Tests\FakeHttpClient;
+use Google\Site_Kit\Tests\FakeHttp;
 use Google\Site_Kit\Tests\TestCase;
 use Google\Site_Kit\Tests\UserAuthenticationTrait;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaConversionEvent;
@@ -39,9 +40,8 @@ use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnaly
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaDataStreamWebStreamData;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaListConversionEventsResponse;
 use Google\Site_Kit_Dependencies\Google\Service\TagManager\Container;
-use Google\Site_Kit_Dependencies\GuzzleHttp\Message\Request;
-use Google\Site_Kit_Dependencies\GuzzleHttp\Message\Response;
-use Google\Site_Kit_Dependencies\GuzzleHttp\Stream\Stream;
+use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Request;
+use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Response;
 use WP_User;
 
 /**
@@ -141,10 +141,10 @@ class Analytics_4Test extends TestCase {
 			)
 		);
 
-		$http_client = new FakeHttpClient();
-		$http_client->set_request_handler(
+		FakeHttp::fake_google_http_handler(
+			$this->analytics->get_client(),
 			function( Request $request ) use ( $property_id, $webdatastream_id, $measurement_id ) {
-				$url = parse_url( $request->getUrl() );
+				$url = parse_url( $request->getUri() );
 
 				if ( 'analyticsadmin.googleapis.com' !== $url['host'] ) {
 					return new Response( 200 );
@@ -155,11 +155,9 @@ class Analytics_4Test extends TestCase {
 						return new Response(
 							200,
 							array(),
-							Stream::factory(
-								json_encode(
-									array(
-										'name' => "properties/{$property_id}",
-									)
+							json_encode(
+								array(
+									'name' => "properties/{$property_id}",
 								)
 							)
 						);
@@ -174,9 +172,7 @@ class Analytics_4Test extends TestCase {
 						return new Response(
 							200,
 							array(),
-							Stream::factory(
-								json_encode( $datastream->toSimpleObject() )
-							)
+							json_encode( $datastream->toSimpleObject() )
 						);
 					default:
 						return new Response( 200 );
@@ -186,7 +182,6 @@ class Analytics_4Test extends TestCase {
 
 		remove_all_actions( 'googlesitekit_analytics_handle_provisioning_callback' );
 
-		$this->analytics->get_client()->setHttpClient( $http_client );
 		$this->analytics->register();
 
 		do_action( 'googlesitekit_analytics_handle_provisioning_callback', $account_id );
@@ -229,10 +224,10 @@ class Analytics_4Test extends TestCase {
 			)
 		);
 
-		$http_client = new FakeHttpClient();
-		$http_client->set_request_handler(
-			function( Request $request ) use ( $property_id, $webdatastream_id, $measurement_id, $google_tag_account_id, $google_tag_container_id, $tag_ids ) {
-				$url = parse_url( $request->getUrl() );
+		FakeHttp::fake_google_http_handler(
+			$this->analytics->get_client(),
+			function ( Request $request ) use ( $property_id, $webdatastream_id, $measurement_id, $google_tag_account_id, $google_tag_container_id, $tag_ids ) {
+				$url = parse_url( $request->getUri() );
 
 				if ( ! in_array( $url['host'], array( 'analyticsadmin.googleapis.com', 'tagmanager.googleapis.com' ), true ) ) {
 					return new Response( 200 );
@@ -243,11 +238,9 @@ class Analytics_4Test extends TestCase {
 						return new Response(
 							200,
 							array(),
-							Stream::factory(
-								json_encode(
-									array(
-										'name' => "properties/{$property_id}",
-									)
+							json_encode(
+								array(
+									'name' => "properties/{$property_id}",
 								)
 							)
 						);
@@ -262,9 +255,7 @@ class Analytics_4Test extends TestCase {
 						return new Response(
 							200,
 							array(),
-							Stream::factory(
-								json_encode( $datastream->toSimpleObject() )
-							)
+							json_encode( $datastream->toSimpleObject() )
 						);
 					case '/tagmanager/v2/accounts/containers:lookup':
 						$data = new Container();
@@ -274,10 +265,8 @@ class Analytics_4Test extends TestCase {
 						return new Response(
 							200,
 							array(),
-							Stream::factory(
-								json_encode(
-									$data->toSimpleObject()
-								)
+							json_encode(
+								$data->toSimpleObject()
 							)
 						);
 
@@ -289,7 +278,6 @@ class Analytics_4Test extends TestCase {
 
 		remove_all_actions( 'googlesitekit_analytics_handle_provisioning_callback' );
 
-		$this->analytics->get_client()->setHttpClient( $http_client );
 		$this->analytics->register();
 
 		$this->assertEqualSetsWithIndex(
@@ -429,10 +417,10 @@ class Analytics_4Test extends TestCase {
 			$this->analytics->get_scopes()
 		);
 
-		$http_client = new FakeHttpClient();
-		$http_client->set_request_handler(
+		FakeHttp::fake_google_http_handler(
+			$this->analytics->get_client(),
 			function ( Request $request ) use ( $tag_ids_data ) {
-				$url = parse_url( $request->getUrl() );
+				$url = parse_url( $request->getUri() );
 
 				if ( 'tagmanager.googleapis.com' !== $url['host'] ) {
 					return new Response( 200 );
@@ -446,10 +434,8 @@ class Analytics_4Test extends TestCase {
 						return new Response(
 							200,
 							array(),
-							Stream::factory(
-								json_encode(
-									$data->toSimpleObject()
-								)
+							json_encode(
+								$data->toSimpleObject()
 							)
 						);
 
@@ -459,7 +445,6 @@ class Analytics_4Test extends TestCase {
 			}
 		);
 
-		$this->analytics->get_client()->setHttpClient( $http_client );
 		$this->analytics->register();
 
 		$data = $this->analytics->get_data(
@@ -535,8 +520,11 @@ class Analytics_4Test extends TestCase {
 			$this->analytics->get_scopes()
 		);
 
-		$http_client = $this->create_fake_http_client( $property_id );
-		$this->analytics->get_client()->setHttpClient( $http_client );
+		FakeHttp::fake_google_http_handler(
+			$this->analytics->get_client(),
+			$this->create_fake_http_handler( $property_id )
+		);
+
 		$this->analytics->register();
 
 		// Fetch a report that exercises all input parameters, barring the alternative date range,
@@ -774,8 +762,10 @@ class Analytics_4Test extends TestCase {
 			$this->analytics->get_scopes()
 		);
 
-		$http_client = $this->create_fake_http_client( $property_id );
-		$this->analytics->get_client()->setHttpClient( $http_client );
+		FakeHttp::fake_google_http_handler(
+			$this->analytics->get_client(),
+			$this->create_fake_http_handler( $property_id )
+		);
 		$this->analytics->register();
 
 		$this->analytics->get_data(
@@ -825,8 +815,10 @@ class Analytics_4Test extends TestCase {
 			$this->analytics->get_scopes()
 		);
 
-		$http_client = $this->create_fake_http_client( $property_id );
-		$this->analytics->get_client()->setHttpClient( $http_client );
+		FakeHttp::fake_google_http_handler(
+			$this->analytics->get_client(),
+			$this->create_fake_http_handler( $property_id )
+		);
 		$this->analytics->register();
 
 		$this->analytics->get_data(
@@ -875,8 +867,10 @@ class Analytics_4Test extends TestCase {
 			$this->analytics->get_scopes()
 		);
 
-		$http_client = $this->create_fake_http_client( $property_id );
-		$this->analytics->get_client()->setHttpClient( $http_client );
+		FakeHttp::fake_google_http_handler(
+			$this->analytics->get_client(),
+			$this->create_fake_http_handler( $property_id )
+		);
 		$this->analytics->register();
 
 		$this->analytics->get_data(
@@ -926,8 +920,10 @@ class Analytics_4Test extends TestCase {
 			$this->analytics->get_scopes()
 		);
 
-		$http_client = $this->create_fake_http_client( $property_id );
-		$this->analytics->get_client()->setHttpClient( $http_client );
+		FakeHttp::fake_google_http_handler(
+			$this->analytics->get_client(),
+			$this->create_fake_http_handler( $property_id )
+		);
 		$this->analytics->register();
 
 		$this->analytics->get_data(
@@ -977,8 +973,10 @@ class Analytics_4Test extends TestCase {
 			$this->analytics->get_scopes()
 		);
 
-		$http_client = $this->create_fake_http_client( $property_id );
-		$this->analytics->get_client()->setHttpClient( $http_client );
+		FakeHttp::fake_google_http_handler(
+			$this->analytics->get_client(),
+			$this->create_fake_http_handler( $property_id )
+		);
 		$this->analytics->register();
 
 		$this->analytics->get_data(
@@ -1190,8 +1188,10 @@ class Analytics_4Test extends TestCase {
 			$this->analytics->get_scopes()
 		);
 
-		$http_client = $this->create_fake_http_client( $property_id );
-		$this->analytics->get_client()->setHttpClient( $http_client );
+		FakeHttp::fake_google_http_handler(
+			$this->analytics->get_client(),
+			$this->create_fake_http_handler( $property_id )
+		);
 		$this->analytics->register();
 
 		// Fetch conversion events.
@@ -1255,84 +1255,75 @@ class Analytics_4Test extends TestCase {
 	}
 
 	/**
-	 * Creates a fake HTTP client with call tracking.
+	 * Creates a fake HTTP handler with call tracking.
 	 *
 	 * @param string $property_id The GA4 property ID to use.
-	 * @return FakeHttpClient The fake HTTP client.
+	 * @return Closure The fake HTTP client.
 	 */
-	protected function create_fake_http_client( $property_id ) {
+	protected function create_fake_http_handler( $property_id ) {
 		$this->request_handler_calls = array();
 
-		$http_client = new FakeHttpClient();
-		$http_client->set_request_handler(
-			function ( Request $request ) use ( $property_id ) {
-				$url    = parse_url( $request->getUrl() );
-				$params = json_decode( (string) $request->getBody(), true );
+		return function ( Request $request ) use ( $property_id ) {
+			$url    = parse_url( $request->getUri() );
+			$params = json_decode( (string) $request->getBody(), true );
 
-				$this->request_handler_calls[] = array(
-					'url'    => $url,
-					'params' => $params,
-				);
+			$this->request_handler_calls[] = array(
+				'url'    => $url,
+				'params' => $params,
+			);
 
-				if (
-					! in_array(
-						$url['host'],
-						array( 'analyticsdata.googleapis.com', 'analyticsadmin.googleapis.com' ),
-						true
-					)
-				) {
-					return new Response( 200 );
-				}
+			if (
+				! in_array(
+					$url['host'],
+					array( 'analyticsdata.googleapis.com', 'analyticsadmin.googleapis.com' ),
+					true
+				)
+			) {
+				return new Response( 200 );
+			}
 
-				switch ( $url['path'] ) {
-					case "/v1beta/properties/$property_id:runReport":
-						// Return a mock report.
-						return new Response(
-							200,
-							array(),
-							Stream::factory(
-								json_encode(
-									array(
-										'kind' => 'analyticsData#runReport',
+			switch ( $url['path'] ) {
+				case "/v1beta/properties/$property_id:runReport":
+					// Return a mock report.
+					return new Response(
+						200,
+						array(),
+						json_encode(
+							array(
+								'kind' => 'analyticsData#runReport',
+								array(
+									'rows' => array(
 										array(
-											'rows' => array(
+											'metricValues' => array(
 												array(
-													'metricValues' => array(
-														array(
-															'value' => 'some-value',
-														),
-													),
+													'value' => 'some-value',
 												),
 											),
 										),
-									)
-								)
+									),
+								),
 							)
-						);
+						)
+					);
 
-					case "/v1beta/properties/$property_id/conversionEvents":
-						$conversion_event = new GoogleAnalyticsAdminV1betaConversionEvent();
-						$conversion_event->setName( "properties/$property_id/conversionEvents/some-name" );
-						$conversion_event->setEventName( 'some-event' );
+				case "/v1beta/properties/$property_id/conversionEvents":
+					$conversion_event = new GoogleAnalyticsAdminV1betaConversionEvent();
+					$conversion_event->setName( "properties/$property_id/conversionEvents/some-name" );
+					$conversion_event->setEventName( 'some-event' );
 
-						$conversion_events = new GoogleAnalyticsAdminV1betaListConversionEventsResponse();
-						$conversion_events->setConversionEvents( array( $conversion_event ) );
+					$conversion_events = new GoogleAnalyticsAdminV1betaListConversionEventsResponse();
+					$conversion_events->setConversionEvents( array( $conversion_event ) );
 
-						return new Response(
-							200,
-							array(),
-							Stream::factory(
-								json_encode( $conversion_events )
-							)
-						);
+					return new Response(
+						200,
+						array(),
+						json_encode( $conversion_events )
+					);
 
-					default:
-						return new Response( 200 );
-				}
+				default:
+					return new Response( 200 );
 			}
-		);
-
-		return $http_client;
+		};
 	}
 
 	/**
@@ -1402,6 +1393,54 @@ class Analytics_4Test extends TestCase {
 		}
 
 		$this->set_user_access_token( $user_id, $access_token );
+	}
+
+	public function test_tracking_opt_out_snippet() {
+		$analytics_4 = new Analytics_4( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$analytics_4->register();
+
+		$snippet_html = $this->capture_action( 'googlesitekit_analytics_tracking_opt_out' );
+		// Ensure the snippet is not output when the measurement ID is empty.
+		$this->assertEmpty( $snippet_html );
+
+		$settings = array(
+			'measurementID' => 'G-12345678',
+		);
+		$analytics_4->get_settings()->merge( $settings );
+
+		$snippet_html = $this->capture_action( 'googlesitekit_analytics_tracking_opt_out' );
+		// Ensure the snippet contains the configured measurement ID.
+		$this->assertStringContainsString( 'window["ga-disable-' . $settings['measurementID'] . '"] = true', $snippet_html );
+	}
+
+	public function test_tracking_opt_out_snippet__gteSupport() {
+		$this->enable_feature( 'gteSupport' );
+
+		$analytics_4 = new Analytics_4( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$analytics_4->register();
+
+		$snippet_html = $this->capture_action( 'googlesitekit_analytics_tracking_opt_out' );
+		// Ensure the snippet is not output when both measurement ID and google tag ID are empty.
+		$this->assertEmpty( $snippet_html );
+
+		$settings = array(
+			'measurementID' => 'G-12345678',
+		);
+		$analytics_4->get_settings()->merge( $settings );
+
+		$snippet_html = $this->capture_action( 'googlesitekit_analytics_tracking_opt_out' );
+		// Ensure the snippet contains the configured measurement ID when it is set and the google tag ID is empty.
+		$this->assertStringContainsString( 'window["ga-disable-' . $settings['measurementID'] . '"] = true', $snippet_html );
+
+		$settings = array(
+			'googleTagID' => 'GT-12345678',
+		);
+
+		$analytics_4->get_settings()->merge( $settings );
+
+		$snippet_html = $this->capture_action( 'googlesitekit_analytics_tracking_opt_out' );
+		// Ensure the snippet contains the configured google tag ID when it is set.
+		$this->assertStringContainsString( 'window["ga-disable-' . $settings['googleTagID'] . '"] = true', $snippet_html );
 	}
 
 	/**

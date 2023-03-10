@@ -19,7 +19,7 @@
 /**
  * Creates a GA4 report row for the given date, with a zero for the metric value.
  *
- * @since n.e.x.t
+ * @since 1.96.0
  *
  * @param {string} date Date in YYYY-MM-DD format.
  * @return {Object} Row object with the date in the GA4 report format as the dimension value, and a zero for the metric value.

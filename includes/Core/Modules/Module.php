@@ -94,7 +94,7 @@ abstract class Module {
 	/**
 	 * Transients instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.96.0
 	 * @var Transients
 	 */
 	protected $transients;

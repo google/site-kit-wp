@@ -38,7 +38,7 @@ import { calculateChange, stringToDate } from '../../../util';
  * @property {number}         total           - Total count for the metric.
  * @property {number}         change          - Monthly change for the metric.
  *
- * @since n.e.x.t
+ * @since 1.96.0
  *
  * @param {Object} report    Analytics report data.
  * @param {string} startDate Start date for the report.
@@ -72,7 +72,7 @@ export function calculateOverallPageMetricsData( report, startDate ) {
 			change: 0,
 		},
 		{
-			metric: 'engagedSessions',
+			metric: 'engagementRate',
 			title: __( 'Engaged Sessions', 'google-site-kit' ),
 			sparkLineData: [
 				[
@@ -81,7 +81,6 @@ export function calculateOverallPageMetricsData( report, startDate ) {
 				],
 			],
 			datapointUnit: '%',
-			datapointDivider: 100,
 			total: 0,
 			change: 0,
 		},

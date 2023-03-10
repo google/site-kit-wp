@@ -36,7 +36,7 @@ const WAIT_FOR_DATA_AVAILABILITY_STATE = 'WAIT_FOR_DATA_AVAILABILITY_STATE';
 /**
  * Creates a store object that includes actions and selectors for gathering data state for a module.
  *
- * @since n.e.x.t
+ * @since 1.96.0
  * @private
  *
  * @param {string}   moduleSlug                  Slug of the module that the store is for.
@@ -88,7 +88,7 @@ export const createGatheringDataStore = (
 		/**
 		 * Receives gathering data state.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.96.0
 		 * @private
 		 *
 		 * @param {boolean} gatheringData Gathering data.
@@ -190,7 +190,7 @@ export const createGatheringDataStore = (
 		/**
 		 * Determines whether data is available for the module.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.96.0
 		 *
 		 * @return {boolean|undefined} Returns TRUE if data is available, otherwise FALSE. If the request is still being resolved, returns undefined.
 		 */
@@ -199,7 +199,7 @@ export const createGatheringDataStore = (
 		/**
 		 * Checks if data is available on load.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.96.0
 		 *
 		 * @param {Object} state Data store's state.
 		 * @return {(string|null|undefined)} The existing tag `string` if present, `null` if not present, or `undefined` if not loaded yet.
@@ -212,7 +212,7 @@ export const createGatheringDataStore = (
 		 * Determines whether the module is still gathering data or not.
 		 *
 		 * @todo Review the name of this selector to a less confusing one.
-		 * @since n.e.x.t
+		 * @since 1.96.0
 		 *
 		 * @param {Object} state Data store's state.
 		 * @return {boolean|undefined} Returns TRUE if gathering data, otherwise FALSE. If the request is still being resolved, returns undefined.
