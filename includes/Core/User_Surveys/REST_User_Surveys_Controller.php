@@ -161,7 +161,7 @@ class REST_User_Surveys_Controller {
 							}
 
 							if ( isset( $data['event']['survey_shown'] ) ) {
-								$this->timeouts->add( '__global', 12 * HOUR_IN_SECONDS );
+								$this->timeouts->set_global_timeout();
 							}
 						}
 
