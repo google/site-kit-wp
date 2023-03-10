@@ -41,7 +41,6 @@ export default function ErrorNotice( {
 	error,
 	storeName,
 	message = error.message,
-	shouldDisplayRetry = true,
 	shouldDisplayError = () => true,
 } ) {
 	const dispatch = useDispatch();
@@ -70,7 +69,7 @@ export default function ErrorNotice( {
 		return null;
 	}
 
-	const canRetryError = isErrorRetryable( error, selectorData );
+	const shouldDisplayRetry = isErrorRetryable( error, selectorData );
 
 	return (
 		<Fragment>
@@ -78,7 +77,7 @@ export default function ErrorNotice( {
 				message={ message }
 				reconnectURL={ error.data?.reconnectURL }
 			/>
-			{ shouldDisplayRetry && canRetryError && (
+			{ shouldDisplayRetry && (
 				<Button onClick={ handleRetry }>
 					{ __( 'Retry', 'google-site-kit' ) }
 				</Button>
@@ -93,6 +92,5 @@ ErrorNotice.propTypes = {
 	} ),
 	storeName: PropTypes.string,
 	message: PropTypes.string,
-	shouldDisplayRetry: PropTypes.bool,
 	shouldDisplayError: PropTypes.func,
 };
