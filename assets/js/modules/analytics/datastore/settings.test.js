@@ -982,7 +982,7 @@ describe( 'modules/analytics settings', () => {
 				).toBe( false );
 			} );
 
-			it( 'should return undefined when the analytics-4 settings are not loaded', async () => {
+			it( 'should return undefined when analytics settings are not loaded', async () => {
 				freezeFetch(
 					new RegExp(
 						'^/google-site-kit/v1/modules/analytics/data/settings'
