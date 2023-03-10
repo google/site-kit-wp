@@ -4,7 +4,7 @@ Contributors:      google
 Requires at least: 5.2
 Tested up to:      6.1
 Requires PHP:      5.6
-Stable tag:        1.95.0
+Stable tag:        1.96.0
 License:           Apache License 2.0
 License URI:       https://www.apache.org/licenses/LICENSE-2.0
 Tags:              google, search-console, analytics, adsense, pagespeed-insights, optimize, tag-manager, site-kit
@@ -107,6 +107,38 @@ By default, Site Kit does anonymize IP addresses upon activation of the Google A
 Please create a new topic on our [WordPress.org support forum](https://wordpress.org/support/plugin/google-site-kit/). Be sure to follow the [support forum guidelines](https://wordpress.org/support/guidelines/) when posting.
 
 == Changelog ==
+
+= 1.96.0 =
+
+**Enhanced**
+
+* Update the Analytics 4 module to use its Google Tag for tracking opt-out if it is used in the snippet. See [#6666](https://github.com/google/site-kit-wp/issues/6666).
+* Update all spinner buttons to be consistent across the codebase. See [#6571](https://github.com/google/site-kit-wp/issues/6571).
+* Add the new setting to the Analytics module to determine the dashboard type. See [#6540](https://github.com/google/site-kit-wp/issues/6540).
+* Update the cache clearing functionality to remove cache for old versions as well. See [#6487](https://github.com/google/site-kit-wp/issues/6487).
+* Enhance experience for existing users who need to grant a new Tag Manager scope for use with Google Tags. See [#6421](https://github.com/google/site-kit-wp/issues/6421).
+* Update the `getKeyMetrics()` selector to return the user-selected key metrics if set, otherwise the user input answer-based key metrics. See [#6257](https://github.com/google/site-kit-wp/issues/6257).
+* Update the WordPress dashboard widget to use Analytics 4 widgets if they are allowed by the feature flag. See [#6222](https://github.com/google/site-kit-wp/issues/6222).
+* Update Analytics and Search Console widgets to use GA4 versions if the feature flag is enabled for the site. See [#6220](https://github.com/google/site-kit-wp/issues/6220).
+* Create the Analytics 4 version of the popular pages widget. See [#6219](https://github.com/google/site-kit-wp/issues/6219).
+* Add a Google Analytics 4 alternative for the overall page metrics widget. See [#6218](https://github.com/google/site-kit-wp/issues/6218).
+* Add a copy of the Search Funnel widget that works with Google Analytics 4 data. See [#6217](https://github.com/google/site-kit-wp/issues/6217).
+* Add new widget for "All traffic" using GA4 as a data source. See [#6216](https://github.com/google/site-kit-wp/issues/6216).
+* Create Google Analytics 4 version of the `AdminBarSessions` widget. See [#6215](https://github.com/google/site-kit-wp/issues/6215).
+* Add the Analytics 4 version of the unique visitors tile in the admin bar. See [#6214](https://github.com/google/site-kit-wp/issues/6214).
+* Create a Google Analytics 4 alternative for the session duration widget on the WordPress dashboard page. See [#6213](https://github.com/google/site-kit-wp/issues/6213).
+* Create the Analytics 4 version of the "Unique Visitors" widget. See [#6212](https://github.com/google/site-kit-wp/issues/6212).
+* Scaffold Key Metrics CTA widget area on Site Kit Dashboard. See [#6209](https://github.com/google/site-kit-wp/issues/6209).
+* Add a periodic check to ensure that the Analytics 4 Google Tag is mapped correctly. See [#6083](https://github.com/google/site-kit-wp/issues/6083).
+* Expose gathering data state on page load. See [#5933](https://github.com/google/site-kit-wp/issues/5933).
+
+**Changed**
+
+* Update usage of Lodash to always use named imports. See [#6139](https://github.com/google/site-kit-wp/issues/6139).
+
+**Fixed**
+
+* Fix the dashboard sharing modal not being closed after closing the feature tour issue. See [#6478](https://github.com/google/site-kit-wp/issues/6478).
 
 = 1.95.0 =
 

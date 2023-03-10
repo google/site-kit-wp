@@ -272,6 +272,10 @@ generateAnalyticsWidgetStories( {
 					expression: 'ga:bounceRate',
 					alias: 'Bounce rate',
 				},
+				{
+					expression: 'ga:avgSessionDuration',
+					alias: 'Session Duration',
+				},
 			],
 			orderby: [
 				{

@@ -19,8 +19,7 @@
 /**
  * External dependencies
  */
-import isFinite from 'lodash/isFinite';
-import unescape from 'lodash/unescape';
+import { isFinite, unescape } from 'lodash';
 
 /**
  * Internal dependencies

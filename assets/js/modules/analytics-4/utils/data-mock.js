@@ -22,11 +22,9 @@
 import md5 from 'md5';
 import faker from 'faker';
 import invariant from 'invariant';
-import castArray from 'lodash/castArray';
+import { castArray, cloneDeep, isPlainObject, zip } from 'lodash';
 import { Observable, merge, from } from 'rxjs';
 import { map, reduce, take, toArray, mergeMap } from 'rxjs/operators';
-import cloneDeep from 'lodash/cloneDeep';
-import isPlainObject from 'lodash/isPlainObject';
 
 /**
  * Internal dependencies
@@ -35,6 +33,9 @@ import { MODULES_ANALYTICS_4 } from '../datastore/constants';
 import { isValidDateString } from '../../../util';
 import { stringToDate } from '../../../util/date-range/string-to-date';
 
+export const STRATEGY_CARTESIAN = 'cartesian';
+export const STRATEGY_ZIP = 'zip';
+
 const ANALYTICS_4_METRIC_TYPES = {
 	totalUsers: 'TYPE_INTEGER',
 	newUsers: 'TYPE_INTEGER',
@@ -42,6 +43,7 @@ const ANALYTICS_4_METRIC_TYPES = {
 	conversions: 'TYPE_INTEGER',
 	screenPageViews: 'TYPE_INTEGER',
 	engagedSessions: 'TYPE_INTEGER',
+	engagementRate: 'TYPE_FLOAT',
 	averageSessionDuration: 'TYPE_SECONDS',
 };
 
@@ -114,6 +116,18 @@ function generateMetricValues( validMetrics ) {
 				values.push( {
 					value: faker.datatype
 						.number( { min: 0, max: 100 } )
+						.toString(),
+				} );
+				break;
+			case 'TYPE_FLOAT':
+				values.push( {
+					value: faker.datatype
+						.float( {
+							min: 0,
+							max: 1,
+							// The GA4 API returns 17 decimal places, so specify that here, although it seems like Faker is only returning up to 16.
+							precision: 0.00000000000000001,
+						} )
 						.toString(),
 				} );
 				break;
@@ -257,7 +271,7 @@ function compareRows( rowA, rowB, metrics, dimensions, orderby ) {
  * @param {Array.<Object>} orderby    Sorting options.
  * @return {Array.<Object>} Sorted rows.
  */
-function sortRows( rows, metrics, dimensions, orderby ) {
+export function sortRows( rows, metrics, dimensions, orderby ) {
 	return rows.sort( ( rowA, rowB ) =>
 		compareRows( rowA, rowB, metrics, dimensions, orderby )
 	);
@@ -296,11 +310,16 @@ function generateDateRange( startDate, endDate ) {
  * Generates mock data for Analytics 4 reports.
  *
  * @since 1.94.0
+ * @since 1.96.0 Added support for using zip to generate dimension combinations.
  *
- * @param {Object} options Report options.
+ * @param {Object} options        Report options.
+ * @param {Object} [extraOptions] Extra options for report generation.
  * @return {Array.<Object>} An array with generated report.
  */
-export function getAnalytics4MockResponse( options ) {
+export function getAnalytics4MockResponse(
+	options,
+	extraOptions = { dimensionCombinationStrategy: STRATEGY_CARTESIAN }
+) {
 	invariant(
 		isPlainObject( options ),
 		'report options are required to generate a mock response.'
@@ -445,15 +464,29 @@ export function getAnalytics4MockResponse( options ) {
 		),
 	];
 
+	const { dimensionCombinationStrategy } = extraOptions;
+	let mergeMapper;
+	if ( dimensionCombinationStrategy === STRATEGY_CARTESIAN ) {
+		// When STRATEGY_CARTESIAN is specified we use the cartesianProduct function to generate all possible combinations of dimension values.
+		mergeMapper = cartesianProduct;
+	} else if ( dimensionCombinationStrategy === STRATEGY_ZIP ) {
+		// When STRATEGY_ZIP is specified we use the zip function to generate one-to-one combinations of dimension values.
+		mergeMapper = ( arrays ) => zip( ...arrays );
+	} else {
+		throw new Error(
+			`Invalid dimension combination strategy: ${ dimensionCombinationStrategy }`
+		);
+	}
+
 	// Process the streams of dimension values and add generated rows to the report data object.
 	// First we merge all streams into one which will emit each set of dimension values as an array.
 	merge( ...streams.map( ( stream ) => stream.pipe( toArray() ) ) )
 		.pipe(
 			// Then we convert the resulting stream to an array...
 			toArray(),
-			// So that we can pass it to the cartesianProduct function to generate all possible combinations of dimension values.
+			// So that we can pass it to the mergeMapper function defined above in order to generate the combinations of dimension values.
 			// Using mergeMap here ensures the resulting set of values will be emitted as a new stream.
-			mergeMap( cartesianProduct ),
+			mergeMap( mergeMapper ),
 			// Then we apply the remaining operations to generate a row for each combination of dimension values.
 			...ops
 		)

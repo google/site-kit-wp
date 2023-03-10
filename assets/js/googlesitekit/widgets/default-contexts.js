@@ -17,6 +17,7 @@
  */
 
 // Main dashboard
+export const CONTEXT_MAIN_DASHBOARD_KEY_METRICS = 'mainDashboardKeyMetrics';
 export const CONTEXT_MAIN_DASHBOARD_TRAFFIC = 'mainDashboardTraffic';
 export const CONTEXT_MAIN_DASHBOARD_CONTENT = 'mainDashboardContent';
 export const CONTEXT_MAIN_DASHBOARD_SPEED = 'mainDashboardSpeed';
@@ -30,6 +31,7 @@ export const CONTEXT_ENTITY_DASHBOARD_MONETIZATION =
 
 export default {
 	// Main dashboard
+	CONTEXT_MAIN_DASHBOARD_KEY_METRICS,
 	CONTEXT_MAIN_DASHBOARD_TRAFFIC,
 	CONTEXT_MAIN_DASHBOARD_CONTENT,
 	CONTEXT_MAIN_DASHBOARD_SPEED,

@@ -26,6 +26,7 @@ import Dialog from './Dialog';
 import Menu from './Menu';
 import ProgressBar from './ProgressBar';
 import Radio from './Radio';
+import SpinnerButton from './SpinnerButton';
 import Switch from './Switch';
 import Tooltip from './Tooltip';
 
@@ -37,6 +38,7 @@ const Components = {
 	Menu,
 	ProgressBar,
 	Radio,
+	SpinnerButton,
 	Switch,
 	Tooltip,
 };

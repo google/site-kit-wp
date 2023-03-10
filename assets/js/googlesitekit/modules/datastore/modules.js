@@ -20,11 +20,8 @@
  * External dependencies
  */
 import memize from 'memize';
-import defaults from 'lodash/defaults';
-import merge from 'lodash/merge';
-import isPlainObject from 'lodash/isPlainObject';
 import invariant from 'invariant';
-import { sprintf, __ } from '@wordpress/i18n';
+import { defaults, merge, isPlainObject } from 'lodash';
 
 /**
  * WordPress dependencies
@@ -32,6 +29,7 @@ import { sprintf, __ } from '@wordpress/i18n';
 // This is used for JSDoc purposes.
 // eslint-disable-next-line no-unused-vars
 import { WPComponent } from '@wordpress/element';
+import { sprintf, __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies

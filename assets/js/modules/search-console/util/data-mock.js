@@ -22,9 +22,9 @@
 import invariant from 'invariant';
 import faker from 'faker';
 import md5 from 'md5';
+import { isPlainObject } from 'lodash';
 import { range } from 'rxjs';
 import { map, reduce, take } from 'rxjs/operators';
-import isPlainObject from 'lodash/isPlainObject';
 
 /**
  * Internal dependencies
