@@ -53,6 +53,7 @@ return array(
 			->path( '#^psr/#' )
 			->path( '#^ralouphie/#' )
 			->path( '#^react/#' )
+			->path( '#^symfony/#' )
 			->path( '#^true/#' )
 			->in( 'vendor' ),
 
@@ -108,6 +109,14 @@ return array(
 			if ( false !== strpos( $file_path, 'vendor/google/apiclient/' ) ) {
 				$contents = str_replace( "'Google_", "'" . $prefix . '\Google_', $contents );
 				$contents = str_replace( '"Google_', '"' . $prefix . '\Google_', $contents );
+			}
+			if (
+				// Bootstrap files polyfill global functions using namespaced implementations.
+				preg_match( '#vendor/symfony/polyfill-.*/bootstrap\.php$#', $file_path )
+				// The classes under Resources/stubs polyfill classes in the global namespace loaded via classmap.
+				|| preg_match( '#vendor/symfony/polyfill-.*/Resources/stubs/.*\.php$#', $file_path )
+			) {
+				$contents = str_replace( "namespace $prefix;", "/* namespace $prefix intentionally removed */", $contents );
 			}
 			return $contents;
 		},
