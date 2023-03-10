@@ -1,25 +1,23 @@
 <?php
 /**
- * Class Google\Site_Kit\Core\Storage\User_Setting\List
+ * Trait Google\Site_Kit\Core\Storage\Setting\Array_Setting
  *
- * @package   Google\Site_Kit\Core\Storage\User_Setting
+ * @package   Google\Site_Kit\Core\Storage\Setting
  * @copyright 2023 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
 
-namespace Google\Site_Kit\Core\Storage\User_Setting;
-
-use Google\Site_Kit\Core\Storage\User_Setting;
+namespace Google\Site_Kit\Core\Storage\Setting;
 
 /**
- * Base class for a single user setting of the array type.
+ * A trait for a single setting of the array type.
  *
  * @since n.e.x.t
  * @access private
  * @ignore
  */
-abstract class Array_Setting extends User_Setting {
+trait Array_Setting {
 
 	/**
 	 * Gets the expected value type.
@@ -74,8 +72,6 @@ abstract class Array_Setting extends User_Setting {
 	 * @param array $items The original array items.
 	 * @return array Filtered items.
 	 */
-	protected function sanitize_array_item( $items ) {
-		return $items;
-	}
+	abstract protected function sanitize_array_item( $items );
 
 }

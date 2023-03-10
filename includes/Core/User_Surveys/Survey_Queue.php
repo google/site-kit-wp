@@ -10,7 +10,8 @@
 
 namespace Google\Site_Kit\Core\User_Surveys;
 
-use Google\Site_Kit\Core\Storage\User_Setting\Array_Setting;
+use Google\Site_Kit\Core\Storage\User_Setting;
+use Google\Site_Kit\Core\Storage\Setting\Array_Setting;
 
 /**
  * Class for handling surveys queue.
@@ -19,7 +20,9 @@ use Google\Site_Kit\Core\Storage\User_Setting\Array_Setting;
  * @access private
  * @ignore
  */
-class Survey_Queue extends Array_Setting {
+class Survey_Queue extends User_Setting {
+
+	use Array_Setting;
 
 	const OPTION = 'googlesitekit_survey_queue';
 
@@ -107,6 +110,18 @@ class Survey_Queue extends Array_Setting {
 		}
 
 		return null;
+	}
+
+	/**
+	 * Filters array items.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $items The original array items.
+	 * @return array Filtered items.
+	 */
+	protected function sanitize_array_item( $items ) {
+		return $items;
 	}
 
 }

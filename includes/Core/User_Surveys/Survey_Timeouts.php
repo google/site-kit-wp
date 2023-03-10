@@ -10,7 +10,8 @@
 
 namespace Google\Site_Kit\Core\User_Surveys;
 
-use Google\Site_Kit\Core\Storage\User_Setting\Array_Setting;
+use Google\Site_Kit\Core\Storage\User_Setting;
+use Google\Site_Kit\Core\Storage\Setting\Array_Setting;
 
 /**
  * Class for representing user survey timeouts.
@@ -19,7 +20,9 @@ use Google\Site_Kit\Core\Storage\User_Setting\Array_Setting;
  * @access private
  * @ignore
  */
-class Survey_Timeouts extends Array_Setting {
+class Survey_Timeouts extends User_Setting {
+
+	use Array_Setting;
 
 	const OPTION = 'googlesitekit_survey_timeouts';
 
