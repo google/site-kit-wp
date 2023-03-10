@@ -68,4 +68,16 @@ class Survey_TimeoutsTest extends TestCase {
 		);
 	}
 
+	public function test_set_global_timeout() {
+		$this->assertEmpty( $this->user_options->get( Survey_Timeouts::OPTION ) );
+
+		$this->timeouts->set_global_timeout();
+		$this->assertEquals(
+			array(
+				'__global' => time() + 12 * HOUR_IN_SECONDS,
+			),
+			$this->user_options->get( Survey_Timeouts::OPTION )
+		);
+	}
+
 }

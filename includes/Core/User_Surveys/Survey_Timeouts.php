@@ -56,6 +56,15 @@ class Survey_Timeouts extends User_Setting {
 	}
 
 	/**
+	 * Sets the global timeout to twelve hours.
+	 *
+	 * @since n.e.x.t
+	 */
+	public function set_global_timeout() {
+		$this->add( '__global', 12 * HOUR_IN_SECONDS );
+	}
+
+	/**
 	 * Filters survey timeouts.
 	 *
 	 * @since 1.73.0
