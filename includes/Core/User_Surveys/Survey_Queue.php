@@ -37,7 +37,7 @@ class Survey_Queue extends User_Setting {
 	public function enqueue( $survey ) {
 		$surveys = $this->get();
 
-		// Do no add the survey if it is already in the queue.
+		// Do not add the survey if it is already in the queue.
 		foreach ( $surveys as $item ) {
 			if ( $item['survey_id'] === $survey['survey_id'] ) {
 				return false;
@@ -89,7 +89,7 @@ class Survey_Queue extends User_Setting {
 	 */
 	public function front() {
 		$surveys = $this->get();
-		return count( $surveys ) > 0 ? $surveys[0] : null;
+		return reset( $surveys ) ?: null;
 	}
 
 	/**
