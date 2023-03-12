@@ -28,18 +28,17 @@ import Data from 'googlesitekit-data';
 import { CORE_USER } from './constants';
 import { createFetchStore } from '../../data/create-fetch-store';
 import { actions as errorStoreActions } from '../../data/create-error-store';
-import { CORE_WIDGETS } from '../../widgets/datastore/constants';
 const { receiveError, clearError } = errorStoreActions;
 const { createRegistrySelector } = Data;
 
 const SET_KEY_METRICS_SETTING = 'SET_KEY_METRICS_SETTING';
 
 const baseInitialState = {
-	keyMetrics: undefined,
+	keyMetricsSettings: undefined,
 };
 
-const fetchGetUserPickedMetricsStore = createFetchStore( {
-	baseName: 'getUserPickedMetrics',
+const fetchGetKeyMetricsSettingsStore = createFetchStore( {
+	baseName: 'getKeyMetricsSettings',
 	controlCallback: () =>
 		API.get( 'core', 'user', 'key-metrics', undefined, {
 			// Never cache key metrics requests, we want them to be
@@ -47,17 +46,20 @@ const fetchGetUserPickedMetricsStore = createFetchStore( {
 			// make requests to Google APIs so it's not a slow request.
 			useCache: false,
 		} ),
-	reducerCallback: ( state, keyMetrics ) => ( {
+	reducerCallback: ( state, keyMetricsSettings ) => ( {
 		...state,
-		keyMetrics,
+		keyMetricsSettings,
 	} ),
 } );
 
-const fetchSaveKeyMetricsStore = createFetchStore( {
-	baseName: 'saveKeyMetrics',
+const fetchSaveKeyMetricsSettingsStore = createFetchStore( {
+	baseName: 'saveKeyMetricsSettings',
 	controlCallback: ( settings ) =>
 		API.set( 'core', 'user', 'key-metrics', { settings } ),
-	reducerCallback: ( state, keyMetrics ) => ( { ...state, keyMetrics } ),
+	reducerCallback: ( state, keyMetricsSettings ) => ( {
+		...state,
+		keyMetricsSettings,
+	} ),
 	argsToParams: ( settings ) => settings,
 	validateParams: ( settings ) => {
 		invariant( isPlainObject( settings ), 'Settings should be an object.' );
@@ -87,23 +89,25 @@ const baseActions = {
 	/**
 	 * Saves key metrics settings.
 	 *
-	 * @since 1.94.0
+	 * @since n.e.x.t
 	 *
 	 * @return {Object} Object with `response` and `error`.
 	 */
-	*saveKeyMetrics() {
-		yield clearError( 'saveKeyMetrics', [] );
+	*saveKeyMetricsSettings() {
+		yield clearError( 'saveKeyMetricsSettings', [] );
 
 		const registry = yield Data.commonActions.getRegistry();
-		const keyMetrics = registry.select( CORE_USER ).getUserPickedMetrics();
+		const keyMetricsSettings = registry
+			.select( CORE_USER )
+			.getKeyMetricsSettings();
 		const { response, error } =
-			yield fetchSaveKeyMetricsStore.actions.fetchSaveKeyMetrics(
-				keyMetrics
+			yield fetchSaveKeyMetricsSettingsStore.actions.fetchSaveKeyMetrics(
+				keyMetricsSettings
 			);
 
 		if ( error ) {
 			// Store error manually since saveKeyMetrics signature differs from fetchSaveKeyMetricsStore.
-			yield receiveError( error, 'saveKeyMetrics', [] );
+			yield receiveError( error, 'saveKeyMetricsSettings', [] );
 		}
 
 		return { response, error };
@@ -117,8 +121,8 @@ const baseReducer = ( state, { type, payload } ) => {
 		case SET_KEY_METRICS_SETTING: {
 			return {
 				...state,
-				keyMetrics: {
-					...state.keyMetrics,
+				keyMetricsSettings: {
+					...state.keyMetricsSettings,
 					[ payload.settingID ]: payload.value,
 				},
 			};
@@ -130,64 +134,52 @@ const baseReducer = ( state, { type, payload } ) => {
 };
 
 const baseResolvers = {
-	*getUserPickedMetrics() {
+	*getKeyMetricsSettings() {
 		const registry = yield Data.commonActions.getRegistry();
-		const userPickedKeyMetrics = registry
+		const keyMetricsSettings = registry
 			.select( CORE_USER )
-			.getUserPickedMetrics();
+			.getKeyMetricsSettings();
 
-		if ( userPickedKeyMetrics ) {
-			return userPickedKeyMetrics;
+		if ( keyMetricsSettings ) {
+			return keyMetricsSettings;
 		}
 
-		yield fetchGetUserPickedMetricsStore.actions.fetchGetUserPickedMetrics();
+		yield fetchGetKeyMetricsSettingsStore.actions.fetchGetKeyMetricsSettings();
 	},
 };
 
 const baseSelectors = {
 	/**
-	 * Gets key metrics for this user, either from the user-selected
-	 * key metrics selected by this user (if available) or—if the user has not
-	 * manually selected their own key metrics—from the automatically-selected
-	 * (eg. "answer-based") metrics based on their answers to our User Input
-	 * questions.
+	 * Gets the Key Metric widget slugs selected by the user.
 	 *
-	 * @since 1.96.0
+	 * @since n.e.x.t
 	 *
-	 * @param {Object} state Data store's state.
-	 * @return {(Object|undefined)} Key metrics settings.
+	 * @return {Array<string>|undefined} An array of Key Metric widget slugs, or undefined if the key metrics settings are not loaded.
 	 */
-	getKeyMetrics: createRegistrySelector( ( select ) => () => {
-		const userPickedMetrics = select( CORE_USER ).getUserPickedMetrics();
+	getUserPickedMetrics: createRegistrySelector( ( select ) => () => {
+		const keyMetricsSettings = select( CORE_USER ).getKeyMetricsSettings();
 
-		if ( userPickedMetrics === undefined ) {
+		if ( keyMetricsSettings === undefined ) {
 			return undefined;
 		}
-
-		if ( userPickedMetrics?.widgetSlugs?.length ) {
-			return userPickedMetrics.widgetSlugs;
-		}
-
-		return select( CORE_WIDGETS ).getAnswerBasedMetrics();
+		return keyMetricsSettings.widgetSlugs;
 	} ),
-
 	/**
-	 * Gets key metrics selected by the user.
+	 * Gets key metrics settings.
 	 *
-	 * @since 1.94.0 Initially introduced as `getKeyMetrics`.
-	 * @since 1.96.0 Updated selector name now that `getKeyMetrics` contains more advanced logic.
+	 * @since n.e.x.t
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {(Object|undefined)} Key metrics settings.
+	 * @return {(Object|undefined)} Key metrics settings. Returns `undefined` if not loaded.
 	 */
-	getUserPickedMetrics( state ) {
-		return state.keyMetrics;
+	getKeyMetricsSettings( state ) {
+		return state.keyMetricsSettings;
 	},
 };
 
 const store = Data.combineStores(
-	fetchGetUserPickedMetricsStore,
-	fetchSaveKeyMetricsStore,
+	fetchGetKeyMetricsSettingsStore,
+	fetchSaveKeyMetricsSettingsStore,
 	{
 		initialState: baseInitialState,
 		actions: baseActions,

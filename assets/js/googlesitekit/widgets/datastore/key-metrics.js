@@ -20,12 +20,33 @@
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { CORE_WIDGETS } from './constants';
 import { CORE_SITE } from '../../datastore/site/constants';
 import { CORE_USER } from '../../datastore/user/constants';
 
 const { createRegistrySelector } = Data;
 
 const selectors = {
+	/**
+	 * Gets currently selected key metrics based on either the user picked metrics or the answer based metrics.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {Array<string>|undefined} An array of key metric slugs, or undefined while loading.
+	 */
+	getKeyMetrics: createRegistrySelector( ( select ) => () => {
+		const userPickedMetrics = select( CORE_USER ).getUserPickedMetrics();
+
+		if ( userPickedMetrics === undefined ) {
+			return undefined;
+		}
+
+		if ( userPickedMetrics.length ) {
+			return userPickedMetrics;
+		}
+
+		return select( CORE_WIDGETS ).getAnswerBasedMetrics();
+	} ),
 	/**
 	 * Gets the Key Metric widget slugs based on the user input settings.
 	 *
