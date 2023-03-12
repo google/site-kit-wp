@@ -34,7 +34,6 @@ const { useSelect } = Data;
 export default function StoreErrorNotices( {
 	moduleSlug,
 	storeName,
-	shouldDisplayRetry = true,
 	shouldDisplayError,
 } ) {
 	const errors = useSelect( ( select ) => select( storeName ).getErrors() );
@@ -74,7 +73,6 @@ export default function StoreErrorNotices( {
 					error={ error }
 					storeName={ storeName }
 					message={ message }
-					shouldDisplayRetry={ shouldDisplayRetry }
 					shouldDisplayError={ shouldDisplayError }
 				/>
 			);
@@ -83,7 +81,6 @@ export default function StoreErrorNotices( {
 
 StoreErrorNotices.propTypes = {
 	storeName: PropTypes.string.isRequired,
-	shouldDisplayRetry: PropTypes.bool,
 	shouldDisplayError: PropTypes.func,
 	moduleSlug: PropTypes.string,
 };

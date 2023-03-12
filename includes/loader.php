@@ -30,7 +30,7 @@ function autoload_classes() {
 
 	spl_autoload_register(
 		function ( $class ) use ( $class_map ) {
-			if ( isset( $class_map[ $class ] ) && 'Google\\Site_Kit' === substr( $class, 0, 15 ) ) {
+			if ( isset( $class_map[ $class ] ) ) {
 				require_once $class_map[ $class ];
 			}
 		},

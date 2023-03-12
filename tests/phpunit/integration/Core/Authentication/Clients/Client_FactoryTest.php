@@ -47,7 +47,7 @@ class Client_FactoryTest extends TestCase {
 
 		$this->assertInstanceOf( Google_Site_Kit_Proxy_Client::class, $client );
 		$this->assertEquals( 3, $client->getConfig( 'retry' )['retries'] );
-		$this->assertEquals( Google_Proxy::get_application_name(), $client->getHttpClient()->getDefaultOption( 'headers/User-Agent' ) );
+		$this->assertEquals( Google_Proxy::get_application_name(), $client->getHttpClient()->getConfig( 'headers' )['User-Agent'] );
 		$this->assertEquals( $client_id, $client->getClientId() );
 		$this->assertEquals( $client_secret, $client->getClientSecret() );
 		$this->assertEquals( $redirect_uri, $client->getRedirectUri() );

@@ -130,27 +130,6 @@ const ga4ReportArgs = [
 			},
 		],
 	},
-	/* This is a duplicate of the one above and should be removed.
-	{
-		startDate: '2021-09-15',
-		endDate: '2021-10-12',
-		compareStartDate: '2021-08-18',
-		compareEndDate: '2021-09-14',
-		metrics: [
-			{
-				name: 'totalUsers',
-			},
-		],
-		dimensions: [
-			{
-				name: 'date',
-			},
-		],
-		dimensionFilters: {
-			sessionDefaultChannelGrouping: [ 'Organic Search' ],
-		},
-	},
-	*/
 	{
 		dimensions: [
 			{
