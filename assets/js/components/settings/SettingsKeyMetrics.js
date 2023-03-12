@@ -44,12 +44,20 @@ export default function SettingsKeyMetrics() {
 		useDispatch( CORE_USER );
 
 	const handleKeyMatricsToggle = useCallback( async () => {
+		if ( ! keyMetricsSettings ) {
+			return;
+		}
+
 		await setKeyMetricSetting(
 			'isWidgetHidden',
-			! keyMetricsSettings?.isWidgetHidden
+			! keyMetricsSettings.isWidgetHidden
 		);
 		await saveKeyMetricsSettings();
 	}, [ keyMetricsSettings, saveKeyMetricsSettings, setKeyMetricSetting ] );
+
+	if ( ! keyMetricsSettings ) {
+		return null;
+	}
 
 	return (
 		<Switch
@@ -57,7 +65,7 @@ export default function SettingsKeyMetrics() {
 				'Display key metrics in dashboard',
 				'google-site-kit'
 			) }
-			checked={ ! keyMetricsSettings?.isWidgetHidden }
+			checked={ ! keyMetricsSettings.isWidgetHidden }
 			onClick={ handleKeyMatricsToggle }
 			hideLabel={ false }
 		/>

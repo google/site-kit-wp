@@ -164,6 +164,7 @@ const baseSelectors = {
 		}
 		return keyMetricsSettings.widgetSlugs;
 	} ),
+
 	/**
 	 * Gets key metrics settings.
 	 *
