@@ -101,7 +101,7 @@ const baseActions = {
 			.select( CORE_USER )
 			.getKeyMetricsSettings();
 		const { response, error } =
-			yield fetchSaveKeyMetricsSettingsStore.actions.fetchSaveKeyMetrics(
+			yield fetchSaveKeyMetricsSettingsStore.actions.fetchSaveKeyMetricsSettings(
 				keyMetricsSettings
 			);
 
