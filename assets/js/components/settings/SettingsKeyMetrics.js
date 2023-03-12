@@ -36,19 +36,20 @@ import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 const { useSelect, useDispatch } = Data;
 
 export default function SettingsKeyMetrics() {
-	const keyMetrics = useSelect( ( select ) =>
-		select( CORE_USER ).getKeyMetrics()
+	const keyMetricsSettings = useSelect( ( select ) =>
+		select( CORE_USER ).getKeyMetricsSettings()
 	);
 
-	const { setKeyMetricSetting, saveKeyMetrics } = useDispatch( CORE_USER );
+	const { setKeyMetricSetting, saveKeyMetricsSettings } =
+		useDispatch( CORE_USER );
 
 	const handleKeyMatricsToggle = useCallback( async () => {
 		await setKeyMetricSetting(
 			'isWidgetHidden',
-			! keyMetrics?.isWidgetHidden
+			! keyMetricsSettings?.isWidgetHidden
 		);
-		await saveKeyMetrics();
-	}, [ keyMetrics, saveKeyMetrics, setKeyMetricSetting ] );
+		await saveKeyMetricsSettings();
+	}, [ keyMetricsSettings, saveKeyMetricsSettings, setKeyMetricSetting ] );
 
 	return (
 		<Switch
@@ -56,7 +57,7 @@ export default function SettingsKeyMetrics() {
 				'Display key metrics in dashboard',
 				'google-site-kit'
 			) }
-			checked={ ! keyMetrics?.isWidgetHidden }
+			checked={ ! keyMetricsSettings?.isWidgetHidden }
 			onClick={ handleKeyMatricsToggle }
 			hideLabel={ false }
 		/>
