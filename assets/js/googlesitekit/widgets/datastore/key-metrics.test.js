@@ -24,6 +24,7 @@ import {
 	freezeFetch,
 	provideSiteInfo,
 	unsubscribeFromAll,
+	untilResolved,
 	waitForDefaultTimeouts,
 } from '../../../../../tests/js/utils';
 import { CORE_USER } from '../../datastore/user/constants';
@@ -43,6 +44,91 @@ describe( 'core/widgets key metrics', () => {
 	} );
 
 	describe( 'selectors', () => {
+		describe( 'getKeyMetrics', () => {
+			it( 'should use answer-based key metrics if the user has not selected any widgets', async () => {
+				fetchMock.getOnce(
+					new RegExp(
+						'^/google-site-kit/v1/core/user/data/key-metrics'
+					),
+					{
+						body: {
+							widgetSlugs: [],
+							isWidgetHidden: false,
+						},
+						status: 200,
+					}
+				);
+
+				fetchMock.getOnce(
+					new RegExp(
+						'^/google-site-kit/v1/core/user/data/user-input-settings'
+					),
+					{
+						body: {
+							purpose: {
+								values: [ 'publish_blog' ],
+								scope: 'site',
+							},
+						},
+						status: 200,
+					}
+				);
+
+				registry.select( CORE_USER ).getUserInputSettings();
+
+				await untilResolved(
+					registry,
+					CORE_USER
+				).getUserInputSettings();
+
+				registry.select( CORE_WIDGETS ).getKeyMetrics();
+
+				await untilResolved(
+					registry,
+					CORE_USER
+				).getKeyMetricsSettings();
+
+				expect(
+					registry.select( CORE_WIDGETS ).getKeyMetrics()
+				).toMatchObject( [
+					'kmAnalyticsLoyalVisitors',
+					'kmAnalyticsNewVisitors',
+					'kmAnalyticsTopTrafficSource',
+					'kmAnalyticsEngagedTrafficSource',
+				] );
+
+				expect( fetchMock ).toHaveFetchedTimes( 2 );
+			} );
+
+			it( 'should use the user-selected key metrics if the user has selected any widgets', async () => {
+				fetchMock.getOnce(
+					new RegExp(
+						'^/google-site-kit/v1/core/user/data/key-metrics'
+					),
+					{
+						body: {
+							widgetSlugs: [ 'kmAnalyticsLoyalVisitors' ],
+							isWidgetHidden: false,
+						},
+						status: 200,
+					}
+				);
+
+				registry.select( CORE_WIDGETS ).getKeyMetrics();
+
+				await untilResolved(
+					registry,
+					CORE_USER
+				).getKeyMetricsSettings();
+
+				expect(
+					registry.select( CORE_WIDGETS ).getKeyMetrics()
+				).toMatchObject( [ 'kmAnalyticsLoyalVisitors' ] );
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+			} );
+		} );
+
 		describe( 'getAnswerBasedMetrics', () => {
 			it( 'should return undefined if user input settings are not resolved', async () => {
 				freezeFetch(

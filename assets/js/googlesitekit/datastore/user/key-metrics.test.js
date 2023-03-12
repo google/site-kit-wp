@@ -20,8 +20,10 @@
 import API from 'googlesitekit-api';
 import {
 	createTestRegistry,
+	freezeFetch,
 	unsubscribeFromAll,
 	untilResolved,
+	waitForDefaultTimeouts,
 } from '../../../../../tests/js/utils';
 import { CORE_USER } from './constants';
 
@@ -75,13 +77,13 @@ describe( 'core/user key metrics', () => {
 					.dispatch( CORE_USER )
 					.setKeyMetricSetting( settingID, settingValue );
 
-				expect( store.getState().keyMetrics[ settingID ] ).toBe(
+				expect( store.getState().keyMetricsSettings[ settingID ] ).toBe(
 					settingValue
 				);
 			} );
 		} );
 
-		describe( 'saveKeyMetrics', () => {
+		describe( 'saveKeyMetricsSettings', () => {
 			beforeEach( async () => {
 				await registry
 					.dispatch( CORE_USER )
@@ -94,7 +96,7 @@ describe( 'core/user key metrics', () => {
 					status: 200,
 				} );
 
-				await registry.dispatch( CORE_USER ).saveKeyMetrics();
+				await registry.dispatch( CORE_USER ).saveKeyMetricsSettings();
 
 				// Ensure the proper body parameters were sent.
 				expect( fetchMock ).toHaveFetched(
@@ -110,7 +112,7 @@ describe( 'core/user key metrics', () => {
 					}
 				);
 
-				expect( store.getState().keyMetrics ).toMatchObject(
+				expect( store.getState().keyMetricsSettings ).toMatchObject(
 					coreKeyMetricsExpectedResponse
 				);
 
@@ -129,12 +131,12 @@ describe( 'core/user key metrics', () => {
 					status: 500,
 				} );
 
-				await registry.dispatch( CORE_USER ).saveKeyMetrics();
+				await registry.dispatch( CORE_USER ).saveKeyMetricsSettings();
 
 				expect(
 					registry
 						.select( CORE_USER )
-						.getErrorForAction( 'saveKeyMetrics', [] )
+						.getErrorForAction( 'saveKeyMetricsSettings', [] )
 				).toMatchObject( response );
 
 				expect( console ).toHaveErrored();
@@ -143,8 +145,8 @@ describe( 'core/user key metrics', () => {
 	} );
 
 	describe( 'selectors', () => {
-		describe( 'getKeyMetrics', () => {
-			it( 'should fetch user key metrics from the API if none exist', async () => {
+		describe( 'getKeyMetricsSettings', () => {
+			it( 'should fetch user key metrics settings from the API if none exist', async () => {
 				fetchMock.getOnce( coreKeyMetricsEndpointRegExp, {
 					body: coreKeyMetricsExpectedResponse,
 					status: 200,
@@ -162,12 +164,12 @@ describe( 'core/user key metrics', () => {
 					CORE_USER
 				).getUserInputSettings();
 
-				registry.select( CORE_USER ).getKeyMetrics();
+				registry.select( CORE_USER ).getKeyMetricsSettings();
 
 				await untilResolved(
 					registry,
 					CORE_USER
-				).getUserPickedMetrics();
+				).getKeyMetricsSettings();
 
 				expect( fetchMock ).toHaveFetched(
 					coreKeyMetricsEndpointRegExp,
@@ -179,50 +181,75 @@ describe( 'core/user key metrics', () => {
 				);
 
 				expect(
-					registry.select( CORE_USER ).getKeyMetrics()
-				).toMatchObject( coreKeyMetricsExpectedResponse.widgetSlugs );
+					registry.select( CORE_USER ).getKeyMetricsSettings()
+				).toMatchObject( coreKeyMetricsExpectedResponse );
 
 				expect( fetchMock ).toHaveFetchedTimes( 2 );
 			} );
 
-			it( 'should use answer-based key metrics if the user has not selected any widgets', async () => {
+			it( 'should not make a network request if settings exist', async () => {
+				registry
+					.dispatch( CORE_USER )
+					.receiveGetKeyMetricsSettings(
+						coreKeyMetricsExpectedResponse
+					);
+
+				registry.select( CORE_USER ).getKeyMetricsSettings();
+
+				await untilResolved(
+					registry,
+					CORE_USER
+				).getKeyMetricsSettings();
+
+				expect( fetchMock ).not.toHaveFetched(
+					coreKeyMetricsEndpointRegExp
+				);
+			} );
+		} );
+
+		describe( 'getUserPickedMetrics', () => {
+			it( 'should return undefined while settings are loading', async () => {
+				freezeFetch( coreKeyMetricsEndpointRegExp );
+
+				const { getUserPickedMetrics } = registry.select( CORE_USER );
+
+				expect( getUserPickedMetrics() ).toBeUndefined();
+
+				await waitForDefaultTimeouts();
+			} );
+
+			it( 'uses a resolver to make a network request if settings are not available', async () => {
 				fetchMock.getOnce( coreKeyMetricsEndpointRegExp, {
-					body: {
-						widgetSlugs: [],
-						isWidgetHidden: false,
-					},
+					body: coreKeyMetricsExpectedResponse,
 					status: 200,
 				} );
 
-				fetchMock.getOnce( coreUserInputSettingsEndpointRegExp, {
-					body: coreUserInputSettingsExpectedResponse,
-					status: 200,
-				} );
+				const { getUserPickedMetrics } = registry.select( CORE_USER );
 
-				registry.select( CORE_USER ).getUserInputSettings();
+				expect( getUserPickedMetrics() ).toBeUndefined();
 
 				await untilResolved(
 					registry,
 					CORE_USER
-				).getUserInputSettings();
-
-				registry.select( CORE_USER ).getKeyMetrics();
-
-				await untilResolved(
-					registry,
-					CORE_USER
-				).getUserPickedMetrics();
+				).getKeyMetricsSettings();
 
 				expect(
-					registry.select( CORE_USER ).getKeyMetrics()
-				).toMatchObject( [
-					'kmAnalyticsLoyalVisitors',
-					'kmAnalyticsNewVisitors',
-					'kmAnalyticsTopTrafficSource',
-					'kmAnalyticsEngagedTrafficSource',
-				] );
+					registry.select( CORE_USER ).getUserPickedMetrics()
+				).toEqual( coreKeyMetricsExpectedResponse.widgetSlugs );
 
-				expect( fetchMock ).toHaveFetchedTimes( 2 );
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+			} );
+
+			it( 'should return user picked metrics', () => {
+				registry
+					.dispatch( CORE_USER )
+					.receiveGetKeyMetricsSettings(
+						coreKeyMetricsExpectedResponse
+					);
+
+				expect(
+					registry.select( CORE_USER ).getUserPickedMetrics()
+				).toEqual( coreKeyMetricsExpectedResponse.widgetSlugs );
 			} );
 		} );
 	} );
