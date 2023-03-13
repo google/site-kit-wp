@@ -34,17 +34,20 @@ import { ProgressBar } from 'googlesitekit-components';
 import { Select, Option } from '../../../../material-components';
 import {
 	MODULES_ANALYTICS_4,
-	PROPERTY_CREATE,
 	WEBDATASTREAM_CREATE,
 } from '../../datastore/constants';
 import { MODULES_ANALYTICS } from '../../../analytics/datastore/constants';
 import { isValidAccountID } from '../../../analytics/util';
-import { isValidWebDataStreamSelection } from '../../utils/validation';
+import {
+	isValidPropertyID,
+	isValidPropertySelection,
+	isValidWebDataStreamSelection,
+} from '../../utils/validation';
 import { trackEvent } from '../../../../util';
 import useViewContext from '../../../../hooks/useViewContext';
 const { useSelect, useDispatch } = Data;
 
-export default function MeasurementSelect( props ) {
+export default function WebDataStreamSelect( props ) {
 	const { hasModuleAccess, className } = props;
 
 	// Analytics accounts need to be loaded in order to load the properties,
@@ -62,30 +65,39 @@ export default function MeasurementSelect( props ) {
 		( select ) => select( MODULES_ANALYTICS_4 ).getSettings() || {}
 	);
 
-	const isRealPropertyID = !! propertyID && propertyID !== PROPERTY_CREATE;
 	const webDataStreams = useSelect( ( select ) =>
-		isRealPropertyID
+		isValidPropertyID( propertyID )
 			? select(
 					MODULES_ANALYTICS_4
 			  ).getMatchingWebDataStreamsByPropertyID( propertyID )
 			: []
 	);
 
-	const isLoading = useSelect(
-		( select ) =>
-			! select( MODULES_ANALYTICS ).hasFinishedResolution(
-				'getAccounts'
-			) ||
-			! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
-				'getProperties',
-				[ accountID ]
-			) ||
-			! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
-				'getWebDataStreams',
-				[ propertyID ]
-			) ||
-			select( MODULES_ANALYTICS ).hasFinishedSelectingAccount() === false
-	);
+	const isLoading = useSelect( ( select ) => {
+		const loadedAccounts =
+			select( MODULES_ANALYTICS ).hasFinishedResolution( 'getAccounts' );
+
+		const loadedProperties = select(
+			MODULES_ANALYTICS_4
+		).hasFinishedResolution( 'getProperties', [ accountID ] );
+
+		const loadedWebDataStreams = isValidPropertyID( propertyID )
+			? select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
+					'getWebDataStreams',
+					[ propertyID ]
+			  )
+			: true;
+
+		const finishedSelectingAccount =
+			select( MODULES_ANALYTICS ).hasFinishedSelectingAccount() !== false;
+
+		return (
+			! loadedAccounts ||
+			! loadedProperties ||
+			! loadedWebDataStreams ||
+			! finishedSelectingAccount
+		);
+	} );
 
 	const viewContext = useViewContext();
 	const { setWebDataStreamID, updateSettingsForMeasurementID } =
@@ -120,7 +132,10 @@ export default function MeasurementSelect( props ) {
 		]
 	);
 
-	if ( ! isValidAccountID( accountID ) || ! isRealPropertyID ) {
+	if (
+		! isValidAccountID( accountID ) ||
+		! isValidPropertySelection( propertyID )
+	) {
 		return null;
 	} else if ( isLoading ) {
 		return <ProgressBar height={ 100 } small />;
@@ -138,7 +153,7 @@ export default function MeasurementSelect( props ) {
 					'googlesitekit-analytics-4__select-measurement',
 					className
 				) }
-				label={ __( 'Measurement', 'google-site-kit' ) }
+				label={ __( 'Web Data Stream', 'google-site-kit' ) }
 				value={ measurementID }
 				enhanced
 				outlined
@@ -158,7 +173,7 @@ export default function MeasurementSelect( props ) {
 					'mdc-select--invalid': ! isValidSelection,
 				}
 			) }
-			label={ __( 'Measurement', 'google-site-kit' ) }
+			label={ __( 'Web Data Stream', 'google-site-kit' ) }
 			value={ webDataStreamID }
 			onEnhancedChange={ onWebDataStreamChange }
 			disabled={ ! isValidAccountID( accountID ) }
@@ -169,7 +184,7 @@ export default function MeasurementSelect( props ) {
 				.concat( {
 					_id: WEBDATASTREAM_CREATE,
 					displayName: __(
-						'Set up a new data stream',
+						'Set up a new web data stream',
 						'google-site-kit'
 					),
 				} )
@@ -194,7 +209,7 @@ export default function MeasurementSelect( props ) {
 	);
 }
 
-MeasurementSelect.propTypes = {
+WebDataStreamSelect.propTypes = {
 	hasModuleAccess: PropTypes.bool,
 	className: PropTypes.string,
 };

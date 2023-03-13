@@ -39,7 +39,7 @@ import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/consta
 import { GA4ActivateSwitch } from '../common';
 import {
 	PropertySelect,
-	MeasurementSelect,
+	WebDataStreamSelect,
 } from '../../../analytics-4/components/common';
 import SettingsUseSnippetSwitch from '../../../analytics-4/components/settings/SettingsUseSnippetSwitch';
 import JoyrideTooltip from '../../../../components/JoyrideTooltip';
@@ -108,7 +108,7 @@ export default function GA4SettingsControls( props ) {
 					}
 				/>
 
-				<MeasurementSelect hasModuleAccess={ hasModuleAccess } />
+				<WebDataStreamSelect hasModuleAccess={ hasModuleAccess } />
 
 				{ ! isDisabled &&
 					! isModuleConnected &&

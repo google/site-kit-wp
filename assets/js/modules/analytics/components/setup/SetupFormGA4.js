@@ -41,7 +41,7 @@ import {
 import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 import {
 	PropertySelect as GA4PropertySelect,
-	MeasurementSelect as GA4MeasurementSelect,
+	WebDataStreamSelect as GA4WebDataStreamSelect,
 } from '../../../analytics-4/components/common';
 import { AccountSelect, GA4PropertyNotice } from '../common';
 import SetupUseSnippetSwitchUA from './SetupUseSnippetSwitch';
@@ -111,7 +111,7 @@ export default function SetupFormGA4() {
 			<div className="googlesitekit-setup-module__inputs">
 				<AccountSelect />
 				<GA4PropertySelect />
-				<GA4MeasurementSelect />
+				<GA4WebDataStreamSelect />
 			</div>
 
 			{ hasExistingGA4Tag && <SetupUseSnippetSwitchGA4 /> }
