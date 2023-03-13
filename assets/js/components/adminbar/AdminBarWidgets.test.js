@@ -21,6 +21,7 @@ import {
 	createTestRegistry,
 	provideModules,
 	provideUserCapabilities,
+	muteFetch,
 } from '../../../../tests/js/test-utils';
 import coreModulesFixture from '../../googlesitekit/modules/datastore/__fixtures__';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
@@ -59,6 +60,12 @@ describe( 'AdminBarWidgets', () => {
 					},
 				],
 			}
+		);
+
+		muteFetch(
+			new RegExp(
+				'^/google-site-kit/v1/modules/search-console/data/data-available'
+			)
 		);
 	} );
 

@@ -286,6 +286,8 @@ final class Modules {
 		add_filter( 'googlesitekit_inline_base_data', $this->get_method_proxy( 'inline_js_data' ) );
 		add_filter( 'googlesitekit_inline_tracking_data', $this->get_method_proxy( 'inline_js_data' ) );
 
+		add_filter( 'googlesitekit_inline_modules_data', $this->get_method_proxy( 'inline_modules_data' ) );
+
 		add_filter(
 			'googlesitekit_dashboard_sharing_data',
 			function ( $data ) {
@@ -426,6 +428,26 @@ final class Modules {
 		$data['activeModules'] = array_keys( $non_internal_active_modules );
 
 		return $data;
+	}
+
+	/**
+	 * Populates modules data to pass to JS.
+	 *
+	 * @since 1.96.0
+	 *
+	 * @param array $modules_data Inline modules data.
+	 * @return array Inline modules data.
+	 */
+	private function inline_modules_data( $modules_data ) {
+		$available_modules = $this->get_available_modules();
+
+		foreach ( $available_modules as $module ) {
+			if ( $module instanceof Module_With_Data_Available_State ) {
+				$modules_data[ 'data_available_' . $module->slug ] = $this->is_module_active( $module->slug ) && $module->is_connected() && $module->is_data_available();
+			}
+		}
+
+		return $modules_data;
 	}
 
 	/**

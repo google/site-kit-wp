@@ -50,6 +50,7 @@ import {
 } from '../util/report-validation';
 import { actions as adsenseActions } from './adsense';
 import { isZeroReport } from '../util';
+import { createGatheringDataStore } from '../../../googlesitekit/modules/create-gathering-data-store';
 
 const { createRegistrySelector } = Data;
 
@@ -118,6 +119,53 @@ const fetchGetReportStore = createFetchStore( {
 			);
 		}
 	},
+} );
+
+const gatheringDataStore = createGatheringDataStore( 'analytics', {
+	storeName: MODULES_ANALYTICS,
+	dataAvailable:
+		global._googlesitekitModulesData?.[ 'data_available_analytics' ],
+	selectDataAvailability: createRegistrySelector( ( select ) => () => {
+		const { startDate, endDate } = select( CORE_USER ).getDateRangeDates( {
+			offsetDays: DATE_RANGE_OFFSET,
+		} );
+
+		const args = {
+			dimensions: [ 'ga:date' ],
+			metrics: [ { expression: 'ga:users' } ],
+			startDate,
+			endDate,
+		};
+
+		const url = select( CORE_SITE ).getCurrentEntityURL();
+		if ( url ) {
+			args.url = url;
+		}
+
+		// Disable reason: select needs to be called here or it will never run.
+		// eslint-disable-next-line @wordpress/no-unused-vars-before-return
+		const report = select( MODULES_ANALYTICS ).getReport( args );
+		const hasResolvedReport = select(
+			MODULES_ANALYTICS
+		).hasFinishedResolution( 'getReport', [ args ] );
+
+		if ( ! hasResolvedReport ) {
+			return undefined;
+		}
+
+		if ( ! Array.isArray( report ) ) {
+			return true;
+		}
+
+		if (
+			! Array.isArray( report[ 0 ]?.data?.rows ) ||
+			report[ 0 ]?.data?.rows?.length === 0
+		) {
+			return false;
+		}
+
+		return true;
+	} ),
 } );
 
 const baseInitialState = {
@@ -194,7 +242,7 @@ const baseSelectors = {
 	 * @since 1.42.0
 	 *
 	 * @param {Object} state             Data store's state.
-	 * @param {Object} report            A report from getReport selector containing pagePaths.
+	 * @param {Object} report            A report from the getReport selector containing pagePaths.
 	 * @param {Object} options           Options for generating the report.
 	 * @param {string} options.startDate Required, start date to query report data for as YYYY-mm-dd.
 	 * @param {string} options.endDate   Required, end date to query report data for as YYYY-mm-dd.
@@ -207,11 +255,11 @@ const baseSelectors = {
 					return;
 				}
 
-				const pagePaths = []; // Array of pagePaths.
+				const pagePaths = [];
 				const REQUEST_MULTIPLIER = 5;
 
 				/*
-				 * Iterate the report, finding which dimension contains the
+				 * Iterate over the report, finding which dimension contains the
 				 * ga:pagePath metric which we add to the array of pagePaths.
 				 */
 				( report || [] ).forEach( ( { columnHeader, data } ) => {
@@ -283,56 +331,6 @@ const baseSelectors = {
 	),
 
 	/**
-	 * Determines whether the Analytics is still gathering data.
-	 *
-	 * @todo Review the name of this selector to a less confusing one.
-	 * @since 1.44.0
-	 *
-	 * @return {boolean|undefined} Returns `true` if gathering data, otherwise `false`. Returns `undefined` while resolving.
-	 */
-	isGatheringData: createRegistrySelector( ( select ) => () => {
-		const { startDate, endDate } = select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
-		} );
-
-		const args = {
-			dimensions: [ 'ga:date' ],
-			metrics: [ { expression: 'ga:users' } ],
-			startDate,
-			endDate,
-		};
-
-		const url = select( CORE_SITE ).getCurrentEntityURL();
-		if ( url ) {
-			args.url = url;
-		}
-
-		// Disable reason: select needs to be called here or it will never run.
-		// eslint-disable-next-line @wordpress/no-unused-vars-before-return
-		const report = select( MODULES_ANALYTICS ).getReport( args );
-		const hasResolvedReport = select(
-			MODULES_ANALYTICS
-		).hasFinishedResolution( 'getReport', [ args ] );
-
-		if ( ! hasResolvedReport ) {
-			return undefined;
-		}
-
-		if ( ! Array.isArray( report ) ) {
-			return false;
-		}
-
-		if (
-			! Array.isArray( report[ 0 ]?.data?.rows ) ||
-			report[ 0 ]?.data?.rows?.length === 0
-		) {
-			return true;
-		}
-
-		return false;
-	} ),
-
-	/**
 	 * Determines whether Analytics has zero data or not.
 	 *
 	 * @since 1.69.0
@@ -383,7 +381,7 @@ const baseSelectors = {
 	} ),
 };
 
-const store = Data.combineStores( fetchGetReportStore, {
+const store = Data.combineStores( fetchGetReportStore, gatheringDataStore, {
 	initialState: baseInitialState,
 	resolvers: baseResolvers,
 	selectors: baseSelectors,

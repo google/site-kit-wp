@@ -12,14 +12,13 @@ namespace Google\Site_Kit\Tests\Modules\Analytics;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Authentication;
-use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Modules\AdSense;
 use Google\Site_Kit\Modules\Analytics;
 use Google\Site_Kit\Modules\Analytics\Settings;
 use Google\Site_Kit\Tests\Core\Storage\Setting_With_Owned_Keys_ContractTests;
-use Google\Site_Kit\Tests\FakeHttpClient;
+use Google\Site_Kit\Tests\FakeHttp;
 use Google\Site_Kit\Tests\Modules\SettingsTestCase;
 
 /**
@@ -108,6 +107,7 @@ class SettingsTest extends SettingsTestCase {
 				'trackingDisabled'      => array( 'loggedinUsers' ),
 				'adsenseLinked'         => false,
 				'adsConversionID'       => '',
+				'dashboardView'         => 'universal-analytics',
 			),
 			get_option( Settings::OPTION )
 		);
@@ -203,8 +203,10 @@ class SettingsTest extends SettingsTestCase {
 		$authentication = new Authentication( $context, $options, $user_options );
 		$adsense        = new AdSense( $context, $options, $user_options, $authentication );
 		$analytics      = new Analytics( $context, $options, $user_options, $authentication );
-		$authentication->get_oauth_client()->get_client()->setHttpClient(
-			new FakeHttpClient() // Returns 200 by default.
+
+		// Fake all Google client requests to return 200.
+		FakeHttp::fake_google_http_handler(
+			$authentication->get_oauth_client()->get_client()
 		);
 
 		$adsense->register(); // AdSense is now active.
@@ -323,6 +325,31 @@ class SettingsTest extends SettingsTestCase {
 		// Save with multiple options including loggedinUsers.
 		$settings->merge( array( 'trackingDisabled' => array( 'loggedinUsers', 'contentCreators' ) ) );
 		$this->assertEqualSets( array( 'loggedinUsers' ), $settings->get()['trackingDisabled'] );
+	}
+
+	public function test_sanitize_callback__dashboard_view() {
+		$context  = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$settings = new Settings( new Options( $context ) );
+		$settings->register();
+
+		// Defaults to `'universal-analytics'`.
+		$this->assertEquals( 'universal-analytics', $settings->get()['dashboardView'] );
+
+		// Save with defaults.
+		$settings->merge( array() );
+		$this->assertEquals( 'universal-analytics', $settings->get()['dashboardView'] );
+
+		// Save with `'universal-analytics'`.
+		$settings->merge( array( 'dashboardView' => 'universal-analytics' ) );
+		$this->assertEquals( 'universal-analytics', $settings->get()['dashboardView'] );
+
+		// Save with `'google-analytics-4'`.
+		$settings->merge( array( 'dashboardView' => 'google-analytics-4' ) );
+		$this->assertEquals( 'google-analytics-4', $settings->get()['dashboardView'] );
+
+		// Saving with invalid random string should preserve current value.
+		$settings->merge( array( 'dashboardView' => 'random-invalid-value' ) );
+		$this->assertEquals( 'google-analytics-4', $settings->get()['dashboardView'] );
 	}
 
 	protected function get_testcase() {

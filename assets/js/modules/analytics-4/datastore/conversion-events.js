@@ -56,6 +56,10 @@ const baseInitialState = {
 
 const baseResolvers = {
 	*getConversionEvents( propertyID ) {
+		if ( propertyID === undefined ) {
+			return;
+		}
+
 		const registry = yield Data.commonActions.getRegistry();
 		const existingConversionEvents = registry
 			.select( MODULES_ANALYTICS_4 )
@@ -77,13 +81,17 @@ const baseSelectors = {
 	/**
 	 * Gets GA4 conversion events.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.96.0
 	 *
 	 * @param {Object} state      Data store's state.
 	 * @param {string} propertyID GA4 property ID.
 	 * @return {(Array.<Object>|undefined)} GA4 conversion events; `undefined` if not loaded.
 	 */
 	getConversionEvents( state, propertyID ) {
+		if ( propertyID === undefined ) {
+			return undefined;
+		}
+
 		return state.conversionEvents[ propertyID ];
 	},
 };

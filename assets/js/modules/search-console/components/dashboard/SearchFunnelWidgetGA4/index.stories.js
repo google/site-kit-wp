@@ -96,6 +96,13 @@ const ga4ReportArgs = [
 		dimensionFilters: {
 			sessionDefaultChannelGrouping: [ 'Organic Search' ],
 		},
+		orderby: [
+			{
+				dimension: {
+					dimensionName: 'date',
+				},
+			},
+		],
 	},
 	{
 		startDate: '2021-09-15',
@@ -115,25 +122,13 @@ const ga4ReportArgs = [
 		dimensionFilters: {
 			sessionDefaultChannelGrouping: [ 'Organic Search' ],
 		},
-	},
-	{
-		startDate: '2021-09-15',
-		endDate: '2021-10-12',
-		compareStartDate: '2021-08-18',
-		compareEndDate: '2021-09-14',
-		metrics: [
+		orderby: [
 			{
-				name: 'totalUsers',
+				dimension: {
+					dimensionName: 'date',
+				},
 			},
 		],
-		dimensions: [
-			{
-				name: 'date',
-			},
-		],
-		dimensionFilters: {
-			sessionDefaultChannelGrouping: [ 'Organic Search' ],
-		},
 	},
 	{
 		dimensions: [

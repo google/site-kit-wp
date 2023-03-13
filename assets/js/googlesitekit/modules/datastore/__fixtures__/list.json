@@ -35,7 +35,7 @@
 		"slug": "adsense",
 		"name": "AdSense",
 		"description": "Earn money by placing ads on your website. It’s free and easy.",
-		"homepage": "https://www.google.com/adsense/start?source=site-kit&url=http://example.com",
+		"homepage": "https://adsense.google.com/start?source=site-kit&url=http://example.com",
 		"internal": false,
 		"order": 2,
 		"active": false,

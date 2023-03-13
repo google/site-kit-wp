@@ -30,13 +30,13 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import { SpinnerButton } from 'googlesitekit-components';
 import Data from 'googlesitekit-data';
 import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
 import { MODULES_ANALYTICS } from '../../js/modules/analytics/datastore/constants';
 import { CORE_LOCATION } from '../../js/googlesitekit/datastore/location/constants';
 import useActivateModuleCallback from '../hooks/useActivateModuleCallback';
 import useCompleteModuleActivationCallback from '../hooks/useCompleteModuleActivationCallback';
-import SpinnerButton from './SpinnerButton';
 import { useDebounce } from '../hooks/useDebounce';
 const { useSelect } = Data;
 
