@@ -168,8 +168,8 @@ const SET_HAS_MISMATCHED_TAG = 'SET_HAS_MISMATCHED_GOOGLE_TAG_ID';
 const baseInitialState = {
 	properties: {},
 	propertiesByID: {},
-	matchingAccountProperty: false,
 	hasMismatchedTag: false,
+	isMatchingAccountProperty: false,
 };
 
 const baseActions = {
@@ -317,7 +317,7 @@ const baseActions = {
 	 */
 	*matchAndSelectProperty( accountID, fallbackPropertyID = '' ) {
 		yield {
-			payload: { matchingAccountProperty: true },
+			payload: { isMatchingAccountProperty: true },
 			type: MATCHING_ACCOUNT_PROPERTY,
 		};
 
@@ -328,7 +328,7 @@ const baseActions = {
 		}
 
 		yield {
-			payload: { matchingAccountProperty: false },
+			payload: { isMatchingAccountProperty: false },
 			type: MATCHING_ACCOUNT_PROPERTY,
 		};
 
@@ -697,7 +697,7 @@ const baseSelectors = {
 	 * @return {boolean} TRUE if we matching account property right now, otherwise FALSE.
 	 */
 	isMatchingAccountProperty( state ) {
-		return state.matchingAccountProperty;
+		return state.isMatchingAccountProperty;
 	},
 
 	/**
