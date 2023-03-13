@@ -20,6 +20,7 @@
  * Internal dependencies
  */
 import { BREAKPOINT_SMALL } from '../hooks/useBreakpoint';
+import { finiteNumberOrZero } from './finite-number-or-zero';
 
 /**
  * Gets the y coordinate to scroll to the top of a context element, taking the sticky admin bar, header and navigation height into account.
@@ -134,11 +135,8 @@ export function getStickyHeaderHeightWithoutNav( breakpoint ) {
 	}
 
 	// Provide a safety net in case something unexpected has happened.
-	if (
-		typeof headerHeight !== 'number' ||
-		! Number.isFinite( headerHeight ) ||
-		headerHeight < 0
-	) {
+	headerHeight = finiteNumberOrZero( headerHeight );
+	if ( headerHeight < 0 ) {
 		return 0;
 	}
 

@@ -66,6 +66,7 @@ import {
 	getImageCellOrderProperties,
 } from './utils';
 import { stringToDate } from '../../../util/date-range/string-to-date';
+import { finiteNumberOrZero } from '../../../util/finite-number-or-zero';
 import { CORE_LOCATION } from '../../../googlesitekit/datastore/location/constants';
 const { useSelect, useDispatch } = Data;
 
@@ -140,7 +141,7 @@ function BannerNotification( {
 
 	const bannerNotificationRef = useRef();
 	const intersectionEntry = useIntersection( bannerNotificationRef, {
-		rootMargin: `-${ Math.abs(
+		rootMargin: `${ -finiteNumberOrZero(
 			getStickyHeaderHeightWithoutNav( breakpoint )
 		) }px 0px 0px 0px`,
 		threshold: 0,
