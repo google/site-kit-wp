@@ -70,7 +70,7 @@ function getRootMargin( breakpoint ) {
 	const gap = gridGaps[ breakpoint ];
 	const top = Math.abs( getStickyHeaderHeight( breakpoint ) + gap );
 
-	return `-${ top }px -${ gap }px -${ gap }px -${ gap }px`;
+	return `${ -top }px ${ -gap }px ${ -gap }px ${ -gap }px`;
 }
 
 export default function WidgetAreaRenderer( { slug, contextID } ) {
