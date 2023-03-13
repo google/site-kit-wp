@@ -48,7 +48,7 @@ import useViewContext from '../../../../hooks/useViewContext';
 const { useSelect, useDispatch } = Data;
 
 export default function WebDataStreamSelect( props ) {
-	const { hasModuleAccess, className } = props;
+	const { hasModuleAccess, isDisabled, className } = props;
 
 	// Analytics accounts need to be loaded in order to load the properties,
 	// otherwise this component will stay in a loading state forever.
@@ -74,6 +74,10 @@ export default function WebDataStreamSelect( props ) {
 	);
 
 	const isLoading = useSelect( ( select ) => {
+		if ( isDisabled ) {
+			return false;
+		}
+
 		const loadedAccounts =
 			select( MODULES_ANALYTICS ).hasFinishedResolution( 'getAccounts' );
 
@@ -91,7 +95,11 @@ export default function WebDataStreamSelect( props ) {
 		const finishedSelectingAccount =
 			select( MODULES_ANALYTICS ).hasFinishedSelectingAccount() !== false;
 
+		const isMatchingAccountProperty =
+			select( MODULES_ANALYTICS_4 ).isMatchingAccountProperty();
+
 		return (
+			isMatchingAccountProperty ||
 			! loadedAccounts ||
 			! loadedProperties ||
 			! loadedWebDataStreams ||
@@ -132,10 +140,7 @@ export default function WebDataStreamSelect( props ) {
 		]
 	);
 
-	if (
-		! isValidAccountID( accountID ) ||
-		! isValidPropertySelection( propertyID )
-	) {
+	if ( ! isValidAccountID( accountID ) ) {
 		return null;
 	} else if ( isLoading ) {
 		return <ProgressBar height={ 100 } small />;
@@ -176,7 +181,7 @@ export default function WebDataStreamSelect( props ) {
 			label={ __( 'Web Data Stream', 'google-site-kit' ) }
 			value={ webDataStreamID }
 			onEnhancedChange={ onWebDataStreamChange }
-			disabled={ ! isValidAccountID( accountID ) }
+			disabled={ isDisabled || ! isValidPropertySelection( propertyID ) }
 			enhanced
 			outlined
 		>
@@ -211,5 +216,6 @@ export default function WebDataStreamSelect( props ) {
 
 WebDataStreamSelect.propTypes = {
 	hasModuleAccess: PropTypes.bool,
+	isDisabled: PropTypes.bool,
 	className: PropTypes.string,
 };

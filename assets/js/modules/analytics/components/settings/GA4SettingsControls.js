@@ -107,7 +107,10 @@ export default function GA4SettingsControls( props ) {
 					}
 				/>
 
-				<WebDataStreamSelect hasModuleAccess={ hasModuleAccess } />
+				<WebDataStreamSelect
+					hasModuleAccess={ hasModuleAccess }
+					isDisabled={ isDisabled }
+				/>
 
 				{ ! isDisabled &&
 					! isModuleConnected &&

@@ -65,7 +65,7 @@ export default function PropertySelect( props ) {
 	);
 
 	const properties = useSelect( ( select ) =>
-		hasModuleAccess !== false
+		hasModuleAccess !== false && ! isDisabled
 			? select( MODULES_ANALYTICS_4 ).getProperties( accountID ) || []
 			: null
 	);
@@ -74,8 +74,12 @@ export default function PropertySelect( props ) {
 		select( MODULES_ANALYTICS_4 ).getPropertyID()
 	);
 
-	const isLoading = useSelect(
-		( select ) =>
+	const isLoading = useSelect( ( select ) => {
+		if ( isDisabled ) {
+			return false;
+		}
+
+		return (
 			select( MODULES_ANALYTICS_4 ).isMatchingAccountProperty() ||
 			! select( MODULES_ANALYTICS ).hasFinishedResolution(
 				'getAccounts'
@@ -85,7 +89,8 @@ export default function PropertySelect( props ) {
 				[ accountID ]
 			) ||
 			select( MODULES_ANALYTICS ).hasFinishedSelectingAccount() === false
-	);
+		);
+	} );
 
 	const viewContext = useViewContext();
 	const { selectProperty } = useDispatch( MODULES_ANALYTICS_4 );
@@ -113,9 +118,7 @@ export default function PropertySelect( props ) {
 
 	if ( ! isValidAccountID( accountID ) ) {
 		return null;
-	}
-
-	if ( isLoading ) {
+	} else if ( isLoading ) {
 		return <ProgressBar height={ 100 } small />;
 	}
 
@@ -154,7 +157,7 @@ export default function PropertySelect( props ) {
 			label={ __( 'Property', 'google-site-kit' ) }
 			value={ propertyID }
 			onEnhancedChange={ onPropertyChange }
-			disabled={ isDisabled || ! isValidAccountID( accountID ) }
+			disabled={ isDisabled }
 			enhanced
 			outlined
 		>
