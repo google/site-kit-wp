@@ -55,6 +55,7 @@ import { createStrictSelect } from '../../../googlesitekit/data/utils';
 import { isPermissionScopeError } from '../../../util/errors';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { MODULES_TAGMANAGER } from '../../tagmanager/datastore/constants';
+import { isFeatureEnabled } from '../../../features';
 
 const { createRegistrySelector } = Data;
 
@@ -269,4 +270,32 @@ export const getCanUseSnippet = createRegistrySelector( ( select ) => () => {
 	}
 
 	return analyticsSettings.canUseSnippet;
+} );
+
+/**
+ * Gets the value of dashboardView from the Analytics settings.
+ *
+ * @since n.e.x.t
+ *
+ * @return {boolean|undefined} True if the dashboard view is GA4, false if it is UA, or undefined if not loaded.
+ */
+export const isGA4DashboardView = createRegistrySelector( ( select ) => () => {
+	const isGA4Enabled = isFeatureEnabled( 'ga4Reporting' );
+	if ( ! isGA4Enabled ) {
+		return false;
+	}
+
+	const ga4ModuleActive =
+		select( CORE_MODULES ).isModuleActive( 'analytics-4' );
+
+	if ( ! ga4ModuleActive ) {
+		return false;
+	}
+
+	const ga4Settings = select( MODULES_ANALYTICS ).getSettings();
+	if ( ! ga4Settings ) {
+		return undefined;
+	}
+
+	return ga4Settings.dashboardView === 'google-analytics-4';
 } );

@@ -19,14 +19,20 @@
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
 import { MODULES_ANALYTICS_4 } from './constants';
-import {
+import * as fixtures from './__fixtures__';
+// These modules will need to be reloaded, because their behaviour changes
+// based on the `gteSupport` feature flag.
+//
+// TODO: Remove this once the `gteSupport` feature flag is removed and use
+// regular `import` statements.
+let API = require( 'googlesitekit-api' ).default;
+let {
 	createTestRegistry,
 	unsubscribeFromAll,
 	untilResolved,
 	provideSiteInfo,
-} from '../../../../../tests/js/utils';
+} = require( '../../../../../tests/js/utils' );
 
 describe( 'modules/analytics tags', () => {
 	let registry;
@@ -50,7 +56,7 @@ describe( 'modules/analytics tags', () => {
 
 	describe( 'selectors', () => {
 		describe( 'getExistingTag', () => {
-			const expectedTag = 'G-1A2BCD345E';
+			const expectedTag = 'G-2B7M8YQ1K6';
 			const tests = {
 				'<script></script> tag': `
 					<script async src="https://googletagmanager.com/gtag/js?id=${ expectedTag }"></script>
@@ -153,6 +159,161 @@ describe( 'modules/analytics tags', () => {
 					).toEqual( expectedTag );
 				}
 			);
+
+			describe( 'GTE support', () => {
+				const containerLookupEndpoint = new RegExp(
+					'^/google-site-kit/v1/modules/analytics-4/data/container-lookup'
+				);
+				const containerMock = fixtures.container[ expectedTag ];
+
+				beforeAll( () => {
+					jest.resetModules();
+
+					const { enabledFeatures } = require( '../../../features' );
+
+					enabledFeatures.add( 'gteSupport' );
+
+					API = require( 'googlesitekit-api' ).default;
+					( {
+						createTestRegistry,
+						unsubscribeFromAll,
+						untilResolved,
+						provideSiteInfo,
+					} = require( '../../../../../tests/js/utils' ) );
+
+					API.setUsingCache( false );
+				} );
+
+				it( 'should return null if no tag is found on the page', async () => {
+					fetchMock.getOnce(
+						{ query: { tagverify: '1' } },
+						{
+							body: `
+						<html>
+							<head></head>
+							<body></body>
+						</html>
+					`,
+						}
+					);
+
+					const initialExistingTag = registry
+						.select( MODULES_ANALYTICS_4 )
+						.getExistingTag();
+					expect( initialExistingTag ).toBeUndefined();
+
+					await untilResolved(
+						registry,
+						MODULES_ANALYTICS_4
+					).getExistingTag();
+
+					const existingTag = registry
+						.select( MODULES_ANALYTICS_4 )
+						.getExistingTag();
+
+					expect( fetchMock ).toHaveFetchedTimes( 1 );
+					expect( existingTag ).toBeNull();
+				} );
+
+				describe.each( Object.entries( tests ) )(
+					'when %s is present',
+					( _, body ) => {
+						beforeEach( () => {
+							fetchMock.getOnce(
+								{ query: { tagverify: '1' } },
+								{
+									body: `
+								<html>
+									<head></head>
+									<body>${ body }</body>
+								</html>
+							`,
+								}
+							);
+						} );
+
+						it( 'uses a resolver to get the tag', async () => {
+							fetchMock.getOnce( containerLookupEndpoint, {
+								body: containerMock,
+								status: 200,
+							} );
+
+							const initialExistingTag = registry
+								.select( MODULES_ANALYTICS_4 )
+								.getExistingTag();
+							expect( initialExistingTag ).toBeUndefined();
+
+							await untilResolved(
+								registry,
+								MODULES_ANALYTICS_4
+							).getExistingTag();
+
+							const existingTag = registry
+								.select( MODULES_ANALYTICS_4 )
+								.getExistingTag();
+
+							expect( fetchMock ).toHaveFetchedTimes( 2 );
+							expect( existingTag ).toBe( expectedTag );
+						} );
+
+						it( 'should return null if no container is found', async () => {
+							fetchMock.getOnce( containerLookupEndpoint, {
+								body: {
+									code: 404,
+									message: 'Not found or permission denied.',
+									data: { status: 404, reason: 'notFound' },
+								},
+								status: 404,
+							} );
+
+							const initialExistingTag = registry
+								.select( MODULES_ANALYTICS_4 )
+								.getExistingTag();
+							expect( initialExistingTag ).toBeUndefined();
+
+							await untilResolved(
+								registry,
+								MODULES_ANALYTICS_4
+							).getExistingTag();
+
+							const existingTag = registry
+								.select( MODULES_ANALYTICS_4 )
+								.getExistingTag();
+
+							expect( fetchMock ).toHaveFetchedTimes( 2 );
+							expect( existingTag ).toBeNull();
+							expect( console ).toHaveErrored();
+						} );
+
+						it( 'should return null if the container does not contain the tag ID', async () => {
+							fetchMock.getOnce( containerLookupEndpoint, {
+								body: {
+									...containerMock,
+									tagIds: [ 'G-1234567890' ],
+								},
+								status: 200,
+							} );
+
+							const initialExistingTag = registry
+								.select( MODULES_ANALYTICS_4 )
+								.getExistingTag();
+							expect( initialExistingTag ).toBeUndefined();
+
+							await untilResolved(
+								registry,
+								MODULES_ANALYTICS_4
+							).getExistingTag();
+
+							const existingTag = registry
+								.select( MODULES_ANALYTICS_4 )
+								.getExistingTag();
+
+							expect( fetchMock ).toHaveFetchedTimes( 2 );
+							expect( existingTag ).toBeNull();
+						} );
+					}
+				);
+			} );
 		} );
 	} );
 } );

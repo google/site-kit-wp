@@ -13,7 +13,7 @@ namespace Google\Site_Kit\Core\Modules;
 /**
  * Interface for a module that have data available state.
  *
- * @since n.e.x.t
+ * @since 1.96.0
  * @access private
  * @ignore
  */
@@ -22,7 +22,7 @@ interface Module_With_Data_Available_State {
 	/**
 	 * Checks whether the data is available for the module.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.96.0
 	 *
 	 * @return bool True if data is available, false otherwise.
 	 */
@@ -31,7 +31,7 @@ interface Module_With_Data_Available_State {
 	/**
 	 * Sets the data available state for the module.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.96.0
 	 *
 	 * @return bool True on success, false otherwise.
 	 */
@@ -40,7 +40,7 @@ interface Module_With_Data_Available_State {
 	/**
 	 * Resets the data available state for the module.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.96.0
 	 *
 	 * @return bool True on success, false otherwise.
 	 */
