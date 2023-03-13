@@ -136,9 +136,5 @@ export function getStickyHeaderHeightWithoutNav( breakpoint ) {
 
 	// Provide a safety net in case something unexpected has happened.
 	headerHeight = finiteNumberOrZero( headerHeight );
-	if ( headerHeight < 0 ) {
-		return 0;
-	}
-
-	return headerHeight;
+	return headerHeight > 0 ? headerHeight : 0;
 }
