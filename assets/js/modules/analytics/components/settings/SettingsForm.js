@@ -60,6 +60,9 @@ export default function SettingsForm( {
 	const documentationURL = useSelect( ( select ) => {
 		return select( CORE_SITE ).getDocumentationLinkURL( 'ga4' );
 	} );
+	const ga4ModuleConnected = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
+	);
 	const useAnalyticsSnippet = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getUseSnippet()
 	);
@@ -90,7 +93,7 @@ export default function SettingsForm( {
 
 	return (
 		<Fragment>
-			{ ga4Enabled && (
+			{ ga4Enabled && ! ga4ModuleConnected && (
 				<SettingsNotice
 					type={ TYPE_WARNING }
 					LearnMore={ () => (

@@ -46,6 +46,9 @@ export default function SettingsView() {
 	const documentationURL = useSelect( ( select ) => {
 		return select( CORE_SITE ).getDocumentationLinkURL( 'ga4' );
 	} );
+	const ga4ModuleConnected = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
+	);
 	const isTagManagerAvailable = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleAvailable( 'tagmanager' )
 	);
@@ -58,7 +61,7 @@ export default function SettingsView() {
 
 	return (
 		<div className="googlesitekit-setup-module googlesitekit-setup-module--analytics">
-			{ ga4Enabled && (
+			{ ga4Enabled && ! ga4ModuleConnected && (
 				<SettingsNotice
 					type={ TYPE_WARNING }
 					LearnMore={ () => (
@@ -72,6 +75,7 @@ export default function SettingsView() {
 					) }
 				/>
 			) }
+
 			<StoreErrorNotices
 				moduleSlug="analytics"
 				storeName={ MODULES_ANALYTICS }
