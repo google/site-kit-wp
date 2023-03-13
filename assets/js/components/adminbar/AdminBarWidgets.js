@@ -43,17 +43,26 @@ const WIDGET_IMPRESSIONS = 'adminBarImpressions';
 const WIDGET_CLICKS = 'adminBarClicks';
 const WIDGET_VISITORS = 'adminBarUniqueVisitors';
 const WIDGET_SESSIONS = 'adminBarSessions';
+
 // Search Console widgets.
 const AdminBarImpressionsWidget =
 	withWidgetComponentProps( WIDGET_IMPRESSIONS )( AdminBarImpressions );
 const AdminBarClicksWidget =
 	withWidgetComponentProps( WIDGET_CLICKS )( AdminBarClicks );
+
 // Analytics Widgets.
 const AdminBarUniqueVisitorsWidget = withWidgetComponentProps(
 	WIDGET_VISITORS
 )( AdminBarUniqueVisitors );
 const AdminBarSessionsWidget =
 	withWidgetComponentProps( WIDGET_SESSIONS )( AdminBarSessions );
+
+// Analytics 4 Widgets.
+const AdminBarUniqueVisitorsGA4Widget = withWidgetComponentProps(
+	WIDGET_VISITORS
+)( AdminBarUniqueVisitorsGA4 );
+const AdminBarSessionsGA4Widget =
+	withWidgetComponentProps( WIDGET_SESSIONS )( AdminBarSessionsGA4 );
 
 export default function AdminBarWidgets() {
 	const ga4ReportingEnabled = useFeature( 'ga4Reporting' );
@@ -80,20 +89,26 @@ export default function AdminBarWidgets() {
 
 				{ analyticsModuleConnected && analyticsModuleActive && (
 					<Fragment>
-						<Cell lgSize={ 3 } mdSize={ 2 }>
-							{ ga4ReportingEnabled ? (
-								<AdminBarUniqueVisitorsGA4 />
-							) : (
-								<AdminBarUniqueVisitorsWidget />
-							) }
-						</Cell>
-						<Cell lgSize={ 3 } mdSize={ 2 }>
-							{ ga4ReportingEnabled ? (
-								<AdminBarSessionsGA4 />
-							) : (
-								<AdminBarSessionsWidget />
-							) }
-						</Cell>
+						{ ! ga4ReportingEnabled && (
+							<Fragment>
+								<Cell lgSize={ 3 } mdSize={ 2 }>
+									<AdminBarUniqueVisitorsWidget />
+								</Cell>
+								<Cell lgSize={ 3 } mdSize={ 2 }>
+									<AdminBarSessionsWidget />
+								</Cell>
+							</Fragment>
+						) }
+						{ ga4ReportingEnabled && (
+							<Fragment>
+								<Cell lgSize={ 3 } mdSize={ 2 }>
+									<AdminBarUniqueVisitorsGA4Widget />
+								</Cell>
+								<Cell lgSize={ 3 } mdSize={ 2 }>
+									<AdminBarSessionsGA4Widget />
+								</Cell>
+							</Fragment>
+						) }
 					</Fragment>
 				) }
 
