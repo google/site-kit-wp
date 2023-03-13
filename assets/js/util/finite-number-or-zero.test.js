@@ -28,7 +28,7 @@ describe( 'finiteNumberOrZero', () => {
 		[ 0.1234 ],
 		[ -23.456 ],
 	] )(
-		'should return the passed value as it is a finite number',
+		'should return the passed value %s as it is a finite number',
 		( value ) => {
 			expect( finiteNumberOrZero( value ) ).toBe( value );
 		}
@@ -49,7 +49,10 @@ describe( 'finiteNumberOrZero', () => {
 		[ [] ],
 		[ {} ],
 		[ () => {} ],
-	] )( 'should return zero as it is not a finite number', ( value ) => {
-		expect( finiteNumberOrZero( value ) ).toBe( 0 );
-	} );
+	] )(
+		'should return zero as the passed value %s is not a finite number',
+		( value ) => {
+			expect( finiteNumberOrZero( value ) ).toBe( 0 );
+		}
+	);
 } );
