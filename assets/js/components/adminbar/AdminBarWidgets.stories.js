@@ -112,9 +112,9 @@ AnalyticsActiveWithGA4Enabled.parameters = {
 	features: [ 'ga4Reporting' ],
 };
 
-export const Analytics4Loading = Template.bind( {} );
-Analytics4Loading.storyName = 'GA4 Loading';
-Analytics4Loading.args = {
+export const Analytics4WidgetsLoading = Template.bind( {} );
+Analytics4WidgetsLoading.storyName = 'GA4 Widgets Loading';
+Analytics4WidgetsLoading.args = {
 	setupRegistry: ( registry ) => {
 		// Set up the analytics module store but provide no data.
 		provideModules( registry, [
@@ -130,7 +130,7 @@ Analytics4Loading.args = {
 		setupAnalytics4Loading( registry );
 	},
 };
-Analytics4Loading.parameters = {
+Analytics4WidgetsLoading.parameters = {
 	features: [ 'ga4Reporting' ],
 };
 
