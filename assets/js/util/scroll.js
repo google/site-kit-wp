@@ -47,6 +47,7 @@ export function getContextScrollTop( context, breakpoint ) {
  * Gets the height of the sticky header.
  *
  * @since 1.69.0
+ * @since n.e.x.t Renamed from `getHeaderHeight()` to `getStickyHeaderHeight()`.
  *
  * @param {string} breakpoint The current breakpoint.
  * @return {number} The height of the sticky header.
@@ -115,6 +116,7 @@ function getGoogleSiteKitHeaderHeight( breakpoint ) {
  * Gets the height of the sticky header without the Site Kit navigation bar.
  *
  * @since 1.95.0
+ * @since n.e.x.t Renamed from `getHeaderHeightWithoutNav()` to `getStickyHeaderHeightWithoutNav()`.
  *
  * @param {string} breakpoint The current breakpoint.
  * @return {number} The height of the sticky header without the navigation bar.
