@@ -57,7 +57,6 @@ export default function GA4SettingsControls( props ) {
 		select( MODULES_ANALYTICS ).getAccountID()
 	);
 
-	// This select is needed to check whether the AdminAPI works or not.
 	const enableGA4 = useSelect( ( select ) =>
 		select( CORE_FORMS ).getValue( FORM_SETUP, 'enableGA4' )
 	);
