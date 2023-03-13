@@ -460,14 +460,16 @@ describe( 'modules/analytics-4 properties', () => {
 				} );
 			} );
 
-			it( 'should update the matchingAccountProperty property', async () => {
+			it( 'should update the isMatchingAccountProperty property', async () => {
 				const promise = registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.matchAndSelectProperty( accountID );
 
-				expect( store.getState().matchingAccountProperty ).toBe( true );
+				expect( store.getState().isMatchingAccountProperty ).toBe(
+					true
+				);
 				await promise;
-				expect( store.getState().matchingAccountProperty ).toBe(
+				expect( store.getState().isMatchingAccountProperty ).toBe(
 					false
 				);
 			} );
