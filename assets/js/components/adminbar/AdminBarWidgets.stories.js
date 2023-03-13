@@ -31,7 +31,10 @@ import {
 	setupSearchConsoleAnalyticsZeroData,
 	widgetDecorators,
 } from './common.stories';
-import { setupAnalytics4MockReports } from './common-GA4.stories';
+import {
+	setupAnalytics4Loading,
+	setupAnalytics4MockReports,
+} from './common-GA4.stories';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import AdminBarWidgets from './AdminBarWidgets';
@@ -87,10 +90,9 @@ AnalyticsInactiveNewCompleteActivation.args = {
 	},
 };
 
-export const AnalyticsModuleActiveAndga4ReportingEnabled = Template.bind( {} );
-AnalyticsModuleActiveAndga4ReportingEnabled.storyName =
-	'Active: With GA4 Reporting Enabled';
-AnalyticsModuleActiveAndga4ReportingEnabled.args = {
+export const AnalyticsActiveWithGA4Enabled = Template.bind( {} );
+AnalyticsActiveWithGA4Enabled.storyName = 'Active: With GA4 Enabled';
+AnalyticsActiveWithGA4Enabled.args = {
 	setupRegistry: ( registry ) => {
 		// Set up the analytics module store but provide no data.
 		provideModules( registry, [
@@ -106,7 +108,29 @@ AnalyticsModuleActiveAndga4ReportingEnabled.args = {
 		setupAnalytics4MockReports( registry );
 	},
 };
-AnalyticsModuleActiveAndga4ReportingEnabled.parameters = {
+AnalyticsActiveWithGA4Enabled.parameters = {
+	features: [ 'ga4Reporting' ],
+};
+
+export const Analytics4Loading = Template.bind( {} );
+Analytics4Loading.storyName = 'GA4 Loading';
+Analytics4Loading.args = {
+	setupRegistry: ( registry ) => {
+		// Set up the analytics module store but provide no data.
+		provideModules( registry, [
+			{
+				slug: 'analytics',
+				active: true,
+				connected: true,
+			},
+		] );
+		provideModuleRegistrations( registry );
+		provideUserAuthentication( registry );
+		setupSearchConsoleMockReports( registry );
+		setupAnalytics4Loading( registry );
+	},
+};
+Analytics4Loading.parameters = {
 	features: [ 'ga4Reporting' ],
 };
 
