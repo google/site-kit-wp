@@ -141,7 +141,7 @@ const baseResolvers = {
 			.getKeyMetricsSettings();
 
 		if ( keyMetricsSettings ) {
-			return keyMetricsSettings;
+			return;
 		}
 
 		yield fetchGetKeyMetricsSettingsStore.actions.fetchGetKeyMetricsSettings();
