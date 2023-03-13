@@ -101,7 +101,7 @@ export default function SettingsAdmin() {
 									/>
 								) }
 								{ isUserInputCompleted === false && (
-									<div>
+									<div className="googlesitekit-user-input__notification">
 										<Cell>
 											<p>
 												<span>
