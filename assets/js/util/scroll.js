@@ -105,7 +105,7 @@ function getGoogleSiteKitHeaderHeight( breakpoint ) {
 
 		const headerBottom = header.getBoundingClientRect().bottom;
 		// In case the header is unexpectedly _not_ sticky and the value for .bottom is negative, we return 0.
-		return headerBottom > 0 ? headerBottom : 0;
+		return headerBottom < 0 ? 0 : headerBottom;
 	}
 
 	return 0;
@@ -136,5 +136,5 @@ export function getStickyHeaderHeightWithoutNav( breakpoint ) {
 
 	// Provide a safety net in case something unexpected has happened.
 	headerHeight = finiteNumberOrZero( headerHeight );
-	return headerHeight > 0 ? headerHeight : 0;
+	return headerHeight < 0 ? 0 : headerHeight;
 }
