@@ -20,6 +20,7 @@
  * WordPress dependencies
  */
 import { Fragment } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -38,17 +39,27 @@ import { MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
 import SettingsControls from './SettingsControls';
 import GA4SettingsControls from './GA4SettingsControls';
 import EntityOwnershipChangeNotice from '../../../../components/settings/EntityOwnershipChangeNotice';
+import SettingsNotice, {
+	TYPE_WARNING,
+} from '../../../../components/SettingsNotice';
+import Link from '../../../../components/Link';
 import { isValidAccountID } from '../../util';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import { useFeature } from '../../../../hooks/useFeature';
 const { useSelect } = Data;
 
 export default function SettingsForm( {
 	hasAnalyticsAccess,
 	hasAnalytics4Access,
 } ) {
+	const ga4Enabled = useFeature( 'ga4Reporting' );
 	const accountID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getAccountID()
 	);
+	const documentationURL = useSelect( ( select ) => {
+		return select( CORE_SITE ).getDocumentationLinkURL( 'ga4' );
+	} );
 	const useAnalyticsSnippet = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getUseSnippet()
 	);
@@ -79,6 +90,20 @@ export default function SettingsForm( {
 
 	return (
 		<Fragment>
+			{ ga4Enabled && (
+				<SettingsNotice
+					type={ TYPE_WARNING }
+					LearnMore={ () => (
+						<Link href={ documentationURL } external>
+							{ __( 'Learn more', 'google-site-kit' ) }
+						</Link>
+					) }
+					notice={ __(
+						'Your current Universal Analytics will stop collecting data on July 1, 2023',
+						'google-site-kit'
+					) }
+				/>
+			) }
 			<StoreErrorNotices
 				moduleSlug="analytics"
 				storeName={ MODULES_ANALYTICS }
