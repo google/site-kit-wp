@@ -44,7 +44,6 @@ describe( 'dashboard surveys', () => {
 				} );
 			} else if (
 				url.match( 'user/data/survey-event' ) ||
-				url.match( 'user/data/survey-trigger' ) ||
 				url.match( 'user/data/survey-timeout' )
 			) {
 				request.respond( { status: 200 } );

@@ -40,6 +40,8 @@ describe( 'Site Kit set up flow for the first time with site verification', () =
 				request.respond( { status: 200, body: '{}' } );
 			} else if ( url.match( 'user/data/survey-timeouts' ) ) {
 				request.respond( { status: 200, body: '[]' } );
+			} else if ( url.match( 'user/data/survey' ) ) {
+				request.respond( { status: 200, body: '{survey:null}' } );
 			} else {
 				request.continue();
 			}

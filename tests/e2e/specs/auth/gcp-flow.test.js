@@ -37,6 +37,8 @@ function handleRequest( request ) {
 		request.respond( { status: 200, body: '{}' } );
 	} else if ( url.match( 'user/data/survey-timeouts' ) ) {
 		request.respond( { status: 200, body: '[]' } );
+	} else if ( url.match( 'user/data/survey' ) ) {
+		request.respond( { status: 200, body: '{survey:null}' } );
 	} else if ( url.match( 'search-console/data/matched-sites' ) ) {
 		request.respond( {
 			status: 200,

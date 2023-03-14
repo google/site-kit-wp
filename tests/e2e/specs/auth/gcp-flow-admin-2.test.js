@@ -44,6 +44,8 @@ describe( 'the set up flow for the second administrator', () => {
 				request.respond( { status: 200, body: '{}' } );
 			} else if ( url.match( 'user/data/survey-timeouts' ) ) {
 				request.respond( { status: 200, body: '[]' } );
+			} else if ( url.match( 'user/data/survey' ) ) {
+				request.respond( { status: 200, body: '{survey:null}' } );
 			} else {
 				request.continue();
 			}
