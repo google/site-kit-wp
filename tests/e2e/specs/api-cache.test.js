@@ -48,7 +48,7 @@ describe( 'API cache', () => {
 			} else if ( url.match( 'pagespeed-insights/data/pagespeed' ) ) {
 				request.respond( { status: 200, body: '{}' } );
 			} else if ( url.match( 'user/data/survey' ) ) {
-				request.respond( { status: 200, body: '{survey:null}' } );
+				request.respond( { status: 200, body: '{"survey":null}' } );
 			} else if ( url.match( 'user/data/survey-timeouts' ) ) {
 				request.respond( { status: 200, body: '[]' } );
 			} else {

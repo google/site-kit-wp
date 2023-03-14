@@ -70,7 +70,7 @@ describe( 'setting up the Analytics module using GCP auth with no existing accou
 					body: '[]',
 				} );
 			} else if ( url.match( 'user/data/survey' ) ) {
-				request.respond( { status: 200, body: '{survey:null}' } );
+				request.respond( { status: 200, body: '{"survey":null}' } );
 			} else if (
 				url.match( 'pagespeed-insights/data/pagespeed' ) ||
 				url.match( 'analytics/data/goals' ) ||

@@ -117,7 +117,7 @@ const fetchGetSurveyStore = createFetchStore( {
 		const {
 			survey_payload: currentSurvey = null,
 			session: currentSurveySession = null,
-		} = survey || {};
+		} = survey ? survey : {};
 
 		return {
 			...state,
