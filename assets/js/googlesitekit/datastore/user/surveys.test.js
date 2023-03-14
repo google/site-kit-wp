@@ -313,10 +313,14 @@ describe( 'core/user surveys', () => {
 
 	describe( 'selectors', () => {
 		describe( 'getCurrentSurvey', () => {
-			it( 'returns null when no current survey is set', () => {
+			it( 'returns undefined when no current survey is set', () => {
+				registry
+					.dispatch( CORE_USER )
+					.finishResolution( 'getCurrentSurvey', [] );
+
 				expect(
 					registry.select( CORE_USER ).getCurrentSurvey()
-				).toBeNull();
+				).toBeUndefined();
 			} );
 
 			it( 'returns the current survey when it is set', () => {
@@ -329,10 +333,10 @@ describe( 'core/user surveys', () => {
 		} );
 
 		describe( 'getCurrentSurveySession', () => {
-			it( 'returns null when no current survey session is set', () => {
+			it( 'returns undefined when no current survey session is set', () => {
 				expect(
 					registry.select( CORE_USER ).getCurrentSurveySession()
-				).toBeNull();
+				).toBeUndefined();
 			} );
 
 			it( 'returns the current survey session when set', () => {
