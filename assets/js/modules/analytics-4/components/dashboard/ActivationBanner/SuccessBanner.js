@@ -74,7 +74,7 @@ export default function SuccessBanner() {
 			) }
 			description={ description }
 			dismiss={ __( 'OK, Got it', 'google-site-kit' ) }
-			WinImageSVG={ () => <SuccessGreenSVG width="356" height="180" /> }
+			WinImageSVG={ () => <SuccessGreenSVG /> }
 			format="small"
 			type="win-success"
 			learnMoreLabel={ __(
