@@ -68,20 +68,20 @@ WithGA4Snippet.args = {
 	},
 };
 
-export const WithDashboardViewToggle = Template.bind( null );
-WithDashboardViewToggle.storyName = 'Settings with Dashboard View';
-WithDashboardViewToggle.args = {
+export const WithDashboardView = Template.bind( null );
+WithDashboardView.storyName = 'Settings with Dashboard View';
+WithDashboardView.args = {
 	setupRegistry: ( registry ) => {
 		registry
 			.dispatch( MODULES_ANALYTICS )
 			.setDashboardView( DASHBOARD_VIEW_GA4 );
 	},
 };
-WithDashboardViewToggle.parameters = {
+WithDashboardView.parameters = {
 	features: [ 'ga4Reporting' ],
 };
-WithDashboardViewToggle.scenario = {
-	label: 'Modules/Analytics/Settings/SettingsView/WithDashboardViewToggle',
+WithDashboardView.scenario = {
+	label: 'Modules/Analytics/Settings/SettingsView/WithDashboardView',
 	delay: 250,
 };
 
