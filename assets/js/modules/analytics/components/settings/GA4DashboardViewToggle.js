@@ -34,11 +34,9 @@ import {
 } from '../../datastore/constants';
 import { trackEvent } from '../../../../util';
 import useViewContext from '../../../../hooks/useViewContext';
-import { useFeature } from '../../../../hooks/useFeature';
 const { useSelect, useDispatch } = Data;
 
 export default function GA4DashboardViewToggle() {
-	const ga4ReportingEnabled = useFeature( 'ga4Reporting' );
 	const viewContext = useViewContext();
 
 	const dashboardView = useSelect( ( select ) =>
@@ -60,10 +58,6 @@ export default function GA4DashboardViewToggle() {
 				: 'set_dashboard_view_to_ua'
 		);
 	}, [ dashboardView, setDashboardView, viewContext ] );
-
-	if ( ! ga4ReportingEnabled ) {
-		return null;
-	}
 
 	return (
 		<div>
