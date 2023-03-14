@@ -61,7 +61,7 @@ const fetchGetGoogleTagContainerDestinationsStore = createFetchStore( {
 			'modules',
 			'analytics-4',
 			'container-destinations',
-			{ accountID: gtmAccountID, internalContainerID: gtmContainerID },
+			{ accountID: gtmAccountID, containerID: gtmContainerID },
 			{
 				useCache: false,
 			}
