@@ -42,11 +42,11 @@ import { useFeature } from '../../../../hooks/useFeature';
 const { useSelect } = Data;
 
 export default function SettingsView() {
-	const ga4Enabled = useFeature( 'ga4Reporting' );
+	const ga4ReportingEnabled = useFeature( 'ga4Reporting' );
 	const documentationURL = useSelect( ( select ) => {
 		return select( CORE_SITE ).getDocumentationLinkURL( 'ga4' );
 	} );
-	const ga4ModuleConnected = useSelect( ( select ) =>
+	const isGA4Connected = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
 	);
 	const isTagManagerAvailable = useSelect( ( select ) =>
@@ -61,7 +61,7 @@ export default function SettingsView() {
 
 	return (
 		<div className="googlesitekit-setup-module googlesitekit-setup-module--analytics">
-			{ ga4Enabled && ! ga4ModuleConnected && (
+			{ ga4ReportingEnabled && ! isGA4Connected && (
 				<SettingsNotice
 					type={ TYPE_WARNING }
 					LearnMore={ () => (

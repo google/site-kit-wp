@@ -53,14 +53,14 @@ export default function SettingsForm( {
 	hasAnalyticsAccess,
 	hasAnalytics4Access,
 } ) {
-	const ga4Enabled = useFeature( 'ga4Reporting' );
+	const ga4ReportingEnabled = useFeature( 'ga4Reporting' );
 	const accountID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getAccountID()
 	);
 	const documentationURL = useSelect( ( select ) => {
 		return select( CORE_SITE ).getDocumentationLinkURL( 'ga4' );
 	} );
-	const ga4ModuleConnected = useSelect( ( select ) =>
+	const isGA4Connected = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
 	);
 	const useAnalyticsSnippet = useSelect( ( select ) =>
@@ -93,7 +93,7 @@ export default function SettingsForm( {
 
 	return (
 		<Fragment>
-			{ ga4Enabled && ! ga4ModuleConnected && (
+			{ ga4ReportingEnabled && ! isGA4Connected && (
 				<SettingsNotice
 					type={ TYPE_WARNING }
 					LearnMore={ () => (
