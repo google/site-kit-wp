@@ -242,9 +242,9 @@ const Overview = ( {
 		...( showGA4 && dashboardType === DASHBOARD_TYPE_ENTITY
 			? [
 					{
-						id: 'engaged-sessions',
+						id: 'engagement-rate',
 						stat: 4,
-						title: __( 'Engaged Sessions', 'google-site-kit' ),
+						title: __( 'Engagement Rate', 'google-site-kit' ),
 						datapoint: ga4EngagedSessionsDatapoint,
 						change: ga4EngagedSessionsChange,
 						isGatheringData: isGA4GatheringData,

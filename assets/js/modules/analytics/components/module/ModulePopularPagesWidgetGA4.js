@@ -183,8 +183,8 @@ function ModulePopularPagesWidgetGA4( props ) {
 			),
 		},
 		{
-			title: __( 'Engaged Sessions', 'google-site-kit' ),
-			description: __( 'Engaged Sessions', 'google-site-kit' ),
+			title: __( 'Engagement Rate', 'google-site-kit' ),
+			description: __( 'Engagement Rate', 'google-site-kit' ),
 			hideOnMobile: true,
 			field: 'metricValues.2.value',
 			Component: ( { fieldValue } ) => (

@@ -82,7 +82,7 @@ export function extractAnalytics4DashboardData(
 	dataLabels = [
 		__( 'Users', 'google-site-kit' ),
 		__( 'Sessions', 'google-site-kit' ),
-		__( 'Engaged Sessions', 'google-site-kit' ),
+		__( 'Engagement Rate', 'google-site-kit' ),
 		__( 'Session Duration', 'google-site-kit' ),
 	],
 	dataFormats = [
