@@ -21,7 +21,10 @@
  */
 import SettingsView from './SettingsView';
 import { Cell, Grid, Row } from '../../../../material-components';
-import { MODULES_ANALYTICS } from '../../datastore/constants';
+import {
+	DASHBOARD_VIEW_GA4,
+	MODULES_ANALYTICS,
+} from '../../datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 import {
 	provideModules,
@@ -63,6 +66,23 @@ WithGA4Snippet.args = {
 			useSnippet: true,
 		} );
 	},
+};
+
+export const WithDashboardViewToggle = Template.bind( null );
+WithDashboardViewToggle.storyName = 'Settings with Dashboard View';
+WithDashboardViewToggle.args = {
+	setupRegistry: ( registry ) => {
+		registry
+			.dispatch( MODULES_ANALYTICS )
+			.setDashboardView( DASHBOARD_VIEW_GA4 );
+	},
+};
+WithDashboardViewToggle.parameters = {
+	features: [ 'ga4Reporting' ],
+};
+WithDashboardViewToggle.scenario = {
+	label: 'Modules/Analytics/Settings/SettingsView/WithDashboardViewToggle',
+	delay: 250,
 };
 
 export default {
