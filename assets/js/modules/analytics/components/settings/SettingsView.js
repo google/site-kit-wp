@@ -70,7 +70,7 @@ export default function SettingsView() {
 						</Link>
 					) }
 					notice={ __(
-						'Your current Universal Analytics will stop collecting data on July 1, 2023',
+						'Your current Universal Analytics property will stop collecting data on July 1, 2023',
 						'google-site-kit'
 					) }
 				/>
