@@ -32,12 +32,17 @@ import { __ } from '@wordpress/i18n';
 import { Switch } from 'googlesitekit-components';
 import Data from 'googlesitekit-data';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import { CORE_WIDGETS } from '../../googlesitekit/widgets/datastore/constants';
 
 const { useSelect, useDispatch } = Data;
 
 export default function SettingsKeyMetrics() {
 	const keyMetricsSettings = useSelect( ( select ) =>
-		select( CORE_USER ).getKeyMetricsSettings()
+		select( CORE_WIDGETS ).getKeyMetricsSettings()
+	);
+
+	const keyMetrics = useSelect( ( select ) =>
+		select( CORE_USER ).getKeyMetrics()
 	);
 
 	const { setKeyMetricSetting, saveKeyMetricsSettings } =
@@ -55,7 +60,7 @@ export default function SettingsKeyMetrics() {
 		await saveKeyMetricsSettings();
 	}, [ keyMetricsSettings, saveKeyMetricsSettings, setKeyMetricSetting ] );
 
-	if ( ! keyMetricsSettings ) {
+	if ( ! keyMetricsSettings || ! keyMetrics?.length ) {
 		return null;
 	}
 
