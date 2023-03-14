@@ -42,6 +42,9 @@ const { useSelect } = Data;
 
 export default function SettingsView() {
 	const ga4ReportingEnabled = useFeature( 'ga4Reporting' );
+	const isGA4Connected = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
+	);
 
 	const isTagManagerAvailable = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleAvailable( 'tagmanager' )
@@ -77,6 +80,7 @@ export default function SettingsView() {
 						<p className="googlesitekit-settings-module__meta-item-data">
 							<DisplaySetting
 								value={
+									isGA4Connected &&
 									dashboardView === DASHBOARD_VIEW_GA4
 										? __(
 												'Google Analytics 4',
