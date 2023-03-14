@@ -37,13 +37,14 @@ describe( 'dashboard surveys', () => {
 
 			// The survey endpoint is stubbed on the server to always return a null survey
 			// so we will intercept it on the client (see e2e-rest-survey-trigger.php).
-			if ( url.match( 'user/data/survey-trigger' ) ) {
+			if ( url.match( 'user/data/survey' ) ) {
 				request.respond( {
 					status: 200,
-					body: JSON.stringify( surveyResponse ),
+					body: JSON.stringify( { survey: surveyResponse } ),
 				} );
 			} else if (
 				url.match( 'user/data/survey-event' ) ||
+				url.match( 'user/data/survey-trigger' ) ||
 				url.match( 'user/data/survey-timeout' )
 			) {
 				request.respond( { status: 200 } );
@@ -62,6 +63,10 @@ describe( 'dashboard surveys', () => {
 
 	it( 'shows a survey', async () => {
 		await visitAdminPage( 'admin.php', 'page=googlesitekit-dashboard' );
+
+		// Wait for 6 seconds before checking whether we see the survey or not
+		// because surveys are shown only in 5 seconds after rendering the page.
+		await new Promise( ( resolve ) => setTimeout( resolve, 6000 ) );
 
 		await expect( page ).toMatchElement( '.googlesitekit-survey', {
 			text: surveyResponse.survey_payload.question[ 0 ].question_text,
