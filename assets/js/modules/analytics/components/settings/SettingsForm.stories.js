@@ -21,7 +21,10 @@
  */
 import SettingsForm from './SettingsForm';
 import { Cell, Grid, Row } from '../../../../material-components';
-import { MODULES_ANALYTICS } from '../../datastore/constants';
+import {
+	DASHBOARD_VIEW_GA4,
+	MODULES_ANALYTICS,
+} from '../../datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 import { createBuildAndReceivers } from '../../../../modules/tagmanager/datastore/__factories__/utils';
 import {
@@ -299,6 +302,61 @@ WithExistingGTMPropertyMatching.decorators = [
 ];
 WithExistingGTMPropertyMatching.scenario = {
 	label: 'Modules/Analytics/Settings/SettingsEdit/WithExistingGTMPropertyMatching',
+	delay: 250,
+};
+
+export const WithDashboardViewToggle = Template.bind( null );
+WithDashboardViewToggle.storyName = 'With Dashboard View Toggle';
+WithDashboardViewToggle.parameters = {
+	features: [ 'ga4Reporting' ],
+};
+WithDashboardViewToggle.decorators = [
+	( Story ) => {
+		const setupRegistry = ( registry ) => {
+			registry
+				.dispatch( MODULES_ANALYTICS )
+				.setDashboardView( DASHBOARD_VIEW_GA4 );
+		};
+
+		return (
+			<WithRegistrySetup func={ setupRegistry }>
+				<Story />
+			</WithRegistrySetup>
+		);
+	},
+];
+WithDashboardViewToggle.scenario = {
+	label: 'Modules/Analytics/Settings/SettingsEdit/WithDashboardViewToggle',
+	delay: 250,
+};
+
+export const WithDashboardViewLabel = Template.bind( null );
+WithDashboardViewLabel.storyName = 'With Dashboard View Label';
+WithDashboardViewLabel.parameters = {
+	features: [ 'ga4Reporting' ],
+};
+WithDashboardViewLabel.decorators = [
+	( Story ) => {
+		const setupRegistry = ( registry ) => {
+			// Ensure the analytics-4 module is not connected so that the Dashboard View label is shown rather than the toggle.
+			provideModules( registry, [
+				{
+					slug: 'analytics-4',
+					active: true,
+					connected: false,
+				},
+			] );
+		};
+
+		return (
+			<WithRegistrySetup func={ setupRegistry }>
+				<Story />
+			</WithRegistrySetup>
+		);
+	},
+];
+WithDashboardViewLabel.scenario = {
+	label: 'Modules/Analytics/Settings/SettingsEdit/WithDashboardViewLabel',
 	delay: 250,
 };
 
