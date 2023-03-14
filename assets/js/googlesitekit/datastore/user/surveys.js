@@ -126,8 +126,8 @@ const fetchGetSurveyStore = createFetchStore( {
 } );
 
 const baseInitialState = {
-	currentSurvey: null,
-	currentSurveySession: null,
+	currentSurvey: undefined,
+	currentSurveySession: undefined,
 	surveyTimeouts: undefined,
 };
 
