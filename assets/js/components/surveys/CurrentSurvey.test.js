@@ -791,6 +791,8 @@ describe( 'CurrentSurvey', () => {
 	} );
 
 	it( 'should render nothing if no survey exists', () => {
+		registry.dispatch( CORE_USER ).receiveGetSurvey( { survey: null } );
+
 		const { container } = render( <CurrentSurvey />, { registry } );
 
 		expect( container ).toBeEmptyDOMElement();
