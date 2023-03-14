@@ -38,11 +38,11 @@ const { useSelect, useDispatch } = Data;
 
 export default function SettingsKeyMetrics() {
 	const keyMetricsSettings = useSelect( ( select ) =>
-		select( CORE_WIDGETS ).getKeyMetricsSettings()
+		select( CORE_USER ).getKeyMetricsSettings()
 	);
 
 	const keyMetrics = useSelect( ( select ) =>
-		select( CORE_USER ).getKeyMetrics()
+		select( CORE_WIDGETS ).getKeyMetrics()
 	);
 
 	const { setKeyMetricSetting, saveKeyMetricsSettings } =
