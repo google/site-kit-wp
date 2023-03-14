@@ -57,6 +57,8 @@ describe( 'CoreSiteBannerNotifications', () => {
 	} );
 
 	it( 'does render notification after timeout', () => {
+		registry.dispatch( CORE_USER ).receiveGetSurvey( { survey: null } );
+
 		const { container } = render( <CoreSiteBannerNotifications />, {
 			registry,
 		} );
@@ -71,12 +73,9 @@ describe( 'CoreSiteBannerNotifications', () => {
 	} );
 
 	it( 'does not render notification with survey', () => {
-		registry
-			.dispatch( CORE_USER )
-			.receiveTriggerSurvey(
-				{ survey_payload: { ab2: true }, session: {} },
-				{ triggerID: 'storybook' }
-			);
+		registry.dispatch( CORE_USER ).receiveGetSurvey( {
+			survey: { survey_payload: { ab2: true }, session: {} },
+		} );
 
 		const { container } = render( <CoreSiteBannerNotifications />, {
 			registry,

@@ -109,18 +109,20 @@ const fetchGetSurveyStore = createFetchStore( {
 		return API.get( 'core', 'user', 'survey', {} );
 	},
 	reducerCallback: ( state, { survey } ) => {
-		// We don't replace survey if we already have one.
+		// We don't replace the current survey if we already have one.
 		if ( baseSelectors.getCurrentSurvey( state ) ) {
 			return state;
 		}
 
-		// eslint-disable-next-line camelcase
-		const { survey_payload, session } = survey;
+		const {
+			survey_payload: currentSurvey = null,
+			session: currentSurveySession = null,
+		} = survey || {};
 
 		return {
 			...state,
-			currentSurvey: survey_payload,
-			currentSurveySession: session,
+			currentSurvey,
+			currentSurveySession,
 		};
 	},
 } );
