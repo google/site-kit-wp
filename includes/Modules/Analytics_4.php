@@ -520,17 +520,17 @@ final class Analytics_4 extends Module
 						array( 'status' => 400 )
 					);
 				}
-				if ( ! isset( $data['internalContainerID'] ) ) {
+				if ( ! isset( $data['containerID'] ) ) {
 					return new WP_Error(
 						'missing_required_param',
 						/* translators: %s: Missing parameter name */
-						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'internalContainerID' ),
+						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'containerID' ),
 						array( 'status' => 400 )
 					);
 				}
 
 				return $this->get_tagmanager_service()->accounts_containers_destinations->listAccountsContainersDestinations(
-					"accounts/{$data['accountID']}/containers/{$data['internalContainerID']}"
+					"accounts/{$data['accountID']}/containers/{$data['containerID']}"
 				);
 			case 'GET:google-tag-settings':
 				if ( ! isset( $data['measurementID'] ) ) {

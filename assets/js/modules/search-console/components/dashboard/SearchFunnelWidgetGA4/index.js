@@ -463,7 +463,7 @@ const SearchFunnelWidgetGA4 = ( { Widget, WidgetReportError } ) => {
 						metrics={ SearchFunnelWidgetGA4.metrics }
 						dataLabels={ [
 							__( 'Conversions', 'google-site-kit' ),
-							__( 'Engaged Sessions', 'google-site-kit' ),
+							__( 'Engagement Rate', 'google-site-kit' ),
 						] }
 						dataFormats={ [
 							( x ) => parseFloat( x ).toLocaleString(),
@@ -508,9 +508,9 @@ SearchFunnelWidgetGA4.metrics = [
 		service: 'analytics-4',
 	},
 	{
-		id: 'engaged-sessions',
+		id: 'engagement-rate',
 		color: '#6e48ab',
-		label: __( 'Engaged Sessions', 'google-site-kit' ),
+		label: __( 'Engagement Rate', 'google-site-kit' ),
 		service: 'analytics-4',
 	},
 ];
