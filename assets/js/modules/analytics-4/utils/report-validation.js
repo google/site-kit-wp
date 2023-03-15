@@ -29,18 +29,29 @@ import { isValidStringsOrObjects } from '../../../util/report-validation';
 /**
  * Verifies that provided metrics match allowed values. Metrics can be a string,
  * an array of string, an array of objects or mix of strings and objects. Objects
- * must have an "name" property in order to be considered as valid, and they
+ * must have a valid "name" property in order to be considered as valid, and they
  * can optionally include an "expression" property.
  *
+ * A valid metric name is a string matching the regular expression /^[a-zA-Z0-9_]+$/.
+ *
  * @since 1.94.0
+ * @since n.e.x.t Added a regular expression to validate metric names, in keeping with the Google API.
  *
  * @param {string|string[]|Object|Object[]} metrics The metrics to check.
  * @return {boolean} TRUE if metrics are valid, otherwise FALSE.
  */
 export function isValidMetrics( metrics ) {
+	const isValidName = ( metricName ) =>
+		typeof metricName === 'string' && /^[a-zA-Z0-9_]+$/.test( metricName );
+
+	if ( typeof metrics === 'string' ) {
+		const metricNames = metrics.split( ',' );
+		return metricNames.every( isValidName );
+	}
+
 	return isValidStringsOrObjects( metrics, ( metric ) => {
 		const validName =
-			metric.hasOwnProperty( 'name' ) && typeof metric.name === 'string';
+			metric.hasOwnProperty( 'name' ) && isValidName( metric.name );
 
 		// 'expression' is optional; if provided, it must be a string.
 		const validExpression =
