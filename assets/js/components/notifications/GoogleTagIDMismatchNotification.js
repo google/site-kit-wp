@@ -33,6 +33,7 @@ import BannerNotification from './BannerNotification';
 import Link from '../Link';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { Cell, Grid, Row } from '../../material-components';
+import { getBestTagID } from '../../modules/analytics-4/utils/google-tag';
 
 const { useSelect, useDispatch } = Data;
 
@@ -80,13 +81,13 @@ export default function GoogleTagIDMismatchNotification() {
 		const validGA4MeasurementIDs =
 			destinationIDs.filter( isValidMeasurementID );
 
-		if ( validGA4MeasurementIDs.length ) {
-			return select(
-				MODULES_ANALYTICS_4
-			).getAnalyticsConfigByMeasurementIDs( validGA4MeasurementIDs );
+		if ( validGA4MeasurementIDs.length === 0 ) {
+			return null;
 		}
 
-		return null;
+		return select( MODULES_ANALYTICS_4 ).getAnalyticsConfigByMeasurementIDs(
+			validGA4MeasurementIDs
+		);
 	} );
 
 	const newAnalyticsProperty = useSelect(
@@ -98,13 +99,17 @@ export default function GoogleTagIDMismatchNotification() {
 			)
 	);
 
-	const newGoogleTagID = useSelect(
-		( select ) =>
+	const newGoogleTagID = useSelect( ( select ) => {
+		const tagIDs =
 			currentAnalyticsConfig?.measurementID &&
 			select( MODULES_ANALYTICS_4 ).getGoogleTagContainer(
 				currentAnalyticsConfig?.measurementID
-			)?.tagIds?.[ 0 ] // eslint-disable-line sitekit/acronym-case
-	);
+			)?.tagIds; // eslint-disable-line sitekit/acronym-case
+
+		if ( Array.isArray( tagIDs ) ) {
+			return getBestTagID( tagIDs, currentAnalyticsConfig.measurementID );
+		}
+	} );
 
 	const isDoingSubmitChanges = useSelect( ( select ) =>
 		select( CORE_MODULES ).isDoingSubmitChanges( 'analytics-4' )
@@ -183,7 +188,7 @@ export default function GoogleTagIDMismatchNotification() {
 				description={ sprintf(
 					/* translators: 1: Currently GA4 property name. 2: Current GA4 property ID. 3: Newly linked GA4 property name. 4: Newly linked GA4 property ID. */
 					__(
-						'The Google Tag on your site is no longer associated with your current Google Analytics 4 property "%1$s (%2$s)". It is now recording metrics to another Google Analytics 4 property "%3$s (%4$s)". If you want to continue seeing Analytics data in the Site Kit dashboard, we suggest you switch Site Kit\'s Google Analytics configuration to show data for this property.',
+						'The Google Tag on your site is no longer associated with your current Google Analytics 4 property "%1$s (%2$s)". It is now recording metrics to another Google Analytics 4 property "%3$s (%4$s)". If you want to continue seeing Analytics data in the Site Kit dashboard, we suggest you switch Site Kit’s Google Analytics configuration to show data for this property.',
 						'google-site-kit'
 					),
 					currentAnalyticsProperty.displayName,
