@@ -61,14 +61,27 @@ describe( 'dashboard surveys', () => {
 	} );
 
 	it( 'shows a survey', async () => {
+		const expectElemSelector = '.googlesitekit-survey';
+		const expectElemText = {
+			text: surveyResponse.survey_payload.question[ 0 ].question_text,
+		};
+
 		await visitAdminPage( 'admin.php', 'page=googlesitekit-dashboard' );
 
-		// Wait for 6 seconds before checking whether we see the survey or not
-		// because surveys are shown only in 5 seconds after rendering the page.
-		await new Promise( ( resolve ) => setTimeout( resolve, 6000 ) );
+		// Wait for 3 seconds and check that we don't see the survey yet.
+		// The survey should appear only after 5 seconds, not earlier.
+		await new Promise( ( resolve ) => setTimeout( resolve, 3000 ) );
+		await expect( page ).not.toMatchElement(
+			expectElemSelector,
+			expectElemText
+		);
 
-		await expect( page ).toMatchElement( '.googlesitekit-survey', {
-			text: surveyResponse.survey_payload.question[ 0 ].question_text,
-		} );
+		// Wait for 3 more seconds to ensure that the survey appears since
+		// the total waiting time is 6 seconds now.
+		await new Promise( ( resolve ) => setTimeout( resolve, 3000 ) );
+		await expect( page ).toMatchElement(
+			expectElemSelector,
+			expectElemText
+		);
 	} );
 } );
