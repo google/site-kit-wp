@@ -50,12 +50,20 @@
 
 		.googlesitekit-publisher-win__secondary-pane {
 
-			ul {
-				list-style-image: $icon-tick;
+			.googlesitekit-publisher-win__secondary-pane-title {
+				font-size: $fs-title-sm;
+				font-weight: $fw-medium;
+				line-height: 0;
+			}
 
-				li {
-					margin-left: $grid-gap-phone;
-					padding-left: $grid-gap-phone;
+			ul li {
+				color: $c-neutral-n-400;
+				display: flex;
+
+				svg {
+					fill: currentColor;
+					flex: none;
+					margin-right: $grid-gap-phone / 2;
 				}
 			}
 		}
