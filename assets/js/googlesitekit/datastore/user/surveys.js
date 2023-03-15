@@ -27,7 +27,7 @@ import { isPlainObject } from 'lodash';
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
-import { CORE_USER } from './constants';
+import { CORE_USER, GLOBAL_SURVEYS_TIMEOUT_SLUG } from './constants';
 import { createFetchStore } from '../../data/create-fetch-store';
 import { createValidatedAction } from '../../data/utils';
 const { createRegistrySelector } = Data;
@@ -382,7 +382,7 @@ const baseSelectors = {
 	 * @param {Object} state   Data store's state.
 	 * @param {string} slug    Survey slug.
 	 * @param {number} timeout Timeout for survey.
-	 * @return {(boolean|undefined)} True if the survey is being timed out, otherwise false.
+	 * @return {(boolean|undefined)} TRUE if the survey is being timed out, otherwise FALSE.
 	 */
 	isTimingOutSurvey: createRegistrySelector(
 		( select ) => ( state, slug, timeout ) => {
@@ -392,6 +392,19 @@ const baseSelectors = {
 			);
 		}
 	),
+
+	/**
+	 * Determines whether surveys are on cooldown or not.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {(boolean|undefined)} TRUE if surveys are on cooldown, otherwise FALSE, `undefined` if not resolved yet.
+	 */
+	areSurveysOnCooldown: createRegistrySelector( ( select ) => () => {
+		return select( CORE_USER ).isSurveyTimedOut(
+			GLOBAL_SURVEYS_TIMEOUT_SLUG
+		);
+	} ),
 };
 
 const store = Data.combineStores(

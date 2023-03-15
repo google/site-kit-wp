@@ -36,7 +36,7 @@ export default function CurrentSurveyPortal() {
 	);
 
 	const isGlobalTimeoutOut = useSelect( ( select ) =>
-		select( CORE_USER ).isSurveyTimedOut( '__global' )
+		select( CORE_USER ).areSurveysOnCooldown()
 	);
 
 	if ( isGlobalTimeoutOut || ! usingProxy || ! currentSurvey ) {

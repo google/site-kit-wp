@@ -478,5 +478,35 @@ describe( 'core/user surveys', () => {
 				expect( timingOut ).toBe( false );
 			} );
 		} );
+
+		describe( 'areSurveysOnCooldown', () => {
+			it( 'should return undefined if getSurveyTimeouts selector is not resolved yet', async () => {
+				fetchMock.getOnce( surveyTimeoutsEndpoint, { body: [] } );
+
+				expect(
+					registry.select( CORE_USER ).areSurveysOnCooldown()
+				).toBeUndefined();
+
+				await untilResolved( registry, CORE_USER ).getSurveyTimeouts();
+			} );
+
+			it( 'should return TRUE if surveys are on cooldown', () => {
+				registry
+					.dispatch( CORE_USER )
+					.receiveGetSurveyTimeouts( [ 'foo', '__global' ] );
+				expect(
+					registry.select( CORE_USER ).areSurveysOnCooldown()
+				).toBe( true );
+			} );
+
+			it( 'should return FALSE if surveys are not on cooldown', () => {
+				registry
+					.dispatch( CORE_USER )
+					.receiveGetSurveyTimeouts( [ 'foo', 'bar' ] );
+				expect(
+					registry.select( CORE_USER ).areSurveysOnCooldown()
+				).toBe( false );
+			} );
+		} );
 	} );
 } );
