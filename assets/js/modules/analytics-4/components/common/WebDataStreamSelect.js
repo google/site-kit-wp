@@ -155,7 +155,7 @@ export default function WebDataStreamSelect( props ) {
 		return (
 			<Select
 				className={ classnames(
-					'googlesitekit-analytics-4__select-measurement',
+					'googlesitekit-analytics-4__select-webdatastream',
 					className
 				) }
 				label={ __( 'Web Data Stream', 'google-site-kit' ) }
@@ -172,7 +172,7 @@ export default function WebDataStreamSelect( props ) {
 	return (
 		<Select
 			className={ classnames(
-				'googlesitekit-analytics-4__select-measurement',
+				'googlesitekit-analytics-4__select-webdatastream',
 				className,
 				{
 					'mdc-select--invalid': ! isValidSelection,
