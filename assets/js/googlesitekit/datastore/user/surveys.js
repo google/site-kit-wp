@@ -109,11 +109,6 @@ const fetchGetSurveyStore = createFetchStore( {
 		return API.get( 'core', 'user', 'survey', {} );
 	},
 	reducerCallback: ( state, { survey } ) => {
-		// We don't replace the current survey if we already have one.
-		if ( baseSelectors.getCurrentSurvey( state ) ) {
-			return state;
-		}
-
 		const {
 			survey_payload: currentSurvey = null,
 			session: currentSurveySession = null,
