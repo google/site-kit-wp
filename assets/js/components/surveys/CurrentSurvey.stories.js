@@ -24,9 +24,10 @@ import fetchMock from 'fetch-mock';
 /**
  * Internal dependencies
  */
-import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
-import { provideCurrentSurvey } from '../../../../tests/js/utils';
+import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
+import { provideCurrentSurvey } from '../../../../tests/js/utils';
+import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import CurrentSurvey from './CurrentSurvey';
 import {
 	multiQuestionConditionalSurvey,
@@ -43,18 +44,23 @@ function Template( { setupRegistry, ...args } ) {
 	);
 }
 
+function setuCommonRegistry( registry, survey, trackingEnabled = true ) {
+	fetchMock.post( new RegExp( 'user/data/survey-event' ), {
+		body: {},
+	} );
+
+	provideCurrentSurvey( registry, survey );
+
+	registry
+		.dispatch( CORE_USER )
+		.receiveGetTracking( { enabled: trackingEnabled } );
+}
+
 export const SurveySingleQuestionStory = Template.bind( {} );
 SurveySingleQuestionStory.storyName = 'Single question';
 SurveySingleQuestionStory.args = {
 	setupRegistry: ( registry ) => {
-		fetchMock.post(
-			new RegExp( 'google-site-kit/v1/core/user/data/survey-event' ),
-			{
-				body: {},
-			}
-		);
-
-		provideCurrentSurvey( registry, singleQuestionSurvey );
+		setuCommonRegistry( registry, singleQuestionSurvey );
 	},
 };
 SurveySingleQuestionStory.scenario = {
@@ -66,14 +72,7 @@ export const SurveyMultipleQuestionsStory = Template.bind( {} );
 SurveyMultipleQuestionsStory.storyName = 'Multiple questions';
 SurveyMultipleQuestionsStory.args = {
 	setupRegistry: ( registry ) => {
-		fetchMock.post(
-			new RegExp( 'google-site-kit/v1/core/user/data/survey-event' ),
-			{
-				body: {},
-			}
-		);
-
-		provideCurrentSurvey( registry, multiQuestionSurvey );
+		setuCommonRegistry( registry, multiQuestionSurvey );
 	},
 };
 
@@ -81,14 +80,7 @@ export const SurveyMultipleQuestionsConditionalStory = Template.bind( {} );
 SurveyMultipleQuestionsConditionalStory.storyName = 'Conditional';
 SurveyMultipleQuestionsConditionalStory.args = {
 	setupRegistry: ( registry ) => {
-		fetchMock.post(
-			new RegExp( 'google-site-kit/v1/core/user/data/survey-event' ),
-			{
-				body: {},
-			}
-		);
-
-		provideCurrentSurvey( registry, multiQuestionConditionalSurvey );
+		setuCommonRegistry( registry, multiQuestionConditionalSurvey );
 	},
 };
 
@@ -96,14 +88,7 @@ export const SurveyNotAnsweredNoFollowUpStory = Template.bind( {} );
 SurveyNotAnsweredNoFollowUpStory.storyName = 'New survey (no follow-up CTA)';
 SurveyNotAnsweredNoFollowUpStory.args = {
 	setupRegistry: ( registry ) => {
-		fetchMock.post(
-			new RegExp( 'google-site-kit/v1/core/user/data/survey-event' ),
-			{
-				body: {},
-			}
-		);
-
-		provideCurrentSurvey( registry, singleQuestionSurveyWithNoFollowUp );
+		setuCommonRegistry( registry, singleQuestionSurveyWithNoFollowUp );
 	},
 };
 
@@ -111,26 +96,19 @@ export const SurveyAnsweredPositiveStory = Template.bind( {} );
 SurveyAnsweredPositiveStory.storyName = 'Completed';
 SurveyAnsweredPositiveStory.args = {
 	setupRegistry: ( registry ) => {
-		const answer = {
-			question_ordinal: 1,
-			answer: {
-				answer: { answer_ordinal: 5 },
-			},
-		};
-
-		fetchMock.post(
-			new RegExp( 'google-site-kit/v1/core/user/data/survey-event' ),
-			{
-				body: {},
-			}
-		);
-
-		provideCurrentSurvey( registry, singleQuestionSurvey );
+		setuCommonRegistry( registry, singleQuestionSurvey );
 
 		registry
 			.dispatch( CORE_FORMS )
 			.setValues( `survey-${ singleQuestionSurvey.session.session_id }`, {
-				answers: [ answer ],
+				answers: [
+					{
+						question_ordinal: 1,
+						answer: {
+							answer: { answer_ordinal: 5 },
+						},
+					},
+				],
 			} );
 	},
 };
@@ -139,16 +117,7 @@ export const SurveyWithTermsStory = Template.bind( {} );
 SurveyWithTermsStory.storyName = 'With Terms';
 SurveyWithTermsStory.args = {
 	setupRegistry: ( registry ) => {
-		fetchMock.post(
-			new RegExp( 'google-site-kit/v1/core/user/data/survey-event' ),
-			{
-				body: {},
-			}
-		);
-
-		provideCurrentSurvey( registry, singleQuestionSurvey, {
-			trackingEnabled: false,
-		} );
+		setuCommonRegistry( registry, singleQuestionSurvey, false );
 	},
 };
 

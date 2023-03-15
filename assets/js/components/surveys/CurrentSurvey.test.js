@@ -61,7 +61,7 @@ describe( 'CurrentSurvey', () => {
 	} );
 
 	it( 'should render a survey when one exists in the datastore', () => {
-		provideCurrentSurvey( registry, singleQuestionSurvey );
+		provideCurrentSurvey( registry );
 
 		const { container } = render( <CurrentSurvey />, { registry } );
 
@@ -70,7 +70,7 @@ describe( 'CurrentSurvey', () => {
 	} );
 
 	it( "should render a rating question when the `question_type` is 'rating'", () => {
-		provideCurrentSurvey( registry, singleQuestionSurvey );
+		provideCurrentSurvey( registry );
 
 		const { container } = render( <CurrentSurvey />, { registry } );
 
@@ -604,7 +604,7 @@ describe( 'CurrentSurvey', () => {
 	} );
 
 	it( "should send a 'survey_shown' event on mount", () => {
-		provideCurrentSurvey( registry, singleQuestionSurvey );
+		provideCurrentSurvey( registry );
 
 		const { rerender } = render( <CurrentSurvey />, { registry } );
 
@@ -635,7 +635,7 @@ describe( 'CurrentSurvey', () => {
 	} );
 
 	it( "should send a 'question_answered' event when a question is answered", async () => {
-		provideCurrentSurvey( registry, singleQuestionSurvey );
+		provideCurrentSurvey( registry );
 
 		const { getByLabelText, findByText } = render( <CurrentSurvey />, {
 			registry,
@@ -765,7 +765,7 @@ describe( 'CurrentSurvey', () => {
 	} );
 
 	it( 'should mark the question as answered in the core/forms datastore', async () => {
-		provideCurrentSurvey( registry, singleQuestionSurvey );
+		provideCurrentSurvey( registry );
 
 		const { getByLabelText } = render( <CurrentSurvey />, { registry } );
 
@@ -799,7 +799,7 @@ describe( 'CurrentSurvey', () => {
 	} );
 
 	it( "should send a 'survey_closed' event when dismissed", () => {
-		provideCurrentSurvey( registry, singleQuestionSurvey );
+		provideCurrentSurvey( registry );
 
 		const { getByLabelText } = render( <CurrentSurvey />, { registry } );
 
@@ -829,7 +829,7 @@ describe( 'CurrentSurvey', () => {
 	it( 'should render nothing if the survey is dismissed', () => {
 		jest.useFakeTimers();
 
-		provideCurrentSurvey( registry, singleQuestionSurvey );
+		provideCurrentSurvey( registry );
 
 		const { container, getByLabelText } = render( <CurrentSurvey />, {
 			registry,
@@ -845,7 +845,7 @@ describe( 'CurrentSurvey', () => {
 	} );
 
 	it( 'should render the completed survey component if all questions have been answered', () => {
-		provideCurrentSurvey( registry, singleQuestionSurvey );
+		provideCurrentSurvey( registry );
 
 		registry
 			.dispatch( CORE_FORMS )
@@ -868,7 +868,7 @@ describe( 'CurrentSurvey', () => {
 	} );
 
 	it( 'should trigger the first completion when no matching trigger_conditions are met', () => {
-		provideCurrentSurvey( registry, singleQuestionSurvey );
+		provideCurrentSurvey( registry );
 
 		registry
 			.dispatch( CORE_FORMS )
@@ -894,7 +894,7 @@ describe( 'CurrentSurvey', () => {
 	} );
 
 	it( "should send a 'completion_shown' event when the survey is completed and the completion component is shown for the first time", () => {
-		provideCurrentSurvey( registry, singleQuestionSurvey );
+		provideCurrentSurvey( registry );
 
 		registry
 			.dispatch( CORE_FORMS )
@@ -949,7 +949,7 @@ describe( 'CurrentSurvey', () => {
 	} );
 
 	it( "should send a 'follow_up_link_clicked' event, then a 'survey_closed' event when a follow-up link is clicked", () => {
-		provideCurrentSurvey( registry, singleQuestionSurvey );
+		provideCurrentSurvey( registry );
 
 		registry
 			.dispatch( CORE_FORMS )
