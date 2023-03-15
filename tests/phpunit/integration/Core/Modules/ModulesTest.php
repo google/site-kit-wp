@@ -25,8 +25,8 @@ use Google\Site_Kit\Modules\PageSpeed_Insights;
 use Google\Site_Kit\Modules\Search_Console;
 use Google\Site_Kit\Modules\Site_Verification;
 use Google\Site_Kit\Modules\Tag_Manager;
+use Google\Site_Kit\Tests\FakeHttp;
 use Google\Site_Kit\Tests\TestCase;
-use Google\Site_Kit\Tests\FakeHttpClient;
 
 /**
  * @group Modules
@@ -942,7 +942,9 @@ class ModulesTest extends TestCase {
 
 		// Connect the analytics module and give it an owner.
 		$analytics = $modules->get_module( 'analytics' );
-		$analytics->get_client()->setHttpClient( new FakeHttpClient() );
+
+		FakeHttp::fake_google_http_handler( $analytics->get_client() );
+
 		$analytics->get_settings()->merge(
 			array(
 				'accountID'             => '12345678',

@@ -520,17 +520,17 @@ final class Analytics_4 extends Module
 						array( 'status' => 400 )
 					);
 				}
-				if ( ! isset( $data['internalContainerID'] ) ) {
+				if ( ! isset( $data['containerID'] ) ) {
 					return new WP_Error(
 						'missing_required_param',
 						/* translators: %s: Missing parameter name */
-						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'internalContainerID' ),
+						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'containerID' ),
 						array( 'status' => 400 )
 					);
 				}
 
 				return $this->get_tagmanager_service()->accounts_containers_destinations->listAccountsContainersDestinations(
-					"accounts/{$data['accountID']}/containers/{$data['internalContainerID']}"
+					"accounts/{$data['accountID']}/containers/{$data['containerID']}"
 				);
 			case 'GET:google-tag-settings':
 				if ( ! isset( $data['measurementID'] ) ) {
@@ -977,7 +977,7 @@ final class Analytics_4 extends Module
 	/**
 	 * Gets the Google Analytics 4 tag ID.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.96.0
 	 *
 	 * @return string Google Analytics 4 tag ID.
 	 */
@@ -1056,13 +1056,15 @@ final class Analytics_4 extends Module
 			);
 
 			if ( ! empty( $dimensions ) ) {
-				try {
-					$this->validate_report_dimensions( $dimensions );
-				} catch ( Invalid_Report_Dimensions_Exception $exception ) {
-					return new WP_Error(
-						'invalid_analytics_4_report_dimensions',
-						$exception->getMessage()
-					);
+				if ( $this->is_shared_data_request( $data ) ) {
+					try {
+						$this->validate_shared_report_dimensions( $dimensions );
+					} catch ( Invalid_Report_Dimensions_Exception $exception ) {
+						return new WP_Error(
+							'invalid_analytics_4_report_dimensions',
+							$exception->getMessage()
+						);
+					}
 				}
 
 				$request_args['dimensions'] = $dimensions;
@@ -1164,13 +1166,15 @@ final class Analytics_4 extends Module
 			);
 
 			if ( ! empty( $metrics ) ) {
-				try {
-					$this->validate_report_metrics( $metrics );
-				} catch ( Invalid_Report_Metrics_Exception $exception ) {
-					return new WP_Error(
-						'invalid_analytics_4_report_metrics',
-						$exception->getMessage()
-					);
+				if ( $this->is_shared_data_request( $data ) ) {
+					try {
+						$this->validate_shared_report_metrics( $metrics );
+					} catch ( Invalid_Report_Metrics_Exception $exception ) {
+						return new WP_Error(
+							'invalid_analytics_4_report_metrics',
+							$exception->getMessage()
+						);
+					}
 				}
 
 				$request->setMetrics( $metrics );
@@ -1328,18 +1332,15 @@ final class Analytics_4 extends Module
 	}
 
 	/**
-	 * Validates the report metrics.
+	 * Validates the report metrics for a shared request.
 	 *
 	 * @since 1.93.0
+	 * @since n.e.x.t Renamed the method, and moved the check for being a shared request to the caller.
 	 *
 	 * @param Google_Service_AnalyticsData_Metric[] $metrics The metrics to validate.
 	 * @throws Invalid_Report_Metrics_Exception Thrown if the metrics are invalid.
 	 */
-	protected function validate_report_metrics( $metrics ) {
-		if ( false === $this->is_using_shared_credentials ) {
-			return;
-		}
-
+	protected function validate_shared_report_metrics( $metrics ) {
 		$valid_metrics = apply_filters(
 			'googlesitekit_shareable_analytics_4_metrics',
 			array(
@@ -1377,7 +1378,7 @@ final class Analytics_4 extends Module
 					'Unsupported metric requested: %s',
 					'google-site-kit'
 				),
-				$invalid_metrics
+				$invalid_metrics[0]
 			);
 
 			throw new Invalid_Report_Metrics_Exception( $message );
@@ -1385,18 +1386,15 @@ final class Analytics_4 extends Module
 	}
 
 	/**
-	 * Validates the report dimensions.
+	 * Validates the report dimensions for a shared request.
 	 *
 	 * @since 1.93.0
+	 * @since n.e.x.t Renamed the method, and moved the check for being a shared request to the caller.
 	 *
 	 * @param Google_Service_AnalyticsData_Dimension[] $dimensions The dimensions to validate.
 	 * @throws Invalid_Report_Dimensions_Exception Thrown if the dimensions are invalid.
 	 */
-	protected function validate_report_dimensions( $dimensions ) {
-		if ( false === $this->is_using_shared_credentials ) {
-			return;
-		}
-
+	protected function validate_shared_report_dimensions( $dimensions ) {
 		$valid_dimensions = apply_filters(
 			'googlesitekit_shareable_analytics_4_dimensions',
 			array(
@@ -1432,7 +1430,7 @@ final class Analytics_4 extends Module
 					'Unsupported dimension requested: %s',
 					'google-site-kit'
 				),
-				$invalid_dimensions
+				$invalid_dimensions[0]
 			);
 
 			throw new Invalid_Report_Dimensions_Exception( $message );

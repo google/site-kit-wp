@@ -39,7 +39,7 @@ import parseDimensionStringToDate from '../util/parseDimensionStringToDate';
  * @property {number}         change          - Monthly change for the metric.
  *
  * @since 1.45.0
- * @since n.e.x.t Extracted to its own file.
+ * @since 1.96.0 Extracted to its own file.
  *
  * @param {Object} report Analytics report data.
  * @return {Array.<OverallPageMetricsData>} Array of data for rendering the data blocks in the Overall Page Metrics widget.

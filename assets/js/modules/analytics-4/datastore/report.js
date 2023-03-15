@@ -204,7 +204,7 @@ const baseSelectors = {
 	/**
 	 * Gets a Page title to URL map for the given options.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.96.0
 	 *
 	 * @param {Object} state             Data store's state.
 	 * @param {Object} report            A report from the getReport selector containing pagePaths.
