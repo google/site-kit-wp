@@ -90,7 +90,7 @@ const fetchGetReportStore = createFetchStore( {
 		);
 		invariant(
 			isValidMetrics( metrics ),
-			'metrics for an Analytics 4 report must be either a string, an array of strings, an object, an array of objects, or a mix of strings and objects. Objects must have a "name" property.'
+			'metrics for an Analytics 4 report must be either a string, an array of strings, an object, an array of objects, or a mix of strings and objects. Objects must have a "name" property matching the expression ^[a-zA-Z0-9_]+$.'
 		);
 
 		if ( dimensions ) {

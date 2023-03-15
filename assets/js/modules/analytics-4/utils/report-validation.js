@@ -35,7 +35,7 @@ import { isValidStringsOrObjects } from '../../../util/report-validation';
  * A valid metric name is a string matching the regular expression /^[a-zA-Z0-9_]+$/.
  *
  * @since 1.94.0
- * @since n.e.x.t Added a regular expression to validate metric names, in keeping with the Google API.
+ * @since n.e.x.t Added a regular expression to validate metric names, in keeping with the GA4 API.
  *
  * @param {string|string[]|Object|Object[]} metrics The metrics to check.
  * @return {boolean} TRUE if metrics are valid, otherwise FALSE.
