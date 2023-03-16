@@ -1,7 +1,7 @@
 /**
  * Analytics GA4 Setup form.
  *
- * Site Kit by Google, Copyright 2023 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,32 +17,38 @@
  */
 
 /**
+ * External dependencies
+ */
+import { useMount } from 'react-use';
+
+/**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
+import { __, _x } from '@wordpress/i18n';
 import { Fragment, useEffect } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { MODULES_ANALYTICS, ACCOUNT_CREATE } from '../../datastore/constants';
+import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
+import {
+	MODULES_ANALYTICS,
+	PROPERTY_CREATE,
+	FORM_SETUP,
+	ACCOUNT_CREATE,
+} from '../../datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 import {
 	PropertySelect as GA4PropertySelect,
 	WebDataStreamSelect as GA4WebDataStreamSelect,
 } from '../../../analytics-4/components/common';
-import {
-	AccountSelect,
-	GA4PropertyNotice,
-	PropertySelect,
-	ProfileSelect,
-} from '../common';
+import { AccountSelect, GA4PropertyNotice } from '../common';
 import SetupUseSnippetSwitchUA from './SetupUseSnippetSwitch';
 import { SetupUseSnippetSwitch as SetupUseSnippetSwitchGA4 } from '../../../analytics-4/components/setup';
 const { useSelect, useDispatch } = Data;
 
-export default function SetupFormGA4() {
+export default function SetupFormGA4Legacy() {
 	const accounts =
 		useSelect( ( select ) => select( MODULES_ANALYTICS ).getAccounts() ) ||
 		[];
@@ -63,14 +69,8 @@ export default function SetupFormGA4() {
 	const accountID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getAccountID()
 	);
-	const properties = useSelect( ( select ) => {
-		if ( ! accountID ) {
-			return [];
-		}
-
-		return select( MODULES_ANALYTICS ).getProperties( accountID ) || [];
-	} );
-
+	const { selectProperty } = useDispatch( MODULES_ANALYTICS );
+	const { setValues } = useDispatch( CORE_FORMS );
 	const { setUseSnippet } = useDispatch( MODULES_ANALYTICS_4 );
 
 	const shouldShowAssociatedPropertyNotice =
@@ -79,6 +79,17 @@ export default function SetupFormGA4() {
 	const hasExistingGA4Tag = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).hasExistingTag()
 	);
+
+	useMount( () => {
+		selectProperty( PROPERTY_CREATE );
+		setValues( FORM_SETUP, {
+			profileName: _x(
+				'All Web Site Data',
+				'default Analytics view name',
+				'google-site-kit'
+			),
+		} );
+	} );
 
 	useEffect( () => {
 		if ( ga4HasExistingTag ) {
@@ -105,20 +116,14 @@ export default function SetupFormGA4() {
 
 			{ hasExistingGA4Tag && <SetupUseSnippetSwitchGA4 /> }
 
-			{ shouldShowAssociatedPropertyNotice && !! properties.length && (
+			{ shouldShowAssociatedPropertyNotice && (
 				<GA4PropertyNotice
 					notice={ __(
-						'You may also connect a Universal Analytics property that’s associated with this Google Analytics 4 property.',
+						'An associated Universal Analytics property will also be created.',
 						'google-site-kit'
 					) }
 				>
-					<Fragment>
-						<div className="googlesitekit-setup-module__inputs">
-							<PropertySelect />
-							<ProfileSelect />
-						</div>
-						<SetupUseSnippetSwitchUA />
-					</Fragment>
+					<SetupUseSnippetSwitchUA />
 				</GA4PropertyNotice>
 			) }
 		</Fragment>

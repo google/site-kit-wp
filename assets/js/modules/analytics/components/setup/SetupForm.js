@@ -35,6 +35,7 @@ import { Button, ProgressBar } from 'googlesitekit-components';
 import {
 	SETUP_FLOW_MODE_UA,
 	SETUP_FLOW_MODE_GA4,
+	SETUP_FLOW_MODE_GA4_LEGACY,
 	SETUP_FLOW_MODE_GA4_TRANSITIONAL,
 	MODULES_ANALYTICS,
 	FORM_SETUP,
@@ -45,6 +46,7 @@ import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants'
 import { isPermissionScopeError } from '../../../../util/errors';
 import SetupFormUA from './SetupFormUA';
 import SetupFormGA4 from './SetupFormGA4';
+import SetupFormGA4Legacy from './SetupFormGA4Legacy';
 import SetupFormGA4Transitional from './SetupFormGA4Transitional';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import { ExistingGTMPropertyNotice } from '../common';
@@ -121,6 +123,9 @@ export default function SetupForm( { finishSetup } ) {
 			/>
 			{ setupFlowMode === SETUP_FLOW_MODE_UA && <SetupFormUA /> }
 			{ setupFlowMode === SETUP_FLOW_MODE_GA4 && <SetupFormGA4 /> }
+			{ setupFlowMode === SETUP_FLOW_MODE_GA4_LEGACY && (
+				<SetupFormGA4Legacy />
+			) }
 			{ setupFlowMode === SETUP_FLOW_MODE_GA4_TRANSITIONAL && (
 				<SetupFormGA4Transitional />
 			) }
