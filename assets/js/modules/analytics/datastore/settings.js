@@ -90,7 +90,10 @@ export async function submitChanges( registry ) {
 	const { select, dispatch } = registry;
 
 	let propertyID = select( MODULES_ANALYTICS ).getPropertyID();
-	if ( propertyID === PROPERTY_CREATE ) {
+	if (
+		! isFeatureEnabled( 'ga4Reporting' ) &&
+		propertyID === PROPERTY_CREATE
+	) {
 		const accountID = select( MODULES_ANALYTICS ).getAccountID();
 		const { response: property, error } = await dispatch(
 			MODULES_ANALYTICS
@@ -109,7 +112,10 @@ export async function submitChanges( registry ) {
 	}
 
 	const profileID = select( MODULES_ANALYTICS ).getProfileID();
-	if ( profileID === PROFILE_CREATE ) {
+	if (
+		! isFeatureEnabled( 'ga4Reporting' ) &&
+		profileID === PROFILE_CREATE
+	) {
 		const profileName = select( CORE_FORMS ).getValue(
 			FORM_SETUP,
 			'profileName'
