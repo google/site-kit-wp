@@ -34,10 +34,9 @@ import SearchConsoleIcon from '../../../svg/graphics/search-console.svg';
 import { MODULES_SEARCH_CONSOLE } from './datastore/constants';
 import PopularKeywordsWidget from './components/widgets/PopularKeywordsWidget';
 import { isFeatureEnabled } from '../../features';
+import GA4DashboardWidgetSwitcher from '../analytics/components/dashboard/GA4DashboardWidgetSwitcher';
 
 export { registerStore } from './datastore';
-
-const ga4ReportingEnabled = isFeatureEnabled( 'ga4Reporting' );
 
 export const registerModule = ( modules ) => {
 	modules.registerModule( 'search-console', {
@@ -67,9 +66,12 @@ export const registerWidgets = ( widgets ) => {
 	widgets.registerWidget(
 		'searchFunnel',
 		{
-			Component: ga4ReportingEnabled
-				? SearchFunnelWidgetGA4
-				: SearchFunnelWidget,
+			Component: () => (
+				<GA4DashboardWidgetSwitcher
+					UA={ SearchFunnelWidget }
+					GA4={ SearchFunnelWidgetGA4 }
+				/>
+			),
 			width: [ widgets.WIDGET_WIDTHS.FULL ],
 			priority: 3,
 			wrapWidget: false,

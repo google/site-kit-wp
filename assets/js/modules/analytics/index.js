@@ -42,11 +42,9 @@ import {
 	ModulePopularPagesWidget,
 	ModulePopularPagesWidgetGA4,
 } from './components/module';
-import { isFeatureEnabled } from '../../features';
+import GA4DashboardWidgetSwitcher from './components/dashboard/GA4DashboardWidgetSwitcher';
 
 export { registerStore } from './datastore';
-
-const ga4ReportingEnabled = isFeatureEnabled( 'ga4Reporting' );
 
 export const registerModule = ( modules ) => {
 	modules.registerModule( 'analytics', {
@@ -67,9 +65,12 @@ export const registerWidgets = ( widgets ) => {
 	widgets.registerWidget(
 		'analyticsAllTraffic',
 		{
-			Component: ga4ReportingEnabled
-				? DashboardAllTrafficWidgetGA4
-				: DashboardAllTrafficWidget,
+			Component: () => (
+				<GA4DashboardWidgetSwitcher
+					UA={ DashboardAllTrafficWidget }
+					GA4={ DashboardAllTrafficWidgetGA4 }
+				/>
+			),
 			width: widgets.WIDGET_WIDTHS.FULL,
 			priority: 1,
 			wrapWidget: false,
@@ -84,9 +85,12 @@ export const registerWidgets = ( widgets ) => {
 	widgets.registerWidget(
 		'analyticsOverallPageMetrics',
 		{
-			Component: ga4ReportingEnabled
-				? DashboardOverallPageMetricsWidgetGA4
-				: DashboardOverallPageMetricsWidget,
+			Component: () => (
+				<GA4DashboardWidgetSwitcher
+					UA={ DashboardOverallPageMetricsWidget }
+					GA4={ DashboardOverallPageMetricsWidgetGA4 }
+				/>
+			),
 			width: widgets.WIDGET_WIDTHS.FULL,
 			priority: 3,
 			wrapWidget: false,
@@ -98,9 +102,12 @@ export const registerWidgets = ( widgets ) => {
 	widgets.registerWidget(
 		'analyticsModulePopularPages',
 		{
-			Component: ga4ReportingEnabled
-				? ModulePopularPagesWidgetGA4
-				: ModulePopularPagesWidget,
+			Component: () => (
+				<GA4DashboardWidgetSwitcher
+					UA={ ModulePopularPagesWidget }
+					GA4={ ModulePopularPagesWidgetGA4 }
+				/>
+			),
 			width: widgets.WIDGET_WIDTHS.FULL,
 			priority: 4,
 			wrapWidget: false,
