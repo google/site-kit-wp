@@ -38,6 +38,7 @@ import {
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import AdminBarWidgets from './AdminBarWidgets';
+import { MODULES_ANALYTICS } from '../../modules/analytics/datastore/constants';
 
 const Template = ( { setupRegistry = () => {}, ...args } ) => (
 	<WithRegistrySetup func={ setupRegistry }>
@@ -101,11 +102,19 @@ AnalyticsActiveWithGA4Enabled.args = {
 				active: true,
 				connected: true,
 			},
+			{
+				slug: 'analytics-4',
+				active: true,
+				connected: true,
+			},
 		] );
 		provideModuleRegistrations( registry );
 		provideUserAuthentication( registry );
 		setupSearchConsoleMockReports( registry );
 		setupAnalytics4MockReports( registry );
+		registry.dispatch( MODULES_ANALYTICS ).setSettings( {
+			dashboardView: 'google-analytics-4',
+		} );
 	},
 };
 AnalyticsActiveWithGA4Enabled.parameters = {
@@ -123,11 +132,19 @@ Analytics4WidgetsLoading.args = {
 				active: true,
 				connected: true,
 			},
+			{
+				slug: 'analytics-4',
+				active: true,
+				connected: true,
+			},
 		] );
 		provideModuleRegistrations( registry );
 		provideUserAuthentication( registry );
 		setupSearchConsoleMockReports( registry );
 		setupAnalytics4Loading( registry );
+		registry.dispatch( MODULES_ANALYTICS ).setSettings( {
+			dashboardView: 'google-analytics-4',
+		} );
 	},
 };
 Analytics4WidgetsLoading.parameters = {
