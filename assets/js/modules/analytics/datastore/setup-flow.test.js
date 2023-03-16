@@ -25,7 +25,7 @@ import { MODULES_ANALYTICS_4 } from '../../analytics-4/datastore/constants';
 import {
 	MODULES_ANALYTICS,
 	SETUP_FLOW_MODE_UA,
-	SETUP_FLOW_MODE_GA4,
+	SETUP_FLOW_MODE_GA4_LEGACY,
 	SETUP_FLOW_MODE_GA4_TRANSITIONAL,
 	FORM_SETUP,
 } from './constants';
@@ -262,7 +262,7 @@ describe( 'modules/analytics setup-flow', () => {
 
 				expect(
 					registry.select( MODULES_ANALYTICS ).getSetupFlowMode()
-				).toBe( SETUP_FLOW_MODE_GA4 );
+				).toBe( SETUP_FLOW_MODE_GA4_LEGACY );
 			} );
 
 			it( 'should return "ga4-transitional" if both GA4 and UA properties are found for an account', () => {
