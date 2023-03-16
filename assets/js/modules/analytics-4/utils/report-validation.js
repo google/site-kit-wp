@@ -32,7 +32,7 @@ import { isValidStringsOrObjects } from '../../../util/report-validation';
  * must have a valid "name" property in order to be considered as valid, and they
  * can optionally include an "expression" property.
  *
- * When a string is provided, it must be a single metric name, or a comma-separated list of metric names.
+ * When a single string is provided, it must be a metric name, or a comma-separated list of metric names.
  * A valid metric name is a string matching the regular expression /^[a-zA-Z0-9_]+$/.
  *
  * @since 1.94.0
@@ -50,16 +50,20 @@ export function isValidMetrics( metrics ) {
 		return metricNames.every( isValidName );
 	}
 
-	return isValidStringsOrObjects( metrics, ( metric ) => {
-		const validName =
-			metric.hasOwnProperty( 'name' ) && isValidName( metric.name );
+	return isValidStringsOrObjects(
+		metrics,
+		( metric ) => {
+			const validName =
+				metric.hasOwnProperty( 'name' ) && isValidName( metric.name );
 
-		// 'expression' is optional; if provided, it must be a string.
-		const validExpression =
-			! metric.hasOwnProperty( 'expression' ) ||
-			typeof metric.expression === 'string';
-		return validName && validExpression;
-	} );
+			// 'expression' is optional; if provided, it must be a string.
+			const validExpression =
+				! metric.hasOwnProperty( 'expression' ) ||
+				typeof metric.expression === 'string';
+			return validName && validExpression;
+		},
+		isValidName
+	);
 }
 
 /**

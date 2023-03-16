@@ -20,26 +20,37 @@
  * Validates data that can be either string or object of the certain type, or array of them.
  *
  * @since 1.13.0
+ * @since n.e.x.t Added verifyStringFunction parameter.
  *
- * @param {string|string[]|Object|Object[]} data           The data to check.
- * @param {Function}                        verifyFunction The callback to verify an object.
+ * @param {string|string[]|Object|Object[]} data                   The data to check.
+ * @param {Function}                        verifyObjectFunction   The callback to verify an object.
+ * @param {Function}                        [verifyStringFunction] The callback to verify a string (optional).
  * @return {boolean} TRUE if data is valid, otherwise FALSE.
  */
-export function isValidStringsOrObjects( data, verifyFunction ) {
+export function isValidStringsOrObjects(
+	data,
+	verifyObjectFunction,
+	verifyStringFunction = () => true
+) {
 	if ( typeof data === 'string' ) {
-		return true;
+		return verifyStringFunction( data );
 	}
 
-	if ( typeof data === 'object' && verifyFunction( data ) ) {
+	if ( typeof data === 'object' && verifyObjectFunction( data ) ) {
 		return true;
 	}
 
 	if ( Array.isArray( data ) ) {
-		return data.every(
-			( item ) =>
-				typeof item === 'string' ||
-				( typeof item === 'object' && verifyFunction( item ) )
-		);
+		return data.every( ( item ) => {
+			switch ( typeof item ) {
+				case 'string':
+					return verifyStringFunction( item );
+				case 'object':
+					return verifyObjectFunction( item );
+				default:
+					return false;
+			}
+		} );
 	}
 
 	// Arguably this should fail/throw, because none of our allowed types were encountered.

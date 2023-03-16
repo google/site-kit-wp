@@ -169,6 +169,7 @@ describe( 'Analytics 4 Reporting API validation', () => {
 			expect( isValidMetrics( 'test,' ) ).toBe( false );
 			expect( isValidMetrics( { name: '' } ) ).toBe( false );
 			expect( isValidMetrics( [ { name: '' } ] ) ).toBe( false );
+			expect( isValidMetrics( [ { name: 'test' }, '' ] ) ).toBe( false );
 			expect(
 				isValidMetrics( [ { name: '', expression: 'test' } ] )
 			).toBe( false );
@@ -189,6 +190,9 @@ describe( 'Analytics 4 Reporting API validation', () => {
 				expect( isValidMetrics( [ { name: invalidName } ] ) ).toBe(
 					false
 				);
+				expect(
+					isValidMetrics( [ { name: 'test' }, invalidName ] )
+				).toBe( false );
 				expect(
 					isValidMetrics( [
 						{ name: invalidName, expression: 'test' },
