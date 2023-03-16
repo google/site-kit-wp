@@ -649,6 +649,15 @@ final class Modules {
 			return false;
 		}
 
+		if (
+			Analytics::MODULE_SLUG === $slug &&
+			Feature_Flags::enabled( 'ga4Reporting' ) &&
+			! $module->is_connected() &&
+			$this->is_module_connected( Analytics_4::MODULE_SLUG )
+		) {
+			return true;
+		}
+
 		return (bool) $module->is_connected();
 	}
 
