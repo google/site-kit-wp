@@ -17,10 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-
-/**
  * WordPress dependencies
  */
 import { useCallback } from '@wordpress/element';
@@ -48,7 +44,7 @@ export default function SettingsKeyMetrics() {
 	const { setKeyMetricSetting, saveKeyMetricsSettings } =
 		useDispatch( CORE_USER );
 
-	const handleKeyMatricsToggle = useCallback( async () => {
+	const handleKeyMetricsToggle = useCallback( async () => {
 		if ( ! keyMetricsSettings ) {
 			return;
 		}
@@ -71,7 +67,7 @@ export default function SettingsKeyMetrics() {
 				'google-site-kit'
 			) }
 			checked={ ! keyMetricsSettings.isWidgetHidden }
-			onClick={ handleKeyMatricsToggle }
+			onClick={ handleKeyMetricsToggle }
 			hideLabel={ false }
 		/>
 	);
