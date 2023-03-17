@@ -243,7 +243,7 @@ final class Analytics_4 extends Module
 			'POST:create-webdatastream'  => array(
 				'service'                => 'analyticsadmin',
 				'scopes'                 => array( Analytics::EDIT_SCOPE ),
-				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create a new Analytics 4 Measurement ID for this site on your behalf.', 'google-site-kit' ),
+				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create a new Analytics 4 web data stream for this site on your behalf.', 'google-site-kit' ),
 			),
 			'GET:properties'             => array( 'service' => 'analyticsadmin' ),
 			'GET:property'               => array( 'service' => 'analyticsadmin' ),
@@ -520,17 +520,17 @@ final class Analytics_4 extends Module
 						array( 'status' => 400 )
 					);
 				}
-				if ( ! isset( $data['internalContainerID'] ) ) {
+				if ( ! isset( $data['containerID'] ) ) {
 					return new WP_Error(
 						'missing_required_param',
 						/* translators: %s: Missing parameter name */
-						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'internalContainerID' ),
+						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'containerID' ),
 						array( 'status' => 400 )
 					);
 				}
 
 				return $this->get_tagmanager_service()->accounts_containers_destinations->listAccountsContainersDestinations(
-					"accounts/{$data['accountID']}/containers/{$data['internalContainerID']}"
+					"accounts/{$data['accountID']}/containers/{$data['containerID']}"
 				);
 			case 'GET:google-tag-settings':
 				if ( ! isset( $data['measurementID'] ) ) {

@@ -99,7 +99,7 @@ WithoutUAAndGA4AccessGA4NotConnected.decorators = [
 					connected: false,
 				},
 			] );
-			registry.dispatch( MODULES_ANALYTICS_4 ).setPropertyID( null );
+			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
 		};
 
 		return (
@@ -132,7 +132,7 @@ WithoutUAAndGA4AccessFallbackOwnerName.decorators = [
 					connected: false,
 				},
 			] );
-			registry.dispatch( MODULES_ANALYTICS_4 ).setPropertyID( null );
+			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
 		};
 
 		return (
