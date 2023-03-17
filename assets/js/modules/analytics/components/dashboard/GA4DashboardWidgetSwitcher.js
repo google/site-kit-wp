@@ -28,12 +28,20 @@ import Data from 'googlesitekit-data';
 import { MODULES_ANALYTICS } from '../../datastore/constants';
 const { useSelect } = Data;
 
-export default function GA4DashboardWidgetSwitcher( { UA, GA4 } ) {
+export default function GA4DashboardWidgetSwitcher( {
+	UA,
+	GA4,
+	...widgetsProps
+} ) {
 	const isGA4DashboardView = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).isGA4DashboardView()
 	);
 
-	return isGA4DashboardView ? <GA4 /> : <UA />;
+	return isGA4DashboardView ? (
+		<GA4 { ...widgetsProps } />
+	) : (
+		<UA { ...widgetsProps } />
+	);
 }
 
 // eslint-disable-next-line sitekit/acronym-case
