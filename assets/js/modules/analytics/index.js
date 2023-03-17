@@ -65,10 +65,11 @@ export const registerWidgets = ( widgets ) => {
 	widgets.registerWidget(
 		'analyticsAllTraffic',
 		{
-			Component: () => (
+			Component: ( widgetsProps ) => (
 				<GA4DashboardWidgetSwitcher
 					UA={ DashboardAllTrafficWidget }
 					GA4={ DashboardAllTrafficWidgetGA4 }
+					{ ...widgetsProps }
 				/>
 			),
 			width: widgets.WIDGET_WIDTHS.FULL,
@@ -85,10 +86,11 @@ export const registerWidgets = ( widgets ) => {
 	widgets.registerWidget(
 		'analyticsOverallPageMetrics',
 		{
-			Component: () => (
+			Component: ( widgetsProps ) => (
 				<GA4DashboardWidgetSwitcher
 					UA={ DashboardOverallPageMetricsWidget }
 					GA4={ DashboardOverallPageMetricsWidgetGA4 }
+					{ ...widgetsProps }
 				/>
 			),
 			width: widgets.WIDGET_WIDTHS.FULL,
@@ -102,10 +104,11 @@ export const registerWidgets = ( widgets ) => {
 	widgets.registerWidget(
 		'analyticsModulePopularPages',
 		{
-			Component: () => (
+			Component: ( widgetsProps ) => (
 				<GA4DashboardWidgetSwitcher
 					UA={ ModulePopularPagesWidget }
 					GA4={ ModulePopularPagesWidgetGA4 }
+					{ ...widgetsProps }
 				/>
 			),
 			width: widgets.WIDGET_WIDTHS.FULL,
