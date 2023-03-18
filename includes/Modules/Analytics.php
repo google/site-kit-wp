@@ -266,6 +266,7 @@ final class Analytics extends Module
 	 * Handles the provisioning callback after the user completes the terms of service.
 	 *
 	 * @since 1.9.0
+	 * @since n.e.x.t Extended to handle callback from Admin API (no UA entities).
 	 */
 	protected function handle_provisioning_callback() {
 		if ( defined( 'WP_CLI' ) && WP_CLI ) {
@@ -282,19 +283,33 @@ final class Analytics extends Module
 			return;
 		}
 
-		// The handler should check the received Account Ticket id parameter against the id stored in the provisioning step.
-		$account_ticket_id        = htmlspecialchars( $input->filter( INPUT_GET, 'accountTicketId' ) );
-		$stored_account_ticket_id = get_transient( self::PROVISION_ACCOUNT_TICKET_ID . '::' . get_current_user_id() );
-		delete_transient( self::PROVISION_ACCOUNT_TICKET_ID . '::' . get_current_user_id() );
+		// First check that the accountTicketId matches one stored for the user.
+		// This is always provided, even in the event of an error.
+		$account_ticket_id = htmlspecialchars( $input->filter( INPUT_GET, 'accountTicketId' ) );
+		// The create-account-ticket request stores the created account ticket in a transient before
+		// sending the user off to the terms of service page.
+		$account_ticket_transient_key = self::PROVISION_ACCOUNT_TICKET_ID . '::' . get_current_user_id();
+		$account_ticket_params        = $this->transients->get( $account_ticket_transient_key );
 
-		if ( $stored_account_ticket_id !== $account_ticket_id ) {
+		// Backwards compat for previous storage type.
+		if ( is_string( $account_ticket_params ) ) {
+			$account_ticket_params = array( 'accountTicketId' => $account_ticket_params );
+		}
+
+		if (
+			empty( $account_ticket_params['accountTicketId'] )
+			|| $account_ticket_params['accountTicketId'] !== $account_ticket_id
+		) {
 			wp_safe_redirect(
 				$this->context->admin_url( 'module-analytics', array( 'error_code' => 'account_ticket_id_mismatch' ) )
 			);
 			exit;
 		}
 
-		// Check for a returned error.
+		// At this point, the accountTicketId is a match and params are loaded, so we can safely delete the transient.
+		$this->transients->delete( $account_ticket_transient_key );
+
+		// Next, check for a returned error.
 		$error = $input->filter( INPUT_GET, 'error' );
 		if ( ! empty( $error ) ) {
 			wp_safe_redirect(
@@ -303,44 +318,51 @@ final class Analytics extends Module
 			exit;
 		}
 
-		$account_id      = htmlspecialchars( $input->filter( INPUT_GET, 'accountId' ) );
-		$web_property_id = htmlspecialchars( $input->filter( INPUT_GET, 'webPropertyId' ) );
-		$profile_id      = htmlspecialchars( $input->filter( INPUT_GET, 'profileId' ) );
+		$account_id = htmlspecialchars( $input->filter( INPUT_GET, 'accountId' ) );
 
-		if ( empty( $account_id ) || empty( $web_property_id ) || empty( $profile_id ) ) {
+		if ( empty( $account_id ) ) {
 			wp_safe_redirect(
 				$this->context->admin_url( 'module-analytics', array( 'error_code' => 'callback_missing_parameter' ) )
 			);
 			exit;
 		}
 
-		// Retrieve the internal web property id.
-		try {
-			$web_property = $this->get_service( 'analytics' )->management_webproperties->get( $account_id, $web_property_id );
-		} catch ( Exception $e ) {
+		$new_settings    = array();
+		$web_property_id = htmlspecialchars( $input->filter( INPUT_GET, 'webPropertyId' ) );
+		$profile_id      = htmlspecialchars( $input->filter( INPUT_GET, 'profileId' ) );
+
+		if ( $web_property_id && $profile_id ) {
+			// UA-SPECIFIC Provisioning callback only.
+			// Retrieve the internal web property id.
+			try {
+				$web_property = $this->get_service( 'analytics' )->management_webproperties->get( $account_id, $web_property_id );
+			} catch ( Exception $e ) {
+				wp_safe_redirect(
+					$this->context->admin_url( 'module-analytics', array( 'error_code' => 'property_not_found' ) )
+				);
+				exit;
+			}
+
+			$new_settings['internalWebPropertyID'] = $web_property->getInternalWebPropertyId();
+			$new_settings['propertyID']            = $web_property_id;
+			$new_settings['profileID']             = $profile_id;
+		} elseif ( ! Feature_Flags::enabled( 'ga4Reporting' ) ) {
+			// If ga4Reporting is not enabled and UA property or profile IDs are missing, something went wrong.
 			wp_safe_redirect(
-				$this->context->admin_url( 'module-analytics', array( 'error_code' => 'property_not_found' ) )
+				$this->context->admin_url( 'module-analytics', array( 'error_code' => 'callback_missing_parameter' ) )
 			);
 			exit;
 		}
 
-		$internal_web_property_id = $web_property->getInternalWebPropertyId();
+		// At this point, account creation was successful.
+		$new_settings['accountID'] = $account_id;
 
-		$this->get_settings()->merge(
-			array(
-				'accountID'             => $account_id,
-				'propertyID'            => $web_property_id,
-				'profileID'             => $profile_id,
-				'internalWebPropertyID' => $internal_web_property_id,
-			)
-		);
+		$this->get_settings()->merge( $new_settings );
 
 		do_action(
 			'googlesitekit_analytics_handle_provisioning_callback',
 			$account_id,
-			$web_property_id,
-			$internal_web_property_id,
-			$profile_id
+			$account_ticket_params
 		);
 
 		wp_safe_redirect(
@@ -917,9 +939,14 @@ final class Analytics extends Module
 				return $response->getReports();
 			case 'POST:create-account-ticket':
 				// Cache the create ticket id long enough to verify it upon completion of the terms of service.
-				set_transient(
+				$this->transients->set(
 					self::PROVISION_ACCOUNT_TICKET_ID . '::' . get_current_user_id(),
-					$response->getId(),
+					array(
+						'accountTicketId' => $response->getId(),
+						'propertyName'    => $data['propertyName'],
+						'profileName'     => $data['profileName'],
+						'timezone'        => $data['timezone'],
+					),
 					15 * MINUTE_IN_SECONDS
 				);
 				return $response;
