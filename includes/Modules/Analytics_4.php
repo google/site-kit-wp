@@ -31,6 +31,7 @@ use Google\Site_Kit\Core\Modules\Module_With_Owner_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Service_Entity;
 use Google\Site_Kit\Core\REST_API\Exception\Invalid_Datapoint_Exception;
 use Google\Site_Kit\Core\REST_API\Data_Request;
+use Google\Site_Kit\Core\REST_API\Exception\Missing_Required_Param_Exception;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Environment_Type_Guard;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Verify_Guard;
 use Google\Site_Kit\Core\Util\BC_Functions;
@@ -42,6 +43,8 @@ use Google\Site_Kit\Core\Util\URL;
 use Google\Site_Kit\Core\Validation\Exception\Invalid_Report_Dimensions_Exception;
 use Google\Site_Kit\Core\Validation\Exception\Invalid_Report_Metrics_Exception;
 use Google\Site_Kit\Modules\Analytics\Settings as Analytics_Settings;
+use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\AccountProvisioningService;
+use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\Proxy_GoogleAnalyticsAdminProvisionAccountTicketRequest;
 use Google\Site_Kit\Modules\Analytics_4\Settings;
 use Google\Site_Kit\Modules\Analytics_4\Tag_Guard;
 use Google\Site_Kit\Modules\Analytics_4\Web_Tag;
@@ -60,6 +63,7 @@ use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\RunReportRequest a
 use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\StringFilter as Google_Service_AnalyticsData_StringFilter;
 use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\Metric as Google_Service_AnalyticsData_Metric;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin as Google_Service_GoogleAnalyticsAdmin;
+use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaAccount;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaDataStream;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaDataStreamWebStreamData;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaListDataStreamsResponse;
@@ -98,7 +102,12 @@ final class Analytics_4 extends Module
 	public function register() {
 		$this->register_scopes_hook();
 
-		add_action( 'googlesitekit_analytics_handle_provisioning_callback', $this->get_method_proxy( 'handle_provisioning_callback' ) );
+		add_action(
+			'googlesitekit_analytics_handle_provisioning_callback',
+			$this->get_method_proxy( 'handle_provisioning_callback' ),
+			10,
+			2
+		);
 		// Analytics 4 tag placement logic.
 		add_action( 'template_redirect', $this->get_method_proxy( 'register_tag' ) );
 		add_action( 'googlesitekit_analytics_tracking_opt_out', $this->get_method_proxy( 'analytics_tracking_opt_out' ) );
@@ -234,6 +243,11 @@ final class Analytics_4 extends Module
 			'GET:accounts'               => array( 'service' => 'analyticsadmin' ),
 			'GET:container-lookup'       => array( 'service' => 'tagmanager' ),
 			'GET:container-destinations' => array( 'service' => 'tagmanager' ),
+			'POST:create-account-ticket' => array(
+				'service'                => 'analyticsprovisioning',
+				'scopes'                 => array( Analytics::EDIT_SCOPE ),
+				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create a new Analytics account on your behalf.', 'google-site-kit' ),
+			),
 			'GET:google-tag-settings'    => array( 'service' => 'tagmanager' ),
 			'POST:create-property'       => array(
 				'service'                => 'analyticsadmin',
@@ -266,19 +280,32 @@ final class Analytics_4 extends Module
 	 * Creates a new property for provided account.
 	 *
 	 * @since 1.35.0
+	 * @since n.e.x.t Added $options for displayName and timezone.
 	 *
 	 * @param string $account_id Account ID.
+	 * @param array  $options {
+	 *     Property options.
+	 *     @type string $displayName Display name.
+	 *     @type string $timezone    Timezone.
+	 * }
 	 * @return Google_Service_GoogleAnalyticsAdmin_GoogleAnalyticsAdminV1betaProperty A new property.
 	 */
-	private function create_property( $account_id ) {
-		$timezone = get_option( 'timezone_string' );
-		if ( empty( $timezone ) ) {
-			$timezone = 'UTC';
+	private function create_property( $account_id, $options = array() ) {
+		if ( ! empty( $options['displayName'] ) ) {
+			$display_name = sanitize_text_field( $options['displayName'] );
+		} else {
+			$display_name = URL::parse( $this->context->get_reference_site_url(), PHP_URL_HOST );
+		}
+
+		if ( ! empty( $options['timezone'] ) ) {
+			$timezone = $options['timezone'];
+		} else {
+			$timezone = get_option( 'timezone_string' ) ?: 'UTC';
 		}
 
 		$property = new Google_Service_GoogleAnalyticsAdmin_GoogleAnalyticsAdminV1betaProperty();
 		$property->setParent( self::normalize_account_id( $account_id ) );
-		$property->setDisplayName( URL::parse( $this->context->get_reference_site_url(), PHP_URL_HOST ) );
+		$property->setDisplayName( $display_name );
 		$property->setTimeZone( $timezone );
 
 		return $this->get_service( 'analyticsadmin' )->properties->create( $property );
@@ -290,15 +317,26 @@ final class Analytics_4 extends Module
 	 * @since 1.35.0
 	 *
 	 * @param string $property_id Property ID.
+	 * @param array  $options {
+	 *     Property options.
+	 *     @type string $displayName Display name.
+	 * }
 	 * @return GoogleAnalyticsAdminV1betaDataStream A new web data stream.
 	 */
-	private function create_webdatastream( $property_id ) {
+	private function create_webdatastream( $property_id, $options = array() ) {
 		$site_url = $this->context->get_reference_site_url();
-		$data     = new GoogleAnalyticsAdminV1betaDataStreamWebStreamData();
+
+		if ( ! empty( $options['displayName'] ) ) {
+			$display_name = sanitize_text_field( $options['displayName'] );
+		} else {
+			$display_name = URL::parse( $site_url, PHP_URL_HOST );
+		}
+
+		$data = new GoogleAnalyticsAdminV1betaDataStreamWebStreamData();
 		$data->setDefaultUri( $site_url );
 
 		$datastream = new GoogleAnalyticsAdminV1betaDataStream();
-		$datastream->setDisplayName( URL::parse( $site_url, PHP_URL_HOST ) );
+		$datastream->setDisplayName( $display_name );
 		$datastream->setType( 'WEB_DATA_STREAM' );
 		$datastream->setWebStreamData( $data );
 
@@ -330,53 +368,80 @@ final class Analytics_4 extends Module
 	 * Provisions new GA4 property and web data stream for provided account.
 	 *
 	 * @since 1.35.0
+	 * @since n.e.x.t Added $account_ticket_params.
 	 *
-	 * @param string $account_id Account ID.
+	 * @param string $account_id     Account ID.
+	 * @param array  $account_ticket_params {
+	 *      Account ticket parameters.
+	 *
+	 *     @type string $accountTicketId Account ticket ID. UA / GA4
+	 *     @type string $propertyName    Property display name. UA / GA4
+	 *     @type string $timezone        Timezone. UA / GA4.
+	 *     @type string $profileName     Property display name. UA only.
+	 *     @type string $dataStreamName  Data stream display name. GA4 only.
+	 * }
 	 */
-	private function handle_provisioning_callback( $account_id ) {
-		// TODO: remove this try/catch once GA4 API stabilizes.
-		try {
-			// Reset the current GA4 settings.
-			$this->get_settings()->merge(
-				array(
-					'propertyID'      => '',
-					'webDataStreamID' => '',
-					'measurementID'   => '',
-				)
-			);
+	private function handle_provisioning_callback( $account_id, $account_ticket_params ) {
+		$account_ticket_params = array_merge(
+			array(
+				'accountTicketId' => null,
+				'propertyName'    => null,
+				'timezone'        => null,
+				'profileName'     => null,
+				'dataStreamName'  => null,
+			),
+			$account_ticket_params
+		);
+		// Reset the current GA4 settings.
+		$this->get_settings()->merge(
+			array(
+				'propertyID'      => '',
+				'webDataStreamID' => '',
+				'measurementID'   => '',
+			)
+		);
 
-			$property = $this->create_property( $account_id );
-			$property = self::filter_property_with_ids( $property );
+		$property = $this->create_property(
+			$account_id,
+			array(
+				'displayName' => $account_ticket_params['propertyName'],
+				'timezone'    => $account_ticket_params['timezone'],
+			)
+		);
+		$property = self::filter_property_with_ids( $property );
 
-			if ( empty( $property->_id ) ) {
-				return;
-			}
+		if ( empty( $property->_id ) ) {
+			return;
+		}
 
-			$this->get_settings()->merge( array( 'propertyID' => $property->_id ) );
+		$this->get_settings()->merge( array( 'propertyID' => $property->_id ) );
 
-			$web_datastream = $this->create_webdatastream( $property->_id );
-			$web_datastream = self::filter_webdatastream_with_ids( $web_datastream );
+		$data_stream_name = isset( $account_ticket_params['dataStreamName'] ) ? $account_ticket_params['dataStreamName'] : null;
+		$web_datastream   = $this->create_webdatastream(
+			$property->_id,
+			array(
+				'displayName' => $data_stream_name,
+			)
+		);
+		$web_datastream   = self::filter_webdatastream_with_ids( $web_datastream );
 
-			if ( empty( $web_datastream->_id ) ) {
-				return;
-			}
+		if ( empty( $web_datastream->_id ) ) {
+			return;
+		}
 
-			$measurement_id = $web_datastream->webStreamData->measurementId; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+		$measurement_id = $web_datastream->webStreamData->measurementId; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 
-			$this->get_settings()->merge(
-				array(
-					'webDataStreamID' => $web_datastream->_id,
-					'measurementID'   => $measurement_id,
-				)
-			);
+		$this->get_settings()->merge(
+			array(
+				'webDataStreamID' => $web_datastream->_id,
+				'measurementID'   => $measurement_id,
+			)
+		);
 
-			if ( Feature_Flags::enabled( 'gteSupport' ) ) {
-				$container           = $this->get_tagmanager_service()->accounts_containers->lookup( array( 'destinationId' => $measurement_id ) );
-				$google_tag_settings = $this->get_google_tag_settings_for_measurement_id( $container, $measurement_id );
-				$this->get_settings()->merge( $google_tag_settings );
-			}
-		} catch ( Exception $e ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
-			// Suppress this exception because it might be caused by unstable GA4 API.
+		if ( Feature_Flags::enabled( 'gteSupport' ) ) {
+			$container           = $this->get_tagmanager_service()->accounts_containers->lookup( array( 'destinationId' => $measurement_id ) );
+			$google_tag_settings = $this->get_google_tag_settings_for_measurement_id( $container, $measurement_id );
+			$this->get_settings()->merge( $google_tag_settings );
 		}
 	}
 
@@ -389,6 +454,8 @@ final class Analytics_4 extends Module
 	 * @return RequestInterface|callable|WP_Error Request object or callable on success, or WP_Error on failure.
 	 *
 	 * @throws Invalid_Datapoint_Exception Thrown if the datapoint does not exist.
+	 * @throws Missing_Required_Param_Exception Thrown if a required parameter is missing or empty.
+	 * phpcs:ignore Squiz.Commenting.FunctionCommentThrowTag.WrongNumber
 	 */
 	protected function create_data_request( Data_Request $data ) {
 		switch ( "{$data->method}:{$data->datapoint}" ) {
@@ -396,6 +463,33 @@ final class Analytics_4 extends Module
 				return $this->get_service( 'analyticsadmin' )->accounts->listAccounts();
 			case 'GET:account-summaries':
 				return $this->get_service( 'analyticsadmin' )->accountSummaries->listAccountSummaries( array( 'pageSize' => 200 ) );
+			case 'POST:create-account-ticket':
+				if ( empty( $data['displayName'] ) ) {
+					throw new Missing_Required_Param_Exception( 'displayName' );
+				}
+				if ( empty( $data['regionCode'] ) ) {
+					throw new Missing_Required_Param_Exception( 'regionCode' );
+				}
+				if ( empty( $data['propertyName'] ) ) {
+					throw new Missing_Required_Param_Exception( 'propertyName' );
+				}
+				if ( empty( $data['dataStreamName'] ) ) {
+					throw new Missing_Required_Param_Exception( 'dataStreamName' );
+				}
+
+				$account = new GoogleAnalyticsAdminV1betaAccount();
+				$account->setDisplayName( $data['displayName'] );
+				$account->setRegionCode( $data['regionCode'] );
+
+				$credentials            = $this->authentication->credentials()->get();
+				$account_ticket_request = new Proxy_GoogleAnalyticsAdminProvisionAccountTicketRequest();
+				$account_ticket_request->setSiteId( $credentials['oauth2_client_id'] );
+				$account_ticket_request->setSiteSecret( $credentials['oauth2_client_secret'] );
+				$account_ticket_request->setRedirectUri( $this->get_provisioning_redirect_uri() );
+				$account_ticket_request->setAccount( $account );
+
+				return $this->get_service( 'analyticsprovisioning' )
+					->accounts->provisionAccountTicket( $account_ticket_request );
 			case 'POST:create-property':
 				if ( ! isset( $data['accountID'] ) ) {
 					return new WP_Error(
@@ -593,6 +687,20 @@ final class Analytics_4 extends Module
 					},
 					$response->getAccountSummaries()
 				);
+			case 'POST:create-account-ticket':
+				// Cache the create ticket id long enough to verify it upon completion of the terms of service.
+				set_transient(
+					Analytics::PROVISION_ACCOUNT_TICKET_ID . '::' . get_current_user_id(),
+					array(
+						'accountTicketId' => $response->getAccountTicketId(),
+						// Required in create_data_request.
+						'propertyName'    => $data['propertyName'],
+						'dataStreamName'  => $data['dataStreamName'],
+					),
+					15 * MINUTE_IN_SECONDS
+				);
+
+				return $response;
 			case 'POST:create-property':
 				return self::filter_property_with_ids( $response );
 			case 'POST:create-webdatastream':
@@ -677,10 +785,13 @@ final class Analytics_4 extends Module
 	 *               instance of Google_Service.
 	 */
 	protected function setup_services( Google_Site_Kit_Client $client ) {
+		$google_proxy = $this->authentication->get_google_proxy();
+
 		return array(
-			'analyticsadmin' => new Google_Service_GoogleAnalyticsAdmin( $client ),
-			'analyticsdata'  => new Google_Service_AnalyticsData( $client ),
-			'tagmanager'     => new Google_Service_TagManager( $client ),
+			'analyticsadmin'        => new Google_Service_GoogleAnalyticsAdmin( $client ),
+			'analyticsdata'         => new Google_Service_AnalyticsData( $client ),
+			'analyticsprovisioning' => new AccountProvisioningService( $client, $google_proxy->url() ),
+			'tagmanager'            => new Google_Service_TagManager( $client ),
 		);
 	}
 
@@ -723,6 +834,18 @@ final class Analytics_4 extends Module
 				)
 			),
 		);
+	}
+
+	/**
+	 * Gets the provisioning redirect URI that listens for the Terms of Service redirect.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string Provisioning redirect URI.
+	 */
+	private function get_provisioning_redirect_uri() {
+		return $this->authentication->get_google_proxy()
+			->get_site_fields()['analytics_redirect_uri'];
 	}
 
 	/**

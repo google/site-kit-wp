@@ -184,7 +184,7 @@ class Analytics_4Test extends TestCase {
 
 		$this->analytics->register();
 
-		do_action( 'googlesitekit_analytics_handle_provisioning_callback', $account_id );
+		do_action( 'googlesitekit_analytics_handle_provisioning_callback', $account_id, array() );
 
 		$this->assertEqualSetsWithIndex(
 			array(
@@ -296,7 +296,7 @@ class Analytics_4Test extends TestCase {
 			$options->get( Settings::OPTION )
 		);
 
-		do_action( 'googlesitekit_analytics_handle_provisioning_callback', $account_id );
+		do_action( 'googlesitekit_analytics_handle_provisioning_callback', $account_id, array() );
 
 		$this->assertEqualSetsWithIndex(
 			array(
@@ -400,6 +400,7 @@ class Analytics_4Test extends TestCase {
 				'report',
 				'webdatastreams',
 				'webdatastreams-batch',
+				'create-account-ticket',
 			),
 			$this->analytics->get_datapoints()
 		);
