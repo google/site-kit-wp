@@ -365,7 +365,7 @@ export const shouldPromptGA4DashboardView = createRegistrySelector(
 		const createTime = new Date( property.createTime ).getTime();
 
 		// Don't prompt if the GA4 property was created less than 3 days ago.
-		if ( createTime < Date.now() - DAY_IN_SECONDS * 3 * 1000 ) {
+		if ( createTime > Date.now() - DAY_IN_SECONDS * 3 * 1000 ) {
 			return false;
 		}
 
