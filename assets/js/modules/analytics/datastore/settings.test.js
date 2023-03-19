@@ -33,6 +33,7 @@ import * as fixtures from './__fixtures__';
 import {
 	createTestRegistry,
 	freezeFetch,
+	muteFetch,
 	provideModules,
 	subscribeUntil,
 	unsubscribeFromAll,
@@ -41,7 +42,7 @@ import {
 import { getItem, setItem } from '../../../googlesitekit/api/cache';
 import { createCacheKey } from '../../../googlesitekit/api';
 import { INVARIANT_INVALID_WEBDATASTREAM_ID } from '../../analytics-4/datastore/settings';
-import { defaultSettings as ga4DefaultSettings } from '../../analytics-4/datastore/__fixtures__';
+import * as ga4fixtures from '../../analytics-4/datastore/__fixtures__';
 import {
 	INVARIANT_INVALID_ACCOUNT_ID,
 	INVARIANT_INVALID_PROFILE_NAME,
@@ -52,6 +53,7 @@ import {
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { MODULES_TAGMANAGER } from '../../tagmanager/datastore/constants';
 import { enabledFeatures } from '../../../features';
+import { DAY_IN_SECONDS } from '../../../util';
 
 describe( 'modules/analytics settings', () => {
 	let registry;
@@ -108,7 +110,7 @@ describe( 'modules/analytics settings', () => {
 
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetSettings( { ...ga4DefaultSettings } );
+			.receiveGetSettings( { ...ga4fixtures.defaultSettings } );
 	} );
 
 	afterAll( () => {
@@ -444,7 +446,7 @@ describe( 'modules/analytics settings', () => {
 
 				it( 'should save analytics-4 settings as well', async () => {
 					const ga4Settings = {
-						...ga4DefaultSettings,
+						...ga4fixtures.defaultSettings,
 						propertyID: '1000',
 						webDataStreamID: '2000',
 					};
@@ -497,7 +499,7 @@ describe( 'modules/analytics settings', () => {
 
 				it( 'should ignore analytics-4 errors if it fails', async () => {
 					const ga4Settings = {
-						...ga4DefaultSettings,
+						...ga4fixtures.defaultSettings,
 						propertyID: '1000',
 						webDataStreamID: '2000',
 					};
@@ -1038,6 +1040,270 @@ describe( 'modules/analytics settings', () => {
 
 				expect(
 					registry.select( MODULES_ANALYTICS ).isGA4DashboardView()
+				).toBe( true );
+			} );
+		} );
+
+		describe( 'shouldPromptGA4DashboardView', () => {
+			it( 'should return false when the `ga4Reporting` feature flag is not enabled', () => {
+				// Delete the `ga4Reporting` feature flag if it exists.
+				enabledFeatures.delete( 'ga4Reporting' );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS )
+						.shouldPromptGA4DashboardView()
+				).toBe( false );
+			} );
+
+			it( 'should return false when the analytics-4 module is not active', () => {
+				enabledFeatures.add( 'ga4Reporting' );
+				provideModules( registry, [
+					{
+						slug: 'analytics-4',
+						active: false,
+						connected: false,
+					},
+				] );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS )
+						.shouldPromptGA4DashboardView()
+				).toBe( false );
+			} );
+
+			it( 'should return false when the analytics-4 module is not connected', () => {
+				enabledFeatures.add( 'ga4Reporting' );
+				provideModules( registry, [
+					{
+						slug: 'analytics-4',
+						active: true,
+						connected: false,
+					},
+				] );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS )
+						.shouldPromptGA4DashboardView()
+				).toBe( false );
+			} );
+
+			it( 'should return undefined when `isGA4DashboardView` is not loaded', async () => {
+				freezeFetch(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics/data/settings'
+					)
+				);
+				enabledFeatures.add( 'ga4Reporting' );
+				provideModules( registry, [
+					{
+						slug: 'analytics-4',
+						active: true,
+						connected: true,
+					},
+				] );
+
+				expect(
+					registry.select( MODULES_ANALYTICS ).isGA4DashboardView()
+				).toBeUndefined();
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS )
+						.shouldPromptGA4DashboardView()
+				).toBeUndefined();
+
+				// Wait for resolvers to run.
+				await waitForDefaultTimeouts();
+			} );
+
+			it( 'should return false when `isGA4DashboardView` is true', () => {
+				enabledFeatures.add( 'ga4Reporting' );
+				provideModules( registry, [
+					{
+						slug: 'analytics-4',
+						active: true,
+						connected: true,
+					},
+				] );
+				registry.dispatch( MODULES_ANALYTICS ).setSettings( {
+					dashboardView: 'google-analytics-4',
+				} );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS )
+						.shouldPromptGA4DashboardView()
+				).toBe( false );
+			} );
+
+			it( 'should return false when analytics-4 has zero data.', async () => {
+				fetchMock.getOnce(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics-4/data/report'
+					),
+					{ body: { totals: [ {} ] } }
+				);
+
+				enabledFeatures.add( 'ga4Reporting' );
+				provideModules( registry, [
+					{
+						slug: 'analytics-4',
+						active: true,
+						connected: true,
+					},
+				] );
+				registry.dispatch( MODULES_ANALYTICS ).setSettings( {
+					dashboardView: 'universal-analytics',
+				} );
+
+				const { hasZeroData } = registry.select( MODULES_ANALYTICS_4 );
+
+				expect( hasZeroData() ).toBeUndefined();
+
+				await subscribeUntil(
+					registry,
+					() => hasZeroData() !== undefined
+				);
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS )
+						.shouldPromptGA4DashboardView()
+				).toBe( false );
+			} );
+
+			it( 'should return false when analytics-4 property is less than 3 days old.', async () => {
+				muteFetch(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics-4/data/data-available'
+					)
+				);
+
+				fetchMock.getOnce(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics-4/data/report'
+					),
+					{ body: ga4fixtures.report }
+				);
+
+				enabledFeatures.add( 'ga4Reporting' );
+				provideModules( registry, [
+					{
+						slug: 'analytics-4',
+						active: true,
+						connected: true,
+					},
+				] );
+
+				// Create a timestamp that is less than three days ago.
+				const createTime = new Date(
+					Date.now() - DAY_IN_SECONDS * 2 * 1000
+				).toISOString();
+
+				const property = {
+					...ga4fixtures.properties[ 0 ],
+					createTime,
+				};
+				const propertyID = property._id;
+
+				registry.dispatch( MODULES_ANALYTICS ).setSettings( {
+					dashboardView: 'universal-analytics',
+				} );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetSettings( {} );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetProperty( property, { propertyID } );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setPropertyID( propertyID );
+
+				const { hasZeroData } = registry.select( MODULES_ANALYTICS_4 );
+
+				expect( hasZeroData() ).toBeUndefined();
+
+				await subscribeUntil(
+					registry,
+					() => hasZeroData() !== undefined
+				);
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS )
+						.shouldPromptGA4DashboardView()
+				).toBe( false );
+			} );
+
+			it( 'should return true when analytics-4 property is 3 days old.', async () => {
+				muteFetch(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics-4/data/data-available'
+					)
+				);
+
+				fetchMock.getOnce(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics-4/data/report'
+					),
+					{ body: ga4fixtures.report }
+				);
+
+				enabledFeatures.add( 'ga4Reporting' );
+				provideModules( registry, [
+					{
+						slug: 'analytics-4',
+						active: true,
+						connected: true,
+					},
+				] );
+
+				// Create a timestamp that is less than three days ago.
+				const createTime = new Date(
+					Date.now() - DAY_IN_SECONDS * 3 * 1000
+				).toISOString();
+
+				const property = {
+					...ga4fixtures.properties[ 0 ],
+					createTime,
+				};
+				const propertyID = property._id;
+
+				registry.dispatch( MODULES_ANALYTICS ).setSettings( {
+					dashboardView: 'universal-analytics',
+				} );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetSettings( {} );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetProperty( property, { propertyID } );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setPropertyID( propertyID );
+
+				const { hasZeroData } = registry.select( MODULES_ANALYTICS_4 );
+
+				expect( hasZeroData() ).toBeUndefined();
+
+				await subscribeUntil(
+					registry,
+					() => hasZeroData() !== undefined
+				);
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS )
+						.shouldPromptGA4DashboardView()
 				).toBe( true );
 			} );
 		} );
