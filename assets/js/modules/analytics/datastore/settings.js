@@ -338,17 +338,6 @@ export const shouldPromptGA4DashboardView = createRegistrySelector(
 			return false;
 		}
 
-		const hasZeroDataGA4 = select( MODULES_ANALYTICS_4 ).hasZeroData();
-
-		if ( hasZeroDataGA4 === undefined ) {
-			return undefined;
-		}
-
-		// Don't prompt if the user has no GA4 data.
-		if ( hasZeroDataGA4 ) {
-			return false;
-		}
-
 		const propertyID = select( MODULES_ANALYTICS_4 ).getPropertyID();
 
 		if ( propertyID === undefined ) {
