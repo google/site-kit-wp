@@ -56,6 +56,7 @@ import { isPermissionScopeError } from '../../../util/errors';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { MODULES_TAGMANAGER } from '../../tagmanager/datastore/constants';
 import { isFeatureEnabled } from '../../../features';
+import { DAY_IN_SECONDS } from '../../../util';
 
 const { createRegistrySelector } = Data;
 
@@ -299,3 +300,75 @@ export const isGA4DashboardView = createRegistrySelector( ( select ) => () => {
 
 	return ga4Settings.dashboardView === 'google-analytics-4';
 } );
+
+/**
+ * Determines whether the user should be prompted to switch to GA4 Dashboard View.
+ *
+ * @since n.e.x.t
+ *
+ * @return {boolean} True if the user should be prompted to switch to GA4 Dashboard, false otherwise, or undefined if not loaded.
+ */
+export const shouldPromptGA4DashboardView = createRegistrySelector(
+	( select ) => () => {
+		const isGA4Enabled = isFeatureEnabled( 'ga4Reporting' );
+		if ( ! isGA4Enabled ) {
+			return false;
+		}
+
+		const ga4ModuleConnected =
+			select( CORE_MODULES ).isModuleConnected( 'analytics-4' );
+
+		if ( ga4ModuleConnected === undefined ) {
+			return undefined;
+		}
+
+		if ( ! ga4ModuleConnected ) {
+			return false;
+		}
+
+		const ga4DashboardView =
+			select( MODULES_ANALYTICS ).isGA4DashboardView();
+
+		if ( ga4DashboardView === undefined ) {
+			return undefined;
+		}
+
+		// Don't prompt if the user is already on the GA4 Dashboard.
+		if ( ga4DashboardView ) {
+			return false;
+		}
+
+		const hasZeroDataGA4 = select( MODULES_ANALYTICS_4 ).hasZeroData();
+
+		if ( hasZeroDataGA4 === undefined ) {
+			return undefined;
+		}
+
+		// Don't prompt if the user has no GA4 data.
+		if ( hasZeroDataGA4 ) {
+			return false;
+		}
+
+		const propertyID = select( MODULES_ANALYTICS_4 ).getPropertyID();
+
+		if ( propertyID === undefined ) {
+			return undefined;
+		}
+
+		const property =
+			select( MODULES_ANALYTICS_4 ).getProperty( propertyID );
+
+		if ( property === undefined ) {
+			return undefined;
+		}
+
+		const createTime = new Date( property.createTime ).getTime();
+
+		// Don't prompt if the GA4 property was created less than 3 days ago.
+		if ( createTime < Date.now() - DAY_IN_SECONDS * 3 * 1000 ) {
+			return false;
+		}
+
+		return true;
+	}
+);
