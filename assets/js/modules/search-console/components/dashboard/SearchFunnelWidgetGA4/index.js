@@ -39,6 +39,7 @@ import {
 import { DATE_RANGE_OFFSET as DATE_RANGE_OFFSET_ANALYTICS } from '../../../../analytics/datastore/constants';
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
+import { numFmt } from '../../../../../util';
 import PreviewBlock from '../../../../../components/PreviewBlock';
 import Header from '../SearchFunnelWidget/Header';
 import Footer from '../SearchFunnelWidget/Footer';
@@ -163,7 +164,7 @@ const SearchFunnelWidgetGA4 = ( { Widget, WidgetReportError } ) => {
 				name: 'conversions',
 			},
 			{
-				name: 'engagedSessions',
+				name: 'engagementRate',
 			},
 		],
 		dimensionFilters: {
@@ -463,11 +464,16 @@ const SearchFunnelWidgetGA4 = ( { Widget, WidgetReportError } ) => {
 						metrics={ SearchFunnelWidgetGA4.metrics }
 						dataLabels={ [
 							__( 'Conversions', 'google-site-kit' ),
-							__( 'Engagement Rate', 'google-site-kit' ),
+							__( 'Engagement Rate %', 'google-site-kit' ),
 						] }
 						dataFormats={ [
 							( x ) => parseFloat( x ).toLocaleString(),
-							( x ) => parseFloat( x ).toLocaleString(),
+							( x ) =>
+								numFmt( x, {
+									style: 'percent',
+									signDisplay: 'never',
+									maximumFractionDigits: 2,
+								} ),
 						] }
 						statsColor={
 							SearchFunnelWidgetGA4.metrics[ selectedStats ].color
