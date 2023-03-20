@@ -479,6 +479,9 @@ final class Analytics_4 extends Module
 				if ( empty( $data['dataStreamName'] ) ) {
 					throw new Missing_Required_Param_Exception( 'dataStreamName' );
 				}
+				if ( empty( $data['timezone'] ) ) {
+					throw new Missing_Required_Param_Exception( 'timezone' );
+				}
 
 				$account = new GoogleAnalyticsAdminV1betaAccount();
 				$account->setDisplayName( $data['displayName'] );
@@ -708,6 +711,7 @@ final class Analytics_4 extends Module
 						// Required in create_data_request.
 						'propertyName'    => $data['propertyName'],
 						'dataStreamName'  => $data['dataStreamName'],
+						'timezone'        => $data['timezone'],
 					),
 					15 * MINUTE_IN_SECONDS
 				);
