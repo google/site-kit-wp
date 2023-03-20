@@ -373,34 +373,34 @@ class Analytics_4Test extends TestCase {
 
 		$this->assertWPError( $response );
 		$this->assertEquals( 'missing_required_param', $response->get_error_code() );
-		$this->assertRegExp( '#\b(displayName|regionCode|propertyName|dataStreamName|timezone)\b#', $response->get_error_message() );
+		$this->assertMatchesRegularExpression( '#\b(displayName|regionCode|propertyName|dataStreamName|timezone)\b#', $response->get_error_message() );
 
 		$data['displayName'] = $account_display_name;
 		$response            = $this->analytics->set_data( 'create-account-ticket', $data );
 
 		$this->assertWPError( $response );
 		$this->assertEquals( 'missing_required_param', $response->get_error_code() );
-		$this->assertRegExp( '#\b(displayName|regionCode|propertyName|dataStreamName|timezone)\b#', $response->get_error_message() );
+		$this->assertMatchesRegularExpression( '#\b(displayName|regionCode|propertyName|dataStreamName|timezone)\b#', $response->get_error_message() );
 
 		$data['regionCode'] = $region_code;
 		$response           = $this->analytics->set_data( 'create-account-ticket', $data );
 
 		$this->assertWPError( $response );
 		$this->assertEquals( 'missing_required_param', $response->get_error_code() );
-		$this->assertRegExp( '#\b(displayName|regionCode|propertyName|dataStreamName|timezone)\b#', $response->get_error_message() );
+		$this->assertMatchesRegularExpression( '#\b(displayName|regionCode|propertyName|dataStreamName|timezone)\b#', $response->get_error_message() );
 
 		$data['propertyName'] = $property_display_name;
 		$response             = $this->analytics->set_data( 'create-account-ticket', $data );
 
 		$this->assertWPError( $response );
 		$this->assertEquals( 'missing_required_param', $response->get_error_code() );
-		$this->assertRegExp( '#\b(displayName|regionCode|propertyName|dataStreamName|timezone)\b#', $response->get_error_message() );
+		$this->assertMatchesRegularExpression( '#\b(displayName|regionCode|propertyName|dataStreamName|timezone)\b#', $response->get_error_message() );
 
 		$data['dataStreamName'] = $stream_display_name;
 		$response               = $this->analytics->set_data( 'create-account-ticket', $data );
 
 		$this->assertEquals( 'missing_required_param', $response->get_error_code() );
-		$this->assertRegExp( '#\b(displayName|regionCode|propertyName|dataStreamName|timezone)\b#', $response->get_error_message() );
+		$this->assertMatchesRegularExpression( '#\b(displayName|regionCode|propertyName|dataStreamName|timezone)\b#', $response->get_error_message() );
 
 		$data['timezone'] = $timezone;
 		$response         = $this->analytics->set_data( 'create-account-ticket', $data );
