@@ -377,7 +377,7 @@ final class Analytics_4 extends Module
 	 *     @type string $accountTicketId Account ticket ID. UA / GA4
 	 *     @type string $propertyName    Property display name. UA / GA4
 	 *     @type string $timezone        Timezone. UA / GA4.
-	 *     @type string $profileName     Property display name. UA only.
+	 *     @type string $profileName     Profile (View) display name. UA only.
 	 *     @type string $dataStreamName  Data stream display name. GA4 only.
 	 * }
 	 */
