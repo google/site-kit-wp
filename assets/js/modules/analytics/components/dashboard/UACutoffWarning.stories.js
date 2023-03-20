@@ -32,6 +32,9 @@ Default.storyName = 'Default';
 Default.parameters = {
 	features: [ 'ga4Reporting' ],
 };
+Default.scenario = {
+	label: 'Modules/Analytics/Components/UACutoffWarning',
+};
 
 export default {
 	title: 'Modules/Analytics/Components/UACutoffWarning',

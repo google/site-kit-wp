@@ -46,6 +46,9 @@ PostUACutoffDate.args = {
 		registry.dispatch( CORE_USER ).setReferenceDate( UA_CUTOFF_DATE );
 	},
 };
+PostUACutoffDate.scenario = {
+	label: 'Modules/Analytics/Components/UACutoffWarning/PostUACutoffDate',
+};
 
 export default {
 	title: 'Modules/Analytics/Components/SettingsUACutoffWarning',
