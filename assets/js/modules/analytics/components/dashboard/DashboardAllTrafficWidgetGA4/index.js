@@ -41,7 +41,7 @@ import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants
 import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
 import { Grid, Row, Cell } from '../../../../../material-components/layout';
 import { generateDateRangeArgs } from '../../../util/report-date-range-args';
-import { getURLPath } from '../../../../../util';
+import { DAY_IN_SECONDS, getURLPath } from '../../../../../util';
 import whenActive from '../../../../../util/when-active';
 import SourceLink from '../../../../../components/SourceLink';
 import TotalUserCount from './TotalUserCount';
@@ -49,6 +49,7 @@ import UserCountGraph from './UserCountGraph';
 import DimensionTabs from './DimensionTabs';
 import UserDimensionsPieChart from './UserDimensionsPieChart';
 import useViewOnly from '../../../../../hooks/useViewOnly';
+import SurveyViewTrigger from '../../../../../components/surveys/SurveyViewTrigger';
 const { useSelect, useInViewSelect, useDispatch } = Data;
 
 function DashboardAllTrafficWidgetGA4( props ) {
@@ -357,6 +358,10 @@ function DashboardAllTrafficWidgetGA4( props ) {
 					</Cell>
 				</Row>
 			</Grid>
+			<SurveyViewTrigger
+				triggerID="view_ga4_dashboard"
+				ttl={ DAY_IN_SECONDS }
+			/>
 		</Widget>
 	);
 }
