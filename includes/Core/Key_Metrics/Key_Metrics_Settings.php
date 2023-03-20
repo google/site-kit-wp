@@ -48,7 +48,7 @@ class Key_Metrics_Settings extends User_Setting {
 	protected function get_default() {
 		return array(
 			'widgetSlugs'    => array(),
-			'isWidgetHidden' => true,
+			'isWidgetHidden' => false,
 		);
 	}
 
