@@ -416,14 +416,13 @@ final class Analytics_4 extends Module
 
 		$this->get_settings()->merge( array( 'propertyID' => $property->_id ) );
 
-		$data_stream_name = isset( $account_ticket_params['dataStreamName'] ) ? $account_ticket_params['dataStreamName'] : null;
-		$web_datastream   = $this->create_webdatastream(
+		$web_datastream = $this->create_webdatastream(
 			$property->_id,
 			array(
-				'displayName' => $data_stream_name,
+				'displayName' => $account_ticket_params['dataStreamName'],
 			)
 		);
-		$web_datastream   = self::filter_webdatastream_with_ids( $web_datastream );
+		$web_datastream = self::filter_webdatastream_with_ids( $web_datastream );
 
 		if ( empty( $web_datastream->_id ) ) {
 			return;
