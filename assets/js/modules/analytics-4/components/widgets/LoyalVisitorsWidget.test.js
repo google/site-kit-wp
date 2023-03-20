@@ -1,5 +1,5 @@
 /**
- * LoyalVisitorsWidget tests.
+ * LoyalVisitorsWidget component tests.
  *
  * Site Kit by Google, Copyright 2023 Google LLC
  *
@@ -16,12 +16,34 @@
  * limitations under the License.
  */
 
-import { render } from '../../../../../../tests/js/test-utils';
+import { freezeFetch, render } from '../../../../../../tests/js/test-utils';
+import {
+	coreKeyMetricsEndpointRegExp,
+	setupRegistryKeyMetricsWidgetHidden,
+	setupRegistryKeyMetricsWidgetNotHidden,
+} from '../../../../util/key-metrics';
 import LoyalVisitorsWidget from './LoyalVisitorsWidget';
 
 describe( 'LoyalVisitorsWidget', () => {
-	it( 'should render the widget', () => {
-		const { getByText } = render( <LoyalVisitorsWidget /> );
+	it( 'should not render anything when isKeyMetricsWidgetHidden is not loaded', () => {
+		freezeFetch( coreKeyMetricsEndpointRegExp );
+		const { container } = render( <LoyalVisitorsWidget /> );
+
+		expect( container ).toBeEmptyDOMElement();
+	} );
+
+	it( 'should not render anything when isKeyMetricsWidgetHidden is true', () => {
+		const { container } = render( <LoyalVisitorsWidget />, {
+			setupRegistry: setupRegistryKeyMetricsWidgetHidden,
+		} );
+
+		expect( container ).toBeEmptyDOMElement();
+	} );
+
+	it( 'should render the widget when isKeyMetricsWidgetHidden is false', () => {
+		const { getByText } = render( <LoyalVisitorsWidget />, {
+			setupRegistry: setupRegistryKeyMetricsWidgetNotHidden,
+		} );
 
 		expect(
 			getByText( 'TODO: UI for LoyalVisitorsWidget' )

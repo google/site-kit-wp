@@ -25,15 +25,12 @@ import {
 	untilResolved,
 	waitForDefaultTimeouts,
 } from '../../../../../tests/js/utils';
+import { coreKeyMetricsEndpointRegExp } from '../../../util/key-metrics';
 import { CORE_USER } from './constants';
 
 describe( 'core/user key metrics', () => {
 	let registry;
 	let store;
-
-	const coreKeyMetricsEndpointRegExp = new RegExp(
-		'^/google-site-kit/v1/core/user/data/key-metrics'
-	);
 
 	const coreKeyMetricsExpectedResponse = {
 		widgetSlugs: [ 'widget1', 'widget2' ],

@@ -16,12 +16,34 @@
  * limitations under the License.
  */
 
-import { render } from '../../../../../../tests/js/test-utils';
+import { freezeFetch, render } from '../../../../../../tests/js/test-utils';
+import {
+	coreKeyMetricsEndpointRegExp,
+	setupRegistryKeyMetricsWidgetHidden,
+	setupRegistryKeyMetricsWidgetNotHidden,
+} from '../../../../util/key-metrics';
 import PopularContentWidget from './PopularContentWidget';
 
 describe( 'PopularContentWidget', () => {
-	it( 'should render the widget', () => {
-		const { getByText } = render( <PopularContentWidget /> );
+	it( 'should not render anything when isKeyMetricsWidgetHidden is not loaded', () => {
+		freezeFetch( coreKeyMetricsEndpointRegExp );
+		const { container } = render( <PopularContentWidget /> );
+
+		expect( container ).toBeEmptyDOMElement();
+	} );
+
+	it( 'should not render anything when isKeyMetricsWidgetHidden is true', () => {
+		const { container } = render( <PopularContentWidget />, {
+			setupRegistry: setupRegistryKeyMetricsWidgetHidden,
+		} );
+
+		expect( container ).toBeEmptyDOMElement();
+	} );
+
+	it( 'should render the widget when isKeyMetricsWidgetHidden is false', () => {
+		const { getByText } = render( <PopularContentWidget />, {
+			setupRegistry: setupRegistryKeyMetricsWidgetNotHidden,
+		} );
 
 		expect(
 			getByText( 'TODO: UI for PopularContentWidget' )

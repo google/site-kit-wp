@@ -16,12 +16,34 @@
  * limitations under the License.
  */
 
-import { render } from '../../../../../../tests/js/test-utils';
+import { freezeFetch, render } from '../../../../../../tests/js/test-utils';
+import {
+	coreKeyMetricsEndpointRegExp,
+	setupRegistryKeyMetricsWidgetHidden,
+	setupRegistryKeyMetricsWidgetNotHidden,
+} from '../../../../util/key-metrics';
 import TopCitiesWidget from './TopCitiesWidget';
 
 describe( 'TopCitiesWidget', () => {
-	it( 'should render the widget', () => {
-		const { getByText } = render( <TopCitiesWidget /> );
+	it( 'should not render anything when isKeyMetricsWidgetHidden is not loaded', () => {
+		freezeFetch( coreKeyMetricsEndpointRegExp );
+		const { container } = render( <TopCitiesWidget /> );
+
+		expect( container ).toBeEmptyDOMElement();
+	} );
+
+	it( 'should not render anything when isKeyMetricsWidgetHidden is true', () => {
+		const { container } = render( <TopCitiesWidget />, {
+			setupRegistry: setupRegistryKeyMetricsWidgetHidden,
+		} );
+
+		expect( container ).toBeEmptyDOMElement();
+	} );
+
+	it( 'should render the widget when isKeyMetricsWidgetHidden is false', () => {
+		const { getByText } = render( <TopCitiesWidget />, {
+			setupRegistry: setupRegistryKeyMetricsWidgetNotHidden,
+		} );
 
 		expect(
 			getByText( 'TODO: UI for TopCitiesWidget' )
