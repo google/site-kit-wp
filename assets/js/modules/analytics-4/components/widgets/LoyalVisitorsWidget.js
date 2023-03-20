@@ -16,6 +16,22 @@
  * limitations under the License.
  */
 
+/**
+ * Internal dependencies
+ */
+import Data from 'googlesitekit-data';
+import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+
+const { useSelect } = Data;
+
 export default function LoyalVisitorsWidget() {
+	const keyMetricsWidgetHidden = useSelect( ( select ) =>
+		select( CORE_USER ).isKeyMetricsWidgetHidden()
+	);
+
+	if ( keyMetricsWidgetHidden !== false ) {
+		return null;
+	}
+
 	return <div>TODO: UI for LoyalVisitorsWidget</div>;
 }
