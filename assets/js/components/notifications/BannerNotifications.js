@@ -59,6 +59,10 @@ export default function BannerNotifications() {
 		select( CORE_MODULES ).isModuleActive( 'adsense' )
 	);
 
+	const analyticsModuleConnected = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleConnected( 'analytics' )
+	);
+
 	const [ notification ] = useQueryArg( 'notification' );
 
 	return (
@@ -83,7 +87,7 @@ export default function BannerNotifications() {
 					) }
 					{ adSenseModuleActive && <AdSenseAlerts /> }
 					{ gteSupportEnabled && <GoogleTagIDMismatchNotification /> }
-					{ ga4ReportingEnabled && (
+					{ ga4ReportingEnabled && analyticsModuleConnected && (
 						<SwitchGA4DashboardViewNotification />
 					) }
 				</Fragment>
