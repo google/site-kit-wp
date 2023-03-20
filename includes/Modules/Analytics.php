@@ -385,7 +385,7 @@ final class Analytics extends Module
 	 * @return array Map of datapoints to their definitions.
 	 */
 	protected function get_datapoint_definitions() {
-		return array(
+		$datapoints = array(
 			'GET:accounts-properties-profiles' => array( 'service' => 'analytics' ),
 			'POST:create-account-ticket'       => array(
 				'service'                => 'analyticsprovisioning',
@@ -413,6 +413,12 @@ final class Analytics extends Module
 				'shareable' => Feature_Flags::enabled( 'dashboardSharing' ),
 			),
 		);
+
+		if ( Feature_Flags::enabled( 'ga4Reporting' ) ) {
+			unset( $datapoints['POST:create-account-ticket'] );
+		}
+
+		return $datapoints;
 	}
 
 	/**

@@ -317,6 +317,26 @@ class AnalyticsTest extends TestCase {
 		);
 	}
 
+	public function test_get_datapoints__ga4Reporting() {
+		$this->enable_feature( 'ga4Reporting' );
+
+		$analytics = new Analytics( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+
+		$this->assertEqualSets(
+			array(
+				// create-account-ticket not available.
+				'goals',
+				'accounts-properties-profiles',
+				'properties-profiles',
+				'profiles',
+				'report',
+				'create-property',
+				'create-profile',
+			),
+			$analytics->get_datapoints()
+		);
+	}
+
 	public function test_handle_provisioning_callback() {
 		$analytics = new Analytics( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() ) );
 
