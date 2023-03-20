@@ -21,7 +21,6 @@
  */
 import { MODULES_ANALYTICS } from '../../modules/analytics/datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
-import * as fixtures from '../../modules/analytics-4/datastore/__fixtures__';
 import SwitchGA4DashboardViewNotification from './SwitchGA4DashboardViewNotification';
 import {
 	createTestRegistry,
@@ -29,7 +28,6 @@ import {
 	provideSiteInfo,
 	WithTestRegistry,
 } from '../../../../tests/js/utils';
-import { DAY_IN_SECONDS } from '../../util';
 import { enabledFeatures } from '../../features';
 
 function Template( { ...args } ) {
@@ -55,31 +53,13 @@ export default {
 				},
 			] );
 
-			registry
-				.dispatch( MODULES_ANALYTICS_4 )
-				.receiveGetSettings( { ...fixtures.defaultSettings } );
-
-			const createTime = new Date(
-				Date.now() - DAY_IN_SECONDS * 4 * 1000
-			).toISOString();
-
-			const property = {
-				...fixtures.properties[ 0 ],
-				createTime,
-			};
-			const propertyID = property._id;
-
 			registry.dispatch( MODULES_ANALYTICS ).setSettings( {
 				dashboardView: 'universal-analytics',
 			} );
 
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
-				.receiveGetProperty( property, { propertyID } );
-
-			registry
-				.dispatch( MODULES_ANALYTICS_4 )
-				.setPropertyID( propertyID );
+				.receiveIsGatheringData( false );
 			return (
 				<WithTestRegistry registry={ registry }>
 					<Story />
