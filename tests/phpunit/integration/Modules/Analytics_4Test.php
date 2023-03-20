@@ -25,6 +25,7 @@ use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
+use Google\Site_Kit\Modules\Analytics;
 use Google\Site_Kit\Modules\Analytics_4;
 use Google\Site_Kit\Modules\Analytics_4\Settings;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Data_Available_State_ContractTests;
@@ -35,13 +36,17 @@ use Google\Site_Kit\Tests\Core\Modules\Module_With_Settings_ContractTests;
 use Google\Site_Kit\Tests\FakeHttp;
 use Google\Site_Kit\Tests\TestCase;
 use Google\Site_Kit\Tests\UserAuthenticationTrait;
+use Google\Site_Kit_Dependencies\Google\Service\Exception;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaConversionEvent;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaDataStream;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaDataStreamWebStreamData;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaListConversionEventsResponse;
+use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaProvisionAccountTicketResponse;
 use Google\Site_Kit_Dependencies\Google\Service\TagManager\Container;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Request;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Response;
+use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Stream;
+use Google\Site_Kit_Dependencies\Psr\Http\Message\ResponseInterface;
 use WP_User;
 
 /**
@@ -313,6 +318,109 @@ class Analytics_4Test extends TestCase {
 			),
 			$options->get( Settings::OPTION )
 		);
+	}
+
+	public function test_create_account_ticket() {
+		$account_ticket_id     = 'test-account-ticket-id';
+		$account_display_name  = 'test account name';
+		$region_code           = 'US';
+		$property_display_name = 'test property name';
+		$stream_display_name   = 'test stream name';
+		$timezone              = 'UTC';
+
+		$provision_account_ticket_request = null;
+		FakeHttp::fake_google_http_handler(
+			$this->analytics->get_client(),
+			function ( Request $request ) use ( &$provision_account_ticket_request, $account_ticket_id ) {
+				$url = parse_url( $request->getUri() );
+
+				if ( 'sitekit.withgoogle.com' !== $url['host'] ) {
+					return new Response( 200 );
+				}
+
+				switch ( $url['path'] ) {
+					case '/v1beta/accounts:provisionAccountTicket':
+						$provision_account_ticket_request = $request;
+
+						$response = new GoogleAnalyticsAdminV1betaProvisionAccountTicketResponse();
+						$response->setAccountTicketId( $account_ticket_id );
+
+						return new Response( 200, array(), json_encode( $response ) );
+
+					default:
+						throw new Exception( 'Not implemented' );
+				}
+			}
+		);
+
+		$this->analytics->register();
+		$data = array();
+
+		$response = $this->analytics->set_data( 'create-account-ticket', $data );
+		// Assert that the Analytics edit scope is required.
+		$this->assertWPError( $response );
+		$this->assertEquals( 'missing_required_scopes', $response->get_error_code() );
+		$this->authentication->get_oauth_client()->set_granted_scopes(
+			array_merge(
+				$this->authentication->get_oauth_client()->get_required_scopes(),
+				(array) Analytics::EDIT_SCOPE
+			)
+		);
+
+		$response = $this->analytics->set_data( 'create-account-ticket', $data );
+
+		// Assert request fails without required parameters.
+
+		$this->assertWPError( $response );
+		$this->assertEquals( 'missing_required_param', $response->get_error_code() );
+		$this->assertRegExp( '#\b(displayName|regionCode|propertyName|dataStreamName|timezone)\b#', $response->get_error_message() );
+
+		$data['displayName'] = $account_display_name;
+		$response            = $this->analytics->set_data( 'create-account-ticket', $data );
+
+		$this->assertWPError( $response );
+		$this->assertEquals( 'missing_required_param', $response->get_error_code() );
+		$this->assertRegExp( '#\b(displayName|regionCode|propertyName|dataStreamName|timezone)\b#', $response->get_error_message() );
+
+		$data['regionCode'] = $region_code;
+		$response           = $this->analytics->set_data( 'create-account-ticket', $data );
+
+		$this->assertWPError( $response );
+		$this->assertEquals( 'missing_required_param', $response->get_error_code() );
+		$this->assertRegExp( '#\b(displayName|regionCode|propertyName|dataStreamName|timezone)\b#', $response->get_error_message() );
+
+		$data['propertyName'] = $property_display_name;
+		$response             = $this->analytics->set_data( 'create-account-ticket', $data );
+
+		$this->assertWPError( $response );
+		$this->assertEquals( 'missing_required_param', $response->get_error_code() );
+		$this->assertRegExp( '#\b(displayName|regionCode|propertyName|dataStreamName|timezone)\b#', $response->get_error_message() );
+
+		$data['dataStreamName'] = $stream_display_name;
+		$response               = $this->analytics->set_data( 'create-account-ticket', $data );
+
+		$this->assertEquals( 'missing_required_param', $response->get_error_code() );
+		$this->assertRegExp( '#\b(displayName|regionCode|propertyName|dataStreamName|timezone)\b#', $response->get_error_message() );
+
+		$data['timezone'] = $timezone;
+		$response         = $this->analytics->set_data( 'create-account-ticket', $data );
+
+		// Assert request was made with expected arguments.
+		$this->assertNotWPError( $response );
+		$account_ticket_request = new Analytics_4\GoogleAnalyticsAdmin\Proxy_GoogleAnalyticsAdminProvisionAccountTicketRequest(
+			json_decode( $provision_account_ticket_request->getBody()->getContents(), true ) // must be array to hydrate model.
+		);
+		$this->assertEquals( $account_display_name, $account_ticket_request->getAccount()->getDisplayName() );
+		$this->assertEquals( $region_code, $account_ticket_request->getAccount()->getRegionCode() );
+		$redirect_uri = $this->authentication->get_google_proxy()->get_site_fields()['analytics_redirect_uri'];
+		$this->assertEquals( $redirect_uri, $account_ticket_request->getRedirectUri() );
+
+		// Assert transient is set with params.
+		$account_ticket_params = get_transient( Analytics::PROVISION_ACCOUNT_TICKET_ID . '::' . $this->user->ID );
+		$this->assertEquals( $account_ticket_id, $account_ticket_params['accountTicketId'] );
+		$this->assertEquals( $property_display_name, $account_ticket_params['propertyName'] );
+		$this->assertEquals( $stream_display_name, $account_ticket_params['dataStreamName'] );
+		$this->assertEquals( $timezone, $account_ticket_params['timezone'] );
 	}
 
 	public function test_get_scopes() {
