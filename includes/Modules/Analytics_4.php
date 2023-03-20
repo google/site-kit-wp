@@ -281,11 +281,12 @@ final class Analytics_4 extends Module
 	 * Creates a new property for provided account.
 	 *
 	 * @since 1.35.0
-	 * @since n.e.x.t Added $options for displayName and timezone.
+	 * @since n.e.x.t Added `$options` parameter.
 	 *
 	 * @param string $account_id Account ID.
 	 * @param array  $options {
 	 *     Property options.
+	 *
 	 *     @type string $displayName Display name.
 	 *     @type string $timezone    Timezone.
 	 * }
@@ -316,10 +317,12 @@ final class Analytics_4 extends Module
 	 * Creates a new web data stream for provided property.
 	 *
 	 * @since 1.35.0
+	 * @since n.e.x.t Added `$options` parameter.
 	 *
 	 * @param string $property_id Property ID.
 	 * @param array  $options {
-	 *     Property options.
+	 *     Web data stream options.
+	 *
 	 *     @type string $displayName Display name.
 	 * }
 	 * @return GoogleAnalyticsAdminV1betaDataStream A new web data stream.
@@ -500,7 +503,12 @@ final class Analytics_4 extends Module
 					);
 				}
 
-				return $this->create_property( $data['accountID'] );
+				$options = array(
+					'displayName' => $data['displayName'],
+					'timezone'    => $data['timezone'],
+				);
+
+				return $this->create_property( $data['accountID'], $options );
 			case 'POST:create-webdatastream':
 				if ( ! isset( $data['propertyID'] ) ) {
 					return new WP_Error(
@@ -511,7 +519,11 @@ final class Analytics_4 extends Module
 					);
 				}
 
-				return $this->create_webdatastream( $data['propertyID'] );
+				$options = array(
+					'displayName' => $data['displayName'],
+				);
+
+				return $this->create_webdatastream( $data['propertyID'], $options );
 			case 'GET:properties':
 				if ( ! isset( $data['accountID'] ) ) {
 					return new WP_Error(
