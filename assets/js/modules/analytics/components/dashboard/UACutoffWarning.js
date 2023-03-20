@@ -32,20 +32,27 @@ import { Fragment } from '@wordpress/element';
  */
 import Data from 'googlesitekit-data';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
+import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
+import { CORE_LOCATION } from '../../../../googlesitekit/datastore/location/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import { FORM_SETUP } from '../../datastore/constants';
 import { UA_CUTOFF_DATE } from '../../constants';
-import { stringToDate } from '../../../../util';
+import { stringToDate, trackEvent } from '../../../../util';
 import { Grid, Row, Cell } from '../../../../material-components/layout';
 import { Button } from 'googlesitekit-components';
 import Link from '../../../../components/Link';
 import SettingsNotice, {
 	TYPE_WARNING,
 } from '../../../../components/SettingsNotice';
+import useViewContext from '../../../../hooks/useViewContext';
 import { useFeature } from '../../../../hooks/useFeature';
-const { useSelect } = Data;
+import { snapshotAllStores } from '../../../../googlesitekit/data/create-snapshot-store';
+const { useDispatch, useSelect } = Data;
 
 export default function UACutoffWarning( { className } ) {
+	const viewContext = useViewContext();
+
 	const ga4ReportingEnabled = useFeature( 'ga4Reporting' );
 
 	const isAnalyticsConnected = useSelect( ( select ) =>
@@ -64,6 +71,14 @@ export default function UACutoffWarning( { className } ) {
 		return select( CORE_SITE ).getDocumentationLinkURL( 'ga4' );
 	} );
 
+	const settingsURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getAdminURL( 'googlesitekit-settings' )
+	);
+
+	const { setValues } = useDispatch( CORE_FORMS );
+
+	const { navigateTo } = useDispatch( CORE_LOCATION );
+
 	const shouldDisplayWarning =
 		ga4ReportingEnabled &&
 		isAnalyticsConnected &&
@@ -74,6 +89,23 @@ export default function UACutoffWarning( { className } ) {
 		return null;
 	}
 
+	const handleCTAClick = async () => {
+		await trackEvent(
+			`${ viewContext }_ua-cutoff-warning`,
+			'click_setup_ga4_button'
+		);
+
+		setValues( FORM_SETUP, {
+			// Pre-enable GA4 controls.
+			enableGA4: true,
+			// Enable tooltip highlighting GA4 property select.
+			enableGA4PropertyTooltip: true,
+		} );
+		await snapshotAllStores();
+
+		navigateTo( `${ settingsURL }#connected-services/analytics/edit` );
+	};
+
 	return (
 		<Grid className={ className }>
 			<Row>
@@ -82,7 +114,7 @@ export default function UACutoffWarning( { className } ) {
 						className="googlesitekit-settings-notice-ua-cutoff-warning"
 						type={ TYPE_WARNING }
 						CTA={ () => (
-							<Button danger>
+							<Button danger onClick={ handleCTAClick }>
 								{ __(
 									'Set up Google Analytics 4',
 									'google-site-kit'
