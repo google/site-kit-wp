@@ -252,5 +252,41 @@ describe( 'core/user key metrics', () => {
 				).toEqual( coreKeyMetricsExpectedResponse.widgetSlugs );
 			} );
 		} );
+
+		describe( 'isKeyMetricsWidgetHidden', () => {
+			it( 'should return undefined while settings are loading', async () => {
+				freezeFetch( coreKeyMetricsEndpointRegExp );
+
+				const { isKeyMetricsWidgetHidden } =
+					registry.select( CORE_USER );
+
+				expect( isKeyMetricsWidgetHidden() ).toBeUndefined();
+
+				await waitForDefaultTimeouts();
+			} );
+
+			it( 'uses a resolver to make a network request if settings are not available', async () => {
+				fetchMock.getOnce( coreKeyMetricsEndpointRegExp, {
+					body: coreKeyMetricsExpectedResponse,
+					status: 200,
+				} );
+
+				const { isKeyMetricsWidgetHidden } =
+					registry.select( CORE_USER );
+
+				expect( isKeyMetricsWidgetHidden() ).toBeUndefined();
+
+				await untilResolved(
+					registry,
+					CORE_USER
+				).getKeyMetricsSettings();
+
+				expect(
+					registry.select( CORE_USER ).isKeyMetricsWidgetHidden()
+				).toEqual( coreKeyMetricsExpectedResponse.isWidgetHidden );
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+			} );
+		} );
 	} );
 } );
