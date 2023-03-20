@@ -16,6 +16,9 @@
  * limitations under the License.
  */
 
+/**
+ * Internal dependencies
+ */
 import { freezeFetch, render } from '../../../../../../tests/js/test-utils';
 import {
 	coreKeyMetricsEndpointRegExp,

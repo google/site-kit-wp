@@ -1,5 +1,5 @@
 /**
- * SetupModule component.
+ * SettingsKeyMetrics component.
  *
  * Site Kit by Google, Copyright 2023 Google LLC
  *

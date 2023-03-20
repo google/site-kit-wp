@@ -27,6 +27,7 @@ import {
 	untilResolved,
 	waitForDefaultTimeouts,
 } from '../../../../../tests/js/utils';
+import { coreKeyMetricsEndpointRegExp } from '../../../util/key-metrics';
 import { CORE_USER } from '../../datastore/user/constants';
 import { CORE_WIDGETS } from './constants';
 
@@ -46,18 +47,13 @@ describe( 'core/widgets key metrics', () => {
 	describe( 'selectors', () => {
 		describe( 'getKeyMetrics', () => {
 			it( 'should use answer-based key metrics if the user has not selected any widgets', async () => {
-				fetchMock.getOnce(
-					new RegExp(
-						'^/google-site-kit/v1/core/user/data/key-metrics'
-					),
-					{
-						body: {
-							widgetSlugs: [],
-							isWidgetHidden: false,
-						},
-						status: 200,
-					}
-				);
+				fetchMock.getOnce( coreKeyMetricsEndpointRegExp, {
+					body: {
+						widgetSlugs: [],
+						isWidgetHidden: false,
+					},
+					status: 200,
+				} );
 
 				fetchMock.getOnce(
 					new RegExp(
@@ -101,18 +97,13 @@ describe( 'core/widgets key metrics', () => {
 			} );
 
 			it( 'should use the user-selected key metrics if the user has selected any widgets', async () => {
-				fetchMock.getOnce(
-					new RegExp(
-						'^/google-site-kit/v1/core/user/data/key-metrics'
-					),
-					{
-						body: {
-							widgetSlugs: [ 'kmAnalyticsLoyalVisitors' ],
-							isWidgetHidden: false,
-						},
-						status: 200,
-					}
-				);
+				fetchMock.getOnce( coreKeyMetricsEndpointRegExp, {
+					body: {
+						widgetSlugs: [ 'kmAnalyticsLoyalVisitors' ],
+						isWidgetHidden: false,
+					},
+					status: 200,
+				} );
 
 				registry.select( CORE_WIDGETS ).getKeyMetrics();
 

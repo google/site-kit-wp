@@ -16,11 +16,10 @@
  * limitations under the License.
  */
 
-import { CORE_USER } from '../googlesitekit/datastore/user/constants';
-
 /**
  * Internal dependencies
  */
+import { CORE_USER } from '../googlesitekit/datastore/user/constants';
 
 /**
  * The endpoint for the key metrics settings.
