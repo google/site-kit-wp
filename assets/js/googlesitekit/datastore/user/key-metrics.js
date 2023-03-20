@@ -166,6 +166,23 @@ const baseSelectors = {
 	} ),
 
 	/**
+	 * Gets whether the key metrics widget is hidden.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {boolean|undefined} True if the key metrics widget is hidden, false if it is not, or undefined if the key metrics settings are not loaded.
+	 */
+	isKeyMetricsWidgetHidden: createRegistrySelector( ( select ) => () => {
+		const keyMetricsSettings = select( CORE_USER ).getKeyMetricsSettings();
+
+		if ( keyMetricsSettings === undefined ) {
+			return undefined;
+		}
+
+		return keyMetricsSettings.isWidgetHidden;
+	} ),
+
+	/**
 	 * Gets key metrics settings.
 	 *
 	 * @since n.e.x.t
