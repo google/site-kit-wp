@@ -22,15 +22,18 @@
 import TextField, { Input } from '@material/react-text-field';
 
 /**
+ * WordPress dependencies
+ */
+import { useState } from '@wordpress/element';
+
+/**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
 import { Button } from 'googlesitekit-components';
-import { useState } from 'react';
 import { CORE_USER } from '../assets/js/googlesitekit/datastore/user/constants';
-import { useRegistry } from '@wordpress/data';
 import { provideUserInfo } from '../tests/js/utils';
-const { useSelect } = Data;
+const { useSelect, useRegistry } = Data;
 
 export const AccountChooser = () => {
 	const [ destURL, setDestURL ] = useState(
