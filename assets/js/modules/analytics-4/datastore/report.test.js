@@ -346,10 +346,10 @@ describe( 'modules/analytics-4 report', () => {
 					await waitForDefaultTimeouts();
 				} );
 
-				it( 'should return TRUE if the connnected GA4 property is under two days old', async () => {
-					// Create a timestamp that is one and a half days ago.
+				it( 'should return TRUE if the connnected GA4 property is under three days old', async () => {
+					// Create a timestamp that is two and a half days ago.
 					const createTime = new Date(
-						Date.now() - DAY_IN_SECONDS * 1.5 * 1000
+						Date.now() - DAY_IN_SECONDS * 2.5 * 1000
 					).toISOString();
 
 					const property = {
@@ -383,16 +383,16 @@ describe( 'modules/analytics-4 report', () => {
 					expect( isGatheringData() ).toBe( true );
 				} );
 
-				it( 'should return FALSE if the connnected GA4 property is older than two days', async () => {
+				it( 'should return FALSE if the connnected GA4 property is older than treww days', async () => {
 					muteFetch(
 						new RegExp(
 							'^/google-site-kit/v1/modules/analytics-4/data/data-available'
 						)
 					);
 
-					// Create a timestamp that is two days ago.
+					// Create a timestamp that is three days ago.
 					const createTime = new Date(
-						Date.now() - DAY_IN_SECONDS * 2 * 1000
+						Date.now() - DAY_IN_SECONDS * 3 * 1000
 					).toISOString();
 
 					const property = {

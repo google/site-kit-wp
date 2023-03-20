@@ -145,8 +145,8 @@ const gatheringDataStore = createGatheringDataStore( 'analytics-4', {
 
 		const createTime = new Date( property.createTime ).getTime();
 
-		// If the property was created within the last two days and has no data, assume it's still gathering data.
-		if ( createTime > Date.now() - DAY_IN_SECONDS * 2 * 1000 ) {
+		// If the property was created within the last three days and has no data, assume it's still gathering data.
+		if ( createTime > Date.now() - DAY_IN_SECONDS * 3 * 1000 ) {
 			return false;
 		}
 
