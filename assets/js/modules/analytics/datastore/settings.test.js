@@ -52,7 +52,6 @@ import {
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { MODULES_TAGMANAGER } from '../../tagmanager/datastore/constants';
 import { enabledFeatures } from '../../../features';
-import { DAY_IN_SECONDS } from '../../../util';
 
 describe( 'modules/analytics settings', () => {
 	let registry;
@@ -1138,7 +1137,7 @@ describe( 'modules/analytics settings', () => {
 				).toBe( false );
 			} );
 
-			it( 'should return false when analytics-4 property is less than 3 days old.', () => {
+			it( 'should return false when analytics-4 is gathering data', () => {
 				enabledFeatures.add( 'ga4Reporting' );
 				provideModules( registry, [
 					{
@@ -1148,28 +1147,15 @@ describe( 'modules/analytics settings', () => {
 					},
 				] );
 
-				// Create a timestamp that is less than three days ago.
-				const createTime = new Date(
-					Date.now() - DAY_IN_SECONDS * 2 * 1000
-				).toISOString();
-
-				const property = {
-					...ga4fixtures.properties[ 0 ],
-					createTime,
-				};
-				const propertyID = property._id;
-
 				registry.dispatch( MODULES_ANALYTICS ).setSettings( {
 					dashboardView: 'universal-analytics',
 				} );
 
+				// Directly set the `isGatheringData` selector to return true.
+				// This is fine as we have dedicated tests for that selector.
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveGetProperty( property, { propertyID } );
-
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.setPropertyID( propertyID );
+					.receiveIsGatheringData( true );
 
 				expect(
 					registry
@@ -1178,7 +1164,7 @@ describe( 'modules/analytics settings', () => {
 				).toBe( false );
 			} );
 
-			it( 'should return true when analytics-4 property is 3 days old.', () => {
+			it( 'should return true when analytics-4 is not gathering data', () => {
 				enabledFeatures.add( 'ga4Reporting' );
 				provideModules( registry, [
 					{
@@ -1188,28 +1174,15 @@ describe( 'modules/analytics settings', () => {
 					},
 				] );
 
-				// Create a timestamp that is three days ago.
-				const createTime = new Date(
-					Date.now() - DAY_IN_SECONDS * 3 * 1000
-				).toISOString();
-
-				const property = {
-					...ga4fixtures.properties[ 0 ],
-					createTime,
-				};
-				const propertyID = property._id;
-
 				registry.dispatch( MODULES_ANALYTICS ).setSettings( {
 					dashboardView: 'universal-analytics',
 				} );
 
+				// Directly set the `isGatheringData` selector to return false.
+				// This is fine as we have dedicated tests for that selector.
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveGetProperty( property, { propertyID } );
-
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.setPropertyID( propertyID );
+					.receiveIsGatheringData( false );
 
 				expect(
 					registry

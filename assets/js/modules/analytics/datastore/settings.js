@@ -56,7 +56,6 @@ import { isPermissionScopeError } from '../../../util/errors';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { MODULES_TAGMANAGER } from '../../tagmanager/datastore/constants';
 import { isFeatureEnabled } from '../../../features';
-import { DAY_IN_SECONDS } from '../../../util';
 
 const { createRegistrySelector } = Data;
 
@@ -338,23 +337,15 @@ export const shouldPromptGA4DashboardView = createRegistrySelector(
 			return false;
 		}
 
-		const propertyID = select( MODULES_ANALYTICS_4 ).getPropertyID();
+		const ga4GatheringData =
+			select( MODULES_ANALYTICS_4 ).isGatheringData();
 
-		if ( propertyID === undefined ) {
+		if ( ga4GatheringData === undefined ) {
 			return undefined;
 		}
 
-		const property =
-			select( MODULES_ANALYTICS_4 ).getProperty( propertyID );
-
-		if ( property === undefined ) {
-			return undefined;
-		}
-
-		const createTime = new Date( property.createTime ).getTime();
-
-		// Don't prompt if the GA4 property was created less than 3 days ago.
-		if ( createTime > Date.now() - DAY_IN_SECONDS * 3 * 1000 ) {
+		// Don't prompt if GA4 is still gathering data.
+		if ( ga4GatheringData ) {
 			return false;
 		}
 
