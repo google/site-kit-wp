@@ -1165,10 +1165,6 @@ describe( 'modules/analytics settings', () => {
 
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveGetSettings( {} );
-
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveGetProperty( property, { propertyID } );
 
 				registry
@@ -1206,10 +1202,6 @@ describe( 'modules/analytics settings', () => {
 				registry.dispatch( MODULES_ANALYTICS ).setSettings( {
 					dashboardView: 'universal-analytics',
 				} );
-
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveGetSettings( {} );
 
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
