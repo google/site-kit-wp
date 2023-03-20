@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
@@ -31,6 +36,7 @@ import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { UA_CUTOFF_DATE } from '../../constants';
 import { stringToDate } from '../../../../util';
+import { Grid, Row, Cell } from '../../../../material-components/layout';
 import { Button } from 'googlesitekit-components';
 import Link from '../../../../components/Link';
 import SettingsNotice, {
@@ -39,7 +45,7 @@ import SettingsNotice, {
 import { useFeature } from '../../../../hooks/useFeature';
 const { useSelect } = Data;
 
-export default function UACutoffWarning() {
+export default function UACutoffWarning( { className } ) {
 	const ga4ReportingEnabled = useFeature( 'ga4Reporting' );
 
 	const isAnalyticsConnected = useSelect( ( select ) =>
@@ -69,31 +75,47 @@ export default function UACutoffWarning() {
 	}
 
 	return (
-		<SettingsNotice
-			className="googlesitekit-settings-notice-ua-cutoff-warning"
-			type={ TYPE_WARNING }
-			CTA={ () => (
-				<Button danger>
-					{ __( 'Set up Google Analytics 4', 'google-site-kit' ) }
-				</Button>
-			) }
-			notice={
-				<Fragment>
-					<p className="googlesitekit-settings-notice-ua-cutoff-warning__notice">
-						{ __(
-							'Your data is stale because Universal Analytics stopped collecting data on July 1, 2023.',
-							'google-site-kit'
+		<Grid className={ className }>
+			<Row>
+				<Cell size={ 12 }>
+					<SettingsNotice
+						className="googlesitekit-settings-notice-ua-cutoff-warning"
+						type={ TYPE_WARNING }
+						CTA={ () => (
+							<Button danger>
+								{ __(
+									'Set up Google Analytics 4',
+									'google-site-kit'
+								) }
+							</Button>
 						) }
-					</p>
-					<Link
-						aria-label={ __( 'Learn more', 'google-site-kit' ) }
-						href={ documentationURL }
-						external
-					>
-						{ __( 'Learn more', 'google-site-kit' ) }
-					</Link>
-				</Fragment>
-			}
-		/>
+						notice={
+							<Fragment>
+								<p className="googlesitekit-settings-notice-ua-cutoff-warning__notice">
+									{ __(
+										'Your data is stale because Universal Analytics stopped collecting data on July 1, 2023.',
+										'google-site-kit'
+									) }
+								</p>
+								<Link
+									aria-label={ __(
+										'Learn more',
+										'google-site-kit'
+									) }
+									href={ documentationURL }
+									external
+								>
+									{ __( 'Learn more', 'google-site-kit' ) }
+								</Link>
+							</Fragment>
+						}
+					/>
+				</Cell>
+			</Row>
+		</Grid>
 	);
 }
+
+UACutoffWarning.propTypes = {
+	className: PropTypes.string,
+};
