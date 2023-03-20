@@ -33,8 +33,8 @@ import { CORE_WIDGETS } from '../../googlesitekit/widgets/datastore/constants';
 const { useSelect, useDispatch } = Data;
 
 export default function SettingsKeyMetrics() {
-	const keyMetricsSettings = useSelect( ( select ) =>
-		select( CORE_USER ).getKeyMetricsSettings()
+	const keyMetricsWidgetHidden = useSelect( ( select ) =>
+		select( CORE_USER ).isKeyMetricsWidgetHidden()
 	);
 
 	const keyMetrics = useSelect( ( select ) =>
@@ -45,18 +45,15 @@ export default function SettingsKeyMetrics() {
 		useDispatch( CORE_USER );
 
 	const handleKeyMetricsToggle = useCallback( async () => {
-		if ( ! keyMetricsSettings ) {
-			return;
-		}
-
-		await setKeyMetricSetting(
-			'isWidgetHidden',
-			! keyMetricsSettings.isWidgetHidden
-		);
+		await setKeyMetricSetting( 'isWidgetHidden', ! keyMetricsWidgetHidden );
 		await saveKeyMetricsSettings();
-	}, [ keyMetricsSettings, saveKeyMetricsSettings, setKeyMetricSetting ] );
+	}, [
+		keyMetricsWidgetHidden,
+		saveKeyMetricsSettings,
+		setKeyMetricSetting,
+	] );
 
-	if ( ! keyMetricsSettings || ! keyMetrics?.length ) {
+	if ( ! keyMetricsWidgetHidden === undefined || ! keyMetrics?.length ) {
 		return null;
 	}
 
@@ -66,7 +63,7 @@ export default function SettingsKeyMetrics() {
 				'Display key metrics in dashboard',
 				'google-site-kit'
 			) }
-			checked={ ! keyMetricsSettings.isWidgetHidden }
+			checked={ ! keyMetricsWidgetHidden }
 			onClick={ handleKeyMetricsToggle }
 			hideLabel={ false }
 		/>
