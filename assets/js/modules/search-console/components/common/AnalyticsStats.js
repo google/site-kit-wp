@@ -36,13 +36,15 @@ const { useSelect } = Data;
  * Extracts chart data from analytics row data.
  *
  * @since 1.96.0
+ * @since n.e.x.t Added chartDataFormats parameter.
  *
- * @param {string} moduleSlug      The module slug.
- * @param {Object} data            The data returned from the Analytics API call.
- * @param {Array}  selectedStats   The currently selected stat we need to return data for.
- * @param {number} dateRangeLength The number of days to extract data for. Pads empty data days.
- * @param {Array}  dataLabels      The labels to be displayed.
- * @param {Array}  dataFormats     The formats to be used for the data.
+ * @param {string} moduleSlug       The module slug.
+ * @param {Object} data             The data returned from the Analytics API call.
+ * @param {Array}  selectedStats    The currently selected stat we need to return data for.
+ * @param {number} dateRangeLength  The number of days to extract data for. Pads empty data days.
+ * @param {Array}  dataLabels       The labels to be displayed.
+ * @param {Array}  dataFormats      The formats to be used for the tooltip data.
+ * @param {Array}  chartDataFormats The formats to be used for the chart data (GA4 only).
  * @return {Array} The dataMap ready for charting.
  */
 function extractChartData(
@@ -51,7 +53,8 @@ function extractChartData(
 	selectedStats,
 	dateRangeLength,
 	dataLabels,
-	dataFormats
+	dataFormats,
+	chartDataFormats
 ) {
 	if ( moduleSlug === 'analytics-4' ) {
 		return (
@@ -60,7 +63,8 @@ function extractChartData(
 				selectedStats,
 				dateRangeLength,
 				dataLabels,
-				dataFormats
+				dataFormats,
+				chartDataFormats
 			) || []
 		);
 	}
@@ -84,6 +88,7 @@ export default function AnalyticsStats( props ) {
 		dateRangeLength,
 		dataLabels,
 		dataFormats,
+		chartDataFormats,
 		statsColor,
 		gatheringData,
 		moduleSlug,
@@ -106,7 +111,8 @@ export default function AnalyticsStats( props ) {
 		selectedStats,
 		dateRangeLength,
 		dataLabels,
-		dataFormats
+		dataFormats,
+		chartDataFormats
 	);
 
 	const dates = googleChartData.slice( 1 ).map( ( [ date ] ) => date );

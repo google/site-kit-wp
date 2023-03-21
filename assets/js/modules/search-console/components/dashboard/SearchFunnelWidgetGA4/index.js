@@ -469,12 +469,13 @@ const SearchFunnelWidgetGA4 = ( { Widget, WidgetReportError } ) => {
 						dataFormats={ [
 							( x ) => parseFloat( x ).toLocaleString(),
 							( x ) =>
-								numFmt( x, {
+								numFmt( x / 100, {
 									style: 'percent',
 									signDisplay: 'never',
 									maximumFractionDigits: 2,
 								} ),
 						] }
+						chartDataFormats={ [ ( x ) => x, ( x ) => x * 100 ] }
 						statsColor={
 							SearchFunnelWidgetGA4.metrics[ selectedStats ].color
 						}

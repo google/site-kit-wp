@@ -67,12 +67,14 @@ function reduceAnalytics4RowsData( rows, selectedStats ) {
  * Extracts the data required from an analytics 'site-analytics' request.
  *
  * @since 1.96.0
+ * @since n.e.x.t Added chartDataFormats parameter.
  *
- * @param {Object} report        The data returned from the Analytics API call.
- * @param {Array}  selectedStats The currently selected stat we need to return data for.
- * @param {number} days          The number of days to extract data for. Pads empty data days.
- * @param {Array}  dataLabels    The labels to be displayed.
- * @param {Array}  dataFormats   The formats to be used for the data.
+ * @param {Object} report           The data returned from the Analytics API call.
+ * @param {Array}  selectedStats    The currently selected stat we need to return data for.
+ * @param {number} days             The number of days to extract data for. Pads empty data days.
+ * @param {Array}  dataLabels       The labels to be displayed.
+ * @param {Array}  dataFormats      The formats to be used for the tooltip data.
+ * @param {Array}  chartDataFormats The formats to be used for the chart data.
  * @return {Array} The dataMap ready for charting.
  */
 export function extractAnalytics4DashboardData(
@@ -95,7 +97,8 @@ export function extractAnalytics4DashboardData(
 				maximumFractionDigits: 2,
 			} ),
 		( x ) => numFmt( x, 's' ),
-	]
+	],
+	chartDataFormats = [ ( x ) => x, ( x ) => x, ( x ) => x * 100, ( x ) => x ]
 ) {
 	if ( ! Array.isArray( report?.rows ) ) {
 		return false;
@@ -211,10 +214,16 @@ export function extractAnalytics4DashboardData(
 			return;
 		}
 
-		const prevMonth = parseFloat( previousMonthData[ i ][ 1 ] );
+		const chartDataFormat = chartDataFormats[ selectedStats ];
+		const currentMonthDatum = chartDataFormat( row[ 1 ] );
+		const previousMonthDatum = chartDataFormat(
+			previousMonthData[ i ][ 1 ]
+		);
+
+		const prevMonth = parseFloat( previousMonthDatum );
 
 		const difference = calculateDifferenceBetweenChartValues(
-			row[ 1 ],
+			currentMonthDatum,
 			prevMonth
 		);
 		const svgArrow = getChartDifferenceArrow( difference );
@@ -240,7 +249,7 @@ export function extractAnalytics4DashboardData(
 				'google-site-kit'
 			),
 			dataLabels[ selectedStats ],
-			dataFormats[ selectedStats ]( row[ 1 ] ),
+			dataFormats[ selectedStats ]( currentMonthDatum ),
 			svgArrow,
 			numFmt( Math.abs( difference ), '%' )
 		);
@@ -254,10 +263,12 @@ export function extractAnalytics4DashboardData(
 				<p>${ dateRange }</p>
 				<p>${ statInfo }</p>
 			</div>`,
-			isSessionDuration ? convertSecondsToArray( row[ 1 ] ) : row[ 1 ],
 			isSessionDuration
-				? convertSecondsToArray( previousMonthData[ i ][ 1 ] )
-				: previousMonthData[ i ][ 1 ],
+				? convertSecondsToArray( currentMonthDatum )
+				: currentMonthDatum,
+			isSessionDuration
+				? convertSecondsToArray( previousMonthDatum )
+				: previousMonthDatum,
 		] );
 	} );
 
