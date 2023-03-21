@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { CORE_USER } from './constants';
+import { CORE_USER, GLOBAL_SURVEYS_TIMEOUT_SLUG } from './constants';
 import {
 	createTestRegistry,
 	untilResolved,
@@ -493,7 +493,10 @@ describe( 'core/user surveys', () => {
 			it( 'should return TRUE if surveys are on cooldown', () => {
 				registry
 					.dispatch( CORE_USER )
-					.receiveGetSurveyTimeouts( [ 'foo', '__global' ] );
+					.receiveGetSurveyTimeouts( [
+						'foo',
+						GLOBAL_SURVEYS_TIMEOUT_SLUG,
+					] );
 				expect(
 					registry.select( CORE_USER ).areSurveysOnCooldown()
 				).toBe( true );
