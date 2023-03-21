@@ -124,11 +124,11 @@ export default function GoogleTagIDMismatchNotification() {
 		setHasMismatchedGoogleTagID,
 	} = useDispatch( MODULES_ANALYTICS_4 );
 
-	const updateToNewAnalyticsConfig = useCallback( () => {
-		setPropertyID( newAnalyticsConfig?.propertyID );
-		setWebDataStreamID( newAnalyticsConfig?.webDataStreamID );
-		setMeasurementID( newAnalyticsConfig?.measurementID );
-		submitChanges();
+	const updateToNewAnalyticsConfig = useCallback( async () => {
+		await setPropertyID( newAnalyticsConfig?.propertyID );
+		await setWebDataStreamID( newAnalyticsConfig?.webDataStreamID );
+		await setMeasurementID( newAnalyticsConfig?.measurementID );
+		await submitChanges();
 		setHasMismatchedGoogleTagID( false );
 	}, [
 		setPropertyID,
@@ -141,9 +141,11 @@ export default function GoogleTagIDMismatchNotification() {
 		setHasMismatchedGoogleTagID,
 	] );
 
-	const updateGoogleTagConfig = useCallback( () => {
-		updateSettingsForMeasurementID( currentAnalyticsConfig?.measurementID );
-		submitChanges();
+	const updateGoogleTagConfig = useCallback( async () => {
+		await updateSettingsForMeasurementID(
+			currentAnalyticsConfig?.measurementID
+		);
+		await submitChanges();
 		setHasMismatchedGoogleTagID( false );
 	}, [
 		updateSettingsForMeasurementID,
