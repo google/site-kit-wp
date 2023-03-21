@@ -443,7 +443,7 @@ const SearchFunnelWidgetGA4 = ( { Widget, WidgetReportError } ) => {
 					dataLabels={ [
 						__( 'Unique Visitors', 'google-site-kit' ),
 					] }
-					dataFormats={ [
+					tooltipDataFormats={ [
 						( x ) => parseFloat( x ).toLocaleString(),
 					] }
 					statsColor={
@@ -466,7 +466,7 @@ const SearchFunnelWidgetGA4 = ( { Widget, WidgetReportError } ) => {
 							__( 'Conversions', 'google-site-kit' ),
 							__( 'Engagement Rate %', 'google-site-kit' ),
 						] }
-						dataFormats={ [
+						tooltipDataFormats={ [
 							( x ) => parseFloat( x ).toLocaleString(),
 							( x ) =>
 								numFmt( x / 100, {

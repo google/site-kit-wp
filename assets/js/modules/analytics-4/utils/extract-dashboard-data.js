@@ -69,12 +69,12 @@ function reduceAnalytics4RowsData( rows, selectedStats ) {
  * @since 1.96.0
  * @since n.e.x.t Added chartDataFormats parameter.
  *
- * @param {Object} report           The data returned from the Analytics API call.
- * @param {Array}  selectedStats    The currently selected stat we need to return data for.
- * @param {number} days             The number of days to extract data for. Pads empty data days.
- * @param {Array}  dataLabels       The labels to be displayed.
- * @param {Array}  dataFormats      The formats to be used for the tooltip data.
- * @param {Array}  chartDataFormats The formats to be used for the chart data.
+ * @param {Object} report             The data returned from the Analytics API call.
+ * @param {Array}  selectedStats      The currently selected stat we need to return data for.
+ * @param {number} days               The number of days to extract data for. Pads empty data days.
+ * @param {Array}  dataLabels         The labels to be displayed.
+ * @param {Array}  tooltipDataFormats The formats to be used for the tooltip data.
+ * @param {Array}  chartDataFormats   The formats to be used for the chart data.
  * @return {Array} The dataMap ready for charting.
  */
 export function extractAnalytics4DashboardData(
@@ -87,7 +87,7 @@ export function extractAnalytics4DashboardData(
 		__( 'Engagement Rate', 'google-site-kit' ),
 		__( 'Session Duration', 'google-site-kit' ),
 	],
-	dataFormats = [
+	tooltipDataFormats = [
 		( x ) => parseFloat( x ).toLocaleString(),
 		( x ) => parseFloat( x ).toLocaleString(),
 		( x ) =>
@@ -249,7 +249,7 @@ export function extractAnalytics4DashboardData(
 				'google-site-kit'
 			),
 			dataLabels[ selectedStats ],
-			dataFormats[ selectedStats ]( currentMonthDatum ),
+			tooltipDataFormats[ selectedStats ]( currentMonthDatum ),
 			svgArrow,
 			numFmt( Math.abs( difference ), '%' )
 		);

@@ -38,13 +38,13 @@ const { useSelect } = Data;
  * @since 1.96.0
  * @since n.e.x.t Added chartDataFormats parameter.
  *
- * @param {string} moduleSlug       The module slug.
- * @param {Object} data             The data returned from the Analytics API call.
- * @param {Array}  selectedStats    The currently selected stat we need to return data for.
- * @param {number} dateRangeLength  The number of days to extract data for. Pads empty data days.
- * @param {Array}  dataLabels       The labels to be displayed.
- * @param {Array}  dataFormats      The formats to be used for the tooltip data.
- * @param {Array}  chartDataFormats The formats to be used for the chart data (GA4 only).
+ * @param {string} moduleSlug         The module slug.
+ * @param {Object} data               The data returned from the Analytics API call.
+ * @param {Array}  selectedStats      The currently selected stat we need to return data for.
+ * @param {number} dateRangeLength    The number of days to extract data for. Pads empty data days.
+ * @param {Array}  dataLabels         The labels to be displayed.
+ * @param {Array}  tooltipDataFormats The formats to be used for the tooltip data.
+ * @param {Array}  chartDataFormats   The formats to be used for the chart data (GA4 only).
  * @return {Array} The dataMap ready for charting.
  */
 function extractChartData(
@@ -53,7 +53,7 @@ function extractChartData(
 	selectedStats,
 	dateRangeLength,
 	dataLabels,
-	dataFormats,
+	tooltipDataFormats,
 	chartDataFormats
 ) {
 	if ( moduleSlug === 'analytics-4' ) {
@@ -63,7 +63,7 @@ function extractChartData(
 				selectedStats,
 				dateRangeLength,
 				dataLabels,
-				dataFormats,
+				tooltipDataFormats,
 				chartDataFormats
 			) || []
 		);
@@ -76,7 +76,7 @@ function extractChartData(
 			0,
 			1,
 			dataLabels,
-			dataFormats
+			tooltipDataFormats
 		) || []
 	);
 }
@@ -87,7 +87,7 @@ export default function AnalyticsStats( props ) {
 		selectedStats,
 		dateRangeLength,
 		dataLabels,
-		dataFormats,
+		tooltipDataFormats,
 		chartDataFormats,
 		statsColor,
 		gatheringData,
@@ -111,7 +111,7 @@ export default function AnalyticsStats( props ) {
 		selectedStats,
 		dateRangeLength,
 		dataLabels,
-		dataFormats,
+		tooltipDataFormats,
 		chartDataFormats
 	);
 
@@ -182,7 +182,7 @@ AnalyticsStats.propTypes = {
 	dateRangeLength: PropTypes.number.isRequired,
 	selectedStats: PropTypes.number.isRequired,
 	dataLabels: PropTypes.arrayOf( PropTypes.string ).isRequired,
-	dataFormats: PropTypes.arrayOf( PropTypes.func ).isRequired,
+	tooltipDataFormats: PropTypes.arrayOf( PropTypes.func ).isRequired,
 	statsColor: PropTypes.string.isRequired,
 	gatheringData: PropTypes.bool,
 	moduleSlug: PropTypes.string.isRequired,
