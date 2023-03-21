@@ -390,6 +390,18 @@ export function provideCurrentSurvey(
 }
 
 /**
+ * Provides user tracking consent state.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object}  registry Registry object to dispatch to.
+ * @param {boolean} enabled  Optional. Whether tracking consent has been granted. Defaults to `true`.
+ */
+export function provideTracking( registry, enabled = true ) {
+	registry.dispatch( CORE_USER ).receiveGetTracking( { enabled } );
+}
+
+/**
  * Mutes a fetch request to the given URL once.
  *
  * Useful for mocking a request for the purpose of preventing a fetch error
