@@ -20,6 +20,7 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import { identity } from 'lodash';
 
 /**
  * WordPress dependencies
@@ -475,7 +476,7 @@ const SearchFunnelWidgetGA4 = ( { Widget, WidgetReportError } ) => {
 									maximumFractionDigits: 2,
 								} ),
 						] }
-						chartDataFormats={ [ ( x ) => x, ( x ) => x * 100 ] }
+						chartDataFormats={ [ identity, ( x ) => x * 100 ] }
 						statsColor={
 							SearchFunnelWidgetGA4.metrics[ selectedStats ].color
 						}

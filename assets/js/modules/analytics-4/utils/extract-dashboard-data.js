@@ -25,6 +25,7 @@ import classnames from 'classnames';
  * WordPress dependencies
  */
 import { __, sprintf, _x } from '@wordpress/i18n';
+import { identity } from 'lodash';
 
 /**
  * Internal dependencies
@@ -98,7 +99,7 @@ export function extractAnalytics4DashboardData(
 			} ),
 		( x ) => numFmt( x, 's' ),
 	],
-	chartDataFormats = [ ( x ) => x, ( x ) => x, ( x ) => x * 100, ( x ) => x ]
+	chartDataFormats = [ identity, identity, ( x ) => x * 100, identity ]
 ) {
 	if ( ! Array.isArray( report?.rows ) ) {
 		return false;
