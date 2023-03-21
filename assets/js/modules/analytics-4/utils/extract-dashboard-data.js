@@ -20,12 +20,12 @@
  * External dependencies
  */
 import classnames from 'classnames';
+import { identity } from 'lodash';
 
 /**
  * WordPress dependencies
  */
 import { __, sprintf, _x } from '@wordpress/i18n';
-import { identity } from 'lodash';
 
 /**
  * Internal dependencies
