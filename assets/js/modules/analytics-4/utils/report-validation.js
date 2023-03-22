@@ -59,9 +59,15 @@ export function isValidMetrics( metrics ) {
 				metric.hasOwnProperty( 'name' ) && isValidName( metric.name );
 
 			// 'expression' is optional; if provided, it must be a string.
-			const validExpression =
-				! metric.hasOwnProperty( 'expression' ) ||
-				typeof metric.expression === 'string';
+			// 'expression' is optional, so if it wasn't provided, we can
+			// return early.
+			if ( ! metric.hasOwnProperty( 'expression' ) ) {
+				return validName;
+			}
+
+			// 'expression', if provided, must be a string.
+			const validExpression = typeof metric.expression === 'string';
+
 			return validName && validExpression;
 		},
 		isValidName

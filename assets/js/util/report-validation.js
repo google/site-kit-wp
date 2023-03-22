@@ -42,14 +42,15 @@ export function isValidStringsOrObjects(
 
 	if ( Array.isArray( data ) ) {
 		return data.every( ( item ) => {
-			switch ( typeof item ) {
-				case 'string':
-					return verifyStringFunction( item );
-				case 'object':
-					return verifyObjectFunction( item );
-				default:
-					return false;
+			if ( typeof item === 'string' ) {
+				return verifyStringFunction( item );
 			}
+			
+			if ( typeof item === 'object' ) {
+				return verifyObjectFunction( item );
+			}
+
+			return false;
 		} );
 	}
 
