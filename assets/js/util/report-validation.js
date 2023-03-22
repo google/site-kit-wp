@@ -45,7 +45,7 @@ export function isValidStringsOrObjects(
 			if ( typeof item === 'string' ) {
 				return verifyStringFunction( item );
 			}
-			
+
 			if ( typeof item === 'object' ) {
 				return verifyObjectFunction( item );
 			}
