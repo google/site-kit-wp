@@ -58,7 +58,6 @@ export function isValidMetrics( metrics ) {
 			const validName =
 				metric.hasOwnProperty( 'name' ) && isValidName( metric.name );
 
-			// 'expression' is optional; if provided, it must be a string.
 			// 'expression' is optional, so if it wasn't provided, we can
 			// return early.
 			if ( ! metric.hasOwnProperty( 'expression' ) ) {
