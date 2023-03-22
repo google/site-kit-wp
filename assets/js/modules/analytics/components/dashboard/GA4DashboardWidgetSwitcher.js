@@ -31,16 +31,16 @@ const { useSelect } = Data;
 export default function GA4DashboardWidgetSwitcher( {
 	UA,
 	GA4,
-	...widgetsProps
+	...widgetProps
 } ) {
 	const isGA4DashboardView = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).isGA4DashboardView()
 	);
 
 	return isGA4DashboardView ? (
-		<GA4 { ...widgetsProps } />
+		<GA4 { ...widgetProps } />
 	) : (
-		<UA { ...widgetsProps } />
+		<UA { ...widgetProps } />
 	);
 }
 

@@ -66,11 +66,11 @@ export const registerWidgets = ( widgets ) => {
 	widgets.registerWidget(
 		'searchFunnel',
 		{
-			Component: ( widgetsProps ) => (
+			Component: ( widgetProps ) => (
 				<GA4DashboardWidgetSwitcher
 					UA={ SearchFunnelWidget }
 					GA4={ SearchFunnelWidgetGA4 }
-					{ ...widgetsProps }
+					{ ...widgetProps }
 				/>
 			),
 			width: [ widgets.WIDGET_WIDTHS.FULL ],
