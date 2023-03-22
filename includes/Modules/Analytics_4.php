@@ -374,9 +374,9 @@ final class Analytics_4 extends Module
 	 * @since 1.35.0
 	 * @since n.e.x.t Added $account_ticket_params.
 	 *
-	 * @param string $account_id     Account ID.
+	 * @param string $account_id            Account ID.
 	 * @param array  $account_ticket_params {
-	 *      Account ticket parameters.
+	 *     Account ticket parameters.
 	 *
 	 *     @type string $accountTicketId Account ticket ID. UA / GA4
 	 *     @type string $propertyName    Property display name. UA / GA4
