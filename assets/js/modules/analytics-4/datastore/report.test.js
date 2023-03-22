@@ -383,7 +383,7 @@ describe( 'modules/analytics-4 report', () => {
 					expect( isGatheringData() ).toBe( true );
 				} );
 
-				it( 'should return FALSE if the connnected GA4 property is older than treww days', async () => {
+				it( 'should return FALSE if the connnected GA4 property is older than three days', async () => {
 					muteFetch(
 						new RegExp(
 							'^/google-site-kit/v1/modules/analytics-4/data/data-available'

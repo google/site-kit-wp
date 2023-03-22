@@ -53,7 +53,7 @@ import {
 } from './settings';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { MODULES_TAGMANAGER } from '../../tagmanager/datastore/constants';
-import { enabledFeatures } from '../../../features';
+import { enabledFeatures, isFeatureEnabled } from '../../../features';
 
 describe( 'modules/analytics settings', () => {
 	let registry;
@@ -1046,8 +1046,8 @@ describe( 'modules/analytics settings', () => {
 
 		describe( 'shouldPromptGA4DashboardView', () => {
 			it( 'should return false when the `ga4Reporting` feature flag is not enabled', () => {
-				// Delete the `ga4Reporting` feature flag if it exists.
-				enabledFeatures.delete( 'ga4Reporting' );
+				// Verify the `ga4Reporting` feature flag is not enabled.
+				expect( isFeatureEnabled( 'ga4Reporting' ) ).toBe( false );
 
 				expect(
 					registry

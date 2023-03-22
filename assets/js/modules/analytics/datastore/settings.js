@@ -281,8 +281,9 @@ export const getCanUseSnippet = createRegistrySelector( ( select ) => () => {
  * @return {boolean|undefined} True if the dashboard view is GA4, false if it is UA, or undefined if not loaded.
  */
 export const isGA4DashboardView = createRegistrySelector( ( select ) => () => {
-	const isGA4Enabled = isFeatureEnabled( 'ga4Reporting' );
-	if ( ! isGA4Enabled ) {
+	const ga4ReportingEnabled = isFeatureEnabled( 'ga4Reporting' );
+
+	if ( ! ga4ReportingEnabled ) {
 		return false;
 	}
 
@@ -307,12 +308,13 @@ export const isGA4DashboardView = createRegistrySelector( ( select ) => () => {
  *
  * @since n.e.x.t
  *
- * @return {boolean} True if the user should be prompted to switch to GA4 Dashboard, false otherwise, or undefined if not loaded.
+ * @return {boolean} True if the user should be prompted to switch to the GA4 Dashboard View, false otherwise, or undefined if not loaded.
  */
 export const shouldPromptGA4DashboardView = createRegistrySelector(
 	( select ) => () => {
-		const isGA4Enabled = isFeatureEnabled( 'ga4Reporting' );
-		if ( ! isGA4Enabled ) {
+		const ga4ReportingEnabled = isFeatureEnabled( 'ga4Reporting' );
+
+		if ( ! ga4ReportingEnabled ) {
 			return false;
 		}
 
