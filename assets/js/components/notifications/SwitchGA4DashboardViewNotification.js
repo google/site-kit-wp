@@ -19,7 +19,6 @@
 /**
  * WordPress dependencies
  */
-import { useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -49,10 +48,10 @@ export default function SwitchGA4DashboardViewNotification() {
 
 	const { setDashboardView, saveSettings } = useDispatch( MODULES_ANALYTICS );
 
-	const handleCTAClick = useCallback( async () => {
+	const handleCTAClick = async () => {
 		await setDashboardView( 'google-analytics-4' );
 		await saveSettings();
-	}, [ saveSettings, setDashboardView ] );
+	};
 
 	if ( ! shouldPromptGA4DashboardView ) {
 		return null;
