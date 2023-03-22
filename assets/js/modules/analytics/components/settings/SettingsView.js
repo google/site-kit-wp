@@ -26,11 +26,15 @@ import { __ } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import { ExistingGTMPropertyNotice } from '../common';
+import DisplaySetting from '../../../../components/DisplaySetting';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import GA4SettingsView from './GA4SettingsView';
 import UASettingsView from './UASettingsView';
 import OptionalSettingsView from './OptionalSettingsView';
-import { MODULES_ANALYTICS } from '../../datastore/constants';
+import {
+	DASHBOARD_VIEW_GA4,
+	MODULES_ANALYTICS,
+} from '../../datastore/constants';
 import { MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
@@ -59,6 +63,10 @@ export default function SettingsView() {
 			select( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID()
 	);
 
+	const dashboardView = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getDashboardView()
+	);
+
 	return (
 		<div className="googlesitekit-setup-module googlesitekit-setup-module--analytics">
 			{ ga4ReportingEnabled && ! isGA4Connected && (
@@ -84,6 +92,32 @@ export default function SettingsView() {
 			<ExistingGTMPropertyNotice
 				gtmAnalyticsPropertyID={ gtmAnalyticsPropertyID }
 			/>
+
+			{ ga4ReportingEnabled && (
+				<div className="googlesitekit-settings-module__meta-items">
+					<div className="googlesitekit-settings-module__meta-item">
+						<h5 className="googlesitekit-settings-module__meta-item-type">
+							{ __( 'Dashboard view', 'google-site-kit' ) }
+						</h5>
+						<p className="googlesitekit-settings-module__meta-item-data">
+							<DisplaySetting
+								value={
+									isGA4Connected &&
+									dashboardView === DASHBOARD_VIEW_GA4
+										? __(
+												'Google Analytics 4',
+												'google-site-kit'
+										  )
+										: __(
+												'Universal Analytics',
+												'google-site-kit'
+										  )
+								}
+							/>
+						</p>
+					</div>
+				</div>
+			) }
 
 			<UASettingsView />
 
