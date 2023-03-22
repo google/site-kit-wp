@@ -50,6 +50,7 @@ import {
 	PROPERTY_CREATE,
 	PROFILE_CREATE,
 	FORM_SETUP,
+	DASHBOARD_VIEW_GA4,
 } from './constants';
 import { createStrictSelect } from '../../../googlesitekit/data/utils';
 import { isPermissionScopeError } from '../../../util/errors';
@@ -292,12 +293,13 @@ export const isGA4DashboardView = createRegistrySelector( ( select ) => () => {
 		return false;
 	}
 
-	const ga4Settings = select( MODULES_ANALYTICS ).getSettings();
-	if ( ! ga4Settings ) {
+	const dashboardView = select( MODULES_ANALYTICS ).getDashboardView();
+
+	if ( dashboardView === undefined ) {
 		return undefined;
 	}
 
-	return ga4Settings.dashboardView === 'google-analytics-4';
+	return dashboardView === DASHBOARD_VIEW_GA4;
 } );
 
 /**

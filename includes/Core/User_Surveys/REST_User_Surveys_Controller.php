@@ -13,6 +13,7 @@ namespace Google\Site_Kit\Core\User_Surveys;
 use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\REST_API\REST_Route;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
+use WP_Error;
 use WP_REST_Request;
 use WP_REST_Response;
 use WP_REST_Server;
@@ -35,7 +36,7 @@ class REST_User_Surveys_Controller {
 	protected $authentication;
 
 	/**
-	 * Survey_Timeouts isntance.
+	 * Survey_Timeouts instance.
 	 *
 	 * @since 1.73.0
 	 * @var Survey_Timeouts
@@ -121,7 +122,7 @@ class REST_User_Surveys_Controller {
 							$this->queue->enqueue( $response );
 						}
 
-						return rest_ensure_response( $response );
+						return new WP_REST_Response( array( 'success' => true ) );
 					},
 					'permission_callback' => $can_authenticate,
 					'args'                => array(
@@ -165,7 +166,7 @@ class REST_User_Surveys_Controller {
 							}
 						}
 
-						return rest_ensure_response( $response );
+						return new WP_REST_Response( $response );
 					},
 					'permission_callback' => $can_authenticate,
 					'args'                => array(
