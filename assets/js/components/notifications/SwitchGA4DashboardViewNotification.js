@@ -27,7 +27,10 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import BannerNotification from './BannerNotification';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import { MODULES_ANALYTICS } from '../../modules/analytics/datastore/constants';
+import {
+	DASHBOARD_VIEW_GA4,
+	MODULES_ANALYTICS,
+} from '../../modules/analytics/datastore/constants';
 import GA4SuccessGreenSVG from '../../../svg/graphics/ga4-success-green.svg';
 
 const { useDispatch, useSelect } = Data;
@@ -44,7 +47,7 @@ export default function SwitchGA4DashboardViewNotification() {
 	const { setDashboardView, saveSettings } = useDispatch( MODULES_ANALYTICS );
 
 	const handleCTAClick = async () => {
-		await setDashboardView( 'google-analytics-4' );
+		await setDashboardView( DASHBOARD_VIEW_GA4 );
 		await saveSettings();
 	};
 

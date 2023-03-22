@@ -19,7 +19,10 @@
 /**
  * Internal dependencies
  */
-import { MODULES_ANALYTICS } from '../../modules/analytics/datastore/constants';
+import {
+	DASHBOARD_VIEW_UA,
+	MODULES_ANALYTICS,
+} from '../../modules/analytics/datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 import SwitchGA4DashboardViewNotification from './SwitchGA4DashboardViewNotification';
 import {
@@ -54,7 +57,7 @@ export default {
 			] );
 
 			registry.dispatch( MODULES_ANALYTICS ).setSettings( {
-				dashboardView: 'universal-analytics',
+				dashboardView: DASHBOARD_VIEW_UA,
 			} );
 
 			registry

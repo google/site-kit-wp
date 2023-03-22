@@ -26,6 +26,8 @@ import {
 	ACCOUNT_CREATE,
 	PROPERTY_CREATE,
 	PROFILE_CREATE,
+	DASHBOARD_VIEW_UA,
+	DASHBOARD_VIEW_GA4,
 } from './constants';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import { MODULES_ANALYTICS_4 } from '../../analytics-4/datastore/constants';
@@ -73,7 +75,7 @@ describe( 'modules/analytics settings', () => {
 		trackingDisabled: [],
 		anonymizeIP: true,
 		canUseSnippet: true,
-		dashboardView: 'universal-analytics',
+		dashboardView: DASHBOARD_VIEW_UA,
 	};
 	const tagWithPermission = {
 		accountID: '12345',
@@ -1015,7 +1017,7 @@ describe( 'modules/analytics settings', () => {
 					},
 				] );
 				registry.dispatch( MODULES_ANALYTICS ).setSettings( {
-					dashboardView: 'universal-analytics',
+					dashboardView: DASHBOARD_VIEW_UA,
 				} );
 
 				expect(
@@ -1033,7 +1035,7 @@ describe( 'modules/analytics settings', () => {
 					},
 				] );
 				registry.dispatch( MODULES_ANALYTICS ).setSettings( {
-					dashboardView: 'google-analytics-4',
+					dashboardView: DASHBOARD_VIEW_GA4,
 				} );
 
 				expect(
@@ -1127,7 +1129,7 @@ describe( 'modules/analytics settings', () => {
 					},
 				] );
 				registry.dispatch( MODULES_ANALYTICS ).setSettings( {
-					dashboardView: 'google-analytics-4',
+					dashboardView: DASHBOARD_VIEW_GA4,
 				} );
 
 				expect(
@@ -1148,7 +1150,7 @@ describe( 'modules/analytics settings', () => {
 				] );
 
 				registry.dispatch( MODULES_ANALYTICS ).setSettings( {
-					dashboardView: 'universal-analytics',
+					dashboardView: DASHBOARD_VIEW_UA,
 				} );
 
 				// Directly set the `isGatheringData` selector to return true.
@@ -1175,7 +1177,7 @@ describe( 'modules/analytics settings', () => {
 				] );
 
 				registry.dispatch( MODULES_ANALYTICS ).setSettings( {
-					dashboardView: 'universal-analytics',
+					dashboardView: DASHBOARD_VIEW_UA,
 				} );
 
 				// Directly set the `isGatheringData` selector to return false.
