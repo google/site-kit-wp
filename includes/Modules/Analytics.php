@@ -327,12 +327,21 @@ final class Analytics extends Module
 			exit;
 		}
 
-		$new_settings    = array();
-		$web_property_id = htmlspecialchars( $input->filter( INPUT_GET, 'webPropertyId' ) );
-		$profile_id      = htmlspecialchars( $input->filter( INPUT_GET, 'profileId' ) );
+		$new_settings = array();
 
-		if ( $web_property_id && $profile_id ) {
+		if ( ! Feature_Flags::enabled( 'ga4Reporting' ) ) {
 			// UA-SPECIFIC Provisioning callback only.
+			$web_property_id = htmlspecialchars( $input->filter( INPUT_GET, 'webPropertyId' ) );
+			$profile_id      = htmlspecialchars( $input->filter( INPUT_GET, 'profileId' ) );
+
+			if ( ! $web_property_id || ! $profile_id ) {
+				// If ga4Reporting is not enabled and UA property or profile IDs are missing, something went wrong.
+				wp_safe_redirect(
+					$this->context->admin_url( 'dashboard', array( 'error_code' => 'callback_missing_parameter' ) )
+				);
+				exit;
+			}
+
 			// Retrieve the internal web property id.
 			try {
 				$web_property = $this->get_service( 'analytics' )->management_webproperties->get( $account_id, $web_property_id );
@@ -346,12 +355,6 @@ final class Analytics extends Module
 			$new_settings['internalWebPropertyID'] = $web_property->getInternalWebPropertyId();
 			$new_settings['propertyID']            = $web_property_id;
 			$new_settings['profileID']             = $profile_id;
-		} elseif ( ! Feature_Flags::enabled( 'ga4Reporting' ) ) {
-			// If ga4Reporting is not enabled and UA property or profile IDs are missing, something went wrong.
-			wp_safe_redirect(
-				$this->context->admin_url( 'dashboard', array( 'error_code' => 'callback_missing_parameter' ) )
-			);
-			exit;
 		}
 
 		// At this point, account creation was successful.
