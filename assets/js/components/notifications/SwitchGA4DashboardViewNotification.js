@@ -24,7 +24,6 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { SpinnerButton } from 'googlesitekit-components';
 import Data from 'googlesitekit-data';
 import BannerNotification from './BannerNotification';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
@@ -36,10 +35,6 @@ const { useDispatch, useSelect } = Data;
 export default function SwitchGA4DashboardViewNotification() {
 	const shouldPromptGA4DashboardView = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).shouldPromptGA4DashboardView()
-	);
-
-	const isSaving = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).isDoingSubmitChanges()
 	);
 
 	const ga4DocumentationURL = useSelect( ( select ) =>
@@ -68,16 +63,9 @@ export default function SwitchGA4DashboardViewNotification() {
 				'Update your dashboard to show data from the new version of Analytics (Google Analytics 4) instead of the old version (Universal Analytics).',
 				'google-site-kit'
 			) }
-			ctaComponent={
-				<SpinnerButton
-					className="googlesitekit-notification__cta"
-					onClick={ handleCTAClick }
-					isSaving={ isSaving }
-					disabled={ isSaving }
-				>
-					{ __( 'Update dashboard', 'google-site-kit' ) }
-				</SpinnerButton>
-			}
+			ctaLink="#"
+			ctaLabel={ __( 'Update dashboard', 'google-site-kit' ) }
+			onCTAClick={ handleCTAClick }
 			dismiss={ __( 'Maybe later', 'google-site-kit' ) }
 			WinImageSVG={ GA4SuccessGreenSVG }
 			learnMoreLabel={ __( 'Learn what’s new', 'google-site-kit' ) }
