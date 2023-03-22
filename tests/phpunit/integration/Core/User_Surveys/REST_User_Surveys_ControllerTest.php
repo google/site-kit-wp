@@ -164,7 +164,7 @@ class REST_User_Surveys_ControllerTest extends TestCase {
 		$this->fake_proxy_site_connection();
 		$response = $this->send_request( 'survey-trigger', array( 'triggerID' => 'test_trigger' ) );
 
-		$this->assertEqualSets( $survey, $response->get_data() );
+		$this->assertEqualSets( array( 'success' => true ), $response->get_data() );
 		$this->assertEqualSets( $survey, $this->queue->front() );
 	}
 

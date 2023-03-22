@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { CORE_USER } from './constants';
+import { CORE_USER, GLOBAL_SURVEYS_TIMEOUT_SLUG } from './constants';
 import {
 	createTestRegistry,
 	untilResolved,
@@ -292,9 +292,8 @@ describe( 'core/user surveys', () => {
 				muteFetch( surveyEventEndpoint );
 
 				// Survey events are only sent if there is a current survey.
-				registry.dispatch( CORE_USER ).receiveTriggerSurvey( survey, {
-					triggerID: 'optimizeSurvey',
-				} );
+				registry.dispatch( CORE_USER ).receiveGetSurvey( { survey } );
+
 				// Send a survey event.
 				await registry
 					.dispatch( CORE_USER )
@@ -314,16 +313,18 @@ describe( 'core/user surveys', () => {
 
 	describe( 'selectors', () => {
 		describe( 'getCurrentSurvey', () => {
-			it( 'returns null when no current survey is set', () => {
+			it( 'returns undefined when no current survey is set', () => {
+				registry
+					.dispatch( CORE_USER )
+					.finishResolution( 'getCurrentSurvey', [] );
+
 				expect(
 					registry.select( CORE_USER ).getCurrentSurvey()
-				).toBeNull();
+				).toBeUndefined();
 			} );
 
 			it( 'returns the current survey when it is set', () => {
-				registry.dispatch( CORE_USER ).receiveTriggerSurvey( survey, {
-					triggerID: 'optimizeSurvey',
-				} );
+				registry.dispatch( CORE_USER ).receiveGetSurvey( { survey } );
 
 				expect(
 					registry.select( CORE_USER ).getCurrentSurvey()
@@ -332,16 +333,14 @@ describe( 'core/user surveys', () => {
 		} );
 
 		describe( 'getCurrentSurveySession', () => {
-			it( 'returns null when no current survey session is set', () => {
+			it( 'returns undefined when no current survey session is set', () => {
 				expect(
 					registry.select( CORE_USER ).getCurrentSurveySession()
-				).toBeNull();
+				).toBeUndefined();
 			} );
 
 			it( 'returns the current survey session when set', () => {
-				registry.dispatch( CORE_USER ).receiveTriggerSurvey( survey, {
-					triggerID: 'optimizeSurvey',
-				} );
+				registry.dispatch( CORE_USER ).receiveGetSurvey( { survey } );
 
 				expect(
 					registry.select( CORE_USER ).getCurrentSurveySession()
@@ -477,6 +476,39 @@ describe( 'core/user surveys', () => {
 					.select( CORE_USER )
 					.isTimingOutSurvey( slug, timeout );
 				expect( timingOut ).toBe( false );
+			} );
+		} );
+
+		describe( 'areSurveysOnCooldown', () => {
+			it( 'should return undefined if getSurveyTimeouts selector is not resolved yet', async () => {
+				fetchMock.getOnce( surveyTimeoutsEndpoint, { body: [] } );
+
+				expect(
+					registry.select( CORE_USER ).areSurveysOnCooldown()
+				).toBeUndefined();
+
+				await untilResolved( registry, CORE_USER ).getSurveyTimeouts();
+			} );
+
+			it( 'should return TRUE if surveys are on cooldown', () => {
+				registry
+					.dispatch( CORE_USER )
+					.receiveGetSurveyTimeouts( [
+						'foo',
+						GLOBAL_SURVEYS_TIMEOUT_SLUG,
+					] );
+				expect(
+					registry.select( CORE_USER ).areSurveysOnCooldown()
+				).toBe( true );
+			} );
+
+			it( 'should return FALSE if surveys are not on cooldown', () => {
+				registry
+					.dispatch( CORE_USER )
+					.receiveGetSurveyTimeouts( [ 'foo', 'bar' ] );
+				expect(
+					registry.select( CORE_USER ).areSurveysOnCooldown()
+				).toBe( false );
 			} );
 		} );
 	} );
