@@ -42,7 +42,10 @@ import {
 	setupAnalytics4ZeroData,
 } from './common-GA4.stories';
 import FeaturesProvider from '../FeaturesProvider';
-import { MODULES_ANALYTICS } from '../../modules/analytics/datastore/constants';
+import {
+	DASHBOARD_VIEW_GA4,
+	MODULES_ANALYTICS,
+} from '../../modules/analytics/datastore/constants';
 
 const Template = ( { setupRegistry, features = [] } ) => {
 	const enabledFeatures = new Set( features );
@@ -69,7 +72,7 @@ ReadyGA4.args = {
 		setupSearchConsoleAnalyticsMockReports( registry );
 		setupAnalytics4MockReports( registry );
 		registry.dispatch( MODULES_ANALYTICS ).setSettings( {
-			dashboardView: 'google-analytics-4',
+			dashboardView: DASHBOARD_VIEW_GA4,
 		} );
 	},
 };
@@ -157,7 +160,7 @@ GatheringDataGA4.args = {
 		setupSearchConsoleAnalyticsGatheringData( registry );
 		setupAnalytics4GatheringData( registry );
 		registry.dispatch( MODULES_ANALYTICS ).setSettings( {
-			dashboardView: 'google-analytics-4',
+			dashboardView: DASHBOARD_VIEW_GA4,
 		} );
 	},
 };
@@ -178,7 +181,7 @@ ZeroDataGA4.args = {
 		setupSearchConsoleAnalyticsZeroData( registry );
 		setupAnalytics4ZeroData( registry );
 		registry.dispatch( MODULES_ANALYTICS ).setSettings( {
-			dashboardView: 'google-analytics-4',
+			dashboardView: DASHBOARD_VIEW_GA4,
 		} );
 	},
 };

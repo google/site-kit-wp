@@ -25,7 +25,11 @@ import {
 	render,
 } from '../../../../../../tests/js/test-utils';
 import { enabledFeatures } from '../../../../features';
-import { MODULES_ANALYTICS } from '../../datastore/constants';
+import {
+	DASHBOARD_VIEW_GA4,
+	DASHBOARD_VIEW_UA,
+	MODULES_ANALYTICS,
+} from '../../datastore/constants';
 import GA4DashboardWidgetSwitcher from './GA4DashboardWidgetSwitcher';
 
 describe( 'GA4DashboardWidgetSwitcher', () => {
@@ -49,7 +53,7 @@ describe( 'GA4DashboardWidgetSwitcher', () => {
 
 	it( 'should render the UA widget when UA dashboard view is enabled', () => {
 		registry.dispatch( MODULES_ANALYTICS ).setSettings( {
-			dashboardView: 'universal-analytics',
+			dashboardView: DASHBOARD_VIEW_UA,
 		} );
 
 		const { container } = render(
@@ -66,7 +70,7 @@ describe( 'GA4DashboardWidgetSwitcher', () => {
 	it( 'should render the GA4 widget when GA4 dashboard view is enabled', () => {
 		enabledFeatures.add( 'ga4Reporting' );
 		registry.dispatch( MODULES_ANALYTICS ).setSettings( {
-			dashboardView: 'google-analytics-4',
+			dashboardView: DASHBOARD_VIEW_GA4,
 		} );
 
 		const { container } = render(

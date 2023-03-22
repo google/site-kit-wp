@@ -38,7 +38,10 @@ import {
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import AdminBarWidgets from './AdminBarWidgets';
-import { MODULES_ANALYTICS } from '../../modules/analytics/datastore/constants';
+import {
+	DASHBOARD_VIEW_GA4,
+	MODULES_ANALYTICS,
+} from '../../modules/analytics/datastore/constants';
 
 const Template = ( { setupRegistry = () => {}, ...args } ) => (
 	<WithRegistrySetup func={ setupRegistry }>
@@ -113,7 +116,7 @@ AnalyticsActiveWithGA4Enabled.args = {
 		setupSearchConsoleMockReports( registry );
 		setupAnalytics4MockReports( registry );
 		registry.dispatch( MODULES_ANALYTICS ).setSettings( {
-			dashboardView: 'google-analytics-4',
+			dashboardView: DASHBOARD_VIEW_GA4,
 		} );
 	},
 };
@@ -143,7 +146,7 @@ Analytics4WidgetsLoading.args = {
 		setupSearchConsoleMockReports( registry );
 		setupAnalytics4Loading( registry );
 		registry.dispatch( MODULES_ANALYTICS ).setSettings( {
-			dashboardView: 'google-analytics-4',
+			dashboardView: DASHBOARD_VIEW_GA4,
 		} );
 	},
 };
