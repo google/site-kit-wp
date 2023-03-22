@@ -46,6 +46,7 @@ import Link from '../../../../components/Link';
 import { isValidAccountID } from '../../util';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import GA4DashboardViewToggle from './GA4DashboardViewToggle';
 import { useFeature } from '../../../../hooks/useFeature';
 const { useSelect } = Data;
 
@@ -114,6 +115,19 @@ export default function SettingsForm( {
 			<ExistingGTMPropertyNotice
 				gtmAnalyticsPropertyID={ analyticsSinglePropertyID }
 			/>
+
+			{ ga4ReportingEnabled && (
+				<div className="googlesitekit-settings-module__fields-group googlesitekit-settings-module__fields-group--no-border">
+					<h4 className="googlesitekit-settings-module__fields-group-title">
+						{ __( 'Dashboard view', 'google-site-kit' ) }
+					</h4>
+					<div className="googlesitekit-settings-module__meta-item googlesitekit-settings-module__meta-item--dashboard-view">
+						{ isGA4Connected && <GA4DashboardViewToggle /> }
+						{ ! isGA4Connected &&
+							__( 'Universal Analytics', 'google-site-kit' ) }
+					</div>
+				</div>
+			) }
 
 			<SettingsControls hasModuleAccess={ hasAnalyticsAccess } />
 

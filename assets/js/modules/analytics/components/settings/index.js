@@ -21,6 +21,7 @@ export { default as SettingsForm } from './SettingsForm';
 export { default as SettingsView } from './SettingsView';
 export { default as SettingsControls } from './SettingsControls';
 export { default as SettingsUseSnippetSwitch } from './SettingsUseSnippetSwitch';
+export { default as GA4DashboardViewToggle } from './GA4DashboardViewToggle';
 export { default as GA4SettingsControls } from './GA4SettingsControls';
 export { default as GA4SettingsNotice } from './GA4SettingsNotice';
 export { default as OptionalSettingsView } from './OptionalSettingsView';
