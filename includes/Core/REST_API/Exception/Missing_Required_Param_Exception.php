@@ -10,6 +10,7 @@
 
 namespace Google\Site_Kit\Core\REST_API\Exception;
 
+use Exception;
 use Google\Site_Kit\Core\Contracts\WP_Errorable;
 use WP_Error;
 
@@ -20,7 +21,7 @@ use WP_Error;
  * @access private
  * @ignore
  */
-class Missing_Required_Param_Exception extends \Exception implements WP_Errorable {
+class Missing_Required_Param_Exception extends Exception implements WP_Errorable {
 
 	/**
 	 * Status code.
@@ -35,10 +36,10 @@ class Missing_Required_Param_Exception extends \Exception implements WP_Errorabl
 	 * @since n.e.x.t
 	 *
 	 * @param string $parameter_name Missing request parameter name.
-	 * @param int    $code           Status code.
+	 * @param int    $code           Optional. HTTP Status code of resulting error. Defaults to 400.
 	 */
-	public function __construct( $parameter_name, $code = 0 ) {
-		$this->status = (int) $code ?: 400;
+	public function __construct( $parameter_name, $code = 400 ) {
+		$this->status = (int) $code;
 
 		parent::__construct(
 			/* translators: %s: Missing parameter name */
