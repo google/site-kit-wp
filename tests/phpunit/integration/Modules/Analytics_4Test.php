@@ -320,6 +320,68 @@ class Analytics_4Test extends TestCase {
 		);
 	}
 
+	public function data_create_account_ticket_required_parameters() {
+		return array(
+			'displayName'    => array( 'displayName' ),
+			'regionCode'     => array( 'regionCode' ),
+			'propertyName'   => array( 'propertyName' ),
+			'dataStreamName' => array( 'dataStreamName' ),
+			'timezone'       => array( 'timezone' ),
+		);
+	}
+
+	/**
+	 * @dataProvider data_create_account_ticket_required_parameters
+	 */
+	public function test_create_account_ticket__required_parameters( $required_param ) {
+		$valid_params = array(
+			'displayName'    => 'test account name',
+			'regionCode'     => 'US',
+			'propertyName'   => 'test property name',
+			'dataStreamName' => 'test stream name',
+			'timezone'       => 'UTC',
+		);
+
+		$provision_account_ticket_request = null;
+		FakeHttp::fake_google_http_handler(
+			$this->analytics->get_client(),
+			function ( Request $request ) use ( &$provision_account_ticket_request ) {
+				$url = parse_url( $request->getUri() );
+
+				if (
+					'sitekit.withgoogle.com' === $url['host']
+					&& '/v1beta/accounts:provisionAccountTicket' === $url['path']
+				) {
+					$provision_account_ticket_request = $request;
+				}
+
+				return new Response( 200 );
+			}
+		);
+
+		$this->analytics->register();
+		// Grant required scopes.
+		$this->authentication->get_oauth_client()->set_granted_scopes(
+			array_merge(
+				$this->authentication->get_oauth_client()->get_required_scopes(),
+				(array) Analytics::EDIT_SCOPE
+			)
+		);
+
+		$data = $valid_params;
+		unset( $data[ $required_param ] );
+
+		$response = $this->analytics->set_data( 'create-account-ticket', $data );
+
+		$this->assertWPError( $response );
+		$this->assertEquals( 'missing_required_param', $response->get_error_code() );
+		$this->assertEquals( "Request parameter is empty: $required_param.", $response->get_error_message() );
+		// Ensure transient is not set in the event of a failure.
+		$this->assertFalse( get_transient( Analytics::PROVISION_ACCOUNT_TICKET_ID . '::' . $this->user->ID ) );
+		// Ensure remote request was not made.
+		$this->assertNull( $provision_account_ticket_request );
+	}
+
 	public function test_create_account_ticket() {
 		$account_ticket_id     = 'test-account-ticket-id';
 		$account_display_name  = 'test account name';
@@ -354,7 +416,13 @@ class Analytics_4Test extends TestCase {
 		);
 
 		$this->analytics->register();
-		$data = array();
+		$data = array(
+			'displayName'    => $account_display_name,
+			'regionCode'     => $region_code,
+			'propertyName'   => $property_display_name,
+			'dataStreamName' => $stream_display_name,
+			'timezone'       => $timezone,
+		);
 
 		$response = $this->analytics->set_data( 'create-account-ticket', $data );
 		// Assert that the Analytics edit scope is required.
@@ -368,47 +436,6 @@ class Analytics_4Test extends TestCase {
 		);
 
 		$response = $this->analytics->set_data( 'create-account-ticket', $data );
-
-		// Assert request fails without required parameters.
-
-		$this->assertWPError( $response );
-		$this->assertEquals( 'missing_required_param', $response->get_error_code() );
-		$this->assertMatchesRegularExpression( '#\b(displayName|regionCode|propertyName|dataStreamName|timezone)\b#', $response->get_error_message() );
-		$this->assertFalse( get_transient( Analytics::PROVISION_ACCOUNT_TICKET_ID . '::' . $this->user->ID ) );
-
-		$data['displayName'] = $account_display_name;
-		$response            = $this->analytics->set_data( 'create-account-ticket', $data );
-
-		$this->assertWPError( $response );
-		$this->assertEquals( 'missing_required_param', $response->get_error_code() );
-		$this->assertMatchesRegularExpression( '#\b(displayName|regionCode|propertyName|dataStreamName|timezone)\b#', $response->get_error_message() );
-		$this->assertFalse( get_transient( Analytics::PROVISION_ACCOUNT_TICKET_ID . '::' . $this->user->ID ) );
-
-		$data['regionCode'] = $region_code;
-		$response           = $this->analytics->set_data( 'create-account-ticket', $data );
-
-		$this->assertWPError( $response );
-		$this->assertEquals( 'missing_required_param', $response->get_error_code() );
-		$this->assertMatchesRegularExpression( '#\b(displayName|regionCode|propertyName|dataStreamName|timezone)\b#', $response->get_error_message() );
-		$this->assertFalse( get_transient( Analytics::PROVISION_ACCOUNT_TICKET_ID . '::' . $this->user->ID ) );
-
-		$data['propertyName'] = $property_display_name;
-		$response             = $this->analytics->set_data( 'create-account-ticket', $data );
-
-		$this->assertWPError( $response );
-		$this->assertEquals( 'missing_required_param', $response->get_error_code() );
-		$this->assertMatchesRegularExpression( '#\b(displayName|regionCode|propertyName|dataStreamName|timezone)\b#', $response->get_error_message() );
-		$this->assertFalse( get_transient( Analytics::PROVISION_ACCOUNT_TICKET_ID . '::' . $this->user->ID ) );
-
-		$data['dataStreamName'] = $stream_display_name;
-		$response               = $this->analytics->set_data( 'create-account-ticket', $data );
-
-		$this->assertEquals( 'missing_required_param', $response->get_error_code() );
-		$this->assertMatchesRegularExpression( '#\b(displayName|regionCode|propertyName|dataStreamName|timezone)\b#', $response->get_error_message() );
-		$this->assertFalse( get_transient( Analytics::PROVISION_ACCOUNT_TICKET_ID . '::' . $this->user->ID ) );
-
-		$data['timezone'] = $timezone;
-		$response         = $this->analytics->set_data( 'create-account-ticket', $data );
 
 		// Assert request was made with expected arguments.
 		$this->assertNotWPError( $response );
