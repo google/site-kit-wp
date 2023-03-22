@@ -28,12 +28,14 @@ import { isValidStringsOrObjects } from '../../../util/report-validation';
 
 /**
  * Verifies that provided metrics match allowed values. Metrics can be a string,
- * an array of string, an array of objects or mix of strings and objects. Objects
- * must have a valid "name" property in order to be considered as valid, and they
- * can optionally include an "expression" property.
+ * an array of string, an array of objects or mix of strings and objects.
+ * Objects must have a "name" property that matches the regex `/^[a-zA-Z0-9_]+$/`
+ * to be valid. Objects can optionally include an "expression" property.
  *
- * When a single string is provided, it must be a metric name, or a comma-separated list of metric names.
- * A valid metric name is a string matching the regular expression /^[a-zA-Z0-9_]+$/.
+ * When a single string is provided, it must be a metric name or a comma-separated
+ * list of metric names.
+ *
+ * A metric name must match the regular expression `/^[a-zA-Z0-9_]+$/`.
  *
  * @since 1.94.0
  * @since n.e.x.t Added a regular expression to validate metric names, in keeping with the GA4 API.
