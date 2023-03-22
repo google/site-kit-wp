@@ -301,7 +301,7 @@ final class Analytics extends Module
 			|| $account_ticket_params['accountTicketId'] !== $account_ticket_id
 		) {
 			wp_safe_redirect(
-				$this->context->admin_url( 'module-analytics', array( 'error_code' => 'account_ticket_id_mismatch' ) )
+				$this->context->admin_url( 'dashboard', array( 'error_code' => 'account_ticket_id_mismatch' ) )
 			);
 			exit;
 		}
@@ -313,7 +313,7 @@ final class Analytics extends Module
 		$error = $input->filter( INPUT_GET, 'error' );
 		if ( ! empty( $error ) ) {
 			wp_safe_redirect(
-				$this->context->admin_url( 'module-analytics', array( 'error_code' => htmlspecialchars( $error ) ) )
+				$this->context->admin_url( 'dashboard', array( 'error_code' => htmlspecialchars( $error ) ) )
 			);
 			exit;
 		}
@@ -322,7 +322,7 @@ final class Analytics extends Module
 
 		if ( empty( $account_id ) ) {
 			wp_safe_redirect(
-				$this->context->admin_url( 'module-analytics', array( 'error_code' => 'callback_missing_parameter' ) )
+				$this->context->admin_url( 'dashboard', array( 'error_code' => 'callback_missing_parameter' ) )
 			);
 			exit;
 		}
@@ -338,7 +338,7 @@ final class Analytics extends Module
 				$web_property = $this->get_service( 'analytics' )->management_webproperties->get( $account_id, $web_property_id );
 			} catch ( Exception $e ) {
 				wp_safe_redirect(
-					$this->context->admin_url( 'module-analytics', array( 'error_code' => 'property_not_found' ) )
+					$this->context->admin_url( 'dashboard', array( 'error_code' => 'property_not_found' ) )
 				);
 				exit;
 			}
@@ -349,7 +349,7 @@ final class Analytics extends Module
 		} elseif ( ! Feature_Flags::enabled( 'ga4Reporting' ) ) {
 			// If ga4Reporting is not enabled and UA property or profile IDs are missing, something went wrong.
 			wp_safe_redirect(
-				$this->context->admin_url( 'module-analytics', array( 'error_code' => 'callback_missing_parameter' ) )
+				$this->context->admin_url( 'dashboard', array( 'error_code' => 'callback_missing_parameter' ) )
 			);
 			exit;
 		}
