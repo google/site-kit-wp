@@ -378,21 +378,19 @@ final class Analytics_4 extends Module
 	 * @param array  $account_ticket_params {
 	 *     Account ticket parameters.
 	 *
-	 *     @type string $accountTicketId Account ticket ID. UA / GA4
-	 *     @type string $propertyName    Property display name. UA / GA4
-	 *     @type string $timezone        Timezone. UA / GA4.
-	 *     @type string $profileName     Profile (View) display name. UA only.
-	 *     @type string $dataStreamName  Data stream display name. GA4 only.
+	 *     @type string $accountTicketId Account ticket ID.
+	 *     @type string $propertyName    Property display name.
+	 *     @type string $timezone        Timezone.
+	 *     @type string $profileName     Optional. Profile (View) display name. UA only.
+	 *     @type string $dataStreamName  Optional. Data stream display name. GA4 only.
 	 * }
 	 */
 	private function handle_provisioning_callback( $account_id, $account_ticket_params ) {
 		$account_ticket_params = array_merge(
 			array(
-				'accountTicketId' => null,
-				'propertyName'    => null,
-				'timezone'        => null,
-				'profileName'     => null,
-				'dataStreamName'  => null,
+				'propertyName'   => null,
+				'timezone'       => null,
+				'dataStreamName' => null,
 			),
 			$account_ticket_params
 		);
