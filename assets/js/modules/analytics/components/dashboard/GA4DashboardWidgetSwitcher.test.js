@@ -47,7 +47,7 @@ describe( 'GA4DashboardWidgetSwitcher', () => {
 		] );
 	} );
 
-	it( 'should render UA widget when UA dashboard view is enabled', () => {
+	it( 'should render the UA widget when UA dashboard view is enabled', () => {
 		registry.dispatch( MODULES_ANALYTICS ).setSettings( {
 			dashboardView: 'universal-analytics',
 		} );
@@ -63,7 +63,7 @@ describe( 'GA4DashboardWidgetSwitcher', () => {
 		expect( container ).toHaveTextContent( 'UA' );
 	} );
 
-	it( 'should render GA4 widget when GA4 dashboard view is enabled', () => {
+	it( 'should render the GA4 widget when GA4 dashboard view is enabled', () => {
 		enabledFeatures.add( 'ga4Reporting' );
 		registry.dispatch( MODULES_ANALYTICS ).setSettings( {
 			dashboardView: 'google-analytics-4',
