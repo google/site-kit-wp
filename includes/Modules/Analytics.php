@@ -36,6 +36,7 @@ use Google\Site_Kit\Core\Tags\Guards\Tag_Verify_Guard;
 use Google\Site_Kit\Core\Util\Debug_Data;
 use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
+use Google\Site_Kit\Modules\Analytics\Account_Ticket;
 use Google\Site_Kit\Modules\Analytics\Google_Service_AnalyticsProvisioning;
 use Google\Site_Kit\Modules\Analytics\AMP_Tag;
 use Google\Site_Kit\Modules\Analytics\Settings;
@@ -290,16 +291,14 @@ final class Analytics extends Module
 		// sending the user off to the terms of service page.
 		$account_ticket_transient_key = self::PROVISION_ACCOUNT_TICKET_ID . '::' . get_current_user_id();
 		$account_ticket_params        = $this->transients->get( $account_ticket_transient_key );
+		$account_ticket               = new Account_Ticket( $account_ticket_params );
 
-		// Backwards compat for previous storage type.
-		if ( is_string( $account_ticket_params ) ) {
-			$account_ticket_params = array( 'accountTicketId' => $account_ticket_params );
+		// Backwards compat for previous storage type which stored ID only.
+		if ( is_scalar( $account_ticket_params ) ) {
+			$account_ticket->set_id( $account_ticket_params );
 		}
 
-		if (
-			empty( $account_ticket_params['accountTicketId'] )
-			|| $account_ticket_params['accountTicketId'] !== $account_ticket_id
-		) {
+		if ( $account_ticket->get_id() !== $account_ticket_id ) {
 			wp_safe_redirect(
 				$this->context->admin_url( 'dashboard', array( 'error_code' => 'account_ticket_id_mismatch' ) )
 			);
@@ -365,7 +364,7 @@ final class Analytics extends Module
 		do_action(
 			'googlesitekit_analytics_handle_provisioning_callback',
 			$account_id,
-			$account_ticket_params
+			$account_ticket
 		);
 
 		wp_safe_redirect(
@@ -947,15 +946,14 @@ final class Analytics extends Module
 
 				return $response->getReports();
 			case 'POST:create-account-ticket':
+				$account_ticket = new Account_Ticket();
+				$account_ticket->set_id( $response->getId() );
+				$account_ticket->set_property_name( $data['propertyName'] );
+				$account_ticket->set_timezone( $data['timezone'] );
 				// Cache the create ticket id long enough to verify it upon completion of the terms of service.
 				$this->transients->set(
 					self::PROVISION_ACCOUNT_TICKET_ID . '::' . get_current_user_id(),
-					array(
-						'accountTicketId' => $response->getId(),
-						'propertyName'    => $data['propertyName'],
-						'profileName'     => $data['profileName'],
-						'timezone'        => $data['timezone'],
-					),
+					$account_ticket->to_array(),
 					15 * MINUTE_IN_SECONDS
 				);
 				return $response;

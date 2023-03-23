@@ -42,6 +42,7 @@ use Google\Site_Kit\Core\Util\Sort;
 use Google\Site_Kit\Core\Util\URL;
 use Google\Site_Kit\Core\Validation\Exception\Invalid_Report_Dimensions_Exception;
 use Google\Site_Kit\Core\Validation\Exception\Invalid_Report_Metrics_Exception;
+use Google\Site_Kit\Modules\Analytics\Account_Ticket;
 use Google\Site_Kit\Modules\Analytics\Settings as Analytics_Settings;
 use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\AccountProvisioningService;
 use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\Proxy_GoogleAnalyticsAdminProvisionAccountTicketRequest;
@@ -372,28 +373,12 @@ final class Analytics_4 extends Module
 	 * Provisions new GA4 property and web data stream for provided account.
 	 *
 	 * @since 1.35.0
-	 * @since n.e.x.t Added $account_ticket_params.
+	 * @since n.e.x.t Added $account_ticket.
 	 *
-	 * @param string $account_id            Account ID.
-	 * @param array  $account_ticket_params {
-	 *     Account ticket parameters.
-	 *
-	 *     @type string $accountTicketId Account ticket ID.
-	 *     @type string $propertyName    Property display name.
-	 *     @type string $timezone        Timezone.
-	 *     @type string $profileName     Optional. Profile (View) display name. UA only.
-	 *     @type string $dataStreamName  Optional. Data stream display name. GA4 only.
-	 * }
+	 * @param string         $account_id     Account ID.
+	 * @param Account_Ticket $account_ticket Account ticket instance.
 	 */
-	private function handle_provisioning_callback( $account_id, $account_ticket_params ) {
-		$account_ticket_params = array_merge(
-			array(
-				'propertyName'   => null,
-				'timezone'       => null,
-				'dataStreamName' => null,
-			),
-			$account_ticket_params
-		);
+	private function handle_provisioning_callback( $account_id, $account_ticket ) {
 		// Reset the current GA4 settings.
 		$this->get_settings()->merge(
 			array(
@@ -406,8 +391,8 @@ final class Analytics_4 extends Module
 		$property = $this->create_property(
 			$account_id,
 			array(
-				'displayName' => $account_ticket_params['propertyName'],
-				'timezone'    => $account_ticket_params['timezone'],
+				'displayName' => $account_ticket->get_property_name(),
+				'timezone'    => $account_ticket->get_timezone(),
 			)
 		);
 		$property = self::filter_property_with_ids( $property );
@@ -421,7 +406,7 @@ final class Analytics_4 extends Module
 		$web_datastream = $this->create_webdatastream(
 			$property->_id,
 			array(
-				'displayName' => $account_ticket_params['dataStreamName'],
+				'displayName' => $account_ticket->get_data_stream_name(),
 			)
 		);
 		$web_datastream = self::filter_webdatastream_with_ids( $web_datastream );
@@ -701,16 +686,16 @@ final class Analytics_4 extends Module
 					$response->getAccountSummaries()
 				);
 			case 'POST:create-account-ticket':
+				$account_ticket = new Account_Ticket();
+				$account_ticket->set_id( $response->getAccountTicketId() );
+				// Required in create_data_request.
+				$account_ticket->set_property_name( $data['propertyName'] );
+				$account_ticket->set_data_stream_name( $data['dataStreamName'] );
+				$account_ticket->set_timezone( $data['timezone'] );
 				// Cache the create ticket id long enough to verify it upon completion of the terms of service.
 				set_transient(
 					Analytics::PROVISION_ACCOUNT_TICKET_ID . '::' . get_current_user_id(),
-					array(
-						'accountTicketId' => $response->getAccountTicketId(),
-						// Required in create_data_request.
-						'propertyName'    => $data['propertyName'],
-						'dataStreamName'  => $data['dataStreamName'],
-						'timezone'        => $data['timezone'],
-					),
+					$account_ticket->to_array(),
 					15 * MINUTE_IN_SECONDS
 				);
 

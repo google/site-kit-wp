@@ -189,7 +189,7 @@ class Analytics_4Test extends TestCase {
 
 		$this->analytics->register();
 
-		do_action( 'googlesitekit_analytics_handle_provisioning_callback', $account_id, array() );
+		do_action( 'googlesitekit_analytics_handle_provisioning_callback', $account_id, new Analytics\Account_Ticket() );
 
 		$this->assertEqualSetsWithIndex(
 			array(
@@ -301,7 +301,7 @@ class Analytics_4Test extends TestCase {
 			$options->get( Settings::OPTION )
 		);
 
-		do_action( 'googlesitekit_analytics_handle_provisioning_callback', $account_id, array() );
+		do_action( 'googlesitekit_analytics_handle_provisioning_callback', $account_id, new Analytics\Account_Ticket() );
 
 		$this->assertEqualSetsWithIndex(
 			array(
@@ -449,9 +449,9 @@ class Analytics_4Test extends TestCase {
 
 		// Assert transient is set with params.
 		$account_ticket_params = get_transient( Analytics::PROVISION_ACCOUNT_TICKET_ID . '::' . $this->user->ID );
-		$this->assertEquals( $account_ticket_id, $account_ticket_params['accountTicketId'] );
-		$this->assertEquals( $property_display_name, $account_ticket_params['propertyName'] );
-		$this->assertEquals( $stream_display_name, $account_ticket_params['dataStreamName'] );
+		$this->assertEquals( $account_ticket_id, $account_ticket_params['id'] );
+		$this->assertEquals( $property_display_name, $account_ticket_params['property_name'] );
+		$this->assertEquals( $stream_display_name, $account_ticket_params['data_stream_name'] );
 		$this->assertEquals( $timezone, $account_ticket_params['timezone'] );
 	}
 
